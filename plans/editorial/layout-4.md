@@ -187,7 +187,8 @@ repertoire, map, pricing, calendar, form, testimonials, footer. **Expect no chan
 - **`vm.navFits` has no layout-4 arm and needs none** (the 768 masters draw the burger), and
   **`navModeDefault`** is *Follow my sections* at `d === 3` for every template — the 1440 capsule
   draws all eight section labels.
-- **`vm.titleWordEms` is not read at layout 4** (the form's head is one line at 118).
+- **`vm.titleWordEms` is not read by the form at layout 4** (its head is one line at 118). *The
+  bio reads it (section 2), which moved its Editorial arm to Noto's 540 table at design 3.*
 
 ## The Figma source
 
@@ -247,7 +248,7 @@ Grunge twin's desktop id — each block's fit comment cites them); it is the gat
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 0 | *foundation* | `964:73037` *(page)* | — | `971:9537` | — | `977:13155` | — | — | — | — | `SCHEMES_OF.Editorial[3]` (decision 1) | **done** (`4018742`) |
 | 1 | `header` | `964:73038` | 1440 × 900 | `971:9538` | 768 × 1024 | `977:13156` | 390 × 844 | **3** (nav **1**, seal **4**, chips name Scheme 1) | `964:72849` / `971:5299` / `977:8867` | `964:72944` / `971:7823` / `977:12044` | `if (s.lime \|\| s.grunge) { … return }` at the head of `HeaderV3` | **done** (`8d2340e`) |
-| 2 | `bio` | `964:73046` *(Section `964:73039`, head `964:73040`)* | 664 × 720 | `971:9546` *(Section `971:9539`, head `971:9540`)* | 708 × 720 | `977:13164` *(Section `977:13157`, head `977:13158`)* | 370 × 536 | **3** (Section *and* instance; Tags **1**) | `964:72857` / `971:5307` / `977:8875` | `964:72952` / `971:7831` / `977:12052` | `if (s.v3 && (s.lime \|\| s.grunge))` ahead of `Bio`'s `if (s.v3)` | open |
+| 2 | `bio` | `964:73046` *(Section `964:73039`, head `964:73040`)* | 664 × 720 | `971:9546` *(Section `971:9539`, head `971:9540`)* | 708 × 720 | `977:13164` *(Section `977:13157`, head `977:13158`)* | 370 × 536 | **3** (Section *and* instance; Tags **1**) | `964:72857` / `971:5307` / `977:8875` | `964:72952` / `971:7831` / `977:12052` | `if (s.v3 && (s.lime \|\| s.grunge))` ahead of `Bio`'s `if (s.v3)` | **done** (`b589827`) |
 | 3 | `media` | `964:73053` *(band `964:73047`, head `964:73048`)* | 1440 × 671 | `971:9548` *(band `971:9547`, head `971:10389`)* | 768 × 569 | `977:13294` *(band `977:13288`, head `977:13289`)* | 390 × 845.9 | **2** (head **1**; 768 / 390 `Device: Tablet`) | `964:72864` / `971:5431` / `977:9005` | `964:72959` / `971:7955` / `977:12182` | `if (s.v3 && (s.lime \|\| s.grunge))` ahead of `Media`'s `if (s.v3)` | open |
 | 4 | `gallery` | `964:73096` *(wrapper `964:73061`, head `964:73062`)* | 874 × 646 | `971:9593` *(wrapper `971:9558`, head `971:9559`)* | 768 × 594 | `977:13460` *(wrapper `977:13425`, head `977:13426`)* | 390 × 585.5 | **3** (discs **4**) | `964:72909` / `971:5597` / `977:9171` | `964:73004` / `971:8121` / `977:12348` | `if (s.lime \|\| s.grunge)` inside `Gallery`'s `if (s.v3)`, after `from` | open |
 | 5 | `repertoire` | `964:73103` *(Section `964:73098`, panel `964:73099`)* | 1208 × **506** | `971:9600` *(Section `971:9595`, panel `971:9596`)* | 608 × **564** | `977:13467` *(Section `977:13462`, panel `977:13463`)* | 310 × **626** | **3** | `964:72916` / `971:5604` / `977:9178` | `964:73011` / `971:8128` / `977:12355` | `if (s.lime \|\| s.grunge)` inside `Repertoire`'s `if (s.v3)`, after `jump` | open |
@@ -813,6 +814,16 @@ bullets; name them.
 - **A shared helper's Editorial arm is scoped to its layouts, not widened by grep** (section 1).
   `LogoMark`'s sparkle stops at `!s.v3`, and `SealBadge`'s layout-1 seal steps aside at `scheme`
   4. Each gate names the one caller that moves, and the five-theme digest proves the rest.
+- **A master can set one head on two ramp keys** (section 2). The bio's 1440 head is Display/LG
+  118 at .89, and its 768 and 390 heads are Display/XL 107 / 64 at .75. `get_variable_defs` on
+  each Section says so, where the twins' single `s.dispXl` would have set 147 at 1440. Read the
+  head's token per master before inheriting the twins' key.
+- **The twins' `wordBreak: 'break-word'` heads split a long word in Noto** (section 2). Where a
+  Lime block breaks a display head inside a word, Editorial fits it to its widest word instead:
+  an `inline-size` container on the head's column and `min(size, calc(min(100cqi, measure) /
+  s.titleWordEms))`. `vm.titleWordEms` is Noto's 540 table at designs 2 and 3 under Editorial,
+  and the Bold table at design 0. The gallery's and the testimonials' heads are the next Lime
+  heads to probe.
 
 ### Seen at planning time, per section
 
@@ -1034,6 +1045,87 @@ From the walks and the renders — impressions to confirm, not measurements.
   showTags `[0, 2, 3]`, showBadge `[0, 3]`, badgeText `[3]`, cta2 `[1, 2]`, subtitle / heroCta and
   layout 2's copy `[1]`, align `[0]`, cardLine `[2]`. `showBadge` stays, as the plan expected.
 
+### Settled in section 2 (the bio)
+
+- **No Editorial block: Lime's `if (s.v3 && (s.lime || s.grunge))` ahead of `Bio`'s `if (s.v3)`
+  is `s.limeTree`**, with `const ed = s.editorial` naming the deltas and no `G`. The walker read
+  all three Sections (34 / 34 / 33 visible nodes) with bindings and their collections. The tree is
+  Grunge's without the grain and the tear: Lime's plus `Frame 255`, and the Genres label drawn.
+  The hidden "the" / "room." text nodes are not drawn. Every Lime and Grunge arm is
+  byte-identical, and `Grain` and `TornEdge` gate themselves on `s.grunge`.
+- **The ground is the seat's (trap 1).** The sheet paints `ed ? s.bg : s.ac` in `ed ? s.tx :
+  s.bg`: ink under the Scheme 3 seat, sampled `rgb(20, 20, 20)`. "KM BIO" is `s.tx` paper, with
+  Grunge's arm. The head is `s.ac` terracotta, one tone, uppercase.
+- **The head is on two ramp keys** (`get_variable_defs` on each Section):
+  - At 1440 it is **Display/LG** 118 at .89, `s.dispLg` 97.
+  - At 768 and 390 it is **Display/XL** 107 / 64 at .75, `s.dispXl`.
+  - The twins' `s.dispXl` would have set 147 at 1440.
+  - It keeps Lime's 572.9 measure, and the seed sets two lines at all three widths, as the frames
+    do.
+- **The head is fitted to its widest word**, which neither twin does. Their `wordBreak:
+  'break-word'` split "UNFORGETTABLE" inside the word at every width in Noto: "UNFORGET / TABLE"
+  at 1440, "UNFORGETTA / BLE" at 390. The head's column is now an `inline-size` container under
+  `ed`, and the size is `min(size, calc(min(100cqi, u(572.9)) / s.titleWordEms))`, with 100cqi
+  alone at 390.
+  - `vm.titleWordEms` took Noto's 540 table at design 3 as well as 2 (`d >= 2`). The only readers
+    are the form's designs 0 and 2, so the change moves no render.
+  - The seed keeps 97 / 107 / 64.
+  - "Unforgettable" sets on one line at 65.6 / 80 / 51.6, 466 / 569 / 367 wide.
+  - "Atmosphere nights" sets at 83 / 101 / 64 on two lines. "Reads the room tonight" sets on three
+    lines at full size.
+  - The card name needed no fit: "Christopher Featherstonehaugh" wraps between words at 37 / 36 /
+    30.
+- **Genres is drawn**, `s.tagsLabel` in `s.body` / `s.bodyLg` / lh 1.5 / `s.ac`, 16 over the chips
+  at every width. An emptied label drops, and an emptied tag list drops the whole column. The
+  chips pass `TagChips`' `hues` / `inks` off `s.onScheme[1].chips`: blush lettered ink, then
+  terracotta lettered paper. The radius is `u(6)`, and the desktop padding is `TagChips`' own
+  `s.limeTree` 4.1 / 9. The frame letters chip 4 ink at 768 and 390 through
+  `scheme/4/tag1/text` (paper through `scheme/4/text1` at 1440). Ours is paper at every width,
+  trap 7 and the header's named diff.
+- **Every box is square**: card, glass and prose box, `u(ed ? 0 : …)`. The well is `s.box3`
+  `#0E0E0E` and the prose box `s.box2` `#2A2A2A`, at every width, since the instance is Scheme 3
+  at all three (no narrow literal).
+- **The glass is ``ed ? (s.mob ? s.bg : `${s.bg}CC`) : …``**. `Frame 255` is `sem/bg` at node
+  opacity .8 at 1440 and 768, drawn as the panel's one fill (Grunge's route) and sampled `rgba(20,
+  20, 20, 0.8)`. At 390 the glass paints `#2E3928` at 1% over opaque `sem/bg`, which is ink. The
+  blur stays in the style at 390, where it paints nothing behind the opaque fill. The 1px
+  `#000000` inside ring is Lime's last-child overlay, at 1440 and 768 and none at 390, as the
+  masters state.
+- **The 390 boxes are Editorial's**: the Section pads its foot **40** (Lime 30, Grunge 60), and
+  stacks head and card **40** apart (Lime 15, Grunge 10). The head's own gap is **30** at every
+  width (Lime's 390 is 15).
+- **The photograph: no seed.** `9d20fe0d` at `FILL`. A centred cover of `editorial-stage.jpg`
+  (820 × 1025) correlates **0.992 / 0.990 / 0.988** with the three renders over the card's top
+  (the anchors at 0 / 25 / 75% give 0.13–0.41 at the wide widths). `photos.js` did not move.
+- **Measured** (canvas, content edges; the frame × 0.82 in brackets at desktop):
+  - Desktop: eyebrow 95.1 (95.1), h2 265.4 × 172.7 (266.1 × 172.2), Genres 588.2 (588.8), chips
+    620.8 / 657.1 (621.6 / 656.8), card 590 · 95.1, 544.1 × 590.4, name 37, prose box `#2A2A2A`.
+  - 768: h2 107.6 × 160.5 (108 × 160), Genres 298.1 (298), chips 336.6 / 372.3 (337 / 373), card
+    439.9 (441), glass 828.4 (826), section 1219.9 (1221).
+  - 390: h2 75.1 × 96 (75 × 96), Genres 201.1 (201), chips 239.6 / 272.7 (240 / 273), card 337.8
+    (338).
+  - No sideways scroll at any width.
+- **Named diffs, all the twins'**:
+  - The panel is content-tall: 278.8 against 250 at 1440, and 301.5 against 305 at 768. The seed
+    has two paragraphs where the frame has one (JP-081's reply). The panel's head-to-prose gap is
+    the 30 padding, where the frame measures 27 / 37.
+  - The 390 card keeps Lime's 400 photo stage (a user call), so the card is 733 against 536 and the
+    section 1110.8 against 914. The seeded meta row also wraps to two lines there.
+  - The meta row prints "DJ · Live Act" and "Performing since June 2021" (JP-081's reply).
+- **`live=1`**: Listen is `<a href="#media">` in paper on the dimmed glass at all three widths.
+  `&noimage=1` at 390 puts paper `KM` on the dark stage. `&who={"tags":""}` drops Genres and the
+  chips together.
+- **`reach.mjs 3`** (bio and `who` probes): `tagsLabel` reaches layouts 3 and 4, `cta2` layout 4,
+  and `who.tags` / `showTags` layouts 2–4. Those are the stored rows (`tagsLabel`'s
+  `Editorial: [2, 3]` was measured over Retro's placeholder arm and holds), so `FIELDS` needed
+  nothing.
+- **Builder** (`page-check.mjs Editorial 3`): four cards, no errors or warnings. About scrolls to
+  `#bio` and the bio's Listen ↗ to `#media`, and the 390 burger goes 1 → 11. The header's ink
+  floor meets the ink bio as one ground. Bio → media meets Retro's flat checker on the media's
+  taupe band, which is the media session's to replace.
+- **Digest**: themes 0, 1, 2 and 4 at zero files, canvas and `live=1`. Theme 3 moved exactly
+  `bio_arch_3` at three widths on both surfaces, six files.
+
 ### Inherited and used
 
 *(Each session appends the bullets it leaned on, one line each: the bullet's title, where it lives,
@@ -1062,6 +1154,22 @@ and what this section did with it.)*
 - Header: *Field reach is measured* (CLAUDE.md, the `FIELDS` bullet) — `reach.mjs 3`, no change.
 - Header: *The whole-page published check is one puppeteer script* (lime/layout-1, *Learned on the
   end-of-pass sweep*) — `page-check.mjs Editorial 3,0,1,2`.
+- Bio: *A section whose live seam is hoisted above its branches can always take a block*
+  (lime/layout-1, *Settled in section 3*) — the block ahead of `if (s.v3)`, widened in place.
+- Bio: *A widened block can need no `G` at all* (grunge/layout-3, *Settled in section 9*) — a
+  dozen `ed` arms.
+- Bio: *A Lime block paints its ground from Scheme 1 keys* (this plan, trap 1) — the sheet `s.bg`.
+- Bio: *A node can name another scheme's variable outright* (editorial/layout-3, *Conventions*) —
+  the chips on `s.onScheme[1]`.
+- Bio: *Read a fill's `scaleMode` before believing its `imageTransform`* (grunge/layout-2,
+  *Settled in section 1*) — `FILL`, a centred cover at 0.992, no seed.
+- Bio: *A head that must fit its measure is fitted to its widest word* (lime/layout-3, section 9;
+  editorial/layout-1, *Conventions*) — the head, on `titleWordEms` in Noto's 540 ems.
+- Bio: *A twin's width-bound call is re-measured in the new face* (editorial/layout-2,
+  *Conventions*) — the twins' `break-word` head, which splits a long word in Noto.
+- Bio: *`get_variable_defs` resolves a node's mode* (memory: `figma-frame-reading`) — the head's
+  Display/LG at 1440 against Display/XL narrow.
+- Bio: *Field reach is measured* (CLAUDE.md) — `reach.mjs 3` over the bio probes, no change.
 
 ## Open questions
 
