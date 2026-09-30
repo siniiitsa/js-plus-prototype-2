@@ -542,14 +542,16 @@ function LogoMark({ s, size = 18, color, glyph }) {
   if (s.retro) return <GlobeMark size={glyph ?? size + 6} color={color || s.tx} />
   // Editorial's mark (964:58612 "Vector") is its blush sparkle, 44.93 × 45.35,
   // where Lime and Grunge draw a globe — in `sem/media` whatever ink the name
-  // beside it takes, so `color` does not reach it.
-  if (s.editorial) {
+  // beside it takes, so `color` does not reach it. Its layout-4 capsule
+  // (964:73038 "Group 7") draws Lime's globe instead, in `sem/text/2`, so the
+  // sparkle stops at layout 3 and the header's design 3 falls to the globe.
+  if (s.editorial && !s.v3) {
     const g = glyph ?? size + 6
     return <GrungeStar s={s} fill={SIENNA_MEDIA}
                        style={{ position: 'relative', width: g, height: g * 145.333 / 144, flex: 'none' }} />
   }
   // Grunge's "Group 6" is Lime's "Group 7" vector for vector.
-  if (s.lime || s.grunge) return <LimeGlobeMark size={glyph ?? size + 6} color={color || s.tx} />
+  if (s.limeTree) return <LimeGlobeMark size={glyph ?? size + 6} color={color || s.tx} />
   return (
     <span style={{
       width: size, height: size, borderRadius: '999px', background: s.ac,
@@ -1082,7 +1084,12 @@ function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32, ink: in
   // under Scheme 3: on layout 3's page (964:68749) the footer stands on
   // Scheme 2, where `tag/1/bg` is the disc's own blush and the frame's name
   // vanishes, so the name is redrawn in the ink that reads there.
-  if (s.editorial && !classic) {
+  //
+  // Editorial's layout-4 header (964:73038's "Frame 247", 977:13156's "Frame
+  // 248") is the one Editorial seal that is not this component: it is Lime's
+  // disc tree, nested in Scheme 4 at all three widths, so `scheme={4}` — which
+  // no other Editorial caller passes — skips this arm for the Lime one below.
+  if (s.editorial && !classic && scheme !== 4) {
     const name = String(s.badgeText || '').toUpperCase()
     const k = 57.78 / 125.37 * 100 / 144
     return (
@@ -1117,9 +1124,16 @@ function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32, ink: in
       </div>
     )
   }
-  if ((s.lime || s.grunge) && !classic) {
+  // Editorial reaches this arm at `scheme` 4 alone (above): a `sem/bg`
+  // terracotta disc with its rings, ticks, equator marks and name in
+  // `sem/text/2`, Scheme 4's ink — read off `s.onScheme[4]`, since the header
+  // seating it is Scheme 3. The frame sets the name in Lime's own Bebas Neue
+  // Bold, a face the component carries unbound; Grunge's frame carries the
+  // same and its pass set the name in its own label face, so this one keeps
+  // `s.label` too.
+  if (s.limeTree && !classic) {
     const name = String(s.badgeText || '').toUpperCase()
-    const [disc, mk] = s.grunge ? (line ? [s.footerBand || s.bg, s.stroke2] : scheme === 4 ? [s.bg, s.ac] : [s.ac, s.bg]) : scheme === 4 ? [s.tx, s.bg] : scheme === 3 ? [s.ac, s.bg] : scheme === 2 ? [s.box1, s.ac] : [s.bg, s.ac]
+    const [disc, mk] = s.editorial ? [s.onScheme[4].bg, s.onScheme[4].tx] : s.grunge ? (line ? [s.footerBand || s.bg, s.stroke2] : scheme === 4 ? [s.bg, s.ac] : [s.ac, s.bg]) : scheme === 4 ? [s.tx, s.bg] : scheme === 3 ? [s.ac, s.bg] : scheme === 2 ? [s.box1, s.ac] : [s.bg, s.ac]
     const nameMk = s.grunge && line ? s.ac : mk
     return (
       <div style={{
@@ -1278,12 +1292,11 @@ function Checkerboard({ s, style, cell = 14, colour }) {
 // is the same ramp in its Scheme 1 greens (`box/1` → `bg` → `box/3`), or a
 // removed hero would leave a brown panel under a lime nav. Grunge takes the
 // same three tokens, which in Static Youth are neutral near-blacks, and so do
-// Editorial's fitted heroes at layouts 1 and 3: both stand on Scheme 3, where
+// Editorial's heroes at layouts 1 and 3: both stand on Scheme 3, where
 // they are `#1D1D1D` → `#141414` → `#0E0E0E` under the ink capsule and the
-// blush one. Its placeholder card 4 stands on Scheme 1, where the same ramp
-// opens on paper under its pale wordmark, so it keeps the browns of the Retro
-// composition it draws until its layout pass seats it. (Card 2's photograph
-// is an arch on `sem/box/3`, not a backdrop.)
+// blush one — and its layout-4 hero, under the paper one, on the same Scheme 3.
+// (Card 2's photograph is an arch on `sem/box/3`, not a backdrop, and passes
+// no `backdrop`.)
 // `src` lets a layout address one slot of a multi-photo section; it falls back
 // to the section's single photo, then to the initials placeholder.
 // `avatar` reads the header's second photo slot, and reads it strictly: an empty
@@ -1309,7 +1322,7 @@ function Photo({ s, style, initialsSize = 44, backdrop = false, avatar = false, 
     return (
       <div style={{
         width: '100%', height: '100%',
-        background: (s.lime || s.grunge || (s.editorial && (s.v0 || s.v2)))
+        background: s.limeTree
           ? `linear-gradient(150deg, ${s.box1}, ${s.bg} 55%, ${s.box3})`
           : `linear-gradient(150deg, ${s.edge}, #2A2622 55%, #14110E)`,
         ...style,
@@ -1471,7 +1484,11 @@ function LimePin({ s, width, height, radius, fill }) {
 // its links are Label/SM 16 at lh 1.1 — Lime's are Display/List 24 at 1.2 —
 // still 23 apart, so the gap is 23/16 of the row's size and the cap
 // `s.labelSm`.
-function NavBar({ s, colour, rule, pill, nameSize, nameColour, mark, links, clean }) {
+// `fill` is the capsule's ground, additive like `mark`: Editorial's layout-4
+// capsule (964:73038 "Frame 49") is a Scheme 1 node inside a Scheme 3 header,
+// so its paper `sem/bg` is `s.onScheme[1].bg` and none of the seat's keys.
+// Every other caller passes none and keeps the arm's own fill.
+function NavBar({ s, colour, rule, pill, nameSize, nameColour, mark, links, clean, fill }) {
   const c = colour || s.tx
   const bar = rule || c
   const tab = isTablet(s)
@@ -1486,7 +1503,7 @@ function NavBar({ s, colour, rule, pill, nameSize, nameColour, mark, links, clea
       // page with so many sections that the links wrap even at their 12px
       // floor (see the row below) gets a rounded bar, not a lozenge.
       ...(lime ? {
-        background: ed ? s.box3 : s.bg, borderRadius: s.narrow ? s.btnR : '30.35px',
+        background: fill ?? (ed ? s.box3 : s.bg), borderRadius: s.narrow ? s.btnR : '30.35px',
         padding: s.narrow ? '10px 20px' : '8.2px 8.2px 8.2px 16.4px',
       } : null),
     })}>
@@ -1561,9 +1578,8 @@ function NavBar({ s, colour, rule, pill, nameSize, nameColour, mark, links, clea
  *
  * Lime's, Grunge's and Editorial's header families are the first four of them
  * in their own tokens (`headerFamily()`), because header card N lays out the
- * whole page as layout N. All four, HeaderV0–V3, are fitted to Lime's frames
- * and to Grunge's; under Editorial, HeaderV0 is fitted and V1–V3 render
- * Retro's compositions in its tokens until their own passes.
+ * whole page as layout N. All four, HeaderV0–V3, are fitted to Lime's frames,
+ * to Grunge's and to Editorial's.
  * ------------------------------------------------------------------ */
 
 // v0 — Header layout 1 · Hero (§10.2 reference design)
@@ -3183,7 +3199,7 @@ function HeaderV3({ s }) {
   const tab = isTablet(s)
   const z = desk ? 0.82 : 1
   const u = (n) => `${+(n * z).toFixed(2)}px`
-  if (s.lime || s.grunge) {
+  if (s.limeTree) {
     // Lime's Stacked header (964:72849 at 1440, 971:5299 at 768, 977:8867 at
     // 390). Retro's skeleton node for node — the nav on the top edge, the
     // avatar tile over the identity panel on the floor, the chips at the
@@ -3218,32 +3234,56 @@ function HeaderV3({ s }) {
     // line at 1440 as well (no hand-break), two-tone white / black; the chips
     // are `vm.tagChips`' own seats; the photograph is FILL, so not mirrored;
     // and the frame's last child is the grain sheet, over everything.
+    //
+    // Editorial's (964:73038 / 971:9538 / 977:13156) is this tree node for
+    // node a third time, in Sienna Vale, Scheme 3 — which `sectionVm` seats
+    // (SCHEMES_OF), so every `s.*` here is the ink scheme's — and `ed` names
+    // what it draws otherwise (plans/editorial/layout-4.md, section 1). The
+    // photograph is FILL, so not mirrored, over `sem/box/3` `#0E0E0E`, and the
+    // fade ends in the seat's own `sem/bg` ink, the bio band below it. The
+    // tile is an arch — 113 × 145 at 1440, 76.95 on its two top corners — on
+    // `sem/box/1` in a 3.04 inside ring of `sem/stroke/2` blush; the kicker
+    // and the location are terracotta `sem/text/1` at Display/Title and
+    // Display/List, the name paper and one tone, the location's square
+    // `sem/box/2` `#2A2A2A` (followed: the binding, all but lost on the ink
+    // floor). Three nodes name Scheme 1 outright and read `s.onScheme[1]`: the
+    // capsule, paper with Label/LG / Label/MD ink type round Lime's globe
+    // and Grunge's fixed 23 gaps; its Book Now, terracotta lettered paper
+    // round a paper disc; and the chips, blush and terracotta, each in its
+    // seat's own ink (the frame letters its fourth and sixth ink through two
+    // other schemes' tag inks — layout 3's header reading). The seal is Lime's
+    // disc in Scheme 4 at all three widths, terracotta with ink marks. No
+    // grain, as under Lime.
     const grunge = s.grunge
-    const lime3 = grunge ? '#9E1F17' : '#CCFA61'
-    const lift = grunge ? '#F52E34' : '#D9FF7F'
-    const kicker = desk ? u(36) : tab ? '28px' : '26px'
+    const ed = s.editorial
+    const lime3 = ed ? s.box1 : grunge ? '#9E1F17' : '#CCFA61'
+    const lift = ed ? s.box2 : grunge ? '#F52E34' : '#D9FF7F'
+    const kicker = ed ? (desk ? u(32) : tab ? '25px' : '23px') : desk ? u(36) : tab ? '28px' : '26px'
     // The frames' page inset — 56 / 30 / 10 round the nav, 56 / 30 / 20 round
     // the block below it — plus `s.surplus`, Retro's reading of the same
     // masters; the sheet bleeds past the canvas, so each child pads itself.
     const navPad = `calc(${s.surplus} + ${desk ? u(56) : tab ? '30px' : '10px'})`
     const bodyPad = `calc(${s.surplus} + ${desk ? u(56) : tab ? '30px' : '20px'})`
-    const avW = desk ? u(112.6) : tab ? '113px' : '116px'
+    const avW = desk ? u(ed ? 113 : 112.6) : tab ? '113px' : '116px'
 
     // The tile: `sem/box/1` under the photograph in a 3.04 inside stroke of
     // `sem/state/inactive/border` — both `lime3` at 1440 and 768 — and at 390
     // a stroke of `sem/stroke/2`, which is ink (read off the node; the 390
     // master's own tell). `border-box`, so the stated 112.6 × 118.68 holds.
+    // Editorial's is the arch, 145 tall at 1440, and its blush ring lies over
+    // the photograph, so it is Grunge's overlay at the frame's 3.04.
     const avatar = (
       <div style={{
-        width: avW, height: desk ? u(118.68) : '119px', flex: 'none',
+        width: avW, height: desk ? u(ed ? 145 : 118.68) : '119px', flex: 'none',
         position: 'relative', overflow: 'hidden', background: lime3,
-        border: grunge ? undefined : `${u(3.04)} solid ${s.mob ? s.bg : lime3}`, borderRadius: u(grunge ? 12 : 26.95),
+        border: grunge || ed ? undefined : `${u(3.04)} solid ${s.mob ? s.bg : lime3}`,
+        borderRadius: ed ? `${u(76.95)} ${u(76.95)} 0 0` : u(grunge ? 12 : 26.95),
       }}>
-        <Photo s={s} avatar initialsSize={Math.round(parseFloat(avW) * 0.3)} ink={grunge ? s.tx : s.bg} />
+        <Photo s={s} avatar initialsSize={Math.round(parseFloat(avW) * 0.3)} ink={grunge || ed ? s.tx : s.bg} />
         {/* Grunge's ring is 1px inside, over the photograph: an overlay. */}
-        {grunge && <div aria-hidden style={{
+        {(grunge || ed) && <div aria-hidden style={{
           position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
-          boxShadow: `inset 0 0 0 ${u(1)} #FFFFFF`,
+          boxShadow: `inset 0 0 0 ${u(ed ? 3.04 : 1)} ${ed ? s.stroke2 : '#FFFFFF'}`,
         }} />}
       </div>
     )
@@ -3252,20 +3292,27 @@ function HeaderV3({ s }) {
       <div style={col(u(18), {
         alignItems: 'flex-start',
         ...(desk ? { flex: '1 0 0', minWidth: 0 } : { width: '100%' }),
+        ...(ed ? { containerType: 'inline-size' } : null),
       })}>
         {/* Display/Title in `scheme/1/text2`, pale — the frame types
             "DJ · LIVE ACT", so the caps are the CSS's (Retro's reading). */}
         <span style={distressed(s, {
           fontFamily: s.display, fontSize: faced(s, kicker), lineHeight: facedLh(s, 1.1),
-          letterSpacing: s.dls, color: grunge ? s.bg : s.tx, textTransform: 'uppercase',
+          letterSpacing: s.dls, color: grunge ? s.bg : ed ? s.ac : s.tx, textTransform: 'uppercase',
         })}>{s.kicker}</span>
         {/* The 1440 master hand-breaks the name after its first word; both
             narrow masters set it `w-[min-content] min-w-full`, one line at
             their own sizes. `inline` at narrow only, Retro's reading. The .75
             leading is the frame's own at all three widths (read off the text
-            nodes), not Retro's alone. */}
-        <Title s={s} size={s.dispXl} lh={0.75} color={s.tx} inline={s.narrow || grunge}
-               twoTone={grunge} toneA={s.tx} toneB={s.bg} />
+            nodes), not Retro's alone.
+            Editorial's Noto Serif Display sets ~83px a capital at 147, where
+            Bebas at 164 sets ~65, so a ten-letter word (MONTGOMERY, 889)
+            outran the 806 column into the chips and ran off the 390 page.
+            So under Editorial the name shrinks only when its widest word
+            would not fit the block (`s.cardNameEms`, HeaderV2's JP-062
+            rule), capped at the ramp; the seeded name keeps its 147. */}
+        <Title s={s} size={ed ? `min(${s.dispXl}, calc(100cqi / ${s.cardNameEms}))` : s.dispXl} lh={0.75} color={s.tx}
+               inline={s.narrow || grunge} twoTone={grunge} toneA={s.tx} toneB={s.bg} />
         <span style={row(u(8), { minWidth: 0 })}>
           {/* A 14 square at `radius/chip` in Scheme 3's `sem/box/2`, and the
               location in Display/List inked `sem/text/1` — ink on the lime. */}
@@ -3274,8 +3321,8 @@ function HeaderV3({ s }) {
           }} />
           <span style={{
             fontFamily: s.display, fontSize: faced(s, s.list), lineHeight: facedLh(s, 1.2),
-            letterSpacing: s.dls, color: s.bg, whiteSpace: 'nowrap',
-            textTransform: grunge ? 'uppercase' : undefined,
+            letterSpacing: s.dls, color: ed ? s.ac : s.bg, whiteSpace: 'nowrap',
+            textTransform: grunge || ed ? 'uppercase' : undefined,
           }}>{s.location}</span>
         </span>
       </div>
@@ -3299,7 +3346,8 @@ function HeaderV3({ s }) {
       }}>
         {s.tagChips.map((c, i) => (
           <span key={i} style={{
-            background: grunge ? c.bg : i % 2 ? s.tx : s.box1, color: grunge ? c.fg : i % 2 ? s.activeFg : s.ac,
+            background: ed ? s.onScheme[1].chips[i % 2].bg : grunge ? c.bg : i % 2 ? s.tx : s.box1,
+            color: ed ? s.onScheme[1].chips[i % 2].fg : grunge ? c.fg : i % 2 ? s.activeFg : s.ac,
             borderRadius: s.radiusChip, padding: `${u(5)} ${u(11)}`,
             fontFamily: s.ui, fontSize: s.labelXs, lineHeight: 1.26,
             letterSpacing: s.dls, whiteSpace: 'nowrap',
@@ -3331,13 +3379,14 @@ function HeaderV3({ s }) {
             the right, clear of the name. Its cost is a mirrored upload at
             desktop alone, named here rather than declined. */}
         <div aria-hidden style={{ position: 'absolute', inset: 0 }}>
-          <Photo s={s} backdrop style={desk && !grunge ? { transform: 'scaleX(-1)' } : undefined} />
+          <Photo s={s} backdrop style={desk && s.lime ? { transform: 'scaleX(-1)' } : undefined} />
         </div>
         {/* Scheme 3's `sem/bg` — `s.ac` — off the floor to a transparent stop
-            in Scheme 1's `sem/bg` at the top, the frame's own two stops. */}
+            in Scheme 1's `sem/bg` at the top, the frame's own two stops.
+            Editorial's Scheme 3 `sem/bg` is the seat's own ink. */}
         <div aria-hidden style={{
           position: 'absolute', inset: 0,
-          background: `linear-gradient(0deg, ${s.ac} 0%, #15180F00 100%)`,
+          background: `linear-gradient(0deg, ${ed ? s.bg : s.ac} 0%, #15180F00 100%)`,
         }} />
 
         {/* NavBar's Lime capsule is this frame's `Frame 49` — the same Figma
@@ -3354,13 +3403,21 @@ function HeaderV3({ s }) {
         <div style={{ position: 'relative', padding: `0 ${navPad}` }}>
           {/* Grunge's capsule names itself at Label/LG at every width, keeps
               the 36 globe 13.15 off it narrow, and spaces its Label/MD links
-              a fixed 23 (NavBar's `mark` / `links`). */}
-          <NavBar s={s} colour={s.tx} nameSize={s.mob || grunge ? s.labelLg : undefined} clean={s.mob || grunge}
-                  mark={grunge ? { glyph: desk ? 29.5 : 36, gap: desk ? '11px' : '13.15px' } : undefined}
-                  links={grunge ? { gap: u(23), cap: s.labelMd } : undefined}
-                  pill={s.mob ? {
-                    size: '11.39px', disc: 32.75,
-                    style: { padding: '3.56px 3.56px 3.56px 14.95px', gap: '7.12px' },
+              a fixed 23 (NavBar's `mark` / `links`). Editorial's does all of
+              that on Scheme 1: a paper `fill`, ink type and globe, and a
+              terracotta pill lettered paper round a paper disc. Its 390 pill
+              states Bold where 1440 and 768 state Regular — the hand-scaled
+              instance's slip, not followed. */}
+          <NavBar s={s} colour={ed ? s.onScheme[1].tx : s.tx} fill={ed ? s.onScheme[1].bg : undefined}
+                  nameSize={s.mob || grunge || ed ? s.labelLg : undefined} clean={s.mob || grunge}
+                  mark={grunge || ed ? { glyph: desk ? 29.5 : 36, gap: desk ? '11px' : '13.15px' } : undefined}
+                  links={grunge || ed ? { gap: u(23), cap: s.labelMd } : undefined}
+                  pill={s.mob || ed ? {
+                    ...(ed ? { bg: s.onScheme[1].pillBg, fg: s.onScheme[1].bg } : null),
+                    ...(s.mob ? {
+                      size: '11.39px', disc: 32.75,
+                      style: { padding: '3.56px 3.56px 3.56px 14.95px', gap: '7.12px' },
+                    } : null),
                   } : undefined} />
         </div>
 
@@ -3389,8 +3446,10 @@ function HeaderV3({ s }) {
         {/* Grunge's seal: `Frame 247` nests Scheme 4 (≡ 1) at 1440 — a black
             disc, red marks — but states no scheme at 768, so it inherits the
             header's Scheme 3 there, and `Frame 248` is Scheme 3 at 390: red
-            with black marks at both. Same boxes as Lime's at all three. */}
-        <SealBadge s={s} scheme={grunge ? (desk ? 4 : 3) : s.mob ? 3 : 4} tilt={26.06}
+            with black marks at both. Same boxes as Lime's at all three.
+            Editorial's nests Scheme 4 at all three — `Frame 248` too — so it
+            is terracotta with ink marks at every width, in Lime's boxes. */}
+        <SealBadge s={s} scheme={grunge ? (desk ? 4 : 3) : ed ? 4 : s.mob ? 3 : 4} tilt={26.06}
                    size={desk ? +(125.37 * z).toFixed(2) : tab ? 125.37 : 85}
                    style={{
                      ...(tab ? { bottom: '185.46px' } : { top: desk ? u(168.46) : '134.35px' }),
@@ -3400,7 +3459,7 @@ function HeaderV3({ s }) {
             whole header — nav, type and seal included — at lighten .29, its
             gradient paint hidden: a 1440 square hung 270 above the top at
             1440, the header's own width 1030 / 850 tall from 6 above it
-            narrow. Grain returns nothing under Lime. */}
+            narrow. Grain returns nothing under Lime and Editorial. */}
         <Grain s={s} exact grunge blend="lighten" opacity={0.29} style={{
           inset: `${desk ? u(-270) : '-6px'} 0 auto 0`,
           height: desk ? undefined : tab ? '1030px' : '850px',
@@ -3533,12 +3592,9 @@ function HeaderV3({ s }) {
           hero composites the same raster at 50%. */}
       <Grain s={s} exact blend="lighten" opacity={0.29} />
 
-      {/* Under Editorial the bar is card 1's capsule (NavBar's `s.limeTree`
-          arm), so its pill keeps that capsule's own scale: Retro's 14.24 at
-          390 ran the pill over the name. Layout 4's pass fits the bar. */}
       <div style={{ position: 'relative', padding: `0 ${navPad}` }}>
         <NavBar s={s} colour={cream} rule={s.chips[3]?.bg || s.ac}
-                pill={{ size: s.editorial ? undefined : T.pill, ...(s.retro ? { bg: ink, fg: cream, shadow: mustard } : null) }} />
+                pill={{ size: T.pill, ...(s.retro ? { bg: ink, fg: cream, shadow: mustard } : null) }} />
       </div>
 
       <div style={{

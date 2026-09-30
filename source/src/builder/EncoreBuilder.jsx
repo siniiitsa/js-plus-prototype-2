@@ -644,11 +644,12 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // 24, still 23 apart — so its gap is 23/16 of the row's size. Its layout-2
   // capsule (964:64599) is Grunge's instead, a fixed 18 at 16px type and at
   // 13, so there the sum is the labels alone, and so is its layout-3 one
-  // (964:68718), at the same sizes. Card 4 is a placeholder and keeps layout
-  // 1's until its pass.
+  // (964:68718), at the same sizes. Its layout-4 capsule (964:73038) is
+  // Grunge's layout-4 one: Label/MD links a fixed 23 apart at 20px type, so
+  // there too the sum is the labels alone and NavBar's `links` takes the gaps.
   const navFace = T.name === 'Lime' ? bebasEms : T.name === 'Grunge' ? (x) => antonEms(x, 0) * 0.75
     : T.name === 'Editorial' ? notoEms : null
-  const navGapEm = T.name === 'Editorial' ? (d === 1 || d === 2 ? 0 : 23 / 16) : T.name === 'Grunge' && d >= 1 ? 0 : 23 / 24
+  const navGapEm = T.name === 'Editorial' ? (d >= 1 ? 0 : 23 / 16) : T.name === 'Grunge' && d >= 1 ? 0 : 23 / 24
   vm.navEms = navFace
     ? Math.max(1, +((vm.navLinks.reduce((w, l) => w + navFace(l.label), 0)
       + Math.max(0, vm.navLinks.length - 1) * navGapEm) * 1.01).toFixed(3))
