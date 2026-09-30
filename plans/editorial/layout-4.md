@@ -245,7 +245,7 @@ Grunge twin's desktop id — each block's fit comment cites them); it is the gat
 
 | # | Cat | Desktop node | Size | Tablet node | Size | Mobile node | Size | Scheme (every width) | Lime twin (1440 / 768 / 390) | Grunge twin (1440 / 768 / 390) | Lime block | Status |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 0 | *foundation* | `964:73037` *(page)* | — | `971:9537` | — | `977:13155` | — | — | — | — | `SCHEMES_OF.Editorial[3]` (decision 1) | open |
+| 0 | *foundation* | `964:73037` *(page)* | — | `971:9537` | — | `977:13155` | — | — | — | — | `SCHEMES_OF.Editorial[3]` (decision 1) | **done** (`4018742`) |
 | 1 | `header` | `964:73038` | 1440 × 900 | `971:9538` | 768 × 1024 | `977:13156` | 390 × 844 | **3** (nav **1**, seal **4**, chips name Scheme 1) | `964:72849` / `971:5299` / `977:8867` | `964:72944` / `971:7823` / `977:12044` | `if (s.lime \|\| s.grunge) { … return }` at the head of `HeaderV3` | open |
 | 2 | `bio` | `964:73046` *(Section `964:73039`, head `964:73040`)* | 664 × 720 | `971:9546` *(Section `971:9539`, head `971:9540`)* | 708 × 720 | `977:13164` *(Section `977:13157`, head `977:13158`)* | 370 × 536 | **3** (Section *and* instance; Tags **1**) | `964:72857` / `971:5307` / `977:8875` | `964:72952` / `971:7831` / `977:12052` | `if (s.v3 && (s.lime \|\| s.grunge))` ahead of `Bio`'s `if (s.v3)` | open |
 | 3 | `media` | `964:73053` *(band `964:73047`, head `964:73048`)* | 1440 × 671 | `971:9548` *(band `971:9547`, head `971:10389`)* | 768 × 569 | `977:13294` *(band `977:13288`, head `977:13289`)* | 390 × 845.9 | **2** (head **1**; 768 / 390 `Device: Tablet`) | `964:72864` / `971:5431` / `977:9005` | `964:72959` / `971:7955` / `977:12182` | `if (s.v3 && (s.lime \|\| s.grunge))` ahead of `Media`'s `if (s.v3)` | open |
@@ -844,10 +844,99 @@ From the walks and the renders — impressions to confirm, not measurements.
 10. **testimonials** — see *The tenth session*. The head is paper Display/LG, two lines, beside the
     two paper discs.
 
+### Settled in session 0 (the seats)
+
+- **Decision 1 as written, one commit**: `4018742`, `SCHEMES_OF.Editorial[3] = { header: 3, bio:
+  3, media: 2, gallery: 3, repertoire: 3, testimonials: 4 }` under the comment naming its page, and
+  row 0's head comment ends at "identical at all three widths" (its "Layout 4 is a later pass's"
+  sentence is gone; the new row's comment is its replacement). No layout code, no scheme, no
+  footer entry, no `&page=`. The plan went in first as `d57f1bf`. `THEMES[3].schemes`' comments
+  (Scheme 2's, 3's and 4's lists of the sections seated on them) are left for the sweep, as layout
+  3 left them for its own (`3359b11`).
+- **What moved: 36 files, theme 3, as the contract says.** 1320 renders a label, canvas and
+  `&live=1`. Themes 0, 1, 2 and 4 are at zero. At theme 3 the moved files are header, bio, media,
+  gallery, repertoire and testimonials at `arch_3`, at three widths, 18 a surface. No `arch_0`,
+  `arch_1` or `arch_2` file moved, and no footer file (the `page_2` render included). **No geometry
+  moved in any of them**: every differing cell is a background, a background image, a colour, a
+  border colour or a box shadow.
+- **Proved in the harness.** The section root (row 3 of each digest; rows 1 and 2 are the harness's
+  wrappers) is `rgb(20, 20, 20)` for the header, bio, gallery and repertoire, `rgb(170, 149, 138)`
+  for the media and `rgb(200, 110, 82)` for the testimonials, at every width, canvas and live. Map,
+  pricing, calendar and form keep paper `rgb(246, 240, 232)`, and the footer (arch 0) is ink. **The
+  header's "ink floor" is only the root so far**: Retro's placeholder half still draws its
+  photograph and checker ribbon over it, and section 1 replaces them.
+- **Proved in the page.** `sectionVm` was called with `data.js` imported at the URL the transformed
+  `EncoreBuilder.jsx` names (`/src/builder/data.js?t=…`, whose `SCHEMES_OF.Editorial[3]` is the
+  row), with `artistName` passed and a minimal `Z` (`dev`, `narrow`; the colour keys read nothing
+  else). The results are identical at all three widths:
+
+  | Seat | `bg` | `ac` | `tx` | `paper` | `deep` / `pillBg` | `pillFg` |
+  |---|---|---|---|---|---|---|
+  | 3 — header, bio, gallery, repertoire (and the footer, row 0's) | `#141414` | `#C86E52` | `#F6F0E8` | `#F6F0E8` | `#C86E52` | `#F6F0E8` |
+  | 2 — media | `#AA958A` | `#F6F0E8` | `#141414` | `#AA958A` | `#E6B6A0` | `#141414` |
+  | 4 — testimonials | `#C86E52` | `#F6F0E8` | `#141414` | **`#FBF6EA`** | `#141414` | `#C86E52` |
+  | 1 — map, pricing, calendar, form | `#F6F0E8` | `#C86E52` | `#141414` | `#F6F0E8` | `#C86E52` | `#F6F0E8` |
+
+  `onScheme[1]` is paper / terracotta / ink with a terracotta pill lettered paper, `[3]` ink /
+  terracotta / paper with the same pill, and `[4]` terracotta / paper / ink with an ink pill
+  lettered terracotta: the plan's table. Scheme 4's `paper` is Retro's `#FBF6EA` fallback, since
+  `paperOf` finds nothing above 0.6 in terracotta and ink (layout 2's session 0 met the same).
+- **Proved in the builder** (a throwaway puppeteer script off `page-check.mjs`'s `publish()`,
+  deleted after). The modal offers four Editorial cards. On card 4 the canvas's eleven roots stand
+  on the grounds above, in the seeded order. The published tab's ids are header, bio, media,
+  gallery, repertoire, map, pricing, calendar, form, testimonials and footer, on the same grounds
+  at 1440, 768 and 390, with no page error. Cards 1–3 are proved by their theme-3 `arch_0` /
+  `arch_1` / `arch_2` files and the footer's files, all at zero.
+- **What the flat arms and `HeaderV3`'s placeholder half now do under the seats** (read off the
+  digest diffs and `shots.mjs` before / after, per width, in the session scratchpad). **`pillBg`
+  is terracotta under 3, blush under 2 and ink under 4**, and `paper` is `#F6F0E8` under 3 (the
+  same value as Scheme 1's), the taupe itself under 2 and `#FBF6EA` under 4. So a sheet reading
+  `paper` moves only on the media and the testimonials. Two of step 3's expectations were wrong,
+  and are corrected here:
+  - **The bio, gallery and repertoire arms paint no cream sheet.** Their band is `mapBg` (the
+    scheme's darkest tag 11% toward its paper; the repertoire's panel is `repPanel`, taken off it),
+    and their `cream` is type (`mapFg`). Under Scheme 3 `mapBg` is the same `rgb(205, 124, 99)`
+    terracotta wash as under Scheme 1, so the band covers the new ink root and **nothing visible
+    moves**. The exceptions are the bio's three blush chips, which turn paper (Scheme 3's first tag
+    seat; the frame names Scheme 1's, trap 3). The gallery's and repertoire's files differ only in
+    the root's own background and colour.
+  - **The header's pill does not move**: `pillBg` is terracotta under both schemes. Its label and
+    disc turn paper → ink, because they read `s.bg`. The capsule goes `#141414` → `#0E0E0E`
+    (`box3`), the avatar tile's 18% wash goes ink → paper, and the three blush chips turn paper (trap
+    3 again). The placeholder keeps its photograph, scrim and checker ribbon.
+  - **The media on taupe**: its band is `cream` = `s.paper`, now the taupe itself. Everything
+    inked in `s.ac` turns terracotta → paper: the head, the now-playing title, the skips, the
+    sleeve's fill and 2px border, the bar and its knob, tile 0's 2.5 / 3px inset ring, and the
+    tiles' subs. The play disc's ▶ goes white → ink (`acFg`). The head checker is `mapBg` again,
+    now a **blush** wash `rgb(223, 178, 158)` (Scheme 2's darkest tag is blush), and the foot
+    checker is `s.bg` → taupe. The arm reads no `pillBg`: the blush reaches it through `mapBg`. So
+    the bio's terracotta band now meets a blush checker. Both are the bio's and media sessions' to
+    replace.
+  - **The testimonials, as predicted**: the arm's `ground = s.pillBg` is an **ink** sheet over the
+    terracotta root. On it the head turns paper → terracotta, and the arrow discs go from
+    terracotta with white arrows to paper with ink arrows. Cards 1 and 3 turn paper → `#FBF6EA`,
+    card 2 `rgb(217, 211, 204)` → `rgb(177, 98, 74)`, and card 4 goes from terracotta lettered
+    white to paper lettered ink. The marks follow their cards: terracotta / white → paper / ink,
+    and the fourth white / terracotta → ink / paper.
+
+  None of it is chased here; each section's widened block replaces its arm.
+- **`shots.mjs` died once on "Execution context was destroyed"** (the desktop "before" run) and
+  passed on a rerun; each width wrote under its own `OUT`, as layout 3's session 0 found it must.
+- **For the sweep's CLAUDE.md pass**: the per-section scheme bullet (*A page section is*) owes
+  layout 4's row — the header, bio, gallery and repertoire on 3, the media on 2, the testimonials
+  on 4 — and `THEMES[3].schemes`' comments owe the same sites.
+
 ### Inherited and used
 
 *(Each session appends the bullets it leaned on, one line each: the bullet's title, where it lives,
 and what this section did with it.)*
+
+- Session 0: *A section's colour scheme is resolved in `sectionVm`, not restated in its block*
+  (editorial/layout-1, *decision 3* and *Settled in session 0*) — one row, six seats, no mechanism.
+- Session 0: *A nested node or a card on another scheme reads that scheme's keys* (editorial/layout-2,
+  *Settled in session 0*) — `onScheme[1]` / `[3]` / `[4]` probed in the page, unchanged.
+- Session 0: *The digest is committed* (lime/layout-1, *Settled in session 0*) — five themes,
+  canvas and live, 1320 renders a label; 36 files, colour columns only.
 
 ## Open questions
 
