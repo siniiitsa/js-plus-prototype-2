@@ -16878,17 +16878,47 @@ function Calendar({ s }) {
     // — `s.ac` chips, heads and Next Step, `s.bg` Back pill, `s.box2` rules,
     // date box and card ink, the `stroke2` step disc — resolves through
     // Lime's keys.
-    if (s.lime || s.grunge) {
+    //
+    // **Editorial (964:73124 + 964:73123 · 971:9622 + 971:9621 · 977:13489 +
+    // 977:13488, in Frame 324 964:73113 · 971:9611 · 977:13478) is this block
+    // a third time**: 98 = 98 nodes against Lime's Frame 324s at every width,
+    // Sienna Vale's Scheme 1, no Device override, no effect, and every fill on
+    // the key Lime's binds, so `s.*` is already right and the stack is three
+    // levels again: #FFF9F2 `s.box1` rows under the ink `s.tx` card on the
+    // #EDE6DC `s.box2` panel. What moves is the rings and the corners. **Every
+    // card is square** — the panel, the wizard card, the chips, the boxes, the
+    // summary card and the rows — and every ring is a dash, three of them read
+    // per node: the panel 5, 5 in `sem/stroke/1` ink at 1440 and 768 and none
+    // at 390; the wizard card, the idle chips and the boxes 10, 10 in ink; the
+    // date and package cards 10, 10 in `sem/stroke/2` terracotta. The summary
+    // card and the rows pad 24 at the sides (Grunge's), and Display/Title is
+    // 32 / 25 / 23. **Two pills read a nested scheme off `explicitVariableModes`**:
+    // Back (and *Start again*) is Scheme 3 — `text/1` terracotta lettered in its
+    // `sem/bg` ink round an ink disc, off `s.onScheme[3]` — while Send Enquiry
+    // is **Scheme 1**, where the twins' is Scheme 2, so it takes BookPill's
+    // defaults. Next Step is Scheme 1 and Lime's keys already. A refused box
+    // changes colour, weight and dash at once: the idle box is dashed in full
+    // ink, so the refusal is 2px of solid terracotta (`s.stroke2`), the dash
+    // gone. Noto sits its Display/Title glyphs 0.09em below the frame's
+    // Fisterra over a stacked line (0.083 / 0.078 / 0.107, off the font's
+    // metrics against `absoluteRenderBounds`), so the stacked display sites lift.
+    if (s.limeTree) {
       const grunge = s.grunge
+      const ed = s.editorial
+      const S3 = ed ? s.onScheme[3] : null
       const hair = `inset 0 0 0 1px ${s.stroke1}`
-      const titleSize = u(desk ? 36 : s.mob ? 26 : 28)
-      const r15 = (lime) => u(grunge ? 15 : lime)
+      const titleSize = u(ed ? (desk ? 32 : s.mob ? 23 : 25) : desk ? 36 : s.mob ? 26 : 28)
+      const r15 = (lime) => u(ed ? 0 : grunge ? 15 : lime)
+      const padSide = u(grunge || ed ? 24 : 34)
+      // A dashed ring on a `position: relative` box, × 0.82 on the canvas.
+      const dashed = (dash, colour) => <DashRule side="all" dash={dash * z} colour={colour} />
+      const lift = ed ? { position: 'relative', top: '-0.09em' } : null
       const body = (size, lh, extra) => ({
         fontFamily: s.body, fontSize: size, lineHeight: lh, letterSpacing: s.dls, ...extra,
       })
       const disp = (size, lh, extra) => ({
         fontFamily: s.display, fontSize: faced(s, size), lineHeight: facedLh(s, lh), letterSpacing: s.dls,
-        ...(grunge ? { textTransform: 'uppercase' } : null), ...extra,
+        ...(grunge || ed ? { textTransform: 'uppercase' } : null), ...extra,
       })
       const chipType = {
         fontFamily: s.body, fontWeight: 700, fontSize: s.chip, lineHeight: 1,
@@ -16900,7 +16930,7 @@ function Calendar({ s }) {
       // shared seam's `sumHead` / `sumCells` / `dc` / `pkg` (JP-052).
       const summary = (
         <div style={col(u(20), {
-          background: s.tx, color: s.box2, borderRadius: r15(50), padding: `${u(24)} ${u(grunge ? 24 : 34)}`,
+          background: s.tx, color: s.box2, borderRadius: r15(50), padding: `${u(24)} ${padSide}`,
           boxShadow: grunge ? `inset 0 0 0 1px ${s.stroke2}` : undefined,
         })}>
           <div style={row(u(14), { justifyContent: 'space-between' })}>
@@ -16925,7 +16955,7 @@ function Calendar({ s }) {
                   alignItems: right ? 'flex-end' : 'flex-start',
                   textAlign: right ? 'right' : 'left', minWidth: 0,
                 })}>
-                  <span style={st.big ? distressed(s, disp(titleSize, 1.1, { color: s.bg, textTransform: 'uppercase' })) : smallCaps}>{st.label}</span>
+                  <span style={st.big ? distressed(s, disp(titleSize, 1.1, { color: s.bg, textTransform: 'uppercase', ...lift })) : smallCaps}>{st.label}</span>
                   <span style={body(s.bodyLg, 1.5, {
                     opacity: st.ph ? 0.45 : undefined, overflowWrap: 'anywhere',
                   })}>{st.value}</span>
@@ -16939,12 +16969,13 @@ function Calendar({ s }) {
       // A refused date takes Lime's blocked state, its parts at .38.
       const infoRow = ({ key, big, sub, end, dim, onClick }) => (
         <div key={key} onClick={onClick} style={row(u(14), {
-          background: s.box1, color: s.tx, borderRadius: r15(50), boxShadow: hair,
-          padding: `${u(18)} ${u(grunge ? 24 : 34)}`, justifyContent: 'space-between',
-          cursor: onClick ? 'pointer' : undefined,
+          background: s.box1, color: s.tx, borderRadius: r15(50), boxShadow: ed ? undefined : hair,
+          padding: `${u(18)} ${padSide}`, justifyContent: 'space-between',
+          cursor: onClick ? 'pointer' : undefined, ...(ed ? { position: 'relative' } : null),
         })}>
+          {ed && dashed(10, s.stroke2)}
           <span style={col(u(2), { minWidth: 0 })}>
-            {big && <span style={distressed(s, disp(titleSize, 1.1, dim ? { opacity: 0.38 } : null))}>{big}</span>}
+            {big && <span style={distressed(s, disp(titleSize, 1.1, { ...(dim ? { opacity: 0.38 } : null), ...lift }))}>{big}</span>}
             {sub && <span style={body(s.bodySm, 1.4)}>{sub}</span>}
           </span>
           {end && (
@@ -16960,10 +16991,12 @@ function Calendar({ s }) {
               alone, since the idle ring is already `stroke1`: the enquiry
               form's Lime layout-4 rule. */}
           <div style={row(0, {
-            background: s.box2, color: s.tx, borderRadius: '999px',
-            boxShadow: refused(key) ? `inset 0 0 0 2px ${s.tx}` : hair,
+            background: s.box2, color: s.tx, borderRadius: ed ? 0 : '999px',
+            boxShadow: refused(key) ? `inset 0 0 0 2px ${ed ? s.stroke2 : s.tx}` : ed ? undefined : hair,
             padding: `${u(12)} ${u(14)}`, ...body(s.bodyMd, 1.5),
+            ...(ed ? { position: 'relative' } : null),
           })}>
+            {ed && !refused(key) && dashed(10, s.stroke1)}
             {s.live ? (
               <input value={wVals[key] ?? ''} placeholder={ph}
                      type={key === 'email' ? 'email' : 'text'}
@@ -16989,11 +17022,12 @@ function Calendar({ s }) {
               const onClick = s.live ? () => setWType(i) : undefined
               return (
                 <span key={i} onClick={onClick} style={row(u(10), {
-                  minWidth: 0, borderRadius: '999px', padding: `${u(14)} ${u(16)}`,
+                  minWidth: 0, borderRadius: ed ? 0 : '999px', padding: `${u(14)} ${u(16)}`,
                   background: on ? s.ac : s.box2, color: on ? s.bg : s.tx,
-                  boxShadow: on ? undefined : hair, cursor: onClick ? 'pointer' : undefined,
-                  ...body(s.bodyMd, 1.5),
+                  boxShadow: on || ed ? undefined : hair, cursor: onClick ? 'pointer' : undefined,
+                  ...body(s.bodyMd, 1.5), ...(ed ? { position: 'relative' } : null),
                 })}>
+                  {ed && !on && dashed(10, s.stroke1)}
                   <span style={{
                     width: u(10), height: u(10), borderRadius: s.radiusChip, flex: 'none',
                     background: on ? s.bg : s.ac,
@@ -17060,16 +17094,31 @@ function Calendar({ s }) {
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
         }}><Glyph size={arrow} strokeWidth={1.5} /></span>
       )
+      // Back is a Scheme 3 pill on both twins' frames and Editorial's. Lime's
+      // Scheme 3 `text/1` is its page ink and `sem/bg` its accent, so it reads
+      // `s.bg` / `s.ac`; Sienna Vale's are terracotta and ink, `S3`'s own.
+      const backBg = ed ? S3.ac : s.bg
+      const backFg = ed ? S3.bg : s.ac
+      // The row is SPACE_BETWEEN in every master, where Figma ignores the 12
+      // `itemSpacing`: the 390 frame stands Back 121 and Next Step 161 in its
+      // 290, 8 apart. So under Editorial the column gap is 0, which is what
+      // lets Noto's pills (121.8 / 160.4) hold one line there, and the row
+      // wraps only for what Noto cannot fit — step 3's Send Enquiry, 191.5 —
+      // the forward pill keeping the right edge on its own line.
       const buttons = (
-        <div style={row(u(12), { justifyContent: 'space-between', alignItems: 'flex-start', width: '100%' })}>
+        <div style={row(u(12), {
+          justifyContent: 'space-between', alignItems: 'flex-start', width: '100%',
+          ...(ed ? { flexWrap: 'wrap', columnGap: 0 } : null),
+        })}>
           <span onClick={onBack} style={{
-            ...pill(false), background: s.bg, color: s.ac, cursor: onBack ? 'pointer' : undefined,
+            ...pill(false), background: backBg, color: backFg, cursor: onBack ? 'pointer' : undefined,
           }}>
-            {disc(s.ac, s.bg, ArrowLeft)}
+            {disc(backFg, backBg, ArrowLeft)}
             {W.back}
           </span>
           <NextTag {...sendLink} onClick={onNextTag} style={{
             ...pill(true), background: s.ac, color: s.bg, cursor: onNextTag ? 'pointer' : undefined,
+            ...(ed ? { marginLeft: 'auto' } : null),
           }}>
             {last ? W.send : W.next}
             {disc(s.bg, s.ac, ArrowRight)}
@@ -17084,26 +17133,29 @@ function Calendar({ s }) {
       // and *Start again* is the Back pill, since it returns to step 1.
       const wizard = (
         <div style={col(u(20), {
-          background: s.box1, color: s.tx, boxShadow: hair, borderRadius: u(desk ? (grunge ? 15 : 50) : 16),
+          background: s.box1, color: s.tx, boxShadow: ed ? undefined : hair,
+          borderRadius: u(ed ? 0 : desk ? (grunge ? 15 : 50) : 16),
           padding: desk ? `${u(40)} ${u(48)}` : '30px',
           justifyContent: wSent ? 'center' : 'space-between', alignItems: 'stretch', minWidth: 0,
+          ...(ed ? { position: 'relative' } : null),
         })}>
+          {ed && dashed(10, s.stroke1)}
           {wSent ? (
             <>
-              <p style={distressed(s, { margin: 0, ...disp(titleSize, 1.1) })}>{W.sentTitle}</p>
+              <p style={distressed(s, { margin: 0, ...disp(titleSize, 1.1, lift) })}>{W.sentTitle}</p>
               <p style={{ margin: 0, ...body(s.bodyMd, 1.5) }}>{W.sentBody}</p>
               <span style={body(s.bodyLg, 1.5, { fontWeight: 700, overflowWrap: 'anywhere' })}>{s.calEmail}</span>
               <span onClick={onAgain} style={{
-                ...pill(false), alignSelf: 'flex-start', background: s.bg, color: s.ac, cursor: 'pointer',
+                ...pill(false), alignSelf: 'flex-start', background: backBg, color: backFg, cursor: 'pointer',
               }}>
-                {disc(s.ac, s.bg, ArrowLeft)}
+                {disc(backFg, backBg, ArrowLeft)}
                 {W.again}
               </span>
             </>
           ) : (
             <>
               {stepper}
-              <p style={distressed(s, { margin: 0, textAlign: 'center', ...disp(titleSize, 1.1) })}>{wCur.title}</p>
+              <p style={distressed(s, { margin: 0, textAlign: 'center', ...disp(titleSize, 1.1, lift) })}>{wCur.title}</p>
               <p style={{ margin: 0, textAlign: 'center', ...body(s.bodySm, 1.4) }}>{wCur.line}</p>
               {stepBody}
               {buttons}
@@ -17118,9 +17170,16 @@ function Calendar({ s }) {
       return (
         <div style={col(u(s.mob ? 20 : 50), {
           background: grunge ? s.box3 : s.box2,
-          borderRadius: u(grunge && desk ? 15 : s.mob ? 30 : 60), padding: panelPad,
+          borderRadius: u(ed ? 0 : grunge && desk ? 15 : s.mob ? 30 : 60), padding: panelPad,
+          // The head is fitted to its widest word in Noto, off the panel's
+          // content box (the bio's and the gallery's rule).
+          ...(ed ? { position: 'relative', containerType: 'inline-size' } : null),
         })}>
-          <h2 style={distressed(s, { margin: 0, ...disp(s.dispLg, 0.89, { color: s.ac }) })}>{s.title}</h2>
+          {ed && !s.mob && dashed(5, s.stroke1)}
+          <h2 style={distressed(s, {
+            margin: 0,
+            ...disp(ed && s.titleWordEms ? `min(${s.dispLg}, calc(100cqi / ${s.titleWordEms}))` : s.dispLg, 0.89, { color: s.ac }),
+          })}>{s.title}</h2>
           <div style={desk
             ? {
               display: 'grid', gridTemplateColumns: 'minmax(0, 680fr) minmax(0, 478fr)',
@@ -17134,7 +17193,7 @@ function Calendar({ s }) {
               {pkg && infoRow({
                 key: 'pkg', big: pkg.name, sub: pkg.price, end: nPkg > 1 ? W.pkg : '', onClick: onPkg,
               })}
-              <BookPill s={s} ext={sendHref} onClick={onSend} label={W.send} fg={grunge ? '#171716' : s.box1} full={s.mob}
+              <BookPill s={s} ext={sendHref} onClick={onSend} label={W.send} fg={ed ? undefined : grunge ? '#171716' : s.box1} full={s.mob}
                         style={{ width: '100%', justifyContent: 'space-between' }} />
             </div>
           </div>
