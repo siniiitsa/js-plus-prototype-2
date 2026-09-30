@@ -252,7 +252,7 @@ Grunge twin's desktop id — each block's fit comment cites them); it is the gat
 | 3 | `media` | `964:73053` *(band `964:73047`, head `964:73048`)* | 1440 × 671 | `971:9548` *(band `971:9547`, head `971:10389`)* | 768 × 569 | `977:13294` *(band `977:13288`, head `977:13289`)* | 390 × 845.9 | **2** (head **1**; 768 / 390 `Device: Tablet`) | `964:72864` / `971:5431` / `977:9005` | `964:72959` / `971:7955` / `977:12182` | `if (s.v3 && (s.lime \|\| s.grunge))` ahead of `Media`'s `if (s.v3)` | **done** (`1a7af2a`) |
 | 4 | `gallery` | `964:73096` *(wrapper `964:73061`, head `964:73062`)* | 874 × 646 | `971:9593` *(wrapper `971:9558`, head `971:9559`)* | 768 × 594 | `977:13460` *(wrapper `977:13425`, head `977:13426`)* | 390 × 585.5 | **3** (discs **4**) | `964:72909` / `971:5597` / `977:9171` | `964:73004` / `971:8121` / `977:12348` | `if (s.lime \|\| s.grunge)` inside `Gallery`'s `if (s.v3)`, after `from` | **done** (`5066e4f`) |
 | 5 | `repertoire` | `964:73103` *(Section `964:73098`, panel `964:73099`)* | 1208 × **506** | `971:9600` *(Section `971:9595`, panel `971:9596`)* | 608 × **564** | `977:13467` *(Section `977:13462`, panel `977:13463`)* | 310 × **626** | **3** | `964:72916` / `971:5604` / `977:9178` | `964:73011` / `971:8128` / `977:12355` | `if (s.lime \|\| s.grunge)` inside `Repertoire`'s `if (s.v3)`, after `jump` | **done** (`8d94074`) |
-| 6 | `map` | `964:73110` *(Frame 319 `964:73104`, head `964:73105`)* | 1440 × 747 | `971:9608` *(Frame 319 `971:9602`, head `971:9603`)* | 768 × 870 | `977:13475` *(Frame 319 `977:13469`, head `977:13470`)* | 390 × 680 | 1 (viewport **3**) | `964:72924` / `971:5612` / `977:9186` | `964:73019` / `971:8136` / `977:12363` | `if (s.lime \|\| s.grunge)` inside `EventsMap`'s `if (s.v3)`, after `zoomScale` | open |
+| 6 | `map` | `964:73110` *(Frame 319 `964:73104`, head `964:73105`)* | 1440 × 747 | `971:9608` *(Frame 319 `971:9602`, head `971:9603`)* | 768 × 870 | `977:13475` *(Frame 319 `977:13469`, head `977:13470`)* | 390 × 680 | 1 (viewport **3**) | `964:72924` / `971:5612` / `977:9186` | `964:73019` / `971:8136` / `977:12363` | `if (s.lime \|\| s.grunge)` inside `EventsMap`'s `if (s.v3)`, after `zoomScale` | **done** (`2b37973`) |
 | 7 | `pricing` | `964:73111` | 1440 × **532** | `971:9609` | 768 × **790** | `977:13476` | 390 × 829 | 1 | `964:72926` / `971:5613` / `977:9187` | `964:73021` / `971:8137` / `977:12364` | `if (s.lime \|\| s.grunge)` inside `Pricing`'s `if (s.v3)`, after `bleedX` | open |
 | 8 | `calendar` | `964:73124` + wizard `964:73123` *(Section `964:73112`, Frame 324 `964:73113`)* | 478 × 518 + 680 × 518 | `971:9622` + `971:9621` *(Section `971:9610`, Frame 324 `971:9611`)* | 608 × 493 + 608 × 473 | `977:13489` + `977:13488` *(Section `977:13477`, Frame 324 `977:13478`)* | 350 × 484 + 350 × 470 | 1 (Back pill **3**) | `964:72939` + `964:72938` / `971:5626` + `971:5625` / `977:9200` + `977:9199` | `964:73034` + `964:73033` / `971:8150` + `971:8149` / `977:12377` + `977:12376` | `if (s.lime \|\| s.grunge)` inside `Calendar`'s `if (s.v3)`, after `onNextTag` | open |
 | 9 | `form` | **`725:3049`** *(the main component — no page instance at 1440)* | 1440 × 809 | `971:9623` | 768 × 1044 | `977:13490` | 390 × 992 | 1 | `964:72940` / `971:5627` / `977:9201` | `725:2990` / `971:8151` / `977:12378` | `if (s.v3 && (s.lime \|\| s.grunge))` ahead of `EnquiryForm`'s `if (s.v3)` | open |
@@ -848,7 +848,22 @@ bullets; name them.
   the 390 title 18 wide where Bebas and Anton keep 111–123. Probe a long string on the side that
   does **not** ellipsize, under the twins as well as ours, before calling a collapse the twins'.
   Cap it at a share of the row that the seed's widest string clears. The map's ticker, the
-  wizard's summary rows and the form's step rows are the next rows of this shape.
+  wizard's summary rows and the form's step rows are the next rows of this shape. *The map's
+  ticker has none* (section 6): both lines ellipsize and only the glyph arrows are `flex: none`.
+- **Noto's glyph floor comes from the font's metrics, not a pixel scan** (section 6). In the page,
+  `measureText` on a canvas in the element's own family gives `fontBoundingBox` and
+  `actualBoundingBox` ascent and descent. Then the floor above a CSS line box is `(lh − (A + D)) / 2
+  + D − actualDescent`, in ems, exact at any size. Noto's is **0.11em at lh 1, 0.16 at 1.1 and
+  0.05 at .89**. Set `fontStretch = 'extra-condensed'` beside the shorthand, because a percentage
+  stretch in `font` fails to parse and silently falls back to 10px sans-serif. A DPR-2 scan of a
+  36px numeral read 0.03em off, from the device pixel's rounding. Read the frame's side with
+  `absoluteRenderBounds`, as layout 3 did. **Map a Lime key through its binding, not its name,
+  inside a nested scheme** (section 6): the twins' viewport paints the rings and labels in `s.ac`
+  because Lime's Scheme 3 `sem/bg` *is* its accent, so under Editorial they read `S3.bg`, ink.
+- **A followed binding can vanish on one node of a set** (section 6). Sample each ring or dot
+  alone round its own outline before calling a set followed or redrawn. The map's three rings
+  share one ink binding; two read on the plate and the outer one, at .3, does not. So the
+  redraw is per node.
 
 ### Seen at planning time, per section
 
@@ -1454,6 +1469,154 @@ From the walks and the renders — impressions to confirm, not measurements.
 - **For the sweep**: the artist's 60% cap is Editorial's alone, and the twins still collapse the
   title under a very long artist. It is a cross-template candidate for the designer's notes.
 
+### Settled in section 6 (the events map)
+
+- **No Editorial block: Lime's `if (s.lime || s.grunge)` inside `EventsMap`'s `if (s.v3)`, after
+  `zoomScale`, is `s.limeTree`**, with `const ed = s.editorial`, `S3 = s.onScheme[3]` and a third
+  arm at the head of `G`. New leaves fall back through `??` (`acc`, `ring0`, `dot`, `lit`,
+  `plate`, `tickR`, `dash`), so every Lime and Grunge arm is byte-identical. The ticker's seam is
+  shared whole, so the wrapping arrows, the by-identity lit pin, the zoom clamp and the `extLink`
+  needed nothing new. The paired diff of the three `Frame 319`s against Lime's (`964:72918` /
+  `971:5606` / `977:9180`), by traversal order, with bindings and their collections, was the whole
+  read: **61 / 61 / 61 nodes, node for node**, less Lime's no-op 1440 `Vector 2`. The schemes are
+  Lime's (the instance on the page, the viewport Scheme 3), with no Device override and no effect.
+- **What moves, read off the fills and their bindings:**
+  - **The card, the four cells and the ticker** are `sem/box/1` `#FFF9F2` (`s.box1` on the page),
+    each **dashed 7, 7** in `sem/stroke/2` terracotta at radius **6 / 0 / 10**. Lime's are 50 / 25
+    / 50 in solid rings, Grunge's 15. Each dash is a `DashRule side="all"` (`dashAll`, 5.74 on the
+    canvas at desktop), drawn as the last child of a `position: relative` box: the card's in place
+    of Lime's overlay `<span>`, since the raster reaches the card's edge, and the cells' and
+    ticker's in place of their inset rings. The cells' minimums are Grunge's 227.5 / 140 (Lime's
+    226.5 / 139.5).
+  - **The panel's left rule** is `sem/stroke/1`, which is **solid ink** `#141414` under Scheme 1,
+    so Lime's `inset 1px 0 0 s.stroke1` reads it as it stands. Under `ed` it draws **at every
+    width**, where Lime's is desktop only. The narrow masters carry the same 1px left stroke, and
+    at 768 it shows: sampled down the card's left edge beside the panel, the 768 render alternates
+    terracotta `(200, 110, 82)` and ink `(20, 20, 20)`, the rule showing through the dash gaps.
+    Under Lime's solid ring it painted nothing (CONVENTIONS A, *leaked tops are followed where they
+    show*).
+  - **The labels, subs and ticker type** are `sem/text/2` ink, `s.tx`, the twins' key. **The
+    numerals are `sem/text/1` terracotta** (`G.num = s.ac`, Grunge's moved binding): Display/SM
+    45 / 36 (`s.dispSm` 37 / 36) at lh 1, and at 390 **Display/Title 23** at 1.1 (a literal,
+    since `vm.title` shadows the ramp; Lime's is 26). They are uppercased at the site (`upper`
+    widened).
+  - **Inside the Scheme 3 viewport** every leaf reads `S3`:
+    - the rings, the ring labels, the marker's head and its tail are `sem/bg` ink (`G.acc`);
+    - the labels' type and the marker's 2px ring and glyph are `text/2` paper (`G.vpInk`);
+    - the zoom squares are `box/2` `#2A2A2A` in a `stroke/1` paper-56 hairline under paper glyphs
+      (`G.lift`, `G.inkHair`);
+    - the viewport's own ground and the raster's fallback are `S3.box1` `#1D1D1D` (`G.plate`),
+      not the page's `s.box1`, which would be a paper well behind a Scheme 3 node. That is inert
+      while the raster covers it.
+  - **The 390 viewport is 370 × 263** (Lime's 251), so the panel is 318.
+- **Open question 3, settled by sampling.** On the 1440 master's render the rings were measured
+  round their circumference (720 points, the label band skipped), each against the mean 4px either
+  side:
+  - the 30 mi ring reads, Δ −41 of 255;
+  - the 60 mi ring reads, faintly, Δ −17;
+  - **the dashed 120 mi ring is gone, Δ −2**: ink at .3 on the dark plate.
+  - The labels (ink pills, paper type), the pin (ink disc, paper ring) and the **dots** read. The
+    dots are paper at .6, `(164–173)` on a `(38–63)` plate, so they are followed at the frame's .6
+    (`G.dot`, `G.dotOp`), not Lime's full-strength redraw.
+  - So the two inner rings are followed, and **the 120 mi ring is redrawn** (`G.ring0`) in Scheme
+    3's `text/1` terracotta at the frame's .3 and 4, 4 dash. That is layout 3's *a frame's own
+    state can vanish by the scheme*, and terracotta is the colour the same node draws on the pages
+    where it reads (layout 3's Scheme 4 viewport, and the twins' accent).
+  - On our render the redrawn ring averages **Δ +12.7** round the circumference at 1440 and +10.5
+    at 768. The mean is diluted by the dash's gaps, so a dash itself runs about +25, against the
+    followed 60 mi's −18 and 30 mi's −40. Paper at .3 would stand out more than the two rings it
+    frames. The picture shows a faint dashed terracotta circle, as faint as the frame's .3 means
+    it.
+  - **Layout 2 disagrees on this node, and is left alone.** Its Editorial map stands the same ink
+    rings on the same Scheme 3 viewport and raster, and its Settled follows all three.
+- **The lit pin**, which no frame draws, is the marker's own pair: an ink disc (`G.lit`) at 14 in
+  a 2px paper ring (`G.vpInk`). That is layout 2's reading of this same viewport. Lime's lit pin is
+  the marker's pair in Lime's inks, so the mechanism is the twins'.
+- **The head's measure is its own text box** (section 3's convention). `Distances we'll Travel`
+  is a **FIXED 1019.18** text node at 1440 and 768 (Lime's too; Bebas fits it on one line), and
+  FILL at 390. At 1440 that box is what sets the frame's two lines, so under `ed` the desktop h2
+  takes `maxWidth: u(1019.18)`, 835.7 on the canvas. At 768 the same fixed width overruns its 708
+  frame, so there the frame is the measure. The head is uppercased and fitted to its widest word
+  (`min(s.dispLg, calc(min(100cqi, u(1019.18)) / s.titleWordEms))` on an `inline-size` column,
+  `100cqi` alone narrow). The seed keeps 97 / 73 / 48.
+  - "Unforgettable Featherstonehaugh" sets 87 / 73 / 38.5 on two lines, ink inside the measure at
+    every width (873.2 of 881.6; 723.9 of 738; 376.3 of 380). Unfitted, the 17-letter word would
+    run about 922 at 97px (by arithmetic off the fitted width, not rendered), past the 835.7 box.
+  - "Christopher Montgomery travels" sets three lines at full size.
+- **One named diff: the 768 head runs two lines.** The frame sets "Distances we'll Travel" in 706.5
+  of its 708 at 73, and Noto needs two. So the 768 section stands at 1081.2, 64.9 over. Typed as
+  "Distances" (`&cj=`), one line, the section is **1016.3**. The frame's 1055 less the root's padY
+  (80 against 56 over the head, 70 against 56 under the ticker) is 1017, and the ticker's 62.3
+  against 63 is the last 0.7. So the wrap is the whole difference. The 1440 head's two lines are
+  the frame's own. With "Distances" the desktop section is 812.2, against the one-line frame's
+  (1077 − 105) × 0.82 plus the same padY residue, 812.7.
+- **The numerals are lifted 0.09em** (CONVENTIONS B, *a stand-in face's glyph floor is measured per
+  site*). The frame's floors, read with `absoluteRenderBounds` against the text box:
+  - "21" sits 0.200 / 0.194 / 0.261em up its box, and "48" 0.188 / 0.182 / 0.249 (the 8
+    overshoots).
+  - Noto's are exact off the font's metrics in the page (`measureText`'s font and actual boxes,
+    through the half-leading): **0.11em at lh 1 and 0.16 at lh 1.1**, and the cap tops 0.166 /
+    0.216 against the frame's 0.069 / 0.095.
+  - So the glyphs sit 0.09–0.10em low at every width. They stand over a stacked sub 8 below, the
+    case layout 3's section 5 lifted, so `position: relative; top: -0.09em` under `ed` moves the
+    glyphs and no box.
+  - A DPR-2 pixel scan agreed at 1440 (0.108em) and read 0.142 at 768, which is the device
+    pixel's rounding at 36px. That is why the metrics settle it and the scan does not.
+- **The ticker has no non-ellipsizing text** (section 5's convention, probed). Both of its lines
+  carry the ellipsis, and only the two glyph arrows are `flex: none`. With a 57-letter venue and a
+  51-letter city, at 390 the venue ran 431 and the city 383 in a 298 line, both ellipsized, with
+  the arrows kept at 5.8 and no page scroll. That held under Lime, Grunge and Editorial alike, and
+  at 1440 and 768.
+- **Measured** (harness, content edges; the frame × 0.82 in brackets at desktop):
+  - Desktop: h2 835.7 × 172.7 at 80, two lines at 97 (1019.18 × 210 → 835.7 × 172.2); card
+    1088.2 × 455.2 (1089 × 455.1); viewport and panel 544.1 each; cells 241 × 186.5 (241.1 ×
+    186.6); numerals 37px; ticker 51.7 at 13.1 under the card (52.5 at 13.1); the dash 5.74 at
+    radius 4.9 / 0 / 8.2.
+  - 768: h2 708 × 129.9, two lines (named, above); card 708 × 731 (731); viewport 708 × 320, panel
+    379 (379); cells 316 × 140 (316 × 140); numerals 36px; ticker 62.3 (63).
+  - 390: h2 370 × 85.4 on two lines (86); card 370 × 581.5 (581); viewport 263 (263), panel 318.5
+    (318); cells 159 × 105.1 and 130.4 (105 / 130), hugging with `space-between`; numerals 23px;
+    ticker 62.3 (63).
+  - The root pads are the twins' padY (80 / 56 / 44 over the head against the frame's 80 / 80 /
+    30), named in their sessions. No sideways scroll at any width.
+- **`live=1&n=8`** at desktop and 390 (puppeteer, probe deleted):
+  - The first paint reads "Next: Venue number 1" and lights pin 0, an ink disc in a `0 0 0 2px`
+    paper ring. `›` ×5 steps gigs 2–6 and the lit pin with them, wrapping to pin 0 at gig 6, and
+    `‹` steps back. "Next:" is on gig 1 alone.
+  - A linked gig's text block is `<a href="https://example.com/tickets">` and an unlinked one a
+    `div`. `++` scales the layer to 1.5625.
+  - The pointers are `+ − ‹ ›` and a linked gig's block. The canvas has none. No page errors.
+  - **Ink on ink, open question 6's map item**: at 390 pin 4 lands on the 30 mi ink ring (70.0
+    from the centre against the ring's 70; 109.3 against 109.4 zoomed), and the pin's paper ring
+    parts it from the ring on the picture.
+  - `n=0` drops the ticker and keeps the map. `n=1` draws the ticker with no arrows. `stats: []`
+    keeps the desktop card at 455.2 (JP-078's floor) and hugs the 390 card to 334.
+- **Builder** (`page-check.mjs Editorial 3`): four cards, no errors or warnings. The published
+  map's `+ − ‹ ›` all move it, the published 390 map is 863 tall (the harness's 863.2), overflow at 390 is 0 and the
+  burger goes 1 → 11. The seam clips show the repertoire's ink onto the paper map and the dashed
+  ticker onto pricing's paper, both straight, at 1440 and 390.
+- **`FIELDS.map` needed nothing**: every `in` row is a flat array and the block reads no key the
+  twins' blocks do not, so no `reach.mjs` run was owed (Grunge's section 6 finding).
+- **Named diffs**:
+  - the 768 head's second line;
+  - the root's padY against the frame's top and foot insets, the twins';
+  - the ticker 62.3 / 51.7 against 63 / 52.5, Inter's line boxes;
+  - the canvas lighting gig 0's pin, the twins' reading (JP-080 2A);
+  - the 120 mi ring redrawn terracotta where the frame's ink vanishes;
+  - the 768 and 390 panel's left rule drawn, which the twins drop.
+- **Digest**: themes 0, 1, 2 and 4 at zero files, canvas and `live=1`. Theme 3 moved exactly
+  `map_arch_3` at three widths on both surfaces, six files. The digest cannot see an SVG `stroke`,
+  so the rings and the dashes were read off the DOM: the 120 mi circle `#C86E52` at .3 dashed `4
+  4`, the 60 and 30 `#141414` at .5 / .8, and six `<rect>` dashes `#C86E52` at `5.74` (desktop) /
+  `7` narrow.
+- **For the sweep**:
+  - `notes/map.md`'s layout-4 sentence ("mustard under Retro, an olive `s.box1` capsule … under
+    Lime, `#1A1A1A` in a 1px `#FF0000` ring … under Grunge") owes Editorial's `#FFF9F2` ticker
+    dashed terracotta at radius 10.
+  - The block's comment and JP-080's entry name the idle dots' opacity for Lime (1) and Grunge
+    (.6) alone. Editorial's are paper at the frame's .6.
+  - The designer note: the frame's ink 120 mi ring vanishes on the dark raster.
+
 ### Inherited and used
 
 *(Each session appends the bullets it leaned on, one line each: the bullet's title, where it lives,
@@ -1565,6 +1728,32 @@ and what this section did with it.)*
 - Repertoire: *The whole-page published check is one puppeteer script* (lime/layout-1, *Learned on
   the end-of-pass sweep*) — `page-check.mjs Editorial 3`, plus the editor's join and the popup's
   sticky.
+- Map: *Where the seam lives inside the branch, the block goes after the seam* (lime/layout-1,
+  *Settled in section 4*) — widened in place after `zoomScale`, the ticker's seam shared whole.
+- Map: *The `G` lookup at the block's head* (grunge/layout-1, *Settled in sections 4–10*) — a third
+  arm, new leaves through `??`.
+- Map: *The paired diff walk* (grunge/layout-2, *Settled in section 8*) — the three `Frame 319`s
+  against Lime's, 61 / 61 / 61, with bindings and collections; the whole read.
+- Map: *A nested node or a card on another scheme reads that scheme's keys* (editorial/layout-2,
+  *Settled in session 0*) — the Scheme 3 viewport on `s.onScheme[3]`, its plate included.
+- Map: *A frame's own state can vanish by the scheme; redraw it* (editorial/layout-3,
+  *Conventions*) — the 120 mi ring alone, terracotta at .3; the dots and inner rings followed.
+- Map: *A dashed rule is `DashRule`* (editorial/layout-1, *Conventions*) — the card, cells and
+  ticker `side="all"`, the card's as its last-child overlay.
+- Map: *Leaked tops are followed where they show* (lime/layout-1, *Settled in section 4*) — the
+  narrow panel's left rule, visible through the dash gaps.
+- Map: *A stand-in face's glyph floor is measured per site* (editorial/layout-3, *Conventions*) —
+  the numerals, 0.09em, off the font's metrics.
+- Map: *A head's measure is its own head frame's* (this plan, section 3) — the FIXED 1019.18 text
+  box at 1440.
+- Map: *A head Noto sets on more lines than the frame is named, not fitted* (this plan, section 4)
+  — the 768 head, proved with a one-word `&cj=`.
+- Map: *A head that must fit its measure is fitted to its widest word* (lime/layout-3, section 9;
+  editorial/layout-1, *Conventions*) — the head, in `min(100cqi, u(1019.18))`.
+- Map: *`vm.title` shadows the ramp's `title` size* (lime/layout-1, *Settled in section 6*) — the
+  390 numeral's 23, a literal.
+- Map: *The whole-page published check is one puppeteer script* (lime/layout-1, *Learned on the
+  end-of-pass sweep*) — `page-check.mjs Editorial 3`, the map's controls and its two seams.
 
 ## Open questions
 
@@ -1580,6 +1769,9 @@ and what this section did with it.)*
    the pin's disc to `sem/bg` ink over the dark plate. Default: sample the render; follow what
    reads (the labels and the pin do), and for what has vanished take layout 3's rule (redraw in
    the other text token at the frame's opacity) or follow it and name it. The map session decides.
+   *Settled in section 6*: sampled on the 1440 master, the 30 and 60 mi rings, the labels, the pin
+   and the paper dots read and are followed; the dashed 120 mi ring (Δ −2) is redrawn in Scheme
+   3's terracotta at .3.
 4. **The header's location dot is `box/2` `#2A2A2A` on the ink floor** — all but invisible, as the
    frame draws it. Default: follow the binding and name it; the alternative is the twins' visible
    dot in another key.
