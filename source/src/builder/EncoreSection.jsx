@@ -25102,8 +25102,37 @@ function EnquiryForm({ s }) {
   // against the idle red, colour and weight at once. The narrow masters'
   // and the component's "KAI MERCER" is the component's default text, the
   // reading Retro's twin made; the head stays JP-054's shared seed.
-  if (s.v3 && (s.lime || s.grunge)) {
+  //
+  // ── Editorial: the same block again (Editorial layout 4, section 9) ─────
+  // The desktop master is the main component `725:3049` (1440 × 809; the
+  // 1440 page carries no instance), with `971:9623` / `977:13490` narrow:
+  // 59 = 59 nodes against Lime's at all three widths, by traversal order,
+  // Sienna Vale's Scheme 1 on the root and the submit, no Device override,
+  // no effect. Every fill binds the key this block already reads, so the
+  // mode swaps the values (terracotta head, placeholders, step squares and
+  // ↘; ink ENQUIRE, labels and steps; paper boxes and numerals) and the pill
+  // is BookPill's Lime branch with `bg={s.tx} fg={s.bg}` already — ink,
+  // lettered and disced paper round an ink arrow — so it needs no arm. What
+  // moves is the frame's own dress, the same at all three widths:
+  //  - the head's rule is 1px dashed 10, 10 in `sem/stroke/2` (terracotta)
+  //    at its foot, and the head frame pads **42** under the text, not 12;
+  //  - every box is an **underline**: `sem/bg` paper, square, padded 12 / 0
+  //    (no side padding — the placeholder stands on the label's edge), its
+  //    only stroke a bottom 1px dashed 10, 10 terracotta — `DashRule` on the
+  //    field's column, layout 1's rule; the message box the same, square;
+  //  - a row's two boxes stand **44** apart (Lime 14);
+  //  - each step row's rule is 1px dashed **2, 2** in `sem/stroke/1` (ink),
+  //    and the step squares are square (Lime 8).
+  // Type is Sienna Vale's ramp (display-lg 118 / 73 / 48, list 24 / 19 / 18,
+  // body 14 / 13 / 13, 12 under the steps), Display/Title 32 / 25 / 23 the
+  // literal. The refused box keeps the underline's shape and turns it to 2px
+  // of solid ink (`s.tx`), the dash gone — layout 1's Editorial shape in
+  // layout 3's ink, since the idle dash is terracotta: colour, weight and
+  // dash at once. Every master's "KAI MERCER" is the component's default and
+  // the head stays "Contact Us" (JP-081's reply, a named diff).
+  if (s.v3 && s.limeTree) {
     const grunge = s.grunge
+    const ed = s.editorial
     const desk = !s.narrow
     const z = desk ? 0.82 : 1
     const u = (v) => `${Math.round(v * z * 10) / 10}px`
@@ -25111,28 +25140,45 @@ function EnquiryForm({ s }) {
       fontFamily: family, fontSize: size, lineHeight: lh, letterSpacing: s.dls, ...extra,
     })
     // Anton at the frame's glyph size, in capitals; a no-op under Lime.
+    // Under Editorial `faced` is the identity and the capitals are Noto's.
     const disp = (size, lh, extra) => type(s.display, faced(s, size), facedLh(s, lh), {
-      ...(grunge && { textTransform: 'uppercase' }), ...extra,
+      ...((grunge || ed) && { textTransform: 'uppercase' }), ...extra,
     })
     const ring = grunge ? s.stroke2 : s.ac
-    const title = desk ? u(36) : s.mob ? '26px' : '28px'
-    // Display/List in `s.tx`, typed in caps.
-    const caps = disp(s.list, 1.2, { color: s.tx, textTransform: 'uppercase' })
+    const title = ed ? (desk ? u(32) : s.mob ? '23px' : '25px')
+      : desk ? u(36) : s.mob ? '26px' : '28px'
+    // Editorial's display lines sit low in Noto (below); a glyph lift, since
+    // every one stands in a `VERTICAL MIN` column over another line.
+    const lift = ed ? { position: 'relative', top: '-0.08em' } : null
+    // Display/List in `s.tx`, typed in caps. Under Editorial lifted 0.07em:
+    // the labels' floor stood 0.225 / 0.232 / 0.211em above the line box
+    // against the frames' 0.273 / 0.297 / 0.307 (lh 1.2, whole-pixel boxes
+    // corrected), 1–1.7px nearer the box than the masters draw.
+    const caps = disp(s.list, 1.2, {
+      color: s.tx, textTransform: 'uppercase', ...(ed && { position: 'relative', top: '-0.07em' }),
+    })
     // 1px, unramped, drawn inside the frame on all three masters.
     const hairline = `inset 0 -1px 0 ${s.stroke1}`
 
+    // Under Editorial the box is bare and square, its idle mark the field
+    // column's `DashRule` (`foot`), which a refusal swaps for 2px of ink.
     const box = (bad) => type(s.body, s.bodyMd, 1.5, {
-      background: s.bg, color: s.ac, border: 'none', borderRadius: s.btnR,
-      boxShadow: `inset 0 0 0 ${bad ? '2px' : '1px'} ${bad ? s.tx : ring}`,
-      height: desk ? u(45) : '44px', padding: `0 ${u(12)}`,
+      background: s.bg, color: s.ac, border: 'none', borderRadius: ed ? 0 : s.btnR,
+      boxShadow: ed ? (bad ? `inset 0 -2px 0 ${s.tx}` : undefined)
+        : `inset 0 0 0 ${bad ? '2px' : '1px'} ${bad ? s.tx : ring}`,
+      height: desk ? u(45) : '44px', padding: ed ? 0 : `0 ${u(12)}`,
       width: '100%', margin: 0, boxSizing: 'border-box',
     })
     // The same shell at the frame's stated 90 and its own 24 corner, padded
     // on all four sides so the line starts at the top (`items-start`).
     // `formCheck` reads `fields` alone, so it is always the idle ring.
     const msgBox = {
-      ...box(false), display: 'block', height: u(90), borderRadius: u(24), padding: u(12),
+      ...box(false), display: 'block', height: u(90),
+      borderRadius: ed ? 0 : u(24), padding: ed ? `${u(12)} 0` : u(12),
     }
+    // Editorial's underline: an overlay on the column's foot, which is the
+    // box's (it is the last child), so the box keeps its stated height.
+    const foot = (bad) => ed && !bad && <DashRule dash={10 * z} colour={s.stroke2} />
     // The frame's 67 radius on a 54 pill is `radius/pill`.
     const pill = (extra) => disp(s.list, 1.2, {
       ...row(u(10), { justifyContent: 'space-between' }),
@@ -25152,7 +25198,7 @@ function EnquiryForm({ s }) {
     const field = (f, i) => {
       const bad = !!(errs && errs.f[i])
       return (
-        <div key={i} style={col(u(6), { minWidth: 0 })}>
+        <div key={i} style={col(u(6), { minWidth: 0, ...(ed && { position: 'relative' }) })}>
           <span style={caps}>{f.label}</span>
           {s.live ? (
             <input
@@ -25169,15 +25215,17 @@ function EnquiryForm({ s }) {
               {f.placeholder}
             </span>
           )}
+          {foot(bad)}
         </div>
       )
     }
     // `vm.formRows`' pairs as two `minmax(0, 1fr)` grid columns, Retro's
     // reading of the frame's `flex-[1_0_0]` cells; a one-field row runs the
-    // whole measure, the frame's own fifth box.
+    // whole measure, the frame's own fifth box. Editorial's pair stands 44
+    // apart at every width.
     const fieldRow = (fs, r) => (
       <div key={r} style={{
-        display: 'grid', gap: u(14),
+        display: 'grid', gap: u(ed ? 44 : 14),
         gridTemplateColumns: fs.length > 1
           ? 'minmax(0, 1fr) minmax(0, 1fr)' : 'minmax(0, 1fr)',
       }}>{fs.map((f, j) => field(f, r * 2 + j))}</div>
@@ -25206,7 +25254,7 @@ function EnquiryForm({ s }) {
         ) : (
           <>
             {s.formRows.map(fieldRow)}
-            <div style={col(u(6))}>
+            <div style={col(u(6), ed ? { position: 'relative' } : undefined)}>
               <span style={caps}>{s.formMsgLabel}</span>
               {s.live ? (
                 <textarea
@@ -25217,6 +25265,7 @@ function EnquiryForm({ s }) {
               ) : (
                 <span style={msgBox}>{s.formMessage}</span>
               )}
+              {foot(false)}
             </div>
             <Pill {...pillLink} onClick={onSubmit} style={pill({ cursor: onSubmit ? 'pointer' : undefined })}>
               {s.formBtn}{disc}
@@ -25236,10 +25285,13 @@ function EnquiryForm({ s }) {
         <span style={caps}>{s.formStepsLabel}</span>
         {s.formSteps.map((st) => (
           <div key={st.n} style={row(u(16), {
-            boxShadow: hairline, padding: `${u(16)} 0`, width: '100%',
+            boxShadow: ed ? undefined : hairline, padding: `${u(16)} 0`, width: '100%',
+            ...(ed && { position: 'relative' }),
           })}>
+            {/* Editorial's rule is dashed 2, 2 in `sem/stroke/1`, ink here. */}
+            {ed && <DashRule dash={2 * z} colour={s.stroke1} />}
             <span style={type(s.body, s.bodyLg, 1.5, {
-              width: u(56), height: u(56), flex: 'none', borderRadius: u(8),
+              width: u(56), height: u(56), flex: 'none', borderRadius: ed ? 0 : u(8),
               background: s.ac, color: s.bg,
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
             })}>{st.n}</span>
@@ -25265,15 +25317,27 @@ function EnquiryForm({ s }) {
       <div style={col(u(24), {
         color: s.tx, marginTop: `calc(${desk ? u(40) : s.mob ? '24px' : '30px'} - ${s.padY})`,
       })}>
+        {/* Under Editorial the head is fitted to its widest word in the
+            head's own measure (`s.titleWordEms`, Noto's 540 ems), where the
+            twins' `break-word` split a 17-letter word at 390, and lifted
+            0.08em with the ENQUIRE line: Noto's glyph floor stood 0.053 /
+            0.055 / 0.060em above the head's box and 0.168 / 0.150 / 0.159
+            above the line's, where the frames' stand 0.133 at lh .89 and
+            0.241 / 0.218 / 0.256 at 1.1 — so both sat nearer the rule and
+            the labels under them than the masters draw. */}
         <div style={{
-          boxShadow: grunge ? `inset 0 -1px 0 ${ring}` : hairline, paddingBottom: u(12), width: '100%',
+          boxShadow: ed ? undefined : grunge ? `inset 0 -1px 0 ${ring}` : hairline,
+          paddingBottom: u(ed ? 42 : 12), width: '100%',
+          ...(ed && { position: 'relative', containerType: 'inline-size' }),
         }}>
-          <h2 style={distressed(s, disp(s.dispLg, 0.89, {
-            margin: 0, color: s.ac, overflowWrap: 'break-word',
+          {ed && <DashRule dash={10 * z} colour={s.stroke2} />}
+          <h2 style={distressed(s, disp(ed && s.titleWordEms
+            ? `min(${s.dispLg}, calc(100cqi / ${s.titleWordEms}))` : s.dispLg, 0.89, {
+            margin: 0, color: s.ac, overflowWrap: 'break-word', ...lift,
           }))}>{s.title}</h2>
         </div>
         {s.formSub && (
-          <span style={distressed(s, disp(title, 1.1, { textTransform: 'uppercase' }))}>{s.formSub}</span>
+          <span style={distressed(s, disp(title, 1.1, { textTransform: 'uppercase', ...lift }))}>{s.formSub}</span>
         )}
         <div style={{
           display: 'grid', width: '100%', gap: u(desk ? 40 : 32),
