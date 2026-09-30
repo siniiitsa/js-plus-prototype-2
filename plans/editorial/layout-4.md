@@ -249,7 +249,7 @@ Grunge twin's desktop id — each block's fit comment cites them); it is the gat
 | 0 | *foundation* | `964:73037` *(page)* | — | `971:9537` | — | `977:13155` | — | — | — | — | `SCHEMES_OF.Editorial[3]` (decision 1) | **done** (`4018742`) |
 | 1 | `header` | `964:73038` | 1440 × 900 | `971:9538` | 768 × 1024 | `977:13156` | 390 × 844 | **3** (nav **1**, seal **4**, chips name Scheme 1) | `964:72849` / `971:5299` / `977:8867` | `964:72944` / `971:7823` / `977:12044` | `if (s.lime \|\| s.grunge) { … return }` at the head of `HeaderV3` | **done** (`8d2340e`) |
 | 2 | `bio` | `964:73046` *(Section `964:73039`, head `964:73040`)* | 664 × 720 | `971:9546` *(Section `971:9539`, head `971:9540`)* | 708 × 720 | `977:13164` *(Section `977:13157`, head `977:13158`)* | 370 × 536 | **3** (Section *and* instance; Tags **1**) | `964:72857` / `971:5307` / `977:8875` | `964:72952` / `971:7831` / `977:12052` | `if (s.v3 && (s.lime \|\| s.grunge))` ahead of `Bio`'s `if (s.v3)` | **done** (`b589827`) |
-| 3 | `media` | `964:73053` *(band `964:73047`, head `964:73048`)* | 1440 × 671 | `971:9548` *(band `971:9547`, head `971:10389`)* | 768 × 569 | `977:13294` *(band `977:13288`, head `977:13289`)* | 390 × 845.9 | **2** (head **1**; 768 / 390 `Device: Tablet`) | `964:72864` / `971:5431` / `977:9005` | `964:72959` / `971:7955` / `977:12182` | `if (s.v3 && (s.lime \|\| s.grunge))` ahead of `Media`'s `if (s.v3)` | open |
+| 3 | `media` | `964:73053` *(band `964:73047`, head `964:73048`)* | 1440 × 671 | `971:9548` *(band `971:9547`, head `971:10389`)* | 768 × 569 | `977:13294` *(band `977:13288`, head `977:13289`)* | 390 × 845.9 | **2** (head **1**; 768 / 390 `Device: Tablet`) | `964:72864` / `971:5431` / `977:9005` | `964:72959` / `971:7955` / `977:12182` | `if (s.v3 && (s.lime \|\| s.grunge))` ahead of `Media`'s `if (s.v3)` | **done** (`1a7af2a`) |
 | 4 | `gallery` | `964:73096` *(wrapper `964:73061`, head `964:73062`)* | 874 × 646 | `971:9593` *(wrapper `971:9558`, head `971:9559`)* | 768 × 594 | `977:13460` *(wrapper `977:13425`, head `977:13426`)* | 390 × 585.5 | **3** (discs **4**) | `964:72909` / `971:5597` / `977:9171` | `964:73004` / `971:8121` / `977:12348` | `if (s.lime \|\| s.grunge)` inside `Gallery`'s `if (s.v3)`, after `from` | open |
 | 5 | `repertoire` | `964:73103` *(Section `964:73098`, panel `964:73099`)* | 1208 × **506** | `971:9600` *(Section `971:9595`, panel `971:9596`)* | 608 × **564** | `977:13467` *(Section `977:13462`, panel `977:13463`)* | 310 × **626** | **3** | `964:72916` / `971:5604` / `977:9178` | `964:73011` / `971:8128` / `977:12355` | `if (s.lime \|\| s.grunge)` inside `Repertoire`'s `if (s.v3)`, after `jump` | open |
 | 6 | `map` | `964:73110` *(Frame 319 `964:73104`, head `964:73105`)* | 1440 × 747 | `971:9608` *(Frame 319 `971:9602`, head `971:9603`)* | 768 × 870 | `977:13475` *(Frame 319 `977:13469`, head `977:13470`)* | 390 × 680 | 1 (viewport **3**) | `964:72924` / `971:5612` / `977:9186` | `964:73019` / `971:8136` / `977:12363` | `if (s.lime \|\| s.grunge)` inside `EventsMap`'s `if (s.v3)`, after `zoomScale` | open |
@@ -824,6 +824,18 @@ bullets; name them.
   s.titleWordEms))`. `vm.titleWordEms` is Noto's 540 table at designs 2 and 3 under Editorial,
   and the Bold table at design 0. The gallery's and the testimonials' heads are the next Lime
   heads to probe.
+- **A head's measure is its own head frame's, not the player's** (section 3). The twins stand a
+  narrow head at the instance's inset, or 26 left of it with Grunge's one-sided margin. The
+  Editorial 768 media head frame pads 30 on both sides, a 708 measure. At the player's 682 the
+  seeded head wrapped in Noto and the section stood 65 over the master. At 708 it holds one line
+  and the section is the master's 844. Read the head Section's padding on both sides before
+  inheriting a twin's margin. The gallery's head column is the next.
+- **A clipping frame is read before a decoration is let past it** (section 3). The media tape
+  rides above the tilted sleeve. At 390 its box rises 21 past the instance's top, into the head's
+  box, and the frame's `Left` (`clipsContent`) cuts it flat 10 under the head. So the column
+  takes `clipPath: inset(-pad)` at `Left`'s padding box. This is inert at 1440 and 768, where
+  nothing reaches it. `getBoundingClientRect` cannot see a `clipPath`, so prove it on the
+  picture.
 
 ### Seen at planning time, per section
 
@@ -1126,6 +1138,105 @@ From the walks and the renders — impressions to confirm, not measurements.
 - **Digest**: themes 0, 1, 2 and 4 at zero files, canvas and `live=1`. Theme 3 moved exactly
   `bio_arch_3` at three widths on both surfaces, six files.
 
+### Settled in section 3 (the media player)
+
+- **No Editorial block: Lime's `if (s.v3 && (s.lime || s.grunge))` ahead of `Media`'s `if (s.v3)`
+  is `s.limeTree`**, with `const ed = s.editorial` and a third arm at the head of `G` and of
+  `tk`. The paired diff of each band against Lime's, by traversal order, was the whole read: 57 /
+  57 / 57 nodes, 55 / 54 / 55 in common. Editorial adds `Frame 210` and its `image 1` (the tape)
+  and drops Lime's two arcs; the 768 band's rename is the third miss. The hooks are hoisted, so
+  the published player needed nothing new. Every Lime and Grunge arm is byte-identical. Grunge's
+  `TornEdge` pair stays its own. `ArcEdge` is `!ed && …` in the ternary's Lime arm.
+- **The ground is the seat's (trap 1).** `G.band` is `s.bg` under `ed`, taupe `rgb(170, 149,
+  138)`. It is also the tiles' well and the play glyph, all `sem/bg`. The track is `sem/box/2`
+  `#D0BCB2`, which is `s.box2` under the seat. Every other ink is Lime's key: `s.ac` is the seat's
+  paper (title, transport, disc, dot, sublines, both rings) and `s.tx` its ink (artist, clocks,
+  the bar's fill, the sleeve's well). The head is **`SIENNA_MEDIA`** (trap 3). The block reads no
+  `pillBg`, so trap 5 has no site here.
+- **The sleeve is a tilted print.** It is 308 × 411 / 317 / 370 × 302.09 at Figma +2.33°, so CSS
+  `rotate(-2.33deg)`, confirmed on the render: its right edge stands higher, as in the frame. It
+  is square, with a 5px paper `sem/text/1` inside ring (`u(5)`, an inset shadow on Lime's
+  overlay) and no effect. The sleeve does not clip; the photograph's span does.
+  - **Its spacing is per master.** At 1440 and 768 the column spaces it by its **unrotated**
+    slot. x 47.76 / 49.67 and y 62.44 / 62.4 are exactly the centre-turned origins of a 56 · 56
+    slot, and `Frame 24` stands at 56 + 411 + 40. So CSS's default centre origin needs no margin.
+  - At 390 the column spaces it by the **rotated** box, 316.88 for 302.09: `Left` is 10 + 316.88
+    + 20 + 49 + 20 + 11 + 10 = 436.91. That is the 9.91 the instance gains on Lime's 836. So the
+    390 sleeve takes `margin: '2% 0'` (W·sin θ / 2 less the H·(1 − cos θ) / 2 term, as a share of
+    the 370 column), and renders 7.4 lower with a 382 × 316.8 rotated box. `scrollWidth` holds at
+    390: the corners reach x 4 / 386.
+- **The tape** is `Tape` at its default, `s.activeBg`, blush under the seat (sampled `rgb(230,
+  182, 160)`). Its node is at (60.59, −43.47), Figma −5.33°, in the sleeve's own frame. So its
+  centre is (160.54, −6.02) there, by layout 1's formula. It is seated `left: u(160.54); top:
+  u(-6.02)` with `translate(-50%, -50%) rotate(5.33deg)` inside the turned sleeve.
+  - The world centre at 1440 composes to x 207.9 in the band. The frame's screenshot reads about
+    208.
+  - Its canvas box is 171.1 × 54.7 at (84.9, 227.8), against the frame's about (86, 228) × 0.82.
+- **The frame's `Left` clips, and at 390 it cuts the tape.** Instance and band do not clip; `Grid`
+  and `Left` do, at every width. At 390 the tape's box rises 21 past the instance's top, into the
+  head's box (ours 114.6 against the head's foot at 125.4), and the frame shows it cut flat 10
+  under the head. The column takes `clipPath: inset(-pad)` at `Left`'s padding box, 56 / 56 / 10,
+  which is inert at 1440 and 768. The picture shows the cut at about 135, as the frame does
+  (*Conventions*).
+- **Tile `at` is a 3px paper ring** (`u(3)`, on Lime's scrim overlay, so no photograph is inset).
+  Every tile is square, padded 20 (Lime 30), at Lime's ratios: 289.33 / 269.5, 136 / 139 and 180
+  / 123.33, the frame's own boxes.
+- **Type, off `get_variable_defs` on the three instances and head frames.** The 768 and 390
+  instances carry `Device: Tablet`.
+  - The head is Display/LG 118 / 73 / 48 at .89, `s.dispLg` 97 / 73 / 48 on the canvas.
+  - Display/Title is 32 / 25 / 25 (`tk.title`), Body/SM 12, Body/Chip 12 / 11 / 11.
+  - The tile titles are **Label/SM** 16 / 13 / 13 at lh 1.1, `textCase` UPPER, in the label face
+    (`s.label`, Noto), where Lime's are Display/List 24 at 1.2.
+  - Every display string is uppercased at its site (`disp`, Grunge's spread, widened).
+- **The narrow boxes.** The 768 band pads 100 / 100 with a 10 gap, and the instance keeps its 56
+  at the foot. So the foot is 156, head-to-player 66 (Grunge's) and the sum 844. The 390 band pads
+  40 / 40 with a 10 gap: 40 over the head, 20 head-to-player, 50 under the player, 1021.91. The
+  1440 boxes are Lime's 156 / 156 with no gap; the head is 105 where Lime's is 116, hence 1032.
+  - **The 768 head's measure is its frame's 708**: `margin: 0 -26px` under `ed`, where Grunge's
+    one-sided −26 stays Grunge's. At the player's 682 the seeded "FIVE WORTH YOUR EAR." wrapped
+    in Noto, and the section stood at 908.9. At 708 it holds one line, and the section is 844
+    (*Conventions*).
+- **Measured** (canvas, content edges; the frame × 0.82 in brackets at desktop):
+  - Desktop: sheet 845.9 (846.2); h2 at 127.9, 86.3 tall, one line (127.9 · 86.1); column at
+    260.1 (259.9); sleeve 253 × 337 (252.6 × 337); now-playing at 630, 46 tall (629.8 · 45.9);
+    clocks at 708 (708.5); grid 743.8 × 457.9 (· 458.4), tiles 237 × 220.8.
+  - 768: sheet 844 (844); h2 at 30 · 100, 708 × 65 (708 × 65); grid 292 × 457 with tiles 136 ×
+    139; sleeve 308 × 318 (317); now-playing 48 (49).
+  - 390: sheet 1021.5 (1021.91); h2 on two lines, 85.4 (86); column at 145.4 (146); sleeve 370 ×
+    302; now-playing 48 (49); grid 370 × 390 at 581.5, tiles 180 × 123.3.
+  - The now-playing block is 1 short at 768 and 390: Noto's 25 at 1.1 is a 27.5 line box where
+    Figma rounds 28. The sleeve's `flex: 1 0 0` takes the pixel at 768.
+  - No sideways scroll at any width.
+- **Long heads** (`&cj=` headings): "Unforgettable nights" sets one line at 1440 and two at 768
+  and 390, and "Atmospherics" one line at 390, none overflowing. The twins' h2 carries no
+  `wordBreak` and a 13-letter word fits the 370 at 48, so no `titleWordEms` fit was owed.
+- **`live=1`** at desktop and 390 (puppeteer, autoplay allowed, probe deleted):
+  - The ring starts on tile 1. A click on tile 3 moves it there and plays `SoundHelix-Song-3`, and
+    a second click pauses.
+  - The disc toggles. Next ×3 goes 3 → 4 → 5 → 1, and Prev ×6 wraps 1 → 5 and round to 5 again.
+  - The canvas has no `<audio>` and no pointer cursor.
+- **JP-084's row holds**: the transport's `u(14)` gap, and `Late Lights (Extended Club Mix) feat.
+  Somebody` clamps at two lines with its ellipsis clear of the transport. At 1440 the sleeve gives
+  the line back (the section stays 845.9, the sleeve 308 tall). At 390 the section grows by
+  **27.5**, one line of the 25 title, since a one-line column (27.5 + 4 + 16.8) already fills the
+  48 disc. That is JP-084's named cost: Lime and Grunge grow 30.8, and the placeholder arm grew
+  14.6.
+- **Empty states**: `n=0` stands the sleeve at its floor (206 / 302), with taupe `KM` on the ink
+  well and *No tracks yet.* in ink on taupe, beside it at 1440 and under it at 390. `n=1` holds the
+  floor.
+- **Builder** (`page-check.mjs Editorial 3`): no errors or warnings. The published player plays
+  and moves (`SoundHelix-Song-5`, unpaused), overflow at 390 is 0, and the burger goes 1 → 11. The
+  seam shots show **bio → media a straight ink-into-taupe edge at 1440 and 390**, and media →
+  gallery taupe into the gallery's flat arm, still its terracotta wash (section 4's).
+- **`FIELDS.media` needed no change.** Typed into media arch 3 under Editorial at three widths,
+  canvas and live, only the heading moved the HTML; `kicker`, `listLabel`, `soundcloud` and `cta`
+  did not. Those are the stored rows (`[0, 2]`, `[1, 2]`, `[0]`, and Lime / Grunge `[0]`).
+- **Named diffs, all the twins'**: five tiles against the frame's six (one per track); the frame's
+  bar is a hand-set 140 of 222 where ours is the element's; the 768 tile titles end in the twins'
+  ellipsis, where the frame's HUG text runs past its 96 box ("Manchester at 3am" is 112).
+- **Digest**: themes 0, 1, 2 and 4 at zero files, canvas and `live=1`. Theme 3 moved exactly
+  `media_arch_3` at three widths on both surfaces, six files.
+
 ### Inherited and used
 
 *(Each session appends the bullets it leaned on, one line each: the bullet's title, where it lives,
@@ -1170,6 +1281,26 @@ and what this section did with it.)*
 - Bio: *`get_variable_defs` resolves a node's mode* (memory: `figma-frame-reading`) — the head's
   Display/LG at 1440 against Display/XL narrow.
 - Bio: *Field reach is measured* (CLAUDE.md) — `reach.mjs 3` over the bio probes, no change.
+- Media: *A section whose live seam is hoisted above its branches can always take a block*
+  (lime/layout-1, *Settled in section 3*) — the block ahead of `if (s.v3)`, widened in place.
+- Media: *The `G` lookup at the block's head* (grunge/layout-1, *Settled in sections 4–10*) — a
+  third arm on `G` and `tk`, the twins' arms byte-identical.
+- Media: *The paired diff walk* (grunge/layout-2, *Settled in section 8*) — against Lime's bands,
+  by traversal order, at all three widths; the whole read.
+- Media: *A Lime block paints its ground from Scheme 1 keys* (this plan, trap 1) — `G.band` the
+  seat's `s.bg`.
+- Media: *`SIENNA_MEDIA` for `sem/media`* (editorial/layout-2, *Conventions*) — the head (trap 3).
+- Media: *Check a narrow master's Device mode* (lime/layout-1, *Settled in section 1*) — the 768
+  and 390 instances in `Device: Tablet`, the tile titles and Display/Title on the 768 ramp.
+- Media: *Figma auto-layout spaces a rotated child by its rotated bounding box — per master*
+  (memory: `figma-frame-reading`; editorial/layout-1, *Conventions*) — the unrotated slot at 1440
+  and 768, the rotated box at 390.
+- Media: *A tape inside a leant print is seated in the print's own frame* (editorial/layout-1,
+  *Conventions*) — the centre formula, and nested CSS transforms.
+- Media: *A frame's inside stroke is an inset `boxShadow`, on an overlay* (lime/layout-2,
+  *Settled in section 1*) — the sleeve's 5px and tile 0's 3px paper rings.
+- Media: *The whole-page published check is one puppeteer script* (lime/layout-1, *Learned on the
+  end-of-pass sweep*) — `page-check.mjs Editorial 3`, the bio → media seam shots.
 
 ## Open questions
 
