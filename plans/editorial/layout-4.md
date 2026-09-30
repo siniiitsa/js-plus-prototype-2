@@ -250,7 +250,7 @@ Grunge twin's desktop id — each block's fit comment cites them); it is the gat
 | 1 | `header` | `964:73038` | 1440 × 900 | `971:9538` | 768 × 1024 | `977:13156` | 390 × 844 | **3** (nav **1**, seal **4**, chips name Scheme 1) | `964:72849` / `971:5299` / `977:8867` | `964:72944` / `971:7823` / `977:12044` | `if (s.lime \|\| s.grunge) { … return }` at the head of `HeaderV3` | **done** (`8d2340e`) |
 | 2 | `bio` | `964:73046` *(Section `964:73039`, head `964:73040`)* | 664 × 720 | `971:9546` *(Section `971:9539`, head `971:9540`)* | 708 × 720 | `977:13164` *(Section `977:13157`, head `977:13158`)* | 370 × 536 | **3** (Section *and* instance; Tags **1**) | `964:72857` / `971:5307` / `977:8875` | `964:72952` / `971:7831` / `977:12052` | `if (s.v3 && (s.lime \|\| s.grunge))` ahead of `Bio`'s `if (s.v3)` | **done** (`b589827`) |
 | 3 | `media` | `964:73053` *(band `964:73047`, head `964:73048`)* | 1440 × 671 | `971:9548` *(band `971:9547`, head `971:10389`)* | 768 × 569 | `977:13294` *(band `977:13288`, head `977:13289`)* | 390 × 845.9 | **2** (head **1**; 768 / 390 `Device: Tablet`) | `964:72864` / `971:5431` / `977:9005` | `964:72959` / `971:7955` / `977:12182` | `if (s.v3 && (s.lime \|\| s.grunge))` ahead of `Media`'s `if (s.v3)` | **done** (`1a7af2a`) |
-| 4 | `gallery` | `964:73096` *(wrapper `964:73061`, head `964:73062`)* | 874 × 646 | `971:9593` *(wrapper `971:9558`, head `971:9559`)* | 768 × 594 | `977:13460` *(wrapper `977:13425`, head `977:13426`)* | 390 × 585.5 | **3** (discs **4**) | `964:72909` / `971:5597` / `977:9171` | `964:73004` / `971:8121` / `977:12348` | `if (s.lime \|\| s.grunge)` inside `Gallery`'s `if (s.v3)`, after `from` | open |
+| 4 | `gallery` | `964:73096` *(wrapper `964:73061`, head `964:73062`)* | 874 × 646 | `971:9593` *(wrapper `971:9558`, head `971:9559`)* | 768 × 594 | `977:13460` *(wrapper `977:13425`, head `977:13426`)* | 390 × 585.5 | **3** (discs **4**) | `964:72909` / `971:5597` / `977:9171` | `964:73004` / `971:8121` / `977:12348` | `if (s.lime \|\| s.grunge)` inside `Gallery`'s `if (s.v3)`, after `from` | **done** (`5066e4f`) |
 | 5 | `repertoire` | `964:73103` *(Section `964:73098`, panel `964:73099`)* | 1208 × **506** | `971:9600` *(Section `971:9595`, panel `971:9596`)* | 608 × **564** | `977:13467` *(Section `977:13462`, panel `977:13463`)* | 310 × **626** | **3** | `964:72916` / `971:5604` / `977:9178` | `964:73011` / `971:8128` / `977:12355` | `if (s.lime \|\| s.grunge)` inside `Repertoire`'s `if (s.v3)`, after `jump` | open |
 | 6 | `map` | `964:73110` *(Frame 319 `964:73104`, head `964:73105`)* | 1440 × 747 | `971:9608` *(Frame 319 `971:9602`, head `971:9603`)* | 768 × 870 | `977:13475` *(Frame 319 `977:13469`, head `977:13470`)* | 390 × 680 | 1 (viewport **3**) | `964:72924` / `971:5612` / `977:9186` | `964:73019` / `971:8136` / `977:12363` | `if (s.lime \|\| s.grunge)` inside `EventsMap`'s `if (s.v3)`, after `zoomScale` | open |
 | 7 | `pricing` | `964:73111` | 1440 × **532** | `971:9609` | 768 × **790** | `977:13476` | 390 × 829 | 1 | `964:72926` / `971:5613` / `977:9187` | `964:73021` / `971:8137` / `977:12364` | `if (s.lime \|\| s.grunge)` inside `Pricing`'s `if (s.v3)`, after `bleedX` | open |
@@ -835,7 +835,14 @@ bullets; name them.
   box, and the frame's `Left` (`clipsContent`) cuts it flat 10 under the head. So the column
   takes `clipPath: inset(-pad)` at `Left`'s padding box. This is inert at 1440 and 768, where
   nothing reaches it. `getBoundingClientRect` cannot see a `clipPath`, so prove it on the
-  picture.
+  picture. **The clip can be per master too** (section 4): the gallery's row clips its turned
+  print at 1440 and 768, while its 390 column clips nothing.
+- **A head Noto sets on more lines than the frame is named, not fitted** (section 4). The
+  widest-word fit only stops a word from outrunning its measure. Where every word fits but the
+  line breaks earlier than the demo face's, the section grows and the growth is a named diff. The
+  gallery's 768 head is one such case, 64.5 over. To measure it, type a one-word head (`&cj=`) and
+  confirm that the section then lands on the master, which proves the wrap is the whole
+  difference. The map's two-line head at 1440 is the next to check this way.
 
 ### Seen at planning time, per section
 
@@ -1239,6 +1246,116 @@ From the walks and the renders — impressions to confirm, not measurements.
 - **Digest**: themes 0, 1, 2 and 4 at zero files, canvas and `live=1`. Theme 3 moved exactly
   `media_arch_3` at three widths on both surfaces, six files.
 
+### Settled in section 4 (the gallery)
+
+- **No Editorial block: Lime's `if (s.lime || s.grunge)` inside `Gallery`'s `if (s.v3)`, after
+  `from`, is `s.limeTree`**, with `const ed = s.editorial` and a third arm at the head of `G`. New
+  leaves fall back through `??` (`discR`, `thumbR`, `thumbInk`, `head`), so every Lime and Grunge
+  arm is byte-identical. The seam is shared whole, so the published thumbs, discs and 390 window
+  needed nothing new. The walker read all three wrappers with bindings and their collections (23 /
+  22 / 23 visible nodes). One `use_figma` call set the wrapper, head frame, instance and row boxes
+  beside Lime's and Grunge's. **Every box is Lime's but three**:
+  - the **768 wrapper pads 0** over its head frame (Lime and Grunge pad 100), so the sheet pads
+    **30** there, not 130;
+  - the **390 wrapper pads Grunge's 60**;
+  - the **390 print is 329.79** tall (Lime 337).
+  The 534 row, the 50 gutter, the 454 head column, the 112 / 60 / 24 head-to-row gutter, the 36 /
+  36 / 10 head gap, the 56 / 30 / 40 foot and every rail number are the twin's.
+- **The ground is the seat's (trap 1).** The sheet paints `ed ? s.bg : s.ac` in `ed ? s.tx : s.bg`,
+  ink under the Scheme 3 seat (sampled `rgb(20, 20, 20)`). The MEDIA eyebrow is `sem/text/2`,
+  `s.tx` paper (Grunge's key). The head is `sem/text/1`, `s.ac` terracotta, uppercased at its site.
+  `Vector 1` (`sem/box/3` ink on the ink band, 1440 only) is not drawn: `ArcEdge` is `!ed && …` in
+  the ternary's Lime arm, and `TornEdge` stays Grunge's.
+- **The print.** `Frame 183` is Figma +1°, so CSS `rotate(-1deg)`, confirmed on the render (its
+  right edge stands higher, as in the frame). Its one effect is `DROP_SHADOW` 5 / 4 blur 4 `#000` at
+  .25, written ``${u(5)} ${u(4)} ${u(4)} rgba(0, 0, 0, 0.25)``, layout 1's `cardShadow`. The mount
+  is its `Frame` child, `sem/box/1` `s.box1` `#1D1D1D`, padded 20. Mount and photograph are one
+  turned box here, with the shadow on it. The photograph is `sem/bg` `s.bg` under `90514a32` at
+  `FILL`, square, and has no brackets and no grain.
+  - **Its spacing is per master.** At 1440 and 768 its origin (−4.61, 5.2 / −4.62, 4.73) is the
+    centre-turned origin of the unrotated slot, so CSS's default centre origin needs no margin. At
+    390 the rail stands at 329.79 cos 1° + 370 sin 1° + 50 = 386.2, so the column spaces it by its
+    rotated box, and it takes `margin: '0.873% 0'` (3.22 a side). The strip lands at 580 (580.2).
+  - **Its clipping ancestor.** At 1440 and 768 the row `Frame` round it clips (`clipsContent`) and
+    the head frame clips its own column. The instance and the 1440 wrapper do not clip. So under
+    `ed` the row takes `overflow: hidden`, which cuts the corners (−5.1 over the row's top, 5.1
+    under its foot, 4.6 past its left) and the shadow's foot at the 534 box, as the frame cuts
+    them. The shadow's right edge falls in the 50 gutter, inside the row, and shows. The 390
+    column does not clip: its turned box spans x 7.2 to 382.9, and the shadow's last 2px past 390
+    are the wrapper's clip in the frame and invisible on ours (`scrollWidth` holds).
+  - **The anchor is the frame's centred cover, not the twins' top anchor**, because the node holds
+    our seed (`editorialGallery4`, 900 × 1125). Swept against the 390 frame render over the photo's
+    inside at 1:1, the correlations are 0.183 / 0.358 / **0.998** / 0.398 / 0.261 at 0 / 25 / 50 /
+    75 / 100%. A contact sheet of all seven slots at 1440 and 390 under the centred cover keeps
+    every face; the stage portrait's hair touches the top edge. The thumbs keep Lime's top anchor,
+    since the frame's thumbs are Retro's placeholder set (layout 2's *a frame's image anchor is
+    evidence for its own photograph only*).
+- **The thumbs** are square on `sem/tag/1/bg`, `s.chips[0].bg` paper under the seat, in a
+  `sem/text/1` terracotta `s.ac` inset ring: **4, and 8 on `active`**, at 1440 and 768 (`u()`,
+  3.3 / 6.6 on the canvas), and 4 on every 390 tile. That is Lime's `active` mechanism at this
+  frame's weights, not live-gated. The ring goes through `u()`, as this page's media rings do,
+  where the twins' stay unscaled. `&n=0` initials are ink on the paper wells (`thumbInk`, since
+  Lime's `s.tx` is paper here) and paper on the ink spotlight well (`G.initials`).
+- **The discs and pills** are Scheme 4 nodes, read off `s.onScheme[4]`: `box/3` `#BE6346` in a
+  0.754 `sem/bg` terracotta ring (0.6 / 0.8px), square (`discR` / `pillR` 0). The arrow is
+  `stroke/2` ink on the wide discs and `text/2` ink on the 390 pills. Two nodes carry two bindings,
+  both `#141414`, and both are followed. The 390 pills carry no effect, so Lime's 5 / 5 hard shadow
+  is `!ed` as well as `!grunge`. The wide discs' blur 18.1 stands behind an opaque fill and is
+  dropped, as under the twins.
+- **Type**: `s.eyebrow` 15 / 12 / 11 in Inter Bold at 1.3 and `s.dispLg` 118 / 73 / 48 at .89,
+  bound `size/eyebrow` and `size/display-lg` on every master. **The head is fitted to its widest
+  word** under `ed`: the column is an `inline-size` container and the size is `min(s.dispLg,
+  calc(100cqi / s.titleWordEms))`, on Noto's 540 ems at design 3. The seed keeps 97 / 73 / 48.
+  "Unforgettable nights" sets 52 at 1440 on two lines, "Christopher Featherstonehaugh live" 38.8 /
+  73 / 38.5 on three, and every line's ink ends inside its column. `vm.titleWordEms`' comment names
+  the gallery beside the bio. Nothing else moved: it was already computed for every Editorial
+  section.
+- **One named diff: the 768 head runs two lines.** The frame sets "Snaps from the night" on one line
+  at 73 in its 708 measure, and Noto needs two. So the 768 section stands at **835.5 against the
+  frame's 771**. Typed as "Snaps", one line, the section is 770.6, so the wrap is the whole
+  difference. This follows the precedent that a head wrapping on the ramp is named, not fitted
+  (layout 2's testimonials, layout 3's bio). Forcing the frame's single line would be a per-line
+  fit, which is a user call and not the widest-word rule.
+- **Measured** (harness, content edges; the frame × 0.82 in brackets at desktop):
+  - Desktop: sheet 611.7 (611.7), pads 127.9 / 45.9; eyebrow at 151.6 (152.1); h2 372.3 × 345.3,
+    four lines (372.3 × 344.4); print 484 × 438 in its unrotated slot at 510 · 127.9 (484.6 ×
+    437.9 at 510); thumbs 99.2 × 46.3 (seven dividing 534, the twins' named cost); discs 45.5 at
+    520.3.
+  - 768: pads 30; eyebrow at 30 (30), h2 at 81.6 (82); print 537 × 534; thumbs 121 × 56.4; discs
+    55.5; section 835.5 (771, above).
+  - 390: pads 60 / 10 / 40; eyebrow 60 (60), h2 84.3 × 85.4, two lines (84 · 86); print 370 × 330,
+    rotated box top at 193.7 (194); strip 123.3 × 67.7 at 580 (580.2); pills 180 × 55.5 at 659.7
+    (659.95); section 755.2 (755.46).
+- **`live=1`** at desktop and 390 (puppeteer, probe deleted):
+  - The canvas has no pointer cursor. Live, the ring (6.6 on slot 3) and the spotlight follow ↓,
+    and forward from slot 6 wraps to 0.
+  - Back from 0 wraps to 6, with the ring on it. A thumb pick moves both.
+  - The 390 window slides 1–3 → 2–4 → 0–2 → 4–6.
+  - No page errors.
+  - **Open question 6's gallery item**: the 8px terracotta ring stands inside the tile, over its
+    photograph (or the paper well), so it never stands on the ink band alone, and it reads.
+- **Builder** (`page-check.mjs Editorial 3`): no errors or warnings. Media → `#gallery` scrolls,
+  overflow at 390 is 0, and the burger goes 1 → 11. The published gallery is **746** tall at 1440
+  (the frame's 746) and 755 at 390, and its seam clips show a straight taupe-into-ink edge. **In
+  the editor**, one puppeteer script (deleted) opened card 4 and used the device tabs. At 1180 and
+  390, bio → media and media → gallery meet to the pixel (bottom = top, 205.58 / 205.5 / 205.83 /
+  206.33): ink into taupe, then taupe into ink, both straight.
+- **`FIELDS.gallery` needed no change.** `youtube` / `instagram` / `tiktok` typed at theme 3 moved
+  `arch_0` alone, and only live, since the canvas draws the rows as spans either way. That is the
+  stored `in: [0]`. The Editorial block reads none of them.
+- **Named diffs**:
+  - the 768 head's second line;
+  - seven thumbs against the frame's six;
+  - the seeded strip against the frame's Retro placeholders (layout 1's call);
+  - the thumbs top-anchored.
+- **Digest**: themes 0, 1, 2 and 4 at zero files, canvas and `live=1`. Theme 3 moved exactly
+  `gallery_arch_3` at three widths on both surfaces, six files.
+- **For the sweep**:
+  - `notes/gallery.md`'s layout-4 paragraph and CLAUDE.md's gallery ring and disc sentences name
+    Lime and Grunge alone. Editorial's 4 / 8 / 4 terracotta ring and square Scheme 4 discs join
+    them.
+  - `notes/gallery.md` names no Editorial layout-4 rule yet, so nothing it states was reversed.
+
 ### Inherited and used
 
 *(Each session appends the bullets it leaned on, one line each: the bullet's title, where it lives,
@@ -1303,6 +1420,32 @@ and what this section did with it.)*
   *Settled in section 1*) — the sleeve's 5px and tile 0's 3px paper rings.
 - Media: *The whole-page published check is one puppeteer script* (lime/layout-1, *Learned on the
   end-of-pass sweep*) — `page-check.mjs Editorial 3`, the bio → media seam shots.
+- Gallery: *Where the seam lives inside the branch, the block goes after the seam* (lime/layout-1,
+  *Settled in section 4*) — widened in place after `from`, the seam shared whole.
+- Gallery: *The `G` lookup at the block's head* (grunge/layout-1, *Settled in sections 4–10*) — a
+  third arm, new leaves through `??`.
+- Gallery: *The paired diff walk* (grunge/layout-2, *Settled in section 8*) — the three wrappers'
+  boxes beside Lime's and Grunge's in one call; three boxes differ.
+- Gallery: *A Lime block paints its ground from Scheme 1 keys* (this plan, trap 1) — the sheet
+  `s.bg`, the head `s.ac`.
+- Gallery: *A nested node or a card on another scheme reads that scheme's keys* (editorial/layout-2,
+  *Settled in session 0*) — the discs and pills on `s.onScheme[4]`.
+- Gallery: *Figma auto-layout spaces a rotated child by its rotated bounding box — per master*
+  (memory: `figma-frame-reading`; editorial/layout-1, *Conventions*) — the unrotated slot at 1440
+  and 768, `0.873% 0` at 390.
+- Gallery: *A clipping frame is read before a decoration is let past it* (this plan, section 3) —
+  the row's `clipsContent` cuts the print's corners and shadow at 1440 and 768.
+- Gallery: *A frame's image anchor is evidence for its own photograph only* (editorial/layout-2,
+  *Conventions*) — the spotlight centred at 0.998, the thumbs top-anchored.
+- Gallery: *A head that must fit its measure is fitted to its widest word* (lime/layout-3, section
+  9; editorial/layout-1, *Conventions*) — the head, on `titleWordEms`.
+- Gallery: *A frame's inside stroke is an inset `boxShadow`, on an overlay* (lime/layout-2,
+  *Settled in section 1*) — the 4 / 8 thumb rings and the 0.754 disc rings.
+- Gallery: *A seeded page cannot show an empty slot* (lime/layout-1, *Learned on the end-of-pass
+  sweep*) — `&n=0`, the initials re-inked on both wells.
+- Gallery: *Field reach is measured* (CLAUDE.md) — the social rows, live, `[0]`.
+- Gallery: *The whole-page published check is one puppeteer script* (lime/layout-1, *Learned on the
+  end-of-pass sweep*) — `page-check.mjs Editorial 3`, plus the editor's joins.
 
 ## Open questions
 
