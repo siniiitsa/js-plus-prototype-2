@@ -45,10 +45,11 @@ another `notes/` file.
   dimmed to .38 with no strike, its frame's own state, and Grunge's and Editorial's layout 1 share
   it), which is a **content** state and not a
   live one, so it renders on the canvas too; the seed blocks nothing, which is
-  what keeps the reference picture. Two **intended diffs from the frame**: the foot row gains the
-  Book pill on `vm.calBookTo` — `bookTo` minus `calendar` itself, the tier pills' rule, since
-  `CTA_TARGETS.book` ends here — which is what turned `cta` from a field that edited nothing into
-  a control, and `para` went with `DEFS.calPara` because it rendered in neither layout; and a
+  what keeps the reference picture. Two **intended diffs from the frame**: under Retro and Pop the
+  foot row gains the Book pill on `vm.calBookTo` — `bookTo` minus `calendar` itself, the tier
+  pills' rule, since `CTA_TARGETS.book` ends here — which is what turned `cta` from a field that
+  edited nothing into a control (under Lime, Grunge and Editorial the line is the link instead,
+  below, JP-088), and `para` went with `DEFS.calPara` because it rendered in neither layout; and a
   month needing six rows grows one where June needs five, the grid never being padded to 35.
   The unreachable fallthrough after layout 4 still draws the hardcoded `CITIES` and reads
   none of this.
@@ -155,3 +156,14 @@ another `notes/` file.
   arms, and `EditPanel`'s chain has the same arm. Retro's layout 1 prints no head, so it
   keeps `TITLES.calendar`, "Availability", which also stays the seed at layout 2. An emptied
   heading behaves as before.
+- **Layout 1's foot is the frame's under Lime, Grunge and Editorial: the line alone, and the line is
+  the link** (JP-088, user call, 2026-09-30, reversing Lime layout 1's "the foot keeps Retro's
+  BookPill"). No frame draws the pill, Retro's included (`964:58583`); it was Retro's one
+  deliberate addition, so a picked date leads somewhere. Their `s.limeTree` block drops it, and the
+  foot's enquiry line takes its job: on the published page, while the line names a picked day
+  (`cur`), it is an `<a>` to `navHref(s, s.calBookTo)`, in the line's own type, with a pointer and
+  no underline. The prompt (`vm.calPrompt`) never links, since "Pick a date" is not a way on, and a
+  page with no `calBookTo` keeps a span. On the canvas it is always a span with no cursor. So the
+  foot is the frames' 101 / 100 / 100. `FIELDS.calendar.cta` reaches only layout 4 there
+  (`{ Lime: [3], Grunge: [3], Editorial: [3], '*': [0, 3] }`, measured). Retro and Pop keep the
+  pill.

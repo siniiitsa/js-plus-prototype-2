@@ -1769,12 +1769,16 @@ export const FIELDS = {
     { k: 'time',    l: 'Enquiry time', d: CAL_TIME, in: [0, 3],
       hint: "Printed in layout 1's enquiry line, and on its own in layout 4's "
           + 'date card. Leave it empty and the line stops at the date.' },
-    // Layout 1's pill and layout 4's Send Enquiry (JP-082). `d` is layout
-    // 1's seed; layout 4 seeds CAL_SEND_4 in sectionVm and EditPanel's chain.
-    { k: 'cta',     l: 'Button', d: 'Check a date', in: [0, 3],
-      hint: 'Layout 1’s button, and layout 4’s Send Enquiry on the last step of the enquiry '
-          + 'wizard and at the foot of the summary. Layout 4 starts from “Send Enquiry”, '
-          + 'and shows it again if you empty this there.' },
+    // Retro's and Pop's layout-1 pill and layout 4's Send Enquiry (JP-082).
+    // `d` is layout 1's seed; layout 4 seeds CAL_SEND_4 in sectionVm and
+    // EditPanel's chain. Lime's, Grunge's and Editorial's layout 1 draws no
+    // pill (JP-088): its enquiry line is the link.
+    { k: 'cta',     l: 'Button', d: 'Check a date',
+      in: { Lime: [3], Grunge: [3], Editorial: [3], '*': [0, 3] },
+      hint: 'Layout 4’s Send Enquiry, on the last step of the enquiry wizard and at the foot '
+          + 'of the summary; it starts from “Send Enquiry” there, and shows it again if you '
+          + 'empty this. Under Retro and Pop it is also layout 1’s button. The other templates’ '
+          + 'layout 1 has no button: its “Enquiry for …” line is the link.' },
     { k: 'slots',   l: 'Dates on offer', type: 'slots', max: 8, in: [1],
       hint: 'The dates layout 2 lists, each with what you play and what it starts from.' },
     { k: 'slotCta', l: 'Button (layout 2)', d: CAL_SLOT_CTA, in: [1] },

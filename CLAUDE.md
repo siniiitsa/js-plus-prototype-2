@@ -327,7 +327,8 @@ mutated through a single `patch()` helper.
   the **pricing section's chip row and Book pill** (below — the row filters the deck in layout 1,
   picks the single big plan in layout 2 and filters the stack in layout 3, where it also moves
   which row is featured),
-  the **booking calendar's month arrows, its day picking, its foot pill and — in layout 4 — its
+  the **booking calendar's month arrows, its day picking, its foot pill (at layout 1 under Lime,
+  Grunge and Editorial, the foot's line, JP-088) and — in layout 4 — its
   enquiry wizard and the summary column that follows it, *Package ›* included** (below),
   the **enquiry form's boxes, its event-type chips and its submit** (below),
   the **testimonials carousel's arrows** (below — layout 2 pages the same `cur` from a rail of

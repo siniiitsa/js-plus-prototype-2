@@ -1021,6 +1021,9 @@ Settled in section 8 (the booking calendar):
   Editorial layout 1 now seeds `CAL_HEADING_1` "Book Now" — see `../editorial/qa-fixes.md`.)*
 - **The foot keeps Retro's BookPill** (its one deliberate addition), in `BookPill`'s Lime defaults. It
   makes the foot 110 / 134 / 149 where the frames' are 83 / 100 / 100; at 390 it wraps under the line.
+  *(Reversed 2026-09-30, JP-088, user call: under Lime, Grunge and Editorial the foot is the line
+  alone, and the line links to `calBookTo` on the published page while it names a picked day. Retro
+  and Pop keep the pill. See `../editorial/qa-fixes.md`.)*
 - **Measured against the masters' content edges**: desktop head 59 at 19.7 over the panel, grid half
   431 (526 × 0.82), names 94.4 and days 136.5 down the half (115.15 / 166.53 × 0.82), cells 58.8 × 45.8,
   photo 493.2 × 398.2 (486 × 0.82 tall); 768 grid 526, names 115.2, days 166.6, cells 78.3 × 55.9, photo

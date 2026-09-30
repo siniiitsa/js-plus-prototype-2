@@ -886,7 +886,8 @@ Append as the pass goes. Do not repeat Lime's or Retro's bullets; name them.
   hung 217.5 above the card, as stated. No seal, no seam.
 - **The foot keeps Retro's `BookPill`** in the capsule defaults (`s.pillBg` / `s.bg`), which read on
   `#1A1A1A`; the frame draws no pill. Foot 110 / 134 / 149 against the frames' 101 / 100 / 100, Lime's
-  own diff.
+  own diff. *(Reversed 2026-09-30, JP-088: the pill is gone and the line is the link —
+  `../editorial/qa-fixes.md`.)*
 - **`FIELDS.calendar.heading`'s `in` gained `Grunge: [0, 1, 2, 3]`** — the row the last five sections
   named as due. No other Lime-keyed row outside the header remains (`grep -n "Lime: \[" data.js`).
 - **Measured against the masters' content edges**: desktop head 59, grid half 431 (526 × 0.82), cells

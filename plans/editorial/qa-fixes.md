@@ -95,7 +95,7 @@ default list is `0,2,3,4`, which **skips Lime**, so always pass the list explici
 | 1 | JP-085 | Heads in Noto Serif Display, not Fisterra Fora | **By design so far**: the named stand-in (layout-1.md decision 1, user call, 2026-09-24). The licence question is the PO's | — (decision) | **user: A, a reply; the licence with the PO** | **done** (no code; the facts in `layout-1.md` open question 1) |
 | 2 | JP-089 | Three layout-1 seeds differ from the frame | **Confirmed, and recorded**: Lime layout 1 named all three as diffs; Grunge and Editorial inherited them | S | **user: 1A, 2A** | **done** |
 | 3 | JP-090 | Four literals no field reaches; the map's Kicker says "Not shown" | **Confirmed**: JP-071's rule, four more sites, every template (the map's two in both bodies too) | S–M | **user: 1A, the whole bio line, 2A** | **done** |
-| 4 | JP-088 | Calendar layout 1's *Check a date* pill | **Confirmed, and recorded**: Retro's deliberate addition, kept by Lime's fit | S | **yes** | open |
+| 4 | JP-088 | Calendar layout 1's *Check a date* pill | **Confirmed, and recorded**: Retro's deliberate addition, kept by Lime's fit | S | **user: A, the line links only on a picked day** | **done** |
 | 5 | JP-086 | 390 hero name clipped | **Confirmed**: Editorial's 390 title is a flat 107px, the only width it is not fitted | S | no | open |
 | 6 | JP-087 | 390 gallery: TikTok wraps to a second row | **Confirmed, and recorded**: wrapping is the shared rule, chosen over the frame's run-off | S–M | **yes** | open |
 | 7 | JP-091 | 1440 nav wraps with a long name | **Confirmed in the code, size unmeasured**: below the links' 12px floor the row wraps, a recorded "least bad" | M | **yes, after measuring** | open |
@@ -602,7 +602,91 @@ same.
 **Docs.** `notes/calendar.md` (the foot's link), a *reversed* pointer on Lime layout 1's *Settled*
 bullet, the field's hint (layout 1's button is Retro's).
 
-**Settled.** —
+**Decided** (2026-09-30, user call): **A, and the line links only while it names a picked day.**
+Drop the pill from the `s.limeTree` layout-1 foot. On the published page the foot's *Enquiry for …*
+line is an `<a>` to `calBookTo`; the *Pick a date to enquire* prompt stays text, since linking
+"Pick a date" to the form would contradict it. On the canvas the line is a span with no cursor. Retro
+and Pop keep the pill. Asked over what the session found first, on HEAD (`df10738`):
+- **Every *Evidence* line held** at the new numbers: the two `BookPill` sites at
+  `EncoreSection.jsx:15205` (the `s.limeTree` foot) and `:15428` (Retro and Pop's), `vm.calCta` at
+  `EncoreBuilder.jsx:1300`, `vm.calBookTo` at `:1493`, `FIELDS.calendar.cta` at `data.js:1774`, and
+  Lime's call at `../lime/layout-1.md:1022`.
+- **Figma: no frame draws the pill, Retro's included.** Every foot is the enquiry line alone:
+  - Editorial `964:58619` / `986:48246` / `986:48258`, and Lime's and Grunge's twins, measure
+    1328 × 101, 708 × 100 and 370 × 100, with 40 padding.
+  - Retro's `964:58583` is 1328 × 77.44, with 30.22 padding and the line in mono caps.
+  - So Retro's pill was always its "one deliberate addition", not the frame's. The entry's
+    "83 / 100 / 100" was the 1440 frame's 101 at the canvas's 0.82.
+- **Reproduced on HEAD.** Card 1 of Editorial, Lime and Grunge, published and opened, draws an
+  `<a href="#form">` *Check a date* pill in the foot at 1440, 768 and 390, and so does Retro's.
+  - The foot is 134 at 1440 (110 laid out at 1180, zoomed 1.22) and 134 at 768.
+  - At 390 it is 113.5 on the prompt, and 168.5 once a picked *Enquiry for Wednesday, September
+    30 …* wraps the pill under it.
+  - On the canvas the foot is 109.9 and the pill a span.
+  - The harness agrees under themes 1–3 at all three widths: a `SPAN` pill on the canvas, an `A`
+    on `live=1`.
+- **The harness was proven first.** The HEAD worktree on :5174 against the tree diffed to 0 of 60
+  on each surface (calendar × themes 0–4 × three widths).
+- **Expected after-diff (named before the code).** Calendar `arch 0` × themes 1–3 × three widths
+  = 9 files a surface, 18 in all. The pill's rows go, the foot shrinks, and the rows after it move
+  up. On `live=1` the line becomes an `A`: the harness passes no `&today=`, so the cued June 12
+  is picked. Retro, Pop and every other section: 0.
+
+**Settled** (2026-09-30).
+- **Code.**
+  - `EncoreSection`'s `s.limeTree` layout-1 block drops the `BookPill`. The foot's line takes its
+    job through two locals, `lineHref = cur ? navHref(s, s.calBookTo) : undefined` and `LineTag`:
+    an `<a>` in the line's own type with a pointer and no underline while it names a picked day,
+    else the span it was, with no cursor.
+  - `navHref` carries the `live` gate, so the canvas never links, and neither does a page with
+    no `calBookTo`.
+  - Retro's and Pop's body is untouched.
+  - `FIELDS.calendar.cta`'s `in` is `{ Lime: [3], Grunge: [3], Editorial: [3], '*': [0, 3] }`.
+    Its hint leads on layout 4's Send Enquiry and says layout 1's button is Retro's and Pop's.
+  - The `vm.calCta` comment says the same.
+- **Digest.** The tree against the HEAD worktree on :5174, every category, themes 0–4, three
+  widths, port and photo stamps normalised.
+  - **Canvas: exactly the 9 named files of 660.** On `live=1` there were 11: the 9 named, plus
+    pricing `arch 0` and repertoire `arch 1` under Editorial at 390. Those two HEAD files were
+    blank renders under load (one row each). Re-rendered, they diffed to 0 of 8. So the diff is
+    the named 18.
+  - In those files, the foot is **82.1 / 99.5 / 99.5**, against the frames' 101 × 0.82 = 82.8,
+    100 and 100. The line is a `SPAN` on the canvas and an `A` on `live=1` at every width.
+- **Reach** (`reach.mjs`'s existing `calendar.cta` probe, themes 0–4): Retro and Pop move layouts
+  1 and 4; Lime, Grunge and Editorial layout 4 alone. `fieldReach()` in Node agrees.
+- **The real app** (a scratch puppeteer script, deleted): card 1 of Editorial, Lime, Grunge and
+  Retro, published and opened.
+  - **Lime, Grunge and Editorial draw no pill.**
+    - The foot is **100.2 at 1440 and 99.5 at 768 and 390**, against 101 / 100 / 100.
+    - A picked *Enquiry for Wednesday, September 30 at 9:00pm* wraps to two lines at 390 (119).
+      The seeded June line does not.
+    - The prompt is a span with no cursor.
+    - Picking a day turns the line into `<a href="#form">` with a pointer and no underline.
+      Clicking it calls `scrollIntoView` on `form` (hooked), the first of `CTA_TARGETS.book`
+      minus the calendar, at all three widths.
+    - On the canvas the line is a span with no href and no cursor (82.1).
+  - **Retro's card 1 is unchanged**: the *Check a date* pill (a span on the canvas, `<a
+    href="#form">` published), and the foot at 102 / 102 / 135.8, as on HEAD.
+  - No page errors.
+- **Build.** `npm run build` is clean. The root `index.html` is not refreshed; the sweep does that.
+- **Docs.**
+  - **Reversed pointers**: Lime `layout-1.md`'s foot bullet (`:1022`), and its repeats in Grunge's
+    and Editorial's `layout-1.md`.
+  - **Rewritten**: `notes/calendar.md`'s "intended diffs" sentence (the pill is Retro's and
+    Pop's). There is a new bullet for the foot's link.
+  - CLAUDE.md's `s.live` list names the foot's line beside the pill.
+  - The code comment at the foot.
+
+Reply: **JP-088 — fixed.** Under Lime, Grunge and Editorial, layout 1's calendar card no longer has
+the *Check a date* button, so its foot is the design's: the *Enquiry for …* line alone.
+- On the published page, whenever the line names a day (the one the visitor picked, or the opening
+  date while it is still ahead), that line is the link. It takes them to the
+  enquiry form, or to Pricing where the page has no form, which is what the button did.
+- The *Pick a date to enquire* prompt is not a link.
+- The calendar's *Button* field now says "Not shown in this layout" at layout 1 under these
+  templates; it still labels layout 4's Send Enquiry.
+- Retro's layout 1 keeps its button, unchanged. Its design draws none either, so if that is
+  wanted gone too, it is its own ticket.
 
 ---
 

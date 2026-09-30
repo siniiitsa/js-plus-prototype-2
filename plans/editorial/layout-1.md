@@ -1403,7 +1403,8 @@ four ink ones are its own register.
   370.
 - **The foot keeps Retro's `BookPill`** in the Lime branch's defaults, terracotta under paper with
   a paper disc; the frame draws none (the twins' diff). Foot 109.9 / 134 / 149 against the
-  frames' 101 / 100 / 100.
+  frames' 101 / 100 / 100. *Reversed 2026-09-30, JP-088: the pill is gone and the line is the
+  link — `./qa-fixes.md`.*
 - **Measured** (harness, against the section root): desktop heading 474.3 wide (578.4 × 0.82),
   cells 61.3 × 45.8 (74.86 / 55.89 × 0.82), print 479 × 366 (478.9 × 365.7) centred 32.6 into a
   431.3 half (the frame's 40 × 0.82), tape at (163.7, −20.1) in the print (u(199.67), u(−24.55));

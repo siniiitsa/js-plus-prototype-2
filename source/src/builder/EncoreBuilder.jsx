@@ -1295,7 +1295,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // passed cues nothing either, and the foot prints the prompt.
     vm.calPick = booked.has(openIso) || dead(openIso) ? '' : openIso
     vm.calPrompt = cased('Pick a date to enquire')
-    // Layout 1's pill. The same field is layout 4's Send Enquiry (JP-082),
+    // Retro's and Pop's layout-1 pill (the `s.limeTree` foot has none, JP-088:
+    // its line links). The same field is layout 4's Send Enquiry (JP-082),
     // seeded CAL_SEND_4 there: `vm.calWizard.send`, below.
     vm.calCta = cased(cv('cta', 'Check a date'))
     // Layout 2's pill, which its frame labels differently from the other two

@@ -15045,6 +15045,10 @@ function Calendar({ s }) {
         display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))',
         columnGap: s.mob ? '2px' : u(10), rowGap: s.mob ? '2px' : u(10),
       }
+      // The foot's line is its link (JP-088, below): live, while it names a
+      // picked day, to `calBookTo`. The prompt never links.
+      const lineHref = cur ? navHref(s, s.calBookTo) : undefined
+      const LineTag = lineHref ? 'a' : 'span'
 
       // The month arrows: `sem/tag/2/text` discs in a 1px `sem/stroke/1` ring,
       // round Pager's own arrow vector in `sem/text/2`. The cursor is read off
@@ -15199,10 +15203,13 @@ function Calendar({ s }) {
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
               flexWrap: 'wrap', gap: u(16),
             }}>
-              <span style={type(s.body, s.bodyMd, 1.5, { color: G.line })}>{line}</span>
-              {/* Retro's one deliberate addition to the frame, kept: a picked
-                  date has to lead somewhere. BookPill's Lime branch dresses it. */}
-              <BookPill s={s} to={s.calBookTo} label={s.calCta} />
+              {/* The frames' foot is this line alone. Retro's Check a date pill
+                  is gone from it (JP-088, user call, 2026-09-30, reversing
+                  Lime's "the foot keeps Retro's BookPill"), so the line itself
+                  leads a picked date on, in its own type: `lineHref`, above. */}
+              <LineTag {...(lineHref ? { href: lineHref } : null)} style={type(s.body, s.bodyMd, 1.5, {
+                color: G.line, textDecoration: 'none', cursor: lineHref ? 'pointer' : undefined,
+              })}>{line}</LineTag>
             </div>
             {/* The panel's 3px `sem/stroke/2` ring, which Figma strokes inside
                 and paints over the halves. An inset shadow on the panel itself
