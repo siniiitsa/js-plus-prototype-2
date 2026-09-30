@@ -1070,9 +1070,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // UNFORGETT / ABLE inside the word in the demo face's measure; in Noto Bold
   // ems. Editorial's layout-3 form head is Lime's again, Display/LG Regular,
   // so at design 2 it is Noto's 540 ems — the Bold table would shrink it 4.5%
-  // too far. Undefined off those two templates.
+  // too far — and so is its layout-4 bio head at design 3, Display/LG / XL
+  // Regular in a 572.9 measure. Undefined off those two templates.
   vm.titleWordEms = T.name === 'Lime' || T.name === 'Editorial'
-    ? +Math.max(0, ...vm.title.split(/\s+/).map(T.name === 'Lime' ? bebasEms : d === 2 ? notoEms : notoBoldEms)).toFixed(3)
+    ? +Math.max(0, ...vm.title.split(/\s+/).map(T.name === 'Lime' ? bebasEms : d >= 2 ? notoEms : notoBoldEms)).toFixed(3)
     : undefined
   vm.testiStars = cv('stars', TESTI_STARS)
   // Layout 3's stat card prints it with a literal "/5" beside it, and an

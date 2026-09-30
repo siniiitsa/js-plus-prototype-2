@@ -5201,24 +5201,42 @@ function Bio({ s }) {
   // photograph's `image 1` grain, a `Frame 255` dimmer over the glass, and at
   // 390 a torn foot. Radii 15 / 7.5 / 2.5. The photograph is a plain `FILL` of
   // `grungeStage`, a centred cover (0.958 against the render), so no seed.
-  if (s.v3 && (s.lime || s.grunge)) {
+  //
+  // ── Editorial ──────────────────────────────────────────────────────────
+  // Editorial's layout-4 bio (964:73046 · 971:9546 · 977:13164; Sections
+  // 964:73039 · 971:9539 · 977:13157) is Lime's tree plus Grunge's `Frame 255`
+  // and a Genres label both twins drop (plans/editorial/layout-4.md, section
+  // 2). Section and instance are Scheme 3 at every width, so the band is the
+  // seat's `sem/bg` ink — the block's `s.ac` is terracotta under the seat —
+  // with "KM BIO" paper and the head terracotta; the well and the prose box
+  // are the seat's `s.box3` / `s.box2` at all three widths. The Tags instance
+  // is Scheme 1: its chips read `s.onScheme[1]`, and "Genres" is the Section's
+  // terracotta `sem/text/1`, drawn at every width. The head is Display/LG at
+  // .89 at 1440 and Display/XL at .75 narrow, per the masters. Every box is
+  // square. The dimmer is `sem/bg` ink at .8 at 1440 and 768; at 390 the glass
+  // paints opaque ink, so its blur shows nothing there. The photograph is a
+  // plain `FILL` of `editorialStage`, a centred cover, so no seed.
+  if (s.v3 && s.limeTree) {
     const grunge = s.grunge
+    const ed = s.editorial
     const desk = !s.narrow
     const tab = isTablet(s)
     const z = desk ? 0.82 : 1
     const u = (v) => `${Math.round(v * z * 10) / 10}px`
     // Scheme 2's `box/3` and `box/2` — the media card's and the testimonials'
     // literals — on the two narrow instances alone; Scheme 1's keys at 1440.
-    const well = desk ? s.box3 : grunge ? '#82211B' : '#263020'
+    // Editorial's instance is Scheme 3 at every width: the seat's own keys.
+    const well = desk || ed ? s.box3 : grunge ? '#82211B' : '#263020'
     // Grunge's instance is Scheme 1 at 1440 and Scheme 3 narrow, and its prose
     // box is bound to `sem/box/1` where Lime's is `sem/box/2` (a moved binding).
-    const dusk = desk ? (grunge ? s.box1 : s.box2) : grunge ? '#9E1F17' : '#43523B'
+    const dusk = ed ? s.box2 : desk ? (grunge ? s.box1 : s.box2) : grunge ? '#9E1F17' : '#43523B'
     // Grunge's glass is Lime's #2E3928 at 1% (a leak, invisible) under
     // `Frame 255`, a `sem/bg` dimmer at .5 over the whole panel and under the
     // text — #000000 at 1440, Scheme 3's #DF262C narrow — drawn as the panel's
-    // own fill, one layer.
-    const glass = grunge ? `${desk ? s.bg : s.ac}80` : `${s.box1}B5`
-    const upper = grunge ? { textTransform: 'uppercase' } : null
+    // own fill, one layer. Editorial's dimmer is the seat's ink at .8 at 1440
+    // and 768; its 390 glass has no dimmer and paints `sem/bg` opaque.
+    const glass = ed ? (s.mob ? s.bg : `${s.bg}CC`) : grunge ? `${desk ? s.bg : s.ac}80` : `${s.box1}B5`
+    const upper = grunge || ed ? { textTransform: 'uppercase' } : null
     // Grunge's name is `sem/text/2` then `text/1` at the first space: white /
     // red on Scheme 1 at 1440, white / black on Scheme 3 narrow.
     const brand = () => {
@@ -5234,27 +5252,50 @@ function Bio({ s }) {
     const stageOver = 60
     const body = { fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5 }
 
+    // Editorial's chips are the Tags instance's Scheme 1 seats, each lettered
+    // in its own seat's ink (the frame's fourth chip borrows Scheme 4's).
+    const tagSeats = ed ? s.onScheme[1].chips : null
+    // Editorial's head is fitted to its widest word (`s.titleWordEms`, in
+    // Noto's ems) inside the 572.9 measure — the header name's rule — where the
+    // twins' `break-word` split a long word the wide Noto capitals outran.
+    const headSize = ed && desk ? s.dispLg : s.dispXl
+    const headMeasure = s.mob ? '100cqi' : `min(100cqi, ${u(572.9)})`
     const head = (
-      <div style={desk
-        ? col('0', { alignItems: 'flex-start', justifyContent: 'space-between', minWidth: 0 })
-        : col(u(s.mob ? 15 : 30), { alignItems: 'flex-start' })}>
+      <div style={{
+        ...(desk
+          ? col('0', { alignItems: 'flex-start', justifyContent: 'space-between', minWidth: 0 })
+          : col(u(s.mob && !ed ? 15 : 30), { alignItems: 'flex-start' })),
+        ...(ed ? { containerType: 'inline-size' } : null),
+      }}>
         <span style={{
           fontFamily: s.ui, fontSize: s.labelXs, lineHeight: 1.26,
-          letterSpacing: s.dls, textTransform: 'uppercase', color: grunge ? s.tx : s.bg,
+          letterSpacing: s.dls, textTransform: 'uppercase', color: grunge || ed ? s.tx : s.bg,
         }}>{s.initials} Bio</span>
         {/* The 572.9 measure is on the text node at 1440 and 768 and is what
             breaks the head — three lines at 1440, two at 768; the 390 master
-            states the full 370. */}
+            states the full 370. Editorial's 1440 master sets it Display/LG at
+            .89 where its narrow ones set Display/XL at .75. */}
         <h2 style={distressed(s, {
-          margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispXl), lineHeight: facedLh(s, 0.75),
-          letterSpacing: s.dls, color: s.bg, ...upper,
+          margin: 0, fontFamily: s.display,
+          fontSize: faced(s, ed && s.titleWordEms ? `min(${headSize}, calc(${headMeasure} / ${s.titleWordEms}))` : headSize),
+          lineHeight: facedLh(s, ed && desk ? 0.89 : 0.75),
+          letterSpacing: s.dls, color: ed ? s.ac : s.bg, ...upper,
           maxWidth: s.mob ? undefined : u(572.9), wordBreak: 'break-word',
         })}>{s.title}</h2>
         {/* The Tags instance's own 457 at 1440 and 768 (six chips wrap to two
-            rows in it, as the frames show), the full measure at 390. */}
+            rows in it, as the frames show), the full measure at 390. Under
+            Editorial its "Genres" line (`tagsLabel`) stands 16 over the chips
+            at every width, Body/LG in the Section's terracotta. */}
         {s.showTags === 'show' && (
-          <div style={{ alignSelf: 'stretch', maxWidth: s.mob ? undefined : u(457) }}>
-            <TagChips s={s} radius={s.radiusChip} />
+          <div style={{
+            alignSelf: 'stretch', maxWidth: s.mob ? undefined : u(457),
+            ...(ed ? col(u(16), { alignItems: 'flex-start' }) : null),
+          }}>
+            {ed && s.tagsLabel && (
+              <span style={{ fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5, color: s.ac }}>{s.tagsLabel}</span>
+            )}
+            <TagChips s={s} radius={ed ? u(6) : s.radiusChip}
+                      hues={tagSeats?.map((c) => c.bg)} inks={tagSeats?.map((c) => c.fg)} />
           </div>
         )}
       </div>
@@ -5282,13 +5323,17 @@ function Bio({ s }) {
 
     // Grunge's 390 Section pads its foot 60 where Lime's pads 30: the room for
     // the torn seam it owns there (below).
+    // Editorial's pads it 40.
     const padV = u(desk ? 116 : tab ? 60 : 30)
-    const padB = grunge && s.mob ? '60px' : padV
+    const padB = grunge && s.mob ? '60px' : ed && s.mob ? '40px' : padV
     return (
       <div style={{
         // The sheet: out to the section's own edges, past the root's padding.
+        // Lime's and Grunge's bands are their Scheme 3's `s.ac`; under
+        // Editorial's Scheme 3 seat that key is terracotta, and the band is the
+        // seat's own `sem/bg` ink.
         margin: `calc(-1 * ${s.padY}) calc(-1 * ${s.padX})`,
-        background: s.ac, color: s.bg,
+        background: ed ? s.bg : s.ac, color: ed ? s.tx : s.bg,
         ...(grunge ? { position: 'relative' } : null),
         padding: `${padV} calc(${s.surplus} + ${desk ? u(56) : tab ? '30px' : '10px'}) ${padB}`,
         // Two `minmax(0, 1fr)` columns rather than two `flex: 1 1 0` halves:
@@ -5296,13 +5341,13 @@ function Bio({ s }) {
         // came out 24.6 wider than the head (the enquiry form's layout-3 trap).
         ...(desk
           ? { display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', alignItems: 'stretch' }
-          : col(u(tab ? 40 : grunge ? 10 : 15))),
+          : col(u(tab || ed ? 40 : grunge ? 10 : 15))),
       }}>
         {head}
         <div style={{
           ...(desk ? { minWidth: 0 } : null),
           position: 'relative', overflow: 'hidden', background: well,
-          borderRadius: u(grunge ? 15 : 55),
+          borderRadius: u(ed ? 0 : grunge ? 15 : 55),
           // The frame's own height as a floor, HeaderV3's rule: the panel is
           // content-tall, so a second paragraph grows the card.
           minHeight: u(s.mob ? 536 : 720),
@@ -5329,7 +5374,7 @@ function Bio({ s }) {
           }} />
           <div style={{
             position: 'relative', width: '100%', overflow: 'hidden',
-            borderRadius: u(grunge ? 7.5 : 27), padding: panelPad,
+            borderRadius: u(ed ? 0 : grunge ? 7.5 : 27), padding: panelPad,
             // `s.box1` at .71 as an 8-digit hex (no `rgba()` in the file),
             // over the frame's 54 backdrop blur, emitted as CSS 27.
             background: glass,
@@ -5346,7 +5391,7 @@ function Bio({ s }) {
               {meta}
             </div>
             <div style={{
-              background: dusk, color: s.tx, borderRadius: u(grunge ? 2.5 : 13.5), padding: u(20),
+              background: dusk, color: s.tx, borderRadius: u(ed ? 0 : grunge ? 2.5 : 13.5), padding: u(20),
               ...col(u(10), { alignItems: 'stretch' }),
             }}>
               <p style={{ margin: 0, ...body, fontSize: s.bodyLg }}>{s.bioP1}</p>
