@@ -1227,7 +1227,9 @@ From the walks and the renders — impressions to confirm, not measurements.
 - **Builder** (`page-check.mjs Editorial 3`): no errors or warnings. The published player plays
   and moves (`SoundHelix-Song-5`, unpaused), overflow at 390 is 0, and the burger goes 1 → 11. The
   seam shots show **bio → media a straight ink-into-taupe edge at 1440 and 390**, and media →
-  gallery taupe into the gallery's flat arm, still its terracotta wash (section 4's).
+  gallery taupe into the gallery's flat arm, still its terracotta wash (section 4's). The plan asked
+  for the join in the editor; these are the published tab's clips of the same render. The editor's
+  card (`overflow: clip` at 0.82) was not shot, so the gallery session checks both joins there.
 - **`FIELDS.media` needed no change.** Typed into media arch 3 under Editorial at three widths,
   canvas and live, only the heading moved the HTML; `kicker`, `listLabel`, `soundcloud` and `cta`
   did not. Those are the stored rows (`[0, 2]`, `[1, 2]`, `[0]`, and Lime / Grunge `[0]`).
