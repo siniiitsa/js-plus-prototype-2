@@ -258,7 +258,7 @@ Grunge twin's desktop id — each block's fit comment cites them); it is the gat
 | 7 | `pricing` | `964:73111` | 1440 × **532** | `971:9609` | 768 × **790** | `977:13476` | 390 × 829 | 1 | `964:72926` / `971:5613` / `977:9187` | `964:73021` / `971:8137` / `977:12364` | `if (s.lime \|\| s.grunge)` inside `Pricing`'s `if (s.v3)`, after `bleedX` | **done** (`b649843`) |
 | 8 | `calendar` | `964:73124` + wizard `964:73123` *(Section `964:73112`, Frame 324 `964:73113`)* | 478 × 518 + 680 × 518 | `971:9622` + `971:9621` *(Section `971:9610`, Frame 324 `971:9611`)* | 608 × 493 + 608 × 473 | `977:13489` + `977:13488` *(Section `977:13477`, Frame 324 `977:13478`)* | 350 × 484 + 350 × 470 | 1 (Back pill **3**) | `964:72939` + `964:72938` / `971:5626` + `971:5625` / `977:9200` + `977:9199` | `964:73034` + `964:73033` / `971:8150` + `971:8149` / `977:12377` + `977:12376` | `if (s.lime \|\| s.grunge)` inside `Calendar`'s `if (s.v3)`, after `onNextTag` | **done** (`2393dc9`) |
 | 9 | `form` | **`725:3049`** *(the main component — no page instance at 1440)* | 1440 × 809 | `971:9623` | 768 × 1044 | `977:13490` | 390 × 992 | 1 | `964:72940` / `971:5627` / `977:9201` | `725:2990` / `971:8151` / `977:12378` | `if (s.v3 && (s.lime \|\| s.grunge))` ahead of `EnquiryForm`'s `if (s.v3)` | **done** (`ffc9139`) |
-| 10 | `testimonials` | `964:73125` | 1440 × 716 | `971:9624` | 768 × **628.4** | `977:13491` | 390 × 609.4 | **4** — a real sheet (cell 2 **1**) | `964:72941` / `971:5628` / `977:9202` | `964:73035` / `971:8152` / `977:12379` | `if (s.lime \|\| s.grunge)` inside `Testimonials`' `if (s.v3)`, after `padBot` | open |
+| 10 | `testimonials` | `964:73125` | 1440 × 716 | `971:9624` | 768 × **628.4** | `977:13491` | 390 × 609.4 | **4** — a real sheet (cell 2 **1**) | `964:72941` / `971:5628` / `977:9202` | `964:73035` / `971:8152` / `977:12379` | `if (s.lime \|\| s.grunge)` inside `Testimonials`' `if (s.v3)`, after `padBot` | **done** (`fdbaf85`) |
 | — | `footer` | `964:73126` | 1440 × 479.5 | `971:9625` | 768 × 692.3 | `977:13492` | 390 × 736.3 | 3 (row 0's) | — | — | — | **out of scope**: layout 1's Editorial footer on its own ink seat; `NVAR.footer` is 1 |
 | — | `video` | `964:73054` | 1440 × 1175 | `971:9551` | 768 × 647 | `977:13295` | 390 × 362 | 1 (paper) | — | — | — | **not in the project** (`d734992`); Retro's, Lime's and Grunge's layout-4 passes declined restoring it, and this pass does the same |
 
@@ -882,7 +882,10 @@ bullets; name them.
   where they fit with less, the CSS gap is 0. The form's step rows and the testimonials' head
   row are the next `SPACE_BETWEEN` rows. *The form's step rows are not* (section 9): they are
   `MIN` at 16 round a `FILL` text box, so the twins' gap is Figma's own. The testimonials' head
-  row is the next.
+  row is the next. *It is `SPACE_BETWEEN` at 1440 alone* (section 10): a hugging 787 head and the
+  152.2 disc pair in 1344, where the 768 and 390 rows are `MAX` / `MIN` at a real 32 / 30 round a
+  `FILL` head. Ours fills at every width, so the twins' 32 is the only thing parting a long head
+  from the discs, and it stays: the gap-0 reading is for two fixed-width children.
 - **A frame's floor is unreadable where the demo face's glyph descends; take the token's clean
   reading off another master** (section 9). Fisterra's R legs and ENQUIRE's Q hang below the
   text box, so the form's `absoluteRenderBounds` floors came out −0.18 and −0.07em. The same
@@ -892,6 +895,14 @@ bullets; name them.
   level at lh 1.2 on the map's venues. The two sites disagree, so measure a Noto line at 1.2
   before calling it level. The testimonials' next Noto sites are the head (Display/LG) and the
   Fisterra marks.
+- **A head bottom-aligned with its controls is a lift site, though it stands over cards**
+  (section 10). This pass left its heads over a card or a grid unlifted (bio, media, Book Us).
+  The testimonials' head also stands over its grid, but its row is `MAX` against the arrow
+  discs, so Noto's floor is read against theirs, as pricing's numeral is read against its Inter
+  neighbour (section 7). Here the frame's floor is 0.132 / 0.139 / 0.134em at lh .89, the clean
+  token reading again, since Fisterra's R does not hang in "stories". Noto's is ~0.055, so the
+  head lifts 0.08em (7.8 / 5.8 / 3.8px). Before deciding, read the head's row: what it is aligned
+  with, not only what stands under it.
 
 ### Seen at planning time, per section
 
@@ -2037,6 +2048,108 @@ From the walks and the renders — impressions to confirm, not measurements.
   - CONVENTIONS C's *refused box* row gains an L4 Editorial form cell, and *a head that must fit
     its measure* a form cell.
 
+### Settled in section 10 (the testimonials)
+
+- **No Editorial block: Lime's `if (s.lime || s.grunge)` inside `Testimonials`' `if (s.v3)`,
+  after `padBot`, is `s.limeTree`**, with `const ed = s.editorial`, `S1 = ed && s.onScheme[1]`
+  and a third arm on `REG`. Every Lime and Grunge arm is byte-identical: `G`, `disp`'s uppercase,
+  the pad, the radius and the cell height take `grunge || ed` or an `ed` head, and the head's
+  container is `ed` alone. The seam is shared whole (`n`, `seats`, `paging`, `shown`, `at`,
+  `step`), so the published discs needed nothing new.
+  - The whole read was a paired diff against Lime's (`964:72941` / `971:5628` / `977:9202`), by
+    traversal order, with bindings and their collections. It found **41 = 41 / 33 = 33 / 41 =
+    41 nodes** on Sienna Vale, the root Scheme 4 and the second cell Scheme 1, with no Device
+    override. The only effect is the discs' blur 24, behind an opaque fill (dropped, the twins').
+  - **The narrow masters are Lime's boxes** (30 / 30 / 48 / 30 and 30 / 10; cells 225.3 / 300 ×
+    392.4; 32 / 30 head gaps). Only the corners, the head's height (Noto's lines), the marks'
+    face and the role's 12 differ.
+- **The sheet is the seat's (trap 2).** Under the Scheme 4 seat, Lime's `G` would be `s.tx` ink
+  over the root's terracotta. `ed` joins Grunge's arm, `{ sheet: s.bg, ink: s.ac }`, which is the
+  seat's terracotta and paper: the block paints the root's own ground again, for the opposite
+  reason to Grunge's (whose Scheme 4 is the page). The head and the discs are `sem/text/1`
+  paper, and the arrows `sem/bg` terracotta.
+- **The desktop master is Editorial's own**: padding **48** all round (Lime 56), so the head
+  row is 1344, and **324 × 382** cells: 716 = 48 + 210 + 28 + 382 + 48, the head being two
+  lines of Display/LG at .89. Under `ed && desk` the block pads `u(48)` inside `s.surplus`, and
+  the cell's `minHeight` is `u(382)`. **Every cell is square** (Lime 30), and so is the empty
+  card. The discs stay round (41.48).
+- **The register is written fresh, off each cell's fill and binding at all three widths**, on
+  the twins' `SEATS = [0, 1, 0, 2]`, which is this frame's order too:
+  - seat 0 (and 2): Scheme 4 `box/1` `#DA7C5E` (`s.box1`) in `stroke/1` paper 56% (`s.stroke1`),
+    lettered `text/2` ink (`s.tx`); the disc `text/1` paper (`s.ac`) in the same ring, lettered
+    `sem/bg` terracotta (`s.bg`);
+  - seat 1: a cell naming **Scheme 1**, `box/3` ink (`S1.box3`) in a `stroke/2` terracotta ring
+    (`S1.stroke2`), lettered `text/1` terracotta (`S1.ac`); the disc terracotta in the same ring,
+    lettered paper (`S1.bg`);
+  - seat 3: Scheme 4 `text/1` **paper** (`s.ac`), **unstroked**, lettered terracotta (`s.bg`); the
+    disc terracotta in a paper-56 ring, lettered paper. **It is left bare**, as the frame draws it
+    and as Grunge left its red cell (`edge: 'transparent'`): paper on terracotta parts from the
+    sheet by its fill.
+  The fourth seat stays unreachable at 768 and 390 at any count (the twins' named diff).
+- **The discs' 1px `sem/bg` INSIDE stroke is not drawn**: terracotta at the rim of a paper disc
+  on the terracotta sheet, it only trims the disc by a pixel. That is the twins' reading. The
+  arrow vectors' 1° / −179° is the same dropped leak.
+- **Type is the ramp.** Display/LG 118 / 73 / 48 at .89 (`s.dispLg`, 97 / 73 / 48 on the canvas);
+  the marks Fisterra Label/LG 24 / 16 / 14 at 1.1, a stated glyph, so `faced` applies (the
+  identity here) on `s.labelLg` in `s.label`, Noto; the quote Body/LG 16 / 15 / 15, `who`
+  Body/MD 14 / 13 / 13, `role` Body/SM **12** at every width (Lime 13 / 13 / 12), all `s.*`.
+  `disp` uppercases under `grunge || ed`: the head and the marks (already capitals).
+- **The head fits its widest word** (*Conventions*: the twins' `break-word` heads split a long
+  word in Noto). Under `ed` the h2 stands in a `flex: 1 1 0` `inline-size` container, and its
+  size is `min(s.dispLg, calc(100cqi / s.titleWordEms))` (Noto's 540 ems at design 3).
+  - The seed "Client success stories" keeps 97 / 73 / 48 and wraps as the frame's does: CLIENT
+    SUCCESS / STORIES at 1440 and 768, three lines at 390 in the frame's 187.8.
+  - "Featherstonehaugh" sets on one line at 97 / 54.6 / **19.6px**; "Christopher
+    Featherstonehaugh live" on three at the same sizes; "Unforgettable" at 97 / 73 / 26.2. No
+    word breaks. Lime's block breaks "Featherstonehaugh" across two lines at 768 and 390.
+  - **Named**: at 390 the measure is the 187.8 beside the discs, so a long single word gets
+    small. That is the cost of not splitting it.
+- **The head lifts 0.08em** (*Conventions*, new bullet): its row is bottom-aligned with the
+  discs, and the frame's floors are 0.132 / 0.139 / 0.134em at lh .89 (`absoluteRenderBounds`
+  against the text box) against Noto's ~0.055 (section 9's `measureText` reading at the same
+  sizes). `position: relative; top: -0.08em`, so no box moves. The quote, names and marks are
+  Inter and centred type, not lifted.
+- **The head row's gap** (*Conventions*, the `SPACE_BETWEEN` bullet): Figma's 1440 row is
+  `SPACE_BETWEEN` with a hugging 787 head; the narrow rows state 32 / 30. Ours fills, so the
+  twins' `u(32)` / 30 stays as the head's clearance from the discs.
+- **Measured** (harness, content edges; the frame × 0.82 in brackets at desktop):
+  - Desktop: section **587.6** (587.1); h2 97px, two lines, 172.7 tall (172.2); discs 60.4 at y
+    151.7 (151.2); grid at 235 (234.5); four cells 265.5 × 313.2 (265.7 × 313.2), square; marks
+    20px, quote 13px, foot 11 / 10px.
+  - 768: section **628.3** (628.4); h2 73px, two lines, 129.9 (130); discs at 86.3 (86.4); grid
+    at 187.9 (188); three cells 225.3 × 392.4; marks 16px, quote 15, foot 13 / 12.
+  - 390: section **608.5** (609.4); h2 48px, three lines, 187.8 wide, 128.2 (129); discs at 84.6
+    (85.4); grid at 186.2 (187); two 300 × 392.4 cells, the second peeking. The shortfalls are
+    Noto's line boxes against Figma's whole-pixel ones.
+  - The inks: cells `rgb(218, 124, 94)` / `rgb(20, 20, 20)` / `rgb(218, 124, 94)` / `rgb(246, 240,
+    232)`, rings paper 56% / terracotta / paper 56% / none, discs paper lettered terracotta. The
+    root and the sheet `rgb(200, 110, 82)`. No sideways scroll at any width.
+- **`live=1`** at desktop and 390 (puppeteer, trusted clicks; probe deleted): both discs carry a
+  pointer (the canvas's none); → steps the leading review 1 → 2 → 3, and ← steps 3 → 2 → 1 → 5
+  (wraps). The seats keep their colours after paging. `n=0` prints *No reviews yet.* in one
+  terracotta cell with no discs; `n=1` one cell, no discs; `n=2` two cells, with the discs at 390
+  alone; `n=8` four / two cells with the discs. No page errors. **No lit or idle state** (open
+  question 6): both discs are the same paper disc, and they read on the terracotta sheet.
+- **`FIELDS.testimonials` has no template-keyed `in` row**, and the block reads no key the twins
+  do not, so no `reach.mjs` run was owed.
+- **Builder** (`page-check.mjs Editorial 3`): four cards, no errors or warnings. Reviews and the
+  footer's Reviews scroll to `#testimonials`, and both discs change the published section.
+  Overflow at 390 is 0, and the burger goes 1 → 11. The published section is 609 tall at 390.
+  The seam clips show the form's paper onto the terracotta sheet and the sheet onto the ink
+  footer, both straight; at 1440 the cells stand at the frame's 48.
+- **Named diffs**: the seeded reviews against the frame's repeated filler; Noto against Fisterra
+  (the head and the marks); the discs' 1px rim; the unreachable fourth seat at 768 and 390; the
+  390 peek at 54 against 64 (the twins'); a long single-word head's small size at 390.
+- **Digest**: themes 0, 1, 2 and 4 at zero files, canvas and `live=1`. Theme 3 moved exactly
+  `testimonials_arch_3` at three widths on both surfaces, six files.
+- **For the sweep**:
+  - CLAUDE.md's and `notes/testimonials.md`'s layout-4 sentence (*under Lime the sheet is Scheme
+    4's pale `s.tx` … under Grunge there is no sheet at all*) gains Editorial: the seat's
+    terracotta, painted by the root, the head and discs paper, the fourth seat a bare paper cell,
+    and the head fitted to its widest word.
+  - CONVENTIONS C's *Scheme 4 ≡ Scheme 1 collapses a sheet* row gains an L4 Editorial cell (not
+    a collapse: the seat), and *a head that must fit its measure* a testimonials cell.
+
 ### Inherited and used
 
 *(Each session appends the bullets it leaned on, one line each: the bullet's title, where it lives,
@@ -2245,6 +2358,31 @@ and what this section did with it.)*
 - Form: *The whole-page published check is one puppeteer script* (lime/layout-1, *Learned on the
   end-of-pass sweep*) — `page-check.mjs Editorial 3`, the refusal and the mailto published, two
   seams.
+- Testimonials: *Where the seam lives inside the branch, the block goes after the seam*
+  (lime/layout-1, *Settled in section 4*) — widened in place after `padBot`, the pager shared
+  whole.
+- Testimonials: *The `G` lookup at the block's head* (grunge/layout-1, *Settled in sections
+  4–10*) — Grunge's arm taken whole, and a third arm on `REG`.
+- Testimonials: *The paired diff walk* (grunge/layout-2, *Settled in section 8*) — 41 / 33 / 41
+  against Lime's, by traversal order; the whole read.
+- Testimonials: *A Lime block paints its ground from Scheme 1 keys* (this plan, traps 1 and 2) —
+  `G.sheet` the seat's `s.bg`, not Lime's ink `s.tx`.
+- Testimonials: *Read every nested node's scheme off the master, never off the twin's row*
+  (grunge/layout-3, *Conventions*) — the register written fresh, cell 2 on `s.onScheme[1]`.
+- Testimonials: *A node can name another scheme's variable outright* (editorial/layout-3,
+  *Conventions*) — the Scheme 1 cell's `box/3`, `stroke/2` and `text/1`.
+- Testimonials: *A frame's inside stroke is an inset `boxShadow`* (lime/layout-2, *Settled in
+  section 1*) — the cells' and discs' rings, the paper cell bare.
+- Testimonials: *A stand-in face is scaled to the frame's glyph size* (grunge/layout-1, *Settled
+  in section 1*) — the Fisterra marks through `faced`, the identity.
+- Testimonials: *A head that must fit its measure is fitted to its widest word* (lime/layout-3,
+  section 9; editorial/layout-1, *Conventions*) — the head in its own container's `100cqi`.
+- Testimonials: *A twin's width-bound call is re-measured in the new face* (editorial/layout-2,
+  *Conventions*) — the twins' `break-word` head and their 32 head gap.
+- Testimonials: *A stand-in face's glyph floor is measured per site* (editorial/layout-3,
+  *Conventions*; this plan, sections 7 and 9) — 0.08em on the head, against the discs.
+- Testimonials: *The whole-page published check is one puppeteer script* (lime/layout-1,
+  *Learned on the end-of-pass sweep*) — `page-check.mjs Editorial 3`, both discs and two seams.
 
 ## Open questions
 
@@ -2278,6 +2416,10 @@ and what this section did with it.)*
    *Settled in section 9 (the form)*: the refused box is a 2px solid ink underline on paper, the
    terracotta dash gone, keeping the idle mark's bottom-only shape; it reads beside the
    terracotta placeholders and the prompt at 390.
+   *Settled in section 10 (the testimonials)*: the discs have no lit or idle state (both are
+   the same paper disc with a terracotta arrow, as on both twins); live, they carry a pointer
+   and read on the terracotta sheet at 1440 and 390, and the seats keep their colours after
+   paging.
 
 ## Notes for the designer
 
