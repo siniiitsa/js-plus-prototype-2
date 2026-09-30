@@ -253,7 +253,7 @@ Grunge twin's desktop id — each block's fit comment cites them); it is the gat
 | 4 | `gallery` | `964:73096` *(wrapper `964:73061`, head `964:73062`)* | 874 × 646 | `971:9593` *(wrapper `971:9558`, head `971:9559`)* | 768 × 594 | `977:13460` *(wrapper `977:13425`, head `977:13426`)* | 390 × 585.5 | **3** (discs **4**) | `964:72909` / `971:5597` / `977:9171` | `964:73004` / `971:8121` / `977:12348` | `if (s.lime \|\| s.grunge)` inside `Gallery`'s `if (s.v3)`, after `from` | **done** (`5066e4f`) |
 | 5 | `repertoire` | `964:73103` *(Section `964:73098`, panel `964:73099`)* | 1208 × **506** | `971:9600` *(Section `971:9595`, panel `971:9596`)* | 608 × **564** | `977:13467` *(Section `977:13462`, panel `977:13463`)* | 310 × **626** | **3** | `964:72916` / `971:5604` / `977:9178` | `964:73011` / `971:8128` / `977:12355` | `if (s.lime \|\| s.grunge)` inside `Repertoire`'s `if (s.v3)`, after `jump` | **done** (`8d94074`) |
 | 6 | `map` | `964:73110` *(Frame 319 `964:73104`, head `964:73105`)* | 1440 × 747 | `971:9608` *(Frame 319 `971:9602`, head `971:9603`)* | 768 × 870 | `977:13475` *(Frame 319 `977:13469`, head `977:13470`)* | 390 × 680 | 1 (viewport **3**) | `964:72924` / `971:5612` / `977:9186` | `964:73019` / `971:8136` / `977:12363` | `if (s.lime \|\| s.grunge)` inside `EventsMap`'s `if (s.v3)`, after `zoomScale` | **done** (`2b37973`) |
-| 7 | `pricing` | `964:73111` | 1440 × **532** | `971:9609` | 768 × **790** | `977:13476` | 390 × 829 | 1 | `964:72926` / `971:5613` / `977:9187` | `964:73021` / `971:8137` / `977:12364` | `if (s.lime \|\| s.grunge)` inside `Pricing`'s `if (s.v3)`, after `bleedX` | open |
+| 7 | `pricing` | `964:73111` | 1440 × **532** | `971:9609` | 768 × **790** | `977:13476` | 390 × 829 | 1 | `964:72926` / `971:5613` / `977:9187` | `964:73021` / `971:8137` / `977:12364` | `if (s.lime \|\| s.grunge)` inside `Pricing`'s `if (s.v3)`, after `bleedX` | **done** (`b649843`) |
 | 8 | `calendar` | `964:73124` + wizard `964:73123` *(Section `964:73112`, Frame 324 `964:73113`)* | 478 × 518 + 680 × 518 | `971:9622` + `971:9621` *(Section `971:9610`, Frame 324 `971:9611`)* | 608 × 493 + 608 × 473 | `977:13489` + `977:13488` *(Section `977:13477`, Frame 324 `977:13478`)* | 350 × 484 + 350 × 470 | 1 (Back pill **3**) | `964:72939` + `964:72938` / `971:5626` + `971:5625` / `977:9200` + `977:9199` | `964:73034` + `964:73033` / `971:8150` + `971:8149` / `977:12377` + `977:12376` | `if (s.lime \|\| s.grunge)` inside `Calendar`'s `if (s.v3)`, after `onNextTag` | open |
 | 9 | `form` | **`725:3049`** *(the main component — no page instance at 1440)* | 1440 × 809 | `971:9623` | 768 × 1044 | `977:13490` | 390 × 992 | 1 | `964:72940` / `971:5627` / `977:9201` | `725:2990` / `971:8151` / `977:12378` | `if (s.v3 && (s.lime \|\| s.grunge))` ahead of `EnquiryForm`'s `if (s.v3)` | open |
 | 10 | `testimonials` | `964:73125` | 1440 × 716 | `971:9624` | 768 × **628.4** | `977:13491` | 390 × 609.4 | **4** — a real sheet (cell 2 **1**) | `964:72941` / `971:5628` / `977:9202` | `964:73035` / `971:8152` / `977:12379` | `if (s.lime \|\| s.grunge)` inside `Testimonials`' `if (s.v3)`, after `padBot` | open |
@@ -864,6 +864,12 @@ bullets; name them.
   alone round its own outline before calling a set followed or redrawn. The map's three rings
   share one ink binding; two read on the plate and the outer one, at .3, does not. So the
   redraw is per node.
+- **A bottom-aligned row lifts its display glyph alone** (section 7). Layout 3's *a
+  baseline-aligned row lifts as one* is for a row the frame sets on `BASELINE`. Pricing's price
+  row is `MAX` (bottom) in the frame and `flex-end` in CSS, and its Inter "from" already sits
+  level with the frame's. So only the Noto numeral takes `top`. Read the row's
+  `counterAxisAlignItems` before choosing, and measure the numeral's floor against the Inter
+  neighbour's, frame and ours. The calendar's and the form's price rows are the next sites.
 
 ### Seen at planning time, per section
 
@@ -1617,6 +1623,109 @@ From the walks and the renders — impressions to confirm, not measurements.
     (.6) alone. Editorial's are paper at the frame's .6.
   - The designer note: the frame's ink 120 mi ring vanishes on the dark raster.
 
+### Settled in section 7 (pricing)
+
+- **No Editorial block: Lime's `if (s.lime || s.grunge)` inside `Pricing`'s `if (s.v3)`, after
+  `bleedX`, is `s.limeTree`**, with `const ed = s.editorial` and no `G`. There are five `ed`
+  sites: `featSeats`, `disp`, the rule, the chip ring and the column's floor, plus the numeral's
+  lift. Every Lime and Grunge arm is byte-identical. The branch has no state, so the published
+  pill needed nothing new.
+- **The paired diff against the Lime twin, by traversal order, was the whole read**: **61 = 61
+  nodes** at all three widths, with bindings and their collections.
+  - Sienna Vale's Scheme 1, no Device override, no effect.
+  - The 768 master stacks its three 1px `-div` frames in row order, as Grunge's does, where
+    Lime's pile after the rows. They are paper on paper.
+  - `get_variable_defs` on the three masters is `THEME_RAMP.Editorial` to the token: display-sm
+    45 / 36 / 30 (`s.dispSm` 37 / 36 / 30), label-sm 16 / 13 / 12, list 24 / 19 / 18, chip 12 /
+    11 / 11, label-xs 20 / 14 / 12, body-md 14 / 13 / 13, body-lg 16 / 15 / 15, eyebrow 15 / 12 /
+    11. So every `s.*` the Lime block reads is already right, and there is no `T` table.
+  - Every text is `sem/text/1` terracotta, `s.ac`, the twins' key.
+- **What moves:**
+  - **The rule is 1px dashed 10, 10** in `sem/stroke/2` terracotta (`s.stroke2`), INSIDE the
+    foot of every row but the last. The twins draw a 4px solid rule there. It is a `DashRule` at
+    `10 * z` on a `position: relative` row, in place of the inset shadow. The row bleeds through
+    `bleedX`, so the svg spans the section's full width, as the frame's rule spans 1440.
+  - **The feature pills are `s.onScheme[1].chips` by parity**: blush lettered ink, then
+    terracotta lettered paper. The frame binds `scheme/1/tag1–4`, and tag 3 is tag 1's blush,
+    tag 4 tag 2's terracotta. The frame letters its fourth seat ink through
+    `scheme/4/tag1/text`. That is the header's and the bio's leak (trap 7), named.
+  - **The tag chips' hairline is dropped** (open question 5's default, trap 7). It is Lime's
+    unbound `#F2FFD0` at 15%, invisible on paper. Grunge's `s.stroke1` arm was not inherited,
+    since under Scheme 1 it is opaque ink, a line the frame does not draw. The chips keep their
+    5 / 10 padding and `radius/pill`. They are 18.2 tall at desktop, the frame's 22 × 0.82.
+  - **The price column's floor is 218**, the width at which the frame hugs both rows. Fisterra's
+    "Star Enquiry" pill is the widest child. Lime's is 184 and Grunge's 177.
+  - **Every display string is uppercased at its site**: the name as the twins already do, and
+    the numeral through `disp`.
+- **The pill needed nothing.** The twins' `bg={s.tx} fg={s.bg} discFg={s.ac}` is, under Scheme
+  1, the frame's exactly: an ink `text/2` pill, lettered and disced in paper `sem/bg`, round a
+  terracotta `text/1` arrow. Trap 5 has no site here because the block never reads `pillBg`. It
+  is 196.1 × 44.3 / 204.4 × 54 / 198 × 54, against the frame's 218 × 0.82 = 178.8 / 189 / 184.
+  The label is our "Start Enquiry" against the frame's "Star Enquiry", in Noto.
+- **The numeral is lifted 0.07em, alone** (*Conventions*). The frame's price row is `MAX`
+  (bottom-aligned), not `BASELINE`, and so is ours (`flex-end`).
+  - The frame's floors, from `absoluteRenderBounds` against each text box: "£450" sits **0.180 /
+    0.174 / 0.180em** up its lh-1 box. The Inter "from" sits 5.82 / 5.83 / 5.83 up its own box.
+    So the numeral's floor stands 2.28 / 0.45 / −0.43 frame px (1.87 canvas px at desktop) above
+    "from"'s.
+  - Ours, off the font's metrics in the page (`measureText`, floor = `(lh − (A + D)) / 2 + D −
+    actualDescent`): Noto's numeral floor is 0.096 / 0.113 / 0.104em. So it sat 1.05 / 1.52 /
+    2.45 below "from"'s floor, 0.084 / 0.061 / 0.076em low.
+  - Inter's "from" measured level with the frame's (0.354 / 0.372em against 0.364 / 0.389
+    / 0.389, 'o' overshoot included). A row lift would have moved a glyph that sits right, so only
+    the numeral takes `position: relative; top: -0.07em`.
+  - Lifted, it stands 1.52 / 0.99 above and 0.35 below "from"'s floor, against the frame's 1.87
+    / 0.45 / −0.43. Every width is within 0.55px.
+  - A DPR-2 pixel scan of the lifted row (the lowest terracotta ink row under each span) reads
+    0.5 / 0.5 / −1.5 px, about one device pixel lower than the metrics at 1440 and 390. That is
+    the rounding section 6's scan showed at 768. The metrics settle it, and the lift stands.
+- **Measured** (harness, content edges; the frame × 0.82 in brackets at desktop):
+  - Desktop: name 37px at 45.9 · 39.4, 335.4 wide (409 × 0.82 at 39.4); chips 18.2 tall (18); the
+    rule `#C86E52` dashed `8.2 8.2`; price column at 938, 196.1 wide (956, 178.8), since the pill
+    is its widest child.
+  - 768: name 36px; chips 21 (21); the rule dashed `10 10`; pill 204.4 × 54 (189 × 54).
+  - 390: name 30px; chips 21; pill 198 × 54 (184 × 54).
+  - Rows 199.8 / 384.4 / 401.9 against the frame's 237 × 0.82 = 194.3 / 350 / 354. The sections
+    are 644.4 / 1276.1 / 1322.2.
+  - No sideways scroll at any width.
+- **A long name, re-measured in Noto** (*a twin's width-bound call*). A 17-letter word
+  ("Featherstonehaugh") sets 351.7 wide at 37px, against the 409 × 0.82 = 335.4 name box, so at
+  1440 alone it breaks inside the word (the twins' `overflowWrap: 'break-word'`). Lime (269.2 at
+  41px) and Grunge (238.7) hold it. At 768 (342.2 in 708) and 390 (285.2 in 370) it holds. Noto
+  sets about 20.7px a capital at 37, so anything up to 15 capitals holds at 1440. It is **named,
+  not fitted**: a package name is not `vm.title`, so a fit would need its own per-tier key
+  (layout 1's `vm.quotes[].wordEms` shape) for a word no seed comes near.
+- **`live=1`** at desktop and 390 (puppeteer, probe deleted):
+  - Every pill is `<a href="#form">`, and a span on the canvas.
+  - `n=0` prints *No packages yet.* in `s.tx` ink on paper, with no rule and no pill.
+  - `n=1` draws one row with no rule, and `n=8` draws seven dashed rules.
+  - No page errors. The section has no lit or refused state (open question 6 has no pricing
+    item).
+- **Builder** (`page-check.mjs Editorial 3`): four cards, no errors or warnings.
+  - All three Start Enquiry pills and the nav's Pricing link scroll to their ids. Overflow at
+    390 is 0 and the burger goes 1 → 11.
+  - The published pricing is 787 tall at 1440 and 1322 at 390.
+  - The seam clips show the map's dashed ticker onto pricing's paper, and pricing's foot onto the
+    calendar's paper, both straight.
+- **`FIELDS.pricing` has no template-keyed `in` row**, so no `reach.mjs` run was owed (the twins'
+  finding, re-checked).
+- **Named diffs**:
+  - the twins' seeded rows (a tag row on every row, four or five features), so the rows run
+    taller than the frame's;
+  - `tierKind` prints EVENT on every row;
+  - "Start Enquiry" against the frame's "Star Enquiry", and Noto's width, so the pill and the
+    price column are wider;
+  - the fourth feature seat lettered paper where the frame's leak letters it ink;
+  - the frame's "£450" renders "£ ✱50" in the demo face; ours prints £450 in Noto;
+  - a 16-letter-plus name breaks inside the word at 1440.
+- **Digest**: themes 0, 1, 2 and 4 at zero files, canvas and `live=1`. Theme 3 moved exactly
+  `pricing_arch_3` at three widths on both surfaces, six files. No `_arch_7_` file exists, since
+  `digest.mjs` caps pricing at 4.
+- **For the sweep**: `notes/pricing.md`'s *Layout 4 filters nothing at all* paragraph names the
+  rule under Lime (`s.ac`) and Grunge (`s.stroke2`, 4px inset) and the feature seats under Lime.
+  It owes Editorial's 1px dashed `s.stroke2` `DashRule` and its `s.onScheme[1].chips` seats.
+  CLAUDE.md carries no pricing layout-4 sentence now (the notes split).
+
 ### Inherited and used
 
 *(Each session appends the bullets it leaned on, one line each: the bullet's title, where it lives,
@@ -1754,6 +1863,26 @@ and what this section did with it.)*
   390 numeral's 23, a literal.
 - Map: *The whole-page published check is one puppeteer script* (lime/layout-1, *Learned on the
   end-of-pass sweep*) — `page-check.mjs Editorial 3`, the map's controls and its two seams.
+- Pricing: *Where the seam lives inside the branch, the block goes after the seam*
+  (lime/layout-1, *Settled in section 4*) — widened in place after `bleedX`.
+- Pricing: *A widened block can need no `G` at all* (grunge/layout-3, *Settled in section 9*) —
+  five `ed` sites and a lift.
+- Pricing: *The paired diff walk* (grunge/layout-2, *Settled in section 8*) — 61 = 61 against
+  Lime's, by traversal order, at all three widths; the whole read.
+- Pricing: *Leaked tops are followed where they show, dropped where they don't* (lime/layout-1,
+  *Settled in section 4*) — the tag chips' `#F2FFD0` hairline, dropped (open question 5).
+- Pricing: *A node can name another scheme's variable outright* (editorial/layout-3,
+  *Conventions*) — the feature pills on `s.onScheme[1].chips`.
+- Pricing: *A dashed rule is `DashRule`* (editorial/layout-1, *Conventions*) — the row rule, in
+  place of the 4px inset shadow.
+- Pricing: *A stand-in face's glyph floor is measured per site* (editorial/layout-3,
+  *Conventions*; this plan, section 6) — the numeral, 0.07em, off the font's metrics against
+  `absoluteRenderBounds`, and lifted alone on a `MAX` row.
+- Pricing: *A twin's width-bound call is re-measured in the new face before it is inherited*
+  (editorial/layout-2, *Conventions*) — the name's 409 box, a 17-letter word breaking at 1440,
+  named.
+- Pricing: *The whole-page published check is one puppeteer script* (lime/layout-1, *Learned on
+  the end-of-pass sweep*) — `page-check.mjs Editorial 3`, the three pills and two seams.
 
 ## Open questions
 
@@ -1777,7 +1906,7 @@ and what this section did with it.)*
    dot in another key.
 5. **The pricing tag chips' hairline** is Lime's unbound `#F2FFD0` at 15%, invisible on paper.
    Default: drop it where it does not show (CONVENTIONS A); the alternative, an ink `s.stroke1`
-   ring, draws a line the frame does not.
+   ring, draws a line the frame does not. *Settled in section 7*: dropped, the default.
 6. **Terracotta on terracotta and ink on ink, live.** The likely states: the repertoire rail's lit
    terracotta cell on the ink panel, the gallery's 8px active ring on the ink band, the
    testimonials' paper discs on the terracotta sheet, and the refused boxes of the wizard (on its
