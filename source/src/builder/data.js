@@ -768,6 +768,24 @@ export const TIERS = [
 // FORM_FIELDS_4's gate, in sectionVm and tiersVal alike; once the artist
 // edits the list it is theirs at every layout.
 export const TIERS_3 = TIERS.map((t, i) => ({ ...t, tags: ['Duo', 'Duo, Trio, Band', 'Trio, Band'][i] }))
+// Layout 1's packages under Lime, Grunge and Editorial (JP-089, user call,
+// 2026-09-30, reversing Lime layout 1's named diff): their frames' chips read
+// Private Event / Club Night / Festival (964:58594, 964:58606, 964:58618)
+// where Retro's read Solo / Trio / Band. The frames print no tags on a card,
+// so each package takes one, in the frame's order, and the All chip stays.
+// TIERS_3's shape otherwise: the tags alone move, and tiersSeed() below is
+// the one expression sectionVm and tiersVal both call.
+export const TIERS_1 = TIERS.map((t, i) => ({ ...t, tags: ['Private Event', 'Club Night', 'Festival'][i] }))
+// The templates whose pages are Lime's component trees — sectionVm's
+// `limeTree` flag, for the seeds that follow the frame rather than the layout.
+export const limeTreeTheme = (themeName) =>
+  themeName === 'Lime' || themeName === 'Grunge' || themeName === 'Editorial'
+// The packages an absent `tiers` key stands for, by template and design (`d`,
+// `arch % designCount`): layout 3's frames' Duo on every template (JP-070),
+// layout 1's frames' three occasions under Lime, Grunge and Editorial
+// (JP-089), and TIERS everywhere else.
+export const tiersSeed = (themeName, d) =>
+  d === 2 ? TIERS_3 : d === 0 && limeTreeTheme(themeName) ? TIERS_1 : TIERS
 
 // Every key a package row carries — what `blankRow()` asks of it. A row is
 // blank only when all five are, whichever of them a layout prints. The
@@ -1218,6 +1236,19 @@ export const TESTI_HEADING_4 = 'Client success stories'
 export const FORM_HEADING_4 = 'Contact Us'
 export const FORM_BTN_4 = 'Check Availability'
 export const FORM_SUB_4 = 'Enquire'
+// Layout 1's frames under Lime, Grunge and Editorial (JP-089, user call,
+// 2026-09-30, reversing Lime layout 1's named diffs): the calendar's head
+// reads *Book Now* (964:58619) and the form's submit *Enquire* (964:58620).
+// Retro's layout-1 form reads *Book Now* (964:58584) and its calendar prints
+// no head, so both are gated on the template as well as the layout, in
+// sectionVm and EditPanel's chain alike. Uncased: `cased()` sets them.
+export const CAL_HEADING_1 = 'Book Now'
+export const FORM_BTN_1 = 'Enquire'
+// The submit's label an absent `button` key stands for (FORM_BTN_4's shape,
+// JP-054, with JP-089's template gate): the one expression sectionVm and
+// EditPanel both call.
+export const formBtnSeed = (themeName, d) =>
+  d === 3 ? FORM_BTN_4 : d === 0 && limeTreeTheme(themeName) ? FORM_BTN_1 : 'Book Now'
 // The address every enquiry is mailed to, as the enquiry form seeds it. Named
 // because two sections resolve it (JP-053): the form's own sectionVm, and the
 // booking calendar's layout-4 wizard through pageEmail() below.
@@ -1604,7 +1635,8 @@ export const FIELDS = {
     { k: 'tiers',   l: 'Packages', type: 'tiers', max: 6,
       hint: 'Tags become the filter chips above the packages in layouts 1 and 3 — separate '
           + 'them with commas. Layout 3 starts the packages tagged Duo where the other layouts '
-          + 'have Solo; once you edit the list, it is the same at every layout. Features are one '
+          + 'have Solo, and layout 1 in Lime, Grunge and Editorial starts them on Private Event, '
+          + 'Club Night and Festival; once you edit the list, it is the same at every layout. Features are one '
           + 'to a line. Layout 2 shows one package at a '
           + 'time and names them in its own chip row, so it reads no tags. Layout 4 has no '
           + 'filter: it prints the tags and the features on the package itself. In layouts 1, 2 '
@@ -1889,7 +1921,7 @@ export const FIELDS = {
     { k: 'email',    l: 'Email address', type: 'email', d: FORM_EMAIL,
       hint: 'Enquiries are mailed here: the button opens the visitor’s mail app with the form filled in, and so does the Booking Calendar’s layout-4 Send Enquiry, until the calendar has an address of its own. Empty leaves the button a picture. An address that isn’t valid also leaves the button a picture.' },
     { k: 'button',   l: 'Button', d: 'Book Now', in: [0, 3],
-      hint: 'Layouts 1 and 4. Layout 4 starts from “Check Availability”.' },
+      hint: 'Layouts 1 and 4. Layout 4 starts from “Check Availability”, and layout 1 from “Enquire” in Lime, Grunge and Editorial.' },
     // Layouts 2 and 3's card — the same component in both frames. Every one is
     // emptiable and drops what it fills, except the button: it is the submit,
     // so an emptied label falls back to `button`.
@@ -1987,8 +2019,9 @@ export const headerIdentity = (sections) => {
 // exactly as pricing's own sectionVm resolves `tierList` — an absent key is
 // the seeded TIERS, blank rows are dropped — and `[]` with no pricing section
 // on the page, which is the card's not-drawn state. Raw: the calendar cases.
-// At pricing layout 3 an absent key is TIERS_3 instead (JP-070), which differs
-// in tags alone, and the card reads no tags, so TIERS serves here whatever the
+// At pricing layout 3 an absent key is TIERS_3 instead (JP-070), and at
+// Lime's, Grunge's and Editorial's layout 1 TIERS_1 (JP-089); both differ in
+// tags alone, and the card reads no tags, so TIERS serves here whatever the
 // pricing section's layout.
 export const pageTiers = (sections) => {
   const p = sections.find((s) => s.cat === 'pricing')

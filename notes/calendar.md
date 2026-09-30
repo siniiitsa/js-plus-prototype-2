@@ -148,3 +148,10 @@ another `notes/` file.
   rows under the white card (ringed 1px in `s.stroke2`) on a `#0E0E0E` `s.box3` panel.
   Editorial's is Lime's stack on Lime's keys: `#FFF9F2` `s.box1` rows dashed in terracotta under
   the ink card on the `#EDE6DC` `s.box2` panel, every one square.
+- **Layout 1's head is the frame's under Lime, Grunge and Editorial** (JP-089, user call,
+  2026-09-30, reversing Lime layout 1's "AVAILABILITY where the frame types BOOK NOW"). Their
+  `s.limeTree` block prints `s.title` over the month. With `heading` absent at `d === 0`,
+  `sectionVm` sets it to `CAL_HEADING_1`, "Book Now", beside the `HEADING_3` / `HEADING_4`
+  arms, and `EditPanel`'s chain has the same arm. Retro's layout 1 prints no head, so it
+  keeps `TITLES.calendar`, "Availability", which also stays the seed at layout 2. An emptied
+  heading behaves as before.

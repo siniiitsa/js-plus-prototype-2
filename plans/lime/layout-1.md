@@ -975,6 +975,11 @@ Settled in section 7 (pricing):
   `live=1` at desktop and 390: every chip filters, the lit chip reads `#0D1F03` on lime, cursors are
   live-gated, the pills are `<a href="#form">`. `n=0` prints *No packages yet.*; the empty grid still
   spends its two gaps, as Retro's does.
+- *(Added 2026-09-30, JP-089.)* The chips' **copy** was never settled here: the row kept Retro's
+  seeds' *Solo / Trio / Band* where the frame draws *Private Event / Club Night / Festival* (item 8
+  above names them only for casing). Reversed by user call: under Lime, Grunge and Editorial an
+  absent `tiers` key at layout 1 is `TIERS_1`, one occasion per package in the frame's order, behind
+  the `All` chip, through `tiersSeed()` — see `../editorial/qa-fixes.md`.
 
 Settled in section 8 (the booking calendar):
 
@@ -1012,7 +1017,8 @@ Settled in section 8 (the booking calendar):
   the grid. No seal — which closes section 2's "the calendar a0 seal's placement is its session's".
 - **The heading is `s.title`**, so `FIELDS.calendar.heading` now reaches layout 1 under Lime (it
   reaches Retro's layout 1 nowhere). The seed prints AVAILABILITY where the frame types BOOK NOW,
-  `TITLES.calendar`'s precedent.
+  `TITLES.calendar`'s precedent. *(Reversed 2026-09-30, JP-089, user call: under Lime, Grunge and
+  Editorial layout 1 now seeds `CAL_HEADING_1` "Book Now" — see `../editorial/qa-fixes.md`.)*
 - **The foot keeps Retro's BookPill** (its one deliberate addition), in `BookPill`'s Lime defaults. It
   makes the foot 110 / 134 / 149 where the frames' are 83 / 100 / 100; at 390 it wraps under the line.
 - **Measured against the masters' content edges**: desktop head 59 at 19.7 over the panel, grid half
@@ -1070,7 +1076,9 @@ Settled in section 9 (the enquiry form):
   closes it to 10), and the message box is 134 at every width (Retro's 390 is 100). The arcs: the foot
   seam passes `s.box1`, the plan's one non-default. **The 768 vectors are 768 wide here, not the leaked
   1438** that section 3 predicted for the map and the form; the 390 ones are 384.
-- **Named diffs.** The frame types *Enquire* where `vm.formBtn` seeds *Book Now*. The context half is
+- **Named diffs.** The frame types *Enquire* where `vm.formBtn` seeds *Book Now* *(reversed
+  2026-09-30, JP-089, user call: under Lime, Grunge and Editorial layout 1 now seeds `FORM_BTN_1`
+  "Enquire", `formBtnSeed()` — see `../editorial/qa-fixes.md`)*. The context half is
   the frame's fixed 420 × 0.82 beside a form half taking the rest of our 1052, so the form half is 707.6
   where the frame's is 744.6 and its boxes are 316 against 334.6. At 390 our 306 measure (the frame's
   is 330) wraps *Other* onto a second chip row, 34.8 of height the frame does not have.

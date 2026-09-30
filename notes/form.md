@@ -117,7 +117,11 @@ another `notes/` file.
   `FORM_HEADING_4` "Contact Us" joins `HEADING_4`, `sub` defaults to `FORM_SUB_4` "Enquire"
   (the line printed `s.brand` until then), and `button` falls back to `FORM_BTN_4` "Check
   Availability" at this layout and "Book Now" at the others — each resolved in `sectionVm`
-  **and** in `EditPanel`'s fallback chain. **So do its boxes** (JP-054 again, user call,
+  **and** in `EditPanel`'s fallback chain. *(Since JP-089, user call, 2026-09-30: layout 1 under
+  Lime, Grunge and Editorial falls back to `FORM_BTN_1` "Enquire", their frames' submit, where
+  Retro's frame reads Book Now. `formBtnSeed(themeName, d)` in `data.js` is the one expression
+  both callers use. Layouts 2 and 3's `formCta` falls back to `button` only when its own `cta` is
+  emptied, and `d` is 1 or 2 there, so it still reads Book Now.)* **So do its boxes** (JP-054 again, user call,
   2026-09-24, reversing the 2026-09-23 "the boxes stay the artist's one list"): with `fields`
   absent, layout 4 seeds `FORM_FIELDS_4`, the frame's five — Your name, Email, Event date,
   Event type, Location over its own placeholders, one `email` row so the guard holds, and the

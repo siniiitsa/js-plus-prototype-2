@@ -1498,7 +1498,8 @@ four ink ones are its own register.
   A rule under a square box does not smear, so no ring. The brief's "must read on ink": the boxes
   stand on the terracotta half, not the ink, and it reads there.
 - **Named diffs**: the frame's submit types *Enquire* where `vm.formBtn` seeds *Book Now* (the
-  twins' diff, a third time); the root's vertical insets are the inherited diff (80 / 56 / 44
+  twins' diff, a third time; *reversed 2026-09-30, JP-089: layout 1 now seeds `FORM_BTN_1`
+  "Enquire", see `qa-fixes.md`*); the root's vertical insets are the inherited diff (80 / 56 / 44
   against the masters' 120, 30 over 60, 24 over 40), with no seam to justify Grunge's `G.pad`, so
   the shell stands 18.4 higher on the desktop canvas than the frame's × 0.82.
 - **Measured** (harness, against the section root): desktop shell 1088.2 × 532.7 (1328 / 651 ×

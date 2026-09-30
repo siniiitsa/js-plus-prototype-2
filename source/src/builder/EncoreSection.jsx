@@ -15118,8 +15118,8 @@ function Calendar({ s }) {
       return (
         <div style={col(u(24))}>
           {/* Display/MD at lh 1, held to the frame's 640 on desktop (Editorial's
-              FIXED 578.4, at 768 too). The frame types BOOK NOW; the seed's
-              heading stays `TITLES.calendar`. */}
+              FIXED 578.4, at 768 too). The frame types BOOK NOW, and so does
+              the seed, `CAL_HEADING_1` (JP-089, reversing `TITLES.calendar`). */}
           <h2 style={distressed(s, disp(s.dispMd, {
             margin: 0, color: s.ac, maxWidth: G.headW ?? (s.narrow ? '100%' : u(640)),
           }))}>{s.title}</h2>
@@ -23153,8 +23153,9 @@ function EnquiryForm({ s }) {
   // Desktop is the frame × 0.82; the 768 and 390 masters are verbatim, both in
   // their page's Device mode, so every type size is the Lime ramp's `s.*`.
   //
-  // Named diffs: the frame's submit types *Enquire*, where `vm.formBtn` seeds
-  // *Book Now*; and the context half is the frame's fixed 420 × 0.82 beside a
+  // The frame's submit types *Enquire*, and so does `vm.formBtn`'s seed here
+  // (`FORM_BTN_1`, JP-089, reversing the named diff). Named diff: the
+  // context half is the frame's fixed 420 × 0.82 beside a
   // form half that takes the rest of our 1052 content width, so the form half
   // is 707.6 where the frame's is 908 × 0.82 = 744.6.
   if (s.v0 && s.limeTree) {

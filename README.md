@@ -337,7 +337,8 @@ That distinction is the whole design, and it buys two things:
   seed. The packages are the artist's list now (`FIELDS.pricing.tiers`, a `TiersField` repeater of
   `{ name, price, tags, blurb, feats }`), and the selector is **derived from the tags they type**,
   by the same `repChips()` the repertoire's chips come from: the three seeds carry Solo, Solo /
-  Trio / Band and Trio / Band, so the reference row is redrawn out of content, behind the `All`
+  Trio / Band and Trio / Band (Duo for Solo at layout 3, and one each of Private Event / Club Night
+  / Festival at Lime's, Grunge's and Editorial's layout 1, `tiersSeed()`), so the reference row is redrawn out of content, behind the `All`
   chip that clears the filter. That extra chip is the intended diff from the Figma frame, the way
   the events map losing its pager was; the row is not drawn at all when the packages carry no
   tags, since a filter with nothing to filter is the pager's case again. The cards key on the

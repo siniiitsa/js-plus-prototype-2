@@ -942,7 +942,9 @@ Append as the pass goes. Do not repeat Lime's or Retro's bullets; name them.
   map's story. Seams off the renders (PIL black-run maxima), head · foot: **40 · 90** at 1440
   (× 0.82), **60 · 16** at 768, **40 · 38** at 390 — node arithmetic agrees at 1440 and 768 (the 768
   foot vector sits at x −328 and shows 16.5), and at 390 the render wins again.
-- **Named diff, Lime's**: the frame's submit types *Enquire* where `vm.formBtn` seeds *Book Now*; and
+- **Named diff, Lime's**: the frame's submit types *Enquire* where `vm.formBtn` seeds *Book Now*
+  *(reversed 2026-09-30, JP-089: layout 1 now seeds `FORM_BTN_1` "Enquire" here, see
+  `../editorial/qa-fixes.md`)*; and
   the form half is 707.6 against the frame's 744.6 beside the fixed 420 × 0.82 context half.
 - **`FIELDS.form` has no Lime-keyed `in` row**, so nothing was owed.
 - **Measured against the masters**: desktop root 791.5 (965 × 0.82 = 791.3), shell 512.7 (512.5),

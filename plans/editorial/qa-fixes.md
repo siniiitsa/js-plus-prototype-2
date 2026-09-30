@@ -93,7 +93,7 @@ default list is `0,2,3,4`, which **skips Lime**, so always pass the list explici
 | Order | ID | Report (short) | Verdict | Size | Decision | Status |
 |---|---|---|---|---|---|---|
 | 1 | JP-085 | Heads in Noto Serif Display, not Fisterra Fora | **By design so far**: the named stand-in (layout-1.md decision 1, user call, 2026-09-24). The licence question is the PO's | — (decision) | **user: A, a reply; the licence with the PO** | **done** (no code; the facts in `layout-1.md` open question 1) |
-| 2 | JP-089 | Three layout-1 seeds differ from the frame | **Confirmed, and recorded**: Lime layout 1 named all three as diffs; Grunge and Editorial inherited them | S | **yes** (scope, pricing tags) | open |
+| 2 | JP-089 | Three layout-1 seeds differ from the frame | **Confirmed, and recorded**: Lime layout 1 named all three as diffs; Grunge and Editorial inherited them | S | **user: 1A, 2A** | **done** |
 | 3 | JP-090 | Four literals no field reaches; the map's Kicker says "Not shown" | **Confirmed**: JP-071's rule, four more sites | S–M | **yes** (small) | open |
 | 4 | JP-088 | Calendar layout 1's *Check a date* pill | **Confirmed, and recorded**: Retro's deliberate addition, kept by Lime's fit | S | **yes** | open |
 | 5 | JP-086 | 390 hero name clipped | **Confirmed**: Editorial's 390 title is a flat 107px, the only width it is not fitted | S | no | open |
@@ -322,7 +322,82 @@ whatever reads `vm.formCta` prints *Enquire* under the three templates.
 **Docs.** `notes/pricing.md` (the per-layout tag seeds), `notes/calendar.md` and `notes/form.md` if
 they name the seeds; a *reversed* pointer on the three named diffs in `../lime/layout-1.md`.
 
-**Settled.** —
+**Decided** (2026-09-30, user call): **1A, 2A.** Lime, Grunge and Editorial at layout 1, and one tag
+per package in the frame's order behind the `All` chip. Asked over what the session read first:
+- **Pricing.** `964:58618` and its twins `964:58594` (Lime) and `964:58606` (Grunge) draw
+  *Private Event / Club Night / Festival* with **no tag row on the cards** and no `All`. Club Night
+  is lit over the second card.
+- **Form.** Retro's layout-1 form (`964:58584`) reads **Book Now**, so the form seed takes a
+  template gate. Editorial's (`964:58620`) reads *Enquire*.
+- **Calendar.** Editorial's (`964:58619`) head reads *Book Now*.
+- **Reproduced on HEAD** (`69e5c3b`). Editorial card 1, published and opened, prints *AVAILABILITY*,
+  *All Solo Trio Band* and a *Book Now* submit at 1440, 768 and 390. The panel shows *Availability*,
+  *Book Now* and *Solo / Solo, Trio, Band / Trio, Band*, and Retro's card 1 the same. The harness
+  agrees under themes 1–3, canvas and `live=1`.
+- **The harness was proven first.** A HEAD worktree on :5174 against the tree diffed to 0 of 180,
+  on both surfaces.
+- **Expected after-diff.** Calendar, form and pricing `arch 0` × themes 1–3 × three widths = 27
+  files a surface, 54 in all, and nothing else under themes 0–4.
+
+**Settled** (2026-09-30). Every *Evidence* line held at `69e5c3b`.
+- **Code.**
+  - `data.js` adds `TIERS_1` beside `TIERS_3`: `TIERS` with the tags *Private Event*, *Club Night*
+    and *Festival*, and nothing else.
+  - It adds `CAL_HEADING_1` "Book Now" and `FORM_BTN_1` "Enquire" beside `FORM_BTN_4`, and three
+    functions:
+    - `limeTreeTheme(name)`, `sectionVm`'s `limeTree` test by name;
+    - `tiersSeed(themeName, d)`;
+    - `formBtnSeed(themeName, d)`.
+  - **All three seeds are template-gated, the calendar's included.** The Decision said the
+    heading needed no gate, since Retro's layout 1 never prints it. Without one, though, Retro's
+    panel would show *Book Now* under "Not shown in this layout", and *Verify* wants Retro's
+    card 1 on the old values.
+  - `sectionVm`'s `tierList` and `EditPanel`'s `tiersVal` both call `tiersSeed()`, and `vm.formBtn`
+    and the chain's `button` arm both call `formBtnSeed()`. So each pair resolves one expression
+    by construction rather than by mirroring. The calendar is one arm on each side, after the
+    `HEADING_4` arm: `d === 0 && vm.limeTree` in `sectionVm`, and `design === 0 &&
+    limeTreeTheme(themeName)` in the chain.
+  - `EncoreBuilder.jsx` no longer imports `TIERS`, `TIERS_3` or `FORM_BTN_4`.
+  - The *Button* and *Packages* hints name the layout-1 seeds.
+  - **Pricing arch 4 folds onto `d === 0`, so it takes `TIERS_1` too.** That is correct, and it
+    is not in the digest's four layouts.
+- **Digest.** The tree against the HEAD worktree on :5174, **every category**, themes 0–4, three
+  widths, canvas and `live=1`, port and photo stamps normalised. **Exactly the 54 named files
+  differ** (27 of 660 a surface): calendar, form and pricing `arch 0` × themes 1–3 × three widths.
+  - Only text rows and the chips' widths moved. No row count changed.
+  - The chip row stays one line at every width: 390 ends inside its canvas, 768 ends at 654, and
+    the desktop row stays right-aligned, its last chip ending at 1194 as before.
+  - The calendar head's text changed and nothing wrapped.
+  - Retro, Pop, calendar layout 4's *Package ›* (`pageTiers()`, name and price) and every other
+    section: 0.
+- **Verify.**
+  - **The real app** (a scratch puppeteer script, deleted). Lime's, Grunge's and Editorial's
+    card 1, published and opened, print *Book Now* over the month, *Enquire* on the submit and
+    *All · Private Event · Club Night · Festival* at 1440, 768 and 390.
+  - **The published chip filter works** under all three: *All* shows the three packages, and
+    each tag shows its one.
+  - **The edit panel** shows *Book Now*, *Enquire* and the three tags on card 1. Retro's card 1
+    shows *Availability*, *Book Now* and *Solo / Solo, Trio, Band / Trio, Band*, and publishes
+    exactly as before.
+  - **`&cj=` against HEAD, 0 of 60 on both surfaces, themes 0–4, every layout of the section:**
+    - an emptied `heading` (calendar);
+    - an emptied `button` with `cta` emptied as well (form);
+    - an edited two-package `tiers` list (pricing). The artist's list is theirs at every layout.
+- **The entry's `formCta` Verify line cannot hold, and was not made to.** `vm.formCta` is read at
+  layouts 2 and 3 alone (`FIELDS.form.cta` `in: [1, 2]`). With `cta` emptied it falls back to
+  `vm.formBtn` at `d` 1 or 2, which stays *Book Now*, as the `&cj=` digest shows. Layout 1's
+  `button` is the only seed JP-089 moves.
+- **Docs.**
+  - **Reversed pointers**:
+    - Lime `layout-1.md`'s section 8 calendar bullet and section 9 *Named diffs*;
+    - a new section 7 bullet, since Lime's pricing *Settled* never recorded the chip copy. Its
+      item 8, the `:245` the entry cites, named the chips only for casing;
+    - Grunge `layout-1.md`'s and Editorial `layout-1.md`'s repeats of the form diff;
+    - the two `EncoreSection` comments, the calendar head's and the form block's.
+  - **Rewritten**: `notes/pricing.md`'s per-layout tag seeds and `notes/form.md`'s
+    "Book Now at the others". There is a new `notes/calendar.md` bullet and a README clause on the
+    pricing seeds.
+  - `CLAUDE.md` states none of the three seeds, so it is unchanged.
 
 ---
 
