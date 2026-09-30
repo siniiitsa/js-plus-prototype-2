@@ -437,11 +437,12 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // Sienna Vale, so what only Editorial draws goes behind this flag, the way
     // Lime's and Grunge's does.
     editorial: T.name === 'Editorial',
-    // The templates whose layout-1 page is Lime's component tree, so a Lime
-    // layout-1 block that Editorial's frame shares is gated on this rather than
-    // on a third name at every site. Widened per site, from the frame, as each
-    // block is fitted (plans/editorial/layout-1.md, decision 2); a block
-    // Editorial does not share keeps `(s.lime || s.grunge)`.
+    // The templates whose pages are Lime's component trees, so a Lime block
+    // that Editorial's frame shares is gated on this rather than on a third
+    // name at every site. Widened per site, from the frame, as each block was
+    // fitted (plans/editorial/layout-1.md, decision 2) — every Lime block at
+    // all four layouts now; a site Editorial does not share keeps
+    // `(s.lime || s.grunge)`, and one is left (layout 2's gallery caption).
     limeTree: T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial',
     // Lime layout 3's footer (964:68684 · 984:10769 · 984:10800) stands on
     // Scheme 2's `sem/bg`, the olive `box1`, where layout 1's is the page

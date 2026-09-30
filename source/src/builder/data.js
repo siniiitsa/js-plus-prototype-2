@@ -240,8 +240,9 @@ export const THEMES = [
     // chip there is an outline only.
     schemes: {
       // Scheme 2, taupe — layout 1's media player and pricing, layout 2's
-      // media panel and calendar card, and layout 3's gallery and footer (and,
-      // nested, its audio card and middle repertoire set).
+      // media panel and calendar card, layout 3's gallery and footer (and,
+      // nested, its audio card and middle repertoire set), and layout 4's
+      // media band.
       2: {
         palette: ['#AA958A', '#F6F0E8', '#141414'],
         // tag1 blush, tag2 paper, both inked black — read off the file; the
@@ -256,10 +257,11 @@ export const THEMES = [
         },
       },
       // Scheme 3, ink — layout 1's header, repertoire, enquiry form and
-      // footer, layout 2's pricing at 1440, and layout 3's header (its frame's
-      // Scheme 8; SCHEMES_OF) — and, nested at layout 3, the third repertoire
-      // set, pricing's featured row, the map's panel and the testimonials'
-      // ink cells.
+      // footer, layout 2's pricing at 1440, layout 3's header (its frame's
+      // Scheme 8; SCHEMES_OF) and layout 4's header, bio, gallery and
+      // repertoire — and, nested at layout 3, the third repertoire set,
+      // pricing's featured row, the map's panel and the testimonials' ink
+      // cells, and at layout 4 the map's viewport and the calendar's Back pill.
       3: {
         palette: ['#141414', '#C86E52', '#F6F0E8'],
         tags: ['#F6F0E8', '#C86E52'],
@@ -272,8 +274,9 @@ export const THEMES = [
         },
       },
       // Scheme 4, terracotta — layout 2's repertoire at 1440 and its enquiry
-      // form, and layout 3's map (and, nested, its first repertoire set and
-      // the testimonials' terracotta cell). Its accent is paper and its active pair ink under terracotta, so
+      // form, layout 3's map (and, nested, its first repertoire set and the
+      // testimonials' terracotta cell), and layout 4's testimonials (and,
+      // nested, the header's seal and the gallery's arrow discs). Its accent is paper and its active pair ink under terracotta, so
       // `pillBg` is ink here. tag1 ink, tag2 salmon — read off the file; layout
       // 1's plan had the two seats the other way round.
       4: {
@@ -546,10 +549,9 @@ export const NVAR = {
 // pages confirmed in the Figma file and all four fitted — Stacked last, in
 // HeaderV3's widened Lime block — so its family is closed too. Editorial is
 // the same four in a fourth mode (Sienna Vale), its four pages found in the
-// file (plans/editorial/layout-1.md, *The Figma source*); Hero, Feature
-// spread and Inset Hero are fitted, in HeaderV0's, HeaderV1's and HeaderV2's
-// Lime blocks widened, and Stacked renders Retro's composition in its tokens
-// until its own pass.
+// file (plans/editorial/layout-1.md, *The Figma source*) and all four fitted
+// in HeaderV0's–HeaderV3's Lime blocks widened — Stacked last — so its family
+// is closed as well.
 // Pop offers three flat layouts (§10.3); its designs do not exist yet.
 export const headerFamily = (themeName) =>
   themeName === 'Retro' ? 'photographic' : themeName === 'Lime' ? 'lime'
@@ -692,7 +694,7 @@ export const NOW_PLAYING = { at: '02:28', of: '04:22', pct: 34 }
 // seeded with TAG_LABELS and zipped onto these seats by index, wrapping
 // (`vm.tagChips`). Six, as the frames draw them: the header at layouts 1, 3
 // and 4 and the Genres rows of Lime's and Grunge's layout-3 and layout-4 bios
-// and Editorial's layout-3 one (JP-081, user call, 2026-09-29, reopening
+// and Editorial's layout-3 and layout-4 ones (JP-081, user call, 2026-09-29, reopening
 // JP-037's five, which had been read off the Lime layout-2 bio). Retro's
 // layout-4 header and Lime's layout-2 bio draw five, and seed the sixth anyway.
 export const TAGS = ['Default', 'Sold Out', 'New Release', 'Archive', 'Live', 'All Access']
@@ -1403,9 +1405,8 @@ export const FIELDS = {
   //
   // The header's `in` is always an object naming Retro, Lime, Grunge and
   // Editorial alone: they have different header families (six designs against
-  // four, four and four — Grunge's row is measured over its four fitted cards,
-  // none a placeholder since its layout-4 pass; Editorial's over three fitted
-  // cards and one placeholder, so its layout-4 pass re-measures that card),
+  // four, four and four — Grunge's row and Editorial's are each measured over
+  // four fitted cards, none a placeholder since each template's layout-4 pass),
   // and Pop has a family of its own that is not designed, so it is left
   // unmarked rather than folded onto any list.
   header: [

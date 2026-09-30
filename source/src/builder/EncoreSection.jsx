@@ -5472,9 +5472,9 @@ function Bio({ s }) {
             it outside the header. At .75 a stacked line of caps collides in
             every display face taller than Fraunces (Titan One and Bebas Neue
             both overlap outright), so every template but Retro degrades to
-            .89 — the flat two, since the Lime block above takes its
-            frames' .75 (Bebas Neue, and Anton under Grunge, which widens
-            it) — which is the leading every other
+            .89 — Pop alone now, since the Lime block above takes its
+            frames' own leading (Bebas Neue, and Anton under Grunge and Noto
+            under Editorial, which widen it) — which is the leading every other
             display head in this file already sets — the page's own ramp
             rather than an invented number. */}
         <h2 style={{
@@ -16832,8 +16832,8 @@ function Calendar({ s }) {
     // flattens**: `box1` rows under a `tx` card on a `box2` panel, where the
     // Retro path's `paper` rows and `tx` card are one colour on Lime.
     // So the flat body's shared card-and-row fill (CLAUDE.md's calendar
-    // paragraph) is no template's: Grunge's own frame restores the same stack
-    // (below). The card's own `stroke/1` (pale at
+    // paragraph) is no template's: Grunge's own frame restores the same stack,
+    // and so does Editorial's (below). The card's own `stroke/1` (pale at
     // .15 on pale) is not drawn, Retro's reading of the same stroke; no child
     // reaches a card's edge, so the rings are plain inset shadows. The Back
     // pill nests **Scheme 3** — `sem/text/1` there is `#15180F` = `s.bg`, its
@@ -18781,8 +18781,8 @@ function EventsMap({ s }) {
     // base, which is what the frame's rings are drawn around. The frame's
     // 30/60/120mi ring labels are `rings`, the artist's own numbers (JP-040;
     // the fit had declined them as fabricated). Its zoom controls stay gone
-    // under Retro and the flat two; the Lime block above draws them, under
-    // Grunge too.
+    // under Retro and Pop; the Lime block above draws them, under Grunge and
+    // Editorial too.
     // The three coverage rings as a share of the viewport's width, outer first.
     const ringW = desk ? [81.6, 51, 23.8] : tab ? [150.9, 94.3, 44] : [138.7, 86.7, 40.5]
     const pins = shown.map((gg, i) => {
@@ -22829,6 +22829,26 @@ function Testimonials({ s }) {
           </div>
         )]
 
+      // The head. Under Editorial it stands in its own `inline-size`
+      // container, which takes the row's fill in its place.
+      const h2 = (
+        <h2 style={distressed(s, {
+          margin: 0, ...(ed ? {} : { flex: '1 1 0', minWidth: 0 }),
+          fontFamily: s.display,
+          ...disp(ed && s.titleWordEms ? `min(${s.dispLg}, calc(100cqi / ${s.titleWordEms}))` : s.dispLg, 0.89),
+          letterSpacing: s.dls, color: G.ink,
+          overflowWrap: 'break-word',
+          // The row is bottom-aligned with the discs (MAX at every width), so
+          // Noto's floor shows against theirs: 0.055em up the line box at .89
+          // against the frame's 0.132 / 0.139 / 0.134, and the glyphs lift
+          // alone (section 7's rule).
+          ...(ed ? { position: 'relative', top: '-0.08em' } : {}),
+        })}>{s.title}</h2>
+      )
+      const head = !s.title ? null
+        : ed ? <div style={{ flex: '1 1 0', minWidth: 0, containerType: 'inline-size' }}>{h2}</div>
+        : h2
+
       return (
         <div style={{
           // The sheet: Scheme 4's pale `sem/bg`, out to the section's own
@@ -22849,25 +22869,7 @@ function Testimonials({ s }) {
               its widest word (`s.titleWordEms`, Noto's 540 ems), where the
               twins' `break-word` would split it. */}
           <div style={row(u(s.mob ? 30 : 32), { alignItems: 'flex-end' })}>
-            {!!s.title && (() => {
-              const h2 = (
-                <h2 style={distressed(s, {
-                  margin: 0, ...(ed ? {} : { flex: '1 1 0', minWidth: 0 }),
-                  fontFamily: s.display,
-                  ...disp(ed && s.titleWordEms ? `min(${s.dispLg}, calc(100cqi / ${s.titleWordEms}))` : s.dispLg, 0.89),
-                  letterSpacing: s.dls, color: G.ink,
-                  overflowWrap: 'break-word',
-                  // The row is bottom-aligned with the discs (MAX at every
-                  // width), so Noto's floor shows against theirs: 0.055em up
-                  // the line box at .89 against the frame's 0.132 / 0.139 /
-                  // 0.134, and the glyphs lift alone (section 7's rule).
-                  ...(ed ? { position: 'relative', top: '-0.08em' } : {}),
-                })}>{s.title}</h2>
-              )
-              return ed
-                ? <div style={{ flex: '1 1 0', minWidth: 0, containerType: 'inline-size' }}>{h2}</div>
-                : h2
-            })()}
+            {head}
             {paging && (
               <div style={row(u(5), { flex: 'none', marginLeft: 'auto' })}>
                 {disc(true, step(-1), 'p')}
