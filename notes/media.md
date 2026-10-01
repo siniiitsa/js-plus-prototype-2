@@ -65,3 +65,16 @@ another `notes/` file.
   `#171716` with a red torn head and a black torn foot at 1440 and 768 and neither at 390,
   Editorial's taupe — its seat's `s.bg`, Scheme 2 — with no seam at all — and the only one to
   draw those strips, arcs or tears.
+- **Layout 2's fan chip and the counter's words are the artist's** (JP-095 (a), user call,
+  2026-10-01, JP-071's label shape). `chipLabel` is the front card's `● Featured` (`in: [1]`,
+  both bodies; the dot is the markup's). It wraps inside the card at its own inset from each edge,
+  since the card clips. `countLabel` and `totalLabel` are the counter over the track list,
+  "5 Featured / 5 Max" at layouts 2 and 3, and `countLabel` is layout 1's "5 / 5 Featured" as
+  well (`in: [0, 1, 2]` and `[1, 2]`, measured). The counts stay derived: "Max" is the track count
+  again, not `TracksField`'s cap. An emptied word takes its count with it, and the ` / ` goes
+  unless both words stand; with both emptied there is no counter, and the row stays, with its
+  padding and Editorial's dash. `trackCount()` composes it in the four text nodes the literal
+  made (a different split moves the shaping by 0.1px, JP-090). The counter keeps its line and its
+  right-hand seat beside a wrapping `listLabel`, as the literal's `nowrap` did, and wraps only
+  once it is wider than the row less the gap. Layout 1's keeps to half the desktop row, so the
+  heading keeps its column.

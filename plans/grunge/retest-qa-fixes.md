@@ -613,7 +613,9 @@ SAT", as the design does.
 rests on Retro layout 2's rule (`../retro/layout-2.md:348`–`350`: a frame label stays a literal).
 The reversal is **scoped to the eight labels reported**. The siblings nobody reported stay
 literals and are named in the reply: the bio's `Bio` eyebrow, media layout 2's `● Featured`, the
-calendar legend's three labels, and testimonials layout 2's `✎ What clients say`.
+calendar legend's three labels, and testimonials layout 2's `✎ What clients say`. *(Two of them
+were reported since and are fields now, `● Featured` and `✎ What clients say`, with six more
+layout-2 labels: JP-095 (a), [`../editorial/layout-2-qa-fixes.md`](../editorial/layout-2-qa-fixes.md).)*
 
 **Evidence** (triage, `525dcab`).
 
@@ -748,7 +750,8 @@ and each can be emptied to hide it.
 - On every template, in the editor and on the published page, at every width. Labels nobody
   reported stay as the design draws them: the Bio's "Bio" eyebrow, the Media Player's
   "● Featured" (layout 2), the Booking Calendar's legend and the Testimonials' "✎ What clients
-  say" (layout 2).
+  say" (layout 2). *(The Media Player's and the Testimonials' were reported since: JP-095 (a),
+  `../editorial/layout-2-qa-fixes.md`.)*
 
 ---
 

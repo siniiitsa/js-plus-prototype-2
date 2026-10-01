@@ -5723,6 +5723,23 @@ const WAVE = [
 // not a count, because the meter's bar count is derived from the width.
 const WAVE_PLAYED = 17 / WAVE.length
 
+// Layouts 2 and 3's counter over the track list, "5 Featured / 5 Max", off
+// `countLabel` and `totalLabel` (JP-095 (a)): each word with its count, the
+// " / " only between two, in the four text nodes the literal made. Null when
+// both are emptied, and the row stays. Layout 1's "5 / 5 Featured" reads
+// `countLabel` alone, in place.
+const trackCount = (s) => {
+  const n = s.tracks.length, a = s.countLabel, b = s.totalLabel
+  if (a && b) return <>{n}{` ${a} / `}{n}{` ${b}`}</>
+  return a || b ? <>{n}{` ${a || b}`}</> : null
+}
+// The counter's span beside a wrapping `listLabel`: it keeps its own line and
+// right-hand seat, as the literal's `nowrap` did, until it is itself wider than
+// the row less the gap, and then it wraps.
+const trackCountFit = (gap) => ({
+  flex: 'none', maxWidth: `calc(100% - ${gap})`, whiteSpace: 'normal', overflowWrap: 'anywhere', textAlign: 'right',
+})
+
 function Media({ s }) {
   // Hooks before the layout branch — the older three-card design plays too.
   // `playing` mirrors the element's own play/pause events rather than being
@@ -5890,7 +5907,13 @@ function Media({ s }) {
     // three widths. An em measure between Bebas Neue's "Five worth" (3.59em)
     // and "Five worth your" (5.34em) reproduces it at every size; Retro's 5.8em
     // is Soulway's and would put "your" on the first line.
-    const featured = eyebrow(`${s.tracks.length} / ${s.tracks.length} Featured`, { textTransform: 'uppercase' })
+    // The counter's word is `countLabel` (JP-095 (a)), the counts the page's;
+    // emptied, no counter. A long one wraps, and at desktop it keeps to half
+    // the row, so the heading keeps its column.
+    const featured = s.countLabel ? eyebrow(`${s.tracks.length} / ${s.tracks.length} ${s.countLabel}`, {
+      textTransform: 'uppercase', whiteSpace: 'normal', overflowWrap: 'anywhere',
+      ...(desk ? { maxWidth: '50%', textAlign: 'right' } : null),
+    }) : null
     const titleWords = String(s.title || '').split(/\s+/).filter(Boolean)
     const titleBlock = (
       <div style={col(u(36), desk ? { flex: 1, minWidth: 0 } : undefined)}>
@@ -6226,17 +6249,21 @@ function Media({ s }) {
       display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
     })
     // Figma sets the kicker and the counter in a small tracked mono, not Anton.
-    const label = (t) => (
+    const label = (t, extra) => (
       <span style={{
         fontFamily: s.body, fontSize: '11px', letterSpacing: '1.2px',
-        textTransform: 'uppercase', color: s.ac, whiteSpace: 'nowrap',
+        textTransform: 'uppercase', color: s.ac, whiteSpace: 'nowrap', ...extra,
       }}>{t}</span>
     )
 
     // Full-width header: on desktop the track counter bottom-aligns with the
     // display heading at the right edge; the narrow frames drop it under the
     // heading instead, left-aligned.
-    const featured = label(`${s.tracks.length} / ${s.tracks.length} Featured`)
+    // Its word is `countLabel` (JP-095 (a)), the counts the page's; emptied,
+    // no counter. A long one wraps, and at desktop it keeps to half the row.
+    const featured = s.countLabel ? label(`${s.tracks.length} / ${s.tracks.length} ${s.countLabel}`, {
+      whiteSpace: 'normal', overflowWrap: 'anywhere', ...(desk ? { maxWidth: '50%', textAlign: 'right' } : null),
+    }) : null
     const titleBlock = (
       <div style={col(desk ? '30px' : '36px', desk ? { flex: 1, minWidth: 0 } : undefined)}>
         {label(s.mediaKicker)}
@@ -6685,12 +6712,15 @@ function Media({ s }) {
                     26.5 / 26 off the card's edge — Retro's 25.5 / 25 stand
                     inside its 1px border, and this card's ring is a shadow.
                     Sienna Vale's `tag/1` is the blush seat, not its paper
-                    accent. */}
-                {k === 0 && (
+                    accent. Its word is `chipLabel` (JP-095 (a)), the dot the
+                    markup's; emptied, no chip. A long one wraps inside the
+                    card, as far from its right edge as from its left. */}
+                {k === 0 && !!s.mediaChip && (
                   <span style={{
                     ...chipType, position: 'absolute', left: u(26.5), top: u(26),
+                    whiteSpace: 'normal', overflowWrap: 'anywhere', maxWidth: `calc(100% - ${u(53)})`,
                     background: ed ? s.chips[0].bg : s.ac, color: s.tx, borderRadius: '999px', padding: `${u(4)} ${u(8)}`,
-                  }}>● Featured</span>
+                  }}>{`● ${s.mediaChip}`}</span>
                 )}
               </div>
             )
@@ -6803,7 +6833,7 @@ function Media({ s }) {
             ...(ed ? { position: 'relative' } : null),
           })}>
             {s.listLabel && <span style={{ ...chipType, whiteSpace: 'normal', minWidth: 0, overflowWrap: 'anywhere' }}>● {s.listLabel}</span>}
-            <span style={chipType}>{s.tracks.length} Featured / {s.tracks.length} Max</span>
+            {!!trackCount(s) && <span style={{ ...chipType, ...trackCountFit(u(12)) }}>{trackCount(s)}</span>}
             {ed && dash('bottom')}
           </div>
           {s.tracks.map((t, i) => {
@@ -6981,12 +7011,15 @@ function Media({ s }) {
                 <span style={{ ...titleType(16), lineHeight: 1.2 }}>{t.name}</span>
                 <span style={subType}>{t.rel || t.sub}</span>
               </div>
-              {k === 0 && (
+              {/* The chip's word is `chipLabel` (JP-095 (a)), the dot the
+                  markup's; emptied, no chip. A long one wraps inside the card. */}
+              {k === 0 && !!s.mediaChip && (
                 <span style={chip({
                   position: 'absolute', left: u(25.5), top: u(25),
+                  whiteSpace: 'normal', overflowWrap: 'anywhere', maxWidth: `calc(100% - ${u(51)})`,
                   background: s.chips[4 % n].bg, color: s.retro ? '#FBF6EA' : s.chips[4 % n].fg,
                   borderRadius: '999px', padding: `${u(4)} ${u(8)}`,
-                })}>● Featured</span>
+                })}>{`● ${s.mediaChip}`}</span>
               )}
             </div>
           )
@@ -7122,10 +7155,11 @@ function Media({ s }) {
           flex: 'none', justifyContent: s.listLabel ? 'space-between' : 'flex-end', padding: `${u(16)} 0`, color: ink,
         })}>
           {s.listLabel && <span style={chip({ textTransform: 'uppercase', whiteSpace: 'normal', minWidth: 0, overflowWrap: 'anywhere' })}>● {s.listLabel}</span>}
-          {/* Layout 1 derives its counter from the track count the same way. */}
-          <span style={chip({ textTransform: 'uppercase' })}>
-            {s.tracks.length} Featured / {s.tracks.length} Max
-          </span>
+          {/* Layout 1 derives its counter from the track count the same way.
+              Its words are `countLabel` and `totalLabel` (JP-095 (a)). */}
+          {!!trackCount(s) && (
+            <span style={chip({ textTransform: 'uppercase', ...trackCountFit(u(12)) })}>{trackCount(s)}</span>
+          )}
         </div>
         {s.tracks.map((t, i) => {
           const r = ROWS[i % ROWS.length]
@@ -7525,7 +7559,7 @@ function Media({ s }) {
               position: ed ? 'relative' : undefined,
             })}>
               {s.listLabel && <span style={{ ...chipType, whiteSpace: 'normal', minWidth: 0, overflowWrap: 'anywhere' }}>● {s.listLabel}</span>}
-              <span style={chipType}>{s.tracks.length} Featured / {s.tracks.length} Max</span>
+              {!!trackCount(s) && <span style={{ ...chipType, ...trackCountFit(u(12)) }}>{trackCount(s)}</span>}
               {footDash}
             </div>
             {s.tracks.length === 0 && (
@@ -7654,7 +7688,7 @@ function Media({ s }) {
           padding: `${u(16)} 0`, color: s.tx,
         })}>
           {s.listLabel && <span style={{ ...chip, whiteSpace: 'normal', minWidth: 0, overflowWrap: 'anywhere' }}>● {s.listLabel}</span>}
-          <span style={chip}>{s.tracks.length} Featured / {s.tracks.length} Max</span>
+          {!!trackCount(s) && <span style={{ ...chip, ...trackCountFit(u(12)) }}>{trackCount(s)}</span>}
         </div>
 
         {/* An emptied list is a real state — the tracks are the artist's — and
@@ -9171,7 +9205,14 @@ function Pricing({ s }) {
           ...(desk ? { flex: '1 1 0', minWidth: 0 } : { width: '100%' }),
           alignItems: 'flex-start',
         })}>
-          <span style={chipFace({ color: s.tx })}>[ PRICING ]</span>
+          {/* The eyebrow is `kicker` (JP-095 (a)), seeded in the frame's
+              capitals and printed as typed; the brackets are the markup's.
+              Emptied, it is not drawn. A long one wraps. */}
+          {!!s.pricingKicker && (
+            <span style={chipFace({ color: s.tx, whiteSpace: 'normal', minWidth: 0, overflowWrap: 'anywhere' })}>
+              {`[ ${s.pricingKicker} ]`}
+            </span>
+          )}
           {/* Display/MD at lh 1. The frame's break after "Personalised" is a
               typed one; the heading is the artist's, so it wraps on the
               column. */}
@@ -9286,7 +9327,12 @@ function Pricing({ s }) {
                 position: ed ? 'relative' : undefined,
               }}>{ed && <DashRule side="top" dash={10 * z} colour={s.stroke1} />}</span>
               <div style={col(u(12), { alignItems: 'flex-start', alignSelf: 'stretch' })}>
-                <span style={chipFace({ color: s.tx })}>WHAT&rsquo;S INCLUDED</span>
+                {/* `featsLabel` (JP-095 (a)), the kicker's shape. */}
+                {!!s.featsLabel && (
+                  <span style={chipFace({ color: s.tx, whiteSpace: 'normal', minWidth: 0, overflowWrap: 'anywhere' })}>
+                    {s.featsLabel}
+                  </span>
+                )}
                 {/* Two columns at every width, Retro's grid. The frame's last
                     three features in Body/MD are normalised to Label/XS. */}
                 <div style={{
@@ -9383,7 +9429,13 @@ function Pricing({ s }) {
         ...(desk ? { flex: '1 1 0', minWidth: 0 } : { width: '100%' }),
         alignItems: 'flex-start',
       })}>
-        <span style={chipType}>[ PRICING ]</span>
+        {/* `kicker` (JP-095 (a)): the frame's capitals as the seed, printed
+            as typed, the brackets the markup's; emptied, not drawn. */}
+        {!!s.pricingKicker && (
+          <span style={{ ...chipType, whiteSpace: 'normal', minWidth: 0, overflowWrap: 'anywhere' }}>
+            {`[ ${s.pricingKicker} ]`}
+          </span>
+        )}
         <h2 style={{
           margin: 0, fontFamily: s.display, fontSize: u(T.dispMd), lineHeight: 1,
           letterSpacing: s.dls, color: s.ac,
@@ -9548,7 +9600,12 @@ function Pricing({ s }) {
               }} />
 
               <div style={col(u(12), { width: '100%', alignItems: 'flex-start' })}>
-                <span style={chipType}>WHAT&rsquo;S INCLUDED</span>
+                {/* `featsLabel` (JP-095 (a)), the kicker's shape. */}
+                {!!s.featsLabel && (
+                  <span style={{ ...chipType, whiteSpace: 'normal', minWidth: 0, overflowWrap: 'anywhere' }}>
+                    {s.featsLabel}
+                  </span>
+                )}
                 {/* One grid rather than the enquiry form's paired rows: the
                     frame spaces the two columns by 24 and the rows by 10, and a
                     grid carries two different gaps on its own. An odd count
@@ -15274,9 +15331,12 @@ function Calendar({ s }) {
               {/* The frames' foot is this line alone. Retro's Check a date pill
                   is gone from it (JP-088, user call, 2026-09-30, reversing
                   Lime's "the foot keeps Retro's BookPill"), so the line itself
-                  leads a picked date on, in its own type: `lineHref`, above. */}
+                  leads a picked date on, in its own type: `lineHref`, above.
+                  The prompt is the artist's since JP-095 (a), so a long word
+                  breaks rather than run off a phone. */}
               <LineTag {...(lineHref ? { href: lineHref } : null)} style={type(s.body, s.bodyMd, 1.5, {
                 color: G.line, textDecoration: 'none', cursor: lineHref ? 'pointer' : undefined,
+                minWidth: 0, overflowWrap: 'anywhere',
               })}>{line}</LineTag>
             </div>
             {/* The panel's 3px `sem/stroke/2` ring, which Figma strokes inside
@@ -15489,10 +15549,12 @@ function Calendar({ s }) {
             {/* The frame sets this line in Space Mono Bold — the body face in
                 this project's mapping of the reference's three, not the Anton
                 every other small label takes. It wraps on the 390 canvas, as
-                the frame has it. */}
+                the frame has it, and a long word in the artist's prompt
+                (JP-095 (a)) breaks. */}
             <span style={{
               fontFamily: s.body, fontWeight: 700, fontSize: u(13.371), lineHeight: 1.3,
               letterSpacing: '0.08em', textTransform: 'uppercase', color: s.ac,
+              minWidth: 0, overflowWrap: 'anywhere',
             }}>{line}</span>
             {/* The one deliberate addition to the frame, which draws this row as
                 a line of type and nothing else: a date the visitor has picked
@@ -15774,15 +15836,25 @@ function Calendar({ s }) {
               }))}>{s.title}</h2>
             </div>
           </div>
-          <div style={row(gap, type(s.ui, s.labelXs, 1.26, {
-            padding: `${u(18)} ${padX}`, boxShadow: rule, color: s.ac,
-            justifyContent: s.mob ? 'space-between' : undefined,
-            ...(ed ? { position: 'relative' } : null),
-          }))}>
-            {dash}
-            <span style={{ flex: 'none', minWidth: pin }}>Date ↓</span>
-            <span style={{ whiteSpace: 'nowrap' }}>Availability ↓</span>
-          </div>
+          {/* The column labels are `dateLabel` and `availLabel` (JP-095 (a)),
+              the "↓" the markup's. An emptied Date keeps its pinned seat, so
+              Availability stays over its column; with both emptied the row
+              and its rule go. A long one wraps: Date down to the pin. */}
+          {(!!s.calDateLabel || !!s.calAvailLabel) && (
+            <div style={row(gap, type(s.ui, s.labelXs, 1.26, {
+              padding: `${u(18)} ${padX}`, boxShadow: rule, color: s.ac,
+              justifyContent: s.mob ? 'space-between' : undefined,
+              ...(ed ? { position: 'relative' } : null),
+            }))}>
+              {dash}
+              <span style={{ flex: '0 1 auto', minWidth: pin ?? 0, overflowWrap: 'anywhere' }}>
+                {s.calDateLabel ? `${s.calDateLabel} ↓` : ''}
+              </span>
+              {!!s.calAvailLabel && (
+                <span style={{ minWidth: 0, overflowWrap: 'anywhere' }}>{`${s.calAvailLabel} ↓`}</span>
+              )}
+            </div>
+          )}
           {s.calSlots.length === 0 ? (
             <div style={type(s.body, s.bodyMd, 1.5, {
               padding: `${u(16)} ${padX}`, boxShadow: rule, opacity: 0.38,
@@ -15805,7 +15877,8 @@ function Calendar({ s }) {
                   letterSpacing: '-0.06em', whiteSpace: 'nowrap',
                 })}>{hit.mark}</span>
               )}
-              <span style={type(s.body, s.bodyMd, 1.5)}>{line}</span>
+              {/* A long word in the artist's prompt breaks (JP-095 (a)). */}
+              <span style={type(s.body, s.bodyMd, 1.5, { minWidth: 0, overflowWrap: 'anywhere' })}>{line}</span>
             </div>
             {/* Scheme 2's pale pill: `sem/text/2` ground, `sem/bg` label and
                 disc, a lime arrow, and the frame's hard 5 / 5 block in
@@ -15877,16 +15950,25 @@ function Calendar({ s }) {
     // two agree; the arrows are the frame's label, not a sort control, and
     // nothing here reads a click. The 390 master has no column to head, its
     // rows being stacked, so it hangs the two labels off the panel's two edges.
-    const colHead = (
+    //
+    // The two labels are `dateLabel` and `availLabel` (JP-095 (a)), the "↓"
+    // the markup's. An emptied Date keeps its seat, so Availability stays
+    // over its column; with both emptied the head and its rule go. A long
+    // label wraps, Date no narrower than its column.
+    const colHead = s.calDateLabel || s.calAvailLabel ? (
       <div style={row(gap, {
         padding: `${u(18)} ${padX}`, borderBottom: `1px solid ${rule}`,
         fontFamily: s.ui, fontSize: u(T.labelXs), lineHeight: 1.26, color: hue,
         justifyContent: s.mob ? 'space-between' : undefined,
       })}>
-        <span style={{ flex: 'none', minWidth: dateCol }}>Date ↓</span>
-        <span style={{ whiteSpace: 'nowrap' }}>Availability ↓</span>
+        <span style={{ flex: '0 1 auto', minWidth: dateCol ?? 0, overflowWrap: 'anywhere' }}>
+          {s.calDateLabel ? `${s.calDateLabel} ↓` : ''}
+        </span>
+        {!!s.calAvailLabel && (
+          <span style={{ minWidth: 0, overflowWrap: 'anywhere' }}>{`${s.calAvailLabel} ↓`}</span>
+        )}
       </div>
-    )
+    ) : null
 
     // A row is a date, the weekday it falls on and what the artist plays that
     // night. The frame lets the display numerals set the second column's start,
@@ -15994,8 +16076,9 @@ function Calendar({ s }) {
             )}
             <span style={{
               fontFamily: s.body, fontSize: u(T.bodyMd), lineHeight: 1.5, minWidth: 0,
+              // At 390 a long word in the artist's prompt breaks (JP-095 (a)).
               ...(s.mob
-                ? { flex: '1 1 0' }
+                ? { flex: '1 1 0', overflowWrap: 'anywhere' }
                 : { whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }),
             }}>{line}</span>
           </div>
@@ -16296,7 +16379,7 @@ function Calendar({ s }) {
             <BookPill s={s} to={s.calBookTo} label={line} fg={grunge ? '#171716' : ed ? undefined : s.box1} full={s.mob}
                       size={ed ? s.labelMd : undefined}
                       style={{ width: '100%', justifyContent: 'space-between', whiteSpace: 'normal',
-                        ...(ed ? { lineHeight: 1.1 } : null) }} />
+                        overflowWrap: 'anywhere', ...(ed ? { lineHeight: 1.1 } : null) }} />
             {ed && <DashRule dash={10 * lz} colour={s.stroke2} side="all" />}
           </div>
         </div>
@@ -16455,13 +16538,15 @@ function Calendar({ s }) {
               Its box does not ramp — 54 tall on a 46 disc in all three masters
               — so the 46 goes in at both narrow widths and `full` opts the 390
               canvas back up to it. `whiteSpace` stays `normal` so a long
-              prompt or month name wraps rather than running off the card. */}
+              prompt or month name wraps rather than running off the card,
+              and a long word in the artist's prompt breaks (JP-095 (a)). */}
           <BookPill s={s} to={s.calBookTo} label={line} glyph="arrow"
                     disc={desk ? 38 : 46} size={u(T.list)} shadow="transparent"
                     {...(s.mob ? { full: true } : null)}
                     {...(s.retro ? { bg: s.ac, fg: '#FBF6EA', discFg: s.ac } : null)}
                     style={{
                       width: '100%', justifyContent: 'space-between', whiteSpace: 'normal',
+                      overflowWrap: 'anywhere',
                       ...(s.retro ? {
                         fontFamily: s.display, textTransform: 'none', lineHeight: 1.2,
                         letterSpacing: s.dls,
@@ -16727,8 +16812,10 @@ function Calendar({ s }) {
               letterSpacing: s.dls, color: dim ? gone : undefined,
             }}>{big}</span>
           )}
+          {/* The date card's `sub` is the artist's prompt while nothing is
+              cued (JP-095 (a)), so a long word breaks. */}
           {sub && (
-            <span style={{ fontFamily: s.body, fontSize: u(T.bodySm), lineHeight: 1.4 }}>{sub}</span>
+            <span style={{ fontFamily: s.body, fontSize: u(T.bodySm), lineHeight: 1.4, overflowWrap: 'anywhere' }}>{sub}</span>
           )}
         </span>
         {end && (
@@ -17062,7 +17149,8 @@ function Calendar({ s }) {
           {ed && dashed(10, s.stroke2)}
           <span style={col(u(2), { minWidth: 0 })}>
             {big && <span style={distressed(s, disp(titleSize, 1.1, { ...(dim ? { opacity: 0.38 } : null), ...lift }))}>{big}</span>}
-            {sub && <span style={body(s.bodySm, 1.4)}>{sub}</span>}
+            {/* The date card's `sub` can be the artist's prompt (JP-095 (a)). */}
+            {sub && <span style={body(s.bodySm, 1.4, { overflowWrap: 'anywhere' })}>{sub}</span>}
           </span>
           {end && (
             <span style={body(s.bodyLg, 1.5, { flex: 'none', textAlign: 'right' })}>{end}</span>
@@ -21531,7 +21619,11 @@ function Testimonials({ s }) {
       // demo face); 768 and 390 wrap to the masters' own three and four.
       const limeHead = (
         <div style={col(u(12), { width: '100%', alignItems: 'center', textAlign: 'center', color: s.tx })}>
-          <span style={bodyType(s.bodySm, 1.4)}>&#9998; What clients say</span>
+          {/* The eyebrow is `kicker` (JP-095 (a)), seeded "What clients say"
+              at this layout; the ✎ is the markup's. Emptied, not drawn. */}
+          {!!s.testiKicker && (
+            <span style={{ ...bodyType(s.bodySm, 1.4), maxWidth: '100%', overflowWrap: 'anywhere' }}>{`\u270E ${s.testiKicker}`}</span>
+          )}
           {!!s.title && (
             <h2 style={distressed(s, {
               margin: 0, ...dispType(s.dispLg, 0.89), overflowWrap: 'break-word', maxWidth: '100%',
@@ -21689,16 +21781,18 @@ function Testimonials({ s }) {
 
     const body12 = { fontFamily: s.body, fontSize: u(T.bodySm), lineHeight: 1.4 }
 
-    // The head. Its eyebrow is the frame's own label, a literal by Retro layout
-    // 2's label rule — an unreported sibling JP-071 named and kept, where
-    // layout 3's "● Testimonials" and the media player's "● Popular" became
-    // fields; the display line is the section's
+    // The head. Its eyebrow is `kicker`, layout 3's "● Testimonials" (JP-071),
+    // which reaches it with JP-095 (a) through `testiKickerSeed()`: the frame's
+    // "What clients say" is its seed here, the ✎ the markup's, and emptied it
+    // is not drawn; the display line is the section's
     // `heading`, which layout 1 draws nowhere; and the sentence under it is the
     // new `sub`. Each of the two fields is rendered or not rather than printed
     // blank, since a `col` gap is spent on an empty span the same as a full one.
     const head = (
       <div style={col(u(12), { width: '100%', alignItems: 'center', textAlign: 'center' })}>
-        <span style={body12}>&#9998; What clients say</span>
+        {!!s.testiKicker && (
+          <span style={{ ...body12, maxWidth: '100%', overflowWrap: 'anywhere' }}>{`\u270E ${s.testiKicker}`}</span>
+        )}
         {!!s.title && (
           // `display-lg` 96 → 60 → 40, which is the page's own ramp read off
           // two different keys — the media player's `tab ? s.h1 : s.dispLg`,

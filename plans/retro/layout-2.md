@@ -353,7 +353,9 @@ Learned on the video section (section 4):
   so the call can be reversed. *(Narrowed since by the Grunge retest's JP-071,
   2026-09-29: "● Popular" and seven other labels the tester reported are now seeded,
   emptiable fields — [`../grunge/retest-qa-fixes.md`](../grunge/retest-qa-fixes.md).
-  The rule still holds for every label nobody has reported.)*
+  The rule still holds for every label nobody has reported.)* *(And again by Editorial layout 2's
+  JP-095 (a), 2026-10-01: eight layout-2 labels on pricing, the calendar, media and the
+  testimonials — [`../editorial/layout-2-qa-fixes.md`](../editorial/layout-2-qa-fixes.md).)*
 - **A field the frame needs and no layout has is cheap; a repeater is not.**
   `FIELDS.video` gained `image` and `avatar` — two `type: 'image'` entries, which
   `EditPanel`'s `imgVal`/`ImageField` already handle generically, so the diff is

@@ -37,7 +37,9 @@ import {
   THEMES, SCHEMES_OF, CATS, NVAR, FLAG, FIELDS, TITLES, DEFS, TRACKS, TAGS, TAG_LABELS, HERO_CTA, BIO_CREDIT, BIO_CTA,
   HERO_AVAIL, FACE_TITLE, FACE_BODY, PLACE_BODY, BIO_TAG,
   BIO_SINCE_LABEL, BIO_ROLE_LABEL, BIO_BASE_LABEL, BIO_ABOUT_LABEL, BIO_TAGS_LABEL, MEDIA_LIST_LABEL,
-  BIO_REF_LABEL, MAP_LIST_LABEL, FORM_TYPE_LABEL, mapKickerSeed, TESTI_KICKER, TIER_KEYS, tiersSeed, limeTreeTheme, PRICE_UNIT, QUOTES,
+  BIO_REF_LABEL, MAP_LIST_LABEL, FORM_TYPE_LABEL, mapKickerSeed, testiKickerSeed,
+  PRICING_KICKER, PRICING_FEATS_LABEL, CAL_DATE_LABEL, CAL_AVAIL_LABEL, CAL_PROMPT,
+  MEDIA_CHIP_LABEL, MEDIA_COUNT_LABEL, MEDIA_TOTAL_LABEL, TIER_KEYS, tiersSeed, limeTreeTheme, PRICE_UNIT, QUOTES,
   CITIES, PINS, EXAMPLE_PAGE,
   NOW_PLAYING, TRACK_AUDIO, SONGS, REP_ALL,
   GIGS, MAP_RADIUS, MAP_BASE, MAP_TERMS, MAP_TRAVEL_TIME, MAP_FEE, directionsUrl, GALLERY_SOURCES,
@@ -816,6 +818,12 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   vm.mediaKicker = cv('kicker', 'Top tracks')
   // JP-071 — layouts 2 and 3's "● Popular" over the list; the dot is the markup's.
   vm.listLabel = cv('listLabel', MEDIA_LIST_LABEL)
+  // JP-095 (a) — layout 2's fan chip and the counter's two words over the list
+  // ("5 Featured / 5 Max", layout 1's "5 / 5 Featured"), the same shape. The
+  // counts are the markup's; an emptied word takes its own with it.
+  vm.mediaChip = cv('chipLabel', MEDIA_CHIP_LABEL)
+  vm.countLabel = cv('countLabel', MEDIA_COUNT_LABEL)
+  vm.totalLabel = cv('totalLabel', MEDIA_TOTAL_LABEL)
   // vm.nowPlaying is resolved under `tracks` below, because it reads them.
   // The Soundcloud button's destination, and the whole of its `live` seam.
   // Normalised to an absolute URL: the published tab carries a <base href> to
@@ -918,6 +926,11 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   vm.pricingRating = cv('rating', PRICING_RATING)
   vm.pricingCta = cv('cta', PRICING_CTA)
   vm.pricingNote = cv('note', PRICING_NOTE)
+  // JP-095 (a) — layout 2's "[ PRICING ]" and "WHAT’S INCLUDED", seeded in the
+  // capitals the frame types and printed as typed; the brackets are the
+  // markup's. '' when emptied.
+  vm.pricingKicker = cv('kicker', PRICING_KICKER)
+  vm.featsLabel = cv('featsLabel', PRICING_FEATS_LABEL)
   // A card's four colours, given the ground it stands on. Layout 1 walks that
   // ground round T.tags, one hue per card; layout 2 has a single card and pins
   // it, so both go through here and the pairing rule is written once.
@@ -1108,7 +1121,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // pricing's rating is.
   vm.testiRating = cv('rating', TESTI_RATING)
   // JP-071 — layout 3's "● Testimonials" eyebrow; the dot is the markup's.
-  vm.testiKicker = cv('kicker', TESTI_KICKER)
+  // JP-095 (a) took it to layout 2's "✎ What clients say", its seed there.
+  vm.testiKicker = cv('kicker', testiKickerSeed(d))
   // §10.2 layout 3 reads the same tags as a *grouping* rather than as a filter:
   // one card per tag, holding the songs that carry it. `repChips` leads with the
   // All chip, which is a filter reset and not a set, so the cards are the chips
@@ -1311,7 +1325,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // artist has blocked — lit and struck through at once. A cue that has
     // passed cues nothing either, and the foot prints the prompt.
     vm.calPick = booked.has(openIso) || dead(openIso) ? '' : openIso
-    vm.calPrompt = cased('Pick a date to enquire')
+    // JP-095 (a): the artist's, and like `messageLabel` it reads its seed
+    // again when emptied, since every layout prints it where the pick would
+    // go and an empty foot reads as broken. Cased, as the slot line is.
+    vm.calPrompt = cased(String(cv('prompt', CAL_PROMPT)).trim() || CAL_PROMPT)
     // Retro's and Pop's layout-1 pill (the `s.limeTree` foot has none, JP-088:
     // its line links). The same field is layout 4's Send Enquiry (JP-082),
     // seeded CAL_SEND_4 there: `vm.calWizard.send`, below.
@@ -1319,6 +1336,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // Layout 2's pill, which its frame labels differently from the other two
     // calendar pills (its "Star Enquiry" read as the intended "Start").
     vm.calSlotCta = cased(cv('slotCta', CAL_SLOT_CTA))
+    // JP-095 (a) — the two column labels over that list, the frame's words,
+    // uncased as the head has always drawn them; the "↓" is the markup's.
+    vm.calDateLabel = cv('dateLabel', CAL_DATE_LABEL)
+    vm.calAvailLabel = cv('availLabel', CAL_AVAIL_LABEL)
     // Layout 4's enquiry wizard (QA, 2026-09-15). Step 1 is the frame's
     // (964:72843); the frame draws no step 2 or 3, so their boxes are what the
     // summary card beside it labels (Details) and a way to answer (Contact).
@@ -4033,7 +4054,8 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                   // form's until one is typed (JP-076). The header's kicker left the chain with
                   // JP-061: its `d` is its seed at every layout, and the
                   // layout-3 card's line is a field of its own. The map's
-                  // kicker joined it with JP-090 (mapKickerSeed). Layouts 3 and
+                  // kicker joined it with JP-090 (mapKickerSeed), and the
+                  // testimonials' with JP-095 (a) (testiKickerSeed). Layouts 3 and
                   // 4's heads come ahead of the song count, which sectionVm's
                   // later assignment says the other way round (JP-070, JP-081).
                   const fallback = (f.k === 'title' || f.k === 'badgeText') && sec.cat === 'header' ? artistName
@@ -4052,6 +4074,7 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                     : f.k === 'navMode' && sec.cat === 'header' ? navModeDefault(themeName, design)
                     : f.k === 'button' && sec.cat === 'form' ? formBtnSeed(themeName, design)
                     : f.k === 'kicker' && sec.cat === 'map' ? mapKickerSeed(design)
+                    : f.k === 'kicker' && sec.cat === 'testimonials' ? testiKickerSeed(design)
                     : f.k === 'cta' && sec.cat === 'calendar' && design === 3 ? CAL_SEND_4
                     : f.k === 'rowCta' && sec.cat === 'pricing'
                       && sec.arch % (designCount(sec.cat, themeName) || 1) === 2 ? PRICING_ROW_CTA_3

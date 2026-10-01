@@ -108,7 +108,7 @@ the list explicitly.
 | 1 | JP-099 | 390 player: no ♡ ↓ ⋯ | **Confirmed, and recorded**: Retro's 390 override, shared by every template, because the master pays for the icons with the track's whole title | S (or none) | **user: A, a reply** | **done** (no code; the published 390 title's cut added to JP-097's *Seen, not filed*) |
 | 2 | JP-093 | Form box labels at 45% | **Confirmed**: the global `::placeholder` .45, recorded as "Repertoire's accepted diff", lands on boxes with no other label | S | **user: 1A `var(--ph, .45)`, 2A the four sites** | **done** (0 digest files; the 90 label-in-box inputs read 1 and the other 300 stay .45) |
 | 3 | JP-092 | Long hero name overflows | **Confirmed, and shared**: `HeaderV1`'s `s.limeTree` title is the flat ramp with no container; the fit was declined on the seed alone | S | **user: A, Retro's half named** | **done** (0 digest files; the title `min(ramp, 100cqi / cardNameEms)` on an `inline-size` column, 105 published renders fitted to 0.002px) |
-| 4 | JP-095 (a) | Pricing, calendar, media, testimonials labels | **Confirmed**: JP-090's rule, eight literals, every template; two are CLAUDE.md's named "unreported siblings" | M | **yes** — keys, emptied rules | open |
+| 4 | JP-095 (a) | Pricing, calendar, media, testimonials labels | **Confirmed**: JP-090's rule, eight literals, every template; two are CLAUDE.md's named "unreported siblings" | M | **user: 1A–4A** (JP-071's shape, the frame's capitals; two counter words; the prompt reads its seed again; siblings named) | **done** (0 of 660 a surface; nine reach rows, 6/6 at each `in`; card 2 under four templates prints none of the eight) |
 | 5 | JP-095 (b) · JP-096 | The map's nine labels; *Based in* / *Willing to travel to* | **Confirmed, and recorded**: Retro dropped *Based in* because `base`'s seed says it | M | **yes** — the home value, emptied pills | open |
 | 6 | JP-100 | 390 calendar foot: pill on its own row | **Confirmed, a fit slip**: Lime's fit drew Retro's pre-QA stack (JP-060's shape) | S | light — Editorial's line | open |
 | 7 | JP-097 | Byline lacks *· Single* | **Confirmed, a fit slip of every template**: the bar prints the artist alone; layouts 3 and 4 print the release | S | no | open |
@@ -730,7 +730,157 @@ loses its "Not shown in this layout" on card 2; long typed labels wrap (JP-090's
 sibling list, which loses `● Featured` and `✎`); `notes/pricing.md`, `notes/calendar.md`,
 `notes/media.md`, `notes/testimonials.md`; `reach.mjs`.
 
-**Settled.** —
+**Decided** (2026-10-01, user call): **1A, 2A, 3A, 4A**, every recommendation.
+1. **JP-071's shape.** Each label is seeded with the text its site renders, uncased, and not drawn
+   when emptied; the `[ ]`, `↓`, `●`, `✎` and the counts are the markup's. Pricing's two seed the
+   **capitals the frame types**, `PRICING` and `WHAT’S INCLUDED` (`964:64610`'s text layers are
+   named `[ PRICING ]` and `WHAT'S INCLUDED`, and a layer's name defaults to its characters), with no `textTransform` added, so a typed label prints as
+   typed; the seed keeps the build's curly `’`, which is what renders. The testimonials' `kicker`
+   reaches layout 2 through a per-layout seed, *What clients say* there and *Testimonials* at
+   layout 3, `mapKickerSeed`'s shape.
+2. **Two word fields for the counter**, *Featured* and *Max*, the counts derived. *Featured* reaches
+   layout 1's `5 / 5 Featured` as well (JP-071's same-word rule, measured). An emptied word takes
+   its count and the ` / ` with it (the map list label's rule, JP-090); both emptied, the counter
+   is not drawn and the row stays.
+3. **The prompt reads its seed again when emptied** (`messageLabel`'s rule), at all four layouts.
+   It stays `cased()` in `sectionVm`, as `calSlotCta` and the slot line beside it are: the one key
+   here that is not uncased.
+4. **The unreported siblings are named, not fielded.** CLAUDE.md's list loses `● Featured` and `✎`
+   and gains the repertoire's `All` chip and search placeholder, the slot line's " selected" and
+   the footer's *A JustPay Product*.
+
+Asked over what the session found first, on HEAD (`4066729`):
+- **Every *Evidence* line moved as JP-092 predicted**: `EncoreSection.jsx` +9 (`:9174`, `:9386`;
+  `:9289`, `:9551`; `:15783`–`15784`, `:15886`–`15887`; `:6693`, `:6989`; `:6806`, `:7127`;
+  layout 3's `:7528`, `:7657`; layout 1's `:5893`, `:6239`; `:21534`, `:21701`; the prompt's readers
+  `:15042`, `:15594`, `:16114`) and `EncoreBuilder.jsx` +2 (`vm.calPrompt` `:1314`, the date card
+  `:1378`, the slot line `:1480`–`1484`, the chain's map-gated `kicker` arm `:4054`).
+- **Reproduced in the real app** (puppeteer: card 2, every text field and list row of the four
+  sections set to a marker through `st`, Publish, Open, each section's text nodes read at 1440, 768
+  and 390). Under Editorial, Lime, Grunge and Retro alike, at every width, exactly the eight are
+  left: `[ PRICING ]`, `WHAT’S INCLUDED`, `Date ↓`, `Availability ↓`, *Pick a date to enquire*,
+  `● Featured`, `Featured /` … `Max`, `✎ What clients say`. The rest is derived or markup: the
+  brand, the initials, the head's link list (the sections' nav labels), the slot's own date, the
+  stars, ♡ ⋯ and the quote mark. No console errors.
+- **The harness was proved first**: a fresh HEAD worktree on :5174 against the unedited tree on
+  :5173, themes 0–4, every category, three widths: **0 of 660 on each surface** after the port and
+  stamp normalisation (194 raw, all the port).
+- **Expected after-diff: zero** on the seed, every category, themes 0–4, both surfaces. **Its blind
+  spot is the prompt**: the canvas never reads the clock and `&today=` is opt-in, so no harness
+  render prints it unless the cued day is blocked. Its proof is a sweep over `booked: [CAL_OPEN]`.
+
+**Settled** (2026-10-01).
+- **`data.js`.** Nine constants sit beside JP-090's (`:749`–`769`): `PRICING_KICKER` "PRICING",
+  `PRICING_FEATS_LABEL` "WHAT’S INCLUDED", `CAL_DATE_LABEL` "Date", `CAL_AVAIL_LABEL`
+  "Availability", `CAL_PROMPT` "Pick a date to enquire", `MEDIA_CHIP_LABEL` and `MEDIA_COUNT_LABEL`
+  "Featured", `MEDIA_TOTAL_LABEL` "Max" and `TESTI_KICKER_2` "What clients say". Beside them is
+  `testiKickerSeed(d)`, `mapKickerSeed`'s shape.
+- **The fields.** Each has a hint that says where it prints and what emptying it does, and each
+  `in` is measured.
+  - Pricing: `kicker` *Kicker* ahead of `heading`, and `featsLabel` *Features label*, both `in: [1]`.
+  - Calendar: `prompt` *Prompt* (no `in`, since every layout reads it), and `dateLabel` *Date column
+    label* and `availLabel` *Availability column label* after `slots`, both `in: [1]`.
+  - Media: `countLabel` *Counter label* `in: [0, 1, 2]`, `totalLabel` *Counter total label*
+    `in: [1, 2]` and `chipLabel` *Card chip* `in: [1]`, after `listLabel`.
+  - Testimonials: `kicker` is now `in: [1, 2]`.
+- **`sectionVm`.**
+  - The plain `cv()` reads are `vm.mediaChip`, `vm.countLabel` and `vm.totalLabel` (`:824`),
+    `vm.pricingKicker` and `vm.featsLabel` (`:932`), and `vm.calDateLabel` and `vm.calAvailLabel`
+    (`:1341`).
+  - `vm.testiKicker` is `cv('kicker', testiKickerSeed(d))` (`:1125`).
+  - `vm.calPrompt` is `cased(String(cv('prompt', CAL_PROMPT)).trim() || CAL_PROMPT)` (`:1331`).
+  - `EditPanel`'s chain has its own testimonials `kicker` arm (`:4077`), beside the map's.
+- **`EncoreSection`, both bodies at every site.**
+  - **Pricing** (`:9211`, `:9331`; Retro and Pop `:9434`, `:9604`). The kicker prints
+    `` {`[ ${kicker} ]`} ``, one text node as the literal was.
+  - **Calendar** (`:15843`; Retro and Pop's `colHead` `:15958`).
+    - The labels print `` {`${label} ↓`} ``.
+    - An emptied Date keeps its pinned span, so Availability stays over its column. With both
+      emptied the row and its rule go, which is 3 elements and about 51px (5 elements under
+      Editorial, whose rule is a `DashRule`).
+    - The Date span is `flex: 0 1 auto` with its old pin as `minWidth`, so a long label wraps no
+      narrower than its column.
+  - **Media.**
+    - The fan chip (`:6718`; Retro and Pop `:7016`) prints `` {`● ${chip}`} ``.
+    - Layouts 2 and 3's counter (`:6836`, `:7160`, `:7562`, `:7691`) is `trackCount(s)` (`:5731`).
+      Each word goes with its count, and the ` / ` stands only between two. It renders in the
+      four text nodes the literal made, `5`, ` Featured / `, `5`, ` Max`.
+    - Layout 1's counter (`:5913`, `:6264`) appends `countLabel` inside its one template literal.
+      Emptied, it is `null`, and the narrow column loses its 32 gap with it.
+  - **Testimonials** (`:21624`, `:21793`) prints `` {`✎ ${kicker}`} ``, one node as
+    `&#9998; What clients say` was. The layout-2 head comment that named it a kept literal is
+    rewritten.
+- **Typed labels wrap.** Every new site takes `whiteSpace: 'normal'`, `overflowWrap: 'anywhere'`
+  and `minWidth: 0` where it was `nowrap`.
+  - The fan chip, which is `absolute` on a clipping card, takes a `maxWidth` that keeps its own
+    inset from the right edge.
+  - The counter is `trackCountFit()`: `flex: none` and `maxWidth: calc(100% - gap)`. It keeps its
+    line and right-hand seat beside a wrapping `listLabel`, as JP-071 measured, and wraps only
+    once it is itself wider than the row.
+  - Layout 1's counter keeps to half the desktop row, so the heading keeps its column. (Its
+    `flex: 1` title block has a 0 basis, so an unbounded counter would take the whole row.)
+  - **The prompt's six sites gained a break.** The first states run found a 53-character word
+    running 19–79px past its box at 390 at all four layouts, clipped by the section, because the
+    lines had never held typed text. Those sites are layout 1's line in both bodies, layout 2's
+    in the `s.limeTree` block and at Retro's and Pop's 390, layout 3's two pills, and layout 4's
+    date card `sub` in both `infoRow`s.
+- **Digest: 0 of 660 on each surface** (themes 0–4, every category, three widths), as named, both
+  before and after the wrap fixes. The harness had been proved first (above).
+- **Reach** (nine rows in `reach.mjs`, themes 0–4). Each key moves exactly the designs its `in`
+  names, in 6 of 6 renders under every template: pricing's two at layout 2, the calendar's labels
+  at 2, `prompt` at all four (on its blocked-day base), `chipLabel` at 2, `countLabel` at 1–3,
+  `totalLabel` at 2 and 3, and `testimonials.kicker` at 2 and 3. A Node check of `fieldReach()`
+  against the same table found 0 mismatches.
+- **States** (a scratch puppeteer run, deleted). Each key was rendered at its layouts × themes 0–4
+  × three widths × both surfaces, 480 cells, as the seed, a marker, emptied, 85 characters and one
+  53-character word. The text `Range` was read against the nearest clipping box and the section.
+  - A marker moves only its own rows. The exceptions are expected: layout 1's title block, which
+    shares the counter's row, and layout 1's spinning seal, which the throwaway probe did not skip.
+  - Emptied, each label loses exactly its element. The Date label keeps its seat, and the prompt
+    renders text identical to the seed at all four layouts.
+  - No long state scrolls the page, and none runs past its box, with one exception: Retro's and
+    Pop's layout-2 foot at 768, which is `nowrap` and ellipsised by design, as it always was for
+    the slot line.
+  - Both words emptied: the media counter goes and its row stays. Both calendar labels emptied:
+    the head row goes.
+- **The real app.** Card 2 under Editorial, Lime, Grunge and Retro (puppeteer, the fields set
+  through `st`, Publish, Open, read at 1440, 768 and 390):
+  - The panel seeds each new field with its literal. The testimonials' *Kicker* reads *What
+    clients say*, with no "Not shown in this layout".
+  - With every field marked, **none of the eight is left** at any width.
+  - With only the new labels emptied, no label or bare glyph is drawn: no `[ ]`, no `↓` head, no
+    counter, no `●` chip and no `✎`. The prompt reads *Pick a date to enquire* again.
+  - No console errors.
+- **Not taken:** the 1088 Desktop canvas. No rule here is fitted to a width, and every seed sits
+  far inside its box.
+- **Build.** `npm run build` is clean. The root `index.html` is not refreshed.
+- **Docs.**
+  - CLAUDE.md's label paragraph: the eight keys, `kicker`'s new reach, the prompt, and the
+    rewritten sibling list.
+  - A bullet each in `notes/pricing.md`, `notes/calendar.md`, `notes/media.md` and
+    `notes/testimonials.md`.
+  - *Now reported* pointers where `● Featured` and `✎` were named kept: `../grunge/retest-qa-fixes.md`
+    (JP-071's head and reply) and `qa-fixes.md` (JP-090's verdict). A narrowing line in
+    `../retro/layout-2.md` beside the label rule.
+  - `reach.mjs` gets the eight new rows.
+
+Reply: **JP-095 (a) — fixed.** Eight labels on layout 2 are now editable on every template, in the
+editor and on the published page. Each starts as the design's text, and each can be emptied to
+hide it.
+- **Pricing**: *Kicker* (the "[ PRICING ]" over the heading) and *Features label* ("WHAT'S
+  INCLUDED"). They print as typed, so type capitals to keep the design's look.
+- **Booking Calendar**: *Date column label* and *Availability column label* over the list of dates.
+  Emptying both removes the row. *Prompt* is "Pick a date to enquire", which every calendar layout
+  shows while no date is picked. Left empty, it shows the design's text again, because the space
+  would otherwise look broken.
+- **Media Player**: *Card chip* ("● Featured" on the front card). *Counter label* and *Counter total
+  label* are the two words of "5 Featured / 5 Max", and *Counter label* is layout 1's "5 / 5
+  Featured" too. The numbers are the track count. An emptied word takes its number with it.
+- **Testimonials**: *Kicker* now changes "✎ What clients say" and no longer says "Not shown in this
+  layout". Layout 3 still starts from "Testimonials".
+- A long label wraps rather than running off a phone screen. Labels nobody reported stay as the
+  design draws them: the Bio's "Bio" eyebrow, the Booking Calendar's legend and its "… selected"
+  line, the Repertoire's "All" chip and search hint, and the footer's "A JustPay Product".
 
 ---
 

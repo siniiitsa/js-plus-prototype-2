@@ -102,6 +102,20 @@ const PROBES = [
   { name: 'bio.refLabel', cats: ['bio'], param: 'cj', value: { refLabel: Z } },
   { name: 'map.listLabel', cats: ['map'], param: 'cj', value: { listLabel: Z } },
   { name: 'form.typeLabel', cats: ['form'], param: 'cj', value: { typeLabel: Z } },
+  // JP-095 (a): layout 2's labels — pricing's eyebrow and features label, the
+  // calendar's column labels, media's fan chip and its counter's two words —
+  // and `testimonials.kicker` above, re-scoped to layout 2. The prompt prints
+  // only while no day is cued, which the clockless canvas never is, so both
+  // sides block the cued day (CAL_OPEN).
+  { name: 'pricing.kicker', cats: ['pricing'], param: 'cj', value: { kicker: Z } },
+  { name: 'pricing.featsLabel', cats: ['pricing'], param: 'cj', value: { featsLabel: Z } },
+  { name: 'calendar.dateLabel', cats: ['calendar'], param: 'cj', value: { dateLabel: Z } },
+  { name: 'calendar.availLabel', cats: ['calendar'], param: 'cj', value: { availLabel: Z } },
+  { name: 'calendar.prompt', cats: ['calendar'], param: 'cj',
+    base: { booked: ['2025-06-12'] }, value: { booked: ['2025-06-12'], prompt: Z } },
+  { name: 'media.chipLabel', cats: ['media'], param: 'cj', value: { chipLabel: Z } },
+  { name: 'media.countLabel', cats: ['media'], param: 'cj', value: { countLabel: Z } },
+  { name: 'media.totalLabel', cats: ['media'], param: 'cj', value: { totalLabel: Z } },
   // JP-066: a song's length and layout 3's set details. The length is a column
   // of `songs`, so both sides carry the same one-song list and only the length
   // differs; the sets key a live tag, or nothing could move.

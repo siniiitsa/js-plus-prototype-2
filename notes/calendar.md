@@ -167,3 +167,15 @@ another `notes/` file.
   foot is the frames' 101 / 100 / 100. `FIELDS.calendar.cta` reaches only layout 4 there
   (`{ Lime: [3], Grunge: [3], Editorial: [3], '*': [0, 3] }`, measured). Retro and Pop keep the
   pill.
+- **Layout 2's column labels and every layout's prompt are the artist's** (JP-095 (a), user call,
+  2026-10-01). `dateLabel` and `availLabel` (`in: [1]`, both bodies) are the `Date ↓` and
+  `Availability ↓` over the slot list, the `↓` the markup's. An emptied Date keeps its pinned
+  seat, so Availability stays over its column; with both emptied the head row and its rule go.
+  `prompt` (`CAL_PROMPT`, no `in`) is `vm.calPrompt`, which every layout prints while no day is
+  cued: layout 1's and 2's foot line, layout 3's pill and layout 4's date card. It stays
+  `cased()`, as the slot line beside it is, and reads its seed again when emptied
+  (`messageLabel`'s rule), since an empty foot reads as broken. The canvas never reads the clock,
+  so no harness render prints it unless the cued day is blocked: its `reach.mjs` row and any sweep
+  stand on `booked: [CAL_OPEN]`. A long word in it breaks at every site, except in Retro's and
+  Pop's layout-2 foot at 1440 and 768, which ellipsises the line as it always has the slot line.
+  The slot line's " selected" and the legend stay literals, unreported siblings.

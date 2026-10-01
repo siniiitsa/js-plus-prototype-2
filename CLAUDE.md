@@ -221,9 +221,20 @@ mutated through a single `patch()` helper.
   rule; it never reaches the mailto, whose subject carries the chip), and the map's
   "Shows/coverage", which is `kicker`'s layout-1 seed — `mapKickerSeed(d)`, called by
   `sectionVm` and `EditPanel`'s chain alike, so `kicker` now reaches layouts 1 and 3. A typed
-  label wraps rather than outrun a 390 page. The unreported siblings stay literals: the bio's
-  `Bio` eyebrow, media layout 2's `● Featured`, the calendar legend and testimonials layout 2's
-  `✎ What clients say`.
+  label wraps rather than outrun a 390 page. **Eight more at layout 2, every template** (JP-095
+  (a), user call, 2026-10-01): pricing's `kicker` and `featsLabel` (`[ PRICING ]` and
+  `WHAT’S INCLUDED`, seeded in the capitals the frame types and printed as typed), the
+  calendar's `dateLabel` / `availLabel` over the slot list (the `↓` the markup's; an emptied
+  Date keeps its seat, and both emptied drop the row), media's `chipLabel` (the fan's
+  `● Featured`) and the counter's `countLabel` / `totalLabel` ("5 Featured / 5 Max", layouts 2
+  and 3; `countLabel` is layout 1's "5 / 5 Featured" too; an emptied word takes its count with
+  it), and the testimonials' "✎ What clients say", which is `kicker`'s layout-2 seed —
+  `testiKickerSeed(d)`, `mapKickerSeed`'s shape with its own chain arm, so `kicker` reaches
+  layouts 2 and 3. The calendar's `prompt`, *Pick a date to enquire*, which every layout prints
+  while no day is cued, reads its seed again when emptied and stays `cased()`. The unreported
+  siblings stay literals: the bio's `Bio` eyebrow, the calendar legend and its slot line's
+  " selected", the repertoire's `All` chip and search placeholder, and the footer's *A JustPay
+  Product*.
 - A page section is `{ id, cat, arch, c }` — category, layout index, sparse content overrides.
   Colours are per-section only where a template's frames make them so: every section renders in
   the active theme's single `palette`, **unless its frames stand it on another colour scheme** —

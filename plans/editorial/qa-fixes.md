@@ -407,6 +407,8 @@ per package in the frame's order behind the `All` chip. Asked over what the sess
 seeded fields and left the unreported siblings as literals (CLAUDE.md lists four: the bio's `Bio`
 eyebrow, media layout 2's `● Featured`, the calendar legend, testimonials layout 2's `✎`). The
 tester has now reported four more, and one of them sits in the seat of a field that already exists.
+*(`● Featured` and `✎` were reported since, with six more layout-2 labels: JP-095 (a),
+[`layout-2-qa-fixes.md`](./layout-2-qa-fixes.md).)*
 
 | Literal | Sites | Reached by | Fix shape |
 |---|---|---|---|
