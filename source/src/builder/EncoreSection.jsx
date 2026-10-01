@@ -13795,15 +13795,15 @@ function Gallery({ s }) {
   // picture by construction (`pick` starts at -1: nothing chosen).
   //
   // What the frame draws and this does not: nothing. What the *section* has and
-  // the frame has no room for: the heading is the caption pill's first line
-  // (its own row at 768 — below) and the four media-source rows are gone, three
-  // of them outbound links. That is the media player's Soundcloud call three
-  // times over — see plans/retro/layout-2's open questions. The frame's own two
-  // lines, `MTV "MOOD SWING"` and `FEATURED REEL`, are named here so the call
-  // can be reversed: both are claims about the artist (an MTV feature, a reel)
-  // that no field backs, the video section's rule, so the pill takes `s.title`
-  // over `s.brand` instead — two strings the artist owns, reading as a caption
-  // credit on a photograph.
+  // the frame has no room for: the heading is the caption pill's first line, at
+  // every width (768's head row holds the frame's own word — below) and the
+  // four media-source rows are gone, three of them outbound links. That is the
+  // media player's Soundcloud call three times over — see plans/retro/layout-2's
+  // open questions. The frame's own two lines, `MTV "MOOD SWING"` and
+  // `FEATURED REEL`, are named here so the call can be reversed: both are
+  // claims about the artist (an MTV feature, a reel) that no field backs, the
+  // video section's rule, so the pill takes `s.title` over `s.brand` instead —
+  // two strings the artist owns, reading as a caption credit on a photograph.
   //
   // Desktop numbers are the 1440 frame × 0.82 (§5.5) through `u()`; the two
   // narrow masters are used verbatim, which is the `z` switch inside it (the
@@ -13823,12 +13823,15 @@ function Gallery({ s }) {
   //
   //  · **768 unhides the component's head row**, which the desktop master
   //    carries `hidden` (Figma 436:863) and the 390 sub-component does not have
-  //    at all. It is the only slot this design has for the section's heading,
-  //    so `s.title` moves up into it there and the caption pill keeps the
-  //    artist's name alone — each field allocated exactly once, the events
-  //    map's rule. The row's own "View list" and "✕" are dead controls and are
-  //    dropped, named here so the call can be reversed; what is left is the
-  //    label, in the frame's own 20px row so the band below stays 358.
+  //    at all. It prints the frame's own word, *Gallery*, which is
+  //    `FIELDS.gallery.railLabel` (`s.galRailLabel`), and the caption pill keeps
+  //    the heading over the artist's name, as at 1440 and 390 (JP-098, user
+  //    call, 2026-10-01, reversing Retro's "each field allocated exactly once":
+  //    `s.title` used to move up into this row and leave the pill the name
+  //    alone). The row's own "View list" and "✕" are dead controls and are
+  //    dropped, named here so the call can be reversed (JP-098 kept it); what
+  //    is left is the label, in the frame's own 20px row so the band below
+  //    stays 358.
   //  · **The 390 rail rounds its tiles at 10** where every other tile on the
   //    page rounds at 30. They still drop the first tile's top border and the
   //    last tile's bottom one, so the "runs on" reading survives the radius —
@@ -13840,7 +13843,8 @@ function Gallery({ s }) {
   //    squeezes it to `min-h-px`. That is `figma-frame-reading`'s leaked-number
   //    case, and honouring it would leave two seats of the rotation invisible
   //    and unclickable. The band is divided in the frame's proportions instead
-  //    — which is what this branch already does at every width.
+  //    — which is what this branch already does at every width. (JP-098 asked
+  //    for the frame's four; the user kept the six, 2026-10-01.)
   //  · **The 390 rail seats ten tiles at 48.8**, all of them `flex: 1 0 0`, and
   //    this branch draws the ten: the count is what shapes the tiles there, and
   //    six would stand at 88 — tall slivers where the frame draws near-squares.
@@ -14013,26 +14017,29 @@ function Gallery({ s }) {
       </div>
     )
 
-    // The head row, 768's alone: the frame's own label slot, holding the
-    // heading the two other masters put in the caption pill's first line. The
+    // The head row, 768's alone: the frame's own label slot, printing its
+    // *Gallery* (`railLabel`, JP-098; it held the heading before that, which
+    // is now the caption's at 768 too). Emptied, the row goes and the band
+    // takes the column's height, as an emptied heading took it before. The
     // 20 is the frame's — its own row is that tall because of the ✕ we drop —
-    // and keeping it is what leaves the band below at the master's 358.
-    const head = tab && s.title ? (
+    // and keeping it is what leaves the band below at the master's 358. A
+    // typed label ellipsises inside the column rather than grow the row.
+    const head = tab && s.galRailLabel ? (
       <div style={{ flex: 'none', height: u(20), display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
         <span style={{
           fontFamily: s.body, fontWeight: 700, fontSize: s.limeTree ? s.chip : u(11), lineHeight: 1,
           letterSpacing: s.limeTree ? '-0.06em' : u(-0.66), color: s.tx,
           whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-        }}>{s.title}</span>
+        }}>{s.galRailLabel}</span>
       </div>
     ) : null
 
     // The caption. Each line is rendered or not rather than printed blank (the
     // testimonials' rule), and with neither string the pill goes with them: a
-    // wordless block over a photograph is not one of the design's states. At
-    // 768 the heading has the head row above, so only the artist's name is
-    // left here — the pill is one line there by allocation, not by truncation.
-    const lines = (tab ? [s.brand] : [s.title, s.brand]).filter(Boolean)
+    // wordless block over a photograph is not one of the design's states. The
+    // heading over the name at every width: the frame's own pill is two lines
+    // at 768 as well (JP-098).
+    const lines = [s.title, s.brand].filter(Boolean)
     const caption = lines.length > 0 && (
       <div style={{
         position: 'absolute', left: u(40), bottom: u(40),

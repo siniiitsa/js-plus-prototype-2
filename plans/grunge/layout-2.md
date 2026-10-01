@@ -948,7 +948,8 @@ Append as the pass goes. Do not repeat layout 1's, Lime's or Retro's bullets; na
   component value the mode did not override, and it shows at desktop (the diagonal crosses at
   9): "leaked tops are followed where they show", so `rTop` is `u(30)` there. The 768 seats
   it would show on are 1px tall (Retro's squeeze, divided in the frame's proportions as
-  before), so nothing changes at 768.
+  before), so nothing changes at 768. *The squeeze call was kept by JP-098 (user call,
+  2026-10-01).*
 - **One named departure: the 390 right column's first-tile wrapper.** `880:19235` carries
   `[0, 0, 40, 40]` where its own image frame says 10, Lime's 390 says 10 on the same node,
   and Grunge's 768 and 1440 say 15 there — a one-node stray, not a leaked default (the render
@@ -978,7 +979,8 @@ Append as the pass goes. Do not repeat layout 1's, Lime's or Retro's bullets; na
   (255 × 0.82) at 100.9 / 176.3 / 184.5 and 159.1 / 198.5 / 104.1 (the frame's six × 0.82 to
   the tenth), first tiles `0 0 12.3 12.3`, middles 12.3, lasts `24.6 24.6 0 0`; 768 hero
   333 × 392 at 15, caption 89.4 × 31 at 11px, head row 331 × 20 with *See us in action* at
-  11px / −0.66px, grain 831 at (2, 1.2), tiles 160.5 wide at 73.9 / 129.3 / 134.8 and 116.3 /
+  11px / −0.66px (*reversed* by JP-098: the row reads *Gallery*, `railLabel`, and the caption
+  gains the heading over the name), grain 831 at (2, 1.2), tiles 160.5 wide at 73.9 / 129.3 / 134.8 and 116.3 /
   145.4 / 76.3 (the 358 band in the frame's proportions, Retro's rule); 390 hero 249 × 284 at
   15, caption 115.7 × 46 on two lines at 11px, ten tiles 36.5 × 48.8 at 10. **Named diffs,
   Lime's**: the root's 40 / 22 side padding against the masters' 30 / 10; the 37 out of the

@@ -42,7 +42,13 @@ another `notes/` file.
   shuffling under the click): the rail is the six slots other than `galActive()`'s, counting on
   from the one after it and wrapping — the old rotation's order at rest, so the canvas is
   unchanged — six tiles at 1440 and 768, and ten at 390, where they loop — and a pick moves only
-  the hero.
+  the hero. **Six at 768 is a decision** (JP-098, user call, 2026-10-01): the master shows four,
+  because its third tile in each column is a 1px leaked desktop height, and four would leave two
+  slots unreachable there. **768 adds a head row over the tiles** that prints `railLabel`
+  (*Gallery*, the frame's word, uncased; `in: [1]`, read at tablet alone). Emptied, the row goes
+  and the band takes the column's 392. The heading is the caption pill's first line, over the
+  artist's name, at every width: the row held it until JP-098. The frame's *View list* and ✕ are
+  not drawn, because they are dead controls (kept, JP-098).
   The picked tile carries an inset accent ring, and clicking it again resets `pick` to -1, which
   is the only way back to the `galActive()` slot, since that one has no tile. No ring on the
   canvas or the published first paint, which therefore stay the Figma picture;

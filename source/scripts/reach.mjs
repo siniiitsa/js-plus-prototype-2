@@ -129,6 +129,9 @@ const PROBES = [
   { name: 'map.feeLabel', cats: ['map'], param: 'cj', value: { feeLabel: Z } },
   { name: 'map.venueCta', cats: ['map'], param: 'cj', value: { venueCta: Z } },
   { name: 'map.routeCta', cats: ['map'], param: 'cj', value: { routeCta: Z } },
+  // JP-098: the gallery's 768 head row, read at tablet alone — so layout 2
+  // moves in 2 of its 6 renders (tablet, canvas and live), by design.
+  { name: 'gallery.railLabel', cats: ['gallery'], param: 'cj', value: { railLabel: Z } },
   // JP-066: a song's length and layout 3's set details. The length is a column
   // of `songs`, so both sides carry the same one-song list and only the length
   // differs; the sets key a live tag, or nothing could move.

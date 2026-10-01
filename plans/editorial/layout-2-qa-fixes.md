@@ -112,7 +112,7 @@ the list explicitly.
 | 5 | JP-095 (b) · JP-096 | The map's nine labels; *Based in* / *Willing to travel to* | **Confirmed, and recorded**: Retro dropped *Based in* because `base`'s seed says it | M | **user: 1A, 2A, 3C, 4A** (JP-071's shape; pills read their seed again; the home value is the header's Location; unfiled seats named) | **done** (15 of 660 a surface, map `arch 1` alone, as named; thirteen reach rows, 6/6 at each `in`; card 2 under four templates prints none of the nine) |
 | 6 | JP-100 | 390 calendar foot: pill on its own row | **Confirmed, a fit slip**: Lime's fit drew Retro's pre-QA stack (JP-060's shape) | S | **user: A** (the group wraps, the line's minimum its widest word) | **done** (6 of 660 a surface, calendar `arch 1` × 390 × themes 1–3, as named; 99 states clean; card 2 one row under four templates) |
 | 7 | JP-097 | Byline lacks *· Single* | **Confirmed, a fit slip of every template**: the bar prints the artist alone; layouts 3 and 4 print the release | S | no | **done** (30 of 660 a surface, media `arch 1`, the byline's text alone, as named, its box the column's; the per-track `byline` read by the layout-2 bar, both bodies; card 2 under four templates reads *Kai Mercer · Single*) |
-| 8 | JP-098 | 768 gallery: six tiles, no *Gallery · View list ✕* | **Confirmed, and recorded**: Retro's squeeze override and head-row allocation, every template | S | **yes** — tiles, head row, dead controls | open |
+| 8 | JP-098 | 768 gallery: six tiles, no *Gallery · View list ✕* | **Confirmed, and recorded**: Retro's squeeze override and head-row allocation, every template | S | **user: 1A, 2B, 3A** (six tiles kept; a *Gallery label* field in the row, the heading back in the caption; View list / ✕ stay dropped) | **done** (10 of 660 a surface, gallery `arch 1` × 768 × themes 0–4, three rows each, as named; `railLabel` reach 2/6 at layout 2, the tablet renders; card 2 under four templates reads *Gallery* over a heading-and-name caption) |
 | 9 | JP-094 | Section gaps too large | **Confirmed, and recorded**: layout 2 stands every section on `padY`; the frames' own insets differ by up to 85px at 1440 and 48 at 390 | L | **yes** — scope, widths | open |
 | 10 | — | End-of-pass sweep | — | S | — | open |
 
@@ -1589,7 +1589,128 @@ and dead-controls comments, `notes/gallery.md:38`–`45`, *reversed* pointers at
 `../retro/layout-2.md:1056`, `../lime/layout-2.md:721`, `../grunge/layout-2.md:950`,
 `layout-2.md:1279`.
 
-**Settled.** —
+**Decided** (2026-10-01, user call): **1A, 2B, 3A**, every recommendation.
+1. **The tiles stay six**, with a reply. The 768 master's two 1px tiles are a leaked desktop height,
+   and four would leave two of the seven photographs unreachable at 768. Retro's call stands.
+2. **The head row prints a new *Gallery label* field**, JP-071's shape: seeded *Gallery* (the
+   frame's title case), uncased, `in: [1]`, read at 768 alone. The *Heading* goes back to the 768
+   caption's first line, so the pill reads heading then name at every width. An emptied label drops
+   the row, as an emptied *Heading* drops it on HEAD, and the band takes the column's height.
+   Reverses Retro's *"a slot that appears at one width only is where a field … finally goes"*.
+3. **View list and ✕ stay dropped**, with a reply: two controls with nothing to do on the
+   published page. Retro's call stands.
+
+Asked over what the session found first, on HEAD (`7b1e1e2`):
+- **Every *Evidence* line moved as mapped.** `EncoreSection.jsx`: `Gallery` `:13070`, its
+  `if (s.v1)` `:13851`, the claims comment `:13796`–`13803`, the head-row note `:13824`–`13831`,
+  the squeeze note `:13840`–`13847`, `COLUMNS` `:13925`, the tile's flex `:13973`, the head
+  `:14017`–`14028`, `lines` `:14035`, the 768 wrap `:14121`. `data.js`: `heading` `:1796`,
+  `TITLES.gallery` `:1157`. Plans: Retro `:1065`–`1070` (the head row) and `:1071`–`1080` (the
+  squeeze); Lime `:721`–`722` and Grunge `:950`–`951` / `:980` unmoved; Editorial's moved to
+  `:1285` and `:1300`.
+- **The frames, re-read.** `986:15668`'s right column is 342 wide: the head row 342 × 20 (*Gallery*
+  35 × 11, a 211 × 1 spacer, *View list* 48 × 17, ✕ 12 × 20), then the band 14 below it, 358 tall,
+  with tiles 123 / 215 / **1** and 194 / 242 / **1**. The render shows four tiles and a two-line
+  caption. `964:64609`'s row `710:2622` is `hidden` (520 × 21), and the band starts at its top.
+- **Reproduced in the real app** (puppeteer, card 2 under Editorial, Lime, Grunge and Retro, the
+  canvas's three tabs, then Publish, Open, at 1440, 768 and 390). At 768 on both surfaces: six
+  tiles, all visible; the row reads *See us in action*; the caption reads *Kai Mercer* alone. 1440
+  and 390: heading over name, no row. No console errors.
+- **The harness was proved first**: a fresh HEAD worktree at `7b1e1e2` on :5174 against the
+  unedited tree on :5173, themes 0–4, every category, both surfaces: **0 of 660 on each** after the
+  port and stamp normalisation (194 raw, all the port).
+- **Expected after-diff, named before the code.** Gallery `arch 1` × tablet × themes 0–4 × both
+  surfaces, 10 files, three rows each:
+  - the head span's text, *See us in action* → *Gallery*, and its width (a content-sized flex item);
+  - the caption pill, one line taller and wider, its top moving up (it is bottom-anchored);
+  - one inserted span, the heading line.
+  
+  The name span's row holds, because the pill grows upward from a fixed bottom. 1440, 390, every
+  other arch and category: 0.
+
+**Settled** (2026-10-02).
+- **`data.js`**: `GALLERY_RAIL_LABEL = 'Gallery'` beside JP-095's labels, and
+  `FIELDS.gallery.railLabel` after `heading`. Its panel name is *Gallery label*, `in: [1]`. The hint
+  is *"The label over the small photos, on a tablet only. Left empty, it is not drawn."*, because
+  `in` names no width.
+- **`sectionVm`** (`EncoreBuilder.jsx:1252`–`1254`): `vm.galRailLabel = cv('railLabel', …)`,
+  uncased (JP-071's shape).
+- **`EncoreSection`, the shared `if (s.v1)` branch** (every template): `head` is
+  `tab && s.galRailLabel` and prints it (`:14020`–`14035`). `lines` is `[s.title, s.brand]` at
+  every width (`:14042`). No style changed. The span still ellipsises in the row, so the 20px row
+  and the 358 band are the frame's. Emptied, `head` is null and the band takes the column's 392,
+  which is HEAD's emptied-heading path.
+- **Digest: as named.** 10 of 660 on each surface, gallery `arch 1` × tablet × themes 0–4. In each
+  file:
+  - the head span reads *Gallery*, its x and y held. Its width goes 73.9 → 33.8 (Retro
+    73.2 → 33.5, Lime 80.6 → 36.9, Pop's *SEE US IN ACTION* 88 → 32.4);
+  - the caption div's y goes 376 → 361 and its h 31 → 46 (Lime, chip 12: 375 → 359, 32 → 48).
+    Its width goes 89.4 → 115.7 (Retro 89 → 115.1, Lime 95 → 123.7, Pop 90.7 → 116);
+  - one span is inserted at (351, 371) (Lime 369), the heading line;
+  - the name span's row is identical.
+  
+  Line counts are +1 in each file. Every other file: 0.
+- **`reach.mjs`**: a `gallery.railLabel` row, measured with a scratch copy running that row and
+  `gallery.heading` alone, themes 0–4. `railLabel` reads **layout 2 (2/6)** under every theme.
+  The two are the tablet canvas and live renders: the states probe below finds the marker moving
+  the HTML at tablet alone, so desktop and mobile move nothing. That is the `in`, a partial by
+  design beside `calendar.email`'s 3/6. `heading` still reads layouts 1–4 at 6/6.
+- **States** (a scratch probe, deleted; themes 0–4 × three widths × both surfaces):
+  - **The seed**: at 768 the band is 358 with six tiles (73.9 / 129.3 / 134.8 …), the row reads
+    *Gallery* and the caption reads heading over name. 1440 and 390 are unchanged.
+  - **Emptied label**: no row, and the band is 392 with six tiles (81.3 / 142.2 / 148.5 …), all
+    inside it. Live, every tile picks (its photo in the hero, one ring) and a second click resets.
+  - **A 127-character label**: the row ellipsises at the column's right edge. The text node's
+    `Range` runs to 954 (Lime 1010), the box ends at 738, and there is no page scroll.
+  - **Emptied heading**: the pill reads the name alone, and the row still reads *Gallery*.
+  - **Both emptied**: the name alone, no row.
+  - **Live at desktop and 390**: every tile picks. At 390 the rail's looped twins ring together,
+    as before.
+- **The real app** (puppeteer: card 2 under Editorial, Lime, Grunge and Retro, the canvas's three
+  tabs, then Publish, Open, at 1440, 768 and 390):
+  - **The seed**: the 768 row reads *Gallery*, and the caption reads *See us in action* (y 369)
+    over *Kai Mercer* (384), on both surfaces. The six tiles fill a 358 band. 1440 and 390 read as
+    on HEAD. Live, the six tiles pick six distinct photographs at 768 and 1440; at 390 the ten
+    tiles cover the same six. No console errors.
+  - **Marker sweep**: `FIELDS.gallery`'s text keys, built off `data.js` and written through `st`'s
+    dispatch. Every gallery text node, at every width on both surfaces, is a marker or the
+    artist's name. No literal is left (*Gallery* was the last one).
+  - **Emptied pass** (the label keys alone, `MARK ?? …`): the row goes, the band is 392, and the
+    six tiles still pick six photographs.
+  - **The panel**, under Editorial and Retro: *Gallery label* shows *Gallery* and the hint, with
+    no "Not shown" note on layout 2. Typing *Photos* moves the Tablet canvas's row. Emptying it
+    drops the row, and the box stays empty. `fieldReach` puts the note on layouts 1, 3 and 4
+    under all five templates, and `fieldNowhere` is false everywhere.
+- **Pop's casing, a consequence, not a decision**: the label is uncased (JP-071's shape) and the
+  caption's lines are `uppercase`. So Pop reads *Gallery* over a pill reading
+  *SEE US IN ACTION / KAI MERCER*. Under Pop the row used to read *SEE US IN ACTION*, the cased
+  heading.
+- **Build.** `npm run build` is clean. The root `index.html` is not refreshed.
+- **Docs.**
+  - CLAUDE.md's JP-071 / JP-090 label paragraph: one sentence before *The unreported siblings*.
+  - `notes/gallery.md`'s layout-2 rail paragraph: six at 768 as a decision, the head row, the
+    caption, *View list* / ✕.
+  - The four comment sites in `Gallery`: the claims comment, the head-row bullet (*reversed*,
+    with how), the squeeze bullet (*kept*), the head and the caption comments.
+  - *Reversed* pointers at `../retro/layout-2.md:1065`'s *a slot that appears at one width only*,
+    `../lime/layout-2.md:721`, and the 768 measurement lines `../grunge/layout-2.md:981` and
+    `layout-2.md:1301`.
+  - *Kept* pointers at Retro's squeeze bullet, `../grunge/layout-2.md:951` and
+    `layout-2.md:1288`.
+  - The README does not describe the row. `notes/list-editors.md` needs nothing: no repeater, and
+    a plain `d` field needs no seed resolver.
+- **Not changed, named:** the six tiles (1A) and the dropped *View list* / ✕ (3A).
+
+Reply: **JP-098 — partly fixed, partly by design.** At tablet width the gallery's small label row
+now reads *Gallery*, as in the design, and the caption on the large photo shows the section
+heading over the artist's name on two lines, also as in the design. *Gallery* is a new field,
+*Gallery label*, so the artist can change it or clear it (cleared, the row is not drawn). The fix
+applies to every template. *By design:*
+- **The six thumbnails.** In the tablet design the last thumbnail in each column is 1px tall, a
+  desktop size left in the frame, which is why only four show. Drawing four would hide two of the
+  seven photos from tablet visitors.
+- ***View list* and ✕.** They are not drawn because the page has no list view for them to open,
+  so they would be buttons that do nothing.
 
 ---
 

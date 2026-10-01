@@ -240,7 +240,10 @@ mutated through a single `patch()` helper.
   the stat row's `radiusLabel` / `travelTimeLabel` / `feeLabel`, are new; an emptied stat label
   leaves its value alone. The pills `venueCta` / `routeCta` read their seed again when emptied.
   Venue Link wraps only once typed longer than its seed (`vm.mapVenueCtaWraps`), because Lime's 768
-  seed runs 1px into the disc's gap. The unreported siblings stay literals: the bio's `Bio` eyebrow, the calendar legend and its slot line's
+  seed runs 1px into the disc's gap. **And the gallery's 768 head row** (JP-098, user call,
+  2026-10-01): `railLabel`, seeded *Gallery*, `in: [1]` but read at tablet alone (the hint says
+  so, since `in` names no width), dropped when emptied; the heading it used to hold is the caption
+  pill's first line at every width. The unreported siblings stay literals: the bio's `Bio` eyebrow, the calendar legend and its slot line's
   " selected", the repertoire's `All` chip and search placeholder, and the footer's *A JustPay
   Product*.
 - A page section is `{ id, cat, arch, c }` — category, layout index, sparse content overrides.

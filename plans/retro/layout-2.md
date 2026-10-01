@@ -1068,6 +1068,10 @@ Learned on the gallery's narrow masters (section 6):
   and the pill keeps the artist's name alone. Allocate each field exactly once
   (the events map's rule) rather than printing it in both — and check the
   *frame's* own copy for the same duplication before transcribing it.
+  ***Reversed** by JP-098 (user call, 2026-10-01,
+  `../editorial/layout-2-qa-fixes.md`): the row prints the frame's own word,
+  a `railLabel` field seeded *Gallery*, and the heading went back to the
+  caption, which is two lines at 768 as in the frame.*
 - **`flex: 1 0 0` under siblings carrying leaked desktop heights is the tell
   for a squeezed master.** The 768 masonry's third tile in each column is a
   fill; its two siblings still state 123/215 and 194/242 against a 358 band,
@@ -1077,6 +1081,7 @@ Learned on the gallery's narrow masters (section 6):
   frame's proportions instead: it shows all six, and it is what the desktop
   branch's `flex: ${h} 1 auto` already does. **Honouring a squeeze costs
   content**, which is the one thing a fidelity argument never buys.
+  *Kept by JP-098 (user call, 2026-10-01), which asked for the frame's four.*
 - **When every tile in a rail is `flex: 1 0 0`, the count is the design and
   the height is derived.** The 390 rail seats ten at 48.8; the section has
   six, so the same mechanism at our count stands them at (284 − 20) / 3 = 88.

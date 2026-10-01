@@ -1285,7 +1285,8 @@ the twins' dark-ground assumptions break (trap 6).
 - **Open question 7's 768 tiles are overridden, as the twins' are**: the master's last tile in
   each column is 1px tall (its siblings keep their desktop 123 / 215 and 194 / 242 in a 358
   band), and the inherited `flex: h 1 auto` divides the band in the frame's proportions so all six
-  show — Retro's *honouring a squeeze costs content*. **The 390 right column's first-tile wrapper
+  show — Retro's *honouring a squeeze costs content* (kept by JP-098, user call, 2026-10-01).
+  **The 390 right column's first-tile wrapper
   carries Grunge's `[0, 0, 40, 40]` stray again** (`880:19258`; its own image frame says 10, as
   Lime's wrapper does), and the render shows its capsule foot on that one tile. Not followed, on
   Grunge's reasoning — one seat of ten. And **the right column's first-tile wrapper at 1440 and
@@ -1298,7 +1299,8 @@ the twins' dark-ground assumptions break (trap 6).
   0.82) at 100.9 / 176.3 / 184.5 and 159.1 / 198.5 / 104.1, radius 2.5, edge 1px `#C86E52` —
   Grunge's numbers, the rail at x 707.7 against 708.5 (the hero's flex share, the twins'); 768
   hero 343 × 392 (342 × 392), head *See us in action* at 11px / −0.66px in ink, caption 89.4 × 31
-  at (41, 41), tiles 165.5 wide (166) at 73.9 / 129.3 / 134.8 and 116.3 / 145.4 / 76.3; 390 ten
+  at (41, 41) (*reversed* by JP-098: the head reads *Gallery*, `railLabel`, and the caption is the
+  heading over the name, 115.7 × 46 at 768), tiles 165.5 wide (166) at 73.9 / 129.3 / 134.8 and 116.3 / 145.4 / 76.3; 390 ten
   tiles 36.5 × 48.8 at radius 10, caption 115.7 × 46 at (41, 41). **Named diffs**: the roots'
   `padY` 80 / 56 / 44 against the masters' 46 / 30 / 40 (every section's); and **at 390 the hero
   is 273 wide against 253** — the master pads its own sides 20 where the root's `padX` is 10

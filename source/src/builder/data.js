@@ -788,6 +788,10 @@ export const TESTI_KICKER_2 = 'What clients say'
 // The testimonials' eyebrow an absent `kicker` stands for, by design:
 // mapKickerSeed()'s shape, called by sectionVm and EditPanel's chain alike.
 export const testiKickerSeed = (d) => (d === 1 ? TESTI_KICKER_2 : TESTI_KICKER)
+// JP-098 (user call, 2026-10-01): the gallery's 768 head row, over the small
+// photos, in the frame's title case (986:15668). Layout 2 at tablet alone; the
+// heading it used to hold went back to the caption.
+export const GALLERY_RAIL_LABEL = 'Gallery'
 
 // Pricing — the packages beside the section's filter row, and the seed for
 // FIELDS.pricing's structured editor: used whenever the section carries no
@@ -1794,6 +1798,10 @@ export const FIELDS = {
     { k: 'images',  l: 'Photos', type: 'images', max: 7,
       hint: 'One per tile. Layout 1 shows the highlighted one in its viewer; layouts 2 and 4 show it as the large photo beside the others.' },
     { k: 'heading', l: 'Heading', d: 'See us in action' },
+    // JP-098: the 768 head row's word, the frame's, uncased. `in` cannot name a
+    // width, so the hint does.
+    { k: 'railLabel', l: 'Gallery label', d: GALLERY_RAIL_LABEL, in: [1],
+      hint: 'The label over the small photos, on a tablet only. Left empty, it is not drawn.' },
     { k: 'youtube',   l: 'YouTube link', type: 'url', d: '', in: [0],
       hint: 'Where the YouTube row goes on the published page. Leave empty and it stays a picture. Layout 1 only.' },
     { k: 'instagram', l: 'Instagram link', type: 'url', d: '', in: [0],

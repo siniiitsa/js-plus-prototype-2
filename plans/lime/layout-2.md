@@ -719,7 +719,10 @@ Settled in section 6 (the gallery):
   bar's reading of Figma's paint order, × 0.82 on desktop. The frame's 4 and 3 radii on the inner
   image frames are clipped by the 30 outside (nested clips: the largest draws).
 - **The 768 head's 204 × 1 spacer carries no paint**, so dropping it with Retro's *View list* and
-  `✕` loses nothing. *Gallery* is title case in Inter Bold at Body/Chip, `s.tx`.
+  `✕` loses nothing. *Gallery* is title case in Inter Bold at Body/Chip, `s.tx`. *The row printed
+  the heading, Retro's allocation, until JP-098 (user call, 2026-10-01) **reversed** it: it prints
+  *Gallery*, `railLabel`, and the heading is the caption's at 768 too. The six tiles and the
+  dropped *View list* / ✕ were kept.*
 - **Photography needs nothing**: the hero's hash is `3a59b4d1`, `limeGallery4`, which is slot 3 and
   `galActive()`, so the canvas opens on the frame's own hero. The six tiles are Retro's shared
   strip in the frame too; their order is the seat rotation's, Retro's accepted diff.

@@ -41,7 +41,7 @@ import {
   MAP_HOME_LABEL, MAP_HOME_CAPTION, MAP_VENUE_LABEL, MAP_VENUE_CAPTION, MAP_RADIUS_LABEL, MAP_TIME_LABEL,
   MAP_FEE_LABEL, MAP_VENUE_CTA, MAP_ROUTE_CTA,
   PRICING_KICKER, PRICING_FEATS_LABEL, CAL_DATE_LABEL, CAL_AVAIL_LABEL, CAL_PROMPT,
-  MEDIA_CHIP_LABEL, MEDIA_COUNT_LABEL, MEDIA_TOTAL_LABEL, TIER_KEYS, tiersSeed, limeTreeTheme, PRICE_UNIT, QUOTES,
+  MEDIA_CHIP_LABEL, MEDIA_COUNT_LABEL, MEDIA_TOTAL_LABEL, GALLERY_RAIL_LABEL, TIER_KEYS, tiersSeed, limeTreeTheme, PRICE_UNIT, QUOTES,
   CITIES, PINS, EXAMPLE_PAGE,
   NOW_PLAYING, TRACK_AUDIO, SONGS, REP_ALL,
   GIGS, MAP_RADIUS, MAP_BASE, MAP_TERMS, MAP_TRAVEL_TIME, MAP_FEE, directionsUrl, GALLERY_SOURCES,
@@ -1249,6 +1249,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // gallery
   vm.gal = ['01', '02', '03', '04', '05', '06']
   vm.gal4 = vm.gal.slice(0, 4)
+  // JP-098 — layout 2's 768 head row over the small photos, the frame's word,
+  // uncased; emptied, the row goes. The heading is the caption's, at every width.
+  vm.galRailLabel = cv('railLabel', GALLERY_RAIL_LABEL)
   // Tag order per the Figma gallery frame: Gallery/YouTube/Instagram/TikTok
   // tiles read accent-red, olive, purple, yellow — tags 1, 3, 0, 2 in Retro.
   //
