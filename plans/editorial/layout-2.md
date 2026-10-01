@@ -933,6 +933,11 @@ the twins' dark-ground assumptions break (trap 6).
   as the frame's — and wraps at the word at 768 (73px, two lines, the frame's own two) and fits
   one line at 390 (243 of 370; **the frame's 390 title is one line too**, 43 tall — *The header,
   and card 2* said two). No `cqi` fit was owed.
+  **Reversed by JP-092** (user call, 2026-10-01, [`layout-2-qa-fixes.md`](./layout-2-qa-fixes.md)):
+  the call was measured on the seed alone, and a long word ran out of the column at every width
+  (*Featherstonehaugh* scrolled the published 1440 page 433px). The column is now a query
+  container and the title `min(s.dispLg, 100cqi / s.cardNameEms)`, in the same block for Lime and
+  Grunge. The seed still sets at the ramp, 97 / 73 / 48.
 - **Measured against the masters' content edges** (harness, `getBoundingClientRect`): desktop
   capsule at (108.2, 33.4) against 132 × 0.82 / 40.47 × 0.82, name centred at 590, pill right
   edge 1071.7 against 1072.6 and 28.6 tall, photo (45.9, 127.9) 521.1 × 564.2, chip 132.9 × 23.8

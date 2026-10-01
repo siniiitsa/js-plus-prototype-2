@@ -2146,18 +2146,27 @@ function HeaderV1({ s }) {
     // The pill, the two cards' copy and `heroCta` are the artist's (JP-037,
     // JP-059): each drops when emptied, and the "●" is the markup's. A long
     // pill wraps inside the column rather than widening the page, as the
-    // hero's does; the seeded box does not move.
+    // hero's does; the seeded box does not move. The column is a query
+    // container at every width (JP-092); it is sized by its parent at all
+    // three, so the container moves nothing.
     const identity = (
-      <div style={col(u(18), { alignItems: 'flex-start', minWidth: 0 })}>
+      <div style={col(u(18), { alignItems: 'flex-start', minWidth: 0, containerType: 'inline-size' })}>
         {s.heroAvail && <span style={{
           boxShadow: ring(s.stroke2), borderRadius: s.btnR, padding: `${u(6)} ${u(12)}`,
           fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4, color: s.ac,
           whiteSpace: 'normal', maxWidth: '100%', boxSizing: 'border-box',
         }}>{`● ${s.heroAvail}`}</span>}
         {/* Grunge's title is two-tone — `sem/text/2` then `text/1`, the hero's
-            own split — where Lime's is one tone. */}
-        <Title s={s} size={s.dispLg} color={s.tx} lh={0.89} inline
-               twoTone={grunge} toneA={s.tx} toneB={s.ac} />
+            own split — where Lime's is one tone. It wraps between words, and
+            shrinks below the ramp only when its widest word would outrun the
+            column (JP-092, user call, 2026-10-01, reversing "no `cqi` fit was
+            owed", which was measured on the seed alone): `100cqi` over the
+            word's width in `navFace` ems (`s.cardNameEms`, HeaderV2's JP-062
+            rule), passed unfaced, since `Title` applies `faced()` and Grunge's
+            ems are already faced. It never breaks inside a word, and the
+            seeded MERCER keeps the ramp at every width. */}
+        <Title s={s} size={s.cardNameEms ? `min(${s.dispLg}, calc(100cqi / ${s.cardNameEms}))` : s.dispLg}
+               color={s.tx} lh={0.89} inline twoTone={grunge} toneA={s.tx} toneB={s.ac} />
         <p style={{
           margin: 0, fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5, color: s.ac, width: '100%',
         }}>{s.subtitle}</p>

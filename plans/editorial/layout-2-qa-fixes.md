@@ -107,7 +107,7 @@ the list explicitly.
 |---|---|---|---|---|---|---|
 | 1 | JP-099 | 390 player: no ♡ ↓ ⋯ | **Confirmed, and recorded**: Retro's 390 override, shared by every template, because the master pays for the icons with the track's whole title | S (or none) | **user: A, a reply** | **done** (no code; the published 390 title's cut added to JP-097's *Seen, not filed*) |
 | 2 | JP-093 | Form box labels at 45% | **Confirmed**: the global `::placeholder` .45, recorded as "Repertoire's accepted diff", lands on boxes with no other label | S | **user: 1A `var(--ph, .45)`, 2A the four sites** | **done** (0 digest files; the 90 label-in-box inputs read 1 and the other 300 stay .45) |
-| 3 | JP-092 | Long hero name overflows | **Confirmed, and shared**: `HeaderV1`'s `s.limeTree` title is the flat ramp with no container; the fit was declined on the seed alone | S | light — Retro's half | open |
+| 3 | JP-092 | Long hero name overflows | **Confirmed, and shared**: `HeaderV1`'s `s.limeTree` title is the flat ramp with no container; the fit was declined on the seed alone | S | **user: A, Retro's half named** | **done** (0 digest files; the title `min(ramp, 100cqi / cardNameEms)` on an `inline-size` column, 105 published renders fitted to 0.002px) |
 | 4 | JP-095 (a) | Pricing, calendar, media, testimonials labels | **Confirmed**: JP-090's rule, eight literals, every template; two are CLAUDE.md's named "unreported siblings" | M | **yes** — keys, emptied rules | open |
 | 5 | JP-095 (b) · JP-096 | The map's nine labels; *Based in* / *Willing to travel to* | **Confirmed, and recorded**: Retro dropped *Based in* because `base`'s seed says it | M | **yes** — the home value, emptied pills | open |
 | 6 | JP-100 | 390 calendar foot: pill on its own row | **Confirmed, a fit slip**: Lime's fit drew Retro's pre-QA stack (JP-060's shape) | S | light — Editorial's line | open |
@@ -548,7 +548,107 @@ names (it did not overflow under the three at triage).
 (add `HeaderV1` to its readers); `notes/templates.md`'s *Feature spread* clause; a *reversed*
 pointer on `layout-2.md:931`; the answer to `qa-fixes.md:798`'s named layout-2 item.
 
-**Settled.** —
+**Decided** (2026-10-01, user call): **A. Retro's half is named, not fixed here.** There is no Retro
+ticket, and a fit would need a Fraunces ems table.
+
+Asked over the evidence, re-checked on HEAD (`de631ab`). JP-093 touched `EncoreSection.jsx` only
+from `:24191` down and `EncoreBuilder.jsx` not at all, so every line held: `HeaderV1` at `:1917`,
+its block `:1918`–`2283`, `identity` at `:2151`, the title at `:2159`–`2160`, the rows at
+`:2252`–`2279`, `Title` at `:935`–`958`, JP-086's fit at `:1826`, Retro's half at `:2470`–`2471`
+and `:2549`, and `navFace` / `navNameEms` / `cardNameEms` at `EncoreBuilder.jsx:651`–`674`.
+
+**Reproduced in the real app** (puppeteer: card 2 published, the tab caught from the opener, *Title*
+typed in the edit panel; each word's text-node `Range`). *Maximilian Featherstonehaugh*:
+
+| Template | 1440 | 768 | 390 |
+|---|---|---|---|
+| Editorial (97 / 73 / 48) | the word **433.19** past the section, page `scrollWidth` 1873 (the tester's 433) | **309.91** under the cards | **76.27** past, page 466 (the tester's 76) |
+| Lime (107 / 81 / 54) | 165.34 past, page 1605 | 147.86 under the cards | fits (354.58 of 370) |
+| Grunge (80.25 / 60.75 / 34.5) | 68.03 past, page 1508 | 87.47 under the cards | fits |
+| Retro (79 / 60 / 40) | 130.17 past, page 1570 | 127.69 under the cards | the title fits; the nav's Book pill ends at **426.28**, 36.3 past |
+
+1440 is zoomed (× 1.22), so Editorial's 433 is the triage's +355 layout px. One reading the triage
+did not have: at **768 under Editorial, MAXIMILIAN alone** (388.78 at 73px) overruns the 324 column
+by 64.78 and runs 4.78 under the cards. The fit covers it, since the widest word sets the size. No
+console errors.
+
+**Settled** (2026-10-01).
+- **The code.** In `HeaderV1`'s `s.limeTree` block:
+  - `identity` takes `containerType: 'inline-size'` at every width (`EncoreSection.jsx:2153`). It is
+    sized by its parent at all three, so the container moves nothing.
+  - The title is `s.cardNameEms ? min(${s.dispLg}, calc(100cqi / ${s.cardNameEms})) : s.dispLg`
+    (`:2168`). It is passed unfaced: `Title` applies `faced()`, and Grunge's `navFace` ems are
+    already × 0.75, so the fitted word comes to `100cqi` under all three.
+  - The comments over both say why, with the *reversed* pointer. The `vm.cardNameEms` comment
+    (`EncoreBuilder.jsx:670`–`675`) names `HeaderV1` among its readers. Nothing on `Title`, and
+    Retro's half is untouched.
+- **Digest: 0 of 528 on each surface** (themes 0–3, all categories, three widths, canvas and
+  `live=1`), as named. The harness was proved first: a fresh HEAD worktree on :5174 against the
+  unedited tree on :5173 came to 0 of 528 on each surface after the port and stamp
+  normalisation. **Positive control:** the same header digest with `&cj=` on *Maximilian
+  Featherstonehaugh* differs in **14 of 72** files per surface. They are header `arch 1` and `5`
+  under Lime and Grunge at desktop and 768, and under Editorial at all three widths, which are
+  exactly the renders where the name overflowed. Lime and Grunge 390 already fit, and nothing moves
+  under Retro.
+- **The 1088 canvas** (the editor's Desktop tab, a 1440 window with the edit panel open; the
+  column 475). The seed sets at the ramp under all three: **97 / 107 / 80.25**. MERCER's limit
+  there is 475 / 3.412 = 139.2 under Editorial. The long names fit: Editorial *Featherstonehaugh*
+  49.48, Lime 71.80, Grunge 61.11, each word one rect and inside the column.
+- **The setup modal's card 2 and the layout picker's thumbnail** (the two other desktop renders of
+  header `arch 1`) lay the 1180 desktop out and scale it, so their column is 521. The seed reads
+  97 / 107 / 80.25 under Editorial / Lime / Grunge in both, the same as HEAD. Only the column's
+  `containerType` differs.
+- **The published tab**, card 2 under Editorial, Lime and Grunge, the five names at 1180, 1440,
+  1920, 768, 414, 390 and 360 (105 renders):
+  - **Every computed font-size is `min(ramp, column ÷ ems) × faceK`** to within 0.002px, with the
+    column taken from its computed `width` (unzoomed) and the ems from `data.js`'s tables. The
+    fitted size is the same at 1180 and 1440 and 0.03–0.05 smaller at 1920, where the gutter takes
+    the column 0.36 narrower. A `cqi` resolved against the viewport would have read the ramp
+    there.
+  - **No word breaks inside itself** (every word's `Range` is one rect).
+  - **Every word ends inside its column.** The widest ends 0.12 short at worst (Lime's
+    *Supercalifragilistic* at 360), and at 768 every word is **60.1 or more** short of the cards'
+    left edge.
+  - The header section's `scrollWidth` equals the width at every row but one (below). The seed
+    keeps the ramp everywhere: 97 / 73 / 48 under Editorial, 107 / 81 / 54 under Lime and
+    80.25 / 60.75 / 34.5 under Grunge.
+
+  | Fitted (px) | 1440 | 768 | 390 | 360 |
+  |---|---|---|---|---|
+  | Editorial FEATHERSTONEHAUGH | 54.27 | 33.74 | 38.53 | 35.41 |
+  | Editorial SHOSTAKOVICH | 80.16 | 49.84 | 48 (ramp) | 48 |
+  | Editorial SUPERCALIFRAGILISTIC | 53.74 | 33.41 | 38.16 | 35.06 |
+  | Lime FEATHERSTONEHAUGH | 78.74 | 48.96 | 54 (ramp) | 51.38 |
+  | Lime SUPERCALIFRAGILISTIC | 76.37 | 47.48 | 54 | 49.82 |
+  | Grunge FEATHERSTONEHAUGH | 67.03 | 41.67 | 34.5 (ramp) | 34.5 |
+  | Grunge SUPERCALIFRAGILISTIC | 64.06 | 39.83 | 34.5 | 34.5 |
+
+  *Florence and the Machine* and *Kai Mercer* keep the ramp at every width under all three. So
+  does Lime's and Grunge's *Shostakovich*, except at 768 (71.68 and 59.84) and Lime's 1088
+  canvas (105.12).
+- **The nav wordmark** with the five names: one rect, inside the section, at every width under
+  all three.
+- **Named, not fixed here** (each reads the same on HEAD):
+  - **Retro's half** (Decided A): the table above.
+  - **Editorial's 390 nav at 360**: with *Featherstonehaugh* the Book pill ends at **361.42**, so
+    the header reads 361 / 360. Its wordmark ends at 246. At 390 and 414 it fits, and so does
+    *Supercalifragilistic* at 360.
+  - **The footer's rule**: the 2 × 150 `flex: 0 0 auto` rule beside the footer's name is pushed
+    past the page by a long word. This is now what scrolls the page. With *Featherstonehaugh* it
+    ends at 424.95 under Editorial, 403.83 under Lime and 491.63 under Retro at 390 (436.95 /
+    415.83 at 414). At 360 the other long names do it too (JP-086's footer item, which now
+    points here). Grunge's footer fits.
+  - **The media player's byline** runs past the 390 page with *Featherstonehaugh* (401.75), but
+    its section clips it, so it does not scroll the page.
+- **The real app is the published table above.** The steps were the tester's (card 2, *Title*
+  typed, Publish, Open). The pages scroll only on the footer and the 360 pill named above. No
+  console errors.
+- **Build.** `npm run build` is clean. The root `index.html` is not refreshed.
+- **Docs.** The `identity` and `Title` comments in `HeaderV1`, and the `vm.cardNameEms` comment.
+  `notes/templates.md`'s *Feature spread* clause now says the title is fitted to its column's
+  widest word, as Hero's is, and that the same block fits Lime's and Grunge's. `layout-2.md:931`
+  gets the *reversed* pointer. JP-086's named layout-2 item in `qa-fixes.md` is answered, and its
+  footer item gains the 390 / 414 reading. No CLAUDE.md or README line stated the old call.
 
 ---
 
