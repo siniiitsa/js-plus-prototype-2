@@ -145,8 +145,8 @@ As [`qa-fixes.md`](./qa-fixes.md)'s *How each session runs*, with these differen
    normalise the port and `\.jpg\?[^|]*` in `src`, or restart :5173). Prove the harness (0
    differences, tree against HEAD, unedited) and **name the expected after-diff before writing
    code.**
-4. **An entry that reverses a recorded call** (JP-093, JP-094, JP-096, and JP-098 and JP-099 on
-   their code options) adds a *reversed* pointer where the call was recorded (the plan's *Settled*
+4. **An entry that reverses a recorded call** (JP-092, JP-093, JP-094, JP-096, and JP-098 and
+   JP-099 on their code options) adds a *reversed* pointer where the call was recorded (the plan's *Settled*
    bullet, the code comment) and rewrites any CLAUDE.md, README or `notes/` line that states the old
    call as a rule. A **fit slip** (JP-097, JP-100) adds the pointer and says how it happened.
 5. **The real app is Editorial card 2**, then Lime's and Grunge's card 2 for every entry that
@@ -546,7 +546,11 @@ two text nodes — splitting the `·` moved Lime's and Grunge's widths by 0.1); 
      the label to avoid.
    - **C (recommended). Layout 2's home value reads the header's `location`**, the frame's own
      *Manchester, UK*, which the artist already types once (F1). No new seed, no stutter; `base`
-     drops to `in: [0, 2]` and its panel says so at layout 2.
+     drops to `in: [0, 2]` and its panel says so at layout 2, and `who.location`'s reach gains map
+     layout 2 (its `reach.mjs` probe and the header field's hint move too).
+
+   Whichever is chosen, the new label cannot read as the same panel row as `base`, which is already
+   labelled *Based in*: name it *Home label* or the like.
 4. **The unfiled seats** — **A (recommended). Named, not fixed**: none is reported, and two are
    recorded calls (JP-060, `MAP_RADIUS`). **B.** Seed the h2 *Venue distance* at `d === 1`.
 
@@ -557,7 +561,8 @@ map `arch 1` × themes 0–4 × three widths × both surfaces: the two label row
 
 **Verify.** The seed digest; the marker sweep per key at `arch 1` (and `kicker` and `listLabel` at
 `arch 0` and `arch 2` unchanged); an emptied label removes its node (a pill reads its seed again);
-`reach.mjs` for every new or moved key, `map.base` re-run; the card at 390 and 768 with long typed
+`reach.mjs` for every new or moved key, `map.base` re-run (and `who.location` under 3C); under 3C a
+`&who=` run with a typed location, which the home value must follow; the card at 390 and 768 with long typed
 labels (wrapping, no overflow); the pill row at 768 still wraps under Editorial (layout-2.md's
 section 8 override); card 2 in the real app, every field marked, none of the nine left.
 
@@ -878,8 +883,8 @@ is the 1440 frame at 0.82* (`:644`) gains a clause on the vertical inset at layo
 1. Full digest against a `main` worktree on :5174 (port and `?t=` normalised), all categories ×
    themes 0–4 × three widths × canvas and `live=1`, the footer's `page=2` render included. Every
    diff must be one a Settled above names, and every named file must differ.
-2. The repro sets re-run on the final tree, read off the DOM: JP-092's five names at the eight
-   widths; JP-093's `::placeholder` opacity per site; JP-094's gap table; the marker sweeps of both
+2. The repro sets re-run on the final tree, read off the DOM: JP-092's five names at the seven
+   widths (1180 / 1440 / 1920, 768, 360 / 390 / 414); JP-093's `::placeholder` opacity per site; JP-094's gap table; the marker sweeps of both
    JP-095 entries (none of the seventeen left); JP-100's foot at 360 / 390 / 414 with the four days.
 3. `reach.mjs` for every `in` that moved (both JP-095 entries, JP-096's labels and `map.base`,
    JP-098's label if added).
