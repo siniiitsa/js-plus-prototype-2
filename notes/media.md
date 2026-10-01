@@ -19,7 +19,18 @@ another `notes/` file.
   **no tracks at all** the card names `vm.mediaEmpty` (the one "No tracks yet." the empty lists
   print too) and `sectionVm` stops the clock at 00:00 under an empty bar on both surfaces, since
   a mid-song clock with nothing cued is a lie. The transport stays wired but inert there —
-  `goTo` returns on an empty list before its modulo. Do not mark the
+  `goTo` returns on an empty list before its modulo. **The line under the title is the artist,
+  `vm.nowPlaying.by`, at layouts 1, 3 and 4** (3 and 4 print the track's `rel` on a line of its
+  own under it), **and at layout 2 the playing track's own `byline`** (JP-097, 2026-10-01, a fit
+  slip of every template: each layout-2 frame types *Kai Mercer · Single*). `vm.tracks[].byline`
+  is the artist and the track's `rel` on ` · `, the separator going with an empty `rel`, composed
+  in `sectionVm`. The bar takes it off the track it names, the centre seat's on the canvas and
+  `at`'s live, and `now.by` only with no track. `nowPlaying.by` is never composed with a release,
+  which 3 and 4 would then print twice. Once the artist edits the list, `rel` is the row's whole
+  subtitle, so the byline reads *Kai Mercer · Single · 4:55*; a separate release column would be
+  a `TracksField` change. It ellipsises in its own box: the seed's *Single* fits every box but
+  Retro's and Pop's at 390 (103.5 and 105.5), and the two longer releases ellipsise at every
+  width, as those tracks' titles do. Do not mark the
   playing card by raising it out of the stack — the cards overlap by 18px at the foot and a raised
   one covers the *next* card's title; the Pause icon and the now-playing block are the whole cue.
   **Layout 2 plays through the same hooks**, and draws the one list twice: the fan and the

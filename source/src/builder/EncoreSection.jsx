@@ -6546,13 +6546,21 @@ function Media({ s }) {
     const centre = s.tracks[anchor]
     const nowTitle = s.live || !centre ? now.track : centre.name
     const nowArt = s.live || !centre ? sleeve : (centre.img ?? undefined)
+    // And the line under the title is that track's own `byline`, the artist
+    // and its release, as every layout-2 frame types it: "Kai Mercer ·
+    // Single" (JP-097). With no track it is the artist alone, `now.by`.
+    // A fit slip, and no plan names it: Retro's desktop fit (44405c6) added
+    // `rel` for the fan cards and the list rows and left the bar on layout 1's
+    // `np.by`, the artist; Lime's fit (5a9cf76) drew it into its own block, and
+    // Grunge and Editorial inherited that block.
+    const nowBy = (s.live || !centre ? track : centre)?.byline ?? now.by
 
     // Lime layout 2 (964:64582 · 986:11850 at 768 · 986:11869 at 390) is the
     // same Section as Retro's below — the same two instances in the same
     // wrapper, and a fan whose five cards stand at Retro's exact offsets, sizes,
     // angles and opacities at all three widths (read off both pages' nodes). So
     // it sits *after* the seam: the seats, `CARD`, `step`, `anchor`, the centre
-    // seat's title and art, `u` / `off` / `pad`, and the hooks above the
+    // seat's title, art and byline, `u` / `off` / `pad`, and the hooks above the
     // branches are shared whole, and the published fan, bar and list needed
     // nothing new. What makes it a block is that every leaf is redressed: the
     // fan's four hues become one glassy olive card in a hairline, the pill
@@ -6771,7 +6779,7 @@ function Media({ s }) {
             {art(nowArt, u(60), '999px', 16)}
             <span style={col(u(2), { flex: 1, minWidth: 0, alignItems: 'stretch' })}>
               <span style={distressed(s, titleType)}>{nowTitle}</span>
-              <span style={{ ...bodySm, ...clip }}>{now.by}</span>
+              <span style={{ ...bodySm, ...clip }}>{nowBy}</span>
             </span>
             {!s.mob && <span style={{ ...bodySm, flex: 'none', whiteSpace: 'nowrap' }}>{now.at} / {now.of}</span>}
           </span>
@@ -7079,7 +7087,7 @@ function Media({ s }) {
           <span style={col(u(2), { flex: 1, minWidth: 0 })}>
             {/* `size/title` ramps 24 → 19 → 18 across the three masters. */}
             <span style={titleType(desk ? 24 : tab ? 19 : 18)}>{nowTitle}</span>
-            <span style={subType}>{now.by}</span>
+            <span style={subType}>{nowBy}</span>
           </span>
           {/* The 390 canvas has no frame of its own and cannot seat the whole
               bar: the running time and the glyphs below go, rather than

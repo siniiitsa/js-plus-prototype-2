@@ -869,16 +869,27 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // the running time apart (media layout 2). The seeded shape is the only one
   // that knows both: TracksField has no duration field at all, so there `rel`
   // is just the row's own subtitle and equals `dur`.
+  //
+  // `byline` is media layout 2's bar line under the playing track's title,
+  // "Kai Mercer · Single" in every frame (JP-097): the artist, then that
+  // track's `rel`, the ` · ` going with an empty one. Composed here, the
+  // testimonials' `byline` rule, and per track, because the bar names the
+  // track it plays. Once the artist edits the list it is the row's whole
+  // subtitle, "Kai Mercer · Single · 4:55", the line the row under it prints.
+  // `nowPlaying.by` stays the artist alone: layouts 3 and 4 print it over
+  // `rel` on a line of its own, and would print the release twice.
   const seedArt = defaultTrackArt(cat, T.name) ?? []
+  const by = cased(artistName)
+  const byline = (rel) => [by, rel].filter(Boolean).join(' · ')
   if (Array.isArray(c.tracks)) {
     vm.tracks = c.tracks.filter((t) => !blankRow(t, TRACK_KEYS)).map((t, i) => {
       const sub = (t?.sub ?? '').trim()
-      return { n: '0' + (i + 1), name: cased(t?.title ?? ''), dur: sub, sub, rel: sub,
+      return { n: '0' + (i + 1), name: cased(t?.title ?? ''), dur: sub, sub, rel: sub, byline: byline(sub),
                img: t?.image ?? null, src: extUrl(t?.audio ?? '', true) || null }
     })
   } else {
     vm.tracks = TRACKS.map(([name, dur, rel], i) => ({
-      n: '0' + (i + 1), name: cased(name), dur, sub: `${rel} · ${dur}`, rel,
+      n: '0' + (i + 1), name: cased(name), dur, sub: `${rel} · ${dur}`, rel, byline: byline(rel),
       img: seedArt[i] ?? null, src: TRACK_AUDIO[i] ?? null,
     }))
   }
@@ -891,10 +902,13 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // tracks the clock stands at 00:00 under an empty bar on both surfaces, and
   // the card names `mediaEmpty`, the one message the empty list prints too.
   // `tracks3` is a prefix of `tracks`, so one test covers every design.
+  // Its `by` is the artist alone, which layouts 1, 3 and 4 print. Layout 2's
+  // bar prints the playing track's own `byline` instead (above, JP-097), and
+  // this `by` only when there is no track to name.
   vm.mediaEmpty = 'No tracks yet.'
   vm.nowPlaying = vm.tracks.length
-    ? { ...NOW_PLAYING, by: cased(artistName) }
-    : { at: '00:00', of: '00:00', pct: 0, by: cased(artistName) }
+    ? { ...NOW_PLAYING, by }
+    : { at: '00:00', of: '00:00', pct: 0, by }
 
   // pricing — the artist's own packages, else the seeded ones. The `songs`
   // rule again: an absent key means TIERS, an emptied array means no packages,

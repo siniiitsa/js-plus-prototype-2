@@ -323,7 +323,12 @@ Learned on the media player (section 3):
 - **A vm key is the honest fix when a design columns apart what layout 1 sets on one line.**
   `sectionVm` gained `rel` (the track subline minus its running time) rather than v1
   string-stripping the ` · 5:42` off `sub`. Additive keys are safe; changing an existing one is
-  not, because `dur` is the audio player's whole right-hand column.
+  not, because `dur` is the audio player's whole right-hand column. *(A slip beside it, JP-097,
+  2026-10-01: this fit gave `rel` to the fan cards and the list rows but left the bar's byline on
+  layout 1's `np.by`, the artist alone, where the frame types* Kai Mercer · Single*. Lime's fit
+  drew it into its own block and Grunge and Editorial inherited it. The bar now prints the track's
+  own `byline`, the artist then `rel` —
+  [`../editorial/layout-2-qa-fixes.md`](../editorial/layout-2-qa-fixes.md).)*
 - **`paperLine` and `paperFg` are the two that read on a `paper` panel.** `line2` is
   `rgba(paper, .4)` — meant for the dark page ground, invisible on the panel — and the accent is
   not guaranteed against it either (Lime's is acid green on pale lime). Retro keeps the frame's

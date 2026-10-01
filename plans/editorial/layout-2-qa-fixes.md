@@ -111,7 +111,7 @@ the list explicitly.
 | 4 | JP-095 (a) | Pricing, calendar, media, testimonials labels | **Confirmed**: JP-090's rule, eight literals, every template; two are CLAUDE.md's named "unreported siblings" | M | **user: 1A–4A** (JP-071's shape, the frame's capitals; two counter words; the prompt reads its seed again; siblings named) | **done** (0 of 660 a surface; nine reach rows, 6/6 at each `in`; card 2 under four templates prints none of the eight) |
 | 5 | JP-095 (b) · JP-096 | The map's nine labels; *Based in* / *Willing to travel to* | **Confirmed, and recorded**: Retro dropped *Based in* because `base`'s seed says it | M | **user: 1A, 2A, 3C, 4A** (JP-071's shape; pills read their seed again; the home value is the header's Location; unfiled seats named) | **done** (15 of 660 a surface, map `arch 1` alone, as named; thirteen reach rows, 6/6 at each `in`; card 2 under four templates prints none of the nine) |
 | 6 | JP-100 | 390 calendar foot: pill on its own row | **Confirmed, a fit slip**: Lime's fit drew Retro's pre-QA stack (JP-060's shape) | S | **user: A** (the group wraps, the line's minimum its widest word) | **done** (6 of 660 a surface, calendar `arch 1` × 390 × themes 1–3, as named; 99 states clean; card 2 one row under four templates) |
-| 7 | JP-097 | Byline lacks *· Single* | **Confirmed, a fit slip of every template**: the bar prints the artist alone; layouts 3 and 4 print the release | S | no | open |
+| 7 | JP-097 | Byline lacks *· Single* | **Confirmed, a fit slip of every template**: the bar prints the artist alone; layouts 3 and 4 print the release | S | no | **done** (30 of 660 a surface, media `arch 1`, the byline's text alone, as named, its box the column's; the per-track `byline` read by the layout-2 bar, both bodies; card 2 under four templates reads *Kai Mercer · Single*) |
 | 8 | JP-098 | 768 gallery: six tiles, no *Gallery · View list ✕* | **Confirmed, and recorded**: Retro's squeeze override and head-row allocation, every template | S | **yes** — tiles, head row, dead controls | open |
 | 9 | JP-094 | Section gaps too large | **Confirmed, and recorded**: layout 2 stands every section on `padY`; the frames' own insets differ by up to 85px at 1440 and 48 at 390 | L | **yes** — scope, widths | open |
 | 10 | — | End-of-pass sweep | — | S | — | open |
@@ -1420,7 +1420,108 @@ entry adds is a box of its own, so it moves neither. Name both widths in the one
 **Docs.** `notes/media.md`'s now-playing paragraph (`:15`–`24`); the `vm.nowPlaying` comment
 (`EncoreBuilder.jsx:876`–`885`).
 
-**Settled.** —
+What the session found first, on HEAD (`dfa611d`):
+- **Every *Evidence* line moved as mapped.** `EncoreSection.jsx`: the `s.limeTree` bar's
+  `{now.by}` `:6774`, Retro's and Pop's `:7082`, `subType` `:6917`, `by: np.by` `:5832`, layouts 3
+  and 4 `:7545` and `:7669`, the fan cards `:6708` / `:7012`, the rows `:6862` / `:7203`.
+  `EncoreBuilder.jsx`: edited `vm.tracks` `:873`–`878`, seeded `:879`–`882`, `vm.nowPlaying`
+  `:886`–`897`, the seed resolver `:3994`–`3995`. `data.js` unmoved.
+- **Reproduced in the real app** (puppeteer, card 2 under Editorial, Lime, Grunge and Retro, the
+  canvas's three tabs, then Publish, Open, at 1440, 768 and 390, and each numbered row played): the
+  bar prints *Kai Mercer* alone everywhere, whichever track plays. No console errors (Grunge's one
+  `ERR_HTTP2_PROTOCOL_ERROR` is the remote demo audio).
+- **How it happened** (`git log -S`): Retro's layout-2 desktop fit (`44405c6`, 2026-09-08) added
+  `rel` for the fan cards and the list rows, and set the bar's byline to layout 1's `np.by`, the
+  artist alone. Lime's fit (`5a9cf76`) drew that into its own block, and Grunge and Editorial
+  inherited it. **No plan names the bar's byline**. The only lines that touch it are Editorial's
+  390 geometry (`layout-2.md:742`, open question 7). The pointer therefore sits in the code, and
+  at `../retro/layout-2.md`'s `rel` bullet (`:323`), the fit's one recorded call about the track
+  line.
+- **The harness was proved first**: a fresh HEAD worktree at `dfa611d` on :5174 against the
+  unedited tree on :5173, themes 0–4, every category, three widths, both surfaces: **0 of 660 on
+  each** after the port and stamp normalisation (194 raw, all the port).
+- **Expected after-diff, named before the code, with one correction to this entry's.** Media
+  `arch 1` × themes 0–4 × three widths × both surfaces, 30 files, one row each: the byline span's
+  text column. Its x, y, w and h hold. **The hand-off expected `w` to move; it cannot.** The span
+  is a stretched item of a `flex: 1 1 0; min-width: 0` column, so its box is the column's. HEAD's
+  own digest shows that: Retro's desktop byline box is 116.4 on the canvas and 115.6 live, the
+  difference being the clock's text. So the ellipsis is a `Range` / `scrollWidth` read, never the
+  digest. Every other arch and category: 0.
+
+**Settled** (2026-10-01).
+- **`sectionVm`** (`EncoreBuilder.jsx:872`–`895`): every `vm.tracks` row gains `byline`, the
+  artist (`cased`, as `nowPlaying.by` always was) and the row's `rel` joined on ` · `, the
+  separator going with an empty `rel`. The seeded rows and the edited rows are both covered. The
+  testimonials' `byline` rule: composed here, never in `EncoreSection`. `vm.nowPlaying.by` is the
+  same `by` const, unchanged, and its comment says why it stays the artist alone. Layouts 3 and 4
+  print it over `rel`, so composing the release into it would print the release twice there and
+  move 90 files, not 30.
+- **`EncoreSection`, layout 2's shared scope** (`:6549`–`6556`): `nowBy` beside `nowTitle` and
+  `nowArt`, by the same rule: the centre seat's `byline` on the canvas, the playing track's live,
+  and `now.by` when there is no track. Both bodies print it (`:6782`, the `s.limeTree` bar;
+  `:7090`, Retro's and Pop's). The comment carries how the slip happened. Layouts 1, 3 and 4 are
+  untouched. No style changed: the span ellipsises in its own box, as it always did.
+- **Pop's casing, a consequence, not a decision**: the artist is `cased` and the release is not,
+  so Pop reads *KAI MERCER · Single*. Each half is printed as the section already prints it beside
+  it (the bar's old byline, and the rows' `t.rel`).
+- **Digest: as named.** 30 of 660 on each surface, media `arch 1` × themes 0–4 × three widths. In
+  each file exactly one row differs, and in that row only the text column moved: *Kai Mercer* →
+  *Kai Mercer · Single* (Pop's *KAI MERCER · Single*). The geometry and style columns are
+  identical, line counts equal. Every other file: 0. `&n=0` (media, themes 0–4, both surfaces):
+  0 of 60 against HEAD, the artist alone under *No tracks yet.*
+- **States** (a scratch puppeteer probe, deleted; themes 0–4 × three widths × both surfaces, then
+  live each numbered row played by a trusted click):
+  - **The seed.** The byline follows the track: *Single*, *Hidden Sessions Vol. 2*, *Single*,
+    *Live at the Deaf Institute*, *Hidden Sessions Vol. 2*. The canvas reads Slow Burn's, live's
+    first paint Late Lights'. *Kai Mercer · Single* (Inter 12, 106.8) fits every box but two:
+    **Retro's 390, 103.5, and Pop's 390, 105.5** (118.7, uppercase). Both ellipsise. The two
+    longer releases (165–192 at 1180, 202–234 published) ellipsise in every template's box at
+    every width, as *Manchester at 3am* and *Echo & The Floor* already do in the title box above.
+    The frames type only *Single*.
+  - **An edited list**, TracksField's resolved seed with track one renamed: the canvas reads
+    *Kai Mercer · Single · 4:55* (the centre seat), live *… · Single · 5:42*, and each row played
+    moves it. That is the row's whole subtitle, as the *Fix* says. It ellipsises wherever its box
+    is under about 119 (Inter 10) / 143 (12), which is most boxes.
+  - **Five distinct subtitles** (*Alpha · 1:00*, *Beta*, *Gamma · 3:00*, emptied, *Epsilon*). This
+    is the probe that tells the seat from the cue, which the seed cannot do, since both its tracks
+    are *Single*. The canvas reads track three's *Gamma*, live's first paint track one's *Alpha*,
+    and each row played moves it. The emptied fourth prints *Kai Mercer*, with no dangling ` · `.
+  - **A long subtitle** (79 characters) on tracks three and five: the byline ellipsises inside
+    its own box. The title box's x and width are those of the short-subtitle render, and there is
+    no page scroll.
+  - **`&n=0`**: *Kai Mercer* under *No tracks yet.*, both surfaces, HEAD's picture.
+- **The real app** (the same puppeteer walk: card 2 under Editorial, Lime, Grunge and Retro, the
+  canvas's three tabs, Publish, Open, 1440, 768 and 390, each row played): the canvas reads
+  *Kai Mercer · Single* at every width. The published bar reads it on the cued Late Lights, and
+  moves with every track played. One text node, no console errors. Retro's 390 box ellipsises it,
+  as named. (The published 390's first read names Roomtone, the track the 768 walk left playing,
+  since `cur` survives a resize.)
+- **Build.** `npm run build` is clean. The root `index.html` is not refreshed.
+- **Docs.**
+  - `notes/media.md`'s now-playing paragraph: the line under the title, per layout, and the
+    edited-list and ellipsis consequences.
+  - The `vm.tracks` and `vm.nowPlaying` comments.
+  - The shared-scope comment in `Media`, which says how it happened. The *Lime layout 2* comment
+    under it now lists the byline among what both bodies share.
+  - The pointer at `../retro/layout-2.md:323`.
+  - CLAUDE.md's "player bylines" (the `artistName` list) is still true, since the byline leads
+    with the name. The README does not describe the byline. No field was added, so no `reach.mjs`
+    row.
+- **Not changed, named:** the cued LATE LIGHTS still ellipsises in the bar's title box. At the
+  published 1440 that is Editorial's 138.5 in 129.6 (the tester's "LATE LIG…") and Lime's 108.4 in
+  105.1, both at the 1180 layout width. At 390 it is Editorial's 121.6 in 115.5 ("LATE LIGH…") and
+  Pop's 115.7 in 105.5, and at 360 Lime's and Retro's too (JP-099's measure). Pop's SLOW BURN is
+  cut on the 390 canvas as well. The byline is a box of its own and moves none of them.
+
+Reply: **JP-097 — fixed.** The player's bar now reads *Kai Mercer · Single* under the track
+title, as in the design, at every width. It also follows the track that is playing, so a track
+from *Hidden Sessions Vol. 2* shows that release instead. Every template had the same gap: the
+bar printed the artist alone, from an early version of the layout. Once the artist edits the track
+list, the line shows the track's whole subtitle, the same text as its row in the list (for example
+*Kai Mercer · Single · 4:55*). A long release is cut with an ellipsis, as the title above it
+already is. *Not changed:* the cued track's title, LATE LIGHTS, is still cut in the bar at 1440
+(Editorial and Lime) and at 390 (Editorial and Pop, and Lime and Retro at 360). That is the title's
+own box, which this fix does not touch.
 
 ---
 
