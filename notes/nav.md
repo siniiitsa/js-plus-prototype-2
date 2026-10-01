@@ -64,3 +64,24 @@ another `notes/` file.
   layouts 5 and 6 draw `NavLinks`, which
   keeps the (wrapping) link row at 768 and collapses only at 390 (measured in JP-033's digest).
   The harness takes `&nav=<n>` to shorten the page and walk the flip.
+- **At desktop, layout 1's capsule gives the name away before the links** (JP-091, user call,
+  2026-10-01, reversing "below the floor it wraps"). Under Lime, Grunge and Editorial the links
+  take the room the wordmark and the pill leave, sized `100cqi / navEms` between their 12px floor
+  (Grunge's row 16, faced to 12) and their cap. The name used to keep its size whatever it was,
+  so a long one pushed the links below the floor and onto a second row: Editorial's nine Noto
+  links need 636px at 12, which left a name 6.75 em. Now the bar is a query container, and the
+  name's room is the capsule's content box less the mark, the gaps, the pill (its label off
+  `vm.navNameFit.pill`) and the links at their floor. In that room the name:
+  - keeps its size while it fits on one line (`navNameFit.one`);
+  - otherwise shrinks on one line;
+  - once one line would put it below 20.1, the size at which two lines of 1.1 fit the pill's
+    44.28, wraps between words, balanced, onto two lines at no more than that size
+    (`navNameFit.two`, the best split's wider line);
+  - takes whichever of those is larger, so the bar never grows;
+  - never goes below the links' own floor. There its box grows past the room to the best split's
+    wider line and the links wrap as before. Only a very long pill label, or one word too long
+    for the room (a 34-letter word under Editorial), gets that far.
+
+  `sectionVm` sets `navNameFit` for the header's design 0 alone. **Layout 4's capsule** (NavBar's
+  `links`) and **Retro's bar** (whose pill drops to a second row with a long name) keep their
+  wrap, and are named in `plans/editorial/qa-fixes.md`'s JP-091 for their own tickets.

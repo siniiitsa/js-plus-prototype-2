@@ -564,13 +564,28 @@ function LogoMark({ s, size = 18, color, glyph }) {
 // `size` overrides the name's type — additive, `BookPill`'s `size` precedent,
 // and read under Lime alone: its 390 hero master is set in the Tablet device
 // mode, so the name there is the 768 ramp's 21 where `s.labelLg` is 14.
-function Wordmark({ s, logo = false, color, glyph, size, gap, clean = false }) {
+// `fit` is the layout-1 capsule's (JP-091, NavBar): `room` is the width its
+// links and pill leave the name, `one` / `two` the name's ems on one line and
+// on its best two (`vm.navNameFit`), `cap` the size two lines fit the capsule
+// at. The name keeps its own size while one line fits the room, shrinks on one
+// line, and below `cap` wraps between words, balanced, onto two — whichever is
+// larger. `floor` is the links' own, so a pill label long enough to leave no
+// room, or one word too long to fit it, keeps the name legible: its box grows
+// past the room to the best split's wider line, and the links wrap, as they
+// did before. Additive; every other caller passes none and keeps `nowrap`.
+const fitName = (fit, base) => fit
+  ? `min(${base}, max(${fit.floor}, calc(${fit.room} / ${fit.one}), min(${fit.cap}, calc(${fit.room} / ${fit.two}))))`
+  : base
+const fitBox = (fit, size) => fit
+  ? { whiteSpace: 'normal', textWrap: 'balance', maxWidth: `max(calc(${fit.room}), calc(${fit.two} * ${size}))` }
+  : null
+function Wordmark({ s, logo = false, color, glyph, size, gap, clean = false, fit }) {
   if (s.lime) {
     // Lime's frame: Label/LG, letterSpacing 0, 13.15 from the globe (× 0.82).
     return (
       <span style={row(s.narrow ? '13px' : '11px')}>
         {logo && <LogoMark s={s} color={color} glyph={glyph} />}
-        <span style={labelStyle(s, size ?? s.labelLg, { color: color || s.tx, letterSpacing: s.dls })}>{s.brand}</span>
+        <span style={labelStyle(s, fitName(fit, size ?? s.labelLg), { color: color || s.tx, letterSpacing: s.dls, ...fitBox(fit, fitName(fit, size ?? s.labelLg)) })}>{s.brand}</span>
       </span>
     )
   }
@@ -587,10 +602,11 @@ function Wordmark({ s, logo = false, color, glyph, size, gap, clean = false }) {
     // Grunge's to the pixel.
     // Display/Title takes Grunge's distress (`distressed`); a caller that sets
     // the name at a label size says so with `clean`, where it picks the size.
+    const px = fitName(fit, size ?? (s.editorial ? (s.narrow ? '25px' : '26.2px') : s.narrow ? '28px' : '29.5px'))
     const name = {
-      fontFamily: s.display, lineHeight: facedLh(s, 1.1),
-      fontSize: faced(s, size ?? (s.editorial ? (s.narrow ? '25px' : '26.2px') : s.narrow ? '28px' : '29.5px')),
+      fontFamily: s.display, lineHeight: facedLh(s, 1.1), fontSize: faced(s, px),
       letterSpacing: s.dls, textTransform: 'uppercase', whiteSpace: 'nowrap', color: color || s.tx,
+      ...fitBox(fit, px),
     }
     return (
       <span style={row(gap ?? (s.narrow ? '10px' : '11px'))}>
@@ -1495,6 +1511,20 @@ function NavBar({ s, colour, rule, pill, nameSize, nameColour, mark, links, clea
   const ruleW = s.mob ? '70px' : tab ? '150px' : '123px'
   const lime = s.limeTree
   const ed = s.editorial
+  const floor = s.grunge ? 16 : 12
+  const glyph = mark?.glyph ?? (lime ? (!s.narrow ? (ed ? 36.84 : 29.5) : s.grunge ? 27.37 : ed ? 44.93 : 36) : s.narrow ? 27 : undefined)
+  // The layout-1 capsule's name gives way before its links (JP-091, user
+  // call, 2026-10-01): the room it has is the capsule's content box — the bar
+  // is the query container, `nav`'s own `cqi` rule — less the mark and its
+  // 11, the halves' 24.6, the pill's 19 and the pill itself (BookPill's 82 of
+  // padding, gap and disc × 0.82, and its label at `s.list`), less the links
+  // at their floor. `cap` is the size two lines of the name (line 1.1) fit
+  // the pill's 44.28 at, so the bar never grows. Wordmark does the sizing.
+  // Layout 4's capsule, which passes `links`, keeps its wrap (JP-091's scope).
+  const fit = lime && !s.narrow && !links && s.navNameFit ? {
+    room: `(100cqi - ${+(glyph + 11 + 24.6 + 19 + 82 * 0.82).toFixed(2)}px - ${s.navNameFit.pill} * ${s.list} - ${s.navEms} * ${floor}px)`,
+    one: s.navNameFit.one, two: s.navNameFit.two, cap: '20.1px', floor: `${floor}px`,
+  } : undefined
   return (
     <div style={row(lime ? ((s.grunge || ed) && s.mob ? '10px' : s.narrow ? '30px' : '24.6px') : s.mob ? '10px' : tab ? '30px' : '24px', {
       justifyContent: 'space-between', width: '100%',
@@ -1506,11 +1536,12 @@ function NavBar({ s, colour, rule, pill, nameSize, nameColour, mark, links, clea
         background: fill ?? (ed ? s.box3 : s.bg), borderRadius: s.narrow ? s.btnR : '30.35px',
         padding: s.narrow ? '10px 20px' : '8.2px 8.2px 8.2px 16.4px',
       } : null),
+      ...(fit ? { containerType: 'inline-size' } : null),
     })}>
       <div style={row(s.narrow ? '20px' : '16px', { flex: s.narrow ? 1 : '0 1 auto', minWidth: 0 })}>
-        <Wordmark s={s} logo glyph={mark?.glyph ?? (lime ? (!s.narrow ? (ed ? 36.84 : 29.5) : s.grunge ? 27.37 : ed ? 44.93 : 36) : s.narrow ? 27 : undefined)}
+        <Wordmark s={s} logo glyph={glyph}
                   size={lime && s.mob ? (nameSize ?? (s.grunge ? '28px' : ed ? '25px' : '21px')) : mark ? nameSize : undefined}
-                  gap={mark?.gap} color={nameColour || c} clean={clean} />
+                  gap={mark?.gap} color={nameColour || c} clean={clean} fit={fit} />
         {/* §10.2 draws a 150px rule after the wordmark — 70px on the 390 frame,
             123px on the 1180 canvas. It has to yield rather than push the Book
             Now pill onto a second line: the nav carries the page's own section
@@ -1535,7 +1566,12 @@ function NavBar({ s, colour, rule, pill, nameSize, nameColour, mark, links, clea
         // capped at the frame's `s.list` and floored at 12px. The gaps are ems
         // too, so the row shrinks as one. `nav` is the query container and the
         // row inside it takes the size: `cqi` resolves against an *ancestor*.
-        // Below the floor it wraps, which is the least bad of the options left.
+        // Below the floor it wrapped, "the least bad of the options left" —
+        // *reversed* for layout 1 (JP-091, user call, 2026-10-01): there the
+        // name gives way first (`fit` above), so the links keep one row at the
+        // floor whatever the artist is called. They still wrap in layout 4's
+        // capsule (`links`), and in layout 1 only when a pill label leaves the
+        // name nothing but its own floor.
         // Grunge's labels are `faced`, 0.75 of the row's size, so its floor is
         // 16 to keep them at 12, and `s.navEms` already counts them at 0.75.
         <span style={row('19px', { flex: '1 1 0', minWidth: 0, justifyContent: 'flex-end' })}>
@@ -1547,7 +1583,7 @@ function NavBar({ s, colour, rule, pill, nameSize, nameColour, mark, links, clea
                 fontSize: `clamp(12px, calc((100cqi - ${links.gap} * ${Math.max(0, s.navLinks.length - 1)}) / ${s.navEms}), ${links.cap})`,
               } : {
                 gap: `${ed ? 23 / 16 : 23 / 24}em`,
-                fontSize: `clamp(${s.grunge ? 16 : 12}px, calc(100cqi / ${s.navEms}), ${ed ? s.labelSm : s.list})`,
+                fontSize: `clamp(${floor}px, calc(100cqi / ${s.navEms}), ${ed ? s.labelSm : s.list})`,
               }),
             }}>
               {s.navLinks.map((l) => (

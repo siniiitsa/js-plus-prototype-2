@@ -673,6 +673,20 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // between words read it too: HeaderV3's, and HeaderV0's at 390 (JP-086).
   vm.cardNameEms = navFace ? +Math.max(0, ...vm.brand.split(/\s+/).map(navFace)).toFixed(3) : undefined
   vm.navCtaEms = navFace ? +(navFace(vm.cta1) + navFace(vm.cta2)).toFixed(3) : undefined
+  // The layout-1 capsule's name gives way before its links do (JP-091, user
+  // call, 2026-10-01): NavBar leaves the name what the links at their floor
+  // and the pill do not take, and the name keeps its size there, else shrinks
+  // on one line, else wraps onto two at no more than the capsule's height
+  // allows. So it needs the name on one line (`one`), its best two-line
+  // split's wider line (`two`, between words only; one word is its own
+  // split) and the pill's label (`pill`), in the same ems — the first two
+  // with `navEms`' 1% spare, so a fitted line never touches its box.
+  if (navFace && cat === 'header' && d === 0) {
+    const words = vm.brand.split(/\s+/).filter(Boolean)
+    const two = words.length < 2 ? navFace(vm.brand) : Math.min(...words.slice(1).map((_, i) =>
+      Math.max(navFace(words.slice(0, i + 1).join(' ')), navFace(words.slice(i + 1).join(' ')))))
+    vm.navNameFit = { one: +(navFace(vm.brand) * 1.01).toFixed(3), two: +(two * 1.01).toFixed(3), pill: +navFace(vm.cta1).toFixed(3) }
+  }
   // Whether the tablet header draws its links (JP-039). The 768 masters of
   // layouts 2 and 3 draw Music / Gigs / About in the capsule, in Retro and Lime
   // alike, where layouts 1 and 4 hide the links behind a burger — but

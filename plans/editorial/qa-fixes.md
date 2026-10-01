@@ -98,7 +98,7 @@ default list is `0,2,3,4`, which **skips Lime**, so always pass the list explici
 | 4 | JP-088 | Calendar layout 1's *Check a date* pill | **Confirmed, and recorded**: Retro's deliberate addition, kept by Lime's fit | S | **user: A, the line links only on a picked day** | **done** |
 | 5 | JP-086 | 390 hero name clipped | **Confirmed**: Editorial's 390 title is a flat 107px, the only width it is not fitted | S | no | **done** |
 | 6 | JP-087 | 390 gallery: TikTok wraps to a second row | **Confirmed, and recorded**: wrapping is the shared rule, chosen over the frame's run-off | S–M | **user: A, one line that scrolls on the published page** | **done** |
-| 7 | JP-091 | 1440 nav wraps with a long name | **Confirmed in the code, size unmeasured**: below the links' 12px floor the row wraps, a recorded "least bad" | M | **yes, after measuring** | open |
+| 7 | JP-091 | 1440 nav wraps with a long name | **Confirmed, Editorial's alone**: its nine Noto links need 636px at the 12px floor, leaving a name 6.75 em | M | **user: A, the name gives way; layout 1 only** | **done** |
 | 8 | — | End-of-pass sweep | — | S | — | open |
 
 **Why this order:**
@@ -1028,7 +1028,170 @@ the burger (under B) opening and scrolling to each section.
 **Docs.** The `lime` arm's comment (*reversed*), `notes/nav.md`, and CLAUDE.md only if it describes
 the desktop wrap.
 
-**Settled.** —
+**Measured** (2026-10-01, on HEAD `6cf0731`). Every *Evidence* line held at `6cf0731`: `NavBar` at
+`EncoreSection.jsx:1491`–`1574`, the `lime` arm from `:1528` with its "Below the floor it wraps" at
+`:1538` and `flexWrap: 'wrap'` at `:1544`, the Wordmark at `:1511`, Retro's `flexWrap: 'wrap'` at
+`:1563`; `vm.navEms` at `EncoreBuilder.jsx:654`, `vm.navNameEms` at `:666`, the `vm.navFits` block
+at `:700` with its sums at `:704`–`714`.
+- **How.** A scratch puppeteer script (deleted) opened card 1 of each template, set the header's
+  Title through the fiber `st` dispatch, read the canvas (its 1180 root), then Publish → Open and
+  `pop.setViewport` to 1180, 1440 and 1920. Every width is in layout px (a 1440 rect ÷ the 1.22
+  zoom). Each link's and the name's line is read off its text `Range`. The canvas and the published
+  1180 / 1440 / 1920 agree to 0.1, except that the 1920 capsule is **1062.4**, a px narrower (the
+  surplus's rounding).
+- **The capsule at 1180** (all three templates): inner **1063.4 × 44.24**, the bar 60.64 tall. The
+  inner height is the pill's (44.27). Between its halves 24.6; between the links and the pill 19;
+  the mark 11 off the name.
+- **Editorial** (Noto; mark 36.84, pill 159.4, the name at 26.2 with a line of 28.82). The nine
+  links are **52.974 em**, so **635.7px at the 12px floor**. That leaves the name **176.8px, 6.75
+  Noto em at 26.2**: the longest name one row holds at the floor.
+
+  | Name | Name ems | Name px | Nav | Links | Rows |
+  |---|---|---|---|---|---|
+  | Kai Mercer | 5.07 | 132.8 | 679.8 | 12.83 | 1 |
+  | Sienna Vale | 5.45 | 141.0 | 671.6 | 12.68 | 1 |
+  | Florence and the Machine | 12.31 | 322.1 | 490.4 | 12 (floor) | **2** |
+  | The Chemical Brothers | 10.79 | 282.0 | 530.5 | 12 (floor) | **2** |
+
+  - The seeded names already sit **0.7–0.8px above the floor**. Nine Noto Label/SM links are 636px
+    where the frame's eight at 16 are its whole row, so the room for a longer name is 36–44px.
+  - Nothing runs past the capsule and the pill stays on the row: the second row of links is 26.4
+    tall and fits inside the pill's 44.24, so the bar does not grow. The wrap is the whole defect.
+- **Lime and Grunge hold one row with all four names.**
+  - Lime (Bebas; mark 29.5, pill 130.5, name 26): the links need 36.917 em × 12 = 443, so one row
+    holds a name up to **405.8px, 15.6 Bebas em**. *Florence and the Machine* (8.61 em) sets the
+    links at 16.94, *The Chemical Brothers* at 17.63, the seeded two at the 20 cap.
+  - Grunge (Anton at 0.75; mark 29.5, pill 125.0, name 22.125): the row's floor is 16, so the links
+    need 33.832 em × 16 = 541.3, and one row holds a name up to **313.0px, 14.1 em**. *Florence*
+    (7.79 em) sets the labels at 13.85, *Chemical* at 14.44, the seeded two at 15.
+- **The A-vs-B test: no at the name's size, yes at 77% of it.**
+  - Two lines of the name at 26.2 are 57.6 tall against the capsule's 44.24, so the bar would grow
+    from 60.6 to about 74.
+  - Two lines fit the capsule at **≤ 20.1px** (44.24 / 2.2). There the 176.8 room holds 8.8 em a
+    line, and both long names break between words inside it: FLORENCE AND THE (8.18 em) / MACHINE,
+    and THE CHEMICAL (6.22) / BROTHERS.
+  - On one line instead the name would have to drop to 14.4 (*Florence*) and 16.4 (*Chemical*).
+- **C by the numbers.** One row needs the links at **9.26px** for *Florence* and **10.01** for
+  *Chemical*. A 10px floor holds neither (*Chemical* misses by 0.8px).
+- **Named, not fixed here** (the same names at 1440, card 1 unless given):
+  - **Retro** (its arm, card 1 and card 4): *Florence and the Machine* keeps the links on one row
+    at 16 and drops **the Book pill** onto a second row, and the bar grows from 33.6 to 69.2.
+    *The Chemical Brothers* fits.
+  - **Editorial's layout-4 capsule** (card 4, the same `lime` arm through `links`) wraps with both
+    long names too: the nav is 574.1 / 604.7, less the fixed gaps' 8 × 18.86 = 150.9, against
+    41.359 em × 12 = 496.3. Lime's and Grunge's card 4 hold one row.
+
+**Decided** (2026-10-01, user call, over the numbers above): **A, the name gives way first, and
+layout 1 alone.**
+- **The rule.** In the layout-1 capsule at desktop, the links keep one row at their floor, and the
+  name takes what is left:
+  - It keeps its desktop size while it fits there.
+  - Otherwise it shrinks on one line.
+  - Once one line would take it below the size at which two lines fit the capsule's height
+    (20.1: the pill's 44.28 over two lines of 1.1), it wraps between words onto two lines at
+    most that size, so the bar never grows.
+  - It never breaks inside a word; a name whose widest word will not fit shrinks further.
+- **Computed from the same ems.** `sectionVm` measures the name and its best two-line split in
+  `navFace` ems. The same rule holds under Lime and Grunge; the four names do not trigger it
+  there.
+- **Scope: layout 1 only.** Layout 4's capsule, which is the same arm through `links`, and Retro's
+  arm keep their wrap, named above for their own tickets. The fix is gated so card 4 renders
+  unchanged.
+- **The harness was proven first.** The HEAD worktree on :5174 against the tree diffed to **0 of
+  660 on each surface** (every category, themes 0–4, three widths, port and photo stamps
+  normalised). The first HEAD canvas run came back with 71 Editorial files a 0.1px Noto shaping
+  apart, from a cold server; rerun warm, it was 0.
+- **Expected after-diff (named before the code): zero on both surfaces.** The harness's seeded
+  *Kai Mercer* has a one-line fit of 176.4 / (5.073 × 1.01) = 34.4px, above its 26.2, so the
+  computed size stays 26.2. What else changes (`containerType`, `whiteSpace`, `maxWidth`,
+  `textWrap`) the digest does not record.
+
+**Settled** (2026-10-01).
+- **Code.**
+  - **`sectionVm`.** `vm.navNameFit` is set for the header's design 0 under a `navFace` template.
+    It is `{ one, two, pill }` in `navFace` ems: the name on one line (with `navEms`' 1% spare),
+    its best two-line split's wider line (between words, with the same spare; one word is its
+    own split), and the pill's label.
+  - **`NavBar`** builds `fit` in the `s.limeTree` desktop arm when no `links` are passed, so
+    layout 4 is out. The capsule becomes the query container. The name's room is `100cqi` less:
+    - the mark, its 11, the halves' 24.6 and the pill's 19;
+    - BookPill's 82 × 0.82;
+    - the label at `s.list`;
+    - the links at their floor, `navEms × 12` (Grunge 16).
+
+    `cap` is 20.1 and `floor` is the links' own. The floor is hoisted, and the links' clamp
+    reads it too.
+  - **`Wordmark`** takes the additive `fit` in both arms.
+    - The name's size is `min(own, max(floor, room / one, min(cap, room / two)))`.
+    - Its box is `whiteSpace: normal`, `textWrap: balance`, and
+      `maxWidth: max(room, two × size)`.
+    - So below the floor the box grows to the word, and the links wrap rather than meet the
+      name.
+    - Grunge's `faced()` wraps the result as before.
+  - **Untouched:** Retro's arm, the narrow branch, and layout 4's `links` branch.
+- **Digest.** The tree against the HEAD labels came to **0 of 660 on the canvas and 0 of 660 on
+  `live=1`**, as named.
+- **Harness, `&name=`.** Desktop, arch 0, themes 1–3, and arch 3 as the control. *Kai Mercer*,
+  *Florence and the Machine*, *The Chemical Brothers*, and three stress names: a 34-letter
+  single word, that word twice, and *Godspeed You Black Emperor and the Orchestra*.
+  - The bar is 60.64 throughout.
+  - **Editorial:**
+    - the 7-word name sets at 13.46 on two lines;
+    - the single word floors at 12 with its box grown to it (200), and the links wrap (2 rows,
+      612.5), the documented last resort;
+    - the word twice sets two lines at 12, with the links on 2 rows.
+  - **Lime:** the 7-word name shrinks on one line to 25.2. The word twice takes two lines at
+    20.1.
+  - **Grunge:** the 7-word name shrinks to 16.09 nominal, still one line. The word twice takes
+    two lines at 15.08 nominal.
+  - In every case with room, the links stay one row at ≥ 12.
+  - **Arch 3 is HEAD's to the hundredth**: Editorial's nav 574.07 / 604.68, two rows. Lime's and
+    Grunge's hold.
+- **The real app** (a scratch puppeteer script, deleted). Card 1 of Editorial, Lime and Grunge.
+  For each name the Title was set through the fiber `st` dispatch, the canvas read, then
+  Publish → Open, and the tab read at 1180, 1440 and 1920.
+  - **All 48 readings pass:**
+    - the links on one row;
+    - no link past the nav and none past the capsule;
+    - the pill on the row, inside the capsule;
+    - the name clear of the nav;
+    - the bar 60.6;
+    - the tab's title the name.
+
+  | 1440 | Name | Lines | Links |
+  |---|---|---|---|
+  | Editorial · Kai Mercer / Sienna Vale | 26.2 | 1 | 12.83 / 12.68 |
+  | Editorial · Florence and the Machine | **20.1** | **2**: FLORENCE AND / THE MACHINE | 12.01 |
+  | Editorial · The Chemical Brothers | **20.1** | **2**: THE CHEMICAL / BROTHERS | 12.01 |
+  | Lime · the four | 26 | 1 | 20 / 20 / 16.94 / 17.63 (as HEAD) |
+  | Grunge · the four | 22.125 | 1 | 15 / 15 / 13.85 / 14.44 (as HEAD) |
+
+  - The canvas and the published 1180 / 1440 / 1920 agree to 0.1. At 1920 Editorial's long
+    names are 0.05 smaller, since the capsule is 1062.4.
+  - A clip of the capsule shows the balanced two lines inside the bar beside the nine links.
+  - B's burger checks do not apply under A.
+- **Build.** `npm run build` is clean. The root `index.html` is not refreshed; the sweep does that.
+- **Docs.**
+  - **Reversed pointers**: the `lime` arm's comment (*Below the floor it wrapped …*), and Lime
+    `layout-1.md`'s nav-capsule bullet. Grunge's and Editorial's `layout-1.md` do not repeat
+    the call.
+  - `notes/nav.md` has a new bullet: the desktop name fit, its keys, and what still wraps.
+  - CLAUDE.md does not describe the desktop wrap, so it is untouched.
+  - The code comments sit at `vm.navNameFit`, at `fit` in `NavBar`, and at `fitName` /
+    `fitBox` in `Wordmark`.
+
+Reply: **JP-091 — fixed.** At 1440 the menu stays on one line however long the artist's name is.
+The name now gives way instead:
+- It keeps the design's size while it fits.
+- A longer name shrinks.
+- A long one wraps between words onto two lines inside the bar: *Florence and the Machine* reads
+  FLORENCE AND / THE MACHINE at about 20px, and *The Chemical Brothers* THE CHEMICAL / BROTHERS.
+
+The bar keeps its height, and the Book button stays on the row. *Kai Mercer* and *Sienna Vale* are
+unchanged. The same holds on Lime and Grunge, where these four names already fit.
+- Logged separately, not changed here:
+  - Editorial's layout-4 header still wraps its menu with these names.
+  - Retro's header pushes its Book button to a second line with *Florence and the Machine*.
 
 ---
 

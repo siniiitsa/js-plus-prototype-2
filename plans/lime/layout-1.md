@@ -660,7 +660,9 @@ Settled in section 1 (the header):
   the room the wordmark and the pill leave, and their type is that room over `s.navEms` (the labels'
   width in ems, summed from `BEBAS_EM` in `data.js`, a table of Bebas Neue advances measured with
   canvas `measureText` that lands within 1% of each label, plus the frame's 23/24 gaps, with 1%
-  spare). It is capped at `s.list` and floored at 12px, and wraps only below the floor. The `nav` is
+  spare). It is capped at `s.list` and floored at 12px, and wraps only below the floor
+  (*reversed* for layout 1 by JP-091, 2026-10-01, `../editorial/qa-fixes.md`: there the name gives
+  way first, so the links keep one row at the floor; layout 4's capsule still wraps). The `nav` is
   the `containerType: 'inline-size'` container and the row inside it takes the
   `clamp(12px, 100cqi / navEms, list)` size, because `cqi` resolves against an ancestor. The seeded
   nine set at 16.1px on the 1078 canvas; the harness's six stay at 20. The desktop corner is still
