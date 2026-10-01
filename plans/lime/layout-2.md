@@ -823,6 +823,11 @@ Settled in section 8 (the booking calendar):
 - **The 390 foot stacks, Retro's departure**: the master leaves the composed line 63px beside the
   157 pill (346 − 40 − 157 − 16 − 58 − 12), which would break inside "Thursday,". The foot is 129
   against the frame's 84.
+  **Reversed by JP-100** (`../editorial/layout-2-qa-fixes.md`, user call, 2026-10-01), a fit slip
+  in JP-060's shape. "Thursday," was Retro's *pre*-QA line. Retro's QA (`cd8c114`, 2026-09-15) had
+  already shortened it to *Thursday evening selected* and made its foot one row, but this fit
+  (`206c596`) does not descend from that commit, so it drew the old stack. The foot is one row at
+  390 now, the frame's 84, with the line beside the chip on three lines in 80.
 - **Measured against the masters' content edges**: desktop column head 49.8 (61 × 0.82), rows
   121.4 (148 × 0.82), foot 82, h2 59 at 98.8 in; 768 column head 53.6 (54), rows 104.1 (104),
   foot 100, h2 at 571 wide; 390 column head 51.1 (51), rows 95.2 (95), marks 48 tall. Every head is

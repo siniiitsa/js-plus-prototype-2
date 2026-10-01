@@ -15861,15 +15861,43 @@ function Calendar({ s }) {
               ...(ed ? { position: 'relative' } : null),
             })}>{dash}No dates yet.</div>
           ) : s.calSlots.map(slotRow)}
-          {/* The 390 master keeps the pill beside the line and leaves the line
-              63px — a break inside "Thursday," for our composed sentence — so
-              the pill takes its own row, Retro's departure for the same reason. */}
-          <div style={(s.mob ? col : row)(u(s.mob ? 12 : 24), {
+          {/* The foot is one row at every width, the frames' own: chip and line
+              in a group that fills, then the pill, 16 apart at 390 (the
+              masters' 370 × 84, NO_WRAP).
+              Reversed by JP-100 (plans/editorial/layout-2-qa-fixes.md, user
+              call, 2026-10-01): this foot stacked the pill on its own row at
+              390, arguing from a 63px line that would break inside "Thursday,".
+              That was Retro's *pre*-QA foot. Retro's QA (cd8c114) shortened the
+              line to "Thursday evening selected" and made its foot one row, but
+              Lime's fit (206c596) did not descend from it, so it drew the old
+              stack, and Grunge and Editorial inherited it
+              (plans/lime/layout-2.md:823, plans/grunge/layout-2.md:1128,
+              plans/editorial/layout-2.md:1477).
+              At 390 the group wraps, and the line's minimum is its widest word
+              (`break-word`, which min-content ignores, where `anywhere` would
+              make it one glyph), so the line stands beside the chip wherever
+              its widest word fits and drops under it otherwise: beside it under
+              Lime and Grunge (80 / 89 of room, Thursday 58, Wednesday 72), under
+              it under Editorial, whose Noto pill (198 to the frame's 184) leaves
+              the line 47 beside the chip. There it takes the 116 left of the
+              pill, 12 under the chip (the group's gap; no master draws that
+              state). Its `maxWidth` clamps that minimum to the group, so a long
+              word in the artist's prompt still breaks inside the cell
+              (JP-095 (a)).
+              The same rule holds one level up: the group's minimum is its own
+              min-content (the chip or the widest word, clamped to the foot), so
+              a typed pill label that would leave the line less than that drops
+              the pill under the group, HEAD's stack as a fallback, where it
+              would otherwise crush the line to a glyph a line. The seed never
+              reaches it (72 + 16 + 198 of 300 at 360). */}
+          <div style={row(u(s.mob ? 16 : 24), {
             minHeight: u(s.mob ? 84 : 100),
             padding: `${u(12)} ${u(s.mob ? 20 : 40)}`,
-            ...(s.mob ? { alignItems: 'flex-start', justifyContent: 'center' } : { flexWrap: 'wrap' }),
+            flexWrap: 'wrap',
           })}>
-            <div style={row(u(12), s.mob ? { width: '100%' } : { flex: '1 1 0', minWidth: u(200) })}>
+            <div style={row(u(12), s.mob
+              ? { flex: '1 1 0', maxWidth: '100%', flexWrap: 'wrap' }
+              : { flex: '1 1 0', minWidth: u(200) })}>
               {!!cur && (
                 <span style={type(s.body, s.chip, 1, {
                   flex: 'none', background: s.ac, color: G.bg2, borderRadius: '999px',
@@ -15878,7 +15906,9 @@ function Calendar({ s }) {
                 })}>{hit.mark}</span>
               )}
               {/* A long word in the artist's prompt breaks (JP-095 (a)). */}
-              <span style={type(s.body, s.bodyMd, 1.5, { minWidth: 0, overflowWrap: 'anywhere' })}>{line}</span>
+              <span style={type(s.body, s.bodyMd, 1.5, s.mob
+                ? { flex: '1 1 0', maxWidth: '100%', overflowWrap: 'break-word' }
+                : { minWidth: 0, overflowWrap: 'anywhere' })}>{line}</span>
             </div>
             {/* Scheme 2's pale pill: `sem/text/2` ground, `sem/bg` label and
                 disc, a lime arrow, and the frame's hard 5 / 5 block in

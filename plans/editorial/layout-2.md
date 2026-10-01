@@ -770,6 +770,7 @@ the twins' dark-ground assumptions break (trap 6).
    *Settled in section 7: the disc is the card's taupe round a paper arrow, so the pill is the
    twins' keys with `G.bg2` = `s.bg`; the four extra 390 nodes are the mark-over-weekday stacks
    (`Frame 313`–`316`), not the foot, which is a row on the master and our inherited stack.*
+   The stack was reversed by JP-100 (`layout-2-qa-fixes.md`): the foot is a row here too.
 8. **map** — paper: the travel card **ink (Scheme 3)** with paper type, an outlined paper
    "Confirmed" chip, dashed blush rules, a terracotta Venue Link pill with an ink disc and an
    outlined terracotta Get Directions; "Other upcoming · 4" ink over four `box1` rows dashed
@@ -1473,7 +1474,9 @@ the twins' dark-ground assumptions break (trap 6).
   Petch string is the twins'.
 - **Inherited whole**: the blocked row (Lime's .38 on the row's three children, no strike, no
   handler — layout 1's Editorial calendar took the same state, and it reads on the taupe); the
-  390 foot stack (the master gives its line 60 beside a 184 pill); and **the desktop vertical
+  390 foot stack (the master gives its line 60 beside a 184 pill — reversed by JP-100,
+  `layout-2-qa-fixes.md`, user call, 2026-10-01: the stack was Lime's fit slip, and the foot is one
+  row, its line under the chip in the 116 beside the Noto pill, 98 against the master's 84); and **the desktop vertical
   inset** — the Lime block's `calc(u(56) - padY)` margin stands the card in Frame 298's own 56 ×
   0.82 at 1440 (user call, 2026-09-17), so this section answers media's "named, not fitted"
   question the other way by inheritance; at 768 the root's `padY` is the wrapper's 56, and at 390
@@ -1943,7 +1946,8 @@ it here in one line, with the plan it came from, a blank line between sessions.)
 - Calendar: *The pin is re-measured per face* (lime/layout-2, D2; retro/layout-2, *measure the
   pin, never transcribe it*) — 12 × 31 marks through a rendered span, 352 / 217.
 - Calendar: *A blocked slot takes layout 1's Lime state* and *the 390 foot stacks*
-  (lime/layout-2, D2) — both kept whole.
+  (lime/layout-2, D2) — both kept whole. The second was reversed by JP-100
+  (`layout-2-qa-fixes.md`).
 - Calendar: *Read every nested node's scheme off the master* (grunge/layout-3, A) — the band,
   Scheme 1 / 3 / 3, read by width off session 0's `s.onScheme`, its first by-width reader.
 - Calendar: *A frame's inside stroke is an inset `boxShadow`* (lime/layout-2, C) — the band's

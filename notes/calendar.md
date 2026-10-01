@@ -67,7 +67,18 @@ another `notes/` file.
   here (under Lime, Grunge and Editorial the row is dimmed to .38 with no strike, the same state their cells take), the foot prints the slot's own short line — `vm.calSlots[].line`, "Thursday evening
   selected", composed from the weekday and the slot's `kind` — or the same `calPrompt`, and the
   pill takes the same `calBookTo` under its own label, `slotCta` ("Start Enquiry"; the frame's
-  "Star Enquiry" read as a typo), chip, line and pill on one row at every width. Its head's link list is `vm.calFlow` — `CTA_TARGETS.book` resolved against
+  "Star Enquiry" read as a typo), chip, line and pill on one row at every width. Under Lime, Grunge
+  and Editorial that is true again since JP-100 (user call, 2026-10-01): their `s.limeTree` foot
+  stacked the pill at 390, a fit slip off Retro's pre-QA foot. At 390 their chip and line are a
+  group that wraps, and the line's minimum is its widest word (`break-word`, not `anywhere`, which
+  would make it one glyph). So the line stands beside the chip wherever that word fits, and drops
+  under it otherwise. That is Lime's and Grunge's seed beside it (80 / 89 of room for *Thursday*'s
+  58), and Editorial's under it (its Noto pill is 198 to the frame's 184, leaving 47). A
+  `maxWidth: 100%` clamps that minimum, so a long word in the prompt still breaks inside the cell.
+  The foot wraps by the same rule: the group's minimum is its own min-content, so a typed `slotCta`
+  long enough to leave the line less than its widest word drops the pill under the group.
+  Retro's and Pop's foot never wraps: at 360 it breaks *Thursday* inside itself, as it always has.
+  Its head's link list is `vm.calFlow` — `CTA_TARGETS.book` resolved against
   the page, this section leading and dotted and never linking to itself, the footer's rule for
   a link column. `heading`, which once headed only the unreachable fallthrough, heads it; `image` does not
   reach it at all.

@@ -110,7 +110,7 @@ the list explicitly.
 | 3 | JP-092 | Long hero name overflows | **Confirmed, and shared**: `HeaderV1`'s `s.limeTree` title is the flat ramp with no container; the fit was declined on the seed alone | S | **user: A, Retro's half named** | **done** (0 digest files; the title `min(ramp, 100cqi / cardNameEms)` on an `inline-size` column, 105 published renders fitted to 0.002px) |
 | 4 | JP-095 (a) | Pricing, calendar, media, testimonials labels | **Confirmed**: JP-090's rule, eight literals, every template; two are CLAUDE.md's named "unreported siblings" | M | **user: 1A–4A** (JP-071's shape, the frame's capitals; two counter words; the prompt reads its seed again; siblings named) | **done** (0 of 660 a surface; nine reach rows, 6/6 at each `in`; card 2 under four templates prints none of the eight) |
 | 5 | JP-095 (b) · JP-096 | The map's nine labels; *Based in* / *Willing to travel to* | **Confirmed, and recorded**: Retro dropped *Based in* because `base`'s seed says it | M | **user: 1A, 2A, 3C, 4A** (JP-071's shape; pills read their seed again; the home value is the header's Location; unfiled seats named) | **done** (15 of 660 a surface, map `arch 1` alone, as named; thirteen reach rows, 6/6 at each `in`; card 2 under four templates prints none of the nine) |
-| 6 | JP-100 | 390 calendar foot: pill on its own row | **Confirmed, a fit slip**: Lime's fit drew Retro's pre-QA stack (JP-060's shape) | S | light — Editorial's line | open |
+| 6 | JP-100 | 390 calendar foot: pill on its own row | **Confirmed, a fit slip**: Lime's fit drew Retro's pre-QA stack (JP-060's shape) | S | **user: A** (the group wraps, the line's minimum its widest word) | **done** (6 of 660 a surface, calendar `arch 1` × 390 × themes 1–3, as named; 99 states clean; card 2 one row under four templates) |
 | 7 | JP-097 | Byline lacks *· Single* | **Confirmed, a fit slip of every template**: the bar prints the artist alone; layouts 3 and 4 print the release | S | no | open |
 | 8 | JP-098 | 768 gallery: six tiles, no *Gallery · View list ✕* | **Confirmed, and recorded**: Retro's squeeze override and head-row allocation, every template | S | **yes** — tiles, head row, dead controls | open |
 | 9 | JP-094 | Section gaps too large | **Confirmed, and recorded**: layout 2 stands every section on `padY`; the frames' own insets differ by up to 85px at 1440 and 48 at 390 | L | **yes** — scope, widths | open |
@@ -1223,10 +1223,151 @@ the foot 113 → about 84 under Lime and Grunge, Editorial's shorter by the pill
 inside itself; the pill still `<a href="#form">` on `live=1`; card 2 in the real app at 390.
 
 **Docs.** The foot's comment (`:15783`, *reversed*, with how it happened); *reversed* pointers at
-`../lime/layout-2.md:823`, `../grunge/layout-2.md:1128` and `layout-2.md:1470`; `notes/calendar.md`
-(true again, with Editorial's wrap under A).
+`../lime/layout-2.md:823`, `../grunge/layout-2.md:1128` and `layout-2.md:1475` (the triage's
+`:1470`); `notes/calendar.md` (true again, with Editorial's wrap under A).
 
-**Settled.** —
+**Decided** (2026-10-01, user call): **A**, the recommendation. At 390 the `s.limeTree` foot is one
+row, chip-and-line group then the pill, under Lime, Grunge and Editorial. The group wraps, and the
+line's minimum is its widest word, so the line drops under the chip only when it cannot stand beside
+it: Lime and Grunge keep chip beside line, Editorial's line takes the 116 left of its 198 pill under
+the chip. The pill stays full size (`full`, the masters' 46 × 44 disc) and on the row everywhere.
+**Applied in-session, not asked:** the same rule one level up. A typed pill label that would leave
+the line less than its widest word drops the pill under the group (HEAD's stack, as a fallback).
+The typed-label probe found the row alone crushing Editorial's line to 16px under a 24-character
+label. The seed never reaches the fallback, so the decision as asked holds; object at the hand-off
+if not.
+
+Asked over what the session found first, on HEAD (`2900a57`):
+- **Every *Evidence* line moved as mapped**: `EncoreSection.jsx` the foot's comment
+  `:15864`–`15866`, its `(s.mob ? col : row)` div `:15867`, the group's `width: '100%'` `:15872`,
+  `BookPill … full={s.mob}` `:15891`–`15893`; Retro's and Pop's comment `:16051`–`16059`, div
+  `:16060`. `EncoreBuilder.jsx`: `vm.calSlots[].line` `:1503`–`1507`, `vm.calPrompt` `:1333`. The
+  plan lines are unmoved, except that Editorial's *390 foot stack* clause sits at
+  `layout-2.md:1475`–`1476` (its *Inherited whole* bullet opens at `:1474`), not `:1470`–`1471`.
+- **`cd8c114` is not an ancestor of `206c596`** (`git merge-base --is-ancestor`): the fit slip as
+  the verdict says.
+- **Reproduced in the real app** (puppeteer, card 2, Publish, Open, 390). The published page cues
+  nothing on its first paint (`CAL_OPEN` is past, so the foot prints the prompt), and a tapped slot
+  brings the chip:
+
+  | Template | Foot | Prompt / picked | Pill | Room for the line (chip *OCT 01*, 58.8) |
+  |---|---|---|---|---|
+  | Editorial | column | 109.5 / 113 | 198.0 × 54 | **45.3** |
+  | Lime | column | 109.5 / 113 | 164.5 × 54 | 78.8 |
+  | Grunge | column | 109.5 / 113 | 155.8 × 54 | 87.5 |
+  | Retro | row | 84 / 84 | 158.1 × 54 | 85.3 (three lines) |
+
+  No console errors. The harness (390, canvas and `live=1` alike, chip *JUN 12* 57.2) re-takes the
+  triage's numbers: foot 113 under themes 1–3 and 84 under 0 and 4, Editorial's pill 198.0, room
+  **46.8 / 80.3 / 89.1** (the triage's 46.6 / 80.3 / 88.8, within the chip's rounding).
+- **The *Fix*'s "not `full`" is the group's `width: '100%'`, not the pill's `full`.** Editorial's
+  390 master (`986:15690`, `get_metadata`) draws the foot 370 × 84, the left group 130 × 60 (a
+  58 × 23 chip, the line 60 × 60), and the pill **184 × 54 round a 46 × 44 disc**: full size.
+  `BookPill`'s Lime-tree scale is `k = tab || full ? 1 : s.mob ? 0.62 : 0.82`, so dropping `full`
+  would draw it at the header's 0.62.
+- **The harness was proved first**: a fresh HEAD worktree on :5174 (`node_modules` an APFS clone,
+  `.vite` removed) against the unedited tree on :5173, themes 0–4, every category, three widths:
+  **0 of 660 on each surface** after the port and stamp normalisation (194 raw, all the port).
+- **Expected after-diff, named before the code**: calendar `arch 1` × mobile × themes 1–3 × both
+  surfaces, **6 files**. No element is added or removed, so the rows pair 1:1. Changes stay in the
+  foot subtree (the foot's height, the group's box, the chip's y, the line's box, the pill's x / y)
+  and the panel's and root's heights. Lime and Grunge: the foot 113 → 84. Editorial: about 98 (the
+  chip's 23, the group's 12, the line on two lines in 116). Retro, Pop, 1440 and 768: 0.
+
+**Settled** (2026-10-01).
+- **`EncoreSection`, the `s.limeTree` foot** (`:15864`–`15924`), at 390 alone:
+  - The foot is `row(u(16))`, the masters' gap, where it was `col(u(12))`, and it wraps at every
+    width (1440 and 768 always did, so they are byte for byte).
+  - The left group is `flex: 1 1 0; maxWidth: 100%; flexWrap: wrap`, where it was `width: 100%`.
+    Its `minWidth` is left at `auto`, so its minimum is its own min-content (the chip or the
+    line's widest word), clamped to the foot. **That is the pill's fallback**: a typed label that
+    would leave the group less than that drops the pill under it, HEAD's stack.
+  - The line is `flex: 1 1 0; maxWidth: 100%; overflowWrap: break-word`, its `minWidth` left at
+    `auto`. **`break-word`, not `anywhere`, is the whole fix**: `anywhere` feeds its break
+    opportunities into min-content, so the line's automatic minimum would be one glyph and it
+    would break *Thursday* beside the chip. Under `break-word` the minimum is the widest word, and
+    `maxWidth` clamps it to the group (flexbox clamps the content-size suggestion by a definite
+    max), so a long word still breaks inside the cell (JP-095 (a)). At 1440 and 768 the line keeps
+    `minWidth: 0; overflowWrap: anywhere`.
+  - The pill is untouched: `full={s.mob}`, the masters' full-size disc. With the group's basis 0
+    it never shrinks on the seed.
+  - The vertical gap between the chip and a dropped line is the group's 12. No master draws that
+    state.
+  - The comment carries the *reversed* note: how it happened (`206c596` does not descend from
+    `cd8c114`) and pointers at the three plan lines.
+- **Digest: as named.** 6 of 660 on each surface, calendar `arch 1` × mobile × themes 1–3, and 0
+  elsewhere (themes 0–4, every category). Re-taken after the fallback (calendar, themes 0–4, both
+  surfaces): byte-identical to the row-only cut, so the seed never reaches it. The rows pair 1:1,
+  every change inside the foot subtree and the panel's and root's heights:
+
+  | Theme | Section | Foot | Line | Pill |
+  |---|---|---|---|---|
+  | Lime | 843.1 → 814.1 | 113 → 84 | 165.9 × 19.5 → 80.3 × 58.5, beside the chip (three lines, the master's 60 × 60) | on the row |
+  | Grunge | 812.7 → 783.7 | 113 → 84 | → 89.1 × 58.5, beside the chip | on the row |
+  | Editorial | 835.1 → 820.1 | 113 → 98 | → 116 × 39, under the chip (two lines) | on the row |
+
+- **States** (a scratch puppeteer probe, deleted): 165 renders. Themes 0–4, at 360, 390 and 414
+  (the harness wrapper re-laid at each width), canvas and `live=1`. The states: the four seeded
+  days (slot one cued, slots two to four tapped live); `&today=2025-06-18`, a Wednesday (the
+  prompt, then slot one tapped: *Wednesday evening selected*); `&booked=2025-06-12` (the prompt, no
+  chip); and that prompt typed as one 54-character word.
+  - **Themes 1–3, all 99 states**: the foot is a row; the pill sits inside the foot, an
+    `<a href="#form">` on `live=1` and a span on the canvas; no text node's `Range` runs past the
+    section; no page scroll. No word breaks inside itself except the 54-character prompt, which
+    breaks inside the cell.
+  - **Where the line stands.** Lime and Grunge: beside the chip at 390 and 414, on every day.
+    Editorial: under it at 390, and at 414 beside it on *Thursday* and under it on *Wednesday*
+    (72). At 360 the rule drops Lime's line under the chip (119.5 of cell against 127 for chip and
+    *Thursday*), and Grunge's on *Wednesday*.
+  - **Heights.** Every state is as tall as HEAD or shorter, except one, named: **Editorial at 360**
+    with *Thursday*, *Saturday wedding* or *Wednesday*. There the line takes three lines in the 86
+    under the chip, and the foot is 117.5 against HEAD's stacked 113.
+  - **Retro and Pop: 66 of 66 states identical to HEAD.** Named, not fixed: their own foot, which
+    never wraps, breaks *Thursday* inside itself at 360 (Retro on the cued day, Pop on every day).
+    HEAD does the same, it is not at 390, and it is not this ticket's.
+  - **The 54-character prompt stacks** under the fallback: its word is the group's minimum, clamped
+    to the foot, so the pill drops under the line, and the word breaks inside the full 300 / 330 /
+    354. The foot is 113.5 at 390 (HEAD 109.5) and 133 at 360 (HEAD 129). These are the only 18 of
+    the 165 states the fallback moved.
+- **A typed pill label** (`&cj={"slotCta":…}`, 390, themes 0–4, the cued day and the prompt, both
+  surfaces; the probe the advisor asked for, which found the fallback's need). With the row alone, a
+  24-character label (*Send us your enquiry now*) drew Editorial's pill 297.7. That left the line
+  16.3, twelve lines broken inside every word, and the foot 293. With the fallback:
+  - *Enquire*: one row, 84, under the three.
+  - The 24-character label: Lime and Grunge keep the row (117.5, the line under the chip on three
+    lines). Editorial's pill drops under the group: 117 against HEAD's 113, the foot's 16 gap where
+    HEAD's column took 12, with the line beside the chip on one line.
+  - A 60-character label is wider than the foot, and overflows it exactly as on HEAD (the pill is
+    `nowrap`; the same 86–268px past the foot), named.
+  - So at 390 the pill drops once its label draws it past about 256 under Editorial and 290 under
+    Lime and Grunge. Retro and Pop: identical to HEAD.
+- **The real app** (puppeteer: card 2 under Editorial, Lime, Grunge and Retro, Publish, Open, at
+  360, 390 and 414, the first paint, then a trusted tap on slot one):
+  - Every foot is one row with the pill an `<a href="#form">` on it, no page scroll, and no console
+    errors.
+  - At the tester's 390, Editorial's foot is 84 on the prompt and 98 picked (the line under the
+    chip). Lime's and Grunge's are 84 both ways, the line beside the chip on three lines. Retro's is
+    unchanged.
+  - At 360 they match the harness. The published tab centres the 390 layout at 414 (every x +12),
+    so its 414 reads as 390; the harness's wider 414 covers that width.
+- **Build.** `npm run build` is clean. The root `index.html` is not refreshed.
+- **Docs.**
+  - The foot's comment, *reversed*.
+  - *Reversed* pointers at `../lime/layout-2.md:823`, `../grunge/layout-2.md:1128` (and its
+    named-diff list at `:1148` and sweep checklist at `:1497`), and `layout-2.md:1477`. That
+    pointer sits at `:1477` now, because section 7's Settled note (`:773`), which called the foot
+    "our inherited stack", gained a line. The sweep checklist at `:1949` gets one too.
+  - `notes/calendar.md`: "one row at every width" is true again, with the wrap rule and Retro's 360
+    break.
+  - CLAUDE.md and the README do not describe the foot (grep). No field was added or re-scoped, so
+    no `reach.mjs` row.
+
+Reply: **JP-100 — fixed.** On a phone, the Booking Calendar's foot is one row again, as in the
+design: the date chip, the line, then *Start Enquiry*. That covers Lime, Grunge and Editorial, which
+all shared the stacked foot. It came from an older version of Retro's calendar that Lime's design
+pass started from. Under Lime and Grunge the line stands beside the chip. Under Editorial the
+button's typeface draws it 14px wider than the design's, which leaves the line too little room
+beside the chip. So there the line sits under the chip, with the button still beside both.
 
 ---
 

@@ -1129,6 +1129,9 @@ Append as the pass goes. Do not repeat layout 1's, Lime's or Retro's bullets; na
   on one row with the line at 90 wide on three lines, exactly as Lime's did, and Lime's block
   departed from its own frame there (the pill on its own row); a Grunge-only row would be the
   ternary tree the plan forbids, so the foot is 113 against the frame's 84 (Lime's 129).
+  **Reversed by JP-100** (`../editorial/layout-2-qa-fixes.md`, user call, 2026-10-01): Lime's
+  stack was a fit slip, Retro's pre-QA foot. The foot is one row, the frame's 84, with the line
+  beside the chip on three lines in 89.
 - **Measured against the masters' content edges**: desktop panel 1052 × 816.8 at radius 12.3
   (15 × 0.82), band 199.5, h2 at 94.6 (115 × 0.82 = 94.3) and 468 wide inside the 571 cap,
   column head 49.8 (61 × 0.82 = 50), rows 121.4 (148 × 0.82), marks 235.3 wide, weekday at 322,
@@ -1142,7 +1145,7 @@ Append as the pass goes. Do not repeat layout 1's, Lime's or Retro's bullets; na
   is one heading line shorter than its frame (199.5 / 220.4 / 208.4 against 258.3 / 271 / 247),
   since the seed prints AVAILABILITY where the frame sets a two-line sentence; the desktop and
   768 weekdays under the measured pin; the root's 40 / 22 side padding against the masters'
-  30 / 10; the 390 foot stack.
+  30 / 10; the 390 foot stack (gone with JP-100).
 - **`FIELDS.calendar.heading`'s `Grunge: [0, 1, 2, 3]`** (layout 1, section 8) holds over the
   fitted card: the h2 is in every layout-2 render above. `reach.mjs` carries no calendar probe
   (its `cj` probes are the header's, the bio's and the map's), so no run was owed; `slotCta`
@@ -1491,7 +1494,8 @@ Conventions, with the plan it came from — layout 1's running list, kept for th
   Bebas Neue, and the frame's 350 is not followed* (Lime 2, calendar) — a third face, a third
   pair of numbers, the same call.
 - *A blocked slot takes layout 1's Lime state* and *the 390 foot stacks, Retro's departure*
-  (Lime 2, calendar) — both inherited, neither grown.
+  (Lime 2, calendar) — both inherited, neither grown. The second was reversed by JP-100
+  (`../editorial/layout-2-qa-fixes.md`).
 - *Open question 2's route 1: the hard shadow goes through `style`* (Lime 2, bio) — the pill's
   block, already Lime's, on the same key.
 - *The `G` lookup whose Lime arm is today's literals* (layout 1, sections 4–10) — four keys.
