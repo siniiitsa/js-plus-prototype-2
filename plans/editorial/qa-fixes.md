@@ -99,7 +99,7 @@ default list is `0,2,3,4`, which **skips Lime**, so always pass the list explici
 | 5 | JP-086 | 390 hero name clipped | **Confirmed**: Editorial's 390 title is a flat 107px, the only width it is not fitted | S | no | **done** |
 | 6 | JP-087 | 390 gallery: TikTok wraps to a second row | **Confirmed, and recorded**: wrapping is the shared rule, chosen over the frame's run-off | S–M | **user: A, one line that scrolls on the published page** | **done** |
 | 7 | JP-091 | 1440 nav wraps with a long name | **Confirmed, Editorial's alone**: its nine Noto links need 636px at the 12px floor, leaving a name 6.75 em | M | **user: A, the name gives way; layout 1 only** | **done** |
-| 8 | — | End-of-pass sweep | — | S | — | open |
+| 8 | — | End-of-pass sweep | — | S | — | **done** |
 
 **Why this order:**
 - **The outside question first.** JP-085 writes no code. Its answer goes to the PO while the code
@@ -1133,6 +1133,9 @@ layout 1 alone.**
   `live=1`**, as named.
   - The repro set moves only the header, by construction. `vm.navNameFit` has one reader,
     `NavBar`'s desktop `lime` arm without `links`, so no other section's render can move.
+  - **The zero is at 1180.** The sweep's two-build digest found the rule firing on the seed at
+    the editor's 1088 Desktop canvas, where `main` already wrapped the links (*End-of-pass
+    sweep*, step 5).
 - **Harness, `&name=`.** Desktop, arch 0, themes 1–3, and arch 3 as the control. *Kai Mercer*,
   *Florence and the Machine*, *The Chemical Brothers*, and three stress names: a 34-letter
   single word, that word twice, and *Godspeed You Black Emperor and the Orchestra*.
@@ -1217,4 +1220,229 @@ unchanged. The same holds on Lime and Grunge, where these four names already fit
    (`curl -sI https://siniiitsa.github.io/js-plus-prototype-2/`; the triage read
    `Wed, 30 Sep 2026 15:07:50 GMT`, 8,776,960 bytes).
 
-**Settled.** —
+**Settled** (2026-10-01, all six steps; the push, the PR, the merge and the build stamp are the
+user's).
+- **1. Full digest against `main`: 64 of 1,320** (32 on the canvas, 32 on `live=1`), and the
+  reconciliation is by file.
+  - **The harness.** A scratchpad worktree at `main` (`bec23d0`), its `node_modules` an APFS clone
+    with `.vite` removed, served on :5174 and warmed with ten renders. Both `main` labels were
+    taken first, then the tree's on :5173. Every category × themes `0,1,2,3,4` × three widths ×
+    canvas and `live=1`, the footer's `page=2` render included, port and photo stamps normalised.
+    No HEAD-worktree proof was taken, since every entry had proved the harness against HEAD; the
+    by-file match below is this step's proof.
+  - **Every differing file is one a Settled names, and every named file differs:**
+
+    | Entry | Named (both surfaces) | Differ | Row shape |
+    |---|---|---|---|
+    | JP-089 | 54 | 54 | calendar, form and pricing `arch 0` × themes 1–3 × three widths. The head reads *Book Now*, the submit *Enquire* (its one row), and the chip row *All · Private Event · Club Night · Festival* (the row and four chips; the desktop row still ends right-aligned) |
+    | JP-088 | 18 | 18, inside JP-089's calendar files | the pill's five rows go (65 → 60 under Lime), the foot is 109.9 → 82.1 at desktop, and the rows below move up. The line is a `SPAN` on the canvas and an `A` on `live=1` |
+    | JP-087 | 10 | 10 | gallery `arch 0` at mobile × themes 0–4. Canvas: 94–130 changed lines, with the fourth tile on the first line and the section shorter. `live=1`: one row, the scroller's box, 370 × 80 → 390 × 100 at −10 / −10 |
+    | JP-086, JP-090, JP-091 | 0 | 0 | — |
+
+    The union is 54 + 10 = 64. No file was a blank render and no diff was 0.1px shaping, so
+    nothing was rerun. :5174 was torn down after step 1.
+- **2. The repro sets on the final tree**, read off the DOM. A scratch puppeteer walk (deleted) took
+  card 1 of Editorial, Lime, Grunge and Retro, published and opened. It ran one template per
+  process under `perl -e 'alarm 300'` with a retry, and appended each row to a JSONL sink. All four
+  reached their last row on the first try, with no page errors. The Title was set through the
+  fiber `st` dispatch, then republished.
+  - **JP-086, Editorial at 360 / 390 / 414.** Its *Settled* table, to the hundredth:
+    - *Florence and the Machine* 78.32 / 85.23 / 85.23;
+    - *The Chemical Brothers* 77.38 / 84.21 / 84.21;
+    - *Kai Mercer* 99.65 / 107 / 107;
+    - *Sienna Vale* 107 throughout;
+    - *Supercalifragilistic* 35.06 / 38.16 / 38.16.
+
+    No word's `Range` has a second rect, and the widest ends 9.9 or more inside the section. The
+    title's and the section's `scrollWidth` equal their `clientWidth`. The page is its width except
+    at 360 with the two long names (390 / 370), which is the 360 footer JP-086 named.
+  - **JP-090's markers.** `bio.refLabel`, `map.kicker`, `map.listLabel` and `form.typeLabel` were
+    marked through `st` on each card 1. Published, none of the four literals is left at 1440, 768
+    or 390 on any of the four templates, and each marker prints. Unmarked, each literal prints as
+    its seed.
+  - **JP-091 at 1440** (the tab's 1180 layout; the bar 60.65 on Lime, Grunge and Editorial with every
+    name, the pill on the row):
+
+    | Card 1 | Kai Mercer | Sienna Vale | Florence and the Machine | The Chemical Brothers |
+    |---|---|---|---|---|
+    | Editorial: name / lines / links | 26.2 / 1 / 12.83 | 26.2 / 1 / 12.68 | **20.1 / 2** / 12.01 | **20.1 / 2** / 12.01 |
+    | Lime: links | 20 | 20 | 16.94 | 17.63 |
+    | Grunge: links | 15 | 15 | 13.85 | 14.44 |
+
+    Every name keeps the links on one row of nine. Lime's and Grunge's names stay one line at 26 and
+    22.13, as HEAD. *Supercalifragilistic* on Editorial sets at 18.02 on one line, the links at
+    12.05. **Retro**, the logged item, is unchanged: *Florence and the Machine* drops the Book pill
+    to a second row and the bar grows from 33.58 to 69.18.
+  - **JP-087 at 390**, with the three addresses:
+    - The scroller's four children sit at one top, so the four tiles are on one line.
+    - The scroll range is **31 / 13 / 10 / 61** on Editorial / Lime / Grunge / Retro.
+    - The page's `scrollWidth` is 390.
+    - The scroller is 390 × 100 (Retro 104), and its `clientHeight` equals its `offsetHeight`.
+  - **Shift+wheel is the user's hand check, still open.** Over the published 390 row in a real
+    desktop browser (a devtools phone frame is enough): Shift+wheel should scroll it sideways. CDP
+    input cannot test it (JP-087's *Settled*).
+- **3. Reach** (a scratch copy of `reach.mjs` filtered to the five rows, themes 0–4, 1,200 renders,
+  deleted after). Each hit is 6/6. A throwaway Node check of `fieldReach()` over every `in` agrees
+  row for row:
+  - `calendar.cta`: Retro and Pop layouts 1 and 4; Lime, Grunge and Editorial layout 4 alone
+    (JP-088).
+  - `bio.refLabel`, `map.listLabel` and `form.typeLabel`: layout 1 on all five templates.
+  - `map.kicker`: layouts 1 and 3 on all five (JP-090).
+- **4. The real app.** The walk above, plus the committed `page-check.mjs` on Editorial card 1.
+  Neither window logged a page error.
+  - **The panel**, on card 1 of Lime, Grunge and Editorial:
+    - the calendar's *Heading* reads *Book Now*, and its *Button* *Check a date* under "Not shown
+      in this layout";
+    - the form's *Button* reads *Enquire* and its *Event type label* *Event type*;
+    - the map's *Kicker* reads *Shows/coverage* with no note, and its *List label* *Upcoming gigs*;
+    - the bio's *Reference line* reads `[ 001 ] Structure · Bio_01`.
+
+    **Retro's panel** keeps *Availability*, which is "Not shown in this layout", and *Book Now*,
+    and its *Button* has no note. Its four label fields read as on Editorial.
+  - **The seed, published at 1440, 768 and 390.**
+    - Lime, Grunge and Editorial print the head *Book Now*, the chips *All · Private Event · Club
+      Night · Festival* and the submit *Enquire*.
+    - **No *Check a date* text or pill is anywhere in their calendar.** The foot is 82.07 laid out
+      at 1440 (100.1 in the tab) and 99.5 at 768 and 390.
+    - The prompt is a span with no cursor.
+    - Picking October 31 turns the line into `<a href="#form">` *Enquiry for Saturday, October 31
+      at 9:00pm*, with a pointer and no underline. Clicking it calls `scrollIntoView` on `form`
+      (hooked), at all three widths.
+    - **Retro** keeps *Solo / Trio / Band*, *Book Now* and its `Check a date → #form` pill. Its foot
+      is 83.57 / 102 / 135.8, and its line stays a span.
+  - **`page-check.mjs`, Editorial card 1.**
+    - Every nav link, the Book pill, the three pricing pills and every footer link scroll to their
+      sections.
+    - The audio plays.
+    - The repertoire's, pricing's and the map's chips and the calendar's days each change their
+      section.
+    - The form refuses an empty submit, then composes
+      `mailto:bookings@kaimercer.co.uk?subject=Wedding%20enquiry&body=Name: … / Email: … / Event
+      date: …`.
+    - The tablet ↔ mobile resize walk logs no warning, `overflow390` is 0, and the 390 burger
+      opens (1 → 11 links).
+  - **Named, not fixed, found by the walk.** Both are byte for byte the same on `main`'s build
+    (root `index.html`, served on :8931), so they predate the batch:
+    - **Retro's footer scrolls the page sideways with a long name**, at 360, 390 and 414 (the page
+      445 / 445 / 457 wide with *Florence and the Machine*, and 419 / 419 / 431 with *The Chemical
+      Brothers*). Its header's seal ring also runs 3–4px past the page there.
+    - **Lime's 390 hero title clips the two long names at 360.** It is a flat 120px, and FLORENCE
+      ends 12.8 past the section, CHEMICAL 25 past. At 390 and 414 they fit, as JP-086 found.
+- **5. `index.html`** refreshed in `97ac77e` from `npm run build:standalone`: 8,779,739 bytes, up
+  from 8,776,960.
+  - **The two-build digest.** A throwaway copy of `build-digest.mjs` tagged each row with its
+    section's root. It walked card 1 (`CARD` unset) with reduced motion, from `127.0.0.1:8931`:
+    `index.html?v=old` before the `cp`, then `source/dist-standalone/index.html`. Every section was
+    re-based on its own root and compared at 0.2px.
+  - **Every section moves as the harness did:**
+    - the gallery at Mobile under all five themes (45–63 rows);
+    - pricing's chips (4–6 rows), the calendar (5–7 changed and the pill's 5 gone) and the form's
+      submit (1 row), under themes 1–3 at every tab;
+    - the header, bio, media, repertoire, map and testimonials: 0, with one exception below;
+    - Retro and Pop: 0 at Desktop and Tablet.
+  - **What is left is residue**: the footer seal's 0×0 `<defs>` / `<path>` (2 a tab, wherever a
+    section above it moved), and one 0×0 form `DIV` under Editorial at Desktop. They report the
+    viewport origin, so re-basing moves them with the page.
+  - **One row set no *Settled* names, and it is JP-091's rule: Editorial's header at the Desktop
+    tab, 15 rows.**
+    - In a 1440 window the editor's Desktop canvas is **1088** wide. The harness renders the
+      desktop at 1180, and the published tab lays out at 1180.
+    - At 1088, `main`'s seeded *Kai Mercer* bar already wraps *Reviews* onto a second row of
+      links, at the 12px floor. That is the tester's defect, on the seed, in the editor.
+    - The new build keeps the nine links on one row at 12.008, and sets the name on two lines,
+      KAI / MERCER, at 20.1 inside the bar. A clip of the canvas shows it.
+    - JP-091's "zero on the seed" was measured at 1180 and holds there (step 1). At 1088 its rule
+      does what the user's call A asks. Lime's and Grunge's headers: 0.
+  - The modal's card counts (4 / 4 / 4 / 4 / 3) do not change.
+- **6.** `plans/README.md`'s Editorial *QA fixes* row and the replies below. At the sweep the
+  deployed build still read `Wed, 30 Sep 2026 15:07:50 GMT`, 8,776,960 bytes, which is the
+  tester's (and `main`'s root `index.html`).
+- **Torn down**: :5174, the `main` worktree (`git worktree remove --force`) and :8931. The scratch
+  scripts in `source/scripts/` were deleted. :5173 is the user's and still runs.
+
+**Replies to QA, one line per ticket.** **Retest against the Pages build whose `last-modified` is
+later than `Wed, 30 Sep 2026 15:07:50 GMT`** (the build these reports were filed against,
+8,776,960 bytes; `curl -sI https://siniiitsa.github.io/js-plus-prototype-2/`). An older tab or
+cached build still shows every one of them.
+- **JP-085 — needs the PO: a web licence. Nothing changes in this build.** Editorial's heads (the
+  hero, the section heads, the nav and the buttons) are set in Noto Serif Display on purpose. The
+  design's Fisterra Fora is a Fontspring *demo*, and the demo licence cannot ship on artists' public
+  sites.
+  - Noto is the closest free stand-in: the same cap height within 1.4% and the same stroke weight,
+    measured. What it lacks is Fisterra's swash serifs and ligatures, and no free condensed serif
+    has those.
+  - Fisterra is sold by its foundry, TipoType, as a web licence from $69 (10k page views a month)
+    to $5,037 (20M). Its terms do not let one licence be passed on. Before buying, the PO has to ask
+    TipoType whether one licence covers every artist's site the builder publishes, or whether that
+    needs their Corporate licence (price on request). It is also on Adobe Fonts, whose terms for a
+    builder are not yet confirmed.
+  - **The next step is the PO's.** Once a licence covering the published sites is in hand, the
+    real face replaces Noto in its own piece of work, re-fitting every Editorial heading.
+- **JP-086 — fixed.** On Editorial's Hero at 390, a long name now shrinks until its widest word
+  fits the page, and it still wraps between words, never inside one.
+  - *Florence and the Machine* sets at about 85px and *The Chemical Brothers* at about 84px, with
+    nothing clipped. At 360 they go a little smaller: 78px and 77px.
+  - *Kai Mercer* and *Sienna Vale* keep the design's 107px. At 360 even the default *Kai Mercer*
+    was clipped; it now shrinks to 100px.
+  - Not changed, and logged separately:
+    - At 390 the menu bar's name runs under the Book button with a name this long.
+    - At 360 the footer scrolls sideways with it.
+    - A single 20-letter word still clips on Lime's and Grunge's Hero, and on Editorial's layouts
+      2 and 3.
+    - Found while retesting, on the old build too: Retro's footer scrolls sideways at 360–414 with
+      either long name, and Lime's Hero clips both at 360.
+- **JP-087 — fixed.** At 390 the gallery's four tiles now sit on one line, as the design draws them,
+  with TikTok running off the right edge.
+  - On the published page the line scrolls sideways, by swipe or trackpad, so TikTok is one swipe
+    away, and every tile still opens its link.
+  - The editor's Mobile preview shows the design's picture: the line cut at the edge, not
+    scrollable.
+  - With only one or two links filled, the tiles fit and nothing scrolls.
+  - The same on Retro, Lime and Grunge.
+- **JP-088 — fixed.** Under Lime, Grunge and Editorial, layout 1's calendar card no longer has the
+  *Check a date* button, so its foot is the design's: the *Enquiry for …* line alone.
+  - On the published page, whenever the line names a day (the one the visitor picked, or the
+    opening date while it is still ahead), that line is the link. It takes the visitor to the
+    enquiry form, or to Pricing where the page has no form, which is what the button did.
+  - The *Pick a date to enquire* prompt is not a link.
+  - The calendar's *Button* field now says "Not shown in this layout" at layout 1 under these
+    templates. It still labels layout 4's Send Enquiry.
+  - Retro's layout 1 keeps its button, unchanged. Its design draws none either, so if that is
+    wanted gone too, it is its own ticket.
+- **JP-089 — fixed.** Under Lime, Grunge and Editorial, layout 1 now starts from the design's copy,
+  in the editor and on the published page:
+  - the calendar's head reads *Book Now*;
+  - the form's submit reads *Enquire*;
+  - the pricing chips read *All · Private Event · Club Night · Festival*, one tag per package in
+    the design's order.
+
+  Each can still be edited. The *All* chip stays, so the visitor can get back to every package.
+  Retro keeps its own design's *Book Now* and *Solo / Trio / Band*, and an artist's own edits are
+  untouched.
+- **JP-090 — fixed.** The four labels are now editable on every template, in the editor and on the
+  published page. Each starts as the design's text.
+  - **Bio** (layout 1): *Reference line*, the "[ 001 ] STRUCTURE · BIO_01" line. Left empty, it is
+    not drawn.
+  - **Events Map** (layout 1): *Kicker* now changes "Shows/coverage" and no longer says "Not shown
+    in this layout". Layout 3 still starts from "Gigs & travel". *List label* changes "Upcoming
+    gigs", and the count after it is the page's. Left empty, each is not drawn, and the list label
+    takes its count with it.
+  - **Enquiry Form** (layout 1): *Event type label*. Left empty, it shows "Event type" again, as
+    *Message label* does, because the chips always need a heading. The enquiry email never carried
+    it: the chosen type goes in the subject.
+  - A long label wraps rather than running off a phone screen. Labels nobody reported stay as the
+    design draws them.
+- **JP-091 — fixed.** At 1440 the menu stays on one line however long the artist's name is. The name
+  gives way instead:
+  - It keeps the design's size while it fits, and a longer name shrinks.
+  - A long one wraps between words onto two lines inside the bar. *Florence and the Machine* reads
+    FLORENCE AND / THE MACHINE at about 20px, and *The Chemical Brothers* THE CHEMICAL / BROTHERS.
+  - The bar keeps its height, and the Book button stays on the row. On the published page *Kai
+    Mercer* and *Sienna Vale* are unchanged. The same holds on Lime and Grunge, where these four
+    names already fit.
+  - In the editor's Desktop preview on a 1440 screen, which is narrower than the page, even *Kai
+    Mercer* used to push *Reviews* onto a second row. It now keeps one row, with the name on two
+    lines.
+  - Logged separately, not changed here:
+    - Editorial's layout-4 header still wraps its menu with these names.
+    - Retro's header pushes its Book button to a second line with *Florence and the Machine*.
