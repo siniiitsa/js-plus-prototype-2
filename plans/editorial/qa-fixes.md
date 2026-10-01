@@ -1131,6 +1131,8 @@ layout 1 alone.**
   - **Untouched:** Retro's arm, the narrow branch, and layout 4's `links` branch.
 - **Digest.** The tree against the HEAD labels came to **0 of 660 on the canvas and 0 of 660 on
   `live=1`**, as named.
+  - The repro set moves only the header, by construction. `vm.navNameFit` has one reader,
+    `NavBar`'s desktop `lime` arm without `links`, so no other section's render can move.
 - **Harness, `&name=`.** Desktop, arch 0, themes 1–3, and arch 3 as the control. *Kai Mercer*,
   *Florence and the Machine*, *The Chemical Brothers*, and three stress names: a 34-letter
   single word, that word twice, and *Godspeed You Black Emperor and the Orchestra*.
