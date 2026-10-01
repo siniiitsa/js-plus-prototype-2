@@ -37,7 +37,9 @@ import {
   THEMES, SCHEMES_OF, CATS, NVAR, FLAG, FIELDS, TITLES, DEFS, TRACKS, TAGS, TAG_LABELS, HERO_CTA, BIO_CREDIT, BIO_CTA,
   HERO_AVAIL, FACE_TITLE, FACE_BODY, PLACE_BODY, BIO_TAG,
   BIO_SINCE_LABEL, BIO_ROLE_LABEL, BIO_BASE_LABEL, BIO_ABOUT_LABEL, BIO_TAGS_LABEL, MEDIA_LIST_LABEL,
-  BIO_REF_LABEL, MAP_LIST_LABEL, FORM_TYPE_LABEL, mapKickerSeed, testiKickerSeed,
+  BIO_REF_LABEL, FORM_TYPE_LABEL, mapKickerSeed, mapListLabelSeed, testiKickerSeed,
+  MAP_HOME_LABEL, MAP_HOME_CAPTION, MAP_VENUE_LABEL, MAP_VENUE_CAPTION, MAP_RADIUS_LABEL, MAP_TIME_LABEL,
+  MAP_FEE_LABEL, MAP_VENUE_CTA, MAP_ROUTE_CTA,
   PRICING_KICKER, PRICING_FEATS_LABEL, CAL_DATE_LABEL, CAL_AVAIL_LABEL, CAL_PROMPT,
   MEDIA_CHIP_LABEL, MEDIA_COUNT_LABEL, MEDIA_TOTAL_LABEL, TIER_KEYS, tiersSeed, limeTreeTheme, PRICE_UNIT, QUOTES,
   CITIES, PINS, EXAMPLE_PAGE,
@@ -1651,9 +1653,29 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   vm.gigPage = PINS.length
   // JP-071 — layout 3's "Gigs & travel" eyebrow over the heading, uncased;
   // JP-090 — layout 1's "Shows/coverage" in the same seat, off the same key
-  // with its own seed, and the label over layout 1's gig list.
+  // with its own seed, and the label over layout 1's gig list; JP-095 (b) —
+  // layout 2's "Travel radius" and "Other upcoming", the same two keys' seeds
+  // there.
   vm.mapKicker = cv('kicker', mapKickerSeed(d))
-  vm.mapListLabel = cv('listLabel', MAP_LIST_LABEL)
+  vm.mapListLabel = cv('listLabel', mapListLabelSeed(d))
+  // JP-095 (b) · JP-096 — the rest of layout 2's travel card, uncased: the two
+  // locations' labels and captions and the stat row's labels, each dropped
+  // when emptied, and the two pills, which read their seed again
+  // (`formMsgLabel`'s rule). The home value is `vm.location`, the header's.
+  vm.mapHomeLabel = cv('homeLabel', MAP_HOME_LABEL)
+  vm.mapHomeCaption = cv('homeCaption', MAP_HOME_CAPTION)
+  vm.mapVenueLabel = cv('venueLabel', MAP_VENUE_LABEL)
+  vm.mapVenueCaption = cv('venueCaption', MAP_VENUE_CAPTION)
+  vm.mapRadiusLabel = cv('radiusLabel', MAP_RADIUS_LABEL)
+  vm.mapTimeLabel = cv('travelTimeLabel', MAP_TIME_LABEL)
+  vm.mapFeeLabel = cv('feeLabel', MAP_FEE_LABEL)
+  vm.mapVenueCta = String(cv('venueCta', MAP_VENUE_CTA)).trim() || MAP_VENUE_CTA
+  vm.mapRouteCta = String(cv('routeCta', MAP_ROUTE_CTA)).trim() || MAP_ROUTE_CTA
+  // Whether the Venue Link pill's label may wrap: only once it is typed longer
+  // than the seed. Lime's 768 frame overlaps the seed's text with the disc, and
+  // its fit runs the one-line label 1px into the gap; a label free to wrap
+  // breaks there onto two lines and lifts the pill 1.6px.
+  vm.mapVenueCtaWraps = vm.mapVenueCta.length > MAP_VENUE_CTA.length
   vm.mapRadius = cv('radius', MAP_RADIUS)
   vm.mapBase = cv('base', MAP_BASE)
   vm.mapTerms = cv('terms', MAP_TERMS)
@@ -4054,8 +4076,10 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                   // form's until one is typed (JP-076). The header's kicker left the chain with
                   // JP-061: its `d` is its seed at every layout, and the
                   // layout-3 card's line is a field of its own. The map's
-                  // kicker joined it with JP-090 (mapKickerSeed), and the
-                  // testimonials' with JP-095 (a) (testiKickerSeed). Layouts 3 and
+                  // kicker joined it with JP-090 (mapKickerSeed), the
+                  // testimonials' with JP-095 (a) (testiKickerSeed), and the
+                  // map's list label with JP-095 (b) (mapListLabelSeed; gated on
+                  // `map`, since media carries a `listLabel` too). Layouts 3 and
                   // 4's heads come ahead of the song count, which sectionVm's
                   // later assignment says the other way round (JP-070, JP-081).
                   const fallback = (f.k === 'title' || f.k === 'badgeText') && sec.cat === 'header' ? artistName
@@ -4074,6 +4098,7 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                     : f.k === 'navMode' && sec.cat === 'header' ? navModeDefault(themeName, design)
                     : f.k === 'button' && sec.cat === 'form' ? formBtnSeed(themeName, design)
                     : f.k === 'kicker' && sec.cat === 'map' ? mapKickerSeed(design)
+                    : f.k === 'listLabel' && sec.cat === 'map' ? mapListLabelSeed(design)
                     : f.k === 'kicker' && sec.cat === 'testimonials' ? testiKickerSeed(design)
                     : f.k === 'cta' && sec.cat === 'calendar' && design === 3 ? CAL_SEND_4
                     : f.k === 'rowCta' && sec.cat === 'pricing'

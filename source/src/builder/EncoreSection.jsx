@@ -18237,8 +18237,9 @@ function EventsMap({ s }) {
     // The travel card. Its head is the section's own heading under the frame's
     // label, with the featured gig's date and set time in the chip, where the
     // frame's "● Confirmed" is a booking status nothing here knows. Its two
-    // locations are the artist's base and the city the featured gig is in, so
-    // the card is the route to whatever the panel beside it is showing.
+    // locations are the artist's home town (the header's Location, JP-096) and
+    // the city the featured gig is in, so the card is the route to whatever
+    // the panel beside it is showing.
     //
     // The stat row is the frame's own three cells. Travel time and Booking fee
     // are fields seeded with the frame's copy, so the artist types them rather
@@ -18248,11 +18249,18 @@ function EventsMap({ s }) {
     // read it as well). An emptied cell drops, and the row with all three. The
     // featured gig's date and set time, which this row printed before, moved
     // up into the chip.
+    //
+    // The three labels are fields too (JP-095 (b), user call, 2026-10-01). A
+    // cell is keyed on its slot, since two emptied labels would share a key,
+    // and an emptied label leaves its value standing alone.
     const stats = [
-      { l: 'Max travel', v: s.mapRadius },
-      { l: 'Travel time', v: s.mapTravelTime },
-      { l: 'Booking fee', v: s.mapFee },
+      { k: 'radius', l: s.mapRadiusLabel, v: s.mapRadius },
+      { k: 'travelTime', l: s.mapTimeLabel, v: s.mapTravelTime },
+      { k: 'fee', l: s.mapFeeLabel, v: s.mapFee },
     ].filter((x) => x.v)
+    // A typed label wraps inside a word rather than run off a 390 card (the
+    // JP-090 rule): every label, caption and pill on the card takes it.
+    const wrap = { overflowWrap: 'anywhere', minWidth: 0 }
     // The frame's outlined twin of the Venue Link pill, in the accent the
     // filled one wears.
     const dir = g ? extLink(s, g.directions) : null
@@ -18376,7 +18384,7 @@ function EventsMap({ s }) {
         })}>
           <div style={row(u(12), { width: '100%', justifyContent: 'space-between', alignItems: 'flex-start' })}>
             <div style={col(u(4), { minWidth: 0 })}>
-              <span style={bodySm}>Travel radius</span>
+              {!!s.mapKicker && <span style={{ ...bodySm, ...wrap }}>{s.mapKicker}</span>}
               <h2 style={distressed(s, display(titleSize, 1.1))}>{s.title}</h2>
             </div>
             {/* The frame's "● Confirmed" again, and Retro's reading of it: when
@@ -18393,27 +18401,36 @@ function EventsMap({ s }) {
           {/* Both names in Display/List, Retro's normalisation of the frame's
               hand-set Body/MD venue location. Editorial keeps the frame's
               Body/MD for the venue: Noto's MANCHESTER is 107.75 in the 768
-              column's 105, so the normalised name broke inside the word. */}
+              column's 105, so the normalised name broke inside the word.
+              The frame's three lines a column, as Retro's body below
+              (JP-096): the home column is the header's Location, and it
+              goes with the connector once that is emptied. */}
           <div style={row(u(18), { width: '100%', padding: `${u(8)} 0`, flexWrap: 'wrap' })}>
-            <div style={col(u(3), { flex: '1 1 0', minWidth: desk ? u(160) : 0 })}>
-              <span style={display(s.list, 1.2)}>{s.mapBase}</span>
-              <span style={bodySm}>Home location</span>
-            </div>
+            {!!s.location && (
+              <div style={col(u(3), { flex: '1 1 0', minWidth: desk ? u(160) : 0 })}>
+                {!!s.mapHomeLabel && <span style={{ ...bodySm, ...wrap }}>{s.mapHomeLabel}</span>}
+                <span style={display(s.list, 1.2)}>{s.location}</span>
+                {!!s.mapHomeCaption && <span style={{ ...bodySm, ...wrap }}>{s.mapHomeCaption}</span>}
+              </div>
+            )}
             {!!g && (
               <>
                 {/* The frame's typed ──●── is 60 / 56 wide: drawn, as Retro's
                     is, at the typed glyph's own proportions. */}
-                <span aria-hidden style={row(0, { flex: 'none' })}>
-                  <span style={{ width: u(24), height: '1px', background: ink }} />
-                  <span style={{ width: u(8), height: u(8), borderRadius: '999px', background: ink }} />
-                  <span style={{ width: u(24), height: '1px', background: ink }} />
-                </span>
+                {!!s.location && (
+                  <span aria-hidden style={row(0, { flex: 'none' })}>
+                    <span style={{ width: u(24), height: '1px', background: ink }} />
+                    <span style={{ width: u(8), height: u(8), borderRadius: '999px', background: ink }} />
+                    <span style={{ width: u(24), height: '1px', background: ink }} />
+                  </span>
+                )}
                 <div style={col(u(3), { flex: '1 1 0', minWidth: desk ? u(160) : 0 })}>
+                  {!!s.mapVenueLabel && <span style={{ ...bodySm, ...wrap }}>{s.mapVenueLabel}</span>}
                   <span style={{
                     ...(ed ? { fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5 } : display(s.list, 1.2)),
                     overflowWrap: 'anywhere',
                   }}>{g.city}</span>
-                  <span style={bodySm}>Venue location</span>
+                  {!!s.mapVenueCaption && <span style={{ ...bodySm, ...wrap }}>{s.mapVenueCaption}</span>}
                 </div>
               </>
             )}
@@ -18428,8 +18445,8 @@ function EventsMap({ s }) {
               {ed && <DashRule side="top" dash={10 * z} colour={G.statRule} />}
               {ed && <DashRule side="bottom" dash={10 * z} colour={G.statRule} />}
               {stats.map((st) => (
-                <div key={st.l} style={col(u(4), { flex: '1 1 0', minWidth: 0 })}>
-                  <span style={bodySm}>{st.l}</span>
+                <div key={st.k} style={col(u(4), { flex: '1 1 0', minWidth: 0 })}>
+                  {!!st.l && <span style={{ ...bodySm, ...wrap }}>{st.l}</span>}
                   <span style={{ fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5 }}>{st.v}</span>
                 </div>
               ))}
@@ -18450,17 +18467,26 @@ function EventsMap({ s }) {
               frame's own Fisterra 171, clipped under the disc), so under
               Editorial each pill keeps its content width and the row wraps
               where it must — at 768 alone; 390's 330 holds 329 — with Get
-              Directions held to the frame's 54 box on a line of its own. */}
+              Directions held to the frame's 54 box on a line of its own.
+              Both labels are the artist's (JP-095 (b)) and wrap, inside a word
+              too, so that content width is `fit-content` rather than `auto`
+              over `nowrap`: the label's own width while it fits the row, and
+              the whole row, wrapping, once it does not. Venue Link wraps only
+              once typed longer than its seed (`vm.mapVenueCtaWraps`): Lime's
+              768 seed runs 1px into the disc's gap and would break. */}
           {!!g && (
             <div style={row(u(10), { width: '100%', alignItems: 'stretch', ...(ed ? { flexWrap: 'wrap' } : null) })}>
-              <BookPill s={s} ext={g.url} label="Venue Link" bg={G.pillBg ?? s.bg} fg={G.pillFg ?? s.ac} full={s.mob}
-                        style={{ flex: '1 1 0', minWidth: ed ? 'auto' : 0, justifyContent: 'space-between' }} />
+              <BookPill s={s} ext={g.url} label={s.mapVenueCta} bg={G.pillBg ?? s.bg} fg={G.pillFg ?? s.ac} full={s.mob}
+                        style={{
+                          flex: '1 1 0', minWidth: ed ? 'fit-content' : 0, justifyContent: 'space-between',
+                          ...(s.mapVenueCtaWraps ? { whiteSpace: 'normal', overflowWrap: 'anywhere' } : null),
+                        }} />
               <Dir {...dir} style={row(0, {
-                flex: '1 1 0', minWidth: ed ? 'auto' : 0, minHeight: ed ? u(54) : undefined, justifyContent: 'center',
+                flex: '1 1 0', minWidth: ed ? 'fit-content' : 0, minHeight: ed ? u(54) : undefined, justifyContent: 'center',
                 boxShadow: ring(G.pillBg ?? s.bg), borderRadius: '999px', color: G.pillBg ?? s.bg,
-                padding: `0 ${u(12)}`, ...display(s.list, 1.2), whiteSpace: 'nowrap',
-                textDecoration: 'none', cursor: dir ? 'pointer' : undefined,
-              })}>Get Directions</Dir>
+                padding: `0 ${u(12)}`, ...display(s.list, 1.2), whiteSpace: 'normal', overflowWrap: 'anywhere',
+                textAlign: 'center', textDecoration: 'none', cursor: dir ? 'pointer' : undefined,
+              })}>{s.mapRouteCta}</Dir>
             </div>
           )}
         </div>
@@ -18527,8 +18553,11 @@ function EventsMap({ s }) {
       const lwin = pageWindow(pages, pg, true)
       const llist = (
         <div style={col(u(8), { width: '100%' })}>
-          {rest.length > 0 && (
-            <span style={{ ...bodySm, color: s.tx }}>Other upcoming · {rest.length}</span>
+          {/* `listLabel`'s layout-2 seed (JP-095 (b)); the count is the
+              markup's and goes with an emptied label. Two text nodes, as the
+              literal was (JP-090's 0.1px). */}
+          {rest.length > 0 && !!s.mapListLabel && (
+            <span style={{ ...bodySm, color: s.tx, ...wrap }}>{`${s.mapListLabel} · `}{rest.length}</span>
           )}
           {rest.map(lrow)}
           {lwin.labels.length > 0 && (
@@ -18752,7 +18781,7 @@ function EventsMap({ s }) {
       })}>
         <div style={row(u(12), { width: '100%', justifyContent: 'space-between', alignItems: 'flex-start' })}>
           <div style={col(u(4), { minWidth: 0 })}>
-            <span style={label12}>Travel radius</span>
+            {!!s.mapKicker && <span style={{ ...label12, ...wrap }}>{s.mapKicker}</span>}
             <h2 style={{
               margin: 0, fontFamily: s.display, fontSize: u(T.title), lineHeight: 1.1,
               letterSpacing: s.dls,
@@ -18769,10 +18798,16 @@ function EventsMap({ s }) {
         </div>
 
         <div style={row(u(18), { width: '100%', padding: `${u(8)} 0`, flexWrap: 'wrap' })}>
-          {/* Two lines a column, not the frame's three: its "Based in" label
-              over "Manchester, UK" is what our `base` field's own copy already
-              says ("Based in Manchester"), so printing both would stutter. The
-              captions carry the meaning the labels did.
+          {/* The frame's three lines a column: "Based in" over "Manchester,
+              UK" over "Home location", and "Willing to travel to" over the
+              venue's city. *Reversed* (JP-096, user call, 2026-10-01): the
+              fit printed two, since our `base` field's own copy already said
+              "Based in Manchester" and printing both would stutter. The home
+              value is now the header's Location, the frame's own town, so
+              both labels came back, and `base` reads layouts 1 and 3 alone.
+              Every label and caption is a field (JP-095 (b)). An emptied
+              Location drops the home column and the connector with it, the
+              bio ID card's `since` rule.
 
               Both names are Display/List here. All three masters set the home
               location's in Display/List and the venue location's in Body/MD,
@@ -18784,29 +18819,35 @@ function EventsMap({ s }) {
               both narrow masters draw them on one row beside the connector, and
               at 390 that is 306px of inner card for two columns and a 92px
               connector, so the minimum goes and the basis divides it. */}
-          <div style={col(u(3), { flex: '1 1 0', minWidth: desk ? u(160) : 0 })}>
-            <span style={{
-              fontFamily: s.display, fontSize: u(T.list), lineHeight: 1.2, letterSpacing: s.dls,
-            }}>{s.mapBase}</span>
-            <span style={label12}>Home location</span>
-          </div>
+          {!!s.location && (
+            <div style={col(u(3), { flex: '1 1 0', minWidth: desk ? u(160) : 0 })}>
+              {!!s.mapHomeLabel && <span style={{ ...label12, ...wrap }}>{s.mapHomeLabel}</span>}
+              <span style={{
+                fontFamily: s.display, fontSize: u(T.list), lineHeight: 1.2, letterSpacing: s.dls,
+              }}>{s.location}</span>
+              {!!s.mapHomeCaption && <span style={{ ...label12, ...wrap }}>{s.mapHomeCaption}</span>}
+            </div>
+          )}
           {!!g && (
             <>
               {/* The frame's ──●── connector, drawn rather than typed. It joins
                   two columns, so it goes with them once the row wraps — which
                   on the desktop canvas is the only way the row ever loses it;
-                  both narrow masters draw it. */}
-              <span aria-hidden style={row(0, { flex: 'none' })}>
-                <span style={{ width: u(24), height: '1px', background: cardFg, opacity: 0.5 }} />
-                <span style={{ width: u(8), height: u(8), borderRadius: '999px', background: cardFg }} />
-                <span style={{ width: u(24), height: '1px', background: cardFg, opacity: 0.5 }} />
-              </span>
+                  both narrow masters draw it — and with the home column. */}
+              {!!s.location && (
+                <span aria-hidden style={row(0, { flex: 'none' })}>
+                  <span style={{ width: u(24), height: '1px', background: cardFg, opacity: 0.5 }} />
+                  <span style={{ width: u(8), height: u(8), borderRadius: '999px', background: cardFg }} />
+                  <span style={{ width: u(24), height: '1px', background: cardFg, opacity: 0.5 }} />
+                </span>
+              )}
               <div style={col(u(3), { flex: '1 1 0', minWidth: desk ? u(160) : 0 })}>
+                {!!s.mapVenueLabel && <span style={{ ...label12, ...wrap }}>{s.mapVenueLabel}</span>}
                 <span style={{
                   fontFamily: s.display, fontSize: u(T.list), lineHeight: 1.2, letterSpacing: s.dls,
                   overflowWrap: 'anywhere',
                 }}>{g.city}</span>
-                <span style={label12}>Venue location</span>
+                {!!s.mapVenueCaption && <span style={{ ...label12, ...wrap }}>{s.mapVenueCaption}</span>}
               </div>
             </>
           )}
@@ -18818,8 +18859,8 @@ function EventsMap({ s }) {
             borderTop: `1px solid ${cardLine}`, borderBottom: `1px solid ${cardLine}`,
           })}>
             {stats.map((st) => (
-              <div key={st.l} style={col(u(4), { flex: '1 1 0', minWidth: 0 })}>
-                <span style={label12}>{st.l}</span>
+              <div key={st.k} style={col(u(4), { flex: '1 1 0', minWidth: 0 })}>
+                {!!st.l && <span style={{ ...label12, ...wrap }}>{st.l}</span>}
                 {/* Body/LG, where the two location names above are Display/List
                     — the frame's two 16s are different tokens and only the
                     line-height tells them apart. */}
@@ -18845,14 +18886,18 @@ function EventsMap({ s }) {
             masters, which is the booking calendar's case — so `disc` is the
             frame's own 46 at narrow (38 being 46 × 0.82) and `full` opts the
             390 canvas back up to the full-size box. Get Directions is stretched
-            to the Venue Link pill's height rather than stating its own 54. */}
+            to the Venue Link pill's height rather than stating its own 54.
+            Both labels are the artist's (JP-095 (b)), and a long one wraps
+            inside its half — Venue Link only once typed longer than its seed,
+            the Lime block's rule above. */}
         {!!g && (
           <div style={row(u(10), { width: '100%', alignItems: 'stretch' })}>
-            <BookPill s={s} ext={g.url} label="Venue Link" glyph="arrow"
+            <BookPill s={s} ext={g.url} label={s.mapVenueCta} glyph="arrow"
                       disc={desk ? 38 : 46} full={!desk} size={u(T.list)}
                       shadow="transparent"
                       style={{
                         flex: '1 1 0', minWidth: 0, justifyContent: 'space-between',
+                        ...(s.mapVenueCtaWraps ? { whiteSpace: 'normal', overflowWrap: 'anywhere' } : null),
                         ...(s.retro ? {
                           fontFamily: s.display, textTransform: 'none', lineHeight: 1.2,
                           letterSpacing: s.dls, padding: `${u(5)} ${u(5)} ${u(5)} ${u(21)}`,
@@ -18863,9 +18908,9 @@ function EventsMap({ s }) {
               flex: '1 1 0', minWidth: 0, justifyContent: 'center',
               border: `1px solid ${dirInk}`, borderRadius: '999px', color: dirInk,
               padding: `0 ${u(12)}`, fontFamily: s.display, fontSize: u(T.list),
-              lineHeight: 1.2, letterSpacing: s.dls, whiteSpace: 'nowrap',
-              textDecoration: 'none', cursor: dir ? 'pointer' : undefined,
-            })}>Get Directions</Dir>
+              lineHeight: 1.2, letterSpacing: s.dls, whiteSpace: 'normal', overflowWrap: 'anywhere',
+              textAlign: 'center', textDecoration: 'none', cursor: dir ? 'pointer' : undefined,
+            })}>{s.mapRouteCta}</Dir>
           </div>
         )}
       </div>
@@ -18946,9 +18991,11 @@ function EventsMap({ s }) {
     const list = (
       <div style={col(u(8), { width: '100%' })}>
         {/* Dropped with the rows: the last page can hold the featured gig
-            alone, and a count of nothing over nothing is not a state. */}
-        {rest.length > 0 && (
-          <span style={{ ...label12, color: s.tx }}>Other upcoming · {rest.length}</span>
+            alone, and a count of nothing over nothing is not a state. The
+            words are `listLabel`'s layout-2 seed (JP-095 (b)), and the count
+            goes with an emptied label. Two text nodes, as the literal was. */}
+        {rest.length > 0 && !!s.mapListLabel && (
+          <span style={{ ...label12, color: s.tx, ...wrap }}>{`${s.mapListLabel} · `}{rest.length}</span>
         )}
         {rest.map(gigRow)}
         {/* Derived from the list and not drawn at one page, the repertoire's

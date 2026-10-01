@@ -109,7 +109,7 @@ the list explicitly.
 | 2 | JP-093 | Form box labels at 45% | **Confirmed**: the global `::placeholder` .45, recorded as "Repertoire's accepted diff", lands on boxes with no other label | S | **user: 1A `var(--ph, .45)`, 2A the four sites** | **done** (0 digest files; the 90 label-in-box inputs read 1 and the other 300 stay .45) |
 | 3 | JP-092 | Long hero name overflows | **Confirmed, and shared**: `HeaderV1`'s `s.limeTree` title is the flat ramp with no container; the fit was declined on the seed alone | S | **user: A, Retro's half named** | **done** (0 digest files; the title `min(ramp, 100cqi / cardNameEms)` on an `inline-size` column, 105 published renders fitted to 0.002px) |
 | 4 | JP-095 (a) | Pricing, calendar, media, testimonials labels | **Confirmed**: JP-090's rule, eight literals, every template; two are CLAUDE.md's named "unreported siblings" | M | **user: 1A–4A** (JP-071's shape, the frame's capitals; two counter words; the prompt reads its seed again; siblings named) | **done** (0 of 660 a surface; nine reach rows, 6/6 at each `in`; card 2 under four templates prints none of the eight) |
-| 5 | JP-095 (b) · JP-096 | The map's nine labels; *Based in* / *Willing to travel to* | **Confirmed, and recorded**: Retro dropped *Based in* because `base`'s seed says it | M | **yes** — the home value, emptied pills | open |
+| 5 | JP-095 (b) · JP-096 | The map's nine labels; *Based in* / *Willing to travel to* | **Confirmed, and recorded**: Retro dropped *Based in* because `base`'s seed says it | M | **user: 1A, 2A, 3C, 4A** (JP-071's shape; pills read their seed again; the home value is the header's Location; unfiled seats named) | **done** (15 of 660 a surface, map `arch 1` alone, as named; thirteen reach rows, 6/6 at each `in`; card 2 under four templates prints none of the nine) |
 | 6 | JP-100 | 390 calendar foot: pill on its own row | **Confirmed, a fit slip**: Lime's fit drew Retro's pre-QA stack (JP-060's shape) | S | light — Editorial's line | open |
 | 7 | JP-097 | Byline lacks *· Single* | **Confirmed, a fit slip of every template**: the bar prints the artist alone; layouts 3 and 4 print the release | S | no | open |
 | 8 | JP-098 | 768 gallery: six tiles, no *Gallery · View list ✕* | **Confirmed, and recorded**: Retro's squeeze override and head-row allocation, every template | S | **yes** — tiles, head row, dead controls | open |
@@ -973,7 +973,186 @@ section 8 override); card 2 in the real app, every field marked, none of the nin
 `notes/map.md`; a *reversed* pointer at `../retro/layout-2.md:606` and on the code comment at
 `:18675`; `layout-2.md:1587`'s *Inherited whole* clause.
 
-**Settled.** —
+**Decided** (2026-10-01, user call): **1A, 2A, 3C, 4A**, every recommendation.
+1. **JP-071's shape.** Each label is seeded with its literal, uncased, and not drawn when emptied;
+   the `·` and the count are the markup's. The new keys, all `in: [1]`:
+   - `homeCaption` *Home caption* (*Home location*) and `venueCaption` *Venue caption* (*Venue
+     location*);
+   - `radiusLabel` *Max travel label*, `travelTimeLabel` *Travel time label* and `feeLabel`
+     *Booking fee label*. A stat's label still goes with its value.
+   - `venueCta` *Venue link button* and `routeCta` *Directions button*.
+
+   `map.kicker` (*Travel radius*) and `map.listLabel` (*Other upcoming*) reach layout 2 through
+   per-layout seeds, in `sectionVm` and `EditPanel`'s chain alike.
+2. **An emptied pill label reads its seed again** (`messageLabel`'s rule). The pill always stands.
+3. **C: layout 2's home value is the header's `location`**, *Manchester, UK*, the frame's own value.
+   `base` drops to `in: [0, 2]`, and `who.location`'s reach gains map layout 2. The two new labels
+   over the values are `homeLabel` *Home label* (*Based in*) and `venueLabel` *Venue label*
+   (*Willing to travel to*), JP-071's shape, `in: [1]`. Neither reads as `base`'s *Based in* row.
+4. **The unfiled seats are named, not fixed**: the h2 (*Venue Distance* / the heading), the chip
+   (*● Confirmed* / the gig's date, JP-060), the featured venue (the page's first gig, where the frame
+   features its third) and *100 mi* (`MAP_RADIUS`, already with the designer).
+
+Asked over what the session found first, on HEAD (`843c38b`):
+- **Every *Evidence* line moved as mapped**: `EncoreSection.jsx` +97 (the `stats` array
+  `:18252`–`18254`; *Travel radius* `:18379` / `:18755`; *Home location* `:18400` / `:18791`; *Venue
+  location* `:18416` / `:18809`; *Venue Link* `:18456` / `:18851`; *Get Directions* `:18463` /
+  `:18868`; *Other upcoming* `:18531` / `:18951`; Retro's comment `:18772`–`18775`; `mapBase`'s
+  readers `:17734`, `:17986`, `:19785`, `:20205`). `EncoreBuilder.jsx`: `vm.mapBase` `:1658`, the
+  chain's map `kicker` arm `:4076`. `data.js`: `mapKickerSeed` `:748`, `MAP_BASE` `:965`,
+  `FIELDS.map.base` `:1883`.
+- **Reproduced in the real app** (puppeteer: card 2, every `FIELDS.map` text field and every gig and
+  stat row set to a marker through `st`, Publish, Open, `#map`'s text nodes read at 1440, 768 and
+  390). Under Editorial, Lime, Grunge and Retro alike, at every width, exactly the nine are left:
+  *Travel radius*, *Home location*, *Venue location*, *Max travel*, *Travel time*, *Booking fee*,
+  *Venue Link*, *Get Directions* and *Other upcoming ·*. The rest is markup: the chip's `●`, the
+  count, the rows' `·`, and `+ − →` (Retro draws no zoom). No console errors.
+- **Figma** (`get_metadata`, `964:64613`). The text layers' names, which default to their
+  characters, type every label in the build's own case: *Travel radius*, *Based in*, *Home
+  location*, *Willing to travel to*, *Venue location*, *Max travel*, *Travel time*, *Booking fee*,
+  *Venue Link*, *Get Directions* and *Other upcoming · 4*. The home column is *Based in* /
+  *Manchester, UK* / *Home location* at y 0 / 20 / 52, so the column's 3 gap holds the new line.
+  The narrow frames (`986:15672`, `986:15691`) keep *Willing to travel to* on one line (102 in
+  columns of 105 and 119). They let *Manchester, UK* run past the 768 column (129 in 105) and wrap
+  it at 390 (119 × 44).
+- **The harness was proved first**: a fresh HEAD worktree on :5174 against the unedited tree on
+  :5173, themes 0–4, every category, three widths: **0 of 660 on each surface** after the port and
+  stamp normalisation (194 raw, all the port).
+- **Expected after-diff, named before the code.**
+  - **JP-095's keys: zero.** Every key is seeded with the bytes its site renders. The list label
+    keeps its two text nodes, `"Other upcoming · "` and the count.
+  - **JP-096: map `arch 1` alone**, themes 0–4 × three widths × both surfaces, **30 files a
+    surface pair** (15 each). In each file:
+    - two new `<span>` rows, *Based in* over the home value and *Willing to travel to* over the
+      city;
+    - the home value's text, *Based in Manchester* → *Manchester, UK*, and its box;
+    - the location row taller by one label line, so the connector and the venue column re-centre
+      in it. Everything below it moves down: the stat row, the pill row, the list, and at 390 the
+      map panel under the column. The card, the left column and, where it is the taller column,
+      the section root grow with it.
+  - *Willing to travel to* may wrap in a narrow column under a wider body face. If it does, the
+    states run names it.
+  - Every other category, and map `arch 0`, `2` and `3`: **0**.
+
+**Settled** (2026-10-01).
+- **`data.js`.**
+  - Eleven constants sit after JP-090's (`:745`–`762`): `MAP_KICKER_2` *Travel radius*,
+    `MAP_LIST_LABEL_2` *Other upcoming*, `MAP_HOME_LABEL` *Based in*, `MAP_HOME_CAPTION` *Home
+    location*, `MAP_VENUE_LABEL` *Willing to travel to*, `MAP_VENUE_CAPTION` *Venue location*,
+    `MAP_RADIUS_LABEL` *Max travel*, `MAP_TIME_LABEL` *Travel time*, `MAP_FEE_LABEL` *Booking fee*,
+    `MAP_VENUE_CTA` *Venue Link* and `MAP_ROUTE_CTA` *Get Directions*.
+  - `mapKickerSeed(d)` gains a `d === 1` arm. `mapListLabelSeed(d)` (`:769`) is its twin.
+- **The fields.** Each has a hint that says where it prints and what emptying it does, and each
+  `in` is measured.
+  - `kicker` is `in: [0, 1, 2]` and `listLabel` `in: [0, 1]`; both hints name the layout-2 seed.
+  - `base` is `in: [0, 2]` (`:1912`), with a hint that sends the artist to the header's Location
+    for layout 2.
+  - Nine rows follow `fee` (`:1922`), all `in: [1]`: `homeLabel` *Home label*, `homeCaption` *Home
+    caption*, `venueLabel` *Venue label*, `venueCaption` *Venue caption*, `radiusLabel` *Max travel
+    label*, `travelTimeLabel` *Travel time label*, `feeLabel` *Booking fee label*, `venueCta`
+    *Venue link button* and `routeCta` *Directions button*.
+  - The header's *Location* hint, and the `FIELDS` comment over it, add the map's layout-2 travel
+    card to its readers.
+- **`sectionVm`** (`:1654`–`1678`).
+  - `vm.mapListLabel` is `cv('listLabel', mapListLabelSeed(d))`.
+  - Seven plain `cv()` reads cover the labels and captions.
+  - `vm.mapVenueCta` and `vm.mapRouteCta` are `String(cv(k, SEED)).trim() || SEED`, uncased.
+  - `vm.mapVenueCtaWraps` says whether Venue Link's label may wrap (below).
+  - The home value reads `vm.location`, which every section already has.
+  - `EditPanel`'s chain has a `listLabel` arm gated on `map` (`:4101`), since media carries a
+    `listLabel` too.
+- **`EncoreSection`, both bodies** (the `s.limeTree` block `:18387`–`18560`, Retro's and Pop's
+  `:18784`–`18998`).
+  - The `stats` array (`:18256`) is keyed on its slot. An emptied label leaves the value standing
+    alone, and the cell still goes with its value.
+  - The list label prints `` {`${label} · `}{n} ``, the literal's two text nodes, and an emptied
+    label takes the count with it.
+  - The location row is the frame's three lines a column. An emptied Location drops the home column
+    and the connector with it (the bio ID card's `since` rule), and leaves the venue column alone in
+    the row.
+  - Retro's "printing both would stutter" comment now carries the *reversed* note.
+  - **Typed labels wrap.** Every new label and caption takes `overflowWrap: 'anywhere'` and
+    `minWidth: 0`. Get Directions is `whiteSpace: 'normal'`, centred.
+  - **Venue Link wraps only once typed longer than its seed** (`vm.mapVenueCtaWraps`). The first
+    cut wrapped it freely, and the digest caught Lime's 768 pills moving 54 → 55.6: Lime's 768
+    frame overlaps the seed's text with the disc, the fit runs the one-line label 1px into the
+    gap, and a label free to wrap broke there onto two lines. Nothing is added to the pill's style
+    while the label is that short, so every template's own `whiteSpace` stands.
+  - Under Editorial both pills are `min-width: fit-content`, not `auto` over `nowrap`. A short
+    label resolves to its own width, so the 768 row still wraps the two pills whole; a long one
+    takes the row and wraps inside it.
+- **Digest: as named.** 15 of 660 on each surface, map `arch 1` × themes 0–4 × three widths, and 0
+  elsewhere (themes 0–4, every category). Paired row by row after dropping the two new labels:
+  - the home value's text and box;
+  - the location row taller by one label line, and the connector and the shorter column
+    re-centred in it;
+  - every row below it moved down by one uniform shift (16.2–19.8; −1.8 to +5.4 where *Based in
+    Manchester* had taken two lines and *Manchester, UK* takes one);
+  - at desktop and 768, Retro's and Pop's map viewport stretched with the taller left column, its
+    pins moving by fractions.
+  - The pills did not move. Lime's 768 *Willing to travel to* takes two lines (its 13px body face;
+    the frame's 102 at 12px fits one).
+  - The 1088 Desktop canvas (the real editor, HEAD against the tree, Editorial and Lime card 2)
+    moves the same rows and no pill.
+- **Reach** (nine new rows in `reach.mjs`, plus `map.kicker`, `map.listLabel`, `map.base` and
+  `who.location` re-run, themes 0–4). Every key moves exactly the designs its `in` names, 6 of 6
+  under every template: the nine at layout 2, `kicker` at 1–3, `listLabel` at 1–2 and `base` at 1
+  and 3. `who.location` gains map layout 2 under all five templates. A Node check of `fieldReach()`
+  against the same table found 0 mismatches.
+- **States** (a scratch puppeteer run, deleted): 2,250 renders. Each key at its layouts × themes
+  0–4 × three widths × both surfaces, as the seed, a marker, emptied, 85 characters and one
+  53-character word; `who.location` the same at map layout 2. The text `Range` was read against
+  the nearest clipping box and the section.
+  - A marker moves only its own text node.
+  - Emptied, each label removes exactly its element. Layout 1's list label removes 1–3, JP-090's
+    wrapper and Grunge's rule. Both pills render text identical to the seed. An emptied Location
+    removes 8 elements: the home column and the connector.
+  - No 85-character state runs past its box or scrolls the page.
+  - **Named, not fixed: a 53-character single-word Location.** The home value keeps `base`'s old
+    style, which has no in-word break. At 390 the word runs past its 119 column, over the connector
+    and the venue column, under every template. Under Editorial it runs 136.5px past the section,
+    clipped there, with no page scroll. Breaking inside the word would split Editorial's seeded
+    *MANCHESTER,* at 768, which already runs past its 105 column, as the frame's *Manchester, UK*
+    does (129 in 105). HEAD had the same overrun with a long `base`.
+- **The real app.** Card 2 under Editorial, Lime, Grunge and Retro (puppeteer, every
+  `FIELDS.map` field and gig and stat row marked through `st`, and the header's Location too,
+  then Publish, Open, read at 1440, 768 and 390):
+  - **None of the nine is left.** The marked Location prints on the card at every width, the
+    positive control.
+  - The panel seeds each new field with its literal. *Based in* says "Not shown in this layout",
+    and *Kicker* and *List label* do not.
+  - With only the eleven labels emptied, no label, count or bare `·` is drawn, and the pills read
+    *Venue Link* and *Get Directions* again.
+  - No console errors.
+- **Build.** `npm run build` is clean. The root `index.html` is not refreshed.
+- **Docs.**
+  - CLAUDE.md: the identity bullet (the Location's new reader) and the label paragraph (the eleven
+    keys, `kicker`'s and `listLabel`'s reach, the pill rule).
+  - `notes/map.md`: a bullet, and the stat wall's line on `base`.
+  - *Reversed* pointers at `../retro/layout-2.md:608` and on the code comment. `layout-2.md:1590`'s
+    *Inherited whole* clause is rewritten.
+  - `reach.mjs` gets the nine rows.
+
+Reply: **JP-095 (b) · JP-096 — fixed.** The map's layout-2 travel card and list are now editable on
+every template, in the editor and on the published page. Each label starts as the design's text.
+- **Events Map**, layout 2:
+  - *Kicker* now changes "Travel radius", and *List label* "Other upcoming". The number after it
+    is the count of gigs.
+  - New: *Home label* ("Based in"), *Home caption* ("Home location"), *Venue label* ("Willing to
+    travel to"), *Venue caption* ("Venue location"), and *Max travel label*, *Travel time label*
+    and *Booking fee label* over the three numbers.
+  - *Venue link button* and *Directions button* change the two buttons.
+- Left empty, a label is not drawn, and the list label takes its count with it. A button left
+  empty shows its design text again, because a button needs a label.
+- **JP-096.** The card now prints the design's *Based in* and *Willing to travel to*. The town
+  under *Based in* is the header's **Location** ("Manchester, UK", as in the design), so it is typed
+  once. The map's own *Based in* field still sets layouts 1 and 3. In layout 2 it says "Not shown in
+  this layout", and its hint points to the header.
+- A long label wraps rather than running off a phone screen.
+- **Seen on the screenshot, not changed:** the card's heading ("Venue Distance" in the design, the
+  map's Heading here), the chip ("● Confirmed" there, the featured gig's date here), which gig is
+  featured, and "100 mi" (the Coverage field's default is still "12 mile radius", with the
+  designer).
 
 ---
 

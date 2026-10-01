@@ -607,7 +607,12 @@ Learned on the events map (section 9):
   once** — the first draft here put `mapTerms` in two places and lost a
   cell to it. Where a frame label duplicates what our field's own copy
   says ("Based in" over `base`, whose default *is* "Based in
-  Manchester"), drop the label, not the field.
+  Manchester"), drop the label, not the field. *(**Reversed** for this
+  card by JP-096, user call, 2026-10-01,
+  [`../editorial/layout-2-qa-fixes.md`](../editorial/layout-2-qa-fixes.md):
+  the home value is now the header's Location, the frame's own
+  "Manchester, UK", so both of the frame's labels are back and `base`
+  reads layouts 1 and 3 alone.)*
 - **The flat four's dark card needs an outline as much as the cream one
   does.** `deep` is the darkest *tag*, which on Grunge is `#000000` —
   the page ground itself. The calendar's note only covered a palette

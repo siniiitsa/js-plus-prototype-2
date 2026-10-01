@@ -116,6 +116,19 @@ const PROBES = [
   { name: 'media.chipLabel', cats: ['media'], param: 'cj', value: { chipLabel: Z } },
   { name: 'media.countLabel', cats: ['media'], param: 'cj', value: { countLabel: Z } },
   { name: 'media.totalLabel', cats: ['media'], param: 'cj', value: { totalLabel: Z } },
+  // JP-095 (b) · JP-096: layout 2's travel card — the two locations' labels and
+  // captions, the stat row's labels and the two pills — and `map.kicker` and
+  // `map.listLabel` above, re-scoped to layout 2. The home value is the header's
+  // location now, so `map.base` and `who.location` above moved too.
+  { name: 'map.homeLabel', cats: ['map'], param: 'cj', value: { homeLabel: Z } },
+  { name: 'map.homeCaption', cats: ['map'], param: 'cj', value: { homeCaption: Z } },
+  { name: 'map.venueLabel', cats: ['map'], param: 'cj', value: { venueLabel: Z } },
+  { name: 'map.venueCaption', cats: ['map'], param: 'cj', value: { venueCaption: Z } },
+  { name: 'map.radiusLabel', cats: ['map'], param: 'cj', value: { radiusLabel: Z } },
+  { name: 'map.travelTimeLabel', cats: ['map'], param: 'cj', value: { travelTimeLabel: Z } },
+  { name: 'map.feeLabel', cats: ['map'], param: 'cj', value: { feeLabel: Z } },
+  { name: 'map.venueCta', cats: ['map'], param: 'cj', value: { venueCta: Z } },
+  { name: 'map.routeCta', cats: ['map'], param: 'cj', value: { routeCta: Z } },
   // JP-066: a song's length and layout 3's set details. The length is a column
   // of `songs`, so both sides carry the same one-song list and only the length
   // differs; the sets key a live tag, or nothing could move.

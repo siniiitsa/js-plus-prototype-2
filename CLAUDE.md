@@ -162,7 +162,7 @@ mutated through a single `patch()` helper.
   artist's role and town are the header's too** (F1): `headerIdentity()` in `data.js` reads the
   header's raw `kicker` / `location`, and `sectionVm({ identity })` gives them to every other
   section — the bio (its role lines, polaroid rail and ID card), the calendar (layout 1's polaroid
-  stamp, which Lime's layout-1 block — Grunge's and Editorial's too, since they share it — does not draw, and layout 4's summary card) and the enquiry form's credit — which have no field for either. The header
+  stamp, which Lime's layout-1 block — Grunge's and Editorial's too, since they share it — does not draw, and layout 4's summary card), the enquiry form's credit and the events map's layout-2 travel card (the town under its *Based in* label, JP-096; `base` reads layouts 1 and 3 alone) — which have no field for either. The header
   reads its own `c`, so previews of other layouts still show theirs. Canvas, published tab and
   `LayoutPicker` all pass it; the harness takes `&who=<json>`. `vm.roleLine` is the pair
   composed with its `·`, so an emptied half drops with the separator, and an emptied value
@@ -231,8 +231,16 @@ mutated through a single `patch()` helper.
   it), and the testimonials' "✎ What clients say", which is `kicker`'s layout-2 seed —
   `testiKickerSeed(d)`, `mapKickerSeed`'s shape with its own chain arm, so `kicker` reaches
   layouts 2 and 3. The calendar's `prompt`, *Pick a date to enquire*, which every layout prints
-  while no day is cued, reads its seed again when emptied and stays `cased()`. The unreported
-  siblings stay literals: the bio's `Bio` eyebrow, the calendar legend and its slot line's
+  while no day is cued, reads its seed again when emptied and stays `cased()`. **And the map's
+  layout-2 travel card and list, every template** (JP-095 (b) · JP-096, user call, 2026-10-01):
+  `kicker` (*Travel radius*) and `listLabel` (*Other upcoming*) reach layout 2 through
+  `mapKickerSeed(d)` and `mapListLabelSeed(d)` (the chain's `listLabel` arm is gated on `map`,
+  since media has one too). The card's `homeLabel` / `homeCaption` and `venueLabel` /
+  `venueCaption` (*Based in* / *Home location*, *Willing to travel to* / *Venue location*), and
+  the stat row's `radiusLabel` / `travelTimeLabel` / `feeLabel`, are new; an emptied stat label
+  leaves its value alone. The pills `venueCta` / `routeCta` read their seed again when emptied.
+  Venue Link wraps only once typed longer than its seed (`vm.mapVenueCtaWraps`), because Lime's 768
+  seed runs 1px into the disc's gap. The unreported siblings stay literals: the bio's `Bio` eyebrow, the calendar legend and its slot line's
   " selected", the repertoire's `All` chip and search placeholder, and the footer's *A JustPay
   Product*.
 - A page section is `{ id, cat, arch, c }` — category, layout index, sparse content overrides.
