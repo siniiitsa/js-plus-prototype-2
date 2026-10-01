@@ -105,7 +105,7 @@ the list explicitly.
 
 | Order | ID | Report (short) | Verdict | Size | Decision | Status |
 |---|---|---|---|---|---|---|
-| 1 | JP-099 | 390 player: no ♡ ↓ ⋯ | **Confirmed, and recorded**: Retro's 390 override, shared by every template, because the master pays for the icons with the track's whole title | S (or none) | **yes** — reply (A), or icons with the sleeve dropped (C) | open |
+| 1 | JP-099 | 390 player: no ♡ ↓ ⋯ | **Confirmed, and recorded**: Retro's 390 override, shared by every template, because the master pays for the icons with the track's whole title | S (or none) | **user: A, a reply** | **done** (no code; the published 390 title's cut added to JP-097's *Seen, not filed*) |
 | 2 | JP-093 | Form box labels at 45% | **Confirmed**: the global `::placeholder` .45, recorded as "Repertoire's accepted diff", lands on boxes with no other label | S | **yes** — mechanism and scope | open |
 | 3 | JP-092 | Long hero name overflows | **Confirmed, and shared**: `HeaderV1`'s `s.limeTree` title is the flat ramp with no container; the fit was declined on the seed alone | S | light — Retro's half | open |
 | 4 | JP-095 (a) | Pricing, calendar, media, testimonials labels | **Confirmed**: JP-090's rule, eight literals, every template; two are CLAUDE.md's named "unreported siblings" | M | **yes** — keys, emptied rules | open |
@@ -225,7 +225,71 @@ bar, the icons inside it, the title's ellipsis on its own box; Retro's 103.5 box
 `../retro/layout-2.md:891`, `../lime/layout-2.md:631` and `layout-2.md:1101` / `:2132` / `:2193`,
 and `notes/media.md`.
 
-**Settled.** —
+**Decided** (2026-10-01, user call): **A, keep the override, with a reply.** No code. The question
+gave the published page's numbers (below) beside the triage's canvas ones. They show the bar has no
+room left before any icon is drawn.
+
+Asked over the evidence, re-checked on HEAD (`755adae`; no source has changed since `84be5f3`).
+Every code line in *Evidence* held: the `s.limeTree` bar's padding at `EncoreSection.jsx:6709`, its
+gaps at `:6710` / `:6712`, the inner pill at `:6728`–`6731`, the clock at `:6737`, the icons at
+`:6739`–`6743`; Retro's and Pop's padding at `:7002`, gaps at `:7003` / `:7010`, clock at `:7045`,
+icons at `:7048`–`7052`. Three comment ranges were off by one to three lines. The inner pill's
+comment is `:6717`–`6727`, Retro's padding comment `:6998`–`7001` (`:6996`–`6997` are the bar's
+`color` and `border`), and its clock comment `:7042`–`7044`.
+
+**Settled** (2026-10-01, no code).
+- **Nothing under `source/` changed**, so there is no digest.
+- **Reproduced in the real app.** Card 2 was published under Editorial, Lime, Grunge and Retro
+  (puppeteer, the tab caught from the opener). At 360, 390 and 414 the bar draws no ♡ ↓ ⋯ and no
+  clock under all four: it is 330 wide (300 at 360), padded 16 (Retro 20), with a gap of 14. At 768
+  and 1440 it draws both. The three glyphs are plain spans, `cursor: auto` and no `onClick`, at
+  every width under every template. Nothing scrolls sideways.
+- **The master, re-read** (`get_metadata` on `I986:15683;879:10509`). The bar is 330 × 108 and
+  the transport 117.07 at x 40. The inner pill is **22.93** at x 181.07: its sleeve at 191.07, its
+  title column 1 wide at 263.07 holding the 184-wide *Slow Burn (Edit)* and the 106-wide *Kai
+  Mercer · Single*, its clock at 276.07. The glyphs are **62 at x 228–290** (♡ 14, ↓ 13, ⋯ 11,
+  gaps 12). So 40 + 117.07 + 24 + 22.93 + 24 + 62 + 40 = 330, the triage's sum. (The x 293 in
+  open question 7 and designer note 6 is the same column in page coordinates, the bar standing
+  at x 30.)
+- **The published page cues another track, and that track already fills the box.** The canvas's
+  bar names the fan's centre seat, SLOW BURN; the published tab names track one, LATE LIGHTS
+  (`cur` starts at −1, `notes/media.md`). The title against its box at 390, the harness and the
+  published tab agreeing to the tenth (Pop's row is the harness alone):
+
+  | Template | Box | SLOW BURN (canvas) | LATE LIGHTS (published) |
+  |---|---|---|---|
+  | Retro | 103.5 | 83.7 | 88.3 |
+  | Lime | 115.5 | 90.1 | 95.5 |
+  | Grunge | 115.5 | 82.3 | 85.3 |
+  | Editorial | 115.5 | 112.6 | **121.6, "LATE LIGH…"** |
+  | Pop | 105.5 | **110.6, cut** | **115.7, cut** |
+
+  At 414 the bar stays 330, so the numbers are 390's. At 360 the box is 30 narrower (85.5, Retro
+  73.5), and LATE LIGHTS is cut under Lime and Retro as well; Grunge's 85.3 holds by 0.2. The
+  icons' 75px would come straight out of a title that is whole only where the face is narrow.
+- **The cut LATE LIGHTS is not JP-099's.** Nobody reported it, and it is the 390 twin of JP-097's
+  *Seen, not filed* "LATE LIG…" at 1440. Section 3's "390 … needed nothing" (`layout-2.md:1099`)
+  was measured on the canvas's SLOW BURN, 2.9px inside the box, not on the track the published tab
+  cues. It is added to JP-097's list, so the sweep's *not changed* line names both widths.
+- **No designer note added.** Note 6's fifth bullet (`layout-2.md:2193`) already says it, and the
+  sweep gathers that note.
+- **The reply line**, in the sweep's shape so step 6 can lift it as it stands. It opens on what
+  changes and who holds the next step, since Grunge's JP-056 reply was refused for reading as
+  closed:
+  - **JP-099 — nothing changes in this build; passed to the designer, whose call it is next.** At
+    390 the Media Player's bar leaves out ♡ ↓ ⋯ and the running time on purpose, on every template,
+    not only Editorial and Grunge. The 390 design fits them only by running the song's name off the
+    bar. It is the 768 bar squeezed to 330px, so the box holding the cover, the title and the
+    running time is 23px wide. The design therefore shows a sliver of the cover and neither the
+    song's name nor the time: the name sits past that box, under the icons, and would run 117px off
+    the bar. On the page the three icons would take 75px from the title, cutting a name like
+    *Late Lights* to two or three letters (under Editorial it already loses its last letters at 390
+    without them). The icons do nothing at any width — they are not buttons on the published page —
+    so at 390 the page keeps the song's name instead. This was decided for Retro's player in its
+    first pass and has held for every template since. It is in the designer's notes for this layout
+    (*Notes for the designer* 6). If the designer wants the icons at 390, the bar needs a 390 layout
+    of its own — the icons on a second line, or no cover art — which is a small change once they
+    choose.
 
 ---
 
@@ -688,7 +752,11 @@ box); `live=1`: each track played moves the byline with the title.
 
 **Seen, not filed.** On the published 1440 the cued LATE LIGHTS ellipsises in the bar's title box
 (138 in 129.6) — the tester's "LATE LIG…". Section 3 widened that box for SLOW BURN only
-(`layout-2.md:1096`). Name it in the reply's *not changed* list.
+(`layout-2.md:1096`). Name it in the reply's *not changed* list. **Its 390 twin** (found in
+JP-099's session): 121.6 in 115.5 under Editorial, "LATE LIGH…", and at 360 under Lime and Retro
+as well; Pop's seed is cut on the canvas too. Section 3's "390 … needed nothing"
+(`layout-2.md:1099`) measured the canvas's SLOW BURN (112.6), not the cued track. The byline this
+entry adds is a box of its own, so it moves neither. Name both widths in the one line.
 
 **Docs.** `notes/media.md`'s now-playing paragraph (`:15`–`24`); the `vm.nowPlaying` comment
 (`EncoreBuilder.jsx:876`–`885`).
