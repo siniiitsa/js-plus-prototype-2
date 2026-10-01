@@ -660,7 +660,9 @@ Settled in section 1 (the header):
   the room the wordmark and the pill leave, and their type is that room over `s.navEms` (the labels'
   width in ems, summed from `BEBAS_EM` in `data.js`, a table of Bebas Neue advances measured with
   canvas `measureText` that lands within 1% of each label, plus the frame's 23/24 gaps, with 1%
-  spare). It is capped at `s.list` and floored at 12px, and wraps only below the floor. The `nav` is
+  spare). It is capped at `s.list` and floored at 12px, and wraps only below the floor
+  (*reversed* for layout 1 by JP-091, 2026-10-01, `../editorial/qa-fixes.md`: there the name gives
+  way first, so the links keep one row at the floor; layout 4's capsule still wraps). The `nav` is
   the `containerType: 'inline-size'` container and the row inside it takes the
   `clamp(12px, 100cqi / navEms, list)` size, because `cqi` resolves against an ancestor. The seeded
   nine set at 16.1px on the 1078 canvas; the harness's six stay at 20. The desktop corner is still
@@ -827,6 +829,9 @@ Settled in section 4 (the gallery):
   down it, thumbs 62.3 at 8.1 below; 768 rows 168.3 × 92, card 527, arrows 217.7 down; 390 rows at 140.4,
   TikTok wrapped to a second row at 269.4, card 346, arrows centred. The section's content height is
   582.2 against the frame's (822 − 112) × 0.82 on desktop, and 1057.9 against 1059 at 768.
+  *(Reversed 2026-10-01, JP-087, user call: the 390 source row is the frame's one line now, TikTok
+  running off the page. It scrolls sideways on the published page and clips on the canvas, on every
+  template. See `../editorial/qa-fixes.md`.)*
 - **No harness parameter fills a social address**, so the `a` branch of a row (`extLink` with a URL)
   was not driven. It is the same `{...link}` spread as Retro's rows over the same `srcRows`. The
   `live=1` digest at `theme=0,2,3,4` proves Retro's rows did not move.
@@ -975,6 +980,11 @@ Settled in section 7 (pricing):
   `live=1` at desktop and 390: every chip filters, the lit chip reads `#0D1F03` on lime, cursors are
   live-gated, the pills are `<a href="#form">`. `n=0` prints *No packages yet.*; the empty grid still
   spends its two gaps, as Retro's does.
+- *(Added 2026-09-30, JP-089.)* The chips' **copy** was never settled here: the row kept Retro's
+  seeds' *Solo / Trio / Band* where the frame draws *Private Event / Club Night / Festival* (item 8
+  above names them only for casing). Reversed by user call: under Lime, Grunge and Editorial an
+  absent `tiers` key at layout 1 is `TIERS_1`, one occasion per package in the frame's order, behind
+  the `All` chip, through `tiersSeed()` — see `../editorial/qa-fixes.md`.
 
 Settled in section 8 (the booking calendar):
 
@@ -1012,9 +1022,13 @@ Settled in section 8 (the booking calendar):
   the grid. No seal — which closes section 2's "the calendar a0 seal's placement is its session's".
 - **The heading is `s.title`**, so `FIELDS.calendar.heading` now reaches layout 1 under Lime (it
   reaches Retro's layout 1 nowhere). The seed prints AVAILABILITY where the frame types BOOK NOW,
-  `TITLES.calendar`'s precedent.
+  `TITLES.calendar`'s precedent. *(Reversed 2026-09-30, JP-089, user call: under Lime, Grunge and
+  Editorial layout 1 now seeds `CAL_HEADING_1` "Book Now" — see `../editorial/qa-fixes.md`.)*
 - **The foot keeps Retro's BookPill** (its one deliberate addition), in `BookPill`'s Lime defaults. It
   makes the foot 110 / 134 / 149 where the frames' are 83 / 100 / 100; at 390 it wraps under the line.
+  *(Reversed 2026-09-30, JP-088, user call: under Lime, Grunge and Editorial the foot is the line
+  alone, and the line links to `calBookTo` on the published page while it names a picked day. Retro
+  and Pop keep the pill. See `../editorial/qa-fixes.md`.)*
 - **Measured against the masters' content edges**: desktop head 59 at 19.7 over the panel, grid half
   431 (526 × 0.82), names 94.4 and days 136.5 down the half (115.15 / 166.53 × 0.82), cells 58.8 × 45.8,
   photo 493.2 × 398.2 (486 × 0.82 tall); 768 grid 526, names 115.2, days 166.6, cells 78.3 × 55.9, photo
@@ -1070,7 +1084,9 @@ Settled in section 9 (the enquiry form):
   closes it to 10), and the message box is 134 at every width (Retro's 390 is 100). The arcs: the foot
   seam passes `s.box1`, the plan's one non-default. **The 768 vectors are 768 wide here, not the leaked
   1438** that section 3 predicted for the map and the form; the 390 ones are 384.
-- **Named diffs.** The frame types *Enquire* where `vm.formBtn` seeds *Book Now*. The context half is
+- **Named diffs.** The frame types *Enquire* where `vm.formBtn` seeds *Book Now* *(reversed
+  2026-09-30, JP-089, user call: under Lime, Grunge and Editorial layout 1 now seeds `FORM_BTN_1`
+  "Enquire", `formBtnSeed()` — see `../editorial/qa-fixes.md`)*. The context half is
   the frame's fixed 420 × 0.82 beside a form half taking the rest of our 1052, so the form half is 707.6
   where the frame's is 744.6 and its boxes are 316 against 334.6. At 390 our 306 measure (the frame's
   is 330) wraps *Other* onto a second chip row, 34.8 of height the frame does not have.

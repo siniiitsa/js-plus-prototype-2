@@ -37,7 +37,7 @@ import {
   THEMES, SCHEMES_OF, CATS, NVAR, FLAG, FIELDS, TITLES, DEFS, TRACKS, TAGS, TAG_LABELS, HERO_CTA, BIO_CREDIT, BIO_CTA,
   HERO_AVAIL, FACE_TITLE, FACE_BODY, PLACE_BODY, BIO_TAG,
   BIO_SINCE_LABEL, BIO_ROLE_LABEL, BIO_BASE_LABEL, BIO_ABOUT_LABEL, BIO_TAGS_LABEL, MEDIA_LIST_LABEL,
-  MAP_KICKER, TESTI_KICKER, TIERS, TIERS_3, TIER_KEYS, PRICE_UNIT, QUOTES,
+  BIO_REF_LABEL, MAP_LIST_LABEL, FORM_TYPE_LABEL, mapKickerSeed, TESTI_KICKER, TIER_KEYS, tiersSeed, limeTreeTheme, PRICE_UNIT, QUOTES,
   CITIES, PINS, EXAMPLE_PAGE,
   NOW_PLAYING, TRACK_AUDIO, SONGS, REP_ALL,
   GIGS, MAP_RADIUS, MAP_BASE, MAP_TERMS, MAP_TRAVEL_TIME, MAP_FEE, directionsUrl, GALLERY_SOURCES,
@@ -48,7 +48,7 @@ import {
   CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN, SLOT_KEYS, slotSeed, parseDayFirst, pageTiers, CAL_SLOT_CTA, CAL_SEND_4, FORM_EMAIL, pageEmail, MONTHS, DAY_FULL,
   TESTI_HEADING_2, CARD_LINE_3, TESTI_STARS, TESTI_RATING,
   CAL_HEADING_3, REP_HEADING_3, GALLERY_HEADING_3, PRICING_HEADING_3, PRICING_INTRO_3, MAP_HEADING_3, TESTI_HEADING_3,
-  CAL_HEADING_4, REP_HEADING_4, GALLERY_HEADING_4, MAP_HEADING_4, TESTI_HEADING_4, FORM_HEADING_4, FORM_BTN_4, FORM_SUB_4, CAL_TYPES, PRICING_ROW_CTA, PRICING_ROW_CTA_3, MAP_SPAN, MAP_STATS_4, STAT_KEYS,FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
+  CAL_HEADING_4, REP_HEADING_4, GALLERY_HEADING_4, MAP_HEADING_4, TESTI_HEADING_4, FORM_HEADING_4, FORM_SUB_4, CAL_HEADING_1, formBtnSeed, CAL_TYPES, PRICING_ROW_CTA, PRICING_ROW_CTA_3, MAP_SPAN, MAP_STATS_4, STAT_KEYS,FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
   parseDate, isoDate, calStart, headerIdentity, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav, navModeDefault,
   catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldDefault, fieldReach, fieldNowhere, copyrightOf, formHeading3, extUrl, urlProblem, emailProblem, emailAddr, songTags, repChips,
@@ -669,9 +669,24 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // padding each side, and shrinks it only when one word would not fit
   // there — `titleWordEms`' rule, never breaking inside a word. `navFace` is
   // the display face at its nominal size, so HeaderV2 fits the unfaced size
-  // and `faced()` stays outside the fit.
+  // and `faced()` stays outside the fit. Editorial's other titles that wrap
+  // between words read it too: HeaderV3's, and HeaderV0's at 390 (JP-086).
   vm.cardNameEms = navFace ? +Math.max(0, ...vm.brand.split(/\s+/).map(navFace)).toFixed(3) : undefined
   vm.navCtaEms = navFace ? +(navFace(vm.cta1) + navFace(vm.cta2)).toFixed(3) : undefined
+  // The layout-1 capsule's name gives way before its links do (JP-091, user
+  // call, 2026-10-01): NavBar leaves the name what the links at their floor
+  // and the pill do not take, and the name keeps its size there, else shrinks
+  // on one line, else wraps onto two at no more than the capsule's height
+  // allows. So it needs the name on one line (`one`), its best two-line
+  // split's wider line (`two`, between words only; one word is its own
+  // split) and the pill's label (`pill`), in the same ems — the first two
+  // with `navEms`' 1% spare, so a fitted line never touches its box.
+  if (navFace && cat === 'header' && d === 0) {
+    const words = vm.brand.split(/\s+/).filter(Boolean)
+    const two = words.length < 2 ? navFace(vm.brand) : Math.min(...words.slice(1).map((_, i) =>
+      Math.max(navFace(words.slice(0, i + 1).join(' ')), navFace(words.slice(i + 1).join(' ')))))
+    vm.navNameFit = { one: +(navFace(vm.brand) * 1.01).toFixed(3), two: +(two * 1.01).toFixed(3), pill: +navFace(vm.cta1).toFixed(3) }
+  }
   // Whether the tablet header draws its links (JP-039). The 768 masters of
   // layouts 2 and 3 draw Music / Gigs / About in the capsule, in Retro and Lime
   // alike, where layouts 1 and 4 hide the links behind a burger — but
@@ -791,6 +806,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   vm.baseLabel = breakLast(cv('baseLabel', BIO_BASE_LABEL))
   vm.aboutLabel = cv('aboutLabel', BIO_ABOUT_LABEL)
   vm.tagsLabel = cv('tagsLabel', BIO_TAGS_LABEL)
+  // JP-090 — layout 1's line under the heading, the same shape: the frames'
+  // whole line as the seed, uncased, and '' when emptied.
+  vm.bioRef = cv('refLabel', BIO_REF_LABEL)
 
   // media
   vm.mediaKicker = cv('kicker', 'Top tracks')
@@ -936,9 +954,11 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // dropped here, before the hue walk and `n`, on both surfaces, so the page is
   // exactly the page without it — the cards keep their hues, the chip row its
   // chips, and layout 3's FEATURED seat, with nothing ticked, lands on the last
-  // real package. An absent key is TIERS, and at layout 3 TIERS_3, the frames'
-  // Duo / Trio / Band chips (JP-070), FORM_FIELDS_4's gate; tiersVal agrees.
-  const tierList = (Array.isArray(c.tiers) ? c.tiers : d === 2 ? TIERS_3 : TIERS).filter((t) => !blankRow(t, TIER_KEYS))
+  // real package. An absent key is tiersSeed()'s: TIERS, at layout 3 TIERS_3,
+  // the frames' Duo / Trio / Band chips (JP-070), and at Lime's, Grunge's and
+  // Editorial's layout 1 TIERS_1, their frames' three occasions (JP-089) —
+  // FORM_FIELDS_4's gate; tiersVal calls the same function.
+  const tierList = (Array.isArray(c.tiers) ? c.tiers : tiersSeed(T.name, d)).filter((t) => !blankRow(t, TIER_KEYS))
   vm.tiers = tierList.map((t, i) => {
     // §10.2 paints the three cards in three different palette hues rather than
     // one accent. Walking T.tags backwards from index 3 lands on olive, gold,
@@ -1060,6 +1080,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // the count instead.
   if (d === 2 && c.heading === undefined && HEADING_3[cat]) vm.title = cased(HEADING_3[cat])
   if (d === 3 && c.heading === undefined && HEADING_4[cat]) vm.title = cased(HEADING_4[cat])
+  // Lime's, Grunge's and Editorial's layout-1 calendar head reads "Book Now"
+  // (JP-089); Retro's layout 1 prints no head. EditPanel mirrors it.
+  if (d === 0 && cat === 'calendar' && c.heading === undefined && vm.limeTree) vm.title = cased(CAL_HEADING_1)
   // The form's layout-3 head is the frame's "Book Kai for / your event" off
   // the artist's own name (JP-070), copyrightOf()'s rule; EditPanel mirrors it.
   if (d === 2 && cat === 'form' && c.heading === undefined) vm.title = cased(formHeading3(artistName))
@@ -1287,7 +1310,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // passed cues nothing either, and the foot prints the prompt.
     vm.calPick = booked.has(openIso) || dead(openIso) ? '' : openIso
     vm.calPrompt = cased('Pick a date to enquire')
-    // Layout 1's pill. The same field is layout 4's Send Enquiry (JP-082),
+    // Retro's and Pop's layout-1 pill (the `s.limeTree` foot has none, JP-088:
+    // its line links). The same field is layout 4's Send Enquiry (JP-082),
     // seeded CAL_SEND_4 there: `vm.calWizard.send`, below.
     vm.calCta = cased(cv('cta', 'Check a date'))
     // Layout 2's pill, which its frame labels differently from the other two
@@ -1602,8 +1626,11 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // five: a page's worth of gigs is what one set of distinct pin positions can
   // light, so the two counts have to move together.
   vm.gigPage = PINS.length
-  // JP-071 — layout 3's "Gigs & travel" eyebrow over the heading, uncased.
-  vm.mapKicker = cv('kicker', MAP_KICKER)
+  // JP-071 — layout 3's "Gigs & travel" eyebrow over the heading, uncased;
+  // JP-090 — layout 1's "Shows/coverage" in the same seat, off the same key
+  // with its own seed, and the label over layout 1's gig list.
+  vm.mapKicker = cv('kicker', mapKickerSeed(d))
+  vm.mapListLabel = cv('listLabel', MAP_LIST_LABEL)
   vm.mapRadius = cv('radius', MAP_RADIUS)
   vm.mapBase = cv('base', MAP_BASE)
   vm.mapTerms = cv('terms', MAP_TERMS)
@@ -1686,8 +1713,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // the submit stays a span on both surfaces and the confirmation panel can
   // never print it; a pasted mailto: is taken off.
   vm.formEmail = emailAddr(cv('email', FORM_EMAIL))
-  // Layout 4's frame types "Check Availability" (JP-054); EditPanel mirrors it.
-  vm.formBtn = cv('button', d === 3 ? FORM_BTN_4 : 'Book Now')
+  // Layout 4's frame types "Check Availability" (JP-054), and Lime's, Grunge's
+  // and Editorial's layout 1 "Enquire" (JP-089); EditPanel calls the same
+  // formBtnSeed().
+  vm.formBtn = cv('button', formBtnSeed(T.name, d))
   // Layout 4's small-caps line under the head, the frame's "Enquire". Emptied,
   // the line drops.
   vm.formSub = cv('sub', FORM_SUB_4)
@@ -1719,7 +1748,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
       title: String(r?.title ?? '').trim(),
       sub: String(r?.sub ?? '').trim(),
     }))
-  // That column's own head. A literal the view-model owns, `formTypeLabel`'s
+  // That column's own head. A literal the view-model owns, `formPrompt`'s
   // rule, upper-cased by the renderer's display face rather than here.
   vm.formStepsLabel = 'What happens next'
   // §10.2 layout 4 outlines every box and rules every step row in one hue, and
@@ -1764,14 +1793,16 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   vm.formTypes = songTags(cv('types', FORM_TYPES.join(', '))).map((l) => cased(l))
   vm.formMessage = cv('message', FORM_MESSAGE)
   // The two labels the frame prints over its controls, and the four lines the
-  // live form needs. The chip row's label and the four lines are literals the
-  // view-model owns, vm.calPrompt's rule, so the section looks them up rather
-  // than writing copy of its own; the message box's is the artist's
-  // `messageLabel` (JP-082), which reads FORM_MSG_LABEL again when emptied,
-  // since the box always stands (FORM_EMAIL_LABEL's rule; `cv` does not trim).
-  // The two control labels stay raw — the render uppercases them in CSS, and
-  // the mailto body wants them as written.
-  vm.formTypeLabel = 'Event type'
+  // live form needs. The four lines are literals the view-model owns,
+  // vm.calPrompt's rule, so the section looks them up rather than writing copy
+  // of its own. Both labels are the artist's: the message box's `messageLabel`
+  // (JP-082) and the chip row's `typeLabel` (JP-090, user call, 2026-09-30).
+  // Each reads its seed again when emptied, since the control it heads always
+  // stands (FORM_EMAIL_LABEL's rule; `cv` does not trim). Both stay raw — the
+  // render uppercases them in CSS, and the mailto body wants the message's as
+  // written. The type's label never reaches the mailto: the picked chip goes
+  // in the subject.
+  vm.formTypeLabel = String(cv('typeLabel', FORM_TYPE_LABEL)).trim() || FORM_TYPE_LABEL
   vm.formMsgLabel = String(cv('messageLabel', FORM_MSG_LABEL)).trim() || FORM_MSG_LABEL
   vm.formPrompt = 'Add the missing details and try again.'
   vm.formSentTitle = cased('Check your mail app')
@@ -3924,9 +3955,10 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
   const gigsVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : GIGS)
   // And for the pricing packages, whose seed needs none either: TIERS carries
   // its tags as the comma string and its features as the newline one, which is
-  // exactly what TiersField edits and what sectionVm splits — TIERS_3 at layout
-  // 3 (JP-070), sectionVm's own gate, so the two resolve one list.
-  const tiersVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : design === 2 ? TIERS_3 : TIERS)
+  // exactly what TiersField edits and what sectionVm splits — tiersSeed(), the
+  // function sectionVm calls (TIERS_3 at layout 3, JP-070; TIERS_1 at Lime's,
+  // Grunge's and Editorial's layout 1, JP-089), so the two resolve one list.
+  const tiersVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : tiersSeed(themeName, design))
   // And for the enquiry form's boxes, whose seed needs no dressing either:
   // FORM_FIELDS is written as the { label, placeholder, kind } row that
   // FormFieldsField edits and sectionVm reads — FORM_FIELDS_4 at layout 4
@@ -3996,9 +4028,10 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                   // it, the repertoire's heading counts the songs, and a few seeds follow
                   // the layout. Each mirrors what sectionVm resolves, so panel
                   // and canvas never disagree. The calendar's address is the
-                  // form's until one is typed (JP-076). The kicker left the chain with
+                  // form's until one is typed (JP-076). The header's kicker left the chain with
                   // JP-061: its `d` is its seed at every layout, and the
-                  // layout-3 card's line is a field of its own. Layouts 3 and
+                  // layout-3 card's line is a field of its own. The map's
+                  // kicker joined it with JP-090 (mapKickerSeed). Layouts 3 and
                   // 4's heads come ahead of the song count, which sectionVm's
                   // later assignment says the other way round (JP-070, JP-081).
                   const fallback = (f.k === 'title' || f.k === 'badgeText') && sec.cat === 'header' ? artistName
@@ -4009,12 +4042,14 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                       && HEADING_3[sec.cat] ? HEADING_3[sec.cat]
                     : f.k === 'heading' && sec.arch % (designCount(sec.cat, themeName) || 1) === 3
                       && HEADING_4[sec.cat] ? HEADING_4[sec.cat]
+                    : f.k === 'heading' && sec.cat === 'calendar' && design === 0
+                      && limeTreeTheme(themeName) ? CAL_HEADING_1
                     : f.k === 'heading' && sec.cat === 'repertoire' ? `${songsVal('songs').filter((t) => !blankRow(t, SONG_KEYS)).length} Songs`
                     : f.k === 'heading' && sec.cat === 'testimonials'
                       && sec.arch % (designCount(sec.cat, themeName) || 1) === 1 ? TESTI_HEADING_2
                     : f.k === 'navMode' && sec.cat === 'header' ? navModeDefault(themeName, design)
-                    : f.k === 'button' && sec.cat === 'form'
-                      && sec.arch % (designCount(sec.cat, themeName) || 1) === 3 ? FORM_BTN_4
+                    : f.k === 'button' && sec.cat === 'form' ? formBtnSeed(themeName, design)
+                    : f.k === 'kicker' && sec.cat === 'map' ? mapKickerSeed(design)
                     : f.k === 'cta' && sec.cat === 'calendar' && design === 3 ? CAL_SEND_4
                     : f.k === 'rowCta' && sec.cat === 'pricing'
                       && sec.arch % (designCount(sec.cat, themeName) || 1) === 2 ? PRICING_ROW_CTA_3

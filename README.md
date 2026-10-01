@@ -310,11 +310,12 @@ That distinction is the whole design, and it buys two things:
   which sits alone, these sit in a row that reads as a list of where to follow the artist. The
   canvas still draws all four: it is the reference design, the three fields start empty, and an
   untouched page would otherwise open on a single tile with no hint that the rest are a field away.
-  One layout consequence: the mobile source row now **wraps**
-  onto a second line instead of letting the frame clip its right edge. Four content-sized tiles
-  come to ~430px against a 390 frame, and the clipped one was TikTok — fine while the rows were
-  decoration, not once the fourth carries an address. Wrapping keeps every tile at the size Figma
-  draws it, and the row's 20px gap is the row gap too, so the open tile's offset shadow clears.
+  One layout consequence: the mobile source row is **one line that scrolls sideways** on the
+  published page, as the frames run it off the right edge. Four content-sized tiles come to
+  380–432px against the 390 page's 370 column, and the one off the edge is TikTok, which now carries
+  an address, so the visitor can swipe to it. The canvas clips the row, since a scrollable region
+  there would be interaction. It used to wrap onto a second line instead, until JP-087 reversed
+  that (`plans/editorial/qa-fixes.md`).
 
   **The events map, which pages and pairs.** Its gig list became the artist's
   (`FIELDS.map.gigs`, a `GigsField` repeater of `{ venue, city, time, month, day, year, link }`; the year only derives layout 3's weekday), and a
@@ -337,7 +338,8 @@ That distinction is the whole design, and it buys two things:
   seed. The packages are the artist's list now (`FIELDS.pricing.tiers`, a `TiersField` repeater of
   `{ name, price, tags, blurb, feats }`), and the selector is **derived from the tags they type**,
   by the same `repChips()` the repertoire's chips come from: the three seeds carry Solo, Solo /
-  Trio / Band and Trio / Band, so the reference row is redrawn out of content, behind the `All`
+  Trio / Band and Trio / Band (Duo for Solo at layout 3, and one each of Private Event / Club Night
+  / Festival at Lime's, Grunge's and Editorial's layout 1, `tiersSeed()`), so the reference row is redrawn out of content, behind the `All`
   chip that clears the filter. That extra chip is the intended diff from the Figma frame, the way
   the events map losing its pager was; the row is not drawn at all when the packages carry no
   tags, since a filter with nothing to filter is the pager's case again. The cards key on the

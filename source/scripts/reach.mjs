@@ -97,6 +97,11 @@ const PROBES = [
   { name: 'media.listLabel', cats: ['media'], param: 'cj', value: { listLabel: Z } },
   { name: 'map.kicker', cats: ['map'], param: 'cj', value: { kicker: Z } },
   { name: 'testimonials.kicker', cats: ['testimonials'], param: 'cj', value: { kicker: Z } },
+  // JP-090: four more — the bio's reference line, the map's gig-list label and
+  // the form's chip-row label, and layout 1's eyebrow on `map.kicker` above.
+  { name: 'bio.refLabel', cats: ['bio'], param: 'cj', value: { refLabel: Z } },
+  { name: 'map.listLabel', cats: ['map'], param: 'cj', value: { listLabel: Z } },
+  { name: 'form.typeLabel', cats: ['form'], param: 'cj', value: { typeLabel: Z } },
   // JP-066: a song's length and layout 3's set details. The length is a column
   // of `songs`, so both sides carry the same one-song list and only the length
   // differs; the sets key a live tag, or nothing could move.

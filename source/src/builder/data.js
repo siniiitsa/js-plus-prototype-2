@@ -733,6 +733,19 @@ export const BIO_TAGS_LABEL = 'Genres'
 export const MEDIA_LIST_LABEL = 'Popular'
 export const MAP_KICKER = 'Gigs & travel'
 export const TESTI_KICKER = 'Testimonials'
+// JP-090 (user call, 2026-09-30): four more, on every template at layout 1 —
+// the bio's reference line under the heading (the whole line, index and
+// brackets included, since the 001 is not a count), the map's eyebrow and the
+// label over its gig list (the "· N" is the markup's), and the form's label
+// over its chip row. The map's eyebrow is `kicker`'s layout-1 seed.
+export const BIO_REF_LABEL = '[ 001 ] Structure · Bio_01'
+export const MAP_KICKER_1 = 'Shows/coverage'
+export const MAP_LIST_LABEL = 'Upcoming gigs'
+export const FORM_TYPE_LABEL = 'Event type'
+// The eyebrow an absent map `kicker` stands for, by design (`d`): layout 1's
+// frames' words, and layout 3's elsewhere. The one expression sectionVm and
+// EditPanel's chain both call, formBtnSeed()'s shape.
+export const mapKickerSeed = (d) => (d === 0 ? MAP_KICKER_1 : MAP_KICKER)
 
 // Pricing — the packages beside the section's filter row, and the seed for
 // FIELDS.pricing's structured editor: used whenever the section carries no
@@ -768,6 +781,24 @@ export const TIERS = [
 // FORM_FIELDS_4's gate, in sectionVm and tiersVal alike; once the artist
 // edits the list it is theirs at every layout.
 export const TIERS_3 = TIERS.map((t, i) => ({ ...t, tags: ['Duo', 'Duo, Trio, Band', 'Trio, Band'][i] }))
+// Layout 1's packages under Lime, Grunge and Editorial (JP-089, user call,
+// 2026-09-30, reversing Lime layout 1's named diff): their frames' chips read
+// Private Event / Club Night / Festival (964:58594, 964:58606, 964:58618)
+// where Retro's read Solo / Trio / Band. The frames print no tags on a card,
+// so each package takes one, in the frame's order, and the All chip stays.
+// TIERS_3's shape otherwise: the tags alone move, and tiersSeed() below is
+// the one expression sectionVm and tiersVal both call.
+export const TIERS_1 = TIERS.map((t, i) => ({ ...t, tags: ['Private Event', 'Club Night', 'Festival'][i] }))
+// The templates whose pages are Lime's component trees — sectionVm's
+// `limeTree` flag, for the seeds that follow the frame rather than the layout.
+export const limeTreeTheme = (themeName) =>
+  themeName === 'Lime' || themeName === 'Grunge' || themeName === 'Editorial'
+// The packages an absent `tiers` key stands for, by template and design (`d`,
+// `arch % designCount`): layout 3's frames' Duo on every template (JP-070),
+// layout 1's frames' three occasions under Lime, Grunge and Editorial
+// (JP-089), and TIERS everywhere else.
+export const tiersSeed = (themeName, d) =>
+  d === 2 ? TIERS_3 : d === 0 && limeTreeTheme(themeName) ? TIERS_1 : TIERS
 
 // Every key a package row carries — what `blankRow()` asks of it. A row is
 // blank only when all five are, whichever of them a layout prints. The
@@ -1218,6 +1249,19 @@ export const TESTI_HEADING_4 = 'Client success stories'
 export const FORM_HEADING_4 = 'Contact Us'
 export const FORM_BTN_4 = 'Check Availability'
 export const FORM_SUB_4 = 'Enquire'
+// Layout 1's frames under Lime, Grunge and Editorial (JP-089, user call,
+// 2026-09-30, reversing Lime layout 1's named diffs): the calendar's head
+// reads *Book Now* (964:58619) and the form's submit *Enquire* (964:58620).
+// Retro's layout-1 form reads *Book Now* (964:58584) and its calendar prints
+// no head, so both are gated on the template as well as the layout, in
+// sectionVm and EditPanel's chain alike. Uncased: `cased()` sets them.
+export const CAL_HEADING_1 = 'Book Now'
+export const FORM_BTN_1 = 'Enquire'
+// The submit's label an absent `button` key stands for (FORM_BTN_4's shape,
+// JP-054, with JP-089's template gate): the one expression sectionVm and
+// EditPanel both call.
+export const formBtnSeed = (themeName, d) =>
+  d === 3 ? FORM_BTN_4 : d === 0 && limeTreeTheme(themeName) ? FORM_BTN_1 : 'Book Now'
 // The address every enquiry is mailed to, as the enquiry form seeds it. Named
 // because two sections resolve it (JP-053): the form's own sectionVm, and the
 // booking calendar's layout-4 wizard through pageEmail() below.
@@ -1507,6 +1551,10 @@ export const FIELDS = {
   bio: [
     { k: 'image',     l: 'Photo', type: 'image', hint: "Fills the bio's portrait card." },
     { k: 'heading',   l: 'Heading', d: 'Reads the room.', in: [0, 2, 3] },
+    // JP-090: layout 1's line under the heading, the frames' own, uncased
+    // (every site upper-cases it). The whole line is the field.
+    { k: 'refLabel',  l: 'Reference line', d: BIO_REF_LABEL, in: [0],
+      hint: 'The small line at the foot of the heading. Left empty, it is not drawn.' },
     // Layout 2's pill over the paragraph (JP-059), seeded with the frame's
     // copy and cased as a label; emptied, it is not drawn.
     { k: 'tag',       l: 'Pill', d: BIO_TAG, in: [1],
@@ -1604,7 +1652,8 @@ export const FIELDS = {
     { k: 'tiers',   l: 'Packages', type: 'tiers', max: 6,
       hint: 'Tags become the filter chips above the packages in layouts 1 and 3 — separate '
           + 'them with commas. Layout 3 starts the packages tagged Duo where the other layouts '
-          + 'have Solo; once you edit the list, it is the same at every layout. Features are one '
+          + 'have Solo, and layout 1 in Lime, Grunge and Editorial starts them on Private Event, '
+          + 'Club Night and Festival; once you edit the list, it is the same at every layout. Features are one '
           + 'to a line. Layout 2 shows one package at a '
           + 'time and names them in its own chip row, so it reads no tags. Layout 4 has no '
           + 'filter: it prints the tags and the features on the package itself. In layouts 1, 2 '
@@ -1720,12 +1769,16 @@ export const FIELDS = {
     { k: 'time',    l: 'Enquiry time', d: CAL_TIME, in: [0, 3],
       hint: "Printed in layout 1's enquiry line, and on its own in layout 4's "
           + 'date card. Leave it empty and the line stops at the date.' },
-    // Layout 1's pill and layout 4's Send Enquiry (JP-082). `d` is layout
-    // 1's seed; layout 4 seeds CAL_SEND_4 in sectionVm and EditPanel's chain.
-    { k: 'cta',     l: 'Button', d: 'Check a date', in: [0, 3],
-      hint: 'Layout 1’s button, and layout 4’s Send Enquiry on the last step of the enquiry '
-          + 'wizard and at the foot of the summary. Layout 4 starts from “Send Enquiry”, '
-          + 'and shows it again if you empty this there.' },
+    // Retro's and Pop's layout-1 pill and layout 4's Send Enquiry (JP-082).
+    // `d` is layout 1's seed; layout 4 seeds CAL_SEND_4 in sectionVm and
+    // EditPanel's chain. Lime's, Grunge's and Editorial's layout 1 draws no
+    // pill (JP-088): its enquiry line is the link.
+    { k: 'cta',     l: 'Button', d: 'Check a date',
+      in: { Lime: [3], Grunge: [3], Editorial: [3], '*': [0, 3] },
+      hint: 'Layout 4’s Send Enquiry, on the last step of the enquiry wizard and at the foot '
+          + 'of the summary; it starts from “Send Enquiry” there, and shows it again if you '
+          + 'empty this. Under Retro and Pop it is also layout 1’s button. The other templates’ '
+          + 'layout 1 has no button: its “Enquiry for …” line is the link.' },
     { k: 'slots',   l: 'Dates on offer', type: 'slots', max: 8, in: [1],
       hint: 'The dates layout 2 lists, each with what you play and what it starts from.' },
     { k: 'slotCta', l: 'Button (layout 2)', d: CAL_SLOT_CTA, in: [1] },
@@ -1760,8 +1813,13 @@ export const FIELDS = {
           + 'Layout 3 also turns the cities into its filter chips, and works out the weekday '
           + 'its date disc prints from the month, the day and the year (four digits).' },
     // JP-071: layout 3's eyebrow over the heading, the frame's words, uncased.
-    { k: 'kicker',  l: 'Kicker', d: MAP_KICKER, in: [2],
-      hint: 'The small line over the heading. Left empty, it is not drawn.' },
+    // JP-090 took it to layout 1's "Shows/coverage", its seed there
+    // (mapKickerSeed(), in sectionVm and EditPanel's chain alike).
+    { k: 'kicker',  l: 'Kicker', d: MAP_KICKER, in: [0, 2],
+      hint: 'The small line over the heading. Layout 1 starts from “Shows/coverage”. Left empty, it is not drawn.' },
+    // JP-090: layout 1's label over the gig list; the "· 5" count is the page's.
+    { k: 'listLabel', l: 'List label', d: MAP_LIST_LABEL, in: [0],
+      hint: 'The label over the list of gigs, before its count. Left empty, neither is drawn.' },
     { k: 'heading', l: 'Heading', d: 'Manchester' },
     // Layouts 1–3 print it, once each (reach.mjs's `map.radius`). It was
     // "Coverage badge", after layout 1's reading, until JP-060: layout 2's Lime
@@ -1881,6 +1939,10 @@ export const FIELDS = {
           + 'in every layout.' },
     { k: 'types',    l: 'Event types', type: 'area', d: FORM_TYPES.join(', '), in: [0],
       hint: 'Comma separated. The form opens on the first; empty hides the row. Layout 1 only.' },
+    // The chip row's label (JP-090), messageLabel's rule: the row it heads
+    // stands whatever it says, so an emptied label reads the seed again.
+    { k: 'typeLabel', l: 'Event type label', d: FORM_TYPE_LABEL, in: [0],
+      hint: 'The label over the event types. Layout 1 only. Left empty, it shows Event type.' },
     { k: 'message',  l: 'Message placeholder', d: FORM_MESSAGE, in: [0, 3], hint: 'Layouts 1 and 4.' },
     // The message box's label (JP-082): the one box label that was a literal.
     { k: 'messageLabel', l: 'Message label', d: FORM_MSG_LABEL, in: [0, 3],
@@ -1889,7 +1951,7 @@ export const FIELDS = {
     { k: 'email',    l: 'Email address', type: 'email', d: FORM_EMAIL,
       hint: 'Enquiries are mailed here: the button opens the visitor’s mail app with the form filled in, and so does the Booking Calendar’s layout-4 Send Enquiry, until the calendar has an address of its own. Empty leaves the button a picture. An address that isn’t valid also leaves the button a picture.' },
     { k: 'button',   l: 'Button', d: 'Book Now', in: [0, 3],
-      hint: 'Layouts 1 and 4. Layout 4 starts from “Check Availability”.' },
+      hint: 'Layouts 1 and 4. Layout 4 starts from “Check Availability”, and layout 1 from “Enquire” in Lime, Grunge and Editorial.' },
     // Layouts 2 and 3's card — the same component in both frames. Every one is
     // emptiable and drops what it fills, except the button: it is the submit,
     // so an emptied label falls back to `button`.
@@ -1987,8 +2049,9 @@ export const headerIdentity = (sections) => {
 // exactly as pricing's own sectionVm resolves `tierList` — an absent key is
 // the seeded TIERS, blank rows are dropped — and `[]` with no pricing section
 // on the page, which is the card's not-drawn state. Raw: the calendar cases.
-// At pricing layout 3 an absent key is TIERS_3 instead (JP-070), which differs
-// in tags alone, and the card reads no tags, so TIERS serves here whatever the
+// At pricing layout 3 an absent key is TIERS_3 instead (JP-070), and at
+// Lime's, Grunge's and Editorial's layout 1 TIERS_1 (JP-089); both differ in
+// tags alone, and the card reads no tags, so TIERS serves here whatever the
 // pricing section's layout.
 export const pageTiers = (sections) => {
   const p = sections.find((s) => s.cat === 'pricing')

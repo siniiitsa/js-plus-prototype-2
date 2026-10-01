@@ -564,13 +564,28 @@ function LogoMark({ s, size = 18, color, glyph }) {
 // `size` overrides the name's type — additive, `BookPill`'s `size` precedent,
 // and read under Lime alone: its 390 hero master is set in the Tablet device
 // mode, so the name there is the 768 ramp's 21 where `s.labelLg` is 14.
-function Wordmark({ s, logo = false, color, glyph, size, gap, clean = false }) {
+// `fit` is the layout-1 capsule's (JP-091, NavBar): `room` is the width its
+// links and pill leave the name, `one` / `two` the name's ems on one line and
+// on its best two (`vm.navNameFit`), `cap` the size two lines fit the capsule
+// at. The name keeps its own size while one line fits the room, shrinks on one
+// line, and below `cap` wraps between words, balanced, onto two — whichever is
+// larger. `floor` is the links' own, so a pill label long enough to leave no
+// room, or one word too long to fit it, keeps the name legible: its box grows
+// past the room to the best split's wider line, and the links wrap, as they
+// did before. Additive; every other caller passes none and keeps `nowrap`.
+const fitName = (fit, base) => fit
+  ? `min(${base}, max(${fit.floor}, calc(${fit.room} / ${fit.one}), min(${fit.cap}, calc(${fit.room} / ${fit.two}))))`
+  : base
+const fitBox = (fit, size) => fit
+  ? { whiteSpace: 'normal', textWrap: 'balance', maxWidth: `max(calc(${fit.room}), calc(${fit.two} * ${size}))` }
+  : null
+function Wordmark({ s, logo = false, color, glyph, size, gap, clean = false, fit }) {
   if (s.lime) {
     // Lime's frame: Label/LG, letterSpacing 0, 13.15 from the globe (× 0.82).
     return (
       <span style={row(s.narrow ? '13px' : '11px')}>
         {logo && <LogoMark s={s} color={color} glyph={glyph} />}
-        <span style={labelStyle(s, size ?? s.labelLg, { color: color || s.tx, letterSpacing: s.dls })}>{s.brand}</span>
+        <span style={labelStyle(s, fitName(fit, size ?? s.labelLg), { color: color || s.tx, letterSpacing: s.dls, ...fitBox(fit, fitName(fit, size ?? s.labelLg)) })}>{s.brand}</span>
       </span>
     )
   }
@@ -587,10 +602,11 @@ function Wordmark({ s, logo = false, color, glyph, size, gap, clean = false }) {
     // Grunge's to the pixel.
     // Display/Title takes Grunge's distress (`distressed`); a caller that sets
     // the name at a label size says so with `clean`, where it picks the size.
+    const px = fitName(fit, size ?? (s.editorial ? (s.narrow ? '25px' : '26.2px') : s.narrow ? '28px' : '29.5px'))
     const name = {
-      fontFamily: s.display, lineHeight: facedLh(s, 1.1),
-      fontSize: faced(s, size ?? (s.editorial ? (s.narrow ? '25px' : '26.2px') : s.narrow ? '28px' : '29.5px')),
+      fontFamily: s.display, lineHeight: facedLh(s, 1.1), fontSize: faced(s, px),
       letterSpacing: s.dls, textTransform: 'uppercase', whiteSpace: 'nowrap', color: color || s.tx,
+      ...fitBox(fit, px),
     }
     return (
       <span style={row(gap ?? (s.narrow ? '10px' : '11px'))}>
@@ -1495,6 +1511,20 @@ function NavBar({ s, colour, rule, pill, nameSize, nameColour, mark, links, clea
   const ruleW = s.mob ? '70px' : tab ? '150px' : '123px'
   const lime = s.limeTree
   const ed = s.editorial
+  const floor = s.grunge ? 16 : 12
+  const glyph = mark?.glyph ?? (lime ? (!s.narrow ? (ed ? 36.84 : 29.5) : s.grunge ? 27.37 : ed ? 44.93 : 36) : s.narrow ? 27 : undefined)
+  // The layout-1 capsule's name gives way before its links (JP-091, user
+  // call, 2026-10-01): the room it has is the capsule's content box — the bar
+  // is the query container, `nav`'s own `cqi` rule — less the mark and its
+  // 11, the halves' 24.6, the pill's 19 and the pill itself (BookPill's 82 of
+  // padding, gap and disc × 0.82, and its label at `s.list`), less the links
+  // at their floor. `cap` is the size two lines of the name (line 1.1) fit
+  // the pill's 44.28 at, so the bar never grows. Wordmark does the sizing.
+  // Layout 4's capsule, which passes `links`, keeps its wrap (JP-091's scope).
+  const fit = lime && !s.narrow && !links && s.navNameFit ? {
+    room: `(100cqi - ${+(glyph + 11 + 24.6 + 19 + 82 * 0.82).toFixed(2)}px - ${s.navNameFit.pill} * ${s.list} - ${s.navEms} * ${floor}px)`,
+    one: s.navNameFit.one, two: s.navNameFit.two, cap: '20.1px', floor: `${floor}px`,
+  } : undefined
   return (
     <div style={row(lime ? ((s.grunge || ed) && s.mob ? '10px' : s.narrow ? '30px' : '24.6px') : s.mob ? '10px' : tab ? '30px' : '24px', {
       justifyContent: 'space-between', width: '100%',
@@ -1506,11 +1536,12 @@ function NavBar({ s, colour, rule, pill, nameSize, nameColour, mark, links, clea
         background: fill ?? (ed ? s.box3 : s.bg), borderRadius: s.narrow ? s.btnR : '30.35px',
         padding: s.narrow ? '10px 20px' : '8.2px 8.2px 8.2px 16.4px',
       } : null),
+      ...(fit ? { containerType: 'inline-size' } : null),
     })}>
       <div style={row(s.narrow ? '20px' : '16px', { flex: s.narrow ? 1 : '0 1 auto', minWidth: 0 })}>
-        <Wordmark s={s} logo glyph={mark?.glyph ?? (lime ? (!s.narrow ? (ed ? 36.84 : 29.5) : s.grunge ? 27.37 : ed ? 44.93 : 36) : s.narrow ? 27 : undefined)}
+        <Wordmark s={s} logo glyph={glyph}
                   size={lime && s.mob ? (nameSize ?? (s.grunge ? '28px' : ed ? '25px' : '21px')) : mark ? nameSize : undefined}
-                  gap={mark?.gap} color={nameColour || c} clean={clean} />
+                  gap={mark?.gap} color={nameColour || c} clean={clean} fit={fit} />
         {/* §10.2 draws a 150px rule after the wordmark — 70px on the 390 frame,
             123px on the 1180 canvas. It has to yield rather than push the Book
             Now pill onto a second line: the nav carries the page's own section
@@ -1535,7 +1566,12 @@ function NavBar({ s, colour, rule, pill, nameSize, nameColour, mark, links, clea
         // capped at the frame's `s.list` and floored at 12px. The gaps are ems
         // too, so the row shrinks as one. `nav` is the query container and the
         // row inside it takes the size: `cqi` resolves against an *ancestor*.
-        // Below the floor it wraps, which is the least bad of the options left.
+        // Below the floor it wrapped, "the least bad of the options left" —
+        // *reversed* for layout 1 (JP-091, user call, 2026-10-01): there the
+        // name gives way first (`fit` above), so the links keep one row at the
+        // floor whatever the artist is called. They still wrap in layout 4's
+        // capsule (`links`), and in layout 1 only when a pill label leaves the
+        // name nothing but its own floor.
         // Grunge's labels are `faced`, 0.75 of the row's size, so its floor is
         // 16 to keep them at 12, and `s.navEms` already counts them at 0.75.
         <span style={row('19px', { flex: '1 1 0', minWidth: 0, justifyContent: 'flex-end' })}>
@@ -1547,7 +1583,7 @@ function NavBar({ s, colour, rule, pill, nameSize, nameColour, mark, links, clea
                 fontSize: `clamp(12px, calc((100cqi - ${links.gap} * ${Math.max(0, s.navLinks.length - 1)}) / ${s.navEms}), ${links.cap})`,
               } : {
                 gap: `${ed ? 23 / 16 : 23 / 24}em`,
-                fontSize: `clamp(${s.grunge ? 16 : 12}px, calc(100cqi / ${s.navEms}), ${ed ? s.labelSm : s.list})`,
+                fontSize: `clamp(${floor}px, calc(100cqi / ${s.navEms}), ${ed ? s.labelSm : s.list})`,
               }),
             }}>
               {s.navLinks.map((l) => (
@@ -1621,7 +1657,8 @@ function HeaderV0({ s }) {
   // the Tablet device mode, so its type is the 768 ramp's — a two-line 120px
   // title where `s.dispXl` is 72. Every other key reads the page's own ramp.
   // Grunge's 390 master (986:44070) is in the same mode: a one-line 95.
-  // Editorial's (986:48251) too: a 107 title, which its column wraps to two.
+  // Editorial's (986:48251) too: a 107 title, which its column wraps to two
+  // (and the Title below fits to a long word).
   const tk = !s.mob ? s
     : grunge ? { list: '19px', dispXl: '95px', labelXs: '14px' }
     : ed ? { list: '19px', dispXl: '107px', labelXs: '14px' }
@@ -1734,11 +1771,13 @@ function HeaderV0({ s }) {
           {/* Editorial's column is the title's measure (below), so it takes
               the row's remaining width rather than its content's: a
               max-content column in this wrapping row would drop under the
-              card whole the moment the name outran it. */}
+              card whole the moment the name outran it. At 390 it is already
+              the full width, under the card, so it takes the container
+              alone (JP-086). */}
           <div style={col(s.mob || tab ? '36px' : lime ? '5px' : '30px', {
             alignItems: centred ? 'center' : 'flex-start', minWidth: 0,
             width: s.mob ? '100%' : undefined,
-            ...(ed && !s.mob ? { flex: '1 1 0', containerType: 'inline-size' } : null),
+            ...(ed ? { containerType: 'inline-size', ...(!s.mob && { flex: '1 1 0' }) } : null),
           })}>
             {lime ? (
               // Lime: Display/List in `sem/text/2` and `sem/text/1`, after a
@@ -1778,9 +1817,13 @@ function HeaderV0({ s }) {
                 column's 540. So there the title is fitted to the column
                 (`100cqi` over the name's width in ems — `s.navNameEms`, the
                 display face being the label face), capped at the ramp: the
-                nav's recipe. 1440 has room to spare and keeps its 147; 390
-                wraps to two lines, as its frame does. */}
-            <Title s={s} size={ed && !s.mob ? `min(${tk.dispXl}, calc(100cqi / ${s.navNameEms}))` : tk.dispXl}
+                nav's recipe. 1440 has room to spare and keeps its 147. 390
+                wraps between words, as its frame does, so there the title is
+                fitted to the name's widest word instead (`s.cardNameEms`,
+                HeaderV2's JP-062 rule), capped at the frame's 107: a long
+                word shrinks the name rather than run off the page, and the
+                seeded MERCER keeps the 107 in the 370 column (JP-086). */}
+            <Title s={s} size={ed ? `min(${tk.dispXl}, calc(100cqi / ${s.mob ? s.cardNameEms : s.navNameEms}))` : tk.dispXl}
                    twoTone={!lime || grunge} color={ed ? ink : lime && !grunge ? s.ac : undefined}
                    toneA={grunge ? s.tx : s.paper} toneB={s.ac} inline={!s.mob || grunge || ed}
                    lh={0.75} align={centred ? 'center' : 'left'} />
@@ -3908,14 +3951,21 @@ function Bio({ s }) {
           ))
           : s.title}</h2>
         {/* Body/SM — Inter regular, not the eyebrow; Grunge's and Editorial's
-            are the eyebrow. */}
-        {grunge || ed
-          ? eyebrow('[ 001 ] Structure · Bio_01', { textTransform: 'uppercase', whiteSpace: 'nowrap' })
+            are the eyebrow. The line is the artist's `refLabel` (JP-090),
+            seeded with the frames' own; emptied, an empty seat keeps the
+            desktop column's three rows, so the heading does not slide to its
+            foot. The narrow column is gapped, not spaced, so there the seat
+            would be a dead 29 and the line simply goes.
+            It wraps, and inside a word, since a typed line can outrun a 390
+            column where the seed never does (JP-071's `listLabel` rule). */}
+        {!s.bioRef ? (s.narrow ? null : <span />)
+          : grunge || ed
+          ? eyebrow(s.bioRef, { textTransform: 'uppercase', whiteSpace: 'normal', overflowWrap: 'anywhere', minWidth: 0 })
           : (
             <span style={{
               fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4, textTransform: 'uppercase',
-              whiteSpace: 'nowrap', ...ink,
-            }}>[ 001 ] Structure · Bio_01</span>
+              whiteSpace: 'normal', overflowWrap: 'anywhere', minWidth: 0, ...ink,
+            }}>{s.bioRef}</span>
           )}
       </div>
     )
@@ -4068,7 +4118,11 @@ function Bio({ s }) {
           margin: s.narrow ? '14px 0' : 0, fontFamily: s.display, fontSize: s.dispLg,
           lineHeight: 0.89, letterSpacing: s.dls, color: s.ac,
         }}>{s.title}</h2>
-        {label('[ 001 ] Structure · Bio_01')}
+        {/* `refLabel` (JP-090); emptied, an empty seat keeps the heading off
+            the foot of the column's space-between, except at 390, whose 16
+            gap would leave the seat a dead band. A typed line wraps. */}
+        {s.bioRef ? label(s.bioRef, { whiteSpace: 'normal', overflowWrap: 'anywhere', minWidth: 0 })
+          : s.mob ? null : <span />}
       </div>
     )
 
@@ -13009,15 +13063,31 @@ function Gallery({ s }) {
     // The Figma tablet and mobile frames fold the source list into a row of
     // icon-only tiles: no labels, and only the open tile carries a dismiss
     // glyph. Tablet spreads four equal tiles across the page; mobile keeps them
-    // content-sized, and **wraps** rather than clipping.
+    // content-sized on **one line that runs off the right edge**, as the frames
+    // draw it.
     //
-    // The frame itself lets the row run off the right edge, which cost nothing
-    // while the tiles were decoration — but three of them now carry an address
-    // the artist typed, and the fourth, TikTok, was the one off the page. Four
-    // content-sized tiles come to ~430px against a 390 frame, so nothing short
-    // of shrinking them fits on one line; wrapping keeps every Figma dimension
-    // exactly as drawn and spends a second row instead. The 20px gap is the
-    // row gap too, which clears the open tile's offset shadow.
+    // *Reversed* (JP-087, user call, 2026-10-01): this row used to wrap,
+    // spending a second row on TikTok so no tile with an address sat off the
+    // page. The four come to 380–432px against the 370 column (Grunge's to
+    // Retro's), so TikTok stood alone under the other three, which QA read as
+    // a bug. Now the row stays one line, every Figma dimension as drawn. On the
+    // published page it scrolls sideways, its scrollbar hidden, so the tile
+    // off the edge is a swipe away. On the canvas it clips, the frame's
+    // picture, since a scrollable region there would be interaction (`s.live`).
+    // It is the only scroll container in this file. The A–Z rail scrolls the
+    // *page*.
+    //
+    // The scroller clips at its padding box, so it takes 10 above and below
+    // (Lime's 7 / 9 offset shadows, Retro's tilted open tile) and the page's
+    // own gutter at the sides, each cancelled by a negative margin. The tiles
+    // keep their places, and the run-off reaches the page's edge, not the
+    // column's.
+    const srcScroll = s.mob ? {
+      flexWrap: 'nowrap',
+      ...(s.live ? { overflowX: 'auto', overflowY: 'hidden', scrollbarWidth: 'none' } : { overflow: 'clip' }),
+      padding: `10px ${s.padX}`, margin: `-10px calc(-1 * ${s.padX})`,
+    } : null
+
     // A row with an address the artist typed is an outbound link on the
     // published page, the same seam BookPill takes: `extLink` returns the props
     // or null, the tag follows, and the style object is the same either way so
@@ -13058,8 +13128,9 @@ function Gallery({ s }) {
     // Named departures. The frame's heading breaks after "See us" with a typed
     // newline, and no measure can: "in action" (2.95em) is wider than "See us in"
     // (2.81em). The 4em cap gives "See us in / action" at all three widths, which
-    // keeps the frame's two lines and its height. The 390 source row wraps where
-    // the frame runs TikTok off the page — the rule this section already has.
+    // keeps the frame's two lines and its height. The 390 source row used to
+    // wrap where the frame runs TikTok off the page; *reversed* by JP-087, it is
+    // the frame's one line now, scrolling on the published page (`srcScroll`).
     // And the arrow discs' 24 background blur is dropped: their fill is opaque,
     // the header's capsule precedent.
     //
@@ -13163,12 +13234,13 @@ function Gallery({ s }) {
 
       // Desktop stacks four full capsules, disc and label and a glyph; 768
       // spreads four equal tiles of disc alone, the open one keeping its cross;
-      // 390 keeps them content-sized and wraps. The open row is `sem/active`,
-      // the closed ones `sem/box/1` under the frame's hard 7 / 9 shadow.
+      // 390 keeps them content-sized on one line (`srcScroll`). The open row is
+      // `sem/active`, the closed ones `sem/box/1` under the frame's hard 7 / 9
+      // shadow.
       const rows = (
         <div style={desk
           ? col(u(G.rowGap), { alignItems: 'stretch' })
-          : row(`${G.rowGap}px`, { alignItems: 'stretch', ...(s.mob ? { flexWrap: 'wrap' } : {}) })}>
+          : row(`${G.rowGap}px`, { alignItems: 'stretch', ...srcScroll })}>
           {srcRows.map(({ g, i }) => {
             const link = extLink(s, g.url)
             const Tag = link ? 'a' : 'div'
@@ -13415,9 +13487,7 @@ function Gallery({ s }) {
     }
 
     const sources = !desk ? (
-      <div style={row('20px', {
-        alignItems: 'stretch', ...(s.mob ? { flexWrap: 'wrap' } : {}),
-      })}>
+      <div style={row('20px', { alignItems: 'stretch', ...srcScroll })}>
         {srcRows.map(({ g, i }) => {
           const link = extLink(s, g.url)
           const Tag = link ? 'a' : 'div'
@@ -15034,6 +15104,10 @@ function Calendar({ s }) {
         display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))',
         columnGap: s.mob ? '2px' : u(10), rowGap: s.mob ? '2px' : u(10),
       }
+      // The foot's line is its link (JP-088, below): live, while it names a
+      // picked day, to `calBookTo`. The prompt never links.
+      const lineHref = cur ? navHref(s, s.calBookTo) : undefined
+      const LineTag = lineHref ? 'a' : 'span'
 
       // The month arrows: `sem/tag/2/text` discs in a 1px `sem/stroke/1` ring,
       // round Pager's own arrow vector in `sem/text/2`. The cursor is read off
@@ -15118,8 +15192,8 @@ function Calendar({ s }) {
       return (
         <div style={col(u(24))}>
           {/* Display/MD at lh 1, held to the frame's 640 on desktop (Editorial's
-              FIXED 578.4, at 768 too). The frame types BOOK NOW; the seed's
-              heading stays `TITLES.calendar`. */}
+              FIXED 578.4, at 768 too). The frame types BOOK NOW, and so does
+              the seed, `CAL_HEADING_1` (JP-089, reversing `TITLES.calendar`). */}
           <h2 style={distressed(s, disp(s.dispMd, {
             margin: 0, color: s.ac, maxWidth: G.headW ?? (s.narrow ? '100%' : u(640)),
           }))}>{s.title}</h2>
@@ -15188,10 +15262,13 @@ function Calendar({ s }) {
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
               flexWrap: 'wrap', gap: u(16),
             }}>
-              <span style={type(s.body, s.bodyMd, 1.5, { color: G.line })}>{line}</span>
-              {/* Retro's one deliberate addition to the frame, kept: a picked
-                  date has to lead somewhere. BookPill's Lime branch dresses it. */}
-              <BookPill s={s} to={s.calBookTo} label={s.calCta} />
+              {/* The frames' foot is this line alone. Retro's Check a date pill
+                  is gone from it (JP-088, user call, 2026-09-30, reversing
+                  Lime's "the foot keeps Retro's BookPill"), so the line itself
+                  leads a picked date on, in its own type: `lineHref`, above. */}
+              <LineTag {...(lineHref ? { href: lineHref } : null)} style={type(s.body, s.bodyMd, 1.5, {
+                color: G.line, textDecoration: 'none', cursor: lineHref ? 'pointer' : undefined,
+              })}>{line}</LineTag>
             </div>
             {/* The panel's 3px `sem/stroke/2` ring, which Figma strokes inside
                 and paints over the halves. An inset shadow on the panel itself
@@ -17495,7 +17572,9 @@ function EventsMap({ s }) {
 
       const head = (
         <div style={col(u(16))}>
-          <span style={eyebrow({ color: G.kicker ?? G.head })}>Shows/coverage</span>
+          {/* The artist's `kicker`, seeded "Shows/coverage" here (JP-090,
+              mapKickerSeed); emptied, it is not drawn. Typed longer, it wraps. */}
+          {s.mapKicker && <span style={eyebrow({ color: G.kicker ?? G.head, whiteSpace: 'normal', overflowWrap: 'anywhere', minWidth: 0 })}>{s.mapKicker}</span>}
           {/* Display/LG over Label/LG, which stands at the row's right on
               desktop and 768 and stacks 10 under the heading at 390. */}
           <div style={s.mob ? col('10px', { alignItems: 'flex-start' }) : row(u(10), { justifyContent: 'space-between' })}>
@@ -17663,12 +17742,17 @@ function EventsMap({ s }) {
           {/* Grunge's head is flush with the rows and its 1px rule is filled
               (`box/1`), 30 from the count, where Lime's carries no fill;
               Editorial's is flush and unfilled. */}
-          <span style={row(grunge ? u(30) : '0px', { padding: grunge || ed ? 0 : `0 ${u(20)}` })}>
-            <span style={eyebrow({ color: G.onPanel, textTransform: 'uppercase' })}>
-              Upcoming gigs · {s.gigs.length}
+          {/* The label is the artist's `listLabel` (JP-090) and the count the
+              page's; emptied, the row goes, Grunge's rule with it. A typed
+              label wraps, inside a word too, rather than run off the panel. */}
+          {s.mapListLabel && (
+            <span style={row(grunge ? u(30) : '0px', { padding: grunge || ed ? 0 : `0 ${u(20)}` })}>
+              <span style={eyebrow({ color: G.onPanel, textTransform: 'uppercase', whiteSpace: 'normal', overflowWrap: 'anywhere', minWidth: 0 })}>
+                {`${s.mapListLabel} · `}{s.gigs.length}
+              </span>
+              {grunge && <span aria-hidden style={{ flex: 1, height: '1px', background: s.bg }} />}
             </span>
-            {grunge && <span aria-hidden style={{ flex: 1, height: '1px', background: s.bg }} />}
-          </span>
+          )}
           {rowsL.length > 0 && <div style={col(u(12))}>{rowsL}</div>}
           {win.labels.length > 0 && (
             <Pager s={s} frame={{
@@ -17822,14 +17906,18 @@ function EventsMap({ s }) {
         <Grain s={s} opacity={0.18} radius={s.radiusSm} />
         {/* All three masters set the label, the rows' sub-lines and the date
             chips in Space Mono: 11 tracked 1.5, 11, and a 42 square of 9 over
-            bold 14. Desktop is the frame × 0.82. */}
-        <span style={{
-          fontFamily: s.mono, fontSize: s.narrow ? '11px' : '9px', lineHeight: 'normal',
-          letterSpacing: s.narrow ? '1.5px' : '1.2px', textTransform: 'uppercase', whiteSpace: 'nowrap',
-          color: onDark ? s.pillBg : s.muted, position: 'relative',
-        }}>
-          Upcoming gigs · {s.gigs.length}
-        </span>
+            bold 14. Desktop is the frame × 0.82. The label is the artist's
+            `listLabel` (JP-090), the count the page's; emptied, neither. It
+            and the kicker wrap, inside a word too, once typed longer. */}
+        {s.mapListLabel && (
+          <span style={{
+            fontFamily: s.mono, fontSize: s.narrow ? '11px' : '9px', lineHeight: 'normal',
+            letterSpacing: s.narrow ? '1.5px' : '1.2px', textTransform: 'uppercase',
+            whiteSpace: 'normal', overflowWrap: 'anywhere', minWidth: 0, color: onDark ? s.pillBg : s.muted, position: 'relative',
+          }}>
+            {`${s.mapListLabel} · `}{s.gigs.length}
+          </span>
+        )}
         {shown.map((g, i) => {
           // A row with a tickets address becomes an anchor, the gallery's seam:
           // `target="_blank"`, so the click both opens the tab and lights the
@@ -17913,13 +18001,16 @@ function EventsMap({ s }) {
         {/* All three masters (964:58581, 986:38401, 986:38721) set the kicker
             in Inter Bold 11 tracked 1.5 and the badge in Anton 32.3 on a 37
             line, on the heading's own row and centred against it. Desktop is
-            the frame × 0.82. */}
+            the frame × 0.82. The kicker is the artist's, seeded
+            "Shows/coverage" here (JP-090, mapKickerSeed), and not drawn when
+            emptied. */}
         <div style={col(s.narrow ? '16px' : '13px')}>
-          <span style={{
+          {s.mapKicker && <span style={{
             fontFamily: s.body, fontWeight: 700, fontSize: s.narrow ? '11px' : '9px', lineHeight: 'normal',
-            letterSpacing: s.narrow ? '1.5px' : '1.2px', textTransform: 'uppercase', whiteSpace: 'nowrap',
+            letterSpacing: s.narrow ? '1.5px' : '1.2px', textTransform: 'uppercase',
+            whiteSpace: 'normal', overflowWrap: 'anywhere', minWidth: 0,
             color: s.retro ? s.mapFg : s.tx,
-          }}>Shows/coverage</span>
+          }}>{s.mapKicker}</span>}
           <div style={row('20px', { justifyContent: 'space-between', flexWrap: 'wrap' })}>
             <h2 style={{
               margin: 0, fontFamily: s.display, fontSize: s.dispLg, lineHeight: 0.95,
@@ -19654,9 +19745,9 @@ function EventsMap({ s }) {
     const head = (
       <div style={col(u(6), { alignItems: 'flex-start', maxWidth: '100%' })}>
         {/* The eyebrow is the frame's own words, seeded into its own field,
-            `kicker` (JP-071, user call, 2026-09-29; it was a literal, layout
-            1's call in this very section, "Shows/coverage"), and not drawn
-            when emptied. `base` was tried here first, on the gallery's
+            `kicker` (JP-071, user call, 2026-09-29; it was a literal, as
+            layout 1's "Shows/coverage" was until JP-090 seated that in the
+            same key), and not drawn when emptied. `base` was tried here first, on the gallery's
             prefer-a-field rule, and read back as a stutter: the head was then
             `TITLES.map`'s "Manchester", so it printed "Based in Manchester"
             over "Manchester" — the pricing deck's render-the-head-and-read-it
@@ -23153,8 +23244,9 @@ function EnquiryForm({ s }) {
   // Desktop is the frame × 0.82; the 768 and 390 masters are verbatim, both in
   // their page's Device mode, so every type size is the Lime ramp's `s.*`.
   //
-  // Named diffs: the frame's submit types *Enquire*, where `vm.formBtn` seeds
-  // *Book Now*; and the context half is the frame's fixed 420 × 0.82 beside a
+  // The frame's submit types *Enquire*, and so does `vm.formBtn`'s seed here
+  // (`FORM_BTN_1`, JP-089, reversing the named diff). Named diff: the
+  // context half is the frame's fixed 420 × 0.82 beside a
   // form half that takes the rest of our 1052 content width, so the form half
   // is 707.6 where the frame's is 908 × 0.82 = 744.6.
   if (s.v0 && s.limeTree) {
@@ -25452,9 +25544,10 @@ function EnquiryForm({ s }) {
   //    the promises went back to layouts 1 and 2.
   //  - **"WHAT HAPPENS NEXT" is a literal**, `vm.formStepsLabel` — the frame's
   //    own word for the column, and this section keeps its literals on the view
-  //    model (`formTypeLabel`, `formPrompt`) rather than in the renderer. The
+  //    model (`formPrompt`, `formAgain`) rather than in the renderer. The
   //    MESSAGE label over the last box is the artist's since JP-082,
-  //    `vm.formMsgLabel` off `FIELDS.form.messageLabel`.
+  //    `vm.formMsgLabel` off `FIELDS.form.messageLabel`, as layout 1's EVENT
+  //    TYPE is since JP-090 (`typeLabel`).
   //
   // Two intended diffs from the frame. It draws five boxes and a message where
   // `FIELDS.form.fields` seeds four, so the reference picture is two rows of two

@@ -240,3 +240,14 @@ another `notes/` file.
   `s.onScheme[4]`, a terracotta disc with ink marks) — so every card in the setup modal lays out
   a whole Editorial page and the family is closed (`plans/editorial/`). The footer is layout 1's
   on every page, on ink but for layout 3's, which stands on taupe.
+- **The bio's layout-1 reference line is the artist's** (JP-090, user call, 2026-09-30; the bio
+  has no notes file of its own). `FIELDS.bio.refLabel`, *Reference line*, `in: [0]`, is seeded
+  with the whole `[ 001 ] Structure · Bio_01` that every template's frame types under the
+  heading (Editorial's `964:58613`, Retro's `964:58577`), brackets and index included, since the
+  `001` is an index and not a count. `vm.bioRef`, uncased: all three bodies upper-case it in CSS
+  (the `s.limeTree` block's eyebrow for Grunge and Editorial, Body/SM for Lime, and Retro's and
+  Pop's flank `label()`). Emptied, an empty `<span>` keeps the desktop heading column's three
+  rows, so the heading does not slide to the foot of its `space-between` column (it moves by
+  half the line). The narrow columns are gapped instead, so there the seat would be a dead band
+  of the gap and the line simply goes (Retro's 768 is ungapped and keeps it). A typed line wraps,
+  inside a word too, where the seed's `nowrap` let an 85-character line run 200px past a 390 page.

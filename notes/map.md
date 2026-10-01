@@ -91,3 +91,17 @@ another `notes/` file.
   seeded wall renders under the frame's 555 × 0.82, so a viewport floor lifted every seeded page.
   Its section stands on the
   page ground, so the root's `darkMap` flag stays layout 1's.
+- **Layout 1's two labels are the artist's** (JP-090, user call, 2026-09-30), on every template,
+  since Retro's and Pop's body prints them as the `s.limeTree` block does (Retro's frame
+  `964:58581`, Editorial's `964:58617`). The eyebrow over the heading, "Shows/coverage", is
+  **`kicker`'s layout-1 seed**: the field reached layout 3's "Gigs & travel" alone (JP-071), and
+  now `in: [0, 2]`, its absent key resolved by `mapKickerSeed(d)` in `data.js`, which `sectionVm`
+  and `EditPanel`'s chain both call (`formBtnSeed()`'s shape; the chain's arm is gated on `map`,
+  since the testimonials carry a `kicker` too). The label over the gig list is
+  `FIELDS.map.listLabel`, *List label*, `in: [0]`, seeded "Upcoming gigs" (`vm.mapListLabel`); the
+  `· N` count is the page's, and an emptied label takes the count with it (under Grunge the
+  row's rule too). Both are uncased and both wrap, inside a word too, once typed longer than the
+  seed: a long label ran up to 330px past a 390 page, and the gig label 60px past the Lime-tree
+  panel at desktop. The label is printed as two text nodes, `"<label> · "` and the count, as the
+  literal was: splitting the ` · ` into a third node moved its width by 0.1px under Lime and
+  Grunge.

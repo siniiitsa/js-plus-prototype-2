@@ -114,7 +114,9 @@ found by the `Primitives` mode of its sections, not by name):
   sets **Scheme 2** itself.
 - The testimonials master is **730 tall at every width**. Read its render before trusting it.
 - The mobile page renders **412** wide, not 390: something runs 22px past its right edge — the
-  390 gallery's source row, which the section already wraps (CLAUDE.md, the gallery).
+  390 gallery's source row, which the section already wraps (CLAUDE.md, the gallery). *Reversed
+  2026-10-01, JP-087: the row is the frame's one line now, scrolling on the published page and
+  clipped on the canvas — see `qa-fixes.md`.*
 
 **The desktop page frame is set to `Primitives → Lime`** (the narrow page frames are Sienna
 Vale). Every instance overrides, so read a *section* node, never the page.
@@ -729,7 +731,8 @@ four ink ones are its own register.
 4. **gallery** — the tree all three share: source rows on `box1` paper in dashed black 5, 5, the
    open row filled terracotta; the viewer a white polaroid under the tape, terracotta arrow discs;
    the strip's fourth thumb ringed terracotta. The 390 source row runs off the page (the 412
-   render), which the section wraps.
+   render), which the section wraps. *(Reversed 2026-10-01, JP-087: it runs off here too now,
+   scrolling on the published page.)*
 5. **repertoire** — Scheme 3: "250 SONGS" in terracotta with the sparkle beside it; the search a
    dashed underline with a terracotta-ringed glyph tile; chips: All filled terracotta, the rest
    paper pills; the artists in terracotta. **The pager marks its current page** (a terracotta ring
@@ -1403,7 +1406,8 @@ four ink ones are its own register.
   370.
 - **The foot keeps Retro's `BookPill`** in the Lime branch's defaults, terracotta under paper with
   a paper disc; the frame draws none (the twins' diff). Foot 109.9 / 134 / 149 against the
-  frames' 101 / 100 / 100.
+  frames' 101 / 100 / 100. *Reversed 2026-09-30, JP-088: the pill is gone and the line is the
+  link — `./qa-fixes.md`.*
 - **Measured** (harness, against the section root): desktop heading 474.3 wide (578.4 × 0.82),
   cells 61.3 × 45.8 (74.86 / 55.89 × 0.82), print 479 × 366 (478.9 × 365.7) centred 32.6 into a
   431.3 half (the frame's 40 × 0.82), tape at (163.7, −20.1) in the print (u(199.67), u(−24.55));
@@ -1498,7 +1502,8 @@ four ink ones are its own register.
   A rule under a square box does not smear, so no ring. The brief's "must read on ink": the boxes
   stand on the terracotta half, not the ink, and it reads there.
 - **Named diffs**: the frame's submit types *Enquire* where `vm.formBtn` seeds *Book Now* (the
-  twins' diff, a third time); the root's vertical insets are the inherited diff (80 / 56 / 44
+  twins' diff, a third time; *reversed 2026-09-30, JP-089: layout 1 now seeds `FORM_BTN_1`
+  "Enquire", see `qa-fixes.md`*); the root's vertical insets are the inherited diff (80 / 56 / 44
   against the masters' 120, 30 over 60, 24 over 40), with no seam to justify Grunge's `G.pad`, so
   the shell stands 18.4 higher on the desktop canvas than the frame's × 0.82.
 - **Measured** (harness, against the section root): desktop shell 1088.2 × 532.7 (1328 / 651 ×
@@ -2030,6 +2035,56 @@ The sweep:
 1. **Fisterra Fora** — *settled in session 0:* Noto Serif Display at wdth 62.5, by user call
    ("you pick"). Worth telling the designer the shipped face is a free stand-in, and that its title
    sets about 9% wider than the frame's.
+
+   *Reached QA as JP-085 (2026-09-30), answered with a reply; the licence is the PO's* —
+   [`qa-fixes.md`](./qa-fixes.md) JP-085. The facts gathered for the PO:
+   - **The face.** Fisterra is **TipoType**'s (Martín Sommaruga and Vicente Lamónaca), one family
+     in two styles, *Fora* (sharp angles, the frames') and *Morte* (curves), 248 characters
+     ([tipotype.com/fisterra](https://tipotype.com/fisterra/),
+     [myfonts.com](https://www.myfonts.com/fonts/tipotype/fisterra)).
+   - **The foundry sells a self-hosted web licence direct**
+     ([tipotype.com/fisterra](https://tipotype.com/fisterra/), the *Fisterra Web* product, read
+     off the page's variation data on 2026-09-30). Priced by page views per month: **10k $69, 50k
+     $207, 100k $345, 1M $1,380, 10M $3,450, 20M $5,037**. Its Web EULA
+     ([tipotype.com/web-eula](https://tipotype.com/web-eula/), v3.0, August 2024) says the payment
+     is "one-time … for perpetual use until the impression quota specified in the license budget is
+     fulfilled". It supplies `.woff2` among its formats. **Unverified:** whether the web product is
+     the family or one style (the desktop prices suggest the family, $69 against MyFonts' $39 a
+     style), and whether "pv/m" is a monthly cap or a quota that runs out.
+   - **The question the PO has to put to TipoType before buying any tier.** The EULA grants a
+     **non-transferable, non-sublicensable** licence and lets third parties use the font only "for
+     work created for or on behalf of the License Owner". So it is unverified whether one web
+     licence covers every artist's public site the builder publishes. The alternative is TipoType's
+     **Corporate & Enterprise** licence, "use … in an infinite number of situations",
+     price on request ([tipotype.com/license](https://tipotype.com/license/),
+     [tipotype.com/corporate-license](https://tipotype.com/corporate-license/)). This is a reading
+     of the terms, not legal advice.
+   - **Fontspring** lists the family (its "FONTSPRING DEMO -" prefix is the frames' source). Its
+     pages answered 403 to every fetch, so the price, the tiers and the terms are **unverified**. A
+     search snippet reads "2 fonts from $69.00" with a Worry-Free badge. **MyFonts** sells it too,
+     $39 a style and $69 the family on desktop. It sells webfonts on its annual model, and that
+     price is unverified.
+   - **Adobe Fonts** lists Fisterra ([fonts.adobe.com/fonts/fisterra](https://fonts.adobe.com/fonts/fisterra)),
+     "cleared for both personal and commercial use" through a Creative Cloud web project. That would
+     be a hosted `<link>` like the Google one, not a self-hosted file. **Unverified:** whether *Fora*
+     itself is in the library (the page describes both styles), and whether Adobe's web-project
+     terms cover customers' sites that a builder publishes.
+   - **Caps-only, by design.** The foundry: "a single skeleton of condensed uppercase letters, with
+     expanded nuances in some alternate characters and ligatures", and every frame string renders
+     capitals whatever its case. A third-party charmap of the *demo*
+     ([befonts.com](https://befonts.com/fontspring-demo-fisterra-fora.charmap)) claims distinct
+     lowercase slots. What those slots hold is unverified: alternates or small caps would fit the
+     foundry's line. Either way, `casing: 'title'` with per-site `textTransform: 'uppercase'` is
+     harmless under the real face, not required by it.
+   - **Every display and label node names it, not the hero alone** (`get_variable_defs`,
+     2026-09-30). `font/display` and `font/label` are both "FONTSPRING DEMO - Fisterra Fora". The
+     header instance `964:58612` binds Display/XL (the 179 hero, 134 tall = 179 × 0.75), Display/Title
+     (the wordmark, 35 = 32 × 1.1), Label/SM (the nav links, 18 = 16 × 1.1) and Display/List (the
+     *Book Now* pill, 29 = 24 × 1.2). The bio `964:58613` binds Display/LG (its 118 head), and pricing
+     `964:58618` binds Display/SM (its 45 head), Label/SM and Display/List. Each style is matched to its
+     node by the node's height, because the tool refuses instance-child ids. The header's
+     chips are Label/XS (25 = 20 × 1.26), which is `font/ui`, **Chakra Petch**, so the tester's
+     "the buttons" is the pill, not the chips.
 2. **Per-section schemes** — *settled in session 0:* route A, by user call.
 3. **The gallery strip** — the frame repeats one thumbnail and borrows Retro's colour spotlight;
    seeded as seven distinct pictures of Editorial's shoot (session 0). Worth telling the designer.

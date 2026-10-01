@@ -12,7 +12,14 @@ another `notes/` file.
   2026-09-29, reversing the "one tag list for every layout" reply): its frames' capsule reads Duo /
   Trio / Band where Retro's layout 1 reads Solo / Trio / Band, so with `tiers` absent, `sectionVm`
   and `tiersVal` both read `TIERS_3` at `d === 2`. That is `TIERS` with *Solo* → *Duo* and nothing
-  else, so `pageTiers()` (name and price alone) keeps `TIERS`. The gate is `FORM_FIELDS_4`'s, the
+  else, so `pageTiers()` (name and price alone) keeps `TIERS`. **Lime's, Grunge's and Editorial's
+  layout 1 seeds its own tags too** (JP-089, user call, 2026-09-30, reversing Lime layout 1's inherited seed):
+  their frames' row reads *Private Event / Club Night / Festival* and their cards print no tags, so
+  at `d === 0` under those three templates an absent key is `TIERS_1`, one occasion per package in
+  the frame's order, behind the same `All`. Retro's and Pop's layout 1 keep `TIERS`. Both callers go
+  through **`tiersSeed(themeName, d)`** in `data.js`, so `sectionVm` and `tiersVal` resolve one
+  expression rather than two mirrored ones. The frame's lit *Club Night* is not reproduced; the
+  canvas pins `All`. The gate is `FORM_FIELDS_4`'s, the
   absent key alone: once the artist edits the list it is theirs at every layout, Duo and all. The row is **not rendered at one chip**: a page whose
   packages carry no tags has nothing to filter, which is the pager's rule, and the extra `All`
   chip on the reference picture is the intended diff. `active` is clamped against the row, the

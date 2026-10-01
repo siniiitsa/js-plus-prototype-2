@@ -712,7 +712,8 @@ Append as the pass goes. Do not repeat Lime's or Retro's bullets; name them.
 - **Measured**: desktop rows 75.4 at 3.3, head 190.4 (232 × 0.82), card 456.7 (557 × 0.82), thumbs
   62.3, rows' and strip's feet level at 659.7; 768 rows 92, card 524, heading lines 72.1; 390 card
   344, lines 40.9, TikTok wrapped to a second row (the section's own rule — the frame runs it 10 past
-  its page). The bright spot in the 390 card's top-right corner is a ceiling light in the seeded
+  its page). *(Reversed 2026-10-01, JP-087: the row is the frame's one line now, scrolling on the
+  published page and clipped on the canvas — see `../editorial/qa-fixes.md`.)* The bright spot in the 390 card's top-right corner is a ceiling light in the seeded
   photograph, not the grain.
 
 ### Settled in section 5 (the repertoire)
@@ -886,7 +887,8 @@ Append as the pass goes. Do not repeat Lime's or Retro's bullets; name them.
   hung 217.5 above the card, as stated. No seal, no seam.
 - **The foot keeps Retro's `BookPill`** in the capsule defaults (`s.pillBg` / `s.bg`), which read on
   `#1A1A1A`; the frame draws no pill. Foot 110 / 134 / 149 against the frames' 101 / 100 / 100, Lime's
-  own diff.
+  own diff. *(Reversed 2026-09-30, JP-088: the pill is gone and the line is the link —
+  `../editorial/qa-fixes.md`.)*
 - **`FIELDS.calendar.heading`'s `in` gained `Grunge: [0, 1, 2, 3]`** — the row the last five sections
   named as due. No other Lime-keyed row outside the header remains (`grep -n "Lime: \[" data.js`).
 - **Measured against the masters' content edges**: desktop head 59, grid half 431 (526 × 0.82), cells
@@ -942,7 +944,9 @@ Append as the pass goes. Do not repeat Lime's or Retro's bullets; name them.
   map's story. Seams off the renders (PIL black-run maxima), head · foot: **40 · 90** at 1440
   (× 0.82), **60 · 16** at 768, **40 · 38** at 390 — node arithmetic agrees at 1440 and 768 (the 768
   foot vector sits at x −328 and shows 16.5), and at 390 the render wins again.
-- **Named diff, Lime's**: the frame's submit types *Enquire* where `vm.formBtn` seeds *Book Now*; and
+- **Named diff, Lime's**: the frame's submit types *Enquire* where `vm.formBtn` seeds *Book Now*
+  *(reversed 2026-09-30, JP-089: layout 1 now seeds `FORM_BTN_1` "Enquire" here, see
+  `../editorial/qa-fixes.md`)*; and
   the form half is 707.6 against the frame's 744.6 beside the fixed 420 × 0.82 context half.
 - **`FIELDS.form` has no Lime-keyed `in` row**, so nothing was owed.
 - **Measured against the masters**: desktop root 791.5 (965 × 0.82 = 791.3), shell 512.7 (512.5),
