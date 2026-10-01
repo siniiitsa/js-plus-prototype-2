@@ -106,7 +106,7 @@ the list explicitly.
 | Order | ID | Report (short) | Verdict | Size | Decision | Status |
 |---|---|---|---|---|---|---|
 | 1 | JP-099 | 390 player: no ♡ ↓ ⋯ | **Confirmed, and recorded**: Retro's 390 override, shared by every template, because the master pays for the icons with the track's whole title | S (or none) | **user: A, a reply** | **done** (no code; the published 390 title's cut added to JP-097's *Seen, not filed*) |
-| 2 | JP-093 | Form box labels at 45% | **Confirmed**: the global `::placeholder` .45, recorded as "Repertoire's accepted diff", lands on boxes with no other label | S | **yes** — mechanism and scope | open |
+| 2 | JP-093 | Form box labels at 45% | **Confirmed**: the global `::placeholder` .45, recorded as "Repertoire's accepted diff", lands on boxes with no other label | S | **user: 1A `var(--ph, .45)`, 2A the four sites** | **done** (0 digest files; the 90 label-in-box inputs read 1 and the other 300 stay .45) |
 | 3 | JP-092 | Long hero name overflows | **Confirmed, and shared**: `HeaderV1`'s `s.limeTree` title is the flat ramp with no container; the fit was declined on the seed alone | S | light — Retro's half | open |
 | 4 | JP-095 (a) | Pricing, calendar, media, testimonials labels | **Confirmed**: JP-090's rule, eight literals, every template; two are CLAUDE.md's named "unreported siblings" | M | **yes** — keys, emptied rules | open |
 | 5 | JP-095 (b) · JP-096 | The map's nine labels; *Based in* / *Willing to travel to* | **Confirmed, and recorded**: Retro dropped *Based in* because `base`'s seed says it | M | **yes** — the home value, emptied pills | open |
@@ -366,7 +366,96 @@ typed value's colour unchanged); the refused box's ring still reads.
 layouts draw it full); README `:470`–`472`; CLAUDE.md's boundary sentence (under 1A); the comments
 at the four sites.
 
-**Settled.** —
+**Decided** (2026-10-01, user call): **1A, `opacity: var(--ph, .45)` with `--ph: 1` inline; 2A, the
+four label-in-box sites on every template.** The question gave the published page's numbers
+(below), which match the triage's layout-2 column.
+
+Asked over the evidence, re-checked on HEAD (`4b864da`; no source has changed since `84be5f3`).
+Every line held: the global rule at `index.css:120`; the `s.limeTree` layout-2 block at
+`EncoreSection.jsx:23921`, its `box(bad)` with `color: ink` at `:24002`–`24008` and its live input
+at `:24187`–`24195` (the placeholder at `:24188`); Retro's and Pop's `if (s.v1)` at `:24287` and
+input at `:24574`; layout 3's `s.limeTree` block at `:24806` and input at `:24939`, Retro's and Pop's
+at `:25123`. The non-sites held too (`:23369`, `:23688`, `:25349`; the repertoire's `:11123`,
+`:11287`, `:11709`, `:11861`; the wizard's `:16769`, `:17078`). The triage's list missed one hint,
+**Retro's and Pop's layout 4 at `:25677`**, which is a label-above-box `f.placeholder` like the
+others and stays at .45. The fallthrough's `flatCtl` inputs (`:25882`, `:25892`) are past every
+design, so `arch % designCount` never reaches them.
+
+**Reproduced in the real app** (puppeteer, card 2 published, the tab caught from the opener, read
+at 1440, 768 and 390, `getComputedStyle(input, '::placeholder')`, the contrast taken against the
+box's composited ground). The three boxes draw at **.45** at every width under all four templates:
+
+| Template | Ink on ground | Now → solid |
+|---|---|---|
+| Editorial | `#141414` on `#DA7C5E` | **2.29** → 6.16 |
+| Lime | `#15180F` on `#D5E3B2` | 2.76 → 13.22 |
+| Grunge | `#FFFFFF` on `#1A1A1A` | 4.47 → 17.40 |
+| Retro | `#FBF6EA` on `#E8B33B` | 1.30 → 1.78 |
+
+The repertoire's search reads .45 on the same pages (Editorial `#141414` on `#DA7C5E` at 1440, its
+`[4, 1, 1]` seat, and on `#FFF9F2` at 768 and 390), as it should. No console errors.
+
+**Settled** (2026-10-01).
+- **The code.** `index.css:122` is now `opacity: var(--ph, .45)`, with a two-line comment over it.
+  The four live inputs add `'--ph': 1` to their `style`, each with a comment: the `s.limeTree`
+  blocks at `EncoreSection.jsx:24196` (layout 2) and `:24952` (layout 3), and Retro's and Pop's at
+  `:24588` and `:25141`. It goes on the `<input>` alone, not into `box()` / `boxShell()`, so the
+  canvas spans, which hold no placeholder, carry no dead property. `--ph` was unused before. Retro's
+  layout-2 header comment (`:24259`–`24268`) said the published first paint was the canvas's
+  picture. It now says that holds at full strength only since JP-093.
+- **Digest: 0 of 660 files on each surface** (themes 0–4, all categories, three widths, canvas
+  and `live=1`), as named. The harness was proved first: HEAD on :5174 against the unedited tree
+  on :5173 diffed to 0 on both surfaces after the port and stamp normalisation. Raw, 194 files
+  differed, all on the port.
+- **The proof, `live=1`, every input the harness draws** (645 renders; the wizard was stepped
+  through its three steps, so all seven of its cells were read). On HEAD all **390** were .45.
+  After: **90 at 1**, exactly form `arch 1` and `arch 2` × three boxes × themes 0–4 × three
+  widths, so both bodies. The other **300 stayed at .45**: form `arch 0` (60 inputs and 15
+  textareas), `arch 3` (75 and 15), the repertoire search at `arch 0` and `1` (15 each; layouts 3
+  and 4 draw none), and the wizard's cells (105). Each input's own `color` and `opacity` (the typed
+  value) and each placeholder's ink and ground were unchanged on all 390. The inline `--ph` reads 1
+  at the 90 and is absent elsewhere.
+- **The canvas and the page now agree by measurement.** At the 90 sites the canvas span's
+  computed colour equals the live `::placeholder` colour, and both draw at opacity 1 (the span's
+  ancestors' opacity product included): 90 agree, 0 differ.
+- **Contrast, after.** Each now equals the triage's solid column at every width:
+
+  | Theme | Layout 2 (`arch 1`) | Layout 3 (`arch 2`) |
+  |---|---|---|
+  | Retro | 1.30 → **1.78** | 2.95 → 16.21 |
+  | Lime | 2.76 → 13.22 | 3.69 → 11.54 |
+  | Grunge | 4.47 → 17.40 | 4.47 → 17.40 |
+  | Editorial | **2.29 → 6.16** | 2.96 → 17.62 |
+  | Pop | 2.99 → 18.42 | 2.99 → 18.42 |
+
+  Retro's layout-2 pair stays 1.78:1 solid, its frame's own colours. That is a designer note for
+  the sweep, not this ticket's.
+- **The real app.** Card 2 was published under Editorial, Lime, Grunge and Retro, from HEAD
+  (:5174) and the tree (:5173). The three boxes read .45 → **1** at 1440, 768 and 390 under all
+  four, Editorial's at 360 and 414 too, and the repertoire search stays .45. The published tab
+  clones the opener's sheet, so this read is the one that proves `var(--ph, .45)` survives the
+  clone. Card 3 reads 1 under Editorial (360, 390, 414, 768, 1440), Retro and Lime (1440, 768,
+  390). As a control, Editorial's cards 1 and 4 keep every hint at .45: layout 1's five, layout 4's
+  six and the wizard's date cell. No console errors.
+- **The refused box and the typed value, the published page at 1440.** A capture-phase guard
+  stopped every `mailto:` click. The script then clicked the submit with the boxes empty and typed
+  *12 May 2027* into the first box. A style digest of `#form` (geometry, colour, ground, box shadow,
+  border, opacity, text, value) was taken idle, refused and typed, and matched HEAD's row for row
+  under all four templates. So the refusal still reads: Editorial's three boxes take the 2px paper
+  ring (`#F6F0E8`), Lime's the 2px ink ring, Grunge's the 2px white one and Retro's the 1.6px
+  accent ring, and typing clears the first box's ring. The typed value's colour is unchanged
+  (Editorial `#141414`, opacity 1).
+- **Docs.** CLAUDE.md's boundary sentence gains the `--ph` clause, and so does README's
+  (`:78`–`82`, the same rule, which the entry did not name). README `:472`–`478` and
+  `notes/form.md:46`–`51` now scope the accepted diff to layouts 1 and 4, with a *reversed*
+  pointer for layouts 2 and 3. `notes/form.md`'s layout-2 sentence (`:61`–`63`) names `--ph`. The
+  call's origin, `../retro/layout-2.md:678`–`689` ("the published first paint must be the
+  canvas's picture"), gets a pointer saying the string matched and the strength did not. The
+  repertoire's (`:11119`) and the wizard's (`:16755`) comments, and Lime's, Grunge's and Editorial
+  layout 4's plan lines, are about hints and stay true.
+- **A fit slip, not a reversal of intent.** The layout-2 call wanted the canvas's picture
+  published, and so did layout 3's, which shares the seam. The string was matched. The
+  global rule's .45 was recorded for layout 1's hints and then carried over to these labels.
 
 ---
 

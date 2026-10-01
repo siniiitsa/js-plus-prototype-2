@@ -24191,7 +24191,9 @@ function EnquiryForm({ s }) {
                         // `number` as inputMode only, a date as the artist's text.
                         type={f.kind === 'email' ? 'email' : 'text'}
                         inputMode={f.kind === 'number' ? 'numeric' : undefined}
-                        style={{ ...box(bad), outline: 'none' }}
+                        // The placeholder is the box's only label, so `--ph`
+                        // draws it full, as the canvas span is (JP-093).
+                        style={{ ...box(bad), outline: 'none', '--ph': 1 }}
                       />
                     ) : (
                       <span key={i} style={{ ...box(bad), display: 'flex', alignItems: 'center' }}>
@@ -24257,12 +24259,13 @@ function EnquiryForm({ s }) {
   //  - The boxes carry the field's **label**, not its placeholder, because that
   //    is what the frame draws in them and because a form with no separate
   //    label row has nowhere else to put it. Live, the label is the input's
-  //    placeholder, so the published first paint is the canvas's picture. The
-  //    row's `placeholder` column therefore reaches layout 1 alone, as do the
-  //    event types (the frame draws no chip row — `showTypes` is already
-  //    `s.v0`, so the mailto sends the bare "Enquiry") and the message
-  //    placeholder (it draws no textarea, and pinning a height for one would be
-  //    inventing a number).
+  //    placeholder, so the published first paint is the canvas's picture —
+  //    at full strength since JP-093 (`--ph: 1`), where the global
+  //    `::placeholder` had drawn it at .45. The row's `placeholder` column
+  //    therefore reaches layout 1 alone, as do the event types (the frame
+  //    draws no chip row — `showTypes` is already `s.v0`, so the mailto sends
+  //    the bare "Enquiry") and the message placeholder (it draws no textarea,
+  //    and pinning a height for one would be inventing a number).
   //  - The heading is one line where the frame hand-breaks two, so everything
   //    under it stands ~33px higher than the frame's own y. Measure the
   //    promises and the credit row against the heading's foot, not the frame.
@@ -24580,7 +24583,9 @@ function EnquiryForm({ s }) {
                         // this card.
                         type={f.kind === 'email' ? 'email' : 'text'}
                         inputMode={f.kind === 'number' ? 'numeric' : undefined}
-                        style={{ ...boxShell(bad), outline: 'none' }}
+                        // The placeholder is the box's only label, so `--ph`
+                        // draws it full, as the canvas span is (JP-093).
+                        style={{ ...boxShell(bad), outline: 'none', '--ph': 1 }}
                       />
                     ) : (
                       <span key={i} style={{
@@ -24942,7 +24947,9 @@ function EnquiryForm({ s }) {
                         // `number` as inputMode only, a date as the artist's text.
                         type={f.kind === 'email' ? 'email' : 'text'}
                         inputMode={f.kind === 'number' ? 'numeric' : undefined}
-                        style={{ ...box(bad), outline: 'none' }}
+                        // The placeholder is the box's only label, so `--ph`
+                        // draws it full, as the canvas span is (JP-093).
+                        style={{ ...box(bad), outline: 'none', '--ph': 1 }}
                       />
                     ) : (
                       <span key={i} style={{ ...box(bad), display: 'flex', alignItems: 'center' }}>
@@ -25129,7 +25136,9 @@ function EnquiryForm({ s }) {
                       // styled onto this card.
                       type={f.kind === 'email' ? 'email' : 'text'}
                       inputMode={f.kind === 'number' ? 'numeric' : undefined}
-                      style={{ ...boxShell(bad), outline: 'none' }}
+                      // Layout 2's `--ph`: the placeholder is the box's only
+                      // label, so it draws full, as the canvas span is (JP-093).
+                      style={{ ...boxShell(bad), outline: 'none', '--ph': 1 }}
                     />
                   ) : (
                     <span key={i} style={{

@@ -684,7 +684,9 @@ Learned on the enquiry form (section 10):
   placeholder without also shouting whatever the visitor types. The
   row's `placeholder` column then reaches layout 1 alone, which is open
   question 4's case at the level of a *column of a repeater* rather than
-  a field.
+  a field. *(The string matched and the strength did not: the global
+  `::placeholder` drew the label at .45 until JP-093 set `--ph: 1` on the
+  input, `../editorial/layout-2-qa-fixes.md`.)*
 - **`Photo` now takes `ink`** — the initials placeholder's colour,
   defaulting to `s.muted`. `Pager`'s `idle` and `BookPill`'s `glyph`
   precedent: additive, so every caller written before it is untouched.

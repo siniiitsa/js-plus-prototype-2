@@ -57,7 +57,11 @@ Two styling systems, deliberately (README §"Two styling systems, deliberately")
   — and no effect.
 
 Do not try to unify them. Only `.hv-indent`, `.hv-acbord` and `.hv-acfill` cross the boundary,
-because each reads the per-section `--ac` / `--acFg` custom properties.
+because each reads the per-section `--ac` / `--acFg` custom properties. One rule reads a custom
+property the same way (JP-093, user call, 2026-10-01): `index.css`'s `::placeholder` is
+`opacity: var(--ph, .45)`. The enquiry form's four label-in-box inputs (layouts 2 and 3, both
+bodies) set `--ph: 1` inline, because their placeholder is the box's only label. Every other
+placeholder is a hint and keeps the .45.
 
 Every section is projected through **`sectionVm()`** into a flat, fully-resolved view-model
 before rendering, so `EncoreSection` does zero colour maths. `sectionVm` takes `themeIdx` as an

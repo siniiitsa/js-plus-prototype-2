@@ -77,7 +77,9 @@ This is the one architectural rule worth knowing before editing anything (§12.9
 
 Do not try to unify them. Only three hand-written CSS classes cross the boundary —
 `.hv-indent`, `.hv-acbord`, `.hv-acfill` — because each reads the `--ac` / `--acFg` custom
-properties set per section at runtime.
+properties set per section at runtime. One more rule reads a custom property the same way:
+`input::placeholder` is `opacity: var(--ph, .45)`, and the enquiry form's label-in-box inputs set
+`--ph: 1` inline (JP-093).
 
 Every section is projected through `sectionVm()` into a flat, fully-resolved view-model before
 rendering, so `EncoreSection` does zero colour maths. The enquiry form and the calendar's
@@ -469,7 +471,11 @@ That distinction is the whole design, and it buys two things:
   panel's own 14, and a single grid has one `rowGap`; an odd count trails one half-width cell,
   which is the pricing deck's rule again. A published placeholder draws at `::placeholder`'s .45
   where the canvas span draws it at full — Repertoire's box has always done that, so it is an
-  accepted diff rather than a new one, and no fourth `.hv-*` class was added for it.
+  accepted diff rather than a new one, and no fourth `.hv-*` class was added for it. That holds at
+  layouts 1 and 4, where a label stands over the box and the placeholder is a hint. At layouts 2
+  and 3 the placeholder **is** the box's label, and the .45 left it faint with no other label
+  (2.29:1 under Editorial). There the inputs set `--ph: 1`, so the published box draws the label
+  full, as the canvas does (JP-093, reversing the accepted diff for those two layouts).
 
   **The testimonials carousel, which pages.** It was the last §10.2 section that was a picture
   on *both* sides rather than only on the canvas: the two arrows flanking the quote card carried
