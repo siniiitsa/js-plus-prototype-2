@@ -1398,7 +1398,9 @@ counters and ink traps: its corners are soft. Rubik 900 is the squarer drawing, 
   wrap; every control hit-tests to itself (the asterisk takes no pointer); the social rows are
   `https://` links with `target="_blank"`; the 390 scroller is 458 wide in 390, and a CDP
   finger drag scrolls it its full 68, after which TikTok is wholly on the page and hit-tests to
-  its link; no console error.
+  its link; no console error. `page-check.mjs Pop 0`: no error or warning (the resize walk's
+  included), `overflow390` 0; its gallery probe's one `false` is the viewer's own tile clicked
+  again.
 - **Digest**: themes 0, 1, 2 and 3 at zero rows, static and live (660 + 660 against the editing
   server's before-labels). Theme 4 moves exactly gallery a0 at three widths, both ways. Three
   theme-1 live before-files were empty renders — a Vite reload under that run when a one-off
