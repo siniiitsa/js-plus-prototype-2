@@ -140,7 +140,9 @@ Sources: [`lime/layout-1.md`](./lime/layout-1.md); the gate idiom is
 
 These are facts about particular blocks, not conventions a new composition would meet. Grunge
 inherited each unchanged because its pages *are* those blocks; Editorial's four pages are them
-again, and its columns in D1, D2, D3 and D4 say which it kept and which a delta replaced.
+again, and its columns in D1, D2, D3 and D4 say which it kept and which a delta replaced. Pop's
+layout-1 page is them in ten of its eleven sections (the media player is Retro's), and its D1
+column says the same.
 
 ### D1. Lime's layout-1 blocks
 

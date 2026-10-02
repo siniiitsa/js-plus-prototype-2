@@ -1113,8 +1113,8 @@ counters and ink traps: its corners are soft. Rubik 900 is the squarer drawing, 
   live one was HEAD served from a scratch `git worktree` (its `source/node_modules` a symlink) on
   :5174, diffed with the memory note's port-and-stamp `sed`. Both recipes held at zero.
   `HEADER_COUNT.pop = 4` makes `designCount('header', 'Pop')` 4, so the sidebar's LayoutPicker on a
-  Pop header highlights as Lime's does; not opened in the editor here — the sweep's item 3 walks
-  every section's picker.
+  Pop header highlights as Lime's does; not opened in the editor here — *walked in the sweep*
+  (its *Learned* note): four header items, each a single live root.
 
 ### Settled in section 2 (the bio)
 
@@ -2449,6 +2449,12 @@ sweep) — `Pop 0,1,2,3`; *field reach is measured* (CLAUDE.md) — `reach.mjs 4
   bio layout 4's `tagsLabel` 4/6), so nothing was spoiled. A scratch puppeteer script launched
   right after a `data.js` edit died on "Execution context was destroyed" — the reload — and
   passed on a rerun.
+- **The LayoutPicker, walked** (section 1 had promised it to the sweep): card 1 opened as
+  `page-check.mjs` does, then per section *Back to page list*, the row and the picker's trigger
+  (the `browser-tool-choice` recipe). All eleven open: the header offers **4** items
+  (`HEADER_COUNT.pop`) — the fitted Hero checked, cards 2–4 Pop's placeholders — the footer 1,
+  and every other section its `layoutCount` (6, 7, 4, 7, 4, 8, 5, 6, 8 in page order, folding repeats
+  included); every item renders exactly one `--ac` root, and the editor logs no error.
 - **Item 9: `CONVENTIONS.md` took a *Pop (layout 1)* column** on A, B, C and D1, and three rows
   this pass leaned on three times or more that the file did not name, all in A: reading raw
   values where a variant binds nothing, reading a text style by name in the template's own mode,
