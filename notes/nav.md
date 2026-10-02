@@ -39,8 +39,8 @@ another `notes/` file.
   Grunge and Editorial, *Follow my sections* everywhere else, and in `EditPanel`'s fallback chain
   too, so the panel names what the canvas draws. A stored value always wins, so the seeded
   header is its frame's picture at all four layouts and moves with the layout until the artist
-  picks. **Pop's header reads
-  none of this**: `FlatNav` hardcodes Music / Shows / Book. **At 768 the links are
+  picks. **Pop is not in that list yet**: its layout-2 and layout-3 cards are placeholders
+  until their passes read their frames, so they follow the sections. **At 768 the links are
   fit-gated in layouts 2 and 3, and folded everywhere else** (JP-039, user call, 2026-09-21).
   The 768 masters of layouts 2 and 3 draw Music / Gigs / About in the capsule, in Retro and
   Lime alike (and Grunge's two, and Editorial's); those of layouts 1 and 4 hide all eight link nodes beside a burger. But `navLinks`
@@ -65,7 +65,7 @@ another `notes/` file.
   keeps the (wrapping) link row at 768 and collapses only at 390 (measured in JP-033's digest).
   The harness takes `&nav=<n>` to shorten the page and walk the flip.
 - **At desktop, layout 1's capsule gives the name away before the links** (JP-091, user call,
-  2026-10-01, reversing "below the floor it wraps"). Under Lime, Grunge and Editorial the links
+  2026-10-01, reversing "below the floor it wraps"). Under Lime, Grunge, Editorial and Pop the links
   take the room the wordmark and the pill leave, sized `100cqi / navEms` between their 12px floor
   (Grunge's row 16, faced to 12) and their cap. The name used to keep its size whatever it was,
   so a long one pushed the links below the floor and onto a second row: Editorial's nine Noto

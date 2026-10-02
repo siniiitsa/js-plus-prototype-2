@@ -167,8 +167,8 @@ Four things about it are load-bearing:
   over a page that has just been built and not yet touched.
 - **Names, not numbers.** `headerLayout()` in `data.js` promotes the names the compositions
   already carried in `EncoreSection`'s §10.2 comments — Hero, Feature spread, Inset Hero, Stacked,
-  Overlay card, Stage wide (Lime's, Grunge's and Editorial's family is the first four, and Pop's is
-  Centred / Split / Rule) — into every label,
+  Overlay card, Stage wide (Lime's, Grunge's, Editorial's and Pop's family is the first four)
+  — into every label,
   including the ordinary `LayoutPicker` dropdown. Every other category stays numbered: its
   layouts are variations of one idea, and the number is honest about the folding.
 
@@ -176,23 +176,22 @@ The `startTheme` prop skips the template picker, and skips the onboarding with i
 
 ## Seeded photography
 
-Retro, Lime, Grunge and Editorial — the four designed templates — open with their Figma mock photography
-already in place.
+All five templates open with their Figma mock photography already in place.
 The assets live in `src/builder/photos/` and are wired up by `src/builder/photos.js`, which is
 the only module that imports them.
 
-- **Every template but Pop.** `defaultImage()` / `defaultImages()` / `defaultTrackArt()` resolve
-  through `SEEDS` in `photos.js`, one row per seeded theme, and return `undefined` for
-  Pop, so it renders the initials placeholder exactly as before. Lime's row
+- **Every template.** `defaultImage()` / `defaultImages()` / `defaultTrackArt()` resolve
+  through `SEEDS` in `photos.js`, one row per theme (a theme with none would return `undefined`
+  and render the initials placeholder). Lime's row
   is a different shoot for the artist's own pictures (the hero, its portrait card, the bio and
   its layout-3 landscape shot, the calendar, the form avatar, the form's layout-2 stage photograph and the gallery spotlight) and
-  Retro's files for the rest; Grunge's row is a third shoot, black-and-white in the assets themselves (nothing desaturates an upload); Editorial's is a fourth, in colour (`editorial-*.jpg`), whose gallery strip is the five pictures of its shoot and two crops of its hero, since its frame's strip repeats one thumbnail and borrows Retro's. The photography is Retro's art direction, not the user's content, so switching template
+  Retro's files for the rest; Grunge's row is a third shoot, black-and-white in the assets themselves (nothing desaturates an upload); Editorial's is a fourth, in colour (`editorial-*.jpg`), whose gallery strip is the five pictures of its shoot and two crops of its hero, since its frame's strip repeats one thumbnail and borrows Retro's; and Pop's is a fifth, in colour (`pop-*.jpg`), whose strip seeds seven different pictures of its shoot where its frame borrows four of Retro's. The photography is Retro's art direction, not the user's content, so switching template
   drops it — with one exception: the media player's track art is materialised into `c.tracks` the
   moment the artist edits the list (it has to be, or renaming track one would delete five
   photographs), so from then on it is theirs and survives a template switch.
 - **Imports, never fetches.** §8.6 forbids a network request in the render path.
-  `vite-plugin-singlefile` forces `assetsInlineLimit = () => true`, so all forty-nine files are
-  base64-inlined and the committed `index.html` still opens from `file://`. It is ~8.7 MB.
+  `vite-plugin-singlefile` forces `assetsInlineLimit = () => true`, so all fifty-six files are
+  base64-inlined and the committed `index.html` still opens from `file://`. It is ~9.8 MB.
   (The plain `npm run build` path has no such override and would emit them to `dist/assets/`
   instead; only the standalone build feeds the committed demo.)
 - **`null` is the explicit-clear sentinel.** A fresh section carries no `image` key at all, and
@@ -548,8 +547,8 @@ That distinction is the whole design, and it buys two things:
   gaps close with it: `showBadge` is the header's own key and `vm.showBadge` already read this
   section's content, so the seal was hidable by nothing only because no field here named it; and
   `vm.footerCta` is deliberately **uncased** where the statement and the labels are cased,
-  because the pill has always drawn the uncased `cta1` and casing it would upper-case the
-  footer's pill on Pop. `FOOTER_CREDIT` stays a constant on purpose — it is the
+  because the pill has always drawn the uncased `cta1` and casing it would recase the artist's
+  own words on the templates that case. `FOOTER_CREDIT` stays a constant on purpose — it is the
   platform's byline, not the artist's. The footer keeps no local state: every link is an anchor
   whose href is `navHref()` or `extLink()`, so it needs none of the `useState` the sections above
   it take.
@@ -587,11 +586,10 @@ These are intentional limits, not oversights — see §12 for the full list. The
   is still on the page, else at the old index — *Start fresh* or not; only a category with no
   entry lands immediately before the footer, as §9.1 says. It lives only as long as the
   session, like everything else.
-- **Retro, Lime, Grunge and Editorial are designed; Pop is not.** Retro ships six
-  photographic header layouts. Pop is fully selectable and functional but
-  renders flat-colour sections and a three-layout flat header family — whose nav is still the
-  hardcoded `Music · Shows · Book` triple in `FlatNav`, ignoring the artist's sections and never
-  collapsing to a burger. Deliberate: the live navigation was scoped to the designed templates.
+- **Retro, Lime, Grunge and Editorial are designed at all four layouts, and Pop at layout 1.**
+  Retro ships six photographic header layouts and every other template the first four. Pop's
+  layouts 2–4 render the shared structure undressed until their passes; there is no flat
+  template, and no flat header family, any more.
   The §10.2 *layouts* are shared by all five templates; Retro's decorative treatment — paper
   grain, torn edges, checkerboard, hard offset shadows, rotated cards — is gated on `s.retro`,
   the same split as `headerFamily()`. **Lime is designed at all four of its layouts**: each of its
@@ -638,7 +636,18 @@ These are intentional limits, not oversights — see §12 for the full list. The
   all four layouts, widened to `s.limeTree` (Lime, Grunge and Editorial). Its header family is
   the same first four, all four fitted (its Stacked header is Lime's capsule in paper over an
   ink floor, with an arch avatar and a terracotta seal), so every card in the setup modal lays
-  out a whole Editorial page and the Editorial family is closed.
+  out a whole Editorial page and the Editorial family is closed. **Pop is designed at layout
+  1**: its page is the fifth variant of the same component sets — Lime's layout-1 tree in ten
+  sections, Retro's floating card stack in the media player — but drawn in raw colours rather
+  than a variable mode, so each section stands on the scheme whose ground it paints (a violet
+  repertoire, a blue calendar, lime testimonials and a pink footer on a white page), and every
+  change of ground is a 10px rule rather than a seam. Its stickers — a spinning smiley-globe
+  seal, a smiley sun, an asterisk, a lightning bolt and a heart, a starburst and rings, a
+  sparkle — lime scribbles and squiggle arrows, dot grids and leant cards are `s.pop` arms
+  inside Lime's layout-1 blocks, widened to `(s.limeTree || s.pop)`, and inside Retro's media
+  body. Titan One stands in for its demo display face. Its header family is the same first
+  four: Hero fitted (a glass capsule, a circle portrait, the seal), the other three placeholders
+  until Pop's layout-2, -3 and -4 passes, which dress its layouts 2–4 as well.
   One piece of Retro's treatment is placed
   rather than copied: the checker ribbon on header layout 1's floor is not in the Figma hero
   frame at all. It is lifted from the stacked header, which shares the same full-bleed
@@ -668,8 +677,8 @@ These are intentional limits, not oversights — see §12 for the full list. The
   of its layouts reads, so switching layouts never discards copy. A field the current layout
   ignores says "Not shown in this layout" under its label, off the field's `in` list and
   `fieldReach()` in `data.js` — or "Not shown in this template" where no layout of the active
-  template reads it (`fieldNowhere()`). Pop's header carries no such note: its family is not
-  designed, and `in` names Retro's, Lime's, Grunge's and Editorial's header layouts only.
+  template reads it (`fieldNowhere()`). The header's `in` names all five templates' layouts;
+  Pop's three placeholder cards are re-measured by its layout passes.
 - **Accessibility is scoped to the chrome.** Radix supplies focus management, keyboard
   navigation and ARIA there. The rendered preview is deliberately not accessible: it is a
   picture of a website, not a website. The seal badge honours `prefers-reduced-motion`.

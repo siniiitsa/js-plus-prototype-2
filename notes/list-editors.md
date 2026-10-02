@@ -93,7 +93,7 @@ another `notes/` file.
   delimited textarea, `FIELDS.form.promises` — the ticked list of the enquiry form's
   layouts 1 and 2. All ten follow
   `images`, not
-  `image`: an absent key means the seeded `SONGS` / `TRACKS` / `GIGS` / `TIERS` (`TIERS_3` at pricing layout 3, `TIERS_1` at Lime's, Grunge's and Editorial's layout 1 — `tiersSeed()`) / `FORM_FIELDS` (`FORM_FIELDS_CARD` at form layouts 2 and 3, `FORM_FIELDS_4` at 4) / `QUOTES` / `FOOTER_LINKS` / `slotSeed()` / `MAP_STATS_4` / `FORM_STEPS`, an emptied array
+  `image`: an absent key means the seeded `SONGS` / `TRACKS` / `GIGS` / `TIERS` (`TIERS_3` at pricing layout 3, `TIERS_1` at Lime's, Grunge's, Editorial's and Pop's layout 1 — `tiersSeed()`) / `FORM_FIELDS` (`FORM_FIELDS_CARD` at form layouts 2 and 3, `FORM_FIELDS_4` at 4) / `QUOTES` / `FOOTER_LINKS` / `slotSeed()` / `MAP_STATS_4` / `FORM_STEPS`, an emptied array
   means none, and there is no
   `null` sentinel. **A blank row is not a row** (JP-048): `blankRow(row, keys)` in `data.js`
   is true when every one of a row's keys trims to empty, and `sectionVm` drops such a package

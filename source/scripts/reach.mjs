@@ -23,8 +23,8 @@ const PROBES = [
   { name: 'who.location', cats: OTHERS, param: 'who', value: { location: Z } },
   { name: 'who.tags', cats: OTHERS, param: 'who', value: { tags: Z } },
   { name: 'who.showTags=hide', cats: OTHERS, param: 'who', value: { showTags: 'hide' } },
-  // The header's own `in` rows (the sweeps of Grunge and Editorial layout 1
-  // measured their rows with these; each layout pass re-measures its card).
+  // The header's own `in` rows (the sweeps of Grunge's, Editorial's and Pop's
+  // layout 1 measured their rows with these; each layout pass re-measures its card).
   { name: 'header.kicker', cats: ['header'], param: 'cj', value: { kicker: Z } },
   { name: 'header.subtitle', cats: ['header'], param: 'cj', value: { subtitle: Z } },
   { name: 'header.location', cats: ['header'], param: 'cj', value: { location: Z } },

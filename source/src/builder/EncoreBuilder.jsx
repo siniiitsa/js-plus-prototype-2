@@ -57,10 +57,10 @@ import {
   CTA_TARGETS, firstPresent, minimalNav, navModeDefault,
   catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldDefault, fieldReach, fieldNowhere, copyrightOf, formHeading3, extUrl, urlProblem, emailProblem, emailAddr, songTags, repChips,
   tierFeats, priceParts, blankRow, SONG_KEYS, repSetsOf, repSetLine, TRACK_KEYS, GIG_KEYS, gigWeekday, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
-  headerFamily, layoutCount, designCount, pageLayout, pageOrder, pageRows, COLUMN_SPLIT, bebasEms, antonEms, notoEms, notoBoldEms,
+  layoutCount, designCount, pageLayout, pageOrder, pageRows, COLUMN_SPLIT, bebasEms, antonEms, notoEms, notoBoldEms, titanEms,
   headerLayout, headerLayoutLabel, setupHeaderCount,
 } from './data.js'
-import { defaultImage, defaultImages, defaultTrackArt, RETRO_TEXTURE, TEMPLATE_STILLS } from './photos.js'
+import { defaultImage, defaultImages, defaultTrackArt, RETRO_TEXTURE } from './photos.js'
 
 /* ------------------------------------------------------------------ *
  * §5.5 Axis B — canvas device preview sizing
@@ -69,13 +69,13 @@ import { defaultImage, defaultImages, defaultTrackArt, RETRO_TEXTURE, TEMPLATE_S
 // `dev` names the row, so sectionVm can pick a theme's ramp for it: `canvasW` is
 // no key for that, since PublishedPage overwrites it with '100%' on a phone.
 const SIZES = {
-  mobile:  { dev: 'mobile',  h1: '42px', h1b: '50px',  h2: '29px', pad: '44px 10px', navGap: '36px', split: '1fr',         g3: '1fr',           g2: '1fr',       canvasW: '390px'  },
-  tablet:  { dev: 'tablet',  h1: '60px', h1b: '78px',  h2: '36px', pad: '56px 30px', navGap: '48px', split: '1fr 1fr',     g3: '1fr 1fr 1fr',   g2: '1fr 1fr',   canvasW: '768px'  },
-  desktop: { dev: 'desktop', h1: '86px', h1b: '118px', h2: '46px', pad: '80px 45.92px', navGap: '64px', split: '1.05fr 1fr',  g3: '1fr 1fr 1fr',   g2: '1fr 1fr',   canvasW: '1180px' },
+  mobile:  { dev: 'mobile',  h1: '42px', h2: '29px', pad: '44px 10px',    g3: '1fr',         g2: '1fr',     canvasW: '390px'  },
+  tablet:  { dev: 'tablet',  h1: '60px', h2: '36px', pad: '56px 30px',    g3: '1fr 1fr 1fr', g2: '1fr 1fr', canvasW: '768px'  },
+  desktop: { dev: 'desktop', h1: '86px', h2: '46px', pad: '80px 45.92px', g3: '1fr 1fr 1fr', g2: '1fr 1fr', canvasW: '1180px' },
 }
 
 // §10.2 — the Figma type ramp, layered on top of SIZES rather than replacing it:
-// the layout variants this pass does not touch still read h1/h1b/h2.
+// the layout variants this pass does not touch still read h1/h2.
 //
 // Figma's tablet (768) and mobile (390) frames are exactly canvasW, so those
 // numbers are used verbatim. Its desktop frame is 1440 against a 1180 canvas,
@@ -135,6 +135,13 @@ const THEME_RAMP = {
     mobile:  { dispXl: '64px',  dispLg: '48px',  dispMd: '36px', dispSm: '30px', title: '23px', list: '18px', labelLg: '14px', labelMd: '13px', labelSm: '12px', labelXs: '12px', bodyLg: '15px', bodyMd: '13px', bodySm: '12px', chip: '11px', eyebrow: '11px' },
     tablet:  { dispXl: '107px', dispLg: '73px',  dispMd: '45px', dispSm: '36px', title: '25px', list: '19px', labelLg: '16px', labelMd: '14px', labelSm: '13px', labelXs: '14px', bodyLg: '15px', bodyMd: '13px', bodySm: '12px', chip: '11px', eyebrow: '12px' },
     desktop: { dispXl: '147px', dispLg: '97px',  dispMd: '52px', dispSm: '37px', title: '26px', list: '20px', labelLg: '20px', labelMd: '16px', labelSm: '13px', labelXs: '16px', bodyLg: '13px', bodyMd: '11px', bodySm: '10px', chip: '10px', eyebrow: '12px' },
+  },
+  // Pop's mode: Grunge's ramp but for the four display sizes, title and list —
+  // the smallest display ramp of the five, a heavy wide face set small.
+  Pop: {
+    mobile:  { dispXl: '46px',  dispLg: '36px',  dispMd: '28px', dispSm: '24px', title: '20px', list: '15px', labelLg: '14px', labelMd: '13px', labelSm: '12px', labelXs: '12px', bodyLg: '15px', bodyMd: '13px', bodySm: '12px', chip: '11px', eyebrow: '11px' },
+    tablet:  { dispXl: '75px',  dispLg: '51px',  dispMd: '36px', dispSm: '29px', title: '22px', list: '16px', labelLg: '16px', labelMd: '14px', labelSm: '13px', labelXs: '14px', bodyLg: '15px', bodyMd: '13px', bodySm: '12px', chip: '11px', eyebrow: '12px' },
+    desktop: { dispXl: '103px', dispLg: '67px',  dispMd: '37px', dispSm: '30px', title: '23px', list: '16px', labelLg: '20px', labelMd: '16px', labelSm: '13px', labelXs: '16px', bodyLg: '13px', bodyMd: '11px', bodySm: '10px', chip: '10px', eyebrow: '12px' },
   },
 }
 
@@ -346,10 +353,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // Its distress mask, `{ image, size }` (`distressed` in EncoreSection);
     // undefined wherever the theme states none, so the helper is the identity.
     distress: T.distress,
-    // Figma's `font/ui`, the face `Label/XS` names. Only the designed templates
-    // carry one; Pop falls back to its body face.
+    // Figma's `font/ui`, the face `Label/XS` names. A theme with none falls
+    // back to its body face.
     ui: T.ui ?? T.body,
-    // Space Mono, the frames' typewriter face; only Retro names it so far.
+    // Space Mono, the frames' typewriter face; Retro and Pop name it.
     mono: T.mono ?? T.body,
     radius: T.radius, radiusSm: T.radiusSm, btnR: T.btnR, bw: T.bw,
     // `radius/chip`. Retro's token is 8, which its branches write as a literal.
@@ -363,6 +370,11 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     activeBg: T.sem?.activeBg, activeFg: T.sem?.activeFg,
     inactiveBg: T.sem?.inactiveBg, inactiveFg: T.sem?.inactiveFg, inactiveLine: T.sem?.inactiveLine,
     stroke1: T.sem?.stroke1, stroke2: T.sem?.stroke2, hl: T.sem?.hl,
+    // `sem/text/3`, the scheme's third ink. Pop's frames set their body copy
+    // and every second ink in it — black on white, lime, teal and yellow,
+    // white on the rest — where `tx` (`text/2`) is violet; no other theme's
+    // `sem` carries it, so it is undefined there (plans/pop/layout-1.md, trap 4).
+    text3: T.sem?.text3,
     // The page's own ground, whatever scheme the section is seated on: a
     // section whose frames stand a card on another scheme is seated on the
     // card's, and the root paints this round it.
@@ -409,14 +421,13 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
 
     // design selector
     v0: d === 0, v1: d === 1, v2: d === 2, v3: d === 3, v4: d === 4, v5: d === 5,
-    flatHeader: cat === 'header' && headerFamily(T.name) === 'flat',
 
     // §10.2 — the layouts are shared by every template, but the Figma page's
     // decorative treatment (grain, torn edges, checkerboard, hard offset
-    // shadows, rotated cards) is Retro's alone. Same split as headerFamily():
-    // Pop renders the identical structure, flat, and Lime, Grunge and
-    // Editorial each draw a decoration of their own behind `lime`, `grunge`
-    // and `editorial` below.
+    // shadows, rotated cards) is Retro's alone. Lime, Grunge, Editorial and
+    // Pop each draw a decoration of their own behind `lime`, `grunge`,
+    // `editorial` and `pop` below — Pop at layout 1 so far; its layouts 2–4
+    // render the shared structure undressed until their passes.
     retro: T.name === 'Retro',
     // Lime's four layout pages are Retro's components in its own variable
     // mode, so its decoration — arc seams, glows, the arch portrait — goes
@@ -425,10 +436,11 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // gated `(s.retro || s.lime)`, what Lime alone draws is `s.lime`.
     lime: T.name === 'Lime',
     // What every designed template's frame draws alike — the full-bleed hero,
-    // TagChips' sentence-case chips — is gated on this rather than on a list of
-    // names. A site only some of them share stays a named pair, widened per
-    // site from the frame.
-    designed: T.name === 'Retro' || T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial',
+    // the map raster — is gated on this rather than on a list of names. Every
+    // template is designed since Pop's layout-1 pass, so it is true for all
+    // five; TagChips' undesigned chip went with the flat family. A site only
+    // some of them share stays a named pair, widened per site from the frame.
+    designed: T.name === 'Retro' || T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial' || T.name === 'Pop',
     // Grunge's four layout pages are the same components in a third mode,
     // Static Youth, so its decoration — at layout 1 torn black seams round its
     // textured bands, grain and the red seal, at layouts 2, 3 and 4 rings where
@@ -441,6 +453,12 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // Sienna Vale, so what only Editorial draws goes behind this flag, the way
     // Lime's and Grunge's does.
     editorial: T.name === 'Editorial',
+    // Pop's layout-1 page is the fifth variant of the same component sets —
+    // Lime's tree for ten sections, Retro's media player for the eleventh — so
+    // each section session widens its own layout-1 block to `(s.limeTree ||
+    // s.pop)`, or Retro's media body to `(s.retro || s.pop)`, and puts what only
+    // Pop draws behind this flag (plans/pop/layout-1.md, decision 3).
+    pop: T.name === 'Pop',
     // The templates whose pages are Lime's component trees, so a Lime block
     // that Editorial's frame shares is gated on this rather than on a third
     // name at every site. Widened per site, from the frame, as each block was
@@ -612,8 +630,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   vm.badgeText = cv('badgeText', name)
   vm.navMode = cv('navMode', cat === 'header' ? navModeDefault(T.name, d) : 'sections')
   vm.align = cv('align', 'left')
-  // Retro, Lime, Grunge and Editorial seed their Figma pages' mock photography
-  // (photos.js); Pop resolves to undefined and keeps the initials placeholder. `undefined` already means "key
+  // Every template seeds its Figma pages' mock photography (photos.js). `undefined` already means "key
   // absent", which is what a fresh section carries, so Remove writes `null` as an
   // explicit-clear sentinel: absent → the mock photo, null → the placeholder,
   // string → an upload.
@@ -682,9 +699,15 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // (964:68718), at the same sizes. Its layout-4 capsule (964:73038) is
   // Grunge's layout-4 one: Label/MD links a fixed 23 apart at 20px type, so
   // there too the sum is the labels alone and NavBar's `links` takes the gaps.
+  // Pop's capsule (964:58624 "Frame 49") is Editorial's: Label/SM 16 links 23
+  // apart, so 23/16 of the row's size, in Titan One (`titanEms`, the face
+  // standing in for Chunko Bold Demo) at 0.98 of the token (`faced`), the way
+  // Grunge's Anton is at 0.75. Its other three cards are placeholders whose
+  // only capsule is NavBar's, which spaces them the same way.
   const navFace = T.name === 'Lime' ? bebasEms : T.name === 'Grunge' ? (x) => antonEms(x, 0) * 0.75
-    : T.name === 'Editorial' ? notoEms : null
-  const navGapEm = T.name === 'Editorial' ? (d >= 1 ? 0 : 23 / 16) : T.name === 'Grunge' && d >= 1 ? 0 : 23 / 24
+    : T.name === 'Editorial' ? notoEms : T.name === 'Pop' ? (x) => titanEms(x) * 0.98 : null
+  const navGapEm = T.name === 'Editorial' ? (d >= 1 ? 0 : 23 / 16) : T.name === 'Pop' ? 23 / 16
+    : T.name === 'Grunge' && d >= 1 ? 0 : 23 / 24
   vm.navEms = navFace
     ? Math.max(1, +((vm.navLinks.reduce((w, l) => w + navFace(l.label), 0)
       + Math.max(0, vm.navLinks.length - 1) * navGapEm) * 1.01).toFixed(3))
@@ -1016,8 +1039,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // exactly the page without it — the cards keep their hues, the chip row its
   // chips, and layout 3's FEATURED seat, with nothing ticked, lands on the last
   // real package. An absent key is tiersSeed()'s: TIERS, at layout 3 TIERS_3,
-  // the frames' Duo / Trio / Band chips (JP-070), and at Lime's, Grunge's and
-  // Editorial's layout 1 TIERS_1, their frames' three occasions (JP-089) —
+  // the frames' Duo / Trio / Band chips (JP-070), and at Lime's, Grunge's,
+  // Editorial's and Pop's layout 1 TIERS_1, their frames' three occasions (JP-089) —
   // FORM_FIELDS_4's gate; tiersVal calls the same function.
   const tierList = (Array.isArray(c.tiers) ? c.tiers : tiersSeed(T.name, d)).filter((t) => !blankRow(t, TIER_KEYS))
   vm.tiers = tierList.map((t, i) => {
@@ -1072,9 +1095,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // rule, or the one card would recolour on every toggle — and it opens on
   // whichever hue package 0 happened to draw. T.tags[1] is Retro's burnt orange,
   // the frame's own card, and it is a *tag* hue rather than the accent so that
-  // the Book pill standing on it still reads on the four undesigned templates,
-  // whose BookPill branch paints `ac` on `acFg` and honours neither `bg` nor
-  // `fg`. It is also what the card falls back to with no packages at all, so
+  // the Book pill standing on it read on the undesigned templates, whose
+  // BookPill branch painted `ac` on `acFg` (it went with the flat family, Pop's
+  // layout-1 sweep). It is also what the card falls back to with no packages at all, so
   // the empty state and the filled one are the same composition.
   vm.tierHero = tierHues(T.tags[1 % T.tags.length])
   // §10.2 layout 3's rows are one hue doing two jobs: it outlines the plain
@@ -1141,9 +1164,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // the count instead.
   if (d === 2 && c.heading === undefined && HEADING_3[cat]) vm.title = cased(HEADING_3[cat])
   if (d === 3 && c.heading === undefined && HEADING_4[cat]) vm.title = cased(HEADING_4[cat])
-  // Lime's, Grunge's and Editorial's layout-1 calendar head reads "Book Now"
-  // (JP-089); Retro's layout 1 prints no head. EditPanel mirrors it.
-  if (d === 0 && cat === 'calendar' && c.heading === undefined && vm.limeTree) vm.title = cased(CAL_HEADING_1)
+  // Lime's, Grunge's, Editorial's and Pop's layout-1 calendar head reads
+  // "Book Now" (JP-089; Pop's frame 964:58631 too, named beside the group as
+  // tiersSeed() names it); Retro's layout 1 prints no head. EditPanel mirrors it.
+  if (d === 0 && cat === 'calendar' && c.heading === undefined && (vm.limeTree || vm.pop)) vm.title = cased(CAL_HEADING_1)
   // The form's layout-3 head is the frame's "Book Kai for / your event" off
   // the artist's own name (JP-070), copyrightOf()'s rule; EditPanel mirrors it.
   if (d === 2 && cat === 'form' && c.heading === undefined) vm.title = cased(formHeading3(artistName))
@@ -1156,10 +1180,13 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // ems. Editorial's layout-3 form head is Lime's again, Display/LG Regular,
   // so at design 2 it is Noto's 540 ems — the Bold table would shrink it 4.5%
   // too far — and so are its layout-4 bio and gallery heads at design 3,
-  // Display/LG / XL Regular in a 572.9 measure and the 454 head column. Undefined
-  // off those two templates.
-  vm.titleWordEms = T.name === 'Lime' || T.name === 'Editorial'
-    ? +Math.max(0, ...vm.title.split(/\s+/).map(T.name === 'Lime' ? bebasEms : d >= 2 ? notoEms : notoBoldEms)).toFixed(3)
+  // Display/LG / XL Regular in a 572.9 measure and the 454 head column. Pop's
+  // layout-1 form statement fits its frame's 313.43 box the same way, in
+  // Titan's ems × `faceK` (`navFace`'s table); no other Pop site reads it.
+  // Undefined off those three templates.
+  vm.titleWordEms = T.name === 'Lime' || T.name === 'Editorial' || T.name === 'Pop'
+    ? +Math.max(0, ...vm.title.split(/\s+/).map(T.name === 'Lime' ? bebasEms
+      : T.name === 'Pop' ? (x) => titanEms(x) * 0.98 : d >= 2 ? notoEms : notoBoldEms)).toFixed(3)
     : undefined
   vm.testiStars = cv('stars', TESTI_STARS)
   // Layout 3's stat card prints it with a literal "/5" beside it, and an
@@ -1360,8 +1387,12 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
       // one — so the two halves are resolved here rather than split out of the
       // label in EncoreSection. A date format, not artist copy, so the name is
       // upper-cased here rather than through cased() (vm.calSlots[].mark's
-      // rule).
-      return { label: cased(monthLabel(y, mo)), name: MONTHS[mo].toUpperCase(), year: String(y), cells }
+      // rule). `ems` is the label's width in the display face's ems
+      // (`navFace`, undefined where a template has no advance table): Pop's
+      // layout-1 month is fitted to the room between its two discs, since
+      // Titan sets SEPTEMBER 2025 265 wide in the 390 row's 216.
+      const label = cased(monthLabel(y, mo))
+      return { label, ems: navFace ? +navFace(label).toFixed(3) : undefined, name: MONTHS[mo].toUpperCase(), year: String(y), cells }
     })
     vm.calDays = CAL_DAYS
     // The day the calendar is cued to, which is what the foot prints and the
@@ -1378,8 +1409,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // again when emptied, since every layout prints it where the pick would
     // go and an empty foot reads as broken. Cased, as the slot line is.
     vm.calPrompt = cased(String(cv('prompt', CAL_PROMPT)).trim() || CAL_PROMPT)
-    // Retro's and Pop's layout-1 pill (the `s.limeTree` foot has none, JP-088:
-    // its line links). The same field is layout 4's Send Enquiry (JP-082),
+    // Retro's layout-1 pill (the `s.limeTree` foot, which Pop's widens, has
+    // none, JP-088: its line links). The same field is layout 4's Send Enquiry (JP-082),
     // seeded CAL_SEND_4 there: `vm.calWizard.send`, below.
     vm.calCta = cased(cv('cta', 'Check a date'))
     // Layout 2's pill, which its frame labels differently from the other two
@@ -1761,9 +1792,11 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
       // row, since the quote is not `vm.title`. Editorial's layout-1 card sets
       // it as a hand-scaled Bold whose frame breaks nothing inside a word only
       // because the demo face is narrower; the card fits the size to this
-      // word instead. Undefined off Editorial.
-      wordEms: T.name === 'Editorial'
-        ? +Math.max(0, ...quote.split(/\s+/).map(notoBoldEms)).toFixed(3)
+      // word instead. Pop's layout-1 card is the same case in Titan's ems ×
+      // `faceK` (`navFace`'s table): its 390 frame breaks PROFESSIO / NAL inside
+      // the word. Undefined off those two.
+      wordEms: T.name === 'Editorial' || T.name === 'Pop'
+        ? +Math.max(0, ...quote.split(/\s+/).map(T.name === 'Pop' ? (x) => titanEms(x) * 0.98 : notoBoldEms)).toFixed(3)
         : undefined,
       who,
       role,
@@ -1926,10 +1959,12 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   vm.footerStatement = cased(cv('statement', FOOTER_STATEMENT))
   // The statement's widest word in Noto Bold ems — `wordEms`' rule, for a
   // third hand-scaled Bold that is not `vm.title`: Editorial's footer fits the
-  // frame's 57.84 to it rather than breaking inside a word. Editorial only;
-  // no other template's footer reads it.
-  vm.footerWordEms = T.name === 'Editorial'
-    ? +Math.max(0, ...vm.footerStatement.split(/\s+/).map(notoBoldEms)).toFixed(3)
+  // frame's 57.84 to it rather than breaking inside a word. Pop's footer is
+  // the same case in Titan's ems × `faceK` (`navFace`'s table): the seed sets
+  // its hand-scaled 40.38 in every column, so this guards a longer word.
+  // Undefined off those two.
+  vm.footerWordEms = T.name === 'Editorial' || T.name === 'Pop'
+    ? +Math.max(0, ...vm.footerStatement.split(/\s+/).map(T.name === 'Pop' ? (x) => titanEms(x) * 0.98 : notoBoldEms)).toFixed(3)
     : undefined
   // The sitemap is the artist's now, so a row carries where it goes as well as
   // what it says — and it goes to one of two kinds of place, which is BookPill's
@@ -4049,7 +4084,7 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
   // its tags as the comma string and its features as the newline one, which is
   // exactly what TiersField edits and what sectionVm splits — tiersSeed(), the
   // function sectionVm calls (TIERS_3 at layout 3, JP-070; TIERS_1 at Lime's,
-  // Grunge's and Editorial's layout 1, JP-089), so the two resolve one list.
+  // Grunge's, Editorial's and Pop's layout 1, JP-089), so the two resolve one list.
   const tiersVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : tiersSeed(themeName, design))
   // And for the enquiry form's boxes, whose seed needs no dressing either:
   // FORM_FIELDS is written as the { label, placeholder, kind } row that
@@ -4138,7 +4173,7 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                     : f.k === 'heading' && sec.arch % (designCount(sec.cat, themeName) || 1) === 3
                       && HEADING_4[sec.cat] ? HEADING_4[sec.cat]
                     : f.k === 'heading' && sec.cat === 'calendar' && design === 0
-                      && limeTreeTheme(themeName) ? CAL_HEADING_1
+                      && (limeTreeTheme(themeName) || themeName === 'Pop') ? CAL_HEADING_1
                     : f.k === 'heading' && sec.cat === 'repertoire' ? `${songsVal('songs').filter((t) => !blankRow(t, SONG_KEYS)).length} Songs`
                     : f.k === 'heading' && sec.cat === 'testimonials'
                       && sec.arch % (designCount(sec.cat, themeName) || 1) === 1 ? TESTI_HEADING_2
@@ -4503,19 +4538,6 @@ const SPOT_ASPECT = `${parseInt(SIZES.desktop.canvasW, 10)} / ${SIZES.desktop.he
 const SPOT_MIN_H = SIZES.desktop.heroH
 
 function TemplatePreview({ themeIdx, artistName }) {
-  // Pop, the one flat template left, shows its Figma header as a still
-  // (photos.js). It is SPOT_ASPECT already, so `cover` crops nothing — not
-  // `contain`.
-  const { name } = THEMES[themeIdx]
-  const still = TEMPLATE_STILLS[name]
-  if (still) {
-    return (
-      <img
-        src={still} alt={`${name} template`}
-        style={{ display: 'block', width: '100%', height: '100%', objectFit: 'cover' }}
-      />
-    )
-  }
   return (
     <ScaledPreview
       height="100%" center

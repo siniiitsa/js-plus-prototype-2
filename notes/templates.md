@@ -1,12 +1,14 @@
-# The designed templates: Retro, Lime, Grunge and Editorial — working notes
+# The designed templates: Retro, Lime, Grunge, Editorial and Pop — working notes
 
 Moved word for word out of `CLAUDE.md`'s *Intentional limits — not bugs* on 2026-09-30, so it
 loads only when a session works on it. "Above" and "below" may point into `CLAUDE.md` or
 another `notes/` file.
 
-- **Retro, Lime, Grunge and Editorial are designed; Pop is not.** Pop is fully
-  functional but renders flat. Retro's decorative language is gated on `s.retro`, and
-  it gets six photographic header layouts where Pop gets three. **Lime is designed at all four of
+- **Retro, Lime, Grunge and Editorial are designed at all four layouts, and Pop at layout 1**;
+  Pop's layouts 2–4 render the shared structure undressed until their passes. There is no flat
+  template and no flat header family any more (`FlatHeader` and its three layouts went in Pop's
+  layout-1 sweep). Retro's decorative language is gated on `s.retro`, and it gets six
+  photographic header layouts where every other template gets four. **Lime is designed at all four of
   its layouts**: each of its Figma pages is the same components as Retro's page of that number
   in another variable mode, so its decoration (arc seams at layouts 1 and 4, glows at every
   layout, the arch portrait) lives in **`s.lime`** blocks inside the shared branches, never in
@@ -242,13 +244,81 @@ another `notes/` file.
   `s.onScheme[4]`, a terracotta disc with ink marks) — so every card in the setup modal lays out
   a whole Editorial page and the family is closed (`plans/editorial/`). The footer is layout 1's
   on every page, on ink but for layout 3's, which stands on taupe.
+  **Pop is designed at layout 1** (`plans/pop/layout-1.md`; the Figma mode is called *Pop*, and
+  its frames' mock artist is Kai Mercer). Its page is the fifth variant of the same eleven
+  component sets — Lime's layout-1 tree in ten sections and **Retro's** *Floating cards stack*
+  in the media player — so it has no blocks of its own either. Each of those ten Lime blocks is
+  widened to **`(s.limeTree || s.pop)`** with Pop's deltas behind **`s.pop`** (a `const pop`
+  and arms, or a fourth arm at the head of the block's `G`), and Retro's own `v0` media body is
+  dressed behind `pop` — Lime's media block stays `s.limeTree`, so Pop falls through it to
+  Retro's. Layouts 2–4 keep `s.limeTree` untouched; the group flag widens to Pop only when
+  Pop's family is closed. The shared helpers a fitted Pop site calls are widened the same way
+  at every layout — `labelStyle`'s tracking, `LogoMark`'s globe, `BookPill`'s Lime branch,
+  `TagChips`' padding, `NavBar` and `HeaderV0`'s `lime`, `Pager`'s Lime branch — so Pop's
+  undressed layouts 2–4 already take them. **The frames are not a variable mode outside the
+  header**: ten of the eleven variants carry raw hexes and sizes, and the desktop page and
+  several narrow masters are in Lime's mode, so a styled node renders Bebas Neue at Lime's
+  size there — a mode leak, drawn in Pop's own ramp. Every other raw hex is followed as a named
+  literal (the `POP_*` tables), Lime's and Retro's leaked hexes included; two leaks that read as
+  defects are overridden (the gallery's invisible eyebrow, its counter chip) and three leaked
+  faces are set in Pop's own (Anton pager numerals in the label face, Roboto Mono clocks in
+  `s.body`, the 390 pill's Soulway in the display face). Its display and label face is **Titan
+  One standing in for Chunko Bold Demo** (a demo licence; user call, 2026-10-02) at **`faceK`
+  0.98**, so `faced()` / `facedLh()` are not the identity under Pop, layouts 2–4 included;
+  Titan has one weight, so a Pop display string never takes a `fontWeight`. Its nav advance
+  table is `titanEms()` (`TITAN_EM`, read off the DOM) × 0.98, and Titan sets its glyphs
+  0.11–0.14em lower than Chunko in the same line box, so each display head is lifted per site
+  (`top: -0.14em` at lh 0.75–0.89, 0.13 at ~0.83, 0.12 at 0.906, 0.11 on the calendar's month).
+  Casing is `'title'`, each display or label string uppercased in its own arm. **Its schemes
+  are inferred, not bound** (the per-section scheme rule above): `THEMES[4].schemes` carries 2,
+  3, 4, 6 and 7, `SCHEMES_OF.Pop[0]` seats the repertoire on 6 (violet), the calendar on 4
+  (blue), the testimonials on 2 (lime) and the footer on 3 (pink) — every page, since it has no
+  page row — and the nested cards read `s.onScheme[n]`: the header's capsule `[3]`, the media's
+  card and player `[3]` / `[6]` (its track cards on `[1]`'s seven tags), the gallery's panel
+  `[2]`, the map's tile and gig panel `[6]` / `[7]`, pricing's three cards `[6]` / `[2]` / `[3]`,
+  the form's shell and half `[6]` / `[3]`, the testimonials' card `[6]`. Two of Scheme 1's
+  facts turn the twins' round: **`text3` is the frames' second ink** (black on white, white on
+  the dark grounds), a `sem` and vm key of Pop's alone, where `s.tx` is violet; and the active
+  pair is **black** under white, so `pillBg` is black and a Pop arm never takes it for the
+  accent. Its decoration: **no seams** — where a ground changes it is a **10px inside rule** on
+  one side of a section's root (the header's foot lime, the repertoire's top lime, pricing's
+  blue, the calendar's pink, the testimonials' violet); **stickers** — the smiley-globe seal
+  (`SealBadge`'s Pop arm, spinning, in the header, the form and the footer), the smiley sun
+  (`PopSun`, the bio and the footer), the gallery's asterisk, the repertoire's lightning and
+  heart, pricing's starburst and rings, the calendar's sparkle; **scribbles** (the header, the
+  bio's stadium stroke, the map, the form) and **squiggle arrows** (the media, the calendar),
+  each transcribed off its node's `fillGeometry`; **dot grids** (`PopDots`: the bio, the media
+  card, the calendar); **leant cards** (the media's ±1°, pricing's three at Retro's `TILT`
+  angles, the testimonials' backs as turned insets off the card); real drop shadows where the
+  node's `effects` carry them (the bio photograph, the testimonials, the gallery's card); and
+  no texture. Pricing's root clips sideways and the footer's both ways (`popClip`,
+  `popFootClip`), so the leant deck and the 390 corner sun never scroll the page. **Four strings
+  are fitted to their room** in `titanEms` × 0.98, where Titan sets wider than Chunko: the three
+  hand-scaled statements by their widest word — the form's (`vm.titleWordEms`' Pop arm), the
+  testimonials' quote (`vm.quotes[].wordEms`), the footer's (`vm.footerWordEms`) — and the
+  calendar's 390 month by its whole label (`vm.calMonths[].ems`). **Its live states
+  are redrawn where its frames draw none** (Lime's rule): the map's lit row and pin on Scheme 7's
+  own active pair, the form's refused box a 2px white ring on the pink half; and where they draw
+  one it is followed — the repertoire's pager marks its page pink, the calendar's booked day is
+  the frame's .38 with no strike, and its foot is JP-088's line-as-link, no pill. The media
+  keeps Retro's Soundcloud seat. Its photographs are its own (`SEEDS.Pop`, eight `pop-*.jpg`;
+  the gallery strip seeds seven distinct pictures where the frame borrows Retro's), and
+  `Photo`'s empty backdrop is `s.tx`, the violet the hero's frame stands under its
+  photograph. Its header family is `'pop'`: four cards, **Hero fitted** — `HeaderV0`'s Lime
+  block widened: a glass capsule on Scheme 3 (`#FFFFFF` at 12% under a blur drawn on a layer of
+  its own, never on the bar, so NavMenu's fixed panel is not trapped in it), a circle portrait
+  in a pink ring, the location and kicker at Label/SM, a one-tone white title fitted to its
+  column, a lime scribble under it, the smiley-globe seal and the 10px foot rule — and Feature
+  spread, Inset Hero and Stacked **placeholders** on Retro's paths, rendering and publishing
+  until their layout passes (`plans/pop/layout-1.md`, open question 8). The footer is layout
+  1's on every page, on pink.
 - **The bio's layout-1 reference line is the artist's** (JP-090, user call, 2026-09-30; the bio
   has no notes file of its own). `FIELDS.bio.refLabel`, *Reference line*, `in: [0]`, is seeded
   with the whole `[ 001 ] Structure · Bio_01` that every template's frame types under the
   heading (Editorial's `964:58613`, Retro's `964:58577`), brackets and index included, since the
   `001` is an index and not a count. `vm.bioRef`, uncased: all three bodies upper-case it in CSS
-  (the `s.limeTree` block's eyebrow for Grunge and Editorial, Body/SM for Lime, and Retro's and
-  Pop's flank `label()`). Emptied, an empty `<span>` keeps the desktop heading column's three
+  (the widened block's eyebrow for Grunge and Editorial and its Space Mono line for Pop, Body/SM
+  for Lime, and Retro's flank `label()`). Emptied, an empty `<span>` keeps the desktop heading column's three
   rows, so the heading does not slide to the foot of its `space-between` column (it moves by
   half the line). The narrow columns are gapped instead, so there the seat would be a dead band
   of the gap and the line simply goes (Retro's 768 is ungapped and keeps it). A typed line wraps,

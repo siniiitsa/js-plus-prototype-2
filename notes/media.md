@@ -81,7 +81,8 @@ another `notes/` file.
   both bodies; the dot is the markup's). It wraps inside the card at its own inset from each edge,
   since the card clips. `countLabel` and `totalLabel` are the counter over the track list,
   "5 Featured / 5 Max" at layouts 2 and 3, and `countLabel` is layout 1's "5 / 5 Featured" as
-  well (`in: [0, 1, 2]` and `[1, 2]`, measured). The counts stay derived: "Max" is the track count
+  well (`in: [0, 1, 2]` and `[1, 2]`, measured) — on every template but Pop, whose layout-1 frame
+  draws no counter, so its row is `{ Pop: [1, 2], '*': [0, 1, 2] }` (measured, 2026-10-02). The counts stay derived: "Max" is the track count
   again, not `TracksField`'s cap. An emptied word takes its count with it, and the ` / ` goes
   unless both words stand; with both emptied there is no counter, and the row stays, with its
   padding and Editorial's dash. `trackCount()` composes it in the four text nodes the literal
