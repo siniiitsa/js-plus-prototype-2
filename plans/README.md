@@ -42,7 +42,10 @@ plans/
     layout-2.md
     layout-3.md
     layout-4.md
-  pop/         ← not started
+    qa-fixes.md
+    layout-2-qa-fixes.md
+  pop/
+    layout-1.md
 ```
 
 A pass that fits layout N of every section is `layout-N.md`. A pass of some other kind gets a
@@ -139,16 +142,18 @@ Lime layout 4 and Grunge layout 4 **and its entries in both layout-4 QA batches*
 JP-054 and JP-038, Grunge's JP-076 … JP-084, which moved the blocks after those bullets), Retro
 layout 4's *Conventions* and 2026-09-15 Addendum, and Lime layout 4's *Per-session procedure*.
 
-## Other templates
+## Pop
 
-Pop works, but it renders flat (see `notes/templates.md`, *Retro, Lime, Grunge and Editorial are designed*). When it gets
-its first plan:
+| Pass | Plan | Branch | Fitted |
+|---|---|---|---|
+| Layout 1 | [`pop/layout-1.md`](./pop/layout-1.md) | `pop-layout-1`, forked from `main` (planned, not started) | Retro, Lime, Grunge and Editorial layout 1's eleven component sets in their fifth variant, `Theme=Pop`, in the Figma mode **Pop**: a token foundation (session 0, which opens on four user calls — the display face, Chunko Bold Demo, is a demo; the casing; whether to seat sections on schemes or write literals; and the raw leaks — after a census of every section's raw hexes), then Pop decoration inside Lime's layout-1 blocks, widened per site to `(s.limeTree \|\| s.pop)` with the deltas behind `s.pop`, the media player dressed inside **Retro's** `s.v0` body instead, the header's four modal cards, plus the end-of-pass sweep, which deletes the then-empty `'flat'` header family. Written as deltas against Editorial layout 1. The planning walk found the page's ten non-header variants **unbound** (raw hexes and sizes, the desktop page frame and nine narrow masters still in Lime's mode, so three heads render Bebas Neue at Lime's sizes), ten sections on Lime's tree and the media player on **Retro's**, a white page with violet, blue, lime and pink bands parted by 10px coloured rules, a decorative language of stickers (a smiley-globe seal, a smiley sun, a heart, an asterisk, a starburst, a sparkle), scribbles, squiggle arrows and dot grids, nine distinct schemes, and Pop frames on all four layout pages, so card 1 is fitted and cards 2–4 are placeholders. Inherits `CONVENTIONS.md` A, B, C and D1 (D1 for the ten Lime-tree sections). |
 
-- Start its folder here, and add a table to this file.
-- Say which groups of [`CONVENTIONS.md`](./CONVENTIONS.md) it inherits — the file Grunge's sweep
-  extracted, from the bullets a third template actually leaned on. Reading Figma, and measuring and
-  proving, always carry over; a template's decorative language (`s.retro`'s grain and torn edges,
-  Lime's arcs, Grunge's tears, Editorial's dashed rules and tape) never does. Keep a running *Inherited and used* list as Grunge's plan
-  did, and fold what it confirms back into that file in the sweep.
+**Reading order in a Pop session:** `CLAUDE.md`, then the plan, then
+[`CONVENTIONS.md`](./CONVENTIONS.md) groups A, B, C and D1 and the bullets they point at, the
+section's *Settled* bullets in Lime, Grunge **and** Editorial layout 1 (the block it widens, and
+the two widenings already done — Editorial's the one on a light page), and Lime layout 1's
+*Per-session procedure*. The media session reads Retro's `v0` fit comments in `Media` and Lime
+layout 1's *Settled in section 3* instead of the three *Settled* bullets, since it dresses
+Retro's body.
 
 `SPEC.md`, which the plans number against, lives in git history: `git show 8fa8ff4:SPEC.md`.
