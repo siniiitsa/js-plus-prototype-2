@@ -343,7 +343,8 @@ const POP_SCRIBBLE_D =
 // The lime of Pop's stickers outside the header, whose scribble binds
 // `sem/tag/1/bg`: every unbound scribble and squiggle arrow is a raw #BCD631
 // (plans/pop/layout-1.md, *Settled in session 0*, Pop's own tints), a duller
-// lime than the palette's. No mode or scheme holds it.
+// lime than the palette's — but the media's arrow, which is the palette's
+// #C6F200 (section 3). No mode or scheme holds it.
 const POP_STICKER_LIME = '#BCD631'
 
 // Pop's media squiggle arrow (964:58626's "Vector", 209.11 × 126.41 before its

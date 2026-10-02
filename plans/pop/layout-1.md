@@ -166,7 +166,7 @@ Session 0 first, then eleven sections in page order. Each row's three masters ar
 | 0 | *foundation* | `964:58623` *(page)* | Pop → `THEMES[4]`, face, casing, ramp, schemes, flags, photos | — | `986:52418` | — | `986:52431` | — | — | — | done `3267b36` · `d57d896` |
 | 1 | `header` | `964:58624` | Headers — hero | 1440 × 750 | `986:52419` | 768 × 1024 | `986:52432` | 390 × 844 | photo over `#6B2CFF` | Lime `964:58588` | done `092b930` |
 | 2 | `bio` | `964:58625` | Bios — A · Flanked portrait | 1440 × 769 | `986:52420` | 768 × 1153.8 | `986:52433` | 390 × 769.8 | `#FFFFFF` | Lime `964:58589` | done `9083be9` |
-| 3 | `media` | `964:58626` | Media Player — D · Floating cards stack | 1440 × 1055 | `986:52422` *(in `986:52421`)* | 768 × 1499 | `986:52434` | 390 × 1167 | `#FFFFFF`, a `#FF2DA0` card | **Retro `964:58578`** | |
+| 3 | `media` | `964:58626` | Media Player — D · Floating cards stack | 1440 × 1055 | `986:52422` *(in `986:52421`)* | 768 × 1499 | `986:52434` | 390 × 1167 | `#FFFFFF`, a `#FF2DA0` card | **Retro `964:58578`** | done `f1861bd` |
 | 4 | `gallery` | `964:58627` | Gallery Sections — Component 1 | 1440 × 788 | `986:52423` | 768 × 1153 | `989:22531` | 390 × 817 | `#FFFFFF`, a `#C6F200` panel | Lime `964:58591` | |
 | 5 | `repertoire` | `964:58628` | Repertoire — A · Two-column dense | 1440 × 1087 | `986:52424` | 768 × 945 | `986:52436` | 390 × 961 | `#6B2CFF` | Lime `964:58592` | |
 | 6 | `map` | `964:58629` | Events Map — D · Compact tile | 1440 × 1192 | `986:52425` | 768 × 1266 | `986:52437` | 390 × 1095.2 | `#FFFFFF` | Lime `964:58593` | |
@@ -1196,6 +1196,114 @@ counters and ink traps: its corners are soft. Rubik 900 is the squarer drawing, 
   `page-check.mjs Pop 0` publishes with no console error and no sideways scroll at 390; the bio's
   published 1440 band matches the frame.
 
+### Settled in section 3 (the media player)
+
+- **Retro's tree, confirmed, so Retro's body is dressed**: `964:58626` is `964:58578` node for
+  node one level down (the 1440 card ys are Retro's to the hundredth), nested in `Frame 208`.
+  Inside Retro's `if (s.v0)`, `const pop = s.pop` names the deltas and `s.retro || pop` the shared
+  arms (the card, cover, player and disc radii); Lime's `if (s.v0 && s.limeTree)` block is
+  untouched and Pop falls through it. **Only Retro and Pop reach this body now**, so its
+  non-Retro arms (`s.paperFg`, `s.paper`, `s.btnR`, the plain `BookPill`) have no reader left —
+  the sweep folds them with the flat family (item 3).
+- **Nothing binds, and almost nothing is styled**: every string at 1440 and 768 is a raw size
+  (the head's hand-scaled 82.14, the track titles' 22, the player title's 20), so trap 2 does not
+  bite there. The 390 master is in Pop's mode and styles two nodes, the head (`Display/LG`, 36 at
+  89%) and the track titles (`Label/LG`, 14 at 110%), which resolve in Pop's ramp — `s.dispLg` and
+  `s.labelLg`. **The 768 master carries the desktop's 82.14 head unscaled** (507 × 137 in a 648
+  column); it shows and reads as designed, so it is followed.
+- **The deltas, off the node walker on all three masters:**
+  - the card (`Frame 208`) is Scheme 3's pink `bg`, radius 50 (41 on the canvas), padded 60 /
+    60 30 / 30 10 round three rows 20 apart. It fills the content box exactly, since `padX` is
+    the frames' own 56 / 30 / 10, and it is a stacking context (`zIndex: 0`) for the dot grid;
+  - the eyebrow is Space Mono 11 tracked 1.5 (`s.mono`) at its auto line height, Scheme 3's
+    `text3` white; the head is `S3.ac` lime, uppercase, Editorial's positional two lines (the
+    frame types the break after "worth" at all three widths), at `68.45 / 82.14` (`Display/LG`'s
+    0.89 at 390);
+  - the five cards are 647 × 92 (585.16 at 768, 288 at 390) in a 710 / 648 / 350 column, so the
+    alternate indent is the slack, 63 / 62.84 / 62; their centres stand 81.69 apart on average at
+    every width (the frame's hand placement runs 80.64 to 83), so they overlap by 10.31; the column
+    pads 11.36 above the first and 6.89 / 5.89 under the last, the leant cards' room, so it is the
+    frame's 437 / 436. The lean is Retro's sign (the first card Figma −1, CSS +1) at **±1.11 at
+    768**, written out since `tilt()` is Retro's;
+  - every card is filled — Scheme 1's `tag1`, `tag6`, `tag3`, `tag4`, `tag7` (lime, red, blue,
+    teal, yellow) — **read off `s.onScheme[1].chips`**, all seven of the scheme's tags: `vm.chips`
+    keeps `TAGS`' six seats, so the yellow is not on it. Each card is inked in the frame's raw hexes
+    (`POP_TRACK_SEATS`, decision 5): Retro's `#1B1714` on the lime and the yellow, Retro's
+    `#FBF6EA` on the red, white on the blue, `#161616` / `#131313` on the teal. The play disc is
+    `#1B1B1B` on the light cards and white on the two dark ones, its ▶ the card's hue. No border,
+    no thrown block, no grain, no cover border; the number Space Mono 18; the title on its auto 26
+    line (`26 / 22`); the sub at full opacity on its auto line;
+  - the player (`Left`) is **Scheme 6's** violet at 540 / 540 / 411, top-aligned (the 23 the
+    content leaves at 1440 and 768 stands under the clocks), clipped to radius 40, its gaps 18 and
+    4. The `<` is text (Inter 20, white), as the frame sets it. The title is Titan at 20 on 1.2,
+    uppercase, `S6.text3` white; the artist and both clocks the frame's raw `#B3B3B3` at the auto
+    line height; the transport the frame's "Group 2" glyph — `LimeSkip`, Lime's transcription of
+    the same vectors — either side of a 48 white disc with a `#1A1A1A` ▶ (`POP_PLAYER`); the
+    playhead `S6.tx` pink over the frame's 42% pink track. The disc's well is the frame's
+    `#2A2A2A`, so an art-less track is a well with white initials;
+  - **the clocks are Roboto Mono in the frame, Retro's too** (`964:58578`'s are Roboto Mono 10),
+    and Retro's code sets its own in `s.body` at 10px unscaled: decision 5's "Retro's own clock
+    face", followed — Inter 10 and Retro's 10 gap at every width;
+  - the Soundcloud pill is `BookPill`'s branch box for box (5/5/5/21, the 46 × 44 disc, 189 × 54,
+    `full` at 390), in Scheme 3's lime `activeBg`, its label a hand-scaled 15.77 and it and the
+    disc Lime's leaked `#0D1F03` (`POP_PILL_INK`), the arrow lime.
+- **The counter is not drawn**, the frame drawing none: `featured` is null under Pop and
+  `FIELDS.media.countLabel`'s `in` is `{ Pop: [1, 2], '*': [0, 1, 2] }` — the `cta` row's shape —
+  measured (a sentinel moves Pop's media a1 and a2 alone, Retro's a0–a2) and agreeing with
+  `fieldReach`. `notes/media.md` says so. The sweep's item 8 needs nothing more for it.
+- **Two stickers, both Pop-only:**
+  - **the dot grid is the bio's at 0.965 across** (277.95 × 238.58: 16.19-wide dots, columns
+    65.44 apart, rows as the bio's), so `PopDots` now sets `preserveAspectRatio="none"` and the
+    media passes its box; teal, Scheme 3's `tag2` (`s.onScheme[3].chips[1].bg`, confirmed). It
+    paints under everything in the card at −1, hung off the player in a plain relative wrapper:
+    34.95 left and 39.97 above it at 1440 (the player covers all but its top row and first
+    column), 8.05 / 18.67 in from its right edge and 380 / 200.51 below its top at 768 / 390 —
+    the pill covers the 390 grid's last row, as the frame's does. The bio's desktop grid moved
+    0.07px with the attribute (its `u()`-rounded box was 0.03% off the drawing's aspect, which
+    `meet` letterboxed);
+  - **the squiggle arrow is `#C6F200`**, the palette lime, by the node's own fill — **not**
+    `POP_STICKER_LIME`: session 0's "every scribble and squiggle arrow is `#BCD631`" is wrong for
+    this one. It is `S3.ac`, the head's lime. `POP_ARROW_D`, off the frame's `fillGeometry` in its
+    209.11 × 126.41 box (the inner loop wound the other way, a hole under nonzero, as rendered),
+    turned Figma −135 → CSS +135 about its centre, which the walker's box and the
+    `relativeTransform` agree on: 130.09 in from the card's right edge and 112 down. **At 1440
+    alone**: both narrow masters carry its desktop x (1079 / 1039 in a 768 / 390 frame), wholly
+    off-frame — a leak that does not show, dropped.
+- **The glyph floor is 0.13em here** (CONVENTIONS B): a lime-ink row scan put the head's ink
+  centre 8.8 / 10.5 / 4.6 px below the frame's at 1180 / 768 / 390 (66 / 80.5 / 35.3 px type) —
+  0.133, 0.130 and 0.130 em, at lh 0.833 and 0.89, where the hero and the bio measured 0.14. Lifted
+  `top: -0.13em`, the ink lands at 90–192 against 89.1–193.4 (1180), 110–235 against 108.7–235.8
+  (768) and 82–138 against 81.4–139.4 (390). The player title and the pill label sit 0–1.5 px
+  off at 768, unlifted (section 1's rule). The first line runs 3.4% wide, Titan at 0.98 on this
+  string, as the bio's.
+- **Measured against the frame, relative to the card**: within 1 px at 1440 (× 0.82) and 2.3 px at
+  768 for the card, the five card centres, the player, its disc, title, transport and clocks, the
+  pill, the grid and the arrow. **At 390 the card runs 10.45 taller** (1157.45 against 1147): the
+  cards are content-tall and two seeded titles wrap to three lines at `Label/LG`, so those cards
+  are 97 where the frame fixes 92 and lets its own title frame overflow — a long title grows its
+  card rather than clip (Lime's *a stated height is a minimum*). Everything under the stack moves
+  down by it; the player's interior is the frame's to the pixel (disc 147 against 146).
+- **The 390 sleeve is a wide source**: the shared track art behind `8c7fa7d8` carries grey sides,
+  so the frame's `FILL` into the squashed 251 × 146 disc shows the whole picture letterboxed;
+  Retro's flex disc and `Photo`'s cover reproduce it, nothing added.
+- **Art-less states** (`&cj=` tracks with no image; `&noimage=1` does not reach the media): the
+  sleeve is the `#2A2A2A` well with white initials; the covers' initials take the card's own ink,
+  where `s.muted` violet vanished on the red and the blue. An empty list names "No tracks yet."
+  under 00:00 in the player beside an empty column, as Retro's does.
+- **Inherited diffs, not Pop's**: the root's `padY` 80 / 56 / 44 against the frame's 56 / 30 / 10
+  (the published 1440 band is 1139 tall against 1055), as the bio recorded; the clocks' Inter at
+  Retro's 10 (the bar starts 3.2 right of the frame's at 1180, 3.4 at 768).
+- **Live**: the published tab at 1440 and 390, trusted clicks under
+  `--autoplay-policy=no-user-gesture-required` — a card plays its track, a second click pauses it,
+  the toggle resumes, next and back step, next off the fifth wraps to the first; the Pause shows on
+  the card and the transport; with an address written through `st` the pill is an `https://` link
+  with `target="_blank"`; `elementFromPoint` finds every control uncovered; no sideways scroll; no
+  console error. Pop's cursors are live-gated (Retro's transport discs set `pointer` always).
+  `page-check.mjs Pop 0`: no error or warning, the player plays, `overflow390` 0.
+- **Digest**: themes 0, 1, 2 and 3 at zero rows, static and live (660 + 660); theme 4 moves media
+  a0 at three widths and the bio a0 desktop grid's 0.07px. The live render differs from the
+  canvas by the seam alone (the clocks, the empty bar, the `<audio>`).
+
 ### Inherited and used
 
 *(Append one line each time a session leans on a bullet from Lime's, Grunge's, Editorial's or
@@ -1247,6 +1355,27 @@ a spacer* (lime/layout-1, section 3) — read as the empty narrow `Layer_1`; *a 
 show an empty slot* (lime/layout-1, sweep) — `&noimage=1`, the initials re-inked; *theme 1 is the
 digest at risk in a widened block* (grunge/layout-1) — themes 0–3 at zero, against the editing
 server's before-label and a HEAD worktree for theme 4.
+
+Section 3: *a section whose live seam is hoisted above its branches can always take a block*
+(lime/layout-1, section 3) — turned round: Pop dresses the body under the seam rather than taking
+one, the `<audio>`, `cur` and transport shared whole; *the node walker, kept* (grunge/layout-2) —
+all three masters, text segments with style names; *the paired diff walk* (grunge/layout-2) —
+against Retro's `964:58578`, the card ys equal to the hundredth; *a rotated group's metadata x/y is
+a bounding box* (memory `figma-frame-reading`) — the arrow placed by the walker's box and its
+`relativeTransform`, and the cards' metadata ys 11.29 off their boxes; *leaked tops are followed
+where they show, dropped where they don't* (lime/layout-1) — the 768 head followed, the narrow
+arrow dropped; *an opacity-0 node is a spacer* / *a stated list height is a column minimum*
+(lime/layout-1, section 3) — the second turned on the cards: content-tall, a three-line 390 title
+grows its card; *icons the frame draws as vectors are transcribed* (lime/layout-1, section 3) —
+`LimeSkip` reused, `POP_ARROW_D`; *a nested node reads `s.onScheme[n]`* (editorial/layout-2) — the
+card on 3, the player on 6, the tracks on 1's seven tags; *`tilt()` is Retro's alone, so a fan
+writes its angle out* (lime/layout-2, section 3) — the cards' ±1 / ±1.11 / ±2.25; *a stand-in face
+is scaled* (`faced`, grunge/layout-1); *a stand-in face's glyph floor is measured per site*
+(editorial/layout-3) — 0.13em here, not 0.14; *a head that must fit … Editorial's positional two
+lines* (editorial/layout-1, section 3) — the typed break; *a seeded page cannot show an empty slot*
+(lime/layout-1, sweep) — `&cj=` art-less tracks, the initials re-inked; *field reach is measured*
+(CLAUDE.md) — `countLabel`'s Pop row; *theme 1 is the digest at risk* (grunge/layout-1) — themes
+0–3 at zero against the editing server's before-label, static and live.
 
 ## Open questions
 
