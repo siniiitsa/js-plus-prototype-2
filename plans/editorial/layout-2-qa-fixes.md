@@ -2164,8 +2164,10 @@ user's).
       sections. Under the hook these are the bio's and the testimonials' Book Now, pricing's pill,
       and the calendar's *Pricing*, *Enquiries* and *Start Enquiry*.
     - The audio plays.
-    - Each control of the gallery, the repertoire, the map, pricing, the calendar and the
-      testimonials changes its section. The exception is the one already selected.
+    - Every real control of the gallery, the repertoire, the map, pricing, the calendar and the
+      testimonials changes its section. The probe's `false` entries are the already-selected chip
+      or tile (the repertoire's *All*, pricing's *The House Party*, the testimonials' *HL*) and the
+      SVG `rect` / `path` nodes the generic probe also clicks.
     - The form refuses an empty submit with the 2px paper ring on its three boxes, then composes
       `mailto:bookings@kaimercer.co.uk?subject=Enquiry&body=Event date: … / Event type: … / Your
       email: …`.
@@ -2338,7 +2340,7 @@ cached build still shows every one of them.
 **New, for the tickets list** (found by JP-094, not fixed in this batch). **On Feature spread at
 1440, a name long enough to take three or more lines runs out of the header.** The header's desktop
 row is a fixed height, the design's 688 (`EncoreSection.jsx:2280`), so a tall name column runs past
-it, and the face and place cards run past with it.
+it. JP-094 found the face and place cards running past with it.
 - With *Shostakovich Collective of Greater Manchester* the last line ends below the header's foot,
   in the Bio's top space or on its content:
   - **22px past under Editorial.** On the build you tested it was 48px past (and the name ran off
