@@ -174,7 +174,7 @@ Session 0 first, then eleven sections in page order. Each row's three masters ar
 | 8 | `calendar` | `964:58631` | Booking Calendar — A · Scheduler | 1440 × 885 | `986:52427` | 768 × 1361 | `986:52439` | 390 × 1011 | `#2563FF` | Lime `964:58595` | done `39a7807` |
 | 9 | `form` | `964:58632` | Enquiry Forms — B · Split context+form | 1440 × 853 | `986:52428` | 768 × 1061.2 | `986:52440` | 390 × 1238.2 | `#FFFFFF`, a `#6B2CFF` card | Lime `964:58596` | done `abea669` |
 | 10 | `testimonials` | `964:58633` | Testimonials H — Stacked tag card | 1440 × 730 | `986:52429` | 768 × 730 | `986:52441` | 390 × 730 | `#C6F200` | Lime `964:58597` | done `edf5815` |
-| 11 | `footer` | `964:58634` | Footer — Component 2 / 3 / 4 | 1440 × 479.7 | `986:52430` | 768 × 720.4 | `986:52442` | 390 × 720.4 | `#FF2DA0` | Lime `964:58598` | |
+| 11 | `footer` | `964:58634` | Footer — Component 2 / 3 / 4 | 1440 × 479.7 | `986:52430` | 768 × 720.4 | `986:52442` | 390 × 720.4 | `#FF2DA0` | Lime `964:58598` | done `9447ba9` |
 
 The twins' fit comments in `EncoreSection.jsx` cite their node ids; grep for any of them to find the
 branch and its block. **Re-measure from the Pop frame; never reuse a twin's block sizes** — the
@@ -2034,6 +2034,114 @@ counters and ink traps: its corners are soft. Rubik 900 is the squarer drawing, 
   widths, both ways** — no shared helper changed, and the `TITAN_EM` entries move no other seed.
 - **`FIELDS.testimonials` owes nothing**: no row is template-keyed.
 
+### Settled in section 11 (the footer)
+
+- **No Pop block: Lime's `if (s.limeTree)` at the head of `Footer` is `(s.limeTree || s.pop)`**,
+  `const pop = s.pop` beside `grunge` and `ed` (too few deltas for a `G`, as under both twins). The
+  seam (`extLink` / `navHref` per row, the pill on `bookTo`, dropped with an empty `footerCta`) is
+  shared whole. The tree is the twins' node for node at all three widths (the walker, all three
+  masters): Frame 199 / 175 / 202 / 176, Line 19, Frame 198 / 50 / 176, Frame 201, plus two
+  `Layer_1`s — the seal in Frame 175 and a sun, the instance's last child. **Nothing binds and no
+  node is styled**: every string is a raw Chunko, so trap 2 does not bite (the 1440 master inherits
+  Lime's mode, the narrow two Pop's, and it reaches nothing). No effect on any node.
+- **Why the narrow masters stand 720 tall** (the brief's question): the link column. Pop's links
+  are a raw Chunko 27.62 on a 33 auto box, 23 apart, then the 54 pill — **278** against Lime's 206
+  (Label/SM 14 on 15 boxes); the statement's three lines are 101 against Lime's two at 100. So
+  768 is 260.37 + 390 + 2 + 68 = 720.4, and 390 the same; the 390 statement box is the column, 370,
+  and still three lines.
+- **The seat is Scheme 3, and the census row holds**: `s.bg` pink, the statement `s.ac` lime, Line 19
+  and the small print's top rule `s.stroke1` violet (the twins' `hair`, unchanged), the links and the
+  small print `s.text3` white. The digest's `page=2` footer falls to row 0 — `SCHEMES_OF.Pop` has no
+  page row — and is **byte-identical** to page 1's at all three widths; `footerBand` is Lime's and
+  Grunge's alone, so it stays undefined. `POP_FOOT` (decision 5: followed): `pale` `#E4F1C4` on the
+  name, the globe's strokes and the 150 × 2 bar; `edge`, that pale at 15%, the instance's 1px INSIDE
+  top stroke (Lime's hairline, leaked); `seal`, the seal's `#3C5BAA` disc.
+- **The deltas, off the walker** (desktop × 0.82):
+  - the **left column is 652** (Lime 743, Editorial 690), SPACE_BETWEEN with Lime's 56 / 20; Line 19
+    at 787 through the unchanged 79s; Frame 198's 76 between columns (26 at 390);
+  - the **name** a raw 13.5 on a 16 box, the **links** 27.62 on 33, the **small print** 14.51 on its
+    86% line, all uppercase in Titan at `faced` — `popType()`, with each stated box **pinned** as a
+    line height (Titan's `normal` box is a pixel short, section 9's lesson): the desktop link pitch
+    is 45.92 = 56 × 0.82 exactly;
+  - the **pill** is BookPill's shared branch in Scheme 3's other pair: `bg` `s.tx` violet, the label
+    and the disc `s.ac` lime, the arrow the pill's own violet (`discFg`'s default), its label a raw
+    15.77 through `size` — 138.5 × 44.3 on desktop against 137.8 × 44.3, 168.9 × 54 narrow against
+    168 × 54;
+  - the **390 small print** is `MAX`-aligned, gap 10, hugging — packed right, not the twins'
+    halves; the 768 row keeps the twins' leaked 56 inset.
+- **The statement**: a raw Chunko **40.38 on 33.44**, uppercase, three lines at every width with the
+  typed break after MAKE, in the frame's FIXED **484.52** box at 1440 and 768 (`maxWidth` over
+  `minWidth: min-content`, Editorial's recipe) and the column at 390. **`vm.footerWordEms` gained a
+  Pop arm** in `titanEms × 0.98` and the size is `faced(min(40.38, 100cqi / ems))` on an
+  `inline-size` column, as the testimonials' quote is. **The seed does not bite at any width**:
+  the 390 `padX` is 10 now, so the column is the frame's 370 and UNFORGETTABLE. sets 351.9 in it
+  (faced 39.57, the ceiling). The fit is the guard for a longer word.
+- **The glyph floor, measured: 0.13em** (lh 0.828; the form's figure at 0.849, the media head's at
+  0.833). A lime-ink row scan puts the 768 line feet at 130 / 164 / 197 against the frame's
+  130 / 163 / 197, the 390 identical less the 12 `padY`, and the 1440 feet at 264 / 291 / 318
+  against the frame × 0.82's 263.7 / 290.7 / 317.8. Nothing else is lifted (section 1's rule).
+- **The seal is SealBadge's Pop arm, unchanged**: its name is 14.80 / 125.60 = the hero's 20.6 /
+  174.8, the globe 0.588, the dots 0.0626, the smiley 0.2773 of the disc — the same drawing. The
+  disc is **125.60** (× 0.82), a hand-scaled **169.89** at 768 and **84.05** at 390, Figma −19.5 →
+  CSS +19.5. All four colour props are passed, since every default is wrong on this seat:
+  `hue` `POP_FOOT.seal`, `ink` `s.text3`, `face` `POP_STICKER_LIME` (`#BCD631`) and `features`
+  `POP_FORM.feat` (`#060707`) — **the census's footer `#BCD631` / `#060707` are this smiley's**, not
+  the sun's. Placed by the disc's centre off the `relativeTransform`: **38.23 in from the 652
+  column's right and 55.06 down** (the dropped 56 out) on desktop, **114.36 / 72.43** off the 708
+  content at 768, **71.58 / 7.30** off the 370 column at 390. Measured: the turned box at (515.24,
+  20.02) 216.84 at 768 against the frame's (515.21, 20) 216.86; the desktop centre (549.56, 125.15)
+  against the frame × 0.82's (549.2, 125.15). At 390 the bar runs under the disc, as the master
+  draws it. Fills read off the DOM: `#3C5BAA`, white, `#BCD631`, `#060707`; **the header's seal
+  reads `#FF2DA0` / `#000000` / `#6B2CFF` and the form's `#6B2CFF` / `#C3F007` / `#060707`, as
+  before**.
+- **The sun is the bio's `PopSun`, squeezed**: its `fillGeometry` is `POP_SUN_D` at 0.98487 ×
+  0.98052, a **151.67 × 151** box, so `PopSun` took an additive `height` (default `size`) and
+  `preserveAspectRatio="none"` — the bio's square sun is unchanged (its box re-read, 168.23 square).
+  It is `#C6F200` with its face in `#FF2DA0` — **`s.ac` and `s.bg`**, the bio's pattern of a lime
+  disc with the ground showing through — Figma −22.27 → CSS +22.27, no pointer. Placed by the turned
+  box's centre: on desktop **41.56 in from the content's right and 256.55 under the links' top**
+  (clear of SHOWS/COVERAGE and REVIEWS), at 768 **98.70 in and 272.91 under the links block's top**,
+  both absolute in the links wrapper (`position: relative` under Pop); at 390 **the corner's** —
+  centre 4.79 past the page's left edge and 6.17 above its foot, off the root's `bottom` so a live
+  safe-area inset keeps it at the foot. Measured: the 768 turned box (540.53, 434.97) against
+  (540.51, 434.71); the 390 box's left at −103.58 against −103.59 and its foot 92.43 past the
+  root's against the master's 92.44.
+- **The 390 sun is followed, not dropped** (CONVENTIONS A, *leaked tops are followed where they
+  show*): each master places it on its own (1300.9 / 213.9, 597.7 / 434.7, −46.4 / 615.6 — no
+  desktop number carried), the 390 instance **clips content**, and a quarter of the disc shows at
+  the corner as a sticker, the small print packed right of it. **So the root clips both axes**
+  (`popFootClip`, `overflowX` and `overflowY` `clip` — longhands, since `popClip` already sets
+  `overflowX` and React warns on a shorthand beside its longhand): unclipped, the 390 page would
+  scroll on 92px past the footer, and the desktop turned box ends 1.2 past the 1440 page. The
+  published 390 page ends at the footer's foot (11140 = 10431 + 709), `overflow390` 0.
+- **The 390 second column wraps** (the frame's FILL 173, HEIGHT): `flex: 1 1 0` and `whiteSpace:
+  normal` on that column alone, and **a `<wbr>` after the slash** — Chrome offers no break between
+  `/` and a letter, so SHOWS/COVERAGE first ran 259.56 wide to x 470, past the page. It now breaks
+  SHOWS/ over COVERAGE as the frame does; `overflowWrap: 'anywhere'` guards a longer word.
+  PRICING lands at 393.67 against the frame's 393.39 (less the 12 `padY`).
+- **Measured** (harness, off the root): desktop wordmark at the content's top, the column 535, the
+  links at 711.9 (the frame × 0.82: 710.1 — the twins' rounding of 652 / 79 / 79 and the rule's
+  pixel), column 2 at +205.2 (202.5; Titan's TOP TRACKS 1.5% wide), the pill 138.5 × 44.3; 768 the
+  section **720.67 against the master's 720.41**, the links at 316.67 (316.41), column 2 at 280.6
+  (277), the small print at 86 / 682 (86 / 682); 390 the section 708.67 (720.39 less the 12 `padY`),
+  column 2 at 210.6 (207), the small print at 79.2–220.4 and 230.4–380 (81–223, 233–380). Inherited,
+  not Pop's: the root's 80 desktop / 44 mobile `padY` against the frames' 56 (the published 1440
+  footer is 522 tall against 479.7).
+- **Function** (`theme=4&live=1`, three widths): `n=8` rows are `<a href="#cat">`, the address row
+  `target="_blank"`, the pill `<a href="#form">`; `n=5` splits 3 / 2; `n=0` is the pill alone; every
+  row and the pill hit-test to themselves (the sun takes none); on the canvas every anchor is
+  href-less with a pointer and the pill a span. `page-check.mjs Pop 0`: no console error or warning,
+  every footer link and Book Now scroll to their sections, `overflow390` 0, the 1440 and 390 seam
+  clips show the testimonials' lime meeting the footer's pink on a straight edge, Line 19 meeting
+  the edge.
+- **Digest**: themes 0, 1, 2 and 3 at zero rows, static and live (660 + 660 against the editing
+  server's before-labels, no empty render). **Theme 4 moved exactly the footer** — arch 0 and its
+  `page=2` render, three widths, both ways. `PopSun`'s `height` and `SealBadge`'s props moved
+  nothing else (the bio's sun and the header's and form's seals re-read above).
+- **`FIELDS.footer` owes nothing**: no row is template-keyed. `notes/footer.md`'s reason for the
+  uncased pill ("casing it would upper-case the footer's pill on Pop") was stale since session 0's
+  `'title'` and is reworded.
+
 ### Inherited and used
 
 *(Append one line each time a session leans on a bullet from Lime's, Grunge's, Editorial's or
@@ -2237,6 +2345,27 @@ site* (editorial/layout-3) — 0.12em; *a head that must fit its measure is fitt
 (editorial/layout-1) — `vm.quotes[].wordEms`' Pop arm; *a twin's width-bound call is re-measured in
 the new face* (editorial/layout-2) — the 390 pill row's wrap, named, and the reviewer's line box
 pinned; *theme 1 is the digest at risk* (grunge/layout-1) — themes 0–3 at zero, static and live.
+
+Section 11: *no block: the twin's gate widened, a named flag for the deltas* (grunge/layout-1 and
+editorial/layout-1, section 11) — `(s.limeTree || s.pop)`, no `G`; *the tenth Lime block, at the head
+of `Footer`*, *three rules the twin does not draw*, *the 768 small print's 56 inset is a leak, and it
+is followed*, *the link cursor is not live-gated* (D1) — all four kept, the top edge re-inked in the
+leaked pale; *the node walker, kept* (grunge/layout-2) — all three masters with modes, the stickers'
+`relativeTransform`s and the sun's `fillGeometry`; *the paired diff walk* (grunge/layout-2) — against
+Lime's `964:58598` by traversal order; *a rotated group's metadata x/y is a bounding box* (memory
+`figma-frame-reading`) — the sun's 1300.9 against the walker's 1243.65; *a section's colour scheme is
+resolved in `sectionVm`* (editorial/layout-1) — the Scheme 3 seat, the page row falling to row 0;
+*place a seal by its disc's centre* (lime/layout-1, section 2) — the seal and the sun; *leaked tops
+are followed where they show* (lime/layout-1) — the 390 sun's corner, clipped; *`BookPill` has a Lime
+branch* (D1) — Scheme 3's other pair and a 15.77 `size`; *under Lime `pillBg` IS the accent*
+(lime/layout-1) — turned round a fifth time: the pill is the seat's `s.tx`; *a stand-in face is scaled*
+(`faced`, grunge/layout-1); *a stand-in face's glyph floor is measured per site* (editorial/layout-3)
+— 0.13em; *a head that must fit its measure is fitted to its widest word* (editorial/layout-1) —
+`vm.footerWordEms`' Pop arm, not biting on the seed; *a twin's width-bound call is re-measured in the
+new face* (editorial/layout-2) — the pinned line boxes and the 390 column's `<wbr>`; *one five-theme
+digest is the whole proof for a shared-helper change* (lime/layout-1, sweep) — `PopSun`'s `height`,
+with the fills read beside it; *theme 1 is the digest at risk* (grunge/layout-1) — themes 0–3 at
+zero, static and live.
 
 ## Open questions
 
