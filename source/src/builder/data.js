@@ -981,9 +981,10 @@ export const TIERS = [
 // FORM_FIELDS_4's gate, in sectionVm and tiersVal alike; once the artist
 // edits the list it is theirs at every layout.
 export const TIERS_3 = TIERS.map((t, i) => ({ ...t, tags: ['Duo', 'Duo, Trio, Band', 'Trio, Band'][i] }))
-// Layout 1's packages under Lime, Grunge and Editorial (JP-089, user call,
-// 2026-09-30, reversing Lime layout 1's named diff): their frames' chips read
-// Private Event / Club Night / Festival (964:58594, 964:58606, 964:58618)
+// Layout 1's packages under Lime, Grunge, Editorial and Pop (JP-089, user
+// call, 2026-09-30, reversing Lime layout 1's named diff): their frames' chips
+// read Private Event / Club Night / Festival (964:58594, 964:58606, 964:58618,
+// 964:58630)
 // where Retro's read Solo / Trio / Band. The frames print no tags on a card,
 // so each package takes one, in the frame's order, and the All chip stays.
 // TIERS_3's shape otherwise: the tags alone move, and tiersSeed() below is
@@ -996,9 +997,11 @@ export const limeTreeTheme = (themeName) =>
 // The packages an absent `tiers` key stands for, by template and design (`d`,
 // `arch % designCount`): layout 3's frames' Duo on every template (JP-070),
 // layout 1's frames' three occasions under Lime, Grunge and Editorial
-// (JP-089), and TIERS everywhere else.
+// (JP-089) and Pop, whose frame's row reads them too (964:58630), and TIERS
+// everywhere else. Pop is named here rather than in limeTreeTheme(), whose
+// other two seeds are its calendar's and form's to widen.
 export const tiersSeed = (themeName, d) =>
-  d === 2 ? TIERS_3 : d === 0 && limeTreeTheme(themeName) ? TIERS_1 : TIERS
+  d === 2 ? TIERS_3 : d === 0 && (limeTreeTheme(themeName) || themeName === 'Pop') ? TIERS_1 : TIERS
 
 // Every key a package row carries — what `blankRow()` asks of it. A row is
 // blank only when all five are, whichever of them a layout prints. The
@@ -2323,7 +2326,7 @@ export const headerIdentity = (sections) => {
 // the seeded TIERS, blank rows are dropped — and `[]` with no pricing section
 // on the page, which is the card's not-drawn state. Raw: the calendar cases.
 // At pricing layout 3 an absent key is TIERS_3 instead (JP-070), and at
-// Lime's, Grunge's and Editorial's layout 1 TIERS_1 (JP-089); both differ in
+// Lime's, Grunge's, Editorial's and Pop's layout 1 TIERS_1 (JP-089); both differ in
 // tags alone, and the card reads no tags, so TIERS serves here whatever the
 // pricing section's layout.
 export const pageTiers = (sections) => {

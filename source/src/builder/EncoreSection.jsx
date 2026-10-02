@@ -458,6 +458,35 @@ const POP_MAP_SCRIBBLE_D =
   'C221.07 63.73 160.71 78.66 101.24 95.01L95.88 92.07L97.06 85.1L274.97 45.35C195.85 52.2 114.27 55.56 36.13 67.92' +
   'C27.83 69.23 2.94 78.77 0.07 72.05L0 65.5C130.4 39.13 262.33 17.66 395.32 0.22C398.39 -0.28 402.28 0 404.55 1.83Z'
 
+// Pop's pricing raw values (964:58630; decision 5: followed). The three
+// leant cards are seats by rendered index, Retro's tilt rule: violet (Scheme
+// 6), lime (2) and pink (3), each card's grounds and inks read off its scheme
+// in the block, and these the hexes no scheme holds. Seat 0 is inked in
+// Retro's beige with Retro's mustard ticks, its numeral, ico and pill in
+// Lime's family; seat 1's ico label is a raw lime of Lime's family. `chipOn`
+// is the picked chip's Lime `hl` label and `chipOff` the idle chips' violet at
+// the frame's 33%.
+const POP_PRICE = {
+  beige: '#EAD7B8', numeral: '#ABE43B', tick: '#D8A227', acid: '#AFE335', icoInk: '#2E3928',
+  icoLime: '#BFED11', chipOn: '#C7FF3C', chipOff: 'rgba(107, 44, 255, 0.33)',
+}
+// Pop's pricing stickers, off the frame's SVGs in their own boxes, rounded to
+// the hundredth: the starburst over the middle card's corner (its "Vector",
+// 105.43 × 104.67, pink) and the rings behind the third (the root's "Vector",
+// 272.57 × 242.17, violet — one spiral outline).
+const POP_STAR_D =
+  'M52.72 0L61.26 18.47L77.4 6.08L76.38 26.4L96.42 22.94L86.08 40.45L105.44 46.7L88.14 57.41L102.37 71.94' +
+  'L82.08 73.37L87.94 92.86L69.3 84.7L65.43 104.67L52.72 88.78L40.01 104.67L36.14 84.7L17.5 92.86L23.36 73.37' +
+  'L3.06 71.94L17.3 57.41L0 46.7L19.36 40.45L9.01 22.94L29.06 26.4L28.04 6.08L44.18 18.47L52.72 0Z'
+const POP_RINGS_D =
+  'M122.59 119.34L124.21 127.83L135.05 126.86C148.65 145.94 111.17 150.87 105.21 132.56C92.63 93.96 162.16 85.36 168.16 122.08' +
+  'C178.8 187.24 80.89 190.15 74.31 133.42C64.39 47.81 210.94 47.24 199.71 140.51C188.97 229.75 32.77 223.8 44.34 114.34' +
+  'C52.95 32.81 176.27 11.27 217.89 84.15C268.08 172.04 166.76 263.9 73.89 221.6C-18.27 179.62 -0.98 50.05 91.27 17.91' +
+  'C179.12 -12.7 262.61 47.8 262.58 135.02L269.24 138.17C275.7 136.23 270.99 107.8 269.71 101.5C236.42 -61.68 -32.48 -15.82 3.26 151.62' +
+  'C33.95 295.38 267.5 257.62 239.75 111.01C218.39 -1.88 45.07 5.84 32.54 112.62C16.85 246.29 227.89 244.37 209.76 116.73' +
+  'C198.56 37.89 69.2 39.57 62.57 120.29C55.65 204.58 190.89 203.6 180.11 124.04C173.12 72.42 89.96 77.32 92.44 127.43' +
+  'C94.69 172.85 169.47 154.74 146.94 121.53C142.22 114.58 125.92 114.12 122.6 119.35L122.59 119.34Z'
+
 // Pop's smiley sun (964:58625's second "Layer_1", 154 × 154 before its tilt):
 // the scalloped disc's outline and the smile's three features, off the
 // frame's `fillGeometry` in the sticker's own units, rounded to the hundredth.
@@ -9285,9 +9314,24 @@ function Pricing({ s }) {
     // the designer applied to the first two cards and missed — and is drawn
     // paper like its neighbours. The instance's own blush stroke is the
     // root's (`editorialRule`), Grunge's reason.
-    if (s.limeTree) {
+    //
+    // Pop — the same component a fifth time (964:58630 at 1440, 986:52426 at
+    // 768, 986:52438 at 390), Lime's tree node for node on white, binding
+    // nothing but the small print, so every leaf is the walker's raw value
+    // (plans/pop/layout-1.md, *Settled in section 7*). The cards are three
+    // seats by rendered index, Retro's tilt rule and Retro's very angles —
+    // violet, lime and pink grounds off `s.onScheme[6]` / `[2]` / `[3]`, each
+    // inked per seat (`seats` below), leant +1, −3 and +2 — at radius 50 with
+    // no ring and no glow; the middle seat carries a pink starburst on its
+    // corner. The head is the frame's lime on white, its chips violet. The
+    // type is raw Chakra Petch, Space Mono and Inter, the name and numeral
+    // raw sizes of the display face. The 10px blue rule across the top and
+    // the violet rings behind the third card stand in a layer the root's size
+    // that clips, or the rings would scroll the 390 page sideways.
+    if (s.limeTree || s.pop) {
       const grunge = s.grunge
       const ed = s.editorial
+      const pop = s.pop
       const ink = ed ? s.ac : s.tx
       const z = s.narrow ? 1 : 0.82
       const u = (v) => `${Math.round(v * z * 10) / 10}px`
@@ -9298,7 +9342,9 @@ function Pricing({ s }) {
       // (the disc) as Sienna Vale's paper scheme resolves them. No vm key holds
       // them here, since route A resolves this section to the taupe.
       const PILL = { bg: '#141414', type: '#C86E52', disc: '#E6B6A0' }
-      const G = ed ? {
+      const G = pop ? {
+        headW: u(607.16), cardR: u(50), icoR: u(4), ring: undefined, lit: undefined,
+      } : ed ? {
         headW: u(578.4), card: s.box3, cardR: 0, icoR: u(4), ring: undefined, lit: undefined,
       } : grunge ? {
         headW: u(597.53), card: s.box1, cardR: u(13), icoR: s.radiusChip,
@@ -9326,8 +9372,56 @@ function Pricing({ s }) {
       const ui = (extra) => ({
         fontFamily: s.ui, fontSize: s.labelXs, lineHeight: 1.26, letterSpacing: s.dls, ...extra,
       })
+      // Pop's three seats, by rendered index: the card's ground, the ink of
+      // its name, £, unit, blurb and features, its numeral, its ✓, its ico's
+      // pair and its Book pill's pair (the arrow takes the pill's ground, the
+      // disc its label's ink — BookPill's own rule). Seat 1 is the lime card,
+      // all violet; seat 2 the pink, white with a violet numeral; seat 0 the
+      // violet, in Retro's beige (POP_PRICE).
+      const S2 = s.onScheme?.[2], S3 = s.onScheme?.[3], S6 = s.onScheme?.[6]
+      const seats = pop && [
+        { bg: S6.bg, ink: POP_PRICE.beige, num: POP_PRICE.numeral, tick: POP_PRICE.tick,
+          icoBg: POP_PRICE.acid, icoFg: POP_PRICE.icoInk, pillBg: POP_PRICE.acid, pillFg: S6.bg },
+        { bg: S2.bg, ink: S2.tx, num: S2.tx, tick: S2.tx,
+          icoBg: S2.tx, icoFg: POP_PRICE.icoLime, pillBg: S2.tx, pillFg: S2.bg },
+        { bg: S3.bg, ink: S3.text3, num: S3.tx, tick: S3.text3,
+          icoBg: S3.tx, icoFg: S3.text3, pillBg: S3.tx, pillFg: S3.bg },
+      ]
+      // A raw string at its auto line height, desktop × 0.82.
+      const pt = (face, size, extra) => ({
+        fontFamily: face, fontSize: u(size), lineHeight: 'normal', letterSpacing: s.dls, ...extra,
+      })
+      // The starburst's centre off the middle card's top-right corner, and
+      // the rings' corner off the content's foot-right, per master.
+      const star = s.mob ? [35.5, 6.52] : tab ? [33.33, 9.47] : [36.11 * z, -1.89 * z]
+      const starW = 105.43 * z, starH = 104.67 * z
+      const ringW = tab ? 188.74 : 272.57 * z, ringH = tab ? 167.69 : 242.17 * z
+      const ringAt = s.mob ? [71.87, 40] : tab ? [20, 15.96] : [32 * z, 13.08 * z]
       return (
-        <div style={col(u(32), grunge ? { position: 'relative' } : undefined)}>
+        <>
+        {/* Pop's 10px INSIDE rule across the root's top, `tag/3` blue, and the
+            violet rings, behind the third card: in a layer the root's size
+            (the block's column is unpositioned until below, so `inset: 0` is
+            the root) that clips, since the 390 rings run 52 past the page.
+            The rings hang off the content's foot-right corner — 32 past it
+            and 13.08 under at 1440, 20 and 15.96 at 768 (the master's own
+            ×0.69 scale), 71.87 and 40 at 390, the root's foot. The layer comes
+            first and the column after it is positioned, so every card and
+            string paints over the rings, as the frame's later siblings do. */}
+        {pop && (
+          <div aria-hidden style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none' }}>
+            <div style={{
+              position: 'absolute', left: 0, right: 0, top: 0, height: s.narrow ? 10 : 8.2, background: s.chips[2].bg,
+            }} />
+            <svg viewBox="0 0 272.57 242.17" preserveAspectRatio="none" style={{
+              position: 'absolute', display: 'block', width: ringW, height: ringH,
+              right: `calc(${s.padX} - ${ringAt[0]}px)`, bottom: `calc(${s.padY} - ${ringAt[1]}px)`,
+            }}>
+              <path d={POP_RINGS_D} fill={s.tx} />
+            </svg>
+          </div>
+        )}
+        <div style={col(u(32), grunge || pop ? { position: 'relative' } : undefined)}>
           {/* Desktop centres the chips against the heading at the row's far
               end; both narrow masters stack them 24 under it — except
               Editorial's 390, whose head is SPACE_BETWEEN on a hugging
@@ -9337,11 +9431,17 @@ function Pricing({ s }) {
             : row(u(24), { justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap' })}>
             {/* Display/SM at lh 1, held to the frame's 640 on desktop.
                 Editorial's box is a FIXED 578.4 at 768 as well. */}
+            {/* Pop's head is Display/SM, which the frame renders in Lime's
+                mode (Bebas 50 / 40 / 32) and Pop's ramp sets 36 / 29 / 24, in
+                the frame's own lime on white; its FIXED 607.16 box holds at
+                768 too, and its glyphs take the page's 0.14em lift, inherited
+                — the frame holds no Chunko glyph to measure. */}
             <h2 style={distressed(s, {
               margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispSm), lineHeight: facedLh(s, 1),
-              letterSpacing: s.dls, color: s.ac,
-              maxWidth: s.mob || (s.narrow && !ed) ? '100%' : G.headW,
-              textTransform: grunge || ed ? 'uppercase' : undefined,
+              letterSpacing: s.dls, color: pop ? s.stroke2 : s.ac,
+              maxWidth: s.mob || (s.narrow && !ed && !pop) ? '100%' : G.headW,
+              textTransform: grunge || ed || pop ? 'uppercase' : undefined,
+              ...(pop && { position: 'relative', top: '-0.14em' }),
             })}>{grunge
               ? <><span style={{ color: s.tx }}>{words.slice(0, 4).join(' ')}</span>{words.length > 4 && ` ${words.slice(4).join(' ')}`}</>
               : s.title}</h2>
@@ -9364,6 +9464,14 @@ function Pricing({ s }) {
                       boxShadow: ed && i !== active ? `inset 0 0 0 1px ${s.stroke1}` : undefined,
                       color: i === active ? s.activeFg : s.ac,
                       cursor: s.live ? 'pointer' : undefined,
+                      // Pop's are raw Chakra Petch Bold 12.5: the picked chip
+                      // violet under Lime's `hl` (not `pillBg`, which is black
+                      // under Scheme 1), the rest violet at 33% under violet.
+                      ...(pop && {
+                        fontSize: u(12.5), lineHeight: 'normal', fontWeight: 700,
+                        background: i === active ? s.tx : POP_PRICE.chipOff,
+                        color: i === active ? POP_PRICE.chipOn : s.tx,
+                      }),
                     })}
                   >{f.label}</span>
                 ))}
@@ -9377,25 +9485,37 @@ function Pricing({ s }) {
           <div style={{
             display: 'grid', alignItems: 'stretch',
             gridTemplateColumns: s.mob ? 'minmax(0, 1fr)' : 'repeat(3, minmax(0, 1fr))',
-            columnGap: tab ? '20px' : u(44), rowGap: s.narrow ? '20px' : u(44),
+            columnGap: tab ? '20px' : u(pop ? 28 : 44), rowGap: pop && s.mob ? 0 : s.narrow ? '20px' : u(44),
           }}>
             {shown.map((t, i) => {
               // The frame's glowing card is its second: a *seat*, the rendered
               // index the way Retro's tilt is, so a filter moves the glow onto
               // whatever now stands in the middle column. The cost, named: one
-              // card on show glows nothing.
+              // card on show glows nothing. Under Pop the seat carries the
+              // starburst instead.
               const featured = i % 3 === 1
+              const seat = pop && seats[i % 3]
+              const lean = (k) => Math.abs(Math.sin(TILT[k % TILT.length] * Math.PI / 180))
               return (
                 // Keyed on the package's place in the whole list, layout 1's
                 // rule, though nothing here cross-fades.
                 <div key={t.n} style={{
-                  background: G.card, borderRadius: G.cardR, minWidth: 0,
+                  background: pop ? seat.bg : G.card, borderRadius: G.cardR, minWidth: 0,
                   // Figma strokes the 3px ring inside the card without growing
                   // it, and paints the INNER_SHADOW 55 under it — so both are
                   // inset shadows, ring first, and the padding stays the frame's.
                   // Grunge's featured seat swaps the hairline's colour instead.
                   boxShadow: featured ? G.lit : G.ring,
-                  position: ed ? 'relative' : undefined,
+                  position: ed || pop ? 'relative' : undefined,
+                  // Pop's cards lean Retro's angles about their centres
+                  // (Figma −1, 3, −2). At 1440 and 768 each stands in its
+                  // unrotated column; the 390 stack is −18 between the cards'
+                  // *rotated* boxes, so each gap gives the two half-leans back
+                  // (Retro's 390 deck, the same arithmetic).
+                  transform: pop ? `rotate(${TILT[i % TILT.length]}deg)` : undefined,
+                  marginBottom: pop && s.mob && i < shown.length - 1
+                    ? `calc(${(((lean(i) + lean(i + 1)) / 2) * 100).toFixed(3)}% - 18px)`
+                    : undefined,
                   padding: tab ? '30px 20px' : u(44),
                   // The pill stands at the card's foot at 1440 and 768, at least
                   // 40 under the content; the 390 card hugs it 30 down.
@@ -9409,14 +9529,24 @@ function Pricing({ s }) {
                     <span style={tab
                       ? col('10px', { alignItems: 'flex-start' })
                       : row(u(10), { alignItems: 'center' })}>
-                      <span style={body(s.eyebrow, 1.3, {
-                        fontWeight: 700, padding: `${u(4)} ${u(6)}`, borderRadius: G.icoR,
-                        background: ed ? s.tx : s.pillBg, color: ed ? s.ac : s.activeFg,
-                        whiteSpace: 'nowrap', flex: 'none',
-                      })}>[ico]</span>
                       <span style={{
-                        fontFamily: s.label, fontSize: faced(s, tab ? s.labelMd : s.labelSm), lineHeight: facedLh(s, 1.1),
-                        letterSpacing: s.dls, color: ink, textTransform: 'uppercase',
+                        ...body(s.eyebrow, 1.3, {
+                          fontWeight: 700, padding: `${u(4)} ${u(6)}`, borderRadius: G.icoR,
+                          background: ed ? s.tx : s.pillBg, color: ed ? s.ac : s.activeFg,
+                          whiteSpace: 'nowrap', flex: 'none',
+                        }),
+                        // Pop's is Space Mono 10 on the seat's pair.
+                        ...(pop && pt(s.mono, 10, { fontWeight: 400, background: seat.icoBg, color: seat.icoFg })),
+                      }}>[ico]</span>
+                      {/* Pop's 1440 and 390 names are a raw 24 in the display
+                          face at its auto 1.2 line; the 768 master styles its
+                          own Label/MD, which takes Pop's ramp (Bebas 17 in
+                          the frame's Lime mode, 14 in Pop's). */}
+                      <span style={{
+                        fontFamily: s.label,
+                        fontSize: faced(s, tab ? s.labelMd : pop ? u(24) : s.labelSm),
+                        lineHeight: facedLh(s, pop && !tab ? 1.2 : 1.1),
+                        letterSpacing: s.dls, color: pop ? seat.ink : ink, textTransform: 'uppercase',
                       }}>{t.name}</span>
                     </span>
 
@@ -9425,26 +9555,34 @@ function Pricing({ s }) {
                         at the card's right edge; desktop hugs it at 4. A range's
                         second half (`t.tail`, JP-074) sets small in the lead's
                         face, so it stands with the unit there, and may wrap. */}
+                    {/* Pop's row hugs at every width: its 390 row FILLs, but
+                        its numeral HUGs, so the unit stands beside it. The £
+                        is Space Mono Bold 18, the numeral a raw 36 on the
+                        frame's 23.34 line, the unit Chakra Petch 12. */}
                     <span style={row(u(4), {
-                      alignItems: 'flex-end', alignSelf: s.narrow ? 'stretch' : 'flex-start',
+                      alignItems: 'flex-end', alignSelf: s.narrow && !pop ? 'stretch' : 'flex-start',
                     })}>
                       {!!t.lead && (
-                        <span style={body(s.bodyLg, 1.5, { color: ink })}>{t.lead}</span>
+                        <span style={pop ? pt(s.mono, 18, { fontWeight: 700, color: seat.ink }) : body(s.bodyLg, 1.5, { color: ink })}>{t.lead}</span>
                       )}
                       <span style={distressed(s, {
-                        fontFamily: s.display, fontSize: faced(s, s.dispSm), lineHeight: facedLh(s, 1),
-                        letterSpacing: s.dls, color: s.ac, whiteSpace: 'nowrap',
-                        flex: s.narrow ? '1 1 auto' : 'none',
+                        fontFamily: s.display, fontSize: faced(s, pop ? u(36) : s.dispSm), lineHeight: facedLh(s, pop ? 23.34 / 36 : 1),
+                        letterSpacing: s.dls, color: pop ? seat.num : s.ac, whiteSpace: 'nowrap',
+                        flex: s.narrow && !pop ? '1 1 auto' : 'none',
                       })}>{t.amount}</span>
                       {!!t.tail && (
-                        <span style={body(s.bodyLg, 1.5, { color: ink })}>{t.tail}</span>
+                        <span style={pop ? pt(s.mono, 18, { fontWeight: 700, color: seat.ink }) : body(s.bodyLg, 1.5, { color: ink })}>{t.tail}</span>
                       )}
                       {!!s.tierUnit && (
-                        <span style={ui({ color: ink, whiteSpace: 'nowrap' })}>{s.tierUnit}</span>
+                        <span style={pop ? pt(s.ui, 12, { color: seat.ink, whiteSpace: 'nowrap' }) : ui({ color: ink, whiteSpace: 'nowrap' })}>{s.tierUnit}</span>
                       )}
                     </span>
 
-                    {!!t.blurb && <p style={ui({ margin: 0, color: ink })}>{t.blurb}</p>}
+                    {/* Pop's blurb and features are raw Chakra Petch 13, the
+                        blurb on a 20 line; its ✓ is Inter Bold 12. */}
+                    {!!t.blurb && (
+                      <p style={pop ? pt(s.ui, 13, { margin: 0, lineHeight: 20 / 13, color: seat.ink }) : ui({ margin: 0, color: ink })}>{t.blurb}</p>
+                    )}
 
                     {/* The tick is the frame's typed ✓ in Body/SM, not Retro's
                         lucide Check; no live state here wants another glyph. */}
@@ -9452,8 +9590,10 @@ function Pricing({ s }) {
                       <div style={col(u(8), { paddingTop: u(4), alignSelf: 'stretch' })}>
                         {t.feats.map((f, j) => (
                           <span key={j} style={row(u(8), { alignItems: 'center' })}>
-                            <span style={body(s.bodySm, 1.4, { color: s.ac, flex: 'none' })}>✓</span>
-                            <span style={ui({ color: ink })}>{f}</span>
+                            <span style={pop
+                              ? pt(s.body, 12, { fontWeight: 700, color: seat.tick, flex: 'none' })
+                              : body(s.bodySm, 1.4, { color: s.ac, flex: 'none' })}>✓</span>
+                            <span style={pop ? pt(s.ui, 13, { color: seat.ink }) : ui({ color: ink })}>{f}</span>
                           </span>
                         ))}
                       </div>
@@ -9470,12 +9610,33 @@ function Pricing({ s }) {
                       {ed
                         ? <BookPill s={s} to={s.tierBookTo} label={s.tierRowCta} bg={PILL.bg} fg={PILL.type} discBg={PILL.disc} full={s.mob}
                                    style={{ whiteSpace: 'normal', maxWidth: '100%', boxSizing: 'border-box' }} />
-                        : <BookPill s={s} to={s.tierBookTo} label={s.tierRowCta} bg={s.pillBg} fg={s.activeFg} full={s.mob}
-                                   style={{ whiteSpace: 'normal', maxWidth: '100%', boxSizing: 'border-box' }} />}
+                        // Pop's pill is the seat's pair, its label a
+                        // hand-scaled 15.77 (the media's Soundcloud size), full
+                        // size and hugging at 390.
+                        : pop
+                          ? <BookPill s={s} to={s.tierBookTo} label={s.tierRowCta} bg={seat.pillBg} fg={seat.pillFg} full={s.mob}
+                                     size={s.narrow ? '15.77px' : u(15.77)}
+                                     style={{ whiteSpace: 'normal', maxWidth: '100%', boxSizing: 'border-box' }} />
+                          : <BookPill s={s} to={s.tierBookTo} label={s.tierRowCta} bg={s.pillBg} fg={s.activeFg} full={s.mob}
+                                     style={{ whiteSpace: 'normal', maxWidth: '100%', boxSizing: 'border-box' }} />}
                     </span>
                   )}
                   {/* Editorial's card is dashed 8, 8 on all four sides, inside. */}
                   {ed && <DashRule side="all" dash={8 * z} colour={s.stroke1} />}
+                  {/* Pop's starburst, on the middle seat's top-right corner,
+                      placed by its centre: 36.11 in and 1.89 above the edge at
+                      1440, 33.33 in and 9.47 below at 768, 35.5 and 6.52 at
+                      390. Figma turns it −3 inside the +3 card, so it stands
+                      upright on the page. The card paints it over its own
+                      content and under the next card, as the frame does. */}
+                  {pop && featured && (
+                    <svg viewBox="0 0 105.44 104.67" aria-hidden style={{
+                      position: 'absolute', display: 'block', width: starW, height: starH, pointerEvents: 'none',
+                      right: star[0] - starW / 2, top: star[1] - starH / 2, transform: 'rotate(3deg)',
+                    }}>
+                      <path d={POP_STAR_D} fill={s.ac} />
+                    </svg>
+                  )}
                 </div>
               )
             })}
@@ -9486,9 +9647,12 @@ function Pricing({ s }) {
           )}
 
           {/* Body/Eyebrow in `sem/text/2` at full strength, where Retro's small
-              print is a warm grey. An emptied field drops the line. */}
+              print is a warm grey. An emptied field drops the line. Pop's is
+              Space Mono 11, and the section's one bound paint: `sem/text/1`,
+              which the frame resolves in its inherited Lime mode (Lime's
+              accent) and Pop's own Scheme 1 resolves pink — `s.ac`. */}
           {!!s.pricingSub && (
-            <span style={body(s.eyebrow, 1.3, {
+            <span style={pop ? pt(s.mono, 11, { color: s.ac }) : body(s.eyebrow, 1.3, {
               fontWeight: 700, color: ink,
               paddingRight: grunge && s.mob && s.showBadge === 'show' ? '150px' : undefined,
             })}>{s.pricingSub}</span>
@@ -9497,6 +9661,7 @@ function Pricing({ s }) {
             <SealBadge s={s} size={s.narrow ? disc : Math.round(disc * z * 10) / 10} tilt={26.06} style={seal} />
           )}
         </div>
+        </>
       )
     }
 
@@ -27592,6 +27757,12 @@ export default function EncoreSection({ s }) {
   // …and Sienna Vale's (964:58618) the one of its eleven: 1px of
   // `sem/stroke/2`, inside, at all three widths — blush under Scheme 2.
   const editorialRule = s.pr && s.v0 && s.editorial
+  // Pop's pricing (964:58630) leans its cards and hangs a starburst off the
+  // middle one's corner. A transformed box's scrollable overflow is its whole
+  // overflow rectangle turned, card and burst together, whose corner runs 21
+  // past the 390 page though the ink stays on it — so the root clips sideways.
+  // `clip`, not `hidden`, which would make the root a scroll container.
+  const popClip = s.pr && s.v0 && s.pop
   // Sienna Vale's layout-2 media panel (964:64602) and calendar (964:64612)
   // are Scheme 2 cards inset on the page's Scheme 1 paper. Each section is
   // seated on its card's scheme (SCHEMES_OF), so `s.bg` is the card's taupe and
@@ -27605,7 +27776,7 @@ export default function EncoreSection({ s }) {
       background: darkMap ? s.mapBg : cream ? '#FBF6EA' : limeBand ? s.box1 : limeLight ? s.tx : grungeBand ? '#171716' : editorialCard ? s.pageBg : s.footerBand || s.bg,
       color: darkMap ? s.mapFg : limeLight ? s.bg : s.tx,
       fontFamily: s.body, padding: bleed ? 0 : s.pad,
-      position: 'relative',
+      position: 'relative', overflowX: popClip ? 'clip' : undefined,
       boxShadow: grungeRule ? `inset 0 0 0 1px ${s.inactiveLine}` : editorialRule ? `inset 0 0 0 1px ${s.stroke2}` : undefined,
       transition: 'background-color .45s ease, color .45s ease',
       '--ac': s.ac, '--acFg': s.acFg,

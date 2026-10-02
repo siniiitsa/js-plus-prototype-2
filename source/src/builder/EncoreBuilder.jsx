@@ -1039,8 +1039,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // exactly the page without it — the cards keep their hues, the chip row its
   // chips, and layout 3's FEATURED seat, with nothing ticked, lands on the last
   // real package. An absent key is tiersSeed()'s: TIERS, at layout 3 TIERS_3,
-  // the frames' Duo / Trio / Band chips (JP-070), and at Lime's, Grunge's and
-  // Editorial's layout 1 TIERS_1, their frames' three occasions (JP-089) —
+  // the frames' Duo / Trio / Band chips (JP-070), and at Lime's, Grunge's,
+  // Editorial's and Pop's layout 1 TIERS_1, their frames' three occasions (JP-089) —
   // FORM_FIELDS_4's gate; tiersVal calls the same function.
   const tierList = (Array.isArray(c.tiers) ? c.tiers : tiersSeed(T.name, d)).filter((t) => !blankRow(t, TIER_KEYS))
   vm.tiers = tierList.map((t, i) => {
@@ -4072,7 +4072,7 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
   // its tags as the comma string and its features as the newline one, which is
   // exactly what TiersField edits and what sectionVm splits — tiersSeed(), the
   // function sectionVm calls (TIERS_3 at layout 3, JP-070; TIERS_1 at Lime's,
-  // Grunge's and Editorial's layout 1, JP-089), so the two resolve one list.
+  // Grunge's, Editorial's and Pop's layout 1, JP-089), so the two resolve one list.
   const tiersVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : tiersSeed(themeName, design))
   // And for the enquiry form's boxes, whose seed needs no dressing either:
   // FORM_FIELDS is written as the { label, placeholder, kind } row that

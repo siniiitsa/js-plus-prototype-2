@@ -16,7 +16,10 @@ another `notes/` file.
   layout 1 seeds its own tags too** (JP-089, user call, 2026-09-30, reversing Lime layout 1's inherited seed):
   their frames' row reads *Private Event / Club Night / Festival* and their cards print no tags, so
   at `d === 0` under those three templates an absent key is `TIERS_1`, one occasion per package in
-  the frame's order, behind the same `All`. Retro's and Pop's layout 1 keep `TIERS`. Both callers go
+  the frame's order, behind the same `All`. **Pop's layout 1 joined them** (its layout-1 pass,
+  section 7, 2026-10-02): its frame's row reads the same three, so `tiersSeed` names `'Pop'` beside
+  `limeTreeTheme()` — not inside it, whose calendar and form seeds are those sessions'. Retro's
+  layout 1 keeps `TIERS`. Both callers go
   through **`tiersSeed(themeName, d)`** in `data.js`, so `sectionVm` and `tiersVal` resolve one
   expression rather than two mirrored ones. The frame's lit *Club Night* is not reproduced; the
   canvas pins `All`. The gate is `FORM_FIELDS_4`'s, the
@@ -127,3 +130,12 @@ another `notes/` file.
   the rendered bytes, curly apostrophe included. The brackets are the markup's. Emptied, each is
   not drawn; the features label still stands only while the package has features. A long one
   wraps.
+- **Pop's layout-1 deck is three seats** (its layout-1 pass, section 7, 2026-10-02): by rendered
+  index, Retro's tilt rule and Retro's angles (`TILT`, CSS +1 / −3 / +2), each seat a card ground
+  off `s.onScheme[6]` / `[2]` / `[3]` with its own inks and Book pill pair, and the middle seat
+  (`i % 3 === 1`, Lime's glow seat) carrying the starburst — so a filter moves colour, lean and
+  burst onto whatever stands in each column, and one card on show is violet and unburst. The
+  small print is the frame's one bound paint, `sem/text/1`, resolved in Pop's mode (`s.ac`). The
+  rings and the 10px blue rule stand in a root-size layer that clips, and the root itself clips
+  sideways (`popClip`, `overflow-x: clip`): a leant card's scrollable overflow is its whole
+  overflow rectangle turned, burst included, which ran 21 past the published 390 page.
