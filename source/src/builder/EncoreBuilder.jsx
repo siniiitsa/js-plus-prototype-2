@@ -136,6 +136,13 @@ const THEME_RAMP = {
     tablet:  { dispXl: '107px', dispLg: '73px',  dispMd: '45px', dispSm: '36px', title: '25px', list: '19px', labelLg: '16px', labelMd: '14px', labelSm: '13px', labelXs: '14px', bodyLg: '15px', bodyMd: '13px', bodySm: '12px', chip: '11px', eyebrow: '12px' },
     desktop: { dispXl: '147px', dispLg: '97px',  dispMd: '52px', dispSm: '37px', title: '26px', list: '20px', labelLg: '20px', labelMd: '16px', labelSm: '13px', labelXs: '16px', bodyLg: '13px', bodyMd: '11px', bodySm: '10px', chip: '10px', eyebrow: '12px' },
   },
+  // Pop's mode: Grunge's ramp but for the four display sizes, title and list —
+  // the smallest display ramp of the five, a heavy wide face set small.
+  Pop: {
+    mobile:  { dispXl: '46px',  dispLg: '36px',  dispMd: '28px', dispSm: '24px', title: '20px', list: '15px', labelLg: '14px', labelMd: '13px', labelSm: '12px', labelXs: '12px', bodyLg: '15px', bodyMd: '13px', bodySm: '12px', chip: '11px', eyebrow: '11px' },
+    tablet:  { dispXl: '75px',  dispLg: '51px',  dispMd: '36px', dispSm: '29px', title: '22px', list: '16px', labelLg: '16px', labelMd: '14px', labelSm: '13px', labelXs: '14px', bodyLg: '15px', bodyMd: '13px', bodySm: '12px', chip: '11px', eyebrow: '12px' },
+    desktop: { dispXl: '103px', dispLg: '67px',  dispMd: '37px', dispSm: '30px', title: '23px', list: '16px', labelLg: '20px', labelMd: '16px', labelSm: '13px', labelXs: '16px', bodyLg: '13px', bodyMd: '11px', bodySm: '10px', chip: '10px', eyebrow: '12px' },
+  },
 }
 
 // The two keys that only matter once a window is wider than the canvas its
@@ -346,10 +353,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // Its distress mask, `{ image, size }` (`distressed` in EncoreSection);
     // undefined wherever the theme states none, so the helper is the identity.
     distress: T.distress,
-    // Figma's `font/ui`, the face `Label/XS` names. Only the designed templates
-    // carry one; Pop falls back to its body face.
+    // Figma's `font/ui`, the face `Label/XS` names. A theme with none falls
+    // back to its body face.
     ui: T.ui ?? T.body,
-    // Space Mono, the frames' typewriter face; only Retro names it so far.
+    // Space Mono, the frames' typewriter face; Retro and Pop name it.
     mono: T.mono ?? T.body,
     radius: T.radius, radiusSm: T.radiusSm, btnR: T.btnR, bw: T.bw,
     // `radius/chip`. Retro's token is 8, which its branches write as a literal.
@@ -433,7 +440,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // TagChips' sentence-case chips — is gated on this rather than on a list of
     // names. A site only some of them share stays a named pair, widened per
     // site from the frame.
-    designed: T.name === 'Retro' || T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial',
+    designed: T.name === 'Retro' || T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial' || T.name === 'Pop',
     // Grunge's four layout pages are the same components in a third mode,
     // Static Youth, so its decoration — at layout 1 torn black seams round its
     // textured bands, grain and the red seal, at layouts 2, 3 and 4 rings where
@@ -623,8 +630,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   vm.badgeText = cv('badgeText', name)
   vm.navMode = cv('navMode', cat === 'header' ? navModeDefault(T.name, d) : 'sections')
   vm.align = cv('align', 'left')
-  // Retro, Lime, Grunge and Editorial seed their Figma pages' mock photography
-  // (photos.js); Pop resolves to undefined and keeps the initials placeholder. `undefined` already means "key
+  // Every template seeds its Figma pages' mock photography (photos.js). `undefined` already means "key
   // absent", which is what a fresh section carries, so Remove writes `null` as an
   // explicit-clear sentinel: absent → the mock photo, null → the placeholder,
   // string → an upload.

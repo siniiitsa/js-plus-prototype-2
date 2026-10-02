@@ -312,17 +312,136 @@ export const THEMES = [
   {
     name: 'Pop',
     sub: 'Titan One · loud & bright',
+    // Pop is the fifth template with a Figma variable mode ("1 · Primitives" →
+    // Pop, "2 · Scheme" → Scheme 1), so every value below is that mode's —
+    // though only its header binds to it; the other ten frames were drawn in
+    // raw values (plans/pop/layout-1.md, *Pop's Figma mode*). The exception is
+    // the display and label face: the mode names Chunko Bold Demo, a
+    // demo-licence heavy wide grotesque that cannot ship, so it is set in Titan
+    // One (user call, 2026-10-02) — the one free face with Chunko's weight (its
+    // stem is .388 of the cap against .385), its widths and its cap at once;
+    // its corners are soft where Chunko's are squared. Its cap is .735 of the em
+    // against Chunko's .720, so it is set at 0.98 of the token (`faced`), which
+    // brings its widths to 1.2% of the frame's. Titan One has a lowercase where
+    // the frames type every Chunko string in capitals, so a Pop block sets its
+    // display and label strings `textTransform: 'uppercase'` per site,
+    // Grunge's rule; Chakra Petch and Inter set mixed case ("Sold Out", "Full
+    // name"), hence casing 'title'.
     display: "'Titan One', sans-serif",
-    label: "'Archivo', sans-serif",
-    body: "'Archivo', sans-serif",
-    casing: 'upper',
-    dls: '0.01em',
-    radius: '20px',
-    radiusSm: '14px',
+    label: "'Titan One', sans-serif",
+    faceK: 0.98,
+    ui: "'Chakra Petch', sans-serif",
+    // The eyebrows, ID lines, day names and gig times are Space Mono.
+    mono: "'Space Mono', monospace",
+    body: "'Inter', sans-serif",
+    casing: 'title',
+    // Every Pop text style states letterSpacing 0.
+    dls: '0px',
+    // radius/card, radius/control, radius/pill, border/thin, radius/chip.
+    radius: '24px',
+    radiusSm: '8px',
     btnR: '999px',
-    bw: '1.5px',
+    bw: '2px',
+    radiusChip: '8px',
+    // Scheme 1's bg / text1 / text2.
     palette: ['#FFFFFF', '#FF2DA0', '#6B2CFF'], // white · hot pink · violet
+    // Scheme 1's tag1…tag7 backgrounds — seven distinct hues, the first seat
+    // system since Retro's that is not two alternating tags — with their inks
+    // in `sem.tagFg`.
     tags: ['#C6F200', '#FF2DA0', '#2563FF', '#00E0C4', '#6B2CFF', '#FF1A1A', '#FFF600'],
+    // Scheme 1, white — the scheme seven of the eleven layout-1 sections stand
+    // on. Its active pair is the twins' turned round: the picked state is
+    // black under white type and the idle one lime under black, so `pillBg` is
+    // black here. `text3` is the frames' body ink (black), where `text2`, the
+    // palette's `tx`, is violet.
+    sem: {
+      box1: '#F5F5F5',                      // sem/box/1
+      box2: '#EBEBEB',                      // sem/box/2
+      box3: '#000000',                      // sem/box/3
+      glow: '#FF2DA0',                      // sem/glow
+      activeBg: '#000000',                  // sem/active/bg
+      activeFg: '#FFFFFF',                  // sem/active/text
+      inactiveBg: '#C6F200',                // sem/inactive/bg
+      inactiveFg: '#000000',                // sem/inactive/text
+      inactiveLine: '#C6F200',              // sem/state/inactive/border
+      stroke1: '#FF2DA0',                   // sem/stroke/1 — opaque pink
+      stroke2: '#C6F200',                   // sem/stroke/2
+      hl: '#141414',                        // sem/box/1/text
+      text3: '#000000',                     // sem/text/3
+      tagFg: ['#141414', '#F6F0E8', '#F6F0E8', '#000000', '#F6F0E8', '#F6F0E8', '#000000'], // sem/tag/1…7/text
+    },
+    // The other schemes a section (SCHEMES_OF) or a nested card (`s.onScheme[n]`)
+    // stands on at layout 1, in Scheme 1's shape. Pop's frames bind no colour
+    // outside the header, so each seat is the scheme whose ground the frame
+    // paints, read off the census (plans/pop/layout-1.md, *Settled in session
+    // 0*), and every tint matching no key is the section's named literal.
+    // Unlike Sienna Vale's, Pop's nine schemes are nine grounds; 5, 8 and 9 (teal,
+    // yellow, black) seat nothing at layout 1.
+    schemes: {
+      // Scheme 2, lime — the testimonials, and the gallery's source panel.
+      2: {
+        palette: ['#C6F200', '#FF2DA0', '#6B2CFF'],
+        tags: ['#FF2DA0', '#2563FF', '#00E0C4', '#6B2CFF', '#FF1A1A', '#FFF600', '#FFFFFF'],
+        sem: {
+          box1: '#D7FF23', box2: '#B7DD0D', box3: '#8CA51E', glow: '#FF2DA0',
+          activeBg: '#FF2DA0', activeFg: '#FFFFFF',
+          inactiveBg: '#FF2DA0', inactiveFg: '#FFFFFF', inactiveLine: '#FF2DA0',
+          stroke1: '#6B2CFF', stroke2: '#FF2DA0', hl: '#141414', text3: '#000000',
+          tagFg: ['#F6F0E8', '#F6F0E8', '#000000', '#F6F0E8', '#F6F0E8', '#000000', '#141414'],
+        },
+      },
+      // Scheme 3, pink — the footer, the media player's card, pricing's third
+      // card and the form's half.
+      3: {
+        palette: ['#FF2DA0', '#C6F200', '#6B2CFF'],
+        tags: ['#2563FF', '#00E0C4', '#6B2CFF', '#FF1A1A', '#FFF600', '#C6F200', '#F5F5F5'],
+        sem: {
+          box1: '#FF63B8', box2: '#F0138C', box3: '#C20A6F', glow: '#C6F200',
+          activeBg: '#C6F200', activeFg: '#000000',
+          inactiveBg: '#C6F200', inactiveFg: '#FFFFFF', inactiveLine: '#C6F200',
+          stroke1: '#6B2CFF', stroke2: '#C6F200', hl: '#141414', text3: '#FFFFFF',
+          tagFg: ['#F6F0E8', '#000000', '#F6F0E8', '#F6F0E8', '#000000', '#141414', '#000000'],
+        },
+      },
+      // Scheme 4, blue — the booking calendar, by its ground and white type
+      // only: its lime head, its #4F81FF panel and its discs are literals.
+      4: {
+        palette: ['#2563FF', '#00E0C4', '#FFF600'],
+        tags: ['#00E0C4', '#6B2CFF', '#FF1A1A', '#FFF600', '#C6F200', '#FF2DA0', '#FFFFFF'],
+        sem: {
+          box1: '#3F76FF', box2: '#1553ED', box3: '#1044C7', glow: '#00E0C4',
+          activeBg: '#00E0C4', activeFg: '#000000',
+          inactiveBg: '#00E0C4', inactiveFg: '#FFFFFF', inactiveLine: '#00E0C4',
+          stroke1: '#00E0C4', stroke2: '#FFF600', hl: '#FFFFFF', text3: '#FFFFFF',
+          tagFg: ['#000000', '#F6F0E8', '#F6F0E8', '#000000', '#141414', '#F6F0E8', '#000000'],
+        },
+      },
+      // Scheme 6, violet — the repertoire, and the media's player, the map's
+      // card, pricing's first card, the form's card and the testimonials' card.
+      6: {
+        palette: ['#6B2CFF', '#C6F200', '#FF2DA0'],
+        tags: ['#FF1A1A', '#FFF600', '#C6F200', '#FF2DA0', '#2563FF', '#00E0C4', '#FFFFFF'],
+        sem: {
+          box1: '#8451FA', box2: '#5C22E6', box3: '#4612BE', glow: '#C6F200',
+          activeBg: '#C6F200', activeFg: '#000000',
+          inactiveBg: '#C6F200', inactiveFg: '#FFFFFF', inactiveLine: '#C6F200',
+          stroke1: '#C6F200', stroke2: '#FF2DA0', hl: '#FFFFFF', text3: '#FFFFFF',
+          tagFg: ['#F6F0E8', '#000000', '#141414', '#F6F0E8', '#F6F0E8', '#000000', '#000000'],
+        },
+      },
+      // Scheme 7, red — the events map's gig panel.
+      7: {
+        palette: ['#FF1A1A', '#C6F200', '#6B2CFF'],
+        tags: ['#FFF600', '#C6F200', '#FF2DA0', '#2563FF', '#00E0C4', '#6B2CFF', '#FFFFFF'],
+        sem: {
+          box1: '#FF5A5A', box2: '#E40606', box3: '#C20303', glow: '#C6F200',
+          activeBg: '#C6F200', activeFg: '#000000',
+          inactiveBg: '#C6F200', inactiveFg: '#F5F5F5', inactiveLine: '#C6F200',
+          stroke1: '#C6F200', stroke2: '#6B2CFF', hl: '#FFFFFF', text3: '#FFFFFF',
+          tagFg: ['#000000', '#141414', '#F6F0E8', '#F6F0E8', '#000000', '#F6F0E8', '#000000'],
+        },
+      },
+    },
   },
 ]
 
@@ -356,6 +475,15 @@ export const SCHEMES_OF = {
     // same at all three widths. The footer is layout 1's on ink, row 0's 3,
     // so it has no entry.
     3: { header: 3, bio: 3, media: 2, gallery: 3, repertoire: 3, testimonials: 4 },
+  },
+  // Pop's layout-1 page (964:58624…34). Its frames bind no colour outside the
+  // header, so a seat is the scheme whose ground the section paints, where the
+  // census found its inks land too (plans/pop/layout-1.md, decision 4, user
+  // call, 2026-10-02): the repertoire, the testimonials and the footer whole
+  // but for Pop's own tints, the calendar by its ground and white type alone.
+  // The same at all three widths.
+  Pop: {
+    0: { repertoire: 6, calendar: 4, testimonials: 2, footer: 3 },
   },
 }
 

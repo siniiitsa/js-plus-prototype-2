@@ -19,9 +19,8 @@
 // helpers; no React" and is import-free, and ~2 MB of base64 has no business in the
 // file people open to read the palettes.
 //
-// Retro, Lime, Grunge and Editorial are the templates with Figma frames of
-// their own, so they are the ones that seed photography. Pop keeps the
-// initials placeholder.
+// All five templates have Figma frames of their own, so all five seed
+// photography: Retro's, Lime's, Grunge's, Editorial's and Pop's shoots.
 
 import hero from './photos/hero.jpg'
 import headerAvatar from './photos/header-avatar.jpg'
@@ -72,6 +71,14 @@ import editorialGallery4 from './photos/editorial-gallery-4.jpg'
 import editorialGallery6 from './photos/editorial-gallery-6.jpg'
 import editorialGallery7 from './photos/editorial-gallery-7.jpg'
 import popHeader from './photos/pop-header.jpg'
+import popHero from './photos/pop-hero.jpg'
+import popHeaderAvatar from './photos/pop-header-avatar.jpg'
+import popStage from './photos/pop-stage.jpg'
+import popCalendar from './photos/pop-calendar.jpg'
+import popAvatar from './photos/pop-avatar.jpg'
+import popGallery1 from './photos/pop-gallery-1.jpg'
+import popGallery2 from './photos/pop-gallery-2.jpg'
+import popGallery4 from './photos/pop-gallery-4.jpg'
 
 const REVIEWERS = [review1, review2, review3]
 
@@ -174,6 +181,34 @@ export const EDITORIAL_PHOTOS = {
   pricing: REVIEWERS,
 }
 
+// Pop's layout-1 frames (964:58624…34, the mode "Pop") are a fifth shoot, in
+// colour — no fill filter, and the only effects are the bio's and the
+// gallery's drop shadows. Own: the hero (hash f70d25d3, 3066 × 2390, exported
+// whole at 1536), the portrait circle (0b079033, a CROP over the full width and
+// the top 80% of a 1122 × 1402 source — a top square, at 384), the bio's arch
+// (51d06990), the gallery's spotlight (b3a33296, a centred cover), two of the
+// strip's thumbnails (a548367c, 3cba54cf), the calendar's photograph (bd34152d,
+// a CROP over the full width and 8.4–65.6% of the height, exported at that
+// crop) and the form's avatar (59099150, which is not the portrait circle's
+// source, so it is a slot of its own). Shared: the five track covers and the
+// map raster. Its layout-2 form fills its stage slot with the hero, so that
+// is `photo` too.
+//
+// The gallery strip departs from the frame, Grunge's call again: the frame's
+// first two thumbnails are this shoot's and the other five Retro's Basement
+// shoot (Retro's own spotlight in the ringed fourth seat, b35b6507 twice). The
+// seven slots are the frame's two, the bio's, the spotlight in galActive()'s
+// slot, the calendar's, the hero and the form avatar's source — every
+// thumbnail a different picture of the one comedy-club night.
+export const POP_PHOTOS = {
+  header: popHero,
+  bio: popStage,
+  calendar: popCalendar,
+  form: popAvatar,
+  gallery: [popGallery1, popGallery2, popStage, popGallery4, popCalendar, popHero, popAvatar],
+  pricing: REVIEWERS,
+}
+
 // The seeded artwork for the media player's five track rows, in track order.
 //
 // These are the frames' own fills (964:58578 and Lime's 964:58590 share the five
@@ -208,6 +243,8 @@ export const GRUNGE_HEADER_AVATAR = grungeHeaderAvatar
 // Editorial's card is an arch (213 × 262) over a portrait source of nearly its
 // own aspect, so it is the whole source at 480 × 600, not a centre square.
 export const EDITORIAL_HEADER_AVATAR = editorialHeaderAvatar
+// Pop's is a circle, the top square of its source (the frame's own CROP).
+export const POP_HEADER_AVATAR = popHeaderAvatar
 
 // Fixed decoration rather than user content, so these are not in FIELDS. The
 // grain is Retro's, Grunge's and Editorial's (its tape); the map raster is every designed template's
@@ -228,7 +265,7 @@ export const RETRO_TEXTURE = { grain, map: mapTile, mapRadial }
 export const TEMPLATE_STILLS = { Pop: popHeader }
 
 // Everything a template seeds, by `THEMES[].name`. A theme with no row seeds
-// nothing, which is what leaves Pop rendering exactly as it did.
+// nothing; every template has one now.
 //   photos — the section photographs above
 //   avatar — the header's artist portrait (`avatar` key)
 //   photo  — the enquiry form's scene (`photo` key)
@@ -259,6 +296,7 @@ const SEEDS = {
   Lime: { photos: LIME_PHOTOS, avatar: LIME_HEADER_AVATAR, photo: limeFormPhoto, layouts: { 2: { bio: limeBioStage }, 3: { bio: limeBioStage } } },
   Grunge: { photos: GRUNGE_PHOTOS, avatar: GRUNGE_HEADER_AVATAR, photo: grungeFormPhoto },
   Editorial: { photos: EDITORIAL_PHOTOS, avatar: EDITORIAL_HEADER_AVATAR, photo: editorialHero },
+  Pop: { photos: POP_PHOTOS, avatar: POP_HEADER_AVATAR, photo: popHero },
 }
 
 // Resolvers for the two shapes. Both return undefined for an unseeded theme.
