@@ -168,7 +168,7 @@ Session 0 first, then eleven sections in page order. Each row's three masters ar
 | 2 | `bio` | `964:58625` | Bios — A · Flanked portrait | 1440 × 769 | `986:52420` | 768 × 1153.8 | `986:52433` | 390 × 769.8 | `#FFFFFF` | Lime `964:58589` | done `9083be9` |
 | 3 | `media` | `964:58626` | Media Player — D · Floating cards stack | 1440 × 1055 | `986:52422` *(in `986:52421`)* | 768 × 1499 | `986:52434` | 390 × 1167 | `#FFFFFF`, a `#FF2DA0` card | **Retro `964:58578`** | done `f1861bd` |
 | 4 | `gallery` | `964:58627` | Gallery Sections — Component 1 | 1440 × 788 | `986:52423` | 768 × 1153 | `989:22531` | 390 × 817 | `#FFFFFF`, a `#C6F200` panel | Lime `964:58591` | done `335655f` |
-| 5 | `repertoire` | `964:58628` | Repertoire — A · Two-column dense | 1440 × 1087 | `986:52424` | 768 × 945 | `986:52436` | 390 × 961 | `#6B2CFF` | Lime `964:58592` | |
+| 5 | `repertoire` | `964:58628` | Repertoire — A · Two-column dense | 1440 × 1087 | `986:52424` | 768 × 945 | `986:52436` | 390 × 961 | `#6B2CFF` | Lime `964:58592` | done `2d77ee8` |
 | 6 | `map` | `964:58629` | Events Map — D · Compact tile | 1440 × 1192 | `986:52425` | 768 × 1266 | `986:52437` | 390 × 1095.2 | `#FFFFFF` | Lime `964:58593` | |
 | 7 | `pricing` | `964:58630` | Pricing — B · 3-col in soft panel | 1440 × 801 | `986:52426` | 768 × 745.1 | `986:52438` | 390 × 1549.7 | `#FFFFFF` | Lime `964:58594` | |
 | 8 | `calendar` | `964:58631` | Booking Calendar — A · Scheduler | 1440 × 885 | `986:52427` | 768 × 1361 | `986:52439` | 390 × 1011 | `#2563FF` | Lime `964:58595` | |
@@ -602,7 +602,7 @@ Everything here is behind `s.pop`, a widened gate or a named pair.
   |---|---|---|
   | **smiley-globe seal** — a disc, a globe, a smiley, the name twice as `TEXT_PATH`, two 11px marks (`Frame 206` / `207`) | header 174.8 (−19.5 → +19.5, *read in section 1*), form 136 (−20), footer 126 (−19.5) | header pink disc; read each |
   | **smiley sun** — a scalloped disc with a smile | bio 154 (−25.37 → +25.37, *read in section 2*; `PopSun`), footer 152 × 151 (−22.3) | blue in the bio, lime in the footer |
-  | heart (`Union` 101 × 80) | repertoire, by the pager | teal |
+  | heart (`Vector` 100.44 × 91 — *corrected in section 5*: the `Union` is the lightning) | repertoire, by the pager | teal |
   | asterisk (93 × 95, −18.52 → +18.52, *read in section 4*) | gallery, beside the head | teal |
   | starburst (105, −3) | pricing, over the middle card | pink |
   | sparkle (90 × 91, +18) | calendar, by the photograph | teal |
@@ -615,7 +615,8 @@ Everything here is behind `s.pop`, a widened gate or a named pair.
   bio's.
 - **Scribbles and arrows** — hand-drawn single-stroke vectors: the lime underlines (the header's
   331 × 95, the bio's 258 × 12 under its head, the map's 407 × 95 at −4 across "MANCHESTER", the
-  form's 292 × 68 at −4 under its statement), the repertoire's pink lightning (100 × 91), and the lime
+  form's 292 × 68 at −4 under its statement), the repertoire's pink lightning (the `Union`, 100.87 × 79.92,
+  *read in section 5*), and the lime
   squiggle arrows (media 209 × 126 at −135, the calendar's 272 × 164 at −165). Transcribe each path
   from `download_assets`' SVG, not by eye.
 - **Dot grids** — a 4 × 5 grid of 20 dots (`Union`, 288 × 239), lime in the bio and the calendar,
@@ -846,7 +847,8 @@ needs to re-read it. Scheme 1's `text3` is `#000000`.
 **Four things the walker reports that are not paint:**
 - `#41BFBA` × 20 `Vector` in the bio, media and calendar, and `#BCD631` inside the repertoire's
   `Union`: the children of a boolean op. The `Union`'s own fill is what renders (the bio's and
-  calendar's lime dots, the media's teal dots, the repertoire's teal heart).
+  calendar's lime dots, the media's teal dots, the repertoire's ~~teal heart~~ **pink lightning** —
+  *corrected in section 5*; the heart is a plain `Vector` in `#00E0C4`).
 - Covered fills: the gallery's `#FBF6EA` spotlight and thumbnail wells (under the photographs), the
   form's four `#FBF6EA` boxes and its message box (an `#EE138B` fill stacked over each), the form
   avatar's `#EAD7B8` well (under the photo).
@@ -1408,6 +1410,99 @@ counters and ink traps: its corners are soft. Rubik 900 is the squarer drawing, 
   :5174 they equal the after-files.
 - `notes/gallery.md`'s "Mobile draws four of the seven" names Pop beside Retro, Lime and Grunge.
 
+### Settled in section 5 (the repertoire)
+
+- **No Pop block: Lime's `if (s.limeTree)` inside `Repertoire`'s `if (s.v0)` is
+  `(s.limeTree || s.pop)`**, still after the seam, with `const pop = s.pop` and a fourth `G` arm ahead
+  of Editorial's; the new leaves (`fieldRing`, `hintFace` / `hintSize` / `hintLh` / `hintOp`,
+  `chipWeight`) fall back to the twins' values through `??` or are absent there. The tree is Lime's
+  node for node at all three widths (the walker against the planning walk's LCS); the heading, the
+  only styled node, is `Display/LG` in Pop's mode at every width (82 / 51 / 36 → `s.dispLg`), and the
+  song titles `Display/Title` (28 / 22 / 20, a literal: `vm.title` shadows the ramp key). The seat
+  is Scheme 6, so `s.bg` / `s.ac` / `s.tx` / `s.stroke1` / `s.pillBg` are violet / lime / pink /
+  lime / lime, and `s.text3` white — every read checked against the render.
+- **The deltas, off the node walker on all three masters** (nothing binds):
+  - the **songs are pills**: each row an inset 1px `s.stroke1` ring at radius 90 (999 in CSS),
+    padded 27 / 30 all round (no `calc(27 − 1px)` foot: the ring is an overlay), the rows **20
+    apart** and the columns **20 apart** (Lime's 70 and flush rules gone); the number a raw Chakra
+    Petch 16 at its auto line height, the title and the number Lime's leaked `#AFE335`, the info row
+    4 apart, the artist a raw **Titan 16 at every width** (not `s.labelSm`, 13 / 13 / 12 under Pop)
+    in `s.tx`;
+  - the **search** is a `#9162FF` pill (`POP_REP.pill`; Scheme 6's `box1` is `#8451FA`) in a 1px
+    inset `#A6E22E` ring at 16%, round a **solid** `#A6E22E` disc 43.56 × 41 (Lime's tile box) with
+    the glyph in `s.bg`; the hint is **Space Mono 13** (`s.mono`, × 0.82 on desktop) at its auto
+    line height, `s.text3` white at the node's 50% on the canvas; the live input types full white
+    and its `::placeholder` keeps the .45 (Lime's accepted diff — here .05 under the frame);
+  - the **chips** are Inter **Bold** 12.5 at the auto line height, padded 5 / 11: All on
+    `s.pillBg` (the seat's `activeBg`, lime) under `s.bg` violet — the census's "All's `#6B2CFF`
+    label" is the seat's own ground, so no literal; the idle ones `#A6E22E` at 15% under `s.ac`;
+  - the **eyebrow** is a raw Inter Bold 11 tracked 1.5 at its auto line height in Lime's leaked
+    `#F2FFD0` (decision 5: followed — it reads white);
+  - the **head** is one tone in `s.ac`, uppercase;
+  - the **10px INSIDE rule** across the root's top is `s.stroke1` lime (8.2 on the canvas), in an
+    absolute layer the root's size (`inset: 0` — the block's column is unpositioned) that clips,
+    as the frame's root does, and carries the heart too.
+- **`Pager`'s Lime branch is `(s.limeTree || s.pop)`** with a Pop `t`: the ends `s.ac` lime
+  (`endBox`) in a 1px `#F2FFD0` ring round the arrow in `s.bg`; page pills `POP_REP.pill` with
+  `#AFE335` numerals; the current page filled `s.tx` pink (`onBox`) under Retro's `#FBF6EA`
+  (`on`) — **the frame marks its page, so the mark is followed** (Editorial's precedent). The
+  numerals are the frame's raw Anton 12 set in Pop's label face at that size (decision 5:
+  `labelStyle(s, u(12))`, so `faced`). Lime's 87 / 55 × 54 boxes and 8 gap are the frame's own.
+- **The census had the two stickers swapped**: the **`Union` is the pink lightning** (its own
+  `#FF2DA0`, `s.tx`; the `#BCD631` children do not render) by the head, and the **heart is a
+  plain `Vector` in `#00E0C4`** by the pager — read off each node's fill, and the render agrees.
+  Both are unrotated paths off the frame's SVGs (`POP_BOLT_D`, `POP_HEART_D`), taking no pointer.
+  - **The lightning hangs off the heading's end** (Editorial's sparkle precedent), over it, in a
+    Pop-only wrapper round the `h2` that hugs the string (`alignSelf: flex-start`), so the glyph
+    lift leaves it put and a longer count carries it along. **The narrow text boxes are a fixed
+    305.02** at both 768 and 390 — not the string (36px Chunko cannot set "240 SONGS" at 305) — so
+    the anchor is the end of Chunko's advance (5.683 em × size, the desktop box's 466 / 82) at every
+    width: the sticker's left at −25 × 0.82 / −36.7 / +1.65 from it and its top −70.73 × 0.82 /
+    −41.97 / −49.96 from the heading's top, 100.87 × 79.92 / 71.27 × 56.47 / 70.63 × 55.96 (each
+    master scales it by hand). Titan sets "240 SONGS" **2.5% narrower** than Chunko's box (371.3
+    against 382 on the canvas, 282.6 against 289.8, 199.5 against 204.6 — the digits), and the
+    sticker follows the end: it lands 10.8 / 7.2 / 5.1 left of the frame's x, on the same glyphs.
+  - **The heart is seated off the content's foot**, not the pager — the seeded twelve songs draw no
+    pager at 1440, and the heart stays beside the list there: at 1440 60.78 in from the content's
+    right edge with its foot 9 past the content's (× 0.82); **at 768 not drawn** — the master keeps
+    the desktop's x (1222.78) in a 768 frame, wholly clipped by the root (a leak that does not show,
+    dropped); **at 390 followed** — 2 from the page edge and its top 12 above the content's foot, so
+    it runs over the → disc's lower corner and the root's clip cuts it at the section's foot, as
+    the master renders it. **It hit-tests clear**: `elementFromPoint` at three points of the 390 →
+    disc under the heart finds the disc, and Next steps 1 → 2 from there.
+- **The glyph floor is 0.14em again** (lh 0.89; the bio's and the gallery's): a lime-ink row scan
+  puts the heading at 24–70 against the frame's 23.0–69.7 (× 0.82, off the content's top), 29–64
+  against 28–63 at 768 and 30–54 against 29–53 at 390 — the narrow +1 is the eyebrow's line box
+  above it (Inter Bold 11 at `normal` is 14 where Figma's is 13; the gallery's +1). No other string
+  is lifted.
+- **A long artist is capped at 60% of its row** under Pop (`maxWidth`, ellipsis — Editorial
+  layout 4's cap): the frame's rows clip their content, and the harness's synthetic artist at 390
+  otherwise crushed the title to nothing and ran past the ring. The twins' flush rows keep
+  `flex: none`, untouched.
+- **Measured** (harness, `n=240`, off the content's top-left): at 1440 the eyebrow, search (769.2,
+  16.9, 319 × 50 against 770.0, 16.8), its disc and hint, the chips (31.3 / 68.8 × 20.2 against
+  32 / 68.9 × 20.5), the rows (156.3, 535.9 × 69.5, stepping 85.9, against 156.6, 536.3 × 69.7,
+  86.1), the number and title x, the pager's 45.1 / 71.3 × 44.3 and the heart (956.0 against
+  956.8) within 1 px of the frame × 0.82, the pager 1.7 high (six rows' Titan line boxes); at 768
+  and 390 the same within 1.4, the eyebrow's +1 carried down. Inherited, not Pop's: the root's
+  80 / 56 / 44 top against the masters' 96 / 60 / 40, the 390's 10 inset against 20, and
+  `pageWindow`'s six buttons at 1440 and 768 where the masters draw five (Lime's).
+- **Live** (`theme=4&live=1&n=240`, three widths): Next lights page 2 and the list starts at 13
+  (7 narrow); a chip re-derives the pager (20 → 7 pages at 1440, 40 → 14 narrow) and resets to
+  page 1, the lit chip lime under violet and the rest the 15% tint under lime; a search with no
+  match prints "No songs match that." in `s.muted` (pink at 64% on violet — read, legible, kept)
+  and drops the pager; the input types white Space Mono; every chip and pager button hit-tests to
+  itself. `page-check.mjs Pop 0`: no console error or warning, the chips change state (All:
+  false is the lit chip clicked again), `overflow390` 0; the seam clips show the lime rule under
+  the white gallery at 1440 and the heart cut by the map's edge at 390.
+- **Digest**: themes 0, 1, 2 and 3 at zero rows, static and live (660 + 660 against the editing
+  server's before-labels, no empty render). **Theme 4 moved repertoire a0 and a1 at three widths
+  and map a2 at 390, both ways** — `Pager`'s spread exactly, as under the three twins. Read:
+  repertoire a1's pills (its caller's `frame.lime`) read on white; map a2's arrows read pink on
+  black. Map a0 is unmoved (the seeded five gigs draw no pager) — **the map session inherits the
+  Pop arm** wherever its pager draws; pass `frame.lime` if the frame's pager differs.
+- **`FIELDS.repertoire` owes nothing**: no row is template-keyed.
+
 ### Inherited and used
 
 *(Append one line each time a session leans on a bullet from Lime's, Grunge's, Editorial's or
@@ -1500,6 +1595,22 @@ slot* (lime/layout-1, sweep) — `&n=0`; *key tile probes on style, not `img`* (
 `browser-tool-choice`) — the strip's state read off its tiles' inline style; *theme 1 is the digest
 at risk* (grunge/layout-1) — themes 0–3 at zero, static and live, three misfired before-files
 re-rendered against HEAD.
+
+Section 5: *no block: the twin's gate widened, a named flag for the deltas* (grunge/layout-1 and
+editorial/layout-1, section 5) — `(s.limeTree || s.pop)`; *where the seam lives inside the branch, the
+block goes after the seam* (lime/layout-1, section 5); *the `G` lookup at the block's head*
+(grunge/layout-1) — a fourth arm, new leaves through `??`; *`Pager` has a Lime branch, `BookPill`'s
+shape* (lime/layout-1, section 5; D1) — a fourth `t`; *the frame's own mark is followed* (Editorial's
+pager, editorial/layout-1, section 5) — the pink current page; *the node walker, kept* (grunge/layout-2)
+— all three masters with style names and modes; *a leak that does not show is dropped* (lime/layout-1)
+— the 768 heart; *a stated text box is not the string* (turned on the narrow 305.02 boxes) — the
+lightning anchored off the ink's end, Editorial's sparkle hung off the heading's end; *a frame's inside
+stroke is an inset `boxShadow`* (lime/layout-2) — the pill rows and the search ring; *`vm.title` shadows
+the ramp's `title` size* (lime/layout-1, section 6) — Display/Title as a literal; *a stand-in face is
+scaled* (`faced`, grunge/layout-1) — the pager numerals; *a stand-in face's glyph floor is measured per
+site* (editorial/layout-3) — 0.14em; *the artist capped at 60%* (editorial/layout-4, repertoire); *one
+five-theme digest is the whole proof for a shared-helper change* (lime/layout-1, sweep) — `Pager`, static
+and live; *theme 1 is the digest at risk* (grunge/layout-1) — themes 0–3 at zero.
 
 ## Open questions
 
