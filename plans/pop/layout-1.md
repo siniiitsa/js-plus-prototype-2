@@ -163,7 +163,7 @@ Session 0 first, then eleven sections in page order. Each row's three masters ar
 
 | # | Cat | Desktop node | Composition | Size | Tablet node | Size | Mobile node | Size | Ground | Twin | Status |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 0 | *foundation* | `964:58623` *(page)* | Pop → `THEMES[4]`, face, casing, ramp, schemes, flags, photos | — | `986:52418` | — | `986:52431` | — | — | — | |
+| 0 | *foundation* | `964:58623` *(page)* | Pop → `THEMES[4]`, face, casing, ramp, schemes, flags, photos | — | `986:52418` | — | `986:52431` | — | — | — | done `3267b36` · `d57d896` |
 | 1 | `header` | `964:58624` | Headers — hero | 1440 × 750 | `986:52419` | 768 × 1024 | `986:52432` | 390 × 844 | photo over `#6B2CFF` | Lime `964:58588` | |
 | 2 | `bio` | `964:58625` | Bios — A · Flanked portrait | 1440 × 769 | `986:52420` | 768 × 1153.8 | `986:52433` | 390 × 769.8 | `#FFFFFF` | Lime `964:58589` | |
 | 3 | `media` | `964:58626` | Media Player — D · Floating cards stack | 1440 × 1055 | `986:52422` *(in `986:52421`)* | 768 × 1499 | `986:52434` | 390 × 1167 | `#FFFFFF`, a `#FF2DA0` card | **Retro `964:58578`** | |
@@ -314,7 +314,11 @@ Seven traps in those tables and that walk:
 
 ## The decisions this plan makes or hands over
 
-### 1. Chunko Bold Demo is a demo face — **the user's call in session 0**
+### 1. Chunko Bold Demo is a demo face — **settled: answer B, Titan One at `faceK` 0.98**
+
+*Settled in session 0 (2026-10-02):* the user chose Titan One, the recommendation off the measured
+table (*Conventions → Settled in session 0*). The rest of this heading is kept as the record of the
+question.
 
 The mode names **Chunko Bold Demo** for display and label, a demo licence (Fisterra Fora's
 situation again; `fonts.googleapis.com` has no Chunko). What the frames show, for the user: a very
@@ -334,7 +338,9 @@ Either way, before section 1: **`faceK`** is measured (identity at 1, as Editori
 `measureText` (Editorial's session-0 lesson), and confirm one label against the DOM. Do **not**
 start section 1 in a fallback face.
 
-### 2. Casing — **recommended: `'title'`, with per-site uppercase (Grunge's rule)**
+### 2. Casing — **settled: `'title'`, with per-site uppercase (Grunge's rule)**
+
+*Settled in session 0 (2026-10-02):* confirmed by the user.
 
 `THEMES[4].casing` is `'upper'`, so `caseText` upper-cases every `cased()` string — and the frames
 set their Chakra Petch, Inter and Space Mono strings mixed: the header chips "Default", "Sold Out",
@@ -344,7 +350,10 @@ picks, and each display or label string takes `textTransform: 'uppercase'` in it
 (CONVENTIONS C, *casing stays the theme's*). Settle it in session 0 beside the face, not per section:
 after it, every Pop head renders mixed case until its section uppercases it — expected.
 
-### 3. The fifth flag — **recommended: `s.pop`, widened per site**
+### 3. The fifth flag — **settled: A, `s.pop`, widened per site**
+
+*Settled in session 0 (2026-10-02):* confirmed by the user; `s.pop` landed in commit (a) with no
+reader.
 
 `s.limeTree` (Lime, Grunge, Editorial) has **62 readers** in `EncoreSection.jsx`, across all four
 layouts, and `limeTreeTheme()` in `data.js` gates JP-089's layout-1 seeds. Adding Pop to either
@@ -382,7 +391,12 @@ Editorial render, and the media body is Retro's. The digest is **themes 0, 1, 2 
 rows**, every session. Widening a shared helper moves Pop's placeholder layouts 2–4 too — expected,
 theme 4 only; record which layouts moved rather than chasing it.
 
-### 4. The frames are unbound — **seat or literals: the user's call in session 0, after a census**
+### 4. The frames are unbound — **settled: route A′, the calendar seated too**
+
+*Settled in session 0 (2026-10-02):* the user chose A′ as recommended off the census —
+`SCHEMES_OF.Pop[0]` seats the repertoire on 6, the calendar on 4, the testimonials on 2 and the
+footer on 3; `THEMES[4].schemes` carries 2, 3, 4, 6 and 7 for those and the nested cards. The rest
+of this heading is kept as the record of the question.
 
 Editorial's route A (`THEMES[i].schemes`, `SCHEMES_OF`, `s.onScheme`) seats a section on the scheme
 its frame *binds*. Pop's frames bind nothing outside the header, so a seat is inferred from the root
@@ -416,7 +430,15 @@ the active and idle pairs, `chips[0]` / `[1]`), and asks:
 Under A′, CLAUDE.md's per-section scheme rule gains a sentence in the sweep ("…or, under Pop, whose
 frames bind none, the scheme whose ground it paints").
 
-### 5. The leaks — **the mode leaks are settled; the raw leaks are the user's call in session 0**
+### 5. The leaks — **settled: follow every raw hex; override the three faces and the two defects**
+
+*Settled in session 0 (2026-10-02):* the user ruled once, off the census's leak table: every raw
+hex is followed as a named literal; **Anton** (the pager numerals) is set in Pop's label face,
+**Roboto Mono** (the media's clocks) in `s.body` (Retro's own clock face), **Soulway** (the 390
+header's Book Now) in the display face; and the two leaks that read as defects are overridden — **the
+gallery's eyebrow "MEDIA"**, Lime's `#F2FFD0` on white and invisible, is inked in a visible Pop ink,
+and **the "02 — 15" counter pill over the gallery's spotlight**, Retro's `#111111` at 55% under
+`#C8461C`, is re-inked in Pop's colours. Sections 1, 3, 4, 5 and 6 carry them out.
 
 - **Mode leaks (trap 2): settled by evidence.** A text style that renders Bebas at Lime's size
   because its node inherits Lime's mode is drawn in Pop's display face at Pop's ramp size. Its
@@ -805,21 +827,205 @@ From the renders and the planning walk — impressions to confirm, not measureme
     leaked hairline at its top. The 768 and 390 masters are 720 tall against Lime's 647 / 619 — find
     out why before fitting.
 
+### Settled in session 0 (the foundation)
+
+#### The census (step 10)
+
+Read 2026-10-02 with the node walker over all 33 masters (every visible node's solid fills,
+strokes, effects and text segments), then a second walk locating every hex outside Pop's palette.
+**The paints are identical at 1440, 768 and 390** — the narrow masters are instances of the desktop
+component — so one row per section serves all three widths; only the type differs, where a text
+style resolves in Lime's mode (trap 2). Every section session starts from its row.
+
+**The schemes table above is right, cell for cell.** One `use_figma` resolving every `2 · Scheme`
+colour variable through the `Pop` primitives mode matched all nine schemes to the table; nobody
+needs to re-read it. Scheme 1's `text3` is `#000000`.
+
+**Four things the walker reports that are not paint:**
+- `#41BFBA` × 20 `Vector` in the bio, media and calendar, and `#BCD631` inside the repertoire's
+  `Union`: the children of a boolean op. The `Union`'s own fill is what renders (the bio's and
+  calendar's lime dots, the media's teal dots, the repertoire's teal heart).
+- Covered fills: the gallery's `#FBF6EA` spotlight and thumbnail wells (under the photographs), the
+  form's four `#FBF6EA` boxes and its message box (an `#EE138B` fill stacked over each), the form
+  avatar's `#EAD7B8` well (under the photo).
+- The two text fills on pricing's footnote (`#E4F1C4` and `#AFE335`, stacked; the top one shows).
+- `#2563FF` "mixed" strokes inside the calendar: per-side dividers in the ground's own colour.
+
+**Pop's own tints — in no mode, in no twin's code** (`grep` of `EncoreSection.jsx` and `data.js`
+found none of them): `#9162FF` (the repertoire's search and pager pills), `#4F81FF` (the calendar's
+panel), `#E41010` (the map's gig rows), `#EE138B` (the form's boxes), `#C3F007` (the form's chips,
+ticks and submit, the calendar's arrow discs), `#6B32FF` / `#6B34FF` (two slips of `#6B2CFF` in the
+gallery's rows), `#BCD631` (**the stickers' lime**: every scribble and squiggle arrow, the bio's
+11.78 stroke, the calendar's arrow, the footer's smiley), `#3C5BAA` (the footer seal's disc) and
+`#060707` (the smileys' features). A section writes them as named literals.
+
+**The twins' leaks** (decision 5's table) — attributed by which primitive mode owns the hex, or, for
+the raw ones, by family:
+
+| Hex / face | Owner | Where it shows |
+|---|---|---|
+| `#AFE335` | Lime's accent | the repertoire's 12 song titles, 12 numbers and 4 pager numerals (a greener lime on violet); pricing card 1's tag chip and Book pill; the testimonials' "Private host" on its pink tag |
+| `#A6E22E` | Lime's glow | the repertoire's search disc (solid), its ring (16%) and idle chips (15%); the gallery's thumb rings (35%) and the active thumb's inner glow (r 18) |
+| `#F2FFD0` | Lime's text | the repertoire's eyebrow and arrow-disc rings, the testimonials' arrows (all read white); **the gallery's eyebrow "MEDIA" on white — invisible** |
+| `#C7FF3C`, `#2E3928` | Lime's `hl`, `box1` | pricing's picked chip label; card 1's tag chip label |
+| `#15180F`, `#0D1F03` | Lime's inks | the map's eyebrow, its gig rows' 14% ring; the media's Soundcloud label and disc (all read black) |
+| `#E4F1C4`, `#ABE43B`, `#BFED11` | raw, Lime's family | the calendar's day names and foot line (pale on blue), the footer's brand name, globe mark, brand rule and 15% top hairline; pricing card 1's price and a tag label |
+| `#EAD7B8`, `#D8A227` | Retro's beige, mustard | **pricing card 1's whole type** (name, £, /event, description, features) and its four ticks, on violet; the map's well under the raster (section 6 reads the blend) |
+| `#FBF6EA` | Retro's paper | the repertoire's and the map's current-page numeral; the media's red card's type |
+| `#111111` 55%, `#C8461C` | Retro's ink, orange | **the "02 — 15" counter pill over the gallery's spotlight** |
+| `#1B1714`, `#131313`, `#161616`, `#1B1B1B`, `#DFCBA2`, `#6A6D41`, `#CBB78E`, `#B3B3B3`, `#2A2A2A` | raw, Retro's family | the media's track inks, play discs and 7 × 16 digits, the player's artist, clocks and disc (Retro's body; read against its literals in section 3); the map card's 1px ring |
+| Anton Regular 12 | Retro's / Grunge's label face | the repertoire's and the map's pager numerals |
+| Roboto Mono Regular 10 | none of ours | the media's two clocks — Retro sets its own in `s.body` (`EncoreSection.jsx`, the `v0` body) |
+| **Soulway Regular 9.91** | Retro's display face | **the 390 header's Book Now label** — new; the planning walk did not see it |
+
+**The mode leaks** (trap 2, settled by evidence): the map's head (`Display/LG`: Bebas 130 / 81 /
+54 → Chunko 82 / 51 / 36), pricing's head (`Display/SM`: Bebas 50 / 40 / 32 → 36 / 29 / 24), the
+testimonials' role (`Display/Title`: Bebas 36 / 28 / 26 → 28 / 22 / 20), and **pricing's 768 tier
+names** (`Label/MD`, Bebas 17 → Chunko 14 by the rule — where the 1440 and 390 names are an
+unstyled Chunko 24; section 7 reads which to follow).
+
+**Per section** — ground, the candidate seat, and every hex against it. *Key* means the seat's own
+key (`bg`, `ac` = `text1`, `tx` = `text2`, `text3`, `stroke1` / `2`, `box1`, the active / idle
+pairs, `tag1`…`7`); a miss names the key the frame did not take.
+
+| # | Section | Ground → seat | Keys that land | Misses (Pop tints, leaks) | Nested |
+|---|---|---|---|---|---|
+| 1 | header | `#6B2CFF` under the photo — **bound**, Scheme 1 | chips `tag1`…`5` and their inks, `#41BFBA` `sem/media`, `#000000` All Access | — (bound); the 390 Soulway | capsule **Scheme 3**, bound: links, mark and pill `#C6F200`, pill label `#FF2DA0` |
+| 2 | bio | `#FFFFFF` → **1** | head `ac`; ring 10 `stroke1`; dots `stroke2`; sun `tag3`; **body, eyebrows, role line and rule `#000000` = `text3`** | scribble `#BCD631` | — |
+| 3 | media | `#FFFFFF` → **1** (Retro's body) | tracks `tag1` / `6` / `3` / `4` / `7` (lime, red, blue, teal, yellow) | track inks Retro's; Soundcloud `#0D1F03`; clocks Roboto Mono | card **3** (eyebrow `text3`, head `text1`, dots `tag2`); player **6** (title `text3`, bar `text2`) |
+| 4 | gallery | `#FFFFFF` → **1** | head `tx`; asterisk `tag4` | eyebrow `#F2FFD0`; thumb rings and glow `#A6E22E`; counter pill Retro's; `#6B32FF` / `#6B34FF` | panel **2** (`bg`; open row `activeBg`; rings, discs, labels `text2` / `stroke1`) — open row's label `#C6F200` where `activeFg` is white |
+| 5 | repertoire | `#6B2CFF` → **6** | `bg`; head `ac`; artists `tx`; row rings and the 10px top rule `stroke1`; All chip `activeBg`; placeholder `text3` | All's label `#6B2CFF` (`activeFg` black); search, pager `#9162FF` (`box1` `#8451FA`); titles `#AFE335`; idle chips `#A6E22E` 15%; Anton | — |
+| 6 | map | `#FFFFFF` → **1** | head `ac`; radius `tx`; eyebrow ≈ `text3` | eyebrow `#15180F`; Anton | card **6** (`bg`, type `text3`; ring `#CBB78E`, well `#EAD7B8`); panel **7** (`bg`, type `text3`, discs `tag5`; rows `#E41010` where `box2` is `#E40606`, current pill teal where `activeBg` is lime) |
+| 7 | pricing | `#FFFFFF` → **1** | chips `tx`; 10px rule `tag3`; head `stroke2` (lime on white — the frame's own, low contrast) | picked label `#C7FF3C`; card 1's Retro type | cards **6 / 2 / 3** — 2 and 3 inked `text2` violet; **card 1 inked Retro's beige where Scheme 6 has lime / white** |
+| 8 | calendar | `#2563FF` → **4** | `bg`; numerals `text3`; picked and rule `#FF2DA0` (`tag6`) | **head and month `#C6F200` (`text1` is teal)**; panel `#4F81FF` (`box1` `#3F76FF`); discs `#C3F007`; day names `#E4F1C4` | — |
+| 9 | form | `#FFFFFF` → **1** | — | — | card **6** (statement `text2`, name and lines `text3`; ticks `#C3F007` ≈ `text1`); half **3** (labels `text3`; boxes `#EE138B` where `box2` is `#F0138C`; chips and submit `#C3F007` where `activeBg` is `#C6F200`) |
+| 10 | testimonials | `#C6F200` → **2** | `bg`; 10px top rule and arrow discs `text2` / `stroke1`; backs `tag1` / `tag3` | arrows `#F2FFD0`; the role `#AFE335` (Bebas) | card **6** (eyebrow `text3`, quote `text1`) |
+| 11 | footer | `#FF2DA0` → **3** | `bg`; statement `ac`; links and small print `text3`; column rule `stroke1`; pill `tx` | brand, mark, rule `#E4F1C4`; hairline 15% | — |
+
+So **three sections land whole** (repertoire 6, testimonials 2, footer 3, each but its tints),
+**one by its ground and white type only** (the calendar, 4), and **every coloured card lands but
+pricing's first**. Across them all, the second ink the frames reach for is **`text3`** — black on
+white, lime, teal and yellow, white everywhere else — never `tx` (`text2`), which is violet on
+white: trap 4 is the page's rule, not the bio's.
+
+**Decision 1's evidence — the candidates measured.** Chunko's ink, off `absoluteRenderBounds` on
+the frame's single-line strings (identical at every size, 13.5 to 125): cap height **0.720 em**,
+"KAI MERCER" 5.945 em, "240 SONGS" 5.660, "ABOUT" 3.389, "TOP TRACKS" 6.141, "BOOK NOW" 5.389,
+"SUPERSTITION" 7.148. Each candidate rendered at 200px in the headless shell from Google Fonts,
+ink read off the pixels; the stem is the "I" of "KAI" scanned 25% up, against the frame's 2× render
+(`download_assets`), as a fraction of the cap:
+
+| Face | cap / em | width vs frame (mean, spread) | I stem / cap | K stem / cap |
+|---|---|---|---|---|
+| **Chunko Bold Demo** (the frame) | .720 | 1 | **.385** | .391 |
+| **Titan One** | .735 | 1.033 (.062) | **.388** | .395 |
+| Rubik 900 | .725 | 1.052 (.084) | .359 | .338 |
+| Paytone One | .720 | 0.995 (.118) | .319 | .326 |
+| Bungee | .725 | 1.047 (.126) | .317 | .310 |
+| Bowlby One | .785 | 1.140 (.045) | .389 | .376 |
+| Archivo Black | .715 | 1.146 (.072) | .315 | .336 |
+| Archivo 900 / at wdth 125 | .715 | 1.125 / 1.366 | — | — |
+| Sigmar One, Rammetto One, Dela Gothic One, Rubik Mono One, Chango | .725–.825 | 1.19–1.40 | — | — |
+| Lilita One | .720 | 0.900 | — | — |
+
+Titan One — Pop's face today, already in the `index.html` link — is the only candidate with
+Chunko's weight, its widths and its cap at once. What it does not have is Chunko's squared
+counters and ink traps: its corners are soft. Rubik 900 is the squarer drawing, 7% light.
+
+#### What session 0 settled
+
+- **The display and label face is Titan One** (user call, 2026-10-02; decision 1). **`faceK` is
+  0.98**: Titan One's ink is 0.735 of the em on every one of the six strings, against Chunko's
+  0.720, and at 0.98 its widths run 1.2% wide where at 1 they would run 3.3% — both inside Grunge's
+  2% rule, where faceK 1 was not. So `faced` / `facedLh` are **not** the identity under Pop:
+  `labelStyle`, `Title` and every display string a Pop arm sets go through them, layouts 2–4
+  included. Titan One has **one weight**, 400: never give a Pop display or label string a
+  `fontWeight`, or the browser synthesises a bold. `index.html` already loaded it (`Titan+One`);
+  `preview.html` now does, so every `theme=4` harness render from `d57d896` on is in the real face.
+  Archivo stays in `index.html` for the builder chrome; nothing in a section names it now.
+- **The nav's advance table is the header session's**: `navFace` needs Titan One's widths in ems
+  (`bebasEms`' shape), times 0.98. Measure the rendered DOM, not canvas `measureText`, and confirm
+  one label against the DOM (Editorial's session-0 lesson).
+- **`labelStyle` still tracks `0.02em` under Pop**: its tracking is gated `s.limeTree`
+  (`EncoreSection.jsx`, `labelStyle`). The header session widens it first, as Editorial's did —
+  measure no label width before it.
+- **Casing is `'title'`** (decision 2): after session 0 every head renders mixed case in Titan One
+  ("Reads the room.") — expected; each section owes its own heads `textTransform: 'uppercase'`.
+- **`text3` is a `sem` key and a vm key** (trap 4, decided here): `T.sem.text3` → `s.text3`, and
+  through `flatScheme`'s spread `s.onScheme[n].text3`. Undefined under every other theme. It is
+  the frames' second ink everywhere (the census), so a Pop arm reaches for `s.text3`, not `s.tx`,
+  for body copy, eyebrows, labels and rules.
+- **Route A′ is data only** (decision 4): `THEMES[4].schemes` 2, 3, 4, 6, 7 — read off the file,
+  every cell the planning table's — and `SCHEMES_OF.Pop[0] = { repertoire: 6, calendar: 4,
+  testimonials: 2, footer: 3 }`; Editorial's head-of-`sectionVm` mechanism needed no change. The
+  nested cards read `s.onScheme[n]` (now defined under Pop): media 3 / 6, gallery 2, map 6 / 7,
+  pricing 6 / 2 / 3, form 6 / 3, testimonials 6. Layouts 2–4 have no row: layout 3's header (Scheme
+  6 at 768 and 390) and layout 4's (Scheme 3) are those passes'. Two derived keys route A′ does not
+  fix: under Scheme 6 `paper` falls to Retro's `#FBF6EA` (neither violet nor pink clears 0.6
+  luminance) and `deep` is blue, the darkest of its tags. Under Schemes 1–4 `deep` stays violet.
+- **`pillBg` is black under Scheme 1** (trap 3). The after-shots show where it already reads: **the
+  form's contact half and the gallery's open source row went black** (the flat `v0` shells paint
+  them in `pillBg` / `activeBg`). Sections 4 and 9 owe them; neither is a regression.
+- **`s.designed` reaches** the root's `bleed` (inert until the header session — `!s.flatHeader`),
+  `TagChips`' designed branch and `vm.mapSrc` / `mapRadialSrc`: the flat map now draws the raster.
+  `vm.grainSrc` stays unwidened: no Pop section carries a texture.
+- **Photographs** (`SEEDS.Pop`, eight `pop-*.jpg`, 967 KB): the hero `f70d25d3` (3066 × 2390,
+  `FILL`, exported whole at 1536 × 1197); the portrait circle `0b079033`, a `CROP` over the full
+  width and the top 80.03% of a 1122 × 1402 source — **a top square**, exported at 384; the bio
+  `51d06990` (1086 × 1448, `FILL`, at 820 × 1093); the spotlight `b3a33296` (a centred cover, 6.4 in
+  255 from the render, at 900 × 1125); the strip's two own thumbnails `a548367c` and `3cba54cf`
+  (matched to seats 0 and 1 off the render, at 800 × 1000); the calendar `bd34152d`, a `CROP` over
+  the full width and 8.4–65.6% of the height, exported at that crop (1000 × 715, the frame's 1.399);
+  and the form avatar `59099150` — **not** the portrait circle's source, so a slot of its own (whole,
+  at 800 × 1000; the 48px circle covers its centre). `photo` is the hero: Pop's layout-2 form
+  (`964:64576`) fills its stage with `f70d25d3`. **The strip departs from the frame** (Grunge's and
+  Editorial's call): its other five seats are Retro's Basement shoot, so the seven slots are the two
+  own thumbnails, the bio, the spotlight in `galActive()`'s slot, the calendar, the hero and the
+  form avatar's source — seven different pictures of the one comedy-club night. In colour; no fill
+  filter.
+- **The standalone build is 10.08 MB** (10,080,265 bytes; the committed root is 8.79 MB): the eight
+  JPEGs, inlined. The still `pop-header.jpg` (224 KB) goes in section 1.
+- **After-render, theme 4 only** (desktop before / after shots in the session scratchpad; themes 0,
+  1, 2 and 3 digested to zero rows, 528 renders, and commit (a) at all five, 660): every layout-1
+  section renders in Titan One, mixed case; the four seats paint their grounds; the photographs
+  and the map raster are in; the header is still `FlatHeader`. **Every theme-4 render moved, layouts
+  2–4 included** — the face, casing `'title'`, `dls` 0, the radii, `faceK`, `pillBg` black, the
+  `sem` keys, `designed` and the seeded photographs reach the flat placeholders too. Expected; name
+  it rather than chase it. The live digest was not re-run: the change is data keyed on `'Pop'` and
+  `designed`, which no theme-0–3 render reads.
+- **`preview.jsx` needed nothing**: `sectionVm` lays `THEME_RAMP.Pop` over its `Z` by `dev`, as for
+  Editorial.
+
 ### Inherited and used
 
 *(Append one line each time a session leans on a bullet from Lime's, Grunge's, Editorial's or
 Retro's Conventions, naming the plan it came from, a blank line between sections. The sweep folds
 it into [`../CONVENTIONS.md`](../CONVENTIONS.md).)*
 
+Session 0: *the node walker, kept* (grunge/layout-2, Conventions) — the census, 33 masters, with a
+second walk locating each foreign hex; *read a fill's `scaleMode` before believing its
+`imageTransform`* (grunge/layout-2, section 1) — the two `CROP`s exported at their crops, the
+spotlight confirmed a centred cover off the render; *load a Google Font the frames name; substitute
+only on a user call* (memory `load-figma-fonts`; grunge/layout-1, decision 1) — asked, Titan One;
+*divide the face out before comparing any width* (retro/layout-2) — `faceK` 0.98, the first since
+Grunge's that is not 1; *a section's colour scheme is resolved in `sectionVm`* (editorial/layout-1,
+decision 3) — route A′, data only; *under Lime `pillBg` IS the accent* (lime/layout-1, session 0) —
+turned round, black; *casing stays the theme's* (grunge/layout-1, session 0); *photographs are per
+theme* (lime/layout-1, session 0); *the digest is committed* (lime/layout-1, session 0) — 660 + 660
+renders.
+
 ## Open questions
 
-1. **Chunko Bold Demo** — decision 1, the user's call in session 0.
-2. **Casing** — decision 2, settled beside it.
-3. **Seats or literals** — decision 4, the user's call after the census.
-4. **The raw leaks** — decision 5, the user's call from the census table.
+1. ~~**Chunko Bold Demo**~~ — settled in session 0: Titan One at `faceK` 0.98.
+2. ~~**Casing**~~ — settled in session 0: `'title'`.
+3. ~~**Seats or literals**~~ — settled in session 0: route A′, four seats.
+4. ~~**The raw leaks**~~ — settled in session 0: follow every hex; the three faces and the two
+   defects overridden.
 5. **The unbound variants** — worth telling the designer: ten of eleven Pop variants carry raw
    values, and the desktop page frame and several narrow masters are in Lime's mode, so the file's
-   Pop mode does not drive them and three heads render in Bebas Neue at Lime's sizes.
+   Pop mode does not drive them and three heads render in Bebas Neue at Lime's sizes. The census
+   found a fourth face leak beside Anton and Roboto Mono: the 390 header's Book Now is set in
+   Soulway, Retro's display face.
 6. **The gallery strip** — the frame borrows four of Retro's placeholder thumbnails beside two of
    Pop's; seeded as seven distinct pictures of Pop's shoot (session 0). Worth telling the designer.
 7. **The 390 pricing rings** run 52 past the page. Clipped here; worth telling the designer.
