@@ -173,7 +173,7 @@ Session 0 first, then eleven sections in page order. Each row's three masters ar
 | 7 | `pricing` | `964:58630` | Pricing — B · 3-col in soft panel | 1440 × 801 | `986:52426` | 768 × 745.1 | `986:52438` | 390 × 1549.7 | `#FFFFFF` | Lime `964:58594` | done `b845e09` |
 | 8 | `calendar` | `964:58631` | Booking Calendar — A · Scheduler | 1440 × 885 | `986:52427` | 768 × 1361 | `986:52439` | 390 × 1011 | `#2563FF` | Lime `964:58595` | done `39a7807` |
 | 9 | `form` | `964:58632` | Enquiry Forms — B · Split context+form | 1440 × 853 | `986:52428` | 768 × 1061.2 | `986:52440` | 390 × 1238.2 | `#FFFFFF`, a `#6B2CFF` card | Lime `964:58596` | done `abea669` |
-| 10 | `testimonials` | `964:58633` | Testimonials H — Stacked tag card | 1440 × 730 | `986:52429` | 768 × 730 | `986:52441` | 390 × 730 | `#C6F200` | Lime `964:58597` | done |
+| 10 | `testimonials` | `964:58633` | Testimonials H — Stacked tag card | 1440 × 730 | `986:52429` | 768 × 730 | `986:52441` | 390 × 730 | `#C6F200` | Lime `964:58597` | done `edf5815` |
 | 11 | `footer` | `964:58634` | Footer — Component 2 / 3 / 4 | 1440 × 479.7 | `986:52430` | 768 × 720.4 | `986:52442` | 390 × 720.4 | `#FF2DA0` | Lime `964:58598` | |
 
 The twins' fit comments in `EncoreSection.jsx` cite their node ids; grep for any of them to find the
