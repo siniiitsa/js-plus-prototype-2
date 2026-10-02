@@ -1478,7 +1478,14 @@ counters and ink traps: its corners are soft. Rubik 900 is the squarer drawing, 
 - **A long artist is capped at 60% of its row** under Pop (`maxWidth`, ellipsis — Editorial
   layout 4's cap): the frame's rows clip their content, and the harness's synthetic artist at 390
   otherwise crushed the title to nothing and ran past the ring. The twins' flush rows keep
-  `flex: none`, untouched.
+  `flex: none`, untouched. Re-shot at 390: row 4 reads "SONG NU…" beside "· ARTIST NUMBER 4 …",
+  both inside the ring.
+- **The empty list is not drawn by any frame, and `s.muted` vanished on the seat**: pink at 64% on
+  the violet, about 1.4:1, invisible in the shot. Pop's "No songs match that." / "No songs yet."
+  take the section's own dim ink instead, the search hint's `s.text3` white at 50% (CONVENTIONS C,
+  *a twin's frame-less control is checked against its own surround*); shot live and at `n=0`. The
+  twins' arm is the old `{ color: s.muted }` unchanged (theme 1's still reads Lime's pale at 64%);
+  the digest cannot see it — no seeded render is empty — so the proof is the shot and the diff.
 - **Measured** (harness, `n=240`, off the content's top-left): at 1440 the eyebrow, search (769.2,
   16.9, 319 × 50 against 770.0, 16.8), its disc and hint, the chips (31.3 / 68.8 × 20.2 against
   32 / 68.9 × 20.5), the rows (156.3, 535.9 × 69.5, stepping 85.9, against 156.6, 536.3 × 69.7,
@@ -1490,8 +1497,7 @@ counters and ink traps: its corners are soft. Rubik 900 is the squarer drawing, 
 - **Live** (`theme=4&live=1&n=240`, three widths): Next lights page 2 and the list starts at 13
   (7 narrow); a chip re-derives the pager (20 → 7 pages at 1440, 40 → 14 narrow) and resets to
   page 1, the lit chip lime under violet and the rest the 15% tint under lime; a search with no
-  match prints "No songs match that." in `s.muted` (pink at 64% on violet — read, legible, kept)
-  and drops the pager; the input types white Space Mono; every chip and pager button hit-tests to
+  match prints "No songs match that." (see the empty-list bullet) and drops the pager; the input types white Space Mono; every chip and pager button hit-tests to
   itself. `page-check.mjs Pop 0`: no console error or warning, the chips change state (All:
   false is the lit chip clicked again), `overflow390` 0; the seam clips show the lime rule under
   the white gallery at 1440 and the heart cut by the map's edge at 390.
@@ -1610,7 +1616,8 @@ the ramp's `title` size* (lime/layout-1, section 6) — Display/Title as a liter
 scaled* (`faced`, grunge/layout-1) — the pager numerals; *a stand-in face's glyph floor is measured per
 site* (editorial/layout-3) — 0.14em; *the artist capped at 60%* (editorial/layout-4, repertoire); *one
 five-theme digest is the whole proof for a shared-helper change* (lime/layout-1, sweep) — `Pager`, static
-and live; *theme 1 is the digest at risk* (grunge/layout-1) — themes 0–3 at zero.
+and live; *a twin's frame-less control is checked against its own surround* (editorial/layout-3) — the
+empty list re-inked; *theme 1 is the digest at risk* (grunge/layout-1) — themes 0–3 at zero.
 
 ## Open questions
 

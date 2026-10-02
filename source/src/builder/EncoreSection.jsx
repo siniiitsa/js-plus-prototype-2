@@ -11989,8 +11989,11 @@ function Repertoire({ s }) {
             )}
           </div>
 
+          {/* No frame draws the empty list. Under Pop `s.muted` is pink at 64%
+              on the violet, which vanishes, so it takes the section's own dim
+              ink, the search hint's white at 50%. */}
           {shown.length === 0 ? (
-            <span style={body(s.bodyMd, 1.5, { color: s.muted })}>
+            <span style={body(s.bodyMd, 1.5, pop ? { color: s.text3, opacity: 0.5 } : { color: s.muted })}>
               {s.songs.length === 0 ? 'No songs yet.' : 'No songs match that.'}
             </span>
           ) : (
