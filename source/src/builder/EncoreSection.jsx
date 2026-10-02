@@ -412,6 +412,33 @@ const POP_ASTERISK_D =
   'L51.89 95L39.86 95L39.86 62.5L17.43 84.64C15.64 85.6 8.21 77.23 8.36 76.37L29.89 54.17L0 54.17' +
   'L0 40.84L29.89 40.84L8.36 18.64L17.02 9.97L39.86 31.67L39.86 0L53.14 0Z'
 
+// Pop's repertoire raw values (964:58628; decision 5: followed). `pill` is the
+// search's and the pager's violet tint, a step off Scheme 6's `box1` #8451FA;
+// `glow` is Lime's, solid on the search disc and at 16% in its ring and 15%
+// under the idle chips; `song` is Lime's accent on the titles, the numbers and
+// the idle page numerals; `pale` is Lime's text on the eyebrow and the arrow
+// discs' rings; `paper` is Retro's, the current page's numeral.
+const POP_REP = {
+  pill: '#9162FF', glow: '#A6E22E', ring: 'rgba(166, 226, 46, 0.16)', chip: 'rgba(166, 226, 46, 0.15)',
+  song: '#AFE335', pale: '#F2FFD0', paper: '#FBF6EA',
+}
+
+// Pop's repertoire stickers, off the frame's SVGs in their own boxes, rounded
+// to the hundredth: the lightning by the head (964:58628's "Union", 100.87 ×
+// 79.92, the boolean's own pink — its children's #BCD631 does not render) and
+// the heart by the pager (its "Vector", 100.44 × 91, teal). Neither is turned.
+const POP_BOLT_D =
+  'M84.03 40.29C85.5 38.93 87.8 39.02 89.16 40.5C90.52 41.98 90.42 44.29 88.95 45.65L52.89 78.96' +
+  'C52.2 79.6 51.32 79.92 50.44 79.92C49.46 79.92 48.48 79.53 47.76 78.75C46.41 77.27 46.5 74.96 47.97 73.6L84.03 40.29Z' +
+  'M94.88 0.88C96.4 -0.43 98.69 -0.26 99.99 1.27C101.3 2.79 101.13 5.09 99.61 6.4L39.23 58.49' +
+  'C38.51 59.11 37.6 59.43 36.7 59.43C35.95 59.43 35.2 59.21 34.55 58.78C33.12 57.82 32.48 56 33.02 54.35' +
+  'L45.01 17.36L6.23 57.25C4.83 58.69 2.53 58.72 1.09 57.32C-0.34 55.91 -0.37 53.61 1.03 52.17L49.96 1.85' +
+  'C51.22 0.55 53.19 0.29 54.73 1.23C56.28 2.17 56.97 4.03 56.41 5.76L43.67 45.06L94.88 0.88Z'
+const POP_HEART_D =
+  'M28.28 0.07C37.62 -0.62 47.47 3.84 53.12 11.24C82.95 -8.29 113.26 22.69 94.81 52.89' +
+  'C86.63 66.29 68.66 79.13 54.74 86.21C51.08 88.07 44.66 92.29 40.85 90.62' +
+  'C38.58 89.62 30.66 82.87 28.41 80.83C17.32 70.76 1.65 51.66 0.17 36.4C-1.53 18.96 9.98 1.43 28.28 0.07Z'
+
 // Pop's smiley sun (964:58625's second "Layer_1", 154 × 154 before its tilt):
 // the scalloped disc's outline and the smile's three features, off the
 // frame's `fillGeometry` in the sticker's own units, rounded to the hundredth.
@@ -11524,12 +11551,23 @@ function Pager({ s, colour, fill, frame = {} }) {
   // Editorial's layout-2 repertoire (964:64608) fills its arrows, which no
   // other frame does, so `frame.lime` takes an additive `endBox`, the two
   // ends' own fill; without it they stay unfilled, as every caller before it.
-  if (s.limeTree) {
+  //
+  // Pop's (964:58628 / 986:52424 / 986:52436) fills everything and marks its
+  // page: the two ends are lime discs (`sem/text/1`, the seat's `s.ac`) in a
+  // 1px ring of Lime's leaked #F2FFD0 round the arrow in the violet ground's
+  // own hue; the page pills are the frame's #9162FF tint with Lime's #AFE335
+  // numerals, the current one filled pink (`s.tx`) under Retro's paper. The
+  // numerals are a raw Anton 12 in the frame, set in Pop's label face at that
+  // size (decision 5).
+  if (s.limeTree || s.pop) {
     const grunge = s.grunge
     const ed = s.editorial
+    const pop = s.pop
     const z = s.narrow ? 1 : 0.82
     const u = (v) => `${Math.round(v * z * 10) / 10}px`
-    const t = ed
+    const t = pop
+      ? { box: POP_REP.pill, endBox: s.ac, ring: POP_REP.pale, ink: s.bg, idle: POP_REP.song, onBox: s.tx, on: POP_REP.paper, ...frame.lime }
+      : ed
       ? { box: 'transparent', ring: s.stroke1, ink: s.tx, idle: s.tx, on: s.ac, onEdge: s.ac, pill: 54, ...frame.lime }
       : grunge
       ? { box: s.pillBg, ring: s.stroke1, ink: s.tx, idle: s.tx, on: s.activeFg, onRing: s.tx, ...frame.lime }
@@ -11545,7 +11583,8 @@ function Pager({ s, colour, fill, frame = {} }) {
         color: on && t.on ? t.on : end || on ? t.ink : t.idle,
         cursor: onClick ? 'pointer' : undefined,
         display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-        ...(grunge || ed
+        ...(pop ? labelStyle(s, u(12))
+          : grunge || ed
           ? labelStyle(s, s.labelSm)
           : { fontFamily: s.label, fontSize: s.labelSm, lineHeight: 1.1, letterSpacing: s.dls, whiteSpace: 'nowrap' }),
         // The 390 master spreads every button to one width across the measure.
@@ -11725,18 +11764,39 @@ function Repertoire({ s }) {
     // the same dashed 9, 9; the heading is one tone. Beside the heading stands
     // the sparkle (`GrungeStar`, 80.67 wide, `sem/media`), which only this
     // template draws.
-    if (s.limeTree) {
+    //
+    // Pop — the fifth time (964:58628 at 1440, 986:52424 at 768, 986:52436 at
+    // 390): Lime's tree node for node, seated on Scheme 6 (violet), so `s.bg`,
+    // `s.ac`, `s.tx` and `s.stroke1` are violet, lime, pink and lime. Nothing
+    // binds, so the leaves are the frame's raw values, and the tints no key
+    // holds are `POP_REP`'s. The songs are **pills**, not ruled rows: each
+    // ringed 1px in `s.stroke1` at radius 90, padded 27 / 30, 20 apart, the
+    // columns 20 apart where Lime's are 70. The search is a #9162FF pill round
+    // a solid #A6E22E disc, its hint Space Mono 13 in white at 50%; the chips
+    // Inter Bold 12.5; the number Chakra Petch 16; the title Display/Title
+    // 28 / 22 / 20 and the artist a raw Titan 16 at every width. The eyebrow
+    // is a raw Inter Bold 11 in Lime's leaked #F2FFD0. A 10px INSIDE `s.stroke1`
+    // rule crosses the root's top, and two stickers stand on it: a pink
+    // lightning off the heading's end and a teal heart by the pager.
+    if (s.limeTree || s.pop) {
       const grunge = s.grunge
       const ed = s.editorial
+      const pop = s.pop
       const z = s.narrow ? 1 : 0.82
       const u = (v) => `${Math.round(v * z * 10) / 10}px`
       const body = (size, lh, extra) => ({
         fontFamily: s.body, fontSize: size, lineHeight: lh, letterSpacing: s.dls, ...extra,
       })
-      const bebas = (size, extra) => (grunge || ed ? labelStyle(s, size, extra) : {
+      const bebas = (size, extra) => (grunge || ed || pop ? labelStyle(s, size, extra) : {
         fontFamily: s.label, fontSize: size, lineHeight: 1.1, letterSpacing: s.dls, whiteSpace: 'nowrap', ...extra,
       })
-      const G = ed ? {
+      const G = pop ? {
+        field: POP_REP.pill, fieldR: '999px', fieldRing: POP_REP.ring, tile: POP_REP.glow, tileR: '999px',
+        tileRule: undefined, glyph: s.bg, hintInk: s.text3,
+        hintFace: s.mono, hintSize: u(13), hintLh: 'normal', hintOp: 0.5,
+        chipSize: u(12.5), chipLh: 'normal', chipWeight: 700, chipOn: s.bg, chipOff: POP_REP.chip,
+        song: s.narrow ? (tab ? '22px' : '20px') : u(28),
+      } : ed ? {
         field: 'transparent', fieldR: 0, tile: 'transparent', tileR: 0, tileW: 49.94,
         tileRule: `inset 0 0 0 1px ${s.ac}`, glyph: s.activeBg, hintInk: s.tx,
         chipSize: s.bodyMd, chipLh: 1.5, chipOn: s.activeFg, chipOff: s.chips[0].bg, chipOffInk: s.bg,
@@ -11754,8 +11814,53 @@ function Repertoire({ s }) {
       }
       const words = String(s.title || '').split(' ')
       const hint = 'Search songs or artists…'
+      // Pop's glyphs are lifted 0.14em, Titan One setting its caps that much
+      // lower in the line box than Chunko does (the bio's and the gallery's
+      // Display/LG at 0.89, measured again here).
+      const heading = (
+        <h2 style={distressed(s, {
+          margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispLg), lineHeight: facedLh(s, 0.89),
+          letterSpacing: s.dls, color: s.ac, textTransform: grunge || ed || pop ? 'uppercase' : undefined,
+          ...(ed && !s.narrow ? { position: 'relative', paddingRight: u(63.07 + 80.67) } : null),
+          ...(pop ? { position: 'relative', top: '-0.14em' } : null),
+        })}>{grunge && words.length > 1
+          ? <>{words[0]} <span style={{ color: s.tx }}>{words.slice(1).join(' ')}</span></>
+          : s.title}
+          {ed && !s.narrow && (
+            <GrungeStar s={s} fill={SIENNA_MEDIA} style={{ right: 0, top: u(0.13), width: u(80.67), height: u(81.42) }} />
+          )}</h2>
+      )
       return (
         <div style={col(u(32))}>
+          {/* Pop's root clips (the frame's own `clipsContent`), so its 10px
+              rule and its heart stand in a layer the root's size: the block's
+              column is unpositioned, so `inset: 0` is the root. The heart is
+              the frame's at 1440 — 60.78 in from the content's right, its foot
+              9 past the content's — and at 390, 2 from the page edge and 12
+              above the content's foot, so it runs over the → disc's lower
+              corner and the root cuts it off, as the master draws it. Both
+              are seated off the content's foot rather than the pager, which
+              the seeded twelve songs do not draw at 1440. The 768 master keeps
+              the desktop's x in a 768 frame, wholly clipped, so it draws none
+              there. It takes no pointer, so the disc under it hit-tests to
+              the disc. */}
+          {pop && (
+            <div aria-hidden style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none' }}>
+              <div style={{
+                position: 'absolute', left: 0, right: 0, top: 0, height: s.narrow ? 10 : 8.2, background: s.stroke1,
+              }} />
+              {!tab && (
+                <svg viewBox="0 0 100.44 91" aria-hidden style={{
+                  position: 'absolute', display: 'block', width: u(100.44), height: u(91),
+                  ...(s.mob
+                    ? { right: '2px', bottom: `calc(${s.padY} - 79px)` }
+                    : { right: `calc(${s.padX} + ${u(60.78)})`, bottom: `calc(${s.padY} - ${u(9)})` }),
+                }}>
+                  <path d={POP_HEART_D} fill={s.onScheme[1].chips[3].bg} />
+                </svg>
+              )}
+            </div>
+          )}
           {/* Desktop centres the field against the heading, 768 halves the row
               and sits both on its foot, 390 stacks them 20 apart. */}
           <div style={row(s.mob ? '20px' : tab ? '0px' : u(20), {
@@ -11767,25 +11872,42 @@ function Repertoire({ s }) {
                 against the content box, so the padded pill came out 20 wider
                 than the heading beside it. */}
             <div style={col(u(16), tab ? { flex: '1 1 50%', minWidth: 0 } : { flex: 'none', maxWidth: '100%' })}>
-              {/* Body/Eyebrow, typed in capitals. */}
-              <span style={body(s.eyebrow, 1.3, {
-                fontWeight: 700, color: s.tx, textTransform: 'uppercase', whiteSpace: 'nowrap',
-              })}>Repertoire</span>
+              {/* Body/Eyebrow, typed in capitals. Pop's is a raw Inter Bold 11
+                  tracked 1.5 at its auto line height, in Lime's #F2FFD0. */}
+              <span style={pop
+                ? body(u(11), 'normal', {
+                  fontWeight: 700, letterSpacing: u(1.5), color: POP_REP.pale, textTransform: 'uppercase', whiteSpace: 'nowrap',
+                })
+                : body(s.eyebrow, 1.3, {
+                  fontWeight: 700, color: s.tx, textTransform: 'uppercase', whiteSpace: 'nowrap',
+                })}>Repertoire</span>
               {/* Display/LG. Editorial's desktop sparkle hangs off the
                   heading's own end, 63.07 past it and level with its top —
                   seated off the string rather than the frame's x, so a longer
                   count carries it along; the heading's box keeps its room, so
                   the search yields to both before either can cover it. */}
-              <h2 style={distressed(s, {
-                margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispLg), lineHeight: facedLh(s, 0.89),
-                letterSpacing: s.dls, color: s.ac, textTransform: grunge || ed ? 'uppercase' : undefined,
-                ...(ed && !s.narrow ? { position: 'relative', paddingRight: u(63.07 + 80.67) } : null),
-              })}>{grunge && words.length > 1
-                ? <>{words[0]} <span style={{ color: s.tx }}>{words.slice(1).join(' ')}</span></>
-                : s.title}
-                {ed && !s.narrow && (
-                  <GrungeStar s={s} fill={SIENNA_MEDIA} style={{ right: 0, top: u(0.13), width: u(80.67), height: u(81.42) }} />
-                )}</h2>
+              {pop ? (
+                // Pop's lightning hangs off the heading's end the same way,
+                // over it: the wrapper hugs the string, and the sticker sits at
+                // each master's offset from the end of Chunko's "240 SONGS"
+                // (5.683em) and from the heading's top. The narrow text boxes
+                // are a fixed 305.02, not the string, so the ink's end is the
+                // anchor at every width. The wrapper, not the `h2`, holds it,
+                // so lifting the glyphs leaves it put.
+                <div style={{ position: 'relative', alignSelf: 'flex-start', maxWidth: '100%' }}>
+                  {heading}
+                  <svg viewBox="0 0 100.87 79.92" aria-hidden style={{
+                    position: 'absolute', display: 'block', overflow: 'visible', pointerEvents: 'none',
+                    ...(s.mob
+                      ? { left: 'calc(100% + 1.65px)', top: '-49.96px', width: '70.63px', height: '55.96px' }
+                      : tab
+                      ? { left: 'calc(100% - 36.7px)', top: '-41.97px', width: '71.27px', height: '56.47px' }
+                      : { left: `calc(100% - ${u(25)})`, top: u(-70.73), width: u(100.87), height: u(79.92) }),
+                  }}>
+                    <path d={POP_BOLT_D} fill={s.tx} />
+                  </svg>
+                </div>
+              ) : heading}
             </div>
             {/* The pill: `sem/box/2` in a 1px `sem/stroke/1` ring stroked
                 inside, round a `sem/active` tile carrying the frame's own
@@ -11795,7 +11917,7 @@ function Repertoire({ s }) {
               background: G.field, borderRadius: G.fieldR, height: u(61), minWidth: 0, overflow: 'hidden',
               ...(ed
                 ? { position: 'relative', padding: `0 0 ${u(14)}` }
-                : { boxShadow: `inset 0 0 0 1px ${s.stroke1}`, padding: u(10) }),
+                : { boxShadow: `inset 0 0 0 1px ${G.fieldRing ?? s.stroke1}`, padding: u(10) }),
               ...(s.mob ? { width: '100%' } : tab ? { flex: '1 1 50%' } : { flex: `0 1 ${u(389)}` }),
             })}>
               {ed && <DashRule dash={9 * z} colour={s.stroke1} />}
@@ -11811,18 +11933,22 @@ function Repertoire({ s }) {
               </span>
               {/* Body/MD. The published field takes the same type, so it
                   measures the same; its placeholder draws at `::placeholder`'s
-                  .45, Retro's accepted diff. */}
+                  .45, Retro's accepted diff. Pop's hint is Space Mono 13 in
+                  white at the node's 50%; its typed text is the white whole,
+                  and its placeholder the same .45, a shade under the frame. */}
               {s.live ? (
                 <input
                   value={q} placeholder={hint}
                   onChange={(e) => { setQ(e.target.value); setPage(0) }}
-                  style={body(s.bodyMd, 1.5, {
+                  style={body(G.hintSize ?? s.bodyMd, G.hintLh ?? 1.5, {
+                    fontFamily: G.hintFace ?? s.body,
                     color: G.hintInk, flex: 1, minWidth: 0, border: 'none', outline: 'none',
                     background: 'transparent', padding: 0,
                   })}
                 />
               ) : (
-                <span style={body(s.bodyMd, 1.5, {
+                <span style={body(G.hintSize ?? s.bodyMd, G.hintLh ?? 1.5, {
+                  fontFamily: G.hintFace ?? s.body, opacity: G.hintOp,
                   color: G.hintInk, minWidth: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
                 })}>{hint}</span>
               )}
@@ -11847,6 +11973,7 @@ function Repertoire({ s }) {
                 key={i}
                 onClick={s.live ? () => { setChip(i); setPage(0) } : undefined}
                 style={body(G.chipSize, G.chipLh, {
+                  fontWeight: G.chipWeight,
                   padding: `${u(5)} ${u(11)}`, borderRadius: '999px', whiteSpace: 'nowrap',
                   background: i === active ? s.pillBg : G.chipOff ?? s.box2,
                   color: i === active ? G.chipOn : G.chipOffInk ?? s.ac,
@@ -11868,17 +11995,20 @@ function Repertoire({ s }) {
             </span>
           ) : (
             <div style={{
-              display: 'grid', columnGap: u(70),
+              display: 'grid', columnGap: u(pop ? 20 : 70),
               gridTemplateColumns: s.narrow ? 'minmax(0, 1fr)' : 'minmax(0, 1fr) minmax(0, 1fr)',
             }}>
               {columns.map((colSongs, ci) => (
-                <div key={ci} style={col('0px', { minWidth: 0 })}>
+                <div key={ci} style={col(pop ? u(20) : '0px', { minWidth: 0 })}>
                   {colSongs.map((t) => (
                     // 27 above and below, the rule stroked inside the row's
                     // height as Figma strokes it, so the foot gives back its 1px.
                     // Editorial's rule is dashed, an overlay taking no height,
-                    // so its foot keeps the whole 27.
-                    <div key={t.n} style={row('0px', ed
+                    // so its foot keeps the whole 27. Pop's row is a pill
+                    // ringed all round, inside, so it keeps all four pads.
+                    <div key={t.n} style={row('0px', pop
+                      ? { padding: `${u(27)} ${u(30)}`, borderRadius: '999px', boxShadow: `inset 0 0 0 1px ${s.stroke1}` }
+                      : ed
                       ? { position: 'relative', padding: `${u(27)} 0` }
                       : { padding: `${u(27)} 0 calc(${u(27)} - 1px)`, borderBottom: `1px solid ${s.stroke1}` })}>
                       {ed && <DashRule dash={9 * z} colour={s.stroke1} />}
@@ -11886,16 +12016,24 @@ function Repertoire({ s }) {
                           "10" does not shunt its own title. */}
                       <span style={{
                         width: u(24), flex: 'none', whiteSpace: 'nowrap',
-                        fontFamily: s.ui, fontSize: s.labelXs, lineHeight: 1.26, letterSpacing: s.dls, color: s.ac,
+                        fontFamily: s.ui, fontSize: pop ? u(16) : s.labelXs, lineHeight: pop ? 'normal' : 1.26,
+                        letterSpacing: s.dls, color: pop ? POP_REP.song : s.ac,
                       }}>{t.n}</span>
-                      <span style={row(u(12), {
+                      <span style={row(u(pop ? 4 : 12), {
                         flex: 1, minWidth: 0, alignItems: 'baseline', justifyContent: 'space-between',
                       })}>
                         {/* Label/LG over Label/SM. */}
                         <span style={bebas(G.song, {
-                          color: s.tx, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis',
+                          color: pop ? POP_REP.song : s.tx, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis',
                         })}>{t.title}</span>
-                        <span style={bebas(s.labelSm, { color: s.ac, flex: 'none' })}>· {t.artist}</span>
+                        {/* Pop's pill clips its row (the frame's own
+                            `clipsContent`), so a long artist stops at 60% of
+                            it rather than crushing the title or crossing the
+                            ring — Editorial's layout-4 cap. */}
+                        <span style={bebas(pop ? u(16) : s.labelSm, {
+                          color: pop ? s.tx : s.ac, flex: 'none',
+                          ...(pop ? { maxWidth: '60%', overflow: 'hidden', textOverflow: 'ellipsis' } : null),
+                        })}>· {t.artist}</span>
                       </span>
                     </div>
                   ))}
