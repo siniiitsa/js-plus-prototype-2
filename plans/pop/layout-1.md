@@ -719,6 +719,11 @@ Do **not** refresh the root `index.html` per section; it is the sweep's last ste
 
 ## The end-of-pass sweep
 
+**Done, 2026-10-03: `7c98393` (the flat family's code), `bb6e5f6` (CLAUDE.md, README, the notes,
+the header's `in`, `CONVENTIONS.md`, `plans/README.md`) and the commit carrying this line (the
+`index.html` refresh).** What each item came to is under *Learned on the end-of-pass sweep* at
+the foot of *Conventions*; the list is kept as it was written.
+
 One session after section 11. Lime's, Grunge's and Editorial's lists apply item for item (their *The
 end-of-pass sweep* and *Learned on the end-of-pass sweep*); what is Pop's own:
 
@@ -2367,6 +2372,96 @@ digest is the whole proof for a shared-helper change* (lime/layout-1, sweep) —
 with the fills read beside it; *theme 1 is the digest at risk* (grunge/layout-1) — themes 0–3 at
 zero, static and live.
 
+The sweep: *one five-theme digest is the whole proof for a shared-helper change* (lime/layout-1,
+sweep) — the flat family and three helper arms, static and live, with a positive control on the
+served module; *a seeded page cannot show an empty slot* (lime/layout-1, sweep) — `&noimage=1` on
+cards 1, 3 and 4; *the whole-page published check is one puppeteer script* (grunge/layout-1,
+sweep) — `Pop 0,1,2,3`; *field reach is measured* (CLAUDE.md) — `reach.mjs 4`, checked against
+`fieldReach()` in Node (memory `browser-tool-choice`); *the two-build digest walks the editor*
+(lime/layout-1, sweep) — `CARD=0`, reduced motion on.
+
+### Learned on the end-of-pass sweep (`7c98393`, `bb6e5f6` and the refresh)
+
+- **Code went first** (items 3 and 4, then 1 and 2): the docs' sentences about the flat family
+  could only be written once it was gone. Item 1's "file table's line counts" had nothing to
+  count — neither CLAUDE.md nor README carries a file table any more.
+- **Item 3: the flat family is deleted, and three helper arms went with it.** `FlatHeader`,
+  `FlatNav` and §10.3's banner, `s.flatHeader` and the root's dispatch, `HEADER_NAMES.flat`,
+  `HEADER_COUNT.flat`, `TEMPLATE_STILLS` and `TemplatePreview`'s `if (still)`, and what only
+  the flat header read (`ctaPrimary`, `ctaGhost`, SIZES' `h1b` / `navGap` / `split` and
+  `preview.jsx`'s copy, lucide's `ArrowUpRight`). **A name no template carries now falls to
+  `'photographic'`**, the six names and counts of what the root dispatches for any theme.
+  Not on the list, and found by asking which branch any template still reaches: **`BookPill`'s
+  flat pill**, **`SealBadge`'s pre-§10.2 starburst** and **`TagChips`' undesigned chip** —
+  once Pop took the Lime arm of every shared helper at every layout (section 1), and `designed`
+  covered all five, no theme reached them. `BookPill`'s Retro branch is now its tail, the
+  fallback for a theme in no arm. Retro's media body lost its non-Retro arms (only Retro and
+  Pop reach it, and every Pop read takes its own arm first) and its calendar body its flat
+  ones (Retro alone). **Digest: zero rows at all five themes, static and live (660 + 660)**,
+  with `curl` on the served module as the positive control (no `FlatHeader`, the new
+  `BookPill` comment present).
+- **Left, and named for a follow-up** (open question 11): the other seven Retro `v0` bodies
+  carry 38 `s.retro` tests — ternaries whose other arm and `&&` gates that no template reaches
+  now — bio 3, pricing 2, repertoire 10, gallery 10, map 6, testimonials 6, form 1 (outside the
+  nested Lime blocks), each Retro's alone since every other template takes its Lime block. And `s.designed` is true for every template; its two readers (`bleed`, the
+  map raster) are kept as the names of what designed templates share.
+- **Item 4: every `(s.limeTree || s.pop)`, kept, none folded.** Sixteen in `EncoreSection`:
+  six shared helpers reached at every layout — `labelStyle`'s tracking, `LogoMark`'s globe,
+  `BookPill`'s Lime branch, `TagChips`' padding, `NavBar`'s and `HeaderV0`'s `lime` — plus
+  `Pager`'s Lime branch, and the nine layout-1 blocks of the bio, pricing, repertoire,
+  gallery, calendar, map, testimonials, form and footer. Three seeds outside it, each
+  `limeTreeTheme(name) || name === 'Pop'` (`tiersSeed`, `formBtnSeed`, `EditPanel`'s
+  `CAL_HEADING_1`), and `sectionVm`'s `(vm.limeTree || vm.pop)` for the calendar's head. A
+  layout-1 group flag would read wrong at the helpers, which reach Pop's undressed layouts 2–4
+  too; the honest fold is widening `limeTree` (and `limeTreeTheme`) to Pop once its family
+  closes, deleting every `|| pop` at once. **Three layout-1 `s.limeTree` sites stay unpaired on
+  purpose**: `SealBadge`'s Lime disc (Pop's own arm precedes it), `Photo`'s backdrop (Pop's `s.tx`
+  arm precedes it) and `Media`'s block (Pop dresses Retro's body). `tiersSeed`'s comment, which
+  still said the calendar's and form's seeds were theirs to widen, was corrected.
+- **Item 5: no change.** The plan's `#F5F5F5` → `#FFFFFF` → `#000000` was Lime's ramp, but
+  section 1 gave Pop its own arm, `s.tx` violet, the hero frame's own empty ground. Shot at
+  `&noimage=1`: card 1 at 1440 and 390, cards 3 and 4 (Retro's paths, which draw a backdrop)
+  at 1440 and 390 — a violet well under the black scrim, every string legible. Card 2 draws none.
+- **Items 6 and 7: `page-check.mjs Pop 0,1,2,3` passed first time.** Card 1: nine nav links and
+  Book Now scroll, the three pricing pills reach `#form`, the player plays (`paused: false`),
+  gallery, repertoire, map, pricing, calendar and testimonials answer the probe (the `false`s
+  are the lit All chips and the gallery's current tile), the form rings four boxes in 2px white
+  and composes *Wedding enquiry*, all nine footer links scroll, the 390 burger opens (1 → 11),
+  `overflow390` 0, no console error or warning in either window. Cards 2–4 publish all eleven
+  sections in `pageOrder(i)`'s order, with none either. The seams at 1440 and 390: every edge
+  straight, each 10px rule on its own section (the header's foot lime, the repertoire's top lime,
+  pricing's blue, the calendar's pink, the testimonials' violet), the footer meeting the lime on
+  the leaked hairline; the 390 heart over the → disc and the footer seal over the bar are the
+  frames' own and were hit-tested in their sections.
+- **Item 8: the header's `in` has a Pop row**, measured with `reach.mjs 4` (5880 renders) and
+  then every plain probe compared with `fieldReach()` in Node: only the header rows differed.
+  kicker, tags and showTags `[0, 2, 3]` (card 3 is Retro's placeholder, which prints the kicker
+  where the twins' fitted card prints `cardLine`); subtitle, heroCta, availability, faceTitle,
+  faceBody and placeBody `[1]`; location all four; cta2 `[1, 2]` (the known 4/6 partial);
+  showBadge and badgeText `[0, 1, 3]` (Pop's seal prints the name; placeholder card 2 draws
+  Retro's); align `[0]`. `cardLine`'s `'*': []` is right under Pop. The identity probes found
+  one hint short of Pop: the calendar's layout 1 prints no location under Pop either (Lime's
+  block), so the Location hint names Pop. Cards 2–4 are placeholders, so each layout pass
+  re-measures its card.
+- **A trap of the session's own**: editing comments in `source/` while `reach.mjs` ran.
+  Comment-only, so no render could change, but a Vite reload mid-render reads as a hit; the run's
+  partials were all the known systematic ones (cta2 4/6, `calendar.email` 3/6, `railLabel` 2/6,
+  bio layout 4's `tagsLabel` 4/6), so nothing was spoiled. A scratch puppeteer script launched
+  right after a `data.js` edit died on "Execution context was destroyed" — the reload — and
+  passed on a rerun.
+- **Item 9: `CONVENTIONS.md` took a *Pop (layout 1)* column** on A, B, C and D1, and three rows
+  this pass leaned on three times or more that the file did not name, all in A: reading raw
+  values where a variant binds nothing, reading a text style by name in the template's own mode,
+  and transcribing the frame's vectors off their own geometry. The stickers, scribbles, dot grids
+  and 10px rules stay in this plan. `plans/README.md` marks the pass swept.
+- **Item 10: the two-build digest.** The old build digested before the `cp`: themes 0, 1, 2 and 3
+  byte-identical at Desktop, Tablet and Mobile; theme 4 moved 737 → 815, 697 → 755 and 684 → 745
+  rows (1552 / 1452 / 1429 diff lines); `modal.txt` reads `Pop: 3 cards` → `4 cards`, the
+  shipped-it tell.
+- **Sizes after the pass**: 56 photograph files, 6.52 MB (49 and 5.77 after Editorial's pass:
+  the eight `pop-*.jpg` in, the still out); the standalone `index.html` is **9.81 MB**
+  (9,813,373 bytes; was 8.79). Titan One is a Google Fonts link, so no face was inlined.
+
 ## Open questions
 
 1. ~~**Chunko Bold Demo**~~ — settled in session 0: Titan One at `faceK` 0.98.
@@ -2407,3 +2502,7 @@ zero, static and live.
     since it reads at display size in the frame's render; worth telling the designer. The section's
     small print binds `sem/text/1` and renders Lime's accent in the frame's inherited Lime mode;
     Pop's own mode makes it pink, which is what is drawn.
+11. **Dead arms left for a follow-up** (the sweep): the seven Retro `v0` bodies other than the
+    media's and the calendar's still carry 38 `s.retro` tests whose other side no template reaches,
+    and `s.designed` is true for every template. Neither was on the sweep's list; folding them is a
+    five-theme digest at zero rows, Retro's bodies alone.

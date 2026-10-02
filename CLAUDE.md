@@ -7,7 +7,7 @@ repeat it. What follows is only what a fresh session tends to get wrong.
 
 All source lives in **`source/`**. Two files at the repo root are *not* source:
 
-- **`index.html`** (~8.8 MB — most of it the inlined Retro, Lime, Grunge and Editorial photography) is the generated
+- **`index.html`** (~9.8 MB — most of it the inlined photography of all five templates) is the generated
   single-file build, committed so the demo is
   double-clickable. Never hand-edit it.
 - **`mock-template.html`** (~12 MB, untracked) is a reference artefact.
@@ -43,7 +43,7 @@ The hand-written code is `src/builder/` (`EncoreBuilder.jsx`, `EncoreSection.jsx
 shadcn.
 
 `photos.js` is the only module that imports the files in `src/builder/photos/`. Keep those
-imports out of `data.js` — it is documented as pure, import-free data, and the assets are ~5.8 MB.
+imports out of `data.js` — it is documented as pure, import-free data, and the assets are ~6.5 MB.
 
 ## The one architectural rule
 

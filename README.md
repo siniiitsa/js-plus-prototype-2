@@ -190,8 +190,8 @@ the only module that imports them.
   moment the artist edits the list (it has to be, or renaming track one would delete five
   photographs), so from then on it is theirs and survives a template switch.
 - **Imports, never fetches.** §8.6 forbids a network request in the render path.
-  `vite-plugin-singlefile` forces `assetsInlineLimit = () => true`, so all forty-nine files are
-  base64-inlined and the committed `index.html` still opens from `file://`. It is ~8.7 MB.
+  `vite-plugin-singlefile` forces `assetsInlineLimit = () => true`, so all fifty-six files are
+  base64-inlined and the committed `index.html` still opens from `file://`. It is ~9.8 MB.
   (The plain `npm run build` path has no such override and would emit them to `dist/assets/`
   instead; only the standalone build feeds the committed demo.)
 - **`null` is the explicit-clear sentinel.** A fresh section carries no `image` key at all, and
