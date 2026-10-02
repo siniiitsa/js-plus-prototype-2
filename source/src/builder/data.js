@@ -653,6 +653,28 @@ export const notoEms = (text) =>
 // 1.041, UNFORGETTABLE. 1.040 — so over, never under.
 export const notoBoldEms = (text) => notoEms(text) * 1.045
 
+// Titan One's — Pop's display and label face, standing in for the caps-only
+// Chunko Bold Demo, so set in caps as well — read off the rendered DOM in the
+// harness (spans at 100px in the loaded face, untracked: Pop's mode states 0),
+// not canvas measureText. Titan One kerns a few capital pairs, so the sums
+// land on most labels exactly and over on the rest — "AVAILABILITY" by 3.6%,
+// "SHOWS/COVERAGE" by 1.3% — never under. The face is set at 0.98 of the
+// token (`faced`), so a width in ems of the token is this sum × 0.98, which
+// is what sectionVm's `navFace` takes.
+const TITAN_EM = {
+  A: 0.738, B: 0.705, C: 0.656, D: 0.731, E: 0.61, F: 0.586, G: 0.674, H: 0.727, I: 0.359,
+  J: 0.41, K: 0.709, L: 0.544, M: 0.88, N: 0.734, O: 0.756, P: 0.707, Q: 0.746, R: 0.716,
+  S: 0.654, T: 0.651, U: 0.726, V: 0.727, W: 1.016, X: 0.721, Y: 0.698, Z: 0.627,
+  0: 0.726, 1: 0.453, 2: 0.614, 3: 0.609, 4: 0.618, 5: 0.611, 6: 0.662, 7: 0.539, 8: 0.659, 9: 0.662,
+  ' ': 0.225, '&': 0.776, '·': 0.293, '/': 0.418, '-': 0.553, "'": 0.261, '.': 0.293,
+  ',': 0.293, '!': 0.332, '?': 0.599, ':': 0.293, '(': 0.45, ')': 0.45, '+': 0.553,
+}
+
+// A label's width in ems of Titan One at its own size; anything unlisted takes
+// 0.726, the widest digit's advance.
+export const titanEms = (text) =>
+  [...String(text).toUpperCase()].reduce((w, ch) => w + (TITAN_EM[ch] ?? 0.726), 0)
+
 /* ------------------------------------------------------------------ *
  * §4.4 NVAR — distinct rendered designs per category.
  * Every category offers at least as many layout choices as it has
@@ -679,13 +701,16 @@ export const NVAR = {
 // the same four in a fourth mode (Sienna Vale), its four pages found in the
 // file (plans/editorial/layout-1.md, *The Figma source*) and all four fitted
 // in HeaderV0's–HeaderV3's Lime blocks widened — Stacked last — so its family
-// is closed as well.
-// Pop offers three flat layouts (§10.3); its designs do not exist yet.
+// is closed as well. Pop is the same four in a fifth mode, its four pages found
+// in the file (plans/pop/layout-1.md, *The Figma source*); its Hero is fitted
+// in HeaderV0's Lime block widened, and its other three render and publish as
+// placeholders until their layout passes.
 export const headerFamily = (themeName) =>
   themeName === 'Retro' ? 'photographic' : themeName === 'Lime' ? 'lime'
-    : themeName === 'Grunge' ? 'grunge' : themeName === 'Editorial' ? 'editorial' : 'flat'
+    : themeName === 'Grunge' ? 'grunge' : themeName === 'Editorial' ? 'editorial'
+    : themeName === 'Pop' ? 'pop' : 'flat'
 
-const HEADER_COUNT = { photographic: 6, lime: 4, grunge: 4, editorial: 4, flat: 3 }
+const HEADER_COUNT = { photographic: 6, lime: 4, grunge: 4, editorial: 4, pop: 4, flat: 3 }
 
 export const headerVariants = (themeName) => HEADER_COUNT[headerFamily(themeName)]
 
@@ -751,6 +776,7 @@ const HEADER_NAMES = {
   lime: PHOTOGRAPHIC_NAMES.slice(0, HEADER_COUNT.lime),
   grunge: PHOTOGRAPHIC_NAMES.slice(0, HEADER_COUNT.grunge),
   editorial: PHOTOGRAPHIC_NAMES.slice(0, HEADER_COUNT.editorial),
+  pop: PHOTOGRAPHIC_NAMES.slice(0, HEADER_COUNT.pop),
   flat: [
     ['Centred', 'Title, tags and buttons'],
     ['Split', 'Text beside an image'],

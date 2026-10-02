@@ -57,7 +57,7 @@ import {
   CTA_TARGETS, firstPresent, minimalNav, navModeDefault,
   catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldDefault, fieldReach, fieldNowhere, copyrightOf, formHeading3, extUrl, urlProblem, emailProblem, emailAddr, songTags, repChips,
   tierFeats, priceParts, blankRow, SONG_KEYS, repSetsOf, repSetLine, TRACK_KEYS, GIG_KEYS, gigWeekday, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
-  headerFamily, layoutCount, designCount, pageLayout, pageOrder, pageRows, COLUMN_SPLIT, bebasEms, antonEms, notoEms, notoBoldEms,
+  headerFamily, layoutCount, designCount, pageLayout, pageOrder, pageRows, COLUMN_SPLIT, bebasEms, antonEms, notoEms, notoBoldEms, titanEms,
   headerLayout, headerLayoutLabel, setupHeaderCount,
 } from './data.js'
 import { defaultImage, defaultImages, defaultTrackArt, RETRO_TEXTURE, TEMPLATE_STILLS } from './photos.js'
@@ -699,9 +699,15 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // (964:68718), at the same sizes. Its layout-4 capsule (964:73038) is
   // Grunge's layout-4 one: Label/MD links a fixed 23 apart at 20px type, so
   // there too the sum is the labels alone and NavBar's `links` takes the gaps.
+  // Pop's capsule (964:58624 "Frame 49") is Editorial's: Label/SM 16 links 23
+  // apart, so 23/16 of the row's size, in Titan One (`titanEms`, the face
+  // standing in for Chunko Bold Demo) at 0.98 of the token (`faced`), the way
+  // Grunge's Anton is at 0.75. Its other three cards are placeholders whose
+  // only capsule is NavBar's, which spaces them the same way.
   const navFace = T.name === 'Lime' ? bebasEms : T.name === 'Grunge' ? (x) => antonEms(x, 0) * 0.75
-    : T.name === 'Editorial' ? notoEms : null
-  const navGapEm = T.name === 'Editorial' ? (d >= 1 ? 0 : 23 / 16) : T.name === 'Grunge' && d >= 1 ? 0 : 23 / 24
+    : T.name === 'Editorial' ? notoEms : T.name === 'Pop' ? (x) => titanEms(x) * 0.98 : null
+  const navGapEm = T.name === 'Editorial' ? (d >= 1 ? 0 : 23 / 16) : T.name === 'Pop' ? 23 / 16
+    : T.name === 'Grunge' && d >= 1 ? 0 : 23 / 24
   vm.navEms = navFace
     ? Math.max(1, +((vm.navLinks.reduce((w, l) => w + navFace(l.label), 0)
       + Math.max(0, vm.navLinks.length - 1) * navGapEm) * 1.01).toFixed(3))
@@ -4520,9 +4526,9 @@ const SPOT_ASPECT = `${parseInt(SIZES.desktop.canvasW, 10)} / ${SIZES.desktop.he
 const SPOT_MIN_H = SIZES.desktop.heroH
 
 function TemplatePreview({ themeIdx, artistName }) {
-  // Pop, the one flat template left, shows its Figma header as a still
-  // (photos.js). It is SPOT_ASPECT already, so `cover` crops nothing — not
-  // `contain`.
+  // A flat template shows its Figma header as a still (photos.js), SPOT_ASPECT
+  // already, so `cover` crops nothing — not `contain`. None is left since
+  // Pop's hero was fitted; the end-of-pass sweep deletes the branch.
   const { name } = THEMES[themeIdx]
   const still = TEMPLATE_STILLS[name]
   if (still) {
