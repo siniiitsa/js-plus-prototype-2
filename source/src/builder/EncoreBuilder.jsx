@@ -1164,9 +1164,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // the count instead.
   if (d === 2 && c.heading === undefined && HEADING_3[cat]) vm.title = cased(HEADING_3[cat])
   if (d === 3 && c.heading === undefined && HEADING_4[cat]) vm.title = cased(HEADING_4[cat])
-  // Lime's, Grunge's and Editorial's layout-1 calendar head reads "Book Now"
-  // (JP-089); Retro's layout 1 prints no head. EditPanel mirrors it.
-  if (d === 0 && cat === 'calendar' && c.heading === undefined && vm.limeTree) vm.title = cased(CAL_HEADING_1)
+  // Lime's, Grunge's, Editorial's and Pop's layout-1 calendar head reads
+  // "Book Now" (JP-089; Pop's frame 964:58631 too, named beside the group as
+  // tiersSeed() names it); Retro's layout 1 prints no head. EditPanel mirrors it.
+  if (d === 0 && cat === 'calendar' && c.heading === undefined && (vm.limeTree || vm.pop)) vm.title = cased(CAL_HEADING_1)
   // The form's layout-3 head is the frame's "Book Kai for / your event" off
   // the artist's own name (JP-070), copyrightOf()'s rule; EditPanel mirrors it.
   if (d === 2 && cat === 'form' && c.heading === undefined) vm.title = cased(formHeading3(artistName))
@@ -1401,8 +1402,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // again when emptied, since every layout prints it where the pick would
     // go and an empty foot reads as broken. Cased, as the slot line is.
     vm.calPrompt = cased(String(cv('prompt', CAL_PROMPT)).trim() || CAL_PROMPT)
-    // Retro's and Pop's layout-1 pill (the `s.limeTree` foot has none, JP-088:
-    // its line links). The same field is layout 4's Send Enquiry (JP-082),
+    // Retro's layout-1 pill (the `s.limeTree` foot, which Pop's widens, has
+    // none, JP-088: its line links). The same field is layout 4's Send Enquiry (JP-082),
     // seeded CAL_SEND_4 there: `vm.calWizard.send`, below.
     vm.calCta = cased(cv('cta', 'Check a date'))
     // Layout 2's pill, which its frame labels differently from the other two
@@ -4161,7 +4162,7 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                     : f.k === 'heading' && sec.arch % (designCount(sec.cat, themeName) || 1) === 3
                       && HEADING_4[sec.cat] ? HEADING_4[sec.cat]
                     : f.k === 'heading' && sec.cat === 'calendar' && design === 0
-                      && limeTreeTheme(themeName) ? CAL_HEADING_1
+                      && (limeTreeTheme(themeName) || themeName === 'Pop') ? CAL_HEADING_1
                     : f.k === 'heading' && sec.cat === 'repertoire' ? `${songsVal('songs').filter((t) => !blankRow(t, SONG_KEYS)).length} Songs`
                     : f.k === 'heading' && sec.cat === 'testimonials'
                       && sec.arch % (designCount(sec.cat, themeName) || 1) === 1 ? TESTI_HEADING_2

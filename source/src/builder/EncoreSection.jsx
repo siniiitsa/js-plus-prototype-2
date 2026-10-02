@@ -344,15 +344,18 @@ const POP_SCRIBBLE_D =
 // `sem/tag/1/bg`: every unbound scribble and squiggle arrow is a raw #BCD631
 // (plans/pop/layout-1.md, *Settled in session 0*, Pop's own tints), a duller
 // lime than the palette's — but the media's arrow and the map's scribble, which
-// are the palette's #C6F200 (sections 3 and 6). No mode or scheme holds it.
+// are the palette's #C6F200 (sections 3 and 6). The calendar's arrow is this
+// one again, by its node's fill and the render (section 8). No mode or scheme
+// holds it.
 const POP_STICKER_LIME = '#BCD631'
 
 // Pop's media squiggle arrow (964:58626's "Vector", 209.11 × 126.41 before its
 // −135° turn): one stroke drawn as a filled outline, off the frame's
 // `fillGeometry`, rounded to the hundredth. The inner loop is wound the other
 // way, so it is a hole under the default nonzero rule, as in the frame. Its
-// fill is the palette's #C6F200, not POP_STICKER_LIME: the one squiggle on the
-// page that is not the stickers' duller lime.
+// fill is the palette's #C6F200, not POP_STICKER_LIME. The calendar's arrow
+// (964:58631's "Layer_1", 271.8 × 164.3) is this drawing at 1.3 to the
+// hundredth, filled in POP_STICKER_LIME.
 const POP_ARROW_D =
   'M176.55 88.2C172.3 82.82 150.18 75.74 150.52 68.9C153.91 53.88 169.8 68.55 177.76 72.66' +
   'C186.89 77.37 196.09 82.08 205.66 85.85C211.49 91.41 209.29 95.66 203.85 99.94' +
@@ -486,6 +489,23 @@ const POP_RINGS_D =
   'C33.95 295.38 267.5 257.62 239.75 111.01C218.39 -1.88 45.07 5.84 32.54 112.62C16.85 246.29 227.89 244.37 209.76 116.73' +
   'C198.56 37.89 69.2 39.57 62.57 120.29C55.65 204.58 190.89 203.6 180.11 124.04C173.12 72.42 89.96 77.32 92.44 127.43' +
   'C94.69 172.85 169.47 154.74 146.94 121.53C142.22 114.58 125.92 114.12 122.6 119.35L122.59 119.34Z'
+
+// Pop's booking-calendar raw values (964:58631; decision 5: followed). The
+// section stands on Scheme 4, blue, whose `text1` is teal — but the frame sets
+// the head and the month in the palette's lime; its panel is a lighter blue
+// than Scheme 4's `box1` #3F76FF; the month discs are the form's #C3F007, round
+// an arrow in the panel's own blue; the day names and the foot line are a raw
+// pale of Lime's family; every cell, the picked day's included, wears a 1px
+// white ring at 15%.
+const POP_CAL = {
+  lime: '#C6F200', panel: '#4F81FF', disc: '#C3F007', pale: '#E4F1C4', ring: 'rgba(255, 255, 255, 0.15)',
+}
+// Pop's calendar sparkle (964:58631's "Vector", 90 × 91 before its tilt), teal,
+// on the photograph's top-left corner: one filled outline off the frame's
+// `fillGeometry`, rounded to the hundredth.
+const POP_SPARKLE_D =
+  'M45 0L48.68 10.04C54.06 24.75 65.53 36.34 80.07 41.78L90 45.5L80.07 49.21C65.52 54.66 54.06 66.25 48.68 80.95' +
+  'L45 91L41.33 80.95C35.94 66.25 24.48 54.65 9.94 49.21L0 45.5L9.93 41.79C24.48 36.34 35.94 24.75 41.32 10.05L45 0Z'
 
 // Pop's smiley sun (964:58625's second "Layer_1", 154 × 154 before its tilt):
 // the scalloped disc's outline and the smile's three features, off the
@@ -16189,17 +16209,38 @@ function Calendar({ s }) {
     // `stroke/2` one, every string `text/1` terracotta but the arrows, and the
     // picked day the active pair in an ink ring. The halves' and the foot's
     // rules are `stroke/2` too. The photograph is a leant print (below).
-    if (s.limeTree) {
+    //
+    // Pop (964:58631 1440 × 885, 986:52427 768 × 1361, 986:52439 390 × 1011)
+    // is this tree node for node again, unbound, seated on Scheme 4 — blue, so
+    // `s.bg` is the cells' fill and both rules, `s.text3` the numerals' white.
+    // Everything else is a raw value (POP_CAL): the lime head and month, the
+    // lighter panel with no ring, the #C3F007 discs with no ring round an
+    // arrow in the panel's blue, the pale day names and foot line, the white
+    // 15% ring on every cell, and the picked day `tag/6` pink. Every string is
+    // a raw size, hand-scaled or raw where the twins read the ramp. Three
+    // stickers: the dot grid behind the photograph at every width, and at
+    // 1440 alone the sparkle on its corner and the squiggle arrow over the
+    // panel's corner — the narrow masters carry both at desktop x's, off the
+    // frame. A 10px `tag/6` rule stands across the root's top.
+    if (s.limeTree || s.pop) {
       const grunge = s.grunge
       const ed = s.editorial
+      const pop = s.pop
       const z = s.narrow ? 1 : 0.82
       const u = (v) => `${Math.round(v * z * 10) / 10}px`
       const type = (family, size, lh, extra) => ({
         fontFamily: family, fontSize: size, lineHeight: lh, letterSpacing: s.dls, ...extra,
       })
-      // The new leaves (`num`, `cellRing`, `rule`, `headW`, `photoPad`) fall
-      // back through `??` to the twins' values, so their arms are unchanged.
-      const G = ed ? {
+      // The new leaves (`num`, `cellRing`, `rule`, `headW`, `photoPad`, and
+      // Pop's `panel`, `discRing`, `onRing`, `head`) fall back through `??` to
+      // the twins' values, so their arms are unchanged.
+      const G = pop ? {
+        panelR: u(55), ring: null, disc: POP_CAL.disc, discRing: 'none', arrow: POP_CAL.panel,
+        names: POP_CAL.pale, line: POP_CAL.pale, cell: s.bg, cellR: u(26), on: s.chips[5].bg, onFg: s.text3,
+        onGlow: '', round: false, photoR: u(35), num: s.text3, cellRing: POP_CAL.ring, onRing: POP_CAL.ring,
+        rule: s.bg, headW: '100%', photoPad: s.mob ? '10px' : s.narrow ? '50px' : u(90),
+        panel: POP_CAL.panel, head: POP_CAL.lime,
+      } : ed ? {
         panelR: 0, ring: null, disc: 'transparent', arrow: s.tx, names: s.ac, line: s.ac,
         cell: 'transparent', cellR: 0, on: s.activeBg, onFg: s.activeFg, onGlow: '', round: false, photoR: 0,
         num: s.ac, cellRing: s.stroke2, rule: s.stroke2, headW: s.mob ? '100%' : u(578.4), photoPad: u(40),
@@ -16212,8 +16253,10 @@ function Calendar({ s }) {
       }
       // Anton at the frame's glyph size, in capitals: the heading and the
       // month are direct display sites (section 1's `faced`). Editorial's
-      // Noto takes the capitals too; its `faced` is the identity.
-      const disp = (size, extra) => (grunge || ed
+      // Noto takes the capitals too; its `faced` is the identity. Pop's Titan
+      // is set at 0.98 of the frame's glyph size, its line height divided back
+      // out, each site passing the frame's own `lineHeight`.
+      const disp = (size, extra) => (grunge || ed || pop
         ? type(s.display, faced(s, size), facedLh(s, 1), { textTransform: 'uppercase', ...extra })
         : type(s.display, size, 1, extra))
       // The 390 master closes the grid's gaps to 2 and its padding to 20 / 10.
@@ -16228,13 +16271,13 @@ function Calendar({ s }) {
 
       // The month arrows: `sem/tag/2/text` discs in a 1px `sem/stroke/1` ring,
       // round Pager's own arrow vector in `sem/text/2`. The cursor is read off
-      // the handler, Pager's rule.
+      // the handler, Pager's rule. Pop's discs are filled and unringed.
       const disc = (back, dir) => {
         const onClick = step(dir)
         return (
           <span onClick={onClick} style={{
             width: u(55), height: u(54), flex: 'none', borderRadius: '999px',
-            background: G.disc, boxShadow: `inset 0 0 0 1px ${s.stroke1}`, color: G.arrow,
+            background: G.disc, boxShadow: G.discRing ?? `inset 0 0 0 1px ${s.stroke1}`, color: G.arrow,
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
             cursor: onClick ? 'pointer' : undefined,
           }}><LimeArrow back={back} z={z} /></span>
@@ -16255,6 +16298,9 @@ function Calendar({ s }) {
       // cell is square and unfilled in `stroke/2`, its numeral `text/1`; only
       // the picked day turns its ring to the ink `stroke/1`. Its frame dims
       // Lime's own six days at .38, no strike, so the booked state is shared.
+      // Pop's cell is the section's blue in a white 15% ring that the picked
+      // day keeps, its numeral a raw Chakra Petch 18.13 at its auto line; at
+      // 390 the 26 corner on a 48.29 column draws Figma's own near-circle.
       const day = (c, i) => {
         if (c.iso === undefined) return <span key={i} />
         const on = c.iso === cur
@@ -16262,13 +16308,13 @@ function Calendar({ s }) {
           ? () => setSel((v) => (v === c.iso ? '' : c.iso))
           : undefined
         return (
-          <span key={i} onClick={onClick} style={type(s.ui, s.labelXs, 1.26, {
+          <span key={i} onClick={onClick} style={type(s.ui, pop ? 18.13 * z : s.labelXs, pop ? 'normal' : 1.26, {
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             ...(G.round
               ? { aspectRatio: '1', borderRadius: '999px' }
               : { height: s.mob ? '50.49px' : u(55.89), borderRadius: G.cellR }),
             background: on ? G.on : G.cell, color: on ? G.onFg : G.num ?? s.tx, opacity: blocked(c) ? 0.38 : undefined,
-            boxShadow: `inset 0 0 0 1px ${on ? s.stroke1 : G.cellRing ?? s.stroke1}${on ? G.onGlow : ''}`,
+            boxShadow: `inset 0 0 0 1px ${on ? G.onRing ?? s.stroke1 : G.cellRing ?? s.stroke1}${on ? G.onGlow : ''}`,
             cursor: onClick ? 'pointer' : undefined,
           })}>{c.d}</span>
         )
@@ -16286,7 +16332,13 @@ function Calendar({ s }) {
         })}>
           <div style={row(u(12), { justifyContent: 'space-between', alignItems: 'center' })}>
             {disc(true, -1)}
-            <span style={distressed(s, disp(s.dispSm, { color: s.ac, whiteSpace: 'nowrap' }))}>
+            {/* Pop's month is a hand-scaled 30.28 at its auto line (a 36 box),
+                lifted 0.11em: Titan sets its caps that much lower than Chunko
+                here (3.0 / 3.2 / 3.2 px, a lime-ink row scan). */}
+            <span style={distressed(s, disp(pop ? 30.28 * z : s.dispSm, {
+              color: G.head ?? s.ac, whiteSpace: 'nowrap',
+              ...(pop ? { lineHeight: facedLh(s, 36 / 30.28), position: 'relative', top: '-0.11em' } : null),
+            }))}>
               {month.label}
             </span>
             {disc(false, 1)}
@@ -16294,10 +16346,11 @@ function Calendar({ s }) {
           {/* The frames space seven fixed 57.4 name cells across the row, which
               on the 390 master overruns the half and clips Saturday — the leak
               Retro's branch declined too. The names stand on the grid's own
-              columns instead, over the days they head. */}
+              columns instead, over the days they head. Pop's are a raw Space
+              Mono 15.11 at its auto line, mixed case. */}
           <div style={{ ...cols, height: u(30.22) }}>
             {s.calDays.map((d) => (
-              <span key={d} style={type(s.body, s.bodyLg, 1.5, {
+              <span key={d} style={type(pop ? s.mono : s.body, pop ? 15.11 * z : s.bodyLg, pop ? 'normal' : 1.5, {
                 display: 'flex', alignItems: 'center', justifyContent: 'center', color: G.names,
               })}>{d}</span>
             ))}
@@ -16306,16 +16359,36 @@ function Calendar({ s }) {
         </div>
       )
 
+      // Pop's dot grid hangs off the photo half's foot-right corner, so a
+      // six-row month keeps it by the photograph's foot: 58.27 in and 51.12 up
+      // at 1440 (× 0.82), 72.27 in and 11.11 up at 768, and 66.73 past and
+      // 10.83 under at 390, where the half clips it as the master does.
+      const dotsAt = s.mob ? [-66.73, -10.83] : s.narrow ? [72.27, 11.11] : [58.27 * z, 51.12 * z]
+
       return (
-        <div style={col(u(24))}>
+        <>
+        {/* Pop's 10px INSIDE rule across the root's top, `tag/6` pink, in a
+            layer the root's size (pricing's): the column after it is
+            positioned, so it paints over the layer. */}
+        {pop && (
+          <div aria-hidden style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none' }}>
+            <div style={{
+              position: 'absolute', left: 0, right: 0, top: 0, height: s.narrow ? 10 : 8.2, background: s.chips[5].bg,
+            }} />
+          </div>
+        )}
+        <div style={col(u(24), pop ? { position: 'relative' } : undefined)}>
           {/* Display/MD at lh 1, held to the frame's 640 on desktop (Editorial's
               FIXED 578.4, at 768 too). The frame types BOOK NOW, and so does
-              the seed, `CAL_HEADING_1` (JP-089, reversing `TITLES.calendar`). */}
-          <h2 style={distressed(s, disp(s.dispMd, {
-            margin: 0, color: s.ac, maxWidth: G.headW ?? (s.narrow ? '100%' : u(640)),
+              the seed, `CAL_HEADING_1` (JP-089, reversing `TITLES.calendar`).
+              Pop's is a hand-scaled 44.79 on a 37.85 line at every width,
+              lifted the page's 0.14em (measured here: 4.8 / 6 / 6 px). */}
+          <h2 style={distressed(s, disp(pop ? 44.79 * z : s.dispMd, {
+            margin: 0, color: G.head ?? s.ac, maxWidth: G.headW ?? (s.narrow ? '100%' : u(640)),
+            ...(pop ? { lineHeight: facedLh(s, 37.85 / 44.79), position: 'relative', top: '-0.14em' } : null),
           }))}>{s.title}</h2>
           <div style={{
-            position: 'relative', background: s.box1, borderRadius: G.panelR, overflow: 'hidden',
+            position: 'relative', background: G.panel ?? s.box1, borderRadius: G.panelR, overflow: 'hidden',
           }}>
             <div style={{
               display: 'grid', gridTemplateColumns: s.narrow ? 'minmax(0, 1fr)' : 'repeat(2, minmax(0, 1fr))',
@@ -16328,7 +16401,17 @@ function Calendar({ s }) {
                 display: 'flex', padding: G.photoPad ?? u(20),
                 height: s.narrow ? (s.mob ? '308px' : '526px') : undefined,
                 ...(ed ? { alignItems: 'center' } : null),
+                // Pop's half clips, as its frame does: the 390 dot grid runs
+                // past the panel's edge and over the foot's rule otherwise.
+                ...(pop ? { position: 'relative', overflow: 'hidden' } : null),
               }}>
+                {/* Pop's dot grid, the half's first child: under the
+                    photograph, which is positioned after it. */}
+                {pop && (
+                  <PopDots hue={G.head} style={{
+                    right: dotsAt[0], bottom: dotsAt[1], width: 288.02 * z, height: 238.58 * z,
+                  }} />
+                )}
                 {ed ? (
                   // Editorial's `Frame 204`, a leant print: the half's content
                   // width by a stated 446 (228 at 390), centred in the half —
@@ -16359,9 +16442,13 @@ function Calendar({ s }) {
                   </div>
                 ) : <div style={{
                   flex: 1, minWidth: 0, borderRadius: G.photoR, overflow: 'hidden',
-                  position: grunge ? 'relative' : undefined,
+                  position: grunge || pop ? 'relative' : undefined,
+                  // Pop's frame draws no empty slot, and `Photo`'s soft well
+                  // is translucent, so the dot grid behind it showed through:
+                  // the section's own blue under it, white initials on it.
+                  ...(pop ? { background: s.bg } : null),
                 }}>
-                  <Photo s={s} initialsSize={Math.round(44 * z)} />
+                  <Photo s={s} initialsSize={Math.round(44 * z)} ink={pop ? s.text3 : undefined} />
                   {/* Grunge's `image 1`: a 624 square of the band grain hung off
                       the photograph's top-left, lighten at .29 (its gradient
                       paint is hidden). The 768 master leaves it 624 in a 668
@@ -16372,6 +16459,18 @@ function Calendar({ s }) {
                     width: s.mob ? '624px' : '100%', aspectRatio: '1',
                   }} />
                 </div>}
+                {/* Pop's sparkle, teal (`tag/1`), its centre 12 right of and 4
+                    below the photograph's top-left at 1440 (Figma 17.93 → CSS
+                    −17.93). Not drawn narrow: both masters keep its desktop x,
+                    past the frame's edge. */}
+                {pop && !s.narrow && (
+                  <svg viewBox="0 0 90 91" aria-hidden="true" style={{
+                    position: 'absolute', display: 'block', pointerEvents: 'none',
+                    left: u(56.99), top: u(48.48), width: u(90), height: u(91), transform: 'rotate(-17.93deg)',
+                  }}>
+                    <path d={POP_SPARKLE_D} fill={s.chips[0].bg} />
+                  </svg>
+                )}
               </div>
             </div>
             <div style={{
@@ -16384,10 +16483,14 @@ function Calendar({ s }) {
                   Lime's "the foot keeps Retro's BookPill"), so the line itself
                   leads a picked date on, in its own type: `lineHref`, above.
                   The prompt is the artist's since JP-095 (a), so a long word
-                  breaks rather than run off a phone. */}
-              <LineTag {...(lineHref ? { href: lineHref } : null)} style={type(s.body, s.bodyMd, 1.5, {
+                  breaks rather than run off a phone. Pop's frame draws the
+                  same foot (the user took JP-088's line for Pop too, section
+                  8), its line a raw Space Mono Bold 13.37 on 1.3, tracked 8%,
+                  in capitals. */}
+              <LineTag {...(lineHref ? { href: lineHref } : null)} style={type(pop ? s.mono : s.body, pop ? 13.37 * z : s.bodyMd, pop ? 1.3 : 1.5, {
                 color: G.line, textDecoration: 'none', cursor: lineHref ? 'pointer' : undefined,
                 minWidth: 0, overflowWrap: 'anywhere',
+                ...(pop ? { fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' } : null),
               })}>{line}</LineTag>
             </div>
             {/* The panel's 3px `sem/stroke/2` ring, which Figma strokes inside
@@ -16401,7 +16504,21 @@ function Calendar({ s }) {
               }} />
             )}
           </div>
+          {/* Pop's squiggle arrow at 1440 alone (the narrow masters keep its
+              desktop x, off the frame): the media's drawing at 1.3, in the
+              stickers' duller lime, Figma −165 → CSS +165, its centre 188.35
+              in from the content's right edge and 27.57 below its top — over
+              the panel's corner, as the frame's later sibling paints. */}
+          {pop && !s.narrow && (
+            <svg viewBox="0 0 209.11 126.41" preserveAspectRatio="none" aria-hidden="true" style={{
+              position: 'absolute', display: 'block', pointerEvents: 'none',
+              right: u(52.45), top: u(-54.58), width: u(271.8), height: u(164.3), transform: 'rotate(165deg)',
+            }}>
+              <path d={POP_ARROW_D} fill={POP_STICKER_LIME} />
+            </svg>
+          )}
         </div>
+        </>
       )
     }
 

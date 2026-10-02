@@ -42,14 +42,14 @@ another `notes/` file.
   the canvas's picture by construction, the clock aside. Blocking the *cued* day cues nothing (`vm.calPick` is
   `''`) and the foot prints `vm.calPrompt`, rather than sliding the pick to the day after — the
   artist blocked it. A booked day is muted, struck through and handlerless (under Lime it is
-  dimmed to .38 with no strike, its frame's own state, and Grunge's and Editorial's layout 1 share
-  it), which is a **content** state and not a
+  dimmed to .38 with no strike, its frame's own state, and Grunge's, Editorial's and Pop's layout 1
+  share it), which is a **content** state and not a
   live one, so it renders on the canvas too; the seed blocks nothing, which is
-  what keeps the reference picture. Two **intended diffs from the frame**: under Retro and Pop the
+  what keeps the reference picture. Two **intended diffs from the frame**: under Retro the
   foot row gains the Book pill on `vm.calBookTo` — `bookTo` minus `calendar` itself, the tier
   pills' rule, since `CTA_TARGETS.book` ends here — which is what turned `cta` from a field that
-  edited nothing into a control (under Lime, Grunge and Editorial the line is the link instead,
-  below, JP-088), and `para` went with `DEFS.calPara` because it rendered in neither layout; and a
+  edited nothing into a control (under Lime, Grunge, Editorial and Pop the line is the link
+  instead, below, JP-088), and `para` went with `DEFS.calPara` because it rendered in neither layout; and a
   month needing six rows grows one where June needs five, the grid never being padded to 35.
   The unreachable fallthrough after layout 4 still draws the hardcoded `CITIES` and reads
   none of this.
@@ -160,24 +160,28 @@ another `notes/` file.
   rows under the white card (ringed 1px in `s.stroke2`) on a `#0E0E0E` `s.box3` panel.
   Editorial's is Lime's stack on Lime's keys: `#FFF9F2` `s.box1` rows dashed in terracotta under
   the ink card on the `#EDE6DC` `s.box2` panel, every one square.
-- **Layout 1's head is the frame's under Lime, Grunge and Editorial** (JP-089, user call,
-  2026-09-30, reversing Lime layout 1's "AVAILABILITY where the frame types BOOK NOW"). Their
-  `s.limeTree` block prints `s.title` over the month. With `heading` absent at `d === 0`,
+- **Layout 1's head is the frame's under Lime, Grunge, Editorial and Pop** (JP-089, user call,
+  2026-09-30, reversing Lime layout 1's "AVAILABILITY where the frame types BOOK NOW"; Pop's
+  frame 964:58631 reads the same since its layout-1 pass, 2026-10-02). Their `s.limeTree` block,
+  which Pop widens, prints `s.title` over the month. With `heading` absent at `d === 0`,
   `sectionVm` sets it to `CAL_HEADING_1`, "Book Now", beside the `HEADING_3` / `HEADING_4`
-  arms, and `EditPanel`'s chain has the same arm. Retro's layout 1 prints no head, so it
-  keeps `TITLES.calendar`, "Availability", which also stays the seed at layout 2. An emptied
-  heading behaves as before.
-- **Layout 1's foot is the frame's under Lime, Grunge and Editorial: the line alone, and the line is
-  the link** (JP-088, user call, 2026-09-30, reversing Lime layout 1's "the foot keeps Retro's
-  BookPill"). No frame draws the pill, Retro's included (`964:58583`); it was Retro's one
-  deliberate addition, so a picked date leads somewhere. Their `s.limeTree` block drops it, and the
+  arms, and `EditPanel`'s chain has the same arm; both gates name Pop beside the group
+  (`vm.limeTree || vm.pop`, `limeTreeTheme(…) || themeName === 'Pop'`), `tiersSeed()`'s way.
+  Retro's layout 1 prints no head, so it keeps `TITLES.calendar`, "Availability", which also
+  stays the seed at layout 2. An emptied heading behaves as before.
+- **Layout 1's foot is the frame's under Lime, Grunge, Editorial and Pop: the line alone, and the
+  line is the link** (JP-088, user call, 2026-09-30, reversing Lime layout 1's "the foot keeps
+  Retro's BookPill"; Pop joined it in its layout-1 pass, user call, 2026-10-02, its frame
+  `964:58631` drawing no pill either). No frame draws the pill, Retro's included (`964:58583`); it
+  was Retro's one deliberate addition, so a picked date leads somewhere. Their `s.limeTree` block
+  drops it, and the
   foot's enquiry line takes its job: on the published page, while the line names a picked day
   (`cur`), it is an `<a>` to `navHref(s, s.calBookTo)`, in the line's own type, with a pointer and
   no underline. The prompt (`vm.calPrompt`) never links, since "Pick a date" is not a way on, and a
   page with no `calBookTo` keeps a span. On the canvas it is always a span with no cursor. So the
   foot is the frames' 101 / 100 / 100. `FIELDS.calendar.cta` reaches only layout 4 there
-  (`{ Lime: [3], Grunge: [3], Editorial: [3], '*': [0, 3] }`, measured). Retro and Pop keep the
-  pill.
+  (`{ Lime: [3], Grunge: [3], Editorial: [3], Pop: [3], '*': [0, 3] }`, measured). Retro keeps
+  the pill.
 - **Layout 2's column labels and every layout's prompt are the artist's** (JP-095 (a), user call,
   2026-10-01). `dateLabel` and `availLabel` (`in: [1]`, both bodies) are the `Date ↓` and
   `Availability ↓` over the slot list, the `↓` the markup's. An emptied Date keeps its pinned

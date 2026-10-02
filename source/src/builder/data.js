@@ -1455,6 +1455,8 @@ export const FORM_SUB_4 = 'Enquire'
 // Layout 1's frames under Lime, Grunge and Editorial (JP-089, user call,
 // 2026-09-30, reversing Lime layout 1's named diffs): the calendar's head
 // reads *Book Now* (964:58619) and the form's submit *Enquire* (964:58620).
+// Pop's calendar frame reads *Book Now* too (964:58631), named beside
+// limeTreeTheme() at both of the head's sites, tiersSeed()'s way.
 // Retro's layout-1 form reads *Book Now* (964:58584) and its calendar prints
 // no head, so both are gated on the template as well as the layout, in
 // sectionVm and EditPanel's chain alike. Uncased: `cased()` sets them.
@@ -1981,7 +1983,7 @@ export const FIELDS = {
     { k: 'image',   l: 'Photo', type: 'image', in: [0, 3],
       hint: 'Fills the polaroid stack beside the month in layout 1, and the small disc on '
           + "layout 4's summary card. Layouts 2 and 3 draw no photograph." },
-    { k: 'heading', l: 'Heading', d: 'Availability', in: { Lime: [0, 1, 2, 3], Grunge: [0, 1, 2, 3], Editorial: [0, 1, 2, 3], '*': [1, 2, 3] } },
+    { k: 'heading', l: 'Heading', d: 'Availability', in: { Lime: [0, 1, 2, 3], Grunge: [0, 1, 2, 3], Editorial: [0, 1, 2, 3], Pop: [0, 1, 2, 3], '*': [1, 2, 3] } },
     { k: 'open',    l: 'Opens on', type: 'date', d: CAL_OPEN,
       hint: 'The month the calendar opens on, and the date it opens picked. '
           + `Layouts 1 and 3 page through ${CAL_SPAN} months from there, layout 2's seeded `
@@ -2002,15 +2004,16 @@ export const FIELDS = {
       hint: 'The line where the picked date goes while none is picked: on the published page, '
           + 'until a visitor picks one, when the opening date is booked or has passed. Left empty, '
           + 'it shows “Pick a date to enquire” again.' },
-    // Retro's and Pop's layout-1 pill and layout 4's Send Enquiry (JP-082).
-    // `d` is layout 1's seed; layout 4 seeds CAL_SEND_4 in sectionVm and
-    // EditPanel's chain. Lime's, Grunge's and Editorial's layout 1 draws no
-    // pill (JP-088): its enquiry line is the link.
+    // Retro's layout-1 pill and layout 4's Send Enquiry (JP-082). `d` is
+    // layout 1's seed; layout 4 seeds CAL_SEND_4 in sectionVm and EditPanel's
+    // chain. Lime's, Grunge's, Editorial's and Pop's layout 1 draws no pill
+    // (JP-088; Pop's since its layout-1 pass, user call, 2026-10-02): its
+    // enquiry line is the link.
     { k: 'cta',     l: 'Button', d: 'Check a date',
-      in: { Lime: [3], Grunge: [3], Editorial: [3], '*': [0, 3] },
+      in: { Lime: [3], Grunge: [3], Editorial: [3], Pop: [3], '*': [0, 3] },
       hint: 'Layout 4’s Send Enquiry, on the last step of the enquiry wizard and at the foot '
           + 'of the summary; it starts from “Send Enquiry” there, and shows it again if you '
-          + 'empty this. Under Retro and Pop it is also layout 1’s button. The other templates’ '
+          + 'empty this. Under Retro it is also layout 1’s button. The other templates’ '
           + 'layout 1 has no button: its “Enquiry for …” line is the link.' },
     { k: 'slots',   l: 'Dates on offer', type: 'slots', max: 8, in: [1],
       hint: 'The dates layout 2 lists, each with what you play and what it starts from.' },
