@@ -164,7 +164,7 @@ Session 0 first, then eleven sections in page order. Each row's three masters ar
 | # | Cat | Desktop node | Composition | Size | Tablet node | Size | Mobile node | Size | Ground | Twin | Status |
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | 0 | *foundation* | `964:58623` *(page)* | Pop → `THEMES[4]`, face, casing, ramp, schemes, flags, photos | — | `986:52418` | — | `986:52431` | — | — | — | done `3267b36` · `d57d896` |
-| 1 | `header` | `964:58624` | Headers — hero | 1440 × 750 | `986:52419` | 768 × 1024 | `986:52432` | 390 × 844 | photo over `#6B2CFF` | Lime `964:58588` | |
+| 1 | `header` | `964:58624` | Headers — hero | 1440 × 750 | `986:52419` | 768 × 1024 | `986:52432` | 390 × 844 | photo over `#6B2CFF` | Lime `964:58588` | done `092b930` |
 | 2 | `bio` | `964:58625` | Bios — A · Flanked portrait | 1440 × 769 | `986:52420` | 768 × 1153.8 | `986:52433` | 390 × 769.8 | `#FFFFFF` | Lime `964:58589` | |
 | 3 | `media` | `964:58626` | Media Player — D · Floating cards stack | 1440 × 1055 | `986:52422` *(in `986:52421`)* | 768 × 1499 | `986:52434` | 390 × 1167 | `#FFFFFF`, a `#FF2DA0` card | **Retro `964:58578`** | |
 | 4 | `gallery` | `964:58627` | Gallery Sections — Component 1 | 1440 × 788 | `986:52423` | 768 × 1153 | `989:22531` | 390 × 817 | `#FFFFFF`, a `#C6F200` panel | Lime `964:58591` | |
@@ -576,8 +576,8 @@ Editorial's section, with `'pop'` for `'editorial'`:
   a ringed lime bullet before "MANCHESTER, UK" (white) and "DJ · LIVE ACT" (pink); the title at
   `Display/XL` in white, **one tone**; a lime **scribble** (331 × 95) under the title's right end;
   the chips in Chakra Petch at `Label/XS` 20, lime and pink alternating, then the teal *Live*
-  (`sem/media` `#41BFBA`) and a black *All Access*; the **smiley-globe seal** (175, Figma −20 → CSS
-  +20) top-right where Lime draws its reticle; and a **10px lime rule** inside its foot.
+  (`sem/media` `#41BFBA`) and a black *All Access*; the **smiley-globe seal** (174.8, Figma −19.5 →
+  CSS +19.5 — *corrected in section 1*, the plan's −20 was the metadata's) top-right where Lime draws its reticle; and a **10px lime rule** inside its foot.
 
 Verify in the builder as Lime's plan says, reading "Pop" for "Lime".
 
@@ -598,7 +598,7 @@ Everything here is behind `s.pop`, a widened gate or a named pair.
 
   | Mark | Where (size, Figma rotation → CSS) | Ink |
   |---|---|---|
-  | **smiley-globe seal** — a disc, a globe, a smiley, the name twice as `TEXT_PATH`, two 11px marks (`Frame 206` / `207`) | header 175 (−20 → +20), form 136 (−20), footer 126 (−19.5) | header pink disc; read each |
+  | **smiley-globe seal** — a disc, a globe, a smiley, the name twice as `TEXT_PATH`, two 11px marks (`Frame 206` / `207`) | header 174.8 (−19.5 → +19.5, *read in section 1*), form 136 (−20), footer 126 (−19.5) | header pink disc; read each |
   | **smiley sun** — a scalloped disc with a smile | bio 154 (−25.4), footer 152 × 151 (−22.3) | blue in the bio, lime in the footer |
   | heart (`Union` 101 × 80) | repertoire, by the pager | teal |
   | asterisk (93 × 95, −19) | gallery, beside the head | teal |
@@ -998,6 +998,108 @@ counters and ink traps: its corners are soft. Rubik 900 is the squarer drawing, 
 - **`sub` was not reworded** (step 3): `'Titan One · loud & bright'` names the face Pop keeps, so it
   is still accurate.
 
+### Settled in section 1 (the header)
+
+- **The hero is Lime's composition node for node a fourth time**, so there is no Pop block:
+  `HeaderV0` and `NavBar` read `lime = s.limeTree || pop` with `const pop = s.pop` naming the
+  deltas; `BookPill`'s branch, `LogoMark`'s globe, `TagChips`' desktop padding and `labelStyle`'s
+  tracking read `s.limeTree || s.pop`; `Wordmark`'s Lime arm and `Title`'s transform widen to
+  `s.pop`. `labelStyle` was widened first, as session 0 asked. `headerFamily('Pop')` is `'pop'`,
+  four layouts, `HEADER_NAMES.pop` sliced; `TEMPLATE_STILLS` is `{}` (its import of
+  `pop-header.jpg` and the file are gone; the sweep deletes the export and `TemplatePreview`'s
+  branch with the flat family).
+- **The deltas, read off all three masters' bindings with the node walker** (every other box, gap
+  and padding is Lime's to the pixel — the capsule's 10/10/10/20 and 30, the identity's 40 / 40 /
+  24 / 36, the kicker row's 30 and 8, the 14px ring, the pill's 5/5/5/21 and 46 × 44 disc):
+  - the capsule (`Frame 49`) is on **Scheme 3**: name, links, globe and burger `sem/text/1` lime,
+    the pill `active/bg` lime under a `sem/bg` pink label and disc — `colour={S3.ac}` and
+    `pill={{ bg: S3.activeBg, fg: S3.bg }}` off `s.onScheme[3]`; BookPill's Lime branch needed
+    nothing else;
+  - its fill is **`#FFFFFF` at 12% under `BACKGROUND_BLUR` 44** — the first capsule fill that is
+    not opaque, so **the first blur kept**: CSS `blur(22px)` (Figma's radius halved), 18 on the
+    desktop canvas. It is a layer of its own (`glass` in NavBar, an absolute `inset: 0` span) under
+    the bar's halves, which go `position: relative` — **never a `backdropFilter` on the bar**,
+    which would make it the containing block of NavMenu's `position: fixed` panel (proved: the
+    live 768 and 390 panels measure the whole viewport);
+  - the links are **Editorial's** — Label/SM 16 at lh 1.1, 23 apart — so NavBar's `sm = ed || pop`
+    shares that arm (gap 23/16 em, cap `s.labelSm`, lh 1.1) and `navGapEm` is 23/16 under Pop;
+  - the name is **Display/List** (20 → `s.list` 16 at 1440, the 768 ramp's 16 on both narrow
+    masters) at lh 1.2, 10 from the globe narrow — Wordmark's Pop arm; the globe is Lime's vector
+    (strokes 2.94), Grunge's 27.37 narrow; the 390 capsule closes its gap to 10; JP-091's
+    two-line cap is **18.45** (44.28 / 2.4, the name's lh 1.2);
+  - the kicker row is **Label/SM** (13 / 13 / 13 — the 390 is Tablet), the location
+    `sem/active/text` white (`ink = s.activeFg`), the kicker `sem/text/1` pink (`s.ac`, Lime's);
+  - the title is one tone in `sem/active/text` white, one wrapping run, and takes **Editorial's
+    fit** (`min(tk.dispXl, 100cqi / navNameEms)`, `cardNameEms` at 390) in Titan's ems — the seed
+    keeps 125 / 75 / 75 (628, 457 and 308 wide in 880, 540 and 370); a long name shrinks rather
+    than drop the column under the card;
+  - the card is a **circle** (213 → 174.66, 144, 96; radius 145) on `sem/text/2` violet in a
+    `sem/text/1` pink ring drawn **inside** — 10, 10 and **4** at 390 — as an inset-shadow overlay
+    over the photograph (CONVENTIONS C);
+  - the scrim is Lime's full-height fade (the same `gradientTransform`) in black at the paint's
+    0.74 (`SCRIM.pop`), over a `sem/text/2` violet ground — which is also the empty hero:
+    **`Photo`'s backdrop is `s.tx` under Pop** (`&noimage=1` checked), not the Lime ramp;
+  - the chips state a **raw radius 6** (4.92 at 1440; Grunge's precedent) and **bind six pairs**
+    — `inactive/bg` · `tag/1/text`, `tag/2/bg` · `tag/5/bg`, `tag/1/bg` · `tag/1/text`,
+    `tag/2/bg` · `text/2`, `media` · `text/2`, `box/3` · `text/2` — passed by seat through
+    `hues` / `inks`; `sem/media` is **`POP_MEDIA` `#41BFBA`**, the header's one literal;
+  - the **scribble** (`sem/tag/1/bg`, 331.36 × 95, `POP_SCRIBBLE_D`) sits in the identity block at
+    (678, 184.72) × 0.82 and the 768's (376, 103), **behind** the block's content — the 768
+    master's black All Access chip covers its foot — so the block is a stacking context under Pop
+    (`zIndex: 0`) and the scribble at −1. **The 390 draws none**: its master carries the 768's
+    numbers unadapted, a 4px sliver at x 386 of 390 — a leak that reads as a defect
+    (CONVENTIONS A);
+  - the **10px INSIDE stroke** on the root's foot is `sem/stroke/2` lime, an absolute strip (8.2 on
+    the canvas).
+- **The seal is SealBadge's new Pop arm** (`if (s.pop && !classic)`), transcribed from the frame's
+  SVG in the 174.795 disc's own units (`POP_SEAL_GLOBE_D`, `POP_SEAL_SMILE_D`): a `tag/2/bg` disc,
+  the `sem/bg` wireframe globe, a 24.24 `box/3` smiley disc with `text/2` features, the name in
+  Titan at `faced(20.598)` tracked 6.18 on a 78.609 circle, caps in (the twins' path), and two
+  `sem/bg` dots at r 5.475 on its equator. `hue` / `ink` override the disc and the marks for the
+  form's and footer's callers. **Tilt −19.5 in Figma (+19.5 CSS)**, not the plan's −20; placed by
+  the disc's centre — the node's corner turned about itself: (1280.0, 242.6) of 1440 and (644.4,
+  219.6) of 768, both 174.8, and (330.3, 164.2) of 390 at 85. It **spins** (open question 9).
+- **The glyph floor, measured** (CONVENTIONS B): the h1's box lands on the frame's to the pixel —
+  (198, 821.4) 457 × 56.2 against (198, 821) at 768, (10, 588.3) against (10, 588) at 390 — but
+  Titan One sets its glyphs **0.14em** lower in the 0.75 line box than Chunko does (14 / 10.5 /
+  10.5 px at 1180 / 768 / 390, the same in ems). `Title` gained an additive `style` and Pop's h1
+  is lifted `top: -0.14em`; the ink then lands at 391–462 against 392.0–464.1 (1180), 816–867
+  against 815–867 (768) and 583–690 exactly (390). The Label/SM and Display/List strings sit 0–2px
+  low and are not lifted.
+- **The nav's advance table is `titanEms`** (`TITAN_EM` in `data.js`), read off the rendered DOM in
+  the harness at 100px, untracked; `navFace` is `titanEms × 0.98`. Summed per character it lands on
+  most labels exactly and over on the kerned ones — AVAILABILITY 3.6%, SHOWS/COVERAGE 1.3%, TOP
+  TRACKS 0.8% — never under. **Confirmed on the rendered nav** after `labelStyle`'s widening:
+  "About" at the 12px row measures 42.06 against 3.576 × 0.98 × 12 = 42.05. The seeded nine links
+  (the frame has eight — no Availability) sit at the 12px floor on the 1180 canvas and the name
+  wraps to two lines at 16 — JP-091's designed "the name gives way first", as under Lime.
+- **The 390 pill's Soulway 9.91 is 16 × 0.62 = 9.92** — the 768 type through BookPill's 0.62
+  hand-scale to the hundredth, confirming decision 5's reading; BookPill's small label is
+  `s.pop ? '9.92px' : '11.8px'`, in the display face. The box (102.8 × 33.45) is Lime's 0.62.
+- **Device modes**: the 390 hero `986:52432` is `Device: Tablet` (as is the 768): `tk` is
+  `{ labelSm 13, dispXl 75, labelXs 14 }`, the name 16 through NavBar.
+- **The burger panel under Pop** is NavMenu's `[s.mapBg, s.mapFg]` — a lifted violet
+  `rgb(123, 67, 255)` under white, the panel's Book Now Scheme 1's black pill under white type —
+  legible, kept; no Pop frame draws it.
+- **Moved with the shared helpers, theme 4 only** (digest: 86 of 132 theme-4 renders; themes 0, 1,
+  2 and 3 at zero, static 528 and live 528 — the live before-side served from a scratch worktree on
+  :5174): every BookPill (now the capsule pill, black under white type on Scheme 1) — bio a0–a3,
+  calendar a0–a3, form a0–a2, map a1–a2, media a0, pricing a0–a3, testimonials a0–a1, footer —
+  every label (untracked), the footer's wordmark, the repertoire a0 and gallery a0 (one width)
+  labels, and header a0–a5 (arch 4 and 5 now fold onto cards 1 and 2 through `HEADER_COUNT.pop`).
+  Each section session re-reads its own pills.
+- **Verified in the builder** (`page-check.mjs Pop 0,1,2,3`): the template stage's big card and
+  filmstrip thumbnail render `HeaderV0` (no still); the setup modal offers **four** cards; card 1
+  publishes, every nav link and Book Now scroll to their sections, the burger opens at 390, the
+  390 page does not scroll sideways; cards 2–4 publish with no console error. What each still
+  owes is open question 8.
+- **Field reach is the sweep's** (item 8): with no Pop key in the header's `in` rows, `fieldReach`
+  leaves every header field unmarked under Pop (only `cardLine`'s `'*': []` speaks). Note for it:
+  Pop's seal **prints `badgeText`**, where Lime's reticle prints nothing.
+- **Harness.** The one-off scripts (the advance table, the shots and probes, the live burger, the
+  picker) lived in `source/scripts/` and are deleted. A white-ink row scan over the frame's 1×
+  render and the harness's was enough to measure the glyph floor; numpy is not installed, PIL is.
+
 ### Inherited and used
 
 *(Append one line each time a session leans on a bullet from Lime's, Grunge's, Editorial's or
@@ -1016,6 +1118,25 @@ turned round, black; *casing stays the theme's* (grunge/layout-1, session 0); *p
 theme* (lime/layout-1, session 0); *the digest is committed* (lime/layout-1, session 0) — 660 + 660
 renders.
 
+Section 1: *the hero is Lime's composition node for node* (grunge/layout-1 and editorial/layout-1,
+section 1) — a fourth time, no block; *the node walker, kept* (grunge/layout-2) — all three masters
+with bindings; *the paired diff walk* (grunge/layout-2) — by traversal order against Lime's
+`964:58588`; *check a narrow master's Device mode* (lime/layout-1, section 1) — the 390 is Tablet;
+*a node can name another scheme's variable outright* / *a nested node reads `s.onScheme[n]`*
+(editorial/layout-2 and -3) — the capsule on Scheme 3; *BookPill has a Lime branch* (lime/layout-1,
+section 1; D1) — widened, no props but the Scheme 3 pair; *the nav's advance table, read off the
+DOM* (editorial/layout-1, section 1) — `titanEms`; *a stand-in face is scaled* (`faced`,
+grunge/layout-1) — × 0.98; *a stand-in face's glyph floor is measured per site* (editorial/layout-3)
+— the title, 0.14em; *a head that must fit its measure is fitted to its widest word*
+(editorial/layout-1) — Editorial's title fit; *a frame's inside stroke is an inset `boxShadow`*
+(lime/layout-2) — the avatar's ring; *every glow is a guess until the node's `effects` confirm it*
+(lime/layout-1) — turned round: the one effect is a real blur over a translucent fill, so kept;
+*leaked tops are followed … a leak that reads as a defect is overridden* (lime/layout-1,
+grunge/layout-1) — the 390 scribble dropped; *place a seal by its disc's centre* (lime/layout-1,
+section 2); *under Lime `pillBg` IS the accent* (lime/layout-1) — turned round again: black, so
+card 4's stand-in is Scheme 3's lime; *one five-theme digest is the whole proof for a shared-helper
+change* (lime/layout-1, sweep) — seven helpers, static and live.
+
 ## Open questions
 
 1. ~~**Chunko Bold Demo**~~ — settled in session 0: Titan One at `faceK` 0.98.
@@ -1031,6 +1152,22 @@ renders.
 6. **The gallery strip** — the frame borrows four of Retro's placeholder thumbnails beside two of
    Pop's; seeded as seven distinct pictures of Pop's shoot (session 0). Worth telling the designer.
 7. **The 390 pricing rings** run 52 past the page. Clipped here; worth telling the designer.
-8. **Header cards 2–4 under Pop** — recorded in section 1.
-9. **The seal's spin** — the twins' seals turn (`.seal-spin`); nothing in Pop's frame says whether
-   its smiley-globe seal does. Decided in section 1.
+8. **Header cards 2–4 under Pop** — each renders at three widths and publishes (section 1). What
+   each owes its layout pass:
+   - **Card 2, Feature spread** (`HeaderV1`'s Retro path): the place card is `pillBg`, which is
+     black under Pop, so its body is violet on black — 3.4:1, legible, not fixed; the desktop links
+     wrap the Retro bar onto two rows; the seal is SealBadge's Pop arm. Pop's layout-2 header stands
+     on Scheme 1.
+   - **Card 3, Inset Hero** (`HeaderV2`'s Retro path): a black capsule with pink links over the
+     photograph, every string legible; nothing fixed. Pop's layout-3 header stands on Scheme 1 at
+     1440 and **Scheme 6 at 768 and 390** — a per-width seat.
+   - **Card 4, Stacked** (`HeaderV3`'s Retro path): two fixes, `s.pop`-gated — the `mustard`
+     stand-in set the kicker, the location and the avatar's border in black on the scrim, so it is
+     `s.onScheme[3].ac` (lime) under Pop, the seat its own frame stands on, where `sem/text/1` and
+     `sem/stroke/2` are one lime; and the seal's `hue={s.paper}` drew a white disc under the Pop
+     arm's white globe and name, so Pop keeps the arm's own pink disc. Its bar is NavBar's glass
+     capsule. Pop's layout-4 header stands on Scheme 3.
+9. ~~**The seal's spin**~~ — decided in section 1: it spins, as every seal in the app does. The
+   name and the two dots turn inside `.seal-spin` (JP-057's rule), the disc, globe and smiley stand
+   still, and reduced motion stops it. A frame is a still and cannot say otherwise; the spin is the
+   app's one seal behaviour, kept by Lime, Grunge and Editorial.
