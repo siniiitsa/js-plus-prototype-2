@@ -363,6 +363,11 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     activeBg: T.sem?.activeBg, activeFg: T.sem?.activeFg,
     inactiveBg: T.sem?.inactiveBg, inactiveFg: T.sem?.inactiveFg, inactiveLine: T.sem?.inactiveLine,
     stroke1: T.sem?.stroke1, stroke2: T.sem?.stroke2, hl: T.sem?.hl,
+    // `sem/text/3`, the scheme's third ink. Pop's frames set their body copy
+    // and every second ink in it — black on white, lime, teal and yellow,
+    // white on the rest — where `tx` (`text/2`) is violet; no other theme's
+    // `sem` carries it, so it is undefined there (plans/pop/layout-1.md, trap 4).
+    text3: T.sem?.text3,
     // The page's own ground, whatever scheme the section is seated on: a
     // section whose frames stand a card on another scheme is seated on the
     // card's, and the root paints this round it.
@@ -441,6 +446,12 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // Sienna Vale, so what only Editorial draws goes behind this flag, the way
     // Lime's and Grunge's does.
     editorial: T.name === 'Editorial',
+    // Pop's layout-1 page is the fifth variant of the same component sets —
+    // Lime's tree for ten sections, Retro's media player for the eleventh — so
+    // each section session widens its own layout-1 block to `(s.limeTree ||
+    // s.pop)`, or Retro's media body to `(s.retro || s.pop)`, and puts what only
+    // Pop draws behind this flag (plans/pop/layout-1.md, decision 3).
+    pop: T.name === 'Pop',
     // The templates whose pages are Lime's component trees, so a Lime block
     // that Editorial's frame shares is gated on this rather than on a third
     // name at every site. Widened per site, from the frame, as each block was
