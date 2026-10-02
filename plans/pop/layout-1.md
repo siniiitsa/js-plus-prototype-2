@@ -169,7 +169,7 @@ Session 0 first, then eleven sections in page order. Each row's three masters ar
 | 3 | `media` | `964:58626` | Media Player — D · Floating cards stack | 1440 × 1055 | `986:52422` *(in `986:52421`)* | 768 × 1499 | `986:52434` | 390 × 1167 | `#FFFFFF`, a `#FF2DA0` card | **Retro `964:58578`** | done `f1861bd` |
 | 4 | `gallery` | `964:58627` | Gallery Sections — Component 1 | 1440 × 788 | `986:52423` | 768 × 1153 | `989:22531` | 390 × 817 | `#FFFFFF`, a `#C6F200` panel | Lime `964:58591` | done `335655f` |
 | 5 | `repertoire` | `964:58628` | Repertoire — A · Two-column dense | 1440 × 1087 | `986:52424` | 768 × 945 | `986:52436` | 390 × 961 | `#6B2CFF` | Lime `964:58592` | done `2d77ee8` |
-| 6 | `map` | `964:58629` | Events Map — D · Compact tile | 1440 × 1192 | `986:52425` | 768 × 1266 | `986:52437` | 390 × 1095.2 | `#FFFFFF` | Lime `964:58593` | |
+| 6 | `map` | `964:58629` | Events Map — D · Compact tile | 1440 × 1192 | `986:52425` | 768 × 1266 | `986:52437` | 390 × 1095.2 | `#FFFFFF` | Lime `964:58593` | done `a9af421` |
 | 7 | `pricing` | `964:58630` | Pricing — B · 3-col in soft panel | 1440 × 801 | `986:52426` | 768 × 745.1 | `986:52438` | 390 × 1549.7 | `#FFFFFF` | Lime `964:58594` | |
 | 8 | `calendar` | `964:58631` | Booking Calendar — A · Scheduler | 1440 × 885 | `986:52427` | 768 × 1361 | `986:52439` | 390 × 1011 | `#2563FF` | Lime `964:58595` | |
 | 9 | `form` | `964:58632` | Enquiry Forms — B · Split context+form | 1440 × 853 | `986:52428` | 768 × 1061.2 | `986:52440` | 390 × 1238.2 | `#FFFFFF`, a `#6B2CFF` card | Lime `964:58596` | |
@@ -1509,6 +1509,106 @@ counters and ink traps: its corners are soft. Rubik 900 is the squarer drawing, 
   Pop arm** wherever its pager draws; pass `frame.lime` if the frame's pager differs.
 - **`FIELDS.repertoire` owes nothing**: no row is template-keyed.
 
+### Settled in section 6 (the events map)
+
+- **No Pop block: Lime's `if (s.limeTree)` inside `EventsMap`'s `if (s.v0)` is
+  `(s.limeTree || s.pop)`**, after the seam, with `const pop = s.pop` and a fourth `G` arm ahead of
+  Editorial's. `perPage`, `pg`, `shown`, `lit` and `onPick` are shared whole. The tree is Lime's node
+  for node at all three widths (the walker, all three masters). Grunge's two pads, which Pop's
+  frames state again, are hoisted (`tilePad`, `panelPad`) and shared by both arms. Every site outside
+  `G` that read `ink` (`s.bg`, white here) or a `grunge || ed` branch was routed: the wrapper's
+  `color` (`s.text3`), the radius label, `disp()`'s uppercase, the 390 seam clearance (`!ed && !pop`
+  — Pop draws no seam). **No arc seams**: `ArcEdge` returns null off Lime, and `TornEdge`, `Grain`
+  and `Tape` are gated on their own templates, so nothing lit.
+- **The section stands on Scheme 1; the two cards read `s.onScheme`** — the tile `S6` (violet
+  `bg`, white `text3` type) and the gig panel `S7` (red `bg`, white `text3` type). The census row was
+  right but for three cells, read off the walker: the tile's raster tint is **`#FF1A1A` MULTIPLY at
+  .6** (`S7.bg`, Lime's mechanism — the "tinted, read the blend" of the planning notes), the globe is
+  the same red, and the date discs are **Scheme 7's `tag/5`** teal (`S7.chips[4].bg`, `#00E0C4`).
+  Named literals (`POP_MAP`, decision 5: followed): the kicker's Lime `#15180F`, the tile's Retro
+  `#CBB78E` 1px ring and `#EAD7B8` well, the rows' `#E41010` in Lime's hairline at the frame's 14%
+  (`#15180F24`; Lime's own is 15%), the idle page pills' teal at 20%.
+- **The leaves, off the walker on all three masters** (nothing binds):
+  - the **tile**: radius 55 at every width (Lime's 390 is 30), padded 20 / 20 / 10 with no gap; the
+    map radius **38**, 214.84 at 768 and 298 at 390, stretched at 1440 as Lime's;
+  - the **foot**: the base a raw Chunko **22.71** on its auto 27 line, white, uppercase; the terms a
+    raw Chakra Petch **13** in capitals at `'normal'` (Lime's Label/XS gone);
+  - the **head**: the kicker a raw Inter Bold 11 tracked 1.5, **uppercase** (the node's own
+    `textCase`), auto line; the heading Display/LG `s.dispLg` in `s.ac`, uppercase; the radius label
+    a raw Chunko **20.39 on 23.36** in `s.tx` violet at every width (Lime's Label/LG, Grunge's
+    Display/Title — neither); the head stands **82** above the cards at 1440 (Lime's 32);
+  - the **panel**: radius 55, Grunge's pads (`30 20 20` at 390), its label **Space Mono 11** tracked
+    1.5, white, uppercase, its head row's 1px frame unfilled (Lime's case, not drawn);
+  - the **rows**: Lime's pills and pads at every width (`11 10 11 33` at 768, the master's 79 / 80);
+    the venue a raw Chunko **19.57** on its auto 23 line (Lime's Display/List gone), the city line
+    **Space Mono 14.22** white at the frame's 85%, the disc Lime's 56 × 57 at radius 46 with **Space
+    Mono 9** tracked 0.5 and **Bold 14**, both in the panel's red.
+  A `pt()` helper in the block sets each raw string (face, size × 0.82 on desktop, `'normal'` line).
+- **`Pager` needed no edit**: `frame.lime` passes the frame's whole dress over the section-5 arm —
+  `{ box: teal 20%, endBox: 'transparent', ring / ink / idle: white, onBox: teal, on: Retro's paper }`
+  — the ends unfilled in a white ring round a white arrow, the current page teal, which is the
+  census's "teal current pill where the arm fills it pink". The numerals stay the arm's Anton → label
+  face at 12. Lime's `grow: !tab` is inherited (natural widths at 768, the measure at 1440 and 390,
+  where the master's own five 59.6 buttons spread the same way).
+- **The scribble** (`POP_MAP_SCRIBBLE_D`, off the frame's `fillGeometry` in its own 407.35 × 95.01
+  box — the hero's stroke redrawn wider, not the same path) is the node's own **`#C6F200`**
+  (`s.stroke2`), **not** `POP_STICKER_LIME`: the census's "every scribble is `#BCD631`" is wrong a
+  second time (the media's arrow was the first). Figma −3.98 → CSS **+3.98**, turned about its own
+  corner, which the `relativeTransform` places (the bounding box is 6.6 left of it):
+  - **1440: off the heading's start**, (208.68, 27.91) from the text box's corner × 0.82, in a
+    Pop-only wrapper round the `h2` so the glyph lift leaves it put. The trap-2 question — the frame
+    crosses a Bebas 130 word whose box is 116 tall, where Pop's Chunko 82 is 73 — was answered by
+    rendering it at the stated offsets: it sweeps under the tail of the Titan word and touches its
+    foot, which is the page's idiom (the hero's and this frame's own 390 scribble sit under their
+    heads), so it was not re-anchored. Measured: the turned box at (165.7, 47.0) 338.6 × 100.9 off
+    the content's corner against the frame × 0.82 (165.7, 46.7) 338.6 × 100.9.
+  - **768: not drawn.** The master keeps the desktop's numbers in a 768 frame, where the tile, its
+    later sibling, covers it whole — a leak that does not show (the render agrees).
+  - **390: off the radius label**, (59.06, 16.46) at 0.2662 (the master's own scale, 108.42 ×
+    25.29), underlining it. That label is a raw Chunko at every width, so its box hugs the string —
+    unlike the heading's, which hug a leaked Bebas word. Measured: the turned box's corner 57.3 in
+    and 16.5 below the label's top, against the master's 57.31 and 16.46.
+- **The heading's boxes are the leak's, so the head is shorter than the frame's**: the walker's 768
+  and 390 heading boxes (329 × 72, 220 × 48) and the desktop's 528 × 116 are Bebas at 130 / 81 /
+  54. Set in Pop's mode (82 / 51 / 36) the head is 36 / 26 / 15 shorter, so the cards stand that
+  much higher and the desktop radius label centres on the shorter row (44.3 against the frame's
+  61.5 × 0.82). Every one of those offsets is what Chunko's own 0.89 box predicts, to the pixel.
+- **The glyph floor is the page's 0.14em, inherited, not measured here**: the frame sets this
+  heading in Bebas, so it holds no Chunko glyph to measure against. The bio's, the gallery's and
+  the repertoire's Display/LG heads (lh 0.89, Pop's mode) all measured 0.14em, so the `h2` is lifted
+  `top: -0.14em` with them.
+- **Two live states the frames do not draw, redrawn** (Lime's rule, checked against their own
+  surround): the **lit row is Scheme 7's own active pair**, `S7.activeBg` lime under
+  `S7.activeFg` black, the teal disc still reading on it; the **lit pin** the same lime in a 5px
+  black ring at 16, and the **idle pin** the date disc's teal in a 3px white ring — both read on the
+  red-multiplied raster. The global `a:hover { opacity: .72 }` dims a linked lit row under the
+  pointer, app-wide, as Editorial recorded.
+- **`gigDark` is not widened** (session 0's hand-over, closed): the block reads no `g.hue`, `mapBg`
+  or `mapFg`, as under Grunge and Editorial.
+- **Measured** (harness, off the content's top-left): at 1440 the kicker, the tile and panel
+  (529.3 against 646 × 0.82 = 529.7), the map's 16.4 inset and 496.6 width, the panel label's
+  32.7 / 16.4, the rows (79.5, stepping 89.3, the venue at 27.1), the disc (45.9 × 46.7, 16.4 from
+  the row's edge) within 0.4 of the frame × 0.82; the radius label 3% wider than Chunko's (Titan at
+  0.98 on this string). At 768 the tile 387 (387), map 214.8, rows 79; at 390 the tile 429.1
+  (429.16), map 350 × 298, the panel's 30 top. The +1 under the kicker at 768 and 390 is Inter
+  Bold 11's 14 line against Figma's 13 (the gallery's +1). Inherited, not Pop's: the root's 80 /
+  56 / 44 top and 80 foot against the masters' 126 / 60 / 30 and 156 / 60 / 10; the 390 page's
+  five gigs where the master draws three; no pager seeded, so the desktop cards stand 498.7 tall
+  against the frame's 683 × 0.82 (Lime's "the frame's 686 less its pager" case); `pageWindow`'s
+  compact `1 2 … 6`.
+- **`n=0`** keeps the map at its floor beside the panel's head, as the twins do.
+- **Live** (`theme=4&live=1&n=30`, trusted clicks, three widths): a row lights its pin and a pin its
+  row, Next moves the teal page 1 → 2 and the list to venue 6, Prev back finds the lit gig still
+  lit, linked rows are `<a>`, every click hit-tests to its target (the scribble takes no pointer),
+  no sideways scroll. `page-check.mjs Pop 0`: no console error or warning, the map's six probed
+  controls all change state, `overflow390` 0, and the 1440 seam clip shows the repertoire's violet
+  meeting the map's white on a straight edge.
+- **Digest**: themes 0, 1, 2 and 3 at zero rows, static and live (660 + 660 against the editing
+  server's before-labels, no empty render). **Theme 4 moved exactly map a0 at three widths, both
+  ways** — no shared helper changed.
+- **`FIELDS.map` owes nothing**: no row is template-keyed, and design 0 prints every key it reads.
+  `notes/map.md`'s "Retro's and Pop's body prints them" now names Pop as going through the block.
+
 ### Inherited and used
 
 *(Append one line each time a session leans on a bullet from Lime's, Grunge's, Editorial's or
@@ -1618,6 +1718,25 @@ site* (editorial/layout-3) — 0.14em; *the artist capped at 60%* (editorial/lay
 five-theme digest is the whole proof for a shared-helper change* (lime/layout-1, sweep) — `Pager`, static
 and live; *a twin's frame-less control is checked against its own surround* (editorial/layout-3) — the
 empty list re-inked; *theme 1 is the digest at risk* (grunge/layout-1) — themes 0–3 at zero.
+
+Section 6: *no block: the twin's gate widened, a named flag for the deltas* (grunge/layout-1 and
+editorial/layout-1, section 6) — `(s.limeTree || s.pop)`; *where the seam lives inside the branch, the
+block goes after the seam* (lime/layout-1, section 6); *the `G` lookup at the block's head*
+(grunge/layout-1) — a fourth arm, Grunge's pads shared; *the node walker, kept* (grunge/layout-2) — all
+three masters with style names, blend modes and the scribble's `relativeTransform`; *a rotated group's
+metadata x/y is a bounding box* (memory `figma-frame-reading`) — the scribble placed by its origin,
+6.6 right of its box; *a nested node reads `s.onScheme[n]`* (editorial/layout-2) — the tile on 6, the
+panel on 7; *a stated text box is not the string* (section 5, turned) — the 390 scribble anchored to
+the radius label because that box does hug; *leaked tops are followed where they show, dropped where
+they don't* (lime/layout-1) — the 768 scribble dropped; *Retro's live states vanish; redraw them*
+(lime/layout-1, section 6) — the lit row and pins on Scheme 7's active pair; *`frame.lime` overrides the
+arm* (grunge/layout-1, section 6) — the pager's whole dress; *the 390 page is five gigs*, *the compact
+`pageWindow`* (lime/layout-1, section 6; D1); *a frame's inside stroke is an inset `boxShadow`*
+(lime/layout-2) — the tile's tan ring, the rows' hairline; *`vm.title` shadows the ramp* (lime/layout-1,
+section 6) — every Display/Title site is a raw size here anyway; *a stand-in face is scaled* (`faced`,
+grunge/layout-1); *a stand-in face's glyph floor is measured per site* (editorial/layout-3) — turned:
+no Chunko glyph to measure, the page's 0.14em inherited; *theme 1 is the digest at risk*
+(grunge/layout-1) — themes 0–3 at zero, static and live.
 
 ## Open questions
 
