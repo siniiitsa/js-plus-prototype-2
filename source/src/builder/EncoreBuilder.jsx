@@ -1960,8 +1960,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // The statement's widest word in Noto Bold ems — `wordEms`' rule, for a
   // third hand-scaled Bold that is not `vm.title`: Editorial's footer fits the
   // frame's 57.84 to it rather than breaking inside a word. Pop's footer is
-  // the same case in Titan's ems × `faceK` (`navFace`'s table): its hand-scaled
-  // 40.38 is wider than the 390 column in Titan. Undefined off those two.
+  // the same case in Titan's ems × `faceK` (`navFace`'s table): the seed sets
+  // its hand-scaled 40.38 in every column, so this guards a longer word.
+  // Undefined off those two.
   vm.footerWordEms = T.name === 'Editorial' || T.name === 'Pop'
     ? +Math.max(0, ...vm.footerStatement.split(/\s+/).map(T.name === 'Pop' ? (x) => titanEms(x) * 0.98 : notoBoldEms)).toFixed(3)
     : undefined

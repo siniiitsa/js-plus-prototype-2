@@ -27754,10 +27754,11 @@ function Footer({ s }) {
         } : pop ? {
           // A raw Chunko 40.38 on a 33.44 line at every width, three lines in
           // the frame's FIXED 484.52 box at 1440 and 768 and the column at
-          // 390 — where Titan's UNFORGETTABLE. outruns our 346 column (the
-          // frame's is 370), so the size is fitted to the widest word as the
-          // testimonials' quote is, the frame's size the ceiling. Titan sets
-          // its caps lower in this line box than Chunko does, so it is lifted.
+          // 390. Titan sets the seed's UNFORGETTABLE. 351.9 wide in the 370
+          // column at the frame's size, so a longer word is what the fit to
+          // the widest word guards (the testimonials' quote's recipe), the
+          // frame's size the ceiling. Titan sets its caps 0.13em lower in this
+          // line box than Chunko does (a lime-ink row scan), so it is lifted.
           fontSize: faced(s, s.footerWordEms ? `min(${px(40.38)}, calc(100cqi / ${s.footerWordEms}))` : px(40.38)),
           lineHeight: facedLh(s, 33.437 / 40.38), textTransform: 'uppercase',
           maxWidth: s.mob ? 'none' : px(484.52), minWidth: 'min-content',
