@@ -172,7 +172,7 @@ Session 0 first, then eleven sections in page order. Each row's three masters ar
 | 6 | `map` | `964:58629` | Events Map — D · Compact tile | 1440 × 1192 | `986:52425` | 768 × 1266 | `986:52437` | 390 × 1095.2 | `#FFFFFF` | Lime `964:58593` | done `a9af421` |
 | 7 | `pricing` | `964:58630` | Pricing — B · 3-col in soft panel | 1440 × 801 | `986:52426` | 768 × 745.1 | `986:52438` | 390 × 1549.7 | `#FFFFFF` | Lime `964:58594` | done `b845e09` |
 | 8 | `calendar` | `964:58631` | Booking Calendar — A · Scheduler | 1440 × 885 | `986:52427` | 768 × 1361 | `986:52439` | 390 × 1011 | `#2563FF` | Lime `964:58595` | done `39a7807` |
-| 9 | `form` | `964:58632` | Enquiry Forms — B · Split context+form | 1440 × 853 | `986:52428` | 768 × 1061.2 | `986:52440` | 390 × 1238.2 | `#FFFFFF`, a `#6B2CFF` card | Lime `964:58596` | |
+| 9 | `form` | `964:58632` | Enquiry Forms — B · Split context+form | 1440 × 853 | `986:52428` | 768 × 1061.2 | `986:52440` | 390 × 1238.2 | `#FFFFFF`, a `#6B2CFF` card | Lime `964:58596` | done `abea669` |
 | 10 | `testimonials` | `964:58633` | Testimonials H — Stacked tag card | 1440 × 730 | `986:52429` | 768 × 730 | `986:52441` | 390 × 730 | `#C6F200` | Lime `964:58597` | |
 | 11 | `footer` | `964:58634` | Footer — Component 2 / 3 / 4 | 1440 × 479.7 | `986:52430` | 768 × 720.4 | `986:52442` | 390 × 720.4 | `#FF2DA0` | Lime `964:58598` | |
 
@@ -600,7 +600,7 @@ Everything here is behind `s.pop`, a widened gate or a named pair.
 
   | Mark | Where (size, Figma rotation → CSS) | Ink |
   |---|---|---|
-  | **smiley-globe seal** — a disc, a globe, a smiley, the name twice as `TEXT_PATH`, two 11px marks (`Frame 206` / `207`) | header 174.8 (−19.5 → +19.5, *read in section 1*), form 136 (−20), footer 126 (−19.5) | header pink disc; read each |
+  | **smiley-globe seal** — a disc, a globe, a smiley, the name twice as `TEXT_PATH`, two 11px marks (`Frame 206` / `207`) | header 174.8 (−19.5 → +19.5, *read in section 1*), form 136.47 (−19.5 → +19.5, *read in section 9*; a lime face), footer 126 (−19.5) | header pink disc, form violet; read each |
   | **smiley sun** — a scalloped disc with a smile | bio 154 (−25.37 → +25.37, *read in section 2*; `PopSun`), footer 152 × 151 (−22.3) | blue in the bio, lime in the footer |
   | heart (`Vector` 100.44 × 91 — *corrected in section 5*: the `Union` is the lightning) | repertoire, by the pager | teal |
   | asterisk (93 × 95, −18.52 → +18.52, *read in section 4*) | gallery, beside the head | teal |
@@ -615,7 +615,7 @@ Everything here is behind `s.pop`, a widened gate or a named pair.
   bio's.
 - **Scribbles and arrows** — hand-drawn single-stroke vectors: the lime underlines (the header's
   331 × 95, the bio's 258 × 12 under its head, the map's 407 × 95 at −4 across "MANCHESTER", the
-  form's 292 × 68 at −4 under its statement), the repertoire's pink lightning (the `Union`, 100.87 × 79.92,
+  form's 292 × 68 at −4 under its statement — the map's drawing at 0.7164, *read in section 9*), the repertoire's pink lightning (the `Union`, 100.87 × 79.92,
   *read in section 5*), and the lime
   squiggle arrows (media 209 × 126 at −135, the calendar's 272 × 164 at −165 — the media's drawing
   at 1.3, but in `#BCD631`, *read in section 8*). Transcribe each path
@@ -1829,6 +1829,121 @@ counters and ink traps: its corners are soft. Rubik 900 is the squarer drawing, 
   layout-2 calendar is still Retro's body (`notes/calendar.md`'s "Retro's and Pop's foot never
   wraps" is layout 2's, true).
 
+### Settled in section 9 (the enquiry form)
+
+- **No Pop block: Lime's `if (s.v0 && s.limeTree)` ahead of `EnquiryForm`'s `if (s.v0)` is
+  `(s.limeTree || s.pop)`**, with `const pop = s.pop` and a fourth `G` arm ahead of Editorial's;
+  the new leaves (`half`, `head`, `ph`, `discBg`) fall back through `??` or are absent there. The
+  live seam is hoisted above the block, so the published boxes, chips, submit and sent state
+  needed nothing. The tree is Lime's node for node at all three widths (the walker, all three
+  masters) less its arcs. **No node is styled** — every string is a raw size, so trap 2 does not
+  bite, though both narrow masters sit in Lime's mode. Session 0's *the contact half paints
+  `pillBg` black* closes by construction: Retro's branch is no longer reached.
+- **Two nested seats, the census's row confirmed**: the shell is `S6 = s.onScheme[6]` (violet
+  `bg`; the statement `S6.tx` pink; brand, kicker and promises `S6.text3` white), the form half
+  `S3 = s.onScheme[3]` (pink `bg`; labels, placeholders, chip type and the prompt `S3.text3`
+  white). The Lime block's two `s.ac` reads (the half and the disc) land on pink by coincidence
+  under Scheme 1, so both go through `G` as `S3.bg`. `POP_FORM` (decision 5: followed): the boxes
+  `#EE138B` in a 1px white ring at 31%, their placeholder white at 80%; the lime `#C3F007` (the
+  picked chip, the ✓s, the submit, the arrow, the seal's face); the idle chips that lime at 48% —
+  orange on the pink — in a white ring at 20%; Retro's `#EAD7B8` avatar well; the seal's
+  `#060707` features.
+- **The leaves, off the walker** (desktop × 0.82, a `pt()` helper for the raw strings):
+  - the **shell** radius 55, padded 20 at every width (Editorial's), the halves **32 apart
+    stacked** (desktop 0); the **form half** radius **42 on all four corners** (Lime's 55 left
+    corners gone), padded Lime's `inset`, its column 14;
+  - the **head block hugs** (161 / 223 / 223: Lime's 210 floor off), the statement **23** under
+    the credit row at every width (Lime's 12 / 20); the context half is Lime's otherwise — 420 at
+    1440 with the promises pinned to the foot, gap 0 at 768 (hug + space-between), 20 at 390;
+  - the **brand** a raw Chunko 13.18, the **kicker** Chakra Petch 12, the **promises** Chakra
+    Petch 13 beside an Inter 13 ✓ in the lime, the **box labels** Chunko 15.14 and **EVENT TYPE /
+    MESSAGE** 14.51, all uppercase in the display face; the **placeholders** Inter 13.5; the
+    **chips** Inter **Bold** 12.5, padded 5 / 11; the **message** 134 / 134 / **100**, radius 20;
+    the **pair** 12 apart, **10** stacked at 390 (Retro's, Grunge's);
+  - the **submit** is BookPill's Lime numbers inline (5/5/5/21, the 46 × 44 disc, 54 tall), the
+    lime under a raw Chunko 15.77 label in `S3.bg` pink round a pink disc, its glyph the frame's
+    ← turned 180 — `LimeArrow` to the hundredth, at 16.15 wide. *Write another* is the same pill.
+- **Titan's `normal` line box is a pixel under Chunko's auto box on every label** (17 against 18
+  at 15.14, 16 against 17 at 14.51, 15 against 16 on the brand), and the form half came up 4 short
+  at 768 and 6 at 390. The frame's stated boxes are pinned as line heights (`u(18)`, `u(17)`,
+  `u(16)`); everything then lands.
+- **The statement fits the frame's box, not its column** (a decision, recorded): a raw Chunko
+  35.16 on 29.84 at every width, uppercase, the typed break after "Let's make" shared with Grunge
+  and Editorial (`lines`), in a **FIXED 313.43 box** — which at 390 runs 23 past the 290 column
+  into the shell's padding, as the frame's own box does. Titan sets UNFORGETTABLE. 306.8 wide at
+  34.5px, inside the box, so the seed keeps the frame's size at every width; a longer word
+  shrinks it to fit the box (`min(35.16, 313.43 / titleWordEms)`) rather than break inside it.
+  **`vm.titleWordEms` gained a Pop arm** in Titan's ems × `faceK` (`navFace`'s table); every
+  other reader is `ed`-gated or inside a `s.limeTree` block, so this statement is its only Pop
+  reader. Fitting the column instead would have shrunk the seed ~4% at 390, a departure the frame
+  does not make.
+- **The glyph floor, measured here: 0.13em** (lh 0.849; the media head's figure at 0.833, where
+  the hero and the bio's 0.75 / 0.89 measured 0.14). A pink-ink row scan put the line feet 4.3–4.7
+  low; lifted, they land 23 / 52 / 82 below the box's top at 768 and 390 against the frame's 23 /
+  53 / 82, and 18.2 / 43.2 / 67.2 at 1440 against 18.9 / 43.5 / 67.2 (× 0.82). No other string is
+  lifted (section 1's rule).
+- **The scribble is the map's drawing at 0.7164** — the frame's `fillGeometry` is
+  `POP_MAP_SCRIBBLE_D` scaled to 291.82 × 68.06, to the hundredth — in the node's own `#C6F200`
+  (`s.stroke2`), the third Pop scribble that is not `POP_STICKER_LIME`. Figma −3.98 → CSS +3.98
+  about its corner. **At 1440 it is absolute** in the head block at (−2.2, 154), which is 7 above
+  the statement box's foot, so it hangs off a Pop-only wrapper round the `h2` (`calc(100% − 7)`)
+  and the glyph lift leaves it put. **Narrow it is a flow row** (`Frame 305`, gap −26): Figma
+  spaces the turned child by its 295.85 × 88.18 bounding box, which CSS never does, so the row is
+  that box, 26 up into the heading, the drawing's corner 4.73 in. Measured: the turned box at
+  (50, 184.6) 295.8 × 88.2 off the shell at 768 against the frame's (50, 185), and (43.5, 178.3)
+  242.6 × 72.3 at 1440 against 43.5 / 178.8 (× 0.82).
+- **The seal is SealBadge's Pop arm at 136.47**, 1440 alone (neither narrow master carries a
+  `Layer_1`), the header's drawing to the hundredth at this size (name 16.08 / 136.47 = the
+  header's 20.6 / 174.8; dots and globe likewise). **Two additive props**, `face` and `features`,
+  take the smiley's lime face and near-black features (the hero's `s.box3` / `s.tx` stay the
+  defaults); `hue` is `S6.bg`, `ink` `S6.text3`. Figma −19.5 → CSS +19.5, placed by the disc's
+  centre off the turned node's `relativeTransform` — **65.0 in from the shell's right edge and 17.9
+  below its top** — as the shell's sibling outside its clip, in the block's wrapper (the shell's
+  box under Pop). Its disc's foot stands 2 above the email box, so it takes no pointer;
+  `elementFromPoint` 20 in from the email input's top-right corner finds the input. It spins
+  (open question 9). The fills read off the DOM: disc `#6B2CFF`, globe, name and dots white, face
+  `#C3F007`, features `#060707`; **the header's seal reads `#FF2DA0` / `#000000` / `#6B2CFF`
+  before and after**, so the defaults are inert (the digest cannot see SVG `fill`).
+- **The refused box is redrawn against the pink half** (CONVENTIONS C, *a twin's frame-less
+  control is checked against its own surround*): the idle ring is a 31% white hairline, so a
+  refusal is 2px of `S3.text3` full white — colour and weight at once, not Lime's `s.tx`, which is
+  violet here. The prompt line is white.
+- **The empty slot** (`&noimage=1`): the frame's covered `#EAD7B8` well shows, and `Photo`'s
+  white `ink` vanished on it, so Pop's initials are `S6.bg` violet.
+- **`FORM_BTN_1` widens by name**: `formBtnSeed` reads `d === 0 && (limeTreeTheme(themeName) ||
+  themeName === 'Pop')`, the last of decision 3's three seeds; `limeTreeTheme()` is untouched. The
+  Button field's hint and `notes/form.md` say so. **`FIELDS.form` owes nothing**: `reach.mjs`'s
+  six form probes under themes 1 and 4 agree row for row (`button` and `messageLabel` layouts 1
+  and 4, `promises` 1 and 2, `typeLabel` 1, `steps` and `sub` 4).
+- **Measured** (harness, off the shell's top-left; the form half's leaves off the half's): at 768
+  the shell 708 × 970.8 (971.18), the context 668 × 353.8 (354.18), the half (20, 405.8) 668 ×
+  545 (406.18, 545), the brand (112, 57) and kicker (112, 75), the ✓s 273.3 (273.68), the boxes
+  (30, 54) 298 × 60, EVENT TYPE 226, the chips 251 (77 / 57 / 46 / 55 / 58 against 76.6 / 56.7 /
+  45.8 / 54.9 / 56.6), the message (30, 313) 608 × 134, the pill (30, 461) 608 × 54, the disc
+  (587, 466) — all within 0.4 of the master; at 390 the half 732 (732), the stacked boxes 54 /
+  148, the chips 439 with *Other* wrapping to 472, the message 534 × 100, the pill 648, as the
+  master's; at 1440 the shell 1088.2 × 502.4 (1089 × 502.7), the half 711 (711.8), the boxes
+  317.8 × 49.2 (318.2), the chips 217.3, the pill 389.2 (389.5), the seal's centre (−53.3, 14.7)
+  exactly. The shell is the frame's own width: no named diff on the halves this time.
+  Inherited, not Pop's: the root's 80 / 56 / 44 top against the masters' 120 / 30 / 30 and foot
+  against 120 / 60 / 30; the live `::placeholder` at the page's .45 against the frame's .8 (a hint
+  under a label, JP-093 — Repertoire's accepted diff); the ✓ is Inter's fallback glyph (pricing's
+  precedent).
+- **Live** (`theme=4&live=1`, puppeteer typing and clicks, 1440 and 390): an empty submit rings
+  all four boxes in 2px white and prints the prompt; typing clears its box's ring; *Party* lights
+  lime under pink (Wedding goes to the 48% lime) and moves the mailto subject to *Party enquiry*
+  with the five answers in the body; a valid submit under a capture-phase `preventDefault` swaps
+  in the sent block; *Write another* restores the values and the message; every box, chip and the
+  pill hit-test to themselves; no sideways scroll. The canvas carries no input, anchor or pointer.
+  `page-check.mjs Pop 0`: no console error or warning, the published form refuses and rings,
+  `overflow390` 0, and the 1440 seam clip shows the calendar's blue meeting the form's white on a
+  straight edge, the seal clear of it.
+- **Digest**: themes 0, 1, 2 and 3 at zero rows, static and live (660 + 660 against the editing
+  server's before-labels, no empty render). **Theme 4 moved exactly form a0 at three widths, both
+  ways** — header a0 unmoved, which with the fills above proves `SealBadge`'s new props inert.
+  (A first after-run was discarded unread: a `git stash` mid-run to read the header's HEAD fills
+  reloaded the server under it. Never stash while a digest runs.)
+
 ### Inherited and used
 
 *(Append one line each time a session leans on a bullet from Lime's, Grunge's, Editorial's or
@@ -1992,6 +2107,30 @@ inherited* (editorial/layout-2) — the 390 month, fitted by `titleWordEms`' rul
 fit its measure*, editorial/layout-1); *a seeded page cannot show an empty slot* (lime/layout-1, sweep) —
 `&noimage=1`, the well made opaque; *field reach is measured* (CLAUDE.md) — `heading` and `cta`'s
 Pop rows; *theme 1 is the digest at risk* (grunge/layout-1) — themes 0–3 at zero, static and live.
+
+Section 9: *no block: the twin's gate widened, a named flag for the deltas* (grunge/layout-1 and
+editorial/layout-1, section 9) — `(s.limeTree || s.pop)`; *a section whose live seam is hoisted
+above its branches can always take a block* (lime/layout-1, section 3) — the seam untouched; *the
+`G` lookup at the block's head* (grunge/layout-1) — a fourth arm, new leaves through `??`; *the node
+walker, kept* (grunge/layout-2) — all three masters, with the seal's and the scribble's
+`relativeTransform`s and `fillGeometry`; *a rotated group's metadata x/y is a bounding box* (memory
+`figma-frame-reading`) — the seal's 174.2 box a 136.47 disc, placed by its centre; *Figma
+auto-layout spaces a rotated child by its rotated bounding box* (memory `figma-frame-reading`) —
+the narrow scribble's flow row; *a nested node reads `s.onScheme[n]`* (editorial/layout-2) — the
+shell on 6, the half on 3; *place a seal by its disc's centre* (lime/layout-1, section 2); *a frame's
+inside stroke is an inset `boxShadow`* (lime/layout-2) — the boxes' and idle chips' rings; *a
+refused box changes colour, not weight alone* (CLAUDE.md) and *a twin's frame-less control is
+checked against its own surround* (editorial/layout-3) — 2px of the half's white; *under Lime
+`pillBg` IS the accent* (lime/layout-1) — turned round a fourth time: the submit is a literal lime;
+*a stand-in face is scaled* (`faced`, grunge/layout-1); *a stand-in face's glyph floor is measured
+per site* (editorial/layout-3) — 0.13em; *a head that must fit its measure is fitted to its widest
+word* (editorial/layout-1) — fitted to the frame's box, Titan's ems; *a twin's width-bound call is
+re-measured in the new face* (editorial/layout-2) — Titan's 1px-short line boxes, pinned; *a seeded
+page cannot show an empty slot* (lime/layout-1, sweep) — `&noimage=1`, the initials re-inked; *field
+reach is measured* (CLAUDE.md) — six form probes, no Pop row owed; *one five-theme digest is the
+whole proof for a shared-helper change* (lime/layout-1, sweep) — `SealBadge`'s two props, with the
+fills read beside it; *theme 1 is the digest at risk* (grunge/layout-1) — themes 0–3 at zero, static
+and live.
 
 ## Open questions
 
