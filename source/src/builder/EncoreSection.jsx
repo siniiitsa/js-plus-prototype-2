@@ -507,6 +507,20 @@ const POP_SPARKLE_D =
   'M45 0L48.68 10.04C54.06 24.75 65.53 36.34 80.07 41.78L90 45.5L80.07 49.21C65.52 54.66 54.06 66.25 48.68 80.95' +
   'L45 91L41.33 80.95C35.94 66.25 24.48 54.65 9.94 49.21L0 45.5L9.93 41.79C24.48 36.34 35.94 24.75 41.32 10.05L45 0Z'
 
+// Pop's enquiry-form raw values (964:58632; decision 5: followed). The shell
+// is Scheme 6's violet and the form half Scheme 3's pink, both read off
+// `s.onScheme`; these are the hexes neither holds. `box` is every box's fill,
+// a step off Scheme 3's `box2` #F0138C, in a 1px white ring at 31%, its
+// placeholder white at 80%; `lime` is the picked chip, the ticks, the submit,
+// the arrow and the seal's smiley face (Scheme 3's `activeBg` is #C6F200),
+// `chip` the idle chips' same lime at 48% — orange on the pink — in a white
+// ring at 20%; `well` is Retro's beige under the avatar's photograph, which an
+// empty slot shows; `feat` the seal smiley's features.
+const POP_FORM = {
+  box: '#EE138B', ring: 'rgba(255, 255, 255, 0.31)', ph: 'rgba(255, 255, 255, 0.8)', lime: '#C3F007',
+  chip: 'rgba(195, 240, 7, 0.48)', chipRing: 'rgba(255, 255, 255, 0.2)', well: '#EAD7B8', feat: '#060707',
+}
+
 // Pop's smiley sun (964:58625's second "Layer_1", 154 × 154 before its tilt):
 // the scalloped disc's outline and the smile's three features, off the
 // frame's `fillGeometry` in the sticker's own units, rounded to the hundredth.
@@ -1306,7 +1320,7 @@ function TagChips({ s, justify = 'flex-start', radius, size, hues, inks }) {
   )
 }
 
-function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32, ink: inkProp, mark, nameInk, glyph = 'asterisk', classic = false, scheme = 1, line = false }) {
+function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32, ink: inkProp, mark, nameInk, glyph = 'asterisk', classic = false, scheme = 1, line = false, face, features }) {
   const id = useId().replace(/:/g, '')
   if (s.showBadge !== 'show') return null
   const size = sizeProp ?? (s.mob ? 62 : 108)
@@ -1403,7 +1417,9 @@ function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32, ink: in
   // `sem/bg`, the smiley's face to `sem/box/3` and its features to
   // `sem/text/2`, which are its Scheme 1 seat's pink, white, black and violet;
   // `hue` and `ink` override the first two for a caller standing on another
-  // scheme. The name is Chunko Bold Demo at 20.6 tracked 30%, in Titan One
+  // scheme, and `face` and `features` the smiley's two — the form's seal
+  // (964:58632's "Layer_1") is a violet disc with a `#C3F007` face and
+  // `#060707` features, raw fills in an unbound variant. The name is Chunko Bold Demo at 20.6 tracked 30%, in Titan One
   // (`faced`, `s.label`), its baseline on the path with the caps pointing in,
   // as the twins' are; it turns with the dots inside `seal-spin` (JP-057),
   // the disc, the globe and the smiley standing still.
@@ -1424,8 +1440,8 @@ function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32, ink: in
           </defs>
           <circle cx={c} cy={c} r={c} fill={disc} />
           <path d={POP_SEAL_GLOBE_D} fill={mk} />
-          <circle cx={c} cy={c} r="24.24" fill={s.box3} />
-          <path d={POP_SEAL_SMILE_D} fill={s.tx} />
+          <circle cx={c} cy={c} r="24.24" fill={face ?? s.box3} />
+          <path d={POP_SEAL_SMILE_D} fill={features ?? s.tx} />
           <g className="seal-spin" style={{ transformOrigin: '50% 50%' }}>
             <g fill={mk}>
               <circle cx="18.25" cy={c} r="5.475" />
@@ -24703,9 +24719,10 @@ function EnquiryForm({ s }) {
   // context half is the frame's fixed 420 × 0.82 beside a
   // form half that takes the rest of our 1052 content width, so the form half
   // is 707.6 where the frame's is 908 × 0.82 = 744.6.
-  if (s.v0 && s.limeTree) {
+  if (s.v0 && (s.limeTree || s.pop)) {
     const grunge = s.grunge
     const ed = s.editorial
+    const pop = s.pop
     const tab = isTablet(s)
     const z = s.narrow ? 1 : 0.82
     const u = (v) => `${Math.round(v * z * 10) / 10}px`
@@ -24738,7 +24755,31 @@ function EnquiryForm({ s }) {
     // 60 / 60 / 40 tall; the idle chips are dashed 5, 5 at a raw radius 3 and
     // the picked one paper at 5. The pair stands 62 apart where the twins'
     // stand 12. The submit is an ink `sem/bg` pill. No node carries an effect.
-    const G = ed ? {
+    //
+    // Pop — 964:58632 / 986:52428 / 986:52440, Lime's tree node for node with
+    // no arcs, on the white page, binding nothing. The shell is a violet card,
+    // Scheme 6's `bg` (`S6`), radius 55 and padded 20 round both halves at
+    // every width, 32 between them stacked; the context half is unfilled on
+    // it, its statement Scheme 6's `tx` pink and every other string its
+    // `text3` white. The form half is Scheme 3's pink `bg` (`S3`), radius 42
+    // on all four corners, every label and chip type its `text3` white. The
+    // boxes, the lime and the idle chips match no key and are `POP_FORM`. The
+    // submit is the lime under a pink label round a pink disc — never
+    // `s.pillBg`, which is black under Scheme 1. No node carries an effect.
+    const S6 = pop ? s.onScheme[6] : null
+    const S3 = pop ? s.onScheme[3] : null
+    const G = pop ? {
+      shell: S6.bg, shellR: u(55), halfR: u(42), half: S3.bg, ctx: S6.text3, head: S6.tx, on: S3.text3,
+      box: POP_FORM.box, boxRing: POP_FORM.ring, ph: POP_FORM.ph,
+      // The idle ring is a 31% hairline, so a refusal is 2px of the half's
+      // own full white — colour and weight at once, read on the pink.
+      badRing: S3.text3,
+      chipOn: POP_FORM.lime, chipOnFg: S3.bg, chipFg: S3.text3, chip: POP_FORM.chip, chipRing: POP_FORM.chipRing,
+      small: [u(12.5), 'normal'], // the chips are a raw Inter Bold 12.5
+      pillBg: POP_FORM.lime, pillFg: S3.bg, discBg: S3.bg, discFg: POP_FORM.lime,
+      // The 390 master stacks the pair 10 apart and closes the message to 100.
+      msgH: s.mob ? 100 : 134, pairGap: s.mob ? 10 : 12,
+    } : ed ? {
       shell: undefined, shellR: undefined, halfR: undefined, ctx: s.tx, on: s.tx,
       box: 'transparent', boxH: s.mob ? 40 : 60,
       // The idle mark is a 56% dashed hairline, so a refused box changes
@@ -24781,8 +24822,11 @@ function EnquiryForm({ s }) {
     // Anton at the frame's glyph size, in capitals: every direct display site
     // here owes both under Grunge (section 1's `faced`).
     const disp = (size, lh, extra) => type(s.display, faced(s, size), facedLh(s, lh), {
-      ...(grunge || ed ? { textTransform: 'uppercase' } : null), ...extra,
+      ...(grunge || ed || pop ? { textTransform: 'uppercase' } : null), ...extra,
     })
+    // Pop states no ramp size anywhere in the section: every string is a raw
+    // size at Figma's auto line height, CSS's `normal`, × 0.82 on desktop.
+    const pt = (face, size, extra) => type(face, u(size), 'normal', extra)
     const titleWords = String(s.title || '').split(/\s+/).filter(Boolean)
     // 44/40 on the 1440 frame, 30 on the 768 one, 30/20 on the 390 one: the
     // same insets Retro's twin states, round both halves.
@@ -24795,18 +24839,24 @@ function EnquiryForm({ s }) {
     // as a smear — and the stated 60 does not grow.
     // Under Editorial the box is bare and its rule is the field's `DashRule`
     // (below), which a refusal swaps for a solid inset one.
-    const box = (bad, extra) => type(s.body, s.bodyMd, 1.5, {
+    // Pop's is a raw Inter 13.5 at its auto line height.
+    const box = (bad, extra) => type(s.body, pop ? u(13.5) : s.bodyMd, pop ? 'normal' : 1.5, {
       background: G.box, color: G.on, border: 'none', borderRadius: ed ? 0 : s.btnR,
       boxShadow: ed ? (bad ? `inset 0 -2px 0 ${G.badRing}` : undefined)
         : `inset 0 0 0 ${bad ? '2px' : '1px'} ${bad ? G.badRing : G.boxRing}`,
       height: u(G.boxH ?? 60), padding: ed ? 0 : `0 ${u(24)}`, margin: 0, width: '100%', ...extra,
     })
     // Display/List over every control — the frame's typed caps are Bebas's own.
-    const label = (t) => <span style={disp(s.list, 1.2, { color: G.on })}>{t}</span>
+    // Pop's are a raw Chunko 15.14 at the auto line height — an 18 box, where
+    // Titan's `normal` is 17, so the frame's box is stated (the brand's 16 and
+    // the minor labels' 17 likewise), or every label row drifts a pixel up.
+    const label = (t) => <span style={disp(pop ? u(15.14) : s.list, pop ? u(18) : 1.2, { color: G.on })}>{t}</span>
     // …but Editorial's EVENT TYPE and MESSAGE are Label/MD, a size under the
-    // boxes' Display/List labels, where the twins set all four alike.
+    // boxes' Display/List labels, where the twins set all four alike — and
+    // Pop's a raw 14.51, a hair under its boxes' 15.14.
     const minor = (t) => (ed
       ? <span style={labelStyle(s, s.labelMd, { color: G.on, whiteSpace: 'normal', overflowWrap: 'break-word' })}>{t}</span>
+      : pop ? <span style={disp(u(14.51), u(17), { color: G.on, overflowWrap: 'break-word' })}>{t}</span>
       : label(t))
     // Editorial's dashed 7, 7 rule under a box, in `stroke/1`: an overlay on
     // the field's foot, which is the box's (it is the last child), so the
@@ -24829,7 +24879,10 @@ function EnquiryForm({ s }) {
               style={{ ...box(bad), outline: 'none' }}
             />
           ) : (
-            <span style={{ ...box(bad), display: 'flex', alignItems: 'center' }}>{f.placeholder}</span>
+            // Pop's placeholder is white at 80% on the canvas; the live
+            // input's `::placeholder` keeps the page's .45 (a hint under a
+            // label, JP-093), Repertoire's accepted diff.
+            <span style={{ ...box(bad), display: 'flex', alignItems: 'center', ...(G.ph && { color: G.ph }) }}>{f.placeholder}</span>
           )}
           {foot(bad)}
         </div>
@@ -24852,7 +24905,10 @@ function EnquiryForm({ s }) {
     // carry. `sem/active/bg` with Display/List in `sem/active/text`, full width,
     // the 46 × 44 disc in the type's lime with an ink arrow. The frame's 67
     // radius on a 54 pill is `radius/pill`.
-    const pill = (extra) => disp(s.list, 1.2, {
+    // Pop's label is a raw Chunko 15.77 (the page's Soundcloud and pricing
+    // pills' size), and its disc's glyph is the frame's own ← turned 180 —
+    // Lime's arrow vector to the hundredth, 16.15 wide.
+    const pill = (extra) => disp(pop ? u(15.77) : s.list, pop ? 'normal' : 1.2, {
       ...row(u(10), { justifyContent: 'space-between' }),
       background: G.pillBg, color: G.pillFg, borderRadius: s.btnR,
       padding: `${u(5)} ${u(5)} ${u(5)} ${u(21)}`, textDecoration: 'none', ...extra,
@@ -24860,9 +24916,9 @@ function EnquiryForm({ s }) {
     const disc = (
       <span style={{
         width: u(46), height: u(44), borderRadius: '999px', flex: 'none',
-        background: s.ac, color: G.discFg,
+        background: G.discBg ?? s.ac, color: G.discFg,
         display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-      }}><ArrowRight size={46 * z * 0.6} strokeWidth={1.5} /></span>
+      }}>{pop ? <LimeArrow z={z * 16.15 / 10.2316} /> : <ArrowRight size={46 * z * 0.6} strokeWidth={1.5} />}</span>
     )
 
     // Editorial's context half. At 1440 the statement stands **centred in the
@@ -24874,6 +24930,55 @@ function EnquiryForm({ s }) {
     // is laid out (credit, then the statement 10 under it) and the promises
     // stand 20 below. `inline-size` containment is for the statement's fit.
     const edDesk = ed && !s.narrow
+    // The frame's typed break after "Let's make", kept at every width by
+    // position (the media heading's rule, one tone here): the 390 master then
+    // sets the rest on one line, as ours does.
+    const lines = (grunge || ed || pop) && titleWords.length > 2 ? (
+      <>
+        <span style={{ display: 'block' }}>{titleWords.slice(0, 2).join(' ')}</span>
+        <span style={{ display: 'block' }}>{titleWords.slice(2).join(' ')}</span>
+      </>
+    ) : s.title
+    // Pop's scribble: the map's drawing (`POP_MAP_SCRIBBLE_D`) at 0.7164,
+    // 291.82 × 68.06, in the node's own `#C6F200` (`s.stroke2`), turned Figma
+    // −3.98 → CSS +3.98 about its own corner, which the `relativeTransform`
+    // places.
+    const scribble = (left, top) => (
+      <svg viewBox="0 0 407.35 95.01" preserveAspectRatio="none" aria-hidden style={{
+        position: 'absolute', left, top, width: u(291.82), height: u(68.06), display: 'block', overflow: 'visible',
+        transform: 'rotate(3.98deg)', transformOrigin: '0 0', pointerEvents: 'none',
+      }}>
+        <path d={POP_MAP_SCRIBBLE_D} fill={s.stroke2} />
+      </svg>
+    )
+    // Pop's statement is a raw Chunko 35.16 on a 29.84 line at every width
+    // (× 0.82 on desktop), uppercase, Scheme 6's pink, 23 under the credit
+    // row, in a FIXED 313.43 box — which at 390 runs 23 past the 290 column
+    // into the shell's padding, as the frame's own box does. Titan sets
+    // UNFORGETTABLE. inside that box, so the seed keeps the frame's size; a
+    // longer word shrinks the statement until it fits the box (`titleWords`'
+    // widest, in Titan's ems × `faceK`, the nav's table) rather than break
+    // inside it, the frame's size being the ceiling. Titan sets its glyphs
+    // 0.13em lower in the 0.849 line than Chunko does (a pink-ink row scan,
+    // the media head's figure), so the `h2` is lifted. The scribble hangs 7
+    // above the box's foot at 1440, absolute in a wrapper round the `h2` so the
+    // glyph lift leaves it put; narrow it is a flow row of its turned
+    // bounding box (295.85 × 88.18), 26 up into the heading, its corner 4.73
+    // in — Figma spaces a turned child by that box, which CSS never does.
+    const popHead = pop && (
+      <>
+        <div style={{ position: 'relative', marginTop: u(23) }}>
+          <h2 style={distressed(s, disp(s.titleWordEms ? `min(${u(35.16)}, calc(${u(313.43)} / ${s.titleWordEms}))` : u(35.16), 29.84 / 35.16, {
+            margin: 0, color: G.head, width: u(313.43), overflowWrap: 'break-word',
+            position: 'relative', top: '-0.13em',
+          }))}>{lines}</h2>
+          {!s.narrow && scribble(u(-2.2), `calc(100% - ${u(7)})`)}
+        </div>
+        {s.narrow && (
+          <div style={{ position: 'relative', height: '88.18px', marginTop: '-26px' }}>{scribble('4.73px', 0)}</div>
+        )}
+      </>
+    )
     const context = (
       <div style={ed ? {
         padding: inset, minWidth: 0, containerType: 'inline-size',
@@ -24885,19 +24990,23 @@ function EnquiryForm({ s }) {
         // 210 with the promises straight under it, and the 390 one hugs at 20.
         ...(s.narrow ? null : { width: u(420), flex: 'none', justifyContent: 'space-between' }),
       })}>
-        <div style={ed ? (s.narrow ? col('10px') : { display: 'contents' }) : col('0px', { minHeight: s.mob ? undefined : u(210) })}>
+        {/* Pop's head block hugs (161 at 1440, 223 narrow): no 210 floor. */}
+        <div style={ed ? (s.narrow ? col('10px') : { display: 'contents' }) : col('0px', { minHeight: s.mob || pop ? undefined : u(210) })}>
           <span style={row(u(14), edDesk ? { alignSelf: 'start' } : undefined)}>
             {/* The artist's portrait, on `sem/bg` under the photograph —
-                Editorial's on `sem/media`, blush. */}
+                Editorial's on `sem/media`, blush, Pop's on Retro's beige
+                (a raw fill), its initials the card's violet. */}
             <span style={{
               width: u(48), height: u(48), flex: 'none', borderRadius: '999px',
-              overflow: 'hidden', background: ed ? SIENNA_MEDIA : s.tx,
-            }}><Photo s={s} ink={ink} initialsSize={Math.round(15 * z)} /></span>
+              overflow: 'hidden', background: ed ? SIENNA_MEDIA : pop ? POP_FORM.well : s.tx,
+            }}><Photo s={s} ink={pop ? S6.bg : ink} initialsSize={Math.round(15 * z)} /></span>
             <span style={col(u(2), { minWidth: 0 })}>
               {/* Label/MD, `UPPER`, under Grunge and Editorial — Lime's is
-                  Display/List. */}
-              <span style={grunge || ed ? labelStyle(s, s.labelMd, { color: G.ctx }) : type(s.display, s.list, 1.2, { color: ink })}>{s.brand}</span>
-              <span style={type(s.ui, s.labelXs, 1.26, { color: G.ctx })}>{s.kicker}</span>
+                  Display/List, Pop's a raw Chunko 13.18 over a raw Chakra
+                  Petch 12, both at the auto line height. */}
+              <span style={pop ? disp(u(13.18), u(16), { color: G.ctx })
+                : grunge || ed ? labelStyle(s, s.labelMd, { color: G.ctx }) : type(s.display, s.list, 1.2, { color: ink })}>{s.brand}</span>
+              <span style={pop ? pt(s.ui, 12, { color: G.ctx }) : type(s.ui, s.labelXs, 1.26, { color: G.ctx })}>{s.kicker}</span>
             </span>
           </span>
           {/* Display/SM at lh 1. The heading stands 68 under the block's top at
@@ -24920,31 +25029,27 @@ function EnquiryForm({ s }) {
               being the ceiling, and the box grows to that word where it is
               wider (`min-content`). Any statement then fits: more words take
               more lines, a longer word a smaller size. The line height keeps
-              the frame's ratio so it follows the fit. */}
-          <h2 style={distressed(s, ed ? disp(s.titleWordEms ? `min(${u(50.36)}, calc(100cqi / ${s.titleWordEms}))` : u(50.36), 0.849, {
+              the frame's ratio so it follows the fit.
+
+              Pop's is `popHead`, above. */}
+          {pop ? popHead : <h2 style={distressed(s, ed ? disp(s.titleWordEms ? `min(${u(50.36)}, calc(100cqi / ${s.titleWordEms}))` : u(50.36), 0.849, {
             margin: 0, color: G.ctx, fontWeight: 700, overflowWrap: 'break-word',
             maxWidth: u(262.7), minWidth: 'min-content',
           }) : disp(s.dispSm, 1, {
             margin: `${s.narrow ? '20px' : u(grunge ? 20 : 12)} 0 0`, color: G.ctx, overflowWrap: 'break-word',
             maxWidth: s.mob ? '100%' : G.cap,
-          }))}>{(grunge || ed) && titleWords.length > 2 ? (
-            // The frame's typed break after "Let's make", kept at every width
-            // by position (the media heading's rule, one tone here): the 390
-            // master then sets the rest on one line, as ours does.
-            <>
-              <span style={{ display: 'block' }}>{titleWords.slice(0, 2).join(' ')}</span>
-              <span style={{ display: 'block' }}>{titleWords.slice(2).join(' ')}</span>
-            </>
-          ) : s.title}</h2>
+          }))}>{lines}</h2>}
         </div>
         {/* The ticked promises: the frame's typed ✓ in Body/SM, the line in
-            Label/XS (Chakra Petch). An emptied list drops the node. */}
+            Label/XS (Chakra Petch). An emptied list drops the node. Pop's
+            are a raw Inter 13 ✓ in the lime beside a raw Chakra Petch 13. */}
         {s.formPromises.length > 0 && (
           <div style={col(u(10), edDesk ? { alignSelf: 'end' } : undefined)}>
             {s.formPromises.map((p, i) => (
               <span key={i} style={row(u(10))}>
-                <span style={type(s.body, G.small[0], G.small[1], { color: G.ctx, flex: 'none' })}>✓</span>
-                <span style={type(s.ui, s.labelXs, 1.26, { color: G.ctx })}>{p}</span>
+                <span style={pop ? pt(s.body, 13, { color: POP_FORM.lime, flex: 'none' })
+                  : type(s.body, G.small[0], G.small[1], { color: G.ctx, flex: 'none' })}>✓</span>
+                <span style={pop ? pt(s.ui, 13, { color: G.ctx }) : type(s.ui, s.labelXs, 1.26, { color: G.ctx })}>{p}</span>
               </span>
             ))}
           </div>
@@ -24954,7 +25059,7 @@ function EnquiryForm({ s }) {
 
     const form = (
       <div style={col(u(14), {
-        background: s.ac, color: G.on, padding: inset, minWidth: 0,
+        background: G.half ?? s.ac, color: G.on, padding: inset, minWidth: 0,
         // Rounded on its left corners only, at every width — inside the
         // clipped shell, so the mist shows in two notches (a stacked half's
         // top-left, and its foot-left under the shell's own corner).
@@ -24993,6 +25098,7 @@ function EnquiryForm({ s }) {
                     // a raw radius 3, the picked one filled at 5 — no token.
                     return (
                       <span key={i} onClick={onClick} style={type(s.body, G.small[0], G.small[1], {
+                        ...(pop && { fontWeight: 700 }),
                         display: 'inline-flex', alignItems: 'center', whiteSpace: 'nowrap',
                         padding: `${u(5)} ${u(11)}`, borderRadius: ed ? u(on ? 5 : 3) : s.btnR,
                         background: on ? G.chipOn : G.chip, color: on ? G.chipOnFg : G.chipFg,
@@ -25020,6 +25126,7 @@ function EnquiryForm({ s }) {
               ) : (
                 <span style={box(false, {
                   display: 'block', height: u(G.msgH), borderRadius: ed ? 0 : u(20), padding: ed ? 0 : `${u(20)} ${u(24)}`,
+                  ...(G.ph && { color: G.ph }),
                 })}>{s.formMessage}</span>
               )}
               {foot(false)}
@@ -25045,7 +25152,7 @@ function EnquiryForm({ s }) {
     // the wrapper and leave the seams inside the section's edges.
     return (
       <div style={{
-        position: 'relative', color: grunge || ed ? s.tx : ink,
+        position: 'relative', color: pop ? G.ctx : grunge || ed ? s.tx : ink,
         padding: G.pad,
       }}>
         {/* Grunge's band sheet, the media player's: `image 1` at .29 LIGHTEN
@@ -25060,17 +25167,37 @@ function EnquiryForm({ s }) {
         <TornEdge s={s} grunge side="top" height={s.mob ? 40 : tab ? 60 : 40 * z} />
         <TornEdge s={s} grunge side="bottom" height={s.mob ? 38 : tab ? 16 : 90 * z} />
         {/* Editorial's shell pads 20 round both halves inside its dashed
-            16, 16 rule, which is the shell's one mark (its fill is hidden). */}
+            16, 16 rule, which is the shell's one mark (its fill is hidden).
+            Pop's pads 20 too, round a form half rounded on its own, and
+            stands the halves 32 apart when stacked. */}
         <div style={{
-          ...(grunge || ed ? { position: 'relative' } : null),
+          ...(grunge || ed || pop ? { position: 'relative' } : null),
           background: G.shell, borderRadius: G.shellR, overflow: 'hidden',
           display: 'flex', flexDirection: s.narrow ? 'column' : 'row',
-          ...(ed && { padding: u(20) }),
+          ...((ed || pop) && { padding: u(20) }),
+          ...(pop && s.narrow && { gap: u(32) }),
         }}>
           {ed && <DashRule side="all" dash={16 * z} colour={s.stroke1} />}
           {context}
           {form}
         </div>
+        {/* Pop's smiley-globe seal over the shell's top-right corner, 1440
+            alone (neither narrow master draws one): SealBadge's Pop arm at
+            the frame's 136.47 disc, a Scheme 6 violet disc with white marks
+            round a lime face with near-black features, turned Figma −19.5 →
+            CSS +19.5 and placed by its disc's centre — 65 in from the
+            shell's right edge and 17.9 below its top, off the node's corner
+            turned about itself. It is the shell's sibling, outside its clip,
+            in this wrapper, which is the shell's box (Pop pads nothing here),
+            and it takes no pointer: its disc's foot stands 2 above the email
+            box. */}
+        {pop && !s.narrow && (
+          <SealBadge s={s} hue={S6.bg} ink={S6.text3} face={POP_FORM.lime} features={POP_FORM.feat}
+                     tilt={19.5} size={136.47 * z} style={{
+                       left: `calc(100% - ${(65 + 136.47 / 2) * z}px)`, top: `${(17.9 - 136.47 / 2) * z}px`,
+                       pointerEvents: 'none',
+                     }} />
+        )}
       </div>
     )
   }

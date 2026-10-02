@@ -34,7 +34,9 @@ another `notes/` file.
   are pills, so there its hairline thickens to a 2px inset ring of full ink, layout 2's rule; Grunge's idle
   ring is already full black, so its refused box is 2px of `s.tx` — colour, not weight alone,
   Lime's layout-4 rule; Editorial's idle mark is a 56% dashed rule under the box, so a refusal
-  drops the dashes for a solid 2px inset rule of full paper — colour, weight and dash at once);
+  drops the dashes for a solid 2px inset rule of full paper — colour, weight and dash at once;
+  Pop's boxes are Lime's pills in a 31% white hairline on its pink half, so a refusal is a 2px
+  inset ring of the half's own full white — colour and weight at once);
   errors are
   `useState`, set on a refused submit and cleared per box as it is corrected, because there is
   still no effect in the file. A valid submit swaps the **mustard half only** for a confirmation
@@ -98,7 +100,9 @@ another `notes/` file.
   Grunge's Anton at 0.75 set the old seed's UNFORGETTABLE.
   at 484 against the 501 column, so the key was measured and left out for Grunge here.
   Editorial's arm is keyed by design: Noto's 540 ems (`notoEms`) for this Regular head at
-  design 2, and Noto Bold's (`notoBoldEms`) for its layout-1 statement (below). The old seed
+  design 2, and Noto Bold's (`notoBoldEms`) for its layout-1 statement (below). Pop's is
+  Titan's (`titanEms` × `faceK`, `navFace`'s table), read by its layout-1 statement alone, which
+  fits the frame's fixed 313.43 box rather than its column. The old seed
   set at 100 under Lime and 70 under Editorial; the name-derived one fits at the ramp's 107 and
   97, so the fit bites only on a long word the artist types or a long one-word name.
   Two things in the branch are not the frame's: its `flex-[1_0_0]` halves are written as
@@ -125,7 +129,8 @@ another `notes/` file.
   **and** in `EditPanel`'s fallback chain. *(Since JP-089, user call, 2026-09-30: layout 1 under
   Lime, Grunge and Editorial falls back to `FORM_BTN_1` "Enquire", their frames' submit, where
   Retro's frame reads Book Now. `formBtnSeed(themeName, d)` in `data.js` is the one expression
-  both callers use. Layouts 2 and 3's `formCta` falls back to `button` only when its own `cta` is
+  both callers use. Pop's frame reads Enquire too (964:58632), named beside `limeTreeTheme()`
+  there, `tiersSeed()`'s way. Layouts 2 and 3's `formCta` falls back to `button` only when its own `cta` is
   emptied, and `d` is 1 or 2 there, so it still reads Book Now.)* **So do its boxes** (JP-054 again, user call,
   2026-09-24, reversing the 2026-09-23 "the boxes stay the artist's one list"): with `fields`
   absent, layout 4 seeds `FORM_FIELDS_4`, the frame's five — Your name, Email, Event date,

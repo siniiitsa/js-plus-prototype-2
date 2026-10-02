@@ -1180,10 +1180,13 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // ems. Editorial's layout-3 form head is Lime's again, Display/LG Regular,
   // so at design 2 it is Noto's 540 ems — the Bold table would shrink it 4.5%
   // too far — and so are its layout-4 bio and gallery heads at design 3,
-  // Display/LG / XL Regular in a 572.9 measure and the 454 head column. Undefined
-  // off those two templates.
-  vm.titleWordEms = T.name === 'Lime' || T.name === 'Editorial'
-    ? +Math.max(0, ...vm.title.split(/\s+/).map(T.name === 'Lime' ? bebasEms : d >= 2 ? notoEms : notoBoldEms)).toFixed(3)
+  // Display/LG / XL Regular in a 572.9 measure and the 454 head column. Pop's
+  // layout-1 form statement fits its frame's 313.43 box the same way, in
+  // Titan's ems × `faceK` (`navFace`'s table); no other Pop site reads it.
+  // Undefined off those three templates.
+  vm.titleWordEms = T.name === 'Lime' || T.name === 'Editorial' || T.name === 'Pop'
+    ? +Math.max(0, ...vm.title.split(/\s+/).map(T.name === 'Lime' ? bebasEms
+      : T.name === 'Pop' ? (x) => titanEms(x) * 0.98 : d >= 2 ? notoEms : notoBoldEms)).toFixed(3)
     : undefined
   vm.testiStars = cv('stars', TESTI_STARS)
   // Layout 3's stat card prints it with a literal "/5" beside it, and an

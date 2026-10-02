@@ -1464,9 +1464,10 @@ export const CAL_HEADING_1 = 'Book Now'
 export const FORM_BTN_1 = 'Enquire'
 // The submit's label an absent `button` key stands for (FORM_BTN_4's shape,
 // JP-054, with JP-089's template gate): the one expression sectionVm and
-// EditPanel both call.
+// EditPanel both call. Pop's layout-1 frame reads *Enquire* too (964:58632),
+// named beside limeTreeTheme(), tiersSeed()'s way.
 export const formBtnSeed = (themeName, d) =>
-  d === 3 ? FORM_BTN_4 : d === 0 && limeTreeTheme(themeName) ? FORM_BTN_1 : 'Book Now'
+  d === 3 ? FORM_BTN_4 : d === 0 && (limeTreeTheme(themeName) || themeName === 'Pop') ? FORM_BTN_1 : 'Book Now'
 // The address every enquiry is mailed to, as the enquiry form seeds it. Named
 // because two sections resolve it (JP-053): the form's own sectionVm, and the
 // booking calendar's layout-4 wizard through pageEmail() below.
@@ -2230,7 +2231,7 @@ export const FIELDS = {
     { k: 'email',    l: 'Email address', type: 'email', d: FORM_EMAIL,
       hint: 'Enquiries are mailed here: the button opens the visitor’s mail app with the form filled in, and so does the Booking Calendar’s layout-4 Send Enquiry, until the calendar has an address of its own. Empty leaves the button a picture. An address that isn’t valid also leaves the button a picture.' },
     { k: 'button',   l: 'Button', d: 'Book Now', in: [0, 3],
-      hint: 'Layouts 1 and 4. Layout 4 starts from “Check Availability”, and layout 1 from “Enquire” in Lime, Grunge and Editorial.' },
+      hint: 'Layouts 1 and 4. Layout 4 starts from “Check Availability”, and layout 1 from “Enquire” in Lime, Grunge, Editorial and Pop.' },
     // Layouts 2 and 3's card — the same component in both frames. Every one is
     // emptiable and drops what it fills, except the button: it is the submit,
     // so an emptied label falls back to `button`.
