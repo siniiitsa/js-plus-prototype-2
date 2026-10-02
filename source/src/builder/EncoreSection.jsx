@@ -340,6 +340,67 @@ const POP_SCRIBBLE_D =
   'C179.84 63.73 130.74 78.66 82.36 95.01L78 92.07L78.96 85.1L223.68 45.35C159.32 52.2 92.96 55.56 29.4 67.92' +
   'C22.65 69.23 2.4 78.77 0.07 72.05L0.01 65.5C106.08 39.13 213.4 17.66 321.58 0.22C324.08 -0.28 327.24 0 329.09 1.83V1.84Z'
 
+// The lime of Pop's stickers outside the header, whose scribble binds
+// `sem/tag/1/bg`: every unbound scribble and squiggle arrow is a raw #BCD631
+// (plans/pop/layout-1.md, *Settled in session 0*, Pop's own tints), a duller
+// lime than the palette's. No mode or scheme holds it.
+const POP_STICKER_LIME = '#BCD631'
+
+// Pop's smiley sun (964:58625's second "Layer_1", 154 × 154 before its tilt):
+// the scalloped disc's outline and the smile's three features, off the
+// frame's `fillGeometry` in the sticker's own units, rounded to the hundredth.
+// The frame cuts the features out of the disc as well as painting them over
+// it; on any ground the two read the same, so the disc is its outline alone.
+const POP_SUN_D =
+  'M103.53 4.48L107.38 28.22L132.28 21.81L125.89 44.9L148.89 48.76L134.21 65.78L154 77.64L153.6 78.97L133.6 90.21' +
+  'C134.09 93.14 147.08 109.02 145.69 110.36L122.7 111.01L127.8 134.74L105.46 127.05L100.65 148.86L84.04 133.48' +
+  'C82.8 133.18 83.25 133.83 82.93 134.28C80.09 138.22 75.95 145.53 73.63 149.95C72.96 151.22 72.45 152.58 72.23 154' +
+  'L61.05 132.83C59.35 135.93 55.28 136.23 52.23 138.07C50.87 138.89 43.53 145.51 42.86 145.01L40.29 122.55' +
+  'L17.94 125.76L24.94 102.69L3.25 98.81C1.93 97.32 17.57 82.98 18.6 80.52C18.6 78.28 3.56 68.58 1.02 66.07' +
+  'C0.4 65.46 -0.19 65.25 0.05 64.17L22.41 56.45L10.91 35.29L35.19 35.93L34.55 10.9L57.8 21.76L69.36 0' +
+  'L82.44 18.29L84.05 19.27L103.53 4.48Z'
+const POP_SUN_FACE_D =
+  'M43.34 72.02C44.35 73.07 44.49 77.27 45.09 78.92C49.83 91.93 62.84 99.53 76.39 99.51C89.56 99.48 101.27 91.34 105.77 78.91' +
+  'C106.84 75.94 106.36 68.89 111.53 73.14C112.81 75.76 108.77 83.57 107.24 86.17C93.79 109.03 61.53 110.22 45.42 89.49' +
+  'C43.29 86.74 37.81 76.65 38.36 73.48C38.73 71.33 42 70.62 43.34 72.01Z' +
+  'M87.38 49.53C93.95 47.53 97.55 60.16 91.73 64.81C83.63 71.27 79.75 51.85 87.38 49.53Z' +
+  'M59.29 49.51C66.48 48.04 68.1 61.49 62.63 65.09C54.43 70.48 51.4 51.12 59.29 49.51Z'
+
+// A Pop sticker sits over the composition and is no control, so it takes no
+// pointer. `size` is the sticker's own box before its tilt (the frame's
+// metadata gives the turned bounding box, × cos + sin).
+function PopSun({ size, tilt, hue, ink, style }) {
+  return (
+    <svg viewBox="0 0 154 154" aria-hidden="true" style={{
+      position: 'absolute', display: 'block', overflow: 'visible', pointerEvents: 'none',
+      width: size, height: size, transform: `rotate(${tilt}deg)`, ...style,
+    }}>
+      <path d={POP_SUN_D} fill={hue} />
+      <path d={POP_SUN_FACE_D} fill={ink} />
+    </svg>
+  )
+}
+
+// Pop's dot grid (964:58625's "Union", 288.02 × 238.58): five columns of four
+// 16.78 × 16.74 dots, 67.81 and 73.95 apart, read off the boolean's children;
+// the Union's own fill is what renders. The bio's is lime; the media card's
+// and the calendar's callers pass their own.
+const POP_DOT_X = [0, 67.81, 135.62, 203.43, 271.24]
+const POP_DOT_Y = [0, 73.95, 147.9, 221.85]
+function PopDots({ hue, style }) {
+  return (
+    <svg viewBox="0 0 288.02 238.58" aria-hidden="true" style={{
+      position: 'absolute', display: 'block', pointerEvents: 'none', ...style,
+    }}>
+      <g fill={hue}>
+        {POP_DOT_Y.flatMap((y) => POP_DOT_X.map((x) => (
+          <ellipse key={`${x}-${y}`} cx={x + 8.39} cy={y + 8.37} rx="8.39" ry="8.37" />
+        )))}
+      </g>
+    </svg>
+  )
+}
+
 // Editorial's dashed rule (964:58614's track rows: 1px, INSIDE, cap NONE,
 // bottom-only, `dashPattern` 9, 9). CSS `border-style: dashed` cannot set a
 // dash length and an inset `boxShadow` cannot dash, so it is an SVG overlay on
@@ -4166,38 +4227,90 @@ function Bio({ s }) {
   // effect of any kind — just a `sem/tag/1/bg` inside stroke, 1px at 1440 and
   // 768 and 3px at 390, the blush ring the 390 render shows. The seal is
   // SealBadge's Editorial arm, tilted 25.03 and hung on its own centres.
-  if (s.v0 && s.limeTree) {
+  //
+  // Pop layout 1 (964:58625 · 986:52420 at 768 · 986:52433 at 390) is the tree
+  // a fourth time, on white, and binds nothing — every value below is the
+  // node walker's raw read — so `pop` names its deltas. Every string but the
+  // head is black, `sem/text/3`, where `s.tx` is violet; and none is the
+  // twins' ramp key: KM BIO is Chakra Petch 11 tracked 1.5, the foot line,
+  // About and the role line Space Mono 10 / 11 / 11 tracked .5 / 1.5 / 1 at
+  // Figma's auto line height, About typed mixed, and the paragraph a raw
+  // Inter 14 / 22 at all three widths. The head is Display/LG, one tone in the
+  // pink accent, uppercase. The photograph is a stadium (radius 301, which CSS
+  // clamps as Figma does) in a 10px `sem/stroke/1` pink ring drawn inside it,
+  // under a real drop shadow (#000 16%, 4 / 4, blur 9) at 1440 and 768 and
+  // none at 390. There is no seal — the first Lime-tree bio without one — and
+  // three stickers in its place: a #BCD631 scribble under the head, the lime
+  // dot grid behind the composition and the blue smiley sun on the arch.
+  if (s.v0 && (s.limeTree || s.pop)) {
     const grunge = s.grunge
     const ed = s.editorial
+    const pop = s.pop
     const tab = isTablet(s)
     const z = s.narrow ? 1 : 0.82
     const u = (v) => `${Math.round(v * z * 10) / 10}px`
-    const ink = { color: ed ? s.ac : s.tx, letterSpacing: s.dls }
+    const ink = { color: pop ? s.text3 : ed ? s.ac : s.tx, letterSpacing: s.dls }
     // Body/Eyebrow — Inter bold, the frame's "About" and its credit line.
     const eyebrow = (t, extra) => (
       <span style={{ fontFamily: s.body, fontWeight: 700, fontSize: s.eyebrow, lineHeight: 1.3, ...ink, ...extra }}>{t}</span>
+    )
+    // Pop's Space Mono strings: a raw size and tracking, Figma's auto line
+    // height (the face's own, which is CSS's `normal`).
+    const mono = (t, size, track, extra) => (
+      <span style={{
+        fontFamily: s.mono, fontSize: u(size), lineHeight: 'normal', ...ink, letterSpacing: u(track), ...extra,
+      }}>{t}</span>
+    )
+
+    const h2 = (
+      <h2 style={distressed(s, {
+        margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispLg), lineHeight: facedLh(s, 0.89),
+        letterSpacing: s.dls, color: grunge ? s.tx : s.ac,
+        textTransform: grunge || ed || pop ? 'uppercase' : undefined,
+        // Titan One sets its glyphs 0.14em lower than Chunko in the same line
+        // box — measured here as the hero's title was (cap tops 10.05 / 7 / 5
+        // low at 1180 / 768 / 390, the feet 8.6 / 6.6 / 5) — so Pop's head is
+        // lifted by it.
+        ...(pop && { position: 'relative', top: '-0.14em' }),
+      })}>{grunge
+        ? String(s.title || '').split(' ').map((w, i) => (
+          <span key={i} style={i === 1 ? { color: s.ac } : undefined}>{i ? ' ' : ''}{w}</span>
+        ))
+        : s.title}</h2>
+    )
+    // Pop's scribble is a 11.78 #BCD631 stroke with round caps — a stadium.
+    // At 1440 it hangs off the head's box, its top 8.5 below the box's foot
+    // and its caps inside the column (258.35 long); on the narrow masters it is
+    // a column row of its own, centred 14 below the head and 14 + 1 + 14 above
+    // the foot line, its left cap 5.89 out of the column (272.32 long). Both
+    // hang off the head's un-lifted box.
+    const head = !pop ? h2 : (
+      <div style={{ position: 'relative', ...(s.narrow && { marginBottom: '14px' }) }}>
+        {h2}
+        <span aria-hidden="true" style={{
+          position: 'absolute', left: s.narrow ? '-5.89px' : 0, top: `calc(100% + ${s.narrow ? '8.11px' : u(8.5)})`,
+          width: s.narrow ? '272.32px' : u(258.35), height: u(11.78), borderRadius: '999px',
+          background: POP_STICKER_LIME, pointerEvents: 'none',
+        }} />
+      </div>
     )
 
     const heading = (
       <div style={col(s.narrow ? '29px' : '0', {
         justifyContent: 'space-between', height: '100%', alignItems: 'flex-start',
+        // The narrow masters close the column on an empty 11.78 frame (the
+        // desktop scribble's, emptied) under the usual 14: stated space.
+        ...(pop && s.narrow && { paddingBottom: '25.78px' }),
       })}>
-        {/* Label/XS, in `font/ui`. */}
+        {/* Label/XS, in `font/ui`; Pop's is a raw 11 tracked 1.5. */}
         <span style={{
-          fontFamily: s.ui, fontSize: s.labelXs, lineHeight: 1.26, textTransform: 'uppercase',
-          whiteSpace: 'nowrap', ...ink,
+          fontFamily: s.ui, fontSize: pop ? u(11) : s.labelXs, lineHeight: pop ? 'normal' : 1.26, textTransform: 'uppercase',
+          whiteSpace: 'nowrap', ...ink, ...(pop && { letterSpacing: u(1.5) }),
         }}>{s.initials} Bio</span>
-        <h2 style={distressed(s, {
-          margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispLg), lineHeight: facedLh(s, 0.89),
-          letterSpacing: s.dls, color: grunge ? s.tx : s.ac,
-          textTransform: grunge || ed ? 'uppercase' : undefined,
-        })}>{grunge
-          ? String(s.title || '').split(' ').map((w, i) => (
-            <span key={i} style={i === 1 ? { color: s.ac } : undefined}>{i ? ' ' : ''}{w}</span>
-          ))
-          : s.title}</h2>
+        {head}
         {/* Body/SM — Inter regular, not the eyebrow; Grunge's and Editorial's
-            are the eyebrow. The line is the artist's `refLabel` (JP-090),
+            are the eyebrow, Pop's Space Mono 10. The line is the artist's
+            `refLabel` (JP-090),
             seeded with the frames' own; emptied, an empty seat keeps the
             desktop column's three rows, so the heading does not slide to its
             foot. The narrow column is gapped, not spaced, so there the seat
@@ -4205,6 +4318,8 @@ function Bio({ s }) {
             It wraps, and inside a word, since a typed line can outrun a 390
             column where the seed never does (JP-071's `listLabel` rule). */}
         {!s.bioRef ? (s.narrow ? null : <span />)
+          : pop
+          ? mono(s.bioRef, 10, 0.5, { textTransform: 'uppercase', whiteSpace: 'normal', overflowWrap: 'anywhere', minWidth: 0 })
           : grunge || ed
           ? eyebrow(s.bioRef, { textTransform: 'uppercase', whiteSpace: 'normal', overflowWrap: 'anywhere', minWidth: 0 })
           : (
@@ -4247,6 +4362,30 @@ function Bio({ s }) {
         : tab
           ? { right: `${-(16.87 + half).toFixed(2)}px`, bottom: `${((grunge ? 23.15 : 25.15) - half).toFixed(2)}px` }
           : { left: u(-11.5 - half), bottom: u(166.35 - half) }
+    // Pop's two stickers hang off the arch's box too, by the walker's
+    // `absoluteBoundingBox` centres (the metadata's x for the turned sun is
+    // its parent's, 65.98 off). The sun is 154 square (78.54 at 390), tilted
+    // 25.37: on desktop its centre is 16.56 inside the right edge and 151.59
+    // below the top; at 768 35.59 past the right edge and 12.22 above the
+    // foot; at 390 5.86 inside the right edge and 4.41 above the foot. The dot
+    // grid's corner is 86 left of the arch and 364.09 below its top on
+    // desktop; at 768 the master keeps the desktop's (390, 424.59) of the
+    // section, unadapted — 250 into the arch and 152.81 down, so the arch
+    // covers all but its fifth column, the one the render shows, and that is
+    // followed; at 390 it is scaled to 0.4584 and hung 98.09 in from the
+    // arch's right edge, 299.54 down. Each 390 offset is read off the right
+    // edge, since the page's 10 inset widens our arch to 250 against the
+    // master's 230. The grid paints under everything, the paragraph's foot
+    // included at 390 — the Union is the section's first child — so it sits
+    // at −1 in the block's stacking context.
+    const sun = s.mob
+      ? { right: '-33.41px', bottom: '-34.86px' }
+      : tab ? { left: '446.59px', top: '558.79px' } : { left: u(394.44), top: u(74.59) }
+    const dots = s.mob
+      ? { right: '-33.93px', top: '299.54px', width: '132.02px', height: '109.36px' }
+      : tab
+        ? { left: '250px', top: '152.81px', width: '288.02px', height: '238.58px' }
+        : { left: u(-86), top: u(364.09), width: u(288.02), height: u(238.58) }
     const card = (
       <div style={row('0', {
         justifyContent: 'center', padding: s.narrow ? '0 60px' : `${u(4.5)} 0`,
@@ -4255,16 +4394,23 @@ function Bio({ s }) {
           position: 'relative', flex: s.mob ? 1 : 'none', minWidth: 0,
           width: s.mob ? undefined : u(488), height: s.mob ? '311px' : u(648),
         }}>
+          {pop && <PopDots hue={s.stroke2} style={{ zIndex: -1, ...dots }} />}
           <div style={{
             position: 'absolute', inset: 0, overflow: 'hidden',
-            borderRadius: ed ? `${u(361)} ${u(361)} 0 0` : u(grunge ? 13 : 151),
-            background: grunge || ed ? s.box3 : s.bg,
+            borderRadius: pop ? u(301) : ed ? `${u(361)} ${u(361)} 0 0` : u(grunge ? 13 : 151),
+            // Pop's well is #000 at 55% under the photograph. The frame draws
+            // no empty slot; there the violet initials (`s.muted`) all but
+            // vanish on the well, so Pop's are white.
+            background: pop ? 'rgba(0, 0, 0, 0.55)' : grunge || ed ? s.box3 : s.bg,
+            ...(pop && !s.mob && { boxShadow: `${u(4)} ${u(4)} ${u(9)} rgba(0, 0, 0, 0.16)` }),
           }}>
-            <Photo s={s} initialsSize={54} />
+            <Photo s={s} initialsSize={54} ink={pop ? s.bg : undefined} />
             {!grunge && (
               <div style={{
                 position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
-                boxShadow: ed
+                boxShadow: pop
+                  ? `inset 0 0 0 ${u(10)} ${s.stroke1}`
+                  : ed
                   ? `inset 0 0 0 ${s.mob ? 3 : 1}px ${s.chips[0].bg}`
                   : `inset 0 0 ${u(64)} ${s.glow}`,
               }} />
@@ -4274,30 +4420,39 @@ function Bio({ s }) {
               maskImage: 'linear-gradient(0deg, transparent 0%, #000 16.3%)',
             }} />
           </div>
-          <SealBadge s={s} size={s.mob ? disc : Math.round(disc * z * 10) / 10} tilt={ed ? 25.03 : 26.06} style={seal} />
+          {pop
+            ? <PopSun size={s.mob ? 78.54 : Math.round(154 * z * 10) / 10} tilt={25.37} hue={s.chips[2].bg} ink={s.bg} style={sun} />
+            : <SealBadge s={s} size={s.mob ? disc : Math.round(disc * z * 10) / 10} tilt={ed ? 25.03 : 26.06} style={seal} />}
         </div>
       </div>
     )
 
     const prose = (
       <div style={col(u(14), { height: '100%', alignItems: 'stretch' })}>
-        {eyebrow('About')}
-        {/* Body/MD. */}
-        <p style={{ margin: 0, fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5, ...ink }}>{s.bioP1}</p>
+        {pop ? mono('About', 11, 1.5) : eyebrow('About')}
+        {/* Body/MD; Pop's is a raw Inter 14 / 22 at every width. */}
+        <p style={{
+          margin: 0, fontFamily: s.body, fontSize: pop ? u(14) : s.bodyMd, lineHeight: pop ? 22 / 14 : 1.5, ...ink,
+        }}>{s.bioP1}</p>
         {/* The frame's own flexible spacer on desktop; a 1px one below it. */}
         <span style={{ flex: 1, minHeight: '1px' }} />
-        <span style={{ height: '1px', background: s.ac, flex: 'none' }} />
+        <span style={{ height: '1px', background: pop ? s.text3 : s.ac, flex: 'none' }} />
         {/* The artist's own role and town (F1), so it wraps rather than
             widening the column — anywhere, since a town can be one long word. */}
-        {eyebrow(s.roleLine, { textTransform: 'uppercase', overflowWrap: 'anywhere' })}
+        {pop
+          ? mono(s.roleLine, 11, 1, { textTransform: 'uppercase', overflowWrap: 'anywhere' })
+          : eyebrow(s.roleLine, { textTransform: 'uppercase', overflowWrap: 'anywhere' })}
       </div>
     )
 
-    if (s.narrow) return <div style={col('40px')}>{heading}{card}{prose}</div>
+    // Under Pop the block is a stacking context, so the dot grid's −1 paints
+    // over the page's white and under every other node.
+    const stack = pop ? { position: 'relative', zIndex: 0 } : null
+    if (s.narrow) return <div style={col('40px', stack)}>{heading}{card}{prose}</div>
     return (
       <div style={{
         display: 'grid', gridTemplateColumns: `minmax(0, 1fr) ${u(580)} minmax(0, 1fr)`,
-        gap: u(40), alignItems: 'stretch',
+        gap: u(40), alignItems: 'stretch', ...stack,
       }}>
         {heading}{card}{prose}
       </div>
