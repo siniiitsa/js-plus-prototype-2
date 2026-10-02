@@ -9393,7 +9393,9 @@ function Pricing({ s }) {
               between this section and the next, 32 under the small print
               (the column's 24 plus 8). It bleeds to the page edges and stands
               in for the root's bottom `padY`, so the gap below it is the next
-              section's own top inset. Under Grunge and Editorial the ring
+              section's own top inset — which is why `sectionVm`'s layout-2
+              arm (JP-094) sets this section's desktop top to the frame's 56
+              and leaves its foot at `padY`. Under Grunge and Editorial the ring
               overlay below owns that row (two 15% layers would stack to 28%, and
               Editorial's 56% would darken), so the span keeps only its box —
               the frame's 32 foot. */}
@@ -15827,11 +15829,12 @@ function Calendar({ s }) {
       }
 
       return (
-        // At desktop the panel stands inside Frame 298's own 56, not the
-        // root's `padY` (user call, 2026-09-17).
+        // The panel stands inside Frame 298's own 56 / 56 / 40, which is the
+        // root's padding, `sectionVm`'s layout-2 arm (JP-094, user call,
+        // 2026-10-02). It was a `calc(u(56) - padY)` margin here, at desktop
+        // alone (user call, 2026-09-17).
         <div style={{
           background: G.bg2, color: s.tx, borderRadius: G.panelR, overflow: 'hidden',
-          ...(desk ? { margin: `calc(${u(56)} - ${s.padY}) 0` } : null),
         }}>
           <div style={col(u(28), {
             background: G.band ?? s.ac, color: G.bandInk ?? G.bg2, padding: `${u(28)} ${padX} ${u(36)}`,
@@ -18802,9 +18805,10 @@ function EventsMap({ s }) {
         <div style={{
           display: 'grid', gridTemplateColumns: s.mob ? 'minmax(0, 1fr)' : 'minmax(0, 1fr) minmax(0, 1fr)',
           gap: u(24), alignItems: 'start',
-          // At desktop the instance's own 56 top inset, not the root's `padY`
-          // (user call, 2026-09-17).
-          ...(desk ? { marginTop: `calc(${u(56)} - ${s.padY})` } : null),
+          // The instance's own 56 / 60 / 40 top and foot are the root's
+          // padding, `sectionVm`'s layout-2 arm (JP-094, user call,
+          // 2026-10-02). Its top was a `calc(u(56) - padY)` margin here, at
+          // desktop alone (user call, 2026-09-17).
         }}>
           <div style={col(u(18))}>{lcard}{llist}</div>
           {lpanel}

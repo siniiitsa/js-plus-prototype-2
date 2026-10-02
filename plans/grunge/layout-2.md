@@ -402,7 +402,9 @@ filtered to the `s.v1` branches):
     `d === 2` is **layout 3's** (the comments cite `964:68655` and its column heads). Layout 2 has
     no `vm.pad` arm under any template; the bio, media, calendar, pricing, form and testimonials
     sessions of this pass widen nothing there and stand on the root's `padY` / `padX`, as Lime's
-    layout-2 blocks do.
+    layout-2 blocks do. *Reversed by JP-094 (`../editorial/layout-2-qa-fixes.md`, user call,
+    2026-10-02): layout 2 has one arm now, under Lime, Grunge and Editorial alike. It pads every
+    section but the repertoire, the form and the footer with its frame's own top and foot.*
   - `vm.navNameEms` and `vm.navCtaEms`, Lime-only and in `bebasEms` — the header needs both in
     Anton × 0.75, the way `vm.navEms` already takes `navFace`;
   - `vm.navFits` (JP-039) has a Lime arm and a Retro arm and **no Grunge arm**, so the 768 header

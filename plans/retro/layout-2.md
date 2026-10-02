@@ -271,6 +271,9 @@ Learned on the bio (section 2):
 - **The section is shorter than its frame, by design.** The frame's 56px inset × 0.82 is 46, and
   the page supplies `padY` 80 / `padX` 64 instead — so a 760-high frame lands 691 high and its
   content column is 1052 wide, not 1089. Fit the **card**, not the frame height.
+  *Kept for Retro and Pop; **reversed** for Lime, Grunge and Editorial by JP-094
+  (`../editorial/layout-2-qa-fixes.md`, user call, 2026-10-02). Their layout-2 sections pad
+  their frames' own top and foot, the `vm.pad` arm in `sectionVm`.*
 - **`BookPill` now takes `glyph="arrow"`** — the layout-2 frames swap the asterisk for an arrow in
   a filled disc flush in the pill's right end. The header's layout-2 frame uses the same pill.
   Default is `"star"`, so every fitted layout-1 caller is untouched.

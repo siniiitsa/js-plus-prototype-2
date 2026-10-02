@@ -113,7 +113,7 @@ the list explicitly.
 | 6 | JP-100 | 390 calendar foot: pill on its own row | **Confirmed, a fit slip**: Lime's fit drew Retro's pre-QA stack (JP-060's shape) | S | **user: A** (the group wraps, the line's minimum its widest word) | **done** (6 of 660 a surface, calendar `arch 1` × 390 × themes 1–3, as named; 99 states clean; card 2 one row under four templates) |
 | 7 | JP-097 | Byline lacks *· Single* | **Confirmed, a fit slip of every template**: the bar prints the artist alone; layouts 3 and 4 print the release | S | no | **done** (30 of 660 a surface, media `arch 1`, the byline's text alone, as named, its box the column's; the per-track `byline` read by the layout-2 bar, both bodies; card 2 under four templates reads *Kai Mercer · Single*) |
 | 8 | JP-098 | 768 gallery: six tiles, no *Gallery · View list ✕* | **Confirmed, and recorded**: Retro's squeeze override and head-row allocation, every template | S | **user: 1A, 2B, 3A** (six tiles kept; a *Gallery label* field in the row, the heading back in the caption; View list / ✕ stay dropped) | **done** (10 of 660 a surface, gallery `arch 1` × 768 × themes 0–4, three rows each, as named; `railLabel` reach 2/6 at layout 2, the tablet renders; card 2 under four templates reads *Gallery* over a heading-and-name caption) |
-| 9 | JP-094 | Section gaps too large | **Confirmed, and recorded**: layout 2 stands every section on `padY`; the frames' own insets differ by up to 85px at 1440 and 48 at 390 | L | **yes** — scope, widths | open |
+| 9 | JP-094 | Section gaps too large | **Confirmed, and recorded**: layout 2 stands every section on `padY`; the frames' own insets differ by up to 85px at 1440 and 48 at 390 | L | **user: 1A, 2A** (Lime, Grunge and Editorial; all three widths) | **done** (78 of 660 a surface: the 75 named, geometry only, plus the calendar's three desktop renders at 1/64px, the fold's rounding; `vm.pad` alone, no new key; card 2 reads the frames' gaps, 112 / 142 / 46 / 56 at 1440 and 40 at 390; Retro and Pop identical) |
 | 10 | — | End-of-pass sweep | — | S | — | open |
 
 **Why this order:**
@@ -1823,7 +1823,173 @@ in-block comments at `EncoreSection.jsx:9328`, `:15744`, `:18634`; *reversed* po
 `../grunge/layout-2.md:399`, and at `../retro/layout-2.md:270` under 1C; README's *the desktop page
 is the 1440 frame at 0.82* (`:644`) gains a clause on the vertical inset at layouts 2 and 3.
 
-**Settled.** —
+**Decided** (2026-10-02, user call): **1A, 2A**, both recommendations.
+1. **Lime, Grunge and Editorial**: a `d === 1` arm in `sectionVm` beside layout 3's, gated on the
+   three by name as those arms are. Retro's and Pop's layout 2 keep the root's `padY`.
+2. **All three widths**, the frames' own numbers (× 0.82 at desktop).
+
+Reverses Retro's *"Fit the card, not the frame height"* for the three templates, and Grunge's
+*"Layout 2 has no `vm.pad` arm under any template"*.
+
+Asked over what the session found first, on HEAD (`2299a63`):
+- **Every *Evidence* line moved as mapped.** `EncoreBuilder.jsx`: `SIZES` `:72`–`74`, `RAMP`'s
+  `padY` `:95`–`97`, the layout-3 arms `:463`–`535`, `PublishedPage`'s `pad` `:4827`.
+  `EncoreSection.jsx`: `HeaderV1`'s nav margin `:2023` and Retro's `:2361`, pricing's foot span
+  `:9391`–`9403`, Retro's pricing sheet `:9658`, the repertoire's `:11725` / `:11952`, the
+  calendar's margin `:15830`–`15834`, the map's `:18805`–`18807`, the form's `:24249` / `:24631`, the
+  root's padding `:26643`. The helpers are unmoved (`bleedTo` `:202`, `TornEdge` `:218`, `ArcEdge`
+  `:255`). The docs moved to the mapped lines, and README's line is `:650`.
+- **The frames, re-read** (one `use_figma` over the twelve page frames). Lime's, Grunge's and
+  Editorial's sections state the table's top and foot to the pixel at all three widths. Retro's
+  differ only in the header (144 / 86, 100 / 100, 90 / 40). Two edges are template-specific:
+  - **Every pricing instance carries a 1px inside ring at all three widths.** Editorial's is ink
+    or 60% paper, Grunge's white 20%, Lime's `#F2FFD0` 20%. Lime's build keeps it only as the
+    1440 foot rule, so at 768 and 390 Lime's pricing shows its own inset.
+  - **Grunge's form paints no band** (Scheme 4 is Scheme 1), so its own top and foot show.
+- **Reproduced in the real app**: puppeteer, card 2 under all five templates, the canvas's three
+  tabs, then Publish, Open at 1440, 768 and 390. The probe measures each section's painted content
+  edges; a band's own edge counts. Editorial gives the table above to 0.1, frame / page, with the
+  published 1440 tab × 1.22. The tester's pairs read 195.3 (197), 195.3 (198), 97.6 (97) and
+  97.7 (99), and 390's header → bio 88 (90). The twins differ only where the build draws a
+  different edge:
+  - Lime's gallery → pricing is 83.6 / 158, 106 / 110 and 70 / 86.
+  - Lime's pricing → calendar is 45.9 / 46, 116 / 112.6 and 70 / 88.3.
+  - Grunge's map → form is 95.1 / 126, 120 / 116 and 80 / 84, and form → testimonials 95.1 /
+    127.2, 120 / 116 and 80 / 84.
+
+  Retro's and Pop's tables are their own pages' (Retro's header → bio is 80, its header standing
+  on its own foot).
+- **The audit: no per-side key is needed.** Inside the sections the arm changes, layout 2 reads
+  `s.padY` at four sites. The bleeds the triage listed are layout 1's, 3's and 4's, or Retro's and
+  Pop's bodies, or the repertoire's and the form's, which the arm leaves alone.
+  - `HeaderV1`'s nav margin (`:2023`) reads the root's **top**, which stays `padY`.
+  - Pricing's desktop foot span (`:9403`) reads the root's **foot**. The span is Lime's 1px foot
+    rule as well, so it has to reach the root's bottom edge. The desktop foot therefore stays
+    `padY`, and the span's 24 + 8 is the frame's 32 already.
+  - The calendar's margin (`:15834`) and the map's (`:18807`) fold into the arm.
+
+  So the arm sets `vm.pad` alone, as layout 3's arms do. `bleedTo` at `:2580` is Retro's
+  `HeaderV1` body (the `s.limeTree` block closes at `:2292`).
+- **Rounding.** The calendar's and the map's `u()` round × 0.82 to 0.1 (`u(56)` is 45.9), where
+  layout 3's arms round to whole pixels. The arm takes the 0.1 rounding, so the fold is exact.
+- **Expected after-diff, named before the code.** Geometry only, themes 1–3, 75 files a surface:
+  - header `arch 1` and `5` × three widths (18): the foot is 80 → 45.9, 56 → 60, 44 → 10;
+  - bio, media, gallery, pricing, map and testimonials `arch 1` × three widths (54);
+  - the calendar `arch 1` at 390 alone (3): 44 → 40. At 1440 the fold is exact, and at 768 the
+    root's 56 is the frame's. *(It is exact to 1/64px. The digest's 0.1 rounding shows that on
+    the three desktop renders: see Settled, below.)*
+
+  Pairs already at the frame move 0: pricing → calendar at 1440 and 768 under every template, and
+  calendar → map at 1440. Themes 0 and 4: 0. The arm has no width term, so the editor's 1088
+  desktop canvas follows the digest's 1180.
+- **The harness was proved first**: a fresh HEAD worktree at `2299a63` on :5174 against the
+  unedited tree on :5173, themes 0–4, every category, both surfaces. It came to **0 of 660 on
+  each** after the port and stamp normalisation (194 raw, all the port).
+
+**Settled** (2026-10-02).
+- **`sectionVm`** (`EncoreBuilder.jsx:463`–`492`): a `d === 1` arm under Lime, Grunge and
+  Editorial, before layout 3's. It holds one `[top, foot]` row per section per width, read off the
+  frames, and sets `vm.pad` from it. Desktop is × 0.82 rounded to 0.1, the blocks' `u()`.
+  - `null` keeps `padY`. That covers the header's top, which its nav margin cancels, and
+    pricing's desktop foot, which its foot rule bleeds through.
+  - The repertoire, the form and the footer have no row.
+  - No new vm key, as the audit found.
+- **`EncoreSection`**: the calendar's desktop `calc(u(56) - padY)` margin (`:15832`) and the map's
+  (`:18808`) are gone, folded into the arm, and their comments point to it. Pricing's foot-span
+  comment (`:9391`) says why its desktop foot stays `padY`.
+- **Digest: 78 of 660 on each surface, the 75 named plus three.** The two surfaces' lists are
+  identical, and every file is geometry only: no style column moved and the line counts are
+  equal. Each root's height moves by exactly its inset change:
+  - **header `arch 1` and `5`**: −34.1, +4 and −34 (only the foot moves, so three rows a file);
+  - **bio**: −68.3, +8 and −28;
+  - **media**: −19, +8 and −8;
+  - **gallery**: −84.6, −36 (26 at the top, 10 at the foot) and −8;
+  - **pricing**: −34.1 (the top alone), +8 and −28;
+  - **map**: −34.1 (the foot alone), +8 and −8;
+  - **testimonials**: −68.2, +8 and −8;
+  - **the calendar at 390**: −8.
+
+  **The three unnamed files are the calendar's desktop renders, themes 1–3, on both surfaces.**
+  The fold is exact to Blink's 1/64px layout unit and no closer. At full precision HEAD's
+  `80px + calc(45.9px - 80px)` lays the card out at 45.90625, and the arm's `45.9px` padding lays
+  it out at 45.890625. The digest rounds to 0.1, so 6, 9 and 11 rows read 0.1 higher, and Grunge's
+  root height reads 908.7 → 908.6. The map's desktop top carries the same 1/64 inside its named
+  file. Rounding to whole pixels, as layout 3 does, would have moved every row by 0.1.
+- **The real app** (the probe again: card 2, the canvas's three tabs, then Publish, Open at 1440,
+  768 and 390):
+  - **Editorial reads the frame column of the table above.** The published 1440 tab shows the
+    frame at 1:1: header → bio 112, bio → media 142, media → repertoire 86, repertoire → gallery
+    46, gallery → pricing 46, pricing → calendar 56, calendar → map 112, then 56 to the form, the
+    testimonials and the footer. 768 reads 120 / 120 / 60 / 30 / 46 / 56 / 116 / 60 / 60 / 60, and
+    390 reads 40 / 70 / 40 / 40 / 40 / 40 / 80 / 40 / 40 / 40. The tester's pairs read **112, 142,
+    46 and 56** (were 195, 195, 98 and 98), and 390's header → bio reads **40** (was 88).
+  - **Lime** reads the same but for pricing's two pairs. Gallery → pricing is 81.6 / 104 / 68, and
+    pricing → calendar is 45.9 / 116.6 / 70.3. That is its own inset content to content, 2px
+    under the frame's 83.6 / 106 / 70 because its card's top starts 2px above its padding, as on
+    HEAD.
+  - **Grunge** reads the same but for the form's two pairs: map → form 91.9 / 120 / 80 and form
+    → testimonials 93.1 / 120 / 80, against the frame's 95.1 / 120 / 80.
+  - **Retro's and Pop's probe output is byte-identical to HEAD's.**
+- **The bleeds.** Pricing's desktop foot span still ends on the root's bottom edge (gap 0) on
+  both servers, themes 1–3, both surfaces, the root now padding `45.9px … 80px`. Editorial's
+  1440 ink band and Grunge's and Editorial's ring overlays are the root's own box. The
+  repertoire's sheets, the form's band and the footer are in no differing file.
+- **The layout picker's thumbnails** (card 2 open, each section's picker): Editorial's `arch 1`
+  roots pad as follows, and Retro's read 80 throughout.
+  - the header 80 / 45.9;
+  - the bio, the calendar and the map 45.9;
+  - the gallery 37.7;
+  - pricing 45.9 / 80.
+- **Seam clips** of card 2's published page under the three templates, at 1440 and 390 (the
+  bio's, media's, pricing's and form's tops): nothing overlaps, and 390's header cards end 40
+  above the bio's.
+- **Build.** `npm run build` is clean. The root `index.html` is not refreshed.
+- **Docs.**
+  - README's *The desktop page is the 1440 frame at 0.82* (`:650`) gains the vertical inset.
+  - *Reversed* pointers:
+    - `layout-2.md`: the bio (`:1057`), media's *named, not fitted* (`:1122`), the gallery
+      (`:1309`), pricing (`:1398`), the map's foot (`:1625`) and the testimonials (`:1803`);
+    - `../grunge/layout-2.md:405`, and `../retro/layout-2.md:274`, kept for Retro and Pop.
+  - *Folded* pointers at the calendar's (`:1492`) and the map's (`:1612`) desktop insets.
+  - A *kept* pointer at the form's `gPad` (`:1700`).
+  - CLAUDE.md and `notes/` state no inset rule, so neither changes.
+- **Named, not fixed:**
+  - **Lime's pricing ring.** All three of Lime's pricing masters draw the instance's 1px
+    `#F2FFD0` 20% ring. Lime's fit keeps it only as the 1440 foot rule, so at 768 and 390 the
+    pricing pairs read content to content, not ring to ring.
+  - **The form's inset.** Its 1440 `gPad` of 46 stands against the frame's 49.2, which shows
+    under Grunge, whose form is no band.
+  - **Line boxes.** A text line box adds 0.8–1.2 (Editorial's form → testimonials reads 46.7).
+  - **The tester's "~13 at tablet"** is the 768 subtitle's extra line (`layout-2.md:944`–`948`).
+    The header's foot is the frame's 60 now, but the cards above it still end where that line
+    puts them.
+  - **A long name runs past the desktop header**, as it did on HEAD, and the arm takes 34.1 of
+    the slack under it. The `s.limeTree` block's desktop row is the frame's fixed
+    `height: u(688)` (`EncoreSection.jsx:2280`). An identity column of three or more name lines
+    therefore runs past the row, and the face and place cards run past it with that column. JP-092
+    fitted the name's width, not this height. Measured in the harness, the last text's distance
+    from the root's foot (HEAD's is 34.1 more):
+
+    | Name | Lime | Grunge | Editorial |
+    |---|---|---|---|
+    | *Florence and the Machine* | 47.1 | 57.4 | **3.9** |
+    | *Maximilian Featherstonehaugh Collective* | 27.3 | 9.3 | 61.6 |
+    | *Shostakovich Collective of Greater Manchester* | −143.4 | −133 | **−22.4** |
+
+    A minus is text past the header's root, into the bio's top inset or onto its content. On HEAD
+    Editorial's *Shostakovich* name still fitted, at 11.7. 768 and 390 do not overrun (their
+    rows grow). A `minHeight` row would let the photograph grow with the column instead. That
+    changes the header, so it is a ticket of its own, not part of this entry.
+
+Reply: **JP-094 — fixed.** On Feature spread (layout 2) the space between sections now follows
+the design at every width, under Editorial, Lime and Grunge. Each section takes the top and
+bottom spacing its own design frame states, and the frames stack the sections with no extra
+space, so the gaps are the design's. At 1440 the published page measures 112, 142, 46 and 56 for
+your four pairs (header → bio, bio → media, gallery → pricing, map → form). On mobile, header →
+bio is 40. At tablet the gallery now sits 26px closer to the repertoire, as designed, and the other
+pairs move 4–8px to the design's numbers. The 13px you saw at tablet is not
+spacing: the default subtitle there runs one line longer than the design's sample text. Retro and
+Pop are unchanged.
 
 ---
 
