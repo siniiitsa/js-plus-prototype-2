@@ -668,6 +668,9 @@ const TITAN_EM = {
   0: 0.726, 1: 0.453, 2: 0.614, 3: 0.609, 4: 0.618, 5: 0.611, 6: 0.662, 7: 0.539, 8: 0.659, 9: 0.662,
   ' ': 0.225, '&': 0.776, '·': 0.293, '/': 0.418, '-': 0.553, "'": 0.261, '.': 0.293,
   ',': 0.293, '!': 0.332, '?': 0.599, ':': 0.293, '(': 0.45, ')': 0.45, '+': 0.553,
+  // The testimonials' quote marks (Pop's layout-1 card fits its quote with
+  // this table), read off the DOM the same way.
+  '"': 0.522, '“': 0.565, '”': 0.565,
 }
 
 // A label's width in ems of Titan One at its own size; anything unlisted takes

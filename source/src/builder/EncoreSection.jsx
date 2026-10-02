@@ -521,6 +521,11 @@ const POP_FORM = {
   chip: 'rgba(195, 240, 7, 0.48)', chipRing: 'rgba(255, 255, 255, 0.2)', well: '#EAD7B8', feat: '#060707',
 }
 
+// Pop's testimonials raw values (964:58633; decision 5: followed): the role
+// pill's label is Lime's leaked accent, and the arrows' glyph Lime's leaked
+// `text/2`, which reads white on the violet discs.
+const POP_TESTI = { role: '#AFE335', arrow: '#F2FFD0' }
+
 // Pop's smiley sun (964:58625's second "Layer_1", 154 × 154 before its tilt):
 // the scalloped disc's outline and the smile's three features, off the
 // frame's `fillGeometry` in the sticker's own units, rounded to the hundredth.
@@ -22488,9 +22493,25 @@ function Testimonials({ s }) {
     // pill `box/3` under the accent, Display/Title 32 / 25 / 23. The quote is
     // a hand-scaled Bold (57.84 on a 52.42 line) at 1440 and 768 and the
     // ramp's Display/MD Regular at 390.
-    if (s.limeTree) {
+    //
+    // Pop (964:58633 · 986:52429 · 986:52441) is the tree a fourth time, seated
+    // on Scheme 2 (lime), so `s.bg` / `s.ac` / `s.tx` are lime / pink / violet;
+    // nothing binds, so every leaf is the walker's raw value. The card is
+    // Scheme 6 (`s.onScheme[6]`: violet, a lime quote, white type), radius 55
+    // and the twins' real shadow on all three; the backs are teal and pink
+    // (Scheme 2's `tag/3` and `tag/1`), **leant** about their own corners —
+    // Figma's `relativeTransform`, which at 390 is a shear, not a rotation.
+    // The quote is a hand-scaled 40.38 on 36.59 at every width, fitted to its
+    // widest word (the 390 frame breaks inside one); the reviewer pill raw
+    // display 20.19, the role pill Display/Title in Pop's mode (28 / 22 / 20,
+    // where the frame's inherited Lime mode renders Bebas 36 / 28 / 26) in
+    // Lime's leaked #AFE335; the arrows filled violet round a #F2FFD0 glyph;
+    // a 10px violet rule across the root's top.
+    if (s.limeTree || s.pop) {
       const grunge = s.grunge
       const ed = s.editorial
+      const pop = s.pop
+      const S6 = pop ? s.onScheme[6] : null
       const z = s.narrow ? 1 : 0.82
       const u = (v) => `${Math.round(v * z * 10) / 10}px`
       // Scheme 2's `box/2`, which no Scheme 1 key carries (its `box2` is
@@ -22503,7 +22524,28 @@ function Testimonials({ s }) {
       // bio's invisible one: a pixel scan of the 1440 render darkens the ground
       // for 7px under the card's foot. Editorial's nodes carry none.
       const shadow = ed ? undefined : `0 ${u(4)} ${u(4)} #00000040`
-      const G = ed ? {
+      const G = pop ? {
+        r: u(55), card: S6.bg, ink: S6.text3, quote: S6.ac,
+        who: [s.bg, s.tx], role: [s.ac, POP_TESTI.role],
+        // [fill, top, left, right, bottom, transform] off the card, teal drawn
+        // first. Each master's own box and `relativeTransform` about the
+        // back's top-left corner (Figma −2.41 / +3.25 → CSS +2.41 / −3.25 at
+        // 1440 and 768; the 390 matrices shear, so they are copied whole).
+        backs: s.mob ? [
+          [s.chips[2].bg, -38.94, 53.91, -0.53, 88.11, 'matrix(0.998211, 0.059793, -0.029475, 0.999565, 0, 0)'],
+          [s.chips[0].bg, -15.41, 0, 61.05, 94.7, 'matrix(0.996747, -0.080596, 0.039774, 0.999209, 0, 0)'],
+        ] : tab ? [
+          [s.chips[2].bg, -39.13, 50, -12.66, 17.13, 'rotate(2.4066deg)'],
+          [s.chips[0].bg, -15.6, -26.83, 75.41, 23.61, 'rotate(-3.2471deg)'],
+        ] : [
+          [s.chips[2].bg, -46, 127.96, -31.96, 74, 'rotate(2.4066deg)'],
+          [s.chips[0].bg, -7.6, -40, 82, 2.6, 'rotate(-3.2471deg)'],
+        ],
+        // The 390 arrows stand 18 off the band's foot, under the root's 44.
+        pad: s.mob ? [199.16, 18] : tab ? [199.35, 160.65] : [165, 145], gap: 17.84,
+        // The wrap's centre at 768 is the card's less 19.35 (Lime's 23).
+        lift: tab ? 38.7 : 20,
+      } : ed ? {
         r: 0, back: s.chips[0].bg, card: s.bg, ink: s.tx, quote: undefined,
         who: [s.activeBg, s.tx], role: [s.box3, s.ac],
         // The narrow backs stand off the frames' taller Bold-quote cards, so
@@ -22533,13 +22575,14 @@ function Testimonials({ s }) {
       // so a longer quote grows the backs with the card. The tops are −46 and
       // −27 at every width; the sides are what the three masters settle. The
       // lime one is drawn first, which is what stands it behind the dark one.
-      const backs = [[s.ac, ...G.backs[0]], [G.back, ...G.backs[1]]]
+      const backs = pop ? G.backs : [[s.ac, ...G.backs[0]], [G.back, ...G.backs[1]]]
       // Editorial's 9, 9 dash, 1px INSIDE, on the backs and the card alike.
       const dashed = ed && <DashRule side="all" dash={9 * z} colour={s.stroke1} />
-      const backing = ([fill, top, left, right, bottom], i) => (
+      const backing = ([fill, top, left, right, bottom, lean], i) => (
         <div key={i} style={{
           position: 'absolute', top: u(top), left: u(left), right: u(right), bottom: u(bottom),
           background: fill, borderRadius: G.r, boxShadow: shadow,
+          ...(lean ? { transform: lean, transformOrigin: '0 0' } : null),
         }}>{dashed}</div>
       )
 
@@ -22552,7 +22595,13 @@ function Testimonials({ s }) {
           // Display/Title 36 / 28 / 26 under Grunge (32 / 25 / 23 under
           // Editorial), a literal because `s.title` is the heading string;
           // content, so it may wrap.
-          ...(ed
+          // Pop's reviewer is a raw display 20.19 whose auto box is 24, a
+          // pixel over Titan's `normal` one, so the box is pinned; its role
+          // is Display/Title 28 / 22 / 20.
+          ...(pop
+            ? labelStyle(s, i === 0 ? u(20.19) : s.mob ? '20px' : tab ? '22px' : u(28),
+              { whiteSpace: 'normal', ...(i === 0 ? { lineHeight: u(24) } : null) })
+            : ed
             ? labelStyle(s, s.mob ? '23px' : tab ? '25px' : u(32), { whiteSpace: 'normal' })
             : grunge
             ? labelStyle(s, s.mob ? '26px' : tab ? '28px' : u(36), { whiteSpace: 'normal' })
@@ -22565,9 +22614,13 @@ function Testimonials({ s }) {
         <>
           {/* Body/Eyebrow over Display/MD at the frame's 14. Each is the
               artist's and each can be empty, so each is rendered or not. */}
-          <div style={col(u(14), ed ? { containerType: 'inline-size' } : null)}>
+          <div style={col(u(14), ed || pop ? { containerType: 'inline-size' } : null)}>
             {!!q.when && (
-              <span style={{
+              <span style={pop ? {
+                // Space Mono 11 tracked 1.5, uppercase, at its auto line.
+                fontFamily: s.mono, fontSize: u(11), lineHeight: 'normal', letterSpacing: u(1.5),
+                textTransform: 'uppercase',
+              } : {
                 fontFamily: s.body, fontWeight: 700, fontSize: s.eyebrow, lineHeight: 1.3,
                 letterSpacing: s.dls,
               }}>{q.when}</span>
@@ -22576,7 +22629,7 @@ function Testimonials({ s }) {
               <p style={distressed(s, {
                 margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispMd),
                 lineHeight: facedLh(s, 1), letterSpacing: s.dls, overflowWrap: 'break-word',
-                color: G.quote, textTransform: grunge || ed ? 'uppercase' : undefined,
+                color: G.quote, textTransform: grunge || ed || pop ? 'uppercase' : undefined,
                 // Editorial's quote is fitted to its widest word, the form
                 // statement's recipe (section 9): the frame's size is the
                 // ceiling — 57.84 Bold on a 52.42 line at 1440 and 768, the
@@ -22589,6 +22642,16 @@ function Testimonials({ s }) {
                   fontSize: `min(${s.mob ? s.dispMd : u(57.84)}, calc(100cqi / ${q.wordEms}))`,
                   ...(s.mob ? null : { fontWeight: 700, lineHeight: 52.42 / 57.84 }),
                   ...(s.narrow ? null : { maxWidth: u(560.33), minWidth: 'min-content' }),
+                } : pop ? {
+                  // A hand-scaled 40.38 on 36.59 at every width, Titan fitted to
+                  // the widest word in the content box — which the seed's
+                  // "PROFESSIONAL outruns at 390 alone, where the frame breaks
+                  // it inside the word.
+                  fontSize: faced(s, `min(${u(40.38)}, calc(100cqi / ${q.wordEms}))`),
+                  lineHeight: facedLh(s, 36.59 / 40.38),
+                  // Titan sets its caps 0.12em lower in this line box than
+                  // Chunko does (a lime-ink row scan, every width).
+                  position: 'relative', top: '-0.12em',
                 } : null),
               })}>{q.quote}</p>
             )}
@@ -22614,7 +22677,10 @@ function Testimonials({ s }) {
         <div style={{
           position: 'relative', flex: 'none', minWidth: 0,
           width: s.mob ? 'auto' : u(tab ? 464 : 720),
-          ...(s.mob ? { margin: `0 calc(13px - ${s.padX})` } : null),
+          // Pop's 390 card is 353, inset 19.39 / 17.61; its 768 card stands
+          // 7.27 right of centre, the designer having centred the backs' box.
+          ...(s.mob ? { margin: pop ? `0 calc(17.61px - ${s.padX}) 0 calc(19.39px - ${s.padX})` : `0 calc(13px - ${s.padX})` } : null),
+          ...(pop && tab ? { left: '7.27px' } : null),
         }}>
           {backs.map(backing)}
           <div style={{
@@ -22638,9 +22704,12 @@ function Testimonials({ s }) {
         <span onClick={onClick} style={{
           width: u(55), height: u(54), flex: 'none', borderRadius: '999px',
           boxShadow: `inset 0 0 0 1px ${s.stroke1}`, color: s.tx,
+          // Pop's disc is filled in the ring's own violet round Lime's leaked
+          // #F2FFD0 glyph.
+          ...(pop ? { background: s.tx, color: POP_TESTI.arrow } : null),
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
           cursor: onClick ? 'pointer' : undefined,
-          ...(s.mob ? null : { marginBottom: u(tab ? 46 : 20) }),
+          ...(s.mob ? null : { marginBottom: u(G.lift ?? (tab ? 46 : 20)) }),
         }}><LimeArrow back={back} z={z} /></span>
       )
       const lPrev = ring(true, step(-1))
@@ -22650,8 +22719,22 @@ function Testimonials({ s }) {
       // (390: the arrows' foot) 145 / 159.5 / 108 up it; what the root's padY
       // does not already give is the shell's padding.
       const pad = (top, bottom) => `calc(${u(top)} - ${s.padY}) 0 calc(${u(bottom)} - ${s.padY})`
+      // Pop's 390 foot (18) is under the root's padY, and a negative padding
+      // clamps to 0, so the rest goes back as a negative margin.
+      const popFoot = pop && s.mob
+        ? { padding: `calc(${u(G.pad[0])} - ${s.padY}) 0 0`, marginBottom: `calc(${u(G.pad[1])} - ${s.padY})` }
+        : null
+      // Pop's 10px INSIDE rule across the root's top, in `stroke/1` violet;
+      // the block is unpositioned, so the root is its containing block.
+      const rule = pop && (
+        <span aria-hidden style={{
+          position: 'absolute', top: 0, left: 0, right: 0, height: u(10),
+          background: s.stroke1, pointerEvents: 'none',
+        }} />
+      )
       return s.mob ? (
-        <div style={col(u(G.gap), { padding: pad(...G.pad) })}>
+        <div style={col(u(G.gap), { padding: pad(...G.pad), ...popFoot })}>
+          {rule}
           {card}
           {paging && (
             <div style={row('0px', {
@@ -22667,6 +22750,7 @@ function Testimonials({ s }) {
           justifyContent: paging ? 'space-between' : 'center',
           padding: pad(...G.pad),
         })}>
+          {rule}
           {paging && lPrev}
           {card}
           {paging && lNext}

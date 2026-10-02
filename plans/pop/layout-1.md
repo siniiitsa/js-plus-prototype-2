@@ -173,7 +173,7 @@ Session 0 first, then eleven sections in page order. Each row's three masters ar
 | 7 | `pricing` | `964:58630` | Pricing — B · 3-col in soft panel | 1440 × 801 | `986:52426` | 768 × 745.1 | `986:52438` | 390 × 1549.7 | `#FFFFFF` | Lime `964:58594` | done `b845e09` |
 | 8 | `calendar` | `964:58631` | Booking Calendar — A · Scheduler | 1440 × 885 | `986:52427` | 768 × 1361 | `986:52439` | 390 × 1011 | `#2563FF` | Lime `964:58595` | done `39a7807` |
 | 9 | `form` | `964:58632` | Enquiry Forms — B · Split context+form | 1440 × 853 | `986:52428` | 768 × 1061.2 | `986:52440` | 390 × 1238.2 | `#FFFFFF`, a `#6B2CFF` card | Lime `964:58596` | done `abea669` |
-| 10 | `testimonials` | `964:58633` | Testimonials H — Stacked tag card | 1440 × 730 | `986:52429` | 768 × 730 | `986:52441` | 390 × 730 | `#C6F200` | Lime `964:58597` | |
+| 10 | `testimonials` | `964:58633` | Testimonials H — Stacked tag card | 1440 × 730 | `986:52429` | 768 × 730 | `986:52441` | 390 × 730 | `#C6F200` | Lime `964:58597` | done |
 | 11 | `footer` | `964:58634` | Footer — Component 2 / 3 / 4 | 1440 × 479.7 | `986:52430` | 768 × 720.4 | `986:52442` | 390 × 720.4 | `#FF2DA0` | Lime `964:58598` | |
 
 The twins' fit comments in `EncoreSection.jsx` cite their node ids; grep for any of them to find the
@@ -1944,6 +1944,96 @@ counters and ink traps: its corners are soft. Rubik 900 is the squarer drawing, 
   (A first after-run was discarded unread: a `git stash` mid-run to read the header's HEAD fills
   reloaded the server under it. Never stash while a digest runs.)
 
+### Settled in section 10 (the testimonials)
+
+- **No Pop block: `Testimonials`' `if (s.limeTree)` inside `if (s.v0)` is `(s.limeTree || s.pop)`**,
+  still after the seam, with `const pop = s.pop`, `S6 = s.onScheme[6]` and a fourth `G` arm ahead
+  of Editorial's; the one new leaf (`lift`) falls back through `??`. `n`, `at`, `q`, `go`, `paging`
+  and `step` are shared whole, so the published arrows needed nothing. The tree is the twins' node
+  for node at all three widths (two backs, a card, an arrow row; `Layer_1` empty), the 768 and 390
+  masters in `Primitives → Lime` and the 390 in `Device: Mobile` too — which reaches one node, the
+  role (trap 2).
+- **The seat is Scheme 2, and the census row holds**: the root paints `s.bg` lime (no root flag);
+  the card is `S6` — `S6.bg` violet, the quote `S6.ac` lime, the eyebrow and the empty list
+  `S6.text3` white; the backs are Scheme 2's `tag/3` teal (`s.chips[2].bg`) and `tag/1` pink
+  (`s.chips[0].bg`), **teal drawn first** — Lime's `backs` put `s.ac` in that slot, so Pop's arm
+  carries its fills in `G.backs` whole; the reviewer pill is `s.bg` under `s.tx` violet, the role
+  pill `s.ac` pink under Lime's leaked `#AFE335` (`POP_TESTI.role`, decision 5: followed); the
+  arrows are filled `s.tx` inside the twins' 1px `s.stroke1` ring (the same violet, so unseen) round
+  Lime's leaked `#F2FFD0` glyph (`POP_TESTI.arrow`, reads white). The 10px INSIDE top rule is
+  `s.stroke1` violet, an absolute strip whose containing block is the root (8.2 on the canvas).
+  Radius 55 on all three boxes and the twins' real `DROP_SHADOW` 0 / 4 / 4 at 25% on all three
+  (`effects` read: kept).
+- **The backs lean — D1's *the backs are insets off the card*, turned**: each is still an inset box
+  off the card (so a longer quote grows them), now `[fill, top, left, right, bottom, transform]`
+  with `transformOrigin: '0 0'` and the master's own `relativeTransform` — Figma −2.41 / +3.25 →
+  CSS `rotate(2.4066deg)` / `rotate(-3.2471deg)` at 1440 and 768. **The 390 matrices are shears,
+  not rotations** (the teal's x-axis at +3.43°, its y-axis at −1.69°; the pink's the other way,
+  though `rotation` reports −3.43 / 4.62), so they are copied whole as `matrix()` — exact, where a
+  `rotate()` would be a readable approximation. The insets are each master's own: desktop teal
+  −46 / 127.96 / −31.96 / 74 and pink −7.6 / −40 / 82 / 2.6; 768 −39.13 / 50 / −12.66 / 17.13 and
+  −15.6 / −26.83 / 75.41 / 23.61; 390 −38.94 / 53.91 / −0.53 / 88.11 and −15.41 / 0 / 61.05 / 94.7.
+  Measured: the desktop backs' turned boxes at (386.2, 97.6) 524.7 × 342.6 and (262, 97.6) 574.8 ×
+  379.4 against the frame × 0.82's (386.6, 97.6) 524.7 × 342.6 and (262.4, 97.6) 574.8 × 379.4.
+- **D1's other two bullets, re-read per master:**
+  - *the 390 card bleeds into the root's padding* turns round: Pop's 390 card is **353, inset
+    19.39 / 17.61** inside the 370 column — positive margins — and its arrows stand **17.84** under
+    it in the 270 row, with **18** to the band's foot. That is under the root's 44 `padY`, and a
+    negative `calc` padding clamps to 0, so the 26 goes back as a negative `marginBottom`
+    (`popFoot`);
+  - *the wide arrows centre on the wrap*: desktop keeps Lime's 20 (arrows 365, the card's centre
+    375); **768 is 38.7** (`G.lift`: the card's centre 384.35, the arrows 19.35 above it), not Lime's
+    46. And the **768 card stands 7.27 right of centre** — the designer centred the backs' group
+    box, not the card — followed as `left: 7.27px`. The card's top is 165 / 199.35 / 199.16 down
+    the band, its foot 145 / 160.65 up (390: the arrows' 18).
+- **The quote is fitted to its widest word** (CONVENTIONS C; the form statement's recipe): a raw
+  Chunko **40.38 on 36.59** at every width, uppercase, at `faced(min(u(40.38), 100cqi / wordEms))`
+  on an `inline-size` column. **The 390 frame breaks PROFESSIO / NAL inside the word** in the demo
+  face's 253 measure; Titan sets `"PROFESSIONAL` at 8.17 em, so the seed sets **30.35px at 390**
+  (25% under the frame's size, five lines against its six — the cost of never breaking a word),
+  and keeps the ceiling at 768 (39.59, four lines, the frame's breaks) and 1440 (32.44, three lines,
+  the frame's). **`vm.quotes[].wordEms` gained a Pop arm** in `titanEms × 0.98` (Editorial's is
+  Noto Bold); no other Pop site reads it. **`TITAN_EM` gained the quote marks** — `"` 0.522, `“` and
+  `”` 0.565, read off the harness DOM at 100px (`"PROFESSIONAL` summed to 8.336 and measured
+  8.336) — where they fell to the 0.726 default; no other seeded Titan string carries one, so the
+  nav, the form statement and the calendar months are unmoved. `INCOMPREHENSIBILITIES` leaves the
+  1440 ceiling and pulls it to 28.6 / 19.9 at 768 / 390; nothing overruns at any width.
+- **The glyph floor, measured here: 0.12em** (lh 0.906). A lime-ink row scan put the quote's lines
+  5 low at 768 (0.126em at 39.59) and 3–4 at 1440; lifted `top: -0.12em`, the 768 lines 2 and 3
+  land on the frame's 316–343 and 353–380 exactly and the 1440 lines within 0–2 px. Between the
+  form's 0.13 (lh 0.849) and the month's 0.11 (a taller line), as the trend says. Nothing else is
+  lifted (section 1's rule).
+- **Trap 2, once: the role pill is Display/Title → 28 / 22 / 20** at lh 1.1 (the frame renders
+  Bebas 36 / 28 / 26 in its inherited Lime mode), uppercase. So the tag row is **36 tall where the
+  frame's is 43–52**: the 768 card is 362.6 against 370 and the band 722.6 against 730; at 1440 the
+  card's stated 420 holds and the row stands on its floor (its foot at 438.7, the frame's × 0.82).
+  The **reviewer** is a raw Chunko 20.19 whose auto box is 24 — Titan's `normal` is a pixel short
+  (section 9's lesson) — so the line box is pinned at `u(24)`; the pill is 36, the frame's.
+- **Named diff: the 390 pills wrap to two rows** — Editorial's case again. The frame's `tag-row`
+  hugs 263 in a 253 slot (it overflows the card's content box); Titan's "PRIVATE HOST" at 20 is
+  166.9 wide against Bebas's 132, so the twins' `flexWrap: 'wrap'` row wraps. With the five-line
+  quote the 390 card is 398.3 against the frame's 441, the band **687.3** against 730.
+- **The eyebrow is Pop's own**: Space Mono 11 tracked 1.5 (`s.mono`, × 0.82 on desktop),
+  uppercase, at its auto line — not Lime's Inter Bold `s.eyebrow`; it lands on the frame's 249.35 /
+  16 at 768.
+- **Measured** (harness, off the section root): desktop band 598.6 (730 × 0.82), card (294.8,
+  135.3) 590.4 × 344.4, quote 508.4 on three lines, arrows 45.1 × 44.3 centred at 299.3 (365 ×
+  0.82); 768 card (159.3, 199.4) 464 wide, quote 364 × 146.4, arrows 19.35 above the card's centre;
+  390 card (19.4, 199.2) 353 wide, arrows at 615.3, 17.8 under the card and 18 above the foot.
+  Inherited, not Pop's: the arrows at our `padX` (45.9 / 30) against the frame's 60 (Lime's and
+  Retro's same diff).
+- **Live** (`theme=4&live=1`, puppeteer clicks, three widths): Next walks all five reviews and
+  wraps 5 → 1, Back wraps 1 → 5, both discs carry a pointer and hit-test to themselves (the rule
+  and the backs take none of it); `n=1` draws no arrows; `n=0` prints *No reviews yet.* in white
+  on the violet card; no sideways scroll at any width (`scrollWidth − innerWidth` 0 — the leant
+  backs stay inside the 390 page). `page-check.mjs Pop 0`: no console error or warning, both
+  arrows change state, `overflow390` 0, and the 1440 seam clip shows the form's white meeting the
+  10px violet rule on a straight edge.
+- **Digest**: themes 0, 1, 2 and 3 at zero rows, static and live (660 + 660 against the editing
+  server's before-labels, no empty render). **Theme 4 moved exactly testimonials a0 at three
+  widths, both ways** — no shared helper changed, and the `TITAN_EM` entries move no other seed.
+- **`FIELDS.testimonials` owes nothing**: no row is template-keyed.
+
 ### Inherited and used
 
 *(Append one line each time a session leans on a bullet from Lime's, Grunge's, Editorial's or
@@ -2131,6 +2221,22 @@ reach is measured* (CLAUDE.md) — six form probes, no Pop row owed; *one five-t
 whole proof for a shared-helper change* (lime/layout-1, sweep) — `SealBadge`'s two props, with the
 fills read beside it; *theme 1 is the digest at risk* (grunge/layout-1) — themes 0–3 at zero, static
 and live.
+
+Section 10: *no block: the twin's gate widened, a named flag for the deltas* (grunge/layout-1 and
+editorial/layout-1, section 10) — `(s.limeTree || s.pop)`; *where the seam lives inside the branch,
+the block goes after the seam* (lime/layout-1, section 10); *the `G` lookup at the block's head*
+(grunge/layout-1) — a fourth arm, `lift` through `??`; *the node walker, kept* (grunge/layout-2) — all
+three masters with style names, modes, effects and the backs' `relativeTransform`s; *the backs are
+insets off the card*, *the 390 card bleeds*, *the wide arrows centre on the wrap* (D1) — the first
+kept with a lean added, the second turned round (an inset, not a bleed), the third re-read (768's
+38.7); *every glow is a guess until the node's `effects` confirm it* (lime/layout-1) — the three
+drop shadows real, kept; *a nested node reads `s.onScheme[n]`* (editorial/layout-2) — the card on 6;
+*`vm.title` shadows the ramp* (lime/layout-1, section 6) — the role's Display/Title a literal; *a
+stand-in face is scaled* (`faced`, grunge/layout-1); *a stand-in face's glyph floor is measured per
+site* (editorial/layout-3) — 0.12em; *a head that must fit its measure is fitted to its widest word*
+(editorial/layout-1) — `vm.quotes[].wordEms`' Pop arm; *a twin's width-bound call is re-measured in
+the new face* (editorial/layout-2) — the 390 pill row's wrap, named, and the reviewer's line box
+pinned; *theme 1 is the digest at risk* (grunge/layout-1) — themes 0–3 at zero, static and live.
 
 ## Open questions
 

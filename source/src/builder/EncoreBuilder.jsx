@@ -1792,9 +1792,11 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
       // row, since the quote is not `vm.title`. Editorial's layout-1 card sets
       // it as a hand-scaled Bold whose frame breaks nothing inside a word only
       // because the demo face is narrower; the card fits the size to this
-      // word instead. Undefined off Editorial.
-      wordEms: T.name === 'Editorial'
-        ? +Math.max(0, ...quote.split(/\s+/).map(notoBoldEms)).toFixed(3)
+      // word instead. Pop's layout-1 card is the same case in Titan's ems ×
+      // `faceK` (`navFace`'s table): its 390 frame breaks PROFESSIO / NAL inside
+      // the word. Undefined off those two.
+      wordEms: T.name === 'Editorial' || T.name === 'Pop'
+        ? +Math.max(0, ...quote.split(/\s+/).map(T.name === 'Pop' ? (x) => titanEms(x) * 0.98 : notoBoldEms)).toFixed(3)
         : undefined,
       who,
       role,
