@@ -165,7 +165,7 @@ Session 0 first, then eleven sections in page order. Each row's three masters ar
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | 0 | *foundation* | `964:58623` *(page)* | Pop → `THEMES[4]`, face, casing, ramp, schemes, flags, photos | — | `986:52418` | — | `986:52431` | — | — | — | done `3267b36` · `d57d896` |
 | 1 | `header` | `964:58624` | Headers — hero | 1440 × 750 | `986:52419` | 768 × 1024 | `986:52432` | 390 × 844 | photo over `#6B2CFF` | Lime `964:58588` | done `092b930` |
-| 2 | `bio` | `964:58625` | Bios — A · Flanked portrait | 1440 × 769 | `986:52420` | 768 × 1153.8 | `986:52433` | 390 × 769.8 | `#FFFFFF` | Lime `964:58589` | |
+| 2 | `bio` | `964:58625` | Bios — A · Flanked portrait | 1440 × 769 | `986:52420` | 768 × 1153.8 | `986:52433` | 390 × 769.8 | `#FFFFFF` | Lime `964:58589` | done `9083be9` |
 | 3 | `media` | `964:58626` | Media Player — D · Floating cards stack | 1440 × 1055 | `986:52422` *(in `986:52421`)* | 768 × 1499 | `986:52434` | 390 × 1167 | `#FFFFFF`, a `#FF2DA0` card | **Retro `964:58578`** | |
 | 4 | `gallery` | `964:58627` | Gallery Sections — Component 1 | 1440 × 788 | `986:52423` | 768 × 1153 | `989:22531` | 390 × 817 | `#FFFFFF`, a `#C6F200` panel | Lime `964:58591` | |
 | 5 | `repertoire` | `964:58628` | Repertoire — A · Two-column dense | 1440 × 1087 | `986:52424` | 768 × 945 | `986:52436` | 390 × 961 | `#6B2CFF` | Lime `964:58592` | |
@@ -599,7 +599,7 @@ Everything here is behind `s.pop`, a widened gate or a named pair.
   | Mark | Where (size, Figma rotation → CSS) | Ink |
   |---|---|---|
   | **smiley-globe seal** — a disc, a globe, a smiley, the name twice as `TEXT_PATH`, two 11px marks (`Frame 206` / `207`) | header 174.8 (−19.5 → +19.5, *read in section 1*), form 136 (−20), footer 126 (−19.5) | header pink disc; read each |
-  | **smiley sun** — a scalloped disc with a smile | bio 154 (−25.4), footer 152 × 151 (−22.3) | blue in the bio, lime in the footer |
+  | **smiley sun** — a scalloped disc with a smile | bio 154 (−25.37 → +25.37, *read in section 2*; `PopSun`), footer 152 × 151 (−22.3) | blue in the bio, lime in the footer |
   | heart (`Union` 101 × 80) | repertoire, by the pager | teal |
   | asterisk (93 × 95, −19) | gallery, beside the head | teal |
   | starburst (105, −3) | pricing, over the middle card | pink |
@@ -1106,6 +1106,96 @@ counters and ink traps: its corners are soft. Rubik 900 is the squarer drawing, 
   Pop header highlights as Lime's does; not opened in the editor here — the sweep's item 3 walks
   every section's picker.
 
+### Settled in section 2 (the bio)
+
+- **No Pop block: Lime's `if (s.v0 && s.limeTree)` is `(s.limeTree || s.pop)`**, with
+  `const pop = s.pop` naming the deltas. The tree is Lime's at all three widths — the flanks, the
+  488 × 648 frame (230 × 311 at 390), the 14-gap prose with its spacer and rule, the 4.5 card pad
+  — with three stickers added and the seal taken away. Both narrow masters are `Primitives → Pop`
+  with no Device override (they inherit Tablet / Mobile from the page), so the head's
+  `Display/LG` is `s.dispLg` 82 / 51 / 36, the only styled node in the section.
+- **The deltas, read off the node walker on all three masters** (nothing binds):
+  - every string but the head is **`#000000` = `s.text3`**, and so is the rule — `ink` is
+    `pop ? s.text3 : …` (trap 4 as session 0 settled it);
+  - **no string is the twins' ramp key**: KM BIO is Chakra Petch 11 tracked 1.5 (`s.ui`), the
+    foot line Space Mono 10 / 0.5, About Space Mono 11 / 1.5 **typed mixed**, the role line Space
+    Mono 11 / 1 — each at Figma's auto line height, which is CSS's `'normal'` (a `mono` helper in
+    the block); the paragraph is a raw **Inter 14 / 22 at all three widths**, not `s.bodyMd`
+    (11 / 13 / 13 under Pop). Desktop × 0.82 through the block's `u()`;
+  - the head is one tone in `s.ac`, uppercase, computed weight 400;
+  - the photograph is a **stadium** (radius 301, which CSS clamps as Figma does) on a `#000` 55%
+    well, in a **10px INSIDE `#FF2DA0` ring** — `s.stroke1`, on the glow's own overlay as
+    `inset 0 0 0 u(10)` — under a **real drop shadow**, `#000` 16%, 4 / 4, blur 9, on the clip
+    div at 1440 and 768 (the frame's sits on the unfilled 580-wide parent, so the arch casts it)
+    and none at 390, whose parent carries no effect.
+- **No seal**: `SealBadge` is not reached under Pop. Three stickers, each Pop-only:
+  - **the scribble** — an 11.78 round-capped `#BCD631` stroke (`POP_STICKER_LIME`, Pop's own
+    tint), so a stadium `<span>`. At 1440 it is an absolute child of the column, 258.35 long, its
+    top 8.5 below the head's box (centre 14.39); on the narrow masters it is a column row of its
+    own (`Vector`, 260.54 plus the caps), centred 14 below the head and 29 above the foot line,
+    its left cap 5.89 out of the column. Both hang off a Pop-only wrapper round the `h2`, so they
+    stay put when the glyphs are lifted.
+  - **the dot grid** — `PopDots`: the `Union`'s own `#C6F200` (`s.stroke2`) over 20 dots, 16.78 ×
+    16.74, five columns 67.81 apart and four rows 73.95 apart, 288.02 × 238.58 (× 0.4584 at 390).
+    The `Union` is the section's first child, so it paints under everything — under the
+    paragraph's foot at 390 too — at `zIndex: -1`, the block being a stacking context under Pop
+    (`position: relative; zIndex: 0` on the grid / column). `hue` is the caller's: the media
+    card's grid is teal and the calendar's lime on blue.
+  - **the sun** — `PopSun`: the scalloped disc's outline (`POP_SUN_D`) in `tag/3` blue
+    (`s.chips[2].bg`) and the smile and eyes (`POP_SUN_FACE_D`) in `s.bg` white, off the frame's
+    `fillGeometry` in the sticker's own 154 units. The frame also cuts the features out of the
+    disc; on any ground the two read the same, so the disc is its outline alone. 154 square
+    (78.54 at 390, the turned box ÷ 1.332), tilted **25.37** (Figma −25.37; the planning table's
+    −25.4 was rounded). It does not spin: a sticker, not a seal. The footer's sun (lime, `#060707`
+    features) is meant to be this component with its own `hue` / `ink` — section 11 checks the
+    drawing.
+- **The stickers hang off the arch's box, by the walker's `absoluteBoundingBox` centres.** The
+  metadata's x for the turned sun (910.85) is its rotated parent's — 65.98 off the walker's
+  844.87, and the render agrees with the walker (CONVENTIONS A). The sun's centre is 16.56 inside
+  the right edge and 151.59 below the top on desktop, 35.59 past the right edge and 12.22 above
+  the foot at 768, and 5.86 inside the right edge and 4.41 above the foot at 390; the grid's corner
+  is 86 left of the arch and 364.09 below its top on desktop, 250 in and 152.81 down at 768, and
+  98.09 in from the right edge and 299.54 down at 390. **The 390 offsets are read off the right
+  edge**, since the page's 10 inset makes our arch 250 wide against the master's 230.
+  Measured: the sun's centre at (776.45, 208.02) on the 1180 canvas against the frame's × 0.82
+  (776.49, 207.99), and at 768 and 390 within 0.02 of the frame's once the root's offsets are
+  taken out.
+- **The 768 grid is a desktop leak, followed** (CONVENTIONS A, *leaked tops are followed where
+  they show*): the master keeps (390, 424.59) of the section to the hundredth where the 390 master
+  scaled its own, so the arch covers all but the fifth column — four dots right of the arch,
+  which reads as designed. Section 1's 390 scribble was the other call (a 4px sliver at the
+  frame's edge, dropped).
+- **The narrow head column closes on an empty frame**: an 11.78 `Layer_1` with no child and no
+  fill — the desktop scribble's frame, emptied when its vector moved into the column — under the
+  column's 14 gap. Stated space, followed as `paddingBottom: 25.78`: it is what puts the arch at
+  the frame's 271.78 / 222.78.
+- **The glyph floor, measured** (CONVENTIONS B): the `h2`'s box lands on the frame's, but Titan
+  One's cap tops sat 10.05 / 7 / 5 px low at 1180 / 768 / 390 and its feet 8.6 / 6.6 / 5 — the
+  hero title's **0.14em** again, at lh 0.89 as at 0.75, since it is a difference in the faces'
+  metrics. The `h2` is lifted `top: -0.14em` under Pop; a pink-ink row scan then puts the head at
+  260–426 against the frame's 257.9–426 (× 0.82, 1180), and 98–134 and 87–112 exactly at 768 and
+  390. KM BIO, the foot line, About and the role line land to the pixel at all three widths
+  unlifted.
+- **Measured**: "READS" 224 wide against the frame's 224.7 at 1180; the one-line head runs 3.4%
+  wide at 768 and 390 (460 against 445, 324 against 313) — Titan One at 0.98 on this string,
+  inside session 0's spread. Three lines at 1440 and one at 768 and 390 (327.7 of our 370, and of
+  the master's 350 too). No `titleWordEms` arm; a longer artist's head is unguarded at desktop,
+  as under the twins. The role line runs wider than the frame's by the seed's ", UK" (the header's
+  location).
+- **The empty slot** (`&noimage=1`, CONVENTIONS B): the frame draws none. The well is the frame's
+  translucent 55% black, so the dot grid shows through it as the frame's own fill would let it;
+  `Photo`'s violet initials (`s.muted`) all but vanished on it, so Pop's are `s.bg` white through
+  `Photo`'s `ink` (undefined, and so unchanged, for the twins).
+- **Inherited diffs, not Pop's**: the root's 80 / 56 / 44 top and 80 foot on the canvas against
+  the masters' 56 / 60 / 24 (the published 1440 bio is 853 tall against 769), and the 390's 10
+  inset against 20 — Lime's, as Editorial recorded.
+- **Moved: theme 4's bio a0 alone** (three widths), against HEAD served from a scratch worktree on
+  :5174; themes 0, 1, 2 and 3 at zero rows (528 renders, and the bio's 48 again after the `ink`
+  prop). `PopSun` and `PopDots` have no other caller yet.
+- **No live control**: `live=1` digests identical to the canvas at all three widths.
+  `page-check.mjs Pop 0` publishes with no console error and no sideways scroll at 390; the bio's
+  published 1440 band matches the frame.
+
 ### Inherited and used
 
 *(Append one line each time a session leans on a bullet from Lime's, Grunge's, Editorial's or
@@ -1142,6 +1232,21 @@ grunge/layout-1) — the 390 scribble dropped; *place a seal by its disc's centr
 section 2); *under Lime `pillBg` IS the accent* (lime/layout-1) — turned round again: black, so
 card 4's stand-in is Scheme 3's lime; *one five-theme digest is the whole proof for a shared-helper
 change* (lime/layout-1, sweep) — seven helpers, static and live.
+
+Section 2: *no block: the twin's gate widened, a named flag for the deltas* (grunge/layout-1 and
+editorial/layout-1, section 2) — `(s.limeTree || s.pop)`; *the node walker, kept* (grunge/layout-2)
+— all three masters, raw paints and text segments, nothing bound; *a rotated group's metadata x/y is
+a bounding box* (memory `figma-frame-reading`) — the sun's 910.85 against the walker's 844.87;
+*place a seal by its disc's centre, off the edges of what it hangs on* (lime/layout-1, section 2) —
+the sun and the dot grid off the arch's box, the 390 off its right edge; *every glow is a guess
+until the node's `effects` confirm it* (lime/layout-1) — turned round: a real drop shadow, kept at
+1440 and 768; *a frame's inside stroke is an inset `boxShadow`* (lime/layout-2) — the arch's 10px
+ring; *a stand-in face's glyph floor is measured per site* (editorial/layout-3) — the head, 0.14em;
+*leaked tops are followed where they show* (lime/layout-1) — the 768 dot grid; *an opacity-0 node is
+a spacer* (lime/layout-1, section 3) — read as the empty narrow `Layer_1`; *a seeded page cannot
+show an empty slot* (lime/layout-1, sweep) — `&noimage=1`, the initials re-inked; *theme 1 is the
+digest at risk in a widened block* (grunge/layout-1) — themes 0–3 at zero, against the editing
+server's before-label and a HEAD worktree for theme 4.
 
 ## Open questions
 
