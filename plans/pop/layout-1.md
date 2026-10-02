@@ -1605,7 +1605,8 @@ counters and ink traps: its corners are soft. Rubik 900 is the squarer drawing, 
   meeting the map's white on a straight edge.
 - **Digest**: themes 0, 1, 2 and 3 at zero rows, static and live (660 + 660 against the editing
   server's before-labels, no empty render). **Theme 4 moved exactly map a0 at three widths, both
-  ways** — no shared helper changed.
+  ways** — no shared helper changed. (`POP_STICKER_LIME`'s comment was corrected after the digest
+  ran, in the same commit: comment-only.) The kicker's uppercase is the repertoire's eyebrow's rule.
 - **`FIELDS.map` owes nothing**: no row is template-keyed, and design 0 prints every key it reads.
   `notes/map.md`'s "Retro's and Pop's body prints them" now names Pop as going through the block.
 
