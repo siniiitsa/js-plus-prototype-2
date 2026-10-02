@@ -167,7 +167,7 @@ Session 0 first, then eleven sections in page order. Each row's three masters ar
 | 1 | `header` | `964:58624` | Headers — hero | 1440 × 750 | `986:52419` | 768 × 1024 | `986:52432` | 390 × 844 | photo over `#6B2CFF` | Lime `964:58588` | done `092b930` |
 | 2 | `bio` | `964:58625` | Bios — A · Flanked portrait | 1440 × 769 | `986:52420` | 768 × 1153.8 | `986:52433` | 390 × 769.8 | `#FFFFFF` | Lime `964:58589` | done `9083be9` |
 | 3 | `media` | `964:58626` | Media Player — D · Floating cards stack | 1440 × 1055 | `986:52422` *(in `986:52421`)* | 768 × 1499 | `986:52434` | 390 × 1167 | `#FFFFFF`, a `#FF2DA0` card | **Retro `964:58578`** | done `f1861bd` |
-| 4 | `gallery` | `964:58627` | Gallery Sections — Component 1 | 1440 × 788 | `986:52423` | 768 × 1153 | `989:22531` | 390 × 817 | `#FFFFFF`, a `#C6F200` panel | Lime `964:58591` | |
+| 4 | `gallery` | `964:58627` | Gallery Sections — Component 1 | 1440 × 788 | `986:52423` | 768 × 1153 | `989:22531` | 390 × 817 | `#FFFFFF`, a `#C6F200` panel | Lime `964:58591` | done `335655f` |
 | 5 | `repertoire` | `964:58628` | Repertoire — A · Two-column dense | 1440 × 1087 | `986:52424` | 768 × 945 | `986:52436` | 390 × 961 | `#6B2CFF` | Lime `964:58592` | |
 | 6 | `map` | `964:58629` | Events Map — D · Compact tile | 1440 × 1192 | `986:52425` | 768 × 1266 | `986:52437` | 390 × 1095.2 | `#FFFFFF` | Lime `964:58593` | |
 | 7 | `pricing` | `964:58630` | Pricing — B · 3-col in soft panel | 1440 × 801 | `986:52426` | 768 × 745.1 | `986:52438` | 390 × 1549.7 | `#FFFFFF` | Lime `964:58594` | |
@@ -603,7 +603,7 @@ Everything here is behind `s.pop`, a widened gate or a named pair.
   | **smiley-globe seal** — a disc, a globe, a smiley, the name twice as `TEXT_PATH`, two 11px marks (`Frame 206` / `207`) | header 174.8 (−19.5 → +19.5, *read in section 1*), form 136 (−20), footer 126 (−19.5) | header pink disc; read each |
   | **smiley sun** — a scalloped disc with a smile | bio 154 (−25.37 → +25.37, *read in section 2*; `PopSun`), footer 152 × 151 (−22.3) | blue in the bio, lime in the footer |
   | heart (`Union` 101 × 80) | repertoire, by the pager | teal |
-  | asterisk (93 × 95, −19) | gallery, beside the head | teal |
+  | asterisk (93 × 95, −18.52 → +18.52, *read in section 4*) | gallery, beside the head | teal |
   | starburst (105, −3) | pricing, over the middle card | pink |
   | sparkle (90 × 91, +18) | calendar, by the photograph | teal |
   | rings (273 × 242) | pricing, behind the third card — 52 past the 390 page | violet |
@@ -1308,6 +1308,104 @@ counters and ink traps: its corners are soft. Rubik 900 is the squarer drawing, 
   and the bio a0 desktop grid's 0.07px. The live render differs from the
   canvas by the seam alone (the clocks, the empty bar, the `<audio>`).
 
+### Settled in section 4 (the gallery)
+
+- **No Pop block: Lime's `if (s.limeTree)` inside `Gallery`'s `if (s.v0)` is
+  `(s.limeTree || s.pop)`**, still after the seam, so `strip`, `active`, `go`, the 390 window and
+  `srcRows` are shared whole; `const pop = s.pop` names the deltas and `G` takes a fourth arm
+  ahead of Editorial's. The tree is Lime's node for node at all three widths (metadata side by
+  side, in traversal order, against `964:58591`), with one container Lime's lacks: the rows stand
+  in `Frame 186`, a padded panel. Nothing binds; the 768 master is `Primitives → Pop`, the 390
+  Pop and `Device: Mobile`, so the head's `Display/LG` (82 / 51 / 36) is `s.dispLg` — the only
+  styled node. The row map was hoisted to `srcEls` so the panel can wrap it; the twins' rows are
+  unchanged (the digest).
+- **The deltas, off the node walker on all three masters:**
+  - the **panel** is Scheme 2's lime `bg` (`S2 = s.onScheme[2]`), radius 50, padded 20, the rows
+    10 apart (Lime's 5); it is `position: relative`, so it paints over the 768 asterisk's foot,
+    as the frame's later sibling does;
+  - the **open row** is `S2.activeBg` pink under the INNER_SHADOW 0 0 4 at .25 (Grunge's and
+    Editorial's `rowOn`); its label, its unringed disc and its cross are the palette lime
+    (`POP_GAL.lime`, a named literal: Scheme 2's `activeFg` is white), the glyph on the disc
+    `S2.ac` pink;
+  - the **closed rows** state a hidden fill and a hidden drop shadow, leaving a 1px INSIDE ring in
+    `#6B32FF` round a `S2.tx` violet disc with a lime glyph; their label and plus are `#6B34FF` —
+    both slips of `#6B2CFF`, followed (decision 5);
+  - the **label** is a raw Chunko 13.88 (UPPER, auto line height) — not Lime's `Display/List` —
+    so `faced(s, u(13.88))`, 11.17 on the canvas;
+  - the **halves** are Grunge's 636 : 636, 56 apart;
+  - the **head** is one tone in `s.tx` across Grunge's positional split, uppercase;
+  - the **top row** is Retro's type, not Lime's Body/Eyebrow: ← Inter 14, "Back to beginning"
+    Space Mono 10 tracked 1, the brand Inter Bold 11 tracked 2 over "Gallery" Space Mono 9
+    tracked 2, all `s.ac` at the auto line height — a `pt()` helper in the block;
+  - the **card** states radii 30, 20 and 50 on its three nested clips, so 50 draws (Lime's
+    largest-wins); its shadow is 4 / 4 / 9 at **.16** (Lime's .25); its well, under the
+    photograph, is Retro's `#FBF6EA` (`POP_GAL.well`), which is what an empty slot shows;
+  - the **arrow discs** are `s.inactiveBg` lime (Scheme 1's idle control) in a 1px white ring at
+    27% round Lime's arrow vector in `s.ac` pink; the 24 background blur is dropped over the
+    opaque fill (Lime's call). The row is the frame's `Frame 184`, absolute in the card per
+    master: 26 in both sides over 0–529 at 1440; **27 in and 33 from the right** over 52–581 at
+    768 (followed — the master's own 6px asymmetry); 8 in and 3 from the right over −4–388 at
+    390;
+  - the **brackets** are Retro's `#1B1714`, at Lime's numbers (14 / 15 in, 388 down; clipped at
+    390); the **strip** is Lime's mechanism in Lime's leaked glow — idle tiles a 1px
+    `#A6E22E` ring at 35%, the viewer's tile the INNER_SHADOW 18 in `#A6E22E` (`effects` read:
+    real), four tiles and the sliding window at 390.
+- **Decision 5's two overrides, ruled here:**
+  - the **eyebrow** "MEDIA" (Lime's `#F2FFD0`, its `sem/text/2`, on white) takes **`s.text3`**
+    black, session 0's rule for Pop's second ink — not Lime's binding resolved in Pop's mode
+    (`text/2`, violet), which would read but break the page's convention (the bio's eyebrows are
+    `text3`, the media's `S3.text3`). Space Mono 11 tracked 1.5, auto line height;
+  - the **counter** chip, Retro's `#111111` at 55% under `#C8461C`, is role-mapped: Pop's ink at
+    the same 55% under `s.ac` — the chip's form kept, only its hues moved. Space Mono 11 tracked
+    1, `0 10` padding, radius 4, desktop only (the narrow masters draw none).
+- **The asterisk** (`POP_ASTERISK_D`, the frame's `fillGeometry` in its own 93 × 95.004 box) is
+  `s.chips[3].bg` teal (`tag/4`, `#00E0C4` read off the DOM), turned **Figma −18.52 → CSS
+  +18.52** — the planning table's −19 was rounded — and placed by the walker's
+  `absoluteBoundingBox` centre, (556.66, 137.27) off the head frame's top-left. The metadata's
+  x (527.66) is the turned node's origin, 30 right of its box (`figma-frame-reading`). **The 768
+  master keeps the desktop's offsets** — a leak that shows and reads as designed (it stands
+  right of the head and the panel covers its foot), so it is followed; the 390 master's is 497
+  into a 370 frame that clips, so it is not drawn.
+- **The 390 panel hugs its rows.** The master states 461 where its content comes to 437.78; the
+  difference lies past the page's edge, invisible on the canvas, and a fixed 461 would strand
+  the one pink row the published page shows when no address is written in a panel of empty lime.
+  `srcScroll` (JP-087) holds the panel: `overflow: clip` on the canvas, a hidden-scrollbar
+  scroller live, the panel `flex: none` inside it.
+- **"The 390 spotlight runs 3 past the page" is the card's drop shadow** (the frame's 393-wide
+  render). A `box-shadow` is ink overflow, not scrollable overflow, so nothing was clipped:
+  `scrollWidth − innerWidth` is 0 in the published 390 tab, before and after the panel is
+  scrolled.
+- **The glyph floor is 0.14em again** (lh 0.89, the bio's): a violet-ink row scan puts the head
+  at 42.3–149.3 against the frame's 41.6–149.9 (× 0.82, off the head frame's top), 51.0–132.0
+  against 50.8–132.5 at 768, and 26.1–83.1 against 25.4–83.4 at 390 — the ink centre within
+  0.2 px at every width. No other string is lifted (section 1's rule).
+- **Measured** (harness, off the head frame's top-left, the content edge): at 1440 every box —
+  the panel, the rows, the label, the discs, the asterisk (407.96, 63.55 against 407.93, 63.52),
+  the card (521.16 × 441.19), the arrow discs, the counter (903.22, 354.88 against 903.64,
+  354.24), the brackets, the strip — within 0.7 px of the frame × 0.82; at 768 and 390 within
+  0.8 px through the panel and the top row, then **+1 px from the credit row down**: Inter
+  Bold 11's line box is 14 where Figma's is 13. Inherited, not Pop's: the root's 80 / 56 / 44
+  top against the masters' 56 / 30 / 20.
+- **Empty slots** (`&n=0`; `&noimage=1` does not reach the gallery): the cream well under
+  `Photo`'s `s.soft` with `s.tx` violet initials, in the spotlight and every tile; the ring and
+  glow read on it.
+- **`FIELDS.gallery` owes nothing**: no row is template-keyed, and Pop's design 0 reads
+  `youtube`, `instagram` and `tiktok` (proved as links below).
+- **Live** — the published tab, Pop card 0, the three addresses written through `st` before
+  Publish, trusted clicks: at 1440 next steps 04 → 07 and wraps to 01, back steps, Back to
+  beginning goes to 01, back from 01 wraps to 07, a thumb pick moves the glow, the spotlight and
+  the counter together; at 390 the four-tile window slides past the fourth and re-anchors on the
+  wrap; every control hit-tests to itself (the asterisk takes no pointer); the social rows are
+  `https://` links with `target="_blank"`; the 390 scroller is 458 wide in 390, and a CDP
+  finger drag scrolls it its full 68, after which TikTok is wholly on the page and hit-tests to
+  its link; no console error.
+- **Digest**: themes 0, 1, 2 and 3 at zero rows, static and live (660 + 660 against the editing
+  server's before-labels). Theme 4 moves exactly gallery a0 at three widths, both ways. Three
+  theme-1 live before-files were empty renders — a Vite reload under that run when a one-off
+  script landed in `source/scripts/` — and re-rendered against HEAD from a scratch worktree on
+  :5174 they equal the after-files.
+- `notes/gallery.md`'s "Mobile draws four of the seven" names Pop beside Retro, Lime and Grunge.
+
 ### Inherited and used
 
 *(Append one line each time a session leans on a bullet from Lime's, Grunge's, Editorial's or
@@ -1380,6 +1478,26 @@ lines* (editorial/layout-1, section 3) — the typed break; *a seeded page canno
 (lime/layout-1, sweep) — `&cj=` art-less tracks, the initials re-inked; *field reach is measured*
 (CLAUDE.md) — `countLabel`'s Pop row; *theme 1 is the digest at risk* (grunge/layout-1) — themes
 0–3 at zero against the editing server's before-label, static and live.
+
+Section 4: *no block: the twin's gate widened, a named flag for the deltas* (grunge/layout-1 and
+editorial/layout-1, section 4) — `(s.limeTree || s.pop)`; *where the seam lives inside the branch,
+the block goes after the seam* (lime/layout-1, section 4); *the `G` lookup at the block's head*
+(grunge/layout-1, sections 4–10) — a fourth arm; *the node walker, kept* (grunge/layout-2) — all
+three masters, text segments with style names; *a rotated group's metadata x/y is a bounding box*
+(memory `figma-frame-reading`) — the asterisk's 527.66 against the walker's 497.48; *nested clips:
+the largest radius draws* (lime/layout-1, section 4) — 50; *leaked tops are followed where they
+show, dropped where they don't* (lime/layout-1) — the 768 asterisk followed, the 390's dropped, the
+brackets at Lime's numbers; *a leak that shows and reads as a defect is overridden*
+(grunge/layout-1) — the eyebrow and the counter, decision 5's two; *every glow is a guess until the
+node's `effects` confirm it* (lime/layout-1) — the strip's INNER_SHADOW real, the discs' blur
+dropped over an opaque fill; *a nested node reads `s.onScheme[n]`* (editorial/layout-2) — the panel
+on 2; *a frame's inside stroke is an inset `boxShadow`* (lime/layout-2) — the closed rows' and the
+thumbs' rings; *a stand-in face is scaled* (`faced`, grunge/layout-1); *a stand-in face's glyph
+floor is measured per site* (editorial/layout-3) — 0.14em; *a seeded page cannot show an empty
+slot* (lime/layout-1, sweep) — `&n=0`; *key tile probes on style, not `img`* (memory
+`browser-tool-choice`) — the strip's state read off its tiles' inline style; *theme 1 is the digest
+at risk* (grunge/layout-1) — themes 0–3 at zero, static and live, three misfired before-files
+re-rendered against HEAD.
 
 ## Open questions
 

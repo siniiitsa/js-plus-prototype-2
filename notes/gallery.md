@@ -10,7 +10,7 @@ another `notes/` file.
   chosen, so both sides open on `galActive()` and the published first paint is the canvas's
   picture by construction. All **seven slots** are navigable, not just the filled ones — an empty
   one shows in the viewer the placeholder it shows in the strip, so the count cannot shift under
-  the visitor. Mobile draws four of the seven under Retro, Lime and Grunge (Editorial's 390 master draws all
+  the visitor. Mobile draws four of the seven under Retro, Lime, Grunge and Pop (Editorial's 390 master draws all
   seven, smaller, so under Editorial the strip maps every slot and nothing slides), and that
   window **slides** once the visitor walks past the fourth (`from = clamp(active - 3, 0, 3)`), which leaves the first four anchored at 0 so
   the canvas's mobile picture is the Figma frame's, unchanged. The three social rows read
