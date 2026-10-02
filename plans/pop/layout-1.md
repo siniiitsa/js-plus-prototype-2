@@ -1789,6 +1789,18 @@ counters and ink traps: its corners are soft. Rubik 900 is the squarer drawing, 
   smaller lift at its taller line. Both lifted (`top`, relative); the ink then lands at −1.04 /
   −1.05 against the frame's −0.8 / −1 (head) and 4.12 / 5.14 against 4.1 / 5 (month), off the
   unlifted box's top. Titan's J descends where Chunko's does not; the month box is unchanged.
+- **The 390 month is fitted to its room** (CONVENTIONS C, *a twin's width-bound call is
+  re-measured in the new face*; found on the review, after the first commit): Lime's `nowrap`
+  month between two `flex: none` discs holds in condensed Bebas, Anton and Noto (widest 170 / 146 /
+  205 of the 390 row's 216), but Titan sets SEPTEMBER 2025 265 wide, so seven of the twelve labels
+  pushed the → disc past the panel's edge — September's off it entirely, its centre hitting
+  nothing. The label now sits in a `flex: 1` container-query cell between the discs at
+  `faced(min(30.28, 100cqi / ems))`, `ems` its width off `navFace` (`vm.calMonths[].ems`, beside
+  `label` in `sectionVm`; undefined where a template has no table, read by Pop's block alone).
+  `titanEms × 0.98` reproduces every measured label to 0.1 px, so September lands at 216.0 and
+  24.2 px, the five short months keep 29.67, and 768 and 1440 never shrink (widest 265 of 494,
+  217 of 378.5). Retro's own v0 body shrinks its 390 month by character count; the advance table is
+  exact where that is not.
 - **The empty slot** (`&noimage=1`): the frame draws none, and `Photo`'s soft well is
   translucent, so the dot grid showed through it with low-contrast yellow initials. Pop's photo
   clip is painted `s.bg` under the well and its initials are `s.text3` white (`Photo`'s `ink`).
@@ -1975,7 +1987,9 @@ where they show, dropped where they don't* (lime/layout-1) — the 390 dot grid 
 sparkle and arrow dropped; *a leak that shows and reads as a defect is overridden* (grunge/layout-1)
 — the narrow divider, Editorial's reading; *a stand-in face is scaled* (`faced`, grunge/layout-1);
 *a stand-in face's glyph floor is measured per site* (editorial/layout-3) — 0.14em on the head,
-0.11em on the month; *a seeded page cannot show an empty slot* (lime/layout-1, sweep) —
+0.11em on the month; *a twin's width-bound call is re-measured in the new face before it is
+inherited* (editorial/layout-2) — the 390 month, fitted by `titleWordEms`' rule (*a head that must
+fit its measure*, editorial/layout-1); *a seeded page cannot show an empty slot* (lime/layout-1, sweep) —
 `&noimage=1`, the well made opaque; *field reach is measured* (CLAUDE.md) — `heading` and `cta`'s
 Pop rows; *theme 1 is the digest at risk* (grunge/layout-1) — themes 0–3 at zero, static and live.
 
