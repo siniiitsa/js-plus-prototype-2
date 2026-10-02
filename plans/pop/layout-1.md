@@ -1099,6 +1099,12 @@ counters and ink traps: its corners are soft. Rubik 900 is the squarer drawing, 
 - **Harness.** The one-off scripts (the advance table, the shots and probes, the live burger, the
   picker) lived in `source/scripts/` and are deleted. A white-ink row scan over the frame's 1×
   render and the harness's was enough to measure the glyph floor; numpy is not installed, PIL is.
+  The static digest's before-side was the editing server (:5173) taken before the first edit; the
+  live one was HEAD served from a scratch `git worktree` (its `source/node_modules` a symlink) on
+  :5174, diffed with the memory note's port-and-stamp `sed`. Both recipes held at zero.
+  `HEADER_COUNT.pop = 4` makes `designCount('header', 'Pop')` 4, so the sidebar's LayoutPicker on a
+  Pop header highlights as Lime's does; not opened in the editor here — the sweep's item 3 walks
+  every section's picker.
 
 ### Inherited and used
 
