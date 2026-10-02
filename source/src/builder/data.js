@@ -1825,7 +1825,8 @@ export const FIELDS = {
       hint: 'The label over the track list, after a dot. Left empty, it is not drawn.' },
     // JP-095 (a): the counter's two words, the counts the page's. An emptied
     // word takes its count (and the " / ") with it; both emptied, no counter.
-    { k: 'countLabel', l: 'Counter label', d: MEDIA_COUNT_LABEL, in: [0, 1, 2],
+    // Pop's layout-1 frame draws no counter (plans/pop/layout-1.md, section 3).
+    { k: 'countLabel', l: 'Counter label', d: MEDIA_COUNT_LABEL, in: { Pop: [1, 2], '*': [0, 1, 2] },
       hint: 'The word after the track count over the list, as in “5 Featured / 5 Max” (“5 / 5 Featured” '
           + 'in layout 1). Left empty, it goes with its count.' },
     { k: 'totalLabel', l: 'Counter total label', d: MEDIA_TOTAL_LABEL, in: [1, 2],

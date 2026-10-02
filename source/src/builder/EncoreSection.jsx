@@ -346,6 +346,50 @@ const POP_SCRIBBLE_D =
 // lime than the palette's. No mode or scheme holds it.
 const POP_STICKER_LIME = '#BCD631'
 
+// Pop's media squiggle arrow (964:58626's "Vector", 209.11 × 126.41 before its
+// −135° turn): one stroke drawn as a filled outline, off the frame's
+// `fillGeometry`, rounded to the hundredth. The inner loop is wound the other
+// way, so it is a hole under the default nonzero rule, as in the frame. Its
+// fill is the palette's #C6F200, not POP_STICKER_LIME: the one squiggle on the
+// page that is not the stickers' duller lime.
+const POP_ARROW_D =
+  'M176.55 88.2C172.3 82.82 150.18 75.74 150.52 68.9C153.91 53.88 169.8 68.55 177.76 72.66' +
+  'C186.89 77.37 196.09 82.08 205.66 85.85C211.49 91.41 209.29 95.66 203.85 99.94' +
+  'C195.84 106.25 173.12 119.77 163.68 124.53C159.59 126.59 154.89 128.26 153.1 122.17' +
+  'C150.36 112.86 168.9 108.85 172.8 101.91C140.6 101.56 109 92.91 85.98 69.67' +
+  'C56.78 82.65 22.69 76.08 0 53.96L6.55 47.05C17.82 55.08 30.02 63.65 44.22 65.46' +
+  'C51.95 66.44 70.74 66.41 76.89 61.4C78.94 59.73 77.64 60.23 76.95 58.9' +
+  'C69.21 43.95 63.22 38.15 65.8 19.18C68.75 -2.47 97.8 -7.51 106.65 12.98' +
+  'C113.9 29.74 107.18 50.48 94.36 62.66C105.54 73.57 121.9 80.95 136.95 84.81' +
+  'C140.5 85.72 150.55 88.19 153.49 88.19L176.53 88.19L176.55 88.2Z' +
+  'M84.05 11.22C67.05 14.93 81.07 53.41 87.5 53.41C96.89 53.41 107.14 6.19 84.05 11.22Z'
+
+// Pop's five media track cards (964:58626, the stack's five "Frame"s): every
+// card filled, in Scheme 1's tag1, tag6, tag3, tag4 and tag7 — lime, red,
+// blue, teal, yellow, read by index off `s.onScheme[1].chips`, all seven of
+// the scheme's tags, where `vm.chips` keeps TAGS' six — each inked in the raw
+// hexes the frame carries (decision 5: followed): Retro's #1B1714 on the lime
+// and the yellow, Retro's cream #FBF6EA on the red, white on the blue, and two
+// near-blacks on the teal, its number a shade off its title. The play disc is
+// #1B1B1B on the light cards and white on the two dark ones, its ▶ in the
+// card's own hue. A sixth track takes the first seat again.
+const POP_TRACK_SEATS = [
+  { tag: 0, num: '#1B1714', ink: '#1B1714', disc: '#1B1B1B' },
+  { tag: 5, num: '#FBF6EA', ink: '#FBF6EA', disc: '#FFFFFF' },
+  { tag: 2, num: '#FFFFFF', ink: '#FFFFFF', disc: '#FFFFFF' },
+  { tag: 3, num: '#161616', ink: '#131313', disc: '#1B1B1B' },
+  { tag: 6, num: '#1B1714', ink: '#1B1714', disc: '#1B1B1B' },
+]
+// The violet player's raw values, Retro's family (decision 5: followed): the
+// sleeve's well, the artist and both clocks, the ▶ on the white disc, and the
+// progress track — `text/2` pink at the frame's 42%.
+const POP_PLAYER = {
+  well: '#2A2A2A', grey: '#B3B3B3', play: '#1A1A1A', track: 'rgba(255, 45, 160, 0.42)',
+}
+// The Soundcloud pill's label and disc, Lime's ink leaked into Pop's variant
+// (#0D1F03; decision 5: followed). It reads black on the lime pill.
+const POP_PILL_INK = '#0D1F03'
+
 // Pop's smiley sun (964:58625's second "Layer_1", 154 × 154 before its tilt):
 // the scalloped disc's outline and the smile's three features, off the
 // frame's `fillGeometry` in the sticker's own units, rounded to the hundredth.
@@ -384,12 +428,15 @@ function PopSun({ size, tilt, hue, ink, style }) {
 // Pop's dot grid (964:58625's "Union", 288.02 × 238.58): five columns of four
 // 16.78 × 16.74 dots, 67.81 and 73.95 apart, read off the boolean's children;
 // the Union's own fill is what renders. The bio's is lime; the media card's
-// and the calendar's callers pass their own.
+// and the calendar's callers pass their own. The media card's grid is this one
+// at 0.965 across (964:58626's "Union", 277.95 × 238.58: 16.19-wide dots,
+// columns 65.44 apart), so the drawing stretches to the caller's box rather
+// than keeping its own aspect — the bio's three boxes all keep it.
 const POP_DOT_X = [0, 67.81, 135.62, 203.43, 271.24]
 const POP_DOT_Y = [0, 73.95, 147.9, 221.85]
 function PopDots({ hue, style }) {
   return (
-    <svg viewBox="0 0 288.02 238.58" aria-hidden="true" style={{
+    <svg viewBox="0 0 288.02 238.58" preserveAspectRatio="none" aria-hidden="true" style={{
       position: 'absolute', display: 'block', pointerEvents: 'none', ...style,
     }}>
       <g fill={hue}>
@@ -6621,8 +6668,34 @@ function Media({ s }) {
     )
   }
 
+  // Pop layout 1 (964:58626 · 986:52422 at 768, inside the Scheme 2 wrapper
+  // 986:52421 · 986:52434 at 390) is this body's tree node for node one level
+  // down — the five 647 × 92 cards leant ±1°, the 35.5 disc and 60 cover, the
+  // 438-wide player with its 251 × 252 disc, the transport, the clock row, the
+  // Soundcloud pill — nested in a pink card, so it dresses this body rather
+  // than taking Lime's block above: `pop` names what only Pop draws, and
+  // `s.retro || pop` what both draw. Nothing in the variant binds; every value
+  // is the node walker's raw read (plans/pop/layout-1.md, section 3).
+  //
+  // The card (`Frame 208`) is Scheme 3's pink ground, radius 50, padded 60 /
+  // 60 30 / 30 10 round the three rows 20 apart; it fills the content box
+  // exactly, since `padX` is the frames' own 56 / 30 / 10. Inside it: Scheme 3's
+  // white `text3` eyebrow and lime `text1` head, a teal dot grid (`tag2`)
+  // under everything, the lime squiggle arrow at 1440 alone, the cards on
+  // Scheme 1's tags in the frame's raw inks (POP_TRACK_SEATS), and the player
+  // on Scheme 6's violet — its title `text3` white, its playhead `text2` pink.
+  // No thrown blocks, borders, grain, checkerboard or tear; and no counter,
+  // which the frame does not draw. The type is raw at 1440 and 768 (the 768
+  // master carries the desktop's 82.14 head unscaled, and it shows, so it is
+  // followed); the 390 head and track titles are Display/LG and Label/LG, which
+  // resolve in Pop's mode there.
   if (s.v0) {
     const desk = !s.narrow
+    const pop = s.pop
+    const tab = isTablet(s)
+    const u = (v) => `${desk ? Math.round(v * 0.82 * 100) / 100 : v}px`
+    const S3 = pop ? s.onScheme[3] : null
+    const S6 = pop ? s.onScheme[6] : null
     // The frame paints this section on cream with near-black ink, not the
     // beige page palette — EncoreSection swaps the section ground to match,
     // so the beige checkerboard band and cards read against it.
@@ -6631,8 +6704,8 @@ function Media({ s }) {
     // The wine red the frame reserves for the player's thrown block and the
     // progress fill — not a palette hue.
     const wine = s.retro ? '#9E1F17' : s.ac
-    const cardR = s.retro ? (desk ? '16px' : '20px') : s.btnR
-    const playerR = s.retro ? (desk ? '33px' : '40px') : s.radius
+    const cardR = s.retro || pop ? (desk ? '16px' : '20px') : s.btnR
+    const playerR = s.retro || pop ? (desk ? '33px' : '40px') : s.radius
     const playBtn = desk ? 39 : 48
     const ctl = (fill) => ({
       width: fill ? playBtn : 30, height: fill ? playBtn : 30,
@@ -6641,6 +6714,8 @@ function Media({ s }) {
       display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
     })
     // Figma sets the kicker and the counter in a small tracked mono, not Anton.
+    // Pop's is Space Mono 11 tracked 1.5 at its auto line height, in Scheme 3's
+    // white `text3` on the pink card.
     const label = (t, extra) => (
       <span style={{
         fontFamily: s.body, fontSize: '11px', letterSpacing: '1.2px',
@@ -6653,35 +6728,66 @@ function Media({ s }) {
     // heading instead, left-aligned.
     // Its word is `countLabel` (JP-095 (a)), the counts the page's; emptied,
     // no counter. A long one wraps, and at desktop it keeps to half the row.
-    const featured = s.countLabel ? label(`${s.tracks.length} / ${s.tracks.length} ${s.countLabel}`, {
+    // Pop's frame draws no counter, so `countLabel` reaches layout 1 nowhere
+    // there (its `in` has a Pop row).
+    const featured = s.countLabel && !pop ? label(`${s.tracks.length} / ${s.tracks.length} ${s.countLabel}`, {
       whiteSpace: 'normal', overflowWrap: 'anywhere', ...(desk ? { maxWidth: '50%', textAlign: 'right' } : null),
     }) : null
+    // Pop's head is a hand-scaled 82.14 on a 68.45 line at 1440 and 768, and
+    // Display/LG (36 at 0.89) at 390, in Scheme 3's lime `text1`, typed in
+    // capitals with a break after "worth" at all three widths — Editorial's
+    // positional two lines, in one tone.
+    const titleWords = String(s.title || '').split(/\s+/).filter(Boolean)
     const titleBlock = (
-      <div style={col(desk ? '30px' : '36px', desk ? { flex: 1, minWidth: 0 } : undefined)}>
-        {label(s.mediaKicker)}
+      <div style={col(pop ? u(36) : desk ? '30px' : '36px', desk ? { flex: 1, minWidth: 0 } : undefined)}>
+        {label(s.mediaKicker, pop ? {
+          fontFamily: s.mono, fontSize: u(11), letterSpacing: u(1.5), lineHeight: 'normal', color: S3.text3,
+        } : undefined)}
         {/* The frame breaks the heading after "worth"; an em measure between
             width("Five worth") and width("Five worth your") forces the same
             break at every size. */}
-        <h2 style={{
-          margin: 0, fontFamily: s.display, fontSize: s.dispLg, lineHeight: 0.89,
-          letterSpacing: s.dls, color: s.ac, maxWidth: '5.8em',
-        }}>{s.title}</h2>
+        {pop ? (
+          <h2 style={{
+            margin: 0, position: 'relative', top: '-0.13em', fontFamily: s.display,
+            fontSize: faced(s, s.mob ? s.dispLg : u(82.14)), lineHeight: facedLh(s, s.mob ? 0.89 : 68.45 / 82.14),
+            letterSpacing: s.dls, color: S3.ac, textTransform: 'uppercase',
+          }}>
+            <span style={{ display: 'block' }}>{titleWords.slice(0, 2).join(' ')}</span>
+            {titleWords.length > 2 && <span style={{ display: 'block' }}>{titleWords.slice(2).join(' ')}</span>}
+          </h2>
+        ) : (
+          <h2 style={{
+            margin: 0, fontFamily: s.display, fontSize: s.dispLg, lineHeight: 0.89,
+            letterSpacing: s.dls, color: s.ac, maxWidth: '5.8em',
+          }}>{s.title}</h2>
+        )}
       </div>
     )
     const heading = desk
       ? <div style={row('16px', { alignItems: 'flex-end' })}>{titleBlock}{featured}</div>
       : <div style={col('32px', { alignItems: 'flex-start' })}>{titleBlock}{featured}</div>
 
+    // Pop's stack: the five cards' centres stand 81.69 apart on average (the
+    // frame's hand placement runs 80.64 to 83 between pairs) at every width,
+    // so 92-tall cards overlap by 10.31, and the slack beside each — the card's
+    // 647 / 585.16 / 288 in a 710 / 648 / 350 column — is the alternate
+    // indent. The cards are content-tall: the frame's fixed 92 is the 60 cover
+    // and its padding, and a title that wraps to three lines at 390 grows its
+    // card 4.7 rather than clip it, where the frame's own overflows the card.
+    // The column pads the leant cards' room back in, 11.36 above the first
+    // and 6.89 (5.89 narrow) under the last, so it is the frame's 437 / 436.
     const stack = (
-      <div style={col('0')}>
+      <div style={col('0', pop ? { padding: `${u(11.36)} 0 ${desk ? u(6.89) : '5.89px'}` } : undefined)}>
         {s.tracks.map((t, i) => {
           const n = s.chips.length
           const filled = i % 2 === 1
+          const seat = pop ? POP_TRACK_SEATS[i % POP_TRACK_SEATS.length] : null
           // Filled rows step through the palette from its third hue (Retro:
           // mustard, then olive) and throw the accent; the open rows throw the
           // frame's off-palette pink and violet blocks, alternating.
-          const hue = s.chips[(2 + Math.floor(i / 2)) % n].bg
-          const fg = filled ? (s.retro ? cream : contrastInk(hue)) : ink
+          const hue = pop ? s.onScheme[1].chips[seat.tag].bg : s.chips[(2 + Math.floor(i / 2)) % n].bg
+          const fg = pop ? seat.ink : filled ? (s.retro ? cream : contrastInk(hue)) : ink
+          const indent = pop ? (desk ? u(63) : tab ? '62.84px' : '62px') : desk ? '49px' : '61px'
           const thrown = filled ? s.ac
             : s.retro ? (Math.floor(i / 2) % 2 ? '#8464AD' : '#FD638E')
             : s.chips[(4 + i) % n].bg
@@ -6697,44 +6803,62 @@ function Media({ s }) {
           return (
             <div key={i} onClick={onPick(i)} style={{
               ...row(desk ? '16px' : '20px'),
-              marginLeft: filled ? (desk ? '49px' : '61px') : 0,
-              marginRight: !filled ? (desk ? '49px' : '61px') : 0,
-              marginTop: i === 0 ? 0 : (desk ? '-18px' : '-22px'),
+              marginLeft: filled ? indent : 0,
+              marginRight: !filled ? indent : 0,
+              marginTop: i === 0 ? 0 : pop ? `-${u(10.31)}` : (desk ? '-18px' : '-22px'),
               position: 'relative', zIndex: i + 1, overflow: 'hidden',
-              // The 390 frame leans its cards harder than the wide ones.
-              transform: tilt(s, (filled ? -1 : 1) * (s.mob ? 2.25 : 1)),
-              background: filled ? hue : cream, color: fg,
-              border: `${s.bw} solid ${s.retro ? ink : fg}`, borderRadius: cardR,
+              // The 390 frame leans its cards harder than the wide ones. Pop's
+              // lean is Retro's — the first card Figma −1, CSS +1 — but 1.11 at
+              // 768; written out, since `tilt()` is Retro's.
+              transform: pop
+                ? `rotate(${(filled ? -1 : 1) * (s.mob ? 2.25 : tab ? 1.11 : 1)}deg)`
+                : tilt(s, (filled ? -1 : 1) * (s.mob ? 2.25 : 1)),
+              background: pop || filled ? hue : cream, color: fg,
+              border: pop ? undefined : `${s.bw} solid ${s.retro ? ink : fg}`, borderRadius: cardR,
               padding: desk ? '13px 13px 13px 20px' : '16px 16px 16px 24px',
               boxShadow: hard(s, thrown, -3, desk ? 8 : 9),
               cursor: s.live ? 'pointer' : undefined,
             }}>
-              <span style={{ fontFamily: s.body, fontSize: desk ? '15px' : '18px', flex: 'none' }}>{t.n}</span>
-              <span style={col('3px', { flex: 1, minWidth: 0 })}>
+              {/* Pop's number is Space Mono 18, its own ink on the teal card. */}
+              <span style={{
+                fontFamily: pop ? s.mono : s.body, fontSize: desk ? '15px' : '18px', flex: 'none',
+                color: pop ? seat.num : undefined,
+              }}>{t.n}</span>
+              <span style={col(pop ? u(4) : '3px', { flex: 1, minWidth: 0 })}>
                 {/* The 390 frame wraps long titles at label-md; the wider
-                    frames truncate at their own sizes. */}
-                <span style={labelStyle(s, desk ? '18px' : s.mob ? s.labelMd : s.title,
-                  s.mob ? { whiteSpace: 'normal' } : { overflow: 'hidden', textOverflow: 'ellipsis' })}>{t.name}</span>
+                    frames truncate at their own sizes. Pop's title is a raw 22
+                    on its auto 26 line at 1440 and 768, and Label/LG (14 at
+                    1.1) at 390, which breaks inside a word that outruns its
+                    70-wide column, as the frame's "MANCHES / TER" does. */}
+                <span style={pop
+                  ? labelStyle(s, s.mob ? s.labelLg : u(22), s.mob
+                    ? { whiteSpace: 'normal', overflowWrap: 'anywhere' }
+                    : { overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: 26 / 22 })
+                  : labelStyle(s, desk ? '18px' : s.mob ? s.labelMd : s.title,
+                    s.mob ? { whiteSpace: 'normal' } : { overflow: 'hidden', textOverflow: 'ellipsis' })}>{t.name}</span>
                 <span style={{
-                  fontFamily: s.body, fontSize: desk ? '10px' : '12px', opacity: 0.75,
+                  fontFamily: s.body, fontSize: desk ? '10px' : '12px', opacity: pop ? undefined : 0.75, lineHeight: pop ? 'normal' : undefined,
                   maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                 }}>{t.sub}</span>
               </span>
               <span style={{
                 width: desk ? 29 : 35, height: desk ? 29 : 35,
                 borderRadius: '999px', flex: 'none',
-                background: filled ? (s.retro ? '#EDE0C4' : fg) : ink,
-                color: filled ? hue : cream,
-                display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+                background: pop ? seat.disc : filled ? (s.retro ? '#EDE0C4' : fg) : ink,
+                color: pop || filled ? hue : cream,
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: pop ? undefined : 'pointer',
               }}>{on && playing
                 ? <Pause size={desk ? 10 : 12} fill="currentColor" strokeWidth={0} />
                 : <Play size={desk ? 10 : 12} fill="currentColor" strokeWidth={0} />}</span>
               <span style={{
                 width: desk ? 49 : 60, height: desk ? 49 : 60, flex: 'none',
-                borderRadius: s.retro ? (desk ? '5px' : '6px') : s.radiusSm, overflow: 'hidden',
-                // The frame borders only the open cards' art, hairline.
-                border: s.retro ? (filled ? 'none' : `1px solid ${ink}`) : `${s.bw} solid ${fg}`,
-              }}><Photo s={s} initialsSize={14} src={t.img} /></span>
+                borderRadius: s.retro || pop ? (desk ? '5px' : '6px') : s.radiusSm, overflow: 'hidden',
+                // The frame borders only the open cards' art, hairline. Pop's
+                // borders none, and an art-less cover's initials take the
+                // card's own ink, where `s.muted` violet vanished on the red
+                // and the blue.
+                border: pop ? undefined : s.retro ? (filled ? 'none' : `1px solid ${ink}`) : `${s.bw} solid ${fg}`,
+              }}><Photo s={s} initialsSize={14} src={t.img} ink={pop ? seat.ink : undefined} /></span>
               {filled && <Grain s={s} exact blend="screen" opacity={0.4} />}
             </div>
           )
@@ -6742,53 +6866,95 @@ function Media({ s }) {
       </div>
     )
 
+    // Pop's player (`Left`) is Scheme 6's violet at the frame's 540 / 540 / 411,
+    // its column top-aligned (the 23 the content leaves at 1440 and 768 stands
+    // under the clocks) and clipped to its 40 radius. Its `<` is set as text,
+    // as the frame sets it; its transport is the frame's "Group 2" glyph either
+    // side of a 48 white disc, Lime's `LimeSkip` and its finger-sized padding.
+    // The disc's well is the frame's #2A2A2A under the sleeve, so an art-less
+    // track is a well with white initials, not a hole. The clocks are Roboto
+    // Mono in the frame, set in `s.body` as Retro's are (decision 5). The
+    // playhead is 140 of the track in every master, a picture's; the bar here
+    // keeps the clock's own `pct`, as Retro's does.
+    const popSkip = (back, fn) => (
+      <span onClick={s.live ? fn : undefined} style={{
+        padding: `${u(11)} ${u(7)}`, margin: `-${u(11)} -${u(7)}`,
+        cursor: s.live ? 'pointer' : undefined, position: 'relative',
+      }}><LimeSkip width={(desk ? 0.82 : 1) * 16.028} color={S6.text3} back={back} /></span>
+    )
+    const clockInk = pop ? { color: POP_PLAYER.grey, lineHeight: 'normal' } : { opacity: 0.7 }
     const player = (
       <div style={{
         position: 'relative', width: '100%',
-        background: s.deep, color: s.deepFg, borderRadius: playerR,
+        background: pop ? S6.bg : s.deep, color: pop ? S6.text3 : s.deepFg, borderRadius: playerR,
         padding: desk ? '26px' : '32px',
         boxShadow: desk ? hard(s, wine, 8, 11) : hard(s, wine, 10, 14),
         // Both fixed-height frames: the 390 one squashes the disc into the
         // leftover space rather than keeping it square.
-        height: desk ? '443px' : s.mob ? '393px' : undefined,
-        ...col(desk ? '15px' : '18px', { alignItems: 'center', justifyContent: desk ? 'space-between' : undefined }),
+        height: pop ? (desk ? u(540) : s.mob ? '411px' : '540px') : desk ? '443px' : s.mob ? '393px' : undefined,
+        overflow: pop ? 'hidden' : undefined,
+        ...col(pop ? u(18) : desk ? '15px' : '18px', { alignItems: 'center', justifyContent: desk && !pop ? 'space-between' : undefined }),
       }}>
         <Grain s={s} exact blend="lighten" opacity={0.3} radius={playerR} />
-        <ChevronLeft size={16} style={{ alignSelf: 'center', opacity: 0.8 }} />
+        {pop
+          ? <span style={{ fontFamily: s.body, fontSize: u(20), lineHeight: 'normal' }}>{'<'}</span>
+          : <ChevronLeft size={16} style={{ alignSelf: 'center', opacity: 0.8 }} />}
         <div style={{
           width: desk ? '207px' : '252px', maxWidth: '100%',
           aspectRatio: s.mob ? undefined : '1', flex: s.mob ? 1 : 'none', minHeight: s.mob ? 0 : undefined,
-          borderRadius: s.retro ? (desk ? '41px' : '50px') : s.radiusSm, overflow: 'hidden', position: 'relative',
-        }}><Photo s={s} initialsSize={44} src={sleeve} /></div>
-        <div style={col('4px', { alignItems: 'center', position: 'relative' })}>
+          borderRadius: s.retro || pop ? (desk ? '41px' : '50px') : s.radiusSm, overflow: 'hidden', position: 'relative',
+        }}><Photo s={s} initialsSize={44} src={sleeve}
+                  ink={pop ? S6.text3 : undefined} style={pop ? { background: POP_PLAYER.well } : undefined} /></div>
+        <div style={col(pop ? u(4) : '4px', { alignItems: 'center', position: 'relative' })}>
           {/* The frame sets the now-playing block in the body face, like a real
-              player UI — not the display serif. */}
+              player UI — not the display serif. Pop's sets the title in its
+              display face, 20 on its auto 24 line, in capitals, and the
+              artist in Inter 13 at the frame's raw grey. */}
           <span style={{
             fontFamily: s.retro ? s.body : s.display, fontWeight: s.retro ? 600 : undefined,
             fontSize: desk ? '16px' : '20px', letterSpacing: s.retro ? 0 : s.dls,
             textAlign: 'center',
+            ...(pop ? { fontSize: faced(s, u(20)), lineHeight: facedLh(s, 1.2), textTransform: 'uppercase' } : null),
           }}>{now.track}</span>
-          <span style={{ fontFamily: s.body, fontSize: desk ? '11px' : '13px', opacity: 0.7 }}>{now.by}</span>
+          <span style={{ fontFamily: s.body, fontSize: desk ? '11px' : '13px', ...clockInk }}>{now.by}</span>
         </div>
-        <div style={row(desk ? '12px' : '14px', { position: 'relative' })}>
-          <span style={ctl(false)} onClick={s.live ? () => goTo(at - 1) : undefined}>
-            <SkipBack size={desk ? 12 : 14} fill="currentColor" strokeWidth={0} />
-          </span>
-          <span style={ctl(true)} onClick={s.live ? toggle : undefined}>
-            {playing
+        {pop ? (
+          <div style={row(u(14), { position: 'relative' })}>
+            {popSkip(true, () => goTo(at - 1))}
+            <span onClick={s.live ? toggle : undefined} style={{
+              width: playBtn, height: playBtn, borderRadius: '999px', flex: 'none',
+              background: S6.text3, color: POP_PLAYER.play,
+              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              cursor: s.live ? 'pointer' : undefined,
+            }}>{playing
               ? <Pause size={desk ? 13 : 16} fill="currentColor" strokeWidth={0} />
-              : <Play size={desk ? 13 : 16} fill="currentColor" strokeWidth={0} />}
-          </span>
-          <span style={ctl(false)} onClick={s.live ? () => goTo(at + 1) : undefined}>
-            <SkipForward size={desk ? 12 : 14} fill="currentColor" strokeWidth={0} />
-          </span>
-        </div>
+              : <Play size={desk ? 13 : 16} fill="currentColor" strokeWidth={0} />}</span>
+            {popSkip(false, () => goTo(at + 1))}
+          </div>
+        ) : (
+          <div style={row(desk ? '12px' : '14px', { position: 'relative' })}>
+            <span style={ctl(false)} onClick={s.live ? () => goTo(at - 1) : undefined}>
+              <SkipBack size={desk ? 12 : 14} fill="currentColor" strokeWidth={0} />
+            </span>
+            <span style={ctl(true)} onClick={s.live ? toggle : undefined}>
+              {playing
+                ? <Pause size={desk ? 13 : 16} fill="currentColor" strokeWidth={0} />
+                : <Play size={desk ? 13 : 16} fill="currentColor" strokeWidth={0} />}
+            </span>
+            <span style={ctl(false)} onClick={s.live ? () => goTo(at + 1) : undefined}>
+              <SkipForward size={desk ? 12 : 14} fill="currentColor" strokeWidth={0} />
+            </span>
+          </div>
+        )}
         <div style={row('10px', { width: '100%', position: 'relative' })}>
-          <span style={{ fontFamily: s.body, fontSize: '10px', opacity: 0.7 }}>{now.at}</span>
-          <span style={{ flex: 1, height: '3px', background: s.retro ? 'rgba(0,0,0,0.28)' : s.deepFg25, borderRadius: '99px' }}>
-            <span style={{ display: 'block', width: `${now.pct}%`, height: '100%', background: wine, borderRadius: '99px' }} />
+          <span style={{ fontFamily: s.body, fontSize: '10px', ...clockInk }}>{now.at}</span>
+          <span style={{
+            flex: 1, height: '3px', background: pop ? POP_PLAYER.track : s.retro ? 'rgba(0,0,0,0.28)' : s.deepFg25,
+            borderRadius: pop ? '2px' : '99px',
+          }}>
+            <span style={{ display: 'block', width: `${now.pct}%`, height: '100%', background: pop ? S6.tx : wine, borderRadius: pop ? '2px' : '99px' }} />
           </span>
-          <span style={{ fontFamily: s.body, fontSize: '10px', opacity: 0.7 }}>{now.of}</span>
+          <span style={{ fontFamily: s.body, fontSize: '10px', ...clockInk }}>{now.of}</span>
         </div>
         {audio}
       </div>
@@ -6807,26 +6973,64 @@ function Media({ s }) {
         boxShadow: hard(s, s.pillBg, 3, 4),
         ...labelStyle(s, desk ? '16px' : '20px'),
       }}>Soundcloud</Pill>
+    ) : pop ? (
+      // Pop's is BookPill's branch box for box — 5/5/5/21 round a 46 × 44 disc
+      // — in Scheme 3's lime active pair, its label a hand-scaled 15.77 and it
+      // and the disc Lime's leaked ink; the 390 master keeps it at full size.
+      <BookPill s={s} label="Soundcloud" ext={s.soundcloud} bg={S3.activeBg} fg={POP_PILL_INK}
+                full={s.mob} size={u(15.77)} />
     ) : (
       <BookPill s={s} label="Soundcloud" ext={s.soundcloud} />
     )
 
+    // Pop's dot grid paints under everything in the card, the frame's first
+    // child: the card is a stacking context and the grid sits at −1 in it. It
+    // hangs off the player — 34.95 left of it and 39.97 above at 1440, where
+    // the player covers all but its top row and first column; under it at 768
+    // and 390, 8.05 and 18.67 in from its right edge, 380 and 200.51 below its
+    // top, the pill covering the 390 grid's last row.
+    const dots = desk
+      ? { left: u(-34.95), top: u(-39.97) }
+      : tab ? { right: '8.05px', top: '380px' } : { right: '18.67px', top: '200.51px' }
+
     return (
       <div style={{ position: 'relative' }}>
-        <Checkerboard s={s} cell={desk ? 19 : 24} colour={s.retro ? s.bg : s.pillBg}
-                      style={{ position: 'absolute', width: 'auto', ...bleedTo(s, 'top') }} />
+        {!pop && (
+          <Checkerboard s={s} cell={desk ? 19 : 24} colour={s.retro ? s.bg : s.pillBg}
+                        style={{ position: 'absolute', width: 'auto', ...bleedTo(s, 'top') }} />
+        )}
         <TornEdge s={s} side="bottom" height={30} />
-        <div style={col(desk ? '16px' : '40px')}>
+        <div style={col(pop ? u(20) : desk ? '16px' : '40px', pop ? {
+          position: 'relative', zIndex: 0, background: S3.bg,
+          borderRadius: desk ? u(50) : '50px', padding: desk ? u(60) : tab ? '60px 30px' : '30px 10px',
+        } : undefined)}>
           {heading}
+          {/* The squiggle arrow, at 1440 alone: both narrow masters carry its
+              desktop x unscaled, wholly off their frames, so it is a leak
+              that does not show. Placed by its centre, 130.09 in from the
+              card's right edge and 112 down, the walker's box turned about
+              itself (Figma −135, CSS +135). */}
+          {pop && desk && (
+            <svg viewBox="0 0 209.11 126.41" aria-hidden="true" style={{
+              position: 'absolute', display: 'block', overflow: 'visible', pointerEvents: 'none',
+              right: u(25.53), top: u(48.8), width: u(209.11), height: u(126.41), transform: 'rotate(135deg)',
+            }}><path d={POP_ARROW_D} fill={S3.ac} /></svg>
+          )}
           <div style={{
             // minmax(0,…): a long nowrap subline must truncate, not size the
             // track to its min-content and push the cards past the canvas.
             display: 'grid',
-            gridTemplateColumns: desk ? 'minmax(0, 1.27fr) minmax(0, 1fr)' : 'minmax(0, 1fr)',
-            gap: desk ? '49px' : '32px', alignItems: 'center',
+            gridTemplateColumns: pop && desk ? 'minmax(0, 710fr) minmax(0, 438fr)'
+              : desk ? 'minmax(0, 1.27fr) minmax(0, 1fr)' : 'minmax(0, 1fr)',
+            gap: pop ? (s.mob ? '30px' : u(60)) : desk ? '49px' : '32px', alignItems: 'center',
           }}>
             {stack}
-            {player}
+            {pop ? (
+              <div style={{ position: 'relative' }}>
+                <PopDots hue={S3.chips[1].bg} style={{ zIndex: -1, width: u(277.95), height: u(238.58), ...dots }} />
+                {player}
+              </div>
+            ) : player}
           </div>
           <span style={{ alignSelf: 'flex-start' }}>{pill}</span>
         </div>
