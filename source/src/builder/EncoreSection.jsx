@@ -16334,13 +16334,26 @@ function Calendar({ s }) {
             {disc(true, -1)}
             {/* Pop's month is a hand-scaled 30.28 at its auto line (a 36 box),
                 lifted 0.11em: Titan sets its caps that much lower than Chunko
-                here (3.0 / 3.2 / 3.2 px, a lime-ink row scan). */}
-            <span style={distressed(s, disp(pop ? 30.28 * z : s.dispSm, {
-              color: G.head ?? s.ac, whiteSpace: 'nowrap',
-              ...(pop ? { lineHeight: facedLh(s, 36 / 30.28), position: 'relative', top: '-0.11em' } : null),
-            }))}>
-              {month.label}
-            </span>
+                here (3.0 / 3.2 / 3.2 px, a lime-ink row scan). Titan is wide
+                where Lime's Bebas is condensed, so seven of the twelve labels
+                outran the 390 row's 216 and pushed the → disc off the panel:
+                the label shrinks to the room between the discs by its own
+                width (`month.ems`, `titleWordEms`' rule), and keeps the
+                frame's 30.28 wherever it fits — June at every width. */}
+            {pop ? (
+              <div style={{ flex: 1, minWidth: 0, containerType: 'inline-size', display: 'flex', justifyContent: 'center' }}>
+                <span style={disp(`min(${30.28 * z}px, calc(100cqi / ${month.ems}))`, {
+                  color: G.head, whiteSpace: 'nowrap',
+                  lineHeight: facedLh(s, 36 / 30.28), position: 'relative', top: '-0.11em',
+                })}>
+                  {month.label}
+                </span>
+              </div>
+            ) : (
+              <span style={distressed(s, disp(s.dispSm, { color: s.ac, whiteSpace: 'nowrap' }))}>
+                {month.label}
+              </span>
+            )}
             {disc(false, 1)}
           </div>
           {/* The frames space seven fixed 57.4 name cells across the row, which

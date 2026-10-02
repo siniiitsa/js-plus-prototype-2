@@ -1384,8 +1384,12 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
       // one — so the two halves are resolved here rather than split out of the
       // label in EncoreSection. A date format, not artist copy, so the name is
       // upper-cased here rather than through cased() (vm.calSlots[].mark's
-      // rule).
-      return { label: cased(monthLabel(y, mo)), name: MONTHS[mo].toUpperCase(), year: String(y), cells }
+      // rule). `ems` is the label's width in the display face's ems
+      // (`navFace`, undefined where a template has no advance table): Pop's
+      // layout-1 month is fitted to the room between its two discs, since
+      // Titan sets SEPTEMBER 2025 265 wide in the 390 row's 216.
+      const label = cased(monthLabel(y, mo))
+      return { label, ems: navFace ? +navFace(label).toFixed(3) : undefined, name: MONTHS[mo].toUpperCase(), year: String(y), cells }
     })
     vm.calDays = CAL_DAYS
     // The day the calendar is cued to, which is what the foot prints and the
