@@ -526,6 +526,12 @@ const POP_FORM = {
 // `text/2`, which reads white on the violet discs.
 const POP_TESTI = { role: '#AFE335', arrow: '#F2FFD0' }
 
+// Pop's footer raw values (964:58634; decision 5: followed). `pale` is a raw
+// pale of Lime's family on the wordmark — the name, the globe's strokes and
+// the bar — and `edge` the instance's 1px top stroke, that pale at 15%: Lime's
+// hairline, leaked. `seal` is the seal's disc, a blue no scheme holds.
+const POP_FOOT = { pale: '#E4F1C4', edge: 'rgba(228, 241, 196, 0.15)', seal: '#3C5BAA' }
+
 // Pop's smiley sun (964:58625's second "Layer_1", 154 × 154 before its tilt):
 // the scalloped disc's outline and the smile's three features, off the
 // frame's `fillGeometry` in the sticker's own units, rounded to the hundredth.
@@ -549,11 +555,15 @@ const POP_SUN_FACE_D =
 // A Pop sticker sits over the composition and is no control, so it takes no
 // pointer. `size` is the sticker's own box before its tilt (the frame's
 // metadata gives the turned bounding box, × cos + sin).
-function PopSun({ size, tilt, hue, ink, style }) {
+//
+// `height` is additive, for the footer's (964:58634's second "Layer_1"), which
+// is this drawing squeezed to 151.67 × 151; it defaults to `size`, so the
+// bio's stays square.
+function PopSun({ size, height = size, tilt, hue, ink, style }) {
   return (
-    <svg viewBox="0 0 154 154" aria-hidden="true" style={{
+    <svg viewBox="0 0 154 154" preserveAspectRatio="none" aria-hidden="true" style={{
       position: 'absolute', display: 'block', overflow: 'visible', pointerEvents: 'none',
-      width: size, height: size, transform: `rotate(${tilt}deg)`, ...style,
+      width: size, height, transform: `rotate(${tilt}deg)`, ...style,
     }}>
       <path d={POP_SUN_D} fill={hue} />
       <path d={POP_SUN_FACE_D} fill={ink} />
@@ -27646,23 +27656,46 @@ function Footer({ s }) {
   // (`tag/1/bg`, blush there), the pill's label (`tag/1/text`, ink in both) and
   // the seal's name, which the frame leaves blush on the blush disc and the
   // page redraws in the disc's own `active/text`, ink.
-  if (s.limeTree) {
+  //
+  // Pop's (964:58634 at 1440, 986:52430 at 768, 986:52442 at 390) is the tree
+  // a fourth time, unbound, seated on Scheme 3 by its pink ground (SCHEMES_OF),
+  // so the rules are `s.stroke1` violet and the statement `s.ac` lime as they
+  // stand; `pop` names the deltas. Every string is a raw Chunko — the name
+  // 13.5, the statement 40.38 on 33.44, the links 27.62, the pill 15.77, the
+  // small print 14.51 — uppercase in Titan, the links and the small print in
+  // `s.text3` white. The wordmark is a leaked pale (`POP_FOOT`); the left
+  // column is 652; the seal is SealBadge's Pop arm on a blue disc; the pill is
+  // violet under lime. A lime sun sticker (`PopSun`) stands by the links,
+  // and at 390 peeks in at the page's bottom-left corner, which the root
+  // clips. Why the narrow masters stand 720 tall where the twins' stand 619 to
+  // 736: the link column is 278 (33-tall boxes 56 apart, then the 54 pill)
+  // against Lime's 206.
+  if (s.limeTree || s.pop) {
     const grunge = s.grunge
     const ed = s.editorial
+    const pop = s.pop
     const hair = `1px solid ${s.stroke1}`
     const px = (v) => `${Math.round(v * scale * 100) / 100}px`
     const face = {
       fontFamily: s.display, fontSize: faced(s, s.list), lineHeight: facedLh(s, 1.2), letterSpacing: s.dls,
       ...(grunge || ed ? { textTransform: 'uppercase' } : null),
     }
+    // Pop's raw Chunko strings, uppercase in Titan at `faced`, each on the
+    // frame's stated line box: Titan's `normal` box runs a pixel under
+    // Chunko's auto one (section 9 of the plan), so the box is pinned.
+    const popType = (size, box, extra) => ({
+      fontFamily: s.display, fontSize: faced(s, px(size)), lineHeight: px(box), letterSpacing: s.dls,
+      textTransform: 'uppercase', ...extra,
+    })
 
     // The instance's own top stroke (inside, 1px, full width at all three
     // widths): the band table's straight edge. It bleeds over the root's
-    // padding, so it is drawn against the root rather than the column.
+    // padding, so it is drawn against the root rather than the column. Pop's
+    // is Lime's 15% pale, leaked (decision 5: followed).
     const edge = (
       <span aria-hidden style={{
         position: 'absolute', top: 0, left: 0, right: 0, height: '1px',
-        background: s.stroke1, pointerEvents: 'none',
+        background: pop ? POP_FOOT.edge : s.stroke1, pointerEvents: 'none',
       }} />
     )
 
@@ -27680,12 +27713,14 @@ function Footer({ s }) {
             ? <GrungeStar s={s} fill={s.chips[0].bg} style={{
                 position: 'relative', flex: 'none', width: px(39.87), height: px(40.24),
               }} />
-            : <LimeGlobeMark size={27.37 * scale} color={s.stroke1} />}
-          <span style={grunge || ed
-            ? labelStyle(s, s.labelMd, { color: s.tx })
-            : { ...face, color: s.tx, whiteSpace: 'nowrap' }}>{s.brand}</span>
+            : <LimeGlobeMark size={27.37 * scale} color={pop ? POP_FOOT.pale : s.stroke1} />}
+          <span style={pop
+            ? popType(13.5, 16, { color: POP_FOOT.pale, whiteSpace: 'nowrap' })
+            : grunge || ed
+              ? labelStyle(s, s.labelMd, { color: s.tx })
+              : { ...face, color: s.tx, whiteSpace: 'nowrap' }}>{s.brand}</span>
         </span>
-        <span style={{ width: u(150), height: u(2), background: ed ? s.chips[0].bg : s.tx, flex: 'none' }} />
+        <span style={{ width: u(150), height: u(2), background: ed ? s.chips[0].bg : pop ? POP_FOOT.pale : s.tx, flex: 'none' }} />
       </span>
     )
 
@@ -27716,6 +27751,17 @@ function Footer({ s }) {
           fontSize: s.footerWordEms ? `min(${px(57.84)}, calc(100cqi / ${s.footerWordEms}))` : px(57.84),
           fontWeight: 700, lineHeight: 47.9 / 57.84,
           maxWidth: s.mob ? 'none' : px(397.28), minWidth: 'min-content',
+        } : pop ? {
+          // A raw Chunko 40.38 on a 33.44 line at every width, three lines in
+          // the frame's FIXED 484.52 box at 1440 and 768 and the column at
+          // 390 — where Titan's UNFORGETTABLE. outruns our 346 column (the
+          // frame's is 370), so the size is fitted to the widest word as the
+          // testimonials' quote is, the frame's size the ceiling. Titan sets
+          // its caps lower in this line box than Chunko does, so it is lifted.
+          fontSize: faced(s, s.footerWordEms ? `min(${px(40.38)}, calc(100cqi / ${s.footerWordEms}))` : px(40.38)),
+          lineHeight: facedLh(s, 33.437 / 40.38), textTransform: 'uppercase',
+          maxWidth: s.mob ? 'none' : px(484.52), minWidth: 'min-content',
+          position: 'relative', top: '-0.13em',
         } : null),
       })}>{s.footerStatement}</h2>
     )
@@ -27737,15 +27783,28 @@ function Footer({ s }) {
     // −25.03, where the same sum is corner + (0.2415a, 0.6646a): 49.95 / 53.96
     // off the 690 column on desktop, 105.04 / 66.95 off the content at 768,
     // 65.02 / 9.06 at 390.
-    const disc = ed ? (s.mob ? 76.64 : 154.91 * scale)
+    //
+    // Pop's "Layer_1" is the hero's smiley-globe seal (SealBadge's Pop arm,
+    // its name 14.8 / 125.6 the hero's 20.6 / 174.8) at a disc of 125.6 at
+    // 1440, a hand-scaled 169.89 at 768 and 84.05 at 390, Figma −19.5 → CSS
+    // +19.5, on a raw blue disc with its globe, name and dots white
+    // (`s.text3`), the smiley's face the stickers' lime and its features the
+    // form seal's near-black. Its centre off the `relativeTransform`: 38.23 in
+    // from the 652 column's right and 55.06 down on desktop, 114.36 / 72.43
+    // off the content at 768, 71.58 / 7.30 at 390.
+    const disc = pop ? (s.mob ? 84.05 : s.narrow ? 169.89 : 125.6 * scale)
+      : ed ? (s.mob ? 76.64 : 154.91 * scale)
       : grunge ? (s.mob ? 74.4 : 150.37 * scale) : s.mob ? 78.5 : 158.67 * scale
-    const [inX, downY] = ed
+    const [inX, downY] = pop
+      ? (s.mob ? [71.58, 7.3] : s.narrow ? [114.36, 72.43] : [38.23, 55.06])
+      : ed
       ? (s.mob ? [65.02, 9.06] : s.narrow ? [105.04, 66.95] : [49.95, 53.96])
       : grunge
         ? (s.mob ? [68.6, 8.14] : s.narrow ? [107.42, 64.57] : [96.41, 37.95])
         : s.mob ? [60.25, 12.73] : s.narrow ? [101.87, 70.13] : [85.18, 49.62]
     const seal = (
-      <SealBadge s={s} size={disc} tilt={ed ? 25.03 : 26.06} scheme={s.footerBand ? 2 : 1} line style={{
+      <SealBadge s={s} size={disc} tilt={pop ? 19.5 : ed ? 25.03 : 26.06} scheme={s.footerBand ? 2 : 1} line
+                 {...(pop ? { hue: POP_FOOT.seal, ink: s.text3, face: POP_STICKER_LIME, features: POP_FORM.feat } : null)} style={{
         right: `${Math.round((inX * scale - disc / 2) * 100) / 100}px`,
         top: `${Math.round((downY * scale - disc / 2) * 100) / 100}px`,
         zIndex: 2,
@@ -27764,19 +27823,36 @@ function Footer({ s }) {
     // which is `s.bg` but on layout 3's page, where it is the band under the
     // footer, `s.footerBand` (JP-067): undefined elsewhere, so the pill falls
     // back to `s.bg`.
+    //
+    // Pop's links are a raw Chunko 27.62 on a 33 box, 23 apart, in `s.text3`
+    // white. At 390 the second column fills the row and wraps (the frame's
+    // FILL 173, SHOWS/ over COVERAGE), the first hugging. The pill is the
+    // shared branch in Scheme 3's other pair — `s.tx` violet under an `s.ac`
+    // lime label and disc, the arrow the pill's own violet — its label a raw
+    // 15.77.
     const linkCol = (colLinks, i) => (
-      <nav key={i} style={col(px(ed ? 12 : 23), { alignItems: 'flex-start' })}>
+      <nav key={i} style={col(px(ed ? 12 : 23), {
+        alignItems: 'flex-start',
+        ...(pop && s.mob && i === 1 ? { flex: '1 1 0', minWidth: 0 } : null),
+      })}>
         {colLinks.map((l, j) => {
           const ext = extLink(s, l.url)
-          const look = { color: s.tx, letterSpacing: s.dls, cursor: 'pointer', textDecoration: 'none' }
+          const look = { color: pop ? s.text3 : s.tx, letterSpacing: s.dls, cursor: 'pointer', textDecoration: 'none' }
+          // Chrome offers no break after a slash between letters, so a
+          // wrapping label gets one (`<wbr>`), as the frame breaks SHOWS/.
+          const wrap = pop && s.mob && i === 1
           return (
             <a key={j} {...(ext || { href: navHref(s, l.to) })}
-               style={ed ? { ...face, ...look, whiteSpace: 'nowrap' } : labelStyle(s, grunge ? s.labelMd : s.labelSm, look)}>{l.label}</a>
+               style={pop ? popType(27.62, 33, { ...look, whiteSpace: wrap ? 'normal' : 'nowrap', ...(wrap ? { overflowWrap: 'anywhere' } : null) })
+                 : ed ? { ...face, ...look, whiteSpace: 'nowrap' } : labelStyle(s, grunge ? s.labelMd : s.labelSm, look)}>
+              {wrap ? l.label.split('/').flatMap((part, k, all) => (k < all.length - 1 ? [`${part}/`, <wbr key={k} />] : [part])) : l.label}
+            </a>
           )
         })}
         {i === 0 && s.footerCta && (
           <BookPill s={s} to={s.bookTo} label={s.footerCta} full={s.mob}
-                    fg={ed ? s.chips[0].fg : s.footerBand} discBg={ed ? s.box3 : undefined} />
+                    {...(pop ? { bg: s.tx, fg: s.ac, discBg: s.ac, size: px(15.77) }
+                      : { fg: ed ? s.chips[0].fg : s.footerBand, discBg: ed ? s.box3 : undefined })} />
         )}
       </nav>
     )
@@ -27792,15 +27868,20 @@ function Footer({ s }) {
     // content width with the desktop's 56 inset leaked into it, which the render
     // shows and is followed; at 390 the inset is gone and the two halves split
     // the row.
-    const half = s.mob ? { flex: '1 1 0', minWidth: 0 } : {}
+    //
+    // Pop's is a raw Chunko 14.51 on its 86% line, white; its 390 row packs
+    // both strings to the right, 10 apart, rather than halving the row.
+    const popEnd = pop && s.mob
+    const half = s.mob && !popEnd ? { flex: '1 1 0', minWidth: 0 } : {}
     const safe = s.live ? 'env(safe-area-inset-bottom)' : '0'
     const smallPrint = (
       <div style={{
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        gap: s.mob ? 0 : u(16), borderTop: hair,
+        display: 'flex', alignItems: 'center', justifyContent: popEnd ? 'flex-end' : 'space-between',
+        gap: popEnd ? u(10) : s.mob ? 0 : u(16), borderTop: hair,
         // Editorial's small print is Label/MD, uppercase, where the twins' is
         // Display/List; it may still wrap, as theirs does.
-        ...(ed ? labelStyle(s, s.labelMd, { whiteSpace: 'normal' }) : face), color: s.tx,
+        ...(pop ? popType(14.51, 14.51 * 0.86) : ed ? labelStyle(s, s.labelMd, { whiteSpace: 'normal' }) : face),
+        color: pop ? s.text3 : s.tx,
         // The row is the instance's floor at every width — nothing under it —
         // so it takes back the root's bottom `padY`, as Line 19 does the top.
         // Being the page's last line, the published row also grows by the
@@ -27818,6 +27899,23 @@ function Footer({ s }) {
       </div>
     )
 
+    // Pop's sun ("Layer_1", the bio's PopSun squeezed to 151.67 × 151) in the
+    // statement's lime with its face cut in the ground's pink, Figma −22.27 →
+    // CSS +22.27, the instance's last child. Placed by its centre (the turned
+    // box's): on desktop 41.56 in from the content's right and 256.55 under
+    // the links' top, clear of SHOWS/COVERAGE; at 768 98.70 in and 272.91 under
+    // the links block's top, beside REVIEWS; at 390 it is the corner's — its
+    // centre 4.79 past the page's left edge and 6.17 above its foot, so only a
+    // quarter shows, as the instance (which clips) shows it. The root clips it.
+    const sunW = 151.67 * scale
+    const sunH = 151 * scale
+    const sun = (inX, downY, at) => pop && (
+      <PopSun size={sunW} height={sunH} tilt={22.27} hue={s.ac} ink={s.bg} style={at ?? {
+        right: `${Math.round((inX * scale - sunW / 2) * 100) / 100}px`,
+        top: `${Math.round((downY * scale - sunH / 2) * 100) / 100}px`,
+      }} />
+    )
+
     // The frame's 56 above the wordmark is the root's `padY`, as in Retro's;
     // the 56 under each block is kept, and the root's gap of 2 stands between
     // the upper frame and the small print at every width.
@@ -27828,16 +27926,20 @@ function Footer({ s }) {
           <div style={col(0)}>
             <div style={col(u(20), {
               position: 'relative', paddingBottom: u(56),
-              ...(ed ? { containerType: 'inline-size' } : null),
+              ...(ed || pop ? { containerType: 'inline-size' } : null),
             })}>
               {wordmark}
               {statement}
               {seal}
             </div>
             <span style={{ height: 0, borderTop: hair }} />
-            <div style={{ padding: `${u(56)} 0` }}>{links}</div>
+            <div style={{ padding: `${u(56)} 0`, ...(pop ? { position: 'relative' } : null) }}>
+              {links}
+              {!s.mob && sun(98.7, 272.91)}
+            </div>
           </div>
           {smallPrint}
+          {s.mob && sun(0, 0, { left: `${-4.79 - sunW / 2}px`, bottom: `${6.17 - sunH / 2}px` })}
         </div>
       )
     }
@@ -27849,8 +27951,8 @@ function Footer({ s }) {
           {/* 409.71 tall less the dropped 56: the wordmark and the statement
               pushed to its ends, the seal absolute over it. */}
           <div style={{
-            position: 'relative', width: u(ed ? 690 : 743), flex: '0 1 auto',
-            ...(ed ? { containerType: 'inline-size' } : null),
+            position: 'relative', width: u(ed ? 690 : pop ? 652 : 743), flex: '0 1 auto',
+            ...(ed || pop ? { containerType: 'inline-size' } : null),
             display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
             minHeight: u(353.71), paddingBottom: u(56),
           }}>
@@ -27865,7 +27967,10 @@ function Footer({ s }) {
             width: 0, borderLeft: hair, flex: 'none',
             marginTop: `calc(-1 * ${s.padY})`, marginBottom: u(2.16),
           }} />
-          <div style={{ flex: '1 1 auto', paddingBottom: u(56) }}>{links}</div>
+          <div style={{ flex: '1 1 auto', paddingBottom: u(56), ...(pop ? { position: 'relative' } : null) }}>
+            {links}
+            {sun(41.56, 256.55)}
+          </div>
         </div>
         {smallPrint}
       </div>
@@ -28104,6 +28209,12 @@ export default function EncoreSection({ s }) {
   // past the 390 page though the ink stays on it — so the root clips sideways.
   // `clip`, not `hidden`, which would make the root a scroll container.
   const popClip = s.pr && s.v0 && s.pop
+  // Pop's footer (964:58634) carries a sun sticker whose turned box reaches
+  // the 1440 page's edge, and whose 390 instance (986:52442, which clips) shows
+  // a quarter of it at the page's bottom-left corner, the rest running past
+  // the page's foot and left edge — so the root clips both ways, or the
+  // published page would scroll on into it. `clip`, never `hidden`.
+  const popFootClip = s.ft && s.pop
   // Sienna Vale's layout-2 media panel (964:64602) and calendar (964:64612)
   // are Scheme 2 cards inset on the page's Scheme 1 paper. Each section is
   // seated on its card's scheme (SCHEMES_OF), so `s.bg` is the card's taupe and
@@ -28117,7 +28228,7 @@ export default function EncoreSection({ s }) {
       background: darkMap ? s.mapBg : cream ? '#FBF6EA' : limeBand ? s.box1 : limeLight ? s.tx : grungeBand ? '#171716' : editorialCard ? s.pageBg : s.footerBand || s.bg,
       color: darkMap ? s.mapFg : limeLight ? s.bg : s.tx,
       fontFamily: s.body, padding: bleed ? 0 : s.pad,
-      position: 'relative', overflowX: popClip ? 'clip' : undefined,
+      position: 'relative', overflowX: popClip || popFootClip ? 'clip' : undefined, overflowY: popFootClip ? 'clip' : undefined,
       boxShadow: grungeRule ? `inset 0 0 0 1px ${s.inactiveLine}` : editorialRule ? `inset 0 0 0 1px ${s.stroke2}` : undefined,
       transition: 'background-color .45s ease, color .45s ease',
       '--ac': s.ac, '--acFg': s.acFg,

@@ -42,6 +42,8 @@ another `notes/` file.
   because no field here named it. `FOOTER_CREDIT` stays a constant on purpose — it is the
   platform's byline, not the artist's. `vm.footerCta` is **uncased** where `vm.footerStatement`
   and the labels are cased, because the pill has always drawn the uncased `cta1` and casing it
-  would upper-case the footer's pill on Pop (Grunge cases `'title'` since its session 0). The footer keeps **no local state**:
+  would recase the artist's own words on the templates that case (Grunge and Pop case `'title'`
+  since their session 0s; a template's pill that wants capitals takes `textTransform`, as
+  `BookPill`'s branch does). The footer keeps **no local state**:
   every link is an `<a>` whose href is `navHref()` or `extLink()`, so nothing here needs the
   `useState` the eight sections above it take.
