@@ -526,7 +526,9 @@ Editorial's session 0 (Lime's steps 1–9) with these deltas. It touches no sect
    **8.79 MB** today (the committed root `index.html`, 8,787,260 bytes); note the new size.
 8. **Casing** — decision 2; check the `cased()` sites against the render, as Lime and Editorial did.
 9. **`T.tags` keeps seven.** Pop's Scheme 1 has seven distinct tag hues, the first seat system since
-   Retro's that is not Lime's two alternating tags, so `vm.chips` has seven real seats (Lime blocks read `chips[0]` / `[1]`: lime and pink, the
+   Retro's that is not Lime's two alternating tags, so ~~`vm.chips` has seven real seats~~ — *corrected
+   in section 3*: `vm.chips` keeps `TAGS`' **six** seats, so Scheme 1's `tag7` (yellow) is
+   `s.onScheme[1].chips[6]`, which `flatScheme` builds from all seven — (Lime blocks read `chips[0]` / `[1]`: lime and pink, the
    header chips' first two). `deep` / `deepFg` / `mapBg` take the darkest tag, which stays **violet**
    `#6B2CFF` — the frame's map card. `pillBg` is **black** (trap 3); the flat layouts 2–4 move with
    it and with `sem`, and with `s.designed` — their map plates draw the raster and their chips take
@@ -1300,8 +1302,10 @@ counters and ink traps: its corners are soft. Rubik 900 is the squarer drawing, 
   with `target="_blank"`; `elementFromPoint` finds every control uncovered; no sideways scroll; no
   console error. Pop's cursors are live-gated (Retro's transport discs set `pointer` always).
   `page-check.mjs Pop 0`: no error or warning, the player plays, `overflow390` 0.
-- **Digest**: themes 0, 1, 2 and 3 at zero rows, static and live (660 + 660); theme 4 moves media
-  a0 at three widths and the bio a0 desktop grid's 0.07px. The live render differs from the
+- **Digest**: themes 0, 1, 2 and 3 at zero rows — static, all 660 renders against the editing
+  server's before-label; live, the media's 60 against its before-live label (the only section the
+  live seam changed; `PopDots`' other caller is Pop's bio). Theme 4 moves media a0 at three widths
+  and the bio a0 desktop grid's 0.07px. The live render differs from the
   canvas by the seam alone (the clocks, the empty bar, the `<audio>`).
 
 ### Inherited and used
