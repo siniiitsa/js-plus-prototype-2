@@ -343,8 +343,8 @@ const POP_SCRIBBLE_D =
 // The lime of Pop's stickers outside the header, whose scribble binds
 // `sem/tag/1/bg`: every unbound scribble and squiggle arrow is a raw #BCD631
 // (plans/pop/layout-1.md, *Settled in session 0*, Pop's own tints), a duller
-// lime than the palette's — but the media's arrow, which is the palette's
-// #C6F200 (section 3). No mode or scheme holds it.
+// lime than the palette's — but the media's arrow and the map's scribble, which
+// are the palette's #C6F200 (sections 3 and 6). No mode or scheme holds it.
 const POP_STICKER_LIME = '#BCD631'
 
 // Pop's media squiggle arrow (964:58626's "Vector", 209.11 × 126.41 before its
@@ -438,6 +438,25 @@ const POP_HEART_D =
   'M28.28 0.07C37.62 -0.62 47.47 3.84 53.12 11.24C82.95 -8.29 113.26 22.69 94.81 52.89' +
   'C86.63 66.29 68.66 79.13 54.74 86.21C51.08 88.07 44.66 92.29 40.85 90.62' +
   'C38.58 89.62 30.66 82.87 28.41 80.83C17.32 70.76 1.65 51.66 0.17 36.4C-1.53 18.96 9.98 1.43 28.28 0.07Z'
+
+// Pop's events-map raw values (964:58629; decision 5: followed). `eyebrow` is
+// Lime's leaked ink on the kicker (it reads black); `ring` is the map card's
+// 1px inside stroke and `well` the ground under its raster, both Retro's
+// family; `row` is the gig rows' red, a step off Scheme 7's `box2` #E40606,
+// in Lime's leaked hairline at the frame's 14%; `idle` is the idle page
+// pills' teal at 20%.
+const POP_MAP = {
+  eyebrow: '#15180F', ring: '#CBB78E', well: '#EAD7B8', row: '#E41010', hair: '#15180F24',
+  idle: 'rgba(0, 224, 196, 0.2)',
+}
+// Pop's map scribble (964:58629's "Vector", 407.35 × 95.01 before its −3.98°
+// turn), across the heading: the hero's stroke redrawn wider, one filled
+// outline off the frame's `fillGeometry`, rounded to the hundredth.
+const POP_MAP_SCRIBBLE_D =
+  'M404.55 1.84C409.72 6.02 407.39 11.06 400.38 12.49L164.41 43.35C163.96 46.79 172.9 45.55 175.55 45.41' +
+  'C234.5 42.33 293.13 33.26 351.99 31.66L354.94 33.26L354.99 39.45C352.48 42.44 292.67 50.37 282.32 52.3' +
+  'C221.07 63.73 160.71 78.66 101.24 95.01L95.88 92.07L97.06 85.1L274.97 45.35C195.85 52.2 114.27 55.56 36.13 67.92' +
+  'C27.83 69.23 2.94 78.77 0.07 72.05L0 65.5C130.4 39.13 262.33 17.66 395.32 0.22C398.39 -0.28 402.28 0 404.55 1.83Z'
 
 // Pop's smiley sun (964:58625's second "Layer_1", 154 × 154 before its tilt):
 // the scalloped disc's outline and the smile's three features, off the
@@ -18506,9 +18525,28 @@ function EventsMap({ s }) {
     // pin is paper in an ink ring (Grunge's keys, which resolve so here), and
     // the lit row is filled paper under ink, bled 12 either side of the flush
     // row so its type does not stand on the fill's edge.
-    if (s.limeTree) {
+    //
+    // Pop (964:58629 1440 × 1192, 986:52425 768 × 1266, 986:52437 390 ×
+    // 1095.2) is Lime's tree on white, with no seam: the tile is a violet
+    // Scheme 6 card in Retro's 1px tan ring, padded round a radius-38 map
+    // multiplied red at .6 over Retro's beige well; the gig panel is a red
+    // Scheme 7 card of `#E41010` pill rows in Lime's 14% hairline, teal date
+    // discs and a teal current page. Nothing binds, so every string is the
+    // frame's raw size and face — Space Mono on the panel, Titan (Chunko's
+    // stand-in) for the venue, the base and the radius label — and only the
+    // heading is the ramp's (Display/LG, which the frames render in Lime's
+    // Bebas: a mode leak). A lime scribble crosses the heading at 1440 and
+    // underlines the radius label at 390; the 768 master carries the
+    // desktop's, under the tile. The pin and the lit row are redrawn: Scheme
+    // 7's own active pair, lime under black, on the lit row and the lit pin,
+    // and the idle pin the date disc's teal in a white ring.
+    if (s.limeTree || s.pop) {
       const grunge = s.grunge
       const ed = s.editorial
+      const pop = s.pop
+      const S6 = pop ? s.onScheme[6] : null // Pop, the map card
+      const S7 = pop ? s.onScheme[7] : null // Pop, the gig panel
+      const teal = pop ? S7.chips[4].bg : null // Scheme 7's tag/5
       const tab = isTablet(s)
       const z = s.narrow ? 1 : 0.82
       const u = (v) => `${Math.round(v * z * 10) / 10}px`
@@ -18521,7 +18559,23 @@ function EventsMap({ s }) {
       // in sectionVm, so Display/Title is the frames' own 36 / 28 / 26 — and
       // Sienna Vale's 32 / 25 / 23.
       const titleSize = ed ? (s.mob ? '23px' : tab ? '25px' : u(32)) : s.mob ? '26px' : tab ? '28px' : u(36)
-      const G = ed ? {
+      // Grunge's pads, which Pop's frames state again.
+      const tilePad = s.mob ? '10px' : u(20)
+      const panelPad = s.mob ? '30px 20px 20px' : u(20)
+      const G = pop ? {
+        head: s.ac, kicker: POP_MAP.eyebrow, tile: S6.bg, panel: S7.bg, onTile: S6.text3, globe: S7.bg,
+        terms: S6.text3, onPanel: S7.text3, ring: POP_MAP.ring,
+        radius: u(55), tilePad, tileGap: '0px', mapR: u(38), mapH: '214.84px', mapBg: POP_MAP.well, tint: S7.bg,
+        pin: teal, pinRing: S7.text3, pinOn: S7.activeBg, pinOnRing: S7.activeFg,
+        rowBg: POP_MAP.row, rowOn: S7.activeBg, rowFg: S7.text3, rowOnFg: S7.activeFg, rowRule: POP_MAP.hair, rowR: '999px',
+        date: teal, dateFg: S7.bg, dateR: u(46),
+        panelPad,
+        venue: [u(19.57), 23 / 19.57],
+        // Every button the frame's own: the ends unfilled in a 1px white ring
+        // round a white arrow, the pages teal at 20% under white numerals,
+        // the current one teal under Retro's paper.
+        pager: { box: POP_MAP.idle, endBox: 'transparent', ring: S7.text3, ink: S7.text3, idle: S7.text3, onBox: teal, on: POP_REP.paper },
+      } : ed ? {
         head: s.ac, kicker: s.tx, tile: s.box3, panel: s.activeBg, onTile: s.activeFg, globe: s.activeBg,
         terms: s.activeFg, onPanel: s.activeFg, ring: s.stroke2,
         radius: '0px', tilePad: u(10), tileGap: '0px', mapR: '0px', mapH: '218.84px', mapBg: s.box2, tint: s.activeBg,
@@ -18536,11 +18590,11 @@ function EventsMap({ s }) {
         pager: { ring: s.stroke1, ink: s.bg, idle: s.activeFg, on: s.tx, onEdge: s.stroke1, pill: 87 },
       } : grunge ? {
         head: s.ac, tile: s.bg, panel: s.ac, onTile: s.ac, terms: s.tx, onPanel: s.tx,
-        radius: u(13), tilePad: s.mob ? '10px' : u(20), tileGap: '0px', mapR: u(8), mapH: '214.84px', mapBg: box2, tint: s.ac,
+        radius: u(13), tilePad, tileGap: '0px', mapR: u(8), mapH: '214.84px', mapBg: box2, tint: s.ac,
         pin: s.bg, pinRing: s.tx, pinOn: s.tx, pinOnRing: s.bg,
         rowBg: s.ac, rowOn: s.bg, rowFg: s.tx, rowOnFg: s.tx, rowRule: s.bg, rowR: u(10),
         date: box2, dateFg: s.tx, dateR: u(6),
-        panelPad: s.mob ? '30px 20px 20px' : u(20),
+        panelPad,
         pager: { box: box2, onBox: s.bg, ring: s.bg, ink: s.bg, idle: s.ac, on: s.tx, onRing: undefined },
       } : {
         head: ink, tile: mist, panel: mist, onTile: ink, terms: ink, onPanel: ink,
@@ -18556,32 +18610,78 @@ function EventsMap({ s }) {
       // site here owes both under Grunge (section 1's `faced`).
       const disp = (size, lh) => ({
         fontFamily: s.display, fontSize: faced(s, size), lineHeight: facedLh(s, lh), letterSpacing: s.dls,
-        ...(grunge || ed ? { textTransform: 'uppercase' } : null),
+        ...(grunge || ed || pop ? { textTransform: 'uppercase' } : null),
       })
       // Body/Eyebrow — Inter bold: the kicker, the panel head, the rows'
-      // city line and their month.
+      // city line and their month. Pop's frames set each of these at a raw
+      // size in its own face at Figma's auto line height (`'normal'`) — the
+      // kicker Inter Bold 11, the rest Space Mono — so `pt` is that, × 0.82
+      // on the desktop canvas, and each site passes its face.
       const eyebrow = (extra) => ({
         fontFamily: s.body, fontWeight: 700, fontSize: s.eyebrow, lineHeight: 1.3,
         letterSpacing: s.dls, whiteSpace: 'nowrap', ...extra,
       })
+      const pt = (face, size, extra) => ({
+        fontFamily: face, fontSize: u(size), lineHeight: 'normal', letterSpacing: 0, whiteSpace: 'nowrap', ...extra,
+      })
+      // Pop's scribble, the node's own `#C6F200` (`s.stroke2`) — not the
+      // stickers' duller POP_STICKER_LIME — turned Figma −3.98 → CSS +3.98
+      // about its own corner, which the `relativeTransform` places. It hangs
+      // off the heading's start at 1440, (208.68, 27.91) from the text box's
+      // corner, and off the radius label's at 390, (59.06, 16.46) at 0.2662;
+      // the 768 master keeps the desktop's numbers in a 768 frame, where the
+      // tile, painted after it, covers it whole — not drawn.
+      const scribble = (left, top, k) => (
+        <svg viewBox="0 0 407.35 95.01" aria-hidden style={{
+          position: 'absolute', left, top, width: `${Math.round(407.35 * k * 100) / 100}px`,
+          height: `${Math.round(95.01 * k * 100) / 100}px`, display: 'block', overflow: 'visible',
+          transform: 'rotate(3.98deg)', transformOrigin: '0 0', pointerEvents: 'none',
+        }}>
+          <path d={POP_MAP_SCRIBBLE_D} fill={s.stroke2} />
+        </svg>
+      )
+      // Display/LG, lifted under Pop by Titan's glyph floor (the hero's
+      // 0.14em), inside a wrapper that keeps the scribble put.
+      const h2 = <h2 style={distressed(s, {
+        margin: 0, ...disp(s.dispLg, 0.89), color: G.head, minWidth: 0,
+        ...(pop ? { position: 'relative', top: '-0.14em' } : null),
+      })}>{s.title}</h2>
+      const radius = (
+        <span style={pop
+          // A raw Chunko 20.39 on a 23.36 line in `text/2` violet, at every width.
+          ? labelStyle(s, u(20.39), { lineHeight: 23.36 / 20.39, color: s.tx, flex: 'none' })
+          : grunge || ed
+          ? labelStyle(s, titleSize, { color: G.kicker ?? G.head, flex: 'none' })
+          : {
+            fontFamily: s.label, fontSize: s.labelLg, lineHeight: 1.1, letterSpacing: s.dls,
+            color: ink, whiteSpace: 'nowrap', flex: 'none',
+          }}>{s.mapRadius}</span>
+      )
 
       const head = (
         <div style={col(u(16))}>
           {/* The artist's `kicker`, seeded "Shows/coverage" here (JP-090,
               mapKickerSeed); emptied, it is not drawn. Typed longer, it wraps. */}
-          {s.mapKicker && <span style={eyebrow({ color: G.kicker ?? G.head, whiteSpace: 'normal', overflowWrap: 'anywhere', minWidth: 0 })}>{s.mapKicker}</span>}
+          {s.mapKicker && <span style={pop
+            ? pt(s.body, 11, { fontWeight: 700, letterSpacing: u(1.5), textTransform: 'uppercase', color: G.kicker, whiteSpace: 'normal', overflowWrap: 'anywhere', minWidth: 0 })
+            : eyebrow({ color: G.kicker ?? G.head, whiteSpace: 'normal', overflowWrap: 'anywhere', minWidth: 0 })}>{s.mapKicker}</span>}
           {/* Display/LG over Label/LG, which stands at the row's right on
               desktop and 768 and stacks 10 under the heading at 390. */}
           <div style={s.mob ? col('10px', { alignItems: 'flex-start' }) : row(u(10), { justifyContent: 'space-between' })}>
-            <h2 style={distressed(s, { margin: 0, ...disp(s.dispLg, 0.89), color: G.head, minWidth: 0 })}>{s.title}</h2>
+            {pop ? (
+              <div style={{ position: 'relative', minWidth: 0 }}>
+                {h2}
+                {!s.narrow && scribble(u(208.68), u(27.91), z)}
+              </div>
+            ) : h2}
             {/* Label/LG under Lime; Grunge's frame sets it in Display/Title,
                 and Editorial's in `text/2` ink. */}
-            <span style={grunge || ed
-              ? labelStyle(s, titleSize, { color: G.kicker ?? G.head, flex: 'none' })
-              : {
-                fontFamily: s.label, fontSize: s.labelLg, lineHeight: 1.1, letterSpacing: s.dls,
-                color: ink, whiteSpace: 'nowrap', flex: 'none',
-              }}>{s.mapRadius}</span>
+            {pop && s.mob ? (
+              <span style={{ position: 'relative', display: 'flex' }}>
+                {radius}
+                {scribble('59.06px', '16.46px', 0.2662)}
+              </span>
+            ) : radius}
           </div>
         </div>
       )
@@ -18629,10 +18729,12 @@ function EventsMap({ s }) {
           <div style={col(u(4), { padding: s.mob ? '10px' : `${u(38)} ${u(30)}` })}>
             <span style={s.mob ? col('8px', { alignItems: 'flex-start' }) : row(u(8))}>
               <LimeGlobeFill size={35.16 * z} color={G.globe ?? G.onTile} />
-              <span style={distressed(s, { ...disp(titleSize, 1.1), color: G.onTile })}>{s.mapBase}</span>
+              {/* Pop's is a raw Chunko 22.71 on its auto 27 line. */}
+              <span style={distressed(s, { ...(pop ? disp(u(22.71), 27 / 22.71) : disp(titleSize, 1.1)), color: G.onTile })}>{s.mapBase}</span>
             </span>
-            {/* Label/XS — Chakra Petch, this section's `s.ui` site. */}
-            <span style={{
+            {/* Label/XS — Chakra Petch, this section's `s.ui` site; Pop's a raw
+                13 in capitals on its auto line. */}
+            <span style={pop ? pt(s.ui, 13, { color: G.terms, textTransform: 'uppercase', whiteSpace: 'normal' }) : {
               fontFamily: s.ui, fontSize: s.labelXs, lineHeight: 1.26, letterSpacing: s.dls, color: G.terms,
             }}>{s.mapTerms}</span>
           </div>
@@ -18682,7 +18784,10 @@ function EventsMap({ s }) {
                 ...disp(...(G.venue ?? [s.list, 1.2])), color: fg,
                 overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
               }}>{g.venue}</span>
-              <span style={eyebrow({ color: fg, overflow: 'hidden', textOverflow: 'ellipsis' })}>
+              {/* Pop's is Space Mono 14.22 at the frame's 85%. */}
+              <span style={pop
+                ? pt(s.mono, 14.22, { color: fg, opacity: 0.85, overflow: 'hidden', textOverflow: 'ellipsis' })
+                : eyebrow({ color: fg, overflow: 'hidden', textOverflow: 'ellipsis' })}>
                 {g.city} · {g.time}
               </span>
             </span>
@@ -18692,10 +18797,13 @@ function EventsMap({ s }) {
               background: G.date, color: G.dateFg,
             })}>
               {/* The seed's month is title case and the frame's capitals, so
-                  the casing is the site's, the panel head's rule. */}
-              <span style={eyebrow({ color: G.dateFg, textTransform: 'uppercase' })}>{g.month}</span>
+                  the casing is the site's, the panel head's rule. Pop's month
+                  and day are Space Mono 9 tracked 0.5 and Bold 14. */}
+              <span style={pop
+                ? pt(s.mono, 9, { letterSpacing: u(0.5), color: G.dateFg, textTransform: 'uppercase' })
+                : eyebrow({ color: G.dateFg, textTransform: 'uppercase' })}>{g.month}</span>
               {/* Body/MD. */}
-              <span style={{
+              <span style={pop ? pt(s.mono, 14, { fontWeight: 700, color: G.dateFg }) : {
                 fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5, letterSpacing: s.dls, color: G.dateFg,
               }}>{g.day}</span>
             </span>
@@ -18742,7 +18850,7 @@ function EventsMap({ s }) {
               label wraps, inside a word too, rather than run off the panel. */}
           {s.mapListLabel && (
             <span style={row(grunge ? u(30) : '0px', { padding: grunge || ed ? 0 : `0 ${u(20)}` })}>
-              <span style={eyebrow({ color: G.onPanel, textTransform: 'uppercase', whiteSpace: 'normal', overflowWrap: 'anywhere', minWidth: 0 })}>
+              <span style={(pop ? (x) => pt(s.mono, 11, { letterSpacing: u(1.5), ...x }) : eyebrow)({ color: G.onPanel, textTransform: 'uppercase', whiteSpace: 'normal', overflowWrap: 'anywhere', minWidth: 0 })}>
                 {`${s.mapListLabel} · `}{s.gigs.length}
               </span>
               {grunge && <span aria-hidden style={{ flex: 1, height: '1px', background: s.bg }} />}
@@ -18783,9 +18891,11 @@ function EventsMap({ s }) {
       // player's fix.
       return (
         <div style={{
-          position: 'relative', color: grunge || ed ? s.tx : ink, ...col(s.narrow ? '30px' : u(32)),
-          // Editorial draws no seam, so it needs no clearance.
-          padding: s.mob && !ed ? '24px 0' : undefined,
+          position: 'relative', color: pop ? s.text3 : grunge || ed ? s.tx : ink,
+          // Pop's frame stands its head 82 above the cards at 1440.
+          ...col(s.narrow ? '30px' : u(pop ? 82 : 32)),
+          // Editorial and Pop draw no seam, so they need no clearance.
+          padding: s.mob && !ed && !pop ? '24px 0' : undefined,
         }}>
           {/* Grunge's band sheet, the media player's: `image 1` at .29 LIGHTEN
               under everything and out over the root's padding, so the head and

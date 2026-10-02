@@ -93,8 +93,8 @@ another `notes/` file.
   Its section stands on the
   page ground, so the root's `darkMap` flag stays layout 1's.
 - **Layout 1's two labels are the artist's** (JP-090, user call, 2026-09-30), on every template,
-  since Retro's and Pop's body prints them as the `s.limeTree` block does (Retro's frame
-  `964:58581`, Editorial's `964:58617`). The eyebrow over the heading, "Shows/coverage", is
+  since Retro's body prints them as the `s.limeTree` block does (Retro's frame `964:58581`,
+  Editorial's `964:58617`), and Pop goes through that block since its layout-1 pass (`964:58629`). The eyebrow over the heading, "Shows/coverage", is
   **`kicker`'s layout-1 seed**: the field reached layout 3's "Gigs & travel" alone (JP-071), and
   now `in: [0, 2]`, its absent key resolved by `mapKickerSeed(d)` in `data.js`, which `sectionVm`
   and `EditPanel`'s chain both call (`formBtnSeed()`'s shape; the chain's arm is gated on `map`,
