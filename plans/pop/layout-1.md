@@ -995,6 +995,8 @@ counters and ink traps: its corners are soft. Rubik 900 is the squarer drawing, 
   `designed`, which no theme-0–3 render reads.
 - **`preview.jsx` needed nothing**: `sectionVm` lays `THEME_RAMP.Pop` over its `Z` by `dev`, as for
   Editorial.
+- **`sub` was not reworded** (step 3): `'Titan One · loud & bright'` names the face Pop keeps, so it
+  is still accurate.
 
 ### Inherited and used
 
