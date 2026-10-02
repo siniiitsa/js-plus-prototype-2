@@ -391,6 +391,27 @@ const POP_PLAYER = {
 // (#0D1F03; decision 5: followed). It reads black on the lime pill.
 const POP_PILL_INK = '#0D1F03'
 
+// Pop's gallery raw values (964:58627; decision 5: followed). `lime` is the
+// palette's, which the open source row inks its label, disc and cross in and
+// every closed disc its glyph — where Scheme 2's `activeFg` is white. The
+// closed rows' ring and their label and plus are two slips of the palette
+// violet. The spotlight's and the thumbs' well is Retro's paper and the corner
+// brackets Retro's ink; the thumbs' 35% ring and the viewer tile's INNER_SHADOW
+// 18 are Lime's glow.
+const POP_GAL = {
+  lime: '#C6F200', ring: '#6B32FF', ink: '#6B34FF', well: '#FBF6EA', bracket: '#1B1714',
+  thumbRing: 'rgba(166, 226, 46, 0.35)', thumbGlow: '#A6E22E',
+}
+
+// Pop's gallery asterisk (964:58627's "Vector", 93 × 95.004 before its tilt):
+// one filled outline, off the frame's `fillGeometry`.
+const POP_ASTERISK_D =
+  'M53.14 0L53.14 32.5C58.06 28.38 61.79 23.17 66.42 18.74C67.64 17.57 75.02 10.65 75.57 10.37' +
+  'C77.29 9.48 84.81 17.63 84.64 18.64L63.11 40.84L93 40.84L93 54.17L63.11 54.17L84.62 75.57' +
+  'C85.02 77.11 78.61 83.92 77.21 84.64C76.57 84.97 76.19 85.19 75.57 84.64L53.14 63.34L53.14 93.75' +
+  'L51.89 95L39.86 95L39.86 62.5L17.43 84.64C15.64 85.6 8.21 77.23 8.36 76.37L29.89 54.17L0 54.17' +
+  'L0 40.84L29.89 40.84L8.36 18.64L17.02 9.97L39.86 31.67L39.86 0L53.14 0Z'
+
 // Pop's smiley sun (964:58625's second "Layer_1", 154 × 154 before its tilt):
 // the scalloped disc's outline and the smile's three features, off the
 // frame's `fillGeometry` in the sticker's own units, rounded to the hundredth.
@@ -13836,12 +13857,42 @@ function Gallery({ s }) {
     // One named departure: the 390 master hangs its left disc 20.88 past the
     // card, 10.88 off its own page (the 412 render); it takes the other two
     // masters' 0.69, and the right disc keeps its own 5.29 overhang.
-    if (s.limeTree) {
+    //
+    // Pop layout 1 (964:58627 · 986:52423 at 768 · 989:22531 at 390) is the
+    // block a fourth time, Lime's tree node for node on Pop's white Scheme 1,
+    // with nothing bound: `pop` names the deltas, off the node walker's raw
+    // read (plans/pop/layout-1.md, section 4). The rows stand in a **lime
+    // panel**, Scheme 2's ground (`s.onScheme[2]`), radius 50, 20 in and 10
+    // apart — so the 390 row is the panel running off the page, and it is the
+    // panel that `srcScroll` scrolls. The open row is Scheme 2's pink
+    // `activeBg` under the INNER_SHADOW 4, its label, disc and cross lime;
+    // the closed rows are bare in a 1px violet ring round violet discs. The
+    // halves are Grunge's 636 : 636; the head is one tone in `s.tx` across the
+    // typed break, with a teal asterisk beside it (Figma −18.52 → CSS +18.52);
+    // the card is radius 50, the largest of its three nested clips, under a
+    // 4 / 4 / 9 shadow at .16, with lime arrow discs; the strip is Lime's ring
+    // and glow mechanism in Lime's leaked `#A6E22E`. Two leaks that read as
+    // defects are re-inked (decision 5): the eyebrow, Lime's `#F2FFD0` on
+    // white, takes `s.text3`, and the counter chip, Retro's `#111111` at 55%
+    // under `#C8461C`, takes Pop's ink at the same 55% under `s.ac`.
+    if (s.limeTree || s.pop) {
       const grunge = s.grunge
       const ed = s.editorial
+      const pop = s.pop
+      const S2 = s.onScheme?.[2]
       const z = desk ? 0.82 : 1
       const u = (v) => `${Math.round(v * z * 10) / 10}px`
-      const G = ed ? {
+      const G = pop ? {
+        rowGap: 10, rowR: u(90), cardR: u(50),
+        cardH: desk ? u(538) : tab ? '581px' : '379px',
+        cardShadow: `${u(4)} ${u(4)} ${u(9)} rgba(0,0,0,.16)`,
+        // The open row's INNER_SHADOW 4; the closed rows' fill and drop
+        // shadow are hidden, leaving their 1px INSIDE ring.
+        rowOn: `inset 0 0 ${u(4)} rgba(0,0,0,.25)`, rowOff: `inset 0 0 0 1px ${POP_GAL.ring}`,
+        top: s.ac, chip: 'rgba(0, 0, 0, 0.55)', discRing: 'rgba(255, 255, 255, 0.27)', discInk: s.ac,
+        // An empty slot shows the frame's own well under the photographs.
+        thumbBg: POP_GAL.well, thumbInk: s.tx,
+      } : ed ? {
         rowGap: 11, rowR: u(2), cardR: 0,
         cardH: desk ? u(536) : tab ? '525px' : '345.3px',
         cardShadow: `${u(5)} ${u(4)} ${u(4)} rgba(0,0,0,.25)`,
@@ -13880,27 +13931,50 @@ function Gallery({ s }) {
         }}>{t}</span>
       )
 
+      // Pop's small type is Retro's, not Lime's Body/Eyebrow: Space Mono (and
+      // Inter Bold for the brand) at the auto line height, tracked, typed in
+      // capitals, in `s.ac` unless the caller says otherwise.
+      const pt = (t, size, ls, extra) => (
+        <span style={{
+          fontFamily: s.mono, fontSize: u(size), lineHeight: 'normal', letterSpacing: u(ls),
+          whiteSpace: 'nowrap', color: s.ac, textTransform: 'uppercase', ...extra,
+        }}>{t}</span>
+      )
+
       // Grunge's frame types Lime's break and colours across it — "See us" in
       // `sem/text/2`, "in action" in `sem/text/1` — so its heading is the media
       // player's: words one and two a block line, the rest a second in the accent.
-      // Editorial's types the same break in one tone, `sem/text/1`.
+      // Editorial's types the same break in one tone, `sem/text/1`, and Pop's in
+      // `s.tx`, lifted by Titan One's glyph floor.
       const titleWords = String(s.title || '').split(/\s+/).filter(Boolean)
       const head = (
-        <div style={col(s.mob ? '10px' : u(36))}>
-          {eyebrow('Media')}
-          {grunge || ed ? (
+        <div style={col(s.mob ? '10px' : u(36), pop ? { position: 'relative' } : undefined)}>
+          {pop ? pt('Media', 11, 1.5, { color: s.text3 }) : eyebrow('Media')}
+          {grunge || ed || pop ? (
             <h2 style={distressed(s, {
               margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispLg), lineHeight: facedLh(s, 0.89),
               letterSpacing: s.dls, color: ed ? s.ac : s.tx, textTransform: 'uppercase',
+              ...(pop ? { position: 'relative', top: '-0.14em' } : {}),
             })}>
               <span style={{ display: 'block' }}>{titleWords.slice(0, 2).join(' ')}</span>
-              {titleWords.length > 2 && <span style={{ display: 'block', color: ed ? undefined : s.ac }}>{titleWords.slice(2).join(' ')}</span>}
+              {titleWords.length > 2 && <span style={{ display: 'block', color: ed || pop ? undefined : s.ac }}>{titleWords.slice(2).join(' ')}</span>}
             </h2>
           ) : (
             <h2 style={{
               margin: 0, fontFamily: s.display, fontSize: s.dispLg, lineHeight: 0.89,
               letterSpacing: s.dls, color: s.ac, maxWidth: '4em',
             }}>{s.title}</h2>
+          )}
+          {/* Pop's asterisk, `tag/4` teal, an absolute child of the head
+              frame by its turned box's centre: (556.66, 137.27). The 768
+              master keeps the desktop's numbers, so it stands right of the
+              head and the panel paints over its foot, as the frame draws it;
+              the 390 master's is 497 into a 370 frame, clipped away. */}
+          {pop && !s.mob && (
+            <svg viewBox="0 0 93 95.004" aria-hidden="true" style={{
+              position: 'absolute', left: u(556.66), top: u(137.27), width: u(93), height: u(95.004),
+              transform: 'translate(-50%, -50%) rotate(18.52deg)', overflow: 'visible', pointerEvents: 'none',
+            }}><path fill={s.chips[3].bg} d={POP_ASTERISK_D} /></svg>
           )}
         </div>
       )
@@ -13910,81 +13984,101 @@ function Gallery({ s }) {
       // 390 keeps them content-sized on one line (`srcScroll`). The open row is
       // `sem/active`, the closed ones `sem/box/1` under the frame's hard 7 / 9
       // shadow.
-      const rows = (
+      const srcEls = srcRows.map(({ g, i }) => {
+        const link = extLink(s, g.url)
+        const Tag = link ? 'a' : 'div'
+        const ink = pop ? (g.on ? POP_GAL.lime : POP_GAL.ink) : g.on ? s.activeFg : s.ac
+        return (
+          <Tag key={i} {...link} style={{
+            ...row(desk ? u(20) : '5px', tab ? { justifyContent: g.on ? 'space-between' : 'center' } : undefined),
+            ...(desk ? { height: u(92) } : tab ? { flex: '1 1 0', minWidth: 0, height: '92px' } : { flex: 'none' }),
+            padding: s.mob ? '10px' : `${u(16)} ${u(24)} ${u(16)} ${u(16)}`,
+            borderRadius: G.rowR, overflow: 'hidden', textDecoration: 'none',
+            background: pop ? (g.on ? S2.activeBg : undefined) : g.on ? s.pillBg : s.box1,
+            boxShadow: g.on ? G.rowOn : G.rowOff,
+            cursor: link ? 'pointer' : undefined,
+            ...(ed ? { position: 'relative' } : {}),
+          }}>
+            {/* The open disc is `sem/tag/2/text` in a 2px `sem/glow` ring
+                stroked inside; the closed ones are `sem/glow` with the
+                glyph in `sem/box/3`. Pop's open disc is lime round a pink
+                glyph, unringed, and its closed discs violet round lime. */}
+            {/* Grunge's seat is an empty radius-6 square in a 1px rule —
+                `sem/box/1` open, the accent closed — round the same vectors
+                as 1px hairlines, `sem/bg` open and `sem/stroke/2` closed.
+                Editorial's is unradiused, and its rule (`sem/stroke/1`) and
+                glyph (`stroke/1` open, `box/3` closed) are all ink. */}
+            {grunge || ed ? (
+              <span style={{
+                width: u(60), height: u(60), flex: 'none', borderRadius: ed ? undefined : u(6),
+                boxShadow: `inset 0 0 0 1px ${ed ? s.stroke1 : g.on ? s.box1 : s.ac}`,
+              }}><LimeSourceGlyph i={i} size={60 * z} color={ed ? (g.on ? s.stroke1 : s.box3) : g.on ? s.bg : s.stroke2} stroke={1} /></span>
+            ) : (
+              <span style={{
+                width: u(60), height: u(60), flex: 'none', borderRadius: '999px',
+                background: pop ? (g.on ? POP_GAL.lime : S2.tx) : g.on ? s.activeFg : s.glow,
+                boxShadow: g.on && !pop ? `inset 0 0 0 ${u(2)} ${s.glow}` : 'none',
+              }}><LimeSourceGlyph i={i} size={60 * z} color={pop ? (g.on ? S2.ac : POP_GAL.lime) : g.on ? s.ac : s.box3} /></span>
+            )}
+            {desk && (
+              // Display/List; Editorial's is Label/MD, Pop's a raw 13.88.
+              <span style={{
+                flex: 1, minWidth: 0, fontFamily: s.display,
+                fontSize: ed ? s.labelMd : faced(s, pop ? u(13.88) : s.list), lineHeight: ed ? 1.1 : facedLh(s, 1.2),
+                letterSpacing: s.dls, color: ink,
+                whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                ...(grunge || ed || pop ? { textTransform: 'uppercase' } : {}),
+              }}>{g.label}</span>
+            )}
+            {(g.on || desk) && (
+              <span style={{
+                width: u(g.on ? 42.777 : 30.248), height: u(g.on ? 42.777 : 30.248), flex: 'none',
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              }}><LimePlus size={30.248 * z} color={ink} cross={g.on} /></span>
+            )}
+            {/* The frame's INSIDE rule, dashed 5, 5: `sem/box/3` on the
+                open row, `sem/stroke/1` on the closed — both opaque ink. */}
+            {ed && <DashRule side="all" dash={5 * z} radius={2 * z} colour={g.on ? s.box3 : s.stroke1} />}
+          </Tag>
+        )
+      })
+      // Pop's rows stand in the lime panel (`Frame 186`), which is
+      // positioned so it paints over the 768 asterisk's foot. At 390 the
+      // panel itself is the one line that runs off the page, so `srcScroll`
+      // holds the panel, content-sized: the master states 461, where its
+      // content comes to 437.78, but the difference lies past the page's
+      // edge, and a hugging panel shrinks with the rows the published page
+      // hides.
+      const panel = (extra) => ({
+        ...extra, position: 'relative', background: S2.bg, borderRadius: u(50), padding: u(20),
+      })
+      const rows = pop ? (s.mob ? (
+        <div style={row('0', { alignItems: 'stretch', ...srcScroll })}>
+          <div style={panel(row('10px', { alignItems: 'stretch', flex: 'none' }))}>{srcEls}</div>
+        </div>
+      ) : (
+        <div style={panel(desk ? col(u(G.rowGap), { alignItems: 'stretch' }) : row('10px', { alignItems: 'stretch' }))}>{srcEls}</div>
+      )) : (
         <div style={desk
           ? col(u(G.rowGap), { alignItems: 'stretch' })
           : row(`${G.rowGap}px`, { alignItems: 'stretch', ...srcScroll })}>
-          {srcRows.map(({ g, i }) => {
-            const link = extLink(s, g.url)
-            const Tag = link ? 'a' : 'div'
-            const ink = g.on ? s.activeFg : s.ac
-            return (
-              <Tag key={i} {...link} style={{
-                ...row(desk ? u(20) : '5px', tab ? { justifyContent: g.on ? 'space-between' : 'center' } : undefined),
-                ...(desk ? { height: u(92) } : tab ? { flex: '1 1 0', minWidth: 0, height: '92px' } : { flex: 'none' }),
-                padding: s.mob ? '10px' : `${u(16)} ${u(24)} ${u(16)} ${u(16)}`,
-                borderRadius: G.rowR, overflow: 'hidden', textDecoration: 'none',
-                background: g.on ? s.pillBg : s.box1,
-                boxShadow: g.on ? G.rowOn : G.rowOff,
-                cursor: link ? 'pointer' : undefined,
-                ...(ed ? { position: 'relative' } : {}),
-              }}>
-                {/* The open disc is `sem/tag/2/text` in a 2px `sem/glow` ring
-                    stroked inside; the closed ones are `sem/glow` with the
-                    glyph in `sem/box/3`. */}
-                {/* Grunge's seat is an empty radius-6 square in a 1px rule —
-                    `sem/box/1` open, the accent closed — round the same vectors
-                    as 1px hairlines, `sem/bg` open and `sem/stroke/2` closed.
-                    Editorial's is unradiused, and its rule (`sem/stroke/1`) and
-                    glyph (`stroke/1` open, `box/3` closed) are all ink. */}
-                {grunge || ed ? (
-                  <span style={{
-                    width: u(60), height: u(60), flex: 'none', borderRadius: ed ? undefined : u(6),
-                    boxShadow: `inset 0 0 0 1px ${ed ? s.stroke1 : g.on ? s.box1 : s.ac}`,
-                  }}><LimeSourceGlyph i={i} size={60 * z} color={ed ? (g.on ? s.stroke1 : s.box3) : g.on ? s.bg : s.stroke2} stroke={1} /></span>
-                ) : (
-                  <span style={{
-                    width: u(60), height: u(60), flex: 'none', borderRadius: '999px',
-                    background: g.on ? s.activeFg : s.glow,
-                    boxShadow: g.on ? `inset 0 0 0 ${u(2)} ${s.glow}` : 'none',
-                  }}><LimeSourceGlyph i={i} size={60 * z} color={g.on ? s.ac : s.box3} /></span>
-                )}
-                {desk && (
-                  // Display/List; Editorial's is Label/MD.
-                  <span style={{
-                    flex: 1, minWidth: 0, fontFamily: s.display,
-                    fontSize: ed ? s.labelMd : faced(s, s.list), lineHeight: ed ? 1.1 : facedLh(s, 1.2),
-                    letterSpacing: s.dls, color: ink,
-                    whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-                    ...(grunge || ed ? { textTransform: 'uppercase' } : {}),
-                  }}>{g.label}</span>
-                )}
-                {(g.on || desk) && (
-                  <span style={{
-                    width: u(g.on ? 42.777 : 30.248), height: u(g.on ? 42.777 : 30.248), flex: 'none',
-                    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                  }}><LimePlus size={30.248 * z} color={ink} cross={g.on} /></span>
-                )}
-                {/* The frame's INSIDE rule, dashed 5, 5: `sem/box/3` on the
-                    open row, `sem/stroke/1` on the closed — both opaque ink. */}
-                {ed && <DashRule side="all" dash={5 * z} radius={2 * z} colour={g.on ? s.box3 : s.stroke1} />}
-              </Tag>
-            )
-          })}
+          {srcEls}
         </div>
       )
 
       const top = (
         <div style={row('12px', { justifyContent: 'space-between' })}>
           {/* The frame's arrow is a Body/MD character, not an icon. */}
+          {/* Pop's is Inter 14 before Space Mono 10, over a credit in Inter
+              Bold 11 and Space Mono 9, all pink: Retro's own row. */}
           <span onClick={s.live ? () => setPick(0) : undefined}
                 style={row(u(8), { color: G.top, cursor: s.live ? 'pointer' : undefined })}>
-            <span style={{ fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5 }}>←</span>
-            {eyebrow('Back to beginning', { color: G.top })}
+            <span style={{ fontFamily: s.body, fontSize: pop ? u(14) : s.bodyMd, lineHeight: pop ? 'normal' : 1.5 }}>←</span>
+            {pop ? pt('Back to beginning', 10, 1) : eyebrow('Back to beginning', { color: G.top })}
           </span>
           <span style={col(u(2), { alignItems: 'flex-end' })}>
-            {eyebrow(s.brand, { color: G.top })}
-            {eyebrow('Gallery', { color: s.ac })}
+            {pop ? pt(s.brand, 11, 2, { fontFamily: s.body, fontWeight: 700 }) : eyebrow(s.brand, { color: G.top })}
+            {pop ? pt('Gallery', 9, 2) : eyebrow('Gallery', { color: s.ac })}
           </span>
         </div>
       )
@@ -13993,7 +14087,9 @@ function Gallery({ s }) {
       // own Scheme 1 does not carry, in a 1px `sem/text/2` ring stroked inside,
       // round the frame's own arrow vector in `sem/bg`. Grunge's are `sem/box/3`
       // in a `sem/stroke/1` ring round an accent arrow; Editorial's are
-      // `sem/active/bg` in the same ring round a `sem/active/text` arrow.
+      // `sem/active/bg` in the same ring round a `sem/active/text` arrow. Pop's
+      // are its idle lime (`inactive/bg`) in a 1px white ring at 27% round a
+      // pink arrow; their 24 blur is dropped, as Lime's, the fill opaque.
       const mist = '#D5E3B2'
       const arrowPath = (back) => (back
         ? 'M35.2703 27.5863L36.8853 29.1256L30.4633 35.7758L47.3912 35.4804L47.4308 37.7484L30.5029 38.0439L37.1527 44.4453L35.5928 46.0607L26.1944 36.9847L35.2703 27.5863Z'
@@ -14001,7 +14097,7 @@ function Gallery({ s }) {
       const arrow = (back) => (
         <span onClick={s.live ? () => go(active + (back ? -1 : 1)) : undefined} style={{
           width: u(73.605), height: u(73.605), flex: 'none', borderRadius: '999px',
-          background: ed ? s.activeBg : grunge ? s.box3 : mist, boxShadow: `inset 0 0 0 1px ${G.discRing}`,
+          background: pop ? s.inactiveBg : ed ? s.activeBg : grunge ? s.box3 : mist, boxShadow: `inset 0 0 0 1px ${G.discRing}`,
           cursor: s.live ? 'pointer' : undefined,
         }}>
           <svg viewBox="0 0 73.6051 73.5989" width="100%" height="100%" aria-hidden style={{ display: 'block' }}>
@@ -14029,6 +14125,14 @@ function Gallery({ s }) {
       // strip at 351.69 + 30, not 345.28 + 30), so only there does the card
       // give it back: W·sin 1° / 2 a side, a percentage margin being the
       // column's width. The other two stack the unrotated slot.
+      //
+      // Pop's clips state 30, 20 and 50, so 50 draws. Its arrow row is the
+      // frame's `Frame 184`, absolute in the card: 26 in on both sides, 0 to
+      // 529 at 1440; 27 in and 33 from the right, 52 to 581 at 768; 8 in and 3
+      // from the right, −4 to 388 at 390 — so the discs centre 264.5, 316.5
+      // and 192 down. Its brackets are Retro's ink, and its counter Space
+      // Mono 11 on the re-inked chip.
+      const bracket = pop ? POP_GAL.bracket : s.inactiveLine
       const well = (
         <>
           <div style={{ position: 'absolute', inset: 0 }}>
@@ -14037,14 +14141,16 @@ function Gallery({ s }) {
           {!s.mob && [['left', 14, 'borderLeft'], ['right', 15, 'borderRight']].map(([side, off, edge]) => (
             <span key={side} aria-hidden style={{
               position: 'absolute', [side]: u(off), top: u(388), width: u(18), height: u(18),
-              [edge]: `${u(2)} solid ${s.inactiveLine}`, borderBottom: `${u(2)} solid ${s.inactiveLine}`,
+              [edge]: `${u(2)} solid ${bracket}`, borderBottom: `${u(2)} solid ${bracket}`,
             }} />
           ))}
           {desk && (
             <span style={{
               position: 'absolute', left: u(410), top: u(380), padding: `0 ${u(10)}`,
               background: G.chip, borderRadius: u(4),
-            }}>{eyebrow(`0${active + 1} — 0${strip.length}`, { color: s.ac, display: 'block' })}</span>
+            }}>{pop
+              ? pt(`0${active + 1} — 0${strip.length}`, 11, 1, { display: 'block' })
+              : eyebrow(`0${active + 1} — 0${strip.length}`, { color: s.ac, display: 'block' })}</span>
           )}
           {/* Grunge's "image 1": the band sheet, lighten at .29, under the
               arrows. A square the card's width hung 6.5 down at desktop; a
@@ -14057,7 +14163,10 @@ function Gallery({ s }) {
       const arrowRow = (
         <div style={{
           position: 'absolute',
-          ...(ed ? { left: u(0.69), right: u(desk ? 0.7 : tab ? -6.86 : -5.29), top: u(s.mob ? 149.14 : 238.94), height: u(73.6) }
+          ...(pop ? (desk ? { left: u(26), right: u(26), top: 0, height: u(529) }
+              : tab ? { left: '27px', right: '33px', top: '52px', height: '529px' }
+              : { left: '8px', right: '3px', top: '-4px', height: '392px' })
+            : ed ? { left: u(0.69), right: u(desk ? 0.7 : tab ? -6.86 : -5.29), top: u(s.mob ? 149.14 : 238.94), height: u(73.6) }
             : s.mob ? { inset: 0 } : { left: u(20), right: u(20), top: u(20), height: u(469) }),
           ...row('0', { justifyContent: 'space-between' }),
         }}>
@@ -14082,7 +14191,7 @@ function Gallery({ s }) {
         <div style={{
           position: 'relative', overflow: 'hidden', width: '100%',
           height: G.cardH,
-          borderRadius: G.cardR, background: s.bg,
+          borderRadius: G.cardR, background: pop ? POP_GAL.well : s.bg,
           boxShadow: G.cardShadow,
         }}>
           {well}
@@ -14094,6 +14203,7 @@ function Gallery({ s }) {
       // 390, each 76 tall at radius 20 in a 1px `sem/stroke/2` ring; the tile the
       // viewer is on trades its ring for the frame's INNER_SHADOW 18 in `sem/glow`.
       // Editorial's are square, seven at every width, the viewer's ringed at 8.
+      // Pop's are Lime's mechanism in Lime's own leaked glow, the ring at 35%.
       const thumbs = (
         <div style={row(u(10), { alignItems: 'stretch' })}>
           {(ed ? strip : strip.slice(from, from + shown)).map((i) => (
@@ -14114,6 +14224,8 @@ function Gallery({ s }) {
                   ? `inset 0 0 0 ${i === active ? u(8) : '1px'} ${s.stroke2}`
                   : grunge
                   ? (i === active ? `inset 0 0 0 1px ${s.ac}` : 'none')
+                  : pop
+                  ? (i === active ? `inset 0 0 ${u(18)} ${POP_GAL.thumbGlow}` : `inset 0 0 0 1px ${POP_GAL.thumbRing}`)
                   : i === active ? `inset 0 0 ${u(18)} ${s.glow}` : `inset 0 0 0 1px ${s.stroke2}`,
               }} />
             </span>
@@ -14144,9 +14256,9 @@ function Gallery({ s }) {
       // stack the halves, 60 apart at 768 (two 30 insets) and 20 at 390.
       return desk ? (
         <div style={{
-          // Grunge's halves are 636 each, 28 + 28 apart.
-          display: 'grid', gridTemplateColumns: grunge ? 'minmax(0, 1fr) minmax(0, 1fr)' : 'minmax(0, 608fr) minmax(0, 585fr)',
-          gap: u(grunge ? 56 : 135), alignItems: 'start',
+          // Grunge's halves are 636 each, 28 + 28 apart, and so are Pop's.
+          display: 'grid', gridTemplateColumns: grunge || pop ? 'minmax(0, 1fr) minmax(0, 1fr)' : 'minmax(0, 608fr) minmax(0, 585fr)',
+          gap: u(grunge || pop ? 56 : 135), alignItems: 'start',
         }}>
           <div style={col(u(40), { minWidth: 0 })}>{head}{rows}</div>
           {viewer}
