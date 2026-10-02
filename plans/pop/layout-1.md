@@ -170,7 +170,7 @@ Session 0 first, then eleven sections in page order. Each row's three masters ar
 | 4 | `gallery` | `964:58627` | Gallery Sections — Component 1 | 1440 × 788 | `986:52423` | 768 × 1153 | `989:22531` | 390 × 817 | `#FFFFFF`, a `#C6F200` panel | Lime `964:58591` | done `335655f` |
 | 5 | `repertoire` | `964:58628` | Repertoire — A · Two-column dense | 1440 × 1087 | `986:52424` | 768 × 945 | `986:52436` | 390 × 961 | `#6B2CFF` | Lime `964:58592` | done `2d77ee8` |
 | 6 | `map` | `964:58629` | Events Map — D · Compact tile | 1440 × 1192 | `986:52425` | 768 × 1266 | `986:52437` | 390 × 1095.2 | `#FFFFFF` | Lime `964:58593` | done `a9af421` |
-| 7 | `pricing` | `964:58630` | Pricing — B · 3-col in soft panel | 1440 × 801 | `986:52426` | 768 × 745.1 | `986:52438` | 390 × 1549.7 | `#FFFFFF` | Lime `964:58594` | |
+| 7 | `pricing` | `964:58630` | Pricing — B · 3-col in soft panel | 1440 × 801 | `986:52426` | 768 × 745.1 | `986:52438` | 390 × 1549.7 | `#FFFFFF` | Lime `964:58594` | done `b845e09` |
 | 8 | `calendar` | `964:58631` | Booking Calendar — A · Scheduler | 1440 × 885 | `986:52427` | 768 × 1361 | `986:52439` | 390 × 1011 | `#2563FF` | Lime `964:58595` | |
 | 9 | `form` | `964:58632` | Enquiry Forms — B · Split context+form | 1440 × 853 | `986:52428` | 768 × 1061.2 | `986:52440` | 390 × 1238.2 | `#FFFFFF`, a `#6B2CFF` card | Lime `964:58596` | |
 | 10 | `testimonials` | `964:58633` | Testimonials H — Stacked tag card | 1440 × 730 | `986:52429` | 768 × 730 | `986:52441` | 390 × 730 | `#C6F200` | Lime `964:58597` | |
@@ -1610,6 +1610,97 @@ counters and ink traps: its corners are soft. Rubik 900 is the squarer drawing, 
 - **`FIELDS.map` owes nothing**: no row is template-keyed, and design 0 prints every key it reads.
   `notes/map.md`'s "Retro's and Pop's body prints them" now names Pop as going through the block.
 
+### Settled in section 7 (pricing)
+
+- **No Pop block: Lime's `if (s.limeTree)` inside `Pricing`'s `if (s.v0)` is
+  `(s.limeTree || s.pop)`**, after the seam, with `const pop = s.pop` and a fourth `G` arm ahead of
+  Editorial's. `tab`, `active`, `shown` and the hoisted `chip` are shared whole, so the published
+  filter needed nothing. The tree is Lime's node for node at all three widths (the walker, all
+  three masters). Every leaf is a raw value, read per master; a `pt()` helper sets each raw string
+  (face, size × 0.82 on desktop, `'normal'` line).
+- **The cards are three seats by rendered index** (`seats` in the block, D1's *the glow is a
+  seat*): the three cards are 424 × 421 at 1440 (`FILL` in the panel) and 222.67 × 447.06 at 768,
+  their grounds Scheme 6's violet, 2's lime and 3's pink `bg` off `s.onScheme`, radius 50, no ring,
+  no glow, no effect on any node. **Each leans Retro's angle** — Figma −1, 3, −2, which is
+  `TILT`'s CSS 1, −3, 2 exactly — about its centre, written out (`tilt()` is Retro's). **At 1440
+  and 768 each stands in its unrotated column** (the walker's `relativeTransform` puts every
+  card's centre on its slot's); **at 390 the stack is −18 between the rotated boxes** (card 2's
+  rotated top is card 1's rotated foot less 18, to the hundredth), so each gap is Retro's
+  `calc(X% − 18px)`. Gaps 28 at 1440 (Lime's 44) and 20 at 768. The seat moves with the filter;
+  one card on show is violet.
+- **The census was wrong about card 3**: "2 and 3 inked `text2` violet" holds for card 2 (all
+  `S2.tx`, its ico label Lime's raw `#BFED11`), but card 3's name, £, unit, blurb, features and
+  ticks are **white** (`S3.text3`) with only its numeral and ico violet (`S3.tx`). Card 1 is
+  decision 5's Retro beige `#EAD7B8` with `#D8A227` ticks, a `#ABE43B` numeral and a `#AFE335`
+  ico (under `#2E3928`) and pill — named literals (`POP_PRICE`). Each pill is BookPill's Lime
+  branch on the seat's pair (seat ground under the label ink: `#AFE335` / violet, violet / lime,
+  violet / pink — the arrow takes the ground, the disc the label's ink, BookPill's own rule), its
+  label a hand-scaled **15.77** (the media's Soundcloud size) at every width, the 390 pill full
+  size and hugging (168.92).
+- **Trap 2, twice:** the head is `Display/SM` → `s.dispSm` (36 / 29 / 24), one tone, uppercase,
+  in a **FIXED 607.16 box at 1440 and 768** (`G.headW`, Editorial's 768 case), lifted the page's
+  0.14em (inherited: the frame holds no Chunko glyph); the **768 tier names follow their style**
+  — `Label/MD` → `s.labelMd` 14 at lh 1.1, where the 1440 and 390 names are an unstyled 24 in the
+  display face at its auto 1.2 line (`faced(s, u(24))`). The styled node takes Pop's ramp, as the
+  session-0 rule says; a raw 24 would not fit the 768 card's 183 on one line either.
+- **The head is lime on white, followed** (`s.stroke2`, the node's raw `#C6F200`): judged against
+  the frame's render, it reads at display size and echoes the lime card, so it is the frame's own
+  call, not a defect. A designer note (open question 10).
+- **The one bound paint, resolved in Pop's mode**: the small print binds `sem/text/1` (at 768 the
+  node's only fill), which the frame resolves in its inherited Lime mode — Lime's accent
+  `#AFE335`, the lime the render shows. That is a mode leak in decision 5's sense, so it takes
+  Pop's own Scheme 1: **`s.ac` pink**, rendered and checked. The `#E4F1C4` under it at 1440 and
+  390 is a covered raw fill. Space Mono 11 Regular.
+- **The leaves**: chips raw Chakra Petch **Bold 12.5** at `'normal'`, padded 9 / 15, radius 56 —
+  the picked one `s.tx` violet under Lime's leaked `#C7FF3C`, **not `s.pillBg`** (trap 3: black),
+  the idle ones violet at 33% under violet; ico Space Mono 10, 4 / 6, radius 4; £ Space Mono Bold
+  18; numeral a raw **36 at every width** on the frame's 23.34 line (not `s.dispSm`), and **it
+  HUGs at 768 and 390 too** — the 390 row FILLs but its children hug — so the twins' narrow
+  `flex: 1 1 auto` is gated off; unit Chakra Petch 12; blurb Chakra Petch 13 on 20; features
+  Chakra Petch 13; ✓ Inter Bold 12. The price row is the frame's `MAX` counter axis, Lime's
+  `flex-end`.
+- **The starburst** (`POP_STAR_D`, off the frame's SVG, pink `s.ac`) is a child of the middle
+  card, on the seat: Figma −3 inside the +3 card, so CSS `rotate(3deg)` and upright on the page,
+  placed by its centre off the card's top-right — 36.11 in and 1.89 above at 1440, 33.33 in and
+  9.47 below at 768, 35.5 in and 6.52 below at 390 (each master's own). The card does not clip
+  (the frame's card 2 alone has no `clipsContent`). Measured: its centre 308.8 from the slot's
+  left and 8.7 above its top at 1180 against the frame's 308.7 and 8.9 (× 0.82).
+- **The rings and the 10px rule** (`POP_RINGS_D`, violet `s.tx`; the rule `tag/3` blue,
+  `s.chips[2].bg`) stand in a **root-size layer that clips** (`inset: 0`, the repertoire's), ahead
+  of the column, which goes `position: relative` under Pop so every card and string paints over
+  the rings (the frame's later siblings). The rings hang off the content's foot-right: 32 past and
+  13.08 under at 1440, 20 and 15.96 at 768 (the master's own 188.74 × 167.69), 71.87 and 40 at
+  390. Measured: 26.2 past the content at 1180 (32 × 0.82).
+- **The root clips sideways: `popClip`** (`s.pr && s.v0 && s.pop`, beside `grungeRule`),
+  `overflow-x: clip`. The layer clipped the rings, but the published 390 page still scrolled 21:
+  Chrome counts a transformed box's scrollable overflow as its whole overflow rectangle turned —
+  the middle card and the burst hanging off it together — whose corner reaches 411, though the
+  burst's ink ends at 386. `clip`, not `hidden`, which would make the root a scroll container.
+  Retro's leant 390 deck measures 0 without it. **Open question 7 is closed**: `overflow390` 0.
+- **Measured** (harness, card-local offsets — layout boxes, so the lean does not move them): at
+  1440 the ico, name, £, numeral, blurb and first feature within 0.5 of the frame × 0.82; at 390
+  within 1, the ✓'s box 2 narrower (Inter has no ✓; the fallback's advance). At 768 the name is
+  15 against 19 (Label/MD 14 against the frame's Bebas 17) and everything under it 4 higher.
+  Cards 347 × 346 at 1180 (347.7 × 345.2); 431 at 768 against the panel's FIXED 447.06,
+  content-tall (Lime's call); 385 / 430 / 430 at 390 against 406 / 431 / 431, the first blurb
+  one line in our 282 against the master's 262 (the inherited 10 inset). The deck stands 22
+  higher than the frame's at 1180 and 16 at 390 — the head is Chunko's shorter box, not Bebas's
+  (the map's case) — and 18 lower at 768, where Titan at 29 wraps "NIGHT" onto a second line of
+  the 607.16 box that the frame's Bebas 40 fills in one (Titan breaks the 1440 head a word
+  earlier too, "…RIGHT / FOR YOUR NIGHT").
+- **Live** (`theme=4&live=1&n=8`, three widths): All / Solo / Band filter 8 → 4 → 4, the lit chip
+  violet under `#C7FF3C`, every chip hit-tests to itself and every pill (`<a href="#form">`,
+  cursor live) too — the layer and the burst take no pointer; `n=0` prints *No packages yet.*
+  `page-check.mjs Pop 0`: no console error or warning, `overflow390` 0.
+- **Digest**: themes 0, 1, 2 and 3 at zero rows, static and live (660 + 660 against the editing
+  server's before-labels, no empty render), before and after `popClip`. **Theme 4 moved exactly
+  pricing a0 at three widths, both ways** — no shared helper changed; `tiersSeed`'s Pop arm is
+  name-gated at `d === 0`.
+- **`TIERS_1` widens by name**: `tiersSeed` reads `d === 0 && (limeTreeTheme(themeName) ||
+  themeName === 'Pop')`. `limeTreeTheme()` itself is untouched — `CAL_HEADING_1` and
+  `FORM_BTN_1` are sections 8 and 9's to widen the same way. `notes/pricing.md` says so.
+- **`FIELDS.pricing` owes nothing**: no row is template-keyed.
+
 ### Inherited and used
 
 *(Append one line each time a session leans on a bullet from Lime's, Grunge's, Editorial's or
@@ -1739,6 +1830,22 @@ grunge/layout-1); *a stand-in face's glyph floor is measured per site* (editoria
 no Chunko glyph to measure, the page's 0.14em inherited; *theme 1 is the digest at risk*
 (grunge/layout-1) — themes 0–3 at zero, static and live.
 
+Section 7: *no block: the twin's gate widened, a named flag for the deltas* (grunge/layout-1 and
+editorial/layout-1, section 7) — `(s.limeTree || s.pop)`; *where the seam lives inside the branch, the
+block goes after the seam* (lime/layout-1, section 7); *the `G` lookup at the block's head*
+(grunge/layout-1) — a fourth arm; *the glow is a seat: rendered index `i % 3 === 1`* (D1) — the seat
+carries three grounds, three inks, Retro's lean and the starburst; *the node walker, kept*
+(grunge/layout-2) — all three masters with style names, `relativeTransform`s and the one bound fill;
+*Figma auto-layout spaces a rotated child by its rotated bounding box — read it per master* (memory
+`figma-frame-reading`) — the unrotated slot at 1440 and 768, the rotated box at 390, Retro's `calc`;
+*a nested node reads `s.onScheme[n]`* (editorial/layout-2) — the cards on 6 / 2 / 3; *`BookPill` has a
+Lime branch* (D1) — the seat's pair and a 15.77 `size`; *under Lime `pillBg` IS the accent*
+(lime/layout-1) — turned round a third time: black, so the picked chip reads `s.tx`; *a stand-in face
+is scaled* (`faced`, grunge/layout-1); *a stand-in face's glyph floor is measured per site*
+(editorial/layout-3) — turned: no Chunko glyph, the page's 0.14em inherited; *emptied content drops its
+node* (lime/layout-1, section 7) — kept; *theme 1 is the digest at risk* (grunge/layout-1) — themes
+0–3 at zero, static and live.
+
 ## Open questions
 
 1. ~~**Chunko Bold Demo**~~ — settled in session 0: Titan One at `faceK` 0.98.
@@ -1753,7 +1860,9 @@ no Chunko glyph to measure, the page's 0.14em inherited; *theme 1 is the digest 
    Soulway, Retro's display face.
 6. **The gallery strip** — the frame borrows four of Retro's placeholder thumbnails beside two of
    Pop's; seeded as seven distinct pictures of Pop's shoot (session 0). Worth telling the designer.
-7. **The 390 pricing rings** run 52 past the page. Clipped here; worth telling the designer.
+7. **The 390 pricing rings** run 52 past the page — clipped in section 7 (the root-size layer, and
+   the root's `overflow-x: clip`, `popClip`, for the leant card's turned overflow); `overflow390` 0.
+   Still worth telling the designer.
 8. **Header cards 2–4 under Pop** — each renders at three widths and publishes (section 1). What
    each owes its layout pass:
    - **Card 2, Feature spread** (`HeaderV1`'s Retro path): the place card is `pillBg`, which is
@@ -1773,3 +1882,7 @@ no Chunko glyph to measure, the page's 0.14em inherited; *theme 1 is the digest 
    name and the two dots turn inside `.seal-spin` (JP-057's rule), the disc, globe and smiley stand
    still, and reduced motion stops it. A frame is a still and cannot say otherwise; the spin is the
    app's one seal behaviour, kept by Lime, Grunge and Editorial.
+10. **Pricing's head is lime on white** (`#C6F200` on `#FFFFFF`, about 1.3:1) — followed in section 7,
+    since it reads at display size in the frame's render; worth telling the designer. The section's
+    small print binds `sem/text/1` and renders Lime's accent in the frame's inherited Lime mode;
+    Pop's own mode makes it pink, which is what is drawn.
