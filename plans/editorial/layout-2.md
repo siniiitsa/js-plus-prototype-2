@@ -770,6 +770,7 @@ the twins' dark-ground assumptions break (trap 6).
    *Settled in section 7: the disc is the card's taupe round a paper arrow, so the pill is the
    twins' keys with `G.bg2` = `s.bg`; the four extra 390 nodes are the mark-over-weekday stacks
    (`Frame 313`–`316`), not the foot, which is a row on the master and our inherited stack.*
+   The stack was reversed by JP-100 (`layout-2-qa-fixes.md`): the foot is a row here too.
 8. **map** — paper: the travel card **ink (Scheme 3)** with paper type, an outlined paper
    "Confirmed" chip, dashed blush rules, a terracotta Venue Link pill with an ink disc and an
    outlined terracotta Get Directions; "Other upcoming · 4" ink over four `box1` rows dashed
@@ -933,6 +934,11 @@ the twins' dark-ground assumptions break (trap 6).
   as the frame's — and wraps at the word at 768 (73px, two lines, the frame's own two) and fits
   one line at 390 (243 of 370; **the frame's 390 title is one line too**, 43 tall — *The header,
   and card 2* said two). No `cqi` fit was owed.
+  **Reversed by JP-092** (user call, 2026-10-01, [`layout-2-qa-fixes.md`](./layout-2-qa-fixes.md)):
+  the call was measured on the seed alone, and a long word ran out of the column at every width
+  (*Featherstonehaugh* scrolled the published 1440 page 433px). The column is now a query
+  container and the title `min(s.dispLg, 100cqi / s.cardNameEms)`, in the same block for Lime and
+  Grunge. The seed still sets at the ramp, 97 / 73 / 48.
 - **Measured against the masters' content edges** (harness, `getBoundingClientRect`): desktop
   capsule at (108.2, 33.4) against 132 × 0.82 / 40.47 × 0.82, name centred at 590, pill right
   edge 1071.7 against 1072.6 and 28.6 tall, photo (45.9, 127.9) 521.1 × 564.2, chip 132.9 × 23.8
@@ -1047,7 +1053,9 @@ the twins' dark-ground assumptions break (trap 6).
   under its top (285.62). **Named diffs**: the seeded paragraph is 2 / 2 / 3 lines against the
   frame's 3 / 3 / 6, so the narrow cards are 395.1 / 377.1 against 419.75 / 448.33 and the desktop
   divider sits 10.6 high (space-between centres it); the pill and chip are Noto against Fisterra,
-  4–6% narrower; the roots' `padY` (80 / 56 / 44 against 46 / 60 / 30) is inherited.
+  4–6% narrower; the roots' `padY` (80 / 56 / 44 against 46 / 60 / 30) is inherited
+  (*reversed* by JP-094, `layout-2-qa-fixes.md`, user call, 2026-10-02: a layout-2 arm in
+  `sectionVm` pads every section its frame's own top and foot, here 45.9 / 60 / 30).
 - **`DashRule side="all"` is soft at DPR 1**: its svg's 0.5 inset is pixel-snapped, so the 1px
   edge lands as two 50% rows (the dashes read pale in a DPR-1 shot); at DPR 2 it is two full
   device rows, crisp. Layout 1's four-sided callers share it; a sweep item, not chased here.
@@ -1111,7 +1119,9 @@ the twins' dark-ground assumptions break (trap 6).
   stands against the wrapper's 86 × 0.82 / 60 / 40 (70.5 / 60 / 40) — the page gutter every
   section here keeps (the bio's *roots' `padY`* diff), and a `sectionVm` arm for one section would
   part it from its neighbours. The calendar's card meets the same question (56 · 56 / 30 · 56 /
-  10 · 40).
+  10 · 40). ***Reversed** by JP-094 (`layout-2-qa-fixes.md`, user call, 2026-10-02): one arm
+  fits every section at once, so none parts from its neighbours, and the panel stands 70.5 /
+  60 / 40 inside the root.*
 - **Measured against the masters** (harness, `getBoundingClientRect`, from the section root):
   desktop panel (45.9, 80) 1088.2 × 650.3 (1089 × 650.3), heading at the panel's 49.2, the fan
   band 271 (271.4), the centre card 180.4 × 233.7 at 256.4 under the panel's top (256.7), its chip
@@ -1279,7 +1289,8 @@ the twins' dark-ground assumptions break (trap 6).
 - **Open question 7's 768 tiles are overridden, as the twins' are**: the master's last tile in
   each column is 1px tall (its siblings keep their desktop 123 / 215 and 194 / 242 in a 358
   band), and the inherited `flex: h 1 auto` divides the band in the frame's proportions so all six
-  show — Retro's *honouring a squeeze costs content*. **The 390 right column's first-tile wrapper
+  show — Retro's *honouring a squeeze costs content* (kept by JP-098, user call, 2026-10-01).
+  **The 390 right column's first-tile wrapper
   carries Grunge's `[0, 0, 40, 40]` stray again** (`880:19258`; its own image frame says 10, as
   Lime's wrapper does), and the render shows its capsule foot on that one tile. Not followed, on
   Grunge's reasoning — one seat of ten. And **the right column's first-tile wrapper at 1440 and
@@ -1292,9 +1303,11 @@ the twins' dark-ground assumptions break (trap 6).
   0.82) at 100.9 / 176.3 / 184.5 and 159.1 / 198.5 / 104.1, radius 2.5, edge 1px `#C86E52` —
   Grunge's numbers, the rail at x 707.7 against 708.5 (the hero's flex share, the twins'); 768
   hero 343 × 392 (342 × 392), head *See us in action* at 11px / −0.66px in ink, caption 89.4 × 31
-  at (41, 41), tiles 165.5 wide (166) at 73.9 / 129.3 / 134.8 and 116.3 / 145.4 / 76.3; 390 ten
+  at (41, 41) (*reversed* by JP-098: the head reads *Gallery*, `railLabel`, and the caption is the
+  heading over the name, 115.7 × 46 at 768), tiles 165.5 wide (166) at 73.9 / 129.3 / 134.8 and 116.3 / 145.4 / 76.3; 390 ten
   tiles 36.5 × 48.8 at radius 10, caption 115.7 × 46 at (41, 41). **Named diffs**: the roots'
-  `padY` 80 / 56 / 44 against the masters' 46 / 30 / 40 (every section's); and **at 390 the hero
+  `padY` 80 / 56 / 44 against the masters' 46 / 30 / 40 (every section's; *reversed* by JP-094,
+  user call, 2026-10-02: 37.7 / 30 · 46 / 40); and **at 390 the hero
   is 273 wide against 253** — the master pads its own sides 20 where the root's `padX` is 10
   (JP-038's page inset), so the hero takes the 20 and the rail stands 10 right of the frame's.
   The twins render the same since JP-038; a `sectionVm` arm for one section would part it from
@@ -1381,7 +1394,9 @@ the twins' dark-ground assumptions break (trap 6).
   as well; it read 540.7 before JP-038 moved `padX`); the seeded three chips against the frame's
   two, wrapping at 390; the seeded two feature rows against four, so the cards stand 406.2 /
   450.8 / 474.5 against 478.9 / 512 / 510; the seeded heading 3 / 2 / 2 lines against the frame's
-  typed 2 / 2 / 2; the roots' `padY` 80 / 56 / 44 against 56 × 0.82 / 60 / 30; Noto's pill 4–6%
+  typed 2 / 2 / 2; the roots' `padY` 80 / 56 / 44 against 56 × 0.82 / 60 / 30 (*reversed* by
+  JP-094, user call, 2026-10-02: the frame's at every width, but the desktop foot, which stays
+  `padY` because the 1px foot rule bleeds through it, its 24 + 8 the frame's 32); Noto's pill 4–6%
   wider than Fisterra's (the header's diff).
 - **`live=1`** (puppeteer clicks, 1440 and 390): chips 2, 1 and 0 each move the fill (paper at
   1440, blush at 390) and swap the name and price (1,200 / 650 / 450); cursors are live-gated;
@@ -1468,11 +1483,15 @@ the twins' dark-ground assumptions break (trap 6).
   Petch string is the twins'.
 - **Inherited whole**: the blocked row (Lime's .38 on the row's three children, no strike, no
   handler — layout 1's Editorial calendar took the same state, and it reads on the taupe); the
-  390 foot stack (the master gives its line 60 beside a 184 pill); and **the desktop vertical
+  390 foot stack (the master gives its line 60 beside a 184 pill — reversed by JP-100,
+  `layout-2-qa-fixes.md`, user call, 2026-10-01: the stack was Lime's fit slip, and the foot is one
+  row, its line under the chip in the 116 beside the Noto pill, 98 against the master's 84); and **the desktop vertical
   inset** — the Lime block's `calc(u(56) - padY)` margin stands the card in Frame 298's own 56 ×
   0.82 at 1440 (user call, 2026-09-17), so this section answers media's "named, not fitted"
   question the other way by inheritance; at 768 the root's `padY` is the wrapper's 56, and at 390
-  it is 44 against 40 (named, the twins').
+  it is 44 against 40 (named, the twins'). *Folded by JP-094 (`layout-2-qa-fixes.md`, user call,
+  2026-10-02): the margin is gone, and `sectionVm`'s layout-2 arm pads the root 45.9 / 56 / 40
+  at both ends. The desktop card stands 1/64px higher, the sum's rounding against the padding's.*
 - **Measured against the masters' content edges** (harness, `getBoundingClientRect` from the
   section root): desktop panel (45.9, 45.9) 1088.2 wide (1328 × 0.82 = 1089), the h2 94.6 into the
   panel (115 × 0.82 = 94.3) at 52px, column head 49.8 (50), rows 112.5 (112.3), foot 82, chip 49.8
@@ -1584,13 +1603,14 @@ the twins' dark-ground assumptions break (trap 6).
   is the twins'.
 - **Inherited whole**: Lime's field allocation (the chip prints `mapRadius` where the frame says
   "● Confirmed" — reversed by JP-060, `../grunge/layout-2-qa-fixes.md`: the chip now prints
-  the featured gig's `g.when`, Retro's reading, and `radius` prints once, as Max travel; two lines a column where the frame prints three — Retro's "Based in" call); the
+  the featured gig's `g.when`, Retro's reading, and `radius` prints once, as Max travel; two lines a column where the frame prints three — Retro's "Based in" call, reversed by JP-096, `layout-2-qa-fixes.md`: the frame's three lines a column, *Based in* over the header's Location and *Willing to travel to* over the city, every label a field with JP-095 (b)); the
   compact `pageWindow` and `grow` (the pager on paper takes `Pager`'s **Editorial default arm** —
   unfilled pills ringed `stroke/1` ink, the current page's ring and numeral terracotta — with no
   `frame.lime`, unlike layout 1's panel; it reads); JP-040's four seats; the zoom; the ring
   labels' seat, **which follows the frame past the 768 and 390 viewports** (open question 7):
   120 mi runs off both, 60 mi half off at 768, clipped by the viewport as the masters clip it
-  (the twins' JP-040 reading); the desktop top inset (`calc(u(56) - padY)`).
+  (the twins' JP-040 reading); the desktop top inset (`calc(u(56) - padY)`; *folded* by JP-094,
+  user call, 2026-10-02, into `sectionVm`'s layout-2 arm, which pads 45.9 / 60 / 40 at both ends).
 - **Measured against the masters' content edges** (harness, `getBoundingClientRect` from the
   section root): desktop card 534.3 wide (652 × 0.82 = 534.6), h2 at (62.3, 78) (62.3, 77.9) at
   26.2px, rows 61.7 (61.5), panel 534.3 × 590.4 (534.6 × 591.2), status pill 82.3 × 19.8 (82 ×
@@ -1602,7 +1622,7 @@ the twins' dark-ground assumptions break (trap 6).
   274.5 / 405 / 336.4 against 290.3 / 340 / 358 (two lines a column; 768's stacked pills); the
   rows hug at 67.3 / 65.1 where the narrow masters divide the 703 column into 74 / 69.5 (Retro's
   declined residue); the terms line wraps in the narrow bar (61.6 against 45), so the panel is
-  718.6 / 495.4 against 703 / 479; the root's `padY` at the foot; the 768 row venues ellipsise
+  718.6 / 495.4 against 703 / 479; the root's `padY` at the foot (*reversed* by JP-094); the 768 row venues ellipsise
   ("THE DEAF INSTI…") where the master's run under the chip, clipped.
 - **`live=1`** (puppeteer, `n=8`, 1440 and 390): a row click features its gig and the list
   rebuilds as the page minus it; a pin click features its gig and moves the lit pin; Venue Link
@@ -1677,7 +1697,7 @@ the twins' dark-ground assumptions break (trap 6).
   the twins' readings stand.
 - **Measured against the masters' content edges** (harness, `getBoundingClientRect` from the
   section root): desktop section 650.3 (802 × 0.82 = 657.6 less the root's `gPad` 46 against 49.2
-  at both ends), photo 686.2 × 358.3 (687.2 × 358.3), h2 at 428.9 (428.9) on two lines 74 tall
+  at both ends; kept by JP-094, user call, 2026-10-02, whose arm leaves the band's own inset alone), photo 686.2 × 358.3 (687.2 × 358.3), h2 at 428.9 (428.9) on two lines 74 tall
   (73.8), card 369 wide at x 765, boxes 329.6 × 34.4 (402 / 42 × 0.82) on a 42.6 pitch, pill
   44.3; 768 section 875.9 (877), photo 334 × 437 at (30, 60), h2 at 527 (527) on three lines 108
   (108), card at (404, 60) 334 wide, boxes 286 × 38 on 48 (48), pill 54; 390 photo 370 × 262 at
@@ -1779,7 +1799,8 @@ the twins' dark-ground assumptions break (trap 6).
   168.5), column 92, card 584 × 367.3 (584 × 369 — Figma's whole-pixel line boxes), pill 169.6 ×
   54 (170 × 54); 390 h2 **170.9** on four lines (172), card 370 wide, tiles **115.3** × 93.6
   equal (108.67 × 94), pill 165 × 54 (165 × 54). **Named diffs**: the desktop head's third line
-  (+86.3, above); the root's `padY` 80 / 56 / 44 against the masters' 45.9 / 60 / 40, and its 390
+  (+86.3, above); the root's `padY` 80 / 56 / 44 against the masters' 45.9 / 60 / 40 (*reversed*
+  by JP-094, user call, 2026-10-02: the masters' own), and its 390
   `padX` 10 against the masters' 20 — **all three masters pad 40 / 20 at 390**, the twins' too
   (the paired diff's root rows agree), so the column is 370 against 350 and the thirds 115.3
   against 108.67, an inherited diff; the seed's five reviews to the frame's three and its quote on
@@ -1938,7 +1959,8 @@ it here in one line, with the plan it came from, a blank line between sessions.)
 - Calendar: *The pin is re-measured per face* (lime/layout-2, D2; retro/layout-2, *measure the
   pin, never transcribe it*) — 12 × 31 marks through a rendered span, 352 / 217.
 - Calendar: *A blocked slot takes layout 1's Lime state* and *the 390 foot stacks*
-  (lime/layout-2, D2) — both kept whole.
+  (lime/layout-2, D2) — both kept whole. The second was reversed by JP-100
+  (`layout-2-qa-fixes.md`).
 - Calendar: *Read every nested node's scheme off the master* (grunge/layout-3, A) — the band,
   Scheme 1 / 3 / 3, read by width off session 0's `s.onScheme`, its first by-width reader.
 - Calendar: *A frame's inside stroke is an inset `boxShadow`* (lime/layout-2, C) — the band's

@@ -77,7 +77,9 @@ This is the one architectural rule worth knowing before editing anything (§12.9
 
 Do not try to unify them. Only three hand-written CSS classes cross the boundary —
 `.hv-indent`, `.hv-acbord`, `.hv-acfill` — because each reads the `--ac` / `--acFg` custom
-properties set per section at runtime.
+properties set per section at runtime. One more rule reads a custom property the same way:
+`input::placeholder` is `opacity: var(--ph, .45)`, and the enquiry form's label-in-box inputs set
+`--ph: 1` inline (JP-093).
 
 Every section is projected through `sectionVm()` into a flat, fully-resolved view-model before
 rendering, so `EncoreSection` does zero colour maths. The enquiry form and the calendar's
@@ -469,7 +471,11 @@ That distinction is the whole design, and it buys two things:
   panel's own 14, and a single grid has one `rowGap`; an odd count trails one half-width cell,
   which is the pricing deck's rule again. A published placeholder draws at `::placeholder`'s .45
   where the canvas span draws it at full — Repertoire's box has always done that, so it is an
-  accepted diff rather than a new one, and no fourth `.hv-*` class was added for it.
+  accepted diff rather than a new one, and no fourth `.hv-*` class was added for it. That holds at
+  layouts 1 and 4, where a label stands over the box and the placeholder is a hint. At layouts 2
+  and 3 the placeholder **is** the box's label, and the .45 left it faint with no other label
+  (2.29:1 under Editorial). There the inputs set `--ph: 1`, so the published box draws the label
+  full, as the canvas does (JP-093, reversing the accepted diff for those two layouts).
 
   **The testimonials carousel, which pages.** It was the last §10.2 section that was a picture
   on *both* sides rather than only on the canvas: the two arrows flanking the quote card carried
@@ -651,7 +657,13 @@ These are intentional limits, not oversights — see §12 for the full list. The
   line, and a sheet that bleeds and puts `u(56)` back lands where the page-ground section
   beside it does (JP-038, user call, 2026-09-24; `scripts/inset.mjs` measures each section's
   edges). The 390 masters themselves part — layout 1's bio, media, repertoire and pricing and
-  layout 3's pricing draw 20 — and 10 was chosen so neighbours always agree.
+  layout 3's pricing draw 20 — and 10 was chosen so neighbours always agree. The *vertical*
+  inset is the page's `padY` (80 / 56 / 44) wherever no frame says otherwise, but under Lime,
+  Grunge and Editorial, layouts 2 and 3 stand each section on its own frame's top and foot:
+  the `vm.pad` arms in `sectionVm`. The page frames stack their sections with no spacing, so a
+  gap between two sections is one's foot plus the next one's top. Layout 3's arms are the
+  Editorial layout-3 sweep's (user call, 2026-09-26), and layout 2's is JP-094's (user call,
+  2026-10-02), which took the tester's 197px header-to-bio gap to the frame's 112.
 - **Fields a layout does not read stay editable.** Each section's panel lists every field any
   of its layouts reads, so switching layouts never discards copy. A field the current layout
   ignores says "Not shown in this layout" under its label, off the field's `in` list and

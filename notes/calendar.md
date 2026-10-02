@@ -67,7 +67,18 @@ another `notes/` file.
   here (under Lime, Grunge and Editorial the row is dimmed to .38 with no strike, the same state their cells take), the foot prints the slot's own short line — `vm.calSlots[].line`, "Thursday evening
   selected", composed from the weekday and the slot's `kind` — or the same `calPrompt`, and the
   pill takes the same `calBookTo` under its own label, `slotCta` ("Start Enquiry"; the frame's
-  "Star Enquiry" read as a typo), chip, line and pill on one row at every width. Its head's link list is `vm.calFlow` — `CTA_TARGETS.book` resolved against
+  "Star Enquiry" read as a typo), chip, line and pill on one row at every width. Under Lime, Grunge
+  and Editorial that is true again since JP-100 (user call, 2026-10-01): their `s.limeTree` foot
+  stacked the pill at 390, a fit slip off Retro's pre-QA foot. At 390 their chip and line are a
+  group that wraps, and the line's minimum is its widest word (`break-word`, not `anywhere`, which
+  would make it one glyph). So the line stands beside the chip wherever that word fits, and drops
+  under it otherwise. That is Lime's and Grunge's seed beside it (80 / 89 of room for *Thursday*'s
+  58), and Editorial's under it (its Noto pill is 198 to the frame's 184, leaving 47). A
+  `maxWidth: 100%` clamps that minimum, so a long word in the prompt still breaks inside the cell.
+  The foot wraps by the same rule: the group's minimum is its own min-content, so a typed `slotCta`
+  long enough to leave the line less than its widest word drops the pill under the group.
+  Retro's and Pop's foot never wraps: at 360 it breaks *Thursday* inside itself, as it always has.
+  Its head's link list is `vm.calFlow` — `CTA_TARGETS.book` resolved against
   the page, this section leading and dotted and never linking to itself, the footer's rule for
   a link column. `heading`, which once headed only the unreachable fallthrough, heads it; `image` does not
   reach it at all.
@@ -167,3 +178,15 @@ another `notes/` file.
   foot is the frames' 101 / 100 / 100. `FIELDS.calendar.cta` reaches only layout 4 there
   (`{ Lime: [3], Grunge: [3], Editorial: [3], '*': [0, 3] }`, measured). Retro and Pop keep the
   pill.
+- **Layout 2's column labels and every layout's prompt are the artist's** (JP-095 (a), user call,
+  2026-10-01). `dateLabel` and `availLabel` (`in: [1]`, both bodies) are the `Date ↓` and
+  `Availability ↓` over the slot list, the `↓` the markup's. An emptied Date keeps its pinned
+  seat, so Availability stays over its column; with both emptied the head row and its rule go.
+  `prompt` (`CAL_PROMPT`, no `in`) is `vm.calPrompt`, which every layout prints while no day is
+  cued: layout 1's and 2's foot line, layout 3's pill and layout 4's date card. It stays
+  `cased()`, as the slot line beside it is, and reads its seed again when emptied
+  (`messageLabel`'s rule), since an empty foot reads as broken. The canvas never reads the clock,
+  so no harness render prints it unless the cued day is blocked: its `reach.mjs` row and any sweep
+  stand on `booked: [CAL_OPEN]`. A long word in it breaks at every site, except in Retro's and
+  Pop's layout-2 foot at 1440 and 768, which ellipsises the line as it always has the slot line.
+  The slot line's " selected" and the legend stay literals, unreported siblings.

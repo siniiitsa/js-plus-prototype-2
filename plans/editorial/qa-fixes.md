@@ -407,6 +407,8 @@ per package in the frame's order behind the `All` chip. Asked over what the sess
 seeded fields and left the unreported siblings as literals (CLAUDE.md lists four: the bio's `Bio`
 eyebrow, media layout 2's `● Featured`, the calendar legend, testimonials layout 2's `✎`). The
 tester has now reported four more, and one of them sits in the seat of a field that already exists.
+*(`● Featured` and `✎` were reported since, with six more layout-2 labels: JP-095 (a),
+[`layout-2-qa-fixes.md`](./layout-2-qa-fixes.md).)*
 
 | Literal | Sites | Reached by | Fix shape |
 |---|---|---|---|
@@ -797,6 +799,9 @@ and `vm.cardNameEms` at `EncoreBuilder.jsx:673`.
     (200 past).
   - It also clips on **Editorial's layout-2** header, 84 past; there the section's `scrollWidth`
     reads 474, so the *page* scrolls sideways. And on Editorial's **layout-3** header, 94 past.
+    *The layout-2 half is fixed by JP-092* ([`layout-2-qa-fixes.md`](./layout-2-qa-fixes.md)):
+    the title now fits its widest word at every width under Lime, Grunge and Editorial, so
+    *Supercalifragilistic* sets at 38.16 at 390 and the section reads 390.
   - Editorial's **layout-4** header fits it, at 36.09px. Layouts 2–4 fit all four real names.
   - **The 390 nav wordmark** (`Wordmark`'s `nowrap` name in NavBar's `minWidth: 0` row): with
     *Florence and the Machine* it runs under the Book pill and the burger, and ends at 392.3 at
@@ -804,6 +809,8 @@ and `vm.cardNameEms` at `EncoreBuilder.jsx:673`.
     414 it fits. HEAD is the same.
   - **The footer at 360** overflows with the two long names (`scrollWidth` 390 and 370 against
     360), so the page scrolls sideways there. HEAD is the same. The footer fits at 390 and 414.
+    *Maximilian Featherstonehaugh* overflows it at 390 and 414 as well (JP-092's *Settled* in
+    [`layout-2-qa-fixes.md`](./layout-2-qa-fixes.md)).
 - **Build.** `npm run build` is clean. The root `index.html` is not refreshed.
 - **Docs.**
   - The `Title` comment (390 is fitted to the widest word).

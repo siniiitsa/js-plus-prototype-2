@@ -402,7 +402,9 @@ filtered to the `s.v1` branches):
     `d === 2` is **layout 3's** (the comments cite `964:68655` and its column heads). Layout 2 has
     no `vm.pad` arm under any template; the bio, media, calendar, pricing, form and testimonials
     sessions of this pass widen nothing there and stand on the root's `padY` / `padX`, as Lime's
-    layout-2 blocks do.
+    layout-2 blocks do. *Reversed by JP-094 (`../editorial/layout-2-qa-fixes.md`, user call,
+    2026-10-02): layout 2 has one arm now, under Lime, Grunge and Editorial alike. It pads every
+    section but the repertoire, the form and the footer with its frame's own top and foot.*
   - `vm.navNameEms` and `vm.navCtaEms`, Lime-only and in `bebasEms` — the header needs both in
     Anton × 0.75, the way `vm.navEms` already takes `navFace`;
   - `vm.navFits` (JP-039) has a Lime arm and a Retro arm and **no Grunge arm**, so the 768 header
@@ -948,7 +950,8 @@ Append as the pass goes. Do not repeat layout 1's, Lime's or Retro's bullets; na
   component value the mode did not override, and it shows at desktop (the diagonal crosses at
   9): "leaked tops are followed where they show", so `rTop` is `u(30)` there. The 768 seats
   it would show on are 1px tall (Retro's squeeze, divided in the frame's proportions as
-  before), so nothing changes at 768.
+  before), so nothing changes at 768. *The squeeze call was kept by JP-098 (user call,
+  2026-10-01).*
 - **One named departure: the 390 right column's first-tile wrapper.** `880:19235` carries
   `[0, 0, 40, 40]` where its own image frame says 10, Lime's 390 says 10 on the same node,
   and Grunge's 768 and 1440 say 15 there — a one-node stray, not a leaked default (the render
@@ -978,7 +981,8 @@ Append as the pass goes. Do not repeat layout 1's, Lime's or Retro's bullets; na
   (255 × 0.82) at 100.9 / 176.3 / 184.5 and 159.1 / 198.5 / 104.1 (the frame's six × 0.82 to
   the tenth), first tiles `0 0 12.3 12.3`, middles 12.3, lasts `24.6 24.6 0 0`; 768 hero
   333 × 392 at 15, caption 89.4 × 31 at 11px, head row 331 × 20 with *See us in action* at
-  11px / −0.66px, grain 831 at (2, 1.2), tiles 160.5 wide at 73.9 / 129.3 / 134.8 and 116.3 /
+  11px / −0.66px (*reversed* by JP-098: the row reads *Gallery*, `railLabel`, and the caption
+  gains the heading over the name), grain 831 at (2, 1.2), tiles 160.5 wide at 73.9 / 129.3 / 134.8 and 116.3 /
   145.4 / 76.3 (the 358 band in the frame's proportions, Retro's rule); 390 hero 249 × 284 at
   15, caption 115.7 × 46 on two lines at 11px, ten tiles 36.5 × 48.8 at 10. **Named diffs,
   Lime's**: the root's 40 / 22 side padding against the masters' 30 / 10; the 37 out of the
@@ -1129,6 +1133,9 @@ Append as the pass goes. Do not repeat layout 1's, Lime's or Retro's bullets; na
   on one row with the line at 90 wide on three lines, exactly as Lime's did, and Lime's block
   departed from its own frame there (the pill on its own row); a Grunge-only row would be the
   ternary tree the plan forbids, so the foot is 113 against the frame's 84 (Lime's 129).
+  **Reversed by JP-100** (`../editorial/layout-2-qa-fixes.md`, user call, 2026-10-01): Lime's
+  stack was a fit slip, Retro's pre-QA foot. The foot is one row, the frame's 84, with the line
+  beside the chip on three lines in 89.
 - **Measured against the masters' content edges**: desktop panel 1052 × 816.8 at radius 12.3
   (15 × 0.82), band 199.5, h2 at 94.6 (115 × 0.82 = 94.3) and 468 wide inside the 571 cap,
   column head 49.8 (61 × 0.82 = 50), rows 121.4 (148 × 0.82), marks 235.3 wide, weekday at 322,
@@ -1142,7 +1149,7 @@ Append as the pass goes. Do not repeat layout 1's, Lime's or Retro's bullets; na
   is one heading line shorter than its frame (199.5 / 220.4 / 208.4 against 258.3 / 271 / 247),
   since the seed prints AVAILABILITY where the frame sets a two-line sentence; the desktop and
   768 weekdays under the measured pin; the root's 40 / 22 side padding against the masters'
-  30 / 10; the 390 foot stack.
+  30 / 10; the 390 foot stack (gone with JP-100).
 - **`FIELDS.calendar.heading`'s `Grunge: [0, 1, 2, 3]`** (layout 1, section 8) holds over the
   fitted card: the h2 is in every layout-2 render above. `reach.mjs` carries no calendar probe
   (its `cj` probes are the header's, the bio's and the map's), so no run was owed; `slotCta`
@@ -1491,7 +1498,8 @@ Conventions, with the plan it came from — layout 1's running list, kept for th
   Bebas Neue, and the frame's 350 is not followed* (Lime 2, calendar) — a third face, a third
   pair of numbers, the same call.
 - *A blocked slot takes layout 1's Lime state* and *the 390 foot stacks, Retro's departure*
-  (Lime 2, calendar) — both inherited, neither grown.
+  (Lime 2, calendar) — both inherited, neither grown. The second was reversed by JP-100
+  (`../editorial/layout-2-qa-fixes.md`).
 - *Open question 2's route 1: the hard shadow goes through `style`* (Lime 2, bio) — the pill's
   block, already Lime's, on the same key.
 - *The `G` lookup whose Lime arm is today's literals* (layout 1, sections 4–10) — four keys.

@@ -57,7 +57,11 @@ Two styling systems, deliberately (README §"Two styling systems, deliberately")
   — and no effect.
 
 Do not try to unify them. Only `.hv-indent`, `.hv-acbord` and `.hv-acfill` cross the boundary,
-because each reads the per-section `--ac` / `--acFg` custom properties.
+because each reads the per-section `--ac` / `--acFg` custom properties. One rule reads a custom
+property the same way (JP-093, user call, 2026-10-01): `index.css`'s `::placeholder` is
+`opacity: var(--ph, .45)`. The enquiry form's four label-in-box inputs (layouts 2 and 3, both
+bodies) set `--ph: 1` inline, because their placeholder is the box's only label. Every other
+placeholder is a hint and keeps the .45.
 
 Every section is projected through **`sectionVm()`** into a flat, fully-resolved view-model
 before rendering, so `EncoreSection` does zero colour maths. `sectionVm` takes `themeIdx` as an
@@ -158,7 +162,7 @@ mutated through a single `patch()` helper.
   artist's role and town are the header's too** (F1): `headerIdentity()` in `data.js` reads the
   header's raw `kicker` / `location`, and `sectionVm({ identity })` gives them to every other
   section — the bio (its role lines, polaroid rail and ID card), the calendar (layout 1's polaroid
-  stamp, which Lime's layout-1 block — Grunge's and Editorial's too, since they share it — does not draw, and layout 4's summary card) and the enquiry form's credit — which have no field for either. The header
+  stamp, which Lime's layout-1 block — Grunge's and Editorial's too, since they share it — does not draw, and layout 4's summary card), the enquiry form's credit and the events map's layout-2 travel card (the town under its *Based in* label, JP-096; `base` reads layouts 1 and 3 alone) — which have no field for either. The header
   reads its own `c`, so previews of other layouts still show theirs. Canvas, published tab and
   `LayoutPicker` all pass it; the harness takes `&who=<json>`. `vm.roleLine` is the pair
   composed with its `·`, so an emptied half drops with the separator, and an emptied value
@@ -217,9 +221,31 @@ mutated through a single `patch()` helper.
   rule; it never reaches the mailto, whose subject carries the chip), and the map's
   "Shows/coverage", which is `kicker`'s layout-1 seed — `mapKickerSeed(d)`, called by
   `sectionVm` and `EditPanel`'s chain alike, so `kicker` now reaches layouts 1 and 3. A typed
-  label wraps rather than outrun a 390 page. The unreported siblings stay literals: the bio's
-  `Bio` eyebrow, media layout 2's `● Featured`, the calendar legend and testimonials layout 2's
-  `✎ What clients say`.
+  label wraps rather than outrun a 390 page. **Eight more at layout 2, every template** (JP-095
+  (a), user call, 2026-10-01): pricing's `kicker` and `featsLabel` (`[ PRICING ]` and
+  `WHAT’S INCLUDED`, seeded in the capitals the frame types and printed as typed), the
+  calendar's `dateLabel` / `availLabel` over the slot list (the `↓` the markup's; an emptied
+  Date keeps its seat, and both emptied drop the row), media's `chipLabel` (the fan's
+  `● Featured`) and the counter's `countLabel` / `totalLabel` ("5 Featured / 5 Max", layouts 2
+  and 3; `countLabel` is layout 1's "5 / 5 Featured" too; an emptied word takes its count with
+  it), and the testimonials' "✎ What clients say", which is `kicker`'s layout-2 seed —
+  `testiKickerSeed(d)`, `mapKickerSeed`'s shape with its own chain arm, so `kicker` reaches
+  layouts 2 and 3. The calendar's `prompt`, *Pick a date to enquire*, which every layout prints
+  while no day is cued, reads its seed again when emptied and stays `cased()`. **And the map's
+  layout-2 travel card and list, every template** (JP-095 (b) · JP-096, user call, 2026-10-01):
+  `kicker` (*Travel radius*) and `listLabel` (*Other upcoming*) reach layout 2 through
+  `mapKickerSeed(d)` and `mapListLabelSeed(d)` (the chain's `listLabel` arm is gated on `map`,
+  since media has one too). The card's `homeLabel` / `homeCaption` and `venueLabel` /
+  `venueCaption` (*Based in* / *Home location*, *Willing to travel to* / *Venue location*), and
+  the stat row's `radiusLabel` / `travelTimeLabel` / `feeLabel`, are new; an emptied stat label
+  leaves its value alone. The pills `venueCta` / `routeCta` read their seed again when emptied.
+  Venue Link wraps only once typed longer than its seed (`vm.mapVenueCtaWraps`), because Lime's 768
+  seed runs 1px into the disc's gap. **And the gallery's 768 head row** (JP-098, user call,
+  2026-10-01): `railLabel`, seeded *Gallery*, `in: [1]` but read at tablet alone (the hint says
+  so, since `in` names no width), dropped when emptied; the heading it used to hold is the caption
+  pill's first line at every width. The unreported siblings stay literals: the bio's `Bio` eyebrow, the calendar legend and its slot line's
+  " selected", the repertoire's `All` chip and search placeholder, and the footer's *A JustPay
+  Product*.
 - A page section is `{ id, cat, arch, c }` — category, layout index, sparse content overrides.
   Colours are per-section only where a template's frames make them so: every section renders in
   the active theme's single `palette`, **unless its frames stand it on another colour scheme** —

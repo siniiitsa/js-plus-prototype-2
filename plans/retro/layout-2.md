@@ -271,6 +271,9 @@ Learned on the bio (section 2):
 - **The section is shorter than its frame, by design.** The frame's 56px inset × 0.82 is 46, and
   the page supplies `padY` 80 / `padX` 64 instead — so a 760-high frame lands 691 high and its
   content column is 1052 wide, not 1089. Fit the **card**, not the frame height.
+  *Kept for Retro and Pop; **reversed** for Lime, Grunge and Editorial by JP-094
+  (`../editorial/layout-2-qa-fixes.md`, user call, 2026-10-02). Their layout-2 sections pad
+  their frames' own top and foot, the `vm.pad` arm in `sectionVm`.*
 - **`BookPill` now takes `glyph="arrow"`** — the layout-2 frames swap the asterisk for an arrow in
   a filled disc flush in the pill's right end. The header's layout-2 frame uses the same pill.
   Default is `"star"`, so every fitted layout-1 caller is untouched.
@@ -323,7 +326,12 @@ Learned on the media player (section 3):
 - **A vm key is the honest fix when a design columns apart what layout 1 sets on one line.**
   `sectionVm` gained `rel` (the track subline minus its running time) rather than v1
   string-stripping the ` · 5:42` off `sub`. Additive keys are safe; changing an existing one is
-  not, because `dur` is the audio player's whole right-hand column.
+  not, because `dur` is the audio player's whole right-hand column. *(A slip beside it, JP-097,
+  2026-10-01: this fit gave `rel` to the fan cards and the list rows but left the bar's byline on
+  layout 1's `np.by`, the artist alone, where the frame types* Kai Mercer · Single*. Lime's fit
+  drew it into its own block and Grunge and Editorial inherited it. The bar now prints the track's
+  own `byline`, the artist then `rel` —
+  [`../editorial/layout-2-qa-fixes.md`](../editorial/layout-2-qa-fixes.md).)*
 - **`paperLine` and `paperFg` are the two that read on a `paper` panel.** `line2` is
   `rgba(paper, .4)` — meant for the dark page ground, invisible on the panel — and the accent is
   not guaranteed against it either (Lime's is acid green on pale lime). Retro keeps the frame's
@@ -353,7 +361,9 @@ Learned on the video section (section 4):
   so the call can be reversed. *(Narrowed since by the Grunge retest's JP-071,
   2026-09-29: "● Popular" and seven other labels the tester reported are now seeded,
   emptiable fields — [`../grunge/retest-qa-fixes.md`](../grunge/retest-qa-fixes.md).
-  The rule still holds for every label nobody has reported.)*
+  The rule still holds for every label nobody has reported.)* *(And again by Editorial layout 2's
+  JP-095 (a), 2026-10-01: eight layout-2 labels on pricing, the calendar, media and the
+  testimonials — [`../editorial/layout-2-qa-fixes.md`](../editorial/layout-2-qa-fixes.md).)*
 - **A field the frame needs and no layout has is cheap; a repeater is not.**
   `FIELDS.video` gained `image` and `avatar` — two `type: 'image'` entries, which
   `EditPanel`'s `imgVal`/`ImageField` already handle generically, so the diff is
@@ -605,7 +615,12 @@ Learned on the events map (section 9):
   once** — the first draft here put `mapTerms` in two places and lost a
   cell to it. Where a frame label duplicates what our field's own copy
   says ("Based in" over `base`, whose default *is* "Based in
-  Manchester"), drop the label, not the field.
+  Manchester"), drop the label, not the field. *(**Reversed** for this
+  card by JP-096, user call, 2026-10-01,
+  [`../editorial/layout-2-qa-fixes.md`](../editorial/layout-2-qa-fixes.md):
+  the home value is now the header's Location, the frame's own
+  "Manchester, UK", so both of the frame's labels are back and `base`
+  reads layouts 1 and 3 alone.)*
 - **The flat four's dark card needs an outline as much as the cream one
   does.** `deep` is the darkest *tag*, which on Grunge is `#000000` —
   the page ground itself. The calendar's note only covered a palette
@@ -684,7 +699,9 @@ Learned on the enquiry form (section 10):
   placeholder without also shouting whatever the visitor types. The
   row's `placeholder` column then reaches layout 1 alone, which is open
   question 4's case at the level of a *column of a repeater* rather than
-  a field.
+  a field. *(The string matched and the strength did not: the global
+  `::placeholder` drew the label at .45 until JP-093 set `--ph: 1` on the
+  input, `../editorial/layout-2-qa-fixes.md`.)*
 - **`Photo` now takes `ink`** — the initials placeholder's colour,
   defaulting to `s.muted`. `Pager`'s `idle` and `BookPill`'s `glyph`
   precedent: additive, so every caller written before it is untouched.
@@ -1054,6 +1071,10 @@ Learned on the gallery's narrow masters (section 6):
   and the pill keeps the artist's name alone. Allocate each field exactly once
   (the events map's rule) rather than printing it in both — and check the
   *frame's* own copy for the same duplication before transcribing it.
+  ***Reversed** by JP-098 (user call, 2026-10-01,
+  `../editorial/layout-2-qa-fixes.md`): the row prints the frame's own word,
+  a `railLabel` field seeded *Gallery*, and the heading went back to the
+  caption, which is two lines at 768 as in the frame.*
 - **`flex: 1 0 0` under siblings carrying leaked desktop heights is the tell
   for a squeezed master.** The 768 masonry's third tile in each column is a
   fill; its two siblings still state 123/215 and 194/242 against a 358 band,
@@ -1063,6 +1084,7 @@ Learned on the gallery's narrow masters (section 6):
   frame's proportions instead: it shows all six, and it is what the desktop
   branch's `flex: ${h} 1 auto` already does. **Honouring a squeeze costs
   content**, which is the one thing a fidelity argument never buys.
+  *Kept by JP-098 (user call, 2026-10-01), which asked for the frame's four.*
 - **When every tile in a rail is `flex: 1 0 0`, the count is the design and
   the height is derived.** The 390 rail seats ten at 48.8; the section has
   six, so the same mechanism at our count stands them at (284 − 20) / 3 = 88.

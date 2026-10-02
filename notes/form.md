@@ -46,6 +46,9 @@ another `notes/` file.
   `rowGap` — and an odd count trails one half-width cell, the pricing deck's rule; and a published
   placeholder draws at `::placeholder`'s `.45` where the canvas span draws it full, which is
   **Repertoire's accepted diff**, not a new one, and is why no fourth `.hv-*` class was added.
+  *(Reversed for layouts 2 and 3 by JP-093, user call, 2026-10-01: there the placeholder is the
+  box's only label, so their inputs set `--ph: 1` and it draws full, below. Layouts 1 and 4 keep
+  the .45, since their placeholder is a hint under a label.)*
   **Everything in this paragraph from "The chip starts at 0" on is layout 1's**: layout 2 is a
   narrow sidebar card on a full-bleed mustard sheet (pale under Lime; Grunge's frame paints no
   sheet at all, its Scheme 4 being its Scheme 1; under Editorial the sheet is the root's own
@@ -55,7 +58,9 @@ another `notes/` file.
   `!!s.v0 && nTypes` and its mailto sends the bare `Enquiry`), the message textarea, or the
   boxes' placeholders: its box holds the field's **label** instead, uppercased as a *string* so
   the live input can carry it as a placeholder without also shouting whatever the visitor types,
-  which is what keeps the published first paint the canvas's picture. Its refused box thickens an
+  which is what keeps the published first paint the canvas's picture. The input also sets
+  `--ph: 1` inline, so that placeholder draws at full strength, as the canvas span does, where
+  `index.css`'s `var(--ph, .45)` dims every hint (JP-093). Its refused box thickens an
   inset **ring** where layout 1 draws an inset rule — a rule under a 999px pill reads as a smear
   (under Lime the ring is 2px of full ink, Lime's layout-1 rule, and under Grunge 2px of `s.tx`,
   the idle ring being the white 15%; Editorial's boxes are square and dashed 6, 6 in full ink, so

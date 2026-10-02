@@ -119,3 +119,11 @@ another `notes/` file.
   terracotta, the pair the frame names outright). `unit` moves with it: nothing prints a suffix after the price here, so **`vm.tierKind`**
   — the unit with its leading slash dropped — stands above the numeral where the frame writes
   SET / PROJECT, which is one section-wide word against the frame's different one per row.
+- **Layout 2's two labels are the artist's** (JP-095 (a), user call, 2026-10-01, the label shape of
+  JP-071 and JP-090): `kicker`, the `[ PRICING ]` over the heading, and `featsLabel`, the
+  `WHAT’S INCLUDED` over the plan card's features, both `in: [1]` and read by both bodies. They are
+  seeded `PRICING_KICKER` and `PRICING_FEATS_LABEL` in the capitals the frame types (`964:64610`'s
+  text layers are named so), and printed as typed: the sites carry no casing, so none was added, and the seed is
+  the rendered bytes, curly apostrophe included. The brackets are the markup's. Emptied, each is
+  not drawn; the features label still stands only while the package has features. A long one
+  wraps.

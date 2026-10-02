@@ -37,7 +37,11 @@ import {
   THEMES, SCHEMES_OF, CATS, NVAR, FLAG, FIELDS, TITLES, DEFS, TRACKS, TAGS, TAG_LABELS, HERO_CTA, BIO_CREDIT, BIO_CTA,
   HERO_AVAIL, FACE_TITLE, FACE_BODY, PLACE_BODY, BIO_TAG,
   BIO_SINCE_LABEL, BIO_ROLE_LABEL, BIO_BASE_LABEL, BIO_ABOUT_LABEL, BIO_TAGS_LABEL, MEDIA_LIST_LABEL,
-  BIO_REF_LABEL, MAP_LIST_LABEL, FORM_TYPE_LABEL, mapKickerSeed, TESTI_KICKER, TIER_KEYS, tiersSeed, limeTreeTheme, PRICE_UNIT, QUOTES,
+  BIO_REF_LABEL, FORM_TYPE_LABEL, mapKickerSeed, mapListLabelSeed, testiKickerSeed,
+  MAP_HOME_LABEL, MAP_HOME_CAPTION, MAP_VENUE_LABEL, MAP_VENUE_CAPTION, MAP_RADIUS_LABEL, MAP_TIME_LABEL,
+  MAP_FEE_LABEL, MAP_VENUE_CTA, MAP_ROUTE_CTA,
+  PRICING_KICKER, PRICING_FEATS_LABEL, CAL_DATE_LABEL, CAL_AVAIL_LABEL, CAL_PROMPT,
+  MEDIA_CHIP_LABEL, MEDIA_COUNT_LABEL, MEDIA_TOTAL_LABEL, GALLERY_RAIL_LABEL, TIER_KEYS, tiersSeed, limeTreeTheme, PRICE_UNIT, QUOTES,
   CITIES, PINS, EXAMPLE_PAGE,
   NOW_PLAYING, TRACK_AUDIO, SONGS, REP_ALL,
   GIGS, MAP_RADIUS, MAP_BASE, MAP_TERMS, MAP_TRAVEL_TIME, MAP_FEE, directionsUrl, GALLERY_SOURCES,
@@ -456,6 +460,36 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
       ? (T.name === 'Lime' ? T.sem?.box1 : T.name === 'Grunge' ? '#171716' : undefined)
       : undefined,
   }
+  // Layout 2's sections stand on their own frames' insets (JP-094, user call,
+  // 2026-10-02, reversing Retro's "fit the card, not the frame height" for the
+  // three templates whose pages are Lime's tree). The page frames stack their
+  // sections with no spacing and each states its own top and foot, so a gap is
+  // one section's foot plus the next one's top, where `padY` doubled up to 160
+  // (the tester's 197 in the zoomed tab) against the frame's 112 × 0.82
+  // (Editorial's 964:64598 · 986:15657 · 986:15676; Lime's 964:64579 ·
+  // 986:11847 · 986:11866 and Grunge's 964:64617 · 986:13752 · 986:13771
+  // state the same numbers to the pixel). [top, foot] at 1440, 768 and 390,
+  // desktop × 0.82 rounded to 0.1 as the blocks' own `u()` rounds it — not
+  // layout 3's whole pixels — so the calendar's and the map's old
+  // `calc(u(56) - padY)` margins (Lime's user call, 2026-09-17) fold in exactly.
+  // `null` keeps `padY` where a block reads it as the root's own: the header's
+  // top, which its nav margin cancels, and pricing's desktop foot, which its
+  // 1px foot rule bleeds through (the rule's 24 + 8 is the frame's 32). The
+  // repertoire's sheet, the form's band and the footer keep theirs.
+  if (d === 1 && (T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial')) {
+    const inset = {
+      header: [[null, 56], [null, 60], [null, 10]],
+      bio: [[56, 56], [60, 60], [30, 30]],
+      media: [[86, 86], [60, 60], [40, 40]],
+      gallery: [[46, 46], [30, 46], [40, 40]],
+      pricing: [[56, null], [60, 60], [30, 30]],
+      calendar: [[56, 56], [56, 56], [40, 40]],
+      map: [[56, 56], [60, 60], [40, 40]],
+      testimonials: [[56, 56], [60, 60], [40, 40]],
+    }[cat]?.[DEV_SEAT[Z.dev]]
+    const z = (v) => (v == null ? vm.padY : `${Z.dev === 'desktop' ? Math.round(v * 0.82 * 10) / 10 : v}px`)
+    if (inset) vm.pad = `${z(inset[0])} ${vm.padX} ${z(inset[1])}`
+  }
   // Lime layout 3's column heads — the bio's "KM BIO", the player's and the
   // calendar's "Book Me" — stand 50 below their row in all three frames
   // (964:68655 · 984:10741 · 984:10772), where `padY` gave 80 / 56 and left a
@@ -670,7 +704,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // there — `titleWordEms`' rule, never breaking inside a word. `navFace` is
   // the display face at its nominal size, so HeaderV2 fits the unfaced size
   // and `faced()` stays outside the fit. Editorial's other titles that wrap
-  // between words read it too: HeaderV3's, and HeaderV0's at 390 (JP-086).
+  // between words read it too: HeaderV3's, and HeaderV0's at 390 (JP-086);
+  // and so does the layout-2 title under Lime, Grunge and Editorial, at every
+  // width, HeaderV1's `s.limeTree` block (JP-092).
   vm.cardNameEms = navFace ? +Math.max(0, ...vm.brand.split(/\s+/).map(navFace)).toFixed(3) : undefined
   vm.navCtaEms = navFace ? +(navFace(vm.cta1) + navFace(vm.cta2)).toFixed(3) : undefined
   // The layout-1 capsule's name gives way before its links do (JP-091, user
@@ -814,6 +850,12 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   vm.mediaKicker = cv('kicker', 'Top tracks')
   // JP-071 — layouts 2 and 3's "● Popular" over the list; the dot is the markup's.
   vm.listLabel = cv('listLabel', MEDIA_LIST_LABEL)
+  // JP-095 (a) — layout 2's fan chip and the counter's two words over the list
+  // ("5 Featured / 5 Max", layout 1's "5 / 5 Featured"), the same shape. The
+  // counts are the markup's; an emptied word takes its own with it.
+  vm.mediaChip = cv('chipLabel', MEDIA_CHIP_LABEL)
+  vm.countLabel = cv('countLabel', MEDIA_COUNT_LABEL)
+  vm.totalLabel = cv('totalLabel', MEDIA_TOTAL_LABEL)
   // vm.nowPlaying is resolved under `tracks` below, because it reads them.
   // The Soundcloud button's destination, and the whole of its `live` seam.
   // Normalised to an absolute URL: the published tab carries a <base href> to
@@ -857,16 +899,27 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // the running time apart (media layout 2). The seeded shape is the only one
   // that knows both: TracksField has no duration field at all, so there `rel`
   // is just the row's own subtitle and equals `dur`.
+  //
+  // `byline` is media layout 2's bar line under the playing track's title,
+  // "Kai Mercer · Single" in every frame (JP-097): the artist, then that
+  // track's `rel`, the ` · ` going with an empty one. Composed here, the
+  // testimonials' `byline` rule, and per track, because the bar names the
+  // track it plays. Once the artist edits the list it is the row's whole
+  // subtitle, "Kai Mercer · Single · 4:55", the line the row under it prints.
+  // `nowPlaying.by` stays the artist alone: layouts 3 and 4 print it over
+  // `rel` on a line of its own, and would print the release twice.
   const seedArt = defaultTrackArt(cat, T.name) ?? []
+  const by = cased(artistName)
+  const byline = (rel) => [by, rel].filter(Boolean).join(' · ')
   if (Array.isArray(c.tracks)) {
     vm.tracks = c.tracks.filter((t) => !blankRow(t, TRACK_KEYS)).map((t, i) => {
       const sub = (t?.sub ?? '').trim()
-      return { n: '0' + (i + 1), name: cased(t?.title ?? ''), dur: sub, sub, rel: sub,
+      return { n: '0' + (i + 1), name: cased(t?.title ?? ''), dur: sub, sub, rel: sub, byline: byline(sub),
                img: t?.image ?? null, src: extUrl(t?.audio ?? '', true) || null }
     })
   } else {
     vm.tracks = TRACKS.map(([name, dur, rel], i) => ({
-      n: '0' + (i + 1), name: cased(name), dur, sub: `${rel} · ${dur}`, rel,
+      n: '0' + (i + 1), name: cased(name), dur, sub: `${rel} · ${dur}`, rel, byline: byline(rel),
       img: seedArt[i] ?? null, src: TRACK_AUDIO[i] ?? null,
     }))
   }
@@ -879,10 +932,13 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // tracks the clock stands at 00:00 under an empty bar on both surfaces, and
   // the card names `mediaEmpty`, the one message the empty list prints too.
   // `tracks3` is a prefix of `tracks`, so one test covers every design.
+  // Its `by` is the artist alone, which layouts 1, 3 and 4 print. Layout 2's
+  // bar prints the playing track's own `byline` instead (above, JP-097), and
+  // this `by` only when there is no track to name.
   vm.mediaEmpty = 'No tracks yet.'
   vm.nowPlaying = vm.tracks.length
-    ? { ...NOW_PLAYING, by: cased(artistName) }
-    : { at: '00:00', of: '00:00', pct: 0, by: cased(artistName) }
+    ? { ...NOW_PLAYING, by }
+    : { at: '00:00', of: '00:00', pct: 0, by }
 
   // pricing — the artist's own packages, else the seeded ones. The `songs`
   // rule again: an absent key means TIERS, an emptied array means no packages,
@@ -916,6 +972,11 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   vm.pricingRating = cv('rating', PRICING_RATING)
   vm.pricingCta = cv('cta', PRICING_CTA)
   vm.pricingNote = cv('note', PRICING_NOTE)
+  // JP-095 (a) — layout 2's "[ PRICING ]" and "WHAT’S INCLUDED", seeded in the
+  // capitals the frame types and printed as typed; the brackets are the
+  // markup's. '' when emptied.
+  vm.pricingKicker = cv('kicker', PRICING_KICKER)
+  vm.featsLabel = cv('featsLabel', PRICING_FEATS_LABEL)
   // A card's four colours, given the ground it stands on. Layout 1 walks that
   // ground round T.tags, one hue per card; layout 2 has a single card and pins
   // it, so both go through here and the pairing rule is written once.
@@ -1106,7 +1167,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // pricing's rating is.
   vm.testiRating = cv('rating', TESTI_RATING)
   // JP-071 — layout 3's "● Testimonials" eyebrow; the dot is the markup's.
-  vm.testiKicker = cv('kicker', TESTI_KICKER)
+  // JP-095 (a) took it to layout 2's "✎ What clients say", its seed there.
+  vm.testiKicker = cv('kicker', testiKickerSeed(d))
   // §10.2 layout 3 reads the same tags as a *grouping* rather than as a filter:
   // one card per tag, holding the songs that carry it. `repChips` leads with the
   // All chip, which is a filter reset and not a set, so the cards are the chips
@@ -1217,6 +1279,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // gallery
   vm.gal = ['01', '02', '03', '04', '05', '06']
   vm.gal4 = vm.gal.slice(0, 4)
+  // JP-098 — layout 2's 768 head row over the small photos, the frame's word,
+  // uncased; emptied, the row goes. The heading is the caption's, at every width.
+  vm.galRailLabel = cv('railLabel', GALLERY_RAIL_LABEL)
   // Tag order per the Figma gallery frame: Gallery/YouTube/Instagram/TikTok
   // tiles read accent-red, olive, purple, yellow — tags 1, 3, 0, 2 in Retro.
   //
@@ -1309,7 +1374,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // artist has blocked — lit and struck through at once. A cue that has
     // passed cues nothing either, and the foot prints the prompt.
     vm.calPick = booked.has(openIso) || dead(openIso) ? '' : openIso
-    vm.calPrompt = cased('Pick a date to enquire')
+    // JP-095 (a): the artist's, and like `messageLabel` it reads its seed
+    // again when emptied, since every layout prints it where the pick would
+    // go and an empty foot reads as broken. Cased, as the slot line is.
+    vm.calPrompt = cased(String(cv('prompt', CAL_PROMPT)).trim() || CAL_PROMPT)
     // Retro's and Pop's layout-1 pill (the `s.limeTree` foot has none, JP-088:
     // its line links). The same field is layout 4's Send Enquiry (JP-082),
     // seeded CAL_SEND_4 there: `vm.calWizard.send`, below.
@@ -1317,6 +1385,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // Layout 2's pill, which its frame labels differently from the other two
     // calendar pills (its "Star Enquiry" read as the intended "Start").
     vm.calSlotCta = cased(cv('slotCta', CAL_SLOT_CTA))
+    // JP-095 (a) — the two column labels over that list, the frame's words,
+    // uncased as the head has always drawn them; the "↓" is the markup's.
+    vm.calDateLabel = cv('dateLabel', CAL_DATE_LABEL)
+    vm.calAvailLabel = cv('availLabel', CAL_AVAIL_LABEL)
     // Layout 4's enquiry wizard (QA, 2026-09-15). Step 1 is the frame's
     // (964:72843); the frame draws no step 2 or 3, so their boxes are what the
     // summary card beside it labels (Details) and a way to answer (Contact).
@@ -1628,9 +1700,29 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   vm.gigPage = PINS.length
   // JP-071 — layout 3's "Gigs & travel" eyebrow over the heading, uncased;
   // JP-090 — layout 1's "Shows/coverage" in the same seat, off the same key
-  // with its own seed, and the label over layout 1's gig list.
+  // with its own seed, and the label over layout 1's gig list; JP-095 (b) —
+  // layout 2's "Travel radius" and "Other upcoming", the same two keys' seeds
+  // there.
   vm.mapKicker = cv('kicker', mapKickerSeed(d))
-  vm.mapListLabel = cv('listLabel', MAP_LIST_LABEL)
+  vm.mapListLabel = cv('listLabel', mapListLabelSeed(d))
+  // JP-095 (b) · JP-096 — the rest of layout 2's travel card, uncased: the two
+  // locations' labels and captions and the stat row's labels, each dropped
+  // when emptied, and the two pills, which read their seed again
+  // (`formMsgLabel`'s rule). The home value is `vm.location`, the header's.
+  vm.mapHomeLabel = cv('homeLabel', MAP_HOME_LABEL)
+  vm.mapHomeCaption = cv('homeCaption', MAP_HOME_CAPTION)
+  vm.mapVenueLabel = cv('venueLabel', MAP_VENUE_LABEL)
+  vm.mapVenueCaption = cv('venueCaption', MAP_VENUE_CAPTION)
+  vm.mapRadiusLabel = cv('radiusLabel', MAP_RADIUS_LABEL)
+  vm.mapTimeLabel = cv('travelTimeLabel', MAP_TIME_LABEL)
+  vm.mapFeeLabel = cv('feeLabel', MAP_FEE_LABEL)
+  vm.mapVenueCta = String(cv('venueCta', MAP_VENUE_CTA)).trim() || MAP_VENUE_CTA
+  vm.mapRouteCta = String(cv('routeCta', MAP_ROUTE_CTA)).trim() || MAP_ROUTE_CTA
+  // Whether the Venue Link pill's label may wrap: only once it is typed longer
+  // than the seed. Lime's 768 frame overlaps the seed's text with the disc, and
+  // its fit runs the one-line label 1px into the gap; a label free to wrap
+  // breaks there onto two lines and lifts the pill 1.6px.
+  vm.mapVenueCtaWraps = vm.mapVenueCta.length > MAP_VENUE_CTA.length
   vm.mapRadius = cv('radius', MAP_RADIUS)
   vm.mapBase = cv('base', MAP_BASE)
   vm.mapTerms = cv('terms', MAP_TERMS)
@@ -4031,7 +4123,10 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                   // form's until one is typed (JP-076). The header's kicker left the chain with
                   // JP-061: its `d` is its seed at every layout, and the
                   // layout-3 card's line is a field of its own. The map's
-                  // kicker joined it with JP-090 (mapKickerSeed). Layouts 3 and
+                  // kicker joined it with JP-090 (mapKickerSeed), the
+                  // testimonials' with JP-095 (a) (testiKickerSeed), and the
+                  // map's list label with JP-095 (b) (mapListLabelSeed; gated on
+                  // `map`, since media carries a `listLabel` too). Layouts 3 and
                   // 4's heads come ahead of the song count, which sectionVm's
                   // later assignment says the other way round (JP-070, JP-081).
                   const fallback = (f.k === 'title' || f.k === 'badgeText') && sec.cat === 'header' ? artistName
@@ -4050,6 +4145,8 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                     : f.k === 'navMode' && sec.cat === 'header' ? navModeDefault(themeName, design)
                     : f.k === 'button' && sec.cat === 'form' ? formBtnSeed(themeName, design)
                     : f.k === 'kicker' && sec.cat === 'map' ? mapKickerSeed(design)
+                    : f.k === 'listLabel' && sec.cat === 'map' ? mapListLabelSeed(design)
+                    : f.k === 'kicker' && sec.cat === 'testimonials' ? testiKickerSeed(design)
                     : f.k === 'cta' && sec.cat === 'calendar' && design === 3 ? CAL_SEND_4
                     : f.k === 'rowCta' && sec.cat === 'pricing'
                       && sec.arch % (designCount(sec.cat, themeName) || 1) === 2 ? PRICING_ROW_CTA_3

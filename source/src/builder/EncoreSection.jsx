@@ -2146,18 +2146,27 @@ function HeaderV1({ s }) {
     // The pill, the two cards' copy and `heroCta` are the artist's (JP-037,
     // JP-059): each drops when emptied, and the "●" is the markup's. A long
     // pill wraps inside the column rather than widening the page, as the
-    // hero's does; the seeded box does not move.
+    // hero's does; the seeded box does not move. The column is a query
+    // container at every width (JP-092); it is sized by its parent at all
+    // three, so the container moves nothing.
     const identity = (
-      <div style={col(u(18), { alignItems: 'flex-start', minWidth: 0 })}>
+      <div style={col(u(18), { alignItems: 'flex-start', minWidth: 0, containerType: 'inline-size' })}>
         {s.heroAvail && <span style={{
           boxShadow: ring(s.stroke2), borderRadius: s.btnR, padding: `${u(6)} ${u(12)}`,
           fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4, color: s.ac,
           whiteSpace: 'normal', maxWidth: '100%', boxSizing: 'border-box',
         }}>{`● ${s.heroAvail}`}</span>}
         {/* Grunge's title is two-tone — `sem/text/2` then `text/1`, the hero's
-            own split — where Lime's is one tone. */}
-        <Title s={s} size={s.dispLg} color={s.tx} lh={0.89} inline
-               twoTone={grunge} toneA={s.tx} toneB={s.ac} />
+            own split — where Lime's is one tone. It wraps between words, and
+            shrinks below the ramp only when its widest word would outrun the
+            column (JP-092, user call, 2026-10-01, reversing "no `cqi` fit was
+            owed", which was measured on the seed alone): `100cqi` over the
+            word's width in `navFace` ems (`s.cardNameEms`, HeaderV2's JP-062
+            rule), passed unfaced, since `Title` applies `faced()` and Grunge's
+            ems are already faced. It never breaks inside a word, and the
+            seeded MERCER keeps the ramp at every width. */}
+        <Title s={s} size={s.cardNameEms ? `min(${s.dispLg}, calc(100cqi / ${s.cardNameEms}))` : s.dispLg}
+               color={s.tx} lh={0.89} inline twoTone={grunge} toneA={s.tx} toneB={s.ac} />
         <p style={{
           margin: 0, fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5, color: s.ac, width: '100%',
         }}>{s.subtitle}</p>
@@ -5714,6 +5723,23 @@ const WAVE = [
 // not a count, because the meter's bar count is derived from the width.
 const WAVE_PLAYED = 17 / WAVE.length
 
+// Layouts 2 and 3's counter over the track list, "5 Featured / 5 Max", off
+// `countLabel` and `totalLabel` (JP-095 (a)): each word with its count, the
+// " / " only between two, in the four text nodes the literal made. Null when
+// both are emptied, and the row stays. Layout 1's "5 / 5 Featured" reads
+// `countLabel` alone, in place.
+const trackCount = (s) => {
+  const n = s.tracks.length, a = s.countLabel, b = s.totalLabel
+  if (a && b) return <>{n}{` ${a} / `}{n}{` ${b}`}</>
+  return a || b ? <>{n}{` ${a || b}`}</> : null
+}
+// The counter's span beside a wrapping `listLabel`: it keeps its own line and
+// right-hand seat, as the literal's `nowrap` did, until it is itself wider than
+// the row less the gap, and then it wraps.
+const trackCountFit = (gap) => ({
+  flex: 'none', maxWidth: `calc(100% - ${gap})`, whiteSpace: 'normal', overflowWrap: 'anywhere', textAlign: 'right',
+})
+
 function Media({ s }) {
   // Hooks before the layout branch — the older three-card design plays too.
   // `playing` mirrors the element's own play/pause events rather than being
@@ -5881,7 +5907,13 @@ function Media({ s }) {
     // three widths. An em measure between Bebas Neue's "Five worth" (3.59em)
     // and "Five worth your" (5.34em) reproduces it at every size; Retro's 5.8em
     // is Soulway's and would put "your" on the first line.
-    const featured = eyebrow(`${s.tracks.length} / ${s.tracks.length} Featured`, { textTransform: 'uppercase' })
+    // The counter's word is `countLabel` (JP-095 (a)), the counts the page's;
+    // emptied, no counter. A long one wraps, and at desktop it keeps to half
+    // the row, so the heading keeps its column.
+    const featured = s.countLabel ? eyebrow(`${s.tracks.length} / ${s.tracks.length} ${s.countLabel}`, {
+      textTransform: 'uppercase', whiteSpace: 'normal', overflowWrap: 'anywhere',
+      ...(desk ? { maxWidth: '50%', textAlign: 'right' } : null),
+    }) : null
     const titleWords = String(s.title || '').split(/\s+/).filter(Boolean)
     const titleBlock = (
       <div style={col(u(36), desk ? { flex: 1, minWidth: 0 } : undefined)}>
@@ -6217,17 +6249,21 @@ function Media({ s }) {
       display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
     })
     // Figma sets the kicker and the counter in a small tracked mono, not Anton.
-    const label = (t) => (
+    const label = (t, extra) => (
       <span style={{
         fontFamily: s.body, fontSize: '11px', letterSpacing: '1.2px',
-        textTransform: 'uppercase', color: s.ac, whiteSpace: 'nowrap',
+        textTransform: 'uppercase', color: s.ac, whiteSpace: 'nowrap', ...extra,
       }}>{t}</span>
     )
 
     // Full-width header: on desktop the track counter bottom-aligns with the
     // display heading at the right edge; the narrow frames drop it under the
     // heading instead, left-aligned.
-    const featured = label(`${s.tracks.length} / ${s.tracks.length} Featured`)
+    // Its word is `countLabel` (JP-095 (a)), the counts the page's; emptied,
+    // no counter. A long one wraps, and at desktop it keeps to half the row.
+    const featured = s.countLabel ? label(`${s.tracks.length} / ${s.tracks.length} ${s.countLabel}`, {
+      whiteSpace: 'normal', overflowWrap: 'anywhere', ...(desk ? { maxWidth: '50%', textAlign: 'right' } : null),
+    }) : null
     const titleBlock = (
       <div style={col(desk ? '30px' : '36px', desk ? { flex: 1, minWidth: 0 } : undefined)}>
         {label(s.mediaKicker)}
@@ -6510,13 +6546,21 @@ function Media({ s }) {
     const centre = s.tracks[anchor]
     const nowTitle = s.live || !centre ? now.track : centre.name
     const nowArt = s.live || !centre ? sleeve : (centre.img ?? undefined)
+    // And the line under the title is that track's own `byline`, the artist
+    // and its release, as every layout-2 frame types it: "Kai Mercer ·
+    // Single" (JP-097). With no track it is the artist alone, `now.by`.
+    // A fit slip, and no plan names it: Retro's desktop fit (44405c6) added
+    // `rel` for the fan cards and the list rows and left the bar on layout 1's
+    // `np.by`, the artist; Lime's fit (5a9cf76) drew it into its own block, and
+    // Grunge and Editorial inherited that block.
+    const nowBy = (s.live || !centre ? track : centre)?.byline ?? now.by
 
     // Lime layout 2 (964:64582 · 986:11850 at 768 · 986:11869 at 390) is the
     // same Section as Retro's below — the same two instances in the same
     // wrapper, and a fan whose five cards stand at Retro's exact offsets, sizes,
     // angles and opacities at all three widths (read off both pages' nodes). So
     // it sits *after* the seam: the seats, `CARD`, `step`, `anchor`, the centre
-    // seat's title and art, `u` / `off` / `pad`, and the hooks above the
+    // seat's title, art and byline, `u` / `off` / `pad`, and the hooks above the
     // branches are shared whole, and the published fan, bar and list needed
     // nothing new. What makes it a block is that every leaf is redressed: the
     // fan's four hues become one glassy olive card in a hairline, the pill
@@ -6676,12 +6720,15 @@ function Media({ s }) {
                     26.5 / 26 off the card's edge — Retro's 25.5 / 25 stand
                     inside its 1px border, and this card's ring is a shadow.
                     Sienna Vale's `tag/1` is the blush seat, not its paper
-                    accent. */}
-                {k === 0 && (
+                    accent. Its word is `chipLabel` (JP-095 (a)), the dot the
+                    markup's; emptied, no chip. A long one wraps inside the
+                    card, as far from its right edge as from its left. */}
+                {k === 0 && !!s.mediaChip && (
                   <span style={{
                     ...chipType, position: 'absolute', left: u(26.5), top: u(26),
+                    whiteSpace: 'normal', overflowWrap: 'anywhere', maxWidth: `calc(100% - ${u(53)})`,
                     background: ed ? s.chips[0].bg : s.ac, color: s.tx, borderRadius: '999px', padding: `${u(4)} ${u(8)}`,
-                  }}>● Featured</span>
+                  }}>{`● ${s.mediaChip}`}</span>
                 )}
               </div>
             )
@@ -6732,7 +6779,7 @@ function Media({ s }) {
             {art(nowArt, u(60), '999px', 16)}
             <span style={col(u(2), { flex: 1, minWidth: 0, alignItems: 'stretch' })}>
               <span style={distressed(s, titleType)}>{nowTitle}</span>
-              <span style={{ ...bodySm, ...clip }}>{now.by}</span>
+              <span style={{ ...bodySm, ...clip }}>{nowBy}</span>
             </span>
             {!s.mob && <span style={{ ...bodySm, flex: 'none', whiteSpace: 'nowrap' }}>{now.at} / {now.of}</span>}
           </span>
@@ -6794,7 +6841,7 @@ function Media({ s }) {
             ...(ed ? { position: 'relative' } : null),
           })}>
             {s.listLabel && <span style={{ ...chipType, whiteSpace: 'normal', minWidth: 0, overflowWrap: 'anywhere' }}>● {s.listLabel}</span>}
-            <span style={chipType}>{s.tracks.length} Featured / {s.tracks.length} Max</span>
+            {!!trackCount(s) && <span style={{ ...chipType, ...trackCountFit(u(12)) }}>{trackCount(s)}</span>}
             {ed && dash('bottom')}
           </div>
           {s.tracks.map((t, i) => {
@@ -6972,12 +7019,15 @@ function Media({ s }) {
                 <span style={{ ...titleType(16), lineHeight: 1.2 }}>{t.name}</span>
                 <span style={subType}>{t.rel || t.sub}</span>
               </div>
-              {k === 0 && (
+              {/* The chip's word is `chipLabel` (JP-095 (a)), the dot the
+                  markup's; emptied, no chip. A long one wraps inside the card. */}
+              {k === 0 && !!s.mediaChip && (
                 <span style={chip({
                   position: 'absolute', left: u(25.5), top: u(25),
+                  whiteSpace: 'normal', overflowWrap: 'anywhere', maxWidth: `calc(100% - ${u(51)})`,
                   background: s.chips[4 % n].bg, color: s.retro ? '#FBF6EA' : s.chips[4 % n].fg,
                   borderRadius: '999px', padding: `${u(4)} ${u(8)}`,
-                })}>● Featured</span>
+                })}>{`● ${s.mediaChip}`}</span>
               )}
             </div>
           )
@@ -7037,7 +7087,7 @@ function Media({ s }) {
           <span style={col(u(2), { flex: 1, minWidth: 0 })}>
             {/* `size/title` ramps 24 → 19 → 18 across the three masters. */}
             <span style={titleType(desk ? 24 : tab ? 19 : 18)}>{nowTitle}</span>
-            <span style={subType}>{now.by}</span>
+            <span style={subType}>{nowBy}</span>
           </span>
           {/* The 390 canvas has no frame of its own and cannot seat the whole
               bar: the running time and the glyphs below go, rather than
@@ -7113,10 +7163,11 @@ function Media({ s }) {
           flex: 'none', justifyContent: s.listLabel ? 'space-between' : 'flex-end', padding: `${u(16)} 0`, color: ink,
         })}>
           {s.listLabel && <span style={chip({ textTransform: 'uppercase', whiteSpace: 'normal', minWidth: 0, overflowWrap: 'anywhere' })}>● {s.listLabel}</span>}
-          {/* Layout 1 derives its counter from the track count the same way. */}
-          <span style={chip({ textTransform: 'uppercase' })}>
-            {s.tracks.length} Featured / {s.tracks.length} Max
-          </span>
+          {/* Layout 1 derives its counter from the track count the same way.
+              Its words are `countLabel` and `totalLabel` (JP-095 (a)). */}
+          {!!trackCount(s) && (
+            <span style={chip({ textTransform: 'uppercase', ...trackCountFit(u(12)) })}>{trackCount(s)}</span>
+          )}
         </div>
         {s.tracks.map((t, i) => {
           const r = ROWS[i % ROWS.length]
@@ -7516,7 +7567,7 @@ function Media({ s }) {
               position: ed ? 'relative' : undefined,
             })}>
               {s.listLabel && <span style={{ ...chipType, whiteSpace: 'normal', minWidth: 0, overflowWrap: 'anywhere' }}>● {s.listLabel}</span>}
-              <span style={chipType}>{s.tracks.length} Featured / {s.tracks.length} Max</span>
+              {!!trackCount(s) && <span style={{ ...chipType, ...trackCountFit(u(12)) }}>{trackCount(s)}</span>}
               {footDash}
             </div>
             {s.tracks.length === 0 && (
@@ -7645,7 +7696,7 @@ function Media({ s }) {
           padding: `${u(16)} 0`, color: s.tx,
         })}>
           {s.listLabel && <span style={{ ...chip, whiteSpace: 'normal', minWidth: 0, overflowWrap: 'anywhere' }}>● {s.listLabel}</span>}
-          <span style={chip}>{s.tracks.length} Featured / {s.tracks.length} Max</span>
+          {!!trackCount(s) && <span style={{ ...chip, ...trackCountFit(u(12)) }}>{trackCount(s)}</span>}
         </div>
 
         {/* An emptied list is a real state — the tracks are the artist's — and
@@ -9162,7 +9213,14 @@ function Pricing({ s }) {
           ...(desk ? { flex: '1 1 0', minWidth: 0 } : { width: '100%' }),
           alignItems: 'flex-start',
         })}>
-          <span style={chipFace({ color: s.tx })}>[ PRICING ]</span>
+          {/* The eyebrow is `kicker` (JP-095 (a)), seeded in the frame's
+              capitals and printed as typed; the brackets are the markup's.
+              Emptied, it is not drawn. A long one wraps. */}
+          {!!s.pricingKicker && (
+            <span style={chipFace({ color: s.tx, whiteSpace: 'normal', minWidth: 0, overflowWrap: 'anywhere' })}>
+              {`[ ${s.pricingKicker} ]`}
+            </span>
+          )}
           {/* Display/MD at lh 1. The frame's break after "Personalised" is a
               typed one; the heading is the artist's, so it wraps on the
               column. */}
@@ -9277,7 +9335,12 @@ function Pricing({ s }) {
                 position: ed ? 'relative' : undefined,
               }}>{ed && <DashRule side="top" dash={10 * z} colour={s.stroke1} />}</span>
               <div style={col(u(12), { alignItems: 'flex-start', alignSelf: 'stretch' })}>
-                <span style={chipFace({ color: s.tx })}>WHAT&rsquo;S INCLUDED</span>
+                {/* `featsLabel` (JP-095 (a)), the kicker's shape. */}
+                {!!s.featsLabel && (
+                  <span style={chipFace({ color: s.tx, whiteSpace: 'normal', minWidth: 0, overflowWrap: 'anywhere' })}>
+                    {s.featsLabel}
+                  </span>
+                )}
                 {/* Two columns at every width, Retro's grid. The frame's last
                     three features in Body/MD are normalised to Label/XS. */}
                 <div style={{
@@ -9330,7 +9393,9 @@ function Pricing({ s }) {
               between this section and the next, 32 under the small print
               (the column's 24 plus 8). It bleeds to the page edges and stands
               in for the root's bottom `padY`, so the gap below it is the next
-              section's own top inset. Under Grunge and Editorial the ring
+              section's own top inset — which is why `sectionVm`'s layout-2
+              arm (JP-094) sets this section's desktop top to the frame's 56
+              and leaves its foot at `padY`. Under Grunge and Editorial the ring
               overlay below owns that row (two 15% layers would stack to 28%, and
               Editorial's 56% would darken), so the span keeps only its box —
               the frame's 32 foot. */}
@@ -9374,7 +9439,13 @@ function Pricing({ s }) {
         ...(desk ? { flex: '1 1 0', minWidth: 0 } : { width: '100%' }),
         alignItems: 'flex-start',
       })}>
-        <span style={chipType}>[ PRICING ]</span>
+        {/* `kicker` (JP-095 (a)): the frame's capitals as the seed, printed
+            as typed, the brackets the markup's; emptied, not drawn. */}
+        {!!s.pricingKicker && (
+          <span style={{ ...chipType, whiteSpace: 'normal', minWidth: 0, overflowWrap: 'anywhere' }}>
+            {`[ ${s.pricingKicker} ]`}
+          </span>
+        )}
         <h2 style={{
           margin: 0, fontFamily: s.display, fontSize: u(T.dispMd), lineHeight: 1,
           letterSpacing: s.dls, color: s.ac,
@@ -9539,7 +9610,12 @@ function Pricing({ s }) {
               }} />
 
               <div style={col(u(12), { width: '100%', alignItems: 'flex-start' })}>
-                <span style={chipType}>WHAT&rsquo;S INCLUDED</span>
+                {/* `featsLabel` (JP-095 (a)), the kicker's shape. */}
+                {!!s.featsLabel && (
+                  <span style={{ ...chipType, whiteSpace: 'normal', minWidth: 0, overflowWrap: 'anywhere' }}>
+                    {s.featsLabel}
+                  </span>
+                )}
                 {/* One grid rather than the enquiry form's paired rows: the
                     frame spaces the two columns by 24 and the rows by 10, and a
                     grid carries two different gaps on its own. An odd count
@@ -13721,15 +13797,15 @@ function Gallery({ s }) {
   // picture by construction (`pick` starts at -1: nothing chosen).
   //
   // What the frame draws and this does not: nothing. What the *section* has and
-  // the frame has no room for: the heading is the caption pill's first line
-  // (its own row at 768 — below) and the four media-source rows are gone, three
-  // of them outbound links. That is the media player's Soundcloud call three
-  // times over — see plans/retro/layout-2's open questions. The frame's own two
-  // lines, `MTV "MOOD SWING"` and `FEATURED REEL`, are named here so the call
-  // can be reversed: both are claims about the artist (an MTV feature, a reel)
-  // that no field backs, the video section's rule, so the pill takes `s.title`
-  // over `s.brand` instead — two strings the artist owns, reading as a caption
-  // credit on a photograph.
+  // the frame has no room for: the heading is the caption pill's first line, at
+  // every width (768's head row holds the frame's own word — below) and the
+  // four media-source rows are gone, three of them outbound links. That is the
+  // media player's Soundcloud call three times over — see plans/retro/layout-2's
+  // open questions. The frame's own two lines, `MTV "MOOD SWING"` and
+  // `FEATURED REEL`, are named here so the call can be reversed: both are
+  // claims about the artist (an MTV feature, a reel) that no field backs, the
+  // video section's rule, so the pill takes `s.title` over `s.brand` instead —
+  // two strings the artist owns, reading as a caption credit on a photograph.
   //
   // Desktop numbers are the 1440 frame × 0.82 (§5.5) through `u()`; the two
   // narrow masters are used verbatim, which is the `z` switch inside it (the
@@ -13749,12 +13825,15 @@ function Gallery({ s }) {
   //
   //  · **768 unhides the component's head row**, which the desktop master
   //    carries `hidden` (Figma 436:863) and the 390 sub-component does not have
-  //    at all. It is the only slot this design has for the section's heading,
-  //    so `s.title` moves up into it there and the caption pill keeps the
-  //    artist's name alone — each field allocated exactly once, the events
-  //    map's rule. The row's own "View list" and "✕" are dead controls and are
-  //    dropped, named here so the call can be reversed; what is left is the
-  //    label, in the frame's own 20px row so the band below stays 358.
+  //    at all. It prints the frame's own word, *Gallery*, which is
+  //    `FIELDS.gallery.railLabel` (`s.galRailLabel`), and the caption pill keeps
+  //    the heading over the artist's name, as at 1440 and 390 (JP-098, user
+  //    call, 2026-10-01, reversing Retro's "each field allocated exactly once":
+  //    `s.title` used to move up into this row and leave the pill the name
+  //    alone). The row's own "View list" and "✕" are dead controls and are
+  //    dropped, named here so the call can be reversed (JP-098 kept it); what
+  //    is left is the label, in the frame's own 20px row so the band below
+  //    stays 358.
   //  · **The 390 rail rounds its tiles at 10** where every other tile on the
   //    page rounds at 30. They still drop the first tile's top border and the
   //    last tile's bottom one, so the "runs on" reading survives the radius —
@@ -13766,7 +13845,8 @@ function Gallery({ s }) {
   //    squeezes it to `min-h-px`. That is `figma-frame-reading`'s leaked-number
   //    case, and honouring it would leave two seats of the rotation invisible
   //    and unclickable. The band is divided in the frame's proportions instead
-  //    — which is what this branch already does at every width.
+  //    — which is what this branch already does at every width. (JP-098 asked
+  //    for the frame's four; the user kept the six, 2026-10-01.)
   //  · **The 390 rail seats ten tiles at 48.8**, all of them `flex: 1 0 0`, and
   //    this branch draws the ten: the count is what shapes the tiles there, and
   //    six would stand at 88 — tall slivers where the frame draws near-squares.
@@ -13939,26 +14019,29 @@ function Gallery({ s }) {
       </div>
     )
 
-    // The head row, 768's alone: the frame's own label slot, holding the
-    // heading the two other masters put in the caption pill's first line. The
+    // The head row, 768's alone: the frame's own label slot, printing its
+    // *Gallery* (`railLabel`, JP-098; it held the heading before that, which
+    // is now the caption's at 768 too). Emptied, the row goes and the band
+    // takes the column's height, as an emptied heading took it before. The
     // 20 is the frame's — its own row is that tall because of the ✕ we drop —
-    // and keeping it is what leaves the band below at the master's 358.
-    const head = tab && s.title ? (
+    // and keeping it is what leaves the band below at the master's 358. A
+    // typed label ellipsises inside the column rather than grow the row.
+    const head = tab && s.galRailLabel ? (
       <div style={{ flex: 'none', height: u(20), display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
         <span style={{
           fontFamily: s.body, fontWeight: 700, fontSize: s.limeTree ? s.chip : u(11), lineHeight: 1,
           letterSpacing: s.limeTree ? '-0.06em' : u(-0.66), color: s.tx,
           whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-        }}>{s.title}</span>
+        }}>{s.galRailLabel}</span>
       </div>
     ) : null
 
     // The caption. Each line is rendered or not rather than printed blank (the
     // testimonials' rule), and with neither string the pill goes with them: a
-    // wordless block over a photograph is not one of the design's states. At
-    // 768 the heading has the head row above, so only the artist's name is
-    // left here — the pill is one line there by allocation, not by truncation.
-    const lines = (tab ? [s.brand] : [s.title, s.brand]).filter(Boolean)
+    // wordless block over a photograph is not one of the design's states. The
+    // heading over the name at every width: the frame's own pill is two lines
+    // at 768 as well (JP-098).
+    const lines = [s.title, s.brand].filter(Boolean)
     const caption = lines.length > 0 && (
       <div style={{
         position: 'absolute', left: u(40), bottom: u(40),
@@ -15265,9 +15348,12 @@ function Calendar({ s }) {
               {/* The frames' foot is this line alone. Retro's Check a date pill
                   is gone from it (JP-088, user call, 2026-09-30, reversing
                   Lime's "the foot keeps Retro's BookPill"), so the line itself
-                  leads a picked date on, in its own type: `lineHref`, above. */}
+                  leads a picked date on, in its own type: `lineHref`, above.
+                  The prompt is the artist's since JP-095 (a), so a long word
+                  breaks rather than run off a phone. */}
               <LineTag {...(lineHref ? { href: lineHref } : null)} style={type(s.body, s.bodyMd, 1.5, {
                 color: G.line, textDecoration: 'none', cursor: lineHref ? 'pointer' : undefined,
+                minWidth: 0, overflowWrap: 'anywhere',
               })}>{line}</LineTag>
             </div>
             {/* The panel's 3px `sem/stroke/2` ring, which Figma strokes inside
@@ -15480,10 +15566,12 @@ function Calendar({ s }) {
             {/* The frame sets this line in Space Mono Bold — the body face in
                 this project's mapping of the reference's three, not the Anton
                 every other small label takes. It wraps on the 390 canvas, as
-                the frame has it. */}
+                the frame has it, and a long word in the artist's prompt
+                (JP-095 (a)) breaks. */}
             <span style={{
               fontFamily: s.body, fontWeight: 700, fontSize: u(13.371), lineHeight: 1.3,
               letterSpacing: '0.08em', textTransform: 'uppercase', color: s.ac,
+              minWidth: 0, overflowWrap: 'anywhere',
             }}>{line}</span>
             {/* The one deliberate addition to the frame, which draws this row as
                 a line of type and nothing else: a date the visitor has picked
@@ -15741,11 +15829,12 @@ function Calendar({ s }) {
       }
 
       return (
-        // At desktop the panel stands inside Frame 298's own 56, not the
-        // root's `padY` (user call, 2026-09-17).
+        // The panel stands inside Frame 298's own 56 / 56 / 40, which is the
+        // root's padding, `sectionVm`'s layout-2 arm (JP-094, user call,
+        // 2026-10-02). It was a `calc(u(56) - padY)` margin here, at desktop
+        // alone (user call, 2026-09-17).
         <div style={{
           background: G.bg2, color: s.tx, borderRadius: G.panelR, overflow: 'hidden',
-          ...(desk ? { margin: `calc(${u(56)} - ${s.padY}) 0` } : null),
         }}>
           <div style={col(u(28), {
             background: G.band ?? s.ac, color: G.bandInk ?? G.bg2, padding: `${u(28)} ${padX} ${u(36)}`,
@@ -15765,30 +15854,68 @@ function Calendar({ s }) {
               }))}>{s.title}</h2>
             </div>
           </div>
-          <div style={row(gap, type(s.ui, s.labelXs, 1.26, {
-            padding: `${u(18)} ${padX}`, boxShadow: rule, color: s.ac,
-            justifyContent: s.mob ? 'space-between' : undefined,
-            ...(ed ? { position: 'relative' } : null),
-          }))}>
-            {dash}
-            <span style={{ flex: 'none', minWidth: pin }}>Date ↓</span>
-            <span style={{ whiteSpace: 'nowrap' }}>Availability ↓</span>
-          </div>
+          {/* The column labels are `dateLabel` and `availLabel` (JP-095 (a)),
+              the "↓" the markup's. An emptied Date keeps its pinned seat, so
+              Availability stays over its column; with both emptied the row
+              and its rule go. A long one wraps: Date down to the pin. */}
+          {(!!s.calDateLabel || !!s.calAvailLabel) && (
+            <div style={row(gap, type(s.ui, s.labelXs, 1.26, {
+              padding: `${u(18)} ${padX}`, boxShadow: rule, color: s.ac,
+              justifyContent: s.mob ? 'space-between' : undefined,
+              ...(ed ? { position: 'relative' } : null),
+            }))}>
+              {dash}
+              <span style={{ flex: '0 1 auto', minWidth: pin ?? 0, overflowWrap: 'anywhere' }}>
+                {s.calDateLabel ? `${s.calDateLabel} ↓` : ''}
+              </span>
+              {!!s.calAvailLabel && (
+                <span style={{ minWidth: 0, overflowWrap: 'anywhere' }}>{`${s.calAvailLabel} ↓`}</span>
+              )}
+            </div>
+          )}
           {s.calSlots.length === 0 ? (
             <div style={type(s.body, s.bodyMd, 1.5, {
               padding: `${u(16)} ${padX}`, boxShadow: rule, opacity: 0.38,
               ...(ed ? { position: 'relative' } : null),
             })}>{dash}No dates yet.</div>
           ) : s.calSlots.map(slotRow)}
-          {/* The 390 master keeps the pill beside the line and leaves the line
-              63px — a break inside "Thursday," for our composed sentence — so
-              the pill takes its own row, Retro's departure for the same reason. */}
-          <div style={(s.mob ? col : row)(u(s.mob ? 12 : 24), {
+          {/* The foot is one row at every width, the frames' own: chip and line
+              in a group that fills, then the pill, 16 apart at 390 (the
+              masters' 370 × 84, NO_WRAP).
+              Reversed by JP-100 (plans/editorial/layout-2-qa-fixes.md, user
+              call, 2026-10-01): this foot stacked the pill on its own row at
+              390, arguing from a 63px line that would break inside "Thursday,".
+              That was Retro's *pre*-QA foot. Retro's QA (cd8c114) shortened the
+              line to "Thursday evening selected" and made its foot one row, but
+              Lime's fit (206c596) did not descend from it, so it drew the old
+              stack, and Grunge and Editorial inherited it
+              (plans/lime/layout-2.md:823, plans/grunge/layout-2.md:1128,
+              plans/editorial/layout-2.md:1477).
+              At 390 the group wraps, and the line's minimum is its widest word
+              (`break-word`, which min-content ignores, where `anywhere` would
+              make it one glyph), so the line stands beside the chip wherever
+              its widest word fits and drops under it otherwise: beside it under
+              Lime and Grunge (80 / 89 of room, Thursday 58, Wednesday 72), under
+              it under Editorial, whose Noto pill (198 to the frame's 184) leaves
+              the line 47 beside the chip. There it takes the 116 left of the
+              pill, 12 under the chip (the group's gap; no master draws that
+              state). Its `maxWidth` clamps that minimum to the group, so a long
+              word in the artist's prompt still breaks inside the cell
+              (JP-095 (a)).
+              The same rule holds one level up: the group's minimum is its own
+              min-content (the chip or the widest word, clamped to the foot), so
+              a typed pill label that would leave the line less than that drops
+              the pill under the group, HEAD's stack as a fallback, where it
+              would otherwise crush the line to a glyph a line. The seed never
+              reaches it (72 + 16 + 198 of 300 at 360). */}
+          <div style={row(u(s.mob ? 16 : 24), {
             minHeight: u(s.mob ? 84 : 100),
             padding: `${u(12)} ${u(s.mob ? 20 : 40)}`,
-            ...(s.mob ? { alignItems: 'flex-start', justifyContent: 'center' } : { flexWrap: 'wrap' }),
+            flexWrap: 'wrap',
           })}>
-            <div style={row(u(12), s.mob ? { width: '100%' } : { flex: '1 1 0', minWidth: u(200) })}>
+            <div style={row(u(12), s.mob
+              ? { flex: '1 1 0', maxWidth: '100%', flexWrap: 'wrap' }
+              : { flex: '1 1 0', minWidth: u(200) })}>
               {!!cur && (
                 <span style={type(s.body, s.chip, 1, {
                   flex: 'none', background: s.ac, color: G.bg2, borderRadius: '999px',
@@ -15796,7 +15923,10 @@ function Calendar({ s }) {
                   letterSpacing: '-0.06em', whiteSpace: 'nowrap',
                 })}>{hit.mark}</span>
               )}
-              <span style={type(s.body, s.bodyMd, 1.5)}>{line}</span>
+              {/* A long word in the artist's prompt breaks (JP-095 (a)). */}
+              <span style={type(s.body, s.bodyMd, 1.5, s.mob
+                ? { flex: '1 1 0', maxWidth: '100%', overflowWrap: 'break-word' }
+                : { minWidth: 0, overflowWrap: 'anywhere' })}>{line}</span>
             </div>
             {/* Scheme 2's pale pill: `sem/text/2` ground, `sem/bg` label and
                 disc, a lime arrow, and the frame's hard 5 / 5 block in
@@ -15868,16 +15998,25 @@ function Calendar({ s }) {
     // two agree; the arrows are the frame's label, not a sort control, and
     // nothing here reads a click. The 390 master has no column to head, its
     // rows being stacked, so it hangs the two labels off the panel's two edges.
-    const colHead = (
+    //
+    // The two labels are `dateLabel` and `availLabel` (JP-095 (a)), the "↓"
+    // the markup's. An emptied Date keeps its seat, so Availability stays
+    // over its column; with both emptied the head and its rule go. A long
+    // label wraps, Date no narrower than its column.
+    const colHead = s.calDateLabel || s.calAvailLabel ? (
       <div style={row(gap, {
         padding: `${u(18)} ${padX}`, borderBottom: `1px solid ${rule}`,
         fontFamily: s.ui, fontSize: u(T.labelXs), lineHeight: 1.26, color: hue,
         justifyContent: s.mob ? 'space-between' : undefined,
       })}>
-        <span style={{ flex: 'none', minWidth: dateCol }}>Date ↓</span>
-        <span style={{ whiteSpace: 'nowrap' }}>Availability ↓</span>
+        <span style={{ flex: '0 1 auto', minWidth: dateCol ?? 0, overflowWrap: 'anywhere' }}>
+          {s.calDateLabel ? `${s.calDateLabel} ↓` : ''}
+        </span>
+        {!!s.calAvailLabel && (
+          <span style={{ minWidth: 0, overflowWrap: 'anywhere' }}>{`${s.calAvailLabel} ↓`}</span>
+        )}
       </div>
-    )
+    ) : null
 
     // A row is a date, the weekday it falls on and what the artist plays that
     // night. The frame lets the display numerals set the second column's start,
@@ -15985,8 +16124,9 @@ function Calendar({ s }) {
             )}
             <span style={{
               fontFamily: s.body, fontSize: u(T.bodyMd), lineHeight: 1.5, minWidth: 0,
+              // At 390 a long word in the artist's prompt breaks (JP-095 (a)).
               ...(s.mob
-                ? { flex: '1 1 0' }
+                ? { flex: '1 1 0', overflowWrap: 'anywhere' }
                 : { whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }),
             }}>{line}</span>
           </div>
@@ -16287,7 +16427,7 @@ function Calendar({ s }) {
             <BookPill s={s} to={s.calBookTo} label={line} fg={grunge ? '#171716' : ed ? undefined : s.box1} full={s.mob}
                       size={ed ? s.labelMd : undefined}
                       style={{ width: '100%', justifyContent: 'space-between', whiteSpace: 'normal',
-                        ...(ed ? { lineHeight: 1.1 } : null) }} />
+                        overflowWrap: 'anywhere', ...(ed ? { lineHeight: 1.1 } : null) }} />
             {ed && <DashRule dash={10 * lz} colour={s.stroke2} side="all" />}
           </div>
         </div>
@@ -16446,13 +16586,15 @@ function Calendar({ s }) {
               Its box does not ramp — 54 tall on a 46 disc in all three masters
               — so the 46 goes in at both narrow widths and `full` opts the 390
               canvas back up to it. `whiteSpace` stays `normal` so a long
-              prompt or month name wraps rather than running off the card. */}
+              prompt or month name wraps rather than running off the card,
+              and a long word in the artist's prompt breaks (JP-095 (a)). */}
           <BookPill s={s} to={s.calBookTo} label={line} glyph="arrow"
                     disc={desk ? 38 : 46} size={u(T.list)} shadow="transparent"
                     {...(s.mob ? { full: true } : null)}
                     {...(s.retro ? { bg: s.ac, fg: '#FBF6EA', discFg: s.ac } : null)}
                     style={{
                       width: '100%', justifyContent: 'space-between', whiteSpace: 'normal',
+                      overflowWrap: 'anywhere',
                       ...(s.retro ? {
                         fontFamily: s.display, textTransform: 'none', lineHeight: 1.2,
                         letterSpacing: s.dls,
@@ -16718,8 +16860,10 @@ function Calendar({ s }) {
               letterSpacing: s.dls, color: dim ? gone : undefined,
             }}>{big}</span>
           )}
+          {/* The date card's `sub` is the artist's prompt while nothing is
+              cued (JP-095 (a)), so a long word breaks. */}
           {sub && (
-            <span style={{ fontFamily: s.body, fontSize: u(T.bodySm), lineHeight: 1.4 }}>{sub}</span>
+            <span style={{ fontFamily: s.body, fontSize: u(T.bodySm), lineHeight: 1.4, overflowWrap: 'anywhere' }}>{sub}</span>
           )}
         </span>
         {end && (
@@ -17053,7 +17197,8 @@ function Calendar({ s }) {
           {ed && dashed(10, s.stroke2)}
           <span style={col(u(2), { minWidth: 0 })}>
             {big && <span style={distressed(s, disp(titleSize, 1.1, { ...(dim ? { opacity: 0.38 } : null), ...lift }))}>{big}</span>}
-            {sub && <span style={body(s.bodySm, 1.4)}>{sub}</span>}
+            {/* The date card's `sub` can be the artist's prompt (JP-095 (a)). */}
+            {sub && <span style={body(s.bodySm, 1.4, { overflowWrap: 'anywhere' })}>{sub}</span>}
           </span>
           {end && (
             <span style={body(s.bodyLg, 1.5, { flex: 'none', textAlign: 'right' })}>{end}</span>
@@ -18140,8 +18285,9 @@ function EventsMap({ s }) {
     // The travel card. Its head is the section's own heading under the frame's
     // label, with the featured gig's date and set time in the chip, where the
     // frame's "● Confirmed" is a booking status nothing here knows. Its two
-    // locations are the artist's base and the city the featured gig is in, so
-    // the card is the route to whatever the panel beside it is showing.
+    // locations are the artist's home town (the header's Location, JP-096) and
+    // the city the featured gig is in, so the card is the route to whatever
+    // the panel beside it is showing.
     //
     // The stat row is the frame's own three cells. Travel time and Booking fee
     // are fields seeded with the frame's copy, so the artist types them rather
@@ -18151,11 +18297,18 @@ function EventsMap({ s }) {
     // read it as well). An emptied cell drops, and the row with all three. The
     // featured gig's date and set time, which this row printed before, moved
     // up into the chip.
+    //
+    // The three labels are fields too (JP-095 (b), user call, 2026-10-01). A
+    // cell is keyed on its slot, since two emptied labels would share a key,
+    // and an emptied label leaves its value standing alone.
     const stats = [
-      { l: 'Max travel', v: s.mapRadius },
-      { l: 'Travel time', v: s.mapTravelTime },
-      { l: 'Booking fee', v: s.mapFee },
+      { k: 'radius', l: s.mapRadiusLabel, v: s.mapRadius },
+      { k: 'travelTime', l: s.mapTimeLabel, v: s.mapTravelTime },
+      { k: 'fee', l: s.mapFeeLabel, v: s.mapFee },
     ].filter((x) => x.v)
+    // A typed label wraps inside a word rather than run off a 390 card (the
+    // JP-090 rule): every label, caption and pill on the card takes it.
+    const wrap = { overflowWrap: 'anywhere', minWidth: 0 }
     // The frame's outlined twin of the Venue Link pill, in the accent the
     // filled one wears.
     const dir = g ? extLink(s, g.directions) : null
@@ -18279,7 +18432,7 @@ function EventsMap({ s }) {
         })}>
           <div style={row(u(12), { width: '100%', justifyContent: 'space-between', alignItems: 'flex-start' })}>
             <div style={col(u(4), { minWidth: 0 })}>
-              <span style={bodySm}>Travel radius</span>
+              {!!s.mapKicker && <span style={{ ...bodySm, ...wrap }}>{s.mapKicker}</span>}
               <h2 style={distressed(s, display(titleSize, 1.1))}>{s.title}</h2>
             </div>
             {/* The frame's "● Confirmed" again, and Retro's reading of it: when
@@ -18296,27 +18449,36 @@ function EventsMap({ s }) {
           {/* Both names in Display/List, Retro's normalisation of the frame's
               hand-set Body/MD venue location. Editorial keeps the frame's
               Body/MD for the venue: Noto's MANCHESTER is 107.75 in the 768
-              column's 105, so the normalised name broke inside the word. */}
+              column's 105, so the normalised name broke inside the word.
+              The frame's three lines a column, as Retro's body below
+              (JP-096): the home column is the header's Location, and it
+              goes with the connector once that is emptied. */}
           <div style={row(u(18), { width: '100%', padding: `${u(8)} 0`, flexWrap: 'wrap' })}>
-            <div style={col(u(3), { flex: '1 1 0', minWidth: desk ? u(160) : 0 })}>
-              <span style={display(s.list, 1.2)}>{s.mapBase}</span>
-              <span style={bodySm}>Home location</span>
-            </div>
+            {!!s.location && (
+              <div style={col(u(3), { flex: '1 1 0', minWidth: desk ? u(160) : 0 })}>
+                {!!s.mapHomeLabel && <span style={{ ...bodySm, ...wrap }}>{s.mapHomeLabel}</span>}
+                <span style={display(s.list, 1.2)}>{s.location}</span>
+                {!!s.mapHomeCaption && <span style={{ ...bodySm, ...wrap }}>{s.mapHomeCaption}</span>}
+              </div>
+            )}
             {!!g && (
               <>
                 {/* The frame's typed ──●── is 60 / 56 wide: drawn, as Retro's
                     is, at the typed glyph's own proportions. */}
-                <span aria-hidden style={row(0, { flex: 'none' })}>
-                  <span style={{ width: u(24), height: '1px', background: ink }} />
-                  <span style={{ width: u(8), height: u(8), borderRadius: '999px', background: ink }} />
-                  <span style={{ width: u(24), height: '1px', background: ink }} />
-                </span>
+                {!!s.location && (
+                  <span aria-hidden style={row(0, { flex: 'none' })}>
+                    <span style={{ width: u(24), height: '1px', background: ink }} />
+                    <span style={{ width: u(8), height: u(8), borderRadius: '999px', background: ink }} />
+                    <span style={{ width: u(24), height: '1px', background: ink }} />
+                  </span>
+                )}
                 <div style={col(u(3), { flex: '1 1 0', minWidth: desk ? u(160) : 0 })}>
+                  {!!s.mapVenueLabel && <span style={{ ...bodySm, ...wrap }}>{s.mapVenueLabel}</span>}
                   <span style={{
                     ...(ed ? { fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5 } : display(s.list, 1.2)),
                     overflowWrap: 'anywhere',
                   }}>{g.city}</span>
-                  <span style={bodySm}>Venue location</span>
+                  {!!s.mapVenueCaption && <span style={{ ...bodySm, ...wrap }}>{s.mapVenueCaption}</span>}
                 </div>
               </>
             )}
@@ -18331,8 +18493,8 @@ function EventsMap({ s }) {
               {ed && <DashRule side="top" dash={10 * z} colour={G.statRule} />}
               {ed && <DashRule side="bottom" dash={10 * z} colour={G.statRule} />}
               {stats.map((st) => (
-                <div key={st.l} style={col(u(4), { flex: '1 1 0', minWidth: 0 })}>
-                  <span style={bodySm}>{st.l}</span>
+                <div key={st.k} style={col(u(4), { flex: '1 1 0', minWidth: 0 })}>
+                  {!!st.l && <span style={{ ...bodySm, ...wrap }}>{st.l}</span>}
                   <span style={{ fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5 }}>{st.v}</span>
                 </div>
               ))}
@@ -18353,17 +18515,26 @@ function EventsMap({ s }) {
               frame's own Fisterra 171, clipped under the disc), so under
               Editorial each pill keeps its content width and the row wraps
               where it must — at 768 alone; 390's 330 holds 329 — with Get
-              Directions held to the frame's 54 box on a line of its own. */}
+              Directions held to the frame's 54 box on a line of its own.
+              Both labels are the artist's (JP-095 (b)) and wrap, inside a word
+              too, so that content width is `fit-content` rather than `auto`
+              over `nowrap`: the label's own width while it fits the row, and
+              the whole row, wrapping, once it does not. Venue Link wraps only
+              once typed longer than its seed (`vm.mapVenueCtaWraps`): Lime's
+              768 seed runs 1px into the disc's gap and would break. */}
           {!!g && (
             <div style={row(u(10), { width: '100%', alignItems: 'stretch', ...(ed ? { flexWrap: 'wrap' } : null) })}>
-              <BookPill s={s} ext={g.url} label="Venue Link" bg={G.pillBg ?? s.bg} fg={G.pillFg ?? s.ac} full={s.mob}
-                        style={{ flex: '1 1 0', minWidth: ed ? 'auto' : 0, justifyContent: 'space-between' }} />
+              <BookPill s={s} ext={g.url} label={s.mapVenueCta} bg={G.pillBg ?? s.bg} fg={G.pillFg ?? s.ac} full={s.mob}
+                        style={{
+                          flex: '1 1 0', minWidth: ed ? 'fit-content' : 0, justifyContent: 'space-between',
+                          ...(s.mapVenueCtaWraps ? { whiteSpace: 'normal', overflowWrap: 'anywhere' } : null),
+                        }} />
               <Dir {...dir} style={row(0, {
-                flex: '1 1 0', minWidth: ed ? 'auto' : 0, minHeight: ed ? u(54) : undefined, justifyContent: 'center',
+                flex: '1 1 0', minWidth: ed ? 'fit-content' : 0, minHeight: ed ? u(54) : undefined, justifyContent: 'center',
                 boxShadow: ring(G.pillBg ?? s.bg), borderRadius: '999px', color: G.pillBg ?? s.bg,
-                padding: `0 ${u(12)}`, ...display(s.list, 1.2), whiteSpace: 'nowrap',
-                textDecoration: 'none', cursor: dir ? 'pointer' : undefined,
-              })}>Get Directions</Dir>
+                padding: `0 ${u(12)}`, ...display(s.list, 1.2), whiteSpace: 'normal', overflowWrap: 'anywhere',
+                textAlign: 'center', textDecoration: 'none', cursor: dir ? 'pointer' : undefined,
+              })}>{s.mapRouteCta}</Dir>
             </div>
           )}
         </div>
@@ -18430,8 +18601,11 @@ function EventsMap({ s }) {
       const lwin = pageWindow(pages, pg, true)
       const llist = (
         <div style={col(u(8), { width: '100%' })}>
-          {rest.length > 0 && (
-            <span style={{ ...bodySm, color: s.tx }}>Other upcoming · {rest.length}</span>
+          {/* `listLabel`'s layout-2 seed (JP-095 (b)); the count is the
+              markup's and goes with an emptied label. Two text nodes, as the
+              literal was (JP-090's 0.1px). */}
+          {rest.length > 0 && !!s.mapListLabel && (
+            <span style={{ ...bodySm, color: s.tx, ...wrap }}>{`${s.mapListLabel} · `}{rest.length}</span>
           )}
           {rest.map(lrow)}
           {lwin.labels.length > 0 && (
@@ -18631,9 +18805,10 @@ function EventsMap({ s }) {
         <div style={{
           display: 'grid', gridTemplateColumns: s.mob ? 'minmax(0, 1fr)' : 'minmax(0, 1fr) minmax(0, 1fr)',
           gap: u(24), alignItems: 'start',
-          // At desktop the instance's own 56 top inset, not the root's `padY`
-          // (user call, 2026-09-17).
-          ...(desk ? { marginTop: `calc(${u(56)} - ${s.padY})` } : null),
+          // The instance's own 56 / 60 / 40 top and foot are the root's
+          // padding, `sectionVm`'s layout-2 arm (JP-094, user call,
+          // 2026-10-02). Its top was a `calc(u(56) - padY)` margin here, at
+          // desktop alone (user call, 2026-09-17).
         }}>
           <div style={col(u(18))}>{lcard}{llist}</div>
           {lpanel}
@@ -18655,7 +18830,7 @@ function EventsMap({ s }) {
       })}>
         <div style={row(u(12), { width: '100%', justifyContent: 'space-between', alignItems: 'flex-start' })}>
           <div style={col(u(4), { minWidth: 0 })}>
-            <span style={label12}>Travel radius</span>
+            {!!s.mapKicker && <span style={{ ...label12, ...wrap }}>{s.mapKicker}</span>}
             <h2 style={{
               margin: 0, fontFamily: s.display, fontSize: u(T.title), lineHeight: 1.1,
               letterSpacing: s.dls,
@@ -18672,10 +18847,16 @@ function EventsMap({ s }) {
         </div>
 
         <div style={row(u(18), { width: '100%', padding: `${u(8)} 0`, flexWrap: 'wrap' })}>
-          {/* Two lines a column, not the frame's three: its "Based in" label
-              over "Manchester, UK" is what our `base` field's own copy already
-              says ("Based in Manchester"), so printing both would stutter. The
-              captions carry the meaning the labels did.
+          {/* The frame's three lines a column: "Based in" over "Manchester,
+              UK" over "Home location", and "Willing to travel to" over the
+              venue's city. *Reversed* (JP-096, user call, 2026-10-01): the
+              fit printed two, since our `base` field's own copy already said
+              "Based in Manchester" and printing both would stutter. The home
+              value is now the header's Location, the frame's own town, so
+              both labels came back, and `base` reads layouts 1 and 3 alone.
+              Every label and caption is a field (JP-095 (b)). An emptied
+              Location drops the home column and the connector with it, the
+              bio ID card's `since` rule.
 
               Both names are Display/List here. All three masters set the home
               location's in Display/List and the venue location's in Body/MD,
@@ -18687,29 +18868,35 @@ function EventsMap({ s }) {
               both narrow masters draw them on one row beside the connector, and
               at 390 that is 306px of inner card for two columns and a 92px
               connector, so the minimum goes and the basis divides it. */}
-          <div style={col(u(3), { flex: '1 1 0', minWidth: desk ? u(160) : 0 })}>
-            <span style={{
-              fontFamily: s.display, fontSize: u(T.list), lineHeight: 1.2, letterSpacing: s.dls,
-            }}>{s.mapBase}</span>
-            <span style={label12}>Home location</span>
-          </div>
+          {!!s.location && (
+            <div style={col(u(3), { flex: '1 1 0', minWidth: desk ? u(160) : 0 })}>
+              {!!s.mapHomeLabel && <span style={{ ...label12, ...wrap }}>{s.mapHomeLabel}</span>}
+              <span style={{
+                fontFamily: s.display, fontSize: u(T.list), lineHeight: 1.2, letterSpacing: s.dls,
+              }}>{s.location}</span>
+              {!!s.mapHomeCaption && <span style={{ ...label12, ...wrap }}>{s.mapHomeCaption}</span>}
+            </div>
+          )}
           {!!g && (
             <>
               {/* The frame's ──●── connector, drawn rather than typed. It joins
                   two columns, so it goes with them once the row wraps — which
                   on the desktop canvas is the only way the row ever loses it;
-                  both narrow masters draw it. */}
-              <span aria-hidden style={row(0, { flex: 'none' })}>
-                <span style={{ width: u(24), height: '1px', background: cardFg, opacity: 0.5 }} />
-                <span style={{ width: u(8), height: u(8), borderRadius: '999px', background: cardFg }} />
-                <span style={{ width: u(24), height: '1px', background: cardFg, opacity: 0.5 }} />
-              </span>
+                  both narrow masters draw it — and with the home column. */}
+              {!!s.location && (
+                <span aria-hidden style={row(0, { flex: 'none' })}>
+                  <span style={{ width: u(24), height: '1px', background: cardFg, opacity: 0.5 }} />
+                  <span style={{ width: u(8), height: u(8), borderRadius: '999px', background: cardFg }} />
+                  <span style={{ width: u(24), height: '1px', background: cardFg, opacity: 0.5 }} />
+                </span>
+              )}
               <div style={col(u(3), { flex: '1 1 0', minWidth: desk ? u(160) : 0 })}>
+                {!!s.mapVenueLabel && <span style={{ ...label12, ...wrap }}>{s.mapVenueLabel}</span>}
                 <span style={{
                   fontFamily: s.display, fontSize: u(T.list), lineHeight: 1.2, letterSpacing: s.dls,
                   overflowWrap: 'anywhere',
                 }}>{g.city}</span>
-                <span style={label12}>Venue location</span>
+                {!!s.mapVenueCaption && <span style={{ ...label12, ...wrap }}>{s.mapVenueCaption}</span>}
               </div>
             </>
           )}
@@ -18721,8 +18908,8 @@ function EventsMap({ s }) {
             borderTop: `1px solid ${cardLine}`, borderBottom: `1px solid ${cardLine}`,
           })}>
             {stats.map((st) => (
-              <div key={st.l} style={col(u(4), { flex: '1 1 0', minWidth: 0 })}>
-                <span style={label12}>{st.l}</span>
+              <div key={st.k} style={col(u(4), { flex: '1 1 0', minWidth: 0 })}>
+                {!!st.l && <span style={{ ...label12, ...wrap }}>{st.l}</span>}
                 {/* Body/LG, where the two location names above are Display/List
                     — the frame's two 16s are different tokens and only the
                     line-height tells them apart. */}
@@ -18748,14 +18935,18 @@ function EventsMap({ s }) {
             masters, which is the booking calendar's case — so `disc` is the
             frame's own 46 at narrow (38 being 46 × 0.82) and `full` opts the
             390 canvas back up to the full-size box. Get Directions is stretched
-            to the Venue Link pill's height rather than stating its own 54. */}
+            to the Venue Link pill's height rather than stating its own 54.
+            Both labels are the artist's (JP-095 (b)), and a long one wraps
+            inside its half — Venue Link only once typed longer than its seed,
+            the Lime block's rule above. */}
         {!!g && (
           <div style={row(u(10), { width: '100%', alignItems: 'stretch' })}>
-            <BookPill s={s} ext={g.url} label="Venue Link" glyph="arrow"
+            <BookPill s={s} ext={g.url} label={s.mapVenueCta} glyph="arrow"
                       disc={desk ? 38 : 46} full={!desk} size={u(T.list)}
                       shadow="transparent"
                       style={{
                         flex: '1 1 0', minWidth: 0, justifyContent: 'space-between',
+                        ...(s.mapVenueCtaWraps ? { whiteSpace: 'normal', overflowWrap: 'anywhere' } : null),
                         ...(s.retro ? {
                           fontFamily: s.display, textTransform: 'none', lineHeight: 1.2,
                           letterSpacing: s.dls, padding: `${u(5)} ${u(5)} ${u(5)} ${u(21)}`,
@@ -18766,9 +18957,9 @@ function EventsMap({ s }) {
               flex: '1 1 0', minWidth: 0, justifyContent: 'center',
               border: `1px solid ${dirInk}`, borderRadius: '999px', color: dirInk,
               padding: `0 ${u(12)}`, fontFamily: s.display, fontSize: u(T.list),
-              lineHeight: 1.2, letterSpacing: s.dls, whiteSpace: 'nowrap',
-              textDecoration: 'none', cursor: dir ? 'pointer' : undefined,
-            })}>Get Directions</Dir>
+              lineHeight: 1.2, letterSpacing: s.dls, whiteSpace: 'normal', overflowWrap: 'anywhere',
+              textAlign: 'center', textDecoration: 'none', cursor: dir ? 'pointer' : undefined,
+            })}>{s.mapRouteCta}</Dir>
           </div>
         )}
       </div>
@@ -18849,9 +19040,11 @@ function EventsMap({ s }) {
     const list = (
       <div style={col(u(8), { width: '100%' })}>
         {/* Dropped with the rows: the last page can hold the featured gig
-            alone, and a count of nothing over nothing is not a state. */}
-        {rest.length > 0 && (
-          <span style={{ ...label12, color: s.tx }}>Other upcoming · {rest.length}</span>
+            alone, and a count of nothing over nothing is not a state. The
+            words are `listLabel`'s layout-2 seed (JP-095 (b)), and the count
+            goes with an emptied label. Two text nodes, as the literal was. */}
+        {rest.length > 0 && !!s.mapListLabel && (
+          <span style={{ ...label12, color: s.tx, ...wrap }}>{`${s.mapListLabel} · `}{rest.length}</span>
         )}
         {rest.map(gigRow)}
         {/* Derived from the list and not drawn at one page, the repertoire's
@@ -21522,7 +21715,11 @@ function Testimonials({ s }) {
       // demo face); 768 and 390 wrap to the masters' own three and four.
       const limeHead = (
         <div style={col(u(12), { width: '100%', alignItems: 'center', textAlign: 'center', color: s.tx })}>
-          <span style={bodyType(s.bodySm, 1.4)}>&#9998; What clients say</span>
+          {/* The eyebrow is `kicker` (JP-095 (a)), seeded "What clients say"
+              at this layout; the ✎ is the markup's. Emptied, not drawn. */}
+          {!!s.testiKicker && (
+            <span style={{ ...bodyType(s.bodySm, 1.4), maxWidth: '100%', overflowWrap: 'anywhere' }}>{`\u270E ${s.testiKicker}`}</span>
+          )}
           {!!s.title && (
             <h2 style={distressed(s, {
               margin: 0, ...dispType(s.dispLg, 0.89), overflowWrap: 'break-word', maxWidth: '100%',
@@ -21680,16 +21877,18 @@ function Testimonials({ s }) {
 
     const body12 = { fontFamily: s.body, fontSize: u(T.bodySm), lineHeight: 1.4 }
 
-    // The head. Its eyebrow is the frame's own label, a literal by Retro layout
-    // 2's label rule — an unreported sibling JP-071 named and kept, where
-    // layout 3's "● Testimonials" and the media player's "● Popular" became
-    // fields; the display line is the section's
+    // The head. Its eyebrow is `kicker`, layout 3's "● Testimonials" (JP-071),
+    // which reaches it with JP-095 (a) through `testiKickerSeed()`: the frame's
+    // "What clients say" is its seed here, the ✎ the markup's, and emptied it
+    // is not drawn; the display line is the section's
     // `heading`, which layout 1 draws nowhere; and the sentence under it is the
     // new `sub`. Each of the two fields is rendered or not rather than printed
     // blank, since a `col` gap is spent on an empty span the same as a full one.
     const head = (
       <div style={col(u(12), { width: '100%', alignItems: 'center', textAlign: 'center' })}>
-        <span style={body12}>&#9998; What clients say</span>
+        {!!s.testiKicker && (
+          <span style={{ ...body12, maxWidth: '100%', overflowWrap: 'anywhere' }}>{`\u270E ${s.testiKicker}`}</span>
+        )}
         {!!s.title && (
           // `display-lg` 96 → 60 → 40, which is the page's own ramp read off
           // two different keys — the media player's `tab ? s.h1 : s.dispLg`,
@@ -24191,7 +24390,9 @@ function EnquiryForm({ s }) {
                         // `number` as inputMode only, a date as the artist's text.
                         type={f.kind === 'email' ? 'email' : 'text'}
                         inputMode={f.kind === 'number' ? 'numeric' : undefined}
-                        style={{ ...box(bad), outline: 'none' }}
+                        // The placeholder is the box's only label, so `--ph`
+                        // draws it full, as the canvas span is (JP-093).
+                        style={{ ...box(bad), outline: 'none', '--ph': 1 }}
                       />
                     ) : (
                       <span key={i} style={{ ...box(bad), display: 'flex', alignItems: 'center' }}>
@@ -24257,12 +24458,13 @@ function EnquiryForm({ s }) {
   //  - The boxes carry the field's **label**, not its placeholder, because that
   //    is what the frame draws in them and because a form with no separate
   //    label row has nowhere else to put it. Live, the label is the input's
-  //    placeholder, so the published first paint is the canvas's picture. The
-  //    row's `placeholder` column therefore reaches layout 1 alone, as do the
-  //    event types (the frame draws no chip row — `showTypes` is already
-  //    `s.v0`, so the mailto sends the bare "Enquiry") and the message
-  //    placeholder (it draws no textarea, and pinning a height for one would be
-  //    inventing a number).
+  //    placeholder, so the published first paint is the canvas's picture —
+  //    at full strength since JP-093 (`--ph: 1`), where the global
+  //    `::placeholder` had drawn it at .45. The row's `placeholder` column
+  //    therefore reaches layout 1 alone, as do the event types (the frame
+  //    draws no chip row — `showTypes` is already `s.v0`, so the mailto sends
+  //    the bare "Enquiry") and the message placeholder (it draws no textarea,
+  //    and pinning a height for one would be inventing a number).
   //  - The heading is one line where the frame hand-breaks two, so everything
   //    under it stands ~33px higher than the frame's own y. Measure the
   //    promises and the credit row against the heading's foot, not the frame.
@@ -24580,7 +24782,9 @@ function EnquiryForm({ s }) {
                         // this card.
                         type={f.kind === 'email' ? 'email' : 'text'}
                         inputMode={f.kind === 'number' ? 'numeric' : undefined}
-                        style={{ ...boxShell(bad), outline: 'none' }}
+                        // The placeholder is the box's only label, so `--ph`
+                        // draws it full, as the canvas span is (JP-093).
+                        style={{ ...boxShell(bad), outline: 'none', '--ph': 1 }}
                       />
                     ) : (
                       <span key={i} style={{
@@ -24942,7 +25146,9 @@ function EnquiryForm({ s }) {
                         // `number` as inputMode only, a date as the artist's text.
                         type={f.kind === 'email' ? 'email' : 'text'}
                         inputMode={f.kind === 'number' ? 'numeric' : undefined}
-                        style={{ ...box(bad), outline: 'none' }}
+                        // The placeholder is the box's only label, so `--ph`
+                        // draws it full, as the canvas span is (JP-093).
+                        style={{ ...box(bad), outline: 'none', '--ph': 1 }}
                       />
                     ) : (
                       <span key={i} style={{ ...box(bad), display: 'flex', alignItems: 'center' }}>
@@ -25129,7 +25335,9 @@ function EnquiryForm({ s }) {
                       // styled onto this card.
                       type={f.kind === 'email' ? 'email' : 'text'}
                       inputMode={f.kind === 'number' ? 'numeric' : undefined}
-                      style={{ ...boxShell(bad), outline: 'none' }}
+                      // Layout 2's `--ph`: the placeholder is the box's only
+                      // label, so it draws full, as the canvas span is (JP-093).
+                      style={{ ...boxShell(bad), outline: 'none', '--ph': 1 }}
                     />
                   ) : (
                     <span key={i} style={{

@@ -719,7 +719,10 @@ Settled in section 6 (the gallery):
   bar's reading of Figma's paint order, × 0.82 on desktop. The frame's 4 and 3 radii on the inner
   image frames are clipped by the 30 outside (nested clips: the largest draws).
 - **The 768 head's 204 × 1 spacer carries no paint**, so dropping it with Retro's *View list* and
-  `✕` loses nothing. *Gallery* is title case in Inter Bold at Body/Chip, `s.tx`.
+  `✕` loses nothing. *Gallery* is title case in Inter Bold at Body/Chip, `s.tx`. *The row printed
+  the heading, Retro's allocation, until JP-098 (user call, 2026-10-01) **reversed** it: it prints
+  *Gallery*, `railLabel`, and the heading is the caption's at 768 too. The six tiles and the
+  dropped *View list* / ✕ were kept.*
 - **Photography needs nothing**: the hero's hash is `3a59b4d1`, `limeGallery4`, which is slot 3 and
   `galActive()`, so the canvas opens on the frame's own hero. The six tiles are Retro's shared
   strip in the frame too; their order is the seat rotation's, Retro's accepted diff.
@@ -823,6 +826,11 @@ Settled in section 8 (the booking calendar):
 - **The 390 foot stacks, Retro's departure**: the master leaves the composed line 63px beside the
   157 pill (346 − 40 − 157 − 16 − 58 − 12), which would break inside "Thursday,". The foot is 129
   against the frame's 84.
+  **Reversed by JP-100** (`../editorial/layout-2-qa-fixes.md`, user call, 2026-10-01), a fit slip
+  in JP-060's shape. "Thursday," was Retro's *pre*-QA line. Retro's QA (`cd8c114`, 2026-09-15) had
+  already shortened it to *Thursday evening selected* and made its foot one row, but this fit
+  (`206c596`) does not descend from that commit, so it drew the old stack. The foot is one row at
+  390 now, the frame's 84, with the line beside the chip on three lines in 80.
 - **Measured against the masters' content edges**: desktop column head 49.8 (61 × 0.82), rows
   121.4 (148 × 0.82), foot 82, h2 59 at 98.8 in; 768 column head 53.6 (54), rows 104.1 (104),
   foot 100, h2 at 571 wide; 390 column head 51.1 (51), rows 95.2 (95), marks 48 tall. Every head is

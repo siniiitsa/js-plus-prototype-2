@@ -85,7 +85,8 @@ another `notes/` file.
   `FIELDS.map.stats`, `{ label, value, sub }` per card, at most four and two to a row, seeded
   `MAP_STATS_4` with the frame's RADIUS 120 / CITIES 21 / GIGS YTD 48 / BASE Manchester, UK
   verbatim. Each part drops alone when emptied and a blank row is dropped, so no card is an
-  empty box. `radius`, `base` and `terms` reach layouts 1–3 alone. The map viewport has no height
+  empty box. `radius`, `base` and `terms` no longer reach layout 4 (and `base` reads layouts 1
+  and 3 alone since JP-096, below). The map viewport has no height
   of its own and stretches to the wall at desktop, so there the wall's grid holds two rows at the
   cell's minimum whatever it lists. That is a floor on the grid, not on the viewport: the
   seeded wall renders under the frame's 555 × 0.82, so a viewport floor lifted every seeded page.
@@ -104,4 +105,38 @@ another `notes/` file.
   seed: a long label ran up to 330px past a 390 page, and the gig label 60px past the Lime-tree
   panel at desktop. The label is printed as two text nodes, `"<label> · "` and the count, as the
   literal was: splitting the ` · ` into a third node moved its width by 0.1px under Lime and
-  Grunge.
+  Grunge. *(Both keys reach layout 2 since JP-095 (b), below.)*
+- **Layout 2's travel card and list are the artist's too** (JP-095 (b) · JP-096, user call,
+  2026-10-01), on every template, both bodies.
+  - **Two keys reach a third layout.** The eyebrow, *Travel radius*, is `kicker`'s layout-2 seed
+    (`mapKickerSeed(d)`, now `in: [0, 1, 2]`). The list's *Other upcoming · N* is `listLabel`'s,
+    through `mapListLabelSeed(d)`, `in: [0, 1]`. The chain's `listLabel` arm is gated on `map`,
+    since media carries a `listLabel` too. An emptied list label takes the count with it, as at
+    layout 1, and it prints as the same two text nodes.
+  - **Nine keys are new, all `in: [1]`.** Over and under the two values sit `homeLabel` *Based in*,
+    `homeCaption` *Home location*, `venueLabel` *Willing to travel to* and `venueCaption` *Venue
+    location*. The stat row's labels are `radiusLabel`, `travelTimeLabel` and `feeLabel`; an
+    emptied one leaves its value standing alone, and the cell still goes with its value. Each is
+    the frame's own text (`964:64613`'s layer names), uncased, and not drawn when emptied.
+  - **The pills.** `venueCta` *Venue Link* and `routeCta` *Get Directions* read their seed again
+    when emptied (`messageLabel`'s rule), since a pill always stands. Get Directions wraps freely.
+    Venue Link wraps only once typed longer than its seed (`vm.mapVenueCtaWraps`): Lime's 768 frame
+    overlaps the seed's text with the disc, the fit runs the one-line label 1px into the gap, and a
+    label free to wrap breaks there onto two lines. Under Editorial both pills are
+    `min-width: fit-content` rather than `auto` over `nowrap`, so the 768 row still wraps them
+    whole while a long label takes the row and wraps inside it.
+  - **The home value is the header's `location`**, the frame's own *Manchester, UK*. It reverses
+    Retro's fit, which dropped the frame's *Based in* label because `base`'s copy said it already
+    (`../plans/retro/layout-2.md:608`). So `base` reads layouts 1 and 3 alone, and its hint sends
+    the artist to the header. An emptied Location drops the home column and the connector with
+    it (the bio ID card's `since` rule), and leaves the venue column alone in the row.
+  - **Named, not fixed.**
+    - A long single-word Location keeps `base`'s old style, so it does not break. At 390 a
+      53-character word runs past its 119 column, over the connector and the venue column, on
+      every template, and under Editorial 136px past the section (clipped, no page scroll).
+      Breaking inside the word would split Editorial's seeded *MANCHESTER,* at 768, which already
+      runs past its 105 column. The frame runs *Manchester, UK* past it too (129 in 105).
+    - Lime's 13px body face wraps *Willing to travel to* onto two lines at 768.
+    - The unfiled seats on the tester's screenshot: the h2 (*Venue Distance*), the chip (*●
+      Confirmed*, JP-060), the featured venue (the frame features its third gig) and *100 mi*
+      (`MAP_RADIUS`).

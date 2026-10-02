@@ -742,10 +742,56 @@ export const BIO_REF_LABEL = '[ 001 ] Structure · Bio_01'
 export const MAP_KICKER_1 = 'Shows/coverage'
 export const MAP_LIST_LABEL = 'Upcoming gigs'
 export const FORM_TYPE_LABEL = 'Event type'
+// JP-095 (b) · JP-096 (user call, 2026-10-01): the map's layout-2 travel card
+// and list, on every template — the eyebrow (`kicker`'s layout-2 seed), the
+// two locations' labels over their values and captions under them, the stat
+// row's three labels, the two pills, and the label over the list
+// (`listLabel`'s layout-2 seed; the "· N" is the markup's). Each is the
+// frame's own text (964:64613's layer names). The pills read their seed again
+// when emptied (FORM_MSG_LABEL's rule): a pill with no label is broken.
+export const MAP_KICKER_2 = 'Travel radius'
+export const MAP_LIST_LABEL_2 = 'Other upcoming'
+export const MAP_HOME_LABEL = 'Based in'
+export const MAP_HOME_CAPTION = 'Home location'
+export const MAP_VENUE_LABEL = 'Willing to travel to'
+export const MAP_VENUE_CAPTION = 'Venue location'
+export const MAP_RADIUS_LABEL = 'Max travel'
+export const MAP_TIME_LABEL = 'Travel time'
+export const MAP_FEE_LABEL = 'Booking fee'
+export const MAP_VENUE_CTA = 'Venue Link'
+export const MAP_ROUTE_CTA = 'Get Directions'
 // The eyebrow an absent map `kicker` stands for, by design (`d`): layout 1's
-// frames' words, and layout 3's elsewhere. The one expression sectionVm and
-// EditPanel's chain both call, formBtnSeed()'s shape.
-export const mapKickerSeed = (d) => (d === 0 ? MAP_KICKER_1 : MAP_KICKER)
+// and layout 2's frames' words, and layout 3's elsewhere. The one expression
+// sectionVm and EditPanel's chain both call, formBtnSeed()'s shape.
+export const mapKickerSeed = (d) => (d === 0 ? MAP_KICKER_1 : d === 1 ? MAP_KICKER_2 : MAP_KICKER)
+// The label an absent map `listLabel` stands for: layout 2's frames' words,
+// layout 1's elsewhere. mapKickerSeed()'s shape.
+export const mapListLabelSeed = (d) => (d === 1 ? MAP_LIST_LABEL_2 : MAP_LIST_LABEL)
+// JP-095 (a) (user call, 2026-10-01): eight more, the layout-2 bodies' on every
+// template — the plan card's eyebrow and its features label, in the capitals
+// the frame types (964:64610; the curly apostrophe is what renders); the slot
+// list's two column labels; the fan card's chip and the counter's two words
+// over the track list ("5 Featured / 5 Max", and layout 1's "5 / 5 Featured");
+// and the testimonials' eyebrow, `kicker`'s layout-2 seed. The "[ ]", "↓", "●"
+// and "✎" and the counts are the markup's. The calendar's prompt, which every
+// layout prints while no day is cued, joins them; emptied, it reads its seed
+// again (FORM_MSG_LABEL's rule).
+export const PRICING_KICKER = 'PRICING'
+export const PRICING_FEATS_LABEL = 'WHAT’S INCLUDED'
+export const CAL_DATE_LABEL = 'Date'
+export const CAL_AVAIL_LABEL = 'Availability'
+export const CAL_PROMPT = 'Pick a date to enquire'
+export const MEDIA_CHIP_LABEL = 'Featured'
+export const MEDIA_COUNT_LABEL = 'Featured'
+export const MEDIA_TOTAL_LABEL = 'Max'
+export const TESTI_KICKER_2 = 'What clients say'
+// The testimonials' eyebrow an absent `kicker` stands for, by design:
+// mapKickerSeed()'s shape, called by sectionVm and EditPanel's chain alike.
+export const testiKickerSeed = (d) => (d === 1 ? TESTI_KICKER_2 : TESTI_KICKER)
+// JP-098 (user call, 2026-10-01): the gallery's 768 head row, over the small
+// photos, in the frame's title case (986:15668). Layout 2 at tablet alone; the
+// heading it used to hold went back to the caption.
+export const GALLERY_RAIL_LABEL = 'Gallery'
 
 // Pricing — the packages beside the section's filter row, and the seed for
 // FIELDS.pricing's structured editor: used whenever the section carries no
@@ -1459,14 +1505,14 @@ export const FIELDS = {
     { k: 'avatar',    l: 'Artist photo',     type: 'image',
       hint: 'The portrait card and the small round avatar.' },
     // Kicker and Location are the artist's role and home town, so they also
-    // reach the bio, the booking calendar and the enquiry form (F1,
-    // headerIdentity); `in`, and the note it prints, speak for the header.
+    // reach the bio, the booking calendar, the enquiry form and the events map
+    // (F1, headerIdentity); `in`, and the note it prints, speak for the header.
     // Their hints name where else each prints, and that reach is measured
     // (JP-042: a sentinel in `&who=`, every design × width × surface): the
     // kicker in all four bios and the form's credit row (layouts 1 and 2); the
-    // location in bio layouts 1–3 and calendar layouts 1 and 4 — except Lime's,
+    // location in bio layouts 1–3, calendar layouts 1 and 4 — except Lime's,
     // Grunge's and Editorial's calendar layout 1, a block of its own with no
-    // polaroid stamp.
+    // polaroid stamp — and map layout 2's travel card (JP-096).
     // Change a reader, change the hint.
     // Lime's, Grunge's and Editorial's layout 3 prints `cardLine` in Retro's
     // kicker seat (JP-061), so their row is [0, 3] (reach.mjs, 2026-09-28).
@@ -1491,8 +1537,9 @@ export const FIELDS = {
       in: { Retro: [1, 4], Lime: [1], Grunge: [1], Editorial: [1] } },
     { k: 'location',  l: 'Location',         d: 'Manchester, UK',
       in: { Retro: [0, 1, 2, 3, 5], Lime: [0, 1, 2, 3], Grunge: [0, 1, 2, 3], Editorial: [0, 1, 2, 3] },
-      hint: 'Where you are based. The bio prints it too in layouts 1 to 3, and the booking '
-          + 'calendar in layouts 1 and 4 (in Lime, Grunge and Editorial, layout 4 only).' },
+      hint: 'Where you are based. The bio prints it too in layouts 1 to 3, the booking '
+          + 'calendar in layouts 1 and 4 (in Lime, Grunge and Editorial, layout 4 only), and the '
+          + 'events map’s travel card in layout 2.' },
     { k: 'cta1',      l: 'Primary button',   d: 'Book Now' },
     // Layout 2's pill under the subtitle (JP-037). Its frame words it apart
     // from the nav's Book Now, so it is a field of its own. Emptied, no pill.
@@ -1622,6 +1669,16 @@ export const FIELDS = {
     // JP-071: the "● Popular" over the track list, the frame's word, uncased.
     { k: 'listLabel', l: 'List label', d: MEDIA_LIST_LABEL, in: [1, 2],
       hint: 'The label over the track list, after a dot. Left empty, it is not drawn.' },
+    // JP-095 (a): the counter's two words, the counts the page's. An emptied
+    // word takes its count (and the " / ") with it; both emptied, no counter.
+    { k: 'countLabel', l: 'Counter label', d: MEDIA_COUNT_LABEL, in: [0, 1, 2],
+      hint: 'The word after the track count over the list, as in “5 Featured / 5 Max” (“5 / 5 Featured” '
+          + 'in layout 1). Left empty, it goes with its count.' },
+    { k: 'totalLabel', l: 'Counter total label', d: MEDIA_TOTAL_LABEL, in: [1, 2],
+      hint: 'The word after the second count, the “Max” of “5 Featured / 5 Max”. Left empty, it goes with its count.' },
+    // JP-095 (a): the chip on the fan's front card, the frame's word, uncased.
+    { k: 'chipLabel', l: 'Card chip', d: MEDIA_CHIP_LABEL, in: [1],
+      hint: 'The chip on the front card of the fan, after a dot. Left empty, it is not drawn.' },
     // Retro's layout-1 frame (446:2265) draws the Soundcloud pill, and so does
     // Editorial's (964:58614), so there and on Pop an empty address leaves it a
     // picture — the rule the rest of the file calls the Soundcloud rule. Lime's
@@ -1646,6 +1703,10 @@ export const FIELDS = {
   // sentinel. The tags are layout 1's filter row, the repertoire's rule; layout 2
   // names the packages themselves in its chip row and reads no tags at all.
   pricing: [
+    // JP-095 (a): layout 2's eyebrow over the heading, in the capitals the
+    // frame types; the brackets are the markup's.
+    { k: 'kicker',  l: 'Kicker', d: PRICING_KICKER, in: [1],
+      hint: 'The small line over the heading, in brackets. Left empty, it is not drawn.' },
     { k: 'heading', l: 'Heading', d: "Choose the set that's right for your night", in: [0, 1, 2],
       hint: 'Layouts 1, 2 and 3 only. Layout 4 is a stack of service rows and heads them with '
           + 'the package names alone, so it draws no title.' },
@@ -1691,6 +1752,10 @@ export const FIELDS = {
       hint: 'The pill under the price on layout 2’s plan card. Empty it to drop the pill.' },
     { k: 'note',    l: 'Line beside the plan card button', d: PRICING_NOTE, in: PRICING_CARD,
       hint: 'Layout 2 only. A phone stacks it under the pill.' },
+    // JP-095 (a): the label over the plan card's features, in the frame's
+    // capitals. Drawn while the package has features, as the list is.
+    { k: 'featsLabel', l: 'Features label', d: PRICING_FEATS_LABEL, in: [1],
+      hint: 'The label over the plan card’s features. Left empty, it is not drawn.' },
     // Every package's pill (JP-070): layout 4's row pill until then, and
     // layouts 1 and 3 printed the section's unfielded "Book Now". `d` is
     // layout 1's word; sectionVm and EditPanel resolve layouts 3 and 4's.
@@ -1733,6 +1798,10 @@ export const FIELDS = {
     { k: 'images',  l: 'Photos', type: 'images', max: 7,
       hint: 'One per tile. Layout 1 shows the highlighted one in its viewer; layouts 2 and 4 show it as the large photo beside the others.' },
     { k: 'heading', l: 'Heading', d: 'See us in action' },
+    // JP-098: the 768 head row's word, the frame's, uncased. `in` cannot name a
+    // width, so the hint does.
+    { k: 'railLabel', l: 'Gallery label', d: GALLERY_RAIL_LABEL, in: [1],
+      hint: 'The label over the small photos, on a tablet only. Left empty, it is not drawn.' },
     { k: 'youtube',   l: 'YouTube link', type: 'url', d: '', in: [0],
       hint: 'Where the YouTube row goes on the published page. Leave empty and it stays a picture. Layout 1 only.' },
     { k: 'instagram', l: 'Instagram link', type: 'url', d: '', in: [0],
@@ -1769,6 +1838,12 @@ export const FIELDS = {
     { k: 'time',    l: 'Enquiry time', d: CAL_TIME, in: [0, 3],
       hint: "Printed in layout 1's enquiry line, and on its own in layout 4's "
           + 'date card. Leave it empty and the line stops at the date.' },
+    // JP-095 (a): the line every layout prints while no day is cued. Cased in
+    // sectionVm, as the slot line beside it is; emptied, the seed again.
+    { k: 'prompt',  l: 'Prompt', d: CAL_PROMPT,
+      hint: 'The line where the picked date goes while none is picked: on the published page, '
+          + 'until a visitor picks one, when the opening date is booked or has passed. Left empty, '
+          + 'it shows “Pick a date to enquire” again.' },
     // Retro's and Pop's layout-1 pill and layout 4's Send Enquiry (JP-082).
     // `d` is layout 1's seed; layout 4 seeds CAL_SEND_4 in sectionVm and
     // EditPanel's chain. Lime's, Grunge's and Editorial's layout 1 draws no
@@ -1781,6 +1856,12 @@ export const FIELDS = {
           + 'layout 1 has no button: its “Enquiry for …” line is the link.' },
     { k: 'slots',   l: 'Dates on offer', type: 'slots', max: 8, in: [1],
       hint: 'The dates layout 2 lists, each with what you play and what it starts from.' },
+    // JP-095 (a): the two column labels over that list; the ↓ is the markup's.
+    { k: 'dateLabel',  l: 'Date column label', d: CAL_DATE_LABEL, in: [1],
+      hint: 'The label over the list’s dates. Left empty, it is not drawn.' },
+    { k: 'availLabel', l: 'Availability column label', d: CAL_AVAIL_LABEL, in: [1],
+      hint: 'The label over what you play each night. Left empty, it is not drawn; with both '
+          + 'labels empty, their row goes.' },
     { k: 'slotCta', l: 'Button (layout 2)', d: CAL_SLOT_CTA, in: [1] },
     { k: 'types',   l: 'Event types', type: 'area', d: CAL_TYPES.join(', '), in: [3],
       hint: "The choices on the first step of layout 4's enquiry wizard, separated by commas." },
@@ -1813,13 +1894,17 @@ export const FIELDS = {
           + 'Layout 3 also turns the cities into its filter chips, and works out the weekday '
           + 'its date disc prints from the month, the day and the year (four digits).' },
     // JP-071: layout 3's eyebrow over the heading, the frame's words, uncased.
-    // JP-090 took it to layout 1's "Shows/coverage", its seed there
-    // (mapKickerSeed(), in sectionVm and EditPanel's chain alike).
-    { k: 'kicker',  l: 'Kicker', d: MAP_KICKER, in: [0, 2],
-      hint: 'The small line over the heading. Layout 1 starts from “Shows/coverage”. Left empty, it is not drawn.' },
+    // JP-090 took it to layout 1's "Shows/coverage" and JP-095 (b) to layout
+    // 2's "Travel radius", its seeds there (mapKickerSeed(), in sectionVm and
+    // EditPanel's chain alike).
+    { k: 'kicker',  l: 'Kicker', d: MAP_KICKER, in: [0, 1, 2],
+      hint: 'The small line over the heading. Layout 1 starts from “Shows/coverage” and layout 2 from '
+          + '“Travel radius”. Left empty, it is not drawn.' },
     // JP-090: layout 1's label over the gig list; the "· 5" count is the page's.
-    { k: 'listLabel', l: 'List label', d: MAP_LIST_LABEL, in: [0],
-      hint: 'The label over the list of gigs, before its count. Left empty, neither is drawn.' },
+    // JP-095 (b): layout 2's "Other upcoming · 4" too (mapListLabelSeed()).
+    { k: 'listLabel', l: 'List label', d: MAP_LIST_LABEL, in: [0, 1],
+      hint: 'The label over the list of gigs, before its count. Layout 2 starts from “Other upcoming”. '
+          + 'Left empty, neither is drawn.' },
     { k: 'heading', l: 'Heading', d: 'Manchester' },
     // Layouts 1–3 print it, once each (reach.mjs's `map.radius`). It was
     // "Coverage badge", after layout 1's reading, until JP-060: layout 2's Lime
@@ -1829,10 +1914,40 @@ export const FIELDS = {
     { k: 'radius',  l: 'Coverage', d: MAP_RADIUS, in: [0, 1, 2],
       hint: 'How far you travel. Layout 1 prints it beside the heading, layout 2 as Max travel on '
           + 'the travel card, and layout 3 in the line under the map.' },
-    { k: 'base',    l: 'Based in',       d: MAP_BASE, in: [0, 1, 2] },
+    // Layout 2's travel card prints the header's Location instead, under its
+    // own "Based in" label (JP-096, user call, 2026-10-01): the frame's value is
+    // the town alone, and this field's copy says "Based in" itself.
+    { k: 'base',    l: 'Based in',       d: MAP_BASE, in: [0, 2],
+      hint: 'Layout 1 prints it beside the map and layout 3 under it. Layout 2’s travel card '
+          + 'shows the Location you typed on the header instead.' },
     { k: 'terms',   l: 'Travel terms',   d: MAP_TERMS, in: [0, 1] },
     { k: 'travelTime', l: 'Travel time (layout 2)', d: MAP_TRAVEL_TIME, in: [1] },
     { k: 'fee',        l: 'Booking fee (layout 2)', d: MAP_FEE, in: [1] },
+    // JP-095 (b) · JP-096 (user call, 2026-10-01): layout 2's travel card, the
+    // frame's own words, uncased. A label or caption left empty is not drawn; a
+    // stat's label goes with its value, as the cell always did; the two pills
+    // read their seed again, since a pill always stands.
+    { k: 'homeLabel',   l: 'Home label',   d: MAP_HOME_LABEL, in: [1],
+      hint: 'The small line over your home town on the travel card. The town is the header’s Location. '
+          + 'Left empty, it is not drawn.' },
+    { k: 'homeCaption', l: 'Home caption', d: MAP_HOME_CAPTION, in: [1],
+      hint: 'The small line under your home town. Left empty, it is not drawn.' },
+    { k: 'venueLabel',  l: 'Venue label',  d: MAP_VENUE_LABEL, in: [1],
+      hint: 'The small line over the featured gig’s city. Left empty, it is not drawn.' },
+    { k: 'venueCaption', l: 'Venue caption', d: MAP_VENUE_CAPTION, in: [1],
+      hint: 'The small line under the featured gig’s city. Left empty, it is not drawn.' },
+    { k: 'radiusLabel', l: 'Max travel label', d: MAP_RADIUS_LABEL, in: [1],
+      hint: 'Over Coverage on the travel card. Left empty, the value stands alone.' },
+    { k: 'travelTimeLabel', l: 'Travel time label', d: MAP_TIME_LABEL, in: [1],
+      hint: 'Over Travel time on the travel card. Left empty, the value stands alone.' },
+    { k: 'feeLabel',    l: 'Booking fee label', d: MAP_FEE_LABEL, in: [1],
+      hint: 'Over Booking fee on the travel card. Left empty, the value stands alone.' },
+    { k: 'venueCta',    l: 'Venue link button', d: MAP_VENUE_CTA, in: [1],
+      hint: 'Opens the featured gig’s tickets link on the published page. Left empty, it shows '
+          + '“Venue Link” again.' },
+    { k: 'routeCta',    l: 'Directions button', d: MAP_ROUTE_CTA, in: [1],
+      hint: 'Opens directions to the featured gig on the published page. Left empty, it shows '
+          + '“Get Directions” again.' },
     // Layout 3's foot pill, the frame's "See all gigs", and the only layout that
     // draws one. Live it lifts the pager and lists every gig under the current
     // filter; where the list is already one page it stays a picture (the
@@ -1859,8 +1974,11 @@ export const FIELDS = {
   ],
   testimonials: [
     // JP-071: layout 3's eyebrow over the heading, the frame's word, uncased.
-    { k: 'kicker',  l: 'Kicker', d: TESTI_KICKER, in: [2],
-      hint: 'The small line over the heading, after a dot. Left empty, it is not drawn.' },
+    // JP-095 (a) took it to layout 2's "✎ What clients say", its seed there
+    // (testiKickerSeed(), in sectionVm and EditPanel's chain alike).
+    { k: 'kicker',  l: 'Kicker', d: TESTI_KICKER, in: [1, 2],
+      hint: 'The small line over the heading, after a ✎ in layout 2 and a dot in layout 3. '
+          + 'Layout 2 starts from “What clients say”. Left empty, it is not drawn.' },
     // A textarea, because layout 2's default breaks onto a second line.
     { k: 'heading', l: 'Heading', type: 'area', d: 'Word of Mouth', in: [1, 2, 3],
       hint: 'Layouts 2, 3 and 4 each start from their own heading. A line break you type is '

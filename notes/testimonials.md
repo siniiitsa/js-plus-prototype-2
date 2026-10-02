@@ -100,3 +100,10 @@ another `notes/` file.
   and the head fitted to its widest word at every width — so the root's `cream` flag stays layout 1's for the fourth time. `when`,
   `sub` and `cta` reach none of it, which leaves `when` a layout-1 column and `cta`
   layout 2 alone.
+- **Layout 2's eyebrow is `kicker`** (JP-095 (a), user call, 2026-10-01). It had been the frame's
+  literal `✎ What clients say`, an unreported sibling JP-071 kept. Now `kicker` (JP-071's,
+  layout 3's `● Testimonials`) reaches layout 2 through a per-layout seed, `testiKickerSeed(d)`:
+  `TESTI_KICKER_2` "What clients say" at `d === 1` and `TESTI_KICKER` otherwise. That is
+  `mapKickerSeed`'s shape, called by `sectionVm` and by an arm of `EditPanel`'s chain of its own,
+  since the map's arm is gated on `map`. The field is `in: [1, 2]`, both bodies. The `✎` is the
+  markup's and goes with an emptied word, as layout 3's `●` does. A long one wraps.
