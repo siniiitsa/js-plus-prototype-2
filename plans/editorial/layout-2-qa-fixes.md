@@ -114,7 +114,7 @@ the list explicitly.
 | 7 | JP-097 | Byline lacks *· Single* | **Confirmed, a fit slip of every template**: the bar prints the artist alone; layouts 3 and 4 print the release | S | no | **done** (30 of 660 a surface, media `arch 1`, the byline's text alone, as named, its box the column's; the per-track `byline` read by the layout-2 bar, both bodies; card 2 under four templates reads *Kai Mercer · Single*) |
 | 8 | JP-098 | 768 gallery: six tiles, no *Gallery · View list ✕* | **Confirmed, and recorded**: Retro's squeeze override and head-row allocation, every template | S | **user: 1A, 2B, 3A** (six tiles kept; a *Gallery label* field in the row, the heading back in the caption; View list / ✕ stay dropped) | **done** (10 of 660 a surface, gallery `arch 1` × 768 × themes 0–4, three rows each, as named; `railLabel` reach 2/6 at layout 2, the tablet renders; card 2 under four templates reads *Gallery* over a heading-and-name caption) |
 | 9 | JP-094 | Section gaps too large | **Confirmed, and recorded**: layout 2 stands every section on `padY`; the frames' own insets differ by up to 85px at 1440 and 48 at 390 | L | **user: 1A, 2A** (Lime, Grunge and Editorial; all three widths) | **done** (78 of 660 a surface: the 75 named, geometry only, plus the calendar's three desktop renders at 1/64px, the fold's rounding; `vm.pad` alone, no new key; card 2 reads the frames' gaps, 112 / 142 / 46 / 56 at 1440 and 40 at 390; Retro and Pop identical) |
-| 10 | — | End-of-pass sweep | — | S | — | open |
+| 10 | — | End-of-pass sweep | — | S | — | **done** (92 of 660 a surface against `main`, exactly the union of the named files; the repro sets, reach and the real app as settled; `index.html` refreshed in `94e2487`, the two-build digest at `CARD=1` as named; replies, a header-height item for the tickets list and the designer's note) |
 
 **Why this order:**
 - **The likely reply first.** JP-099's recommendation writes no code, so its reply is ready while
@@ -2016,4 +2016,357 @@ Pop are unchanged.
    Retro's form label pair at 1.78:1 even solid (JP-093), the 390 bar and the 768 gallery's leaks if
    their calls stand — into a note at the plan's foot.
 
-**Settled.** —
+**Settled** (2026-10-02, all six steps; the push, the PR, the merge and the build stamp are the
+user's).
+- **1. Full digest against `main`: 92 of 660 on each surface** (184 of 1,320), and the
+  reconciliation is by file.
+  - **The harness.** A scratchpad worktree at `main` (`84be5f3`, PR #45), its `node_modules` an
+    APFS clone with `.vite` removed, served on :5174 and warmed with 42 renders. Both `main` labels
+    were taken first, then the tree's on :5173. Every category × themes `0,1,2,3,4` × three widths
+    × canvas and `live=1`, the footer's `page=2` render included, port and photo stamps
+    normalised. No file was a blank render, and no diff was 0.1px shaping outside the three files
+    JP-094 named, so nothing was rerun.
+  - **The expected set is the union of every Settled's list, not their sum**, since JP-094's
+    files take in four other entries' surfaces. Per surface:
+
+    | Entry | Named | Differ | Row shape |
+    |---|---|---|---|
+    | JP-094 | 75 + 3 | 78 | geometry only, `h` and `y`. Header `arch 1` and `5` three rows, the root −34.1 / +4 / −34. Bio −68.3 / +8 / −28, media −19 / +8 / −8, gallery −84.6 / −36 / −8, pricing −34.1 / +8 / −28, the map −34.1 / +8 / −8, the testimonials −68.2 / +8 / −8, the calendar at 390 −8. The calendar's desktop renders, themes 1–3: 6, 9 and 11 rows 0.1 off, the 1/64px its Settled names |
+    | JP-095 (b) · JP-096 | 15 | 15, 9 of them inside JP-094's map files | +2 lines at every width (the two new labels). Under themes 0 and 4 alone the root grows 16.3 / 5.4 / 19.8 (Retro) and 16.2 / 5.4 / 4.2 (Pop). Under 1–3 it moves by JP-094's inset plus a shift inside JP-096's named −1.8 to +19.8 |
+    | JP-097 | 15 | 15, 9 inside JP-094's media files | the byline's text row alone under themes 0 and 4; under 1–3 that row among JP-094's |
+    | JP-098 | 5 | 5, 3 inside JP-094's gallery files | +1 line: the head span reads *Gallery*, the caption 376 → 361 and 31 → 46, the heading's span inserted. The root holds 504 under 0 and 4 and is 468 (JP-094's −36) under 1–3 |
+    | JP-100 | 3 | 3, all inside JP-094's 390 calendar files | the foot's subtree and the heights over it |
+    | JP-092, JP-093, JP-095 (a), JP-099 | 0 | 0 | — |
+
+    The union is 78 + 6 + 6 + 2 + 0 = **92**: 24 files carry two entries' rows. Every named file
+    differs, and nothing else does. *A note on the counts:* JP-097's, JP-098's and JP-100's
+    Settleds say "30 / 10 / 6 of 660 on each surface", which are both surfaces together (15 / 5 /
+    3 a surface, the lists above).
+- **2. The repro sets on the final tree**, read off the DOM. Scratch puppeteer scripts in
+  `source/scripts/` (deleted) drove card 2, published and opened. Each ran one template per process
+  under `perl -e 'alarm …'`, appended each row to a JSONL sink, and had a retry, which no run needed.
+  No page logged an error.
+  - **JP-092** (Editorial, Lime and Grunge; the five names, each set through `st` and republished,
+    at 1180, 1440, 1920, 768, 414, 390 and 360: 105 renders):
+    - Every computed size is `min(ramp, column ÷ ems) × faceK` to within 0.0021px, the column read
+      off its computed `width` and the ems off `data.js`'s tables.
+    - No word's `Range` has a second rect. The tightest word ends 0.13 inside its column (Lime's
+      *Supercalifragilistic* at 360). At 768 every word is 0.14 or more inside, so 60.1 or more
+      short of the cards.
+    - The fitted sizes are the Settled's table to the hundredth. Editorial: FEATHERSTONEHAUGH 54.27
+      / 33.74 / 38.53 / 35.41, SHOSTAKOVICH 80.16 / 49.84 / 48 / 48 and SUPERCALIFRAGILISTIC 53.74 /
+      33.41 / 38.16 / 35.06 (1440 / 768 / 390 / 360). *Kai Mercer* and *Florence and the Machine*
+      keep the ramp everywhere.
+    - **The page scrolls only where JP-092 named it**: the footer's rule (*Featherstonehaugh* at
+      414 / 390 / 360, the page 437 / 425 / 425 under Editorial and 416 / 404 / 404 under Lime;
+      at 360 *Shostakovich* 381 / 364 and *Florence* 390 / 372), and Editorial's 360 header at
+      361 / 360. Grunge's never scrolls.
+    - **One more, found by the sweep and the same on `main`:** Editorial's form at 360 with
+      *Featherstonehaugh*. The layout-2 credit (the name at 18px over *DJ · Live Act*) ends at
+      362.11, 2.11 past the page. The footer's 425 had masked it. It fits at 390. Named, not fixed.
+  - **JP-093.**
+    - The harness, `live=1`: form `arch 0`–`3`, repertoire `arch 0`–`3` and the calendar's
+      `arch 3` wizard, themes 0–4, three widths. **90 inputs read 1, with `--ph: 1` inline**, which
+      is form `arch 1` and `2`, 45 each. **210 read .45 with no `--ph`**: form `arch 0` (60 inputs
+      and 15 textareas), `arch 3` (75 and 15), the repertoire search at `arch 0` and `1` (15 each;
+      layouts 3 and 4 draw none) and the wizard's date cell (15). The wizard was read on its first
+      step only, where the Settled stepped all three (105 cells).
+    - The real app (card 2 under Editorial, Lime, Grunge and Retro, published, 1440 / 768 / 390):
+      the form's three boxes read 1 and the repertoire search .45.
+  - **JP-094's gap table**, rebuilt and deleted after. For each section, the union of its painted
+    descendants: text `Range`s, img / svg, fills off the page ground, borders and shadows, each
+    clipped by the root and every clipping ancestor up to it. A root painted off the ground counts
+    its own edge. Card 2 under all five templates, on the canvas's three tabs (its ground taken
+    from the published `documentElement`, since the canvas paints a gutter) and the published tab
+    at 1440 / 768 / 390, on the tree and on `main`:
+
+    | Pair | header → bio | bio → media | media → rep. | rep. → gallery | gallery → pricing | pricing → cal. | cal. → map | map → form | form → testi. | testi. → footer |
+    |---|---|---|---|---|---|---|---|---|---|---|
+    | Editorial, published 1440 | **112** | **142** | 86 | 46 | **46** | 56 | 112 | **56** | 56 | 56 |
+    | *`main`* | *195.3* | *195.3* | *97.6* | *97.6* | *97.6* | *56* | *112* | *97.6* | *97.7* | *97.6* |
+    | Editorial, 768 | 120 | 120 | 60 | 30 | 46 | 56 | 116 | 60 | 60 | 60 |
+    | Editorial, 390 | **40** | 70 | 40 | 40 | 40 | 40 | 80 | 40 | 40 | 40 |
+    | Editorial, Desktop canvas | 91.8 | 116.4 | 70.5 | 37.7 | 37.7 | 45.9 | 91.8 | 45.9 | 46.7 | 45.9 |
+
+    - Editorial reads the expected frame numbers exactly on both surfaces. The canvas desktop is
+      the frame × 0.82, with form → testimonials 46.7, the line box JP-094 named. The tester's
+      four pairs read 112, 142, 46 and 56 (were 195.3, 195.3, 97.6 and 97.6), and 390's header →
+      bio 40 (was 88).
+    - **Lime** reads Editorial's numbers but for pricing's two named pairs: gallery → pricing 81.6
+      / 104 / 68 and pricing → calendar 45.9 / 116.6 / 70.3 (canvas desktop / 768 / 390).
+    - **Grunge** reads them but for the form's two named pairs: map → form 91.9 / 120 / 80 and form
+      → testimonials 93 / 120 / 80. The Settled read 93.1, a text rect's 0.1.
+    - **Retro: identical to `main`** at every pair, both surfaces and three widths. **Pop**:
+      identical except one canvas Tablet pair (testimonials → footer), which read 99.2 against
+      99.1, then 99.1 against 99.2 on a rerun. At full precision every Pop root height equals
+      `main`'s except the map's +5.41 (JP-096's, named). The footer's top is a text rect, and its
+      sub-pixel position re-rounds after that shift. Not layout.
+  - **Both JP-095 entries' marker sweeps** (card 2 under Editorial, Lime, Grunge and Retro, at 1440
+    / 768 / 390). The marker sets were built from `FIELDS` in Node and written through `st`.
+    - **The seed** prints all nineteen literals at every width: the seventeen reported, plus
+      JP-096's *Based in* and *Willing to travel to*.
+    - **Marked**: every text field of pricing, the calendar, media, the testimonials and the map,
+      and the header's Location. **None of the nineteen is left** at any width, and each of the 21
+      markers prints. The header's Location on the travel card is the positive control.
+    - **Emptied**: a fresh card, only the 20 label keys emptied. Only the prompt and the two pills
+      print, each reading its seed again. No glyph-only text node appears that the seed lacks (no
+      `[ ]`, `↓`, `●`, `✎`, bare `·` or count).
+  - **JP-100's foot** at 360, 390 and 414: the first paint, then each of the four slots tapped
+    (trusted clicks). Today's seed days are Friday, Sunday, Saturday and Sunday, not the Settled's.
+    - Every state is one row, with the pill an `<a href="#form">` inside the foot and no page
+      scroll.
+    - **Editorial**: 84 on the prompt, 98 picked, the line under the chip. At 360 two days take
+      117.5, Friday evening and Sunday wedding: JP-100's named 360 case, the line on three lines.
+    - **Lime**: 84 at 390 and 414, the line beside the chip; at 360 98, under it (named).
+    - **Grunge**: 84 with the line beside the chip at all three widths. Today's seed has no
+      Wednesday, the day its Settled found dropping at 360.
+    - **Retro**: 84, unchanged.
+- **3. Reach.** A scratch copy of `reach.mjs` (deleted after) was filtered to the 23 rows the
+  batch moved: both JP-095 entries' twenty keys, `map.base`, `who.location` and
+  `gallery.railLabel`. It ran themes 0–4, 7,500 renders, with no walk beside it. **Every key reads
+  the same under all five templates**, and each hit is 6/6 except `railLabel`'s.
+  - Layout 2 alone: `pricing.kicker`, `featsLabel`, `calendar.dateLabel`, `availLabel`,
+    `media.chipLabel`, and the map's nine new keys.
+  - `calendar.prompt` 1–4, `media.countLabel` 1–3, `totalLabel` 2 and 3, `testimonials.kicker` 2
+    and 3, `map.kicker` 1–3, `map.listLabel` 1 and 2, `map.base` 1 and 3.
+  - `gallery.railLabel` layout 2 at 2/6, the tablet renders, by design.
+  - `who.location` reaches map layout 2 on every template, beside the bio's 1–3 and the calendar's
+    4 (and Retro's and Pop's calendar 1).
+
+  A throwaway Node check of `fieldReach()` against the 22 plain rows found **0 mismatches** on the
+  five templates.
+- **4. The real app.** Two walks. A scratch puppeteer script did the tester's steps on card 2 under
+  Editorial, Lime, Grunge and Retro: the canvas's three tabs, the edit panel, then Publish, Open at
+  1440, 768 and 390. Then the committed `page-check.mjs Editorial 1,0,2,3` ran. No window logged an
+  error, and none of `page-check`'s logged a warning (the scratch walk listened for errors alone).
+  - **The canvas.**
+    - The bar's byline reads *Kai Mercer · Single* on all three tabs: Slow Burn, the centre seat.
+      The ♡ is drawn at Desktop and Tablet and not at Mobile (JP-099's override, unchanged).
+    - The Tablet gallery's row reads *Gallery*, and its caption reads *See us in action* over *Kai
+      Mercer* in one column.
+    - The Mobile calendar's foot is one row, its pill a span. It is 84 with the line beside the
+      chip under Lime, Grunge and Retro, and 98 with the line under the chip under Editorial.
+  - **The panel**, under all four templates:
+    - Every field JP-095 (a), JP-095 (b) · JP-096 and JP-098 added or re-scoped shows its seed
+      with no "Not shown" note: *PRICING*, *WHAT’S INCLUDED*, the prompt, *Date*, *Availability*,
+      *Featured* / *Max* / *Featured*, *What clients say*, the map's eleven and *Gallery*.
+    - The map's *Based in* reads *Based in Manchester* under "Not shown in this layout".
+  - **The published tab.**
+    - The bar reads *Kai Mercer · Single* on the cued Late Lights at 1440 and 768.
+    - Each list row played (a trusted click) moves the byline at every width: *Single*, *Hidden
+      Sessions Vol. 2*, *Single*, *Live at the Deaf Institute*, *Hidden Sessions Vol. 2*. 390's
+      first read names Roomtone's release, since `cur` survives the resize.
+    - No ♡ at 390.
+    - The 768 gallery reads as the canvas does.
+    - The form's boxes and the calendar's foot are item 2's.
+  - **`page-check.mjs`, Editorial card 2.**
+    - Every nav link, Book Now, the six in-page anchors and the nine footer links scroll to their
+      sections. Under the hook these are the bio's and the testimonials' Book Now, pricing's pill,
+      and the calendar's *Pricing*, *Enquiries* and *Start Enquiry*.
+    - The audio plays.
+    - Each control of the gallery, the repertoire, the map, pricing, the calendar and the
+      testimonials changes its section. The exception is the one already selected.
+    - The form refuses an empty submit with the 2px paper ring on its three boxes, then composes
+      `mailto:bookings@kaimercer.co.uk?subject=Enquiry&body=Event date: … / Event type: … / Your
+      email: …`.
+    - The tablet ↔ mobile resize walk logs no warning, `overflow390` is 0, and the 390 burger
+      opens (2 → 6 links).
+    - Cards 1, 3 and 4 render and publish their eleven sections.
+    - Seam clips of every section's top at 1440 and 390: nothing overlaps, and 390's header cards
+      end 40 above the bio's.
+- **5. `index.html`** refreshed in `94e2487` from `npm run build:standalone`: 8,787,260 bytes, up
+  from 8,779,739.
+  - **The two-build digest ran with `CARD=1`, not the step's `CARD=2`.** `build-digest.mjs`'s
+    `CARD` is 0-based, so 2 is card 3, layout 3's page. Editorial's and Grunge's own layout-2
+    sweeps used 1.
+  - **The run.** A throwaway copy (deleted) tagged each row with its section's root and re-based it
+    on that root. It walked card 2 with reduced motion from `127.0.0.1:8931`: `index.html?v=old`
+    before the `cp`, then `source/dist-standalone/index.html`. The comparison was at 0.2px.
+    `modal.txt` is identical (4 / 4 / 4 / 4 / 3).
+  - **Every section moves as the harness did.**
+    - **Retro and Pop**, at every tab: the media byline's one row (*Kai Mercer · Single*, Pop's
+      *KAI MERCER · Single*), the map's two new labels (+2 rows), and the gallery's +1 row at
+      Tablet. Nothing else moves.
+    - **Lime, Grunge and Editorial**, at every tab:
+      - JP-094's rows on the header (the root's height alone), the bio, media (with the byline),
+        the gallery (+1 row at Tablet), pricing, the map (+2 rows) and the testimonials;
+      - the calendar at Mobile alone (JP-094's −8 and JP-100's foot);
+      - the repertoire and the form: 0.
+      - The calendar's Desktop is 0 at 0.2px. Its 6–11 rows of 1/64px are under the tolerance.
+  - **What is left is residue**: the footer seal's 0×0 `<defs>` / `<path>`, 2 rows a tab under the
+    four templates that draw it. They report the viewport origin, so re-basing moves them with the
+    page.
+  - **The 1088 Desktop canvas adds nothing.** Editorial's header moves by its root's height alone
+    (772.1 → 738, −34.1), and no title row moves. So JP-092's width-fitted title keeps the ramp on
+    the seed there, as its Settled measured (MERCER's limit 139.2). JP-094's arm has no width term.
+- **6.** `plans/README.md` gains an Editorial *Layout 2 QA fixes* row. The replies and the
+  tickets-list item are below, and the note for the designer is at the plan's foot. At the sweep
+  the deployed build still read `Thu, 01 Oct 2026 10:11:08 GMT`, 8,779,739 bytes, which is the
+  tester's build and `main`'s root `index.html`.
+- **Named, not fixed, found by the sweep:** Editorial's form at 360 with *Featherstonehaugh* (item
+  2), the same on `main`.
+- **Torn down**:
+  - :5174, which stopped at its background time limit after both its labels and the gap probe's
+    `main` runs had been taken;
+  - the `main` worktree (`git worktree remove --force`);
+  - :8931.
+
+  The scratch scripts in `source/scripts/` were deleted. :5173 is the user's and still runs.
+
+**Replies to QA, one line per ticket.** **Retest against the Pages build whose `last-modified` is
+later than `Thu, 01 Oct 2026 10:11:08 GMT`** (the build these reports were filed against,
+8,779,739 bytes; `curl -sI https://siniiitsa.github.io/js-plus-prototype-2/`). An older tab or
+cached build still shows every one of them.
+- **JP-092 — fixed.** On Feature spread (layout 2), a long name in the hero now shrinks until its
+  longest word fits the column, at every width. It still wraps between words, never inside one,
+  and the page no longer scrolls sideways.
+  - *Maximilian Featherstonehaugh* sets at about 54px at 1440 (the size the page reports, as your
+    97px was), about 34px at 768, clear of the two cards, and about 39px at 390.
+  - A name that fits keeps the design's 97px. That includes *Kai Mercer* and *Florence and the
+    Machine*.
+  - Lime and Grunge had the same fault in this hero, and the same fix covers them.
+  - *Not changed, logged separately:*
+    - Retro's Feature spread still overflows with a long name. Its typeface needs a width table
+      before the same fit can work there.
+    - At 360, Editorial's menu bar runs 1px past the page with *Featherstonehaugh*.
+    - At 390 and 414, the footer's rule beside the name scrolls the page sideways with that name
+      (Editorial and Lime). At 360 the other long names do it too.
+    - At 360, the Enquiry Form's credit runs 2px past with that name.
+- **JP-093 — fixed.** The Enquiry Form's EVENT DATE, EVENT TYPE and YOUR EMAIL now draw solid, as in
+  the design, at every width and on every template.
+  - Under Editorial that is `#141414` on `#DA7C5E`, about 6.2:1 (it was 2.3:1).
+  - Layout 3's form (Inset Hero) labels its boxes the same way, and it is fixed too.
+  - Placeholders that are hints under a visible label stay faint on purpose: layouts 1 and 4's
+    form, and the Repertoire's search.
+  - Typed text is unchanged, and an empty submit still rings the boxes.
+  - Passed to the designer: Retro's own colours for these labels (cream on mustard) are 1.8:1 even
+    solid.
+- **JP-094 — fixed.** On Feature spread (layout 2) the space between sections now follows the
+  design at every width, under Editorial, Lime and Grunge.
+  - Each section takes the top and bottom spacing its own design frame states. The frames stack the
+    sections with no extra space, so the gaps are the design's.
+  - At 1440 the published page measures 112, 142, 46 and 56 for your four pairs (header → bio,
+    bio → media, gallery → pricing, map → form). On mobile, header → bio is 40.
+  - At tablet the gallery now sits 26px closer to the repertoire, as designed, and the other pairs
+    move 4–8px to the design's numbers. The 13px you saw at tablet is not spacing: the default
+    subtitle there runs one line longer than the design's sample text.
+  - Retro and Pop are unchanged.
+- **JP-095 (a) — fixed.** Eight labels on layout 2 are now editable on every template, in the
+  editor and on the published page. Each starts as the design's text, and each can be emptied to
+  hide it.
+  - **Pricing**: *Kicker* (the "[ PRICING ]" over the heading) and *Features label* ("WHAT'S
+    INCLUDED"). They print as typed, so type capitals to keep the design's look.
+  - **Booking Calendar**: *Date column label* and *Availability column label* over the list of
+    dates. Emptying both removes the row. *Prompt* is "Pick a date to enquire", which every
+    calendar layout shows while no date is picked. Left empty, it shows the design's text again,
+    because the space would otherwise look broken.
+  - **Media Player**: *Card chip* ("● Featured" on the front card). *Counter label* and *Counter
+    total label* are the two words of "5 Featured / 5 Max", and *Counter label* is layout 1's "5 / 5
+    Featured" too. The numbers are the track count. An emptied word takes its number with it.
+  - **Testimonials**: *Kicker* now changes "✎ What clients say" and no longer says "Not shown in
+    this layout". Layout 3 still starts from "Testimonials".
+  - A long label wraps rather than running off a phone screen. Labels nobody reported stay as the
+    design draws them: the Bio's "Bio" eyebrow, the Booking Calendar's legend and its "… selected"
+    line, the Repertoire's "All" chip and search hint, and the footer's "A JustPay Product".
+- **JP-095 (b) · JP-096 — fixed.** The map's layout-2 travel card and list are now editable on
+  every template, in the editor and on the published page. Each label starts as the design's text.
+  - **Events Map**, layout 2:
+    - *Kicker* now changes "Travel radius", and *List label* "Other upcoming". The number after it
+      is the count of gigs.
+    - New: *Home label* ("Based in"), *Home caption* ("Home location"), *Venue label* ("Willing to
+      travel to"), *Venue caption* ("Venue location"), and *Max travel label*, *Travel time label*
+      and *Booking fee label* over the three numbers.
+    - *Venue link button* and *Directions button* change the two buttons.
+  - Left empty, a label is not drawn, and the list label takes its count with it. A button left
+    empty shows its design text again, because a button needs a label.
+  - **JP-096.** The card now prints the design's *Based in* and *Willing to travel to*. The town
+    under *Based in* is the header's **Location** ("Manchester, UK", as in the design), so it is
+    typed once. The map's own *Based in* field still sets layouts 1 and 3. In layout 2 it says "Not
+    shown in this layout", and its hint points to the header.
+  - A long label wraps rather than running off a phone screen.
+  - **Seen on the screenshot, not changed:** the card's heading ("Venue Distance" in the design,
+    the map's Heading here), the chip ("● Confirmed" there, the featured gig's date here), which
+    gig is featured, and "100 mi" (the Coverage field's default is still "12 mile radius", with the
+    designer).
+- **JP-097 — fixed.** The player's bar now reads *Kai Mercer · Single* under the track title, as in
+  the design, at every width.
+  - It follows the track that is playing, so a track from *Hidden Sessions Vol. 2* shows that
+    release instead.
+  - Every template had the same gap: the bar printed the artist alone, from an early version of the
+    layout.
+  - Once the artist edits the track list, the line shows the track's whole subtitle, the same text
+    as its row in the list (for example *Kai Mercer · Single · 4:55*). A long release is cut with an
+    ellipsis, as the title above it already is.
+  - *Not changed:* the cued track's title, LATE LIGHTS, is still cut in the bar at 1440 (Editorial
+    and Lime) and at 390 (Editorial and Pop, and Lime and Retro at 360). That is the title's own
+    box, which this fix does not touch.
+- **JP-098 — partly fixed, partly by design.** At tablet width the gallery's small label row now
+  reads *Gallery*, as in the design. The caption on the large photo shows the section heading over
+  the artist's name on two lines, also as in the design.
+  - *Gallery* is a new field, *Gallery label*, so the artist can change it or clear it (cleared,
+    the row is not drawn). The fix applies to every template.
+  - *By design:*
+    - **The six thumbnails.** In the tablet design the last thumbnail in each column is 1px tall,
+      a desktop size left in the frame, which is why only four show. Drawing four would hide two of
+      the seven photos from tablet visitors.
+    - ***View list* and ✕.** They are not drawn because the page has no list view for them to
+      open, so they would be buttons that do nothing.
+- **JP-099 — nothing changes in this build; passed to the designer, whose call it is next.** At 390
+  the Media Player's bar leaves out ♡ ↓ ⋯ and the running time on purpose, on every template, not
+  only Editorial and Grunge.
+  - The 390 design fits them only by running the song's name off the bar. It is the 768 bar
+    squeezed to 330px, so the box holding the cover, the title and the running time is 23px wide.
+    The design therefore shows a sliver of the cover and neither the song's name nor the time: the
+    name sits past that box, under the icons, and would run 117px off the bar.
+  - On the page the three icons would take 75px from the title, cutting a name like *Late Lights*
+    to two or three letters. Under Editorial it already loses its last letters at 390 without them.
+  - The icons do nothing at any width: they are not buttons on the published page. So at 390 the
+    page keeps the song's name instead.
+  - This was decided for Retro's player in its first pass and has held for every template since.
+    It is in the designer's notes for this layout (*Notes for the designer* 6).
+  - If the designer wants the icons at 390, the bar needs a 390 layout of its own (the icons on a
+    second line, or no cover art). That is a small change once they choose.
+- **JP-100 — fixed.** On a phone, the Booking Calendar's foot is one row again, as in the design:
+  the date chip, the line, then *Start Enquiry*.
+  - That covers Lime, Grunge and Editorial, which all shared the stacked foot. It came from an older
+    version of Retro's calendar that Lime's design pass started from.
+  - Under Lime and Grunge the line stands beside the chip.
+  - Under Editorial the button's typeface draws it 14px wider than the design's, which leaves the
+    line too little room beside the chip. So there the line sits under the chip, with the button
+    still beside both.
+
+**New, for the tickets list** (found by JP-094, not fixed in this batch). **On Feature spread at
+1440, a name long enough to take three or more lines runs out of the header.** The header's desktop
+row is a fixed height, the design's 688 (`EncoreSection.jsx:2280`), so a tall name column runs past
+it, and the face and place cards run past with it.
+- With *Shostakovich Collective of Greater Manchester* the last line ends below the header's foot,
+  in the Bio's top space or on its content:
+  - **22px past under Editorial.** On the build you tested it was 48px past (and the name ran off
+    the page sideways too).
+  - **143px under Lime and 133px under Grunge**, against 109px and 99px on that build. JP-094's
+    tighter spacing takes 34px of the room under the name.
+- Two-line names fit, with room to spare. At 768 and 390 the header grows with the name.
+- A fix would let the photograph's row grow with the name column (a minimum height in place of the
+  fixed one). That changes the header's design, so it wants its own ticket.
+
+## Notes for the designer
+
+*(What this batch found worth telling the designer, gathered by the sweep into one note to forward,
+in layout 1's shape. Each is shipped as described. [`layout-2.md`](./layout-2.md)'s eight notes
+still stand. Two of these restate its note 6 because QA reported them.)*
+
+1. **Retro's form labels are 1.78:1 even at full strength** (JP-093). Retro's layout-2 form
+   (`964:64652`) inks EVENT DATE, EVENT TYPE and YOUR EMAIL in `#FBF6EA` on the `#E8B33B` boxes. The
+   page now draws every template's labels solid, as every frame does. That brings Editorial from
+   2.29:1 to 6.16:1, but Retro's own pair stays 1.78:1, under any readable contrast. The boxes have
+   no other label.
+2. **The 390 player bar pays for ♡ ↓ ⋯ with the track's title** (JP-099; note 6's fifth bullet).
+   The master (`I986:15683;879:10509`) is the 768 bar squeezed to 330: 40 + 117 transport + 24 +
+   **22.9** for the sleeve, title and clock + 24 + 62 icons + 40. So it draws a sliver of the
+   sleeve and runs the title 117px off the bar. The page keeps the title and drops the clock and
+   the icons, which do nothing. If the icons are wanted at 390, the bar needs a 390 layout of its
+   own: the icons on a second line, or no sleeve.
+3. **The 768 gallery's last tile in each column is 1px tall** (JP-098; note 6's seventh bullet), a
+   desktop height left in the frame. That is why QA counted four thumbnails. The page divides the
+   band in the frame's proportions, so all six show and no photograph is hidden at tablet. The
+   frame's *View list* and ✕ have no list view to open, so the page does not draw them.
