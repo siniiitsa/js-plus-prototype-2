@@ -1698,7 +1698,8 @@ counters and ink traps: its corners are soft. Rubik 900 is the squarer drawing, 
   name-gated at `d === 0`.
 - **`TIERS_1` widens by name**: `tiersSeed` reads `d === 0 && (limeTreeTheme(themeName) ||
   themeName === 'Pop')`. `limeTreeTheme()` itself is untouched — `CAL_HEADING_1` and
-  `FORM_BTN_1` are sections 8 and 9's to widen the same way. `notes/pricing.md` says so.
+  `FORM_BTN_1` are sections 8 and 9's to widen the same way. `notes/pricing.md` and the
+  Packages field's hint say so.
 - **`FIELDS.pricing` owes nothing**: no row is template-keyed.
 
 ### Inherited and used

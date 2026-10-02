@@ -1871,7 +1871,7 @@ export const FIELDS = {
     { k: 'tiers',   l: 'Packages', type: 'tiers', max: 6,
       hint: 'Tags become the filter chips above the packages in layouts 1 and 3 — separate '
           + 'them with commas. Layout 3 starts the packages tagged Duo where the other layouts '
-          + 'have Solo, and layout 1 in Lime, Grunge and Editorial starts them on Private Event, '
+          + 'have Solo, and layout 1 in Lime, Grunge, Editorial and Pop starts them on Private Event, '
           + 'Club Night and Festival; once you edit the list, it is the same at every layout. Features are one '
           + 'to a line. Layout 2 shows one package at a '
           + 'time and names them in its own chip row, so it reads no tags. Layout 4 has no '
