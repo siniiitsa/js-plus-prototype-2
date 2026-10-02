@@ -58,6 +58,8 @@ another `notes/` file.
   `tierHues()` in `sectionVm`. Layout 2 also has no grain — its frame carries none — and it is
   what made **`BookPill`'s flat branch honour `bg`/`fg`** (defaulting to the accent pair): a pill
   standing on a card in the accent hue was invisible on Pop, in layout 1 as well as layout 2.
+  That branch went with the flat family in Pop's layout-1 sweep, once Pop took the Lime pill at
+  every layout.
   The card's pill is labelled by `cta` (`vm.pricingCta`, uncased) with `note`
   (`vm.pricingNote`) beside it and stacked under it at 390, in Retro's card, Lime's, Grunge's and
   Editorial's alike

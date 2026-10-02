@@ -162,7 +162,7 @@ mutated through a single `patch()` helper.
   artist's role and town are the header's too** (F1): `headerIdentity()` in `data.js` reads the
   header's raw `kicker` / `location`, and `sectionVm({ identity })` gives them to every other
   section — the bio (its role lines, polaroid rail and ID card), the calendar (layout 1's polaroid
-  stamp, which Lime's layout-1 block — Grunge's and Editorial's too, since they share it — does not draw, and layout 4's summary card), the enquiry form's credit and the events map's layout-2 travel card (the town under its *Based in* label, JP-096; `base` reads layouts 1 and 3 alone) — which have no field for either. The header
+  stamp, which Lime's layout-1 block — Grunge's, Editorial's and Pop's too, since they share it — does not draw, and layout 4's summary card), the enquiry form's credit and the events map's layout-2 travel card (the town under its *Based in* label, JP-096; `base` reads layouts 1 and 3 alone) — which have no field for either. The header
   reads its own `c`, so previews of other layouts still show theirs. Canvas, published tab and
   `LayoutPicker` all pass it; the harness takes `&who=<json>`. `vm.roleLine` is the pair
   composed with its `·`, so an emptied half drops with the separator, and an emptied value
@@ -282,7 +282,8 @@ mutated through a single `patch()` helper.
   **A nested node on another scheme reads `s.onScheme[n]`**: every scheme of a theme carrying
   `schemes`, flat (`flatScheme()`: `bg` / `ac` / `tx` / `acFg`, the `sem` keys, `pillBg` /
   `pillFg`, and the scheme's own two `chips`), keyed by number with 1 the theme's own, and
-  undefined under every other theme, so a reader sits behind `s.editorial`. Layout 2's header
+  undefined under every theme carrying no `schemes`, so a reader sits behind `s.editorial` or
+  `s.pop`. Layout 2's header
   and bio Book pills read `[4]`, the calendar's head band `[1]` at desktop and `[3]` narrow, the
   map's travel card and viewport `[3]` and its map card `[2]`, the testimonials' card and picked
   tile `[3]`. Layout 3's header reads `[5]` for its blush nav capsule, links and Book pill and
@@ -294,7 +295,14 @@ mutated through a single `patch()` helper.
   paper capsule, links, pill and chips and `[4]` for its seal, the bio's and pricing's chips
   `[1]`, the gallery's arrow discs `[4]`, the map's viewport and the calendar's Back pill `[3]`,
   and the testimonials' second cell `[1]`. Layout 1's one such site (pricing's Book
-  pills, Scheme 1 inside Scheme 2) predates the key and stays named literals.
+  pills, Scheme 1 inside Scheme 2) predates the key and stays named literals. **Pop's frames
+  bind no colour outside the header**, so its seats are inferred rather than read: a section
+  stands on the scheme whose ground it paints, and a tint no scheme key holds is a named literal
+  (plans/pop/layout-1.md, decision 4, user call, 2026-10-02). `THEMES[4]` carries Schemes 2, 3,
+  4, 6 and 7, `SCHEMES_OF.Pop` seats layout 1's repertoire on 6, calendar on 4, testimonials on
+  2 and footer on 3 (row 0 alone, so the footer is pink on every page), and its nested cards
+  read `s.onScheme[n]` (`notes/templates.md`). Its Scheme 1 adds a `sem` key no other theme
+  carries, **`text3`** (`s.text3`), the frames' second ink, where `s.tx` is violet.
 - **`FIELDS` exposes every key any layout reads. A layout that does not consume a key simply
   ignores it, and the panel says so**: a field's `in` lists the designs that read it (0-based,
   `arch % designCount` and never the raw `arch`; an array, or an object keyed by template with
@@ -303,13 +311,14 @@ mutated through a single `patch()` helper.
   finds the template's row empty). The field stays editable — switching layouts
   never discards copy. `in` is **measured, not read off the prose**: type into the field and
   see whether the section's HTML moves, canvas and `live`, at all three widths. The header's
-  `in` names Retro, Lime, Grunge and Editorial only (Grunge's row measured over its four fitted
+  `in` names all five templates (Grunge's row measured over its four fitted
   cards, 2026-09-24 — the first measurement with no placeholder card; Editorial's over its four
   fitted cards, 2026-09-30, card 2 having lost the placeholder's `showBadge` and `badgeText`
-  since its frame draws no seal, and cards 3 and 4 re-measured unchanged), so
-  Pop's undesigned header family carries no note. The one exception is `cardLine` (JP-061):
-  its `'*': []` row marks Retro and Pop "Not shown in this template", as `FIELDS.media.cta`'s
-  row does, because only the three `s.limeTree` blocks read it. A field no design reads is deleted, not kept at `in: []`: `bio.statement` and
+  since its frame draws no seal, and cards 3 and 4 re-measured unchanged; Pop's over its fitted
+  Hero and three placeholder cards, 2026-10-03, so each of Pop's layout passes re-measures its
+  card). One header row keeps a `'*'`: `cardLine` (JP-061), whose `'*': []` marks Retro and Pop
+  "Not shown in this template", as `FIELDS.media.cta`'s row does, because only the three
+  `s.limeTree` blocks read it. A field no design reads is deleted, not kept at `in: []`: `bio.statement` and
   `map.sub` went that way with the fallthroughs that read them (the other seven NVAR-4
   sections still end in one after `v3`, which `arch % designCount` never reaches).
 - The `startTheme` prop in `App.jsx` skips the template picker (and the onboarding with it) when
@@ -420,7 +429,7 @@ file is loaded into every session and holds only what is cross-cutting.
 | [`notes/footer.md`](./notes/footer.md) | The footer: `LinksField`, the two derived columns, the Book pill |
 | [`notes/list-editors.md`](./notes/list-editors.md) | The ten repeaters, `BookedField`, `SetsField`, `blankRow`, the seed resolvers |
 | [`notes/photography.md`](./notes/photography.md) | Seeded photography: `SEEDS`, `null` vs absent, the two-slot categories |
-| [`notes/templates.md`](./notes/templates.md) | Retro, Lime, Grunge and Editorial: the `s.lime` / `s.limeTree` blocks, faces, decoration, header families |
+| [`notes/templates.md`](./notes/templates.md) | Retro, Lime, Grunge, Editorial and Pop: the `s.lime` / `s.limeTree` / `s.pop` blocks, faces, decoration, header families |
 
 ## Load-bearing rules from the notes
 

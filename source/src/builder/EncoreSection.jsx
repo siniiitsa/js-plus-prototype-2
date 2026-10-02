@@ -63,12 +63,12 @@ const isTablet = (s) => !!s.narrow && !s.mob
  *
  * The Figma page's decoration — grain, torn paper, checkerboard, hard
  * offset shadows, rotated cards — belongs to Retro alone. Every helper
- * below no-ops when `s.retro` is false, so Pop gets the identical
- * structure rendered flat. They no-op under Lime, Grunge and Editorial as
- * well: Lime's own decoration (arc seams, glows, the arch portrait) is drawn
- * by its `if (s.lime)` blocks inside the shared `v0` branches, and Grunge's
- * and Editorial's by their arms inside those blocks, never by these helpers
- * (bar the few a named pair widens). Same split as headerFamily().
+ * below no-ops when `s.retro` is false. Lime's own decoration (arc seams,
+ * glows, the arch portrait) is drawn by its `if (s.lime)` blocks inside the
+ * shared `v0` branches, and Grunge's, Editorial's and Pop's by their arms
+ * inside those blocks, never by these helpers (bar the few a named pair
+ * widens). Pop's layouts 2–4 take the shared structure undressed until their
+ * passes.
  * ------------------------------------------------------------------ */
 
 // Anton (or the theme's label face): uppercase, tight, used for nav, eyebrows,
@@ -1174,8 +1174,8 @@ function BookPill({ s, label, bg, fg, shadow, full = false, to, ext, glyph = 'st
 
 // Same seam as BookPill: a link to wherever the page plays something, but only
 // once the page is live. `style` is spread last, for the layout-2 header, whose
-// frame sets this link in the label face beside a wordmark rather than in the
-// flat templates' tracked-out bold. `after` rides inside the link after the
+// frame sets this link in the label face beside a wordmark rather than in its
+// default tracked-out bold. `after` rides inside the link after the
 // label — `Pager`'s `idle` and `BookPill`'s `glyph` precedent, additive, so
 // the four callers written before it are a `{undefined}` no-op. The bio's
 // layout 4 needs it: its frame writes the link as "Listen ↗", and an arrow
@@ -3468,7 +3468,7 @@ function HeaderV2({ s }) {
   const locationLine = (
     <span style={row(u(8))}>
       {/* radius/chip 8 on a 14px square — a rounded block, not the ring
-          LocationLine draws for the flat templates. */}
+          LocationLine draws. */}
       <span style={{
         width: u(14), height: u(14), borderRadius: u(8), background: s.ac, flex: 'none',
       }} />
@@ -4011,7 +4011,7 @@ function HeaderV3({ s }) {
       <Title s={s} size={T.disp} lh={0.75} color={cream} inline={s.narrow} />
       <span style={row(u(8), { minWidth: 0 })}>
         {/* radius/chip 8 on a 14px square — a rounded block, not the ring
-            LocationLine draws for the flat templates. HeaderV2's pair. */}
+            LocationLine draws. HeaderV2's pair. */}
         <span style={{
           width: u(14), height: u(14), borderRadius: u(8), background: mustard, flex: 'none',
         }} />

@@ -1095,9 +1095,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // rule, or the one card would recolour on every toggle — and it opens on
   // whichever hue package 0 happened to draw. T.tags[1] is Retro's burnt orange,
   // the frame's own card, and it is a *tag* hue rather than the accent so that
-  // the Book pill standing on it still reads on the four undesigned templates,
-  // whose BookPill branch paints `ac` on `acFg` and honours neither `bg` nor
-  // `fg`. It is also what the card falls back to with no packages at all, so
+  // the Book pill standing on it read on the undesigned templates, whose
+  // BookPill branch painted `ac` on `acFg` (it went with the flat family, Pop's
+  // layout-1 sweep). It is also what the card falls back to with no packages at all, so
   // the empty state and the filled one are the same composition.
   vm.tierHero = tierHues(T.tags[1 % T.tags.length])
   // §10.2 layout 3's rows are one hue doing two jobs: it outlines the plain

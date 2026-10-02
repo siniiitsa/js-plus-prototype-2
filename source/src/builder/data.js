@@ -1657,12 +1657,12 @@ export const FIELDS = {
   // undesigned layout 5 prints "4.9 ★ / Experience", "5 pcs / Line-up" and a
   // "Tell me your date" pill that no field reaches.
   //
-  // The header's `in` is always an object naming Retro, Lime, Grunge and
-  // Editorial alone: they have different header families (six designs against
-  // four, four and four — Grunge's row and Editorial's are each measured over
-  // four fitted cards, none a placeholder since each template's layout-4 pass),
-  // and Pop has a family of its own that is not designed, so it is left
-  // unmarked rather than folded onto any list.
+  // The header's `in` is always an object naming all five templates: they have
+  // different header families (six designs against four, four, four and four —
+  // Grunge's row and Editorial's are each measured over four fitted cards, none
+  // a placeholder since each template's layout-4 pass). Pop's was measured in
+  // its layout-1 sweep over one fitted card and three placeholders on Retro's
+  // paths, so each of its layout passes re-measures its own card.
   header: [
     { k: 'image',     l: 'Background photo', type: 'image',
       hint: 'Fills the header behind the type.' },
@@ -1675,15 +1675,17 @@ export const FIELDS = {
     // (JP-042: a sentinel in `&who=`, every design × width × surface): the
     // kicker in all four bios and the form's credit row (layouts 1 and 2); the
     // location in bio layouts 1–3, calendar layouts 1 and 4 — except Lime's,
-    // Grunge's and Editorial's calendar layout 1, a block of its own with no
+    // Grunge's, Editorial's and Pop's calendar layout 1, a block of its own with no
     // polaroid stamp — and map layout 2's travel card (JP-096).
     // Change a reader, change the hint.
     // Lime's, Grunge's and Editorial's layout 3 prints `cardLine` in Retro's
     // kicker seat (JP-061), so their row is [0, 3] (reach.mjs, 2026-09-28).
+    // Pop's is [0, 2, 3] while its card 3 is Retro's placeholder, which prints
+    // the kicker there (reach.mjs, 2026-10-03).
     // The panel then says "Not shown in this layout" there while the bio prints
     // the kicker, which the hint answers, as at layout 2.
     { k: 'kicker',    l: 'Kicker',           d: 'DJ · Live Act',
-      in: { Retro: [0, 2, 3, 5], Lime: [0, 3], Grunge: [0, 3], Editorial: [0, 3] },
+      in: { Retro: [0, 2, 3, 5], Lime: [0, 3], Grunge: [0, 3], Editorial: [0, 3], Pop: [0, 2, 3] },
       hint: 'Your role. Every bio layout prints it too, and so do the enquiry form’s layouts 1 and 2.' },
     // The layout-3 portrait card's line under the name (JP-061): the card's
     // own copy, so the kicker is not seeded apart there and the bio's Current
@@ -1698,17 +1700,17 @@ export const FIELDS = {
           + 'field, so change both if you name a year here. Left empty, it is not drawn.' },
     { k: 'title',     l: 'Title' },                       // the artist's name, page-wide and required (NameInput) — special-cased
     { k: 'subtitle',  l: 'Subtitle',         type: 'area', def: 'heroSub',
-      in: { Retro: [1, 4], Lime: [1], Grunge: [1], Editorial: [1] } },
+      in: { Retro: [1, 4], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1] } },
     { k: 'location',  l: 'Location',         d: 'Manchester, UK',
-      in: { Retro: [0, 1, 2, 3, 5], Lime: [0, 1, 2, 3], Grunge: [0, 1, 2, 3], Editorial: [0, 1, 2, 3] },
+      in: { Retro: [0, 1, 2, 3, 5], Lime: [0, 1, 2, 3], Grunge: [0, 1, 2, 3], Editorial: [0, 1, 2, 3], Pop: [0, 1, 2, 3] },
       hint: 'Where you are based. The bio prints it too in layouts 1 to 3, the booking '
-          + 'calendar in layouts 1 and 4 (in Lime, Grunge and Editorial, layout 4 only), and the '
+          + 'calendar in layouts 1 and 4 (in Lime, Grunge, Editorial and Pop, layout 4 only), and the '
           + 'events map’s travel card in layout 2.' },
     { k: 'cta1',      l: 'Primary button',   d: 'Book Now' },
     // Layout 2's pill under the subtitle (JP-037). Its frame words it apart
     // from the nav's Book Now, so it is a field of its own. Emptied, no pill.
     { k: 'heroCta',   l: 'Hero button',      d: HERO_CTA,
-      in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1] },
+      in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1] },
       hint: 'The button under the subtitle. Left empty, it is not drawn.' },
     // The rest of layout 2's copy (JP-059, reversing Lime's fit, which kept
     // them literals): the pill over the name and the two cards under the
@@ -1717,44 +1719,44 @@ export const FIELDS = {
     // card's "Performing since 2021" is the artist's copy — the bio's own
     // Performing since is another field, which the hint says.
     { k: 'availability', l: 'Availability',  d: HERO_AVAIL,
-      in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1] },
+      in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1] },
       hint: 'The small pill over your name. Left empty, it is not drawn.' },
     { k: 'faceTitle', l: 'Face card title',  d: FACE_TITLE,
-      in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1] },
+      in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1] },
       hint: 'The card beside your portrait, under the photograph. Left empty, it is not drawn.' },
     { k: 'faceBody',  l: 'Face card text',   type: 'area', d: FACE_BODY,
-      in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1] },
+      in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1] },
       hint: 'The line under the face card’s title. The bio’s Performing since is a separate field, '
           + 'so change both if you name a year here. Left empty, it is not drawn.' },
     { k: 'placeBody', l: 'Place card text',  type: 'area', d: PLACE_BODY,
-      in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1] },
+      in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1] },
       hint: 'The line under your Location on the card beside the pin. Left empty, it is not drawn.' },
     // Named `cta2` on the bio's own content too, which FIELDS.bio.cta2 edits
     // (JP-082): bio layout 4's Listen prints that, not this (JP-059's census).
     // `in` speaks for the header.
     { k: 'cta2',      l: 'Secondary button', d: 'Listen',
-      in: { Retro: [1, 2, 4], Lime: [1, 2], Grunge: [1, 2], Editorial: [1, 2] } },
+      in: { Retro: [1, 2, 4], Lime: [1, 2], Grunge: [1, 2], Editorial: [1, 2], Pop: [1, 2] } },
     // The chips are the header's the way Kicker and Location are (JP-037,
     // headerIdentity): the bio prints the same list and honours the same
     // Show / Hide. An emptied list hides the row, as Hide does. The bio's
     // reach is measured (scripts/reach.mjs): layouts 2 and 4, and Lime's,
     // Grunge's and Editorial's 3.
     { k: 'tags',      l: 'Tags',             type: 'area', d: TAG_LABELS,
-      in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3], Editorial: [0, 2, 3] },
+      in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3], Editorial: [0, 2, 3], Pop: [0, 2, 3] },
       hint: 'Separate them with commas. The bio prints them too in layouts 2 and 4 '
           + '(in Lime, Grunge and Editorial, layout 3 as well).' },
     { k: 'showTags',  l: 'Tag chips',        type: 'select', d: 'show', opts: SHOW_HIDE,
-      in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3], Editorial: [0, 2, 3] },
+      in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3], Editorial: [0, 2, 3], Pop: [0, 2, 3] },
       hint: 'Hides the bio’s chips as well.' },
     { k: 'showBadge', l: 'Corner badge',     type: 'select', d: 'show', opts: SHOW_HIDE,
-      in: { Retro: [0, 1, 3, 4, 5], Lime: [0, 3], Grunge: [0, 3], Editorial: [0, 3] } },
+      in: { Retro: [0, 1, 3, 4, 5], Lime: [0, 3], Grunge: [0, 3], Editorial: [0, 3], Pop: [0, 1, 3] } },
     { k: 'badgeText', l: 'Badge text',                    // defaults to the artist's name — special-cased
-      in: { Retro: [0, 1, 3, 4, 5], Lime: [3], Grunge: [0, 3], Editorial: [3] } },
+      in: { Retro: [0, 1, 3, 4, 5], Lime: [3], Grunge: [0, 3], Editorial: [3], Pop: [0, 1, 3] } },
     { k: 'navMode',   l: 'Navigation links', type: 'select', d: 'sections', opts: [
       { v: 'sections', l: 'Follow my sections' },
       { v: 'minimal',  l: 'Minimal (Music · Gigs · About)' },
     ] },
-    { k: 'align',     l: 'Alignment',        type: 'select', d: 'left', in: { Retro: [0], Lime: [0], Grunge: [0], Editorial: [0] }, opts: [
+    { k: 'align',     l: 'Alignment',        type: 'select', d: 'left', in: { Retro: [0], Lime: [0], Grunge: [0], Editorial: [0], Pop: [0] }, opts: [
       { v: 'left',   l: 'Left' },
       { v: 'centre', l: 'Centre' },
     ] },
