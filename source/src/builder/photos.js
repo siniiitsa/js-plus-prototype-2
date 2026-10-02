@@ -253,14 +253,6 @@ export const POP_HEADER_AVATAR = popHeaderAvatar
 // where `map` is inverted onto a dark plate.
 export const RETRO_TEXTURE = { grain, map: mapTile, mapRadial }
 
-// The template picker's picture of a flat template: a flattened render of its
-// Figma header instance, shown in place of the flat header until the template
-// is designed. Every template's card is a live HeaderV0 now — Pop's still went
-// when its hero was fitted (plans/pop/layout-1.md, section 1), as Grunge's and
-// Editorial's had — so this is empty, and the end-of-pass sweep deletes it
-// with the flat family. Picker only — nothing the editor renders reads this.
-export const TEMPLATE_STILLS = {}
-
 // Everything a template seeds, by `THEMES[].name`. A theme with no row seeds
 // nothing; every template has one now.
 //   photos — the section photographs above

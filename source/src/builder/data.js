@@ -708,12 +708,16 @@ export const NVAR = {
 // in the file (plans/pop/layout-1.md, *The Figma source*); its Hero is fitted
 // in HeaderV0's Lime block widened, and its other three render and publish as
 // placeholders until their layout passes.
+//
+// There is no flat family any more: Pop was its last member, and its three
+// compositions went with Pop's own header (plans/pop/layout-1.md, the
+// end-of-pass sweep). A name no template carries falls to Retro's six, which
+// is what EncoreSection's root dispatches for any theme.
 export const headerFamily = (themeName) =>
-  themeName === 'Retro' ? 'photographic' : themeName === 'Lime' ? 'lime'
-    : themeName === 'Grunge' ? 'grunge' : themeName === 'Editorial' ? 'editorial'
-    : themeName === 'Pop' ? 'pop' : 'flat'
+  themeName === 'Lime' ? 'lime' : themeName === 'Grunge' ? 'grunge'
+    : themeName === 'Editorial' ? 'editorial' : themeName === 'Pop' ? 'pop' : 'photographic'
 
-const HEADER_COUNT = { photographic: 6, lime: 4, grunge: 4, editorial: 4, pop: 4, flat: 3 }
+const HEADER_COUNT = { photographic: 6, lime: 4, grunge: 4, editorial: 4, pop: 4 }
 
 export const headerVariants = (themeName) => HEADER_COUNT[headerFamily(themeName)]
 
@@ -763,7 +767,7 @@ export const pageLayout = (catId, i, themeName) => {
  * and the numbering is honest about the folding (§4.4).
  * ------------------------------------------------------------------ */
 
-// [name, what it is] — index-aligned with HeaderV0…V5 / FlatHeader v0…v2.
+// [name, what it is] — index-aligned with HeaderV0…V5.
 const PHOTOGRAPHIC_NAMES = [
   ['Hero', 'Full-bleed photo'],
   ['Feature spread', 'Photo beside the details'],
@@ -780,11 +784,6 @@ const HEADER_NAMES = {
   grunge: PHOTOGRAPHIC_NAMES.slice(0, HEADER_COUNT.grunge),
   editorial: PHOTOGRAPHIC_NAMES.slice(0, HEADER_COUNT.editorial),
   pop: PHOTOGRAPHIC_NAMES.slice(0, HEADER_COUNT.pop),
-  flat: [
-    ['Centred', 'Title, tags and buttons'],
-    ['Split', 'Text beside an image'],
-    ['Rule', 'Big title over a line'],
-  ],
 }
 
 export const headerLayout = (themeName, i) =>
@@ -1001,8 +1000,10 @@ export const limeTreeTheme = (themeName) =>
 // `arch % designCount`): layout 3's frames' Duo on every template (JP-070),
 // layout 1's frames' three occasions under Lime, Grunge and Editorial
 // (JP-089) and Pop, whose frame's row reads them too (964:58630), and TIERS
-// everywhere else. Pop is named here rather than in limeTreeTheme(), whose
-// other two seeds are its calendar's and form's to widen.
+// everywhere else. Pop is named here rather than in limeTreeTheme(), as at
+// the calendar's head and the form's submit, so each seed reads as sectionVm's
+// `(vm.limeTree || vm.pop)` does; the two fold together when Pop's last layout
+// pass widens `limeTree` itself (plans/pop/layout-1.md, the end-of-pass sweep).
 export const tiersSeed = (themeName, d) =>
   d === 2 ? TIERS_3 : d === 0 && (limeTreeTheme(themeName) || themeName === 'Pop') ? TIERS_1 : TIERS
 

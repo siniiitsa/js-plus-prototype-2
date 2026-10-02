@@ -31,7 +31,7 @@
 import { useId, useRef, useState } from 'react'
 import {
   Play, Pause, SkipBack, SkipForward, Check, ChevronLeft, ChevronRight,
-  ArrowLeft, ArrowRight, ArrowUp, ArrowDown, ArrowUpRight, Star, Plus, X, Search, MapPin, User,
+  ArrowLeft, ArrowRight, ArrowUp, ArrowDown, Star, Plus, X, Search, MapPin, User,
   Image as ImageIcon, Youtube, Instagram, Music2,
 } from 'lucide-react'
 
@@ -41,19 +41,6 @@ import {
 
 const h2Style = (s) => ({
   fontFamily: s.display, fontSize: s.h2, letterSpacing: s.dls, lineHeight: 1.02,
-})
-
-const ctaType = {
-  fontSize: '12px', fontWeight: 700, letterSpacing: '1.2px',
-  textTransform: 'uppercase', padding: '13px 26px', cursor: 'pointer',
-}
-
-const ctaPrimary = (s) => ({
-  ...ctaType, background: s.ac, color: s.acFg, borderRadius: s.btnR,
-})
-
-const ctaGhost = (s) => ({
-  ...ctaType, border: `1.5px solid ${s.line2}`, borderRadius: s.btnR,
 })
 
 const inputStyle = (s) => ({
@@ -1074,7 +1061,7 @@ function NavLinks({ s, color, pills = false }) {
 // twice, small in its nav and large as the hero's own call to action, and only
 // the disc changes size between them.
 // `discFg` is the arrow inside the disc. It defaults to what every caller
-// written before it got — Retro's cream, the flat four's pill ground — and is
+// written before it got — Retro's cream — and is
 // passed only by the calendar's slot list, whose frame stands a cream disc on
 // an ink pill and would otherwise draw cream on cream.
 // `style` is spread last in both branches — ListenLink's precedent, and added
@@ -1132,74 +1119,55 @@ function BookPill({ s, label, bg, fg, shadow, full = false, to, ext, glyph = 'st
       </Tag>
     )
   }
-  if (s.retro) {
-    // Accent-coloured type on a second palette hue, with the offset block.
-    //
-    // One Figma pill at three scales: the 768 frame draws it at full size and
-    // the 1180 canvas at × 0.82. The 390 *header* takes it down to × 0.62,
-    // where the 390 pricing frame keeps it at full size — hence `full`, which
-    // opts a caller on the mobile canvas back up to the 768 numbers.
-    const tab = isTablet(s)
-    const scale = tab || full ? 'full' : s.mob ? 'small' : 'mid'
-    const pick = (fullV, midV, smallV) => (
-      scale === 'full' ? fullV : scale === 'mid' ? midV : smallV
-    )
-    const face = fg ?? s.pillFg
-    const block = shadow ?? s.ac
-    const disc = glyph === 'arrow'
-    const dia = discSize ?? pick(27, 22, 17)
-    return (
-      <Tag {...link} onClick={onClick} style={{
-        ...row(pick('10px', '8px', '6.2px')),
-        background: bg ?? s.pillBg, color: face,
-        padding: disc
-          ? pick('4px 4px 4px 18px', '3.5px 3.5px 3.5px 15px', '3px 3px 3px 12px')
-          : pick('10px 20px', '8px 16px', '6.2px 12.4px'),
-        borderRadius: s.btnR, cursor: 'pointer',
-        boxShadow: scale === 'small' ? hard(s, block, 1.9, 2.5) : hard(s, block, 3, 4),
-        // The type is one of the scaled dimensions: it was the only one left on
-        // label-md, which made the tablet pill's type *smaller* than the
-        // desktop one's even though every other dimension was bigger.
-        //
-        // `size` overrides it, and the 768 header master is why: Figma ramped
-        // `size/label-sm` down for the narrow frames (20 → 16) while leaving
-        // every *box* dimension at the desktop component's own numbers, so a
-        // tablet pill wants the full-scale box with the desktop canvas's type.
-        // Additive — `glyph`/`disc`'s precedent — so the callers written before
-        // it, and the `full` scale the 390 pricing frame asks for, are
-        // untouched.
-        ...labelStyle(s, sizeProp ?? pick('20px', undefined, '12.4px')),
-        ...style,
-      }}>
-        {text}
-        {disc ? (
-          <span style={{
-            width: dia, height: dia, borderRadius: '999px', flex: 'none',
-            background: face, color: discFg ?? (s.retro ? '#FBF6EA' : (bg ?? s.pillBg)),
-            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-          }}><ArrowRight size={Math.round(dia * 0.6)} /></span>
-        ) : <Asterisk size={pick(20, 16, 12.4)} color={face} />}
-      </Tag>
-    )
-  }
-  // The flat four honour `bg`/`fg` too, defaulting to the accent pair. They
-  // used to ignore both, which is fine for a pill on the page ground and wrong
-  // for one standing on a card: a caller passes them precisely because the
-  // ground under the pill is not the page's, and on Pop — whose T.tags[1] IS
-  // the accent — the pricing deck's third card already drew an accent pill on
-  // an accent card with only its type showing.
+  // Retro's pill — accent-coloured type on a second palette hue, with the
+  // offset block — and the fallback for any template not above: the flat
+  // templates' own went with the flat family (plans/pop/layout-1.md, the
+  // end-of-pass sweep).
+  //
+  // One Figma pill at three scales: the 768 frame draws it at full size and
+  // the 1180 canvas at × 0.82. The 390 *header* takes it down to × 0.62,
+  // where the 390 pricing frame keeps it at full size — hence `full`, which
+  // opts a caller on the mobile canvas back up to the 768 numbers.
+  const tab = isTablet(s)
+  const scale = tab || full ? 'full' : s.mob ? 'small' : 'mid'
+  const pick = (fullV, midV, smallV) => (
+    scale === 'full' ? fullV : scale === 'mid' ? midV : smallV
+  )
+  const face = fg ?? s.pillFg
+  const block = shadow ?? s.ac
+  const disc = glyph === 'arrow'
+  const dia = discSize ?? pick(27, 22, 17)
   return (
     <Tag {...link} onClick={onClick} style={{
-      ...row('8px'), background: bg ?? s.ac, color: fg ?? s.acFg, fontSize: '10px', fontWeight: 700,
-      letterSpacing: '1.2px', textTransform: 'uppercase', padding: '9px 18px',
-      borderRadius: s.btnR, cursor: 'pointer', whiteSpace: 'nowrap',
+      ...row(pick('10px', '8px', '6.2px')),
+      background: bg ?? s.pillBg, color: face,
+      padding: disc
+        ? pick('4px 4px 4px 18px', '3.5px 3.5px 3.5px 15px', '3px 3px 3px 12px')
+        : pick('10px 20px', '8px 16px', '6.2px 12.4px'),
+      borderRadius: s.btnR, cursor: 'pointer',
+      boxShadow: scale === 'small' ? hard(s, block, 1.9, 2.5) : hard(s, block, 3, 4),
+      // The type is one of the scaled dimensions: it was the only one left on
+      // label-md, which made the tablet pill's type *smaller* than the
+      // desktop one's even though every other dimension was bigger.
+      //
+      // `size` overrides it, and the 768 header master is why: Figma ramped
+      // `size/label-sm` down for the narrow frames (20 → 16) while leaving
+      // every *box* dimension at the desktop component's own numbers, so a
+      // tablet pill wants the full-scale box with the desktop canvas's type.
+      // Additive — `glyph`/`disc`'s precedent — so the callers written before
+      // it, and the `full` scale the 390 pricing frame asks for, are
+      // untouched.
+      ...labelStyle(s, sizeProp ?? pick('20px', undefined, '12.4px')),
       ...style,
     }}>
       {text}
-      <span style={{
-        width: '14px', height: '14px', borderRadius: '999px', background: s.acFg20,
-        display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flex: 'none',
-      }}><ArrowRight size={9} /></span>
+      {disc ? (
+        <span style={{
+          width: dia, height: dia, borderRadius: '999px', flex: 'none',
+          background: face, color: discFg ?? '#FBF6EA',
+          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+        }}><ArrowRight size={Math.round(dia * 0.6)} /></span>
+      ) : <Asterisk size={pick(20, 16, 12.4)} color={face} />}
     </Tag>
   )
 }
@@ -1298,9 +1266,7 @@ function LocationLine({ s, color }) {
 //
 // `size` is the same shape of override, for HeaderV3's chips, whose
 // masters ramp `size/label-xs` 20/14/12 where `s.labelXs` is a flat 14 at every
-// width. It reaches the Retro branch alone: the flat templates' 9px tracked-out
-// caps are a design constant. Every other caller passes nothing and keeps
-// `s.labelXs`.
+// width. Every other caller passes nothing and keeps `s.labelXs`.
 //
 // `hues` overrides the chips' grounds by seat (`i % hues.length`) — additive
 // again. `vm.tagChips` is seated on the theme's Scheme 1 tags, and Grunge's
@@ -1311,18 +1277,14 @@ function LocationLine({ s, color }) {
 function TagChips({ s, justify = 'flex-start', radius, size, hues, inks }) {
   if (s.showTags !== 'show') return null
   // §10.2 sets the chips in the body face at label-xs, sentence case — not the
-  // tracked-out caps the flat templates use. Lime's mode is the same chip in
-  // Chakra Petch (`s.ui`); its 1180 canvas takes the frame's 5/11 × 0.82, where
-  // Retro's kept the 768 numbers at every width.
-  const chip = s.designed
-    ? {
-        fontFamily: s.ui, fontSize: size || s.labelXs, lineHeight: 1.26,
-        padding: (s.limeTree || s.pop) && !s.narrow ? '4.1px 9px' : '5px 11px',
-      }
-    : {
-        fontSize: '9px', fontWeight: 700, letterSpacing: '1px',
-        textTransform: 'uppercase', padding: '5px 11px',
-      }
+  // tracked-out caps the flat templates used, which went with the flat family
+  // (plans/pop/layout-1.md, the end-of-pass sweep). Lime's mode is the same
+  // chip in Chakra Petch (`s.ui`); its 1180 canvas takes the frame's 5/11 ×
+  // 0.82, where Retro's kept the 768 numbers at every width.
+  const chip = {
+    fontFamily: s.ui, fontSize: size || s.labelXs, lineHeight: 1.26,
+    padding: (s.limeTree || s.pop) && !s.narrow ? '4.1px 9px' : '5px 11px',
+  }
   return (
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', justifyContent: justify }}>
       {s.tagChips.map((c, i) => (
@@ -1358,8 +1320,7 @@ function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32, ink: in
   // inverted. The frame's face is Bebas Neue *Bold*, which Google Fonts does
   // not ship; the regular cut is set rather than a synthesised bold.
   //
-  // `classic` opts a caller out of this branch (and the flat starburst below)
-  // and into the §10.2 seal, which then honours `hue` and `ink`. Lime's
+  // `classic` opts a caller out of this branch and into the §10.2 seal, which then honours `hue` and `ink`. Lime's
   // layout-3 bio (964:68663's "Frame 248") is that seal exactly — Retro's
   // asterisks in Lime's inks, a `s.ac` disc with `s.bg` marks — where every
   // other Lime frame draws the dark disc above. Every earlier caller leaves it
@@ -1551,39 +1512,6 @@ function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32, ink: in
             </text>
           </g>
         </svg>
-      </div>
-    )
-  }
-
-  if (!s.retro && !classic) {
-    // The pre-§10.2 starburst seal, still used by the flat templates.
-    const spikes = 24
-    const pts = []
-    for (let i = 0; i < spikes * 2; i++) {
-      const r = i % 2 === 0 ? 50 : 43
-      const a = (Math.PI * i) / spikes - Math.PI / 2
-      pts.push(`${(50 + r * Math.cos(a)).toFixed(2)},${(50 + r * Math.sin(a)).toFixed(2)}`)
-    }
-    const flat = s.mob ? 52 : 76
-    return (
-      <div style={{ position: 'absolute', width: flat, height: flat, ...style }}>
-        <svg viewBox="0 0 100 100" width={flat} height={flat} className="seal-spin"
-             style={{ display: 'block', overflow: 'visible' }} aria-hidden="true">
-          <defs>
-            <path id={`seal-${id}`} d="M 50,50 m -33,0 a 33,33 0 1,1 66,0 a 33,33 0 1,1 -66,0" />
-          </defs>
-          <polygon points={pts.join(' ')} fill={s.ac} />
-          <text fill={s.acFg} style={{
-            fontSize: '7px', fontWeight: 700, letterSpacing: '0.5px',
-            textTransform: 'uppercase', fontFamily: s.body,
-          }}>
-            <textPath href={`#seal-${id}`} startOffset="0%">{s.badgeText}</textPath>
-          </text>
-        </svg>
-        <span style={{
-          position: 'absolute', inset: 0, display: 'flex', alignItems: 'center',
-          justifyContent: 'center', color: s.acFg, pointerEvents: 'none',
-        }}><ArrowUpRight size={s.mob ? 13 : 18} /></span>
       </div>
     )
   }
@@ -4282,94 +4210,6 @@ function HeaderV5({ s }) {
 }
 
 /* ------------------------------------------------------------------ *
- * §10.3 Header, flat family (Pop — 3 layouts)
- * ------------------------------------------------------------------ */
-
-function FlatNav({ s }) {
-  return (
-    <div style={row('20px', { justifyContent: 'space-between', flexWrap: 'wrap', marginBottom: s.navGap })}>
-      <span style={{ fontFamily: s.display, fontSize: '19px', letterSpacing: s.dls }}>{s.brand}</span>
-      <nav style={row('26px', { flexWrap: 'wrap' })}>
-        {[['Music', '#music'], ['Shows', '#shows'], ['Book', '#book']].map(([l, href]) => (
-          <a key={l} href={href} style={{
-            fontSize: '12px', fontWeight: 600, letterSpacing: '1.4px', textTransform: 'uppercase',
-          }}>{l}</a>
-        ))}
-      </nav>
-    </div>
-  )
-}
-
-function FlatHeader({ s }) {
-  const chipRow = (
-    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', justifyContent: 'center' }}>
-      {s.tagChips.map((c, i) => (
-        <span key={i} style={{
-          background: c.bg, color: c.fg, fontSize: '11px', fontWeight: 700,
-          letterSpacing: '1.2px', textTransform: 'uppercase', padding: '6px 13px', borderRadius: s.btnR,
-        }}>{c.label}</span>
-      ))}
-    </div>
-  )
-
-  return (
-    <div>
-      <FlatNav s={s} />
-
-      {s.v0 && (
-        <div style={col('22px', { alignItems: 'center', textAlign: 'center' })}>
-          <h1 style={{ margin: 0, fontFamily: s.display, fontSize: s.h1, lineHeight: 0.98, letterSpacing: s.dls, maxWidth: '900px' }}>
-            {s.heroTitle}
-          </h1>
-          <p style={{ margin: 0, fontSize: '16px', color: s.muted, maxWidth: '540px', lineHeight: 1.55 }}>{s.subtitle}</p>
-          {s.showTags === 'show' && chipRow}
-          <div style={row('12px', { marginTop: '6px', flexWrap: 'wrap', justifyContent: 'center' })}>
-            <span style={ctaPrimary(s)}>{s.cta1}</span>
-            <span style={ctaGhost(s)}>{s.cta2}</span>
-          </div>
-        </div>
-      )}
-
-      {s.v1 && (
-        <div style={{ display: 'grid', gridTemplateColumns: s.split, gap: '44px', alignItems: 'center' }}>
-          <div style={col('20px', { alignItems: 'flex-start' })}>
-            <h1 style={{ margin: 0, fontFamily: s.display, fontSize: s.h1, lineHeight: 0.98, letterSpacing: s.dls }}>
-              {s.heroTitle}
-            </h1>
-            <p style={{ margin: 0, fontSize: '16px', color: s.muted, maxWidth: '440px', lineHeight: 1.55 }}>{s.subtitle}</p>
-            <div style={row('12px', { flexWrap: 'wrap' })}>
-              <span style={ctaPrimary(s)}>{s.cta1}</span>
-              <span style={ctaGhost(s)}>{s.cta2}</span>
-            </div>
-          </div>
-          <div style={{
-            background: s.soft, borderRadius: s.radius, aspectRatio: '4 / 3.4',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>
-            <span style={{ fontFamily: s.display, fontSize: '64px', color: s.muted, letterSpacing: s.dls }}>{s.initials}</span>
-          </div>
-        </div>
-      )}
-
-      {s.v2 && (
-        <div style={col('26px')}>
-          <h1 style={{ margin: 0, fontFamily: s.display, fontSize: s.h1b, lineHeight: 0.92, letterSpacing: s.dls }}>
-            {s.heroTitle}
-          </h1>
-          <div style={row('20px', {
-            borderTop: `1.5px solid ${s.line}`, paddingTop: '22px',
-            justifyContent: 'space-between', flexWrap: 'wrap',
-          })}>
-            <p style={{ margin: 0, fontSize: '15px', color: s.muted, maxWidth: '420px', lineHeight: 1.55 }}>{s.subtitle}</p>
-            <span style={{ ...ctaPrimary(s), flex: 'none' }}>{s.cta1}</span>
-          </div>
-        </div>
-      )}
-    </div>
-  )
-}
-
-/* ------------------------------------------------------------------ *
  * §10.4 All other categories
  * ------------------------------------------------------------------ */
 
@@ -6821,9 +6661,10 @@ function Media({ s }) {
   // down — the five 647 × 92 cards leant ±1°, the 35.5 disc and 60 cover, the
   // 438-wide player with its 251 × 252 disc, the transport, the clock row, the
   // Soundcloud pill — nested in a pink card, so it dresses this body rather
-  // than taking Lime's block above: `pop` names what only Pop draws, and
-  // `s.retro || pop` what both draw. Nothing in the variant binds; every value
-  // is the node walker's raw read (plans/pop/layout-1.md, section 3).
+  // than taking Lime's block above: `pop` names what only Pop draws, and what
+  // both draw needs no gate, since no other template reaches this body. Nothing
+  // in the variant binds; every value is the node walker's raw read
+  // (plans/pop/layout-1.md, section 3).
   //
   // The card (`Frame 208`) is Scheme 3's pink ground, radius 50, padded 60 /
   // 60 30 / 30 10 round the three rows 20 apart; it fills the content box
@@ -6844,16 +6685,20 @@ function Media({ s }) {
     const u = (v) => `${desk ? Math.round(v * 0.82 * 100) / 100 : v}px`
     const S3 = pop ? s.onScheme[3] : null
     const S6 = pop ? s.onScheme[6] : null
+    // Only Retro and Pop reach this body — every other template takes Lime's
+    // block above — so a value not behind `pop` is Retro's, and every Pop read
+    // of one below takes its own arm first.
+    //
     // The frame paints this section on cream with near-black ink, not the
     // beige page palette — EncoreSection swaps the section ground to match,
     // so the beige checkerboard band and cards read against it.
-    const ink = s.retro ? '#1B1714' : s.paperFg
-    const cream = s.retro ? '#FBF6EA' : s.paper
+    const ink = '#1B1714'
+    const cream = '#FBF6EA'
     // The wine red the frame reserves for the player's thrown block and the
     // progress fill — not a palette hue.
-    const wine = s.retro ? '#9E1F17' : s.ac
-    const cardR = s.retro || pop ? (desk ? '16px' : '20px') : s.btnR
-    const playerR = s.retro || pop ? (desk ? '33px' : '40px') : s.radius
+    const wine = '#9E1F17'
+    const cardR = desk ? '16px' : '20px'
+    const playerR = desk ? '33px' : '40px'
     const playBtn = desk ? 39 : 48
     const ctl = (fill) => ({
       width: fill ? playBtn : 30, height: fill ? playBtn : 30,
@@ -6934,11 +6779,9 @@ function Media({ s }) {
           // mustard, then olive) and throw the accent; the open rows throw the
           // frame's off-palette pink and violet blocks, alternating.
           const hue = pop ? s.onScheme[1].chips[seat.tag].bg : s.chips[(2 + Math.floor(i / 2)) % n].bg
-          const fg = pop ? seat.ink : filled ? (s.retro ? cream : contrastInk(hue)) : ink
+          const fg = pop ? seat.ink : filled ? cream : ink
           const indent = pop ? (desk ? u(63) : tab ? '62.84px' : '62px') : desk ? '49px' : '61px'
-          const thrown = filled ? s.ac
-            : s.retro ? (Math.floor(i / 2) % 2 ? '#8464AD' : '#FD638E')
-            : s.chips[(4 + i) % n].bg
+          const thrown = filled ? s.ac : Math.floor(i / 2) % 2 ? '#8464AD' : '#FD638E'
           // The whole card is the button on the published page, not just the
           // circle: the frame draws no other affordance, and a 29px target is
           // not one on a phone. The playing card is marked by its circle
@@ -6962,7 +6805,7 @@ function Media({ s }) {
                 ? `rotate(${(filled ? -1 : 1) * (s.mob ? 2.25 : tab ? 1.11 : 1)}deg)`
                 : tilt(s, (filled ? -1 : 1) * (s.mob ? 2.25 : 1)),
               background: pop || filled ? hue : cream, color: fg,
-              border: pop ? undefined : `${s.bw} solid ${s.retro ? ink : fg}`, borderRadius: cardR,
+              border: pop ? undefined : `${s.bw} solid ${ink}`, borderRadius: cardR,
               padding: desk ? '13px 13px 13px 20px' : '16px 16px 16px 24px',
               boxShadow: hard(s, thrown, -3, desk ? 8 : 9),
               cursor: s.live ? 'pointer' : undefined,
@@ -6992,7 +6835,7 @@ function Media({ s }) {
               <span style={{
                 width: desk ? 29 : 35, height: desk ? 29 : 35,
                 borderRadius: '999px', flex: 'none',
-                background: pop ? seat.disc : filled ? (s.retro ? '#EDE0C4' : fg) : ink,
+                background: pop ? seat.disc : filled ? '#EDE0C4' : ink,
                 color: pop || filled ? hue : cream,
                 display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: pop ? undefined : 'pointer',
               }}>{on && playing
@@ -7000,12 +6843,12 @@ function Media({ s }) {
                 : <Play size={desk ? 10 : 12} fill="currentColor" strokeWidth={0} />}</span>
               <span style={{
                 width: desk ? 49 : 60, height: desk ? 49 : 60, flex: 'none',
-                borderRadius: s.retro || pop ? (desk ? '5px' : '6px') : s.radiusSm, overflow: 'hidden',
+                borderRadius: desk ? '5px' : '6px', overflow: 'hidden',
                 // The frame borders only the open cards' art, hairline. Pop's
                 // borders none, and an art-less cover's initials take the
                 // card's own ink, where `s.muted` violet vanished on the red
                 // and the blue.
-                border: pop ? undefined : s.retro ? (filled ? 'none' : `1px solid ${ink}`) : `${s.bw} solid ${fg}`,
+                border: pop ? undefined : filled ? 'none' : `1px solid ${ink}`,
               }}><Photo s={s} initialsSize={14} src={t.img} ink={pop ? seat.ink : undefined} /></span>
               {filled && <Grain s={s} exact blend="screen" opacity={0.4} />}
             </div>
@@ -7050,7 +6893,7 @@ function Media({ s }) {
         <div style={{
           width: desk ? '207px' : '252px', maxWidth: '100%',
           aspectRatio: s.mob ? undefined : '1', flex: s.mob ? 1 : 'none', minHeight: s.mob ? 0 : undefined,
-          borderRadius: s.retro || pop ? (desk ? '41px' : '50px') : s.radiusSm, overflow: 'hidden', position: 'relative',
+          borderRadius: desk ? '41px' : '50px', overflow: 'hidden', position: 'relative',
         }}><Photo s={s} initialsSize={44} src={sleeve}
                   ink={pop ? S6.text3 : undefined} style={pop ? { background: POP_PLAYER.well } : undefined} /></div>
         <div style={col(pop ? u(4) : '4px', { alignItems: 'center', position: 'relative' })}>
@@ -7059,8 +6902,8 @@ function Media({ s }) {
               display face, 20 on its auto 24 line, in capitals, and the
               artist in Inter 13 at the frame's raw grey. */}
           <span style={{
-            fontFamily: s.retro ? s.body : s.display, fontWeight: s.retro ? 600 : undefined,
-            fontSize: desk ? '16px' : '20px', letterSpacing: s.retro ? 0 : s.dls,
+            fontFamily: pop ? s.display : s.body, fontWeight: pop ? undefined : 600,
+            fontSize: desk ? '16px' : '20px', letterSpacing: pop ? s.dls : 0,
             textAlign: 'center',
             ...(pop ? { fontSize: faced(s, u(20)), lineHeight: facedLh(s, 1.2), textTransform: 'uppercase' } : null),
           }}>{now.track}</span>
@@ -7097,7 +6940,7 @@ function Media({ s }) {
         <div style={row('10px', { width: '100%', position: 'relative' })}>
           <span style={{ fontFamily: s.body, fontSize: '10px', ...clockInk }}>{now.at}</span>
           <span style={{
-            flex: 1, height: '3px', background: pop ? POP_PLAYER.track : s.retro ? 'rgba(0,0,0,0.28)' : s.deepFg25,
+            flex: 1, height: '3px', background: pop ? POP_PLAYER.track : 'rgba(0,0,0,0.28)',
             borderRadius: pop ? '2px' : '99px',
           }}>
             <span style={{ display: 'block', width: `${now.pct}%`, height: '100%', background: pop ? S6.tx : wine, borderRadius: pop ? '2px' : '99px' }} />
@@ -7121,14 +6964,12 @@ function Media({ s }) {
         boxShadow: hard(s, s.pillBg, 3, 4),
         ...labelStyle(s, desk ? '16px' : '20px'),
       }}>Soundcloud</Pill>
-    ) : pop ? (
+    ) : (
       // Pop's is BookPill's branch box for box — 5/5/5/21 round a 46 × 44 disc
       // — in Scheme 3's lime active pair, its label a hand-scaled 15.77 and it
       // and the disc Lime's leaked ink; the 390 master keeps it at full size.
       <BookPill s={s} label="Soundcloud" ext={s.soundcloud} bg={S3.activeBg} fg={POP_PILL_INK}
                 full={s.mob} size={u(15.77)} />
-    ) : (
-      <BookPill s={s} label="Soundcloud" ext={s.soundcloud} />
     )
 
     // Pop's dot grid paints under everything in the card, the frame's first
@@ -7144,7 +6985,7 @@ function Media({ s }) {
     return (
       <div style={{ position: 'relative' }}>
         {!pop && (
-          <Checkerboard s={s} cell={desk ? 19 : 24} colour={s.retro ? s.bg : s.pillBg}
+          <Checkerboard s={s} cell={desk ? 19 : 24} colour={s.bg}
                         style={{ position: 'absolute', width: 'auto', ...bleedTo(s, 'top') }} />
         )}
         <TornEdge s={s} side="bottom" height={30} />
@@ -16622,7 +16463,7 @@ function Calendar({ s }) {
           borderRadius: u(12.088),
           border: c.d === '' ? 'none' : `${s.bw} solid ${on ? s.tx : s.line}`,
           background: on ? s.ac : blocked(c) ? s.soft : 'transparent',
-          color: on ? (s.retro ? s.pillBg : s.acFg) : blocked(c) ? s.muted : s.tx,
+          color: on ? s.pillBg : blocked(c) ? s.muted : s.tx,
           textDecoration: c.booked ? 'line-through' : undefined,
           cursor: onClick ? 'pointer' : undefined,
         }}>{c.d}</span>
@@ -16668,12 +16509,11 @@ function Calendar({ s }) {
     // along its foot with a rule and the location.
     const LEAN = [28.7, 3.2, 15]
     const SHIFT = [0, -47.3, -12.1]
-    const stampInk = (s.retro && s.chips[3]?.bg) || s.paperFg
+    const stampInk = s.chips[3].bg
     const print = (i) => (
       <div key={i} style={{
         position: 'absolute', left: '50%', top: '50%', zIndex: i + 1, width: pu(366.382),
-        transform: `translate(calc(-50% + ${pu(SHIFT[i])}), -50%)`
-          + (s.retro ? ` rotate(${LEAN[i]}deg)` : ''),
+        transform: `translate(calc(-50% + ${pu(SHIFT[i])}), -50%) rotate(${LEAN[i]}deg)`,
         background: s.paper, borderRadius: pu(11.308), boxShadow: soft(s),
         padding: `${pu(11.308)} ${pu(11.308)} 0`,
       }}>
@@ -16727,10 +16567,8 @@ function Calendar({ s }) {
         <TornEdge s={s} side="top" height={30} />
         <div style={{
           // The frame stands the panel a tone off the sheet it sits on, which
-          // for Retro is `paper` over the cream. The flat templates keep the
-          // page ground: their `paper` is the lightest palette colour, which is
-          // also `tx` in a dark palette — the month would be pale on pale.
-          background: s.retro ? s.paper : undefined,
+          // for Retro is `paper` over the cream.
+          background: s.paper,
           border: `${s.bw} solid ${s.tx}`,
           borderRadius: u(20), overflow: 'hidden',
         }}>
@@ -28159,7 +27997,7 @@ function Footer({ s }) {
 export default function EncoreSection({ s }) {
   // §10.2 — the hero is the one full-bleed composition: the photograph runs to
   // the section edges and the layout supplies its own insets.
-  const bleed = s.hd && s.v0 && !s.flatHeader && s.designed
+  const bleed = s.hd && s.v0 && s.designed
   // §10.2 — Retro's events map is the one section painted on a dark ground
   // rather than the page background, so its checkerboard bands and cream type
   // read. Lime's map stands on a light band instead (`limeLight`, below).
@@ -28234,14 +28072,14 @@ export default function EncoreSection({ s }) {
       transition: 'background-color .45s ease, color .45s ease',
       '--ac': s.ac, '--acFg': s.acFg,
     }}>
-      {s.hd && (s.flatHeader ? <FlatHeader s={s} /> : (
+      {s.hd && (
         s.v0 ? <HeaderV0 s={s} />
           : s.v1 ? <HeaderV1 s={s} />
           : s.v2 ? <HeaderV2 s={s} />
           : s.v3 ? <HeaderV3 s={s} />
           : s.v4 ? <HeaderV4 s={s} />
           : <HeaderV5 s={s} />
-      ))}
+      )}
       {s.bi && <Bio s={s} />}
       {s.me && <Media s={s} />}
       {s.pr && <Pricing s={s} />}

@@ -14,8 +14,8 @@ import { EXAMPLE_PAGE, navSectionsOf, pageTiers, pageEmail } from './builder/dat
 const Z = {
   desktop: {
     dev: 'desktop',
-    h1: '86px', h1b: '118px', h2: '46px', pad: '80px 45.92px', navGap: '64px',
-    split: '1.05fr 1fr', g3: '1fr 1fr 1fr', g2: '1fr 1fr', canvasW: '1180px',
+    h1: '86px', h2: '46px', pad: '80px 45.92px',
+    g3: '1fr 1fr 1fr', g2: '1fr 1fr', canvasW: '1180px',
     dispXl: '105px', dispLg: '79px', dispSm: '33px', title: '20px',
     labelMd: '16px', labelXs: '14px', eyebrow: '12px', gPad: '46px', gGap: '36px',
     padY: '80px', padX: '45.92px', narrow: false,
@@ -24,8 +24,8 @@ const Z = {
   },
   tablet: {
     dev: 'tablet',
-    h1: '60px', h1b: '78px', h2: '36px', pad: '56px 30px', navGap: '48px',
-    split: '1fr 1fr', g3: '1fr 1fr 1fr', g2: '1fr 1fr', canvasW: '768px',
+    h1: '60px', h2: '36px', pad: '56px 30px',
+    g3: '1fr 1fr 1fr', g2: '1fr 1fr', canvasW: '768px',
     dispXl: '77px', dispLg: '64px', dispSm: '34px', title: '22px',
     labelMd: '14px', labelXs: '14px', eyebrow: '13px', gPad: '32px', gGap: '28px',
     padY: '56px', padX: '30px', narrow: true,
@@ -34,8 +34,8 @@ const Z = {
   },
   mobile: {
     dev: 'mobile',
-    h1: '42px', h1b: '50px', h2: '29px', pad: '44px 10px', navGap: '36px',
-    split: '1fr', g3: '1fr', g2: '1fr', canvasW: '390px',
+    h1: '42px', h2: '29px', pad: '44px 10px',
+    g3: '1fr', g2: '1fr', canvasW: '390px',
     dispXl: '77px', dispLg: '40px', dispSm: '26px', title: '18px',
     labelMd: '14px', labelXs: '14px', eyebrow: '11px', gPad: '20px', gGap: '18px',
     padY: '44px', padX: '10px', narrow: true,

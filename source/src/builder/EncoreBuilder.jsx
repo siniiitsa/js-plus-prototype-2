@@ -57,10 +57,10 @@ import {
   CTA_TARGETS, firstPresent, minimalNav, navModeDefault,
   catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldDefault, fieldReach, fieldNowhere, copyrightOf, formHeading3, extUrl, urlProblem, emailProblem, emailAddr, songTags, repChips,
   tierFeats, priceParts, blankRow, SONG_KEYS, repSetsOf, repSetLine, TRACK_KEYS, GIG_KEYS, gigWeekday, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
-  headerFamily, layoutCount, designCount, pageLayout, pageOrder, pageRows, COLUMN_SPLIT, bebasEms, antonEms, notoEms, notoBoldEms, titanEms,
+  layoutCount, designCount, pageLayout, pageOrder, pageRows, COLUMN_SPLIT, bebasEms, antonEms, notoEms, notoBoldEms, titanEms,
   headerLayout, headerLayoutLabel, setupHeaderCount,
 } from './data.js'
-import { defaultImage, defaultImages, defaultTrackArt, RETRO_TEXTURE, TEMPLATE_STILLS } from './photos.js'
+import { defaultImage, defaultImages, defaultTrackArt, RETRO_TEXTURE } from './photos.js'
 
 /* ------------------------------------------------------------------ *
  * §5.5 Axis B — canvas device preview sizing
@@ -69,13 +69,13 @@ import { defaultImage, defaultImages, defaultTrackArt, RETRO_TEXTURE, TEMPLATE_S
 // `dev` names the row, so sectionVm can pick a theme's ramp for it: `canvasW` is
 // no key for that, since PublishedPage overwrites it with '100%' on a phone.
 const SIZES = {
-  mobile:  { dev: 'mobile',  h1: '42px', h1b: '50px',  h2: '29px', pad: '44px 10px', navGap: '36px', split: '1fr',         g3: '1fr',           g2: '1fr',       canvasW: '390px'  },
-  tablet:  { dev: 'tablet',  h1: '60px', h1b: '78px',  h2: '36px', pad: '56px 30px', navGap: '48px', split: '1fr 1fr',     g3: '1fr 1fr 1fr',   g2: '1fr 1fr',   canvasW: '768px'  },
-  desktop: { dev: 'desktop', h1: '86px', h1b: '118px', h2: '46px', pad: '80px 45.92px', navGap: '64px', split: '1.05fr 1fr',  g3: '1fr 1fr 1fr',   g2: '1fr 1fr',   canvasW: '1180px' },
+  mobile:  { dev: 'mobile',  h1: '42px', h2: '29px', pad: '44px 10px',    g3: '1fr',         g2: '1fr',     canvasW: '390px'  },
+  tablet:  { dev: 'tablet',  h1: '60px', h2: '36px', pad: '56px 30px',    g3: '1fr 1fr 1fr', g2: '1fr 1fr', canvasW: '768px'  },
+  desktop: { dev: 'desktop', h1: '86px', h2: '46px', pad: '80px 45.92px', g3: '1fr 1fr 1fr', g2: '1fr 1fr', canvasW: '1180px' },
 }
 
 // §10.2 — the Figma type ramp, layered on top of SIZES rather than replacing it:
-// the layout variants this pass does not touch still read h1/h1b/h2.
+// the layout variants this pass does not touch still read h1/h2.
 //
 // Figma's tablet (768) and mobile (390) frames are exactly canvasW, so those
 // numbers are used verbatim. Its desktop frame is 1440 against a 1180 canvas,
@@ -421,14 +421,13 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
 
     // design selector
     v0: d === 0, v1: d === 1, v2: d === 2, v3: d === 3, v4: d === 4, v5: d === 5,
-    flatHeader: cat === 'header' && headerFamily(T.name) === 'flat',
 
     // §10.2 — the layouts are shared by every template, but the Figma page's
     // decorative treatment (grain, torn edges, checkerboard, hard offset
-    // shadows, rotated cards) is Retro's alone. Same split as headerFamily():
-    // Pop renders the identical structure, flat, and Lime, Grunge and
-    // Editorial each draw a decoration of their own behind `lime`, `grunge`
-    // and `editorial` below.
+    // shadows, rotated cards) is Retro's alone. Lime, Grunge, Editorial and
+    // Pop each draw a decoration of their own behind `lime`, `grunge`,
+    // `editorial` and `pop` below — Pop at layout 1 so far; its layouts 2–4
+    // render the shared structure undressed until their passes.
     retro: T.name === 'Retro',
     // Lime's four layout pages are Retro's components in its own variable
     // mode, so its decoration — arc seams, glows, the arch portrait — goes
@@ -437,9 +436,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // gated `(s.retro || s.lime)`, what Lime alone draws is `s.lime`.
     lime: T.name === 'Lime',
     // What every designed template's frame draws alike — the full-bleed hero,
-    // TagChips' sentence-case chips — is gated on this rather than on a list of
-    // names. A site only some of them share stays a named pair, widened per
-    // site from the frame.
+    // the map raster — is gated on this rather than on a list of names. Every
+    // template is designed since Pop's layout-1 pass, so it is true for all
+    // five; TagChips' undesigned chip went with the flat family. A site only
+    // some of them share stays a named pair, widened per site from the frame.
     designed: T.name === 'Retro' || T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial' || T.name === 'Pop',
     // Grunge's four layout pages are the same components in a third mode,
     // Static Youth, so its decoration — at layout 1 torn black seams round its
@@ -4538,19 +4538,6 @@ const SPOT_ASPECT = `${parseInt(SIZES.desktop.canvasW, 10)} / ${SIZES.desktop.he
 const SPOT_MIN_H = SIZES.desktop.heroH
 
 function TemplatePreview({ themeIdx, artistName }) {
-  // A flat template shows its Figma header as a still (photos.js), SPOT_ASPECT
-  // already, so `cover` crops nothing — not `contain`. None is left since
-  // Pop's hero was fitted; the end-of-pass sweep deletes the branch.
-  const { name } = THEMES[themeIdx]
-  const still = TEMPLATE_STILLS[name]
-  if (still) {
-    return (
-      <img
-        src={still} alt={`${name} template`}
-        style={{ display: 'block', width: '100%', height: '100%', objectFit: 'cover' }}
-      />
-    )
-  }
   return (
     <ScaledPreview
       height="100%" center
