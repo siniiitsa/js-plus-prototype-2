@@ -171,7 +171,7 @@ Session 0 first, then eleven sections in page order. Each row's three masters ar
 | 5 | `repertoire` | `964:58628` | Repertoire — A · Two-column dense | 1440 × 1087 | `986:52424` | 768 × 945 | `986:52436` | 390 × 961 | `#6B2CFF` | Lime `964:58592` | done `2d77ee8` |
 | 6 | `map` | `964:58629` | Events Map — D · Compact tile | 1440 × 1192 | `986:52425` | 768 × 1266 | `986:52437` | 390 × 1095.2 | `#FFFFFF` | Lime `964:58593` | done `a9af421` |
 | 7 | `pricing` | `964:58630` | Pricing — B · 3-col in soft panel | 1440 × 801 | `986:52426` | 768 × 745.1 | `986:52438` | 390 × 1549.7 | `#FFFFFF` | Lime `964:58594` | done `b845e09` |
-| 8 | `calendar` | `964:58631` | Booking Calendar — A · Scheduler | 1440 × 885 | `986:52427` | 768 × 1361 | `986:52439` | 390 × 1011 | `#2563FF` | Lime `964:58595` | |
+| 8 | `calendar` | `964:58631` | Booking Calendar — A · Scheduler | 1440 × 885 | `986:52427` | 768 × 1361 | `986:52439` | 390 × 1011 | `#2563FF` | Lime `964:58595` | done `39a7807` |
 | 9 | `form` | `964:58632` | Enquiry Forms — B · Split context+form | 1440 × 853 | `986:52428` | 768 × 1061.2 | `986:52440` | 390 × 1238.2 | `#FFFFFF`, a `#6B2CFF` card | Lime `964:58596` | |
 | 10 | `testimonials` | `964:58633` | Testimonials H — Stacked tag card | 1440 × 730 | `986:52429` | 768 × 730 | `986:52441` | 390 × 730 | `#C6F200` | Lime `964:58597` | |
 | 11 | `footer` | `964:58634` | Footer — Component 2 / 3 / 4 | 1440 × 479.7 | `986:52430` | 768 × 720.4 | `986:52442` | 390 × 720.4 | `#FF2DA0` | Lime `964:58598` | |
@@ -605,7 +605,7 @@ Everything here is behind `s.pop`, a widened gate or a named pair.
   | heart (`Vector` 100.44 × 91 — *corrected in section 5*: the `Union` is the lightning) | repertoire, by the pager | teal |
   | asterisk (93 × 95, −18.52 → +18.52, *read in section 4*) | gallery, beside the head | teal |
   | starburst (105, −3) | pricing, over the middle card | pink |
-  | sparkle (90 × 91, +18) | calendar, by the photograph | teal |
+  | sparkle (90 × 91, Figma +17.93 → CSS −17.93, *read in section 8*) | calendar, on the photograph's corner (1440 only) | teal |
   | rings (273 × 242) | pricing, behind the third card — 52 past the 390 page | violet |
 
   The seal is the twins' `SealBadge` idea (a turned disc, the name on a path, two marks) in a new
@@ -617,7 +617,8 @@ Everything here is behind `s.pop`, a widened gate or a named pair.
   331 × 95, the bio's 258 × 12 under its head, the map's 407 × 95 at −4 across "MANCHESTER", the
   form's 292 × 68 at −4 under its statement), the repertoire's pink lightning (the `Union`, 100.87 × 79.92,
   *read in section 5*), and the lime
-  squiggle arrows (media 209 × 126 at −135, the calendar's 272 × 164 at −165). Transcribe each path
+  squiggle arrows (media 209 × 126 at −135, the calendar's 272 × 164 at −165 — the media's drawing
+  at 1.3, but in `#BCD631`, *read in section 8*). Transcribe each path
   from `download_assets`' SVG, not by eye.
 - **Dot grids** — a 4 × 5 grid of 20 dots (`Union`, 288 × 239), lime in the bio and the calendar,
   teal in the media card.
@@ -1702,6 +1703,120 @@ counters and ink traps: its corners are soft. Rubik 900 is the squarer drawing, 
   Packages field's hint say so.
 - **`FIELDS.pricing` owes nothing**: no row is template-keyed.
 
+### Settled in section 8 (the booking calendar)
+
+- **No Pop block: Lime's `if (s.limeTree)` inside `Calendar`'s `if (s.v0)` is
+  `(s.limeTree || s.pop)`**, after the seam, with `const pop = s.pop` and a fourth `G` arm ahead of
+  Editorial's; the new leaves (`panel`, `discRing`, `onRing`, `head`) fall back through `??`.
+  `at`, `month`, `cur`, `line` and `step` are shared whole, so the published arrows, day picking
+  and foot needed nothing. The tree is Lime's node for node at all three widths (the walker, all
+  three masters); the 768 master is `Device: Tablet` and the 390 `Device: Mobile`, but **no node
+  is styled**, so neither mode reaches a string. Retro's calendar body has no non-Retro reader
+  left (its `s.retro ? s.paper : undefined` arms) — the sweep's item 3.
+- **The seat is Scheme 4**, and only four reads land on it: `s.bg` blue is the cells' fill and
+  both rules (the halves' divider and the foot's top, the census's "`#2563FF` mixed strokes"),
+  `s.text3` white the numerals, `s.chips[5].bg` the picked day's and the 10px rule's pink (Scheme
+  4's `tag/6`, read off the DOM: `rgb(255, 45, 160)`), `s.chips[0].bg` the sparkle's teal. The
+  rest is `POP_CAL` (decision 5: followed): the head and month in the palette's lime `#C6F200`
+  (`s.ac` is teal), the panel `#4F81FF` (`box1` `#3F76FF`), the discs `#C3F007`, the day names and
+  foot line Lime's family's `#E4F1C4`, and every cell's 1px INSIDE white ring at 15%.
+- **The leaves, off the walker** (nothing binds, nothing is styled):
+  - the **panel** is radius 55 (Lime's) with **no ring** (`G.ring` null, the overlay span off)
+    and no effect;
+  - the **discs** are 55 × 54, filled, unringed (`discRing: 'none'`), round `LimeArrow` in the
+    panel's blue — the frame's `←` is that vector to the hundredth;
+  - the **cells** are `s.bg` at Lime's `radius/card` 26, 74.86 / 81.14 / 48.29 × 55.89 / 55.89 /
+    50.49, gaps 10 / 10 / 2 — Lime's boxes; **the picked day keeps the white 15% ring**
+    (`onRing`), where Lime's turns to `stroke1`; no glow. **The 390 cell is not Lime's circle**
+    (`G.round` false): the 26 corner on a 48.29 column clamps to Figma's own near-circle, 2.2 of
+    straight side, so the master's 50.49 is kept;
+  - booked is **opacity .38, no strike** — the frame dims Lime's own six days (2, 6, 14, 24, 27,
+    28), D1's state;
+  - **every string is raw**: the head a hand-scaled **44.79 on 37.85** at every width, the month
+    **30.28** at its auto line (a 36 box), both `faced` / `facedLh` and uppercase through
+    `disp()` (widened to `pop`); the numerals Chakra Petch **18.13** (not `s.labelXs`, 16 / 14 /
+    12 under Pop), the day names Space Mono **15.11**, mixed case, both at `'normal'`; the foot
+    line Space Mono **Bold 13.37 on 1.3, tracked 8%**, uppercase. Desktop × 0.82;
+  - the **head's box hugs the string** (`headW: '100%'`, Lime's 640 cap off);
+  - the **photo half pads 90 / 50 / 10** round a radius-35 photograph that is exactly its
+    content box at every width (484 × 346, 608 × 426, 350 × 288), so Lime's stretch holds and a
+    six-row month grows the photograph with the grid (August 2025 checked). The 390 master's fill
+    is `FILL` of the whole source where 1440 and 768 are `CROP`; the seed is the desktop crop
+    (session 0), covered into the 390 box — a framing difference, accepted.
+- **The foot is JP-088's** (user call, 2026-10-02, asked this session): the frame draws no pill at
+  any width, so Pop takes the block's line-as-link — an `<a>` to `calBookTo` while it names a
+  picked day, a span otherwise — and **not** Retro's `BookPill`, which `notes/calendar.md`'s
+  "Retro and Pop keep the pill" had kept for Pop while it rendered Retro's body. `FIELDS.calendar.cta`
+  gains `Pop: [3]` (measured: under Pop it now reaches layout 4 alone), its hint and the notes say
+  "Retro keeps the pill", and CLAUDE.md's live list names Pop beside the three.
+- **`CAL_HEADING_1` widens by name** at both sites, `tiersSeed`'s way: `sectionVm`'s
+  `(vm.limeTree || vm.pop)` and `EditPanel`'s `(limeTreeTheme(themeName) || themeName === 'Pop')`.
+  `limeTreeTheme()` itself is untouched, and `FORM_BTN_1`'s gate (`formBtnSeed`) is section 9's.
+  **`FIELDS.calendar.heading`'s `in` gains `Pop: [0, 1, 2, 3]`**, measured with `reach.mjs`'s
+  `calendar.heading` probe (all four layouts under themes 1 and 4; the calendar's other nine
+  probes agree with Lime's rows).
+- **Three stickers**, each Pop-only, taking no pointer:
+  - **the dot grid** (`PopDots`, the palette lime `G.head`, 288.02 × 238.58 at every width) is the
+    photo half's first child, under the photograph (positioned after it), and **hangs off the
+    half's foot-right corner** so a six-row month keeps it by the photograph's foot: 58.27 in and
+    51.12 up at 1440 (× 0.82), 72.27 in and 11.11 up at 768, 66.73 past and 10.83 under at 390.
+    **The 390 grid is followed**: the master clips it at the panel's edge and the foot's rule, so
+    one column and the bottom row show as half-dots — it shows, and reads as the bio's 768 grid
+    did (CONVENTIONS A); Pop's half clips (`overflow: hidden`) as the frame's does. At 768 the
+    photograph covers all but the bottom row, as the master renders;
+  - **the sparkle** (`POP_SPARKLE_D`, 90 × 91, teal) is **Figma +17.93 → CSS −17.93** — the
+    planning table's "+18" was Figma's sign — its centre 12 right of and 4 below the photograph's
+    top-left at 1440. **Not drawn narrow**: both masters keep its desktop x (796 / 776), past the
+    frame;
+  - **the squiggle arrow is `POP_ARROW_D` at 1.3** (271.8 × 164.3 against the media's 209.11 ×
+    126.41, every coordinate to the hundredth), and **its fill is `#BCD631`, `POP_STICKER_LIME`** —
+    the node's own and the render's `rgb(188, 214, 49)`, where the head beside it is `#C6F200`:
+    the first sticker to bear session 0's "stickers' lime" out since the bio's scribble. Figma
+    −165 → CSS +165, its centre 188.35 in from the content's right edge and 27.57 below its top
+    (× 0.82), over the panel's top-right corner (the frame's later sibling), in the column, which
+    goes `position: relative` under Pop. **1440 alone**: both narrow masters carry its desktop x
+    (1043), wholly off-frame.
+- **The 10px rule** is `s.chips[5].bg` pink across the root's top, in pricing's root-size
+  clipping layer, which the block now returns ahead of its column as a fragment (the twins' DOM
+  is unchanged: the layer is `pop &&`).
+- **Named departure: the grid half's right stroke at 768 and 390 is not drawn** — Editorial's
+  reading. Pop's panel has no ring, so both narrow masters show the half's 1px `#2563FF` right
+  stroke down the panel's edge to the grid's foot — the desktop divider leaking; Lime's
+  `s.narrow ? undefined` kept.
+- **The glyph floor, measured here** (the frame holds Chunko glyphs in BOOK NOW and JUNE 2025): a
+  lime-ink row scan puts Titan's caps **0.14em** low in the head (4.8 / 6 / 6 px at 36 / 43.9 /
+  43.9) and **0.11em** low in the month (3.0 / 3.2 / 3.2 at 24.3 / 29.7 / 29.7) — the month's
+  smaller lift at its taller line. Both lifted (`top`, relative); the ink then lands at −1.04 /
+  −1.05 against the frame's −0.8 / −1 (head) and 4.12 / 5.14 against 4.1 / 5 (month), off the
+  unlifted box's top. Titan's J descends where Chunko's does not; the month box is unchanged.
+- **The empty slot** (`&noimage=1`): the frame draws none, and `Photo`'s soft well is
+  translucent, so the dot grid showed through it with low-contrast yellow initials. Pop's photo
+  clip is painted `s.bg` under the well and its initials are `s.text3` white (`Photo`'s `ink`).
+- **Measured** (harness, off the content's and the panel's top-left): at 1440 the panel 50.72 down
+  (62 × 0.82 = 50.84) and 1088.19 × 510.92 (1088.96 × 510.86), the discs (32.79, 32.8) 45.09 ×
+  44.3, the month (207.93, 40.19) 128.23 wide (129.6), the names 94.39 down (94.42), the cells
+  (32.79, 136.48) 61.33 × 45.8, the photo (73.8, 73.8) 396.5 × 283.48, the grid (260.14, 193.55) in
+  the half (260.5, 193.8), the sparkle's turned box (581.09, 30.25) 93.18 × 93.69 (581.5, 30.2),
+  the arrow's 808.66 / 8.65 (809.4 / 8.7), the foot 431.08 down and its line (32.79, 32.79) — all
+  within 0.8 px of the frame × 0.82; at 768 and 390 every one of those within 1 px. The head runs
+  1.6% wide (202.5 against 199.3). Inherited, not Pop's: the root's 80 / 56 / 44 top against the
+  masters' 100 / 100 / 60 and its foot.
+- **Live** (`theme=4&live=1&today=2025-06-10&booked=2025-06-14,2025-06-24`, puppeteer clicks, three
+  widths): a pick moves the pink fill and the line ("Enquiry for Friday, June 20…", an
+  `<a href="#form">`), the booked 14th and the past 5th take no click, re-clicking the lit day
+  falls back to the cued 12th, Next goes to July and Back twice wraps to May 2026; 19 cells carry
+  a pointer (30 − 9 past − 2 booked); every disc hit-tests to itself and every sticker to what is
+  under it; no sideways scroll at 390 (no transformed box reaches it, so `popClip` is not owed).
+  `page-check.mjs Pop 0`: no console error or warning, the calendar's probed controls all change
+  state, `overflow390` 0, and the 1440 seam clip shows pricing's white meeting the pink rule.
+- **Digest**: themes 0, 1, 2 and 3 at zero rows, static and live (660 + 660 against the editing
+  server's before-labels, no empty render). **Theme 4 moved exactly calendar a0 at three widths,
+  both ways** — no shared helper changed (`PopDots` and `LimeArrow` are called, not edited).
+- **Retro's calendar body has no Pop reader now**, so its flat arms (`background: s.retro ?
+  s.paper : undefined`, the pill's flat defaults) read Retro alone — the sweep's item 3. Pop's
+  layout-2 calendar is still Retro's body (`notes/calendar.md`'s "Retro's and Pop's foot never
+  wraps" is layout 2's, true).
+
 ### Inherited and used
 
 *(Append one line each time a session leans on a bullet from Lime's, Grunge's, Editorial's or
@@ -1846,6 +1961,23 @@ is scaled* (`faced`, grunge/layout-1); *a stand-in face's glyph floor is measure
 (editorial/layout-3) — turned: no Chunko glyph, the page's 0.14em inherited; *emptied content drops its
 node* (lime/layout-1, section 7) — kept; *theme 1 is the digest at risk* (grunge/layout-1) — themes
 0–3 at zero, static and live.
+
+Section 8: *no block: the twin's gate widened, a named flag for the deltas* (grunge/layout-1 and
+editorial/layout-1, section 8) — `(s.limeTree || s.pop)`; *where the seam lives inside the branch, the
+block goes after the seam* (lime/layout-1, section 8); *the `G` lookup at the block's head*
+(grunge/layout-1) — a fourth arm, new leaves through `??`; *the node walker, kept* (grunge/layout-2) —
+all three masters, with `relativeTransform`s, the arrow's and the sparkle's `fillGeometry` and the
+photo's `scaleMode`; *a rotated group's metadata x/y is a bounding box* (memory `figma-frame-reading`) —
+the arrow placed by its `relativeTransform`'s centre; *the panel's ring is an overlay*, *booked is the
+frame's own state*, *the foot keeps Retro's BookPill* (D1) — the overlay gated off (no ring), the
+booked state kept, the pill turned round to JP-088's line on a user call; *leaked tops are followed
+where they show, dropped where they don't* (lime/layout-1) — the 390 dot grid followed, the narrow
+sparkle and arrow dropped; *a leak that shows and reads as a defect is overridden* (grunge/layout-1)
+— the narrow divider, Editorial's reading; *a stand-in face is scaled* (`faced`, grunge/layout-1);
+*a stand-in face's glyph floor is measured per site* (editorial/layout-3) — 0.14em on the head,
+0.11em on the month; *a seeded page cannot show an empty slot* (lime/layout-1, sweep) —
+`&noimage=1`, the well made opaque; *field reach is measured* (CLAUDE.md) — `heading` and `cta`'s
+Pop rows; *theme 1 is the digest at risk* (grunge/layout-1) — themes 0–3 at zero, static and live.
 
 ## Open questions
 
