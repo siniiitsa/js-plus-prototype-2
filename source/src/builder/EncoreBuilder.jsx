@@ -480,13 +480,14 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   }
   // Layout 2's sections stand on their own frames' insets (JP-094, user call,
   // 2026-10-02, reversing Retro's "fit the card, not the frame height" for the
-  // three templates whose pages are Lime's tree). The page frames stack their
+  // templates whose pages are Lime's tree, Pop's included). The page frames stack their
   // sections with no spacing and each states its own top and foot, so a gap is
   // one section's foot plus the next one's top, where `padY` doubled up to 160
   // (the tester's 197 in the zoomed tab) against the frame's 112 × 0.82
   // (Editorial's 964:64598 · 986:15657 · 986:15676; Lime's 964:64579 ·
   // 986:11847 · 986:11866 and Grunge's 964:64617 · 986:13752 · 986:13771
-  // state the same numbers to the pixel). [top, foot] at 1440, 768 and 390,
+  // state the same numbers to the pixel, and so do Pop's 964:64560 · 986:17562
+  // · 986:17581, plans/pop/layout-2.md, session 0). [top, foot] at 1440, 768 and 390,
   // desktop × 0.82 rounded to 0.1 as the blocks' own `u()` rounds it — not
   // layout 3's whole pixels — so the calendar's and the map's old
   // `calc(u(56) - padY)` margins (Lime's user call, 2026-09-17) fold in exactly.
@@ -494,7 +495,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // top, which its nav margin cancels, and pricing's desktop foot, which its
   // 1px foot rule bleeds through (the rule's 24 + 8 is the frame's 32). The
   // repertoire's sheet, the form's band and the footer keep theirs.
-  if (d === 1 && (T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial')) {
+  if (d === 1 && (T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial' || T.name === 'Pop')) {
     const inset = {
       header: [[null, 56], [null, 60], [null, 10]],
       bio: [[56, 56], [60, 60], [30, 30]],

@@ -376,9 +376,11 @@ export const THEMES = [
     // paints, read off the census (plans/pop/layout-1.md, *Settled in session
     // 0*), and every tint matching no key is the section's named literal.
     // Unlike Sienna Vale's, Pop's nine schemes are nine grounds; 5, 8 and 9 (teal,
-    // yellow, black) seat nothing at layout 1.
+    // yellow, black) seat nothing at layout 1, and at layout 2, whose frames are
+    // bound, 5 and 8 seat the media's fan card and list rows, nested; 9 none.
     schemes: {
-      // Scheme 2, lime — the testimonials, and the gallery's source panel.
+      // Scheme 2, lime — the testimonials, and the gallery's source panel; at
+      // layout 2 the media panel and the calendar card.
       2: {
         palette: ['#C6F200', '#FF2DA0', '#6B2CFF'],
         tags: ['#FF2DA0', '#2563FF', '#00E0C4', '#6B2CFF', '#FF1A1A', '#FFF600', '#FFFFFF'],
@@ -404,7 +406,8 @@ export const THEMES = [
         },
       },
       // Scheme 4, blue — the booking calendar, by its ground and white type
-      // only: its lime head, its #4F81FF panel and its discs are literals.
+      // only: its lime head, its #4F81FF panel and its discs are literals; at
+      // layout 2 the enquiry form's band.
       4: {
         palette: ['#2563FF', '#00E0C4', '#FFF600'],
         tags: ['#00E0C4', '#6B2CFF', '#FF1A1A', '#FFF600', '#C6F200', '#FF2DA0', '#FFFFFF'],
@@ -414,6 +417,21 @@ export const THEMES = [
           inactiveBg: '#00E0C4', inactiveFg: '#FFFFFF', inactiveLine: '#00E0C4',
           stroke1: '#00E0C4', stroke2: '#FFF600', hl: '#FFFFFF', text3: '#FFFFFF',
           tagFg: ['#000000', '#F6F0E8', '#F6F0E8', '#000000', '#141414', '#F6F0E8', '#000000'],
+        },
+      },
+      // Scheme 5, teal — layout 2's media: a fan card and a list row, read
+      // through `s.onScheme[5]`; no section is seated on it. Read off `2 ·
+      // Scheme` through `Primitives → Pop` (plans/pop/layout-2.md, *Settled in
+      // session 0*). Its accent is violet and its body ink yellow.
+      5: {
+        palette: ['#00E0C4', '#6B2CFF', '#FFF600'],
+        tags: ['#6B2CFF', '#FF1A1A', '#FFF600', '#C6F200', '#FF2DA0', '#2563FF', '#FFFFFF'],
+        sem: {
+          box1: '#14F4D8', box2: '#0AC9B1', box3: '#06A893', glow: '#6B2CFF',
+          activeBg: '#6B2CFF', activeFg: '#FFFFFF',
+          inactiveBg: '#6B2CFF', inactiveFg: '#FFFFFF', inactiveLine: '#6B2CFF',
+          stroke1: '#6B2CFF', stroke2: '#FFF600', hl: '#000000', text3: '#000000',
+          tagFg: ['#F6F0E8', '#F6F0E8', '#000000', '#141414', '#F6F0E8', '#F6F0E8', '#000000'],
         },
       },
       // Scheme 6, violet — the repertoire, and the media's player, the map's
@@ -439,6 +457,20 @@ export const THEMES = [
           inactiveBg: '#C6F200', inactiveFg: '#F5F5F5', inactiveLine: '#C6F200',
           stroke1: '#C6F200', stroke2: '#6B2CFF', hl: '#FFFFFF', text3: '#FFFFFF',
           tagFg: ['#000000', '#141414', '#F6F0E8', '#F6F0E8', '#000000', '#F6F0E8', '#000000'],
+        },
+      },
+      // Scheme 8, yellow — layout 2's media list, a row read through
+      // `s.onScheme[8]`; no section is seated on it. Read with Scheme 5. Its
+      // idle label is black where its active one is white.
+      8: {
+        palette: ['#FFF600', '#FF2DA0', '#6B2CFF'],
+        tags: ['#C6F200', '#FF2DA0', '#2563FF', '#00E0C4', '#6B2CFF', '#FF1A1A', '#FFFFFF'],
+        sem: {
+          box1: '#FFFB96', box2: '#EEE60B', box3: '#D4CC04', glow: '#FF2DA0',
+          activeBg: '#FF2DA0', activeFg: '#FFFFFF',
+          inactiveBg: '#FF2DA0', inactiveFg: '#000000', inactiveLine: '#FF2DA0',
+          stroke1: '#FF2DA0', stroke2: '#6B2CFF', hl: '#141414', text3: '#000000',
+          tagFg: ['#141414', '#F6F0E8', '#F6F0E8', '#000000', '#F6F0E8', '#F6F0E8', '#000000'],
         },
       },
     },
@@ -484,6 +516,14 @@ export const SCHEMES_OF = {
   // The same at all three widths.
   Pop: {
     0: { repertoire: 6, calendar: 4, testimonials: 2, footer: 3 },
+    // Its layout-2 page (964:64560 · 986:17562 · 986:17581), whose frames are
+    // bound, so these are read off `explicitVariableModes`, the same at all
+    // three widths: the media panel (964:64564 · 986:17566 · 986:17585) and the
+    // calendar card (964:64574 · 986:17576 · 986:17595) are Scheme 2 cards on
+    // the page's white, which the root paints round them (`pageBg`), and the
+    // form (964:64576 · 986:17578 · 986:17597) is a Scheme 4 band. The footer
+    // keeps row 0's 3.
+    1: { media: 2, calendar: 2, form: 4 },
   },
 }
 
@@ -583,10 +623,11 @@ export const minimalNav = (navSections) =>
 // `arch % designCount`. A stored value always wins, so a header moved back
 // to layout 1 returns to its sections unless the artist picked Minimal.
 // Editorial's layouts 2 and 3 draw the three too (964:64599, 986:15658;
-// 964:68718, 984:16812), so it joins them.
+// 964:68718, 984:16812), so it joins them. Pop's layout 2 does (964:64561,
+// 986:17563), so it joins at `d === 1`; its layout 3 is still a placeholder.
 export const navModeDefault = (themeName, d) =>
-  (themeName === 'Retro' || themeName === 'Lime' || themeName === 'Grunge' || themeName === 'Editorial')
-    && (d === 1 || d === 2) ? 'minimal' : 'sections'
+  ((themeName === 'Retro' || themeName === 'Lime' || themeName === 'Grunge' || themeName === 'Editorial')
+    && (d === 1 || d === 2)) || (themeName === 'Pop' && d === 1) ? 'minimal' : 'sections'
 
 // Bebas Neue's advance widths in em, capitals only — Lime's label face, which
 // sets every nav label in caps — read off the loaded face with canvas

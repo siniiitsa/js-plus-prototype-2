@@ -210,7 +210,7 @@ session widens. The narrow twins are in Editorial's and Grunge's sections tables
 
 | # | Cat | Desktop node | Size | Tablet node | Size | Mobile node | Size | Scheme 1440 / 768 / 390 (nested) | Lime twin | Editorial twin | Lime block | Status |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 0 | *foundation* | `964:64560` *(page)* | — | `986:17562` | — | `986:17581` | — | — | — | — | Schemes 5 and 8, `SCHEMES_OF.Pop[1]`, `editorialCard`, the JP-094 pad arm, `navModeDefault` | |
+| 0 | *foundation* | `964:64560` *(page)* | — | `986:17562` | — | `986:17581` | — | — | — | — | Schemes 5 and 8, `SCHEMES_OF.Pop[1]`, `editorialCard`, the JP-094 pad arm, `navModeDefault` | **done** |
 | 1 | `header` | `964:64561` | 1440 × 974 | `986:17563` | 768 × 1024 | `986:17582` | 390 × 994 | 1 (Enquire pill **3**, place card **6**, Book pill **3 / 3 / 4**) | `964:64580` | `964:64599` | `if (s.limeTree) { … return }` at the head of `HeaderV1` | |
 | 2 | `bio` | `964:64562` | 1440 × 760 | `986:17564` | 768 × 1138.8 | `986:17583` | 390 × 881.3 | 1 (Book pill **4**) | `964:64581` | `964:64600` | `if (s.v1 && s.limeTree)` ahead of `Bio`'s `if (s.v1)` | |
 | 3 | `media` | `964:64563` *(Section; panel `964:64564`)* | 1440 × 965 | `986:17565` *(Frame 299; `986:17566`)* | 768 × 1541 | `986:17584` *(Frame 299; `986:17585`)* | 390 × 1420 | page 1, **panel 2** (fan cards 6 / 3 / 5 / 4 / 2, list rows 3 / 4 / 5 / 7 / 8) | `964:64582` | `964:64601` | inside `Media`'s `if (s.v1)`, after `nowArt` | |
@@ -371,7 +371,7 @@ repertoire sheet's 1px pink ring and pricing's narrow 1px pink ring.
 
 ## The decisions this plan makes or hands over
 
-### 1. The gate — **recommended: `(s.limeTree || s.pop)` per site, layout 1's idiom; confirm in session 0**
+### 1. The gate — **settled: A, `(s.limeTree || s.pop)` per site, layout 1's idiom** (user call, 2026-10-05)
 
 Layout 1's decision 3 widened each layout-1 block per site to the pair, and its sweep kept all
 sixteen pairs, naming the fold for later: *widen `limeTree` (and `limeTreeTheme`) to Pop once its
@@ -390,7 +390,7 @@ family closes, deleting every `|| pop` at once*. Layout 2 is not the family's cl
 
 Under A, the sweep lists every layout-2 pair beside layout 1's sixteen (item 6).
 
-### 2. Leaks on a bound page — **recommended: CONVENTIONS A per site, layout 1's face rule; confirm in session 0**
+### 2. Leaks on a bound page — **settled: CONVENTIONS A per site, layout 1's face rule** (user call, 2026-10-05; the media head's case and ink stay the media session's)
 
 Layout 1's decision 5 was *follow every raw hex as a named literal* — right for an unbound page,
 where a raw hex was Pop's own tint. Here every Pop colour is bound, so a raw hex is another
@@ -795,17 +795,82 @@ and its **lime** cards add a third ground the twins never had.
     (Scheme 1's `active/bg`) with a white disc. At 390 the rail stands under the card as a row, and
     the sub is a 411-wide no-wrap line clipped by the root (open question 6).
 
+### Settled in session 0 (the data)
+
+- **Decisions 1 and 2 are the recommendations** (user call, 2026-10-05): the pair `(s.limeTree ||
+  s.pop)` per site, each section widening its own block; and on this bound page a raw hex is a
+  leak judged per site by CONVENTIONS A, Anton set in Pop's label face, a hand-scaled instance not
+  the ramp. The media head's case and ink stay the media session's. One commit, data and one-word
+  gates; no section's layout code moved.
+- **Schemes 5 and 8 are the plan's table, cell for cell**, read with one `use_figma` walk of every
+  `2 · Scheme` colour variable, each alias resolved through `1 · Primitives` → Pop. **Scheme 2 was
+  the positive control**: the same walk gave `schemes[2]`'s every key, tags 1–7 and their inks
+  included. Tags 3–7, which the table left out: Scheme 5 `#FFF600` / `#C6F200` / `#FF2DA0` /
+  `#2563FF` / `#FFFFFF`, inked `#000000` / `#141414` / `#F6F0E8` / `#F6F0E8` / `#000000`; Scheme 8
+  `#2563FF` / `#00E0C4` / `#6B2CFF` / `#FF1A1A` / `#FFFFFF`, inked `#F6F0E8` / `#000000` /
+  `#F6F0E8` / `#F6F0E8` / `#000000`. **`hl` is `sem/box/1/text`**: `#000000` under Scheme 5, where
+  every other Pop scheme's is `#141414` or `#FFFFFF`. Both entries carry `schemes[2]`'s fourteen
+  `sem` keys and seven-long `tags` / `tagFg` (checked in Node), since `flatScheme()` runs over every
+  entry for every Pop render, layout 1's included. Scheme 9 still seats nothing.
+- **`SCHEMES_OF.Pop[1] = { media: 2, calendar: 2, form: 4 }`**, with no footer entry (row 0's 3,
+  pink, at every page); `editorialCard` widened to `(s.editorial || s.pop)`, its comment naming
+  Pop's two cards and the rename left to the sweep; Pop joined JP-094's `d === 1` arm on the
+  twins' table unchanged; `navModeDefault` gained its own clause, `(themeName === 'Pop' && d ===
+  1)`, so Pop is Minimal at layout 2 alone (Node: `smss` over designs 0–3, the four others `smms`).
+- **Digest: themes 0, 1, 2 and 3 at zero rows, canvas and live** (660 + 660 renders each side,
+  no one-row file in any label). **Theme 4 moved 30 files, canvas and live alike**, every one
+  arch 1 at all three widths: header (and **arch 5, byte-identical to arch 1** at each width), bio,
+  media, gallery, pricing, calendar, map, testimonials and form. **No `_arch_0_` file moved, nor the
+  header's arch 4**, so layout 1 is untouched; **the repertoire and the footer (`&page=2` too) did
+  not move**, as neither has a seat or an inset row. Why each moved:
+  - **The pad arm** — header, bio, media, gallery, pricing, calendar, map and testimonials, the
+    root's height alone at most widths (the 1440 bio 691 → 623, gallery 638 → 553, testimonials 669
+    → 601; at 768 most grow by 8, `padY` 56 to the frame's 60). The calendar at 768 kept its height,
+    the frame's 56 being `padY`'s, and moved six colour rows only (the seat below).
+  - **`navModeDefault`** — the 1440 header lost six rows: Retro's placeholder bar draws Music /
+    Gigs / About where it wrapped nine links onto two rows. At 768 and 390 the bar is the burger
+    either way, so only the foot moved.
+  - **The seats** — media and the calendar are lime (`#C6F200`) cards in white roots
+    (`vm.pageBg`), inset by the frames' own numbers (45.9 · 70.5 at 1440, 30 · 60 / 10 · 40 media
+    and 30 · 56 / 10 · 40 calendar narrow); the form's root is blue (`#2563FF`) at every width.
+    **`preview.jsx` needed nothing**: its `Z` carries `dev`.
+- **What the pictures show** (`shots.mjs` before / after, all eleven at all three widths, in the
+  session scratchpad) differs from the root rows in the two places Editorial's did, for its reason —
+  **the flat `s.v1` arms paint full-size sheets and read their own keys on the new ground**:
+  - **The form reads teal, not blue**: its flat sheet is `ground = s.pillBg`, Scheme 4's `activeBg`
+    `#00E0C4` (black, Scheme 1's, before); the blue root shows nowhere. Its card turned yellow and
+    its submit stayed violet. **Step 3's `paperOf` prediction was wrong**: Scheme 4's `tx` is
+    `#FFF600`, which clears 0.6, so `paper` there is that yellow, not Retro's `#FBF6EA` — the card's
+    yellow is `paper`.
+  - **The media list's rows and the fan re-inked on lime** (the teal and blue rows went violet and
+    teal), and **the calendar's foot pill turned pink** with a lime label — Scheme 2's `pillBg`, as
+    the plan foresaw (trap 6). Its head band stayed pink.
+  - **The header's checker ribbon dropped off the root.** Retro's placeholder half hangs it
+    `bleedTo(s, 'bottom')` — `padY` below its container — and the pad arm made the foot the frame's
+    45.9 / 60 / 10, so the ribbon now sits under the root, past the shot and the digest. Retro's half
+    is unreachable under Pop once the header session widens the block, so it is named, not chased.
+  None of it is chased here; each section's widened block replaces the flat arm it stands on.
+- **For the sweep's CLAUDE.md pass**: the per-section scheme paragraph (`SCHEMES_OF.Pop` gains row
+  1, `THEMES[4]` Schemes 5 and 8, `editorialCard`'s reach), `navModeDefault`'s sentence and the
+  JP-094 comment's "Pop's included" — the code comments are written, the docs are not.
+
 ### Inherited and used
 
 *(The running list the sweep folds into [`../CONVENTIONS.md`](../CONVENTIONS.md): each time a
 session leans on a bullet from Pop layout 1's, Editorial's, Lime's, Grunge's or Retro's
 Conventions, name it here in one line, with the plan it came from, a blank line between sessions.)*
 
+- Session 0: *the digest is committed* (lime/layout-1) — 1320 renders a side, five themes, canvas
+  and live; *a section's colour scheme is resolved in `sectionVm`* (editorial/layout-1) and *a card
+  on another scheme reads that scheme's keys* (editorial/layout-2) — Schemes 5 and 8, row 1 and
+  `pageBg` round the two lime cards, data only.
+
 ## Open questions
 
-1. **Decision 1** — the gate, `(s.limeTree || s.pop)` per site. *Session 0 confirms.*
-2. **Decision 2** — leaks on a bound page, and the media head's case and ink. *Session 0 confirms
-   the rule; the media session settles the head.*
+1. ~~**Decision 1** — the gate, `(s.limeTree || s.pop)` per site.~~ *Settled in session 0: the
+   pair per site (user call, 2026-10-05).*
+2. **Decision 2** — leaks on a bound page, and the media head's case and ink. *The rule settled in
+   session 0 (user call, 2026-10-05); the media session settles the head.*
 3. **The header's face-card portrait and the form's credit avatar** are Lime's `e3790c2c` and
    `f821adc2`, the components' default pictures through Pop instances; the seeds stand. Worth
    telling the designer, with Grunge's and Editorial's.

@@ -28058,7 +28058,10 @@ export default function EncoreSection({ s }) {
   // are Scheme 2 cards inset on the page's Scheme 1 paper. Each section is
   // seated on its card's scheme (SCHEMES_OF), so `s.bg` is the card's taupe and
   // the block paints the card; the root paints the page's own ground round it.
-  const editorialCard = (s.me || s.ca) && s.v1 && s.editorial
+  // Pop's layout-2 panel (964:64564) and calendar (964:64574) are the same
+  // Scheme 2 cards on its white, so it shares the flag, and the name now says
+  // less than it covers (plans/pop/layout-2.md; the sweep decides a rename).
+  const editorialCard = (s.me || s.ca) && s.v1 && (s.editorial || s.pop)
   return (
     // The id is the nav's scroll target, and it is live-gated: the editor
     // document renders a dozen header previews at once through LayoutPicker
