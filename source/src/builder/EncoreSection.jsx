@@ -7342,22 +7342,54 @@ function Media({ s }) {
     // lines at every width, and Noto's own widths break it where the frames
     // do — after "worth" at 1440 and 390, after "your" at 768 — so it takes
     // no cap. Display/Title is 32 × 0.82 / 25 / 23.
-    if (s.limeTree) {
+    //
+    // Pop layout 2 (964:64563 · 986:17565 at 768 · 986:17584 at 390) is the
+    // tree a fourth time, seated on Scheme 2 as Editorial's is, so `pop` names
+    // its deltas: the panel is `s.bg` (lime) on the page's white, and the bar
+    // and its inner pill `box/1`, the sleeve's well `box/2`, every bar ink
+    // `sem/text/2` (violet) in a 1px `sem/stroke/1` ring — violet too under the
+    // seat — with no glow. But every fan card and every list row stands on a
+    // scheme of its own (`s.onScheme`): the five card seats on 5 / 4 / 2 / 3 /
+    // 6 from the left, each its `box/1` at radius 8 in a 1px `stroke/1` ring
+    // round a `box/2` well, inked `text/2`; the five rows on 3 / 4 / 5 / 7 / 8
+    // by index, each a pill on its `sem/bg`, ringed 4px, inked `text/1`, 10
+    // apart, round a ringed cover disc. The heading flips ink by width on
+    // Lime's own keys and is uppercase at every width (decision 2). The 1440
+    // Section's 5px lime rules are visible here, and the root draws them.
+    if (s.limeTree || s.pop) {
       const grunge = s.grunge
       const ed = s.editorial
+      const pop = s.pop
       // Scheme 2's `sem/bg`, `box/1` and `box/2` in Static Youth — literals,
       // since under Grunge none of them is a Scheme 1 key's value.
       const G2 = { bg: '#171716', box1: '#000000', box2: '#222222' }
-      const panelBg = ed ? s.bg : grunge ? G2.bg : s.box1
+      const panelBg = ed || pop ? s.bg : grunge ? G2.bg : s.box1
       const cardBg = ed ? s.box1 : grunge ? G2.box1 : s.box2
-      // Sienna Vale's bar binds the panel's `sem/bg`, not the cards' `box/1`.
-      const barBg = ed ? s.bg : cardBg
-      const dusk = ed ? s.box2 : grunge ? G2.box2 : '#43523B'
-      const tk = { title: ed ? (desk ? u(32) : tab ? '25px' : '23px') : desk ? u(36) : tab ? '28px' : '26px' }
+      // Sienna Vale's bar binds the panel's `sem/bg`, not the cards' `box/1`;
+      // Pop's binds `box/1` (its fan cards are each on a scheme of their own).
+      const barBg = pop ? s.box1 : ed ? s.bg : cardBg
+      const dusk = ed || pop ? s.box2 : grunge ? G2.box2 : '#43523B'
+      // Pop's fan seats, k = −2 … +2, and its rows by index: each node's own
+      // scheme, read off `explicitVariableModes` on all three masters. A
+      // sixth or seventh card keeps its side's outermost seat, as `CARD` does;
+      // a sixth row starts the cycle again.
+      const popCard = (k) => s.onScheme[[5, 4, 2, 3, 6][Math.max(-2, Math.min(2, k)) + 2]]
+      // The rows bind `text/1` and ring 4px in whichever stroke each node
+      // names — `stroke/2`, `stroke/1`, `stroke/2`, `stroke/2`, `stroke/1` —
+      // transcribed, not patterned.
+      const popRow = (i) => {
+        const [n, ring] = [[3, 'stroke2'], [4, 'stroke1'], [5, 'stroke2'], [7, 'stroke2'], [8, 'stroke1']][i % 5]
+        const S = s.onScheme[n]
+        return { S, ring: S[ring] }
+      }
+      const tk = {
+        title: pop ? (desk ? u(28) : tab ? '22px' : '20px')
+          : ed ? (desk ? u(32) : tab ? '25px' : '23px') : desk ? u(36) : tab ? '28px' : '26px',
+      }
       const clip = { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }
       // The display face's three properties under Grunge (section 1's
-      // `faced`): identity on Lime. Noto is uppercased per site too.
-      const disp = grunge || ed ? { textTransform: 'uppercase' } : null
+      // `faced`): identity on Lime. Noto and Titan are uppercased per site too.
+      const disp = grunge || ed || pop ? { textTransform: 'uppercase' } : null
       // Sienna Vale's 10, 10 dash in `sem/stroke/2`.
       const dash = (side) => <DashRule dash={10 * z} colour={s.stroke2} side={side} />
       // Body/Chip — Inter bold, tracked in by its own −6%.
@@ -7368,12 +7400,22 @@ function Media({ s }) {
       const bodySm = { fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4, letterSpacing: s.dls }
       const titleType = { fontFamily: s.display, fontSize: faced(s, tk.title), lineHeight: facedLh(s, 1.1), letterSpacing: s.dls, ...disp, ...clip }
       // A photograph on the frame's `box/2` well, so an art-less track is a
-      // tile and not a hole, with initials that read on it.
-      const art = (src, size, radius, initials) => (
+      // tile and not a hole, with initials that read on it. Pop's list discs
+      // stand on their row's own well and ink, under a 4px inside ring that
+      // paints over the photograph.
+      const art = (src, size, radius, initials, well = dusk, ink = s.tx, ring) => (
         <span style={{
           width: size, height: size, flex: 'none', display: 'block', position: 'relative',
-          borderRadius: radius, overflow: 'hidden', background: dusk,
-        }}><Photo s={s} initialsSize={initials} src={src} ink={s.tx} /></span>
+          borderRadius: radius, overflow: 'hidden', background: well,
+        }}>
+          <Photo s={s} initialsSize={initials} src={src} ink={ink} />
+          {ring && (
+            <span aria-hidden style={{
+              position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
+              boxShadow: `inset 0 0 0 ${u(4)} ${ring}`,
+            }} />
+          )}
+        </span>
       )
 
       // The heading breaks after "worth" at 1440 and 390 and sets one line at
@@ -7391,11 +7433,20 @@ function Media({ s }) {
       // alone — 516 / 648 / 330 — breaks after "worth" (506 of 516 at 97,
       // 250 of 330 at 48) and after "your" at 768 (561 of 648 at 73), the
       // three frames' own breaks.
+      // Pop's binds Lime's two keys by width — `sem/text/2` violet at 1440,
+      // `sem/text/1` pink at 768 and 390 — and is uppercased at every width,
+      // where the narrow masters type "Five Worth your ear" mixed, a slip
+      // (decision 2). Titan's "FIVE WORTH" alone outruns Lime's 4.6em, and
+      // the 629 column breaks after it unaided, so desktop takes no cap; 768
+      // holds one line in 648; the 390 master's own 251 box is Grunge's cap,
+      // since 330 would hold "FIVE WORTH YOUR". Titan sits 0.13em low at this
+      // lh 0.89 (layout 1's media head, CONVENTIONS B), so it is lifted.
       const heading = (
         <h2 style={distressed(s, {
           margin: 0, flex: 'none', fontFamily: s.display, fontSize: faced(s, s.dispLg), lineHeight: facedLh(s, 0.89),
           letterSpacing: s.dls, color: desk && !ed ? s.tx : s.ac, ...disp,
-          maxWidth: tab || ed ? undefined : grunge && s.mob ? '251px' : '4.6em',
+          maxWidth: tab || ed || (pop && desk) ? undefined : (grunge || pop) && s.mob ? '251px' : '4.6em',
+          ...(pop ? { position: 'relative', top: '-0.13em' } : null),
         })}>{s.title}</h2>
       )
 
@@ -7410,6 +7461,8 @@ function Media({ s }) {
             const i = (anchor + k + s.tracks.length) % s.tracks.length
             const t = s.tracks[i]
             const g = CARD[Math.min(Math.abs(k), 2)]
+            // Pop's card stands on its seat's scheme; the twins' on the panel's.
+            const C = pop ? popCard(k) : null
             return (
               <div key={j} onClick={onPick(i)} style={{
                 position: 'absolute',
@@ -7419,16 +7472,17 @@ function Media({ s }) {
                 // `sem/stroke/1`, stroked inside: an inset ring, so the 16
                 // padding stays the frame's. Grunge's card is Scheme 2's
                 // `box/1` at the mode's raw 8; Sienna Vale's is square, ringed
-                // in `sem/stroke/2`.
-                background: cardBg, color: s.tx, boxShadow: `inset 0 0 0 1px ${ed ? s.stroke2 : s.stroke1}`,
-                borderRadius: ed ? 0 : u(grunge ? 8 : 13), padding: u(16), overflow: 'hidden',
+                // in `sem/stroke/2`; Pop's is its own scheme's `box/1` at 8.
+                background: C ? C.box1 : cardBg, color: C ? C.tx : s.tx,
+                boxShadow: `inset 0 0 0 1px ${C ? C.stroke1 : ed ? s.stroke2 : s.stroke1}`,
+                borderRadius: ed ? 0 : u(grunge || pop ? 8 : 13), padding: u(16), overflow: 'hidden',
                 cursor: s.live ? 'pointer' : undefined,
                 ...col(u(12), { alignItems: 'stretch' }),
               }}>
                 <span style={{
                   position: 'relative', height: u(g.art), flex: 'none', display: 'block',
-                  borderRadius: u(4), overflow: 'hidden', background: dusk,
-                }}><Photo s={s} initialsSize={20} src={t.img} ink={s.tx} /></span>
+                  borderRadius: u(4), overflow: 'hidden', background: C ? C.box2 : dusk,
+                }}><Photo s={s} initialsSize={20} src={t.img} ink={C ? C.tx : s.tx} /></span>
                 <div style={col(u(4), { minWidth: 0, alignItems: 'stretch' })}>
                   {/* Display/List over Body/SM. */}
                   <span style={{ fontFamily: s.display, fontSize: faced(s, s.list), lineHeight: facedLh(s, 1.2), letterSpacing: s.dls, ...disp, ...clip }}>{t.name}</span>
@@ -7446,7 +7500,7 @@ function Media({ s }) {
                   <span style={{
                     ...chipType, position: 'absolute', left: u(26.5), top: u(26),
                     whiteSpace: 'normal', overflowWrap: 'anywhere', maxWidth: `calc(100% - ${u(53)})`,
-                    background: ed ? s.chips[0].bg : s.ac, color: s.tx, borderRadius: '999px', padding: `${u(4)} ${u(8)}`,
+                    background: ed || pop ? s.chips[0].bg : s.ac, color: s.tx, borderRadius: '999px', padding: `${u(4)} ${u(8)}`,
                   }}>{`● ${s.mediaChip}`}</span>
                 )}
               </div>
@@ -7471,7 +7525,7 @@ function Media({ s }) {
           flex: 'none', position: 'relative', overflow: 'hidden',
           // Grunge's bar is Scheme 2's `box/1` at the mode's stated 92 — a
           // full capsule on a 108 bar either way. Sienna Vale's is square.
-          height: u(108), background: barBg, color: s.tx, borderRadius: ed ? 0 : grunge ? u(92) : '999px',
+          height: u(108), background: barBg, color: s.tx, borderRadius: ed ? 0 : grunge || pop ? u(92) : '999px',
           padding: `0 ${s.mob ? '16px' : u(40)}`,
           ...row(s.mob ? '14px' : u(24)),
         }}>
@@ -7492,7 +7546,7 @@ function Media({ s }) {
               128 wide at 32 × 0.82, and the 12 and the 10 take the title
               box from 112 to 130. */}
           <span style={row(u(12), {
-            flex: 1, minWidth: 0, background: ed ? undefined : cardBg, borderRadius: u(80),
+            flex: 1, minWidth: 0, background: ed ? undefined : pop ? barBg : cardBg, borderRadius: u(80),
             padding: `${u(10)} ${desk ? (ed ? 0 : u(12)) : tab ? '30px' : 0} ${u(10)} ${s.mob || (desk && ed) ? 0 : u(10)}`,
           })}>
             {art(nowArt, u(60), '999px', 16)}
@@ -7512,12 +7566,13 @@ function Media({ s }) {
               (not `s.glow`), over the children as Figma paints a frame's
               stroke and effects. Grunge's node carries no effect: its ring
               is `sem/stroke/2`, the pass's `#FF0000`, and nothing else.
-              Sienna Vale's is that stroke dashed 10, 10, all round. */}
+              Sienna Vale's is that stroke dashed 10, 10, all round. Pop's
+              is `sem/stroke/1` alone — violet under the seat. */}
           {ed ? dash('all') : (
             <span aria-hidden style={{
               position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
-              boxShadow: grunge
-                ? `inset 0 0 0 1px ${s.stroke2}`
+              boxShadow: grunge || pop
+                ? `inset 0 0 0 1px ${pop ? s.stroke1 : s.stroke2}`
                 : `inset 0 0 0 1px ${s.stroke1}, inset 0 0 ${u(14)} 0 ${s.ac}`,
             }} />
           )}
@@ -7548,9 +7603,15 @@ function Media({ s }) {
       // frame's hugging numbers get — so the live glyph swap moves nothing.
       // Sienna Vale's rules are the other way up: dashed along the *bottom*
       // of the counter row and of every track row, the last included.
+      // Pop's rows are pills, each on its own scheme, standing 10 apart (and
+      // 10 under the counter row) where the twins' rows touch: so the desktop
+      // column divides to 115.8 a row and the narrow 596 to 100.6, the frames'.
+      // Their 30 side padding is the pill's; the 390 master's 20 gaps clip
+      // every seeded title mid-word at 101, a defect, so they close to 14 as
+      // the twins' do (Retro's override) and the title ellipsises.
       const gap = s.mob ? '14px' : u(20)
       const list = (
-        <div style={col('0', {
+        <div style={col(pop ? u(10) : '0', {
           minWidth: 0, alignItems: 'stretch',
           minHeight: desk || !s.tracks.length ? undefined : '596px',
         })}>
@@ -7566,11 +7627,14 @@ function Media({ s }) {
           {s.tracks.map((t, i) => {
             const dur = t.dur && t.dur !== t.rel ? t.dur : ''
             const on = chosen && i === at
+            const R = pop ? popRow(i) : null
             return (
               <div key={i} onClick={onPick(i)} style={{
                 flex: desk ? '1 1 0' : '1 1 auto', minHeight: 0, overflow: 'hidden',
-                boxShadow: ed ? undefined : `inset 0 1px 0 ${s.stroke1}`, color: s.tx,
-                padding: `${u(14)} 0`, cursor: s.live ? 'pointer' : undefined,
+                boxShadow: R ? `inset 0 0 0 ${u(4)} ${R.ring}` : ed ? undefined : `inset 0 1px 0 ${s.stroke1}`,
+                color: R ? R.S.ac : s.tx,
+                ...(R ? { background: R.S.bg, borderRadius: '999px' } : null),
+                padding: `${u(14)} ${R ? u(30) : 0}`, cursor: s.live ? 'pointer' : undefined,
                 ...(ed ? { position: 'relative' } : null),
                 ...row(gap),
               }}>
@@ -7582,7 +7646,9 @@ function Media({ s }) {
                     ? <Pause size={parseFloat(s.bodyLg)} fill="currentColor" strokeWidth={0} />
                     : <Play size={parseFloat(s.bodyLg)} fill="currentColor" strokeWidth={0} />)
                   : t.n}</span>
-                {art(t.img, u(64), u(4), 16)}
+                {/* Pop's cover is a disc on the row's own well, ringed 4px
+                    in `scheme/1/stroke/2` — lime, named outright. */}
+                {R ? art(t.img, u(64), '999px', 16, R.S.box2, R.S.ac, s.onScheme[1].stroke2) : art(t.img, u(64), u(4), 16)}
                 {/* Display/Title over Body/SM. */}
                 <span style={col(u(4), { flex: 1, minWidth: 0, alignItems: 'stretch' })}>
                   <span style={distressed(s, titleType)}>{t.name}</span>
@@ -28199,6 +28265,10 @@ export default function EncoreSection({ s }) {
   // Scheme 2 cards on its white, so it shares the flag, and the name now says
   // less than it covers (plans/pop/layout-2.md; the sweep decides a rename).
   const editorialCard = (s.me || s.ca) && s.v1 && (s.editorial || s.pop)
+  // Pop's layout-2 media `Section` (964:64563) strokes its top and foot 5px
+  // inside in `scheme/1/stroke/2`, lime, at 1440 alone — visible, where the
+  // twins' same stroke is a hidden paint; the narrow wrappers carry none.
+  const popMediaRule = s.me && s.v1 && s.pop && !s.narrow
   return (
     // The id is the nav's scroll target, and it is live-gated: the editor
     // document renders a dozen header previews at once through LayoutPicker
@@ -28208,7 +28278,8 @@ export default function EncoreSection({ s }) {
       color: darkMap ? s.mapFg : limeLight ? s.bg : s.tx,
       fontFamily: s.body, padding: bleed ? 0 : s.pad,
       position: 'relative', overflowX: popClip || popFootClip ? 'clip' : undefined, overflowY: popFootClip ? 'clip' : undefined,
-      boxShadow: grungeRule ? `inset 0 0 0 1px ${s.inactiveLine}` : editorialRule ? `inset 0 0 0 1px ${s.stroke2}` : undefined,
+      boxShadow: grungeRule ? `inset 0 0 0 1px ${s.inactiveLine}` : editorialRule ? `inset 0 0 0 1px ${s.stroke2}`
+        : popMediaRule ? `inset 0 4.1px 0 ${s.onScheme[1].stroke2}, inset 0 -4.1px 0 ${s.onScheme[1].stroke2}` : undefined,
       transition: 'background-color .45s ease, color .45s ease',
       '--ac': s.ac, '--acFg': s.acFg,
     }}>
