@@ -57,7 +57,7 @@ import {
   CTA_TARGETS, firstPresent, minimalNav, navModeDefault,
   catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldDefault, fieldReach, fieldNowhere, copyrightOf, formHeading3, extUrl, urlProblem, emailProblem, emailAddr, songTags, repChips,
   tierFeats, priceParts, blankRow, SONG_KEYS, repSetsOf, repSetLine, TRACK_KEYS, GIG_KEYS, gigWeekday, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
-  layoutCount, designCount, pageLayout, pageOrder, pageRows, COLUMN_SPLIT, bebasEms, antonEms, notoEms, notoBoldEms, titanEms,
+  layoutCount, designCount, pageLayout, pageOrder, pageRows, COLUMN_SPLIT, bebasEms, antonEms, gloockEms, titanEms,
   headerLayout, headerLayoutLabel, setupHeaderCount,
 } from './data.js'
 import { defaultImage, defaultImages, defaultTrackArt, RETRO_TEXTURE } from './photos.js'
@@ -693,10 +693,11 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // a fixed box beside the capsule's padding. Its layout-4 capsule (964:72944)
   // gaps them a fixed 23 at 20px type, and NavBar's `links` takes them off the
   // row the same way.
-  // Editorial's capsule (964:58612 "Frame 50") is Lime's again, in Noto Serif
-  // Display (`notoEms`, the face standing in for Fisterra Fora, at its own
-  // glyph size), but its links are Label/SM 16 where Lime's are Display/List
-  // 24, still 23 apart — so its gap is 23/16 of the row's size. Its layout-2
+  // Editorial's capsule (964:58612 "Frame 50") is Lime's again, in Gloock
+  // (`gloockEms`, the face standing in for Fisterra Fora) at 0.967 of the
+  // token (`faced`), the way Grunge's Anton is at 0.75, but its links are
+  // Label/SM 16 where Lime's are Display/List 24, still 23 apart — so its gap
+  // is 23/16 of the row's size. Its layout-2
   // capsule (964:64599) is Grunge's instead, a fixed 18 at 16px type and at
   // 13, so there the sum is the labels alone, and so is its layout-3 one
   // (964:68718), at the same sizes. Its layout-4 capsule (964:73038) is
@@ -710,7 +711,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // Its cards 3 and 4 are placeholders whose only capsule is NavBar's, which
   // spaces them the layout-1 way.
   const navFace = T.name === 'Lime' ? bebasEms : T.name === 'Grunge' ? (x) => antonEms(x, 0) * 0.75
-    : T.name === 'Editorial' ? notoEms : T.name === 'Pop' ? (x) => titanEms(x) * 0.98 : null
+    : T.name === 'Editorial' ? (x) => gloockEms(x) * 0.967 : T.name === 'Pop' ? (x) => titanEms(x) * 0.98 : null
   const navGapEm = T.name === 'Editorial' ? (d >= 1 ? 0 : 23 / 16) : T.name === 'Pop' ? (d === 1 ? 0 : 23 / 16)
     : T.name === 'Grunge' && d >= 1 ? 0 : 23 / 24
   vm.navEms = navFace
@@ -778,7 +779,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // the same 684, with the links at Label/MD (14 at 768) where Lime's are
   // Label/SM, and the same fixed 18 gaps. Editorial's layout 2 (986:15658) is
   // Grunge's layout-2 bar box for box — the same 138.32, the same fixed 18
-  // gaps, its links at Label/SM 13 and its name at Label/LG 16 — in Noto
+  // gaps, its links at Label/SM 13 and its name at Label/LG 16 — in Gloock
   // (`navFace`). Its layout 3 (984:16812) is that bar again against layout
   // 3's 684: the same 138.32 and fixed 18 gaps, and the links still Label/SM,
   // where Grunge's layout-3 links are Label/MD. Pop's layout 2 (986:17563) is
@@ -1194,18 +1195,17 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // fallback above. Lime's layout-3 form sets Display/LG in a half column its
   // longest word can outrun at desktop, so it shrinks the head until that word
   // fits rather than break it (the nav's `navEms` rule); in Bebas ems. So does
-  // Editorial's layout-1 form statement, a hand-scaled Bold whose frame breaks
-  // UNFORGETT / ABLE inside the word in the demo face's measure; in Noto Bold
-  // ems. Editorial's layout-3 form head is Lime's again, Display/LG Regular,
-  // so at design 2 it is Noto's 540 ems — the Bold table would shrink it 4.5%
-  // too far — and so are its layout-4 bio and gallery heads at design 3,
-  // Display/LG / XL Regular in a 572.9 measure and the 454 head column. Pop's
-  // layout-1 form statement fits its frame's 313.43 box the same way, in
-  // Titan's ems × `faceK` (`navFace`'s table); no other Pop site reads it.
-  // Undefined off those three templates.
+  // Editorial's layout-1 form statement, a hand-scaled Bold in the frame (set
+  // at Gloock's one weight, 400) whose frame breaks UNFORGETT / ABLE inside
+  // the word in the demo face's measure. Editorial's layout-3 form head is
+  // Lime's again, Display/LG, and so are its layout-4 bio and gallery heads at
+  // design 3, Display/LG / XL in a 572.9 measure and the 454 head column; all
+  // of them read Gloock's ems × `faceK`. Pop's layout-1 form statement fits
+  // its frame's 313.43 box the same way, in Titan's ems × `faceK`; no other
+  // Pop site reads it. Each is `navFace`'s table. Undefined off those three
+  // templates.
   vm.titleWordEms = T.name === 'Lime' || T.name === 'Editorial' || T.name === 'Pop'
-    ? +Math.max(0, ...vm.title.split(/\s+/).map(T.name === 'Lime' ? bebasEms
-      : T.name === 'Pop' ? (x) => titanEms(x) * 0.98 : d >= 2 ? notoEms : notoBoldEms)).toFixed(3)
+    ? +Math.max(0, ...vm.title.split(/\s+/).map(navFace)).toFixed(3)
     : undefined
   vm.testiStars = cv('stars', TESTI_STARS)
   // Layout 3's stat card prints it with a literal "/5" beside it, and an
@@ -1807,15 +1807,16 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     const quote = cased(String(r?.quote ?? '').trim())
     return {
       quote,
-      // The review's widest word in Noto Bold ems — `titleWordEms`' rule, per
-      // row, since the quote is not `vm.title`. Editorial's layout-1 card sets
-      // it as a hand-scaled Bold whose frame breaks nothing inside a word only
-      // because the demo face is narrower; the card fits the size to this
-      // word instead. Pop's layout-1 card is the same case in Titan's ems ×
-      // `faceK` (`navFace`'s table): its 390 frame breaks PROFESSIO / NAL inside
-      // the word. Undefined off those two.
+      // The review's widest word in the display face's ems × `faceK`
+      // (`navFace`'s table) — `titleWordEms`' rule, per row, since the quote
+      // is not `vm.title`. Editorial's layout-1 card sets it as a hand-scaled
+      // Bold in the frame (Gloock's 400 here) whose frame breaks nothing inside
+      // a word only because the demo face is narrower; the card fits the size
+      // to this word instead. Pop's layout-1 card is the same case in Titan:
+      // its 390 frame breaks PROFESSIO / NAL inside the word. Undefined off
+      // those two.
       wordEms: T.name === 'Editorial' || T.name === 'Pop'
-        ? +Math.max(0, ...quote.split(/\s+/).map(T.name === 'Pop' ? (x) => titanEms(x) * 0.98 : notoBoldEms)).toFixed(3)
+        ? +Math.max(0, ...quote.split(/\s+/).map(navFace)).toFixed(3)
         : undefined,
       who,
       role,
@@ -1976,14 +1977,14 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // display face narrower than the frame's. Kept in step with FIELDS.footer's
   // own default, and rendered `pre-wrap` so an edited statement can break too.
   vm.footerStatement = cased(cv('statement', FOOTER_STATEMENT))
-  // The statement's widest word in Noto Bold ems — `wordEms`' rule, for a
-  // third hand-scaled Bold that is not `vm.title`: Editorial's footer fits the
-  // frame's 57.84 to it rather than breaking inside a word. Pop's footer is
-  // the same case in Titan's ems × `faceK` (`navFace`'s table): the seed sets
-  // its hand-scaled 40.38 in every column, so this guards a longer word.
+  // The statement's widest word in the display face's ems × `faceK`
+  // (`navFace`'s table) — `wordEms`' rule, for a third hand-scaled Bold that is
+  // not `vm.title`: Editorial's footer fits the frame's 57.84 to it rather than
+  // breaking inside a word. Pop's footer is the same case in Titan: the seed
+  // sets its hand-scaled 40.38 in every column, so this guards a longer word.
   // Undefined off those two.
   vm.footerWordEms = T.name === 'Editorial' || T.name === 'Pop'
-    ? +Math.max(0, ...vm.footerStatement.split(/\s+/).map(T.name === 'Pop' ? (x) => titanEms(x) * 0.98 : notoBoldEms)).toFixed(3)
+    ? +Math.max(0, ...vm.footerStatement.split(/\s+/).map(navFace)).toFixed(3)
     : undefined
   // The sitemap is the artist's now, so a row carries where it goes as well as
   // what it says — and it goes to one of two kinds of place, which is BookPill's

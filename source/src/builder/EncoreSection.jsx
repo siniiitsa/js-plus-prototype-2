@@ -22924,13 +22924,14 @@ function Testimonials({ s }) {
                 // statement's recipe (section 9): the frame's size is the
                 // ceiling — 57.84 Bold on a 52.42 line at 1440 and 768, the
                 // ramp's 36 Regular at 390 — and `100cqi / wordEms` the floor
-                // a long word pulls it to, so Noto, wider than the demo face,
-                // never breaks inside one. The ems are Bold's at every width
-                // (over, never under, at 390). The desktop box is the frame's
+                // a long word pulls it to, so Gloock, wider than the demo face,
+                // never breaks inside one. The frame's Bold is Gloock's one
+                // weight, 400, and both sizes are `faced`, as the ems are
+                // (`navFace`'s table). The desktop box is the frame's
                 // FIXED 560.33, widened to a word that outruns it.
                 ...(ed ? {
-                  fontSize: `min(${s.mob ? s.dispMd : u(57.84)}, calc(100cqi / ${q.wordEms}))`,
-                  ...(s.mob ? null : { fontWeight: 700, lineHeight: 52.42 / 57.84 }),
+                  fontSize: faced(s, `min(${s.mob ? s.dispMd : u(57.84)}, calc(100cqi / ${q.wordEms}))`),
+                  ...(s.mob ? null : { fontWeight: 400, lineHeight: facedLh(s, 52.42 / 57.84) }),
                   ...(s.narrow ? null : { maxWidth: u(560.33), minWidth: 'min-content' }),
                 } : pop ? {
                   // A hand-scaled 40.38 on 36.59 at every width, Titan fitted to
@@ -25429,10 +25430,11 @@ function EnquiryForm({ s }) {
               Editorial's is one of the mode's three hand-scaled Bold sites
               (trap 4): 50.36 on a 42.75 line at every width, in a FIXED 262.7
               box, where the demo face breaks UNFORGETT / ABLE inside the word —
-              its measure, not a design. Noto Bold sets UNFORGETTABLE. at 386.9,
-              past the 1440 and 390 columns, so the statement shrinks until its
-              widest word fits the column (`s.titleWordEms`, in Noto Bold ems,
-              over `100cqi` — the header title's recipe), the frame's size
+              its measure, not a design. Gloock (at its one weight, 400: the
+              frame's Bold has no face to take) sets UNFORGETTABLE. at ~437,
+              past the 1440 and 390 columns, so the statement shrinks until its widest word
+              fits the column (`s.titleWordEms`, in Gloock's ems × `faceK`, over
+              `100cqi` — the header title's recipe), the frame's size
               being the ceiling, and the box grows to that word where it is
               wider (`min-content`). Any statement then fits: more words take
               more lines, a longer word a smaller size. The line height keeps
@@ -25440,7 +25442,7 @@ function EnquiryForm({ s }) {
 
               Pop's is `popHead`, above. */}
           {pop ? popHead : <h2 style={distressed(s, ed ? disp(s.titleWordEms ? `min(${u(50.36)}, calc(100cqi / ${s.titleWordEms}))` : u(50.36), 0.849, {
-            margin: 0, color: G.ctx, fontWeight: 700, overflowWrap: 'break-word',
+            margin: 0, color: G.ctx, fontWeight: 400, overflowWrap: 'break-word',
             maxWidth: u(262.7), minWidth: 'min-content',
           }) : disp(s.dispSm, 1, {
             margin: `${s.narrow ? '20px' : u(grunge ? 20 : 12)} 0 0`, color: G.ctx, overflowWrap: 'break-word',
@@ -28095,8 +28097,10 @@ function Footer({ s }) {
     // and the column at 390, where the demo face breaks UNFORGETTAB / LE inside
     // the word. So it takes the form statement's fit (section 9): the frame's
     // size is the ceiling and `100cqi / footerWordEms` — the widest word in
-    // Noto Bold ems — the floor a long word pulls it to, on an `inline-size`
-    // column; the box grows to a word that outruns it rather than breaking it.
+    // Gloock's ems × `faceK`, so the size is `faced` too — the floor a long
+    // word pulls it to, on an `inline-size` column; the box grows to a word
+    // that outruns it rather than breaking it. The frame's Bold is Gloock's
+    // one weight, 400.
     const statement = (
       <h2 style={distressed(s, {
         margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispMd), lineHeight: facedLh(s, 1),
@@ -28104,8 +28108,8 @@ function Footer({ s }) {
         ...(grunge || ed ? { textTransform: 'uppercase' } : null),
         maxWidth: s.mob ? 'none' : s.narrow ? (grunge ? '439.59px' : '9em') : u(439.59),
         ...(ed ? {
-          fontSize: s.footerWordEms ? `min(${px(57.84)}, calc(100cqi / ${s.footerWordEms}))` : px(57.84),
-          fontWeight: 700, lineHeight: 47.9 / 57.84,
+          fontSize: faced(s, s.footerWordEms ? `min(${px(57.84)}, calc(100cqi / ${s.footerWordEms}))` : px(57.84)),
+          fontWeight: 400, lineHeight: facedLh(s, 47.9 / 57.84),
           maxWidth: s.mob ? 'none' : px(397.28), minWidth: 'min-content',
         } : pop ? {
           // A raw Chunko 40.38 on a 33.44 line at every width, three lines in

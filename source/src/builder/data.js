@@ -184,21 +184,24 @@ export const THEMES = [
     // Primitives" → Sienna Vale, "2 · Scheme" → Scheme 1), so every value below
     // is that mode's. The exception is the display and label face: the mode
     // names FONTSPRING DEMO - Fisterra Fora, a demo-licence caps-only condensed
-    // display serif that cannot ship, so it is set in Noto Serif Display at its
-    // narrowest width (user call, 2026-09-24: substitute, "pick the closest").
-    // index.html asks Google for exactly one instance — `wdth,wght@62.5,540..700`
-    // — so the single face it serves is condensed whatever a site asks, and a
-    // site that names no weight gets 540, the frame's stem to the pixel (.154
-    // of the cap); the three Bold statements get 700. Its cap height is the
-    // frame's within 1.4% (.715 against .725 of the em), so it takes no
-    // `faceK`. Do NOT add a second Noto Serif Display entry to that link: the
-    // default 400 would find a face of its own and the display would go wide
-    // and thin (Retro's Fraunces rule). It has a lowercase where Fisterra Fora
-    // is all capitals, so an Editorial block sets its display and label strings
-    // `textTransform: 'uppercase'` per site, Grunge's rule; Chakra Petch and
-    // Inter set mixed case ("Sold Out", "Full name"), hence casing 'title'.
-    display: "'Noto Serif Display', serif",
-    label: "'Noto Serif Display', serif",
+    // display serif that cannot ship (no web licence has been bought), so it is
+    // set in Gloock, picked over the renders against the frame
+    // (plans/editorial/display-face.md, step 2, user call, 2026-10-05): the
+    // closest free face in colour, contrast and tight fit, with wedge-bracketed
+    // serifs; it has none of Fisterra's R and Q tails, flared stems or N–N
+    // joins, and no free face on the list did. It replaces Noto Serif Display
+    // (session 0's pick, 2026-09-24), which is no longer loaded. Gloock has one
+    // weight, 400, and index.html asks Google for it alone (`family=Gloock`),
+    // so the three statements the frames set Bold set it at 400 rather than
+    // take a synthetic bold. Its cap is .750 of the em against the frame's
+    // .725, so it is set at 0.967 of the token (`faced`). It has a lowercase
+    // where Fisterra Fora is all capitals, so an Editorial block sets its
+    // display and label strings `textTransform: 'uppercase'` per site,
+    // Grunge's rule; Chakra Petch and Inter set mixed case ("Sold Out", "Full
+    // name"), hence casing 'title'.
+    display: "'Gloock', serif",
+    label: "'Gloock', serif",
+    faceK: 0.967,
     ui: "'Chakra Petch', sans-serif",
     body: "'Inter', sans-serif",
     casing: 'title',
@@ -667,32 +670,65 @@ const ANTON_EM = {
 export const antonEms = (text, track = 0.02) =>
   [...String(text).toUpperCase()].reduce((w, ch) => w + (ANTON_EM[ch] ?? 0.494) + track, 0)
 
-// Noto Serif Display's, at the one instance index.html serves (wdth 62.5, a
-// site naming no weight clamped to 540) — Editorial's display and label face,
+// Gloock's, at its one weight (400) — Editorial's display and label face,
 // standing in for the caps-only Fisterra Fora, so set in caps as well. Read
-// off the rendered DOM in the harness, not canvas measureText, which sees
-// neither the width axis nor an unloaded webfont. Untracked (Sienna Vale
-// states 0). Summed a character at a time they land within 2.1% of each
-// measured label ("Availability", the most kerned), and over, never under.
-const NOTO_EM = {
-  A: 0.588, B: 0.546, C: 0.52, D: 0.602, E: 0.513, F: 0.488, G: 0.599, H: 0.648, I: 0.311,
-  J: 0.313, K: 0.587, L: 0.513, M: 0.758, N: 0.623, O: 0.617, P: 0.501, Q: 0.617, R: 0.554,
-  S: 0.451, T: 0.511, U: 0.589, V: 0.552, W: 0.848, X: 0.565, Y: 0.534, Z: 0.51,
-  ' ': 0.175, '&': 0.623, '·': 0.222, '/': 0.191, '-': 0.249, "'": 0.148, '.': 0.222,
-  ',': 0.222, '!': 0.291, '?': 0.43, ':': 0.231, '(': 0.304, ')': 0.304, '+': 0.425,
+// off the rendered DOM (spans at 1000px in the loaded face, untracked: Sienna
+// Vale states 0), not canvas measureText, which cannot see an unloaded
+// webfont. The digits are proportional, so each is listed.
+const GLOOCK_EM = {
+  A: 0.684, B: 0.657, C: 0.742, D: 0.827, E: 0.606, F: 0.569, G: 0.825, H: 0.805, I: 0.317,
+  J: 0.314, K: 0.733, L: 0.569, M: 0.95, N: 0.749, O: 0.878, P: 0.608, Q: 0.872, R: 0.669,
+  S: 0.51, T: 0.694, U: 0.745, V: 0.683, W: 1.003, X: 0.707, Y: 0.639, Z: 0.57, 0: 0.657,
+  1: 0.326, 2: 0.504, 3: 0.534, 4: 0.601, 5: 0.547, 6: 0.622, 7: 0.505, 8: 0.62, 9: 0.622,
+  ' ': 0.215, '&': 0.764, '·': 0.231, '/': 0.253, '-': 0.308, "'": 0.191, '’': 0.221, '‘': 0.221,
+  '"': 0.352, '“': 0.416, '”': 0.416, '.': 0.25, ',': 0.22, '!': 0.232, '?': 0.446, ':': 0.23,
+  '(': 0.349, ')': 0.349, '+': 0.421, '#': 0.574, '–': 0.454, '—': 0.848,
 }
 
-// A label's width in ems of Noto Serif Display; digits and anything unlisted
-// take 0.448, the digits' own advance.
-export const notoEms = (text) =>
-  [...String(text).toUpperCase()].reduce((w, ch) => w + (NOTO_EM[ch] ?? 0.448), 0)
+// …and its pair kerning, read off the DOM the same way (a pair's width less
+// its two advances; a triple leaves no residual, so it is pairwise). Gloock
+// kerns hard — VA is −0.163em — so the advances alone ran up to 8% over a
+// measured label (JULY, VALE). Every pair at −0.03em or tighter is kept, and
+// every positive one, rounded toward zero: summed with the advances, each of
+// 146 seeded labels and words lands 0–2.3% over its measured width ("PEOPLE"
+// the most), never under.
+const GLOOCK_KERN = {
+  'AC': -0.073, 'AG': -0.073, 'AO': -0.073, 'AQ': -0.073, 'AT': -0.113, 'AU': -0.07, 'AV': -0.159,
+  'AW': -0.159, 'AY': -0.149, 'BA': -0.037, 'BT': -0.054, 'BV': -0.069, 'BW': -0.069,
+  'BY': -0.085, 'B?': -0.03, 'DA': -0.06, 'DM': -0.03, 'DN': -0.032, 'DT': -0.033, 'DV': -0.058,
+  'DW': -0.058, 'DX': -0.069, 'DY': -0.088, 'D.': -0.073, 'D,': -0.073, 'FA': -0.107, 'F.': -0.08,
+  'F,': -0.08, 'GV': -0.046, 'GW': -0.046, 'GY': -0.048, 'G.': -0.034, 'G,': -0.034, 'HY': -0.045,
+  'IY': -0.045, 'KC': -0.092, 'KG': -0.092, 'KO': -0.092, 'KQ': -0.092, 'KU': -0.066,
+  'KV': -0.088, 'KW': -0.088, 'KY': -0.11, 'LA': 0.002, 'LT': -0.12, 'LV': -0.124, 'LW': -0.124,
+  'LY': -0.126, 'MT': -0.037, 'MV': -0.044, 'MW': -0.044, 'MY': -0.032, 'NC': -0.033,
+  'NG': -0.033, 'NO': -0.033, 'NQ': -0.033, 'N’': 0.008, 'OA': -0.06, 'OM': -0.03, 'ON': -0.032,
+  'OT': -0.033, 'OV': -0.058, 'OW': -0.058, 'OX': -0.069, 'OY': -0.088, 'O.': -0.073,
+  'O,': -0.073, 'PA': -0.115, 'QA': -0.06, 'QM': -0.03, 'QN': -0.032, 'QT': -0.033, 'QV': -0.058,
+  'QW': -0.058, 'QX': -0.069, 'QY': -0.088, 'Q.': -0.073, 'Q,': -0.073, 'RC': -0.058,
+  'RG': -0.058, 'RO': -0.058, 'RQ': -0.058, 'RT': -0.036, 'RU': -0.057, 'RV': -0.078,
+  'RW': -0.078, 'RY': -0.09, 'TA': -0.132, 'TC': -0.033, 'TG': -0.033, 'TO': -0.033, 'TQ': -0.033,
+  'TZ': -0.033, 'T.': -0.11, 'T,': -0.11, 'UA': -0.082, 'UB': -0.034, 'UC': -0.041, 'UD': -0.034,
+  'UE': -0.034, 'UF': -0.034, 'UG': -0.041, 'UJ': -0.035, 'UK': -0.034, 'UL': -0.034,
+  'UM': -0.038, 'UN': -0.03, 'UO': -0.041, 'UP': -0.034, 'UQ': -0.041, 'UR': -0.034, 'UU': -0.032,
+  'UV': -0.03, 'UW': -0.03, 'UZ': -0.042, 'VA': -0.163, 'VC': -0.069, 'VG': -0.069, 'VM': -0.033,
+  'VO': -0.069, 'VQ': -0.069, 'VT': 0.004, 'V ': -0.05, 'WA': -0.163, 'WC': -0.069, 'WG': -0.069,
+  'WM': -0.033, 'WO': -0.069, 'WQ': -0.069, 'WT': 0.004, 'W ': -0.05, 'YA': -0.133, 'YC': -0.085,
+  'YG': -0.085, 'YO': -0.085, 'YQ': -0.085, 'YZ': -0.03, 'Y’': 0.018, '0.': -0.04, '0,': -0.04,
+  '2)': -0.03, '37': -0.044, '3.': -0.04, '3,': -0.04, '3)': -0.046, '4.': -0.046, '4,': -0.046,
+  '4)': -0.03, '5.': -0.04, '5,': -0.04, '5)': -0.05, '6.': -0.034, '6,': -0.034, '70': -0.034,
+  '74': -0.103, '76': -0.038, '78': -0.034, '7-': -0.1, '7.': -0.12, '7,': -0.12, '87': -0.038,
+  '8.': -0.03, '8,': -0.03, '9.': -0.064, '9,': -0.064, ' V': -0.035, ' W': -0.035, '-2': -0.04,
+  '-7': -0.076, '’V': 0.013, '’W': 0.013, '.0': -0.04, '.2': 0.01, '.6': -0.05, '.7': -0.04,
+  '.)': -0.03, ',0': -0.04, ',2': 0.01, ',6': -0.05, '? ': -0.035, '(4': -0.046, '(7': -0.03,
+}
 
-// The same face at 700, which the served variable face reaches and the three
-// hand-scaled Bold statements set (the form's, the testimonials', the
-// footer's): the 540 table widened by the largest ratio measured in the
-// harness on the seeded form statement's lines — LET'S MAKE 1.045, YOUR NIGHT
-// 1.041, UNFORGETTABLE. 1.040 — so over, never under.
-export const notoBoldEms = (text) => notoEms(text) * 1.045
+// A label's width in ems of Gloock, at the token (multiply by `faceK` for
+// the set size, as `navFace` does). An accented capital takes its base
+// letter's advance, and anything still unlisted takes 0.657, the widest digit.
+export const gloockEms = (text) => {
+  const chs = [...String(text).toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g, '')]
+  return chs.reduce((w, ch, i) => w + (GLOOCK_EM[ch] ?? 0.657) + (i ? GLOOCK_KERN[chs[i - 1] + ch] ?? 0 : 0), 0)
+}
 
 // Titan One's — Pop's display and label face, standing in for the caps-only
 // Chunko Bold Demo, so set in caps as well — read off the rendered DOM in the

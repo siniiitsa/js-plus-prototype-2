@@ -30,6 +30,10 @@ forked from `editorial-retest-qa-fixes` (`b20b969`), since this file exists only
 touches no source. **Rebase it onto `main` once `editorial-retest-qa-fixes` merges, before step
 0's baseline**, so the digests still carry no retest rows.
 
+*Amended again (2026-10-05, step 0).* PR #49 merged this branch, steps 1 and 2 included, and the
+retest batch with it, so `main` (`55e3bfa`) already held `e31ef56`. The "rebase" was a
+fast-forward of `editorial-display-face` to `55e3bfa`, and steps 0 and 3 continue on top of it.
+
 **Read first, every session:** [`CLAUDE.md`](../../CLAUDE.md), then this file, then
 `qa-fixes.md` JP-085 (options A, B and C, and the Settled facts), [`layout-1.md`](./layout-1.md)
 *The decisions* §1 (`:262`), *Settled in session 0* (`:768`–`:813`, the face table, `faceK`, the
@@ -278,6 +282,26 @@ A winner that is already loaded for another template needs its own instance chec
    digest baseline (`../grunge/display-face.md` step 0's recipe: a worktree on :5174, the
    `cp -Rc` `node_modules`, themes 0–4, bare and `EXTRA='&live=1'`, the port and `?t=` normaliser):
    0 of N on each surface.
+
+   **Settled** (2026-10-05, HEAD `55e3bfa`).
+   - **Every Facts line holds at `55e3bfa`.** Only the `EncoreBuilder.jsx` line numbers moved,
+     by the retest batch: `navFace` `:712`–`713`, `vm.navEms` `:716`, `vm.navNameEms` `:728`,
+     `vm.cardNameEms` `:738`, `vm.navCtaEms` `:739`, `vm.navNameFit` `:752`–`759`, the
+     calendar month's `ems` `:1414`, `vm.titleWordEms` `:1206`–`1209`, the testimonials'
+     `wordEms` `:1817`–`1818`, `vm.footerWordEms` `:1985`–`1986`, and `dressPublishedWindow`
+     `:4980`. `data.js` (`THEMES[3]` `:180`–`201`, `NOTO_EM` `:677`, `notoEms` `:687`,
+     `notoBoldEms` `:695`) and the two links (`index.html:11`, `preview.html:10`) are where
+     *Facts* puts them. There is still no `@font-face` in `source/`.
+   - **Baseline: 0 of 660 on each surface**, themes 0–4 × the 44 renders × three widths. The
+     worktree of `55e3bfa` ran on :5174 (`cp -Rc` `node_modules`, its `.vite` removed), and the
+     tree ran on a **fresh :5175**, not the user's long-running :5173, which can carry Noto
+     shaping noise. With three ports in play, the normaliser's port rule is `localhost:517[0-9]`.
+     Bare 0 of 660, `live=1` 0 of 660.
+   - **The Bold census at HEAD**: the theme-3 rows set in Noto at a weight other than 400 are 17
+     per surface, all at 700 and all at layout 1. They are exactly the three statements: the
+     footer's `h2` (three widths × both pages), the form's `h2` and its two line spans (three
+     widths), and the testimonials quote's `p` at 1440 and 768. At 390 the quote is the ramp's
+     Regular. No other site would take a synthetic bold under a one-weight face.
 1. **Render and score.** In the headless shell, each row at matched cap height beside the frame's
    *KAI MERCER* render and the bio's 118 head. Fill the table's columns and the character column,
    and write a contact sheet into the scratchpad. Record each family's licence.
@@ -290,6 +314,89 @@ A winner that is already loaded for another template needs its own instance chec
    stand-in comment rewritten. Then the advance table, replacing `NOTO_EM` / `notoEms` /
    `notoBoldEms` at every read (*Facts*), and `faceK` if step 1 says so. Expected after-diff:
    every Editorial file at every layout (theme 3 only); themes 0, 1, 2 and 4: 0.
+
+   **Settled** (2026-10-05, on `55e3bfa`).
+   - **The face.** `THEMES[3].display` / `label` are `'Gloock', serif`, and Noto is not in the
+     list. The stand-in comment (`data.js:183`–`201`) says Gloock, the step-2 call, what it lacks
+     (the R / Q tails, flared stems, N–N joins), the one weight and `faceK`.
+   - **The link.** `family=Gloock` replaces the Noto entry in both files, after Fraunces in each:
+     alphabetical in `index.html`, and Noto's old slot in `preview.html`. The digest loads only
+     `preview.html`, so `index.html`'s full href was fetched on its own. It returned `200` with
+     three Gloock `@font-face` blocks (cyrillic-ext, latin-ext, latin) and no Noto. In the
+     harness the face loads, and every Gloock node computes 400.
+   - **Trap 5 passes.** Gloock's latin subset maps `'`, `"`, `&`, `·`, `’ ‘ “ ”`, `#` and every
+     digit (fontTools on the served `.woff2`). In the DOM, no character of the table renders
+     differently under two fallback stacks, so none falls back.
+   - **`faceK` is 0.967, not .965.** The I, H, E, F, L and T each ink 750 of 1000 at 1000px (a
+     canvas bounding box and a pixel scan of the I agree), and OS/2 `sCapHeight` is 750 / 1000.
+     .725 / .750 = .9667. Step 1's .751 was pixel rounding at 179px. `faced` / `facedLh` now
+     scale every Editorial site that calls them, the identity branch kept for the others.
+   - **The table is `GLOOCK_EM` plus `GLOOCK_KERN`, read by `gloockEms()`** (`data.js:678`–`731`).
+     Both are read off the DOM: spans at 1000px in the loaded face, untracked. This is not
+     NOTO_EM's shape, because Gloock kerns hard (VA is −0.163em). Its advances alone run 0–8.1%
+     over a measured label (JULY 8.1%, VALE 7.6%), and 78 of 146 seeded labels and words came
+     out over 2%.
+     - The kerning is pairwise: a triple leaves no residual. 555 pairs are nonzero.
+     - The table keeps every pair at −0.03em or tighter, plus the nine positive ones: 182 pairs.
+       Pairs and advances are both rounded toward "over" at three decimals.
+     - Summed that way, all 146 land **0–2.27% over, never under**; PEOPLE is the most, where
+       Noto's worst was 2.1%. A .02 cut would keep 344 pairs for a 1.9% worst case.
+     - The digits are proportional (1 is .326, 0 is .657), so each is listed. An accented
+       capital is read as its base letter (NFD, marks stripped). Anything still unlisted takes
+       .657, the widest digit.
+   - **Every read is `navFace`.** Editorial's arm is `(x) => gloockEms(x) * 0.967`, which is
+     Grunge's and Pop's shape: the ems are at the set size, because the sites are `faced`.
+     `vm.titleWordEms`, the testimonials' `wordEms` and `vm.footerWordEms` now `.map(navFace)`
+     for every template they serve. Lime's and Pop's arms were already `navFace`'s own
+     functions, so their values do not change, and themes 1 and 4 digest 0. `notoEms`,
+     `notoBoldEms` and `NOTO_EM` are gone, and no Bold table replaces them. The four
+     comments at the reads are rewritten.
+   - **The three Bold statements are set at `fontWeight: 400`**, not with
+     `font-synthesis-weight: none`. With 400 the computed weight tells the truth, and the
+     digest's weight column proves it: **0 Gloock rows at a weight other than 400**, against
+     HEAD's 17 Noto rows at 700. Two of the three are `<h2>`s, so the explicit weight also stops
+     them depending on the heading reset.
+   - **Two fit sites are now `faced`.** The testimonials quote's and the footer statement's
+     Editorial arms set their size raw, outside `faced`. Their ems now carry `faceK`, so raw
+     they would overrun the column by 3.4%. Both are wrapped in `faced`, with
+     `facedLh(s, frame ratio)` for the line height, so the frame's line box holds at the
+     ceiling. The form's already went through the faced `disp`. A Range probe of each
+     statement's widest word against its `inline-size` container fits at all nine (three
+     statements × three widths), with 0.4–4.3px to spare where the fit binds. The line boxes
+     read 47.90 for the footer at 768 (frame 47.9) and 42.96 for the quote at 1440
+     (52.42 × .82 = 42.98).
+   - **After-diff: 129 of 660 on each surface, all theme 3.** Themes 0, 1, 2 and 4 are 0, bare
+     and `live=1`. The after-label against the tree's own pre-edit label (same :5175) gives the
+     same 129, so none of it is server noise. No `Noto Serif` row remains. Three of the 132
+     theme-3 files do not move: the layout-2 gallery at each width, which sets no display or
+     label face under Editorial (Inter only).
+   - **Census for step 4: each Gloock text row's font size against HEAD's.** On the bare
+     surface, 965 rows scale by .967 (faced), 64 move by a fit that binds, and 37 do not move
+     (`live=1`: 947 / 64 / 34). The 37 are the Editorial-only arms that still set a raw size:
+     - **pricing layout 4**: the plan names and prices (37 / 36 / 30, six spans per width);
+     - **testimonials layout 3**: the initials tiles (9 at 1440, 11 narrow);
+     - **gallery layout 1 at 1440**: the head and the social rows (16: Gallery, YouTube,
+       Instagram, TikTok).
+
+     The fit-bound moves step 4 should look at first:
+     - **Layout 1's capsule, and arch 4, which folds to the same design.** The links fall to
+       their 12px floor (11.6 faced). The name then gives way (JP-091's rule), from 26.2 to
+       16.8, and wraps, on the 1180 canvas.
+     - **Layout 4's nav** falls to its floor: 13.7 → 11.6.
+     - **The hero name** fits at 88.4 at 390 and 88.0 at 768 (Noto: 107 and 106.4). At 1440 it
+       is 142.1, the faced 147.
+     - **The three statements** sit at .860 of their Noto size wherever the word fit binds. So
+       does the quote at 390 and 768, at .939 and .893.
+     - **The layout-4 testimonials head** at 390: .905.
+   - **Left for later, by design.** These items have not been changed:
+     - The picker subtitle `sub: 'Noto Serif Display · paper & ink'` (`data.js:182`). It shows
+       on the template card until step 5.
+     - CLAUDE.md's *Editorial's face* rule (`:467`), `notes/templates.md:131` on, and
+       `README.md:619`: step 5.
+     - About 60 per-site Noto comments in `EncoreSection.jsx`, and the Noto glyph-floor lifts
+       they explain (the 0.07–0.09em nudges, the J's 0.24em descender). Step 4 re-measures
+       each one on its own site.
+     - The published tab's first-paint check: step 5's sweep.
 4. **Re-measure, layout by layout.** Every Editorial head and fit at all four layouts and three
    widths: the hero and its JP-092 fit, the nav (`vm.navEms`, `navNameFit`), the layout-3 card
    (`cardNameEms`), `titleWordEms`, the form, testimonials and footer statements, the calendar
