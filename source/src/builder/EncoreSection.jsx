@@ -12740,9 +12740,25 @@ function Repertoire({ s }) {
     // master's list 421 / 414 / 297); the display strings are uppercase
     // (`faceK` 1); and the pager is filled, which `Pager`'s layout-1 arm is
     // not, so it passes the frame's own bindings (below).
-    if (s.limeTree) {
+    //
+    // Pop — the component a fifth time (964:64570 at 1440, 986:17572 at 768,
+    // 986:17591 at 390): the twins' tree node for node, on Scheme 1 at every
+    // width with no Device override and no effect on any node. Every size is
+    // `THEME_RAMP.Pop`'s `s.*` (display-sm 36 / 29 / 24, list 20 / 16 / 15,
+    // body-md 14 / 13 / 13, body-sm 12) and every fill and ink a key the
+    // block already reads — the sheet `sem/box/1` #F5F5F5, every rule and
+    // ring `sem/stroke/1` pink, the type `sem/text/2` violet, the toggle's
+    // pill `sem/text/1` under `sem/bg` — so the rings are Lime's, opaque
+    // pink. The deltas: the sheet's own ring is drawn (Grunge's and
+    // Editorial's overlay — Pop's `phone` shows it at every width); the rows
+    // pin at 86 / 84.2 / 60.6, neither twin's (Titan's smaller display-sm
+    // leaves each master's list 430 / 421 / 303); the display strings are
+    // uppercase, through `faced` (0.98); and the pager passes the frame's own
+    // bindings, Scheme 1's, where `Pager`'s Pop arm is layout 1's Scheme 6.
+    if (s.limeTree || s.pop) {
       const grunge = s.grunge
       const ed = s.editorial
+      const pop = s.pop
       const ring = `inset 0 0 0 1px ${s.stroke1}`
       const dash = (side, extra) => <DashRule side={side} dash={5 * z} colour={s.stroke1} {...extra} />
       const body = (size, lh, extra) => ({
@@ -12750,9 +12766,11 @@ function Repertoire({ s }) {
       })
       const hint = 'Search songs or artists…'
       // Each master's `flex-1` division of its list (416 / 410 / 295 over
-      // five; Grunge's 390 list is 297, Editorial's 421 / 414 / 297), pinned
-      // for Retro's reason: our list has no height to divide.
-      const limeRowH = u(ed ? (desk ? 84.2 : tab ? 82.8 : 59.4) : desk ? 83.2 : tab ? 82 : grunge ? 59.4 : 59)
+      // five; Grunge's 390 list is 297, Editorial's 421 / 414 / 297, Pop's
+      // 430 / 421 / 303), pinned for Retro's reason: our list has no height
+      // to divide.
+      const limeRowH = u(pop ? (desk ? 86 : tab ? 84.2 : 60.6)
+        : ed ? (desk ? 84.2 : tab ? 82.8 : 59.4) : desk ? 83.2 : tab ? 82 : grunge ? 59.4 : 59)
       // The toggle's dashed capsule takes its one-row height's half as the
       // rect's radius (`DashRule`'s rule): 3 + 6 either side of a Body/SM
       // line at 1.4. A toggle that wraps rounds that one row's worth.
@@ -12761,17 +12779,22 @@ function Repertoire({ s }) {
         <div style={{
           margin: `calc(-1 * ${s.padY}) calc(-1 * ${s.padX})`,
           background: s.box1, color: s.tx,
-          position: grunge || ed ? 'relative' : undefined,
+          position: grunge || ed || pop ? 'relative' : undefined,
         }}>
           <div style={col(u(12), {
             padding: `${headPadY} ${padH}`, boxShadow: ed ? undefined : ring,
             position: ed ? 'relative' : undefined,
           })}>
             {ed && dash('all')}
-            {/* Display/SM in `sem/text/2`, line height 1. */}
+            {/* Display/SM in `sem/text/2`, line height 1. Titan sits 0.14em
+                low in it against the frame's Chunko (an ink-row scan: 4.4 /
+                4.5 / 3.0 px at the three widths), so Pop lifts the glyphs and
+                no box, layout 1's floor; the song titles sit ~1px low and
+                are left, as layout 1 left its own. */}
             <h2 style={distressed(s, {
               margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispSm), lineHeight: facedLh(s, 1),
-              letterSpacing: s.dls, color: s.tx, textTransform: grunge || ed ? 'uppercase' : undefined,
+              letterSpacing: s.dls, color: s.tx, textTransform: grunge || ed || pop ? 'uppercase' : undefined,
+              ...(pop ? { position: 'relative', top: '-0.14em' } : null),
             })}>{s.title}</h2>
             <div style={row(u(16), {
               justifyContent: 'space-between', flexWrap: 'wrap', rowGap: u(s.mob ? 10 : 12),
@@ -12863,7 +12886,7 @@ function Repertoire({ s }) {
                         <span style={{
                           fontFamily: s.display, fontSize: faced(s, s.list), lineHeight: facedLh(s, 1.2), letterSpacing: s.dls,
                           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                          textTransform: grunge || ed ? 'uppercase' : undefined,
+                          textTransform: grunge || ed || pop ? 'uppercase' : undefined,
                         }}>{t.title}</span>
                         <span style={body(s.bodySm, 1.4, {
                           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
@@ -12889,7 +12912,18 @@ function Repertoire({ s }) {
               current pill keeps its fill and takes a `sem/text/2` numeral in
               a 1px `sem/text/2` ring. Filling it ink instead would dress it
               as an arrow, and at the seeded two pages the one paper pill left
-              would read as the chosen one. */}
+              would read as the chosen one.
+              Pop's are filled and marked, its frame's own bindings on Scheme
+              1: the arrows `sem/tag/1/bg` lime (`s.chips[0].bg`) round a
+              violet glyph (a raw #6B2CFF, `sem/text/2`'s own bytes, so
+              `s.tx`), the pages `sem/text/2` violet, the current one
+              `sem/text/1` pink. The other three are Lime's and Retro's
+              leaks, each read where it shows and followed, layout 1's
+              pager's call on the same component (`POP_REP`): the #AFE335
+              numerals read lime on violet, the #FBF6EA current numeral
+              off-white on pink, the arrows' 1px #F2FFD0 ring barely
+              anything on lime. The numerals are Anton 12 in the frame,
+              set in Pop's label face by `Pager`'s Pop arm. */}
           <div style={{ padding: labels.length > 0 ? `${footPadY} ${padH}` : `0 0 ${footPadY}` }}>
             {labels.length > 0 && (
               <Pager s={s} frame={{
@@ -12898,7 +12932,10 @@ function Repertoire({ s }) {
                 onStep: s.live
                   ? (dir) => setPage(Math.max(0, Math.min(pages - 1, pg + dir)))
                   : undefined,
-                lime: ed ? {
+                lime: pop ? {
+                  box: s.tx, endBox: s.chips[0].bg, ring: POP_REP.pale, ink: s.tx,
+                  idle: POP_REP.song, onBox: s.ac, on: POP_REP.paper,
+                } : ed ? {
                   box: s.ac, endBox: s.tx, ring: s.bg, ink: s.bg, idle: s.bg, onEdge: s.tx, on: s.tx,
                 } : undefined,
               }} />
@@ -12906,8 +12943,9 @@ function Repertoire({ s }) {
           </div>
           {/* The sheet's own ring, above its children as Figma paints a
               frame's stroke — so it stacks on the head's ring, the render's
-              89 over the head against 60 under the pager. */}
-          {(grunge || ed) && (
+              89 over the head against 60 under the pager. Pop's is opaque,
+              so the two stacked rings are one pink row. */}
+          {(grunge || ed || pop) && (
             <span aria-hidden style={{
               position: 'absolute', inset: 0, boxShadow: ring, pointerEvents: 'none',
             }} />
