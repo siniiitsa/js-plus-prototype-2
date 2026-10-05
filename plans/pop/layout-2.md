@@ -216,7 +216,7 @@ session widens. The narrow twins are in Editorial's and Grunge's sections tables
 | 2 | `bio` | `964:64562` | 1440 × 760 | `986:17564` | 768 × 1138.8 | `986:17583` | 390 × 881.3 | 1 (Book pill **4**) | `964:64581` | `964:64600` | `if (s.v1 && s.limeTree)` ahead of `Bio`'s `if (s.v1)` | **done** `3de6182` |
 | 3 | `media` | `964:64563` *(Section; panel `964:64564`)* | 1440 × 965 | `986:17565` *(Frame 299; `986:17566`)* | 768 × 1541 | `986:17584` *(Frame 299; `986:17585`)* | 390 × 1420 | page 1, **panel 2** (fan cards 6 / 3 / 5 / 4 / 2, list rows 3 / 4 / 5 / 7 / 8) | `964:64582` | `964:64601` | inside `Media`'s `if (s.v1)`, after `nowArt` | **done** `5e8ea24` |
 | 4 | `repertoire` | `964:64570` | 1440 × 792 | `986:17572` | 768 × 792 | `986:17591` | 390 × 594 | 1 (a `box/1` sheet) | `964:64589` | `964:64608` | inside `Repertoire`'s `if (s.v1)`, after `pageWindow()` | **done** `4e6c51f` |
-| 5 | `gallery` | `964:64571` | 1440 × 675 | `986:17573` | 768 × 468 | `986:17592` | 390 × 364 | 1 | `964:64590` | `964:64609` | **no block** — `s.limeTree` reads and `(s.lime \|\| grunge)` / `ed` ternaries through `Gallery`'s `if (s.v1)` | |
+| 5 | `gallery` | `964:64571` | 1440 × 675 | `986:17573` | 768 × 468 | `986:17592` | 390 × 364 | 1 | `964:64590` | `964:64609` | **no block** — `s.limeTree` reads and `(s.lime \|\| grunge)` / `ed` ternaries through `Gallery`'s `if (s.v1)` | **done** `d8a361e` |
 | 6 | `pricing` | `964:64572` | 1440 × 719.7 | `986:17574` | 768 × 926.4 | `986:17593` | 390 × 841.4 | 1 (the plan card **7**, leant −3 / −3 / −1) | `964:64591` | `964:64610` | inside `Pricing`'s `if (s.v1)`, after `sel` / `t` | |
 | 7 | `calendar` | `964:64574` *(in `964:64573`)* | 1328 × 842 *(1440 × 954)* | `986:17576` *(in `986:17575`)* | 708 × 705 *(817)* | `986:17595` *(in `986:17594`)* | 370 × 698 *(778)* | page 1, **card 2** | `964:64593` | `964:64612` | inside `Calendar`'s `if (s.v1)`, after `want` / `hit` / `cur` / `line` | |
 | 8 | `map` | `964:64575` | 1440 × 808 | `986:17577` | 768 × 823 | `986:17596` | 390 × 1286 | 1 (travel card **3**, map card **2**, viewport **3**) | `964:64594` | `964:64613` | inside `EventsMap`'s `if (s.v1)`, after `stats` | |
@@ -731,6 +731,15 @@ bullets; name them.
 - **The 0.14em head lift holds at lh 1 too** (section 4: measured, 0.13–0.16em at three widths),
   so the glyph floor is Titan's metrics, not the line height; the lh-1.2 list titles sit only
   ~1px low and are left. Scan each head all the same.
+- **Pop's rings are thick, so a twin's border can stop being invisible** (section 5): a 1px
+  CSS border insets nothing anyone sees, but the 5px one moves anything positioned off the
+  padding box (the gallery's caption) and shrinks a cover box. Where a child is placed by the
+  frame's offset from the outer edge, draw the ring as an overlay; where the border drops a
+  side, keep it. And an accent state inside an accent ring vanishes, so read every twin's `s.ac`
+  state against Pop's edge before inheriting it.
+- **A frame's anchor for its own seed binds that slot, not the seat** (section 5): sweep it, and
+  then picture every other seed in the seat. Where the frame's anchor costs another seed its
+  face, key it to the slot (`active === home`).
 
 ### Seen at planning time, per section
 
@@ -1213,6 +1222,100 @@ and its **lime** cards add a third ground the twins never had.
 - **For the sweep's CLAUDE.md pass**: nothing new — the repertoire's paragraph names no
   layout-2 pager state. Not written here.
 
+### Settled in section 5 (the gallery)
+
+- **No block, for the third time: the sites through `Gallery`'s `if (s.v1)` widen one by one
+  under `const pop = s.pop`**, at nine sites. They are `bw`, the well, `wellInk`, the hero's
+  border (now an overlay), its anchor, the caption's ink gate, the caption's and the 768 head's
+  chip type, and the pick ring's ink. The tree is Lime's node for node at all three widths
+  (18 / 23 / 22), each master read with one walker call (bindings with their collection), on
+  **Scheme 1 with no Device override** (`resolvedVariableModes` Desktop / Tablet / Mobile) and
+  with **no effect, no rotation and no raw paint on any node**, so the gallery has no leak.
+  `get_variable_defs` gives `size/chip` 12 / 11 / 11, which is `THEME_RAMP.Pop`'s chip (10 on
+  the canvas, 11, 11), so `s.chip` exactly. The hooks sit above the branches.
+  **The plan's census was one site off**: the `v1` branch holds one `(s.lime || grunge)`
+  ternary, the caption's fill. The "tile ratio" and `cream` ternaries are layout 3's `v2`
+  (the viewer), not this pass's. No Titan string is drawn here (the caption and the head are
+  Inter Bold), so no 0.14em lift is owed.
+- **On white, the inks are already the bindings**: the tiles' edge `sem/text/1` (`s.ac`, pink,
+  the `edge` already drawn), the wells `sem/box/3` (`s.box3`, black), the caption's fill
+  `sem/tag/1/bg` (`s.chips[0].bg`, lime), which is Retro's else-arm again, as under Editorial
+  (its comment now names both), and the 768 head `sem/text/2` (`s.tx`). The radii are Lime's
+  to the corner: the hero 30; the tiles 30 with the first and last in each column squared off
+  where their dropped side runs (`0 0 30 30` / `30 30 0 0`, so neither `rTop` nor `ed`'s
+  whole-corner rule applies); the 390 rail 10. The deltas:
+  - **every ring is 5px INSIDE** where the twins' are 1px. The hero's is
+    `scheme/1/stroke/2`, named outright (`s.stroke2`, lime, since the seat is Scheme 1), and
+    the tiles' is `sem/text/1`, with the same per-side weights as the twins' (`[0, 5, 5, 5]`
+    first, `[5, 5, 0, 5]` last). The tiles keep the twins' CSS border at `u(5)`, which is what
+    drops their outer sides. The photograph's 4.1px inset under an opaque ring cannot show, and
+    `flex: h 1 auto` already carries the border. **The hero's ring is an overlay** (`inset 0 0 0
+    u(5)` in `s.stroke2`, after the caption), not the border. A 4.1px border would have put the
+    caption 36.9 in rather than the frame's 32.8 and shrunk the cover box by 8 each way. Its
+    image frame's own radius 4 lands under the ring, as on every twin. Computed: the overlay is
+    4.1 / 5 / 5; the tiles' border computes **4px** at desktop (Chrome snaps a 4.1 border width
+    at DPR 2), 5 / 5 narrow;
+  - **the caption's ink is `sem/text/2`**, violet (`s.tx`), where Pop's tag-1 ink is `#141414`,
+    so the gate takes `(s.retro || s.limeTree || pop)`. Its type and the 768 head's take `s.chip`
+    at −0.06em, the twins' widening;
+  - **the empty slot's initials are white** (`wellInk` `(ed || pop) ? s.bg`): Pop's `s.muted` is
+    violet at .64 on the black well. `&n=0` shows white `KM` on black at all three widths, with
+    the rings and caption in place. `&noimage=1` leaves the gallery's own slots seeded, so `&n=0`
+    is this section's empty state.
+- **The hero anchors by slot.** Its node holds our own seed (`b3a33296`, `popGallery4`,
+  `galActive()`'s slot 3) as a `FILL` at all three widths. A sweep of cover anchors against the
+  frames' renders bottoms out **centred**: mean |Δ| 3.5 / 2.2 / 2.1 at 50%, against 68 / 38 / 41
+  top-anchored. But centred, three other seeds picked into the seat lose the singer's head at
+  1440 (`pop-gallery-1`, `pop-stage`, `pop-avatar`; a montage at 0 / 25 / 50% is in the session
+  scratchpad). Editorial's convention says *a frame's image anchor is evidence for its own
+  photograph only*, so the anchor is `pop && active === home ? '50% 50%' : '50% 0%'`: the canvas
+  and the published first paint get the frame's crop, and a pick gets the twins' top anchor.
+  The tiles keep the top anchor too (open question 4: the frame's strip is Retro's
+  placeholders). Reversible in one line at the hero's `Photo`.
+- **The pick ring is re-inked lime** (CONVENTIONS C, *a twin's frame-less control is checked
+  against its own surround*). No frame draws it. The twins' `s.ac` inset inside Pop's 4.1px pink
+  edge read as the idle tile in the shot, so under `pop` it is `s.stroke2`, the hero's ring, at
+  the twins' 2.5 / 2 weights. In the shot it reads clearly, and it tells the visitor which tile is
+  in the hero.
+- **The 390 right column's first-tile wrapper carries the `[0, 0, 40, 40]` stray** a third time
+  (its own image frame says 10), and the frame's render shows the capsule foot. It is not
+  followed, on Grunge's and Editorial's reasoning. The 768 master's 1px third tiles are divided
+  in the frame's proportions (JP-098 kept the six). The head row reads *Gallery* (`railLabel`),
+  and *View list* / ✕ are dropped, as the twins drop them.
+- **Measured against the masters' content edges** (harness, from the section root): desktop
+  root 553.5 (675 × 0.82), hero 642.1 × 478.1 at (45.9, 37.7) (784 × 583 × 0.82 = 642.9 ×
+  478.1). The caption is 102.8 × 39.7 at **32.8, 32.8** in from the hero's outer edge (40 ×
+  0.82, the frame's exactly; the twins' 33.8 counted their 1px border), 10px Inter 700 at
+  −0.6px, violet on `#C6F200`. Tiles 209.1 wide at 100.9 / 176.3 / 184.5 and 159.1 / 198.5 /
+  104.1 (the twins' numbers). 768: root 468, hero 342 × 392 at (30, 30), caption at **(70,
+  336)** (the frame's to the pixel), head *Gallery* 33.8 × 11 at (396, 34.5) (the frame's
+  396, 34.5), tiles 166 wide. 390: root 364, hero 273 × 284 at (10, 40), caption at (50, 238),
+  ten tiles 36.5 × 48.8 at 10. **Named diffs, the twins'**: at 390 the hero is 273 wide
+  against 253 and the caption 10 left of the frame's 60, since the root's `padX` is JP-038's
+  10 against the master's 20; the caption reads the seeded heading and name ("SEE US IN ACTION
+  / KAI MERCER") where the frame types "MTV 'MOOD SWING' / FEATURED REEL"; the seeded strip
+  stands against the frame's placeholder six.
+- **`live=1`** (puppeteer, trusted clicks, three widths): tiles 0, 3 and 5 move the hero to
+  `pop-calendar`, `pop-gallery-1` and `pop-stage` and ring themselves (at 390 tile 0 rings with
+  its looped twin 6, and 3 with 9). A second click on the ringed tile hands the hero back to
+  `pop-gallery-4` with no ring, and a hero click changes nothing. Every tile hit-tests to itself
+  at its centre (6/6, 6/6, 10/10) with a pointer cursor. No page error or warning.
+- **`FIELDS.gallery` has no template-keyed `in` row**, so no `reach.mjs` run was owed.
+- **`page-check.mjs Pop 1`**: the modal's four cards; every nav, anchor and footer link on its id;
+  the player plays; `overflow390` 0; the burger 2 → 6; no console error or warning. The published
+  1440 gallery is **675** tall (675). The seam clips show the repertoire's opaque 1px pink ring
+  closing the sheet over the white gallery at 1440 and 390, so the seam is the repertoire's.
+- **Digest: themes 0, 1, 2 and 3 zero files of 660, canvas and `live=1`**; theme 4 exactly
+  gallery arch 1 at three widths on both surfaces (6 files), no `_arch_0_` file, no one-row
+  file.
+- **For pricing**: it stands on white, **ringed 1px pink at 768 and 390 only** (read that off
+  the root's strokes per master), and its plan card is a **nested Scheme 7** leant −3 / −3 / −1
+  (Figma → CSS +3 / +1), so spacing is read against the rotated box per master (CONVENTIONS A).
+  Its Lime block (after `sel` / `t`) has Grunge's `G` at its head, with Editorial as the third
+  arm, so Pop is a fourth.
+- **For the sweep's CLAUDE.md pass**: nothing new. CLAUDE.md names no gallery layout-2 state;
+  `notes/gallery.md` now carries Pop's pick ring and its anchor by slot.
+
 ### Inherited and used
 
 *(The running list the sweep folds into [`../CONVENTIONS.md`](../CONVENTIONS.md): each time a
@@ -1272,6 +1375,19 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
   floor* (editorial/layout-3 — the head's 0.14em measured at lh 1, the titles' ~1px left);
   *field reach is measured* (CLAUDE.md — no row owed).
 
+- Section 5: *the node walker, kept* (grunge/layout-2) with bound names and their collection (*a
+  node can name another scheme's variable outright*, editorial/layout-3 — the hero's
+  `scheme/1/stroke/2`); *a frame's inside stroke is an inset `boxShadow`, on an overlay where an
+  image paints over it* (lime/layout-2 — the hero's 5px; the tiles keep the twins' border);
+  *a frame's image anchor is evidence for its own photograph only* (editorial/layout-2 — the
+  hero centred on its own slot alone); *read a fill's `scaleMode` … correlate the render with
+  the seed* (grunge/layout-2 — the `FILL` swept); *on a page where `s.muted` does not read, an
+  empty slot on a dark well needs `Photo`'s `ink`* (editorial/layout-2 — white on black); *a
+  twin's frame-less control is checked against its own surround* (editorial/layout-3 — the pick
+  ring re-inked lime); *a leak that shows and reads as a defect is overridden* (grunge/layout-1 —
+  the 390 wrapper's stray capsule, the 768 1px tiles); *a seeded page cannot show an empty slot*
+  (lime/layout-1 — `&n=0`); *field reach is measured* (CLAUDE.md — no row owed).
+
 ## Open questions
 
 1. ~~**Decision 1** — the gate, `(s.limeTree || s.pop)` per site.~~ *Settled in session 0: the
@@ -1283,7 +1399,10 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
    `f821adc2`, the components' default pictures through Pop instances; the seeds stand. Worth
    telling the designer, with Grunge's and Editorial's.
 4. **The gallery strip** repeats Retro's placeholder thumbnails again; the seeds stand (layout 1,
-   open question 6). Worth telling the designer with it.
+   open question 6). Worth telling the designer with it. *Section 5: confirmed — `b35b6507`,
+   `b073b46f`, `8f69a4a6`, `35ae28b9`, `3f0c98b4` and `b35b6507` again at every width; the
+   tiles keep the twins' top anchor. The 390 right column's first-tile wrapper carries the
+   twins' `[0, 0, 40, 40]` stray a third time; worth the same note.*
 5. ~~**`showBadge` / `badgeText` at layout 2** — the frame draws a sun, not a seal; recommended
    decoration, drawn always (*The header, and card 2*). The header session settles it.~~
    *Settled in section 1: the sun is drawn always; both fields measure `[0, 3]` under Pop.*
