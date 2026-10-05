@@ -215,7 +215,7 @@ session widens. The narrow twins are in Editorial's and Grunge's sections tables
 | 1 | `header` | `964:64561` | 1440 × 974 | `986:17563` | 768 × 1024 | `986:17582` | 390 × 994 | 1 (Enquire pill **3**, place card **6**, Book pill **3 / 3 / 4**) | `964:64580` | `964:64599` | `if (s.limeTree) { … return }` at the head of `HeaderV1` | **done** `5bc12c1` |
 | 2 | `bio` | `964:64562` | 1440 × 760 | `986:17564` | 768 × 1138.8 | `986:17583` | 390 × 881.3 | 1 (Book pill **4**) | `964:64581` | `964:64600` | `if (s.v1 && s.limeTree)` ahead of `Bio`'s `if (s.v1)` | **done** `3de6182` |
 | 3 | `media` | `964:64563` *(Section; panel `964:64564`)* | 1440 × 965 | `986:17565` *(Frame 299; `986:17566`)* | 768 × 1541 | `986:17584` *(Frame 299; `986:17585`)* | 390 × 1420 | page 1, **panel 2** (fan cards 6 / 3 / 5 / 4 / 2, list rows 3 / 4 / 5 / 7 / 8) | `964:64582` | `964:64601` | inside `Media`'s `if (s.v1)`, after `nowArt` | **done** `5e8ea24` |
-| 4 | `repertoire` | `964:64570` | 1440 × 792 | `986:17572` | 768 × 792 | `986:17591` | 390 × 594 | 1 (a `box/1` sheet) | `964:64589` | `964:64608` | inside `Repertoire`'s `if (s.v1)`, after `pageWindow()` | |
+| 4 | `repertoire` | `964:64570` | 1440 × 792 | `986:17572` | 768 × 792 | `986:17591` | 390 × 594 | 1 (a `box/1` sheet) | `964:64589` | `964:64608` | inside `Repertoire`'s `if (s.v1)`, after `pageWindow()` | **done** `4e6c51f` |
 | 5 | `gallery` | `964:64571` | 1440 × 675 | `986:17573` | 768 × 468 | `986:17592` | 390 × 364 | 1 | `964:64590` | `964:64609` | **no block** — `s.limeTree` reads and `(s.lime \|\| grunge)` / `ed` ternaries through `Gallery`'s `if (s.v1)` | |
 | 6 | `pricing` | `964:64572` | 1440 × 719.7 | `986:17574` | 768 × 926.4 | `986:17593` | 390 × 841.4 | 1 (the plan card **7**, leant −3 / −3 / −1) | `964:64591` | `964:64610` | inside `Pricing`'s `if (s.v1)`, after `sel` / `t` | |
 | 7 | `calendar` | `964:64574` *(in `964:64573`)* | 1328 × 842 *(1440 × 954)* | `986:17576` *(in `986:17575`)* | 708 × 705 *(817)* | `986:17595` *(in `986:17594`)* | 370 × 698 *(778)* | page 1, **card 2** | `964:64593` | `964:64612` | inside `Calendar`'s `if (s.v1)`, after `want` / `hit` / `cur` / `line` | |
@@ -724,6 +724,13 @@ bullets; name them.
 - **Diff by traversal order and case-insensitively, never by id**: each template is its own
   variant, and Pop types its display strings in capitals (all but one, decision 2).
 - **Every head on this page is one tone and on the ramp.**
+- **`Pager`'s Pop arm is layout 1's Scheme 6 seat; a layout-2 caller passes `frame.lime`** (section
+  4): its defaults (`POP_REP.pill` pages, `s.ac` ends, an `s.bg` arrow, `s.tx` current page) read
+  wrong on Scheme 1, and changing them moves layout 1's map a2. Read the pager's bindings off the
+  master and pass all seven keys, Editorial's route — the map's layout-2 pager is the next caller.
+- **The 0.14em head lift holds at lh 1 too** (section 4: measured, 0.13–0.16em at three widths),
+  so the glyph floor is Titan's metrics, not the line height; the lh-1.2 list titles sit only
+  ~1px low and are left. Scan each head all the same.
 
 ### Seen at planning time, per section
 
@@ -1128,6 +1135,84 @@ and its **lime** cards add a third ground the twins never had.
   `grungeRule` wherever a sentence names the root's rules, and the media's per-seat schemes
   are in `notes/media.md` already. `art()`'s arguments need no line. Not written here.
 
+### Settled in section 4 (the repertoire)
+
+- **The block widened whole: `if (s.limeTree || s.pop)` inside `Repertoire`'s `if (s.v1)`, after
+  `pageWindow()`, `const pop = s.pop`** (six arms, no `G`). The tree is the twins' node for node
+  at all three widths (`phone` / `sticky-head` / `Frame 286` / `list` / `pagination`, two columns
+  of five, the seven-slot pager), on **Scheme 1 with no Device override** (`resolvedVariableModes`
+  Desktop / Tablet / Mobile) and **no nested scheme, no effect, no rotation** on any node, each
+  master read with one walker call (bindings with their collection). `get_variable_defs` is
+  `THEME_RAMP.Pop` (display-sm 36 / 29 / 24, list 20 / 16 / 15, body-md 14 / 13 / 13, body-sm 12),
+  so every size reads `s.*`. The hooks sit above the branches, so the published search, chips and
+  pager needed nothing.
+- **On white, every fill and ink the block reads is already the binding**: the sheet `sem/box/1`
+  `#F5F5F5` (`s.box1`); every ring and rule `sem/stroke/1`, **opaque pink** (`s.stroke1`) — the
+  head on all four sides, the toggle, the field (radius 118), the column's inside edge, each row's
+  foot; the heading, field, numbers, titles and artists `sem/text/2` violet (`s.tx`); the toggle's
+  pill `sem/text/1` pink under `sem/bg` white type (Lime's `s.ac` / `s.bg`). The paddings, the 12
+  head gap, the 42 row gap, the toggle's 3 and chips' 6 / 14, the 390 stack's 10 and the rows'
+  56 / 20 / 30 / 10 insets are the twins' to the number. The deltas:
+  - **the sheet's own ring is drawn** — `phone`'s 1px INSIDE `sem/stroke/1` is visible at every
+    Pop width (Grunge's and Editorial's reading), so the overlay widens to `grunge || ed || pop`.
+    Opaque, so where it stacks on the head's ring the render is one pink row (sampled at y 0 and x
+    0 / 1439 of the 1440 render), not Grunge's 89-over-60 double;
+  - **the rows pin at 86 / 84.2 / 60.6** — neither twin's: Titan's display-sm leaves each
+    master's head at 196 / 197 / 197, so the list the rows divide is 430 / 421 / 303;
+  - **the heading and titles are uppercase** (`grunge || ed || pop`), through `faced` (0.98);
+  - **the heading is lifted 0.14em** (CONVENTIONS B's Pop row — measured, not inherited, since lh
+    is 1 here): a violet ink-row scan put Titan 4.4 / 4.5 / 3.0 px under the frame's Chunko at the
+    three widths (0.15 / 0.16 / 0.13 em, ink heights equal); lifted, 2.0 / 1.5 / 1.0 against 1.6 /
+    1 / 1 off the box's top. **The song titles sit 1.0–1.7 px low** (~0.06–0.1 em at lh 1.2) and
+    are left, as layout 1 left its row titles — it does not show;
+  - **the pager passes the frame's own bindings** — `Pager`'s Pop arm is layout 1's Scheme 6 seat
+    (the `#9162FF` pills, pink ends, a white arrow, a pink current pill read as `s.tx`) and reads
+    wrong on Scheme 1 at four keys, so the block passes `frame.lime` under `pop`, Editorial's
+    route, and `Pager` is untouched: `box: s.tx` (`sem/text/2`, violet pages), `endBox:
+    s.chips[0].bg` (`sem/tag/1/bg`, lime arrows), `ink: s.tx`, `onBox: s.ac` (`sem/text/1`, the
+    pink current page) — **the frame marks its page, so the mark is followed** — and the three
+    leaks below.
+- **Open question 9's leaks, read where each shows (decision 2), all followed** through layout 1's
+  `POP_REP` names, the same leak on the same component (layout 1, section 5): `#AFE335` × 4 (the
+  idle numerals, `POP_REP.song`) reads lime on violet; `#FBF6EA` (the current numeral,
+  `POP_REP.paper`) off-white on pink; `#F2FFD0` × 2 (the arrows' 1px ring, `POP_REP.pale`) barely
+  anything on lime (sampled `#F2FFD0` at x 56 of the 1440 render). **The two raw `#6B2CFF`** (the
+  arrow glyphs) are `sem/text/2`'s own bytes — Pop's violet, not a leak in effect — so `s.tx`.
+  **Anton 12** on the numerals is Pop's label face at that size, `Pager`'s Pop arm already
+  (`labelStyle(s, u(12))`).
+- **Measured against the masters** (harness, from the sheet's top-left): desktop section 650.1
+  (792 × 0.82 = 649.4), head 161.3 (160.7), h2 at (46, 46), field 311.6 × 29.5 at x 822.4, rows
+  70.5 (86 × 0.82), pager band 136.3 at 513.8 (513.3), pills 44.3 tall at 559.8; 768 section
+  791.9 (792), head 197, h2 at (30, 60), field 380 × 36 at (358, 101), rows 84.2, pager band 174
+  at 617.9 (618); 390 section 593.8 (594), head 196.8 (197), field 370 × 36 at 120.8 (121), rows
+  60.6, pager band 94 at 499.8 (500), pills 54 at 519.8 (520). **Named diffs, the twins'**: the
+  seeded four chips against the frame's three; the seeded twelve make two pages, so four buttons
+  divide the measure (267 / 171 / 86.5) where the frames draw a fictional seven; "12 SONGS"
+  against "REPERTOIRE"; the title at x 64.9 / 53 / 32 on Lime's pinned number against the
+  frame's 62.3 / 50–52 / 30.
+- **`live=1`** (puppeteer, `n=30`, three widths): Next lights page 2 and the list starts at 11;
+  the "3" pill reaches 21; Prev steps back to 11; *Weddings* re-filters to one page and the pager
+  drops; a no-match search prints *No songs match that.*; `&n=0` prints *No songs yet.*; every pill
+  hit-tests to itself at its centre with a pointer cursor; no page error or warning. **The empty
+  message keeps the twins' `s.muted`**, violet at 64% on `#F5F5F5`, which reads (shot) — layout
+  1's re-ink was for 1.4 : 1 on its violet seat, not this.
+- **`FIELDS.repertoire` has no template-keyed row** (`heading` and `songs` reach every layout,
+  `sets` design 2), so no `reach.mjs` run was owed.
+- **`page-check.mjs Pop 1`**: the modal's four cards; every nav, anchor and footer link on its
+  id; the player plays; the repertoire's chips change state; `overflow390` 0; the burger 2 → 6;
+  no console error or warning. The published 1440 repertoire is **793** tall (792). The seam
+  clips: at 1440 the media's 5px lime foot rule stands directly on the sheet's pink ring, the
+  frames' own adjacency; at 390 the sheet closes on its pink ring above the white gallery.
+- **Digest: themes 0, 1, 2 and 3 zero files of 660, canvas and `live=1`**; theme 4 exactly
+  repertoire arch 1 at three widths on both surfaces (6 files), no `_arch_0_` file, no one-row
+  file. `Pager` was not touched, so map a2 (layout 1's other Pop pager reader) did not move.
+- **For the gallery**: it stands on white directly under this sheet's opaque 1px pink ring at
+  every width, so the seam is the repertoire's and the gallery owes it nothing. It has no block —
+  `s.limeTree` reads and `(s.lime || grunge)` / `ed` ternaries through `Gallery`'s `if (s.v1)` —
+  so each widens from the frame, one site at a time (Editorial's section 5 is the model).
+- **For the sweep's CLAUDE.md pass**: nothing new — the repertoire's paragraph names no
+  layout-2 pager state. Not written here.
+
 ### Inherited and used
 
 *(The running list the sweep folds into [`../CONVENTIONS.md`](../CONVENTIONS.md): each time a
@@ -1176,6 +1261,17 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
   slot* (lime/layout-1 — `&n=8`'s art-less wells); *a widened block can need no `G`*
   (grunge/layout-3); *field reach is measured* (CLAUDE.md).
 
+- Section 4: *the node walker, kept* (grunge/layout-2) with bound names and their collection,
+  its raw paints the leak list; *where the seam lives inside the branch, the block goes after
+  the seam* (lime/layout-1); *a widened block can need no `G`* (grunge/layout-3); *rows pin at
+  each master's division result* (D2, re-pinned 86 / 84.2 / 60.6); *a frame's inside stroke is
+  an inset `boxShadow`, on an overlay where a child paints over it* (lime/layout-2 — the sheet's
+  ring); *a twin's redrawn state or live mechanism is read against this frame* (editorial/layout-2
+  — the pager's mark, the frame's own, followed); *leaked tops are followed where they show*
+  (lime/layout-1 — the three pager hexes, through layout 1's `POP_REP`); *a stand-in face's glyph
+  floor* (editorial/layout-3 — the head's 0.14em measured at lh 1, the titles' ~1px left);
+  *field reach is measured* (CLAUDE.md — no row owed).
+
 ## Open questions
 
 1. ~~**Decision 1** — the gate, `(s.limeTree || s.pop)` per site.~~ *Settled in session 0: the
@@ -1209,7 +1305,11 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
    (`446:8697`) is not layout 1's (`907:12019`), but the trees are identical.
 9. **The repertoire's leaks** — Lime's `#AFE335` × 4 and `#F2FFD0` × 2, Retro's `#FBF6EA`, two raw
    violets and Anton numerals in an otherwise bound variant, the same nodes at all three widths.
-   Worth telling the designer once the session has found where they show.
+   Worth telling the designer once the session has found where they show. *Section 4: all on the
+   pager — the idle numerals (`#AFE335`, lime on violet), the current numeral (`#FBF6EA` on
+   pink), the arrows' 1px ring (`#F2FFD0` on lime) and glyphs (`#6B2CFF`, Pop's own violet) —
+   each followed, layout 1's `POP_REP`; Anton set in Titan. Still worth telling the designer:
+   the frame's own Scheme 1 has keys for all of them.*
 10. ~~**The desktop capsule with *Follow my sections* on a full page** (section 1): the seeded nine
     wrap it to two rows at the 12px floor on the 1180 canvas (and so in the published 1440 tab,
     which zooms that layout), where Lime's, Grunge's and Editorial's hold one row — Titan is the
