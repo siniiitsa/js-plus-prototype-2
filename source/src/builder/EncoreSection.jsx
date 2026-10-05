@@ -7330,7 +7330,7 @@ function Media({ s }) {
     // the same tree a third time, so `ed` names its deltas beside `grunge`.
     // The section is seated on Scheme 2 (SCHEMES_OF), so every leaf reads a
     // key: the panel is `sem/bg`, `s.bg`, and the root paints the page's paper
-    // round it (`editorialCard`); the cards are `box/1`, the wells `box/2`,
+    // round it (`cardOnPage`); the cards are `box/1`, the wells `box/2`,
     // every ink `sem/text/2`, `s.tx`, and the heading `sem/text/1`, `s.ac`
     // (paper) at every width. The panel is square at 1440 and 30 narrow, the
     // cards and the bar square. Rings become Sienna Vale's dashes: the bar is
@@ -7676,7 +7676,7 @@ function Media({ s }) {
       // column still has 254 for "Late Lights".
       // Grunge's panel is Scheme 2's `sem/bg` at the mode's raw 15 on desktop;
       // its narrow masters state Lime's 30. Sienna Vale's is square at 1440
-      // and 30 narrow, on the page's paper (the root's `editorialCard`). Its
+      // and 30 narrow, on the page's paper (the root's `cardOnPage`). Its
       // wrapper insets it 86 × 0.82 / 60 / 40 above and below where the root
       // pads `padY`, 80 / 56 / 44 — the page's gutter, as on every section.
       return (
@@ -17065,7 +17065,7 @@ function Calendar({ s }) {
     //
     // Editorial — the same tree a fourth time (964:64612 at 1440, 986:15671 at
     // 768, 986:15690 at 390), seated on Scheme 2 as a card on the page's paper
-    // (the root's `editorialCard`), so the panel, the chip's label and the
+    // (the root's `cardOnPage`), so the panel, the chip's label and the
     // pill's type and disc — every `sem/bg` the twins read as `G.bg2` — are
     // `s.bg`, the card's taupe, and the chip, the pill and its paper 5 / 5
     // block are the twins' own keys. The card is square. The head band is the
@@ -28524,9 +28524,9 @@ export default function EncoreSection({ s }) {
   // seated on its card's scheme (SCHEMES_OF), so `s.bg` is the card's taupe and
   // the block paints the card; the root paints the page's own ground round it.
   // Pop's layout-2 panel (964:64564) and calendar (964:64574) are the same
-  // Scheme 2 cards on its white, so it shares the flag, and the name now says
-  // less than it covers (plans/pop/layout-2.md; the sweep decides a rename).
-  const editorialCard = (s.me || s.ca) && s.v1 && (s.editorial || s.pop)
+  // Scheme 2 cards on its white, so the flag is named for the shape, not a
+  // template (`editorialCard` until Pop's layout-2 sweep).
+  const cardOnPage = (s.me || s.ca) && s.v1 && (s.editorial || s.pop)
   // Pop's layout-2 media `Section` (964:64563) strokes its top and foot 5px
   // inside in `scheme/1/stroke/2`, lime, at 1440 alone — visible, where the
   // twins' same stroke is a hidden paint; the narrow wrappers carry none.
@@ -28536,7 +28536,7 @@ export default function EncoreSection({ s }) {
     // document renders a dozen header previews at once through LayoutPicker
     // and HeaderChoices, which would all claim id="header".
     <div id={s.live ? s.anchor : undefined} style={{
-      background: darkMap ? s.mapBg : cream ? '#FBF6EA' : limeBand ? s.box1 : limeLight ? s.tx : grungeBand ? '#171716' : editorialCard ? s.pageBg : s.footerBand || s.bg,
+      background: darkMap ? s.mapBg : cream ? '#FBF6EA' : limeBand ? s.box1 : limeLight ? s.tx : grungeBand ? '#171716' : cardOnPage ? s.pageBg : s.footerBand || s.bg,
       color: darkMap ? s.mapFg : limeLight ? s.bg : s.tx,
       fontFamily: s.body, padding: bleed ? 0 : s.pad,
       position: 'relative', overflowX: popClip || popFootClip ? 'clip' : undefined, overflowY: popFootClip ? 'clip' : undefined,

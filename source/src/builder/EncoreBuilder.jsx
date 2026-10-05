@@ -426,8 +426,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // decorative treatment (grain, torn edges, checkerboard, hard offset
     // shadows, rotated cards) is Retro's alone. Lime, Grunge, Editorial and
     // Pop each draw a decoration of their own behind `lime`, `grunge`,
-    // `editorial` and `pop` below — Pop at layout 1 so far; its layouts 2–4
-    // render the shared structure undressed until their passes.
+    // `editorial` and `pop` below — Pop at layouts 1 and 2 so far; its layouts
+    // 3 and 4 render the shared structure undressed until their passes.
     retro: T.name === 'Retro',
     // Lime's four layout pages are Retro's components in its own variable
     // mode, so its decoration — arc seams, glows, the arch portrait — goes
@@ -457,7 +457,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // Lime's tree for ten sections, Retro's media player for the eleventh — so
     // each section session widens its own layout-1 block to `(s.limeTree ||
     // s.pop)`, or Retro's media body to `(s.retro || s.pop)`, and puts what only
-    // Pop draws behind this flag (plans/pop/layout-1.md, decision 3).
+    // Pop draws behind this flag (plans/pop/layout-1.md, decision 3). Its
+    // layout-2 page is Lime's layout-2 tree in all ten, widened the same way
+    // (plans/pop/layout-2.md, decision 1).
     pop: T.name === 'Pop',
     // The templates whose pages are Lime's component trees, so a Lime block
     // that Editorial's frame shares is gated on this rather than on a third

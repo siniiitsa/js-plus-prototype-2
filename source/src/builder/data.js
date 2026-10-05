@@ -1702,8 +1702,9 @@ export const FIELDS = {
   // different header families (six designs against four, four, four and four —
   // Grunge's row and Editorial's are each measured over four fitted cards, none
   // a placeholder since each template's layout-4 pass). Pop's was measured in
-  // its layout-1 sweep over one fitted card and three placeholders on Retro's
-  // paths, so each of its layout passes re-measures its own card.
+  // its layout-1 sweep and re-measured in its layout-2 header session, over two
+  // fitted cards and two placeholders on Retro's paths, so its layout-3 and
+  // layout-4 passes each re-measure their own card.
   header: [
     { k: 'image',     l: 'Background photo', type: 'image',
       hint: 'Fills the header behind the type.' },
