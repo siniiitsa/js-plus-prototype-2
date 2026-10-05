@@ -227,6 +227,30 @@ curled serifs. It is **not** on the list for that reason. Any second instance of
 already carries changes the face the existing sites are served (the Fraunces rule, and Noto's).
 A winner that is already loaded for another template needs its own instance check before step 3.
 
+### Decided (step 2, user call over `shortlist.png`, 2026-10-05)
+
+1. **The face is Gloock (C)**, chosen over Imbue (D), Amarante (E) and keeping Noto 540 (A). It was
+   chosen knowing that no candidate has Fisterra's R / Q tails, flared stems or N–N joins. Gloock
+   is the closest on the sheet in colour, contrast and tight fit. **Every width from step 3 on is
+   Gloock's.**
+2. **Instance: Gloock 400**, its only weight. The link entry is `family=Gloock`, replacing the Noto
+   entry in `index.html` and `preview.html`. Gloock is in neither link today, so the Fraunces trap
+   does not apply.
+3. **Noto is dropped as the fallback.** `display` / `label` become `'Gloock', serif`, and the Noto
+   Serif Display link entry is retired. CLAUDE.md's *Editorial's face* rule moves to Gloock.
+4. **The three Bold statements are set at the Regular** (the form's, the testimonials' quote and
+   the footer's). There is no synthetic bold, so step 3 sets their `fontWeight` to 400 under
+   Editorial (or `font-synthesis-weight: none`; step 3 picks one and says why). `notoBoldEms`
+   retires with no Bold table in its place: every fit reads the one Gloock table.
+
+**What step 3 inherits from the pick**:
+- Gloock's cap is .751 against the frame's .725 (+3.6%, past Grunge's 2%), so `faceK` is
+  re-measured with ≈ .965 as the starting estimate.
+- Its title is 1.153 of the frame at matched cap, against Noto 540's 1.066 (step 1's method), so
+  every head fit shrinks further. JP-092's 390 hero fit and the long-name set at step 5 are the
+  sites to watch.
+- Trap 5: check that Gloock carries `'`, `"` and `&` before the advance table is measured.
+
 ## How the face reaches the page
 
 - **A Google Fonts entry, if the winner is a Google family** (every row above is). It replaces
