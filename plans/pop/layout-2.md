@@ -219,7 +219,7 @@ session widens. The narrow twins are in Editorial's and Grunge's sections tables
 | 5 | `gallery` | `964:64571` | 1440 × 675 | `986:17573` | 768 × 468 | `986:17592` | 390 × 364 | 1 | `964:64590` | `964:64609` | **no block** — `s.limeTree` reads and `(s.lime \|\| grunge)` / `ed` ternaries through `Gallery`'s `if (s.v1)` | **done** `d8a361e` |
 | 6 | `pricing` | `964:64572` | 1440 × 719.7 | `986:17574` | 768 × 926.4 | `986:17593` | 390 × 841.4 | 1 (the plan card **7**, leant −3 / −3 / −1) | `964:64591` | `964:64610` | inside `Pricing`'s `if (s.v1)`, after `sel` / `t` | **done** `fb84f5b` |
 | 7 | `calendar` | `964:64574` *(in `964:64573`)* | 1328 × 842 *(1440 × 954)* | `986:17576` *(in `986:17575`)* | 708 × 705 *(817)* | `986:17595` *(in `986:17594`)* | 370 × 698 *(778)* | page 1, **card 2** | `964:64593` | `964:64612` | inside `Calendar`'s `if (s.v1)`, after `want` / `hit` / `cur` / `line` | **done** `a204ba6` |
-| 8 | `map` | `964:64575` | 1440 × 808 | `986:17577` | 768 × 823 | `986:17596` | 390 × 1286 | 1 (travel card **3**, map card **2**, viewport **3**) | `964:64594` | `964:64613` | inside `EventsMap`'s `if (s.v1)`, after `stats` | |
+| 8 | `map` | `964:64575` | 1440 × 808 | `986:17577` | 768 × 823 | `986:17596` | 390 × 1286 | 1 (travel card **3**, map card **2**, viewport **3**) | `964:64594` | `964:64613` | inside `EventsMap`'s `if (s.v1)`, after `stats` | **done** `9567812` |
 | 9 | `form` | `964:64576` | 1440 × 784 | `986:17578` | 768 × 856 | `986:17597` | 390 × 910 | **4** (sidebar card **2**) | `964:64595` | `964:64614` | `if (s.v1 && s.limeTree)` ahead of `EnquiryForm`'s `if (s.v1)` | |
 | 10 | `testimonials` | `964:64577` | 1440 × 762.9 | `986:17579` | 768 × 730 | `986:17598` | 390 × 842 | 1 (big card **2**, picked tile **3**) | `964:64596` | `964:64615` | inside `Testimonials`' `if (s.v1)`, after `rail` | |
 | — | `footer` | `964:64578` | 1440 × 479.5 | `986:17580` | 768 × 720.4 | `986:17599` | 390 × 720.4 | 3 | — | — | — | **out of scope**: layout 1's footer, closed at planning time (above) |
@@ -749,6 +749,13 @@ bullets; name them.
   vertical margin as a percentage (which resolves against the wrapper's width, the card's). The
   grid row then measures the rotated box's height at any content height; check the published
   page's `scrollWidth` before reaching for a clip.
+- **A control no master of the section draws takes the one this page draws** (section 8): the
+  map's layout-2 pager is drawn by no Pop map master, and `Pager`'s Pop arm is another page's
+  seat, so the block passes the repertoire's layout-2 `frame.lime` — the same page, the same
+  Scheme 1. Prove it at `n=30`: the seed is one page and draws no pager.
+- **Lift the label, never the ring** (section 8): where a Titan string is a ringed element's own
+  text (Get Directions), `top: -0.14em` on the element moves the ring with it; wrap the label in
+  a span under `pop` and lift that.
 
 ### Seen at planning time, per section
 
@@ -1520,6 +1527,124 @@ and its **lime** cards add a third ground the twins never had.
   second layout-2 `Pager` caller: pass `frame.lime` with all seven keys read off the master
   (section 4's convention). Any display month there ("JUN") meets Titan's descending J.
 
+### Settled in section 8 (the events map)
+
+- **The block widened: `if (s.limeTree || s.pop)` inside `EventsMap`'s `if (s.v1)`, after
+  `stats`, `const pop = s.pop`, `S2` / `S3` off `s.onScheme` under `ed || pop`, and a fourth `G`
+  arm** (Lime's, Grunge's and Editorial's byte-identical), plus six `pop` sites: `display()`'s
+  uppercase gate, a `lift` spread at five display strings, the venue city's face, the pill row's
+  three wrap keys and the pager's `frame.lime`. No new leaf: every Pop key is one Editorial already
+  reads through `??`. The tree is the twins' node for node, **123 = 123 = 123 at all three widths**
+  (one walker call per master, bindings with their collection), on **Scheme 1 with the travel
+  card and the `Map Viewport` on Scheme 3 and `radius-map` on Scheme 2** at every width
+  (`explicitVariableModes`; `resolvedVariableModes` Desktop / Tablet / Mobile — no Device
+  override). Every size is `THEME_RAMP.Pop`'s (Display/Title **28 / 22 / 20** in `G.title`,
+  `vm.title` shadowing the ramp; list 20 / 16 / 15, body-sm 12, body-md 14 / 13 / 13, body-lg 16 /
+  15 / 15, label-xs 20 / 14 / 12, chip 12 / 11 / 11). **No raw hex on any master, no effect on any
+  node** — the map has no leak but the ring labels' run past the narrow viewports. The hooks sit
+  above the block, so the published featuring, paging, zoom and links needed nothing.
+- **Every leaf is Editorial's key read on Pop's schemes.** The travel card is `S3`: `box/1`
+  `#FF63B8` (`G.card`) in a 1px `stroke/1` **violet** ring (`G.hair`), lettered `text/2` violet
+  (`G.ink`), the chip and the stats row's two rules the same violet `stroke/1`, **solid** — so the
+  stats row takes Lime's `hair` path and Editorial's dashed `statRule` stays unset; the pill
+  `text/1` lime under a `sem/bg` pink label and disc round a lime arrow (`G.pillBg` / `G.pillFg`
+  = `S3.ac` / `S3.bg`, BookPill's Lime branch) and Get Directions a 1px lime ring lettered lime.
+  The rows stand on the page, Scheme 1's keys already: `box/1` `#F5F5F5` in a 1px `stroke/1`
+  pink ring, violet type, the "In transit" chip ringed pink, the day tile `box/1` at
+  `s.radiusChip` 8. The panel is `S2`: `box/1` `#D7FF23` (`G.panel`), the status pill `sem/bg`
+  lime under `text/1` pink (`G.status` / `G.statusFg`, the dot too); the featured venue, the city,
+  "Updated", the terms and EXPAND VIEW `text/2` — Scheme 2's violet is Scheme 1's to the byte, so
+  `G.feat` stays unset and the panel's inherited `s.tx` stands; the map container and the foot rule
+  `stroke/1` violet (`G.frame`). Inside the viewport, `S3`: the rings, the ring labels' fill, the
+  centre disc and its tail `sem/bg` pink (`G.acc`), the labels' type, the disc's 2px ring and its
+  glyph `text/2` violet (`G.ink` again), the zoom `box/2` `#F0138C` (`G.zoom`) in the violet
+  ring. **Radii**: card, rows and panel **30** at every width (`G.r`, `G.panelR`), the map
+  container **8 / 19 / 19** (`G.mapR`). The viewport's shape is the masters' stated **588 × 471,
+  318 × 527, 346 × 305** (`G.aspect`).
+- **The plate stands a fourth time**: the viewport states no fill, the texture is `e089bd11` at
+  `FILL`, and the frame's render samples (42.8, 44.2, 29.4) / (40.4, 41.9, 28.0) / (42.1, 43.3,
+  29.2) in three ring-free corners — Retro's `#292A1C`.
+- **The frame's own dots are followed, the lit pin redrawn** (Editorial's reading): Pop's five dots
+  are `S3` `text/2` violet at .6 and read on the plate (sampled (80, 43, 164)), so `G.dot` /
+  `G.dotOp`; the lit pin is the centre marker's own pair, a pink disc in a 2px violet ring at 16.
+  **EXPAND VIEW's arrow is `S2`'s `sem/bg`, lime on the `#D7FF23` bar** — faint but drawn
+  (sampled `#C6F200`), followed as Editorial's taupe-on-taupe was (`G.arrow`, reversible in one
+  line).
+- **The venue city keeps the frame's Body/MD — Editorial's departure, widened to Pop.** The frame
+  binds Inter `size/body-md` at all three widths, as every twin's does; Lime and Grunge normalise it
+  to Display/List. Under Pop that broke the seeded canvas at 768: Titan's uppercase MANCHESTER is
+  **109.4** in the 105 column, so it wrapped "MANCHESTE / R" (`overflowWrap: anywhere`). The home
+  location stays Display/List (the frame's `size/list`) and wraps between words, "MANCHESTER, /
+  UK", at 768 and 390, where the frame runs it past the 768 column (136 in 105) and wraps it at
+  390 — JP-096's named run.
+- **The 768 pill row wraps — Editorial's override, widened to Pop.** The 768 frame's pill is
+  21 + 91 + 10 + 46 + 5 = 173 in a 146 half, VENUE LIN clipped under the disc; Titan's needs 176,
+  and BookPill does not clip, so the disc stood over Get Directions (whose label wrapped to two
+  lines in 121). Under `ed || pop` both pills keep `fit-content` and the row wraps: **at 768
+  alone** they stack full-width and the card is 414.3 tall against 333; desktop halves at 247.5 /
+  245.8; 390's 330 holds 169.9 + 10 + 147.3 on one row.
+- **Titan sits 0.11–0.17em low, so five display strings take the 0.14em lift** (`lift`, one
+  spread): the h2, the home location, each row venue, the panel's h3 and Get Directions (its label
+  wrapped in a span, since the element is the ring). An ink-row scan of the h2 and the venues put
+  the cap tops 2.44 / 2.82 / 3.4px under the frame's Chunko (`absoluteRenderBounds`: 3.12 × 0.82 /
+  2.38 / 1.8 off the box) at the three widths; lifted, 0.7 high / 0.4 high / 0.46 low. Venue Link
+  is BookPill's own label and is not lifted, as no Pop BookPill is. **Titan's J needs no clip
+  reach**: `&cj=` with *Jumpin Jacks*, *The Junction* and *Jam Jar Joinery*, DPR 2 — the row
+  venue's J ends 1.3px inside its lh-1.1 ellipsis box at 1440 and on its last row at 390, and the
+  same row with Editorial's `paddingBottom: 0.1em` reach tried, so the foot is the glyph's, not the
+  clip's; the reach was reverted. No display month here: the row month is Inter.
+- **The pager wears the repertoire's dress** (section 4's convention, turned round): no Pop map
+  master draws a pager at any width, so `Pager`'s Pop arm (layout 1's Scheme 6 seat) is not the
+  frame's and the block passes the one pager this page *does* draw on Scheme 1 — the repertoire's
+  seven keys: violet `s.tx` pages, lime `s.chips[0].bg` arrows ringed `POP_REP.pale`, a violet
+  glyph, `POP_REP.song` numerals, the current page `s.ac` pink under `POP_REP.paper` (CONVENTIONS
+  C, *a twin's frame-less control is checked against its own surround*: on white it reads, shot
+  at `n=30`). `Pager` is untouched, so layout 1's map a2 did not move.
+- **The ring labels follow the frame past the narrow viewports** (open question 6): 120mi runs
+  off both at 786.6 / 414.6 (the frame's 785.5 / 413.5) and 60mi half off at 768, clipped by the
+  viewport as the masters clip them — the twins' JP-040 reading.
+- **Measured against the masters' content edges** (harness, from the section root): desktop root
+  **662.3** (808 × 0.82 = 662.6), card 534.3 × 282.7 (652 × 345 × 0.82 = 534.6 × 282.9), rows
+  58.2 (71 × 0.82), panel 534.3 × 569.7 (570.7), viewport 481.9 × 386 (482.2 × 386.2), labels at
+  908.1 / 973.7 / 1045.7 (908.2 / 973.8 / 1045.5); 768 viewport 318 × 527, labels 618.5 / 698.5 /
+  786.6 (618 / 698 / 785.5); 390 card 345.7 (347), viewport 346 × 305, labels 246.5 / 326.5 /
+  414.6. **Named diffs, the twins'**: the 768 card 414.3 against 333 (the stacked pills, and the
+  home value on two lines); the narrow rows hug at 64 / 61.8 where the masters divide their
+  columns into 75.8 / 72.3 (Retro's declined residue); the terms line wraps in the narrow bar, so
+  the panels are 719.3 / 495.1 against 703 / 479; the 768 row venues ellipsise ("THE DEAF
+  INST…"); the seed's h2 is the heading (MANCHESTER) where the frame types VENUE DISTANCE, and
+  the chip the gig's date (JP-060), as JP-095 (b) named.
+- **`live=1`** (puppeteer, trusted clicks, 1440 and 390, `n=8`): a row click features its gig and
+  the list rebuilds as the page minus it; a pin click features its gig and lights its pin (13.1 /
+  16); `+` scales the layer to 1.25; `n=30`: Next features gig 6, marks page 2 pink and lists
+  #7–#10, and Venue Link flips span → `<a>` on a linked gig; `n=0` prints *No dates yet.* with no
+  rows and no pager; `n=1` draws no list and no pager. No page error or warning.
+- **`page-check.mjs Pop 1,0,2,3`**: the modal's four cards; Gigs → `#map` and every other nav,
+  anchor and footer link on its id; the player plays; the map's rows and pins change state;
+  `overflow390` 0; the burger 2 → 6; no console error or warning on any card. The published 1440
+  map is **808** tall (808); its seam clip shows the calendar's lime card closing over the white
+  map root, 112 above the travel card (the calendar's 56 foot and the map's 56 top).
+- **Digest: themes 0, 1, 2 and 3 zero files of 660, canvas and `live=1`**; theme 4 exactly map
+  arch 1 at three widths on both surfaces (6 files), no `_arch_0_` file, no one-row file.
+- **`FIELDS.map` has no template-keyed `in` row**, so no `reach.mjs` run was owed; a
+  confirm-only `reach.mjs 4` over the fitted block reports JP-040's `status`, `updated` and
+  `expand` at layouts 2 and 3 and `rings` at 2–4, JP-095 (b)'s nine labels at 2 alone, `kicker`
+  1–3, `listLabel` 1–2, `base` 1 and 3, and `who.location` reaching map layout 2 — every design
+  6/6. The only partials are the known four (`bio.tagsLabel`, `calendar.email`,
+  `gallery.railLabel`, `header.cta2`). Nothing in `FIELDS` moved.
+- **For the sweep's CLAUDE.md pass**: the `s.live` list's *"its map zoom (layouts 3 and 4, and
+  Lime's, Grunge's and Editorial's layout 2)"* owes Pop — its layout 2 reads `zoom` through the
+  widened block now. `notes/map.md` already names Pop beside the three (the compact pager and its
+  dress, the plate, `zoom`, the venue city's face and the 768 pill row). Not written here.
+- **For the form**: it is seated on **Scheme 4 at every width** (`form: 4`), a full-bleed blue
+  band, so `s.bg` is blue, `s.ac` teal, `s.tx` yellow and `pillBg` teal (session 0 found its flat
+  sheet teal and its card `paper` yellow); its sidebar card is a **nested Scheme 2** (lime, so its
+  `pillBg` pink — the Check Availability pill — and `stroke1` violet, trap 6), and its promises and
+  credit bind `text/3`, white. Its Lime block (`if (s.v1 && s.limeTree)` ahead of
+  `EnquiryForm`'s `if (s.v1)`) has Grunge's `G` with Editorial's third arm, so Pop is a fourth.
+  The four label-in-box inputs keep `--ph: 1` (JP-093); the credit avatar is Lime's leak (open
+  question 3).
+
 ### Inherited and used
 
 *(The running list the sweep folds into [`../CONVENTIONS.md`](../CONVENTIONS.md): each time a
@@ -1617,6 +1742,21 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
   *a twin's frame-less control is checked against its own surround* (editorial/layout-3 — the
   empty message, kept); *field reach is measured* (CLAUDE.md).
 
+- Section 8: *the node walker, kept* (grunge/layout-2) with bound names and their collection —
+  three schemes in one section; *read every nested node's scheme off the master*
+  (grunge/layout-3 — 3 / 2 / 3 at all three widths); *the `G` lookup at the block's head*
+  (grunge/layout-1 — a fourth arm, no new leaf); *a nested node reads that scheme's keys*
+  (editorial/layout-2 — `[2]`, `[3]`); *a twin's width-bound call is re-measured in the new face*
+  (editorial/layout-2 — the venue city's Body/MD and the 768 pill row, both Editorial's
+  overrides widened); *a stand-in face's glyph floor* (editorial/layout-3 — 0.14em at five
+  strings, ink-scanned; the J tested with `&cj=` and found unclipped); *a twin's redrawn state or
+  live mechanism is read against this frame* (editorial/layout-2 — the dots followed, the lit pin
+  redrawn, EXPAND VIEW's arrow followed); *a twin's frame-less control is checked against its own
+  surround* (editorial/layout-3 — the pager in the repertoire's dress); *leaked tops are followed
+  where they show* (lime/layout-1 — the ring labels past the narrow viewports); *the raster:
+  Retro's call is followed* (D2 — the plate sampled a fourth time); *the whole-page published
+  check* (lime/layout-1); *field reach is measured* (CLAUDE.md — confirm-only).
+
 ## Open questions
 
 1. ~~**Decision 1** — the gate, `(s.limeTree || s.pop)` per site.~~ *Settled in session 0: the
@@ -1645,7 +1785,10 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
    - ~~the 390 media bar's title and byline and the list's titles, past the master;~~ *section
      3: overridden as the twins' are — the rows' gaps close to 14 and the titles ellipsise, the
      bar drops its clock and icons;*
-   - the map's ring labels past the 768 and 390 viewports, clipped;
+   - ~~the map's ring labels past the 768 and 390 viewports, clipped;~~ *section 8: followed —
+     120mi runs off both and 60mi half off at 768, clipped by the viewport as the masters clip
+     them (the twins' JP-040 reading). The 768 pill row the frame clips under its disc is
+     overridden, Editorial's way (the row wraps);*
    - the 390 testimonials' sub, a 411-wide no-wrap line.
    - *section 7:* the 390 calendar foot squeezes its own line to 54 beside a 190 pill and breaks
      *Thursday* inside the word — the leak JP-100 overrode under the three twins; Pop takes the
