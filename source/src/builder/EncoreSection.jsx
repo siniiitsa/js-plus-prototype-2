@@ -25826,9 +25826,10 @@ function EnquiryForm({ s }) {
   // band*; the credit row is narrower for the shorter role, and the card runs
   // shorter than the frames' by the dropped price and stars. The sheet's own
   // `s.gPad` inset makes the desktop photo column 686.2, the frame's 687.2.
-  if (s.v1 && s.limeTree) {
+  if (s.v1 && (s.limeTree || s.pop)) {
     const grunge = s.grunge
     const ed = s.editorial
+    const pop = s.pop
     const desk = !s.narrow
     const tab = isTablet(s)
     const z = desk ? 0.82 : 1
@@ -25858,7 +25859,34 @@ function EnquiryForm({ s }) {
     // `box/2` in a 1px `text/1` ring, square. The pill is Grunge's four seats
     // (paper, a terracotta label and disc, a paper arrow). Display/Title is
     // this mode's 32 / 25 / 23. No node carries an effect.
-    const G = ed ? {
+    //
+    // Pop — 964:64576 / 986:17578 / 986:17597, the twins' tree node for node,
+    // on **Scheme 4** at every width (a blue band the root paints, so no
+    // sheet) with the card **nested Scheme 2**, so the one ink Lime's block
+    // cascades is three here: the sheet's `text/3` white (the promises, the
+    // name, the role), its ✓ `text/2` yellow (`tick`), and the card's `text/2`
+    // violet (`cardInk` — the unit, the count, the box labels, the note). The
+    // head is `text/1` teal; the price and the stars the card's `text/1` pink
+    // (`cardHead`, `star`). The card and each box are Scheme 2's `box/1`
+    // `#D7FF23` in a 1px `stroke/1` violet ring, the boxes at `radius/pill`
+    // and Grunge's 42 / 38 / 37; the pill is `text/1` pink round a `sem/bg`
+    // `#C6F200` label and disc and a pink arrow — two limes, both bound. The
+    // photograph is `box/2` in a **4px** `text/1` teal ring, radius 50; the
+    // avatar's well `sem/bg`. Display/Title is 28 / 22 / 20. Every paint is
+    // bound and no node carries an effect.
+    const S2 = pop ? s.onScheme[2] : null
+    const G = pop ? {
+      sheet: undefined, ink: s.text3, head: s.ac, tick: s.tx,
+      mist: S2.box1, hair: S2.stroke1, r: u(50),
+      well: s.box2, photoRing: `inset 0 0 0 ${u(4)} ${s.ac}`, avatarWell: s.bg,
+      boxH: desk ? u(42) : s.mob ? '37px' : '38px',
+      pillBg: S2.ac, pillFg: S2.bg, discBg: S2.bg, discFg: S2.ac,
+      title: desk ? u(28) : s.mob ? '20px' : '22px',
+      cardInk: S2.tx, cardHead: S2.ac, star: S2.ac,
+      // The idle ring is 1px of full violet, so a refusal that only thickened
+      // it would be weight alone (CONVENTIONS C): 2px of the card's own pink.
+      badRing: S2.ac,
+    } : ed ? {
       sheet: undefined, ink: s.tx, head: s.ac,
       mist: s.box1, hair: s.stroke2, r: 0,
       well: s.box2, photoRing: `inset 0 0 0 1px ${s.ac}`, avatarWell: s.bg,
@@ -25886,11 +25914,14 @@ function EnquiryForm({ s }) {
     // Anton at the frame's glyph size, in capitals: every direct display or
     // label site here owes both under Grunge; identity off it.
     const disp = (family, size, lh, extra) => type(family, faced(s, size), facedLh(s, lh), {
-      ...(grunge || ed ? { textTransform: 'uppercase' } : null), ...extra,
+      ...(grunge || ed || pop ? { textTransform: 'uppercase' } : null), ...extra,
     })
     const ink = G.ink // Lime: Scheme 4 `sem/text/1` and `/2`
     const mist = G.mist // Lime: Scheme 4 `sem/box/1` — the card and every box
     const hair = G.hair // Lime: Scheme 4 `sem/stroke/1`, 15%
+    // The card's own ink: the sheet's everywhere but under Pop, whose card is
+    // another scheme.
+    const cardInk = G.cardInk ?? ink
     // Retro's twin's page inset, for Retro's reasons (the repertoire's bleed).
     const padV = desk ? s.gPad : s.mob ? '40px' : '60px'
     const padH = `calc(${s.surplus} + ${desk ? s.gPad : s.mob ? '10px' : '30px'})`
@@ -25908,9 +25939,9 @@ function EnquiryForm({ s }) {
     // Under Editorial the box is square and its idle mark is the field's
     // `DashRule` (below), which a refusal swaps for the solid paper ring.
     const box = (bad) => type(s.label, faced(s, s.labelSm), facedLh(s, 1.1), {
-      background: mist, color: ink, border: 'none', borderRadius: ed ? 0 : s.btnR,
+      background: mist, color: cardInk, border: 'none', borderRadius: ed ? 0 : s.btnR,
       boxShadow: ed ? (bad ? `inset 0 0 0 2px ${G.badRing}` : undefined)
-        : `inset 0 0 0 ${bad ? '2px' : '1px'} ${bad ? ink : hair}`,
+        : `inset 0 0 0 ${bad ? '2px' : '1px'} ${bad ? G.badRing ?? ink : hair}`,
       height: G.boxH,
       padding: `0 ${u(14)}`, margin: 0, width: '100%', boxSizing: 'border-box',
     })
@@ -25941,7 +25972,7 @@ function EnquiryForm({ s }) {
     const title = G.title ?? (desk ? u(36) : s.mob ? '26px' : '28px')
     const priceRow = (!!s.formPrice || !!s.formPriceUnit) && (
       <div style={row(u(8), { alignItems: 'baseline', flexWrap: 'wrap' })}>
-        {!!s.formPrice && <span style={distressed(s, disp(s.display, title, 1.1, { color: G.head }))}>{s.formPrice}</span>}
+        {!!s.formPrice && <span style={distressed(s, disp(s.display, title, 1.1, { color: G.cardHead ?? G.head }))}>{s.formPrice}</span>}
         {!!s.formPriceUnit && <span style={type(s.body, s.bodySm, 1.4)}>{s.formPriceUnit}</span>}
       </div>
     )
@@ -25950,7 +25981,7 @@ function EnquiryForm({ s }) {
     // paper, the same key.
     const bookingsLine = !!s.formBookings && (
       <span style={type(s.body, s.bodySm, 1.4, { whiteSpace: 'pre' })}>
-        {grunge || ed ? <span style={{ color: s.ac }}>★★★★★</span> : '★★★★★'}{'  '}{s.formBookings}
+        {grunge || ed || pop ? <span style={{ color: G.star ?? s.ac }}>★★★★★</span> : '★★★★★'}{'  '}{s.formBookings}
       </span>
     )
 
@@ -26003,8 +26034,11 @@ function EnquiryForm({ s }) {
               768 wrap the rest, so Grunge's rule again, in paper. */}
           <h2 style={distressed(s, disp(s.display, s.dispSm, 1, {
             margin: 0, color: G.head, overflowWrap: 'break-word',
-            maxWidth: grunge || ed ? undefined : desk ? '9em' : tab ? '5.2em' : undefined,
-          }))}>{(grunge || ed) && titleWords.length > 2 ? (
+            maxWidth: grunge || ed || pop ? undefined : desk ? '9em' : tab ? '5.2em' : undefined,
+            // Titan sits 0.13–0.14em under the frame's Chunko (an ink-row scan
+            // at 768 and 390), so Pop lifts the glyphs and moves no box.
+            ...(pop ? { position: 'relative', top: '-0.14em' } : null),
+          }))}>{(grunge || ed || pop) && titleWords.length > 2 ? (
             <>
               <span style={{ display: 'block' }}>{titleWords.slice(0, 2).join(' ')}</span>
               <span style={{ display: 'block' }}>{titleWords.slice(2).join(' ')}</span>
@@ -26027,7 +26061,7 @@ function EnquiryForm({ s }) {
                 {/* The frame's typed ✓ in Body/SM, the line in Label/XS. */}
                 {s.formPromises.map((p, i) => (
                   <span key={i} style={row(u(10))}>
-                    <span style={type(s.body, s.bodySm, 1.4, { flex: 'none' })}>✓</span>
+                    <span style={type(s.body, s.bodySm, 1.4, { flex: 'none', ...(G.tick ? { color: G.tick } : null) })}>✓</span>
                     <span style={type(s.ui, s.labelXs, 1.26)}>{p}</span>
                   </span>
                 ))}
@@ -26059,7 +26093,7 @@ function EnquiryForm({ s }) {
           alignSelf: s.mob ? undefined : 'stretch',
         }}>
           <div style={col(u(14), {
-            background: mist, color: ink, borderRadius: G.r,
+            background: mist, color: cardInk, borderRadius: G.r,
             boxShadow: ed ? undefined : `inset 0 0 0 1px ${hair}`,
             padding: `${u(28)} ${u(24)}`, boxSizing: 'border-box',
             position: 'sticky', top: 0,
