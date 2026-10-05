@@ -2113,6 +2113,9 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
      same rule (the line under the chip, the foot 98). Worth the designer's note.
 7. **Header cards 3 and 4** stay placeholders (layout 1, open question 8): card 3's Pop frame stands
    on Scheme 1 at 1440 and **Scheme 6 at 768 and 390**, card 4's on Scheme 3. Each is its own pass's.
+   *Corrected by layout 3's planning walk (2026-10-05): card 3's `hero-card` is Scheme 6 at every
+   width (nested at 1440); only the instance root's 20 / 10 frame round it moves, white at 1440
+   and violet narrow ([`layout-3.md`](./layout-3.md), trap 1 and decision 1).*
 8. **The footer** is layout 1's, closed at planning time: the desktop instance's main component
    (`446:8697`) is not layout 1's (`907:12019`), but the trees are identical.
 9. **The repertoire's leaks** — Lime's `#AFE335` × 4 and `#F2FFD0` × 2, Retro's `#FBF6EA`, two raw
@@ -2162,7 +2165,9 @@ gallery strip, the 390 pricing rings, the lime head on white — still stand.)*
 4. **Header cards 3 and 4 are next.** They stay placeholders until Pop's layout-3 and layout-4
    passes. One thing worth confirming before then: card 3's frame stands on Scheme 1 (white) at
    1440 and on **Scheme 6** (violet) at 768 and 390, a change of ground between widths no other
-   Pop header makes; card 4's stands on Scheme 3 at every width. *(7)*
+   Pop header makes; card 4's stands on Scheme 3 at every width. *(7)* *Corrected by layout 3's
+   planning walk: the card itself is Scheme 6 at every width; only the frame round it is white at
+   1440 and violet narrow.*
 5. **The footer is the one unbound variant on this page.** Every other layout-2 variant binds
    its colours to the Pop mode; the footer still carries layout 1's 41 raw solids. Its desktop
    instance is also of another main component (`446:8697`) than layout 1's (`907:12019`), though
