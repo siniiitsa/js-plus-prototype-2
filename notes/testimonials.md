@@ -39,18 +39,20 @@ another `notes/` file.
   card simply takes the whole width. The picked tile is also the **wide** one in the 390 row;
   under Lime and Grunge it widens in the desktop and 768 column as well, where the idle tiles hug their
   padding inside a column pinned at the frame's widest tile, while Retro's column gives every
-  tile one fixed width. Under Editorial no tile is wide: every one fills both axes in its
-  frame, so the 390 row divides into equal parts (`flex: 1 1 0`, `minWidth: 'min-content'` so it
-  can still wrap) and the column is one width, and the pick is its Scheme 3 fill and a paper
-  dash alone. The tile's mark is **`vm.quotes[].mark`**, composed in
+  tile one fixed width. Under Editorial and Pop no tile is wide: every one fills both axes in
+  its frame, so the 390 row divides into equal parts (`flex: 1 1 0`, `minWidth: 'min-content'` so
+  it can still wrap) and the column is one width, and the pick is its Scheme 3 fill and a paper
+  dash alone under Editorial, and its Scheme 3 pink and 3px violet ring under Pop, whose picked
+  tile is not the card (the card is Scheme 2's lime `box/1`). The tile's mark is **`vm.quotes[].mark`**, composed in
   `sectionVm` beside `byline` — the reviewer's initials, or the row's number when the name is
   empty, punctuation spaced out first so "Sarah &amp; Tom" marks the tile `ST` and not `S&`.
   The frame's `★★★★★` is a section field, `stars`, seeded with the frame's copy and printed in
   the card's corner, so `when` has no seat in layout 2; its heading falls back to the frame's
   own two-line "Honest feedback / from people who booked" (`TESTI_HEADING_2`, resolved in
-  `sectionVm` and `EditPanel` alike) where the other layouts keep the shared default — under Grunge
-  and Editorial set `pre-wrap`, so the typed break holds, and Editorial's long second line wraps
-  at the ramp size rather than shrinking to fit (three lines at desktop where the frame sets two).
+  `sectionVm` and `EditPanel` alike) where the other layouts keep the shared default — under Grunge,
+  Editorial and Pop set `pre-wrap`, so the typed break holds, and a long second line wraps at the
+  ramp size rather than shrinking to fit (Editorial's three lines at desktop and Pop's at 768,
+  where each frame sets two).
   It also draws the section's **head**, which no earlier layout did: `heading` had
   reached the flat tail alone, and `FIELDS.testimonials` gained `sub` and `cta` — a line of
   prose and the centred Book Now pill on `vm.bookTo`, which needs no self-exclusion because

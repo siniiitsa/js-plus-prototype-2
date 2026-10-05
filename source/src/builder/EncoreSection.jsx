@@ -23274,16 +23274,38 @@ function Testimonials({ s }) {
     // each FILLs both axes, so the column is the widest padded mark (97 / 92)
     // with every tile across it, and the 390 row is three equal thirds, not
     // the twins' widened pick: the fill and the dash are the whole selection.
-    if (s.limeTree) {
+    //
+    // Pop (964:64577 1440 × 762.9, 986:17579 768 × 730, 986:17598 390 × 842)
+    // is the same 26 nodes a fifth time, on Scheme 1's white with no Device
+    // override, the card on **Scheme 2** and the picked tile on **Scheme 3**.
+    // Its ramp is `THEME_RAMP.Pop` (the head Display/LG, the twins' token).
+    // The card is `S2`'s `box/1` `#D7FF23` — not its `sem/bg` — in a 3px
+    // violet `stroke/1`, lettered `S2`'s `text/2`; the picked tile is `S3`'s
+    // pink `box/1` in its 3px violet `stroke/1`, lettered violet — its own
+    // fill, not the card's; the idle tiles keep the twins' `s.box1` and `s.ac`
+    // ring at 3px. Radii 31 / 50. Every tile FILLs both axes, Editorial's
+    // mechanism: the column is the widest padded mark (95 / 90), the 390 row
+    // equal thirds. The pill is the twins' call: `sem/active/bg` black under
+    // a `sem/tag/2/text` label and disc, Grunge's and Editorial's key.
+    if (s.limeTree || s.pop) {
       const grunge = s.grunge
       const ed = s.editorial
-      const S3 = ed ? s.onScheme[3] : null
+      const pop = s.pop
+      const S3 = ed || pop ? s.onScheme[3] : null
+      const S2 = pop ? s.onScheme[2] : null
       // Scheme 3's `box/1` and `stroke/1`, the map block's names for them.
       const lime3 = '#CCFA61'
       const hair = '#15180F26'
+      // Pop's picked tile is not the card (Scheme 3 against the card's 2), so
+      // it carries its own fill, ink and ring, and both rings are 3px; the
+      // twins read none of the four leaves and fall back through `??`.
       const G = grunge
         ? { card: '#9E1F17', ink: s.tx, hair: '#00000026', tileR: 15, cardR: 15, pillFg: s.chips[1].fg }
         : ed ? { card: S3.box1, ink: S3.tx, hair: S3.stroke1, tileR: 0, cardR: 0, pillFg: s.chips[1].fg }
+        : pop ? {
+          card: S2.box1, ink: S2.tx, hair: S2.stroke1, tileR: 31, cardR: 50, pillFg: s.chips[1].fg,
+          tileOn: S3.box1, tileOnInk: S3.tx, tileOnHair: S3.stroke1, ringW: Math.round(3 * z * 10) / 10,
+        }
         : { card: lime3, ink: s.bg, hair, tileR: 30, cardR: 50, pillFg: s.activeFg }
       // Every stroke is inside, so each is an inset ring: the frame's heights
       // hold, and the picked tile's 2px needs no border arithmetic against its
@@ -23297,7 +23319,7 @@ function Testimonials({ s }) {
       // identity there.
       const dispType = (size, lh) => ({
         fontFamily: s.display, fontSize: faced(s, size), lineHeight: facedLh(s, lh), letterSpacing: s.dls,
-        ...(grunge || ed ? { textTransform: 'uppercase' } : null),
+        ...(grunge || ed || pop ? { textTransform: 'uppercase' } : null),
       })
 
       // Body/SM, Display/LG and Body/MD, all `sem/text/2`. No measure: the
@@ -23311,6 +23333,13 @@ function Testimonials({ s }) {
       // the 1088 desktop column, so desktop sets three lines where the 1440
       // master's no-wrap node sets two (and overruns its own 1328 by 5 in the
       // demo face); 768 and 390 wrap to the masters' own three and four.
+      // Pop keeps it and is on the ramp too (Display/LG, the twins' token —
+      // the 125 is the glyph's Display/XL): Titan's FROM PEOPLE WHO BOOKED is
+      // 911 in 1088 at desktop and wraps at the masters' three at 390, but is
+      // 715 in the 708 at 768, where the frame's Chunko sets 691 — so 768
+      // wraps BOOKED to a third line, Editorial's call again. Titan sits
+      // 0.144–0.154em low at lh 0.89 (an ink scan against the frames), so the
+      // h2 takes the page's 0.14em lift.
       const limeHead = (
         <div style={col(u(12), { width: '100%', alignItems: 'center', textAlign: 'center', color: s.tx })}>
           {/* The eyebrow is `kicker` (JP-095 (a)), seeded "What clients say"
@@ -23321,7 +23350,8 @@ function Testimonials({ s }) {
           {!!s.title && (
             <h2 style={distressed(s, {
               margin: 0, ...dispType(s.dispLg, 0.89), overflowWrap: 'break-word', maxWidth: '100%',
-              ...(grunge || ed ? { whiteSpace: 'pre-wrap' } : null),
+              ...(grunge || ed || pop ? { whiteSpace: 'pre-wrap' } : null),
+              ...(pop ? { position: 'relative', top: '-0.14em' } : null),
             })}>
               {s.title}
             </h2>
@@ -23353,8 +23383,8 @@ function Testimonials({ s }) {
         <div style={{
           display: 'flex', flexDirection: wide ? 'column' : 'row', gap: u(12), flex: 'none',
           ...(wide
-            ? ed
-              ? { minWidth: u(desk ? 97 : 92), alignSelf: 'stretch' }
+            ? ed || pop
+              ? { minWidth: u(desk ? (pop ? 95 : 97) : pop ? 90 : 92), alignSelf: 'stretch' }
               : { width: u(desk ? 89 : 85), alignSelf: 'stretch', alignItems: 'center' }
             : { flexWrap: 'wrap', justifyContent: 'center' }),
         }}>
@@ -23364,11 +23394,12 @@ function Testimonials({ s }) {
               <div key={i} onClick={s.live ? () => setCur(i) : undefined} style={{
                 ...(wide
                   ? { flex: '1 1 0', minHeight: 0, padding: `0 ${u(30)}`, ...(on ? { alignSelf: 'stretch' } : null) }
-                  : ed
+                  : ed || pop
                     ? { flex: '1 1 0', padding: `${u(36)} 0`, minWidth: 'min-content' }
                     : { flex: on ? '1 0 auto' : 'none', padding: `${u(36)} ${u(30)}`, minWidth: 0 }),
-                background: on ? G.card : s.box1, color: on ? G.ink : s.tx,
-                boxShadow: ed ? undefined : on ? ring(2, G.hair) : ring(1, s.ac), borderRadius: u(G.tileR),
+                background: on ? G.tileOn ?? G.card : s.box1, color: on ? G.tileOnInk ?? G.ink : s.tx,
+                boxShadow: ed ? undefined : on ? ring(G.ringW ?? 2, G.tileOnHair ?? G.hair) : ring(G.ringW ?? 1, s.ac),
+                borderRadius: u(G.tileR),
                 overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center',
                 cursor: s.live ? 'pointer' : undefined,
                 ...(ed ? { position: 'relative' } : null),
@@ -23390,7 +23421,7 @@ function Testimonials({ s }) {
       const limeBig = (
         <div style={col(u(40), {
           ...(wide ? { flex: '1 1 0', minWidth: 0 } : { width: '100%' }),
-          background: G.card, color: G.ink, boxShadow: ring(1, G.hair), borderRadius: u(G.cardR),
+          background: G.card, color: G.ink, boxShadow: ring(G.ringW ?? 1, G.hair), borderRadius: u(G.cardR),
           padding: u(40), alignItems: 'flex-start',
         })}>
           {q ? (
