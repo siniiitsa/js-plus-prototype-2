@@ -10098,9 +10098,30 @@ function Pricing({ s }) {
     // `stroke/1` ring shows on all four sides at every width (paper 56% on ink,
     // ink on paper), so Grunge's overlay is drawn. The pill is `BookPill`'s
     // defaults in both schemes (`pillBg` is terracotta, `text/1`, in both).
-    if (s.limeTree) {
+    //
+    // Pop — the same composition a fifth time (964:64572 at 1440, 986:17574
+    // at 768, 986:17593 at 390), the twins' tree node for node on Scheme 1
+    // with no Device override, every paint bound. The head is the block's
+    // keys (pink head, violet copy, the faces in Grunge's 2px `stroke/1` at
+    // `radius/control` 8); the card is a nested Scheme 7 (`s.onScheme[7]`):
+    // coral `box/1` in a 4px lime `stroke/1` ring, its amount and `+`s lime
+    // `text/1`, its copy `text/2` — Scheme 7's violet is Scheme 1's to the
+    // byte, so those sites read `s.tx` — the pill lime under a red label and
+    // disc, the rule `scheme/6/stroke/1` named outright. The chips are
+    // Editorial's visible pick: `toggle-a` fills `sem/tag/1/bg` yellow, both
+    // ringed 1px `stroke/2` violet under lime type — but the picked label is
+    // re-inked to the fill's own ink, `sem/tag/1/text` black, since lime on
+    // yellow is 1.15 : 1 in the frame's own render (user call, 2026-10-05).
+    // The card leans: Figma −3° at 1440 and 768, −1° at 390, and each master
+    // spaces it by its rotated box (the grid row is 588.73 / 532.37 / 502.38
+    // tall), so it turns in a slot-sized wrapper with w·sin θ / 2 above and
+    // below. The root's own 1px `stroke/1` ring is drawn at 768 and 390 only;
+    // the 1440 root carries no stroke.
+    if (s.limeTree || s.pop) {
       const grunge = s.grunge
       const ed = s.editorial
+      const pop = s.pop
+      const S7 = pop ? s.onScheme[7] : null
       const G = grunge ? {
         cardR: u(15), cardPad: s.mob ? '30px 20px' : u(32), ring: `inset 0 0 0 1px ${s.stroke2}`,
         chipRing: `inset 0 0 0 1px ${s.stroke2}`, faceRing: `2px solid ${s.stroke1}`, faceR: u(8),
@@ -10108,15 +10129,29 @@ function Pricing({ s }) {
         cardR: 0, cardPad: s.mob ? '30px 20px' : u(42), ring: undefined,
         chipRing: `inset 0 0 0 1px ${s.stroke2}`, faceRing: `2px solid ${s.stroke1}`, faceR: '999px',
         chipOn: s.chips[0].bg, chipOnFg: s.ac, chipOnRing: `inset 0 0 0 1px ${s.stroke2}`,
+      } : pop ? {
+        cardR: u(50), cardPad: s.mob ? '30px 20px' : u(42), ring: `inset 0 0 0 ${u(4)} ${S7.stroke1}`,
+        chipRing: `inset 0 0 0 1px ${S7.stroke2}`, faceRing: `2px solid ${s.stroke1}`, faceR: u(8),
+        chipOn: S7.chips[0].bg, chipOnFg: S7.chips[0].fg, chipOnRing: `inset 0 0 0 1px ${S7.stroke2}`,
+        chipFg: S7.ac, card: S7.box1, cardAc: S7.ac, div: s.onScheme[6].stroke1,
+        // The lean (CSS +3 / +1) and its rotated box's margin, a share of the
+        // card's width (w·sin θ / 2); the h(1 − cos θ) / 2 it leaves out is
+        // 0.2px at 1440 and 768, 0.04 at 390.
+        lean: s.mob ? 1 : 3, leanPad: s.mob ? '0.8726%' : '2.6168%',
       } : {
         cardR: u(50), cardPad: s.mob ? '30px 20px' : u(42), ring: `inset 0 0 0 1px ${s.stroke1}`,
         chipRing: `inset 0 0 0 1px ${s.ac}`, faceRing: `2px solid ${s.tx}`, faceR: u(13),
       }
-      // The display sites, `faced` and uppercase under Grunge and Editorial
-      // (identity off them; Editorial's `faceK` is 1, so `faced` is too).
+      // The display sites, `faced` and uppercase under Grunge, Editorial and
+      // Pop (identity off them; Editorial's `faceK` is 1, so `faced` is too).
+      // Under Pop each is lifted 0.14em, Titan's glyph floor at lh 1: an ink
+      // scan put the head's baseline 0.126 / 0.139 / 0.143em under the
+      // frame's at 1440 / 768 / 390, and the name and the numeral (on its
+      // `MAX` row beside the £) are the same face in the same line box.
       const disp = (size) => ({
         fontFamily: s.display, fontSize: faced(s, size), lineHeight: facedLh(s, 1),
-        letterSpacing: s.dls, textTransform: grunge || ed ? 'uppercase' : undefined,
+        letterSpacing: s.dls, textTransform: grunge || ed || pop ? 'uppercase' : undefined,
+        ...(pop && { position: 'relative', top: '-0.14em' }),
       })
       const body = (size, lh, extra) => ({
         fontFamily: s.body, fontSize: size, lineHeight: lh, letterSpacing: s.dls, ...extra,
@@ -10201,7 +10236,7 @@ function Pricing({ s }) {
                     style={chipFace({
                       padding: `${u(8)} ${u(14)}`, borderRadius: s.radiusChip,
                       background: i === sel ? G.chipOn ?? s.pillBg : 'transparent',
-                      color: i === sel ? G.chipOnFg ?? s.activeFg : s.ac,
+                      color: i === sel ? G.chipOnFg ?? s.activeFg : G.chipFg ?? s.ac,
                       // The 1px `sem/stroke/2` rule, stroked inside.
                       boxShadow: i === sel ? G.chipOnRing ?? 'none' : G.chipRing,
                       cursor: s.live ? 'pointer' : undefined,
@@ -10219,7 +10254,7 @@ function Pricing({ s }) {
             <span style={row(u(6), { alignItems: 'flex-end', alignSelf: 'stretch' })}>
               {!!lead && <span style={body(s.bodyLg, 1.5, { color: s.tx })}>{lead}</span>}
               <span style={distressed(s, {
-                ...disp(s.dispMd), color: s.ac, whiteSpace: 'nowrap',
+                ...disp(s.dispMd), color: G.cardAc ?? s.ac, whiteSpace: 'nowrap',
                 flex: desk ? 'none' : '1 1 auto',
               })}>{amount}</span>
               {!!tail && <span style={body(s.bodyLg, 1.5, { color: s.tx })}>{tail}</span>}
@@ -10238,6 +10273,7 @@ function Pricing({ s }) {
               <span style={s.mob ? col(u(16), { alignItems: 'flex-start' }) : row(u(16), { flexWrap: 'wrap' })}>
                 {!!s.pricingCta && (
                   <BookPill s={s} to={s.tierBookTo} full={s.mob} label={s.pricingCta}
+                            bg={pop ? S7.ac : undefined} fg={pop ? S7.bg : undefined}
                             style={{ whiteSpace: 'normal', maxWidth: '100%', boxSizing: 'border-box' }} />
                 )}
                 {!!s.pricingNote && (
@@ -10252,7 +10288,7 @@ function Pricing({ s }) {
               {/* Editorial's `div` is a 1px frame stroked, not filled: dashed
                   10, 10 in `sem/stroke/1`. */}
               <span style={{
-                alignSelf: 'stretch', height: '1px', background: ed ? 'transparent' : s.stroke1, flex: 'none',
+                alignSelf: 'stretch', height: '1px', background: ed ? 'transparent' : G.div ?? s.stroke1, flex: 'none',
                 position: ed ? 'relative' : undefined,
               }}>{ed && <DashRule side="top" dash={10 * z} colour={s.stroke1} />}</span>
               <div style={col(u(12), { alignItems: 'flex-start', alignSelf: 'stretch' })}>
@@ -10270,7 +10306,7 @@ function Pricing({ s }) {
                 }}>
                   {t.feats.map((f, i) => (
                     <span key={i} style={row(u(8), { alignItems: 'center', minWidth: 0 })}>
-                      <span style={chipFace({ color: s.ac, flex: 'none' })}>+</span>
+                      <span style={chipFace({ color: G.cardAc ?? s.ac, flex: 'none' })}>+</span>
                       <span style={{
                         fontFamily: s.ui, fontSize: s.labelXs, lineHeight: 1.26,
                         letterSpacing: s.dls, color: s.tx, minWidth: 0,
@@ -10283,8 +10319,10 @@ function Pricing({ s }) {
           )}
         </>
       ) : (
-        // The card is the composition, so an emptied list keeps it.
-        <span style={body(s.bodyMd, 1.5, { color: s.muted })}>No packages yet.</span>
+        // The card is the composition, so an emptied list keeps it. On Pop's
+        // coral card `s.muted` (Scheme 1's violet at .64) reads faint, so the
+        // message takes the card's own copy ink, Scheme 7's `text/2`.
+        <span style={body(s.bodyMd, 1.5, { color: pop ? S7.tx : s.muted })}>No packages yet.</span>
       )
 
       return (
@@ -10293,18 +10331,29 @@ function Pricing({ s }) {
             ? row(u(48), { alignItems: 'flex-start', width: '100%' })
             : col('32px', { width: '100%' })}>
             {head}
-            <div style={{
-              ...(desk ? { flex: '1 1 0', minWidth: 0 } : { width: '100%' }),
-              ...col(u(30), { alignItems: 'flex-start' }),
-              background: s.box1, borderRadius: G.cardR,
-              boxShadow: G.ring,
-              padding: G.cardPad,
-              position: ed ? 'relative' : undefined,
-            }}>
-              {plan}
-              {/* Editorial's card: 1px INSIDE, dashed 10, 10, square. */}
-              {ed && <DashRule side="all" dash={10 * z} colour={s.stroke1} />}
-            </div>
+            {(() => {
+              const slot = desk ? { flex: '1 1 0', minWidth: 0 } : { width: '100%' }
+              const card = (
+                <div style={{
+                  ...(pop ? undefined : slot),
+                  ...col(u(30), { alignItems: 'flex-start' }),
+                  background: G.card ?? s.box1, borderRadius: G.cardR,
+                  boxShadow: G.ring,
+                  padding: G.cardPad,
+                  position: ed ? 'relative' : undefined,
+                  // Pop's lean, about the card's centre, its rotated box given
+                  // back as margin (the percentage reads the wrapper's width,
+                  // which is the card's).
+                  ...(pop && { transform: `rotate(${G.lean}deg)`, margin: `${G.leanPad} 0` }),
+                }}>
+                  {plan}
+                  {/* Editorial's card: 1px INSIDE, dashed 10, 10, square. */}
+                  {ed && <DashRule side="all" dash={10 * z} colour={s.stroke1} />}
+                </div>
+              )
+              // A flex column, so the card's margins cannot collapse through it.
+              return pop ? <div style={{ ...slot, display: 'flex', flexDirection: 'column' }}>{card}</div> : card
+            })()}
           </div>
           {!!s.pricingSub && (
             <span style={body(s.eyebrow, 1.3, { fontWeight: 700, color: s.tx })}>{s.pricingSub}</span>
@@ -10322,7 +10371,7 @@ function Pricing({ s }) {
               the frame's 32 foot. */}
           {desk && (
             <span style={{
-              display: 'block', height: '1px', background: grunge || ed ? 'transparent' : s.stroke1, flex: 'none',
+              display: 'block', height: '1px', background: grunge || ed || pop ? 'transparent' : s.stroke1, flex: 'none',
               margin: `${u(8)} calc(-1 * ${s.padX}) calc(-1 * ${s.padY})`,
             }} />
           )}
@@ -10333,8 +10382,10 @@ function Pricing({ s }) {
               chips would click the overlay (the repertoire's sheet ring).
               Editorial's is the same node: paper 56% round the 1440 ink band
               (sampled 147, 143, 139 on every edge), opaque ink round the narrow
-              paper sections. */}
-          {(grunge || ed) && (
+              paper sections. Pop's is opaque pink at 768 and 390 alone; its
+              1440 root has no stroke, so the foot span above paints nothing
+              there either. */}
+          {(grunge || ed || (pop && !desk)) && (
             <span aria-hidden style={{
               position: 'absolute', inset: 0, pointerEvents: 'none',
               boxShadow: `inset 0 0 0 1px ${s.stroke1}`,
