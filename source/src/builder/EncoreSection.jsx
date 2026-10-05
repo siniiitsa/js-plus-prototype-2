@@ -17080,9 +17080,31 @@ function Calendar({ s }) {
     // own column: `MAR 01` is 288.3 at 1440's 118 × 0.82 (so 352, which puts
     // the column head's second cell at the frame's 458), and 217.0 at 768's
     // 73, where the frame's 350 is the leaked desktop number again.
-    if (s.limeTree) {
+    //
+    // Pop — the same tree a fifth time (964:64574 at 1440, 986:17576 at 768,
+    // 986:17595 at 390), seated on Scheme 2 as Editorial's is: a lime card on
+    // the page's white, every `sem/bg` the twins read as `G.bg2` the card's
+    // `s.bg`, and every other binding Lime's own key — the band `sem/text/1`
+    // (pink) under `sem/bg` type, the column heads `s.ac`, the rules
+    // `sem/stroke/1` (violet under the seat), the rows `s.tx`, the chip, the
+    // pill, its disc and its pink 5 / 5 block the twins' keys unchanged. The
+    // band carries no nested scheme at any width, and its `sem/stroke/2` rule
+    // is pink on the pink band, Lime's paints-nothing case. The card is
+    // radius 50. What only Pop draws: the four marks bind four keys —
+    // `sem/media` (teal), `text/2`, `text/1` and `stroke/2` — the same at
+    // every width, where the twins' all bind `text/2`, so they are seats by
+    // rendered row (`G.marks`, `i % 4`), not a pick state; the pick's cue is
+    // still the foot's chip. Titan sits 0.14em low at lh 0.89 and at lh 1
+    // (ink rows against the frame's Chunko caps at all three widths), so the
+    // marks and the heading are lifted by it; lifted, the 390 J clears the
+    // stacked weekday by 4px. The pin is re-measured for Titan at 0.98:
+    // `MAR 06` 259.2 at 1440's 82 × 0.82 (so 317) and 197.3 at 768's 51 —
+    // the frame's 350 is wider than Titan needs at 1440, and the leaked
+    // desktop number at 768.
+    if (s.limeTree || s.pop) {
       const grunge = s.grunge
       const ed = s.editorial
+      const pop = s.pop
       const band = ed ? s.onScheme[desk ? 1 : 3] : null
       const G = grunge ? {
         panelR: u(15), bg2: '#171716', pin: desk ? 287 : 179,
@@ -17091,6 +17113,10 @@ function Calendar({ s }) {
         panelR: 0, bg2: s.bg, pin: desk ? 352 : 217,
         headRule: `inset 0 -1px 0 ${band.stroke2}`,
         band: band.ac, bandInk: band.bg,
+      } : pop ? {
+        panelR: u(50), bg2: s.bg, pin: desk ? 317 : 198,
+        headRule: undefined,
+        marks: [POP_MEDIA, s.tx, s.ac, s.stroke2],
       } : {
         panelR: u(50), bg2: s.box1, pin: desk ? 301 : 187,
         headRule: undefined,
@@ -17110,9 +17136,9 @@ function Calendar({ s }) {
         fontFamily: family, fontSize: size, lineHeight: lh, letterSpacing: s.dls, ...extra,
       })
       // The two display sites — the heading and the marks — faced and
-      // uppercase under Grunge and Editorial (faced is the identity under
+      // uppercase under Grunge, Editorial and Pop (faced is the identity under
       // Editorial, and both are the identity under Lime).
-      const disp = (size, lh, extra) => (grunge || ed
+      const disp = (size, lh, extra) => (grunge || ed || pop
         ? type(s.display, faced(s, size), facedLh(s, lh), { textTransform: 'uppercase', ...extra })
         : type(s.display, size, lh, extra))
       // Lime's frames draw no blocked slot; layout 1's Lime calendar settled
@@ -17151,8 +17177,9 @@ function Calendar({ s }) {
         // rows 94 against the master's 90).
         const mark = (
           <span style={distressed(s, disp(s.dispLg, 0.89, {
-            whiteSpace: 'nowrap', flex: 'none', minWidth: pin, ...dim(sl.booked),
-            ...(ed ? { position: 'relative', top: '-0.09em', marginBottom: s.mob ? '0.09em' : undefined } : null),
+            whiteSpace: 'nowrap', flex: 'none', minWidth: pin, color: G.marks?.[i % 4], ...dim(sl.booked),
+            ...(ed ? { position: 'relative', top: '-0.09em', marginBottom: s.mob ? '0.09em' : undefined }
+              : pop ? { position: 'relative', top: '-0.14em' } : null),
           }))}>{sl.mark}</span>
         )
         const day = (
@@ -17208,6 +17235,7 @@ function Calendar({ s }) {
             <div style={{ paddingBottom: u(20), boxShadow: G.headRule }}>
               <h2 style={distressed(s, disp(s.dispMd, 1, {
                 margin: 0, maxWidth: s.mob ? undefined : u(571),
+                ...(pop ? { position: 'relative', top: '-0.14em' } : null),
               }))}>{s.title}</h2>
             </div>
           </div>
