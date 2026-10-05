@@ -214,7 +214,7 @@ session widens. The narrow twins are in Editorial's and Grunge's sections tables
 | 0 | *foundation* | `964:64560` *(page)* | — | `986:17562` | — | `986:17581` | — | — | — | — | Schemes 5 and 8, `SCHEMES_OF.Pop[1]`, `editorialCard`, the JP-094 pad arm, `navModeDefault` | **done** |
 | 1 | `header` | `964:64561` | 1440 × 974 | `986:17563` | 768 × 1024 | `986:17582` | 390 × 994 | 1 (Enquire pill **3**, place card **6**, Book pill **3 / 3 / 4**) | `964:64580` | `964:64599` | `if (s.limeTree) { … return }` at the head of `HeaderV1` | **done** `5bc12c1` |
 | 2 | `bio` | `964:64562` | 1440 × 760 | `986:17564` | 768 × 1138.8 | `986:17583` | 390 × 881.3 | 1 (Book pill **4**) | `964:64581` | `964:64600` | `if (s.v1 && s.limeTree)` ahead of `Bio`'s `if (s.v1)` | **done** `3de6182` |
-| 3 | `media` | `964:64563` *(Section; panel `964:64564`)* | 1440 × 965 | `986:17565` *(Frame 299; `986:17566`)* | 768 × 1541 | `986:17584` *(Frame 299; `986:17585`)* | 390 × 1420 | page 1, **panel 2** (fan cards 6 / 3 / 5 / 4 / 2, list rows 3 / 4 / 5 / 7 / 8) | `964:64582` | `964:64601` | inside `Media`'s `if (s.v1)`, after `nowArt` | |
+| 3 | `media` | `964:64563` *(Section; panel `964:64564`)* | 1440 × 965 | `986:17565` *(Frame 299; `986:17566`)* | 768 × 1541 | `986:17584` *(Frame 299; `986:17585`)* | 390 × 1420 | page 1, **panel 2** (fan cards 6 / 3 / 5 / 4 / 2, list rows 3 / 4 / 5 / 7 / 8) | `964:64582` | `964:64601` | inside `Media`'s `if (s.v1)`, after `nowArt` | **done** `5e8ea24` |
 | 4 | `repertoire` | `964:64570` | 1440 × 792 | `986:17572` | 768 × 792 | `986:17591` | 390 × 594 | 1 (a `box/1` sheet) | `964:64589` | `964:64608` | inside `Repertoire`'s `if (s.v1)`, after `pageWindow()` | |
 | 5 | `gallery` | `964:64571` | 1440 × 675 | `986:17573` | 768 × 468 | `986:17592` | 390 × 364 | 1 | `964:64590` | `964:64609` | **no block** — `s.limeTree` reads and `(s.lime \|\| grunge)` / `ed` ternaries through `Gallery`'s `if (s.v1)` | |
 | 6 | `pricing` | `964:64572` | 1440 × 719.7 | `986:17574` | 768 × 926.4 | `986:17593` | 390 × 841.4 | 1 (the plan card **7**, leant −3 / −3 / −1) | `964:64591` | `964:64610` | inside `Pricing`'s `if (s.v1)`, after `sel` / `t` | |
@@ -1035,6 +1035,99 @@ and its **lime** cards add a third ground the twins never had.
 - **Digest: themes 0, 1, 2 and 3 zero files of 660, canvas and `live=1`**; theme 4 exactly bio
   arch 1 at three widths on both surfaces (6 files), no `_arch_0_` file, no one-row file.
 
+### Settled in section 3 (the media player)
+
+- **The block widened whole: `if (s.limeTree || s.pop)` inside `Media`'s `if (s.v1)`, after
+  `nowArt`, `const pop = s.pop`** (a dozen arms, two seat helpers, no `G`). The tree is the
+  twins' node for node at all three widths — Section / Frame 297 / Frame 296 / the two
+  instances, the fan at the twins' offsets, angles (±5.33 / ±10.66) and opacities (.82 / .64),
+  the 108 bar — on **Scheme 1, Frame 297 on Scheme 2, no Device override**, each master read
+  with one walker call (bindings with their collection). Every size is `THEME_RAMP.Pop`'s
+  (display-lg 82 / 51 / 36, list 20 / 16 / 15, body-lg 16 / 15 / 15, body-md 14 / 13 / 13,
+  body-sm 12, chip 12 / 11 / 11) but Display/Title, **28 / 22 / 20** in `tk` (`s.title` is the
+  heading string). **No raw hex on any master**: the media has no leak but the 390 titles' run.
+- **Under the Scheme 2 seat the panel, bar and heads are keys**: the panel `sem/bg` → `s.bg`
+  (Editorial's arm), radius 50 / 30 / 30, the twins' padding and 629 column; the bar and its
+  inner pill **`box/1`** (`s.box1` — where Editorial binds the panel's `sem/bg`), radius 92 as
+  Grunge's, ringed **1px `sem/stroke/1`**, violet under the seat (trap 6, as the frame draws it),
+  **no glow** (`effects: []` on every node); the sleeve's well `box/2`; every bar and counter ink
+  `sem/text/2`, `s.tx`. The Featured chip is `sem/tag/1/bg` → `s.chips[0].bg`, pink (Editorial's
+  arm), lettered violet.
+- **Every fan card and every list row stands on its own scheme** (`explicitVariableModes`, the
+  same at all three widths), read through `s.onScheme`:
+  - **the fan's seats, left to right, 5 / 4 / 2 / 3 / 6** (teal, blue, lime, pink, violet) —
+    each its `box/1` at **radius 8** in a 1px `stroke/1` ring round a `box/2` well, its title and
+    sub `text/2`. Seats, not tracks (`notes/media.md`'s rule): `popCard(k)` clamps |k| to 2, so a
+    sixth card keeps its side's outermost scheme. "Translucent" is the twins' `.82 / .64` on the
+    seat's own fill, nothing new;
+  - **the rows by index, 3 / 4 / 5 / 7 / 8** (pink, blue, teal, red, yellow; `i % 5` past five) —
+    a **pill** (radius 999) on the scheme's `sem/bg`, padded 14 · 30, ringed **4px inside** in the
+    stroke each node names — `stroke/2`, `stroke/1`, `stroke/2`, `stroke/2`, `stroke/1`,
+    transcribed, not patterned (`popRow`) — inked **`text/1`** (`R.S.ac`: lime, teal, violet,
+    lime, pink), the number, title, sub, time and the live Play / Pause alike;
+  - **the cover is a 64 disc** on the row's own `box/2`, under a **4px inside ring of
+    `scheme/1/stroke/2`**, lime, named outright (`s.onScheme[1].stroke2` — `s.stroke2` under the
+    seat is pink): `art()` took three additive arguments (`well`, `ink`, `ring`), the ring an
+    overlay that paints over the photograph.
+- **The rows stand 10 apart** (the list's `itemSpacing`, which the twins' frames set 0), under the
+  counter row too: the desktop column then divides to **115.8** a row (95 on the canvas) and the
+  narrow 596 to **100.6**, the frames' own. Their rules are gone: a pill needs none.
+- **Decision 2's open item, settled: the head is uppercase at every width, its ink per width.**
+  The binding is Lime's flip on Lime's keys — `sem/text/2` violet at 1440, `sem/text/1` pink at
+  768 and 390 — so the block's `desk && !ed ? s.tx : s.ac` already reads it, no arm; pink on lime
+  reads in the render, so it is followed. The narrow masters' "Five Worth your ear" is the one
+  mixed-case display string on the page, a slip, uppercased through `disp` as the 1440 master
+  types it. **The breaks**: Titan's "FIVE WORTH" alone outruns Lime's 4.6em, and the 629 column
+  breaks after it unaided, so desktop takes no cap; 768 holds one line in 648 (62 to 659 of
+  ink); at 390 a 330 column would hold "FIVE WORTH YOUR", so the master's own **251** box is the
+  cap (Grunge's). Two / one / two lines, the frames'. **Lifted 0.13em** (layout 1's media head, at
+  the same lh 0.89; CONVENTIONS B), and a violet / pink ink-row scan proves it: 120–226 against the
+  frame's 118.9–225.5 × 0.82 at 1180, 120 against 118 at 768 (cap tops), 80 against 79 at 390.
+- **The 1440 Section's 5px lime rules are drawn** — `scheme/1/stroke/2` INSIDE, top and foot,
+  **visible** on Pop's node where the twins' same stroke is a hidden paint, and in the render. The
+  root draws them, `popMediaRule` (`s.me && s.v1 && s.pop && !s.narrow`): two inset shadows of
+  4.1px (5 × 0.82) in `s.onScheme[1].stroke2`. The narrow wrappers carry none.
+- **Open question 6's media line: the 390 titles are overridden, the twins' way.** The master's
+  rows keep 30 · 20 and clip every seeded title mid-word at 101 ("LATE LIGH"), and its bar runs the
+  title off at x 471 — both the twins' 390 artefact, so Retro's override stands: the rows' gaps
+  close to 14 and the title ellipsises; the bar drops the clock and icons. The pills keep their 30
+  side padding, which their curve needs.
+- **Measured against the masters** (harness, from the section root): desktop root **791.3**
+  (965 × 0.82), h2 at x 95.1 (116 × 0.82), bar top 583 (711 × 0.82), rows at x 651.9 (795 × 0.82),
+  first at 164.1 (200 × 0.82), 433 × 95 (529 / 115.8 × 0.82) on a 103.1 pitch; 768 root
+  **1541.4** (1541), bar 667.4 (667), rows 878.4 (878) on 110.6, 100.6 tall; 390 root **1420.1**
+  (1420), bar 586.1 (586), rows 797.1 (797). The fan is the twins' seats, untouched.
+- **Named diffs**: **the desktop bar's SLOW BURN ellipsises** — Titan's 136.3 in a 112.4 box; the
+  frame's own box is 109.8 on the canvas and its Chunko "SLOW BURN" (~136) would not fit it either,
+  so the frame clips its own title there ("SLOW BUI"). Editorial's departure (both inner sides
+  dropped) buys 18 of the 24, so it is not taken; the cued LATE LIGHTS (141.5) is JP-097's
+  *not changed* line already, which this joins. 768 fits (130.4 in 140.2); 390 is JP-099's table
+  (118.5 in 115.5). The seeded heading carries its full stop ("…EAR."), the frame's none; the fan
+  art is our seeds.
+- **States**: `&n=8` — eight pills cycling the five schemes; the desktop rows share the stretched
+  column, so each 52.5 disc is clipped by its pill's ~33 content box (the twins' 64.5 rows clip
+  their tiles the same way, Retro's rule), and the fan clips at the column. Art-less tiles and
+  discs read: `KM` in each card's `text/2` and each row's `text/1` on its own `box/2` (yellow on
+  blue, violet on teal, pink on yellow), violet on the bar's `#B7DD0D`. `&n=0`: the counter row
+  alone, "NO TRAC…" in the 390 bar (the twins' state).
+- **`live=1`** (puppeteer, trusted clicks, `--autoplay-policy=no-user-gesture-required`, 1440 and
+  390): row 2 plays Manchester at 3am and the bar names it, a second click pauses; the outermost
+  left card, clicked on its visible edge, deals Roomtone to the centre and plays it; every row is
+  hit by `elementFromPoint` at its centre; no sideways scroll; no page error or warning.
+  **`page-check.mjs Pop 1`**: the modal's four cards, the player plays (`paused: false`),
+  `overflow390` 0, the burger 2 → 6, no console error or warning; the published 1440 media is
+  **966** tall (965), and its seam clip shows the lime rule on the media's top edge under the
+  bio's white, 86 above the panel.
+- **`FIELDS.media` under Pop** (`scripts/reach.mjs 4`, confirm-only): `countLabel` reaches media
+  layouts 2 and 3 — its `{ Pop: [1, 2] }` row, as the frame's "5 FEATURED / 5 MAX" says;
+  `listLabel` and `totalLabel` 2 and 3, `chipLabel` 2, every hit whole. Nothing in `FIELDS` moved.
+- **Digest: themes 0, 1, 2 and 3 zero files of 660, canvas and `live=1`**; theme 4 exactly media
+  arch 1 at three widths on both surfaces (6 files), no `_arch_0_` file, no one-row file. The
+  `art()` arguments are additive and the twins' calls pass none; the digest is their proof.
+- **For the sweep's CLAUDE.md pass**: `popMediaRule` belongs beside `editorialRule` /
+  `grungeRule` wherever a sentence names the root's rules, and the media's per-seat schemes
+  are in `notes/media.md` already. `art()`'s arguments need no line. Not written here.
+
 ### Inherited and used
 
 *(The running list the sweep folds into [`../CONVENTIONS.md`](../CONVENTIONS.md): each time a
@@ -1070,12 +1163,26 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
   page cannot show an empty slot* (lime/layout-1 — `&noimage=1` found the violet-on-violet
   initials); *field reach is measured* (CLAUDE.md).
 
+- Section 3: *the node walker, kept* (grunge/layout-2) with bound names and their collection (*a
+  node can name another scheme's variable outright*, editorial/layout-3 — the discs' and the
+  Section's `scheme/1/stroke/2`); *read every nested node's scheme off the master*
+  (grunge/layout-3 — ten nodes on six schemes); *a nested node reads that scheme's keys* and *a
+  card on another scheme is `s.bg`* (editorial/layout-2); *a frame's inside stroke is an inset
+  `boxShadow`, on an overlay where an image paints over it* (lime/layout-2 — the rows' and the
+  discs' 4px); *a stand-in face's glyph floor* (editorial/layout-3, Pop layout 1's 0.13em at lh
+  0.89, pixel-scanned); *a twin's width-bound call is re-measured in the new face*
+  (editorial/layout-2 — Lime's 4.6em dropped, Grunge's 251 kept); *a leak that shows and reads as
+  a defect is overridden* (grunge/layout-1 — the 390 titles); *a seeded page cannot show an empty
+  slot* (lime/layout-1 — `&n=8`'s art-less wells); *a widened block can need no `G`*
+  (grunge/layout-3); *field reach is measured* (CLAUDE.md).
+
 ## Open questions
 
 1. ~~**Decision 1** — the gate, `(s.limeTree || s.pop)` per site.~~ *Settled in session 0: the
    pair per site (user call, 2026-10-05).*
-2. **Decision 2** — leaks on a bound page, and the media head's case and ink. *The rule settled in
-   session 0 (user call, 2026-10-05); the media session settles the head.*
+2. ~~**Decision 2** — leaks on a bound page, and the media head's case and ink.~~ *The rule settled
+   in session 0 (user call, 2026-10-05); the head in section 3: uppercase at every width, the ink
+   per width (violet at 1440, pink narrow), as the plan recommended.*
 3. **The header's face-card portrait and the form's credit avatar** are Lime's `e3790c2c` and
    `f821adc2`, the components' default pictures through Pop instances; the seeds stand. Worth
    telling the designer, with Grunge's and Editorial's.
@@ -1091,7 +1198,9 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
      credit box (`Frame 6`), followed as a `minHeight`, never its width — the root is 390;*
    - ~~the 390 header pill's label in Anton 12.07;~~ *section 1: set in Titan at 12.07, the
      pill 110.5 wide against 91;*
-   - the 390 media bar's title and byline and the list's titles, past the master;
+   - ~~the 390 media bar's title and byline and the list's titles, past the master;~~ *section
+     3: overridden as the twins' are — the rows' gaps close to 14 and the titles ellipsise, the
+     bar drops its clock and icons;*
    - the map's ring labels past the 768 and 390 viewports, clipped;
    - the 390 testimonials' sub, a 411-wide no-wrap line.
 7. **Header cards 3 and 4** stay placeholders (layout 1, open question 8): card 3's Pop frame stands
