@@ -220,7 +220,7 @@ session widens. The narrow twins are in Editorial's and Grunge's sections tables
 | 6 | `pricing` | `964:64572` | 1440 × 719.7 | `986:17574` | 768 × 926.4 | `986:17593` | 390 × 841.4 | 1 (the plan card **7**, leant −3 / −3 / −1) | `964:64591` | `964:64610` | inside `Pricing`'s `if (s.v1)`, after `sel` / `t` | **done** `fb84f5b` |
 | 7 | `calendar` | `964:64574` *(in `964:64573`)* | 1328 × 842 *(1440 × 954)* | `986:17576` *(in `986:17575`)* | 708 × 705 *(817)* | `986:17595` *(in `986:17594`)* | 370 × 698 *(778)* | page 1, **card 2** | `964:64593` | `964:64612` | inside `Calendar`'s `if (s.v1)`, after `want` / `hit` / `cur` / `line` | **done** `a204ba6` |
 | 8 | `map` | `964:64575` | 1440 × 808 | `986:17577` | 768 × 823 | `986:17596` | 390 × 1286 | 1 (travel card **3**, map card **2**, viewport **3**) | `964:64594` | `964:64613` | inside `EventsMap`'s `if (s.v1)`, after `stats` | **done** `9567812` |
-| 9 | `form` | `964:64576` | 1440 × 784 | `986:17578` | 768 × 856 | `986:17597` | 390 × 910 | **4** (sidebar card **2**) | `964:64595` | `964:64614` | `if (s.v1 && s.limeTree)` ahead of `EnquiryForm`'s `if (s.v1)` | |
+| 9 | `form` | `964:64576` | 1440 × 784 | `986:17578` | 768 × 856 | `986:17597` | 390 × 910 | **4** (sidebar card **2**) | `964:64595` | `964:64614` | `if (s.v1 && s.limeTree)` ahead of `EnquiryForm`'s `if (s.v1)` | **done** `58b37a8` |
 | 10 | `testimonials` | `964:64577` | 1440 × 762.9 | `986:17579` | 768 × 730 | `986:17598` | 390 × 842 | 1 (big card **2**, picked tile **3**) | `964:64596` | `964:64615` | inside `Testimonials`' `if (s.v1)`, after `rail` | |
 | — | `footer` | `964:64578` | 1440 × 479.5 | `986:17580` | 768 × 720.4 | `986:17599` | 390 × 720.4 | 3 | — | — | — | **out of scope**: layout 1's footer, closed at planning time (above) |
 | — | `video` | `964:64569` | 1440 × 782 | `986:17571` | 768 × 1112.2 | `986:17590` | 390 × 1107.8 | 1 | — | — | — | **not a category** |
@@ -1645,6 +1645,105 @@ and its **lime** cards add a third ground the twins never had.
   The four label-in-box inputs keep `--ph: 1` (JP-093); the credit avatar is Lime's leak (open
   question 3).
 
+### Settled in section 9 (the enquiry form)
+
+- **The block widened: `if (s.v1 && (s.limeTree || s.pop))` ahead of `EnquiryForm`'s `if (s.v1)`,
+  `const pop = s.pop`, `S2 = s.onScheme[2]` and a fourth `G` arm ahead of Editorial's** (Lime's,
+  Grunge's and Editorial's byte-identical), plus five `pop` sites: `disp()`'s uppercase, the
+  heading's positional split and its cap gate, the heading's lift and the two-tone stars' gate.
+  Five new leaves fall back through `??` or are absent on the twins — `tick`, `cardInk`,
+  `cardHead`, `star` and `badRing` (Editorial's, now read on the ring path too, `G.badRing ??
+  ink`). The tree is the twins' node for node at all three widths (one walker call per master,
+  bindings with their collection), on **Scheme 4 with no Device override**
+  (`resolvedVariableModes` Desktop / Tablet / Mobile) and the card **explicitly Scheme 2** at
+  every width. Every size is `THEME_RAMP.Pop`'s (display-sm 36 / 29 / 24, list 20 / 16 / 15,
+  label-sm 16 / 13 / 12, label-xs 20 / 14 / 12, body-sm 12) but Display/Title, **28 / 22 / 20**
+  in `G.title`. **No raw hex on any master and no effect on any node** — the form's only leak is
+  the credit avatar (open question 3). The live seam is hoisted above the block, so nothing was
+  owed.
+- **Lime's one ink is three here.** The block cascades `ink` from the sheet into the promises,
+  the credit and the card; under Pop those are three bindings: the sheet's `text/3` **white**
+  (`G.ink = s.text3` — the promises, the name, the role), the ✓ `text/2` **yellow** (`G.tick =
+  s.tx`, applied only where defined) and the card's `text/2` **violet** (`cardInk = G.cardInk ??
+  ink`, `S2.tx` — the unit, the count, the box labels, the prompt, the note and the sent state).
+  The head is `text/1` teal (`s.ac`, the twins' `G.head`); the price and the stars the card's
+  `text/1` pink (`G.cardHead`, `G.star`, `S2.ac` — widening the stars' gate alone would have
+  painted them teal). The root paints the blue `sem/bg`, so `G.sheet` is Grunge's `undefined`.
+- **The card is `box/1`, not the scheme's ground** — `#D7FF23`, where Scheme 2's `sem/bg` is
+  `#C6F200` — so *a card on another scheme is `s.bg`* (section 3) does not apply: `G.mist =
+  S2.box1` in a 1px `S2.stroke1` **violet** hairline (trap 6) at radius 50, Lime's shape; every box
+  the same fill and ring at `radius/pill`, Grunge's **42 / 38 / 37**. The pill is `text/1` pink
+  round a `sem/bg` lime label and disc and a pink arrow (`S2.ac` / `S2.bg` / `S2.bg` / `S2.ac`) —
+  two limes, both bound, so both drawn. The photograph is `box/2` `#1553ED` in a **4px** `text/1`
+  teal INSIDE ring (`u(4)`; the twins' 1px), radius 50, no glow; the avatar's well `sem/bg` blue.
+  The plan's "the Check Availability pill is Scheme 2's `pillBg`" was a guess: it binds `text/1`,
+  which is pink too; the block reads no `pillBg`.
+- **The refused box is pink.** The idle ring is 1px of **full** violet, so Lime's rule (2px of
+  `ink`) would have been weight alone (CONVENTIONS C, *a refused box changes colour, not weight
+  alone, when the idle ring is already full ink*): `G.badRing = S2.ac`, 2px of the card's own
+  pink, the price's and the pill's colour. No frame draws the state. Reversible in one line.
+- **The head needs no fit** (`vm.titleWordEms` checked against its column, not read): Titan ×
+  0.98 sets the widest word UNFORGETTABLE. at 8.81em — 260 / 256 / 212px against the 686 / 334
+  / 370 columns — and the second line at 15.18em, **448 in 686** (two lines), **440 past 334**
+  (it wraps at the word: three lines, the frame's own 87) and **364 in 370** (two lines, 6 to
+  spare). So the twins' positional split, words one and two a block, the rest a second, gives the
+  frames' 2 / 3 / 2 at 60 / 87 / 48 tall; Lime's 9em / 5.2em caps are gated off with Grunge's and
+  Editorial's. A longer typed word wraps inside itself (`break-word`), the twins' rule.
+- **The head is lifted 0.14em** (CONVENTIONS B's Pop row, measured): an ink-row scan against the
+  frame's Chunko put Titan's lines 4px low at 768 (29px, 0.138em) and 3px at 390 (24px, 0.125em),
+  cap tops and feet alike. Lifted, lines two and three land on the frame's rows exactly at both
+  widths (31–50 / 60–79 and 25–41 off the box). **Nothing else is lifted**: the price sits 1px
+  low and the name within 1px; the pill's label 2px low, as every Pop pill label is left; and the
+  box labels cannot be — live they are the input's placeholder, and a lifted canvas span would
+  part from it (JP-093's agreement).
+- **Measured against the masters' content edges** (harness, from the section root): desktop root
+  **636.3** (784 × 0.82 = 642.9, less the twins' `gPad` 46 against 49.2 at both ends), photo
+  686.2 × 358.3 at 46 (687.2 × 358.3), h2 at 428.9 on two lines 60, card 369 × **305.8** at x 765
+  (450 × 373 × 0.82 = 369 × 305.9), boxes 329.6 × 34.4 on a 42.6 pitch (402 × 42, 52 × 0.82), the
+  price at 784.7; 768 root **854.9** (856), photo 334 × 437 at (30, 60), h2 at (30, 527) on three
+  lines 87 (87), card at (404, 60) 334 × **354.4** (354), boxes 286 × 38 on 48 at 157.6 (157), the
+  price at (428, 88) (428, 88), the name at 751.5 (752.5); 390 root **910.8** (910), photo 370 ×
+  262 at (10, 40), h2 at 332 on two lines 48 (48), card at 520.4 370 × 350.4 (521, 349), boxes 322
+  × 37 on 47 at 617 (616), the note at 826 (825). **Named diffs, the twins'**: the seed types *DJ ·
+  Live Act* where the frame types *DJ · Live band*; the credit avatar keeps the seed (open question
+  3). The seeded three boxes are the frame's three (`FORM_FIELDS_CARD`, JP-070), so the card is the
+  frame's height to the pixel — no box-count diff this time.
+- **States**: `&noimage=1` gives the avatar white `KM` on its blue well, and `&cj={"photo":null}`
+  the stage white `KM` on `#1553ED` in its teal ring — both read, so `Photo`'s `ink` stays `G.ink`.
+  `&n=0&promises=` is the card's price, stars, pill and line with the credit at the row's end;
+  `&n=8` grows the card (518.7 / 594.4 / 585.4) with nothing overflowing.
+- **`live=1`** (puppeteer, typed and clicked, three widths): every placeholder reads `--ph` **1**
+  in violet; an empty submit rings all three boxes in 2px pink with the heights unchanged (34.4 /
+  38 / 37) and prints the prompt; typing clears its box's ring; the subject is the bare *Enquiry*
+  with the three values in the body; a valid submit behind a capture-phase intercept swaps in the
+  sent card (CHECK YOUR MAIL APP, uppercased by `disp()`); *Write another* restores the typed
+  values; every box hit-tests to itself; no page error or warning.
+- **`page-check.mjs Pop 1,0,2,3`**: the modal's four cards; every nav, anchor and footer link on
+  its id (*Start Enquiry*, *Enquire about a date* and Book Now → `#form`); the player plays;
+  `overflow390` 0; the burger 2 → 6; the published form refuses in 2px pink and composes; no
+  console error or warning on any card. The published 1440 form is **777** tall (784, the `gPad`
+  diff zoomed); the seam clips show the white map closing on a straight edge over the blue band at
+  1440, and the band closing over the white testimonials at 390 — the frames' own adjacencies.
+- **Digest: themes 0, 1, 2 and 3 zero files of 660, canvas and `live=1`**; theme 4 exactly form
+  arch 1 at three widths on both surfaces (6 files), no `_arch_0_` file, no one-row file.
+- **`FIELDS.form` has no template-keyed `in` row**; a confirm-only `scripts/reach.mjs 4` (5,880
+  renders) over the fitted block reports `button` and `messageLabel` at form layouts 1 and 4,
+  `promises` and `who.kicker` 1 and 2, `typeLabel` 1, `steps` and `sub` 4 — each design whole,
+  Pop's layout-1 table unchanged. The only partials are the known four (`bio.tagsLabel`,
+  `calendar.email`, `gallery.railLabel`, `header.cta2`). Nothing in `FIELDS` moved.
+- **`notes/form.md`** now names Pop in the layout-2 sentences (the band, the Scheme 2 card, the
+  pink refusal, the two-tone stars).
+- **For the sweep's CLAUDE.md pass**: CLAUDE.md names no layout-2 form state (the refused ring
+  and the band live in `notes/form.md`, done here); JP-093's `--ph` sentence holds as written.
+- **For the testimonials**: the page is Scheme 1 white with the big card nested **Scheme 2**
+  (`s.onScheme[2]`, lime, its `stroke1` violet — trap 6) and the picked rail tile **Scheme 3**
+  (pink, ringed violet); the head is **`Display/XL` 125 / 75 / 46**, one tone in violet, which
+  every twin set at `Display/LG` — check it against its column (`vm.titleWordEms`, Titan's ems)
+  before choosing, and scan its glyph floor; `TESTI_HEADING_2` is the fallback at `d === 1`; the
+  Book pill is Scheme 1's `active/bg`, **black**; the 390 sub is a 411-wide no-wrap line (open
+  question 6). Its Lime block (inside `Testimonials`' `if (s.v1)`, after `rail`) has Grunge's `G`
+  with Editorial's third arm, so Pop is a fourth.
+
 ### Inherited and used
 
 *(The running list the sweep folds into [`../CONVENTIONS.md`](../CONVENTIONS.md): each time a
@@ -1757,6 +1856,18 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
   Retro's call is followed* (D2 — the plate sampled a fourth time); *the whole-page published
   check* (lime/layout-1); *field reach is measured* (CLAUDE.md — confirm-only).
 
+- Section 9: *the node walker, kept* (grunge/layout-2) with bound names and their collection —
+  two schemes, Scheme 4 and the card's 2; *the `G` lookup at the block's head* (grunge/layout-1 —
+  a fourth arm, five leaves through `??`); *a nested node reads that scheme's keys*
+  (editorial/layout-2 — `[2]`, the card turned round: `box/1`, not `s.bg`); *a refused box
+  changes colour, not weight alone, when the idle ring is already full ink* (C — 2px of the card's
+  pink); *a frame's inside stroke is an inset `boxShadow`* (lime/layout-2 — the photograph's 4px);
+  *a head that must fit its measure* (C — checked, not needed: the widest word 260 in every
+  column); *a stand-in face's glyph floor* (editorial/layout-3 — 0.14em, ink-scanned at 768 and
+  390); *a seeded page cannot show an empty slot* (lime/layout-1 — `&noimage=1` and an emptied
+  stage); *the whole-page published check* (lime/layout-1); *field reach is measured* (CLAUDE.md
+  — confirm-only).
+
 ## Open questions
 
 1. ~~**Decision 1** — the gate, `(s.limeTree || s.pop)` per site.~~ *Settled in session 0: the
@@ -1766,7 +1877,8 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
    per width (violet at 1440, pink narrow), as the plan recommended.*
 3. **The header's face-card portrait and the form's credit avatar** are Lime's `e3790c2c` and
    `f821adc2`, the components' default pictures through Pop instances; the seeds stand. Worth
-   telling the designer, with Grunge's and Editorial's.
+   telling the designer, with Grunge's and Editorial's. *Section 9: confirmed — `f821adc2` `FILL` in
+   the 48 avatar at all three widths; the seed (`popAvatar`) stands.*
 4. **The gallery strip** repeats Retro's placeholder thumbnails again; the seeds stand (layout 1,
    open question 6). Worth telling the designer with it. *Section 5: confirmed — `b35b6507`,
    `b073b46f`, `8f69a4a6`, `35ae28b9`, `3f0c98b4` and `b35b6507` again at every width; the
