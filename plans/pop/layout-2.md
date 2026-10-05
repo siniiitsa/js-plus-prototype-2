@@ -1797,8 +1797,8 @@ and its **lime** cards add a third ground the twins never had.
   911 — two lines, the frame's) and three lines at 390 (the master's three), but **715.4 in the
   708 column at 768**, where Chunko sets 691: BOOKED drops to a third line (136.2 against the
   frame's 90). Fitting it would be 49.46px against the ramp's 49.98 (−1%) on a line-ems key no vm
-  key gives, so it is named, as Editorial named its desktop third line. Reversible in one
-  `fontSize`.
+  key gives, so it is named, as Editorial named its desktop third line. **Kept as named (user
+  call, 2026-10-05).** Reversible in one `fontSize`.
 - **The head is lifted 0.14em** (CONVENTIONS B's Pop row, measured): an ink scan against the
   frames put Titan's cap tops **0.154 / 0.144 / 0.147em** low at the three widths at lh 0.89.
   Lifted, they land 1.1 / 0.2 / 0.2px under the frame's rows. **Nothing else is lifted**: the
@@ -2048,3 +2048,7 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
     (`sem/text/1`) on the pick's yellow `sem/tag/1/bg`, 1.15 : 1.~~ *Settled (user call,
     2026-10-05): the fill and ring are followed, the label takes the tag's own ink, black. Worth
     telling the designer — the frame's own render shows the label all but gone.*
+12. ~~**The 768 testimonials head** (section 10): Titan's FROM PEOPLE WHO BOOKED is 715.4 in the
+    708 column, so BOOKED wraps to a third line where the frame sets two; a −1% fit (49.46px)
+    would hold two.~~ *Settled (user call, 2026-10-05): kept as named, on the ramp, Editorial's
+    call.*
