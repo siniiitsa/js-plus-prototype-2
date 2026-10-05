@@ -15063,14 +15063,28 @@ function Gallery({ s }) {
     // column included, where the twins square off the corners their dropped
     // borders ran through (the 390 rail keeps its 10). The caption stands on
     // `sem/tag/1/bg`, blush, which is Retro's own `s.chips[0].bg` arm.
+    //
+    // Pop (964:64571, 986:17573, 986:17592) is Lime's tree node for node at
+    // all three widths, on Scheme 1 — white — with no Device override and no
+    // effect on any node, so it widens the same ternaries under `pop`. What
+    // moves is the weight: every ring is **5px INSIDE** — the hero's
+    // `scheme/1/stroke/2` named outright (`s.stroke2`, lime, the seat being
+    // Scheme 1), the tiles' `sem/text/1` (`s.ac`, pink, the edge already
+    // drawn) — so the hero's is an overlay rather than the border (a 4.1px
+    // border would move the caption off the frame's 40 and shrink the cover
+    // box), while the tiles keep the border, which is what drops their outer
+    // sides. The radii are Lime's 30 / 10 to the corner, the wells `sem/box/3`
+    // black, the caption `sem/tag/1/bg` lime in `sem/text/2` violet.
     const grunge = s.grunge
     const ed = s.editorial
-    const bw = (s.retro || s.limeTree) ? '1px' : s.bw
-    const well = s.limeTree ? { background: s.box3 } : undefined
+    const pop = s.pop
+    const bw = (s.retro || s.limeTree) ? '1px' : pop ? u(5) : s.bw
+    const well = (s.limeTree || pop) ? { background: s.box3 } : undefined
     // The initials an empty slot shows sit on that well, and Editorial's
     // `s.muted` is ink at a lower alpha — ink on ink — so its placeholder
-    // takes the page's paper. `Photo` falls back to `s.muted` on undefined.
-    const wellInk = ed ? s.bg : undefined
+    // takes the page's paper; Pop's is violet at .64 on black, so it takes
+    // the page's white. `Photo` falls back to `s.muted` on undefined.
+    const wellInk = (ed || pop) ? s.bg : undefined
     const r = u(s.mob ? 10 : grunge ? 15 : ed ? 3 : 30)
     // The last tile in each column keeps a 30 on its top corners under
     // Grunge, where every other corner in the rail is 15: `[30, 30, 0, 0]` on
@@ -15168,11 +15182,13 @@ function Gallery({ s }) {
                       style={{ ...well, objectPosition: '50% 0%' }} />
                   </span>
                   {/* An inset ring over the photograph rather than a thicker
-                      border, which would inset the photo and move the masonry. */}
+                      border, which would inset the photo and move the masonry.
+                      No frame draws it, and Pop's `s.ac` inside its 5px pink
+                      edge reads as no change, so Pop's is the hero's lime. */}
                   {on && (
                     <span style={{
                       position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
-                      boxShadow: `inset 0 0 0 ${u(s.mob ? 2 : 3)} ${s.ac}`,
+                      boxShadow: `inset 0 0 0 ${u(s.mob ? 2 : 3)} ${pop ? s.stroke2 : s.ac}`,
                     }} />
                   )}
                 </div>
@@ -15193,8 +15209,8 @@ function Gallery({ s }) {
     const head = tab && s.galRailLabel ? (
       <div style={{ flex: 'none', height: u(20), display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
         <span style={{
-          fontFamily: s.body, fontWeight: 700, fontSize: s.limeTree ? s.chip : u(11), lineHeight: 1,
-          letterSpacing: s.limeTree ? '-0.06em' : u(-0.66), color: s.tx,
+          fontFamily: s.body, fontWeight: 700, fontSize: (s.limeTree || pop) ? s.chip : u(11), lineHeight: 1,
+          letterSpacing: (s.limeTree || pop) ? '-0.06em' : u(-0.66), color: s.tx,
           whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
         }}>{s.galRailLabel}</span>
       </div>
@@ -15213,15 +15229,17 @@ function Gallery({ s }) {
         // line, so a long heading ends in an ellipsis inside the hero rather
         // than running out under its own clip.
         maxWidth: `calc(100% - ${u(80)})`,
-        // Editorial takes the else-arm by its binding, not by default: its
-        // chip is `sem/tag/1/bg`, the blush `s.chips[0].bg` Retro's purple is.
+        // Editorial and Pop take the else-arm by their binding, not by
+        // default: the chip is `sem/tag/1/bg`, the `s.chips[0].bg` Retro's
+        // purple is — Editorial's blush, Pop's lime.
         background: (s.lime || grunge) ? s.box1 : s.chips[0].bg,
         // Ink on the purple, which is what the frame sets and what the bio's
         // "Retro's chips are cream on every hue" note does not cover — the
         // repertoire's frame already contradicted it once. The flat four take
         // the chip's own computed foreground, which is guaranteed against it.
-        // Editorial's is `sem/text/2`, ink on the blush.
-        color: (s.retro || s.limeTree) ? s.tx : s.chips[0].fg,
+        // Editorial's is `sem/text/2`, ink on the blush; Pop's the same
+        // binding, violet on the lime, where its tag's own ink is #141414.
+        color: (s.retro || s.limeTree || pop) ? s.tx : s.chips[0].fg,
         borderRadius: u(4), padding: `${u(10)} ${u(14)}`,
         ...col(u(4), { alignItems: 'flex-start' }),
       }}>
@@ -15233,8 +15251,8 @@ function Gallery({ s }) {
             // `size/chip` is 12 on the 1440 master and 11 on both narrow ones —
             // the one token here that is not the desktop number verbatim, so it
             // is read off `get_variable_defs` rather than left to `z`.
-            fontFamily: s.body, fontWeight: 700, fontSize: s.limeTree ? s.chip : u(desk ? 12 : 11), lineHeight: 1,
-            textTransform: 'uppercase', letterSpacing: s.limeTree ? '-0.06em' : u(desk ? -0.72 : -0.66),
+            fontFamily: s.body, fontWeight: 700, fontSize: (s.limeTree || pop) ? s.chip : u(desk ? 12 : 11), lineHeight: 1,
+            textTransform: 'uppercase', letterSpacing: (s.limeTree || pop) ? '-0.06em' : u(desk ? -0.72 : -0.66),
             whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
           }}>{t}</span>
         ))}
@@ -15250,8 +15268,9 @@ function Gallery({ s }) {
           // The hero rounds at 30 on all three masters (15 on Grunge's three,
           // square on Editorial's); only the 390 rail's tiles drop to 10, so
           // this is not `r`. Editorial's ring binds `scheme/1/stroke/1`, which
-          // is opaque ink on Scheme 1.
-          border: `${bw} solid ${grunge ? s.stroke2 : s.lime ? s.ac : ed ? s.stroke1 : s.tx}`,
+          // is opaque ink on Scheme 1. Pop's 5px ring is the overlay below,
+          // so its hero carries no border.
+          border: pop ? undefined : `${bw} solid ${grunge ? s.stroke2 : s.lime ? s.ac : ed ? s.stroke1 : s.tx}`,
           borderRadius: ed ? 0 : u(grunge ? 15 : 30),
           flex: '1 1 0', height: '100%',
         }}>
@@ -15265,11 +15284,27 @@ function Gallery({ s }) {
                 cover 18.5% down (not a stretch — its window is the box's
                 aspect to 0.1%), and a centred `FILL` at 768 and 390. The seed
                 matches each render there and nowhere else, and the other six
-                seeds, each picked into the seat, keep their faces. */}
+                seeds, each picked into the seat, keep their faces. Pop's
+                frames hold their own seed here too (`b3a33296`), a `FILL` at
+                all three widths, and a sweep against the renders bottoms out
+                centred (mean |Δ| 3.5 / 2.2 / 2.1 against 68 / 38 / 41
+                top-anchored) — but centred, three of the other seeds picked
+                into the seat lose the singer's head at 1440. The frame's
+                anchor is evidence for its own slot only, so under Pop `home`
+                is centred and a pick keeps the twins' top anchor. */}
             <Photo s={s} initialsSize={desk ? 52 : tab ? 34 : 26} src={s.images[active]} ink={wellInk}
-              style={{ ...well, objectPosition: ed ? (desk ? '50% 18.5%' : '50% 50%') : '50% 0%' }} />
+              style={{ ...well, objectPosition: ed ? (desk ? '50% 18.5%' : '50% 50%') : pop && active === home ? '50% 50%' : '50% 0%' }} />
           </span>
           {caption}
+          {/* Pop's 5px INSIDE `scheme/1/stroke/2`, lime, over the photograph
+              as the frame paints it, so the caption keeps its 40 from the
+              outer edge and the photograph covers the whole box. */}
+          {pop && (
+            <span aria-hidden style={{
+              position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
+              boxShadow: `inset 0 0 0 ${u(5)} ${s.stroke2}`,
+            }} />
+          )}
           {/* Lime's INNER_SHADOW 34 in `s.ac` (not `s.glow`), read off the
               node. Last, over the caption, as the media bar's is. */}
           {s.lime && (

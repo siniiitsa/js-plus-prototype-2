@@ -51,7 +51,12 @@ another `notes/` file.
   not drawn, because they are dead controls (kept, JP-098).
   The picked tile carries an inset accent ring, and clicking it again resets `pick` to -1, which
   is the only way back to the `galActive()` slot, since that one has no tile. No ring on the
-  canvas or the published first paint, which therefore stay the Figma picture;
+  canvas or the published first paint, which therefore stay the Figma picture. Under Pop the
+  ring is the hero's lime (`s.stroke2`), not `s.ac`. Pop's tiles are already edged 5px in pink,
+  so a pink ring inside them read as no change. Pop's hero also anchors by slot: the
+  `galActive()` slot is centred, as its frames' `FILL` of that photograph states, and a picked
+  slot keeps the twins' top anchor, because centred, three of the seeds lose the singer's head
+  at 1440;
   the three social addresses reach layout 1 only, which is `FIELDS.media.soundcloud`'s case three
   times over and is why their hints name a layout. **Layout 3 opens a fullscreen viewer on the
   same `pick`** (user call, 2026-09-15 — its frame draws a plain grid and nothing to open): -1 is
