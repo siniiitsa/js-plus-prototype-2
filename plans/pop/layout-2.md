@@ -211,7 +211,7 @@ session widens. The narrow twins are in Editorial's and Grunge's sections tables
 | # | Cat | Desktop node | Size | Tablet node | Size | Mobile node | Size | Scheme 1440 / 768 / 390 (nested) | Lime twin | Editorial twin | Lime block | Status |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 0 | *foundation* | `964:64560` *(page)* | — | `986:17562` | — | `986:17581` | — | — | — | — | Schemes 5 and 8, `SCHEMES_OF.Pop[1]`, `editorialCard`, the JP-094 pad arm, `navModeDefault` | **done** |
-| 1 | `header` | `964:64561` | 1440 × 974 | `986:17563` | 768 × 1024 | `986:17582` | 390 × 994 | 1 (Enquire pill **3**, place card **6**, Book pill **3 / 3 / 4**) | `964:64580` | `964:64599` | `if (s.limeTree) { … return }` at the head of `HeaderV1` | |
+| 1 | `header` | `964:64561` | 1440 × 974 | `986:17563` | 768 × 1024 | `986:17582` | 390 × 994 | 1 (Enquire pill **3**, place card **6**, Book pill **3 / 3 / 4**) | `964:64580` | `964:64599` | `if (s.limeTree) { … return }` at the head of `HeaderV1` | **done** `5bc12c1` |
 | 2 | `bio` | `964:64562` | 1440 × 760 | `986:17564` | 768 × 1138.8 | `986:17583` | 390 × 881.3 | 1 (Book pill **4**) | `964:64581` | `964:64600` | `if (s.v1 && s.limeTree)` ahead of `Bio`'s `if (s.v1)` | |
 | 3 | `media` | `964:64563` *(Section; panel `964:64564`)* | 1440 × 965 | `986:17565` *(Frame 299; `986:17566`)* | 768 × 1541 | `986:17584` *(Frame 299; `986:17585`)* | 390 × 1420 | page 1, **panel 2** (fan cards 6 / 3 / 5 / 4 / 2, list rows 3 / 4 / 5 / 7 / 8) | `964:64582` | `964:64601` | inside `Media`'s `if (s.v1)`, after `nowArt` | |
 | 4 | `repertoire` | `964:64570` | 1440 × 792 | `986:17572` | 768 × 792 | `986:17591` | 390 × 594 | 1 (a `box/1` sheet) | `964:64589` | `964:64608` | inside `Repertoire`'s `if (s.v1)`, after `pageWindow()` | |
@@ -854,6 +854,124 @@ and its **lime** cards add a third ground the twins never had.
   1, `THEMES[4]` Schemes 5 and 8, `editorialCard`'s reach), `navModeDefault`'s sentence and the
   JP-094 comment's "Pop's included" — the code comments are written, the docs are not.
 
+### Settled in section 1 (the header)
+
+- **The block widened at its head: `if (s.limeTree || s.pop) { … return }`, `const pop = s.pop`**
+  (about twenty arms, no `G`). The tree is the twins' node for node at all three widths, on
+  **Scheme 1 with no Device override** (`resolvedVariableModes`: Desktop / Tablet / Mobile — the
+  "— Tablet" 390 master is Mobile), and `get_variable_defs` is `THEME_RAMP.Pop` exactly
+  (display-lg 82 / 51 / 36, label-lg 24 / 16 / 14, label-sm 16 / 13, list 20 / 16 / 15, body-lg
+  16 / 15 / 15, body-sm 12), so every leaf reads `s.*` and there is no `tk`. Retro's half is
+  unreachable under Pop and was not touched: its placeholder seal, black place card and session
+  0's dropped checker ribbon simply stop being drawn. Every paint on the three masters is bound
+  but the sun's three face glyphs (raw `#FFFFFF`, followed as `s.bg`, the bio's precedent — white
+  on white page, it reads as Pop) and the dot grid's children (under the `Union`'s bound fill).
+- **On white, most of what the block reads is already the frame's binding**: the capsule
+  (`sem/bg` in a `scheme/1/stroke/2` ring), the links (`text/1`, `s.ac`), the chip, the title
+  (one tone, `text/2`, violet), the subtitle (`text/1`), the face card's copy (`text/2` /
+  `text/1`). The deltas, off one node walk per master with the bindings and their collections:
+  - **the nav** is inset **36 / 26 / 10** past the spread (1256 / 656 / 350 wide), its row tops
+    the pill's at 1440 and 768 (y **70.04 / 36**, 34.93 tall) and the capsule's at 390 (**31**,
+    34), the spreads at 156 / 100 / 90 — so `navGap` 51.03 / 29.07 / 25. The 768 numbers are
+    Lime's; the other two are Pop's own;
+  - **the capsule is gapped a fixed 18** at 16px type and at 13 (`H/18/8/18/8/18`), Grunge's
+    mechanism: `navGaps` and the `<nav>`'s gap take `grunge || ed || pop`, and `sectionVm`'s
+    `navGapEm` is **0 at Pop `d === 1`** (23/16 elsewhere — card 3's NavBar placeholder keeps
+    it). Minimal's capsule is **176.4 × 27.4** on the 1180 canvas against 219 × 0.82 = 179.6, and
+    **189.4** at 768 against 191 (Titan 1.2% narrow);
+  - **the name is `sem/text/1` pink at 1440 and 768 and `text/2` violet at 390** (the burger's
+    ink there, NavMenu's `s.tx`), and Listen is pink — where the twins' both read `s.tx`;
+  - **the nav pill is two nodes on two schemes** — Scheme 3 at 1440 and 768 (pink under lime),
+    Scheme 4 at 390 (blue under teal) — `navPill = s.onScheme[s.mob ? 4 : 3]`, `bg={navPill.bg}
+    fg={navPill.ac}`, each over its own `Retro/Poster` block in `navPill.ac`: **lime 5 / 5 and
+    teal 3.77** (`pp(5)`: the block × the hand-scale, 4.1 on the canvas), through `style` — the
+    first of the three twins' pills whose block shows on its page. Its box is Lime's `pk` recipe
+    to the hundredth (145.32 × 34.93 → **119.5 × 28.6** on the canvas; 130 × 34.9 at 768);
+  - **the 390 pill's label is the Anton 12.07 leak set in Titan at that size** (decision 2),
+    `faced` to 11.83: the pill is **110.5 × 26.4 against the master's 91.01 × 26.36**, flush
+    right — Titan's BOOK NOW is wider than Anton's (Editorial's Noto was 99.3). Named;
+  - **the Enquire pill is Scheme 3**: `bg={s.onScheme[3].ac} fg={s.onScheme[3].bg}`, lime under a
+    pink label and disc, BookPill's box otherwise (257.3 × 44.3 against 312 × 54 × 0.82 = 255.8;
+    272 at 768 against 266, 260.2 at 390 against 254 — Titan again);
+  - **the photograph is a stadium**: radius `u(430)` on the 636 × 762 box, which CSS scales to
+    the half-width as Figma clamps it (and at 768, 708 × 398, to the half-height), on the
+    `s.box3` well in an **8px** `s.stroke2` inside ring (`u(8)`), 398 / 227 tall narrow, no glow,
+    no grain; its fill is **FILL at every width**, a centred cover, so Lime's `22% 50%` is gated
+    off; the desktop spread is **762** tall (`u(762)`, the twins' 688);
+  - **the stickers hang off the photograph's box**: under `pop` a relative column wrapper stands
+    in the photograph's seat (`hero`) and the photograph fills it. **The sun** is `PopSun`
+    (154 → 126.28 on the canvas, 154 at 768, **85** at 390; `sem/tag/3/bg` = `s.chips[2].bg`;
+    Figma −25.37 → CSS +25.37), placed by its disc's centre — (528.42, 83.59) off the
+    photograph's corner at 1440, (650.14, 85.57) at 768, (318.19, 220.89) at 390 — and painted
+    last, over the ring. **The dot grid** (`Union`, 328.02 × 238.58, `sem/text/1` pink) is the
+    1440 master's alone, its first child, so the photograph paints over it and only the lower
+    left shows: `PopDots` took an additive **`xs` / `vw`** (its five columns stand 80.81 / 67.81
+    / 81.81 / 80.81 apart, where the bio's are an even 67.81; the dots and rows are the bio's),
+    at (−4, 501.21) off the photograph's corner. The 390 sun's foot hangs 50 below the photograph
+    into the gap over the chip, as the frame's does;
+  - **the cards are stadiums at 1440** (`s.btnR` on 310 × 468) and **radius 60 narrow**, ringed
+    **2px** inside (`u(2)`) — the face card in `sem/stroke/1` pink, the place card in
+    `scheme/3/stroke/2` lime named outright (`s.onScheme[3].stroke2`). At 1440 a column centred
+    both ways, 28 between tile and copy, padded 0 · 36 (the place card 18 · 36 — `card()`'s
+    additive `py`), the copy centred; narrow a row centred across, gap 28, padded 16 / 10, the
+    copy left beside the tile, hugging its 165 (197 / 185 tall, the frame's own);
+  - **both tiles are arches, 107 × 165 at radius 110** — the pin tile **88** wide at 1440 — the
+    portrait on `s.box2` in Lime's 1px `s.stroke2` overlay ring; the titles uppercase
+    (`grunge || ed || pop`), Titan through `faced`;
+  - **the place card is Scheme 6 filled `sem/text/2`** — `S6.tx`, pink, not the scheme's violet
+    (trap 4) — its title `S6.ac` lime, its body `S6.text3` white; its pin tile has no fill, ringed
+    and pinned in `S6.ac`. `LimePin` took an additive **`ink`** (ring and pin, default `s.bg`)
+    and **`glyph`** (the drawing's own width, flex-centred, so the 88 × 89 pin keeps its 27.43 ×
+    34.28 in the taller tile rather than grow with it).
+- **The h1 is lifted `top: -0.14em`** under Pop through `Title`'s `style` (CONVENTIONS B's Pop
+  row), and a pixel scan proves it: the violet ink runs box − 1 to + 34 at 768 in the frame and in
+  ours (box − 0.8 to + 46.7 against − 0.5 to + 45.5 at 1440 × 0.82; 400–424 against 400–424 at
+  390). The boxes land on the frame's: h1 166.5 (unlifted) against 203 × 0.82 at 1440, 399.8
+  against 400 at 390.
+- **Deliverable 3, the 768 sun**: the root clips sideways — `popClip` is now `(s.pr && s.v0 ||
+  s.hd && s.v1) && s.pop`, `clip` not `hidden`. **Measured in the published tab** (card 2, the
+  window at 768): `scrollWidth` **768 with the clip and 783 without it** — the frame's own 783,
+  the positive control — and 1440 and 390 at their widths either way. The harness cannot show
+  it: its page clips too (768 with the clip removed).
+- **Decision 3, done.** `vm.navFits` takes the Grunge / Editorial arm at Pop `d === 1` against
+  **656** (the frame's inset bar, not the twins' 708), the same 138.32 and fixed 18 gaps, links
+  at Label/SM 13 and the name at Label/LG 16 in Titan × 0.98. Walked in the harness (`&nav=`,
+  `navMode: 'sections'`, `live=1`): **up to three links** draw at 768 on one row with the name
+  centred at 384; four fold to the burger. Minimal's three draw at 1440 and 768. At 1440 *Follow
+  my sections* holds one row to eight links, the name sliding right from five (617.9 → 855.5);
+  **the seeded nine wrap the capsule to two rows at the 12px floor** (11.76 rendered) — the
+  block's designed below-the-floor fallback, reached for the first time by a seeded page because
+  Titan is wide. Minimal is Pop's layout-2 default, so the seeded header never shows it (open
+  question 10).
+- **Named diffs**: the seeded subtitle runs 2 / 3 / 2 lines against the frame's 1 / 2 / 2 (the
+  twins'), so the 768 identity block centres ~11 higher (h1 at 681 unlifted against 692); **the
+  768 face card's title wraps** — Titan's THE FACE OF THE ACT outruns the 157 column, as the
+  frame's own 163-wide box does (it runs 6 into the padding there); ours wraps inside the card's
+  197, which does not grow. `&noimage=1`: the empty stadium is the black well with violet `KM`
+  initials (legible), sun and dots in place.
+- **`FIELDS.header` under Pop** (`scripts/reach.mjs 4`, every probe): **`showBadge` and
+  `badgeText` `[0, 3]`** — each lost design 1, the placeholder's Retro seal gone; subtitle,
+  heroCta, availability, faceTitle, faceBody and placeBody `[1]`; cta2 `[1, 2]` (4/6: Listen is
+  dropped at 390); kicker, tags and showTags `[0, 2, 3]`; location all four; align `[0]` —
+  unchanged.
+- **Digest: themes 0, 1, 2 and 3 zero files of 660, canvas and `live=1`**; theme 4 exactly
+  header arch 1 and arch 5 at three widths on both surfaces (12 files), **arch 5 byte-identical
+  to arch 1**; no `_arch_0_` file and no header `_arch_4_`. The two helper props are additive,
+  and the digest is their proof.
+- **The published tab** (`page-check.mjs Pop 1,0,2,3`): the modal offers four Pop cards; card 2
+  opens the page in layout 2's order; Music → `#media`, Gigs → `#map`, About → `#bio`, Listen →
+  `#media`, Book Now → `#form`; every other anchor and footer link on its id; the player plays;
+  the form refuses and composes; `overflow390` 0; the burger at 390 opens (2 → 6); no console
+  error or warning on any card. *Enquire about a date* read no scroll in that run — the known
+  smooth-scroll click race (Grunge's *a walk is two runs*) — and scrolls to `#form` clicked from
+  rest (a second script). Cards 1, 3 and 4 render and publish.
+- **For the sweep's CLAUDE.md pass**: the *Pop is designed at layout 1* / card-2 placeholder
+  sentences (card 2 is fitted now; cards 3 and 4 are placeholders), `popClip`'s reach in any line
+  that names the root's clips, and `LimePin` / `PopDots`' props need no line. Not written here.
+- **For the bio**: its Book pill is Scheme 4 at all three widths with a **teal 5 / 5 block at all
+  three** (the plan's effects list) — the nav pill's recipe with `s.onScheme[4]` fixed, but read
+  its box per master (145 / 129 / 123 × 35: the 390 one is not hand-shrunk to 91).
+
 ### Inherited and used
 
 *(The running list the sweep folds into [`../CONVENTIONS.md`](../CONVENTIONS.md): each time a
@@ -864,6 +982,19 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
   and live; *a section's colour scheme is resolved in `sectionVm`* (editorial/layout-1) and *a card
   on another scheme reads that scheme's keys* (editorial/layout-2) — Schemes 5 and 8, row 1 and
   `pageBg` round the two lime cards, data only.
+
+- Section 1: *the node walker, kept* (grunge/layout-2) with bound names and their collection
+  (*a node can name another scheme's variable outright*, editorial/layout-3 — the capsule's and
+  the place card's rings); *read a scheme per master* (editorial/layout-2 — the nav pill 3 / 3 /
+  4); *a nested node reads that scheme's keys* (editorial/layout-2 — `[3]`, `[4]`, `[6]`); *a
+  hard offset shadow goes through the caller's `style`* (lime/layout-2); *a frame's inside stroke
+  is an inset `boxShadow`* (lime/layout-2 — the 8px and 2px rings); *a stand-in face's glyph
+  floor* (editorial/layout-3, Pop layout 1's 0.14em, pixel-scanned); *place a seal by its disc's
+  centre* (lime/layout-1 — the sun); *a widened block can need no `G`* (grunge/layout-3); *one
+  five-theme digest is the whole proof for a shared-helper change* (lime/layout-1 — `PopDots`,
+  `LimePin`); *field reach is measured* (CLAUDE.md); *the whole-page published check*
+  (lime/layout-1) and *the popup is `about:blank`* (memory) — the 768 overflow measured in the
+  popup with the clip removed as the positive control.
 
 ## Open questions
 
@@ -876,12 +1007,15 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
    telling the designer, with Grunge's and Editorial's.
 4. **The gallery strip** repeats Retro's placeholder thumbnails again; the seeds stand (layout 1,
    open question 6). Worth telling the designer with it.
-5. **`showBadge` / `badgeText` at layout 2** — the frame draws a sun, not a seal; recommended
-   decoration, drawn always (*The header, and card 2*). The header session settles it.
+5. ~~**`showBadge` / `badgeText` at layout 2** — the frame draws a sun, not a seal; recommended
+   decoration, drawn always (*The header, and card 2*). The header session settles it.~~
+   *Settled in section 1: the sun is drawn always; both fields measure `[0, 3]` under Pop.*
 6. **The narrow masters' leaks**, each for its session to follow or override:
-   - the 768 header's sun, 15 past the page (the reason the 768 page renders 783 wide);
+   - ~~the 768 header's sun, 15 past the page (the reason the 768 page renders 783 wide);~~
+     *section 1: followed, and clipped by the root (783 → 768 in the published tab);*
    - the 390 bio's chip row, a no-wrap row to 667 (the 390 page's 667);
-   - the 390 header pill's label in Anton 12.07;
+   - ~~the 390 header pill's label in Anton 12.07;~~ *section 1: set in Titan at 12.07, the
+     pill 110.5 wide against 91;*
    - the 390 media bar's title and byline and the list's titles, past the master;
    - the map's ring labels past the 768 and 390 viewports, clipped;
    - the 390 testimonials' sub, a 411-wide no-wrap line.
@@ -892,3 +1026,11 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
 9. **The repertoire's leaks** — Lime's `#AFE335` × 4 and `#F2FFD0` × 2, Retro's `#FBF6EA`, two raw
    violets and Anton numerals in an otherwise bound variant, the same nodes at all three widths.
    Worth telling the designer once the session has found where they show.
+10. **The desktop capsule with *Follow my sections* on a full page** (section 1): the seeded nine
+    wrap it to two rows at the 12px floor on the 1180 canvas (and so in the published 1440 tab,
+    which zooms that layout), where Lime's, Grunge's and Editorial's hold one row — Titan is the
+    widest of the four faces, and the block's below-the-floor fallback is a wrap. Minimal is Pop's
+    layout-2 default, so the seeded header and the setup modal's card never show it; eight links
+    hold one row. *Options*: accept it as the designed fallback (recommended — no frame draws
+    nine links), or lower the floor under Pop (≈ 10.5px on the canvas, 12.8 in the published
+    1440). A user call if it is to change.
