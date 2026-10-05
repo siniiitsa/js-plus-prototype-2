@@ -2037,7 +2037,9 @@ The sweep:
    sets about 9% wider than the frame's.
 
    *Reached QA as JP-085 (2026-09-30), answered with a reply; the licence is the PO's* —
-   [`qa-fixes.md`](./qa-fixes.md) JP-085. The facts gathered for the PO:
+   [`qa-fixes.md`](./qa-fixes.md) JP-085. *Re-filed and reversed (2026-10-05):* with still no
+   licence, a closer free stand-in is chosen by rendering, in [`display-face.md`](./display-face.md)
+   ([`retest-qa-fixes.md`](./retest-qa-fixes.md) JP-085). The facts gathered for the PO:
    - **The face.** Fisterra is **TipoType**'s (Martín Sommaruga and Vicente Lamónaca), one family
      in two styles, *Fora* (sharp angles, the frames') and *Morte* (curves), 248 characters
      ([tipotype.com/fisterra](https://tipotype.com/fisterra/),

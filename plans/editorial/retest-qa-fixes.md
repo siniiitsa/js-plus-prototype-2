@@ -105,12 +105,12 @@ default list is `0,2,3,4`, which **skips Lime**, so always pass the list explici
 
 | Order | ID | Report (short) | Reverses | Verdict | Size | Decision | Status |
 |---|---|---|---|---|---|---|---|
-| 1 | JP-085 · JP-098 (*View list ✕*) | Noto, not Fisterra Fora · what *View list ✕* does | `qa-fixes.md` JP-085 (A); `layout-2-qa-fixes.md` JP-098 decision 3 (A) | **Both need an answer from outside the code**: a web licence (the PO) and the controls' meaning (the BA) | — (decisions) | **user** | open |
+| 1 | JP-085 · JP-098 (*View list ✕*) | Noto, not Fisterra Fora · what *View list ✕* does | `qa-fixes.md` JP-085 (A); `layout-2-qa-fixes.md` JP-098 decision 3 (A) | **Both need an answer from outside the code**: a web licence (the PO) and the controls' meaning (the BA) | — (decisions) | **user**: JP-085 **C** ([`display-face.md`](./display-face.md), its own branch); JP-098 **B** (proposal to the BA) | **done** (2026-10-05, no code) |
 | 2 | JP-092 (rest) | 390: the footer's rule scrolls the page with a long name | `layout-2-qa-fixes.md` JP-092 *Named, not fixed* (the footer's rule) and `qa-fixes.md` JP-086's footer item | **Confirmed, shared**: the rule is `flex: 'none'` in both footer trees; it never yields | S | light | open |
 | 3 | JP-101 | 390: a long name in the nav runs under BOOK NOW | `qa-fixes.md` JP-086 *Named, not fixed* (`:806`–`809`) and JP-091's scope (desktop only) | **Confirmed, shared**: the narrow wordmark is `nowrap` with no fit under Lime, Grunge, Editorial and Pop | S–M | **user** | open |
 | 4 | JP-099 | 390 player: no ♡ ↓ ⋯ | `layout-2-qa-fixes.md` JP-099 (A, a reply) | **Recorded call, refused twice**: Retro's 390 override, every template | S | **user** | open |
 | 5 | JP-089 (rest) | The extra `All` chip | `qa-fixes.md` JP-089 decision 2A ("the `All` chip stays"); `notes/pricing.md`'s "intended diff" | **Recorded call**: `repChips()` always leads with `All` | S–M | **user** | open |
-| 6 | JP-098 (rest) | 768 gallery: six tiles, no *View list ✕* | `layout-2-qa-fixes.md` JP-098 decisions 1A and 3A | **Waits on entry 1**: code only if the BA's answer asks for it | S–M (or none) | entry 1's | open |
+| 6 | JP-098 (rest) | 768 gallery: six tiles, no *View list ✕* | `layout-2-qa-fixes.md` JP-098 decisions 1A and 3A | **Waits on the BA**: the proposal was sent on entry 1's B (2026-10-05); code only if they confirm or amend it | S–M (or none) | entry 1's (B) | waits on the BA |
 | 7 | — | End-of-pass sweep | — | — | S | — | open |
 
 **Why this order:**
@@ -251,10 +251,74 @@ photos in the list" is right: six tiles are the seven slots less the one in the 
   two photographs become unreachable at 768, and two controls do nothing — the reasons the last
   batch kept them out.
 
-**Decided** — *(the session fills this in.)*
+**Decided** (user, 2026-10-05).
+1. **JP-085: C, a closer free stand-in, chosen by rendering.** No Fisterra web licence has been
+   bought or agreed. [`display-face.md`](./display-face.md) is written from option C. It runs on its
+   own branch (`editorial-display-face`) after this batch merges, not as entries appended here, so
+   this batch's digests carry no Editorial face rows. If a licence is bought, `qa-fixes.md`
+   JP-085's option B replaces it.
+2. **JP-098: B, the proposal goes to the BA now.** The user relays *A proposal to put to the BA*
+   above, as written: *View list* reveals the rest, ✕ clears the pick, neither at 1440 or 390.
+   Entry 6 builds it if the BA confirms or amends it before entry 6's session. If not, entry 6 is
+   skipped, and the sweep's reply says the question is with the BA, with the proposal attached.
+   `layout-2-qa-fixes.md` JP-098's decisions 1A and 3A stand until then.
 
-**Settled** — *(the session fills this in: the reply lines, in the sweep's shape, opening on who
-holds the next step, since a reply that reads as closed is refused.)*
+Asked over the evidence, re-checked on HEAD (`e953ec9`, the plan commit on `bb142de`; no source
+has changed since the triage). Every line held:
+- **JP-085**: `THEMES[3]` at `data.js:180`–`201`, the stand-in comment inside `:183`–`199`,
+  `display` / `label` at `:200`–`201`; `NOTO_EM` at `:677`, `notoEms` at `:687` (and `notoBoldEms`
+  at `:695`); one pinned `Noto+Serif+Display:wdth,wght@62.5,540..700` entry at `index.html:11` and
+  `preview.html:10`; no `@font-face` in `source/`.
+- **JP-098**: `Gallery`'s `if (s.v1)` at `EncoreSection.jsx:15072`, `COLUMNS` `:15160`–`15162`,
+  `railSlot` `:15168`, the tile's click and reset `:15186`–`15192`, its `flex: ${h} 1 auto`
+  `:15208`, the head row `:15260`–`15268`, the repertoire's *View full set* `:13362`–`13368`.
+
+**Settled** (2026-10-05, no code).
+- **Nothing under `source/` changed**, so there is no digest.
+- **`display-face.md`** takes option C as a comparison first. Writing it found these, and the plan
+  carries them:
+  - **Session 0's table is the baseline.** Its seven measured rows are carried over, Noto 540
+    among them. Noto at 700 (`qa-fixes.md` JP-085's option C) is a new row.
+  - **Ten new rows, each confirmed served by Google Fonts with its axes** (2026-10-05). Two are
+    roman–blackletter hybrids for *Fora*'s sharp angles (Grenze, Texturina). Two are narrow
+    high-contrast cuts (Imbue, and Playfair with its width axis). Three are caps-only or titling
+    faces (Cinzel, Castoro Titling, Elsie Swash Caps). Almendra Display and Pirata One mark the
+    angular edge. Their character column is unrendered, so it is step 1's to fill.
+  - **A fifth score column, *character***: wedge or angled serifs, R and Q tails, caps-only,
+    ligatures. The tester's complaint is the face's shape, and session 0's four columns measured
+    only proportions and weight.
+  - **Fraunces is left out on purpose.** Its SOFT / WONK curls are already pinned for Retro, and a
+    second instance would change the face Retro's sites are served.
+  - **The cost list names every read of the Noto ems**: `navFace` (six vm keys and the calendar
+    month), `titleWordEms`, and the testimonials and footer statements. `faceK` is re-measured, not
+    assumed 1. CLAUDE.md's *Editorial's face* rule moves to the winner when it ships.
+- **Docs.** A *reversed* pointer on `qa-fixes.md` JP-085's Decided. `layout-1.md` open question 1
+  now points at `display-face.md`. `layout-2-qa-fixes.md` JP-098's Decided notes the proposal sent
+  (not *reversed*, since 3A stands until the BA answers). `notes/gallery.md` is unchanged, since no
+  code moved. `plans/README.md`'s row is the sweep's (step 6).
+- **The reply lines**, in the sweep's shape so step 6 can use them unchanged. Each opens on who
+  holds the next step:
+  - **JP-085 — planned for a later build; the licence stays with the PO.** This build is
+    unchanged: the headings are still Noto Serif Display, and nothing named Fisterra is loaded. No
+    licence covering the artists' public sites has been bought, and the PO still has to ask
+    TipoType whether one web licence covers every site the builder publishes. In the meantime, a
+    later build replaces Noto with a closer free face. It is chosen by rendering candidates side by
+    side against the design's *KAI MERCER* and a section heading. The test is the shape the report
+    points at: the angled serifs, the tails on R and Q, the narrow capitals. Weight alone was
+    matched already. It will still not be Fisterra Fora. If the PO buys a licence, the real face
+    replaces it.
+  - **JP-098 — with the BA, with a proposal.** This build is unchanged at tablet width: six
+    thumbnails and no *View list* or ✕. We have sent the BA this proposal:
+    - ***View list* reveals the rest.** At rest the tablet gallery shows the design's four
+      thumbnails, the fourth cut at the band's foot. *View list* opens the band to every thumbnail,
+      so no photo is out of reach.
+    - **✕ clears the pick.** Clicking a thumbnail already puts its photo in the large frame, and
+      clicking it again puts the featured photo back. ✕ does the same from the row.
+    - **Neither is drawn at desktop or mobile**, since those designs have no such row.
+
+    Whether *View list* folds back, and whether ✕ shows while nothing is picked, are for the BA to
+    decide. If they confirm or amend the proposal, it is built as described. Until then the six
+    thumbnails stay, so all seven photos remain reachable on a tablet.
 
 ---
 

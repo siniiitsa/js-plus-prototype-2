@@ -1600,6 +1600,11 @@ and dead-controls comments, `notes/gallery.md:38`–`45`, *reversed* pointers at
 3. **View list and ✕ stay dropped**, with a reply: two controls with nothing to do on the
    published page. Retro's call stands.
 
+*Re-filed (2026-10-05):* the tester handed *View list* / ✕ to the BA, and a proposal went to them
+on [`retest-qa-fixes.md`](./retest-qa-fixes.md) entry 1's B. *View list* would reveal the rest
+from the frame's four tiles, and ✕ would clear the pick. 1A and 3A stand until the BA answers.
+That plan's entry 6 reverses them on a confirmed answer.
+
 Asked over what the session found first, on HEAD (`7b1e1e2`):
 - **Every *Evidence* line moved as mapped.** `EncoreSection.jsx`: `Gallery` `:13070`, its
   `if (s.v1)` `:13851`, the claims comment `:13796`–`13803`, the head-row note `:13824`–`13831`,

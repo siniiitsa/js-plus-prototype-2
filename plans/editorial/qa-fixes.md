@@ -206,6 +206,12 @@ handed to the PO. No code. B replaces it if a licence is bought. It would then b
 `display-face.md` on its own branch, and the licence could be TipoType's self-hosted file or
 Adobe Fonts' hosted link, which the facts now name as a second route.
 
+*Reversed* (2026-10-05, user call, [`retest-qa-fixes.md`](./retest-qa-fixes.md) JP-085 · JP-098):
+the tester re-filed it, and no licence has been bought, so **C** in a new shape replaces the reply.
+It is a closer free stand-in chosen by rendering, planned in [`display-face.md`](./display-face.md)
+for its own branch. This entry's C (Noto at 700) is one row of that comparison. B still replaces it
+if a licence is bought.
+
 Asked over the facts, gathered in-session and re-checked on HEAD (`50b165c`). Every *Evidence*
 line held: the stand-in comment at `data.js:186`, `display` / `label` at `:200`–`201`, `NOTO_EM`
 at `:508`, `notoEms` at `:518` and `notoBoldEms` at `:526`. `index.html:11` and `preview.html:10`
