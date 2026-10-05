@@ -54,7 +54,8 @@ another `notes/` file.
   **Everything in this paragraph from "The chip starts at 0" on is layout 1's**: layout 2 is a
   narrow sidebar card on a full-bleed mustard sheet (pale under Lime; Grunge's frame paints no
   sheet at all, its Scheme 4 being its Scheme 1; under Editorial the sheet is the root's own
-  terracotta, the section seated on Scheme 4), and it shares the seam whole rather than
+  terracotta, the section seated on Scheme 4; under Pop the root's own blue, Scheme 4 again, with
+  the card a lime nested Scheme 2 read through `s.onScheme[2]`), and it shares the seam whole rather than
   growing one — the same `vals`, the same `errs`, the same `sent`, the same `<a href="mailto:">`
   and the same *Write another*. What it does not draw is the chip row (so `showTypes` stays
   `!!s.v0 && nTypes` and its mailto sends the bare `Enquiry`), the message textarea, or the
@@ -66,13 +67,15 @@ another `notes/` file.
   inset **ring** where layout 1 draws an inset rule — a rule under a 999px pill reads as a smear
   (under Lime the ring is 2px of full ink, Lime's layout-1 rule, and under Grunge 2px of `s.tx`,
   the idle ring being the white 15%; Editorial's boxes are square and dashed 6, 6 in full ink, so
-  its refusal drops the dash for a solid 2px ring of paper — colour, weight and dash at once) —
+  its refusal drops the dash for a solid 2px ring of paper — colour, weight and dash at once; Pop's
+  are Lime's pills in a 1px hairline of full violet on the lime card, so a refusal is 2px of the
+  card's own pink, `G.badRing` — colour and weight at once) —
   and its card carries the frame's price row, `★★★★★ 42 bookings` line, "Check Availability"
   label and "No charge to enquire" line as fields seeded with the frame's copy (`price`,
   `priceUnit`, `bookings`, `cta`, `note`), each dropping when emptied except the label, which is
   the submit and falls back to `button` (Lime's card draws all five, the stars in ink, since
-  Scheme 4 binds both of the line's colours to it; Grunge's and Editorial's line is two-tone, the
-  stars in the accent — paper under Editorial — and the count in ink). The stage photograph above the heading is
+  Scheme 4 binds both of the line's colours to it; Grunge's, Editorial's and Pop's line is two-tone, the
+  stars in the accent — paper under Editorial, the card's pink under Pop — and the count in ink). The stage photograph above the heading is
   `FIELDS.form.photo`, a **third single-photo slot** beside `image` and `avatar`, because this
   section's `image` **is** the artist: the header's pair is the other way up,
   and layout 1 has drawn `image` as the 48px circle since it was fitted.

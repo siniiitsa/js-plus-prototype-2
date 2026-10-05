@@ -36,14 +36,14 @@ another `notes/` file.
   Gigs on the map or the calendar, About on the bio, Book gone because its pill already stands
   beside the links — and **`navMode`'s default follows the layout** (`navModeDefault()` in
   `data.js`, JP-039 reopened, user call, 2026-09-23): Minimal at layouts 2 and 3 of Retro, Lime,
-  Grunge and Editorial, *Follow my sections* everywhere else, and in `EditPanel`'s fallback chain
-  too, so the panel names what the canvas draws. A stored value always wins, so the seeded
-  header is its frame's picture at all four layouts and moves with the layout until the artist
-  picks. **Pop is not in that list yet**: its layout-2 and layout-3 cards are placeholders
-  until their passes read their frames, so they follow the sections. **At 768 the links are
+  Grunge and Editorial and at Pop's layout 2, *Follow my sections* everywhere else, and in
+  `EditPanel`'s fallback chain too, so the panel names what the canvas draws. A stored value
+  always wins, so the seeded header is its frame's picture at all four layouts and moves with the
+  layout until the artist picks. **Pop's layout 3 is not in that list yet**: its card is a
+  placeholder until its pass reads the frame, so it follows the sections. **At 768 the links are
   fit-gated in layouts 2 and 3, and folded everywhere else** (JP-039, user call, 2026-09-21).
   The 768 masters of layouts 2 and 3 draw Music / Gigs / About in the capsule, in Retro and
-  Lime alike (and Grunge's two, and Editorial's); those of layouts 1 and 4 hide all eight link nodes beside a burger. But `navLinks`
+  Lime alike (and Grunge's two, Editorial's, and Pop's layout 2); those of layouts 1 and 4 hide all eight link nodes beside a burger. But `navLinks`
   is the artist's page, and the seeded eleven sections give nine — 576px of type at the master's
   own 16px, 720 with the capsule's eight 18px gaps, in a 708px bar that also seats the wordmark,
   Listen and the pill. So `sectionVm` sums the bar's one row at the master's own sizes — the
@@ -52,14 +52,15 @@ another `notes/` file.
   otherwise, in the same bordered capsule, which the 390 masters draw the burger in. Minimal's
   three fit under the seeded name (the wordmark is in the sum, so a long one can fold them too); *Follow my sections* on the seeded names fits up to four links in Retro
   layout 2, five in Retro layout 3, seven in Lime's layout 2 and six in its layout 3, eight in Grunge's layout 2 and seven in its
-  layout 3, five in Editorial's layout 2 and four in its layout 3 (it is the words' width that
-  counts, not their number), so a page switched to *Follow my sections* is still the burger. It is a vm boolean
+  layout 3, five in Editorial's layout 2 and four in its layout 3, and three in Pop's layout 2
+  (it is the words' width that counts, not their number), so a page switched to *Follow my
+  sections* is still the burger. It is a vm boolean
   because `EncoreSection` has no effect to measure with: Lime's sum is `navEms` /
   `navNameEms` / `navCtaEms` (Bebas, `bebasEms()`), Retro's is `antonEms()` in `data.js`, its
   0.02em tracking folded in (Grunge's arm is the same table at a tracking of 0, its mode stating
   none; Editorial's `navEms` family is `notoEms()`, read off the rendered DOM, and its layouts 2
   and 3 take Grunge's arm — the same bar, the same fixed 18 gaps — in Noto, layout 3's links at
-  Label/SM where Grunge's are Label/MD, against 684). It is set at tablet only — desktop never reads it and always draws
+  Label/SM where Grunge's are Label/MD, against 684; Pop's layout 2 takes it too, in `titanEms` × 0.98, against **656**, the frame's bar, inset 26 inside the 708 spread). It is set at tablet only — desktop never reads it and always draws
   the links — and is undefined, so the burger, at 390, on an empty nav and in layouts 1 and 4;
   layouts 5 and 6 draw `NavLinks`, which
   keeps the (wrapping) link row at 768 and collapses only at 390 (measured in JP-033's digest).

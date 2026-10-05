@@ -31,9 +31,11 @@ another `notes/` file.
   which is where the frame's own "Other upcoming · 4" comes from, and `feat` falls back to the
   page's first gig whenever `sel` is off-page — the canvas, the -1 start and a gig deleted under
   the visitor, all in one test. Its pager takes the wide `pageWindow` except at 390; under Lime,
-  Grunge and Editorial it takes the compact one at every width, layout 1's map recipe, and their
-  map draws the same screened raster on Retro's own dark plate (Editorial's frame too: its
-  viewport states no fill, and the render samples the plate). **Layout 3 is layout 1's lit row and layout 2's featured panel
+  Grunge, Editorial and Pop it takes the compact one at every width, layout 1's map recipe, and their
+  map draws the same screened raster on Retro's own dark plate (Editorial's and Pop's frames too:
+  each viewport states no fill, and the render samples the plate). No Pop master draws a pager, so
+  Pop's wears the repertoire's layout-2 dress (`frame.lime`, the one pager its page draws on
+  Scheme 1) rather than `Pager`'s Pop arm, which is layout 1's Scheme 6 seat. **Layout 3 is layout 1's lit row and layout 2's featured panel
   in one control**: its rows light *and* the panel beside them features, on the same `sel`, so
   nothing is removed from the page the way layout 2 removes the featured gig from its list — and
   the lit row is **not drawn at one row**, which is exactly the 390 canvas, where a page is one
@@ -65,7 +67,7 @@ another `notes/` file.
   the frame offers both. Layout 2 alone also prints `status` as the chip on **every** gig row:
   one section-wide word, not a per-gig status (pricing's `unit` precedent), with the row's own
   hour, which held that seat, moved into the meta line. Each drops when emptied. Layout 2's
-  Lime block (Grunge's and Editorial's too, widened) reads layout 3's `zoom`; Retro's layout 2 draws no zoom controls. **Layout 4 is the
+  Lime block (Grunge's, Editorial's and Pop's too, widened) reads layout 3's `zoom`; Retro's layout 2 draws no zoom controls. **Layout 4 is the
   pager alone**: its whole gig list is one ticker (mustard under Retro, an olive `s.box1`
   capsule in a `s.stroke1` hairline under Lime, `#1A1A1A` in a 1px `#FF0000` ring with red
   numerals under Grunge, `#FFF9F2` dashed 7, 7 in terracotta at radius 10 under Editorial, whose
@@ -137,6 +139,10 @@ another `notes/` file.
       Breaking inside the word would split Editorial's seeded *MANCHESTER,* at 768, which already
       runs past its 105 column. The frame runs *Manchester, UK* past it too (129 in 105).
     - Lime's 13px body face wraps *Willing to travel to* onto two lines at 768.
+    - Under Editorial and Pop the venue city keeps the frames' Body/MD, where Lime and Grunge
+      normalise it to Display/List: both display faces break the uppercase *MANCHESTER* inside
+      the word in the 768 column's 105. Both wrap the pill row there too, so Get Directions
+      stands on its own line under Venue Link.
     - The unfiled seats on the tester's screenshot: the h2 (*Venue Distance*), the chip (*●
       Confirmed*, JP-060), the featured venue (the frame features its third gig) and *100 mi*
       (`MAP_RADIUS`).

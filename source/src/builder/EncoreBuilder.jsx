@@ -426,8 +426,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // decorative treatment (grain, torn edges, checkerboard, hard offset
     // shadows, rotated cards) is Retro's alone. Lime, Grunge, Editorial and
     // Pop each draw a decoration of their own behind `lime`, `grunge`,
-    // `editorial` and `pop` below — Pop at layout 1 so far; its layouts 2–4
-    // render the shared structure undressed until their passes.
+    // `editorial` and `pop` below — Pop at layouts 1 and 2 so far; its layouts
+    // 3 and 4 render the shared structure undressed until their passes.
     retro: T.name === 'Retro',
     // Lime's four layout pages are Retro's components in its own variable
     // mode, so its decoration — arc seams, glows, the arch portrait — goes
@@ -457,7 +457,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // Lime's tree for ten sections, Retro's media player for the eleventh — so
     // each section session widens its own layout-1 block to `(s.limeTree ||
     // s.pop)`, or Retro's media body to `(s.retro || s.pop)`, and puts what only
-    // Pop draws behind this flag (plans/pop/layout-1.md, decision 3).
+    // Pop draws behind this flag (plans/pop/layout-1.md, decision 3). Its
+    // layout-2 page is Lime's layout-2 tree in all ten, widened the same way
+    // (plans/pop/layout-2.md, decision 1).
     pop: T.name === 'Pop',
     // The templates whose pages are Lime's component trees, so a Lime block
     // that Editorial's frame shares is gated on this rather than on a third
@@ -480,13 +482,14 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   }
   // Layout 2's sections stand on their own frames' insets (JP-094, user call,
   // 2026-10-02, reversing Retro's "fit the card, not the frame height" for the
-  // three templates whose pages are Lime's tree). The page frames stack their
+  // templates whose pages are Lime's tree, Pop's included). The page frames stack their
   // sections with no spacing and each states its own top and foot, so a gap is
   // one section's foot plus the next one's top, where `padY` doubled up to 160
   // (the tester's 197 in the zoomed tab) against the frame's 112 × 0.82
   // (Editorial's 964:64598 · 986:15657 · 986:15676; Lime's 964:64579 ·
   // 986:11847 · 986:11866 and Grunge's 964:64617 · 986:13752 · 986:13771
-  // state the same numbers to the pixel). [top, foot] at 1440, 768 and 390,
+  // state the same numbers to the pixel, and so do Pop's 964:64560 · 986:17562
+  // · 986:17581, plans/pop/layout-2.md, session 0). [top, foot] at 1440, 768 and 390,
   // desktop × 0.82 rounded to 0.1 as the blocks' own `u()` rounds it — not
   // layout 3's whole pixels — so the calendar's and the map's old
   // `calc(u(56) - padY)` margins (Lime's user call, 2026-09-17) fold in exactly.
@@ -494,7 +497,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // top, which its nav margin cancels, and pricing's desktop foot, which its
   // 1px foot rule bleeds through (the rule's 24 + 8 is the frame's 32). The
   // repertoire's sheet, the form's band and the footer keep theirs.
-  if (d === 1 && (T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial')) {
+  if (d === 1 && (T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial' || T.name === 'Pop')) {
     const inset = {
       header: [[null, 56], [null, 60], [null, 10]],
       bio: [[56, 56], [60, 60], [30, 30]],
@@ -702,11 +705,13 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // Pop's capsule (964:58624 "Frame 49") is Editorial's: Label/SM 16 links 23
   // apart, so 23/16 of the row's size, in Titan One (`titanEms`, the face
   // standing in for Chunko Bold Demo) at 0.98 of the token (`faced`), the way
-  // Grunge's Anton is at 0.75. Its other three cards are placeholders whose
-  // only capsule is NavBar's, which spaces them the same way.
+  // Grunge's Anton is at 0.75. Its layout-2 capsule (964:64561) is Grunge's,
+  // a fixed 18 at 16px type and at 13, so there the sum is the labels alone.
+  // Its cards 3 and 4 are placeholders whose only capsule is NavBar's, which
+  // spaces them the layout-1 way.
   const navFace = T.name === 'Lime' ? bebasEms : T.name === 'Grunge' ? (x) => antonEms(x, 0) * 0.75
     : T.name === 'Editorial' ? notoEms : T.name === 'Pop' ? (x) => titanEms(x) * 0.98 : null
-  const navGapEm = T.name === 'Editorial' ? (d >= 1 ? 0 : 23 / 16) : T.name === 'Pop' ? 23 / 16
+  const navGapEm = T.name === 'Editorial' ? (d >= 1 ? 0 : 23 / 16) : T.name === 'Pop' ? (d === 1 ? 0 : 23 / 16)
     : T.name === 'Grunge' && d >= 1 ? 0 : 23 / 24
   vm.navEms = navFace
     ? Math.max(1, +((vm.navLinks.reduce((w, l) => w + navFace(l.label), 0)
@@ -769,14 +774,17 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // gaps, its links at Label/SM 13 and its name at Label/LG 16 — in Noto
   // (`navFace`). Its layout 3 (984:16812) is that bar again against layout
   // 3's 684: the same 138.32 and fixed 18 gaps, and the links still Label/SM,
-  // where Grunge's layout-3 links are Label/MD.
+  // where Grunge's layout-3 links are Label/MD. Pop's layout 2 (986:17563) is
+  // Grunge's layout-2 bar box for box again — the same 138.32, fixed 18 gaps,
+  // links at Label/SM 13, name at Label/LG 16 — in Titan (`navFace`), but its
+  // nav is inset 26 a side, so the bar is 656; its layout 3 is a placeholder.
   if (cat === 'header' && Z.dev === 'tablet' && vm.navLinks.length && (d === 1 || d === 2)) {
     const px = (v) => parseFloat(v)
-    const row = d === 1 ? 708 : 684
+    const row = d === 1 ? (T.name === 'Pop' ? 656 : 708) : 684
     if (T.name === 'Lime') {
       vm.navFits = vm.navEms * px(vm.labelSm) + vm.navNameEms * px(vm.labelLg)
         + vm.navCtaEms * px(vm.labelSm) + 138.32 <= row
-    } else if (T.name === 'Grunge' || T.name === 'Editorial') {
+    } else if (T.name === 'Grunge' || T.name === 'Editorial' || (T.name === 'Pop' && d === 1)) {
       vm.navFits = vm.navEms * px(T.name === 'Grunge' && d === 2 ? vm.labelMd : vm.labelSm) + (vm.navLinks.length - 1) * 18
         + vm.navNameEms * px(vm.labelLg) + vm.navCtaEms * px(vm.labelSm) + 138.32 <= row
     } else if (T.name === 'Retro') {

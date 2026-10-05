@@ -24,7 +24,7 @@ another `notes/` file.
   which is honoured only when `live`. With it, a day or slot before today carries **`dead`**
   beside `booked` — `EncoreSection`'s one `blocked()` test, so the two behave identically in all
   four layouts: no handler, no enquiry line, never the pick, and the booked look **without the
-  strike** (except Lime's layout 2 — and Grunge's and Editorial's, which widen its block — whose past rows keep full ink and only lose the handler —
+  strike** (except Lime's layout 2 — and Grunge's, Editorial's and Pop's, which widen its block — whose past rows keep full ink and only lose the handler —
   user call, 2026-09-17, made while its seeded slots had no editor and were all past; Lime's
   layout-4 exception went with JP-052; and layout 3 on every template, whose legend names the
   booked fill *Booked*, so a past day there is the *free* dot at .38, booked or not, lest the
@@ -64,20 +64,23 @@ another `notes/` file.
   so no arrows and no `mi`. Everything else it shares whole:
   `sel` is the same ISO date, `open` cues the same day (slot one *is* `CAL_OPEN`, so the
   seeded page opens on the frame's picture), `booked` kills a row there as it strikes a cell
-  here (under Lime, Grunge and Editorial the row is dimmed to .38 with no strike, the same state their cells take), the foot prints the slot's own short line — `vm.calSlots[].line`, "Thursday evening
+  here (under Lime, Grunge, Editorial and Pop the row is dimmed to .38 with no strike, the same state their cells take), the foot prints the slot's own short line — `vm.calSlots[].line`, "Thursday evening
   selected", composed from the weekday and the slot's `kind` — or the same `calPrompt`, and the
   pill takes the same `calBookTo` under its own label, `slotCta` ("Start Enquiry"; the frame's
-  "Star Enquiry" read as a typo), chip, line and pill on one row at every width. Under Lime, Grunge
-  and Editorial that is true again since JP-100 (user call, 2026-10-01): their `s.limeTree` foot
+  "Star Enquiry" read as a typo), chip, line and pill on one row at every width. Under Lime, Grunge,
+  Editorial and Pop that is true again since JP-100 (user call, 2026-10-01): their `s.limeTree` foot
   stacked the pill at 390, a fit slip off Retro's pre-QA foot. At 390 their chip and line are a
   group that wraps, and the line's minimum is its widest word (`break-word`, not `anywhere`, which
   would make it one glyph). So the line stands beside the chip wherever that word fits, and drops
   under it otherwise. That is Lime's and Grunge's seed beside it (80 / 89 of room for *Thursday*'s
-  58), and Editorial's under it (its Noto pill is 198 to the frame's 184, leaving 47). A
+  58), and Editorial's and Pop's under it (Editorial's Noto pill is 198 to the frame's 184, leaving 47;
+  Pop's Titan pill is 201 to the frame's 190, leaving 44, so its 390 foot is 98 on a picked day
+  against the master's 104, whose line is squeezed to 54 and breaks inside *Thursday*). A
   `maxWidth: 100%` clamps that minimum, so a long word in the prompt still breaks inside the cell.
   The foot wraps by the same rule: the group's minimum is its own min-content, so a typed `slotCta`
   long enough to leave the line less than its widest word drops the pill under the group.
-  Retro's and Pop's foot never wraps: at 360 it breaks *Thursday* inside itself, as it always has.
+  Retro's foot never wraps: at 360 it breaks *Thursday* inside itself, as it always has. (Pop's
+  layout 2 drew Retro's body until its layout-2 pass widened the Lime block to it, 2026-10-05.)
   Its head's link list is `vm.calFlow` — `CTA_TARGETS.book` resolved against
   the page, this section leading and dotted and never linking to itself, the footer's rule for
   a link column. `heading`, which once headed only the unreachable fallthrough, heads it; `image` does not
@@ -191,6 +194,12 @@ another `notes/` file.
   `cased()`, as the slot line beside it is, and reads its seed again when emptied
   (`messageLabel`'s rule), since an empty foot reads as broken. The canvas never reads the clock,
   so no harness render prints it unless the cued day is blocked: its `reach.mjs` row and any sweep
-  stand on `booked: [CAL_OPEN]`. A long word in it breaks at every site, except in Retro's and
-  Pop's layout-2 foot at 1440 and 768, which ellipsises the line as it always has the slot line.
+  stand on `booked: [CAL_OPEN]`. A long word in it breaks at every site, except in Retro's
+  layout-2 foot at 1440 and 768, which ellipsises the line as it always has the slot line.
   The slot line's " selected" and the legend stay literals, unreported siblings.
+- **Pop's layout-2 marks are four colours, seated by row** (Pop layout 2, section 7, 2026-10-05).
+  Pop widens the `s.limeTree` block, seated on Scheme 2 as Editorial's is. Its four slot marks bind
+  `sem/media` (teal), `text/2` (violet), `text/1` and `stroke/2` (both pink) at all three widths,
+  where the twins' all bind `text/2`. Because the last three are not one colour, this is a row
+  palette, not a pick state: `G.marks[i % 4]` by rendered row, so `&n=8` cycles it and a booked
+  row dims its mark with the rest. The pick's cue is still the foot's chip alone.

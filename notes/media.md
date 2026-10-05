@@ -53,7 +53,10 @@ another `notes/` file.
   rotate *through* them, wrapping, so the centre seat always holds the track the player is on.
   Do not centre the seats on `at` instead — `at` is 0 until a visitor picks, and the fan would
   open one-sided. Geometry and hue belong to the seat, not the track, or the composition would
-  shuffle its colours on every pick; the centre is the accent and carries the Featured tab. On
+  shuffle its colours on every pick; the centre is the accent and carries the Featured tab.
+  Under Pop each seat is a **scheme** (`popCard(k)`, 5 / 4 / 2 / 3 / 6 from the left, the
+  outermost repeating past five), and each list row is one by **index** (`popRow(i)`, 3 / 4 / 5 /
+  7 / 8, cycling) — the row is the track's place in the list, which never rotates. On
   the canvas the seats are unrotated (the Figma frame's picture) and the bar takes the **centre
   seat's** title and artwork rather than the shared now-playing block's, which names the cued
   first track — live the two are the same track by construction.

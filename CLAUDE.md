@@ -276,9 +276,10 @@ mutated through a single `patch()` helper.
   Lime or Grunge seam reads `s.bg` as a neighbour's colour, which a seat would change), and the reads outside
   `sectionVm` — the page gutter, the published `documentElement`, the picker's dots — stay the
   theme's, Scheme 1. **A card on another scheme seats its section on the card's**: layout 2's
-  media panel and calendar card are Scheme 2 cards on the page's paper, so `s.bg` there is the
-  card's taupe, the block paints the card, and the root paints **`vm.pageBg`** round it —
-  `theme.palette[0]`, the page's own ground whatever the seat — through its `editorialCard` flag.
+  media panel and calendar card are Scheme 2 cards on the page's paper (on Pop's white too), so
+  `s.bg` there is the card's taupe (Pop's lime), the block paints the card, and the root paints
+  **`vm.pageBg`** round it — `theme.palette[0]`, the page's own ground whatever the seat —
+  through its `cardOnPage` flag (`editorialCard` until Pop's layout-2 sweep).
   **A nested node on another scheme reads `s.onScheme[n]`**: every scheme of a theme carrying
   `schemes`, flat (`flatScheme()`: `bg` / `ac` / `tx` / `acFg`, the `sem` keys, `pillBg` /
   `pillFg`, and the scheme's own two `chips`), keyed by number with 1 the theme's own, and
@@ -295,14 +296,25 @@ mutated through a single `patch()` helper.
   paper capsule, links, pill and chips and `[4]` for its seal, the bio's and pricing's chips
   `[1]`, the gallery's arrow discs `[4]`, the map's viewport and the calendar's Back pill `[3]`,
   and the testimonials' second cell `[1]`. Layout 1's one such site (pricing's Book
-  pills, Scheme 1 inside Scheme 2) predates the key and stays named literals. **Pop's frames
-  bind no colour outside the header**, so its seats are inferred rather than read: a section
-  stands on the scheme whose ground it paints, and a tint no scheme key holds is a named literal
-  (plans/pop/layout-1.md, decision 4, user call, 2026-10-02). `THEMES[4]` carries Schemes 2, 3,
-  4, 6 and 7, `SCHEMES_OF.Pop` seats layout 1's repertoire on 6, calendar on 4, testimonials on
-  2 and footer on 3 (row 0 alone, so the footer is pink on every page), and its nested cards
-  read `s.onScheme[n]` (`notes/templates.md`). Its Scheme 1 adds a `sem` key no other theme
-  carries, **`text3`** (`s.text3`), the frames' second ink, where `s.tx` is violet.
+  pills, Scheme 1 inside Scheme 2) predates the key and stays named literals. **Pop's layout-1
+  frames bind no colour outside the header**, so its seats there are inferred rather than read: a
+  section stands on the scheme whose ground it paints, and a tint no scheme key holds is a named
+  literal (plans/pop/layout-1.md, decision 4, user call, 2026-10-02). **Its layout-2 frames are
+  bound** (plans/pop/layout-2.md), so those seats are read off the masters, and a raw hex there
+  is a leak. `THEMES[4]` carries Schemes 2, 3, 4, 5, 6, 7 and 8 (5 and 8, teal and yellow, seat
+  only layout 2's nested media cards and rows), and `SCHEMES_OF.Pop` seats layout 1's repertoire
+  on 6, calendar on 4, testimonials on 2 and footer on 3 (row 0 alone, so the footer is pink on
+  every page), and layout 2's media and calendar on 2 (lime cards on the white page, Editorial's
+  mechanism) and the form on 4 (a blue band). Its nested cards read `s.onScheme[n]`
+  (`notes/templates.md`): at layout 2 the header's Enquire pill `[3]`, its place card `[6]`
+  ringed in `[3]`'s `stroke2` and its Book pill `[3]` at 1440 and 768 and `[4]` at 390, the
+  bio's Book pill `[4]`, the media fan's cards `[5]` / `[4]` / `[2]` / `[3]` / `[6]` and list rows
+  `[3]` / `[4]` / `[5]` / `[7]` / `[8]` round `[1]`-ringed discs, pricing's plan card `[7]` and
+  its rule `[6]`, the map's travel card and viewport `[3]` and its map card `[2]`, the form's
+  sidebar card `[2]`, and the testimonials' card `[2]` and picked tile `[3]`. Its Scheme 1 adds a
+  `sem` key no other theme carries, **`text3`** (`s.text3`), the frames' second ink, where
+  `s.tx` is violet; at layout 2 body copy binds `text/2`, so it is `s.tx` there, and `text3` is
+  read only where a node binds it (the place card's body, the form's promises and credit).
 - **`FIELDS` exposes every key any layout reads. A layout that does not consume a key simply
   ignores it, and the panel says so**: a field's `in` lists the designs that read it (0-based,
   `arch % designCount` and never the raw `arch`; an array, or an object keyed by template with
@@ -315,8 +327,9 @@ mutated through a single `patch()` helper.
   cards, 2026-09-24 — the first measurement with no placeholder card; Editorial's over its four
   fitted cards, 2026-09-30, card 2 having lost the placeholder's `showBadge` and `badgeText`
   since its frame draws no seal, and cards 3 and 4 re-measured unchanged; Pop's over its fitted
-  Hero and three placeholder cards, 2026-10-03, so each of Pop's layout passes re-measures its
-  card). One header row keeps a `'*'`: `cardLine` (JP-061), whose `'*': []` marks Retro and Pop
+  Hero and three placeholder cards, 2026-10-03, and again over fitted card 2, 2026-10-05, which
+  took `showBadge` and `badgeText` off design 1 as Editorial's had, so Pop's layout-3 and -4
+  passes each re-measure their card). One header row keeps a `'*'`: `cardLine` (JP-061), whose `'*': []` marks Retro and Pop
   "Not shown in this template", as `FIELDS.media.cta`'s row does, because only the three
   `s.limeTree` blocks read it. A field no design reads is deleted, not kept at `in: []`: `bio.statement` and
   `map.sub` went that way with the fallthroughs that read them (the other seven NVAR-4
@@ -359,7 +372,7 @@ mutated through a single `patch()` helper.
   and thumbnail strip, layout 3's fullscreen viewer, and layout 1's 390 source row, which
   scrolls sideways only when live and clips on the canvas** (below — the file's one scroll
   container, JP-087), the **events map's pager, its pin/row pairing, its map zoom
-  (layouts 3 and 4, and Lime's, Grunge's and Editorial's layout 2) and — in layout 3 alone — its city chip row and its See all gigs reveal**
+  (layouts 3 and 4, and Lime's, Grunge's, Editorial's and Pop's layout 2) and — in layout 3 alone — its city chip row and its See all gigs reveal**
   (below),
   the **pricing section's chip row and Book pill** (below — the row filters the deck in layout 1,
   picks the single big plan in layout 2 and filters the stack in layout 3, where it also moves
