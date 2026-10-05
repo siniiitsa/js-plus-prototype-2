@@ -218,7 +218,7 @@ session widens. The narrow twins are in Editorial's and Grunge's sections tables
 | 4 | `repertoire` | `964:64570` | 1440 × 792 | `986:17572` | 768 × 792 | `986:17591` | 390 × 594 | 1 (a `box/1` sheet) | `964:64589` | `964:64608` | inside `Repertoire`'s `if (s.v1)`, after `pageWindow()` | **done** `4e6c51f` |
 | 5 | `gallery` | `964:64571` | 1440 × 675 | `986:17573` | 768 × 468 | `986:17592` | 390 × 364 | 1 | `964:64590` | `964:64609` | **no block** — `s.limeTree` reads and `(s.lime \|\| grunge)` / `ed` ternaries through `Gallery`'s `if (s.v1)` | **done** `d8a361e` |
 | 6 | `pricing` | `964:64572` | 1440 × 719.7 | `986:17574` | 768 × 926.4 | `986:17593` | 390 × 841.4 | 1 (the plan card **7**, leant −3 / −3 / −1) | `964:64591` | `964:64610` | inside `Pricing`'s `if (s.v1)`, after `sel` / `t` | **done** `fb84f5b` |
-| 7 | `calendar` | `964:64574` *(in `964:64573`)* | 1328 × 842 *(1440 × 954)* | `986:17576` *(in `986:17575`)* | 708 × 705 *(817)* | `986:17595` *(in `986:17594`)* | 370 × 698 *(778)* | page 1, **card 2** | `964:64593` | `964:64612` | inside `Calendar`'s `if (s.v1)`, after `want` / `hit` / `cur` / `line` | |
+| 7 | `calendar` | `964:64574` *(in `964:64573`)* | 1328 × 842 *(1440 × 954)* | `986:17576` *(in `986:17575`)* | 708 × 705 *(817)* | `986:17595` *(in `986:17594`)* | 370 × 698 *(778)* | page 1, **card 2** | `964:64593` | `964:64612` | inside `Calendar`'s `if (s.v1)`, after `want` / `hit` / `cur` / `line` | **done** `a204ba6` |
 | 8 | `map` | `964:64575` | 1440 × 808 | `986:17577` | 768 × 823 | `986:17596` | 390 × 1286 | 1 (travel card **3**, map card **2**, viewport **3**) | `964:64594` | `964:64613` | inside `EventsMap`'s `if (s.v1)`, after `stats` | |
 | 9 | `form` | `964:64576` | 1440 × 784 | `986:17578` | 768 × 856 | `986:17597` | 390 × 910 | **4** (sidebar card **2**) | `964:64595` | `964:64614` | `if (s.v1 && s.limeTree)` ahead of `EnquiryForm`'s `if (s.v1)` | |
 | 10 | `testimonials` | `964:64577` | 1440 × 762.9 | `986:17579` | 768 × 730 | `986:17598` | 390 × 842 | 1 (big card **2**, picked tile **3**) | `964:64596` | `964:64615` | inside `Testimonials`' `if (s.v1)`, after `rail` | |
@@ -679,7 +679,7 @@ Written now from what the plan can see; the sections add to it. One session, in 
    gains a row, `THEMES[4]` Schemes 5 and 8, `editorialCard`'s reach); `navModeDefault`'s sentence
    (Minimal at layout 2 of five templates); the JP-094 pad sentence ("the three templates whose pages
    are Lime's tree"); every layout-2 paragraph naming a Lime-and-twins state (the calendar's dimmed
-   row, the form's refused ring, the map's compact pager and raster plate, the testimonials' tile)
+   row — *section 7: CLAUDE.md carries none; `notes/calendar.md` is done* — the form's refused ring, the map's compact pager and raster plate, the testimonials' tile)
    owes a Pop clause where its session found the same or another. Grep for "layout 2", "Pop" and
    "placeholder".
 2. **One whole-page published check under Pop at layout 2** — `node scripts/page-check.mjs Pop
@@ -1418,6 +1418,108 @@ and its **lime** cards add a third ground the twins never had.
 - **For the sweep's CLAUDE.md pass**: nothing new in CLAUDE.md; `notes/pricing.md` carries Pop's
   card, its lean and the chip's label.
 
+### Settled in section 7 (the booking calendar)
+
+- **The block widened: `if (s.limeTree || s.pop)` inside `Calendar`'s `if (s.v1)`, after `want` /
+  `hit` / `cur` / `line`, `const pop = s.pop` and a fourth `G` arm** (Grunge's, Editorial's and
+  Lime's byte-identical), plus three `pop` sites: `disp()`'s uppercase gate and the two lifts. One
+  new leaf falls back through `??` (`G.marks?.[i % 4]`, undefined on the twins, so their marks
+  inherit the row's `s.tx`). The tree is the twins' node for node at all three widths (the head
+  band, Frame 42, the column head, four rows, the foot; the 390 rows' `Frame 313`–`316` stacks),
+  the instance **explicitly Scheme 2** with no Device override (`resolvedVariableModes` Desktop /
+  Tablet / Mobile), each master read with one walker call (bindings with their collection).
+  `get_variable_defs` is `THEME_RAMP.Pop` at all three (display-md 45 / 36 / 28, display-lg 82 /
+  51 / 36, label-xs 20 / 14 / 12, body-lg 16 / 15 / 15, body-md 14 / 13 / 13, body-sm 12, chip 12
+  / 11 / 11, list 20 / 16 / 15), so every size reads `s.*`. **No raw hex on any master**, and no
+  effect but the pill's `Retro/Poster`. The hooks sit above the block, so the published row
+  picking, the flow links and the pill needed nothing.
+- **Every binding is a Lime key once `G.bg2` is `s.bg`** (Editorial's route under the seat): the
+  card `sem/bg` lime at radius 50 (Lime's `u(50)`), no ring; the band `sem/text/1` (`s.ac`,
+  pink) under `sem/bg` type (`G.bandInk ?? G.bg2`); the column heads `s.ac`; every row's 1px
+  INSIDE foot rule `sem/stroke/1` — **violet** under the seat (trap 6), and the frame draws it, so
+  `s.stroke1` is followed; the weekday, slot and price `sem/text/2` (`s.tx`); the chip `s.ac`
+  under a `sem/bg` label; the pill `sem/text/2` violet round a `sem/bg` lime label and disc, its
+  arrow and its 5 / 5 block `sem/text/1` pink — the twins' `BookPill` call unchanged.
+- **The plan's two worries came out plain.** The head band has **no nested scheme at any width**
+  (no `explicitVariableModes` on it in any master — Editorial's per-width `band` stays
+  Editorial's), and its heading rule is `sem/stroke/2`, **pink on the pink band**: Lime's
+  paints-nothing case, so `headRule` is `undefined` and the 20 of padding stays.
+- **The marks are four colours, seated by row** (trap 4). They bind `sem/media` (teal,
+  `POP_MEDIA`), `text/2` (violet, `s.tx`), `text/1` and `stroke/2` (pink, `s.ac` / `s.stroke2`),
+  the same at all three widths, where Lime's and Editorial's four marks all bind `text/2`. The
+  last three are not one colour, so this is a **row palette, not a pick state**: `G.marks[i %
+  4]`, transcribed rather than patterned (the media rows' rule), by rendered row. The pick's cue
+  stays the foot's chip (`notes/calendar.md`). `&n=8` cycles teal / violet / pink / pink; a booked
+  row's mark dims with its row.
+- **The pin is re-measured for Titan, and the frame's 350 is wider than it needs.** Every string
+  of 12 × 31 swapped through the rendered mark span: the widest is **`MAR 06`, 259.2 at 1440**
+  (82 × 0.82 × 0.98 = 65.66px) and **197.3 at 768** (49.98px), `JUN 12` 207.6 / 158.0. So the pin
+  is `u(desk ? 317 : 198)` (259.9 / 198). The frame's 350 box is 287 on the canvas, so at 1440 the
+  weekday and the column head's second cell stand at **423** (346.8 on the canvas) against the
+  frame's 456 — the twins' named diff (Lime 407, Grunge 393, Editorial 458 at frame scale). At 768 the 350 is the
+  leaked desktop number again: the weekday at 304 against 456. No pin at 390, where the mark stacks.
+- **Titan sits 0.14em low at both display sites**, measured, not inherited (CONVENTIONS B's Pop
+  row): an ink-row scan of the cap tops against the frame's Chunko put the marks (lh 0.89) 0.13 /
+  0.12 / 0.13em low and the heading (lh 1) 0.13em low at the three widths. Both take `position:
+  relative; top: -0.14em`, per site. Lifted, the marks' cap tops land at −0.003 / −0.02 / +0.014em
+  against the frame's −0.012 / −0.02 / 0.0, and the heading's within 0.6px at every width (1.5 /
+  1.6 / 2.6px against 1.6 / 2.0 / 2.0). **Titan's J descends where Chunko's does not**: lifted,
+  the 390 JUL 05's tail ends 4px above the stacked weekday (ink 543–571, the weekday's box at
+  574.9), so Editorial's `marginBottom` is not owed and the 390 rows are the master's 79.
+- **The 390 foot is JP-100's rule, and Pop lands in Editorial's state**: Titan's START ENQUIRY
+  pill is 201 against the master's 190, which leaves the line 44 beside the 57 chip, less than
+  *Thursday*'s 58, so the line drops under the chip (two lines in 113). The foot is **98 on a
+  picked day and 84 on the prompt**, against the master's 104, whose own line is squeezed to 54 and
+  breaks inside *Thursday* (the leak JP-100 overrode). The pill fallback is not reached on the seed.
+- **Measured against the masters' content edges** (harness, from the section root): desktop panel
+  (45.9, 45.9) 1088.2 wide (1328 × 0.82 = 1089), the h2's box (unlifted, as are the narrow two) 94.6
+  into it (115 × 0.82 = 94.3) at 36.26px,
+  rows 85.8 (105 × 0.82 = 86.1), marks 59.6 tall (73 × 0.82 = 59.9), foot 82, chip 49.8 × 19.8
+  (50.8 × 19.7), pill 195 × 44 with a 4.1 block (225 × 54 × 0.82 = 184.5 × 44.3); 768 panel 708 at
+  (30, 56), h2 114.4 in (115), rows 77.4 (77), foot 100, chip 57.2 × 23 (58 × 23), pill 209 × 54
+  (197); 390 panel 370 at (10, 40), h2 114.4 in (115), column head with *Availability ↓* flush
+  right, rows 79.1 (79), pill 201 × 54 (190). **Named diffs, the twins'**: the seed prints
+  AVAILABILITY on one line where the frame sets a two-line sentence, so the card is one heading
+  line short (652.5 against 690.4 on the canvas; the published 1440 section **908** against 954);
+  the pill reads `slotCta`'s START ENQUIRY in Titan against the frame's typo'd "Star Enquiry" in
+  Chunko, 6% wide; the flow prints the page's own labels (JP-041); the weekday under the pin.
+- **States, `live=1`** (puppeteer clicks, three widths): row 2 moves the chip and line to JUN 14 /
+  *Saturday full day selected*, a second click falls back to the cued JUN 12, row 4 features JUL
+  05; the pill is `<a href="#form">` live and a span on the canvas; `&booked=2025-06-12,2025-06-14`
+  dims both rows to .38 (their teal and violet marks with them) with `cursor: auto` and no state
+  change, and the foot prints *Pick a date to enquire*; `&today=2026-10-07` seeds OCT 07 … every
+  row live; `n=0` prints *No dates yet.* at the twins' .38 violet on lime, faint but legible and of
+  a piece with the dimmed booked rows, so kept; `n=8` draws eight rows with no overflow. No page
+  error or warning.
+- **The 571 cap re-measured in Titan with the frame's own sentence** (`&cj={"heading":"Find a date
+  that works for your event"}`): two lines at 1440 (74 in the 468.2 cap) and 768 (72 in 571), the
+  band 214.5 / 242.4 against the frame's 261 × 0.82 = 214 / 243. **At 390 it takes three lines**
+  (84 against the master's 56 in its 350 box), the band 254.3 against 227: Titan's ~1.2% width
+  tips the 350 measure. Named, not fitted — the seed is one word.
+- **`FIELDS.calendar` under Pop** (`scripts/reach.mjs 4`, confirm-only): `heading`, `open` and
+  `prompt` reach all four layouts (the `Pop: [0, 1, 2, 3]` heading row holds over the fitted
+  card); `slots`, `dateLabel` and `availLabel` layout 2; `cta`, `types`, `tiers` and
+  `who.location` layout 4; `image` and `time` 1 and 4; `email` 4 at 3/6 (the known partial).
+  Nothing in `FIELDS` moved.
+- **`page-check.mjs Pop 1`**: the modal's four cards, every nav, anchor and footer link on its id,
+  the calendar's six probed controls all change state, `overflow390` 0, the burger 2 → 6, no
+  console error or warning. The published calendar is 908 tall at 1440 and 730 at 390; the 1440
+  seam clip shows pricing's white small print over the card's pink band.
+- **Digest: themes 0, 1, 2 and 3 zero files of 660, canvas and `live=1`**; theme 4 exactly
+  calendar arch 1 at three widths on both surfaces (6 files), no `_arch_0_` file, no one-row file.
+- **`notes/calendar.md`** now names Pop beside the three wherever its layout-2 sentences named the
+  `s.limeTree` block's states (the past row's full ink, the dimmed booked row, JP-100's one-row
+  foot), drops Pop from *Retro's foot never wraps* and JP-095 (a)'s ellipsis clause (both were
+  Pop on Retro's body), and carries the marks bullet.
+- **For the sweep's CLAUDE.md pass**: CLAUDE.md names no layout-2 calendar state (the dimmed row
+  lives in `notes/calendar.md`, done here). Not written here.
+- **For the map**: it stands on Scheme 1 (white) with **three nested schemes** — the travel card
+  Scheme 3, `radius-map` Scheme 2, the `Map Viewport` Scheme 3 — so read each leaf's binding
+  through `s.onScheme`, not `s.*`. Its Lime block (inside `EventsMap`'s `if (s.v1)`, after
+  `stats`) has Grunge's `G` with Editorial's third arm, so Pop is a fourth. Its pager is the
+  second layout-2 `Pager` caller: pass `frame.lime` with all seven keys read off the master
+  (section 4's convention). Any display month there ("JUN") meets Titan's descending J.
+
 ### Inherited and used
 
 *(The running list the sweep folds into [`../CONVENTIONS.md`](../CONVENTIONS.md): each time a
@@ -1504,6 +1606,17 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
   twin's frame-less control is checked against its own surround* (editorial/layout-3 — the empty
   message); *the popup is `about:blank`* (memory — `scrollWidth` read in the popup).
 
+- Section 7: *the node walker, kept* (grunge/layout-2) with bound names and their collection —
+  the marks' four keys; *the `G` lookup at the block's head* (grunge/layout-1 — a fourth arm,
+  `marks` through `??`); *a card on another scheme is `s.bg`* (editorial/layout-2 — `G.bg2`);
+  *the pin is re-measured per face* (D2; Retro 2's *measure the pin, never transcribe it* —
+  317 / 198 in Titan); *a stand-in face's glyph floor* (editorial/layout-3 — 0.14em at both
+  sites, ink-scanned, the J checked at 390); *a hard offset shadow goes through the caller's
+  `style`* (lime/layout-2 — the twins' own call); *a twin's width-bound call is re-measured in the
+  new face* (editorial/layout-2 — JP-100's foot, Titan's pill dropping the line under the chip);
+  *a twin's frame-less control is checked against its own surround* (editorial/layout-3 — the
+  empty message, kept); *field reach is measured* (CLAUDE.md).
+
 ## Open questions
 
 1. ~~**Decision 1** — the gate, `(s.limeTree || s.pop)` per site.~~ *Settled in session 0: the
@@ -1534,6 +1647,9 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
      bar drops its clock and icons;*
    - the map's ring labels past the 768 and 390 viewports, clipped;
    - the 390 testimonials' sub, a 411-wide no-wrap line.
+   - *section 7:* the 390 calendar foot squeezes its own line to 54 beside a 190 pill and breaks
+     *Thursday* inside the word — the leak JP-100 overrode under the three twins; Pop takes the
+     same rule (the line under the chip, the foot 98). Worth the designer's note.
 7. **Header cards 3 and 4** stay placeholders (layout 1, open question 8): card 3's Pop frame stands
    on Scheme 1 at 1440 and **Scheme 6 at 768 and 390**, card 4's on Scheme 3. Each is its own pass's.
 8. **The footer** is layout 1's, closed at planning time: the desktop instance's main component
