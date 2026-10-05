@@ -262,11 +262,18 @@ the content:
 
 ## Pop's layout-2 mode
 
-Pop's Scheme 1 and the six schemes layout 1 met are in [`layout-1.md`](./layout-1.md), *Pop's Figma
+Pop's Scheme 1 and the five schemes layout 1 seated (2, 3, 4, 6, 7) are in [`layout-1.md`](./layout-1.md), *Pop's Figma
 mode*, and in `THEMES[4]` (`palette` / `sem` / `tags`, `schemes[2]`, `[3]`, `[4]`, `[6]`, `[7]`). Its
-traps 3, 4 and 5 recur here — Scheme 1's active pair **black** and idle pair **lime** (the
-testimonials' Book pill is `sem/active/bg`: black), `s.tx` violet with `text3` black, `stroke1`
-opaque pink. Traps 1, 2, 6 and 7 do **not** recur (above): read the bindings.
+traps 3 and 5 recur here — Scheme 1's active pair **black** and idle pair **lime** (the
+testimonials' Book pill is `sem/active/bg`: black), `stroke1` opaque pink. **Trap 4 is turned
+round**: layout 1's rule was *a Pop arm reaches for `s.text3`, not `s.tx`, for body copy*, because
+those unbound frames set it in black. This page binds its body copy to **`sem/text/2`** — violet,
+`s.tx` — everywhere (the census: bio × 5, media × 28, repertoire × 39, map × 54, testimonials × 11;
+the bio's paragraph, pricing's quote and the review render violet), and `sem/text/3` appears at two
+sites only: the place card's body (white, under Scheme 6) and the form's promises and credit
+(white, under Scheme 4). So on this page body copy is `s.tx`, and `s.text3` (or
+`s.onScheme[n].text3`) is read only where a node binds `text/3`. Traps 1, 2, 6 and 7 do **not**
+recur (above): read the bindings.
 
 **Schemes 5 and 8 are new to the code**, read at planning time off `2 · Scheme` resolved through
 `Primitives → Pop` — and identical, cell for cell, to layout 1's planning table:
@@ -478,8 +485,10 @@ and form for the seats, every arch-1 section for the pad arm, the header (arch 1
   precedent. Three nested sites read `s.onScheme`: the **Enquire pill** on Scheme 3 (lime, pink
   label, a pink disc), the **place card** on Scheme 6 (trap 4: a pink fill, lime title, white body,
   a lime 2px ring named `scheme/3/stroke/2`) and the **Book pill** on Scheme 3 / 3 / 4 (trap 3),
-  each with the `Retro/Poster` 5 / 5 block (lime, lime, teal 3.77) — a hard offset shadow through
-  the caller's `style` (CONVENTIONS C).
+  and **the Book pill alone** carries the `Retro/Poster` block — lime 5 / 5 at 1440 and 768, teal
+  3.77 / 3.77 at 390 (a per-node effects read, not deduped, found no other effect in the header) —
+  a hard offset shadow through the caller's `style` (CONVENTIONS C). Read `effects` per node, never
+  off a deduplicated list.
 - **What the frame draws** (desktop render; confirm each against the three twins' arms before
   inventing anything): the links Music / Gigs / About in pink in a **white capsule ringed 1px lime**
   (219 × 34; `scheme/1/stroke/2`); the wordmark pink, centred; Listen pink; the Book pill. An **oval
@@ -701,7 +710,10 @@ bullets; name them.
 
 - **Layout 1's conventions all hold**: the gates are `s.pop`, the widened pair, the named pairs and
   `s.designed`; never edit another template's literal; uppercase per site, through `faced`, with no
-  `fontWeight` on Titan One; `s.text3` for black copy; themes 0, 1, 2 and 3 at zero rows.
+  `fontWeight` on Titan One; themes 0, 1, 2 and 3 at zero rows.
+- **Body copy is `s.tx` here, not `s.text3`** — layout 1's reflex turned round (*Pop's layout-2
+  mode*, trap 4): this page binds body copy to `sem/text/2`, violet; read `s.text3` only where a
+  node binds `text/3` (the place card's body, the form's promises and credit).
 - **Harness:** `theme=4`, `arch=1`, and every width — a nested scheme moves between them.
 - **Read the variables; a raw hex is a leak.** Turned round from layout 1: this page's variants
   are bound, so `get_variable_defs` and `boundVariables` are the source, and the node walker's raw
