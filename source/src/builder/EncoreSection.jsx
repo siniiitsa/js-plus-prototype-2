@@ -28006,6 +28006,12 @@ function Footer({ s }) {
     // same `sem/tag/1/bg`, which is `s.tx`'s paper under layout 1's Scheme 3
     // and blush under the Scheme 2 layout 3 seats the footer on (the page
     // row), so Editorial reads the binding rather than the coincidence.
+    //
+    // The 150 rule yields to a long name, as NavBar's §10.2 rule does (JP-092):
+    // it takes what the name leaves, up to its 150, down to a 30 floor at 768
+    // and 390. Its basis is 0, not 150, so it shrinks to that floor before the
+    // name gives a pixel (a 150 basis would share the deficit and wrap the name
+    // early); past the floor the name wraps between words, never inside one.
     const wordmark = (
       <span style={row(u(20))}>
         <span style={row(u(10))}>
@@ -28015,12 +28021,15 @@ function Footer({ s }) {
               }} />
             : <LimeGlobeMark size={27.37 * scale} color={pop ? POP_FOOT.pale : s.stroke1} />}
           <span style={pop
-            ? popType(13.5, 16, { color: POP_FOOT.pale, whiteSpace: 'nowrap' })
+            ? popType(13.5, 16, { color: POP_FOOT.pale })
             : grunge || ed
-              ? labelStyle(s, s.labelMd, { color: s.tx })
-              : { ...face, color: s.tx, whiteSpace: 'nowrap' }}>{s.brand}</span>
+              ? labelStyle(s, s.labelMd, { color: s.tx, whiteSpace: 'normal' })
+              : { ...face, color: s.tx }}>{s.brand}</span>
         </span>
-        <span style={{ width: u(150), height: u(2), background: ed ? s.chips[0].bg : pop ? POP_FOOT.pale : s.tx, flex: 'none' }} />
+        <span style={{
+          height: u(2), background: ed ? s.chips[0].bg : pop ? POP_FOOT.pale : s.tx,
+          flex: '1 1 0', maxWidth: u(150), minWidth: s.narrow ? '30px' : '0px',
+        }} />
       </span>
     )
 
@@ -28300,14 +28309,20 @@ function Footer({ s }) {
   // The stated 31, not the row's own content: the frame's height is the line
   // box Anton's leading gives 21.4px type, and labelStyle sets the tighter 1.1
   // the rest of the page wants, which would otherwise leave the globe to set a
-  // 27 row and pull everything under it up by four.
+  // 27 row and pull everything under it up by four. A floor, not a height: a
+  // long name wraps, below. The rule yields to it as Lime's tree's does (JP-092,
+  // the comment there): up to 150, down to 30 at 768 and 390, basis 0 so it
+  // gives way before the name wraps.
   const wordmark = (
-    <span style={row(u(20), { height: u(31) })}>
+    <span style={row(u(20), { minHeight: u(31) })}>
       <span style={row(u(10))}>
         <GlobeMark size={Math.round(27.37 * scale)} color={s.ac} />
-        <span style={labelStyle(s, u(21.4), { color: s.ac })}>{s.brand}</span>
+        <span style={labelStyle(s, u(21.4), { color: s.ac, whiteSpace: 'normal' })}>{s.brand}</span>
       </span>
-      <span style={{ width: u(150), height: u(2), background: s.ac, flex: 'none' }} />
+      <span style={{
+        height: u(2), background: s.ac,
+        flex: '1 1 0', maxWidth: u(150), minWidth: s.narrow ? '30px' : '0px',
+      }} />
     </span>
   )
 

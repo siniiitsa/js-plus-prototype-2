@@ -637,7 +637,9 @@ console errors.
     past the page by a long word. This is now what scrolls the page. With *Featherstonehaugh* it
     ends at 424.95 under Editorial, 403.83 under Lime and 491.63 under Retro at 390 (436.95 /
     415.83 at 414). At 360 the other long names do it too (JP-086's footer item, which now
-    points here). Grunge's footer fits.
+    points here). Grunge's footer fits. **Answered by JP-092 (rest)**
+    ([`retest-qa-fixes.md`](./retest-qa-fixes.md), 2026-10-05): the rule now yields to the name,
+    down to a 30 floor, and a name past that wraps between words, in both footer trees.
   - **The media player's byline** runs past the 390 page with *Featherstonehaugh* (401.75), but
     its section clips it, so it does not scroll the page.
 - **The real app is the published table above.** The steps were the tester's (card 2, *Title*
@@ -2237,7 +2239,8 @@ cached build still shows every one of them.
       before the same fit can work there.
     - At 360, Editorial's menu bar runs 1px past the page with *Featherstonehaugh*.
     - At 390 and 414, the footer's rule beside the name scrolls the page sideways with that name
-      (Editorial and Lime). At 360 the other long names do it too.
+      (Editorial and Lime). At 360 the other long names do it too. *Answered by JP-092 (rest),
+      [`retest-qa-fixes.md`](./retest-qa-fixes.md): the rule now gives way to the name.*
     - At 360, the Enquiry Form's credit runs 2px past with that name.
 - **JP-093 — fixed.** The Enquiry Form's EVENT DATE, EVENT TYPE and YOUR EMAIL now draw solid, as in
   the design, at every width and on every template.

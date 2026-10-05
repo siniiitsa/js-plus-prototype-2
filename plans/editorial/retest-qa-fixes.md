@@ -106,7 +106,7 @@ default list is `0,2,3,4`, which **skips Lime**, so always pass the list explici
 | Order | ID | Report (short) | Reverses | Verdict | Size | Decision | Status |
 |---|---|---|---|---|---|---|---|
 | 1 | JP-085 · JP-098 (*View list ✕*) | Noto, not Fisterra Fora · what *View list ✕* does | `qa-fixes.md` JP-085 (A); `layout-2-qa-fixes.md` JP-098 decision 3 (A) | **Both need an answer from outside the code**: a web licence (the PO) and the controls' meaning (the BA) | — (decisions) | **user**: JP-085 **C** ([`display-face.md`](./display-face.md), its own branch); JP-098 **B** (proposal to the BA) | **done** (2026-10-05, no code) |
-| 2 | JP-092 (rest) | 390: the footer's rule scrolls the page with a long name | `layout-2-qa-fixes.md` JP-092 *Named, not fixed* (the footer's rule) and `qa-fixes.md` JP-086's footer item | **Confirmed, shared**: the rule is `flex: 'none'` in both footer trees; it never yields | S | light | open |
+| 2 | JP-092 (rest) | 390: the footer's rule scrolls the page with a long name | `layout-2-qa-fixes.md` JP-092 *Named, not fixed* (the footer's rule) and `qa-fixes.md` JP-086's footer item | **Confirmed, shared**: the rule is `flex: 'none'` in both footer trees; it never yields | S | light; **user**: **A** (the two 360 items named again) | **done** (2026-10-05) |
 | 3 | JP-101 | 390: a long name in the nav runs under BOOK NOW | `qa-fixes.md` JP-086 *Named, not fixed* (`:806`–`809`) and JP-091's scope (desktop only) | **Confirmed, shared**: the narrow wordmark is `nowrap` with no fit under Lime, Grunge, Editorial and Pop | S–M | **user** | open |
 | 4 | JP-099 | 390 player: no ♡ ↓ ⋯ | `layout-2-qa-fixes.md` JP-099 (A, a reply) | **Recorded call, refused twice**: Retro's 390 override, every template | S | **user** | open |
 | 5 | JP-089 (rest) | The extra `All` chip | `qa-fixes.md` JP-089 decision 2A ("the `All` chip stays"); `notes/pricing.md`'s "intended diff" | **Recorded call**: `repChips()` always leads with `All` | S–M | **user** | open |
@@ -397,9 +397,70 @@ Editorial (the tester's steps), then Lime, Pop and Retro.
 wraps past its floor); *answered* pointers at `layout-2-qa-fixes.md:636` and its reply's *Not
 changed* line (`:2234`), and `qa-fixes.md:810`.
 
-**Decided** — *(the session fills this in.)*
+**Decided** (user, 2026-10-05). **A**: the two 360 items stay named, not fixed here (Editorial's
+layout-2 nav Book pill and form credit with *Featherstonehaugh*). This entry fixes the footer's
+rule alone.
 
-**Settled** — *(the session fills this in, with the reply line.)*
+**Settled** (2026-10-05).
+- **Reproduced on HEAD in the real app**, card 2, the tester's steps (*Title* typed, Publish, Open),
+  then 360 and 414. The published document's `scrollWidth` with *Featherstonehaugh*: Editorial
+  425 / 425 / 437 at 360 / 390 / 414 (the tester's 35), Lime 404 / 404 / 416, Retro 492 / 492 /
+  504. *Florence and the Machine* scrolled Editorial and Lime at 360 (390, 372) and Retro at every
+  width (445, and 457 at 414). *Supercalifragilistic* scrolled Retro at 360 and 390 (396). **Pop
+  does not scroll; it clips.** Its rule ran to 456 at 390 under a document of 390: the triage's Pop
+  row was the section's `scrollWidth`, which counts clipped overflow. So under Pop the fault is a
+  rule cut off at the page's edge, and the check there is the rule's right edge, not the
+  document's. Grunge fits every name (its rule ends at 339 at 390). No console errors.
+- **The fix, with one change from the plan.** The rule is `flex: '1 1 0'`, `maxWidth: u(150)`,
+  `minWidth` 30 at narrow widths (0 at desktop, as NavBar's), not the plan's `0 1 150px`. Flex
+  shares a deficit by `shrink × basis`, so a 150 basis beside a name that may now wrap would wrap
+  the name while the rule still had room to give. At basis 0 the rule's shrink weight is 0: it
+  grows back to 150 when there is room, and stands at its 30 floor before the name gives a pixel.
+  The name drops `nowrap` in both trees (Lime's face and Pop's `popType` lose it; Grunge's and
+  Editorial's `labelStyle` and Retro's take `whiteSpace: 'normal'`), never `overflowWrap:
+  'anywhere'`. Retro's row is a `minHeight: u(31)`. **No `minWidth: 0` on the rows round it**:
+  the wordmark row takes its width from the column's stretch, and the name group's `min-width:
+  auto` (the mark and the longest word) is the right floor under JP-062's rule.
+- **Harness proved** (HEAD worktree on :5174 against the unedited tree): 0 of 660 canvas, 0 of 660
+  `live=1`. The first live pass read 71 theme-3 files at 0.1px, the cold-server Noto noise; a warm
+  rerun took it to 0.
+- **After-diff: 0 of 660 on both surfaces**, as named: *Kai Mercer* never fills the row.
+- **Positive control, as named**: the footer digest with `&name=Maximilian%20Featherstonehaugh`
+  differs in **16 of 60 files**, the `arch 0` and `page=2` mobile renders of themes 0, 1, 3 and 4 on
+  both surfaces, each in **one row, the rule's width**: Retro 150 → 38.4, Lime → 126.2, Editorial
+  → 105, Pop → 73.9. Grunge and every 768 and desktop render: 0. No name wraps at 390, so Retro's
+  `minHeight` moves nothing there.
+- **Verified in the real app** (card 2 on all five templates and Editorial's card 1; the four names
+  at 360, 390 and 414, and 768 on card 2): the rule stays inside the page and at 30 or more in all
+  92 rows, every word is one `Range` rect, and the seed's rule is 150 at every width. With
+  *Featherstonehaugh* the rule now ends at 350 / 380 / 392 and is Editorial 75 / 105 / 105 wide,
+  Lime 96 / 126 / 126, Pop 44 / 74 / 74 and Retro 30 / 38 / 38. **The one wrap is Retro at 360
+  with *Featherstonehaugh***: the name takes two lines, the rule sits at its 30, the row is 46.19
+  tall, and the statement moves down under it (looked at). The footer no longer scrolls any page.
+  What still does is named elsewhere and is the same on HEAD (found by hiding each section in
+  turn):
+  - **Retro's layout-2 hero** (`layout-2-qa-fixes.md` JP-092, *Retro's half*, Decided A): the
+    header's `scrollWidth` is 389 at 360 with *Florence*, and 426 / 426 / 438 with
+    *Featherstonehaugh*.
+  - **Editorial's layout-2 form credit at 360** with *Featherstonehaugh*: 362 (below).
+- **Named, not fixed here** (Decided A), both Editorial layout 2 at 360 with *Featherstonehaugh*:
+  the nav Book pill ending at 361.42, and the form credit at 362.11. The tester has not checked
+  360.
+- **Build.** `npm run build` is clean. The root `index.html` is not refreshed.
+- **Docs.** The rule's comment in both trees (Retro's points at Lime's). `notes/footer.md` gets a
+  bullet: the rule yields, basis 0, the name wraps past the floor. *Answered* pointers at
+  `layout-2-qa-fixes.md` JP-092's footer item and its reply's *Not changed* line, and at
+  `qa-fixes.md` JP-086's footer item.
+- **The reply line:**
+  - **JP-092 — fixed.** At 390 a long name no longer makes the page scroll sideways. The footer's
+    decorative line beside the name now gets shorter to make room for it, down to 30px. A name too
+    long even for that goes onto two lines, breaking between words. With *Maximilian
+    Featherstonehaugh* the line is about 105px under Editorial at 390 and 414, and 75px at 360. A
+    name that fits, *Kai Mercer* included, keeps the design's 150px line. The same fix covers
+    Retro, Lime and Pop. Under Pop the line used to be cut off at the page's edge rather than
+    scroll it. Grunge's footer already fitted. *Not changed, logged separately:* at 360, the
+    Enquiry Form's credit runs 2px past the page with that name, and the menu's Book Now pill runs
+    1px past. Retro's Feature spread hero still overflows with a long name.
 
 ---
 

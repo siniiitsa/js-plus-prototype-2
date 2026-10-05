@@ -816,7 +816,9 @@ and `vm.cardNameEms` at `EncoreBuilder.jsx:673`.
   - **The footer at 360** overflows with the two long names (`scrollWidth` 390 and 370 against
     360), so the page scrolls sideways there. HEAD is the same. The footer fits at 390 and 414.
     *Maximilian Featherstonehaugh* overflows it at 390 and 414 as well (JP-092's *Settled* in
-    [`layout-2-qa-fixes.md`](./layout-2-qa-fixes.md)).
+    [`layout-2-qa-fixes.md`](./layout-2-qa-fixes.md)). **Answered by JP-092 (rest)**
+    ([`retest-qa-fixes.md`](./retest-qa-fixes.md), 2026-10-05): the footer's rule yields to the
+    name, down to a 30 floor, and a name past that wraps between words.
 - **Build.** `npm run build` is clean. The root `index.html` is not refreshed.
 - **Docs.**
   - The `Title` comment (390 is fitted to the widest word).

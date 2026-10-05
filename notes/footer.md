@@ -47,3 +47,16 @@ another `notes/` file.
   `BookPill`'s branch does). The footer keeps **no local state**:
   every link is an `<a>` whose href is `navHref()` or `extLink()`, so nothing here needs the
   `useState` the eight sections above it take.
+- **The rule beside the name yields, and the name wraps past its floor** (JP-092, 2026-10-05,
+  `plans/editorial/retest-qa-fixes.md`). Both trees draw the wordmark row as
+  `[mark + name]`, a 20 gap, then the frames' 150 × 2 rule. The rule was `flex: 'none'` beside a
+  `nowrap` name, so a long name (*Maximilian Featherstonehaugh*) pushed it past a 390 page and
+  the page scrolled sideways (Retro, Lime, Editorial; Pop's root clips, so there the rule was cut
+  at the page's edge instead; Grunge's narrower label fits). It is now NavBar's §10.2 rule
+  (`flex: 0 1 …`, a 30 floor at narrow widths), with one change: its basis is **0**, grown to a
+  `maxWidth` of 150, not shrunk from a 150 basis. Flex shares a deficit by basis, so a 150 basis
+  beside a wrapping name would wrap the name while the rule still had room to give; at basis 0
+  the rule stands at its floor before the name gives a pixel. Past the floor the name wraps
+  between words, never inside one (CLAUDE.md JP-062's rule for a display name), so Retro's row
+  is a `minHeight` of 31, not a `height`. The seeded name never fills the row, so the rule keeps
+  its 150 (123 on the desktop canvas) everywhere.
