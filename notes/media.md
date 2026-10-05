@@ -98,8 +98,9 @@ another `notes/` file.
   do this: the `(s.limeTree || s.pop)` bar and Retro's. The master seats the icons by squeezing
   sleeve, title and clock into 22.9, so it names no track. The page pays for the icons with the
   sleeve and its 12 gap instead. It keeps the override's padding (16, Retro 20) and its gaps of
-  14, and draws the glyphs at 768's size (Retro's at its own 14). So the title box is 112.4
-  (Retro 97.5) at 390 and 414, and 82.4 (67.5) at 360. The glyphs are inert spans at every
-  width. A title the box cuts ellipsises in it: the canvas's SLOW BURN under Editorial (112.6)
-  and Pop, and the cued LATE LIGHTS under Editorial and Pop at 390 and under every template
-  at 360.
+  14, and draws the glyphs at 768's size (Retro's at its own 14). The Lime bar closes the
+  glyphs' 12 gap to 11 at 390 (user call, same day), so Editorial's seeded SLOW BURN (112.6)
+  stays whole. So the title box is 114.4 (Retro 97.5) at 390 and 414, and 84.4 (67.5) at 360.
+  The glyphs are inert spans at every width. A title the box cuts ellipsises in it: the
+  canvas's SLOW BURN under Pop, and the cued LATE LIGHTS under Editorial and Pop at 390 and
+  under every template at 360.

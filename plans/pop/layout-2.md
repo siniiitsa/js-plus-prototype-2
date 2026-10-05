@@ -1144,7 +1144,7 @@ and its **lime** cards add a third ground the twins never had.
   so the frame clips its own title there ("SLOW BUI"). Editorial's departure (both inner sides
   dropped) buys 18 of the 24, so it is not taken; the cued LATE LIGHTS (141.5) is JP-097's
   *not changed* line already, which this joins. 768 fits (130.4 in 140.2); 390 is JP-099's table
-  (118.5 in 115.5; 112.4 since JP-099's reversal, 2026-10-05, which draws ♡ ↓ ⋯ and drops the
+  (118.5 in 115.5; 114.4 since JP-099's reversal, 2026-10-05, which draws ♡ ↓ ⋯ and drops the
   sleeve at 390). The seeded heading carries its full stop ("…EAR."), the frame's none; the fan
   art is our seeds.
 - **States**: `&n=8` — eight pills cycling the five schemes; the desktop rows share the stretched

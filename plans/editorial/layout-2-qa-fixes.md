@@ -227,7 +227,7 @@ and `notes/media.md`.
 
 > **Reversed** (2026-10-05, user call, [`retest-qa-fixes.md`](./retest-qa-fixes.md) JP-099): the
 > tester refused the reply, and the retest took **C**. At 390 the bar draws ♡ ↓ ⋯ and drops the
-> sleeve to pay for them, on every template. The clock stays off. The title box goes 115.5 → 112.4
+> sleeve to pay for them, on every template. The clock stays off. The title box goes 115.5 → 114.4
 > (Retro 103.5 → 97.5). The decision and reply below are the record of the first call.
 
 **Decided** (2026-10-01, user call): **A, keep the override, with a reply.** No code. The question

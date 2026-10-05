@@ -7575,7 +7575,7 @@ function Media({ s }) {
               ♡ ↓ ⋯ (JP-099, user call, 2026-10-05, reversing the override
               that dropped them): the master seats them by squeezing sleeve,
               title and clock into 22.9, so it names no track. Here the
-              title box goes 115.5 → 112.4 and keeps the name. */}
+              title box goes 115.5 → 114.4 and keeps the name. */}
           <span style={row(u(12), {
             flex: 1, minWidth: 0, background: ed ? undefined : pop ? barBg : cardBg, borderRadius: u(80),
             padding: `${u(10)} ${desk ? (ed ? 0 : u(12)) : tab ? '30px' : 0} ${u(10)} ${s.mob || (desk && ed) ? 0 : u(10)}`,
@@ -7588,8 +7588,10 @@ function Media({ s }) {
             {/* The clock stays off at 390: the master runs it off the bar. */}
             {!s.mob && <span style={{ ...bodySm, flex: 'none', whiteSpace: 'nowrap' }}>{now.at} / {now.of}</span>}
           </span>
-          {/* Inert at every width, as in the frames. */}
-          <span style={row(u(12), {
+          {/* Inert at every width, as in the frames. Their 12 gap closes to
+              11 at 390: Noto's seeded "SLOW BURN" is 112.6 wide, and the 2px
+              take the box from 112.4 to 114.4, so it is whole, not "SLOW BU…". */}
+          <span style={row(s.mob ? '11px' : u(12), {
             flex: 'none', fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5, letterSpacing: s.dls,
           })}><span>♡</span><span>↓</span><span>⋯</span></span>
           {audio}

@@ -1110,8 +1110,8 @@ the twins' dark-ground assumptions break (trap 6).
   seats the transport and a sliver of sleeve and runs the title off at x 293; ours drops the clock
   and icons and closes the padding, so the track the player is on is named. *Reversed in part*
   (JP-099, 2026-10-05, user call, [`retest-qa-fixes.md`](./retest-qa-fixes.md)): the icons are
-  drawn at 390 and the sleeve goes instead; the title box is 112.4, so the seeded SLOW BURN
-  (112.6) now reads "SLOW BU…" on the canvas.
+  drawn at 390 and the sleeve goes instead. The glyphs' gap closes to 11, so the title box is
+  114.4 and the seeded SLOW BURN (112.6) stays whole.
 - **No pill**: none of the three masters has a pill node (the twins' finding), so `FIELDS.media`
   moves nothing — `cta`'s `'*': []` row already reads "Not shown in this template" here and
   `soundcloud` reaches layout 1 alone. No `reach.mjs` run was owed. The 1440 Section's 5px
@@ -2158,7 +2158,7 @@ it here in one line, with the plan it came from, a blank line between sessions.)
      is 22.9 wide, the title column 1). *Section 3: overridden by the shared 390 override the
      twins already run* (clock and icons dropped, padding 16, gaps 14, the inner pill's sides
      0), so "SLOW BURN" is whole at 23; *reversed in part* (JP-099, 2026-10-05): the icons are
-     drawn and the sleeve goes, so it reads "SLOW BU…" (112.6 in 112.4);
+     drawn and the sleeve goes, and it stays whole (112.6 in 114.4);
    - the 768 gallery's two 1px tiles — *section 5: overridden, as the twins' are*: the inherited
      `flex: h 1 auto` divides the band in the frame's proportions, so all six show;
    - the 390 gallery's right-column first-tile wrapper at `[0, 0, 40, 40]` (Grunge's stray
