@@ -221,7 +221,7 @@ session widens. The narrow twins are in Editorial's and Grunge's sections tables
 | 7 | `calendar` | `964:64574` *(in `964:64573`)* | 1328 × 842 *(1440 × 954)* | `986:17576` *(in `986:17575`)* | 708 × 705 *(817)* | `986:17595` *(in `986:17594`)* | 370 × 698 *(778)* | page 1, **card 2** | `964:64593` | `964:64612` | inside `Calendar`'s `if (s.v1)`, after `want` / `hit` / `cur` / `line` | **done** `a204ba6` |
 | 8 | `map` | `964:64575` | 1440 × 808 | `986:17577` | 768 × 823 | `986:17596` | 390 × 1286 | 1 (travel card **3**, map card **2**, viewport **3**) | `964:64594` | `964:64613` | inside `EventsMap`'s `if (s.v1)`, after `stats` | **done** `9567812` |
 | 9 | `form` | `964:64576` | 1440 × 784 | `986:17578` | 768 × 856 | `986:17597` | 390 × 910 | **4** (sidebar card **2**) | `964:64595` | `964:64614` | `if (s.v1 && s.limeTree)` ahead of `EnquiryForm`'s `if (s.v1)` | **done** `58b37a8` |
-| 10 | `testimonials` | `964:64577` | 1440 × 762.9 | `986:17579` | 768 × 730 | `986:17598` | 390 × 842 | 1 (big card **2**, picked tile **3**) | `964:64596` | `964:64615` | inside `Testimonials`' `if (s.v1)`, after `rail` | |
+| 10 | `testimonials` | `964:64577` | 1440 × 762.9 | `986:17579` | 768 × 730 | `986:17598` | 390 × 842 | 1 (big card **2**, picked tile **3**) | `964:64596` | `964:64615` | inside `Testimonials`' `if (s.v1)`, after `rail` | **done** `ab1ba50` |
 | — | `footer` | `964:64578` | 1440 × 479.5 | `986:17580` | 768 × 720.4 | `986:17599` | 390 × 720.4 | 3 | — | — | — | **out of scope**: layout 1's footer, closed at planning time (above) |
 | — | `video` | `964:64569` | 1440 × 782 | `986:17571` | 768 × 1112.2 | `986:17590` | 390 × 1107.8 | 1 | — | — | — | **not a category** |
 
@@ -255,10 +255,11 @@ the content:
   One at all three widths with `&open=` looping every month (Retro layout 2, *measure the pin,
   never transcribe it*; Editorial's section 7 re-pinned it for Noto). The frame is a fair ruler
   this time: Chunko draws "JUN 14" whole (Editorial's demo face dropped the 4).
-- **The testimonials' head is `Display/XL` 125** ("HONEST FEEDBACK / FROM PEOPLE WHO BOOKED", two
+- ~~**The testimonials' head is `Display/XL` 125** ("HONEST FEEDBACK / FROM PEOPLE WHO BOOKED", two
   lines at 1440 and 768, three at 390) — every twin's is `Display/LG`. Check it against its column
   before choosing (CONVENTIONS C, *a head that must fit its measure*; `titanEms` already serves
-  Pop's quote and footer fits).
+  Pop's quote and footer fits).~~ *Corrected in section 10*: the head is `Display/LG` 82 / 51 / 36,
+  the twins' token, on all three masters; the 125 / 75 / 46 is the quote glyph's `Display/XL`.
 - **The media head moves token and case between widths** — decision 2.
 
 ## Pop's layout-2 mode
@@ -760,6 +761,10 @@ bullets; name them.
   read the card's fill before writing `S.bg`. The form's Scheme 2 card binds `box/1` `#D7FF23`,
   one shade off `sem/bg` `#C6F200`, and its pill's label and disc bind `sem/bg` outright, so both
   limes are drawn. The testimonials' big card is the next Scheme 2 card.
+- **A plan's token for a string is read off that string's own text style** (section 10): the
+  planning walk gave the testimonials' head `Display/XL` 125, which is the quote glyph's style in
+  the same section; the h2 is `Display/LG`, the twins' token. Read the style name on the node
+  before sizing or fitting anything off a plan's number.
 
 ### Seen at planning time, per section
 
@@ -825,8 +830,8 @@ and its **lime** cards add a third ground the twins never had.
    **pill boxes ringed violet** with violet labels in the display face at `Label/SM` 16, the **pink**
    Check Availability pill (Scheme 2's `pillBg`) with a lime label and disc, "No charge to enquire"
    violet. The four label-in-box inputs set `--ph: 1` (JP-093).
-10. **testimonials** — white: "✎ What clients say" violet; the head at **`Display/XL` 125** violet,
-    one tone (above); the sub violet; the rail's three tiles `box/1` ringed 3px pink (radius 31),
+10. **testimonials** — white: "✎ What clients say" violet; the head at ~~**`Display/XL` 125**~~
+    **`Display/LG` 82** (*section 10*) violet, one tone (above); the sub violet; the rail's three tiles `box/1` ringed 3px pink (radius 31),
     the picked one **pink (Scheme 3)** ringed violet; the big card **lime (Scheme 2)** ringed 3px
     violet (radius 50) with violet quote marks, quote, name, role and stars; a **black Book pill**
     (Scheme 1's `active/bg`) with a white disc. At 390 the rail stands under the card as a row, and
@@ -1741,12 +1746,107 @@ and its **lime** cards add a third ground the twins never had.
   and the band live in `notes/form.md`, done here); JP-093's `--ph` sentence holds as written.
 - **For the testimonials**: the page is Scheme 1 white with the big card nested **Scheme 2**
   (`s.onScheme[2]`, lime, its `stroke1` violet — trap 6) and the picked rail tile **Scheme 3**
-  (pink, ringed violet); the head is **`Display/XL` 125 / 75 / 46**, one tone in violet, which
-  every twin set at `Display/LG` — check it against its column (`vm.titleWordEms`, Titan's ems)
-  before choosing, and scan its glyph floor; `TESTI_HEADING_2` is the fallback at `d === 1`; the
+  (pink, ringed violet); the head is ~~**`Display/XL` 125 / 75 / 46**~~ *`Display/LG` 82 / 51 /
+  36, the twins' token (section 10)*, one tone in violet ~~, which every twin set at `Display/LG` —
+  check it against its column (`vm.titleWordEms`, Titan's ems) before choosing~~, and scan its
+  glyph floor; `TESTI_HEADING_2` is the fallback at `d === 1`; the
   Book pill is Scheme 1's `active/bg`, **black**; the 390 sub is a 411-wide no-wrap line (open
   question 6). Its Lime block (inside `Testimonials`' `if (s.v1)`, after `rail`) has Grunge's `G`
   with Editorial's third arm, so Pop is a fourth.
+
+### Settled in section 10 (the testimonials)
+
+- **The block widened: `if (s.limeTree || s.pop)` inside `Testimonials`' `if (s.v1)`, after
+  `rail`, `const pop = s.pop`, `S3` off `s.onScheme[3]` under `ed || pop`, `S2` under `pop`, and a
+  fourth `G` arm** (Lime's, Grunge's and Editorial's byte-identical), plus four `pop` sites:
+  `dispType`'s uppercase, the h2's `pre-wrap` and its lift, and the tiles' sizing (Editorial's
+  arms widened to `ed || pop`, `DashRule` and `position: relative` left on `ed`). Four new leaves
+  fall back through `??`: `tileOn`, `tileOnInk`, `tileOnHair` and `ringW`. The tree is the twins'
+  node for node, **26 = 26 = 26 at all three widths** (one walker call per master, bindings with
+  their collection, and a paired read of Lime's and Editorial's desktop spacing — every gap and
+  padding the same three ways), on **Scheme 1 with the card on Scheme 2 and the picked tile on
+  Scheme 3** (`explicitVariableModes`; `resolvedVariableModes` Desktop / Tablet / Mobile, no
+  override). Every size is `THEME_RAMP.Pop`'s (display-lg 82 / 51 / 36, display-xl 125 / 75 / 46
+  on the glyph, list 20 / 16 / 15, body-lg 16 / 15 / 15, body-md 14 / 13 / 13, body-sm 12). **No
+  raw hex on any master, no effect, no rotation.** The seam is shared whole, so the published
+  rail and pill needed nothing.
+- **The head is `Display/LG`, not the plan's `Display/XL`.** All three masters style the h2
+  `Display/LG` at lh 0.89, the twins' token (146 / 90 / 96 tall: two / two / three lines); the 125
+  / 75 / 46 is the quote glyph's `Display/XL`. So the plan's fit question has no site — the head
+  is one tone, on the ramp, and `vm.titleWordEms` is not read. Corrected in *Sizes* and the
+  section-9 hand-off above.
+- **Every leaf is a binding.** The eyebrow, head, sub, idle marks and every string on both cards
+  `sem/text/2` violet (`s.tx`; Scheme 2's and Scheme 3's `text/2` are the same `#6B2CFF`, so
+  `G.ink = S2.tx` and `G.tileOnInk = S3.tx`). **The card is `S2.box1` `#D7FF23`, not `S2.bg`**
+  (section 9's convention, the second Scheme 2 card to bind it), in a **3px** INSIDE `stroke/1`,
+  violet under the seat (trap 6), radius 50. **The picked tile is not the card**: the twins' pick
+  is the card's own fill, Pop's is Scheme 3's pink `box/1` `#FF63B8` in its own 3px violet
+  `stroke/1` — hence the three `tileOn*` leaves. The idle tiles are the twins' keys, `s.box1`
+  `#F5F5F5` ringed `s.ac` pink, at **3px** (`ringW`, `3 × z`: 2.5 on the canvas, 3 narrow), radius
+  **31**. The pill is the twins' call as it stands: `sem/active/bg` black (`s.pillBg`) under a
+  `sem/tag/2/text` `#F6F0E8` label and disc (`s.chips[1].fg`, Grunge's and Editorial's key) round a
+  black arrow — BookPill's Lime branch paints the disc in `fg` and the arrow in `bg`.
+- **Every tile FILLs both axes — Editorial's mechanism, not the twins' hug** (`layoutSizing` `FF`,
+  grow, at every width, read before inheriting). So under `ed || pop` the column takes every
+  tile across it with the frame's own **95 / 90** as its floor (77.9 on the canvas; the seeded
+  marks sit under it) and the 390 row divides into equal parts, `flex: 1 1 0` with
+  `minWidth: 'min-content'`. Seeded, the five 390 tiles are 64.4 each; at `n=8`, 35.8, every mark
+  inside its ring.
+- **The head keeps its typed break and wraps on the ramp — Editorial's call, at 768.** Titan's
+  FROM PEOPLE WHO BOOKED is **911** in the 1088 column at desktop (the frame's Chunko 1111 × 0.82 =
+  911 — two lines, the frame's) and three lines at 390 (the master's three), but **715.4 in the
+  708 column at 768**, where Chunko sets 691: BOOKED drops to a third line (136.2 against the
+  frame's 90). Fitting it would be 49.46px against the ramp's 49.98 (−1%) on a line-ems key no vm
+  key gives, so it is named, as Editorial named its desktop third line. Reversible in one
+  `fontSize`.
+- **The head is lifted 0.14em** (CONVENTIONS B's Pop row, measured): an ink scan against the
+  frames put Titan's cap tops **0.154 / 0.144 / 0.147em** low at the three widths at lh 0.89.
+  Lifted, they land 1.1 / 0.2 / 0.2px under the frame's rows. **Nothing else is lifted**: the
+  glyph's ink top meets its box's top to the pixel at every width (Titan's ” is a taller drawing
+  than Chunko's slab, 0.33em of ink against 0.15); the marks sit 1.6 / 1.6 / 0.9px low and the
+  reviewer's name 1.2 / 0.9 / 0.7px at lh 1.2 — the repertoire's titles' case, left; the pill's
+  label is left as every Pop pill label is.
+- **The 390 sub wraps (open question 6, the last item)** — the twins' `<p>`, Retro's reading of
+  the leak: the master's no-wrap line is **431** wide (x −20.5, not the plan's 411), and nothing
+  in its layout depends on it. Two lines, 39 tall.
+- **Measured against the masters' content edges** (harness, from the section root): desktop
+  eyebrow at 45.9 (56 × 0.82), column **77.9** (95 × 0.82), card **984.1 × 246.2** at x 150 (1201 ×
+  0.82 = 984.8), glyph 57 × 45.9 (67 × 55.91 × 0.82 = 54.9 × 45.8), pill **155.5 × 44.3** (191 × 54
+  × 0.82 = 156.6 × 44.3); 768 root **729.2** (730) — the extra head line paid back by the seeded
+  quote's one line — column 90 (90), card 586 wide at x 152 (152), pill 170.2 × 54 (169 × 54); 390
+  card 370 wide, tiles 64.4 × 90 (108.67 × 90 for the frame's three), pill 164.7 × 54 (164 × 54).
+  **Named diffs, the twins'**: the seed's five reviews to the frame's three and its quote on 1 / 1
+  / 2 lines against 2 / 3 / 5, so the desktop root is 603.9 against 762.9 × 0.82 = 625.6 and the
+  390 790.2 against 842; the 390 `padX` 10 against the master's 20 (JP-038), so the column is 370;
+  canvas tile 0 lit where the frame lights the middle (`cur`'s pinned 0); the foot's 12 gap where
+  every master (the twins' too) sets 16 — the twins' own, inherited; the 768 head's third line.
+- **States**: `n=0` keeps the card with *No reviews yet.* in violet on lime and no rail; `n=1`
+  draws no rail and the card takes the width (1088.2 / 708 / 370); `n=8` divides the desktop column
+  into eight tiles and sets the 390 row on one line at 35.8; the root's `scrollWidth` is its width
+  at every count and width.
+- **`live=1`** (puppeteer, trusted clicks, 1440 and 390): tiles 3, 5, 5 again and 1 move the pink
+  fill with the card (HANNAH L. → DAN WHITFIELD → OLIVIA B., idempotent, → HANNAH L.); every tile
+  hit-tests to itself; the tiles carry a pointer live and `auto` on the canvas; the pill is
+  `<a href="#form">` live and a span on the canvas; no page error or warning.
+- **`page-check.mjs Pop 1,0,2,3`**: the modal's four cards; every nav, anchor and footer link on
+  its id (the testimonials' Book Now → `#form`, the footer's *Reviews* → `#testimonials`); the
+  player plays; the rail's idle tiles change state; `overflow390` 0; the burger 2 → 6; no console
+  error or warning on any card. The published 1440 testimonials is **737** tall (the seed's); its
+  seam clips show the blue form band closing on a straight edge over the white testimonials and
+  the white testimonials over the pink footer, at 1440 and 390 — the frames' own adjacencies.
+- **Digest: themes 0, 1, 2 and 3 zero files of 660, canvas and `live=1`**; theme 4 exactly
+  testimonials arch 1 at three widths on both surfaces (6 files), no `_arch_0_` file, no one-row
+  file.
+- **`FIELDS.testimonials` has no template-keyed `in` row** (`heading` `[1, 2, 3]`, `sub` `[1, 2]`,
+  `stars` and `cta` `[1]`, `kicker` `[1, 2]`, every one drawn by the widened block), so no
+  `reach.mjs` run was owed.
+- **`notes/testimonials.md`** names Pop beside Editorial in the tile sentence (no tile wide; the
+  pick its Scheme 3 pink and 3px violet ring, not the card's fill) and beside Grunge and Editorial
+  in the `pre-wrap` clause (the long line wrapping on the ramp at 768).
+- **For the sweep's CLAUDE.md pass**: CLAUDE.md names no layout-2 testimonials state (the tile
+  and the head live in `notes/testimonials.md`, done here). Not written here.
+- **This was the last section.** The footer is layout 1's and closed at planning time, so the next
+  session is the end-of-pass sweep.
 
 ### Inherited and used
 
@@ -1872,6 +1972,20 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
   stage); *the whole-page published check* (lime/layout-1); *field reach is measured* (CLAUDE.md
   — confirm-only).
 
+- Section 10: *the node walker, kept* (grunge/layout-2) with bound names and their collection —
+  three schemes, the card's 2 and the tile's 3; *the paired diff walk* (grunge/layout-2 — Lime's
+  and Editorial's spacing, by traversal order); *the `G` lookup at the block's head*
+  (grunge/layout-1 — a fourth arm, four leaves through `??`); *a nested node reads that scheme's
+  keys* (editorial/layout-2 — `[2]`, `[3]`; the card `box/1`, section 9's turn-round); *a twin's
+  redrawn state or live mechanism is read against this frame* (editorial/layout-2 — every tile
+  fills, Editorial's mechanism, no widened pick); *a twin's width-bound call is re-measured in the
+  new face* (editorial/layout-2 — the typed break, 715 in 708 at 768, named); *a frame's inside
+  stroke is an inset `boxShadow`* (lime/layout-2 — the 3px rings); *a stand-in face's glyph
+  floor* (editorial/layout-3 — 0.14em on the head, ink-scanned; the glyph, marks and name read and
+  left); *a leak that shows and reads as a defect is overridden* (grunge/layout-1 — the 390 sub);
+  *the whole-page published check* (lime/layout-1); *field reach is measured* (CLAUDE.md — no row
+  owed).
+
 ## Open questions
 
 1. ~~**Decision 1** — the gate, `(s.limeTree || s.pop)` per site.~~ *Settled in session 0: the
@@ -1905,7 +2019,8 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
      120mi runs off both and 60mi half off at 768, clipped by the viewport as the masters clip
      them (the twins' JP-040 reading). The 768 pill row the frame clips under its disc is
      overridden, Editorial's way (the row wraps);*
-   - the 390 testimonials' sub, a 411-wide no-wrap line.
+   - ~~the 390 testimonials' sub, a 411-wide no-wrap line.~~ *section 10: 431 wide (x −20.5);
+     it wraps, the twins' `<p>` — nothing in the master's layout depends on it.*
    - *section 7:* the 390 calendar foot squeezes its own line to 54 beside a 190 pill and breaks
      *Thursday* inside the word — the leak JP-100 overrode under the three twins; Pop takes the
      same rule (the line under the chip, the foot 98). Worth the designer's note.
