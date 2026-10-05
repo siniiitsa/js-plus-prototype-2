@@ -1254,7 +1254,7 @@ and its **lime** cards add a third ground the twins never had.
     caption 36.9 in rather than the frame's 32.8 and shrunk the cover box by 8 each way. Its
     image frame's own radius 4 lands under the ring, as on every twin. Computed: the overlay is
     4.1 / 5 / 5; the tiles' border computes **4px** at desktop (Chrome snaps a 4.1 border width
-    at DPR 2), 5 / 5 narrow;
+    to a whole pixel, at the digest's DPR 1 too), 5 / 5 narrow;
   - **the caption's ink is `sem/text/2`**, violet (`s.tx`), where Pop's tag-1 ink is `#141414`,
     so the gate takes `(s.retro || s.limeTree || pop)`. Its type and the 768 head's take `s.chip`
     at −0.06em, the twins' widening;
@@ -1294,7 +1294,10 @@ and its **lime** cards add a third ground the twins never had.
   against 253 and the caption 10 left of the frame's 60, since the root's `padX` is JP-038's
   10 against the master's 20; the caption reads the seeded heading and name ("SEE US IN ACTION
   / KAI MERCER") where the frame types "MTV 'MOOD SWING' / FEATURED REEL"; the seeded strip
-  stands against the frame's placeholder six.
+  stands against the frame's placeholder six; and the 768 tiles land at 74.1 / 130 / 133.8 and
+  115.7 / 145.9 / 76.5 against the twins' 73.9 / 129.3 / 134.8 and 116.3 / 145.4 / 76.3, since
+  flex-shrink weighs the inner base size and a 5px border redistributes the 358 band (desktop's
+  column has no free space, so it is exact).
 - **`live=1`** (puppeteer, trusted clicks, three widths): tiles 0, 3 and 5 move the hero to
   `pop-calendar`, `pop-gallery-1` and `pop-stage` and ring themselves (at 390 tile 0 rings with
   its looped twin 6, and 3 with 9). A second click on the ringed tile hands the hero back to
