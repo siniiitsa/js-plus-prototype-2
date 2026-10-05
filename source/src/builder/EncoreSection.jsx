@@ -4790,11 +4790,18 @@ function Bio({ s }) {
   // round a blush well (`tag/5/bg`), under the twins' soft shadow and with no
   // glow and no grain; the caption card is square `s.box1`, its disc blush
   // (`sem/tag/1/bg`). The photograph is a centred cover (`FILL`).
-  if (s.v1 && s.limeTree) {
+  // Pop's (layout 2) is Lime's tree on white: the card `box/1` ringed 4px in
+  // `sem/stroke/1` pink; every chip on its own `scheme/1/tagN/bg`, at the
+  // hand-scaled instance's 6.15 radius (Pop's chip 8 × 0.7686); the pill its
+  // Scheme 4 node, as Editorial's, but its teal 5 / 5 block drawn at all three
+  // widths; and the photo card a 4 mount in `sem/text/1` pink at 26.25 round a
+  // `tag/5/bg` violet well at 21.44, under the twins' soft shadow, no glow.
+  if (s.v1 && (s.limeTree || s.pop)) {
     const grunge = s.grunge
     const ed = s.editorial
-    // Grunge's and Editorial's frames keep the photo card's 10 mount.
-    const mount = grunge || ed
+    const pop = s.pop
+    // Grunge's and Editorial's frames keep the photo card's 10 mount; Pop's is 4.
+    const mount = grunge || ed || pop
     const tab = isTablet(s)
     const nar = s.narrow
     const z = nar ? 1 : 0.82
@@ -4818,8 +4825,8 @@ function Bio({ s }) {
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: u(6.15), maxWidth: u(264.4) }}>
           {s.tagChips.map((c, i) => (
             <span key={i} style={{
-              background: ed || i % 2 ? c.bg : grunge ? s.box3 : s.box2, color: c.fg,
-              borderRadius: u(grunge ? 3.07 : 4.61), padding: `${u(3.84)} ${u(8.45)}`,
+              background: ed || pop || i % 2 ? c.bg : grunge ? s.box3 : s.box2, color: c.fg,
+              borderRadius: u(grunge ? 3.07 : pop ? 6.15 : 4.61), padding: `${u(3.84)} ${u(8.45)}`,
               fontFamily: s.ui, fontSize: u(chipK), lineHeight: 1.26, letterSpacing: s.dls,
               whiteSpace: 'nowrap',
             }}>{c.label}</span>
@@ -4841,15 +4848,18 @@ function Bio({ s }) {
     // disc round a terracotta arrow, the header's `s.onScheme[4]` pair — and
     // its narrow block is that scheme's paper, which on the card's `box1`
     // reads 9 levels darker (sampled at both widths), so it is drawn.
+    // Pop's is the same Scheme 4 node — blue under a teal label and disc —
+    // and its teal block is on the desktop pill too, so it is drawn at all
+    // three widths (5 × 0.82 on the canvas; `u(5)` is the twins' 5px narrow).
     const pill = s.bioCta && (
       <BookPill s={s} to={s.bookTo} label={s.bioCta}
-                bg={ed ? s.onScheme[4].bg : grunge ? s.bg : s.tx}
-                fg={ed ? s.onScheme[4].ac : grunge ? s.ac : s.bg}
+                bg={ed || pop ? s.onScheme[4].bg : grunge ? s.bg : s.tx}
+                fg={ed || pop ? s.onScheme[4].ac : grunge ? s.ac : s.bg}
                 size={s.labelSm} disc={27.6 * z}
                 style={{
                   padding: `${u(4.27)} ${u(4.27)} ${u(4.27)} ${u(17.92)}`,
                   gap: u(8.53), lineHeight: facedLh(s, 1.1),
-                  boxShadow: nar ? `5px 5px 0 ${ed ? s.onScheme[4].ac : grunge ? s.ac : s.bg}` : undefined,
+                  boxShadow: nar || pop ? `${u(5)} ${u(5)} 0 ${ed || pop ? s.onScheme[4].ac : grunge ? s.ac : s.bg}` : undefined,
                 }} />
     )
 
@@ -4867,7 +4877,7 @@ function Bio({ s }) {
       <div style={{
         flex: nar ? 'none' : '1 1 0', minWidth: 0, background: s.box1,
         position: ed ? 'relative' : undefined,
-        boxShadow: ed ? undefined : ring('1px', s.stroke1), borderRadius: ed ? 0 : u(30),
+        boxShadow: ed ? undefined : ring(pop ? u(4) : '1px', s.stroke1), borderRadius: ed ? 0 : u(30),
         padding: ed ? (s.mob ? '20px' : 0) : u(s.mob ? 20 : 30),
         ...col(u(18), { justifyContent: nar ? 'flex-start' : 'space-between' }),
       }}>
@@ -4925,20 +4935,24 @@ function Bio({ s }) {
     // caption block's 20 inset is measured from that clip — 30 from the card,
     // 31.88 at the foot for the clip's own 1.875 padding. Editorial keeps the
     // same mount, square, in paper round a blush well, with no glow or grain.
+    // Pop's mount is 4, in `sem/text/1` pink at Grunge's 26.25 / 21.44, round
+    // the `tag/5/bg` well Editorial's binds — violet here — so the caption
+    // block's 20 stands 24 / 24 / 25.88 off the card.
     const photoCard = (
       <div style={{
         position: 'relative', flex: 'none', overflow: 'hidden',
         width: nar ? '100%' : u(433),
         height: s.mob ? (mount ? '362px' : '390px') : tab ? (mount ? '648px' : '700px') : undefined,
-        background: ed ? s.chips[3].fg : s.box1, borderRadius: ed ? 0 : u(grunge ? 26.25 : 55),
+        background: ed ? s.chips[3].fg : pop ? s.ac : s.box1, borderRadius: ed ? 0 : u(grunge || pop ? 26.25 : 55),
         boxShadow: `${u(1.25)} ${u(1.25)} ${u(10.81)} #00000029`,
         ...col('0', { justifyContent: 'flex-end' }),
       }}>
         <div style={{
-          position: 'absolute', inset: mount ? u(10) : 0,
-          ...(mount ? { overflow: 'hidden', borderRadius: ed ? 0 : u(21.44), background: ed ? s.chips[4].bg : s.box1 } : null),
+          position: 'absolute', inset: mount ? u(pop ? 4 : 10) : 0,
+          ...(mount ? { overflow: 'hidden', borderRadius: ed ? 0 : u(21.44), background: ed || pop ? s.chips[4].bg : s.box1 } : null),
         }}>
-          <Photo s={s} initialsSize={54} />
+          {/* Pop's empty slot is violet, so its initials go white (layout 1's bio). */}
+          <Photo s={s} initialsSize={54} ink={pop ? s.bg : undefined} />
           {grunge && (
             <Grain s={s} exact grunge blend="screen" opacity={1} style={{
               inset: `${u(0.2)} auto auto 0`,
@@ -4952,10 +4966,10 @@ function Bio({ s }) {
             boxShadow: `inset 0 0 ${u(34)} ${s.ac}`,
           }} />
         )}
-        <div style={{ position: 'relative', padding: mount ? `${u(30)} ${u(30)} ${u(31.88)}` : u(20) }}>
+        <div style={{ position: 'relative', padding: pop ? `${u(24)} ${u(24)} ${u(25.88)}` : mount ? `${u(30)} ${u(30)} ${u(31.88)}` : u(20) }}>
           <div style={{
             ...row(u(12)), background: mount ? s.box1 : s.box2, color: s.tx,
-            borderRadius: ed ? 0 : u(grunge ? 9 : 29), padding: `${u(18)} ${u(20)}`,
+            borderRadius: ed ? 0 : u(grunge || pop ? 9 : 29), padding: `${u(18)} ${u(20)}`,
           }}>
             <div style={col(u(4), { flex: 1, minWidth: 0 })}>
               <span style={labelStyle(s, s.labelLg, { lineHeight: 1.1, whiteSpace: 'normal' })}>{s.brand}</span>
@@ -4966,7 +4980,7 @@ function Bio({ s }) {
                 typed ⏵⏵ (pricing's typed-tick rule). */}
             <span style={{
               width: u(36), height: nar ? undefined : u(36), borderRadius: u(18), flex: 'none',
-              background: ed ? s.chips[0].bg : s.box1, fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4,
+              background: ed || pop ? s.chips[0].bg : s.box1, fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4,
               ...row('0', { justifyContent: 'center' }),
             }}>⏵⏵</span>
           </div>
