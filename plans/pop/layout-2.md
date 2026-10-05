@@ -1986,6 +1986,93 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
   *the whole-page published check* (lime/layout-1); *field reach is measured* (CLAUDE.md — no row
   owed).
 
+### Learned on the end-of-pass sweep (`0548f3d`, `92f7cf0`, `18f5c7e` and the refresh)
+
+- **Item 7 was decided first**, so item 1 could write the final name once: CLAUDE.md names the
+  flag, and a rename after the docs would have left them naming a const that no longer exists.
+  **`editorialCard` is `cardOnPage`** (its definition, its one use and three block comments),
+  with three stale comments fixed beside it — the design selector's "Pop at layout 1 so far",
+  the `pop` flag's "its own layout-1 block", and `FIELDS`' header note, which now says Pop's row
+  was re-measured over card 2. **Five-theme digest, canvas and live: zero files of 660 + 660**,
+  no one-row file in any label, and `curl` on the served module as the positive control (five
+  `cardOnPage`, the old name only in the comment that records it).
+- **Item 1, the docs.** CLAUDE.md's scheme bullet now splits Pop's two pages — layout 1's seats
+  inferred, layout 2's read off bound frames — and carries Schemes 5 and 8, `SCHEMES_OF.Pop[1]`,
+  `cardOnPage` and every layout-2 `s.onScheme` reader, with the body-copy turn-round (`s.tx`,
+  `text3` only where a node binds it); its header-`in` sentence names the card-2 re-measure, and
+  the `s.live` list's map zoom names Pop. Two sentences the plan placed in CLAUDE.md live
+  elsewhere: **`navModeDefault`'s is `notes/nav.md`'s** ("Pop is not in that list yet"), now
+  Minimal at Pop's layout 2 with its 768 fit (three links, against 656), and **JP-094's is
+  README's** (the vertical inset). README and `notes/templates.md` say Pop is designed at
+  layouts 1 and 2; the templates note gained a layout-2 paragraph in Editorial's shape, where
+  `popMediaRule` stands beside `grungeRule` and `editorialRule` and `popClip` reaches the
+  layout-2 header. README's booked-day sentence named Grunge and Editorial alone and now names
+  Pop. Every other notes file already carried Pop from its section's session.
+- **Item 2: the published page passed first time** (`page-check.mjs Pop 1,0,2,3`). Card 2: Music,
+  Gigs, About, Listen, Book Now and *Enquire about a date* scroll to `#media` / `#map` / `#bio` /
+  `#form`; the bio's, pricing's and the testimonials' pills and the calendar's Pricing, Enquiries
+  and Start Enquiry reach their ids; the player plays (`paused: false`); every section answers the
+  probe; the form rings its three boxes in 2px pink (`#FF2DA0`) from 1px violet, composes the bare
+  *Enquiry* mailto with the three values and swaps to *Check your mail*; all nine footer links
+  scroll; the 390 burger opens (2 → 6); `overflow390` 0; no console error or warning in either
+  window or across the resize walk. The published 1440 page: header 975, bio 760, media 966,
+  repertoire 793, gallery 675, pricing 635, calendar 908, map 808, form 777, testimonials 737.
+  **The 768 overflow**, read in the popup by a scratch script: `scrollWidth − innerWidth` **0**
+  at 1440, 768 and 390, and **15 at 768 with the header's `overflowX` lifted** (the frame's 783,
+  the positive control). **The seams are straight at both widths**: at 1440 the media's 5px lime
+  top and foot, the foot standing on the repertoire sheet's pink ring, the sheet closing over the
+  white gallery, pricing unringed, the blue form band square to the white map and testimonials,
+  the white testimonials over the pink footer; at 390 pricing in its 1px pink ring, the rest the
+  same.
+- **Item 3: the thumbnails** (a scratch walk, the `browser-tool-choice` recipe, after a *Back to
+  page list* — card 2 opens on the header's panel, so the first walk found no rows): all eleven
+  rows open; the header offers 4 items, the footer 1, the rest 6, 7, 7, 4, 8, 5, 4, 6, 8 in page
+  order; every arch-1 item renders exactly one `--ac` root and reads as its fitted section on the
+  desktop seats — the lime media and calendar cards on white, the grey repertoire sheet, the
+  leant coral plan card, the blue form band; no editor error.
+- **Item 4**: cards 1, 3 and 4 publish all eleven sections in `pageOrder(i)`'s order with no
+  error or warning; cards 3 and 4 are Retro's placeholder paths (the checker ribbon, the polaroid,
+  the stacked floor), as layout 1's open question 8 leaves them.
+- **Item 5: `reach.mjs 4`** (5,880 renders), then every plain probe compared with
+  `fieldReach(f, 'Pop', d)` in Node: **75 probes, no mismatch**. The header's rows are section
+  1's (`showBadge` and `badgeText` `[0, 3]`, the six layout-2 copy fields `[1]`, `cta2` `[1, 2]`,
+  kicker, tags and showTags `[0, 2, 3]`, location all four, align `[0]`), and the partials are
+  the known four (`header.cta2` 4/6, `calendar.email` 3/6, `bio.tagsLabel` 4/6,
+  `gallery.railLabel` 2/6). Nothing in `FIELDS` moved. The compare script's own trap: a list
+  column's probe (`repertoire.songs.length`, `map.gigs.year`) splits to its list's key on the
+  first dot and reads as a mismatch; skip any name with two dots.
+- **Item 6: every pair, kept, none folded.** In layout-2 code: **nine blocks**, each
+  `(s.limeTree || s.pop)` — `HeaderV1`'s at its head, the bio's and the form's ahead of their
+  `if (s.v1)`, and media, pricing, repertoire, calendar, map and testimonials inside it after the
+  seam — and **the gallery's six reads** inside its `if (s.v1)`, `(s.limeTree || pop)` (the well,
+  the caption's and the 768 head's chip size and tracking, the caption's ink beside `s.retro`).
+  Beside layout 1's sixteen (six helpers, `Pager` and nine blocks), that is 31 sites. **Two layout-2
+  sites stay unpaired on purpose**: the gallery's `bw`, `(s.retro || s.limeTree) ? '1px' : pop ?
+  u(5)`, where Pop has its own arm, and the caption's fill, `(s.lime || grunge) ? s.box1 :
+  s.chips[0].bg`, whose other arm is Pop's binding as it is Editorial's. The bio's
+  `s.lime ? s.dls : 0` sits in Retro's `v1` body, which the block returns ahead of. In
+  `data.js` and `EncoreBuilder.jsx` every name gate at `d === 1` names Pop (JP-094's pad arm,
+  `navModeDefault`, the `navFits` arm, `navGapEm`, `titleWordEms`); every gate naming Lime,
+  Grunge and Editorial without Pop is at `d === 2` (the composed row, pricing's footnote, the
+  form's and testimonials' insets). The fold (decision 1) is still the family's last pass's.
+- **Item 8**: `CONVENTIONS.md` took a *Pop (layout 2)* column on A, B, C and D2, and one row
+  leaned on three times that it did not name — *an empty slot whose well `s.muted` does not read
+  takes `Photo`'s `ink`* (C; the bio, the gallery and the form here, and every Editorial pass's
+  gallery). Every other bullet in *Inherited and used* already had a row. `plans/README.md`
+  closes the pass, and its Pop layout-1 row, still "push, PR and merge open", now says PR #47.
+- **Item 9**: *Notes for the designer*, at the plan's foot — nine notes, the user's list plus the
+  two type slips (the narrow media head's mixed case, the twins' "Star Enquiry").
+- **Item 10: the two-build digest** (the repo root on `127.0.0.1:8931`, the committed build
+  digested before the `cp`, reduced motion on). `CARD=0`: the seeded page is **byte-identical
+  under all five templates** at Desktop, Tablet and Mobile, and `modal.txt` is identical (four
+  Pop cards in both). `CARD=1`: card 2's page is identical under Retro, Lime, Grunge and
+  Editorial and rebuilt under Pop (659 → 675, 660 → 657 and 666 → 665 rows; ~1,320 diff lines a
+  width); the tell is `repeating-conic` (Retro's checker ribbon) old-only at every width and
+  Minimal's *Music* new-only at Desktop and Tablet (390 is the burger). The standalone file is
+  **9,819,684 bytes** (was 9,813,373); only `EncoreSection.jsx`, `EncoreBuilder.jsx` and
+  `data.js` changed in `src` since the last refresh (`7a8a8df`), every change named in the pass's
+  sessions; no photograph was added (56 files).
+
 ## Open questions
 
 1. ~~**Decision 1** — the gate, `(s.limeTree || s.pop)` per site.~~ *Settled in session 0: the
@@ -2052,3 +2139,49 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
     708 column, so BOOKED wraps to a third line where the frame sets two; a −1% fit (49.46px)
     would hold two.~~ *Settled (user call, 2026-10-05): kept as named, on the ramp, Editorial's
     call.*
+
+## Notes for the designer
+
+*(The open questions above that are worth telling the designer, gathered by the sweep into one
+note to forward, in Editorial layout 2's shape. Each is shipped as described; where it says "one
+line", the other answer is a one-line change. Layout 1's notes — the unbound variants, the
+gallery strip, the 390 pricing rings, the lime head on white — still stand.)*
+
+1. **Two portraits are the components' default pictures.** The header's face card (107 × 165)
+   shows Lime's colour avatar (`e3790c2c`) and the form's 48px credit circle shows Lime's other
+   one (`f821adc2`), both through Pop instances at all three widths. The page shows Pop's own
+   portraits there. *(3)*
+2. **The gallery strip is Retro's placeholders again.** The hero is Pop's own photograph, but the
+   six thumbnails beside it are five of Retro's pictures (one twice); the page's strip is the
+   other pictures of Pop's shoot. And the 390 master's right-column first tile is rounded
+   `0 0 40 40`, one tile of ten, where its own image says 10; the page does not follow it. *(4)*
+3. **The 390 calendar foot breaks a word.** The master squeezes the foot's line to 54 wide beside
+   a 190 pill, so *Thursday* breaks inside the word. The page drops the line under the date chip
+   when it cannot fit (the rule Lime's, Grunge's and Editorial's pages already take); in Titan
+   One the pill is 201 wide, so on the seeded page the line drops there. *(6)*
+4. **Header cards 3 and 4 are next.** They stay placeholders until Pop's layout-3 and layout-4
+   passes. One thing worth confirming before then: card 3's frame stands on Scheme 1 (white) at
+   1440 and on **Scheme 6** (violet) at 768 and 390, a change of ground between widths no other
+   Pop header makes; card 4's stands on Scheme 3 at every width. *(7)*
+5. **The footer is the one unbound variant on this page.** Every other layout-2 variant binds
+   its colours to the Pop mode; the footer still carries layout 1's 41 raw solids. Its desktop
+   instance is also of another main component (`446:8697`) than layout 1's (`907:12019`), though
+   the two trees match node for node. The page draws layout 1's footer on every page. *(8)*
+6. **The repertoire's pager carries other templates' colours.** In an otherwise bound variant,
+   its idle numerals are Lime's `#AFE335`, the current numeral Retro's `#FBF6EA`, the arrows' 1px
+   ring Lime's `#F2FFD0`, and the numerals are set in Anton, at every width. Each is followed as
+   drawn (Anton set in Pop's display face), but Scheme 1 has a key for every one of them. *(9)*
+7. **Pricing's picked chip label is all but invisible.** The picked chip fills `sem/tag/1/bg`
+   (yellow) and keeps the idle chips' `sem/text/1` label (lime), 1.15 : 1 — the frame's own
+   render shows the label nearly gone. The page keeps the fill and ring and letters the label in
+   the tag's own ink, black. *(11)*
+8. **The testimonials head is wider than its 768 column in the stand-in face.** The head is
+   `Display/LG` (82 / 51 / 36) on all three masters, the twins' token — not `Display/XL`, which
+   is the quote glyph's. At 768, Titan One sets FROM PEOPLE WHO BOOKED 715 wide in the 708
+   column (Chunko 691), so BOOKED wraps to a third line where the frame sets two. The page stays
+   on the type ramp; one line to fit it instead (about 49.5px against the ramp's 50). *(12, and
+   section 10)*
+9. **Two slips in the type.** The narrow media masters type the head "Five Worth your ear" in
+   mixed case, the only display string on the page not typed in capitals (the page sets it in
+   capitals, as the 1440 master does); and the calendar pill reads "Star Enquiry", the twins'
+   typo (the page says "Start Enquiry").
