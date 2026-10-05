@@ -1138,7 +1138,7 @@ and its **lime** cards add a third ground the twins never had.
 ### Settled in section 4 (the repertoire)
 
 - **The block widened whole: `if (s.limeTree || s.pop)` inside `Repertoire`'s `if (s.v1)`, after
-  `pageWindow()`, `const pop = s.pop`** (six arms, no `G`). The tree is the twins' node for node
+  `pageWindow()`, `const pop = s.pop`** (seven sites, no `G`). The tree is the twins' node for node
   at all three widths (`phone` / `sticky-head` / `Frame 286` / `list` / `pagination`, two columns
   of five, the seven-slot pager), on **Scheme 1 with no Device override** (`resolvedVariableModes`
   Desktop / Tablet / Mobile) and **no nested scheme, no effect, no rotation** on any node, each
