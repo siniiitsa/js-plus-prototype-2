@@ -19846,11 +19846,25 @@ function EventsMap({ s }) {
     // frame's own dot, which reads on the plate. Display/Title is Sienna
     // Vale's 32 / 25 / 23 and uppercase. The plate samples (41, 42, 28), so
     // Retro's stands a third time.
-    if (s.limeTree) {
+    //
+    // Pop — the same tree a fifth time (964:64575 1440 × 808, 986:17577 768 ×
+    // 823, 986:17596 390 × 1286), bound, on Editorial's three nested schemes
+    // and no Device override, so it reads Editorial's keys through its own
+    // `S2` / `S3`: the travel card Scheme 3's pink `box/1` in a violet
+    // `stroke/1` ring (solid, as are its stats rules — Lime's `hair` path),
+    // lettered violet; its pill lime under a pink label and disc; the panel
+    // Scheme 2's `box/1`, its status pill the lime `sem/bg` under pink; inside
+    // the viewport the rings, labels, centre disc and tail Scheme 3's pink
+    // `sem/bg`, the five dots its violet `text/2` at .6 (they read on the
+    // plate), the zoom its `box/2`. Every radius is 30 but the map
+    // container's 8 / 19 / 19; Display/Title is Pop's 28 / 22 / 20, faced and
+    // uppercase. The plate samples (43, 44, 29): Retro's a fourth time.
+    if (s.limeTree || s.pop) {
       const grunge = s.grunge
       const ed = s.editorial
-      const S2 = ed ? s.onScheme[2] : null
-      const S3 = ed ? s.onScheme[3] : null
+      const pop = s.pop
+      const S2 = ed || pop ? s.onScheme[2] : null
+      const S3 = ed || pop ? s.onScheme[3] : null
       const G = grunge ? {
         card: '#F52E34', hair: '#00000026', ink: s.tx, zoom: '#F52E34',
         panel: s.box1, status: s.bg, r: u(15), panelR: u(15), mapR: u(8),
@@ -19864,6 +19878,13 @@ function EventsMap({ s }) {
         pillBg: S3.ac, pillFg: S3.bg, statRule: S3.stroke2,
         acc: S3.bg, dot: S3.tx, dotOp: 0.6,
         statusFg: S2.ac, feat: S2.ac, frame: S2.stroke1, arrow: S2.bg,
+      } : pop ? {
+        card: S3.box1, hair: S3.stroke1, ink: S3.tx, zoom: S3.box2,
+        panel: S2.box1, status: S2.bg, r: u(30), panelR: u(30), mapR: desk ? u(8) : '19px',
+        aspect: desk ? '588 / 471' : tab ? '318 / 527' : '346 / 305',
+        title: desk ? u(28) : tab ? '22px' : '20px',
+        pillBg: S3.ac, pillFg: S3.bg, acc: S3.bg, dot: S3.tx, dotOp: 0.6,
+        statusFg: S2.ac, frame: S2.stroke1, arrow: S2.bg,
       } : {
         card: '#CCFA61', hair: '#15180F26', ink: s.bg, zoom: '#D9FF7F',
         panel: s.box2, status: s.box1, r: u(50), panelR: u(s.mob ? 30 : 50),
@@ -19889,8 +19910,13 @@ function EventsMap({ s }) {
       // under Editorial); identity off them.
       const display = (size, lh) => ({
         margin: 0, fontFamily: s.display, fontSize: faced(s, size), lineHeight: facedLh(s, lh), letterSpacing: s.dls,
-        ...(grunge || ed ? { textTransform: 'uppercase' } : null),
+        ...(grunge || ed || pop ? { textTransform: 'uppercase' } : null),
       })
+      // Titan sets its caps 0.14em lower than the frame's Chunko in the same
+      // box (an ink scan of the h2 and the venues put them 0.11–0.17em low at
+      // the three widths), so under Pop each display string is lifted; no box
+      // moves.
+      const lift = pop ? { position: 'relative', top: '-0.14em' } : null
       const chip = {
         fontFamily: s.body, fontWeight: 700, fontSize: s.chip, lineHeight: 1,
         letterSpacing: '-0.06em', textTransform: 'uppercase', whiteSpace: 'nowrap',
@@ -19909,7 +19935,7 @@ function EventsMap({ s }) {
           <div style={row(u(12), { width: '100%', justifyContent: 'space-between', alignItems: 'flex-start' })}>
             <div style={col(u(4), { minWidth: 0 })}>
               {!!s.mapKicker && <span style={{ ...bodySm, ...wrap }}>{s.mapKicker}</span>}
-              <h2 style={distressed(s, display(titleSize, 1.1))}>{s.title}</h2>
+              <h2 style={distressed(s, { ...display(titleSize, 1.1), ...lift })}>{s.title}</h2>
             </div>
             {/* The frame's "● Confirmed" again, and Retro's reading of it: when
                 the featured gig is. Until JP-060 the block drew `radius` here,
@@ -19926,6 +19952,9 @@ function EventsMap({ s }) {
               hand-set Body/MD venue location. Editorial keeps the frame's
               Body/MD for the venue: Noto's MANCHESTER is 107.75 in the 768
               column's 105, so the normalised name broke inside the word.
+              Pop's frame binds Body/MD too, and Titan's MANCHESTER is 109.4
+              in the same 105 ("MANCHESTE / R" on the seeded canvas), so Pop
+              keeps it as well.
               The frame's three lines a column, as Retro's body below
               (JP-096): the home column is the header's Location, and it
               goes with the connector once that is emptied. */}
@@ -19933,7 +19962,7 @@ function EventsMap({ s }) {
             {!!s.location && (
               <div style={col(u(3), { flex: '1 1 0', minWidth: desk ? u(160) : 0 })}>
                 {!!s.mapHomeLabel && <span style={{ ...bodySm, ...wrap }}>{s.mapHomeLabel}</span>}
-                <span style={display(s.list, 1.2)}>{s.location}</span>
+                <span style={{ ...display(s.list, 1.2), ...lift }}>{s.location}</span>
                 {!!s.mapHomeCaption && <span style={{ ...bodySm, ...wrap }}>{s.mapHomeCaption}</span>}
               </div>
             )}
@@ -19951,7 +19980,7 @@ function EventsMap({ s }) {
                 <div style={col(u(3), { flex: '1 1 0', minWidth: desk ? u(160) : 0 })}>
                   {!!s.mapVenueLabel && <span style={{ ...bodySm, ...wrap }}>{s.mapVenueLabel}</span>}
                   <span style={{
-                    ...(ed ? { fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5 } : display(s.list, 1.2)),
+                    ...(ed || pop ? { fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5 } : display(s.list, 1.2)),
                     overflowWrap: 'anywhere',
                   }}>{g.city}</span>
                   {!!s.mapVenueCaption && <span style={{ ...bodySm, ...wrap }}>{s.mapVenueCaption}</span>}
@@ -19992,6 +20021,9 @@ function EventsMap({ s }) {
               Editorial each pill keeps its content width and the row wraps
               where it must — at 768 alone; 390's 330 holds 329 — with Get
               Directions held to the frame's 54 box on a line of its own.
+              Pop's pair is Editorial's keys (lime under pink) and its row
+              Editorial's: Titan's pill needs 176 of the 768 frame's 146 (the
+              frame's Chunko 173, clipped), and 390's 330 holds 170 + 10 + 147.
               Both labels are the artist's (JP-095 (b)) and wrap, inside a word
               too, so that content width is `fit-content` rather than `auto`
               over `nowrap`: the label's own width while it fits the row, and
@@ -19999,18 +20031,18 @@ function EventsMap({ s }) {
               once typed longer than its seed (`vm.mapVenueCtaWraps`): Lime's
               768 seed runs 1px into the disc's gap and would break. */}
           {!!g && (
-            <div style={row(u(10), { width: '100%', alignItems: 'stretch', ...(ed ? { flexWrap: 'wrap' } : null) })}>
+            <div style={row(u(10), { width: '100%', alignItems: 'stretch', ...(ed || pop ? { flexWrap: 'wrap' } : null) })}>
               <BookPill s={s} ext={g.url} label={s.mapVenueCta} bg={G.pillBg ?? s.bg} fg={G.pillFg ?? s.ac} full={s.mob}
                         style={{
-                          flex: '1 1 0', minWidth: ed ? 'fit-content' : 0, justifyContent: 'space-between',
+                          flex: '1 1 0', minWidth: ed || pop ? 'fit-content' : 0, justifyContent: 'space-between',
                           ...(s.mapVenueCtaWraps ? { whiteSpace: 'normal', overflowWrap: 'anywhere' } : null),
                         }} />
               <Dir {...dir} style={row(0, {
-                flex: '1 1 0', minWidth: ed ? 'fit-content' : 0, minHeight: ed ? u(54) : undefined, justifyContent: 'center',
+                flex: '1 1 0', minWidth: ed || pop ? 'fit-content' : 0, minHeight: ed || pop ? u(54) : undefined, justifyContent: 'center',
                 boxShadow: ring(G.pillBg ?? s.bg), borderRadius: '999px', color: G.pillBg ?? s.bg,
                 padding: `0 ${u(12)}`, ...display(s.list, 1.2), whiteSpace: 'normal', overflowWrap: 'anywhere',
                 textAlign: 'center', textDecoration: 'none', cursor: dir ? 'pointer' : undefined,
-              })}>{s.mapRouteCta}</Dir>
+              })}>{pop ? <span style={lift}>{s.mapRouteCta}</span> : s.mapRouteCta}</Dir>
             </div>
           )}
         </div>
@@ -20042,8 +20074,11 @@ function EventsMap({ s }) {
                   overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                   // Noto's J descends 0.24em, 0.05em past this 1.1 box's foot,
                   // so under Editorial the clip reaches 0.1em lower and the
-                  // margin gives it back: no box moves.
-                  ...(ed ? { paddingBottom: '0.1em', marginBottom: '-0.1em' } : null),
+                  // margin gives it back: no box moves. Titan's J, lifted,
+                  // ends inside the box at every width (`&cj=` "Jumpin
+                  // Jacks": its foot the same row with the clip moved 0.1em
+                  // lower), so Pop needs no reach.
+                  ...(ed ? { paddingBottom: '0.1em', marginBottom: '-0.1em' } : lift),
                 })}>{gg.venue}</span>
                 {!!gg.url && (
                   <Tix {...tix} style={{
@@ -20089,6 +20124,14 @@ function EventsMap({ s }) {
               pages: lwin.labels, active: lwin.at, grow: true,
               onPage: s.live ? (n) => setPage(Number(n) - 1) : undefined,
               onStep: s.live ? (dir) => setPage(Math.max(0, Math.min(pages - 1, pg + dir))) : undefined,
+              // No Pop map master draws a pager, so the list takes the one
+              // this page does draw on Scheme 1 — the repertoire's seven keys
+              // (section 4) — over `Pager`'s Pop arm, which is layout 1's
+              // Scheme 6 seat.
+              ...(pop ? { lime: {
+                box: s.tx, endBox: s.chips[0].bg, ring: POP_REP.pale, ink: s.tx,
+                idle: POP_REP.song, onBox: s.ac, on: POP_REP.paper,
+              } } : null),
             }} />
           )}
         </div>
@@ -20159,7 +20202,7 @@ function EventsMap({ s }) {
             <div style={col(u(4), { width: '100%', minWidth: 0 })}>
               {g ? (
                 <>
-                  <h3 style={distressed(s, { ...display(titleSize, 1.1), overflowWrap: 'anywhere', color: G.feat })}>{g.venue}</h3>
+                  <h3 style={distressed(s, { ...display(titleSize, 1.1), overflowWrap: 'anywhere', color: G.feat, ...lift })}>{g.venue}</h3>
                   <span style={{
                     fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5, opacity: 0.7, overflowWrap: 'anywhere',
                   }}>{g.city}</span>
