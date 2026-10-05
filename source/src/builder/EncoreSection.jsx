@@ -23369,9 +23369,10 @@ function Testimonials({ s }) {
       // height (36 + 21.6 + 36 = the frame's 94); in the column it is inert,
       // Retro's division rule.
       //
-      // Editorial's tiles all FILL both axes, so under `ed` no tile hugs: the
-      // column takes every tile across it and is its widest padded mark, with
-      // the frame's own 97 / 92 as a floor (the seeded marks sit under it), and
+      // Editorial's and Pop's tiles all FILL both axes, so under `ed || pop` no
+      // tile hugs: the column takes every tile across it and is its widest
+      // padded mark, with the frame's own 97 / 92 (Pop's 95 / 90) as a floor
+      // (the seeded marks sit under it), and
       // the 390 row divides like the column in the other axis — 3 × 108.67 +
       // 24 is the 350 row, so the widths are the fill share and the 30 of
       // horizontal padding is inert there (Retro's division rule), while the
@@ -23414,7 +23415,8 @@ function Testimonials({ s }) {
         </div>
       )
 
-      // Scheme 3, radius 50 at all three widths (Retro's twin is 30). Its foot
+      // Scheme 3 (Pop's Scheme 2, `G`), radius `G.cardR` at all three widths
+      // (Lime's 50; Retro's twin is 30). Its foot
       // is `items-center` where Retro's aligns to the end, and the corner is
       // the section's `stars` in Body/MD ink, as all three masters draw it
       // (user call, 2026-09-17) — so `when` has no seat here, Retro's rule.

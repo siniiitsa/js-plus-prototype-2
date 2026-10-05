@@ -187,7 +187,7 @@ defect is overridden*):
 
 Inside a root, clipped by it (each its session's to read): the 390 media titles and bar byline (to
 x 471), the map's ring labels past the 768 and 390 viewports (to 866 / 480), and the 390
-testimonials' sub, a no-wrap line to 411.
+testimonials' sub, a no-wrap line to 411 (*section 10*: 431 wide at x −20.5; it wraps).
 
 **Two sections are wrapped**, exactly as on the twins' pages:
 - **media** is a `Section` (1440, `964:64563`) or `Frame 299` (narrow, `986:17565` / `986:17584`)
