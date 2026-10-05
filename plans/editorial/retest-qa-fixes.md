@@ -436,7 +436,12 @@ rule alone.
   *Featherstonehaugh* the rule now ends at 350 / 380 / 392 and is Editorial 75 / 105 / 105 wide,
   Lime 96 / 126 / 126, Pop 44 / 74 / 74 and Retro 30 / 38 / 38. **The one wrap is Retro at 360
   with *Featherstonehaugh***: the name takes two lines, the rule sits at its 30, the row is 46.19
-  tall, and the statement moves down under it (looked at). The footer no longer scrolls any page.
+  tall, and the statement moves down under it (looked at). **The other tree's wrap**, taken with a
+  fifth name, *Maximilian Featherstonehaugh Windsor*: Editorial at 360 and Pop at 360 and 390 put
+  the name on two lines with the rule at 30 and every word whole (Editorial's row stays the
+  star's 40.23, Pop's is 32). Lime's rule holds it on one line (44 / 74), and Grunge's (126 /
+  150). That name scrolls Editorial's and Pop's pages through the form (437, 434), the credit
+  named below, not the footer. The footer no longer scrolls any page.
   What still does is named elsewhere and is the same on HEAD (found by hiding each section in
   turn):
   - **Retro's layout-2 hero** (`layout-2-qa-fixes.md` JP-092, *Retro's half*, Decided A): the
