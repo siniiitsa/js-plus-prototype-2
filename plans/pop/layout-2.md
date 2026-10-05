@@ -181,8 +181,9 @@ defect is overridden*):
 - **The 768 page renders 783 wide**: the header's sun (`Layer_1`, 154 at x 644) runs 15 past its
   right edge. Clip it, or the published 768 page scrolls sideways — layout 1's pricing rings and
   `popClip` are the precedent.
-- **The 390 page renders 667 wide**: the bio's chip row (`Frame 6`) is a no-wrap row running to 667,
-  Editorial's leak again (its open question 7). `TagChips` wraps, so it does not reproduce.
+- **The 390 page renders 667 wide**: the bio's ~~chip row~~ **credit box** (`Frame 6`, 637.5 × 39 at x 30) is a
+  no-wrap row running to 667, Editorial's leak again (its open question 7). *Corrected in section 2*: the
+  chips wrap at the Tags instance's 264.4; the block follows the credit box as a `minHeight` only.
 
 Inside a root, clipped by it (each its session's to read): the 390 media titles and bar byline (to
 x 471), the map's ring labels past the 768 and 390 viewports (to 866 / 480), and the 390
@@ -212,7 +213,7 @@ session widens. The narrow twins are in Editorial's and Grunge's sections tables
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 0 | *foundation* | `964:64560` *(page)* | — | `986:17562` | — | `986:17581` | — | — | — | — | Schemes 5 and 8, `SCHEMES_OF.Pop[1]`, `editorialCard`, the JP-094 pad arm, `navModeDefault` | **done** |
 | 1 | `header` | `964:64561` | 1440 × 974 | `986:17563` | 768 × 1024 | `986:17582` | 390 × 994 | 1 (Enquire pill **3**, place card **6**, Book pill **3 / 3 / 4**) | `964:64580` | `964:64599` | `if (s.limeTree) { … return }` at the head of `HeaderV1` | **done** `5bc12c1` |
-| 2 | `bio` | `964:64562` | 1440 × 760 | `986:17564` | 768 × 1138.8 | `986:17583` | 390 × 881.3 | 1 (Book pill **4**) | `964:64581` | `964:64600` | `if (s.v1 && s.limeTree)` ahead of `Bio`'s `if (s.v1)` | |
+| 2 | `bio` | `964:64562` | 1440 × 760 | `986:17564` | 768 × 1138.8 | `986:17583` | 390 × 881.3 | 1 (Book pill **4**) | `964:64581` | `964:64600` | `if (s.v1 && s.limeTree)` ahead of `Bio`'s `if (s.v1)` | **done** `3de6182` |
 | 3 | `media` | `964:64563` *(Section; panel `964:64564`)* | 1440 × 965 | `986:17565` *(Frame 299; `986:17566`)* | 768 × 1541 | `986:17584` *(Frame 299; `986:17585`)* | 390 × 1420 | page 1, **panel 2** (fan cards 6 / 3 / 5 / 4 / 2, list rows 3 / 4 / 5 / 7 / 8) | `964:64582` | `964:64601` | inside `Media`'s `if (s.v1)`, after `nowArt` | |
 | 4 | `repertoire` | `964:64570` | 1440 × 792 | `986:17572` | 768 × 792 | `986:17591` | 390 × 594 | 1 (a `box/1` sheet) | `964:64589` | `964:64608` | inside `Repertoire`'s `if (s.v1)`, after `pageWindow()` | |
 | 5 | `gallery` | `964:64571` | 1440 × 675 | `986:17573` | 768 × 468 | `986:17592` | 390 × 364 | 1 | `964:64590` | `964:64609` | **no block** — `s.limeTree` reads and `(s.lime \|\| grunge)` / `ed` ternaries through `Gallery`'s `if (s.v1)` | |
@@ -972,6 +973,68 @@ and its **lime** cards add a third ground the twins never had.
   three** (the plan's effects list) — the nav pill's recipe with `s.onScheme[4]` fixed, but read
   its box per master (145 / 129 / 123 × 35: the 390 one is not hand-shrunk to 91).
 
+### Settled in section 2 (the bio)
+
+- **The block widened whole: `if (s.v1 && (s.limeTree || s.pop))` ahead of `Bio`'s `if (s.v1)`,
+  `const pop = s.pop`**, `mount` now `grunge || ed || pop` (nine arms, no `G`). The tree is Lime's
+  node for node at all three widths (the walker, one call per master, bindings with their
+  collection), on **Scheme 1 with no Device override**, the pill's `Frame` nested **Scheme 4** at
+  768 and 390 (explicit) and resolving its values at 1440. Every size is the ramp's (label-sm 16 /
+  13 / 12, label-lg 24 / 16 / 14, body-lg 16 / 15 / 15, body-sm 12) and the Tags instance the
+  twins' hand-scaled 264.4 (15.37 / 10.76 / 9.22). **No raw hex on any master** — the bio has no
+  leak but the credit box's width.
+- **On white, most of the block is already the binding**: the `/FEATURED` pill (`sem/text/2` in a
+  `scheme/1/stroke/2` ring — the seat is Scheme 1, so `s.tx` in `s.stroke2`, violet in lime), the
+  paragraph (`s.tx`, violet — this page's body copy), the credit (`scheme/1/text1` pink lead over
+  `text2`, i.e. `s.ac` / `s.tx`), the card's `box/1`, radius 30, padding 30 / 30 / 20, desktop
+  `SPACE_BETWEEN`, the 390 foot's `10px 0`, and the caption card's `box/1`, name and role in
+  `s.tx`. The deltas:
+  - **the card's ring is 4px `sem/stroke/1` pink**, INSIDE: `ring(u(4), s.stroke1)` (Lime's 1px);
+  - **every chip sits on its own tag** — `scheme/1/tag1…tag5/bg`, named outright, lime / pink /
+    blue / teal / violet, which are `vm.chips`' seats since the bio stands on Scheme 1 — so `ed ||
+    pop || i % 2 ? c.bg`, Editorial's turn-round; radius **6.15** (Pop's chip 8 × 0.7686; Lime's
+    4.61, Grunge's 3.07). Inks: four of five are `c.fg`; the fourth binds `scheme/4/tag1/text`
+    `#141414` where `c.fg` is Scheme 1's `tag4` ink `#000000` — the twins' one-chip leak, a
+    named diff of one level. The sixth seeded chip (*All Access*, red) is JP-081's;
+  - **the pill is Scheme 4**: `bg={s.onScheme[4].bg} fg={s.onScheme[4].ac}` — blue under a teal
+    label and disc, the arrow blue — Editorial's pair, and its **teal `Retro/Poster` 5 / 5 block is
+    on the 1440 pill too**, so `boxShadow` is drawn at all three widths, `${u(5)}` (4.1 on the
+    canvas, 5px narrow — the string is the twins' `5px` there, byte for byte). The box is Lime's
+    bio recipe (`k` 0.82 / 1 / 1), not the header's `pk`: **119.5 × 28.6** against 145.32 × 0.82 =
+    119.2, **130 × 34.9** against 129.32, **124.5 × 34.9** against 123.32 (Titan against Chunko);
+  - **the photo card is a 4 mount**, not the twins' 10: the outer frame `sem/text/1` (`s.ac`,
+    pink) at Grunge's 26.25 padded 4, the inner clip `sem/tag/5/bg` (`s.chips[4].bg`, **violet**,
+    Editorial's binding) at 21.44, under the twins' soft 1.25 / 1.25 / 10.81 at 16% black; no
+    glow, no grain. The caption block's 20 stands **24 / 24 / 25.88** off the card (4 + 20, 4 +
+    1.875 + 20); the caption card `box/1` at Grunge's 9, its disc `sem/tag/1/bg` lime
+    (`s.chips[0].bg`). The heights are the mount's 648 / 648 / 362;
+  - **the empty slot's initials are white** (`ink={pop ? s.bg : undefined}`, layout 1's bio):
+    `&noimage=1` drew violet `KM` on the violet slot, invisible, before it.
+- **The plan's "390 chip row" is the credit box** — `Frame 6`, 637.5 × 39 at x 30, is the credit
+  line's leaked desktop box, as Editorial found; the Tags row wraps at 264.4 at every width. The
+  block follows it as a `minHeight: u(39)` and never its width, so the 390 root's `scrollWidth`
+  is 390. Corrected above and in open question 6.
+- **The photograph is a centred cover** (`FILL`, `51d06990` = `POP_PHOTOS.bio`), the twins' rule;
+  the frame's render and ours crop alike at all three widths.
+- **Measured against the masters' content edges** (harness, `getBoundingClientRect`): desktop
+  `/FEATURED` 95.7 × 23.6 (114.35 × 29.34 × 0.82 = 93.8 × 24.1), chips at 445 (543.29 × 0.82 =
+  445.5) with *Live* at x 131.7 (132.1), credit at 521.7 (520.7), the pill's right edge 24.6 in
+  from the card's, the photo card 355 × 531.4 at 779 (779.8), the clip inset 3.28 at 17.58, the
+  name at 502 (502.8), the disc at 1068.5 × 506.9 (1069.3 × 507.3); 768 `/FEATURED` at 90 (90),
+  the paragraph at 141.1 (140.85), the photo card 708 × 648; 390 the pill 47.6 under the credit
+  (48.65), the photo card 370 × 362, the name 281.9 under its top (282.1). **Named diffs, the
+  twins'**: the seeded paragraph is 2 / 2 / 3 lines against the frame's 3 / 3 / 6, so the narrow
+  cards run 24 / 69 short; the caption names `s.brand` where the frame types "KAI MERCER · DJ";
+  `/FEATURED` and the pill run ~2% wide in Titan.
+- **`live=1`**: the pill is `<a href="#form">` at all three widths with its teal block (4.1 / 5 /
+  5); nothing else in the section is live. No page errors or warnings.
+- **`FIELDS.bio` under Pop** (`scripts/reach.mjs 4`, confirm-only, 5,880 renders): `bio.credit`,
+  `bio.cta` and `bio.tag` reach bio layout 2 alone; `who.tags` / `who.showTags` bio 2 and 4;
+  `who.kicker` all four bios; `who.location` 1–3; `bio.tagsLabel` layout 4 at 4/6 (the known
+  partial). Nothing in `FIELDS` moved.
+- **Digest: themes 0, 1, 2 and 3 zero files of 660, canvas and `live=1`**; theme 4 exactly bio
+  arch 1 at three widths on both surfaces (6 files), no `_arch_0_` file, no one-row file.
+
 ### Inherited and used
 
 *(The running list the sweep folds into [`../CONVENTIONS.md`](../CONVENTIONS.md): each time a
@@ -996,6 +1059,17 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
   (lime/layout-1) and *the popup is `about:blank`* (memory) — the 768 overflow measured in the
   popup with the clip removed as the positive control.
 
+- Section 2: *the node walker, kept* (grunge/layout-2) with bound names and their collection (*a
+  node can name another scheme's variable outright*, editorial/layout-3 — the chips' `scheme/1/tagN`
+  and the pill ring's `scheme/1/stroke/2`, Scheme 1 being the seat); *a nested node reads that
+  scheme's keys* (editorial/layout-2 — the pill's `[4]`); *a hard offset shadow goes through the
+  caller's `style`* (lime/layout-2 — at all three widths here); *a hand-scaled instance is not the
+  ramp* (lime/layout-2 — the Tags row); *a widened block can need no `G`* (grunge/layout-3); *a
+  frame's inside stroke is an inset `boxShadow`* (lime/layout-2 — the 4px ring); *leaked tops are
+  followed where they show* (lime/layout-1 — the credit box's height, never its width); *a seeded
+  page cannot show an empty slot* (lime/layout-1 — `&noimage=1` found the violet-on-violet
+  initials); *field reach is measured* (CLAUDE.md).
+
 ## Open questions
 
 1. ~~**Decision 1** — the gate, `(s.limeTree || s.pop)` per site.~~ *Settled in session 0: the
@@ -1013,7 +1087,8 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
 6. **The narrow masters' leaks**, each for its session to follow or override:
    - ~~the 768 header's sun, 15 past the page (the reason the 768 page renders 783 wide);~~
      *section 1: followed, and clipped by the root (783 → 768 in the published tab);*
-   - the 390 bio's chip row, a no-wrap row to 667 (the 390 page's 667);
+   - ~~the 390 bio's chip row, a no-wrap row to 667 (the 390 page's 667);~~ *section 2: it is the
+     credit box (`Frame 6`), followed as a `minHeight`, never its width — the root is 390;*
    - ~~the 390 header pill's label in Anton 12.07;~~ *section 1: set in Titan at 12.07, the
      pill 110.5 wide against 91;*
    - the 390 media bar's title and byline and the list's titles, past the master;
