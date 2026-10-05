@@ -679,6 +679,12 @@ pill.**
     Retro's face has no ems table.
   - **768 with *…Windsor*** under Editorial: the one-line name runs 85 under the pill. The four
     report names fit at 768.
+  - **The burger's panel** draws its own `Wordmark` (`NavMenu`, no fit, `nowrap` at the narrow
+    ramp), so a long name pushes its ✕ off the panel rather than run under it. The panel then
+    scrolls sideways (`overflowY: auto` makes `overflowX` auto too). Editorial with *Florence* at
+    360 and 390 (the ✕ ends at 410; at 414 it fits) and with *Featherstonehaugh* at every width
+    (478); Grunge and Pop with *Featherstonehaugh* at 360 (366, 368). Lime and Retro fit. Measured
+    after the fix with the ✕'s box; the code is HEAD's.
   - **The gallery at layout 1 scrolls the page** with long names: under Pop with *Florence* at
     360 (378), *Featherstonehaugh* at 360–414 (421, 433), and under Editorial, Lime and Grunge
     with *…Windsor* (413). Found by hiding each section in turn; the gallery reads the name.
@@ -698,7 +704,8 @@ pill.**
     (layout 4), which had the same fault. At 360 even the default *Kai Mercer* ran under the
     button under Editorial; it now takes two lines. The name's size there is 25px under
     Editorial; 16px is Pop's. *Not changed, logged separately:* Editorial's Inset Hero header
-    (layout 3) and Retro's at 360 still run a long name under the button. Under Pop a long name
+    (layout 3) and Retro's at 360 still run a long name under the button. In the open menu, a
+    long name pushes the ✕ past the screen's edge under Editorial. Under Pop a long name
     makes the Gallery scroll the page sideways (*Florence and the Machine* at 360, *Maximilian
     Featherstonehaugh* at every width).
 
