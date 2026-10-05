@@ -812,7 +812,10 @@ and `vm.cardNameEms` at `EncoreBuilder.jsx:673`.
   - **The 390 nav wordmark** (`Wordmark`'s `nowrap` name in NavBar's `minWidth: 0` row): with
     *Florence and the Machine* it runs under the Book pill and the burger, and ends at 392.3 at
     360 and at 390. The header clips it, so 2.3 of the last E is lost at 390 and 32 at 360. At
-    414 it fits. HEAD is the same.
+    414 it fits. HEAD is the same. **Answered by JP-101** ([`retest-qa-fixes.md`](./retest-qa-fixes.md),
+    2026-10-05): in layouts 1 and 4 under Lime, Grunge, Editorial and Pop the name keeps its size
+    while one line fits up to the pill, and otherwise wraps between words onto two balanced lines,
+    and the bar grows.
   - **The footer at 360** overflows with the two long names (`scrollWidth` 390 and 370 against
     360), so the page scrolls sideways there. HEAD is the same. The footer fits at 390 and 414.
     *Maximilian Featherstonehaugh* overflows it at 390 and 414 as well (JP-092's *Settled* in
@@ -835,7 +838,8 @@ keep the design's 107px.
 - One thing the report did not check: at 360 even the default *Kai Mercer* was clipped. It now
   shrinks to 100px.
 - Not changed, and logged separately:
-  - At 390 the menu bar's name runs under the Book button with a name this long.
+  - At 390 the menu bar's name runs under the Book button with a name this long. *(Answered by
+    JP-101, `retest-qa-fixes.md`, 2026-10-05: it now wraps onto two lines before the button.)*
   - At 360 the footer scrolls sideways with it.
   - A single 20-letter word still clips on Lime's and Grunge's Hero, and on Editorial's layouts 2
     and 3.
@@ -1143,7 +1147,10 @@ layout 1 alone.**
     - So below the floor the box grows to the word, and the links wrap rather than meet the
       name.
     - Grunge's `faced()` wraps the result as before.
-  - **Untouched:** Retro's arm, the narrow branch, and layout 4's `links` branch.
+  - **Untouched:** Retro's arm, the narrow branch, and layout 4's `links` branch. *(The narrow
+    branch has its own fit since JP-101, `retest-qa-fixes.md`, 2026-10-05, in layouts 1 and 4;
+    the desktop rule above is unchanged and now gated on design 0 by `s.v0`, since
+    `vm.navNameFit` is built for design 3 as well.)*
 - **Digest.** The tree against the HEAD labels came to **0 of 660 on the canvas and 0 of 660 on
   `live=1`**, as named.
   - The repro set moves only the header, by construction. `vm.navNameFit` has one reader,

@@ -107,7 +107,7 @@ default list is `0,2,3,4`, which **skips Lime**, so always pass the list explici
 |---|---|---|---|---|---|---|---|
 | 1 | JP-085 · JP-098 (*View list ✕*) | Noto, not Fisterra Fora · what *View list ✕* does | `qa-fixes.md` JP-085 (A); `layout-2-qa-fixes.md` JP-098 decision 3 (A) | **Both need an answer from outside the code**: a web licence (the PO) and the controls' meaning (the BA) | — (decisions) | **user**: JP-085 **C** ([`display-face.md`](./display-face.md), its own branch); JP-098 **B** (proposal to the BA) | **done** (2026-10-05, no code) |
 | 2 | JP-092 (rest) | 390: the footer's rule scrolls the page with a long name | `layout-2-qa-fixes.md` JP-092 *Named, not fixed* (the footer's rule) and `qa-fixes.md` JP-086's footer item | **Confirmed, shared**: the rule is `flex: 'none'` in both footer trees; it never yields | S | light; **user**: **A** (the two 360 items named again) | **done** (2026-10-05) |
-| 3 | JP-101 | 390: a long name in the nav runs under BOOK NOW | `qa-fixes.md` JP-086 *Named, not fixed* (`:806`–`809`) and JP-091's scope (desktop only) | **Confirmed, shared**: the narrow wordmark is `nowrap` with no fit under Lime, Grunge, Editorial and Pop | S–M | **user** | open |
+| 3 | JP-101 | 390: a long name in the nav runs under BOOK NOW | `qa-fixes.md` JP-086 *Named, not fixed* (`:806`–`809`) and JP-091's scope (desktop only) | **Confirmed, shared**: the narrow wordmark is `nowrap` with no fit under Lime, Grunge, Editorial and Pop | S–M | **user**: **1A, 2A**, the room up to the pill | **done** (2026-10-05) |
 | 4 | JP-099 | 390 player: no ♡ ↓ ⋯ | `layout-2-qa-fixes.md` JP-099 (A, a reply) | **Recorded call, refused twice**: Retro's 390 override, every template | S | **user** | open |
 | 5 | JP-089 (rest) | The extra `All` chip | `qa-fixes.md` JP-089 decision 2A ("the `All` chip stays"); `notes/pricing.md`'s "intended diff" | **Recorded call**: `repChips()` always leads with `All` | S–M | **user** | open |
 | 6 | JP-098 (rest) | 768 gallery: six tiles, no *View list ✕* | `layout-2-qa-fixes.md` JP-098 decisions 1A and 3A | **Waits on the BA**: the proposal was sent on entry 1's B (2026-10-05); code only if they confirm or amend it | S–M (or none) | entry 1's (B) | waits on the BA |
@@ -594,9 +594,113 @@ at 390.
 (the 390 arm); *answered* pointers at `qa-fixes.md:806` and its reply's *Not changed* line;
 `notes/templates.md` if it states the wordmark's 390 size as fixed.
 
-**Decided** — *(the session fills this in.)*
+**Decided** (user, 2026-10-05, over the real-app reproduction below). **1A, 2A, the room up to the
+pill.**
+- **1A, the name wraps and the bar grows.** One line at the ramp while it fits; otherwise two
+  balanced lines at the size where the longer line fits the room. Below 12px it takes a third
+  line, and a single word too wide for the room at 12 goes below it (the widest word in the same
+  ems), so no name runs under the pill and none breaks inside a word.
+- **2A, layouts 1 and 4** at 390, Lime, Grunge, Editorial and Pop. Editorial's layout 3 and Retro
+  at 360 are named, not fixed.
+- **The room is up to the pill**: the left half plus the halves' gap. The wordmark's row is
+  `flex: none` under the narrow fit, or the flex row itself would wrap the seed, whose 2.8px
+  overrun of its half is the frame's own picture.
 
-**Settled** — *(the session fills this in, with the reply line.)*
+**Settled** (2026-10-05).
+- **Evidence held at `f11cf44`.** `NavBar` at `EncoreSection.jsx:1838`, `fit` at `:1861`, the
+  narrow name sizes at `:1886`, the §10.2 rule at `:1888`–`1895` (entry 2 touched only the
+  Footer); `Wordmark` at `:879`, the Grunge / Editorial `nowrap` at `:910`; `vm.navNameFit` at
+  `EncoreBuilder.jsx:748`–`753`. The hero is `aspectRatio: 390 / 844`, `overflow: hidden`,
+  `justifyContent: space-between` (`:2050`–`2066`): a fixed height, so a taller capsule takes its
+  extra from the empty middle, never the identity block.
+- **Reproduced on HEAD in the real app** (a scratch puppeteer walk: picker, the card, the Title
+  through `st`, Publish, Open; 320 readings, the name's `Range` against the pill's box, with a
+  vertical-overlap test). No console errors.
+  - **Card 1**: *Florence* runs under the pill under Editorial (392.3 against 218.8, the tester's
+    numbers), Lime, Grunge and Pop at 360, 390 and 414; *Featherstonehaugh* likewise, and
+    *Supercalifragilistic* under Editorial and Pop at all three, Lime and Grunge at 360.
+    **Editorial's seed runs 22.8 under the pill at 360.** The size is 25 under Editorial; the
+    tester's 16 is Pop's (15.68, faced).
+  - **Card 4** (the same NavBar): Editorial and Pop with every long name at all three widths
+    (Pop's seed 0.2 under at 360), Lime and Grunge with *Featherstonehaugh* at 360.
+  - **Card 3 under Editorial** (`HeaderV2`'s centred `flex: none` name, not NavBar): *Florence*
+    24.7 under the pill at 390, and the other long names at all three widths; Lime with
+    *Featherstonehaugh* at 360. The triage's "layouts 2 and 3 fit" missed it.
+  - **Retro** cards 1 and 4: only *Featherstonehaugh* at 360 (9.2, 16.6). Card 2 fits everywhere.
+  - **768 fits every one of the four names on every card.**
+- **The code.**
+  - `NavBar`: at `s.mob` the fit is `narrow`, its room `100cqi + halves - glyph - markGap` with
+    the **left half** the query container (the capsule stays one at desktop alone), for layouts 1
+    and 4. The desktop fit is unchanged and now gated on `s.v0` beside `!links`, since
+    `vm.navNameFit` exists at design 3 too (Lime's and Pop's layout-4 desktop pass no `links`).
+    The halves' gap is hoisted (`halves`).
+  - `Wordmark`: a `narrow` fit's size is `min(own, max(min(floor, room / word), room / two))`,
+    its box `maxWidth: room`, and its row `flex: none` (`fitRow`).
+  - `sectionVm`: `navNameFit` is built for designs 0 and 3, and carries `word`
+    (`cardNameEms × 1.01`).
+- **Harness proved** (HEAD worktree on :5174 against the unedited tree): **0 of 660 canvas, 0 of
+  660 `live=1`**, no cold-server noise this time.
+- **After-diff: 0 of 660 on both surfaces**, as named.
+- **Positive control, as named**: the header digest with `&name=Florence%20and%20the%20Machine`
+  differs in **10 of 90 files** on each surface: mobile `arch 0` and `4` under themes 1–4, and
+  `arch 3` under Editorial and Pop. *Featherstonehaugh* moves the same 10 (at 390 it fits Lime's
+  and Grunge's layout 4 at their 14). Retro and every 768 and desktop render: 0.
+- **Verified in the real app** (cards 1 and 4 under Lime, Grunge, Editorial and Pop; the four
+  names plus *Maximilian Featherstonehaugh Windsor*; 360, 390, 414 and 768; 160 readings): every
+  name ends before the pill, by **1.0px** or more (a fitted name's 1% spare), every word is one
+  `Range` rect, the pill and burger keep their row, and the burger opens (9 links) and closes.
+
+  | 390, card 1 | Editorial | Lime | Grunge | Pop |
+  |---|---|---|---|---|
+  | Kai Mercer | 25, 1 line | 21, 1 | 21, 1 | 15.68, 1 |
+  | Florence and the Machine | **20.94, 2** | 21, 2 | 21, 2 | 15.68, 2 |
+  | Maximilian Featherstonehaugh | 13.8, 2 | 21, 2 | 21, 2 | 12.86, 2 |
+  | Supercalifragilistic | 13.67, 1 | 21, 1 | 20.9, 1 | 12.46, 1 |
+  | …Windsor | 12, **3** | 16.29, 2 | 14.96, 2 | 11.76, 3 |
+
+  - **The bar grows** by the second line: Editorial 65.34 → 66.06 (the star is nearly as tall),
+    Lime 56 → 66.19, Pop 53.45 → 58.41, and **Grunge 53.45 → 81.59**, more than the question's
+    "about 13", because Anton's faced line box is the nominal 28 × 1.1 = 30.8. The hero's height
+    does not move; under Grunge with *Florence* the capsule ends 4.4 above the seal's top, which
+    floats beside it (looked at), and the identity block keeps its place.
+  - **Every seed keeps its size and one line at 390 and 414.** At 360 **Editorial's *Kai Mercer***
+    takes two lines at 25 (KAI / MERCER, the bar 75, looked at), and Pop's layout-4 seed takes
+    two at 15.68: both ran under the pill on HEAD.
+  - **The floor's yield**: Editorial's *Featherstonehaugh* at 360 sets at 10.71, Pop's layout-4 at
+    8.28 at 360 and 10.83 at 390, its widest word filling the room. 3 lines only with *…Windsor*.
+  - Card 4 under Lime and Grunge: *Featherstonehaugh* at 360 now takes two lines at their 14
+    (Grunge 10.5 faced).
+  - Retro (cards 1 and 4, the four names): HEAD's readings, the 360 overlap unchanged.
+  - Desktop: the positive control's desktop renders are 0, so JP-091's rule is unchanged.
+- **Named, not fixed here** (each reads the same on HEAD):
+  - **Editorial's layout-3 nav** (`HeaderV2`, its own centred name): *Florence* 24.7 under the
+    pill at 390, every long name at 360–414; Lime's with *Featherstonehaugh* at 360.
+  - **Retro's narrow bar** (cards 1 and 4): *Featherstonehaugh* 9.2 / 16.6 under the pill at 360.
+    Retro's face has no ems table.
+  - **768 with *…Windsor*** under Editorial: the one-line name runs 85 under the pill. The four
+    report names fit at 768.
+  - **The gallery at layout 1 scrolls the page** with long names: under Pop with *Florence* at
+    360 (378), *Featherstonehaugh* at 360–414 (421, 433), and under Editorial, Lime and Grunge
+    with *…Windsor* (413). Found by hiding each section in turn; the gallery reads the name.
+- **Build.** `npm run build` is clean. The root `index.html` is not refreshed.
+- **Docs.** The `fit` comment in `NavBar` (the 390 arm), `fitName` / `fitBox` / `fitRow`'s
+  comment, the `vm.navNameFit` comment; `notes/nav.md`, a new bullet beside JP-091's; *answered*
+  pointers at `qa-fixes.md` JP-086's nav-wordmark item and its reply's *Not changed* line, and at
+  JP-091's "Untouched: the narrow branch". `notes/templates.md` does not state the 390 size, and
+  CLAUDE.md does not describe the nav's name, so both are untouched.
+- **The reply line:**
+  - **JP-101 — fixed.** At 390 a long name in the menu bar no longer runs under BOOK NOW. It
+    keeps the design's size while it fits on one line before the button; otherwise it wraps
+    between words onto two balanced lines and the bar grows to hold them. *Florence and the
+    Machine* reads FLORENCE AND / THE MACHINE at about 21px under Editorial. A longer name is set
+    smaller so its two lines still fit, and a name too long even for that takes a third line at
+    12px. The same holds at 360 and 414, on Lime, Grunge and Pop, and on the Stacked header
+    (layout 4), which had the same fault. At 360 even the default *Kai Mercer* ran under the
+    button under Editorial; it now takes two lines. The name's size there is 25px under
+    Editorial; 16px is Pop's. *Not changed, logged separately:* Editorial's Inset Hero header
+    (layout 3) and Retro's at 360 still run a long name under the button. Under Pop a long name
+    makes the Gallery scroll the page sideways (*Florence and the Machine* at 360, *Maximilian
+    Featherstonehaugh* at every width).
 
 ---
 

@@ -870,12 +870,22 @@ function LogoMark({ s, size = 18, color, glyph }) {
 // room, or one word too long to fit it, keeps the name legible: its box grows
 // past the room to the best split's wider line, and the links wrap, as they
 // did before. Additive; every other caller passes none and keeps `nowrap`.
-const fitName = (fit, base) => fit
-  ? `min(${base}, max(${fit.floor}, calc(${fit.room} / ${fit.one}), min(${fit.cap}, calc(${fit.room} / ${fit.two}))))`
-  : base
-const fitBox = (fit, size) => fit
-  ? { whiteSpace: 'normal', textWrap: 'balance', maxWidth: `max(calc(${fit.room}), calc(${fit.two} * ${size}))` }
-  : null
+// A `narrow` fit is the 390 capsule's (JP-101), whose bar may grow: no
+// one-line shrink and no `cap`, so the name keeps its size while one line
+// fits and otherwise takes two at the size the longer fits the room. Its box
+// is the room alone, so past the floor it takes a third line rather than
+// reach the pill, and its floor yields to a word too wide for the room
+// (`word`, the widest one's ems). Its row is `flex: none`: the seed already
+// runs past its half into the halves' gap, which the room counts, and a
+// shrinkable row would wrap it there.
+const fitName = (fit, base) => !fit ? base : fit.narrow
+  ? `min(${base}, max(min(${fit.floor}, calc(${fit.room} / ${fit.word})), calc(${fit.room} / ${fit.two})))`
+  : `min(${base}, max(${fit.floor}, calc(${fit.room} / ${fit.one}), min(${fit.cap}, calc(${fit.room} / ${fit.two}))))`
+const fitBox = (fit, size) => !fit ? null : {
+  whiteSpace: 'normal', textWrap: 'balance',
+  maxWidth: fit.narrow ? `calc(${fit.room})` : `max(calc(${fit.room}), calc(${fit.two} * ${size}))`,
+}
+const fitRow = (fit) => (fit?.narrow ? { flex: 'none' } : null)
 function Wordmark({ s, logo = false, color, glyph, size, gap, clean = false, fit }) {
   if (s.lime || s.pop) {
     // Lime's frame: Label/LG, letterSpacing 0, 13.15 from the globe (× 0.82).
@@ -885,7 +895,7 @@ function Wordmark({ s, logo = false, color, glyph, size, gap, clean = false, fit
     // and 10 from the globe on both narrow masters, Grunge's and Editorial's.
     const px = fitName(fit, size ?? (s.pop ? s.list : s.labelLg))
     return (
-      <span style={row(s.narrow ? (s.pop ? '10px' : '13px') : '11px')}>
+      <span style={row(s.narrow ? (s.pop ? '10px' : '13px') : '11px', fitRow(fit))}>
         {logo && <LogoMark s={s} color={color} glyph={glyph} />}
         <span style={labelStyle(s, px, { color: color || s.tx, letterSpacing: s.dls, ...(s.pop && { lineHeight: 1.2 }), ...fitBox(fit, px) })}>{s.brand}</span>
       </span>
@@ -911,7 +921,7 @@ function Wordmark({ s, logo = false, color, glyph, size, gap, clean = false, fit
       ...fitBox(fit, px),
     }
     return (
-      <span style={row(gap ?? (s.narrow ? '10px' : '11px'))}>
+      <span style={row(gap ?? (s.narrow ? '10px' : '11px'), fitRow(fit))}>
         {logo && <LogoMark s={s} color={color} glyph={glyph} />}
         <span style={clean ? name : distressed(s, name)}>{s.brand}</span>
       </span>
@@ -1858,12 +1868,25 @@ function NavBar({ s, colour, rule, pill, nameSize, nameColour, mark, links, clea
   // the pill's 44.28 at, so the bar never grows. Wordmark does the sizing.
   // Layout 4's capsule, which passes `links`, keeps its wrap (JP-091's scope).
   // Pop's name stands at line 1.2, so its two lines fit the pill at 18.45.
-  const fit = lime && !s.narrow && !links && s.navNameFit ? {
+  // At 390 the name gives way to the pill (JP-101, user call, 2026-10-05), in
+  // layouts 1 and 4 alike, since there the links are behind the burger. Its
+  // room is up to the pill: the left half, which is the query container
+  // there, plus the halves' gap, less the mark and its gap. It keeps its size
+  // while one line fits, else wraps between words, balanced, onto two lines
+  // at the size the longer one fits, and the bar grows by the line. Below the
+  // floor it takes a third, and a word too wide even at the floor goes under
+  // it (`word`), so no name reaches the pill or breaks inside a word.
+  const halves = lime ? ((s.grunge || ed || pop) && s.mob ? '10px' : s.narrow ? '30px' : '24.6px') : s.mob ? '10px' : tab ? '30px' : '24px'
+  const markGap = s.lime || pop ? (pop ? '10px' : '13px') : mark?.gap ?? '10px'
+  const fit = !lime || !s.navNameFit ? undefined : s.mob ? {
+    narrow: true, room: `(100cqi + ${halves} - ${glyph}px - ${markGap})`,
+    two: s.navNameFit.two, word: s.navNameFit.word, floor: `${floor}px`,
+  } : !s.narrow && !links && s.v0 ? {
     room: `(100cqi - ${+(glyph + 11 + 24.6 + 19 + 82 * 0.82).toFixed(2)}px - ${s.navNameFit.pill} * ${s.list} - ${s.navEms} * ${floor}px)`,
     one: s.navNameFit.one, two: s.navNameFit.two, cap: pop ? '18.45px' : '20.1px', floor: `${floor}px`,
   } : undefined
   return (
-    <div style={row(lime ? ((s.grunge || ed || pop) && s.mob ? '10px' : s.narrow ? '30px' : '24.6px') : s.mob ? '10px' : tab ? '30px' : '24px', {
+    <div style={row(halves, {
       justifyContent: 'space-between', width: '100%',
       // The desktop corner is the one-row bar's own half-height, 60.7 / 2,
       // not the pill token: one row draws the frame's capsule exactly, and a
@@ -1874,14 +1897,17 @@ function NavBar({ s, colour, rule, pill, nameSize, nameColour, mark, links, clea
         padding: s.narrow ? '10px 20px' : '8.2px 8.2px 8.2px 16.4px',
       } : null),
       ...(glass ? { position: 'relative' } : null),
-      ...(fit ? { containerType: 'inline-size' } : null),
+      ...(fit && !fit.narrow ? { containerType: 'inline-size' } : null),
     })}>
       {glass && <span aria-hidden style={{
         position: 'absolute', inset: 0, borderRadius: corner, pointerEvents: 'none',
         background: 'rgba(255,255,255,0.12)',
         backdropFilter: `blur(${s.narrow ? 22 : 18}px)`, WebkitBackdropFilter: `blur(${s.narrow ? 22 : 18}px)`,
       }} />}
-      <div style={row(s.narrow ? '20px' : '16px', { flex: s.narrow ? 1 : '0 1 auto', minWidth: 0, ...(glass && { position: 'relative' }) })}>
+      <div style={row(s.narrow ? '20px' : '16px', {
+        flex: s.narrow ? 1 : '0 1 auto', minWidth: 0, ...(glass && { position: 'relative' }),
+        ...(fit?.narrow && { containerType: 'inline-size' }),
+      })}>
         <Wordmark s={s} logo glyph={glyph}
                   size={lime && s.mob ? (nameSize ?? (s.grunge ? '28px' : ed ? '25px' : pop ? '16px' : '21px')) : mark ? nameSize : undefined}
                   gap={mark?.gap} color={nameColour || c} clean={clean} fit={fit} />

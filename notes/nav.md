@@ -83,6 +83,27 @@ another `notes/` file.
     wider line and the links wrap as before. Only a very long pill label, or one word too long
     for the room (a 34-letter word under Editorial), gets that far.
 
-  `sectionVm` sets `navNameFit` for the header's design 0 alone. **Layout 4's capsule** (NavBar's
+  At desktop this is design 0's alone (NavBar's `s.v0`). **Layout 4's capsule** (NavBar's
   `links`) and **Retro's bar** (whose pill drops to a second row with a long name) keep their
   wrap, and are named in `plans/editorial/qa-fixes.md`'s JP-091 for their own tickets.
+- **At 390 the name gives way to the pill, in layouts 1 and 4** (JP-101, user call, 2026-10-05,
+  `plans/editorial/retest-qa-fixes.md`). The narrow capsule has no links, only the wordmark,
+  the pill and the burger, and the name used to stay `nowrap` at a flat size, so a long one ran
+  under the pill (the hero clips it, so nothing scrolled). Now its left half is the query
+  container, and the name's room is up to the pill: the half plus the halves' gap, less the mark
+  and its gap. In that room the name (a `narrow` fit in `Wordmark`):
+  - keeps its size while one line fits;
+  - otherwise wraps between words, balanced, onto two lines at the size the longer one fits
+    (`navNameFit.two`), capped at its own size, and the bar grows by the line. The hero is a
+    fixed `aspectRatio` with its content `space-between`, so the extra comes out of the empty
+    middle, never the identity block;
+  - below 12px (Grunge's nominal 16) takes a third line, its box being the room;
+  - goes below that floor only for a word too wide for the room at the floor
+    (`navNameFit.word`, the widest word), so no name reaches the pill or breaks inside a word.
+
+  Its row is `flex: none`, because Editorial's seed already runs 2.8px past its half into the
+  gap, which a shrinkable row would wrap. So `sectionVm` builds `navNameFit` for design 3 too.
+  Every seed keeps its size and one line at 390 and 414; at 360 Editorial's *Kai Mercer*, which
+  ran 22.8px under the pill, wraps. Lime, Grunge, Editorial and Pop; 768 fits every name, and
+  **Retro** (no ems table) and **Editorial's layout-3 centred name** (`HeaderV2`, its own span)
+  are named in the entry, not fitted.

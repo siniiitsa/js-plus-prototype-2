@@ -745,11 +745,18 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // split's wider line (`two`, between words only; one word is its own
   // split) and the pill's label (`pill`), in the same ems — the first two
   // with `navEms`' 1% spare, so a fitted line never touches its box.
-  if (navFace && cat === 'header' && d === 0) {
+  // At 390 the capsule of layouts 1 and 4 gives the name way to the pill
+  // (JP-101), so design 3 builds it too (NavBar keeps the desktop rule to
+  // design 0), and `word`, the widest word with the same spare, is the floor
+  // a name too long even at 12px yields to there.
+  if (navFace && cat === 'header' && (d === 0 || d === 3)) {
     const words = vm.brand.split(/\s+/).filter(Boolean)
     const two = words.length < 2 ? navFace(vm.brand) : Math.min(...words.slice(1).map((_, i) =>
       Math.max(navFace(words.slice(0, i + 1).join(' ')), navFace(words.slice(i + 1).join(' ')))))
-    vm.navNameFit = { one: +(navFace(vm.brand) * 1.01).toFixed(3), two: +(two * 1.01).toFixed(3), pill: +navFace(vm.cta1).toFixed(3) }
+    vm.navNameFit = {
+      one: +(navFace(vm.brand) * 1.01).toFixed(3), two: +(two * 1.01).toFixed(3), pill: +navFace(vm.cta1).toFixed(3),
+      word: +(vm.cardNameEms * 1.01).toFixed(3),
+    }
   }
   // Whether the tablet header draws its links (JP-039). The 768 masters of
   // layouts 2 and 3 draw Music / Gigs / About in the capsule, in Retro and Lime
