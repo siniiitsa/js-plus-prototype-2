@@ -703,11 +703,13 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // Pop's capsule (964:58624 "Frame 49") is Editorial's: Label/SM 16 links 23
   // apart, so 23/16 of the row's size, in Titan One (`titanEms`, the face
   // standing in for Chunko Bold Demo) at 0.98 of the token (`faced`), the way
-  // Grunge's Anton is at 0.75. Its other three cards are placeholders whose
-  // only capsule is NavBar's, which spaces them the same way.
+  // Grunge's Anton is at 0.75. Its layout-2 capsule (964:64561) is Grunge's,
+  // a fixed 18 at 16px type and at 13, so there the sum is the labels alone.
+  // Its cards 3 and 4 are placeholders whose only capsule is NavBar's, which
+  // spaces them the layout-1 way.
   const navFace = T.name === 'Lime' ? bebasEms : T.name === 'Grunge' ? (x) => antonEms(x, 0) * 0.75
     : T.name === 'Editorial' ? notoEms : T.name === 'Pop' ? (x) => titanEms(x) * 0.98 : null
-  const navGapEm = T.name === 'Editorial' ? (d >= 1 ? 0 : 23 / 16) : T.name === 'Pop' ? 23 / 16
+  const navGapEm = T.name === 'Editorial' ? (d >= 1 ? 0 : 23 / 16) : T.name === 'Pop' ? (d === 1 ? 0 : 23 / 16)
     : T.name === 'Grunge' && d >= 1 ? 0 : 23 / 24
   vm.navEms = navFace
     ? Math.max(1, +((vm.navLinks.reduce((w, l) => w + navFace(l.label), 0)
@@ -770,14 +772,17 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // gaps, its links at Label/SM 13 and its name at Label/LG 16 — in Noto
   // (`navFace`). Its layout 3 (984:16812) is that bar again against layout
   // 3's 684: the same 138.32 and fixed 18 gaps, and the links still Label/SM,
-  // where Grunge's layout-3 links are Label/MD.
+  // where Grunge's layout-3 links are Label/MD. Pop's layout 2 (986:17563) is
+  // Grunge's layout-2 bar box for box again — the same 138.32, fixed 18 gaps,
+  // links at Label/SM 13, name at Label/LG 16 — in Titan (`navFace`), but its
+  // nav is inset 26 a side, so the bar is 656; its layout 3 is a placeholder.
   if (cat === 'header' && Z.dev === 'tablet' && vm.navLinks.length && (d === 1 || d === 2)) {
     const px = (v) => parseFloat(v)
-    const row = d === 1 ? 708 : 684
+    const row = d === 1 ? (T.name === 'Pop' ? 656 : 708) : 684
     if (T.name === 'Lime') {
       vm.navFits = vm.navEms * px(vm.labelSm) + vm.navNameEms * px(vm.labelLg)
         + vm.navCtaEms * px(vm.labelSm) + 138.32 <= row
-    } else if (T.name === 'Grunge' || T.name === 'Editorial') {
+    } else if (T.name === 'Grunge' || T.name === 'Editorial' || (T.name === 'Pop' && d === 1)) {
       vm.navFits = vm.navEms * px(T.name === 'Grunge' && d === 2 ? vm.labelMd : vm.labelSm) + (vm.navLinks.length - 1) * 18
         + vm.navNameEms * px(vm.labelLg) + vm.navCtaEms * px(vm.labelSm) + 138.32 <= row
     } else if (T.name === 'Retro') {
