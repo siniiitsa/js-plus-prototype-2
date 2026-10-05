@@ -9369,7 +9369,11 @@ function Pricing({ s }) {
   // a real control in the published tab and inert on the editor canvas, which
   // is a picture of a website (§12.7) — a live chip there would both filter the
   // cards and select the section. Above the layout branch, because hooks are.
-  const [chip, setChip] = useState(0)
+  // -1 is "no chip lit, every package on show", the row's rest (JP-089): the
+  // row carries no All, so a press on the lit chip puts it back. Layout 2,
+  // which picks one package rather than filtering, floors it at 0.
+  const [chip, setChip] = useState(-1)
+  const pressChip = (i, active) => setChip(i === active ? -1 : i)
 
   if (s.v0) {
     const TILT = [1, -3, 2]
@@ -9391,12 +9395,15 @@ function Pricing({ s }) {
     // them; the faces stay the theme's, as everywhere else.
     const tab = isTablet(s)
     // The chip index, clamped: the row is derived from the artist's tags, so a
-    // tag they delete can leave `chip` past the end of it. The canvas pins the
-    // first chip and filters nothing, which is the picture the frames show.
-    const active = s.live ? Math.min(chip, s.tierChips.length - 1) : 0
+    // tag they delete can leave `chip` past the end of it. -1 lights nothing
+    // and filters nothing, and the canvas pins it: every package on show, the
+    // frames' three cards (their lit Club Night is not drawn, JP-089). So does
+    // a row too short to draw, or a republish down to one tag would leave a
+    // filter on that nothing on the page can clear.
+    const active = s.live && s.tierChips.length > 1 ? Math.min(chip, s.tierChips.length - 1) : -1
     const eq = (a, b) => a.toLowerCase() === b.toLowerCase()
     const shown = s.live
-      ? s.tiers.filter((t) => active === 0 || t.tags.some((g) => eq(g, s.tierChips[active].tag)))
+      ? s.tiers.filter((t) => active < 0 || t.tags.some((g) => eq(g, s.tierChips[active].tag)))
       : s.tiers
 
     // Lime — the same component in Lime's mode (964:58594 at 1440, 986:39883 at
@@ -9576,14 +9583,14 @@ function Pricing({ s }) {
               : s.title}</h2>
             {/* Filled pills in Label/XS, mixed case: `sem/active` for the chip
                 on show, `sem/box/1` with lime type for the rest. The frame lights
-                its second chip; ours pins chip 0 (All) on the canvas, layout 1's
-                rule. Not drawn at one chip, as Retro's is not. */}
+                its second chip; ours lights none at rest, layout 1's rule
+                (JP-089). Not drawn at one chip, as Retro's is not. */}
             {s.tierChips.length > 1 && (
               <div style={row(u(8), { flexWrap: 'wrap' })}>
                 {s.tierChips.map((f, i) => (
                   <span
                     key={i}
-                    onClick={s.live ? () => setChip(i) : undefined}
+                    onClick={s.live ? () => pressChip(i, active) : undefined}
                     style={ui({
                       padding: `${u(9)} ${u(15)}`, borderRadius: u(56), whiteSpace: 'nowrap',
                       // Editorial's idle chip is the page's `sem/bg` in a 1px
@@ -9807,14 +9814,15 @@ function Pricing({ s }) {
           {/* The one row in §10.2 whose chips are body-bold sentence case rather
               than Anton caps, and whose selected chip drops its rule. Built from
               the tags the artist typed — the frame's Solo / Trio / Band is now
-              the seeds' tags, behind an All — so it is not drawn at one chip:
-              a filter with nothing to filter is the pager's case. */}
+              the seeds' tags, with no All in front (JP-089) — so it is not
+              drawn at one chip: a filter with nothing to filter is the pager's
+              case. */}
           {s.tierChips.length > 1 && (
             <div style={row('8px', { flexWrap: 'wrap' })}>
               {s.tierChips.map((f, i) => (
                 <span
                   key={i}
-                  onClick={s.live ? () => setChip(i) : undefined}
+                  onClick={s.live ? () => pressChip(i, active) : undefined}
                   style={{
                     border: i === active ? 'none' : `${s.bw} solid ${s.tx}`,
                     borderRadius: s.btnR, padding: s.narrow ? '5px 11px' : '4px 9px',
@@ -9990,8 +9998,8 @@ function Pricing({ s }) {
         </div>
 
         {/* An empty grid is a real state now that the packages are the
-            artist's. One message, not the repertoire's two: every chip but All
-            exists because some package carries its tag, so a live filter can
+            artist's. One message, not the repertoire's two: every chip exists
+            because some package carries its tag, so a live filter can
             never empty a list that has anything in it — there is no search box
             here to do what the repertoire's does. */}
         {s.tiers.length === 0 && (
@@ -10019,9 +10027,10 @@ function Pricing({ s }) {
   // selected, which is what stops a single-card layout stranding every package
   // but the first (the testimonials' own defect, and the reason `c.quotes`
   // exists). That reuses `chip` whole — the same state layout 1 filters with,
-  // the same `s.live` gate, the same clamp against a list the artist can
-  // shorten, and the same pinned 0 on the canvas, where the frame draws chip 0
-  // filled and so the picture *is* a choice. It leaves `s.tierChips` — the tags
+  // the same `s.live` gate and the same clamp against a list the artist can
+  // shorten, floored at 0 here, since layout 1's rest is -1, "no chip lit"
+  // (JP-089). It pins 0 on the canvas, where the frame draws chip 0 filled,
+  // so the picture *is* a choice. It leaves `s.tierChips` — the tags
   // — reaching layouts 1 and 3, which is FIELDS.media.soundcloud's case again;
   // the field's hint says so. Not drawn at one package: nothing to select is
   // the row's own rule in layout 1 too.
@@ -10710,11 +10719,12 @@ function Pricing({ s }) {
   //    video section's rule (JP-070 restored the rest, 2026-09-29).
   //  - The Duo / Trio / Band capsule is `s.tierChips`, layout 1's filter row in
   //    a different dress: the same `chip` state, the same `s.live` gate, the
-  //    same clamp, the same pinned 0 on the canvas and the same not-drawn-at-one
-  //    (a filter with nothing to filter is the pager's case). Its Duo is
-  //    TIERS_3's, this layout's own tag seed while the packages are unedited
-  //    (JP-070). The extra `All` that leads it is layout 1's intended diff,
-  //    unchanged.
+  //    same clamp, the same unlit rest on both surfaces and the same
+  //    not-drawn-at-one (a filter with nothing to filter is the pager's case).
+  //    Its Duo is TIERS_3's, this layout's own tag seed while the packages are
+  //    unedited (JP-070). It carries no `All` (JP-089, user call, 2026-10-05,
+  //    reversing "layout 1's intended diff"): the frame's Duo is lit over all
+  //    three rows, and a lit chip that filters nothing is not drawn.
   //  - "Save 15% on bundles" beside the capsule is `s.pricingOffer`, a field
   //    added for it (JP-046, reversing this fit's "a discount no field
   //    states"): seeded with the frame's copy, emptiable, drawn 14 from the
@@ -10771,12 +10781,12 @@ function Pricing({ s }) {
 
     // The chip index and the filtered list, layout 1's two expressions whole:
     // the row is derived from the artist's tags, so a tag they delete can leave
-    // `chip` past the end of it, and the canvas pins the first chip and filters
-    // nothing — which is the picture all three frames show.
-    const active = s.live ? Math.min(chip, s.tierChips.length - 1) : 0
+    // `chip` past the end of it, and -1 (the canvas's pin, and the rest)
+    // lights nothing and filters nothing — the three rows all three frames show.
+    const active = s.live && s.tierChips.length > 1 ? Math.min(chip, s.tierChips.length - 1) : -1
     const eq = (a, b) => a.toLowerCase() === b.toLowerCase()
     const shown = s.live
-      ? s.tiers.filter((t) => active === 0 || t.tags.some((g) => eq(g, s.tierChips[active].tag)))
+      ? s.tiers.filter((t) => active < 0 || t.tags.some((g) => eq(g, s.tierChips[active].tag)))
       : s.tiers
     // The FEATURED seat (JP-048): the package the artist ticked, while the
     // filter leaves it on show, and otherwise the last row on show — the seat
@@ -11038,7 +11048,7 @@ function Pricing({ s }) {
                   {s.tierChips.map((f, i) => (
                     <span
                       key={i}
-                      onClick={s.live ? () => setChip(i) : undefined}
+                      onClick={s.live ? () => pressChip(i, active) : undefined}
                       style={{
                         padding: `${u(6)} ${u(14)}`, borderRadius: s.btnR,
                         background: i === active ? s.ac : 'transparent',
@@ -11126,7 +11136,7 @@ function Pricing({ s }) {
         {s.tierChips.map((f, i) => (
           <span
             key={i}
-            onClick={s.live ? () => setChip(i) : undefined}
+            onClick={s.live ? () => pressChip(i, active) : undefined}
             style={{
               padding: `${u(6)} ${u(14)}`, borderRadius: s.btnR,
               background: i === active ? s.ac : 'transparent',
@@ -11311,7 +11321,7 @@ function Pricing({ s }) {
             // *stack*, and a stack with nothing in it is not one of its states —
             // the testimonials' rule, where the card stays and the message goes
             // inside it. One message and not the repertoire's two, for layout
-            // 1's reason: every chip but All exists because some package carries
+            // 1's reason: every chip exists because some package carries
             // its tag, so a live filter cannot empty a list that has anything.
             <div style={{
               width: '100%', border: `1px solid ${h.card}`, borderRadius: u(30),

@@ -296,6 +296,9 @@ frame before choosing that seed's gate.
      a tag row that says otherwise (read `964:58618` first). The `All` chip stays, as
      `notes/pricing.md` records ("the extra `All` chip on the reference picture is the intended
      diff"), and the canvas pins it. The frame's *Club Night* lit is not reproduced.
+     **Reversed** (JP-089 (rest), user call, 2026-10-05, [`retest-qa-fixes.md`](./retest-qa-fixes.md)):
+     the `All` chip is gone from every pricing row, layouts 1 and 3 on every template. At rest no
+     chip is lit and every package shows, and a press on the lit chip clears it.
    - **B. Overlapping tags**, mirroring the seed's current *Solo* / *Solo, Trio, Band* shape.
      Only if the frame shows it.
 
@@ -329,7 +332,8 @@ whatever reads `vm.formCta` prints *Enquire* under the three templates.
 they name the seeds; a *reversed* pointer on the three named diffs in `../lime/layout-1.md`.
 
 **Decided** (2026-09-30, user call): **1A, 2A.** Lime, Grunge and Editorial at layout 1, and one tag
-per package in the frame's order behind the `All` chip. Asked over what the session read first:
+per package in the frame's order behind the `All` chip (the `All` reversed by JP-089 (rest),
+2026-10-05, [`retest-qa-fixes.md`](./retest-qa-fixes.md)). Asked over what the session read first:
 - **Pricing.** `964:58618` and its twins `964:58594` (Lime) and `964:58606` (Grunge) draw
   *Private Event / Club Night / Festival* with **no tag row on the cards** and no `All`. Club Night
   is lit over the second card.

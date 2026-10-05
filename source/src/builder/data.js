@@ -1029,7 +1029,8 @@ export const TIERS_3 = TIERS.map((t, i) => ({ ...t, tags: ['Duo', 'Duo, Trio, Ba
 // read Private Event / Club Night / Festival (964:58594, 964:58606, 964:58618,
 // 964:58630)
 // where Retro's read Solo / Trio / Band. The frames print no tags on a card,
-// so each package takes one, in the frame's order, and the All chip stays.
+// so each package takes one, in the frame's order. The row carries no All
+// (JP-089 again, user call, 2026-10-05, reversing "the All chip stays").
 // TIERS_3's shape otherwise: the tags alone move, and tiersSeed() below is
 // the one expression sectionVm and tiersVal both call.
 export const TIERS_1 = TIERS.map((t, i) => ({ ...t, tags: ['Private Event', 'Club Night', 'Festival'][i] }))
@@ -1163,7 +1164,9 @@ export function repSetLine(d) {
 
 // The chip that clears the filter. It is index 0 of the row and carries a null
 // tag; repChips() skips a tag of the same name so an artist who writes "All" on
-// a song — or on a pricing package — gets one chip here, not two.
+// a song gets one chip here, not two. The pricing row drops the head (JP-089),
+// so a package tagged "All" gets no chip there: its rest state already shows
+// every package.
 export const REP_ALL = 'All'
 
 // Events map — the upcoming-gigs list beside the map tile, and the seed for
@@ -2583,7 +2586,8 @@ export function songTags(str) {
 }
 
 // A filter row over any list of `{ tags }` rows — the repertoire's songs and
-// the pricing section's packages both: REP_ALL, then every tag any row carries,
+// the pricing section's packages both (whose row drops the REP_ALL head,
+// JP-089; `vm.tierChips` slices it off): REP_ALL, then every tag any row carries,
 // in first-seen order. Deduped case-insensitively but keeping the casing it was
 // first typed in, so 'Weddings' and 'weddings' are one chip rather than two.
 // `label` is what the chip prints; `tag` is the raw value it matches against,

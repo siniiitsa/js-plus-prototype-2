@@ -109,7 +109,7 @@ default list is `0,2,3,4`, which **skips Lime**, so always pass the list explici
 | 2 | JP-092 (rest) | 390: the footer's rule scrolls the page with a long name | `layout-2-qa-fixes.md` JP-092 *Named, not fixed* (the footer's rule) and `qa-fixes.md` JP-086's footer item | **Confirmed, shared**: the rule is `flex: 'none'` in both footer trees; it never yields | S | light; **user**: **A** (the two 360 items named again) | **done** (2026-10-05) |
 | 3 | JP-101 | 390: a long name in the nav runs under BOOK NOW | `qa-fixes.md` JP-086 *Named, not fixed* (`:806`–`809`) and JP-091's scope (desktop only) | **Confirmed, shared**: the narrow wordmark is `nowrap` with no fit under Lime, Grunge, Editorial and Pop | S–M | **user**: **1A, 2A**, the room up to the pill | **done** (2026-10-05) |
 | 4 | JP-099 | 390 player: no ♡ ↓ ⋯ | `layout-2-qa-fixes.md` JP-099 (A, a reply) | **Recorded call, refused twice**: Retro's 390 override, every template | S | **user**: **C** (icons in, sleeve out at 390), then the 1px gap that keeps SLOW BURN whole | **done** (2026-10-05) |
-| 5 | JP-089 (rest) | The extra `All` chip | `qa-fixes.md` JP-089 decision 2A ("the `All` chip stays"); `notes/pricing.md`'s "intended diff" | **Recorded call**: `repChips()` always leads with `All` | S–M | **user** | open |
+| 5 | JP-089 (rest) | The extra `All` chip | `qa-fixes.md` JP-089 decision 2A ("the `All` chip stays"); `notes/pricing.md`'s "intended diff" | **Recorded call**: `repChips()` always leads with `All` | S–M | **user**: **1A, 2A**, no row at one tag | **done** (2026-10-05) |
 | 6 | JP-098 (rest) | 768 gallery: six tiles, no *View list ✕* | `layout-2-qa-fixes.md` JP-098 decisions 1A and 3A | **Waits on the BA**: the proposal was sent on entry 1's B (2026-10-05); code only if they confirm or amend it | S–M (or none) | entry 1's (B) | waits on the BA |
 | 7 | — | End-of-pass sweep | — | — | S | — | open |
 
@@ -930,9 +930,109 @@ two row comments (`:9540`, `:10674`) and `data.js:1029`–`1034`; *reversed* poi
 A+ text, which this answers differently), `../grunge/layout-3-qa-fixes.md:2150`–`2153`, and
 `../lime/layout-1.md`'s pricing bullet.
 
-**Decided** — *(the session fills this in.)*
+**Decided** (user, 2026-10-05; three questions, each the recommendation): **1A, 2A**, and **no
+row at one tag**.
+1. **The rest state: A.** `All` goes. At rest no chip is lit and every package shows. A press
+   lights a chip and filters, and a press on the lit chip clears it. `chip` starts at -1, and the
+   canvas pins -1.
+2. **Scope: A.** Every pricing row that led with `All`: layout 1's chip row and layout 3's capsule,
+   on all five templates, Retro included. That also settles JP-070's remainder.
+3. **One tag: no row** (a third question, asked because the entry's "a row of one chip … still is
+   not drawn, *as now*" did not hold). On HEAD, one tag between the packages makes `[All, tag]`,
+   two chips, so the `> 1` gate draws *All · tag*. Without `All`, the same page gives one chip.
+   The user kept the `> 1` gate, so that page now draws no row. A lone toggling chip was the
+   alternative.
 
-**Settled** — *(the session fills this in, with the reply line.)*
+Asked over what the session found first:
+- **Evidence re-checked at `92403bd`.** Every line was where the brief said, +11 after entry 4:
+  `chip` at `EncoreSection.jsx:9372`, layout 1's `active` / `shown` at `:9396`–`9400`, its two rows
+  at `:9581` and `:9812`, the empty-state comment at `:9993`, layout 2's `sel` at `:10081`, layout
+  3's comment at `:10711`–`10717`, its `active` at `:10776` and its two capsules at `:11030` and
+  `:11119`. `vm.tierChips` is at `EncoreBuilder.jsx:1140`, `repChips()` at `data.js:2633`, and the
+  `TIERS_1` comment at `:1029`–`1034`.
+- **Layout 2 needs no edit.** Its `sel` already reads `Math.max(0, Math.min(chip, …))`, so a -1
+  start floors to 0. Its after-diff is 0 by construction.
+- **`tierChips` has one producer and no index arithmetic.** It is only built at `:1140`, and
+  nothing offsets by the head. The repertoire's `.slice(1)` calls (`EncoreBuilder.jsx:1267`,
+  `:2752`) read `vm.repChips` and stay as they are.
+- **Reproduced in the real app** (a scratch puppeteer script, deleted). Cards 1 and 3 under all
+  five templates, published and opened, at 1440, 768, 390, 360 and 414. Every row leads with a lit
+  `All` over all three packages. That is *All · Private Event · Club Night · Festival* on card 1
+  under Lime, Grunge, Editorial and Pop, *All · Solo · Trio · Band* under Retro, and *All · Duo ·
+  Trio · Band* on every card 3. Each chip filters (layout 1: one package per occasion; Retro:
+  two each; layout 3: two each, FEATURED moving to the Wedding Set under Duo). No width scrolls
+  sideways.
+- **The harness was proven first.** A HEAD worktree on :5174 against a **fresh** tree server on
+  :5175 (not the long-running :5173): every category × themes 0–4 × three widths gave **0 of 660**
+  on each surface, with `localhost:517[0-9]` and the photo stamps normalised. No render was empty.
+- **Expected after-diff** (named before the code, on 2A): pricing `arch 0` and `arch 2` × themes
+  0–4 × three widths × both surfaces, **60 files**. The `All` span goes, the row re-flows, and no
+  chip is lit. Pricing `arch 1` and `arch 3`, the repertoire, the calendar's *Package ›* and every
+  other category: 0.
+
+**Settled** (2026-10-05).
+- **Code.**
+  - `vm.tierChips` is `repChips(tierList).slice(1)` (`EncoreBuilder.jsx`). It slices at the call
+    site rather than adding an option to `repChips()`, the repertoire sets' own `.slice(1)`
+    idiom. The repertoire's row keeps its `All`. A package tagged "All" now gets no chip, since
+    `repChips()` already skips that tag. The `REP_ALL` comment says so.
+  - `Pricing`'s `chip` starts at -1, and `pressChip(i, active)` sets -1 on the lit chip, else `i`.
+    The four filter sites take it: layout 1's `(s.limeTree || s.pop)` row and Retro's, and
+    layout 3's two capsules. Layout 2's two pickers keep `setChip(i)`.
+  - Layouts 1 and 3 have the same `active`:
+    `s.live && s.tierChips.length > 1 ? Math.min(chip, …) : -1`. Their `shown` gate reads
+    `active < 0`. **The `length > 1` test goes beyond the entry's Fix.** Without it, a republish
+    from three tags down to one would clamp a live `chip` to 0. That would filter by the lone tag
+    while its row is not drawn, so nothing on the page could clear it. This was reasoned, not
+    driven: the published `&cj=` renders below start from rest.
+  - The comments are rewritten: layout 1's clamp and both rows, the empty-state comments at both
+    layouts ("every chip exists because…"), layout 2's "same clamp, floored at 0", and layout 3's
+    copy note and clamp. In `data.js`, the `TIERS_1`, `repChips()` and `REP_ALL` comments.
+- **Digest.** The tree against the HEAD worktree, every category, themes 0–4, three widths,
+  canvas and `live=1`: **exactly the 60 named files** (30 of 660 a surface).
+  - In each file, one `SPAN` row goes (the `All` chip), and the row's other chips shift.
+  - The lit background moves off `All` and lands on no chip.
+  - No root height changes in any file.
+  - Layout 1's desktop row stays right-aligned, its last chip ending at **1194.1** as before.
+    The narrow rows and layout 3's capsule are left-aligned and end 35–53 sooner.
+  - Pricing `arch 1` and `arch 3`, the repertoire and every other category: 0.
+  - A re-take of pricing and the repertoire after the comment-only `data.js` edits: 0 of 120
+    against the after-label.
+- **Verify.**
+  - **The published filter, after** (the same script, on :5175). Cards 1 and 3 under all five
+    templates, at 1440 / 768 / 390, with 360 and 414 at rest. At rest every package is on show and
+    no chip is lit. Each chip lights and filters to the same packages as on HEAD. A second press on
+    the lit chip clears the filter, and the three packages come back. Layout 3's FEATURED sits on
+    the Festival Set at rest, where it sat under `All`. It moves to the Wedding Set under Duo and
+    back on the clear. All three widths gave identical sequences (50 steps, 0 differing). No page
+    scrolls sideways.
+  - **`&cj=` package lists**, HEAD against the tree, pricing × themes 0–4 × three widths × both
+    surfaces:
+    - **One tag** (*Club Night* on two packages, none on the third): HEAD draws *All · Club Night*
+      at layouts 1 and 3. The tree draws **no row**, which is decision 3.
+    - **Two tags** (*Gala*, *Gala, Party*, *Party*): three chips become two.
+    - In both lists, pricing `arch 1` and `arch 3` differ by 0.
+  - **The panel**: no field moved, so no `reach.mjs` run is owed.
+- **Docs.**
+  - `notes/pricing.md` is rewritten: the row carries no `All`, its rest and toggle, the -1 start,
+    the one-tag rule, and layout 2's floor. So is `README.md`'s pricing paragraph.
+  - *Reversed* pointers are in:
+    - `qa-fixes.md` JP-089, decision 2A and its Decided;
+    - `../grunge/retest-qa-fixes.md` JP-070, its A+ text (*answered differently*) and its
+      decision 2;
+    - `../grunge/layout-3-qa-fixes.md`'s "The chips: by design";
+    - `../lime/layout-1.md`, a new pricing bullet after the JP-089 one.
+  - CLAUDE.md states no `All` rule for pricing, so it is unchanged.
+- **For the designer note** (the sweep's): every pricing frame lights a chip (*Club Night*, *Duo*)
+  over every card, so in the frame's picture the lit chip filters nothing. The page lights none at
+  rest, because a lit chip there would filter.
+- **The reply line** (the sweep's shape):
+  - **JP-089 — fixed, on every template.** The pricing chips no longer start with an extra
+    *All*. Layout 1 reads *Private Event · Club Night · Festival* (Retro: *Solo · Trio · Band*),
+    and layout 3's capsule reads *Duo · Trio · Band*, which also closes JP-070's remainder. At
+    rest no chip is lit and every package shows. A chip filters, and pressing it again shows
+    every package. The design's lit *Club Night* is not copied, because on the live page a lit
+    chip would hide the other two packages.
 
 ---
 

@@ -985,6 +985,9 @@ Settled in section 7 (pricing):
   above names them only for casing). Reversed by user call: under Lime, Grunge and Editorial an
   absent `tiers` key at layout 1 is `TIERS_1`, one occasion per package in the frame's order, behind
   the `All` chip, through `tiersSeed()` — see `../editorial/qa-fixes.md`.
+- *(Added 2026-10-05, JP-089 (rest).)* **The `All` chip is reversed** by user call: no pricing frame
+  draws one, so the row is the tags alone, at rest none lit and every package shown, and a press on
+  the lit chip clears it — see `../editorial/retest-qa-fixes.md`.
 
 Settled in section 8 (the booking calendar):
 

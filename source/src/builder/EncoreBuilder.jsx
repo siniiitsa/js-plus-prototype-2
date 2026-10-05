@@ -1137,7 +1137,11 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // The filter row above the cards, derived from the tags the artist typed the
   // way the repertoire's is — `label` cased for printing, `tag` raw for
   // comparing. It replaces TIER_MODES, which was a constant nothing could edit.
-  vm.tierChips = repChips(tierList).map((ch) => ({ ...ch, label: cased(ch.label) }))
+  // The tags alone, without `repChips`' leading All (JP-089, user call,
+  // 2026-10-05): no pricing frame draws one, so the row rests with nothing lit
+  // and every package on show, and a second press on the lit chip clears it.
+  // The repertoire's row keeps its All, which its frames draw.
+  vm.tierChips = repChips(tierList).slice(1).map((ch) => ({ ...ch, label: cased(ch.label) }))
 
   // repertoire — the artist's own list, else the seeded one. The semantics are
   // `images`, not `image`: an emptied array is already distinguishable from an

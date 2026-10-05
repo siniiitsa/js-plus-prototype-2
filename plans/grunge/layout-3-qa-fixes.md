@@ -2147,7 +2147,9 @@ shape, not `KICKER_3`'s.
   to book this act." (a count, false even in the frame, which draws three packages) and "Choose by
   the kind of night you're throwing" (a stutter against the old head). With the head "Pricing" the
   stutter falls away.
-- **The chips: by design.** `All` is layout 1's named intended diff (`EncoreSection.jsx:9300`–
+- **The chips: by design.** (*Reversed* twice: the tags by JP-070's retest, and `All` by
+  Editorial's JP-089 (rest), 2026-10-05, [`../editorial/retest-qa-fixes.md`](../editorial/retest-qa-fixes.md),
+  which drops it from every pricing row.) `All` is layout 1's named intended diff (`EncoreSection.jsx:9300`–
   `9304`, CLAUDE.md), and the chips derive from `TIERS`' tags (`data.js:700`–`712`), one list for
   every layout. The frames disagree between layouts (Retro's layout 1 draws Solo / Trio / Band,
   Grunge's layout 1 Private Event / Club Night / Festival), so no per-layout tag seed can exist.
