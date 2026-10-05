@@ -46,6 +46,7 @@ plans/
     layout-2-qa-fixes.md
   pop/
     layout-1.md
+    layout-2.md
 ```
 
 A pass that fits layout N of every section is `layout-N.md`. A pass of some other kind gets a
@@ -147,6 +148,7 @@ layout 4's *Conventions* and 2026-09-15 Addendum, and Lime layout 4's *Per-sessi
 | Pass | Plan | Branch | Fitted |
 |---|---|---|---|
 | Layout 1 | [`pop/layout-1.md`](./pop/layout-1.md) | `pop-layout-1`, forked from `main` (swept, with the root `index.html` refreshed; push, PR and merge still open) | Retro, Lime, Grunge and Editorial layout 1's eleven component sets in their fifth variant, `Theme=Pop`, in the Figma mode **Pop**: a token foundation (session 0, which opens on four user calls — the display face, Chunko Bold Demo, is a demo; the casing; whether to seat sections on schemes or write literals; and the raw leaks — after a census of every section's raw hexes), then Pop decoration inside Lime's layout-1 blocks, widened per site to `(s.limeTree \|\| s.pop)` with the deltas behind `s.pop`, the media player dressed inside **Retro's** `s.v0` body instead, the header's four modal cards, plus the end-of-pass sweep, which deletes the then-empty `'flat'` header family. Written as deltas against Editorial layout 1. The planning walk found the page's ten non-header variants **unbound** (raw hexes and sizes, the desktop page frame and nine narrow masters still in Lime's mode, so three heads render Bebas Neue at Lime's sizes), ten sections on Lime's tree and the media player on **Retro's**, a white page with violet, blue, lime and pink bands parted by 10px coloured rules, a decorative language of stickers (a smiley-globe seal, a smiley sun, a heart, an asterisk, a starburst, a sparkle), scribbles, squiggle arrows and dot grids, nine distinct schemes, and Pop frames on all four layout pages, so card 1 is fitted and cards 2–4 are placeholders. Inherits `CONVENTIONS.md` A, B, C and D1 (D1 for the ten Lime-tree sections). Session 0 settled all four calls — Titan One at `faceK` 0.98 for the demo face, `'title'` casing, four sections seated on the scheme whose ground they paint (route A′, every nested card on `s.onScheme`) and every raw hex followed but three faces and two defects — and every section widened its Lime block (or dressed Retro's media body) with no Pop branch of its own. The sweep deleted the flat family — `FlatHeader`, `FlatNav`, `s.flatHeader`, the `'flat'` names and counts, `TEMPLATE_STILLS` and the three shared-helper arms only it reached — at zero digest rows on all five themes, listed the `(s.limeTree \|\| s.pop)` pairs and kept them (they fold when Pop's last layout pass widens `limeTree`), gave the header's `in` a Pop row, and folded the pass into [`CONVENTIONS.md`](./CONVENTIONS.md) as a *Pop (layout 1)* column with three new rows in A. |
+| Layout 2 | [`pop/layout-2.md`](./pop/layout-2.md) | `pop-layout-2`, forked from `main` (`e4b7bc8`, after PR #47; planned) | Lime layout 2's ten compositions in the Pop mode: a data-only session 0 — Schemes 5 (teal) and 8 (yellow) into `THEMES[4]`, `SCHEMES_OF.Pop[1]` (media and the calendar Scheme 2 cards on the page's white, the form a Scheme 4 band), `editorialCard` and JP-094's pad arm widened to Pop, `navModeDefault` at `d === 1`, and two confirmations (the gate; leaks on a bound page) — then each Lime layout-2 block widened per site to `(s.limeTree \|\| s.pop)` with the Pop deltas behind `s.pop`, reading Editorial's light-page arm first, all three widths per session, plus the end-of-pass sweep. Written as deltas against Editorial layout 2 and Pop layout 1. The planning walk found **the opposite of layout 1's trap**: every variant but the footer is **bound** (100% of solid paints in nine sections) in a page frame set to Pop, so the variable tools work again and a raw hex is a leak; every section is Lime's tree node for node, the header adding layout 1's dot grid and sun; a white page of rings (8 / 4 / 3 / 2 / 1px, no dashes, no glows, **no 10px rules** — only the media `Section`'s 5px lime pair at 1440) with cards on **seven** schemes, the header's Book pill moving 3 / 3 / 4 by width, a coral plan card leant −3 / −3 / −1, four hard or soft shadows, and the footer layout 1's (closed at planning time). Inherits `CONVENTIONS.md` A, B, C and D2. Card 2 of the setup modal is to be a fitted page; cards 3 and 4 stay placeholders. |
 
 **Reading order in a Pop session:** `CLAUDE.md`, then the plan, then
 [`CONVENTIONS.md`](./CONVENTIONS.md) groups A, B, C and D1 and the bullets they point at, the
@@ -155,5 +157,11 @@ the two widenings already done — Editorial's the one on a light page), and Lim
 *Per-session procedure*. The media session reads Retro's `v0` fit comments in `Media` and Lime
 layout 1's *Settled in section 3* instead of the three *Settled* bullets, since it dresses
 Retro's body.
+The layout-2 pass reads layout 1's *Conventions*, *Settled in session 0* and *Learned on the end-of-pass
+sweep*, Editorial layout 2's *Conventions* and *Settled in session 0* (the scheme mechanisms it leans on),
+groups A, B, C and **D2**, the section's *Settled* bullets in Lime, Grunge **and** Editorial layout 2 and its
+entries in all three layout-2 QA batches (Lime's JP-036 … JP-042, Grunge's JP-059 and JP-060, Editorial's
+JP-092 … JP-100, which moved the blocks after those bullets), Retro layout 2's *Conventions* and
+narrow-masters notes, and Lime layout 2's *Per-session procedure*.
 
 `SPEC.md`, which the plans number against, lives in git history: `git show 8fa8ff4:SPEC.md`.
