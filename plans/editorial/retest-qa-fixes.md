@@ -111,7 +111,7 @@ default list is `0,2,3,4`, which **skips Lime**, so always pass the list explici
 | 4 | JP-099 | 390 player: no ♡ ↓ ⋯ | `layout-2-qa-fixes.md` JP-099 (A, a reply) | **Recorded call, refused twice**: Retro's 390 override, every template | S | **user**: **C** (icons in, sleeve out at 390), then the 1px gap that keeps SLOW BURN whole | **done** (2026-10-05) |
 | 5 | JP-089 (rest) | The extra `All` chip | `qa-fixes.md` JP-089 decision 2A ("the `All` chip stays"); `notes/pricing.md`'s "intended diff" | **Recorded call**: `repChips()` always leads with `All` | S–M | **user**: **1A, 2A**, no row at one tag | **done** (2026-10-05) |
 | 6 | JP-098 (rest) | 768 gallery: six tiles, no *View list ✕* | `layout-2-qa-fixes.md` JP-098 decisions 1A and 3A | **Waits on the BA**: the proposal was sent on entry 1's B (2026-10-05); code only if they confirm or amend it | S–M (or none) | entry 1's (B) | waits on the BA |
-| 7 | — | End-of-pass sweep | — | — | S | — | open |
+| 7 | — | End-of-pass sweep | — | — | S | — | **done** (2026-10-05; entry 6 still with the BA) |
 
 **Why this order:**
 - **The outside questions first.** Entry 1 writes no code. Its questions go out to the PO and the
@@ -1110,3 +1110,239 @@ anyone's ticket):
 - The probe's section `scrollWidth` read 783 for Pop's layout-2 header at 768 with every name, the
   seed included. `scrollWidth` counts clipped overflow, so this may be a clipped decoration and
   not a scroll; the sweep reads the published document's `scrollWidth` at 768 under Pop once.
+
+**Settled** (2026-10-05, all six steps; the push, the PR, the merge and the build stamp are the
+user's).
+- **Entry 6 did not run.** The BA has not answered entry 1's proposal (asked at the session's
+  start). Its status row stays *waits on the BA*, and its reply below is entry 1's, with the
+  proposal attached.
+- **1. Full digest against `main`: 35 of 660 on each surface** (70 of 1,320), exactly the named
+  files.
+  - **The harness.** A scratchpad worktree at `main` (`bb142de`, PR #48), its `node_modules` an
+    APFS clone with `.vite` removed, served on :5174, against a **fresh** tree server on :5175
+    (`npx vite --port 5175`), not the long-running :5173. It ran every category × themes 0–4 ×
+    three widths × canvas and `live=1`, the footer's `page=2` render included, with
+    `localhost:517[0-9]` and the photo stamps normalised. No file was a blank render, and no
+    Editorial file showed 0.1px shaping noise, so nothing was rerun.
+  - **The reconciliation, per surface:**
+
+    | Entry | Named | Differ |
+    |---|---|---|
+    | JP-092 (rest), JP-101 | 0 | 0 |
+    | JP-099 | 5: media `arch 1` × mobile × themes 0–4 | the same 5 |
+    | JP-089 (rest) | 30: pricing `arch 0` and `arch 2` × themes 0–4 × three widths | the same 30 |
+
+    The canvas and `live=1` lists are the same files. Nothing else differs.
+  - **The long-name controls** were re-taken against `main`: header and footer, themes 0–4, three
+    widths, both surfaces.
+    - ***Featherstonehaugh*: 18 of 120 on each surface.**
+      - The footer's 8 match entry 2's 16 across both surfaces: `arch 0` and `page=2` × mobile ×
+        themes 0, 1, 3 and 4.
+      - The header's 10 match entry 3's: mobile `arch 0` and `4` × themes 1–4, and `arch 3` × 3
+        and 4.
+    - ***Florence and the Machine*: 16 of 120.**
+      - The header's 10 are the same files.
+      - The footer moves only under themes 0, 3 and 4 (6). Entry 2 did not count *Florence*. The
+        walk's rule widths agree: at 390 Lime's and Grunge's rule stays 150, while Retro's is 84.9,
+        Editorial's 140.3 and Pop's 117.7.
+    - Every desktop and 768 render is 0 with both names. So JP-091's desktop rows are unchanged.
+- **2. The repro sets on the final tree**, read off the DOM. A scratch puppeteer walk in
+  `source/scripts/` (deleted) ran on :5175, one template per process under `perl -e 'alarm …'`, and
+  wrote rows to a JSONL sink.
+  - **What it drove:**
+    - each card through the picker and the setup modal, then Publish and Open;
+    - the four names set through `st` and republished;
+    - every width read in the published tab.
+  - **Coverage:** cards 1, 2 and 4 under all five templates at 360 / 390 / 414 / 768, which is 240
+    readings. Card 4 is beyond the step, because JP-101 reaches it. Pricing on cards 1 and 3 took
+    230 more. No window logged an error.
+  - **JP-092** (card 2).
+    - The rule is 150 with every seed, and with every name at 768.
+    - With *Featherstonehaugh* at 360 / 390 / 414 it reads entry 2's widths: Editorial 75 / 105 /
+      105, Lime 96.2 / 126.2 / 126.2, Pop 43.9 / 73.9 / 73.9, Retro 30 / 38.4 / 38.4, and Grunge
+      150.
+    - No rule runs under 30 or past the page.
+  - **JP-101** (cards 1 and 4, Lime, Grunge, Editorial and Pop): **every name ends before the
+    pill.** A fitted name ends 1.0px or more short of it. The one tighter row is a name the fit
+    leaves alone: Lime's layout-4 *Florence* at 360 fits on one line at its own 14 and ends 0.2
+    short.
+    - Editorial, card 1, at 390: *Kai Mercer* is 25 on one line, *Florence* 20.94 on two,
+      *Featherstonehaugh* 13.8 on two, and *Supercalifragilistic* 13.67 on one.
+    - At 360 the seed takes two lines at 25, and *Featherstonehaugh* sets at 10.71.
+    - Pop's layout-4 *Featherstonehaugh* is 8.28 at 360 and 10.83 at 390.
+    - All of these are entry 3's table.
+    - Retro's cards 1 and 4 still run *Featherstonehaugh* under the pill at 360, by 9.2 and 16.6.
+      That is named and unchanged.
+  - **JP-099** (card 2, all five templates).
+    - ♡ ↓ ⋯ sit inside the bar at 360, 390 and 414 (16 from its right edge; Retro 22), and the
+      bar holds no `img`.
+    - The title box is 114.4 at 390 and 414 and 84.4 at 360. Retro's is 97.5 and 67.5.
+    - *Late Lights* is whole at 390 under Lime, Grunge and Retro, and cut under Editorial and Pop
+      (as before). At 360 it is cut everywhere, Grunge's being the cut entry 4 named.
+    - At 768 every bar keeps its sleeve and its glyphs.
+  - **JP-089** (cards 1 and 3, all five templates, at 1440 / 768 / 390, and 360 / 414 at rest).
+    - **No row carries `All`.** At rest every chip has the same style, none lit, and all three
+      packages show.
+    - Each chip lights alone and filters, and a second press on it clears the filter.
+      - Layout 1 shows one package per chip; Retro's shows two.
+      - Layout 3 shows two. FEATURED sits on the Festival Set at rest, moves to the Wedding Set
+        under *Duo*, and comes back on the clear.
+    - All three widths gave identical sequences, and no page scrolled sideways.
+    - The pricing root was found by a `data-probe` attribute set on the first read.
+  - **The page scrolls only where an entry named it**, the same on `main`:
+    - Retro's layout-2 hero: 389 at 360 with *Florence*, and 426 / 426 / 438 with
+      *Featherstonehaugh*.
+    - Editorial's layout-2 form credit: 362 at 360 with *Featherstonehaugh*.
+    - Pop's layout-1 gallery: 378 at 360 with *Florence*, and 421 / 421 / 433 with
+      *Featherstonehaugh*.
+  - **Pop's layout-2 page at 768 is 768 wide with every name**, the seed included. So the triage's
+    783 (*Seen at triage* above) was the section's clipped overflow, not a scroll.
+- **3. Reach: none owed.** `data.js` changed in comments only, and no field's `in` moved.
+- **4. The real app.**
+  - **`page-check.mjs` on :5175:** `Editorial 0,1` and `Editorial 1,0` (each card given the full
+    walk), then `Lime`, `Grunge`, `Pop` and `Retro` `0,1`. No window logged an error or a warning.
+    - Every nav link, every in-page anchor and the nine footer links scroll to their sections.
+    - The audio plays, and the form refuses an empty submit and then composes its mailto.
+    - The resize walk logs no warning, `overflow390` is 0, and the burger opens: 1 → 11 links on
+      card 1, 2 → 6 on card 2.
+    - Every card publishes its eleven sections.
+  - **The probe's pricing entries** read *Private Event · Club Night · Festival* on card 1 (Retro
+    *Solo · Trio · Band*), each `true`, with no `All`.
+  - **Card 2's control probe is the same, entry for entry, as `page-check.mjs Editorial 1` against
+    `main`** (taken on :5174 before teardown). Its `false` entries are the selected tile or chip and
+    the SVG nodes.
+  - **How the tester's steps were covered.** The Title went in through `st`, not the panel's
+    NameInput (entry 3's walk typed it). The canvas's three tabs were read by item 5's two-build
+    digest, not by a tab walk. No panel check is owed, since no field moved.
+- **5. `index.html`** refreshed in `71bfc93` from `npm run build:standalone`: 9,820,306 bytes, up
+  from 9,819,684.
+  - **The two-build digest** (`build-digest.mjs`, `CARD=0` and `CARD=1`, every theme, from
+    `127.0.0.1:8931`). It took `index.html?v=old` before the `cp`, then
+    `source/dist-standalone/index.html`. `modal.txt` is identical.
+  - **Card 1:** the pricing chip row alone, under all five templates.
+    - Desktop moves 3 rows: the row `DIV` narrows (Editorial 362.5 → 313.8) and the `All` span
+      goes. The row stays right-aligned.
+    - Tablet and Mobile move 9 rows: the row re-flows from its left edge, the `All` span goes, and
+      no chip is lit.
+  - **Card 2:** Mobile alone, 14 rows a template, the 390 bar.
+    - The inner pill and the sleeve's span and `img` go.
+    - The title column narrows to 114.4, and the glyph row and its three spans come in.
+    - Desktop and Tablet: 0.
+  - **The 1088 Desktop canvas:** only JP-089's 3 rows on card 1 move there. JP-092's rule and
+    JP-101's fit move nothing at that width, as their Settleds expected at the harness's 1180: the
+    seed's rule fits, and the name fit acts at `s.mob` alone.
+  - No section below a changed row moves, under any theme.
+- **6.** `plans/README.md`'s Editorial *Retest QA fixes* row is updated. The replies are below, and
+  the note for the designer is at the plan's foot.
+  - At the sweep the deployed build still read `Mon, 05 Oct 2026 12:57:01 GMT`, 9,819,684 bytes.
+    That is `main`'s root `index.html`, which carries none of this batch.
+- **Named, not fixed: found by the entries and the walk, outside every entry.** Each is the same on
+  `main`, and each is left for its own ticket:
+  - **The layout-1 gallery scrolls the page with a long name** (entry 3's Settled). Under Pop:
+    *Florence* at 360 (378), and *Featherstonehaugh* at 360–414 (421 / 433), re-read by the walk.
+    Under Editorial, Lime and Grunge: *…Windsor* (413), not re-read. It is the only page scroll on
+    card 1.
+  - **The burger panel's wordmark pushes its ✕ off the panel** (entry 3's Settled; not re-read).
+    `NavMenu`'s `Wordmark` has no fit and is `nowrap` at the narrow ramp.
+    - Editorial with *Florence* at 360 / 390, and with *Featherstonehaugh* at every width.
+    - Grunge and Pop with *Featherstonehaugh* at 360.
+  - **The entries' own named items stand** (and are named in their replies):
+    - Retro's layout-2 hero, and its 360 nav with *Featherstonehaugh*;
+    - Editorial's layout-3 nav;
+    - Editorial's layout-2 nav Book pill and form credit at 360;
+    - Editorial at 768 with *…Windsor*.
+  - **Seen at triage** (above):
+    - Pop's layout-2 and layout-3 headers pushing the Book pill past the 390 page with a long name.
+      This is not re-read, and is left as the triage recorded it. Layout 3's is for
+      `../pop/layout-3.md`'s header session, and layout 2's is a tickets-list candidate.
+    - The 768 reading is now taken (item 2): no scroll.
+- **Torn down:**
+  - :5174, :5175 and :8931;
+  - the `main` worktree (`git worktree remove --force`);
+  - the scratch walk in `source/scripts/`.
+
+  :5173 is the user's and still runs.
+
+**Replies to QA, one line per ticket.** **Retest against the Pages build whose `last-modified` is
+later than `Mon, 05 Oct 2026 12:57:01 GMT`** (`curl -sI
+https://siniiitsa.github.io/js-plus-prototype-2/`). The reports were filed against `Fri, 02 Oct
+2026 22:25:49 GMT`. The build deployed at the sweep (9,819,684 bytes) does not carry these fixes
+either. An older tab or cached build still shows every one of them.
+- **JP-085 — planned for a later build; the licence stays with the PO.** This build is unchanged:
+  the headings are still Noto Serif Display, and nothing named Fisterra is loaded. No licence
+  covering the artists' public sites has been bought, and the PO still has to ask TipoType whether
+  one web licence covers every site the builder publishes. In the meantime, a later build replaces
+  Noto with a closer free face. It is chosen by rendering candidates side by side against the
+  design's *KAI MERCER* and a section heading. The test is the shape the report points at: the
+  angled serifs, the tails on R and Q, the narrow capitals. Weight alone was matched already. It
+  will still not be Fisterra Fora. If the PO buys a licence, the real face replaces it.
+- **JP-089 — fixed, on every template.** The pricing chips no longer start with an extra *All*.
+  Layout 1 reads *Private Event · Club Night · Festival* (Retro: *Solo · Trio · Band*), and layout
+  3's capsule reads *Duo · Trio · Band*, which also closes JP-070's remainder. At rest no chip is
+  lit and every package shows. A chip filters, and pressing it again shows every package. The
+  design's lit *Club Night* is not copied, because on the live page a lit chip would hide the other
+  two packages.
+- **JP-092 — fixed.** At 390 a long name no longer makes the page scroll sideways. The footer's
+  decorative line beside the name now gets shorter to make room for it, down to 30px. A name too
+  long even for that goes onto two lines, breaking between words. With *Maximilian
+  Featherstonehaugh* the line is about 105px under Editorial at 390 and 414, and 75px at 360. A
+  name that fits, *Kai Mercer* included, keeps the design's 150px line. The same fix covers Retro,
+  Lime and Pop. Under Pop the line used to be cut off at the page's edge rather than scroll it.
+  Grunge's footer already fitted. *Not changed, logged separately:* at 360, the Enquiry Form's
+  credit runs 2px past the page with that name, and the menu's Book Now pill runs 1px past.
+  Retro's Feature spread hero still overflows with a long name.
+- **JP-098 — with the BA, with a proposal.** This build is unchanged at tablet width: six
+  thumbnails and no *View list* or ✕. We have sent the BA this proposal:
+  - ***View list* reveals the rest.** At rest the tablet gallery shows the design's four
+    thumbnails, the fourth cut at the band's foot. *View list* opens the band to every thumbnail, so
+    no photo is out of reach.
+  - **✕ clears the pick.** Clicking a thumbnail already puts its photo in the large frame, and
+    clicking it again puts the featured photo back. ✕ does the same from the row.
+  - **Neither is drawn at desktop or mobile**, since those designs have no such row.
+
+  Whether *View list* folds back, and whether ✕ shows while nothing is picked, are for the BA to
+  decide. If they confirm or amend the proposal, it is built as described. Until then the six
+  thumbnails stay, so all seven photos remain reachable on a tablet.
+- **JP-099 — fixed, on every template.** At 390 (and 360 and 414) the Media Player's bar now shows
+  ♡ ↓ ⋯, as the design does. To make room, the cover thumbnail in the bar goes at that width. The
+  design's thumbnail is only a sliver there anyway, and this way the song's name stays readable.
+  The running time stays hidden, as in the design. The icons do nothing at any width, as before. A
+  long name such as *Late Lights* under Editorial still ends in "…" at 390, as it did before.
+- **JP-101 — fixed.** At 390 a long name in the menu bar no longer runs under BOOK NOW. It keeps
+  the design's size while it fits on one line before the button; otherwise it wraps between words
+  onto two balanced lines and the bar grows to hold them. *Florence and the Machine* reads FLORENCE
+  AND / THE MACHINE at about 21px under Editorial. A longer name is set smaller so its two lines
+  still fit, and a name too long even for that takes a third line at 12px. The same holds at 360
+  and 414, on Lime, Grunge and Pop, and on the Stacked header (layout 4), which had the same
+  fault. At 360 even the default *Kai Mercer* ran under the button under Editorial; it now takes
+  two lines. The name's size there is 25px under Editorial; 16px is Pop's. *Not changed, logged
+  separately:* Editorial's Inset Hero header (layout 3) and Retro's at 360 still run a long name
+  under the button. In the open menu, a long name pushes the ✕ past the screen's edge under
+  Editorial. Under Pop a long name makes the Gallery scroll the page sideways (*Florence and the
+  Machine* at 360, *Maximilian Featherstonehaugh* at every width).
+
+## Notes for the designer
+
+*(What this batch found worth telling the designer, gathered by the sweep into one note to forward,
+in the earlier batches' shape. Each is shipped as described. [`layout-1.md`](./layout-1.md)'s and
+[`layout-2.md`](./layout-2.md)'s notes, and [`layout-2-qa-fixes.md`](./layout-2-qa-fixes.md)'s
+three, still stand; the first and third below update two of those.)*
+
+1. **The 390 player bar now drops the cover for ♡ ↓ ⋯** (JP-099, on every template; it updates
+   `layout-2-qa-fixes.md`'s note 2, which carries the *Reversed* line). The master
+   (`I986:15683;879:10509`) seats the three icons by squeezing the sleeve, the title and the clock
+   into 22.9px, so it names no track. The page keeps the title instead. At 390 it draws the
+   transport, the title box (114.4px; Retro's 97.5) and the icons, with no sleeve and no clock. The
+   icons' gap is 11 at 390 in the Lime-tree bar, 1px under the frame's 12, so that Editorial's
+   seeded *SLOW BURN* stays whole. The icons do nothing at any width. If the designer wants the
+   sleeve back at 390, the bar needs a layout of its own there, such as the icons on a second line.
+2. **Every pricing frame lights a chip that filters nothing** (JP-089). Layout 1's frames light
+   *Club Night* and layout 3's light *Duo*, each over all three cards. On the live page a lit chip
+   is the filter, so lighting one at rest would hide the other packages. The page lights none at
+   rest and drops the frames' *All*. A press lights a chip and filters, and a second press clears
+   it. A page whose packages carry one tag between them draws no row.
+3. **The 768 gallery's last tile in each column is still 1px tall** (JP-098;
+   `layout-2-qa-fixes.md`'s note 3). The page still draws six tiles, and no *View list* or ✕, while
+   the BA answers the proposal sent on 2026-10-05 (*JP-098 (View list ✕)* above). If they confirm
+   it, the band draws the frame's four at rest, the fourth cut at its foot, and *View list* opens
+   it to all six.
