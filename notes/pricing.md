@@ -61,13 +61,16 @@ another `notes/` file.
   That branch went with the flat family in Pop's layout-1 sweep, once Pop took the Lime pill at
   every layout.
   The card's pill is labelled by `cta` (`vm.pricingCta`, uncased) with `note`
-  (`vm.pricingNote`) beside it and stacked under it at 390, in Retro's card, Lime's, Grunge's and
-  Editorial's alike
+  (`vm.pricingNote`) beside it and stacked under it at 390, in Retro's card, Lime's, Grunge's,
+  Editorial's and Pop's alike
   (JP-036: Lime's pill took no label and printed the section's static `cta1`, "Book Now", where
   its frame reads the same "Enquire about a date"); an emptied label drops the pill, an emptied
   line its span, and both the row. The picked chip is redrawn in `sem/active` under Lime and
   Grunge, whose frames' pick is the card's own colour; Editorial's frame draws its pick visibly,
-  a `tag/1/bg` fill in the idle chips' ring, so it is followed rather than redrawn.
+  a `tag/1/bg` fill in the idle chips' ring, so it is followed rather than redrawn. Pop's frame
+  draws it the same way, but its label stays the idle chips' lime on the yellow fill (1.15 : 1),
+  so Pop follows the fill and ring and re-inks the picked label to the tag's own ink, black
+  (user call, 2026-10-05).
   **Layout 3 is a stack of full-width rows on the page ground**, and it filters as layout 1 does
   — the same `chip`, in the frame's segmented capsule instead of a loose chip row — but what it
   adds is a **seat that the filter moves**: one row *on show* is filled in `vm.tierRow`'s
@@ -141,3 +144,11 @@ another `notes/` file.
   rings and the 10px blue rule stand in a root-size layer that clips, and the root itself clips
   sideways (`popClip`, `overflow-x: clip`): a leant card's scrollable overflow is its whole
   overflow rectangle turned, burst included, which ran 21 past the published 390 page.
+- **Pop's layout-2 plan card is a nested Scheme 7 and leans** (its layout-2 pass, section 6,
+  2026-10-05): Lime's block, widened, reads the card's coral ground, lime ring, lime amount and
+  `+`s and the pill's pair off `s.onScheme[7]`, while the head stays on the section's Scheme 1.
+  The card turns CSS +3° at 1440 and 768 and +1° at 390 inside a slot-sized flex-column wrapper,
+  with `w·sin θ / 2` of margin above and below (a percentage, which reads the wrapper's width):
+  every master spaces it by its rotated box, so the row is that box's height. The published page
+  needs no clip for it — the turned corners stay inside 768 and 390. The root's own 1px pink ring
+  is drawn at 768 and 390 only, as the masters draw it.

@@ -217,7 +217,7 @@ session widens. The narrow twins are in Editorial's and Grunge's sections tables
 | 3 | `media` | `964:64563` *(Section; panel `964:64564`)* | 1440 × 965 | `986:17565` *(Frame 299; `986:17566`)* | 768 × 1541 | `986:17584` *(Frame 299; `986:17585`)* | 390 × 1420 | page 1, **panel 2** (fan cards 6 / 3 / 5 / 4 / 2, list rows 3 / 4 / 5 / 7 / 8) | `964:64582` | `964:64601` | inside `Media`'s `if (s.v1)`, after `nowArt` | **done** `5e8ea24` |
 | 4 | `repertoire` | `964:64570` | 1440 × 792 | `986:17572` | 768 × 792 | `986:17591` | 390 × 594 | 1 (a `box/1` sheet) | `964:64589` | `964:64608` | inside `Repertoire`'s `if (s.v1)`, after `pageWindow()` | **done** `4e6c51f` |
 | 5 | `gallery` | `964:64571` | 1440 × 675 | `986:17573` | 768 × 468 | `986:17592` | 390 × 364 | 1 | `964:64590` | `964:64609` | **no block** — `s.limeTree` reads and `(s.lime \|\| grunge)` / `ed` ternaries through `Gallery`'s `if (s.v1)` | **done** `d8a361e` |
-| 6 | `pricing` | `964:64572` | 1440 × 719.7 | `986:17574` | 768 × 926.4 | `986:17593` | 390 × 841.4 | 1 (the plan card **7**, leant −3 / −3 / −1) | `964:64591` | `964:64610` | inside `Pricing`'s `if (s.v1)`, after `sel` / `t` | |
+| 6 | `pricing` | `964:64572` | 1440 × 719.7 | `986:17574` | 768 × 926.4 | `986:17593` | 390 × 841.4 | 1 (the plan card **7**, leant −3 / −3 / −1) | `964:64591` | `964:64610` | inside `Pricing`'s `if (s.v1)`, after `sel` / `t` | **done** `fb84f5b` |
 | 7 | `calendar` | `964:64574` *(in `964:64573`)* | 1328 × 842 *(1440 × 954)* | `986:17576` *(in `986:17575`)* | 708 × 705 *(817)* | `986:17595` *(in `986:17594`)* | 370 × 698 *(778)* | page 1, **card 2** | `964:64593` | `964:64612` | inside `Calendar`'s `if (s.v1)`, after `want` / `hit` / `cur` / `line` | |
 | 8 | `map` | `964:64575` | 1440 × 808 | `986:17577` | 768 × 823 | `986:17596` | 390 × 1286 | 1 (travel card **3**, map card **2**, viewport **3**) | `964:64594` | `964:64613` | inside `EventsMap`'s `if (s.v1)`, after `stats` | |
 | 9 | `form` | `964:64576` | 1440 × 784 | `986:17578` | 768 × 856 | `986:17597` | 390 × 910 | **4** (sidebar card **2**) | `964:64595` | `964:64614` | `if (s.v1 && s.limeTree)` ahead of `EnquiryForm`'s `if (s.v1)` | |
@@ -740,6 +740,15 @@ bullets; name them.
 - **A frame's anchor for its own seed binds that slot, not the seat** (section 5): sweep it, and
   then picture every other seed in the seat. Where the frame's anchor costs another seed its
   face, key it to the slot (`active === home`).
+- **A followed state's paint is read whole, label included** (section 6): pricing's picked chip
+  is Editorial's visible pick, but Pop's binds the idle chips' lime on its yellow fill, 1.15 : 1
+  in the frame's own render. The fill and ring are followed; the label took the fill's own ink
+  (user call). Read every leaf of a state the plan calls "followed" before following it.
+- **A leant card whose master spaces it by its rotated box turns in a slot wrapper** (section 6):
+  a flex column taking the slot, the card inside it with `rotate(θ)` and `w·sin θ / 2` of
+  vertical margin as a percentage (which resolves against the wrapper's width, the card's). The
+  grid row then measures the rotated box's height at any content height; check the published
+  page's `scrollWidth` before reaching for a clip.
 
 ### Seen at planning time, per section
 
@@ -1319,6 +1328,96 @@ and its **lime** cards add a third ground the twins never had.
 - **For the sweep's CLAUDE.md pass**: nothing new. CLAUDE.md names no gallery layout-2 state;
   `notes/gallery.md` now carries Pop's pick ring and its anchor by slot.
 
+### Settled in section 6 (pricing)
+
+- **The block widened: `if (s.limeTree || s.pop)` inside `Pricing`'s `if (s.v1)`, after `sel` /
+  `t`, `const pop = s.pop`, `const S7 = s.onScheme[7]` and a fourth `G` arm** (Grunge's,
+  Editorial's and Lime's byte-identical), plus six `pop` sites: `disp()`'s uppercase and lift,
+  the pill's pair, the slot wrapper, the root ring overlay, the transparent desktop foot rule and
+  the empty message's ink. Four new leaves fall back through `??`: `chipFg`, `card`, `cardAc`
+  and `div`. The tree is the twins' node for node at all three widths, on **Scheme 1 with no
+  Device override** (`resolvedVariableModes` Desktop / Tablet / Mobile), the plan card `right`
+  **explicitly Scheme 7** at every width, each master read with one walker call (bindings with
+  their collection). Every size is `THEME_RAMP.Pop` (display-md 45 / 36 / 28, display-sm 36 / 29
+  / 24, chip 12 / 11 / 11, body-lg 16 / 15 / 15, body-md 14 / 13 / 13, body-sm 12, label-xs 20 /
+  14 / 12, eyebrow 15 / 12 / 11, list 20 / 16 / 15), so every size reads `s.*`. `get_variable_defs`
+  mixes Scheme 1 and Scheme 7 in one list (`sem/bg` `#FF1A1A`, `sem/tag/1/bg` `#FFF600`) — the
+  walker settled which node is on which. **No raw hex on any master, no effect** on any node.
+  The hooks sit above the block, so the published toggle needed nothing.
+- **The head is the block's Scheme 1 keys**: `[ PRICING ]`, the quote, the reviews and the small
+  print `sem/text/2` (`s.tx`, violet); the heading, stars and rating `sem/text/1` (`s.ac`, pink);
+  the faces `sem/box/1` in a 2px INSIDE `sem/stroke/1` ring at `radius/control` 8 — Grunge's
+  `faceRing` / `faceR`, now pink.
+- **The card is Scheme 7, read through `s.onScheme[7]`**: `sem/box/1` coral `#FF5A5A`
+  (`G.card`) in a **4px** INSIDE `sem/stroke/1` lime ring (`inset 0 0 0 u(4)`), radius 50 and
+  padding 42 / 42 / `30px 20px` (Lime's); the amount and the `+`s `sem/text/1`, lime
+  (`G.cardAc`); the name, blurb, £, unit, note, features label and features `sem/text/2` —
+  Scheme 7's violet is Scheme 1's `#6B2CFF` to the byte, so those sites keep `s.tx`; the rule
+  `scheme/6/stroke/1` named outright (`G.div`, `s.onScheme[6].stroke1`, lime); the pill
+  `BookPill`'s Lime branch on `bg={S7.ac} fg={S7.bg}` — lime under a red label and disc, the
+  arrow lime — where its defaults would paint Scheme 1's black `pillBg`.
+- **The picked chip: the frame's fill and ring, the tag's own ink** (user call, 2026-10-05).
+  `toggle-a` fills `sem/tag/1/bg`, yellow `#FFF600`, `toggle-b` none, both ringed 1px INSIDE
+  `sem/stroke/2` violet under `sem/text/1` lime — so the pick shows (Editorial's route, followed:
+  `chipOn` / `chipOnRing`), but its label is lime on yellow, **1.15 : 1** and near-invisible in the
+  frame's render. Asked; the label is `sem/tag/1/text`, `S7.chips[0].fg`, black. The idle chips'
+  lime on coral (2.35 : 1) reads in the render and is followed (`G.chipFg`). **The lime price on
+  coral** is the same 2.35 at display size and reads; followed.
+- **The lean.** `right` is Figma −3° at 1440 and 768 and −1° at 390 (CSS +3 / +1). **Every master
+  spaces it by its rotated bounding box**: the grid's height is that box's (588.73 = 640 sin 3° +
+  556 cos 3° at 1440, a row; 532.37 at 768 and 502.38 at 390, stacks), and its centre is the
+  slot's. So under `pop` the card turns about its centre inside a slot-sized flex-column wrapper
+  (`display: flex` so the margins cannot collapse), with `margin: 2.6168% 0` / `0.8726% 0` —
+  `w·sin θ / 2`, a percentage of the wrapper's width, which is the card's — leaving out
+  `h(1 − cos θ) / 2`, 0.2px. Measured: the wrapper is the card plus 13.7 / 18.5 / 3.2 each way
+  (the rotated box's height, 471.5 at 768 for our 435 card), at y 46 / 294 / 270 against the
+  frame's 45.9 / 294 / 271.
+- **The turned corners need no clip.** The published tab (card 2) reads `scrollWidth −
+  innerWidth` **0 at 1440, 768 and 390** with the root unclipped (`overflowX: visible`), and the
+  furthest box edge in the section is the root's own at each width (the card's visual box
+  6–384 at 390, 19–749 at 768). `popClip` is untouched.
+- **The root ring is drawn at 768 and 390 alone**: the narrow roots carry a 1px INSIDE
+  `sem/stroke/1` (opaque pink) and the 1440 root no stroke at all. Grunge's overlay widens to
+  `grunge || ed || (pop && !desk)`, and the desktop foot span keeps its box and paints
+  `transparent` under `pop` too.
+- **Type**: `disp()` uppercases under `pop` (the heading, the name, the numeral), `faced` at 0.98,
+  and **lifts each 0.14em** — measured, not inherited: an ink-row scan put the head's baseline
+  0.126 / 0.139 / 0.143em under the frame's at 1440 / 768 / 390, and lifted it lands within 0.4px
+  at 1440 and on the frame's row at 768 and 390. The name and the numeral are the same face in
+  the same lh-1 box, the numeral on the price row's `MAX` (bottom) alignment beside the £, so
+  they take the same lift. Kicker and features label stay as typed (JP-095 (a)).
+- **Measured against the masters' content edges** (harness, from the section root): desktop
+  kicker at 45.9 (56 × 0.82), h2 at 72.3 (72.2) in 36.26px (45 × 0.82 × 0.98), chips 23 tall (28
+  × 0.82), the pill 257 × 44 (312 × 54 × 0.82 = 255.8 × 44.3); 768 h2 at 91 (91) in 35.28px,
+  chips 27, pill 272 × 54 (266); 390 h2 at 61 (61) in 27.44px, chips 27 with the seeded third on
+  a second row, pill 260 × 54 (254), the note stacked. **Named diffs, the twins'**: the seeded
+  heading's own words (two lines at every width, as the frame's typed break) and the seeded package's two
+  features and one-line blurb, so the card stands 384 / 435 / 460 against 556 × 0.82 / 496 /
+  496 and the roots 520 / 865 / 805 against 590 / 926 / 841; the seeded three chips against two;
+  Titan's pill ~2% wide.
+- **States**: `&n=0` keeps the leant card with *No packages yet.* — re-inked from `s.muted`
+  (violet at .64, faint on coral) to Scheme 7's `text/2` (CONVENTIONS C, *a twin's frame-less
+  control is checked against its own surround*); `&n=1` draws no chips; `&n=8` wraps them to
+  three rows at 390 inside the card.
+- **`live=1`** (puppeteer, trusted clicks, three widths): the third chip lights yellow and swaps
+  in *The Festival Set* / 1,200, the second *The Wedding Set* / 650; every chip hit-tests to
+  itself at its centre on the leant card; the pill is `<a href="#form">`; no page error or
+  warning. **`page-check.mjs Pop 1`**: the modal's four cards, every nav, anchor and footer link
+  on its id (*Enquire about a date* → `#form`), the player plays, the pricing chips change state,
+  `overflow390` 0, the burger 2 → 6, no console error or warning; the published 1440 pricing is
+  **635** tall (the seeded card's).
+- **`FIELDS.pricing` has no template-keyed `in` row**, so no `reach.mjs` run was owed.
+- **Digest: themes 0, 1, 2 and 3 zero files of 660, canvas and `live=1`**; theme 4 exactly
+  pricing arch 1 at three widths on both surfaces (6 files), no `_arch_0_` file, no one-row file.
+- **For the calendar**: it is seated on Scheme 2 (the card, `editorialCard` painting white round
+  it); its Lime block (inside `Calendar`'s `if (s.v1)`, after `want` / `hit` / `cur` / `line`) has
+  Grunge's `G` with Editorial's third arm, so Pop is a fourth. Its head band reads Scheme 2's keys
+  (read which), the first slot mark binds `sem/media` teal (trap 4), the pin is re-measured in
+  Titan with `&open=` looping every month, and the foot pill's pink 5 / 5 block goes through the
+  caller's `style`. The 390 instance is another main component with four more nodes.
+- **For the sweep's CLAUDE.md pass**: nothing new in CLAUDE.md; `notes/pricing.md` carries Pop's
+  card, its lean and the chip's label.
+
 ### Inherited and used
 
 *(The running list the sweep folds into [`../CONVENTIONS.md`](../CONVENTIONS.md): each time a
@@ -1391,6 +1490,20 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
   the 390 wrapper's stray capsule, the 768 1px tiles); *a seeded page cannot show an empty slot*
   (lime/layout-1 — `&n=0`); *field reach is measured* (CLAUDE.md — no row owed).
 
+- Section 6: *the node walker, kept* (grunge/layout-2) with bound names and their collection (*a
+  node can name another scheme's variable outright*, editorial/layout-3 — the rule's
+  `scheme/6/stroke/1`); *`get_variable_defs` mixes nested schemes in one list; the fills settle
+  which node is on which* (lime/layout-1 — Scheme 7's red and yellow beside Scheme 1's white);
+  *the `G` lookup at the block's head* (grunge/layout-1 — a fourth arm, new leaves through `??`);
+  *a nested node reads that scheme's keys* (editorial/layout-2 — `[7]`, `[6]`); *a twin's
+  redrawn state is read against this frame* (editorial/layout-2 — the pick followed, its label
+  asked); *Figma auto-layout spaces a rotated child by its rotated bounding box — read it per
+  master* (memory: `figma-frame-reading` — the rotated box at all three here); *a frame's inside
+  stroke is an inset `boxShadow`* (lime/layout-2 — the card's 4px, the narrow root's 1px
+  overlay); *a stand-in face's glyph floor* (editorial/layout-3 — 0.14em, ink-scanned); *a
+  twin's frame-less control is checked against its own surround* (editorial/layout-3 — the empty
+  message); *the popup is `about:blank`* (memory — `scrollWidth` read in the popup).
+
 ## Open questions
 
 1. ~~**Decision 1** — the gate, `(s.limeTree || s.pop)` per site.~~ *Settled in session 0: the
@@ -1441,3 +1554,7 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
     nine links), or lower the floor under Pop (≈ 10.5px on the canvas, 12.8 in the published
     1440). A user call if it is to change.~~ *Settled (user call, 2026-10-05): the wrap stays as
     the designed fallback; the floor is not lowered under Pop.*
+11. ~~**Pricing's picked chip label** (section 6): the frame binds the idle chips' lime
+    (`sem/text/1`) on the pick's yellow `sem/tag/1/bg`, 1.15 : 1.~~ *Settled (user call,
+    2026-10-05): the fill and ring are followed, the label takes the tag's own ink, black. Worth
+    telling the designer — the frame's own render shows the label all but gone.*
