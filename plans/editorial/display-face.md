@@ -25,6 +25,11 @@ layouts, and the batch's digests have to stay readable. One commit per step. The
 `index.html` is refreshed once, by the sweep. The retest batch's sweep adds this plan's row to
 `plans/README.md`.
 
+*Amended (user call, 2026-10-05).* Step 1 ran before the merge, at the user's word. The branch was
+forked from `editorial-retest-qa-fixes` (`b20b969`), since this file exists only there. Step 1
+touches no source. **Rebase it onto `main` once `editorial-retest-qa-fixes` merges, before step
+0's baseline**, so the digests still carry no retest rows.
+
 **Read first, every session:** [`CLAUDE.md`](../../CLAUDE.md), then this file, then
 `qa-fixes.md` JP-085 (options A, B and C, and the Settled facts), [`layout-1.md`](./layout-1.md)
 *The decisions* §1 (`:262`), *Settled in session 0* (`:768`–`:813`, the face table, `faceK`, the
@@ -71,7 +76,8 @@ pinned link) and open question 1 (`:2035`), then `notes/templates.md`'s Editoria
 The comparison ends on a **user call over the renders**, as session 0's face pick did. It is
 judged on the render beside the frame, not by name.
 
-**The target.** Header `964:58612` at 1440: *KAI MERCER* in Display/XL (179, 134 tall), the
+**The target.** Header `964:58612` at 1440: *SIENNA VALE* (not *KAI MERCER*; step 1 read the
+node) in Display/XL (179, 134 tall), the
 wordmark in Display/Title (32), the nav in Label/SM (16), *Book Now* in Display/List (24). One
 section head too: the bio's Display/LG (`964:58613`, its 118 head). Measured off the frame's ink
 bounds (`absoluteRenderBounds`) and a pixel scan of its render, as session 0 did.
@@ -123,6 +129,97 @@ way. Each addition gets the same `200` check and the same row.
 **Licence check, per row.** Google Fonts serves OFL or Apache families, which allow web embedding
 and self-hosting. Step 1 reads each family's licence on its Google Fonts page and records it in
 the row. A face that is not OFL or Apache leaves the list.
+
+### Measured in step 1 (2026-10-05)
+
+**The frame's title is *SIENNA VALE*, not *KAI MERCER*.** `964:58612`'s Display/XL node
+(`I964:58612;446:372`, 877 × 134) sets the theme's own name. The bio's head (`I964:58613;446:1498`)
+is *READS THE ROOM.* over three lines. Both were exported at 2× (`download_assets`, `defaultScale`
+2) and scanned.
+
+**The method, recalibrated on the frame.** Every candidate was rendered in the headless shell at
+the frame's sizes (179 and 118, dpr 2, `font-optical-sizing: auto`). The scores are:
+- **cap / em**: the I's ink height over the em.
+- **stem / cap**: the I's narrowest run between 35% and 65% of its height. Fisterra's I flares,
+  so its narrowest point is near the middle.
+- **hair / cap**: the E's middle arm, the thinnest horizontal.
+- **width**: *SIENNA VALE*'s ink width over its cap height, divided by the frame's (6.976).
+
+The frame reads stem .156 and hair .040 by this method (session 0: .154 / .038), and Noto 540
+reads stem .152. **The width column runs about 3.5% under session 0's** on every carried row: Noto
+540 1.066 against 1.108, Oranienbaum 1.017 against 1.049, Gloock 1.153 against 1.191, Playfair
+Display 1.217 against 1.258. The offset is uniform, so the order holds. Only the rows below were
+taken by this method, so compare them with each other.
+
+**Variable faces are scored at the weight whose stem matches the frame's** (interpolated off a
+100-step sweep). All 36 families answered `200` from `css2` with the axes shown, except Bagnard,
+which answered `400` and is not on Google Fonts. **Every one is OFL** (its `ofl/` directory in
+`google/fonts`); none is Apache. The OpenType features were read off each family's TTF with
+fontTools. **No candidate has capital ligatures, swash capitals on R or Q, or is caps-only.** Every
+`liga` / `dlig` set is f-ligatures alone, which the uppercase transform never reaches. So the
+frame's R tail (*READS*, and every R in the nav: TRACKS, REPERTOIRE, PRICING …), its Q tail and its
+N–N joins have no free match on this list.
+
+| Face, instance | cap / em | stem / cap | hair / cap | width | Character | Outcome |
+|---|---|---|---|---|---|---|
+| **Fisterra Fora** (the frame) | .725 | .156 | .040 | 1 | Condensed, high contrast, very tight fit; stems flared and pinched at mid-height; sharp wedge serifs; R and Q tails; joined N–N; caps-only | — |
+| **Noto Serif Display, wdth 62.5, wght 540** (today) | .715 | .152 | .016 | 1.066 | Condensed, high contrast, open fit; straight stems, thin bracketed serifs; no swash; lowercase | **shortlist A** |
+| **Noto Serif Display, wdth 62.5, wght 700** | .715 | .188 | .012 | 1.114 | 540's skeleton, darker, hairlines thinner still; stem 21% over the frame's | **shortlist B** |
+| **Gloock** | .751 | .204 | .019 | 1.153 | High-contrast display, closest to the frame's dark colour and tight fit; wedge-bracketed serifs; no flare, no swash; one weight, stem 31% over | **shortlist C** |
+| **Imbue, opsz 40, wght 630** | .701 | .155 | .040 | 0.724 | Condensed Didone, flat hairline serifs, tight; stem **and** hairline the frame's; sets 28% narrow; no flare, no swash | **shortlist D** |
+| **Amarante** | .749 | .146 | .075 | 1.036 | Art-nouveau capitals: curved, flared strokes (the V and A), dark, tight; the frame's width; low contrast (hair ×1.9); one weight, no Bold | **shortlist E** |
+| Imbue, opsz 10, wght 630 | .701 | .155 | .052 | 0.737 | D at a coarser optical size | D's twin |
+| Imbue, opsz auto (100 at 179), wght 630 | .701 | .155 | .012 | 0.699 | D with hairlines as thin as Noto's | dropped for D |
+| Grenze, wght 400 | .603 | .153 | .083 | 1.210 | Roman–blackletter hybrid, low contrast | dropped: cap −17%, width |
+| Texturina, wght 580 | .704 | .151 | .087 | 1.340 | Hybrid, low contrast, wide | dropped: width |
+| Playfair, wdth 87.5, wght 460 | .570 | .157 | .020 | 1.321 | wdth 87.5 does not bring it in | dropped: cap −21%, width |
+| Cinzel, wght 560 | .701 | .155 | .052 | 1.345 | Inscriptional wedge serifs; caps-only (small caps for lowercase) | dropped: width |
+| Castoro Titling | .701 | .116 | .048 | 1.324 | Caps-only titling, light | dropped: width |
+| Elsie Swash Caps 400 | .802 | .129 | .035 | 1.029 | Ball-terminal swashes on S, I, E, A, L; not the R or Q | dropped: cap +11% |
+| Almendra Display | .835 | — | — | 1.046 | An outline (hollow) face, so its stem reads the contour | dropped: cap, outline |
+| Pirata One | .771 | .156 | .065 | 0.765 | Blackletter: the angular edge, as expected | dropped: character |
+| Kalnia, wdth 100, wght 390 *(added)* | .709 | .154 | .020 | 1.401 | Flared Didone, wide at its narrowest | dropped: width |
+| Limelight *(added)* | .690 | .360 | .053 | 1.301 | Art deco, heavy | dropped: width, stem |
+| Lancelot *(added)* | .628 | .107 | .049 | 1.161 | Art nouveau, light | dropped: cap −13% |
+| Yeseva One *(added)* | .701 | .235 | .036 | 1.316 | Heavy, curved | dropped: width |
+| Rozha One *(added)* | .561 | .269 | .040 | 1.462 | Heavy Didone | dropped: cap, width |
+| Marcellus *(added)* | .701 | .127 | .060 | 1.186 | Flared Trajan, light, low contrast | not shortlisted: light, wide |
+| Bodoni Moda, wght 520 *(added)* | .751 | .152 | .004 | 1.236 | Hairlines vanish at 179 | dropped: width |
+| Gilda Display *(added)* | .701 | .100 | .036 | 1.322 | Light Didone | dropped: width |
+| Federant *(added)* | .726 | .165 | .073 | 1.193 | Art nouveau, near-sans N and V | not shortlisted: low contrast, wide |
+| Abril Fatface *(added)* | .701 | .275 | .036 | 1.250 | Fat face | dropped: width |
+| Smythe *(added)* | .648 | .103 | .060 | 0.813 | Condensed art nouveau, light; E / N / L / H / A alternates | dropped: cap −11%, light |
+| Bigelow Rules *(added)* | .684 | .069 | .024 | 0.630 | Very condensed art nouveau, very light | dropped: light |
+| Glass Antiqua *(added)* | .640 | .087 | .100 | 1.085 | Art nouveau, light, monoline | dropped: cap −12% |
+| Prata *(added)* | .802 | .139 | .031 | 1.237 | Didone | dropped: cap, width |
+| Federo *(added)* | .726 | .146 | .065 | 1.183 | Art deco sans | not shortlisted: no serifs |
+| Gupter, wght 500 *(added)* | .628 | .142 | .071 | 1.279 | Text serif | dropped: cap, width |
+| Young Serif *(added)* | .751 | .216 | .108 | 1.415 | Heavy, low contrast | dropped: width |
+| Chonburi *(added)* | .701 | .291 | .044 | 1.457 | Heavy, wide | dropped: width |
+| Rakkas *(added)* | .670 | .250 | .058 | 1.287 | Heavy | dropped: width |
+
+Re-rendered from session 0, not re-scored: Oranienbaum (1.017), Instrument Serif (0.878), Noto Serif
+text cut 500 (1.063), Playfair Display 400 (1.217) and DM Serif Display (1.230). None beat the
+shortlist on the sheet.
+
+**What each shortlisted face would cost from step 3 on**:
+- **Gloock (C)**: one weight. The three Bold statements would get synthetic bold, or stay at 400.
+  It sets 8% wider than Noto 540, so every head fit shrinks further. Its cap is 3.6% over the
+  frame's, past Grunge's 2%, so `faceK` comes into play.
+- **Imbue (D)**: the link has to pin `opsz` (40) and a weight range from 630 to the Bolds'. That
+  top is about 800: stem .191, where Noto 700 is .188, the same 1.24× over the Regular. With `opsz` left on auto, the 179 hero clamps to 100 and
+  the hairlines go back to .012. It sets 32% narrower than Noto 540, so the fits loosen. Its cap is
+  3.3% under the frame's (`faceK`).
+- **Amarante (E)**: one weight, no Bold, and its cap is 3.3% over the frame's (`faceK`).
+- **Noto 700 (B)**: no new link. Every fit moves to `notoBoldEms`.
+
+The contact sheets were written to step 1's session scratchpad, which did not outlive the session.
+Seven sheets held every row. `shortlist.png` held the frame and A–E, each with the hero, the
+bio's head and the nav row at 32 / 16 / 24. The scripts went with them. To redo it:
+- puppeteer-core on the headless shell renders each face from its `css2` link at 179 and 118, dpr
+  2, and the nav string at 32 / 16 / 24;
+- PIL scans the ink against the frame's 2× export;
+- fontTools reads the GSUB of each family's TTF from `google/fonts`.
 
 **Trap: a face already in the link.** Fraunces (Retro) is pinned as
 `opsz,wght,SOFT,WONK@144,900,100,1` (`data.js:37`'s comment), and its SOFT / WONK axes give
