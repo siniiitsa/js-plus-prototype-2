@@ -756,6 +756,10 @@ bullets; name them.
 - **Lift the label, never the ring** (section 8): where a Titan string is a ringed element's own
   text (Get Directions), `top: -0.14em` on the element moves the ring with it; wrap the label in
   a span under `pop` and lift that.
+- **A card on another scheme is that scheme's binding, not always its ground** (section 9):
+  read the card's fill before writing `S.bg`. The form's Scheme 2 card binds `box/1` `#D7FF23`,
+  one shade off `sem/bg` `#C6F200`, and its pill's label and disc bind `sem/bg` outright, so both
+  limes are drawn. The testimonials' big card is the next Scheme 2 card.
 
 ### Seen at planning time, per section
 
