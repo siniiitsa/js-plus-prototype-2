@@ -819,6 +819,12 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // in the display face with no text transform, and casing it would shout on
   // Pop. Layout 2's plan card reads its own `cta`.
   vm.tierRowCta = cv('rowCta', d === 2 ? PRICING_ROW_CTA_3 : d === 3 ? PRICING_ROW_CTA : 'Book Now')
+  // The label's width in the display face's ems (`navFace`, undefined where a
+  // template has no advance table). Editorial's layout-1 deck fits its pill's
+  // label to the card (plans/editorial/display-face.md, step 4): Gloock sets
+  // the seeded BOOK NOW 104.8 wide at 768, where Fisterra's is 88, and the
+  // pill came to 186.8 in a 182.7 card, so the seed wrapped.
+  vm.tierRowCtaEms = navFace ? +navFace(vm.tierRowCta).toFixed(3) : undefined
 
   // chips — TAGS, one per palette tag hue. A template whose Figma mode names
   // each tag's ink (`sem.tagFg`, parallel to `tags`) takes it; contrast()'s

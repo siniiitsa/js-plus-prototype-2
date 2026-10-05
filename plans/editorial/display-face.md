@@ -402,6 +402,86 @@ A winner that is already loaded for another template needs its own instance chec
    (`cardNameEms`), `titleWordEms`, the form, testimonials and footer statements, the calendar
    month. Also the Noto quirks named in *Facts*, each on its own site. One commit per layout. Each
    Settled names the sites that moved, and why.
+
+   **The harness for every layout.**
+   - The before-digest is a worktree of the previous commit on :5174, and the tree runs on a
+     fresh :5175. Both surfaces, themes 0–4, normalised `localhost:517[0-9]` and `?t=`.
+   - A third worktree, of `55e3bfa` (Noto, before step 3), runs on :5176. For every display-face
+     text node of the layout at three widths, a Range probe reads its size, its line count, and
+     any ink past the root or a clipping ancestor (or an ellipsis), under Noto and under Gloock.
+     A site whose line count changed, or that newly clips, is a site to look at.
+   - **Gloock sits higher in its line box than Noto.** Gloock's ascent is .975 and its descent
+     .225; Noto's are 1.069 and .293. In a box of line height L, Gloock's baseline is L/2 + .375em
+     down and Noto's L/2 + .388em. Faced (× .967, the line box kept by `facedLh`), Gloock's
+     baseline stands **0.025em higher** than Noto's, and its caps 0.035em higher. Gloock's J
+     descends .187em (.181 faced), not Noto's .240. So every Noto lift at layouts 2–4 (0.07–0.09em)
+     is expected to shrink by about 0.025em. Each one is re-measured against its frame.
+
+   **Settled, layout 1** (2026-10-05, on `73a8b73`). Line numbers are this commit's.
+   - **Four user calls**, over the Noto-vs-Gloock probe and the frames' text nodes (`use_figma`,
+     `absoluteBoundingBox` / `absoluteRenderBounds`):
+     1. **The 1440 capsule name wraps: accepted.** The nine seeded links need 720px at their 12px
+        floor, where Noto's needed 636. That leaves the name 66.8 of room, against the 157 that
+        *KAI MERCER* needs at 26.2. So JP-091's rule sets it at 16.8 on two lines (arch 0, and
+        arch 4, which folds to it). One line would need 10.5px links. Pop's seed already wraps
+        the same way (`plans/pop/layout-1.md:1085`). No code change.
+     2. **The 390 capsule name wraps: accepted.** *KAI MERCER* needs about 143 at 24.2, and the
+        room up to the pill is 121. It was 133.9 under Noto: the pill's label is wider in Gloock
+        too. JP-101 takes it onto two balanced lines and the bar grows by the line, as Noto's
+        did at 360. No code change. `notes/nav.md`'s "every seed keeps its size and one line at
+        390 and 414" is now Lime's, Grunge's and Pop's. That note is step 5's.
+     3. **Pricing's 768 Book pill fits its label.** Fisterra sets BOOK NOW 88 wide at 19
+        (`986:48245`). Gloock set it 104.8 (faced), so the pill needed 186.8 in its 182.7 card,
+        and the seed wrapped onto two lines (JP-070's long-label rule). Now the label is
+        `min(list, max(12px, (100cqi − 82) / s.tierRowCtaEms))`, with 67.24 for the 82 on the
+        canvas (`EncoreSection.jsx:9759`). The pill's wrapper is the `inline-size` container,
+        stretched to the card. `vm.tierRowCtaEms` is `navFace` of the label
+        (`EncoreBuilder.jsx:827`). The ems are 5.9 against a measured 5.865. The seed sets at
+        17.06 on one line at 768. 1440 (19.34) and 390 (17.41, the 18 ramp) do not bind.
+        Recorded in `notes/pricing.md`.
+     4. **The extra lines are accepted.** Three sites gain a line, and none overflows:
+        - the bio's 390 head, *Reads the room.*, goes 1 → 2 lines (the frame's is one, 344 of 350);
+        - the testimonials quote goes 3 → 4 lines at 1440 (the frame's three);
+        - the quote goes 4 → 5 lines at 390 (the frame's four).
+
+        Media's 390 track titles ellipsise further (*Echo & The Floor* too), but the frame clips
+        both titles itself: its 197 and 191 boxes run past a 175.5 row.
+   - **Gallery layout 1's 1440 source labels are faced** (`:14590`). This is the census's unfaced
+     arm. The rows set Label/MD raw under Editorial, because `faced` was the identity under Noto.
+     Gloock's cap stands 3.4% over Fisterra's, so the label is now `faced(s, …)` with
+     `facedLh(s, 1.1)`: 16 → 15.47, and the 17.6 line box holds.
+   - **Re-measured, unchanged:**
+     - **The hero.** 1440 keeps its 147 (142.1 faced, 870 wide in its 880 column). At 768 the
+       column fit binds at 88.0 (538.9 of 540; Noto's was 106.4). At 390 MERCER's widest-word fit
+       binds at 88.4 (369.6 of 370; Noto's was 107).
+     - **The three statements**: the form's, the testimonials quote and the footer's. Each fits
+       its column with no overflow and no line-count change except the quote's, above.
+     - **The calendar month.** Editorial's layout-1 month is not fitted, since `month.ems` is
+       Pop's arm alone. All twelve months, `&today=2025-01-02` … `12-02`, hold one line in the
+       row at all three widths, under both faces.
+     - **No glyph lift exists at layout 1.** Gloock stands 0.025em higher than Noto there, so
+       nothing at layout 1 sits lower than it did.
+   - **Comments.** The five layout-1 comments that named Noto now name Gloock:
+     - `Wordmark` (`:913`), `Title` (`:1246`), the bio's head (`:4407`) and the calendar's
+       `disp` (`:16513`);
+     - the hero (`:2231`–`2245`), its numbers re-taken in Gloock.
+
+     `notes/nav.md`'s Noto lines (`notoEms()`, the 636px, the 390 seed line) are left for
+     step 5, with `notes/templates.md`.
+   - **After-diff: 4 of 660 on each surface, all theme 3, layout 1.** Themes 0, 1, 2 and 4 are 0,
+     bare and `live=1`:
+     - gallery arch 0 at 1440: the four source labels, size only;
+     - pricing arch 0 at 768: the three pills on one line, so the section is 1.6 shorter;
+     - pricing arch 0 at 1440 and 390: the pills' wrapper alone, now stretched to its card. The
+       pill does not move.
+
+     **The fit is width-sensitive.** On the editor's 1088 Desktop canvas, which `digest.mjs` never
+     renders, the cards are narrower than at 1180, so the fit may bind on the seed there. Step 5's
+     two-build digest should expect pricing rows to move, and that is not a regression.
+     **The long-label path**, `&cj=` with `rowCta` *Start a long enquiry about this package*: at
+     all three widths the label lands on the 12px floor (11.6 faced) and wraps, onto two lines
+     at 1440 and 390 and three at 768. The pill's right edge is the card's content edge, to the
+     0.1. The disc stays beside the text, and the pill keeps its 44.3 / 54.
 5. **Sweep.** The full two-build digest against `main`; `page-check.mjs Editorial 0,1,2,3`; the
    long-name set (*Kai Mercer*, *Florence and the Machine*, *Maximilian Featherstonehaugh*,
    *Supercalifragilistic*) at 360 / 390 / 414 / 768 / 1440 on cards 1–4; the build size; the root

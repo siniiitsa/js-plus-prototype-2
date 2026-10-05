@@ -910,8 +910,8 @@ function Wordmark({ s, logo = false, color, glyph, size, gap, clean = false, fit
     // its narrow masters keep where the hero's close it to 10 — additive.
     // Editorial's (964:58612) is the same node in its own Display/Title — 32 ×
     // 0.82, and 25 on both narrow masters, the 390 being in the Tablet device
-    // mode — in Noto Serif Display for the caps-only Fisterra Fora, the gaps
-    // Grunge's to the pixel.
+    // mode — in Gloock for the caps-only Fisterra Fora, at 0.967 of the token
+    // (`faced`), the gaps Grunge's to the pixel.
     // Display/Title takes Grunge's distress (`distressed`); a caller that sets
     // the name at a label size says so with `clean`, where it picks the size.
     const px = fitName(fit, size ?? (s.editorial ? (s.narrow ? '25px' : '26.2px') : s.narrow ? '28px' : '29.5px'))
@@ -1243,8 +1243,8 @@ function Title({ s, size, color, twoTone = false, align = 'left', toneA, toneB, 
     letterSpacing: s.dls, color: color || s.tx, textAlign: align,
     // Grunge's display face is all capitals (Stones Crush); Anton, standing
     // in for it, is not, so every header's title takes the transform — and
-    // so does Editorial's, Noto Serif Display standing in for the caps-only
-    // Fisterra Fora, and Pop's, Titan One standing in for Chunko Bold Demo.
+    // so does Editorial's, Gloock standing in for the caps-only Fisterra
+    // Fora, and Pop's, Titan One standing in for Chunko Bold Demo.
     textTransform: s.grunge || s.editorial || s.pop ? 'uppercase' : undefined,
     ...style,
   }
@@ -2229,18 +2229,20 @@ function HeaderV0({ s }) {
                 the artist's name outruns the column. The frame's other run (Soulway at 128) is the component's
                 default leaking; the node is one 198 run.
                 Editorial's is one tone in `sem/text/2`, one wrapping run at
-                every width, and one line at 1440 and 768 — but Noto Serif
-                Display sets "SIENNA VALE" 9% wider than Fisterra Fora, and
-                the seeded "KAI MERCER" comes to 542 at 107px against the 768
-                column's 540. So there the title is fitted to the column
-                (`100cqi` over the name's width in ems — `s.navNameEms`, the
-                display face being the label face), capped at the ramp: the
-                nav's recipe. 1440 has room to spare and keeps its 147. 390
-                wraps between words, as its frame does, so there the title is
-                fitted to the name's widest word instead (`s.cardNameEms`,
-                HeaderV2's JP-062 rule), capped at the frame's 107: a long
-                word shrinks the name rather than run off the page, and the
-                seeded MERCER keeps the 107 in the 370 column (JP-086).
+                every width, and one line at 1440 and 768 — but Gloock sets
+                "SIENNA VALE" 15% wider than Fisterra Fora at the same cap
+                height, and the seeded "KAI MERCER" comes to 635 at 107px
+                (faced) against the 768 column's 540. So there the title is
+                fitted to the column (`100cqi` over the name's width in ems —
+                `s.navNameEms`, the display face being the label face), capped
+                at the ramp: the nav's recipe. It sets at 88.0, one line,
+                538.9 of the 540. 1440 keeps its 147 (142.1 faced, 870 in
+                880). 390 wraps between words, as its frame does, so there
+                the title is fitted to the name's widest word instead
+                (`s.cardNameEms`, HeaderV2's JP-062 rule), capped at the
+                frame's 107: a long word shrinks the name rather than run off
+                the page (JP-086), and the seeded MERCER sets at 88.4, 369.6
+                of the 370 column (plans/editorial/display-face.md, step 4).
                 Pop's is one tone in `sem/active/text` and one wrapping run,
                 on one line at 1440 and 768 and two at 390, and takes
                 Editorial's fit in Titan One's ems: the seeded name keeps the
@@ -4402,7 +4404,7 @@ function Bio({ s }) {
   // the tree a third time, node for node, on paper — so `ed` names its
   // deltas. Every string binds `sem/text/1`, the terracotta accent, where
   // Lime's copy is `text/2`; the head is one tone in it and owes the capitals
-  // Fisterra Fora has and Noto does not; the foot line is Grunge's eyebrow.
+  // Fisterra Fora has and Gloock does not; the foot line is Grunge's eyebrow.
   // The photograph is an arch with square feet (361 / 361 / 0 / 0, which CSS
   // clamps to the semicircle Figma draws) on `sem/box/3`, with no glow and no
   // effect of any kind — just a `sem/tag/1/bg` inside stroke, 1px at 1440 and
@@ -9740,11 +9742,21 @@ function Pricing({ s }) {
                       the branch defaults to `sem/bg`; the 390 master keeps it at
                       full size, as Retro's does. The label is `rowCta`: an
                       emptied one drops the pill, and a long one wraps inside
-                      the card, layout 2's rule (JP-070). */}
+                      the card, layout 2's rule (JP-070).
+                      Editorial's label first shrinks to the room the card
+                      leaves it, by its own width (`s.tierRowCtaEms`, Gloock's
+                      ems), down to 12px, and wraps only below that: Gloock
+                      sets the seeded BOOK NOW 104.8 wide at 768 where the
+                      frame's Fisterra is 88, which ran the pill 4.1 past its
+                      182.7 card (plans/editorial/display-face.md, step 4).
+                      The room is the card's content box (the wrapper, the
+                      query container) less BookPill's 82 of padding, gap and
+                      disc, × 0.82 on the canvas. */}
                   {!!s.tierRowCta && (
-                    <span style={{ alignSelf: 'flex-start' }}>
+                    <span style={ed ? { alignSelf: 'stretch', display: 'flex', containerType: 'inline-size' } : { alignSelf: 'flex-start' }}>
                       {ed
                         ? <BookPill s={s} to={s.tierBookTo} label={s.tierRowCta} bg={PILL.bg} fg={PILL.type} discBg={PILL.disc} full={s.mob}
+                                   size={`min(${s.list}, max(12px, calc((100cqi - ${s.narrow ? 82 : 67.24}px) / ${s.tierRowCtaEms})))`}
                                    style={{ whiteSpace: 'normal', maxWidth: '100%', boxSizing: 'border-box' }} />
                         // Pop's pill is the seat's pair, its label a
                         // hand-scaled 15.77 (the media's Soundcloud size), full
@@ -14575,9 +14587,11 @@ function Gallery({ s }) {
             )}
             {desk && (
               // Display/List; Editorial's is Label/MD, Pop's a raw 13.88.
+              // Editorial's is faced too, since Gloock's cap stands 3.4% over
+              // Fisterra's (`faceK` 0.967, plans/editorial/display-face.md).
               <span style={{
                 flex: 1, minWidth: 0, fontFamily: s.display,
-                fontSize: ed ? s.labelMd : faced(s, pop ? u(13.88) : s.list), lineHeight: ed ? 1.1 : facedLh(s, 1.2),
+                fontSize: faced(s, ed ? s.labelMd : pop ? u(13.88) : s.list), lineHeight: facedLh(s, ed ? 1.1 : 1.2),
                 letterSpacing: s.dls, color: ink,
                 whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
                 ...(grunge || ed || pop ? { textTransform: 'uppercase' } : {}),
@@ -16496,7 +16510,7 @@ function Calendar({ s }) {
       }
       // Anton at the frame's glyph size, in capitals: the heading and the
       // month are direct display sites (section 1's `faced`). Editorial's
-      // Noto takes the capitals too; its `faced` is the identity. Pop's Titan
+      // Gloock takes the capitals too, at 0.967 (`faceK`). Pop's Titan
       // is set at 0.98 of the frame's glyph size, its line height divided back
       // out, each site passing the frame's own `lineHeight`.
       const disp = (size, extra) => (grunge || ed || pop
