@@ -206,6 +206,12 @@ handed to the PO. No code. B replaces it if a licence is bought. It would then b
 `display-face.md` on its own branch, and the licence could be TipoType's self-hosted file or
 Adobe Fonts' hosted link, which the facts now name as a second route.
 
+*Reversed* (2026-10-05, user call, [`retest-qa-fixes.md`](./retest-qa-fixes.md) JP-085 · JP-098):
+the tester re-filed it, and no licence has been bought, so **C** in a new shape replaces the reply.
+It is a closer free stand-in chosen by rendering, planned in [`display-face.md`](./display-face.md)
+for its own branch. This entry's C (Noto at 700) is one row of that comparison. B still replaces it
+if a licence is bought.
+
 Asked over the facts, gathered in-session and re-checked on HEAD (`50b165c`). Every *Evidence*
 line held: the stand-in comment at `data.js:186`, `display` / `label` at `:200`–`201`, `NOTO_EM`
 at `:508`, `notoEms` at `:518` and `notoBoldEms` at `:526`. `index.html:11` and `preview.html:10`
@@ -290,6 +296,9 @@ frame before choosing that seed's gate.
      a tag row that says otherwise (read `964:58618` first). The `All` chip stays, as
      `notes/pricing.md` records ("the extra `All` chip on the reference picture is the intended
      diff"), and the canvas pins it. The frame's *Club Night* lit is not reproduced.
+     **Reversed** (JP-089 (rest), user call, 2026-10-05, [`retest-qa-fixes.md`](./retest-qa-fixes.md)):
+     the `All` chip is gone from every pricing row, layouts 1 and 3 on every template. At rest no
+     chip is lit and every package shows, and a press on the lit chip clears it.
    - **B. Overlapping tags**, mirroring the seed's current *Solo* / *Solo, Trio, Band* shape.
      Only if the frame shows it.
 
@@ -323,7 +332,8 @@ whatever reads `vm.formCta` prints *Enquire* under the three templates.
 they name the seeds; a *reversed* pointer on the three named diffs in `../lime/layout-1.md`.
 
 **Decided** (2026-09-30, user call): **1A, 2A.** Lime, Grunge and Editorial at layout 1, and one tag
-per package in the frame's order behind the `All` chip. Asked over what the session read first:
+per package in the frame's order behind the `All` chip (the `All` reversed by JP-089 (rest),
+2026-10-05, [`retest-qa-fixes.md`](./retest-qa-fixes.md)). Asked over what the session read first:
 - **Pricing.** `964:58618` and its twins `964:58594` (Lime) and `964:58606` (Grunge) draw
   *Private Event / Club Night / Festival* with **no tag row on the cards** and no `All`. Club Night
   is lit over the second card.
@@ -806,11 +816,16 @@ and `vm.cardNameEms` at `EncoreBuilder.jsx:673`.
   - **The 390 nav wordmark** (`Wordmark`'s `nowrap` name in NavBar's `minWidth: 0` row): with
     *Florence and the Machine* it runs under the Book pill and the burger, and ends at 392.3 at
     360 and at 390. The header clips it, so 2.3 of the last E is lost at 390 and 32 at 360. At
-    414 it fits. HEAD is the same.
+    414 it fits. HEAD is the same. **Answered by JP-101** ([`retest-qa-fixes.md`](./retest-qa-fixes.md),
+    2026-10-05): in layouts 1 and 4 under Lime, Grunge, Editorial and Pop the name keeps its size
+    while one line fits up to the pill, and otherwise wraps between words onto two balanced lines,
+    and the bar grows.
   - **The footer at 360** overflows with the two long names (`scrollWidth` 390 and 370 against
     360), so the page scrolls sideways there. HEAD is the same. The footer fits at 390 and 414.
     *Maximilian Featherstonehaugh* overflows it at 390 and 414 as well (JP-092's *Settled* in
-    [`layout-2-qa-fixes.md`](./layout-2-qa-fixes.md)).
+    [`layout-2-qa-fixes.md`](./layout-2-qa-fixes.md)). **Answered by JP-092 (rest)**
+    ([`retest-qa-fixes.md`](./retest-qa-fixes.md), 2026-10-05): the footer's rule yields to the
+    name, down to a 30 floor, and a name past that wraps between words.
 - **Build.** `npm run build` is clean. The root `index.html` is not refreshed.
 - **Docs.**
   - The `Title` comment (390 is fitted to the widest word).
@@ -827,7 +842,8 @@ keep the design's 107px.
 - One thing the report did not check: at 360 even the default *Kai Mercer* was clipped. It now
   shrinks to 100px.
 - Not changed, and logged separately:
-  - At 390 the menu bar's name runs under the Book button with a name this long.
+  - At 390 the menu bar's name runs under the Book button with a name this long. *(Answered by
+    JP-101, `retest-qa-fixes.md`, 2026-10-05: it now wraps onto two lines before the button.)*
   - At 360 the footer scrolls sideways with it.
   - A single 20-letter word still clips on Lime's and Grunge's Hero, and on Editorial's layouts 2
     and 3.
@@ -1135,7 +1151,10 @@ layout 1 alone.**
     - So below the floor the box grows to the word, and the links wrap rather than meet the
       name.
     - Grunge's `faced()` wraps the result as before.
-  - **Untouched:** Retro's arm, the narrow branch, and layout 4's `links` branch.
+  - **Untouched:** Retro's arm, the narrow branch, and layout 4's `links` branch. *(The narrow
+    branch has its own fit since JP-101, `retest-qa-fixes.md`, 2026-10-05, in layouts 1 and 4;
+    the desktop rule above is unchanged and now gated on design 0 by `s.v0`, since
+    `vm.navNameFit` is built for design 3 as well.)*
 - **Digest.** The tree against the HEAD labels came to **0 of 660 on the canvas and 0 of 660 on
   `live=1`**, as named.
   - The repro set moves only the header, by construction. `vm.navNameFit` has one reader,

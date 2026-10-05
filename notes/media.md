@@ -29,7 +29,7 @@ another `notes/` file.
   which 3 and 4 would then print twice. Once the artist edits the list, `rel` is the row's whole
   subtitle, so the byline reads *Kai Mercer · Single · 4:55*; a separate release column would be
   a `TracksField` change. It ellipsises in its own box: the seed's *Single* fits every box but
-  Retro's and Pop's at 390 (103.5 and 105.5), and the two longer releases ellipsise at every
+  Retro's at 390 (97.5) and every box at 360, and the two longer releases ellipsise at every
   width, as those tracks' titles do. Do not mark the
   playing card by raising it out of the stack — the cards overlap by 18px at the foot and a raised
   one covers the *next* card's title; the Pause icon and the now-playing block are the whole cue.
@@ -93,3 +93,14 @@ another `notes/` file.
   right-hand seat beside a wrapping `listLabel`, as the literal's `nowrap` did, and wraps only
   once it is wider than the row less the gap. Layout 1's keeps to half the desktop row, so the
   heading keeps its column.
+- **Layout 2's 390 bar draws ♡ ↓ ⋯ and drops the sleeve and the clock** (JP-099, user call,
+  2026-10-05, reversing the 2026-10-01 reply and Retro's first-pass override). Both bodies
+  do this: the `(s.limeTree || s.pop)` bar and Retro's. The master seats the icons by squeezing
+  sleeve, title and clock into 22.9, so it names no track. The page pays for the icons with the
+  sleeve and its 12 gap instead. It keeps the override's padding (16, Retro 20) and its gaps of
+  14, and draws the glyphs at 768's size (Retro's at its own 14). The Lime bar closes the
+  glyphs' 12 gap to 11 at 390 (user call, same day), so Editorial's seeded SLOW BURN (112.6)
+  stays whole. So the title box is 114.4 (Retro 97.5) at 390 and 414, and 84.4 (67.5) at 360.
+  The glyphs are inert spans at every width. A title the box cuts ellipsises in it: the
+  canvas's SLOW BURN under Pop, and the cued LATE LIGHTS under Editorial and Pop at 390 and
+  under every template at 360.

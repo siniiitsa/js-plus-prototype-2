@@ -914,6 +914,11 @@ Learned on the media player's narrow masters (section 3):
   verbatim, and say in the commit which numbers went and what paid for what.
   Once the call is made it applies consistently: having decided the bar's
   padding pays for the track, the transport's internal gap does too.
+  *Reversed in part* (JP-099, 2026-10-05, user call,
+  `../editorial/retest-qa-fixes.md`): QA refused the dropped ♡ ↓ ⋯ twice, so at
+  390 the bar now draws them and drops the sleeve to pay for them, on every
+  template. The padding, the gaps and the dropped clock stand; Retro's title
+  box goes 103.5 → 97.5.
 - **`flex: 1 1 auto` + a `minHeight` on the column is how a frame's stated
   instance height survives a variable list.** Both masters state the list at 596
   and let five rows divide what the counter row and the gaps leave — 574, so each

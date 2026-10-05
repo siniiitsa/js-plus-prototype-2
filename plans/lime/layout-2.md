@@ -633,7 +633,9 @@ Settled in section 3 (the media player):
   icons dropped, transport gap 14, inner right padding 0), the bar's side padding closes 20 → 16
   and the inner pill's left 10 goes. Those 18px take the title box from 74 to 92, and "Slow Burn"
   is 90 wide at 26. The list rows' 390 gap is Retro's 14 as well; the master keeps 20 and
-  hard-clips its titles.
+  hard-clips its titles. *Reversed in part* (JP-099, 2026-10-05, user call,
+  `../editorial/retest-qa-fixes.md`): the 390 bar now draws ♡ ↓ ⋯ and drops the sleeve to pay
+  for them; the padding and the gaps stand, and the title box is 114.4 (the glyphs' gap 11).
 - **The number keeps a 21 slot**, the widest of the frame's hugging numbers ("03", "04"), so the
   art lands within 3px of the frame's x and the live Play/Pause swap moves nothing.
 - **Row rules are top-only**, `inset 0 1px 0 s.stroke1`, so the 14 padding stays the frame's and

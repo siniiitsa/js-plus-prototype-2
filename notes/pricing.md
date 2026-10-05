@@ -7,8 +7,17 @@ another `notes/` file.
 - **The pricing cards filter, in the published tab only.** The Solo / Trio / Band selector was a
   constant (`TIER_MODES`, gone) over a hardcoded three cards; the packages are now the artist's
   (`FIELDS.pricing.tiers`, below) and the chip row is **derived from their tags** by the same
-  `repChips()` the repertoire uses, `REP_ALL` chip and all — so the seeds' tags are what redraw
-  the frame's three modes, behind an `All`. **Layout 3 seeds its own tags** (JP-070, user call,
+  `repChips()` the repertoire uses — so the seeds' tags are what redraw the frame's three modes.
+  **The row carries no `All`** (JP-089, user call, 2026-10-05, reversing "the extra `All` chip …
+  is the intended diff" and `../plans/editorial/qa-fixes.md` JP-089 decision 2A): no pricing
+  frame on any template draws one, so `vm.tierChips` is `repChips()` with its `REP_ALL` head
+  sliced off, at layouts 1 and 3 alike, where the repertoire's row keeps it (its frames draw it).
+  At rest **no chip is lit and every package is on show** (`chip` starts at **-1**, not the form
+  chip's 0: "every package" is the useful rest here, where the form's chip is a choice the
+  visitor must make). A press lights a chip and filters to its packages, and a press on the lit
+  chip clears it, the gallery tile's *second click resets*. The canvas pins -1. The frames' lit
+  chip (*Club Night* at layout 1, *Duo* at layout 3) over every card is the one named diff left:
+  a lit chip that filters nothing would mislead on the published page. **Layout 3 seeds its own tags** (JP-070, user call,
   2026-09-29, reversing the "one tag list for every layout" reply): its frames' capsule reads Duo /
   Trio / Band where Retro's layout 1 reads Solo / Trio / Band, so with `tiers` absent, `sectionVm`
   and `tiersVal` both read `TIERS_3` at `d === 2`. That is `TIERS` with *Solo* → *Duo* and nothing
@@ -16,23 +25,24 @@ another `notes/` file.
   layout 1 seeds its own tags too** (JP-089, user call, 2026-09-30, reversing Lime layout 1's inherited seed):
   their frames' row reads *Private Event / Club Night / Festival* and their cards print no tags, so
   at `d === 0` under those three templates an absent key is `TIERS_1`, one occasion per package in
-  the frame's order, behind the same `All`. **Pop's layout 1 joined them** (its layout-1 pass,
+  the frame's order. **Pop's layout 1 joined them** (its layout-1 pass,
   section 7, 2026-10-02): its frame's row reads the same three, so `tiersSeed` names `'Pop'` beside
   `limeTreeTheme()` — not inside it, whose calendar and form seeds are those sessions'. Retro's
   layout 1 keeps `TIERS`. Both callers go
   through **`tiersSeed(themeName, d)`** in `data.js`, so `sectionVm` and `tiersVal` resolve one
-  expression rather than two mirrored ones. The frame's lit *Club Night* is not reproduced; the
-  canvas pins `All`. The gate is `FORM_FIELDS_4`'s, the
+  expression rather than two mirrored ones. The frame's lit *Club Night* is not reproduced (above).
+  The gate is `FORM_FIELDS_4`'s, the
   absent key alone: once the artist edits the list it is theirs at every layout, Duo and all. The row is **not rendered at one chip**: a page whose
-  packages carry no tags has nothing to filter, which is the pager's rule, and the extra `All`
-  chip on the reference picture is the intended diff. `active` is clamped against the row, the
-  canvas pins chip 0 and filters nothing, and the card **keys on the package's index in the whole
+  packages carry no tags, or one tag between them, has little or nothing to filter, which is the
+  pager's rule (JP-089 chose it over a lone toggling chip; before it, one tag drew *All · tag*).
+  `active` is clamped against the row, and is -1 whenever the row is not drawn, so a republish
+  down to one tag cannot leave a filter on that nothing on the page clears; the card **keys on the package's index in the whole
   list** (`t.n`) rather than on its place in the filtered one: the card cross-fades its
   background, so a positional key would hand a filtered-out card's node to its neighbour and
   animate one card hue into another. The tilt and the mobile overlap take the *rendered* index
   instead — they are decoration, and the deck has to read as a deck at any count. The hue is
   computed over the whole list in `sectionVm`, the gigs' rule. The empty state is one message where
-  the repertoire's is two — every chip but `All` exists because some package carries its tag, so a
+  the repertoire's is two — every chip exists because some package carries its tag, so a
   filter here cannot empty a list that has anything in it; there is no search box to do what the
   repertoire's does. Three columns stay three columns:
   a fourth package wraps to a second row rather than squeezing the first three. The card's Book
@@ -49,8 +59,9 @@ another `notes/` file.
   — layout 1's and, where it says the same thing, layout 3's: layout 2 is a single big plan, and
   its chip row names the
   **packages** rather than their tags — one chip each, the card showing the one selected, so the
-  design cannot strand every package but the first. It is the same `chip` state, the same
-  `s.live` gate, the same clamp and the same pinned 0 on the canvas; what it is not is a filter,
+  design cannot strand every package but the first. It is the same `chip` state, the same `s.live` gate and the same clamp,
+  floored at 0 (layout 1's rest is -1), and the canvas pins 0, where the frame draws chip 0 filled;
+  what it is not is a filter,
   which leaves `vm.tierChips` reaching layouts 1 and 3 (`FIELDS.media.soundcloud`'s case again —
   the field's hint says which layouts read the tags). Its card is painted from **`vm.tierHero`**,
   not from the selected package: the hue belongs to the seat, the media player's fan rule, or one

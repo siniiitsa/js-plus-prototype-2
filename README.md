@@ -340,10 +340,11 @@ That distinction is the whole design, and it buys two things:
   `{ name, price, tags, blurb, feats }`), and the selector is **derived from the tags they type**,
   by the same `repChips()` the repertoire's chips come from: the three seeds carry Solo, Solo /
   Trio / Band and Trio / Band (Duo for Solo at layout 3, and one each of Private Event / Club Night
-  / Festival at Lime's, Grunge's and Editorial's layout 1, `tiersSeed()`), so the reference row is redrawn out of content, behind the `All`
-  chip that clears the filter. That extra chip is the intended diff from the Figma frame, the way
-  the events map losing its pager was; the row is not drawn at all when the packages carry no
-  tags, since a filter with nothing to filter is the pager's case again. The cards key on the
+  / Festival at Lime's, Grunge's and Editorial's layout 1, `tiersSeed()`), so the reference row is redrawn out of content. It carries no
+  `All` (JP-089, 2026-10-05, reversing the extra chip once kept as the intended diff): at rest no
+  chip is lit and every package shows, a press filters, and a press on the lit chip clears it. The
+  row is not drawn at all when the packages carry fewer than two tags, since a filter with nothing
+  to filter is the pager's case again. The cards key on the
   package's index in the *whole* list (a package left wholly empty is not in it: `blankRow()`
   drops it in `sectionVm`, so it draws no card on either surface), not its place in the filtered one — they cross-fade their
   background, and a positional key would animate one card's hue into another's on every chip

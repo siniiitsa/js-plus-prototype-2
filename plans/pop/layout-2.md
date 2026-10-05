@@ -1131,7 +1131,8 @@ and its **lime** cards add a third ground the twins never had.
 - **Open question 6's media line: the 390 titles are overridden, the twins' way.** The master's
   rows keep 30 · 20 and clip every seeded title mid-word at 101 ("LATE LIGH"), and its bar runs the
   title off at x 471 — both the twins' 390 artefact, so Retro's override stands: the rows' gaps
-  close to 14 and the title ellipsises; the bar drops the clock and icons. The pills keep their 30
+  close to 14 and the title ellipsises; the bar drops the clock and icons (*reversed in part*,
+  JP-099, 2026-10-05: it now draws the icons and drops the sleeve instead). The pills keep their 30
   side padding, which their curve needs.
 - **Measured against the masters** (harness, from the section root): desktop root **791.3**
   (965 × 0.82), h2 at x 95.1 (116 × 0.82), bar top 583 (711 × 0.82), rows at x 651.9 (795 × 0.82),
@@ -1143,7 +1144,8 @@ and its **lime** cards add a third ground the twins never had.
   so the frame clips its own title there ("SLOW BUI"). Editorial's departure (both inner sides
   dropped) buys 18 of the 24, so it is not taken; the cued LATE LIGHTS (141.5) is JP-097's
   *not changed* line already, which this joins. 768 fits (130.4 in 140.2); 390 is JP-099's table
-  (118.5 in 115.5). The seeded heading carries its full stop ("…EAR."), the frame's none; the fan
+  (118.5 in 115.5; 114.4 since JP-099's reversal, 2026-10-05, which draws ♡ ↓ ⋯ and drops the
+  sleeve at 390). The seeded heading carries its full stop ("…EAR."), the frame's none; the fan
   art is our seeds.
 - **States**: `&n=8` — eight pills cycling the five schemes; the desktop rows share the stretched
   column, so each 52.5 disc is clipped by its pill's ~33 content box (the twins' 64.5 rows clip
@@ -2101,7 +2103,8 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
      pill 110.5 wide against 91;*
    - ~~the 390 media bar's title and byline and the list's titles, past the master;~~ *section
      3: overridden as the twins' are — the rows' gaps close to 14 and the titles ellipsise, the
-     bar drops its clock and icons;*
+     bar drops its clock and icons* (the icons are drawn since JP-099, 2026-10-05, the sleeve
+     dropped instead);
    - ~~the map's ring labels past the 768 and 390 viewports, clipped;~~ *section 8: followed —
      120mi runs off both and 60mi half off at 768, clipped by the viewport as the masters clip
      them (the twins' JP-040 reading). The 768 pill row the frame clips under its disc is

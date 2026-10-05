@@ -1108,7 +1108,10 @@ the twins' dark-ground assumptions break (trap 6).
   longer "Slow Burn (Edit)" at every width.
 - **The 390 bar leak is overridden by the twins' shared override** (open question 7): the master
   seats the transport and a sliver of sleeve and runs the title off at x 293; ours drops the clock
-  and icons and closes the padding, so the track the player is on is named.
+  and icons and closes the padding, so the track the player is on is named. *Reversed in part*
+  (JP-099, 2026-10-05, user call, [`retest-qa-fixes.md`](./retest-qa-fixes.md)): the icons are
+  drawn at 390 and the sleeve goes instead. The glyphs' gap closes to 11, so the title box is
+  114.4 and the seeded SLOW BURN (112.6) stays whole.
 - **No pill**: none of the three masters has a pill node (the twins' finding), so `FIELDS.media`
   moves nothing — `cta`'s `'*': []` row already reads "Not shown in this template" here and
   `soundcloud` reaches layout 1 alone. No `reach.mjs` run was owed. The 1440 Section's 5px
@@ -2154,7 +2157,8 @@ it here in one line, with the plan it came from, a blank line between sessions.)
    - the 390 media bar's title and byline, 184 wide from x 293 — off the master (its inner pill
      is 22.9 wide, the title column 1). *Section 3: overridden by the shared 390 override the
      twins already run* (clock and icons dropped, padding 16, gaps 14, the inner pill's sides
-     0), so "SLOW BURN" is whole at 23;
+     0), so "SLOW BURN" is whole at 23; *reversed in part* (JP-099, 2026-10-05): the icons are
+     drawn and the sleeve goes, and it stays whole (112.6 in 114.4);
    - the 768 gallery's two 1px tiles — *section 5: overridden, as the twins' are*: the inherited
      `flex: h 1 auto` divides the band in the frame's proportions, so all six show;
    - the 390 gallery's right-column first-tile wrapper at `[0, 0, 40, 40]` (Grunge's stray
@@ -2213,7 +2217,8 @@ other answer is a one-line change. Layout 1's nine notes — the stand-in face f
    - the 390 header's Book Now label is set in **Anton** 12.07, the only Anton on the page; the page
      sets it in the display face at 12;
    - the 390 media bar's title and byline run off the master (from x 293); the page drops the
-     clock and icons there so the track is named;
+     clock and icons there so the track is named; *reversed in part* (JP-099, 2026-10-05): the
+     page now draws the icons and drops the sleeve and the clock instead;
    - the 768 gallery's last tile in each column is 1px tall; the page divides the band in the
      frame's proportions so all six show;
    - the 390 gallery's right-column first tile is rounded `0 0 40 40`, one tile of ten; not followed;

@@ -274,7 +274,10 @@ row is a Duo package, or the pick filters nothing in the frame's picture.
      frame's tags, at `d === 2 && c.tiers === undefined`, `FORM_FIELDS_4`'s gate, in `sectionVm`
      and `tiersVal` alike. `All` stays, as the one way a filter clears. The chips then read *All /
      Duo / Trio / Band*.
-   - **A+. A, and layout 3 drops `All`**, with chip 0 picked at rest on both surfaces: the form
+   - **A+. A, and layout 3 drops `All`**, with chip 0 picked at rest on both surfaces (*answered
+     differently* by Editorial's JP-089 (rest), 2026-10-05,
+     [`../editorial/retest-qa-fixes.md`](../editorial/retest-qa-fixes.md): `All` goes, and the row
+     rests with **no** chip picked, so the first paint filters nothing): the form
      chip's rule, "the picture *is* a choice". This is coherent only if the frame read shows every
      seeded package carrying the first tag, since the frame draws three rows under Duo. Otherwise
      the first paint filters rows away. The canvas's "pins chip 0 and filters nothing" becomes
@@ -306,7 +309,10 @@ pricing Settled.
    while `c.tiers` is absent at layout 3 (`d === 2`, `FORM_FIELDS_4`'s gate), in `sectionVm` and
    `tiersVal` alike. `All` stays in front, and the canvas still pins it, so the chips read *All /
    Duo / Trio / Band* and the seeded picture shows all three rows with FEATURED on the Festival
-   Set.
+   Set. **The `All` half is reversed** (Editorial's JP-089 (rest), user call, 2026-10-05,
+   [`../editorial/retest-qa-fixes.md`](../editorial/retest-qa-fixes.md)): the capsule reads *Duo /
+   Trio / Band* with none lit at rest. The seeded picture still shows all three rows with FEATURED
+   on the Festival Set.
 
 Asked over the frame read, which held at all three widths (`964:68712`, `984:13925`,
 `984:13956`). **No row carries chips of its own**, and the capsule's `opt-active` is *Duo*, over

@@ -870,12 +870,22 @@ function LogoMark({ s, size = 18, color, glyph }) {
 // room, or one word too long to fit it, keeps the name legible: its box grows
 // past the room to the best split's wider line, and the links wrap, as they
 // did before. Additive; every other caller passes none and keeps `nowrap`.
-const fitName = (fit, base) => fit
-  ? `min(${base}, max(${fit.floor}, calc(${fit.room} / ${fit.one}), min(${fit.cap}, calc(${fit.room} / ${fit.two}))))`
-  : base
-const fitBox = (fit, size) => fit
-  ? { whiteSpace: 'normal', textWrap: 'balance', maxWidth: `max(calc(${fit.room}), calc(${fit.two} * ${size}))` }
-  : null
+// A `narrow` fit is the 390 capsule's (JP-101), whose bar may grow: no
+// one-line shrink and no `cap`, so the name keeps its size while one line
+// fits and otherwise takes two at the size the longer fits the room. Its box
+// is the room alone, so past the floor it takes a third line rather than
+// reach the pill, and its floor yields to a word too wide for the room
+// (`word`, the widest one's ems). Its row is `flex: none`: the seed already
+// runs past its half into the halves' gap, which the room counts, and a
+// shrinkable row would wrap it there.
+const fitName = (fit, base) => !fit ? base : fit.narrow
+  ? `min(${base}, max(min(${fit.floor}, calc(${fit.room} / ${fit.word})), calc(${fit.room} / ${fit.two})))`
+  : `min(${base}, max(${fit.floor}, calc(${fit.room} / ${fit.one}), min(${fit.cap}, calc(${fit.room} / ${fit.two}))))`
+const fitBox = (fit, size) => !fit ? null : {
+  whiteSpace: 'normal', textWrap: 'balance',
+  maxWidth: fit.narrow ? `calc(${fit.room})` : `max(calc(${fit.room}), calc(${fit.two} * ${size}))`,
+}
+const fitRow = (fit) => (fit?.narrow ? { flex: 'none' } : null)
 function Wordmark({ s, logo = false, color, glyph, size, gap, clean = false, fit }) {
   if (s.lime || s.pop) {
     // Lime's frame: Label/LG, letterSpacing 0, 13.15 from the globe (× 0.82).
@@ -885,7 +895,7 @@ function Wordmark({ s, logo = false, color, glyph, size, gap, clean = false, fit
     // and 10 from the globe on both narrow masters, Grunge's and Editorial's.
     const px = fitName(fit, size ?? (s.pop ? s.list : s.labelLg))
     return (
-      <span style={row(s.narrow ? (s.pop ? '10px' : '13px') : '11px')}>
+      <span style={row(s.narrow ? (s.pop ? '10px' : '13px') : '11px', fitRow(fit))}>
         {logo && <LogoMark s={s} color={color} glyph={glyph} />}
         <span style={labelStyle(s, px, { color: color || s.tx, letterSpacing: s.dls, ...(s.pop && { lineHeight: 1.2 }), ...fitBox(fit, px) })}>{s.brand}</span>
       </span>
@@ -911,7 +921,7 @@ function Wordmark({ s, logo = false, color, glyph, size, gap, clean = false, fit
       ...fitBox(fit, px),
     }
     return (
-      <span style={row(gap ?? (s.narrow ? '10px' : '11px'))}>
+      <span style={row(gap ?? (s.narrow ? '10px' : '11px'), fitRow(fit))}>
         {logo && <LogoMark s={s} color={color} glyph={glyph} />}
         <span style={clean ? name : distressed(s, name)}>{s.brand}</span>
       </span>
@@ -1858,12 +1868,25 @@ function NavBar({ s, colour, rule, pill, nameSize, nameColour, mark, links, clea
   // the pill's 44.28 at, so the bar never grows. Wordmark does the sizing.
   // Layout 4's capsule, which passes `links`, keeps its wrap (JP-091's scope).
   // Pop's name stands at line 1.2, so its two lines fit the pill at 18.45.
-  const fit = lime && !s.narrow && !links && s.navNameFit ? {
+  // At 390 the name gives way to the pill (JP-101, user call, 2026-10-05), in
+  // layouts 1 and 4 alike, since there the links are behind the burger. Its
+  // room is up to the pill: the left half, which is the query container
+  // there, plus the halves' gap, less the mark and its gap. It keeps its size
+  // while one line fits, else wraps between words, balanced, onto two lines
+  // at the size the longer one fits, and the bar grows by the line. Below the
+  // floor it takes a third, and a word too wide even at the floor goes under
+  // it (`word`), so no name reaches the pill or breaks inside a word.
+  const halves = lime ? ((s.grunge || ed || pop) && s.mob ? '10px' : s.narrow ? '30px' : '24.6px') : s.mob ? '10px' : tab ? '30px' : '24px'
+  const markGap = s.lime || pop ? (pop ? '10px' : '13px') : mark?.gap ?? '10px'
+  const fit = !lime || !s.navNameFit ? undefined : s.mob ? {
+    narrow: true, room: `(100cqi + ${halves} - ${glyph}px - ${markGap})`,
+    two: s.navNameFit.two, word: s.navNameFit.word, floor: `${floor}px`,
+  } : !s.narrow && !links && s.v0 ? {
     room: `(100cqi - ${+(glyph + 11 + 24.6 + 19 + 82 * 0.82).toFixed(2)}px - ${s.navNameFit.pill} * ${s.list} - ${s.navEms} * ${floor}px)`,
     one: s.navNameFit.one, two: s.navNameFit.two, cap: pop ? '18.45px' : '20.1px', floor: `${floor}px`,
   } : undefined
   return (
-    <div style={row(lime ? ((s.grunge || ed || pop) && s.mob ? '10px' : s.narrow ? '30px' : '24.6px') : s.mob ? '10px' : tab ? '30px' : '24px', {
+    <div style={row(halves, {
       justifyContent: 'space-between', width: '100%',
       // The desktop corner is the one-row bar's own half-height, 60.7 / 2,
       // not the pill token: one row draws the frame's capsule exactly, and a
@@ -1874,14 +1897,17 @@ function NavBar({ s, colour, rule, pill, nameSize, nameColour, mark, links, clea
         padding: s.narrow ? '10px 20px' : '8.2px 8.2px 8.2px 16.4px',
       } : null),
       ...(glass ? { position: 'relative' } : null),
-      ...(fit ? { containerType: 'inline-size' } : null),
+      ...(fit && !fit.narrow ? { containerType: 'inline-size' } : null),
     })}>
       {glass && <span aria-hidden style={{
         position: 'absolute', inset: 0, borderRadius: corner, pointerEvents: 'none',
         background: 'rgba(255,255,255,0.12)',
         backdropFilter: `blur(${s.narrow ? 22 : 18}px)`, WebkitBackdropFilter: `blur(${s.narrow ? 22 : 18}px)`,
       }} />}
-      <div style={row(s.narrow ? '20px' : '16px', { flex: s.narrow ? 1 : '0 1 auto', minWidth: 0, ...(glass && { position: 'relative' }) })}>
+      <div style={row(s.narrow ? '20px' : '16px', {
+        flex: s.narrow ? 1 : '0 1 auto', minWidth: 0, ...(glass && { position: 'relative' }),
+        ...(fit?.narrow && { containerType: 'inline-size' }),
+      })}>
         <Wordmark s={s} logo glyph={glyph}
                   size={lime && s.mob ? (nameSize ?? (s.grunge ? '28px' : ed ? '25px' : pop ? '16px' : '21px')) : mark ? nameSize : undefined}
                   gap={mark?.gap} color={nameColour || c} clean={clean} fit={fit} />
@@ -7544,23 +7570,30 @@ function Media({ s }) {
               Sienna Vale's inner pill carries no fill at all, so its sides
               are spacing alone, and at 1440 both go: Noto's "SLOW BURN" is
               128 wide at 32 × 0.82, and the 12 and the 10 take the title
-              box from 112 to 130. */}
+              box from 112 to 130.
+              At 390 the sleeve goes too, and its 72 with the gap pays for
+              ♡ ↓ ⋯ (JP-099, user call, 2026-10-05, reversing the override
+              that dropped them): the master seats them by squeezing sleeve,
+              title and clock into 22.9, so it names no track. Here the
+              title box goes 115.5 → 114.4 and keeps the name. */}
           <span style={row(u(12), {
             flex: 1, minWidth: 0, background: ed ? undefined : pop ? barBg : cardBg, borderRadius: u(80),
             padding: `${u(10)} ${desk ? (ed ? 0 : u(12)) : tab ? '30px' : 0} ${u(10)} ${s.mob || (desk && ed) ? 0 : u(10)}`,
           })}>
-            {art(nowArt, u(60), '999px', 16)}
+            {!s.mob && art(nowArt, u(60), '999px', 16)}
             <span style={col(u(2), { flex: 1, minWidth: 0, alignItems: 'stretch' })}>
               <span style={distressed(s, titleType)}>{nowTitle}</span>
               <span style={{ ...bodySm, ...clip }}>{nowBy}</span>
             </span>
+            {/* The clock stays off at 390: the master runs it off the bar. */}
             {!s.mob && <span style={{ ...bodySm, flex: 'none', whiteSpace: 'nowrap' }}>{now.at} / {now.of}</span>}
           </span>
-          {!s.mob && (
-            <span style={row(u(12), {
-              flex: 'none', fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5, letterSpacing: s.dls,
-            })}><span>♡</span><span>↓</span><span>⋯</span></span>
-          )}
+          {/* Inert at every width, as in the frames. Their 12 gap closes to
+              11 at 390: Noto's seeded "SLOW BURN" is 112.6 wide, and the 2px
+              take the box from 112.4 to 114.4, so it is whole, not "SLOW BU…". */}
+          <span style={row(s.mob ? '11px' : u(12), {
+            flex: 'none', fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5, letterSpacing: s.dls,
+          })}><span>♡</span><span>↓</span><span>⋯</span></span>
           {audio}
           {/* The 1px `sem/stroke/1` rule and the INNER_SHADOW 14 in `s.ac`
               (not `s.glow`), over the children as Figma paints a frame's
@@ -7863,28 +7896,32 @@ function Media({ s }) {
             the page's content width — and that padding is the one gap here
             that costs nothing to give back, where a truncated track title
             costs the most. 768 has the room for the frame's own 30; 390, which
-            has already dropped the clock and the glyphs below, has none. */}
+            drops the clock and the sleeve to seat the glyphs below, has none.
+            The sleeve and its 12 are what pay for ♡ ↓ ⋯ at 390 (JP-099, user
+            call, 2026-10-05, reversing the override that dropped the glyphs):
+            the master's sleeve is a sliver anyway, and the title box goes
+            103.5 → 97.5 rather than to nothing. */}
         <span style={row(u(12), { flex: 1, minWidth: 0, paddingRight: desk ? u(12) : tab ? '30px' : 0 })}>
-          <span style={{
-            width: u(60), height: u(60), flex: 'none',
-            borderRadius: '999px', overflow: 'hidden', position: 'relative',
-          }}><Photo s={s} initialsSize={16} src={nowArt} /></span>
+          {!s.mob && (
+            <span style={{
+              width: u(60), height: u(60), flex: 'none',
+              borderRadius: '999px', overflow: 'hidden', position: 'relative',
+            }}><Photo s={s} initialsSize={16} src={nowArt} /></span>
+          )}
           <span style={col(u(2), { flex: 1, minWidth: 0 })}>
             {/* `size/title` ramps 24 → 19 → 18 across the three masters. */}
             <span style={titleType(desk ? 24 : tab ? 19 : 18)}>{nowTitle}</span>
             <span style={subType}>{nowBy}</span>
           </span>
-          {/* The 390 canvas has no frame of its own and cannot seat the whole
-              bar: the running time and the glyphs below go, rather than
-              squeeze the track off it. */}
+          {/* The 390 master seats the whole bar only by running the track
+              off it: the running time goes there, with the sleeve above,
+              and the glyphs below stay. */}
           {!s.mob && <span style={{ ...subType, flex: 'none' }}>{now.at} / {now.of}</span>}
         </span>
-        {/* Text glyphs in the frame, not icons. */}
-        {!s.mob && (
-          <span style={row(u(12), {
-            flex: 'none', fontFamily: s.body, fontSize: u(14), lineHeight: 1.5,
-          })}><span>♡</span><span>↓</span><span>⋯</span></span>
-        )}
+        {/* Text glyphs in the frame, not icons, and inert at every width. */}
+        <span style={row(u(12), {
+          flex: 'none', fontFamily: s.body, fontSize: u(14), lineHeight: 1.5,
+        })}><span>♡</span><span>↓</span><span>⋯</span></span>
         {audio}
       </div>
     )
@@ -9332,7 +9369,11 @@ function Pricing({ s }) {
   // a real control in the published tab and inert on the editor canvas, which
   // is a picture of a website (§12.7) — a live chip there would both filter the
   // cards and select the section. Above the layout branch, because hooks are.
-  const [chip, setChip] = useState(0)
+  // -1 is "no chip lit, every package on show", the row's rest (JP-089): the
+  // row carries no All, so a press on the lit chip puts it back. Layout 2,
+  // which picks one package rather than filtering, floors it at 0.
+  const [chip, setChip] = useState(-1)
+  const pressChip = (i, active) => setChip(i === active ? -1 : i)
 
   if (s.v0) {
     const TILT = [1, -3, 2]
@@ -9354,12 +9395,15 @@ function Pricing({ s }) {
     // them; the faces stay the theme's, as everywhere else.
     const tab = isTablet(s)
     // The chip index, clamped: the row is derived from the artist's tags, so a
-    // tag they delete can leave `chip` past the end of it. The canvas pins the
-    // first chip and filters nothing, which is the picture the frames show.
-    const active = s.live ? Math.min(chip, s.tierChips.length - 1) : 0
+    // tag they delete can leave `chip` past the end of it. -1 lights nothing
+    // and filters nothing, and the canvas pins it: every package on show, the
+    // frames' three cards (their lit Club Night is not drawn, JP-089). So does
+    // a row too short to draw, or a republish down to one tag would leave a
+    // filter on that nothing on the page can clear.
+    const active = s.live && s.tierChips.length > 1 ? Math.min(chip, s.tierChips.length - 1) : -1
     const eq = (a, b) => a.toLowerCase() === b.toLowerCase()
     const shown = s.live
-      ? s.tiers.filter((t) => active === 0 || t.tags.some((g) => eq(g, s.tierChips[active].tag)))
+      ? s.tiers.filter((t) => active < 0 || t.tags.some((g) => eq(g, s.tierChips[active].tag)))
       : s.tiers
 
     // Lime — the same component in Lime's mode (964:58594 at 1440, 986:39883 at
@@ -9539,14 +9583,14 @@ function Pricing({ s }) {
               : s.title}</h2>
             {/* Filled pills in Label/XS, mixed case: `sem/active` for the chip
                 on show, `sem/box/1` with lime type for the rest. The frame lights
-                its second chip; ours pins chip 0 (All) on the canvas, layout 1's
-                rule. Not drawn at one chip, as Retro's is not. */}
+                its second chip; ours lights none at rest, layout 1's rule
+                (JP-089). Not drawn at one chip, as Retro's is not. */}
             {s.tierChips.length > 1 && (
               <div style={row(u(8), { flexWrap: 'wrap' })}>
                 {s.tierChips.map((f, i) => (
                   <span
                     key={i}
-                    onClick={s.live ? () => setChip(i) : undefined}
+                    onClick={s.live ? () => pressChip(i, active) : undefined}
                     style={ui({
                       padding: `${u(9)} ${u(15)}`, borderRadius: u(56), whiteSpace: 'nowrap',
                       // Editorial's idle chip is the page's `sem/bg` in a 1px
@@ -9770,14 +9814,15 @@ function Pricing({ s }) {
           {/* The one row in §10.2 whose chips are body-bold sentence case rather
               than Anton caps, and whose selected chip drops its rule. Built from
               the tags the artist typed — the frame's Solo / Trio / Band is now
-              the seeds' tags, behind an All — so it is not drawn at one chip:
-              a filter with nothing to filter is the pager's case. */}
+              the seeds' tags, with no All in front (JP-089) — so it is not
+              drawn at one chip: a filter with nothing to filter is the pager's
+              case. */}
           {s.tierChips.length > 1 && (
             <div style={row('8px', { flexWrap: 'wrap' })}>
               {s.tierChips.map((f, i) => (
                 <span
                   key={i}
-                  onClick={s.live ? () => setChip(i) : undefined}
+                  onClick={s.live ? () => pressChip(i, active) : undefined}
                   style={{
                     border: i === active ? 'none' : `${s.bw} solid ${s.tx}`,
                     borderRadius: s.btnR, padding: s.narrow ? '5px 11px' : '4px 9px',
@@ -9953,8 +9998,8 @@ function Pricing({ s }) {
         </div>
 
         {/* An empty grid is a real state now that the packages are the
-            artist's. One message, not the repertoire's two: every chip but All
-            exists because some package carries its tag, so a live filter can
+            artist's. One message, not the repertoire's two: every chip exists
+            because some package carries its tag, so a live filter can
             never empty a list that has anything in it — there is no search box
             here to do what the repertoire's does. */}
         {s.tiers.length === 0 && (
@@ -9982,9 +10027,10 @@ function Pricing({ s }) {
   // selected, which is what stops a single-card layout stranding every package
   // but the first (the testimonials' own defect, and the reason `c.quotes`
   // exists). That reuses `chip` whole — the same state layout 1 filters with,
-  // the same `s.live` gate, the same clamp against a list the artist can
-  // shorten, and the same pinned 0 on the canvas, where the frame draws chip 0
-  // filled and so the picture *is* a choice. It leaves `s.tierChips` — the tags
+  // the same `s.live` gate and the same clamp against a list the artist can
+  // shorten, floored at 0 here, since layout 1's rest is -1, "no chip lit"
+  // (JP-089). It pins 0 on the canvas, where the frame draws chip 0 filled,
+  // so the picture *is* a choice. It leaves `s.tierChips` — the tags
   // — reaching layouts 1 and 3, which is FIELDS.media.soundcloud's case again;
   // the field's hint says so. Not drawn at one package: nothing to select is
   // the row's own rule in layout 1 too.
@@ -10673,11 +10719,12 @@ function Pricing({ s }) {
   //    video section's rule (JP-070 restored the rest, 2026-09-29).
   //  - The Duo / Trio / Band capsule is `s.tierChips`, layout 1's filter row in
   //    a different dress: the same `chip` state, the same `s.live` gate, the
-  //    same clamp, the same pinned 0 on the canvas and the same not-drawn-at-one
-  //    (a filter with nothing to filter is the pager's case). Its Duo is
-  //    TIERS_3's, this layout's own tag seed while the packages are unedited
-  //    (JP-070). The extra `All` that leads it is layout 1's intended diff,
-  //    unchanged.
+  //    same clamp, the same unlit rest on both surfaces and the same
+  //    not-drawn-at-one (a filter with nothing to filter is the pager's case).
+  //    Its Duo is TIERS_3's, this layout's own tag seed while the packages are
+  //    unedited (JP-070). It carries no `All` (JP-089, user call, 2026-10-05,
+  //    reversing "layout 1's intended diff"): the frame's Duo is lit over all
+  //    three rows, and a lit chip that filters nothing is not drawn.
   //  - "Save 15% on bundles" beside the capsule is `s.pricingOffer`, a field
   //    added for it (JP-046, reversing this fit's "a discount no field
   //    states"): seeded with the frame's copy, emptiable, drawn 14 from the
@@ -10734,12 +10781,12 @@ function Pricing({ s }) {
 
     // The chip index and the filtered list, layout 1's two expressions whole:
     // the row is derived from the artist's tags, so a tag they delete can leave
-    // `chip` past the end of it, and the canvas pins the first chip and filters
-    // nothing — which is the picture all three frames show.
-    const active = s.live ? Math.min(chip, s.tierChips.length - 1) : 0
+    // `chip` past the end of it, and -1 (the canvas's pin, and the rest)
+    // lights nothing and filters nothing — the three rows all three frames show.
+    const active = s.live && s.tierChips.length > 1 ? Math.min(chip, s.tierChips.length - 1) : -1
     const eq = (a, b) => a.toLowerCase() === b.toLowerCase()
     const shown = s.live
-      ? s.tiers.filter((t) => active === 0 || t.tags.some((g) => eq(g, s.tierChips[active].tag)))
+      ? s.tiers.filter((t) => active < 0 || t.tags.some((g) => eq(g, s.tierChips[active].tag)))
       : s.tiers
     // The FEATURED seat (JP-048): the package the artist ticked, while the
     // filter leaves it on show, and otherwise the last row on show — the seat
@@ -11001,7 +11048,7 @@ function Pricing({ s }) {
                   {s.tierChips.map((f, i) => (
                     <span
                       key={i}
-                      onClick={s.live ? () => setChip(i) : undefined}
+                      onClick={s.live ? () => pressChip(i, active) : undefined}
                       style={{
                         padding: `${u(6)} ${u(14)}`, borderRadius: s.btnR,
                         background: i === active ? s.ac : 'transparent',
@@ -11089,7 +11136,7 @@ function Pricing({ s }) {
         {s.tierChips.map((f, i) => (
           <span
             key={i}
-            onClick={s.live ? () => setChip(i) : undefined}
+            onClick={s.live ? () => pressChip(i, active) : undefined}
             style={{
               padding: `${u(6)} ${u(14)}`, borderRadius: s.btnR,
               background: i === active ? s.ac : 'transparent',
@@ -11274,7 +11321,7 @@ function Pricing({ s }) {
             // *stack*, and a stack with nothing in it is not one of its states —
             // the testimonials' rule, where the card stays and the message goes
             // inside it. One message and not the repertoire's two, for layout
-            // 1's reason: every chip but All exists because some package carries
+            // 1's reason: every chip exists because some package carries
             // its tag, so a live filter cannot empty a list that has anything.
             <div style={{
               width: '100%', border: `1px solid ${h.card}`, borderRadius: u(30),
@@ -28006,6 +28053,12 @@ function Footer({ s }) {
     // same `sem/tag/1/bg`, which is `s.tx`'s paper under layout 1's Scheme 3
     // and blush under the Scheme 2 layout 3 seats the footer on (the page
     // row), so Editorial reads the binding rather than the coincidence.
+    //
+    // The 150 rule yields to a long name, as NavBar's §10.2 rule does (JP-092):
+    // it takes what the name leaves, up to its 150, down to a 30 floor at 768
+    // and 390. Its basis is 0, not 150, so it shrinks to that floor before the
+    // name gives a pixel (a 150 basis would share the deficit and wrap the name
+    // early); past the floor the name wraps between words, never inside one.
     const wordmark = (
       <span style={row(u(20))}>
         <span style={row(u(10))}>
@@ -28015,12 +28068,15 @@ function Footer({ s }) {
               }} />
             : <LimeGlobeMark size={27.37 * scale} color={pop ? POP_FOOT.pale : s.stroke1} />}
           <span style={pop
-            ? popType(13.5, 16, { color: POP_FOOT.pale, whiteSpace: 'nowrap' })
+            ? popType(13.5, 16, { color: POP_FOOT.pale })
             : grunge || ed
-              ? labelStyle(s, s.labelMd, { color: s.tx })
-              : { ...face, color: s.tx, whiteSpace: 'nowrap' }}>{s.brand}</span>
+              ? labelStyle(s, s.labelMd, { color: s.tx, whiteSpace: 'normal' })
+              : { ...face, color: s.tx }}>{s.brand}</span>
         </span>
-        <span style={{ width: u(150), height: u(2), background: ed ? s.chips[0].bg : pop ? POP_FOOT.pale : s.tx, flex: 'none' }} />
+        <span style={{
+          height: u(2), background: ed ? s.chips[0].bg : pop ? POP_FOOT.pale : s.tx,
+          flex: '1 1 0', maxWidth: u(150), minWidth: s.narrow ? '30px' : '0px',
+        }} />
       </span>
     )
 
@@ -28300,14 +28356,20 @@ function Footer({ s }) {
   // The stated 31, not the row's own content: the frame's height is the line
   // box Anton's leading gives 21.4px type, and labelStyle sets the tighter 1.1
   // the rest of the page wants, which would otherwise leave the globe to set a
-  // 27 row and pull everything under it up by four.
+  // 27 row and pull everything under it up by four. A floor, not a height: a
+  // long name wraps, below. The rule yields to it as Lime's tree's does (JP-092,
+  // the comment there): up to 150, down to 30 at 768 and 390, basis 0 so it
+  // gives way before the name wraps.
   const wordmark = (
-    <span style={row(u(20), { height: u(31) })}>
+    <span style={row(u(20), { minHeight: u(31) })}>
       <span style={row(u(10))}>
         <GlobeMark size={Math.round(27.37 * scale)} color={s.ac} />
-        <span style={labelStyle(s, u(21.4), { color: s.ac })}>{s.brand}</span>
+        <span style={labelStyle(s, u(21.4), { color: s.ac, whiteSpace: 'normal' })}>{s.brand}</span>
       </span>
-      <span style={{ width: u(150), height: u(2), background: s.ac, flex: 'none' }} />
+      <span style={{
+        height: u(2), background: s.ac,
+        flex: '1 1 0', maxWidth: u(150), minWidth: s.narrow ? '30px' : '0px',
+      }} />
     </span>
   )
 
