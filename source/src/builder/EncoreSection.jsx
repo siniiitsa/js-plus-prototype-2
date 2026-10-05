@@ -7570,23 +7570,28 @@ function Media({ s }) {
               Sienna Vale's inner pill carries no fill at all, so its sides
               are spacing alone, and at 1440 both go: Noto's "SLOW BURN" is
               128 wide at 32 × 0.82, and the 12 and the 10 take the title
-              box from 112 to 130. */}
+              box from 112 to 130.
+              At 390 the sleeve goes too, and its 72 with the gap pays for
+              ♡ ↓ ⋯ (JP-099, user call, 2026-10-05, reversing the override
+              that dropped them): the master seats them by squeezing sleeve,
+              title and clock into 22.9, so it names no track. Here the
+              title box goes 115.5 → 112.4 and keeps the name. */}
           <span style={row(u(12), {
             flex: 1, minWidth: 0, background: ed ? undefined : pop ? barBg : cardBg, borderRadius: u(80),
             padding: `${u(10)} ${desk ? (ed ? 0 : u(12)) : tab ? '30px' : 0} ${u(10)} ${s.mob || (desk && ed) ? 0 : u(10)}`,
           })}>
-            {art(nowArt, u(60), '999px', 16)}
+            {!s.mob && art(nowArt, u(60), '999px', 16)}
             <span style={col(u(2), { flex: 1, minWidth: 0, alignItems: 'stretch' })}>
               <span style={distressed(s, titleType)}>{nowTitle}</span>
               <span style={{ ...bodySm, ...clip }}>{nowBy}</span>
             </span>
+            {/* The clock stays off at 390: the master runs it off the bar. */}
             {!s.mob && <span style={{ ...bodySm, flex: 'none', whiteSpace: 'nowrap' }}>{now.at} / {now.of}</span>}
           </span>
-          {!s.mob && (
-            <span style={row(u(12), {
-              flex: 'none', fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5, letterSpacing: s.dls,
-            })}><span>♡</span><span>↓</span><span>⋯</span></span>
-          )}
+          {/* Inert at every width, as in the frames. */}
+          <span style={row(u(12), {
+            flex: 'none', fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5, letterSpacing: s.dls,
+          })}><span>♡</span><span>↓</span><span>⋯</span></span>
           {audio}
           {/* The 1px `sem/stroke/1` rule and the INNER_SHADOW 14 in `s.ac`
               (not `s.glow`), over the children as Figma paints a frame's
@@ -7889,28 +7894,32 @@ function Media({ s }) {
             the page's content width — and that padding is the one gap here
             that costs nothing to give back, where a truncated track title
             costs the most. 768 has the room for the frame's own 30; 390, which
-            has already dropped the clock and the glyphs below, has none. */}
+            drops the clock and the sleeve to seat the glyphs below, has none.
+            The sleeve and its 12 are what pay for ♡ ↓ ⋯ at 390 (JP-099, user
+            call, 2026-10-05, reversing the override that dropped the glyphs):
+            the master's sleeve is a sliver anyway, and the title box goes
+            103.5 → 97.5 rather than to nothing. */}
         <span style={row(u(12), { flex: 1, minWidth: 0, paddingRight: desk ? u(12) : tab ? '30px' : 0 })}>
-          <span style={{
-            width: u(60), height: u(60), flex: 'none',
-            borderRadius: '999px', overflow: 'hidden', position: 'relative',
-          }}><Photo s={s} initialsSize={16} src={nowArt} /></span>
+          {!s.mob && (
+            <span style={{
+              width: u(60), height: u(60), flex: 'none',
+              borderRadius: '999px', overflow: 'hidden', position: 'relative',
+            }}><Photo s={s} initialsSize={16} src={nowArt} /></span>
+          )}
           <span style={col(u(2), { flex: 1, minWidth: 0 })}>
             {/* `size/title` ramps 24 → 19 → 18 across the three masters. */}
             <span style={titleType(desk ? 24 : tab ? 19 : 18)}>{nowTitle}</span>
             <span style={subType}>{nowBy}</span>
           </span>
-          {/* The 390 canvas has no frame of its own and cannot seat the whole
-              bar: the running time and the glyphs below go, rather than
-              squeeze the track off it. */}
+          {/* The 390 master seats the whole bar only by running the track
+              off it: the running time goes there, with the sleeve above,
+              and the glyphs below stay. */}
           {!s.mob && <span style={{ ...subType, flex: 'none' }}>{now.at} / {now.of}</span>}
         </span>
-        {/* Text glyphs in the frame, not icons. */}
-        {!s.mob && (
-          <span style={row(u(12), {
-            flex: 'none', fontFamily: s.body, fontSize: u(14), lineHeight: 1.5,
-          })}><span>♡</span><span>↓</span><span>⋯</span></span>
-        )}
+        {/* Text glyphs in the frame, not icons, and inert at every width. */}
+        <span style={row(u(12), {
+          flex: 'none', fontFamily: s.body, fontSize: u(14), lineHeight: 1.5,
+        })}><span>♡</span><span>↓</span><span>⋯</span></span>
         {audio}
       </div>
     )

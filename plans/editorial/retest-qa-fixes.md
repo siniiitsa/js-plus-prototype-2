@@ -108,7 +108,7 @@ default list is `0,2,3,4`, which **skips Lime**, so always pass the list explici
 | 1 | JP-085 · JP-098 (*View list ✕*) | Noto, not Fisterra Fora · what *View list ✕* does | `qa-fixes.md` JP-085 (A); `layout-2-qa-fixes.md` JP-098 decision 3 (A) | **Both need an answer from outside the code**: a web licence (the PO) and the controls' meaning (the BA) | — (decisions) | **user**: JP-085 **C** ([`display-face.md`](./display-face.md), its own branch); JP-098 **B** (proposal to the BA) | **done** (2026-10-05, no code) |
 | 2 | JP-092 (rest) | 390: the footer's rule scrolls the page with a long name | `layout-2-qa-fixes.md` JP-092 *Named, not fixed* (the footer's rule) and `qa-fixes.md` JP-086's footer item | **Confirmed, shared**: the rule is `flex: 'none'` in both footer trees; it never yields | S | light; **user**: **A** (the two 360 items named again) | **done** (2026-10-05) |
 | 3 | JP-101 | 390: a long name in the nav runs under BOOK NOW | `qa-fixes.md` JP-086 *Named, not fixed* (`:806`–`809`) and JP-091's scope (desktop only) | **Confirmed, shared**: the narrow wordmark is `nowrap` with no fit under Lime, Grunge, Editorial and Pop | S–M | **user**: **1A, 2A**, the room up to the pill | **done** (2026-10-05) |
-| 4 | JP-099 | 390 player: no ♡ ↓ ⋯ | `layout-2-qa-fixes.md` JP-099 (A, a reply) | **Recorded call, refused twice**: Retro's 390 override, every template | S | **user** | open |
+| 4 | JP-099 | 390 player: no ♡ ↓ ⋯ | `layout-2-qa-fixes.md` JP-099 (A, a reply) | **Recorded call, refused twice**: Retro's 390 override, every template | S | **user**: **C** (icons in, sleeve out at 390) | **done** (2026-10-05) |
 | 5 | JP-089 (rest) | The extra `All` chip | `qa-fixes.md` JP-089 decision 2A ("the `All` chip stays"); `notes/pricing.md`'s "intended diff" | **Recorded call**: `repChips()` always leads with `All` | S–M | **user** | open |
 | 6 | JP-098 (rest) | 768 gallery: six tiles, no *View list ✕* | `layout-2-qa-fixes.md` JP-098 decisions 1A and 3A | **Waits on the BA**: the proposal was sent on entry 1's B (2026-10-05); code only if they confirm or amend it | S–M (or none) | entry 1's (B) | waits on the BA |
 | 7 | — | End-of-pass sweep | — | — | S | — | open |
@@ -767,9 +767,76 @@ clock); *reversed* pointers at `layout-2-qa-fixes.md`'s JP-099 Decided, `../retr
 `../lime/layout-2.md:631`, `layout-2.md:1101` and its designer note 6 (and `layout-2-qa-fixes.md`'s
 designer note 2), `../pop/layout-2.md:1145`.
 
-**Decided** — *(the session fills this in.)*
+**Decided** (2026-10-05, user call): **C, draw the icons and drop the sleeve at 390.** The
+question gave HEAD's published numbers and named C's two costs. First, Retro's cluster is 64, not
+61.1, so its box goes to 97.5, not 100.4. Second, C newly cuts Grunge's LATE LIGHTS at 360, which
+fits today by 0.2.
 
-**Settled** — *(the session fills this in, with the reply line.)*
+Re-checked on HEAD (`aa2a381`). Every *Evidence* line held, **+26** as entry 3 predicted:
+- the `(s.limeTree || s.pop)` bar `:7549`–`7605`: height `:7554`, padding `:7555`, gaps `:7556` /
+  `:7558`, the 390-trade comment `:7563`–`7573`, the inner pill `:7574`–`7584` (sleeve `:7578`,
+  title box `:7579`–`7582`), the clock `:7583`, the icons `:7585`–`7589`;
+- Retro's bar `:7849`–`7916`: padding `:7863` (comment `:7859`–`7862`), gaps `:7864` / `:7871`,
+  the inner pill `:7893` (comment `:7887`–`7892`), sleeve `:7894`–`7897`, title box
+  `:7898`–`7902`, clock `:7906`, icons `:7909`–`7913`.
+
+Retro's body is Retro's alone now: Pop renders through the Lime bar.
+
+**Settled** (2026-10-05).
+- **Reproduced in the real app on HEAD.** Card 2 was published under Editorial, Lime, Grunge, Pop
+  and Retro (puppeteer, the tab caught from the opener). At 360, 390 and 414 no template drew
+  ♡ ↓ ⋯ or the clock, and at 768 all five drew both. The title box was 115.5 at 390 and 414
+  (85.5 at 360) under the four Lime-tree templates, Pop included, and 103.5 (73.5) under Retro.
+  The prior entry's 105.5 for Pop predates Pop layout 2 moving it onto the Lime bar.
+- **The harness.** A HEAD worktree on :5174 against the tree. The long-running :5173 carried 71
+  Editorial live files 0.1px off (Noto shaping), on two reruns of both servers. A fresh tree server
+  on :5175 diffed **0 of 660 on each surface**, themes 0–4. So :5173 was a stale server, not cold
+  noise, and every after-label below was taken on :5175.
+- **The fix**, both bodies, at `s.mob` alone. The sleeve is gated `!s.mob` (`art(…)` in the Lime
+  bar, the `Photo` span in Retro's), and the glyph cluster's `!s.mob` gate is gone. The padding,
+  the 14 gaps and the dropped clock stand. The glyphs keep 768's size (13 / 10.8 / 13.3, gap 12;
+  Retro's 14 / 11.7 / 14.3), so the cluster is 61.1 (Retro 64).
+- **After-diff: exactly the named 10 files.** Media `arch 1` × mobile × themes 0–4 × canvas and
+  `live=1`. In each, the inner pill and the sleeve's span and `img` go, three glyph spans and
+  their row come in, and the title column narrows. Nothing else moves: 768, 1440 and media
+  `arch 0`, `2`, `3` are 0.
+- **The published tab, after** (card 2, all five templates, 360 / 390 / 414 / 768). The page does
+  not scroll sideways at any width. The glyphs sit inside the bar, `cursor: auto` with no handler.
+  The title box is **112.4** at 390 and 414 (82.4 at 360), Retro's **97.5** (67.5), as predicted.
+  Playing row 03 moves the title to SLOW BURN with the byline, and the audio plays, under all five
+  templates.
+
+  | Template | LATE LIGHTS | 390 / 414 (box 112.4; Retro 97.5) | 360 (82.4; Retro 67.5) |
+  |---|---|---|---|
+  | Retro | 88.3 | whole | cut (was cut) |
+  | Lime | 95.5 | whole | cut (was cut) |
+  | Grunge | 85.3 | whole | **cut, new** (fit by 0.2) |
+  | Editorial | 121.6 | cut (was cut) | cut (was cut) |
+  | Pop | 123.0 | cut (was cut) | cut (was cut) |
+
+- **Named, not fixed: the seed on the canvas under Editorial.** SLOW BURN is 112.6 in the 112.4
+  box, so the canvas now reads "SLOW BU…" at 390. It was whole by 2.9. The triage foresaw this for
+  C (`layout-2-qa-fixes.md` JP-099's option C, "SLOW BU…"). Pop's seed (118.5) was cut before.
+  One pixel off the glyphs' 12 gap at 390 would buy it back. That is a departure from the frame's
+  measure, not taken without a call. The byline *Kai Mercer · Single* (106.8) now fits every
+  390 box but Retro's.
+- **Docs.** The comments are rewritten: the Lime bar's 390-trade comment and the clock and glyph
+  notes, and Retro's inner-pill and clock comments. `notes/media.md` has a new bullet for the 390
+  bar, and its byline line now gives the new boxes. *Reversed* pointers are in:
+  - `layout-2-qa-fixes.md`'s JP-099 (a note over Decided, and *superseded* on its reply line) and
+    its designer note 2;
+  - `../retro/layout-2.md`'s "A frame's own render can be the artefact";
+  - `../lime/layout-2.md`'s second named departure;
+  - `layout-2.md`'s section-3 bullet, open question 7's media line and designer note 6;
+  - `../pop/layout-2.md`'s named diffs, open question 6's media line and its leak list.
+- **The reply line** (the sweep's shape):
+  - **JP-099 — fixed, on every template.** At 390 (and 360 and 414) the Media Player's bar now
+    shows ♡ ↓ ⋯, as the design does. To make room, the cover thumbnail in the bar goes at that
+    width. The design's thumbnail is only a sliver there anyway, and this way the song's name
+    stays readable. The running time stays hidden, as in the design. The icons do nothing at any
+    width, as before. A long name such as *Late Lights* under Editorial still ends in "…" at 390,
+    as it did before. The seeded *Slow Burn* now loses its last two letters in the editor's
+    Mobile preview (0.2px short).
 
 ---
 

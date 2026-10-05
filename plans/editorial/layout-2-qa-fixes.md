@@ -225,6 +225,11 @@ bar, the icons inside it, the title's ellipsis on its own box; Retro's 103.5 box
 `../retro/layout-2.md:891`, `../lime/layout-2.md:631` and `layout-2.md:1101` / `:2132` / `:2193`,
 and `notes/media.md`.
 
+> **Reversed** (2026-10-05, user call, [`retest-qa-fixes.md`](./retest-qa-fixes.md) JP-099): the
+> tester refused the reply, and the retest took **C**. At 390 the bar draws ♡ ↓ ⋯ and drops the
+> sleeve to pay for them, on every template. The clock stays off. The title box goes 115.5 → 112.4
+> (Retro 103.5 → 97.5). The decision and reply below are the record of the first call.
+
 **Decided** (2026-10-01, user call): **A, keep the override, with a reply.** No code. The question
 gave the published page's numbers (below) beside the triage's canvas ones. They show the bar has no
 room left before any icon is drawn.
@@ -275,7 +280,7 @@ comment is `:6717`–`6727`, Retro's padding comment `:6998`–`7001` (`:6996`�
   sweep gathers that note.
 - **The reply line**, in the sweep's shape so step 6 can lift it as it stands. It opens on what
   changes and who holds the next step, since Grunge's JP-056 reply was refused for reading as
-  closed:
+  closed. *Superseded* by the retest's reply line (`retest-qa-fixes.md` JP-099, *Settled*):
   - **JP-099 — nothing changes in this build; passed to the designer, whose call it is next.** At
     390 the Media Player's bar leaves out ♡ ↓ ⋯ and the running time on purpose, on every template,
     not only Editorial and Grunge. The 390 design fits them only by running the song's name off the
@@ -2375,7 +2380,8 @@ still stand. Two of these restate its note 6 because QA reported them.)*
    **22.9** for the sleeve, title and clock + 24 + 62 icons + 40. So it draws a sliver of the
    sleeve and runs the title 117px off the bar. The page keeps the title and drops the clock and
    the icons, which do nothing. If the icons are wanted at 390, the bar needs a 390 layout of its
-   own: the icons on a second line, or no sleeve.
+   own: the icons on a second line, or no sleeve. *Reversed* (JP-099, 2026-10-05): QA asked for
+   the icons again, so the page now draws them at 390 and drops the sleeve; the clock stays off.
 3. **The 768 gallery's last tile in each column is 1px tall** (JP-098; note 6's seventh bullet), a
    desktop height left in the frame. That is why QA counted four thumbnails. The page divides the
    band in the frame's proportions, so all six show and no photograph is hidden at tablet. The
