@@ -941,8 +941,8 @@ and its **lime** cards add a third ground the twins never had.
   my sections* holds one row to eight links, the name sliding right from five (617.9 → 855.5);
   **the seeded nine wrap the capsule to two rows at the 12px floor** (11.76 rendered) — the
   block's designed below-the-floor fallback, reached for the first time by a seeded page because
-  Titan is wide. Minimal is Pop's layout-2 default, so the seeded header never shows it (open
-  question 10).
+  Titan is wide. Minimal is Pop's layout-2 default, so the seeded header never shows it. **Kept
+  as the designed fallback** (user call, 2026-10-05; open question 10): the floor stays 12.
 - **Named diffs**: the seeded subtitle runs 2 / 3 / 2 lines against the frame's 1 / 2 / 2 (the
   twins'), so the 768 identity block centres ~11 higher (h1 at 681 unlifted against 692); **the
   768 face card's title wraps** — Titan's THE FACE OF THE ACT outruns the 157 column, as the
@@ -1026,11 +1026,12 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
 9. **The repertoire's leaks** — Lime's `#AFE335` × 4 and `#F2FFD0` × 2, Retro's `#FBF6EA`, two raw
    violets and Anton numerals in an otherwise bound variant, the same nodes at all three widths.
    Worth telling the designer once the session has found where they show.
-10. **The desktop capsule with *Follow my sections* on a full page** (section 1): the seeded nine
+10. ~~**The desktop capsule with *Follow my sections* on a full page** (section 1): the seeded nine
     wrap it to two rows at the 12px floor on the 1180 canvas (and so in the published 1440 tab,
     which zooms that layout), where Lime's, Grunge's and Editorial's hold one row — Titan is the
     widest of the four faces, and the block's below-the-floor fallback is a wrap. Minimal is Pop's
     layout-2 default, so the seeded header and the setup modal's card never show it; eight links
     hold one row. *Options*: accept it as the designed fallback (recommended — no frame draws
     nine links), or lower the floor under Pop (≈ 10.5px on the canvas, 12.8 in the published
-    1440). A user call if it is to change.
+    1440). A user call if it is to change.~~ *Settled (user call, 2026-10-05): the wrap stays as
+    the designed fallback; the floor is not lowered under Pop.*
