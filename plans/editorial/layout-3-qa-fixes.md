@@ -611,6 +611,10 @@ Pop's placeholder, which renders it) is named, not fixed.
 - **The 1088 canvas** (the editor's Desktop tab; the column 802.7). The seed keeps the ramp under all
   three (93.8 / 107 / 80.25), MERCER's limit there being far above it. Editorial's *Featherstonehaugh*
   fits at 68.93 and *Supercalifragilistic* at 69.81. Lime and Grunge keep their ramps there for both.
+- **The setup modal's card 3** lays the 1180 desktop out and scales it, so its column is 894.7. The
+  seed reads 93.8 / 107 / 80.25 there under Editorial / Lime / Grunge, the ramp, the column now
+  `inline-size`. The layout picker's thumbnail (the same 1180 layout) was not re-measured: MERCER needs
+  about 330 of its ≥ 802 column, so the `min()` cannot bind there.
 - **The harness** (themes 1–3, three widths, canvas and `live=1`, the seed and the three names: 72
   renders) and **the published tab** (Editorial, Lime and Grunge card 3, the four names typed in the
   panel, at 360, 390, 414, 768, 1180 and 1440 and the 1088 canvas: 84 renders):
