@@ -37,14 +37,14 @@ import {
   THEMES, SCHEMES_OF, CATS, NVAR, FLAG, FIELDS, TITLES, DEFS, TRACKS, TAGS, TAG_LABELS, HERO_CTA, BIO_CREDIT, BIO_CTA,
   HERO_AVAIL, FACE_TITLE, FACE_BODY, PLACE_BODY, BIO_TAG,
   BIO_SINCE_LABEL, BIO_ROLE_LABEL, BIO_BASE_LABEL, BIO_ABOUT_LABEL, BIO_TAGS_LABEL, MEDIA_LIST_LABEL,
-  BIO_REF_LABEL, FORM_TYPE_LABEL, mapKickerSeed, mapListLabelSeed, testiKickerSeed,
+  BIO_REF_LABEL, FORM_TYPE_LABEL, mapKickerSeed, mapListLabelSeed, mapRadiusSeed, testiKickerSeed,
   MAP_HOME_LABEL, MAP_HOME_CAPTION, MAP_VENUE_LABEL, MAP_VENUE_CAPTION, MAP_RADIUS_LABEL, MAP_TIME_LABEL,
   MAP_FEE_LABEL, MAP_VENUE_CTA, MAP_ROUTE_CTA,
   PRICING_KICKER, PRICING_FEATS_LABEL, CAL_DATE_LABEL, CAL_AVAIL_LABEL, CAL_PROMPT,
   MEDIA_CHIP_LABEL, MEDIA_COUNT_LABEL, MEDIA_TOTAL_LABEL, GALLERY_RAIL_LABEL, TIER_KEYS, tiersSeed, limeTreeTheme, PRICE_UNIT, QUOTES,
   CITIES, PINS, EXAMPLE_PAGE,
   NOW_PLAYING, TRACK_AUDIO, SONGS, REP_ALL,
-  GIGS, MAP_RADIUS, MAP_BASE, MAP_TERMS, MAP_TRAVEL_TIME, MAP_FEE, directionsUrl, GALLERY_SOURCES,
+  GIGS, MAP_BASE, MAP_TERMS, MAP_TRAVEL_TIME, MAP_FEE, directionsUrl, GALLERY_SOURCES,
   MAP_STATUS, MAP_UPDATED, MAP_RINGS, MAP_EXPAND,
   PRICING_REVIEWS, PRICING_RATING, PRICING_CTA, PRICING_NOTE, PRICING_OFFER,
   FORM_PROMISES, FORM_STEPS, STEP_KEYS, FORM_FIELDS, FORM_FIELDS_CARD, FORM_FIELDS_4, FORM_FIELD_KEYS, FORM_EMAIL_LABEL, FORM_KINDS, FORM_TYPES, FORM_MESSAGE, FORM_MSG_LABEL,
@@ -56,7 +56,7 @@ import {
   parseDate, isoDate, calStart, headerIdentity, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav, navModeDefault,
   catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldDefault, fieldReach, fieldNowhere, copyrightOf, formHeading3, extUrl, urlProblem, emailProblem, emailAddr, songTags, repChips,
-  tierFeats, priceParts, blankRow, SONG_KEYS, repSetsOf, repSetLine, TRACK_KEYS, GIG_KEYS, gigWeekday, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
+  tierFeats, priceParts, blankRow, SONG_KEYS, repSetsOf, repSetLine, TRACK_KEYS, GIG_KEYS, gigWeekday, gigStatus, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
   layoutCount, designCount, pageLayout, pageOrder, pageRows, COLUMN_SPLIT, bebasEms, antonEms, gloockEms, titanEms,
   headerLayout, headerLayoutLabel, setupHeaderCount,
 } from './data.js'
@@ -550,14 +550,34 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
       : vm.padY
     vm.pad = `${top} ${vm.padX} ${foot}`
   }
+  // The gallery's band at desktop (JP-103, 2026-10-06, no decision: the
+  // frames' own numbers). The page frames stack their sections edge to edge
+  // (Editorial's 964:68717, Lime's 964:68653, Grunge's 964:68685), and the
+  // repertoire pads 56 under its cards and pricing 56 over its head, where
+  // both kept `padY` 80 and the published tab read 97 and 100 against the
+  // frames' 56 and 60. So the repertoire's foot is 56 × 0.82 at desktop, and
+  // pricing's top joins its foot in the arm below. The repertoire's top
+  // stays `padY`, which the media feet above were tuned against (20 / 34 /
+  // 26), and the gallery keeps its own: its band is a sheet that bleeds
+  // `calc(-1 * padY)` to the root's edges, so its edge is the gap's already.
+  // 768 and 390 keep `padY` (56 and 44 against the frames' 60): reported as
+  // matching, and their pages stand the calendar between the two.
+  if ((T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial')
+    && d === 2 && cat === 'repertoire' && Z.dev === 'desktop') {
+    vm.pad = `${vm.padY} ${vm.padX} ${Math.round(56 * 0.82)}px`
+  }
   // The pricing stack's footnote stands 32 above the section's foot at 1440
   // and 768 (964:68680 · 984:10765). 390 keeps its 44, under the master's 60.
   // Grunge's three masters state the same 32 / 32 / 60 (964:68712 · 984:13925
   // · 984:13956), and so do Editorial's (964:68745 · 984:16837 · 984:16868),
-  // so the arm is all three templates'.
+  // so the arm is all three templates'. Its desktop top is the frames' 56
+  // under the gallery's band (JP-103, above); 768 keeps `padY`.
   if ((T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial')
     && d === 2 && cat === 'pricing' && Z.dev !== 'mobile') {
-    vm.pad = `${vm.padY} ${vm.padX} ${Z.dev === 'desktop' ? Math.round(32 * 0.82) : 32}px`
+    const desk = Z.dev === 'desktop'
+    vm.pad = desk
+      ? `${Math.round(56 * 0.82)}px ${vm.padX} ${Math.round(32 * 0.82)}px`
+      : `${vm.padY} ${vm.padX} 32px`
   }
   // The form's card ends 90 / 60 above its foot and the testimonials' head
   // stands 56 / 30 below their top (964:68682 + 964:68683 · 984:10767 +
@@ -734,8 +754,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // the display face at its nominal size, so HeaderV2 fits the unfaced size
   // and `faced()` stays outside the fit. Editorial's other titles that wrap
   // between words read it too: HeaderV3's, and HeaderV0's at 390 (JP-086);
-  // and so does the layout-2 title under Lime, Grunge and Editorial, at every
-  // width, HeaderV1's `s.limeTree` block (JP-092).
+  // and so do the layout-2 and layout-3 titles under Lime, Grunge and
+  // Editorial, at every width: HeaderV1's `s.limeTree` block (JP-092) and
+  // HeaderV2's h1 beside that card (JP-102), each fitted to its own column.
   vm.cardNameEms = navFace ? +Math.max(0, ...vm.brand.split(/\s+/).map(navFace)).toFixed(3) : undefined
   vm.navCtaEms = navFace ? +(navFace(vm.cta1) + navFace(vm.cta2)).toFixed(3) : undefined
   // The layout-1 capsule's name gives way before its links do (JP-091, user
@@ -1673,6 +1694,13 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // so the pins, the hues, the pager and the chips all follow the rendered
   // list: otherwise it is a blank row that lights a pin.
   const gigList = (Array.isArray(c.gigs) ? c.gigs : GIGS).filter((g) => !blankRow(g, GIG_KEYS))
+  // Today, for each gig's status: live only, the calendar's rule, so the canvas
+  // has no date and draws no pill (JP-106, user call, 2026-10-06).
+  const gigToday = live ? parseDate(today) : null
+  // The pill's two words: literals, the frames' own (every master types them
+  // in sentence case), and no field, since no ticket asks for one (the JP-071
+  // / JP-090 question). `cased()` is a passthrough on every template today.
+  vm.gigStatus = { upcoming: cased('Upcoming'), past: cased('Past') }
   vm.gigs = gigList.map((g, i) => {
     const h = T.tags[i % T.tags.length]
     return {
@@ -1683,6 +1711,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
       // '' — no third line — for a row with no year or a date that is not one.
       // `year` itself is printed nowhere, so `when` and `meta` do not read it.
       weekday: gigWeekday(g?.year, g?.month, g?.day),
+      // Layout 3's row pill, 'upcoming' | 'past' | '' (JP-106): the same date
+      // against today, '' on the canvas and wherever the weekday is ''. A gig
+      // dated today is upcoming.
+      status: gigStatus(g?.year, g?.month, g?.day, gigToday),
       url: extUrl(g?.link ?? ''),
       // Layout 2's Get Directions pill, a route to the venue.
       directions: directionsUrl(g?.venue, g?.city),
@@ -1779,7 +1811,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // its fit runs the one-line label 1px into the gap; a label free to wrap
   // breaks there onto two lines and lifts the pill 1.6px.
   vm.mapVenueCtaWraps = vm.mapVenueCta.length > MAP_VENUE_CTA.length
-  vm.mapRadius = cv('radius', MAP_RADIUS)
+  // JP-105 — layout 3's line under the map seeds its frames' "120 mi radius".
+  vm.mapRadius = cv('radius', mapRadiusSeed(d))
   vm.mapBase = cv('base', MAP_BASE)
   vm.mapTerms = cv('terms', MAP_TERMS)
   vm.mapTravelTime = cv('travelTime', MAP_TRAVEL_TIME)
@@ -3005,9 +3038,10 @@ function TracksField({ value, max, onChange, onToast }) {
  * is the artist's own word ("Jul", "July", "Sept") rather than a format. The
  * year is printed nowhere: layout 3's stamp adds the weekday under the day
  * (JP-069), which gigWeekday() in data.js derives from all three, so a stamp
- * never says SAT on a Friday. A row that names no real day (no year, a
- * two-digit one, 31 Jun) keeps its place and draws no weekday, and at
- * layout 3 the row says so.
+ * never says SAT on a Friday, and its published rows add an Upcoming / Past
+ * pill off the same date against today (gigStatus(), JP-106). A row that
+ * names no real day (no year, a two-digit one, 31 Jun) keeps its place and
+ * draws neither, and at layout 3 the row says so.
  *
  * Same house rules as the two above: whole-array rewrite per keystroke,
  * numbered rows, a round X, a dashed add, an "n of max" footnote, no
@@ -3020,7 +3054,10 @@ function TracksField({ value, max, onChange, onToast }) {
  * ------------------------------------------------------------------- */
 
 const BLANK_GIG_HINT = 'Empty gigs aren’t shown.'
-const NO_WEEKDAY_HINT = 'No weekday: the date needs a real day and a four-digit year.'
+// Layout 3 reads the date twice, for the disc's weekday and the published
+// row's Upcoming / Past pill (JP-106), and a date that names no day gets
+// neither, so the line names both.
+const NO_WEEKDAY_HINT = 'No weekday and no Upcoming / Past: the date needs a real day and a four-digit year.'
 
 function GigsField({ value, max, design, onChange }) {
   const list = Array.isArray(value) ? value : []
@@ -3105,10 +3142,10 @@ function GigsField({ value, max, design, onChange }) {
           <p style={{ margin: 0, fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>{BLANK_GIG_HINT}</p>
         ) : design === 2 && [g.month, g.day, g.year].some((v) => String(v ?? '').trim())
           && !gigWeekday(g.year, g.month, g.day) && (
-          // Only layout 3 prints the weekday, so only there is a date that
-          // names no day worth a line, and only once a date box is filled, so
-          // a new row holding a venue alone is not scolded mid-edit. The row
-          // still shows, without the weekday.
+          // Only layout 3 prints the weekday and the pill, so only there is a
+          // date that names no day worth a line, and only once a date box is
+          // filled, so a new row holding a venue alone is not scolded
+          // mid-edit. The row still shows, without either.
           <p style={{ margin: 0, fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>{NO_WEEKDAY_HINT}</p>
         )}
       </div>
@@ -4187,7 +4224,8 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                   // kicker joined it with JP-090 (mapKickerSeed), the
                   // testimonials' with JP-095 (a) (testiKickerSeed), and the
                   // map's list label with JP-095 (b) (mapListLabelSeed; gated on
-                  // `map`, since media carries a `listLabel` too). Layouts 3 and
+                  // `map`, since media carries a `listLabel` too), and the map's
+                  // coverage with JP-105 (mapRadiusSeed). Layouts 3 and
                   // 4's heads come ahead of the song count, which sectionVm's
                   // later assignment says the other way round (JP-070, JP-081).
                   const fallback = (f.k === 'title' || f.k === 'badgeText') && sec.cat === 'header' ? artistName
@@ -4207,6 +4245,7 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                     : f.k === 'button' && sec.cat === 'form' ? formBtnSeed(themeName, design)
                     : f.k === 'kicker' && sec.cat === 'map' ? mapKickerSeed(design)
                     : f.k === 'listLabel' && sec.cat === 'map' ? mapListLabelSeed(design)
+                    : f.k === 'radius' && sec.cat === 'map' ? mapRadiusSeed(design)
                     : f.k === 'kicker' && sec.cat === 'testimonials' ? testiKickerSeed(design)
                     : f.k === 'cta' && sec.cat === 'calendar' && design === 3 ? CAL_SEND_4
                     : f.k === 'rowCta' && sec.cat === 'pricing'

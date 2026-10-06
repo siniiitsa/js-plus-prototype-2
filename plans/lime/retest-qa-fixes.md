@@ -223,6 +223,13 @@ artist, 10936 the grid).
 Reply: **fixed.** At tablet width the artist now sits under the song title in the Repertoire's
 set cards, so every title shows in full, in the editor and on the published page.
 
+*Reversed* (JP-104, user call, 2026-10-06): the 768 row is the frame's one row again, the
+length (in the seat since JP-066) `flex: none` on the right, and a title too long for its room
+wraps between words to a second line, clamped by CSS, at 768 and 390. Lime's and Grunge's 768
+titles fit on one line; Editorial's four long ones wrap whole. This entry's standing rule, "no
+seeded title ends in an ellipsis at 768", holds, now met by wrapping rather than stacking.
+`../editorial/layout-3-qa-fixes.md`, entries 1 and 5.
+
 
 ---
 
@@ -575,6 +582,10 @@ with free-text month and day and **no year**, so nothing can place it before or 
 repeater change, offered separately. *Since* the Grunge retest (JP-069 (weekday), user call,
 2026-09-29, `../grunge/retest-qa-fixes.md`) a gig carries a `year`, which derives layout 3's
 weekday. Upcoming / Past is derivable from it now, and it is still not built.
+*Reversed in part* (JP-106, user call, 2026-10-06,
+[`../editorial/layout-3-qa-fixes.md`](../editorial/layout-3-qa-fixes.md) entry 7): the premise, not
+the chips. Layout 3's rows carry the frames' Upcoming / Past pill on the published tab, derived
+from the gig's date against today. The chips stay cities.
 
 ---
 

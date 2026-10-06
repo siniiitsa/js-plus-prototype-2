@@ -31,8 +31,11 @@ another `notes/` file.
   `c.songs` is an array of `{ title, artist, tags, length }`
   (tags a raw comma string; `length` free text, printed as typed by layout 3 alone, in the seat
   the artist held — no other repertoire frame draws a length, and a song with none leaves the
-  seat empty, the artist not being drawn there; at 768 it stands under the title, JP-044's stack),
-  maintained by `SongsField`; `media`'s `c.tracks` is an array of `{ title, sub, image, audio }`,
+  seat empty, the artist not being drawn there; it stands on the title's row at every width, on the right, and at 768 and 390 a title too long for its room wraps between words to a second line, clamped by CSS — JP-104, user call, 2026-10-06, reversing JP-044's 768 stack),
+  maintained by `SongsField`. Every layout reads the songs, and `in` is per field, so no column
+  carries a reach of its own: the Songs hint says that layout 3 shows the length in place of the
+  artist and the other layouts the artist and not the length (JP-107, user call, 2026-10-06, the
+  reviews' "no seat for the date" shape, not `GigsField`'s design-aware line); `media`'s `c.tracks` is an array of `{ title, sub, image, audio }`,
   maintained by `TracksField`, and it is the only field whose *rows* carry a photograph
   (`RowThumb`, the 46px cousin of `ImageField`) and a sound file. `audio` is an address, not an
   upload — an image is inlined as a data URI and a track is two orders of magnitude larger —

@@ -938,6 +938,8 @@ Append as the pass goes. Do not repeat layouts 1's and 2's, Lime's or Retro's bu
   the shared block. Grunge's reading differs — its 168 measure and Anton at 0.75 fit every
   seeded title in one row — but it moves with Lime's rather than splitting the block, since a
   longer title clips here as it did there. The pinned 62.5 holds both lines.
+  *(Reversed by JP-104, 2026-10-06: the 768 row is the frame's one row again, as this reading
+  had it, the length on the right. `../editorial/layout-3-qa-fixes.md`, entry 5.)*
 - **The gap under the media section — the re-check section 3 owed — is Lime's, and off the
   frame.** Measured last media content → repertoire head: the frame's (glyph bounds, so a few
   px generous to us) **109.3** (133.3 × 0.82) / **128.2** / **109.2**; ours **128.5 / 117 /
@@ -1274,7 +1276,9 @@ Append as the pass goes. Do not repeat layouts 1's and 2's, Lime's or Retro's bu
 - **Named diffs, Lime's and Retro's**: the left column runs **506.6** against the panel's 579
   because the seeded six gigs are shorter than the frame's, Lime's own case; the 768 data bar
   wraps the seeded "Based in Manchester · 6 pins · 120 mi radius" and runs 61.6 against the
-  master's 45, Retro's named diff through Lime; **the 390 section is 872.9 against 887, and the
+  master's 45, Retro's named diff through Lime (the seed read "12 mile radius" until JP-105,
+  2026-10-06, which made this line's "120 mi radius" true; it still wraps,
+  `../editorial/layout-3-qa-fixes.md` entry 4); **the 390 section is 872.9 against 887, and the
   14 is the type**, not a box — the rows are content-tall (Lime's open question 3) and Anton at
   0.75 sets a shorter line than Bebas Neue, so the list comes to 178.8 where Lime's measured
   186.8 (row 122.8 + pager 54), with the chip row, the head and the panel making up the other 6

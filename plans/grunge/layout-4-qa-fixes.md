@@ -2121,6 +2121,11 @@ user's).
     it is. It has been the seed since Retro's layout-1 rebuild (`8fa8ff4`), and no ticket reports
     it. It disagrees with the page's own "120 mi standard" terms and 120mi rings at layouts 1–3.
     It goes to the designer (note 10). If they confirm 120, changing it moves map `arch 0`–`2`.
+    *(Answered for layout 3 by JP-105, user call, 2026-10-06: `mapRadiusSeed(d)` seeds layout
+    3's line under the map with its frames' "120 mi radius", moving map `arch 2` alone. Layouts
+    1 and 2 keep "12 mile radius": layout 1's frame prints "12 Mile Radius" beside its
+    heading, and layout 2's "100 mi" is still with the designer.
+    `../editorial/layout-3-qa-fixes.md`, entry 4.)*
   - **CLAUDE.md's ticker sentence** was already corrected by JP-080 ("stands **without its
     arrows** and is gone at none", `:535`), so nothing was edited.
   - A *closed* pointer on `./layout-4.md`'s open question 2 (`:1620`, where the triage's
@@ -2225,3 +2230,7 @@ in the layout-3 batch's shape. Each is shipped as described.)*
 10. **Coverage: 12 miles or 120?** (sweep, user call: a follow-up). The map's seeded coverage at
     layouts 1–3 reads "12 mile radius", seeded since the page's layout-1 rebuild. The same page's
     terms read "120 mi standard" and its rings run to 120mi. Which is meant?
+    *(Answered for layout 3 by JP-105, 2026-10-06: its frames print "120 mi radius", and so
+    does its seed now. Layout 1's frame prints "12 Mile Radius" beside "120 mi standard", and
+    layout 2's frame prints "100 mi". Both keep "12 mile radius", so the question stands for
+    them. `../editorial/layout-3-qa-fixes.md`, entry 4.)*

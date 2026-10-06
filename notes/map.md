@@ -41,10 +41,21 @@ another `notes/` file.
   the lit row is **not drawn at one row**, which is exactly the 390 canvas, where a page is one
   gig. It is also the only layout with a **filter**: a chip row derived from the gigs' own
   cities (`vm.gigChips`, one chip per distinct city with its count, behind an All and not built
-  below two cities), because the frame's own Upcoming/Past chips are a status nothing here can
-  know (a gig's `year`, below, would let the published tab derive it; named and out of scope).
-  Its date disc prints the frames' third line, the weekday (JP-069, user call, 2026-09-29), as
-  `vm.gigs[].weekday`, derived and never typed. That filter is the one thing in this section that can break the
+  below two cities), because the frame's own Upcoming/Past chips were a status nothing here could
+  know when they were chosen (JP-047). The chips stay cities. Its date disc prints the frames'
+  third line, the weekday (JP-069, user call, 2026-09-29), as `vm.gigs[].weekday`, derived and
+  never typed. **Each row carries the frames' Upcoming / Past pill on the published tab alone**
+  (JP-106, user call, 2026-10-06): `vm.gigs[].status`, `'upcoming' | 'past' | ''`, is
+  `gigStatus()` in `data.js` off the same `gigStamp()` the weekday reads, against `today`, which
+  `sectionVm` honours only when live (the calendar's rule). So the canvas, a picture with no date,
+  draws no pill, and nor does a row whose date names no day (no year, a two-digit one, 31 Jun).
+  A gig dated today is upcoming, today being the tab's UTC date, as the calendar's is. The two words are literals (`vm.gigStatus`, `cased()`), since
+  no ticket asks for a field. The pill sits between the lines and *Tickets →* at the wide widths
+  (stacked over it in a centred column on the 768 lit row, the master's own), and on the right
+  of the 390 row's second line, which it now draws for an unlinked gig too: the 390 row is the
+  frame's 123 where it was 84. Idle it is unfilled in the row's ink, ringed in its hairline; on
+  the lit row it is the lit row turned round. `GIGS` seeds `year: '2031'` (2025's calendar, so the
+  discs keep the frames' weekdays), so every seeded row reads *Upcoming* until 2031. That filter is the one thing in this section that can break the
   one-pin-per-gig-on-a-page rule: it punches holes in the indices, so a filtered page of six or
   more can seat two gigs on the same `PINS[i % 5]`. Pairing the dot with the row's place on the
   *page* would close it and pin every gig to dot 0 at 390, where a page is one gig, so the edge
@@ -53,7 +64,8 @@ another `notes/` file.
   whole row, layout 2's ↗ and Venue Link pill (beside which its Get Directions pill takes
   `vm.gigs[].directions`, a Google Maps route composed from the venue and city), layout 3's
   Tickets → column — and layout 3 drops
-  the frame's second `↗` beside the venue, the same address marked twice. An empty or refused
+  the frame's second `↗` beside the venue, the same address marked twice (re-asked by JP-106 and
+  kept, 2026-10-06: a recorded drop of its own, not JP-047's). An empty or refused
   `link` draws **no ↗ and no Tickets →, on either surface** (JP-045, user call, 2026-09-24):
   they read `vm.gigs[].url`, which is resolved on both, never `extLink()`, which is null on the
   whole canvas — so the canvas no longer promises a link the published row cannot keep. That is
@@ -146,3 +158,15 @@ another `notes/` file.
     - The unfiled seats on the tester's screenshot: the h2 (*Venue Distance*), the chip (*●
       Confirmed*, JP-060), the featured venue (the frame features its third gig) and *100 mi*
       (`MAP_RADIUS`).
+- **The coverage seeds per layout** (JP-105, user call, 2026-10-06). `radius` reads layouts 1–3.
+  Its absent key resolves through `mapRadiusSeed(d)` in `data.js`, which `sectionVm` and
+  `EditPanel`'s chain both call (`mapKickerSeed`'s shape; the chain's arm is gated on `map`).
+  Layout 3's line under the map, `[base, "N pins", radius]` joined by ` · `, seeds its frames'
+  *120 mi radius* (`MAP_RADIUS_3`), the outermost ring's. All twelve masters (Retro, Lime, Grunge
+  and Editorial at 1440, 768 and 390) read "UK · 8 pins · 120 mi radius". Layouts 1 and 2 keep
+  `MAP_RADIUS`, *12 mile radius*: layout 1's frame prints *12 Mile Radius* beside its heading,
+  and layout 2's *100 mi* is with the designer. A page shows the map at one layout, so a seeded
+  page still claims one coverage. `base` keeps *Based in Manchester* at layout 3, where the frames
+  print *UK* (Retro's fit seated it in this line, `../plans/retro/layout-3.md:959`). So the 768
+  line still wraps to two lines under every template, as it did before (the layout-3 fits' named
+  diff, Retro's through Lime and Grunge).

@@ -615,7 +615,9 @@ A winner that is already loaded for another template needs its own instance chec
           The frame fits them, 194 in 201 and 178 in 202.
         - The repertoire's 768 *Don't Stop Me Now* is cut too: 194.7 of the stacked 174.6, where
           the frame sets it 172 in 174.7 (`:13573`). It is stacked since JP-044, so this is
-          not a new layout.
+          not a new layout. *(Reversed by JP-104, 2026-10-06: the 768 row is one row again,
+          and the title wraps to two lines, so it is whole, 139.3 wide on two lines.
+          `./layout-3-qa-fixes.md`, entry 5.)*
         - The row-height sweep found no Inter or Chakra Petch row that a wider Gloock
           neighbour wraps at layout 3.
    - **The lifts.** Each was re-measured against the frame's `absoluteRenderBounds` in the
@@ -851,7 +853,11 @@ A winner that is already loaded for another template needs its own instance chec
        - **Card 3** (layout 3): the hero title (`HeaderV2`'s h1, which has no word fit) runs
          its long word past the well's clip at 768 too, by 100.5 (FEATHERSTONEHAUGH at 70.59) and
          88.1 (SUPERCALIFRAGILISTIC), where Noto's fitted. At 360–414 it runs 157–207 past, where
-         Noto's ran 84–134.
+         Noto's ran 84–134. **Answered by JP-102**
+         ([`layout-3-qa-fixes.md`](./layout-3-qa-fixes.md) entry 3, 2026-10-06): the h1 is fitted
+         to its column's widest word, `min(ramp, 100cqi / cardNameEms)`, JP-092's shape, so the
+         word ends inside the column and short of the card at every width, under Lime and Grunge
+         too.
        - **Card 4** (layout 4): the bio's name breaks the long word at 390 and 414 too. Noto broke
          it at 360.
      - **Better than Noto:** on card 3 at 1440 and 768, the bio's ID-card name no longer breaks

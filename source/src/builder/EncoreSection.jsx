@@ -3367,10 +3367,23 @@ function HeaderV2({ s }) {
         ))}
       </div>
     )
+    // The title wraps between words, and shrinks below the ramp only when its
+    // widest word would outrun the column (JP-102, user call, 2026-10-06,
+    // HeaderV1's JP-092 shape): `100cqi` over the word's width in `navFace`
+    // ems (`s.cardNameEms`), passed unfaced, since `Title` applies `faced()`
+    // and Grunge's ems are already faced. The column ends at the card at
+    // desktop and 768 (`stack` is `flex: 1 1 0` beside it), so a fitted word
+    // no longer runs under the card or past the well's clip. It never breaks
+    // inside a word. `identity` is the query container at every width; it is
+    // `width: 100%` of a parent-sized column, so the container moves nothing,
+    // and the seeded MERCER keeps the ramp everywhere (Editorial's tightest,
+    // 768, has 7.9 to spare). One block fits Lime's, Grunge's and Editorial's
+    // titles, each in its own face's ems. Retro's half (which Pop's arch-2
+    // placeholder renders) clips at its column instead, and is not fitted.
     const identity = (
-      <div style={col(u(12), { alignItems: 'flex-start', width: '100%' })}>
-        <Title s={s} size={s.dispLg} color={s.tx} lh={0.89} inline
-               twoTone={grunge} toneA={s.tx} toneB={s.ac} />
+      <div style={col(u(12), { alignItems: 'flex-start', width: '100%', containerType: 'inline-size' })}>
+        <Title s={s} size={s.cardNameEms ? `min(${s.dispLg}, calc(100cqi / ${s.cardNameEms}))` : s.dispLg}
+               color={s.tx} lh={0.89} inline twoTone={grunge} toneA={s.tx} toneB={s.ac} />
         <span style={row(u(8))}>
           {/* Editorial's dot is `sem/text/2`, the location's own paper, where
               the twins' is the accent. */}
@@ -13580,19 +13593,26 @@ function Repertoire({ s }) {
       // Retro's reason: our card has no height to divide. The rows' own
       // `py-6` is therefore inert.
       const limeRowH = u(G.rowH)
-      // JP-044 (2026-09-24): the frame's row is a title beside a four-glyph
-      // duration, and ours put the artist in that seat — beside a 19px title
-      // in the 768 card's 148 (Grunge 168) that cut most seeded titles to an
-      // ellipsis. So at 768 the seat stands under the title, a named diff
-      // from the frame's one row; the pinned 57 / 62.5 holds both lines. The
-      // desktop and 390 rows fit and keep the frame's. The seat has held the
-      // length since JP-066, and the stack stays: on one row it fits beside
-      // every seeded title under Lime and Grunge, but Editorial's
-      // "DON'T STOP ME NOW" was 160 of its 175 in Noto. In Gloock it is 194.7
-      // of the stacked 174.6 and is cut even so (accepted, display-face.md
-      // step 4, layout 3; the frame sets it 172 in 174.7).
-      const stack = tab
+      // The frame's row at every width (JP-104, user call, 2026-10-06,
+      // reversing JP-044's 768 stack, kept by JP-066): the title, then the
+      // length `flex: none` on the right. At 768 and 390 a title too long for
+      // its room wraps between words to a second line, clamped there by CSS
+      // (no word is broken), where it used to ellipsise; the pinned 57 / 62.5
+      // holds the two. So Editorial's Gloock "DON'T STOP ME NOW", 194.7
+      // against ≈ 138.7 beside its length at 768, is whole for the first
+      // time, and Lime's and Grunge's 768 titles fit on one line. The desktop
+      // rows (39 / 44.5 / 47.25) are shorter than two lines, so a title there
+      // keeps its one-line ellipsis; no seeded one reaches it (Editorial's
+      // widest is 205 of 312). A typed word wider than its room is still
+      // clipped, on the line it starts. The title grows from 0 but stops
+      // at its own width, so a one-line title is the box it was; the row
+      // wraps only to centre its one flex line (`alignContent`), and the
+      // length rides that line's top, lowered by half the two line heights'
+      // difference: centred on the title's first line, which is where the
+      // old centring put it beside a one-line title.
       const disp = (lh) => grunge || ed ? { lineHeight: facedLh(s, lh), textTransform: 'uppercase' } : { lineHeight: lh }
+      const titleSize = faced(s, s.list)
+      const lenDrop = `calc((${titleSize} * ${disp(1.2).lineHeight} - ${s.bodySm} * 1.4) / 2)`
       const body = (size, lh, extra) => ({
         fontFamily: s.body, fontSize: size, lineHeight: lh, ...extra,
       })
@@ -13615,21 +13635,24 @@ function Repertoire({ s }) {
               color: k.acc, whiteSpace: 'nowrap', overflow: 'hidden',
             })}>{st.meta}</span>
             {rows.map((sg) => (
-              <div key={sg.n} style={(stack ? col : row)(u(stack ? 2 : 10), {
-                flex: 'none', height: limeRowH, justifyContent: stack ? 'center' : 'space-between',
+              <div key={sg.n} style={row(u(10), {
+                flex: 'none', height: limeRowH, justifyContent: 'space-between',
+                flexWrap: 'wrap', alignContent: 'center',
                 boxShadow: ed ? undefined : `inset 0 -1px 0 ${k.edge}`, overflow: 'hidden',
                 position: ed ? 'relative' : undefined,
               })}>
                 {ed && <DashRule dash={5 * z} colour={k.edge} />}
                 <span style={{
-                  fontFamily: s.display, fontSize: faced(s, s.list), ...disp(1.2),
-                  letterSpacing: s.dls, minWidth: 0, maxWidth: '100%',
-                  overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                  fontFamily: s.display, fontSize: titleSize, ...disp(1.2),
+                  letterSpacing: s.dls, flex: '1 1 0', minWidth: 0, maxWidth: 'max-content',
+                  overflow: 'hidden', ...(desk ? { textOverflow: 'ellipsis', whiteSpace: 'nowrap' } : {
+                    display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: 2,
+                  }),
                 }}>{sg.title}</span>
                 {sg.length && (
-                  <span style={body(s.bodySm, 1.4, stack ? {
-                    maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                  } : { flex: 'none', whiteSpace: 'nowrap' })}>{sg.length}</span>
+                  <span style={body(s.bodySm, 1.4, {
+                    flex: 'none', whiteSpace: 'nowrap', alignSelf: 'flex-start', marginTop: lenDrop,
+                  })}>{sg.length}</span>
                 )}
               </div>
             ))}
@@ -20976,10 +20999,12 @@ function EventsMap({ s }) {
   // **Five things the frame draws are dropped**, all of them claims or controls
   // with nowhere to go: the row's weekday (since restored: a gig carries a
   // `year` and `sectionVm` derives `gg.weekday` from it, JP-069, user call,
-  // 2026-09-29), the "Upcoming"/"Past" status pill (its seat
-  // stays empty: the row's hour sits in the sub line, "Manchester · 22:00",
-  // where every master prints it — JP-069, user call, 2026-09-28; it had
-  // taken that seat as a chip, layout 2's own words), the 30/60/120mi ring
+  // 2026-09-29), the "Upcoming"/"Past" status pill (since restored too, on
+  // the published tab alone: `gg.status`, derived from the gig's date against
+  // today, JP-106, user call, 2026-10-06; the row's hour stays in the sub
+  // line, "Manchester · 22:00", where every master prints it — JP-069, user
+  // call, 2026-09-28; it had taken the pill's seat as a chip, layout 2's own
+  // words), the 30/60/120mi ring
   // labels and the zoom controls (numbers the artist never typed, and a control
   // this file has nothing to do), and
   // "Updated 2m ago", a timestamp nothing here can produce — the labels, the
@@ -21325,6 +21350,28 @@ function EventsMap({ s }) {
             color: 'inherit', textDecoration: 'none', cursor: tix ? 'pointer' : undefined,
           }}>Tickets →</Tix>
         )
+        // The frames' Upcoming / Past pill (JP-106, user call, 2026-10-06):
+        // `gg.status`, derived in sectionVm from the gig's date against today,
+        // so it stands on the published tab alone and not where the date names
+        // no day. Body/SM in a `radius/pill` capsule padded 4 / 10, ringed in
+        // `stroke/1`, the row's hairline, square corners or not (Editorial's
+        // too). Idle it is unfilled and lettered `text/2`, the row's ink; on
+        // the lit row it fills `sem/bg` under `text/1`, which is the lit row
+        // turned round: `G.litFg` under `G.lit` on all three templates.
+        const pill = !!gg.status && (
+          <span style={{
+            ...bodySm, flex: 'none', whiteSpace: 'nowrap',
+            padding: `${u(4)} ${u(10)}`, borderRadius: '999px', boxShadow: ring(hair),
+            ...(on ? { background: G.litFg, color: G.lit } : { color: ink }),
+            ...(s.mob ? { marginLeft: 'auto' } : null),
+          }}>{s.gigStatus[gg.status]}</span>
+        )
+        // The wide rows run the pill between the lines and Tickets →, the
+        // frames' order; the 768 lit row stands the two in a centred column 3
+        // apart (its `Frame 304`), the room its 29 right inset leaves.
+        const tail = tab && on && pill && tickets
+          ? <div style={col(u(3), { flex: 'none', alignItems: 'center' })}>{pill}{tickets}</div>
+          : <>{pill}{tickets}</>
         return (
           <div key={i} onClick={onPick(i)} style={{
             width: '100%', boxSizing: 'border-box', color: fg,
@@ -21341,9 +21388,16 @@ function EventsMap({ s }) {
             {s.mob ? (
               <>
                 <div style={row(u(20), { width: '100%' })}>{mark}{lines}</div>
-                {showTix && <div style={row(u(10), { width: '100%' })}>{tickets}</div>}
+                {/* The 390 master's second row: Tickets → on the left, the
+                    pill on the right (its `Frame 308`), which keeps the
+                    right when the gig has no link. */}
+                {(showTix || pill) && (
+                  <div style={row(u(10), { width: '100%' })}>
+                    {tickets}{pill}
+                  </div>
+                )}
               </>
-            ) : <>{mark}{lines}{tickets}</>}
+            ) : <>{mark}{lines}{tail}</>}
             {ed && (on
               ? <DashRule side="all" dash={10 * z} colour={hair} />
               : !aboveLit && <DashRule dash={10 * z} colour={G.rule} />)}
@@ -21695,14 +21749,13 @@ function EventsMap({ s }) {
           }}>{gg.venue}</span>
           {/* The frame's own "Manchester · 22:00" at every width (JP-069, user
               call, 2026-09-28): the hour had a chip of its own in the seat of
-              the frame's "Upcoming"/"Past", a status the section cannot know,
-              and that seat now stays empty. An emptied half drops with its
-              `·`. The line wraps between words rather than clipping, where the
-              768 master clips its own in a 107px column beside that status and
-              Tickets →. With no chip, ours at 768 is 160–270 wide (lit or not,
-              linked or not) and holds every seeded line on one. The lit row
-              sets it in Body/Eyebrow, which is the frame's own mark of the
-              featured show and the only place that token is used. */}
+              the frame's "Upcoming"/"Past", and that seat holds the status
+              pill now, on the published tab (JP-106). An emptied half drops
+              with its `·`. The line wraps between words rather than clipping,
+              where the 768 master clips its own in a 107px column beside that
+              status and Tickets →; ours wraps there when a row carries both.
+              The lit row sets it in Body/Eyebrow, which is the frame's own mark
+              of the featured show and the only place that token is used. */}
           {!!place && (
             <span style={on
               ? { fontFamily: s.body, fontWeight: 700, fontSize: u(T.eyebrow), lineHeight: 1.3 }
@@ -21716,6 +21769,27 @@ function EventsMap({ s }) {
           color: 'inherit', textDecoration: 'none', cursor: tix ? 'pointer' : undefined,
         }}>Tickets →</Tix>
       )
+      // The frame's Upcoming / Past pill (JP-106, user call, 2026-10-06), on
+      // `gg.status`: published only, and not where the date names no day.
+      // Body/SM in a capsule padded 4 / 10 and stroked 1 inside (given back
+      // out of the padding, the chip row's rule). Idle it rings in ink, the
+      // rows' `stroke/1`, unfilled and lettered `text/2`; on the lit row it
+      // is the lit disc, an ink fill lettered and ringed in the row's own hot
+      // colour (`sem/text/3`, `sem/text/1`).
+      const pill = !!gg.status && (
+        <span style={{
+          ...body12, flex: 'none', whiteSpace: 'nowrap', borderRadius: '999px',
+          padding: `calc(${u(4)} - 1px) calc(${u(10)} - 1px)`,
+          border: `1px solid ${on ? hot : ink}`,
+          background: on ? ink : 'transparent', color: on ? hot : sheetFg,
+          ...(s.mob ? { marginLeft: 'auto' } : null),
+        }}>{s.gigStatus[gg.status]}</span>
+      )
+      // The 768 lit row stands the pill over Tickets →, centred 3 apart (the
+      // master's `Frame 304`); every other wide row runs them across.
+      const tail = tab && on && pill && tickets
+        ? <div style={col(u(3), { flex: 'none', alignItems: 'center' })}>{pill}{tickets}</div>
+        : <>{pill}{tickets}</>
       return (
         <div key={i} onClick={onPick(i)} style={{
           width: '100%', boxSizing: 'border-box', color: on ? sheet : sheetFg,
@@ -21748,9 +21822,11 @@ function EventsMap({ s }) {
           {s.mob ? (
             <>
               <div style={row(u(20), { width: '100%' })}>{mark}{lines}</div>
-              {showTix && <div style={row(u(10), { width: '100%' })}>{tickets}</div>}
+              {/* Tickets → on the left and the pill on the right, which it
+                  keeps when the gig has no link (the master's `Frame 308`). */}
+              {(showTix || pill) && <div style={row(u(10), { width: '100%' })}>{tickets}{pill}</div>}
             </>
-          ) : <>{mark}{lines}{tickets}</>}
+          ) : <>{mark}{lines}{tail}</>}
         </div>
       )
     }

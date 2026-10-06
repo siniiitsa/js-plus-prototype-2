@@ -1335,11 +1335,18 @@ sections are where the twins' dark-ground assumptions break (trap 6).
 - **Named diffs, the twins'**: `s.title` ("12 Songs") where the frame writes "Curated sets" (**since JP-070** (2026-09-28) layout 3 seeds the frame's head, `HEADING_3`; see `../grunge/layout-3-qa-fixes.md`); the
   meta line is the set's count, not a mood and a running time; the right-hand column is the
   artist, not a duration *(Since JP-066, 2026-09-29: the meta line is the set's mood and running time from `SetsField`, and the right-hand column the song's `length`; see `../grunge/retest-qa-fixes.md`.)*; the section pads the shared `padY` (80 / 56 / 44), not the frame's 56 /
-  60 / 60; the card's 438.3 against 439 (its content).
+  60 / 60 *(Since JP-103, 2026-10-06: the desktop foot is the frame's 56 × 0.82 = 46 above the
+  gallery's band, under all three templates; the top, 768 and 390 keep `padY`. See
+  `./layout-3-qa-fixes.md`, entry 6.)*; the card's 438.3 against 439 (its content).
 - **JP-044 holds**: `stack = tab` is the shared block's, so at 768 the artist stands under the
   title. No seeded title's ellipsis span overflows at any width (`scrollWidth > clientWidth` on
   none), in the harness and on the published page. The `&n=` rows' deliberate long title still
   ellipsizes at desktop, Retro's harness row.
+  *(Reversed by JP-104, user call, 2026-10-06: `stack` is gone. Every width draws the frame's one
+  row, and at 768 and 390 a title too long for its room wraps to a second line, clamped by CSS.
+  Under Editorial four seeded titles wrap at 768, *Don't Stop Me Now* among them, and none is
+  cut. The desktop keeps the one-line ellipsis, its rows being shorter than two lines.
+  `./layout-3-qa-fixes.md`, entry 5.)*
 - **`live=1`** (puppeteer clicks, `n=20`, all three widths): *View full set →* reveals the card's
   seven rows (the link goes); Next turns to the *All* card and Prev back, wrapping both ways; at
   390 the centre card's reveal grows all three seats to 599; cursors pointer. `n=0` prints *No
@@ -1614,7 +1621,9 @@ sections are where the twins' dark-ground assumptions break (trap 6).
     line in our 314 column where the frame's 294 wraps them: 352.1 / 337 against 367 / 352.
     The twins' 390 carries the same width now; Grunge's "exact" 346-wide rows predate JP-038;
   - the twins': the section's top pad is the shared `padY` 80 / 56 / 44, not 56 × 0.82 / 30 /
-    60; the seeded intro is one line and the heading is the artist's; the pill reads *Book Now*
+    60 *(since JP-103, 2026-10-06, the desktop top is the frame's 56 × 0.82 = 46 under all three
+    templates, in the foot's arm; 768 and 390 keep `padY`; `./layout-3-qa-fixes.md`, entry 6)*;
+    the seeded intro is one line and the heading is the artist's; the pill reads *Book Now*
     (`cta1`), 159.4 wide against *Book*'s 114.8; the unit is `/event` where the frame types
     "— £1,400"; the capsule carries the leading *All* (172 against 135 wide); sections **923.7
     / 977.7 / 1326.3** against 909.4 / 975 / 1383;
@@ -1750,6 +1759,14 @@ sections are where the twins' dark-ground assumptions break (trap 6).
   - **390: the frame's row carries *Tickets →* and an *Upcoming* chip under it** (123); ours is
     84 — the hour after the city (the twins' 390 call) and no *Tickets →* on an unlinked gig
     (JP-045) — so the section is 839.5 against 883;
+    *Reversed* (JP-106, user call, 2026-10-06, [`layout-3-qa-fixes.md`](./layout-3-qa-fixes.md)
+    entry 7): the rows carry the frame's Upcoming / Past pill on the published tab, so the 390 row
+    is the frame's 123 (the section 878.3), and the 768 venues wrap beside it as the frame's do,
+    between words where Fisterra broke WAREHO / USE. On the seed (no links) the lit HIDDEN /
+    WAREHOUSE and THE DEAF / INSTITUTE take two lines (92.2 / 93.4, the frame's 117 / 94), and
+    with *Tickets →* on every row all five wrap (92.2–110.2). The section stays 824.6 either way, the panel
+    being the taller column; the frame's 858 is six rows to our five gigs. The canvas draws no
+    pill.
   - the twins': the chip row is Retro's normalisation (the lit *All* at Body/SM, 22.2 against
     the frame's Body/MD 25.4), so the list stands 3 / 4 / 3 higher; the 768 data bar wraps the
     seeded line (61.6 against 45); the head prints `vm.title`'s "Manchester" where the frame

@@ -372,8 +372,9 @@ mutated through a single `patch()` helper.
   and thumbnail strip, layout 3's fullscreen viewer, and layout 1's 390 source row, which
   scrolls sideways only when live and clips on the canvas** (below — the file's one scroll
   container, JP-087), the **events map's pager, its pin/row pairing, its map zoom
-  (layouts 3 and 4, and Lime's, Grunge's, Editorial's and Pop's layout 2) and — in layout 3 alone — its city chip row and its See all gigs reveal**
-  (below),
+  (layouts 3 and 4, and Lime's, Grunge's, Editorial's and Pop's layout 2) and — in layout 3 alone — its city chip row, its See all gigs reveal
+  and its rows' Upcoming / Past pill** (below; the pill is `vm.gigs[].status`, which
+  `sectionVm` derives only when live, off `today`, the calendar's rule, JP-106),
   the **pricing section's chip row and Book pill** (below — the row filters the deck in layout 1,
   picks the single big plan in layout 2 and filters the stack in layout 3, where it also moves
   which row is featured),
