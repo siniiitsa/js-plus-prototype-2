@@ -87,7 +87,7 @@ the photo; `964-73037` 1440 Base card beside the build's MANCHESTE / R, UK.
 | 1 | JP-108 · JP-109 (scope) · JP-110 | 390 card past the photo · long name under the seal · Base breaks inside a word | **JP-108 a recorded user call** (2026-09-18) whose cost the tester has found; **JP-109 confirmed** (the fit ignores the seal, and is Editorial's only); **JP-110 confirmed, but the frames disagree** (1440 breaks between words, 390 inside one) | — (decisions) | **user: JP-108 A; JP-109 (ii), scope A; JP-110 A, no floor, three templates** (2026-10-06) | **done** (all three reproduced on HEAD; **the 768 seed reproduces JP-109**, E R under the seal; *WOLVERHAMPTON* breaks under Lime and Grunge too; the twins' 390 bios FILL) |
 | 2 | JP-109 | Long name under the seal at 768 | **Confirmed, `s.limeTree`**: the shrink term's measure is the column; the seal sits inside it at 768 alone. **The seed's own line reaches it** (663 against the disc's 591), so (ii) | S | **(ii)** the line fit to the room beside the seal, held by a floor, capped by the word fit; **A** (Lime and Grunge widened; Retro's half named) | **done** (the 768 h1 boxed beside the disc, its line fitted 16 short, floor 0.6 × ramp; seed digest 1 of 90 a surface, Editorial 768; no glyph under the disc at seven widths under three templates) |
 | 3 | JP-110 | Base value breaks inside a word | **Confirmed, `s.limeTree`**: the numeral is the flat ramp, so `anywhere` is what keeps a wide word inside the cell | S | **A** (widest-word fit, no floor; Lime, Grunge, Editorial; Pop's seed break named) | **done** (per-row `wordEms`, the cell an `inline-size` container; seed digest 2 of 60 a surface, Editorial 1440 and 390; *Wolverhampton* 6, the cells that broke; no word breaks inside itself in the real app, three values × three widths × three templates, nor on the 1088 canvas) |
-| 4 | JP-108 | 390 card past the photo | **Confirmed, `s.limeTree`**: the photograph is a fixed 400 band; the panel is content-tall below it | S–M | **A** (the photo fills the card; the 340 stage kept) | open |
+| 4 | JP-108 | 390 card past the photo | **Confirmed, `s.limeTree`**: the photograph is a fixed 400 band; the panel is content-tall below it | S–M | **A** (the photo fills the card; the 340 stage kept) | **done** (the stage div `inset: 0` unless the phone draws no picture; seed digest 3 of 60 a surface, themes 1–3 at 390, two rows each, roots unchanged; `&noimage=1` 0 of 60; the before / after shots approved, *commit as is*) |
 | 5 | — | End-of-pass sweep | — | S | — | open |
 
 **Why this order:**
@@ -690,7 +690,57 @@ As entry 1 decides. Screenshot the 390 card under Editorial, Lime and Grunge bef
 `&noimage=1` too. Put the before / after pair in front of the user before committing: where the face
 lands is a visual call. Check that the 768 and 1440 cards are byte-identical in the digest.
 
-**Settled**: —
+**Settled** (2026-10-06, on `d9b1dda`).
+- **The code**, A as decided. It is one condition in the bio's layout-4 `s.limeTree` block, on the
+  stage div (`EncoreSection.jsx:6080`). That div is `inset: 0` at every width now, unless the phone
+  draws no picture: `s.mob && !s.image` keeps the `top: 0; height: stageH` band.
+  - The card's `paddingTop: stageH − stageOver` (340, `:6077`) is untouched, so the 2026-09-18
+    clear stage, the panel's place and every root height are HEAD's.
+  - **An emptied slot keeps the 400 band.** This is the "placeholder box stays 400 tall" option.
+    `Photo` centres its initials, so in the band they sit at 170–230 down the card, inside the
+    340 stage. In the 733 card they would fall under the panel. `s.image` is the key `Photo`
+    reads (no `src`, no `avatar`), and it is `undefined` for both Remove's `null` and
+    `&noimage=1`, which writes the same `null` (`preview.jsx:206`).
+  - The comment over the padding (`:6066`–`6076`) now records the amendment. `stageH`'s comment
+    names the stage "clear" rather than "photo".
+- **Digest** (bio, all four arches, themes **0–4 explicit**, three widths, 60 files a surface, four
+  surfaces: canvas, `live=1`, `&noimage=1`, `&noimage=1&live=1`). The harness was proved first: a
+  fresh HEAD worktree on :5174 against the unedited tree on a fresh :5177 came to **0 of 60** on
+  each surface (port masked). After, the tree against HEAD:
+  - **Canvas and `live=1`: 3 of 60 each**, bio `arch 3` × 390 × themes 1, 2, 3, as named. In each
+    file the only rows that move are two: the stage div and its `img`, 400 → 735 (Lime) / 733
+    (Grunge, Editorial) tall, same x / y. Roots are unchanged.
+  - **`&noimage=1`, both surfaces: 0 of 60.** The placeholder's band is untouched.
+  - Every 768 and 1440 file is byte-identical, and themes 0 and 4 do not move.
+- **The real app** (puppeteer from the scratchpad, `createRequire` on `source/package.json`;
+  reduced motion on the editor and the popup). Card 4 → Publish → Open, then the tab at 1440, 768
+  and 390, under Editorial, Lime, Grunge and Retro (the control). Then the bio's `image` was
+  written `null` through `st`'s dispatch, and Publish → Open again.
+  - **Seed, 390:** under all three, the `img` rect equals the card rect (370 × 733 / 735 / 733),
+    at the default `50% 50%`. The panel is HEAD's (340 down, 383 / 385 tall).
+  - **Emptied, 390:** the stage is still the 400 band, and the initials are where they were on
+    HEAD to the 0.1 (Editorial 507.8, Lime 426.3, Grunge 352.3 from the section's top: the
+    card's 170 in each case).
+  - Every other measure (root, card, stage, panel, `scrollWidth`) at 1440 and 768, seed and
+    emptied, is HEAD's, under all four templates. Retro is unchanged at 390 too. No errors on
+    the editor or the popup.
+- **The visual call** (user, 2026-10-06: *commit as is*). The before / after shots of the 390 card,
+  seed and emptied, were put in front of the user before the commit.
+  - Editorial's singer crops tighter, her face higher in the stage. The photograph shows in the 10
+    gutters round the opaque panel, down to the foot, as in `977:13164`.
+  - Lime's DJ scales up, his face in the stage, and the blurred photograph now carries the whole
+    translucent panel. The copy stays legible.
+  - Grunge's drummer loses the most at the sides: the seated drummer is cut at the left edge.
+    Every face stays above the panel. An `objectPosition` for Grunge was offered and declined.
+  - The emptied shots do not change.
+- **Build.** `npm run build` is clean. The root `index.html` is not refreshed.
+- **Docs.** The block's comment (above). *Amended* pointers at [`layout-4.md`](./layout-4.md)
+  section 2 (the 733 card's named diff), at [`../grunge/layout-4.md`](../grunge/layout-4.md)
+  `:890` (the 400 stage), with a still-true clause on its `&noimage=1` line, and at
+  [`../lime/layout-4.md`](../lime/layout-4.md)'s bio measurement bullet. `f74a4ff` wrote no bio
+  bullet, so that pointer also records the 2026-09-18 call, which until now lived only in the
+  commit message and the block's comment. `notes/templates.md`, CLAUDE.md and README state no
+  stage, so nothing is owed there.
 
 ## Entry 5 — the end-of-pass sweep
 

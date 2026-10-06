@@ -888,10 +888,14 @@ them.
     three widths, so the 768 and 390 heads are the frame's height less the Genres label.*
   - The seeded two paragraphs make the panel content-tall: 282.8 / 305.5 / 383.
   - The 390 photo stage is 400 tall (Lime's user call), so the sheet is 942 against the frame's
-    778.
+    778. *Amended by JP-108 (user call, 2026-10-06,
+    [`../editorial/layout-4-qa-fixes.md`](../editorial/layout-4-qa-fixes.md) entry 4): the
+    photograph fills the whole card, as in the master, and the drummer's blurred picture shows
+    through the panel. The 340 clear stage above the panel stays, so the sheet is still 942.*
 - **`live=1`**: only Listen changes (span → `<a href="#media">`) at three widths. `&noimage=1`
   (looked at, 390): the red well under the grain, the 400 stage band a shade lighter (`Photo`'s
-  placeholder), `KM` in white. `page-check.mjs Grunge 3`: four cards,
+  placeholder), `KM` in white. *(Still true after JP-108: an emptied slot alone keeps the 400
+  band, so its initials stay above the panel.)* `page-check.mjs Grunge 3`: four cards,
   no errors or warnings, About → `#bio` and Listen → `#media` scroll, the 390 burger 1 → 11.
 - **Digest**: themes 0, 1, 3 and 4 zero files, canvas and `live=1`. Theme 2 moved exactly
   `bio_arch_3` at three widths on both surfaces.

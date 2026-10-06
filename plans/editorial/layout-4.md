@@ -1197,6 +1197,10 @@ From the walks and the renders — impressions to confirm, not measurements.
     the 30 padding, where the frame measures 27 / 37.
   - The 390 card keeps Lime's 400 photo stage (a user call), so the card is 733 against 536 and the
     section 1110.8 against 914. The seeded meta row also wraps to two lines there.
+    *Amended by JP-108 (user call, 2026-10-06, [`layout-4-qa-fixes.md`](./layout-4-qa-fixes.md)
+    entry 4): the photograph fills the whole 733 card, as in the master, and runs on under the
+    panel. The 340 clear stage above the panel stays, so the card and section heights are
+    unchanged. An emptied slot alone keeps the 400 band, for its initials.*
   - The meta row prints "DJ · Live Act" and "Performing since June 2021" (JP-081's reply).
 - **`live=1`**: Listen is `<a href="#media">` in paper on the dimmed glass at all three widths.
   `&noimage=1` at 390 puts paper `KM` on the dark stage. `&who={"tags":""}` drops Genres and the

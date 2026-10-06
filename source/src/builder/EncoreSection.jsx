@@ -5954,7 +5954,7 @@ function Bio({ s }) {
       return <>{s.brand.slice(0, i)} <span style={{ color: desk ? s.ac : s.bg }}>{s.brand.slice(i + 1)}</span></>
     }
     const panelPad = u(s.mob ? 20 : 30)
-    // The phone's photo stage (below): its height, and how far the panel
+    // The phone's clear stage (below): its height, and how far the panel
     // stands up into it.
     const stageH = 400
     const stageOver = 60
@@ -6066,12 +6066,18 @@ function Bio({ s }) {
           // At 390 the content-tall panel covered all but the top ~130 of the
           // photograph, cutting the artist off at the forehead (user call,
           // 2026-09-18). So the phone keeps a clear stage above the panel: the
-          // photograph fills a fixed top band and the panel starts `stageOver`
-          // above that band's foot, its blur carrying the picture's last strip.
+          // panel starts `stageH − stageOver` down the card. The photograph
+          // fills the whole card, as at 768 and 1440 and in all three 390
+          // masters, so it runs on under the panel to the card's foot (JP-108,
+          // user call, 2026-10-06, amending the 2026-09-18 call, whose
+          // photograph filled a `stageH` top band). The seeds' faces stay in
+          // the stage at the centred cover. Only an emptied slot keeps the
+          // band, because `Photo` centres its initials, and in the card's full
+          // height they would sit under the panel.
           ...(s.mob ? { paddingTop: `${stageH - stageOver}px` } : null),
           ...col('0', { justifyContent: 'flex-end', alignItems: 'center' }),
         }}>
-          <div style={s.mob
+          <div style={s.mob && !s.image
             ? { position: 'absolute', top: 0, left: 0, right: 0, height: `${stageH}px` }
             : { position: 'absolute', inset: 0 }}>
             <Photo s={s} initialsSize={desk ? 72 : tab ? 56 : 40} ink={s.tx} />
