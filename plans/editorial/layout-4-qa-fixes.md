@@ -86,7 +86,7 @@ the photo; `964-73037` 1440 Base card beside the build's MANCHESTE / R, UK.
 |---|---|---|---|---|---|---|
 | 1 | JP-108 · JP-109 (scope) · JP-110 | 390 card past the photo · long name under the seal · Base breaks inside a word | **JP-108 a recorded user call** (2026-09-18) whose cost the tester has found; **JP-109 confirmed** (the fit ignores the seal, and is Editorial's only); **JP-110 confirmed, but the frames disagree** (1440 breaks between words, 390 inside one) | — (decisions) | **user: JP-108 A; JP-109 (ii), scope A; JP-110 A, no floor, three templates** (2026-10-06) | **done** (all three reproduced on HEAD; **the 768 seed reproduces JP-109**, E R under the seal; *WOLVERHAMPTON* breaks under Lime and Grunge too; the twins' 390 bios FILL) |
 | 2 | JP-109 | Long name under the seal at 768 | **Confirmed, `s.limeTree`**: the shrink term's measure is the column; the seal sits inside it at 768 alone. **The seed's own line reaches it** (663 against the disc's 591), so (ii) | S | **(ii)** the line fit to the room beside the seal, held by a floor, capped by the word fit; **A** (Lime and Grunge widened; Retro's half named) | **done** (the 768 h1 boxed beside the disc, its line fitted 16 short, floor 0.6 × ramp; seed digest 1 of 90 a surface, Editorial 768; no glyph under the disc at seven widths under three templates) |
-| 3 | JP-110 | Base value breaks inside a word | **Confirmed, `s.limeTree`**: the numeral is the flat ramp, so `anywhere` is what keeps a wide word inside the cell | S | **A** (widest-word fit, no floor; Lime, Grunge, Editorial; Pop's seed break named) | open |
+| 3 | JP-110 | Base value breaks inside a word | **Confirmed, `s.limeTree`**: the numeral is the flat ramp, so `anywhere` is what keeps a wide word inside the cell | S | **A** (widest-word fit, no floor; Lime, Grunge, Editorial; Pop's seed break named) | **done** (per-row `wordEms`, the cell an `inline-size` container; seed digest 2 of 60 a surface, Editorial 1440 and 390; *Wolverhampton* 6, the cells that broke; no word breaks inside itself in the real app, three values × three widths × three templates, nor on the 1088 canvas) |
 | 4 | JP-108 | 390 card past the photo | **Confirmed, `s.limeTree`**: the photograph is a fixed 400 band; the panel is content-tall below it | S–M | **A** (the photo fills the card; the 340 stage kept) | open |
 | 5 | — | End-of-pass sweep | — | S | — | open |
 
@@ -603,7 +603,83 @@ changes, so `reach.mjs` is not owed. In the real app: card 4, *Map* → *Stats* 
 set to *Wolverhampton*, *Manchester, UK* and a 20-letter word, at 1440, 768 and 390. Record that no
 value breaks inside a word, and each fitted size.
 
-**Settled**: —
+**Settled** (2026-10-06, on `3866e77`).
+- **The code**, A as decided:
+  - `vm.mapStats[]` carries **`wordEms`** (`EncoreBuilder.jsx:1795`): `navFace` over the value's
+    words, the widest, per row. It is the quotes' `wordEms` shape and sits beside them, not beside
+    `vm.titleWordEms`, which reads `vm.title` alone. It is set under `vm.limeTree` and undefined
+    elsewhere. The tables upper-case internally, so the CSS `uppercase` under Grunge and Editorial
+    needs nothing more.
+  - In the map's layout-4 `s.limeTree` block, the numeral's token is held unfaced as
+    `numeralSize` (`EncoreSection.jsx:22459`; `23px` under Editorial at 390, `26px` under the
+    twins, `s.dispSm` wider). Each stat cell is `containerType: 'inline-size'` (`:22570`), under
+    all three templates. The cell is a `minmax(0, 1fr)` grid item, so the container moves nothing.
+  - The value's size is `faced(s, min(numeralSize, calc(100cqi / wordEms)))` (`:22594`), with
+    `faced()` outside the `min()`. `overflowWrap: 'anywhere'` stays. The comment over it replaces
+    the old *"306 in its 276 … accepted"* lines.
+  - Retro's half (`:22806`ff., Retro and Pop) is untouched.
+- **The table errs safe.** `gloockEms` reads MANCHESTER, at 7.202 and WOLVERHAMPTON at 9.518. Entry
+  1's rendered measurements were 7.15 and 9.47, so a fitted Gloock word ends 1–3.6px inside its
+  cell. Bebas and Anton land 2–3.6px inside too (below).
+- **Digest** (map, all four arches, themes **0–4 explicit**, three widths, canvas and `live=1`,
+  60 files a surface). The harness was proved first: a fresh HEAD worktree on :5174 against
+  the unedited tree on a fresh :5177 came to **0 of 60** on each surface, for the seed and for
+  `&cj=` with the Base value *Wolverhampton*. The image `src` rows carry the port, so that part
+  of the URL is masked before comparing. *Wolverhampton* against the seed is the positive
+  control: 15 of 60, map `arch 3` under every theme. After, the tree against HEAD:
+  - **The seed: 2 of 60 on each surface**, map `arch 3` × theme 3 at 1440 and 390, as predicted.
+    768 does not move, since MANCHESTER, fits its 276 at the ramp, and themes 0, 1, 2 and 4 do
+    not move.
+    - At 1440 the value goes from 35.78 to **28.91** (two lines, 74 → 59.8 tall). The cell keeps
+      its 227.5 floor, so only the bottom-aligned label and value rows move.
+    - At 390 it goes from 22.24 to **16.52** (two lines, 50.6 → 37.6). The second row of cells is
+      117.4, where it was 130.4, so the panel, the card and the root are **13 shorter**
+      (863.2 → 850.2).
+  - **_Wolverhampton_: 6 of 60 on each surface**, exactly the cells entry 1 saw break: Editorial
+    at all three widths, Lime at 1440 and 390, and Grunge at 390. Each now sets one line inside
+    its cell. Lime's 768 and Grunge's 1440 and 768 fit on HEAD and do not move. Themes 0 and 4
+    do not move. At 390 the roots are shorter by 28.6 (Lime), 28.6 (Grunge) and 25.3
+    (Editorial). Editorial's 768 root is 11.8 shorter.
+- **The real app** (puppeteer from the scratchpad, `createRequire` on `source/package.json`, so
+  no file in `source/scripts/`; reduced motion on the editor and the popup). The run used card 4,
+  with the stats written through `st`'s dispatch and the Base value replaced, then Publish → Open,
+  and the tab at 1440, 768 and 390. The same walk ran on HEAD's :5174 for the before column. For
+  each word it took a `Range`'s rects (more than one means the word broke inside itself), each
+  word's right edge against the cell's content box, and the document's `scrollWidth`. The values
+  were *Manchester, UK*, *Wolverhampton* and *Llanfairpwllgwyngyll*, 20 letters.
+  - **Under Lime, Grunge and Editorial: no word breaks inside itself, no word passes its cell's
+    content box, and no width scrolls sideways.** That holds for all three values at all three
+    widths. HEAD broke 17 of the 27.
+  - **Retro (the control) is unchanged**: the same sizes, and the same breaks inside
+    *Wolverhampton* at 1440 and 390 and inside the 20-letter word at all three widths (note 4).
+  - **The editor's 1088 Desktop canvas** (a 1440 window, the panel open), which `digest.mjs`
+    never renders, has a 185.2 content box. Editorial's seed broke MANCHEST / ER there too, at
+    35.78. It now sets MANCHESTER, / UK at **25.71**, and Lime's and Grunge's seeds do not move.
+    *Wolverhampton* sets 19.46 / 34.39 / 28.34 and the 20-letter word 14.09 / 23.96 / 20.11
+    (Editorial / Lime / Grunge), one line each, where HEAD broke all six.
+  - No errors on the editor or the popup.
+
+  | Faced px (HEAD → after) | 1440 (content 208.2 layout) | 768 (276) | 390 (119) |
+  |---|---|---|---|
+  | Editorial *Manchester, UK* | 35.78 MANCHEST / ER, UK → **28.91** MANCHESTER, / UK | 34.81, MANCHESTER, / UK | 22.24 MANCHES / TER, UK → **16.52** MANCHESTER, / UK |
+  | Editorial *Wolverhampton* | 35.78, broken → **21.87** | 34.81, broken → **29.00** | 22.24, broken → **12.50** |
+  | Editorial *Llanfairpwllgwyngyll* | 35.78, three lines → **15.84** | 34.81, broken → **21.00** | 22.24, three lines → **9.05** |
+  | Lime *Manchester, UK* | 41, MANCHESTER, / UK | 40, one line | 26, two lines |
+  | Lime *Wolverhampton* | 41, broken → **38.66** | 40, one line | 26, broken → **22.10** |
+  | Lime *Llanfairpwllgwyngyll* | 41, broken → **26.93** | 40, broken → **35.71** | 26, broken → **15.40** |
+  | Grunge *Manchester, UK* | 30.75, one line | 30, one line | 19.5, two lines |
+  | Grunge *Wolverhampton* | 30.75, one line | 30, one line | 19.5, broken → **18.21** |
+  | Grunge *Llanfairpwllgwyngyll* | 30.75, broken → **22.60** | 30, broken → **29.97** | 19.5, broken → **12.92** |
+
+  Entry 1 predicted 29.13 / 16.65 for the seed and 22.0 / 29.1 / 12.6 for *Wolverhampton*, from
+  its measured ems. The table's slightly larger ems explain the small shortfall. The cost of no
+  floor is the 20-letter word at 390: Editorial sets it at 9.05, under the cell's 12px sub line.
+- **Build.** `npm run build` is clean. The root `index.html` is not refreshed.
+- **Docs.** The value's comment (above). `notes/map.md`'s stat-wall paragraph. An *answered*
+  pointer at [`display-face.md`](./display-face.md) step 4, layout 4, on the 768 MANCHESTER, UK
+  line (the 768 wrap is unchanged; the 1440 and 390 breaks are fitted). An *amended* pointer on
+  [`layout-4.md`](./layout-4.md) section 6's 390 cell height. Designer notes 1 and 4 (below). No
+  CLAUDE.md or README line states the flat numeral, and no field moves, so `reach.mjs` is not owed.
 
 ## Entry 4 — JP-108: the 390 photograph
 
@@ -641,7 +717,13 @@ Written as each entry settles. Two are already known to be wanted:
    *Entry 1 (user, 2026-10-06): answered by a fit to the widest word, with no floor. At 390 the seed
    sets MANCHESTER, / UK at 16.65 rather than the frame's MANCHEST / ER at 23, and a long city such
    as WOLVERHAMPTON sets at 12.6. The note tells the designer this, and asks whether a floor is
-   wanted.*
+   wanted.* *Entry 3 (done): every value on the stat wall shrinks to fit its widest word, under
+   Lime, Grunge and Editorial, so a value wraps only between words and never inside one. The
+   seed sets MANCHESTER, / UK at every width: 28.9 at 1440, as the frame draws it, and 16.5 at
+   390, where the frame's MANCHEST / ER is departed from on purpose. There is no floor:
+   WOLVERHAMPTON sets 12.5 in the 390 cell, and a 20-letter town 9, under the cell's 12px sub
+   line. Is a floor wanted, and if so, should a word longer than the floor allows break inside
+   itself there, or overrun the cell?*
 2. **A long name beside the 768 seal** (JP-109's residual). The frame gives the name the full column,
    and the seal stands in its right ≈ 150 at the name's height. Should a multi-word line stop short
    of the seal, as a single word now does? *Entry 1: under (ii) the line is fitted to the room beside
@@ -657,3 +739,5 @@ Written as each entry settles. Two are already known to be wanted:
    Featherstonehaugh*'s U G H, ending at 687 against the disc's 591.
 4. **Pop's Base value** (JP-110, named, not fitted). Retro's half keeps `overflowWrap: 'anywhere'`,
    and Pop's Titan One breaks the seed MANCHESTE / R, UK at 1440 and MANCHESTER / , UK at 390.
+   *Entry 3: Retro breaks a typed long city inside the word too (WOLVERHAMPTON at 1440 and 390,
+   a 20-letter word at every width). Its seed does not break.*

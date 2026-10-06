@@ -22454,9 +22454,10 @@ function EventsMap({ s }) {
         letterSpacing: '-0.06em', textTransform: 'uppercase', whiteSpace: 'nowrap',
       }
       const bodySmL = { fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4, letterSpacing: s.dls }
-      const numeral = s.mob
-        ? { fontSize: faced(s, ed ? '23px' : '26px'), lineHeight: facedLh(s, 1.1) }
-        : { fontSize: faced(s, s.dispSm), lineHeight: facedLh(s, 1) }
+      // The numeral's token, unfaced: the stat value fits it to its widest
+      // word (below), and `faced()` wraps the fit.
+      const numeralSize = s.mob ? (ed ? '23px' : '26px') : s.dispSm
+      const numeralLh = facedLh(s, s.mob ? 1.1 : 1)
       // Outer first: diameter, inside stroke, opacity.
       const ringLine = [[480, 1, 0.3], [300, 1.5, 0.5], [140, 2, 0.8]]
 
@@ -22565,6 +22566,8 @@ function EventsMap({ s }) {
                 background: s.box1, borderRadius: u(G.cellR),
                 ...(ed ? { position: 'relative' } : { boxShadow: ring(G.cellRing) }),
                 padding: `${u(18)} ${u(20)}`, alignItems: 'flex-start', minWidth: 0,
+                // The value's measure (JP-110): `100cqi` is the content box.
+                containerType: 'inline-size',
                 ...(s.mob
                   ? { justifyContent: 'space-between' }
                   : { justifyContent: 'flex-end', minHeight: u(G.cellMin) }),
@@ -22575,14 +22578,25 @@ function EventsMap({ s }) {
                 {!!st.label && <span style={{ ...chipL, whiteSpace: 'normal', overflowWrap: 'anywhere' }}>{st.label}</span>}
                 {!!st.value && (
                   <span style={distressed(s, {
-                    fontFamily: s.display, ...numeral, letterSpacing: s.dls, overflowWrap: 'anywhere',
-                    color: G.num, ...upper,
+                    fontFamily: s.display, lineHeight: numeralLh, letterSpacing: s.dls,
+                    // Fitted to the value's widest word in the cell (JP-110,
+                    // user call, 2026-10-06; `st.wordEms`, `navFace`'s table),
+                    // `titleWordEms`' rule: the token is the ceiling, and a word
+                    // wider than the cell shrinks the value until it fits, so it
+                    // wraps between words and never inside one. No floor, also
+                    // the user's call: a long city at 390 sets small. `faced()`
+                    // stays outside the `min()`, as the ems are faced. The seeded
+                    // MANCHESTER, outran Gloock's 1440 and 390 cells and broke
+                    // inside the word; it now sets MANCHESTER, / UK at all three
+                    // widths, as the 1440 frame does (its 390 frame breaks
+                    // MANCHEST / ER, departed from on purpose). `anywhere` is the
+                    // last resort for a word the table under-reads.
+                    fontSize: faced(s, st.wordEms ? `min(${numeralSize}, calc(100cqi / ${st.wordEms}))` : numeralSize),
+                    overflowWrap: 'anywhere', color: G.num, ...upper,
                     // Gloock sits 0.06–0.09em under the frame's face at lh 1 and
                     // 1.1, over the sub 8 below: layout 3's lift, glyphs only,
                     // lifted to 0.190 / 0.193 / 0.241, each under 0.5px off
                     // (display-face.md step 4, layout 4; Noto took 0.09em).
-                    // The seeded MANCHESTER, UK sets two lines at 768 too (306
-                    // in its 276), as the 1440 and 390 frames set it: accepted.
                     ...(ed ? { position: 'relative', top: '-0.07em' } : null),
                   })}>{st.value}</span>
                 )}

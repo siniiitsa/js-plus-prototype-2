@@ -1781,11 +1781,20 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // upper-cases the label, and the frame's value and sub are its own casing.
   vm.mapStats = (Array.isArray(c.stats) ? c.stats : MAP_STATS_4)
     .filter((r) => !blankRow(r, STAT_KEYS))
-    .map((r) => ({
-      label: String(r?.label ?? '').trim(),
-      value: String(r?.value ?? '').trim(),
-      sub: String(r?.sub ?? '').trim(),
-    }))
+    .map((r) => {
+      const value = String(r?.value ?? '').trim()
+      return {
+        label: String(r?.label ?? '').trim(),
+        value,
+        sub: String(r?.sub ?? '').trim(),
+        // The value's widest word in the display face's ems × `faceK`
+        // (`navFace`'s table) — the quotes' `wordEms`, per row (JP-110, user
+        // call, 2026-10-06). The `s.limeTree` stat cell fits the numeral to it,
+        // so a city wraps between words and never inside one. Undefined off
+        // Lime, Grunge and Editorial.
+        wordEms: vm.limeTree ? +Math.max(0, ...value.split(/\s+/).map(navFace)).toFixed(3) : undefined,
+      }
+    })
   // Gigs to a page in the compact tile. It is PINS.length rather than a literal
   // five: a page's worth of gigs is what one set of distinct pin positions can
   // light, so the two counts have to move together.

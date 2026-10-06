@@ -1622,7 +1622,10 @@ From the walks and the renders — impressions to confirm, not measurements.
     379 (379); cells 316 × 140 (316 × 140); numerals 36px; ticker 62.3 (63).
   - 390: h2 370 × 85.4 on two lines (86); card 370 × 581.5 (581); viewport 263 (263), panel 318.5
     (318); cells 159 × 105.1 and 130.4 (105 / 130), hugging with `space-between`; numerals 23px;
-    ticker 62.3 (63).
+    ticker 62.3 (63). *Amended by JP-110 (2026-10-06,
+    [`layout-4-qa-fixes.md`](./layout-4-qa-fixes.md) entry 3): each value is fitted to its widest
+    word, so the seeded BASE sets MANCHESTER, / UK at 28.91 (1440) and 16.52 (390) rather than
+    breaking inside the word, and the 390 second row is 117.4, not 130.4.*
   - The root pads are the twins' padY (80 / 56 / 44 over the head against the frame's 80 / 80 /
     30), named in their sessions. No sideways scroll at any width.
 - **`live=1&n=8`** at desktop and 390 (puppeteer, probe deleted):
