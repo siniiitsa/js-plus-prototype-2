@@ -37,14 +37,14 @@ import {
   THEMES, SCHEMES_OF, CATS, NVAR, FLAG, FIELDS, TITLES, DEFS, TRACKS, TAGS, TAG_LABELS, HERO_CTA, BIO_CREDIT, BIO_CTA,
   HERO_AVAIL, FACE_TITLE, FACE_BODY, PLACE_BODY, BIO_TAG,
   BIO_SINCE_LABEL, BIO_ROLE_LABEL, BIO_BASE_LABEL, BIO_ABOUT_LABEL, BIO_TAGS_LABEL, MEDIA_LIST_LABEL,
-  BIO_REF_LABEL, FORM_TYPE_LABEL, mapKickerSeed, mapListLabelSeed, testiKickerSeed,
+  BIO_REF_LABEL, FORM_TYPE_LABEL, mapKickerSeed, mapListLabelSeed, mapRadiusSeed, testiKickerSeed,
   MAP_HOME_LABEL, MAP_HOME_CAPTION, MAP_VENUE_LABEL, MAP_VENUE_CAPTION, MAP_RADIUS_LABEL, MAP_TIME_LABEL,
   MAP_FEE_LABEL, MAP_VENUE_CTA, MAP_ROUTE_CTA,
   PRICING_KICKER, PRICING_FEATS_LABEL, CAL_DATE_LABEL, CAL_AVAIL_LABEL, CAL_PROMPT,
   MEDIA_CHIP_LABEL, MEDIA_COUNT_LABEL, MEDIA_TOTAL_LABEL, GALLERY_RAIL_LABEL, TIER_KEYS, tiersSeed, limeTreeTheme, PRICE_UNIT, QUOTES,
   CITIES, PINS, EXAMPLE_PAGE,
   NOW_PLAYING, TRACK_AUDIO, SONGS, REP_ALL,
-  GIGS, MAP_RADIUS, MAP_BASE, MAP_TERMS, MAP_TRAVEL_TIME, MAP_FEE, directionsUrl, GALLERY_SOURCES,
+  GIGS, MAP_BASE, MAP_TERMS, MAP_TRAVEL_TIME, MAP_FEE, directionsUrl, GALLERY_SOURCES,
   MAP_STATUS, MAP_UPDATED, MAP_RINGS, MAP_EXPAND,
   PRICING_REVIEWS, PRICING_RATING, PRICING_CTA, PRICING_NOTE, PRICING_OFFER,
   FORM_PROMISES, FORM_STEPS, STEP_KEYS, FORM_FIELDS, FORM_FIELDS_CARD, FORM_FIELDS_4, FORM_FIELD_KEYS, FORM_EMAIL_LABEL, FORM_KINDS, FORM_TYPES, FORM_MESSAGE, FORM_MSG_LABEL,
@@ -1780,7 +1780,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // its fit runs the one-line label 1px into the gap; a label free to wrap
   // breaks there onto two lines and lifts the pill 1.6px.
   vm.mapVenueCtaWraps = vm.mapVenueCta.length > MAP_VENUE_CTA.length
-  vm.mapRadius = cv('radius', MAP_RADIUS)
+  // JP-105 — layout 3's line under the map seeds its frames' "120 mi radius".
+  vm.mapRadius = cv('radius', mapRadiusSeed(d))
   vm.mapBase = cv('base', MAP_BASE)
   vm.mapTerms = cv('terms', MAP_TERMS)
   vm.mapTravelTime = cv('travelTime', MAP_TRAVEL_TIME)
@@ -4188,7 +4189,8 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                   // kicker joined it with JP-090 (mapKickerSeed), the
                   // testimonials' with JP-095 (a) (testiKickerSeed), and the
                   // map's list label with JP-095 (b) (mapListLabelSeed; gated on
-                  // `map`, since media carries a `listLabel` too). Layouts 3 and
+                  // `map`, since media carries a `listLabel` too), and the map's
+                  // coverage with JP-105 (mapRadiusSeed). Layouts 3 and
                   // 4's heads come ahead of the song count, which sectionVm's
                   // later assignment says the other way round (JP-070, JP-081).
                   const fallback = (f.k === 'title' || f.k === 'badgeText') && sec.cat === 'header' ? artistName
@@ -4208,6 +4210,7 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                     : f.k === 'button' && sec.cat === 'form' ? formBtnSeed(themeName, design)
                     : f.k === 'kicker' && sec.cat === 'map' ? mapKickerSeed(design)
                     : f.k === 'listLabel' && sec.cat === 'map' ? mapListLabelSeed(design)
+                    : f.k === 'radius' && sec.cat === 'map' ? mapRadiusSeed(design)
                     : f.k === 'kicker' && sec.cat === 'testimonials' ? testiKickerSeed(design)
                     : f.k === 'cta' && sec.cat === 'calendar' && design === 3 ? CAL_SEND_4
                     : f.k === 'rowCta' && sec.cat === 'pricing'

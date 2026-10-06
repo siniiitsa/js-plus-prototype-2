@@ -1227,7 +1227,16 @@ export const GIGS = [
 // What `blankRow()` asks of a GigsField row (the JP-051 sweep). `year` is in
 // it, so a row holding only a year is still a row.
 export const GIG_KEYS = ['venue', 'city', 'time', 'month', 'day', 'year', 'link']
+// The coverage an absent map `radius` stands for, by design (`d`). Layout 1's
+// frame prints "12 Mile Radius" beside its heading (964:58581), and layout 2
+// takes it too (its frame's "100 mi" is with the designer). Layout 3's line
+// under the map reads its frames' "120 mi radius" (964:68649 / 68681 / 68713 /
+// 68746, at every width), the rings' outermost (JP-105, user call,
+// 2026-10-06). mapKickerSeed()'s shape, called by sectionVm and EditPanel's
+// chain alike.
 export const MAP_RADIUS = '12 mile radius'
+export const MAP_RADIUS_3 = '120 mi radius'
+export const mapRadiusSeed = (d) => (d === 2 ? MAP_RADIUS_3 : MAP_RADIUS)
 export const MAP_BASE = 'Based in Manchester'
 export const MAP_TERMS = '120 mi standard · further on request'
 // Layout 3's map panel copy, the frame's own (964:68649), seeded and emptiable.
@@ -1248,6 +1257,8 @@ export const PRICING_OFFER = 'Save 15% on bundles'
 // Layout 2's stat row: the frame's Travel time and Booking fee cells, seeded
 // with its own copy. Max travel, the third cell, is MAP_RADIUS rather than a
 // field of its own, so a seeded page cannot claim two different coverages.
+// mapRadiusSeed() keeps that: a page shows the map at one layout, so it prints
+// one seed.
 export const MAP_TRAVEL_TIME = '~2 hrs'
 export const MAP_FEE = '£1,200'
 
@@ -2162,10 +2173,12 @@ export const FIELDS = {
     // "Coverage badge", after layout 1's reading, until JP-060: layout 2's Lime
     // block printed it in the travel card's chip as well as its Max travel, and
     // that chip now takes Retro's gig date. Layout 4's Coverage card went with
-    // JP-077: its wall is `stats`.
+    // JP-077: its wall is `stats`. JP-105: layout 3 seeds its frames' "120 mi
+    // radius" (mapRadiusSeed(), in sectionVm and EditPanel's chain alike).
     { k: 'radius',  l: 'Coverage', d: MAP_RADIUS, in: [0, 1, 2],
       hint: 'How far you travel. Layout 1 prints it beside the heading, layout 2 as Max travel on '
-          + 'the travel card, and layout 3 in the line under the map.' },
+          + 'the travel card, and layout 3 in the line under the map, where it starts from '
+          + '“120 mi radius”.' },
     // Layout 2's travel card prints the header's Location instead, under its
     // own "Based in" label (JP-096, user call, 2026-10-01): the frame's value is
     // the town alone, and this field's copy says "Based in" itself.

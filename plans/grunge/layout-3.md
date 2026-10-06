@@ -1274,7 +1274,9 @@ Append as the pass goes. Do not repeat layouts 1's and 2's, Lime's or Retro's bu
 - **Named diffs, Lime's and Retro's**: the left column runs **506.6** against the panel's 579
   because the seeded six gigs are shorter than the frame's, Lime's own case; the 768 data bar
   wraps the seeded "Based in Manchester · 6 pins · 120 mi radius" and runs 61.6 against the
-  master's 45, Retro's named diff through Lime; **the 390 section is 872.9 against 887, and the
+  master's 45, Retro's named diff through Lime (the seed read "12 mile radius" until JP-105,
+  2026-10-06, which made this line's "120 mi radius" true; it still wraps,
+  `../editorial/layout-3-qa-fixes.md` entry 4); **the 390 section is 872.9 against 887, and the
   14 is the type**, not a box — the rows are content-tall (Lime's open question 3) and Anton at
   0.75 sets a shorter line than Bebas Neue, so the list comes to 178.8 where Lime's measured
   186.8 (row 122.8 + pager 54), with the chip row, the head and the panel making up the other 6

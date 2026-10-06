@@ -100,7 +100,7 @@ Lime**, so always pass the list explicitly.
 | 1 | JP-104 · JP-106 · JP-103 (form) | 768 length stacked · no status pill, no ↗ · Enquiry → Testimonials 156 | **JP-104 a recorded call** (JP-044, kept by JP-066), which now buys nothing under Lime and Grunge; **JP-106's premise has changed** (gigs carry a `year` since JP-069), the ↗ a separate recorded drop; **JP-103 (form) unreconciled**: the triage measured it matching from like edges, but the tester's screenshot measures card foot to label on both sides, and the frame reading disagrees with that crop; re-read before asking | — (decisions) | **user: JP-104 D; JP-106 A (seed 2031), no pill on the canvas, the ↗ a reply; JP-103 (form) A** (2026-10-06) | **done** (reproduced on HEAD; the form frame re-read: card foot → label 166, so A) |
 | 2 | JP-107 | Artist not flagged at layout 3 | **Confirmed, chrome**: no per-column reach exists; the songs hint names the length but not the missing artist | S | **user: B** (the hint and its mirror; 2026-10-06) | **done** (reproduced; 0 digest files; verified on cards 1–4 under all five templates) |
 | 3 | JP-102 | Long hero name clipped / under the card | **Confirmed, `s.limeTree`**: the h1 is the flat ramp; the column already ends at the card, the word just ignores it. Named, not fitted, in `display-face.md:851` | S | **user: A** (JP-092's shape; Retro's half named; 2026-10-06) | **done** (reproduced; 0 digest files, the `&name=` control 6 per surface; 156 renders fitted to 0.005px) |
-| 4 | JP-105 | *12 mile radius* against 120mi rings | **Confirmed, a seed three frames disagree on**; parked for the designer on 2026-09-29, and this is the ticket that call waited for | S | **yes** — A (a per-layout seed), A + D (and `base` at layout 3) | open |
+| 4 | JP-105 | *12 mile radius* against 120mi rings | **Confirmed, a seed three frames disagree on**; parked for the designer on 2026-09-29, and this is the ticket that call waited for | S | **user: A** (`mapRadiusSeed(d)`; `base` unchanged; 2026-10-06) | **done** (reproduced on all five templates; 30 digest files, one row each; the 768 line still wraps, under all five) |
 | 5 | JP-104 (code) | 768 length stacked | **D**: one row, the title clamped to two lines, the length on the right | S | decided (entry 1) | open |
 | 6 | JP-103 (rest) | Repertoire → Gallery 97, Gallery → Pricing 100 | **Confirmed, `s.limeTree`**: both sides of the taupe band keep `padY` 80 at desktop where the frames pad 56 | S | no | open |
 | 7 | JP-106 (code) | no status pill | **A**: a derived pill, published tab only, the seed's year 2031 | M | decided (entry 1) | open |
@@ -722,6 +722,86 @@ move (map `arch 0` and `1`, 0 files).
 **Docs.** The `MAP_RADIUS` comment; the hint; `notes/map.md`; an *answered* pointer at
 `../grunge/layout-4-qa-fixes.md:2120` and its designer note 10.
 
+**Re-checked** (2026-10-06, HEAD `2bb44e7`). Every *Evidence* line held as the prompt re-based it:
+the composed line `EncoreSection.jsx:21560` (Lime, Grunge, Editorial) and `:21980` (Retro, Pop);
+`vm.mapRadius` / `vm.mapBase` `EncoreBuilder.jsx:1783`–`1784`; the chain's `mapKickerSeed` arm
+`:4209`; `mapKickerSeed` `data.js:999`, `MAP_RADIUS` `:1230`, the "one coverage" comment
+`:1249`–`1250`, the field `:2166` (`in: [0, 1, 2]`).
+
+**The frames** (`use_figma`, every text node under each master matching `pins|radius|mi`). All
+twelve read **"UK · 8 pins · 120 mi radius"** on one line: Retro `964:68649` / `977:23264` /
+`982:10389`, Lime `964:68681` / `984:10766` / `984:10797`, Grunge `964:68713` / `984:13926` /
+`984:13957`, Editorial `964:68746` / `984:16838` / `984:16869`. The node is 147–159 wide and hugs
+its text at 1440 and 768, and is a fixed 330 at 390. Every master's rings read 30mi / 60mi /
+120mi.
+
+**Reproduced** (2026-10-06, :5175 serving HEAD; puppeteer: template → card 3 → the Events Map's
+panel → Publish → Open, the popup at 1440, 768 and 390). Under Editorial, Lime, Grunge, Retro and
+Pop alike the *Coverage* box reads *12 mile radius*. The line reads "Based in Manchester · 5 pins ·
+12 mile radius" on the canvas and in the tab, at all three widths, against rings of 30mi / 60mi /
+120mi. It is **two lines at 768 under all five templates**, not only under Lime and Grunge, and
+one line at 1440 and 390. No console errors.
+
+**Measured before asking** (the harness, map `arch 2`, themes 0–4, canvas and `live=1`, `&cj=`
+on HEAD). A (`radius` *120 mi radius*): the 768 line still wraps everywhere, since *Based in
+Manchester* is the long part, so no height moves. A + D (and `base` *UK*): the line fits on one
+line at 768 under all five, the bar is 16.8 shorter (61.6 → 44.8 under Editorial), and so is the
+section (824.6 → 807.8). Desktop and 390 move no height on either.
+
+**Decided** (user, 2026-10-06): **A. A per-layout seed**, `mapRadiusSeed(d)`. `base` is unchanged.
+
+**Settled** (2026-10-06).
+- **The code.**
+  - `data.js:1230`–`1239`: `MAP_RADIUS_3 = '120 mi radius'` and `mapRadiusSeed = (d) => (d === 2 ?
+    MAP_RADIUS_3 : MAP_RADIUS)` beside `MAP_RADIUS`, under a comment naming each layout's frame.
+    The "one coverage per seeded page" comment (`:1257`–`1261`) gains a clause: a page shows the
+    map at one layout, so it still prints one seed.
+  - `sectionVm`: `vm.mapRadius = cv('radius', mapRadiusSeed(d))` (`EncoreBuilder.jsx:1784`).
+  - `EditPanel`'s chain: `f.k === 'radius' && sec.cat === 'map' ? mapRadiusSeed(design)`
+    (`:4213`), beside the kicker and list-label arms and gated on `map` as they are. Its comment
+    names JP-105.
+  - The import swaps `MAP_RADIUS`, which `EncoreBuilder.jsx` no longer reads, for `mapRadiusSeed`.
+  - The field's `d` stays `MAP_RADIUS` and its `in` stays `[0, 1, 2]`, so no `reach.mjs` run is
+    owed. The hint (`data.js:2178`–`2181`) adds "…and layout 3 in the line under the map, where it
+    starts from “120 mi radius”."
+- **Digest: 30 files, as named**, and in each **exactly one row**, the line's `<span>`: map
+  `arch 2` × themes 0–4 × three widths, 15 on the canvas and 15 at `live=1`. At desktop and 390 the
+  row's text and its width move (Editorial 209.2 → 207.3, 251.1 → 248.8). At 768 only the text
+  moves, since the wrapped span is as wide as its room (Editorial 178.3). Map `arch 0`, `1` and
+  `3`: 0 files. The harness was proved first: a HEAD worktree on :5174 against the unedited tree on
+  :5175, 0 of 60 per surface.
+- **`textContent`** (the digest's text column cuts at 40): "Based in Manchester · 5 pins · 120 mi
+  radius" in all 30 renders. The bar and root heights equal HEAD's in every one (Editorial 37 /
+  61.6 / 65.8 and 665.8 / 824.6 / 839.5), so the 768 line is still two lines.
+- **A typed Coverage still wins**: `&cj={"radius":"ZQ coverage"}` prints the marker and neither
+  seed at `arch 0`, `1` and `2` (themes 0, 1 and 3, both surfaces); emptied, neither prints, as
+  before (`.filter(Boolean)` drops it from the line). On the seed, `arch 0` and `1` print *12 mile
+  radius* and `arch 2` *120 mi radius*.
+- **The real app** (:5175, the edited tree; the repro above re-run). On card 3, under all five
+  templates, the panel's *Coverage* reads *120 mi radius*. The canvas and the published tab print
+  "Based in Manchester · 5 pins · 120 mi radius" at 1440, 768 and 390, and the map section's height
+  is HEAD's at each width (Editorial 812.5 / 824.6 / 839.5). On cards 1 and 2 the panel keeps
+  *12 mile radius*. *45 miles* typed in card 3's panel prints on both surfaces at all three widths
+  (Editorial and Retro). No console errors.
+- **Not taken: D.** The line keeps `base`'s *Based in Manchester* where the frames print *UK*, so
+  the 768 line still wraps under every template (the layout-3 fits' named diff, Retro's through Lime
+  and Grunge). D would have closed it at 16.8 off the 768 section.
+- **Pop** reaches layout 3 through Retro's body (`:21980`) on `main`, so it takes the seed already.
+  `pop-layout-3` reads the same `vm.mapRadius` and inherits it.
+- **Build.** `npm run build` is clean. The root `index.html` is not refreshed.
+- **Docs.** `notes/map.md` gains a bullet on the per-layout seed. *Answered* pointers go at
+  `../grunge/layout-4-qa-fixes.md`'s `MAP_RADIUS` follow-up and its designer note 10 (layout 3
+  alone: layouts 1 and 2 stay open). Pointers also go at `../lime/layout-3.md:966` and
+  `../grunge/layout-3.md:1275`, which name the 768 wrap: it holds, and `base` is now its cause.
+  CLAUDE.md and README name no coverage seed, so they are unchanged.
+
+Reply (JP-105): **fixed.** The line under the map on layout 3 now reads *120 mi radius* by default,
+matching the 120mi rings and the design. The Coverage field starts from that value on layout 3.
+Layouts 1 and 2 keep their own defaults from their designs, and anything typed into Coverage still
+shows on every layout. The design also reads *UK* and *8 pins* where the page reads *Based in
+Manchester* and *5 pins*. Those are by design: the place comes from the *Based in* field, and the
+count is the number of gigs in the list.
+
 ---
 
 ## Entry 5 — JP-104 (code)
@@ -901,6 +981,12 @@ Written as each entry settles.
   *Florence and the Machine*, keep their full size. Two other places on these pages still break a
   very long word inside itself, and are not part of this ticket: the enquiry form's heading on
   layout 3 at tablet and phone widths, and the bio's name on layout 4 at phone width.
+- **JP-105 (*12 mile radius* under the map) — fixed** (entry 4). The line under the map on
+  layout 3 now reads *120 mi radius* by default, matching the 120mi rings and the design. The
+  Coverage field starts from that value on layout 3. Layouts 1 and 2 keep their own defaults from
+  their designs, and anything typed into Coverage still shows on every layout. The design's *UK*
+  and *8 pins* are not bugs: the place comes from the *Based in* field, and the count is the number
+  of gigs in the list.
 - **JP-103 (Enquiry → Testimonials) — matches the design** (entry 1, user, 2026-10-06). The two
   figures were taken from different edges. The design's 61 runs from the form block's own bottom
   edge, which is invisible, to *● Testimonials*: ours is 57. The 156 runs from the left column's
@@ -913,3 +999,8 @@ Written as each entry settles.
 ## Notes for the designer
 
 Written as each entry settles.
+
+1. **Coverage at layouts 1 and 2** (JP-105, entry 4). Layout 3 now seeds its frames' *120 mi
+   radius*. Layout 1's frame prints *12 Mile Radius* beside its heading and *120 mi standard*
+   in its terms. Layout 2's Max travel reads *100 mi*. Both still seed *12 mile radius*. Which
+   is meant? (The open half of `../grunge/layout-4-qa-fixes.md`'s note 10.)

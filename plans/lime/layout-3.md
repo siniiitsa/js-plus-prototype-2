@@ -965,6 +965,9 @@ Settled in section 8 (the events map):
   - The 390 pager's two pills sit Pager's 8 apart, where the frame's sit flush (185 + 185).
   - The 768 data bar wraps, since the seeded "Based in Manchester · 5 pins · 12 mile radius" is
     longer than the frame's. This is Retro's named diff, and it makes the 768 panel 714.7 against 697.
+    *(Since JP-105 (2026-10-06) layout 3 seeds "120 mi radius", so the line reads "Based in
+    Manchester · 5 pins · 120 mi radius" and still wraps at 768: `base` is the long part.
+    `../editorial/layout-3-qa-fixes.md`, entry 4.)*
   - Retro's drops hold: the weekday, the status chips and the ↗.
 - **No `T` table.** `get_variable_defs` is the ramp at all three widths: bodySm 13 / 13 / 12, bodyMd
   14 / 13 / 13, list 24 / 19 / 18, labelXs 20 / 14 / 12, chip 13 / 12 / 11, eyebrow 15 / 12. Display/Title
