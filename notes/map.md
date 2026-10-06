@@ -104,7 +104,14 @@ another `notes/` file.
   of its own and stretches to the wall at desktop, so there the wall's grid holds two rows at the
   cell's minimum whatever it lists. That is a floor on the grid, not on the viewport: the
   seeded wall renders under the frame's 555 × 0.82, so a viewport floor lifted every seeded page.
-  Its section stands on the
+  **A card's value is fitted to its widest word** under Lime, Grunge and Editorial (JP-110, user
+  call, 2026-10-06): `vm.mapStats[].wordEms` is `navFace` over the value, per row (the quotes'
+  `wordEms`), the cell is an `inline-size` container, and the size is
+  `faced(min(token, 100cqi / wordEms))`, so a city wraps between words and never inside one.
+  There is no floor (the user's call): *Wolverhampton* sets 12.5 in Editorial's 119 cell at 390.
+  `overflowWrap: 'anywhere'` stays as the last resort. Retro's half (Retro, and Pop through it)
+  keeps the flat numeral, and Gloock's seed sets *MANCHESTER, / UK* where its 390 frame breaks
+  MANCHEST / ER. Its section stands on the
   page ground, so the root's `darkMap` flag stays layout 1's.
 - **Layout 1's two labels are the artist's** (JP-090, user call, 2026-09-30), on every template,
   since Retro's body prints them as the `s.limeTree` block does (Retro's frame `964:58581`,

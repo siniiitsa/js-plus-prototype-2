@@ -3923,11 +3923,13 @@ function HeaderV3({ s }) {
       </div>
     )
 
+    // Whether the 768 name makes room for the seal (JP-109, below).
+    const sealRoom = tab && s.cardNameEms && s.showBadge === 'show'
     const idBlock = (
       <div style={col(u(18), {
         alignItems: 'flex-start',
         ...(desk ? { flex: '1 0 0', minWidth: 0 } : { width: '100%' }),
-        ...(ed ? { containerType: 'inline-size' } : null),
+        containerType: 'inline-size',
       })}>
         {/* Display/Title in `scheme/1/text2`, pale — the frame types
             "DJ · LIVE ACT", so the caps are the CSS's (Retro's reading). */}
@@ -3943,15 +3945,37 @@ function HeaderV3({ s }) {
             Editorial's Gloock sets ~108px a capital at 142.15 (the faced
             147), where Bebas at 164 sets ~65, so a ten-letter word
             (MONTGOMERY, 1084; Noto's was 889) outruns the 806 column into
-            the chips and runs off the 390 page. So under Editorial the name
-            shrinks only when its widest word would not fit the block
-            (`s.cardNameEms`, HeaderV2's JP-062 rule), capped at the ramp;
-            the seeded name keeps its faced 147. At 390 the seed's whole
+            the chips and runs off the 390 page. So the name shrinks only when
+            its widest word would not fit the block (`s.cardNameEms`,
+            HeaderV2's JP-062 rule), capped at the ramp — under Lime and
+            Grunge too (JP-109, as JP-102 widened layout 3's), whose flat
+            Bebas and Anton ran a long word over the 1440 chips and, Lime's,
+            off the 768 and 390 pages. The seeded name keeps its ramp
+            everywhere but Editorial's 768 (below). At 390 the seed's whole
             line, KAI MERCER, needs 378.8 of the 350 column, so it breaks
             between words where the master sets one line (302 in 350) and
             Noto's held one (324.4): accepted (display-face.md step 4,
-            layout 4). The root's height is fixed, so nothing moves. */}
-        <Title s={s} size={ed ? `min(${s.dispXl}, calc(100cqi / ${s.cardNameEms}))` : s.dispXl} lh={0.75} color={s.tx}
+            layout 4). The root's height is fixed, so nothing moves.
+            At 768 the seal stands inside the column, level with the name,
+            its disc reaching 146.54 in from the column's right edge (125.37
+            plus its 51.17 offset, less the 30 inset; both carry `s.surplus`,
+            so the reach holds at every tablet width). So there (JP-109, user
+            call, 2026-10-06, shape (ii)) the h1 is boxed to the column less
+            that reach, and the whole line (`s.navNameEms`) is fitted 16
+            short of the box, the gap taking any under-read of the ems
+            table: a name stays on the frame's one line and shrinks just
+            enough to clear the disc. Editorial's seed sets 92 (88.96 faced),
+            where Gloock's 107 put its E R under the disc; Lime's and
+            Grunge's seeds clear it at their ramps. A line fit alone would
+            set a long multi-word name tiny, so it is held up at 0.6 of the
+            ramp, about the frames' own 390 : 768 ratio (72 : 120 under
+            Lime); a name whose line needs less wraps there instead, inside
+            the box, each word still fitted to the room. A hidden seal
+            (`showBadge`) leaves the column whole, and the word fit alone. */}
+        <Title s={s} size={!s.cardNameEms ? s.dispXl : sealRoom
+                 ? `min(${s.dispXl}, calc((100cqi - 162.54px) / ${s.cardNameEms}), max(calc((100cqi - 162.54px) / ${s.navNameEms}), calc(${s.dispXl} * 0.6)))`
+                 : `min(${s.dispXl}, calc(100cqi / ${s.cardNameEms}))`}
+               lh={0.75} color={s.tx} style={sealRoom ? { maxWidth: 'calc(100cqi - 146.54px)' } : undefined}
                inline={s.narrow || grunge} twoTone={grunge} toneA={s.tx} toneB={s.bg} />
         <span style={row(u(8), { minWidth: 0 })}>
           {/* A 14 square at `radius/chip` in Scheme 3's `sem/box/2`, and the
@@ -5930,7 +5954,7 @@ function Bio({ s }) {
       return <>{s.brand.slice(0, i)} <span style={{ color: desk ? s.ac : s.bg }}>{s.brand.slice(i + 1)}</span></>
     }
     const panelPad = u(s.mob ? 20 : 30)
-    // The phone's photo stage (below): its height, and how far the panel
+    // The phone's clear stage (below): its height, and how far the panel
     // stands up into it.
     const stageH = 400
     const stageOver = 60
@@ -6042,12 +6066,18 @@ function Bio({ s }) {
           // At 390 the content-tall panel covered all but the top ~130 of the
           // photograph, cutting the artist off at the forehead (user call,
           // 2026-09-18). So the phone keeps a clear stage above the panel: the
-          // photograph fills a fixed top band and the panel starts `stageOver`
-          // above that band's foot, its blur carrying the picture's last strip.
+          // panel starts `stageH − stageOver` down the card. The photograph
+          // fills the whole card, as at 768 and 1440 and in all three 390
+          // masters, so it runs on under the panel to the card's foot (JP-108,
+          // user call, 2026-10-06, amending the 2026-09-18 call, whose
+          // photograph filled a `stageH` top band). The seeds' faces stay in
+          // the stage at the centred cover. Only an emptied slot keeps the
+          // band, because `Photo` centres its initials, and in the card's full
+          // height they would sit under the panel.
           ...(s.mob ? { paddingTop: `${stageH - stageOver}px` } : null),
           ...col('0', { justifyContent: 'flex-end', alignItems: 'center' }),
         }}>
-          <div style={s.mob
+          <div style={s.mob && !s.image
             ? { position: 'absolute', top: 0, left: 0, right: 0, height: `${stageH}px` }
             : { position: 'absolute', inset: 0 }}>
             <Photo s={s} initialsSize={desk ? 72 : tab ? 56 : 40} ink={s.tx} />
@@ -22430,9 +22460,10 @@ function EventsMap({ s }) {
         letterSpacing: '-0.06em', textTransform: 'uppercase', whiteSpace: 'nowrap',
       }
       const bodySmL = { fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4, letterSpacing: s.dls }
-      const numeral = s.mob
-        ? { fontSize: faced(s, ed ? '23px' : '26px'), lineHeight: facedLh(s, 1.1) }
-        : { fontSize: faced(s, s.dispSm), lineHeight: facedLh(s, 1) }
+      // The numeral's token, unfaced: the stat value fits it to its widest
+      // word (below), and `faced()` wraps the fit.
+      const numeralSize = s.mob ? (ed ? '23px' : '26px') : s.dispSm
+      const numeralLh = facedLh(s, s.mob ? 1.1 : 1)
       // Outer first: diameter, inside stroke, opacity.
       const ringLine = [[480, 1, 0.3], [300, 1.5, 0.5], [140, 2, 0.8]]
 
@@ -22541,6 +22572,8 @@ function EventsMap({ s }) {
                 background: s.box1, borderRadius: u(G.cellR),
                 ...(ed ? { position: 'relative' } : { boxShadow: ring(G.cellRing) }),
                 padding: `${u(18)} ${u(20)}`, alignItems: 'flex-start', minWidth: 0,
+                // The value's measure (JP-110): `100cqi` is the content box.
+                containerType: 'inline-size',
                 ...(s.mob
                   ? { justifyContent: 'space-between' }
                   : { justifyContent: 'flex-end', minHeight: u(G.cellMin) }),
@@ -22551,14 +22584,25 @@ function EventsMap({ s }) {
                 {!!st.label && <span style={{ ...chipL, whiteSpace: 'normal', overflowWrap: 'anywhere' }}>{st.label}</span>}
                 {!!st.value && (
                   <span style={distressed(s, {
-                    fontFamily: s.display, ...numeral, letterSpacing: s.dls, overflowWrap: 'anywhere',
-                    color: G.num, ...upper,
+                    fontFamily: s.display, lineHeight: numeralLh, letterSpacing: s.dls,
+                    // Fitted to the value's widest word in the cell (JP-110,
+                    // user call, 2026-10-06; `st.wordEms`, `navFace`'s table),
+                    // `titleWordEms`' rule: the token is the ceiling, and a word
+                    // wider than the cell shrinks the value until it fits, so it
+                    // wraps between words and never inside one. No floor, also
+                    // the user's call: a long city at 390 sets small. `faced()`
+                    // stays outside the `min()`, as the ems are faced. The seeded
+                    // MANCHESTER, outran Gloock's 1440 and 390 cells and broke
+                    // inside the word; it now sets MANCHESTER, / UK at all three
+                    // widths, as the 1440 frame does (its 390 frame breaks
+                    // MANCHEST / ER, departed from on purpose). `anywhere` is the
+                    // last resort for a word the table under-reads.
+                    fontSize: faced(s, st.wordEms ? `min(${numeralSize}, calc(100cqi / ${st.wordEms}))` : numeralSize),
+                    overflowWrap: 'anywhere', color: G.num, ...upper,
                     // Gloock sits 0.06–0.09em under the frame's face at lh 1 and
                     // 1.1, over the sub 8 below: layout 3's lift, glyphs only,
                     // lifted to 0.190 / 0.193 / 0.241, each under 0.5px off
                     // (display-face.md step 4, layout 4; Noto took 0.09em).
-                    // The seeded MANCHESTER, UK sets two lines at 768 too (306
-                    // in its 276), as the 1440 and 390 frames set it: accepted.
                     ...(ed ? { position: 'relative', top: '-0.07em' } : null),
                   })}>{st.value}</span>
                 )}

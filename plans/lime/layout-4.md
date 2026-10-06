@@ -823,6 +823,13 @@ Settled in section 2 (the bio):
   rect equals the card rect at all three widths. `live=1`: Listen is `<a href="#media">`, a
   span on the canvas; the one canvas pointer is `ListenLink`'s own unconditional cursor,
   shared with Retro. `noimage=1`: the `box3` well under the panel with `KM` in `s.tx`.
+  *Superseded at 390 by `f74a4ff` (user call, 2026-09-18, recorded only in that commit's message
+  and the block's comment): the 390 card padded its top 340, so the panel started 60 above a
+  400 photo band, and the card grew to 735. Amended by JP-108 (user call, 2026-10-06,
+  [`../editorial/layout-4-qa-fixes.md`](../editorial/layout-4-qa-fixes.md) entry 4): the 340
+  clear stage stays, but the photograph fills the whole card again, as in the master, and shows
+  blurred through the panel. So the `img` rect equals the card rect at all three widths once
+  more. An emptied slot alone keeps the 400 band, for its initials.*
   `since=` holds. No page errors. Digest at themes 0, 2, 3 and 4: zero differing files;
   theme 1: exactly bio arch 3 at three widths (bio has no fold partner, and the new seed is
   read at `d` 3 alone).

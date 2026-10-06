@@ -746,6 +746,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // that bar in Anton at 0.75, so it takes the same two off `navFace`.
   // Editorial's display face is its label face, so `navNameEms` is also the
   // hero title's width in ems: HeaderV0 fits the title to its column with it.
+  // So does HeaderV3's `s.limeTree` h1 at 768 under Lime, Grunge and
+  // Editorial (JP-109), to the room beside the seal, where it is the name's
+  // line in each template's own face.
   vm.navNameEms = navFace ? +navFace(vm.brand).toFixed(3) : undefined
   // The name's widest word in the same ems (JP-062): the layout-3 portrait
   // card wraps the name between words at its content box plus half its
@@ -753,10 +756,11 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // there — `titleWordEms`' rule, never breaking inside a word. `navFace` is
   // the display face at its nominal size, so HeaderV2 fits the unfaced size
   // and `faced()` stays outside the fit. Editorial's other titles that wrap
-  // between words read it too: HeaderV3's, and HeaderV0's at 390 (JP-086);
-  // and so do the layout-2 and layout-3 titles under Lime, Grunge and
-  // Editorial, at every width: HeaderV1's `s.limeTree` block (JP-092) and
-  // HeaderV2's h1 beside that card (JP-102), each fitted to its own column.
+  // between words read it too: HeaderV0's at 390 (JP-086); and so do the
+  // layout-2, -3 and -4 titles under Lime, Grunge and Editorial, at every
+  // width: HeaderV1's `s.limeTree` block (JP-092), HeaderV2's h1 beside that
+  // card (JP-102) and HeaderV3's (JP-109, Editorial's alone before it), each
+  // fitted to its own column, HeaderV3's at 768 to the room beside the seal.
   vm.cardNameEms = navFace ? +Math.max(0, ...vm.brand.split(/\s+/).map(navFace)).toFixed(3) : undefined
   vm.navCtaEms = navFace ? +(navFace(vm.cta1) + navFace(vm.cta2)).toFixed(3) : undefined
   // The layout-1 capsule's name gives way before its links do (JP-091, user
@@ -1777,11 +1781,20 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // upper-cases the label, and the frame's value and sub are its own casing.
   vm.mapStats = (Array.isArray(c.stats) ? c.stats : MAP_STATS_4)
     .filter((r) => !blankRow(r, STAT_KEYS))
-    .map((r) => ({
-      label: String(r?.label ?? '').trim(),
-      value: String(r?.value ?? '').trim(),
-      sub: String(r?.sub ?? '').trim(),
-    }))
+    .map((r) => {
+      const value = String(r?.value ?? '').trim()
+      return {
+        label: String(r?.label ?? '').trim(),
+        value,
+        sub: String(r?.sub ?? '').trim(),
+        // The value's widest word in the display face's ems × `faceK`
+        // (`navFace`'s table) — the quotes' `wordEms`, per row (JP-110, user
+        // call, 2026-10-06). The `s.limeTree` stat cell fits the numeral to it,
+        // so a city wraps between words and never inside one. Undefined off
+        // Lime, Grunge and Editorial.
+        wordEms: vm.limeTree ? +Math.max(0, ...value.split(/\s+/).map(navFace)).toFixed(3) : undefined,
+      }
+    })
   // Gigs to a page in the compact tile. It is PINS.length rather than a literal
   // five: a page's worth of gigs is what one set of distinct pin positions can
   // light, so the two counts have to move together.

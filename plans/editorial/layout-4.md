@@ -1086,7 +1086,11 @@ From the walks and the renders — impressions to confirm, not measurements.
   `min(s.dispXl, calc(100cqi / s.cardNameEms))`: HeaderV2's JP-062 rule, on `notoEms`, which runs
   0.1–1% over the render. "Christopher Montgomery" then sets 132.5 / 107 / 57.5, and "Kai
   Featherstonehaugh" 84 / 73.7 / 36.5, each on two lines inside its column. The seeded name keeps
-  147 / 107 / 64, so the digest does not see the fit.
+  147 / 107 / 64, so the digest does not see the fit. **Answered by JP-109**
+  ([`layout-4-qa-fixes.md`](./layout-4-qa-fixes.md) entry 2, 2026-10-06): inside the column at 768
+  is not clear of the seal, whose disc stands in the column's right 146.54 level with the name. The
+  768 h1 is now boxed to the column less that reach and its line fitted 16 short of it, down to 0.6
+  of the ramp, under Lime and Grunge too; the seed sets 88.93 there.
 - **Measured against the masters** (× 0.82 at desktop; the frame's number in brackets):
 
   | Width | Avatar (y · h) | Kicker | h1 (y × h) | Location | Chips | Capsule | Pill |
@@ -1193,6 +1197,10 @@ From the walks and the renders — impressions to confirm, not measurements.
     the 30 padding, where the frame measures 27 / 37.
   - The 390 card keeps Lime's 400 photo stage (a user call), so the card is 733 against 536 and the
     section 1110.8 against 914. The seeded meta row also wraps to two lines there.
+    *Amended by JP-108 (user call, 2026-10-06, [`layout-4-qa-fixes.md`](./layout-4-qa-fixes.md)
+    entry 4): the photograph fills the whole 733 card, as in the master, and runs on under the
+    panel. The 340 clear stage above the panel stays, so the card and section heights are
+    unchanged. An emptied slot alone keeps the 400 band, for its initials.*
   - The meta row prints "DJ · Live Act" and "Performing since June 2021" (JP-081's reply).
 - **`live=1`**: Listen is `<a href="#media">` in paper on the dimmed glass at all three widths.
   `&noimage=1` at 390 puts paper `KM` on the dark stage. `&who={"tags":""}` drops Genres and the
@@ -1618,7 +1626,10 @@ From the walks and the renders — impressions to confirm, not measurements.
     379 (379); cells 316 × 140 (316 × 140); numerals 36px; ticker 62.3 (63).
   - 390: h2 370 × 85.4 on two lines (86); card 370 × 581.5 (581); viewport 263 (263), panel 318.5
     (318); cells 159 × 105.1 and 130.4 (105 / 130), hugging with `space-between`; numerals 23px;
-    ticker 62.3 (63).
+    ticker 62.3 (63). *Amended by JP-110 (2026-10-06,
+    [`layout-4-qa-fixes.md`](./layout-4-qa-fixes.md) entry 3): each value is fitted to its widest
+    word, so the seeded BASE sets MANCHESTER, / UK at 28.91 (1440) and 16.52 (390) rather than
+    breaking inside the word, and the 390 second row is 117.4, not 130.4.*
   - The root pads are the twins' padY (80 / 56 / 44 over the head against the frame's 80 / 80 /
     30), named in their sessions. No sideways scroll at any width.
 - **`live=1&n=8`** at desktop and 390 (puppeteer, probe deleted):

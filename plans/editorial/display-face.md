@@ -721,7 +721,11 @@ A winner that is already loaded for another template needs its own instance chec
           it on one line (302 in 350), and so did Noto (324.4). The root's height is fixed, so
           nothing below moves (`:3930`).
         - The 1440 name (870 in 806, KAI and MERCER on the frame's two lines) and the 768 name
-          (633 in 708, one line) do not bind.
+          (633 in 708, one line) do not bind. **Answered by JP-109**
+          ([`layout-4-qa-fixes.md`](./layout-4-qa-fixes.md) entry 2, 2026-10-06): the 768 line
+          did not bind on the column, but it ran 72 under the seal's disc (E R), which this
+          reading did not weigh. The 768 h1 is now boxed beside the disc and its line fitted 16
+          short of it: the seed sets 88.93 on one line, ending 17 clear.
      4. **The other changes are accepted.** None overflows, and there is no code change but
         comments.
         - **The 390 wizard's pill row wraps at step 1.** Back 129 + Next Step 174.4 is 303.4 in
@@ -736,7 +740,11 @@ A winner that is already loaded for another template needs its own instance chec
           768 too (802). The 1440 sleeve's LATE LIGHTS takes its second line, which `clamp2`
           allows (`:8770`).
         - **The map's 768 MANCHESTER, UK** goes 1 → 2 lines: 306 in its 276, 12 taller. The 1440
-          and 390 frames wrap it themselves (`:22486`).
+          and 390 frames wrap it themselves (`:22486`). *JP-110 (2026-10-06,
+          [`layout-4-qa-fixes.md`](./layout-4-qa-fixes.md) entry 3): the 768 wrap is unchanged,
+          since MANCHESTER, fits the 276 at the ramp. At 1440 and 390 Gloock broke it inside the
+          word, and the value is now fitted to its widest word, MANCHESTER, / UK at 28.91 and
+          16.52.*
         - **The testimonials head** goes 2 → 3 lines at 768, where SUCCESS STORIES is 605, 65
           taller. At 390 the word fit binds on SUCCESS at 43.44 (the faced 46.42; Noto's kept
           48), 8 shorter (`:24950`).
