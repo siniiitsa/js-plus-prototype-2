@@ -84,10 +84,10 @@ the photo; `964-73037` 1440 Base card beside the build's MANCHESTE / R, UK.
 
 | Order | ID | Report (short) | Verdict | Size | Decision | Status |
 |---|---|---|---|---|---|---|
-| 1 | JP-108 · JP-109 (scope) · JP-110 | 390 card past the photo · long name under the seal · Base breaks inside a word | **JP-108 a recorded user call** (2026-09-18) whose cost the tester has found; **JP-109 confirmed** (the fit ignores the seal, and is Editorial's only); **JP-110 confirmed, but the frames disagree** (1440 breaks between words, 390 inside one) | — (decisions) | open | open |
-| 2 | JP-109 | Long name under the seal at 768 | **Confirmed, `s.limeTree`**: the shrink term's measure is the column; the seal sits inside it at 768 alone. Whether the seed's own line reaches the seal is measured in entry 1, and that picks the shape | S | entry 1 (shape, scope) | open |
-| 3 | JP-110 | Base value breaks inside a word | **Confirmed, `s.limeTree`**: the numeral is the flat ramp, so `anywhere` is what keeps a wide word inside the cell | S | entry 1 | open |
-| 4 | JP-108 | 390 card past the photo | **Confirmed, `s.limeTree`**: the photograph is a fixed 400 band; the panel is content-tall below it | S–M | entry 1 | open |
+| 1 | JP-108 · JP-109 (scope) · JP-110 | 390 card past the photo · long name under the seal · Base breaks inside a word | **JP-108 a recorded user call** (2026-09-18) whose cost the tester has found; **JP-109 confirmed** (the fit ignores the seal, and is Editorial's only); **JP-110 confirmed, but the frames disagree** (1440 breaks between words, 390 inside one) | — (decisions) | **user: JP-108 A; JP-109 (ii), scope A; JP-110 A, no floor, three templates** (2026-10-06) | **done** (all three reproduced on HEAD; **the 768 seed reproduces JP-109**, E R under the seal; *WOLVERHAMPTON* breaks under Lime and Grunge too; the twins' 390 bios FILL) |
+| 2 | JP-109 | Long name under the seal at 768 | **Confirmed, `s.limeTree`**: the shrink term's measure is the column; the seal sits inside it at 768 alone. **The seed's own line reaches it** (663 against the disc's 591), so (ii) | S | **(ii)** the line fit to the room beside the seal, held by a floor, capped by the word fit; **A** (Lime and Grunge widened; Retro's half named) | open |
+| 3 | JP-110 | Base value breaks inside a word | **Confirmed, `s.limeTree`**: the numeral is the flat ramp, so `anywhere` is what keeps a wide word inside the cell | S | **A** (widest-word fit, no floor; Lime, Grunge, Editorial; Pop's seed break named) | open |
+| 4 | JP-108 | 390 card past the photo | **Confirmed, `s.limeTree`**: the photograph is a fixed 400 band; the panel is content-tall below it | S–M | **A** (the photo fills the card; the 340 stage kept) | open |
 | 5 | — | End-of-pass sweep | — | S | — | open |
 
 **Why this order:**
@@ -96,7 +96,9 @@ the photo; `964-73037` 1440 Base card beside the build's MANCHESTE / R, UK.
   every `s.limeTree` template, as JP-102 went).
 - **Then by footprint, zero-diff first.** JP-109 moves nothing on the seed if the seed's line clears
   the seal (shape (i); the positive controls are the long names). If it does not, it moves the 768
-  header under the fitted themes, still the smallest footprint. JP-110
+  header under the fitted themes, still the smallest footprint. *(Entry 1: the seed does not clear.
+  Under (ii) the seed moves Editorial's 768 header alone, since Lime's and Grunge's seeds clear the
+  seal.)* JP-110
   moves the Base cell under Editorial, 1–3 files a surface. JP-108 moves the 390 bio under three
   templates, geometry, and its photo crop is a visual call the user signs off on.
 
@@ -196,8 +198,29 @@ photograph's box rows only, roots unchanged; B theme 3, 1 + 1; C themes 1–3, r
 `layout-4.md:1194`, `../grunge/layout-4.md:890` and the Lime layout-4 bio *Settled* bullet that
 records the call; `notes/templates.md` if it states the stage.
 
-**Reproduced**: —
-**Decided**: —
+**Reproduced** (2026-10-06, HEAD `80543c5`, the real app: card 4 → Publish → Open, the tab at 390,
+puppeteer on :5173). Under all three `s.limeTree` templates, as the triage read it:
+
+| 390 | card | photo band | panel (top → foot) | panel past the photo |
+|---|---|---|---|---|
+| Editorial | 370 × 733 | 0 → 400 | 340 → 723, opaque `#141414` | 323 (the tester's ≈ 250) |
+| Lime | 370 × 735 | 0 → 400 | 340 → 725, `#2E3928` at .71, blur 27 | 325, the well `#263020` through the glass |
+| Grunge | 370 × 733 | 0 → 400 | 340 → 723, `#DF262C` at .5, blur 27 | 323, the well `#82211B` through the glass |
+
+768 and 1440 fill the card (`inset: 0`, 708 × 720 at 768), as the tester said. **The frames:** all three
+390 masters (`977:13164` Editorial, `977:8875` Lime, `977:12052` Grunge, 370 × 536 each, a single
+`stage` child) draw the photograph across the whole card, with the panel standing in the 10 inset at its foot. So the
+twins FILL under the glass too, and option B has no case. **Option A, tried on HEAD** (the stage
+div set to `top: 0; bottom: 0` in the published tab): the seeded photo cover-crops to 370 × 733.
+Editorial's singer, Lime's DJ and Grunge's drummer all keep their faces inside the 340 clear stage at
+the default `50% 50%`, so no `objectPosition` is owed for the seeds. Grunge's drummer loses the most
+at the sides. Not measured: an emptied slot's initials (`Photo` centres them, so a 733 box puts them
+under the panel) and `&noimage=1`. Both are entry 4's.
+
+**Decided** (user, 2026-10-06): **A.** At 390, under Lime, Grunge and Editorial, the photograph fills
+the whole card. The 340 top padding (the 2026-09-18 call's clear stage) stays. Entry 4 keeps an
+emptied slot's initials in the stage and puts the before / after in front of the user. The 2026-09-18
+call is **amended**, not reversed: its clear stage survives, and only the photograph's band goes.
 
 ### JP-109 — 768: a long one-word name runs under the seal
 
@@ -274,8 +297,57 @@ long names at 1440 and 390 too, wherever the flat ramp outran the column.
 names HeaderV3; the `display-face.md` / `layout-4.md` long-name line, if one exists, gets the
 *answered* pointer.
 
-**Reproduced**: —
-**Decided**: —
+**Reproduced** (2026-10-06, HEAD `80543c5`, card 4 → Publish → Open; *Title* written through `st`,
+republished; seal spin stopped with reduced motion). **The seed reproduces at 768.** Under Editorial,
+*KAI MERCER* sets one line at the faced ramp, 103.47px, from x 30 to **663.3**. The seal's disc
+(125.37, centre 654.1 / 775.9 from the header's top) has its left edge at **591.4** and spans
+713–839 vertically, and the name's line box spans 763–887. So the disc covers the tops of the E and
+R (the shot shows the seal over them). The tester did not report it. **The frame `971:9538`**:
+the disc spans x 592–716, centre 654 / 775, so ours stands exactly where the frame's does. The
+frame's name ink ends at **536**, 56 short of the disc, because Fisterra sets *KAI MERCER* ≈ 506 wide
+where Gloock sets 633: the 25% is the whole bug. So `sealReach` = 738 − 591.4 ≈ **146.6** plus a gap.
+
+Widths are the tab's own px. At 1440 they are zoomed ×1.2203, the column 983.7 wide and ending at 1039.8.
+
+| Name | Theme | 1440 | 768 | 390 |
+|---|---|---|---|---|
+| *Kai Mercer* (seed) | Editorial | 142.1, fits | 103.5, ends 663: **E R under the seal** | 61.9, two lines (accepted), fits |
+| | Lime | 164, fits | 120, ends 464, clear | 72, fits |
+| | Grunge | 121.5, fits | 71.25, ends 345, clear | 39, fits |
+| *Maximilian Featherstonehaugh* | Editorial | 69.2 (fitted), ends 1033, fits | 60.8 (fitted), ends 733: **U G H under the seal** | 30.1, fits |
+| | Lime | 164 flat: ends **1370**, over the chips | 120 flat: ends **818**, under the seal and off the page (clipped) | 72 flat: ends **493**, off the page |
+| | Grunge | 121.5 flat: ends **1207**, over the chips | 71.25, ends 583, 8 clear | 39, fits |
+| | Retro (control) | fits | 77 flat: ends 687, **U G H under the seal** | fits |
+| *Kai Featherstone* | Editorial | fits | 89.7 (fitted), ends 733: **O N E under the seal** | fits |
+| *Supercalifragilistic* | Editorial | fits | 61.6, ends 731: under the seal | fits |
+| *Florence and the Machine* | Editorial | fits | 103.5, three lines, the last (*Machine*) ends 519, clear | fits |
+
+The 768 seed is the only seal hit on the seed under any theme (Retro and Pop clear it too). The
+shapes, tried on HEAD at 768 by restyling the h1 in the tab:
+- **(ii)** `font-size: calc(546px / 6.12)`, where 6.12 = 633.3 / 103.47 is the line's ems and
+  546 ≈ 708 − 146.6 − 16. The seed sets **89.2**, one line, ending at **576.1**, 15 clear of the disc.
+  The id block is 11 shorter and nothing else moves.
+- **(iii)** the h1 boxed to 546: *KAI / MERCER* on two lines at 103.47. The id block is +80 tall, and
+  since it stands on the floor, the kicker and the portrait arch (580.8 → 500.6) rise 80. Nothing
+  overlaps.
+
+So (i) is out: it leaves the seed's E R under the seal.
+
+**Decided** (user, 2026-10-06): **shape (ii), scope A.**
+- **(ii)**: at 768 the whole line is fitted to the room beside the seal, so the seed stays on the frame's
+  one line at ≈ 89. A name too long for one line wraps at a floor instead of collapsing, with each word
+  fitted to the room. *Florence and the Machine*'s line is ≈ 15 ems, so a pure line fit would set it at
+  ≈ 37. **Note for entry 2:** `max(line fit, word fit)` is *not* that combination. `room / lineEms ≤
+  room / wordEms` always holds, so the `max` is the word fit, which is (i). The combination is
+  `min(ramp, calc(room / wordEms), max(calc(room / lineEms), floor))`: the line fit, held up by a
+  floor, and capped by the word fit and the ramp. Entry 2 picks and records the floor (a fraction of
+  the ramp or a px), and measures the multi-word residual against it.
+- **A**: Lime and Grunge get the `inline-size` container and the word fit at every width, as JP-102
+  did. Lime's long name overruns at all three widths and Grunge's at 1440. The seal's room applies at
+  768 under all three (the twins' seal boxes are Lime's). Lime's and Grunge's seeds clear the seal
+  (464 / 345 against 591), so the line fit is a no-op on them.
+- **Retro's half** (Retro, Pop) is named, not fitted. Retro's flat 77 puts the long name's U G H under
+  the 768 seal. It goes in *Notes for the designer*, note 3.
 
 ### JP-110 — the Base card breaks its value inside a word
 
@@ -326,8 +398,53 @@ they break today. B and C: B none; C the same files as A.
 **Docs.** The comment at `:22556`–`22561`; `display-face.md`'s step-4 layout-4 line on the seed's 768
 wrap gets a pointer if A changes it; `notes/map.md`'s stat-wall paragraph.
 
-**Reproduced**: —
-**Decided**: —
+**Reproduced** (2026-10-06, HEAD `80543c5`, card 4 → Publish → Open; the stats written through `st`
+with the Base value replaced). **Units:** at 1440 a line's width is the tab's zoomed px, while the
+cell's content box (`clientWidth` − padding) is the 1180 layout's. The zoomed content box is 208.2 ×
+1.2203 = **254**. The Base cell's content box is **254** (zoomed) at 1440, **276** at 768 and **119** at
+390, the same under all five themes to 1px.
+
+| Value | Theme | 1440 | 768 | 390 |
+|---|---|---|---|---|
+| *Manchester, UK* (seed) | Editorial (35.78 zoomed / 34.81 / 22.24) | **Manchest / er, UK** | Manchester, / UK (between words, accepted) | **Manches / ter, UK** |
+| | Lime (Bebas 41 / 40 / 26) | Manchester, / UK | one line | Manchester, / UK |
+| | Grunge (Anton 30.75 / 30 / 19.5) | one line | one line | Manchester, / UK |
+| | Retro (control) | Manchester, / UK | one line | Manchester, / UK |
+| | Pop (control, Retro's half) | **Mancheste / r, UK** | one line | **Manchester / , UK** |
+| *Wolverhampton* | Editorial | **Wolverha / mpton** | **Wolverhampt / on** | **Wolverh / ampton** |
+| | Lime | **Wolverhampto / n** | one line | **Wolverhampt / on** |
+| | Grunge | one line | one line | **Wolverhampto / n** |
+
+The tester's MANCHESTE / R is one glyph off ours. The break point moves with the face's shaping, and
+the defect is the same. **The frames:**
+- `964:73110` (1440): the cell is 294, content 254, and it sets *MANCHESTER, / UK*, with
+  MANCHESTER, inked ≈ 248.
+- `971:9608` (768): it sets *MANCHESTER, UK* on one line in the 276.
+- `977:13475` (390): the cell is 159, content 119, and it sets *MANCHEST / ER, UK*, inside the word, in
+  the frame's own face.
+
+So the premise that Lime and Grunge "may never break" is false for a typed value. *WOLVERHAMPTON*
+breaks under both, so the fit covers all three `s.limeTree` templates.
+
+**What A sets** (Gloock's ems from the 768 widths: *MANCHESTER,* ≈ 7.15, *WOLVERHAMPTON* ≈ 9.47):
+
+| Value | 1440 (layout px) | 768 | 390 |
+|---|---|---|---|
+| Seed | 29.32 → 29.13, *MANCHESTER, / UK* as the frame | 34.81, unchanged | 22.24 → **16.65**, *MANCHESTER, / UK* |
+| *Wolverhampton* | 29.32 → 22.0 | 34.81 → 29.1 | 22.24 → **12.6** |
+
+That 12.6 is the cost of having no floor: it is smaller than the cell's sub line. Lime's and Grunge's
+seeds are unmoved.
+
+**Decided** (user, 2026-10-06): **A, under Lime, Grunge and Editorial, no floor.**
+- The value is fitted to its widest word, JP-102's rule: a per-row widest-word ems in `sectionVm`
+  beside `vm.titleWordEms`, `containerType: inline-size` on the cell, and
+  `faced(s, min(token, calc(100cqi / ems)))` with `faced()` outside the `min()`.
+- `overflowWrap: 'anywhere'` stays as the last resort for a word with no table entry.
+- At 390 the seed departs from the frame's MANCHEST / ER on purpose.
+- Pop's seed break (Retro's half, the same `anywhere` at `:22806`) is named as a residual in *Notes for
+  the designer*, note 4, not fitted.
+- Note 1's question is answered by this call. The designer is told what was done, and why.
 
 ---
 
@@ -392,6 +509,17 @@ Written as each entry settles. Two are already known to be wanted:
 1. **The Base card's long value** (JP-110). The 1440 frame breaks *MANCHESTER, / UK* between words,
    and the 390 frame breaks *MANCHEST / ER* inside the word. Is a break inside a word acceptable, or
    should the value shrink to fit its widest word? (The tester's question, verbatim in substance.)
+   *Entry 1 (user, 2026-10-06): answered by a fit to the widest word, with no floor. At 390 the seed
+   sets MANCHESTER, / UK at 16.65 rather than the frame's MANCHEST / ER at 23, and a long city such
+   as WOLVERHAMPTON sets at 12.6. The note tells the designer this, and asks whether a floor is
+   wanted.*
 2. **A long name beside the 768 seal** (JP-109's residual). The frame gives the name the full column,
    and the seal stands in its right ≈ 150 at the name's height. Should a multi-word line stop short
-   of the seal, as a single word now does?
+   of the seal, as a single word now does? *Entry 1: under (ii) the line is fitted to the room beside
+   the seal down to a floor, and only below the floor does a name wrap. So the residual is the wrapped
+   name's lines, which entry 2 measures.*
+3. **Retro's half at 768** (JP-109, named, not fitted). Under Retro (and Pop, which renders Retro's
+   layout-4 header) a long one-word name at the flat 77 runs under the 768 seal: *Maximilian
+   Featherstonehaugh*'s U G H, ending at 687 against the disc's 591.
+4. **Pop's Base value** (JP-110, named, not fitted). Retro's half keeps `overflowWrap: 'anywhere'`,
+   and Pop's Titan One breaks the seed MANCHESTE / R, UK at 1440 and MANCHESTER / , UK at 390.
