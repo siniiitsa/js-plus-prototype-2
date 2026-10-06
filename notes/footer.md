@@ -60,3 +60,11 @@ another `notes/` file.
   between words, never inside one (CLAUDE.md JP-062's rule for a display name), so Retro's row
   is a `minHeight` of 31, not a `height`. The seeded name never fills the row, so the rule keeps
   its 150 (123 on the desktop canvas) everywhere.
+- **At 390 the second link column fills the row and breaks after its slash, under Pop and
+  Editorial** (Pop's frame, FILL 173, SHOWS/ over COVERAGE; Editorial's on a user call,
+  2026-10-06, `plans/editorial/display-face.md` step 5). The column is `flex: 1 1 0` with
+  `minWidth: 0`, the label `normal` with a `<wbr>` after each `/`, the first column hugging. In
+  Gloock the Book pill (194.1) and SHOWS/COVERAGE (163) set the two columns 383 wide, so a 360
+  page scrolled 23px sideways and a 390 one ran 3 into the frame's 10 inset; Noto's ended at
+  337.7. So Editorial's seed breaks at 390 too, where its frame sets one line. Lime, Grunge and
+  Retro keep their `nowrap` columns.

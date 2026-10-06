@@ -73,8 +73,9 @@ another `notes/` file.
   group that wraps, and the line's minimum is its widest word (`break-word`, not `anywhere`, which
   would make it one glyph). So the line stands beside the chip wherever that word fits, and drops
   under it otherwise. That is Lime's and Grunge's seed beside it (80 / 89 of room for *Thursday*'s
-  58), and Editorial's and Pop's under it (Editorial's Noto pill is 198 to the frame's 184, leaving 47;
-  Pop's Titan pill is 201 to the frame's 190, leaving 44, so its 390 foot is 98 on a picked day
+  58), and Editorial's and Pop's under it (Editorial's Gloock pill is 215.2 to the frame's 184,
+  leaving 30, so its line takes three lines and the foot is 117.5 against the master's 84; Noto's
+  pill was 198, leaving 47; Pop's Titan pill is 201 to the frame's 190, leaving 44, so its 390 foot is 98 on a picked day
   against the master's 104, whose line is squeezed to 54 and breaks inside *Thursday*). A
   `maxWidth: 100%` clamps that minimum, so a long word in the prompt still breaks inside the cell.
   The foot wraps by the same rule: the group's minimum is its own min-content, so a typed `slotCta`
@@ -126,7 +127,12 @@ another `notes/` file.
   narrow, since `form` took the editorial band and the wizard has no section of its own. Its
   hooks (`wStep`, `wType`, `wVals`, `wPkg`) are appended after `sel`; only step 1 is designed, so
   steps 2 and 3 take the summary card's own labels and a name and email, every string resolved
-  onto `vm.calWizard`; its inputs exist only when `s.live`, and there is no `<form>`. **Send
+  onto `vm.calWizard`; its inputs exist only when `s.live`, and there is no `<form>`. The pill
+  row is SPACE_BETWEEN with no column gap under Editorial and wraps, the forward pill keeping the
+  right edge on its own line: at 390 in Gloock that happens from step 1 (Back 129 + Next Step
+  174.4 in the 290; the frame fits 121 + 161), where Noto's held one row until step 3's Send
+  Enquiry (accepted, `plans/editorial/display-face.md` step 4, layout 4, user call,
+  2026-10-06). **Send
   Enquiry mails, like the form** (JP-053, user call, 2026-09-23 — it was a fragment link to
   `calBookTo`, which lost every answer): both pills are an `<a href="mailto:">` composed by
   `vm.calMailto` over the type, the date as typed, step 2's four answers, the package and the

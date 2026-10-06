@@ -54,7 +54,14 @@ another `notes/` file.
   `FORM_BTN_4`, it seeds per layout: `vm.tierRowCta` is "Book Now", "Book" or "Start Enquiry"
   (`PRICING_ROW_CTA_3`, `PRICING_ROW_CTA`), resolved in `sectionVm` and `EditPanel`'s chain. An
   emptied label drops the pill at all three layouts. A long one wraps rather than widening the
-  page, as layout 2's plan card pill (its own `cta`) does.
+  page, as layout 2's plan card pill (its own `cta`) does. **Editorial's layout-1 deck fits the
+  label first** (user call, 2026-10-05, `plans/editorial/display-face.md` step 4): Gloock set the
+  seeded BOOK NOW 104.8 wide at 768, where the frame's Fisterra is 88, so the pill needed 186.8
+  in a 182.7 card and the seed wrapped. The label is now `min(list, max(12px, room / ems))`.
+  The room is the card's content box, the pill's wrapper being the `inline-size` container, less
+  BookPill's 82 of padding, gap and disc (× 0.82 on the canvas). The ems are
+  `vm.tierRowCtaEms`, `navFace` of the label. It wraps only below 12px. The seed sets at 17.06
+  at 768, and 1440 and 390 keep the ramp.
   **Everything in this paragraph from "The row is *not* rendered at one chip" on is the deck's**
   — layout 1's and, where it says the same thing, layout 3's: layout 2 is a single big plan, and
   its chip row names the
@@ -138,6 +145,11 @@ another `notes/` file.
   terracotta, the pair the frame names outright). `unit` moves with it: nothing prints a suffix after the price here, so **`vm.tierKind`**
   — the unit with its leading slash dropped — stands above the numeral where the frame writes
   SET / PROJECT, which is one section-wide word against the frame's different one per row.
+  **Under Editorial the name and the numeral are `faced`** (Display/SM through `faced` /
+  `facedLh`, Grunge's arm; `plans/editorial/display-face.md` step 4, layout 4, user call,
+  2026-10-06): the frame states Fisterra there, and raw, Gloock's taller cap set THE HOUSE PARTY
+  and THE WEDDING SET on two lines in the 1440 name's 335.4. Faced they are 326.3 and 333.7 on
+  one. The numeral is lifted 0.045em (Noto took 0.07).
 - **Layout 2's two labels are the artist's** (JP-095 (a), user call, 2026-10-01, the label shape of
   JP-071 and JP-090): `kicker`, the `[ PRICING ]` over the heading, and `featsLabel`, the
   `WHAT’S INCLUDED` over the plan card's features, both `in: [1]` and read by both bodies. They are

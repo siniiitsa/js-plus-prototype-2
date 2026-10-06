@@ -264,7 +264,8 @@ Five traps in those tables:
 *Settled in session 0 (2026-09-24):* the user chose a free substitute and delegated the pick
 ("you pick"). It is **Noto Serif Display, pinned to wdth 62.5 and wght 540–700**, with `faceK` 1 —
 see *Conventions → Settled in session 0* for the measurements. The rest of this heading is kept as
-the record of the question.
+the record of the question. *(Reversed 2026-10-05, [`display-face.md`](./display-face.md) step 2:
+the face is Gloock 400, `faceK` 0.967, and Noto Serif Display is no longer loaded.)*
 
 `fonts.googleapis.com/css2?family=Fisterra+Fora` answers 400, and the family's own name says the
 frames were drawn under a **demo licence**. What the frames show, for the user: a condensed,
@@ -788,7 +789,11 @@ four ink ones are its own register.
   Its hairlines are thinner than Fisterra's; the text cut's are twice as thick, and the frame sits
   between them — the Display cut is the high-contrast one the brief names, and it holds at the
   13px nav. It has `'`, `"` and `&` (trap 5 is moot) and a real Bold. The choice is final: every
-  width from section 1 on is this face's.
+  width from section 1 on is this face's. *(Reversed 2026-10-05, JP-085 re-filed: Gloock 400
+  replaced it, chosen over the renders in [`display-face.md`](./display-face.md) step 2 and
+  shipped by its steps 3–5. Its `faceK` is 0.967, its widths are `gloockEms()`, and the link
+  entry is `family=Gloock`. The `faceK`, link and advance-table bullets below are Noto's
+  history.)*
 - **`faceK` is 1.** The cap height is the frame's within 1.4%, and across the header's twelve
   strings (the eight nav labels, Book Now, the location row, the role line, the title) the width
   ratio runs 0.94–1.09 and averages **0.997**. Only the big title runs wide (×1.09): Fisterra's

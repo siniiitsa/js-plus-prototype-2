@@ -616,8 +616,8 @@ These are intentional limits, not oversights — see §12 for the full list. The
   in the setup modal lays out a whole Grunge page and the Grunge family is closed. **Editorial is
   designed at all four of its layouts**: its pages are the fourth variant of the same component sets, in
   the mode *Sienna Vale* — the first **light** pages, paper, taupe, ink and terracotta grounds
-  meeting on straight edges, with Noto Serif Display at width 62.5 standing in for the frames'
-  Fontspring demo face. Layout 1 draws dashed rules, blush tape strips, tilted prints under real
+  meeting on straight edges, with Gloock standing in for the frames' Fontspring demo face (it
+  replaced Noto Serif Display, `plans/editorial/display-face.md`). Layout 1 draws dashed rules, blush tape strips, tilted prints under real
   drop shadows, sparkles and a terracotta seal; layouts 2 and 3 draw the dashed rules alone, on
   square cards (layout 3's bio keeps a strip of tape and a sparkle). Six of layout 1's sections
   stand on another colour scheme than the page, so `sectionVm`
