@@ -46,7 +46,7 @@ The triage ran scratch puppeteer probes on HEAD against `preview.html` (`&name=`
 **Nothing was reproduced in the real app.** Each session does that first (Editorial card 3,
 Publish, Open) and records anything that does not reproduce.
 
-**Only one of the six is Editorial's to the pixel; none is Editorial's alone in code.** This
+**None of the six is Editorial's alone in code.** This
 decides each entry's digest theme list. `digest.mjs`'s default list is `0,2,3,4`, which **skips
 Lime**, so always pass the list explicitly.
 
@@ -97,7 +97,7 @@ Lime**, so always pass the list explicitly.
 
 | Order | ID | Report (short) | Verdict | Size | Decision | Status |
 |---|---|---|---|---|---|---|
-| 1 | JP-104 · JP-106 · JP-103 (form) | 768 length stacked · no status pill, no ↗ · Enquiry → Testimonials 156 | **JP-104 a recorded call** (JP-044, kept by JP-066), which now buys nothing under Lime and Grunge; **JP-106's premise has changed** (gigs carry a `year` since JP-069), the ↗ a separate recorded drop; **JP-103 (form) already matches** glyph to glyph, the tester measured two different edges | — (decisions) | **yes** — four questions | open |
+| 1 | JP-104 · JP-106 · JP-103 (form) | 768 length stacked · no status pill, no ↗ · Enquiry → Testimonials 156 | **JP-104 a recorded call** (JP-044, kept by JP-066), which now buys nothing under Lime and Grunge; **JP-106's premise has changed** (gigs carry a `year` since JP-069), the ↗ a separate recorded drop; **JP-103 (form) unreconciled**: the triage measured it matching from like edges, but the tester's screenshot measures card foot to label on both sides, and the frame reading disagrees with that crop; re-read before asking | — (decisions) | **yes** — four questions | open |
 | 2 | JP-107 | Artist not flagged at layout 3 | **Confirmed, chrome**: no per-column reach exists; the songs hint names the length but not the missing artist | S | light — B (the hint) or A′ (a design-aware line) | open |
 | 3 | JP-102 | Long hero name clipped / under the card | **Confirmed, `s.limeTree`**: the h1 is the flat ramp; the column already ends at the card, the word just ignores it. Named, not fitted, in `display-face.md:851` | S | light — A (JP-092's shape) | open |
 | 4 | JP-105 | *12 mile radius* against 120mi rings | **Confirmed, a seed three frames disagree on**; parked for the designer on 2026-09-29, and this is the ticket that call waited for | S | **yes** — A (a per-layout seed), A + D (and `base` at layout 3) | open |
@@ -108,7 +108,7 @@ Lime**, so always pass the list explicitly.
 
 **Why this order:**
 - **The decisions first.** Entry 1 writes no code. JP-104 and JP-106 each reverse a recorded call,
-  and JP-103's third gap is a reply unless the user wants the card moved. Their code entries (5, 7)
+  and JP-103's third gap needs its two readings reconciled before it can be asked. Their code entries (5, 7)
   are placed by footprint.
 - **Then by footprint, zero-diff entries first.** JP-107 touches the panel alone (no digest file),
   and JP-102 moves nothing on the seed (*Kai Mercer* fits at every width under every theme; the
@@ -146,7 +146,8 @@ As [`layout-2-qa-fixes.md`](./layout-2-qa-fixes.md)'s *How each session runs*, s
    arch 2 alone.
 6. **Pop layout 3 is open on its own branch** (`pop-layout-3`, off the unmerged `pop-layout-2`,
    user call, 2026-10-05). Its plan widens the `HeaderV2` and repertoire `s.limeTree` blocks to
-   `(s.limeTree || s.pop)` ([`../pop/layout-3.md`](../pop/layout-3.md) `:159`, `:275`). JP-102 and
+   `(s.limeTree || s.pop)` ([`../pop/layout-3.md`](../pop/layout-3.md) `:159` for the header; its
+   *Sections* table, `:275`, names the repertoire's block). JP-102 and
    JP-104 edit exactly those blocks. Whichever lands second re-measures the other's site under Pop
    (JP-102's `s.cardNameEms` guard covers Pop's Titan for free; JP-104's `stack` choice does not).
    Each entry's *Settled* names what Pop inherits.
@@ -300,8 +301,25 @@ pill counts as a read of `live`).
 
 ### JP-103 (form) — Enquiry → Testimonials, 156 against 61
 
-**Verdict: already matches; the two figures are measured from different edges.** At 1440
-(triage, Editorial; Lime and Grunge alike):
+**Verdict: unreconciled. Two readings disagree, so re-read before asking.**
+
+**The tester's screenshot measures the same edge on both sides.** In both crops, the dashed card
+holding *No charge to enquire* has its foot about 44 screenshot px above *● Testimonials* in the
+design and about 108 in the build. That ratio, about 2.5, is the tester's 156 : 61. So the tester
+read card foot to label on both sides. **The triage's frame reading does not agree with that
+crop**: it puts the card's foot 162 above the label (the card 106–483 in a 589-tall form, the label
+56 below the form). Either the triage read another node than the visible dashed card, or the crop
+is not `964:68747`'s card. The build crop also shows the card's foot nearly level with *Tell me
+about the night …*, where HEAD measures them 56 apart. That fits a report filed against the 02.10
+Noto build, whose head wrapped differently.
+
+**Before the question:** read the dashed card's foot off `absoluteRenderBounds` (or a
+`get_screenshot` of `964:68747` + `964:68748`) and set it beside the tester's crop. Then
+re-reproduce on HEAD, in the published 1440 tab. If the frame's card really ends near the form's
+foot, B (or a stretch rule) stops being a new call and becomes the fix, with its own after-diff.
+
+**The triage's reading**, kept for the session to confirm or replace (1440, Editorial; Lime and
+Grunge alike):
 - **The frame's 61 is the form frame's own bottom edge to the label.** That edge is invisible. In
   the build the same measure is **59 against 60**.
 - **The build's 156 runs from the left column's last line** ("Tell me about the night …") to the
@@ -318,7 +336,8 @@ pill counts as a read of `live`).
   not wider, and unreported.
 
 **Decision.**
-- **A (recommended). Reply**, with the three measures above. No code.
+- **A. Reply**, with the three measures above. No code. The recommendation waits on the re-read:
+  A only if the frame's card foot really is 162 above the label.
 - **B. Align the card to the head column's foot** at desktop (`alignItems: 'end'`). Every frame
   centres it, so this would be a new call. Form `arch 2` × themes 1–3 × desktop × both surfaces:
   the card moves down about 58 under Editorial, about 15–20 under Lime and Grunge; root heights
