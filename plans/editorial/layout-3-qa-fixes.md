@@ -104,7 +104,7 @@ Lime**, so always pass the list explicitly.
 | 5 | JP-104 (code) | 768 length stacked | **D**: one row, the title clamped to two lines, the length on the right | S | decided (entry 1) | **done** (reproduced; 6 digest files, the rows' spans alone; the clamp at 768 and 390, desktop's rows too short for two lines) |
 | 6 | JP-103 (rest) | Repertoire → Gallery 97, Gallery → Pricing 100 | **Confirmed, `s.limeTree`**: both sides of the taupe band keep `padY` 80 at desktop where the frames pad 56 | S | no | **done** (reproduced, 97.6 / 102–104; 12 digest files, as named; the published 1440 reads 56.1 and 60–63, the composed row and 768 / 390 unchanged) |
 | 7 | JP-106 (code) | no status pill | **A**: a derived pill, published tab only, the seed's year 2031 | M | decided (entry 1) | **done** (reproduced under four templates; 15 digest files, as named, canvas 0; the 390 row the frame's 123) |
-| 8 | — | End-of-pass sweep | — | S | — | open |
+| 8 | — | End-of-pass sweep | — | S | — | **done** (24 of 660 on the canvas and at `live=1&today=`, 14 of 220 a `&column=right` surface, against `main`: exactly the named files, rows attributed; no reach owed; the real app clean on card 3 under all five; `index.html` refreshed in `6ba9885`; replies collated, the designer's note kept) |
 
 **Why this order:**
 - **The decisions first.** Entry 1 writes no code. JP-104 and JP-106 each reverse a recorded call,
@@ -1256,24 +1256,107 @@ templates; the root `index.html` refreshed (`cp source/dist-standalone/index.htm
 the README row; a reply line per ticket; the designer's note (JP-105's *100 mi* at layout 2, if it
 is still open).
 
+**Settled** (2026-10-06, all five steps; the push, the PR, the merge and the build stamp are the
+user's).
+- **1. Digest against `main`: 24 of 660 on the canvas, 24 of 660 at `live=1&today=2026-10-06`,
+  and 14 of 220 on each `&column=right` surface**, reconciled by file and, where two entries share
+  a file, by row.
+  - **The harness.** A scratchpad worktree, its `node_modules` an APFS clone (`cp -Rc`) with
+    `.vite` removed, served on :5174: first at HEAD (`f4c198a`), then switched to `main`
+    (`50513ab`, PR #50) with `.vite` removed again and the server restarted and warmed. The tree
+    was served fresh on **:5177**, not :5175: a :5175 left by an earlier session had been up four
+    hours, and a long-running server can carry 0.1px shaping noise for good (the memory note), so
+    it and another job's :5176 were left alone. Four surfaces, every category × themes `0,1,2,3,4`:
+    the canvas and `live=1&today=2026-10-06` at three widths (660 each, the footer's `page=2`
+    render included), and `WIDTHS=desktop EXTRA='&column=right'` with and without
+    `live=1&today=` (220 each). Port and photo stamps normalised. No file was a blank render.
+  - **Proved first: HEAD against the tree, 0 of 1,760** (660 + 660 + 220 + 220).
+  - **The canvas and `live=1&today=`**, per surface:
+
+    | Entry | Named | Differ | Row shape |
+    |---|---|---|---|
+    | JP-105 | 15 + 15 | 15 + 15 | map `arch 2` × themes 0–4 × three widths: one row, the line's `<span>` |
+    | JP-104 | 3 + 3 | 3 + 3 | repertoire `arch 2` × themes 1–3 × 768: the titles' and lengths' spans |
+    | JP-103 | 6 + 6 | 6 + 6 | repertoire and pricing `arch 2` × themes 1–3 × desktop: the roots −34, pricing's rows 34 up |
+    | JP-106 | 0 + 15 | 0 + 15, all inside JP-105's live map files | the pill's rows; 390 +38.8 |
+    | JP-102, JP-107 | 0 | 0 | — |
+
+    The union is 24 per surface (JP-106's 15 sit in JP-105's). **JP-105's and JP-106's live rows,
+    attributed**: the map at `live=1` without `today` draws no pill, so it was digested on both
+    servers (60 each). `main` against the tree there is **exactly one span a file** (JP-105's
+    line). The tree without `today` against the tree with it is JP-106 alone: 15 files, the line's
+    text unchanged, five *Upcoming* rows added at 1440 and 768 (Editorial's 768 more, its lit row's
+    venue wrapping between words, as entry 7 measured) and one at 390, where the line's span moves
+    in `y` alone and the root grows 38.8 (Editorial 839.5 → 878.3). Root heights at 1440 and 768
+    are `main`'s.
+  - **`&column=right`, 14 of 220 a surface.** The harness's 323 column is a render the page draws
+    for the calendar alone (`pageRows` composes bio, media and calendar), and **the bio, media and
+    calendar move 0**. The 14 are the entries' own changes in a column the page never stands
+    those sections in:
+    - map `arch 2` × themes 0–4 (5): JP-105's line, re-wrapped in the narrow column (6–8 rows);
+      at `live=1&today=` JP-106's five pills too. Root heights unchanged;
+    - pricing and repertoire `arch 2` × themes 1–3 (6): JP-103's desktop arm, the roots −34, as on
+      the plain desktop;
+    - header `arch 2` × themes 1–3 (3): JP-102's fit binding. In the 323 column the h1's stack is
+      49.7 wide beside the card, so *Kai Mercer* fits at 20.26 / 16.58 / 11.88 (Lime / Grunge /
+      Editorial) where `main` ran it 262 / 240 / 392 wide out of that stack. Seven rows a file;
+      the root's 738 unchanged. The page's header is never a column, so this is not a finding.
+    Nothing else moves.
+- **2. Reach: none owed.** No `in:` line differs between `main` and HEAD (`git diff main..HEAD --
+  source/src/builder/data.js`). JP-105 kept `radius`'s `[0, 1, 2]`, JP-106 added no field and
+  `FIELDS.map.gigs` has no `in`, JP-107 changed a hint alone, and JP-102, JP-103 and JP-104 touch
+  no field.
+- **3. The real app** (:5177, the tree; a scratchpad puppeteer script, one template per process
+  under `perl -e 'alarm 240'`, rows appended to a JSONL sink, deleted after; the editor at 1600 ×
+  1000, the published tab at 1440, 768 and 390; trusted clicks). Card 3 under Editorial, Lime,
+  Grunge, Retro and Pop. **No page or console error in any window.**
+  - **JP-107, the panel.** The Repertoire (*Repertoire layout 3*) Songs hint carries the clause
+    "…shows each song’s length in place of its artist; the other layouts show the artist and not
+    the length." under all five, with no *Not shown* line.
+  - **JP-105.** The *Coverage* box reads *120 mi radius* under all five, its hint naming layout 3's
+    seed. The line reads "Based in Manchester · 5 pins · 120 mi radius" on the canvas's Desktop,
+    Tablet and Mobile tabs and in the tab at 1440, 768 and 390, under all five.
+  - **JP-106.** The canvas draws **no pill** on any tab under any template. The published tab reads
+    **five *Upcoming* at 1440 and 768 and one at 390**, no *Past* and no *Tickets →*, under all
+    five. The map is 812.5 / 824.6 / 878.3 under Editorial (Lime 818.9 / 826.7 / 880.9, Grunge 817
+    / 824.9 / 880.9, Retro and Pop 805.5 / 824.7 / 875.3).
+  - **JP-104** (every *View full set* revealed: 18 rows, a song in two sets drawn twice). At 768,
+    and at 1440 and 390, **no row is stacked, no title is cut and none ends in an ellipsis**, and
+    every length's centre sits in its title's first line, under all five, on the canvas's three
+    tabs too. Under Editorial at 768 four titles take two lines, whole: *Dancing Queen*, *Mr.
+    Brightside*, *Don't Stop Me Now* and *I Wanna Dance*. Lime, Grunge, Retro and Pop are one line
+    throughout.
+  - **JP-103, the published 1440.** Repertoire → band **56.1** under Editorial, Lime and Grunge;
+    band → *Pricing*'s line box **55.1 / 54.1 / 55.1**, entry 6's line-box readings (its glyph
+    scan 61 / 60 / 63). Retro and Pop keep 97.6 and 95.6 / 96.6: no arm reaches them, as named.
+  - **JP-102.** *Maximilian Featherstonehaugh* typed into the header's *Title*, republished; the tab's
+    `<title>` follows. Under Editorial / Lime / Grunge the h1 is `inline-size`-contained and sets at
+    **76.83 / 107 / 80.25** at 1440, **37.78 / 66.49 / 56.59** at 768 and **30.06 / 52.89 / 34.5** at
+    390, entry 3's table. No word breaks inside itself, every word ends inside its column (the
+    tightest 0.8 short, Grunge at 768), and neither the header nor the document scrolls sideways.
+    Retro and Pop render Retro's half, unfitted, as named: Retro's word runs 94 past its column at
+    768, Pop's 13.6 (the 1440 tab's zoom of 10.9), 258.8 and 101, the table's overruns.
+  - **Pop** on `main` renders Retro's layout-3 body, its lit pill the cream-on-white entry 7
+    names; not re-filed.
+- **4. `index.html`** refreshed in `6ba9885` from `npm run build:standalone`: 9,824,192 bytes, up from
+  9,822,351. Before the copy, the same walk ran on `source/dist-standalone/index.html` over
+  `127.0.0.1:8931` (Editorial): every reading above to the decimal, and no error.
+- **5.** `plans/README.md`'s row says the pass is swept. The replies are collated below, by ticket,
+  under the retest line; each entry's own reply line is unchanged. At the sweep the deployed build
+  still read `Tue, 06 Oct 2026 09:29:32 GMT`, 9,822,351 bytes, `main`'s root `index.html`. The
+  designer's note 1 is still open and is kept.
+- **Named, not fixed, found by the sweep:** none.
+- **Torn down**: :5174, :5177 and :8931, then the `main` worktree (`git worktree remove --force`). The
+  scratch scripts lived in the scratchpad, never in `source/scripts/`. :5173 is the user's, and
+  :5175 and :5176 belong to other sessions; all three still run.
+
 ## Replies
 
-Written as each entry settles.
+**Retest against the Pages build whose `last-modified` is later than `Tue, 06 Oct 2026 09:29:32
+GMT`** (9,822,351 bytes; `curl -sI https://siniiitsa.github.io/js-plus-prototype-2/`). JP-102 was
+filed against the older `Fri, 02 Oct 2026 22:25:49 GMT` build. An older tab or cached build still
+shows every one of these.
 
-- **JP-106 (the ↗) — by design** (entry 1, user, 2026-10-06). Layout 3 leaves out the design's
-  second ↗ beside the venue on purpose. It would point to the same ticket address that *Tickets →*
-  already links, so the row would carry one link twice. This is a separate call from JP-047's city
-  filters. A gig with a ticket link shows *Tickets →*; the sample gigs have none, so neither
-  appears out of the box.
-- **JP-106 (the pill) — fixed** (entry 7). On the published page each gig row in layout 3 carries
-  an *Upcoming* or *Past* pill, worked out from the gig's date against today, the featured row's
-  filled and the others outlined, at every width and on every template. The editor's preview shows
-  none, since it has no "today" (the booking calendar's rule). The sample gigs are dated 2031, so
-  they read *Upcoming* and keep the design's weekdays. A gig with no year, or a date that does not
-  exist, gets no pill, and the gig's editor says so.
-- **JP-107 (the songs' Artist at layout 3) — fixed** (entry 2). The Songs help line in the
-  Repertoire panel now says that layout 3 shows each song's length in place of its artist, and
-  that the other layouts show the artist and not the length.
 - **JP-102 (a long hero name on Inset Hero) — fixed** (entry 3). The name in the hero now wraps
   between words and shrinks only when its longest word would not fit beside the portrait card, so
   *Maximilian Featherstonehaugh* fits at every width, stops before the card at 1440 and 768, and is no
@@ -1281,16 +1364,6 @@ Written as each entry settles.
   *Florence and the Machine*, keep their full size. Two other places on these pages still break a
   very long word inside itself, and are not part of this ticket: the enquiry form's heading on
   layout 3 at tablet and phone widths, and the bio's name on layout 4 at phone width.
-- **JP-105 (*12 mile radius* under the map) — fixed** (entry 4). The line under the map on
-  layout 3 now reads *120 mi radius* by default, matching the 120mi rings and the design. The
-  Coverage field starts from that value on layout 3. Layouts 1 and 2 keep their own defaults from
-  their designs, and anything typed into Coverage still shows on every layout. The design's *UK*
-  and *8 pins* are not bugs: the place comes from the *Based in* field, and the count is the number
-  of gigs in the list.
-- **JP-104 (the song's length at 768) — fixed** (entry 5). At tablet width the length stands on its
-  title's line, on the right, as in the design. A title too long for its row wraps onto a second
-  line instead of being cut, so *Don't Stop Me Now* now shows in full under Editorial, in the
-  editor and on the published page. Lime and Grunge fit every title on one line.
 - **JP-103 (Enquiry → Testimonials) — matches the design** (entry 1, user, 2026-10-06). The two
   figures were taken from different edges. The design's 61 runs from the form block's own bottom
   edge, which is invisible, to *● Testimonials*: ours is 57. The 156 runs from the left column's
@@ -1302,6 +1375,30 @@ Written as each entry settles.
   the repertoire now ends 56 above the gallery's band, and *Pricing* starts about 60 below it, as in
   the design. Before, both read about 100. This applies to Editorial, Lime and Grunge. Tablet and
   phone widths are unchanged.
+- **JP-104 (the song's length at 768) — fixed** (entry 5). At tablet width the length stands on its
+  title's line, on the right, as in the design. A title too long for its row wraps onto a second
+  line instead of being cut, so *Don't Stop Me Now* now shows in full under Editorial, in the
+  editor and on the published page. Lime and Grunge fit every title on one line.
+- **JP-105 (*12 mile radius* under the map) — fixed** (entry 4). The line under the map on
+  layout 3 now reads *120 mi radius* by default, matching the 120mi rings and the design. The
+  Coverage field starts from that value on layout 3. Layouts 1 and 2 keep their own defaults from
+  their designs, and anything typed into Coverage still shows on every layout. The design's *UK*
+  and *8 pins* are not bugs: the place comes from the *Based in* field, and the count is the number
+  of gigs in the list.
+- **JP-106 (the pill) — fixed** (entry 7). On the published page each gig row in layout 3 carries
+  an *Upcoming* or *Past* pill, worked out from the gig's date against today, the featured row's
+  filled and the others outlined, at every width and on every template. The editor's preview shows
+  none, since it has no "today" (the booking calendar's rule). The sample gigs are dated 2031, so
+  they read *Upcoming* and keep the design's weekdays. A gig with no year, or a date that does not
+  exist, gets no pill, and the gig's editor says so.
+- **JP-106 (the ↗) — by design** (entry 1, user, 2026-10-06). Layout 3 leaves out the design's
+  second ↗ beside the venue on purpose. It would point to the same ticket address that *Tickets →*
+  already links, so the row would carry one link twice. This is a separate call from JP-047's city
+  filters. A gig with a ticket link shows *Tickets →*; the sample gigs have none, so neither
+  appears out of the box.
+- **JP-107 (the songs' Artist at layout 3) — fixed** (entry 2). The Songs help line in the
+  Repertoire panel now says that layout 3 shows each song's length in place of its artist, and
+  that the other layouts show the artist and not the length.
 
 ## Notes for the designer
 
