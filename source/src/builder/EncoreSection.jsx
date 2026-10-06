@@ -28858,8 +28858,12 @@ export default function EncoreSection({ s }) {
   // the block paints the card; the root paints the page's own ground round it.
   // Pop's layout-2 panel (964:64564) and calendar (964:64574) are the same
   // Scheme 2 cards on its white, so the flag is named for the shape, not a
-  // template (`editorialCard` until Pop's layout-2 sweep).
+  // template (`editorialCard` until Pop's layout-2 sweep). Pop's layout-3
+  // calendar (964:68774) is that Scheme 2 card again, in the composed column,
+  // and its layout-3 header (964:68751) a Scheme 6 card on the page's white at
+  // 1440 alone — narrow, the frame round it is the card's own violet.
   const cardOnPage = (s.me || s.ca) && s.v1 && (s.editorial || s.pop)
+    || (s.ca || s.hd && !s.narrow) && s.v2 && s.pop
   // Pop's layout-2 media `Section` (964:64563) strokes its top and foot 5px
   // inside in `scheme/1/stroke/2`, lime, at 1440 alone — visible, where the
   // twins' same stroke is a hidden paint; the narrow wrappers carry none.

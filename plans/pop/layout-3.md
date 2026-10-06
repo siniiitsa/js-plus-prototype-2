@@ -62,8 +62,13 @@ Branch: **`pop-layout-3`, forked from `pop-layout-2`** (`f998160`, its sweep's l
 from `main`: `pop-layout-2` was closed but not merged when this pass was planned (33 commits, PR
 still open), and a fork from `main` would carry neither layout 2's code nor its plan — Lime's and
 Grunge's layout-2 passes forked from their unmerged predecessors the same way (user call,
-2026-10-05). The planning session created it and committed this plan there. Rebase onto `main`
-once `pop-layout-2` merges; nothing in this pass depends on the merge.
+2026-10-05). The planning session created it and committed this plan there. **Rebased onto `main`
+on 2026-10-06** (`e54a3ba`, after the Editorial layout-3 QA merge, #51). That was a fast-forward:
+#48 merged `pop-layout-3` itself, which carried `pop-layout-2`'s 33 commits and this plan, so
+the branch held nothing `main` lacked.
+That QA batch moved two of the blocks this pass widens. *Inherited from Editorial layout 3's QA*,
+under the header and under the repertoire (*Seen at planning time*, item 4), records what Pop
+gets from it.
 
 ## What the pass must deliver
 
@@ -268,7 +273,7 @@ masters are one session. **Lime block** is where that section's Lime layout-3 bl
 
 | # | Cat | Desktop node | Size | Tablet node | Size | Mobile node | Size | Scheme 1440 / 768 / 390 (nested) | Lime twin (1440 / 768 / 390) | Editorial twin (1440 / 768 / 390) | Lime block | Status |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 0 | *foundation* | `964:68750` *(page)* | — | `984:15355` | — | `984:15386` | — | — | — | — | `SCHEMES_OF.Pop[2]`, `cardOnPage` at `d === 2`, `navModeDefault` (decision 1) | open |
+| 0 | *foundation* | `964:68750` *(page)* | — | `984:15355` | — | `984:15386` | — | — | — | — | `SCHEMES_OF.Pop[2]`, `cardOnPage` at `d === 2`, `navModeDefault` (decision 1) | **done** |
 | 1 | `header` | `964:68751` | 1440 × 900 | `984:15356` | 768 × 1024 | `984:15387` | 390 × **606.5** | **1 / 6 / 6** (`hero-card` **6** at 1440; the rings, capsule ring and chips name Scheme 1) | `964:68654` / `984:10740` / `984:10771` | `964:68718` / `984:16812` / `984:16843` | `if (s.limeTree) { … return }` at the head of `HeaderV2` | open |
 | 2 | `bio` | `964:68760` *(head `964:68755`, in Section `964:68754`)* | 858 × 882 | `984:15364` *(head `984:15359`)* | 708 × 912 | `984:15395` *(head `984:15390`)* | 370 × **893** | 1 (seal **4**) | `964:68663` / `984:10748` / `984:10779` | `964:68728` / `984:16820` / `984:16851` | `if (s.v2 && s.limeTree)` ahead of `Bio`'s `if (s.v2)` | open |
 | 3 | `media` | `964:68771` list + `964:68770` card *(head `964:68763`)* | 858 × **678** + 858 × 243 | `984:15375` + `984:15374` *(head `984:15367`)* | 708 × 647 + 708 × 243 | `984:15406` + `984:15405` *(head `984:15398`)* | 370 × 647 + 370 × 243 | 1 (card **2**; rows **3 / 4 / 5 / 7 / 8**) | `964:68674` + `964:68673` / `984:10759` + `984:10758` / `984:10790` + `984:10789` | `964:68739` + `964:68738` / `984:16831` + `984:16830` / `984:16862` + `984:16861` | `if (s.limeTree)` inside `Media`'s `if (s.v2)`, after `nHot` | open |
@@ -422,7 +427,7 @@ seat's `s.bg`. The two cards on the page — the calendar's (as at layout 2) and
 
 ## The decisions this plan makes or hands over
 
-### 1. The header's ground — **a user call, asked in session 0**
+### 1. The header's ground — **settled: A, seat 6 with `cardOnPage` at desktop** (user call, 2026-10-06)
 
 The header's frames say two things: the card (`hero-card`, the photograph and everything over it) is
 Scheme 6 at every width, and the instance root's frame round it is Scheme 1 (white) at 1440 and
@@ -438,8 +443,8 @@ Scheme 6 (violet) at 768 and 390. Layout 2's mechanisms can say both; which read
   every leaf inside the card then reads Scheme 1 and needs an `s.onScheme[6]` arm — about twenty
   arms for a ground three of them would carry under A.
 
-Either way the seeded page and every other card move nothing. Session 0 asks this and records the
-answer here.
+Either way the seeded page and every other card move nothing. **Session 0 asked: A** (user call,
+2026-10-06), built as written — *Settled in session 0*.
 
 ### 2. Leaks and case on a bound page — **settled by layout 2; one carry-over**
 
@@ -554,7 +559,61 @@ so three header files a surface. Keep before / after shots of all eleven at all 
 - **`showBadge` and `badgeText`** stay off design 2 (the header draws no seal; the bio's seal is
   the bio's). `cta2` holds `[1, 2]` (390 drops LISTEN, confirmed on the master).
 - **The 0.14em lift** (CONVENTIONS B's Pop row): scan the foot's name and the card's name per
-  width before lifting.
+  width before lifting. **The foot's name is measured** (below): it wants the lift. The card's
+  name is still to scan.
+- **Inherited from Editorial layout 3's QA: JP-102** ([`../editorial/layout-3-qa-fixes.md`](../editorial/layout-3-qa-fixes.md),
+  entry 3). That entry fitted this block's h1. `identity` is an `inline-size` container, and the
+  title is `min(s.dispLg, calc(100cqi / s.cardNameEms))`, passed unfaced. Pop's `navFace` is
+  Titan's ems × 0.98, so `s.cardNameEms` is set under Pop, and the widening carries the fit with
+  no Pop arm.
+
+  **Pre-measured on 2026-10-06, ahead of session 0, on a scratch widening.** A throwaway worktree
+  of `e54a3ba` widened only this block's gate to `(s.limeTree || s.pop)` and served it on its own
+  port. Nothing was committed, and the worktree is gone. No seat, no Pop delta and no lift were
+  applied, so the measure covers geometry only, not colour. Two surfaces were measured:
+  - the harness (`header&arch=2&theme=4&name=…`), canvas and `live=1`, at three widths;
+  - the real app: Pop → card 3 → *Title* typed in the header's panel → the 1088 editor canvas →
+    Publish → Open, the popup at 1440, 1180, 768, 414, 390 and 360.
+
+  Each ran with four names: the seed, *Maximilian Featherstonehaugh*, *Supercalifragilistic
+  Expialidocious* and *Florence and the Machine*. That is 52 renders.
+  - **The fit.** Every computed font-size is `min(ramp, column ÷ ems) × 0.98` to within 0.001px.
+    The column is `inline-size` in every render. It is 894.7 at 1440 and 1180 (zoomed 1.22 at
+    1440), 802.7 on the canvas, 440 at 768, 350 at 414 and 390, and 320 at 360.
+  - **The ramp holds at desktop.** The ramp is 67 / 51 / 36, which sets 65.66 / 49.98 / 35.28
+    after facing. It never yields at desktop or on the canvas. FEATHERSTONEHAUGH ends 139.3 short
+    of the 894.7 column and 47.3 short of the canvas's 802.7; SUPERCALIFRAGILISTIC ends 108.3 and
+    16.3 short. The seed and *Florence and the Machine* keep the ramp at every width.
+
+    | Fitted (px) | 1440 / 1180 | 1088 canvas | 768 | 414 / 390 | 360 |
+    |---|---|---|---|---|---|
+    | FEATHERSTONEHAUGH | 65.66 (ramp) | 65.66 (ramp) | 37.82 | 30.08 | 27.50 |
+    | SUPERCALIFRAGILISTIC | 65.66 (ramp) | 65.66 (ramp) | 36.65 | 29.15 | 26.65 |
+
+  - **No word breaks inside itself**: every word's `Range` is one rect. **Every word ends inside
+    its column.** The fitted words end 0.8–5.0 short, since Titan's table is near exact
+    (Editorial's Gloock ended 2.3–9 short). At 768 nothing runs under the card: every word ends at
+    least 25.2 short of the card's left edge. Nothing runs past the well's clip, the root's and
+    the document's `scrollWidth` equal the width everywhere, and there are no console errors.
+  - **The triage's Pop row was not this block.** That row read +10.9 / +258.8 / +101.0. It
+    measured Retro's half, card 3's placeholder, and does not describe this block.
+  - **The lift: wanted, HeaderV1's arm verbatim.** HeaderV1's Pop h1 takes
+    `style={pop ? { position: 'relative', top: '-0.14em' } : undefined}`, and `Title` spreads
+    `style` last. Below, a "token-em" is the token's size, 82 / 51 / 36 before the 0.98 facing.
+    - **The frame.** Read off `absoluteRenderBounds` on `964:68751` / `984:15356` / `984:15387`.
+      The Chunko name is Display/LG at lh 0.89. Its ink starts 0.015–0.024 token-em above the line
+      box (0.024 at 768), and its floor stands 0.185 token-em above the box's foot, at all three
+      widths.
+    - **Ours, unlifted.** Titan's line box is 0.908 of its own size (lh `facedLh` 0.89). Its ink
+      starts 0.118–0.130 token-em below the box's top, and its floor stands 0.045–0.058 token-em
+      above the box's foot. So both the top and the floor sit **0.13–0.145 token-em low**. The
+      `-0.14em` lift is 0.137 token-em, since the h1's em is the faced size.
+    - **The ink gap from the name's floor to the location's ink.** The frame's is 24.6 (1440 ×
+      0.82), 24.1 and 21.0. Ours is 16.6 / 18.7 / 17.1 unlifted and 25.8 / 25.7 / 22.1 lifted.
+      The 1.1–1.5 left over is the location's own Titan drop, at Display/List, which this
+      measure did not look at.
+  - **Seen, not measured**: the card's name (`s.cardNameEms` against `measure`) for the long
+    names, and the location's lift. Both are this session's.
 - **Digest**: `HEADER_COUNT.pop` is 4, so header arch 2 has **no fold partner** — three theme-4
   files a surface.
 - **In the builder** (`node scripts/page-check.mjs Pop 2,0,1,3` — card 3 first gets the full walk):
@@ -803,6 +862,68 @@ From the renders and the planning walk — impressions to confirm, not measureme
    each ringed 4px in its own `stroke/1`; meta `text/1` (pink / lime / teal), titles and times
    `text/2` (violet / violet / yellow); the 390 pager two 180 × 54 pills ringed pink; the head
    "CURATED SETS" violet (ours `vm.title`).
+
+   **Inherited from Editorial layout 3's QA: JP-104** ([`../editorial/layout-3-qa-fixes.md`](../editorial/layout-3-qa-fixes.md),
+   entries 1 and 5). That entry gave this block the frame's one row at every width. The title is
+   `flex: 1 1 0; maxWidth: max-content`. It is clamped at two lines at 768 and 390
+   (`WebkitLineClamp: 2`, no `overflowWrap`), and keeps a one-line `nowrap` + ellipsis at
+   desktop. The length is `flex: none` on the right, lowered by `lenDrop` onto the title's first
+   line.
+
+   **Pre-measured on 2026-10-06, on the same scratch widening.** The block's gate was widened,
+   and `pop` was added to `disp`'s arm (below). The harness took
+   `repertoire&arch=2&theme=4` at three widths, canvas and `live=1`, every *View full set*
+   revealed. The rows read `G`'s fallback arm.
+   - **One correction to entry 5's inheritance.** `disp()` is `grunge || ed ? { lineHeight:
+     facedLh(s, lh), textTransform: 'uppercase' } : { lineHeight: lh }`, so a bare widening sets
+     Pop's titles in mixed case at an unfaced lh 1.2. `lenDrop` reads `disp(1.2).lineHeight`, so it
+     follows `faceK` only once `pop` joins that arm. **This session adds it:** `grunge || ed ||
+     pop`.
+   - **The frame's sets are Lime's box.** Padding 34 and radius 50. The 768 card is 222.67 wide,
+     154.67 inside; the 390 card is 290, 222 inside. The rows (`sr`) are 50.25 / 57.5 / 57.5,
+     padded 6, `justify-between` at gap 0. Titles are Display/List 20 / 16 / 15 at lh 1.2, and
+     lengths Inter 12. `G`'s fallback arm (pad 34, radius 50, rows 39 / 57 / 57.5) differs only
+     in two rows: desktop 39 against 50.25, and 768 57 against 57.5. Whether Pop takes its own
+     arm for those is this session's call.
+   - **The type.** Titan titles are 15.68 / 15.68 / 14.7 at a 19.2 / 19.2 / 18.0 line, uppercased.
+     Pop's desktop `list` token is 16, which is 20 × 0.82 rounded, as its other desktop tokens
+     are.
+   - **The widest Titan word against the room beside the length.**
+     - At 768 the room is 118.5–119.3: 154.67, less the length (≈ 26), less the block's 10 gap.
+       Beside DANCING QUEEN's narrower 3:51 it is 121.8.
+     - The widest seeded word is SUPERSTITION, 118.8 of advance in its 118.69 box. Its ink is
+       118.2 wide, so it ends 0.5 inside the box and fits. BRIGHTSIDE is 97.0.
+     - At 390 the room is 185.8–189.1, and SUPERSTITION is 111.4.
+     - **No seeded title is cut at any width**: no `scrollWidth` or `scrollHeight` overflow and no
+       ellipsis.
+   - **Which titles wrap.** At 768 four seeded titles wrap to two lines, whole: DANCING QUEEN,
+     MR. BRIGHTSIDE, DON'T STOP ME NOW and I WANNA DANCE, which are Editorial's four. The other
+     seven are one line. **The frame** (every `sr` row of the three 768 sets read) fits 11 of its
+     12 rows on one line at gap 0. DANCING QUEEN, MR. BRIGHTSIDE and I WANNA DANCE run 128 / 127 /
+     126 beside lengths of 24–26, 0.7–2.7 to spare. **DON'T STOP ME NOW overruns**: its title is
+     159 wide, so its length sits at 159–185, 30.3 past the 154.67 row and into the card's
+     padding. That is Editorial's frame case again. So three of the four wraps come from Titan's
+     width plus the block's 10 gap, and the fourth wraps a title the frame itself cannot hold. In
+     every case the wrap is the clamp doing its job. At 390 the frame's twelve fit (DON'T STOP ME
+     NOW 149 of 222), and so do ours; at desktop every seeded title is one line.
+   - **Two Titan lines against the pinned row.** Two lines are 38.4 at 768 (in 57, or the frame's
+     57.5) and 36.0 at 390 (in 57.5), so both fit. A two-line title's box starts at 9.3 and a
+     one-line title's at 18.9, both centred. At desktop the fallback row is 32 (39 × 0.82), shorter
+     than two lines, which is entry 5's reason for keeping the ellipsis there. The frame's 50.25 is
+     41.2 on the canvas and would hold two lines (38.4). The ellipsis is the block's rule either
+     way.
+   - **`lenDrop`.** The length's centre sits exactly on the title's first-line centre (Δ 0.0) in
+     every row, one line or two, at all three widths. Every length ends flush with the row's right
+     edge, at least 10 after its title.
+   - **`&cj=`.** One set of four songs: *Featherstonehaugh*, *Go Featherstonehaugh*, a 52-character
+     title, and *Don't Stop Me Now* as the control. Canvas and `live=1` are identical.
+     - **768.** FEATHERSTONEHAUGH (180.4) is clipped 61.8 past the box, as named. That is on line
+       one when it stands alone and on line two after GO. The long title clamps 5 → 2.
+     - **390.** FEATHERSTONEHAUGH fits (169.1 of 186.0). *Go Featherstonehaugh* wraps to two lines
+       whole, and the long title clamps 3 → 2.
+     - **Desktop.** The long title is one line, ellipsised.
+     - Every length sits on its title's first line. The root's `scrollWidth` equals the width at
+       all three widths.
 5. **calendar** — a **lime** card (`box/1` `#D7FF23`) ringed **4px violet** at radius 36 — Lime's
    is a 2px ring, Editorial's a dash; the numeral violet at Display/LG with Titan's J to check in
    "JUNE" at Display/SM; dots `box/2` booked, pink picked, ringed free; the pill pink on Scheme 2,
@@ -831,7 +952,55 @@ From the renders and the planning walk — impressions to confirm, not measureme
 
 ### Settled in session 0 (the data)
 
-*(Empty until session 0 runs.)*
+- **Decision 1 is A** (user call, 2026-10-06): the header is seated on Scheme 6 at every width, and
+  at desktop the root paints `vm.pageBg` round the card. One commit, data and one-word gates; no
+  section's layout code moved.
+- **`SCHEMES_OF.Pop[2] = { header: 6, calendar: 2, gallery: 2, map: 4 }`**, its comment naming the
+  page frames and the four instances at three widths, with no footer entry (row 0's 3 at every
+  page). `THEMES[4].schemes` 2, 4 and 6 were checked in Node first; no scheme was added.
+- **`cardOnPage`** gained a second clause, `(s.ca || s.hd && !s.narrow) && s.v2 && s.pop`: the
+  calendar at every width, the header at desktop alone. Layout 2's clause is unchanged.
+- **`navModeDefault`**'s Pop clause is `(d === 1 || d === 2)`. In Node every template now reads
+  `smms` over designs 0–3.
+- **Digest: themes 0, 1, 2 and 3 at zero rows, canvas and live.** That is 660 renders a label, five
+  themes, on a fresh `:5177` server; a second before-label diffed to zero against the first, and no
+  file in any label held a single row. **Theme 4 moved 12 files, canvas and live alike**: header,
+  calendar, gallery and map at `arch_2`, three widths each. Zero in every `_arch_0_`, `_arch_1_`
+  and `_arch_3_` file, in the header's `_arch_4_` and `_arch_5_`, and in the footer's `page_2`
+  (the footer's explicit Scheme 2 is inert, as planned). Only the 1440 header moved geometry; the
+  other eleven are colour rows, every section root's height unchanged.
+  - **Header** — the root is white at 1440 and violet at 768 and 390, inked Scheme 6's pink `s.tx`.
+    At 1440 the bar lost six rows: Minimal draws Music / Gigs / About where Retro's placeholder
+    wrapped nine links onto two rows. At 768 and 390 it is the burger either way.
+  - **Calendar** — the root stays white (`cardOnPage`), its ink violet both before and after.
+  - **Gallery** — the root and the flat sheet are lime (`#C6F200`).
+  - **Map** — the root is blue (`#2563FF`), inked yellow.
+- **What the pictures show** (`shots.mjs` before / after, all eleven at three widths, in the session
+  scratchpad, one `OUT` per width) differs from the root rows. As at layout 2, **the flat `s.v2`
+  arms paint over the root and read their own keys on the new ground**:
+  - **The header's frame reads lime, not white or violet.** Retro's placeholder half paints its own
+    ground over the root at every width. Its `s.ac` is now Scheme 6's lime, so the frame round the
+    card, its 4px ring (pink before), the capsule and the Book pill are all lime. **The three
+    Minimal links are lime on the lime capsule, so they are invisible.** The card's name is pink on
+    cream, and the chips sit on Scheme 6's tag seats. The white 1440 root and the violet narrow one
+    show nowhere until the header session's widened block stops painting over them.
+  - **The map reads teal, as predicted**: the flat sheet is `pillBg`, Scheme 4's `activeBg`
+    `#00E0C4`, over the blue root, which shows nowhere. The lit row is a black pill under teal type,
+    and the panel is violet round a viewport ringed teal. At 390 the pager's two pills are teal on
+    the teal sheet, ringed white.
+  - **The calendar is a lime card on white**, but it is the flat arm's `s.bg` `#C6F200`, not the
+    frame's `box/1` `#D7FF23`, and its 2px ring is still Retro's `#141414`. The foot pill turned
+    pink with a lime label and disc (Scheme 2's `pillBg`), as at layout 2.
+  - **The gallery is the frame's lime sheet** under a pink head (`s.ac` under the seat). Its tiles
+    keep the flat arm's dark rings.
+  - The bio's and footer's JPEGs differ before / after while their digest files are at zero: their
+    seals turn (`.seal-spin`, which the digest skips). It is not a change.
+  None of it is chased here; each section's widened block replaces the flat arm it stands on.
+- **`preview.jsx` needed nothing**: its `Z` carries `dev`.
+- **For the sweep's CLAUDE.md pass**: the per-section scheme bullet gains `SCHEMES_OF.Pop` row 2,
+  the header seated on 6 with the page's white round its card at desktop, and `cardOnPage`'s reach
+  to layout 3's calendar and header. `notes/nav.md`'s `navModeDefault` sentence gains Pop at
+  layout 3. The code comments are written; the docs are not.
 
 ### Inherited and used
 
@@ -839,10 +1008,15 @@ From the renders and the planning walk — impressions to confirm, not measureme
 session leans on a bullet from Pop's layout 1 or 2, Editorial's, Lime's, Grunge's or Retro's
 Conventions, name it here in one line, with the plan it came from, a blank line between sessions.)*
 
+- Session 0: *the digest is committed* (lime/layout-1) — 660 renders a label, five themes, canvas
+  and live; *a section's colour scheme is resolved in `sectionVm`* (editorial/layout-1) and *a card
+  on another scheme reads that scheme's keys* (editorial/layout-2) — row 2 and `pageBg` round the
+  calendar's card and the 1440 header's, data only.
+
 ## Open questions
 
-1. **Decision 1** — the header's ground: seat 6 with `cardOnPage` at desktop (A, recommended) or a
-   `[1, 6, 6]` triple (B). Session 0 asks.
+1. ~~**Decision 1** — the header's ground: seat 6 with `cardOnPage` at desktop (A, recommended) or a
+   `[1, 6, 6]` triple (B).~~ *Settled in session 0: A (user call, 2026-10-06).*
 2. **The bio well's covered leak** is Lime's `fa453f7d` under Pop's own photograph, painted over —
    Grunge's and Editorial's layout-3 open question again. Worth telling the designer.
 3. **The gallery's twelve tiles** are placeholders from four templates (Retro's, Grunge's,

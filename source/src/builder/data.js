@@ -527,6 +527,18 @@ export const SCHEMES_OF = {
     // form (964:64576 · 986:17578 · 986:17597) is a Scheme 4 band. The footer
     // keeps row 0's 3.
     1: { media: 2, calendar: 2, form: 4 },
+    // Its layout-3 page (964:68750 · 984:15355 · 984:15386), bound too, the
+    // same at all three widths but the header. The header's card (964:68751 ·
+    // 984:15356 · 984:15387) is Scheme 6 at every width, while its root round
+    // the card is Scheme 1 at 1440 and 6 narrow: it is seated on 6, and at
+    // desktop the root paints the page's white round the card (`cardOnPage`;
+    // plans/pop/layout-3.md, decision 1, user call, 2026-10-06). The calendar
+    // (964:68774 · 984:15379 · 984:15410) is a Scheme 2 card on the white, as
+    // at layout 2; the gallery (964:68776 · 984:15380 · 984:15411) a Scheme 2
+    // sheet and the map (964:68778 · 984:15382 · 984:15413) a Scheme 4 band.
+    // The footer's instances set Scheme 2 on a tree that binds nothing, so it
+    // keeps row 0's 3.
+    2: { header: 6, calendar: 2, gallery: 2, map: 4 },
   },
 }
 
@@ -627,10 +639,11 @@ export const minimalNav = (navSections) =>
 // to layout 1 returns to its sections unless the artist picked Minimal.
 // Editorial's layouts 2 and 3 draw the three too (964:64599, 986:15658;
 // 964:68718, 984:16812), so it joins them. Pop's layout 2 does (964:64561,
-// 986:17563), so it joins at `d === 1`; its layout 3 is still a placeholder.
+// 986:17563), so it joins at `d === 1`, and its layout 3 does (964:68751,
+// 984:15356), so at `d === 2` too.
 export const navModeDefault = (themeName, d) =>
   ((themeName === 'Retro' || themeName === 'Lime' || themeName === 'Grunge' || themeName === 'Editorial')
-    && (d === 1 || d === 2)) || (themeName === 'Pop' && d === 1) ? 'minimal' : 'sections'
+    && (d === 1 || d === 2)) || (themeName === 'Pop' && (d === 1 || d === 2)) ? 'minimal' : 'sections'
 
 // Bebas Neue's advance widths in em, capitals only — Lime's label face, which
 // sets every nav label in caps — read off the loaded face with canvas
