@@ -73,8 +73,9 @@ another `notes/` file.
   group that wraps, and the line's minimum is its widest word (`break-word`, not `anywhere`, which
   would make it one glyph). So the line stands beside the chip wherever that word fits, and drops
   under it otherwise. That is Lime's and Grunge's seed beside it (80 / 89 of room for *Thursday*'s
-  58), and Editorial's and Pop's under it (Editorial's Noto pill is 198 to the frame's 184, leaving 47;
-  Pop's Titan pill is 201 to the frame's 190, leaving 44, so its 390 foot is 98 on a picked day
+  58), and Editorial's and Pop's under it (Editorial's Gloock pill is 215.2 to the frame's 184,
+  leaving 30, so its line takes three lines and the foot is 117.5 against the master's 84; Noto's
+  pill was 198, leaving 47; Pop's Titan pill is 201 to the frame's 190, leaving 44, so its 390 foot is 98 on a picked day
   against the master's 104, whose line is squeezed to 54 and breaks inside *Thursday*). A
   `maxWidth: 100%` clamps that minimum, so a long word in the prompt still breaks inside the cell.
   The foot wraps by the same rule: the group's minimum is its own min-content, so a typed `slotCta`

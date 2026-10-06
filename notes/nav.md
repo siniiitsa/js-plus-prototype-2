@@ -52,14 +52,15 @@ another `notes/` file.
   otherwise, in the same bordered capsule, which the 390 masters draw the burger in. Minimal's
   three fit under the seeded name (the wordmark is in the sum, so a long one can fold them too); *Follow my sections* on the seeded names fits up to four links in Retro
   layout 2, five in Retro layout 3, seven in Lime's layout 2 and six in its layout 3, eight in Grunge's layout 2 and seven in its
-  layout 3, five in Editorial's layout 2 and four in its layout 3, and three in Pop's layout 2
+  layout 3, four in each of Editorial's layouts 2 and 3, and three in Pop's layout 2
   (it is the words' width that counts, not their number), so a page switched to *Follow my
   sections* is still the burger. It is a vm boolean
   because `EncoreSection` has no effect to measure with: Lime's sum is `navEms` /
   `navNameEms` / `navCtaEms` (Bebas, `bebasEms()`), Retro's is `antonEms()` in `data.js`, its
   0.02em tracking folded in (Grunge's arm is the same table at a tracking of 0, its mode stating
-  none; Editorial's `navEms` family is `notoEms()`, read off the rendered DOM, and its layouts 2
-  and 3 take Grunge's arm — the same bar, the same fixed 18 gaps — in Noto, layout 3's links at
+  none; Editorial's `navEms` family is `gloockEms()` × `faceK`, advances and kerning pairs read
+  off the rendered DOM, and its layouts 2 and 3 take Grunge's arm — the same bar, the same fixed
+  18 gaps — in Gloock (five links ran 697.4 in Noto and 791.9 in Gloock), layout 3's links at
   Label/SM where Grunge's are Label/MD, against 684; Pop's layout 2 takes it too, in `titanEms` × 0.98, against **656**, the frame's bar, inset 26 inside the 708 spread). It is set at tablet only — desktop never reads it and always draws
   the links — and is undefined, so the burger, at 390, on an empty nav and in layouts 1 and 4;
   layouts 5 and 6 draw `NavLinks`, which
@@ -70,8 +71,9 @@ another `notes/` file.
   take the room the wordmark and the pill leave, sized `100cqi / navEms` between their 12px floor
   (Grunge's row 16, faced to 12) and their cap. The name used to keep its size whatever it was,
   so a long one pushed the links below the floor and onto a second row: Editorial's nine Noto
-  links need 636px at 12, which left a name 6.75 em. Now the bar is a query container, and the
-  name's room is the capsule's content box less the mark, the gaps, the pill (its label off
+  links needed 636px at 12, which left a name 6.75 em (Gloock's need 720, so since
+  `plans/editorial/display-face.md` the seed itself takes the two-line branch below, at 16.8).
+  Now the bar is a query container, and the name's room is the capsule's content box less the mark, the gaps, the pill (its label off
   `vm.navNameFit.pill`) and the links at their floor. In that room the name:
   - keeps its size while it fits on one line (`navNameFit.one`);
   - otherwise shrinks on one line;
@@ -101,9 +103,12 @@ another `notes/` file.
   - goes below that floor only for a word too wide for the room at the floor
     (`navNameFit.word`, the widest word), so no name reaches the pill or breaks inside a word.
 
-  Its row is `flex: none`, because Editorial's seed already runs 2.8px past its half into the
-  gap, which a shrinkable row would wrap. So `sectionVm` builds `navNameFit` for design 3 too.
-  Every seed keeps its size and one line at 390 and 414; at 360 Editorial's *Kai Mercer*, which
-  ran 22.8px under the pill, wraps. Lime, Grunge, Editorial and Pop; 768 fits every name, and
+  Its row is `flex: none`, because Editorial's seed already ran 2.8px past its half into the
+  gap in Noto, which a shrinkable row would wrap. So `sectionVm` builds `navNameFit` for design 3
+  too. Lime's, Grunge's and Pop's seeds keep their size and one line at 390 and 414. Editorial's
+  layout-1 *Kai Mercer* wraps onto two lines at its 24.18 at 390 and 414, and at 21.62 at 360,
+  since Gloock's needs about 143 of the 121 up to the pill (`plans/editorial/display-face.md`
+  step 4, layout 1; in Noto it wrapped at 360 alone, having run 22.8px under the pill). Its
+  layout-4 seed keeps one line at all three. Lime, Grunge, Editorial and Pop; 768 fits every name, and
   **Retro** (no ems table) and **Editorial's layout-3 centred name** (`HeaderV2`, its own span)
   are named in the entry, not fitted.

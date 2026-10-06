@@ -128,11 +128,15 @@ another `notes/` file.
   — paper, taupe and ink bands meeting on straight edges, no seams, arcs, tears or band grain —
   and six of its layout-1 sections stand on another scheme, resolved in `sectionVm` (the
   per-section scheme rule above).
-  Its display and label face is **Noto Serif Display pinned to wdth 62.5 and wght 540–700**,
-  standing in for Fontspring's demo Fisterra Fora (user call, 2026-09-24): one Google Fonts
-  entry, never a second, or the default 400 finds a face of its own and the display goes wide
-  and thin; `faceK` 1, casing `'title'`, each display or label string uppercased in its own arm
-  (Grunge's rule). Its decoration: **dashed rules** (`DashRule`, an inline-SVG overlay at the
+  Its display and label face is **Gloock 400**, standing in for Fontspring's demo Fisterra Fora
+  (`plans/editorial/display-face.md` step 2, user call, 2026-10-05, replacing session 0's Noto
+  Serif Display at wdth 62.5): one Google Fonts entry, `family=Gloock`, never a second. Gloock
+  has one weight, so every Editorial site sets 400 and none asks for Bold, which Blink would
+  synthesise. Its cap is .750 of the em against Fisterra's .725, so `faceK` is 0.967 and
+  `faced` / `facedLh` scale every Editorial site that calls them. Its widths are `gloockEms()`
+  in `data.js` (`GLOOCK_EM` plus the `GLOOCK_KERN` pairs, since Gloock kerns hard), times
+  `faceK`, which is `navFace`'s Editorial arm and every Editorial fit's. Casing `'title'`, each
+  display or label string uppercased in its own arm (Grunge's rule). Its decoration: **dashed rules** (`DashRule`, an inline-SVG overlay at the
   node's own `dashPattern` — `gap` beside `dash` for an uneven one — on a row's edge, a
   column's upright side (`'left'` / `'right'`) or `side="all"` round a card, taking no height),
   **tape** (`Tape`, a blush or terracotta strip clipping the grain raster at SCREEN, seated by
@@ -148,8 +152,9 @@ another `notes/` file.
   (`editorialRule`). **Its three hand-scaled Bold statements** — the form's, the testimonials'
   quote and the footer's — are fitted to their widest word rather than broken inside it, as the
   demo face's measure broke them: `min(frame size, calc(100cqi / ems))` on an `inline-size`
-  container, the frame's box a `max-width` over `min-width: min-content`, the ems in Noto Bold
-  (`notoBoldEms()`, `notoEms()` × 1.045) — `vm.titleWordEms`'s Editorial arm for the form,
+  container, the frame's box a `max-width` over `min-width: min-content`, the ems `navFace`'s (Gloock
+  at 400, the frames' Bold set at the Regular; the testimonials' and the footer's sizes are
+  `faced`) — `vm.titleWordEms`'s Editorial arm for the form,
   `vm.quotes[].wordEms` per review and `vm.footerWordEms` for the footer, each undefined off
   Editorial. **Its live states are redrawn where its frames draw none** (Lime's rule): at layout
   1 the map's pin and lit row (paper in an ink ring; paper under ink, bled to the row's edges) and
@@ -168,11 +173,12 @@ another `notes/` file.
   every width (`Pager`'s additive `endBox` fills its two arrows) and marks the current page with
   an ink ring no frame draws; the map's lit pin is redrawn, an ink disc in a paper ring, where
   its idle dots are the frame's own paper at .6; pricing's picked chip is the frame's; and the
-  form's refused box is a solid 2px paper ring. **Noto's J descends 0.24em** where the frames'
-  face sits on the line, so the calendar's slot marks are lifted 0.09em in their tight line box
-  (a `position: relative` nudge that moves no box) and the map's clipped venue box pads 0.1em
-  under the glyphs and gives it back. **Layout 3 is a paper page between four full-bleed
-  grounds** — the ink header (Scheme 3, its nav Scheme 5), the taupe gallery (2), the terracotta
+  form's refused box is a solid 2px paper ring. **Gloock's J descends 0.187em** where the
+  frames' face sits on the line, so the calendar's slot marks are lifted 0.05em in their tight
+  line box (a `position: relative` nudge that moves no box; Noto's was 0.09) and pinned to
+  Gloock's widest mark, `OCT 06` (`u(436)` at 1440, 269 at 768), and the map's clipped venue box
+  pads 0.02em under the glyphs and gives it back (Noto's 0.24em J took 0.1). **Layout 3 is a
+  paper page between four full-bleed grounds** — the ink header (Scheme 3, its nav Scheme 5), the taupe gallery (2), the terracotta
   map (4) and the taupe footer (2, by page) — every band meeting its neighbour on a straight edge
   and **every card square** where the twins round theirs; no effect on any node, no leant print,
   no seal but the footer's, the bio trading Lime's seal for layout 1's tape and a terracotta
@@ -184,11 +190,15 @@ another `notes/` file.
   filter stands it; the map's lit row the frame's own and **followed** — paper dashed paper 56%
   under terracotta type — its idle dots **redrawn** in paper at the frame's .6, since Scheme 4's
   viewport resolves their `text/2` to ink on the dark plate, and its lit pin paper in a 2px ink
-  ring; the form's refused box (above); the footer seal's name (above). Noto's glyph floor is
+  ring; the form's refused box (above); the footer seal's name (above). Gloock's glyph floor is
   measured per site against the frame's `absoluteRenderBounds` and lifted only where it shows —
-  0.09em on the calendar's numeral and month (the J of JUNE) and pricing's numeral, 0.07em on
-  the map panel's title, 0.08em on the form's head and, as baseline-aligned rows lifted whole,
-  the form's price row (0.09em) and the testimonials' numeral row. **Layout 4 is ink, taupe,
+  0.055em on the calendar's numeral and month (the J of JUNE), 0.08em on pricing's numeral,
+  0.055em on the map panel's title, 0.06em on the form's head and, as baseline-aligned rows
+  lifted whole, the form's price row (0.08 × the price) and the testimonials' numeral row
+  (0.055 × the numeral). Noto's were 0.09, 0.09, 0.07, 0.08, 0.09 and 0.08
+  (`plans/editorial/display-face.md` step 4, layout 3's table). The bio's ID-card name is
+  fitted to its widest word (`cardNameEms`, HeaderV2's rule), since Gloock's MERCER outran
+  the 1440 cap. **Layout 4 is ink, taupe,
   paper and terracotta on straight edges**: the header's photograph fades to ink over the ink bio
   (Scheme 3), then the taupe media band (2), the gallery and the repertoire on one ink ground
   (3), the map, pricing, calendar and form on the paper page, and a terracotta testimonials
@@ -214,11 +224,14 @@ another `notes/` file.
   `[4]`, the bio's and pricing's chips `[1]`, the gallery's square arrow discs `[4]`, the map's
   viewport `[3]`, the calendar's Back pill `[3]` and the testimonials' second cell `[1]`; the
   media head is `SIENNA_MEDIA`. Every display head is fitted to its widest word (`vm.titleWordEms`,
-  Noto's 540 ems at designs 2 and 3; the header's name on `vm.cardNameEms`) where the twins'
-  `break-word` heads split a long word in Noto, and the repertoire's artist stops at 60% of its
-  row where the twins let it take the title's room. Noto's floor is lifted 0.09em on the map's
-  numerals and the calendar's stacked display lines, 0.08em on the form's head and ENQUIRE and
-  the testimonials' head, and 0.07em on pricing's numeral and the form's labels. Its live
+  `navFace`'s Gloock ems; the header's name on `vm.cardNameEms`) where the twins' `break-word`
+  heads would split a long word, and the repertoire's artist stops at 60% of its row where the
+  twins let it take the title's room. Gloock's floor is lifted 0.07em on the map's numerals,
+  0.055em on the calendar's stacked display lines, the form's head and ENQUIRE and the
+  testimonials' head, 0.06em on the form's labels and 0.045em on pricing's numeral (Noto's were
+  0.09, 0.09, 0.08, 0.08, 0.07 and 0.07; `plans/editorial/display-face.md` step 4, layout 4's
+  table). The repertoire's clipped title pads 0.02em under its J (Noto's 0.1) and the artist
+  pads none. Pricing's plan names and numerals are `faced`, as the frame states Fisterra there. Its live
   states: the repertoire's lit rail cell terracotta lettered ink, the map's lit pin the marker's
   ink disc in a paper ring, its 120 mi ring redrawn terracotta at .3 where the frame's ink
   vanishes on the raster, and the refused boxes, which drop their dash — the wizard's for 2px of
@@ -227,11 +240,11 @@ another `notes/` file.
   "KAI MERCER" where ours keeps the shared "Contact Us". Its header family is
   `'editorial'`: four cards, **all four fitted** — Hero is `HeaderV0`'s Lime block, widened (an ink capsule on
   `s.box3` with the sparkle mark, an arch portrait card, a one-tone title fitted to its column
-  in `notoEms`, chips in terracotta and blush), and Feature spread `HeaderV1`'s (an outlined
+  in Gloock's ems (`navFace`), chips in terracotta and blush), and Feature spread `HeaderV1`'s (an outlined
   terracotta capsule on paper with Grunge's fixed 18 gaps, the arch photograph — its 1440 `CROP`
   a stretch, drawn instead as a cover anchored at `95% 50%` — dashed square face and place
   cards, the Book pill on `s.onScheme[4]`, `LimePin`'s additive `fill` for the outlined pin
-  tile, and a one-tone title fitted to its column's widest word in `notoEms`, `vm.cardNameEms`,
+  tile, and a one-tone title fitted to its column's widest word in Gloock's ems, `vm.cardNameEms`,
   at every width — JP-092, user call, 2026-10-01, which fits Lime's and Grunge's titles in the
   same block the same way, each in its own face's ems), and Inset Hero `HeaderV2`'s (a square well with one floor fade, ringed in Scheme 1's
   ink; a blush Scheme 5 capsule ringed ink round ink links at Grunge's fixed 18 gaps; a blush

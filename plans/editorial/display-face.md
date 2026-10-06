@@ -808,7 +808,104 @@ A winner that is already loaded for another template needs its own instance chec
    `sub: 'Noto Serif Display · paper & ink'` (`:182`, the picker's card subtitle), and a
    *reversed* pointer on `layout-1.md`'s *Settled in session 0* face bullet.
 
+   **Settled** (2026-10-06, on `21e60fe`). Line numbers are this step's commit's.
+   - **The harness digest, `main` (`55e3bfa`, :5176) against the tree (:5175): 129 of 660 on each
+     surface, all theme 3.** Themes 0, 1, 2 and 4 are 0, bare and `live=1`, and neither label holds
+     an empty render. The three unmoved theme-3 files are layout 2's gallery, which sets no Gloock.
+     - **The root-height sweep** (row 2, column 5): every theme-3 root that moves past a ±0.1
+       re-rounding is a call above. They are layout 1's four (the bio's 390 head; the form and the
+       footer at 390 and the quote at 768 shorter by the statements' fit; the quote at 390), layout
+       2's four (the 390 pricing head, calendar foot, promise and map pill row), layout 3's (bio,
+       media, form, testimonials) and layout 4's (bio, media, calendar wizard, map, testimonials),
+       but one.
+     - **One move is step 3's, unnamed until now:** the layout-4 repertoire is 2.4 shorter at
+       1440 (1323.2 → 1320.8). Each of its twelve rows is 0.2 shorter, because the titles' and
+       artists' faced line boxes are (31.4 → 29.3 and 26 → 24). That is `faceK`, not a wrap.
+     - **The row-height sweep** (`rowh.sh`, layouts 1–4) lists only rows the four Settleds name.
+   - **The long-name set** on the published tab, `main` against the tree: the four names, cards
+     1–4, 360 / 390 / 414 / 768 / 1440, 80 renders a build. For every name word, a `Range` reads
+     whether it broke inside itself, ran past the page, or ran past a clipping ancestor. The page's
+     `scrollWidth` and what scrolls it are read too, and so is the line count of each element whose
+     whole text is the name.
+     - **Found: the seeded page scrolled at 360.** The footer's 390 link columns are sized by the
+       Book Now pill (194.1; Noto's 175) and SHOWS/COVERAGE (163; Noto's 136.7), so column 2
+       ended at 383. A 360 page scrolled 23px sideways and a 375 one 8px, on every card and every
+       name. At 390 the column ran 3px into the frame's 10 inset.
+     - **User call 1: Pop's wrap arm** (`EncoreSection.jsx:28324`). At 390 the second column fills
+       the row (`flex: 1 1 0`, `minWidth: 0`) and breaks after its slash (`<wbr>`), as Pop's
+       frame draws it. At 360 / 375 / 390 / 414 the page no longer scrolls, and the column ends at
+       350 / 365 / 380 / 392. The seed breaks SHOWS/ over COVERAGE at 390 too (159.9 wide, two
+       lines; the frame's is one), and the footer's root holds 637.5. A footer-only digest moves
+       theme 3's two 390 footer files on each surface, and Pop's does not move. Recorded in
+       `notes/footer.md`.
+     - **User call 2: four long-name sites are named, not fixed.** Gloock takes each of them to
+       more widths than Noto did:
+       - **Card 2** (layout 2), *Maximilian Featherstonehaugh*: the form's credit runs past the page
+         at 390 and 414 too (404.7 / 416.7), not only at 360, and so does the 390 header's Book
+         pill arrow (397.2; 416.0 at 414). Noto's was 360 alone (`layout-2-qa-fixes.md`'s
+         sweep).
+       - **Card 3** (layout 3): the form head breaks FEATHERSTONEHAUGH and SUPERCALIFRAGILISTIC
+         inside the word at 768 too. Noto broke them at 360–414.
+       - **Card 3** (layout 3): the centred wordmark's clip is deeper, and now happens at 768 too
+         (100.5 / 88.1 past its box). JP-101 named this site, not fitted.
+       - **Card 4** (layout 4): the bio's name breaks the long word at 390 and 414 too. Noto broke
+         it at 360.
+     - **Better than Noto:** on card 3 at 1440 and 768, the bio's ID-card name no longer breaks
+       FLORENCE, MAXIMILIAN, FEATHERSTONEHAUGH or SUPERCALIFRAGILISTIC (step 4's `cardNameEms`
+       fit).
+     - *Kai Mercer* and *Florence and the Machine* break no word and scroll no page anywhere.
+       Layout 1's capsule *Kai Mercer* is two lines at 390 and 414 (24.18) and at 360 (21.62),
+       which is layout 1's call 2. Noto's wrapped at 360 alone.
+   - **The published tab's first paint is Gloock.** CDP `CSS.getPlatformFontsForNode` on the
+     header's h1 reads `Gloock (web)` from the first probe, +15ms after the popup opens, through
+     `fonts.ready`. That holds on the dev server and on the built standalone (+84ms), on all four
+     cards. `main` reads `Noto Serif Display ExtraCondensed (web)` as the positive control. The
+     popup's link asks for `family=Gloock`, its loaded face is `Gloock 400` (latin), and no Noto
+     file is fetched.
+   - **The two-build digest** (`build-digest.mjs`, the root `index.html`, which is `main`'s build,
+     `71bfc93` with no source change after it, against the new `dist-standalone`; one origin,
+     `CARD=0`–`3`). Themes 0, 1, 2 and 4 are **0 rows** on all four cards at all three tabs, and
+     every theme-3 file moves. The Tablet and Mobile roots move as the harness's do. The Desktop
+     tab is the 1088 canvas, and its states are not regressions:
+     - card 1: the header's and pricing's rows move with the face, and their roots hold
+       (JP-091's name fit and layout 1's pill fit are among them, as expected). The gallery
+       head's IN ACTION takes a second line there (+86). It holds one line at 1180.
+     - card 2: no root moves.
+     - card 3: the form head takes another line (+86) and the testimonials grow 15.
+     - card 4: the two-row capsule, as expected; the media head (+86) and the 2.4 repertoire as
+       at 1180. The pricing plans' middle column narrows 399.1 → 380 beside the wider *Start
+       Enquiry* pill (215.3; Noto's 196.1), so the Chakra Petch feature chips of two plans take
+       another row (+35 each). At 1180 they do not.
+   - **`page-check.mjs Editorial 0,1,2,3`** on the built standalone: every card publishes, with no
+     console error or warning. Card 1's full walk passes: every nav, anchor and footer link
+     scrolls to its section, the audio plays, the form refuses and then fills its mailto, the
+     390 overflow is 0, and the burger opens. Its control list is `main`'s build's, entry for
+     entry.
+   - **The build.** `npm run build` is clean. `dist-standalone/index.html` is 9,822,351 bytes
+     against the root's 9,820,306 (+2,045). The face loads from Google, so the gain is code: the
+     Gloock advance and kerning tables in place of Noto's, and step 4's fits.
+   - **Docs.**
+     - CLAUDE.md's *Editorial's face* rule names Gloock: one entry, one weight, never Bold.
+       Noto's reason (a second entry lets 400 find a face of its own) does not hold for a
+       one-weight family.
+     - `notes/templates.md` covers the face, `faceK`, `gloockEms()`, the J at 0.187em, and every
+       per-layout lift in Gloock's values, with Noto's beside them.
+     - `notes/nav.md`: `gloockEms()`, four links at layouts 2 and 3, the 720px and the 390 seed
+       lines.
+     - `notes/calendar.md`: the 215.2 pill, leaving 30.
+     - `notes/footer.md`: call 1.
+     - `README.md`'s Editorial line.
+     - `data.js:182`'s `sub: 'Gloock · paper & ink'`, the picker card's subtitle.
+     - *Reversed* pointers on `layout-1.md`'s §1 heading and its *Settled in session 0* face
+       bullet.
+     - `plans/README.md`'s row.
+   - **The root `index.html`** is refreshed from `dist-standalone/` in its own commit.
+   - **Servers.** :5174's `wt724` worktree is removed. `wt55e` (`main`) remains for the PR's
+     review.
+
 ## For the reply and the designer
+
+*Written by step 5 (2026-10-06).* The plan's brief for each text is kept above them.
 
 - **The reply, once step 5 is done:** the heads are now set in *the winner*, a free face chosen
   side by side against the design's Fisterra Fora for its shape (the angled serifs, the narrow
@@ -816,3 +913,47 @@ A winner that is already loaded for another template needs its own instance chec
   is bought, the real face replaces this one.
 - **For the designer:** the shipped face is a free stand-in, and the frames' patch face (Playfair
   Display) is not it either. Name the winner and its measured differences.
+
+**The reply (JP-085).**
+
+> Editorial's display and label type is now set in **Gloock**, in place of Noto Serif Display. It
+> is still not Fisterra Fora: the computed font is Gloock, and nothing named Fisterra loads,
+> because Fisterra still has no web licence. Gloock is a free face (SIL Open Font License, served
+> by Google Fonts). We chose it by rendering over thirty free faces beside the design's *SIENNA
+> VALE* and *READS THE ROOM.* and comparing them side by side. It came out closest in colour, contrast and
+> tight fit, and its serifs are wedge-bracketed. No free face has Fisterra's tails on the R and
+> Q, its flared stems or its joined N–N, and Gloock has none of them either. The change reaches
+> every Editorial head, the wordmark, the nav links and the *Book Now* pills, on all four
+> layouts. The PO still holds the licence question. If one is bought, Fisterra replaces Gloock.
+
+**For the designer.**
+
+> The Editorial frames name Fisterra Fora (a Fontspring demo, no web licence). The shipped face
+> is **Gloock 400** (Google Fonts, OFL), a free stand-in chosen over the renders. The frames'
+> patch face, Playfair Display, is not it either: it sets 22% wider than Fisterra. Measured against
+> the frames:
+> - **Cap height** .750 of the em against Fisterra's .725. Every Editorial size is set at 0.967
+>   of its token, so the caps land on the frame's and the stated line boxes hold.
+> - **Width.** At matched cap height Gloock sets *SIENNA VALE* 1.153 of the frame's width (Noto
+>   1.066). Some heads take a line more than the frame:
+>   - layout 1: the bio's 390 head, the testimonials quote at 1440 and 390, and the 1440 and
+>     390 capsule names;
+>   - layout 2: the 1440 hero name, the 768 face-card title, the 1440 media head and the 390
+>     pricing head;
+>   - layout 3: the bio's 390 head, the 1440 media head, the form head at 1440 and 390, the
+>     testimonials quotes at 768 and 390, and the 1440 portrait-card name;
+>   - layout 4: the bio head at 1440 and 768, the media head, the 768 MANCHESTER, UK, the 768
+>     testimonials head and the 390 hero name.
+>
+>   Some seeded titles in narrow rows ellipsise further (SLOW BURN, *Manchester at 3am*, *Echo &
+>   The Floor*, *Don't Stop Me Now*). At 390 the footer's second link column now breaks SHOWS/
+>   over COVERAGE, where the frame sets one line.
+> - **Colour.** Gloock's stem is .204 of its cap against Fisterra's .156, so it is darker. Its
+>   thinnest stroke is .019 against .040, so it has more contrast.
+> - **Character.** Gloock has no R or Q tails, no flared stems pinched at mid-height, and no N–N
+>   joins. It has a lowercase where Fisterra is caps-only, so every Editorial string is
+>   uppercased per site.
+> - **One weight.** Gloock has only a Regular, so the three statements the frames set Bold (the
+>   form's, the testimonials quote and the footer's) are set at 400, not a synthetic bold.
+> - **The J** descends .187em, where Fisterra's sits on the line, so every glyph-floor nudge was
+>   re-measured against the frames, per site and per width.

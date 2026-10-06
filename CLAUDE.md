@@ -464,5 +464,6 @@ Copied from the notes files so they are never missed. Each is explained where it
 - **Repeaters:** each seed resolver in `EditPanel` has to resolve exactly what `sectionVm`
   resolves. The heading's fallbacks live in `sectionVm` **and** in `EditPanel`'s chain: change
   one, change both. (`notes/list-editors.md`)
-- **Editorial's face:** Noto Serif Display is one Google Fonts entry, never a second.
+- **Editorial's face:** Gloock is one Google Fonts entry, `family=Gloock`, never a second, and
+  it has one weight: an Editorial site sets 400, never Bold, or Blink synthesises one.
   (`notes/templates.md`)

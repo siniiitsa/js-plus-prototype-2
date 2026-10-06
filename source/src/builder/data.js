@@ -179,7 +179,7 @@ export const THEMES = [
   },
   {
     name: 'Editorial',
-    sub: 'Noto Serif Display · paper & ink',
+    sub: 'Gloock · paper & ink',
     // Editorial is the fourth template with a Figma variable mode ("1 ·
     // Primitives" → Sienna Vale, "2 · Scheme" → Scheme 1), so every value below
     // is that mode's. The exception is the display and label face: the mode

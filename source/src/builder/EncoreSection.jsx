@@ -28314,21 +28314,28 @@ function Footer({ s }) {
     // shared branch in Scheme 3's other pair — `s.tx` violet under an `s.ac`
     // lime label and disc, the arrow the pill's own violet — its label a raw
     // 15.77.
+    //
+    // Editorial takes Pop's 390 wrap (plans/editorial/display-face.md, step 5,
+    // user call, 2026-10-06). In Gloock the Book pill (194.1) and SHOWS/COVERAGE
+    // (163) set the two columns 383 wide, so a 360 page scrolled 23px sideways and
+    // a 390 one ran 3 into the frame's 10 inset; Noto's ended at 337.7. So the
+    // second column fills the row and breaks after the slash, which the seed does
+    // at 390 too, where the frame sets one line.
     const linkCol = (colLinks, i) => (
       <nav key={i} style={col(px(ed ? 12 : 23), {
         alignItems: 'flex-start',
-        ...(pop && s.mob && i === 1 ? { flex: '1 1 0', minWidth: 0 } : null),
+        ...((pop || ed) && s.mob && i === 1 ? { flex: '1 1 0', minWidth: 0 } : null),
       })}>
         {colLinks.map((l, j) => {
           const ext = extLink(s, l.url)
           const look = { color: pop ? s.text3 : s.tx, letterSpacing: s.dls, cursor: 'pointer', textDecoration: 'none' }
           // Chrome offers no break after a slash between letters, so a
           // wrapping label gets one (`<wbr>`), as the frame breaks SHOWS/.
-          const wrap = pop && s.mob && i === 1
+          const wrap = (pop || ed) && s.mob && i === 1
           return (
             <a key={j} {...(ext || { href: navHref(s, l.to) })}
                style={pop ? popType(27.62, 33, { ...look, whiteSpace: wrap ? 'normal' : 'nowrap', ...(wrap ? { overflowWrap: 'anywhere' } : null) })
-                 : ed ? { ...face, ...look, whiteSpace: 'nowrap' } : labelStyle(s, grunge ? s.labelMd : s.labelSm, look)}>
+                 : ed ? { ...face, ...look, whiteSpace: wrap ? 'normal' : 'nowrap', ...(wrap ? { overflowWrap: 'anywhere' } : null) } : labelStyle(s, grunge ? s.labelMd : s.labelSm, look)}>
               {wrap ? l.label.split('/').flatMap((part, k, all) => (k < all.length - 1 ? [`${part}/`, <wbr key={k} />] : [part])) : l.label}
             </a>
           )
