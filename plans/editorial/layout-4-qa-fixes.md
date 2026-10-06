@@ -85,7 +85,7 @@ the photo; `964-73037` 1440 Base card beside the build's MANCHESTE / R, UK.
 | Order | ID | Report (short) | Verdict | Size | Decision | Status |
 |---|---|---|---|---|---|---|
 | 1 | JP-108 · JP-109 (scope) · JP-110 | 390 card past the photo · long name under the seal · Base breaks inside a word | **JP-108 a recorded user call** (2026-09-18) whose cost the tester has found; **JP-109 confirmed** (the fit ignores the seal, and is Editorial's only); **JP-110 confirmed, but the frames disagree** (1440 breaks between words, 390 inside one) | — (decisions) | **user: JP-108 A; JP-109 (ii), scope A; JP-110 A, no floor, three templates** (2026-10-06) | **done** (all three reproduced on HEAD; **the 768 seed reproduces JP-109**, E R under the seal; *WOLVERHAMPTON* breaks under Lime and Grunge too; the twins' 390 bios FILL) |
-| 2 | JP-109 | Long name under the seal at 768 | **Confirmed, `s.limeTree`**: the shrink term's measure is the column; the seal sits inside it at 768 alone. **The seed's own line reaches it** (663 against the disc's 591), so (ii) | S | **(ii)** the line fit to the room beside the seal, held by a floor, capped by the word fit; **A** (Lime and Grunge widened; Retro's half named) | open |
+| 2 | JP-109 | Long name under the seal at 768 | **Confirmed, `s.limeTree`**: the shrink term's measure is the column; the seal sits inside it at 768 alone. **The seed's own line reaches it** (663 against the disc's 591), so (ii) | S | **(ii)** the line fit to the room beside the seal, held by a floor, capped by the word fit; **A** (Lime and Grunge widened; Retro's half named) | **done** (the 768 h1 boxed beside the disc, its line fitted 16 short, floor 0.6 × ramp; seed digest 1 of 90 a surface, Editorial 768; no glyph under the disc at seven widths under three templates) |
 | 3 | JP-110 | Base value breaks inside a word | **Confirmed, `s.limeTree`**: the numeral is the flat ramp, so `anywhere` is what keeps a wide word inside the cell | S | **A** (widest-word fit, no floor; Lime, Grunge, Editorial; Pop's seed break named) | open |
 | 4 | JP-108 | 390 card past the photo | **Confirmed, `s.limeTree`**: the photograph is a fixed 400 band; the panel is content-tall below it | S–M | **A** (the photo fills the card; the 340 stage kept) | open |
 | 5 | — | End-of-pass sweep | — | S | — | open |
@@ -461,7 +461,136 @@ Featherstonehaugh* typed into *Title* and republished, the tab at 1440, 1180, 10
 390. At each width, no glyph under the seal, no word broken inside itself, no sideways scroll. Record
 the multi-word residual's probe.
 
-**Settled**: —
+**Settled** (2026-10-06, on `2e253a1`).
+- **The code** (`HeaderV3`'s `s.limeTree` block):
+  - `idBlock` is `containerType: 'inline-size'` under all three templates at every width
+    (`EncoreSection.jsx:3932`; it was Editorial's alone). It is `flex: 1 0 0` at desktop and
+    `width: 100%` narrow, so it is parent-sized and the container moves nothing.
+  - **The h1's size** (`:3975`–`3977`), guarded by `s.cardNameEms` (set under all three: `navFace`
+    has Bebas, Anton × 0.75 and Gloock × 0.967), passed unfaced, since `Title` applies `faced()`:
+    - at 1440 and 390, `min(ramp, calc(100cqi / cardNameEms))`, JP-102's word fit;
+    - at 768, `min(ramp, calc(room / cardNameEms), max(calc(room / navNameEms), ramp × 0.6))`,
+      with `room = 100cqi − 162.54px`.
+  - **At 768 the h1 is also boxed**: `maxWidth: calc(100cqi − 146.54px)`, through `Title`'s
+    `style` (`:3978`). This goes past entry 1's formula, on review. With the box left at the
+    column's 708, a name whose line fit is below the floor sets one line at the floor whenever
+    that line is under 708 wide. That line runs straight under the disc: Editorial's *Kai
+    Featherstone* would end at about 641 and Lime's *Florence and the Machine* at about 650, both
+    past the disc's 591. Boxed, such a name wraps inside the room instead, and the word cap
+    keeps every line inside the box. So no name of any length puts a glyph under the disc. The
+    decision's "a name too long for one line wraps at a floor" now holds as written.
+  - **The reach is 146.54**: the disc's 125.37, plus its 51.17 right offset, less the column's 30
+    inset. Read off `971:9538`, whose disc spans 592–716, and off ours, which spans 591.5 → 716.9
+    at 768. Both the seal's `right` and the column's inset carry `s.surplus`, so the reach is
+    column-relative at every tablet width (820 and 1024 measured below).
+  - **The gap is 16** (this entry's call). The line is fitted 16 short of the box, so a table that
+    under-reads a name still cannot wrap the seed. A fitted line ends 15–17 clear of the disc.
+  - **The floor is 0.6 of the ramp** (this entry's call). That is about the frames' own 390 : 768
+    ratio: 72 : 120 under Lime, 64 : 107 under Editorial, and 52 : 95 ≈ 0.55 under Grunge. So a
+    768 name never sets smaller than the phone sets it, unless its widest word needs that. The
+    floor binds on Editorial's *Kai Featherstone*, *Florence* and (through the word cap)
+    *Maximilian*, and on Lime's *Maximilian* and *Florence*.
+  - **A hidden seal leaves the column whole** (on review). `SealBadge` draws nothing when
+    `showBadge` is not `'show'`, so the box and the room are gated on it (`sealRoom`, `:3927`), and
+    a hidden seal falls through to the plain word fit. A 768 digest at `&cj={"showBadge":"hide"}`
+    (themes 0–4, canvas and `live=1`) comes to **0 of 5** against HEAD on the seed. Editorial's h1
+    reads HEAD's 103.47 / 633.3 there. The positive control is the seal's 11 rows, gone from the
+    file. *Maximilian* moves only Lime's 768 there: its word fit now uses the full column, where the
+    flat 120 ran it off the page. Hidden *chips* (`showTags`) drop the name below the disc's height
+    as well, but the room still applies. That edge is left, since the rule is simpler without it.
+  - Comments over the h1 (`:3940`–`3974`). `vm.navNameEms`'s and `vm.cardNameEms`'s comments
+    (`EncoreBuilder.jsx:747`–`763`) name HeaderV3 as a reader at every width and the 768 line
+    fit. Retro's half is untouched.
+- **Digest** (header, all six arches, themes **0–4 explicit**, three widths, canvas and `live=1`,
+  90 files a surface). The harness was proved first: a fresh HEAD worktree on :5174 against the
+  unedited tree on a fresh :5177 came to **0 of 90** on each surface, for the seed and for each of
+  the five names. After, the tree against HEAD:
+  - **The seed: 1 of 90 on each surface**, header `arch 3` × 768 × theme 3, as named. The h1 goes
+    from 103.47 to 88.93 (633.3 → 544.4 wide). The h1's line box is 11.3 shorter, so the id block
+    is too, and the arch tile and kicker above it rise 11.3. The block stands on the floor, and
+    entry 1's try saw the same 11. Lime's and Grunge's seeds and themes 0 and 4 do not move.
+  - **With `&name=`** (each name's files; every one is header `arch 3`):
+    - *Maximilian Featherstonehaugh*, 6: Lime at 1440, 768 and 390, Grunge at 1440 and 768,
+      Editorial at 768;
+    - *Supercalifragilistic*, 6: the same six;
+    - *Florence and the Machine*, 3: 768 under all three;
+    - *Kai Featherstone*, 2: 768 under Lime and Editorial;
+    - *Kai Mercer*, 1: Editorial 768, which is the seed.
+
+    Themes 0 and 4 do not move anywhere. Entry 1 named Grunge's long name at 1440 and Lime's at
+    1440 and 390. It did not name Grunge's 768 (Maximilian ended 8 clear there, but
+    *Supercalifragilistic* put its C under the disc on HEAD) or the 768 multi-word names. Both are
+    the seal's room working as intended.
+- **The real app** (puppeteer from the scratchpad, `createRequire` on `source/package.json`, so
+  no file in `source/scripts/`; reduced motion on the editor and the popup). Card 4, *Title* written
+  through `st`'s dispatch, Publish → Open, the tab at 1440, 1180, 1024, 820, 768, 744 and 390, and
+  the editor's own **1088 Desktop canvas** (a 1440 window, the panel open), which `digest.mjs`
+  never renders. The probe ran Editorial, Lime and Grunge with the seed and four names, and
+  Retro with the seed and *Maximilian*. For each glyph it took a `Range` rect against the disc
+  (its radius from `style.width`, 125.37), each word's rect count, each word's right edge against
+  the column, and the document's `scrollWidth`. The seal reads were confirmed by crops at 768.
+  - **Under Lime, Grunge and Editorial: no glyph box meets the disc, no word breaks inside itself,
+    no word passes its column, and no width scrolls sideways.** This holds at all seven widths,
+    on the 1088 canvas, and for all five names.
+  - **744 is the phone layout** (the 390 ramp; its seal hangs at the top, far from the name), so
+    the 768 rule does not reach it. 1024 and 820 are the tablet layout, and the disc moves with
+    `s.surplus` as the column does: 719.5 and 617.5 against lines ending at 702.4 and 600.4 for
+    the seed.
+  - **Retro (the control) is unchanged**: *Maximilian*'s U G H is still under the disc at 768,
+    820 and 1024 (note 3). FEATHERSTONEHAUGH also runs past its column at 1440, 1180, the canvas,
+    744 and 390, the way it does on HEAD.
+  - No console errors, apart from the editor's known `gap` / `columnGap` rerender warning (five,
+    one per template switch), which predates the branch.
+
+  | 768 (px, faced) | HEAD | after | lines after, the last glyph's right edge (disc at 591.5) |
+  |---|---|---|---|
+  | Editorial *Kai Mercer* | 103.47, ends 663.3, **E R under** | **88.93** | one, 574.4 |
+  | Editorial *Maximilian Featherstonehaugh* | 60.80, **U G H under** | **46.84** | two, 571.7 |
+  | Editorial *Kai Featherstone* | 89.71, **O N E under** | **62.08** (floor) | KAI / FEATHERSTONE, 516.2 |
+  | Editorial *Florence and the Machine* | 103.47, three lines, 575.2 | **62.08** (floor) | FLORENCE AND / THE MACHINE, 505.9 |
+  | Editorial *Supercalifragilistic* | 61.57, **S T I C under** | **47.44** | one, 570.3 |
+  | Lime *Kai Mercer* | 120 | 120 | one, 464.4 |
+  | Lime *Maximilian Featherstonehaugh* | 120, **H A U under**, past the page | **72** (floor) | two, 502.8 |
+  | Lime *Kai Featherstone* | 120, **O N E under** | **94.85** (line fit) | one, 570.7 |
+  | Lime *Florence and the Machine* | 120, **T H E under** | **72** (floor) | FLORENCE AND THE / MACHINE, 442.1 |
+  | Lime *Supercalifragilistic* | 120, **G I L I S under**, past the page | **79.93** | one, 575.3 |
+  | Grunge *Kai Mercer* | 71.25 | 71.25 | one, 344.6 |
+  | Grunge *Maximilian Featherstonehaugh* | 71.25, two lines, 8 clear | **43.53** (line fit) | **one**, 574.9 |
+  | Grunge *Kai Featherstone* | 71.25 | 71.25 | one, 510 |
+  | Grunge *Florence and the Machine* | 71.25, two lines | **52.54** (line fit) | **one**, 575.5 |
+  | Grunge *Supercalifragilistic* | 71.25, **C under** | **67.05** | one, 575.3 |
+
+  | Word fit (px, faced) | 1440 / 1180 | 1088 canvas | 390 |
+  |---|---|---|---|
+  | Lime *Maximilian Featherstonehaugh* | 121.80 (was 164, over the chips) | 107.90 | 52.89 (was 72, off the page) |
+  | Lime *Supercalifragilistic* | 118.13 | 104.65 | 51.29 |
+  | Lime *Kai Featherstone* | 164 (ramp) | 155.78 (was 164, past the column) | 72 |
+  | Grunge *Maximilian Featherstonehaugh* | 103.68 (was 121.5, over the chips) | 91.85 | 39 (ramp) |
+  | Grunge *Supercalifragilistic* | 99.09 | 87.79 | 39 |
+
+  Editorial's 1440, 1180, canvas and 390 sizes are HEAD's to the 0.001 (its word fit predates this
+  entry). The seed keeps its ramp everywhere but Editorial's 768, and on the canvas (142.15 / 164 /
+  121.5). The setup modal's card 4 and the layout picker's thumbnail lay the 1180 desktop out, and
+  MERCER needs under half of the 806 column there, so the `min()` cannot bind. They were not
+  re-measured.
+- **The residual for designer note 2** (measured above). Nothing reaches the disc any more. What is
+  left is a departure from the frame's one line. At 768 a name whose line needs less than 0.6 of
+  the ramp wraps there, inside the room:
+  - Editorial: *Kai Featherstone* and *Florence and the Machine* at 62.08, two lines each. HEAD
+    set *Florence* at 103.47 on three lines, clear of the disc by luck. It is now smaller and one
+    line shorter.
+  - Lime: *Maximilian* and *Florence* at 72.
+
+  A name above the floor holds one line at the line fit, smaller than the ramp: Lime's *Kai
+  Featherstone* at 94.85, and Grunge's *Maximilian* at 43.53 and *Florence* at 52.54, where HEAD
+  wrapped them at 71.25. The tester's control, *"Florence and the Machine wraps fine"*, therefore
+  changes under all three. It still never reaches the disc.
+- **Build.** `npm run build` is clean. The root `index.html` is not refreshed.
+- **Docs.** The h1's comment and the two `navFace` key comments (above). `notes/templates.md`'s
+  Stacked clause. *Answered* pointers at [`display-face.md`](./display-face.md) step 4, layout 4
+  (*"the 768 name (633 in 708, one line) do not bind"*), and at [`layout-4.md`](./layout-4.md)
+  section 1 (the 768 *"inside its column"* reading). No long-name clip was named in the Lime or
+  Grunge layout-4 plans. No CLAUDE.md or README line states the old ramp.
 
 ## Entry 3 — JP-110: the Base value
 
@@ -517,7 +646,12 @@ Written as each entry settles. Two are already known to be wanted:
    and the seal stands in its right ≈ 150 at the name's height. Should a multi-word line stop short
    of the seal, as a single word now does? *Entry 1: under (ii) the line is fitted to the room beside
    the seal down to a floor, and only below the floor does a name wrap. So the residual is the wrapped
-   name's lines, which entry 2 measures.*
+   name's lines, which entry 2 measures.* *Entry 2: the 768 h1 is boxed beside the disc too, so no
+   line reaches it. The residual is the frame's one line: a name whose line would need less than
+   0.6 of the ramp wraps there (Editorial's KAI / FEATHERSTONE and FLORENCE AND / THE MACHINE at
+   62, Lime's MAXIMILIAN / FEATHERSTONEHAUGH and FLORENCE AND THE / MACHINE at 72). A name above
+   the floor holds one line, smaller than the ramp (Grunge's MAXIMILIAN FEATHERSTONEHAUGH at 43.5).
+   Is 0.6 the right floor, and is a smaller one-line name preferred to a larger wrapped one?*
 3. **Retro's half at 768** (JP-109, named, not fitted). Under Retro (and Pop, which renders Retro's
    layout-4 header) a long one-word name at the flat 77 runs under the 768 seal: *Maximilian
    Featherstonehaugh*'s U G H, ending at 687 against the disc's 591.

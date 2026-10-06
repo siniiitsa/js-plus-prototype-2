@@ -254,7 +254,10 @@ another `notes/` file.
   and an ink arch card in a terracotta ring round an arch portrait), and Stacked `HeaderV3`'s (a
   paper capsule over the ink floor — `NavBar`'s additive `fill`, `s.onScheme[1].bg` — with
   Lime's globe, since `LogoMark`'s sparkle stops at layout 3, and the links at Grunge's fixed 23
-  gaps, `navGapEm` 0 at `d >= 1`; the arch avatar; a one-tone paper name fitted to its column;
+  gaps, `navGapEm` 0 at `d >= 1`; the arch avatar; a one-tone paper name fitted to its column's
+  widest word, and at 768 boxed and its whole line fitted to the room beside the seal, held at
+  0.6 of the ramp — JP-109, user call, 2026-10-06, which fits Lime's and Grunge's names in the
+  same block, each in its own face's ems;
   the photograph **not** mirrored, Editorial's fill being `FILL`; and Lime's disc seal on
   `s.onScheme[4]`, a terracotta disc with ink marks) — so every card in the setup modal lays out
   a whole Editorial page and the family is closed (`plans/editorial/`). The footer is layout 1's

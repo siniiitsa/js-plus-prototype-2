@@ -3923,11 +3923,13 @@ function HeaderV3({ s }) {
       </div>
     )
 
+    // Whether the 768 name makes room for the seal (JP-109, below).
+    const sealRoom = tab && s.cardNameEms && s.showBadge === 'show'
     const idBlock = (
       <div style={col(u(18), {
         alignItems: 'flex-start',
         ...(desk ? { flex: '1 0 0', minWidth: 0 } : { width: '100%' }),
-        ...(ed ? { containerType: 'inline-size' } : null),
+        containerType: 'inline-size',
       })}>
         {/* Display/Title in `scheme/1/text2`, pale — the frame types
             "DJ · LIVE ACT", so the caps are the CSS's (Retro's reading). */}
@@ -3943,15 +3945,37 @@ function HeaderV3({ s }) {
             Editorial's Gloock sets ~108px a capital at 142.15 (the faced
             147), where Bebas at 164 sets ~65, so a ten-letter word
             (MONTGOMERY, 1084; Noto's was 889) outruns the 806 column into
-            the chips and runs off the 390 page. So under Editorial the name
-            shrinks only when its widest word would not fit the block
-            (`s.cardNameEms`, HeaderV2's JP-062 rule), capped at the ramp;
-            the seeded name keeps its faced 147. At 390 the seed's whole
+            the chips and runs off the 390 page. So the name shrinks only when
+            its widest word would not fit the block (`s.cardNameEms`,
+            HeaderV2's JP-062 rule), capped at the ramp — under Lime and
+            Grunge too (JP-109, as JP-102 widened layout 3's), whose flat
+            Bebas and Anton ran a long word over the 1440 chips and, Lime's,
+            off the 768 and 390 pages. The seeded name keeps its ramp
+            everywhere but Editorial's 768 (below). At 390 the seed's whole
             line, KAI MERCER, needs 378.8 of the 350 column, so it breaks
             between words where the master sets one line (302 in 350) and
             Noto's held one (324.4): accepted (display-face.md step 4,
-            layout 4). The root's height is fixed, so nothing moves. */}
-        <Title s={s} size={ed ? `min(${s.dispXl}, calc(100cqi / ${s.cardNameEms}))` : s.dispXl} lh={0.75} color={s.tx}
+            layout 4). The root's height is fixed, so nothing moves.
+            At 768 the seal stands inside the column, level with the name,
+            its disc reaching 146.54 in from the column's right edge (125.37
+            plus its 51.17 offset, less the 30 inset; both carry `s.surplus`,
+            so the reach holds at every tablet width). So there (JP-109, user
+            call, 2026-10-06, shape (ii)) the h1 is boxed to the column less
+            that reach, and the whole line (`s.navNameEms`) is fitted 16
+            short of the box, the gap taking any under-read of the ems
+            table: a name stays on the frame's one line and shrinks just
+            enough to clear the disc. Editorial's seed sets 92 (88.96 faced),
+            where Gloock's 107 put its E R under the disc; Lime's and
+            Grunge's seeds clear it at their ramps. A line fit alone would
+            set a long multi-word name tiny, so it is held up at 0.6 of the
+            ramp, about the frames' own 390 : 768 ratio (72 : 120 under
+            Lime); a name whose line needs less wraps there instead, inside
+            the box, each word still fitted to the room. A hidden seal
+            (`showBadge`) leaves the column whole, and the word fit alone. */}
+        <Title s={s} size={!s.cardNameEms ? s.dispXl : sealRoom
+                 ? `min(${s.dispXl}, calc((100cqi - 162.54px) / ${s.cardNameEms}), max(calc((100cqi - 162.54px) / ${s.navNameEms}), calc(${s.dispXl} * 0.6)))`
+                 : `min(${s.dispXl}, calc(100cqi / ${s.cardNameEms}))`}
+               lh={0.75} color={s.tx} style={sealRoom ? { maxWidth: 'calc(100cqi - 146.54px)' } : undefined}
                inline={s.narrow || grunge} twoTone={grunge} toneA={s.tx} toneB={s.bg} />
         <span style={row(u(8), { minWidth: 0 })}>
           {/* A 14 square at `radius/chip` in Scheme 3's `sem/box/2`, and the

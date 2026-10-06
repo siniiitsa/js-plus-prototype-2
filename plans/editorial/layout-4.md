@@ -1086,7 +1086,11 @@ From the walks and the renders — impressions to confirm, not measurements.
   `min(s.dispXl, calc(100cqi / s.cardNameEms))`: HeaderV2's JP-062 rule, on `notoEms`, which runs
   0.1–1% over the render. "Christopher Montgomery" then sets 132.5 / 107 / 57.5, and "Kai
   Featherstonehaugh" 84 / 73.7 / 36.5, each on two lines inside its column. The seeded name keeps
-  147 / 107 / 64, so the digest does not see the fit.
+  147 / 107 / 64, so the digest does not see the fit. **Answered by JP-109**
+  ([`layout-4-qa-fixes.md`](./layout-4-qa-fixes.md) entry 2, 2026-10-06): inside the column at 768
+  is not clear of the seal, whose disc stands in the column's right 146.54 level with the name. The
+  768 h1 is now boxed to the column less that reach and its line fitted 16 short of it, down to 0.6
+  of the ramp, under Lime and Grunge too; the seed sets 88.93 there.
 - **Measured against the masters** (× 0.82 at desktop; the frame's number in brackets):
 
   | Width | Avatar (y · h) | Kicker | h1 (y × h) | Location | Chips | Capsule | Pill |
