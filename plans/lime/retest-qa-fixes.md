@@ -582,6 +582,10 @@ with free-text month and day and **no year**, so nothing can place it before or 
 repeater change, offered separately. *Since* the Grunge retest (JP-069 (weekday), user call,
 2026-09-29, `../grunge/retest-qa-fixes.md`) a gig carries a `year`, which derives layout 3's
 weekday. Upcoming / Past is derivable from it now, and it is still not built.
+*Reversed in part* (JP-106, user call, 2026-10-06,
+[`../editorial/layout-3-qa-fixes.md`](../editorial/layout-3-qa-fixes.md) entry 7): the premise, not
+the chips. Layout 3's rows carry the frames' Upcoming / Past pill on the published tab, derived
+from the gig's date against today. The chips stay cities.
 
 ---
 

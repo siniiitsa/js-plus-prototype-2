@@ -1759,6 +1759,14 @@ sections are where the twins' dark-ground assumptions break (trap 6).
   - **390: the frame's row carries *Tickets →* and an *Upcoming* chip under it** (123); ours is
     84 — the hour after the city (the twins' 390 call) and no *Tickets →* on an unlinked gig
     (JP-045) — so the section is 839.5 against 883;
+    *Reversed* (JP-106, user call, 2026-10-06, [`layout-3-qa-fixes.md`](./layout-3-qa-fixes.md)
+    entry 7): the rows carry the frame's Upcoming / Past pill on the published tab, so the 390 row
+    is the frame's 123 (the section 878.3), and the 768 venues wrap beside it as the frame's do,
+    between words where Fisterra broke WAREHO / USE. On the seed (no links) the lit HIDDEN /
+    WAREHOUSE and THE DEAF / INSTITUTE take two lines (92.2 / 93.4, the frame's 117 / 94), and
+    with *Tickets →* on every row all five wrap (92.2–110.2). The section stays 824.6 either way, the panel
+    being the taller column; the frame's 858 is six rows to our five gigs. The canvas draws no
+    pill.
   - the twins': the chip row is Retro's normalisation (the lit *All* at Body/SM, 22.2 against
     the frame's Body/MD 25.4), so the list stands 3 / 4 / 3 higher; the 768 data bar wraps the
     seeded line (61.6 against 45); the head prints `vm.title`'s "Manchester" where the frame

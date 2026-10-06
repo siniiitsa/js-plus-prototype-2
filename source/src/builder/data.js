@@ -1214,15 +1214,19 @@ export const REP_ALL = 'All'
 // One gig pairs with one pin, by index — PINS is five positions over the seeded
 // Manchester raster and sectionVm hands each gig `PINS[i % PINS.length]`.
 //
-// `year` is printed nowhere. It is what layout 3's date disc derives its
-// weekday from (gigWeekday(), JP-069, user call, 2026-09-29), and 2025 is the
-// year whose weekdays the frames print: JUL / 12 / SAT … AUG / 30 / SAT.
+// `year` is printed nowhere. Layout 3 reads it twice: its date disc derives
+// the weekday from it (gigWeekday(), JP-069, user call, 2026-09-29), and the
+// published tab's row pill reads Upcoming or Past off it against today
+// (gigStatus(), JP-106, user call, 2026-10-06). The seed is 2031, which has
+// 2025's calendar, the year whose weekdays the frames print (JUL / 12 / SAT …
+// AUG / 30 / SAT), so the discs keep the frames' weekdays and every seeded row
+// reads Upcoming until 2031. It was 2025 until JP-106, which read Past.
 export const GIGS = [
-  { venue: 'Hidden Warehouse',  city: 'Manchester',   time: '22:00', month: 'Jul', day: '12', year: '2025', link: '' },
-  { venue: 'The Deaf Institute', city: 'Manchester',  time: '21:00', month: 'Jul', day: '25', year: '2025', link: '' },
-  { venue: 'Private wedding',   city: 'Lake District', time: '19:00', month: 'Aug', day: '02', year: '2025', link: '' },
-  { venue: 'Mint Lounge',       city: 'Manchester',   time: '23:00', month: 'Aug', day: '16', year: '2025', link: '' },
-  { venue: 'Gorilla',           city: 'Manchester',   time: '23:00', month: 'Aug', day: '30', year: '2025', link: '' },
+  { venue: 'Hidden Warehouse',  city: 'Manchester',   time: '22:00', month: 'Jul', day: '12', year: '2031', link: '' },
+  { venue: 'The Deaf Institute', city: 'Manchester',  time: '21:00', month: 'Jul', day: '25', year: '2031', link: '' },
+  { venue: 'Private wedding',   city: 'Lake District', time: '19:00', month: 'Aug', day: '02', year: '2031', link: '' },
+  { venue: 'Mint Lounge',       city: 'Manchester',   time: '23:00', month: 'Aug', day: '16', year: '2031', link: '' },
+  { venue: 'Gorilla',           city: 'Manchester',   time: '23:00', month: 'Aug', day: '30', year: '2031', link: '' },
 ]
 // What `blankRow()` asks of a GigsField row (the JP-051 sweep). `year` is in
 // it, so a row holding only a year is still a row.
@@ -2155,7 +2159,9 @@ export const FIELDS = {
           + "layouts 1–3 (layout 3 shows one at a time on a phone) and one at a time in "
           + "layout 4's ticker. "
           + 'Layout 3 also turns the cities into its filter chips, and works out the weekday '
-          + 'its date disc prints from the month, the day and the year (four digits).' },
+          + 'its date disc prints from the month, the day and the year (four digits). On the '
+          + 'published page it also marks each show Upcoming or Past from that date, against '
+          + 'the day the page is visited.' },
     // JP-071: layout 3's eyebrow over the heading, the frame's words, uncased.
     // JP-090 took it to layout 1's "Shows/coverage" and JP-095 (b) to layout
     // 2's "Travel radius", its seeds there (mapKickerSeed(), in sectionVm and
@@ -2766,21 +2772,39 @@ export function weekdayOf(y, m, d) {
   return new Date(Date.UTC(y, m, d)).getUTCDay()
 }
 
-// A gig's weekday, for layout 3's date disc (JP-069, user call, 2026-09-29):
-// CAL_DAYS' short name, or '' when the three boxes do not name a real day.
-// The month is the artist's free text ("Jul", "july", "Sept"), matched by its
-// first three letters against MONTHS; the year must be four digits, because
-// Date.UTC reads 25 as 1925; and a day the month does not have (31 Jun) gives
-// nothing rather than rolling over, parseDate()'s rule.
-export function gigWeekday(year, month, day) {
+// A gig's date as a `Date.UTC` stamp, or null when the three boxes do not name
+// a real day. The month is the artist's free text ("Jul", "july", "Sept"),
+// matched by its first three letters against MONTHS; the year must be four
+// digits, because Date.UTC reads 25 as 1925; and a day the month does not have
+// (31 Jun) gives nothing rather than rolling over, parseDate()'s rule. The
+// weekday and the Upcoming / Past status both read it, so a date is one rule.
+export function gigStamp(year, month, day) {
   const y = /^\d{4}$/.exec(String(year ?? '').trim())
   const d = /^\d{1,2}$/.exec(String(day ?? '').trim())
   const key = String(month ?? '').trim().slice(0, 3).toLowerCase()
   const m = key.length === 3 ? MONTHS.findIndex((n) => n.slice(0, 3).toLowerCase() === key) : -1
-  if (!y || !d || m < 0) return ''
+  if (!y || !d || m < 0) return null
   const n = +d[0]
-  if (n < 1 || n > monthSpan(+y[0], m).length) return ''
-  return CAL_DAYS[weekdayOf(+y[0], m, n)]
+  if (n < 1 || n > monthSpan(+y[0], m).length) return null
+  return Date.UTC(+y[0], m, n)
+}
+
+// A gig's weekday, for layout 3's date disc (JP-069, user call, 2026-09-29):
+// CAL_DAYS' short name, or '' where gigStamp() names no day.
+export function gigWeekday(year, month, day) {
+  const t = gigStamp(year, month, day)
+  return t == null ? '' : CAL_DAYS[new Date(t).getUTCDay()]
+}
+
+// A gig's status against today, for layout 3's row pill (JP-106, user call,
+// 2026-10-06): 'upcoming' or 'past', and '' with no today (the canvas, which
+// is a picture with no date: the calendar's `dead` rule) or no date gigStamp()
+// accepts. A gig dated today is upcoming: the night has not happened yet.
+// `today` is parsed ({ y, m, d }, parseDate()'s shape), compared by Date.UTC.
+export function gigStatus(year, month, day, today) {
+  const t = gigStamp(year, month, day)
+  if (t == null || !today) return ''
+  return t >= Date.UTC(today.y, today.m, today.d) ? 'upcoming' : 'past'
 }
 
 export function monthLabel(y, m) {

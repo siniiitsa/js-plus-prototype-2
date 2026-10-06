@@ -20999,10 +20999,12 @@ function EventsMap({ s }) {
   // **Five things the frame draws are dropped**, all of them claims or controls
   // with nowhere to go: the row's weekday (since restored: a gig carries a
   // `year` and `sectionVm` derives `gg.weekday` from it, JP-069, user call,
-  // 2026-09-29), the "Upcoming"/"Past" status pill (its seat
-  // stays empty: the row's hour sits in the sub line, "Manchester · 22:00",
-  // where every master prints it — JP-069, user call, 2026-09-28; it had
-  // taken that seat as a chip, layout 2's own words), the 30/60/120mi ring
+  // 2026-09-29), the "Upcoming"/"Past" status pill (since restored too, on
+  // the published tab alone: `gg.status`, derived from the gig's date against
+  // today, JP-106, user call, 2026-10-06; the row's hour stays in the sub
+  // line, "Manchester · 22:00", where every master prints it — JP-069, user
+  // call, 2026-09-28; it had taken the pill's seat as a chip, layout 2's own
+  // words), the 30/60/120mi ring
   // labels and the zoom controls (numbers the artist never typed, and a control
   // this file has nothing to do), and
   // "Updated 2m ago", a timestamp nothing here can produce — the labels, the
@@ -21348,6 +21350,28 @@ function EventsMap({ s }) {
             color: 'inherit', textDecoration: 'none', cursor: tix ? 'pointer' : undefined,
           }}>Tickets →</Tix>
         )
+        // The frames' Upcoming / Past pill (JP-106, user call, 2026-10-06):
+        // `gg.status`, derived in sectionVm from the gig's date against today,
+        // so it stands on the published tab alone and not where the date names
+        // no day. Body/SM in a `radius/pill` capsule padded 4 / 10, ringed in
+        // `stroke/1`, the row's hairline, square corners or not (Editorial's
+        // too). Idle it is unfilled and lettered `text/2`, the row's ink; on
+        // the lit row it fills `sem/bg` under `text/1`, which is the lit row
+        // turned round: `G.litFg` under `G.lit` on all three templates.
+        const pill = !!gg.status && (
+          <span style={{
+            ...bodySm, flex: 'none', whiteSpace: 'nowrap',
+            padding: `${u(4)} ${u(10)}`, borderRadius: '999px', boxShadow: ring(hair),
+            ...(on ? { background: G.litFg, color: G.lit } : { color: ink }),
+            ...(s.mob ? { marginLeft: 'auto' } : null),
+          }}>{s.gigStatus[gg.status]}</span>
+        )
+        // The wide rows run the pill between the lines and Tickets →, the
+        // frames' order; the 768 lit row stands the two in a centred column 3
+        // apart (its `Frame 304`), the room its 29 right inset leaves.
+        const tail = tab && on && pill && tickets
+          ? <div style={col(u(3), { flex: 'none', alignItems: 'center' })}>{pill}{tickets}</div>
+          : <>{pill}{tickets}</>
         return (
           <div key={i} onClick={onPick(i)} style={{
             width: '100%', boxSizing: 'border-box', color: fg,
@@ -21364,9 +21388,16 @@ function EventsMap({ s }) {
             {s.mob ? (
               <>
                 <div style={row(u(20), { width: '100%' })}>{mark}{lines}</div>
-                {showTix && <div style={row(u(10), { width: '100%' })}>{tickets}</div>}
+                {/* The 390 master's second row: Tickets → on the left, the
+                    pill on the right (its `Frame 308`), which keeps the
+                    right when the gig has no link. */}
+                {(showTix || pill) && (
+                  <div style={row(u(10), { width: '100%' })}>
+                    {tickets}{pill}
+                  </div>
+                )}
               </>
-            ) : <>{mark}{lines}{tickets}</>}
+            ) : <>{mark}{lines}{tail}</>}
             {ed && (on
               ? <DashRule side="all" dash={10 * z} colour={hair} />
               : !aboveLit && <DashRule dash={10 * z} colour={G.rule} />)}
@@ -21718,14 +21749,13 @@ function EventsMap({ s }) {
           }}>{gg.venue}</span>
           {/* The frame's own "Manchester · 22:00" at every width (JP-069, user
               call, 2026-09-28): the hour had a chip of its own in the seat of
-              the frame's "Upcoming"/"Past", a status the section cannot know,
-              and that seat now stays empty. An emptied half drops with its
-              `·`. The line wraps between words rather than clipping, where the
-              768 master clips its own in a 107px column beside that status and
-              Tickets →. With no chip, ours at 768 is 160–270 wide (lit or not,
-              linked or not) and holds every seeded line on one. The lit row
-              sets it in Body/Eyebrow, which is the frame's own mark of the
-              featured show and the only place that token is used. */}
+              the frame's "Upcoming"/"Past", and that seat holds the status
+              pill now, on the published tab (JP-106). An emptied half drops
+              with its `·`. The line wraps between words rather than clipping,
+              where the 768 master clips its own in a 107px column beside that
+              status and Tickets →; ours wraps there when a row carries both.
+              The lit row sets it in Body/Eyebrow, which is the frame's own mark
+              of the featured show and the only place that token is used. */}
           {!!place && (
             <span style={on
               ? { fontFamily: s.body, fontWeight: 700, fontSize: u(T.eyebrow), lineHeight: 1.3 }
@@ -21739,6 +21769,27 @@ function EventsMap({ s }) {
           color: 'inherit', textDecoration: 'none', cursor: tix ? 'pointer' : undefined,
         }}>Tickets →</Tix>
       )
+      // The frame's Upcoming / Past pill (JP-106, user call, 2026-10-06), on
+      // `gg.status`: published only, and not where the date names no day.
+      // Body/SM in a capsule padded 4 / 10 and stroked 1 inside (given back
+      // out of the padding, the chip row's rule). Idle it rings in ink, the
+      // rows' `stroke/1`, unfilled and lettered `text/2`; on the lit row it
+      // is the lit disc, an ink fill lettered and ringed in the row's own hot
+      // colour (`sem/text/3`, `sem/text/1`).
+      const pill = !!gg.status && (
+        <span style={{
+          ...body12, flex: 'none', whiteSpace: 'nowrap', borderRadius: '999px',
+          padding: `calc(${u(4)} - 1px) calc(${u(10)} - 1px)`,
+          border: `1px solid ${on ? hot : ink}`,
+          background: on ? ink : 'transparent', color: on ? hot : sheetFg,
+          ...(s.mob ? { marginLeft: 'auto' } : null),
+        }}>{s.gigStatus[gg.status]}</span>
+      )
+      // The 768 lit row stands the pill over Tickets →, centred 3 apart (the
+      // master's `Frame 304`); every other wide row runs them across.
+      const tail = tab && on && pill && tickets
+        ? <div style={col(u(3), { flex: 'none', alignItems: 'center' })}>{pill}{tickets}</div>
+        : <>{pill}{tickets}</>
       return (
         <div key={i} onClick={onPick(i)} style={{
           width: '100%', boxSizing: 'border-box', color: on ? sheet : sheetFg,
@@ -21771,9 +21822,11 @@ function EventsMap({ s }) {
           {s.mob ? (
             <>
               <div style={row(u(20), { width: '100%' })}>{mark}{lines}</div>
-              {showTix && <div style={row(u(10), { width: '100%' })}>{tickets}</div>}
+              {/* Tickets → on the left and the pill on the right, which it
+                  keeps when the gig has no link (the master's `Frame 308`). */}
+              {(showTix || pill) && <div style={row(u(10), { width: '100%' })}>{tickets}{pill}</div>}
             </>
-          ) : <>{mark}{lines}{tickets}</>}
+          ) : <>{mark}{lines}{tail}</>}
         </div>
       )
     }

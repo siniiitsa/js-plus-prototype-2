@@ -56,7 +56,7 @@ import {
   parseDate, isoDate, calStart, headerIdentity, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav, navModeDefault,
   catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldDefault, fieldReach, fieldNowhere, copyrightOf, formHeading3, extUrl, urlProblem, emailProblem, emailAddr, songTags, repChips,
-  tierFeats, priceParts, blankRow, SONG_KEYS, repSetsOf, repSetLine, TRACK_KEYS, GIG_KEYS, gigWeekday, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
+  tierFeats, priceParts, blankRow, SONG_KEYS, repSetsOf, repSetLine, TRACK_KEYS, GIG_KEYS, gigWeekday, gigStatus, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
   layoutCount, designCount, pageLayout, pageOrder, pageRows, COLUMN_SPLIT, bebasEms, antonEms, gloockEms, titanEms,
   headerLayout, headerLayoutLabel, setupHeaderCount,
 } from './data.js'
@@ -1694,6 +1694,13 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // so the pins, the hues, the pager and the chips all follow the rendered
   // list: otherwise it is a blank row that lights a pin.
   const gigList = (Array.isArray(c.gigs) ? c.gigs : GIGS).filter((g) => !blankRow(g, GIG_KEYS))
+  // Today, for each gig's status: live only, the calendar's rule, so the canvas
+  // has no date and draws no pill (JP-106, user call, 2026-10-06).
+  const gigToday = live ? parseDate(today) : null
+  // The pill's two words: literals, the frames' own (every master types them
+  // in sentence case), and no field, since no ticket asks for one (the JP-071
+  // / JP-090 question). `cased()` is a passthrough on every template today.
+  vm.gigStatus = { upcoming: cased('Upcoming'), past: cased('Past') }
   vm.gigs = gigList.map((g, i) => {
     const h = T.tags[i % T.tags.length]
     return {
@@ -1704,6 +1711,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
       // '' — no third line — for a row with no year or a date that is not one.
       // `year` itself is printed nowhere, so `when` and `meta` do not read it.
       weekday: gigWeekday(g?.year, g?.month, g?.day),
+      // Layout 3's row pill, 'upcoming' | 'past' | '' (JP-106): the same date
+      // against today, '' on the canvas and wherever the weekday is ''. A gig
+      // dated today is upcoming.
+      status: gigStatus(g?.year, g?.month, g?.day, gigToday),
       url: extUrl(g?.link ?? ''),
       // Layout 2's Get Directions pill, a route to the venue.
       directions: directionsUrl(g?.venue, g?.city),
@@ -3027,9 +3038,10 @@ function TracksField({ value, max, onChange, onToast }) {
  * is the artist's own word ("Jul", "July", "Sept") rather than a format. The
  * year is printed nowhere: layout 3's stamp adds the weekday under the day
  * (JP-069), which gigWeekday() in data.js derives from all three, so a stamp
- * never says SAT on a Friday. A row that names no real day (no year, a
- * two-digit one, 31 Jun) keeps its place and draws no weekday, and at
- * layout 3 the row says so.
+ * never says SAT on a Friday, and its published rows add an Upcoming / Past
+ * pill off the same date against today (gigStatus(), JP-106). A row that
+ * names no real day (no year, a two-digit one, 31 Jun) keeps its place and
+ * draws neither, and at layout 3 the row says so.
  *
  * Same house rules as the two above: whole-array rewrite per keystroke,
  * numbered rows, a round X, a dashed add, an "n of max" footnote, no
@@ -3042,7 +3054,10 @@ function TracksField({ value, max, onChange, onToast }) {
  * ------------------------------------------------------------------- */
 
 const BLANK_GIG_HINT = 'Empty gigs aren’t shown.'
-const NO_WEEKDAY_HINT = 'No weekday: the date needs a real day and a four-digit year.'
+// Layout 3 reads the date twice, for the disc's weekday and the published
+// row's Upcoming / Past pill (JP-106), and a date that names no day gets
+// neither, so the line names both.
+const NO_WEEKDAY_HINT = 'No weekday and no Upcoming / Past: the date needs a real day and a four-digit year.'
 
 function GigsField({ value, max, design, onChange }) {
   const list = Array.isArray(value) ? value : []
@@ -3127,10 +3142,10 @@ function GigsField({ value, max, design, onChange }) {
           <p style={{ margin: 0, fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>{BLANK_GIG_HINT}</p>
         ) : design === 2 && [g.month, g.day, g.year].some((v) => String(v ?? '').trim())
           && !gigWeekday(g.year, g.month, g.day) && (
-          // Only layout 3 prints the weekday, so only there is a date that
-          // names no day worth a line, and only once a date box is filled, so
-          // a new row holding a venue alone is not scolded mid-edit. The row
-          // still shows, without the weekday.
+          // Only layout 3 prints the weekday and the pill, so only there is a
+          // date that names no day worth a line, and only once a date box is
+          // filled, so a new row holding a venue alone is not scolded
+          // mid-edit. The row still shows, without either.
           <p style={{ margin: 0, fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>{NO_WEEKDAY_HINT}</p>
         )}
       </div>

@@ -103,7 +103,7 @@ Lime**, so always pass the list explicitly.
 | 4 | JP-105 | *12 mile radius* against 120mi rings | **Confirmed, a seed three frames disagree on**; parked for the designer on 2026-09-29, and this is the ticket that call waited for | S | **user: A** (`mapRadiusSeed(d)`; `base` unchanged; 2026-10-06) | **done** (reproduced on all five templates; 30 digest files, one row each; the 768 line still wraps, under all five) |
 | 5 | JP-104 (code) | 768 length stacked | **D**: one row, the title clamped to two lines, the length on the right | S | decided (entry 1) | **done** (reproduced; 6 digest files, the rows' spans alone; the clamp at 768 and 390, desktop's rows too short for two lines) |
 | 6 | JP-103 (rest) | Repertoire → Gallery 97, Gallery → Pricing 100 | **Confirmed, `s.limeTree`**: both sides of the taupe band keep `padY` 80 at desktop where the frames pad 56 | S | no | **done** (reproduced, 97.6 / 102–104; 12 digest files, as named; the published 1440 reads 56.1 and 60–63, the composed row and 768 / 390 unchanged) |
-| 7 | JP-106 (code) | no status pill | **A**: a derived pill, published tab only, the seed's year 2031 | M | decided (entry 1) | open |
+| 7 | JP-106 (code) | no status pill | **A**: a derived pill, published tab only, the seed's year 2031 | M | decided (entry 1) | **done** (reproduced under four templates; 15 digest files, as named, canvas 0; the 390 row the frame's 123) |
 | 8 | — | End-of-pass sweep | — | S | — | open |
 
 **Why this order:**
@@ -1114,10 +1114,136 @@ seeded row reads *Upcoming*, and the canvas draws no pill.
 - The `GIGS` comment, and CLAUDE.md's `s.live` list: the map's pill is a read of `live`, so it
   joins the map's entry, and the count of things that read `live` is re-checked.
 
+**Re-checked** (2026-10-06, HEAD `e1b950a`). Every line held as the prompt re-based it:
+`vm.gigs[].weekday` `EncoreBuilder.jsx:1706`, the calendar's live-only `now` `:1399`,
+`NO_WEEKDAY_HINT` `:3045`, `GigsField` `:3047` (its refused-date note `:3129`–`3134`); `GIGS`
+`data.js:1220` (the five `year: '2025'` `:1221`–`1225`, the comment `:1214`–`1219`), `gigWeekday()`
+`:2775`; `EncoreSection.jsx`'s block `litRow` `:21124` and *Tickets →* `:21349`, Retro's / Pop's
+`:21740`. The calendar's `now` is inside its own block, so the map takes its own `today` read.
+
+**The frames** (`use_figma`, every `Upcoming` / `Past` text node under the twelve masters). One
+pill in every template, at all three widths: Inter Regular at `size/body-sm` (12; Lime 13 / 13 /
+12), line height 140%, sentence case (`textCase` ORIGINAL), in a `radius/pill` capsule padded 4 /
+10 (78 × 25 *Upcoming*, 46 × 25 *Past*; Lime 83 × 26) and stroked 1 inside in `sem/stroke/1`, the
+rows' hairline. **Idle** it is unfilled, lettered `sem/text/2`. **On the featured row** it fills
+`sem/bg`, lettered `sem/text/1`: Lime `#F2FFD0` / `#15180F`, Grunge `#000` / `#DF262C`, Editorial
+`#C86E52` / `#F6F0E8`. Retro's binds differently: fill `sem/text/3` `#111`, text and stroke
+`sem/text/1` `#C8461C`, the lit disc's pair. The *Past* row is styled as the others. Placement:
+1440 and 768 run `disc | lines | pill | Tickets →` at gap 14; **the 768 lit row** stands pill
+over *Tickets →* in a centred column 3 apart (`Frame 304`, 78 × 45); **390** adds a second line
+under the disc and lines, `Tickets → … pill`, space-between (`Frame 308`, 25 tall), so the row
+is 14 + 56 + 14 + 25 + 14 = 123.
+
+**Reproduced** (2026-10-06, :5175 serving HEAD; puppeteer at 1600 × 1000: template → card 3 → the
+canvas's Desktop, Tablet and Mobile tabs → Publish → Open, the popup at 1440, 768 and 390).
+Under Editorial, Lime, Grunge and Retro the map holds no *Upcoming*, no *Past* and no *Tickets →*
+on either surface at any width. Editorial's section is 812.5 / 824.6 / 839.5 in the tab. No console
+errors.
+
+**The harness, proved** before the edit: a fresh HEAD worktree on :5174 against the unedited tree on
+:5175, map × themes 0–4 × three widths, **0 of 60** on the canvas, at `live=1`, and at `live=1`
+with `&today=2026-10-06`.
+
+**Expected after-diff**, named before the code: map `arch 2` × themes 0–4 × three widths × `live=1&today=`
+= **15 files**. Desktop moves too, since the `flex: 1 1 0` lines column gives the pill its room
+at every width. The canvas, `live=1` without `today`, map `arch 0`, `1` and `3` and every other
+category: 0. The seed's year and the shared parse: 0 on every surface.
+
+**Decided in the session.**
+- **A gig dated today is *Upcoming*** (`>=` against today's `Date.UTC`): the night has not
+  happened yet. The one edge, named: the published tab's `today` is a **UTC** date
+  (`new Date().toISOString().slice(0, 10)`, `EncoreBuilder.jsx` `PublishedPage`), so a visitor
+  west of Greenwich sees tonight's gig turn *Past* once UTC rolls over (about 7–8 pm US Eastern).
+  The calendar's dead days have the same property; it is inherited, not new.
+- **The 768 lit row's stack is taken** (the master's `Frame 304`). It is inert on the seed (no
+  link), and it keeps the lit row's lines their room beside its 29 right inset.
+- **At 390 the pill keeps the right** when the gig has no link (`marginLeft: auto`), the seat
+  every master gives it, rather than `space-between`'s start.
+- **The words are literals**, *Upcoming* and *Past*, sentence case as every master types them,
+  on `vm.gigStatus` through `cased()` (a passthrough on all five templates), so `EncoreSection`
+  composes nothing. No field: no ticket asks for one (the JP-071 / JP-090 question).
+
+**Settled** (2026-10-06).
+- **The code.**
+  - `data.js`: `gigStamp(year, month, day)` returns the gig's `Date.UTC` or `null`, holding
+    JP-069's rules (the first three letters against `MONTHS`, a four-digit year, a day inside
+    `monthSpan`). `gigWeekday()` now reads it (`CAL_DAYS[getUTCDay()]`), and `gigStatus(year,
+    month, day, today)` compares it with `Date.UTC(today)`: `'upcoming'` on or after, `'past'`
+    before, `''` with no stamp or no today. `GIGS` seeds `year: '2031'`, and its comment says why.
+    The `gigs` hint adds that the published page marks each show Upcoming or Past.
+  - `sectionVm`: `const gigToday = live ? parseDate(today) : null` beside the gig list,
+    `vm.gigs[].status = gigStatus(…, gigToday)` beside `weekday`, and `vm.gigStatus`, the two
+    words.
+  - `EncoreSection.jsx`, both layout-3 bodies: the pill on `gg.status`, `bodySm` / `body12`, padded
+    `u(4) u(10)`, radius 999 (Editorial's too, `radius/pill` being bound). The block rings it
+    `ring(hair)` and letters it `ink`, and on the lit row fills `G.litFg` under `G.lit`: the lit
+    row turned round, the frame's `sem/bg` / `text/1` on all three templates. Retro's body
+    borders it 1px inside (the chip row's `calc(padding − 1px)`): idle `ink` round `sheetFg`, lit
+    `ink` filled, `hot` lettered and ringed, the lit disc's pair. Wide rows run `{mark}{lines}{pill}
+    {tickets}`; the 768 lit row wraps the two in `col(u(3))`, centred; 390's second line draws
+    when `showTix || pill`. The drops-list comment and the body's sub-line comment no longer say
+    the seat stays empty.
+  - `GigsField`: `NO_WEEKDAY_HINT` reads "No weekday and no Upcoming / Past: the date needs a real
+    day and a four-digit year." Its header comment and the line's comment name the pill.
+- **Digest: 15 files, as named.** Map `arch 2` × themes 0–4 × three widths at `live=1&today=2026-10-06`.
+  The full digest, every category × themes 0–4 × three widths, came to **0 of 660 on the canvas
+  and 15 of 660 at `live=1&today=`**; the map alone at `live=1` without `today`, **0 of 60**. The
+  data.js step alone (the shared parse and the 2031 seed) was digested first: 0 of 60 on all three
+  surfaces. A rerun after the last comment edits matched the after-digest file for file.
+  - **1440 and 768**: five rows gain the pill (95 → 100 rows under Retro and Pop, 99 → 104 under
+    Lime and Grunge, 112 → 117 under Editorial). Every root height is HEAD's.
+  - **390**: two rows each (the second line and its pill); the row is **122.8**, the frame's 123,
+    so the section grows 38.8 (Editorial 839.5 → 878.3, against the frame's 883).
+- **Statuses** (the harness, `live=1`, Editorial desktop, the seed): `&today=2026-10-06` five
+  *Upcoming*; `2031-07-30` (between the second and third gigs) Past, Past, Upcoming × 3;
+  `2031-09-01` five *Past*; `2031-07-25`, the second gig's own day, Past then Upcoming × 4. With
+  `&today=` but no `live`, and with `live=1` but no `today`: no pill.
+- **Edges** (`&cj=`, `live=1&today=2026-10-06`, Retro and Editorial × three widths): a row with
+  no `year` key, *31 Jun 2031*, and a two-digit year *31* draw no pill (and no weekday); *1 Mar
+  2020* reads *Past*; *October 6 2026*, today, reads *Upcoming*. The canvas render of the same
+  list draws no pill.
+- **The dress, measured** (`&today=2031-07-30`, themes 0–4 × three widths): every template's idle
+  and lit pill are the frame's colours above; 768 sizes 78.2 × 24.8 (*Upcoming*), 44.7 × 24.8
+  (*Past*), Lime 83 × 26.2; desktop the same × 0.82. On the lit row the pill ends 23.8 (desktop,
+  29 × 0.82) or 29 (768) inside the row, Editorial's 8.2 / 10, the rows' own right insets.
+  *Tickets →* sits right of the pill, its text centred on it (4 down at 768); on the 768 lit row it
+  stands 27.8 under the pill's top, centred (10.9 in), and at 390 left of it, the pill at the
+  row's right edge.
+- **Row heights** against the frames: **390** 122.8 under all five (frame 123). **768**, the seed:
+  four templates hold 84 per row; Editorial's lit HIDDEN / WAREHOUSE and THE DEAF / INSTITUTE wrap
+  between words to 92.2 / 93.4 (the frame breaks WAREHO / USE inside the word, 117 / 94). With a
+  link on every seeded gig, the frame's own case, Editorial's rows run 92.2 / 110.2 / 110.2 /
+  110.2 / 87.4, Lime's 84 / 113 / 113 / 90.2 / 90.2. **The 768 section stays 824.6** throughout,
+  because the panel is the taller column; the frame's 858 is six rows to our five gigs, named.
+- **Live controls** (themes 0–3, `today=2031-07-30`): the *Lake District · 1* chip filters to
+  *Private wedding · Upcoming* and *All* restores five; a click on *Mint Lounge* lights it, and
+  its pill takes the fill while row 1's goes back to outlined; the 390 pager steps to *The Deaf
+  Institute · Past*; *See all gigs* lists five with their pills. No page errors.
+- **The real app** (:5175, the edited tree; the repro re-run): under Editorial, Lime, Grunge and
+  Retro the canvas draws no pill on its Desktop, Tablet or Mobile tab, and the published tab
+  reads *Upcoming* on all five rows at 1440 and 768 and on the one row at 390. Section heights:
+  1440 and 768 HEAD's, 390 +38.8 (Editorial 878.3). No console errors.
+- **Pop** (theme 4) reaches layout 3 through Retro's body on `main`, so it takes the pill already,
+  in Retro's dress over the placeholder's own colours: its lit pill is the lit disc's pair, cream
+  under white, as unreadable as that disc already is. `pop-layout-3` replaces the body; it reads
+  the same `vm.gigs[].status` and should seat the pill off its own masters.
+- **Reach**: `FIELDS.map.gigs` has no `in`, and no field was added, so no `reach.mjs` run was owed.
+- **Build.** `npm run build` is clean. The root `index.html` is not refreshed.
+- **Docs.**
+  - `notes/map.md`: the chips bullet now says the pill is drawn, published only, with its rule;
+    the ↗ sentence notes JP-106 re-asked and kept it.
+  - *Reversed* pointers at [`../lime/retest-qa-fixes.md`](../lime/retest-qa-fixes.md) JP-047 (its
+    premise, not its chips) and [`layout-3.md`](./layout-3.md)'s 768 / 390 named diffs.
+  - CLAUDE.md's `s.live` list: the pill joins the map's entry, so the count stays **sixteen**.
+  - README's `GigsField` shape: the year's second use.
+  - The `GIGS` comment, the `gigs` hint, `NO_WEEKDAY_HINT` and `GigsField`'s comments.
+
 Reply (JP-106, the pill): **fixed.** On the published page each gig row in layout 3 now carries
-an *Upcoming* or *Past* pill, worked out from the gig's date against today. The editor's preview
-shows none, since it has no "today" (the booking calendar's rule). The sample gigs are dated so
-they read *Upcoming*. A gig with no year, or with a date that does not exist, gets no pill.
+an *Upcoming* or *Past* pill, worked out from the gig's date against today, as in the design: the
+featured row's pill is filled and the others outlined, at every width and on every template. The
+editor's preview shows none, since it has no "today" (the booking calendar's rule). The sample
+gigs are dated 2031, so they read *Upcoming*, and their weekdays still match the design. A gig
+with no year, or with a date that does not exist, gets no pill, and the gig's editor says so.
 
 ---
 
@@ -1138,7 +1264,13 @@ Written as each entry settles.
   second ↗ beside the venue on purpose. It would point to the same ticket address that *Tickets →*
   already links, so the row would carry one link twice. This is a separate call from JP-047's city
   filters. A gig with a ticket link shows *Tickets →*; the sample gigs have none, so neither
-  appears out of the box. The Upcoming / Past pill is fixed under entry 7.
+  appears out of the box.
+- **JP-106 (the pill) — fixed** (entry 7). On the published page each gig row in layout 3 carries
+  an *Upcoming* or *Past* pill, worked out from the gig's date against today, the featured row's
+  filled and the others outlined, at every width and on every template. The editor's preview shows
+  none, since it has no "today" (the booking calendar's rule). The sample gigs are dated 2031, so
+  they read *Upcoming* and keep the design's weekdays. A gig with no year, or a date that does not
+  exist, gets no pill, and the gig's editor says so.
 - **JP-107 (the songs' Artist at layout 3) — fixed** (entry 2). The Songs help line in the
   Repertoire panel now says that layout 3 shows each song's length in place of its artist, and
   that the other layouts show the artist and not the length.
