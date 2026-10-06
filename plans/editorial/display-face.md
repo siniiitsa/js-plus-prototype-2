@@ -482,6 +482,99 @@ A winner that is already loaded for another template needs its own instance chec
      all three widths the label lands on the 12px floor (11.6 faced) and wraps, onto two lines
      at 1440 and 390 and three at 768. The pill's right edge is the card's content edge, to the
      0.1. The disc stays beside the text, and the pill keeps its 44.3 / 54.
+
+   **Settled, layout 2** (2026-10-06, on `b547d31`). Line numbers are this commit's.
+   - **The harness.** It was layout 1's, with two additions:
+     - **An element-level line count.** The Range probe's per-text-node count missed the hero:
+       *Kai* and *Mercer* are two text nodes of one line each. So every block-level display
+       element's lines are also clustered off its text rects.
+     - **A row-height sweep.** Every layout-2 text row, in any face, whose height moved
+       between Noto's digest (`55e3bfa`) and Gloock's. It caught three Inter / Chakra Petch
+       wraps that a wider Gloock neighbour caused.
+
+     The frames' text nodes were read with `use_figma` (`absoluteBoundingBox` /
+     `absoluteRenderBounds`) on `964:64598` / `986:15657` / `986:15676`.
+   - **Seven user calls**, over the Noto-vs-Gloock probe and the frames' nodes:
+     1. **The 1440 hero name wraps: accepted.** *KAI MERCER* needs about 600 at 93.8 in the 521
+        column, so it sets two lines. Noto set one (490 at 97), and the frame sets *SIENNA VALE*
+        on one (575 ink in its 636 box). JP-092's word fit is unchanged and binds on long names
+        at every width with no overflow: *Supercalifragilistic* sets at 45.3 / 28.2 / 32.2,
+        *Featherstonehaugh* at 44.8 / 27.8 / 31.8. No code change.
+     2. **Three display lines are accepted.** None overflows. No code change.
+        - The 768 face-card title, *The face of the act*, goes 1 → 2 lines. It needs about 199,
+          and the frame sets it on one line, 162 in 183.
+        - The 1440 media head goes 2 → 3 lines, FIVE / WORTH / YOUR EAR. The 768 head keeps
+          two lines, but breaks after *worth*, not the frame's *your*: FIVE WORTH YOUR is 658
+          of 648.
+        - The 390 pricing head goes 2 → 3 lines.
+     3. **The new ellipses are accepted.** No code change.
+        - Newly cut: the media bar's seeded SLOW BURN (146.7 in 130 at 1440, 128.8 in 114.4
+          at 390), the fan's *Manchester at 3am* and *Echo & The Floor* at 768 and 390, and
+          the map's 390 *The Deaf Institute*.
+        - Cut further: the repertoire's 390 *Don't Stop Me Now* and the map's 768 venues.
+        - The frame clips its own bar title (*Slow Burn (Edit)* in 133.9). The two SLOW BURN
+          departures (1440's dropped padding, 390's 11 gap) no longer save the seed, and are
+          kept as they are.
+     4. **The 390 calendar stack drops its margin** (below).
+     5. **The calendar's pin is re-pinned to Gloock's widest mark** (below).
+     6. **Three 390 wraps from a wider neighbour are accepted.** No code change.
+        - The calendar foot's *Thursday evening selected* goes 2 → 3 lines beside the
+          215.2 pill (Noto's was 198). The foot is 117.5 tall, against Noto's 98 and the
+          master's 84.
+        - The form's promise *Covers 120 mi from Manchester* goes 1 → 2 lines. Its column
+          is 181.5 beside the wider credit name, where Noto's was 190 (the frame's line is 171
+          in 192).
+        - The map's Venue Link / Get Directions row wraps at 390 too: about 366 of 330, where
+          Noto's 329 held one row. That is the fallback it already takes at 768, and it adds
+          64px.
+     7. *(Noted, not asked.)* **`vm.navFits` at 768 needs no change.** Its sum is Gloock's
+        already (`navFace`). The four links' ems run 2.1% over the drawn row, never under. A
+        page of five section links now takes the burger: Gloock 791.9 against 708, Noto 697.4.
+        Four still fit (653.8). `notes/nav.md`'s "five in Editorial's layout 2" is step 5's.
+   - **The calendar's mark lift is 0.05em, not 0.09** (`EncoreSection.jsx:17263`).
+     - **The frame.** Fisterra's ink stands 0.124–0.138em above the 0.89 box's foot
+       (`absoluteRenderBounds` of JUN 12 / JUN 20 at all three widths).
+     - **Gloock, unlifted**, stands 0.072 / 0.082 / 0.085 above it at 1440 / 768 / 390. That
+       is the baseline marker plus the canvas ink of the marks without their J.
+     - **Lifted 0.05em**, the marks stand 0.121 / 0.130 / 0.133. The subtraction (0.09 −
+       0.025) would have given 0.065 and set the marks 0.015em high.
+     - **The J.** It ends 0.047 / 0.037 / 0.034em under the box's foot: 8.6 / 13.3px above the
+       row's dash at 1440 / 768. At 390 it ends 0.8px above the stacked weekday's capitals.
+     - **So the 390 `marginBottom` is gone.** It was Noto's 0.09em, rows 94.1. The rows are
+       now **89.8 against the master's 90**, and the named departure retires (user call 4).
+   - **The calendar's pin is `OCT 06`** (`:17192`, user call 5).
+     - **What broke.** Noto's widest of all 12 × 31 marks was MAR 01: 288.3 at 1440, the
+       frame's own 350 column. Gloock's is OCT 06: 357.2 at 1440 and 268.8 at 768 (canvas,
+       kerned). The seeded JUN 20 (294) already outran the 289 pin, and stood its weekday 5px
+       right of its neighbours (4px at 768).
+     - **The fix.** The pin is `u(436)` (357.5) at 1440 and 269 at 768.
+     - **Checked in the DOM.** Each of the 372 marks was swapped through a rendered mark: the
+       widest is 355.3 / 267.4, none outgrows the pin, and every row's weekday stands at
+       411.6 / 335.
+     - **What it costs.** The column head's second cell stands at x 542, where
+       the frame has 458. There is still no pin at 390.
+   - **The map's venue reach is 0.02em, not 0.1** (`:20171`).
+     - Gloock's J descends 0.187em. In the faced 1.1 box it ends 0.042 / 0.005em inside the
+       foot at 1440 / 390, and 0.002em past it at 768 (`&cj=` *Jumpin Jacks*). Noto's 0.24em J
+       ran 0.05em past.
+     - At 0.02em the clip clears the J by 0.018em at 768, its tightest width. No box moves.
+   - **Re-measured, unchanged:**
+     - the 390 header pill, still Lime's `s.labelSm`, faced to 11.6;
+     - the repertoire's row pins, since the head keeps its line boxes and lines;
+     - the testimonials head, which still sets three lines at desktop (1382 in 1088, Noto's
+       1134) and the masters' three and four at 768 and 390.
+   - **Comments.** Every layout-2 comment that measured Noto now measures Gloock. A comment
+     keeps Noto's number only as the history of a call: the header's pill (`:2576`), face card
+     (`:2766`) and hero (`:2692`); media's head (`:7376`, `:7467`) and SLOW BURN (`:7585`,
+     `:7608`); the repertoire (`:12863`); the calendar's pin (`:17155`), lift (`:17248`) and
+     foot (`:17366`); the map's MANCHESTER (167.5, `:20037`), pill row (`:20108`) and J
+     (`:20163`); and the testimonials (`:23409`, `:23423`).
+   - **After-diff: 6 of 660 on each surface, all theme 3, layout 2.** Themes 0, 1, 2 and 4 are
+     0, bare and `live=1`, and neither label holds an empty render:
+     - the calendar at 1440 and 768: the pin widens the mark column, and the weekday and
+       column head follow. The root does not move;
+     - the calendar at 390: the four rows are 89.8, so the root is 831 → 814.3;
+     - the map at all three widths: the venue spans' 0.02em padding alone.
 5. **Sweep.** The full two-build digest against `main`; `page-check.mjs Editorial 0,1,2,3`; the
    long-name set (*Kai Mercer*, *Florence and the Machine*, *Maximilian Featherstonehaugh*,
    *Supercalifragilistic*) at 360 / 390 / 414 / 768 / 1440 on cards 1–4; the build size; the root
