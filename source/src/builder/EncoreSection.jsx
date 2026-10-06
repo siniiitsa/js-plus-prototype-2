@@ -13593,19 +13593,26 @@ function Repertoire({ s }) {
       // Retro's reason: our card has no height to divide. The rows' own
       // `py-6` is therefore inert.
       const limeRowH = u(G.rowH)
-      // JP-044 (2026-09-24): the frame's row is a title beside a four-glyph
-      // duration, and ours put the artist in that seat — beside a 19px title
-      // in the 768 card's 148 (Grunge 168) that cut most seeded titles to an
-      // ellipsis. So at 768 the seat stands under the title, a named diff
-      // from the frame's one row; the pinned 57 / 62.5 holds both lines. The
-      // desktop and 390 rows fit and keep the frame's. The seat has held the
-      // length since JP-066, and the stack stays: on one row it fits beside
-      // every seeded title under Lime and Grunge, but Editorial's
-      // "DON'T STOP ME NOW" was 160 of its 175 in Noto. In Gloock it is 194.7
-      // of the stacked 174.6 and is cut even so (accepted, display-face.md
-      // step 4, layout 3; the frame sets it 172 in 174.7).
-      const stack = tab
+      // The frame's row at every width (JP-104, user call, 2026-10-06,
+      // reversing JP-044's 768 stack, kept by JP-066): the title, then the
+      // length `flex: none` on the right. At 768 and 390 a title too long for
+      // its room wraps between words to a second line, clamped there by CSS
+      // (no word is broken), where it used to ellipsise; the pinned 57 / 62.5
+      // holds the two. So Editorial's Gloock "DON'T STOP ME NOW", 194.7
+      // against ≈ 138.7 beside its length at 768, is whole for the first
+      // time, and Lime's and Grunge's 768 titles fit on one line. The desktop
+      // rows (39 / 44.5 / 47.25) are shorter than two lines, so a title there
+      // keeps its one-line ellipsis; no seeded one reaches it (Editorial's
+      // widest is 205 of 312). A typed word wider than its room is still
+      // clipped, on the line it starts. The title grows from 0 but stops
+      // at its own width, so a one-line title is the box it was; the row
+      // wraps only to centre its one flex line (`alignContent`), and the
+      // length rides that line's top, lowered by half the two line heights'
+      // difference: centred on the title's first line, which is where the
+      // old centring put it beside a one-line title.
       const disp = (lh) => grunge || ed ? { lineHeight: facedLh(s, lh), textTransform: 'uppercase' } : { lineHeight: lh }
+      const titleSize = faced(s, s.list)
+      const lenDrop = `calc((${titleSize} * ${disp(1.2).lineHeight} - ${s.bodySm} * 1.4) / 2)`
       const body = (size, lh, extra) => ({
         fontFamily: s.body, fontSize: size, lineHeight: lh, ...extra,
       })
@@ -13628,21 +13635,24 @@ function Repertoire({ s }) {
               color: k.acc, whiteSpace: 'nowrap', overflow: 'hidden',
             })}>{st.meta}</span>
             {rows.map((sg) => (
-              <div key={sg.n} style={(stack ? col : row)(u(stack ? 2 : 10), {
-                flex: 'none', height: limeRowH, justifyContent: stack ? 'center' : 'space-between',
+              <div key={sg.n} style={row(u(10), {
+                flex: 'none', height: limeRowH, justifyContent: 'space-between',
+                flexWrap: 'wrap', alignContent: 'center',
                 boxShadow: ed ? undefined : `inset 0 -1px 0 ${k.edge}`, overflow: 'hidden',
                 position: ed ? 'relative' : undefined,
               })}>
                 {ed && <DashRule dash={5 * z} colour={k.edge} />}
                 <span style={{
-                  fontFamily: s.display, fontSize: faced(s, s.list), ...disp(1.2),
-                  letterSpacing: s.dls, minWidth: 0, maxWidth: '100%',
-                  overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                  fontFamily: s.display, fontSize: titleSize, ...disp(1.2),
+                  letterSpacing: s.dls, flex: '1 1 0', minWidth: 0, maxWidth: 'max-content',
+                  overflow: 'hidden', ...(desk ? { textOverflow: 'ellipsis', whiteSpace: 'nowrap' } : {
+                    display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: 2,
+                  }),
                 }}>{sg.title}</span>
                 {sg.length && (
-                  <span style={body(s.bodySm, 1.4, stack ? {
-                    maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                  } : { flex: 'none', whiteSpace: 'nowrap' })}>{sg.length}</span>
+                  <span style={body(s.bodySm, 1.4, {
+                    flex: 'none', whiteSpace: 'nowrap', alignSelf: 'flex-start', marginTop: lenDrop,
+                  })}>{sg.length}</span>
                 )}
               </div>
             ))}

@@ -615,7 +615,9 @@ A winner that is already loaded for another template needs its own instance chec
           The frame fits them, 194 in 201 and 178 in 202.
         - The repertoire's 768 *Don't Stop Me Now* is cut too: 194.7 of the stacked 174.6, where
           the frame sets it 172 in 174.7 (`:13573`). It is stacked since JP-044, so this is
-          not a new layout.
+          not a new layout. *(Reversed by JP-104, 2026-10-06: the 768 row is one row again,
+          and the title wraps to two lines, so it is whole, 139.3 wide on two lines.
+          `./layout-3-qa-fixes.md`, entry 5.)*
         - The row-height sweep found no Inter or Chakra Petch row that a wider Gloock
           neighbour wraps at layout 3.
    - **The lifts.** Each was re-measured against the frame's `absoluteRenderBounds` in the

@@ -1340,6 +1340,11 @@ sections are where the twins' dark-ground assumptions break (trap 6).
   title. No seeded title's ellipsis span overflows at any width (`scrollWidth > clientWidth` on
   none), in the harness and on the published page. The `&n=` rows' deliberate long title still
   ellipsizes at desktop, Retro's harness row.
+  *(Reversed by JP-104, user call, 2026-10-06: `stack` is gone. Every width draws the frame's one
+  row, and at 768 and 390 a title too long for its room wraps to a second line, clamped by CSS.
+  Under Editorial four seeded titles wrap at 768, *Don't Stop Me Now* among them, and none is
+  cut. The desktop keeps the one-line ellipsis, its rows being shorter than two lines.
+  `./layout-3-qa-fixes.md`, entry 5.)*
 - **`live=1`** (puppeteer clicks, `n=20`, all three widths): *View full set →* reveals the card's
   seven rows (the link goes); Next turns to the *All* card and Prev back, wrapping both ways; at
   390 the centre card's reveal grows all three seats to 599; cursors pointer. `n=0` prints *No

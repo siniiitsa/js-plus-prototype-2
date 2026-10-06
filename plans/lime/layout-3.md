@@ -782,6 +782,8 @@ Settled in section 4 (the repertoire):
   twelve seeded titles ended in an ellipsis. **At 768 the artist now stands under the title**
   (`stack` in the block: a column of 2, centred in the pinned 57, each line its own ellipsis as
   a last resort), a named diff from the frame's one row. Desktop and 390 fit and keep it.
+  *(Reversed by JP-104, 2026-10-06: the 768 row is the frame's one row again, the length on the
+  right; Lime's seeded titles fit on it. `../editorial/layout-3-qa-fixes.md`, entry 5.)*
 - **Measured against the masters** (seeded page): desktop head 95.2 (116 × 0.82), grid 19.7 under it
   (24 × 0.82), cards **303.4** tall (369 × 0.82 = 302.6) at radius 41, title line 19.5, meta 11,
   rows 32, view block 40; 768 head 72.1 (72), cards **438.7** (439), rows 57, view 48.2 (48); 390

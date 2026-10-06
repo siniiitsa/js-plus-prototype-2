@@ -822,6 +822,10 @@ README's section on structured editors, if it counts them.
    title**, so JP-044's stack stays. The reason was measured at triage: on one row, a length at
    body-sm fits beside every seeded title under Lime and Grunge, but Editorial's Noto "DON'T STOP
    ME NOW" (160 of a 175 row) would be cut.
+   *(Reversed for the stack by JP-104, user call, 2026-10-06: the 768 row is one row again, the
+   length on the right, and a title too long for its room wraps to a second line, clamped by
+   CSS, so Editorial's Gloock "DON'T STOP ME NOW" wraps whole. The length column stands.
+   `../editorial/layout-3-qa-fixes.md`, entries 1 and 5.)*
 2. **A song with no length leaves the seat empty.** Layout 3 prints no artist, as the frame
    draws none.
 3. **`SetsField`**, a structured field that is not a list (`BookedField`'s precedent), stored as

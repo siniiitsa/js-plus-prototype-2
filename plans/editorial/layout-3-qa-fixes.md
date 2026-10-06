@@ -101,7 +101,7 @@ Lime**, so always pass the list explicitly.
 | 2 | JP-107 | Artist not flagged at layout 3 | **Confirmed, chrome**: no per-column reach exists; the songs hint names the length but not the missing artist | S | **user: B** (the hint and its mirror; 2026-10-06) | **done** (reproduced; 0 digest files; verified on cards 1–4 under all five templates) |
 | 3 | JP-102 | Long hero name clipped / under the card | **Confirmed, `s.limeTree`**: the h1 is the flat ramp; the column already ends at the card, the word just ignores it. Named, not fitted, in `display-face.md:851` | S | **user: A** (JP-092's shape; Retro's half named; 2026-10-06) | **done** (reproduced; 0 digest files, the `&name=` control 6 per surface; 156 renders fitted to 0.005px) |
 | 4 | JP-105 | *12 mile radius* against 120mi rings | **Confirmed, a seed three frames disagree on**; parked for the designer on 2026-09-29, and this is the ticket that call waited for | S | **user: A** (`mapRadiusSeed(d)`; `base` unchanged; 2026-10-06) | **done** (reproduced on all five templates; 30 digest files, one row each; the 768 line still wraps, under all five) |
-| 5 | JP-104 (code) | 768 length stacked | **D**: one row, the title clamped to two lines, the length on the right | S | decided (entry 1) | open |
+| 5 | JP-104 (code) | 768 length stacked | **D**: one row, the title clamped to two lines, the length on the right | S | decided (entry 1) | **done** (reproduced; 6 digest files, the rows' spans alone; the clamp at 768 and 390, desktop's rows too short for two lines) |
 | 6 | JP-103 (rest) | Repertoire → Gallery 97, Gallery → Pricing 100 | **Confirmed, `s.limeTree`**: both sides of the taupe band keep `padY` 80 at desktop where the frames pad 56 | S | no | open |
 | 7 | JP-106 (code) | no status pill | **A**: a derived pill, published tab only, the seed's year 2031 | M | decided (entry 1) | open |
 | 8 | — | End-of-pass sweep | — | S | — | open |
@@ -847,9 +847,115 @@ its row.
 [`layout-3.md`](./layout-3.md) `:1339`. `notes/list-editors.md:34`: "at 768 it stands under the
 title, JP-044's stack" becomes the wrap.
 
+**Re-checked** (2026-10-06, HEAD `ba20c6c`). Every line held as the prompt re-based it: the
+comment `EncoreSection.jsx:13596`–`13606`, `const stack = tab` `:13607`, the row `:13631`–`13646`,
+the clamp shape `:8820` (`clamp2`, which also carries `overflowWrap: 'anywhere'`, left out here).
+
+**Reproduced** (2026-10-06, :5174 serving HEAD; puppeteer: template → card 3 → the canvas's
+Tablet tab → Publish → Open, the popup at 1440, 1179, 1024, 820, 768, 744 and 390, every *View full
+set* revealed). Under Editorial, Lime and Grunge, **every row is a column at every tablet width**
+(768–1179, `PublishedPage`'s `w < 1180`) and on the Tablet canvas, the length under the title.
+Under Editorial *Don't Stop Me Now* ends in an ellipsis, its ink 20.1 past its 175 box (the
+triage's 194.7 of 174.6). No other title is cut. At 1440, 744 and 390 every row is one line and
+nothing is cut. **744 is not a tablet width**: the tab keys `w < 768` to mobile, so 744 is the 390
+carousel (the section 831.7 under Editorial at both). The tablet range is 768–1179, which the
+verify covers at 768, 820, 1024 and 1179. No console errors.
+
+**Decided in the session: the clamp at 768 and 390, not at desktop.** The first cut clamped at every
+width, and the digest still moved desktop 0. The `&cj=` probe then showed why that is wrong: the
+desktop rows are pinned at 39 / 44.5 / 47.25 (Lime / Grunge / Editorial), shorter than two lines of
+24. A typed title that wrapped there was cut by the row's `overflow: hidden`, its first line 8
+above the row under Lime. So the desktop title keeps its one-line ellipsis. No seeded title
+reaches it (Editorial's widest is 205 of 312). The 390 rows (57.5 / 62.5) hold two lines of 21.6,
+so 390 clamps as 768 does. That costs the seed nothing, since every 390 title is one line.
+
+**Settled** (2026-10-06).
+- **The code** (the `s.limeTree` repertoire block, `EncoreSection.jsx`):
+  - `stack` is gone. Every width draws `row(u(10))` with `justifyContent: 'space-between'`, as
+    desktop and 390 already did (`:13638`–`13643`).
+  - The title (`:13645`–`13651`) is `flex: '1 1 0'; minWidth: 0; maxWidth: 'max-content'`. It
+    grows from 0, so the length never wraps off the line, and it stops at its own width, so a
+    one-line title is the box it was. **That is why desktop and 390 move 0 files.** `flex: 1 1 0`
+    alone would stretch every title's box to the row's room, which the digest records.
+  - At 768 and 390 the title is `display: '-webkit-box', WebkitBoxOrient: 'vertical',
+    WebkitLineClamp: 2` with `overflow: hidden`, and no `overflowWrap`. At desktop it is `nowrap` +
+    ellipsis, as before.
+  - **The alignment.** `row()` centres its items, which would put the length between a two-line
+    title's lines. Instead the row takes `flexWrap: 'wrap', alignContent: 'center'`, so its one
+    flex line is centred in the pinned row and is as tall as the title. The length is `alignSelf:
+    'flex-start'` with `marginTop: lenDrop` (`:13615`): half of the title's line height less its
+    own, `calc((faced(list) × lh − bodySm × 1.4) / 2)`. That centres the length on the title's
+    **first line**. Beside a one-line title that is exactly where `alignItems: center` put it, so
+    desktop and 390 do not move. Baseline alignment was not taken: it would have moved every
+    one-line row's length. One cost of the wrap, untested: a typed *length* wider than its whole
+    row would drop to a second flex line under the title, where HEAD let it overflow `nowrap`.
+    Every seeded length is four glyphs.
+  - The comment over it (`:13596`–`13613`) says why, and names the reversal. `col` and `tab` keep
+    their other readers.
+- **Digest: 6 files, as named.** Repertoire `arch 2` × themes 1–3 × 768 × canvas and `live=1`, of 660
+  per surface (every category, themes 0–4, three widths). In each, **24 rows move, every one a
+  `SPAN`**: the 12 titles and the 12 lengths. No `DIV` moves, and the root heights are HEAD's (646.8
+  / 646.4 / 639.3). The harness was proved first: a fresh HEAD worktree on :5174 against the unedited
+  tree on :5175 came to 0 of 660 on each surface. The final code's 6 files are byte-identical to the
+  first cut's.
+- **The real app** (:5175, the edited tree; the repro re-run):
+  - **Every tablet width** (768, 820, 1024, 1179 and the Tablet canvas) draws one row under all
+    three templates.
+  - **No title is cut**: no ink past its box, no `scrollWidth` or `scrollHeight` overflow, no
+    ellipsis.
+  - **Every length** ends at the row's right edge (0 gap) with at least 10.6 before it, and its text
+    sits inside the title's first-line band.
+  - **Every section height** is HEAD's at every width (Editorial 639.3 on the canvas, 800 in the
+    tab).
+  - **Editorial** wraps four titles to two lines, whole: *Dancing Queen* 142.1, *Don't Stop Me Now*
+    139.3, *I Wanna Dance* 139.3 and *Mr. Brightside* 139 (the box at 768). The other eight are one
+    line. **Lime and Grunge** are one line throughout.
+  - **1440, 744 and 390**: with every set revealed, the rows are identical to HEAD's (each row's
+    geometry, ten fields), so the *View full set* reveal and the 390 carousel are unchanged
+    (JP-075). No console errors.
+- **One line against two** (Editorial, 768, the 62.6 row). A one-line title's box is centred, top
+  19.9, and the length's box (16.8) centres on it, top 22.9. A two-line title's box is 45.7, also
+  centred, top 8.5. The length's top is 11.5, so its centre is 19.9, the first line's centre. The
+  two-line block therefore starts 11.4 higher than a one-line title. That is half a line, and the
+  row stays balanced.
+- **`&cj=`** (themes 1–3, three widths, both surfaces alike). The probe holds four songs on one set:
+  *Featherstonehaugh*, *Go Featherstonehaugh*, a 52-character title and the control *Don't Stop Me
+  Now*.
+  - **The long title is clamped at two lines at 768**: Editorial 7 lines of wrap shown as 2, Lime
+    4 → 2, Grunge 3 → 2. At 390 it is 4 → 2 under Editorial and 2 lines under Lime and Grunge.
+  - **At desktop** it is one line, ellipsised, as on HEAD.
+  - **A single word wider than the room is clipped** on the line it starts, as named. FEATHERSTONEHAUGH
+    is cut on line one when it stands alone and on line two after *Go*: 73.6 past at 768 under
+    Editorial, 7.9 under Lime. Grunge's Anton fits it.
+  - The control wraps to two lines whole under Editorial and stays one line under Lime and Grunge.
+  - Every length sits on its title's first line.
+- **Build.** `npm run build` is clean. The root `index.html` is not refreshed.
+- **Docs.**
+  - The block's comment.
+  - *Reversed* pointers at [`../lime/retest-qa-fixes.md`](../lime/retest-qa-fixes.md) (JP-044,
+    under its reply), [`../grunge/retest-qa-fixes.md`](../grunge/retest-qa-fixes.md) (JP-066,
+    item 1), [`display-face.md`](./display-face.md) `:616` and [`layout-3.md`](./layout-3.md)
+    `:1339`.
+  - The same pointer under the two notes that restate the stack, Lime's *Reversed in part*
+    ([`../lime/layout-3.md`](../lime/layout-3.md) `:780`) and Grunge's *Since*
+    ([`../grunge/layout-3.md`](../grunge/layout-3.md) `:937`).
+  - `notes/list-editors.md:34` now says the length stands on the title's row at every width and
+    the title wraps.
+  - CLAUDE.md and README never stated the stack.
+- **What Pop's layout-3 pass inherits.** `pop-layout-3` holds only its plan so far (`c6c2e5f`). Its
+  *Sections* table (`:275`) widens this block to `(s.limeTree || s.pop)`, so Pop's Titan titles get
+  the one row and the clamp, at 768 and 390, as they stand. `G`'s fallback arm (Lime's 34 padding,
+  rows 39 / 57 / 57.5) is what Pop would read unless its pass adds an arm. Whichever lands second
+  re-measures Pop's titles against their rows at 768 and 390:
+  - the widest Titan word against the room beside the length (a word wider than it is clipped);
+  - two Titan lines against the pinned row height;
+  - `lenDrop`, which reads `faced(s, s.list)` and `facedLh`, so it follows Pop's `faceK` for free.
+
 Reply (JP-104): **fixed.** At tablet width the song's length now stands on the same line as its
-title, on the right, as in the design. A long title wraps onto a second line instead of being cut,
-so *Don't Stop Me Now* now shows in full under Editorial.
+title, on the right, as in the design. A title too long for its row wraps onto a second line
+instead of being cut, so *Don't Stop Me Now* (and three other long titles) now shows in full under
+Editorial. Lime and Grunge fit every title on one line. A typed title longer than two lines is
+trimmed at the second, and phone width wraps the same way.
 
 ---
 
@@ -987,6 +1093,10 @@ Written as each entry settles.
   their designs, and anything typed into Coverage still shows on every layout. The design's *UK*
   and *8 pins* are not bugs: the place comes from the *Based in* field, and the count is the number
   of gigs in the list.
+- **JP-104 (the song's length at 768) — fixed** (entry 5). At tablet width the length stands on its
+  title's line, on the right, as in the design. A title too long for its row wraps onto a second
+  line instead of being cut, so *Don't Stop Me Now* now shows in full under Editorial, in the
+  editor and on the published page. Lime and Grunge fit every title on one line.
 - **JP-103 (Enquiry → Testimonials) — matches the design** (entry 1, user, 2026-10-06). The two
   figures were taken from different edges. The design's 61 runs from the form block's own bottom
   edge, which is invisible, to *● Testimonials*: ours is 57. The 156 runs from the left column's
