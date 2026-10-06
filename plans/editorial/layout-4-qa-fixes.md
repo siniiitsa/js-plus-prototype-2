@@ -88,7 +88,7 @@ the photo; `964-73037` 1440 Base card beside the build's MANCHESTE / R, UK.
 | 2 | JP-109 | Long name under the seal at 768 | **Confirmed, `s.limeTree`**: the shrink term's measure is the column; the seal sits inside it at 768 alone. **The seed's own line reaches it** (663 against the disc's 591), so (ii) | S | **(ii)** the line fit to the room beside the seal, held by a floor, capped by the word fit; **A** (Lime and Grunge widened; Retro's half named) | **done** (the 768 h1 boxed beside the disc, its line fitted 16 short, floor 0.6 × ramp; seed digest 1 of 90 a surface, Editorial 768; no glyph under the disc at seven widths under three templates) |
 | 3 | JP-110 | Base value breaks inside a word | **Confirmed, `s.limeTree`**: the numeral is the flat ramp, so `anywhere` is what keeps a wide word inside the cell | S | **A** (widest-word fit, no floor; Lime, Grunge, Editorial; Pop's seed break named) | **done** (per-row `wordEms`, the cell an `inline-size` container; seed digest 2 of 60 a surface, Editorial 1440 and 390; *Wolverhampton* 6, the cells that broke; no word breaks inside itself in the real app, three values × three widths × three templates, nor on the 1088 canvas) |
 | 4 | JP-108 | 390 card past the photo | **Confirmed, `s.limeTree`**: the photograph is a fixed 400 band; the panel is content-tall below it | S–M | **A** (the photo fills the card; the 340 stage kept) | **done** (the stage div `inset: 0` unless the phone draws no picture; seed digest 3 of 60 a surface, themes 1–3 at 390, two rows each, roots unchanged; `&noimage=1` 0 of 60; the before / after shots approved, *commit as is*) |
-| 5 | — | End-of-pass sweep | — | S | — | open |
+| 5 | — | End-of-pass sweep | — | S | — | **done** (against `main`, 6 of 660 on each surface, exactly the union of entries 2–4's named files; reach identical on both servers; card 4 clean under all five templates; root `index.html` refreshed, 9,824,578 bytes) |
 
 **Why this order:**
 - **The decisions first.** Entry 1 writes no code. JP-108 reverses a user call, JP-110 waits on a
@@ -751,43 +751,147 @@ moves); the real app on card 4 under all five templates; the root `index.html` r
 (`cp source/dist-standalone/index.html index.html`); `plans/README.md`'s row; a reply line per ticket;
 and the designer's notes.
 
-**Settled**: —
+**Settled** (2026-10-06, all five steps, on `786eabc`; the push, the PR, the merge and the build
+stamp are the user's).
+- **1. Digest against `main`: 6 of 660 on the canvas and 6 of 660 at `live=1`**, exactly the union
+  of the named after-diffs, file for file.
+  - **The harness.** A scratchpad worktree (`git worktree add --detach`), its `source/node_modules` a
+    symlink to the repo's, served on **:5174**: first at HEAD (`786eabc`), then switched to `main`
+    (`e54a3ba`) with the server restarted. The tree was served fresh on **:5177**. The user's :5173,
+    :5175 and :5176 were left alone. Every category × themes **`0,1,2,3,4` explicit** × three
+    widths, the canvas and `live=1` (660 each, the footer's `page=2` render included). Each file was
+    compared with `localhost:51[0-9]{2}` masked and the photo `?t=` stamp normalised. **No file on
+    any of the six labels is a one-row (blank) render.**
+  - **Proved first: HEAD against the tree, 0 of 1,320** (660 + 660).
+  - **`main` against the tree**, the same 6 files on each surface:
+
+    | Entry | Named | Differ | Row shape (each file, both surfaces) |
+    |---|---|---|---|
+    | JP-109 | header `arch 3` × 768 × theme 3 (1) | 1 | 10 rows: the h1 and the id block rising above it; root 1024, unchanged |
+    | JP-110 | map `arch 3` × theme 3 × 1440 and 390 (2) | 2 | 1440: 2 rows, the value's, root 898.5 unchanged. 390: 28 rows, the value and every row below it in the wall, root **863.2 → 850.2** (entry 3's 13) |
+    | JP-108 | bio `arch 3` × 390 × themes 1, 2, 3 (3) | 3 | 2 rows: the stage div and its `img`, 400 → 735 (Lime) / 733 (Grunge, Editorial), same x / y; roots 1021.3 / 975.3 / 1110.8, unchanged |
+
+    Nothing else moves. Themes 0 and 4 do not move anywhere, and no 768 or 1440 bio file moves.
+  - **Not in the digest:** the `&name=` / `&cj=` controls (entries 2 and 3 took them against HEAD),
+    and the editor's 1088 Desktop canvas, which `digest.mjs` never renders. Entries 2 and 3 measured
+    that canvas by hand.
+- **2. Reach: zero.** `reach.mjs` with themes `0,1,2,3,4` on both servers: 29,400 renders each,
+  and the two 424-line reports are **identical**. `git diff main..HEAD -- source/src/builder/data.js`
+  is empty, since no entry touched a field.
+- **3. The real app** (:5177, the tree; a scratchpad puppeteer script through `createRequire` on
+  `source/package.json`, so no file landed in `source/scripts/`; one template per process under
+  `perl -e 'alarm 240'`, rows appended to a JSONL sink; reduced motion on the editor and the popup;
+  the editor at 1600 × 1000). Card 4 → Publish → Open, the tab at 1440, 768 and 390, under
+  Editorial, Lime, Grunge, Retro and Pop. In every window: 11 sections, `scrollWidth` equal to the
+  width (no sideways scroll), and no section root wider than itself. **0 page or console errors on
+  the editor or the popup.** The known `gap` / `columnGap` warning comes from a theme switch, which
+  this walk does not make. The tab's `<title>` is *Kai Mercer*.
+
+  | Seed | 1440 | 768 | 390 |
+  |---|---|---|---|
+  | h1 (faced px; last glyph's right edge, disc's left edge) | E 142.1 · L 164 · G 121.5 · R 105 · P 102.9, all clear of the disc | **E 88.9, 574.4 against 591.5**; L 120, 464.4; G 71.3, 344.6; R 77; P 75.5 | E 61.9 · L 72 · G 39 · R 48 · P 47 |
+  | Base value (faced px, lines) | **E 28.9, 2**; L 41, 2; G 30.8, 1; R 32.8, 2; P 32.8, 2 | E 34.8, 2; L 40, 1; G 30, 1; R 32, 1; P 32, 1 | **E 16.5, 2**; L 26, 2; G 19.5, 2; R 18, 2; P 18, 2 |
+  | Bio photograph | 664 × 720.5 (all five) | 708 × 720 (R, P 706 × 718) | **E 370 × 733, L 370 × 735, G 370 × 733**; R, P 370 × 536 |
+
+  - **No glyph of any h1 meets its seal's disc, and no word in any h1 breaks inside itself or runs
+    off the page**, at every width under all five templates. The disc was taken as the seal's
+    125.37 (768) / 102.8 (1440) / 85 (390) box about its centre, not as the `<svg>`'s bounding box.
+    That box is the turned square's, 167.7 wide at 768, and it reported a false hit on MERCER's R.
+  - **No word on the map breaks inside itself under Editorial, Lime, Grunge or Retro.** Pop's seed
+    *Manchester,* breaks at 1440 and 390, as note 4 names.
+  - **The bio's photograph equals its card at 390** under the three `s.limeTree` templates. Retro and
+    Pop keep their 536 card.
+- **4. `index.html`** refreshed from `npm run build:standalone`: **9,824,578 bytes**, up from 9,824,192.
+  Before the copy, the same walk ran on `source/dist-standalone/index.html` over `127.0.0.1:8931`,
+  under all five templates. All 20 rows were identical to the dev server's, and there were no errors.
+- **5.** `plans/README.md`'s row says the pass is swept. The replies are below, under the retest
+  line. The designer's notes are finalised, and note 5 (JP-108's 733 card and Grunge's crop) is
+  new. At the sweep the deployed build still read `Tue, 06 Oct 2026 12:41:04 GMT`, 9,824,192 bytes,
+  which is `main`'s root `index.html`.
+- **Named, not fixed, found by the sweep:** none.
+- **Torn down**: :5174, :5177 and :8931, then the worktree (`git worktree remove --force`, the
+  symlink with it; `git worktree prune`). :5173, :5175 and :5176 are not this session's and still run.
 
 ## Replies
 
-Written at the sweep, by ticket, under a retest line that names the deployed build to retest against.
+**Retest against the Pages build whose `last-modified` is later than `Tue, 06 Oct 2026 12:41:04
+GMT`** (9,824,192 bytes; `curl -sI https://siniiitsa.github.io/js-plus-prototype-2/`). All three
+tickets were filed against that build, and an older tab or cached build still shows every one of them.
+
+- **JP-108 (390: the Bio card runs past the photo) — fixed** (entry 4, user call A). At phone width
+  the photograph now fills the whole card. It runs behind the text panel to the card's foot and
+  shows in the margins round the panel, as in `977-13155`. The same fix applies to Lime and Grunge,
+  where the photograph now shows through the whole translucent panel.
+  - **The card is still taller than the design's on purpose: 733 against `977-13155`'s 536.** So a
+    height comparison against the frame will still differ, and that difference is not this bug. The
+    panel grows with its text. A clear strip of the photograph, 340 tall, is kept above the panel,
+    so the panel never covers the artist's face. That strip is a user call of 2026-09-18, which this
+    fix amends but does not reverse: only the photograph's band changed, from a 400 strip to the
+    whole card.
+  - The photograph is cropped to the taller card, so it crops tighter at the sides. Under Grunge
+    the seated drummer is cut at the left edge. A different focal point was offered and declined
+    (user, 2026-10-06), so this is expected.
+  - With the photo removed, the initials stay in the clear strip above the panel, as before.
+- **JP-109 (768: a long one-word name under the seal) — fixed** (entry 2). At tablet width the name
+  now fits the room beside the seal, so no letter reaches it. *Maximilian Featherstonehaugh* shrinks
+  to fit. The default *Kai Mercer* was also running under the seal (its last E and R): it stays on
+  one line, a little smaller (89 rather than 103 under Editorial).
+  - A long name of several words keeps one line and shrinks, down to 0.6 of the full size. Below
+    that it wraps beside the seal instead: *Florence and the Machine* now sets two lines at about
+    62, where it used to set three at 103, still clear of the seal.
+  - The same fit now applies to Lime and Grunge at every width. There a long one-word name used to
+    run over the tag chips at 1440, and under Lime off the page at 768 and 390. Desktop and phone
+    widths under Editorial are unchanged.
+  - Retro and Pop, which use a different layout-4 header, are not changed. Under them the long name
+    still reaches the 768 seal, and that has gone to the designer.
+- **JP-110 (the Base card breaks the city inside the word) — fixed** (entry 3, the designer's
+  question answered by a user call). Every value on that stat wall now shrinks just enough for its
+  longest word to fit its card, so a value wraps only between words.
+  - The default reads *MANCHESTER, / UK* at 1440, as in the design, and at 390 too, where the phone
+    design's *MANCHEST / ER* is not followed, on purpose. *WOLVERHAMPTON* fits on one line at every
+    width.
+  - The same applies to Lime and Grunge, where a long typed city also broke.
+  - There is no minimum size, so a very long single word sets small (*WOLVERHAMPTON* at about 12.5
+    in the phone card). Whether a minimum is wanted has gone to the designer.
+  - Pop uses a different layout-4 map and still breaks its default *MANCHESTER* inside the word. That
+    is named for the designer, not fixed here.
 
 ## Notes for the designer
 
-Written as each entry settles. Two are already known to be wanted:
-
-1. **The Base card's long value** (JP-110). The 1440 frame breaks *MANCHESTER, / UK* between words,
-   and the 390 frame breaks *MANCHEST / ER* inside the word. Is a break inside a word acceptable, or
-   should the value shrink to fit its widest word? (The tester's question, verbatim in substance.)
-   *Entry 1 (user, 2026-10-06): answered by a fit to the widest word, with no floor. At 390 the seed
-   sets MANCHESTER, / UK at 16.65 rather than the frame's MANCHEST / ER at 23, and a long city such
-   as WOLVERHAMPTON sets at 12.6. The note tells the designer this, and asks whether a floor is
-   wanted.* *Entry 3 (done): every value on the stat wall shrinks to fit its widest word, under
-   Lime, Grunge and Editorial, so a value wraps only between words and never inside one. The
-   seed sets MANCHESTER, / UK at every width: 28.9 at 1440, as the frame draws it, and 16.5 at
-   390, where the frame's MANCHEST / ER is departed from on purpose. There is no floor:
-   WOLVERHAMPTON sets 12.5 in the 390 cell, and a 20-letter town 9, under the cell's 12px sub
-   line. Is a floor wanted, and if so, should a word longer than the floor allows break inside
-   itself there, or overrun the cell?*
-2. **A long name beside the 768 seal** (JP-109's residual). The frame gives the name the full column,
-   and the seal stands in its right ≈ 150 at the name's height. Should a multi-word line stop short
-   of the seal, as a single word now does? *Entry 1: under (ii) the line is fitted to the room beside
-   the seal down to a floor, and only below the floor does a name wrap. So the residual is the wrapped
-   name's lines, which entry 2 measures.* *Entry 2: the 768 h1 is boxed beside the disc too, so no
-   line reaches it. The residual is the frame's one line: a name whose line would need less than
-   0.6 of the ramp wraps there (Editorial's KAI / FEATHERSTONE and FLORENCE AND / THE MACHINE at
-   62, Lime's MAXIMILIAN / FEATHERSTONEHAUGH and FLORENCE AND THE / MACHINE at 72). A name above
-   the floor holds one line, smaller than the ramp (Grunge's MAXIMILIAN FEATHERSTONEHAUGH at 43.5).
-   Is 0.6 the right floor, and is a smaller one-line name preferred to a larger wrapped one?*
-3. **Retro's half at 768** (JP-109, named, not fitted). Under Retro (and Pop, which renders Retro's
-   layout-4 header) a long one-word name at the flat 77 runs under the 768 seal: *Maximilian
-   Featherstonehaugh*'s U G H, ending at 687 against the disc's 591.
-4. **Pop's Base value** (JP-110, named, not fitted). Retro's half keeps `overflowWrap: 'anywhere'`,
-   and Pop's Titan One breaks the seed MANCHESTE / R, UK at 1440 and MANCHESTER / , UK at 390.
-   *Entry 3: Retro breaks a typed long city inside the word too (WOLVERHAMPTON at 1440 and 390,
-   a 20-letter word at every width). Its seed does not break.*
+1. **The stat wall's long value** (JP-110). The 1440 frame `964:73110` breaks *MANCHESTER, / UK*
+   between words, and the 390 frame `977:13475` breaks *MANCHEST / ER* inside the word. We now fit
+   every value on the layout-4 stat wall to its widest word, under Lime, Grunge and Editorial, so a
+   value wraps only between words. The seed sets *MANCHESTER, / UK* at every width: 28.9 at 1440, as
+   the frame draws it, and 16.5 at 390, departing from the frame's *MANCHEST / ER* at 23 on purpose.
+   There is no floor: *WOLVERHAMPTON* sets 12.5 in the 390 cell, and a 20-letter town sets 9, below
+   the cell's 12px sub line. **Is a floor wanted?** If so, should a word longer than the floor allows
+   break inside itself there, or overrun the cell?
+2. **A long name beside the 768 seal** (JP-109). The frame `971:9538` gives the name the full column,
+   with the seal in its right ≈ 150 at the name's height. Gloock sets *KAI MERCER* 633 wide where the
+   frame's Fisterra sets ≈ 506, so the seed's own line reached the seal. At 768 we now fit the name's
+   line to the room beside the seal, 16 short of the disc, under Lime, Grunge and Editorial. Below a
+   floor of 0.6 of the ramp the name wraps inside that room instead. So the seed stays on the frame's
+   one line at 89 (the ramp is 103). Editorial's *KAI / FEATHERSTONE* and *FLORENCE AND / THE
+   MACHINE* wrap at 62, and Lime's *MAXIMILIAN / FEATHERSTONEHAUGH* and *FLORENCE AND THE / MACHINE*
+   wrap at 72. Above the floor a name holds one line, smaller than the ramp, such as Grunge's
+   *MAXIMILIAN FEATHERSTONEHAUGH* at 43.5. **Is 0.6 the right floor, and is a smaller one-line name
+   preferred to a larger wrapped one?**
+3. **Retro's half at 768** (JP-109, named, not fitted). Retro's layout-4 header, which Pop also
+   renders, sets the name at a flat 77. A long one-word name runs under the 768 seal there:
+   *Maximilian Featherstonehaugh*'s U G H end at 687, against the disc's 591. Its seed clears.
+4. **Retro's half of the stat wall** (JP-110, named, not fitted). Retro's map keeps
+   `overflowWrap: 'anywhere'`. Pop's Titan One breaks the seed inside the word: *MANCHESTE / R, UK*
+   at 1440 and *MANCHESTER / , UK* at 390. Retro's seed does not break, but a typed long city does:
+   *WOLVERHAMPTON* at 1440 and 390, and a 20-letter word at every width.
+5. **The 390 bio card** (JP-108). The frame `977:13164` draws a 370 × 536 card, with the photograph
+   across it and the panel at its foot. Ours is **733** tall under Editorial and Grunge, and 735
+   under Lime, **on purpose**. The panel is content-tall, and the card keeps a 340 clear stage of
+   the photograph above it. That is a user call of 2026-09-18, which JP-108 amended but did not
+   reverse. At 536, the seeded two paragraphs would cover all but the top ≈ 130 of the photograph,
+   cutting the artist off at the forehead.
+   - The photograph now fills the whole card, as the frame draws it, so it shows round the panel
+     down to the foot.
+   - The cost is a tighter cover crop at the sides: Grunge's seated drummer is cut at the left edge.
+     An `objectPosition` was offered and declined (user, 2026-10-06).
+   - **Should the card keep the frame's 536,** with shorter copy or a shorter panel, **or is the
+     taller card right?**
