@@ -1275,8 +1275,8 @@ user's).
 
     | Entry | Named | Differ | Row shape |
     |---|---|---|---|
-    | JP-105 | 15 + 15 | 15 + 15 | map `arch 2` × themes 0–4 × three widths: one row, the line's `<span>` |
-    | JP-104 | 3 + 3 | 3 + 3 | repertoire `arch 2` × themes 1–3 × 768: the titles' and lengths' spans |
+    | JP-105 | 15 + 15 | 15 + 15 | map `arch 2` × themes 0–4 × three widths: on the canvas one `SPAN` a file, the line's, the roots unchanged |
+    | JP-104 | 3 + 3 | 3 + 3 | repertoire `arch 2` × themes 1–3 × 768: 24 `SPAN` rows a file (the 12 titles and 12 lengths), no `DIV`, the roots unchanged |
     | JP-103 | 6 + 6 | 6 + 6 | repertoire and pricing `arch 2` × themes 1–3 × desktop: the roots −34, pricing's rows 34 up |
     | JP-106 | 0 + 15 | 0 + 15, all inside JP-105's live map files | the pill's rows; 390 +38.8 |
     | JP-102, JP-107 | 0 | 0 | — |
@@ -1289,7 +1289,7 @@ user's).
     venue wrapping between words, as entry 7 measured) and one at 390, where the line's span moves
     in `y` alone and the root grows 38.8 (Editorial 839.5 → 878.3). Root heights at 1440 and 768
     are `main`'s.
-  - **`&column=right`, 14 of 220 a surface.** The harness's 323 column is a render the page draws
+  - **`&column=right`, 14 of 220 a surface.** The harness's column (its wrapper reads 335, `s.contentW`; `preview.jsx`'s comment says 323) is a render the page draws
     for the calendar alone (`pageRows` composes bio, media and calendar), and **the bio, media and
     calendar move 0**. The 14 are the entries' own changes in a column the page never stands
     those sections in:
@@ -1297,7 +1297,7 @@ user's).
       at `live=1&today=` JP-106's five pills too. Root heights unchanged;
     - pricing and repertoire `arch 2` × themes 1–3 (6): JP-103's desktop arm, the roots −34, as on
       the plain desktop;
-    - header `arch 2` × themes 1–3 (3): JP-102's fit binding. In the 323 column the h1's stack is
+    - header `arch 2` × themes 1–3 (3): JP-102's fit binding. In that column the h1's stack is
       49.7 wide beside the card, so *Kai Mercer* fits at 20.26 / 16.58 / 11.88 (Lime / Grunge /
       Editorial) where `main` ran it 262 / 240 / 392 wide out of that stack. Seven rows a file;
       the root's 738 unchanged. The page's header is never a column, so this is not a finding.
