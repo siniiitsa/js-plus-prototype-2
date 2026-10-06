@@ -99,7 +99,7 @@ Lime**, so always pass the list explicitly.
 |---|---|---|---|---|---|---|
 | 1 | JP-104 · JP-106 · JP-103 (form) | 768 length stacked · no status pill, no ↗ · Enquiry → Testimonials 156 | **JP-104 a recorded call** (JP-044, kept by JP-066), which now buys nothing under Lime and Grunge; **JP-106's premise has changed** (gigs carry a `year` since JP-069), the ↗ a separate recorded drop; **JP-103 (form) unreconciled**: the triage measured it matching from like edges, but the tester's screenshot measures card foot to label on both sides, and the frame reading disagrees with that crop; re-read before asking | — (decisions) | **user: JP-104 D; JP-106 A (seed 2031), no pill on the canvas, the ↗ a reply; JP-103 (form) A** (2026-10-06) | **done** (reproduced on HEAD; the form frame re-read: card foot → label 166, so A) |
 | 2 | JP-107 | Artist not flagged at layout 3 | **Confirmed, chrome**: no per-column reach exists; the songs hint names the length but not the missing artist | S | **user: B** (the hint and its mirror; 2026-10-06) | **done** (reproduced; 0 digest files; verified on cards 1–4 under all five templates) |
-| 3 | JP-102 | Long hero name clipped / under the card | **Confirmed, `s.limeTree`**: the h1 is the flat ramp; the column already ends at the card, the word just ignores it. Named, not fitted, in `display-face.md:851` | S | light — A (JP-092's shape) | open |
+| 3 | JP-102 | Long hero name clipped / under the card | **Confirmed, `s.limeTree`**: the h1 is the flat ramp; the column already ends at the card, the word just ignores it. Named, not fitted, in `display-face.md:851` | S | **user: A** (JP-092's shape; Retro's half named; 2026-10-06) | **done** (reproduced; 0 digest files, the `&name=` control 6 per surface; 156 renders fitted to 0.005px) |
 | 4 | JP-105 | *12 mile radius* against 120mi rings | **Confirmed, a seed three frames disagree on**; parked for the designer on 2026-09-29, and this is the ticket that call waited for | S | **yes** — A (a per-layout seed), A + D (and `base` at layout 3) | open |
 | 5 | JP-104 (code) | 768 length stacked | **D**: one row, the title clamped to two lines, the length on the right | S | decided (entry 1) | open |
 | 6 | JP-103 (rest) | Repertoire → Gallery 97, Gallery → Pricing 100 | **Confirmed, `s.limeTree`**: both sides of the taupe band keep `padY` 80 at desktop where the frames pad 56 | S | no | open |
@@ -565,6 +565,100 @@ name on card 4 at 390 and 414. Name them again in the reply.
 *answered* pointer at `display-face.md:851`; `notes/templates.md`'s `HeaderV2` paragraph if it names
 the title's ramp. On Pop: name what the Pop layout-3 pass inherits.
 
+**Re-checked** (2026-10-06, HEAD `9185e63`). Every *Evidence* line held to within two: `HeaderV2`
+`:3190`, `identity` `:3370`, the h1 `:3372`, `stack` `:3390`, the card `:3444`–`3454`, the well's clip
+`:3507`, `Title` `:1235`; `HeaderV1`'s `identity` `:2678` and its title `:2699`; `navFace`
+`EncoreBuilder.jsx:713`–`714`, `vm.cardNameEms` `:739` under its comment `:730`–`738`.
+
+**Reproduced** (2026-10-06, HEAD `9185e63`, :5175 serving the clean tree; puppeteer: Editorial →
+card 3 → *Title* typed in the header's panel → Publish → Open, the popup at 1440, 768 and 390; each
+word's text-node `Range` against the `identity` column's right edge, the card's left edge and the
+nearest clipping ancestor). *Maximilian Featherstonehaugh* under Editorial, the h1 at 93.8 / 70.59 /
+46.42: at **1440** FEATHERSTONEHAUGH ends 232.2 past its column and 208.1 past the card's left edge
+in the zoomed tab, which is **190.3** and **170.6** layout px (zoom 1.22); at **768** it ends 376.5
+past the column, **352.5 under the card** and **100.5 past the well's clip** (the H in the gap); at
+**390** 186.8 past the column and **176.8 past the clip**. No word breaks inside itself, and no page
+scrolls. The editor's 1088 Desktop canvas runs it 282.2 past its 802.7 column and 55.9 past the clip.
+Lime runs it 91.9 past at 768 (67.9 under its glass card) and 4.6 past at 390; Grunge 31.5 past at
+768 (7.5 under the card). The controls: *Supercalifragilistic Expialidocious* overruns as
+*Featherstonehaugh* does (Editorial 211.2 / 363.6 / 178.3 screen px); *Florence and the Machine* and
+the seed fit everywhere, the seed's tightest Editorial at 768 (7.9 to spare). No console errors.
+**The triage's overrun table, re-taken** in the harness (`&name=`, header `arch 2`, canvas and
+`live=1` identical): Editorial +190.2 / +376.5 / +186.8, Lime fits / +91.9 / +4.6, Grunge fits /
++31.5 / fits, Retro fits / +94.0 / fits, Pop +10.9 / +258.8 / +101.0. It is the triage's table to
+the pixel.
+
+**Decided** (user, 2026-10-06): **A. JP-092's shape in the `s.limeTree` block.** Retro's half (and
+Pop's placeholder, which renders it) is named, not fixed.
+
+**Settled** (2026-10-06).
+- **The code.** In `HeaderV2`'s `s.limeTree` block:
+  - `identity` takes `containerType: 'inline-size'` at every width (`EncoreSection.jsx:3384`). It is
+    `width: 100%` of `stack`, which is `flex: 1 1 0` beside the card at desktop and 768 and
+    stretched by the 390 column, so it is parent-sized at all three and the container moves nothing.
+  - The h1 is `s.cardNameEms ? min(${s.dispLg}, calc(100cqi / ${s.cardNameEms})) : s.dispLg`
+    (`:3385`), passed unfaced, since `Title` applies `faced()`. It wraps between words and shrinks
+    only when its widest word would outrun the column, which already ends at the card.
+  - A comment over both (`:3370`–`3382`) says why. `vm.cardNameEms`'s reader list
+    (`EncoreBuilder.jsx:730`–`739`) now names the h1 beside the card, since "HeaderV2" there meant
+    the card's own name. `Title`, the card and Retro's half are untouched.
+- **Digest: 0 of 90 on each surface** (header, every arch, themes 0–4, three widths, canvas and
+  `live=1`), as named. The harness was proved first: a fresh HEAD worktree on :5174 against the
+  unedited tree on :5175 came to 0 of 90 on each surface. **Positive control:** the same digest with
+  `&name=Maximilian Featherstonehaugh`, HEAD against the tree, moves **6 of 90** per surface, which
+  are exactly the renders the table above overran: Lime 768 and 390, Grunge 768, Editorial at all
+  three. Retro and Pop do not move, and nor does any other arch.
+- **The 1088 canvas** (the editor's Desktop tab; the column 802.7). The seed keeps the ramp under all
+  three (93.8 / 107 / 80.25), MERCER's limit there being far above it. Editorial's *Featherstonehaugh*
+  fits at 68.93 and *Supercalifragilistic* at 69.81. Lime and Grunge keep their ramps there for both.
+- **The harness** (themes 1–3, three widths, canvas and `live=1`, the seed and the three names: 72
+  renders) and **the published tab** (Editorial, Lime and Grunge card 3, the four names typed in the
+  panel, at 360, 390, 414, 768, 1180 and 1440 and the 1088 canvas: 84 renders):
+  - **Every computed font-size is `min(ramp, column ÷ ems) × faceK`** to within 0.005px, the column
+    read off its computed `width` (unzoomed) and the ems off `data.js`'s tables in `navFace`'s
+    shape. A `cqi` resolved against the viewport could not match at both 1180 and 1440 and at 768.
+  - The column is `inline-size` in every render; **no word breaks inside itself** (every word's
+    `Range` is one rect).
+  - **Every word ends inside its column**, Editorial's widest 2.3–9 layout px short (Gloock's table
+    runs about 1% wide), Lime's and Grunge's 0.1–3.5 short. So nothing runs **under the card** (at 768
+    every word ends 24 or more short of its left edge) and nothing runs **past the well's clip**.
+    The header root's and the document's `scrollWidth` equal the width everywhere.
+  - Themes 0 and 4 (the controls) render Retro's half unchanged: no container, the ramp.
+
+  | Fitted (px) | 1440 / 1180 | 1088 canvas | 768 | 414 / 390 | 360 |
+  |---|---|---|---|---|---|
+  | Editorial FEATHERSTONEHAUGH | 76.83 | 68.93 | 37.78 | 30.06 | 27.48 |
+  | Editorial SUPERCALIFRAGILISTIC | 77.81 | 69.81 | 38.27 | 30.44 | 27.83 |
+  | Lime FEATHERSTONEHAUGH | 107 (ramp) | 107 | 66.49 | 52.89 | 48.35 |
+  | Lime SUPERCALIFRAGILISTIC | 107 | 107 | 64.48 | 51.29 | 46.89 |
+  | Grunge FEATHERSTONEHAUGH | 80.25 (ramp) | 80.25 | 56.59 | 34.5 (ramp) | 34.5 |
+  | Grunge SUPERCALIFRAGILISTIC | 80.25 | 80.25 | 54.09 | 34.5 | 34.5 |
+
+  *Kai Mercer* and *Florence and the Machine* keep the ramp at every width under all three. The 414
+  column is 350, as at 390, so the two widths fit alike. **At 768 the fitted word is small** (37.78
+  under Editorial against the ramp's 70.59): the 768 column is 440 beside the card, narrower than the
+  frame's own name would need for a 17-letter word. That is the fit's rule, as at layout 2 (JP-092's
+  768 FEATHERSTONEHAUGH was 33.74).
+- **Seen, not filed** (each re-read today on the published tab, Editorial, unchanged by this entry):
+  - **The form head on card 3** breaks FEATHERSTONEHAUGH inside the word at 360, 390, 414 and 768,
+    and *Supercalifragilistic Expialidocious* breaks both words at 360–414 and SUPERCALIFRAGILISTIC
+    at 768. At 1440 neither breaks.
+  - **The bio's name on card 4** breaks FEATHERSTONEHAUGH (and SUPERCALIFRAGILISTIC) inside the word
+    at 360, 390 and 414. At 768 and 1440 it holds.
+  - Neither scrolls the page.
+- **Build.** `npm run build` is clean. The root `index.html` is not refreshed.
+- **Docs.** The comment over `identity` and the h1; the `vm.cardNameEms` comment;
+  [`display-face.md`](./display-face.md) `:851` gets the *answered* pointer; `notes/templates.md`'s
+  *Inset Hero* clause now says the title is fitted to its column's widest word, as Feature spread's
+  is. `notes/nav.md:113` names layout 3's centred **nav** name (its own span), not this h1, so it is
+  unchanged. No CLAUDE.md or README line stated the old ramp.
+- **What Pop's layout-3 pass inherits.** `pop-layout-3` widens this block to
+  `(s.limeTree || s.pop)` ([`../pop/layout-3.md`](../pop/layout-3.md) `:159`). Pop's `navFace` is
+  Titan's ems × 0.98, so `s.cardNameEms` is set under Pop and the fit applies to its h1 for free once
+  the block is widened. Whichever lands second re-measures Pop's long names at the six widths (the
+  probe above), and checks whether Pop's h1 wants `HeaderV1`'s `top: -0.14em` glyph-floor arm, which
+  this block does not carry.
+
 ---
 
 ## Entry 4 — JP-105: *12 mile radius* under 120mi rings
@@ -796,6 +890,13 @@ Written as each entry settles.
 - **JP-107 (the songs' Artist at layout 3) — fixed** (entry 2). The Songs help line in the
   Repertoire panel now says that layout 3 shows each song's length in place of its artist, and
   that the other layouts show the artist and not the length.
+- **JP-102 (a long hero name on Inset Hero) — fixed** (entry 3). The name in the hero now wraps
+  between words and shrinks only when its longest word would not fit beside the portrait card, so
+  *Maximilian Featherstonehaugh* fits at every width, stops before the card at 1440 and 768, and is no
+  longer cut at 390. The same fix applies to Lime and Grunge. Shorter names, such as *Kai Mercer* and
+  *Florence and the Machine*, keep their full size. Two other places on these pages still break a
+  very long word inside itself, and are not part of this ticket: the enquiry form's heading on
+  layout 3 at tablet and phone widths, and the bio's name on layout 4 at phone width.
 - **JP-103 (Enquiry → Testimonials) — matches the design** (entry 1, user, 2026-10-06). The two
   figures were taken from different edges. The design's 61 runs from the form block's own bottom
   edge, which is invisible, to *● Testimonials*: ours is 57. The 156 runs from the left column's

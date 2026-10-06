@@ -3367,10 +3367,23 @@ function HeaderV2({ s }) {
         ))}
       </div>
     )
+    // The title wraps between words, and shrinks below the ramp only when its
+    // widest word would outrun the column (JP-102, user call, 2026-10-06,
+    // HeaderV1's JP-092 shape): `100cqi` over the word's width in `navFace`
+    // ems (`s.cardNameEms`), passed unfaced, since `Title` applies `faced()`
+    // and Grunge's ems are already faced. The column ends at the card at
+    // desktop and 768 (`stack` is `flex: 1 1 0` beside it), so a fitted word
+    // no longer runs under the card or past the well's clip. It never breaks
+    // inside a word. `identity` is the query container at every width; it is
+    // `width: 100%` of a parent-sized column, so the container moves nothing,
+    // and the seeded MERCER keeps the ramp everywhere (Editorial's tightest,
+    // 768, has 7.9 to spare). One block fits Lime's, Grunge's and Editorial's
+    // titles, each in its own face's ems. Retro's half (which Pop's arch-2
+    // placeholder renders) clips at its column instead, and is not fitted.
     const identity = (
-      <div style={col(u(12), { alignItems: 'flex-start', width: '100%' })}>
-        <Title s={s} size={s.dispLg} color={s.tx} lh={0.89} inline
-               twoTone={grunge} toneA={s.tx} toneB={s.ac} />
+      <div style={col(u(12), { alignItems: 'flex-start', width: '100%', containerType: 'inline-size' })}>
+        <Title s={s} size={s.cardNameEms ? `min(${s.dispLg}, calc(100cqi / ${s.cardNameEms}))` : s.dispLg}
+               color={s.tx} lh={0.89} inline twoTone={grunge} toneA={s.tx} toneB={s.ac} />
         <span style={row(u(8))}>
           {/* Editorial's dot is `sem/text/2`, the location's own paper, where
               the twins' is the accent. */}

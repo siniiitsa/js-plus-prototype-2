@@ -248,7 +248,9 @@ another `notes/` file.
   at every width — JP-092, user call, 2026-10-01, which fits Lime's and Grunge's titles in the
   same block the same way, each in its own face's ems), and Inset Hero `HeaderV2`'s (a square well with one floor fade, ringed in Scheme 1's
   ink; a blush Scheme 5 capsule ringed ink round ink links at Grunge's fixed 18 gaps; a blush
-  Book pill on an ink disc; a one-tone paper title over Scheme 1's blush and terracotta chips;
+  Book pill on an ink disc; a one-tone paper title over Scheme 1's blush and terracotta chips,
+  fitted to its column's widest word, `vm.cardNameEms`, at every width — JP-102, user call,
+  2026-10-06, JP-092's shape, which fits Lime's and Grunge's titles in the same block;
   and an ink arch card in a terracotta ring round an arch portrait), and Stacked `HeaderV3`'s (a
   paper capsule over the ink floor — `NavBar`'s additive `fill`, `s.onScheme[1].bg` — with
   Lime's globe, since `LogoMark`'s sparkle stops at layout 3, and the links at Grunge's fixed 23

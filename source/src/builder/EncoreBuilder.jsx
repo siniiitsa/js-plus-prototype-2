@@ -734,8 +734,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // the display face at its nominal size, so HeaderV2 fits the unfaced size
   // and `faced()` stays outside the fit. Editorial's other titles that wrap
   // between words read it too: HeaderV3's, and HeaderV0's at 390 (JP-086);
-  // and so does the layout-2 title under Lime, Grunge and Editorial, at every
-  // width, HeaderV1's `s.limeTree` block (JP-092).
+  // and so do the layout-2 and layout-3 titles under Lime, Grunge and
+  // Editorial, at every width: HeaderV1's `s.limeTree` block (JP-092) and
+  // HeaderV2's h1 beside that card (JP-102), each fitted to its own column.
   vm.cardNameEms = navFace ? +Math.max(0, ...vm.brand.split(/\s+/).map(navFace)).toFixed(3) : undefined
   vm.navCtaEms = navFace ? +(navFace(vm.cta1) + navFace(vm.cta2)).toFixed(3) : undefined
   // The layout-1 capsule's name gives way before its links do (JP-091, user

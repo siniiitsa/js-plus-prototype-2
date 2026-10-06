@@ -851,7 +851,11 @@ A winner that is already loaded for another template needs its own instance chec
        - **Card 3** (layout 3): the hero title (`HeaderV2`'s h1, which has no word fit) runs
          its long word past the well's clip at 768 too, by 100.5 (FEATHERSTONEHAUGH at 70.59) and
          88.1 (SUPERCALIFRAGILISTIC), where Noto's fitted. At 360–414 it runs 157–207 past, where
-         Noto's ran 84–134.
+         Noto's ran 84–134. **Answered by JP-102**
+         ([`layout-3-qa-fixes.md`](./layout-3-qa-fixes.md) entry 3, 2026-10-06): the h1 is fitted
+         to its column's widest word, `min(ramp, 100cqi / cardNameEms)`, JP-092's shape, so the
+         word ends inside the column and short of the card at every width, under Lime and Grunge
+         too.
        - **Card 4** (layout 4): the bio's name breaks the long word at 390 and 414 too. Noto broke
          it at 360.
      - **Better than Noto:** on card 3 at 1440 and 768, the bio's ID-card name no longer breaks
