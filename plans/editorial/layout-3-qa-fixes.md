@@ -102,7 +102,7 @@ Lime**, so always pass the list explicitly.
 | 3 | JP-102 | Long hero name clipped / under the card | **Confirmed, `s.limeTree`**: the h1 is the flat ramp; the column already ends at the card, the word just ignores it. Named, not fitted, in `display-face.md:851` | S | **user: A** (JP-092's shape; Retro's half named; 2026-10-06) | **done** (reproduced; 0 digest files, the `&name=` control 6 per surface; 156 renders fitted to 0.005px) |
 | 4 | JP-105 | *12 mile radius* against 120mi rings | **Confirmed, a seed three frames disagree on**; parked for the designer on 2026-09-29, and this is the ticket that call waited for | S | **user: A** (`mapRadiusSeed(d)`; `base` unchanged; 2026-10-06) | **done** (reproduced on all five templates; 30 digest files, one row each; the 768 line still wraps, under all five) |
 | 5 | JP-104 (code) | 768 length stacked | **D**: one row, the title clamped to two lines, the length on the right | S | decided (entry 1) | **done** (reproduced; 6 digest files, the rows' spans alone; the clamp at 768 and 390, desktop's rows too short for two lines) |
-| 6 | JP-103 (rest) | Repertoire → Gallery 97, Gallery → Pricing 100 | **Confirmed, `s.limeTree`**: both sides of the taupe band keep `padY` 80 at desktop where the frames pad 56 | S | no | open |
+| 6 | JP-103 (rest) | Repertoire → Gallery 97, Gallery → Pricing 100 | **Confirmed, `s.limeTree`**: both sides of the taupe band keep `padY` 80 at desktop where the frames pad 56 | S | no | **done** (reproduced, 97.6 / 102–104; 12 digest files, as named; the published 1440 reads 56.1 and 60–63, the composed row and 768 / 390 unchanged) |
 | 7 | JP-106 (code) | no status pill | **A**: a derived pill, published tab only, the seed's year 2031 | M | decided (entry 1) | open |
 | 8 | — | End-of-pass sweep | — | S | — | open |
 
@@ -999,6 +999,68 @@ desktop, `pageRows`).
 **Docs.** The arm's comment, in the shape of its neighbours (frames, numbers, the call);
 [`layout-3.md`](./layout-3.md)'s sections 4 and 7 *Settled* (a pointer); `notes/` none.
 
+**Re-checked** (2026-10-06, HEAD `524609d`). Every *Evidence* line held as the prompt re-based it:
+`padY` `EncoreBuilder.jsx:97` (80 at desktop), the bio / media / calendar arm `:544`–`552` (the
+media feet `:549`), pricing's arm `:558`–`561` (its foot alone), the form / testimonials arm
+`:579`–`586`. None covers Retro or Pop. **The audit**: neither the repertoire's nor pricing's
+layout-3 `s.limeTree` block reads `s.padY`. Pricing's Grunge / Editorial ring is `inset: 0` on
+the root (`EncoreSection.jsx:11163`), so it follows the box. `vm.pad` alone is enough.
+
+**Reproduced** (2026-10-06, :5174 serving HEAD; puppeteer: template → card 3 → Publish → Open,
+the popup at 1440, each section's union of painted descendants, the *Pricing* glyph by a pixel
+scan of its own columns). Repertoire cards → band **97.6** under Editorial, Lime and Grunge (the
+tester's 97); band → *Pricing* glyph **103 / 102 / 104** (the triage's 102 / 102 / 104, the
+tester's 100). No console errors.
+
+**The gallery, confirmed: its band's edges are its root's.** Under Lime and Grunge the root paints
+the page ground, and the band is the layout-3 sheet (`EncoreSection.jsx:15775`) bleeding
+`calc(-1 * padY) calc(-1 * padX)` out to the root's edges. Under Editorial the root also paints
+the taupe itself (its Scheme 2 seat), with the same sheet on it. Either way the painted union is
+the root box to the 0.01px at 1440, so the band's edge is the gap's. The arm must leave the
+gallery's pad alone, or the sheet's bleed would miss its edge (JP-094's trap).
+
+**Settled** (2026-10-06).
+- **The code** (`sectionVm`, `EncoreBuilder.jsx:553`–`581`):
+  - **A new arm** before pricing's, gated as its neighbours are (Lime, Grunge, Editorial,
+    `d === 2`) and on `cat === 'repertoire' && Z.dev === 'desktop'`. It sets the repertoire's
+    foot to `round(56 × 0.82)` = 46 and keeps its top `padY`.
+  - **Pricing's arm** keeps its gate (`Z.dev !== 'mobile'`). Its desktop top is now 46 too, and
+    768 keeps `padY` over its 32 foot.
+  - The comment names the three page frames (`964:68717` / `964:68653` / `964:68685`), the
+    frames' 56 at both edges against the tester's 97 and 100, and why the repertoire's top, the
+    gallery and 768 / 390 are left as they are.
+- **Digest: 12 files, as named.** Desktop, themes 1–3, `repertoire arch=2` and `pricing arch=2`,
+  canvas and `live=1`, of 660 per surface (every category, themes 0–4, three widths). The harness
+  was proved first: a fresh HEAD worktree on :5174 against the unedited tree on :5175, 0 of 660 on
+  each surface.
+  - **Geometry only.** No style column moved, and the line counts are equal.
+  - **The repertoire**: three rows lose 34 in height (the harness's `#root`, its 1180 wrapper and
+    the section root, 577.4 → 543.4 under Editorial), and nothing inside moves.
+  - **Pricing**: the same three rows lose 34, and every other row moves 34 up rigidly. Under
+    Grunge and Editorial, add the ring span: y 0, −34.
+  - **768 and 390: 0 files.** The full three-width digest is the proof.
+- **The real app** (:5175, the edited tree; the repro re-run), the published 1440 tab:
+  - **Repertoire → band 56.1** under all three (frame 56). This is the painted union box to box,
+    the frame's own measure.
+  - **Band → *Pricing* glyph 61 / 60 / 63** by pixel scan (Editorial / Lime / Grunge; frame 60).
+    The font-metric read gives 57.8 / 56.7 / 57.9 and the line box 55.1 / 54.1 / 55.1. The
+    head's first line starts 1–2 inside the padding edge, as on HEAD (in-block, not an inset).
+  - **The composed row is unchanged**: the header, the bio, the calendar and the media root
+    keep their tops, heights and painted spans, and media → repertoire stays 105 / 101 / 106.
+    The repertoire's top is HEAD's. The gallery moves up 41.5 (34 × 1440 / 1180), and every
+    section from pricing down moves up 83.
+  - **768 and 390** are identical to HEAD under all three templates: every section's box, painted
+    span and gap. No console errors at any width.
+- **Retro and Pop**: no arm reaches them, and themes 0 and 4 digest to 0.
+- **Build.** `npm run build` is clean. The root `index.html` is not refreshed.
+- **Docs.**
+  - The arm's comment, and a clause in pricing's.
+  - *Since JP-103* pointers in [`layout-3.md`](./layout-3.md): section 4's *Named diffs* (the
+    repertoire's `padY`) and section 7's *the twins'* (pricing's top).
+  - Section 4's *gap under media* bullet is about the repertoire's **top**, which this entry
+    leaves alone, so it gets no pointer.
+  - `notes/` none. CLAUDE.md and README state no layout-3 inset.
+
 ---
 
 ## Entry 7 — JP-106 (code)
@@ -1104,7 +1166,10 @@ Written as each entry settles.
   the design and 206 on the page. That is because the default heading, *Book Kai Mercer for your
   event*, runs one line longer than the design's *Book Kai for your event*. The design centres the
   card on the heading column, so a longer name lifts the card. The other two gaps in this ticket
-  (Repertoire → Gallery, Gallery → Pricing) are real and are fixed under entry 6.
+  (Repertoire → Gallery, Gallery → Pricing) are real and are **fixed** (entry 6). At desktop
+  the repertoire now ends 56 above the gallery's band, and *Pricing* starts about 60 below it, as in
+  the design. Before, both read about 100. This applies to Editorial, Lime and Grunge. Tablet and
+  phone widths are unchanged.
 
 ## Notes for the designer
 

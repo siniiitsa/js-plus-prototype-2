@@ -550,14 +550,34 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
       : vm.padY
     vm.pad = `${top} ${vm.padX} ${foot}`
   }
+  // The gallery's band at desktop (JP-103, 2026-10-06, no decision: the
+  // frames' own numbers). The page frames stack their sections edge to edge
+  // (Editorial's 964:68717, Lime's 964:68653, Grunge's 964:68685), and the
+  // repertoire pads 56 under its cards and pricing 56 over its head, where
+  // both kept `padY` 80 and the published tab read 97 and 100 against the
+  // frames' 56 and 60. So the repertoire's foot is 56 × 0.82 at desktop, and
+  // pricing's top joins its foot in the arm below. The repertoire's top
+  // stays `padY`, which the media feet above were tuned against (20 / 34 /
+  // 26), and the gallery keeps its own: its band is a sheet that bleeds
+  // `calc(-1 * padY)` to the root's edges, so its edge is the gap's already.
+  // 768 and 390 keep `padY` (56 and 44 against the frames' 60): reported as
+  // matching, and their pages stand the calendar between the two.
+  if ((T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial')
+    && d === 2 && cat === 'repertoire' && Z.dev === 'desktop') {
+    vm.pad = `${vm.padY} ${vm.padX} ${Math.round(56 * 0.82)}px`
+  }
   // The pricing stack's footnote stands 32 above the section's foot at 1440
   // and 768 (964:68680 · 984:10765). 390 keeps its 44, under the master's 60.
   // Grunge's three masters state the same 32 / 32 / 60 (964:68712 · 984:13925
   // · 984:13956), and so do Editorial's (964:68745 · 984:16837 · 984:16868),
-  // so the arm is all three templates'.
+  // so the arm is all three templates'. Its desktop top is the frames' 56
+  // under the gallery's band (JP-103, above); 768 keeps `padY`.
   if ((T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial')
     && d === 2 && cat === 'pricing' && Z.dev !== 'mobile') {
-    vm.pad = `${vm.padY} ${vm.padX} ${Z.dev === 'desktop' ? Math.round(32 * 0.82) : 32}px`
+    const desk = Z.dev === 'desktop'
+    vm.pad = desk
+      ? `${Math.round(56 * 0.82)}px ${vm.padX} ${Math.round(32 * 0.82)}px`
+      : `${vm.padY} ${vm.padX} 32px`
   }
   // The form's card ends 90 / 60 above its foot and the testimonials' head
   // stands 56 / 30 below their top (964:68682 + 964:68683 · 984:10767 +

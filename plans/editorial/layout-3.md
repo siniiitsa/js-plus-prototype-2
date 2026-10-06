@@ -1335,7 +1335,9 @@ sections are where the twins' dark-ground assumptions break (trap 6).
 - **Named diffs, the twins'**: `s.title` ("12 Songs") where the frame writes "Curated sets" (**since JP-070** (2026-09-28) layout 3 seeds the frame's head, `HEADING_3`; see `../grunge/layout-3-qa-fixes.md`); the
   meta line is the set's count, not a mood and a running time; the right-hand column is the
   artist, not a duration *(Since JP-066, 2026-09-29: the meta line is the set's mood and running time from `SetsField`, and the right-hand column the song's `length`; see `../grunge/retest-qa-fixes.md`.)*; the section pads the shared `padY` (80 / 56 / 44), not the frame's 56 /
-  60 / 60; the card's 438.3 against 439 (its content).
+  60 / 60 *(Since JP-103, 2026-10-06: the desktop foot is the frame's 56 × 0.82 = 46 above the
+  gallery's band, under all three templates; the top, 768 and 390 keep `padY`. See
+  `./layout-3-qa-fixes.md`, entry 6.)*; the card's 438.3 against 439 (its content).
 - **JP-044 holds**: `stack = tab` is the shared block's, so at 768 the artist stands under the
   title. No seeded title's ellipsis span overflows at any width (`scrollWidth > clientWidth` on
   none), in the harness and on the published page. The `&n=` rows' deliberate long title still
@@ -1619,7 +1621,9 @@ sections are where the twins' dark-ground assumptions break (trap 6).
     line in our 314 column where the frame's 294 wraps them: 352.1 / 337 against 367 / 352.
     The twins' 390 carries the same width now; Grunge's "exact" 346-wide rows predate JP-038;
   - the twins': the section's top pad is the shared `padY` 80 / 56 / 44, not 56 × 0.82 / 30 /
-    60; the seeded intro is one line and the heading is the artist's; the pill reads *Book Now*
+    60 *(since JP-103, 2026-10-06, the desktop top is the frame's 56 × 0.82 = 46 under all three
+    templates, in the foot's arm; 768 and 390 keep `padY`; `./layout-3-qa-fixes.md`, entry 6)*;
+    the seeded intro is one line and the heading is the artist's; the pill reads *Book Now*
     (`cta1`), 159.4 wide against *Book*'s 114.8; the unit is `/event` where the frame types
     "— £1,400"; the capsule carries the leading *All* (172 against 135 wide); sections **923.7
     / 977.7 / 1326.3** against 909.4 / 975 / 1383;
