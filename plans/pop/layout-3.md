@@ -274,7 +274,7 @@ masters are one session. **Lime block** is where that section's Lime layout-3 bl
 | # | Cat | Desktop node | Size | Tablet node | Size | Mobile node | Size | Scheme 1440 / 768 / 390 (nested) | Lime twin (1440 / 768 / 390) | Editorial twin (1440 / 768 / 390) | Lime block | Status |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 0 | *foundation* | `964:68750` *(page)* | — | `984:15355` | — | `984:15386` | — | — | — | — | `SCHEMES_OF.Pop[2]`, `cardOnPage` at `d === 2`, `navModeDefault` (decision 1) | **done** |
-| 1 | `header` | `964:68751` | 1440 × 900 | `984:15356` | 768 × 1024 | `984:15387` | 390 × **606.5** | **1 / 6 / 6** (`hero-card` **6** at 1440; the rings, capsule ring and chips name Scheme 1) | `964:68654` / `984:10740` / `984:10771` | `964:68718` / `984:16812` / `984:16843` | `if (s.limeTree) { … return }` at the head of `HeaderV2` | open |
+| 1 | `header` | `964:68751` | 1440 × 900 | `984:15356` | 768 × 1024 | `984:15387` | 390 × **606.5** | **1 / 6 / 6** (`hero-card` **6** at 1440; the rings, capsule ring and chips name Scheme 1) | `964:68654` / `984:10740` / `984:10771` | `964:68718` / `984:16812` / `984:16843` | `if (s.limeTree) { … return }` at the head of `HeaderV2` | **done** `39ae7fc` |
 | 2 | `bio` | `964:68760` *(head `964:68755`, in Section `964:68754`)* | 858 × 882 | `984:15364` *(head `984:15359`)* | 708 × 912 | `984:15395` *(head `984:15390`)* | 370 × **893** | 1 (seal **4**) | `964:68663` / `984:10748` / `984:10779` | `964:68728` / `984:16820` / `984:16851` | `if (s.v2 && s.limeTree)` ahead of `Bio`'s `if (s.v2)` | open |
 | 3 | `media` | `964:68771` list + `964:68770` card *(head `964:68763`)* | 858 × **678** + 858 × 243 | `984:15375` + `984:15374` *(head `984:15367`)* | 708 × 647 + 708 × 243 | `984:15406` + `984:15405` *(head `984:15398`)* | 370 × 647 + 370 × 243 | 1 (card **2**; rows **3 / 4 / 5 / 7 / 8**) | `964:68674` + `964:68673` / `984:10759` + `984:10758` / `984:10790` + `984:10789` | `964:68739` + `964:68738` / `984:16831` + `984:16830` / `984:16862` + `984:16861` | `if (s.limeTree)` inside `Media`'s `if (s.v2)`, after `nHot` | open |
 | 4 | `repertoire` | `964:68775` | 1440 × 621 | `984:15376` *(in `984:15373`)* | 708 × **628** | `984:15407` | 390 × **693** | 1 (sets **2 / 3 / 4**) | `964:68678` / `984:10760` / `984:10791` | `964:68743` / `984:16832` / `984:16863` | `if (s.limeTree)` inside `Repertoire`'s `if (s.v2)`, after `arrow` | open |
@@ -457,7 +457,7 @@ narrow masters' rule, not one string's**: "Reads the room.", "Five worth your ea
 typed mixed at 768 and 390 and in capitals at 1440 — every display string is uppercased at every
 width, layout 2's media head reading. Not asked again.
 
-### 3. `navModeDefault`, `navFits`, `navGapEm` and `cardLine` at `d === 2` — **not a user call; session 0 and the header session**
+### 3. `navModeDefault`, `navFits`, `navGapEm` and `cardLine` at `d === 2` — **done: session 0 and the header session**
 
 JP-039's rule is the user's: Minimal where a template's layout-2 and -3 masters draw Music / Gigs /
 About. Pop's layout-3 masters do at 1440 and 768 (390 is the burger), so `navModeDefault` gains Pop
@@ -1002,6 +1002,113 @@ From the renders and the planning walk — impressions to confirm, not measureme
   to layout 3's calendar and header. `notes/nav.md`'s `navModeDefault` sentence gains Pop at
   layout 3. The code comments are written; the docs are not.
 
+### Settled in section 1 (the header)
+
+- **The block widened at its head: `if (s.limeTree || s.pop) { … return }`, `const pop = s.pop`**
+  (about twenty arms, no `G`). The tree is Lime's node for node at all three widths (the
+  planning LCS, 44 / 44), the 390 Lime's written-out 606.5; the root resolves Scheme 1 at
+  1440 and Scheme 6 narrow, the `hero-card` Scheme 6 at every width, and no Device override
+  anywhere (the walk's `resolvedVariableModes`: Desktop / Tablet / Mobile). Every paint on the
+  three masters is bound; no effect. Retro's half is unreachable under Pop and was not touched.
+- **Under the Scheme 6 seat most leaves were already the binding** (`bg` violet, `ac` lime, `tx`
+  pink, `text3` white, `box1` / `box2` / `box3` `#8451FA` / `#5C22E6` / `#4612BE`, `stroke2`
+  pink — checked in Node off `THEMES[4].schemes[6]`): the capsule's fill and links, the location's
+  dot, the portrait's well. The deltas, off one node walk per master with bindings and their
+  collections:
+  - **the frame round the card**: `pop && desk ? s.pageBg : s.bg` on the block's own wrapper —
+    the block paints over the root, so session 0's `cardOnPage` alone did not show; white at
+    1440, the seat's violet narrow;
+  - **the well**: radius 30 at every width (`u(30)`), faded off `sem/box/3` (`s.box3`) where
+    Lime's is `s.box1`, and ringed **8 / 8 / 2** INSIDE in `scheme/1/stroke/2` lime
+    (`s.onScheme[1].stroke2`, `u(s.mob ? 2 : 8)`);
+  - **the capsule** ringed 1px `scheme/1/stroke/1` pink (`s.onScheme[1].stroke1`, Editorial's
+    arm) and gapped a fixed 18 (`grunge || ed || pop` on `navGaps` and the `<nav>`'s gap);
+  - **the name and Listen** `text/3`, `s.text3` white — the first `s.text3` read on a layout-3
+    page;
+  - **the Book pill** `bg={s.bg} fg={s.ac}`: the seat's violet on the violet card, lettered and
+    disced lime round a violet arrow (BookPill's disc rule), Lime's box, no block — 119.5 × 28.6
+    on the canvas (145.32 × 0.82 = 119.2), 130 × 34.9 at 768 (129.32), 124.5 at 390 (123.32);
+  - **the title** `s.ac` lime, one tone, lifted `top: -0.14em` (HeaderV1's Pop arm, the
+    pre-measure's verdict, re-scanned: unlifted, its ink starts 0.13 / 0.12 / 0.13em below its
+    box, where the frame's starts 0.02 above); the
+    JP-102 fit needed nothing (`s.cardNameEms` is Titan's under Pop);
+  - **the location** `s.text3` white, uppercased (`grunge || ed || pop`). **Not lifted**: it
+    scans 1.1–1.4px (0.07–0.09em) low at Display/List lh 1.2, the token layout 2 measured "~1px
+    low and left";
+  - **the chips** read `s.onScheme[1].chips[i % 6]` (Scheme 1's six seats in order: lime, pink,
+    blue, teal, violet, red), corner `u(6.01)` (`radius/chip` 8 × 0.752), Lime's hand-scaled
+    type and padding. Each takes its own seat's ink, which is the frame's in four of six; **the
+    fourth and sixth are not followed** — `scheme/4/tag1/text` `#141414` where Scheme 1's teal
+    seat letters `#000000`, and `sem/tag/7/bg` `#FFFFFF` where its red seat letters `#F6F0E8`
+    (Editorial's open question 4, the same call; open question 9);
+  - **the card** `s.ac` lime in a 4px `scheme/1/stroke/1` pink ring (`ring(u(4), …)`), radius
+    `u(27)` / 21 at 390, no glow; **its portrait centred** (`alignItems: 'center'` under `pop`,
+    below), 87 on `s.box1` in a 4px `s.stroke2` pink ring; the name `s.bg` violet at
+    Display/Title **28 / 22 / 20** (a literal — `vm.title` shadows the ramp), uppercased, lifted
+    **`top: -0.1em`**; the line `s.tx` pink;
+  - **`Photo`'s backdrop under Pop at `s.v2`** is `s.box2`: the frame states `sem/box/2` violet
+    under the photograph, where layout 1's `s.tx` is pink under this seat. This block is the one
+    Pop `backdrop` caller at `s.v2`. `&noimage=1`: a violet well under the `box/3` floor fade.
+  - **NavMenu's panel under Pop at `s.v2`** is `[s.bg, s.text3]`: `mapBg` under Scheme 6 is its
+    darkest tag, red, with Retro's fallback paper (`paperOf` misses on Scheme 6, layout 1's
+    session 0), a panel no frame draws. Now the seat's violet with white links and the lime
+    BookPill, the panel Pop's cards 1 and 2 open (`#7B43FF` / white, Scheme 1's `mapBg`).
+- **The portrait is centred in every twin's frame and left-aligned in the block.** All four
+  layout-3 frames stand the upright card's portrait at 66.5 in (`counterAxisAlignItems: CENTER`;
+  Editorial's 136-wide one at 42); the block's `col()` stretches it to the padding edge, so
+  Lime and Grunge draw it 26.5 left of centre and Editorial 2. Centred under `pop` only, since
+  fixing the twins moves themes 1–3 — **named for a QA pass** (open question 10).
+- **The card's name lift, scanned** (the frame's `absoluteRenderBounds` against our ink, rows
+  read white on black in place): Titan sat **2.2 / 2.0 / 3.1px** (0.10 / 0.09 / 0.16em) low at
+  its cap top and at its floor alike; `-0.1em` levels 1440 and 768 and leaves 390 1.2px low, and
+  restores the frame's ~12.8 gap from the name to the line (10.3 unlifted).
+- **Measured against the masters** (harness, `theme=4&arch=2`): desktop section 738 (900 × 0.82),
+  the well (16.4, 16.4) radius 24.6 ringed 6.56; capsule (42.6, 43.2) 176.4 × 27.4 against
+  (42.6, 43.0) 179.6 × 27.9 (Titan, layout 2's same 176.4); the nav name centred at 590; pill right
+  edge 1137.4 (1138.2); location at 629.9 (629.3); chips at 673.7 (673.6), 54.5 wide (54.6);
+  card (957, 498.7) 180.4 × 196.7 against (957.8, 498.6) 180.4 × 196.8, portrait at 1011.5
+  (1012.3), its name at 620 (619.9) and line at 648.5 (648.6). 768: section 1024, capsule (42,
+  44.3) 189.4 × 30.3 against (42, 44.5) 191 × 30, card (506, 749) 220 × 233 **exact**, portrait
+  at 572.5 (exact), name at 897 (897), location 912 (912.5), chips 961.2 (961.5). 390: section
+  606.4 (606.45), card (20, 459.4) 350 × 127 (exact), its name at 501.5 (501.45), chips 416.6
+  (416.9), the burger capsule 62 × 33.5. The pictures read as the frames at every width.
+- **Decision 3, done.** `navGapEm` is 0 at Pop `d === 1 || d === 2`; `vm.navFits`'s fixed-18 arm
+  takes Pop at both designs (`T.name === 'Pop'`), against 684 at design 2. **The 768 fold, walked**
+  (harness, `live=1`, `&cj={"navMode":"sections"}`, `&nav=` 2–9): *Follow my sections* draws **up
+  to four** seeded links on one row (the name slides to 448.5 at four, Lime's rule); five and more
+  fold to the burger, which opens (6 → 12 anchors at `nav=9`). Minimal's three draw at 1440 and
+  768, the name centred at 384; desktop *Follow my sections* holds all nine on one row. Every
+  root's `scrollWidth` equals its width. `live=1`: Music → `#media`, Gigs → `#map`, About →
+  `#bio`, Listen → `#media`, Book Now → `#form`; the canvas anchors carry no href.
+- **Long names** (`&name=`): *Maximilian Featherstonehaugh* fits the h1 at 390 on two lines and
+  wraps the card's name (JP-062's measure); *Florence and the Machine* sets the h1 on two lines at
+  desktop and the card's name on three. **Named, not fitted**: at 390 the nav's centred name runs
+  under the pill with a long name — the block's own span, which JP-101 named and did not fit
+  under any twin (`notes/nav.md`).
+- **`FIELDS.header` under Pop** (`scripts/reach.mjs 4` over the fitted card): **`cardLine`
+  `[2]`** (decision 3, as written) and **the kicker `[0, 3]`** — it lost design 2, JP-061's
+  prediction once the card stopped being Retro's polaroid, so Pop's row is the twins'. Unchanged:
+  showBadge / badgeText `[0, 3]` (off design 2, as planned), cta2 `[1, 2]` (4/6: Listen dropped at
+  390), tags / showTags `[0, 2, 3]`, location all four, subtitle / heroCta / the four JP-059 keys
+  `[1]`, align `[0]`. The rows' comments now name three fitted Pop cards and one placeholder.
+- **Digest: themes 0, 1, 2 and 3 zero files of 660, canvas and `live=1`** (a fresh `:5178`, both
+  labels taken there, no one-row file in any); theme 4 exactly **header arch 2 at three widths**
+  on each surface (6 files). `Photo`'s and NavMenu's arms are `s.pop && s.v2`, so their states
+  (`&noimage=1`, the open panel) were proved by pictures, not the seeded digest.
+- **In the builder** (`page-check.mjs Pop 2,0,1,3`; card 3's walk rerun alone after the known
+  first-step reload trap): four modal cards; card 3 lays the page out in `PAGE_ORDERS[2]` with the
+  calendar composed beside the bio (both at top 901 in the published 1440 tab), the header 901
+  tall on white; Music → `#media`, Gigs → `#map`, About → `#bio`, Listen → `#media`, Book Now →
+  `#form`, every other anchor and footer link on its id; the player plays; the form refuses and
+  composes; the 390 burger opens (1 → 5); `overflow390` 0; no console error or warning on any
+  card. Cards 1, 2 and 4 render and publish.
+- **For the sweep's CLAUDE.md pass**: `notes/templates.md`'s Pop paragraph (*Inset Hero and Stacked
+  placeholders* → Stacked alone; Inset Hero's dress); `notes/nav.md`'s *Pop's layout 3 is not in
+  that list yet* sentence (Minimal at layouts 2 and 3) and its fit counts (*Follow my sections*
+  fits **four** in Pop's layout 3 at 768); the `cardLine` sentence of the header-identity
+  paragraph (*`'*': []` marks Retro and Pop* → Retro); and the `FIELDS` paragraph's *Pop's …
+  re-measure their card* clause. Not written here.
+
 ### Inherited and used
 
 *(The running list the sweep folds into [`../CONVENTIONS.md`](../CONVENTIONS.md): each time a
@@ -1012,6 +1119,18 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
   and live; *a section's colour scheme is resolved in `sectionVm`* (editorial/layout-1) and *a card
   on another scheme reads that scheme's keys* (editorial/layout-2) — row 2 and `pageBg` round the
   calendar's card and the 1440 header's, data only.
+
+- Section 1: *a node can name another scheme's variable outright* (editorial/layout-3) — the well's,
+  capsule's and card's rings and the chips on `s.onScheme[1]` under the Scheme 6 seat; *a widened
+  block can need no `G`* (grunge/layout-3); *the node walker* and *read a scheme per master*
+  (the root 1 / 6 / 6, the card 6); *a frame's inside stroke is an inset `boxShadow`, on an
+  overlay* (lime/layout-2) — the 8 / 8 / 2 well ring and the portrait's 4px; *`vm.title` shadows
+  the ramp* (lime/layout-1) — the card name's 28 / 22 / 20; *a stand-in face's glyph floor is
+  measured per site* (editorial/layout-3) — the title 0.14em, the card's name 0.1em, the location
+  left; *a twin's frame-less control is checked against its own surround* (editorial/layout-3) —
+  the burger's panel; *an empty slot … takes the frame's own ground* (`&noimage=1`, the well's
+  `box/2`); *field reach is measured* — `reach.mjs 4`; *the whole-page published check* —
+  `page-check.mjs Pop 2,0,1,3`.
 
 ## Open questions
 
@@ -1035,3 +1154,12 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
    the designer only if the column was meant to be pink.
 8. **Header card 4** stays a placeholder: Retro's `HeaderV3` path. Its own pass's (layout 2 recorded
    its frame on Scheme 3 at every width — that pass re-reads it).
+9. **The header's fourth and sixth chips are lettered in other schemes' inks** — `scheme/4/tag1/text`
+   `#141414` on the teal seat and `sem/tag/7/bg` `#FFFFFF` on the red one, where Scheme 1's own
+   seats letter `#000000` and `#F6F0E8`. Each chip takes its own seat's ink (Editorial's open
+   question 4); the difference is a shade apiece. Worth a line to the designer.
+10. **Every twin's *Inset Hero* card draws its portrait left of centre** (section 1): all four
+    frames centre it (`counterAxisAlignItems: CENTER`, 66.5 in), the block's column stretches it
+    to the padding edge, so Lime and Grunge stand it 26.5 left at 1440 (× 0.82) and 768, and
+    Editorial 2. Pop's is centred behind `pop`; fixing the twins moves header arch 2 under themes
+    1–3 at desktop and 768 (6 files a surface), a QA ticket's or the sweep's — **a user call**.
