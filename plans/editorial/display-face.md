@@ -834,9 +834,11 @@ A winner that is already loaded for another template needs its own instance chec
      - **User call 1: Pop's wrap arm** (`EncoreSection.jsx:28324`). At 390 the second column fills
        the row (`flex: 1 1 0`, `minWidth: 0`) and breaks after its slash (`<wbr>`), as Pop's
        frame draws it. At 360 / 375 / 390 / 414 the page no longer scrolls, and the column ends at
-       350 / 365 / 380 / 392. The seed breaks SHOWS/ over COVERAGE at 390 too (159.9 wide, two
-       lines; the frame's is one), and the footer's root holds 637.5. A footer-only digest moves
-       theme 3's two 390 footer files on each surface, and Pop's does not move. Recorded in
+       350 / 365 / 380 / 392. The seed breaks SHOWS/ over COVERAGE at 390 too (159.9 wide; each
+       text node is one rect, so the break is the `<wbr>`'s; the frame sets one line), and the
+       footer's root holds 637.5. A footer-only digest moves theme 3's two 390 footer files on
+       each surface, and Pop's does not move. Those two files were already among the 129 above,
+       which were taken before this call, so the count holds. Recorded in
        `notes/footer.md`.
      - **User call 2: four long-name sites are named, not fixed.** Gloock takes each of them to
        more widths than Noto did:
@@ -846,8 +848,10 @@ A winner that is already loaded for another template needs its own instance chec
          sweep).
        - **Card 3** (layout 3): the form head breaks FEATHERSTONEHAUGH and SUPERCALIFRAGILISTIC
          inside the word at 768 too. Noto broke them at 360–414.
-       - **Card 3** (layout 3): the centred wordmark's clip is deeper, and now happens at 768 too
-         (100.5 / 88.1 past its box). JP-101 named this site, not fitted.
+       - **Card 3** (layout 3): the hero title (`HeaderV2`'s h1, which has no word fit) runs
+         its long word past the well's clip at 768 too, by 100.5 (FEATHERSTONEHAUGH at 70.59) and
+         88.1 (SUPERCALIFRAGILISTIC), where Noto's fitted. At 360–414 it runs 157–207 past, where
+         Noto's ran 84–134.
        - **Card 4** (layout 4): the bio's name breaks the long word at 390 and 414 too. Noto broke
          it at 360.
      - **Better than Noto:** on card 3 at 1440 and 768, the bio's ID-card name no longer breaks
