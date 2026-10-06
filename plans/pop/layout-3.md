@@ -1029,8 +1029,10 @@ From the renders and the planning walk — impressions to confirm, not measureme
     disced lime round a violet arrow (BookPill's disc rule), Lime's box, no block — 119.5 × 28.6
     on the canvas (145.32 × 0.82 = 119.2), 130 × 34.9 at 768 (129.32), 124.5 at 390 (123.32);
   - **the title** `s.ac` lime, one tone, lifted `top: -0.14em` (HeaderV1's Pop arm, the
-    pre-measure's verdict, re-scanned: unlifted, its ink starts 0.13 / 0.12 / 0.13em below its
-    box, where the frame's starts 0.02 above); the
+    pre-measure's verdict, which stands: a scan of the h1 against its own box cannot show a
+    relative lift, since the box moves with the glyphs. Read lifted as the gap from its ink
+    floor to the location's cap: **25.9 / 25.6 / 22.2** against the frame's 24.6 / 24.1 / 21.0,
+    the 1.2–1.5 over being the unlifted location's own drop, below); the
     JP-102 fit needed nothing (`s.cardNameEms` is Titan's under Pop);
   - **the location** `s.text3` white, uppercased (`grunge || ed || pop`). **Not lifted**: it
     scans 1.1–1.4px (0.07–0.09em) low at Display/List lh 1.2, the token layout 2 measured "~1px
@@ -1060,8 +1062,24 @@ From the renders and the planning walk — impressions to confirm, not measureme
   fixing the twins moves themes 1–3 — **named for a QA pass** (open question 10).
 - **The card's name lift, scanned** (the frame's `absoluteRenderBounds` against our ink, rows
   read white on black in place): Titan sat **2.2 / 2.0 / 3.1px** (0.10 / 0.09 / 0.16em) low at
-  its cap top and at its floor alike; `-0.1em` levels 1440 and 768 and leaves 390 1.2px low, and
-  restores the frame's ~12.8 gap from the name to the line (10.3 unlifted).
+  its cap top and at its floor alike (read unlifted, before the edit); `-0.1em` levels 1440 and
+  768 and leaves 390 1.2px low. Read lifted, the gap from its ink floor to the line's cap is
+  **13.0 / 13.1 / 11.7** against the frame's 12.8 / 13.7 / 13.6.
+- **The card's long names** (JP-062's probe set, `live=1`, three widths; px from the name's ink
+  to the card's outer edge, the 4px ring inside it — 3.28 on the canvas):
+
+  | | 1440 (canvas) | 768 | 390 (right edge) |
+  |---|---|---|---|
+  | Kai Mercer | 1 line, 20.2 | 1 line, 43 | 100.1 |
+  | The Rolling Stones | 2 lines, 16.6 | 2 lines, 39.5 | 2 lines, 93.8 |
+  | Florence and the Machine | 3 lines, 31.5 | 2 lines, 27.6 | 2 lines, 28.9 |
+  | Supercalifragilistic | 12.29px, 16.6 | 14.99px, 20.2 | 17.66px, 10.6 |
+  | Maximilian Featherstonehaugh | 12.69px, 2 lines, 17.3 | 15.47px, 2 lines, 21 | 18.22px, 2 lines, 12.4 |
+
+  A size is named where the widest-word fit shrank the name. Every render passes: no word breaks
+  inside itself (one `Range` rect a word), `card.scrollWidth === clientWidth`, the root at its
+  width. The h1 beside it keeps the ramp at desktop for all five and ends inside its column
+  everywhere (at 768 FEATHERSTONEHAUGH fits at 37.82, 29 short of the card; at 390 at 30.08).
 - **Measured against the masters** (harness, `theme=4&arch=2`): desktop section 738 (900 × 0.82),
   the well (16.4, 16.4) radius 24.6 ringed 6.56; capsule (42.6, 43.2) 176.4 × 27.4 against
   (42.6, 43.0) 179.6 × 27.9 (Titan, layout 2's same 176.4); the nav name centred at 590; pill right
