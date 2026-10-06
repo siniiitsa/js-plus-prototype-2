@@ -97,13 +97,13 @@ Lime**, so always pass the list explicitly.
 
 | Order | ID | Report (short) | Verdict | Size | Decision | Status |
 |---|---|---|---|---|---|---|
-| 1 | JP-104 · JP-106 · JP-103 (form) | 768 length stacked · no status pill, no ↗ · Enquiry → Testimonials 156 | **JP-104 a recorded call** (JP-044, kept by JP-066), which now buys nothing under Lime and Grunge; **JP-106's premise has changed** (gigs carry a `year` since JP-069), the ↗ a separate recorded drop; **JP-103 (form) unreconciled**: the triage measured it matching from like edges, but the tester's screenshot measures card foot to label on both sides, and the frame reading disagrees with that crop; re-read before asking | — (decisions) | **yes** — four questions | open |
+| 1 | JP-104 · JP-106 · JP-103 (form) | 768 length stacked · no status pill, no ↗ · Enquiry → Testimonials 156 | **JP-104 a recorded call** (JP-044, kept by JP-066), which now buys nothing under Lime and Grunge; **JP-106's premise has changed** (gigs carry a `year` since JP-069), the ↗ a separate recorded drop; **JP-103 (form) unreconciled**: the triage measured it matching from like edges, but the tester's screenshot measures card foot to label on both sides, and the frame reading disagrees with that crop; re-read before asking | — (decisions) | **user: JP-104 D; JP-106 A (seed 2031), no pill on the canvas, the ↗ a reply; JP-103 (form) A** (2026-10-06) | **done** (reproduced on HEAD; the form frame re-read: card foot → label 166, so A) |
 | 2 | JP-107 | Artist not flagged at layout 3 | **Confirmed, chrome**: no per-column reach exists; the songs hint names the length but not the missing artist | S | light — B (the hint) or A′ (a design-aware line) | open |
 | 3 | JP-102 | Long hero name clipped / under the card | **Confirmed, `s.limeTree`**: the h1 is the flat ramp; the column already ends at the card, the word just ignores it. Named, not fitted, in `display-face.md:851` | S | light — A (JP-092's shape) | open |
 | 4 | JP-105 | *12 mile radius* against 120mi rings | **Confirmed, a seed three frames disagree on**; parked for the designer on 2026-09-29, and this is the ticket that call waited for | S | **yes** — A (a per-layout seed), A + D (and `base` at layout 3) | open |
-| 5 | JP-104 (code) | — | entry 1's answer | S | entry 1's | open (or none on A) |
+| 5 | JP-104 (code) | 768 length stacked | **D**: one row, the title clamped to two lines, the length on the right | S | decided (entry 1) | open |
 | 6 | JP-103 (rest) | Repertoire → Gallery 97, Gallery → Pricing 100 | **Confirmed, `s.limeTree`**: both sides of the taupe band keep `padY` 80 at desktop where the frames pad 56 | S | no | open |
-| 7 | JP-106 (code) | — | entry 1's answer | M | entry 1's | open (or none on B) |
+| 7 | JP-106 (code) | no status pill | **A**: a derived pill, published tab only, the seed's year 2031 | M | decided (entry 1) | open |
 | 8 | — | End-of-pass sweep | — | S | — | open |
 
 **Why this order:**
@@ -227,6 +227,26 @@ files; C themes 1–2, 4 files; D themes 1–3, 6 files, the rows' inner geometr
 (JP-044), `../grunge/retest-qa-fixes.md:821` (JP-066), `display-face.md:616` and
 [`layout-3.md`](./layout-3.md) `:1339`; `notes/list-editors.md:34`.
 
+**Reproduced** (2026-10-06, HEAD `2358a6f`, :5175; puppeteer: Editorial → card 3 → Publish →
+Open, the popup at 1440, 768 and 390). At **768** all twelve rows are stacked, the length under
+the title. *Don't Stop Me Now* is cut, 194.7 of the 175 title box, and no other title is. At
+**1440 and 390** every row is one line and nothing is cut. (At 1440 a title's rect reads 1.22× its
+`clientWidth`: that is the tab's zoom, not a cut.) The canvas was not re-checked this session; the
+triage measured it identical. `const stack = tab` is still `EncoreSection.jsx:13594`.
+**Measured for D** (Editorial, 768, the published tab): the row is 174.7 × 62.5, and the title
+is Gloock 18.37px, uppercase, line-height 22.8, so two lines take 45.6 of the 62.5. The widest
+seeded single words are SUPERSTITION **131.5** and BRIGHTSIDE **112.6**, against ≈ 138.7 beside
+the length. Every seeded title therefore wraps between words. A typed single word wider than
+≈ 138.7 would still be cut, at its second line.
+
+**Decided** (user, 2026-10-06): **D. One row, and the title wraps to at most two lines.** The
+length is `flex: none` on the right, the frame's row. The title is clamped with CSS
+(`display: -webkit-box`, `WebkitLineClamp: 2`, the shape at `EncoreSection.jsx:8807`), never
+measured. Lime and Grunge get the frame's one-line row back. Editorial wraps its four long titles
+and shows *Don't Stop Me Now* whole. This reverses JP-044's stack (kept by JP-066). JP-044's
+standing rule, "no seeded title ends in an ellipsis at 768", holds, and is now met by wrapping
+rather than stacking. The code is entry 5.
+
 ### JP-106 — the gig rows have no Upcoming/Past pill and no ↗
 
 **Verdict: two things, with two answers.** The pill's recorded reason no longer holds. The ↗ was
@@ -299,9 +319,31 @@ chips) and [`layout-3.md`](./layout-3.md) `:1746`; the `GIGS` comment (`data.js:
 `GigsField` hint, if it names the year's use; CLAUDE.md's `s.live` list (the map's controls, if the
 pill counts as a read of `live`).
 
+**Reproduced** (2026-10-06, HEAD `2358a6f`, the published tab, Editorial card 3): `#map` holds
+no *Upcoming*, no *Past*, no ↗ and no *Tickets →* at 1440, 768 or 390 (no seeded gig has a link,
+JP-045). The section is 812.5 / 824.6 / 839.5 tall.
+
+**Decided** (user, 2026-10-06):
+- **Q1: A. A derived pill, with the seed's year moved to 2031.** `vm.gigs[].status` is
+  `'upcoming' | 'past' | ''`, derived in `sectionVm` beside `weekday` (`EncoreBuilder.jsx:1685`)
+  from `year` / `month` / `day` against `today`, through `Date.UTC`. It is drawn in the seat beside
+  *Tickets →* on every template's layout 3, in both bodies. A row with no year, or a date
+  `gigWeekday()` refuses, gets no pill. `GIGS` seeds `year: '2031'`, which has 2025's calendar,
+  so the discs keep the frame's SAT FRI SAT SAT SAT and every seeded row reads *Upcoming* until
+  2031. The frame's *Manchester · past* in the hour's seat is not taken: the hour stays.
+- **Q2: no pill on the canvas.** `today` stays honoured live only (the calendar's `dead` rule,
+  `:1378`), so the canvas is a picture with no date and `status` is `''` there. The canvas does
+  not move.
+- **The ↗: a reply.** It is a recorded drop with its own reason (the same address as *Tickets →*,
+  `notes/map.md`), not JP-047. The user did not ask for an ↗ on `directions`.
+
+The code is entry 7. The ↗ reply is under *Replies*.
+
 ### JP-103 (form) — Enquiry → Testimonials, 156 against 61
 
-**Verdict: unreconciled. Two readings disagree, so re-read before asking.**
+**Verdict: unreconciled. Two readings disagree, so re-read before asking.** *Reconciled in entry
+1 (below, **Re-read**): the frame's card ends 166 above the label, so the triage's reading stands
+and the answer is A.*
 
 **The tester's screenshot measures the same edge on both sides.** In both crops, the dashed card
 holding *No charge to enquire* has its foot about 44 screenshot px above *● Testimonials* in the
@@ -342,6 +384,39 @@ Grunge alike):
   centres it, so this would be a new call. Form `arch 2` × themes 1–3 × desktop × both surfaces:
   the card moves down about 58 under Editorial, about 15–20 under Lime and Grunge; root heights
   unchanged.
+
+**Re-read** (2026-10-06). The tester's crop is not on this machine, so it was not set beside the
+frame. What follows rests on the frame and on HEAD, not on the crop.
+- **The frame** (`use_figma`, `absoluteRenderBounds`, measured from the form instance's top):
+  `964:68747` is 589 tall. Its row frame `I964:68747;725:3244` pads 90 / 90 and is
+  `counterAxisAlignItems: CENTER`, so the frame itself centres the card on the head column. The
+  dashed card `I964:68747;725:3296` (stroke `#C86E52`, dash 10, 10, fill `#FFF9F2`) runs
+  **106–483**. *● Testimonials* (`I964:68748;753:2180`) inks at **649**, so:
+  - card foot → label ink is **166**. The triage's 162 was measured to the label's *box*, which is
+    the same reading;
+  - form foot → label is **60**;
+  - the left column's last line (the lede, inked to 494.2) → label is **154.8**.
+
+  A `get_screenshot` of `964:68747` shows that same card, ending a clear 106 above the form's
+  foot, so the triage did not read another node. The other frames: Editorial 768 (`984:16839`)
+  94 / 34, 390 (`984:16870`) 124 / 34, Lime 1440 150.3 / 60.3, Grunge 1440 150 / 60. In no frame
+  is the card foot 61 from the label.
+- **HEAD** (`2358a6f`, the published tab at 1440, Editorial card 3, screen px = frame px): form
+  foot → label **57.1** (frame 60); the left column's last line → label **149.5** (frame 154.8);
+  card foot → label **205.5** (frame 166). The 40 over the frame is the seeded `formHeading3()`
+  head, *Book Kai Mercer for / your event*, which is taller than the frame's *Book Kai for your
+  event*, so the frame's own centring floats the card higher. Any longer name does the same, by
+  the frame's rule.
+- **Inferred, not measured**: on the tester's 02.10 Noto build the head set one line fewer
+  (`display-face.md`: Gloock took the 1440 form head 3 → 4 lines, +86), so the head column was
+  about the frame's 409 tall and the centred card's foot sat about where the frame's does. Card
+  foot → label was then about 166 too. So 156 : 61 cannot be card foot → label on either side.
+  The plain reading is the triage's: the 61 is the frame's invisible form edge, and the 156 runs
+  from the left column's last line.
+
+**Decided** (user, 2026-10-06): **A. Reply, no code.** The reply is under *Replies*. B (align the
+card to the head's foot) would be a new call against the frame's `CENTER`, and would land the
+card foot ≈ 147 from the label, no closer to the frame's 166.
 
 ---
 
@@ -520,11 +595,50 @@ move (map `arch 0` and `1`, 0 files).
 
 ## Entry 5 — JP-104 (code)
 
-Entry 1's answer, written here when it is decided. On A, none; this entry closes with the reply.
-Expected after-diff, Verify and Docs as entry 1 lists them for the chosen option. **Verify**
-also: every seeded title at 744, 768 and 820 under themes 1–3 (on D, no title cut inside a word
-except one wider than its row, named), the 62.5 row pinned (no section height moves), and Pop's
-inheritance named.
+**Decided in entry 1: D** (user, 2026-10-06). One row at every width, and the title wraps to at
+most two lines.
+
+**Code.** In the `s.limeTree` repertoire block (`EncoreSection.jsx`, `const stack = tab` at
+`:13594`, the row at `:13618`–`13633` at triage; re-check):
+- the row goes back to the frame's one row at 768: `stack` is dropped, or held `false`, which
+  leaves the desktop and 390 branches as they are;
+- the length is `flex: none` on the right, and the title is `flex: 1 1 0; minWidth: 0`;
+- the title becomes `display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: 2,
+  overflow: 'hidden'` (the shape at `:8807`), in place of `nowrap` + ellipsis. It never breaks
+  inside a word: no `overflowWrap` is added.
+
+Clamp at desktop and 390 too, or only at 768? Every seeded title is one line at desktop and 390, so
+either way moves nothing on the seed. Clamping at every width is the simpler rule, and it lets a
+long typed title wrap rather than ellipsise there too. Decide in the session, and name the choice.
+The pinned 62.5 row holds two lines of 22.8 (Editorial), so check the row's alignment of a
+one-line title (centred, as now) against a two-line one.
+
+**Expected after-diff** (name it again before writing code): repertoire `arch 2` × themes 1–3 ×
+768 × canvas and `live=1` = **6 files**, the rows' inner geometry only, with no root height moved.
+Themes 0 and 4, desktop and 390: 0 files. If the clamp is taken at every width, desktop and 390
+still move 0 on the seed.
+
+**Verify.** Every seeded title at 744, 768 and 820 under themes 1–3, both surfaces:
+- no title is cut inside a word, and no text ends in an ellipsis. *Don't Stop Me Now* is whole
+  on two lines under Editorial;
+- the length is on the title's first line, on the right;
+- the 62.5 row is pinned, and no section height moves.
+
+Then `&cj=` with a single word wider than ≈ 138.7 (it is cut at its second line, as named) and a
+three-line title (clamped at two). The *View full set* reveal and the 390 carousel are unchanged
+(JP-075). In the real app, card 3 under Editorial, Lime and Grunge, the tester's steps at 768.
+Name Pop's inheritance: the `pop-layout-3` branch widens this block to `(s.limeTree || s.pop)`,
+so Pop's Titan titles get the clamp. Whichever lands second re-measures Pop's widest word against
+its row.
+
+**Docs.** The comment at `:13583`. *Reversed* pointers at `../lime/retest-qa-fixes.md:179`
+(JP-044), `../grunge/retest-qa-fixes.md:821` (JP-066), `display-face.md:616` and
+[`layout-3.md`](./layout-3.md) `:1339`. `notes/list-editors.md:34`: "at 768 it stands under the
+title, JP-044's stack" becomes the wrap.
+
+Reply (JP-104): **fixed.** At tablet width the song's length now stands on the same line as its
+title, on the right, as in the design. A long title wraps onto a second line instead of being cut,
+so *Don't Stop Me Now* now shows in full under Editorial.
 
 ---
 
@@ -572,14 +686,59 @@ desktop, `pageRows`).
 
 ## Entry 7 — JP-106 (code)
 
-Entry 1's answer, written here when it is decided. On B, none; this entry closes with the reply.
-On A: `vm.gigs[].status` in `sectionVm` (after `gigWeekday()`, through `Date.UTC`), the pill in
-both layout-3 bodies (the `s.limeTree` block after `litRow`, and Retro's and Pop's), the seed's
-year, and the `GigsField` hint. Read [`layout-3.md`](./layout-3.md) section 8's *Settled* and the
-twins' first: the pill's fill, ring and type are the frame's (`964:68746`, its featured row's pill
-filled, the others outlined), per template. **Verify** with a pinned `&today=` either side of a
-seeded date, a row with no year, a past row, and the 768 / 390 row heights against the frames'
-(858 and 123).
+**Decided in entry 1: Q1 A, Q2 no pill on the canvas** (user, 2026-10-06). The ↗ is a reply,
+already written under *Replies*.
+
+**Code** (line numbers re-checked at `2358a6f`):
+- **`sectionVm`**: `vm.gigs[].status` beside `weekday` (`EncoreBuilder.jsx:1685`). It is
+  `'upcoming' | 'past' | ''`. It is `''` unless `live` and `today` parse (the calendar's rule,
+  `:1378`), and `''` where `gigWeekday()` refuses the date. Otherwise the gig's
+  `Date.UTC(y, m, d)` is compared with today's, through `Date.UTC`. **Decide in the session, and
+  name it, whether a gig dated today is *Upcoming*.** It should be: the night has not happened.
+  The date parse wants a helper in `data.js` beside `gigWeekday()` (`data.js:2759`) that returns
+  the UTC stamp both can share, so the month and year rules are one rule.
+- **The pill**, in both layout-3 bodies, in the seat beside *Tickets →*: the `s.limeTree` block
+  (after `litRow`, `EncoreSection.jsx:21101`; its *Tickets →* at `:21326`), and Retro's and Pop's
+  body (*Tickets →* at `:21717`). It reads `vm.gigs[].status` and draws nothing on `''`. Its
+  words are literals (*Upcoming* / *Past*), cased per template. Whether they want fields is the
+  JP-071 / JP-090 question: no ticket asks for one, so they stay literals, and that is named.
+- **The seed**: `GIGS`' five `year: '2025'` (`data.js:1221`–`1225`) become `'2031'`, and the
+  comment at `:1217`–`1219` says why (2031 has 2025's calendar, so the frames' weekdays hold).
+- **`GigsField`**: its hint names the year's second use (the published tab's Upcoming / Past).
+  `NO_WEEKDAY_HINT` (`EncoreBuilder.jsx:3023`) covers a refused date for the pill too, if it is
+  reworded to say so.
+
+**Read first**: [`layout-3.md`](./layout-3.md) section 8's *Settled* and the twins'. The pill's
+fill, ring and type are the frame's (`964:68746`: its featured row's pill filled, the others
+outlined), per template, at all three widths. Retro's frame is `964:68649`.
+
+**Expected after-diff** (name it again before writing code):
+- map `arch 2` × themes 0–4 × three widths × **`live=1` with a pinned `&today=`** = about 15
+  files, the rows' geometry at 768 and 390 where the pill brings back the frame's venue wrap and
+  its 390 second line;
+- the canvas: **0 files** (Q2);
+- `live=1` without `&today=`: 0 files, since `status` is `''` with no date;
+- the seed's year: 0 files, because the weekday is unchanged and the year prints nowhere.
+
+**Verify.** A pinned `&today=` before every seeded date (five *Upcoming*), between two (mixed),
+after all of them (five *Past*), and on a gig's own day. Then `&cj=` with a row with no year, a
+refused date (31 Jun), a two-digit year, and a past row. The 768 and 390 row heights against the
+frames' (section 858 at 768; the 390 row 123). The city chips, the pager, the lit row and *See all
+gigs* still work. In the real app, card 3 under Editorial, Lime, Grunge and Retro, published: every
+seeded row reads *Upcoming*, and the canvas draws no pill.
+
+**Docs.**
+- `notes/map.md:44`–`45`: the status is drawn now, on the published page only.
+- `notes/map.md:55`–`57`: the ↗ stays dropped.
+- *Reversed* pointers at `../lime/retest-qa-fixes.md:568` (JP-047's premise, not its chips: the
+  chips stay cities) and [`layout-3.md`](./layout-3.md) `:1746` (the rows' one-line call).
+- The `GIGS` comment, and CLAUDE.md's `s.live` list: the map's pill is a read of `live`, so it
+  joins the map's entry, and the count of things that read `live` is re-checked.
+
+Reply (JP-106, the pill): **fixed.** On the published page each gig row in layout 3 now carries
+an *Upcoming* or *Past* pill, worked out from the gig's date against today. The editor's preview
+shows none, since it has no "today" (the booking calendar's rule). The sample gigs are dated so
+they read *Upcoming*. A gig with no year, or with a date that does not exist, gets no pill.
 
 ---
 
@@ -595,6 +754,20 @@ is still open).
 ## Replies
 
 Written as each entry settles.
+
+- **JP-106 (the ↗) — by design** (entry 1, user, 2026-10-06). Layout 3 leaves out the design's
+  second ↗ beside the venue on purpose. It would point to the same ticket address that *Tickets →*
+  already links, so the row would carry one link twice. This is a separate call from JP-047's city
+  filters. A gig with a ticket link shows *Tickets →*; the sample gigs have none, so neither
+  appears out of the box. The Upcoming / Past pill is fixed under entry 7.
+- **JP-103 (Enquiry → Testimonials) — matches the design** (entry 1, user, 2026-10-06). The two
+  figures were taken from different edges. The design's 61 runs from the form block's own bottom
+  edge, which is invisible, to *● Testimonials*: ours is 57. The 156 runs from the left column's
+  last line to the label: the design's is 155, ours 150. From the dashed card's foot it is 166 in
+  the design and 206 on the page. That is because the default heading, *Book Kai Mercer for your
+  event*, runs one line longer than the design's *Book Kai for your event*. The design centres the
+  card on the heading column, so a longer name lifts the card. The other two gaps in this ticket
+  (Repertoire → Gallery, Gallery → Pricing) are real and are fixed under entry 6.
 
 ## Notes for the designer
 
