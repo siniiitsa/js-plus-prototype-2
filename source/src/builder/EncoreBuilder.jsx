@@ -727,12 +727,13 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // apart, so 23/16 of the row's size, in Titan One (`titanEms`, the face
   // standing in for Chunko Bold Demo) at 0.98 of the token (`faced`), the way
   // Grunge's Anton is at 0.75. Its layout-2 capsule (964:64561) is Grunge's,
-  // a fixed 18 at 16px type and at 13, so there the sum is the labels alone.
-  // Its cards 3 and 4 are placeholders whose only capsule is NavBar's, which
-  // spaces them the layout-1 way.
+  // a fixed 18 at 16px type and at 13, so there the sum is the labels alone,
+  // and so is its layout-3 one (964:68751), at the same sizes. Its card 4 is
+  // a placeholder whose only capsule is NavBar's, which spaces it the
+  // layout-1 way.
   const navFace = T.name === 'Lime' ? bebasEms : T.name === 'Grunge' ? (x) => antonEms(x, 0) * 0.75
     : T.name === 'Editorial' ? (x) => gloockEms(x) * 0.967 : T.name === 'Pop' ? (x) => titanEms(x) * 0.98 : null
-  const navGapEm = T.name === 'Editorial' ? (d >= 1 ? 0 : 23 / 16) : T.name === 'Pop' ? (d === 1 ? 0 : 23 / 16)
+  const navGapEm = T.name === 'Editorial' ? (d >= 1 ? 0 : 23 / 16) : T.name === 'Pop' ? (d === 1 || d === 2 ? 0 : 23 / 16)
     : T.name === 'Grunge' && d >= 1 ? 0 : 23 / 24
   vm.navEms = navFace
     ? Math.max(1, +((vm.navLinks.reduce((w, l) => w + navFace(l.label), 0)
@@ -760,7 +761,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // layout-2, -3 and -4 titles under Lime, Grunge and Editorial, at every
   // width: HeaderV1's `s.limeTree` block (JP-092), HeaderV2's h1 beside that
   // card (JP-102) and HeaderV3's (JP-109, Editorial's alone before it), each
-  // fitted to its own column, HeaderV3's at 768 to the room beside the seal.
+  // fitted to its own column, HeaderV3's at 768 to the room beside the seal —
+  // and under Pop, whose layouts 2 and 3 widen the first two blocks, in Titan.
   vm.cardNameEms = navFace ? +Math.max(0, ...vm.brand.split(/\s+/).map(navFace)).toFixed(3) : undefined
   vm.navCtaEms = navFace ? +(navFace(vm.cta1) + navFace(vm.cta2)).toFixed(3) : undefined
   // The layout-1 capsule's name gives way before its links do (JP-091, user
@@ -810,14 +812,16 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // where Grunge's layout-3 links are Label/MD. Pop's layout 2 (986:17563) is
   // Grunge's layout-2 bar box for box again — the same 138.32, fixed 18 gaps,
   // links at Label/SM 13, name at Label/LG 16 — in Titan (`navFace`), but its
-  // nav is inset 26 a side, so the bar is 656; its layout 3 is a placeholder.
+  // nav is inset 26 a side, so the bar is 656. Its layout 3 (984:15356) is
+  // Editorial's layout-3 bar box for box — the same 138.32 against the same
+  // 684, fixed 18 gaps, links at Label/SM 13 and the name at Label/LG 16.
   if (cat === 'header' && Z.dev === 'tablet' && vm.navLinks.length && (d === 1 || d === 2)) {
     const px = (v) => parseFloat(v)
     const row = d === 1 ? (T.name === 'Pop' ? 656 : 708) : 684
     if (T.name === 'Lime') {
       vm.navFits = vm.navEms * px(vm.labelSm) + vm.navNameEms * px(vm.labelLg)
         + vm.navCtaEms * px(vm.labelSm) + 138.32 <= row
-    } else if (T.name === 'Grunge' || T.name === 'Editorial' || (T.name === 'Pop' && d === 1)) {
+    } else if (T.name === 'Grunge' || T.name === 'Editorial' || T.name === 'Pop') {
       vm.navFits = vm.navEms * px(T.name === 'Grunge' && d === 2 ? vm.labelMd : vm.labelSm) + (vm.navLinks.length - 1) * 18
         + vm.navNameEms * px(vm.labelLg) + vm.navCtaEms * px(vm.labelSm) + 138.32 <= row
     } else if (T.name === 'Retro') {

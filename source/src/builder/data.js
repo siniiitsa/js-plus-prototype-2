@@ -1769,9 +1769,9 @@ export const FIELDS = {
   // different header families (six designs against four, four, four and four —
   // Grunge's row and Editorial's are each measured over four fitted cards, none
   // a placeholder since each template's layout-4 pass). Pop's was measured in
-  // its layout-1 sweep and re-measured in its layout-2 header session, over two
-  // fitted cards and two placeholders on Retro's paths, so its layout-3 and
-  // layout-4 passes each re-measure their own card.
+  // its layout-1 sweep and re-measured in its layout-2 and layout-3 header
+  // sessions, the last over three fitted cards and one placeholder on Retro's
+  // path, so its layout-4 pass re-measures its own card.
   header: [
     { k: 'image',     l: 'Background photo', type: 'image',
       hint: 'Fills the header behind the type.' },
@@ -1787,24 +1787,23 @@ export const FIELDS = {
     // Grunge's, Editorial's and Pop's calendar layout 1, a block of its own with no
     // polaroid stamp — and map layout 2's travel card (JP-096).
     // Change a reader, change the hint.
-    // Lime's, Grunge's and Editorial's layout 3 prints `cardLine` in Retro's
-    // kicker seat (JP-061), so their row is [0, 3] (reach.mjs, 2026-09-28).
-    // Pop's is [0, 2, 3] while its card 3 is Retro's placeholder, which prints
-    // the kicker there (reach.mjs, 2026-10-03).
+    // Lime's, Grunge's, Editorial's and Pop's layout 3 prints `cardLine` in
+    // Retro's kicker seat (JP-061), so their row is [0, 3] (reach.mjs,
+    // 2026-09-28; Pop's over its fitted card 3, 2026-10-06).
     // The panel then says "Not shown in this layout" there while the bio prints
     // the kicker, which the hint answers, as at layout 2.
     { k: 'kicker',    l: 'Kicker',           d: 'DJ · Live Act',
-      in: { Retro: [0, 2, 3, 5], Lime: [0, 3], Grunge: [0, 3], Editorial: [0, 3], Pop: [0, 2, 3] },
+      in: { Retro: [0, 2, 3, 5], Lime: [0, 3], Grunge: [0, 3], Editorial: [0, 3], Pop: [0, 3] },
       hint: 'Your role. Every bio layout prints it too, and so do the enquiry form’s layouts 1 and 2.' },
     // The layout-3 portrait card's line under the name (JP-061): the card's
     // own copy, so the kicker is not seeded apart there and the bio's Current
-    // role always prints what the Kicker field shows. Lime's, Grunge's and
-    // Editorial's card reads it; Retro's polaroid prints the kicker in that
-    // seat. `'*': []` marks every other template, Pop included, as
-    // FIELDS.media.cta does, because only those three read it. Emptied, the
-    // card is the name alone.
+    // role always prints what the Kicker field shows. Lime's, Grunge's,
+    // Editorial's and Pop's card reads it; Retro's polaroid prints the kicker
+    // in that seat. `'*': []` marks Retro, as FIELDS.media.cta does, because
+    // only the `HeaderV2` block those four share reads it. Emptied, the card
+    // is the name alone.
     { k: 'cardLine',  l: 'Portrait card line', d: CARD_LINE_3,
-      in: { Lime: [2], Grunge: [2], Editorial: [2], '*': [] },
+      in: { Lime: [2], Grunge: [2], Editorial: [2], Pop: [2], '*': [] },
       hint: 'The line under your name on the portrait card. The bio’s Performing since is a separate '
           + 'field, so change both if you name a year here. Left empty, it is not drawn.' },
     { k: 'title',     l: 'Title' },                       // the artist's name, page-wide and required (NameInput) — special-cased
