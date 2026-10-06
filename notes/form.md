@@ -102,8 +102,9 @@ another `notes/` file.
   `navNameEms` and the header card's `vm.cardNameEms`, JP-062) rather than breaking inside it —
   Grunge's Anton at 0.75 set the old seed's UNFORGETTABLE.
   at 484 against the 501 column, so the key was measured and left out for Grunge here.
-  Editorial's arm is keyed by design: Noto's 540 ems (`notoEms`) for this Regular head at
-  design 2, and Noto Bold's (`notoBoldEms`) for its layout-1 statement (below). Pop's is
+  Editorial's arm is Gloock's (`gloockEms` × `faceK`, `navFace`'s table), one table for this
+  head at design 2 and its layout-1 statement (below), both set at Gloock's one weight, 400
+  (`plans/editorial/display-face.md` step 3; Noto's 540 and Bold tables are gone). Pop's is
   Titan's (`titanEms` × `faceK`, `navFace`'s table), read by its layout-1 statement alone, which
   fits the frame's fixed 313.43 box rather than its column. The old seed
   set at 100 under Lime and 70 under Editorial; the name-derived one fits at the ramp's 107 and
