@@ -98,7 +98,7 @@ Lime**, so always pass the list explicitly.
 | Order | ID | Report (short) | Verdict | Size | Decision | Status |
 |---|---|---|---|---|---|---|
 | 1 | JP-104 · JP-106 · JP-103 (form) | 768 length stacked · no status pill, no ↗ · Enquiry → Testimonials 156 | **JP-104 a recorded call** (JP-044, kept by JP-066), which now buys nothing under Lime and Grunge; **JP-106's premise has changed** (gigs carry a `year` since JP-069), the ↗ a separate recorded drop; **JP-103 (form) unreconciled**: the triage measured it matching from like edges, but the tester's screenshot measures card foot to label on both sides, and the frame reading disagrees with that crop; re-read before asking | — (decisions) | **user: JP-104 D; JP-106 A (seed 2031), no pill on the canvas, the ↗ a reply; JP-103 (form) A** (2026-10-06) | **done** (reproduced on HEAD; the form frame re-read: card foot → label 166, so A) |
-| 2 | JP-107 | Artist not flagged at layout 3 | **Confirmed, chrome**: no per-column reach exists; the songs hint names the length but not the missing artist | S | light — B (the hint) or A′ (a design-aware line) | open |
+| 2 | JP-107 | Artist not flagged at layout 3 | **Confirmed, chrome**: no per-column reach exists; the songs hint names the length but not the missing artist | S | **user: B** (the hint and its mirror; 2026-10-06) | **done** (reproduced; 0 digest files; verified on cards 1–4 under all five templates) |
 | 3 | JP-102 | Long hero name clipped / under the card | **Confirmed, `s.limeTree`**: the h1 is the flat ramp; the column already ends at the card, the word just ignores it. Named, not fitted, in `display-face.md:851` | S | light — A (JP-092's shape) | open |
 | 4 | JP-105 | *12 mile radius* against 120mi rings | **Confirmed, a seed three frames disagree on**; parked for the designer on 2026-09-29, and this is the ticket that call waited for | S | **yes** — A (a per-layout seed), A + D (and `base` at layout 3) | open |
 | 5 | JP-104 (code) | 768 length stacked | **D**: one row, the title clamped to two lines, the length on the right | S | decided (entry 1) | open |
@@ -457,6 +457,39 @@ the hint (or line) reads right at each layout; nothing else in the panel moves.
 **Docs.** `notes/list-editors.md` (the songs field's column reach); on A′, CLAUDE.md's `FIELDS`
 paragraph if it states that reach is per field alone.
 
+**Reproduced** (2026-10-06, HEAD `1611a4b`, :5173, puppeteer: Editorial → card 3 → the
+repertoire's panel → Publish → Open). On card 3 (*Repertoire layout 3*) the Songs block holds 12
+Artist boxes and 12 Length boxes. It has no *Not shown in this layout* line, and its hint ends "…and
+shows each song’s length." The published tab prints **0 artists and 12 lengths** at 1440, 768 and
+390. On card 1 the tab prints 12 artists at 1440, 6 at 768 and 390 (paged), and 0 lengths. (A text
+probe for the seeded artists also matches the title *Dancing Queen* on "Queen", so it is excluded.)
+Every evidence line number still held at `1611a4b`.
+
+**Decided** (user, 2026-10-06): **B. One clause in the songs hint, and its mirror.**
+
+**Settled** (2026-10-06).
+- **Code**: `FIELDS.repertoire`'s `songs` hint (`data.js:2031`–`2034`) now ends "Layout 3 groups the
+  songs into one set per tag and shows each song’s length in place of its artist; the other
+  layouts show the artist and not the length." A two-line comment above the field says why the
+  hint carries it: `in` is per field, and every layout reads the songs. `SongsField` and its call
+  site are untouched, and no column reach was added.
+- **After-diff: 0 digest files, by construction.** `f.hint` is read in `EditPanel` alone
+  (`EncoreBuilder.jsx:4232`), never by `sectionVm` or `EncoreSection`, so no digest was run.
+- **Verified** in the real app (:5173) over Retro, Lime, Grunge, Editorial and Pop, cards 1–4, the
+  panel and the published tab at 1440, 768 and 390. In all 20 runs the panel carries the new hint
+  alone (no reach line, 12 Artist and 12 Length boxes, the "12 of 60" footnote). Its text grows by
+  exactly the clause's 77 characters (Editorial 435 → 512 on card 3, 461 → 538 on card 1), and its
+  height by one hint line. The published counts bear the hint out under every template: layout 3
+  prints 0 artists and 12 lengths; layout 1 prints 12 artists at 1440 and 6 at 768 and 390; layout 2
+  prints 10 and layout 4 prints 12; layouts 1, 2 and 4 print 0 lengths.
+- **Docs**: `notes/list-editors.md`'s songs sentence names the hint as the songs' column reach.
+  CLAUDE.md is unchanged (B adds no mechanism).
+
+Reply (JP-107): **fixed.** The Songs field's help line in the Repertoire panel now says that
+layout 3 shows each song's length in place of its artist, and that the other layouts show the
+artist and not the length. The Artist boxes stay editable, so the artists come back if you switch
+layouts.
+
 ---
 
 ## Entry 3 — JP-102: a long hero name is clipped, or hidden under the card
@@ -760,6 +793,9 @@ Written as each entry settles.
   already links, so the row would carry one link twice. This is a separate call from JP-047's city
   filters. A gig with a ticket link shows *Tickets →*; the sample gigs have none, so neither
   appears out of the box. The Upcoming / Past pill is fixed under entry 7.
+- **JP-107 (the songs' Artist at layout 3) — fixed** (entry 2). The Songs help line in the
+  Repertoire panel now says that layout 3 shows each song's length in place of its artist, and
+  that the other layouts show the artist and not the length.
 - **JP-103 (Enquiry → Testimonials) — matches the design** (entry 1, user, 2026-10-06). The two
   figures were taken from different edges. The design's 61 runs from the form block's own bottom
   edge, which is invisible, to *● Testimonials*: ours is 57. The 156 runs from the left column's

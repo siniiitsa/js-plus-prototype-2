@@ -2026,9 +2026,12 @@ export const FIELDS = {
     // "Repertoire" (JP-081) instead, which count nothing. An emptied heading
     // stays empty at every layout.
     { k: 'heading', l: 'Heading' },
+    // `in` is per field, and every layout reads the songs, so the hint says
+    // which column each layout leaves out (JP-107): the reviews' date shape.
     { k: 'songs',   l: 'Songs', type: 'songs', max: 60,
       hint: 'Tags become the filter chips above the list — separate them with commas. Layout 4 draws no chips: it indexes the whole list A–Z instead. '
-          + 'Layout 3 groups the songs into one set per tag and shows each song’s length.' },
+          + 'Layout 3 groups the songs into one set per tag and shows each song’s length in place of its artist; '
+          + 'the other layouts show the artist and not the length.' },
     { k: 'sets',    l: 'Sets', type: 'sets', in: [2],
       hint: 'One per tag on your songs. The mood and length show under the set’s name in layout 3; with both empty, it shows the song count.' },
   ],
