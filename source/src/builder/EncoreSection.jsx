@@ -3927,12 +3927,17 @@ function HeaderV3({ s }) {
             their own sizes. `inline` at narrow only, Retro's reading. The .75
             leading is the frame's own at all three widths (read off the text
             nodes), not Retro's alone.
-            Editorial's Noto Serif Display sets ~83px a capital at 147, where
-            Bebas at 164 sets ~65, so a ten-letter word (MONTGOMERY, 889)
-            outran the 806 column into the chips and ran off the 390 page.
-            So under Editorial the name shrinks only when its widest word
-            would not fit the block (`s.cardNameEms`, HeaderV2's JP-062
-            rule), capped at the ramp; the seeded name keeps its 147. */}
+            Editorial's Gloock sets ~108px a capital at 142.15 (the faced
+            147), where Bebas at 164 sets ~65, so a ten-letter word
+            (MONTGOMERY, 1084; Noto's was 889) outruns the 806 column into
+            the chips and runs off the 390 page. So under Editorial the name
+            shrinks only when its widest word would not fit the block
+            (`s.cardNameEms`, HeaderV2's JP-062 rule), capped at the ramp;
+            the seeded name keeps its faced 147. At 390 the seed's whole
+            line, KAI MERCER, needs 378.8 of the 350 column, so it breaks
+            between words where the master sets one line (302 in 350) and
+            Noto's held one (324.4): accepted (display-face.md step 4,
+            layout 4). The root's height is fixed, so nothing moves. */}
         <Title s={s} size={ed ? `min(${s.dispXl}, calc(100cqi / ${s.cardNameEms}))` : s.dispXl} lh={0.75} color={s.tx}
                inline={s.narrow || grunge} twoTone={grunge} toneA={s.tx} toneB={s.bg} />
         <span style={row(u(8), { minWidth: 0 })}>
@@ -5922,8 +5927,11 @@ function Bio({ s }) {
     // in its own seat's ink (the frame's fourth chip borrows Scheme 4's).
     const tagSeats = ed ? s.onScheme[1].chips : null
     // Editorial's head is fitted to its widest word (`s.titleWordEms`, in
-    // Noto's ems) inside the 572.9 measure — the header name's rule — where the
-    // twins' `break-word` split a long word the wide Noto capitals outran.
+    // Gloock's ems) inside the 572.9 measure — the header name's rule — where
+    // the twins' `break-word` split a long word the wide capitals outran. The
+    // seed does not bind, but it sets three lines at 1440 and 768 where the
+    // frames set two: READS THE is 521 of the 469.8 measure and 574.7 of
+    // 572.9 (Noto's held two). Accepted (display-face.md step 4, layout 4).
     const headSize = ed && desk ? s.dispLg : s.dispXl
     const headMeasure = s.mob ? '100cqi' : `min(100cqi, ${u(572.9)})`
     const head = (
@@ -6139,7 +6147,7 @@ function Bio({ s }) {
             every display face taller than Fraunces (Titan One and Bebas Neue
             both overlap outright), so every template but Retro degrades to
             .89 — Pop alone now, since the Lime block above takes its
-            frames' own leading (Bebas Neue, and Anton under Grunge and Noto
+            frames' own leading (Bebas Neue, and Anton under Grunge and Gloock
             under Editorial, which widen it) — which is the leading every other
             display head in this file already sets — the page's own ramp
             rather than an invented number. */}
@@ -8761,8 +8769,13 @@ function Media({ s }) {
   // 768 band pads 100 / 100 with a 10 gap and the instance keeps its 56, so
   // the foot is 156 and head-to-player 66. Its head frame pads 30, so the
   // head stands 26 out from the player on both sides, a 708 measure: the
-  // seeded head needs it to hold one line in Noto (at the player's 682 it
-  // wrapped, 65 taller than the master's 844). The 390 band pads
+  // seeded head needed it to hold one line in Noto (at the player's 682 it
+  // wrapped, 65 taller than the master's 844). In Gloock it wraps in the 708
+  // too (FIVE WORTH YOUR EAR. is 822; the frame's own SIX WORTH YOUR EARS
+  // would be 802), and at 1440, by 4 (1092 in the 1088 head), so the band is
+  // 65 / 86 taller than the masters: accepted (display-face.md step 4, layout
+  // 4). The 1440 sleeve's LATE LIGHTS takes its second line too, which
+  // `clamp2` allows. The 390 band pads
   // 40 / 40, so it is 40 over the head and 50 under the player. The 1440
   // boxes are Lime's.
   if (s.v3 && s.limeTree) {
@@ -11558,16 +11571,20 @@ function Pricing({ s }) {
     //     paper — dropped (under Scheme 1 `s.stroke1` is opaque ink, a line
     //     the frame does not draw);
     //   · the price column hugs at **218**: Fisterra's wider "Star Enquiry";
-    //   · the numeral is lifted (below), and every display string is upper.
+    //   · the name and the numeral are Fisterra's Display/SM, so they are
+    //     `faced` / `facedLh` as Grunge's are (display-face.md step 4, layout
+    //     4: raw, Gloock's 3.4% taller cap set THE HOUSE PARTY and THE
+    //     WEDDING SET on two lines in the 1440 name's 335.4, where faced they
+    //     are 326.3 and 333.7 on one); the numeral is lifted (below), and
+    //     every display string is upper.
     // The pill is the twins' turned-round pair, and under Scheme 1 it is the
     // frame's: ink, lettered and disced paper round a terracotta arrow.
     if (s.limeTree) {
       const grunge = s.grunge
       const ed = s.editorial
       const featSeats = ed ? s.onScheme[1].chips : grunge ? s.chips : [{ bg: s.box1, fg: s.ac }, { bg: s.ac, fg: s.activeFg }]
-      const disp = grunge
+      const disp = grunge || ed
         ? { fontSize: faced(s, s.dispSm), lineHeight: facedLh(s, 1), textTransform: 'uppercase' }
-        : ed ? { fontSize: s.dispSm, lineHeight: 1, textTransform: 'uppercase' }
         : { fontSize: s.dispSm, lineHeight: 1 }
       const chip = {
         fontFamily: s.body, fontWeight: 700, fontSize: s.chip, lineHeight: 1,
@@ -11642,13 +11659,15 @@ function Pricing({ s }) {
                 }}>from</span>
                 {/* The frame's row is bottom-aligned (`MAX`), not on a
                     baseline, and Inter's "from" sits level with the frame's;
-                    Noto's numeral floor sits 0.061–0.084em under Fisterra's
-                    0.18 (off the font's metrics against
-                    `absoluteRenderBounds`), so the numeral alone is lifted. */}
+                    Gloock's faced numeral floor stands 0.122 / 0.125 / 0.153em
+                    up its box against Fisterra's 0.180 / 0.175 / 0.180
+                    (`absoluteRenderBounds`), so the numeral alone is lifted
+                    0.045em, to 0.166 / 0.169 / 0.197, each under 0.6px off
+                    (display-face.md step 4, layout 4; Noto took 0.07). */}
                 <span style={distressed(s, {
                   fontFamily: s.display, ...disp,
                   letterSpacing: s.dls, overflowWrap: 'break-word', minWidth: 0,
-                  ...(ed ? { position: 'relative', top: '-0.07em' } : {}),
+                  ...(ed ? { position: 'relative', top: '-0.045em' } : {}),
                 })}>{t.price}</span>
               </span>
             )}
@@ -14037,21 +14056,30 @@ function Repertoire({ s }) {
                     letterSpacing: s.dls, color: ink, minWidth: 0,
                     overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                     ...upper,
-                    // Noto's J descends 0.24em, and the ellipsis clip flattens
-                    // its hook: the pad moves the clip and no box.
-                    ...(ed ? { paddingBottom: '0.1em', marginBottom: '-0.1em' } : null),
+                    // Gloock's J descends 0.187em and ends 0.040 / −0.002 /
+                    // 0.005em inside this line box at 1440 / 768 / 390, so the
+                    // ellipsis clip would shave its hook at 768: the pad moves
+                    // the clip 0.02em and no box (the layout-2 map's venue
+                    // reach; Noto's 0.24em J took 0.1em, display-face.md step 4).
+                    // Gloock's titles ellipsize sooner at 390: DON'T STOP ME NOW,
+                    // SEPTEMBER and SUPERSTITION lose a few px beside their
+                    // artists, where the frame fits them (accepted, layout 4).
+                    ...(ed ? { paddingBottom: '0.02em', marginBottom: '-0.02em' } : null),
                   })}>{sg.title}</span>
                   {sg.artist && (
                     <span style={{
                       fontFamily: s.display, fontSize: faced(s, s.list), lineHeight: facedLh(s, 1.2),
                       letterSpacing: s.dls, color: ink2, flex: 'none', whiteSpace: 'nowrap',
                       ...upper,
-                      // Noto's capitals are wider than the twins' faces: a
+                      // Editorial's capitals are wider than the twins' faces
+                      // (Noto's were, and Gloock's are wider still): a
                       // 29-letter artist left the 390 title 18 wide where
                       // Lime's and Grunge's keep 111–123, so Editorial's artist
                       // stops at 60% of the row (the seed's widest, EARTH, WIND
-                      // & FIRE at 390, is 51%) and ellipsizes past it.
-                      ...(ed ? { maxWidth: '60%', overflow: 'hidden', textOverflow: 'ellipsis', paddingBottom: '0.1em', marginBottom: '-0.1em' } : null),
+                      // & FIRE at 390, is 56% in Gloock) and ellipsizes past it.
+                      // In its 1.2 box Gloock's J ends 0.069em or more inside
+                      // the clip, so it takes no pad (Noto's 0.24em J took 0.1em).
+                      ...(ed ? { maxWidth: '60%', overflow: 'hidden', textOverflow: 'ellipsis' } : null),
                     }}>· {sg.artist}</span>
                   )}
                 </div>
@@ -14078,8 +14106,8 @@ function Repertoire({ s }) {
             ...(ed ? { containerType: 'inline-size' } : null),
           })}>
             {/* Editorial's head shrinks only when its widest word would outrun
-                the panel: Noto's capitals are wider than the frame's face, and
-                a 13-letter word ran 31 past the 390 column. */}
+                the panel: Gloock's capitals are wider than the frame's face (in
+                Noto, a 13-letter word ran 31 past the 390 column). */}
             <h2 style={distressed(s, {
               margin: 0, fontFamily: s.display,
               fontSize: faced(s, ed && s.titleWordEms ? `min(${s.dispLg}, calc(100cqi / ${s.titleWordEms}))` : s.dispLg),
@@ -16001,7 +16029,7 @@ function Gallery({ s }) {
     // the Scheme 3 seat, so `s.*` is the ink band's: the sheet is `s.bg`, not
     // Lime's `s.ac` (a Lime block paints its ground from Scheme 1 keys), the
     // MEDIA eyebrow `s.tx` paper and the head `s.ac` terracotta, uppercase,
-    // fitted to its widest word (`s.titleWordEms`, Noto's ems) in its column.
+    // fitted to its widest word (`s.titleWordEms`, Gloock's ems) in its column.
     // Every box is Lime's but three: the 768 wrapper pads **0** over its head
     // frame (Lime's 100), so the sheet pads 30 there; the 390 pads Grunge's
     // 60; and the 390 print is **329.79** tall. What changes is the card:
@@ -16195,7 +16223,7 @@ function Gallery({ s }) {
                 letterSpacing: s.dls, textTransform: 'uppercase', color: G.eyebrow,
               }}>Media</span>
               {/* Editorial's head shrinks only when its widest word would
-                  outrun the column (Noto's capitals are wider than the
+                  outrun the column (Gloock's capitals are wider than the
                   frame's face); the twins' never meets a long enough word. */}
               <h2 style={distressed(s, {
                 margin: 0, fontFamily: s.display,
@@ -18610,9 +18638,11 @@ function Calendar({ s }) {
     // defaults. Next Step is Scheme 1 and Lime's keys already. A refused box
     // changes colour, weight and dash at once: the idle box is dashed in full
     // ink, so the refusal is 2px of solid terracotta (`s.stroke2`), the dash
-    // gone. Noto sits its Display/Title glyphs 0.09em below the frame's
-    // Fisterra over a stacked line (0.083 / 0.078 / 0.107, off the font's
-    // metrics against `absoluteRenderBounds`), so the stacked display sites lift.
+    // gone. Gloock's Display/Title ink floor stands 0.208 / 0.166 / 0.173em up
+    // its 1.1 box against Fisterra's 0.238 / 0.228 / 0.248
+    // (`absoluteRenderBounds`) over a stacked line, so the stacked display
+    // sites lift 0.055em, to 0.261 / 0.219 / 0.226, each under 0.65px off
+    // (display-face.md step 4, layout 4; Noto took 0.09).
     if (s.limeTree) {
       const grunge = s.grunge
       const ed = s.editorial
@@ -18623,7 +18653,7 @@ function Calendar({ s }) {
       const padSide = u(grunge || ed ? 24 : 34)
       // A dashed ring on a `position: relative` box, × 0.82 on the canvas.
       const dashed = (dash, colour) => <DashRule side="all" dash={dash * z} colour={colour} />
-      const lift = ed ? { position: 'relative', top: '-0.09em' } : null
+      const lift = ed ? { position: 'relative', top: '-0.055em' } : null
       const body = (size, lh, extra) => ({
         fontFamily: s.body, fontSize: size, lineHeight: lh, letterSpacing: s.dls, ...extra,
       })
@@ -18814,9 +18844,11 @@ function Calendar({ s }) {
       // The row is SPACE_BETWEEN in every master, where Figma ignores the 12
       // `itemSpacing`: the 390 frame stands Back 121 and Next Step 161 in its
       // 290, 8 apart. So under Editorial the column gap is 0, which is what
-      // lets Noto's pills (121.8 / 160.4) hold one line there, and the row
-      // wraps only for what Noto cannot fit — step 3's Send Enquiry, 191.5 —
-      // the forward pill keeping the right edge on its own line.
+      // let Noto's pills (121.8 / 160.4) hold one line there. Gloock's are
+      // 129 / 174.4, 303.4 of the 290, so at 390 the row wraps at step 1 too
+      // (66 taller), as it already did for step 3's Send Enquiry: the forward
+      // pill keeps the right edge on its own line (display-face.md step 4,
+      // layout 4, accepted; the frame fits 121 / 161 in its 290).
       const buttons = (
         <div style={row(u(12), {
           justifyContent: 'space-between', alignItems: 'flex-start', width: '100%',
@@ -18883,7 +18915,7 @@ function Calendar({ s }) {
         <div style={col(u(s.mob ? 20 : 50), {
           background: grunge ? s.box3 : s.box2,
           borderRadius: u(ed ? 0 : grunge && desk ? 15 : s.mob ? 30 : 60), padding: panelPad,
-          // The head is fitted to its widest word in Noto, off the panel's
+          // The head is fitted to its widest word in Gloock, off the panel's
           // content box (the bio's and the gallery's rule).
           ...(ed ? { position: 'relative', containerType: 'inline-size' } : null),
         })}>
@@ -22272,8 +22304,9 @@ function EventsMap({ s }) {
     //    masters' shows through the card's dash gaps beside the panel;
     //  · the numerals are `text/1` terracotta (Grunge's moved binding), at
     //    Display/SM 37 / 36 and **Display/Title 23** at lh 1.1 at 390, upper,
-    //    lifted 0.09em (Noto's floor 0.11 / 0.16em up the box against the
-    //    frame's 0.20 / 0.26, font metrics against `absoluteRenderBounds`);
+    //    lifted 0.07em (Gloock's ink floor 0.122 / 0.125 / 0.173em up the
+    //    box against the frame's 0.190 / 0.183 / 0.262, its three numerals'
+    //    mean off `absoluteRenderBounds`; Noto took 0.09);
     //  · the viewport is **Scheme 3**, so every leaf reads `s.onScheme[3]`:
     //    the rings, the ring labels, the marker's head and tail `sem/bg` ink,
     //    the labels' type and the marker's ring and glyph `text/2` paper, the
@@ -22291,7 +22324,7 @@ function EventsMap({ s }) {
     //    disc in a 2px paper ring — layout 2's reading of this viewport;
     //  · the head's 1440 measure is its own fixed 1019.18 text box, which is
     //    what sets it on two lines; narrow, its frame's. It shrinks only where
-    //    its widest word would outrun that (`s.titleWordEms`, Noto's ems).
+    //    its widest word would outrun that (`s.titleWordEms`, Gloock's ems).
     if (s.limeTree) {
       const grunge = s.grunge
       const ed = s.editorial
@@ -22444,9 +22477,13 @@ function EventsMap({ s }) {
                   <span style={distressed(s, {
                     fontFamily: s.display, ...numeral, letterSpacing: s.dls, overflowWrap: 'anywhere',
                     color: G.num, ...upper,
-                    // Noto sits 0.09–0.10em under the frame's face at lh 1 and
-                    // 1.1, over the sub 8 below: layout 3's lift, glyphs only.
-                    ...(ed ? { position: 'relative', top: '-0.09em' } : null),
+                    // Gloock sits 0.06–0.09em under the frame's face at lh 1 and
+                    // 1.1, over the sub 8 below: layout 3's lift, glyphs only,
+                    // lifted to 0.190 / 0.193 / 0.241, each under 0.5px off
+                    // (display-face.md step 4, layout 4; Noto took 0.09em).
+                    // The seeded MANCHESTER, UK sets two lines at 768 too (306
+                    // in its 276), as the 1440 and 390 frames set it: accepted.
+                    ...(ed ? { position: 'relative', top: '-0.07em' } : null),
                   })}>{st.value}</span>
                 )}
                 {!!st.sub && <span style={bodySmL}>{st.sub}</span>}
@@ -24704,7 +24741,7 @@ function Testimonials({ s }) {
     // the desktop master pads **48** all round (Lime 56) round a two-line head
     // and **324 × 382** cells; every cell is **square**; the register is read
     // off the cells (below); and the head fits its widest word, since the
-    // twins' `break-word` splits a long one in Noto.
+    // twins' `break-word` splits a long one in Gloock (and did in Noto).
     if (s.limeTree) {
       const grunge = s.grunge
       const ed = s.editorial
@@ -24880,10 +24917,12 @@ function Testimonials({ s }) {
           letterSpacing: s.dls, color: G.ink,
           overflowWrap: 'break-word',
           // The row is bottom-aligned with the discs (MAX at every width), so
-          // Noto's floor shows against theirs: 0.055em up the line box at .89
-          // against the frame's 0.132 / 0.139 / 0.134, and the glyphs lift
-          // alone (section 7's rule).
-          ...(ed ? { position: 'relative', top: '-0.08em' } : {}),
+          // Gloock's floor shows against theirs: 0.072 / 0.082 / 0.097em up
+          // the line box at .89 against the frame's 0.132 / 0.138 / 0.133, so
+          // the glyphs lift alone (section 7's rule), 0.055em, to 0.125 /
+          // 0.135 / 0.150, each under 0.85px off (display-face.md step 4,
+          // layout 4; Noto took 0.08em).
+          ...(ed ? { position: 'relative', top: '-0.055em' } : {}),
         })}>{s.title}</h2>
       )
       const head = !s.title ? null
@@ -24907,8 +24946,12 @@ function Testimonials({ s }) {
               0.82 — named, not fixed. The gap is the narrow masters' 32 / 30,
               taken at desktop too, where SPACE_BETWEEN states none. Under
               Editorial the head stands in an `inline-size` container and fits
-              its widest word (`s.titleWordEms`, Noto's 540 ems), where the
-              twins' `break-word` would split it. */}
+              its widest word (`s.titleWordEms`, Gloock's ems), where the
+              twins' `break-word` would split it. In Gloock the seed sets three
+              lines at 768 (SUCCESS STORIES is 605), 65 taller than the
+              master's two, and at 390 the fit binds on SUCCESS at 43.44 (the
+              faced 46.42), where Noto's kept its 48 (display-face.md step
+              4, layout 4, accepted). */}
           <div style={row(u(s.mob ? 30 : 32), { alignItems: 'flex-end' })}>
             {head}
             {paging && (
@@ -27394,22 +27437,23 @@ function EnquiryForm({ s }) {
       fontFamily: family, fontSize: size, lineHeight: lh, letterSpacing: s.dls, ...extra,
     })
     // Anton at the frame's glyph size, in capitals; a no-op under Lime.
-    // Under Editorial `faced` is the identity and the capitals are Noto's.
+    // Under Editorial `faced` scales Gloock's taller cap to Fisterra's.
     const disp = (size, lh, extra) => type(s.display, faced(s, size), facedLh(s, lh), {
       ...((grunge || ed) && { textTransform: 'uppercase' }), ...extra,
     })
     const ring = grunge ? s.stroke2 : s.ac
     const title = ed ? (desk ? u(32) : s.mob ? '23px' : '25px')
       : desk ? u(36) : s.mob ? '26px' : '28px'
-    // Editorial's display lines sit low in Noto (below); a glyph lift, since
+    // Editorial's display lines sit low in Gloock (below); a glyph lift, since
     // every one stands in a `VERTICAL MIN` column over another line.
-    const lift = ed ? { position: 'relative', top: '-0.08em' } : null
-    // Display/List in `s.tx`, typed in caps. Under Editorial lifted 0.07em:
-    // the labels' floor stood 0.225 / 0.232 / 0.211em above the line box
-    // against the frames' 0.273 / 0.297 / 0.307 (lh 1.2, whole-pixel boxes
-    // corrected), 1–1.7px nearer the box than the masters draw.
+    const lift = ed ? { position: 'relative', top: '-0.055em' } : null
+    // Display/List in `s.tx`, typed in caps. Under Editorial lifted 0.06em:
+    // Gloock's ink floor stood 0.236 / 0.238 / 0.241em above the line box
+    // against the frames' 0.279 / 0.303 / 0.320 (EMAIL, EVENT DATE and
+    // LOCATION, lh 1.2), and lifted stands 0.294 / 0.296 / 0.299, each
+    // under 0.4px off (display-face.md step 4, layout 4; Noto took 0.07em).
     const caps = disp(s.list, 1.2, {
-      color: s.tx, textTransform: 'uppercase', ...(ed && { position: 'relative', top: '-0.07em' }),
+      color: s.tx, textTransform: 'uppercase', ...(ed && { position: 'relative', top: '-0.06em' }),
     })
     // 1px, unramped, drawn inside the frame on all three masters.
     const hairline = `inset 0 -1px 0 ${s.stroke1}`
@@ -27572,13 +27616,15 @@ function EnquiryForm({ s }) {
         color: s.tx, marginTop: `calc(${desk ? u(40) : s.mob ? '24px' : '30px'} - ${s.padY})`,
       })}>
         {/* Under Editorial the head is fitted to its widest word in the
-            head's own measure (`s.titleWordEms`, Noto's 540 ems), where the
+            head's own measure (`s.titleWordEms`, Gloock's ems), where the
             twins' `break-word` split a 17-letter word at 390, and lifted
-            0.08em with the ENQUIRE line: Noto's glyph floor stood 0.053 /
-            0.055 / 0.060em above the head's box and 0.168 / 0.150 / 0.159
-            above the line's, where the frames' stand 0.133 at lh .89 and
-            0.241 / 0.218 / 0.256 at 1.1 — so both sat nearer the rule and
-            the labels under them than the masters draw. */}
+            0.055em with the ENQUIRE line: Gloock's ink floor stood 0.072 /
+            0.082 / 0.085em above the head's box and 0.208 / 0.166 / 0.173
+            above the line's, where the frames' stand 0.132 / 0.138 / 0.133
+            at lh .89 and 0.238 / 0.228 / 0.248 at 1.1 (the untailed Display
+            nodes: Fisterra's R and Q run under both boxes). Lifted they stand
+            0.125 / 0.135 / 0.138 and 0.261 / 0.219 / 0.226, each under 0.7px
+            off (display-face.md step 4, layout 4; Noto took 0.08em). */}
         <div style={{
           boxShadow: ed ? undefined : grunge ? `inset 0 -1px 0 ${ring}` : hairline,
           paddingBottom: u(ed ? 42 : 12), width: '100%',

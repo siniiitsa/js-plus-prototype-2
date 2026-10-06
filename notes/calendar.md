@@ -126,7 +126,12 @@ another `notes/` file.
   narrow, since `form` took the editorial band and the wizard has no section of its own. Its
   hooks (`wStep`, `wType`, `wVals`, `wPkg`) are appended after `sel`; only step 1 is designed, so
   steps 2 and 3 take the summary card's own labels and a name and email, every string resolved
-  onto `vm.calWizard`; its inputs exist only when `s.live`, and there is no `<form>`. **Send
+  onto `vm.calWizard`; its inputs exist only when `s.live`, and there is no `<form>`. The pill
+  row is SPACE_BETWEEN with no column gap under Editorial and wraps, the forward pill keeping the
+  right edge on its own line: at 390 in Gloock that happens from step 1 (Back 129 + Next Step
+  174.4 in the 290; the frame fits 121 + 161), where Noto's held one row until step 3's Send
+  Enquiry (accepted, `plans/editorial/display-face.md` step 4, layout 4, user call,
+  2026-10-06). **Send
   Enquiry mails, like the form** (JP-053, user call, 2026-09-23 — it was a fragment link to
   `calBookTo`, which lost every answer): both pills are an `<a href="mailto:">` composed by
   `vm.calMailto` over the type, the date as typed, step 2's four answers, the package and the

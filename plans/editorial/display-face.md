@@ -675,6 +675,130 @@ A winner that is already loaded for another template needs its own instance chec
        Noto's height again;
      - the calendar, pricing, map, form and testimonials at all three widths: the lifted
        spans and rows alone. No root moves.
+
+   **Settled, layout 4** (2026-10-06, on `e8377c6`). Line numbers are this commit's.
+   - **The harness.** It was layout 3's, with two changes:
+     - **The probe list is arch=3** for the ten sections, three widths, bare and `live=1`.
+       Layout 3's `&column=` renders were dropped, since layout 4 composes nothing.
+     - **A root-height sweep.** It compares every layout-4 root between Noto's digest and
+       Gloock's. It caught the 390 calendar wizard's pill row wrapping, which the three text
+       checks cannot see: no text node changes its lines or its height when a whole pill
+       drops to a row of its own.
+
+     The frames' text nodes were read with `use_figma` on `964:73037` / `971:9537` /
+     `977:13155`. Two more reads were needed:
+     - the testimonials masters `971:9624` / `977:13491`, whose names a filter on the footer's
+       *Component 2* had dropped;
+     - the form's main component `725:3049`, since the 1440 page has no form instance.
+
+     **Trap: Fisterra's R and Q tails run under the box.** KAI MERCER, ENQUIRE, YOUR NAME and
+     the repertoire head ink 8–18px past their boxes' foot. So every frame floor is read off an
+     untailed node of the same token:
+     - Display/LG .89: the media, gallery and testimonials heads, .132 / .138 / .133;
+     - Display/Title 1.1: GUESTS and *What's the occasion?*, .238 / .228 / .248;
+     - Display/List 1.2: EMAIL, EVENT DATE and LOCATION, .279 / .303 / .320.
+   - **Four user calls**, over the Noto-vs-Gloock probe and the frames' nodes. Every answer was
+     the recommended option:
+     1. **The lifts and J pads are re-measured** (below).
+     2. **Pricing's plan names and numerals are faced** (`EncoreSection.jsx:11586`). This is the
+        census's layout-4 arm: Editorial's `disp` set Display/SM raw (37 / 36 / 30), because
+        `faced` was the identity under Noto.
+        - The frame states Fisterra there, so the arm is now Grunge's: `faced` / `facedLh(s, 1)`,
+          35.78 / 34.81 / 29.01. That is layout 1's gallery-label rule.
+        - Raw, THE HOUSE PARTY (337.4) and THE WEDDING SET (345.0) took two lines in the 1440
+          name's 335.4. Faced they are 326.3 and 333.7 on one line (1.7 spare), and THE
+          FESTIVAL SET is 312.8.
+        - The frame's own BESPOKE PRODUCTION wraps in its 409 too.
+        - Recorded in `notes/pricing.md`.
+     3. **The header: both wraps accepted.** No code change.
+        - The 1440 capsule's nine links need 731 at their 12px floor (11.6 faced) and have 680,
+          so they wrap onto two rows: `NavBar`'s documented layout-4 fallback (`:1945`).
+        - Noto's 9 links needed 647 of 719 and held one row at 13.7. The frame sets eight links
+          at 20 on one row.
+        - The 390 name breaks KAI / MERCER, which needs 378.8 of the 350 column. The frame sets
+          it on one line (302 in 350), and so did Noto (324.4). The root's height is fixed, so
+          nothing below moves (`:3930`).
+        - The 1440 name (870 in 806, KAI and MERCER on the frame's two lines) and the 768 name
+          (633 in 708, one line) do not bind.
+     4. **The other changes are accepted.** None overflows, and there is no code change but
+        comments.
+        - **The 390 wizard's pill row wraps at step 1.** Back 129 + Next Step 174.4 is 303.4 in
+          the 290, where the frame fits 121 + 161. So Next Step takes its own line, 66 taller
+          (root 1182.8 → 1248.7). Noto's 121.8 + 160.4 held one row until step 3's Send
+          Enquiry (`:18847`, `notes/calendar.md`).
+        - **The bio head** goes 2 → 3 lines at 1440 and 768. READS THE is 521 in the 469.8
+          measure, and 574.7 in 572.9 at 768, so the 768 section is 80 taller. The frames set
+          two lines (`:5929`).
+        - **The media head** goes 1 → 2 lines: 1092 in the 1088 head at 1440, 822 in the 708 at
+          768. The bands are 86 and 65 taller. The frame's own SIX WORTH YOUR EARS would wrap at
+          768 too (802). The 1440 sleeve's LATE LIGHTS takes its second line, which `clamp2`
+          allows (`:8770`).
+        - **The map's 768 MANCHESTER, UK** goes 1 → 2 lines: 306 in its 276, 12 taller. The 1440
+          and 390 frames wrap it themselves (`:22486`).
+        - **The testimonials head** goes 2 → 3 lines at 768, where SUCCESS STORIES is 605, 65
+          taller. At 390 the word fit binds on SUCCESS at 43.44 (the faced 46.42; Noto's kept
+          48), 8 shorter (`:24950`).
+        - **New ellipses.**
+          - At 390 the repertoire's DON'T STOP ME NOW, SEPTEMBER and SUPERSTITION lose a few px
+            beside their artists, and I WANNA DANCE is cut further. The frame fits them.
+          - At 768 the media list's *Manchester at 3am* and *Echo & The Floor* are cut further.
+            The frame clips its own titles there at about 96 in 112.
+        - The row-height sweep found no Inter or Chakra Petch row that a wider Gloock neighbour
+          wraps at layout 4.
+   - **The lifts.** Each was re-measured against the frame's `absoluteRenderBounds` in the
+     frame's em: the ink floor over the box's foot. Each lift is the single value that brings all
+     three widths closest to the frame in px, and every residual is under 0.85px. The unlifted
+     floors come from a copy of `lift3.mjs` that reads the width off the query.
+
+     | Site | Frame 1440 / 768 / 390 | Gloock unlifted | Lift (Noto's) | Lifted |
+     |---|---|---|---|---|
+     | Calendar's stacked Display/Title (`:18656`) | .238 / .228 / .248 | .208 / .166 / .173 | **0.055em** (0.09) | .261 / .219 / .226 |
+     | Map numerals, the three numerals' mean (`:22486`) | .190 / .183 / .262 | .122 / .125 / .173 | **0.07em** (0.09) | .190 / .193 / .241 |
+     | Pricing numeral, faced (`:11670`) | .180 / .175 / .180 | .122 / .125 / .153 | **0.045em** (0.07) | .166 / .169 / .197 |
+     | Form head (`:27449`, shared with ENQUIRE) | .132 / .138 / .133 | .072 / .082 / .085 | **0.055em** (0.08) | .125 / .135 / .138 |
+     | Form's ENQUIRE (same `lift`) | .238 / .228 / .248 | .208 / .166 / .173 | 0.055em | .261 / .219 / .226 |
+     | Form labels (`:27456`) | .279 / .303 / .320 | .236 / .238 / .241 | **0.06em** (0.07) | .294 / .296 / .299 |
+     | Testimonials head (`:24925`) | .132 / .138 / .133 | .072 / .082 / .097 | **0.055em** (0.08) | .125 / .135 / .150 |
+
+   - **The repertoire's J pads** (`:14067`, `:14082`). They were measured with `&cj=` songs
+     *Jumpin Jack* by *Jackson Jive*:
+     - **The title's pad is 0.02em, not 0.1.** In its faced 1.1 box, Gloock's J ends 0.040 /
+       −0.002 / 0.005em inside the foot at 1440 / 768 / 390, so the ellipsis clip would shave
+       its hook at 768. This is the layout-2 map's venue reach: at 0.02em the clip clears the
+       J by 0.017em at 768. No box moves, but the span's own height drops 2.1 (31.4 → 29.3 at
+       1440), and the row's does not.
+     - **The artist takes no pad.** In its 1.2 box the J ends 0.069em or more inside the clip.
+       Noto's ended 0.010em inside, and took 0.1em.
+     - The artist's 60% cap stands: the seed's widest, EARTH, WIND & FIRE, is 56% of the 390
+       row in Gloock (Noto's was 51%).
+   - **Re-measured, unchanged:**
+     - **The titleWordEms heads.** The bio's (the 572.9 measure), the gallery's (the 454
+       column), the repertoire's, the calendar's and the form's all set at the faced
+       Display/LG at every width, so no fit binds. The one that binds is the 390 testimonials
+       head (above).
+     - **No pin or `min-width` at layout 4 is sized to a display string.** Pricing's 218
+       price column is Fisterra's *Star Enquiry* pill, read off the frame.
+     - **The seal's per-glyph spans** (KAI MERCER at 13.59) report a changed line count in
+       both probes. They are the badge's ring, not a wrap.
+   - **Comments.** Every layout-4 comment that measured Noto now measures Gloock. A comment
+     keeps Noto's number only as the history of a call:
+     - HeaderV3's name (`:3930`), the bio's head (`:5929`) and the media block (`:8770`);
+     - pricing's block and numeral (`:11573`, `:11660`);
+     - the repertoire's title, artist and head (`:14059`, `:14074`, `:14109`) and the gallery's
+       head (`:16032`, `:16226`);
+     - the calendar's block, pills and head (`:18641`, `:18844`, `:18918`);
+     - the map's block and numerals (`:22307`, `:22480`);
+     - the testimonials' block, lift and head (`:24744`, `:24920`, `:24950`);
+     - the form's `disp`, `lift`, labels and head (`:27440`–`27456`, `:27618`);
+     - the shared bio leading note (`:6150`).
+   - **After-diff: 18 of 660 on each surface, all theme 3, layout 4.** Themes 0, 1, 2 and 4 are
+     0, bare and `live=1`, and neither label holds an empty render:
+     - pricing at all three widths: the faced names and numerals. At 1440 two names go back
+       to one line, but the root holds 644.4, since the rows' height is the middle column's.
+       768's root re-rounds 1276.1 → 1276;
+     - the repertoire at all three widths: the 24 title and artist pads;
+     - the calendar, map, form and testimonials at all three widths: the lifted spans alone.
+       No root moves.
 5. **Sweep.** The full two-build digest against `main`; `page-check.mjs Editorial 0,1,2,3`; the
    long-name set (*Kai Mercer*, *Florence and the Machine*, *Maximilian Featherstonehaugh*,
    *Supercalifragilistic*) at 360 / 390 / 414 / 768 / 1440 on cards 1–4; the build size; the root

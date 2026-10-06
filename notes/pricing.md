@@ -145,6 +145,11 @@ another `notes/` file.
   terracotta, the pair the frame names outright). `unit` moves with it: nothing prints a suffix after the price here, so **`vm.tierKind`**
   — the unit with its leading slash dropped — stands above the numeral where the frame writes
   SET / PROJECT, which is one section-wide word against the frame's different one per row.
+  **Under Editorial the name and the numeral are `faced`** (Display/SM through `faced` /
+  `facedLh`, Grunge's arm; `plans/editorial/display-face.md` step 4, layout 4, user call,
+  2026-10-06): the frame states Fisterra there, and raw, Gloock's taller cap set THE HOUSE PARTY
+  and THE WEDDING SET on two lines in the 1440 name's 335.4. Faced they are 326.3 and 333.7 on
+  one. The numeral is lifted 0.045em (Noto took 0.07).
 - **Layout 2's two labels are the artist's** (JP-095 (a), user call, 2026-10-01, the label shape of
   JP-071 and JP-090): `kicker`, the `[ PRICING ]` over the heading, and `featsLabel`, the
   `WHAT’S INCLUDED` over the plan card's features, both `in: [1]` and read by both bodies. They are
