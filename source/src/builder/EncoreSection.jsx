@@ -15904,6 +15904,20 @@ function Gallery({ s }) {
   // the 390 one Grunge's 83 again ((587 − 120 − 43 − 32 − 60) / 4); 768 states
   // the same 660 grid. The tiles keep the twins' centred cover: the frame's own
   // FILL on our stage shot (its third tile) is centred at every width.
+  //
+  // **Pop (964:68776 · 984:15380 · 984:15411) is that tree a fifth time**, 17
+  // nodes against both twins', so it widens the same ternaries under `pop`.
+  // Pop · Scheme 2 on all three roots, no Device override, no effect, and every
+  // paint bound, so the seat does the paint again: the sheet `sem/bg` (`s.bg`,
+  // lime), the head `sem/text/1` (`s.ac`, pink) at Display/LG 82 / 51 / 36,
+  // uppercased and lifted 0.14em (Titan sits low, as on every Pop head), and
+  // each well `sem/box/3` (`s.box3`, #8CA51E). The ring names
+  // **`scheme/1/stroke/2`** from inside the seat, lime on the lime sheet, at
+  // **5px** INSIDE where the twins draw 1, so it reads `s.onScheme[1].stroke2`
+  // on the twins' overlay, scaled. The tiles round at Lime's 30. The desktop
+  // tile is **326 / 185.333**, the residue over this page's 73 head
+  // ((789 − 112 − 73 − 32 − 16) / 3), and the 390 one **111.333 / 83.75**
+  // ((579 − 120 − 32 − 32 − 60) / 4); 768 states the same 660 grid.
   if (s.v2) {
     const desk = !s.narrow
     const tab = isTablet(s)
@@ -15915,26 +15929,31 @@ function Gallery({ s }) {
     // chosen against the page and need not read on the sheet.
     const grunge = s.grunge
     const ed = s.editorial
-    // Editorial's sheet is its seat's own ground, the root's `s.bg`.
-    const sheet = s.retro ? '#FBF6EA' : s.lime ? s.box1 : grunge ? '#171716' : ed ? s.bg : s.paper
-    const ink = s.retro ? '#111111' : s.limeTree ? s.tx : s.paperFg
+    const pop = s.pop
+    // Editorial's and Pop's sheet is their seat's own ground, the root's `s.bg`.
+    const sheet = s.retro ? '#FBF6EA' : s.lime ? s.box1 : grunge ? '#171716' : (ed || pop) ? s.bg : s.paper
+    const ink = s.retro ? '#111111' : (s.limeTree || pop) ? s.tx : s.paperFg
     const bw = s.retro ? '1px' : s.bw
     // Scheme 2's `box/3` on both designed pages, and a different value in each
     // mode: neither theme has a key for it (Lime layout 3's open question 5).
-    // Under Editorial the section is seated on Scheme 2, so it is `s.box3`.
-    const well = ed ? s.box3 : grunge ? '#353535' : '#263020'
+    // Under Editorial and Pop the section is seated on Scheme 2, so it is
+    // `s.box3`.
+    const well = (ed || pop) ? s.box3 : grunge ? '#353535' : '#263020'
     // The tiles' ring: `scheme/1/stroke/2` under Grunge, `scheme/1/stroke/1`
     // under Lime and Editorial — 1px INSIDE at every width, so it is never
     // scaled. Editorial's names Scheme 1 from inside its Scheme 2 seat, so it is
-    // `onScheme[1]`'s ink, not the seat's paper `s.stroke1`.
-    const ring = ed ? s.onScheme[1].stroke1 : grunge ? s.stroke2 : s.stroke1
+    // `onScheme[1]`'s ink, not the seat's paper `s.stroke1`. Pop's names
+    // `scheme/1/stroke/2` from inside the same seat, lime on the lime sheet, at
+    // 5px: scaled at desktop, as every Pop ring is.
+    const ring = pop ? s.onScheme[1].stroke2 : ed ? s.onScheme[1].stroke1 : grunge ? s.stroke2 : s.stroke1
+    const ringW = pop ? u(5) : '1px'
     const slots = [0, 1, 2, 3, 4, 5, 6]
     const cols = desk ? 4 : 3
     // Each master's own tile, as a ratio: 326 / 181.333, 230.667 / 150 and
     // 111.333 / 107.5. See the note above — these are what each page's stated
     // height left over, so they travel as a shape rather than as a number.
-    const ratio = desk ? 326 / (ed ? 174.6667 : s.lime || grunge ? 171 : 181.3333)
-      : tab ? 230.6667 / 150 : 111.3333 / (grunge || ed ? 83 : s.lime ? 82.75 : 107.5)
+    const ratio = desk ? 326 / (pop ? 185.3333 : ed ? 174.6667 : s.lime || grunge ? 171 : 181.3333)
+      : tab ? 230.6667 / 150 : 111.3333 / (pop ? 83.75 : grunge || ed ? 83 : s.lime ? 82.75 : 107.5)
     const padH = `calc(${s.surplus} + ${u(desk ? 56 : tab ? 30 : 20)})`
     const padV = u(desk ? 56 : 60)
 
@@ -15954,10 +15973,15 @@ function Gallery({ s }) {
     // paper, so its `s.tx` is ink and the twins' reading would put ink controls
     // on an ink scrim: its scrim is the page ink #141414 at .94 (Grunge's
     // reading) and its controls the head's own paper, `s.ac` under the seat.
-    const cream = ed ? s.ac : s.lime || grunge ? s.tx : '#FBF6EA'
+    // Pop's page is white and its `s.tx` violet under the seat, which would
+    // read at 3:1 on a dark scrim, so it takes Editorial's reading in its own
+    // keys: the scrim is its darkest ink, #000000 (Scheme 1's `text/3` and
+    // `active/bg`), at .94, and the controls the head's pink, `s.ac` under the
+    // seat, on pink at 14%.
+    const cream = (ed || pop) ? s.ac : s.lime || grunge ? s.tx : '#FBF6EA'
     const ctlBg = s.lime ? 'rgba(242,255,208,.14)' : grunge ? 'rgba(255,255,255,.14)'
-      : ed ? 'rgba(246,240,232,.14)' : 'rgba(251,246,234,.14)'
-    const scrim = s.lime ? 'rgba(21,24,15,.94)' : grunge ? 'rgba(0,0,0,.94)'
+      : ed ? 'rgba(246,240,232,.14)' : pop ? 'rgba(255,45,160,.14)' : 'rgba(251,246,234,.14)'
+    const scrim = s.lime ? 'rgba(21,24,15,.94)' : (grunge || pop) ? 'rgba(0,0,0,.94)'
       : ed ? 'rgba(20,20,20,.94)' : 'rgba(17,17,17,.94)'
     const ctl = (label, act, Icon, pos) => (
       <button
@@ -16049,9 +16073,10 @@ function Gallery({ s }) {
             and nothing in any master's layout depends on the leak, so it wraps
             here (the testimonials' rule). */}
         <h2 style={distressed(s, {
-          margin: 0, fontFamily: s.display, fontSize: faced(s, tab && !s.limeTree ? s.h1 : s.dispLg),
+          margin: 0, fontFamily: s.display, fontSize: faced(s, tab && !(s.limeTree || pop) ? s.h1 : s.dispLg),
           lineHeight: facedLh(s, 0.89), letterSpacing: s.dls, color: s.ac,
-          ...(grunge || ed ? { textTransform: 'uppercase' } : null),
+          ...(grunge || ed || pop ? { textTransform: 'uppercase' } : null),
+          ...(pop ? { position: 'relative', top: '-0.14em' } : null),
         })}>{s.title}</h2>
         <div style={{
           display: 'grid', gridTemplateColumns: `repeat(${cols}, 1fr)`,
@@ -16064,27 +16089,38 @@ function Gallery({ s }) {
               onClick={s.live && s.images[i] ? () => setPick(i) : undefined}
               style={{
                 aspectRatio: `${ratio}`, overflow: 'hidden', position: 'relative',
-                border: s.limeTree ? undefined : `${bw} solid ${ink}`, borderRadius: u(grunge ? 15 : ed ? 0 : 30),
+                border: (s.limeTree || pop) ? undefined : `${bw} solid ${ink}`, borderRadius: u(grunge ? 15 : ed ? 0 : 30),
                 cursor: s.live && s.images[i] ? 'zoom-in' : undefined,
               }}>
-              <span style={{ position: 'absolute', inset: 0 }}>
+              {/* Pop's ring is the sheet's own lime, so the photograph's
+                  anti-aliased edge, where the tile's round clip cuts it, showed
+                  as a dark arc round each corner, outside a ring that cannot
+                  hide it. Clipped 2px in, the edge lies under the opaque ring,
+                  and the cover box, so the crop, is the frame's. */}
+              <span style={{ position: 'absolute', inset: 0, ...(pop ? { clipPath: `inset(2px round calc(${u(30)} - 2px))` } : null) }}>
                 {/* Placeholder initials only — the masters are photographs
                     throughout and Retro seeds them, so the three sizes are
                     invented, read off each master's own tile width. `ink` is
                     what a section on its own sheet owes the placeholder: the
                     default is `s.muted`, an rgba of the PAGE's text colour,
-                    which on Lime is the same pale lime the sheet is. */}
+                    which on Lime is the same pale lime the sheet is. Pop's
+                    `s.tx` is violet at 2.2:1 on its olive well, so its
+                    initials take the seat's `text/3`, black, at 7.5:1. */}
                 <Photo
                   s={s} src={s.images[i]}
                   initialsSize={desk ? 32 : tab ? 28 : 14}
-                  ink={s.retro ? undefined : s.limeTree ? s.tx : s.paperFg}
-                  style={s.limeTree ? { background: well } : undefined}
+                  ink={s.retro ? undefined : pop ? s.text3 : s.limeTree ? s.tx : s.paperFg}
+                  style={(s.limeTree || pop) ? { background: well } : undefined}
                 />
               </span>
-              {s.limeTree && (
+              {/* The INSIDE ring over the photograph, as the frame paints it.
+                  Pop's is 5px of lime on the lime sheet: invisible as a
+                  colour, but an inset that eats the photograph's edge, so an
+                  overlay and never a border, which would shrink the cover. */}
+              {(s.limeTree || pop) && (
                 <span style={{
                   position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
-                  boxShadow: `inset 0 0 0 1px ${ring}`,
+                  boxShadow: `inset 0 0 0 ${ringW} ${ring}`,
                 }} />
               )}
             </div>
