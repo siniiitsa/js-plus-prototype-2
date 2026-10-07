@@ -288,7 +288,7 @@ masters are one session. **Lime block** is where that section's Lime layout-3 bl
 | 3 | `media` | `964:68771` list + `964:68770` card *(head `964:68763`)* | 858 × **678** + 858 × 243 | `984:15375` + `984:15374` *(head `984:15367`)* | 708 × 647 + 708 × 243 | `984:15406` + `984:15405` *(head `984:15398`)* | 370 × 647 + 370 × 243 | 1 (card **2**; rows **3 / 4 / 5 / 7 / 8**) | `964:68674` + `964:68673` / `984:10759` + `984:10758` / `984:10790` + `984:10789` | `964:68739` + `964:68738` / `984:16831` + `984:16830` / `984:16862` + `984:16861` | `if (s.limeTree)` inside `Media`'s `if (s.v2)`, after `nHot` | **done** `8a386f5` |
 | 4 | `repertoire` | `964:68775` | 1440 × 621 | `984:15376` *(in `984:15373`)* | 708 × **628** | `984:15407` | 390 × **693** | 1 (sets **2 / 3 / 4**) | `964:68678` / `984:10760` / `984:10791` | `964:68743` / `984:16832` / `984:16863` | `if (s.limeTree)` inside `Repertoire`'s `if (s.v2)`, after `arrow` | **done** `b5e832b` |
 | 5 | `calendar` | `964:68774` *(in `964:68772`; "BOOK ME" `964:68773`)* | 405 × **481.9** | `984:15379` *(in `984:15377`; `984:15378`)* | 708 × **445.9** | `984:15410` *(in `984:15408`; `984:15409`)* | 370 × **427.9** | **2** (the instance; its pill names 2 again) | `964:68677` / `984:10763` / `984:10794` | `964:68742` / `984:16835` / `984:16866` | `if (s.limeTree)` inside `Calendar`'s `if (s.v2)`, after `line` | **done** `94d3c24` |
-| 6 | `gallery` | `964:68776` | 1440 × 789 | `984:15380` | 768 × **857** | `984:15411` | 390 × **579** | **2** (tile rings name Scheme 1) | `964:68679` / `984:10764` / `984:10795` | `964:68744` / `984:16836` / `984:16867` | **no block** — `s.limeTree`, `(s.lime \|\| grunge)` and `ed` reads through `Gallery`'s `if (s.v2)` | open |
+| 6 | `gallery` | `964:68776` | 1440 × 789 | `984:15380` | 768 × **857** | `984:15411` | 390 × **579** | **2** (tile rings name Scheme 1) | `964:68679` / `984:10764` / `984:10795` | `964:68744` / `984:16836` / `984:16867` | **no block** — `s.limeTree`, `(s.lime \|\| grunge)` and `ed` reads through `Gallery`'s `if (s.v2)` | **done** `0dd172e` |
 | 7 | `pricing` | `964:68777` | 1440 × **1093** | `984:15381` | 768 × **1010** | `984:15412` | 390 × **1419** | 1 (featured row **2**) | `964:68680` / `984:10765` / `984:10796` | `964:68745` / `984:16837` / `984:16868` | `if (s.limeTree)` inside `Pricing`'s `if (s.v2)`, after `shown` | open |
 | 8 | `map` | `964:68778` | 1440 × **809** | `984:15382` | 768 × **827** | `984:15413` | 390 × **880** | **4** (lit row, *See all gigs* and `radius-map` **3**; the viewport inherits 3) | `964:68681` / `984:10766` / `984:10797` | `964:68746` / `984:16838` / `984:16869` | `if (s.limeTree)` inside `EventsMap`'s `if (s.v2)`, after `litRow` | open |
 | 9 | `form` | `964:68779` | 1440 × **553** | `984:15383` | 768 × **667** | `984:15414` | 390 × **716** | 1 (card **2**) | `964:68682` / `984:10767` / `984:10798` | `964:68747` / `984:16839` / `984:16870` | `if (s.limeTree)` inside `EnquiryForm`'s `if (s.v2)`, after `up` | open |
@@ -878,6 +878,14 @@ Retro's bullets; name them.
   reads as ink. Hide every other node (`visibility: hidden`, the target `visible`, its fill and
   shadow cleared), scan on white, and correct for any lift the probe reads back, since a
   relative lift moves the element's own rect.
+- **A ring the colour of its own sheet hides nothing that leaks past it** (section 6). The
+  gallery's 5px `scheme/1/stroke/2` is lime on the lime sheet, so the photograph's
+  anti-aliased edge, where the tile's round clip cuts it, showed as a dark arc outside each
+  corner (17% darker on its one pixel at 1×), on the `n=0` wells as well. A coloured twin
+  ring is darker than the leak and hides it. Clip the photograph inside the ring
+  (`clipPath: inset(2px round r − 2px)`, 1px left a 5% fringe) and read the corner's diagonal
+  pixels, not only a straight edge, which is pixel-aligned and clean either way. The clip
+  keeps the cover box, so the crop is the frame's.
 
 ### Seen at planning time, per section
 
@@ -1651,6 +1659,122 @@ From the renders and the planning walk — impressions to confirm, not measureme
   to a 4px one at radius 36; the pill kept on Scheme 2 at `BookPill`'s defaults under the seat,
   `fg` dropped. Not written here.
 
+### Settled in section 6 (the gallery)
+
+- **No block, for the fourth time: the twins' ternaries through `Gallery`'s `if (s.v2)` widen
+  one by one under `const pop = s.pop`**, at eleven sites: `sheet`, `ink`, `well`, `ring` and a
+  new `ringW`, the desktop and 390 halves of `ratio`, the viewer's `cream` / `ctlBg` / `scrim`,
+  the head's size, casing and lift, and the tile's border gate, clip, `Photo` ink and well, and
+  overlay gate. The Lime, Grunge and Editorial arms are byte-identical (the overlay's `'1px'`
+  arm included). The walk (bindings with their collections, all three widths) found the twins'
+  tree node for node, **17 / 17 / 17** against Lime's and Editorial's by traversal order: the
+  56 / 60·30 / 60·20 insets, the 32 head gap, `columnGap` 8 with `rowGap` 8 / 20 / 20, the head
+  row's `flex-[1_0_0] h-px` spacer (no fill). The paired diff returned leaves alone: the head's
+  size and box, the tiles' residue, the ring's weight and binding, and Editorial's square
+  corners. **Scheme 2 on all three roots, no Device override** (Desktop / Tablet / Mobile), no
+  effect on any node, every paint bound. `get_variable_defs` is `size/display-lg` 82 / 51 / 36
+  and the five colours below. The hooks sit above the branch, so the published viewer needed
+  nothing.
+- **The seat does the paint.** The sheet is `sem/bg` lime, so `(ed || pop) ? s.bg` (the flat
+  arm's `s.paper` read the same lime through `paperOf`, by accident, Editorial's case). The
+  head is `sem/text/1` pink (`s.ac`, already Lime's key), and each well `sem/box/3` `#8CA51E`
+  (`s.box3` under the seat). The seventh tile's well is `sem/active/bg` pink under its
+  photograph: it paints nothing and is not drawn, the twins' call on the identical slot. No
+  tile carries an `s.ac` state at layout 3 (no pick ring; a pick opens the viewer), so Pop's
+  ring hides no accent state.
+- **Trap 3, the ring.** It names **`scheme/1/stroke/2`** (the `1 · Primitives` collection's
+  scheme variable) at **5px INSIDE**, where both twins bind `scheme/1/stroke/1` at 1px. Inside
+  the Scheme 2 seat it reads `s.onScheme[1].stroke2`, lime `#C6F200`, the sheet's own colour.
+  Kept on the twins' mechanism, an inset `boxShadow` on a last-child overlay over the
+  photograph, so the photograph fills the whole tile under it as the frame paints it, at
+  `u(5)`: 4.1 / 5 / 5 computed. The tile's CSS border is gated off as Lime's is. Radius 30 at
+  every width (24.6 on the canvas), Lime's.
+- **The leak behind a sheet-coloured ring** (the new *Conventions* bullet). The first build
+  showed a faint dark arc round every tile's corners, outside the invisible ring: the
+  photograph's anti-aliased edge where the tile's round clip cuts it, (165, 198, 0) on the
+  corner's one edge pixel against the sheet's (198, 242, 0), on the `n=0` wells too. The
+  straight edges are pixel-aligned and were clean. Under `pop` the photograph's span is
+  clipped `inset(2px round calc(r − 2px))` (1px left (189, 230, 0)); the corner diagonal now
+  reads the sheet's lime on every pixel, at desktop and on the `n=0` wells. The cover box is
+  unchanged, so the crop is the frame's; the 2px sits under the 4.1 / 5 ring. Proved at DPR 1
+  alone; in the published desktop tab's 1.22 zoom the clip and the ring scale together, so it
+  holds by construction. The clip also bounds the photograph's hit area, so a click in the
+  outer 2px lands on the tile, which carries the handler.
+- **The tile is a residue again**: **326 / 185.333** at desktop ((789 − 112 − 73 − 32 − 16) / 3,
+  over this page's 73 head) and **111.333 / 83.75** at 390 ((579 − 120 − 32 − 32 − 60) / 4); 768
+  states the same 660 grid, 230.667 / 150. Each matches the master's own tile to the hundredth.
+- **The head**: `s.dispLg` at every width, where the flat arm stood the 768 head on Retro's
+  `s.h1` (`tab && !(s.limeTree || pop)`), uppercased, so `HEADING_3`'s "Gallery" prints the
+  frame's GALLERY. **The lift, scanned** at DPR 4 with the string drawn alone, against the
+  frame's `absoluteRenderBounds` (ink top 0 and floor 0.185 / 0.186 / 0.184 token-em above the
+  box's foot, the media and repertoire heads' figures again): unlifted, Titan sat **0.130 /
+  0.118 / 0.125** below the top and **0.046 / 0.057 / 0.049** above the foot. **`top:
+  −0.14em`** under `pop`: lifted, −0.004 / −0.020 / −0.014 and 0.180 / 0.194 / 0.188 (≤ 0.6px
+  off).
+- **The empty slot's initials take the seat's `text/3`, black** (`pop ? s.text3`): the twins'
+  `s.tx` is violet at 2.2:1 on the `#8CA51E` well, white 2.8, pink 1.2, black 7.5. `&n=0`: seven
+  olive wells in their lime rings with black `KM` at 32 / 28 / 14, `cursor: auto` canvas and
+  live, and a click opens nothing. **`&noimage=1` is inert here** (the gallery's own slots stay
+  seeded: seven `img`s and identical HTML at three widths), the positive control.
+- **The viewer is re-inked a fourth time.** No frame draws it. Widened as written it would
+  have been Retro's fallthrough (`#111` at .94, cream controls). The twins' key reading would
+  put violet `s.tx` controls on the scrim, 3.2:1. So Editorial's reading in Pop's own keys:
+  the scrim is Pop's darkest ink, **`#000000` at .94** (Scheme 1's `text/3` and `active/bg`;
+  Grunge's literal, so `grunge || pop`), and the controls and counter **`s.ac`**, the head's
+  own pink under the seat, on pink at 14%, 5.7:1 on the scrim. Pictured open over the lime
+  sheet at desktop and 390: the page shows through as a faint olive tint at 6%, and the pink
+  discs, arrows and counter read.
+- **Measured against the masters' content edges** (harness; the frame × 0.82 in brackets):
+  **desktop** the h2's box at 45.9 (45.9), 59.6 tall (59.9) at 65.66px; grid top 131.7 (132.0);
+  tiles **267.1 × 151.8** (267.3 × 152.0) on a 273.7 / 158.4 pitch (273.9 / 158.5); ring 4.1,
+  radius 24.6. **768** h2 at 60 (60), 45.4 (45); grid top 137.4 (137); tiles 230.7 × 150 on
+  238.7 / 170, exact. **390** h2 at 60 (60), 32 (32); grid top 124 (124); tiles 111.3 × 83.7
+  (83.75) on 119.3 / 103.8. Every root's `scrollWidth` is its width.
+- **Named diffs, the twins'**: the sections are **487.9 / 687.4 / 475.3** against 647 / 857 /
+  579, our seven tiles in two rows (three narrow) against the frame's twelve in three (four),
+  one row's pitch short each; the frame's tiles are placeholders from four templates (open
+  question 3), our seven Pop slots stand, centred covers (the frame's one `CROP` is its eighth
+  tile at 1440, a seat we do not draw); Pop's rounded desktop `dispLg` 67 against 67.24.
+- **`live=1`** (puppeteer, trusted clicks and keys, desktop and 390, the harness and the
+  published tab at 1440 / 768 / 390): the third tile opens the viewer at 3 / 7
+  (`pop-stage.jpg`) with focus inside and `hidden | stable | hidden` on `<html>` and `<body>`;
+  Next steps to 4 / 7, → to 5 / 7, ← back to 4 / 7; Escape closes and restores all three; reopened
+  on slot 1, a scrim click closes. Every tile hit-tests to itself at its centre (7 / 7) with
+  `zoom-in`; the canvas carries no pointer cursor and a click opens nothing. No page errors or
+  warnings. The digest's canvas and `live=1` files are byte-identical (the cursor is no column).
+- **`FIELDS.gallery` has no template-keyed `in` row**, so no `reach.mjs` run was owed.
+- **Digest: themes 0, 1, 2 and 3 zero files of 660, canvas and `live=1`** (a fresh `:5183`, both
+  labels taken there, no one-row file in any). Theme 4 moved exactly **gallery arch 2 at three
+  widths** on each surface: seven rows more a width (the overlays), the roots 481.3 → 487.9,
+  695.4 → 687.4 and 546.5 → 475.3.
+- **In the builder** (`page-check.mjs Pop 2,0,1,3`, and a one-off probe of card 3's popup): four
+  modal cards on every card, no console error or warning on any. Card 3's published 1440 tab
+  stands the gallery at **4039**, 595 tall (487.9 × 1.22), under the repertoire (3376 · 663) and
+  over pricing (4634). **Repertoire → band 56.1** (the frame's 56, JP-103's arm); band →
+  pricing's head box is `padY` 97.6, pricing's session's (JP-103's other half). At 768 and 390
+  the calendar stands above it, 56 and 44 off its card. The seam clips are straight at 1440 and
+  390: white → full-bleed lime → white. No sideways scroll at 1440, 768 or 390. Every nav,
+  anchor and footer link lands (Media → `#gallery`); the player plays; the form refuses and
+  composes; the 390 burger opens (1 → 5); `overflow390` 0. page-check's generic probe lists no
+  gallery control, since the viewer opens on a tile; it was driven above.
+- **For pricing**: it stands on white, ringed 1px `sem/stroke/1` pink **at every width** (the
+  block's 1px `s.stroke1` overlay on the root is `(grunge || ed)`-gated today — widen from the
+  frame); its featured row is a
+  nested **Scheme 2** node, lime, ringed `stroke/2` pink — read whether it binds `sem/bg` or
+  `box/1` (layout 2's Scheme 2 card rule) before writing a key; the head "PRICING" is
+  **Display/Title** 28 / 22 / 20, a literal (`vm.title` shadows the ramp), and Titan at
+  Display/Title took 0.1em, not 0.14 (section 5); `vm.pad`'s layout-3 pricing arm (32 foot at
+  1440 and 768, JP-103's 46 desktop top) names Lime, Grunge and Editorial and waits for Pop.
+  Its block has `G` at its head, so Pop is a fourth arm.
+- **For the sweep's CLAUDE.md pass**: CLAUDE.md names no gallery layout-3 colour or viewer
+  palette. `notes/gallery.md` now carries Pop's viewer, its 5px ring with the 2px clip, and the
+  black initials (written in this session's commit). CONVENTIONS D3's gallery row gains a Pop
+  column (eleven sites under `pop`; the ratio re-derived, 326 / 185.333 and 111.333 / 83.75; the
+  viewer re-inked a fourth time, black and pink), A's *a node can name another scheme's
+  variable outright* row (the tiles' `scheme/1/stroke/2`), and C's *a twin's frame-less control
+  is checked against its own surround* (the viewer) and *an empty slot … takes `Photo`'s `ink`*
+  (black on the olive well). Not written here.
+
 ### Inherited and used
 
 *(The running list the sweep folds into [`../CONVENTIONS.md`](../CONVENTIONS.md): each time a
@@ -1733,6 +1857,21 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
   twin's width-bound call is re-measured in the new face* (editorial/layout-2) — JP-063's head
   fit with the longest months; *field reach is measured* — a calendar-only `reach.mjs`; *the
   whole-page published check* — `page-check.mjs Pop 2,0,1,3`.
+
+- Section 6: *no block: ternaries through `Gallery`'s `if (s.v2)`* (D3, lime/layout-3) — eleven
+  sites under `pop`, the twins' arms byte-identical; *the tile ratio is re-derived, not
+  inherited* (D3) — 326 / 185.333 and 111.333 / 83.75; *the viewer is re-inked, not
+  restructured* (D3) and *a twin's frame-less control is checked against its own surround*
+  (editorial/layout-3) — black at .94, pink controls; *a node can name another scheme's
+  variable outright* (editorial/layout-3) — the ring's `scheme/1/stroke/2` under the Scheme 2
+  seat; *a Lime block paints its ground from Scheme 1 keys* (editorial/layout-4) — the sheet the
+  seat's `s.bg`; *a frame's inside stroke is an inset `boxShadow`, on an overlay*
+  (lime/layout-2) and *Pop's rings are thick* (pop/layout-2) — the 5px ring over the
+  photograph, never a border; *an empty slot … takes `Photo`'s `ink`* (C) — black `text/3` on
+  the olive well; *a seeded page cannot show an empty slot* — `&n=0`, `&noimage=1` inert; *a
+  stand-in face's glyph floor is measured per site* (editorial/layout-3) — the head 0.14em;
+  *the node walker* and *the paired diff walk* (A) — 17 / 17 / 17; *the whole-page published
+  check* — `page-check.mjs Pop 2,0,1,3`.
 
 ## Open questions
 
