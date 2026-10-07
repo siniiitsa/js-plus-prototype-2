@@ -287,7 +287,7 @@ masters are one session. **Lime block** is where that section's Lime layout-3 bl
 | 2 | `bio` | `964:68760` *(head `964:68755`, in Section `964:68754`)* | 858 × 882 | `984:15364` *(head `984:15359`)* | 708 × 912 | `984:15395` *(head `984:15390`)* | 370 × **893** | 1 (seal **4**) | `964:68663` / `984:10748` / `984:10779` | `964:68728` / `984:16820` / `984:16851` | `if (s.v2 && s.limeTree)` ahead of `Bio`'s `if (s.v2)` | **done** `66cc709` |
 | 3 | `media` | `964:68771` list + `964:68770` card *(head `964:68763`)* | 858 × **678** + 858 × 243 | `984:15375` + `984:15374` *(head `984:15367`)* | 708 × 647 + 708 × 243 | `984:15406` + `984:15405` *(head `984:15398`)* | 370 × 647 + 370 × 243 | 1 (card **2**; rows **3 / 4 / 5 / 7 / 8**) | `964:68674` + `964:68673` / `984:10759` + `984:10758` / `984:10790` + `984:10789` | `964:68739` + `964:68738` / `984:16831` + `984:16830` / `984:16862` + `984:16861` | `if (s.limeTree)` inside `Media`'s `if (s.v2)`, after `nHot` | **done** `8a386f5` |
 | 4 | `repertoire` | `964:68775` | 1440 × 621 | `984:15376` *(in `984:15373`)* | 708 × **628** | `984:15407` | 390 × **693** | 1 (sets **2 / 3 / 4**) | `964:68678` / `984:10760` / `984:10791` | `964:68743` / `984:16832` / `984:16863` | `if (s.limeTree)` inside `Repertoire`'s `if (s.v2)`, after `arrow` | **done** `b5e832b` |
-| 5 | `calendar` | `964:68774` *(in `964:68772`; "BOOK ME" `964:68773`)* | 405 × **481.9** | `984:15379` *(in `984:15377`; `984:15378`)* | 708 × **445.9** | `984:15410` *(in `984:15408`; `984:15409`)* | 370 × **427.9** | **2** (the instance; its pill names 2 again) | `964:68677` / `984:10763` / `984:10794` | `964:68742` / `984:16835` / `984:16866` | `if (s.limeTree)` inside `Calendar`'s `if (s.v2)`, after `line` | open |
+| 5 | `calendar` | `964:68774` *(in `964:68772`; "BOOK ME" `964:68773`)* | 405 × **481.9** | `984:15379` *(in `984:15377`; `984:15378`)* | 708 × **445.9** | `984:15410` *(in `984:15408`; `984:15409`)* | 370 × **427.9** | **2** (the instance; its pill names 2 again) | `964:68677` / `984:10763` / `984:10794` | `964:68742` / `984:16835` / `984:16866` | `if (s.limeTree)` inside `Calendar`'s `if (s.v2)`, after `line` | **done** `94d3c24` |
 | 6 | `gallery` | `964:68776` | 1440 × 789 | `984:15380` | 768 × **857** | `984:15411` | 390 × **579** | **2** (tile rings name Scheme 1) | `964:68679` / `984:10764` / `984:10795` | `964:68744` / `984:16836` / `984:16867` | **no block** — `s.limeTree`, `(s.lime \|\| grunge)` and `ed` reads through `Gallery`'s `if (s.v2)` | open |
 | 7 | `pricing` | `964:68777` | 1440 × **1093** | `984:15381` | 768 × **1010** | `984:15412` | 390 × **1419** | 1 (featured row **2**) | `964:68680` / `984:10765` / `984:10796` | `964:68745` / `984:16837` / `984:16868` | `if (s.limeTree)` inside `Pricing`'s `if (s.v2)`, after `shown` | open |
 | 8 | `map` | `964:68778` | 1440 × **809** | `984:15382` | 768 × **827** | `984:15413` | 390 × **880** | **4** (lit row, *See all gigs* and `radius-map` **3**; the viewport inherits 3) | `964:68681` / `984:10766` / `984:10797` | `964:68746` / `984:16838` / `984:16869` | `if (s.limeTree)` inside `EventsMap`'s `if (s.v2)`, after `litRow` | open |
@@ -869,6 +869,15 @@ Retro's bullets; name them.
   the minimum one track stands as a list-tall stadium (512 on the canvas, 594 at 390). Layout 2's
   media list takes the minimum and does exactly that (open question 13). Prove the pin with
   `n=1`, `n=5` and `n=8`.
+- **Titan at Display/Title, lh 1.1, takes 0.1em, not every head's 0.14** (section 5, the second
+  site after the header card's name). "BOOK ME" scanned 0.10 / 0.08 / 0.15em low, as the card's
+  name did, while the lh-0.89 and lh-1 strings in the same card took 0.14. Scan a Display/Title
+  site before reaching for 0.14.
+- **Scan a glyph floor with the string drawn alone** (section 5). Inside a card, a clip padded
+  enough to catch a descender also catches the next string and the card's ring, and every row
+  reads as ink. Hide every other node (`visibility: hidden`, the target `visible`, its fill and
+  shadow cleared), scan on white, and correct for any lift the probe reads back, since a
+  relative lift moves the element's own rect.
 
 ### Seen at planning time, per section
 
@@ -1499,6 +1508,149 @@ From the renders and the planning walk — impressions to confirm, not measureme
   fourth `G` arm, seated by rendered place on `s.onScheme[2]` / `[3]` / `[4]`, a 4px ring), and
   C's `G` row gains the repertoire. Not written here.
 
+### Settled in section 5 (the booking calendar)
+
+- **The block widened whole: `if (s.limeTree || s.pop)` inside `Calendar`'s `if (s.v2)`, after
+  `line`, `const pop = s.pop`**, Editorial's shape: a handful of arms and no `G`. The Lime, Grunge
+  and Editorial arms are byte-identical. The walk (bindings with their collections, all three
+  widths) found the twins' tree node for node, 65 nodes against Lime's 65. The paired
+  traversal-order diff against `964:68677` returned only the card's ring and radius, the dots'
+  ring weight, one dot (below) and the type's boxes. The instance is **explicitly Scheme 2**, and so
+  is its foot pill, with no Device override (Desktop / Tablet / Mobile) and no effect on any node.
+  Every paint is bound. `get_variable_defs` is the ramp (display-lg 82 / 51 / 36, display-sm
+  36 / 29 / 24, body-lg 16 / 15 / 15, body-md 14 / 13 / 13, body-sm 12, list 20 / 16 / 15) plus
+  `border/default` 4, so every size reads `s.*`. The hooks sit above the block, so the published
+  day picking, the month arrows and the pill needed nothing.
+- **Under the Scheme 2 seat Lime's keys are the bindings.** The card is `s.box1`, which is
+  `sem/box/1` `#D7FF23` here, so the Scheme 2 card rule (layout 2's) is met by Lime's own key
+  with no arm. Every ink is `text/2` violet. The dots are `box/2` `#B7DD0D` booked, `text/1`
+  pink picked and `box/1` free, and the legend's two marks take the same fills. The deltas,
+  behind `pop`:
+  - **the card's ring is `border/default`**, 4px of `sem/stroke/1` violet INSIDE, at radius
+    **36**. Both scale at desktop (`lu(4)` 3.3, `lu(36)` 29.5), as every Pop ring does; Lime's
+    is `s.bw`, 2px unscaled, at 50;
+  - **the free dot's ring is a raw 2** (Lime's 2.559, Editorial's 1px), `lu(2)`, and the JP-063
+    month arrows take it too, so they stay the free dot a size down;
+  - **"BOOK ME" is Display/Title 28 / 22 / 20** at lh 1.1, a literal (`vm.title` shadows the
+    ramp), and `disp()` gains `pop`, so the numeral, the month and the head are uppercase Titan
+    through `faced` / `facedLh`. The narrow masters type "Book Me" (decision 2);
+  - **the pill is Scheme 2's own and `BookPill`'s defaults under the seat**: `pillBg` pink,
+    lettered and disced in `s.bg` `#C6F200` round a pink arrow. So Lime's `fg={s.box1}` is not
+    passed (`ed || pop ? undefined`): it would have given the card's `#D7FF23`, one shade off
+    the frame's `sem/bg`, Editorial's trap. Its label is Lime's `size/list` (`s.list`, 16 / 16
+    / 15 against 16.4 / 16 / 15), Titan uppercase through `labelStyle`. The pill stays on
+    Scheme 2, Lime's own; Editorial turned it to Scheme 1, and Pop's
+    `explicitVariableModes` names 2 at all three widths.
+- **The lifts, scanned** at DPR 4, each string drawn alone (*Conventions*), against the frames'
+  `absoluteRenderBounds` in token-em:
+  - **The numeral** (Display/LG, lh 0.89). The frame inks −0.005 / −0.014 / −0.006 above the
+    box's top and floats 0.195 / 0.196 / 0.194 above its foot. Unlifted, Titan sat 0.131 /
+    0.118 / 0.125 below the top and 0.054 / 0.066 / 0.056 above the foot. **`top: −0.14em`**
+    lifts it to −0.007 / −0.020 / −0.012 and 0.191 / 0.204 / 0.194.
+  - **The month** (Display/SM, lh 1). The frame inks 0.050 / 0.059 / 0.050 down and 0.24 /
+    0.231 / 0.24 up; Chunko's J sits on the line. Titan sat 0.200 / 0.198 / 0.177 down and,
+    its J aside, 0.092 / 0.095 / 0.114 up, so it takes **`−0.14em`** too: lifted, 0.063 / 0.061
+    / 0.040 and 0.229 / 0.232 / 0.251. Editorial's `lift` gained the `pop` arm. **Titan's J
+    descends**: lifted, its tail ends 9.4 / 10.4 / 10.2 above "2025"'s ink, against the
+    frame's (J-less) 14.0 / 14.9 / 13.9. The non-J floor clears by 13.2 at desktop. Named.
+  - **"BOOK ME"** (Display/Title, lh 1.1). The frame's floor, corrected for its whole-pixel
+    line box (31 for 30.8), is 0.272 at 1440, and 0.258 / 0.29 at the narrow two in mixed case.
+    Titan sat 0.176 / 0.179 / 0.137 up, so it takes **`−0.1em`**, the header card's name's
+    number at the same token: lifted, 0.274 / 0.277 / 0.234. The gap from its ink to the card
+    is then 30.9 on the canvas, the frame's 37.72 × 0.82 exactly.
+  - **The pill's label is not lifted.** Against its own line box it sits 0.11–0.13 token-em
+    (1.7–2.1px) low at lh 1.2, which is every Pop `BookPill` label's state; layout 2 left them
+    at lh 1.2. A lift would have to wrap the label in a span inside the shared `BookPill`
+    (*lift the label, never the ring*). Named.
+- **Measured against the masters** (harness, `column=right` at desktop; the frame × 0.82 in
+  brackets):
+  - **desktop:** "BOOK ME" box at 41.05 (41), 25.3 tall (25.4); the card 24.6 under it at 90.9
+    (91.0), radius 29.5, ring 3.3, padding 16.4; the numeral box 59.6 (59.9) at 65.66px, the
+    month 30 (29.5; Pop's rounded `dispSm` 30); dots 25.2 (25.2) in a 1.6 ring; the legend 20.6
+    (20.5); the pill 44.3 (44.3) on a 37.7 × 36.1 disc. The card is 425.8, the frame's 395.1
+    plus one dot row (31.7).
+  - **768:** "BOOK ME" at 50.05 (50), 24.2 (24); the card at 104.2 (104), radius 36, ring 4;
+    numeral 45.4 (45), month 29 (29); the pill 54 on a 46 × 44 disc. The card is 482.8 against
+    445.9 + 37.4.
+  - **390:** "BOOK ME" at 44 against the frame's 40 (`padY`, the twins' named diff), 22 (22);
+    numeral 32 (32), month 24 (24); the pill 54 `full`. The card is 464.5 against 427.9 + 37.4.
+- **Named diffs**:
+  - **the twins'**:
+    - the seeded June runs five weeks where the frame draws four, so each card is one dot row
+      taller;
+    - the frame's four booked and seven selected dots are filler the section has no model
+      for, and its "11 / Tue" is the seed's "12 / Thu";
+    - the dot grid is Retro's seven-column normalisation;
+    - the legend's ● and ○ are Inter's smaller glyphs;
+    - the desktop foot is `padY` 80 against `Frame 300`'s 56 × 0.82, and the 390 top 44
+      against 40;
+  - **Pop's own**:
+    - **the frame's one 31.99 dot ringed in `text/2`** (row 2, the Friday): a *today* neither
+      twin's frame draws. It is the same violet as the free ring under Scheme 2, 1.3 larger.
+      The canvas never reads the clock, so it has no seat (open question 14);
+    - Pop's rounded desktop tokens (`dispSm` 30, `list` 16).
+- **`live=1`** (puppeteer, trusted clicks, desktop `column=right` and 390):
+  - **picking**: June 21 moves the head to *21 / JUNE / Sat* and the pill to *Enquiry About
+    June 21*; a second click falls back to the cued 12th;
+  - **the arrows**: Next shows JULY with the head the month alone and the pill still on
+    June 12; the 15th gives *15 / JULY / Tue* and *Enquiry About July 15*; Prev shows JUNE,
+    the month alone, the pill on July 15; Prev again wraps to MAY 2026;
+  - **`&booked=2025-06-12,2025-06-20`**: both days take `box/2` with no handler (28
+    pointers), and the pill prints *Pick a date to enquire*;
+  - **`&today=2025-06-18&booked=2025-06-10,2025-06-24`**: the 17 days before today are the
+    free dot at .38, the booked 10th among them (JP-064, past wins), and only the 24th takes
+    `box/2`. A click on the 26th picks it. The dimmed violet rings read as quiet rings on the
+    lime card;
+  - **`&open=2025-03-29`**: opens on *29 / MARCH / Sat*;
+  - **the pill** is `<a href="#form">` live and a span on the canvas;
+  - **the canvas**: the dots and arrows carry no pointer and a click on Next leaves June.
+    `BookPill`'s own `cursor: pointer` is every template's;
+  - no page error or warning; the root's `scrollWidth` is its width at both widths.
+- **The head's fit** (JP-063's risk in the column): SEPTEMBER, NOVEMBER, DECEMBER and FEBRUARY,
+  each with a Wednesday picked, hold one line beside the pair and the weekday at all three
+  widths, canvas and live. Nothing overflows the card's content box.
+- **A long typed heading.** *Book me for your wedding party* wraps to two lines in the 335
+  column. **A single 34-letter word runs past it** (466 in 335), because the h2 carries no
+  `overflowWrap`. That is the shared block's behaviour: Lime's runs to 344 and Editorial's to
+  506 with the same word. Named, not fitted; open question 15.
+- **The composed row closes here.** `vm.pad`'s layout-3 arm folds Pop into the four templates
+  (`… || T.name === 'Pop'`, the `(cat === …)` clause gone), as Editorial's calendar did. In the
+  builder (a one-off puppeteer probe, Pop → card 3 → *Use this header*, a 1760 window):
+  - **the heads**: "KM BIO" and "BOOK ME" stand at one top, **41 on the 1180 canvas** and
+    **50 in the published 1440 tab**. Before this session they stood at 41 / 80 and 50 /
+    97.6. Both are box tops, the head's 0.1em lift undone;
+  - **the columns**: 708.7 : 334.5 and 864.8 : 408.2;
+  - **the sticky cell (JP-043 / JP-072)**: on the canvas it pins at the scroller's top + 28 at
+    ¼, ½ and ¾ of the row's travel (the scroller 944 tall, the cell 596.6). At 1.1 it is
+    released, its bottom flush with the row's. In the tab it pins at 0 and is released the
+    same way (row 2475.5, cell 655.3);
+  - no sideways scroll at 1440, 768 or 390, and the calendar's root is white at each.
+- **Digest: themes 0, 1, 2 and 3 zero files of 660, canvas and `live=1`** (a fresh `:5182`,
+  both labels taken there, no one-row file in any). Theme 4 moved exactly **calendar arch 2 at
+  three widths** on each surface. The roots go 649.9 → 596.6, 660.7 → 643 and 611.8 → 604.4:
+  the pad's top (80 → 41 at desktop) and the shorter type.
+- **`FIELDS.calendar` moves nothing.** A calendar-only copy of `scripts/reach.mjs 4`, run from
+  the scratchpad (768 renders), reads layout 2's list: `heading`, `open` and `prompt` reach all
+  four layouts, so the `Pop: [0, 1, 2, 3]` heading row holds over the fitted card. `slots`,
+  `dateLabel` and `availLabel` reach layout 2, `cta`, `types`, `tiers` and `who.location`
+  layout 4, `image` and `time` layouts 1 and 4, and `email` layout 4 at 3/6, the known partial.
+  All eleven rows match `fieldReach` under Pop in Node.
+- **In the builder** (`page-check.mjs Pop 2,0,1,3`): four modal cards on every card. On card
+  3's published 1440 tab the calendar stands beside the bio at **901**, 655 tall, under the
+  901 header, with media under the bio at 2126. The tab reads the real clock (F20), so it opens
+  on OCTOBER 2026 with the days before today dimmed and the pill on *Pick a date to enquire*,
+  the named, accepted diff. The calendar's six probed controls all change state. The nav, the
+  calendar's and pricing's pills and every footer link land on their ids. The player plays, the
+  form refuses and composes, the 390 burger opens (1 → 5), and `overflow390` is 0. **No console
+  error or warning on any card.**
+- **For the sweep's CLAUDE.md pass**: CLAUDE.md names no layout-3 calendar colour, ring or
+  radius, and the composed-row paragraph states no template list. `notes/calendar.md`'s
+  layout-3 sentences name no template, so nothing is owed there either. The `vm.pad` comment is
+  written. CONVENTIONS C's *the composed row's pad arm* row gains Pop (bio, media, then the
+  calendar, which closes it). D3's calendar row gains a Pop column: no `G`; the 2px ring turned
+  to a 4px one at radius 36; the pill kept on Scheme 2 at `BookPill`'s defaults under the seat,
+  `fg` dropped. Not written here.
+
 ### Inherited and used
 
 *(The running list the sweep folds into [`../CONVENTIONS.md`](../CONVENTIONS.md): each time a
@@ -1567,6 +1719,21 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
   is re-measured in the new face* (editorial/layout-2) — JP-104's clamp, the 768 wraps; *the
   whole-page published check* — `page-check.mjs Pop 2,0,1,3`.
 
+- Section 5: *after `line`* (D3, lime/layout-3) — widened, no `G`; *a widened block can need no
+  `G`* (grunge/layout-3) — Editorial's shape again; *a card on another scheme is that scheme's
+  binding, not always its ground* (pop/layout-2) — the card's `box/1` met by Lime's `s.box1`, the
+  pill's label and disc `sem/bg`, so `fg` dropped; *a nested node or a card on another scheme
+  reads that scheme's keys* (editorial/layout-2) — seated on 2, `cardOnPage` round it; *read
+  every nested node's scheme off the master* (grunge/layout-3) — the pill's Scheme 2, Lime's,
+  where Editorial's turned to 1; *a frame's inside stroke is an inset `boxShadow`*
+  (lime/layout-2) — the 4px ring and the dots' 2px; *a stand-in face's glyph floor is measured
+  per site* (editorial/layout-3) — the numeral and month 0.14em, "BOOK ME" 0.1em, the pill's
+  label left; *`vm.title` shadows the ramp* (lime/layout-1) — Display/Title 28 / 22 / 20; *the
+  composed row's pad arm moves per section* (grunge/layout-3) — closed by the calendar; *a
+  twin's width-bound call is re-measured in the new face* (editorial/layout-2) — JP-063's head
+  fit with the longest months; *field reach is measured* — a calendar-only `reach.mjs`; *the
+  whole-page published check* — `page-check.mjs Pop 2,0,1,3`.
+
 ## Open questions
 
 1. ~~**Decision 1** — the header's ground: seat 6 with `cardOnPage` at desktop (A, recommended) or a
@@ -1613,3 +1780,13 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
     arch 1 under theme 4 alone, but the desktop rows also divide the grid's stretched height, so
     it wants its own check. Not touched here, since theme 4 may move only media arch 2. **A user
     call**, for a QA batch or the sweep.
+14. **The calendar frame draws a *today*** (section 5): one dot in row 2 is 31.99 against
+    30.71, on `box/1` ringed in `text/2` rather than `stroke/1`. Under Scheme 2 both are violet,
+    so it reads as a slightly larger free dot. Neither twin's frame draws it, and the canvas
+    never reads the clock, so it has no seat; a live-only today mark would be a new state.
+    Worth a line to the designer, with the booked and selected filler beside it.
+15. **A one-word typed heading runs out of the calendar's column** (section 5): the layout-3
+    block's h2 carries no `overflowWrap`, so a 34-letter word sets 466 wide in the 335
+    composed column under Pop. Lime's sets 344 and Editorial's 506 with the same word. A shared
+    fix (`overflowWrap: 'anywhere'` on the h2) should move no seeded geometry (by inspection,
+    not measured), but it is every template's; **a user call**, for a QA batch or the sweep.
