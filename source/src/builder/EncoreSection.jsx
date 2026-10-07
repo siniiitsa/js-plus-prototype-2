@@ -24753,11 +24753,37 @@ function Testimonials({ s }) {
     //    face, and the numeral Scheme 3's `text/1` terracotta where the card's
     //    other ink is its `text/2` paper — Grunge's two inks, other keys.
     //    Every display and label string is uppercase at its own site.
-    if (s.limeTree) {
+    //
+    // **Pop (Kai Mercer — 964:68780 · 984:15384 · 984:15415) is the tree a
+    // fifth time, 44 = 44 = 44 at every width** against both twins, the
+    // paired diff leaves alone (the ramp, Lime's 50 corner on solid 1px
+    // rings, Editorial's 24 / 28 padding), on Scheme 1 with **every cell on
+    // its own scheme** — the stat card 3, then 7 / 2 / 4 / 5 / 6 — no Device
+    // override, no effect and every paint bound. So a fourth `G` arm, written
+    // first, and the `pop` sites beside Editorial's:
+    //
+    //  - **Five registers, one to a seat** (`SEATS` the identity, Retro's own
+    //    order; the stat card's Scheme 3 is the sixth scheme, read through
+    //    `card` as every twin's): coral, lime, blue, teal and violet
+    //    `box/1`s, each ringed 1px in its `stroke/1` and its disc `text/1`
+    //    lettered `sem/bg`, Editorial's mapping. The quote's ink alternates
+    //    with the frame — `text/2` on the two name-cells and `feat-quote`,
+    //    `text/1` on `quote-cell` and `small-quote` — and the cell's name and
+    //    role take the same ink, so each cell reads in one (`feat-quote`'s
+    //    pink on violet is the frame's own, 1.35 : 1, followed). `quote-cell`
+    //    is left bare, Editorial's call (`G.bare`): a lime card on the white
+    //    page is parted by its fill. The frame draws no disc on seats 1, 3 or
+    //    4; the seed's named reviews there take the name-cells' bindings, an
+    //    extrapolation.
+    //  - **The stat card is Scheme 3**: pink `box/1` in a violet `stroke/1`,
+    //    its ink `text/2` violet and the numeral and stars `text/1` lime, the
+    //    face stack ringed in `box/2` — Editorial's keys read on Pop's.
+    if (s.limeTree || s.pop) {
       const grunge = s.grunge
       const ed = s.editorial
+      const pop = s.pop
       const S1 = ed ? s.onScheme[1] : null
-      const S3 = ed ? s.onScheme[3] : null
+      const S3 = ed || pop ? s.onScheme[3] : null
       const S4 = ed ? s.onScheme[4] : null
       const ring = (c, w = 1) => `inset 0 0 0 ${w}px ${c}`
       // The frame's five quote cells by scheme, read off the nodes' fills —
@@ -24778,7 +24804,35 @@ function Testimonials({ s }) {
       // Grunge masters state 28 on the **last column of each row** and 24 on
       // every other cell at all three widths, which a wall of any count cannot
       // model, so the majority is taken and the diff named.
-      const G = grunge
+      //
+      // Pop's register is one scheme a seat, read off each cell's own
+      // `explicitVariableModes`: `box/1` under the ink its quote binds, its
+      // `stroke/1` ring, the disc its `text/1` lettered its `sem/bg`.
+      const popReg = (n, ink) => {
+        const k = s.onScheme[n]
+        return { bg: k.box1, fg: k[ink], edge: k.stroke1, disc: k.bg, discBg: k.ac }
+      }
+      const G = pop
+        ? {
+          REG: [
+            popReg(7, 'tx'), // name-cell: coral, violet ink, a lime disc
+            popReg(2, 'ac'), // quote-cell: lime `box/1`, its quote `text/1` pink
+            popReg(4, 'tx'), // name-cell: blue, yellow ink, a teal disc
+            popReg(5, 'ac'), // small-quote: teal, its quote `text/1` violet
+            popReg(6, 'tx'), // feat-quote: violet, its quote `text/2` pink
+          ],
+          SEATS: [0, 1, 2, 3, 4],
+          bare: 1,              // `quote-cell`, the frame's one unringed seat
+          card: S3.box1,        // `rating` is Scheme 3: `box/1` pink
+          cardFg: S3.tx,        // its `text/2`, violet
+          num: S3.ac,           // the numeral and stars its `text/1`, lime
+          hair: S3.stroke1,     // 1px violet
+          lift: S3.box2,        // the face stack's 2px ring, `box/2` #F0138C
+          radius: 50,
+          pad: 24,              // 28 on each row's last cell, the majority taken
+          quote: s.labelLg,
+        }
+        : grunge
         ? {
           REG: [
             { bg: s.box1, fg: s.tx, edge: s.stroke1, disc: s.bg },
@@ -24843,7 +24897,7 @@ function Testimonials({ s }) {
       // site, because the two label-face sites carry none.
       const disp = (family, size, lh) => ({
         fontFamily: family, fontSize: faced(s, size), lineHeight: facedLh(s, lh),
-        ...(grunge || ed ? { textTransform: 'uppercase' } : null),
+        ...(grunge || ed || pop ? { textTransform: 'uppercase' } : null),
       })
 
       // The frame's four stack faces are photographs in a 2px `lift` ring;
@@ -24867,7 +24921,7 @@ function Testimonials({ s }) {
           background: s.bg, color: s.ac, boxShadow: ring(G.lift, 2),
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
           overflow: 'hidden', fontFamily: s.label, fontSize: u(11), lineHeight: 1.1,
-          ...(grunge || ed ? { textTransform: 'uppercase' } : null),
+          ...(grunge || ed || pop ? { textTransform: 'uppercase' } : null),
           ...(last ? null : { marginRight: u(-8) }),
         }}>{mark}</span>
       )
@@ -24904,10 +24958,15 @@ function Testimonials({ s }) {
                 below. Lifted 0.055em of the numeral it stands 0.190 / 0.211 /
                 0.194 (Noto's floor stood 0.085 / 0.088 / 0.057em low and took
                 0.08; display-face.md step 4, layout 3, and
-                plans/editorial/layout-3.md, section 10). */}
+                plans/editorial/layout-3.md, section 10). Titan's stood
+                0.102 / 0.104 / 0.098 token-em up against Chunko's 0.234 /
+                0.24 / 0.24 and its cap top 0.14 low, the head's figures, so
+                Pop's row takes the head's 0.14em of the faced numeral
+                (plans/pop/layout-3.md, section 10). */}
             <div style={row(u(rated ? 4 : 8), {
               alignItems: 'baseline', ...(desk ? null : { width: '100%' }),
-              ...(ed ? { position: 'relative', top: `calc(-0.055 * ${s.dispMd})` } : null),
+              ...(ed ? { position: 'relative', top: `calc(-0.055 * ${s.dispMd})` }
+                : pop ? { position: 'relative', top: `calc(-0.14 * ${faced(s, s.dispMd)})` } : null),
             })}>
               <span style={distressed(s, {
                 ...disp(s.display, s.dispMd, 1),
@@ -24948,23 +25007,34 @@ function Testimonials({ s }) {
       // the accent in the cell's own ring colour, lettered in `reg.disc`.
       // Grunge sets the quote itself at Display/Title instead — `G.quote`, the
       // one size this block writes out. Editorial's disc is its cell's own
-      // `text/1` (`reg.discBg`), and its seat `G.bare` goes undashed.
+      // `text/1` (`reg.discBg`), and its seat `G.bare` goes undashed; Pop's
+      // `G.bare` goes unringed, and its disc is Editorial's mapping.
+      //
+      // Titan sits low in its line box, so Pop lifts each string by its own
+      // scan (drawn alone at DPR 4, flat-bottomed `&cj=` strings, against the
+      // frame's `absoluteRenderBounds` corrected for its whole-pixel box): the
+      // quote and the disc's mark, Label/LG at lh 1.1, 0.10–0.15 token-em low
+      // at the three widths, take 0.12em; the name, Display/List at lh 1.2
+      // over its role, 0.05–0.10 low, the map's venues' 0.08em. The mark is
+      // lifted inside the disc, never the disc.
+      const popLift = (em) => (pop ? { position: 'relative', top: `-${em}em` } : null)
       const quoteCard = (q, i) => {
         const reg = REG[SEATS[i % SEATS.length]]
+        const bare = i % SEATS.length === G.bare
         return (
-          <div key={i} style={cell(reg)}>
+          <div key={i} style={cell(reg, pop && bare ? { boxShadow: undefined } : null)}>
             {!!q.who && (
               <span style={{
                 width: u(56), height: u(56), flex: 'none', borderRadius: '999px',
                 background: reg.discBg ?? s.ac, color: reg.disc, boxShadow: ring(reg.edge),
                 display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                 overflow: 'hidden', ...disp(s.label, s.labelLg, 1.1),
-              }}>{q.mark}</span>
+              }}>{pop ? <span style={popLift(0.12)}>{q.mark}</span> : q.mark}</span>
             )}
             {!!q.quote && (
               <p style={{
                 margin: 0, width: '100%', ...disp(s.label, G.quote, 1.1),
-                overflowWrap: 'break-word',
+                overflowWrap: 'break-word', ...popLift(0.12),
               }}>{q.quote}</p>
             )}
             {!!q.byline && (
@@ -24972,13 +25042,13 @@ function Testimonials({ s }) {
                 {!!q.who && (
                   <span style={{
                     ...disp(s.display, s.list, 1.2),
-                    letterSpacing: s.dls,
+                    letterSpacing: s.dls, ...popLift(0.08),
                   }}>{q.who}</span>
                 )}
                 {!!q.role && <span style={small}>{q.role}</span>}
               </div>
             )}
-            {i % SEATS.length !== G.bare && dash(reg.edge)}
+            {!bare && dash(reg.edge)}
           </div>
         )
       }
@@ -24997,9 +25067,12 @@ function Testimonials({ s }) {
 
       // The head is `s.tx` for both lines (Retro's display line is ink on
       // beige); Display/MD is 72 / 50 / 40 under Lime, 72 / 50 / 38 under
-      // Grunge and 64 / 45 / 36 under Editorial, the ramp each time, and one
-      // tone on every frame's segments. The 1440 column's 306 cap is dropped,
-      // Retro's call — Editorial's frame breaks EXPERIENC / ES. inside it.
+      // Grunge, 64 / 45 / 36 under Editorial and 45 / 36 / 28 under Pop, the
+      // ramp each time, and one tone on every frame's segments. The 1440
+      // column's 306 cap is dropped, Retro's call — Editorial's and Pop's
+      // frames break EXPERIENC / ES. inside it. Under Pop the head is `text/2`
+      // violet, `s.tx` again, lifted Titan's 0.14em: unlifted it sat 0.14
+      // token-em low at both ends, at all three widths.
       return (
         <div style={col(u(24))}>
           <div style={col('0px', { width: '100%', color: s.tx })}>
@@ -25007,7 +25080,7 @@ function Testimonials({ s }) {
             {!!s.title && (
               <h2 style={distressed(s, {
                 margin: 0, ...disp(s.display, s.dispMd, 1),
-                letterSpacing: s.dls,
+                letterSpacing: s.dls, ...popLift(0.14),
               })}>{s.title}</h2>
             )}
           </div>

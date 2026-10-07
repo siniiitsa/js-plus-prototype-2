@@ -610,12 +610,13 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // sections 9 and 10).
   //
   // Pop's form masters (964:68779 · 984:15383 · 984:15414) pad the twins'
-  // 90 / 56 and 60 / 30 again, round the card at 1440, so the form joins on
-  // their numbers; the testimonials join in their own session, which folds
-  // the pair back into one condition (plans/pop/layout-3.md, section 9).
-  if (((T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial')
-    && (cat === 'form' || cat === 'testimonials') || (T.name === 'Pop' && cat === 'form'))
-    && d === 2 && Z.dev !== 'mobile') {
+  // 90 / 56 and 60 / 30 again, round the card at 1440, so the form joined on
+  // their numbers, and its testimonials' roots (964:68780 · 984:15384 ·
+  // 984:15415) pad the twins' 56 / 56 and 30 / 56, so the pair is one
+  // condition again for the four templates (plans/pop/layout-3.md, sections
+  // 9 and 10).
+  if ((T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial' || T.name === 'Pop')
+    && (cat === 'form' || cat === 'testimonials') && d === 2 && Z.dev !== 'mobile') {
     const desk = Z.dev === 'desktop'
     const px = (v) => `${desk ? Math.round(v * 0.82) : v}px`
     vm.pad = cat === 'form'
