@@ -290,7 +290,7 @@ masters are one session. **Lime block** is where that section's Lime layout-3 bl
 | 5 | `calendar` | `964:68774` *(in `964:68772`; "BOOK ME" `964:68773`)* | 405 × **481.9** | `984:15379` *(in `984:15377`; `984:15378`)* | 708 × **445.9** | `984:15410` *(in `984:15408`; `984:15409`)* | 370 × **427.9** | **2** (the instance; its pill names 2 again) | `964:68677` / `984:10763` / `984:10794` | `964:68742` / `984:16835` / `984:16866` | `if (s.limeTree)` inside `Calendar`'s `if (s.v2)`, after `line` | **done** `94d3c24` |
 | 6 | `gallery` | `964:68776` | 1440 × 789 | `984:15380` | 768 × **857** | `984:15411` | 390 × **579** | **2** (tile rings name Scheme 1) | `964:68679` / `984:10764` / `984:10795` | `964:68744` / `984:16836` / `984:16867` | **no block** — `s.limeTree`, `(s.lime \|\| grunge)` and `ed` reads through `Gallery`'s `if (s.v2)` | **done** `0dd172e` |
 | 7 | `pricing` | `964:68777` | 1440 × **1093** | `984:15381` | 768 × **1010** | `984:15412` | 390 × **1419** | 1 (featured row **2**) | `964:68680` / `984:10765` / `984:10796` | `964:68745` / `984:16837` / `984:16868` | `if (s.limeTree)` inside `Pricing`'s `if (s.v2)`, after `shown` | **done** `ed6432a` |
-| 8 | `map` | `964:68778` | 1440 × **809** | `984:15382` | 768 × **827** | `984:15413` | 390 × **880** | **4** (lit row, *See all gigs* and `radius-map` **3**; the viewport inherits 3) | `964:68681` / `984:10766` / `984:10797` | `964:68746` / `984:16838` / `984:16869` | `if (s.limeTree)` inside `EventsMap`'s `if (s.v2)`, after `litRow` | open |
+| 8 | `map` | `964:68778` | 1440 × **809** | `984:15382` | 768 × **827** | `984:15413` | 390 × **880** | **4** (lit row, *See all gigs* and `radius-map` **3**; the viewport inherits 3) | `964:68681` / `984:10766` / `984:10797` | `964:68746` / `984:16838` / `984:16869` | `if (s.limeTree)` inside `EventsMap`'s `if (s.v2)`, after `litRow` | **done** `1177b7f` |
 | 9 | `form` | `964:68779` | 1440 × **553** | `984:15383` | 768 × **667** | `984:15414` | 390 × **716** | 1 (card **2**) | `964:68682` / `984:10767` / `984:10798` | `964:68747` / `984:16839` / `984:16870` | `if (s.limeTree)` inside `EnquiryForm`'s `if (s.v2)`, after `up` | open |
 | 10 | `testimonials` | `964:68780` | 1440 × 790 | `984:15384` | 768 × **775** | `984:15415` | 390 × **1050** | 1 (cells **3 / 7 / 2 / 4 / 5 / 6**) | `964:68683` / `984:10768` / `984:10799` | `964:68748` / `984:16840` / `984:16871` | `if (s.limeTree)` inside `Testimonials`' `if (s.v2)`, after `template` | open |
 | — | `footer` | `964:68781` | 1440 × 479.5 | `984:15385` | 768 × 720.4 | `984:15416` | 390 × 720.4 | *(explicit 2, inert)* — renders 3, layout 1's pink | — | — | — | **out of scope**: layout 1's footer, closed at planning time |
@@ -892,6 +892,15 @@ Retro's bullets; name them.
   "the defaults are the frame's" paints a black pill here. Read the pill's fill binding and pass
   it (`G.pillBg`, spread only where set, so the twins' spread stays `{}`). Under a seat whose
   `pillBg` is the frame's (the calendar's Scheme 2, pink) the default holds.
+- **One lit pair in a twin can be two schemes here** (section 8). Every twin's map lights its
+  chip and its row with one `lit` / `litFg`; Pop's chip is the band's own Scheme 4 pair and its
+  lit row a nested Scheme 3 pill, so the pair split (`chipLit`, read `?? G.lit`). Where a block
+  reuses one key for two nodes, read each node's `explicitVariableModes` before giving the key a
+  value — and the same for every ink inside a nested node that does not state its own mode (the
+  map's viewport letters Scheme 3's violet where the twins' `ink` was the band's, `vpInk`).
+- **`Pager`'s Pop arm fills its ends** (section 8): `endBox: s.ac`, layout 1's Scheme 6 seat. A
+  caller whose frame draws unfilled arrows passes `endBox: 'transparent'` in `frame.lime`, spread
+  only where set; the map's 390 arrows were teal discs round a teal arrow until it did.
 
 ### Seen at planning time, per section
 
@@ -1917,6 +1926,174 @@ From the renders and the planning walk — impressions to confirm, not measureme
   Scheme 2 as Editorial's off 3; the plain pill passed `s.ac`, `pillBg` being black), and C's
   *under Lime `pillBg` IS the accent* row (turned round again: black, so passed). Not written here.
 
+### Settled in section 8 (the events map)
+
+- **The block widened: `if (s.limeTree || s.pop)` inside `EventsMap`'s `if (s.v2)`, after
+  `litRow`, `const pop = s.pop`, `S3` off `s.onScheme[3]` under `ed || pop`, and a fourth `G` arm
+  written first**, the Lime, Grunge and Editorial arms byte-identical: Grunge's keys and
+  Editorial's leaves read on Pop's schemes, plus **seven new leaves through `??`** (below) and a
+  handful of `pop` sites — `disp()`'s uppercase, three lifts (`popLift`), the date disc's 2px
+  ring. The walk (bindings with their collection, all three widths) found the twins' tree node
+  for node, **141 / 142 / 83**, on **Scheme 4** with the lit row, *See all gigs* and
+  `radius-map` **explicitly Scheme 3** and the `Map View Container` stating no mode, so the
+  viewport **inherits 3** (trap 4); `resolvedVariableModes` Desktop / Tablet / Mobile, no effect
+  on any node, **no raw paint** (every fill and stroke bound but the map texture `e089bd11`).
+  `get_variable_defs` is the ramp (title 28 / 22 / 20, list 20 / 16 / 15, body-sm 12, body-md
+  14 / 13 / 13, body-lg 16 / 15, label-xs 20 / 14 / 12, chip 12 / 11 / 11, eyebrow 15 / 12) plus
+  `border/thin` 2 (the date discs' ring), so every size reads `s.*` but Display/Title, the literal
+  `u(28)` / 22 / 20 (`G.title`; `vm.title` shadows the ramp). The hooks sit above the block, so
+  the published filter, featuring, 390 pager, zoom, *See all gigs* and JP-106's pill needed
+  nothing.
+- **Under the Scheme 4 seat Grunge's split is the frame's** for the page side: idle type,
+  the chips' and rows' hairlines and the date discs are `s.tx` yellow, `s.stroke1` teal and
+  `s.box1` `#3F76FF`; the head and the venues bind `text/2`, the ink, so `head` and `venue` stay
+  unset; the rows' foot rule is solid `stroke/1` (Lime's `hair` path, Editorial's dash unset);
+  the band is the seat's (`G.sheet` undefined). **Lime's five-way `ink` split takes a sixth seat
+  under Pop** (*Conventions*, the new bullet): the lit chip and the lit row stand on different
+  schemes. The All chip fills Scheme 4's `text/1` teal lettered `sem/bg` blue (`chipLit` /
+  `chipLitFg`, read `?? G.lit`), while `lit` / `litFg` stay the lit row's: Scheme 3's `text/1`
+  lime under `sem/bg` pink type. On that row:
+  - the row is ringed **2px `S3.stroke1` violet** INSIDE (`litRing`, `u(2)`: 1.6 on the canvas),
+    padded Lime's 14 / 29 / 14 / 10 at radius 999, the place line Body/Eyebrow in pink;
+  - its date disc **turns round** to Scheme 3's `box/1` `#FF63B8` in that violet ring
+    (`litDisc`), lettered `text/1` lime (`litBoxFg`), where every twin keeps `mist` in both
+    states; every idle disc is ringed **2px** in teal (`border/thin`, the twins' 1px hair);
+  - its JP-106 pill fills `sem/bg` pink under `text/1` lime — the block's `G.litFg` / `G.lit`,
+    already the frame's — but rings in the lit row's violet, not the hairline (`litRing`).
+- ***See all gigs* is Scheme 3's pill**: `text/1` lime lettered and disced `sem/bg` pink round a
+  lime arrow, `G.pillBg` / `G.pillFg` = `S3.ac` / `S3.bg` (`BookPill`'s Lime branch; `s.pillBg`
+  is Scheme 4's teal, so passed — section 7's convention). Not lifted (`BookPill`'s label).
+- **The panel is `S3`, Editorial's keys read on Pop's**: `box/1` `#FF63B8` for the card and the
+  map container alike (`panel`, `mapBox` — one value, Lime's case), radius **50 / 30 / 30** and
+  **25 / 20 / 20** (Lime's own numbers), padding 32 / 12 / 12·10; its type `text/2` violet
+  (`panelInk`; *Updated* at the frame's own .6, the city .7); the status pill `sem/bg` pink
+  lettered and dotted `text/1` lime (`statusBg` / `statusFg`); the container's ring, the data
+  bar's rule and the zoom buttons' ring `stroke/1` violet (`hairP`); EXPAND VIEW's arrow `sem/bg`
+  pink on the pink container — faint, the frame's own, followed as every twin's (`arrow`). The
+  viewport's shape is the masters' **570 × 472, 315 × 521, 350 × 164** (`ratio`).
+- **The viewport is Scheme 3, inherited** (trap 4): the rings, ring labels, centre disc and tail
+  `sem/bg` pink (`acc`, at 1 / 1.5 / 2 and .3 / .5 / .8, the outer dashed 4, 4 — unchanged), and
+  everything lettered inside it — the ring labels, the centre disc's 2px ring and glyph, the zoom
+  buttons' glyphs — **Scheme 3's `text/2` violet** (`vpInk`), which every twin draws in the band's
+  `ink` (right under theirs: Grunge's and Editorial's viewport letters what the band does). Here
+  `ink` is the band's yellow, so the four sites read `G.vpInk ?? ink`. The zoom buttons are
+  `box/2` `#F0138C` (`zoom`). **The frame's five dots are followed**: violet `text/2` at .6, which
+  reads on the plate, layout 2's Pop reading (`dot` / `dotOp`). The plate stands a fifth time.
+- **The lit pin is the lit row's own pair** (the one state no frame draws): lime `S3.ac` (`pin`,
+  read `?? s.ac`, which is Scheme 4's teal) in a 2px violet `S3.stroke1` ring (`pinRing`) —
+  Grunge's and Editorial's reading (the lit row's own fill), where layout 2's Pop took the centre
+  marker's pair because that page has no lit row. Pictured lit over a pink ring at desktop and
+  768: the violet ring parts it from the ring and from the pink centre marker.
+- **The 390 pager's two arrows are unfilled**, ringed and lettered `text/1` teal (`pagerInk` =
+  `s.ac`). `Pager`'s Pop arm fills its ends (`endBox: s.ac`), which made them teal discs round a
+  teal arrow, so the block passes `endBox: 'transparent'` through a new `pagerBox` leaf, spread
+  only where set, so the twins' `frame.lime` is unchanged (*Conventions*, the second new bullet).
+- **The lifts, scanned** at DPR 4, each string drawn alone, against the frames'
+  `absoluteRenderBounds` in token-em:
+  - **Display/Title, lh 1.1** — the h2 and the panel's h3. The frame's floor is 0.276 / 0.263 /
+    0.29 up the box (0.272 / 0.258 / 0.29 corrected for its whole-pixel line box — pricing's and
+    "BOOK ME"'s figures to the thousandth). Titan sat **0.176 / 0.179 / 0.137**, so both take
+    **`top: −0.1em`**: lifted, 0.274 / 0.277 / 0.235. The h3 replaces Editorial's `−0.055em` arm
+    with Pop's.
+  - **Display/List, lh 1.2** — the row venues, over their place line 3 below. The frame's floor
+    is 0.34 / 0.309 / 0.323 and its cap top 0.14 / 0.175 / 0.157; Titan sat 0.247 / 0.247 / 0.25
+    up and 0.234 / 0.234 / 0.233 down, **0.06–0.09em low at both ends**, so they take the
+    measured **`top: −0.08em`**: lifted, 0.325 / 0.325 / 0.328 up, 0.156 down. Not layout 2's
+    0.14 (a cap-top reading of the h2 and venues together), and not the repertoire's or pricing's
+    "~1px low and left" (a title that stands alone or centred): this one stands over a line of
+    type, Editorial's site rule.
+  - **Titan's J clears**: `&cj=` with *Jumpin Jacks*, *Jam Jar Joinery* and *The Junction*,
+    lifted, leaves 9.25–9.75px of blank between each venue's ink and its place line's at all
+    three widths, J-less rows the same.
+- **Measured against the masters' content edges** (harness; the frame × 0.82 in brackets):
+  - **desktop**: root **662.3** (663.4); h2's unlifted box at 64.8 (64.8), 25.3 (25.4); chips at
+    104.9 (105.0); rows **68.9** (68.9); discs 45.9 in a 1.6 ring; *See all gigs* 169.3 × 44.3
+    (173.8 × 44.3); panel (614.6, 45.9) **519.5 × 570.5** (615, 45.9, 519.9 × 571.5), radius 41;
+    status 82.3 × 19.8 at 72.1 (82 × 19.7 at 72.2); h3's unlifted box at 101.7 (101.7);
+    container 467.1 × 423.8 (467.4 × 423.9) at 20.5; viewport **386.8** (387); zoom at (1070.2,
+    471.3) (1070.9, 472.3); ring labels at 915.6 / 1053 (915.5 / 1052.9); bar 37 (36.9).
+  - **768**: root 825.3 (827); h2 at 78.9 (79); chips 121 (121); rows 84; *See all gigs* 184.1 ×
+    54 (186 × 54); panel (399, 56) 339 × 713.3; status 94.3 × 23 (95 × 23); h3 at 103 (103);
+    container at 174.7 (175); viewport **315 × 521**, exact; zoom (680, 595.7) (680, 596); labels
+    620 / 788.1 (620 / 787.5).
+  - **390**: root 835.9 on the canvas, **874.7** live with a `today` (880); h2 at 82.8 (83); row
+    84 / **122.8** with the pill (123); pager 181 × 54 (185 × 54); *See all gigs* 370 × 54 (370 ×
+    54); panel 370 × 358.3 (360); viewport **350 × 164**, exact; bar 65.8 (67).
+  - No root's `scrollWidth` exceeds its width.
+- **Named diffs, the twins'**:
+  - the chip row is Retro's normalisation (the lit *All* at Body/SM, 22.2 / 26.8 tall against
+    the frame's Body/MD 25.4 / 30), so the list stands 3.2 higher;
+  - the chips are the gigs' cities, the frame's six rows are our five gigs, the ↗ beside the
+    venue is dropped (JP-045, re-asked by JP-106 and kept), and the day numerals are Label/XS
+    throughout where the frame hand-sets Inter in four rows;
+  - **768**: the frame's venues wrap beside the pill and *Tickets →* (HIDDEN / WAREHO / USE in
+    an 89 box, rows 105 / 86 / 85 / 86 / 84 / 84); ours hold one line on the seed (no link, and
+    no pill on the canvas), 84 each — the 768 section stays the panel's height either way; the
+    data bar wraps the seeded "Based in Manchester · 5 pins · 120 mi radius" (61.6 against 45,
+    the panel 713.3 against 697 — JP-105's named run, `base` the long part);
+  - **390**: the pager's two pills sit `Pager`'s 8 apart (181 against the frame's flush 185);
+    the frame's past row prints *Manchester · past* where ours keeps the hour (JP-106);
+  - Pop's rounded desktop tokens (`list` 16 against 16.4).
+- **`live=1`** (puppeteer, trusted clicks, 1440 and 390; probes in the scratchpad):
+  - a row click features its gig and lights its row (Mint Lounge), a pin click does the same back
+    (pin 2 → The Deaf Institute); the lit row is lime ringed violet with its pink disc, the lit
+    pin lime 11.5 in its violet ring, the idle pins violet at .6;
+  - the *Lake District · 1* chip lights teal lettered blue and filters to one row (no lit row,
+    one pin), and *All* restores five with the pick kept;
+  - two `+` clicks scale the layer to 1.5625, `−` back to 1.25;
+  - the 390 arrows walk Hidden Warehouse → The Deaf Institute → Private wedding and back, the
+    panel following;
+  - `n=30`: *See all gigs* lists all 30 at 1440, 768 and 390, the pager gone;
+  - `n=0` prints *No dates yet.* in both columns with no chips or pins; `n=1` draws no chip row
+    and no lit row;
+  - **JP-106's pill** at `today=2031-07-30` (two past, three upcoming), three widths: idle
+    unfilled in a 1px teal ring under yellow, lit pink under lime in the violet ring, 78.2 × 24.8
+    / 44.7 × 24.8 at 768 (78 × 25 / 46 × 25), the 768 lit row's pill standing where *Tickets →*
+    would stack under it; `&cj=` links — one *Tickets →*, an `<a>` live and a span on the canvas,
+    the refused `foo` none;
+  - the canvas carries no link and no pointer but `BookPill`'s own; no page error or warning.
+- **`FIELDS.map` has no template-keyed `in` row** (checked in Node: 25 rows, every `in` a flat
+  array), so no `reach.mjs` run was owed — the twins' finding.
+- **Digest: themes 0, 1, 2 and 3 zero files of 660, canvas and `live=1`** (a fresh `:5185`, both
+  labels taken there, no one-row file in any). Theme 4 moved exactly **map arch 2 at three
+  widths** on each surface: four rows more a width, the roots 660.3 → 662.3, 824.7 → 825.3 and
+  836.5 → 835.9.
+- **In the builder** (`page-check.mjs Pop 2,0,1,3`): four modal cards on every card, no console
+  error or warning on any. Card 3's published 1440 tab stands the map at **5703**, **808** tall
+  (the frame's 809), under pricing (4634 · 1069) and over the form (6511); at 390 it is 875 (the
+  tab reads today, so the pills draw; frame 880). The map's city chips and rows change state (the
+  lit *All* and the lit first row idempotent), every nav link (Gigs → `#map`), anchor and footer
+  link (Shows/Coverage → `#map`) lands, the player plays, the form refuses and composes, the 390
+  burger opens (1 → 5), `overflow390` 0. **The seam clips are straight at 1440 and 390**:
+  pricing's pink ring onto the blue band, the band onto the white form; the kicker stands 56 / 60
+  under the band's top, the panel's foot 56 over its bottom — the roots' own insets, which the
+  block writes out over a cancelled `padY` / `padX`, so `vm.pad` needed no map arm.
+- **For the sweep's CLAUDE.md pass**: CLAUDE.md names no layout-3 map colour; its `s.live` list
+  states no template for the layout-3 map. `notes/map.md`'s JP-106 pill sentence now names Pop's
+  violet lit ring (written in this session's commit). CONVENTIONS D3's map row gains a Pop column
+  (a fourth `G` arm; the split's sixth seat, `chipLit`; the lit row a nested Scheme 3 pill with its
+  disc turned round; the viewport inheriting Scheme 3, `vpInk`; the rings kept; the plate sampled
+  and kept), C's *Retro's live states vanish… redraw them* row (the lit pin, the lit row's pair)
+  and *a twin's redrawn state is read against this frame* (the lit row, the frame's own,
+  followed). Not written here.
+- **For the form**: it stands on **Scheme 1, white, no band** (`SCHEMES_OF.Pop[2]` has no `form`
+  entry) round a **nested Scheme 2 card** (634 × 373 / 708 × 354 / 370 × 349) — read whether it
+  binds `box/1` `#D7FF23` or `sem/bg` before writing a key (layout 2's form card bound `box/1`;
+  section 7's featured row bound `sem/bg`). Its block is **`if (s.limeTree)` inside `EnquiryForm`'s
+  `if (s.v2)`, after `up`**, with no `G` (Grunge's section 9; Editorial's arms are `ed`), so
+  expect `pop` arms and a `G` only if the leaves pile up. **`vm.pad`'s `d === 2` form /
+  testimonials arm names Lime, Grunge and Editorial**: Pop joins for `cat === 'form'` alone, the
+  composed row's precedent, until the testimonials close the pair — measure the root's 90 / 60
+  foot first. The head is pink at Display/LG, `formHeading3()`'s "Book Kai Mercer for your
+  event", on `vm.titleWordEms` (Pop's `titanEms` already) — read its text style on the node and
+  scan its lift (Editorial's form head took one over its prose). **The submit pill**: the card is
+  a nested Scheme 2 node on a Scheme 1 section, so `BookPill`'s default `pillBg` is Scheme 1's
+  **black** there, not Scheme 2's pink (section 7's convention). The plan's table reads it
+  `text/1` pink round `sem/bg` lime, Scheme 2's own pair — read the binding and pass it (`S2.ac`
+  / `S2.bg`, as *See all gigs* passes `S3`'s here). The four label-in-box inputs keep
+  `--ph: 1` (JP-093); the refused box's colour is a state no frame draws, checked against the
+  lime card (CONVENTIONS C).
+
 ### Inherited and used
 
 *(The running list the sweep folds into [`../CONVENTIONS.md`](../CONVENTIONS.md): each time a
@@ -2031,6 +2208,23 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
   is checked against its own surround* (editorial/layout-3) — the moving seat and *No packages
   yet.*, which needed nothing; *the whole-page published check* — `page-check.mjs Pop 2,0,1,3`.
 
+- Section 8: *after `litRow`* (D3, lime/layout-3) — widened, a fourth `G` arm; *the `G` lookup at
+  the block's head* (grunge/layout-1) — Pop's arm first, seven leaves falling back through `??`;
+  *Lime's one `ink` was doing five jobs* (grunge/layout-3, section 8) — a sixth seat for the lit
+  chip; *a nested node or a card on another scheme reads that scheme's keys* (editorial/layout-2)
+  — the lit row, *See all gigs* and the panel on `S3`; *read every nested node's scheme off the
+  master* (grunge/layout-3) — the viewport inheriting 3, not the seat's 4; *a Lime block paints
+  its ground from Scheme 1 keys* (editorial/layout-4) — `G.sheet` undefined, the seat's blue;
+  *under Lime `pillBg` IS the accent* (C) — turned round: Scheme 4's teal, so *See all gigs*
+  passes `S3`'s pair; *rings are the frame's weights, opacities and dash* (D3) — kept; *the
+  raster is drawn as it is* (D3) — the plate a fifth time; *a twin's redrawn state is read against
+  this frame* (C) — the lit row, the frame's own, followed; *Retro's live states vanish… redraw
+  them* (lime/layout-1) — the lit pin, the lit row's pair; *a frame's inside stroke is an inset
+  `boxShadow`* (lime/layout-2) — the lit row's and discs' 2px; *a stand-in face's glyph floor is
+  measured per site* (editorial/layout-3) — 0.1em at Display/Title, 0.08em on the venues;
+  *`vm.title` shadows the ramp* (lime/layout-1) — Display/Title 28 / 22 / 20; *the whole-page
+  published check* — `page-check.mjs Pop 2,0,1,3`.
+
 ## Open questions
 
 1. ~~**Decision 1** — the header's ground: seat 6 with `cardOnPage` at desktop (A, recommended) or a
@@ -2091,3 +2285,8 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
     row's `sem/bg` `#C6F200`, 1.13 : 1, so the tile all but vanishes and only its violet word
     (5.31 : 1) reads. Followed, as the frame draws it (Grunge's red-on-red badge, the same
     call). Worth a line to the designer.
+17. **Two faint pairs on the map** (section 8), both the frame's and followed: EXPAND VIEW's
+    arrow is `sem/bg` pink `#FF2DA0` on the pink container `#FF63B8`, and the lit row's date disc
+    letters its 7px month and weekday in lime on that same pink. Every twin's arrow is faint the
+    same way (Lime's on `lime3`, Grunge's red on red, Editorial's ink on ink). Worth a line to the
+    designer with question 16.
