@@ -9153,30 +9153,69 @@ function Media({ s }) {
   // `clamp2` allows. The 390 band pads
   // 40 / 40, so it is 40 over the head and 50 under the player. The 1440
   // boxes are Lime's.
-  if (s.v3 && s.limeTree) {
+  //
+  // ── Pop (964:73164 · 971:10851 at 768 · 977:14406 at 390, in the band
+  // 964:73158 · 971:10845 · 977:14400) ───────────────────────────────────────
+  // Lime's tree again (the paired diff: 55 / 54 / 55 nodes in common), plus a
+  // dot grid and less Lime's two arcs, in Pop's Scheme 2, the band seated on
+  // lime (SCHEMES_OF.Pop[3]; plans/pop/layout-4.md, section 3). The pair
+  // `(s.limeTree || s.pop)` folds into `limeTree` in the pass's sweep (its
+  // decision 2). Under `pop` the band, the tiles' well and the play glyph are
+  // the seat's `sem/bg`, and the track binds `sem/box/1` #D7FF23, `s.box1` (a
+  // moved binding, as Grunge's). The sleeve's well and the bar's fill bind
+  // `sem/text/3`, which is black here, `s.text3`, where Lime's `s.tx` is
+  // violet. Every other ink is Lime's key: `s.ac` pink, `s.tx` violet. The
+  // head's Section is Scheme 1 and binds its `text/1`, `s.onScheme[1].ac`,
+  // the seat's own pink to the byte. Neither arc is drawn, and at 1440 and
+  // 768 the band closes on a 10px `stroke/1` violet rule (layout 1's rule, an
+  // inside stroke). The sleeve is Lime's shape, upright: radius 50, a 5px
+  // `sem/stroke/1` violet inside ring, no effect. **No tile is marked**: Pop's
+  // frames ring none, at any width (only the hidden #D4D4D4), so the sleeve,
+  // the title and Pause are the cue (user call, 2026-10-07). `Left` carries
+  // the dot grid, `Union` 149 × 123.42 at (20, 26.91) in `tag/1/bg` pink
+  // (`PopDots` at 0.517), under the sleeve, so only its top row and its first
+  // column show. The 390 band draws two, one under the sleeve and one under
+  // the instance's opaque `Grid`, so neither shows and neither is drawn. Type:
+  // the head is Display/LG (`s.dispLg`, 67.2 / 51 / 36). The 768 and 390
+  // instances carry `Device: Tablet`, so Display/Title is 28 / 22 / 22,
+  // Display/List 20 / 16 / 16, Body/SM 12, Body/Chip 12 / 11 / 11. The boxes
+  // are Editorial's at every width, the 768 head's 708 measure included. In
+  // Titan the head holds one line at 1440 and 768 and takes two at 390, where
+  // FIVE WORTH YOUR EAR. is 425 in the 370 (the frame's own string, 418), and
+  // it is fitted to its widest word, since a 20-letter one ran 43 past the
+  // 390 page where Retro's, Lime's and Grunge's faces hold it.
+  if (s.v3 && (s.limeTree || s.pop)) {
     const grunge = s.grunge
     const ed = s.editorial
+    const pop = s.pop
     const desk = !s.narrow
     const tab = isTablet(s)
     const z = desk ? 0.82 : 1
     const u = (v) => `${Math.round(v * z * 10) / 10}px`
     const un = (v) => Math.round(v * z * 10) / 10
-    const G = ed
+    const G = pop
+      ? { band: s.bg, track: s.box1, radius: 50, pad: 30, body: 12, chip: desk ? 12 : 11 }
+      : ed
       ? { band: s.bg, track: s.box2, radius: 0, pad: 20, body: 12, chip: desk ? 12 : 11 }
       : grunge
       ? { band: '#171716', track: '#222222', radius: 15, pad: 20, body: 12, chip: desk ? 12 : 11 }
       : { band: s.box1, track: s.box2, radius: 50, pad: 30, body: 13, chip: desk ? 13 : 12 }
-    const tk = ed
+    const tk = pop
+      ? { title: desk ? 28 : 22, list: desk ? 20 : 16, body: G.body, chip: G.chip }
+      : ed
       ? { title: desk ? 32 : 25, list: desk ? 16 : 13, body: G.body, chip: G.chip }
       : desk
       ? { title: 36, list: 24, body: G.body, chip: G.chip }
       : { title: 28, list: 19, body: G.body, chip: G.chip }
-    const disp = grunge || ed ? { textTransform: 'uppercase' } : null
+    const disp = grunge || ed || pop ? { textTransform: 'uppercase' } : null
     // The tiles' foot fade, the twin's own gradient (0 → black at 88.942%).
     const scrim = 'linear-gradient(180deg, rgba(0,0,0,0) 0%, #000000 88.942%)'
-    const glow = ed ? `inset 0 0 0 ${u(5)} ${s.ac}`
+    const glow = pop ? `inset 0 0 0 ${u(5)} ${s.stroke1}` : ed ? `inset 0 0 0 ${u(5)} ${s.ac}`
       : grunge ? `inset 0 0 0 1px ${s.stroke2}` : `inset 0 0 ${u(34)} ${s.ac}`
-    const mark = ed ? `inset 0 0 0 ${u(3)} ${s.ac}` : grunge ? `inset 0 0 0 1px ${s.ac}` : glow
+    const mark = pop ? undefined : ed ? `inset 0 0 0 ${u(3)} ${s.ac}` : grunge ? `inset 0 0 0 1px ${s.ac}` : glow
+    // The sleeve's well and the bar's fill bind `sem/text/3`: Lime's `s.tx`,
+    // Pop's black `s.text3`.
+    const well = pop ? s.text3 : s.tx
     const clip = { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }
     const clamp2 = {
       display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: 2,
@@ -9203,14 +9242,14 @@ function Media({ s }) {
     // outright at 390), on a pale `sem/text/3` well under the lime glow.
     const sleeveBox = (
       <div style={{
-        borderRadius: u(G.radius), overflow: ed ? undefined : 'hidden', position: 'relative', background: s.tx,
+        borderRadius: u(G.radius), overflow: ed ? undefined : 'hidden', position: 'relative', background: well,
         ...(s.mob
           ? { aspectRatio: '370 / 302', flex: 'none', width: '100%' }
           : { flex: '1 0 0', minHeight: u(308 * 302 / 370), width: '100%' }),
         ...(ed && { transform: 'rotate(-2.33deg)', margin: s.mob ? '2% 0' : undefined }),
       }}>
         <span style={{ position: 'absolute', inset: 0, overflow: ed ? 'hidden' : undefined }}>
-          <Photo s={s} initialsSize={un(56)} src={sleeve} ink={s.bg} style={{ background: s.tx }} />
+          <Photo s={s} initialsSize={un(56)} src={sleeve} ink={s.bg} style={{ background: well }} />
         </span>
         <span aria-hidden style={{
           position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none', boxShadow: glow,
@@ -9230,6 +9269,8 @@ function Media({ s }) {
           <span style={distressed(s, {
             fontFamily: s.display, fontSize: u(faced(s, tk.title)), lineHeight: facedLh(s, 1.1),
             letterSpacing: s.dls, color: s.ac, ...clamp2, ...disp,
+            // Titan sits 0.1em low at Display/Title, 1.1 (scanned).
+            ...(pop && { position: 'relative', top: '-0.1em' }),
           })}>{now.track}</span>
           <span style={{
             fontFamily: s.body, fontSize: u(tk.body), lineHeight: 1.4,
@@ -9259,7 +9300,7 @@ function Media({ s }) {
         <span style={{ flex: 1, minWidth: 0, height: u(3), background: G.track, borderRadius: u(2) }}>
           <span style={{
             display: 'block', position: 'relative', height: '100%',
-            width: `${now.pct}%`, background: s.tx, borderRadius: u(2),
+            width: `${now.pct}%`, background: well, borderRadius: u(2),
           }}>
             {/* The 6.3 dot rides the fill's end, as the frame's ellipse rides
                 its 140 (x 137, y −1.65: centred on the 3px bar). */}
@@ -9302,6 +9343,8 @@ function Media({ s }) {
               position: 'relative', width: '100%', fontFamily: ed ? s.label : s.display,
               fontSize: u(faced(s, tk.list)), lineHeight: facedLh(s, ed ? 1.1 : 1.2), letterSpacing: s.dls, color: '#FFFFFF',
               ...clip, ...disp,
+              // Titan sits 0.08em low at Display/List over a line (scanned).
+              ...(pop && { top: '-0.08em' }),
             }}>{t.name}</span>
             {t.rel && (
               <span style={{
@@ -9320,24 +9363,39 @@ function Media({ s }) {
         // in Scheme 2's `sem/bg`. `position: relative` seats the two arcs.
         margin: `calc(-1 * ${s.padY}) calc(-1 * ${s.padX})`,
         background: G.band, color: s.tx, position: 'relative', ...col('0'),
+        // Pop's band closes on a 10px `stroke/1` violet rule at 1440 and 768,
+        // the band's own last 10 (an inside stroke).
+        ...(pop && !s.mob && { boxShadow: `inset 0 -${u(10)} 0 ${s.stroke1}` }),
       }}>
         {grunge
           ? !s.mob && (<>
               <TornEdge s={s} grunge side="top" bleed={false} height={desk ? 70 * z : 62} colour={s.ac} />
               <TornEdge s={s} grunge side="bottom" bleed={false} height={desk ? 83 * z : 52} colour={s.bg} />
             </>)
-          : !ed && <ArcEdge s={s} side="top" height={44.24 * z} colour={s.ac} bleed={false} />}
+          : !ed && !pop && <ArcEdge s={s} side="top" height={44.24 * z} colour={s.ac} bleed={false} />}
         <div style={{
-          padding: ed && !desk
+          padding: (ed || pop) && !desk
             ? `${u(tab ? 100 : 40)} calc(${s.surplus} + ${u(s.mob ? 10 : 56)}) ${u(tab ? 156 : 50)}`
             : grunge && !desk
             ? `${u(tab ? 100 : 60)} calc(${s.surplus} + ${u(s.mob ? 10 : 56)}) ${u(tab ? 100 : 70)}`
             : `${u(desk ? 156 : 100)} calc(${s.surplus} + ${u(s.mob ? 10 : 56)}) ${u(desk ? 156 : tab ? 106 : 110)}`,
-          ...col(u(s.mob ? 20 : (grunge || ed) && tab ? 66 : 56)),
+          ...col(u(s.mob ? 20 : (grunge || ed || pop) && tab ? 66 : 56)),
+          // Pop's head is fitted to its widest word, in Titan's ems: a long
+          // word outran the 370 at 390, where Titan is the widest face here.
+          ...(pop && { containerType: 'inline-size' }),
         }}>
           <h2 style={distressed(s, {
-            margin: ed && tab ? `0 ${u(-26)}` : grunge && tab ? `0 0 0 ${u(-26)}` : 0, fontFamily: s.display, fontSize: faced(s, s.dispLg),
-            lineHeight: facedLh(s, 0.89), letterSpacing: s.dls, color: ed ? SIENNA_MEDIA : s.ac, ...disp,
+            margin: (ed || pop) && tab ? `0 ${u(-26)}` : grunge && tab ? `0 0 0 ${u(-26)}` : 0, fontFamily: s.display,
+            // The container is this column; the 768 head stands 26 out of it
+            // on each side, a 708 measure.
+            fontSize: faced(s, pop && s.titleWordEms
+              ? `min(${s.dispLg}, calc(${tab ? '(100cqi + 52px)' : '100cqi'} / ${s.titleWordEms}))`
+              : s.dispLg),
+            lineHeight: facedLh(s, 0.89), letterSpacing: s.dls,
+            color: pop ? s.onScheme[1].ac : ed ? SIENNA_MEDIA : s.ac, ...disp,
+            // Titan's floor sits 0.14em under Chunko's at .89 (scanned at all
+            // three widths).
+            ...(pop && { position: 'relative', top: '-0.14em' }),
           })}>{s.title}</h2>
           <div style={{
             ...(s.mob ? col(u(20)) : row(u(desk ? 112 : 56), { alignItems: 'stretch' })),
@@ -9350,7 +9408,14 @@ function Media({ s }) {
             <div style={col(u(s.mob ? 20 : 40), {
               flex: 'none', width: s.mob ? '100%' : u(308), minWidth: 0,
               clipPath: ed ? `inset(-${u(s.mob ? 10 : 56)})` : undefined,
+              ...(pop && { position: 'relative' }),
             })}>
+              {/* Pop's dot grid, `Left`'s first child at (20, 26.91), so 36 out
+                  from this column and 29.09 above it; the sleeve, positioned
+                  after it, paints over all but its top row and first column. */}
+              {pop && !s.mob && (
+                <PopDots hue={s.chips[0].bg} style={{ left: u(-36), top: u(-29.09), width: u(149), height: u(123.42) }} />
+              )}
               {sleeveBox}
               {nowPlaying}
               {progress}
