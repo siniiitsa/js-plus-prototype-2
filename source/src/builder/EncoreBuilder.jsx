@@ -540,8 +540,11 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // media list ends the frames' 100 / 90 / 70 above the head's box. The
   // calendar closes Editorial's row as it closed Grunge's (its `Frame 300`
   // pads 50 / 56 at 1440 and 768, 40 / 40 at 390), so the three templates are
-  // one condition again.
-  if (d === 2 && (T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial')
+  // one condition again. Pop's wrappers are Editorial's inset for inset
+  // (plans/pop/layout-3.md, *The composed page*), and it joins the same way,
+  // the bio first; until media and the calendar join, the heads part again.
+  if (d === 2 && (T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial'
+    || (T.name === 'Pop' && cat === 'bio'))
     && (cat === 'bio' || cat === 'calendar' || cat === 'media')) {
     const z = (v) => `${Z.dev === 'desktop' ? Math.round(v * 0.82) : v}px`
     const top = Z.dev === 'mobile' ? vm.padY : z(50)

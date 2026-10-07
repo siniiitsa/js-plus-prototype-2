@@ -1848,11 +1848,11 @@ export const FIELDS = {
     // headerIdentity): the bio prints the same list and honours the same
     // Show / Hide. An emptied list hides the row, as Hide does. The bio's
     // reach is measured (scripts/reach.mjs): layouts 2 and 4, and Lime's,
-    // Grunge's and Editorial's 3.
+    // Grunge's, Editorial's and Pop's 3.
     { k: 'tags',      l: 'Tags',             type: 'area', d: TAG_LABELS,
       in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3], Editorial: [0, 2, 3], Pop: [0, 2, 3] },
       hint: 'Separate them with commas. The bio prints them too in layouts 2 and 4 '
-          + '(in Lime, Grunge and Editorial, layout 3 as well).' },
+          + '(in Lime, Grunge, Editorial and Pop, layout 3 as well).' },
     { k: 'showTags',  l: 'Tag chips',        type: 'select', d: 'show', opts: SHOW_HIDE,
       in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3], Editorial: [0, 2, 3], Pop: [0, 2, 3] },
       hint: 'Hides the bio’s chips as well.' },
@@ -1912,7 +1912,7 @@ export const FIELDS = {
     { k: 'aboutLabel', l: 'About label', d: BIO_ABOUT_LABEL, in: [2],
       hint: 'The bracketed label over the paragraphs on the ID card. Left empty, it is not drawn.' },
     { k: 'tagsLabel',  l: 'Genres label', d: BIO_TAGS_LABEL,
-      in: { Lime: [2], Grunge: [2], Editorial: [2, 3], '*': [3] },
+      in: { Lime: [2], Grunge: [2], Editorial: [2, 3], Pop: [2, 3], '*': [3] },
       hint: 'The line over the Header’s tag chips, drawn while they are shown. Left empty, the chips stand alone.' },
     // Layout 4's "Listen ↗" (JP-082, user call, 2026-09-29): the key the bio
     // already read, `vm.cta2` off its own content, which no field reached

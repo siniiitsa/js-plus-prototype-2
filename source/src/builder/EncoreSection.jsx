@@ -5388,9 +5388,25 @@ function Bio({ s }) {
   // the same 50. 390 is its own composition, the tape clear of the head. The
   // head wraps at the word on the ramp in the composed column, where the
   // frame's Fisterra sets it on one line (9.06 Gloock ems against 709).
-  if (s.v2 && s.limeTree) {
+  //
+  // Pop layout 3 (964:68760 · 984:15364 at 768 · 984:15395 at 390; the head
+  // 964:68755 · 984:15359 · 984:15390) is Lime's tree again on Scheme 1, and
+  // `pop` names what moves (plans/pop/layout-3.md, section 2). No effect on
+  // any node, every paint bound but the sparkle's. The card is `box/1` in a
+  // 1px `stroke/1` ring at radius 50, unringed at 30 at 390; the photograph a
+  // raw 15 on its `box/3` well, unglowed. No hairline rule: the head band
+  // stands straight on the about band, and a 5px `text/1` bar closes the
+  // column, 40 above the card's foot. The labels and `[ ABOUT ]` are
+  // `text/1`, the values Grunge's Chakra Petch in `text/2`. Three stickers:
+  // Pop's smiley-globe seal, nested on Scheme 4, in the card's top-right
+  // corner; a teal sparkle (raw `#00E0C4`, Scheme 1's `tag4`) on the bar at
+  // the card's lower left, by the right edge at 390; and a lime scribble
+  // under the name, the hero's stroke at 0.3455. No `Frame 302`: the card
+  // stands 30 under its head, as Lime's does.
+  if (s.v2 && (s.limeTree || s.pop)) {
     const grunge = s.grunge
     const ed = s.editorial
+    const pop = s.pop
     const desk = !s.narrow
     const tab = isTablet(s)
     const z = desk ? 0.82 : 1
@@ -5404,7 +5420,9 @@ function Bio({ s }) {
       if (i === -1) return s.brand
       return <>{s.brand.slice(0, i)} <span style={{ color: s.ac }}>{s.brand.slice(i + 1)}</span></>
     }
-    const upper = grunge || ed ? { textTransform: 'uppercase' } : null
+    const upper = grunge || ed || pop ? { textTransform: 'uppercase' } : null
+    // Pop's labels and "[ About ]" bind `sem/text/1` over the `text/2` values.
+    const labelInk = pop ? { color: s.ac } : null
     // Body/Chip, Inter bold at -6%: the stat labels and "[ About ]".
     const chipType = {
       fontFamily: s.body, fontWeight: 700, fontSize: s.chip, lineHeight: 1,
@@ -5425,11 +5443,11 @@ function Bio({ s }) {
       <div key={key} style={col(u(15), {
         flex: '0 1 auto', minWidth: 0, alignItems: 'flex-start',
       })}>
-        {label && <span style={{ ...chipType, whiteSpace: 'pre-line', overflowWrap: 'break-word' }}>{label}</span>}
+        {label && <span style={{ ...chipType, whiteSpace: 'pre-line', overflowWrap: 'break-word', ...labelInk }}>{label}</span>}
         {/* Two lines reserved either way: 2 × 1.1 in the label face, 2 × 1.26
             in Chakra Petch (Grunge's 50 box is 2 × 20 × 1.26; Editorial's
-            values are the same Label/XS in `font/ui`). */}
-        <span style={grunge || ed ? {
+            and Pop's values are the same Label/XS in `font/ui`). */}
+        <span style={grunge || ed || pop ? {
           fontFamily: s.ui, fontSize: s.labelXs, lineHeight: 1.26, letterSpacing: s.dls,
           textTransform: 'uppercase', overflowWrap: 'break-word', minHeight: '2.52em',
         } : labelStyle(s, s.labelLg, { whiteSpace: 'normal', overflowWrap: 'break-word', minHeight: '2.2em' })}>{value}</span>
@@ -5445,25 +5463,46 @@ function Bio({ s }) {
       <div style={{
         display: 'flex', flexDirection: s.mob ? 'column' : 'row',
         alignItems: s.mob ? 'flex-start' : 'flex-end',
-        gap: u(s.mob ? 10 : 40), overflow: 'hidden',
+        // Pop's scribble hangs 5 past the band's foot, where the frame draws
+        // it as Frame 258's child, outside the band's clip.
+        gap: u(s.mob ? 10 : 40), overflow: pop ? 'visible' : 'hidden',
         padding: ed ? `0 ${pad} ${u(24)}` : `${u(24)} ${pad}`,
       }}>
         {/* Display/SM at 50 wraps "Kai Mercer" in the 179 cap at 1440, as the
-            frame does; 40 and 32 hold it on one line. Under Editorial the
-            name wraps between words and shrinks only when its widest word
+            frame does; 40 and 32 hold it on one line. Under Editorial and Pop
+            the name wraps between words and shrinks only when its widest word
             (`s.cardNameEms`, HeaderV2's card rule) would outrun the cap:
             Gloock's MERCER is 4.05 ems, 149.5 in the 146.8 cap at 1440, where
             it broke before its R (display-face.md step 4, layout 3). */}
         <div style={{
           flex: s.mob ? 'none' : '1 0 0', width: s.mob ? '100%' : undefined,
           minWidth: 0, maxWidth: u(179),
-          ...(ed && s.cardNameEms ? { containerType: 'inline-size' } : null),
+          ...((ed || pop) && s.cardNameEms ? { containerType: 'inline-size' } : null),
+          ...(pop ? { position: 'relative' } : null),
         }}>
           <p style={distressed(s, {
             margin: 0, fontFamily: s.display, lineHeight: facedLh(s, 1),
-            fontSize: faced(s, ed && s.cardNameEms ? `min(${s.dispSm}, calc(100cqi / ${s.cardNameEms}))` : s.dispSm),
+            fontSize: faced(s, (ed || pop) && s.cardNameEms ? `min(${s.dispSm}, calc(100cqi / ${s.cardNameEms}))` : s.dispSm),
             letterSpacing: s.dls, color: grunge || ed ? s.tx : s.ac, wordBreak: 'break-word', ...upper,
+            // Titan sits 0.13–0.15em low against the frame's ink at lh 1,
+            // top and floor alike (scanned at all three widths).
+            ...(pop ? { position: 'relative', top: '-0.14em' } : null),
           })}>{brand()}</p>
+          {/* Pop's scribble (`scheme/1/tag1/bg`, lime) is the hero's stroke at
+              0.3455, 114.48 × 32.82, hung off the name's box rather than its
+              glyphs: its top 3.82 above the box's foot and 32.26 in at 1440
+              and 768 (the 768 master keeps the desktop's numbers, and its
+              one-line name stands on the same floor), 6.41 above and 57.52
+              in at 390. */}
+          {pop && (
+            <svg viewBox="0 0 331.36 95" aria-hidden="true" style={{
+              position: 'absolute', display: 'block', overflow: 'visible', pointerEvents: 'none',
+              left: u(s.mob ? 57.52 : 32.26), top: `calc(100% - ${u(s.mob ? 6.41 : 3.82)})`,
+              width: u(114.48), height: u(32.82),
+            }}>
+              <path d={POP_SCRIBBLE_D} fill={s.chips[0].bg} />
+            </svg>
+          )}
         </div>
         <div style={row(u(s.mob ? 52 : 100), {
           flex: s.mob ? 'none' : '1 0 0', width: s.mob ? '100%' : undefined,
@@ -5483,12 +5522,48 @@ function Bio({ s }) {
     // 1.6 above Lime's; its 390 centre is Lime's to the hundredth.
     const sealBox = 125.37
     const sealTop = grunge ? (tab ? 90.08 : 86.08) : tab ? 91.69 : 87.7
+    // Pop's seal (`Layer_1`, Figma −19.5 → CSS +19.5) is SealBadge's Pop arm
+    // on its nested Scheme 4: a `sem/bg` blue disc, the globe, the name and
+    // the dots in `text/2` yellow, the smiley `text/1` teal with `text/3`
+    // white features. At 1440 its turned box sits flush in the instance's
+    // top-right corner, so the 174.8 disc's centre is 111.56 in from the
+    // card's right and down from its top. The 768 master keeps the desktop's
+    // x in its 708 instance, which stands the disc 125.8 past the card and
+    // has the Section's clip cut it to a sliver at the edge — a leak that
+    // reads as a defect, so 768 takes the desktop's corner. The 390 seal
+    // (62.69) is Lime's seat to the hundredth, over the photograph.
+    const S4 = pop ? s.onScheme[4] : null
     const seal = (
-      <SealBadge s={s} classic={!grunge} hue={s.ac} ink={s.bg} size={(s.mob ? 62.68 : sealBox) * z}
-                 tilt={grunge ? 26.06 : 32.38}
+      <SealBadge s={s} classic={!grunge && !pop} hue={pop ? S4.bg : s.ac} ink={pop ? S4.tx : s.bg}
+                 face={pop ? S4.ac : undefined} features={pop ? S4.text3 : undefined}
+                 size={(pop ? (s.mob ? 62.69 : 174.8) : s.mob ? 62.68 : sealBox) * z}
+                 tilt={grunge ? 26.06 : pop ? 19.5 : 32.38}
                  style={s.mob
                    ? { right: u(30.76), top: u(52.51) }
+                   : pop ? { right: u(24.16), top: u(24.16) }
                    : { left: u(grunge ? 51.17 : 42.9), top: u(sealTop) }} />
+    )
+    // Pop's sparkle (90 × 91, Figma 17.93 → CSS −17.93), the calendar's
+    // drawing in Scheme 1's teal `tag4` (the frame's one raw paint). It is
+    // the instance's child, seated by its centre: on the bar's top edge, 45
+    // above the card's foot and 69.18 in, at 1440; the 768 master keeps the
+    // desktop's y in its taller card, 75 above the foot. It is anchored to
+    // the card's foot, so a longer bio does not walk it off the bar. At 390
+    // it stands by the card's right edge, centred (334.92, 400), and the
+    // card's own clip cuts it at 370 where the Section's does. There it sits
+    // beside the frame's hand-broken stats, which our one-line values run
+    // under ("Manchester, UK"), so at 390 it stands behind the card's content
+    // (−1 in the card, which isolates under Pop), layout 1's scribble rule.
+    const popSparkle = pop && (
+      <svg viewBox="0 0 90 91" aria-hidden="true" style={{
+        position: 'absolute', display: 'block', pointerEvents: 'none', zIndex: s.mob ? -1 : undefined,
+        width: u(90), height: u(91), transform: 'rotate(-17.93deg)',
+        ...(s.mob
+          ? { left: u(334.92 - 45), top: u(400 - 45.5) }
+          : { left: u(69.18 - 45), bottom: u((tab ? 75 : 45) - 45.5) }),
+      }}>
+        <path d={POP_SPARKLE_D} fill={s.chips[3].bg} />
+      </svg>
     )
     // Editorial's sparkle, `text/1` terracotta (not layout 1's blush). At 1440
     // and 768 it is the card's (38.28, 713), 106 down the about band (the
@@ -5501,35 +5576,38 @@ function Bio({ s }) {
         : { left: u(38.28), top: u(106), width: u(108), height: u(109) }} />
     )
 
+    // Pop's about band FILLs a card the 1440 and 768 instances state at 882
+    // and 912, so it is 253 / 283 at the least; it pads 32 at 390 too.
     const about = (
       <div style={{
         display: 'flex', alignItems: 'flex-start', gap: u(40), overflow: 'hidden',
-        padding: `${u(24)} ${pad}`, position: 'relative',
-        ...(s.mob ? null : { minHeight: u(ed ? 106 + 109 + 24 : sealTop + sealBox + 24) }),
+        padding: `${u(24)} ${pop ? u(32) : pad}`, position: 'relative',
+        ...(s.mob ? null : { minHeight: u(pop ? (tab ? 283 : 253) : ed ? 106 + 109 + 24 : sealTop + sealBox + 24) }),
       }}>
         {!s.mob && <div style={{ width: u(188), height: u(64), flex: 'none' }} />}
         <div style={col(u(12), { flex: '1 0 0', minWidth: 0, color: s.tx })}>
-          {s.aboutLabel && <span style={chipType}>[ {s.aboutLabel} ]</span>}
+          {s.aboutLabel && <span style={{ ...chipType, ...labelInk }}>[ {s.aboutLabel} ]</span>}
           <p style={{ margin: 0, fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5 }}>{s.bioP1}</p>
           {s.bioP2 && (
             <p style={{ margin: 0, fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5 }}>{s.bioP2}</p>
           )}
         </div>
-        {!s.mob && (ed ? sparkle : seal)}
+        {!s.mob && !pop && (ed ? sparkle : seal)}
       </div>
     )
 
     const card = (
       <div style={{
         position: 'relative', background: s.box1, color: s.tx, overflow: 'hidden',
-        borderRadius: ed ? 0 : u(s.mob ? (grunge ? 15 : 60) : 50), paddingBottom: u(40),
+        borderRadius: ed ? 0 : u(s.mob ? (grunge ? 15 : pop ? 30 : 60) : 50), paddingBottom: u(40),
         ...col('0', { alignItems: 'stretch' }),
         ...(ed && s.mob ? { margin: `0 calc(-1 * ${s.padX})` } : null),
+        ...(pop ? { isolation: 'isolate' } : null),
       }}>
         <div style={{ position: 'relative', padding: u(s.mob ? 10 : 30), ...row('0') }}>
           <div style={{
             position: 'relative', flex: '1 0 0', minWidth: 0, overflow: 'hidden',
-            height: u(s.mob ? 259 : 380), borderRadius: ed ? 0 : u(grunge ? 15 : 55), background: s.box3,
+            height: u(s.mob ? 259 : 380), borderRadius: ed ? 0 : u(grunge || pop ? 15 : 55), background: s.box3,
           }}>
             {/* Grunge's fill is `CROP`, which honours its transform: the
                 drummer's rows 16.9–55%, full width. At desktop that is a
@@ -5541,29 +5619,36 @@ function Bio({ s }) {
                 against the render). The 768 squashes that band as Grunge's
                 does; a cover sweep peaks at 16% (0.68; the band's centre,
                 14.1%, gives 0.66). 390 centred. The well is ink, so the
-                empty slot's initials are paper. */}
+                empty slot's initials are paper. Pop's is `CROP` once more,
+                rows 6.4–42.1% of `popStage`: a cover at 10% at desktop
+                (0.994 against the render), the squashed 768 band's broad
+                sweep peak 7.5% (0.565), 390 centred (0.992). Its well is
+                black, so its initials are white. */}
             <div style={{ position: 'absolute', inset: 0 }}>
-              <Photo s={s} initialsSize={desk ? 64 : tab ? 56 : 40} ink={ed ? s.bg : s.tx}
-                     style={(grunge || ed) && !s.mob
-                       ? { objectPosition: `50% ${ed ? (tab ? 16 : 19.2) : tab ? 22.7 : 27.3}%` }
+              <Photo s={s} initialsSize={desk ? 64 : tab ? 56 : 40} ink={ed || pop ? s.bg : s.tx}
+                     style={(grunge || ed || pop) && !s.mob
+                       ? { objectPosition: `50% ${pop ? (tab ? 7.5 : 10) : ed ? (tab ? 16 : 19.2) : tab ? 22.7 : 27.3}%` }
                        : undefined} />
             </div>
             {grunge
               ? <Grain s={s} exact grunge blend="screen" opacity={1} />
-              : !ed && (
+              : !ed && !pop && (
                 <span style={{
                   position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
                   boxShadow: `inset 0 0 ${u(34)} ${s.ac}`,
                 }} />
               )}
           </div>
-          {s.mob && !ed && seal}
+          {s.mob && !ed && !pop && seal}
         </div>
+        {/* Pop's column has no hairline: the about band stands on the head
+            band, and the 5px `text/1` bar closes it. */}
         <div style={col(u(s.mob ? 20 : ed ? 23 : 0), { alignItems: 'stretch' })}>
           {head}
-          {rule}
+          {!pop && rule}
           {about}
-          {!ed && rule}
+          {!ed && !pop && rule}
+          {pop && <div style={{ height: u(5), background: s.ac, flex: 'none' }} />}
         </div>
         {/* The ring is Figma's inside stroke, so an overlay painted over the
             children rather than a border that would grow the card. */}
@@ -5575,6 +5660,10 @@ function Bio({ s }) {
               boxShadow: `inset 0 0 0 1px ${s.stroke1}`,
             }} />
           ))}
+        {/* Pop's stickers are the instance's last children, painted over the
+            card; inside it, so its clip is the 390 Section's. */}
+        {popSparkle}
+        {pop && seal}
       </div>
     )
 
@@ -5588,10 +5677,13 @@ function Bio({ s }) {
             letterSpacing: s.dls, textTransform: 'uppercase', color: s.tx,
           }}>{s.initials} Bio</span>
           {/* Grunge's head is one tone, `sem/text/1` throughout: layout 1's
-              word-two accent was that frame's, not the template's. */}
+              word-two accent was that frame's, not the template's. So is
+              Pop's, uppercased at 768 and 390 where the masters type it mixed,
+              and lifted 0.14em, Titan's drop at lh 0.89 (scanned). */}
           <h2 style={distressed(s, {
             margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispLg), lineHeight: facedLh(s, 0.89),
             letterSpacing: s.dls, color: s.ac, ...upper,
+            ...(pop ? { position: 'relative', top: '-0.14em' } : null),
           })}>{s.title}</h2>
         </div>
         {ed ? (
