@@ -608,8 +608,14 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // testimonials' roots (964:68748 · 984:16840) pad the twins' 56 / 56 and
   // 30 / 56, so the pair is one condition again (plans/editorial/layout-3.md,
   // sections 9 and 10).
-  if ((T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial')
-    && (cat === 'form' || cat === 'testimonials') && d === 2 && Z.dev !== 'mobile') {
+  //
+  // Pop's form masters (964:68779 · 984:15383 · 984:15414) pad the twins'
+  // 90 / 56 and 60 / 30 again, round the card at 1440, so the form joins on
+  // their numbers; the testimonials join in their own session, which folds
+  // the pair back into one condition (plans/pop/layout-3.md, section 9).
+  if (((T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial')
+    && (cat === 'form' || cat === 'testimonials') || (T.name === 'Pop' && cat === 'form'))
+    && d === 2 && Z.dev !== 'mobile') {
     const desk = Z.dev === 'desktop'
     const px = (v) => `${desk ? Math.round(v * 0.82) : v}px`
     vm.pad = cat === 'form'
@@ -1248,9 +1254,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // Lime's again, Display/LG, and so are its layout-4 bio and gallery heads at
   // design 3, Display/LG / XL in a 572.9 measure and the 454 head column; all
   // of them read Gloock's ems × `faceK`. Pop's layout-1 form statement fits
-  // its frame's 313.43 box the same way, in Titan's ems × `faceK`; no other
-  // Pop site reads it. Each is `navFace`'s table. Undefined off those three
-  // templates.
+  // its frame's 313.43 box the same way, in Titan's ems × `faceK`, and so does
+  // its layout-3 form head, Lime's again (plans/pop/layout-3.md, section 9).
+  // Each is `navFace`'s table. Undefined off those three templates.
   vm.titleWordEms = T.name === 'Lime' || T.name === 'Editorial' || T.name === 'Pop'
     ? +Math.max(0, ...vm.title.split(/\s+/).map(navFace)).toFixed(3)
     : undefined

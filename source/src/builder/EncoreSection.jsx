@@ -27504,9 +27504,30 @@ function EnquiryForm({ s }) {
     // box is Lime's 2px of `s.tx`, ink on `#FFF9F2`: the idle mark is a 1px
     // dash of full terracotta, so the refusal changes colour, weight and dash
     // at once — no frame draws it, and the twins' key reads on this paper.
-    if (s.limeTree) {
+    //
+    // Pop (964:68779 / 984:15383 / 984:15414) is the same tree a fourth time,
+    // 27 = 27 against Lime's at every width, every box, gap, inset, radius,
+    // ring weight and tracking Lime's — the paired diff returned the ramp,
+    // the face and Grunge's 42 / 38 / 37 boxes alone. The section is **Scheme
+    // 1**, white, no band, no Device override and no effect on any node, but
+    // the card is **explicitly Scheme 2** at every width, so every leaf on it
+    // reads `card`, `s.onScheme[2]` (`s` itself under the twins): the card and
+    // each box bind `box/1` `#D7FF23` — not Scheme 2's `sem/bg` — in a 1px
+    // `stroke/1` violet ring; the box labels, unit, count and note `text/2`
+    // violet; the price, the stars and the pill's fill and arrow `text/1`
+    // pink; the pill's label and disc `sem/bg` `#C6F200`. The block's own
+    // `pill()` stands on `s.bg`, which is Scheme 1's white here, so the card's
+    // pair is the binding, not a stand-in. The head column is Scheme 1's own
+    // keys: the eyebrow and paragraph `text/2`, the head `text/1`. Display/
+    // Title is 28 / 22 / 20. A refused box is 2px of the card's pink: the idle
+    // ring is 1px of full violet, so the twins' 2px of `s.tx` would be weight
+    // alone (CONVENTIONS C) — layout 2's Pop call on the same card.
+    if (s.limeTree || s.pop) {
       const grunge = s.grunge
       const ed = s.editorial
+      const pop = s.pop
+      // The card's scheme: Scheme 2 under Pop, the section's own elsewhere.
+      const card = pop ? s.onScheme[2] : s
       const type = (family, size, lh, extra) => ({
         fontFamily: family, fontSize: size, lineHeight: lh, letterSpacing: s.dls, ...extra,
       })
@@ -27516,9 +27537,10 @@ function EnquiryForm({ s }) {
       // Editorial `faced` scales Gloock by its `faceK` and the uppercase is
       // Gloock's.
       const disp = (size, lh, extra) => type(s.display, faced(s, size), facedLh(s, lh), {
-        ...((grunge || ed) && { textTransform: 'uppercase' }), ...extra,
+        ...((grunge || ed || pop) && { textTransform: 'uppercase' }), ...extra,
       })
       const title = ed ? (desk ? u(32) : s.mob ? '23px' : '25px')
+        : pop ? (desk ? u(28) : s.mob ? '20px' : '22px')
         : desk ? u(36) : s.mob ? '26px' : '28px'
       // Half of the content width less the 60 gap, floored to the pixel so the
       // word fits with room rather than to the rounding.
@@ -27532,11 +27554,13 @@ function EnquiryForm({ s }) {
       // for the same padding over its own two-sizes-smaller Label/SM, and so
       // do Editorial's. Under Editorial the box is square and its idle mark is
       // the field wrapper's `DashRule` (below), which a refusal replaces.
+      // Pop's are Grunge's 42 / 38 / 37 too (Label/SM 16 / 13 / 12), Scheme 2's
+      // `box/1` in its violet `stroke/1`, refused in the card's pink.
       const box = (bad) => type(s.label, faced(s, s.labelSm), facedLh(s, 1.1), {
-        background: s.box1, color: s.tx, border: 'none', borderRadius: ed ? 0 : s.btnR,
+        background: card.box1, color: card.tx, border: 'none', borderRadius: ed ? 0 : s.btnR,
         boxShadow: ed ? (bad ? `inset 0 0 0 2px ${s.tx}` : undefined)
-          : `inset 0 0 0 ${bad ? '2px' : '1px'} ${bad ? s.tx : s.stroke1}`,
-        height: grunge || ed
+          : `inset 0 0 0 ${bad ? '2px' : '1px'} ${bad ? (pop ? card.ac : card.tx) : card.stroke1}`,
+        height: grunge || ed || pop
           ? (desk ? u(42) : s.mob ? '37px' : '38px')
           : (desk ? u(44) : s.mob ? '37px' : '39px'),
         padding: `0 ${u(14)}`, margin: 0, width: '100%', boxSizing: 'border-box',
@@ -27544,13 +27568,13 @@ function EnquiryForm({ s }) {
       // The frame's 67 radius on a 54 pill is `radius/pill`.
       const pill = (extra) => disp(s.list, 1.2, {
         ...row(u(10), { justifyContent: 'space-between' }),
-        background: s.ac, color: s.bg, borderRadius: s.btnR, width: '100%', boxSizing: 'border-box',
+        background: card.ac, color: card.bg, borderRadius: s.btnR, width: '100%', boxSizing: 'border-box',
         padding: `${u(5)} ${u(5)} ${u(5)} ${u(21)}`, textDecoration: 'none', ...extra,
       })
       const disc = (
         <span style={{
           width: u(46), height: u(44), borderRadius: '999px', flex: 'none',
-          background: s.bg, color: s.ac,
+          background: card.bg, color: card.ac,
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
         }}><ArrowRight size={46 * z * 0.6} strokeWidth={1.5} /></span>
       )
@@ -27579,17 +27603,22 @@ function EnquiryForm({ s }) {
                 0.133, and it stands over a line of type, where a J would all
                 but meet the paragraph. Lifted it stands 0.129 / 0.139 / 0.142
                 (Noto stood 0.053 / 0.060 / 0.077 and took 0.08em;
-                display-face.md step 4, layout 3). */}
+                display-face.md step 4, layout 3). Under Pop Titan sat
+                0.130 / 0.118 / 0.125em below the box's top and 0.050 /
+                0.064 / 0.050 above its foot where the frames' Chunko inks
+                0.015 / 0.024 / 0.016 above and 0.185 / 0.186 / 0.184 above,
+                so it takes every Pop lh-0.89 head's 0.14em. */}
             <h2 style={distressed(s, disp(headSize, 0.89, {
               margin: 0, color: s.ac, overflowWrap: 'break-word',
               ...(ed && { position: 'relative', top: '-0.06em' }),
+              ...(pop && { position: 'relative', top: '-0.14em' }),
             }))}>{s.title}</h2>
             <p style={type(s.body, s.bodyMd, 1.5, { margin: 0 })}>{s.formPara}</p>
           </div>
 
           <div style={col(u(14), {
-            background: s.box1, color: s.tx, borderRadius: ed ? 0 : u(grunge ? 15 : 50),
-            boxShadow: ed ? undefined : `inset 0 0 0 1px ${s.stroke1}`,
+            background: card.box1, color: card.tx, borderRadius: ed ? 0 : u(grunge ? 15 : 50),
+            boxShadow: ed ? undefined : `inset 0 0 0 1px ${card.stroke1}`,
             padding: `${u(28)} ${u(24)}`, boxSizing: 'border-box',
             ...(ed && { position: 'relative' }),
           })}>
@@ -27605,19 +27634,24 @@ function EnquiryForm({ s }) {
                 the row's top at 1440 / 768 / 390, Gloock's 0.878 / 0.92 /
                 0.913, and lifted 0.798 / 0.84 / 0.833 (Noto's 0.92 took
                 0.09; display-face.md step 4, layout 3). The row moves, so the
-                baseline they share holds. An Inter unit alone sits right. */}
+                baseline they share holds. An Inter unit alone sits right.
+                Pop's row takes 0.1em of the price, Titan's Display/Title
+                number: the shared baseline stood 0.913 / 0.909 / 0.95 of the
+                price below the row's top where the frames' stands 0.816 /
+                0.807 / 0.79. */}
             {(!!s.formPrice || !!s.formPriceUnit) && (
               <div style={row(u(8), {
                 alignItems: 'baseline', flexWrap: 'wrap',
                 ...(ed && !!s.formPrice && { position: 'relative', top: `calc(-0.08 * ${title})` }),
+                ...(pop && !!s.formPrice && { position: 'relative', top: `calc(-0.1 * ${title})` }),
               })}>
-                {!!s.formPrice && <span style={distressed(s, disp(title, 1.1, { color: s.ac }))}>{s.formPrice}</span>}
+                {!!s.formPrice && <span style={distressed(s, disp(title, 1.1, { color: card.ac }))}>{s.formPrice}</span>}
                 {!!s.formPriceUnit && <span style={type(s.body, s.bodySm, 1.4)}>{s.formPriceUnit}</span>}
               </div>
             )}
             {!!s.formBookings && (
               <span style={type(s.body, s.bodySm, 1.4, { whiteSpace: 'pre' })}>
-                <span style={{ color: s.ac }}>★★★★★</span>{'  '}{s.formBookings}
+                <span style={{ color: card.ac }}>★★★★★</span>{'  '}{s.formBookings}
               </span>
             )}
             {sent ? (
@@ -27625,7 +27659,7 @@ function EnquiryForm({ s }) {
               // Display/Title and the address Body/MD, layout 2's inventions.
               <>
                 <h3 style={distressed(s, disp(title, 1.1, {
-                  margin: 0, color: s.ac, overflowWrap: 'break-word',
+                  margin: 0, color: card.ac, overflowWrap: 'break-word',
                 }))}>{s.formSentTitle}</h3>
                 <p style={type(s.body, s.bodySm, 1.4, { margin: 0 })}>{s.formSentBody}</p>
                 {/* Plain text, Retro's reason: the fallback for a browser that

@@ -107,7 +107,13 @@ another `notes/` file.
   emptied one stays empty. Under Lime and Grunge a refused box takes layout 2's 2px
   ring of full ink, and under Editorial — whose card and boxes are square, dashed 10, 10 and
   6, 6 in terracotta on the paper page — the dash gives way to a solid 2px ring of ink `s.tx`
-  (colour, weight and dash at once). Under Lime and Editorial the desktop
+  (colour, weight and dash at once). Under Pop the section is the white page with no band and
+  the card a nested Scheme 2 node, so every card leaf reads `s.onScheme[2]` (the block's
+  `card`, `s` itself under the twins): `box/1` `#D7FF23` in a 1px violet hairline, its boxes
+  the same pills, its pill pink lettered and disced in Scheme 2's `sem/bg` lime — the block's
+  own `pill()`, not `BookPill`, so the trap was `s.bg`'s white, not `pillBg`'s black — and a
+  refusal is 2px of the card's own pink, layout 2's Pop call (colour and weight at once).
+  Under Lime, Editorial and Pop the desktop
   head shrinks to fit its widest word in the half column (`vm.titleWordEms`, beside
   `navNameEms` and the header card's `vm.cardNameEms`, JP-062) rather than breaking inside it —
   Grunge's Anton at 0.75 set the old seed's UNFORGETTABLE.
@@ -115,10 +121,11 @@ another `notes/` file.
   Editorial's arm is Gloock's (`gloockEms` × `faceK`, `navFace`'s table), one table for this
   head at design 2 and its layout-1 statement (below), both set at Gloock's one weight, 400
   (`plans/editorial/display-face.md` step 3; Noto's 540 and Bold tables are gone). Pop's is
-  Titan's (`titanEms` × `faceK`, `navFace`'s table), read by its layout-1 statement alone, which
-  fits the frame's fixed 313.43 box rather than its column. The old seed
+  Titan's (`titanEms` × `faceK`, `navFace`'s table), read by this head and by its layout-1
+  statement, which fits the frame's fixed 313.43 box rather than its column. The old seed
   set at 100 under Lime and 70 under Editorial; the name-derived one fits at the ramp's 107 and
-  97, so the fit bites only on a long word the artist types or a long one-word name.
+  97, and Pop's 67 (65.66 faced), so the fit bites only on a long word the artist types or a
+  long one-word name.
   Two things in the branch are not the frame's: its `flex-[1_0_0]` halves are written as
   two `minmax(0, 1fr)` grid columns, because a zero flex-basis resolves against the
   *content* box whatever `box-sizing` says and the padded card came out 41 wider than the
