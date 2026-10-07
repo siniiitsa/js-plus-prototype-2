@@ -69,6 +69,15 @@ the branch held nothing `main` lacked.
 That QA batch moved two of the blocks this pass widens. *Inherited from Editorial layout 3's QA*,
 under the header and under the repertoire (*Seen at planning time*, item 4), records what Pop
 gets from it.
+**Rebased again on 2026-10-07**, after section 1, onto `6c81448` (after #52, Editorial layout 4's
+QA, and #53, JP-120). There was one conflict, in a comment. JP-109 and section 1 had both rewritten
+`sectionVm`'s note over `vm.cardNameEms`, and the merged note names both. Neither batch touches a
+layout-3 block: JP-108 … JP-110 are `s.v3`, and JP-120 is the layout-2 form. `git range-diff`
+shows the four patches unchanged but for that comment. **The two-server digest against `main`**
+(`main` in a worktree on `:5181`, the branch on `:5182`, the port normalised out of
+`background-image`'s URLs) shows themes 0, 1, 2 and 3 at zero files of 660, canvas and `live=1`.
+Theme 4 moves exactly 12 files on each surface: header, calendar, gallery and map at `arch_2`,
+three widths each. Those are session 0's seats and section 1's header, and nothing else.
 
 ## What the pass must deliver
 
@@ -274,7 +283,7 @@ masters are one session. **Lime block** is where that section's Lime layout-3 bl
 | # | Cat | Desktop node | Size | Tablet node | Size | Mobile node | Size | Scheme 1440 / 768 / 390 (nested) | Lime twin (1440 / 768 / 390) | Editorial twin (1440 / 768 / 390) | Lime block | Status |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 0 | *foundation* | `964:68750` *(page)* | — | `984:15355` | — | `984:15386` | — | — | — | — | `SCHEMES_OF.Pop[2]`, `cardOnPage` at `d === 2`, `navModeDefault` (decision 1) | **done** |
-| 1 | `header` | `964:68751` | 1440 × 900 | `984:15356` | 768 × 1024 | `984:15387` | 390 × **606.5** | **1 / 6 / 6** (`hero-card` **6** at 1440; the rings, capsule ring and chips name Scheme 1) | `964:68654` / `984:10740` / `984:10771` | `964:68718` / `984:16812` / `984:16843` | `if (s.limeTree) { … return }` at the head of `HeaderV2` | **done** `39ae7fc` |
+| 1 | `header` | `964:68751` | 1440 × 900 | `984:15356` | 768 × 1024 | `984:15387` | 390 × **606.5** | **1 / 6 / 6** (`hero-card` **6** at 1440; the rings, capsule ring and chips name Scheme 1) | `964:68654` / `984:10740` / `984:10771` | `964:68718` / `984:16812` / `984:16843` | `if (s.limeTree) { … return }` at the head of `HeaderV2` | **done** `469ffa3` |
 | 2 | `bio` | `964:68760` *(head `964:68755`, in Section `964:68754`)* | 858 × 882 | `984:15364` *(head `984:15359`)* | 708 × 912 | `984:15395` *(head `984:15390`)* | 370 × **893** | 1 (seal **4**) | `964:68663` / `984:10748` / `984:10779` | `964:68728` / `984:16820` / `984:16851` | `if (s.v2 && s.limeTree)` ahead of `Bio`'s `if (s.v2)` | open |
 | 3 | `media` | `964:68771` list + `964:68770` card *(head `964:68763`)* | 858 × **678** + 858 × 243 | `984:15375` + `984:15374` *(head `984:15367`)* | 708 × 647 + 708 × 243 | `984:15406` + `984:15405` *(head `984:15398`)* | 370 × 647 + 370 × 243 | 1 (card **2**; rows **3 / 4 / 5 / 7 / 8**) | `964:68674` + `964:68673` / `984:10759` + `984:10758` / `984:10790` + `984:10789` | `964:68739` + `964:68738` / `984:16831` + `984:16830` / `984:16862` + `984:16861` | `if (s.limeTree)` inside `Media`'s `if (s.v2)`, after `nHot` | open |
 | 4 | `repertoire` | `964:68775` | 1440 × 621 | `984:15376` *(in `984:15373`)* | 708 × **628** | `984:15407` | 390 × **693** | 1 (sets **2 / 3 / 4**) | `964:68678` / `984:10760` / `984:10791` | `964:68743` / `984:16832` / `984:16863` | `if (s.limeTree)` inside `Repertoire`'s `if (s.v2)`, after `arrow` | open |
