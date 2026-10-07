@@ -21588,12 +21588,59 @@ function EventsMap({ s }) {
     // resolved to under layout 2's Scheme 3 viewport; the lit pin, which no
     // frame draws, is Grunge's keys: the paper accent in a 2px `s.tx` ring,
     // the lit row's own paper.
-    if (s.limeTree) {
+    //
+    // Pop (964:68778 / 984:15382 / 984:15413) is the same tree a fifth time —
+    // 141 / 142 / 83 by traversal order — bound, on **Scheme 4**: a blue band
+    // the root paints (`G.sheet` undefined), its type `text/2` yellow, the
+    // chips, the date discs and every rule `stroke/1` teal, the head and the
+    // venues `text/2` (no `head` or `venue` leaf). Grunge's five-way split
+    // needs a sixth seat here, because the lit chip and the lit row stand on
+    // different schemes: the All chip is Scheme 4's own `text/1` teal lettered
+    // `sem/bg` blue (`chipLit` / `chipLitFg`), while the lit row is a nested
+    // **Scheme 3** pill — `text/1` lime lettered `sem/bg` pink, ringed 2px in
+    // its violet `stroke/1` — whose date disc turns round to Scheme 3's pink
+    // `box/1` in that violet ring (`litDisc`, `litRing`), lettered lime, and
+    // whose Upcoming pill is pink under lime in the same violet. Every date
+    // disc is ringed 2px, scaled as Pop's rings are. *See all gigs* is Scheme 3
+    // again: lime under a pink label and disc round a lime arrow. The panel is
+    // `S3`, Editorial's keys read on Pop's: `box/1` `#FF63B8` for the card and
+    // the map container (one value, Lime's case), radius 50 / 30 / 30 and 25 /
+    // 20 / 20, its type `text/2` violet, the status pill `sem/bg` pink under
+    // lime, the container's ring, the bar's rule and the zoom buttons' ring
+    // `stroke/1` violet, EXPAND VIEW's arrow `sem/bg` pink on the pink
+    // container (faint, the frame's, followed). The `Map View Container`
+    // states no mode, so the viewport inherits Scheme 3 where Editorial's was
+    // the seat's 4: the rings, ring labels, centre disc and tail `sem/bg`
+    // pink, and everything lettered inside it — the labels, the centre disc's
+    // ring and glyph, the zoom glyphs — Scheme 3's `text/2` violet (`vpInk`),
+    // not the band's yellow; the zoom buttons `box/2` `#F0138C`. The frame's
+    // five dots are that violet at .6 and read on the plate, so they are
+    // followed. The lit pin, which no frame draws, is the lit row's own pair,
+    // Grunge's and Editorial's reading: lime in a 2px violet ring, apart from
+    // the pink centre marker it can cross. The 390 pager's two arrows are
+    // ringed and lettered `text/1` teal with no fill, so `Pager`'s Pop arm,
+    // which fills its ends, is told `endBox: 'transparent'`.
+    if (s.limeTree || s.pop) {
       const grunge = s.grunge
       const ed = s.editorial
-      const S3 = ed ? s.onScheme[3] : null
+      const pop = s.pop
+      const S3 = ed || pop ? s.onScheme[3] : null
       // Lime's arm is this block's own literals, so theme 1 digests to zero.
-      const G = grunge
+      const G = pop ? {
+        sheet: undefined, ink: s.tx, lit: S3.ac, litFg: S3.bg, litBoxFg: S3.ac,
+        disc: s.box1, hair: s.stroke1, hairP: S3.stroke1,
+        panel: S3.box1, mapBox: S3.box1, zoom: S3.box2,
+        pinRing: S3.stroke1, pillBg: S3.ac, pillFg: S3.bg, pagerInk: s.ac,
+        panelR: desk ? u(50) : '30px', boxR: desk ? u(25) : '20px',
+        ratio: desk ? '570 / 472' : tab ? '315 / 521' : '350 / 164',
+        // Editorial's leaves, read on Pop's schemes.
+        title: desk ? u(28) : tab ? '22px' : '20px',
+        panelInk: S3.tx, statusBg: S3.bg, statusFg: S3.ac, arrow: S3.bg,
+        acc: S3.bg, dot: S3.tx, dotOp: 0.6,
+        // Pop's own, each read through `??` below.
+        chipLit: s.ac, chipLitFg: s.bg, litDisc: S3.box1, litRing: S3.stroke1,
+        vpInk: S3.tx, pin: S3.ac, pagerBox: 'transparent',
+      } : grunge
         ? {
           sheet: undefined, ink: s.tx, lit: s.ac, litFg: s.bg, litBoxFg: s.ac,
           disc: s.box1, hair: s.stroke1, hairP: '#00000026',
@@ -21638,7 +21685,7 @@ function EventsMap({ s }) {
       // `faced` is the identity).
       const disp = (size, lh) => ({
         fontFamily: s.display, fontSize: faced(s, size), lineHeight: facedLh(s, lh),
-        letterSpacing: s.dls, ...(grunge || ed ? { textTransform: 'uppercase' } : null),
+        letterSpacing: s.dls, ...(grunge || ed || pop ? { textTransform: 'uppercase' } : null),
       })
       const bodySm = { fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4, letterSpacing: s.dls }
       const chipL = {
@@ -21646,16 +21693,25 @@ function EventsMap({ s }) {
         letterSpacing: '-0.06em', textTransform: 'uppercase', whiteSpace: 'nowrap',
       }
 
+      // Titan stands lower than the frame's Chunko, measured per site against
+      // each text node's `absoluteRenderBounds` (the string drawn alone, DPR
+      // 4): Display/Title at lh 1.1 — the h2 and the panel's h3 — floats
+      // 0.176 / 0.179 / 0.137em up its box against 0.272 / 0.258 / 0.29, so
+      // it lifts 0.1em (pricing's head and the calendar's BOOK ME again);
+      // the row venues at lh 1.2 sit 0.06–0.09em low at the cap and the floor
+      // alike, over their place line, so they lift 0.08em.
+      const popLift = (em) => (pop ? { position: 'relative', top: `-${em}em` } : null)
       const headL = (
         <div style={col(u(6), { alignItems: 'flex-start', maxWidth: '100%', color: ink })}>
           {s.mapKicker && <span style={bodySm}>{s.mapKicker}</span>}
-          <h2 style={distressed(s, { margin: 0, ...disp(titleSize, 1.1), ...(G.head ? { color: G.head } : null) })}>{s.title}</h2>
+          <h2 style={distressed(s, { margin: 0, ...disp(titleSize, 1.1), ...(G.head ? { color: G.head } : null), ...popLift(0.1) })}>{s.title}</h2>
         </div>
       )
 
       // The lit chip is ink lettered in the sheet's colour; every chip keeps
       // the hairline, which on the lit one is ink on ink. Under Grunge the
-      // fill is the accent and the letter the page's own black.
+      // fill is the accent and the letter the page's own black. Under Pop the
+      // chip is the band's own pair, not the lit row's (`chipLit`).
       const chipRowL = chips.length > 0 && (
         <div style={row(u(desk || tab ? 8 : 5), { flexWrap: 'wrap', maxWidth: '100%' })}>
           {chips.map((ch, k) => {
@@ -21667,7 +21723,7 @@ function EventsMap({ s }) {
                 style={{
                   ...bodySm, flex: 'none', whiteSpace: 'nowrap',
                   boxShadow: ring(hair), borderRadius: '999px', padding: `${u(5)} ${u(12)}`,
-                  background: on ? G.lit : 'transparent', color: on ? G.litFg : ink,
+                  background: on ? G.chipLit ?? G.lit : 'transparent', color: on ? G.chipLitFg ?? G.litFg : ink,
                   cursor: s.live ? 'pointer' : undefined,
                 }}
               >{ch.city ? `${ch.label} · ${ch.n}` : ch.label}</span>
@@ -21682,7 +21738,9 @@ function EventsMap({ s }) {
       // black type, and the box standing on it — the date disc, still `box/1` —
       // letters the accent back, which is the frame's own reading. Under
       // Editorial the pill is a square paper row, dashed all round, the date
-      // disc a square box, and the rules dashed ink.
+      // disc a square box, and the rules dashed ink. Under Pop the pill is
+      // Scheme 3's lime ringed 2px violet, and the disc on it turns pink in
+      // the same ring; every disc's ring is 2px.
       const gigRowL = ({ g: gg, i }, k) => {
         const on = litRow(i)
         const next = shown[k + 1]
@@ -21700,7 +21758,8 @@ function EventsMap({ s }) {
         const mark = (
           <span style={col(0, {
             width: u(56), height: u(56), flex: 'none', alignItems: 'center', justifyContent: 'center',
-            borderRadius: ed ? 0 : '999px', background: mist, boxShadow: ring(hair),
+            borderRadius: ed ? 0 : '999px', background: on && G.litDisc ? G.litDisc : mist,
+            boxShadow: pop ? `inset 0 0 0 ${u(2)} ${on ? G.litRing : hair}` : ring(hair),
             color: on ? G.litBoxFg : ink,
           })}>
             {/* Label/XXXS, a literal 7; the day is Label/XS, Retro's normalisation.
@@ -21721,7 +21780,7 @@ function EventsMap({ s }) {
           <div style={col(u(3), { flex: '1 1 0', minWidth: 0 })}>
             <span style={{
               ...disp(s.list, 1.2), overflowWrap: 'anywhere',
-              ...(G.venue && !on ? { color: G.venue } : null),
+              ...(G.venue && !on ? { color: G.venue } : null), ...popLift(0.08),
             }}>{gg.venue}</span>
             {!!place && (
               <span style={on
@@ -21743,11 +21802,12 @@ function EventsMap({ s }) {
         // `stroke/1`, the row's hairline, square corners or not (Editorial's
         // too). Idle it is unfilled and lettered `text/2`, the row's ink; on
         // the lit row it fills `sem/bg` under `text/1`, which is the lit row
-        // turned round: `G.litFg` under `G.lit` on all three templates.
+        // turned round: `G.litFg` under `G.lit` on all three templates, and
+        // on Pop's, whose lit pill rings in the lit row's violet instead.
         const pill = !!gg.status && (
           <span style={{
             ...bodySm, flex: 'none', whiteSpace: 'nowrap',
-            padding: `${u(4)} ${u(10)}`, borderRadius: '999px', boxShadow: ring(hair),
+            padding: `${u(4)} ${u(10)}`, borderRadius: '999px', boxShadow: ring(on && G.litRing ? G.litRing : hair),
             ...(on ? { background: G.litFg, color: G.lit } : { color: ink }),
             ...(s.mob ? { marginLeft: 'auto' } : null),
           }}>{s.gigStatus[gg.status]}</span>
@@ -21763,7 +21823,10 @@ function EventsMap({ s }) {
             width: '100%', boxSizing: 'border-box', color: fg,
             cursor: s.live ? 'pointer' : undefined,
             ...(on
-              ? { background: G.lit, borderRadius: ed ? 0 : '999px', padding: `${u(14)} ${u(ed ? 10 : 29)} ${u(14)} ${u(10)}` }
+              ? {
+                background: G.lit, borderRadius: ed ? 0 : '999px', padding: `${u(14)} ${u(ed ? 10 : 29)} ${u(14)} ${u(10)}`,
+                ...(G.litRing ? { boxShadow: `inset 0 0 0 ${u(2)} ${G.litRing}` } : null),
+              }
               : {
                 padding: `${u(14)} 0`,
                 ...(aboveLit || ed ? null : { boxShadow: `inset 0 -1px 0 ${hair}` }),
@@ -21803,7 +21866,8 @@ function EventsMap({ s }) {
           {pages > 1 && (
             <div style={{ marginTop: u(10) }}>
               <Pager s={s} frame={{
-                pages: [], grow: true, lime: { ring: G.pagerInk, ink: G.pagerInk },
+                pages: [], grow: true,
+                lime: { ring: G.pagerInk, ink: G.pagerInk, ...(G.pagerBox ? { endBox: G.pagerBox } : null) },
                 onStep: s.live
                   ? (dir) => setPage(Math.max(0, Math.min(pages - 1, pg + dir)))
                   : undefined,
@@ -21823,7 +21887,7 @@ function EventsMap({ s }) {
           <span key={i} onClick={onPick(i)} style={{
             position: 'absolute', left: gg.pin.x, top: gg.pin.y,
             width: on ? u(14) : u(8), height: on ? u(14) : u(8),
-            borderRadius: '999px', background: on ? s.ac : G.dot ?? s.tx,
+            borderRadius: '999px', background: on ? G.pin ?? s.ac : G.dot ?? s.tx,
             opacity: on ? undefined : G.dotOp,
             boxShadow: on ? `0 0 0 2px ${G.pinRing}` : undefined,
             transform: 'translate(-50%, -50%)', cursor: s.live ? 'pointer' : undefined,
@@ -21878,10 +21942,10 @@ function EventsMap({ s }) {
                     0.260 / 0.218 / 0.225, each under a pixel off (Noto took
                     0.07em; display-face.md step 4, layout 3). The row venues,
                     at lh 1.2, sat level with the frame's in Noto and are not
-                    lifted. */}
+                    lifted. Titan takes the h2's 0.1em (above). */}
                 <h3 style={distressed(s, {
                   margin: 0, ...disp(titleSize, 1.1), overflowWrap: 'anywhere',
-                  ...(ed ? { position: 'relative', top: '-0.055em' } : null),
+                  ...(ed ? { position: 'relative', top: '-0.055em' } : popLift(0.1)),
                 })}>{feature.venue}</h3>
                 {!!feature.city && (
                   <span style={{
@@ -21936,7 +22000,7 @@ function EventsMap({ s }) {
                 {s.mapRings.slice(0, ringW.length).map((label, k) => (
                   <span key={k} aria-hidden style={{
                     position: 'absolute', left: `${50 + ringW[ringW.length - 1 - k] / 2}%`, top: '50%',
-                    transform: 'translate(-50%, -50%)', background: G.acc ?? s.ac, color: ink,
+                    transform: 'translate(-50%, -50%)', background: G.acc ?? s.ac, color: G.vpInk ?? ink,
                     borderRadius: u(4), padding: `${u(2)} ${u(6)}`, ...chipL, textTransform: 'none',
                   }}>{label}</span>
                 ))}
@@ -21949,8 +22013,8 @@ function EventsMap({ s }) {
                   transform: 'translate(-50%, -100%)',
                 })}>
                   <span style={row(0, {
-                    background: G.acc ?? s.ac, color: ink, padding: u(4),
-                    boxShadow: `inset 0 0 0 2px ${ink}`, borderRadius: '999px',
+                    background: G.acc ?? s.ac, color: G.vpInk ?? ink, padding: u(4),
+                    boxShadow: `inset 0 0 0 2px ${G.vpInk ?? ink}`, borderRadius: '999px',
                   })}>
                     <User size={Math.round(16 * z)} />
                   </span>
@@ -21965,7 +22029,7 @@ function EventsMap({ s }) {
                   <span key={glyph}
                         onClick={s.live ? () => setZoom((v) => Math.max(-2, Math.min(3, v + dir))) : undefined}
                         style={{
-                          width: u(30), height: u(40), borderRadius: u(8), background: lift, color: ink,
+                          width: u(30), height: u(40), borderRadius: u(8), background: lift, color: G.vpInk ?? ink,
                           boxShadow: ring(G.hairP), boxSizing: 'border-box',
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
                           fontFamily: s.body, fontWeight: 700, fontSize: u(20), lineHeight: 1,

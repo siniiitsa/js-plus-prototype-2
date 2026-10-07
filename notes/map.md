@@ -54,7 +54,8 @@ another `notes/` file.
   (stacked over it in a centred column on the 768 lit row, the master's own), and on the right
   of the 390 row's second line, which it now draws for an unlinked gig too: the 390 row is the
   frame's 123 where it was 84. Idle it is unfilled in the row's ink, ringed in its hairline; on
-  the lit row it is the lit row turned round. `GIGS` seeds `year: '2031'` (2025's calendar, so the
+  the lit row it is the lit row turned round (Pop's rings in the lit row's own violet, since its
+  lit row is a nested Scheme 3 pill on the Scheme 4 band). `GIGS` seeds `year: '2031'` (2025's calendar, so the
   discs keep the frames' weekdays), so every seeded row reads *Upcoming* until 2031. That filter is the one thing in this section that can break the
   one-pin-per-gig-on-a-page rule: it punches holes in the indices, so a filtered page of six or
   more can seat two gigs on the same `PINS[i % 5]`. Pairing the dot with the row's place on the
