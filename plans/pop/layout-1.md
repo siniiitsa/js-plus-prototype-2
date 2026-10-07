@@ -2500,6 +2500,9 @@ sweep) — `Pop 0,1,2,3`; *field reach is measured* (CLAUDE.md) — `reach.mjs 4
      `sem/stroke/2` are one lime; and the seal's `hue={s.paper}` drew a white disc under the Pop
      arm's white globe and name, so Pop keeps the arm's own pink disc. Its bar is NavBar's glass
      capsule. Pop's layout-4 header stands on Scheme 3.
+     *Closed by layout 4's section 1 ([`layout-4.md`](./layout-4.md), 2026-10-07): the root is
+     Scheme 3 at every width, its nav Scheme 1 and its seal Scheme 4 / 4 / 5; card 4 is the fitted
+     Lime block, and both fixes above were deleted with Retro's half's reach under Pop.*
 9. ~~**The seal's spin**~~ — decided in section 1: it spins, as every seal in the app does. The
    name and the two dots turn inside `.seal-spin` (JP-057's rule), the disc, globe and smiley stand
    still, and reduced motion stops it. A frame is a still and cannot say otherwise; the spin is the

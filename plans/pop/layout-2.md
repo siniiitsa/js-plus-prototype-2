@@ -2118,7 +2118,9 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
    on Scheme 1 at 1440 and **Scheme 6 at 768 and 390**, card 4's on Scheme 3. Each is its own pass's.
    *Corrected by layout 3's planning walk (2026-10-05): card 3's `hero-card` is Scheme 6 at every
    width (nested at 1440); only the instance root's 20 / 10 frame round it moves, white at 1440
-   and violet narrow ([`layout-3.md`](./layout-3.md), trap 1 and decision 1).*
+   and violet narrow ([`layout-3.md`](./layout-3.md), trap 1 and decision 1).* *Card 4 closed by
+   layout 4's section 1 ([`layout-4.md`](./layout-4.md), 2026-10-07): Scheme 3 at every width, as
+   written, with its nav on Scheme 1 and its seal on Scheme 4 / 4 / 5.*
 8. **The footer** is layout 1's, closed at planning time: the desktop instance's main component
    (`446:8697`) is not layout 1's (`907:12019`), but the trees are identical.
 9. **The repertoire's leaks** — Lime's `#AFE335` × 4 and `#F2FFD0` × 2, Retro's `#FBF6EA`, two raw
