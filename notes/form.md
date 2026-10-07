@@ -79,6 +79,16 @@ another `notes/` file.
   `FIELDS.form.photo`, a **third single-photo slot** beside `image` and `avatar`, because this
   section's `image` **is** the artist: the header's pair is the other way up,
   and layout 1 has drawn `image` as the 48px circle since it was fitted.
+  **The credit row yields at 390** (JP-120, user call, 2026-10-07, every template): the
+  promises / credit row was a no-wrap space-between row with the credit `flex: 'none'`, so a
+  long name squeezed the promises to a word a line and, under Editorial's Gloock, ran past the
+  page (*Maximilian Featherstonehaugh*, 375 wide on a 370 measure). At 390 the row now wraps as
+  1440's does, the promises hold half of it (`flex: '1 1 0'` floored at `50%` less half the gap —
+  a zero basis, because the line break reads the flex-base size and the promises' max-content
+  would have wrapped Kai Mercer's credit too), and the credit shrinks (`0 1 auto`), so a name
+  wider than the other half stands under the promises and wraps between words, inside one with
+  `break-word`. The seeded name keeps the frame's row (its credit is 128–169 of 370); only the
+  promises' box widens into the space-between gap. 1440 and 768 do not move.
   **Layout 3 is layout 2's card again, beside a display head instead of under a
   photograph**, and it shares the seam whole for the second time — the same `vals`, the
   same `errs`, the same `sent`, the same `<a href="mailto:">`, the same *Write another*,
