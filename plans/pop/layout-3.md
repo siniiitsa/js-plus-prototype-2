@@ -2576,7 +2576,7 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
   *the composed row's pad arm moves per section* (grunge/layout-3) — the inset pair closed; *the
   whole-page published check* — `page-check.mjs Pop 2,0,1,3`.
 
-### Learned on the end-of-pass sweep
+### Learned on the end-of-pass sweep (`3007775`, `888330b`, `627d987` and this note)
 
 - **The HEAD-side labels first**, on a fresh `:5188` (the user's `:5173`, `:5175` and `:5176`
   were days old): five themes, canvas and `live=1`, 660 + 660 files, no one-row file in either.
@@ -2681,6 +2681,21 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
   layout-2 row, still "push, PR and merge open", now says it merged inside this branch's PR #48.
 - **Item 8**: *Notes for the designer*, at the plan's foot — eight notes from open questions 2–18
   (10, 13 and 15 are code calls, not the designer's; 8 is card 4's pass).
+- **Item 9: the two-build digest** (the repo root on `127.0.0.1:8931`, the committed build — JP-120's
+  refresh, `816941d` — digested on both cards before the build and the `cp`, reduced motion on).
+  `CARD=0`: the seeded page is **byte-identical under all five templates** at Desktop, Tablet and
+  Mobile, and `modal.txt` is identical (four cards each in both). `CARD=2`: card 3's page is
+  identical under Retro, Lime, Grunge and Editorial and rebuilt under Pop (707 → 723, 691 → 712
+  and 655 → 677 rows; 1,318–1,418 diff lines a tab). The tell: `repeating-conic` (Retro's checker
+  ribbon) old-only at every tab; Minimal's *Music* new-only at Desktop and Tablet (390 is the
+  burger); the header root white at Desktop and violet `#6B2CFF` at Tablet and Mobile in the new
+  build, white at all three in the old; twenty lime inset rings new-only at each tab. The
+  standalone file is **9,829,780 bytes** (was 9,824,811); only `EncoreSection.jsx`,
+  `EncoreBuilder.jsx` and `data.js` changed in `src` since that refresh, every change named in
+  this pass's sessions; no photograph was added (56 files).
+- **Raised for the user, not decided**: open questions 10 (every twin's off-centre *Inset Hero*
+  portrait), 13 (layout 2's one-track media stadium), 15 (the calendar's one-word heading) and 18
+  (the testimonials' pink-on-violet `feat-quote`), and item 3's 16px seals in the layout picker.
 
 ## Open questions
 
