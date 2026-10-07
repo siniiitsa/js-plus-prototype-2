@@ -67,8 +67,8 @@ const isTablet = (s) => !!s.narrow && !s.mob
  * glows, the arch portrait) is drawn by its `if (s.lime)` blocks inside the
  * shared `v0` branches, and Grunge's, Editorial's and Pop's by their arms
  * inside those blocks, never by these helpers (bar the few a named pair
- * widens). Pop's layouts 2–4 take the shared structure undressed until their
- * passes.
+ * widens). Pop's layout 4 takes the shared structure undressed until its
+ * pass.
  * ------------------------------------------------------------------ */
 
 // Anton (or the theme's label face): uppercase, tight, used for nav, eyebrows,
