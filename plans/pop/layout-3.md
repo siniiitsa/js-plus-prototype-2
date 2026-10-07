@@ -1230,7 +1230,9 @@ From the renders and the planning walk — impressions to confirm, not measureme
   742 against 893 — the seeded prose. Genres 24.6 / 30 / 30 under the card, chips 28.3 / 27.6 /
   25.1 tall.
 - **Named diffs**: the values run one line where the frame hand-breaks "JUNE\n2021" (the twins');
-  the 390 card is 151 short (the seeded prose); Pop's rounded desktop tokens (`dispSm` 30 against
+  the 390 card is 151 short (the seeded prose), and stands at 151.1 in the root against the
+  frame's 157 (`padY` 44 against the left column's 50, Lime's arm, which Editorial named the same
+  way) — the 390 numbers above are card-relative; Pop's rounded desktop tokens (`dispSm` 30 against
   29.52, `bodyMd` 11 against 11.48 — every Pop section's); the Genres chips' corner is
   `s.radiusChip` 8 at desktop against 6.56 (TagChips' shared reading, the twins'); the third and
   fourth chips letter their seats' own `#F6F0E8` and `#000000` where the frame binds
