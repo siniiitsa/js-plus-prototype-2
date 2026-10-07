@@ -286,7 +286,7 @@ masters are one session. **Lime block** is where that section's Lime layout-3 bl
 | 1 | `header` | `964:68751` | 1440 × 900 | `984:15356` | 768 × 1024 | `984:15387` | 390 × **606.5** | **1 / 6 / 6** (`hero-card` **6** at 1440; the rings, capsule ring and chips name Scheme 1) | `964:68654` / `984:10740` / `984:10771` | `964:68718` / `984:16812` / `984:16843` | `if (s.limeTree) { … return }` at the head of `HeaderV2` | **done** `469ffa3` |
 | 2 | `bio` | `964:68760` *(head `964:68755`, in Section `964:68754`)* | 858 × 882 | `984:15364` *(head `984:15359`)* | 708 × 912 | `984:15395` *(head `984:15390`)* | 370 × **893** | 1 (seal **4**) | `964:68663` / `984:10748` / `984:10779` | `964:68728` / `984:16820` / `984:16851` | `if (s.v2 && s.limeTree)` ahead of `Bio`'s `if (s.v2)` | **done** `66cc709` |
 | 3 | `media` | `964:68771` list + `964:68770` card *(head `964:68763`)* | 858 × **678** + 858 × 243 | `984:15375` + `984:15374` *(head `984:15367`)* | 708 × 647 + 708 × 243 | `984:15406` + `984:15405` *(head `984:15398`)* | 370 × 647 + 370 × 243 | 1 (card **2**; rows **3 / 4 / 5 / 7 / 8**) | `964:68674` + `964:68673` / `984:10759` + `984:10758` / `984:10790` + `984:10789` | `964:68739` + `964:68738` / `984:16831` + `984:16830` / `984:16862` + `984:16861` | `if (s.limeTree)` inside `Media`'s `if (s.v2)`, after `nHot` | **done** `8a386f5` |
-| 4 | `repertoire` | `964:68775` | 1440 × 621 | `984:15376` *(in `984:15373`)* | 708 × **628** | `984:15407` | 390 × **693** | 1 (sets **2 / 3 / 4**) | `964:68678` / `984:10760` / `984:10791` | `964:68743` / `984:16832` / `984:16863` | `if (s.limeTree)` inside `Repertoire`'s `if (s.v2)`, after `arrow` | open |
+| 4 | `repertoire` | `964:68775` | 1440 × 621 | `984:15376` *(in `984:15373`)* | 708 × **628** | `984:15407` | 390 × **693** | 1 (sets **2 / 3 / 4**) | `964:68678` / `984:10760` / `984:10791` | `964:68743` / `984:16832` / `984:16863` | `if (s.limeTree)` inside `Repertoire`'s `if (s.v2)`, after `arrow` | **done** `b5e832b` |
 | 5 | `calendar` | `964:68774` *(in `964:68772`; "BOOK ME" `964:68773`)* | 405 × **481.9** | `984:15379` *(in `984:15377`; `984:15378`)* | 708 × **445.9** | `984:15410` *(in `984:15408`; `984:15409`)* | 370 × **427.9** | **2** (the instance; its pill names 2 again) | `964:68677` / `984:10763` / `984:10794` | `964:68742` / `984:16835` / `984:16866` | `if (s.limeTree)` inside `Calendar`'s `if (s.v2)`, after `line` | open |
 | 6 | `gallery` | `964:68776` | 1440 × 789 | `984:15380` | 768 × **857** | `984:15411` | 390 × **579** | **2** (tile rings name Scheme 1) | `964:68679` / `984:10764` / `984:10795` | `964:68744` / `984:16836` / `984:16867` | **no block** — `s.limeTree`, `(s.lime \|\| grunge)` and `ed` reads through `Gallery`'s `if (s.v2)` | open |
 | 7 | `pricing` | `964:68777` | 1440 × **1093** | `984:15381` | 768 × **1010** | `984:15412` | 390 × **1419** | 1 (featured row **2**) | `964:68680` / `984:10765` / `984:10796` | `964:68745` / `984:16837` / `984:16868` | `if (s.limeTree)` inside `Pricing`'s `if (s.v2)`, after `shown` | open |
@@ -1396,6 +1396,109 @@ From the renders and the planning walk — impressions to confirm, not measureme
   the 632 box at 1440 and 768, Editorial's); `notes/media.md`'s per-seat schemes gain layout 3's
   list. Not written here.
 
+### Settled in section 4 (the repertoire)
+
+- **The block widened whole: `if (s.limeTree || s.pop)` inside `Repertoire`'s `if (s.v2)`, after
+  `arrow`, `const pop = s.pop`**, with a fourth `G` arm written first and two `pop` arms. The
+  Lime, Grunge and Editorial arms are byte-identical. The walk (bindings with their collections,
+  all three widths) found the twins' tree node for node: the head, the grid, three `set`s of name,
+  `metaWrap`, four `sr` rows and `view`, and at 390 the head's `Frame 311` and the pager's
+  `Frame 307`. It is on **Scheme 1 with the three sets on Schemes 2 / 3 / 4** at every width, with
+  no Device override (Desktop / Tablet / Mobile) and no effect on any node. Every paint is bound.
+  `get_variable_defs` is the ramp (display-lg 82 / 51 / 36, body-lg 16 / 15 / 15, chip
+  12 / 11 / 11, list 20 / 16 / 15, body-sm 12) plus `border/default` 4 (and `border/hairline` 1
+  at 390), so every size reads `s.*`. The hooks sit above the branch, so the reveal and the 390
+  pager needed nothing.
+- **Every card leaf is a `sem/*` binding in the card's own scheme, so each seat is
+  `s.onScheme[n]`**, Editorial's `seat(n)`, and no literal is owed. `box/1` is the card
+  (`#D7FF23` / `#FF63B8` / `#3F76FF`); `text/2` its name, titles, lengths and *View full set →*
+  (violet / violet / yellow); `text/1` the meta line (pink / lime / teal); `stroke/1` its ring and
+  the rows' foot rules, one binding (violet / violet / teal). No node names another scheme's
+  variable. **Seated by rendered place**, Lime's rule unchanged: the 390 master centres the pink
+  card, which is seat 1.
+- **The `G` arm is Pop's own** (the plan's call): `seats: [seat(2), seat(3), seat(4)]`, Lime's pad
+  34 and radius 50, the frame's rows **50.25 / 57.5 / 57.5**, and `ringW: 4`. The arm was owed
+  anyway for the seats and the ring, so the frame's rows cost nothing. The fallback's 39 / 57 are
+  Lime's: its 1440 card divides 369 under a 116 head, and Pop's 412 under Chunko's 73.
+  - **The card's ring is `border/default` 4px INSIDE**, where the twins draw a hairline. `ringW`
+    is a new key, since a seat's `ring` is Grunge's ring *colour*. The fallback stays the literal
+    `'1px'` (`u(1)` would be 0.8 at desktop and move themes 1–3); Pop's is `u(4)`, 3.3 on the
+    canvas. The rows' foot rules stay 1px.
+  - **`disp()` gains `pop`** (the plan's *Seen at planning time*, item 4). The head and the
+    titles are uppercase Titan through `faced`, and `lenDrop` follows `faceK`.
+  - **Head `s.tx` and the 390 pills need nothing.** `s.tx` is `sem/text/2` violet. The pills'
+    1px `s.ac` ring and arrow at radius 60 are the frame's `sem/text/1` pink, `border/hairline`
+    1, `cornerRadius` 60.
+- **The head's lift, scanned** at DPR 4. The frame's capitals ink 0.015 / 0.024 / 0.016 token-em
+  above the box's top and float 0.185 / 0.186 / 0.184 above its foot, the media head's figures
+  exactly. Unlifted, Titan sat **0.131 / 0.118 / 0.132** below the top and **0.047 / 0.062 /
+  0.049** above the foot, 0.12–0.15 low at both ends. So **`top: −0.14em`** under `pop`, the
+  header's, bio's and media's number. Lifted, the tops are −0.004 / −0.020 / −0.007 and the floors
+  0.181 / 0.199 / 0.188 (≤ 0.7px off). The song titles are not lifted (lh 1.2, layout 2's call).
+- **The desktop row keeps its one-line ellipsis.** The frame's 50.25 is 41.2 on the canvas, which
+  *would* hold two Titan lines (38.4). But clamping only at 768 and 390 is the block's shared
+  rule (JP-104, entry 5), and a Pop-only clamp would split the block's behaviour, not dress it.
+  No seeded desktop title reaches it (DON'T STOP ME NOW 165.3 of ≈ 267 beside its length).
+- **Measured against the masters** (harness; the frame × 0.82 in brackets):
+  - **desktop:** head 59.6 tall (59.9); grid 19.7 under it (19.7); cards **351.8 × 337.8**
+    (352.05 × 337.84), ring 3.3, radius 41, padding 27.9 (27.9); name at 27.9, meta at 55.6
+    (55.8); rows **41.2** (41.2). Section 543.1 against 509.2: the shared `padY` 80 on top
+    against the frame's 45.9, the foot JP-103's 46.
+  - **768:** head 45.4 (45); cards **222.7 × 438.3** (222.67 × 439), ring 4, rows 57.5; section
+    619.7 against 628 (`padY` 56 against 60, top and foot).
+  - **390:** head 32 (32); cards 290 × 438.3 at **−260 / 50 / 360** (the master's x); pills
+    **180 × 54** at 562.3 (the master's 579, less the 16 of `padY` 44 against 60, and the card's
+    0.7); section 660.3 against 693.
+  - Every length is centred on its title's first line (Δ 0.0) and ends flush with its row.
+- **Which titles wrap** (the pre-measure, confirmed on the fitted rows). At 768 the seeded first
+  fours wrap DANCING QUEEN, MR. BRIGHTSIDE and DON'T STOP ME NOW to two lines, whole; I WANNA
+  DANCE wraps too once revealed. The frame holds three of them on one line at gap 0 and overruns
+  with the fourth, so the block's 10 gap and Titan's 1.2% are the difference. It is named, not
+  fitted: at gap 0 MR. BRIGHTSIDE would have 0.2px to spare. At 390 and at desktop every seeded
+  title is one line. `&cj=` (JP-104's set) reads as the pre-measure: FEATHERSTONEHAUGH clipped at
+  768 and fitting at 390, the 52-character title clamped to two lines at 768 and 390 and
+  ellipsised at desktop, every length on its title's first line, the root at its width.
+- **`live=1`** (puppeteer clicks):
+  - **390:** the carousel opens Weddings | **Pubs** | Birthdays, lime | **pink** | blue. Next and
+    Prev each walk three stops, wrapping, and the colours stay with the seats. The peeks take no
+    pointer (`elementFromPoint` finds the row behind them). The centre's reveal (Pubs' fifth
+    song) grows the three seats together and the root 660.3 → 671.
+  - **`n=20`, desktop and 768:** *View full set →* reveals seven rows and the link goes. The wide
+    pager turns to the *All* card, on seat 0's lime, and wraps back.
+  - **Two sets (`&cj=`):** two cards at desktop, lime and pink with no pager. At 390 the lone
+    card is pink (seat 1) and the pager turns it.
+  - **`n=0`** prints *No songs yet.* in `s.muted`, violet at 64% on white. It reads, as layout
+    2's did on `#F5F5F5`.
+  - The canvas carries no pointer cursor. There were no page errors or warnings.
+- **The gap under media, re-measured as section 3 asked: the feet carry.** In the real app on card
+  3, from the media list's lowest box to the head's **unlifted** box: **100 on the canvas**
+  (122 × 0.82), **90 at 768 and 70 at 390** in the published tab. That is the frames' 122 / 90 /
+  70, since the head stands at the shared `padY` as the twins' do. The published 1440 tab reads
+  120 until the lift is scaled: `getComputedStyle().top` is the unzoomed −9.19 inside the tab's
+  1.22 zoom, so the corrected gap is 122.0. The media arm did not move.
+- **`vm.pad`: JP-103's desktop arm takes Pop**, since the frame's root pads 56 / 56 at 1440. The
+  repertoire's foot is 46 above the lime gallery band on the canvas and **56.1** in the published
+  1440 tab (frame 56), on a straight edge (seam clip). The top stays `padY`, the twins' named diff.
+  Pricing's half of JP-103 is the pricing session's.
+- **Named diffs, the twins'**: the shared `padY` top (80 / 56 / 44 against 56 / 60 / 60, and the
+  foot at 768 and 390); the seeded sets are the tags (Weddings / Pubs / Birthdays against Cocktail
+  hour / Dinner / Party peak, JP-066's call); the 768 wraps (above); Pop's rounded desktop tokens
+  (`list` 16 against 16.4, `bodyLg` 13 against 13.1, `chip` 10 against 9.8).
+- **`FIELDS.repertoire` has no template-keyed row**, so no `reach.mjs` run was owed.
+- **Digest: themes 0, 1, 2 and 3 zero files of 660, canvas and `live=1`** (a fresh `:5181`, both
+  labels taken there, no one-row file in any). Theme 4 moved exactly **repertoire arch 2 at three
+  widths** on each surface.
+- **In the builder** (`page-check.mjs Pop 2,0,1,3`): four modal cards on every card. On card 3's
+  published 1440 tab the repertoire stands at **3376**, 663 tall (543.1 × 1.22), under media and
+  over the gallery. Both reveals change state. The nav, the calendar's and pricing's pills and
+  every footer link (Repertoire → `#repertoire`) land on their ids. The player plays, the form
+  refuses and composes, the 390 burger opens (1 → 5), and `overflow390` is 0. **No console error
+  or warning on any card.**
+- **For the sweep's CLAUDE.md pass**: nothing in CLAUDE.md names the layout-3 repertoire's colours
+  or rings. The JP-103 comment now names Pop. CONVENTIONS D3's repertoire row gains a Pop column (a
+  fourth `G` arm, seated by rendered place on `s.onScheme[2]` / `[3]` / `[4]`, a 4px ring), and
+  C's `G` row gains the repertoire. Not written here.
+
 ### Inherited and used
 
 *(The running list the sweep folds into [`../CONVENTIONS.md`](../CONVENTIONS.md): each time a
@@ -1451,6 +1554,18 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
   shadows the ramp* (lime/layout-1) — Display/Title 28 / 22 / 20; *the composed row's pad arm moves
   per section* (grunge/layout-3) — media second; *field reach is measured* — a media-only
   `reach.mjs`; *the whole-page published check* — `page-check.mjs Pop 2,0,1,3`.
+
+- Section 4: *after `arrow`, the seat layouts 1 and 2 used* (D3, lime/layout-3) — widened, a fourth
+  `G` arm; *seat the schemes by rendered place, not by index* (D3) — `s.onScheme[2]` / `[3]` /
+  `[4]`, the pink card centred; *the `G` lookup at the block's head* (grunge/layout-1) — Pop's arm
+  first, `ringW` falling back to the twins' literal; *a nested node or a card on another scheme
+  reads that scheme's keys* (editorial/layout-2) — every leaf off the card's own scheme; *read
+  every nested node's scheme off the master* (grunge/layout-3) — 2 / 3 / 4 at every width; *a
+  frame's inside stroke is an inset `boxShadow`* (lime/layout-2) — the 4px ring; *rows pin at each
+  master's division result* (D2, Retro's rule) — 50.25 / 57.5 / 57.5; *a stand-in face's glyph
+  floor is measured per site* (editorial/layout-3) — the head, 0.14em; *a twin's width-bound call
+  is re-measured in the new face* (editorial/layout-2) — JP-104's clamp, the 768 wraps; *the
+  whole-page published check* — `page-check.mjs Pop 2,0,1,3`.
 
 ## Open questions
 
