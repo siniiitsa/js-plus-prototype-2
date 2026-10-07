@@ -542,9 +542,11 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // pads 50 / 56 at 1440 and 768, 40 / 40 at 390), so the three templates are
   // one condition again. Pop's wrappers are Editorial's inset for inset
   // (plans/pop/layout-3.md, *The composed page*), and it joins the same way,
-  // the bio first; until media and the calendar join, the heads part again.
+  // the bio first, then media — whose list ends 122 / 90 / 70 above the
+  // repertoire's head again, its 678 list included, so the shared feet carry;
+  // until the calendar joins, the heads part again.
   if (d === 2 && (T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial'
-    || (T.name === 'Pop' && cat === 'bio'))
+    || (T.name === 'Pop' && (cat === 'bio' || cat === 'media')))
     && (cat === 'bio' || cat === 'calendar' || cat === 'media')) {
     const z = (v) => `${Z.dev === 'desktop' ? Math.round(v * 0.82) : v}px`
     const top = Z.dev === 'mobile' ? vm.padY : z(50)

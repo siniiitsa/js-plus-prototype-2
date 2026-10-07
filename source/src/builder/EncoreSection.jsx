@@ -8519,21 +8519,51 @@ function Media({ s }) {
     // frame's 632 box at 768 too (the 390 column is narrower than it). Gloock
     // sets the 1440 head on three lines where the frame's two (accepted,
     // display-face.md step 4, layout 3).
-    if (s.limeTree) {
+    //
+    // Pop layout 3 (964:68770 card + 964:68771 list, head 964:68763 ·
+    // 984:15374 + 984:15375 at 708 · 984:15405 + 984:15406 at 370) is the
+    // tree a fourth time, on Scheme 1 with the card's instance on Scheme 2, so
+    // `pop` names its deltas and the card is a fourth `G` arm off
+    // `s.onScheme[2]`: its fill binds `sem/box/1` `#D7FF23` (not `sem/bg`),
+    // radius 50 at every width, unringed, no effect; the played bars
+    // `text/1`, pink; the idle bars `box/2`; every ink `text/2`, violet; and
+    // the disc binds `box/1` too — the card's own fill, so only its glyph
+    // shows. The list is layout 2's (`popRow` in `v1`'s block): five pills on
+    // Schemes 3 / 4 / 5 / 7 / 8, ringed 4px inside, inked `text/1`, 10 apart
+    // and 10 under the counter, round 64 discs on the row's `box/2` in a 4px
+    // `scheme/1/stroke/2` lime ring. The rows `FILL` the list's stated 678 /
+    // 647 — 116.8 / 110.8 a row, where every twin's 1440 list is 424 — and a
+    // pill's height is its shape, so each row pins at that division result
+    // (the layout-2 repertoire's rule) rather than the list taking 678 as a
+    // minimum, which would stand one track as a 512-tall stadium. The head
+    // keeps the 632 box at 1440 and 768, uppercase in Titan where the narrow
+    // masters type it mixed (decision 2), so it sets two lines at 390 where
+    // the master's one.
+    if (s.limeTree || s.pop) {
       const grunge = s.grunge
       const ed = s.editorial
-      // `onScheme` exists under Editorial alone.
-      const S2 = ed ? s.onScheme[2] : null
-      const G = ed
-        ? { card: S2.box1, dusk: S2.box2, disc: S2.box2, radius: 0, ring: undefined, hot: S2.ac, ink: S2.tx }
-        : grunge
-          ? { card: '#353535', dusk: '#222222', disc: '#000000', radius: u(15), ring: `inset 0 0 0 1px ${s.stroke2}` }
-          : { card: '#263020', dusk: '#43523B', disc: s.box2, radius: u(50), ring: undefined }
-      const card = G.card // Scheme 2 `sem/box/3` (Editorial's `box/1`)
+      const pop = s.pop
+      // `onScheme` exists under Editorial and Pop alone.
+      const S2 = ed || pop ? s.onScheme[2] : null
+      const G = pop
+        ? { card: S2.box1, dusk: S2.box2, disc: S2.box1, radius: u(50), ring: undefined, hot: S2.ac, ink: S2.tx }
+        : ed
+          ? { card: S2.box1, dusk: S2.box2, disc: S2.box2, radius: 0, ring: undefined, hot: S2.ac, ink: S2.tx }
+          : grunge
+            ? { card: '#353535', dusk: '#222222', disc: '#000000', radius: u(15), ring: `inset 0 0 0 1px ${s.stroke2}` }
+            : { card: '#263020', dusk: '#43523B', disc: s.box2, radius: u(50), ring: undefined }
+      const card = G.card // Scheme 2 `sem/box/3` (Editorial's and Pop's `box/1`)
       const dusk = G.dusk // Scheme 2 `sem/box/2` — the idle bars
       const hot = G.hot ?? s.ac // the played bars
       const cardInk = G.ink ?? s.tx
-      const disp = grunge || ed ? { textTransform: 'uppercase' } : null
+      // Pop's rows by index, each node's own scheme and the stroke it names —
+      // layout 2's `popRow`, read again off these masters' `explicitVariableModes`.
+      const popRow = (i) => {
+        const [n, ring] = [[3, 'stroke2'], [4, 'stroke1'], [5, 'stroke2'], [7, 'stroke2'], [8, 'stroke1']][i % 5]
+        const S = s.onScheme[n]
+        return { S, ring: S[ring] }
+      }
+      const disp = grunge || ed || pop ? { textTransform: 'uppercase' } : null
       // Sienna Vale's 10, 10 dash in `sem/stroke/2`, at a row's foot.
       const footDash = ed ? <DashRule dash={10 * z} colour={s.stroke2} /> : null
       const clip = { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }
@@ -8546,7 +8576,8 @@ function Media({ s }) {
       }
       const titleType = {
         fontFamily: s.display,
-        fontSize: faced(s, ed ? (desk ? u(32) : tab ? '25px' : '23px') : desk ? u(36) : tab ? '28px' : '26px'),
+        fontSize: faced(s, pop ? (desk ? u(28) : tab ? '22px' : '20px')
+          : ed ? (desk ? u(32) : tab ? '25px' : '23px') : desk ? u(36) : tab ? '28px' : '26px'),
         lineHeight: facedLh(s, 1.1), letterSpacing: s.dls, ...disp, ...clip,
       }
 
@@ -8561,7 +8592,11 @@ function Media({ s }) {
           <h2 style={distressed(s, {
             margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispLg), lineHeight: facedLh(s, 0.89),
             letterSpacing: s.dls, color: s.ac, ...disp,
-            maxWidth: ed ? u(632.156) : desk ? (grunge ? '4.6em' : u(632.156)) : undefined,
+            maxWidth: ed || pop ? u(632.156) : desk ? (grunge ? '4.6em' : u(632.156)) : undefined,
+            // Titan sits 0.13–0.15 token-em low at lh 0.89, top and floor
+            // alike (scanned against the 1440 master's capitals), so it is
+            // lifted, as the header's and the bio's heads are.
+            ...(pop ? { position: 'relative', top: '-0.14em' } : null),
           })}>{s.title}</h2>
         </div>
       )
@@ -8612,11 +8647,12 @@ function Media({ s }) {
       )
 
       const gap = s.mob ? '14px' : u(20)
+      // Pop's pills stand 10 apart, and 10 under the counter row.
       return (
         <div style={col(u(30), { alignItems: 'stretch' })}>
           {limeHead}
           {limeCard}
-          <div style={col('0', { alignItems: 'stretch' })}>
+          <div style={col(pop ? u(10) : '0', { alignItems: 'stretch' })}>
             <div style={row(u(12), {
               flex: 'none', justifyContent: s.listLabel ? 'space-between' : 'flex-end', padding: `${u(16)} 0`, color: s.tx,
               position: ed ? 'relative' : undefined,
@@ -8631,12 +8667,17 @@ function Media({ s }) {
             {s.tracks.map((t, i) => {
               const dur = t.dur && t.dur !== t.rel ? t.dur : ''
               const on = chosen && i === at
+              // Pop's row is a pill on its own scheme's `sem/bg`, ringed 4px
+              // inside in the stroke its node names, every leaf its `text/1`,
+              // pinned at its master's division result.
+              const R = pop ? popRow(i) : null
               return (
                 <div key={i} onClick={onPick(i)} style={{
-                  flex: 'none', overflow: 'hidden', color: s.tx,
-                  boxShadow: ed ? undefined : `inset 0 1px 0 ${s.stroke1}`,
+                  flex: 'none', overflow: 'hidden', color: R ? R.S.ac : s.tx,
+                  boxShadow: R ? `inset 0 0 0 ${u(4)} ${R.ring}` : ed ? undefined : `inset 0 1px 0 ${s.stroke1}`,
                   position: ed ? 'relative' : undefined,
-                  padding: `${u(14)} 0`, cursor: s.live ? 'pointer' : undefined,
+                  ...(R ? { background: R.S.bg, borderRadius: '999px', minHeight: desk ? u(116.8) : '110.8px' } : null),
+                  padding: `${u(14)} ${R ? u(30) : 0}`, cursor: s.live ? 'pointer' : undefined,
                   ...row(gap),
                 }}>
                   {/* A 21 slot, the widest of the frame's hugging numbers, so
@@ -8649,10 +8690,21 @@ function Media({ s }) {
                       ? <Pause size={parseFloat(s.bodyLg)} fill="currentColor" strokeWidth={0} />
                       : <Play size={parseFloat(s.bodyLg)} fill="currentColor" strokeWidth={0} />)
                     : t.n}</span>
+                  {/* Pop's cover is a disc on the row's own `box/2`, under a
+                      4px inside ring of `scheme/1/stroke/2` — lime, named
+                      outright — that paints over the photograph. */}
                   <span style={{
                     width: u(64), height: u(64), flex: 'none', display: 'block', position: 'relative',
-                    borderRadius: u(4), overflow: 'hidden', background: s.box2,
-                  }}><Photo s={s} initialsSize={16} src={t.img} ink={s.tx} /></span>
+                    borderRadius: R ? '999px' : u(4), overflow: 'hidden', background: R ? R.S.box2 : s.box2,
+                  }}>
+                    <Photo s={s} initialsSize={16} src={t.img} ink={R ? R.S.ac : s.tx} />
+                    {R && (
+                      <span aria-hidden style={{
+                        position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
+                        boxShadow: `inset 0 0 0 ${u(4)} ${s.onScheme[1].stroke2}`,
+                      }} />
+                    )}
+                  </span>
                   {/* Display/Title over Body/SM. */}
                   <span style={col(u(4), { flex: 1, minWidth: 0, alignItems: 'stretch' })}>
                     <span style={distressed(s, titleType)}>{t.name}</span>
