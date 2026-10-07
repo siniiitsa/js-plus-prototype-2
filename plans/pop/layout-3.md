@@ -284,7 +284,7 @@ masters are one session. **Lime block** is where that section's Lime layout-3 bl
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 0 | *foundation* | `964:68750` *(page)* | — | `984:15355` | — | `984:15386` | — | — | — | — | `SCHEMES_OF.Pop[2]`, `cardOnPage` at `d === 2`, `navModeDefault` (decision 1) | **done** |
 | 1 | `header` | `964:68751` | 1440 × 900 | `984:15356` | 768 × 1024 | `984:15387` | 390 × **606.5** | **1 / 6 / 6** (`hero-card` **6** at 1440; the rings, capsule ring and chips name Scheme 1) | `964:68654` / `984:10740` / `984:10771` | `964:68718` / `984:16812` / `984:16843` | `if (s.limeTree) { … return }` at the head of `HeaderV2` | **done** `469ffa3` |
-| 2 | `bio` | `964:68760` *(head `964:68755`, in Section `964:68754`)* | 858 × 882 | `984:15364` *(head `984:15359`)* | 708 × 912 | `984:15395` *(head `984:15390`)* | 370 × **893** | 1 (seal **4**) | `964:68663` / `984:10748` / `984:10779` | `964:68728` / `984:16820` / `984:16851` | `if (s.v2 && s.limeTree)` ahead of `Bio`'s `if (s.v2)` | open |
+| 2 | `bio` | `964:68760` *(head `964:68755`, in Section `964:68754`)* | 858 × 882 | `984:15364` *(head `984:15359`)* | 708 × 912 | `984:15395` *(head `984:15390`)* | 370 × **893** | 1 (seal **4**) | `964:68663` / `984:10748` / `984:10779` | `964:68728` / `984:16820` / `984:16851` | `if (s.v2 && s.limeTree)` ahead of `Bio`'s `if (s.v2)` | **done** `66cc709` |
 | 3 | `media` | `964:68771` list + `964:68770` card *(head `964:68763`)* | 858 × **678** + 858 × 243 | `984:15375` + `984:15374` *(head `984:15367`)* | 708 × 647 + 708 × 243 | `984:15406` + `984:15405` *(head `984:15398`)* | 370 × 647 + 370 × 243 | 1 (card **2**; rows **3 / 4 / 5 / 7 / 8**) | `964:68674` + `964:68673` / `984:10759` + `984:10758` / `984:10790` + `984:10789` | `964:68739` + `964:68738` / `984:16831` + `984:16830` / `984:16862` + `984:16861` | `if (s.limeTree)` inside `Media`'s `if (s.v2)`, after `nHot` | open |
 | 4 | `repertoire` | `964:68775` | 1440 × 621 | `984:15376` *(in `984:15373`)* | 708 × **628** | `984:15407` | 390 × **693** | 1 (sets **2 / 3 / 4**) | `964:68678` / `984:10760` / `984:10791` | `964:68743` / `984:16832` / `984:16863` | `if (s.limeTree)` inside `Repertoire`'s `if (s.v2)`, after `arrow` | open |
 | 5 | `calendar` | `964:68774` *(in `964:68772`; "BOOK ME" `964:68773`)* | 405 × **481.9** | `984:15379` *(in `984:15377`; `984:15378`)* | 708 × **445.9** | `984:15410` *(in `984:15408`; `984:15409`)* | 370 × **427.9** | **2** (the instance; its pill names 2 again) | `964:68677` / `984:10763` / `984:10794` | `964:68742` / `984:16835` / `984:16866` | `if (s.limeTree)` inside `Calendar`'s `if (s.v2)`, after `line` | open |
@@ -852,6 +852,17 @@ Retro's bullets; name them.
 - **Every head on this page is one tone and on the ramp**, and its token is read off its own text
   style: the testimonials' head and the pricing head are not Display/LG.
 - **The narrow masters type their composed heads in mixed case**; uppercase every width.
+- **Before transcribing a sticker, test layout 1's at another scale** (section 2): when the node's
+  width and height over a known drawing's give one ratio, check the path's first points by it. The
+  bio's scribble is the hero's `POP_SCRIBBLE_D` at 0.3455, its sparkle the calendar's
+  `POP_SPARKLE_D` verbatim; neither needed a new path.
+- **A `FILL` child of a `FIXED` instance states its height** (section 2): read
+  `layoutSizingVertical` before calling a band's height a hug. The bio's about band is 253 / 283
+  only because the instance is 882 / 912, so it is a `minHeight`, and a short bio lands on the
+  frame.
+- **A sticker the frame seats beside its own short copy goes behind the artist's longer copy**
+  (section 2; layout 1's hero scribble at −1): the 390 sparkle clears "DJ & / SELECTOR" and covered
+  "MANCHESTER, UK". Where it covers no copy it keeps the frame's paint order.
 
 ### Seen at planning time, per section
 
@@ -1136,6 +1147,133 @@ From the renders and the planning walk — impressions to confirm, not measureme
   paragraph (*`'*': []` marks Retro and Pop* → Retro); and the `FIELDS` paragraph's *Pop's …
   re-measure their card* clause. Not written here.
 
+### Settled in section 2 (the bio)
+
+- **The block widened whole: `if (s.v2 && (s.limeTree || s.pop))` ahead of `Bio`'s `if (s.v2)`,
+  `const pop = s.pop`** (about twenty arms, no `G`). The tree is Lime's at all three widths, on
+  **Scheme 1 with no Device override** (`resolvedVariableModes`: Desktop / Tablet / Mobile), the
+  seal `Layer_1` nested **Scheme 4** at every width; no effect on any node; every paint bound but
+  the sparkle's. `get_variable_defs` is the ramp (display-sm 36 / 29 / 24, chip 12 / 11 / 11,
+  label-xs 20 / 14 / 12, body-md 14 / 13 / 13), so every size is an `s.*` token. The deltas, off
+  one node walk per master with bindings and their collections:
+  - **no hairline rule**: `Frame 258` is the head band, the about band and a **5px `sem/text/1`
+    bar** (858 × 5, full width at 390 too), so `{rule}` and the foot rule drop under `pop` and the
+    bar (`s.ac`, `u(5)`) closes the column, 40 above the card's foot (the card's `paddingBottom`);
+  - **the card** `box/1` `#F5F5F5` ringed 1px `stroke/1` pink at radius 50, **unringed at 30 at
+    390** (Lime's ring overlay and `!s.mob` gate carry; the radius arm is `pop ? 30`). The
+    instance root states `sem/bg` white at radius 50 at 1440 and 768 and clips nothing, on the
+    white page — invisible, as Editorial's was; at 390 it states neither;
+  - **the photograph** radius 15 on the `box/3` black well (`grunge || pop`), **no glow** (`!ed &&
+    !pop`) and no grain; **initials white** (`ed || pop ? s.bg`, `&noimage=1`: `KM` white on black);
+  - **labels and `[ ABOUT ]` `sem/text/1` pink** over `text/2` violet values (`labelInk`); the values
+    take Grunge's Chakra Petch arm (`grunge || ed || pop`), 16 / 14 / 12 at 1.26;
+  - **the name** `text/1` pink — Lime's own `s.ac` — uppercased, on the widest-word fit
+    (`(ed || pop) && s.cardNameEms`, Titan's ems: the seed keeps the ramp, 29.4 / 28.42 / 23.52);
+  - **the about band pads 32 at 390** (Lime's `pad` is 10 there), and its `minHeight` is **253 /
+    283** at 1440 and 768: the instance is `FIXED` 882 / 912 and the band `FILL`s what is left
+    (`layoutSizingVertical` read; 390 hugs), so a short bio lands the card on the frame's height —
+    Lime's seal floor does not apply, the seal having left the band;
+  - **the head** one tone in `s.ac`, uppercased at 768 and 390 where the masters type "Reads the
+    room." (decision 2); "KM BIO" is Lime's span already (`text/2`, Label/XS).
+- **The seal is SealBadge's Pop arm on `s.onScheme[4]`** (`classic={!grunge && !pop}`): `hue` its
+  `bg` `#2563FF`, `ink` its `tx` `#FFF600` (the globe, the name and both dots bind `text/2`), `face`
+  its `ac` `#00E0C4`, `features` its `text3` `#FFFFFF` — read off the DOM on the harness, the canvas
+  and the published tab. Figma −19.5 → CSS **+19.5**. At 1440 its turned box sits flush in the
+  instance's top-right corner (`absoluteBoundingBox` 634.88–858 × 0–223.12), so the disc's centre
+  is **111.56 in from the right and 111.56 down**: `right` / `top` `u(24.16)` at 174.8. **The 768
+  master keeps the desktop's x** in its 708 instance, standing the disc 125.8 past the card, and
+  the Section's clip cuts it to a sliver at the photograph's top-right edge (`absoluteRenderBounds`
+  73 of 223 wide; the render shows a quarter-seal). A leak that reads as a defect (CONVENTIONS A),
+  so **768 takes the desktop's corner**, unscaled — Editorial's 768 tape call. The 390 seal
+  (62.69) is Lime's seat to the hundredth (`right` 30.76, `top` 52.51). Both are children of the
+  card, after its ring: the disc reaches no edge (24.16 from the right and top; its corner-most
+  point is 0.34 from the r50 corner's centre).
+- **The sparkle is `POP_SPARKLE_D`** — the calendar's layout-1 drawing to the hundredth — in
+  Scheme 1's `tag4` (`s.chips[3].bg`, the frame's raw `#00E0C4`, trap 7), Figma 17.93 → CSS
+  −17.93, seated by its centre: **(69.18, 837)** at 1440 — on the bar's top edge, 45 above the
+  card's foot — and the same y in the 768 master's taller card, 75 above the foot; **(334.92,
+  400)** at 390, by the card's right edge, where the Section's clip cuts it at 370. It is a child of
+  the card, anchored to its **foot** at 1440 and 768 (`bottom`), so a longer bio does not walk it
+  off the bar, and the card's clip is the 390 Section's. **At 390 it stands behind the card's
+  content** (`zIndex: −1`, the card `isolation: isolate` under `pop`): the frame stands it beside
+  its own hand-broken stats ("DJ & / SELECTOR"), but our one-line values run under it ("MANCHESTER,
+  UK" was half covered). Layout 1's rule for a sticker meeting copy (the hero scribble at −1); at
+  1440 and 768 it covers no copy and keeps the frame's paint order, over the bar.
+- **The scribble is the hero's `POP_SCRIBBLE_D` at 0.3455** (114.48 / 331.36 = 32.82 / 95, point
+  for point), not a new transcription, in `scheme/1/tag1/bg` (`s.chips[0].bg`), `viewBox` 331.36
+  × 95 at 114.48 × 32.82. It hangs off the name's **wrapper**, not its lifted glyphs: top 3.82
+  above the box's foot and 32.26 in at 1440 and 768 (the 768 master keeps the desktop's numbers;
+  its one-line name stands on the same floor, 560), 6.41 above and 57.52 in at 390. Its foot runs
+  5 past the head band, which the frame draws as `Frame 258`'s child outside the band's clip, so
+  the band is `overflow: visible` under `pop`.
+- **The photograph's `CROP`, correlated** (`51d06990` = `popStage`, over Lime's covered
+  `fa453f7d`, open question 2): `[[1, 0, 0], [0, 0.3571, 0.0637]]` at 1440 and 768 — rows
+  6.4–42.1% — and `FILL` at 390. A cover sweep against the renders (PIL, the seal's corner masked)
+  peaks at **10%** at desktop (0.994; the band's own 9.9%), and at **7.5%** for the squashed 768
+  band (0.565, a broad peak — Editorial's case; *follow the sweep's peak*); 390 is centred (0.992).
+  `Photo`'s `style.objectPosition`, so an upload takes the same band.
+- **The lifts, scanned** (the frame's `absoluteRenderBounds` against its text box; ours at DPR 4
+  against the **unlifted** box — a relative lift moves the element's own rect, section 1's trap):
+  the h2 sat 0.13–0.16 token-em low and the name (Display/SM, lh 1) 0.13–0.15, top and floor
+  alike, so both take **`top: −0.14em`** under `pop`. Lifted, every floor is level with the
+  frame's to within 0.011em at all three widths (the tops differ by Titan's taller cap).
+- **Measured against the masters** (harness, `column=left` at desktop; the frame × 0.82 in
+  brackets): card 709 × 723.2 (882), 24.6 under the head; photo (24.6, 24.6) 659.8 × 311.6; name
+  (26.2, 399.2) 146.8 × 60 (400.2, 59 — Pop's desktop `dispSm` is a rounded 30); scribble (52.7,
+  456) 93.9 × 26.9 (52.7, 456.1); label (205.8, 386.5) (386.2), value 418.8 (418.2); `[ ABOUT ]`
+  (213.2, 498.5) (498.6); prose 518.3 (518.2); bar 686.3 (686.3); sparkle centre (56.7, 686.3)
+  exact; seal centre 91.5 in and down at 143.3 exact. **768 exact**: card (30, 173) 708 × 912;
+  name (32, 531); scribble (64.3, 556.2); label 487.7 (487), value 524.7 (524); about (260, 608);
+  bar 867; sparkle (69.2, 837); seal (596.4, 111.6). **390 exact to the about band**: photo (10,
+  10) 350 × 259, name (10, 303), scribble (67.5, 320.6), label 365.8 (366), value 402.8 (403),
+  about (32, 501), sparkle (334.9, 400), seal (307.9, 83.8) at 62.69; the card is content-tall at
+  742 against 893 — the seeded prose. Genres 24.6 / 30 / 30 under the card, chips 28.3 / 27.6 /
+  25.1 tall.
+- **Named diffs**: the values run one line where the frame hand-breaks "JUNE\n2021" (the twins');
+  the 390 card is 151 short (the seeded prose); Pop's rounded desktop tokens (`dispSm` 30 against
+  29.52, `bodyMd` 11 against 11.48 — every Pop section's); the Genres chips' corner is
+  `s.radiusChip` 8 at desktop against 6.56 (TagChips' shared reading, the twins'); the third and
+  fourth chips letter their seats' own `#F6F0E8` and `#000000` where the frame binds
+  `scheme/3/inactive/text` `#FFFFFF` and `scheme/4/tag1/text` `#141414` — the header's open
+  question 9 again; **the seal's name overlaps itself with a long name** (*Maximilian
+  Featherstonehaugh* runs past half the circle) — SealBadge's Pop arm as layouts 1 and 2 left it,
+  seen, not fitted.
+- **`vm.pad`'s layout-3 arm takes the bio under Pop**: `|| (T.name === 'Pop' && cat === 'bio')`,
+  Lime's numbers (top 50 / 50 / `padY`, foot 30), the wrappers Editorial's inset for inset. **The
+  heads part until the calendar joins** (CONVENTIONS C): on the 1180 canvas "KM BIO" stands 41
+  below the row's top and "Book Me" 80; in the published 1440 tab 50 and 97.6.
+- **Long names** (`&name=`, `column=left` / 768 / 390): *Maximilian Featherstonehaugh* fits at
+  12.62 / 15.39 / 15.39px and *Supercalifragilistic Expialidocious* at 12.23 / 14.91 / 14.91, two
+  lines each; *Florence and the Machine* keeps the ramp at 390 (three lines) and fits FLORENCE at
+  28.16 on the canvas. No word breaks inside itself (one `Range` rect a word), every word ends
+  inside its 146.8 / 179 cap, the scribble stays under the name's box, every root's `scrollWidth`
+  is its width.
+- **`FIELDS` under Pop** (a bio-only copy of `scripts/reach.mjs 4`, 672 renders): the four ID-card
+  labels reach bio layout 3, as their plain `[2]` says; **`tagsLabel` now reaches 3 and 4** (4/6,
+  the known partial), so its row gains **`Pop: [2, 3]`** (it fell to `'*': [3]`); `who.tags` /
+  `who.showTags` reach bios 2, 3 and 4, so `FIELDS.header.tags`' hint names Pop ("in Lime, Grunge,
+  Editorial and Pop, layout 3 as well"). Kicker all four, location 1–3, unchanged. Every bio row
+  checked against the measurement in Node (`fieldReach`), ten of ten.
+- **No live control**: `live=1` is byte-identical to the canvas at all three widths.
+- **Digest: themes 0, 1, 2 and 3 zero files of 660, canvas and `live=1`** (a fresh `:5179`, both
+  labels taken there, no one-row file in any); theme 4 exactly **bio arch 2 at three widths** on
+  each surface.
+- **In the builder** (a one-off puppeteer probe, Pop → card 3 → *Use this header*, reduced motion,
+  then `page-check.mjs Pop 2,0,1,3`): the bio and the calendar stand in one grid row at **708.7 :
+  334.5 on the 1180 canvas** (a 1760 window; 646 : 305 on the 1088 canvas of a 1440 one, the same
+  858 : 405) and **864.8 : 408.2 in the published 1440 tab**, both at top 900.6 under the 901
+  header, media under the bio at 2125.5. The seal's four fills, the sparkle and the scribble on
+  both surfaces; no sideways scroll at 1440, 768 or 390. `page-check`: four modal cards; card 3's
+  nav (Music → `#media`, Gigs → `#map`, About → `#bio`, Listen → `#media`, Book Now → `#form`),
+  the calendar's and pricing's pills and every footer link on their ids; the player plays; the
+  form refuses and composes; the 390 burger opens (1 → 5); `overflow390` 0; **no console error
+  or warning on any of the four cards**.
+- **For the sweep's CLAUDE.md pass**: the header-identity paragraph's *prints them in layouts 2
+  and 4 and Lime's, Grunge's and Editorial's 3* gains Pop's; the `vm.pad` comment and CONVENTIONS
+  C's *the composed row's pad arm* row (Pop: bio first); D3's bio row gains a Pop column (no seal
+  of Lime's — Pop's own on Scheme 4, the sparkle and the scribble; `&column=` kept). Not written
+  here.
+
 ### Inherited and used
 
 *(The running list the sweep folds into [`../CONVENTIONS.md`](../CONVENTIONS.md): each time a
@@ -1158,6 +1296,24 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
   the burger's panel; *an empty slot … takes the frame's own ground* (`&noimage=1`, the well's
   `box/2`); *field reach is measured* — `reach.mjs 4`; *the whole-page published check* —
   `page-check.mjs Pop 2,0,1,3`.
+
+- Section 2: *the first layout-3 block inside a section, ahead of `Bio`'s `if (s.v2)`* (D3,
+  lime/layout-3) — widened, no `G`; *a widened block can need no `G`* (grunge/layout-3); *read a
+  fill's `scaleMode` … correlate the render* (grunge/layout-2) and *a `CROP` transform does not
+  adapt when an instance is resized* (grunge/layout-3) — 10% / 7.5% / centred; *place a seal by
+  its disc's centre* and *measure anything under `.seal-spin` with the animation stopped*
+  (lime/layout-1) — the corner seat, reduced motion on every shot; *a rotated group's metadata is a
+  bounding box* (memory) — the seal and the sparkle seated off `absoluteTransform`; *icons and
+  stickers are transcribed off the node's own geometry* (lime/layout-1) — and found already
+  transcribed, the scribble at 0.3455 and the sparkle verbatim; *a leak that shows and reads as a
+  defect is overridden* (grunge/layout-1) — the 768 seal; *a stated list height is a column
+  minimum* (lime/layout-1) — the about band's 253 / 283; *a stand-in face's glyph floor is
+  measured per site* (editorial/layout-3) — the h2 and the name, 0.14em; *a head that must fit
+  its measure is fitted to its widest word* (lime/layout-3, D3) — the name's `cardNameEms`; *an
+  empty slot whose well `s.muted` does not read takes `Photo`'s `ink`* (editorial/layout-2) —
+  white on black; *the composed row's pad arm moves per section* (grunge/layout-3) — the bio
+  first; *`preview.jsx` takes `&column=`* (D3); *field reach is measured* — a bio-only
+  `reach.mjs 4`.
 
 ## Open questions
 
@@ -1190,3 +1346,10 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
     to the padding edge, so Lime and Grunge stand it 26.5 left at 1440 (× 0.82) and 768, and
     Editorial 2. Pop's is centred behind `pop`; fixing the twins moves header arch 2 under themes
     1–3 at desktop and 768 (6 files a surface), a QA ticket's or the sweep's — **a user call**.
+11. **The bio's 768 seal keeps the desktop's x** (section 2): in the 708 instance the disc stands
+    125.8 past the card and the Section's clip cuts it to a quarter at the photograph's edge. Drawn
+    in the desktop's corner seat instead. Worth telling the designer.
+12. **The bio's 390 sparkle stands where our one-line stats run** (section 2): the frame's copy is
+    hand-broken short ("DJ & / SELECTOR") and clears it; ours ("MANCHESTER, UK") runs under it, so
+    at 390 the sparkle is drawn behind the card's content. Worth a line to the designer if a
+    sticker is meant to stay clear of copy.
