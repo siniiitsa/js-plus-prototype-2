@@ -298,7 +298,7 @@ desktop id — each block's fit comment cites them); it is the gate the session 
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 0 | *foundation* | `964:73127` *(page)* | — | `971:10835` | — | `977:14267` | — | — | — | — | `SCHEMES_OF.Pop[3]` (decision 1); the fold asked (decision 2) | **done** — `038e62e`; the fold A |
 | 1 | `header` | `964:73128` | 1440 × 900 | `971:10836` | 768 × 1024 | `977:14268` | 390 × 844 | **3** (nav `Frame 49` **1**; seal `Frame 247` **4** at 1440 and 768, `Frame 248` **5** at 390) | `964:72849` / `971:5299` / `977:8867` | `964:73038` / `971:9538` / `977:13156` | `if (s.limeTree) { … return }` at the head of `HeaderV3` | **done** — `46d22eb` |
-| 2 | `bio` | `964:73157` *(Section `964:73129`, head `964:73151`)* | 664 × 720 | `971:10844` *(Section `971:10837`, head `971:10838`)* | 708 × 720 | `977:14276` *(Section `977:14269`, head `977:14270`)* | 370 × 536 | Section **3**; card **2 / 2 / 3**; Tags 1 | `964:72850` / `971:5300` / `977:8868` *(Sections)* | `964:73039` / `971:9539` / `977:13157` | `if (s.v3 && s.limeTree)` ahead of `Bio`'s `if (s.v3)` | |
+| 2 | `bio` | `964:73157` *(Section `964:73129`, head `964:73151`)* | 664 × 720 | `971:10844` *(Section `971:10837`, head `971:10838`)* | 708 × 720 | `977:14276` *(Section `977:14269`, head `977:14270`)* | 370 × 536 | Section **3**; card **2 / 2 / 3**; Tags 1 | `964:72850` / `971:5300` / `977:8868` *(Sections)* | `964:73039` / `971:9539` / `977:13157` | `if (s.v3 && s.limeTree)` ahead of `Bio`'s `if (s.v3)` | **done** — `bf3b9c0` |
 | 3 | `media` | `964:73164` *(band `964:73158`, head `964:73159`)* | 1440 × 671 | `971:10851` *(band `971:10845`, head `971:10846`)* | 768 × 569 | `977:14406` *(band `977:14400`, head `977:14401`)* | 390 × **830** | band **2** (head `Section` **1**; 768 / 390 instance `Device: Tablet`) | `964:72858` / `971:6533` / `977:8999` *(bands)* | `964:73047` / `971:9547` / `977:13288` | `if (s.v3 && s.limeTree)` ahead of `Media`'s `if (s.v3)` | |
 | 4 | `gallery` | `964:73214` *(wrapper `964:73173`, head `964:73174`)* | 874 × 646 | `971:10894` *(wrapper `971:10859`, head `971:10860`)* | 768 × 594 | `977:14572` *(wrapper `977:14537`, head `977:14538`)* | 390 × 585.3 | **3** (discs / pills **4**) | `964:72874` / `971:5562` / `977:9136` *(wrappers)* | `964:73061` / `971:9558` / `977:13425` | `if (s.limeTree)` inside `Gallery`'s `if (s.v3)`, after `from` | |
 | 5 | `repertoire` | `964:73220` *(Section `964:73215`, panel `964:73216`)* | 1208 × **482** | `971:10900` *(Section `971:10895`, panel `971:10896`)* | 608 × **540** | `977:14579` *(Section `977:14574`, panel `977:14575`)* | 310 × **608** | **3** | `964:72911` / `971:5599` / `977:9173` *(Sections)* | `964:73098` / `971:9595` / `977:13462` | `if (s.limeTree)` inside `Repertoire`'s `if (s.v3)`, after `jump` | |
@@ -395,7 +395,7 @@ collection (`P:` names a Primitives variable outright; the rest are `sem/…` in
 | Section | Root | Nested (every width unless said) | What it paints (bindings read at planning time) |
 |---|---|---|---|
 | header | **Scheme 3** | nav `Frame 49` **1**; seal `Frame 247` **4** at 1440 and 768, `Frame 248` **5** at 390 | the instance's own fill `box/3` `#C20A6F` under `f70d25d3` at **`FILL`**, then a linear fade `sem/bg` **pink** at the floor → Lime's transparent `#15180F`, on Lime's transform. The **capsule is white** (`sem/bg` of Scheme 1), radius 85, padded 10 / 10 / 10 / 20, blur 44 behind it; Lime's **globe** stroked `text/2` violet; the name `text/2` at Label/LG 24 / 16 / 14; the links `text/2` at **Label/SM 16**, a fixed 23 apart; Book Now **`active/bg` black** (191 × 54, radius 67), its label and disc `sem/bg` white round a `text/1` pink arrow; at 390 the burger and the pill at Lime's × 0.712 recipe (120.4 × 38.4, an unstyled Chunko 11.39 label). **The avatar is a stadium**: 113 × 180 / 113 × 180 / 116 × 180 at radius 96.95 on every corner, `box/1` `#FF63B8` under `0b079033` at `FILL`, a **3.04** `stroke/2` **lime** inside ring (Lime 26.95 × 112.6 × 118.68, Editorial's 113 × 145 arch). Kicker `text/1` lime at Display/Title 28 / 22 / 20; the name **`text/3` white, one tone**, Display/XL 125 / 75 / 46 at lh .75, typed "KAI ⏎MERCER"; the location `text/2` violet at Display/List beside a 14 × 14 `text/1` lime dot (radius 8); the six chips Label/XS Chakra on **the seat's own tags** — Scheme 3's `tag/1…6/bg`, blue / teal / violet / red / yellow / lime — lettered `P:scheme/1/tag2/text`, `P:scheme/1/inactive/text`, `tag/3/text`, `P:scheme/4/tag1/text`, `P:scheme/5/tag1/text` and `tag/6/text` (trap 7). The seal **Lime's disc tree**, 125.4 at 1440 and 768, 85 at 390, Figma −26.06°: disc `sem/bg` — **blue** under 4, **teal** under 5 — with its two rings, the crosshair bars, `Frame 179`'s ring, two end marks and the name all `text/1` (**teal** under 4, **violet** under 5) |
-| bio | **Scheme 3** (Section) | the card `Bios — B · Portrait + overlays` **2 at 1440 and 768, 3 at 390**; `Tags — Frame` **1** | the band `sem/bg` **pink**, with a **10px bottom stroke** bound `P:color/neutral/media` — Pop's `#41BFBA`, `POP_MEDIA` — at 1440 (`sem/media` at 768, the same teal; **none at 390**). "KM BIO" `text/2` violet at Label/XS; "READS THE ROOM." `text/1` **lime** at **Display/XL** 125 / 75 / 46; "Genres" drawn, `text/1` lime at Body/LG; the chips Scheme 1's `P:scheme/1/tag1…6/bg` (lime, **pink on the pink band**, blue, teal, violet, red) at radius 8, lettered in four schemes' inks (trap 7). A **dot grid** (`Union`, raw `#C6F200` — Scheme 1's `tag1`, and the seat's own `text/1`) at (590, 67) in the Section, 414 × 343 at 1440 and 768, 231.7 × 192 at (242, 149) at 390. The card at **radius 25** at every width (Lime 55, Editorial 0), clipping, ringed 1px **raw `#000000`** INSIDE (Lime's leak, trap 6); the photograph `51d06990` at `FILL`; the glass `#2E3928` at 1% (Lime's leak) under **`Frame 255`, `sem/bg` at node opacity .80, at every width** (Editorial's 390 had none) at radius 38 — so **lime glass at 1440 and 768, pink at 390**; the name `text/1` (pink / lime) at Display/SM; the meta row `text/3` (black / white) at Body/MD; the prose box `box/1` (`#D7FF23` / `#FF63B8`) at radius 20, its prose `text/3` |
+| bio | **Scheme 3** (Section) | the card `Bios — B · Portrait + overlays` **2 at 1440 and 768, 3 at 390**; `Tags — Frame` **1** | the band `sem/bg` **pink**, with a **10px bottom stroke** bound `P:color/neutral/media` — Pop's `#41BFBA`, `POP_MEDIA` — at 1440 (`sem/media` at 768, the same teal; **none at 390**). "KM BIO" `text/2` violet at Label/XS; "READS THE ROOM." `text/1` **lime** at **Display/XL** 125 / 75 / 46; ~~"Genres" drawn, `text/1` lime at Body/LG~~ *"Genres" binds the Tags instance's Scheme 1 `text/1`, **pink on the pink band**, invisible at 1440 and 768, and the 390 instance has no label — not drawn (section 2, user call)*; the chips Scheme 1's `P:scheme/1/tag1…6/bg` (lime, **pink on the pink band**, blue, teal, violet, red) at radius 8, lettered in four schemes' inks (trap 7). A **dot grid** (`Union`, raw `#C6F200` — Scheme 1's `tag1`, and the seat's own `text/1`) at (590, 67) in the Section, 414 × 343 at 1440 and 768, 231.7 × 192 at (242, 149) at 390. The card at **radius 25** at every width (Lime 55, Editorial 0), clipping, ringed 1px **raw `#000000`** INSIDE (Lime's leak, trap 6); the photograph `51d06990` at `FILL`; the glass `#2E3928` at 1% (Lime's leak) under **`Frame 255`, `sem/bg` at node opacity .80, at every width** (Editorial's 390 had none) at radius 38 — so **lime glass at 1440 and 768, pink at 390**; the name `text/1` (pink / lime) at Display/SM; the meta row `text/3` (black / white) at Body/MD; the prose box `box/1` (`#D7FF23` / `#FF63B8`) at radius 20, its prose `text/3` |
 | media | **Scheme 2** (the band) | head `Section` **1**; the instance carries `Device: Tablet` at 768 and 390 | the band `sem/bg` **lime** with a **10px bottom stroke** `P:scheme/2/stroke/1` violet at 1440 (`sem/stroke/1` at 768; **none at 390**); the head "SIX WORTH YOUR EARS" `text/1` **pink** at Display/LG — a Scheme 1 node on the Scheme 2 band, and both schemes' `text/1` are the same pink; the grid `sem/bg` at radius 8 (invisible). A **dot grid** (`Union` 149 × 123.4 at (20, 27) in `Left`, `tag/1/bg` — Scheme 2's first tag, pink; at 390 a second at (−64, 92), clipped). **The sleeve (`Disc`) is Lime's, upright**: 308 × 415 / 318 / 370 × 302, radius 50, `text/3` black under the track's art at `FILL`, in a **5px `stroke/1` violet** inside ring, no effect, no tape. "NIGHT RAIN" `text/1` pink at Display/Title 28; the artist `text/2` violet; the transport `text/1` pink, the play disc `text/1` with a `sem/bg` ▶; the bar `box/1` `#D7FF23` with a `text/3` black fill and a `text/1` knob; the clocks `text/2`. **Six tiles at radius 50**, `sem/bg` under the art under Lime's black 0 → 1 fade; titles the component's unbound **`#FFFFFF`** (Lime's and Editorial's leak — it reads on the fade, follow it), subs `text/1` pink. Tile 0's mark is a stroke on the tile — read its weight and binding in the session |
 | gallery | **Scheme 3** | the two arrow discs (1440, 768) / pills (390) **4** | the band `sem/bg` pink; "MEDIA" `text/2` violet at Body/Eyebrow; "SNAPS FROM THE NIGHT" `text/1` lime at Display/LG. **The spotlight is Lime's well without its brackets**: `IMAGE` 591 × 534 / 537 × 534 / 370 × 336 at radius **50 / 50 / 30**, under **`b3a33296`** at `FILL` — Pop's own spotlight, `POP_PHOTOS.gallery`'s slot 3 — in a **5px `text/1` lime** inside ring; **no tilt, no mount, no shadow**. Six thumbs 121 × 67.7 at radius **90** (25 at 390) on `tag/1/bg` under Retro's shared placeholders, in a **4px** `sem/state/inactive/border` lime inside ring — **the fourth 8px `text/1` lime at 1440 and 768; all six 4px `text/1` at 390**. The discs 56 × 56 at radius **10**, `box/3` `#1044C7` in a 0.754 `sem/bg` blue inside ring, blur 18.1 behind the opaque fill, the arrows `stroke/2` **yellow**; at 390 two 180 × 56 pills at radius 60, no blur. The **smiley sun** (`Layer_1` 154, Figma −25.37°, raw `#2563FF` disc and `#FFFFFF` face — Scheme 1's `tag3` blue and white) at (361, 106) in the wrapper at 1440, and the **asterisk** (`Vector` 93 × 95, Figma −18.52°, raw `#00E0C4` — Scheme 1's `tag4`) at the head frame's foot |
 | repertoire | **Scheme 3** | — | the band `sem/bg` pink with a **10px bottom stroke** `sem/stroke/1` **violet** at 1440 and 768 (none at 390); the panel `box/1` `#FF63B8` at radius **60** (50 / 60); "REPERTOIRE" `text/1` **lime** at Display/LG, in a fixed 1019.2 text box at 1440 and 768 —
@@ -476,7 +476,7 @@ sequence is identical at 1440, 768 and 390**:
 | # | Section | Ground | What stands on it |
 |---|---|---|---|
 | 1 | header | the photograph over `#C20A6F`, fading to **pink** `#FF2DA0` at the floor | the **white** capsule nav, the lime-ringed stadium avatar, the identity block, the **blue** seal (teal at 390) |
-| 2 | bio | **pink** (Scheme 3) — one pink ground with the header's floor; a **10px teal rule** at its foot (1440, 768) | "KM BIO", the lime head, Genres, the chips, the lime dot grid; the card with its **lime** glass (pink at 390) |
+| 2 | bio | **pink** (Scheme 3) — one pink ground with the header's floor; a **10px teal rule** at its foot (1440, 768) | "KM BIO", the lime head, ~~Genres~~ the chips (Genres is pink on pink, not drawn — section 2), the lime dot grid; the card with its **lime** glass (pink at 390) |
 | 3 | media | **lime** `#C6F200` (Scheme 2); a **10px violet rule** at its foot (1440, 768) | the pink head and dot grid, the upright sleeve in its violet ring, six rounded tiles |
 | — | *video* | *white, under a 10px lime rule* | *not in the project* — so on our page the lime band meets the gallery's pink directly, a straight edge under the media's violet rule |
 | 4 | gallery | **pink** (Scheme 3) | the lime head, the sun and the asterisk, the lime-ringed spotlight, the pill thumbs, the blue discs |
@@ -920,8 +920,8 @@ that this pass shipped is card 4 in both builds' setup modals.
 - **The card is `card = s.mob ? s : s.onScheme[2]`** (trap 2): the dimmer `card.bg` at .80 at every
   width (Editorial's had none at 390), the name `card.ac`, the meta `card.text3`, the prose box
   `card.box1` at radius 20, its prose `card.text3`. The card's radius is **25** at every width.
-- **Genres is drawn** — `s.ac` lime at Body/LG — and the chips are `s.onScheme[1].chips` (trap 7),
-  the second pink on pink.
+- ~~**Genres is drawn** — `s.ac` lime at Body/LG~~ *Genres is not drawn (section 2: it is Scheme 1's pink
+  on the pink band, user call)* — and the chips are `s.onScheme[1].chips` (trap 7), the second pink on pink.
 - **The dot grid** (`PopDots` at 1.4376 / 0.805, `s.ac`, trap 8) and **the 10px teal rule**
   (`POP_MEDIA`, `!s.mob`) are this section's Pop leaves. The 1px `#000000` card ring is trap 6's
   call.
@@ -1035,6 +1035,15 @@ Retro's bullets; name them.
 - **A pill whose fill is the frame's own black still owes its arrow** (section 1): `BookPill`'s disc
   rule inks the arrow in the pill's colour, so a black pill with a `text/1` arrow passes `discFg`.
   Read the arrow's binding apart from the pill's.
+- **A nested instance's binding resolves in the instance's scheme, not the section's** (section 2).
+  The planning walk read the bio's "Genres" (`sem/text/1`) on the Section's Scheme 3 — lime — but
+  the `Tags` instance is Scheme 1, where `text/1` is pink: pink on the pink band, invisible, Lime's
+  and Grunge's case. Read the walker's resolved hex beside every binding name inside a nested
+  instance before giving it a key; the media's Scheme 1 head on the Scheme 2 band is the next.
+- **A `space-between` column moves its middle child when an end child shrinks** (section 2).
+  Dropping the invisible 40 of Genres left the 1440 bio's chips on the frame's floor and moved the
+  head 16 down (half the 40, × 0.82), where Lime's comment says "nothing moves there". Measure the
+  middle child of a `space-between` column, not only its ends.
 
 ### Seen at planning time, per section
 
@@ -1345,6 +1354,111 @@ From the walks and the renders — impressions to confirm, not measurements.
   the FIELDS paragraph's card-4 re-measure clause; README's *Choosing a header* if it names card 4
   as a placeholder. Not written here.
 
+### Settled in section 2 (the bio)
+
+- **The block widened ahead of `Bio`'s `if (s.v3)`: `if (s.v3 && (s.limeTree || s.pop))`, `const
+  pop = s.pop`**, one alias and no `G`, its comment saying the pair folds into `limeTree` in the
+  sweep. The node walker read the three Sections (35 / 35 / 32 visible nodes, the `Union`'s 20 dots
+  counted as one) with every binding's collection: the tree is Lime's plus `Frame 255` and the
+  `Union`, as planned. Every paint is bound but the planned raws — the `Union`'s `#C6F200`, the
+  card's 1px `#000000` ring, the glass's `#2E3928` at 1% — and the boxes are the twins' to the
+  pixel but the type (the Pop ramp) and the radii (card 25, glass 38, prose box 20, the stage's
+  own 8 under the card's clip). Every Lime, Grunge and Editorial arm is byte-identical.
+- **Schemes, read per master**: the Section 3 at every width; the card 2 / 2 / 3; the `Tags`
+  instance 1. So the block reads:
+  - **the band** `s.bg` pink (`ed || pop`, trap 1), sampled `rgb(255, 45, 160)`; "KM BIO" `s.tx`
+    violet; the head `s.ac` lime, uppercase, `s.dispXl` at every width (`facedLh(0.75)`);
+  - **the card**, every leaf off `const card = pop && !s.mob ? s.onScheme[2] : s` (layout 3's *one
+    alias*): the well `card.box3` (`#8CA51E` / `#C20A6F`), the glass `` `${card.bg}CC` `` at every
+    width (`rgba(198, 242, 0, .8)` wide, `rgba(255, 45, 160, .8)` at 390, the blur kept), the name
+    `card.ac` (pink / lime), the meta row and Listen `card.text3` (black / white), the prose box
+    `card.box1` (`#D7FF23` / `#FF63B8`) lettered `card.text3`;
+  - **the chips** `TagChips`' `hues` / `inks` off `s.onScheme[1].chips` (Editorial's `tagSeats`):
+    lime / pink / blue / teal / violet / red, each in its own seat's ink, at `s.radiusChip` (the
+    header's spelling on this page).
+- **Genres is not drawn** (user call, 2026-10-07, reversing the plan's "drawn, lime"). The
+  `Tags` instance is Scheme 1, so its "Genres" (`sem/text/1`) resolves to `#FF2DA0` on the
+  `#FF2DA0` band at 1440 and 768, invisible in both renders, and the 390 instance carries no
+  label frame — Lime's and Grunge's case, not Editorial's (whose Scheme 1 `text/1` was terracotta
+  on ink). Asked with three options (not drawn, recommended; drawn lime; drawn pink on pink).
+  `FIELDS.bio.tagsLabel`'s Pop row went `[2, 3]` → `[2]`, beside Lime's and Grunge's, with a
+  comment, so Pop's layout-4 `tagsLabel` partial (4/6, Retro's flat arm) is gone. The costs, named:
+  the 768 Section is 1133.3 against the frame's 1173 (the label's 23 + 16), and the 1440 head
+  stands 15.6 under the frame's (252.2 against 236.6), since its `space-between` column keeps the
+  chips on the floor and splits the 40 × 0.82 between its two gaps (*Conventions*).
+- **The dot grid** is `PopDots` in `s.ac` (lime, Scheme 1's `tag1` to the byte) at the `Union`'s
+  boxes, off `calc(s.surplus + x)` so a published gutter carries it with the column: (589.97,
+  66.53) 414.04 × 342.97 at 1440 (× 0.82), (560.98, 181.52) the same size at 768, (242.21, 149)
+  231.75 × 191.97 at 390. It is the Section's first child, so it paints under the head and the
+  card: an absolute `overflow: hidden` wrapper at `zIndex: -1` in a sheet that takes `position:
+  relative; isolation: isolate` under `pop` (layout 1's recipe). The wrapper is the Section's
+  clip: at 768 the grid runs to 975 and at 390 to 474, and both roots' `scrollWidth` are their
+  widths. Measured: 483.8 · 54.6, 339.5 × 281.2 on the canvas; 561 · 181.5 and 242.2 · 149 narrow.
+- **The 10px rule** is the band's own last 10, an inset `boxShadow` `inset 0 -${u(10)} 0
+  POP_MEDIA` at `!s.mob` (read off the DOM: `rgb(65, 191, 186) 0px -8.2px 0px 0px inset` / `-10px`,
+  none at 390). The frame binds `P:color/neutral/media` at 1440 and `sem/media` at 768, one teal.
+- **The 390 boxes** are the frame's: the Section pads 30 / 30 (Lime's), stacks head and card 40
+  apart (Editorial's; Lime's 15), and the head's own gap is 30 (Lime's 15) — `pop` joins the
+  `tab || ed` and `!ed` arms.
+- **The lifts, scanned** (each string alone on white at DPR 2, its ink against its own box, then
+  against the frame's `absoluteRenderBounds`): the head at lh .75 sat 0.134–0.157em low, the name
+  at lh 1 0.129–0.156 → `top: -0.14em` on both under `pop`. After, every ink edge is within 1.5px
+  of the frame's (the 768 head's top 1.46, the rest under 0.8).
+- **The fits, probed** (`&name=` and `&cj=` heads, three widths, per-word line counts and right
+  edges): the card name wraps between words and no word breaks inside itself — *Supercalifragilistic*
+  ends 991 of 1085 at desktop, 430 of 678 at 768, 322 of 350 at 390 — so it needs no fit. The head
+  takes Editorial's widest-word fit (`(ed || pop) && s.titleWordEms`, Titan's ems): the seed holds
+  three / two / two lines at 100.94 / 73.5 / 45.08; *Unforgettable* sets on one line at 54 / 65.8
+  / 42.5 ending 510 / 596 / 376 inside 515.7 / 602.9 / 380; *Supercalifragilistic* at 39.1 / 47.7
+  / 30.8. No root scrolls sideways.
+- **Measured against the masters** (harness, `theme=4&arch=3`; × 0.82 at desktop, the frame's number
+  in brackets): the 1440 root **780.6** (780.6), KM BIO 95.1 (95.1), the chips 620.8 (621.6), the
+  card 590 · 95.1, 544.1 × 590.4 (544.5 × 590.4), the glass 494.9 × 271.8 (495.3 × 250.1); at 768
+  KM BIO 60 (60), the head 107.6 × 112.5 (108 × 112), the chips 250.1 (289, less Genres), the card
+  708 × 720 at 353.3 (393, less Genres), the glass 648 × 294.5 (648 × 305); at 390 the head 75.1 ×
+  69 (75 × 70), the chips 174.1 (175), the card 370 at 272.3 (273), the root 1029.3 (839).
+- **Named diffs**, the twins' but where said:
+  - Genres (above), and its two costs.
+  - The panel is content-tall (two seeded paragraphs, JP-081's reply): 271.8 against 250 at 1440,
+    294.5 against 305 at 768, with the 30 padding between the name block and the prose box where the
+    frame's absolute children stand 36 / 44 apart (Lime's "leaked 22 / 33").
+  - The 390 card is 727 against 536 and the root 1029.3 against 839: JP-108's 340 clear stage, the
+    two paragraphs, and the seeded meta row wrapping to two lines.
+  - **Chip inks** (trap 7): ours letter chip 3 (blue) and chip 5 (violet) `#F6F0E8` at every width,
+    where the frame binds `scheme/3/inactive/text` `#FFFFFF` and `scheme/5/tag2/text` `#F6F0E8` at
+    1440 but `scheme/3/tag1/text` and `scheme/5/tag1/text` `#141414` at 768 and 390; chip 4 `#000000`
+    where it binds `#141414`. Each chip takes its own seat's ink (the header's call).
+  - Chip 2 is the frame's pink on the pink band, "Sold Out" bare text (open question 6, followed).
+  - The meta row prints "DJ · Live Act" and "Performing since June 2021" (JP-081's reply).
+- **Trap 6 — the 1px `#000000` ring is followed** (open question 5): on pink it reads as the
+  photograph's own dark edge at 1440 and 768, and the 390 master draws none, as the block already
+  had it.
+- **The photograph: no seed.** `51d06990` at `FILL`; our 768 card's clear area (708 × 350 above the
+  glass) against the frame's render correlates **0.965**, 5 in 255 — a centred cover of `popStage`.
+  JP-108's 390 fill is the block's: the `img` rect is the card's at all three widths.
+- **`&noimage=1`**: `Photo`'s initials take `card.text3` — black on the olive well wide, white on
+  the magenta at 390 (CONVENTIONS C; `s.tx` violet would sink on both). At 1440 they stand
+  half under the panel, as on every Lime-tree template; at 390 in the 400 band.
+- **`live=1`**: Listen is `<a href="#media">` in `card.text3` at all three widths (a span on the
+  canvas).
+- **Digest: themes 0, 1, 2 and 3 zero files of 660, canvas and `live=1`** (a fresh `:5192`, no
+  one-row file in any of the four labels); theme 4 exactly **bio arch 3 at three widths** on each
+  surface (6 files).
+- **`reach.mjs`, bio probes only** (a scratchpad copy filtered to the bio, theme 4): all ten plain
+  bio probes match `fieldReach(f, 'Pop', d)` in Node — `tagsLabel` `[2]` now, `cta2` `[3]`,
+  layout 2's `credit` / `cta` / `tag` `[1]`, layout 3's labels `[2]`, `refLabel` `[0]` — and the
+  identity rows hold (kicker at every bio, location at 1–3, tags and `showTags` at 2–4).
+- **In the builder** (`page-check.mjs Pop 3` on `:5192`): four modal cards, no error or warning;
+  About → `#bio`, the bio's Listen ↗ → `#media`, every nav link and Book Now land; the published
+  1440 bio is 953 tall (the frame's 952); `overflow390` 0; the 390 burger 1 → 11. The header's pink
+  floor and the bio are one ground; the bio closes on its teal rule over the media's flat checker
+  (section 3's).
+- **For the sweep's CLAUDE.md pass**: the Genres line is drawn at layout 4 by Retro and Editorial
+  alone (the header-identity paragraph's `tagsLabel` clause, "bio layout 4's too", stays true); the
+  bio card's `s.onScheme[2]` at 1440 and 768 joins the scheme bullet's layout-4 readers; and
+  `browser-tool-choice`'s known-partials line loses "bio layout 4's `tagsLabel` 4/6 under Pop"
+  (updated in this session).
+
 ### Inherited and used
 
 *(The running list the sweep folds into [`../CONVENTIONS.md`](../CONVENTIONS.md): each time a
@@ -1375,6 +1489,23 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
   measured* (CLAUDE.md) — `reach.mjs 4`, 70 probes; *the whole-page published check*
   (lime/layout-1) — `page-check.mjs Pop 3,0,1,2`.
 
+- Section 2: *a section whose live seam is hoisted above its branches can always take a block*
+  (lime/layout-1) — the block ahead of `if (s.v3)`; *a Lime block paints its ground from Scheme 1
+  keys* (editorial/layout-4, trap 1) — the band the seat's `s.bg`; *a nested card whose every leaf
+  is the card's takes one alias* (pop/layout-3) — `card`, Scheme 2 wide and 3 at 390; *read every
+  nested node's scheme off the master* (grunge/layout-3) — the card 2 / 2 / 3 and the `Tags` 1,
+  which turned the plan's Genres round; *leaked tops are followed where they show, dropped where
+  they don't* (lime/layout-1) — the ring followed, Genres not drawn as Lime's and Grunge's; *before
+  transcribing a sticker, test layout 1's at another scale* (pop/layout-3) — `PopDots` at 1.4376 /
+  0.805; *a frame's inside stroke is an inset `boxShadow`* (lime/layout-2) — the 10px rule; *a
+  stand-in face's glyph floor is measured per site* (editorial/layout-3) — the head and the name
+  0.14; *a head that must fit its measure is fitted to its widest word* (editorial/layout-1) —
+  Titan's `titleWordEms`; *probe a display string with a long word* (editorial/layout-4) — three
+  names, three heads; *correlate the render with the seed* (grunge/layout-2) — 0.965; *an empty
+  slot … takes `Photo`'s `ink`* (editorial/layout-2) — `card.text3`; *field reach is measured*
+  (CLAUDE.md) — ten bio probes; *the whole-page published check* (lime/layout-1) — `page-check.mjs
+  Pop 3`.
+
 ## Open questions
 
 1. ~~**Decision 1** — the seats.~~ Not a user call; session 0 writes the row.
@@ -1388,12 +1519,14 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
 4. **The narrow masters type six display heads in mixed case** where 1440 types capitals — layout
    3's case slip on every head now. Uppercased everywhere (layout 3's decision 2). Worth telling the
    designer.
-5. **The bio card's 1px `#000000` ring** (trap 6) shows on pink where it hid on the twins' dark
+5. ~~**The bio card's 1px `#000000` ring** (trap 6) shows on pink where it hid on the twins' dark
    bands. Default: follow it if it reads as the card's edge; drop it if it reads as a defect. The
-   bio session decides.
+   bio session decides.~~ *Section 2: followed — on pink it reads as the photograph's own dark
+   edge, and the 390 master draws none.*
 6. **The bio's second chip is pink on the pink band** (`P:scheme/1/tag2/bg` on Scheme 3's `sem/bg`),
    so "Sold Out" reads as bare text. Followed, as the frame draws it. Worth a line to the designer
-   with trap 7's inks.
+   with trap 7's inks — and with the narrow masters' chips 3 and 5, lettered `#141414` on blue and
+   violet where 1440 letters them light (section 2's named diff).
 7. ~~**The header avatar's seed** may not be this frame's crop (*Photography*). The header session
    correlates; a new asset is its call, recorded here if taken.~~ *Taken in section 1*: the
    stadium covers the whole source, so design 3 seeds it whole (`pop-stacked-avatar.jpg`,
@@ -1411,6 +1544,12 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
    scope leaves it. The other answer is a user call for both templates: give layout 4's capsule
    JP-091's name fit (`NavBar`'s `fit` gate takes `s.v3` beside `s.v0`, so the seed's name gives
    way first — not measured here), or lower the links' floor there.
+11. **The bio's "Genres" is pink on the pink band** (section 2): the `Tags` instance is Scheme 1,
+   whose `text/1` is the Section's own `sem/bg`, so the label is invisible at 1440 and 768 and the
+   390 instance drops it — Lime's and Grunge's frames do the same in their colours. Not drawn (user
+   call, 2026-10-07); the 768 head runs 40 short. Worth a line to the designer: if the label is
+   meant, the instance wants another scheme or the label another ink; drawing it is a one-line arm
+   plus `tagsLabel`'s Pop row back to `[2, 3]`.
 
 ## Notes for the designer
 
