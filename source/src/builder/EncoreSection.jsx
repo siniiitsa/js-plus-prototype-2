@@ -11178,26 +11178,55 @@ function Pricing({ s }) {
     // Sienna Vale's 32 × 0.82 / 25 / 23. The instance's 1px `sem/stroke/1`
     // ring is on all three masters, ink on the paper page, so Grunge's
     // overlay draws it.
-    if (s.limeTree) {
+    //
+    // Pop — the same three masters in Pop's mode (964:68777 at 1440,
+    // 984:15381 at 768, 984:15412 at 390), every paint bound. The walk
+    // (bindings with their collection, all three widths) found the twins'
+    // tree node for node, on Scheme 1 with no Device override and no effect
+    // on any node, the featured `row` nested **Scheme 2** at every width.
+    // The geometry is Lime's — the row's 50 corner and 38 padding, the 240
+    // tablet includes panel — and the bindings are Editorial's names in Pop's
+    // schemes: a plain row is the page's white in a 1px `sem/stroke/2`
+    // (`s.stroke2`, lime), and every leaf of the featured one reads
+    // `s.onScheme[2]` — its fill `sem/bg` lime #C6F200 (the row binds `sem/bg`,
+    // not the Scheme 2 card's `box/1`), its ring `stroke/2` pink, its inks
+    // `text/2` violet, its numeral `text/1` pink, its badge `box/1` #D7FF23
+    // lettered `text/2`, and its pill `text/1` lettered and disced in `sem/bg`
+    // — pink round lime. The capsule is the twins' five keys to the node. The
+    // plain row's pill is `text/1` pink lettered and disced in `sem/bg` white,
+    // which is not `BookPill`'s default under Pop — Scheme 1's `pillBg` is
+    // black — so the arm passes `s.ac` (`pillBg`). The heading is
+    // Display/Title, Pop's 28 × 0.82 / 22 / 20. The instance's 1px
+    // `sem/stroke/1` ring is on all three masters, pink on the white page —
+    // layout 2's was narrow only — so Grunge's overlay draws it.
+    if (s.limeTree || s.pop) {
       const grunge = s.grunge
       const ed = s.editorial
+      const pop = s.pop
       const S3 = ed ? s.onScheme[3] : null
+      const S2 = pop ? s.onScheme[2] : null
       const ring = (c) => `inset 0 0 0 1px ${c}`
       // Lime's arm is this block's own literals, so theme 1 digests to zero.
-      // Editorial's three extra leaves fall back to the twins' reading.
-      const G = grunge
-        ? { radius: 15, pad: 28, incW: 248, rowRing: s.stroke2, featRing: '#FFFFFF',
-            featInk: s.tx, featNum: '#000000', badgeBg: '#9E1F17', badgeFg: '#FFFFFF' }
-        : ed
-          ? { radius: 0, pad: 28, incW: 248, rowRing: s.stroke2, featRing: S3.stroke2,
-              featInk: S3.tx, featNum: S3.ac, badgeBg: S3.box1, badgeFg: S3.tx,
-              featBg: S3.bg, featPillBg: S3.ac, featPillFg: S3.bg }
-          : { radius: 50, pad: 38, incW: 240, rowRing: s.ac, featRing: s.bg,
-              featInk: s.bg, featNum: s.bg, badgeBg: '#CCFA61', badgeFg: s.bg }
+      // Editorial's three extra leaves fall back to the twins' reading, and so
+      // does Pop's fourth, the plain row's pill.
+      const G = pop
+        ? { radius: 50, pad: 38, incW: 240, rowRing: s.stroke2, featRing: S2.stroke2,
+            featInk: S2.tx, featNum: S2.ac, badgeBg: S2.box1, badgeFg: S2.tx,
+            featBg: S2.bg, featPillBg: S2.ac, featPillFg: S2.bg, pillBg: s.ac }
+        : grunge
+          ? { radius: 15, pad: 28, incW: 248, rowRing: s.stroke2, featRing: '#FFFFFF',
+              featInk: s.tx, featNum: '#000000', badgeBg: '#9E1F17', badgeFg: '#FFFFFF' }
+          : ed
+            ? { radius: 0, pad: 28, incW: 248, rowRing: s.stroke2, featRing: S3.stroke2,
+                featInk: S3.tx, featNum: S3.ac, badgeBg: S3.box1, badgeFg: S3.tx,
+                featBg: S3.bg, featPillBg: S3.ac, featPillFg: S3.bg }
+            : { radius: 50, pad: 38, incW: 240, rowRing: s.ac, featRing: s.bg,
+                featInk: s.bg, featNum: s.bg, badgeBg: '#CCFA61', badgeFg: s.bg }
       // Anton stands in for Stones Crush, which is all capitals: every display
       // site scales and cases at its own site (layout 1, session 0), and so
-      // does Gloock under Editorial, at its `faceK` of 0.967.
-      const disp = (lh) => (grunge || ed
+      // do Gloock under Editorial, at its `faceK` of 0.967, and Titan One
+      // under Pop, at 0.98.
+      const disp = (lh) => (grunge || ed || pop
         ? { lineHeight: facedLh(s, lh), textTransform: 'uppercase' }
         : { lineHeight: lh })
       const chip = {
@@ -11263,6 +11292,12 @@ function Pricing({ s }) {
                     letterSpacing: s.dls, color: feat ? G.featNum : s.ac, whiteSpace: 'nowrap',
                     ...(desk ? {} : { flex: '1 0 auto' }),
                     ...(ed ? { position: 'relative', top: '-0.08em' } : {}),
+                    // Titan sits 0.14em low at lh 1 (Pop's every display
+                    // site): unlifted, its floor stood 0.101 / 0.104 / 0.097
+                    // token-em above the box's foot where the frame's stands
+                    // 0.234 / 0.24 / 0.24, and 1.75 / 2.75 / 3.76 under the
+                    // `£`'s where the frame's stands 3.7 / 2.6 / 0.7 over it.
+                    ...(pop ? { position: 'relative', top: '-0.14em' } : {}),
                   })}>{t.amount}</span>
                   {/* A range's second half (JP-074): the lead's face, and free
                       to wrap where the lead holds its line. */}
@@ -11281,11 +11316,14 @@ function Pricing({ s }) {
               {/* Plain: `BookPill`'s Lime defaults exactly (lime box, ink label
                   and disc, lime arrow). Featured: the pair turned round, a
                   lime disc round an ink arrow — the frame's two disc SVGs.
+                  Under Pop the plain pill passes `G.pillBg`, `s.ac`, since
+                  Scheme 1's `pillBg` is black where the frame's is pink.
                   The label is `rowCta`, the frame's "Book": an emptied
                   one drops the pill, a long one wraps (JP-070). */}
               {!!s.tierRowCta && (
                 <BookPill s={s} to={s.tierBookTo} full={s.mob} label={s.tierRowCta}
-                          {...(feat ? { bg: G.featPillBg ?? s.bg, fg: G.featPillFg ?? s.ac } : {})}
+                          {...(feat ? { bg: G.featPillBg ?? s.bg, fg: G.featPillFg ?? s.ac }
+                            : G.pillBg ? { bg: G.pillBg } : {})}
                           style={{ whiteSpace: 'normal', maxWidth: '100%', boxSizing: 'border-box' }} />
               )}
             </div>
@@ -11324,8 +11362,15 @@ function Pricing({ s }) {
             {!!s.title && (
               <h2 style={distressed(s, {
                 margin: 0, fontFamily: s.display,
-                fontSize: faced(s, ed ? (desk ? u(32) : tab ? '25px' : '23px') : desk ? u(36) : tab ? '28px' : '26px'),
+                fontSize: faced(s, ed ? (desk ? u(32) : tab ? '25px' : '23px')
+                  : pop ? (desk ? u(28) : tab ? '22px' : '20px')
+                    : desk ? u(36) : tab ? '28px' : '26px'),
                 ...disp(1.1), letterSpacing: s.dls, color: s.tx,
+                // Titan at Display/Title takes 0.1em, the calendar's "BOOK
+                // ME" again: unlifted its floor stood 0.176 / 0.179 / 0.137
+                // token-em up the line box against the frame's 0.272 /
+                // 0.258 / 0.29.
+                ...(pop ? { position: 'relative', top: '-0.1em' } : {}),
               })}>{s.title}</h2>
             )}
             {!!s.pricingIntro && (
@@ -11395,8 +11440,9 @@ function Pricing({ s }) {
               The section root is the nearest positioned ancestor, so `inset: 0`
               is its box; `pointerEvents` off, or the published capsule would
               click the overlay. Lime's masters carry no such stroke;
-              Editorial's do, ink on the paper page. */}
-          {(grunge || ed) && (
+              Editorial's do, ink on the paper page, and Pop's, pink on the
+              white page, at every width. */}
+          {(grunge || ed || pop) && (
             <span aria-hidden style={{
               position: 'absolute', inset: 0, pointerEvents: 'none',
               boxShadow: `inset 0 0 0 1px ${s.stroke1}`,

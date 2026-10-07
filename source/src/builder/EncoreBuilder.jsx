@@ -571,7 +571,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // matching, and their pages stand the calendar between the two. Pop's
   // repertoire root pads the same 56 / 56 at 1440 (964:68775, over its lime
   // gallery band), so it joined with its repertoire (plans/pop/layout-3.md,
-  // section 4); its pricing joins the arm below in its own session.
+  // section 4), and its pricing joined the arm below in its section 7.
   if ((T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial' || T.name === 'Pop')
     && d === 2 && cat === 'repertoire' && Z.dev === 'desktop') {
     vm.pad = `${vm.padY} ${vm.padX} ${Math.round(56 * 0.82)}px`
@@ -579,10 +579,12 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // The pricing stack's footnote stands 32 above the section's foot at 1440
   // and 768 (964:68680 · 984:10765). 390 keeps its 44, under the master's 60.
   // Grunge's three masters state the same 32 / 32 / 60 (964:68712 · 984:13925
-  // · 984:13956), and so do Editorial's (964:68745 · 984:16837 · 984:16868),
-  // so the arm is all three templates'. Its desktop top is the frames' 56
+  // · 984:13956), and so do Editorial's (964:68745 · 984:16837 · 984:16868)
+  // and Pop's (964:68777 · 984:15381 · 984:15412, padded 56 / 56 / 32 / 56,
+  // 30 / 30 / 32 / 30 and 60 / 20 / 60 / 20; plans/pop/layout-3.md, section
+  // 7), so the arm is all four templates'. Its desktop top is the frames' 56
   // under the gallery's band (JP-103, above); 768 keeps `padY`.
-  if ((T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial')
+  if ((T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial' || T.name === 'Pop')
     && d === 2 && cat === 'pricing' && Z.dev !== 'mobile') {
     const desk = Z.dev === 'desktop'
     vm.pad = desk
