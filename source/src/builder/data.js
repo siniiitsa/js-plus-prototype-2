@@ -539,6 +539,16 @@ export const SCHEMES_OF = {
     // The footer's instances set Scheme 2 on a tree that binds nothing, so it
     // keeps row 0's 3.
     2: { header: 6, calendar: 2, gallery: 2, map: 4 },
+    // Its layout-4 page (964:73127 · 971:10835 · 977:14267), bound, every seat
+    // the same at all three widths — Editorial's row 3 in shape. The header
+    // (964:73128 · 971:10836 · 977:14268), the bio's Section (964:73129 ·
+    // 971:10837 · 977:14269), the gallery's wrapper (964:73173 · 971:10859 ·
+    // 977:14537) and the repertoire's Section (964:73215 · 971:10895 ·
+    // 977:14574) stand on 3 (pink), the media's band (964:73158 · 971:10845 ·
+    // 977:14400) on 2 (lime) and the testimonials (964:73244 · 971:10923 ·
+    // 977:14603) on 4 (blue). The footer's instances state no scheme, so it
+    // keeps row 0's 3.
+    3: { header: 3, bio: 3, media: 2, gallery: 3, repertoire: 3, testimonials: 4 },
   },
 }
 
