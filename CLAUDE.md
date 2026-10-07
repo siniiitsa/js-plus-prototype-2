@@ -167,7 +167,7 @@ mutated through a single `patch()` helper.
   `LayoutPicker` all pass it; the harness takes `&who=<json>`. `vm.roleLine` is the pair
   composed with its `·`, so an emptied half drops with the separator, and an emptied value
   drops the ID card's column (the `since` rule). **The layout-3 card's second line is not the
-  kicker** (JP-061, user call, 2026-09-28). Lime's, Grunge's and Editorial's *Inset Hero*
+  kicker** (JP-061, user call, 2026-09-28). Lime's, Grunge's, Editorial's and Pop's *Inset Hero*
   portrait card prints `FIELDS.header.cardLine` (`vm.cardLine`) under the name. It is seeded
   `CARD_LINE_3`, "Performing since 2021", uncased, and dropped when emptied. Retro's polaroid
   prints the kicker in that seat. So the kicker has one seed, `'DJ · Live Act'`, at every layout,
@@ -185,10 +185,10 @@ mutated through a single `patch()` helper.
   `nowrap` polaroid is unchanged.
   **The tag chips are the header's as well**
   (JP-037): `FIELDS.header.tags` is a comma list seeded with `TAG_LABELS` (six, as the header
-  frames at layouts 1, 3 and 4 and Lime's, Grunge's and Editorial's Genres rows draw them — JP-081, user
+  frames at layouts 1, 3 and 4 and Lime's, Grunge's, Editorial's and Pop's Genres rows draw them — JP-081, user
   call, 2026-09-29, reopening JP-037's five; Retro's layout-4 header and Lime's layout-2 bio draw
   five and seed the sixth anyway), and `identity` carries `tags` and `showTags` to the bio,
-  which prints them in layouts 2 and 4 and Lime's, Grunge's and Editorial's 3 (measured, `scripts/reach.mjs`). An emptied
+  which prints them in layouts 2 and 4 and Lime's, Grunge's, Editorial's and Pop's 3 (measured, `scripts/reach.mjs`). An emptied
   list folds into `vm.showTags = 'hide'`, since every reader of that key is a chip-row gate.
   **`vm.chips` is a palette, not the chip row**: six colour seats off `TAGS`, read as
   `s.chips[3].bg` and the like across header, media, map and pricing, carrying no label and
@@ -279,7 +279,11 @@ mutated through a single `patch()` helper.
   media panel and calendar card are Scheme 2 cards on the page's paper (on Pop's white too), so
   `s.bg` there is the card's taupe (Pop's lime), the block paints the card, and the root paints
   **`vm.pageBg`** round it — `theme.palette[0]`, the page's own ground whatever the seat —
-  through its `cardOnPage` flag (`editorialCard` until Pop's layout-2 sweep).
+  through its `cardOnPage` flag (`editorialCard` until Pop's layout-2 sweep). Pop's layout 3
+  stands its calendar the same way in the composed column, and its header at desktop alone: the
+  header's card is Scheme 6 at every width while the frame round it is white at 1440 and the
+  card's own violet narrow, so the header is seated on 6 and `cardOnPage` paints the page's white
+  round the card at desktop (plans/pop/layout-3.md, decision 1, user call, 2026-10-06).
   **A nested node on another scheme reads `s.onScheme[n]`**: every scheme of a theme carrying
   `schemes`, flat (`flatScheme()`: `bg` / `ac` / `tx` / `acFg`, the `sem` keys, `pillBg` /
   `pillFg`, and the scheme's own two `chips`), keyed by number with 1 the theme's own, and
@@ -299,22 +303,32 @@ mutated through a single `patch()` helper.
   pills, Scheme 1 inside Scheme 2) predates the key and stays named literals. **Pop's layout-1
   frames bind no colour outside the header**, so its seats there are inferred rather than read: a
   section stands on the scheme whose ground it paints, and a tint no scheme key holds is a named
-  literal (plans/pop/layout-1.md, decision 4, user call, 2026-10-02). **Its layout-2 frames are
-  bound** (plans/pop/layout-2.md), so those seats are read off the masters, and a raw hex there
-  is a leak. `THEMES[4]` carries Schemes 2, 3, 4, 5, 6, 7 and 8 (5 and 8, teal and yellow, seat
-  only layout 2's nested media cards and rows), and `SCHEMES_OF.Pop` seats layout 1's repertoire
+  literal (plans/pop/layout-1.md, decision 4, user call, 2026-10-02). **Its layout-2 and layout-3
+  frames are bound** (plans/pop/layout-2.md, layout-3.md), so those seats are read off the
+  masters, and a raw hex there is a leak. `THEMES[4]` carries Schemes 2, 3, 4, 5, 6, 7 and 8 (5
+  and 8, teal and yellow, seat only nested nodes: layout 2's media cards, both layouts' media
+  rows and layout 3's teal testimonials cell), and `SCHEMES_OF.Pop` seats layout 1's repertoire
   on 6, calendar on 4, testimonials on 2 and footer on 3 (row 0 alone, so the footer is pink on
-  every page), and layout 2's media and calendar on 2 (lime cards on the white page, Editorial's
-  mechanism) and the form on 4 (a blue band). Its nested cards read `s.onScheme[n]`
+  every page), layout 2's media and calendar on 2 (lime cards on the white page, Editorial's
+  mechanism) and the form on 4 (a blue band), and layout 3's header on 6 (above), the calendar
+  on 2 (layout 2's lime card, in the composed column), the gallery on 2 (a lime sheet) and the
+  map on 4 (a blue band). Its nested cards read `s.onScheme[n]`
   (`notes/templates.md`): at layout 2 the header's Enquire pill `[3]`, its place card `[6]`
   ringed in `[3]`'s `stroke2` and its Book pill `[3]` at 1440 and 768 and `[4]` at 390, the
   bio's Book pill `[4]`, the media fan's cards `[5]` / `[4]` / `[2]` / `[3]` / `[6]` and list rows
   `[3]` / `[4]` / `[5]` / `[7]` / `[8]` round `[1]`-ringed discs, pricing's plan card `[7]` and
   its rule `[6]`, the map's travel card and viewport `[3]` and its map card `[2]`, the form's
-  sidebar card `[2]`, and the testimonials' card `[2]` and picked tile `[3]`. Its Scheme 1 adds a
-  `sem` key no other theme carries, **`text3`** (`s.text3`), the frames' second ink, where
-  `s.tx` is violet; at layout 2 body copy binds `text/2`, so it is `s.tx` there, and `text3` is
-  read only where a node binds it (the place card's body, the form's promises and credit).
+  sidebar card `[2]`, and the testimonials' card `[2]` and picked tile `[3]`; at layout 3 the
+  header's well, capsule and card rings and its chips `[1]` (nodes naming Scheme 1 outright under
+  the Scheme 6 seat), the bio's seal `[4]`, the audio card `[2]` and the list's rows `[3]` /
+  `[4]` / `[5]` / `[7]` / `[8]` round `[1]`-ringed discs, the repertoire's three sets `[2]` /
+  `[3]` / `[4]`, the gallery's tile rings `[1]` under the lime seat, pricing's featured row and
+  the form's card `[2]`, the map's lit row, *See all gigs*, panel and viewport `[3]`, and the
+  testimonials' stat card `[3]` and five quote cells `[7]` / `[2]` / `[4]` / `[5]` / `[6]`. Its
+  Scheme 1 adds a `sem` key no other theme carries, **`text3`** (`s.text3`), the frames' second
+  ink, where `s.tx` is violet; at layouts 2 and 3 body copy binds `text/2`, so it is `s.tx`
+  there, and `text3` is read only where a node binds it (layout 2's place card's body and the
+  form's promises and credit; layout 3's white name, Listen and location in the header).
 - **`FIELDS` exposes every key any layout reads. A layout that does not consume a key simply
   ignores it, and the panel says so**: a field's `in` lists the designs that read it (0-based,
   `arch % designCount` and never the raw `arch`; an array, or an object keyed by template with
@@ -327,11 +341,12 @@ mutated through a single `patch()` helper.
   cards, 2026-09-24 — the first measurement with no placeholder card; Editorial's over its four
   fitted cards, 2026-09-30, card 2 having lost the placeholder's `showBadge` and `badgeText`
   since its frame draws no seal, and cards 3 and 4 re-measured unchanged; Pop's over its fitted
-  Hero and three placeholder cards, 2026-10-03, and again over fitted card 2, 2026-10-05, which
-  took `showBadge` and `badgeText` off design 1 as Editorial's had, so Pop's layout-3 and -4
-  passes each re-measure their card). One header row keeps a `'*'`: `cardLine` (JP-061), whose `'*': []` marks Retro and Pop
-  "Not shown in this template", as `FIELDS.media.cta`'s row does, because only the three
-  `s.limeTree` blocks read it. A field no design reads is deleted, not kept at `in: []`: `bio.statement` and
+  Hero and three placeholder cards, 2026-10-03, again over fitted card 2, 2026-10-05, which
+  took `showBadge` and `badgeText` off design 1 as Editorial's had, and over fitted card 3,
+  2026-10-06, which took design 2 off the kicker and gave `cardLine` a Pop row, the twins' rows
+  exactly, so Pop's layout-4 pass re-measures card 4, its last placeholder). One header row keeps a `'*'`: `cardLine` (JP-061), whose `'*': []` marks Retro
+  "Not shown in this template", as `FIELDS.media.cta`'s row does, because only the `HeaderV2`
+  block Lime, Grunge, Editorial and Pop share reads it. A field no design reads is deleted, not kept at `in: []`: `bio.statement` and
   `map.sub` went that way with the fallthroughs that read them (the other seven NVAR-4
   sections still end in one after `v3`, which `arch % designCount` never reaches).
 - The `startTheme` prop in `App.jsx` skips the template picker (and the onboarding with it) when

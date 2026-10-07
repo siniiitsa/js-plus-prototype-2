@@ -587,9 +587,9 @@ These are intentional limits, not oversights — see §12 for the full list. The
   is still on the page, else at the old index — *Start fresh* or not; only a category with no
   entry lands immediately before the footer, as §9.1 says. It lives only as long as the
   session, like everything else.
-- **Retro, Lime, Grunge and Editorial are designed at all four layouts, and Pop at layouts 1
-  and 2.** Retro ships six photographic header layouts and every other template the first four.
-  Pop's layouts 3 and 4 render the shared structure undressed until their passes; there is no
+- **Retro, Lime, Grunge and Editorial are designed at all four layouts, and Pop at layouts 1,
+  2 and 3.** Retro ships six photographic header layouts and every other template the first four.
+  Pop's layout 4 renders the shared structure undressed until its pass; there is no
   flat template, and no flat header family, any more.
   The §10.2 *layouts* are shared by all five templates; Retro's decorative treatment — paper
   grain, torn edges, checkerboard, hard offset shadows, rotated cards — is gated on `s.retro`,
@@ -637,8 +637,8 @@ These are intentional limits, not oversights — see §12 for the full list. The
   all four layouts, widened to `s.limeTree` (Lime, Grunge and Editorial). Its header family is
   the same first four, all four fitted (its Stacked header is Lime's capsule in paper over an
   ink floor, with an arch avatar and a terracotta seal), so every card in the setup modal lays
-  out a whole Editorial page and the Editorial family is closed. **Pop is designed at layouts 1
-  and 2**: its layout-1 page is the fifth variant of the same component sets — Lime's layout-1 tree in ten
+  out a whole Editorial page and the Editorial family is closed. **Pop is designed at layouts 1,
+  2 and 3**: its layout-1 page is the fifth variant of the same component sets — Lime's layout-1 tree in ten
   sections, Retro's floating card stack in the media player — but drawn in raw colours rather
   than a variable mode, so each section stands on the scheme whose ground it paints (a violet
   repertoire, a blue calendar, lime testimonials and a pink footer on a white page), and every
@@ -652,11 +652,16 @@ These are intentional limits, not oversights — see §12 for the full list. The
   white, Editorial's mechanism; the form a blue band), drawn in solid inside rings — 8, 5, 4, 3,
   2 and 1px — with no seams, glows or 10px rules but the media's 5px lime pair at 1440, the
   header's dot grid and sun its only stickers, and pricing's coral plan card leant 3°. Its
-  treatment is `s.pop` arms inside Lime's layout-2 blocks, widened the same way. Its header
-  family is the same first four: Hero and Feature spread fitted (Feature spread an oval
-  photograph under the sun, a white capsule ringed lime, pill-tall face and place cards), Inset
-  Hero and Stacked placeholders until Pop's layout-3 and -4 passes, which dress its layouts 3
-  and 4 as well.
+  treatment is `s.pop` arms inside Lime's layout-2 blocks, widened the same way. Its layout-3
+  page is Lime's layout-3 tree in every section but the bio, and bound again: a white page broken
+  by a violet header card (the page's white round it at 1440), a full-bleed lime gallery sheet
+  and a blue map band, with cards and cells on seven schemes (the testimonials' wall six of
+  them), drawn in solid inside rings with no seams, rules or effects; the bio trades Lime's seal
+  for Pop's smiley-globe seal, a teal sparkle and a lime scribble. Its header family is the same
+  first four: Hero, Feature spread and Inset Hero fitted (Feature spread an oval photograph under
+  the sun, a white capsule ringed lime, pill-tall face and place cards; Inset Hero a violet card
+  in a lime ring, a violet capsule ringed pink and a lime portrait card ringed pink), Stacked a
+  placeholder until Pop's layout-4 pass, which dresses its layout 4 as well.
   One piece of Retro's treatment is placed
   rather than copied: the checker ribbon on header layout 1's floor is not in the Figma hero
   frame at all. It is lifted from the stacked header, which shares the same full-bleed
@@ -678,7 +683,7 @@ These are intentional limits, not oversights — see §12 for the full list. The
   layout 3's pricing draw 20 — and 10 was chosen so neighbours always agree. The *vertical*
   inset is the page's `padY` (80 / 56 / 44) wherever no frame says otherwise, but under Lime,
   Grunge and Editorial, layouts 2 and 3 stand each section on its own frame's top and foot
-  (and under Pop, layout 2, whose frames state the twins' numbers to the pixel): the `vm.pad`
+  (and under Pop, layouts 2 and 3, whose frames state the twins' numbers to the pixel): the `vm.pad`
   arms in `sectionVm`. The page frames stack their sections with no spacing, so a
   gap between two sections is one's foot plus the next one's top. Layout 3's arms are the
   Editorial layout-3 sweep's (user call, 2026-09-26), and layout 2's is JP-094's (user call,
@@ -688,7 +693,7 @@ These are intentional limits, not oversights — see §12 for the full list. The
   ignores says "Not shown in this layout" under its label, off the field's `in` list and
   `fieldReach()` in `data.js` — or "Not shown in this template" where no layout of the active
   template reads it (`fieldNowhere()`). The header's `in` names all five templates' layouts;
-  Pop's two placeholder cards (Inset Hero and Stacked) are re-measured by its layout passes.
+  Pop's one placeholder card (Stacked) is re-measured by its layout-4 pass.
 - **Accessibility is scoped to the chrome.** Radix supplies focus management, keyboard
   navigation and ARIA there. The rendered preview is deliberately not accessible: it is a
   picture of a website, not a website. The seal badge honours `prefers-reduced-motion`.

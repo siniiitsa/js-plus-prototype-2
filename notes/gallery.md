@@ -65,10 +65,16 @@ another `notes/` file.
   takes focus off a callback ref so Escape and ← / → reach its own `onKeyDown`, closes on any
   click that is not a control, and locks the popup's scroll while open — `overflow: hidden` on
   its `<html>` and `<body>` with the scrollbar gutter kept, set in that same ref and undone by
-  the ref's React 19 cleanup (under Lime, Grunge and Editorial alike its scrim is the page ink at
-  .94 and its controls pale — under Editorial `#141414` and the taupe seat's paper `s.ac`, since
-  its `s.tx` is ink — the only thing about the viewer that moves; no frame draws it, so each
-  palette's reading of it is that template's own call). **Layout 4 browses through the same `pick` for
+  the ref's React 19 cleanup (under Lime, Grunge, Editorial and Pop alike its scrim is the page's
+  darkest ink at .94 and its controls a light key on it — Lime's and Grunge's pale `s.tx`, under
+  Editorial `#141414` and the taupe seat's paper `s.ac`, since its `s.tx` is ink, and under Pop
+  `#000000` and the lime seat's pink `s.ac`, since its violet `s.tx` reads at 3:1 on the scrim —
+  the only thing about the viewer that moves; no frame draws it, so each palette's reading of it
+  is that template's own call). Pop's layout-3 tiles are ringed 5px INSIDE in the sheet's own lime
+  (`s.onScheme[1].stroke2`), on the twins' overlay, so the ring hides nothing that leaks past
+  it: the photograph is clipped 2px inside the tile, or its anti-aliased edge showed as a dark
+  arc outside each round corner. An empty slot's initials there are the seat's black `text/3`
+  on the olive `s.box3` well (7.5:1, where the twins' `s.tx` is violet at 2.2:1). **Layout 4 browses through the same `pick` for
   the fourth time** — a spotlight photograph beside a rail of all seven thumbnails, with two arrow
   discs under it that step and wrap on layout 1's own `go`. Under Retro it carries **no active
   mark**: its Figma frame rings all six of its thumbnails identically, and what names the chosen

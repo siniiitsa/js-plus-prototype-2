@@ -56,7 +56,13 @@ another `notes/` file.
   shuffle its colours on every pick; the centre is the accent and carries the Featured tab.
   Under Pop each seat is a **scheme** (`popCard(k)`, 5 / 4 / 2 / 3 / 6 from the left, the
   outermost repeating past five), and each list row is one by **index** (`popRow(i)`, 3 / 4 / 5 /
-  7 / 8, cycling) — the row is the track's place in the list, which never rotates. On
+  7 / 8, cycling) — the row is the track's place in the list, which never rotates. **Layout 3's
+  list is the same five pills on the same five schemes by index** (its own `popRow`, re-read off
+  its masters, so layout 2's block is untouched), round the same `[1]`-ringed discs, under a
+  Scheme 2 now-playing card that binds `box/1` `#D7FF23`, its disc the card's own fill so only the
+  glyph shows. Each row is pinned at its master's division result (116.8 at 1440, 110.8 narrow,
+  border-box), not the list's stated height as a minimum, so one track is one pill and more grow
+  the list by the frame's pitch (`plans/pop/layout-3.md`, section 3). On
   the canvas the seats are unrotated (the Figma frame's picture) and the bar takes the **centre
   seat's** title and artwork rather than the shared now-playing block's, which names the cued
   first track — live the two are the same track by construction.

@@ -113,13 +113,14 @@ another `notes/` file.
   call, 2026-09-24; the fit had dropped it as a discount no field states): seeded with the
   frame's copy, emptiable, `in: [2]`, in every template's block, and the capsule's row stands
   on either half — an offer is not a filter, so it outlives a page whose packages carry no tags.
-  **Lime's, Grunge's and Editorial's stacks read no `vm.tierRow`**: Lime's frame outlines the
-  rows in the accent and fills the moving seat with it, ringed and lettered in the page ink,
-  Grunge's names Scheme 3's own three literals, and Editorial's dashes its square paper rows 10,
+  **Lime's, Grunge's, Editorial's and Pop's stacks read no `vm.tierRow`**: Lime's frame outlines
+  the rows in the accent and fills the moving seat with it, ringed and lettered in the page ink,
+  Grunge's names Scheme 3's own three literals, Editorial's dashes its square paper rows 10,
   10 in the seat's terracotta and paints the moving seat off `s.onScheme[3]` — ink dashed blush,
-  a terracotta numeral — so the walk (which reaches pale lime under Lime and the page's own
-  black under Grunge) is Retro's and Pop's; the seat still moves exactly as above, every leaf of
-  it read off the nested scheme wherever the filter stands it. The three templates' capsule
+  a terracotta numeral — and Pop's rings its white rows in lime and paints the seat off
+  `s.onScheme[2]` (below), so the walk (which reaches pale lime under Lime and the page's own
+  black under Grunge) is Retro's alone; the seat still moves exactly as above, every leaf of
+  it read off the nested scheme wherever the filter stands it. The four templates' capsule
   draws the frame's own pick (`sem/text/1` under `sem/bg`), not layout 2's redraw.
   **Layout 4 filters nothing at all**: it is a stack of service rows on the page ground, the one
   pricing design with no chip row, no state and no control but the Book pill, so `chip` is
@@ -175,3 +176,12 @@ another `notes/` file.
   every master spaces it by its rotated box, so the row is that box's height. The published page
   needs no clip for it — the turned corners stay inside 768 and 390. The root's own 1px pink ring
   is drawn at 768 and 390 only, as the masters draw it.
+- **Pop's layout-3 stack is Lime's geometry in Editorial's bindings** (its layout-3 pass, section
+  7, 2026-10-07): the widened block's fourth `G` arm keeps Lime's 50 corner, 38 padding and 240
+  tablet includes panel, outlines a plain row in `s.stroke2` (lime) on the white page, and reads
+  every leaf of the moving FEATURED seat off `s.onScheme[2]` wherever the filter stands it — the
+  row's `sem/bg` lime (not the Scheme 2 card's `box/1`), a pink ring, violet inks, a pink numeral,
+  a `#D7FF23` badge lettered violet and a pink pill round a lime label and disc. The plain row's
+  pill passes `s.ac` (`G.pillBg`), since `BookPill`'s default `pillBg` is black on Pop's Scheme 1.
+  The root's 1px pink ring is drawn at every width (layout 2's was narrow only). The heading is
+  lifted 0.1em and the numeral 0.14em; the names, at lh 1.2, are left.

@@ -67,8 +67,8 @@ const isTablet = (s) => !!s.narrow && !s.mob
  * glows, the arch portrait) is drawn by its `if (s.lime)` blocks inside the
  * shared `v0` branches, and Grunge's, Editorial's and Pop's by their arms
  * inside those blocks, never by these helpers (bar the few a named pair
- * widens). Pop's layouts 2–4 take the shared structure undressed until their
- * passes.
+ * widens). Pop's layout 4 takes the shared structure undressed until its
+ * pass.
  * ------------------------------------------------------------------ */
 
 // Anton (or the theme's label face): uppercase, tight, used for nav, eyebrows,
@@ -994,7 +994,11 @@ function NavMenu({ s, color }) {
   // terracotta, so the panel came out the accent and swallowed the Book Now
   // pill on it. Its `sem/box/3` is near-black in Schemes 1 and 3 alike — the
   // capsule's own fill on card 1 — and `paper` is its paper in both.
-  const [ground, ink] = s.editorial ? [s.box3, s.paper] : [s.mapBg, s.mapFg]
+  // Pop's Inset Hero stands on Scheme 6, whose darkest tag is red and whose
+  // `paper` falls to Retro's cream, so `mapBg` there is a red panel no frame
+  // draws; it takes the seat's violet and its white `text/3`, the panel Pop's
+  // other cards open on Scheme 1.
+  const [ground, ink] = s.editorial ? [s.box3, s.paper] : s.pop && s.v2 ? [s.bg, s.text3] : [s.mapBg, s.mapFg]
   return (
     <>
       <span
@@ -1625,7 +1629,9 @@ function Checkerboard({ s, style, cell = 14, colour }) {
 // blush one — and its layout-4 hero, under the paper one, on the same Scheme 3.
 // (Card 2's photograph is an arch on `sem/box/3`, not a backdrop, and passes
 // no `backdrop`.) Pop's hero (964:58624) states its own empty ground: a flat
-// `sem/text/2` violet under the photograph, which is `s.tx`.
+// `sem/text/2` violet under the photograph, which is `s.tx`. Its Inset Hero
+// (964:68751) states `sem/box/2` under its seat's photograph instead, which is
+// violet where that seat's `s.tx` is pink.
 // `src` lets a layout address one slot of a multi-photo section; it falls back
 // to the section's single photo, then to the initials placeholder.
 // `avatar` reads the header's second photo slot, and reads it strictly: an empty
@@ -1651,7 +1657,7 @@ function Photo({ s, style, initialsSize = 44, backdrop = false, avatar = false, 
     return (
       <div style={{
         width: '100%', height: '100%',
-        background: s.pop ? s.tx : s.limeTree
+        background: s.pop ? (s.v2 ? s.box2 : s.tx) : s.limeTree
           ? `linear-gradient(150deg, ${s.box1}, ${s.bg} 55%, ${s.box3})`
           : `linear-gradient(150deg, ${s.edge}, #2A2622 55%, #14110E)`,
         ...style,
@@ -3192,7 +3198,7 @@ function HeaderV2({ s }) {
   const tab = isTablet(s)
   const z = desk ? 0.82 : 1
   const u = (n) => `${+(n * z).toFixed(2)}px`
-  if (s.limeTree) {
+  if (s.limeTree || s.pop) {
     // Lime's Inset Hero (964:68654 at 1440, 984:10740 at 768, 984:10771 at
     // 390). Retro's shell — a photographic card inset in the page, the nav on
     // its top edge and the identity on its floor — with the rest redrawn: no
@@ -3234,8 +3240,27 @@ function HeaderV2({ s }) {
     // the card is the page's ink in a terracotta ring, an arch, with no glow,
     // round an arch portrait; and the 390 band states 418.52. Nothing carries
     // an effect.
+    //
+    // Pop's Inset Hero (964:68751 at 1440, 984:15356 at 768, 984:15387 at
+    // 390) is the tree a fourth time, node for node at all three widths, its
+    // 390 Lime's 606.5, every paint bound, no effect, no Device override
+    // (plans/pop/layout-3.md). The card round the photograph is Scheme 6 at
+    // every width, so the section is seated there; the root's frame round it
+    // is the page's white at 1440 (`cardOnPage`, `vm.pageBg`) and the seat's
+    // violet narrow. So `pop` names the deltas, and four of its nodes name
+    // Scheme 1's variables outright, reading `s.onScheme[1]`: the well's lime
+    // ring, the capsule's and the card's pink rings, and the chips. What
+    // moves: the well is radius 30 at every width in an 8 / 8 / 2 lime ring,
+    // faded off `sem/box/3`; the capsule is Grunge's fixed 18 gaps at Lime's
+    // Label/SM; the name and Listen are `text/3` white; the pill is the
+    // seat's own violet, lettered and disced lime, no block; the title is
+    // lime and one tone, lifted 0.14em; the location white; the chips
+    // Scheme 1's six seats; and the card is the seat's lime in a 4px pink
+    // ring, radius 27 (21 at 390), round a portrait in a 4px pink ring, its
+    // name violet and its line pink.
     const grunge = s.grunge
     const ed = s.editorial
+    const pop = s.pop
     const ring = (w, c) => `inset 0 0 0 ${w} ${c}`
     const inset = desk ? 20 : 10
     // Grunge's names are `sem/text/2` then `text/1` — Title's split, at the
@@ -3276,14 +3301,20 @@ function HeaderV2({ s }) {
     // pair; the capsule's ring names Scheme 1's ink `stroke/1`. The name,
     // Listen and the burger's bars are Scheme 5's `text/2`, the paper Scheme
     // 3's `s.tx` already is.
+    //
+    // Pop's capsule is Editorial's bar again: the fixed 18 at Label/SM (16 /
+    // 13), the capsule the seat's violet `sem/bg` ringed in Scheme 1's pink
+    // `stroke/1`, the links its lime `text/1` — Lime's own keys under the
+    // seat. The name and Listen are `text/3`, white; the burger's bars
+    // `text/2`, the seat's pink `s.tx`.
     const links = desk || !!s.navFits
     const linkCap = grunge ? s.labelMd : s.labelSm
-    const navGaps = grunge || ed ? u(18 * Math.max(0, s.navLinks.length - 1)) : '0px'
+    const navGaps = grunge || ed || pop ? u(18 * Math.max(0, s.navLinks.length - 1)) : '0px'
     const reserve = `(${s.navNameEms} * ${s.labelLg} + ${s.navCtaEms} * ${s.labelSm} + ${u(138.32)} + ${navGaps})`
     const linkSize = `clamp(12px, calc((100cqi - ${reserve}) / ${s.navEms}), ${linkCap})`
     const capsule = {
       background: ed ? s.onScheme[5].bg : grunge ? s.box1 : s.bg,
-      boxShadow: ring('1px', ed ? s.onScheme[1].stroke1 : grunge ? s.stroke2 : s.stroke1),
+      boxShadow: ring('1px', ed || pop ? s.onScheme[1].stroke1 : grunge ? s.stroke2 : s.stroke1),
       padding: `${u(8)} ${u(18)}`,
     }
     const nav = (
@@ -3301,7 +3332,7 @@ function HeaderV2({ s }) {
             // below the 12px floor keeps its ends rather than turning stadium.
             <nav style={{
               ...capsule, borderRadius: u(18), maxWidth: '100%',
-              display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: grunge || ed ? u(18) : `${23 / 24}em`,
+              display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: grunge || ed || pop ? u(18) : `${23 / 24}em`,
               fontSize: desk ? linkSize : linkCap,
             }}>
               {s.navLinks.map((l) => (
@@ -3315,13 +3346,13 @@ function HeaderV2({ s }) {
             </span>
           )}
         </div>
-        <span style={labelStyle(s, s.labelLg, { color: s.tx, flex: 'none' })}>{brand()}</span>
+        <span style={labelStyle(s, s.labelLg, { color: pop ? s.text3 : s.tx, flex: 'none' })}>{brand()}</span>
         {/* At 390 the pill is wider than its half; the master lets it overrun
             into the spacer, which keeps the name centred, and so does this. */}
         <div style={row(u(12), { flex: '1 1 0', justifyContent: 'flex-end', minWidth: s.mob ? 0 : undefined })}>
           {!s.mob && (
             <ListenLink s={s} to={s.listenTo}
-                        style={labelStyle(s, s.labelSm, { color: s.tx, fontWeight: 400 })} />
+                        style={labelStyle(s, s.labelSm, { color: pop ? s.text3 : s.tx, fontWeight: 400 })} />
           )}
           {/* Scheme 3's pill is BookPill's Lime defaults — lime, lettered and
               disced in `sem/bg` round a lime arrow — at the frame's small box,
@@ -3332,10 +3363,13 @@ function HeaderV2({ s }) {
               its `#0E0E0E` disc takes the label's ink, BookPill's own rule.
               Editorial's is Scheme 5's: blush `sem/bg` lettered and disced in
               its ink `text/1`, round a blush arrow — the same box at all three
-              widths, 139.32 / 124.32 / 119.32 with its label. */}
+              widths, 139.32 / 124.32 / 119.32 with its label. Pop's is the
+              seat's own violet `sem/bg` on the violet card, lettered and
+              disced in its lime `text/1` round a violet arrow, with no block:
+              the frame outlines it with nothing, and so does this. */}
           <BookPill s={s} to={s.bookTo} size={s.labelSm} disc={27.6 * z}
-                    bg={ed ? s.onScheme[5].bg : undefined}
-                    fg={ed ? s.onScheme[5].ac : grunge ? s.pillFg : undefined}
+                    bg={pop ? s.bg : ed ? s.onScheme[5].bg : undefined}
+                    fg={pop ? s.ac : ed ? s.onScheme[5].ac : grunge ? s.pillFg : undefined}
                     style={{
                       padding: `${u(4.27)} ${u(4.27)} ${u(4.27)} ${u(17.92)}`,
                       gap: u(8.53), lineHeight: 1.1,
@@ -3354,13 +3388,20 @@ function HeaderV2({ s }) {
     // `vm.chips` are paper and terracotta — so they read `s.onScheme[1]`, each
     // seat lettered in its own ink. The frame letters its fourth and sixth
     // chips `sem/tag/6/bg`, terracotta on terracotta, which is not followed.
+    // Pop's name Scheme 1's six tag seats outright too (`scheme/1/tag1…6/bg`:
+    // lime, pink, blue, teal, violet, red) under the Scheme 6 seat, so they
+    // read `s.onScheme[1]` in order, each lettered in its own seat's ink —
+    // four of the frame's six inks. Its fourth and sixth are bound to other
+    // schemes (`scheme/4/tag1/text` #141414 where the seat's is #000000,
+    // `sem/tag/7/bg` #FFFFFF where it is #F6F0E8) and are not followed,
+    // Editorial's call. The corner is its `radius/chip` 8 × 0.752, 6.01.
     const chips = s.showTags === 'show' && (
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: u(6.01) }}>
         {s.tagChips.map((c, i) => (
           <span key={i} style={{
-            background: ed ? s.onScheme[1].chips[i % 2].bg : c.bg,
-            color: ed ? s.onScheme[1].chips[i % 2].fg : c.fg,
-            borderRadius: u(grunge ? 3.01 : 4.51), padding: `${u(3.76)} ${u(8.27)}`,
+            background: ed ? s.onScheme[1].chips[i % 2].bg : pop ? s.onScheme[1].chips[i % 6].bg : c.bg,
+            color: ed ? s.onScheme[1].chips[i % 2].fg : pop ? s.onScheme[1].chips[i % 6].fg : c.fg,
+            borderRadius: u(pop ? 6.01 : grunge ? 3.01 : 4.51), padding: `${u(3.76)} ${u(8.27)}`,
             fontFamily: s.ui, fontSize: u(s.mob ? 9.02 : tab ? 10.53 : 15.04),
             lineHeight: 1.26, letterSpacing: s.dls, whiteSpace: 'nowrap',
           }}>{c.label}</span>
@@ -3378,21 +3419,25 @@ function HeaderV2({ s }) {
     // `width: 100%` of a parent-sized column, so the container moves nothing,
     // and the seeded MERCER keeps the ramp everywhere (Editorial's tightest,
     // 768, has 7.9 to spare). One block fits Lime's, Grunge's and Editorial's
-    // titles, each in its own face's ems. Retro's half (which Pop's arch-2
-    // placeholder renders) clips at its column instead, and is not fitted.
+    // titles, each in its own face's ems. Retro's half clips at its column
+    // instead, and is not fitted.
+    // Pop's is the same fit in Titan's ems (`navFace` × 0.98), its title the
+    // seat's lime `text/1`, one tone, lifted 0.14em off Titan's low floor
+    // (HeaderV1's Pop arm).
     const identity = (
       <div style={col(u(12), { alignItems: 'flex-start', width: '100%', containerType: 'inline-size' })}>
         <Title s={s} size={s.cardNameEms ? `min(${s.dispLg}, calc(100cqi / ${s.cardNameEms}))` : s.dispLg}
-               color={s.tx} lh={0.89} inline twoTone={grunge} toneA={s.tx} toneB={s.ac} />
+               color={pop ? s.ac : s.tx} lh={0.89} inline twoTone={grunge} toneA={s.tx} toneB={s.ac}
+               style={pop ? { position: 'relative', top: '-0.14em' } : undefined} />
         <span style={row(u(8))}>
           {/* Editorial's dot is `sem/text/2`, the location's own paper, where
-              the twins' is the accent. */}
+              the twins' is the accent. Pop's location is `text/3`, white. */}
           <span style={{
             width: u(14), height: u(14), borderRadius: s.radiusChip, background: ed ? s.tx : s.ac, flex: 'none',
           }} />
           <span style={{
-            fontFamily: s.display, fontSize: faced(s, s.list), lineHeight: facedLh(s, 1.2), letterSpacing: s.dls, color: s.tx,
-            textTransform: grunge || ed ? 'uppercase' : undefined,
+            fontFamily: s.display, fontSize: faced(s, s.list), lineHeight: facedLh(s, 1.2), letterSpacing: s.dls,
+            color: pop ? s.text3 : s.tx, textTransform: grunge || ed || pop ? 'uppercase' : undefined,
           }}>{s.location}</span>
         </span>
       </div>
@@ -3450,27 +3495,37 @@ function HeaderV2({ s }) {
     // KAI MERCER needs ~158 in the 147.6 measure at 1440, so it sets two
     // lines there where the frame's SIENNA VALE holds one (accepted,
     // display-face.md step 4, layout 3); 768 and 390 hold one.
+    //
+    // Pop's card is the seat's lime `text/1` in a 4px ring naming Scheme 1's
+    // pink `stroke/1`, radius 27 (21 on its side at 390), no effect; the
+    // portrait is the twins' 87 on `sem/box/1` in a 4px ring of the seat's
+    // pink `stroke/2`; the name is `sem/bg` violet at Display/Title 28 / 22 /
+    // 20, uppercased, and the line `text/2` pink.
     const pw =ed ? (s.mob ? '96px' : u(136)) : u(87)
     const ph = ed ? (desk ? u(128) : tab ? '135px' : '96px') : u(87)
     const measure = s.mob ? `(100cqi - ${pw} - 21px + 10px)` : `(100cqi + ${u(40)})`
-    const nameSize = ed ? (desk ? u(32) : tab ? '25px' : '23px') : desk ? u(36) : tab ? '28px' : '26px'
+    const nameSize = ed ? (desk ? u(32) : tab ? '25px' : '23px') : pop ? (desk ? u(28) : tab ? '22px' : '20px')
+      : desk ? u(36) : tab ? '28px' : '26px'
     const card = (
       <div style={{
         containerType: 'inline-size',
-        background: ed ? s.bg : grunge ? s.box1 : undefined,
-        boxShadow: ed ? ring('1px', s.onScheme[1].stroke2)
+        background: ed ? s.bg : pop ? s.ac : grunge ? s.box1 : undefined,
+        boxShadow: ed ? ring('1px', s.onScheme[1].stroke2) : pop ? ring(u(4), s.onScheme[1].stroke1)
           : grunge ? ring('1px', s.stroke2) : `${ring('1px', s.ac)}, inset 0 0 ${u(19)} ${s.glow}`,
         borderRadius: ed ? (s.mob ? '70px 70px 0 0' : `${u(145)} ${u(145)} 0 0`)
-          : grunge ? u(15) : s.mob ? '12px' : u(45),
+          : pop ? u(s.mob ? 21 : 27) : grunge ? u(15) : s.mob ? '12px' : u(45),
         padding: s.mob ? '20px' : u(40), flex: 'none',
-        ...(s.mob ? row('21px', { width: '100%' }) : col(u(21), { width: u(220) })),
+        // Every twin's upright card centres its portrait (`counterAxisAlignItems`
+        // CENTER, 66.5 in); this column stretches it to the left edge, 26.5
+        // short, under Lime and Grunge. Pop's is centred; the twins' is theirs.
+        ...(s.mob ? row('21px', { width: '100%' }) : col(u(21), { width: u(220), alignItems: pop ? 'center' : undefined })),
       }}>
         <div style={{
           position: 'relative', width: pw, height: ph, flex: 'none',
           borderRadius: ed ? `${u(81)} ${u(81)} 0 0` : u(grunge ? 10 : 21), overflow: 'hidden', background: s.box1,
         }}>
           <Photo s={s} avatar initialsSize={Math.round(34 * z)} ink={s.tx} />
-          <span style={{ position: 'absolute', inset: 0, borderRadius: 'inherit', boxShadow: ring('1px', grunge || ed ? s.stroke2 : s.ac) }} />
+          <span style={{ position: 'absolute', inset: 0, borderRadius: 'inherit', boxShadow: ring(pop ? u(4) : '1px', grunge || ed || pop ? s.stroke2 : s.ac) }} />
         </div>
         <div style={col(u(4), {
           alignItems: s.mob ? 'flex-start' : 'center', minWidth: 0, textAlign: s.mob ? 'left' : 'center',
@@ -3478,13 +3533,16 @@ function HeaderV2({ s }) {
           <span style={distressed(s, {
             width: 'max-content', maxWidth: `calc${measure}`, fontFamily: s.display,
             fontSize: faced(s, s.cardNameEms ? `min(${nameSize}, calc(${measure} / ${s.cardNameEms}))` : nameSize),
-            lineHeight: facedLh(s, 1.1), letterSpacing: s.dls, color: s.tx,
-            textTransform: grunge || ed ? 'uppercase' : undefined,
+            lineHeight: facedLh(s, 1.1), letterSpacing: s.dls, color: pop ? s.bg : s.tx,
+            textTransform: grunge || ed || pop ? 'uppercase' : undefined,
+            // Titan's cap at lh 1.1 sits 0.10 / 0.09 / 0.16em under Chunko's
+            // (scanned against the frames' render bounds, top and floor alike).
+            ...(pop ? { position: 'relative', top: '-0.1em' } : null),
           })}>{brand()}</span>
           {s.cardLine && (
             <span style={{
               width: 'max-content', maxWidth: `calc${measure}`, overflowWrap: 'anywhere',
-              fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4, color: s.ac,
+              fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4, color: pop ? s.tx : s.ac,
             }}>{s.cardLine}</span>
           )}
         </div>
@@ -3512,14 +3570,18 @@ function HeaderV2({ s }) {
     // Editorial's well is square at every width, its fade's opaque stop is
     // `sem/bg` (the twins' `sem/media`), and its ring names Scheme 1's ink
     // `stroke/1` — ink on the ink page, drawn by its binding.
+    // Pop's well is radius 30 at every width, faded off `sem/box/3`, in a
+    // ring naming Scheme 1's lime `stroke/2`, 8 / 8 / 2 — the narrowest 390
+    // ring of any template's hero. The frame round it is the page's white at
+    // 1440 (the root's `vm.pageBg`) and the seat's violet narrow.
     return (
       <div style={{
-        background: s.bg, padding: u(inset),
+        background: pop && desk ? s.pageBg : s.bg, padding: u(inset),
         margin: `calc(-1 * ${s.padY}) calc(-1 * ${s.padX})`,
       }}>
         <div style={{
           position: 'relative', overflow: 'hidden', background: s.box2,
-          borderRadius: ed ? 0 : grunge ? u(15) : desk ? u(50) : tab ? '50px' : '20px',
+          borderRadius: ed ? 0 : pop ? u(30) : grunge ? u(15) : desk ? u(50) : tab ? '50px' : '20px',
           minHeight: desk ? u(860) : tab ? '1004px' : undefined,
           padding: `${u(s.mob ? 0 : 16)} 0 ${u(s.mob ? 10 : 32)}`,
           paddingLeft: `calc(${u(padX)} + ${s.surplus})`,
@@ -3534,7 +3596,7 @@ function HeaderV2({ s }) {
           <div aria-hidden style={{
             position: 'absolute', inset: 0, // `sem/media` off the floor to `sem/bg` at 0 — a transparent stop in the
             // page's own hue, so the fade does not grey on its way out.
-            background: `linear-gradient(to top, ${ed ? s.bg : s.box1}, #15180F00)`,
+            background: `linear-gradient(to top, ${ed ? s.bg : pop ? s.box3 : s.box1}, #15180F00)`,
           }} />
           {grunge && (
             <>
@@ -3547,7 +3609,8 @@ function HeaderV2({ s }) {
             </>
           )}
           <span aria-hidden style={{
-            position: 'absolute', inset: 0, borderRadius: 'inherit', boxShadow: ring('1px', ed ? s.onScheme[1].stroke1 : s.stroke1),
+            position: 'absolute', inset: 0, borderRadius: 'inherit',
+            boxShadow: pop ? ring(u(s.mob ? 2 : 8), s.onScheme[1].stroke2) : ring('1px', ed ? s.onScheme[1].stroke1 : s.stroke1),
             pointerEvents: 'none',
           }} />
           <div style={{ position: 'relative', width: '100%' }}>{nav}</div>
@@ -5325,9 +5388,25 @@ function Bio({ s }) {
   // the same 50. 390 is its own composition, the tape clear of the head. The
   // head wraps at the word on the ramp in the composed column, where the
   // frame's Fisterra sets it on one line (9.06 Gloock ems against 709).
-  if (s.v2 && s.limeTree) {
+  //
+  // Pop layout 3 (964:68760 · 984:15364 at 768 · 984:15395 at 390; the head
+  // 964:68755 · 984:15359 · 984:15390) is Lime's tree again on Scheme 1, and
+  // `pop` names what moves (plans/pop/layout-3.md, section 2). No effect on
+  // any node, every paint bound but the sparkle's. The card is `box/1` in a
+  // 1px `stroke/1` ring at radius 50, unringed at 30 at 390; the photograph a
+  // raw 15 on its `box/3` well, unglowed. No hairline rule: the head band
+  // stands straight on the about band, and a 5px `text/1` bar closes the
+  // column, 40 above the card's foot. The labels and `[ ABOUT ]` are
+  // `text/1`, the values Grunge's Chakra Petch in `text/2`. Three stickers:
+  // Pop's smiley-globe seal, nested on Scheme 4, in the card's top-right
+  // corner; a teal sparkle (raw `#00E0C4`, Scheme 1's `tag4`) on the bar at
+  // the card's lower left, by the right edge at 390; and a lime scribble
+  // under the name, the hero's stroke at 0.3455. No `Frame 302`: the card
+  // stands 30 under its head, as Lime's does.
+  if (s.v2 && (s.limeTree || s.pop)) {
     const grunge = s.grunge
     const ed = s.editorial
+    const pop = s.pop
     const desk = !s.narrow
     const tab = isTablet(s)
     const z = desk ? 0.82 : 1
@@ -5341,7 +5420,9 @@ function Bio({ s }) {
       if (i === -1) return s.brand
       return <>{s.brand.slice(0, i)} <span style={{ color: s.ac }}>{s.brand.slice(i + 1)}</span></>
     }
-    const upper = grunge || ed ? { textTransform: 'uppercase' } : null
+    const upper = grunge || ed || pop ? { textTransform: 'uppercase' } : null
+    // Pop's labels and "[ About ]" bind `sem/text/1` over the `text/2` values.
+    const labelInk = pop ? { color: s.ac } : null
     // Body/Chip, Inter bold at -6%: the stat labels and "[ About ]".
     const chipType = {
       fontFamily: s.body, fontWeight: 700, fontSize: s.chip, lineHeight: 1,
@@ -5362,11 +5443,11 @@ function Bio({ s }) {
       <div key={key} style={col(u(15), {
         flex: '0 1 auto', minWidth: 0, alignItems: 'flex-start',
       })}>
-        {label && <span style={{ ...chipType, whiteSpace: 'pre-line', overflowWrap: 'break-word' }}>{label}</span>}
+        {label && <span style={{ ...chipType, whiteSpace: 'pre-line', overflowWrap: 'break-word', ...labelInk }}>{label}</span>}
         {/* Two lines reserved either way: 2 × 1.1 in the label face, 2 × 1.26
             in Chakra Petch (Grunge's 50 box is 2 × 20 × 1.26; Editorial's
-            values are the same Label/XS in `font/ui`). */}
-        <span style={grunge || ed ? {
+            and Pop's values are the same Label/XS in `font/ui`). */}
+        <span style={grunge || ed || pop ? {
           fontFamily: s.ui, fontSize: s.labelXs, lineHeight: 1.26, letterSpacing: s.dls,
           textTransform: 'uppercase', overflowWrap: 'break-word', minHeight: '2.52em',
         } : labelStyle(s, s.labelLg, { whiteSpace: 'normal', overflowWrap: 'break-word', minHeight: '2.2em' })}>{value}</span>
@@ -5382,25 +5463,46 @@ function Bio({ s }) {
       <div style={{
         display: 'flex', flexDirection: s.mob ? 'column' : 'row',
         alignItems: s.mob ? 'flex-start' : 'flex-end',
-        gap: u(s.mob ? 10 : 40), overflow: 'hidden',
+        // Pop's scribble hangs 5 past the band's foot, where the frame draws
+        // it as Frame 258's child, outside the band's clip.
+        gap: u(s.mob ? 10 : 40), overflow: pop ? 'visible' : 'hidden',
         padding: ed ? `0 ${pad} ${u(24)}` : `${u(24)} ${pad}`,
       }}>
         {/* Display/SM at 50 wraps "Kai Mercer" in the 179 cap at 1440, as the
-            frame does; 40 and 32 hold it on one line. Under Editorial the
-            name wraps between words and shrinks only when its widest word
+            frame does; 40 and 32 hold it on one line. Under Editorial and Pop
+            the name wraps between words and shrinks only when its widest word
             (`s.cardNameEms`, HeaderV2's card rule) would outrun the cap:
             Gloock's MERCER is 4.05 ems, 149.5 in the 146.8 cap at 1440, where
             it broke before its R (display-face.md step 4, layout 3). */}
         <div style={{
           flex: s.mob ? 'none' : '1 0 0', width: s.mob ? '100%' : undefined,
           minWidth: 0, maxWidth: u(179),
-          ...(ed && s.cardNameEms ? { containerType: 'inline-size' } : null),
+          ...((ed || pop) && s.cardNameEms ? { containerType: 'inline-size' } : null),
+          ...(pop ? { position: 'relative' } : null),
         }}>
           <p style={distressed(s, {
             margin: 0, fontFamily: s.display, lineHeight: facedLh(s, 1),
-            fontSize: faced(s, ed && s.cardNameEms ? `min(${s.dispSm}, calc(100cqi / ${s.cardNameEms}))` : s.dispSm),
+            fontSize: faced(s, (ed || pop) && s.cardNameEms ? `min(${s.dispSm}, calc(100cqi / ${s.cardNameEms}))` : s.dispSm),
             letterSpacing: s.dls, color: grunge || ed ? s.tx : s.ac, wordBreak: 'break-word', ...upper,
+            // Titan sits 0.13–0.15em low against the frame's ink at lh 1,
+            // top and floor alike (scanned at all three widths).
+            ...(pop ? { position: 'relative', top: '-0.14em' } : null),
           })}>{brand()}</p>
+          {/* Pop's scribble (`scheme/1/tag1/bg`, lime) is the hero's stroke at
+              0.3455, 114.48 × 32.82, hung off the name's box rather than its
+              glyphs: its top 3.82 above the box's foot and 32.26 in at 1440
+              and 768 (the 768 master keeps the desktop's numbers, and its
+              one-line name stands on the same floor), 6.41 above and 57.52
+              in at 390. */}
+          {pop && (
+            <svg viewBox="0 0 331.36 95" aria-hidden="true" style={{
+              position: 'absolute', display: 'block', overflow: 'visible', pointerEvents: 'none',
+              left: u(s.mob ? 57.52 : 32.26), top: `calc(100% - ${u(s.mob ? 6.41 : 3.82)})`,
+              width: u(114.48), height: u(32.82),
+            }}>
+              <path d={POP_SCRIBBLE_D} fill={s.chips[0].bg} />
+            </svg>
+          )}
         </div>
         <div style={row(u(s.mob ? 52 : 100), {
           flex: s.mob ? 'none' : '1 0 0', width: s.mob ? '100%' : undefined,
@@ -5420,12 +5522,48 @@ function Bio({ s }) {
     // 1.6 above Lime's; its 390 centre is Lime's to the hundredth.
     const sealBox = 125.37
     const sealTop = grunge ? (tab ? 90.08 : 86.08) : tab ? 91.69 : 87.7
+    // Pop's seal (`Layer_1`, Figma −19.5 → CSS +19.5) is SealBadge's Pop arm
+    // on its nested Scheme 4: a `sem/bg` blue disc, the globe, the name and
+    // the dots in `text/2` yellow, the smiley `text/1` teal with `text/3`
+    // white features. At 1440 its turned box sits flush in the instance's
+    // top-right corner, so the 174.8 disc's centre is 111.56 in from the
+    // card's right and down from its top. The 768 master keeps the desktop's
+    // x in its 708 instance, which stands the disc 125.8 past the card and
+    // has the Section's clip cut it to a sliver at the edge — a leak that
+    // reads as a defect, so 768 takes the desktop's corner. The 390 seal
+    // (62.69) is Lime's seat to the hundredth, over the photograph.
+    const S4 = pop ? s.onScheme[4] : null
     const seal = (
-      <SealBadge s={s} classic={!grunge} hue={s.ac} ink={s.bg} size={(s.mob ? 62.68 : sealBox) * z}
-                 tilt={grunge ? 26.06 : 32.38}
+      <SealBadge s={s} classic={!grunge && !pop} hue={pop ? S4.bg : s.ac} ink={pop ? S4.tx : s.bg}
+                 face={pop ? S4.ac : undefined} features={pop ? S4.text3 : undefined}
+                 size={(pop ? (s.mob ? 62.69 : 174.8) : s.mob ? 62.68 : sealBox) * z}
+                 tilt={grunge ? 26.06 : pop ? 19.5 : 32.38}
                  style={s.mob
                    ? { right: u(30.76), top: u(52.51) }
+                   : pop ? { right: u(24.16), top: u(24.16) }
                    : { left: u(grunge ? 51.17 : 42.9), top: u(sealTop) }} />
+    )
+    // Pop's sparkle (90 × 91, Figma 17.93 → CSS −17.93), the calendar's
+    // drawing in Scheme 1's teal `tag4` (the frame's one raw paint). It is
+    // the instance's child, seated by its centre: on the bar's top edge, 45
+    // above the card's foot and 69.18 in, at 1440; the 768 master keeps the
+    // desktop's y in its taller card, 75 above the foot. It is anchored to
+    // the card's foot, so a longer bio does not walk it off the bar. At 390
+    // it stands by the card's right edge, centred (334.92, 400), and the
+    // card's own clip cuts it at 370 where the Section's does. There it sits
+    // beside the frame's hand-broken stats, which our one-line values run
+    // under ("Manchester, UK"), so at 390 it stands behind the card's content
+    // (−1 in the card, which isolates under Pop), layout 1's scribble rule.
+    const popSparkle = pop && (
+      <svg viewBox="0 0 90 91" aria-hidden="true" style={{
+        position: 'absolute', display: 'block', pointerEvents: 'none', zIndex: s.mob ? -1 : undefined,
+        width: u(90), height: u(91), transform: 'rotate(-17.93deg)',
+        ...(s.mob
+          ? { left: u(334.92 - 45), top: u(400 - 45.5) }
+          : { left: u(69.18 - 45), bottom: u((tab ? 75 : 45) - 45.5) }),
+      }}>
+        <path d={POP_SPARKLE_D} fill={s.chips[3].bg} />
+      </svg>
     )
     // Editorial's sparkle, `text/1` terracotta (not layout 1's blush). At 1440
     // and 768 it is the card's (38.28, 713), 106 down the about band (the
@@ -5438,35 +5576,38 @@ function Bio({ s }) {
         : { left: u(38.28), top: u(106), width: u(108), height: u(109) }} />
     )
 
+    // Pop's about band FILLs a card the 1440 and 768 instances state at 882
+    // and 912, so it is 253 / 283 at the least; it pads 32 at 390 too.
     const about = (
       <div style={{
         display: 'flex', alignItems: 'flex-start', gap: u(40), overflow: 'hidden',
-        padding: `${u(24)} ${pad}`, position: 'relative',
-        ...(s.mob ? null : { minHeight: u(ed ? 106 + 109 + 24 : sealTop + sealBox + 24) }),
+        padding: `${u(24)} ${pop ? u(32) : pad}`, position: 'relative',
+        ...(s.mob ? null : { minHeight: u(pop ? (tab ? 283 : 253) : ed ? 106 + 109 + 24 : sealTop + sealBox + 24) }),
       }}>
         {!s.mob && <div style={{ width: u(188), height: u(64), flex: 'none' }} />}
         <div style={col(u(12), { flex: '1 0 0', minWidth: 0, color: s.tx })}>
-          {s.aboutLabel && <span style={chipType}>[ {s.aboutLabel} ]</span>}
+          {s.aboutLabel && <span style={{ ...chipType, ...labelInk }}>[ {s.aboutLabel} ]</span>}
           <p style={{ margin: 0, fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5 }}>{s.bioP1}</p>
           {s.bioP2 && (
             <p style={{ margin: 0, fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5 }}>{s.bioP2}</p>
           )}
         </div>
-        {!s.mob && (ed ? sparkle : seal)}
+        {!s.mob && !pop && (ed ? sparkle : seal)}
       </div>
     )
 
     const card = (
       <div style={{
         position: 'relative', background: s.box1, color: s.tx, overflow: 'hidden',
-        borderRadius: ed ? 0 : u(s.mob ? (grunge ? 15 : 60) : 50), paddingBottom: u(40),
+        borderRadius: ed ? 0 : u(s.mob ? (grunge ? 15 : pop ? 30 : 60) : 50), paddingBottom: u(40),
         ...col('0', { alignItems: 'stretch' }),
         ...(ed && s.mob ? { margin: `0 calc(-1 * ${s.padX})` } : null),
+        ...(pop ? { isolation: 'isolate' } : null),
       }}>
         <div style={{ position: 'relative', padding: u(s.mob ? 10 : 30), ...row('0') }}>
           <div style={{
             position: 'relative', flex: '1 0 0', minWidth: 0, overflow: 'hidden',
-            height: u(s.mob ? 259 : 380), borderRadius: ed ? 0 : u(grunge ? 15 : 55), background: s.box3,
+            height: u(s.mob ? 259 : 380), borderRadius: ed ? 0 : u(grunge || pop ? 15 : 55), background: s.box3,
           }}>
             {/* Grunge's fill is `CROP`, which honours its transform: the
                 drummer's rows 16.9–55%, full width. At desktop that is a
@@ -5478,29 +5619,36 @@ function Bio({ s }) {
                 against the render). The 768 squashes that band as Grunge's
                 does; a cover sweep peaks at 16% (0.68; the band's centre,
                 14.1%, gives 0.66). 390 centred. The well is ink, so the
-                empty slot's initials are paper. */}
+                empty slot's initials are paper. Pop's is `CROP` once more,
+                rows 6.4–42.1% of `popStage`: a cover at 10% at desktop
+                (0.994 against the render), the squashed 768 band's broad
+                sweep peak 7.5% (0.565), 390 centred (0.992). Its well is
+                black, so its initials are white. */}
             <div style={{ position: 'absolute', inset: 0 }}>
-              <Photo s={s} initialsSize={desk ? 64 : tab ? 56 : 40} ink={ed ? s.bg : s.tx}
-                     style={(grunge || ed) && !s.mob
-                       ? { objectPosition: `50% ${ed ? (tab ? 16 : 19.2) : tab ? 22.7 : 27.3}%` }
+              <Photo s={s} initialsSize={desk ? 64 : tab ? 56 : 40} ink={ed || pop ? s.bg : s.tx}
+                     style={(grunge || ed || pop) && !s.mob
+                       ? { objectPosition: `50% ${pop ? (tab ? 7.5 : 10) : ed ? (tab ? 16 : 19.2) : tab ? 22.7 : 27.3}%` }
                        : undefined} />
             </div>
             {grunge
               ? <Grain s={s} exact grunge blend="screen" opacity={1} />
-              : !ed && (
+              : !ed && !pop && (
                 <span style={{
                   position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
                   boxShadow: `inset 0 0 ${u(34)} ${s.ac}`,
                 }} />
               )}
           </div>
-          {s.mob && !ed && seal}
+          {s.mob && !ed && !pop && seal}
         </div>
+        {/* Pop's column has no hairline: the about band stands on the head
+            band, and the 5px `text/1` bar closes it. */}
         <div style={col(u(s.mob ? 20 : ed ? 23 : 0), { alignItems: 'stretch' })}>
           {head}
-          {rule}
+          {!pop && rule}
           {about}
-          {!ed && rule}
+          {!ed && !pop && rule}
+          {pop && <div style={{ height: u(5), background: s.ac, flex: 'none' }} />}
         </div>
         {/* The ring is Figma's inside stroke, so an overlay painted over the
             children rather than a border that would grow the card. */}
@@ -5512,6 +5660,10 @@ function Bio({ s }) {
               boxShadow: `inset 0 0 0 1px ${s.stroke1}`,
             }} />
           ))}
+        {/* Pop's stickers are the instance's last children, painted over the
+            card; inside it, so its clip is the 390 Section's. */}
+        {popSparkle}
+        {pop && seal}
       </div>
     )
 
@@ -5525,10 +5677,13 @@ function Bio({ s }) {
             letterSpacing: s.dls, textTransform: 'uppercase', color: s.tx,
           }}>{s.initials} Bio</span>
           {/* Grunge's head is one tone, `sem/text/1` throughout: layout 1's
-              word-two accent was that frame's, not the template's. */}
+              word-two accent was that frame's, not the template's. So is
+              Pop's, uppercased at 768 and 390 where the masters type it mixed,
+              and lifted 0.14em, Titan's drop at lh 0.89 (scanned). */}
           <h2 style={distressed(s, {
             margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispLg), lineHeight: facedLh(s, 0.89),
             letterSpacing: s.dls, color: s.ac, ...upper,
+            ...(pop ? { position: 'relative', top: '-0.14em' } : null),
           })}>{s.title}</h2>
         </div>
         {ed ? (
@@ -8364,21 +8519,51 @@ function Media({ s }) {
     // frame's 632 box at 768 too (the 390 column is narrower than it). Gloock
     // sets the 1440 head on three lines where the frame's two (accepted,
     // display-face.md step 4, layout 3).
-    if (s.limeTree) {
+    //
+    // Pop layout 3 (964:68770 card + 964:68771 list, head 964:68763 ·
+    // 984:15374 + 984:15375 at 708 · 984:15405 + 984:15406 at 370) is the
+    // tree a fourth time, on Scheme 1 with the card's instance on Scheme 2, so
+    // `pop` names its deltas and the card is a fourth `G` arm off
+    // `s.onScheme[2]`: its fill binds `sem/box/1` `#D7FF23` (not `sem/bg`),
+    // radius 50 at every width, unringed, no effect; the played bars
+    // `text/1`, pink; the idle bars `box/2`; every ink `text/2`, violet; and
+    // the disc binds `box/1` too — the card's own fill, so only its glyph
+    // shows. The list is layout 2's (`popRow` in `v1`'s block): five pills on
+    // Schemes 3 / 4 / 5 / 7 / 8, ringed 4px inside, inked `text/1`, 10 apart
+    // and 10 under the counter, round 64 discs on the row's `box/2` in a 4px
+    // `scheme/1/stroke/2` lime ring. The rows `FILL` the list's stated 678 /
+    // 647 — 116.8 / 110.8 a row, where every twin's 1440 list is 424 — and a
+    // pill's height is its shape, so each row pins at that division result
+    // (the layout-2 repertoire's rule) rather than the list taking 678 as a
+    // minimum, which would stand one track as a 512-tall stadium. The head
+    // keeps the 632 box at 1440 and 768, uppercase in Titan where the narrow
+    // masters type it mixed (decision 2), so it sets two lines at 390 where
+    // the master's one.
+    if (s.limeTree || s.pop) {
       const grunge = s.grunge
       const ed = s.editorial
-      // `onScheme` exists under Editorial alone.
-      const S2 = ed ? s.onScheme[2] : null
-      const G = ed
-        ? { card: S2.box1, dusk: S2.box2, disc: S2.box2, radius: 0, ring: undefined, hot: S2.ac, ink: S2.tx }
-        : grunge
-          ? { card: '#353535', dusk: '#222222', disc: '#000000', radius: u(15), ring: `inset 0 0 0 1px ${s.stroke2}` }
-          : { card: '#263020', dusk: '#43523B', disc: s.box2, radius: u(50), ring: undefined }
-      const card = G.card // Scheme 2 `sem/box/3` (Editorial's `box/1`)
+      const pop = s.pop
+      // `onScheme` exists under Editorial and Pop alone.
+      const S2 = ed || pop ? s.onScheme[2] : null
+      const G = pop
+        ? { card: S2.box1, dusk: S2.box2, disc: S2.box1, radius: u(50), ring: undefined, hot: S2.ac, ink: S2.tx }
+        : ed
+          ? { card: S2.box1, dusk: S2.box2, disc: S2.box2, radius: 0, ring: undefined, hot: S2.ac, ink: S2.tx }
+          : grunge
+            ? { card: '#353535', dusk: '#222222', disc: '#000000', radius: u(15), ring: `inset 0 0 0 1px ${s.stroke2}` }
+            : { card: '#263020', dusk: '#43523B', disc: s.box2, radius: u(50), ring: undefined }
+      const card = G.card // Scheme 2 `sem/box/3` (Editorial's and Pop's `box/1`)
       const dusk = G.dusk // Scheme 2 `sem/box/2` — the idle bars
       const hot = G.hot ?? s.ac // the played bars
       const cardInk = G.ink ?? s.tx
-      const disp = grunge || ed ? { textTransform: 'uppercase' } : null
+      // Pop's rows by index, each node's own scheme and the stroke it names —
+      // layout 2's `popRow`, read again off these masters' `explicitVariableModes`.
+      const popRow = (i) => {
+        const [n, ring] = [[3, 'stroke2'], [4, 'stroke1'], [5, 'stroke2'], [7, 'stroke2'], [8, 'stroke1']][i % 5]
+        const S = s.onScheme[n]
+        return { S, ring: S[ring] }
+      }
+      const disp = grunge || ed || pop ? { textTransform: 'uppercase' } : null
       // Sienna Vale's 10, 10 dash in `sem/stroke/2`, at a row's foot.
       const footDash = ed ? <DashRule dash={10 * z} colour={s.stroke2} /> : null
       const clip = { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }
@@ -8391,7 +8576,8 @@ function Media({ s }) {
       }
       const titleType = {
         fontFamily: s.display,
-        fontSize: faced(s, ed ? (desk ? u(32) : tab ? '25px' : '23px') : desk ? u(36) : tab ? '28px' : '26px'),
+        fontSize: faced(s, pop ? (desk ? u(28) : tab ? '22px' : '20px')
+          : ed ? (desk ? u(32) : tab ? '25px' : '23px') : desk ? u(36) : tab ? '28px' : '26px'),
         lineHeight: facedLh(s, 1.1), letterSpacing: s.dls, ...disp, ...clip,
       }
 
@@ -8406,7 +8592,11 @@ function Media({ s }) {
           <h2 style={distressed(s, {
             margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispLg), lineHeight: facedLh(s, 0.89),
             letterSpacing: s.dls, color: s.ac, ...disp,
-            maxWidth: ed ? u(632.156) : desk ? (grunge ? '4.6em' : u(632.156)) : undefined,
+            maxWidth: ed || pop ? u(632.156) : desk ? (grunge ? '4.6em' : u(632.156)) : undefined,
+            // Titan sits 0.13–0.15 token-em low at lh 0.89, top and floor
+            // alike (scanned against the 1440 master's capitals), so it is
+            // lifted, as the header's and the bio's heads are.
+            ...(pop ? { position: 'relative', top: '-0.14em' } : null),
           })}>{s.title}</h2>
         </div>
       )
@@ -8457,11 +8647,12 @@ function Media({ s }) {
       )
 
       const gap = s.mob ? '14px' : u(20)
+      // Pop's pills stand 10 apart, and 10 under the counter row.
       return (
         <div style={col(u(30), { alignItems: 'stretch' })}>
           {limeHead}
           {limeCard}
-          <div style={col('0', { alignItems: 'stretch' })}>
+          <div style={col(pop ? u(10) : '0', { alignItems: 'stretch' })}>
             <div style={row(u(12), {
               flex: 'none', justifyContent: s.listLabel ? 'space-between' : 'flex-end', padding: `${u(16)} 0`, color: s.tx,
               position: ed ? 'relative' : undefined,
@@ -8476,12 +8667,17 @@ function Media({ s }) {
             {s.tracks.map((t, i) => {
               const dur = t.dur && t.dur !== t.rel ? t.dur : ''
               const on = chosen && i === at
+              // Pop's row is a pill on its own scheme's `sem/bg`, ringed 4px
+              // inside in the stroke its node names, every leaf its `text/1`,
+              // pinned at its master's division result.
+              const R = pop ? popRow(i) : null
               return (
                 <div key={i} onClick={onPick(i)} style={{
-                  flex: 'none', overflow: 'hidden', color: s.tx,
-                  boxShadow: ed ? undefined : `inset 0 1px 0 ${s.stroke1}`,
+                  flex: 'none', overflow: 'hidden', color: R ? R.S.ac : s.tx,
+                  boxShadow: R ? `inset 0 0 0 ${u(4)} ${R.ring}` : ed ? undefined : `inset 0 1px 0 ${s.stroke1}`,
                   position: ed ? 'relative' : undefined,
-                  padding: `${u(14)} 0`, cursor: s.live ? 'pointer' : undefined,
+                  ...(R ? { background: R.S.bg, borderRadius: '999px', minHeight: desk ? u(116.8) : '110.8px' } : null),
+                  padding: `${u(14)} ${R ? u(30) : 0}`, cursor: s.live ? 'pointer' : undefined,
                   ...row(gap),
                 }}>
                   {/* A 21 slot, the widest of the frame's hugging numbers, so
@@ -8494,10 +8690,21 @@ function Media({ s }) {
                       ? <Pause size={parseFloat(s.bodyLg)} fill="currentColor" strokeWidth={0} />
                       : <Play size={parseFloat(s.bodyLg)} fill="currentColor" strokeWidth={0} />)
                     : t.n}</span>
+                  {/* Pop's cover is a disc on the row's own `box/2`, under a
+                      4px inside ring of `scheme/1/stroke/2` — lime, named
+                      outright — that paints over the photograph. */}
                   <span style={{
                     width: u(64), height: u(64), flex: 'none', display: 'block', position: 'relative',
-                    borderRadius: u(4), overflow: 'hidden', background: s.box2,
-                  }}><Photo s={s} initialsSize={16} src={t.img} ink={s.tx} /></span>
+                    borderRadius: R ? '999px' : u(4), overflow: 'hidden', background: R ? R.S.box2 : s.box2,
+                  }}>
+                    <Photo s={s} initialsSize={16} src={t.img} ink={R ? R.S.ac : s.tx} />
+                    {R && (
+                      <span aria-hidden style={{
+                        position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
+                        boxShadow: `inset 0 0 0 ${u(4)} ${s.onScheme[1].stroke2}`,
+                      }} />
+                    )}
+                  </span>
                   {/* Display/Title over Body/SM. */}
                   <span style={col(u(4), { flex: 1, minWidth: 0, alignItems: 'stretch' })}>
                     <span style={distressed(s, titleType)}>{t.name}</span>
@@ -10971,26 +11178,55 @@ function Pricing({ s }) {
     // Sienna Vale's 32 × 0.82 / 25 / 23. The instance's 1px `sem/stroke/1`
     // ring is on all three masters, ink on the paper page, so Grunge's
     // overlay draws it.
-    if (s.limeTree) {
+    //
+    // Pop — the same three masters in Pop's mode (964:68777 at 1440,
+    // 984:15381 at 768, 984:15412 at 390), every paint bound. The walk
+    // (bindings with their collection, all three widths) found the twins'
+    // tree node for node, on Scheme 1 with no Device override and no effect
+    // on any node, the featured `row` nested **Scheme 2** at every width.
+    // The geometry is Lime's — the row's 50 corner and 38 padding, the 240
+    // tablet includes panel — and the bindings are Editorial's names in Pop's
+    // schemes: a plain row is the page's white in a 1px `sem/stroke/2`
+    // (`s.stroke2`, lime), and every leaf of the featured one reads
+    // `s.onScheme[2]` — its fill `sem/bg` lime #C6F200 (the row binds `sem/bg`,
+    // not the Scheme 2 card's `box/1`), its ring `stroke/2` pink, its inks
+    // `text/2` violet, its numeral `text/1` pink, its badge `box/1` #D7FF23
+    // lettered `text/2`, and its pill `text/1` lettered and disced in `sem/bg`
+    // — pink round lime. The capsule is the twins' five keys to the node. The
+    // plain row's pill is `text/1` pink lettered and disced in `sem/bg` white,
+    // which is not `BookPill`'s default under Pop — Scheme 1's `pillBg` is
+    // black — so the arm passes `s.ac` (`pillBg`). The heading is
+    // Display/Title, Pop's 28 × 0.82 / 22 / 20. The instance's 1px
+    // `sem/stroke/1` ring is on all three masters, pink on the white page —
+    // layout 2's was narrow only — so Grunge's overlay draws it.
+    if (s.limeTree || s.pop) {
       const grunge = s.grunge
       const ed = s.editorial
+      const pop = s.pop
       const S3 = ed ? s.onScheme[3] : null
+      const S2 = pop ? s.onScheme[2] : null
       const ring = (c) => `inset 0 0 0 1px ${c}`
       // Lime's arm is this block's own literals, so theme 1 digests to zero.
-      // Editorial's three extra leaves fall back to the twins' reading.
-      const G = grunge
-        ? { radius: 15, pad: 28, incW: 248, rowRing: s.stroke2, featRing: '#FFFFFF',
-            featInk: s.tx, featNum: '#000000', badgeBg: '#9E1F17', badgeFg: '#FFFFFF' }
-        : ed
-          ? { radius: 0, pad: 28, incW: 248, rowRing: s.stroke2, featRing: S3.stroke2,
-              featInk: S3.tx, featNum: S3.ac, badgeBg: S3.box1, badgeFg: S3.tx,
-              featBg: S3.bg, featPillBg: S3.ac, featPillFg: S3.bg }
-          : { radius: 50, pad: 38, incW: 240, rowRing: s.ac, featRing: s.bg,
-              featInk: s.bg, featNum: s.bg, badgeBg: '#CCFA61', badgeFg: s.bg }
+      // Editorial's three extra leaves fall back to the twins' reading, and so
+      // does Pop's fourth, the plain row's pill.
+      const G = pop
+        ? { radius: 50, pad: 38, incW: 240, rowRing: s.stroke2, featRing: S2.stroke2,
+            featInk: S2.tx, featNum: S2.ac, badgeBg: S2.box1, badgeFg: S2.tx,
+            featBg: S2.bg, featPillBg: S2.ac, featPillFg: S2.bg, pillBg: s.ac }
+        : grunge
+          ? { radius: 15, pad: 28, incW: 248, rowRing: s.stroke2, featRing: '#FFFFFF',
+              featInk: s.tx, featNum: '#000000', badgeBg: '#9E1F17', badgeFg: '#FFFFFF' }
+          : ed
+            ? { radius: 0, pad: 28, incW: 248, rowRing: s.stroke2, featRing: S3.stroke2,
+                featInk: S3.tx, featNum: S3.ac, badgeBg: S3.box1, badgeFg: S3.tx,
+                featBg: S3.bg, featPillBg: S3.ac, featPillFg: S3.bg }
+            : { radius: 50, pad: 38, incW: 240, rowRing: s.ac, featRing: s.bg,
+                featInk: s.bg, featNum: s.bg, badgeBg: '#CCFA61', badgeFg: s.bg }
       // Anton stands in for Stones Crush, which is all capitals: every display
       // site scales and cases at its own site (layout 1, session 0), and so
-      // does Gloock under Editorial, at its `faceK` of 0.967.
-      const disp = (lh) => (grunge || ed
+      // do Gloock under Editorial, at its `faceK` of 0.967, and Titan One
+      // under Pop, at 0.98.
+      const disp = (lh) => (grunge || ed || pop
         ? { lineHeight: facedLh(s, lh), textTransform: 'uppercase' }
         : { lineHeight: lh })
       const chip = {
@@ -11056,6 +11292,12 @@ function Pricing({ s }) {
                     letterSpacing: s.dls, color: feat ? G.featNum : s.ac, whiteSpace: 'nowrap',
                     ...(desk ? {} : { flex: '1 0 auto' }),
                     ...(ed ? { position: 'relative', top: '-0.08em' } : {}),
+                    // Titan sits 0.14em low at lh 1 (Pop's every display
+                    // site): unlifted, its floor stood 0.101 / 0.104 / 0.097
+                    // token-em above the box's foot where the frame's stands
+                    // 0.234 / 0.24 / 0.24, and 1.75 / 2.75 / 3.76 under the
+                    // `£`'s where the frame's stands 3.7 / 2.6 / 0.7 over it.
+                    ...(pop ? { position: 'relative', top: '-0.14em' } : {}),
                   })}>{t.amount}</span>
                   {/* A range's second half (JP-074): the lead's face, and free
                       to wrap where the lead holds its line. */}
@@ -11074,11 +11316,14 @@ function Pricing({ s }) {
               {/* Plain: `BookPill`'s Lime defaults exactly (lime box, ink label
                   and disc, lime arrow). Featured: the pair turned round, a
                   lime disc round an ink arrow — the frame's two disc SVGs.
+                  Under Pop the plain pill passes `G.pillBg`, `s.ac`, since
+                  Scheme 1's `pillBg` is black where the frame's is pink.
                   The label is `rowCta`, the frame's "Book": an emptied
                   one drops the pill, a long one wraps (JP-070). */}
               {!!s.tierRowCta && (
                 <BookPill s={s} to={s.tierBookTo} full={s.mob} label={s.tierRowCta}
-                          {...(feat ? { bg: G.featPillBg ?? s.bg, fg: G.featPillFg ?? s.ac } : {})}
+                          {...(feat ? { bg: G.featPillBg ?? s.bg, fg: G.featPillFg ?? s.ac }
+                            : G.pillBg ? { bg: G.pillBg } : {})}
                           style={{ whiteSpace: 'normal', maxWidth: '100%', boxSizing: 'border-box' }} />
               )}
             </div>
@@ -11117,8 +11362,15 @@ function Pricing({ s }) {
             {!!s.title && (
               <h2 style={distressed(s, {
                 margin: 0, fontFamily: s.display,
-                fontSize: faced(s, ed ? (desk ? u(32) : tab ? '25px' : '23px') : desk ? u(36) : tab ? '28px' : '26px'),
+                fontSize: faced(s, ed ? (desk ? u(32) : tab ? '25px' : '23px')
+                  : pop ? (desk ? u(28) : tab ? '22px' : '20px')
+                    : desk ? u(36) : tab ? '28px' : '26px'),
                 ...disp(1.1), letterSpacing: s.dls, color: s.tx,
+                // Titan at Display/Title takes 0.1em, the calendar's "BOOK
+                // ME" again: unlifted its floor stood 0.176 / 0.179 / 0.137
+                // token-em up the line box against the frame's 0.272 /
+                // 0.258 / 0.29.
+                ...(pop ? { position: 'relative', top: '-0.1em' } : {}),
               })}>{s.title}</h2>
             )}
             {!!s.pricingIntro && (
@@ -11188,8 +11440,9 @@ function Pricing({ s }) {
               The section root is the nearest positioned ancestor, so `inset: 0`
               is its box; `pointerEvents` off, or the published capsule would
               click the overlay. Lime's masters carry no such stroke;
-              Editorial's do, ink on the paper page. */}
-          {(grunge || ed) && (
+              Editorial's do, ink on the paper page, and Pop's, pink on the
+              white page, at every width. */}
+          {(grunge || ed || pop) && (
             <span aria-hidden style={{
               position: 'absolute', inset: 0, pointerEvents: 'none',
               boxShadow: `inset 0 0 0 1px ${s.stroke1}`,
@@ -13596,9 +13849,27 @@ function Repertoire({ s }) {
     // `faced` (Gloock's `faceK`) at their sites. The 390 pager's two pills
     // are **square** too (radius 0, where the twins' are 60), dashed 5, 5 in
     // `sem/text/1`.
-    if (s.limeTree) {
+    //
+    // Pop (964:68775 / 984:15376 / 984:15407, plans/pop/layout-3.md) is the
+    // tree a fourth time, 57 / 57 / 63 nodes, on the white page (Scheme 1)
+    // with its three cards on **Schemes 2 / 3 / 4** — lime, pink and blue by
+    // the same rendered place (the 390 master centres the pink card). Every
+    // leaf is a `sem/*` binding in the card's own scheme, Editorial's
+    // reading, so each seat is `s.onScheme[n]` again: `box/1` the card,
+    // `text/2` its title, songs, times and link (violet / violet / yellow),
+    // `text/1` the meta line (pink / lime / teal), `stroke/1` its ring and
+    // the rows' foot rules (violet / violet / teal). The deltas: the ring is
+    // **4px** (`border/default`) where the rules stay 1, Lime's 34 padding and
+    // 50 corner, and the rows divide to **50.25** / 57.5 / 57.5 (the card is
+    // 412 at 1440, its head being the frame's Chunko, 73 tall). The head and
+    // titles are uppercase in Titan through `faced` (`faceK` 0.98), and the
+    // head is lifted Titan's 0.14em. Head `s.tx` and the 390 pills' 1px
+    // `s.ac` ring at radius 60 are the frame's `sem/text/2` and `sem/text/1`
+    // already, so they need nothing.
+    if (s.limeTree || s.pop) {
       const grunge = s.grunge
       const ed = s.editorial
+      const pop = s.pop
       const mist = '#D5E3B2'  // Scheme 4 `sem/box/1`
       const lime3 = '#CCFA61' // Scheme 3 `sem/box/1`
       const dark = { bg: mist, ink: s.bg, acc: s.bg, edge: '#15180F26' }
@@ -13607,7 +13878,12 @@ function Repertoire({ s }) {
         const S = s.onScheme[n]
         return { bg: S.box1, ink: S.tx, acc: S.ac, edge: S.stroke1 }
       }
-      const G = grunge ? {
+      // `ringW` is Pop's alone: the card's ring weight, where the twins' is a
+      // hairline (`ring` on a seat is its colour, Grunge's).
+      const G = pop ? {
+        seats: [seat(2), seat(3), seat(4)],
+        pad: 34, radius: 50, rowH: desk ? 50.25 : 57.5, ringW: 4,
+      } : grunge ? {
         seats: [blk, { bg: '#9E1F17', ink: s.tx, acc: '#000000', edge: '#00000026', ring: '#FFFFFF' }, blk],
         pad: 24, radius: 15, rowH: desk ? 44.5 : 62.5,
       } : ed ? {
@@ -13640,7 +13916,7 @@ function Repertoire({ s }) {
       // length rides that line's top, lowered by half the two line heights'
       // difference: centred on the title's first line, which is where the
       // old centring put it beside a one-line title.
-      const disp = (lh) => grunge || ed ? { lineHeight: facedLh(s, lh), textTransform: 'uppercase' } : { lineHeight: lh }
+      const disp = (lh) => grunge || ed || pop ? { lineHeight: facedLh(s, lh), textTransform: 'uppercase' } : { lineHeight: lh }
       const titleSize = faced(s, s.list)
       const lenDrop = `calc((${titleSize} * ${disp(1.2).lineHeight} - ${s.bodySm} * 1.4) / 2)`
       const body = (size, lh, extra) => ({
@@ -13653,7 +13929,7 @@ function Repertoire({ s }) {
         const more = st.songs.length > rows.length
         return (
           <div key={st.label} style={col(u(10), {
-            background: k.bg, color: k.ink, boxShadow: ed ? undefined : `inset 0 0 0 1px ${k.ring || k.edge}`,
+            background: k.bg, color: k.ink, boxShadow: ed ? undefined : `inset 0 0 0 ${G.ringW ? u(G.ringW) : '1px'} ${k.ring || k.edge}`,
             borderRadius: u(G.radius), padding: u(G.pad), overflow: 'hidden', minWidth: 0,
             position: ed ? 'relative' : undefined,
           })}>
@@ -13708,6 +13984,9 @@ function Repertoire({ s }) {
           <h2 style={distressed(s, {
             margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispLg), ...disp(0.89),
             letterSpacing: s.dls, color: s.tx,
+            // Titan's glyph floor, scanned: 0.12–0.15 token-em low at both
+            // ends against the frame's Chunko, the header's and media's heads.
+            ...(pop ? { position: 'relative', top: '-0.14em' } : null),
           })}>{s.title}</h2>
 
           {sets.length === 0 ? (
@@ -15671,6 +15950,20 @@ function Gallery({ s }) {
   // the 390 one Grunge's 83 again ((587 − 120 − 43 − 32 − 60) / 4); 768 states
   // the same 660 grid. The tiles keep the twins' centred cover: the frame's own
   // FILL on our stage shot (its third tile) is centred at every width.
+  //
+  // **Pop (964:68776 · 984:15380 · 984:15411) is that tree a fifth time**, 17
+  // nodes against both twins', so it widens the same ternaries under `pop`.
+  // Pop · Scheme 2 on all three roots, no Device override, no effect, and every
+  // paint bound, so the seat does the paint again: the sheet `sem/bg` (`s.bg`,
+  // lime), the head `sem/text/1` (`s.ac`, pink) at Display/LG 82 / 51 / 36,
+  // uppercased and lifted 0.14em (Titan sits low, as on every Pop head), and
+  // each well `sem/box/3` (`s.box3`, #8CA51E). The ring names
+  // **`scheme/1/stroke/2`** from inside the seat, lime on the lime sheet, at
+  // **5px** INSIDE where the twins draw 1, so it reads `s.onScheme[1].stroke2`
+  // on the twins' overlay, scaled. The tiles round at Lime's 30. The desktop
+  // tile is **326 / 185.333**, the residue over this page's 73 head
+  // ((789 − 112 − 73 − 32 − 16) / 3), and the 390 one **111.333 / 83.75**
+  // ((579 − 120 − 32 − 32 − 60) / 4); 768 states the same 660 grid.
   if (s.v2) {
     const desk = !s.narrow
     const tab = isTablet(s)
@@ -15682,26 +15975,31 @@ function Gallery({ s }) {
     // chosen against the page and need not read on the sheet.
     const grunge = s.grunge
     const ed = s.editorial
-    // Editorial's sheet is its seat's own ground, the root's `s.bg`.
-    const sheet = s.retro ? '#FBF6EA' : s.lime ? s.box1 : grunge ? '#171716' : ed ? s.bg : s.paper
-    const ink = s.retro ? '#111111' : s.limeTree ? s.tx : s.paperFg
+    const pop = s.pop
+    // Editorial's and Pop's sheet is their seat's own ground, the root's `s.bg`.
+    const sheet = s.retro ? '#FBF6EA' : s.lime ? s.box1 : grunge ? '#171716' : (ed || pop) ? s.bg : s.paper
+    const ink = s.retro ? '#111111' : (s.limeTree || pop) ? s.tx : s.paperFg
     const bw = s.retro ? '1px' : s.bw
     // Scheme 2's `box/3` on both designed pages, and a different value in each
     // mode: neither theme has a key for it (Lime layout 3's open question 5).
-    // Under Editorial the section is seated on Scheme 2, so it is `s.box3`.
-    const well = ed ? s.box3 : grunge ? '#353535' : '#263020'
+    // Under Editorial and Pop the section is seated on Scheme 2, so it is
+    // `s.box3`.
+    const well = (ed || pop) ? s.box3 : grunge ? '#353535' : '#263020'
     // The tiles' ring: `scheme/1/stroke/2` under Grunge, `scheme/1/stroke/1`
     // under Lime and Editorial — 1px INSIDE at every width, so it is never
     // scaled. Editorial's names Scheme 1 from inside its Scheme 2 seat, so it is
-    // `onScheme[1]`'s ink, not the seat's paper `s.stroke1`.
-    const ring = ed ? s.onScheme[1].stroke1 : grunge ? s.stroke2 : s.stroke1
+    // `onScheme[1]`'s ink, not the seat's paper `s.stroke1`. Pop's names
+    // `scheme/1/stroke/2` from inside the same seat, lime on the lime sheet, at
+    // 5px: scaled at desktop, as every Pop ring is.
+    const ring = pop ? s.onScheme[1].stroke2 : ed ? s.onScheme[1].stroke1 : grunge ? s.stroke2 : s.stroke1
+    const ringW = pop ? u(5) : '1px'
     const slots = [0, 1, 2, 3, 4, 5, 6]
     const cols = desk ? 4 : 3
     // Each master's own tile, as a ratio: 326 / 181.333, 230.667 / 150 and
     // 111.333 / 107.5. See the note above — these are what each page's stated
     // height left over, so they travel as a shape rather than as a number.
-    const ratio = desk ? 326 / (ed ? 174.6667 : s.lime || grunge ? 171 : 181.3333)
-      : tab ? 230.6667 / 150 : 111.3333 / (grunge || ed ? 83 : s.lime ? 82.75 : 107.5)
+    const ratio = desk ? 326 / (pop ? 185.3333 : ed ? 174.6667 : s.lime || grunge ? 171 : 181.3333)
+      : tab ? 230.6667 / 150 : 111.3333 / (pop ? 83.75 : grunge || ed ? 83 : s.lime ? 82.75 : 107.5)
     const padH = `calc(${s.surplus} + ${u(desk ? 56 : tab ? 30 : 20)})`
     const padV = u(desk ? 56 : 60)
 
@@ -15721,10 +16019,15 @@ function Gallery({ s }) {
     // paper, so its `s.tx` is ink and the twins' reading would put ink controls
     // on an ink scrim: its scrim is the page ink #141414 at .94 (Grunge's
     // reading) and its controls the head's own paper, `s.ac` under the seat.
-    const cream = ed ? s.ac : s.lime || grunge ? s.tx : '#FBF6EA'
+    // Pop's page is white and its `s.tx` violet under the seat, which would
+    // read at 3:1 on a dark scrim, so it takes Editorial's reading in its own
+    // keys: the scrim is its darkest ink, #000000 (Scheme 1's `text/3` and
+    // `active/bg`), at .94, and the controls the head's pink, `s.ac` under the
+    // seat, on pink at 14%.
+    const cream = (ed || pop) ? s.ac : s.lime || grunge ? s.tx : '#FBF6EA'
     const ctlBg = s.lime ? 'rgba(242,255,208,.14)' : grunge ? 'rgba(255,255,255,.14)'
-      : ed ? 'rgba(246,240,232,.14)' : 'rgba(251,246,234,.14)'
-    const scrim = s.lime ? 'rgba(21,24,15,.94)' : grunge ? 'rgba(0,0,0,.94)'
+      : ed ? 'rgba(246,240,232,.14)' : pop ? 'rgba(255,45,160,.14)' : 'rgba(251,246,234,.14)'
+    const scrim = s.lime ? 'rgba(21,24,15,.94)' : (grunge || pop) ? 'rgba(0,0,0,.94)'
       : ed ? 'rgba(20,20,20,.94)' : 'rgba(17,17,17,.94)'
     const ctl = (label, act, Icon, pos) => (
       <button
@@ -15816,9 +16119,10 @@ function Gallery({ s }) {
             and nothing in any master's layout depends on the leak, so it wraps
             here (the testimonials' rule). */}
         <h2 style={distressed(s, {
-          margin: 0, fontFamily: s.display, fontSize: faced(s, tab && !s.limeTree ? s.h1 : s.dispLg),
+          margin: 0, fontFamily: s.display, fontSize: faced(s, tab && !(s.limeTree || pop) ? s.h1 : s.dispLg),
           lineHeight: facedLh(s, 0.89), letterSpacing: s.dls, color: s.ac,
-          ...(grunge || ed ? { textTransform: 'uppercase' } : null),
+          ...(grunge || ed || pop ? { textTransform: 'uppercase' } : null),
+          ...(pop ? { position: 'relative', top: '-0.14em' } : null),
         })}>{s.title}</h2>
         <div style={{
           display: 'grid', gridTemplateColumns: `repeat(${cols}, 1fr)`,
@@ -15831,27 +16135,38 @@ function Gallery({ s }) {
               onClick={s.live && s.images[i] ? () => setPick(i) : undefined}
               style={{
                 aspectRatio: `${ratio}`, overflow: 'hidden', position: 'relative',
-                border: s.limeTree ? undefined : `${bw} solid ${ink}`, borderRadius: u(grunge ? 15 : ed ? 0 : 30),
+                border: (s.limeTree || pop) ? undefined : `${bw} solid ${ink}`, borderRadius: u(grunge ? 15 : ed ? 0 : 30),
                 cursor: s.live && s.images[i] ? 'zoom-in' : undefined,
               }}>
-              <span style={{ position: 'absolute', inset: 0 }}>
+              {/* Pop's ring is the sheet's own lime, so the photograph's
+                  anti-aliased edge, where the tile's round clip cuts it, showed
+                  as a dark arc round each corner, outside a ring that cannot
+                  hide it. Clipped 2px in, the edge lies under the opaque ring,
+                  and the cover box, so the crop, is the frame's. */}
+              <span style={{ position: 'absolute', inset: 0, ...(pop ? { clipPath: `inset(2px round calc(${u(30)} - 2px))` } : null) }}>
                 {/* Placeholder initials only — the masters are photographs
                     throughout and Retro seeds them, so the three sizes are
                     invented, read off each master's own tile width. `ink` is
                     what a section on its own sheet owes the placeholder: the
                     default is `s.muted`, an rgba of the PAGE's text colour,
-                    which on Lime is the same pale lime the sheet is. */}
+                    which on Lime is the same pale lime the sheet is. Pop's
+                    `s.tx` is violet at 2.2:1 on its olive well, so its
+                    initials take the seat's `text/3`, black, at 7.5:1. */}
                 <Photo
                   s={s} src={s.images[i]}
                   initialsSize={desk ? 32 : tab ? 28 : 14}
-                  ink={s.retro ? undefined : s.limeTree ? s.tx : s.paperFg}
-                  style={s.limeTree ? { background: well } : undefined}
+                  ink={s.retro ? undefined : pop ? s.text3 : s.limeTree ? s.tx : s.paperFg}
+                  style={(s.limeTree || pop) ? { background: well } : undefined}
                 />
               </span>
-              {s.limeTree && (
+              {/* The INSIDE ring over the photograph, as the frame paints it.
+                  Pop's is 5px of lime on the lime sheet: invisible as a
+                  colour, but an inset that eats the photograph's edge, so an
+                  overlay and never a border, which would shrink the cover. */}
+              {(s.limeTree || pop) && (
                 <span style={{
                   position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
-                  boxShadow: `inset 0 0 0 1px ${ring}`,
+                  boxShadow: `inset 0 0 0 ${ringW} ${ring}`,
                 }} />
               )}
             </div>
@@ -17871,12 +18186,41 @@ function Calendar({ s }) {
     //     `sem/bg` paper — `BookPill`'s defaults exactly, so Lime's `fg` is not
     //     passed — and its label is **Label/MD** 20 / 14 / 13 (`s.labelMd`) at
     //     lh 1.1, where Lime's is `size/list`.
-    if (s.limeTree) {
+    //
+    // Pop (964:68774 / 984:15379 / 984:15410, in `Frame 300`s padded as
+    // Editorial's) is the same tree a fifth time, node for node at all three
+    // widths, seated on **Scheme 2** — the instance's own mode, and the foot
+    // pill's again — as a lime card on the page's white (the root's
+    // `cardOnPage`), with no Device override and no effect on any node. Every
+    // size is the ramp (display-lg 82 / 51 / 36, display-sm 36 / 29 / 24,
+    // body-lg 16 / 15 / 15, body-md 14 / 13 / 13, body-sm 12, list 20 / 16 /
+    // 15) and every ink the key Lime's block already reads under the seat:
+    // the card `sem/box/1` `#D7FF23` (the Scheme 2 card's binding, not its
+    // `sem/bg`), the type and day letters `text/2` violet, the dots `box/2`
+    // booked, `text/1` pink picked and `box/1` free. The deltas, behind `pop`:
+    //
+    //   · the card's ring is `border/default`, 4px of `sem/stroke/1` violet
+    //     inside, at radius 36 — scaled at desktop, as every Pop ring is;
+    //   · the free dot's ring is a raw 2 (Lime's 2.559, Editorial's 1px), and
+    //     the month arrows' with it;
+    //   · "Book Me" is Display/Title at 28 / 22 / 20, and the three display
+    //     strings are uppercased and lifted (below);
+    //   · the pill is Scheme 2's own: `text/1` pink lettered and disced in
+    //     `sem/bg` lime round a pink arrow — `BookPill`'s defaults under the
+    //     seat, so Lime's `fg={s.box1}` is not passed (it would give the card's
+    //     `#D7FF23`, one shade off the frame's `#C6F200`). Its label is Lime's
+    //     `size/list`.
+    //
+    // The frame's 32 dot ringed in `text/2` (row 2, the Friday) is a *today*
+    // the twins' frames do not draw, filler beside its booked and selected
+    // runs: the canvas never reads the clock, so it has no seat here.
+    if (s.limeTree || s.pop) {
       const grunge = s.grunge
       const ed = s.editorial
+      const pop = s.pop
       const lz = desk ? 0.82 : 1
       const lu = (v) => `${Math.round(v * lz * 10) / 10}px`
-      const disp = (lh) => (grunge || ed
+      const disp = (lh) => (grunge || ed || pop
         ? { lineHeight: facedLh(s, lh), textTransform: 'uppercase' }
         : { lineHeight: lh })
       // Gloock sits its glyphs lower in these tight boxes than the frames'
@@ -17888,8 +18232,15 @@ function Calendar({ s }) {
       // of descender) clears "2025" by 6.5 / 7.5 / 8.3. Noto took 0.09em,
       // and its 0.24em J cleared it by 4.6 / 6.7 / 6.6 (display-face.md step
       // 4, layout 3). The lift moves the glyphs and no box
-      // (plans/editorial/layout-2.md, *Noto's J*).
-      const lift = ed ? { position: 'relative', top: '-0.055em' } : null
+      // (plans/editorial/layout-2.md, *Noto's J*). Titan sat 0.12–0.15em
+      // (of the frame's size) low at both ends of both strings against Pop's
+      // Chunko (the numeral's floor 0.054 / 0.066 / 0.056 against 0.195 /
+      // 0.196 / 0.194, the month's, its J aside, 0.092 / 0.095 / 0.114
+      // against 0.24 / 0.231 / 0.24), so it takes every Pop head's 0.14em;
+      // lifted, Titan's J — which descends where Chunko's sits on the line —
+      // still clears "2025".
+      const lift = ed ? { position: 'relative', top: '-0.055em' }
+        : pop ? { position: 'relative', top: '-0.14em' } : null
       const body = (size, lh, extra) => ({
         fontFamily: s.body, fontSize: size, lineHeight: lh, letterSpacing: s.dls, ...extra,
       })
@@ -17901,14 +18252,14 @@ function Calendar({ s }) {
           : undefined
         // The free dot's ring is the frame's raw 2.559, stroked inside, so it
         // is an inset shadow and the 30.713 stands. Editorial's is
-        // `border/hairline`, 1px unscaled. A past day is the free dot at .38
+        // `border/hairline`, 1px unscaled; Pop's a raw 2. A past day is the free dot at .38
         // (JP-064), booked or not, since the legend names `box/2` Booked.
         const took = c.booked && !c.dead
         return (
           <span key={i} onClick={onClick} style={{
             width: lu(30.713), height: lu(30.713), borderRadius: '999px', justifySelf: 'center',
             background: on ? s.ac : took ? s.box2 : s.box1,
-            boxShadow: on || took ? undefined : `inset 0 0 0 ${ed ? '1px' : lu(2.559)} ${s.stroke1}`,
+            boxShadow: on || took ? undefined : `inset 0 0 0 ${ed ? '1px' : pop ? lu(2) : lu(2.559)} ${s.stroke1}`,
             opacity: c.dead ? 0.38 : undefined,
             cursor: onClick ? 'pointer' : undefined,
           }} />
@@ -17924,7 +18275,7 @@ function Calendar({ s }) {
           <span onClick={onClick} style={{
             width: lu(24), height: lu(24), flex: 'none', borderRadius: '999px',
             background: s.box1, color: s.tx,
-            boxShadow: `inset 0 0 0 ${ed ? '1px' : lu(2.559)} ${s.stroke1}`,
+            boxShadow: `inset 0 0 0 ${ed ? '1px' : pop ? lu(2) : lu(2.559)} ${s.stroke1}`,
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
             cursor: onClick ? 'pointer' : undefined,
           }}><LimeArrow back={back} z={lz} /></span>
@@ -17933,18 +18284,22 @@ function Calendar({ s }) {
       return (
         <div style={col(lu(30))}>
           {/* "Book Me" is Display/Title at the frames' own 36 / 28 / 26 (32 /
-              25 / 23 under Editorial) — `s.title` is the heading string, not
-              the ramp's size. */}
+              25 / 23 under Editorial, 28 / 22 / 20 under Pop) — `s.title` is
+              the heading string, not the ramp's size. Pop's Titan at lh 1.1
+              sat 0.10 / 0.08 / 0.15em low against the frames' floors, the
+              header card's name again, so it takes that site's 0.1em. */}
           <h2 style={distressed(s, {
             margin: 0, fontFamily: s.display,
-            fontSize: faced(s, lu(ed ? (desk ? 32 : s.mob ? 23 : 25) : desk ? 36 : s.mob ? 26 : 28)), ...disp(1.1),
+            fontSize: faced(s, lu(ed ? (desk ? 32 : s.mob ? 23 : 25) : pop ? (desk ? 28 : s.mob ? 20 : 22)
+              : desk ? 36 : s.mob ? 26 : 28)), ...disp(1.1),
             letterSpacing: s.dls, color: s.tx,
+            ...(pop ? { position: 'relative', top: '-0.1em' } : null),
           })}>{s.title}</h2>
           <div style={col(lu(18), ed ? {
             position: 'relative', background: s.box1, color: s.tx, padding: lu(20), overflow: 'hidden',
           } : {
-            background: s.box1, color: s.tx, padding: lu(20), borderRadius: lu(grunge ? 15 : 50),
-            boxShadow: `inset 0 0 0 ${s.bw} ${s.stroke1}`, overflow: 'hidden',
+            background: s.box1, color: s.tx, padding: lu(20), borderRadius: lu(grunge ? 15 : pop ? 36 : 50),
+            boxShadow: `inset 0 0 0 ${pop ? lu(4) : s.bw} ${s.stroke1}`, overflow: 'hidden',
           })}>
             <div style={col('0')}>
               {!!hit && (
@@ -17994,8 +18349,9 @@ function Calendar({ s }) {
                 the disc's arrow follows the `bg`.
                 BookPill's own scale gives the 54 box and `s.list` label, with
                 `full` opting the 390 canvas back up. Editorial's is Scheme 1,
-                the defaults, with its Label/MD size. */}
-            <BookPill s={s} to={s.calBookTo} label={line} fg={grunge ? '#171716' : ed ? undefined : s.box1} full={s.mob}
+                the defaults, with its Label/MD size; Pop's is Scheme 2's
+                defaults under the seat, at Lime's size. */}
+            <BookPill s={s} to={s.calBookTo} label={line} fg={grunge ? '#171716' : ed || pop ? undefined : s.box1} full={s.mob}
                       size={ed ? s.labelMd : undefined}
                       style={{ width: '100%', justifyContent: 'space-between', whiteSpace: 'normal',
                         overflowWrap: 'anywhere', ...(ed ? { lineHeight: 1.1 } : null) }} />
@@ -21232,12 +21588,59 @@ function EventsMap({ s }) {
     // resolved to under layout 2's Scheme 3 viewport; the lit pin, which no
     // frame draws, is Grunge's keys: the paper accent in a 2px `s.tx` ring,
     // the lit row's own paper.
-    if (s.limeTree) {
+    //
+    // Pop (964:68778 / 984:15382 / 984:15413) is the same tree a fifth time —
+    // 141 / 142 / 83 by traversal order — bound, on **Scheme 4**: a blue band
+    // the root paints (`G.sheet` undefined), its type `text/2` yellow, the
+    // chips, the date discs and every rule `stroke/1` teal, the head and the
+    // venues `text/2` (no `head` or `venue` leaf). Grunge's five-way split
+    // needs a sixth seat here, because the lit chip and the lit row stand on
+    // different schemes: the All chip is Scheme 4's own `text/1` teal lettered
+    // `sem/bg` blue (`chipLit` / `chipLitFg`), while the lit row is a nested
+    // **Scheme 3** pill — `text/1` lime lettered `sem/bg` pink, ringed 2px in
+    // its violet `stroke/1` — whose date disc turns round to Scheme 3's pink
+    // `box/1` in that violet ring (`litDisc`, `litRing`), lettered lime, and
+    // whose Upcoming pill is pink under lime in the same violet. Every date
+    // disc is ringed 2px, scaled as Pop's rings are. *See all gigs* is Scheme 3
+    // again: lime under a pink label and disc round a lime arrow. The panel is
+    // `S3`, Editorial's keys read on Pop's: `box/1` `#FF63B8` for the card and
+    // the map container (one value, Lime's case), radius 50 / 30 / 30 and 25 /
+    // 20 / 20, its type `text/2` violet, the status pill `sem/bg` pink under
+    // lime, the container's ring, the bar's rule and the zoom buttons' ring
+    // `stroke/1` violet, EXPAND VIEW's arrow `sem/bg` pink on the pink
+    // container (faint, the frame's, followed). The `Map View Container`
+    // states no mode, so the viewport inherits Scheme 3 where Editorial's was
+    // the seat's 4: the rings, ring labels, centre disc and tail `sem/bg`
+    // pink, and everything lettered inside it — the labels, the centre disc's
+    // ring and glyph, the zoom glyphs — Scheme 3's `text/2` violet (`vpInk`),
+    // not the band's yellow; the zoom buttons `box/2` `#F0138C`. The frame's
+    // five dots are that violet at .6 and read on the plate, so they are
+    // followed. The lit pin, which no frame draws, is the lit row's own pair,
+    // Grunge's and Editorial's reading: lime in a 2px violet ring, apart from
+    // the pink centre marker it can cross. The 390 pager's two arrows are
+    // ringed and lettered `text/1` teal with no fill, so `Pager`'s Pop arm,
+    // which fills its ends, is told `endBox: 'transparent'`.
+    if (s.limeTree || s.pop) {
       const grunge = s.grunge
       const ed = s.editorial
-      const S3 = ed ? s.onScheme[3] : null
+      const pop = s.pop
+      const S3 = ed || pop ? s.onScheme[3] : null
       // Lime's arm is this block's own literals, so theme 1 digests to zero.
-      const G = grunge
+      const G = pop ? {
+        sheet: undefined, ink: s.tx, lit: S3.ac, litFg: S3.bg, litBoxFg: S3.ac,
+        disc: s.box1, hair: s.stroke1, hairP: S3.stroke1,
+        panel: S3.box1, mapBox: S3.box1, zoom: S3.box2,
+        pinRing: S3.stroke1, pillBg: S3.ac, pillFg: S3.bg, pagerInk: s.ac,
+        panelR: desk ? u(50) : '30px', boxR: desk ? u(25) : '20px',
+        ratio: desk ? '570 / 472' : tab ? '315 / 521' : '350 / 164',
+        // Editorial's leaves, read on Pop's schemes.
+        title: desk ? u(28) : tab ? '22px' : '20px',
+        panelInk: S3.tx, statusBg: S3.bg, statusFg: S3.ac, arrow: S3.bg,
+        acc: S3.bg, dot: S3.tx, dotOp: 0.6,
+        // Pop's own, each read through `??` below.
+        chipLit: s.ac, chipLitFg: s.bg, litDisc: S3.box1, litRing: S3.stroke1,
+        vpInk: S3.tx, pin: S3.ac, pagerBox: 'transparent',
+      } : grunge
         ? {
           sheet: undefined, ink: s.tx, lit: s.ac, litFg: s.bg, litBoxFg: s.ac,
           disc: s.box1, hair: s.stroke1, hairP: '#00000026',
@@ -21282,7 +21685,7 @@ function EventsMap({ s }) {
       // `faced` is the identity).
       const disp = (size, lh) => ({
         fontFamily: s.display, fontSize: faced(s, size), lineHeight: facedLh(s, lh),
-        letterSpacing: s.dls, ...(grunge || ed ? { textTransform: 'uppercase' } : null),
+        letterSpacing: s.dls, ...(grunge || ed || pop ? { textTransform: 'uppercase' } : null),
       })
       const bodySm = { fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4, letterSpacing: s.dls }
       const chipL = {
@@ -21290,16 +21693,25 @@ function EventsMap({ s }) {
         letterSpacing: '-0.06em', textTransform: 'uppercase', whiteSpace: 'nowrap',
       }
 
+      // Titan stands lower than the frame's Chunko, measured per site against
+      // each text node's `absoluteRenderBounds` (the string drawn alone, DPR
+      // 4): Display/Title at lh 1.1 — the h2 and the panel's h3 — floats
+      // 0.176 / 0.179 / 0.137em up its box against 0.272 / 0.258 / 0.29, so
+      // it lifts 0.1em (pricing's head and the calendar's BOOK ME again);
+      // the row venues at lh 1.2 sit 0.06–0.09em low at the cap and the floor
+      // alike, over their place line, so they lift 0.08em.
+      const popLift = (em) => (pop ? { position: 'relative', top: `-${em}em` } : null)
       const headL = (
         <div style={col(u(6), { alignItems: 'flex-start', maxWidth: '100%', color: ink })}>
           {s.mapKicker && <span style={bodySm}>{s.mapKicker}</span>}
-          <h2 style={distressed(s, { margin: 0, ...disp(titleSize, 1.1), ...(G.head ? { color: G.head } : null) })}>{s.title}</h2>
+          <h2 style={distressed(s, { margin: 0, ...disp(titleSize, 1.1), ...(G.head ? { color: G.head } : null), ...popLift(0.1) })}>{s.title}</h2>
         </div>
       )
 
       // The lit chip is ink lettered in the sheet's colour; every chip keeps
       // the hairline, which on the lit one is ink on ink. Under Grunge the
-      // fill is the accent and the letter the page's own black.
+      // fill is the accent and the letter the page's own black. Under Pop the
+      // chip is the band's own pair, not the lit row's (`chipLit`).
       const chipRowL = chips.length > 0 && (
         <div style={row(u(desk || tab ? 8 : 5), { flexWrap: 'wrap', maxWidth: '100%' })}>
           {chips.map((ch, k) => {
@@ -21311,7 +21723,7 @@ function EventsMap({ s }) {
                 style={{
                   ...bodySm, flex: 'none', whiteSpace: 'nowrap',
                   boxShadow: ring(hair), borderRadius: '999px', padding: `${u(5)} ${u(12)}`,
-                  background: on ? G.lit : 'transparent', color: on ? G.litFg : ink,
+                  background: on ? G.chipLit ?? G.lit : 'transparent', color: on ? G.chipLitFg ?? G.litFg : ink,
                   cursor: s.live ? 'pointer' : undefined,
                 }}
               >{ch.city ? `${ch.label} · ${ch.n}` : ch.label}</span>
@@ -21326,7 +21738,9 @@ function EventsMap({ s }) {
       // black type, and the box standing on it — the date disc, still `box/1` —
       // letters the accent back, which is the frame's own reading. Under
       // Editorial the pill is a square paper row, dashed all round, the date
-      // disc a square box, and the rules dashed ink.
+      // disc a square box, and the rules dashed ink. Under Pop the pill is
+      // Scheme 3's lime ringed 2px violet, and the disc on it turns pink in
+      // the same ring; every disc's ring is 2px.
       const gigRowL = ({ g: gg, i }, k) => {
         const on = litRow(i)
         const next = shown[k + 1]
@@ -21344,7 +21758,8 @@ function EventsMap({ s }) {
         const mark = (
           <span style={col(0, {
             width: u(56), height: u(56), flex: 'none', alignItems: 'center', justifyContent: 'center',
-            borderRadius: ed ? 0 : '999px', background: mist, boxShadow: ring(hair),
+            borderRadius: ed ? 0 : '999px', background: on && G.litDisc ? G.litDisc : mist,
+            boxShadow: pop ? `inset 0 0 0 ${u(2)} ${on ? G.litRing : hair}` : ring(hair),
             color: on ? G.litBoxFg : ink,
           })}>
             {/* Label/XXXS, a literal 7; the day is Label/XS, Retro's normalisation.
@@ -21365,7 +21780,7 @@ function EventsMap({ s }) {
           <div style={col(u(3), { flex: '1 1 0', minWidth: 0 })}>
             <span style={{
               ...disp(s.list, 1.2), overflowWrap: 'anywhere',
-              ...(G.venue && !on ? { color: G.venue } : null),
+              ...(G.venue && !on ? { color: G.venue } : null), ...popLift(0.08),
             }}>{gg.venue}</span>
             {!!place && (
               <span style={on
@@ -21387,11 +21802,12 @@ function EventsMap({ s }) {
         // `stroke/1`, the row's hairline, square corners or not (Editorial's
         // too). Idle it is unfilled and lettered `text/2`, the row's ink; on
         // the lit row it fills `sem/bg` under `text/1`, which is the lit row
-        // turned round: `G.litFg` under `G.lit` on all three templates.
+        // turned round: `G.litFg` under `G.lit` on all three templates, and
+        // on Pop's, whose lit pill rings in the lit row's violet instead.
         const pill = !!gg.status && (
           <span style={{
             ...bodySm, flex: 'none', whiteSpace: 'nowrap',
-            padding: `${u(4)} ${u(10)}`, borderRadius: '999px', boxShadow: ring(hair),
+            padding: `${u(4)} ${u(10)}`, borderRadius: '999px', boxShadow: ring(on && G.litRing ? G.litRing : hair),
             ...(on ? { background: G.litFg, color: G.lit } : { color: ink }),
             ...(s.mob ? { marginLeft: 'auto' } : null),
           }}>{s.gigStatus[gg.status]}</span>
@@ -21407,7 +21823,10 @@ function EventsMap({ s }) {
             width: '100%', boxSizing: 'border-box', color: fg,
             cursor: s.live ? 'pointer' : undefined,
             ...(on
-              ? { background: G.lit, borderRadius: ed ? 0 : '999px', padding: `${u(14)} ${u(ed ? 10 : 29)} ${u(14)} ${u(10)}` }
+              ? {
+                background: G.lit, borderRadius: ed ? 0 : '999px', padding: `${u(14)} ${u(ed ? 10 : 29)} ${u(14)} ${u(10)}`,
+                ...(G.litRing ? { boxShadow: `inset 0 0 0 ${u(2)} ${G.litRing}` } : null),
+              }
               : {
                 padding: `${u(14)} 0`,
                 ...(aboveLit || ed ? null : { boxShadow: `inset 0 -1px 0 ${hair}` }),
@@ -21447,7 +21866,8 @@ function EventsMap({ s }) {
           {pages > 1 && (
             <div style={{ marginTop: u(10) }}>
               <Pager s={s} frame={{
-                pages: [], grow: true, lime: { ring: G.pagerInk, ink: G.pagerInk },
+                pages: [], grow: true,
+                lime: { ring: G.pagerInk, ink: G.pagerInk, ...(G.pagerBox ? { endBox: G.pagerBox } : null) },
                 onStep: s.live
                   ? (dir) => setPage(Math.max(0, Math.min(pages - 1, pg + dir)))
                   : undefined,
@@ -21467,7 +21887,7 @@ function EventsMap({ s }) {
           <span key={i} onClick={onPick(i)} style={{
             position: 'absolute', left: gg.pin.x, top: gg.pin.y,
             width: on ? u(14) : u(8), height: on ? u(14) : u(8),
-            borderRadius: '999px', background: on ? s.ac : G.dot ?? s.tx,
+            borderRadius: '999px', background: on ? G.pin ?? s.ac : G.dot ?? s.tx,
             opacity: on ? undefined : G.dotOp,
             boxShadow: on ? `0 0 0 2px ${G.pinRing}` : undefined,
             transform: 'translate(-50%, -50%)', cursor: s.live ? 'pointer' : undefined,
@@ -21522,10 +21942,10 @@ function EventsMap({ s }) {
                     0.260 / 0.218 / 0.225, each under a pixel off (Noto took
                     0.07em; display-face.md step 4, layout 3). The row venues,
                     at lh 1.2, sat level with the frame's in Noto and are not
-                    lifted. */}
+                    lifted. Titan takes the h2's 0.1em (above). */}
                 <h3 style={distressed(s, {
                   margin: 0, ...disp(titleSize, 1.1), overflowWrap: 'anywhere',
-                  ...(ed ? { position: 'relative', top: '-0.055em' } : null),
+                  ...(ed ? { position: 'relative', top: '-0.055em' } : popLift(0.1)),
                 })}>{feature.venue}</h3>
                 {!!feature.city && (
                   <span style={{
@@ -21580,7 +22000,7 @@ function EventsMap({ s }) {
                 {s.mapRings.slice(0, ringW.length).map((label, k) => (
                   <span key={k} aria-hidden style={{
                     position: 'absolute', left: `${50 + ringW[ringW.length - 1 - k] / 2}%`, top: '50%',
-                    transform: 'translate(-50%, -50%)', background: G.acc ?? s.ac, color: ink,
+                    transform: 'translate(-50%, -50%)', background: G.acc ?? s.ac, color: G.vpInk ?? ink,
                     borderRadius: u(4), padding: `${u(2)} ${u(6)}`, ...chipL, textTransform: 'none',
                   }}>{label}</span>
                 ))}
@@ -21593,8 +22013,8 @@ function EventsMap({ s }) {
                   transform: 'translate(-50%, -100%)',
                 })}>
                   <span style={row(0, {
-                    background: G.acc ?? s.ac, color: ink, padding: u(4),
-                    boxShadow: `inset 0 0 0 2px ${ink}`, borderRadius: '999px',
+                    background: G.acc ?? s.ac, color: G.vpInk ?? ink, padding: u(4),
+                    boxShadow: `inset 0 0 0 2px ${G.vpInk ?? ink}`, borderRadius: '999px',
                   })}>
                     <User size={Math.round(16 * z)} />
                   </span>
@@ -21609,7 +22029,7 @@ function EventsMap({ s }) {
                   <span key={glyph}
                         onClick={s.live ? () => setZoom((v) => Math.max(-2, Math.min(3, v + dir))) : undefined}
                         style={{
-                          width: u(30), height: u(40), borderRadius: u(8), background: lift, color: ink,
+                          width: u(30), height: u(40), borderRadius: u(8), background: lift, color: G.vpInk ?? ink,
                           boxShadow: ring(G.hairP), boxSizing: 'border-box',
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
                           fontFamily: s.body, fontWeight: 700, fontSize: u(20), lineHeight: 1,
@@ -24333,11 +24753,37 @@ function Testimonials({ s }) {
     //    face, and the numeral Scheme 3's `text/1` terracotta where the card's
     //    other ink is its `text/2` paper — Grunge's two inks, other keys.
     //    Every display and label string is uppercase at its own site.
-    if (s.limeTree) {
+    //
+    // **Pop (Kai Mercer — 964:68780 · 984:15384 · 984:15415) is the tree a
+    // fifth time, 44 = 44 = 44 at every width** against both twins, the
+    // paired diff leaves alone (the ramp, Lime's 50 corner on solid 1px
+    // rings, Editorial's 24 / 28 padding), on Scheme 1 with **every cell on
+    // its own scheme** — the stat card 3, then 7 / 2 / 4 / 5 / 6 — no Device
+    // override, no effect and every paint bound. So a fourth `G` arm, written
+    // first, and the `pop` sites beside Editorial's:
+    //
+    //  - **Five registers, one to a seat** (`SEATS` the identity, Retro's own
+    //    order; the stat card's Scheme 3 is the sixth scheme, read through
+    //    `card` as every twin's): coral, lime, blue, teal and violet
+    //    `box/1`s, each ringed 1px in its `stroke/1` and its disc `text/1`
+    //    lettered `sem/bg`, Editorial's mapping. The quote's ink alternates
+    //    with the frame — `text/2` on the two name-cells and `feat-quote`,
+    //    `text/1` on `quote-cell` and `small-quote` — and the cell's name and
+    //    role take the same ink, so each cell reads in one (`feat-quote`'s
+    //    pink on violet is the frame's own, 1.35 : 1, followed). `quote-cell`
+    //    is left bare, Editorial's call (`G.bare`): a lime card on the white
+    //    page is parted by its fill. The frame draws no disc on seats 1, 3 or
+    //    4; the seed's named reviews there take the name-cells' bindings, an
+    //    extrapolation.
+    //  - **The stat card is Scheme 3**: pink `box/1` in a violet `stroke/1`,
+    //    its ink `text/2` violet and the numeral and stars `text/1` lime, the
+    //    face stack ringed in `box/2` — Editorial's keys read on Pop's.
+    if (s.limeTree || s.pop) {
       const grunge = s.grunge
       const ed = s.editorial
+      const pop = s.pop
       const S1 = ed ? s.onScheme[1] : null
-      const S3 = ed ? s.onScheme[3] : null
+      const S3 = ed || pop ? s.onScheme[3] : null
       const S4 = ed ? s.onScheme[4] : null
       const ring = (c, w = 1) => `inset 0 0 0 ${w}px ${c}`
       // The frame's five quote cells by scheme, read off the nodes' fills —
@@ -24358,7 +24804,35 @@ function Testimonials({ s }) {
       // Grunge masters state 28 on the **last column of each row** and 24 on
       // every other cell at all three widths, which a wall of any count cannot
       // model, so the majority is taken and the diff named.
-      const G = grunge
+      //
+      // Pop's register is one scheme a seat, read off each cell's own
+      // `explicitVariableModes`: `box/1` under the ink its quote binds, its
+      // `stroke/1` ring, the disc its `text/1` lettered its `sem/bg`.
+      const popReg = (n, ink) => {
+        const k = s.onScheme[n]
+        return { bg: k.box1, fg: k[ink], edge: k.stroke1, disc: k.bg, discBg: k.ac }
+      }
+      const G = pop
+        ? {
+          REG: [
+            popReg(7, 'tx'), // name-cell: coral, violet ink, a lime disc
+            popReg(2, 'ac'), // quote-cell: lime `box/1`, its quote `text/1` pink
+            popReg(4, 'tx'), // name-cell: blue, yellow ink, a teal disc
+            popReg(5, 'ac'), // small-quote: teal, its quote `text/1` violet
+            popReg(6, 'tx'), // feat-quote: violet, its quote `text/2` pink
+          ],
+          SEATS: [0, 1, 2, 3, 4],
+          bare: 1,              // `quote-cell`, the frame's one unringed seat
+          card: S3.box1,        // `rating` is Scheme 3: `box/1` pink
+          cardFg: S3.tx,        // its `text/2`, violet
+          num: S3.ac,           // the numeral and stars its `text/1`, lime
+          hair: S3.stroke1,     // 1px violet
+          lift: S3.box2,        // the face stack's 2px ring, `box/2` #F0138C
+          radius: 50,
+          pad: 24,              // 28 on each row's last cell, the majority taken
+          quote: s.labelLg,
+        }
+        : grunge
         ? {
           REG: [
             { bg: s.box1, fg: s.tx, edge: s.stroke1, disc: s.bg },
@@ -24423,7 +24897,7 @@ function Testimonials({ s }) {
       // site, because the two label-face sites carry none.
       const disp = (family, size, lh) => ({
         fontFamily: family, fontSize: faced(s, size), lineHeight: facedLh(s, lh),
-        ...(grunge || ed ? { textTransform: 'uppercase' } : null),
+        ...(grunge || ed || pop ? { textTransform: 'uppercase' } : null),
       })
 
       // The frame's four stack faces are photographs in a 2px `lift` ring;
@@ -24447,7 +24921,7 @@ function Testimonials({ s }) {
           background: s.bg, color: s.ac, boxShadow: ring(G.lift, 2),
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
           overflow: 'hidden', fontFamily: s.label, fontSize: u(11), lineHeight: 1.1,
-          ...(grunge || ed ? { textTransform: 'uppercase' } : null),
+          ...(grunge || ed || pop ? { textTransform: 'uppercase' } : null),
           ...(last ? null : { marginRight: u(-8) }),
         }}>{mark}</span>
       )
@@ -24484,10 +24958,15 @@ function Testimonials({ s }) {
                 below. Lifted 0.055em of the numeral it stands 0.190 / 0.211 /
                 0.194 (Noto's floor stood 0.085 / 0.088 / 0.057em low and took
                 0.08; display-face.md step 4, layout 3, and
-                plans/editorial/layout-3.md, section 10). */}
+                plans/editorial/layout-3.md, section 10). Titan's stood
+                0.102 / 0.104 / 0.098 token-em up against Chunko's 0.234 /
+                0.24 / 0.24 and its cap top 0.14 low, the head's figures, so
+                Pop's row takes the head's 0.14em of the faced numeral
+                (plans/pop/layout-3.md, section 10). */}
             <div style={row(u(rated ? 4 : 8), {
               alignItems: 'baseline', ...(desk ? null : { width: '100%' }),
-              ...(ed ? { position: 'relative', top: `calc(-0.055 * ${s.dispMd})` } : null),
+              ...(ed ? { position: 'relative', top: `calc(-0.055 * ${s.dispMd})` }
+                : pop ? { position: 'relative', top: `calc(-0.14 * ${faced(s, s.dispMd)})` } : null),
             })}>
               <span style={distressed(s, {
                 ...disp(s.display, s.dispMd, 1),
@@ -24528,23 +25007,34 @@ function Testimonials({ s }) {
       // the accent in the cell's own ring colour, lettered in `reg.disc`.
       // Grunge sets the quote itself at Display/Title instead — `G.quote`, the
       // one size this block writes out. Editorial's disc is its cell's own
-      // `text/1` (`reg.discBg`), and its seat `G.bare` goes undashed.
+      // `text/1` (`reg.discBg`), and its seat `G.bare` goes undashed; Pop's
+      // `G.bare` goes unringed, and its disc is Editorial's mapping.
+      //
+      // Titan sits low in its line box, so Pop lifts each string by its own
+      // scan (drawn alone at DPR 4, flat-bottomed `&cj=` strings, against the
+      // frame's `absoluteRenderBounds` corrected for its whole-pixel box): the
+      // quote and the disc's mark, Label/LG at lh 1.1, 0.10–0.15 token-em low
+      // at the three widths, take 0.12em; the name, Display/List at lh 1.2
+      // over its role, 0.05–0.10 low, the map's venues' 0.08em. The mark is
+      // lifted inside the disc, never the disc.
+      const popLift = (em) => (pop ? { position: 'relative', top: `-${em}em` } : null)
       const quoteCard = (q, i) => {
         const reg = REG[SEATS[i % SEATS.length]]
+        const bare = i % SEATS.length === G.bare
         return (
-          <div key={i} style={cell(reg)}>
+          <div key={i} style={cell(reg, pop && bare ? { boxShadow: undefined } : null)}>
             {!!q.who && (
               <span style={{
                 width: u(56), height: u(56), flex: 'none', borderRadius: '999px',
                 background: reg.discBg ?? s.ac, color: reg.disc, boxShadow: ring(reg.edge),
                 display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                 overflow: 'hidden', ...disp(s.label, s.labelLg, 1.1),
-              }}>{q.mark}</span>
+              }}>{pop ? <span style={popLift(0.12)}>{q.mark}</span> : q.mark}</span>
             )}
             {!!q.quote && (
               <p style={{
                 margin: 0, width: '100%', ...disp(s.label, G.quote, 1.1),
-                overflowWrap: 'break-word',
+                overflowWrap: 'break-word', ...popLift(0.12),
               }}>{q.quote}</p>
             )}
             {!!q.byline && (
@@ -24552,13 +25042,13 @@ function Testimonials({ s }) {
                 {!!q.who && (
                   <span style={{
                     ...disp(s.display, s.list, 1.2),
-                    letterSpacing: s.dls,
+                    letterSpacing: s.dls, ...popLift(0.08),
                   }}>{q.who}</span>
                 )}
                 {!!q.role && <span style={small}>{q.role}</span>}
               </div>
             )}
-            {i % SEATS.length !== G.bare && dash(reg.edge)}
+            {!bare && dash(reg.edge)}
           </div>
         )
       }
@@ -24577,9 +25067,12 @@ function Testimonials({ s }) {
 
       // The head is `s.tx` for both lines (Retro's display line is ink on
       // beige); Display/MD is 72 / 50 / 40 under Lime, 72 / 50 / 38 under
-      // Grunge and 64 / 45 / 36 under Editorial, the ramp each time, and one
-      // tone on every frame's segments. The 1440 column's 306 cap is dropped,
-      // Retro's call — Editorial's frame breaks EXPERIENC / ES. inside it.
+      // Grunge, 64 / 45 / 36 under Editorial and 45 / 36 / 28 under Pop, the
+      // ramp each time, and one tone on every frame's segments. The 1440
+      // column's 306 cap is dropped, Retro's call — Editorial's and Pop's
+      // frames break EXPERIENC / ES. inside it. Under Pop the head is `text/2`
+      // violet, `s.tx` again, lifted Titan's 0.14em: unlifted it sat 0.14
+      // token-em low at both ends, at all three widths.
       return (
         <div style={col(u(24))}>
           <div style={col('0px', { width: '100%', color: s.tx })}>
@@ -24587,7 +25080,7 @@ function Testimonials({ s }) {
             {!!s.title && (
               <h2 style={distressed(s, {
                 margin: 0, ...disp(s.display, s.dispMd, 1),
-                letterSpacing: s.dls,
+                letterSpacing: s.dls, ...popLift(0.14),
               })}>{s.title}</h2>
             )}
           </div>
@@ -27084,9 +27577,30 @@ function EnquiryForm({ s }) {
     // box is Lime's 2px of `s.tx`, ink on `#FFF9F2`: the idle mark is a 1px
     // dash of full terracotta, so the refusal changes colour, weight and dash
     // at once — no frame draws it, and the twins' key reads on this paper.
-    if (s.limeTree) {
+    //
+    // Pop (964:68779 / 984:15383 / 984:15414) is the same tree a fourth time,
+    // 27 = 27 against Lime's at every width, every box, gap, inset, radius,
+    // ring weight and tracking Lime's — the paired diff returned the ramp,
+    // the face and Grunge's 42 / 38 / 37 boxes alone. The section is **Scheme
+    // 1**, white, no band, no Device override and no effect on any node, but
+    // the card is **explicitly Scheme 2** at every width, so every leaf on it
+    // reads `card`, `s.onScheme[2]` (`s` itself under the twins): the card and
+    // each box bind `box/1` `#D7FF23` — not Scheme 2's `sem/bg` — in a 1px
+    // `stroke/1` violet ring; the box labels, unit, count and note `text/2`
+    // violet; the price, the stars and the pill's fill and arrow `text/1`
+    // pink; the pill's label and disc `sem/bg` `#C6F200`. The block's own
+    // `pill()` stands on `s.bg`, which is Scheme 1's white here, so the card's
+    // pair is the binding, not a stand-in. The head column is Scheme 1's own
+    // keys: the eyebrow and paragraph `text/2`, the head `text/1`. Display/
+    // Title is 28 / 22 / 20. A refused box is 2px of the card's pink: the idle
+    // ring is 1px of full violet, so the twins' 2px of `s.tx` would be weight
+    // alone (CONVENTIONS C) — layout 2's Pop call on the same card.
+    if (s.limeTree || s.pop) {
       const grunge = s.grunge
       const ed = s.editorial
+      const pop = s.pop
+      // The card's scheme: Scheme 2 under Pop, the section's own elsewhere.
+      const card = pop ? s.onScheme[2] : s
       const type = (family, size, lh, extra) => ({
         fontFamily: family, fontSize: size, lineHeight: lh, letterSpacing: s.dls, ...extra,
       })
@@ -27096,9 +27610,10 @@ function EnquiryForm({ s }) {
       // Editorial `faced` scales Gloock by its `faceK` and the uppercase is
       // Gloock's.
       const disp = (size, lh, extra) => type(s.display, faced(s, size), facedLh(s, lh), {
-        ...((grunge || ed) && { textTransform: 'uppercase' }), ...extra,
+        ...((grunge || ed || pop) && { textTransform: 'uppercase' }), ...extra,
       })
       const title = ed ? (desk ? u(32) : s.mob ? '23px' : '25px')
+        : pop ? (desk ? u(28) : s.mob ? '20px' : '22px')
         : desk ? u(36) : s.mob ? '26px' : '28px'
       // Half of the content width less the 60 gap, floored to the pixel so the
       // word fits with room rather than to the rounding.
@@ -27112,11 +27627,13 @@ function EnquiryForm({ s }) {
       // for the same padding over its own two-sizes-smaller Label/SM, and so
       // do Editorial's. Under Editorial the box is square and its idle mark is
       // the field wrapper's `DashRule` (below), which a refusal replaces.
+      // Pop's are Grunge's 42 / 38 / 37 too (Label/SM 16 / 13 / 12), Scheme 2's
+      // `box/1` in its violet `stroke/1`, refused in the card's pink.
       const box = (bad) => type(s.label, faced(s, s.labelSm), facedLh(s, 1.1), {
-        background: s.box1, color: s.tx, border: 'none', borderRadius: ed ? 0 : s.btnR,
+        background: card.box1, color: card.tx, border: 'none', borderRadius: ed ? 0 : s.btnR,
         boxShadow: ed ? (bad ? `inset 0 0 0 2px ${s.tx}` : undefined)
-          : `inset 0 0 0 ${bad ? '2px' : '1px'} ${bad ? s.tx : s.stroke1}`,
-        height: grunge || ed
+          : `inset 0 0 0 ${bad ? '2px' : '1px'} ${bad ? (pop ? card.ac : card.tx) : card.stroke1}`,
+        height: grunge || ed || pop
           ? (desk ? u(42) : s.mob ? '37px' : '38px')
           : (desk ? u(44) : s.mob ? '37px' : '39px'),
         padding: `0 ${u(14)}`, margin: 0, width: '100%', boxSizing: 'border-box',
@@ -27124,13 +27641,13 @@ function EnquiryForm({ s }) {
       // The frame's 67 radius on a 54 pill is `radius/pill`.
       const pill = (extra) => disp(s.list, 1.2, {
         ...row(u(10), { justifyContent: 'space-between' }),
-        background: s.ac, color: s.bg, borderRadius: s.btnR, width: '100%', boxSizing: 'border-box',
+        background: card.ac, color: card.bg, borderRadius: s.btnR, width: '100%', boxSizing: 'border-box',
         padding: `${u(5)} ${u(5)} ${u(5)} ${u(21)}`, textDecoration: 'none', ...extra,
       })
       const disc = (
         <span style={{
           width: u(46), height: u(44), borderRadius: '999px', flex: 'none',
-          background: s.bg, color: s.ac,
+          background: card.bg, color: card.ac,
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
         }}><ArrowRight size={46 * z * 0.6} strokeWidth={1.5} /></span>
       )
@@ -27159,17 +27676,22 @@ function EnquiryForm({ s }) {
                 0.133, and it stands over a line of type, where a J would all
                 but meet the paragraph. Lifted it stands 0.129 / 0.139 / 0.142
                 (Noto stood 0.053 / 0.060 / 0.077 and took 0.08em;
-                display-face.md step 4, layout 3). */}
+                display-face.md step 4, layout 3). Under Pop Titan sat
+                0.130 / 0.118 / 0.125em below the box's top and 0.050 /
+                0.064 / 0.050 above its foot where the frames' Chunko inks
+                0.015 / 0.024 / 0.016 above and 0.185 / 0.186 / 0.184 above,
+                so it takes every Pop lh-0.89 head's 0.14em. */}
             <h2 style={distressed(s, disp(headSize, 0.89, {
               margin: 0, color: s.ac, overflowWrap: 'break-word',
               ...(ed && { position: 'relative', top: '-0.06em' }),
+              ...(pop && { position: 'relative', top: '-0.14em' }),
             }))}>{s.title}</h2>
             <p style={type(s.body, s.bodyMd, 1.5, { margin: 0 })}>{s.formPara}</p>
           </div>
 
           <div style={col(u(14), {
-            background: s.box1, color: s.tx, borderRadius: ed ? 0 : u(grunge ? 15 : 50),
-            boxShadow: ed ? undefined : `inset 0 0 0 1px ${s.stroke1}`,
+            background: card.box1, color: card.tx, borderRadius: ed ? 0 : u(grunge ? 15 : 50),
+            boxShadow: ed ? undefined : `inset 0 0 0 1px ${card.stroke1}`,
             padding: `${u(28)} ${u(24)}`, boxSizing: 'border-box',
             ...(ed && { position: 'relative' }),
           })}>
@@ -27185,19 +27707,24 @@ function EnquiryForm({ s }) {
                 the row's top at 1440 / 768 / 390, Gloock's 0.878 / 0.92 /
                 0.913, and lifted 0.798 / 0.84 / 0.833 (Noto's 0.92 took
                 0.09; display-face.md step 4, layout 3). The row moves, so the
-                baseline they share holds. An Inter unit alone sits right. */}
+                baseline they share holds. An Inter unit alone sits right.
+                Pop's row takes 0.1em of the price, Titan's Display/Title
+                number: the shared baseline stood 0.913 / 0.909 / 0.95 of the
+                price below the row's top where the frames' stands 0.816 /
+                0.807 / 0.79. */}
             {(!!s.formPrice || !!s.formPriceUnit) && (
               <div style={row(u(8), {
                 alignItems: 'baseline', flexWrap: 'wrap',
                 ...(ed && !!s.formPrice && { position: 'relative', top: `calc(-0.08 * ${title})` }),
+                ...(pop && !!s.formPrice && { position: 'relative', top: `calc(-0.1 * ${title})` }),
               })}>
-                {!!s.formPrice && <span style={distressed(s, disp(title, 1.1, { color: s.ac }))}>{s.formPrice}</span>}
+                {!!s.formPrice && <span style={distressed(s, disp(title, 1.1, { color: card.ac }))}>{s.formPrice}</span>}
                 {!!s.formPriceUnit && <span style={type(s.body, s.bodySm, 1.4)}>{s.formPriceUnit}</span>}
               </div>
             )}
             {!!s.formBookings && (
               <span style={type(s.body, s.bodySm, 1.4, { whiteSpace: 'pre' })}>
-                <span style={{ color: s.ac }}>★★★★★</span>{'  '}{s.formBookings}
+                <span style={{ color: card.ac }}>★★★★★</span>{'  '}{s.formBookings}
               </span>
             )}
             {sent ? (
@@ -27205,7 +27732,7 @@ function EnquiryForm({ s }) {
               // Display/Title and the address Body/MD, layout 2's inventions.
               <>
                 <h3 style={distressed(s, disp(title, 1.1, {
-                  margin: 0, color: s.ac, overflowWrap: 'break-word',
+                  margin: 0, color: card.ac, overflowWrap: 'break-word',
                 }))}>{s.formSentTitle}</h3>
                 <p style={type(s.body, s.bodySm, 1.4, { margin: 0 })}>{s.formSentBody}</p>
                 {/* Plain text, Retro's reason: the fallback for a browser that
@@ -28858,8 +29385,12 @@ export default function EncoreSection({ s }) {
   // the block paints the card; the root paints the page's own ground round it.
   // Pop's layout-2 panel (964:64564) and calendar (964:64574) are the same
   // Scheme 2 cards on its white, so the flag is named for the shape, not a
-  // template (`editorialCard` until Pop's layout-2 sweep).
+  // template (`editorialCard` until Pop's layout-2 sweep). Pop's layout-3
+  // calendar (964:68774) is that Scheme 2 card again, in the composed column,
+  // and its layout-3 header (964:68751) a Scheme 6 card on the page's white at
+  // 1440 alone — narrow, the frame round it is the card's own violet.
   const cardOnPage = (s.me || s.ca) && s.v1 && (s.editorial || s.pop)
+    || (s.ca || s.hd && !s.narrow) && s.v2 && s.pop
   // Pop's layout-2 media `Section` (964:64563) strokes its top and foot 5px
   // inside in `scheme/1/stroke/2`, lime, at 1440 alone — visible, where the
   // twins' same stroke is a hidden paint; the narrow wrappers carry none.

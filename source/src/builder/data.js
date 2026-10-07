@@ -527,6 +527,18 @@ export const SCHEMES_OF = {
     // form (964:64576 · 986:17578 · 986:17597) is a Scheme 4 band. The footer
     // keeps row 0's 3.
     1: { media: 2, calendar: 2, form: 4 },
+    // Its layout-3 page (964:68750 · 984:15355 · 984:15386), bound too, the
+    // same at all three widths but the header. The header's card (964:68751 ·
+    // 984:15356 · 984:15387) is Scheme 6 at every width, while its root round
+    // the card is Scheme 1 at 1440 and 6 narrow: it is seated on 6, and at
+    // desktop the root paints the page's white round the card (`cardOnPage`;
+    // plans/pop/layout-3.md, decision 1, user call, 2026-10-06). The calendar
+    // (964:68774 · 984:15379 · 984:15410) is a Scheme 2 card on the white, as
+    // at layout 2; the gallery (964:68776 · 984:15380 · 984:15411) a Scheme 2
+    // sheet and the map (964:68778 · 984:15382 · 984:15413) a Scheme 4 band.
+    // The footer's instances set Scheme 2 on a tree that binds nothing, so it
+    // keeps row 0's 3.
+    2: { header: 6, calendar: 2, gallery: 2, map: 4 },
   },
 }
 
@@ -627,10 +639,11 @@ export const minimalNav = (navSections) =>
 // to layout 1 returns to its sections unless the artist picked Minimal.
 // Editorial's layouts 2 and 3 draw the three too (964:64599, 986:15658;
 // 964:68718, 984:16812), so it joins them. Pop's layout 2 does (964:64561,
-// 986:17563), so it joins at `d === 1`; its layout 3 is still a placeholder.
+// 986:17563), so it joins at `d === 1`, and its layout 3 does (964:68751,
+// 984:15356), so at `d === 2` too.
 export const navModeDefault = (themeName, d) =>
   ((themeName === 'Retro' || themeName === 'Lime' || themeName === 'Grunge' || themeName === 'Editorial')
-    && (d === 1 || d === 2)) || (themeName === 'Pop' && d === 1) ? 'minimal' : 'sections'
+    && (d === 1 || d === 2)) || (themeName === 'Pop' && (d === 1 || d === 2)) ? 'minimal' : 'sections'
 
 // Bebas Neue's advance widths in em, capitals only — Lime's label face, which
 // sets every nav label in caps — read off the loaded face with canvas
@@ -1756,9 +1769,9 @@ export const FIELDS = {
   // different header families (six designs against four, four, four and four —
   // Grunge's row and Editorial's are each measured over four fitted cards, none
   // a placeholder since each template's layout-4 pass). Pop's was measured in
-  // its layout-1 sweep and re-measured in its layout-2 header session, over two
-  // fitted cards and two placeholders on Retro's paths, so its layout-3 and
-  // layout-4 passes each re-measure their own card.
+  // its layout-1 sweep and re-measured in its layout-2 and layout-3 header
+  // sessions, the last over three fitted cards and one placeholder on Retro's
+  // path, so its layout-4 pass re-measures its own card.
   header: [
     { k: 'image',     l: 'Background photo', type: 'image',
       hint: 'Fills the header behind the type.' },
@@ -1774,24 +1787,23 @@ export const FIELDS = {
     // Grunge's, Editorial's and Pop's calendar layout 1, a block of its own with no
     // polaroid stamp — and map layout 2's travel card (JP-096).
     // Change a reader, change the hint.
-    // Lime's, Grunge's and Editorial's layout 3 prints `cardLine` in Retro's
-    // kicker seat (JP-061), so their row is [0, 3] (reach.mjs, 2026-09-28).
-    // Pop's is [0, 2, 3] while its card 3 is Retro's placeholder, which prints
-    // the kicker there (reach.mjs, 2026-10-03).
+    // Lime's, Grunge's, Editorial's and Pop's layout 3 prints `cardLine` in
+    // Retro's kicker seat (JP-061), so their row is [0, 3] (reach.mjs,
+    // 2026-09-28; Pop's over its fitted card 3, 2026-10-06).
     // The panel then says "Not shown in this layout" there while the bio prints
     // the kicker, which the hint answers, as at layout 2.
     { k: 'kicker',    l: 'Kicker',           d: 'DJ · Live Act',
-      in: { Retro: [0, 2, 3, 5], Lime: [0, 3], Grunge: [0, 3], Editorial: [0, 3], Pop: [0, 2, 3] },
+      in: { Retro: [0, 2, 3, 5], Lime: [0, 3], Grunge: [0, 3], Editorial: [0, 3], Pop: [0, 3] },
       hint: 'Your role. Every bio layout prints it too, and so do the enquiry form’s layouts 1 and 2.' },
     // The layout-3 portrait card's line under the name (JP-061): the card's
     // own copy, so the kicker is not seeded apart there and the bio's Current
-    // role always prints what the Kicker field shows. Lime's, Grunge's and
-    // Editorial's card reads it; Retro's polaroid prints the kicker in that
-    // seat. `'*': []` marks every other template, Pop included, as
-    // FIELDS.media.cta does, because only those three read it. Emptied, the
-    // card is the name alone.
+    // role always prints what the Kicker field shows. Lime's, Grunge's,
+    // Editorial's and Pop's card reads it; Retro's polaroid prints the kicker
+    // in that seat. `'*': []` marks Retro, as FIELDS.media.cta does, because
+    // only the `HeaderV2` block those four share reads it. Emptied, the card
+    // is the name alone.
     { k: 'cardLine',  l: 'Portrait card line', d: CARD_LINE_3,
-      in: { Lime: [2], Grunge: [2], Editorial: [2], '*': [] },
+      in: { Lime: [2], Grunge: [2], Editorial: [2], Pop: [2], '*': [] },
       hint: 'The line under your name on the portrait card. The bio’s Performing since is a separate '
           + 'field, so change both if you name a year here. Left empty, it is not drawn.' },
     { k: 'title',     l: 'Title' },                       // the artist's name, page-wide and required (NameInput) — special-cased
@@ -1836,11 +1848,11 @@ export const FIELDS = {
     // headerIdentity): the bio prints the same list and honours the same
     // Show / Hide. An emptied list hides the row, as Hide does. The bio's
     // reach is measured (scripts/reach.mjs): layouts 2 and 4, and Lime's,
-    // Grunge's and Editorial's 3.
+    // Grunge's, Editorial's and Pop's 3.
     { k: 'tags',      l: 'Tags',             type: 'area', d: TAG_LABELS,
       in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3], Editorial: [0, 2, 3], Pop: [0, 2, 3] },
       hint: 'Separate them with commas. The bio prints them too in layouts 2 and 4 '
-          + '(in Lime, Grunge and Editorial, layout 3 as well).' },
+          + '(in Lime, Grunge, Editorial and Pop, layout 3 as well).' },
     { k: 'showTags',  l: 'Tag chips',        type: 'select', d: 'show', opts: SHOW_HIDE,
       in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3], Editorial: [0, 2, 3], Pop: [0, 2, 3] },
       hint: 'Hides the bio’s chips as well.' },
@@ -1900,7 +1912,7 @@ export const FIELDS = {
     { k: 'aboutLabel', l: 'About label', d: BIO_ABOUT_LABEL, in: [2],
       hint: 'The bracketed label over the paragraphs on the ID card. Left empty, it is not drawn.' },
     { k: 'tagsLabel',  l: 'Genres label', d: BIO_TAGS_LABEL,
-      in: { Lime: [2], Grunge: [2], Editorial: [2, 3], '*': [3] },
+      in: { Lime: [2], Grunge: [2], Editorial: [2, 3], Pop: [2, 3], '*': [3] },
       hint: 'The line over the Header’s tag chips, drawn while they are shown. Left empty, the chips stand alone.' },
     // Layout 4's "Listen ↗" (JP-082, user call, 2026-09-29): the key the bio
     // already read, `vm.cta2` off its own content, which no field reached
