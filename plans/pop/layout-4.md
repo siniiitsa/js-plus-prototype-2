@@ -106,9 +106,9 @@ there.
    arm on Scheme 1 — into Pop's own page. The header session verifies it **in the builder**.
 4. **The sidebar's layout-picker thumbnails for layout 4** under Pop look like their sections.
    Check once, in the sweep.
-5. **The fold** (layout 2's decision 1): with every Pop page fitted, `limeTree` either widens to
-   Pop and every `|| pop` goes, or the pairs stay for good. Decision 2 asks it in session 0; the
-   sweep carries it out if the answer is to fold.
+5. **The fold** (layout 2's decision 1): with every Pop page fitted, `limeTree` widens to Pop and
+   every `|| pop` goes — decision 2, settled **A** in session 0 (user call, 2026-10-07); the sweep
+   carries it out.
 
 ## What this pass actually is
 
@@ -296,7 +296,7 @@ desktop id — each block's fit comment cites them); it is the gate the session 
 
 | # | Cat | Desktop node | Size | Tablet node | Size | Mobile node | Size | Scheme 1440 / 768 / 390 (nested) | Lime twin (1440 / 768 / 390) | Editorial twin (1440 / 768 / 390) | Lime block | Status |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 0 | *foundation* | `964:73127` *(page)* | — | `971:10835` | — | `977:14267` | — | — | — | — | `SCHEMES_OF.Pop[3]` (decision 1); the fold asked (decision 2) | |
+| 0 | *foundation* | `964:73127` *(page)* | — | `971:10835` | — | `977:14267` | — | — | — | — | `SCHEMES_OF.Pop[3]` (decision 1); the fold asked (decision 2) | **done** — `038e62e`; the fold A |
 | 1 | `header` | `964:73128` | 1440 × 900 | `971:10836` | 768 × 1024 | `977:14268` | 390 × 844 | **3** (nav `Frame 49` **1**; seal `Frame 247` **4** at 1440 and 768, `Frame 248` **5** at 390) | `964:72849` / `971:5299` / `977:8867` | `964:73038` / `971:9538` / `977:13156` | `if (s.limeTree) { … return }` at the head of `HeaderV3` | |
 | 2 | `bio` | `964:73157` *(Section `964:73129`, head `964:73151`)* | 664 × 720 | `971:10844` *(Section `971:10837`, head `971:10838`)* | 708 × 720 | `977:14276` *(Section `977:14269`, head `977:14270`)* | 370 × 536 | Section **3**; card **2 / 2 / 3**; Tags 1 | `964:72850` / `971:5300` / `977:8868` *(Sections)* | `964:73039` / `971:9539` / `977:13157` | `if (s.v3 && s.limeTree)` ahead of `Bio`'s `if (s.v3)` | |
 | 3 | `media` | `964:73164` *(band `964:73158`, head `964:73159`)* | 1440 × 671 | `971:10851` *(band `971:10845`, head `971:10846`)* | 768 × 569 | `977:14406` *(band `977:14400`, head `977:14401`)* | 390 × **830** | band **2** (head `Section` **1**; 768 / 390 instance `Device: Tablet`) | `964:72858` / `971:6533` / `977:8999` *(bands)* | `964:73047` / `971:9547` / `977:13288` | `if (s.v3 && s.limeTree)` ahead of `Media`'s `if (s.v3)` | |
@@ -527,7 +527,12 @@ triple (the two nested moves are the bio card's and the seal's, read in their se
 `cardOnPage` (the Book Us panel is Scheme 1's own `box/2` on the page), no `footer` entry, so no
 `&page=` and no new digest render.
 
-### 2. The fold — **a user call for session 0; this plan names it and does not decide it**
+### 2. The fold — **settled: A, fold in the sweep** (user call, 2026-10-07)
+
+Asked in session 0 as written below, A recommended; the user took A. So every section session still
+widens its block to the pair `(s.limeTree || s.pop)`, and says in the block's comment that the pair
+folds into `limeTree` in the sweep; the sweep's item 1 widens `limeTree` and `limeTreeTheme()`,
+deletes every pair and reorders the order-sensitive sites listed below.
 
 Layout 1's decision 3 widened each layout-1 block per site to the pair `(s.limeTree || s.pop)` and
 its sweep named the honest fold — *widen `limeTree` (and `limeTreeTheme`) to Pop once its family
@@ -961,10 +966,10 @@ teal rule closes the sheet at 1440 and 768. The 1440 instance pads **56** (Lime'
 
 Written now from what the plan can see; the sections add to it. One session, in this order:
 
-1. **Decision 2's fold, if A** — code first, so the docs can describe the folded flag once: widen
-   `limeTree` and `limeTreeTheme`, delete every pair, reorder the order-sensitive sites, five-theme
-   digest at zero rows, canvas and `live=1`, with `curl` on the served module as the positive
-   control. Under B, list every layout-4 pair beside layouts 1–3's 46 and keep them.
+1. **Decision 2's fold** (A, settled in session 0) — code first, so the docs can describe the
+   folded flag once: widen `limeTree` and `limeTreeTheme`, delete every pair, reorder the
+   order-sensitive sites, five-theme digest at zero rows, canvas and `live=1`, with `curl` on the
+   served module as the positive control.
 2. **CLAUDE.md, README.md and `notes/`**, wherever they describe Pop as designed at layouts 1–3, card
    4 as a placeholder, or a layout-4 state as Lime's, Grunge's and Editorial's alone. The known
    sites: the scheme bullet (`SCHEMES_OF.Pop[3]`, the layout-4 `s.onScheme` readers — the seal's 4 /
@@ -1066,17 +1071,138 @@ From the walks and the renders — impressions to confirm, not measurements.
 10. **testimonials** — see *The tenth session*. The head is teal Display/LG, two lines, beside the
     two teal discs; cell 2 is **black**, the page's one black card.
 
+### Settled in session 0 (the seats and the fold)
+
+- **Decision 2 is A** (user call, 2026-10-07): the fold happens in the sweep. Each section session
+  still widens its block to the pair and says in the block's comment that the pair folds in the
+  sweep. Nothing in this session's commit depended on it.
+- **Decision 1 as written, one commit**: `038e62e`, `SCHEMES_OF.Pop[3] = { header: 3, bio: 3,
+  media: 2, gallery: 3, repertoire: 3, testimonials: 4 }`. Its comment names the page frames and
+  the six roots at three widths, says every seat is the same at all three (Editorial's row 3 in
+  shape), and says the footer's instances state no scheme, so it keeps row 0's 3. No layout code,
+  no scheme, no triple, no `cardOnPage`, no footer entry. `sectionVm`'s footer seat is
+  `row[page]?.footer ?? row[0].footer` (its own `d` is 0), so a page row with no `footer` key leaves
+  the layout-4 footer pink. `digest.mjs` renders no `page=3` footer, so the builder check below
+  proves it. `THEMES[4].schemes`' comments (Scheme 2's, 3's and 4's lists of the sections seated on
+  them) are left for the sweep, as Editorial's session 0 left its own.
+- **What moved: 36 files, theme 4, as the contract says.** The server was a fresh `:5189` (the
+  user's `:5173` is days old). Each label held 660 renders, five themes, canvas and `&live=1`, and
+  no label held a one-row file. Themes 0, 1, 2 and 3 are at zero on the first after-label, so no
+  second before-label was needed. At theme 4 the moved files are header, bio, media, gallery,
+  repertoire and testimonials at `arch_3`, at three widths, 18 a surface. Nothing moved at
+  `arch_0`, `arch_1` or `arch_2`, nor at the header's `arch_4` / `arch_5`, nor in any footer file
+  (`page_2` included). **No geometry moved in any of them**: every differing cell is a background,
+  a background image, a colour or a border colour. No shadow, size or `src` cell differs.
+- **Proved in the harness.** The section root (row 3 of each digest; rows 1 and 2 are the
+  harness's wrappers) is `#FF2DA0` for the header, bio, gallery and repertoire, `rgb(198, 242, 0)`
+  for the media and `rgb(37, 99, 255)` for the testimonials, at every width, canvas and live. Map,
+  pricing, calendar and form keep white. The footer (arch 0) is pink. **The header's pink is only
+  the root so far**: Retro's placeholder half still draws its photograph and checker ribbon over
+  it, and section 1 replaces them.
+- **Proved in the page.** `sectionVm` was called with `data.js` imported at the URL the transformed
+  `EncoreBuilder.jsx` names (`/src/builder/data.js?t=…`, whose `SCHEMES_OF.Pop[3]` is the row). It
+  was passed `artistName`, `page: 3` and a minimal `Z` (`dev`, `narrow`, the pads). All eleven
+  categories are identical at all three widths:
+
+  | Seat | `bg` | `ac` | `tx` | `text3` | `paper` | `pillBg` | `pillFg` |
+  |---|---|---|---|---|---|---|---|
+  | 3 — header, bio, gallery, repertoire (and the footer, row 0's) | `#FF2DA0` | `#C6F200` | `#6B2CFF` | `#FFFFFF` | **`#FBF6EA`** | `#C6F200` | `#000000` |
+  | 2 — media | `#C6F200` | `#FF2DA0` | `#6B2CFF` | `#000000` | `#C6F200` | `#FF2DA0` | `#FFFFFF` |
+  | 4 — testimonials | `#2563FF` | `#00E0C4` | `#FFF600` | `#FFFFFF` | `#FFF600` | `#00E0C4` | `#000000` |
+  | 1 — map, pricing, calendar, form | `#FFFFFF` | `#FF2DA0` | `#6B2CFF` | `#000000` | `#FFFFFF` | `#000000` | `#FFFFFF` |
+
+  `deep` is violet under all four. `onScheme[1]` is white / pink / violet with a black pill
+  lettered white (`box1` `#F5F5F5`, `stroke1` pink). `[2]` is lime / pink / violet with a pink pill
+  (`box1` `#D7FF23`, `stroke1` violet). `[4]` is blue / teal / yellow with a teal pill lettered
+  black (`box1` `#3F76FF`, `stroke1` teal). `[5]` is teal / violet / yellow with a violet pill
+  (`box1` `#14F4D8`). `[6]` is violet / lime / pink with a lime pill (`box1` `#8451FA`). `[3]` is the
+  seat's own row above (`box1` `#FF63B8`, `stroke1` violet). That is the *Pop's layout-4 mode*
+  paragraph, key for key.
+- **Proved in the builder** (a throwaway puppeteer script in the session scratchpad, off
+  `page-check.mjs`'s `publish()` walk). The modal offers four Pop cards. On card 4 the canvas's
+  eleven roots stand on pink, pink, lime, pink, pink, white × 4, blue and pink (the footer), in the
+  seeded order, at Desktop, Tablet and Mobile. The published tab's ids are header, bio, media,
+  gallery, repertoire, map, pricing, calendar, form, testimonials and footer, on the same grounds at
+  1440, 768 and 390. Neither window logged an error. Cards 1–3 are proved by their theme-4 `arch_0` /
+  `arch_1` / `arch_2` files and the footer's, all at zero.
+- **What the flat arms and `HeaderV3`'s placeholder half now do under the seats.** This is read off
+  the digest diffs (each changed cell, before → after) and `shots.mjs` before / after, per width, in
+  the session scratchpad. Of the step-4 expectations, three held and one was wrong:
+  - **held**: `pillBg` is lime under 3, pink under 2 and teal under 4;
+  - **held**: the placeholder's `mustard` did not move — the kicker's row is byte-identical at
+    every width (it reads `s.onScheme[3].ac`, now the seat's own `s.ac`);
+  - **held**: the testimonials' flat ground reads Scheme 4's `pillBg`, teal;
+  - **wrong**: **`paper` is not lime under Scheme 3**. It is Retro's `#FBF6EA`, since `paperOf`
+    finds neither pink nor violet above 0.6. It is lime under 2 and yellow `#FFF600` under 4, as
+    expected. So **every white ink of the flat arms on the three pink seats turns cream**.
+
+  Section by section:
+  - **The header's placeholder**:
+    - the root goes white → pink under the photograph, which still covers it, as do Retro's scrim
+      and checker ribbon (its white squares now cream);
+    - every white ink turns `#FBF6EA`, the name included;
+    - Book Now goes black → lime lettered pink, its disc pink round a lime arrow;
+    - the six chips re-seat on Scheme 3's tags — blue, teal, violet, red, yellow, lime, the frame's
+      own backgrounds (trap 7's inks are section 1's);
+    - **the seal's disc turns pink → teal**: `SealBadge`'s Pop arm reads `s.chips[1].bg`, Scheme 3's
+      second tag, read off the DOM, since the digest cannot see an SVG `fill`. Its marks go
+      white → pink (`s.bg`) and its face `box3` black → `#C20A6F`. It is still Pop's smiley-globe,
+      where the frame draws Lime's disc (trap 4).
+  - **The bio, gallery and repertoire** keep their violet look, as Editorial's did:
+    - their band is the flat arm's `mapBg` wash, `rgb(123, 67, 255)` → `rgb(123, 66, 253)` (its
+      paper moved white → cream); the repertoire's panel `repPanel` moves the same way. So the pink
+      root shows nowhere;
+    - their white type turns cream;
+    - every ink that was Scheme 1's black active pair turns Scheme 3's lime: the bio's head and its
+      card's name, the gallery's head, its seven thumbs' fills and rings, and its two arrow discs
+      (their arrows white → black); the repertoire's head and twelve titles, and the rail's idle
+      cells, lettered and ringed;
+    - the lit rail cell goes lime, lettered the band's violet;
+    - the bio's Genres goes pink → lime (`s.ac`), and its six chips re-seat on Scheme 3's tags,
+      where the frame names Scheme 1's (trap 7);
+    - the gallery's white mount round the spotlight goes cream.
+  - **The media is already the frame's lime band.** Four rows a width moved:
+    - the root and the flat band (`cream` = `s.paper`) go white → lime;
+    - the head checker (`mapBg`, Scheme 2's darkest tag, violet, washed toward lime) goes a shade
+      greener;
+    - the foot checker's `s.bg` squares go white → lime.
+
+    Everything inked `s.ac` / `s.tx` stands, since Scheme 2's pink and violet are Scheme 1's. The
+    arm reads no `pillBg`.
+  - **The testimonials, as predicted**: the arm's `ground = s.pillBg` is a **teal** sheet over the
+    blue root, which shows nowhere.
+    - The head goes white → black, and the sheet's ink cream → `#141414`.
+    - The arrow discs go pink → teal on the teal sheet, so only their `#141414` arrows show.
+    - Cards 1 and 3 go white → yellow (`paper`).
+    - Card 2 goes lavender `rgb(236, 228, 255)` → `rgb(65, 118, 222)`; its ink and ring go
+      violet → yellow.
+    - Card 4 goes pink → teal ringed `#141414`, its disc white → `#141414` lettered teal.
+    - The avatar discs go pink → teal, lettered `#141414`.
+
+  None of it is chased here; each section's widened block replaces its arm.
+- **`shots.mjs` passed first time at all three widths**, each under its own `OUT`.
+- **For the sweep's CLAUDE.md pass**: the per-section scheme bullet owes `SCHEMES_OF.Pop` row 3 —
+  the header, bio, gallery and repertoire on 3, the media on 2, the testimonials on 4 — and
+  `THEMES[4].schemes`' comments owe the same sites.
+
 ### Inherited and used
 
 *(The running list the sweep folds into [`../CONVENTIONS.md`](../CONVENTIONS.md): each time a
 session leans on a bullet from Pop's layouts 1–3, Editorial's, Lime's, Grunge's or Retro's
 Conventions, name it here in one line, with the plan it came from, a blank line between sessions.)*
 
+- Session 0: *a section's colour scheme is resolved in `sectionVm`, not restated in its block*
+  (editorial/layout-1) — one row, six seats, no mechanism; *a nested node or a card on another
+  scheme reads that scheme's keys* (editorial/layout-2) — `onScheme[1]` … `[6]` probed in the page,
+  unchanged; *the digest is committed* (lime/layout-1) — five themes, canvas and live, 660 renders a
+  label, 36 files, colour columns only; *the digest's blind spots* (memory: `browser-tool-choice`) —
+  the seal's SVG `fill` read off the DOM, the `page=3` footer proved in the builder.
+
 ## Open questions
 
 1. ~~**Decision 1** — the seats.~~ Not a user call; session 0 writes the row.
-2. **Decision 2 — the fold.** A (fold in the sweep), B (keep the pairs), C (fold in session 0,
-   rejected). Session 0 asks.
+2. ~~**Decision 2 — the fold.** A (fold in the sweep), B (keep the pairs), C (fold in session 0,
+   rejected). Session 0 asks.~~ **A** (user call, 2026-10-07): the sweep folds.
 3. **The map viewport's pink rings on the dark raster.** Scheme 3 binds the rings, their labels and
    the pin's disc to `sem/bg` pink at .3 / .5 / .8 over the plate. Editorial's ink 120 mi ring
    vanished there and was redrawn; Pop's pink may read. Default: sample the render; follow what
