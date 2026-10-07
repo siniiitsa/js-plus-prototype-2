@@ -26362,7 +26362,9 @@ function EnquiryForm({ s }) {
             </>
           ) : s.title}</h2>
           {/* Frame 284: Retro's axis flip — a space-between row at 1440 and
-              390, a column at 768. An emptied promise list drops its node. */}
+              390, a column at 768. An emptied promise list drops its node.
+              At 390 the row wraps too, and the promises hold half of it
+              (JP-120, Retro's block below). */}
           <div style={tab
             ? col(u(30), { alignItems: 'flex-start' })
             : row(u(20), {
@@ -26371,10 +26373,12 @@ function EnquiryForm({ s }) {
               // dropped beside the `gap` shorthand on a resize is React's
               // "Removing a style property" warning (plans/grunge/layout-2.md,
               // open question 1).
-              rowGap: u(20), ...(desk ? { flexWrap: 'wrap' } : null),
+              rowGap: u(20), ...(desk || s.mob ? { flexWrap: 'wrap' } : null),
             })}>
             {s.formPromises.length > 0 && (
-              <div style={col(u(10), { minWidth: 0 })}>
+              <div style={col(u(10), {
+                minWidth: 0, ...(s.mob ? { flex: '1 1 0', minWidth: `calc(50% - ${u(10)})` } : null),
+              })}>
                 {/* The frame's typed ✓ in Body/SM, the line in Label/XS. */}
                 {s.formPromises.map((p, i) => (
                   <span key={i} style={row(u(10))}>
@@ -26386,7 +26390,7 @@ function EnquiryForm({ s }) {
             )}
             {/* With no promises the row keeps the credit at its end. */}
             <span style={row(u(14), {
-              flex: 'none', marginLeft: tab || s.formPromises.length ? undefined : 'auto',
+              flex: '0 1 auto', minWidth: 0, marginLeft: tab || s.formPromises.length ? undefined : 'auto',
             })}>
               {/* The portrait on `sem/bg`, radius 24 of 48 — a circle. */}
               <span style={{
@@ -26394,7 +26398,7 @@ function EnquiryForm({ s }) {
                 overflow: 'hidden', background: G.avatarWell,
               }}><Photo s={s} ink={ink} initialsSize={Math.round(15 * z)} /></span>
               <span style={col(u(2), { minWidth: 0 })}>
-                <span style={disp(s.display, s.list, 1.2)}>{s.brand}</span>
+                <span style={disp(s.display, s.list, 1.2, { overflowWrap: 'break-word' })}>{s.brand}</span>
                 <span style={type(s.ui, s.labelXs, 1.26)}>{s.kicker}</span>
               </span>
             </span>
@@ -26743,7 +26747,17 @@ function EnquiryForm({ s }) {
               rather than left to `flexWrap` (the video section's rule), and
               `alignItems` flips with the axis (the testimonials'): `flex-end`
               bottom-aligns the credit against the last tick in a row, and
-              `flex-start` stops the stacked credit stretching to the measure. */}
+              `flex-start` stops the stacked credit stretching to the measure.
+              The credit was `flex: 'none'`, so at 390 a long name took its
+              whole width out of the promises and, past the measure, ran off
+              the page (JP-120, user call, 2026-10-07, Editorial's Gloock
+              having made a 27-letter name 375 wide). So at 390 the row wraps
+              as 1440's does, and the promises hold half of it: a zero basis
+              floored at the half is what the line break reads, where their
+              max-content would have wrapped Kai Mercer's credit too. The
+              control keeps the row (its credit is 128–169 of 370) and a
+              longer name stands under the promises, wrapping between words
+              — inside them with `break-word` — once it outruns the measure. */}
           <div style={tab
             ? col(u(30), { alignItems: 'flex-start' })
             : row(u(20), {
@@ -26752,9 +26766,11 @@ function EnquiryForm({ s }) {
               // dropped beside the `gap` shorthand on a resize is React's
               // "Removing a style property" warning (plans/grunge/layout-2.md,
               // open question 1).
-              rowGap: u(20), ...(desk ? { flexWrap: 'wrap' } : null),
+              rowGap: u(20), ...(desk || s.mob ? { flexWrap: 'wrap' } : null),
             })}>
-            <div style={col(u(10), { minWidth: 0 })}>
+            <div style={col(u(10), {
+              minWidth: 0, ...(s.mob ? { flex: '1 1 0', minWidth: `calc(50% - ${u(10)})` } : null),
+            })}>
               {s.formPromises.map((p) => (
                 <span key={p} style={row(u(10), {
                   fontFamily: s.ui, fontSize: u(T.labelXs), lineHeight: 1.26,
@@ -26764,14 +26780,15 @@ function EnquiryForm({ s }) {
                 </span>
               ))}
             </div>
-            <span style={row(u(14), { flex: 'none' })}>
+            <span style={row(u(14), { flex: '0 1 auto', minWidth: 0 })}>
               <span style={{
                 width: Math.round(48 * z), height: Math.round(48 * z),
                 flex: 'none', borderRadius: '999px', overflow: 'hidden', background: card,
               }}><Photo s={s} ink={cardInk} initialsSize={desk ? 15 : 18} /></span>
-              <span style={col(u(2))}>
+              <span style={col(u(2), { minWidth: 0 })}>
                 <span style={{
                   fontFamily: s.display, fontSize: u(T.list), lineHeight: 1.2, letterSpacing: s.dls,
+                  overflowWrap: 'break-word',
                 }}>{s.brand}</span>
                 <span style={{ fontFamily: s.ui, fontSize: u(T.labelXs), lineHeight: 1.26 }}>{s.kicker}</span>
               </span>
