@@ -545,9 +545,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // the bio first, then media — whose list ends 122 / 90 / 70 above the
   // repertoire's head again, its 678 list included, so the shared feet carry
   // (re-measured once its repertoire was fitted: 100 / 90 / 70 box to box on
-  // card 3, its head at `padY`); until the calendar joins, the heads part again.
-  if (d === 2 && (T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial'
-    || (T.name === 'Pop' && (cat === 'bio' || cat === 'media')))
+  // card 3, its head at `padY`). The calendar closes Pop's row too (its
+  // `Frame 300`s pad 50 / 56, 50 / 56 and 40 / 40, Editorial's), so the four
+  // templates are one condition again.
+  if (d === 2 && (T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial' || T.name === 'Pop')
     && (cat === 'bio' || cat === 'calendar' || cat === 'media')) {
     const z = (v) => `${Z.dev === 'desktop' ? Math.round(v * 0.82) : v}px`
     const top = Z.dev === 'mobile' ? vm.padY : z(50)

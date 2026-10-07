@@ -18104,12 +18104,41 @@ function Calendar({ s }) {
     //     `sem/bg` paper — `BookPill`'s defaults exactly, so Lime's `fg` is not
     //     passed — and its label is **Label/MD** 20 / 14 / 13 (`s.labelMd`) at
     //     lh 1.1, where Lime's is `size/list`.
-    if (s.limeTree) {
+    //
+    // Pop (964:68774 / 984:15379 / 984:15410, in `Frame 300`s padded as
+    // Editorial's) is the same tree a fifth time, node for node at all three
+    // widths, seated on **Scheme 2** — the instance's own mode, and the foot
+    // pill's again — as a lime card on the page's white (the root's
+    // `cardOnPage`), with no Device override and no effect on any node. Every
+    // size is the ramp (display-lg 82 / 51 / 36, display-sm 36 / 29 / 24,
+    // body-lg 16 / 15 / 15, body-md 14 / 13 / 13, body-sm 12, list 20 / 16 /
+    // 15) and every ink the key Lime's block already reads under the seat:
+    // the card `sem/box/1` `#D7FF23` (the Scheme 2 card's binding, not its
+    // `sem/bg`), the type and day letters `text/2` violet, the dots `box/2`
+    // booked, `text/1` pink picked and `box/1` free. The deltas, behind `pop`:
+    //
+    //   · the card's ring is `border/default`, 4px of `sem/stroke/1` violet
+    //     inside, at radius 36 — scaled at desktop, as every Pop ring is;
+    //   · the free dot's ring is a raw 2 (Lime's 2.559, Editorial's 1px), and
+    //     the month arrows' with it;
+    //   · "Book Me" is Display/Title at 28 / 22 / 20, and the three display
+    //     strings are uppercased and lifted (below);
+    //   · the pill is Scheme 2's own: `text/1` pink lettered and disced in
+    //     `sem/bg` lime round a pink arrow — `BookPill`'s defaults under the
+    //     seat, so Lime's `fg={s.box1}` is not passed (it would give the card's
+    //     `#D7FF23`, one shade off the frame's `#C6F200`). Its label is Lime's
+    //     `size/list`.
+    //
+    // The frame's 32 dot ringed in `text/2` (row 2, the Friday) is a *today*
+    // the twins' frames do not draw, filler beside its booked and selected
+    // runs: the canvas never reads the clock, so it has no seat here.
+    if (s.limeTree || s.pop) {
       const grunge = s.grunge
       const ed = s.editorial
+      const pop = s.pop
       const lz = desk ? 0.82 : 1
       const lu = (v) => `${Math.round(v * lz * 10) / 10}px`
-      const disp = (lh) => (grunge || ed
+      const disp = (lh) => (grunge || ed || pop
         ? { lineHeight: facedLh(s, lh), textTransform: 'uppercase' }
         : { lineHeight: lh })
       // Gloock sits its glyphs lower in these tight boxes than the frames'
@@ -18121,8 +18150,15 @@ function Calendar({ s }) {
       // of descender) clears "2025" by 6.5 / 7.5 / 8.3. Noto took 0.09em,
       // and its 0.24em J cleared it by 4.6 / 6.7 / 6.6 (display-face.md step
       // 4, layout 3). The lift moves the glyphs and no box
-      // (plans/editorial/layout-2.md, *Noto's J*).
-      const lift = ed ? { position: 'relative', top: '-0.055em' } : null
+      // (plans/editorial/layout-2.md, *Noto's J*). Titan sat 0.12–0.15em
+      // (of the frame's size) low at both ends of both strings against Pop's
+      // Chunko (the numeral's floor 0.054 / 0.066 / 0.056 against 0.195 /
+      // 0.196 / 0.194, the month's, its J aside, 0.092 / 0.095 / 0.114
+      // against 0.24 / 0.231 / 0.24), so it takes every Pop head's 0.14em;
+      // lifted, Titan's J — which descends where Chunko's sits on the line —
+      // still clears "2025".
+      const lift = ed ? { position: 'relative', top: '-0.055em' }
+        : pop ? { position: 'relative', top: '-0.14em' } : null
       const body = (size, lh, extra) => ({
         fontFamily: s.body, fontSize: size, lineHeight: lh, letterSpacing: s.dls, ...extra,
       })
@@ -18134,14 +18170,14 @@ function Calendar({ s }) {
           : undefined
         // The free dot's ring is the frame's raw 2.559, stroked inside, so it
         // is an inset shadow and the 30.713 stands. Editorial's is
-        // `border/hairline`, 1px unscaled. A past day is the free dot at .38
+        // `border/hairline`, 1px unscaled; Pop's a raw 2. A past day is the free dot at .38
         // (JP-064), booked or not, since the legend names `box/2` Booked.
         const took = c.booked && !c.dead
         return (
           <span key={i} onClick={onClick} style={{
             width: lu(30.713), height: lu(30.713), borderRadius: '999px', justifySelf: 'center',
             background: on ? s.ac : took ? s.box2 : s.box1,
-            boxShadow: on || took ? undefined : `inset 0 0 0 ${ed ? '1px' : lu(2.559)} ${s.stroke1}`,
+            boxShadow: on || took ? undefined : `inset 0 0 0 ${ed ? '1px' : pop ? lu(2) : lu(2.559)} ${s.stroke1}`,
             opacity: c.dead ? 0.38 : undefined,
             cursor: onClick ? 'pointer' : undefined,
           }} />
@@ -18157,7 +18193,7 @@ function Calendar({ s }) {
           <span onClick={onClick} style={{
             width: lu(24), height: lu(24), flex: 'none', borderRadius: '999px',
             background: s.box1, color: s.tx,
-            boxShadow: `inset 0 0 0 ${ed ? '1px' : lu(2.559)} ${s.stroke1}`,
+            boxShadow: `inset 0 0 0 ${ed ? '1px' : pop ? lu(2) : lu(2.559)} ${s.stroke1}`,
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
             cursor: onClick ? 'pointer' : undefined,
           }}><LimeArrow back={back} z={lz} /></span>
@@ -18166,18 +18202,22 @@ function Calendar({ s }) {
       return (
         <div style={col(lu(30))}>
           {/* "Book Me" is Display/Title at the frames' own 36 / 28 / 26 (32 /
-              25 / 23 under Editorial) — `s.title` is the heading string, not
-              the ramp's size. */}
+              25 / 23 under Editorial, 28 / 22 / 20 under Pop) — `s.title` is
+              the heading string, not the ramp's size. Pop's Titan at lh 1.1
+              sat 0.10 / 0.08 / 0.15em low against the frames' floors, the
+              header card's name again, so it takes that site's 0.1em. */}
           <h2 style={distressed(s, {
             margin: 0, fontFamily: s.display,
-            fontSize: faced(s, lu(ed ? (desk ? 32 : s.mob ? 23 : 25) : desk ? 36 : s.mob ? 26 : 28)), ...disp(1.1),
+            fontSize: faced(s, lu(ed ? (desk ? 32 : s.mob ? 23 : 25) : pop ? (desk ? 28 : s.mob ? 20 : 22)
+              : desk ? 36 : s.mob ? 26 : 28)), ...disp(1.1),
             letterSpacing: s.dls, color: s.tx,
+            ...(pop ? { position: 'relative', top: '-0.1em' } : null),
           })}>{s.title}</h2>
           <div style={col(lu(18), ed ? {
             position: 'relative', background: s.box1, color: s.tx, padding: lu(20), overflow: 'hidden',
           } : {
-            background: s.box1, color: s.tx, padding: lu(20), borderRadius: lu(grunge ? 15 : 50),
-            boxShadow: `inset 0 0 0 ${s.bw} ${s.stroke1}`, overflow: 'hidden',
+            background: s.box1, color: s.tx, padding: lu(20), borderRadius: lu(grunge ? 15 : pop ? 36 : 50),
+            boxShadow: `inset 0 0 0 ${pop ? lu(4) : s.bw} ${s.stroke1}`, overflow: 'hidden',
           })}>
             <div style={col('0')}>
               {!!hit && (
@@ -18227,8 +18267,9 @@ function Calendar({ s }) {
                 the disc's arrow follows the `bg`.
                 BookPill's own scale gives the 54 box and `s.list` label, with
                 `full` opting the 390 canvas back up. Editorial's is Scheme 1,
-                the defaults, with its Label/MD size. */}
-            <BookPill s={s} to={s.calBookTo} label={line} fg={grunge ? '#171716' : ed ? undefined : s.box1} full={s.mob}
+                the defaults, with its Label/MD size; Pop's is Scheme 2's
+                defaults under the seat, at Lime's size. */}
+            <BookPill s={s} to={s.calBookTo} label={line} fg={grunge ? '#171716' : ed || pop ? undefined : s.box1} full={s.mob}
                       size={ed ? s.labelMd : undefined}
                       style={{ width: '100%', justifyContent: 'space-between', whiteSpace: 'normal',
                         overflowWrap: 'anywhere', ...(ed ? { lineHeight: 1.1 } : null) }} />
