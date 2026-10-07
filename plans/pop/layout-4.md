@@ -297,7 +297,7 @@ desktop id — each block's fit comment cites them); it is the gate the session 
 | # | Cat | Desktop node | Size | Tablet node | Size | Mobile node | Size | Scheme 1440 / 768 / 390 (nested) | Lime twin (1440 / 768 / 390) | Editorial twin (1440 / 768 / 390) | Lime block | Status |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 0 | *foundation* | `964:73127` *(page)* | — | `971:10835` | — | `977:14267` | — | — | — | — | `SCHEMES_OF.Pop[3]` (decision 1); the fold asked (decision 2) | **done** — `038e62e`; the fold A |
-| 1 | `header` | `964:73128` | 1440 × 900 | `971:10836` | 768 × 1024 | `977:14268` | 390 × 844 | **3** (nav `Frame 49` **1**; seal `Frame 247` **4** at 1440 and 768, `Frame 248` **5** at 390) | `964:72849` / `971:5299` / `977:8867` | `964:73038` / `971:9538` / `977:13156` | `if (s.limeTree) { … return }` at the head of `HeaderV3` | |
+| 1 | `header` | `964:73128` | 1440 × 900 | `971:10836` | 768 × 1024 | `977:14268` | 390 × 844 | **3** (nav `Frame 49` **1**; seal `Frame 247` **4** at 1440 and 768, `Frame 248` **5** at 390) | `964:72849` / `971:5299` / `977:8867` | `964:73038` / `971:9538` / `977:13156` | `if (s.limeTree) { … return }` at the head of `HeaderV3` | **done** — `46d22eb` |
 | 2 | `bio` | `964:73157` *(Section `964:73129`, head `964:73151`)* | 664 × 720 | `971:10844` *(Section `971:10837`, head `971:10838`)* | 708 × 720 | `977:14276` *(Section `977:14269`, head `977:14270`)* | 370 × 536 | Section **3**; card **2 / 2 / 3**; Tags 1 | `964:72850` / `971:5300` / `977:8868` *(Sections)* | `964:73039` / `971:9539` / `977:13157` | `if (s.v3 && s.limeTree)` ahead of `Bio`'s `if (s.v3)` | |
 | 3 | `media` | `964:73164` *(band `964:73158`, head `964:73159`)* | 1440 × 671 | `971:10851` *(band `971:10845`, head `971:10846`)* | 768 × 569 | `977:14406` *(band `977:14400`, head `977:14401`)* | 390 × **830** | band **2** (head `Section` **1**; 768 / 390 instance `Device: Tablet`) | `964:72858` / `971:6533` / `977:8999` *(bands)* | `964:73047` / `971:9547` / `977:13288` | `if (s.v3 && s.limeTree)` ahead of `Media`'s `if (s.v3)` | |
 | 4 | `gallery` | `964:73214` *(wrapper `964:73173`, head `964:73174`)* | 874 × 646 | `971:10894` *(wrapper `971:10859`, head `971:10860`)* | 768 × 594 | `977:14572` *(wrapper `977:14537`, head `977:14538`)* | 390 × 585.3 | **3** (discs / pills **4**) | `964:72874` / `971:5562` / `977:9136` *(wrappers)* | `964:73061` / `971:9558` / `977:13425` | `if (s.limeTree)` inside `Gallery`'s `if (s.v3)`, after `from` | |
@@ -1028,6 +1028,13 @@ Retro's bullets; name them.
 - **Figma's rotation is counter-clockwise; CSS's is the negative.**
 - **Every card on this page is Lime's rounded shape** — read a radius before inheriting
   Editorial's 0.
+- **Pop's strokes are heavier than the twins' where both bind the same node** (section 1): the
+  globe's six strokes and the seal's equator rings are 4 where Lime's and Editorial's are 3, with
+  every box the same. A paired diff that compares stroke weights finds them; a box-only diff does
+  not. Read `strokeWeight` on every ring and line before reusing a twin's drawing.
+- **A pill whose fill is the frame's own black still owes its arrow** (section 1): `BookPill`'s disc
+  rule inks the arrow in the pill's colour, so a black pill with a `text/1` arrow passes `discFg`.
+  Read the arrow's binding apart from the pill's.
 
 ### Seen at planning time, per section
 
@@ -1185,6 +1192,159 @@ From the walks and the renders — impressions to confirm, not measurements.
   the header, bio, gallery and repertoire on 3, the media on 2, the testimonials on 4 — and
   `THEMES[4].schemes`' comments owe the same sites.
 
+### Settled in section 1 (the header)
+
+- **The block widened at its head: `if (s.limeTree || s.pop) { … return }`, `const pop = s.pop`**
+  (about twenty arms, no `G`), its comment saying the pair folds into `limeTree` in the sweep
+  (decision 2). The paired diff against Lime's **and** Editorial's twins, by traversal order and
+  case-insensitively, was the whole read: 61 / 57 / 57 nodes, node for node, and every box the
+  same but these, Pop's own at all three widths — the avatar (113 × 180 / 113 × 180 / 116 × 180,
+  radius 96.95, where Lime's is 112.6 × 118.68 at 26.95 and Editorial's a 145 arch), the type (the
+  Pop ramp; the boxes that hug it), `radius/chip` 8 on the dot and the chips (the twins' 6), the
+  globe's six strokes **4** (`border/default`; the twins' 3) and the seal's two equator rings **4**
+  (2.71 at 390; the twins' 3 / 2.03). The seal boxes, the capsule, the paddings and the gaps are
+  the twins' to the hundredth. Every paint is bound; the walk found no raw hex. Root Scheme 3 at
+  every width, the nav `Frame 49` Scheme 1, the seal `Frame 247` Scheme 4 at 1440 and 768 and
+  `Frame 248` Scheme 5 at 390, the 768 root `Device: Tablet` (a no-op): the plan's table, which
+  closes layout 1's open question 8 and layout 2's open question 7.
+- **Retro's half lost its two Pop arms** (`mustard = s.pillBg`, `hue={s.paper}`, and both comment
+  passages). Theme 0 at zero proves nothing else moved.
+- **What reads what, under the Scheme 3 seat** (`get_variable_defs` on the three masters is
+  `THEME_RAMP.Pop` exactly — display-xl 125 / 75 / 46, title 28 / 22 / 20, list 20 / 16 / 15,
+  label-lg 24 / 16 / 14, label-sm 16, label-xs 20 / 14 / 12, radius/chip 8):
+  - **the photograph** `f70d25d3` at `FILL` (`popHero`), unmirrored (the guard is `desk && s.lime`,
+    unchanged), over `sem/box/3`, fading to the seat's own `s.bg` pink (`ed || pop`);
+  - **the avatar**: `s.box1` `#FF63B8` under the photograph, `u(180)` tall, `u(96.95)` on every
+    corner, its 3.04 `s.stroke2` lime ring Grunge's and Editorial's overlay; the initials `s.tx`;
+  - **the kicker** `s.ac` lime at Display/Title `u(28)` / 22 / 20 (a literal, `vm.title` shadowing
+    the ramp); **the name** `s.text3` white, one tone (`Title`'s `twoTone` stays Grunge's) — the
+    first `s.text3` read on a layout-4 page; **the location** `s.tx` violet, uppercased, beside an
+    `s.ac` lime dot (`lift`) at `s.radiusChip`;
+  - **the chips** `vm.tagChips`' own `c.bg` / `c.fg`, Grunge's route: Scheme 3's six tags are
+    exactly the frame's six backgrounds (blue, teal, violet, red, yellow, lime). Each takes its own
+    seat's ink, which is the frame's in four of six (trap 7): **chip 4 "Archive" is lettered cream
+    `#F6F0E8`** (Scheme 3's red seat) where the frame binds `scheme/4/tag1/text` `#141414`, and
+    chip 5 "Live" `#000000` where it binds `scheme/5/tag1/text` `#141414` (indistinguishable).
+    Chip 2 is the frame's `#000000` at 1440 and `#141414` narrow — the frame flips between
+    `scheme/1/inactive/text` and `scheme/1/tag1/text`; ours is `#000000` at every width;
+  - **the capsule** is Editorial's: `fill` `s.onScheme[1].bg` white, `colour` `s.onScheme[1].tx`
+    violet (name, links, globe, burger), `nameSize` `s.labelLg` at every width, `mark` Grunge's
+    29.5 / 36 globe at 11 / 13.15. **Book Now** is `s.onScheme[1]`'s `pillBg` black lettered and
+    disced `bg` white (trap 5, the frame's own black) and **needs `discFg: s.onScheme[1].ac`**: the
+    frame's arrow is `text/1` pink, where BookPill's disc rule inks it the pill's own black
+    (Editorial's terracotta arrow was its pill's colour, so it needed none). At 390 Lime's × 0.712
+    recipe, its unstyled Chunko 11.39 label set in Titan;
+  - **the seal** on `scheme={s.mob ? 5 : 4}` (trap 4, below).
+- **Four shared helpers moved, each additive and scoped:**
+  - **`SealBadge`**: the Pop arm steps aside at `scheme` 4 or 5 (`s.pop && !classic && scheme
+    !== 4 && scheme !== 5`; no other Pop caller passes either — the footer passes 1 or 2), and the
+    Lime-disc arm widens to `(s.limeTree || s.pop)`, reading `[s.onScheme[scheme].bg,
+    s.onScheme[scheme].ac]` ahead of Editorial's pair. Its equator rings take Pop's 4 inside their
+    14: `strokeWidth` 3.19 and `r` 3.99 in the 100 box (Lime's 2.39 / 4.39). Read off the DOM, since
+    the digest cannot see a `fill`: disc `#2563FF` with `#00E0C4` marks at 1440 and 768, `#00E0C4`
+    with `#6B2CFF` marks at 390; card 1's seal still the pink smiley-globe (`174.795` box), Lime's
+    `#F2FFD0`, Grunge's `#DF262C` and Retro's `#EAD7B8` unchanged.
+  - **`LogoMark` / `LimeGlobeMark`**: the globe takes an additive `weight` (3 by default; the ring
+    and the meridian are inside strokes, so their centre lines pull in by half the difference) and
+    `LogoMark` passes 4 at `s.pop && s.v3` alone. Every other template's globe reads `3` / `16.49` /
+    `7.41` off the DOM, byte for byte.
+  - **`Wordmark`**'s Lime / Pop branch honours `gap` (`gap ?? …`), so the capsule's 13.15 reaches
+    Pop's narrow masters (measured 13.14 at 768 and 390); NavBar's `markGap` reads `mark?.gap`
+    first, so the 390 name's fit room counts it. No Lime or Pop caller passed `mark` before.
+  - **`Photo`'s backdrop under Pop at `s.v3`** is `s.box3`, the frame's `#C20A6F` under the fade
+    (`&noimage=1`: a magenta ground under the pink floor, the white capsule and type reading on
+    it). **NavMenu's panel at Pop `s.v3`** is `[s.mapBg, s.text3]`: under Scheme 3 `mapBg` is
+    already cards 1 and 2's violet (`rgb(123, 66, 253)`), but `mapFg` is Retro's cream `paper`, so
+    the links took the seat's white `text/3`, the ink cards 1 and 2 open with.
+- **The avatar is a new asset, `pop-stacked-avatar.jpg`** (open question 7, the session's call). The
+  stadium covers the whole 1122 × 1402 source (`0b079033` at `FILL`), where the seeded
+  `POP_HEADER_AVATAR` is its top square (layout 1's circle `CROP`): a centred cover of the square
+  diffed **58** in 255 from the frame's render, a cover of the whole source **2**. Exported whole
+  at 480 × 600 (Editorial's arch's size, 54 KB). Seeded per design: `SEEDS.Pop.avatars = { 3: … }`,
+  `defaultImage`'s avatar arm reads `seed.avatars?.[design] ?? seed.avatar`, and `sectionVm` now
+  passes `d` there (`EditPanel`'s `imgVal` already did). No other theme carries `avatars`; card 1's
+  circle keeps its square.
+- **The lifts, scanned** (each string drawn alone on white at DPR 2, its ink against the frame's
+  `absoluteRenderBounds`, cap tops, since Titan's cap height matched Chunko's to 0.4% on the name):
+  the name sat **0.134 / 0.135 / 0.142em** low → `top: -0.14em` on the h1 (merged into `Title`'s
+  `style` beside JP-109's `maxWidth`); the kicker **0.12 / 0.085 / 0.18em** → `-0.1em`, Display/
+  Title's token; the location **0.11 / 0.08 / 0.06em** → `-0.08em`, on the text alone, so it
+  centres on the dot as the frame's does. After: every cap top within 0.8 frame px of the frame's
+  but the 390 kicker's 1.6 (Blink's per-size rounding, layout 3's 390 again). The kicker's floor
+  reads 2–4 px under the frame's because Titan's J descends where Chunko's does not.
+- **Measured against the masters** (harness, `theme=4&arch=3`; × 0.82 at desktop, the frame's
+  number in brackets):
+
+  | Width | Avatar (y · w × h) | Kicker | h1 (y × h) | Location | Chips | Pill | Nav name |
+  |---|---|---|---|---|---|---|---|
+  | 1440 | 288.2 · 92.7 × 147.6 (287.8 · 92.7 × 147.6) | 468.6 (468.2) | 508.6 × 154.5 (508.4 × 154.2) | 677.8 (677.3) | 852 · 633.8 (852.8 · 633) | 155.5 × 44.3 (156.6 × 44.3) | 102.8 (102.6) |
+  | 768 | 550.8 · 113 × 180 (551) | 770.8 (771) | 812.9 × 56.2 (813 × 56) | 887.2 (887) | 936.4 (936) | 170.2 × 54 at 498.8 (169 × 54 at 500) | 99.1 (99.1) |
+  | 390 | 385.3 · 116 × 180 (385) | 605.3 (605) | 645.3 × 34.5 (645 × 35) | 697.8 (698) | 745.8 / 778.9 (746 / 779) | 121.2 × 38.4 at 202.8 (120.37 × 38.44 at 203.6) | 79.1 (79.1) |
+
+  The capsule is 1088.2 × 60.6 / 708 × 74 / 370 × 58.4; the globes 29.5 / 36 / 36 (at 50 · 49 and
+  30 · 41.2 narrow, exact). The seal boxes are Lime's: 137.5 at 1010.6 / 120.8, 167.7 at 570.3 /
+  692, 113.7 at 270 / 120. The seed's name holds the frame's lines: two at 1440 (typed break), one
+  at 768 (ends 487.1, the disc at 591.5) and one at 390 (280.4 of 350, where Gloock broke). The
+  pictures read as the frames at every width.
+- **The links: the em reading stays, and nine wrap at desktop** (*What `sectionVm` owes*). Without
+  `links`, NavBar spaces Pop's Label/SM links `23 / 16` em apart (`sm = ed || pop`; `navGapEm`'s
+  Pop arm at `d === 3`), which **is** the frame's fixed 23 at the cap — so passing Editorial's
+  `links={{ gap, cap }}` would only part them below it, and would need `navGapEm` 0. Measured on
+  the canvas: the frame's **eight** fit one row at 12.27px (689.7 in 702.2, `&nav=8`); our **nine**
+  (Availability) need 733.6 at the 12px floor and **wrap, "Reviews" alone on a second row inside
+  the capsule**. The fixed reading would need 746.5, worse. **Editorial's layout-4 capsule does
+  the same on HEAD** (Gloock: 718.8 in 680.5, two rows), so it is the layout-4 capsule's own wrap,
+  which JP-091 left in place (*"Layout 4's capsule … keeps its wrap"*), not a Pop regression.
+  Named; open question 10.
+- **The seal's name in Titan runs into its equator rings** (the frame sets Lime's Bebas Neue Bold
+  17.61, a face the component carries unbound): each copy spans ~170° of the ring at the faced
+  14.05, so "…MERCER" meets "KAI…" across each ring. Editorial's accepted Gloock seal does exactly
+  the same on HEAD, so it follows that precedent: named, not fitted.
+- **JP-109 holds for Pop with no arm** (`s.cardNameEms` / `s.navNameEms` are Titan's). The
+  long-name probe (`&name=`, three widths: per-glyph `Range` rects against the disc's circle off
+  its wrapper's `width`, per-word line count, `scrollWidth`):
+
+  | Name | 1440 | 768 | 390 |
+  |---|---|---|---|
+  | *Kai Mercer* | 100.94, 2 lines | 73.5, 1 line, ends 487.1 | 45.08, 1 line |
+  | *Maximilian Featherstonehaugh* | 69.29, 2 lines | 44.1 (floor), 2 lines, ends 537.4 | 30.08, 2 lines |
+  | *Supercalifragilistic Expialidocious* | 67.14, 2 lines | 44.1 (floor), 2 lines, ends 558.2 | 29.15, 2 lines |
+  | *Supercalifragilistic* | 67.14 | 45.43, ends 574.1 | 29.15 |
+  | *Florence and the Machine* | 100.94, 3 lines | 44.1 (floor), 2 lines, ends 464.5 | 45.08, 2 lines |
+  | *Kai Featherstone* | 100.23, 2 lines | 54.14 (line fit), 1 line, ends 570 | 43.52, 2 lines |
+
+  No glyph meets the 768 disc (left edge 591.5) for any of them, no word breaks inside itself, no
+  root scrolls sideways, and every root keeps its height. JP-109's designer note 3 (Pop's Retro
+  half put U G H under the seal) closes with the placeholder.
+- **Digest: themes 0, 1, 2 and 3 zero files of 660, canvas and `live=1`** (a fresh `:5191`, both
+  labels there, no one-row file); theme 4 exactly **header arch 3 at three widths** on each
+  surface (6 files) — no `arch_0`, `arch_1`, `arch_2`, `arch_4` or `arch_5` file, no other
+  category. `SealBadge`, `LogoMark`, `Wordmark`, `NavBar`'s `markGap`, `Photo` and `NavMenu` are
+  shared, so the zero rows are their proof, with the DOM reads above for what the digest cannot
+  see (an SVG `fill` or `stroke-width`, the open panel, `&noimage=1`).
+- **In the builder** (`page-check.mjs Pop 3,0,1,2` on `:5191`, plus one scratch script): four Pop
+  cards on every card and **none draws a `conic` gradient** — card 4's seal is the blue disc in the
+  modal, card 1's the pink smiley-globe. After *Use this header* the canvas stands pink, pink,
+  lime, pink, pink, white × 4, blue and pink (the footer), and the page list reads every body row
+  at "layout 4" and the footer at "layout 1". Published: the seeded order with no composed row, the
+  header 901 tall at 1440; all nine nav links and Book Now scroll, Book Now to `#form`; the player
+  plays; the form refuses (1.6px pink rings) and composes its mailto; the 390 burger goes 1 → 11,
+  `overflow390` 0; at **820 in a fresh tab** the burger opens the violet panel lettered white, nine
+  links, no overflow, and a panel link scrolls `#pricing`. No error or warning on any card.
+- **`FIELDS.header` needed no change**: `reach.mjs 4` (the first Pop header measurement with no
+  placeholder card) compared in Node with `fieldReach(f, 'Pop', d)`: **70 plain probes, no
+  mismatch**. Kicker / `showBadge` / `badgeText` `[0, 3]`, tags / `showTags` `[0, 2, 3]`, location
+  all four, `cta2` `[1, 2]` (4/6), `cardLine` `[2]`, layout 2's copy `[1]`, align `[0]`. The
+  partials are the known four (`header.cta2` 4/6, `calendar.email` 3/6, `bio.tagsLabel` 4/6 at
+  layout 4, `gallery.railLabel` 2/6).
+- **Named diffs**: the ninth link and its wrap at desktop (open question 10); chip 4 lettered cream
+  (trap 7); the seal's name in Titan, into its rings; the kicker's J under its floor.
+- **For the sweep's CLAUDE.md pass**: `notes/photography.md`'s Pop sentence (the stadium seeds the
+  whole source, `SEEDS.Pop.avatars`, and `defaultImage` reads it by design); `notes/templates.md`'s
+  Pop paragraph (*Stacked the one placeholder* → fitted) and its `SealBadge` / `LogoMark` lines;
+  the FIELDS paragraph's card-4 re-measure clause; README's *Choosing a header* if it names card 4
+  as a placeholder. Not written here.
+
 ### Inherited and used
 
 *(The running list the sweep folds into [`../CONVENTIONS.md`](../CONVENTIONS.md): each time a
@@ -1197,6 +1357,23 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
   unchanged; *the digest is committed* (lime/layout-1) — five themes, canvas and live, 660 renders a
   label, 36 files, colour columns only; *the digest's blind spots* (memory: `browser-tool-choice`) —
   the seal's SVG `fill` read off the DOM, the `page=3` footer proved in the builder.
+
+- Section 1: *the paired diff walk* (grunge/layout-2) — against Lime's and Editorial's twins at
+  three widths, the whole read; *read every nested node's scheme off the master* (grunge/layout-3)
+  — the seal 4 / 4 / 5 and the capsule's 1; *a node can name another scheme's variable outright*
+  (editorial/layout-3) — the chips' inks from Schemes 1, 4 and 5; *a shared helper's arm is scoped
+  to its layouts, not widened by grep* (editorial/layout-4) — `SealBadge`'s step-aside at 4 / 5,
+  `LogoMark`'s weight at `s.v3`; *one five-theme digest is the whole proof for a shared-helper
+  change* (lime/layout-1) — six helpers, the SVG attributes read off the DOM beside it; *read a
+  fill's `scaleMode` … correlate the render with the seed* (grunge/layout-2) — the avatar's
+  `FILL` over the whole source, 58 against 2 in 255; *a stand-in face's glyph floor is measured per
+  site* (editorial/layout-3) and *Titan at Display/Title takes 0.1em* (pop/layout-3) — the name
+  0.14, the kicker 0.1, the location 0.08; *the pill that leans on `BookPill`'s black default*
+  (pop/layout-3) — turned round: the black is the frame's, but its arrow needed `discFg`; *probe a
+  display string with a long word* (editorial/layout-4) — JP-109's six names; *a seeded page cannot
+  show an empty slot* (lime/layout-1) — `&noimage=1` and an emptied avatar; *field reach is
+  measured* (CLAUDE.md) — `reach.mjs 4`, 70 probes; *the whole-page published check*
+  (lime/layout-1) — `page-check.mjs Pop 3,0,1,2`.
 
 ## Open questions
 
@@ -1217,13 +1394,23 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
 6. **The bio's second chip is pink on the pink band** (`P:scheme/1/tag2/bg` on Scheme 3's `sem/bg`),
    so "Sold Out" reads as bare text. Followed, as the frame draws it. Worth a line to the designer
    with trap 7's inks.
-7. **The header avatar's seed** may not be this frame's crop (*Photography*). The header session
-   correlates; a new asset is its call, recorded here if taken.
+7. ~~**The header avatar's seed** may not be this frame's crop (*Photography*). The header session
+   correlates; a new asset is its call, recorded here if taken.~~ *Taken in section 1*: the
+   stadium covers the whole source, so design 3 seeds it whole (`pop-stacked-avatar.jpg`,
+   `SEEDS.Pop.avatars[3]`); the top square diffed 58 in 255 from the render, the whole source 2.
 8. **The form's head is "CONTACT US" at 1440 and "KAI MERCER" at 768 and 390** — the one Pop frame
    that disagrees with itself between widths. "Contact Us" stands (JP-081's reply); worth a line to
    the designer.
 9. **The 390 page drops every 10px rule** the 1440 and 768 pages draw. Followed; worth a line to the
    designer only if the rules were meant at every width.
+10. **The layout-4 capsule wraps nine links at desktop under Pop** (section 1), "Reviews" alone on a
+   second row inside the bar: Titan at the 12px floor needs 733.6 of 702.2 on the canvas (the
+   frame's eight fit at 12.27). **Editorial's does the same on HEAD** (Gloock, 718.8 in 680.5), so
+   it is the layout-4 capsule's own wrap, which JP-091 (user call, 2026-10-01) reversed for layout 1
+   alone — there the name gives way first and the links keep one row. Default: named, as JP-091's
+   scope leaves it. The other answer is a user call for both templates: give layout 4's capsule
+   JP-091's name fit (`NavBar`'s `fit` gate takes `s.v3` beside `s.v0`, so the seed's name gives
+   way first — not measured here), or lower the links' floor there.
 
 ## Notes for the designer
 
