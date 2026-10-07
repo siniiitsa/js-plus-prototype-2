@@ -13803,9 +13803,27 @@ function Repertoire({ s }) {
     // `faced` (Gloock's `faceK`) at their sites. The 390 pager's two pills
     // are **square** too (radius 0, where the twins' are 60), dashed 5, 5 in
     // `sem/text/1`.
-    if (s.limeTree) {
+    //
+    // Pop (964:68775 / 984:15376 / 984:15407, plans/pop/layout-3.md) is the
+    // tree a fourth time, 57 / 57 / 63 nodes, on the white page (Scheme 1)
+    // with its three cards on **Schemes 2 / 3 / 4** — lime, pink and blue by
+    // the same rendered place (the 390 master centres the pink card). Every
+    // leaf is a `sem/*` binding in the card's own scheme, Editorial's
+    // reading, so each seat is `s.onScheme[n]` again: `box/1` the card,
+    // `text/2` its title, songs, times and link (violet / violet / yellow),
+    // `text/1` the meta line (pink / lime / teal), `stroke/1` its ring and
+    // the rows' foot rules (violet / violet / teal). The deltas: the ring is
+    // **4px** (`border/default`) where the rules stay 1, Lime's 34 padding and
+    // 50 corner, and the rows divide to **50.25** / 57.5 / 57.5 (the card is
+    // 412 at 1440, its head being the frame's Chunko, 73 tall). The head and
+    // titles are uppercase in Titan through `faced` (`faceK` 0.98), and the
+    // head is lifted Titan's 0.14em. Head `s.tx` and the 390 pills' 1px
+    // `s.ac` ring at radius 60 are the frame's `sem/text/2` and `sem/text/1`
+    // already, so they need nothing.
+    if (s.limeTree || s.pop) {
       const grunge = s.grunge
       const ed = s.editorial
+      const pop = s.pop
       const mist = '#D5E3B2'  // Scheme 4 `sem/box/1`
       const lime3 = '#CCFA61' // Scheme 3 `sem/box/1`
       const dark = { bg: mist, ink: s.bg, acc: s.bg, edge: '#15180F26' }
@@ -13814,7 +13832,12 @@ function Repertoire({ s }) {
         const S = s.onScheme[n]
         return { bg: S.box1, ink: S.tx, acc: S.ac, edge: S.stroke1 }
       }
-      const G = grunge ? {
+      // `ringW` is Pop's alone: the card's ring weight, where the twins' is a
+      // hairline (`ring` on a seat is its colour, Grunge's).
+      const G = pop ? {
+        seats: [seat(2), seat(3), seat(4)],
+        pad: 34, radius: 50, rowH: desk ? 50.25 : 57.5, ringW: 4,
+      } : grunge ? {
         seats: [blk, { bg: '#9E1F17', ink: s.tx, acc: '#000000', edge: '#00000026', ring: '#FFFFFF' }, blk],
         pad: 24, radius: 15, rowH: desk ? 44.5 : 62.5,
       } : ed ? {
@@ -13847,7 +13870,7 @@ function Repertoire({ s }) {
       // length rides that line's top, lowered by half the two line heights'
       // difference: centred on the title's first line, which is where the
       // old centring put it beside a one-line title.
-      const disp = (lh) => grunge || ed ? { lineHeight: facedLh(s, lh), textTransform: 'uppercase' } : { lineHeight: lh }
+      const disp = (lh) => grunge || ed || pop ? { lineHeight: facedLh(s, lh), textTransform: 'uppercase' } : { lineHeight: lh }
       const titleSize = faced(s, s.list)
       const lenDrop = `calc((${titleSize} * ${disp(1.2).lineHeight} - ${s.bodySm} * 1.4) / 2)`
       const body = (size, lh, extra) => ({
@@ -13860,7 +13883,7 @@ function Repertoire({ s }) {
         const more = st.songs.length > rows.length
         return (
           <div key={st.label} style={col(u(10), {
-            background: k.bg, color: k.ink, boxShadow: ed ? undefined : `inset 0 0 0 1px ${k.ring || k.edge}`,
+            background: k.bg, color: k.ink, boxShadow: ed ? undefined : `inset 0 0 0 ${G.ringW ? u(G.ringW) : '1px'} ${k.ring || k.edge}`,
             borderRadius: u(G.radius), padding: u(G.pad), overflow: 'hidden', minWidth: 0,
             position: ed ? 'relative' : undefined,
           })}>
@@ -13915,6 +13938,9 @@ function Repertoire({ s }) {
           <h2 style={distressed(s, {
             margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispLg), ...disp(0.89),
             letterSpacing: s.dls, color: s.tx,
+            // Titan's glyph floor, scanned: 0.12–0.15 token-em low at both
+            // ends against the frame's Chunko, the header's and media's heads.
+            ...(pop ? { position: 'relative', top: '-0.14em' } : null),
           })}>{s.title}</h2>
 
           {sets.length === 0 ? (

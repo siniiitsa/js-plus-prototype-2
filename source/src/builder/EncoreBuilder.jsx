@@ -543,8 +543,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // one condition again. Pop's wrappers are Editorial's inset for inset
   // (plans/pop/layout-3.md, *The composed page*), and it joins the same way,
   // the bio first, then media — whose list ends 122 / 90 / 70 above the
-  // repertoire's head again, its 678 list included, so the shared feet carry;
-  // until the calendar joins, the heads part again.
+  // repertoire's head again, its 678 list included, so the shared feet carry
+  // (re-measured once its repertoire was fitted: 100 / 90 / 70 box to box on
+  // card 3, its head at `padY`); until the calendar joins, the heads part again.
   if (d === 2 && (T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial'
     || (T.name === 'Pop' && (cat === 'bio' || cat === 'media')))
     && (cat === 'bio' || cat === 'calendar' || cat === 'media')) {
@@ -566,8 +567,11 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // 26), and the gallery keeps its own: its band is a sheet that bleeds
   // `calc(-1 * padY)` to the root's edges, so its edge is the gap's already.
   // 768 and 390 keep `padY` (56 and 44 against the frames' 60): reported as
-  // matching, and their pages stand the calendar between the two.
-  if ((T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial')
+  // matching, and their pages stand the calendar between the two. Pop's
+  // repertoire root pads the same 56 / 56 at 1440 (964:68775, over its lime
+  // gallery band), so it joined with its repertoire (plans/pop/layout-3.md,
+  // section 4); its pricing joins the arm below in its own session.
+  if ((T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial' || T.name === 'Pop')
     && d === 2 && cat === 'repertoire' && Z.dev === 'desktop') {
     vm.pad = `${vm.padY} ${vm.padX} ${Math.round(56 * 0.82)}px`
   }
