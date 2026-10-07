@@ -683,7 +683,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // is a different photograph from the backdrop; elsewhere an empty avatar is
   // the initials placeholder. A backdrop upload no longer fills it.
   vm.avatar = c.avatar !== undefined ? (c.avatar ?? undefined)
-    : defaultImage(cat, T.name, 'avatar')
+    : defaultImage(cat, T.name, 'avatar', d)
   // Multi-photo sections — the gallery strip is the only one left, now that the
   // media player's track artwork travels per track. Slot n fills tile n;
   // an empty slot falls through to the section's initials placeholder. An
