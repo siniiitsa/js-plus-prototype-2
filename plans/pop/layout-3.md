@@ -292,7 +292,7 @@ masters are one session. **Lime block** is where that section's Lime layout-3 bl
 | 7 | `pricing` | `964:68777` | 1440 × **1093** | `984:15381` | 768 × **1010** | `984:15412` | 390 × **1419** | 1 (featured row **2**) | `964:68680` / `984:10765` / `984:10796` | `964:68745` / `984:16837` / `984:16868` | `if (s.limeTree)` inside `Pricing`'s `if (s.v2)`, after `shown` | **done** `ed6432a` |
 | 8 | `map` | `964:68778` | 1440 × **809** | `984:15382` | 768 × **827** | `984:15413` | 390 × **880** | **4** (lit row, *See all gigs* and `radius-map` **3**; the viewport inherits 3) | `964:68681` / `984:10766` / `984:10797` | `964:68746` / `984:16838` / `984:16869` | `if (s.limeTree)` inside `EventsMap`'s `if (s.v2)`, after `litRow` | **done** `1177b7f` |
 | 9 | `form` | `964:68779` | 1440 × **553** | `984:15383` | 768 × **667** | `984:15414` | 390 × **716** | 1 (card **2**) | `964:68682` / `984:10767` / `984:10798` | `964:68747` / `984:16839` / `984:16870` | `if (s.limeTree)` inside `EnquiryForm`'s `if (s.v2)`, after `up` | **done** `bbf71a0` |
-| 10 | `testimonials` | `964:68780` | 1440 × 790 | `984:15384` | 768 × **775** | `984:15415` | 390 × **1050** | 1 (cells **3 / 7 / 2 / 4 / 5 / 6**) | `964:68683` / `984:10768` / `984:10799` | `964:68748` / `984:16840` / `984:16871` | `if (s.limeTree)` inside `Testimonials`' `if (s.v2)`, after `template` | open |
+| 10 | `testimonials` | `964:68780` | 1440 × 790 | `984:15384` | 768 × **775** | `984:15415` | 390 × **1050** | 1 (cells **3 / 7 / 2 / 4 / 5 / 6**) | `964:68683` / `984:10768` / `984:10799` | `964:68748` / `984:16840` / `984:16871` | `if (s.limeTree)` inside `Testimonials`' `if (s.v2)`, after `template` | **done** `7868053` |
 | — | `footer` | `964:68781` | 1440 × 479.5 | `984:15385` | 768 × 720.4 | `984:15416` | 390 × 720.4 | *(explicit 2, inert)* — renders 3, layout 1's pink | — | — | — | **out of scope**: layout 1's footer, closed at planning time |
 | — | `tags` | `964:68761` | 858 × 75 | `984:15365` | 708 × 67 | `984:15396` | 370 × 97 | 1 | — | — | — | **not in the project**; its Genres row is drawn inside the bio's block |
 
@@ -401,9 +401,10 @@ Seven traps in that table:
    pink type — the frame draws the lit state, so it is followed (CONVENTIONS C, *a twin's redrawn
    state is read against this frame*).
 6. **The testimonials stand six cells on six schemes**, one per cell (3 / 7 / 2 / 4 / 5 / 6), where
-   Lime's register is three seats, Grunge's two and Editorial's three: a six-entry `REG` in `G`,
-   written fresh in Retro's `SEATS` order — never a remap of a twin's (CONVENTIONS A, *seat the
-   schemes off the master, never remap the twin's register*).
+   Lime's register is three seats, Grunge's two and Editorial's three: a ~~six-entry~~ `REG` in
+   `G`, written fresh in Retro's `SEATS` order — never a remap of a twin's (CONVENTIONS A, *seat
+   the schemes off the master, never remap the twin's register*). *Section 10: five entries —
+   the stat card's Scheme 3 is read through `card`, as under every twin.*
 7. **One raw hex, and it reads as Pop**: the bio's sparkle `#00E0C4` is Scheme 1's `tag4` (teal) to
    the byte — `s.chips[3].bg` — at every width. Layout 2's decision 2: followed, through the key.
 
@@ -908,6 +909,18 @@ Retro's bullets; name them.
   **And read whose pill it is before naming its trap**: a block's own `pill()` on `s.ac` /
   `s.bg` is not `BookPill`, so under a nested card its trap is the section's `s.bg` (Scheme 1's
   white, where the frame binds the card's `sem/bg` lime), not `pillBg`'s black.
+- **Count a register in the block's own terms, and read each register's ink off its cell**
+  (section 10). The plan's "six-entry `REG`" counted the stat card's scheme, but every twin's
+  `REG` holds the quote cells alone and the stat card reads `card` / `cardFg` / `num` / `hair`
+  / `lift`, so Pop's is five registers seated by identity. And where a frame gives every cell
+  its own scheme, the quote's ink is not one key across them: it binds `text/2` on three cells
+  and `text/1` on two, so a register's `fg` is the cell's binding, never the scheme's `tx` by
+  default.
+- **Titan at Label/LG, lh 1.1, took 0.12em** (section 10): the quote and the disc's mark
+  scanned 0.07–0.15 token-em low across the three widths (Blink's per-size rounding), between
+  Display/Title's 0.1 at the same line height and the heads' 0.14. Display/List over a line of
+  type took the map's 0.08 again. A disc's mark lifts inside the disc (layout 2's *lift the
+  label, never the ring*).
 
 ### Seen at planning time, per section
 
@@ -2257,6 +2270,150 @@ From the renders and the planning walk — impressions to confirm, not measureme
   cap stays dropped. **`vm.pad`'s form / testimonials arm folds back into one condition** once
   the roots' 56 · 30 / 30 / 56 / 30 are measured (the twins' numbers by the planning read).
 
+### Settled in section 10 (the testimonials)
+
+- **The block widened: `if (s.limeTree || s.pop)` inside `Testimonials`' `if (s.v2)`, after
+  `template`, `const pop = s.pop`, `S3` off `s.onScheme[3]` under `ed || pop`, and a fourth `G`
+  arm written first**, the Lime, Grunge and Editorial arms byte-identical: Editorial's keys read
+  on Pop's schemes (no new leaf), a `popReg(n, ink)` helper for the register, and a handful of
+  `pop` sites — `disp()`'s and the face stack's uppercase, the unringed seat, four lifts. The
+  walk (bindings with their collection, all three widths) found the twins' tree node for node,
+  **44 = 44 = 44** against both, and the paired traversal-order diff returned **leaves alone**:
+  the ramp, Lime's corner **50** on Grunge's **solid** 1px INSIDE rings (Editorial's are square
+  and dashed), and Editorial's **24** padding (28 on `quote-cell` and `feat-quote`, each row's
+  last cell — the twins' majority call, taken again); every gap, inset, disc and seat (the
+  14 / 16 / 24 gaps, the 56 and 24 discs at −8, the 275 / 276 seats) the twins'. **Scheme 1 on
+  the root, every cell on its own scheme at every width** — `rating` 3, then 7 / 2 / 4 / 5 / 6
+  (`explicitVariableModes`); `resolvedVariableModes` Desktop / Tablet / Mobile; no effect, no
+  rotation, **every paint bound** but the four face photographs. `get_variable_defs` is the
+  ramp (display-md 45 / 36 / 28, label-lg 24 / 16 / 14, list 20 / 16 / 15, body-lg 16 / 15 /
+  15, body-md 14 / 13 / 13, body-sm 12), so every size reads `s.*`. The section has no control,
+  so `live=1` is byte-identical to the canvas.
+- **Five registers, not six — a correction to the plan's count** (the new *Conventions*
+  bullet). Trap 6's "six-entry `REG`" counted the stat card, which every twin reads through
+  `card` / `cardFg` / `num` / `hair` / `lift`, so the arm is **five registers in Retro's seat
+  order, `SEATS` the identity** — `popReg(7, 'tx')`, `popReg(2, 'ac')`, `popReg(4, 'tx')`,
+  `popReg(5, 'ac')`, `popReg(6, 'tx')` — each `box/1` (coral `#FF5A5A`, lime `#D7FF23`, blue
+  `#3F76FF`, teal `#14F4D8`, violet `#8451FA`) ringed 1px in its `stroke/1` (lime, —, teal,
+  violet, lime), its 56 disc `text/1` lettered `sem/bg` in that ring (Editorial's mapping:
+  lime lettered `#FF1A1A`, teal lettered `#2563FF` on the two name-cells), checked in Node off
+  `THEMES[4].schemes`. Every value is a binding; no literal.
+  - **The quote's ink is read per cell**: `text/2` on both name-cells and `feat-quote` (violet,
+    yellow, pink), `text/1` on `quote-cell` and `small-quote` (pink, violet). The name and role
+    take the cell's ink too, so each cell reads in one — the name-cells' own rule (quote, name
+    and role all `text/2` there).
+  - **`quote-cell` is the one bare seat** (`G.bare = 1`, Editorial's call, its mechanism
+    reached through `cell(reg, { boxShadow: undefined })` since Pop's rings are a `boxShadow`,
+    not `DashRule`): a lime card on the white page is parted by its fill.
+  - **The frame draws no disc on seats 1, 3 or 4** (`quote-cell`, `small-quote`, `feat-quote`);
+    the seed's named reviews there take the name-cells' bindings — pink lettered lime in a violet
+    ring, violet lettered teal, lime lettered violet — Editorial's extrapolation, named.
+- **The stat card is `S3`, Editorial's keys read on Pop's**: `box/1` pink `#FF63B8` in a 1px
+  `stroke/1` violet ring (`card` / `hair`), its ink `text/2` violet (`/5`, `sub`, `brand`), the
+  numeral and the stars `text/1` lime (`num`, through the block's `numInk`), the face stack's
+  2px ring `box/2` `#F0138C` (`lift`). The stack keeps the block's invented pair, the page's
+  `s.bg` lettered `s.ac` — white lettered pink — the twins' reading (the frame's faces are
+  photographs).
+- **The lifts, scanned** at DPR 4, each string drawn alone with flat-bottomed `&cj=` strings
+  ("The beat held", "The beat held til late", "Hal Bett", rating "5.9"), against the frames'
+  `absoluteRenderBounds` in token-em, corrected for Figma's whole-pixel line boxes:
+  - **the head** (Display/MD, lh 1): the frame inks 0.046 / 0.04 / 0.04 below the box's top and
+    floats 0.234 / 0.24 / 0.24 above its foot (EXPERIENCES.'s round glyphs; pricing's numeral's
+    figures). Titan sat **0.19 / 0.181 / 0.188** down and **0.108 / 0.111 / 0.107** up, 0.13–0.15
+    low at both ends, so **`top: −0.14em`**: lifted, 0.053 / 0.044 / 0.051 and 0.245 / 0.248 /
+    0.244. It stands over the wall, not prose — Editorial's head was not lifted there — but
+    every Pop head so far has taken the lift its scan showed, the gallery's over a grid among
+    them;
+  - **the numeral row** (Display/MD, lh 1, baseline-aligned with Inter's `/5`; Editorial's *a
+    baseline-aligned row lifts as one*): "5.9" sat 0.102 / 0.104 / 0.098 up against 0.234 /
+    0.24 / 0.24, the head's figures, so the **row** takes the head's lift, `calc(−0.14 ×
+    faced(dispMd))` — 0.239 / 0.241 / 0.235 lifted;
+  - **the quote and the disc's mark** (Label/LG, lh 1.1): the frame's flat `IK` reads top
+    **0.10** and floor **0.30** at every width once its 26 / 18 / 15 boxes are corrected to
+    26.4 / 17.6 / 15.4. Titan sat 0.254 / 0.172 / 0.214 down and 0.152 / 0.199 / 0.171 up,
+    0.07–0.15 low, varying with Blink's per-size rounding; **`top: −0.12em`** splits it:
+    floors 0.270 / 0.317 / 0.289, within 0.7px at every width. The mark sits 0.10 token-em
+    above its disc's centre in the frame (−1.97 / −1.6 / −1.4px); Titan's sat +1.06 / +0.38 /
+    0px, and lifted 0.12em inside a span (the disc does not move) it sits −1.95 / −1.63 /
+    −1.0px;
+  - **the name** (Display/List, lh 1.2, over its role 4 below): the frame's 0.15 / 0.181 /
+    0.167 down and 0.34 / 0.309 / 0.323 up; Titan's 0.229 / 0.234 / 0.233 and 0.256 / 0.263 /
+    0.267, 0.05–0.08 low — the map's venues' case, **`top: −0.08em`**: 0.151 / 0.156 / 0.155
+    and 0.334 / 0.341 / 0.345;
+  - **not lifted**: the Inter strings, and the face stack's 11px marks (no frame glyph, the
+    twins' rule).
+- **`vm.pad`'s layout-3 form / testimonials arm is one condition again**: the three roots pad
+  **56 / 56 / 56 / 56**, **30 / 30 / 56 / 30** and 30 / 10 / 60 / 10 — the twins' to the pixel
+  — so the arm is `(Lime || Grunge || Editorial || Pop) && (form || testimonials)`, 390 keeping
+  `padY` 44. **The inset pair closes**, as the composed row closed at the calendar.
+- **Measured against the masters' content edges** (harness; the frame × 0.82 in brackets):
+  - **desktop**: eyebrow at 45.9 (45.9); h2's unlifted box at 60 (59.9), 37 tall (36.9) at
+    36.26px; grid at **116.7** against 153.3 (the frame's second head line, below); columns
+    **225.5** / 418.3 / 418.3 and 417.8 / 417.9 / **226.3** (225.5 / 418.6 · 226.3); cells radius
+    41, padding 19.7 (19.7), discs 45.9 (45.9), the quote at 19.6px, names 15.68px; the numeral
+    box at 19.7 into the card (19.7) unlifted, `/5` 3.3 after it; faces 19.7 (19.7); rows 188.7 /
+    210.7 against 217.7; foot 46 (45.9). Root **575.2** against 647.8.
+  - **768**: eyebrow 30 (30), h2 at 46.8 (47) 36 tall (36); grid at 106.8 (107); columns
+    **275** / 200.5 / 200.5 and 200 / 200 / **276**, exact; radius 50, padding 24, discs 56;
+    rows 276.8 / 242.4 against 298; foot 56. Root **697.9** against 775.
+  - **390**: h2 at 60.8 against 47 (`padY` 44 against 30); six stacked cells 370 wide, the stat
+    card 211.3 (189), the name-cells 201.6 (the frame's 201); root **1440.6** against 1050.
+- **Named diffs, the twins'**:
+  - the head is one line where the frame's capped 306 box breaks EXPERIENC / ES. at 1440 (open
+    question 5; the twins' dropped cap), so the 1440 wall stands 36.6 higher;
+  - the rows are **content-tall** where the frame's are residues of a stated 790 / 775, so they
+    run short at 1440 and 768;
+  - **the 390 section's 1440.6 is the seed**: five named reviews, each a ~200-tall name-cell,
+    where the master fills three of its five seats with bare quotes 63–86 tall;
+  - the numeral is `rating`'s 4.9 where the frame types 5.9 (JP-065's typo, Editorial's);
+    the faces are initials, not photographs, and the `®` stays out;
+  - `quote-cell` and `feat-quote` pad 24 against the frame's 28;
+  - Pop's rounded desktop tokens (`dispMd` 37 against 36.9, `labelLg` 20 against 19.68, `list`
+    16 against 16.4);
+  - the stat card's `/5` row stands 1.5 deeper than the frame's (Inter's 1.5 line box under a
+    shallower Titan baseline), so `sub` sits 71.3 into the card against 69.7.
+- **The pass's low-contrast pairs, all the frame's** (open question 18): `feat-quote` letters
+  its quote `text/2` pink on its violet `box/1`, **1.35 : 1**, and the seed's named review there
+  carries its name and role in the same ink at 15.7 / 10px on the canvas (the extrapolation,
+  its role all but gone); the coral name-cell's violet is 2.0 : 1, the stat card's lime numeral on pink 2.1 : 1.
+  Followed, Grunge's red-on-red and section 7's lime-on-lime precedent.
+- **States** (`live=1`, three widths): `n=0` keeps the stat card at *4.9 /5* with no stack beside
+  a coral *No reviews yet.* cell in violet — the name-cell's own pair, the frame's at 12px for
+  its role, followed; `n=1` fills row 0; `n=8` gives row 1 the 276 seat and row 2 three equal
+  fills, the seats cycling coral / lime bare / blue / teal / violet / coral / lime bare / blue,
+  review 5 (no `who`, no `role`) collapsing to the frame's quote-only `feat-quote`, pink on
+  violet, and the stack marking the named seven; an emptied `rating` prints *5 reviews*, an
+  emptied `stars` drops the stars, a 42-character unbroken rating wraps inside the card, a
+  34-letter word in a quote and *Maximilian Featherstonehaugh* stay inside their cell, an
+  emptied heading drops the h2. Every text `Range` inside its cell, every root's `scrollWidth` its width, no
+  pointer cursor, no anchor.
+- **`FIELDS.testimonials` has no template-keyed `in` row** (checked in Node: `kicker` `[1, 2]`,
+  `heading` `[1, 2, 3]`, `sub` `[1, 2]`, `rating` `[2]`, `stars` `[1, 2]`, `cta` `[1]`, `quotes`
+  every layout), and the block reads the twins' keys alone, so no `reach.mjs` run was owed.
+- **Digest: themes 0, 1, 2 and 3 zero files of 660, canvas and `live=1`** (a fresh `:5187`, both
+  labels taken there, no one-row file in any). Theme 4 moved exactly **testimonials arch 2 at
+  three widths** on each surface, the live files byte-identical to the canvas ones: five rows
+  more a width (the disc marks' spans), the roots 683.2 → 575.2, 744.3 → 697.9 and 1516.6 →
+  1440.6. A testimonials-only re-digest after the last (comment-only) edit matched 120 of 120.
+- **In the builder** (`page-check.mjs Pop 2,0,1,3`): four modal cards on every card, no console
+  error or warning on any. Card 3's published 1440 tab stands the wall at **7073**, **702** tall
+  (575.2 × 1.22), under the form (6511 · 561) and over the footer (7775); at 390 it is 1441.
+  `controls.testimonials` is empty (the wall pages nothing); the nav, every anchor and footer
+  link (Reviews → `#testimonials`) land; the player plays; the form refuses and composes; the 390
+  burger opens (1 → 5); `overflow390` 0. **The seam clips are straight at 1440 and 390**: the
+  white form on into the white wall, and the wall onto the pink footer.
+- **For the sweep's CLAUDE.md pass**: nothing owed — CLAUDE.md's and `notes/testimonials.md`'s
+  layout-3 paragraph ("**Layout 3 is a bento wall and the one design here that pages
+  nothing**") names no template's colours, radii or seats, the twins' finding. The `vm.pad`
+  comment is written. CONVENTIONS: D3's testimonials row gains a Pop column (a fourth `G` arm;
+  five registers, one to a seat, the quote's ink read per cell; `quote-cell` left bare,
+  Editorial's call; Lime's 50 on solid rings with Editorial's 24); C's *the composed row's pad
+  arm* (Pop: the inset pair closed by the testimonials); C's *a twin's redrawn state is read
+  against this frame* (the bare seat); B's lift row (Label/LG at lh 1.1, 0.12em); A's *read
+  every nested node's scheme off the master* (six cells on six schemes). Not written here.
+- **This was the last section.** The footer is layout 1's and closed at planning time, so the
+  next session is the end-of-pass sweep.
+
 ### Inherited and used
 
 *(The running list the sweep folds into [`../CONVENTIONS.md`](../CONVENTIONS.md): each time a
@@ -2403,6 +2560,22 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
   pad arm moves per section* (grunge/layout-3) — the inset pair, the form first; *the whole-page
   published check* — `page-check.mjs Pop 2,0,1,3`.
 
+- Section 10: *after `template`* (D3, lime/layout-3) — widened, a fourth `G` arm; *the `G` lookup
+  at the block's head* (grunge/layout-1) — Pop's arm first, no new leaf; *seat the schemes off
+  the master, never remap the twin's register* (grunge/layout-4) and *read every nested node's
+  scheme off the master* (grunge/layout-3) — five registers on 7 / 2 / 4 / 5 / 6, the stat card
+  on 3; *a nested node or a card on another scheme reads that scheme's keys*
+  (editorial/layout-2) — every cell and the stat card on `s.onScheme`; *the paired diff walk*
+  (A) — 44 / 44 / 44, leaves alone; *a twin's redrawn state is read against this frame* (C) —
+  `quote-cell` left bare, Editorial's call; *a frame's inside stroke is an inset `boxShadow`*
+  (lime/layout-2) — the cells' and discs' 1px, the faces' 2px; *a stand-in face's glyph floor
+  is measured per site*, *a baseline-aligned row lifts as one* and *measure a floor with
+  flat-bottomed glyphs, and correct the frame's for its whole-pixel line box*
+  (editorial/layout-3) — 0.14em on the head and the numeral row, 0.12 on the quote and the
+  mark, 0.08 on the name; *lift the label, never the ring* (pop/layout-2) — the disc's mark;
+  *the composed row's pad arm moves per section* (grunge/layout-3) — the inset pair closed; *the
+  whole-page published check* — `page-check.mjs Pop 2,0,1,3`.
+
 ## Open questions
 
 1. ~~**Decision 1** — the header's ground: seat 6 with `cardOnPage` at desktop (A, recommended) or a
@@ -2468,3 +2641,11 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
     letters its 7px month and weekday in lime on that same pink. Every twin's arrow is faint the
     same way (Lime's on `lime3`, Grunge's red on red, Editorial's ink on ink). Worth a line to the
     designer with question 16.
+18. **The testimonials' `feat-quote` is pink on violet** (section 10): its quote binds `text/2`
+    `#FF2DA0` on Scheme 6's `box/1` `#8451FA`, **1.35 : 1**, and the seed's named review in that
+    seat letters its name and its 10px role in the same ink (the frame draws no name there; the
+    name-cells' binding, extrapolated), so the role all but vanishes. Followed, as the frame
+    draws it; `text/3` white would read at 4.6 : 1 and is bound by no node. The coral cell's
+    violet (2.0 : 1) and the stat card's lime numeral on pink (2.1 : 1) are the frame's too.
+    Worth a line to the designer with questions 16 and 17; **a user call** if the seed's role
+    should read.
