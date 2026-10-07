@@ -1921,8 +1921,11 @@ export const FIELDS = {
       hint: 'The label over the Header’s Location on the ID card. Left empty, the location stands alone.' },
     { k: 'aboutLabel', l: 'About label', d: BIO_ABOUT_LABEL, in: [2],
       hint: 'The bracketed label over the paragraphs on the ID card. Left empty, it is not drawn.' },
+    // Layout 4 draws it under Retro and Editorial alone: Lime's, Grunge's and
+    // Pop's frames ink it the band's own colour, so it is not drawn there (Pop's
+    // user call, 2026-10-07, plans/pop/layout-4.md section 2).
     { k: 'tagsLabel',  l: 'Genres label', d: BIO_TAGS_LABEL,
-      in: { Lime: [2], Grunge: [2], Editorial: [2, 3], Pop: [2, 3], '*': [3] },
+      in: { Lime: [2], Grunge: [2], Editorial: [2, 3], Pop: [2], '*': [3] },
       hint: 'The line over the Header’s tag chips, drawn while they are shown. Left empty, the chips stand alone.' },
     // Layout 4's "Listen ↗" (JP-082, user call, 2026-09-29): the key the bio
     // already read, `vm.cta2` off its own content, which no field reached

@@ -6147,27 +6147,56 @@ function Bio({ s }) {
   // square. The dimmer is `sem/bg` ink at .8 at 1440 and 768; at 390 the glass
   // paints opaque ink, so its blur shows nothing there. The photograph is a
   // plain `FILL` of `editorialStage`, a centred cover, so no seed.
-  if (s.v3 && s.limeTree) {
+  //
+  // ── Pop ────────────────────────────────────────────────────────────────
+  // Pop's layout-4 bio (964:73157 · 971:10844 · 977:14276; Sections 964:73129
+  // · 971:10837 · 977:14269) is Lime's tree plus `Frame 255` and a dot grid
+  // (plans/pop/layout-4.md, section 2). The pair `(s.limeTree || s.pop)` folds
+  // into `limeTree` in the pass's sweep (its decision 2). The Section is
+  // Scheme 3 at every width, so the band is the seat's `sem/bg` pink (the
+  // block's `s.ac` is lime under the seat), "KM BIO" `s.tx` violet and the
+  // head `s.ac` lime at Display/XL 125 / 75 / 46, .75, at every width. The
+  // card is **Scheme 2 at 1440 and 768 and Scheme 3 at 390**, so its every
+  // leaf reads one alias, `card`: the well `box/3`, `Frame 255` `sem/bg` at .8
+  // at every width (lime glass wide, pink at 390), the name `text/1`, the meta
+  // row and the prose `text/3`, the prose box `box/1`. Radii 25 / 38 / 20. The
+  // Tags instance is Scheme 1: its chips read `s.onScheme[1]`, and its
+  // "Genres" binds Scheme 1's `text/1` — pink on the pink band, invisible, as
+  // Lime's and Grunge's are — so it is not drawn (user call, 2026-10-07). The
+  // grid is the Section's first child, `Union` 414.04 × 342.97 at 1440 and
+  // 768 (`PopDots` at 1.4376) and 231.75 × 191.97 at 390 (0.805), raw #C6F200
+  // — the seat's `s.ac` — under everything and clipped by the Section, which
+  // at 1440 and 768 closes on a 10px `sem/media` teal rule (`POP_MEDIA`). The
+  // 390 Section pads 30 / 30 and stacks head and card 40 apart, its head's own
+  // gap 30. Lime's 1px #000000 ring is followed: on pink it reads as the
+  // photograph's own dark edge. The photograph is a plain `FILL` of
+  // `popStage`, a centred cover.
+  if (s.v3 && (s.limeTree || s.pop)) {
     const grunge = s.grunge
     const ed = s.editorial
+    const pop = s.pop
     const desk = !s.narrow
     const tab = isTablet(s)
     const z = desk ? 0.82 : 1
     const u = (v) => `${Math.round(v * z * 10) / 10}px`
+    // Pop's card scheme: Scheme 2 at 1440 and 768, the seat's own at 390.
+    const card = pop && !s.mob ? s.onScheme[2] : s
     // Scheme 2's `box/3` and `box/2` — the media card's and the testimonials'
     // literals — on the two narrow instances alone; Scheme 1's keys at 1440.
     // Editorial's instance is Scheme 3 at every width: the seat's own keys.
-    const well = desk || ed ? s.box3 : grunge ? '#82211B' : '#263020'
+    const well = pop ? card.box3 : desk || ed ? s.box3 : grunge ? '#82211B' : '#263020'
     // Grunge's instance is Scheme 1 at 1440 and Scheme 3 narrow, and its prose
     // box is bound to `sem/box/1` where Lime's is `sem/box/2` (a moved binding).
-    const dusk = ed ? s.box2 : desk ? (grunge ? s.box1 : s.box2) : grunge ? '#9E1F17' : '#43523B'
+    // Pop's binds `box/1` too, on the card's scheme.
+    const dusk = pop ? card.box1 : ed ? s.box2 : desk ? (grunge ? s.box1 : s.box2) : grunge ? '#9E1F17' : '#43523B'
     // Grunge's glass is Lime's #2E3928 at 1% (a leak, invisible) under
     // `Frame 255`, a `sem/bg` dimmer at .5 over the whole panel and under the
     // text — #000000 at 1440, Scheme 3's #DF262C narrow — drawn as the panel's
     // own fill, one layer. Editorial's dimmer is the seat's ink at .8 at 1440
-    // and 768; its 390 glass has no dimmer and paints `sem/bg` opaque.
-    const glass = ed ? (s.mob ? s.bg : `${s.bg}CC`) : grunge ? `${desk ? s.bg : s.ac}80` : `${s.box1}B5`
-    const upper = grunge || ed ? { textTransform: 'uppercase' } : null
+    // and 768; its 390 glass has no dimmer and paints `sem/bg` opaque. Pop's is
+    // the card's `sem/bg` at .8 at every width, the blur reading through it.
+    const glass = pop ? `${card.bg}CC` : ed ? (s.mob ? s.bg : `${s.bg}CC`) : grunge ? `${desk ? s.bg : s.ac}80` : `${s.box1}B5`
+    const upper = grunge || ed || pop ? { textTransform: 'uppercase' } : null
     // Grunge's name is `sem/text/2` then `text/1` at the first space: white /
     // red on Scheme 1 at 1440, white / black on Scheme 3 narrow.
     const brand = () => {
@@ -6185,25 +6214,28 @@ function Bio({ s }) {
 
     // Editorial's chips are the Tags instance's Scheme 1 seats, each lettered
     // in its own seat's ink (the frame's fourth chip borrows Scheme 4's).
-    const tagSeats = ed ? s.onScheme[1].chips : null
+    // Pop's are the same six seats, and its frames letter three of them in
+    // other schemes' inks, two of those by width; each takes its own seat's.
+    const tagSeats = ed || pop ? s.onScheme[1].chips : null
     // Editorial's head is fitted to its widest word (`s.titleWordEms`, in
     // Gloock's ems) inside the 572.9 measure — the header name's rule — where
     // the twins' `break-word` split a long word the wide capitals outran. The
     // seed does not bind, but it sets three lines at 1440 and 768 where the
     // frames set two: READS THE is 521 of the 469.8 measure and 574.7 of
     // 572.9 (Noto's held two). Accepted (display-face.md step 4, layout 4).
+    // Pop's is fitted the same way, in Titan's ems.
     const headSize = ed && desk ? s.dispLg : s.dispXl
     const headMeasure = s.mob ? '100cqi' : `min(100cqi, ${u(572.9)})`
     const head = (
       <div style={{
         ...(desk
           ? col('0', { alignItems: 'flex-start', justifyContent: 'space-between', minWidth: 0 })
-          : col(u(s.mob && !ed ? 15 : 30), { alignItems: 'flex-start' })),
-        ...(ed ? { containerType: 'inline-size' } : null),
+          : col(u(s.mob && !ed && !pop ? 15 : 30), { alignItems: 'flex-start' })),
+        ...(ed || pop ? { containerType: 'inline-size' } : null),
       }}>
         <span style={{
           fontFamily: s.ui, fontSize: s.labelXs, lineHeight: 1.26,
-          letterSpacing: s.dls, textTransform: 'uppercase', color: grunge || ed ? s.tx : s.bg,
+          letterSpacing: s.dls, textTransform: 'uppercase', color: grunge || ed || pop ? s.tx : s.bg,
         }}>{s.initials} Bio</span>
         {/* The 572.9 measure is on the text node at 1440 and 768 and is what
             breaks the head — three lines at 1440, two at 768; the 390 master
@@ -6211,10 +6243,13 @@ function Bio({ s }) {
             .89 where its narrow ones set Display/XL at .75. */}
         <h2 style={distressed(s, {
           margin: 0, fontFamily: s.display,
-          fontSize: faced(s, ed && s.titleWordEms ? `min(${headSize}, calc(${headMeasure} / ${s.titleWordEms}))` : headSize),
+          fontSize: faced(s, (ed || pop) && s.titleWordEms ? `min(${headSize}, calc(${headMeasure} / ${s.titleWordEms}))` : headSize),
           lineHeight: facedLh(s, ed && desk ? 0.89 : 0.75),
-          letterSpacing: s.dls, color: ed ? s.ac : s.bg, ...upper,
+          letterSpacing: s.dls, color: ed || pop ? s.ac : s.bg, ...upper,
           maxWidth: s.mob ? undefined : u(572.9), wordBreak: 'break-word',
+          // Titan sits 0.13–0.16em low against the frame's ink at .75, top and
+          // floor alike (scanned at all three widths).
+          ...(pop ? { position: 'relative', top: '-0.14em' } : null),
         })}>{s.title}</h2>
         {/* The Tags instance's own 457 at 1440 and 768 (six chips wrap to two
             rows in it, as the frames show), the full measure at 390. Under
@@ -6238,7 +6273,7 @@ function Bio({ s }) {
     const meta = (
       <div style={{
         ...row(u(18), {
-          width: '100%', color: s.tx, flexWrap: 'wrap', rowGap: u(8),
+          width: '100%', color: pop ? card.text3 : s.tx, flexWrap: 'wrap', rowGap: u(8),
           // The 390 master spreads the three items across the panel; the wide
           // ones gap them 18. Wrapping rather than clipping is Retro's call.
           ...(s.mob ? { justifyContent: 'space-between' } : null),
@@ -6249,7 +6284,7 @@ function Bio({ s }) {
         {s.since && <span>Performing since {s.since}</span>}
         {/* `FIELDS.bio.cta2` (JP-082): emptied, the link goes with its arrow. */}
         {s.cta2 && (
-          <ListenLink s={s} to={s.listenTo} color={s.tx} after=" ↗"
+          <ListenLink s={s} to={s.listenTo} color={pop ? card.text3 : s.tx} after=" ↗"
                       style={{ ...body, fontWeight: 400, letterSpacing: s.dls, textTransform: 'none' }} />
         )}
       </div>
@@ -6257,31 +6292,50 @@ function Bio({ s }) {
 
     // Grunge's 390 Section pads its foot 60 where Lime's pads 30: the room for
     // the torn seam it owns there (below).
-    // Editorial's pads it 40.
+    // Editorial's pads it 40. Pop's pads Lime's 30.
     const padV = u(desk ? 116 : tab ? 60 : 30)
     const padB = grunge && s.mob ? '60px' : ed && s.mob ? '40px' : padV
+    // Pop's dot grid, off the Section's own origin (the content edge less the
+    // frame's inset, so a published gutter carries it with the column).
+    const dots = desk
+      ? { left: `calc(${s.surplus} + ${u(589.97)})`, top: u(66.53), width: u(414.04), height: u(342.97) }
+      : tab
+        ? { left: `calc(${s.surplus} + 560.98px)`, top: '181.52px', width: '414.04px', height: '342.97px' }
+        : { left: `calc(${s.surplus} + 242.21px)`, top: '149px', width: '231.75px', height: '191.97px' }
     return (
       <div style={{
         // The sheet: out to the section's own edges, past the root's padding.
         // Lime's and Grunge's bands are their Scheme 3's `s.ac`; under
-        // Editorial's Scheme 3 seat that key is terracotta, and the band is the
-        // seat's own `sem/bg` ink.
+        // Editorial's and Pop's Scheme 3 seats that key is terracotta or lime,
+        // and the band is the seat's own `sem/bg`, ink or pink.
         margin: `calc(-1 * ${s.padY}) calc(-1 * ${s.padX})`,
-        background: ed ? s.bg : s.ac, color: ed ? s.tx : s.bg,
+        background: ed || pop ? s.bg : s.ac, color: ed || pop ? s.tx : s.bg,
         ...(grunge ? { position: 'relative' } : null),
+        // Pop's grid paints under the head and the card, as the Section's
+        // first child, so the sheet isolates it at −1; its rule is the band's
+        // own last 10 at 1440 and 768, an inside stroke.
+        ...(pop ? {
+          position: 'relative', isolation: 'isolate',
+          ...(!s.mob && { boxShadow: `inset 0 -${u(10)} 0 ${POP_MEDIA}` }),
+        } : null),
         padding: `${padV} calc(${s.surplus} + ${desk ? u(56) : tab ? '30px' : '10px'}) ${padB}`,
         // Two `minmax(0, 1fr)` columns rather than two `flex: 1 1 0` halves:
         // a zero basis resolves against the content box, so the padded card
         // came out 24.6 wider than the head (the enquiry form's layout-3 trap).
         ...(desk
           ? { display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', alignItems: 'stretch' }
-          : col(u(tab || ed ? 40 : grunge ? 10 : 15))),
+          : col(u(tab || ed || pop ? 40 : grunge ? 10 : 15))),
       }}>
+        {pop && (
+          <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none', zIndex: -1 }}>
+            <PopDots hue={s.ac} style={dots} />
+          </div>
+        )}
         {head}
         <div style={{
           ...(desk ? { minWidth: 0 } : null),
           position: 'relative', overflow: 'hidden', background: well,
-          borderRadius: u(ed ? 0 : grunge ? 15 : 55),
+          borderRadius: u(pop ? 25 : ed ? 0 : grunge ? 15 : 55),
           // The frame's own height as a floor, HeaderV3's rule: the panel is
           // content-tall, so a second paragraph grows the card.
           minHeight: u(s.mob ? 536 : 720),
@@ -6303,7 +6357,7 @@ function Bio({ s }) {
           <div style={s.mob && !s.image
             ? { position: 'absolute', top: 0, left: 0, right: 0, height: `${stageH}px` }
             : { position: 'absolute', inset: 0 }}>
-            <Photo s={s} initialsSize={desk ? 72 : tab ? 56 : 40} ink={s.tx} />
+            <Photo s={s} initialsSize={desk ? 72 : tab ? 56 : 40} ink={pop ? card.text3 : s.tx} />
           </div>
           {/* Grunge's `image 1`: a 640-wide sheet centred on the card at every
               width, card-tall, lighten .5, under a #0B0B0B foot paint to 16.3%
@@ -6314,7 +6368,7 @@ function Bio({ s }) {
           }} />
           <div style={{
             position: 'relative', width: '100%', overflow: 'hidden',
-            borderRadius: u(ed ? 0 : grunge ? 7.5 : 27), padding: panelPad,
+            borderRadius: u(pop ? 38 : ed ? 0 : grunge ? 7.5 : 27), padding: panelPad,
             // `s.box1` at .71 as an 8-digit hex (no `rgba()` in the file),
             // over the frame's 54 backdrop blur, emitted as CSS 27.
             background: glass,
@@ -6326,12 +6380,15 @@ function Bio({ s }) {
                   the descenders off at the baseline. */}
               <p style={distressed(s, {
                 margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispSm), lineHeight: facedLh(s, 1),
-                letterSpacing: s.dls, color: grunge ? s.tx : s.ac, wordBreak: 'break-word', ...upper,
+                letterSpacing: s.dls, color: pop ? card.ac : grunge ? s.tx : s.ac, wordBreak: 'break-word', ...upper,
+                // Titan sits 0.13–0.16em low at lh 1, as the header's does.
+                ...(pop ? { position: 'relative', top: '-0.14em' } : null),
               })}>{brand()}</p>
               {meta}
             </div>
             <div style={{
-              background: dusk, color: s.tx, borderRadius: u(ed ? 0 : grunge ? 2.5 : 13.5), padding: u(20),
+              background: dusk, color: pop ? card.text3 : s.tx,
+              borderRadius: u(pop ? 20 : ed ? 0 : grunge ? 2.5 : 13.5), padding: u(20),
               ...col(u(10), { alignItems: 'stretch' }),
             }}>
               <p style={{ margin: 0, ...body, fontSize: s.bodyLg }}>{s.bioP1}</p>
@@ -6412,9 +6469,9 @@ function Bio({ s }) {
             it outside the header. At .75 a stacked line of caps collides in
             every display face taller than Fraunces (Titan One and Bebas Neue
             both overlap outright), so every template but Retro degrades to
-            .89 — Pop alone now, since the Lime block above takes its
-            frames' own leading (Bebas Neue, and Anton under Grunge and Gloock
-            under Editorial, which widen it) — which is the leading every other
+            .89 — no template now, since the Lime block above takes its
+            frames' own leading (Bebas Neue, and Anton, Gloock and Titan One
+            under Grunge, Editorial and Pop, which widen it) — which is the leading every other
             display head in this file already sets — the page's own ramp
             rather than an invented number. */}
         <h2 style={{
