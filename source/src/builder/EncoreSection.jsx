@@ -16610,11 +16610,60 @@ function Gallery({ s }) {
     //    discs' blur 18.1 stands behind an opaque fill.
     // No seam: the wrapper's `Vector 1` is `sem/box/3` ink on the ink band,
     // Lime's leftover, and is not drawn. The 768 and 390 masters drop it.
-    if (s.limeTree) {
+    //
+    // ── Pop ────────────────────────────────────────────────────────────────
+    // Pop layout 4 (964:73214 · 971:10894 · 977:14572, in the 964:73173 /
+    // 971:10859 / 977:14537 wrappers) is this block in Pop's mode, on the
+    // Scheme 3 seat: Lime's tree by traversal order, less the four brackets
+    // and the arc, plus two stickers. The pair `(s.limeTree || s.pop)` folds
+    // into `limeTree` in the sweep (plans/pop/layout-4.md, decision 2). The
+    // sheet is the seat's `s.bg` pink, Editorial's arm (trap 1); the MEDIA
+    // eyebrow `sem/text/2` `s.tx` violet and the head `sem/text/1` `s.ac`
+    // lime, uppercase, fitted to its widest word in Titan's ems. Every box is
+    // Lime's but these:
+    //  · the 1440 wrapper pads **50** over its head frame (Lime's 100), so the
+    //    sheet pads 106 there; at 768 it pads 0 (Editorial's 30) and at 390
+    //    60 (Grunge's and Editorial's);
+    //  · the card is `Frame 37` **unpadded**, with no brackets: the photograph
+    //    is the whole 590.97 × 534 / 536.97 × 534 / 370 × **336** card, on
+    //    `sem/box/3` `s.box3` #C20A6F at radius 50 / 50 / 30, in a **5px**
+    //    `sem/text/1` lime inside ring, an overlay over the photograph. No
+    //    tilt, no mount, no shadow. It is `b3a33296`, our slot 3, at `FILL`,
+    //    a centred cover there (0.999 / 0.992 / 0.998 against the renders);
+    //    the other slots keep the twins' top anchor, layout 2's Pop rule,
+    //    since centred, three of them cut the singer's hair at the top edge;
+    //  · the thumbs are stadiums, radius 90 (25 at 390), on `sem/tag/1/bg`
+    //    `s.chips[0].bg` blue, ringed 4 in `sem/state/inactive/border`
+    //    (`s.inactiveLine`) and **8** in `sem/text/1` on the fourth at 1440
+    //    and 768, 4 in `sem/text/1` on every 390 tile — one lime, Lime's
+    //    `active` mechanism at Editorial's scaled weights;
+    //  · the discs and pills are Scheme 4 nodes: `box/3` #1044C7 in a 0.754
+    //    `sem/bg` blue ring, radius 10 and 60, the arrow `stroke/2` yellow on
+    //    the discs and `text/1` **teal** on the 390 pills; no hard shadow, and
+    //    the discs' blur 18.1 stands behind an opaque fill.
+    // The stickers are layout 1's drawings in Scheme 1's raw tints (trap 8),
+    // placed by their turned boxes' centres: the smiley sun (`Layer_1`, 154,
+    // Figma −25.37°) at (463.44, 208.92) / (665.44, 98.65) / (384.45, 84.01)
+    // in the wrapper, blue with a white face, and the asterisk (`Vector`, 93
+    // × 95, Figma −18.52°) at (85, 636.18) / (59.18, 695.75) / (11.33,
+    // 498.18), teal. The wrapper clips at 768 and 390, so the sheet clips:
+    // the 390 sun loses its right half and the 390 asterisk its left, the 768
+    // asterisk its last 4.6. The asterisk keeps the frame's paint order, over
+    // the spotlight's corner at 768 and 390, and is anchored off the sheet's
+    // foot, so a longer head keeps it on that corner. The sun sits beside the
+    // frame's mixed-case Chunko head, but Titan's capitals run 59 further at
+    // 768 and 27 at 390, under it; so it goes behind the head at every width
+    // (layout 3's rule for a sticker beside the artist's copy).
+    if (s.limeTree || s.pop) {
       const grunge = s.grunge
       const ed = s.editorial
+      const pop = s.pop
       const un = (v) => Math.round(v * z * 10) / 10
-      const G = ed
+      const G = pop
+        ? { well3: s.box3, well1: s.chips[0].bg, mist: s.onScheme[4].box3, ring: s.onScheme[4].bg,
+            arrow: s.mob ? s.onScheme[4].ac : s.onScheme[4].stroke2, eyebrow: s.tx, photoR: s.mob ? 30 : 50,
+            pillR: 60, initials: s.text3, thumbR: s.mob ? 25 : 90, thumbInk: s.text3, head: s.ac }
+        : ed
         ? { well3: s.bg, well1: s.chips[0].bg, mist: s.onScheme[4].box3, ring: s.onScheme[4].bg,
             arrow: s.mob ? s.onScheme[4].tx : s.onScheme[4].stroke2, eyebrow: s.tx, photoR: 0,
             pillR: 0, initials: s.tx, discR: 0, thumbR: 0, thumbInk: s.bg, head: s.ac }
@@ -16627,12 +16676,13 @@ function Gallery({ s }) {
             pillR: 60, initials: s.bg }
       const well3 = G.well3
       const mist = G.mist
-      const disp = grunge || ed ? { textTransform: 'uppercase' } : null
+      const disp = grunge || ed || pop ? { textTransform: 'uppercase' } : null
       const ringW = (i) => (s.mob ? 4 : i === active ? 3 : 1)
       // Editorial's ring is terracotta, 4 / 8 / 4 through `u()` (this page's
-      // rings scale); the twins' stays unscaled in their `s.bg`.
-      const ring = (i) => ed
-        ? `inset 0 0 0 ${u(s.mob || i !== active ? 4 : 8)} ${s.ac}`
+      // rings scale); the twins' stays unscaled in their `s.bg`. Pop's is
+      // Editorial's weights in lime, the idle wide tiles on their own key.
+      const ring = (i) => ed || pop
+        ? `inset 0 0 0 ${u(s.mob || i !== active ? 4 : 8)} ${pop && !s.mob && i !== active ? s.inactiveLine : s.ac}`
         : `inset 0 0 0 ${ringW(i)}px ${s.bg}`
 
       const glyph = (turn) => (
@@ -16645,10 +16695,12 @@ function Gallery({ s }) {
       const thumb = (i) => (
         <span key={i} onClick={s.live ? () => setPick(i) : undefined} style={{
           position: 'relative', overflow: 'hidden', minWidth: 0, minHeight: 0,
-          borderRadius: u(G.thumbR ?? (s.mob ? 25 : 10)), background: G.well1,
+          borderRadius: u(G.thumbR ?? (s.mob ? 25 : 10)), background: pop ? undefined : G.well1,
           cursor: s.live ? 'pointer' : undefined,
         }}>
-          <span style={{ position: 'absolute', inset: 0 }}>
+          {/* Pop's photograph and well are clipped 2px inside the ring, the
+              spotlight's reason. */}
+          <span style={{ position: 'absolute', inset: 0, ...(pop ? { clipPath: `inset(2px round calc(${u(G.thumbR)} - 2px))` } : null) }}>
             {/* Top-anchored, Retro's call on the same seven files: the frame's
                 own tiles are `FILL` centred, but its sources are landscape
                 crops where ours are the tall strip photographs, and a centred
@@ -16669,7 +16721,7 @@ function Gallery({ s }) {
       const arrowBtn = (key, turn, step) => (
         <span key={key} onClick={s.live ? () => go(active + step) : undefined} style={{
           height: u(55.514), borderRadius: u(s.mob ? G.pillR : G.discR ?? 10), background: mist,
-          boxShadow: `inset 0 0 0 ${u(0.754)} ${G.ring}${s.mob && !grunge && !ed ? `, 5px 5px 0 ${s.bg}` : ''}`,
+          boxShadow: `inset 0 0 0 ${u(0.754)} ${G.ring}${s.mob && !grunge && !ed && !pop ? `, 5px 5px 0 ${s.bg}` : ''}`,
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
           cursor: s.live ? 'pointer' : undefined,
           ...(s.mob ? { flex: '1 1 0', minWidth: 0 } : { width: u(55.514), flex: 'none' }),
@@ -16730,29 +16782,42 @@ function Gallery({ s }) {
       ) : (
         <div style={{
           ...(s.mob
-            ? { width: '100%', height: u(337) }
+            ? { width: '100%', height: u(pop ? 336 : 337) }
             : { flex: '1 1 0', minWidth: 0, height: '100%' }),
-          position: 'relative', padding: u(20),
+          // Pop's `Frame 37` is unpadded: the photograph is the card.
+          position: 'relative', padding: pop ? 0 : u(20),
         }}>
           <div style={{
             width: '100%', height: '100%', position: 'relative', overflow: 'hidden',
-            borderRadius: u(G.photoR), background: well3,
+            borderRadius: u(G.photoR), background: pop ? undefined : well3,
           }}>
             {/* Top-anchored as well: the seeded slot 3 is a 1200 × 800 the
                 cover crops sideways, so this is a no-op on the frame's own
-                picture and keeps the heads of the six portrait slots. */}
+                picture and keeps the heads of the six portrait slots. Pop's
+                slot 3 is a portrait its frame centres, so it alone is. Pop's
+                photograph (its well with it) is clipped 2px inside the ring,
+                or its anti-aliased edge darkened the corners' outer pixel
+                past the lime: layout 3's tiles, on a ring of another colour. */}
             <Photo s={s} src={s.images[active]} initialsSize={un(88)} ink={G.initials}
-                   style={{ background: well3, objectPosition: '50% 0%' }} />
+                   style={{
+                     background: well3, objectPosition: pop && active === galActive(s) ? '50% 50%' : '50% 0%',
+                     ...(pop ? { clipPath: `inset(2px round calc(${u(G.photoR)} - 2px))` } : null),
+                   }} />
             {/* Grunge's `image 1`, clipped by the photograph (Grain draws
                 nothing on the other templates). */}
             <Grain s={s} exact grunge blend="lighten" opacity={0.29} style={{
               inset: `0 auto auto ${u(0.5)}`, width: u(550.5), height: u(550.5),
             }} />
+            {/* Pop's 5px lime ring, over the photograph as Figma strokes it. */}
+            {pop && <span aria-hidden style={{
+              position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
+              boxShadow: `inset 0 0 0 ${u(5)} ${s.ac}`,
+            }} />}
           </div>
-          {bracket('tl', { top: 0, left: 0, borderTop: edge, borderLeft: edge })}
-          {bracket('tr', { top: 0, right: 0, borderTop: edge, borderRight: edge })}
-          {bracket('br', { bottom: 0, right: 0, borderBottom: edge, borderRight: edge })}
-          {bracket('bl', { bottom: 0, left: 0, borderBottom: edge, borderLeft: edge })}
+          {!pop && bracket('tl', { top: 0, left: 0, borderTop: edge, borderLeft: edge })}
+          {!pop && bracket('tr', { top: 0, right: 0, borderTop: edge, borderRight: edge })}
+          {!pop && bracket('br', { bottom: 0, right: 0, borderBottom: edge, borderRight: edge })}
+          {!pop && bracket('bl', { bottom: 0, left: 0, borderBottom: edge, borderLeft: edge })}
         </div>
       )
 
@@ -16762,19 +16827,29 @@ function Gallery({ s }) {
           // the root's padding, in Scheme 3's `sem/bg`. `position: relative`
           // seats the arc.
           margin: `calc(-1 * ${s.padY}) calc(-1 * ${s.padX})`,
-          background: ed ? s.bg : s.ac, color: ed ? s.tx : s.bg, position: 'relative',
-          padding: `${u(desk ? 156 : tab ? (ed ? 30 : 130) : grunge || ed ? 60 : 100)} `
+          background: ed || pop ? s.bg : s.ac, color: ed || pop ? s.tx : s.bg, position: 'relative',
+          padding: `${u(desk ? (pop ? 106 : 156) : tab ? (ed || pop ? 30 : 130) : grunge || ed || pop ? 60 : 100)} `
                  + `calc(${s.surplus} + ${desk ? u(56) : tab ? '30px' : '10px'}) `
                  + `${u(desk ? 56 : tab ? 30 : 40)}`,
           ...col(u(desk ? 112 : tab ? 60 : 24)),
+          // Pop's wrapper clips its stickers, and the sun stands behind the
+          // head (`zIndex: -1` inside the sheet's own stacking context).
+          ...(pop ? { overflow: 'clip', isolation: 'isolate' } : null),
         }}>
           {grunge
             ? <TornEdge s={s} grunge side="top" bleed={false} height={desk ? 67.8 * z : tab ? 66.3 : 36.3} colour={s.bg} />
-            : !ed && <ArcEdge s={s} side="top" height={44.24 * z} colour={s.box1} bleed={false} />}
+            : !ed && !pop && <ArcEdge s={s} side="top" height={44.24 * z} colour={s.box1} bleed={false} />}
+          {pop && (
+            <PopSun size={un(154)} tilt={25.37} hue={s.onScheme[1].chips[2].bg} ink={s.onScheme[1].bg} style={{
+              zIndex: -1,
+              left: `calc(${s.surplus} + ${u(desk ? 386.44 : tab ? 588.44 : 307.45)})`,
+              top: u(desk ? 131.92 : tab ? 21.65 : 7.01),
+            }} />
+          )}
           <div style={desk ? row(u(112), { alignItems: 'center' }) : col(u(tab ? 60 : 24))}>
             <div style={col(u(s.mob ? 10 : 36), {
               alignItems: 'flex-start', ...(desk ? { width: u(454), flex: 'none' } : null),
-              ...(ed ? { containerType: 'inline-size' } : null),
+              ...(ed || pop ? { containerType: 'inline-size' } : null),
             })}>
               <span style={{
                 fontFamily: s.body, fontWeight: 700, fontSize: s.eyebrow, lineHeight: 1.3,
@@ -16782,11 +16857,13 @@ function Gallery({ s }) {
               }}>Media</span>
               {/* Editorial's head shrinks only when its widest word would
                   outrun the column (Gloock's capitals are wider than the
-                  frame's face); the twins' never meets a long enough word. */}
+                  frame's face), and Pop's in Titan's; the twins' never meets
+                  a long enough word. Titan sits 0.14em low at Display/LG. */}
               <h2 style={distressed(s, {
                 margin: 0, fontFamily: s.display,
-                fontSize: faced(s, ed && s.titleWordEms ? `min(${s.dispLg}, calc(100cqi / ${s.titleWordEms}))` : s.dispLg),
+                fontSize: faced(s, (ed || pop) && s.titleWordEms ? `min(${s.dispLg}, calc(100cqi / ${s.titleWordEms}))` : s.dispLg),
                 lineHeight: facedLh(s, 0.89), letterSpacing: s.dls, color: G.head ?? s.bg, ...disp,
+                ...(pop ? { position: 'relative', top: '-0.14em' } : null),
               })}>{s.title}</h2>
             </div>
             {s.mob
@@ -16797,6 +16874,14 @@ function Gallery({ s }) {
                 ...(ed ? { overflow: 'hidden' } : null),
               })}>{card}{rail}</div>}
           </div>
+          {pop && (
+            <svg viewBox="0 0 93 95.004" aria-hidden="true" style={{
+              position: 'absolute', width: u(93), height: u(95.004),
+              left: `calc(${s.surplus} + ${u(desk ? 85 : tab ? 59.18 : 11.33)})`,
+              bottom: u(desk ? 59.82 : tab ? 55.25 : 235.08),
+              transform: 'translate(-50%, 50%) rotate(18.52deg)', overflow: 'visible', pointerEvents: 'none',
+            }}><path fill={s.onScheme[1].chips[3].bg} d={POP_ASTERISK_D} /></svg>
+          )}
         </div>
       )
     }

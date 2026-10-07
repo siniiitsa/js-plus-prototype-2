@@ -90,7 +90,20 @@ another `notes/` file.
   pills are square `s.onScheme[4]` buttons, `#BE6346` round ink arrows with no shadow; and its
   spotlight is a tilted print in a `#1D1D1D` mount under a drop shadow, a centred cover where
   the twins anchor it at the top, since the frame's node holds our own seed (the thumbs keep the
-  top anchor, the frame's strip being Retro's placeholders). Its
+  top anchor, the frame's strip being Retro's placeholders). Pop widens it a fourth time, on its
+  pink seat: the spotlight is Lime's well with no brackets and no padding, so the photograph is
+  the whole card, radius 50 (30 at 390), in a 5px lime `s.ac` ring, centred on the frame's own
+  slot 3 and top-anchored on the others (layout 2's Pop hero rule); the thumbs are lime-ringed
+  stadiums on blue wells, 4px (`s.inactiveLine`) and 8 on `active` (`s.ac`) at 1440 and 768 and 4
+  on every 390 tile, through `u()`; the discs are `s.onScheme[4]`'s `#1044C7` squares at radius 10
+  with yellow arrows, and the 390 pills radius 60 with teal ones and no shadow. Under Pop the
+  photograph and its well are clipped 2px inside every ring, the spotlight's and each thumb's:
+  a lime ring on the pink sheet hides the photograph's anti-aliased edge no better than layout
+  3's lime-on-lime did, so the corner's outer pixel read darker than the clean pink-to-lime
+  blend. Two stickers ride on the sheet, which clips them: the smiley sun behind the head (Titan's
+  capitals run under it at 768 and 390, where the frame's mixed case stops short) and the
+  asterisk over the spotlight's lower-left corner at 768 and 390, anchored off the sheet's foot.
+  Its
   **390 master runs its strip off its own page** (six fixed 121px tiles in a 370 frame, so three
   and a sliver show and the one its spotlight is on does not), so there the three visible tiles are
   a **sliding window** on layout 1's formula, `from = clamp(active - 2, 0, 4)` — not live-gated, so
