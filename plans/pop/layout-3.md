@@ -2576,6 +2576,112 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
   *the composed row's pad arm moves per section* (grunge/layout-3) — the inset pair closed; *the
   whole-page published check* — `page-check.mjs Pop 2,0,1,3`.
 
+### Learned on the end-of-pass sweep
+
+- **The HEAD-side labels first**, on a fresh `:5188` (the user's `:5173`, `:5175` and `:5176`
+  were days old): five themes, canvas and `live=1`, 660 + 660 files, no one-row file in either.
+- **Item 1, the docs.** CLAUDE.md's header-identity paragraph names Pop's *Inset Hero* card as a
+  `cardLine` reader, Pop's Genres row among the six-chip ones, and Pop's layout 3 among the bios
+  that print the tags; the `FIELDS` paragraph records the card-3 re-measure (the kicker off design
+  2, `cardLine` gaining Pop) and `cardLine`'s `'*': []` marking Retro alone. The scheme bullet
+  gains Pop's layout-3 seats (`SCHEMES_OF.Pop[2]`: the header on 6, the calendar and the gallery
+  on 2, the map on 4), `cardOnPage`'s reach to the layout-3 calendar and the desktop header (the
+  card Scheme 6 at every width, the frame round it white at 1440 only), every layout-3
+  `s.onScheme` reader, Schemes 5 and 8 seating layout 3's nested nodes too, and `text3` at
+  layout 3 (the header's white name, Listen and location). `notes/nav.md`: Minimal at layouts 2
+  and 3 of every template, *Follow my sections* fitting four in Pop's layout 3 at 768, the
+  fixed-18 arm against 684, and Pop's centred 390 name named beside Editorial's (JP-101's span).
+  `notes/templates.md`: Pop designed at layouts 1–3, Inset Hero fitted and Stacked the one
+  placeholder, and a layout-3 paragraph in Editorial's shape. `notes/media.md`: layout 3's list
+  on layout 2's five schemes by index, pinned at the division. README: Pop at layouts 1–3, its
+  layout-3 page, the header family and its `vm.pad` arms, and one placeholder card left. One
+  stale code comment fixed (§10.2's "Pop's layouts 2–4 take the shared structure undressed" →
+  layout 4). The `vm.pad`, `SCHEMES_OF`, `cardOnPage`, `navModeDefault`, `navFits` and `FIELDS`
+  comments were already the sessions'. **The flat four** prose in Retro's `s.v2` arms (pricing's
+  `h = s.tierRow` paragraph among it) describes a path no designed template reaches at layout 3
+  any more; it is Retro-pass prose, not a template list, and was not chased (Editorial's call).
+- **Item 2: the published page passed first time.** `page-check.mjs Pop 2,0,1,3`: four modal
+  cards on every card, no error or warning in either window on any. Card 3: Music → `#media`,
+  Gigs → `#map`, About → `#bio`, Listen → `#media`, Book Now → `#form`; the calendar's pill and
+  the three pricing pills → `#form`; the player plays (`paused: false`, the playhead moved); the
+  form rings its three boxes 2px pink from 1px violet, composes the bare *Enquiry* mailto and
+  swaps to *Check your mail app*; all nine footer links land; the 390 burger 1 → 5;
+  `overflow390` 0. The published 1440 page: header 901, bio 1225 beside the calendar 655 (both at
+  901), media 1251, repertoire 663, gallery 595, pricing 1069, map 808, form 561, testimonials
+  702, footer 522. **Sideways overflow** in the popup (a scratch probe): the document 0 at 1440,
+  1180, 768, 414, 390 and 360, and no section root wider than its box but the footer's 1181 /
+  1180 at desktop, which card 1 shows too (layout 1's hairline; the document does not scroll).
+  **The seams are straight at both widths**: at 1440 the white frame round the violet card, white
+  into the lime gallery sheet, the sheet onto pricing's pink-ringed white, pricing onto the blue
+  map band, the band onto the white form, the wall onto the pink footer; at 390 the violet frame
+  onto the white bio, the calendar into the sheet and the rest the same.
+  - **The harness controls** (`theme=4&arch=2&live=1`, one scratch script, trusted clicks): the
+    gallery viewer opens on the third tile at 3 / 7 with focus inside and `hidden` / `stable` /
+    `hidden` on `<html>` and `<body>`; Next → 4 / 7, → 5 / 7, ← 4 / 7; Escape closes and restores
+    all three; reopened on tile 1, a scrim click closes. Scrim `rgba(0, 0, 0, .94)`, the controls
+    and counter pink on pink at 14%, desktop and 390. The repertoire at `n=20`: *View full set →*
+    reveals its card at all three widths (the section 101.4 / 145.7 / 78.2 taller, the link gone);
+    the 390 carousel opens on Pubs and Next walks Birthdays → Weddings → Pubs, wrapping, Prev
+    back. Pricing's FEATURED seat: rest → The Festival Set, Duo → The Wedding Set, Trio and Band →
+    The Festival Set, a second Band press clearing to The Festival Set, lime wherever it lands,
+    desktop and 390. The map at `n=30`: two `+` presses scale the layer to 1.5625 and `−` back to
+    1.25, *See all gigs* lists all 30 at every width. No page error or warning; every root's
+    `scrollWidth` its width. **One probe trap**: a reveal link found by text alone can be a
+    390 peek's, which takes no pointer, so the first probe's click landed on nothing; pick the
+    link whose `elementFromPoint` is itself.
+- **Item 3: the thumbnails** (`browser-tool-choice`'s recipe, card 3): all eleven rows open; the
+  header offers 4 items, the footer 1, the rest 6, 7, 7, 5, 4, 8, 4, 6, 8 in page order; every
+  arch-2 item renders one `--ac` root and reads as its fitted section — the violet header card in
+  its lime ring, the lime gallery sheet, the blue map round its pink panel, the white sections with
+  their cards on their own schemes, the repertoire's lime / pink / blue sets, the wall's six
+  cells; no editor error. **A finding outside the pass: the picker draws every seal at 16px.**
+  The menu item is shadcn's `DropdownMenuItem`, whose `[&_svg:not([class*='size-'])]:size-4`
+  sizes every `<svg>` that carries no `size-` class, and `SealBadge` sizes its svg by its
+  `width` / `height` attributes, which any CSS rule outranks. So the bio's seal is a 16px dot in
+  its 143px wrapper (Pop's here, Lime's layout-3 bio the same, the footer's on every template);
+  `Photo`, the scribbles and the sparkles size by inline style and are right. The same item rule
+  colours a class-less svg `text-muted-foreground`. Builder chrome, every template, older than
+  this pass and invisible to `digest.mjs`; raised for a user call, not fixed here.
+- **Item 4**: cards 1, 2 and 4 publish all eleven sections in `pageOrder(i)`'s order with no
+  error or warning; card 1 is Hero, card 2 Feature spread, and card 4 keeps Retro's `HeaderV3`
+  placeholder (the checker ribbon over the stacked floor), as layout 1's open question 8 leaves
+  it.
+- **Item 5: `reach.mjs 4`** (5,880 renders), every plain probe compared with
+  `fieldReach(f, 'Pop', d)` in Node: **75 probes, no mismatch**. The header's rows are section
+  1's over the fitted card (`cardLine` `[2]`, kicker / showBadge / badgeText `[0, 3]`, tags /
+  showTags `[0, 2, 3]`, location all four, cta2 `[1, 2]` at 4/6, the layout-2 copy `[1]`, align
+  `[0]`), the identity probes match CLAUDE.md (the tags at bios 2, 3 and 4; the kicker at every
+  bio and forms 1 and 2; the location at bios 1–3, calendar 4 and map 2), and the partials are the
+  known four (`header.cta2` 4/6, `calendar.email` 3/6, `bio.tagsLabel` 4/6 at layout 4,
+  `gallery.railLabel` 2/6). Nothing in `FIELDS` moved.
+- **Item 6: every pair, kept, none folded.** In layout-3 code: **nine blocks**, each
+  `(s.limeTree || s.pop)` — `HeaderV2`'s at its head, the bio's ahead of its `if (s.v2)`, and
+  media, repertoire, calendar, pricing, map, form and testimonials inside it after the seam — and
+  **the gallery's five pair reads** inside its `if (s.v2)`, `(s.limeTree || pop)` (the ink, the
+  768 head's size gate, the tile's border gate, the well's style, the overlay ring's gate). That
+  is fourteen layout-3 sites beside layouts 1's and 2's 31: **45**. **One layout-3 `s.limeTree`
+  stays unpaired on purpose**: the tile's `Photo` ink, `pop ? s.text3 : s.limeTree ? s.tx :
+  s.paperFg`, where Pop has its own arm (black on the olive well). The gallery's other Pop sites
+  are `(ed || pop)` or `pop ?` reads — the sheet, the well, the ring and `ringW`, the ratio, the
+  viewer's three inks, the head's case and lift, the photograph's clip — not the pair. Beside
+  them, as at layout 2, `SealBadge`'s `s.limeTree && !classic` and `Photo`'s backdrop
+  `s.pop ? … : s.limeTree` keep Pop's own arms at every layout, and every `s.v3` block and
+  `HeaderV3` are `s.limeTree` alone (layout 4's pass). In `data.js` and `EncoreBuilder.jsx` every
+  `d === 2` name gate names Pop (the four `vm.pad` arms, `navModeDefault`, the `navFits` arm,
+  `navGapEm`, `titleWordEms`); `footerBand` is Lime's and Grunge's by design (Pop's footer is
+  pink on every page). With card 3 fitted, three of Pop's four layouts are; the fold (layout 2's
+  decision 1) is still the family's last pass's.
+- **Item 7**: `CONVENTIONS.md` took a *Pop (layout 3)* column on A, B and C and D3's first Pop
+  column, and one row this pass leaned on four times that it did not name — *a card on another
+  scheme is that scheme's binding, not always its ground* (C; written by layout 2's form
+  session): the audio and calendar cards `box/1`, and of the three Scheme 2 cards the sessions
+  asked about, two `box/1` (the form's card, the testimonials' `quote-cell`) to one `sem/bg`
+  (pricing's featured row). Every other bullet in *Inherited and used* already had a row.
+  `plans/README.md` closes the pass, its reading order gains layout 3's *Conventions*, and its Pop
+  layout-2 row, still "push, PR and merge open", now says it merged inside this branch's PR #48.
+- **Item 8**: *Notes for the designer*, at the plan's foot — eight notes from open questions 2–18
+  (10, 13 and 15 are code calls, not the designer's; 8 is card 4's pass).
+
 ## Open questions
 
 1. ~~**Decision 1** — the header's ground: seat 6 with `cardOnPage` at desktop (A, recommended) or a
@@ -2649,3 +2755,55 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
     violet (2.0 : 1) and the stat card's lime numeral on pink (2.1 : 1) are the frame's too.
     Worth a line to the designer with questions 16 and 17; **a user call** if the seed's role
     should read.
+
+## Notes for the designer
+
+*(The open questions above that are worth telling the designer, gathered by the sweep into one
+note to forward, in layout 2's shape. Each is shipped as described; where it says "one line", the
+other answer is a one-line change. Layouts 1's and 2's notes still stand.)*
+
+1. **Three pairs the frames draw too faint to read.** Each is followed as drawn, as the Grunge
+   page's red-on-red badge was.
+   - The testimonials' `feat-quote` letters its quote `text/2` pink `#FF2DA0` on Scheme 6's
+     `box/1` violet `#8451FA`, 1.35 : 1. Where the seed puts a named review in that seat, its
+     name and its 10px role take the same ink, so the role all but vanishes. `text/3` white would
+     read at 4.6 : 1, but no node binds it. The coral name-cell's violet (2.0 : 1) and the stat
+     card's lime numeral on pink (2.1 : 1) are faint the same way. *(18)*
+   - Pricing's FEATURED badge is `box/1` `#D7FF23` on the featured row's `sem/bg` `#C6F200`,
+     1.13 : 1, so the tile all but vanishes and only its violet word reads. *(16)*
+   - On the map, EXPAND VIEW's arrow is `sem/bg` pink `#FF2DA0` on the pink map container
+     `#FF63B8`, and the lit row's date disc letters its 7px month and weekday in lime on that same
+     pink. *(17)*
+2. **Two header chips are lettered in other schemes' inks.** The fourth chip binds
+   `scheme/4/tag1/text` `#141414` on Scheme 1's teal seat and the sixth `sem/tag/7/bg` `#FFFFFF`
+   on its red one, where those seats' own inks are `#000000` and `#F6F0E8`; the bio's Genres row
+   letters its third and fourth chips `scheme/3/inactive/text` and `scheme/4/tag1/text` the same
+   way. The page letters each chip in its own seat's ink. A shade apiece, the class of
+   Editorial's layout-3 chips. *(9)*
+3. **The bio's photograph hides another template's.** Under Pop's own stage photograph (a crop
+   of rows 6.4–42.1%) the well carries Lime's stage shot (`fa453f7d`) at `FILL`, painted over and
+   invisible — a leak in the component, as on Grunge's and Editorial's pages. *(2)*
+4. **The gallery's twelve tiles are other templates' pictures.** Retro's, Grunge's and
+   Editorial's placeholders with two of Pop's photographs and one (`3a59b4d1`) no template uses;
+   the page shows the seven pictures of Pop's own shoot (layout 1's note, layout 2's note 2). *(3)*
+5. **Two of the bio's stickers sit where they cannot at every width.** At 768 the seal keeps the
+   desktop's x in the 708 instance, so it stands 125.8 past the card and the `Section`'s clip
+   cuts it to a quarter at the photograph's edge; the page draws it in the desktop's corner. At
+   390 the teal sparkle stands beside the frame's hand-broken "DJ & / SELECTOR", but a one-line
+   value ("MANCHESTER, UK") runs under it, so the page draws it behind the card's copy there.
+   *(11, 12)*
+6. **The calendar's frame draws filler the page cannot model.** One dot in row 2 is a *today*
+   (31.99 against 30.71, ringed `text/2` rather than `stroke/1`), which neither twin's frame
+   draws and the canvas never knows; with it, four booked and seven selected dots that are no
+   one's data. The page draws the seeded month's real state. *(14)*
+7. **Two slips in the type.** The narrow masters type the three composed heads in mixed case —
+   "Reads the room.", "Five worth your ear", "Book Me" — where 1440 types them in capitals (the
+   page sets them in capitals at every width, layout 2's media head again). And the
+   testimonials' "EXPERIENCES." breaks inside the word at 1440, EXPERIENC / ES., in its capped
+   306 box in the demo face; the page drops the cap and prints its heading on one line, as Lime's,
+   Grunge's and Editorial's do. *(4, 5)*
+8. **The footer is still layout 1's unbound variant, and two schemes on the page paint
+   nothing.** All three footer instances set Scheme 2 on a tree that binds no colour, so they
+   draw layout 1's pink; the 1440 instance also draws no type in Figma (its 13 text nodes report
+   a missing Chunko style). `Frame 299`, the composed region's wrapper, sets Scheme 3 with no fill
+   and nothing reads it — worth a line only if the column was meant to be pink. *(6, 7)*
