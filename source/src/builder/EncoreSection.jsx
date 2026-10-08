@@ -19418,23 +19418,49 @@ function Calendar({ s }) {
     // (`absoluteRenderBounds`) over a stacked line, so the stacked display
     // sites lift 0.055em, to 0.261 / 0.219 / 0.226, each under 0.65px off
     // (display-face.md step 4, layout 4; Noto took 0.09).
-    if (s.limeTree) {
+    //
+    // **Pop (964:73230 · 971:10909 · 977:14589, Frame 324 964:73231 ·
+    // 971:10910 · 977:14590) is this block a fourth time**: 98 = 98 nodes
+    // against Lime's Frame 324s at every width, Pop's Scheme 1 with the twins'
+    // nested schemes (Back 3, Send Enquiry 2), no Device override, no effect,
+    // every paint bound. The stack is three levels again — #F5F5F5 `s.box1`
+    // rows under the violet `s.tx` card on the #EBEBEB `s.box2` panel — and
+    // Back, Next Step and the step discs resolve through Lime's and
+    // Editorial's keys (Back on `s.onScheme[3]`, lime lettered pink). What
+    // moves: the wizard card, the idle chips and the date box ring **4px** in
+    // `stroke/1` pink (`ring`; the rows keep the 1px `hair`); the summary card
+    // draws its 1px `stroke/1` ring, which Lime's leaves undrawn; GUESTS binds
+    // `text/1`, pink (`s.ac`), where Lime's binds `sem/bg`; the wizard card is
+    // radius 50 at every width (Lime's narrow 16 is a second component) and
+    // the panel 60 / **50** / 30; the cards pad 24 at the sides; Display/Title
+    // is 28 / 22 / 20; and Send Enquiry is Scheme 2's pair, `text/1` pink
+    // lettered and disced `sem/bg` lime round a pink arrow, where BookPill's
+    // default `pillBg` is Scheme 1's black. A refused box is 4px of violet
+    // `s.tx` — the other text token at the idle ring's own weight, so the mark
+    // is a colour change (CONVENTIONS C). The head and the stacked display
+    // lines take Titan's lift by token, and the head fits its widest word.
+    // The pair `(s.limeTree || s.pop)` folds into `limeTree` in the sweep
+    // (plans/pop/layout-4.md, decision 2).
+    if (s.limeTree || s.pop) {
       const grunge = s.grunge
       const ed = s.editorial
-      const S3 = ed ? s.onScheme[3] : null
+      const pop = s.pop
+      const S3 = ed || pop ? s.onScheme[3] : null
+      const S2 = pop ? s.onScheme[2] : null
       const hair = `inset 0 0 0 1px ${s.stroke1}`
-      const titleSize = u(ed ? (desk ? 32 : s.mob ? 23 : 25) : desk ? 36 : s.mob ? 26 : 28)
+      const ring = pop ? `inset 0 0 0 ${u(4)} ${s.stroke1}` : hair
+      const titleSize = u(ed ? (desk ? 32 : s.mob ? 23 : 25) : pop ? (desk ? 28 : s.mob ? 20 : 22) : desk ? 36 : s.mob ? 26 : 28)
       const r15 = (lime) => u(ed ? 0 : grunge ? 15 : lime)
-      const padSide = u(grunge || ed ? 24 : 34)
+      const padSide = u(grunge || ed || pop ? 24 : 34)
       // A dashed ring on a `position: relative` box, × 0.82 on the canvas.
       const dashed = (dash, colour) => <DashRule side="all" dash={dash * z} colour={colour} />
-      const lift = ed ? { position: 'relative', top: '-0.055em' } : null
+      const lift = ed ? { position: 'relative', top: '-0.055em' } : pop ? { position: 'relative', top: '-0.1em' } : null
       const body = (size, lh, extra) => ({
         fontFamily: s.body, fontSize: size, lineHeight: lh, letterSpacing: s.dls, ...extra,
       })
       const disp = (size, lh, extra) => ({
         fontFamily: s.display, fontSize: faced(s, size), lineHeight: facedLh(s, lh), letterSpacing: s.dls,
-        ...(grunge || ed ? { textTransform: 'uppercase' } : null), ...extra,
+        ...(grunge || ed || pop ? { textTransform: 'uppercase' } : null), ...extra,
       })
       const chipType = {
         fontFamily: s.body, fontWeight: 700, fontSize: s.chip, lineHeight: 1,
@@ -19447,7 +19473,7 @@ function Calendar({ s }) {
       const summary = (
         <div style={col(u(20), {
           background: s.tx, color: s.box2, borderRadius: r15(50), padding: `${u(24)} ${padSide}`,
-          boxShadow: grunge ? `inset 0 0 0 1px ${s.stroke2}` : undefined,
+          boxShadow: grunge ? `inset 0 0 0 1px ${s.stroke2}` : pop ? hair : undefined,
         })}>
           <div style={row(u(14), { justifyContent: 'space-between' })}>
             <div style={col(u(4))}>
@@ -19471,7 +19497,7 @@ function Calendar({ s }) {
                   alignItems: right ? 'flex-end' : 'flex-start',
                   textAlign: right ? 'right' : 'left', minWidth: 0,
                 })}>
-                  <span style={st.big ? distressed(s, disp(titleSize, 1.1, { color: s.bg, textTransform: 'uppercase', ...lift })) : smallCaps}>{st.label}</span>
+                  <span style={st.big ? distressed(s, disp(titleSize, 1.1, { color: pop ? s.ac : s.bg, textTransform: 'uppercase', ...lift })) : smallCaps}>{st.label}</span>
                   <span style={body(s.bodyLg, 1.5, {
                     opacity: st.ph ? 0.45 : undefined, overflowWrap: 'anywhere',
                   })}>{st.value}</span>
@@ -19509,7 +19535,7 @@ function Calendar({ s }) {
               form's Lime layout-4 rule. */}
           <div style={row(0, {
             background: s.box2, color: s.tx, borderRadius: ed ? 0 : '999px',
-            boxShadow: refused(key) ? `inset 0 0 0 2px ${ed ? s.stroke2 : s.tx}` : ed ? undefined : hair,
+            boxShadow: refused(key) ? `inset 0 0 0 ${pop ? u(4) : '2px'} ${ed ? s.stroke2 : s.tx}` : ed ? undefined : ring,
             padding: `${u(12)} ${u(14)}`, ...body(s.bodyMd, 1.5),
             ...(ed ? { position: 'relative' } : null),
           })}>
@@ -19541,7 +19567,7 @@ function Calendar({ s }) {
                 <span key={i} onClick={onClick} style={row(u(10), {
                   minWidth: 0, borderRadius: ed ? 0 : '999px', padding: `${u(14)} ${u(16)}`,
                   background: on ? s.ac : s.box2, color: on ? s.bg : s.tx,
-                  boxShadow: on || ed ? undefined : hair, cursor: onClick ? 'pointer' : undefined,
+                  boxShadow: on || ed ? undefined : ring, cursor: onClick ? 'pointer' : undefined,
                   ...body(s.bodyMd, 1.5), ...(ed ? { position: 'relative' } : null),
                 })}>
                   {ed && !on && dashed(10, s.stroke1)}
@@ -19614,8 +19640,8 @@ function Calendar({ s }) {
       // Back is a Scheme 3 pill on both twins' frames and Editorial's. Lime's
       // Scheme 3 `text/1` is its page ink and `sem/bg` its accent, so it reads
       // `s.bg` / `s.ac`; Sienna Vale's are terracotta and ink, `S3`'s own.
-      const backBg = ed ? S3.ac : s.bg
-      const backFg = ed ? S3.bg : s.ac
+      const backBg = ed || pop ? S3.ac : s.bg
+      const backFg = ed || pop ? S3.bg : s.ac
       // The row is SPACE_BETWEEN in every master, where Figma ignores the 12
       // `itemSpacing`: the 390 frame stands Back 121 and Next Step 161 in its
       // 290, 8 apart. So under Editorial the column gap is 0, which is what
@@ -19627,7 +19653,7 @@ function Calendar({ s }) {
       const buttons = (
         <div style={row(u(12), {
           justifyContent: 'space-between', alignItems: 'flex-start', width: '100%',
-          ...(ed ? { flexWrap: 'wrap', columnGap: 0 } : null),
+          ...(ed || pop ? { flexWrap: 'wrap', columnGap: 0 } : null),
         })}>
           <span onClick={onBack} style={{
             ...pill(false), background: backBg, color: backFg, cursor: onBack ? 'pointer' : undefined,
@@ -19637,7 +19663,7 @@ function Calendar({ s }) {
           </span>
           <NextTag {...sendLink} onClick={onNextTag} style={{
             ...pill(true), background: s.ac, color: s.bg, cursor: onNextTag ? 'pointer' : undefined,
-            ...(ed ? { marginLeft: 'auto' } : null),
+            ...(ed || pop ? { marginLeft: 'auto' } : null),
           }}>
             {last ? W.send : W.next}
             {disc(s.bg, s.ac, ArrowRight)}
@@ -19652,8 +19678,8 @@ function Calendar({ s }) {
       // and *Start again* is the Back pill, since it returns to step 1.
       const wizard = (
         <div style={col(u(20), {
-          background: s.box1, color: s.tx, boxShadow: ed ? undefined : hair,
-          borderRadius: u(ed ? 0 : desk ? (grunge ? 15 : 50) : 16),
+          background: s.box1, color: s.tx, boxShadow: ed ? undefined : ring,
+          borderRadius: u(ed ? 0 : desk ? (grunge ? 15 : 50) : pop ? 50 : 16),
           padding: desk ? `${u(40)} ${u(48)}` : '30px',
           justifyContent: wSent ? 'center' : 'space-between', alignItems: 'stretch', minWidth: 0,
           ...(ed ? { position: 'relative' } : null),
@@ -19689,15 +19715,17 @@ function Calendar({ s }) {
       return (
         <div style={col(u(s.mob ? 20 : 50), {
           background: grunge ? s.box3 : s.box2,
-          borderRadius: u(ed ? 0 : grunge && desk ? 15 : s.mob ? 30 : 60), padding: panelPad,
-          // The head is fitted to its widest word in Gloock, off the panel's
-          // content box (the bio's and the gallery's rule).
-          ...(ed ? { position: 'relative', containerType: 'inline-size' } : null),
+          borderRadius: u(ed ? 0 : grunge && desk ? 15 : s.mob ? 30 : pop && !desk ? 50 : 60), padding: panelPad,
+          // The head is fitted to its widest word in Gloock (and Titan), off
+          // the panel's content box (the bio's and the gallery's rule).
+          ...(ed ? { position: 'relative', containerType: 'inline-size' } : pop ? { containerType: 'inline-size' } : null),
         })}>
           {ed && !s.mob && dashed(5, s.stroke1)}
           <h2 style={distressed(s, {
             margin: 0,
-            ...disp(ed && s.titleWordEms ? `min(${s.dispLg}, calc(100cqi / ${s.titleWordEms}))` : s.dispLg, 0.89, { color: s.ac }),
+            ...disp((ed || pop) && s.titleWordEms ? `min(${s.dispLg}, calc(100cqi / ${s.titleWordEms}))` : s.dispLg, 0.89, {
+              color: s.ac, ...(pop ? { position: 'relative', top: '-0.14em' } : null),
+            }),
           })}>{s.title}</h2>
           <div style={desk
             ? {
@@ -19712,7 +19740,10 @@ function Calendar({ s }) {
               {pkg && infoRow({
                 key: 'pkg', big: pkg.name, sub: pkg.price, end: nPkg > 1 ? W.pkg : '', onClick: onPkg,
               })}
-              <BookPill s={s} ext={sendHref} onClick={onSend} label={W.send} fg={ed ? undefined : grunge ? '#171716' : s.box1} full={s.mob}
+              {/* Send Enquiry is Scheme 2 on the twins' frames and Pop's: Pop's
+                  pair is `text/1` pink lettered and disced `sem/bg` lime. */}
+              <BookPill s={s} ext={sendHref} onClick={onSend} label={W.send} fg={ed ? undefined : grunge ? '#171716' : pop ? S2.bg : s.box1} full={s.mob}
+                        {...(pop ? { bg: S2.ac } : null)}
                         style={{ width: '100%', justifyContent: 'space-between' }} />
             </div>
           </div>
