@@ -306,7 +306,7 @@ desktop id — each block's fit comment cites them); it is the gate the session 
 | 7 | `pricing` | `964:73229` | 1440 × **514** | `971:10908` | 768 × **762** | `977:14588` | 390 × **805** | 1 | `964:72926` / `971:5613` / `977:9187` | `964:73111` / `971:9609` / `977:13476` | `if (s.limeTree)` inside `Pricing`'s `if (s.v3)`, after `bleedX` | **done** — `24d4407` |
 | 8 | `calendar` | `964:73230` *(Section; Frame 324 `964:73231`; wizard 680 × 506)* | 1440 × **909** | `971:10909` *(Frame 324 `971:10910`; wizard 608 × 469)* | 768 × **1315** | `977:14589` *(Frame 324 `977:14590`; wizard 350 × 467)* | 390 × **1154** | 1 (wizard 1; **Back 3**; **Send Enquiry 2**) | `964:72927` / `971:5614` / `977:9188` *(Sections)* | `964:73112` / `971:9610` / `977:13477` | `if (s.limeTree)` inside `Calendar`'s `if (s.v3)`, after `onNextTag` | **done** — `823add7` |
 | 9 | `form` | **`964:73243`** *(an instance, at last)* | 1440 × **723** | `971:10922` | 768 × **970** | `977:14602` | 390 × **928** | 1 (submit 1) | `964:72940` / `971:5627` / `977:9201` | `725:3049` *(component)* / `971:9623` / `977:13490` | `if (s.v3 && s.limeTree)` ahead of `EnquiryForm`'s `if (s.v3)` | **done** — `c13fc52` |
-| 10 | `testimonials` | `964:73244` | 1440 × 716 | `971:10923` | 768 × **588.4** | `977:14603` | 390 × **576.4** | **4** (discs 4; cell 2 **1**, cell 3 **3**) | `964:72941` / `971:5628` / `977:9202` | `964:73125` / `971:9624` / `977:13491` | `if (s.limeTree)` inside `Testimonials`' `if (s.v3)`, after `padBot` | |
+| 10 | `testimonials` | `964:73244` | 1440 × 716 | `971:10923` | 768 × **588.4** | `977:14603` | 390 × **576.4** | **4** (discs 4; cell 2 **1**, cell 3 **3**) | `964:72941` / `971:5628` / `977:9202` | `964:73125` / `971:9624` / `977:13491` | `if (s.limeTree)` inside `Testimonials`' `if (s.v3)`, after `padBot` | **done** — `19dd78f` |
 | — | `footer` | `964:73245` | 1440 × 479.5 | `971:10924` | 768 × 720.4 | `977:14604` | 390 × 720.4 | *(no mode; unbound)* — row 0's 3, layout 1's pink | — | — | — | **out of scope**: layout 1's Pop footer, closed at planning time |
 | — | `video` | `964:73165` | 1440 × 1143 | `971:10852` | 768 × 627 | `977:14407` | 390 × 383 | 1 (white) | — | — | — | **not in the project**; the three earlier layout-4 passes declined restoring it, and this pass does the same |
 
@@ -1134,6 +1134,16 @@ Retro's bullets; name them.
   wizard card is 16 at 768 and 390 because those masters instance another component; Pop's
   narrow masters keep 50, and its panel is 50 at 768 where Lime's is 60. A radius that differs
   by width on the twin can be flat here, and the other way round.
+- **A twin's arm on a nested scheme is copied for its shape, and its keys re-read off the
+  binding** (section 10). Editorial's testimonials seat 1 rings its Scheme 1 cell in
+  `S1.stroke2`, terracotta there; Pop's frame binds the same cell's ring to `stroke/1`, and
+  Pop's Scheme 1 `stroke2` is lime. The scheme number matched, the role did not. Read each key's
+  binding name per node before reusing a twin's `S1.*` read.
+- **A narrow master can disagree with the wide ones on a node only a peek shows** (section 10).
+  The 390 testimonials master seats its third cell on Scheme 4 and inks its second violet, where
+  1440 and 768 say Scheme 3 and pink. When the node is unreachable or a peek at that width, the
+  wide reading stands at every width (the seat owns the hue) and the disagreement is named,
+  never gated by width.
 
 ### Seen at planning time, per section
 
@@ -2320,6 +2330,112 @@ From the walks and the renders — impressions to confirm, not measurements.
   cell; D4's form row a Pop column (no `G`, Grunge's `ring`, the pill and the refusal as they
   stand, the fit widened).
 
+### Settled in section 10 (the testimonials)
+
+- **The block widened inside `Testimonials`' `if (s.v3)`, after `padBot`: `if (s.limeTree ||
+  s.pop)`, `const pop = s.pop`**, its comment saying the pair folds into `limeTree` in the sweep.
+  Every Lime, Grunge and Editorial arm is byte-identical: `G`, `disp` and the head's container
+  take `pop` beside `grunge || ed` / `ed` (`fit = ed || pop`), `REG` and `SEATS` take a `pop`
+  arm **first** (fold-safe), and `cellH` a `pop ? 430` arm. The seam is shared whole (`n`,
+  `seats`, `paging`, `shown`, `at`, `step`), so the published discs needed nothing new.
+- **The read was the node walker over the three Pop masters**, bindings with their collections,
+  paired against the plan's LCS (41 / 33 / 41 = Lime's): `Pop | Scheme 4` roots, no Device
+  override, the cells' `explicitVariableModes` the only nested schemes, the discs' blur 24 the
+  only effect, **no raw paint**. Every box is Lime's — the 56 / 30·30·48·30 / 30·10 insets, which
+  are the block's `padTop` / `padH` / `padBot` as they stand, the 30 corners, the 24 cell pad,
+  the 16 gaps, the 73.6 discs 5 apart, the 56 avatars — **but the desktop cell: 430** (716 = 56
+  + 146 + 28 + 430 + 56, the head two lines of Display/LG 82 at .89; Lime's 344, Editorial's 382).
+- **The sheet is the seat's (trap 3)**: `G = { sheet: s.bg, ink: s.ac }` under `pop`, the blue
+  and teal of Scheme 4; Lime's `s.tx` would have laid a yellow sheet over the root. The head and
+  the discs are `text/1` teal, the arrows `sem/bg` blue. The discs' 1px `sem/bg` rim is the
+  sheet's own blue on a disc on the sheet, and their blur stands behind an opaque fill: both not
+  drawn, the twins' reading.
+- **The 10px rule** is the repertoire's spelling on the sheet, `inset 0 -${u(10)} 0 ${s.stroke1}`
+  behind `pop && !s.mob` — `sem/stroke/1` teal under the seat, read live `rgb(0, 224, 196) 0px
+  -8.2px 0px 0px inset` / `-10px`, none at 390 (the 390 root has no stroke).
+- **The register is four seats, one each, written fresh** (`SEATS = [0, 1, 2, 3]`), read off each
+  cell's mode and bindings at 1440 and 768:
+  - seat 0, Scheme 4: `box/1` `#3F76FF` (`s.box1`) in `stroke/1` teal, lettered `text/2` yellow
+    (`s.tx`); the disc `text/1` teal lettered `sem/bg` blue, in the teal ring;
+  - seat 1, a cell naming **Scheme 1**: `box/3` black (`S1.box3`) in **`stroke/1`** pink — not
+    Editorial's `stroke/2`, which is lime on Pop's Scheme 1 — lettered `text/1` pink (`S1.ac`);
+    the disc pink lettered `sem/bg` white in the pink ring;
+  - seat 2, a cell naming **Scheme 3**: `box/1` `#FF63B8` (`S3.box1`) in `stroke/1` violet,
+    lettered `text/2` violet (`S3.tx`); the disc `text/1` lime lettered `sem/bg` pink in the violet
+    ring;
+  - seat 3, Scheme 4: `text/1` teal, **unstroked**, left bare as the twins leave theirs, lettered
+    `sem/bg` blue; the disc blue lettered teal in a teal ring.
+  Read live in that order at every width (blue / black / pink / teal at 1440, the first three at
+  768, blue and the black peek at 390), the inks and rings exactly as listed. The fourth seat is
+  unreachable at 768 and 390 at any count (the twins' named diff).
+- **The 390 master disagrees with itself on the two cells it barely shows**: its black cell binds
+  the quote and foot `text/2` violet where 1440 and 768 bind `text/1` pink, and its third cell
+  states no mode (Scheme 4's `box/1` blue again, the twins' `[0, 1, 0, 2]`) where the wide masters
+  state Scheme 3. The third is unreachable at 390 and the second shows as a 54 peek, so the wide
+  masters' reading stands at every width — the seat owns the hue (open question 22).
+- **Type is `THEME_RAMP.Pop` to the token**: the head Display/LG 82 / 51 / 36 at .89 (`s.dispLg`,
+  65.66 / 49.98 / 35.28 rendered through `faced`), the marks Label/LG 24 / 16 / 14 at 1.1
+  (`s.labelLg`, 19.6 / 15.68 / 13.72), the quote Body/LG 16 / 15 / 15, `who` Body/MD, `role`
+  Body/SM 12. `disp` uppercases under `pop` (the head and the marks).
+- **The lifts, scanned** (each string alone on white at DPR 4, against the frame's
+  `absoluteRenderBounds`):
+  - **the head** `top: −0.14em`: unlifted, its ink top stood 0.133 / 0.120 / 0.128em under the box
+    top and its floor 0.044 / 0.066 / 0.045em up, against the frame's 0 and 0.185 / 0.186 /
+    0.184 — the row is `MAX` against the discs (Editorial's *a head bottom-aligned with its
+    controls is a lift site*), and Display/LG's token lands its ink top at −0.007 / −0.020 /
+    −0.012em and its floor at 0.184 / 0.206 / 0.185 (the 768 residue 1px, Blink's rounding);
+  - **the marks** `−0.12em` on a span inside the disc (layout 3's Label/LG token, *lift the label,
+    never the ring*): the ink centre stands 0.95 / 2.63 / 0.88px over the disc's, against the
+    frame's 1.15 / 1.6 / 1.4 (× 0.82 at desktop) — the 768 residue 1px, Blink's per-size rounding;
+  - the quote and the foot are Inter, not lifted.
+- **The head fits its widest word** (`fit && s.titleWordEms`, the head in an `inline-size`
+  container under `pop`): the seed keeps the ramp at every width — **one line at desktop** (900.5
+  of the 936.9 measure), two at 768 and three at 390, as the narrow masters set it.
+  *Supercalifragilistic* sets at 65.66 / 43.6 / **15.6** px, ending 0.5 inside the measure at 390;
+  *Christopher Featherstonehaugh live* two / three / three lines; *Unforgettable* 65.66 / 49.98 /
+  21.6. No word breaks inside itself; no root scrolls sideways. Lime, the control, breaks
+  *Supercalifragilistic* and *Featherstonehaugh* at 768 and 390 unfitted.
+- **Measured** (harness, the frame in brackets; × 0.82 at desktop): desktop section **528**
+  (587.1) — exactly the head's second line, the seeded heading holding one line where the frame
+  authors two (Lime's and Grunge's named diff; *Christopher Featherstonehaugh live* takes two and
+  lands 586.8); h2 59.6 tall at 46; discs 60.4 at y 46; cells 262.2 × 352.6 (262.4 × 352.6) at
+  radius 24.6. 768: section **589.2** (588.4); h2 90.8 (90); discs 73.6 at y 47.2 (46.4); cells
+  225.3 × 392.4 at y 148.8 (148). 390: section **576.5** (576.4); h2 187.8 wide, 96.1 (96), three
+  lines; discs at 52.5 (52.4); cells 300 × 392.4 at 154.1 (154), the second peeking 54. The
+  shortfalls are Titan's line boxes against Figma's whole pixels. No root scrolls sideways.
+- **`live=1`** (puppeteer, trusted clicks, desktop and 390): the canvas carries no pointer; live,
+  both discs do. → steps the leading review Hannah → Amara → Dan, ← steps Dan → Amara → Hannah →
+  Olivia (wraps), and the seats keep their blue / black / pink / teal after every press. `n=0`
+  prints *No reviews yet.* in one blue cell with no discs; `n=1` one cell, no discs; `n=2` two
+  cells, with the discs at 390 alone; `n=8` four / two cells with the discs. No page error. **No
+  lit or idle disc state** (the twins'): both discs are the same teal disc with a blue arrow, and
+  they read on the blue sheet.
+- **Digest: themes 0, 1, 2 and 3 zero files of 660, canvas and `live=1`** (a fresh `:5201`, both
+  labels there, no one-row file in any of the four labels); theme 4 moved exactly
+  **testimonials arch 3 at three widths** on each surface (6 files).
+- **`FIELDS.testimonials` has no template-keyed `in` row** (checked in Node: `kicker`,
+  `heading`, `sub`, `rating`, `stars` and `cta` are plain arrays, `quotes` has none), and the block
+  reads no key the twins do not, so no `reach.mjs` run was owed.
+- **In the builder** (`page-check.mjs Pop 3` on `:5201`): four modal cards, no error or warning;
+  every nav link lands, Reviews on `#testimonials` and Book Now on `#form`; both testimonials discs
+  change the published section; `overflow390` 0; the 390 burger 1 → 11. The published section is
+  **644** at 1440 (528 × 1.22) and 576 at 390. The seam clips: the form's white onto the blue
+  sheet, straight at 1440 and 390; the sheet onto the pink footer under the teal rule at 1440 and
+  straight at 390.
+- **Named diffs**: the desktop head on one line (above); the seeded reviews against the frame's
+  repeated filler; Titan against Chunko (the head and the marks); the discs' 1px rim; the
+  unreachable fourth seat at 768 and 390; the 390 peek at 54 against 64 (the twins'); the 390
+  master's two disagreeing cells (open question 22); a long single-word head's small size at 390
+  (Editorial's); the 768 marks 1px high.
+- **For the sweep's CLAUDE.md pass**: `notes/testimonials.md`'s layout-4 sentence carries Pop
+  (written in this session's commit). The scheme bullet's layout-4 readers gain the testimonials'
+  black cell on `s.onScheme[1]` and pink cell on `s.onScheme[3]`. CONVENTIONS C's *Scheme 4 ≡
+  Scheme 1 collapses a sheet* row gains a Pop (layout 4) cell (not a collapse: the seat, as
+  Editorial's), *a Lime block paints its ground from Scheme 1 keys* a testimonials cell, and *a
+  head that must fit its measure* a testimonials cell; D4's testimonials row a Pop column (the
+  no-sheet `G`, four registers on `[0, 1, 2, 3]`, the 430 cell, the → path kept, the fourth seat a
+  bare teal cell, the 10px rule).
+
 ### Inherited and used
 
 *(The running list the sweep folds into [`../CONVENTIONS.md`](../CONVENTIONS.md): each time a
@@ -2533,6 +2649,26 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
   — no template-keyed row; *the digest is committed* (lime/layout-1); *the whole-page published
   check* (lime/layout-1) — `page-check.mjs Pop 3`.
 
+- Section 10: *where the seam lives inside the branch, the block goes after the seam*
+  (lime/layout-1) — after `padBot`, the pager shared whole; *the `G` lookup at the block's head*
+  (grunge/layout-1) — `G`'s no-sheet arm, a fourth `REG` arm first; *the node walker, kept*
+  (grunge/layout-2) — the three instances, bindings with their collections; *a Lime block paints
+  its ground from Scheme 1 keys* (editorial/layout-4, trap 1) — the seat's blue, no sheet of its
+  own; *seat the schemes off the master, never remap the twin's register* (CONVENTIONS A) — four
+  seats where every twin has three; *a register's ink is read per cell* (pop/layout-3) — yellow,
+  pink, violet, blue; *an Editorial `s.onScheme[n]` arm names Sienna Vale's scheme by number*
+  (pop/layout-4) — turned to the binding: the black cell's ring `stroke/1`, not Editorial's
+  `stroke/2`; *a twin's redrawn state or live mechanism is read against this frame*
+  (editorial/layout-2) — the fourth cell left bare; *a frame's inside stroke is an inset
+  `boxShadow`* (lime/layout-2) — the cells' and discs' 1px and the 10px rule; *a head that must
+  fit its measure is fitted to its widest word* (editorial/layout-1) and *probe a display string
+  with a long word* (editorial/layout-4) — four heads, three widths, a Lime control; *a head
+  bottom-aligned with its controls is a lift site* (editorial/layout-4) — 0.14em; *Titan at
+  Label/LG took 0.12em* (pop/layout-3) and *lift the label, never the ring* (pop/layout-2) — the
+  marks; *scan a glyph floor with the string drawn alone* (pop/layout-3); *a seeded page cannot
+  show an empty slot* (lime/layout-1) — `n=0`, `n=1`, `n=2`, `n=8`; *the digest is committed*
+  (lime/layout-1); *the whole-page published check* (lime/layout-1) — `page-check.mjs Pop 3`.
+
 ## Open questions
 
 1. ~~**Decision 1** — the seats.~~ Not a user call; session 0 writes the row.
@@ -2634,6 +2770,14 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
    ring is already 4px of full pink, so the twins' 2px would read thinner than the box it marks.
    It keeps the idle weight and changes colour to the other text token. No frame draws the state;
    the other answer (the twins' 2px) is a one-line arm.
+
+22. **The 390 testimonials master disagrees with the wide ones on two cells** (section 10): its
+   black Scheme 1 cell letters the quote and foot `text/2` violet (2.4 : 1 on black) where 1440
+   and 768 bind `text/1` pink, and its third cell states no mode, so it is Scheme 4's blue again
+   (the twins' `[0, 1, 0, 2]`) where the wide masters seat it on Scheme 3's pink. At 390 the third
+   cell is unreachable and the second is a 54px peek, so the wide masters' reading stands at every
+   width — the seat owns the hue. Followed and named, not gated by width. Worth a line to the
+   designer: the 390 instance looks like an earlier copy of the component.
 
 ## Notes for the designer
 
