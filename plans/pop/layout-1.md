@@ -1204,7 +1204,10 @@ counters and ink traps: its corners are soft. Rubik 900 is the squarer drawing, 
   `Photo`'s `ink` (undefined, and so unchanged, for the twins).
 - **Inherited diffs, not Pop's**: the root's 80 / 56 / 44 top and 80 foot on the canvas against
   the masters' 56 / 60 / 24 (the published 1440 bio is 853 tall against 769), and the 390's 10
-  inset against 20 — Lime's, as Editorial recorded.
+  inset against 20 — Lime's, as Editorial recorded. (The top and foot *reversed* by JP-116,
+  [`qa-fixes.md`](./qa-fixes.md), user call, 2026-10-08: `sectionVm`'s layout-1 arm pads Pop's
+  sections with their frames' own top and foot, here 56 / 56, 60 / 60, 24 / 40. The 390's 10
+  side inset stands.)
 - **Moved: theme 4's bio a0 alone** (three widths), against HEAD served from a scratch worktree on
   :5174; themes 0, 1, 2 and 3 at zero rows (528 renders, and the bio's 48 again after the `ink`
   prop). `PopSun` and `PopDots` have no other caller yet.
@@ -1307,7 +1310,9 @@ counters and ink traps: its corners are soft. Rubik 900 is the squarer drawing, 
   where `s.muted` violet vanished on the red and the blue. An empty list names "No tracks yet."
   under 00:00 in the player beside an empty column, as Retro's does.
 - **Inherited diffs, not Pop's**: the root's `padY` 80 / 56 / 44 against the frame's 56 / 30 / 10
-  (the published 1440 band is 1139 tall against 1055), as the bio recorded; the clocks' Inter at
+  (the published 1440 band is 1139 tall against 1055), as the bio recorded (*reversed* by JP-116,
+  [`qa-fixes.md`](./qa-fixes.md), user call, 2026-10-08: the root pads the frame's 56 / 30 / 10 at
+  both ends); the clocks' Inter at
   Retro's 10 (the bar starts 3.2 right of the frame's at 1180, 3.4 at 768).
 - **Live**: the published tab at 1440 and 390, trusted clicks under
   `--autoplay-policy=no-user-gesture-required` — a card plays its track, a second click pauses it,
@@ -1399,7 +1404,8 @@ counters and ink traps: its corners are soft. Rubik 900 is the squarer drawing, 
   354.24), the brackets, the strip — within 0.7 px of the frame × 0.82; at 768 and 390 within
   0.8 px through the panel and the top row, then **+1 px from the credit row down**: Inter
   Bold 11's line box is 14 where Figma's is 13. Inherited, not Pop's: the root's 80 / 56 / 44
-  top against the masters' 56 / 30 / 20.
+  top against the masters' 56 / 30 / 20 (*reversed* by JP-116, [`qa-fixes.md`](./qa-fixes.md),
+  user call, 2026-10-08: the root pads the inner frames' 56 / 56, 30 / 30, 20 / 30).
 - **Empty slots** (`&n=0`; `&noimage=1` does not reach the gallery): the cream well under
   `Photo`'s `s.soft` with `s.tx` violet initials, in the spotlight and every tile; the ring and
   glow read on it.
@@ -1509,8 +1515,10 @@ counters and ink traps: its corners are soft. Rubik 900 is the squarer drawing, 
   86.1), the number and title x, the pager's 45.1 / 71.3 × 44.3 and the heart (956.0 against
   956.8) within 1 px of the frame × 0.82, the pager 1.7 high (six rows' Titan line boxes); at 768
   and 390 the same within 1.4, the eyebrow's +1 carried down. Inherited, not Pop's: the root's
-  80 / 56 / 44 top against the masters' 96 / 60 / 40, the 390's 10 inset against 20, and
-  `pageWindow`'s six buttons at 1440 and 768 where the masters draw five (Lime's).
+  80 / 56 / 44 top against the masters' 96 / 60 / 40 (*reversed* by JP-116,
+  [`qa-fixes.md`](./qa-fixes.md), user call, 2026-10-08: the band pads the frame's 96 / 60 / 40
+  at both ends, and the heart reads the root's own foot, `padFoot`), the 390's 10 inset against
+  20, and `pageWindow`'s six buttons at 1440 and 768 where the masters draw five (Lime's).
 - **Live** (`theme=4&live=1&n=240`, three widths): Next lights page 2 and the list starts at 13
   (7 narrow); a chip re-derives the pager (20 → 7 pages at 1440, 40 → 14 narrow) and resets to
   page 1, the lit chip lime under violet and the rest the 15% tint under lime; a search with no
@@ -1616,7 +1624,10 @@ counters and ink traps: its corners are soft. Rubik 900 is the squarer drawing, 
   0.98 on this string). At 768 the tile 387 (387), map 214.8, rows 79; at 390 the tile 429.1
   (429.16), map 350 × 298, the panel's 30 top. The +1 under the kicker at 768 and 390 is Inter
   Bold 11's 14 line against Figma's 13 (the gallery's +1). Inherited, not Pop's: the root's 80 /
-  56 / 44 top and 80 foot against the masters' 126 / 60 / 30 and 156 / 60 / 10; the 390 page's
+  56 / 44 top and 80 foot against the masters' 126 / 60 / 30 and 156 / 60 / 10 (*reversed* by
+  JP-116, [`qa-fixes.md`](./qa-fixes.md), user call, 2026-10-08: the root pads them. The triage's
+  "two content seams" measured as these insets; the Bebas head and the pager below shorten the
+  map and move no seam); the 390 page's
   five gigs where the master draws three; no pager seeded, so the desktop cards stand 498.7 tall
   against the frame's 683 × 0.82 (Lime's "the frame's 686 less its pager" case); `pageWindow`'s
   compact `1 2 … 6`.
@@ -1835,7 +1846,8 @@ counters and ink traps: its corners are soft. Rubik 900 is the squarer drawing, 
   the arrow's 808.66 / 8.65 (809.4 / 8.7), the foot 431.08 down and its line (32.79, 32.79) — all
   within 0.8 px of the frame × 0.82; at 768 and 390 every one of those within 1 px. The head runs
   1.6% wide (202.5 against 199.3). Inherited, not Pop's: the root's 80 / 56 / 44 top against the
-  masters' 100 / 100 / 60 and its foot.
+  masters' 100 / 100 / 60 and its foot (*reversed* by JP-116, [`qa-fixes.md`](./qa-fixes.md), user
+  call, 2026-10-08: the band pads the frames' 100 / 100, 100 / 50, 60 / 40).
 - **Live** (`theme=4&live=1&today=2025-06-10&booked=2025-06-14,2025-06-24`, puppeteer clicks, three
   widths): a pick moves the pink fill and the line ("Enquiry for Friday, June 20…", an
   `<a href="#form">`), the booked 14th and the past 5th take no click, re-clicking the lit day
@@ -1949,7 +1961,8 @@ counters and ink traps: its corners are soft. Rubik 900 is the squarer drawing, 
   317.8 × 49.2 (318.2), the chips 217.3, the pill 389.2 (389.5), the seal's centre (−53.3, 14.7)
   exactly. The shell is the frame's own width: no named diff on the halves this time.
   Inherited, not Pop's: the root's 80 / 56 / 44 top against the masters' 120 / 30 / 30 and foot
-  against 120 / 60 / 30; the live `::placeholder` at the page's .45 against the frame's .8 (a hint
+  against 120 / 60 / 30 (*reversed* by JP-116, [`qa-fixes.md`](./qa-fixes.md), user call,
+  2026-10-08: the root pads them); the live `::placeholder` at the page's .45 against the frame's .8 (a hint
   under a label, JP-093 — Repertoire's accepted diff) (*reversed* by JP-119,
   [`qa-fixes.md`](./qa-fixes.md), user call, 2026-10-08: each live box sets `--ph: 0.8`, so the
   published tab draws the frame's .8, as the canvas does); the ✓ is Inter's fallback glyph (pricing's
@@ -2046,7 +2059,8 @@ counters and ink traps: its corners are soft. Rubik 900 is the squarer drawing, 
   0.82); 768 card (159.3, 199.4) 464 wide, quote 364 × 146.4, arrows 19.35 above the card's centre;
   390 card (19.4, 199.2) 353 wide, arrows at 615.3, 17.8 under the card and 18 above the foot.
   Inherited, not Pop's: the arrows at our `padX` (45.9 / 30) against the frame's 60 (Lime's and
-  Retro's same diff).
+  Retro's same diff) (*reversed* by JP-116, [`qa-fixes.md`](./qa-fixes.md), user call, 2026-10-08,
+  for Pop: the row pads in to `u(60)` at 1440 and 768. Lime's and Retro's stand).
 - **Live** (`theme=4&live=1`, puppeteer clicks, three widths): Next walks all five reviews and
   wraps 5 → 1, Back wraps 1 → 5, both discs carry a pointer and hit-test to themselves (the rule
   and the backs take none of it); `n=1` draws no arrows; `n=0` prints *No reviews yet.* in white
@@ -2151,7 +2165,9 @@ counters and ink traps: its corners are soft. Rubik 900 is the squarer drawing, 
   (277), the small print at 86 / 682 (86 / 682); 390 the section 708.67 (720.39 less the 12 `padY`),
   column 2 at 210.6 (207), the small print at 79.2–220.4 and 230.4–380 (81–223, 233–380). Inherited,
   not Pop's: the root's 80 desktop / 44 mobile `padY` against the frames' 56 (the published 1440
-  footer is 522 tall against 479.7).
+  footer is 522 tall against 479.7) (*reversed* by JP-116, [`qa-fixes.md`](./qa-fixes.md), user
+  call, 2026-10-08: the root's top is the frames' 56 at every width, on every Pop page, and Line
+  19 reads it as `padTop`).
 - **Function** (`theme=4&live=1`, three widths): `n=8` rows are `<a href="#cat">`, the address row
   `target="_blank"`, the pill `<a href="#form">`; `n=5` splits 3 / 2; `n=0` is the pill alone; every
   row and the pill hit-test to themselves (the sun takes none); on the canvas every anchor is

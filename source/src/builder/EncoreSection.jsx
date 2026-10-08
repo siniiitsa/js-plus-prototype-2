@@ -10036,7 +10036,9 @@ function Pricing({ s }) {
             the root) that clips, since the 390 rings run 52 past the page.
             The rings hang off the content's foot-right corner — 32 past it
             and 13.08 under at 1440, 20 and 15.96 at 768 (the master's own
-            ×0.69 scale), 71.87 and 40 at 390, the root's foot. The layer comes
+            ×0.69 scale), 71.87 and 40 at 390, the root's foot. The content's
+            foot is the root's own (`padFoot`, the frame's 100 / 60 / 40 since
+            JP-116), not the page's `padY`. The layer comes
             first and the column after it is positioned, so every card and
             string paints over the rings, as the frame's later siblings do. */}
         {pop && (
@@ -10046,7 +10048,7 @@ function Pricing({ s }) {
             }} />
             <svg viewBox="0 0 272.57 242.17" preserveAspectRatio="none" style={{
               position: 'absolute', display: 'block', width: ringW, height: ringH,
-              right: `calc(${s.padX} - ${ringAt[0]}px)`, bottom: `calc(${s.padY} - ${ringAt[1]}px)`,
+              right: `calc(${s.padX} - ${ringAt[0]}px)`, bottom: `calc(${s.padFoot} - ${ringAt[1]}px)`,
             }}>
               <path d={POP_RINGS_D} fill={s.tx} />
             </svg>
@@ -12822,7 +12824,9 @@ function Repertoire({ s }) {
               heart's top 12 over the last pill's ring, as over the → disc.
               The 768 master keeps the desktop's x in a 768 frame, wholly
               clipped, so it draws none there. It takes no pointer, so the
-              disc under it hit-tests to the disc. */}
+              disc under it hit-tests to the disc. The content's foot is the
+              root's own (`padFoot`, the frame's 96 / 40 since JP-116), not the
+              page's `padY`. */}
           {pop && (
             <div aria-hidden style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none' }}>
               <div style={{
@@ -12832,8 +12836,8 @@ function Repertoire({ s }) {
                 <svg viewBox="0 0 100.44 91" aria-hidden style={{
                   position: 'absolute', display: 'block', width: u(100.44), height: u(91),
                   ...(s.mob
-                    ? { right: '2px', bottom: `calc(${s.padY} - 79px)` }
-                    : { right: `calc(${s.padX} + ${u(60.78)})`, bottom: `calc(${s.padY} - ${u(9)})` }),
+                    ? { right: '2px', bottom: `calc(${s.padFoot} - 79px)` }
+                    : { right: `calc(${s.padX} + ${u(60.78)})`, bottom: `calc(${s.padFoot} - ${u(9)})` }),
                 }}>
                   <path d={POP_HEART_D} fill={s.onScheme[1].chips[3].bg} />
                 </svg>
@@ -24198,13 +24202,17 @@ function Testimonials({ s }) {
       const lNext = ring(false, step(1))
 
       // The card's top stands 165 / 205.5 / 205.2 down the 730 band and its foot
-      // (390: the arrows' foot) 145 / 159.5 / 108 up it; what the root's padY
-      // does not already give is the shell's padding.
-      const pad = (top, bottom) => `calc(${u(top)} - ${s.padY}) 0 calc(${u(bottom)} - ${s.padY})`
+      // (390: the arrows' foot) 145 / 159.5 / 108 up it; what the root's own
+      // padding (`padTop` / `padFoot`: `padY`, since no layout-1 arm gives the
+      // testimonials a row, JP-116) does not already give is the shell's
+      // padding. Pop's masters seat the arrow row 60 in from the band's sides
+      // at every width (JP-116, user call, 2026-10-08), where the root's `padX`
+      // put them 45.9 / 30 in at 1440 and 768; 390's row is a centred 270.
+      const pad = (top, bottom, side = '0') => `calc(${u(top)} - ${s.padTop}) ${side} calc(${u(bottom)} - ${s.padFoot})`
       // Pop's 390 foot (18) is under the root's padY, and a negative padding
       // clamps to 0, so the rest goes back as a negative margin.
       const popFoot = pop && s.mob
-        ? { padding: `calc(${u(G.pad[0])} - ${s.padY}) 0 0`, marginBottom: `calc(${u(G.pad[1])} - ${s.padY})` }
+        ? { padding: `calc(${u(G.pad[0])} - ${s.padTop}) 0 0`, marginBottom: `calc(${u(G.pad[1])} - ${s.padFoot})` }
         : null
       // Pop's 10px INSIDE rule across the root's top, in `stroke/1` violet;
       // the block is unpositioned, so the root is its containing block.
@@ -24230,7 +24238,7 @@ function Testimonials({ s }) {
       ) : (
         <div style={row('0px', {
           justifyContent: paging ? 'space-between' : 'center',
-          padding: pad(...G.pad),
+          padding: pad(...G.pad, pop ? `calc(${u(60)} - ${s.padX})` : '0'),
         })}>
           {rule}
           {paging && lPrev}
@@ -29670,7 +29678,8 @@ function Footer({ s }) {
         ...(pop ? popType(14.51, 14.51 * 0.86) : ed ? labelStyle(s, s.labelMd, { whiteSpace: 'normal' }) : face),
         color: pop ? s.text3 : s.tx,
         // The row is the instance's floor at every width — nothing under it —
-        // so it takes back the root's bottom `padY`, as Line 19 does the top.
+        // so it takes back the root's bottom padding (`padFoot`, which is
+        // `padY` on every template, Pop's included), as Line 19 does the top.
         // Being the page's last line, the published row also grows by the
         // safe-area inset: the tab is `viewport-fit=cover`, so on an iPad with
         // a home indicator the bottom ~20px sit under it, and the band (not
@@ -29678,8 +29687,8 @@ function Footer({ s }) {
         // viewport's edge, so it keeps the frame's 68.
         height: s.live ? `calc(${u(68)} + env(safe-area-inset-bottom))` : u(68),
         ...(s.narrow
-          ? { padding: `0 ${s.mob ? 0 : '56px'} ${safe}`, marginBottom: `calc(-1 * ${s.padY})` }
-          : { margin: `0 calc(-1 * ${s.padX}) calc(-1 * ${s.padY})`, padding: `0 ${s.padX} ${safe}` }),
+          ? { padding: `0 ${s.mob ? 0 : '56px'} ${safe}`, marginBottom: `calc(-1 * ${s.padFoot})` }
+          : { margin: `0 calc(-1 * ${s.padX}) calc(-1 * ${s.padFoot})`, padding: `0 ${s.padX} ${safe}` }),
       }}>
         <span style={half}>{s.copyright}</span>
         <span style={{ ...half, textAlign: 'right' }}>{s.footerCredit}</span>
@@ -29703,9 +29712,11 @@ function Footer({ s }) {
       }} />
     )
 
-    // The frame's 56 above the wordmark is the root's `padY`, as in Retro's;
-    // the 56 under each block is kept, and the root's gap of 2 stands between
-    // the upper frame and the small print at every width.
+    // The frame's 56 above the wordmark is the root's top padding: `padY`, as
+    // in Retro's, under the twins, and Pop's own 56 at every width (JP-116,
+    // `sectionVm`'s layout-1 arm, which `padY`'s 80 / 44 used to miss by +24
+    // and −12); the 56 under each block is kept, and the root's gap of 2
+    // stands between the upper frame and the small print at every width.
     if (s.narrow) {
       return (
         <div style={col('2px')}>
@@ -29748,11 +29759,11 @@ function Footer({ s }) {
             {seal}
           </div>
           {/* Line 19 runs from the instance's top edge to 2.16 short of the
-              row's foot, so it reclaims the whole of the root's top padding and
-              meets the edge hairline. */}
+              row's foot, so it reclaims the whole of the root's top padding
+              (`padTop`) and meets the edge hairline. */}
           <span style={{
             width: 0, borderLeft: hair, flex: 'none',
-            marginTop: `calc(-1 * ${s.padY})`, marginBottom: u(2.16),
+            marginTop: `calc(-1 * ${s.padTop})`, marginBottom: u(2.16),
           }} />
           <div style={{ flex: '1 1 auto', paddingBottom: u(56), ...(pop ? { position: 'relative' } : null) }}>
             {links}

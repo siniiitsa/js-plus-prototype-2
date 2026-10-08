@@ -166,7 +166,7 @@ Screenshots (the tester's):
 | 6 | JP-112 | the heart over song 12 | **Confirmed, and recorded**: seated off the content's foot because the seed draws no pager | S | **user**: **A**, the pager's seat at desktop; 390 as is | **done** (2026-10-08) |
 | 7 | JP-117 | the scribble under the word | **Confirmed, and recorded**: the frame's offsets kept against a Titan word they were not measured on | S | entry 1: **A**, the frame's fractions | **done** (2026-10-08) |
 | 8 | JP-114 · JP-115 | the logo on two lines · the nav wraps | **Confirmed, and recorded** (layout-1.md `:1085`): JP-091's rule under Pop's room (77px at the 12px floor); the cap is not the lever | M | **user**: **B**, the floor 11 at desktop layout 1; no C; Pop alone (Editorial named) | **done** (2026-10-08) |
-| 9 | JP-116 | section gaps off the frames | **Confirmed, and recorded as inherited** in every section's *Settled*; two of the six seams are content shortfalls, not padding | M–L | **measure, then decide** the scope | open |
+| 9 | JP-116 | section gaps off the frames | **Confirmed, and recorded as inherited** in every section's *Settled*; the two "content" seams measure as the map's own insets | M–L | **user**: A (Pop alone) · A (pad the map) · A (arrows at 60, 1440 and 768) · A (footer on every page) | **done** (2026-10-08) |
 | 10 | — | End-of-pass sweep | — | S | — | open |
 
 **Why this order:**
@@ -1602,6 +1602,308 @@ themes × the widths whose frames differ, geometry only, plus `page=2`'s footer.
 Pop's" line it closes in layout-1.md (and the twins', on scope B). `notes/templates.md` if it states
 the insets.
 
+**Measured** (2026-10-08, on HEAD `629cd5f`).
+- **Every *Evidence* line held, re-based.**
+  - `EncoreBuilder.jsx`: `RAMP`'s `padY` `:95`–`:97`; layout 2's arm `:501`–`:514`; layout 3's arms
+    `:552`–`:626`.
+  - `EncoreSection.jsx`: the testimonials' `pad()` `:24203` and `popFoot` `:24206`; the root's
+    `padding: bleed ? 0 : s.pad` `:30037` (the header bleeds, so it pads 0).
+  - The entry's table cites the triage's lines. The six records are at `layout-1.md` `:1205`
+    (bio), `:1309` (media), `:1401` (gallery), `:1511` (repertoire), `:1618` (map), `:1837`
+    (calendar), `:1951` (form), `:2048` (testimonials) and `:2152` (footer).
+- **The double-count trap, site by site** (layout 1 alone):
+  - **Pop reads `padY` at four sites.**
+    - Pricing's rings: `bottom: calc(padY − 13.08z)` (`:10049`).
+    - The repertoire heart: `bottom: calc(padY − u(9))`, and `calc(padY − 79px)` at 390
+      (`:12835`–`:12836`).
+    - The footer's Line 19: `marginTop: calc(−1 × padY)` (`:29755`).
+    - The footer's small print: `marginBottom: calc(−1 × padY)` (`:29681`–`:29682`). The footer
+      is one block for all four `s.limeTree` templates.
+  - **The testimonials' `pad()` and `popFoot` take back the root's `padY` at both ends.** So the
+    band's insides are already the frames' absolute numbers: the band is 730.5 tall at 1440,
+    against the frame's 730.
+  - **Under the twins alone:**
+    - Grunge's form shell, `calc(u(170 / 100 / 60) − padY)` (`:26546`);
+    - the bleeds `Grain`, `TornEdge` and `ArcEdge` (`:189`, `:205`, `:242`);
+    - the map's and the form's `Grain` insets (`:20454`, `:26903`), and Lime's media (`:7125`).
+
+    None of them draws under Pop: `ArcEdge` is `s.lime`'s, the other two Retro's and Grunge's.
+  - **Pop's form `G` carries no `pad`** (`:26505`). Its media is Retro's v0 body, which reads no
+    `padY`. "Lime's old `calc(u(56) − padY)` margins" are layout 2's, folded in by JP-094.
+- **How.** `seams.mjs`, a scratchpad puppeteer probe on :5174.
+  - Card 1 → Publish → Open, and the popup laid out at 1180 (the canvas), 1440, 768 and 390.
+  - Per section root, it reads the padding and the union of painted descendants: text `Range`s,
+    img and svg, fills off the page ground, borders and shadows. The union is clipped by the root
+    and by every clipping ancestor. A root painted off the page ground counts its own edge.
+  - A seam is the next union's top less this one's foot, in screen px. The 1440 tab is the
+    frame at 1:1.
+- **The frames** (one `use_figma` read of the twelve page frames).
+  - Each page stacks its sections with `itemSpacing` 0. Each section's inset is read box to box:
+    text boxes, not glyph ink, and the page ground's fills and the section's own are left out.
+  - Pop's own 10px INSIDE top rules are edges: pricing's blue, the repertoire's lime, the
+    calendar's pink and the testimonials' violet. So is the header's 10px lime foot rule.
+- **Pop, card 1: the published tab on HEAD / the frame:**
+
+  | Seam | 1440 | 768 | 390 |
+  |---|---|---|---|
+  | header → bio | 97.6 / 56 | 56 / 60 | 44 / 24 |
+  | bio → media | 188.6 / 105.4 | 112 / 90 | 88 / 50 |
+  | media → gallery | 195.3 / 112 | 112 / 60 | 88 / 30 |
+  | gallery → repertoire | 97.6 / 56 | 56 / 30 | 44 / 30 |
+  | repertoire → map | 97.6 / 126 | 56 / 60 | 44 / 30 |
+  | map → pricing | 97.6 / 156 | 56 / 60 | 44 / 10 |
+  | pricing → calendar | 84.5 / 86.9 | 40 / 44 | 4 / 0 |
+  | calendar → form | 28.4 / 50.8 | 56 / 30 | 44 / 30 |
+  | form → testimonials | 97.6 / 120 | 56 / 60 | 44 / 30 |
+  | testimonials → footer | 0 / 0 | 0 / 0 | 0 / 0 |
+  | the footer's top, inside its band | 97.6 / 56 | 56 / 56 | 44 / 56 |
+
+  The tester's six reproduce: +83.3 (theirs +82), +83.3 (+86), +41.6 (+42), the footer's +41.6
+  (+41), −58.4 (−55) and −28.4 (−28). No sideways scroll and no page errors at any width.
+- **Each section's own inset, and where it is set.** On HEAD every root pads `padY` (80 on the
+  canvas and 97.6 in the tab, 56, 44), and the header pads 0. The frames' `[top, foot]`, at 1440
+  / 768 / 390, are each section's padding, except the gallery's, whose root pads 0: its row is
+  its inner frames' content inset.
+
+  | Section | 1440 | 768 | 390 |
+  |---|---|---|---|
+  | bio | 56 / 56 | 60 / 60 | 24 / 40 |
+  | media | 56 / 56 | 30 / 30 (the master in `986:52421`) | 10 / 10 |
+  | gallery | 56 / 56 | 30 / 30 | 20 / 30 |
+  | repertoire | 96 / 96 | 60 / 60 | 40 / 40 |
+  | map | 126 / 156 | 60 / 60 | 30 / 10 |
+  | pricing | 100 / 100 | 60 / 60 | 24 / 40 |
+  | calendar | 100 / 100 | 100 / 50 | 60 / 40 |
+  | form | 120 / 120 | 30 / 60 | 30 / 30 |
+  | footer | 56 / 0 | 56 / 0 | 56 / 0 |
+
+  - The footer's foot is 0 because its small print stands on the floor.
+  - The testimonials master is an absolutely laid out (layout `NONE`) 730 band, its card 165 /
+    205.5 / 205.2 down. The block's `pad()` gives those already.
+  - **Three in-block offsets ride on the inset.** The media's sticker stands 6.6 above its card
+    (the build draws it only at 1440). The form's sticker stands 69.2 above its content (1440).
+    Pricing's rings hang 13.08 / 15.96 / 40 under its content's foot.
+- **The two "content seams" are padding seams.**
+  - Box to box, repertoire → map is the map's own top inset: 126, which every template's 1440
+    map frame states (Lime's, Grunge's and Editorial's too).
+  - Map → pricing is the map's own foot, 156, against pricing's 10px rule.
+  - The Bebas leak and the missing pager are inside the map. They shorten its height (the head
+    36 × 0.82 = 29.5, the tile 683 × 0.82 − 498.7 = 61.4) and move no seam.
+  - Editorial, whose 1440 map frame is Pop's, reads the same −28.4 / −58.4.
+- **The testimonials' arrows.** Every master, Pop's and Lime's, at all three widths, seats the
+  arrow row (`Frame`) at x 60. The build seats it at `padX`: 45.9 on the canvas (56.0 in the 1440
+  tab, so −4), 30 at 768 (−30), and 60 at 390, which matches.
+- **The footer is one component on every Pop page.** Layouts 1–4 all instance it (`907:12019` /
+  `446:8697`, `907:12261`, `907:12502`). Its first line stands 56 down at 1440, and 61.68 narrow
+  (56, plus the wordmark row's centring). Its small print is a 68 row on the floor. So a footer
+  row is right on every Pop page, which it moves anyway, being one design.
+- **The twins, card 1 on HEAD against their own frames** (the 1440 tab / the frame):
+
+  | Seam | Lime | Grunge | Editorial |
+  |---|---|---|---|
+  | header → bio | 96.6 / 56 | 96.6 / 56 | 96.6 / 56 |
+  | bio → media | 98.7 / 56 | 98.7 / 56 | 98.7 / 56 |
+  | media → gallery | 97.6 / 56 | 97.6 / 56 | 97.6 / 56 |
+  | gallery → repertoire | 195.3 / 152 | 195.3 / 152 | 97.6 / 56 |
+  | repertoire → map | 97.6 / 96 | 97.6 / 96 | 97.6 / 126 |
+  | map → pricing | 92.6 / 100 | 94.6 / 0 (its ring) | 97.6 / 156 |
+  | pricing → calendar | 188.3 / 148 | 113.3 / 48 | 91.6 / 98 |
+  | calendar → form | 97.6 / 98 | 97.6 / 98 | 97.6 / 98 |
+  | form → testimonials | 0 / 0 | 119.1 / 119 | 119.1 / 119 |
+  | testimonials → footer | 0 / 0 | 145.1 / 145 | 146.3 / 145 |
+
+  - Grunge's 94.6 is read to pricing's type. The probe does not count the root's inset ring,
+    which the frame counts as an edge.
+  - At 768 and 390 the twins are off by −52 to +26: the gallery's 30 tops +26, and Lime's
+    768 pricing → calendar −52.
+  - **Their frames agree with Pop's at all three widths in four sections**: the bio, the
+    gallery, the repertoire and pricing (and the map, at 1440 alone). None of the four reads
+    `padY` in its layout-1 block under the twins.
+  - **They part elsewhere.**
+    - Media: 98 / 108 at 1440, against Pop's 56 / 56.
+    - Calendar: 48 / 98 (Lime, Grunge) or 98 / 98 (Editorial), against Pop's 100 / 100.
+    - Form: Grunge's 170 / 170, and the twins' 100 / 100 at 768, against Pop's 30 / 60.
+    - Map: 100 / 100 and 60 / 60 narrow (Lime, Grunge).
+  - Their bands also bleed off `padY` at both ends (`ArcEdge`, `TornEdge`, `Grain`). So the
+    sections they do not share need per-template rows, plus those rewrites.
+
+**Decided** (user, 2026-10-08, over the numbers above; all four recommendations):
+1. **Scope A: Pop alone.** A `d === 0` arm under Pop carries the *Measured* rows for every section
+   but two. The header bleeds, and the testimonials' `pad()` already gives their frame's absolute
+   insets. The bands' insides are included: the repertoire, the calendar and the footer.
+   - Pop's four `padY` reads are rewritten in the same commit.
+   - Lime's, Grunge's and Editorial's card 1 stay byte-for-byte HEAD. Their numbers go in the
+     reply, for a ticket of their own. B (the four shared sections) and C (every template) were
+     not taken.
+2. **The map's two seams: A, pad them.** They are the map's own 126 / 156 (60 / 60, 30 / 10),
+   not content. The reply names the Bebas head (−29.5) and the missing pager (−61.4) as height
+   differences inside the map. This reverses the triage's "two content seams".
+3. **The testimonials' arrows: A, at the masters' 60 at 1440 and 768**, Pop alone. 390 already
+   reads 60.
+4. **The footer: A, on every Pop page.** Every Pop footer frame on all four pages is the one
+   component, 56 down to its first line. So the row is not gated on the page, and the digest's
+   `page=2` footer moves with it.
+
+**Expected after-diff, named before the code.** Theme 4 alone, geometry only, **30 files a
+surface** (canvas and `live=1`):
+- **24 files: eight sections' `arch 0` at three widths.** In each, the root's height moves by
+  its inset change and every row inside moves rigidly by the top's change. Desktop is × 0.82
+  rounded to 0.1; the root's padding on HEAD is 80 / 56 / 44.
+
+  | Section | Desktop | 768 | 390 |
+  |---|---|---|---|
+  | bio | 45.9 / 45.9 | 60 / 60 | 24 / 40 |
+  | media | 45.9 / 45.9 | 30 / 30 | 10 / 10 |
+  | gallery | 45.9 / 45.9 | 30 / 30 | 20 / 30 |
+  | repertoire | 78.7 / 78.7 | 60 / 60 | 40 / 40 |
+  | map | 103.3 / 127.9 | 60 / 60 | 30 / 10 |
+  | pricing | 82 / 82 | 60 / 60 | 24 / 40 |
+  | calendar | 82 / 82 | 100 / 50 | 60 / 40 |
+  | form | 98.4 / 98.4 | 30 / 60 | 30 / 30 |
+
+  - Pricing's 10px rule stays on the root's top edge. Its rings, which read the root's foot,
+    move with the content.
+  - The repertoire's rule stays on the root's top edge too. Its heart reads the root's foot and
+    moves with the content.
+- **4 footer files:** `arch 0` and `page=2`, desktop and 390. The top goes 80 → 45.9 and 44 →
+  56, and Line 19 follows the top. 768 is 56 already, so it moves 0. The foot keeps `padY`,
+  which the small print takes back.
+- **2 testimonials files:** `arch 0` at desktop and 768. Only the two arrows move, in by 3.3
+  (the block's `u(60)` is 49.2, against `padX`'s 45.92) and by 30. The card stays centred
+  between them.
+- **Every other render moves 0:** themes 0–3, Pop's header, Pop's other layouts, and Pop's
+  testimonials at 390.
+- **The editor's 1088 canvas follows the digest's 1180.** The arm has no width term but the
+  device.
+
+**The harness was proven first.** A fresh HEAD worktree (`629cd5f`, :5174) was diffed against the
+unedited tree (:5177): every category, themes 0–4, three widths, the footer's `page=2` included.
+It came to **0 of 660 on the canvas and 0 of 660 on `live=1`**, with no one-row renders.
+
+**Settled** (2026-10-08).
+- **`sectionVm`** (`EncoreBuilder.jsx`, before layout 2's arm): a `d === 0` arm under Pop alone.
+  - It holds one `[top, foot]` row per section per width, read off the frames (the *Measured*
+    table), and sets `vm.pad` from it. Desktop is × 0.82 rounded to 0.1, JP-094's `z`.
+  - `null` keeps `padY`: the footer's foot, which its small print takes back.
+  - The header (it bleeds) and the testimonials (their `pad()` is in-block) have no row.
+  - **Two new keys, `vm.padTop` and `vm.padFoot`**, are read off `vm.pad` after every arm, at
+    every layout and under every template. They are the root's own top and foot, and they equal
+    `padY` wherever no arm moved them.
+- **`EncoreSection`: every block that reached across the root's padding now reads them, not
+  `padY`.**
+  - Pricing's rings and the repertoire heart: `padFoot`.
+  - The footer's Line 19 (`padTop`) and its small print (`padFoot`).
+  - The testimonials' `pad()` and `popFoot` (`padTop` / `padFoot`). Under every template these
+    are still `padY`, the same strings.
+  - The testimonials' desktop and 768 row pads in to the masters' 60 under Pop:
+    `calc(u(60) − padX)` at each side.
+- **Digest** (HEAD :5174 against the tree :5177): **30 of 660 on the canvas and 30 of 660 on
+  `live=1`, exactly the 30 named.** The two surfaces' file lists are identical, and every file is
+  geometry only.
+  - **Re-based per root** (`rebase.mjs`, scratchpad), each root's height moves by its inset
+    change, and every content row moves rigidly by the top's change: −34.1 / +4 / −20 (bio),
+    −34.1 / −26 / −34 (media), −34.1 / −26 / −24 (gallery), −1.3 / +4 / −4 (repertoire),
+    +23.3 / +4 / −14 (map), +2 / +4 / −20 (pricing), +2 / +44 / +16 (calendar), +18.4 / −26 /
+    −14 (form), and −34.1 / +12 for the footer at desktop and 390.
+  - **The rows that stay put are the root's own edges**, which belong there: the pricing,
+    repertoire and calendar 10px rules and their root-sized layers, the footer's hairline and
+    Line 19 (its height −34.1), and the seal's 0×0 `<defs>` / `<path>`. `live=1` adds the media's
+    hidden 0×0 `<audio>`.
+  - **The testimonials move only their arrows**: +3.3 / −3.3 at desktop (the block's `u(60)` is
+    49.2) and +30 / −30 at 768. The card does not move.
+  - Themes 0–3, Pop's header, Pop at layouts 2–4 and Pop's 390 testimonials: 0.
+- **The real app** (`seams.mjs` on :5177, Pop card 1, the published tab):
+
+  | Seam | 1440 (frame) | 768 (frame) | 390 (frame) |
+  |---|---|---|---|
+  | header → bio | 56.0 (56) | 60 (60) | 24 (24) |
+  | bio → media | 105.4 (105.4) | 90 (90) | 50 (50) |
+  | media → gallery | 112.0 (112) | 60 (60) | 30 (30) |
+  | gallery → repertoire | 56.0 (56) | 30 (30) | 30 (30) |
+  | repertoire → map | 126.1 (126) | 60 (60) | 30 (30) |
+  | map → pricing | 156.1 (156) | 60 (60) | 10 (10) |
+  | pricing → calendar | 87.0 (86.9) | 44.0 (44.0) | 0 (0) |
+  | calendar → form | 50.8 (50.8) | 30 (30) | 30 (30) |
+  | form → testimonials | 120.1 (120) | 60 (60) | 30 (30) |
+  | testimonials → footer | 0 (0) | 0 (0) | 0 (0) |
+  | the footer's top | 56.0 (56) | 56 (56) | 56 (56) |
+
+  - **Every seam is within 0.1 of its frame.** The tester's six read +0.0, +0.0, 0.0, the footer
+    0.0, +0.1 and +0.1.
+  - *Measured* first read bio → media's 768 and 390 frame gaps as 83.4 and 40, off a vector whose
+    box stands above the card. That vector is the desktop's sticker at the desktop's x (1079 /
+    1039), past the narrow frames' edge, so it is not on those pages. The frames' gaps are 90 and
+    50, and the table above is corrected.
+  - **The stickers keep the frames' offsets** (1440, the root's top or foot to the svg, HEAD →
+    tree, frame):
+    - the calendar's 10.6 → 13.0 (13.03);
+    - the form's 28.4 → 50.8 (50.8);
+    - the media's 91.0 → 49.4 (49.38);
+    - the repertoire's Union 56.8 → 55.3 (54.27), and its heart's foot 88.6 → 87.0 (87);
+    - pricing's rings' foot 84.5 → 87.0 (86.93).
+  - **The arrows:** 60.0 in the 1440 tab, 60 at 768 and 60 at 390, the masters' 60.
+  - **Section heights in the 1440 tab now match the frames**: the bio 769 (769), media 1055
+    (1055), gallery 789 (788), repertoire 1087 (1087), calendar 885 (885), form 854 (853),
+    testimonials 730 (730) and footer 481 (479.7).
+    - The map is 1076 against 1192, the Bebas head and the pager, named.
+    - Pricing is 775 against 801, its content's own.
+  - No sideways scroll and no page errors at any width.
+  - **Past 1440** the tab widens `padX` alone, a plain `Npx`, so `padTop` / `padFoot` parse
+    the same. At 1600 and 1920 Pop's seams read the 1440 row above, and the footer pads 56.0 /
+    97.6. Lime's readings at both widths are identical to HEAD's.
+  - **Lime, Grunge and Editorial card 1: 12 of 12 readings identical to HEAD** (each section's
+    box, padding, painted union and seams, at 1180, 1440, 768 and 390).
+- **`page-check.mjs Pop 0`** (:5177): no console errors or warnings. Every nav, footer and Book
+  link scrolls to its section, and every probed control changes state. `overflow390` is 0, the
+  burger opens, and the 1440 and 390 seam clips are clean.
+- **The editor's 1088 Desktop canvas**, named: Pop's roots pad the arm's desktop rows there,
+  45.9 / 78.7 / 103.3 / 127.9 / 82 / 98.4. Each root's height moves by the same delta as at 1180
+  (pricing 647.3 → 651.3, its content wrapping taller at 1088). The header and the testimonials
+  are unchanged.
+- **Build.** `npm run build` is clean. The root `index.html` is not refreshed; the sweep does
+  that.
+- **Torn down:** :5174, :5177 and the HEAD worktree (`git worktree remove --force`). :5173 is the
+  user's, and :5175 and :5176 belong to other jobs; all three still run. The probes (`seams.mjs`,
+  `sum.mjs` with `frames.json`, `rebase.mjs`, `canvas1088.mjs`) stay in this session's scratchpad.
+- **Docs.**
+  - The arm's comment, and the `padTop` / `padFoot` comment, in `sectionVm`.
+  - The in-block comments at pricing's rings, the repertoire heart, the testimonials' `pad()`,
+    the footer's small print, its *56 above the wordmark* and Line 19.
+  - README's vertical-inset paragraph (*The desktop page is the 1440 frame at 0.82*) gains Pop's
+    layout 1 and the two keys.
+  - *Reversed* pointers in `layout-1.md`: the bio (`:1205`), media (`:1309`), the gallery
+    (`:1401`), the repertoire (`:1511`), the map (`:1618`, with the triage's content-seam
+    reading), the calendar (`:1837`), the form (`:1951`), the testimonials' arrows (`:2048`)
+    and the footer (`:2152`).
+  - CLAUDE.md and `notes/` state no inset, so neither changes.
+- **Named, not fixed.**
+  - **The twins carry the same diff.** Their 1440 seams run +40.6 to +43.3 on their first four
+    seams (the *Measured* table), Grunge's map → pricing and pricing → calendar are off by more,
+    and their 768 / 390 seams by −52 to +26. Their frames agree with Pop's in four sections
+    (bio, gallery, repertoire, pricing) and part elsewhere, and their bands bleed off `padY`. That
+    is their own ticket: decided 1's B or C.
+  - **The map is 116 shorter than its 1440 frame:** the head's Bebas leak (29.5 × 1.22) and the
+    pager the seeded five gigs do not draw. It moves no seam.
+  - **Lime's and Retro's testimonials arrows stand at `padX`**, against their masters' 60.
+
+Reply: **JP-116 — fixed.** On Pop's *Hero* layout the space between sections now follows the
+design at every width.
+- **How:** each section takes the top and bottom spacing its own design frame states. The frames
+  stack the sections with no extra space, so the gaps are the design's.
+- **At 1440** your six now read on the design to within 0.1px: Bio → Top Tracks 105, Top Tracks
+  → Media 112, Media → Repertoire 56, the footer's top 56, Repertoire → Shows 126 and Events Map
+  → Pricing 156.
+- **Tablet and mobile** match the design too. At tablet the Testimonials arrows stand 60px from
+  the edge, as designed, and so do the desktop's (they were 56).
+- **The two short seams were spacing, not content.** Repertoire → Shows and Events Map →
+  Pricing were the map's own top and bottom spacing (126 and 156 in the design).
+- **Still different, and not a gap:** the map section is 116px shorter than the design's at
+  1440. Its heading is drawn in Bebas in the design file (a mode leak), and the design draws a
+  pager that the default five gigs do not need. Neither moves a gap.
+- **Unchanged:** the footer's new top spacing applies on all four Pop layouts, whose footers are
+  the same component. Lime, Grunge and Editorial are unchanged; their first layout has the same
+  extra spacing, which we will log separately.
+
 ---
 
 ## End-of-pass sweep
@@ -1645,12 +1947,20 @@ Gathered as the entries run; the sweep finalises them. Seeded at triage:
 - **The gallery's back link is typed *BEGININNING*** in Pop's and Retro's layout-1 frames
   (`964:58627`, `964:58579`). The build spells it right.
 - **The desktop page frame is still in Lime's mode**, so the map's heading renders in Bebas 130,
-  not Chunko 82 (JP-116's Repertoire → Shows −28, JP-117's anchor). The map's scribble is drawn to
+  not Chunko 82 (JP-117's anchor). That makes the frame's map 29.5 taller on the canvas than
+  Pop's face would draw it, which moves no gap: JP-116 measured the −28 above it as the map's own
+  126 top inset. The map's scribble is drawn to
   that Bebas word. JP-117 places it by its relation to the word and keeps its size, so against the
   shorter Chunko or Titan cap its lower arm runs further below the word. A frame in Pop's mode would
   settle the size.
 - **The repertoire and the map draw a pager the seeded page does not have** (twelve songs, five
-  gigs), so a sticker or a height that hangs off the pager has nothing to stand on (JP-112, JP-116).
+  gigs), so a sticker that hangs off the pager has nothing to stand on (JP-112). The map is 61.4
+  shorter on the canvas for it, and no gap moves (JP-116: the −55 under it was the map's own 156
+  foot).
+- **Lime's, Grunge's and Editorial's layout-1 frames state their own section insets** (JP-116),
+  which the build does not pad yet: their 1440 gaps run about 41 wide on the first four seams.
+  Their frames agree with Pop's in the bio, gallery, repertoire and pricing, and part from them in
+  the media (98 / 108), the calendar (48 / 98 or 98 / 98) and the form (Grunge's 170).
 - **The frames' nav draws eight links**, and the seeded page carries a ninth, *Availability*
   (JP-114 · JP-115). Nine Titan links do not fit beside the name at the frame's 16. So Pop's
   layout-1 menu now sets down to 11 on the 1180 layout, about 13 in a 1440 window, which keeps the

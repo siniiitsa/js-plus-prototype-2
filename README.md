@@ -694,11 +694,15 @@ These are intentional limits, not oversights — see §12 for the full list. The
   layout 3's pricing draw 20 — and 10 was chosen so neighbours always agree. The *vertical*
   inset is the page's `padY` (80 / 56 / 44) wherever no frame says otherwise, but under Lime,
   Grunge and Editorial, layouts 2 and 3 stand each section on its own frame's top and foot
-  (and under Pop, layouts 2 and 3, whose frames state the twins' numbers to the pixel): the `vm.pad`
+  (and under Pop, layouts 2 and 3, whose frames state the twins' numbers to the pixel), and so
+  does Pop's layout 1, whose frames part from the twins': the `vm.pad`
   arms in `sectionVm`. The page frames stack their sections with no spacing, so a
   gap between two sections is one's foot plus the next one's top. Layout 3's arms are the
   Editorial layout-3 sweep's (user call, 2026-09-26), and layout 2's is JP-094's (user call,
-  2026-10-02), which took the tester's 197px header-to-bio gap to the frame's 112.
+  2026-10-02), which took the tester's 197px header-to-bio gap to the frame's 112. Pop's
+  layout-1 arm is JP-116's (user call, 2026-10-08). It also covers the footer, the same
+  component on all four of Pop's pages. A block that reaches across the root's padding to its
+  edge reads `padTop` / `padFoot`, the root's own top and foot, never `padY`.
 - **Fields a layout does not read stay editable.** Each section's panel lists every field any
   of its layouts reads, so switching layouts never discards copy. A field the current layout
   ignores says "Not shown in this layout" under its label, off the field's `in` list and

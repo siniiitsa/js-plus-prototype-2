@@ -481,6 +481,38 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
       ? (T.name === 'Lime' ? T.sem?.box1 : T.name === 'Grunge' ? '#171716' : undefined)
       : undefined,
   }
+  // Pop's layout-1 sections stand on their own frames' insets too (JP-116, user
+  // call, 2026-10-08, JP-094's shape at layout 1, reversing the fit's
+  // "inherited, not Pop's" in each section). The page frames (964:58623 ·
+  // 986:52418 · 986:52431) stack their sections with no spacing and each states
+  // its own top and foot, where `padY` gave 80 / 56 / 44 at both ends: the
+  // tester's +82 / +86 / +42 at 1440 were two of those standing in for the
+  // frames' 56s, and the map's −28 / −55 its own 126 / 156 — padding, not the
+  // Bebas head or the missing pager, which shorten the map and move no seam.
+  // [top, foot] at 1440, 768 and 390, desktop × 0.82 rounded to 0.1. The
+  // gallery's root pads 0 in the frames, so its row is its inner frames'
+  // content inset; the footer is one component on all four of Pop's pages, 56
+  // down to its first line at every width, and `null` keeps its foot `padY`,
+  // which its small print takes back. The header bleeds, and the
+  // testimonials' band places its card off the root's edges in-block (`pad()`),
+  // so neither has a row. Lime's, Grunge's and Editorial's layout-1 frames part
+  // from Pop's in the media, the calendar, the form and the narrow map, and
+  // their bands bleed off `padY` at both ends, so they keep it.
+  if (d === 0 && T.name === 'Pop') {
+    const inset = {
+      bio: [[56, 56], [60, 60], [24, 40]],
+      media: [[56, 56], [30, 30], [10, 10]],
+      gallery: [[56, 56], [30, 30], [20, 30]],
+      repertoire: [[96, 96], [60, 60], [40, 40]],
+      map: [[126, 156], [60, 60], [30, 10]],
+      pricing: [[100, 100], [60, 60], [24, 40]],
+      calendar: [[100, 100], [100, 50], [60, 40]],
+      form: [[120, 120], [30, 60], [30, 30]],
+      footer: [[56, null], [56, null], [56, null]],
+    }[cat]?.[DEV_SEAT[Z.dev]]
+    const z = (v) => (v == null ? vm.padY : `${Z.dev === 'desktop' ? Math.round(v * 0.82 * 10) / 10 : v}px`)
+    if (inset) vm.pad = `${z(inset[0])} ${vm.padX} ${z(inset[1])}`
+  }
   // Layout 2's sections stand on their own frames' insets (JP-094, user call,
   // 2026-10-02, reversing Retro's "fit the card, not the frame height" for the
   // templates whose pages are Lime's tree, Pop's included). The page frames stack their
@@ -623,6 +655,15 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     vm.pad = cat === 'form'
       ? `${vm.padY} ${vm.padX} ${px(desk ? 90 : 60)}`
       : `${px(desk ? 56 : 30)} ${vm.padX} ${px(56)}`
+  }
+  // The root's own top and foot, whichever arm above set them, for a block that
+  // reaches across the root's padding to its edge: Line 19 up to the footer's
+  // top, a sticker hung off the content's foot. `padY` is the page's default,
+  // not the root's, wherever an arm has moved it (JP-116).
+  {
+    const [top, , foot = top] = vm.pad.split(' ')
+    vm.padTop = top
+    vm.padFoot = foot
   }
 
   // ---- content -----------------------------------------------------
