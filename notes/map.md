@@ -109,8 +109,8 @@ another `notes/` file.
   cell's minimum whatever it lists. That is a floor on the grid, not on the viewport: the
   seeded wall renders under the frame's 555 × 0.82, so a viewport floor lifted every seeded page.
   **A card's value is fitted to its widest word** under Lime, Grunge, Editorial and Pop (JP-110,
-  user call, 2026-10-06; Pop since its layout-4 map, 2026-10-08, the gate the pair
-  `(vm.limeTree || vm.pop)`): `vm.mapStats[].wordEms` is `navFace` over the value, per row (the quotes'
+  user call, 2026-10-06; Pop since its layout-4 map, 2026-10-08, the gate `vm.limeTree`):
+  `vm.mapStats[].wordEms` is `navFace` over the value, per row (the quotes'
   `wordEms`), the cell is an `inline-size` container, and the size is
   `faced(min(token, 100cqi / wordEms))`, so a city wraps between words and never inside one.
   There is no floor (the user's call): *Wolverhampton* sets 12.5 in Editorial's 119 cell at 390.

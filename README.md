@@ -340,7 +340,7 @@ That distinction is the whole design, and it buys two things:
   `{ name, price, tags, blurb, feats }`), and the selector is **derived from the tags they type**,
   by the same `repChips()` the repertoire's chips come from: the three seeds carry Solo, Solo /
   Trio / Band and Trio / Band (Duo for Solo at layout 3, and one each of Private Event / Club Night
-  / Festival at Lime's, Grunge's and Editorial's layout 1, `tiersSeed()`), so the reference row is redrawn out of content. It carries no
+  / Festival at Lime's, Grunge's, Editorial's and Pop's layout 1, `tiersSeed()`), so the reference row is redrawn out of content. It carries no
   `All` (JP-089, 2026-10-05, reversing the extra chip once kept as the intended diff): at rest no
   chip is lit and every package shows, a press filters, and a press on the lit chip clears it. The
   row is not drawn at all when the packages carry fewer than two tags, since a filter with nothing
@@ -459,7 +459,7 @@ That distinction is the whole design, and it buys two things:
   visitor was never offered. And **no palette in `THEMES` has a red**, so a refused box is drawn
   out of what exists: an inset rule in the accent's own ink — inset, so the frame's stated 60px
   box does not grow — under one prompt line. (Lime's boxes are pills, and a rule under a pill
-  smears, so there the hairline thickens to a 2px inset ring of full ink; Grunge's idle ring is already full black at layout 1, the white 15% at layouts 2 and 3 and 1px of red at layout 4, so its refused box is a 2px white one in all four. Editorial's layout-1 box is a 56% dashed rule on the terracotta half, so a refusal drops the dashes for a solid 2px inset rule of full paper — colour, weight and dash at once; its layout-2 box is square and dashed all round in full ink on the terracotta band, and a refusal there is the same solid 2px of paper, as a ring; its layout-3 box is square and dashed in terracotta on a paper card, so a refusal there is a solid 2px ring of ink; its layout-4 box is an underline dashed in terracotta on the paper page, so a refusal there is a solid 2px ink underline.) Errors are `useState`, set on a refused submit and
+  smears, so there the hairline thickens to a 2px inset ring of full ink; Grunge's idle ring is already full black at layout 1, the white 15% at layouts 2 and 3 and 1px of red at layout 4, so its refused box is a 2px white one in all four. Editorial's layout-1 box is a 56% dashed rule on the terracotta half, so a refusal drops the dashes for a solid 2px inset rule of full paper — colour, weight and dash at once; its layout-2 box is square and dashed all round in full ink on the terracotta band, and a refusal there is the same solid 2px of paper, as a ring; its layout-3 box is square and dashed in terracotta on a paper card, so a refusal there is a solid 2px ring of ink; its layout-4 box is an underline dashed in terracotta on the paper page, so a refusal there is a solid 2px ink underline. Pop's layout-1 box is a 31% hairline on the pink half, refused as a 2px white ring; at layouts 2 and 3 its idle ring is a full violet hairline on a lime card, refused as 2px of the card's pink; and its layout-4 pill is ringed 1px of lime on white, refused as Lime's 2px of violet — colour and weight at once. Its layout-4 calendar wizard is the one box whose idle ring is already thick, 4px of pink, so its refusal keeps the 4px and turns violet.) Errors are `useState`, set on a refused submit and
   cleared per box as it is corrected; nothing needed an effect, and the file still has none. A
   valid submit swaps the mustard half alone for a confirmation that prints the address in plain
   text, since a browser that opened no mail app must still show one, and *Write another* comes
@@ -587,10 +587,10 @@ These are intentional limits, not oversights — see §12 for the full list. The
   is still on the page, else at the old index — *Start fresh* or not; only a category with no
   entry lands immediately before the footer, as §9.1 says. It lives only as long as the
   session, like everything else.
-- **Retro, Lime, Grunge and Editorial are designed at all four layouts, and Pop at layouts 1,
-  2 and 3.** Retro ships six photographic header layouts and every other template the first four.
-  Pop's layout 4 renders the shared structure undressed until its pass; there is no
-  flat template, and no flat header family, any more.
+- **Retro, Lime, Grunge, Editorial and Pop are designed at all four layouts.** Retro ships six
+  photographic header layouts and every other template the first four, every family closed, so
+  no card of any template draws Retro's checker floor under another's tokens; there is no flat
+  template, and no flat header family, any more.
   The §10.2 *layouts* are shared by all five templates; Retro's decorative treatment — paper
   grain, torn edges, checkerboard, hard offset shadows, rotated cards — is gated on `s.retro`,
   the same split as `headerFamily()`. **Lime is designed at all four of its layouts**: each of its
@@ -634,19 +634,20 @@ These are intentional limits, not oversights — see §12 for the full list. The
   paper and terracotta from the header down, every edge straight where Lime and Grunge draw
   arcs and tears, with layout 1's tilted prints and tape back on the media sleeve and the gallery
   spotlight and every card square. Its treatment is `s.editorial` arms inside Lime's blocks at
-  all four layouts, widened to `s.limeTree` (Lime, Grunge and Editorial). Its header family is
+  all four layouts, widened to `s.limeTree` (Lime, Grunge and Editorial — and Pop, since its
+  family closed). Its header family is
   the same first four, all four fitted (its Stacked header is Lime's capsule in paper over an
   ink floor, with an arch avatar and a terracotta seal), so every card in the setup modal lays
-  out a whole Editorial page and the Editorial family is closed. **Pop is designed at layouts 1,
-  2 and 3**: its layout-1 page is the fifth variant of the same component sets — Lime's layout-1 tree in ten
+  out a whole Editorial page and the Editorial family is closed. **Pop is designed at all four
+  of its layouts**: its layout-1 page is the fifth variant of the same component sets — Lime's layout-1 tree in ten
   sections, Retro's floating card stack in the media player — but drawn in raw colours rather
   than a variable mode, so each section stands on the scheme whose ground it paints (a violet
   repertoire, a blue calendar, lime testimonials and a pink footer on a white page), and every
   change of ground is a 10px rule rather than a seam. Its stickers — a spinning smiley-globe
   seal, a smiley sun, an asterisk, a lightning bolt and a heart, a starburst and rings, a
   sparkle — lime scribbles and squiggle arrows, dot grids and leant cards are `s.pop` arms
-  inside Lime's layout-1 blocks, widened to `(s.limeTree || s.pop)`, and inside Retro's media
-  body. Titan One stands in for its demo display face. Its layout-2 page is Lime's layout-2 tree
+  inside Lime's layout-1 blocks, each widened per site to the pair `(s.limeTree || s.pop)` and
+  folded into `s.limeTree` once the family closed, and inside Retro's media body. Titan One stands in for its demo display face. Its layout-2 page is Lime's layout-2 tree
   in all ten sections, and **bound** to its variable mode where layout 1's was raw: a white page
   of lime, pink, coral and blue cards on seven schemes (media and the calendar lime cards on the
   white, Editorial's mechanism; the form a blue band), drawn in solid inside rings — 8, 5, 4, 3,
@@ -657,11 +658,16 @@ These are intentional limits, not oversights — see §12 for the full list. The
   by a violet header card (the page's white round it at 1440), a full-bleed lime gallery sheet
   and a blue map band, with cards and cells on seven schemes (the testimonials' wall six of
   them), drawn in solid inside rings with no seams, rules or effects; the bio trades Lime's seal
-  for Pop's smiley-globe seal, a teal sparkle and a lime scribble. Its header family is the same
-  first four: Hero, Feature spread and Inset Hero fitted (Feature spread an oval photograph under
-  the sun, a white capsule ringed lime, pill-tall face and place cards; Inset Hero a violet card
-  in a lime ring, a violet capsule ringed pink and a lime portrait card ringed pink), Stacked a
-  placeholder until Pop's layout-4 pass, which dresses its layout 4 as well.
+  for Pop's smiley-globe seal, a teal sparkle and a lime scribble. Its layout-4 page is Lime's
+  layout-4 tree, bound again, running pink, lime, pink, white and blue from the header down on
+  straight edges, layout 1's 10px rules back at four band feet (none at 390), Lime's rounded
+  cards in solid inside rings, and a dot grid, a smiley sun, an asterisk and a starburst on four
+  sections. Its header family is the same first four, all four fitted (Feature spread an oval
+  photograph under the sun, a white capsule ringed lime, pill-tall face and place cards; Inset
+  Hero a violet card in a lime ring, a violet capsule ringed pink and a lime portrait card ringed
+  pink; Stacked a white capsule over a pink floor, a lime-ringed stadium avatar and Lime's disc
+  seal in blue), so every card in the setup modal lays out a whole Pop page and the Pop family is
+  closed.
   One piece of Retro's treatment is placed
   rather than copied: the checker ribbon on header layout 1's floor is not in the Figma hero
   frame at all. It is lifted from the stacked header, which shares the same full-bleed
@@ -692,8 +698,8 @@ These are intentional limits, not oversights — see §12 for the full list. The
   of its layouts reads, so switching layouts never discards copy. A field the current layout
   ignores says "Not shown in this layout" under its label, off the field's `in` list and
   `fieldReach()` in `data.js` — or "Not shown in this template" where no layout of the active
-  template reads it (`fieldNowhere()`). The header's `in` names all five templates' layouts;
-  Pop's one placeholder card (Stacked) is re-measured by its layout-4 pass.
+  template reads it (`fieldNowhere()`). The header's `in` names all five templates' layouts,
+  each measured over fitted cards alone since Pop's Stacked was fitted.
 - **Accessibility is scoped to the chrome.** Radix supplies focus management, keyboard
   navigation and ARIA there. The rendered preview is deliberately not accessible: it is a
   picture of a website, not a website. The seal badge honours `prefers-reduced-motion`.

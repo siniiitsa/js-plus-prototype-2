@@ -179,11 +179,11 @@ another `notes/` file.
   lime.
 - **Layout 1's head is the frame's under Lime, Grunge, Editorial and Pop** (JP-089, user call,
   2026-09-30, reversing Lime layout 1's "AVAILABILITY where the frame types BOOK NOW"; Pop's
-  frame 964:58631 reads the same since its layout-1 pass, 2026-10-02). Their `s.limeTree` block,
-  which Pop widens, prints `s.title` over the month. With `heading` absent at `d === 0`,
-  `sectionVm` sets it to `CAL_HEADING_1`, "Book Now", beside the `HEADING_3` / `HEADING_4`
-  arms, and `EditPanel`'s chain has the same arm; both gates name Pop beside the group
-  (`vm.limeTree || vm.pop`, `limeTreeTheme(…) || themeName === 'Pop'`), `tiersSeed()`'s way.
+  frame 964:58631 reads the same since its layout-1 pass, 2026-10-02). Their `s.limeTree` block
+  prints `s.title` over the month. With `heading` absent at `d === 0`, `sectionVm` sets it to
+  `CAL_HEADING_1`, "Book Now", beside the `HEADING_3` / `HEADING_4` arms, and `EditPanel`'s
+  chain has the same arm; both gates are the group (`vm.limeTree`, `limeTreeTheme(…)`), which
+  names Pop since its layout-4 sweep folded the pair in, `tiersSeed()`'s way.
   Retro's layout 1 prints no head, so it keeps `TITLES.calendar`, "Availability", which also
   stays the seed at layout 2. An emptied heading behaves as before.
 - **Layout 1's foot is the frame's under Lime, Grunge, Editorial and Pop: the line alone, and the

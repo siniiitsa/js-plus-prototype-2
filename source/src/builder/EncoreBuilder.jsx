@@ -426,8 +426,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // decorative treatment (grain, torn edges, checkerboard, hard offset
     // shadows, rotated cards) is Retro's alone. Lime, Grunge, Editorial and
     // Pop each draw a decoration of their own behind `lime`, `grunge`,
-    // `editorial` and `pop` below — Pop at layouts 1 and 2 so far; its layouts
-    // 3 and 4 render the shared structure undressed until their passes.
+    // `editorial` and `pop` below, at all four layouts.
     retro: T.name === 'Retro',
     // Lime's four layout pages are Retro's components in its own variable
     // mode, so its decoration — arc seams, glows, the arch portrait — goes
@@ -749,9 +748,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // standing in for Chunko Bold Demo) at 0.98 of the token (`faced`), the way
   // Grunge's Anton is at 0.75. Its layout-2 capsule (964:64561) is Grunge's,
   // a fixed 18 at 16px type and at 13, so there the sum is the labels alone,
-  // and so is its layout-3 one (964:68751), at the same sizes. Its card 4 is
-  // a placeholder whose only capsule is NavBar's, which spaces it the
-  // layout-1 way.
+  // and so is its layout-3 one (964:68751), at the same sizes. Its layout-4
+  // capsule (964:73128) is layout 1's again — Label/SM 16 links a fixed 23
+  // apart, which the em reading is at the cap — so it keeps 23/16 and passes
+  // NavBar no `links` (plans/pop/layout-4.md, section 1).
   const navFace = T.name === 'Lime' ? bebasEms : T.name === 'Grunge' ? (x) => antonEms(x, 0) * 0.75
     : T.name === 'Editorial' ? (x) => gloockEms(x) * 0.967 : T.name === 'Pop' ? (x) => titanEms(x) * 0.98 : null
   const navGapEm = T.name === 'Editorial' ? (d >= 1 ? 0 : 23 / 16) : T.name === 'Pop' ? (d === 1 || d === 2 ? 0 : 23 / 16)

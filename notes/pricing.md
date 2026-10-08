@@ -26,8 +26,9 @@ another `notes/` file.
   their frames' row reads *Private Event / Club Night / Festival* and their cards print no tags, so
   at `d === 0` under those three templates an absent key is `TIERS_1`, one occasion per package in
   the frame's order. **Pop's layout 1 joined them** (its layout-1 pass,
-  section 7, 2026-10-02): its frame's row reads the same three, so `tiersSeed` names `'Pop'` beside
-  `limeTreeTheme()` — not inside it, whose calendar and form seeds are those sessions'. Retro's
+  section 7, 2026-10-02): its frame's row reads the same three, so `tiersSeed` named `'Pop'` beside
+  `limeTreeTheme()` until Pop's layout-4 sweep widened `limeTreeTheme()` itself and the seed
+  became the group alone. Retro's
   layout 1 keeps `TIERS`. Both callers go
   through **`tiersSeed(themeName, d)`** in `data.js`, so `sectionVm` and `tiersVal` resolve one
   expression rather than two mirrored ones. The frame's lit *Club Night* is not reproduced (above).

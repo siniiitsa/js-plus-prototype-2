@@ -87,7 +87,11 @@ another `notes/` file.
 
   At desktop this is design 0's alone (NavBar's `s.v0`). **Layout 4's capsule** (NavBar's
   `links`) and **Retro's bar** (whose pill drops to a second row with a long name) keep their
-  wrap, and are named in `plans/editorial/qa-fixes.md`'s JP-091 for their own tickets.
+  wrap, and are named in `plans/editorial/qa-fixes.md`'s JP-091 for their own tickets. Pop's
+  layout-4 capsule passes no `links` — its Label/SM 16 links a fixed 23 apart are the em
+  reading (`navGapEm`'s 23/16 at `d === 3`) at the cap — and wraps the same way, the seeded
+  nine needing 733.6 of 702.2 at the 12px floor, Reviews alone on a second row
+  (`plans/pop/layout-4.md`, open question 10).
 - **At 390 the name gives way to the pill, in layouts 1 and 4** (JP-101, user call, 2026-10-05,
   `plans/editorial/retest-qa-fixes.md`). The narrow capsule has no links, only the wordmark,
   the pill and the burger, and the name used to stay `nowrap` at a flat size, so a long one ran

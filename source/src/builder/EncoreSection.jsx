@@ -67,8 +67,7 @@ const isTablet = (s) => !!s.narrow && !s.mob
  * glows, the arch portrait) is drawn by its `if (s.lime)` blocks inside the
  * shared `v0` branches, and Grunge's, Editorial's and Pop's by their arms
  * inside those blocks, never by these helpers (bar the few a named pair
- * widens). Pop's layout 4 takes the shared structure undressed until its
- * pass.
+ * widens).
  * ------------------------------------------------------------------ */
 
 // Anton (or the theme's label face): uppercase, tight, used for nav, eyebrows,
@@ -19346,7 +19345,7 @@ function Calendar({ s }) {
     // Retro path's `paper` rows and `tx` card are one colour on Lime.
     // So the flat body's shared card-and-row fill (CLAUDE.md's calendar
     // paragraph) is no template's: Grunge's own frame restores the same stack,
-    // and so does Editorial's (below). The card's own `stroke/1` (pale at
+    // and so do Editorial's and Pop's (below). The card's own `stroke/1` (pale at
     // .15 on pale) is not drawn, Retro's reading of the same stroke; no child
     // reaches a card's edge, so the rings are plain inset shadows. The Back
     // pill nests **Scheme 3** — `sem/text/1` there is `#15180F` = `s.bg`, its
@@ -26061,13 +26060,15 @@ function Testimonials({ s }) {
               may hold one line there and the section run shorter than 716 ×
               0.82 — named, not fixed. The gap is the narrow masters' 32 / 30,
               taken at desktop too, where SPACE_BETWEEN states none. Under
-              Editorial the head stands in an `inline-size` container and fits
-              its widest word (`s.titleWordEms`, Gloock's ems), where the
-              twins' `break-word` would split it. In Gloock the seed sets three
-              lines at 768 (SUCCESS STORIES is 605), 65 taller than the
-              master's two, and at 390 the fit binds on SUCCESS at 43.44 (the
-              faced 46.42), where Noto's kept its 48 (display-face.md step
-              4, layout 4, accepted). */}
+              Editorial and Pop the head stands in an `inline-size` container
+              and fits its widest word (`s.titleWordEms`, each face's ems),
+              where Lime's and Grunge's `break-word` would split it. In Gloock
+              the seed sets three lines at 768 (SUCCESS STORIES is 605), 65
+              taller than the master's two, and at 390 the fit binds on
+              SUCCESS at 43.44 (the faced 46.42), where Noto's kept its 48
+              (display-face.md step 4, layout 4, accepted). In Titan the seed
+              keeps the ramp at every width — one line at 1440, two at 768,
+              three at 390, the narrow masters' own. */}
           <div style={row(u(s.mob ? 30 : 32), { alignItems: 'flex-end' })}>
             {head}
             {paging && (

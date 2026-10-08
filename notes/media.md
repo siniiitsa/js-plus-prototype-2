@@ -78,13 +78,17 @@ another `notes/` file.
   Grunge it is a ring again, two reds on the same overlays — 1px of `s.ac` on the tile and 1px
   of `s.stroke2` on the sleeve; and under Editorial it is a paper ring, 3px on the tile and 5px
   round the sleeve, which is a **tilted print** there (Figma +2.33°) carrying layout 1's blush
-  tape. It is also
+  tape. Under Pop **no tile is marked** (user call, 2026-10-07): its frames ring no tile at any
+  width, so `mark` is undefined and the sleeve — Lime's upright shape in a 5px violet
+  `s.stroke1` ring — the now-playing title and Pause are the cue, layout 1's fan rule. It is also
   the one layout whose section paints the page's whole band — Retro's cream with a
   checkerboard strip at each end, Lime's olive `s.box1` with a lime arc seam at its head and a square foot (the
   frame's dark foot arc met the gallery's head arc as a lens; user call, 2026-09-18), Grunge's
   `#171716` with a red torn head and a black torn foot at 1440 and 768 and neither at 390,
-  Editorial's taupe — its seat's `s.bg`, Scheme 2 — with no seam at all — and the only one to
-  draw those strips, arcs or tears.
+  Editorial's taupe — its seat's `s.bg`, Scheme 2 — with no seam at all, Pop's lime — its seat's
+  `s.bg`, Scheme 2 again — closed by a 10px violet rule inside its foot at 1440 and 768 and
+  carrying a pink dot grid behind the sleeve (none at 390) — and the only media layout to draw
+  those strips, arcs or tears.
 - **Layout 2's fan chip and the counter's words are the artist's** (JP-095 (a), user call,
   2026-10-01, JP-071's label shape). `chipLabel` is the front card's `● Featured` (`in: [1]`,
   both bodies; the dot is the markup's). It wraps inside the card at its own inset from each edge,
@@ -101,7 +105,7 @@ another `notes/` file.
   heading keeps its column.
 - **Layout 2's 390 bar draws ♡ ↓ ⋯ and drops the sleeve and the clock** (JP-099, user call,
   2026-10-05, reversing the 2026-10-01 reply and Retro's first-pass override). Both bodies
-  do this: the `(s.limeTree || s.pop)` bar and Retro's. The master seats the icons by squeezing
+  do this: the `s.limeTree` bar (Pop's too) and Retro's. The master seats the icons by squeezing
   sleeve, title and clock into 22.9, so it names no track. The page pays for the icons with the
   sleeve and its 12 gap instead. It keeps the override's padding (16, Retro 20) and its gaps of
   14, and draws the glyphs at 768's size (Retro's at its own 14). The Lime bar closes the

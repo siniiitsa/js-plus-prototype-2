@@ -381,9 +381,12 @@ export const THEMES = [
     // Unlike Sienna Vale's, Pop's nine schemes are nine grounds; 5, 8 and 9 (teal,
     // yellow, black) seat nothing at layout 1, and at layout 2, whose frames are
     // bound, 5 and 8 seat the media's fan card and list rows, nested; 9 none.
+    // Layouts 3 and 4 are bound too, and seat 5 and 8 on nested nodes alone.
+    // The section seats per layout are SCHEMES_OF.Pop's rows.
     schemes: {
       // Scheme 2, lime — the testimonials, and the gallery's source panel; at
-      // layout 2 the media panel and the calendar card.
+      // layout 2 the media panel and the calendar card; at layout 3 the
+      // calendar card and the gallery sheet; at layout 4 the media band.
       2: {
         palette: ['#C6F200', '#FF2DA0', '#6B2CFF'],
         tags: ['#FF2DA0', '#2563FF', '#00E0C4', '#6B2CFF', '#FF1A1A', '#FFF600', '#FFFFFF'],
@@ -396,7 +399,8 @@ export const THEMES = [
         },
       },
       // Scheme 3, pink — the footer, the media player's card, pricing's third
-      // card and the form's half.
+      // card and the form's half; at layout 4 the header, the bio, the gallery
+      // and the repertoire.
       3: {
         palette: ['#FF2DA0', '#C6F200', '#6B2CFF'],
         tags: ['#2563FF', '#00E0C4', '#6B2CFF', '#FF1A1A', '#FFF600', '#C6F200', '#F5F5F5'],
@@ -410,7 +414,8 @@ export const THEMES = [
       },
       // Scheme 4, blue — the booking calendar, by its ground and white type
       // only: its lime head, its #4F81FF panel and its discs are literals; at
-      // layout 2 the enquiry form's band.
+      // layout 2 the enquiry form's band; at layout 3 the map's band; at
+      // layout 4 the testimonials' sheet.
       4: {
         palette: ['#2563FF', '#00E0C4', '#FFF600'],
         tags: ['#00E0C4', '#6B2CFF', '#FF1A1A', '#FFF600', '#C6F200', '#FF2DA0', '#FFFFFF'],
@@ -423,7 +428,8 @@ export const THEMES = [
         },
       },
       // Scheme 5, teal — layout 2's media: a fan card and a list row, read
-      // through `s.onScheme[5]`; no section is seated on it. Read off `2 ·
+      // through `s.onScheme[5]` (and layout 3's media rows and a testimonials
+      // cell, layout 4's 390 seal and map ticker); no section is seated on it. Read off `2 ·
       // Scheme` through `Primitives → Pop` (plans/pop/layout-2.md, *Settled in
       // session 0*). Its accent is violet and its body ink yellow.
       5: {
@@ -438,7 +444,8 @@ export const THEMES = [
         },
       },
       // Scheme 6, violet — the repertoire, and the media's player, the map's
-      // card, pricing's first card, the form's card and the testimonials' card.
+      // card, pricing's first card, the form's card and the testimonials' card;
+      // at layout 3 the header.
       6: {
         palette: ['#6B2CFF', '#C6F200', '#FF2DA0'],
         tags: ['#FF1A1A', '#FFF600', '#C6F200', '#FF2DA0', '#2563FF', '#00E0C4', '#FFFFFF'],
@@ -805,9 +812,10 @@ export const NVAR = {
 // file (plans/editorial/layout-1.md, *The Figma source*) and all four fitted
 // in HeaderV0's–HeaderV3's Lime blocks widened — Stacked last — so its family
 // is closed as well. Pop is the same four in a fifth mode, its four pages found
-// in the file (plans/pop/layout-1.md, *The Figma source*); its Hero is fitted
-// in HeaderV0's Lime block widened, and its other three render and publish as
-// placeholders until their layout passes.
+// in the file (plans/pop/layout-1.md, *The Figma source*) and all four fitted
+// in HeaderV0's–HeaderV3's Lime blocks widened — Stacked last — so every
+// family is closed and no card of any template draws Retro's checker under
+// another template's tokens.
 //
 // There is no flat family any more: Pop was its last member, and its three
 // compositions went with Pop's own header (plans/pop/layout-1.md, the
@@ -1773,11 +1781,10 @@ export const FIELDS = {
   //
   // The header's `in` is always an object naming all five templates: they have
   // different header families (six designs against four, four, four and four —
-  // Grunge's row and Editorial's are each measured over four fitted cards, none
-  // a placeholder since each template's layout-4 pass). Pop's was measured in
-  // its layout-1 sweep and re-measured in its layout-2 and layout-3 header
-  // sessions, the last over three fitted cards and one placeholder on Retro's
-  // path, so its layout-4 pass re-measures its own card.
+  // Grunge's, Editorial's and Pop's rows are each measured over four fitted
+  // cards, none a placeholder since each template's layout-4 pass). Pop's was
+  // measured in its layout-1 sweep and re-measured in each later header
+  // session, the last over its fitted card 4 (2026-10-07), unchanged.
   header: [
     { k: 'image',     l: 'Background photo', type: 'image',
       hint: 'Fills the header behind the type.' },
