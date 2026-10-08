@@ -453,21 +453,23 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // Sienna Vale, so what only Editorial draws goes behind this flag, the way
     // Lime's and Grunge's does.
     editorial: T.name === 'Editorial',
-    // Pop's layout-1 page is the fifth variant of the same component sets —
-    // Lime's tree for ten sections, Retro's media player for the eleventh — so
-    // each section session widens its own layout-1 block to `(s.limeTree ||
-    // s.pop)`, or Retro's media body to `(s.retro || s.pop)`, and puts what only
-    // Pop draws behind this flag (plans/pop/layout-1.md, decision 3). Its
-    // layout-2 page is Lime's layout-2 tree in all ten, widened the same way
-    // (plans/pop/layout-2.md, decision 1).
+    // Pop's four layout pages are the fifth variant of the same component sets —
+    // Lime's tree in every section but layout 1's media player, which is
+    // Retro's body dressed — so what only Pop draws goes behind this flag
+    // (plans/pop/layout-1.md, decision 3). Each block was widened per site to
+    // the pair `(s.limeTree || s.pop)` as its session fitted it, and the pairs
+    // folded into `limeTree` once the family closed (plans/pop/layout-4.md,
+    // decision 2).
     pop: T.name === 'Pop',
-    // The templates whose pages are Lime's component trees, so a Lime block
-    // that Editorial's frame shares is gated on this rather than on a third
-    // name at every site. Widened per site, from the frame, as each block was
-    // fitted (plans/editorial/layout-1.md, decision 2) — every Lime block at
-    // all four layouts now; a site Editorial does not share keeps
-    // `(s.lime || s.grunge)`, and one is left (layout 2's gallery caption).
-    limeTree: T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial',
+    // The templates whose pages are Lime's component trees — all four designed
+    // templates — so a Lime block a twin's frame shares is gated on this rather
+    // than on a name at every site. Widened per site, from the frame, as each
+    // block was fitted (plans/editorial/layout-1.md, decision 2; Pop's pair
+    // folded in its layout-4 sweep) — every Lime block at all four layouts; a
+    // site the others do not share keeps `(s.lime || s.grunge)`, and one is
+    // left (layout 2's gallery caption). Pop's layout-1 media steps out of it
+    // (`&& !s.pop`), being Retro's body dressed.
+    limeTree: T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial' || T.name === 'Pop',
     // Lime layout 3's footer (964:68684 · 984:10769 · 984:10800) stands on
     // Scheme 2's `sem/bg`, the olive `box1`, where layout 1's is the page
     // ground; its seal's disc and the Book pill's label and disc follow, each
@@ -766,8 +768,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // that bar in Anton at 0.75, so it takes the same two off `navFace`.
   // Editorial's display face is its label face, so `navNameEms` is also the
   // hero title's width in ems: HeaderV0 fits the title to its column with it.
-  // So does HeaderV3's `s.limeTree` h1 at 768 under Lime, Grunge and
-  // Editorial (JP-109), to the room beside the seal, where it is the name's
+  // So does HeaderV3's `s.limeTree` h1 at 768 under Lime, Grunge, Editorial
+  // and Pop (JP-109), to the room beside the seal, where it is the name's
   // line in each template's own face.
   vm.navNameEms = navFace ? +navFace(vm.brand).toFixed(3) : undefined
   // The name's widest word in the same ems (JP-062): the layout-3 portrait
@@ -781,7 +783,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // width: HeaderV1's `s.limeTree` block (JP-092), HeaderV2's h1 beside that
   // card (JP-102) and HeaderV3's (JP-109, Editorial's alone before it), each
   // fitted to its own column, HeaderV3's at 768 to the room beside the seal —
-  // and under Pop, whose layouts 2 and 3 widen the first two blocks, in Titan.
+  // and under Pop, whose layouts 2, 3 and 4 take all three blocks, in Titan.
   vm.cardNameEms = navFace ? +Math.max(0, ...vm.brand.split(/\s+/).map(navFace)).toFixed(3) : undefined
   vm.navCtaEms = navFace ? +(navFace(vm.cta1) + navFace(vm.cta2)).toFixed(3) : undefined
   // The layout-1 capsule's name gives way before its links do (JP-091, user
@@ -1239,9 +1241,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   if (d === 2 && c.heading === undefined && HEADING_3[cat]) vm.title = cased(HEADING_3[cat])
   if (d === 3 && c.heading === undefined && HEADING_4[cat]) vm.title = cased(HEADING_4[cat])
   // Lime's, Grunge's, Editorial's and Pop's layout-1 calendar head reads
-  // "Book Now" (JP-089; Pop's frame 964:58631 too, named beside the group as
-  // tiersSeed() names it); Retro's layout 1 prints no head. EditPanel mirrors it.
-  if (d === 0 && cat === 'calendar' && c.heading === undefined && (vm.limeTree || vm.pop)) vm.title = cased(CAL_HEADING_1)
+  // "Book Now" (JP-089; Pop's frame 964:58631 too); Retro's layout 1 prints no
+  // head. EditPanel mirrors it.
+  if (d === 0 && cat === 'calendar' && c.heading === undefined && vm.limeTree) vm.title = cased(CAL_HEADING_1)
   // The form's layout-3 head is the frame's "Book Kai for / your event" off
   // the artist's own name (JP-070), copyrightOf()'s rule; EditPanel mirrors it.
   if (d === 2 && cat === 'form' && c.heading === undefined) vm.title = cased(formHeading3(artistName))
@@ -1482,7 +1484,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // again when emptied, since every layout prints it where the pick would
     // go and an empty foot reads as broken. Cased, as the slot line is.
     vm.calPrompt = cased(String(cv('prompt', CAL_PROMPT)).trim() || CAL_PROMPT)
-    // Retro's layout-1 pill (the `s.limeTree` foot, which Pop's widens, has
+    // Retro's layout-1 pill (the `s.limeTree` foot, Pop's too, has
     // none, JP-088: its line links). The same field is layout 4's Send Enquiry (JP-082),
     // seeded CAL_SEND_4 there: `vm.calWizard.send`, below.
     vm.calCta = cased(cv('cta', 'Check a date'))
@@ -1813,10 +1815,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
         // The value's widest word in the display face's ems × `faceK`
         // (`navFace`'s table) — the quotes' `wordEms`, per row (JP-110, user
         // call, 2026-10-06). The `s.limeTree` stat cell fits the numeral to it,
-        // so a city wraps between words and never inside one — Pop's too since
-        // its layout-4 map took the block (Titan's ems, `navFace`'s; the pair
-        // folds into `limeTree` in that pass's sweep). Undefined under Retro.
-        wordEms: (vm.limeTree || vm.pop) ? +Math.max(0, ...value.split(/\s+/).map(navFace)).toFixed(3) : undefined,
+        // so a city wraps between words and never inside one — Pop's in
+        // Titan's ems (`navFace`'s). Undefined under Retro.
+        wordEms: vm.limeTree ? +Math.max(0, ...value.split(/\s+/).map(navFace)).toFixed(3) : undefined,
       }
     })
   // Gigs to a page in the compact tile. It is PINS.length rather than a literal
@@ -4274,7 +4275,7 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                     : f.k === 'heading' && sec.arch % (designCount(sec.cat, themeName) || 1) === 3
                       && HEADING_4[sec.cat] ? HEADING_4[sec.cat]
                     : f.k === 'heading' && sec.cat === 'calendar' && design === 0
-                      && (limeTreeTheme(themeName) || themeName === 'Pop') ? CAL_HEADING_1
+                      && limeTreeTheme(themeName) ? CAL_HEADING_1
                     : f.k === 'heading' && sec.cat === 'repertoire' ? `${songsVal('songs').filter((t) => !blankRow(t, SONG_KEYS)).length} Songs`
                     : f.k === 'heading' && sec.cat === 'testimonials'
                       && sec.arch % (designCount(sec.cat, themeName) || 1) === 1 ? TESTI_HEADING_2

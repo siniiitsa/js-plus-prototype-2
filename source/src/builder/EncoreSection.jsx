@@ -107,7 +107,7 @@ const distressed = (s, style) => (s.distress ? {
 const labelStyle = (s, size, extra) => {
   const st = {
     fontFamily: s.label, fontSize: size || s.labelMd, lineHeight: 1.1,
-    textTransform: 'uppercase', letterSpacing: s.limeTree || s.pop ? s.dls : '0.02em', whiteSpace: 'nowrap', ...extra,
+    textTransform: 'uppercase', letterSpacing: s.limeTree ? s.dls : '0.02em', whiteSpace: 'nowrap', ...extra,
   }
   if (s.faceK !== 1) { st.fontSize = faced(s, st.fontSize); st.lineHeight = facedLh(s, st.lineHeight) }
   return st
@@ -855,7 +855,7 @@ function LogoMark({ s, size = 18, color, glyph }) {
   // (964:58624 "Group 6", its strokes 2.94 where Lime's are 3). Pop's layout-4
   // capsule (964:73128 "Group 7") strokes the same drawing 4 (`border/default`)
   // at every width, so its design 3 takes the heavier weight.
-  if (s.limeTree || s.pop) return <LimeGlobeMark size={glyph ?? size + 6} color={color || s.tx} weight={s.pop && s.v3 ? 4 : undefined} />
+  if (s.limeTree) return <LimeGlobeMark size={glyph ?? size + 6} color={color || s.tx} weight={s.pop && s.v3 ? 4 : undefined} />
   return (
     <span style={{
       width: size, height: size, borderRadius: '999px', background: s.ac,
@@ -1121,7 +1121,7 @@ function BookPill({ s, label, bg, fg, shadow, full = false, to, ext, glyph = 'st
   // too — and its 390 master's 9.91 Soulway label is that hand-scaling again,
   // the 768 type (16) × 0.62 to the hundredth, set here in the display face
   // (plans/pop/layout-1.md, decision 5).
-  if (s.limeTree || s.pop) {
+  if (s.limeTree) {
     // Lime's pill, off the hero's Book Now (964:58588): Display/List type in
     // `sem/bg` on `sem/active/bg`, standing flush against an arrow in a 46 × 44
     // disc of the type's own ink, with no offset block. It is always the disc —
@@ -1317,7 +1317,7 @@ function TagChips({ s, justify = 'flex-start', radius, size, hues, inks }) {
   // 0.82, where Retro's kept the 768 numbers at every width.
   const chip = {
     fontFamily: s.ui, fontSize: size || s.labelXs, lineHeight: 1.26,
-    padding: (s.limeTree || s.pop) && !s.narrow ? '4.1px 9px' : '5px 11px',
+    padding: s.limeTree && !s.narrow ? '4.1px 9px' : '5px 11px',
   }
   return (
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', justifyContent: justify }}>
@@ -1522,7 +1522,7 @@ function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32, ink: in
   // seating it is Scheme 3. Its equator rings are stroked 4 inside their 14,
   // where Lime's are 3; the name is set in Titan One (`s.label`), as the
   // twins set theirs in their own faces.
-  if ((s.limeTree || s.pop) && !classic) {
+  if (s.limeTree && !classic) {
     const name = String(s.badgeText || '').toUpperCase()
     const [disc, mk] = s.pop ? [s.onScheme[scheme].bg, s.onScheme[scheme].ac] : s.editorial ? [s.onScheme[4].bg, s.onScheme[4].tx] : s.grunge ? (line ? [s.footerBand || s.bg, s.stroke2] : scheme === 4 ? [s.bg, s.ac] : [s.ac, s.bg]) : scheme === 4 ? [s.tx, s.bg] : scheme === 3 ? [s.ac, s.bg] : scheme === 2 ? [s.box1, s.ac] : [s.bg, s.ac]
     const nameMk = s.grunge && line ? s.ac : mk
@@ -1884,7 +1884,7 @@ function NavBar({ s, colour, rule, pill, nameSize, nameColour, mark, links, clea
   const tab = isTablet(s)
   const ruleW = s.mob ? '70px' : tab ? '150px' : '123px'
   const pop = s.pop
-  const lime = s.limeTree || pop
+  const lime = s.limeTree
   const ed = s.editorial
   // Pop sets its links at Editorial's Label/SM: the two share every arm below.
   const sm = ed || pop
@@ -2065,7 +2065,7 @@ function HeaderV0({ s }) {
   const grunge = s.grunge
   const ed = s.editorial
   const pop = s.pop
-  const lime = s.limeTree || pop
+  const lime = s.limeTree
   const S3 = pop ? s.onScheme[3] : null                 // Pop, the capsule's Scheme 3
   const G2 = { bg: '#171716', box3: '#353535' }         // Static Youth, Scheme 2
   // Lime's 390 master (986:39889) is the one instance on its 390 page set to
@@ -2406,7 +2406,7 @@ function HeaderV0({ s }) {
 // and both hand the links to NavMenu — the way every Retro header collapses
 // below desktop, and for the reason the nav's own comment gives.
 function HeaderV1({ s }) {
-  if (s.limeTree || s.pop) {
+  if (s.limeTree) {
     // Lime's Feature spread (964:64580 at 1440, 986:11848 at 768, 986:11867 at
     // 390). The same skeleton as Retro's frame — a nav over two columns, the
     // identity block over two sub-cards — with every piece of Retro's dress
@@ -2453,10 +2453,11 @@ function HeaderV1({ s }) {
     // Pop's Feature spread (964:64561 at 1440, 986:17563 at 768, 986:17582 at
     // 390) is the tree a fourth time, on Scheme 1's white at every width with
     // no Device override, its every paint bound (plans/pop/layout-2.md), so
-    // `pop` names its deltas — the pair `(s.limeTree || s.pop)` at the gate,
-    // layout 1's idiom. What moves: the nav is inset 36 / 26 / 10 and centred
-    // 87.5 / 53.47 / 48 down, its capsule gapped a fixed 18 (Grunge's
-    // mechanism), the name pink but violet at 390, Listen pink; the nav pill is
+    // `pop` names its deltas — the block gated `s.limeTree`, which reaches Pop
+    // since its family's sweep folded the pair in. What moves: the nav is
+    // inset 36 / 26 / 10 and centred 87.5 / 53.47 / 48 down, its capsule
+    // gapped a fixed 18 (Grunge's mechanism), the name pink but violet at 390,
+    // Listen pink; the nav pill is
     // Scheme 3's pink at 1440 and 768 and Scheme 4's blue at 390, each over its
     // own `sem/text/1` 5 / 5 block; the photograph is a stadium (radius 430,
     // clamped as in Figma) in an 8px `sem/stroke/2` ring, 762 / 398 / 227
@@ -3225,7 +3226,7 @@ function HeaderV2({ s }) {
   const tab = isTablet(s)
   const z = desk ? 0.82 : 1
   const u = (n) => `${+(n * z).toFixed(2)}px`
-  if (s.limeTree || s.pop) {
+  if (s.limeTree) {
     // Lime's Inset Hero (964:68654 at 1440, 984:10740 at 768, 984:10771 at
     // 390). Retro's shell — a photographic card inset in the page, the nav on
     // its top edge and the identity on its floor — with the rest redrawn: no
@@ -3924,7 +3925,7 @@ function HeaderV3({ s }) {
   const tab = isTablet(s)
   const z = desk ? 0.82 : 1
   const u = (n) => `${+(n * z).toFixed(2)}px`
-  if (s.limeTree || s.pop) {
+  if (s.limeTree) {
     // Lime's Stacked header (964:72849 at 1440, 971:5299 at 768, 977:8867 at
     // 390). Retro's skeleton node for node — the nav on the top edge, the
     // avatar tile over the identity panel on the floor, the chips at the
@@ -3983,11 +3984,11 @@ function HeaderV3({ s }) {
     // Pop's (964:73128 / 971:10836 / 977:14268) is this tree node for node a
     // fourth time, bound to its own mode on Scheme 3 — the seat, so every `s.*`
     // is the pink scheme's — and `pop` names what it draws otherwise
-    // (plans/pop/layout-4.md, section 1). The gate is the pair
-    // `(s.limeTree || s.pop)` (layout 2's decision 1), which folds into
-    // `limeTree` in the pass's sweep (decision 2). Editorial's arm is the nearer
-    // start, and most of Pop's deltas take it: the photograph FILL over
-    // `sem/box/3`, fading to the seat's own pink; the capsule, its links and
+    // (plans/pop/layout-4.md, section 1). The gate is `s.limeTree`, which
+    // reaches Pop since the pass's sweep folded the pair in (decision 2).
+    // Editorial's arm is the nearer start, and most of Pop's deltas take it:
+    // the photograph FILL over `sem/box/3`, fading to the seat's own pink; the
+    // capsule, its links and
     // its Book Now on Scheme 1 (`s.onScheme[1]`), the pill the frame's own
     // black (`active/bg`) lettered and disced white round a `text/1` pink
     // arrow; the avatar Grunge's ring overlay, 3.04 of `sem/stroke/2` lime. The
@@ -4606,7 +4607,7 @@ function Bio({ s }) {
   // none at 390. There is no seal — the first Lime-tree bio without one — and
   // three stickers in its place: a #BCD631 scribble under the head, the lime
   // dot grid behind the composition and the blue smiley sun on the arch.
-  if (s.v0 && (s.limeTree || s.pop)) {
+  if (s.v0 && s.limeTree) {
     const grunge = s.grunge
     const ed = s.editorial
     const pop = s.pop
@@ -5005,7 +5006,7 @@ function Bio({ s }) {
   // Scheme 4 node, as Editorial's, but its teal 5 / 5 block drawn at all three
   // widths; and the photo card a 4 mount in `sem/text/1` pink at 26.25 round a
   // `tag/5/bg` violet well at 21.44, under the twins' soft shadow, no glow.
-  if (s.v1 && (s.limeTree || s.pop)) {
+  if (s.v1 && s.limeTree) {
     const grunge = s.grunge
     const ed = s.editorial
     const pop = s.pop
@@ -5471,7 +5472,7 @@ function Bio({ s }) {
   // the card's lower left, by the right edge at 390; and a lime scribble
   // under the name, the hero's stroke at 0.3455. No `Frame 302`: the card
   // stands 30 under its head, as Lime's does.
-  if (s.v2 && (s.limeTree || s.pop)) {
+  if (s.v2 && s.limeTree) {
     const grunge = s.grunge
     const ed = s.editorial
     const pop = s.pop
@@ -6151,8 +6152,7 @@ function Bio({ s }) {
   // ── Pop ────────────────────────────────────────────────────────────────
   // Pop's layout-4 bio (964:73157 · 971:10844 · 977:14276; Sections 964:73129
   // · 971:10837 · 977:14269) is Lime's tree plus `Frame 255` and a dot grid
-  // (plans/pop/layout-4.md, section 2). The pair `(s.limeTree || s.pop)` folds
-  // into `limeTree` in the pass's sweep (its decision 2). The Section is
+  // (plans/pop/layout-4.md, section 2). The Section is
   // Scheme 3 at every width, so the band is the seat's `sem/bg` pink (the
   // block's `s.ac` is lime under the seat), "KM BIO" `s.tx` violet and the
   // head `s.ac` lime at Display/XL 125 / 75 / 46, .75, at every width. The
@@ -6171,7 +6171,7 @@ function Bio({ s }) {
   // gap 30. Lime's 1px #000000 ring is followed: on pink it reads as the
   // photograph's own dark edge. The photograph is a plain `FILL` of
   // `popStage`, a centred cover.
-  if (s.v3 && (s.limeTree || s.pop)) {
+  if (s.v3 && s.limeTree) {
     const grunge = s.grunge
     const ed = s.editorial
     const pop = s.pop
@@ -6820,7 +6820,11 @@ function Media({ s }) {
   // Retro's Soundcloud seat (JP-034's per-template call — Lime's and Grunge's
   // frames draw Book Now, Editorial's does not). No seams, no grain sheet, no
   // star, no glow.
-  if (s.v0 && s.limeTree) {
+  //
+  // Pop's layout-1 media dresses Retro's `s.v0` body below rather than taking
+  // this block (plans/pop/layout-1.md, section 3), so Pop steps out of
+  // `limeTree` here — the one block that does.
+  if (s.v0 && s.limeTree && !s.pop) {
     const grunge = s.grunge
     const ed = s.editorial
     const desk = !s.narrow
@@ -7731,7 +7735,7 @@ function Media({ s }) {
     // apart, round a ringed cover disc. The heading flips ink by width on
     // Lime's own keys and is uppercase at every width (decision 2). The 1440
     // Section's 5px lime rules are visible here, and the root draws them.
-    if (s.limeTree || s.pop) {
+    if (s.limeTree) {
       const grunge = s.grunge
       const ed = s.editorial
       const pop = s.pop
@@ -8664,7 +8668,7 @@ function Media({ s }) {
     // keeps the 632 box at 1440 and 768, uppercase in Titan where the narrow
     // masters type it mixed (decision 2), so it sets two lines at 390 where
     // the master's one.
-    if (s.limeTree || s.pop) {
+    if (s.limeTree) {
       const grunge = s.grunge
       const ed = s.editorial
       const pop = s.pop
@@ -9158,9 +9162,8 @@ function Media({ s }) {
   // 964:73158 · 971:10845 · 977:14400) ───────────────────────────────────────
   // Lime's tree again (the paired diff: 55 / 54 / 55 nodes in common), plus a
   // dot grid and less Lime's two arcs, in Pop's Scheme 2, the band seated on
-  // lime (SCHEMES_OF.Pop[3]; plans/pop/layout-4.md, section 3). The pair
-  // `(s.limeTree || s.pop)` folds into `limeTree` in the pass's sweep (its
-  // decision 2). Under `pop` the band, the tiles' well and the play glyph are
+  // lime (SCHEMES_OF.Pop[3]; plans/pop/layout-4.md, section 3). Under `pop`
+  // the band, the tiles' well and the play glyph are
   // the seat's `sem/bg`, and the track binds `sem/box/1` #D7FF23, `s.box1` (a
   // moved binding, as Grunge's). The sleeve's well and the bar's fill bind
   // `sem/text/3`, which is black here, `s.text3`, where Lime's `s.tx` is
@@ -9184,7 +9187,7 @@ function Media({ s }) {
   // FIVE WORTH YOUR EAR. is 425 in the 370 (the frame's own string, 418), and
   // it is fitted to its widest word, since a 20-letter one ran 43 past the
   // 390 page where Retro's, Lime's and Grunge's faces hold it.
-  if (s.v3 && (s.limeTree || s.pop)) {
+  if (s.v3 && s.limeTree) {
     const grunge = s.grunge
     const ed = s.editorial
     const pop = s.pop
@@ -9944,7 +9947,7 @@ function Pricing({ s }) {
     // raw sizes of the display face. The 10px blue rule across the top and
     // the violet rings behind the third card stand in a layer the root's size
     // that clips, or the rings would scroll the 390 page sideways.
-    if (s.limeTree || s.pop) {
+    if (s.limeTree) {
       const grunge = s.grunge
       const ed = s.editorial
       const pop = s.pop
@@ -10653,7 +10656,7 @@ function Pricing({ s }) {
     // tall), so it turns in a slot-sized wrapper with w·sin θ / 2 above and
     // below. The root's own 1px `stroke/1` ring is drawn at 768 and 390 only;
     // the 1440 root carries no stroke.
-    if (s.limeTree || s.pop) {
+    if (s.limeTree) {
       const grunge = s.grunge
       const ed = s.editorial
       const pop = s.pop
@@ -11389,7 +11392,7 @@ function Pricing({ s }) {
     // Display/Title, Pop's 28 × 0.82 / 22 / 20. The instance's 1px
     // `sem/stroke/1` ring is on all three masters, pink on the white page —
     // layout 2's was narrow only — so Grunge's overlay draws it.
-    if (s.limeTree || s.pop) {
+    if (s.limeTree) {
       const grunge = s.grunge
       const ed = s.editorial
       const pop = s.pop
@@ -12091,9 +12094,8 @@ function Pricing({ s }) {
     //     both lifted (below).
     // The pill is the twins' pair again: violet `text/2`, lettered and disced
     // white `sem/bg` round a pink `text/1` arrow — which `discFg={s.ac}`
-    // already says. The pair `(s.limeTree || s.pop)` folds into `limeTree` in
-    // the sweep (plans/pop/layout-4.md, decision 2).
-    if (s.limeTree || s.pop) {
+    // already says.
+    if (s.limeTree) {
       const grunge = s.grunge
       const ed = s.editorial
       const pop = s.pop
@@ -12518,7 +12520,7 @@ function Pager({ s, colour, fill, frame = {} }) {
   // numerals, the current one filled pink (`s.tx`) under Retro's paper. The
   // numerals are a raw Anton 12 in the frame, set in Pop's label face at that
   // size (decision 5).
-  if (s.limeTree || s.pop) {
+  if (s.limeTree) {
     const grunge = s.grunge
     const ed = s.editorial
     const pop = s.pop
@@ -12737,7 +12739,7 @@ function Repertoire({ s }) {
     // is a raw Inter Bold 11 in Lime's leaked #F2FFD0. A 10px INSIDE `s.stroke1`
     // rule crosses the root's top, and two stickers stand on it: a pink
     // lightning off the heading's end and a teal heart by the pager.
-    if (s.limeTree || s.pop) {
+    if (s.limeTree) {
       const grunge = s.grunge
       const ed = s.editorial
       const pop = s.pop
@@ -13439,7 +13441,7 @@ function Repertoire({ s }) {
     // leaves each master's list 430 / 421 / 303); the display strings are
     // uppercase, through `faced` (0.98); and the pager passes the frame's own
     // bindings, Scheme 1's, where `Pager`'s Pop arm is layout 1's Scheme 6.
-    if (s.limeTree || s.pop) {
+    if (s.limeTree) {
       const grunge = s.grunge
       const ed = s.editorial
       const pop = s.pop
@@ -14096,7 +14098,7 @@ function Repertoire({ s }) {
     // head is lifted Titan's 0.14em. Head `s.tx` and the 390 pills' 1px
     // `s.ac` ring at radius 60 are the frame's `sem/text/2` and `sem/text/1`
     // already, so they need nothing.
-    if (s.limeTree || s.pop) {
+    if (s.limeTree) {
       const grunge = s.grunge
       const ed = s.editorial
       const pop = s.pop
@@ -14550,8 +14552,7 @@ function Repertoire({ s }) {
     // Pop layout 4 (964:73220 · 971:10900 · 977:14579, in the 964:73215 /
     // 971:10895 / 977:14574 Sections) is this block in Pop's mode on the
     // Scheme 3 seat: Lime's tree node for node less its foot arc, plus a
-    // starburst. The pair `(s.limeTree || s.pop)` folds into `limeTree` in the
-    // sweep (plans/pop/layout-4.md, decision 2). Every paint is bound, and
+    // starburst. Every paint is bound, and
     // every leaf reads Editorial's keys on Pop's seat:
     //  · **the band is `s.bg` pink and the panel `sem/box/1` `s.box1`
     //    #FF63B8**, at radius 60 / **50** / 60 (trap 1);
@@ -14573,7 +14574,7 @@ function Repertoire({ s }) {
     //    The frame paints it over the head, beside a mixed-case "Repertoire";
     //    our capitals run under it at 390, so it goes behind the head at every
     //    width (layout 3's rule for a sticker beside the artist's copy).
-    if (s.limeTree || s.pop) {
+    if (s.limeTree) {
       const grunge = s.grunge
       const ed = s.editorial
       const pop = s.pop
@@ -15113,7 +15114,7 @@ function Gallery({ s }) {
     // defects are re-inked (decision 5): the eyebrow, Lime's `#F2FFD0` on
     // white, takes `s.text3`, and the counter chip, Retro's `#111111` at 55%
     // under `#C8461C`, takes Pop's ink at the same 55% under `s.ac`.
-    if (s.limeTree || s.pop) {
+    if (s.limeTree) {
       const grunge = s.grunge
       const ed = s.editorial
       const pop = s.pop
@@ -15863,8 +15864,8 @@ function Gallery({ s }) {
     const grunge = s.grunge
     const ed = s.editorial
     const pop = s.pop
-    const bw = (s.retro || s.limeTree) ? '1px' : pop ? u(5) : s.bw
-    const well = (s.limeTree || pop) ? { background: s.box3 } : undefined
+    const bw = pop ? u(5) : (s.retro || s.limeTree) ? '1px' : s.bw
+    const well = s.limeTree ? { background: s.box3 } : undefined
     // The initials an empty slot shows sit on that well, and Editorial's
     // `s.muted` is ink at a lower alpha — ink on ink — so its placeholder
     // takes the page's paper; Pop's is violet at .64 on black, so it takes
@@ -15994,8 +15995,8 @@ function Gallery({ s }) {
     const head = tab && s.galRailLabel ? (
       <div style={{ flex: 'none', height: u(20), display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
         <span style={{
-          fontFamily: s.body, fontWeight: 700, fontSize: (s.limeTree || pop) ? s.chip : u(11), lineHeight: 1,
-          letterSpacing: (s.limeTree || pop) ? '-0.06em' : u(-0.66), color: s.tx,
+          fontFamily: s.body, fontWeight: 700, fontSize: s.limeTree ? s.chip : u(11), lineHeight: 1,
+          letterSpacing: s.limeTree ? '-0.06em' : u(-0.66), color: s.tx,
           whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
         }}>{s.galRailLabel}</span>
       </div>
@@ -16024,7 +16025,7 @@ function Gallery({ s }) {
         // the chip's own computed foreground, which is guaranteed against it.
         // Editorial's is `sem/text/2`, ink on the blush; Pop's the same
         // binding, violet on the lime, where its tag's own ink is #141414.
-        color: (s.retro || s.limeTree || pop) ? s.tx : s.chips[0].fg,
+        color: (s.retro || s.limeTree) ? s.tx : s.chips[0].fg,
         borderRadius: u(4), padding: `${u(10)} ${u(14)}`,
         ...col(u(4), { alignItems: 'flex-start' }),
       }}>
@@ -16036,8 +16037,8 @@ function Gallery({ s }) {
             // `size/chip` is 12 on the 1440 master and 11 on both narrow ones —
             // the one token here that is not the desktop number verbatim, so it
             // is read off `get_variable_defs` rather than left to `z`.
-            fontFamily: s.body, fontWeight: 700, fontSize: (s.limeTree || pop) ? s.chip : u(desk ? 12 : 11), lineHeight: 1,
-            textTransform: 'uppercase', letterSpacing: (s.limeTree || pop) ? '-0.06em' : u(desk ? -0.72 : -0.66),
+            fontFamily: s.body, fontWeight: 700, fontSize: s.limeTree ? s.chip : u(desk ? 12 : 11), lineHeight: 1,
+            textTransform: 'uppercase', letterSpacing: s.limeTree ? '-0.06em' : u(desk ? -0.72 : -0.66),
             whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
           }}>{t}</span>
         ))}
@@ -16259,7 +16260,7 @@ function Gallery({ s }) {
     const pop = s.pop
     // Editorial's and Pop's sheet is their seat's own ground, the root's `s.bg`.
     const sheet = s.retro ? '#FBF6EA' : s.lime ? s.box1 : grunge ? '#171716' : (ed || pop) ? s.bg : s.paper
-    const ink = s.retro ? '#111111' : (s.limeTree || pop) ? s.tx : s.paperFg
+    const ink = s.retro ? '#111111' : s.limeTree ? s.tx : s.paperFg
     const bw = s.retro ? '1px' : s.bw
     // Scheme 2's `box/3` on both designed pages, and a different value in each
     // mode: neither theme has a key for it (Lime layout 3's open question 5).
@@ -16400,7 +16401,7 @@ function Gallery({ s }) {
             and nothing in any master's layout depends on the leak, so it wraps
             here (the testimonials' rule). */}
         <h2 style={distressed(s, {
-          margin: 0, fontFamily: s.display, fontSize: faced(s, tab && !(s.limeTree || pop) ? s.h1 : s.dispLg),
+          margin: 0, fontFamily: s.display, fontSize: faced(s, tab && !s.limeTree ? s.h1 : s.dispLg),
           lineHeight: facedLh(s, 0.89), letterSpacing: s.dls, color: s.ac,
           ...(grunge || ed || pop ? { textTransform: 'uppercase' } : null),
           ...(pop ? { position: 'relative', top: '-0.14em' } : null),
@@ -16416,7 +16417,7 @@ function Gallery({ s }) {
               onClick={s.live && s.images[i] ? () => setPick(i) : undefined}
               style={{
                 aspectRatio: `${ratio}`, overflow: 'hidden', position: 'relative',
-                border: (s.limeTree || pop) ? undefined : `${bw} solid ${ink}`, borderRadius: u(grunge ? 15 : ed ? 0 : 30),
+                border: s.limeTree ? undefined : `${bw} solid ${ink}`, borderRadius: u(grunge ? 15 : ed ? 0 : 30),
                 cursor: s.live && s.images[i] ? 'zoom-in' : undefined,
               }}>
               {/* Pop's ring is the sheet's own lime, so the photograph's
@@ -16437,14 +16438,14 @@ function Gallery({ s }) {
                   s={s} src={s.images[i]}
                   initialsSize={desk ? 32 : tab ? 28 : 14}
                   ink={s.retro ? undefined : pop ? s.text3 : s.limeTree ? s.tx : s.paperFg}
-                  style={(s.limeTree || pop) ? { background: well } : undefined}
+                  style={s.limeTree ? { background: well } : undefined}
                 />
               </span>
               {/* The INSIDE ring over the photograph, as the frame paints it.
                   Pop's is 5px of lime on the lime sheet: invisible as a
                   colour, but an inset that eats the photograph's edge, so an
                   overlay and never a border, which would shrink the cover. */}
-              {(s.limeTree || pop) && (
+              {s.limeTree && (
                 <span style={{
                   position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
                   boxShadow: `inset 0 0 0 ${ringW} ${ring}`,
@@ -16706,9 +16707,7 @@ function Gallery({ s }) {
     // Pop layout 4 (964:73214 · 971:10894 · 977:14572, in the 964:73173 /
     // 971:10859 / 977:14537 wrappers) is this block in Pop's mode, on the
     // Scheme 3 seat: Lime's tree by traversal order, less the four brackets
-    // and the arc, plus two stickers. The pair `(s.limeTree || s.pop)` folds
-    // into `limeTree` in the sweep (plans/pop/layout-4.md, decision 2). The
-    // sheet is the seat's `s.bg` pink, Editorial's arm (trap 1); the MEDIA
+    // and the arc, plus two stickers. The sheet is the seat's `s.bg` pink, Editorial's arm (trap 1); the MEDIA
     // eyebrow `sem/text/2` `s.tx` violet and the head `sem/text/1` `s.ac`
     // lime, uppercase, fitted to its widest word in Titan's ems. Every box is
     // Lime's but these:
@@ -16745,7 +16744,7 @@ function Gallery({ s }) {
     // frame's mixed-case Chunko head, but Titan's capitals run 59 further at
     // 768 and 27 at 390, under it; so it goes behind the head at every width
     // (layout 3's rule for a sticker beside the artist's copy).
-    if (s.limeTree || s.pop) {
+    if (s.limeTree) {
       const grunge = s.grunge
       const ed = s.editorial
       const pop = s.pop
@@ -17273,7 +17272,7 @@ function Calendar({ s }) {
     // 1440 alone the sparkle on its corner and the squiggle arrow over the
     // panel's corner — the narrow masters carry both at desktop x's, off the
     // frame. A 10px `tag/6` rule stands across the root's top.
-    if (s.limeTree || s.pop) {
+    if (s.limeTree) {
       const grunge = s.grunge
       const ed = s.editorial
       const pop = s.pop
@@ -17959,7 +17958,7 @@ function Calendar({ s }) {
     // `MAR 06` 259.2 at 1440's 82 × 0.82 (so 317) and 197.3 at 768's 51 —
     // the frame's 350 is wider than Titan needs at 1440, and the leaked
     // desktop number at 768.
-    if (s.limeTree || s.pop) {
+    if (s.limeTree) {
       const grunge = s.grunge
       const ed = s.editorial
       const pop = s.pop
@@ -18580,7 +18579,7 @@ function Calendar({ s }) {
     // The frame's 32 dot ringed in `text/2` (row 2, the Friday) is a *today*
     // the twins' frames do not draw, filler beside its booked and selected
     // runs: the canvas never reads the clock, so it has no seat here.
-    if (s.limeTree || s.pop) {
+    if (s.limeTree) {
       const grunge = s.grunge
       const ed = s.editorial
       const pop = s.pop
@@ -19439,9 +19438,7 @@ function Calendar({ s }) {
     // `s.tx` — the other text token at the idle ring's own weight, so the mark
     // is a colour change (CONVENTIONS C). The head and the stacked display
     // lines take Titan's lift by token, and the head fits its widest word.
-    // The pair `(s.limeTree || s.pop)` folds into `limeTree` in the sweep
-    // (plans/pop/layout-4.md, decision 2).
-    if (s.limeTree || s.pop) {
+    if (s.limeTree) {
       const grunge = s.grunge
       const ed = s.editorial
       const pop = s.pop
@@ -19999,7 +19996,7 @@ function EventsMap({ s }) {
     // desktop's, under the tile. The pin and the lit row are redrawn: Scheme
     // 7's own active pair, lime under black, on the lit row and the lit pin,
     // and the idle pin the date disc's teal in a white ring.
-    if (s.limeTree || s.pop) {
+    if (s.limeTree) {
       const grunge = s.grunge
       const ed = s.editorial
       const pop = s.pop
@@ -20802,7 +20799,7 @@ function EventsMap({ s }) {
     // plate), the zoom its `box/2`. Every radius is 30 but the map
     // container's 8 / 19 / 19; Display/Title is Pop's 28 / 22 / 20, faced and
     // uppercase. The plate samples (43, 44, 29): Retro's a fourth time.
-    if (s.limeTree || s.pop) {
+    if (s.limeTree) {
       const grunge = s.grunge
       const ed = s.editorial
       const pop = s.pop
@@ -22017,7 +22014,7 @@ function EventsMap({ s }) {
     // the pink centre marker it can cross. The 390 pager's two arrows are
     // ringed and lettered `text/1` teal with no fill, so `Pager`'s Pop arm,
     // which fills its ends, is told `endBox: 'transparent'`.
-    if (s.limeTree || s.pop) {
+    if (s.limeTree) {
       const grunge = s.grunge
       const ed = s.editorial
       const pop = s.pop
@@ -23253,8 +23250,7 @@ function EventsMap({ s }) {
     // Pop layout 4 (964:73228 · 971:10907 · 977:14587, in the `Frame 319`s
     // 964:73222 / 971:10901 / 977:14581) is this tree again, node for node —
     // 61 / 61 / 61 against Lime's and Editorial's — on the page's Scheme 1,
-    // every paint bound. The gate is the widened pair, which folds into
-    // `limeTree` in the pass's sweep (plans/pop/layout-4.md, decision 2).
+    // every paint bound.
     // What moves, in `G`'s fourth arm, Editorial's read first:
     //  · Lime's rounded shapes in Pop's 4px rings: the card `box/1` #F5F5F5
     //    in a `stroke/1` pink ring at radius 50, the cells at 25 and the
@@ -23280,7 +23276,7 @@ function EventsMap({ s }) {
     //    370 × **272**;
     //  · the head is Editorial's: the 1019.18 box at 1440, the widest-word
     //    fit in Titan's ems, uppercased.
-    if (s.limeTree || s.pop) {
+    if (s.limeTree) {
       const grunge = s.grunge
       const ed = s.editorial
       const pop = s.pop
@@ -23899,7 +23895,7 @@ function Testimonials({ s }) {
     // where the frame's inherited Lime mode renders Bebas 36 / 28 / 26) in
     // Lime's leaked #AFE335; the arrows filled violet round a #F2FFD0 glyph;
     // a 10px violet rule across the root's top.
-    if (s.limeTree || s.pop) {
+    if (s.limeTree) {
       const grunge = s.grunge
       const ed = s.editorial
       const pop = s.pop
@@ -24437,7 +24433,7 @@ function Testimonials({ s }) {
     // mechanism: the column is the widest padded mark (95 / 90), the 390 row
     // equal thirds. The pill is the twins' call: `sem/active/bg` black under
     // a `sem/tag/2/text` label and disc, Grunge's and Editorial's key.
-    if (s.limeTree || s.pop) {
+    if (s.limeTree) {
       const grunge = s.grunge
       const ed = s.editorial
       const pop = s.pop
@@ -25235,7 +25231,7 @@ function Testimonials({ s }) {
     //  - **The stat card is Scheme 3**: pink `box/1` in a violet `stroke/1`,
     //    its ink `text/2` violet and the numeral and stars `text/1` lime, the
     //    face stack ringed in `box/2` — Editorial's keys read on Pop's.
-    if (s.limeTree || s.pop) {
+    if (s.limeTree) {
       const grunge = s.grunge
       const ed = s.editorial
       const pop = s.pop
@@ -25813,9 +25809,7 @@ function Testimonials({ s }) {
     // off the cells (below); and the head fits its widest word, since the
     // twins' `break-word` splits a long one in Gloock (and did in Noto).
     //
-    // Pop (964:73244 · 971:10923 · 977:14603) widens it a third time, the pair
-    // `(s.limeTree || s.pop)` folding into `limeTree` in the sweep (Pop
-    // layout 4's decision 2): 41 = 41 / 33 = 33 / 41 = 41 nodes against Lime's,
+    // Pop (964:73244 · 971:10923 · 977:14603) widens it a third time: 41 = 41 / 33 = 33 / 41 = 41 nodes against Lime's,
     // every box Lime's — the 56 / 30·30·48·30 / 30·10 insets, the 30 corners,
     // the 73.6 discs — but the desktop cell, **430** (716 = 56 + 146 + 28 +
     // 430 + 56, the head two lines of Display/LG 82). **Seated on Scheme 4,
@@ -25823,7 +25817,7 @@ function Testimonials({ s }) {
     // `s.tx` would lay a yellow sheet over the root. Its own: the register is
     // four seats (below), the head fits its widest word as Editorial's does,
     // and the sheet's foot is a 10px teal rule at 1440 and 768.
-    if (s.limeTree || s.pop) {
+    if (s.limeTree) {
       const grunge = s.grunge
       const ed = s.editorial
       const pop = s.pop
@@ -26364,7 +26358,7 @@ function EnquiryForm({ s }) {
   // context half is the frame's fixed 420 × 0.82 beside a
   // form half that takes the rest of our 1052 content width, so the form half
   // is 707.6 where the frame's is 908 × 0.82 = 744.6.
-  if (s.v0 && (s.limeTree || s.pop)) {
+  if (s.v0 && s.limeTree) {
     const grunge = s.grunge
     const ed = s.editorial
     const pop = s.pop
@@ -27145,7 +27139,7 @@ function EnquiryForm({ s }) {
   // band*; the credit row is narrower for the shorter role, and the card runs
   // shorter than the frames' by the dropped price and stars. The sheet's own
   // `s.gPad` inset makes the desktop photo column 686.2, the frame's 687.2.
-  if (s.v1 && (s.limeTree || s.pop)) {
+  if (s.v1 && s.limeTree) {
     const grunge = s.grunge
     const ed = s.editorial
     const pop = s.pop
@@ -28104,7 +28098,7 @@ function EnquiryForm({ s }) {
     // Title is 28 / 22 / 20. A refused box is 2px of the card's pink: the idle
     // ring is 1px of full violet, so the twins' 2px of `s.tx` would be weight
     // alone (CONVENTIONS C) — layout 2's Pop call on the same card.
-    if (s.limeTree || s.pop) {
+    if (s.limeTree) {
       const grunge = s.grunge
       const ed = s.editorial
       const pop = s.pop
@@ -28619,9 +28613,7 @@ function EnquiryForm({ s }) {
   // lime, colour and weight at once, and the calendar's violet beside it.
   // The 1440 master prints "CONTACT US", the narrow two the component's
   // "KAI MERCER"; the head stays "Contact Us" and fits its widest word.
-  // The pair `(s.limeTree || s.pop)` folds into `limeTree` in the sweep
-  // (plans/pop/layout-4.md, decision 2).
-  if (s.v3 && (s.limeTree || s.pop)) {
+  if (s.v3 && s.limeTree) {
     const grunge = s.grunge
     const ed = s.editorial
     const pop = s.pop
@@ -29347,7 +29339,7 @@ function Footer({ s }) {
   // clips. Why the narrow masters stand 720 tall where the twins' stand 619 to
   // 736: the link column is 278 (33-tall boxes 56 apart, then the 54 pill)
   // against Lime's 206.
-  if (s.limeTree || s.pop) {
+  if (s.limeTree) {
     const grunge = s.grunge
     const ed = s.editorial
     const pop = s.pop

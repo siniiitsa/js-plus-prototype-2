@@ -1095,18 +1095,16 @@ export const TIERS_3 = TIERS.map((t, i) => ({ ...t, tags: ['Duo', 'Duo, Trio, Ba
 export const TIERS_1 = TIERS.map((t, i) => ({ ...t, tags: ['Private Event', 'Club Night', 'Festival'][i] }))
 // The templates whose pages are Lime's component trees — sectionVm's
 // `limeTree` flag, for the seeds that follow the frame rather than the layout.
+// All four designed templates since Pop's layout-4 sweep folded its pair in
+// (plans/pop/layout-4.md, decision 2).
 export const limeTreeTheme = (themeName) =>
-  themeName === 'Lime' || themeName === 'Grunge' || themeName === 'Editorial'
+  themeName === 'Lime' || themeName === 'Grunge' || themeName === 'Editorial' || themeName === 'Pop'
 // The packages an absent `tiers` key stands for, by template and design (`d`,
 // `arch % designCount`): layout 3's frames' Duo on every template (JP-070),
-// layout 1's frames' three occasions under Lime, Grunge and Editorial
-// (JP-089) and Pop, whose frame's row reads them too (964:58630), and TIERS
-// everywhere else. Pop is named here rather than in limeTreeTheme(), as at
-// the calendar's head and the form's submit, so each seed reads as sectionVm's
-// `(vm.limeTree || vm.pop)` does; the two fold together when Pop's last layout
-// pass widens `limeTree` itself (plans/pop/layout-1.md, the end-of-pass sweep).
+// layout 1's frames' three occasions under Lime, Grunge, Editorial and Pop
+// (JP-089; Pop's frame's row 964:58630), and TIERS everywhere else.
 export const tiersSeed = (themeName, d) =>
-  d === 2 ? TIERS_3 : d === 0 && (limeTreeTheme(themeName) || themeName === 'Pop') ? TIERS_1 : TIERS
+  d === 2 ? TIERS_3 : d === 0 && limeTreeTheme(themeName) ? TIERS_1 : TIERS
 
 // Every key a package row carries — what `blankRow()` asks of it. A row is
 // blank only when all five are, whichever of them a layout prints. The
@@ -1577,8 +1575,7 @@ export const FORM_SUB_4 = 'Enquire'
 // Layout 1's frames under Lime, Grunge and Editorial (JP-089, user call,
 // 2026-09-30, reversing Lime layout 1's named diffs): the calendar's head
 // reads *Book Now* (964:58619) and the form's submit *Enquire* (964:58620).
-// Pop's calendar frame reads *Book Now* too (964:58631), named beside
-// limeTreeTheme() at both of the head's sites, tiersSeed()'s way.
+// Pop's calendar frame reads *Book Now* too (964:58631).
 // Retro's layout-1 form reads *Book Now* (964:58584) and its calendar prints
 // no head, so both are gated on the template as well as the layout, in
 // sectionVm and EditPanel's chain alike. Uncased: `cased()` sets them.
@@ -1586,10 +1583,9 @@ export const CAL_HEADING_1 = 'Book Now'
 export const FORM_BTN_1 = 'Enquire'
 // The submit's label an absent `button` key stands for (FORM_BTN_4's shape,
 // JP-054, with JP-089's template gate): the one expression sectionVm and
-// EditPanel both call. Pop's layout-1 frame reads *Enquire* too (964:58632),
-// named beside limeTreeTheme(), tiersSeed()'s way.
+// EditPanel both call. Pop's layout-1 frame reads *Enquire* too (964:58632).
 export const formBtnSeed = (themeName, d) =>
-  d === 3 ? FORM_BTN_4 : d === 0 && (limeTreeTheme(themeName) || themeName === 'Pop') ? FORM_BTN_1 : 'Book Now'
+  d === 3 ? FORM_BTN_4 : d === 0 && limeTreeTheme(themeName) ? FORM_BTN_1 : 'Book Now'
 // The address every enquiry is mailed to, as the enquiry form seeds it. Named
 // because two sections resolve it (JP-053): the form's own sectionVm, and the
 // booking calendar's layout-4 wizard through pageEmail() below.
