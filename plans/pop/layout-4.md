@@ -2669,6 +2669,128 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
   show an empty slot* (lime/layout-1) — `n=0`, `n=1`, `n=2`, `n=8`; *the digest is committed*
   (lime/layout-1); *the whole-page published check* (lime/layout-1) — `page-check.mjs Pop 3`.
 
+### Learned on the end-of-pass sweep (`0a5fe0b`, `e0d8432`, `23ae044` and the refresh)
+
+- **The HEAD-side labels first**, on a fresh `:5202` (the user's `:5173` is days old): five
+  themes, canvas and `live=1`, 660 + 660 files, no one-row file in either.
+- **Item 1, the fold, is `0a5fe0b`.** `limeTree` and `limeTreeTheme()` take `|| … 'Pop'`; every
+  `(s.limeTree || s.pop)` / `(s.limeTree || pop)` / `s.limeTree || pop` in `EncoreSection.jsx`
+  (layouts 1–4: the blocks, the shared helpers, `HeaderV0`'s and `NavBar`'s local `lime`, the
+  layout-2 and -3 gallery reads), `sectionVm`'s two `(vm.limeTree || vm.pop)` (the layout-1
+  calendar head, JP-110's `wordEms`) and the three `limeTreeTheme(name) || name === 'Pop'` seeds
+  (`tiersSeed`, `formBtnSeed`, `EditPanel`'s `CAL_HEADING_1`) went, mechanically on code lines and
+  by hand in the comments that said "folds in the sweep". **Two sites were order-sensitive**, as
+  the plan said: `Media`'s layout-1 block became `if (s.v0 && s.limeTree && !s.pop)` (the one
+  block Pop steps out of, since it dresses Retro's `s.v0` body below), and the layout-2 gallery's
+  `bw` tests `pop` first. The others the plan named were already Pop-first and stay so —
+  `SealBadge`'s smiley-globe arm, `Photo`'s backdrop, the layout-3 tile's ink. A last read of every
+  non-comment `limeTree` hit found nothing else whose behaviour depends on Pop being outside it.
+  Not folded, deliberately: `s.lime || s.pop` (`Wordmark`) and `s.lime || pop` (`NavBar`'s
+  `markGap`) are Lime and Pop, not the tree, and every `ed || pop` / `grunge || ed || pop` arm is a
+  named delta.
+  - **Proof**: five themes at **zero files of 660 + 660**, canvas and `live=1`, no one-row file;
+    `curl` on the served modules: zero pairs (the one hit is the `pop` flag's comment recording
+    it), both widened definitions present. **Positive control**: dropping `&& !s.pop` moves
+    exactly media `arch_0` under theme 4 at three widths. **Trap, met**: restoring the guard with
+    a pattern rewrote the two other `if (s.v0 && s.limeTree)` blocks too (each was a folded pair
+    a minute earlier); caught by `grep -n`, fixed by line, and both labels re-taken at zero.
+    Restore by line number, never by pattern, after a fold makes many sites alike.
+- **Item 2, the docs, is `e0d8432`.** CLAUDE.md's scheme bullet took `SCHEMES_OF.Pop[3]`, every
+  layout-4 `s.onScheme` reader, layout 4's Scheme 5 nested sites and `text3`'s layout-4 sites;
+  its `FIELDS` paragraph the card-4 measurement. `notes/templates.md`: Pop designed at all four,
+  the pair folded, the three Pop-first helper arms named, the family closed, and a layout-4
+  paragraph in Editorial's shape. README: all five templates designed, Pop's layout-4 page and
+  Stacked, Pop's four refused boxes, and the `tiersSeed` list. `notes/calendar.md`, `map.md`,
+  `media.md` (its layout-4 paragraph lacked Pop's no-mark and band clauses — section 3's flag,
+  unwritten until now), `nav.md` (the layout-4 capsule's wrap under Pop), `photography.md` (the
+  stadium seed), `pricing.md` and `form.md`. Code comments only (a `git diff` filtered to
+  non-comment lines was empty): the `retro` and `pop` flags, `navFace`'s card-4 note, the §10.2
+  banner, `HEADER_COUNT`'s family comment, `THEMES[4].schemes`' seat lists (layout 3's seats were
+  missing too), `FIELDS`' header note, the calendar's stack and the testimonials head's JSX
+  comment.
+- **Item 3: the published page passed first time.** `page-check.mjs Pop 3,0,1,2` on `:5202`: four
+  modal cards on every card, no error or warning in either window on any. Card 4: nine nav links
+  and Book Now scroll (Book Now → `#form`), the bio's Listen → `#media`, three Start Enquiry →
+  `#form`; the player plays (`SoundHelix-Song-5`, unpaused); the gallery's six probed controls,
+  the rail's lit letters (C already lit), the map's `+ − ‹ ›`, the wizard's chips and Next and the
+  testimonials' discs all change their sections; the form rings five boxes 1px lime → 2px violet
+  (the message box untouched) and composes its mailto; nine footer links land; `overflow390` 0;
+  the burger 1 → 11. The published 1440 page: header 901, bio 953, media 1000, gallery 696,
+  repertoire 1528, map 1031, pricing 787, calendar 937, form 762, testimonials 644, footer 522 —
+  each section's settled number.
+  - **The controls page-check does not reach** (one scratch script, trusted clicks, a mailto
+    `preventDefault`): each of the five tiles loads its own track, the disc pauses, Prev and
+    Next wrap (5 → 1); all nine gallery controls move the section at 1440, and at 390 the window
+    slides with the pills; each of the eight lit rail letters calls `scrollIntoView` on its group,
+    and the rail is `sticky` at `top: 0` in the popup at 1440 (pinned at 0 from 30% to 70% down
+    the 1528 section, carried off by the row's foot by 90%; a first probe that measured the
+    section once and re-added a moving `scrollY` read nonsense — take the section's page top
+    once, at `scrollY` 0); `+ − ‹ ›`; the wizard 1 / 4 / 2 inputs, Festival with `14/11/2026` and four answers and
+    *Package ›* giving *SAT, NOVEMBER 14 2026 9:00pm* and *THE WEDDING SET £650*, an empty Send
+    Enquiry ringing both boxes **4px violet** with *Add your name and a valid email, then send
+    again.*, a filled one composing JP-053's body (*Festival enquiry*, name and email) and the
+    confirmation, *Start again* back at step 1 with Festival kept; the testimonials' discs stepping
+    Hannah → Amara → Dan → Amara → Hannah → Olivia (wraps); the burger at **820 in a fresh tab** 1 →
+    11 on the violet panel lettered white, `#pricing` scrolled, overflow 0. No page error. **Probe
+    trap**: the 390 gallery window re-renders its tiles, so a tag set before the first click is
+    gone by the second — re-tag before every click.
+  - **Seams** (page-check's `captureBeyondViewport` clips at each section's top, read at 1440
+    and stacked at 390 on the headless canvas): the header's pink floor and the bio one ground,
+    the bio's teal rule into the lime media, the media's violet rule into the pink gallery (where
+    the frame has its white video between), the gallery and the repertoire one pink ground, the
+    repertoire's violet rule into the white map, white onto the blue testimonials, and the
+    sheet's teal rule onto the pink footer; at 390 every edge straight with no rule. None
+    garbled; nothing to fix.
+- **Item 4: the thumbnails** (`browser-tool-choice`'s recipe, card 4): every row reads
+  *<Section> layout 4* (the header *Header layout 4 · Stacked*, the footer *Footer layout 1*);
+  every picker's fourth item (the footer's one) renders one `--ac` root on its seat's ground —
+  pink for the header, bio, gallery and repertoire, lime for the media, white for the map,
+  pricing, calendar and form, blue for the testimonials, pink for the footer — and reads as its
+  fitted section (the header's seal the known 16px menu-item dot, layout 3's builder-chrome
+  finding).
+- **Item 5: no card of any template draws the checker under another template's tokens.** One
+  script clicked every card of every modal and counted `conic` backgrounds in the card and on the
+  canvas behind it: Retro's four draw it (1 a card; 16 / 1 / 1 / 3 on the canvas — the positive
+  control), and Lime's, Grunge's, Editorial's and Pop's sixteen draw none; Pop's four published
+  tabs carry none, eleven roots each. Cards 1–3 publish in their own orders with no error
+  (page-check). **Named, not this pass's**: switching cards inside the modal logs React's dev-only
+  "a style property during rerender … `background` / `backgroundPosition` / `backgroundSize`"
+  twice per designed template; `main` on a scratch worktree logs the same under Lime, and a
+  production build logs nothing (the memory note's theme-switch warnings).
+- **Item 6: `reach.mjs 4`** (5,880 renders; the first Pop measurement with no placeholder card):
+  all 78 single-section probes moved something; **75 plain probes compared with
+  `fieldReach(f, 'Pop', d)` in Node, no mismatch** (the three list-column probes skipped). The
+  partials are the known three — `header.cta2` 4/6 (layouts 2, 3 and 6), `calendar.email` 3/6,
+  `gallery.railLabel` 2/6 — `bio.tagsLabel`'s layout-4 partial gone with section 2's `[2]`. The
+  identity probes hold CLAUDE.md's: the kicker at every bio and forms 1 and 2, the location at
+  bios 1–3, calendar 4 and map 2, the tags at bios 2–4. Nothing in `FIELDS` moved.
+- **Item 7 is `23ae044`.** `plans/README.md` closes the pass and the family (and layout 3's row,
+  still "merge open", now says PR #54). CONVENTIONS.md took a *Pop (layout 4)* column on A, B and
+  C, a Pop column on D4, and four rows leaned on three times unnamed — three in B (the long-word
+  probe, the string drawn alone, the hand-off's trap checked first) and one in C (a photograph
+  clipped 2px inside its ring) — its intro rewritten for the fold. The sticker that goes behind
+  the artist's longer copy, met three times across two passes, stays here with the decorative
+  language.
+- **Item 8**: *Notes for the designer*, nine, at the plan's foot (open questions 10, 14, 20 and
+  21 are code calls, not the designer's).
+- **Item 9: the two-build digest** (the repo root on `127.0.0.1:8931`, the committed build —
+  layout 3's refresh, `627d987` — digested on both cards before the build and the `cp`, reduced
+  motion on). `CARD=0`: the seeded page is **byte-identical under all five templates** at
+  Desktop, Tablet and Mobile, and `modal.txt` is identical (four cards each in both). `CARD=3`:
+  card 4 is identical under Retro, Lime, Grunge and Editorial and rebuilt under Pop (648 → 707,
+  635 → 693, 618 → 649 rows; 1,261–1,349 diff lines a tab). The tell: three `conic` rows (Retro's
+  checker floor) old-only at every tab; the stadium avatar's 96.95 corners and 53–60 lime inset
+  rings new-only; blue `#2563FF` rows 5 → 20–30. Looked at in both modals: the old card 4's
+  checker floor and pink smiley-globe; the new one's white capsule over the pink floor, the
+  lime-ringed stadium and the blue disc seal. The standalone file is **9,908,045 bytes** (was
+  9,829,780); since that refresh only `EncoreSection.jsx`, `EncoreBuilder.jsx`, `data.js` and
+  `photos.js` changed in `src`, every change named in this pass's sessions, and one photograph
+  was added, `pop-stacked-avatar.jpg` (57 files).
+- **Raised for the user, not decided**: open questions 10 (the layout-4 capsule's nine-link wrap,
+  Pop's and Editorial's), 14 (Editorial's and Lime's unfitted layout-4 heads with a 20-letter
+  word at 390), 20 (every Pop pill's label 0.5–3px low) and 21 (the wizard's 4px refusal, the
+  session's call), and layout 3's 16px seals in the layout picker, still open.
+
 ## Open questions
 
 1. ~~**Decision 1** — the seats.~~ Not a user call; session 0 writes the row.
