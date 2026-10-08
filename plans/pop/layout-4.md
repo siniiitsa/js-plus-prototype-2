@@ -2784,3 +2784,61 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
 *(The open questions above that are worth telling the designer, gathered by the sweep into one note
 to forward, in layout 3's shape. Each is shipped as described; where it says "one line", the other
 answer is a one-line change. Layouts 1's, 2's and 3's notes still stand.)*
+
+1. **Three pairs on the page are drawn too faint to read, and two of them are controls.**
+   - The map ticker's ‹ › arrows bind Scheme 5's `text/2` yellow `#FFF600` on its `box/1` teal
+     `#14F4D8`, 1.2 : 1, all but gone on the frame's own render. They are the ticker's only
+     controls, so the page draws them in the lines' `text/1` violet (a user call). If the yellow
+     was meant, the ticker wants another fill. *(19)*
+   - The map's violet stat cell (Scheme 6) letters its label, value and sub `text/2` pink
+     `#FF2DA0` on `#8451FA`, 1.35 : 1. The 36px numeral reads; the 12px label and sub barely do.
+     Followed (a user call). Scheme 6's `text/1` lime reads on that violet, as the cell's own ring
+     does. *(18)*
+   - The bio's second chip binds Scheme 1's pink `tag2` on the bio's pink band, so "Sold Out"
+     reads as bare text. And the bio's "Genres" label binds the `Tags` instance's Scheme 1
+     `text/1`, the band's own pink, so it is invisible at 1440 and 768, and the 390 instance drops
+     it; the page draws no label there (a user call). If it is meant, the instance wants another
+     scheme or the label another ink. *(6, 11)*
+2. **Chips lettered in other schemes' inks, and the narrow masters disagree with the wide ones.**
+   The header's six chips stand on Scheme 3's own tags but are lettered through Schemes 1, 4 and
+   5 (the fourth, "Archive", binds `scheme/4/tag1/text` `#141414` where its red seat's own ink is
+   cream); pricing's blue and teal feature pills the same. The bio's chips 3 and 5 are lettered
+   light at 1440 and `#141414` at 768 and 390. The page letters every chip in its own seat's ink:
+   a shade apiece, as on layout 3. *(6; layout 3's note 2)*
+3. **The 390 testimonials master looks like an earlier copy of the component.** Its black cell
+   letters the quote and foot `text/2` violet (2.4 : 1 on black) where 1440 and 768 bind `text/1`
+   pink, and its third cell states no scheme, so it is blue again where the wide masters seat it on
+   pink. At 390 the third cell is never reached and the second is a 54px peek, so the page uses
+   the wide masters' reading at every width. *(22)*
+4. **The narrow masters type six display heads in mixed case** — "Reads the room.", "Six Worth
+   Your Ears", "Snaps from the night", "Repertoire", "Distances we'll Travel", "Book Us" — where
+   1440 types them in capitals. The page sets every head in capitals at every width (layouts 2's
+   and 3's slip again). Two stickers then stand where the shorter mixed-case copy left them room:
+   the gallery's sun at 768 and 390 and the repertoire's starburst at 390 sit beside the
+   lower-case heads, and the capitals run 59 and 27px further in the gallery and 28 in the
+   repertoire, into them, so the page draws each sticker
+   behind the head's last letters. Either the narrow heads were meant in mixed case, or the
+   stickers want room beside the capitals. *(4, 15, 16)*
+5. **The form's head says "CONTACT US" at 1440 and the component's "KAI MERCER" at 768 and
+   390** — the one Pop frame that disagrees with itself between widths. The page prints "Contact
+   Us" at every width, the shared seed. And the 1440 form is on the page this time, an instance
+   (`964:73243`) — the first layout-4 page of the four designed templates to carry it. *(8)*
+6. **The media grid marks no tile.** Every twin's frame marks the playing tile (Lime a glow,
+   Grunge a red ring, Editorial a paper ring); Pop's rings none at any width. The page follows it
+   (a user call): the sleeve, the now-playing title and Pause say what plays. If the grid was
+   meant to show it, the twins' 5px violet ring is one line. *(12)*
+7. **The 390 page drops every 10px rule** the 1440 and 768 pages stand at the bio's, media's,
+   repertoire's and testimonials' feet. Followed; worth a line only if the rules were meant at
+   every width. *(9)*
+8. **Lime's leaks ride the Pop variant again.** The bio card's 1px raw `#000000` ring now edges
+   a card on pink, where it read as the photograph's own edge and is followed; its glass's
+   `#2E3928` at 1% paints nothing; the media tiles' titles are the component's unbound `#FFFFFF`
+   (they read on the fade, followed); pricing's tag chips carry Lime's `#F2FFD0` hairline at 15%,
+   invisible on white (not drawn); and the seal's name is set in Lime's unbound Bebas Neue Bold,
+   which the page sets in its own face. The gallery strip is Retro's placeholders once more, where
+   the page shows Pop's own shoot. *(trap 6; layout 1's note)*
+9. **In the demo face the page runs wider.** Titan sets "SIX WORTH YOUR EARS" on two lines at
+   390 where Chunko's mixed case holds one (the band 33 taller), and a very long artist can still squeeze a
+   repertoire title — the page stops the artist at 60% of its row, as Editorial's does; Lime's
+   and Grunge's rows give it the whole row. The pricing pill still reads "Star Enquiry", where the
+   page says "Start Enquiry". *(13, 17)*
