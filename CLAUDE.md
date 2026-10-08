@@ -59,9 +59,12 @@ Two styling systems, deliberately (README §"Two styling systems, deliberately")
 Do not try to unify them. Only `.hv-indent`, `.hv-acbord` and `.hv-acfill` cross the boundary,
 because each reads the per-section `--ac` / `--acFg` custom properties. One rule reads a custom
 property the same way (JP-093, user call, 2026-10-01): `index.css`'s `::placeholder` is
-`opacity: var(--ph, .45)`. The enquiry form's four label-in-box inputs (layouts 2 and 3, both
-bodies) set `--ph: 1` inline, because their placeholder is the box's only label. Every other
-placeholder is a hint and keeps the .45.
+`opacity: var(--ph, .45)`, and a box whose frame states its placeholder's strength sets `--ph`
+inline. Two sets do. The enquiry form's four label-in-box inputs (layouts 2 and 3, both bodies)
+set `--ph: 1`, because their placeholder is the box's only label. Pop's layout-1 form sets
+`--ph: 0.8` on each live box, its frame's white at 80% (JP-119, user call, 2026-10-08). Every
+other placeholder is a hint at .45. That includes Pop's repertoire search, whose frame states 50%
+(JP-119's option B, not taken), so a box joins by a call, not by the rule alone.
 
 Every section is projected through **`sectionVm()`** into a flat, fully-resolved view-model
 before rendering, so `EncoreSection` does zero colour maths. `sectionVm` takes `themeIdx` as an
@@ -241,11 +244,18 @@ mutated through a single `patch()` helper.
   leaves its value alone. The pills `venueCta` / `routeCta` read their seed again when emptied.
   Venue Link wraps only once typed longer than its seed (`vm.mapVenueCtaWraps`), because Lime's 768
   seed runs 1px into the disc's gap. **And the gallery's 768 head row** (JP-098, user call,
-  2026-10-01): `railLabel`, seeded *Gallery*, `in: [1]` but read at tablet alone (the hint says
+  2026-10-01): `railLabel`, seeded *Gallery*, read at layout 2 at tablet alone (the hint says
   so, since `in` names no width), dropped when emptied; the heading it used to hold is the caption
-  pill's first line at every width. The unreported siblings stay literals: the bio's `Bio` eyebrow, the calendar legend and its slot line's
-  " selected", the repertoire's `All` chip and search placeholder, and the footer's *A JustPay
-  Product*.
+  pill's first line at every width. **And the gallery's layout 1, every template** (JP-120
+  (gallery), user call, 2026-10-08): `kicker` (*Media*, which layout 4's eyebrow prints too, so
+  `in: [0, 3]`), and `railLabel` again as the credit line under the name, at every width (`in:
+  [0, 1]`), each dropped when emptied; `backLabel` (*Back to beginning*) and `sourceLabel` (the
+  open source row's *Gallery*, printed at desktop alone in both bodies), which read their seed
+  again when emptied, since the link and the row always stand. Typed, each wraps. The unreported
+  siblings stay literals: the bio's `Bio` eyebrow, the calendar legend and its slot line's
+  " selected", the repertoire's `All` chip and search placeholder, Retro's gallery rail wordmark
+  *Gallery*, and the footer's *A JustPay Product*. The gallery's *YouTube*, *Instagram* and
+  *TikTok* are the services' names, not labels.
 - A page section is `{ id, cat, arch, c }` — category, layout index, sparse content overrides.
   Colours are per-section only where a template's frames make them so: every section renders in
   the active theme's single `palette`, **unless its frames stand it on another colour scheme** —

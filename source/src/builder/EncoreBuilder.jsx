@@ -44,7 +44,7 @@ import {
   MEDIA_CHIP_LABEL, MEDIA_COUNT_LABEL, MEDIA_TOTAL_LABEL, GALLERY_RAIL_LABEL, TIER_KEYS, tiersSeed, limeTreeTheme, PRICE_UNIT, QUOTES,
   CITIES, PINS, EXAMPLE_PAGE,
   NOW_PLAYING, TRACK_AUDIO, SONGS, REP_ALL,
-  GIGS, MAP_BASE, MAP_TERMS, MAP_TRAVEL_TIME, MAP_FEE, directionsUrl, GALLERY_SOURCES,
+  GIGS, MAP_BASE, MAP_TERMS, MAP_TRAVEL_TIME, MAP_FEE, directionsUrl, GALLERY_SOURCES, GALLERY_KICKER, GALLERY_BACK_LABEL,
   MAP_STATUS, MAP_UPDATED, MAP_RINGS, MAP_EXPAND,
   PRICING_REVIEWS, PRICING_RATING, PRICING_CTA, PRICING_NOTE, PRICING_OFFER,
   FORM_PROMISES, FORM_STEPS, STEP_KEYS, FORM_FIELDS, FORM_FIELDS_CARD, FORM_FIELDS_4, FORM_FIELD_KEYS, FORM_EMAIL_LABEL, FORM_KINDS, FORM_TYPES, FORM_MESSAGE, FORM_MSG_LABEL,
@@ -481,6 +481,38 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
       ? (T.name === 'Lime' ? T.sem?.box1 : T.name === 'Grunge' ? '#171716' : undefined)
       : undefined,
   }
+  // Pop's layout-1 sections stand on their own frames' insets too (JP-116, user
+  // call, 2026-10-08, JP-094's shape at layout 1, reversing the fit's
+  // "inherited, not Pop's" in each section). The page frames (964:58623 ·
+  // 986:52418 · 986:52431) stack their sections with no spacing and each states
+  // its own top and foot, where `padY` gave 80 / 56 / 44 at both ends: the
+  // tester's +82 / +86 / +42 at 1440 were two of those standing in for the
+  // frames' 56s, and the map's −28 / −55 its own 126 / 156 — padding, not the
+  // Bebas head or the missing pager, which shorten the map and move no seam.
+  // [top, foot] at 1440, 768 and 390, desktop × 0.82 rounded to 0.1. The
+  // gallery's root pads 0 in the frames, so its row is its inner frames'
+  // content inset; the footer is one component on all four of Pop's pages, 56
+  // down to its first line at every width, and `null` keeps its foot `padY`,
+  // which its small print takes back. The header bleeds, and the
+  // testimonials' band places its card off the root's edges in-block (`pad()`),
+  // so neither has a row. Lime's, Grunge's and Editorial's layout-1 frames part
+  // from Pop's in the media, the calendar, the form and the narrow map, and
+  // their bands bleed off `padY` at both ends, so they keep it.
+  if (d === 0 && T.name === 'Pop') {
+    const inset = {
+      bio: [[56, 56], [60, 60], [24, 40]],
+      media: [[56, 56], [30, 30], [10, 10]],
+      gallery: [[56, 56], [30, 30], [20, 30]],
+      repertoire: [[96, 96], [60, 60], [40, 40]],
+      map: [[126, 156], [60, 60], [30, 10]],
+      pricing: [[100, 100], [60, 60], [24, 40]],
+      calendar: [[100, 100], [100, 50], [60, 40]],
+      form: [[120, 120], [30, 60], [30, 30]],
+      footer: [[56, null], [56, null], [56, null]],
+    }[cat]?.[DEV_SEAT[Z.dev]]
+    const z = (v) => (v == null ? vm.padY : `${Z.dev === 'desktop' ? Math.round(v * 0.82 * 10) / 10 : v}px`)
+    if (inset) vm.pad = `${z(inset[0])} ${vm.padX} ${z(inset[1])}`
+  }
   // Layout 2's sections stand on their own frames' insets (JP-094, user call,
   // 2026-10-02, reversing Retro's "fit the card, not the frame height" for the
   // templates whose pages are Lime's tree, Pop's included). The page frames stack their
@@ -623,6 +655,15 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     vm.pad = cat === 'form'
       ? `${vm.padY} ${vm.padX} ${px(desk ? 90 : 60)}`
       : `${px(desk ? 56 : 30)} ${vm.padX} ${px(56)}`
+  }
+  // The root's own top and foot, whichever arm above set them, for a block that
+  // reaches across the root's padding to its edge: Line 19 up to the footer's
+  // top, a sticker hung off the content's foot. `padY` is the page's default,
+  // not the root's, wherever an arm has moved it (JP-116).
+  {
+    const [top, , foot = top] = vm.pad.split(' ')
+    vm.padTop = top
+    vm.padFoot = foot
   }
 
   // ---- content -----------------------------------------------------
@@ -1383,7 +1424,15 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   vm.gal4 = vm.gal.slice(0, 4)
   // JP-098 — layout 2's 768 head row over the small photos, the frame's word,
   // uncased; emptied, the row goes. The heading is the caption's, at every width.
+  // JP-120 (gallery) prints it as layout 1's credit line too, under the name.
   vm.galRailLabel = cv('railLabel', GALLERY_RAIL_LABEL)
+  // JP-120 (gallery), user call, 2026-10-08 — layout 1's eyebrow (layout 4's
+  // too) and its back link, the frames' words, uncased. An emptied kicker is
+  // not drawn; the back link is a control that stands whatever it says, so
+  // emptied, it reads its seed again (venueCta's rule), as the open source
+  // row's label below does.
+  vm.galKicker = cv('kicker', GALLERY_KICKER)
+  vm.galBackLabel = String(cv('backLabel', GALLERY_BACK_LABEL)).trim() || GALLERY_BACK_LABEL
   // Tag order per the Figma gallery frame: Gallery/YouTube/Instagram/TikTok
   // tiles read accent-red, olive, purple, yellow — tags 1, 3, 0, 2 in Retro.
   //
@@ -1392,10 +1441,15 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // the thumbnails already navigate. Normalised through extUrl for the same
   // <base href> reason as the Soundcloud button, and an empty field leaves the
   // row a picture rather than a dead link.
+  //
+  // The first row's label is the artist's (`sourceLabel`, JP-120 (gallery)),
+  // uncased, and reads its seed again when emptied: the row always stands. The
+  // other three are the services' own names.
   vm.gallerySources = GALLERY_SOURCES.map((g, i) => {
     const cbg = T.tags[[1, 3, 0, 2][i] % T.tags.length]
     return {
-      label: cased(g.l), bg: cbg, fg: contrast(cbg), ink: legible(cbg), on: i === 0,
+      label: i === 0 ? String(cv('sourceLabel', g.l)).trim() || g.l : cased(g.l),
+      bg: cbg, fg: contrast(cbg), ink: legible(cbg), on: i === 0,
       url: g.k ? extUrl(cv(g.k, '')) : '',
     }
   })

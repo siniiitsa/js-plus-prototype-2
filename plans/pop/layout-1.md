@@ -318,7 +318,8 @@ Seven traps in those tables and that walk:
 
 *Settled in session 0 (2026-10-02):* the user chose Titan One, the recommendation off the measured
 table (*Conventions → Settled in session 0*). The rest of this heading is kept as the record of the
-question.
+question. *JP-111 (2026-10-08, user call) re-asked it: Titan One stays, and the licence is open
+question 12, the PO's. The face is not caps-only (see there).*
 
 The mode names **Chunko Bold Demo** for display and label, a demo licence (Fisterra Fora's
 situation again; `fonts.googleapis.com` has no Chunko). What the frames show, for the user: a very
@@ -1083,6 +1084,11 @@ counters and ink traps: its corners are soft. Rubik 900 is the squarer drawing, 
   "About" at the 12px row measures 42.06 against 3.576 × 0.98 × 12 = 42.05. The seeded nine links
   (the frame has eight — no Availability) sit at the 12px floor on the 1180 canvas and the name
   wraps to two lines at 16 — JP-091's designed "the name gives way first", as under Lime.
+  *Reversed* (JP-114 · JP-115, [`qa-fixes.md`](./qa-fixes.md), user call, 2026-10-08). The two
+  lines are what the tester filed as a bug. The 12px floor left the name 77px, and long names
+  wrapped *Reviews* onto a second row. Pop's capsule now floors its links, and the name with them,
+  at **11**, at desktop in layout 1 alone. KAI MERCER sets on one line at 16, and the long-name
+  set holds the row.
 - **The 390 pill's Soulway 9.91 is 16 × 0.62 = 9.92** — the 768 type through BookPill's 0.62
   hand-scale to the hundredth, confirming decision 5's reading; BookPill's small label is
   `s.pop ? '9.92px' : '11.8px'`, in the display face. The box (102.8 × 33.45) is Lime's 0.62.
@@ -1198,7 +1204,10 @@ counters and ink traps: its corners are soft. Rubik 900 is the squarer drawing, 
   `Photo`'s `ink` (undefined, and so unchanged, for the twins).
 - **Inherited diffs, not Pop's**: the root's 80 / 56 / 44 top and 80 foot on the canvas against
   the masters' 56 / 60 / 24 (the published 1440 bio is 853 tall against 769), and the 390's 10
-  inset against 20 — Lime's, as Editorial recorded.
+  inset against 20 — Lime's, as Editorial recorded. (The top and foot *reversed* by JP-116,
+  [`qa-fixes.md`](./qa-fixes.md), user call, 2026-10-08: `sectionVm`'s layout-1 arm pads Pop's
+  sections with their frames' own top and foot, here 56 / 56, 60 / 60, 24 / 40. The 390's 10
+  side inset stands.)
 - **Moved: theme 4's bio a0 alone** (three widths), against HEAD served from a scratch worktree on
   :5174; themes 0, 1, 2 and 3 at zero rows (528 renders, and the bio's 48 again after the `ink`
   prop). `PopSun` and `PopDots` have no other caller yet.
@@ -1301,7 +1310,9 @@ counters and ink traps: its corners are soft. Rubik 900 is the squarer drawing, 
   where `s.muted` violet vanished on the red and the blue. An empty list names "No tracks yet."
   under 00:00 in the player beside an empty column, as Retro's does.
 - **Inherited diffs, not Pop's**: the root's `padY` 80 / 56 / 44 against the frame's 56 / 30 / 10
-  (the published 1440 band is 1139 tall against 1055), as the bio recorded; the clocks' Inter at
+  (the published 1440 band is 1139 tall against 1055), as the bio recorded (*reversed* by JP-116,
+  [`qa-fixes.md`](./qa-fixes.md), user call, 2026-10-08: the root pads the frame's 56 / 30 / 10 at
+  both ends); the clocks' Inter at
   Retro's 10 (the bar starts 3.2 right of the frame's at 1180, 3.4 at 768).
 - **Live**: the published tab at 1440 and 390, trusted clicks under
   `--autoplay-policy=no-user-gesture-required` — a card plays its track, a second click pauses it,
@@ -1393,7 +1404,8 @@ counters and ink traps: its corners are soft. Rubik 900 is the squarer drawing, 
   354.24), the brackets, the strip — within 0.7 px of the frame × 0.82; at 768 and 390 within
   0.8 px through the panel and the top row, then **+1 px from the credit row down**: Inter
   Bold 11's line box is 14 where Figma's is 13. Inherited, not Pop's: the root's 80 / 56 / 44
-  top against the masters' 56 / 30 / 20.
+  top against the masters' 56 / 30 / 20 (*reversed* by JP-116, [`qa-fixes.md`](./qa-fixes.md),
+  user call, 2026-10-08: the root pads the inner frames' 56 / 56, 30 / 30, 20 / 30).
 - **Empty slots** (`&n=0`; `&noimage=1` does not reach the gallery): the cream well under
   `Photo`'s `s.soft` with `s.tx` violet initials, in the spotlight and every tile; the ring and
   glow read on it.
@@ -1476,6 +1488,11 @@ counters and ink traps: its corners are soft. Rubik 900 is the squarer drawing, 
     it runs over the → disc's lower corner and the root's clip cuts it at the section's foot, as
     the master renders it. **It hit-tests clear**: `elementFromPoint` at three points of the 390 →
     disc under the heart finds the disc, and Next steps 1 → 2 from there.
+    *Reversed* at 1440 (JP-112, user call, 2026-10-08, [`qa-fixes.md`](./qa-fixes.md)). With no
+    pager the content's foot is the last row, so the heart stood over song 12's artist, which the
+    render check missed. The 1440 list now keeps the pager's seat while no pager is drawn, so the
+    content's foot is the pager's row either way, and the heart stands where it does with 13 songs.
+    390 is unchanged: six songs or fewer put its top 12 over the last pill's ring.
 - **The glyph floor is 0.14em again** (lh 0.89; the bio's and the gallery's): a lime-ink row scan
   puts the heading at 24–70 against the frame's 23.0–69.7 (× 0.82, off the content's top), 29–64
   against 28–63 at 768 and 30–54 against 29–53 at 390 — the narrow +1 is the eyebrow's line box
@@ -1498,8 +1515,10 @@ counters and ink traps: its corners are soft. Rubik 900 is the squarer drawing, 
   86.1), the number and title x, the pager's 45.1 / 71.3 × 44.3 and the heart (956.0 against
   956.8) within 1 px of the frame × 0.82, the pager 1.7 high (six rows' Titan line boxes); at 768
   and 390 the same within 1.4, the eyebrow's +1 carried down. Inherited, not Pop's: the root's
-  80 / 56 / 44 top against the masters' 96 / 60 / 40, the 390's 10 inset against 20, and
-  `pageWindow`'s six buttons at 1440 and 768 where the masters draw five (Lime's).
+  80 / 56 / 44 top against the masters' 96 / 60 / 40 (*reversed* by JP-116,
+  [`qa-fixes.md`](./qa-fixes.md), user call, 2026-10-08: the band pads the frame's 96 / 60 / 40
+  at both ends, and the heart reads the root's own foot, `padFoot`), the 390's 10 inset against
+  20, and `pageWindow`'s six buttons at 1440 and 768 where the masters draw five (Lime's).
 - **Live** (`theme=4&live=1&n=240`, three widths): Next lights page 2 and the list starts at 13
   (7 narrow); a chip re-derives the pager (20 → 7 pages at 1440, 40 → 14 narrow) and resets to
   page 1, the lit chip lime under violet and the rest the 15% tint under lime; a search with no
@@ -1568,6 +1587,13 @@ counters and ink traps: its corners are soft. Rubik 900 is the squarer drawing, 
     foot, which is the page's idiom (the hero's and this frame's own 390 scribble sit under their
     heads), so it was not re-anchored. Measured: the turned box at (165.7, 47.0) 338.6 × 100.9 off
     the content's corner against the frame × 0.82 (165.7, 46.7) 338.6 × 100.9.
+    *Reversed* (JP-117, user call, 2026-10-08, [`qa-fixes.md`](./qa-fixes.md)). The offsets were
+    the leaked Bebas box's, so the stroke's ink topped 0.96 of the Titan cap down, at the word's
+    foot, where the frame's crosses its lower half. It is now anchored by the frame's own relation
+    to its word: the ink tops 0.468 of the cap below the cap's top and starts 0.382 into the word's
+    ink, set in ems of the heading off the seeded word (2.686em, 0.330em) less the turned path's
+    own ink offset. The stroke keeps the frame's size, so against the smaller Titan cap its foot
+    runs 0.735 of the cap past the baseline (the frame's 0.265).
   - **768: not drawn.** The master keeps the desktop's numbers in a 768 frame, where the tile, its
     later sibling, covers it whole — a leak that does not show (the render agrees).
   - **390: off the radius label**, (59.06, 16.46) at 0.2662 (the master's own scale, 108.42 ×
@@ -1598,7 +1624,10 @@ counters and ink traps: its corners are soft. Rubik 900 is the squarer drawing, 
   0.98 on this string). At 768 the tile 387 (387), map 214.8, rows 79; at 390 the tile 429.1
   (429.16), map 350 × 298, the panel's 30 top. The +1 under the kicker at 768 and 390 is Inter
   Bold 11's 14 line against Figma's 13 (the gallery's +1). Inherited, not Pop's: the root's 80 /
-  56 / 44 top and 80 foot against the masters' 126 / 60 / 30 and 156 / 60 / 10; the 390 page's
+  56 / 44 top and 80 foot against the masters' 126 / 60 / 30 and 156 / 60 / 10 (*reversed* by
+  JP-116, [`qa-fixes.md`](./qa-fixes.md), user call, 2026-10-08: the root pads them. The triage's
+  "two content seams" measured as these insets; the Bebas head and the pager below shorten the
+  map and move no seam); the 390 page's
   five gigs where the master draws three; no pager seeded, so the desktop cards stand 498.7 tall
   against the frame's 683 × 0.82 (Lime's "the frame's 686 less its pager" case); `pageWindow`'s
   compact `1 2 … 6`.
@@ -1817,7 +1846,8 @@ counters and ink traps: its corners are soft. Rubik 900 is the squarer drawing, 
   the arrow's 808.66 / 8.65 (809.4 / 8.7), the foot 431.08 down and its line (32.79, 32.79) — all
   within 0.8 px of the frame × 0.82; at 768 and 390 every one of those within 1 px. The head runs
   1.6% wide (202.5 against 199.3). Inherited, not Pop's: the root's 80 / 56 / 44 top against the
-  masters' 100 / 100 / 60 and its foot.
+  masters' 100 / 100 / 60 and its foot (*reversed* by JP-116, [`qa-fixes.md`](./qa-fixes.md), user
+  call, 2026-10-08: the band pads the frames' 100 / 100, 100 / 50, 60 / 40).
 - **Live** (`theme=4&live=1&today=2025-06-10&booked=2025-06-14,2025-06-24`, puppeteer clicks, three
   widths): a pick moves the pink fill and the line ("Enquiry for Friday, June 20…", an
   `<a href="#form">`), the booked 14th and the past 5th take no click, re-clicking the lit day
@@ -1931,8 +1961,11 @@ counters and ink traps: its corners are soft. Rubik 900 is the squarer drawing, 
   317.8 × 49.2 (318.2), the chips 217.3, the pill 389.2 (389.5), the seal's centre (−53.3, 14.7)
   exactly. The shell is the frame's own width: no named diff on the halves this time.
   Inherited, not Pop's: the root's 80 / 56 / 44 top against the masters' 120 / 30 / 30 and foot
-  against 120 / 60 / 30; the live `::placeholder` at the page's .45 against the frame's .8 (a hint
-  under a label, JP-093 — Repertoire's accepted diff); the ✓ is Inter's fallback glyph (pricing's
+  against 120 / 60 / 30 (*reversed* by JP-116, [`qa-fixes.md`](./qa-fixes.md), user call,
+  2026-10-08: the root pads them); the live `::placeholder` at the page's .45 against the frame's .8 (a hint
+  under a label, JP-093 — Repertoire's accepted diff) (*reversed* by JP-119,
+  [`qa-fixes.md`](./qa-fixes.md), user call, 2026-10-08: each live box sets `--ph: 0.8`, so the
+  published tab draws the frame's .8, as the canvas does); the ✓ is Inter's fallback glyph (pricing's
   precedent).
 - **Live** (`theme=4&live=1`, puppeteer typing and clicks, 1440 and 390): an empty submit rings
   all four boxes in 2px white and prints the prompt; typing clears its box's ring; *Party* lights
@@ -2026,7 +2059,8 @@ counters and ink traps: its corners are soft. Rubik 900 is the squarer drawing, 
   0.82); 768 card (159.3, 199.4) 464 wide, quote 364 × 146.4, arrows 19.35 above the card's centre;
   390 card (19.4, 199.2) 353 wide, arrows at 615.3, 17.8 under the card and 18 above the foot.
   Inherited, not Pop's: the arrows at our `padX` (45.9 / 30) against the frame's 60 (Lime's and
-  Retro's same diff).
+  Retro's same diff) (*reversed* by JP-116, [`qa-fixes.md`](./qa-fixes.md), user call, 2026-10-08,
+  for Pop: the row pads in to `u(60)` at 1440 and 768. Lime's and Retro's stand).
 - **Live** (`theme=4&live=1`, puppeteer clicks, three widths): Next walks all five reviews and
   wraps 5 → 1, Back wraps 1 → 5, both discs carry a pointer and hit-test to themselves (the rule
   and the backs take none of it); `n=1` draws no arrows; `n=0` prints *No reviews yet.* in white
@@ -2131,7 +2165,9 @@ counters and ink traps: its corners are soft. Rubik 900 is the squarer drawing, 
   (277), the small print at 86 / 682 (86 / 682); 390 the section 708.67 (720.39 less the 12 `padY`),
   column 2 at 210.6 (207), the small print at 79.2–220.4 and 230.4–380 (81–223, 233–380). Inherited,
   not Pop's: the root's 80 desktop / 44 mobile `padY` against the frames' 56 (the published 1440
-  footer is 522 tall against 479.7).
+  footer is 522 tall against 479.7) (*reversed* by JP-116, [`qa-fixes.md`](./qa-fixes.md), user
+  call, 2026-10-08: the root's top is the frames' 56 at every width, on every Pop page, and Line
+  19 reads it as `padTop`).
 - **Function** (`theme=4&live=1`, three widths): `n=8` rows are `<a href="#cat">`, the address row
   `target="_blank"`, the pill `<a href="#form">`; `n=5` splits 3 / 2; `n=0` is the pill alone; every
   row and the pill hit-test to themselves (the sun takes none); on the canvas every anchor is
@@ -2470,7 +2506,8 @@ sweep) — `Pop 0,1,2,3`; *field reach is measured* (CLAUDE.md) — `reach.mjs 4
 
 ## Open questions
 
-1. ~~**Chunko Bold Demo**~~ — settled in session 0: Titan One at `faceK` 0.98.
+1. ~~**Chunko Bold Demo**~~ — settled in session 0: Titan One at `faceK` 0.98. Its licence is open
+   question 12 (JP-111).
 2. ~~**Casing**~~ — settled in session 0: `'title'`.
 3. ~~**Seats or literals**~~ — settled in session 0: route A′, four seats.
 4. ~~**The raw leaks**~~ — settled in session 0: follow every hex; the three faces and the two
@@ -2515,3 +2552,61 @@ sweep) — `Pop 0,1,2,3`; *field reach is measured* (CLAUDE.md) — `reach.mjs 4
     media's and the calendar's still carry 38 `s.retro` tests whose other side no template reaches,
     and `s.designed` is true for every template. Neither was on the sweep's list; folding them is a
     five-theme digest at zero rows, Retro's bodies alone.
+12. **Chunko Bold Demo's licence: the PO's question** (JP-111, [`qa-fixes.md`](./qa-fixes.md), user
+    call, 2026-10-08). Titan One stays (decision 1). The next step is the PO's: ask Zarma Type in
+    writing whether any licence covers a builder that embeds the face on every artist site it
+    publishes. What was found on 2026-10-08:
+    - **The face.** It is *Chunko Bold* by Zarma Type. The frames' *Chunko Bold Demo* is its free
+      demo (FontSpace, befonts), marked "PERSONAL USE ONLY (NO COMMERCIAL USE ALLOWED)". The demo
+      file's name table reads `Chunko Bold Demo`, "Copyright © 2025 by Zarma Type". Its ink widths
+      match session 0's six frame strings to 0.1% (*KAI MERCER* 5.943 em against 5.945), so it is
+      the frames' face.
+    - **Zarma Type, direct** (`zarmatype.com/font/chunko-bold/`, `/license/`, `/terms-conditions/`):
+      - Desktop: $19.
+      - **Webfont / E-Pub: $79.** "1 Domain. Unlimited Sub-domains, blogs, pages, and content." "Up
+        to 500,000 monthly web page views." "Embedding fonts via @font-face."
+      - Extended: $349. "Up to 3,000,000 monthly web page views. Only for Small & Medium
+        Enterprise."
+      - **Server: $649.** "1 Server. 1 Website. Unlimited monthly active users. Allow users to use
+        the font to create a custom design/POD (Print on Demand) application."
+      - Corporate: $3,499. "1 Corporate/Brand … Unlimited monthly web page views … For Big
+        Enterprise."
+      - Formats: "OTF, TTF, WOFF, WOFF2".
+      - The terms: "You are not allowed to resell, redistribute, convert, duplicate, or modify our
+        products in whole or in part, for any reason without our permission." There are no refunds.
+        Nothing is said about site builders, templates or SaaS, or about traffic over a tier.
+    - **Creative Market** (Zarma's shop there) sells Desktop at $22, Webfont $29, E-pub $149 and App
+      $199. Its font terms let a webfont go on "more than one distinct website", with combined
+      traffic under the page-view limit on the receipt. But it is "only … in websites the Licensee
+      owns or controls", and the App licence bars "Cloud-based apps allowing third-party, End User
+      Font usage".
+    - **Fontspring** lists it from $22, "Worry-Free". Its page refused the fetch (403), so its tiers
+      were **not read**. Fontspring's standard EULA ties a web font to page-view tiers and to
+      websites the licensee "owns or controls".
+    - **So no licence on sale plainly covers the builder.**
+      - Zarma's Webfont fits only if every published site is a sub-domain of one platform domain,
+        and the sites stay under 500,000 views a month between them.
+      - Its Server licence is the closest in intent (users designing with the font), but it names one
+        website and print-on-demand.
+      - Creative Market's terms exclude it.
+
+      The question for Zarma: a licence for a site builder whose published artist sites embed the
+      face through `@font-face`. How many sites, what traffic, at what price, and whether the sites
+      may stand on the artists' own domains.
+    - **It is not caps-only.** The demo draws a full lowercase: every a–z differs from its capital in
+      advance and ink, with an x-height ≈ 0.51 em and ascenders above the cap. The frames type every
+      Chunko string in capitals, so under Chunko decision 2's per-site `textTransform: 'uppercase'`
+      is *necessary*, not merely harmless. It is already in place. `data.js:763`'s comment ("the
+      caps-only Chunko Bold Demo") is wrong, and the QA sweep corrects it (corrected, 2026-10-08,
+      `43d00c7`).
+    - **Glyphs.** The demo's cmap (`fc-query`) is U+0020–005E, U+0061–007D, `˜` and `€`. It has `"`,
+      `&` and the straight `'`. It lacks **©** (U+00A9), **’** (U+2019), **“ ”** and **·** (U+00B7).
+      `TITAN_EM` lists `·`, `“` and `”` because Pop's display strings set them, so a Chunko build
+      would fall back on them, as on JP-118's © (decided A), unless the commercial file has them.
+      **The commercial file's set could not be verified.** The listings say "Multilingual Support"
+      and "Complete Punctuation Set" but print no glyph list, and befonts' © is its showcase image,
+      not the cmap. Ask Zarma for the character set with the licence quote.
+    - **Not re-read**: whether every display node in the frames names the face. Session 0's census
+      stands (the header is bound and the rest raw; three heads leak Bebas, open question 5).
+    - **If a licence is bought**: JP-111's option B in `qa-fixes.md` lists the cost. It is its own plan
+      (`plans/pop/display-face.md`), on its own branch after the QA batch merges.

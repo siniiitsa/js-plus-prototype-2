@@ -760,10 +760,11 @@ export const gloockEms = (text) => {
   return chs.reduce((w, ch, i) => w + (GLOOCK_EM[ch] ?? 0.657) + (i ? GLOOCK_KERN[chs[i - 1] + ch] ?? 0 : 0), 0)
 }
 
-// Titan One's — Pop's display and label face, standing in for the caps-only
-// Chunko Bold Demo, so set in caps as well — read off the rendered DOM in the
-// harness (spans at 100px in the loaded face, untracked: Pop's mode states 0),
-// not canvas measureText. Titan One kerns a few capital pairs, so the sums
+// Titan One's — Pop's display and label face, standing in for Chunko Bold
+// Demo, which the frames type in capitals throughout (the face itself draws a
+// full lowercase, plans/pop/layout-1.md open question 12), so set in caps as
+// well — read off the rendered DOM in the harness (spans at 100px in the
+// loaded face, untracked: Pop's mode states 0), not canvas measureText. Titan One kerns a few capital pairs, so the sums
 // land on most labels exactly and over on the rest — "AVAILABILITY" by 3.6%,
 // "SHOWS/COVERAGE" by 1.3% — never under. The face is set at 0.98 of the
 // token (`faced`), so a width in ems of the token is this sum × 0.98, which
@@ -1054,8 +1055,14 @@ export const TESTI_KICKER_2 = 'What clients say'
 export const testiKickerSeed = (d) => (d === 1 ? TESTI_KICKER_2 : TESTI_KICKER)
 // JP-098 (user call, 2026-10-01): the gallery's 768 head row, over the small
 // photos, in the frame's title case (986:15668). Layout 2 at tablet alone; the
-// heading it used to hold went back to the caption.
+// heading it used to hold went back to the caption. JP-120 (gallery) gave it
+// layout 1's credit line too, the gallery's name under the artist's.
 export const GALLERY_RAIL_LABEL = 'Gallery'
+// JP-120 (gallery), user call, 2026-10-08: layout 1's eyebrow, which layout 4's
+// prints as well, and its back link, the frames' words. The open source row's
+// label seeds off GALLERY_SOURCES[0].l.
+export const GALLERY_KICKER = 'Media'
+export const GALLERY_BACK_LABEL = 'Back to beginning'
 
 // Pricing — the packages beside the section's filter row, and the seed for
 // FIELDS.pricing's structured editor: used whenever the section carries no
@@ -2091,11 +2098,24 @@ export const FIELDS = {
   gallery: [
     { k: 'images',  l: 'Photos', type: 'images', max: 7,
       hint: 'One per tile. Layout 1 shows the highlighted one in its viewer; layouts 2 and 4 show it as the large photo beside the others.' },
+    // JP-120 (gallery): the eyebrow over the heading, the frames' word, uncased.
+    { k: 'kicker',  l: 'Kicker', d: GALLERY_KICKER, in: [0, 3],
+      hint: 'The small line over the heading. Left empty, it is not drawn.' },
     { k: 'heading', l: 'Heading', d: 'See us in action' },
     // JP-098: the 768 head row's word, the frame's, uncased. `in` cannot name a
-    // width, so the hint does.
-    { k: 'railLabel', l: 'Gallery label', d: GALLERY_RAIL_LABEL, in: [1],
-      hint: 'The label over the small photos, on a tablet only. Left empty, it is not drawn.' },
+    // width, so the hint does. JP-120 (gallery): layout 1's credit line too.
+    { k: 'railLabel', l: 'Gallery label', d: GALLERY_RAIL_LABEL, in: [0, 1],
+      hint: 'The line under your name over the large photo in layout 1, and the label over the small '
+          + 'photos in layout 2, on a tablet only. Left empty, neither is drawn.' },
+    // JP-120 (gallery): two words that head a control or a row standing
+    // whatever they say, so an emptied one reads its seed again (venueCta's
+    // rule). The row's label prints at desktop alone, so the hint says so.
+    { k: 'backLabel', l: 'Back link', d: GALLERY_BACK_LABEL, in: [0],
+      hint: 'The link over the large photo that goes back to the first one. Left empty, it shows '
+          + '“Back to beginning” again.' },
+    { k: 'sourceLabel', l: 'Gallery row label', d: GALLERY_SOURCES[0].l, in: [0],
+      hint: 'The first row, above YouTube, Instagram and TikTok, on desktop only. Left empty, it '
+          + 'shows “Gallery” again.' },
     { k: 'youtube',   l: 'YouTube link', type: 'url', d: '', in: [0],
       hint: 'Where the YouTube row goes on the published page. Leave empty and it stays a picture. Layout 1 only.' },
     { k: 'instagram', l: 'Instagram link', type: 'url', d: '', in: [0],
@@ -2441,7 +2461,11 @@ export function caseText(t, casing) {
 }
 
 // The footer's small print, off the artist's name. sectionVm and EditPanel both read it.
-export const copyrightOf = (name) => `C 2026 ${name}`
+// The sign, not the letter (JP-118, user call, 2026-10-08): all five footer frames
+// type a capital C ("C 2026 Kai Mercer"), Pop's in a face with no © to type, and the
+// seed copied it until the tester read it as the © it stands for. Each template's
+// footer face draws its own ©; a small print the artist typed is never touched.
+export const copyrightOf = (name) => `© 2026 ${name}`
 // The enquiry form's layout-3 head, off the artist's name for the same reason
 // (JP-070, user call, 2026-09-29): every layout-3 frame reads "Book Kai for /
 // your event", which names its mock artist. Only while the heading key is

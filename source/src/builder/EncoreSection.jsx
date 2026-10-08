@@ -872,10 +872,11 @@ function LogoMark({ s, size = 18, color, glyph }) {
 // on its best two (`vm.navNameFit`), `cap` the size two lines fit the capsule
 // at. The name keeps its own size while one line fits the room, shrinks on one
 // line, and below `cap` wraps between words, balanced, onto two — whichever is
-// larger. `floor` is the links' own, so a pill label long enough to leave no
-// room, or one word too long to fit it, keeps the name legible: its box grows
-// past the room to the best split's wider line, and the links wrap, as they
-// did before. Additive; every other caller passes none and keeps `nowrap`.
+// larger. `floor` is the links' own (12; Grunge's 16, Pop's 11 at desktop,
+// JP-114 · JP-115), so a pill label long enough to leave no room, or one word
+// too long to fit it, keeps the name legible: its box grows past the room to
+// the best split's wider line, and the links wrap, as they did before.
+// Additive; every other caller passes none and keeps `nowrap`.
 // A `narrow` fit is the 390 capsule's (JP-101), whose bar may grow: no
 // one-line shrink and no `cap`, so the name keeps its size while one line
 // fits and otherwise takes two at the size the longer fits the room. Its box
@@ -1887,7 +1888,15 @@ function NavBar({ s, colour, rule, pill, nameSize, nameColour, mark, links, clea
   const ed = s.editorial
   // Pop sets its links at Editorial's Label/SM: the two share every arm below.
   const sm = ed || pop
-  const floor = s.grunge ? 16 : 12
+  // Pop's layout-1 capsule floors its links at 11 where every other row
+  // floors at 12 (JP-114 · JP-115, user call, 2026-10-08), and the name's
+  // floor is the links' own (`fit` below). Titan's nine seeded links need
+  // 746px at 12, which left the name 77: KAI MERCER on two lines at its own
+  // 16, and a long name at the floor with Reviews on a second row. At 11 the
+  // room is 139, so the seed sets on one line and the long-name set holds the
+  // row. Desktop design 0 alone: layout 4's capsule, which passes no `links`
+  // either, and the 390 fit keep 12.
+  const floor = s.grunge ? 16 : pop && s.v0 && !s.narrow && !links ? 11 : 12
   const glyph = mark?.glyph ?? (lime ? (!s.narrow ? (ed ? 36.84 : 29.5) : s.grunge || pop ? 27.37 : ed ? 44.93 : 36) : s.narrow ? 27 : undefined)
   const corner = s.narrow ? s.btnR : '30.35px'
   const glass = pop && !fill
@@ -1899,7 +1908,10 @@ function NavBar({ s, colour, rule, pill, nameSize, nameColour, mark, links, clea
   // at their floor. `cap` is the size two lines of the name (line 1.1) fit
   // the pill's 44.28 at, so the bar never grows. Wordmark does the sizing.
   // Layout 4's capsule, which passes `links`, keeps its wrap (JP-091's scope).
-  // Pop's name stands at line 1.2, so its two lines fit the pill at 18.45.
+  // Pop's name stands at line 1.2, so its two lines fit the pill at 18.45,
+  // and its floor is 11 (above): the cap over its own 16 means a name that
+  // misses one line takes two at 16 rather than shrink on one, so it is the
+  // room, not the cap, that keeps the seed on one line.
   // At 390 the name gives way to the pill (JP-101, user call, 2026-10-05), in
   // layouts 1 and 4 alike, since there the links are behind the burger. Its
   // room is up to the pill: the left half, which is the query container
@@ -1964,7 +1976,8 @@ function NavBar({ s, colour, rule, pill, nameSize, nameColour, mark, links, clea
         // than the frame's eight. So the links take the room the wordmark and
         // the pill leave, and their type is that room divided by the row's own
         // width in ems (`s.navEms`, Bebas Neue's advances summed in sectionVm),
-        // capped at the frame's `s.list` and floored at 12px. The gaps are ems
+        // capped at the frame's `s.list` and floored at 12px (Pop's layout 1 at
+        // 11, JP-114 · JP-115, the `floor` above). The gaps are ems
         // too, so the row shrinks as one. `nav` is the query container and the
         // row inside it takes the size: `cqi` resolves against an *ancestor*.
         // Below the floor it wrapped, "the least bad of the options left" —
@@ -10023,7 +10036,9 @@ function Pricing({ s }) {
             the root) that clips, since the 390 rings run 52 past the page.
             The rings hang off the content's foot-right corner — 32 past it
             and 13.08 under at 1440, 20 and 15.96 at 768 (the master's own
-            ×0.69 scale), 71.87 and 40 at 390, the root's foot. The layer comes
+            ×0.69 scale), 71.87 and 40 at 390, the root's foot. The content's
+            foot is the root's own (`padFoot`, the frame's 100 / 60 / 40 since
+            JP-116), not the page's `padY`. The layer comes
             first and the column after it is positioned, so every card and
             string paints over the rings, as the frame's later siblings do. */}
         {pop && (
@@ -10033,7 +10048,7 @@ function Pricing({ s }) {
             }} />
             <svg viewBox="0 0 272.57 242.17" preserveAspectRatio="none" style={{
               position: 'absolute', display: 'block', width: ringW, height: ringH,
-              right: `calc(${s.padX} - ${ringAt[0]}px)`, bottom: `calc(${s.padY} - ${ringAt[1]}px)`,
+              right: `calc(${s.padX} - ${ringAt[0]}px)`, bottom: `calc(${s.padFoot} - ${ringAt[1]}px)`,
             }}>
               <path d={POP_RINGS_D} fill={s.tx} />
             </svg>
@@ -12799,11 +12814,19 @@ function Repertoire({ s }) {
               9 past the content's — and at 390, 2 from the page edge and 12
               above the content's foot, so it runs over the → disc's lower
               corner and the root cuts it off, as the master draws it. Both
-              are seated off the content's foot rather than the pager, which
-              the seeded twelve songs do not draw at 1440. The 768 master keeps
-              the desktop's x in a 768 frame, wholly clipped, so it draws none
-              there. It takes no pointer, so the disc under it hit-tests to
-              the disc. */}
+              are seated off the content's foot, which in both masters is the
+              pager's row. *Reversed* (JP-112, user call, 2026-10-08): the fit
+              seated it there "rather than the pager, which the seeded twelve
+              songs do not draw at 1440", and so it stood over song 12's
+              artist. Now the 1440 list keeps the pager's seat while no pager
+              is drawn (below), so the content's foot is the pager's row
+              either way. 390 keeps no seat: six songs or fewer put the
+              heart's top 12 over the last pill's ring, as over the → disc.
+              The 768 master keeps the desktop's x in a 768 frame, wholly
+              clipped, so it draws none there. It takes no pointer, so the
+              disc under it hit-tests to the disc. The content's foot is the
+              root's own (`padFoot`, the frame's 96 / 40 since JP-116), not the
+              page's `padY`. */}
           {pop && (
             <div aria-hidden style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none' }}>
               <div style={{
@@ -12813,8 +12836,8 @@ function Repertoire({ s }) {
                 <svg viewBox="0 0 100.44 91" aria-hidden style={{
                   position: 'absolute', display: 'block', width: u(100.44), height: u(91),
                   ...(s.mob
-                    ? { right: '2px', bottom: `calc(${s.padY} - 79px)` }
-                    : { right: `calc(${s.padX} + ${u(60.78)})`, bottom: `calc(${s.padY} - ${u(9)})` }),
+                    ? { right: '2px', bottom: `calc(${s.padFoot} - 79px)` }
+                    : { right: `calc(${s.padX} + ${u(60.78)})`, bottom: `calc(${s.padFoot} - ${u(9)})` }),
                 }}>
                   <path d={POP_HEART_D} fill={s.onScheme[1].chips[3].bg} />
                 </svg>
@@ -13016,6 +13039,17 @@ function Repertoire({ s }) {
                   ? (dir) => setPage(Math.max(0, Math.min(pages - 1, pg + dir)))
                   : undefined,
               }} />
+            </div>
+          )}
+          {/* Pop's heart stands in the pager's row, so with no pager at 1440
+              (twelve songs or fewer, or a chip or search leaving one page)
+              the list keeps that row's seat: the column's gap, the wrapper's
+              8 and the pager's 54, as the pager draws them. The heart then
+              stands beside the rows' foot, as the frame draws it, rather
+              than over the last row (JP-112). */}
+          {pop && !s.narrow && labels.length === 0 && (
+            <div aria-hidden style={{ paddingTop: u(8) }}>
+              <div style={{ height: u(54) }} />
             </div>
           )}
         </div>
@@ -15185,9 +15219,14 @@ function Gallery({ s }) {
       // Editorial's types the same break in one tone, `sem/text/1`, and Pop's in
       // `s.tx`, lifted by Titan One's glyph floor.
       const titleWords = String(s.title || '').split(/\s+/).filter(Boolean)
+      // The kicker, the back link and the credit's second line are the
+      // artist's (JP-120 (gallery)), so a typed one wraps where the seed's
+      // `nowrap` would run it off a 390 page (JP-090's fix). The credit's
+      // name wraps the same way (JP-113, the head row below).
+      const wrap = { whiteSpace: 'normal', overflowWrap: 'anywhere', minWidth: 0 }
       const head = (
         <div style={col(s.mob ? '10px' : u(36), pop ? { position: 'relative' } : undefined)}>
-          {pop ? pt('Media', 11, 1.5, { color: s.text3 }) : eyebrow('Media')}
+          {s.galKicker && (pop ? pt(s.galKicker, 11, 1.5, { color: s.text3, ...wrap }) : eyebrow(s.galKicker, wrap))}
           {grunge || ed || pop ? (
             <h2 style={distressed(s, {
               margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispLg), lineHeight: facedLh(s, 0.89),
@@ -15306,19 +15345,29 @@ function Gallery({ s }) {
         </div>
       )
 
+      // The back link beside the credit, one row as every frame draws it. A
+      // long name (or `railLabel`) wraps the row, as Retro's below does: the
+      // credit drops under the back link, at the row's start, and its lines
+      // wrap between words, inside one only when that word alone outruns the
+      // measure (JP-113, JP-120 (form)'s shape). Without the wrap the credit
+      // squeezed the back link a few glyphs wide, or ran off a 360 page.
       const top = (
-        <div style={row('12px', { justifyContent: 'space-between' })}>
+        <div style={row('12px', { justifyContent: 'space-between', flexWrap: 'wrap' })}>
           {/* The frame's arrow is a Body/MD character, not an icon. */}
           {/* Pop's is Inter 14 before Space Mono 10, over a credit in Inter
               Bold 11 and Space Mono 9, all pink: Retro's own row. */}
           <span onClick={s.live ? () => setPick(0) : undefined}
                 style={row(u(8), { color: G.top, cursor: s.live ? 'pointer' : undefined })}>
             <span style={{ fontFamily: s.body, fontSize: pop ? u(14) : s.bodyMd, lineHeight: pop ? 'normal' : 1.5 }}>←</span>
-            {pop ? pt('Back to beginning', 10, 1) : eyebrow('Back to beginning', { color: G.top })}
+            {pop ? pt(s.galBackLabel, 10, 1, wrap) : eyebrow(s.galBackLabel, { color: G.top, ...wrap })}
           </span>
-          <span style={col(u(2), { alignItems: 'flex-end' })}>
-            {pop ? pt(s.brand, 11, 2, { fontFamily: s.body, fontWeight: 700 }) : eyebrow(s.brand, { color: G.top })}
-            {pop ? pt('Gallery', 9, 2) : eyebrow('Gallery', { color: s.ac })}
+          <span style={col(u(2), { alignItems: 'flex-end', flex: '0 1 auto', minWidth: 0 })}>
+            {pop
+              ? pt(s.brand, 11, 2, { fontFamily: s.body, fontWeight: 700, textAlign: 'right', ...wrap })
+              : eyebrow(s.brand, { color: G.top, textAlign: 'right', ...wrap })}
+            {s.galRailLabel && (pop
+              ? pt(s.galRailLabel, 9, 2, { textAlign: 'right', ...wrap })
+              : eyebrow(s.galRailLabel, { color: s.ac, textAlign: 'right', ...wrap }))}
           </span>
         </div>
       )
@@ -15559,8 +15608,12 @@ function Gallery({ s }) {
             }}>
               {g.on && <Grain s={s} radius={rowR} />}
               {iconSq(g, srcIcons[i] || ImageIcon, 49, 24)}
+              {/* The labels may wrap, since the open row's is the artist's
+                  (JP-120 (gallery)): a long one wraps rather than pushing the
+                  cross out. The services' names are short. */}
               <span style={labelStyle(s, '18px', {
                 flex: 1, position: 'relative', color: g.on ? s.pillFg : ink,
+                whiteSpace: 'normal', overflowWrap: 'anywhere', minWidth: 0,
               })}>{g.label}</span>
               {g.on
                 ? <X size={25} strokeWidth={2.4} style={{ position: 'relative' }} />
@@ -15625,19 +15678,34 @@ function Gallery({ s }) {
             })}
           >
             <span style={{ fontSize: desk ? '11.5px' : '14px', color: s.tx }}>←</span>
+            {/* The artist's word (JP-120 (gallery)), so it may wrap. */}
             <span style={{
               fontFamily: s.mono, fontSize: desk ? '8.2px' : '10px', letterSpacing: desk ? '0.8px' : '1px',
               textTransform: 'uppercase', color: s.ac,
-            }}>Back to beginning</span>
+              whiteSpace: 'normal', overflowWrap: 'anywhere', minWidth: 0,
+            }}>{s.galBackLabel}</span>
           </span>
           {/* The frame's credit is Inter Bold over Space Mono, both tracked 2,
-              not the Anton label. Desktop is the frame × 0.82. */}
+              not the Anton label. Desktop is the frame × 0.82. The row wraps,
+              so a long name drops the credit under the back link, at the
+              row's start; the credit then shrinks to the measure and its
+              lines wrap, inside a word only when that word alone outruns it
+              (JP-113). */}
           <span style={col('2px', {
             alignItems: 'flex-end', fontFamily: s.body, lineHeight: 'normal', color: s.ac,
             letterSpacing: desk ? '1.6px' : '2px', textTransform: 'uppercase', whiteSpace: 'nowrap',
+            flex: '0 1 auto', minWidth: 0,
           })}>
-            <span style={{ fontWeight: 700, fontSize: desk ? '9px' : '11px' }}>{s.brand}</span>
-            <span style={{ fontFamily: s.mono, fontSize: desk ? '7.4px' : '9px' }}>Gallery</span>
+            <span style={{
+              fontWeight: 700, fontSize: desk ? '9px' : '11px',
+              whiteSpace: 'normal', overflowWrap: 'anywhere', minWidth: 0, textAlign: 'right',
+            }}>{s.brand}</span>
+            {s.galRailLabel && (
+              <span style={{
+                fontFamily: s.mono, fontSize: desk ? '7.4px' : '9px',
+                whiteSpace: 'normal', overflowWrap: 'anywhere', minWidth: 0, textAlign: 'right',
+              }}>{s.galRailLabel}</span>
+            )}
           </span>
         </div>
 
@@ -15706,11 +15774,15 @@ function Gallery({ s }) {
       }}>
         <div style={col(desk ? '33px' : tab ? '40px' : '20px', { minWidth: 0 })}>
           <div style={col(desk ? '30px' : tab ? '36px' : '10px')}>
-            {/* Space Mono 11 tracked 1.5 in all three masters. */}
-            <span style={{
-              fontFamily: s.mono, fontSize: desk ? '9px' : '11px', lineHeight: 'normal',
-              letterSpacing: desk ? '1.2px' : '1.5px', textTransform: 'uppercase', whiteSpace: 'nowrap', color: s.ac,
-            }}>Media</span>
+            {/* Space Mono 11 tracked 1.5 in all three masters. The word is
+                the artist's (JP-120 (gallery)), so a typed one wraps. */}
+            {s.galKicker && (
+              <span style={{
+                fontFamily: s.mono, fontSize: desk ? '9px' : '11px', lineHeight: 'normal',
+                letterSpacing: desk ? '1.2px' : '1.5px', textTransform: 'uppercase', color: s.ac,
+                whiteSpace: 'normal', overflowWrap: 'anywhere', minWidth: 0,
+              }}>{s.galKicker}</span>
+            )}
             <h2 style={{
               margin: 0, fontFamily: s.display, fontSize: s.dispLg, lineHeight: 0.89,
               letterSpacing: s.dls, color: s.ac,
@@ -16940,10 +17012,13 @@ function Gallery({ s }) {
               alignItems: 'flex-start', ...(desk ? { width: u(454), flex: 'none' } : null),
               ...(ed || pop ? { containerType: 'inline-size' } : null),
             })}>
-              <span style={{
-                fontFamily: s.body, fontWeight: 700, fontSize: s.eyebrow, lineHeight: 1.3,
-                letterSpacing: s.dls, textTransform: 'uppercase', color: G.eyebrow,
-              }}>Media</span>
+              {/* Layout 1's kicker, the same word (JP-120 (gallery)). */}
+              {s.galKicker && (
+                <span style={{
+                  fontFamily: s.body, fontWeight: 700, fontSize: s.eyebrow, lineHeight: 1.3,
+                  letterSpacing: s.dls, textTransform: 'uppercase', color: G.eyebrow, overflowWrap: 'anywhere',
+                }}>{s.galKicker}</span>
+              )}
               {/* Editorial's head shrinks only when its widest word would
                   outrun the column (Gloock's capitals are wider than the
                   frame's face), and Pop's in Titan's; the twins' never meets
@@ -17112,12 +17187,15 @@ function Gallery({ s }) {
         })}>
           {/* The page's own eyebrow, and the one this section already writes:
               v0's identity block letters it "Media" too, so the frame's string
-              costs no literal that was not here (the bio's `{initials} Bio`
-              pattern, which this wrapper's label does not follow). */}
-          <span style={{
-            fontFamily: s.body, fontWeight: 700, fontSize: u(T.eyebrow),
-            lineHeight: 1.3, textTransform: 'uppercase', color: cream,
-          }}>Media</span>
+              is layout 1's kicker, the artist's since JP-120 (gallery) (the
+              bio's `{initials} Bio` pattern, which this wrapper's label does
+              not follow). */}
+          {s.galKicker && (
+            <span style={{
+              fontFamily: s.body, fontWeight: 700, fontSize: u(T.eyebrow),
+              lineHeight: 1.3, textTransform: 'uppercase', color: cream, overflowWrap: 'anywhere',
+            }}>{s.galKicker}</span>
+          )}
           <h2 style={{
             margin: 0, fontFamily: s.display, fontSize: tab ? s.h1 : s.dispLg,
             lineHeight: 0.89, letterSpacing: s.dls, color: mustard,
@@ -20082,10 +20160,27 @@ function EventsMap({ s }) {
       // Pop's scribble, the node's own `#C6F200` (`s.stroke2`) — not the
       // stickers' duller POP_STICKER_LIME — turned Figma −3.98 → CSS +3.98
       // about its own corner, which the `relativeTransform` places. It hangs
-      // off the heading's start at 1440, (208.68, 27.91) from the text box's
-      // corner, and off the radius label's at 390, (59.06, 16.46) at 0.2662;
-      // the 768 master keeps the desktop's numbers in a 768 frame, where the
-      // tile, painted after it, covers it whole — not drawn.
+      // off the radius label's corner at 390, (59.06, 16.46) at 0.2662; the 768
+      // master keeps the desktop's numbers in a 768 frame, where the tile,
+      // painted after it, covers it whole — not drawn.
+      //
+      // At 1440 it crosses the heading by the frame's own relation to its word
+      // (JP-117, user call, 2026-10-08, *reversed*: the fit kept the frame's
+      // (208.68, 27.91) off the text box, which is a Bebas 130 leak, and so
+      // swept the stroke under the shorter Titan word). In 964:58629 the
+      // stroke's ink tops 0.468 of the cap below the cap's top and starts 0.382
+      // into the word's ink. The seeded MANCHESTER in Titan at Display/LG
+      // inks from 0.0406 to 6.9670em across and from −0.0119 to 0.7182em
+      // down, off the h2's box (its 0.14em lift inside those), so the ink's
+      // corner is (2.686em, 0.330em), and the box's is that less the turned
+      // path's own: its ink starts 4.93 left of the box's corner and tops
+      // 27.59 below it (viewBox units, × 0.82 here), 410.85 × 74.22 in all —
+      // the frame's 410.85 × 74.20,
+      // so the path and the turn are the frame's. The ems are the heading's
+      // (the svg's parent is the section's 16px), so the anchor follows its
+      // size; a typed heading keeps the seed's offsets. The stroke keeps the
+      // frame's size against the smaller Titan cap, so its foot runs further
+      // past the baseline than the frame's 0.265 of the cap.
       const scribble = (left, top, k) => (
         <svg viewBox="0 0 407.35 95.01" aria-hidden style={{
           position: 'absolute', left, top, width: `${Math.round(407.35 * k * 100) / 100}px`,
@@ -20126,7 +20221,10 @@ function EventsMap({ s }) {
             {pop ? (
               <div style={{ position: 'relative', minWidth: 0 }}>
                 {h2}
-                {!s.narrow && scribble(u(208.68), u(27.91), z)}
+                {!s.narrow && scribble(
+                  `calc(${faced(s, s.dispLg)} * 2.686 + ${u(4.93)})`,
+                  `calc(${faced(s, s.dispLg)} * 0.33 - ${u(27.59)})`, z,
+                )}
               </div>
             ) : h2}
             {/* Label/LG under Lime; Grunge's frame sets it in Display/Title,
@@ -24104,13 +24202,17 @@ function Testimonials({ s }) {
       const lNext = ring(false, step(1))
 
       // The card's top stands 165 / 205.5 / 205.2 down the 730 band and its foot
-      // (390: the arrows' foot) 145 / 159.5 / 108 up it; what the root's padY
-      // does not already give is the shell's padding.
-      const pad = (top, bottom) => `calc(${u(top)} - ${s.padY}) 0 calc(${u(bottom)} - ${s.padY})`
+      // (390: the arrows' foot) 145 / 159.5 / 108 up it; what the root's own
+      // padding (`padTop` / `padFoot`: `padY`, since no layout-1 arm gives the
+      // testimonials a row, JP-116) does not already give is the shell's
+      // padding. Pop's masters seat the arrow row 60 in from the band's sides
+      // at every width (JP-116, user call, 2026-10-08), where the root's `padX`
+      // put them 45.9 / 30 in at 1440 and 768; 390's row is a centred 270.
+      const pad = (top, bottom, side = '0') => `calc(${u(top)} - ${s.padTop}) ${side} calc(${u(bottom)} - ${s.padFoot})`
       // Pop's 390 foot (18) is under the root's padY, and a negative padding
       // clamps to 0, so the rest goes back as a negative margin.
       const popFoot = pop && s.mob
-        ? { padding: `calc(${u(G.pad[0])} - ${s.padY}) 0 0`, marginBottom: `calc(${u(G.pad[1])} - ${s.padY})` }
+        ? { padding: `calc(${u(G.pad[0])} - ${s.padTop}) 0 0`, marginBottom: `calc(${u(G.pad[1])} - ${s.padFoot})` }
         : null
       // Pop's 10px INSIDE rule across the root's top, in `stroke/1` violet;
       // the block is unpositioned, so the root is its containing block.
@@ -24136,7 +24238,7 @@ function Testimonials({ s }) {
       ) : (
         <div style={row('0px', {
           justifyContent: paging ? 'space-between' : 'center',
-          padding: pad(...G.pad),
+          padding: pad(...G.pad, pop ? `calc(${u(60)} - ${s.padX})` : '0'),
         })}>
           {rule}
           {paging && lPrev}
@@ -26516,12 +26618,15 @@ function EnquiryForm({ s }) {
               // `number` as inputMode only, a date as the artist's text.
               type={f.kind === 'email' ? 'email' : 'text'}
               inputMode={f.kind === 'number' ? 'numeric' : undefined}
-              style={{ ...box(bad), outline: 'none' }}
+              // Pop's frame states its hint's strength, so the live box sets
+              // it: `--ph` 0.8 on `G.on`'s white is `POP_FORM.ph` (JP-119).
+              // The twins' hint keeps `::placeholder`'s .45.
+              style={{ ...box(bad), outline: 'none', ...(G.ph && { '--ph': 0.8 }) }}
             />
           ) : (
-            // Pop's placeholder is white at 80% on the canvas; the live
-            // input's `::placeholder` keeps the page's .45 (a hint under a
-            // label, JP-093), Repertoire's accepted diff.
+            // Pop's placeholder is white at 80% on the canvas, and the live
+            // input's `::placeholder` draws the same (JP-119, reversing the
+            // .45 that JP-093 kept for a hint under a label).
             <span style={{ ...box(bad), display: 'flex', alignItems: 'center', ...(G.ph && { color: G.ph }) }}>{f.placeholder}</span>
           )}
           {foot(bad)}
@@ -26762,6 +26867,7 @@ function EnquiryForm({ s }) {
                   style={box(false, {
                     display: 'block', height: u(G.msgH), borderRadius: ed ? 0 : u(20),
                     padding: ed ? 0 : `${u(20)} ${u(24)}`, resize: 'none', outline: 'none',
+                    ...(G.ph && { '--ph': 0.8 }), // Pop's 80%, as the inputs' (JP-119)
                   })}
                 />
               ) : (
@@ -29572,7 +29678,8 @@ function Footer({ s }) {
         ...(pop ? popType(14.51, 14.51 * 0.86) : ed ? labelStyle(s, s.labelMd, { whiteSpace: 'normal' }) : face),
         color: pop ? s.text3 : s.tx,
         // The row is the instance's floor at every width — nothing under it —
-        // so it takes back the root's bottom `padY`, as Line 19 does the top.
+        // so it takes back the root's bottom padding (`padFoot`, which is
+        // `padY` on every template, Pop's included), as Line 19 does the top.
         // Being the page's last line, the published row also grows by the
         // safe-area inset: the tab is `viewport-fit=cover`, so on an iPad with
         // a home indicator the bottom ~20px sit under it, and the band (not
@@ -29580,8 +29687,8 @@ function Footer({ s }) {
         // viewport's edge, so it keeps the frame's 68.
         height: s.live ? `calc(${u(68)} + env(safe-area-inset-bottom))` : u(68),
         ...(s.narrow
-          ? { padding: `0 ${s.mob ? 0 : '56px'} ${safe}`, marginBottom: `calc(-1 * ${s.padY})` }
-          : { margin: `0 calc(-1 * ${s.padX}) calc(-1 * ${s.padY})`, padding: `0 ${s.padX} ${safe}` }),
+          ? { padding: `0 ${s.mob ? 0 : '56px'} ${safe}`, marginBottom: `calc(-1 * ${s.padFoot})` }
+          : { margin: `0 calc(-1 * ${s.padX}) calc(-1 * ${s.padFoot})`, padding: `0 ${s.padX} ${safe}` }),
       }}>
         <span style={half}>{s.copyright}</span>
         <span style={{ ...half, textAlign: 'right' }}>{s.footerCredit}</span>
@@ -29605,9 +29712,11 @@ function Footer({ s }) {
       }} />
     )
 
-    // The frame's 56 above the wordmark is the root's `padY`, as in Retro's;
-    // the 56 under each block is kept, and the root's gap of 2 stands between
-    // the upper frame and the small print at every width.
+    // The frame's 56 above the wordmark is the root's top padding: `padY`, as
+    // in Retro's, under the twins, and Pop's own 56 at every width (JP-116,
+    // `sectionVm`'s layout-1 arm, which `padY`'s 80 / 44 used to miss by +24
+    // and −12); the 56 under each block is kept, and the root's gap of 2
+    // stands between the upper frame and the small print at every width.
     if (s.narrow) {
       return (
         <div style={col('2px')}>
@@ -29650,11 +29759,11 @@ function Footer({ s }) {
             {seal}
           </div>
           {/* Line 19 runs from the instance's top edge to 2.16 short of the
-              row's foot, so it reclaims the whole of the root's top padding and
-              meets the edge hairline. */}
+              row's foot, so it reclaims the whole of the root's top padding
+              (`padTop`) and meets the edge hairline. */}
           <span style={{
             width: 0, borderLeft: hair, flex: 'none',
-            marginTop: `calc(-1 * ${s.padY})`, marginBottom: u(2.16),
+            marginTop: `calc(-1 * ${s.padTop})`, marginBottom: u(2.16),
           }} />
           <div style={{ flex: '1 1 auto', paddingBottom: u(56), ...(pop ? { position: 'relative' } : null) }}>
             {links}

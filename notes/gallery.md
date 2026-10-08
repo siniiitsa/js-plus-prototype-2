@@ -5,8 +5,8 @@ loads only when a session works on it. "Above" and "below" may point into `CLAUD
 another `notes/` file.
 
 - **The gallery browses, in the published tab only, and its three social rows leave the page.**
-  Thumbnails are clickable, the rail's arrows step and wrap, "Back to beginning" rewinds, and the
-  tile counter and viewer follow. `pick` starts at **-1** for the same reason `cur` does: nothing
+  Thumbnails are clickable, the rail's arrows step and wrap, "Back to beginning" (`backLabel`)
+  rewinds, and the tile counter and viewer follow. `pick` starts at **-1** for the same reason `cur` does: nothing
   chosen, so both sides open on `galActive()` and the published first paint is the canvas's
   picture by construction. All **seven slots** are navigable, not just the filled ones — an empty
   one shows in the viewer the placeholder it shows in the strip, so the count cannot shift under
@@ -109,3 +109,30 @@ another `notes/` file.
   a **sliding window** on layout 1's formula, `from = clamp(active - 2, 0, 4)` — not live-gated, so
   the canvas and the published first paint agree on slots 1–3. It draws no source rows either: the
   Figma wrapper carries layout 1's four as a `hidden` frame.
+- **Layout 1's labels are the artist's** (JP-120 (gallery), user call, 2026-10-08), in both
+  bodies, each seeded with the frame's word and uncased, so the seeded page did not move:
+  - `kicker`, *Media* (`vm.galKicker`), which layout 4's eyebrow prints too, the same word;
+  - `railLabel`, *Gallery* (`vm.galRailLabel`), the credit's second line under the name at every
+    width, as well as layout 2's 768 head row;
+  - `backLabel`, *Back to beginning* (`vm.galBackLabel`), the rewind;
+  - `sourceLabel`, *Gallery* (`vm.gallerySources[0].label`, seeded off `GALLERY_SOURCES[0].l`),
+    the open source row, which prints its label at desktop alone in both bodies: the narrow rows
+    are icon-only tiles.
+
+  An emptied kicker or credit line is not drawn. An emptied back link or row label reads its seed
+  again (`venueCta`'s rule), since the link is a control and the row always stands. Typed, each
+  wraps (`whiteSpace: 'normal'`, `overflowWrap: 'anywhere'`, `minWidth: 0`) where the seed's
+  `nowrap` would run it off a 390 page. The Lime-tree capsule's row label keeps its ellipsis,
+  since the capsule is a fixed height; Retro's row grows. The services' names (*YouTube*,
+  *Instagram*, *TikTok*), the counter and Retro's rail wordmark *Gallery* stay literals.
+- **Layout 1's head row wraps** (JP-113, 2026-10-08, both bodies, JP-120 (form)'s shape). The
+  back link and the credit stand on one row, as every frame draws them, and the seed keeps it at
+  every width. A name or credit line too long for the row wraps it: the credit drops under the
+  back link, at the row's **start** (a lone item on a `space-between` line stands at its start,
+  as Retro's row and the form's credit always did), shrinks to the measure (`flex: '0 1 auto'`,
+  `minWidth: 0`), and its two lines wrap between words, right-aligned inside the credit, breaking
+  inside a word only when that word alone outruns the measure (`overflowWrap: 'anywhere'`). It
+  is a wrap, not a shrink: an 11px credit fitted to its widest word would be illegible. The back
+  link keeps its line. Before, the Lime-tree row did not wrap, so a long name squeezed the back
+  link a few glyphs wide (Pop's *Maximilian Featherstonehaugh Windsor* at 360: 15 lines, the page
+  379), and Retro's credit column was `nowrap`.
