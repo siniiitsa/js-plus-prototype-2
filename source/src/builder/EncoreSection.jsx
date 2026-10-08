@@ -872,10 +872,11 @@ function LogoMark({ s, size = 18, color, glyph }) {
 // on its best two (`vm.navNameFit`), `cap` the size two lines fit the capsule
 // at. The name keeps its own size while one line fits the room, shrinks on one
 // line, and below `cap` wraps between words, balanced, onto two — whichever is
-// larger. `floor` is the links' own, so a pill label long enough to leave no
-// room, or one word too long to fit it, keeps the name legible: its box grows
-// past the room to the best split's wider line, and the links wrap, as they
-// did before. Additive; every other caller passes none and keeps `nowrap`.
+// larger. `floor` is the links' own (12; Grunge's 16, Pop's 11 at desktop,
+// JP-114 · JP-115), so a pill label long enough to leave no room, or one word
+// too long to fit it, keeps the name legible: its box grows past the room to
+// the best split's wider line, and the links wrap, as they did before.
+// Additive; every other caller passes none and keeps `nowrap`.
 // A `narrow` fit is the 390 capsule's (JP-101), whose bar may grow: no
 // one-line shrink and no `cap`, so the name keeps its size while one line
 // fits and otherwise takes two at the size the longer fits the room. Its box
@@ -1887,7 +1888,15 @@ function NavBar({ s, colour, rule, pill, nameSize, nameColour, mark, links, clea
   const ed = s.editorial
   // Pop sets its links at Editorial's Label/SM: the two share every arm below.
   const sm = ed || pop
-  const floor = s.grunge ? 16 : 12
+  // Pop's layout-1 capsule floors its links at 11 where every other row
+  // floors at 12 (JP-114 · JP-115, user call, 2026-10-08), and the name's
+  // floor is the links' own (`fit` below). Titan's nine seeded links need
+  // 746px at 12, which left the name 77: KAI MERCER on two lines at its own
+  // 16, and a long name at the floor with Reviews on a second row. At 11 the
+  // room is 139, so the seed sets on one line and the long-name set holds the
+  // row. Desktop design 0 alone: layout 4's capsule, which passes no `links`
+  // either, and the 390 fit keep 12.
+  const floor = s.grunge ? 16 : pop && s.v0 && !s.narrow && !links ? 11 : 12
   const glyph = mark?.glyph ?? (lime ? (!s.narrow ? (ed ? 36.84 : 29.5) : s.grunge || pop ? 27.37 : ed ? 44.93 : 36) : s.narrow ? 27 : undefined)
   const corner = s.narrow ? s.btnR : '30.35px'
   const glass = pop && !fill
@@ -1899,7 +1908,10 @@ function NavBar({ s, colour, rule, pill, nameSize, nameColour, mark, links, clea
   // at their floor. `cap` is the size two lines of the name (line 1.1) fit
   // the pill's 44.28 at, so the bar never grows. Wordmark does the sizing.
   // Layout 4's capsule, which passes `links`, keeps its wrap (JP-091's scope).
-  // Pop's name stands at line 1.2, so its two lines fit the pill at 18.45.
+  // Pop's name stands at line 1.2, so its two lines fit the pill at 18.45,
+  // and its floor is 11 (above): the cap over its own 16 means a name that
+  // misses one line takes two at 16 rather than shrink on one, so it is the
+  // room, not the cap, that keeps the seed on one line.
   // At 390 the name gives way to the pill (JP-101, user call, 2026-10-05), in
   // layouts 1 and 4 alike, since there the links are behind the burger. Its
   // room is up to the pill: the left half, which is the query container
@@ -1964,7 +1976,8 @@ function NavBar({ s, colour, rule, pill, nameSize, nameColour, mark, links, clea
         // than the frame's eight. So the links take the room the wordmark and
         // the pill leave, and their type is that room divided by the row's own
         // width in ems (`s.navEms`, Bebas Neue's advances summed in sectionVm),
-        // capped at the frame's `s.list` and floored at 12px. The gaps are ems
+        // capped at the frame's `s.list` and floored at 12px (Pop's layout 1 at
+        // 11, JP-114 · JP-115, the `floor` above). The gaps are ems
         // too, so the row shrinks as one. `nav` is the query container and the
         // row inside it takes the size: `cqi` resolves against an *ancestor*.
         // Below the floor it wrapped, "the least bad of the options left" —

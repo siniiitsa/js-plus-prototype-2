@@ -165,7 +165,7 @@ Screenshots (the tester's):
 | 5 | JP-119 | live placeholders at .45 | **Confirmed, and recorded**: the canvas draws the frame's .8; the live box keeps JP-093's .45 | S | entry 1: **A**, `--ph: 0.8` | **done** (2026-10-08) |
 | 6 | JP-112 | the heart over song 12 | **Confirmed, and recorded**: seated off the content's foot because the seed draws no pager | S | **user**: **A**, the pager's seat at desktop; 390 as is | **done** (2026-10-08) |
 | 7 | JP-117 | the scribble under the word | **Confirmed, and recorded**: the frame's offsets kept against a Titan word they were not measured on | S | entry 1: **A**, the frame's fractions | **done** (2026-10-08) |
-| 8 | JP-114 · JP-115 | the logo on two lines · the nav wraps | **Confirmed, and recorded** (layout-1.md `:1085`): JP-091's rule under Pop's room and cap | M | **measure, then decide** | open |
+| 8 | JP-114 · JP-115 | the logo on two lines · the nav wraps | **Confirmed, and recorded** (layout-1.md `:1085`): JP-091's rule under Pop's room (77px at the 12px floor); the cap is not the lever | M | **user**: **B**, the floor 11 at desktop layout 1; no C; Pop alone (Editorial named) | **done** (2026-10-08) |
 | 9 | JP-116 | section gaps off the frames | **Confirmed, and recorded as inherited** in every section's *Settled*; two of the six seams are content shortfalls, not padding | M–L | **measure, then decide** the scope | open |
 | 10 | — | End-of-pass sweep | — | S | — | open |
 
@@ -1323,6 +1323,199 @@ Lime, Grunge and Editorial card 1 are byte-for-byte HEAD.
 **Docs.** The `fit` comment in `NavBar` and `fitName`'s. `notes/nav.md`'s JP-091 bullet. A
 *reversed* pointer at layout-1.md `:1085`.
 
+**Measured** (2026-10-08, on HEAD `005f95a`).
+- **Every *Evidence* line held**, with one correction. `fitName` `:887`, `fitBox` `:890`, `Wordmark`
+  `:895`; `NavBar` `:1880`, its `floor` `:1890`, the desktop `fit` `:1916`–`:1919` (the cap
+  `:1918`); `vm.navEms` `:759`, `vm.navNameFit` `:801`–`:808`; `TITAN_EM` `:771`. The links'
+  clamp is **`:1987`**; `:1984` is layout 4's `links` clamp.
+- **How.** A scratchpad puppeteer probe on the HEAD worktree (:5174), card 1 of Pop, Lime, Grunge
+  and Editorial.
+  - For each name, the header's `title` was written through the fiber `st` dispatch, and the
+    tab's `<title>` read back as the name, so the key took.
+  - The editor's Desktop canvas was read (1088 in a 1440 window, the header's panel open). Then
+    Publish → Open, and the popup was read at 1180, 1440 and 1920.
+  - Every width is in layout px (a rect ÷ the zoom). Every line is read off per-character
+    `Range`s.
+  - The arithmetic beside it, off `data.js`'s em tables, lands on the measured room to 0.02.
+- **Two of the entry's numbers are the frame's, not the build's.** `THEME_RAMP.Pop.desktop` rounds
+  the frame's 20 and 16 × 0.82: `list` is **16** and `labelSm` **13**. So the name's own size is 16
+  (15.68 faced) and the links' cap 13 (12.74). The two-line cap, 18.45 (44.28 / 2.4), is as
+  stated.
+- **The capsule.**
+  - Inner **1063.4** × 44.27 at 1180 and 1440 (1062.75 at 1920), **971.4** on the 1088 canvas. The
+    bar is 60.64 everywhere.
+  - Pop's fixed boxes: the mark 29.5, its 11, the halves' 24.6, the pill's 19, and the pill
+    **155.45** (its BOOK NOW label 88.2 at 15.68).
+  - **The nine links are 62.185 Titan em** (× 0.98, gaps 23/16 em, the 1% spare), so **746.2px at
+    the 12px floor**.
+  - **That leaves the name 77.14 at 1180** (the measured box 77.16, the tester's 77), and
+    **−14.9 on the 1088 canvas**.
+- **What *Kai Mercer* needs:** 6.156 em on one line, so **98.5 at 16** (101 at the frame's 16.4).
+  Its best split is MERCER, 4.145 em, so 66.3 at 16 on two lines.
+- **The longest name one row holds at the floor, at 1180:** 4.77 Titan em on one line at its own
+  16, or two lines whose wider one is 6.36 em at 12. *Kai Mercer* fits only on two lines.
+
+  | Name | Pop, 1180 / 1440 / 1920 | Pop, 1088 canvas | Editorial, 1180 / 1440 / 1920 |
+  |---|---|---|---|
+  | Kai Mercer | 16, KAI / MERCER; links 1 row at 12.01 | 12, 2 lines; **Reviews** wraps | 16.78, 2 lines; links 1 row (1088: 12, Reviews wraps) |
+  | Florence and the Machine | 12, FLORENCE AND / THE MACHINE; **Reviews** wraps | 12; Enquiries, Reviews wrap | 12, 2 lines; **Reviews** wraps |
+  | The Chemical Brothers | 12, 2 lines; links 1 row (box 87.7 > room, absorbed by the 1% spare) | 12; Enquiries, Reviews wrap | 12, 2 lines; **Reviews** wraps |
+  | Maximilian Featherstonehaugh | 12, 2 lines; **Reviews** wraps | 12; Enquiries, Reviews wrap | 12, 2 lines; **Reviews** wraps |
+  | Supercalifragilistic | 12, 1 line; **Reviews** wraps | 12; Enquiries, Reviews wrap | 12, 1 line; **Reviews** wraps |
+
+  - **Lime and Grunge hold one row with all five names**, at 1180–1920 and on the 1088 canvas.
+    Lime's name stays 26 on one line (the links 15.7–20). Grunge's stays 22.125 (the links
+    17.07–20), and on the canvas *Florence* shrinks to 21.07 and *Maximilian* to 17.46.
+  - Everywhere: the bar 60.64, nothing past the capsule, the pill on the row, no word broken, and
+    the tab's title the name.
+- **(a) is true, but it is not the lever.** At 1180 *Kai Mercer*'s one-line size is room / one =
+  **12.53**, and its two-line size is min(18.45, room / two = 18.61). So the rule sets two lines at
+  its own 16.
+  - A cap at or below 16 changes nothing: two lines at 16 (or at the cap) still beat 12.53.
+  - Only a cap under 12.53 lets one line win, and then the name sets at 12.5, the links' own
+    size.
+  - Under Editorial in Noto (JP-091) one line won because room / one stayed above the 20.1 cap.
+- **(b) is confirmed by a render.** With the calendar dropped (the frame's eight links), the seed
+  sets **KAI MERCER on one line at 16** with the links at their 13 cap, at 1180, 1440 and 1920.
+  - On the 1088 canvas it takes two lines at 16, with the links one row at 12.
+  - *Florence* sets two lines at 16, with the links one row at 12.01.
+  - By the numbers: *Availability* is 8.54 em, 102.5px at 12. The frame's eight at 13.12 are
+    703.8, which leaves 119.5 against the 101 its name needs at 16.4.
+- **The levers, by the numbers** (Pop's nine links; nominal sizes at 1180 / on the 1088 canvas;
+  *wraps* = the name's box grows past the room, so the links take a second row):
+
+  | Lever | Room | Kai Mercer | Florence | Chemical | Maximilian | Supercali |
+  |---|---|---|---|---|---|---|
+  | HEAD, floor 12 | 77.1 / −14.9 | 16, 2 lines / wraps | wraps | 12, 2 lines (spare) / wraps | wraps | wraps |
+  | **B, floor 11.5** | 108.2 / 16.2 | **16, 1 line** / wraps | 14.31, 2 lines / wraps | 14.81, 2 lines / wraps | wraps | wraps |
+  | **B, floor 11** | 139.3 / 47.3 | **16, 1 line** / 11.42, 2 lines | 16, 2 lines / wraps | 16, 2 lines / wraps | 12.1, 2 lines / wraps | 11.72, 1 line / wraps |
+  | **B, floor 10.5** | 170.4 / 78.4 | **16, 1 line** / 16, 2 lines | 16, 2 lines / wraps | 16, 2 lines / 10.73 | 14.8, 2 lines / wraps | 14.34, 1 line / wraps |
+  | A, cap 16 / 14 / 12.6 | 77.1 | 16 / 14 / 12.6, **2 lines** | wraps | wraps | wraps | wraps |
+  | C, the name's floor 10 (links 12) | 77.1 | 16, 2 lines | 10.2, 2 lines | 10.56, 2 lines | wraps | wraps |
+
+  - **At 11 the links render 10.78 on the canvas and 13.15 in a 1440 tab.** Today they are 11.76
+    and 14.35, and the frame's are 16.
+  - **The longest name one row holds at 11 (1180):** 8.62 Titan em on one line at 16, or a
+    two-line split whose wider line is 12.54 em, which is a single word of about 18 letters.
+- **Named, not fixed here.**
+  - **Editorial is in Pop's position on HEAD.** Its nine Gloock links are 59.979 em, 719.7 at 12,
+    which leaves the name **70.87**.
+    - The seed's two lines at 16.78 are a user call (`../editorial/display-face.md` `:423`,
+      2026-10-05).
+    - **But all four long names now wrap *Reviews* at 1180–1920.** That is JP-115 under Editorial.
+      JP-091's settled rows (*Florence* at 20.1 on two lines, the links at 12.01) held in Noto, and
+      have not held since the Gloock swap. Nobody recorded it.
+  - **On the 1088 canvas both seeds already wrap *Reviews***: Pop's and Editorial's name sits at
+    the floor on two lines.
+  - **Pop's layout-4 capsule shares `floor`.** It passes no `links`, so it reads the same clamp,
+    and its seed wraps *Reviews* (`../pop/layout-4.md`, open question 10). A lower floor has to be
+    gated to design 0 at desktop, or it moves layout 4 too.
+
+**Decided** (user, 2026-10-08, over the numbers above):
+1. **B: a lower floor.** Under Pop, in layout 1's capsule at desktop, the links' floor drops to
+   **11px**. The name's floor is the links' own, as in JP-091, so it drops with them.
+   - The links render 10.78 on the canvas and 13.15 in a 1440 tab.
+   - At 1180–1920 the seed sets KAI MERCER on one line at its own 16 (JP-114). Every name in the
+     set holds the links on one row (JP-115).
+   - This reverses Pop's header fit, "the name wraps to two lines at 16" (layout-1.md `:1085`).
+   - A is out by the numbers. D and E were not taken.
+2. **The floor is 11**, not 11.5 (which leaves both single words wrapping) or 10.5.
+3. **No C.** A word too long for the room at 11 keeps JP-091's documented last resort: the name's
+   box grows to it, and the links wrap. That is a single word past about 12.5 Titan em, roughly 18
+   letters; none in the set.
+4. **Pop alone.** Lime's, Grunge's and Editorial's card 1 stay byte-for-byte HEAD. Editorial's
+   long-name wrap under Gloock is named above, and goes into the sweep's reply for its own ticket.
+   Layout 4's capsule, 768 and 390 are untouched.
+
+**Expected after-diff, named before the code.** The new floor is gated to Pop's desktop design 0,
+which header arch 4 folds onto (`designCount('header', 'Pop')` is 4).
+- **The seed:** `cat_header_arch_0_theme_4_w_desktop` and `cat_header_arch_4_theme_4_w_desktop`,
+  on the canvas and on `live=1`, so **2 files a surface**.
+  - The room grows 77.14 → 139.33, so the name sets KAI MERCER on one line at 16 (15.68). Its
+    row's width and height move, and so does the left half's width.
+  - The nav narrows by the name's growth: about 746.7 → 726.3. So the links' row size goes
+    12.008 → about 11.68 (11.45 faced), and every link's x, width and size moves.
+  - The capsule, the glass, the pill and the bar's 60.64 do not move.
+- **The `&name=` renders** (header, themes 0–4, three widths, both surfaces): the same 2 files a
+  surface for each long name, and nothing else.
+- **Every other render is 0:** themes 0–3, Pop at 768 and 390, Pop's header arch 1, 2, 3 and 5,
+  and every other category.
+
+**The harness was proven first.** The HEAD worktree (`005f95a`, :5174) was diffed against a fresh
+tree server (:5177). Every category, themes 0–4, three widths: **0 of 660 on the canvas and 0 of
+660 on `live=1`**. The `&name=` header renders, for each of the four long names (themes 0–4, three
+widths, both surfaces), were **0 of 90** each. No one-row renders.
+
+**Settled** (2026-10-08).
+- **Code: `NavBar`'s `floor`, one line.**
+  - It is now `s.grunge ? 16 : pop && s.v0 && !s.narrow && !links ? 11 : 12`.
+  - Its two desktop readers move together: the `fit`'s `room` and `floor`, and the links' clamp
+    (`:1987` before the edit).
+  - The 390 `narrow` fit reads it under `s.mob`, where the gate is false. Layout 4's capsule is
+    `s.v3`. So both keep 12.
+  - The cap, 18.45, is untouched. By the numbers it was never the lever.
+- **Digest** (HEAD :5174 against the tree :5177): **2 of 660 on the canvas and 2 of 660 on
+  `live=1`**, the named `cat_header_arch_0_theme_4_w_desktop` and `…_arch_4_…`.
+  - Each `&name=` set is **2 of 90** on each surface, the same two renders.
+  - Inside the seed's file, exactly the named rows move:
+    - the left half and the wordmark's row (117.7 × 38.4 → 138 × 29.5);
+    - the name (77.2 × 38.4 → **97.5 × 19.2, one line**, still 15.68);
+    - the right half and the nav (746.7 → 726.4);
+    - the links' row (12.008 → 11.68) and every link (11.77 → 11.45 faced).
+  - The capsule, the mark, the glass, the pill and the root do not move. No one-row renders.
+- **The real app** (the same probe on :5177, Pop card 1; nominal sizes):
+
+  | Name | 1180 / 1440 / 1920 | 1088 canvas |
+  |---|---|---|
+  | Kai Mercer | **16, KAI MERCER on one line**; links 11.68, one row | 11.42, KAI / MERCER; links one row at 11.01 (HEAD: Reviews wrapped) |
+  | Florence and the Machine | **16**, FLORENCE AND / THE MACHINE; links 11.01, **one row** | 11; Reviews wraps |
+  | The Chemical Brothers | **16**, THE CHEMICAL / BROTHERS; links 11.01, one row | 11; Reviews wraps |
+  | Maximilian Featherstonehaugh | **12.1**, MAXIMILIAN / FEATHERSTONEHAUGH; links 11.01, **one row** | 11; Enquiries, Reviews wrap |
+  | Supercalifragilistic | **11.72, one line**; links 11.04, **one row** | 11; Enquiries, Reviews wrap |
+
+  - At 1920 the capsule is 1062.75, so *Maximilian* sets at 12.04 and *Supercali* at 11.67.
+  - **Every reading passes:**
+    - the links on one row at 1180–1920;
+    - nothing past the capsule;
+    - the pill on the row (x 924.4–1079.8, top 8.19, 44.27 tall);
+    - the name clear of the nav by 36.5 at least, and never broken inside a word;
+    - the bar 60.64;
+    - the tab's title the name;
+    - no sideways scroll and no page errors.
+  - **Lime, Grunge and Editorial card 1: 60 of 60 readings identical to HEAD.**
+  - **The 1088 canvas, named:** the seed's links now hold one row, where HEAD wrapped *Reviews*.
+    The long names still wrap there (Decided, 2).
+  - Clips of the capsule at 1440 and on the 1088 canvas, HEAD against the tree, with the seed and
+    *Florence*, were read and handed to the user. They are not kept.
+- **Build.** `npm run build` is clean. The root `index.html` is not refreshed; the sweep does that.
+- **Torn down:** :5174, :5177 and the HEAD worktree (`git worktree remove --force`). :5173 is the
+  user's, and :5175 and :5176 belong to other jobs; all three still run.
+- **Docs.**
+  - The `floor` comment in `NavBar` (new). The `fit` comment says why the cap is not the lever.
+    The links' clamp comment and `fitName`'s comment name the 11.
+  - `notes/nav.md`: a paragraph under JP-091's bullet, covering Pop's floor and Editorial named.
+    "A 34-letter word under Editorial" now reads "in Noto".
+  - A *reversed* pointer under layout-1.md's nav bullet (`:1087`).
+  - No CLAUDE.md or README line states the floor.
+
+Reply: **JP-114 · JP-115 — fixed.** On Pop's *Hero* layout at desktop, the header now holds the
+name and the menu on one bar:
+- **JP-114:** *KAI MERCER* sits on one line at its design size, as in the frame.
+- **JP-115:** a long name no longer pushes REVIEWS onto a second row. *Florence and the Machine* and
+  *The Chemical Brothers* wrap onto two lines at the logo's size. *Maximilian Featherstonehaugh* and
+  *Supercalifragilistic* shrink to about 12px.
+- **How:** the menu's smallest size under Pop is now 11px on the 1180 layout, which is about 13px
+  in a 1440 window (it was 12, about 14.5). That gives the name the room it was missing. The page
+  carries nine menu links where the frame draws eight (*Availability*, a ninth section), which is
+  why the frame's sizes cannot hold.
+- **Unchanged:** tablet, mobile and the layout-4 header. The bar's height and the Book Now button
+  are unchanged.
+- **Still possible:** a single word of about 18 letters or more still wraps the menu, the
+  documented last resort. In the editor's own preview, which is narrower than the published page
+  in a 1440 window, a long name can still wrap the menu.
+- **Logged separately:** Editorial's header has the same long-name wrap since its face changed to
+  Gloock.
+
 ---
 
 ## JP-116 — the gaps between sections are not the frames'
@@ -1459,4 +1652,7 @@ Gathered as the entries run; the sweep finalises them. Seeded at triage:
 - **The repertoire and the map draw a pager the seeded page does not have** (twelve songs, five
   gigs), so a sticker or a height that hangs off the pager has nothing to stand on (JP-112, JP-116).
 - **The frames' nav draws eight links**, and the seeded page carries a ninth, *Availability*
-  (JP-114 · JP-115).
+  (JP-114 · JP-115). Nine Titan links do not fit beside the name at the frame's 16. So Pop's
+  layout-1 menu now sets down to 11 on the 1180 layout, about 13 in a 1440 window, which keeps the
+  name on one line. Eight links at the frame's size would hold the frame's row (confirmed by
+  render).

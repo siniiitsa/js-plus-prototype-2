@@ -83,7 +83,18 @@ another `notes/` file.
   - takes whichever of those is larger, so the bar never grows;
   - never goes below the links' own floor. There its box grows past the room to the best split's
     wider line and the links wrap as before. Only a very long pill label, or one word too long
-    for the room (a 34-letter word under Editorial), gets that far.
+    for the room (a 34-letter word under Editorial in Noto), gets that far.
+
+  **Under Pop the links' floor is 11 in this capsule, not 12** (JP-114 · JP-115, user call,
+  2026-10-08, `plans/pop/qa-fixes.md`). It is the name's floor too. Pop's nine Titan links need
+  746px at 12, which left the name 77: the seeded KAI MERCER took two lines at its own 16, and
+  *Florence and the Machine*, *Maximilian Featherstonehaugh* and *Supercalifragilistic* reached the
+  floor and wrapped *Reviews*. At 11 the room is 139. The seed sets on one line at 16, and every
+  name in the long-name set holds the row at 1180–1920. A single word past about 12.5 Titan em
+  (about 18 letters) still takes the last resort above. The lower floor is design 0's at desktop
+  alone. Layout 4's capsule and the 390 fit keep 12. **Editorial sits where Pop did**, named
+  there and not changed: since the Gloock swap its nine links need 720 at 12, which leaves the
+  name 70.9, and all four long names wrap *Reviews* at 1180–1920.
 
   At desktop this is design 0's alone (NavBar's `s.v0`). **Layout 4's capsule** (NavBar's
   `links`) and **Retro's bar** (whose pill drops to a second row with a long name) keep their

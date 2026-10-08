@@ -1084,6 +1084,11 @@ counters and ink traps: its corners are soft. Rubik 900 is the squarer drawing, 
   "About" at the 12px row measures 42.06 against 3.576 × 0.98 × 12 = 42.05. The seeded nine links
   (the frame has eight — no Availability) sit at the 12px floor on the 1180 canvas and the name
   wraps to two lines at 16 — JP-091's designed "the name gives way first", as under Lime.
+  *Reversed* (JP-114 · JP-115, [`qa-fixes.md`](./qa-fixes.md), user call, 2026-10-08). The two
+  lines are what the tester filed as a bug. The 12px floor left the name 77px, and long names
+  wrapped *Reviews* onto a second row. Pop's capsule now floors its links, and the name with them,
+  at **11**, at desktop in layout 1 alone. KAI MERCER sets on one line at 16, and the long-name
+  set holds the row.
 - **The 390 pill's Soulway 9.91 is 16 × 0.62 = 9.92** — the 768 type through BookPill's 0.62
   hand-scale to the hundredth, confirming decision 5's reading; BookPill's small label is
   `s.pop ? '9.92px' : '11.8px'`, in the display face. The box (102.8 × 33.45) is Lime's 0.62.
