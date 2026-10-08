@@ -162,7 +162,7 @@ Screenshots (the tester's):
 | 2 | JP-118 | *C 2026* where © is meant | **Confirmed, but the frames type it**: all five footer frames carry a capital C (U+0043); the seed copies them | S | entry 1: **A**, © on every template | **done** (2026-10-08) |
 | 3 | JP-120 (gallery) | four literals, the label "Not shown" | **Confirmed**: JP-090's rule, four more sites, both bodies | S–M | **user**: 1A (three keys + `railLabel`), 2A (an emptied control label reads its seed) | **done** (2026-10-08) |
 | 4 | JP-113 | 390 credit runs off the page | **Confirmed, and named** (Editorial's retest sweep, `:688`, `:1241`): every `s.limeTree` template; on HEAD a squeeze of the back link since JP-120 (gallery) | S | no (JP-120 (form)'s shape) | **done** (2026-10-08) |
-| 5 | JP-119 | live placeholders at .45 | **Confirmed, and recorded**: the canvas draws the frame's .8; the live box keeps JP-093's .45 | S | entry 1: **A**, `--ph: 0.8` | open |
+| 5 | JP-119 | live placeholders at .45 | **Confirmed, and recorded**: the canvas draws the frame's .8; the live box keeps JP-093's .45 | S | entry 1: **A**, `--ph: 0.8` | **done** (2026-10-08) |
 | 6 | JP-112 | the heart over song 12 | **Confirmed, and recorded**: seated off the content's foot because the seed draws no pager | S | **user**: the pager's seat | open |
 | 7 | JP-117 | the scribble under the word | **Confirmed, and recorded**: the frame's offsets kept against a Titan word they were not measured on | S | entry 1: **A**, the frame's fractions | open |
 | 8 | JP-114 · JP-115 | the logo on two lines · the nav wraps | **Confirmed, and recorded** (layout-1.md `:1085`): JP-091's rule under Pop's room and cap | M | **measure, then decide** | open |
@@ -858,6 +858,87 @@ block draws: each input and the message textarea.
 
 The Evidence lines drift by one on HEAD: the live input is `:26512`–`:26520`, its canvas comment
 `:26522`–`:26524`, and the textarea `:26759`.
+
+**Re-checked on HEAD** (`ff4b6f8`, entry 5). JP-120 (gallery) and JP-113 moved the block by about
++44:
+- `index.css:120`–`:122` is unchanged.
+- `POP_FORM` is at `EncoreSection.jsx:505`, bound to `G.ph` at `:26457`.
+- The live input is `:26556`–`:26564`, and its canvas span with the "accepted diff" comment is
+  `:26566`–`:26569`.
+- The live textarea is `:26803`–`:26811`, and its canvas span `:26812`–`:26815`.
+- JP-093's four `'--ph': 1` sites are `:27500`, `:27905`, `:28308` and `:28497`.
+
+**Reproduced in the real app.** This was puppeteer on a HEAD worktree (:5174). Each card was
+published, then *Open* at 1440, 768 and 390. The probe read `getComputedStyle(box, '::placeholder')`
+on every live box, with the contrast composited over the box's ground:
+- **Pop card 1:** all five boxes (*Full name*, *you@email.com*, *dd / mm / yyyy*, *approx.* and the
+  message) were **.45 white on `#EE138B`, 1.69 : 1** at every width. That is the tester's number.
+- **The controls, card 1, at .45:**
+  - Lime: `#15180F` on `#D9FF7F`, 2.87;
+  - Grunge: white on `#F52E34`, 1.73;
+  - Editorial: `#F6F0E8` on `#C86E52`, 1.75;
+  - Retro: 1.96.
+- **Pop's repertoire search** was .45 (white on `#9162FF`, 1.93).
+- **Pop's cards 2 and 3** (JP-093's three label-in-box inputs) were 1. **Card 4's** boxes, its
+  message and the wizard's date cell were .45.
+- No page errors.
+
+**The harness was proven first.** The HEAD worktree (:5174) was digested against a fresh tree
+server on :5177: every category, themes 0–4, three widths. **0 of 660 on each surface** after the
+port and stamp normalisation (168 raw canvas files differed, all on the port). No empty renders.
+
+**Expected after-diff, named before the code: zero** on both surfaces.
+
+**Settled** (2026-10-08).
+- **`EncoreSection`, the `s.limeTree` layout-1 form block: two sites, five boxes.** `field()`'s
+  live `<input>` draws all four of the seed's inputs, and the message `<textarea>` is the fifth.
+  Each adds `...(G.ph && { '--ph': 0.8 })` to its own style.
+  - **The gate is `G.ph`**, which Pop's arm of `G` alone sets. So Lime's, Grunge's and Editorial's
+    boxes never carry the property.
+  - **It stays out of `box()`**, JP-093's rule. The canvas spans draw their placeholder in their
+    own `color: G.ph` and carry no dead property. The textarea's goes through `box()`'s `extra` at
+    the call site.
+  - **No colour change.** The probe read the placeholder's colour as `rgb(255, 255, 255)` (`G.on`,
+    `S3.text3`) before and after.
+- **Digest** (the HEAD worktree against the tree, every category, themes 0–4, three widths):
+  **0 of 660 on each surface**, as named. No empty renders.
+- **The positive control: the computed `::placeholder` on the published tab.** The digest cannot
+  see it. The same probe ran on :5177: eight cards, three widths, 132 rows.
+  - **Exactly 15 rows moved.** These are Pop card 1's four inputs and message at 1440, 768 and 390.
+    Each went from 0.45 to **0.8**, with the inline `--ph` 0.8 and a contrast of 1.69 → **3.0 : 1**,
+    the frame's.
+  - Their placeholder colour and the box's own colour and opacity did not move.
+  - **The other 117 rows are identical:**
+    - Lime's, Grunge's, Editorial's and Retro's card 1, at .45;
+    - Pop's repertoire search, at .45 (B was not taken);
+    - Pop's cards 2 and 3, at JP-093's 1;
+    - Pop's card 4, at .45.
+- **Typed text is unchanged.** Trusted keystrokes went into each of the five boxes at 1440 and 390,
+  on HEAD and on the tree. The output was byte-identical: the value white at opacity 1, on the
+  same ground and ring, in the same box.
+- **The canvas span is unchanged.** The canvas digest, colour column included, is 0.
+- **Build.** `npm run build` is clean. The root `index.html` is not refreshed; the sweep does that.
+- **Docs.**
+  - The live input's comment and the canvas span's (*reversed*), and the textarea's.
+  - `index.css`'s comment.
+  - CLAUDE.md's `--ph` paragraph. The rule is now "a box whose frame states its placeholder's
+    strength sets it". It names its two sets and the repertoire search, which stays a hint. So a
+    box joins by a call, not by the rule alone.
+  - README: the same rule (`:78`–`:83`), and the form's accepted-diff paragraph (`:473`–`:483`).
+    The entry did not name README, but *How each session runs* step 5 does.
+  - `notes/form.md`: a *reversed* parenthetical after JP-093's.
+  - A *reversed* pointer at `layout-1.md:1936`.
+
+Reply: **JP-119 — fixed.** On Pop's *Hero* layout, the Enquiry Form's placeholders on the published
+page now draw at the design's strength: white at 80% on the pink boxes, about 3.0 : 1 where they
+were 1.7 : 1.
+- **What changed:** all five boxes, *Full name*, *you@email.com*, *dd / mm / yyyy*, *approx.* and
+  *Tell me about your event…*, at every width.
+- **What stays the same:**
+  - typed text;
+  - the editor's canvas, which already drew 80%;
+  - the other templates' *Hero* forms;
+  - Pop's repertoire search, which keeps the lighter hint.
 
 ---
 

@@ -50,7 +50,14 @@ another `notes/` file.
   **Repertoire's accepted diff**, not a new one, and is why no fourth `.hv-*` class was added.
   *(Reversed for layouts 2 and 3 by JP-093, user call, 2026-10-01: there the placeholder is the
   box's only label, so their inputs set `--ph: 1` and it draws full, below. Layouts 1 and 4 keep
-  the .45, since their placeholder is a hint under a label.)*
+  the .45, since their placeholder is a hint under a label, Pop's layout 1 aside.)*
+  *(Reversed for Pop's layout 1 by JP-119, user call, 2026-10-08: its frame fills the hint white
+  at 80%, which the canvas span always drew (`POP_FORM.ph`, read as `G.ph`). So each live box
+  sets `--ph: 0.8` on its own style, never in `box()`, gated on `G.ph`: the seed's four inputs
+  and the message. The colour needs nothing, since `::placeholder` inherits the box's `G.on`,
+  `S3.text3` white. The published tab now draws the frame's 3.0 : 1 on the `#EE138B` box, where
+  the .45 drew 1.7 : 1. Lime's, Grunge's and Editorial's layout 1 share the block and keep the
+  .45, as does every layout 4.)*
   **Everything in this paragraph from "The chip starts at 0" on is layout 1's**: layout 2 is a
   narrow sidebar card on a full-bleed mustard sheet (pale under Lime; Grunge's frame paints no
   sheet at all, its Scheme 4 being its Scheme 1; under Editorial the sheet is the root's own

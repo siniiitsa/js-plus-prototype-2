@@ -26560,12 +26560,15 @@ function EnquiryForm({ s }) {
               // `number` as inputMode only, a date as the artist's text.
               type={f.kind === 'email' ? 'email' : 'text'}
               inputMode={f.kind === 'number' ? 'numeric' : undefined}
-              style={{ ...box(bad), outline: 'none' }}
+              // Pop's frame states its hint's strength, so the live box sets
+              // it: `--ph` 0.8 on `G.on`'s white is `POP_FORM.ph` (JP-119).
+              // The twins' hint keeps `::placeholder`'s .45.
+              style={{ ...box(bad), outline: 'none', ...(G.ph && { '--ph': 0.8 }) }}
             />
           ) : (
-            // Pop's placeholder is white at 80% on the canvas; the live
-            // input's `::placeholder` keeps the page's .45 (a hint under a
-            // label, JP-093), Repertoire's accepted diff.
+            // Pop's placeholder is white at 80% on the canvas, and the live
+            // input's `::placeholder` draws the same (JP-119, reversing the
+            // .45 that JP-093 kept for a hint under a label).
             <span style={{ ...box(bad), display: 'flex', alignItems: 'center', ...(G.ph && { color: G.ph }) }}>{f.placeholder}</span>
           )}
           {foot(bad)}
@@ -26806,6 +26809,7 @@ function EnquiryForm({ s }) {
                   style={box(false, {
                     display: 'block', height: u(G.msgH), borderRadius: ed ? 0 : u(20),
                     padding: ed ? 0 : `${u(20)} ${u(24)}`, resize: 'none', outline: 'none',
+                    ...(G.ph && { '--ph': 0.8 }), // Pop's 80%, as the inputs' (JP-119)
                   })}
                 />
               ) : (

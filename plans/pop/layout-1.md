@@ -1933,7 +1933,9 @@ counters and ink traps: its corners are soft. Rubik 900 is the squarer drawing, 
   exactly. The shell is the frame's own width: no named diff on the halves this time.
   Inherited, not Pop's: the root's 80 / 56 / 44 top against the masters' 120 / 30 / 30 and foot
   against 120 / 60 / 30; the live `::placeholder` at the page's .45 against the frame's .8 (a hint
-  under a label, JP-093 — Repertoire's accepted diff); the ✓ is Inter's fallback glyph (pricing's
+  under a label, JP-093 — Repertoire's accepted diff) (*reversed* by JP-119,
+  [`qa-fixes.md`](./qa-fixes.md), user call, 2026-10-08: each live box sets `--ph: 0.8`, so the
+  published tab draws the frame's .8, as the canvas does); the ✓ is Inter's fallback glyph (pricing's
   precedent).
 - **Live** (`theme=4&live=1`, puppeteer typing and clicks, 1440 and 390): an empty submit rings
   all four boxes in 2px white and prints the prompt; typing clears its box's ring; *Party* lights
