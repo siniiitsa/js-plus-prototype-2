@@ -688,6 +688,8 @@ pill.**
   - **The gallery at layout 1 scrolls the page** with long names: under Pop with *Florence* at
     360 (378), *Featherstonehaugh* at 360–414 (421, 433), and under Editorial, Lime and Grunge
     with *…Windsor* (413). Found by hiding each section in turn; the gallery reads the name.
+    *Answered* by Pop's JP-113 (`../pop/qa-fixes.md`, 2026-10-08): the head row wraps in both
+    bodies, so the credit drops under the back link and wraps to the measure.
 - **Build.** `npm run build` is clean. The root `index.html` is not refreshed.
 - **Docs.** The `fit` comment in `NavBar` (the 390 arm), `fitName` / `fitBox` / `fitRow`'s
   comment, the `vm.navNameFit` comment; `notes/nav.md`, a new bullet beside JP-091's; *answered*
@@ -1238,7 +1240,8 @@ user's).
     That is `main`'s root `index.html`, which carries none of this batch.
 - **Named, not fixed: found by the entries and the walk, outside every entry.** Each is the same on
   `main`, and each is left for its own ticket:
-  - **The layout-1 gallery scrolls the page with a long name** (entry 3's Settled). Under Pop:
+  - **The layout-1 gallery scrolls the page with a long name** (entry 3's Settled; *answered* by
+    Pop's JP-113, `../pop/qa-fixes.md`, 2026-10-08: the head row wraps). Under Pop:
     *Florence* at 360 (378), and *Featherstonehaugh* at 360–414 (421 / 433), re-read by the walk.
     Under Editorial, Lime and Grunge: *…Windsor* (413), not re-read. It is the only page scroll on
     card 1.

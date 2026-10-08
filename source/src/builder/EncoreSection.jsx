@@ -15187,7 +15187,8 @@ function Gallery({ s }) {
       const titleWords = String(s.title || '').split(/\s+/).filter(Boolean)
       // The kicker, the back link and the credit's second line are the
       // artist's (JP-120 (gallery)), so a typed one wraps where the seed's
-      // `nowrap` would run it off a 390 page (JP-090's fix).
+      // `nowrap` would run it off a 390 page (JP-090's fix). The credit's
+      // name wraps the same way (JP-113, the head row below).
       const wrap = { whiteSpace: 'normal', overflowWrap: 'anywhere', minWidth: 0 }
       const head = (
         <div style={col(s.mob ? '10px' : u(36), pop ? { position: 'relative' } : undefined)}>
@@ -15310,8 +15311,14 @@ function Gallery({ s }) {
         </div>
       )
 
+      // The back link beside the credit, one row as every frame draws it. A
+      // long name (or `railLabel`) wraps the row, as Retro's below does: the
+      // credit drops under the back link, at the row's start, and its lines
+      // wrap between words, inside one only when that word alone outruns the
+      // measure (JP-113, JP-120 (form)'s shape). Without the wrap the credit
+      // squeezed the back link a few glyphs wide, or ran off a 360 page.
       const top = (
-        <div style={row('12px', { justifyContent: 'space-between' })}>
+        <div style={row('12px', { justifyContent: 'space-between', flexWrap: 'wrap' })}>
           {/* The frame's arrow is a Body/MD character, not an icon. */}
           {/* Pop's is Inter 14 before Space Mono 10, over a credit in Inter
               Bold 11 and Space Mono 9, all pink: Retro's own row. */}
@@ -15320,8 +15327,10 @@ function Gallery({ s }) {
             <span style={{ fontFamily: s.body, fontSize: pop ? u(14) : s.bodyMd, lineHeight: pop ? 'normal' : 1.5 }}>←</span>
             {pop ? pt(s.galBackLabel, 10, 1, wrap) : eyebrow(s.galBackLabel, { color: G.top, ...wrap })}
           </span>
-          <span style={col(u(2), { alignItems: 'flex-end' })}>
-            {pop ? pt(s.brand, 11, 2, { fontFamily: s.body, fontWeight: 700 }) : eyebrow(s.brand, { color: G.top })}
+          <span style={col(u(2), { alignItems: 'flex-end', flex: '0 1 auto', minWidth: 0 })}>
+            {pop
+              ? pt(s.brand, 11, 2, { fontFamily: s.body, fontWeight: 700, textAlign: 'right', ...wrap })
+              : eyebrow(s.brand, { color: G.top, textAlign: 'right', ...wrap })}
             {s.galRailLabel && (pop
               ? pt(s.galRailLabel, 9, 2, { textAlign: 'right', ...wrap })
               : eyebrow(s.galRailLabel, { color: s.ac, textAlign: 'right', ...wrap }))}
@@ -15643,12 +15652,20 @@ function Gallery({ s }) {
             }}>{s.galBackLabel}</span>
           </span>
           {/* The frame's credit is Inter Bold over Space Mono, both tracked 2,
-              not the Anton label. Desktop is the frame × 0.82. */}
+              not the Anton label. Desktop is the frame × 0.82. The row wraps,
+              so a long name drops the credit under the back link, at the
+              row's start; the credit then shrinks to the measure and its
+              lines wrap, inside a word only when that word alone outruns it
+              (JP-113). */}
           <span style={col('2px', {
             alignItems: 'flex-end', fontFamily: s.body, lineHeight: 'normal', color: s.ac,
             letterSpacing: desk ? '1.6px' : '2px', textTransform: 'uppercase', whiteSpace: 'nowrap',
+            flex: '0 1 auto', minWidth: 0,
           })}>
-            <span style={{ fontWeight: 700, fontSize: desk ? '9px' : '11px' }}>{s.brand}</span>
+            <span style={{
+              fontWeight: 700, fontSize: desk ? '9px' : '11px',
+              whiteSpace: 'normal', overflowWrap: 'anywhere', minWidth: 0, textAlign: 'right',
+            }}>{s.brand}</span>
             {s.galRailLabel && (
               <span style={{
                 fontFamily: s.mono, fontSize: desk ? '7.4px' : '9px',

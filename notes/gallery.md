@@ -125,3 +125,14 @@ another `notes/` file.
   `nowrap` would run it off a 390 page. The Lime-tree capsule's row label keeps its ellipsis,
   since the capsule is a fixed height; Retro's row grows. The services' names (*YouTube*,
   *Instagram*, *TikTok*), the counter and Retro's rail wordmark *Gallery* stay literals.
+- **Layout 1's head row wraps** (JP-113, 2026-10-08, both bodies, JP-120 (form)'s shape). The
+  back link and the credit stand on one row, as every frame draws them, and the seed keeps it at
+  every width. A name or credit line too long for the row wraps it: the credit drops under the
+  back link, at the row's **start** (a lone item on a `space-between` line stands at its start,
+  as Retro's row and the form's credit always did), shrinks to the measure (`flex: '0 1 auto'`,
+  `minWidth: 0`), and its two lines wrap between words, right-aligned inside the credit, breaking
+  inside a word only when that word alone outruns the measure (`overflowWrap: 'anywhere'`). It
+  is a wrap, not a shrink: an 11px credit fitted to its widest word would be illegible. The back
+  link keeps its line. Before, the Lime-tree row did not wrap, so a long name squeezed the back
+  link a few glyphs wide (Pop's *Maximilian Featherstonehaugh Windsor* at 360: 15 lines, the page
+  379), and Retro's credit column was `nowrap`.

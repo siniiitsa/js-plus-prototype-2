@@ -161,7 +161,7 @@ Screenshots (the tester's):
 | 1 | JP-111 · JP-117 · JP-118 · JP-119 | the face · the scribble · © · the placeholders | four calls; no code | — (decisions) | **user**: A · A · A · A | **done** (2026-10-08) |
 | 2 | JP-118 | *C 2026* where © is meant | **Confirmed, but the frames type it**: all five footer frames carry a capital C (U+0043); the seed copies them | S | entry 1: **A**, © on every template | **done** (2026-10-08) |
 | 3 | JP-120 (gallery) | four literals, the label "Not shown" | **Confirmed**: JP-090's rule, four more sites, both bodies | S–M | **user**: 1A (three keys + `railLabel`), 2A (an emptied control label reads its seed) | **done** (2026-10-08) |
-| 4 | JP-113 | 390 credit runs off the page | **Confirmed, and named** (Editorial's retest sweep, `:688`, `:1241`): every `s.limeTree` template | S | no (JP-120 (form)'s shape) | open |
+| 4 | JP-113 | 390 credit runs off the page | **Confirmed, and named** (Editorial's retest sweep, `:688`, `:1241`): every `s.limeTree` template; on HEAD a squeeze of the back link since JP-120 (gallery) | S | no (JP-120 (form)'s shape) | **done** (2026-10-08) |
 | 5 | JP-119 | live placeholders at .45 | **Confirmed, and recorded**: the canvas draws the frame's .8; the live box keeps JP-093's .45 | S | entry 1: **A**, `--ph: 0.8` | open |
 | 6 | JP-112 | the heart over song 12 | **Confirmed, and recorded**: seated off the content's foot because the seed draws no pager | S | **user**: the pager's seat | open |
 | 7 | JP-117 | the scribble under the word | **Confirmed, and recorded**: the frame's offsets kept against a Titan word they were not measured on | S | entry 1: **A**, the frame's fractions | open |
@@ -601,7 +601,8 @@ Asked over what the session found first, on HEAD (`e0d6287`):
   can shrink since its word wraps, onto 2–4 lines: Pop at 390 reads 4, breaking inside
   *BEGINNING*. On HEAD, the same credit would have run off the page. Retro's row already wraps,
   so its back link keeps its line. JP-113's `flexWrap` on that row gives the back link its line
-  back, and its verify should type a long *Gallery label* as well as a long name.
+  back, and its verify should type a long *Gallery label* as well as a long name. *Answered* by
+  JP-113 (below, 2026-10-08): the row wraps, and the back link keeps one line.
 - **The real app** (puppeteer on :5177, card 1 of Pop, Lime, Grunge, Editorial and Retro;
   content written through `st`'s dispatch; the canvas's three tabs, then Publish, Open, at 1440,
   768 and 390):
@@ -692,6 +693,105 @@ Mercer* fits one row at every width, and the digest does not record `whiteSpace`
 
 **Docs.** The head row's comment. `notes/gallery.md`. The *answered* pointers at
 `../editorial/retest-qa-fixes.md:688` and `:1241`.
+
+Found first, on HEAD (`ff7d698`):
+- **The Evidence moved with JP-120 (gallery)**, which also did part of the fix. The Lime-tree head
+  row is `const top` at `:15313`, and the credit column is `:15323`. Retro's row is `:15624`, and
+  its `nowrap` credit column is `:15647`. JP-120 (gallery) had already let the back link's word
+  and the credit's second line wrap.
+- **Reproduced in the real app.** This was puppeteer on a HEAD worktree (:5174), card 1 of all
+  five templates, with the name written through `st`'s dispatch. It read the Mobile, Tablet and
+  Desktop canvases, then Publish → Open at 360, 390, 414, 768 and 1440. **The tester's overflow
+  had become a squeeze.** The back link's word can now wrap (`minWidth: 0`, `anywhere`), so the
+  no-wrap Lime-tree row shrank the back link instead of running the credit off:
+  - 2 lines: Pop with *Florence* and *The Chemical Brothers* at 360, and Lime, Grunge and
+    Editorial with *Featherstonehaugh* at 360;
+  - 3 lines: Pop with *Featherstonehaugh* at 360, and Lime, Grunge and Editorial with
+    *…Windsor* at 360;
+  - 4–8 lines: Pop with a 34-letter word;
+  - 15 lines: Pop with *Maximilian Featherstonehaugh Windsor*. Its credit was 328 wide, and the
+    page was **379 at 360**.
+
+  A long *Gallery label* did the same at 360–414, and at the 1088 Desktop canvas under Lime and
+  Editorial. A long one-word label broke inside itself though it fit the measure. The tester's
+  *Featherstonehaugh* at 390 no longer scrolls on HEAD; the back link takes 2 lines instead.
+  Retro's row already wrapped, so its gallery stayed inside the page with every name.
+- **The harness was proven first.** The HEAD worktree (:5174) was digested against a fresh tree
+  server on :5177: every category, themes 0–4, three widths. **0 of 660 on each surface.**
+- **Expected after-diff, named before the code: zero** on the seed, both surfaces.
+
+**Settled** (2026-10-08).
+- **`EncoreSection`, both bodies, at every width.** No width gates a longhand, so a resize logs no
+  "Removing a style property".
+  - **The Lime-tree row** (`const top`) takes `flexWrap: 'wrap'`. Its credit column takes
+    `flex: '0 1 auto'` and `minWidth: 0`. The name line takes `textAlign: 'right'` and the
+    block's `wrap` (`whiteSpace: 'normal'`, `overflowWrap: 'anywhere'`, `minWidth: 0`), through
+    `pt()`'s and `eyebrow()`'s `extra`.
+  - **Retro's credit column** takes `flex: '0 1 auto'` and `minWidth: 0`. It keeps its `nowrap`
+    for the inheritance. The name span takes the three wrap properties and `textAlign: 'right'`,
+    as the second line already did.
+  - **Not a shrink.** The credit keeps its 11px.
+  - **A dropped credit stands at the row's start.** A lone item on a `space-between` line stands
+    at the line's start, as in Retro's row and JP-120 (form)'s credit. So `textAlign: 'right'`
+    aligns the lines inside the credit once it wraps. It does not hold the credit at the row's
+    right edge. This follows the precedent: no `marginLeft: 'auto'`.
+- **Digest** (the HEAD worktree against the tree, every category, themes 0–4, three widths, port
+  and photo stamps normalised): **0 of 660 on each surface**, as named. No empty renders.
+  - **Positive control:** with `&name=Maximilian Featherstonehaugh Windsor&live=1` at 390, the
+    gallery moves at layout 1 under themes 1–4 alone (4 of 20 files). Retro and layouts 2–4 do not
+    move.
+- **The real app** (the same probe on :5177). Thirteen cases:
+  - the tester's five names and *…Windsor*;
+  - a 34-letter word and a 45-letter word (*Pneumonoultramicroscopicsilicovolcanoconiosis*);
+  - a long *Gallery label*, with the seed name and with *Featherstonehaugh*;
+  - a 34-letter label and a 45-letter label;
+  - the label emptied.
+
+  The results:
+  - **At 360, 390 and 414, and on the Mobile canvas, under all five:**
+    - no gallery text `Range` runs past the section;
+    - **the back link keeps one line in every case**, long labels included;
+    - no word breaks inside itself except the 45-letter name under Pop and Retro. That word is
+      wider than the 340 / 370 measure at Inter Bold 11 tracked 2, so it breaks.
+  - **Lime's, Grunge's and Editorial's eyebrow fits the 45-letter word whole** (326 wide).
+  - **The page's `scrollWidth` equals its width** for every name in the tester's set and for
+    *…Windsor*.
+  - **At 768, 1440 and the Tablet and Desktop canvases, the tester's control holds.** With the
+    name set alone (the five names, *…Windsor* and the 34-letter word), the head row's boxes and
+    line counts equal HEAD's under all five.
+  - **What moves wide** is 14 rows. Each one is under Lime, Grunge or Editorial, with a long label
+    or the 45-letter word, at the 1088 Desktop canvas or at 1440. HEAD squeezed the back link onto
+    2–4 lines there. Now it keeps one, and the credit drops.
+  - No page errors.
+- **One plan expectation did not hold.** The *Verify* named the 20-letter *Supercalifragilistic*
+  as the word wider than the measure. It is about 200 wide and never breaks. The 45-letter word is
+  the positive control.
+- **Build.** `npm run build` is clean. The root `index.html` is not refreshed; the sweep does
+  that.
+- **Docs.**
+  - The head row's comment in both bodies, and the `wrap` const's comment.
+  - `notes/gallery.md`, a bullet after the labels'.
+  - *Answered* pointers at `../editorial/retest-qa-fixes.md:688` and `:1241`, and at JP-120
+    (gallery)'s *One interaction* above.
+  - CLAUDE.md and README state no rule about this row, so they are untouched.
+- **Named, not fixed: the footer scrolls the page with a one-word name of 34 or 45 letters.**
+  - Retro: 404 with the 34-letter word, and 539 with the 45-letter word, at 360 and 390.
+  - Lime: 396 with the 45-letter word.
+  - Editorial: 479 with the 45-letter word, and 361 with the 34-letter word at 360.
+  - Pop fits.
+
+  Hiding the footer brings each page back to its width. None of these is in the tester's set.
+  The issue belongs to the long-name family (JP-092, JP-102, JP-109) and is left for its own
+  ticket.
+
+Reply: **JP-113 — fixed.** In the Gallery's layout 1, a long artist name or Gallery label no longer
+runs off a phone screen. It also no longer squeezes "Back to beginning".
+- **What changed:** when the name does not fit beside the link, it moves to its own line under the
+  link and wraps between words. One word is broken only when it alone is wider than the screen.
+- **What stays the same:** the default name keeps the design's single row. With the report's
+  names, 768 and 1440 do not change, and that holds on every template.
+- **Found while checking:** a one-word name of 34 letters or more still scrolls the page, from the
+  footer, on Retro, Lime and Editorial. It is logged for its own ticket.
 
 ---
 
