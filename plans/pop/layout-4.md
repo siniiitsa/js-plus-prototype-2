@@ -2311,8 +2311,8 @@ From the walks and the renders — impressions to confirm, not measurements.
   white, straight at 1440 and 390; the form into the testimonials is still the flat arm's teal
   sheet, which section 10 replaces.
 - **Named diffs**: "Contact Us" against the narrow masters' "KAI MERCER" (open question 8,
-  JP-081's reply); the foot's `padY`; Titan against Chunko (the labels and the pill wider, the
-  head 509 → 534 at 1440 in the frame's units); the pill label 0.5–1.9px low (open question 20);
+  JP-081's reply); the foot's `padY`; Titan against Chunko (CONTACT US 504 wide at 1440 in the
+  frame's units, against the frame's 507 ink); the pill label 0.5–1.9px low (open question 20);
   the 390 ENQUIRE 1px low; the published placeholders at `::placeholder`'s .45.
 - **For the sweep's CLAUDE.md pass**: `notes/form.md`'s layout-4 paragraph carries Pop (written
   in this session's commit). CONVENTIONS C's *refused box* row gains a Pop (layout 4) form cell —
