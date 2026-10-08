@@ -2465,7 +2465,9 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
    hold it, and Pop's head now fits its widest word). Outside this pass — themes 0–3 stay at zero
    rows — so raised for a user call, not fixed: the fix would be Pop's one arm widened to `(ed ||
    pop)`, and since Gloock's seed fits its widest word it should not move the seeded digest
-   (not measured).
+   (not measured). *Section 8 found the same shape in Lime's layout-4 Book Us head*:
+   *Supercalifragilistic* runs to 378.4 in the 360 measure at 390 (Lime's block fits only under
+   `ed || pop`); Grunge's likely does too (not measured). The same one-arm widening, the same call.
 15. **The 768 and 390 gallery heads run over the sun in capitals** (section 4). The narrow
    masters type "Snaps from the night" mixed case, and its ink stops 6 and 11 short of the sun's
    disc. Uppercased in Titan (open question 4) the line runs 59 and 27 further, so the sun stands
