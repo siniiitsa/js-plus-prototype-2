@@ -136,10 +136,11 @@ another `notes/` file.
   the same `vals`, `errs`, `sent`, `<a href="mailto:">` and *Write another*, so its whole
   live surface is four handlers and the only line outside the branch is one comment. It
   is a display head over a 4px mustard rule (1px of `s.stroke1` under Lime, 1px of
-  `s.stroke2` under Grunge, 1px of `s.stroke2` dashed 10, 10 under Editorial), a small-caps
+  `s.stroke2` under Grunge, 1px of `s.stroke2` dashed 10, 10 under Editorial, 1px of
+  `s.stroke1` under Pop, which is full pink there), a small-caps
   line under it (`FIELDS.form.sub`, layout 4 alone, emptiable),
   and then two columns: the boxes over a mustard submit pill (pale `s.tx` under Lime, white
-  under Grunge, ink under Editorial), and the artist's steps numbered
+  under Grunge, ink under Editorial, violet under Pop), and the artist's steps numbered
   01 / 02 / 03 beside them. **Its head, that line and its pill seed the frame's own copy**
   (JP-054, user call, 2026-09-23; Retro's frame and Lime's agree, so no theme gate — Grunge's
   and Editorial's masters print the component's unoverridden "KAI MERCER" and keep the shared
@@ -151,7 +152,7 @@ another `notes/` file.
   Lime, Grunge and Editorial falls back to `FORM_BTN_1` "Enquire", their frames' submit, where
   Retro's frame reads Book Now. `formBtnSeed(themeName, d)` in `data.js` is the one expression
   both callers use. Pop's frame reads Enquire too (964:58632), named beside `limeTreeTheme()`
-  there, `tiersSeed()`'s way. Layouts 2 and 3's `formCta` falls back to `button` only when its own `cta` is
+  there until Pop's layout-4 sweep folded it inside. Layouts 2 and 3's `formCta` falls back to `button` only when its own `cta` is
   emptied, and `d` is 1 or 2 there, so it still reads Book Now.)* **So do its boxes** (JP-054 again, user call,
   2026-09-24, reversing the 2026-09-23 "the boxes stay the artist's one list"): with `fields`
   absent, layout 4 seeds `FORM_FIELDS_4`, the frame's five — Your name, Email, Event date,
@@ -197,6 +198,15 @@ another `notes/` file.
   -2px 0`, layout 1's shape in layout 3's ink), colour, weight and dash at once, and never a
   ring, since the idle mark has one edge. Its head fits its widest word at every width, in its
   own div's `100cqi` — layout 3's desktop fit, and every layout-4 head's under Editorial.
+  Pop widens it a fourth time with no dress of its own (Pop layout 4, section 9): every node
+  binds Lime's key, so the mode swaps the values — a pink head over a 1px pink rule, violet
+  labels and steps, white pill boxes in a 1px lime ring (`sem/stroke/2`, so `s.stroke2`,
+  Grunge's arm, where Lime's block writes its own `s.ac`), pink step squares lettered white,
+  the violet pill — and Display/Title is 28 / 22 / 20. Lime's refusal holds unchanged: 2px of
+  violet `s.tx` against the idle 1px lime is colour and weight at once (the idle ring is thin,
+  so the calendar's keep-the-idle-weight rule beside it does not apply), and the calendar's
+  violet on the same page. The head fits its widest word in Titan, Editorial's fit widened;
+  Titan lifts by token — the head 0.14em, ENQUIRE 0.1, the labels 0.08.
 - **The chip row's label is the artist's** (JP-090, user call, 2026-09-30): `FIELDS.form.typeLabel`,
   *Event type label*, `in: [0]`, seeded `FORM_TYPE_LABEL` "Event type" beside `messageLabel`,
   and on its rule. The row it heads always stands, so `vm.formTypeLabel` reads the seed again

@@ -84,7 +84,10 @@ another `notes/` file.
   pager alone**: its whole gig list is one ticker (mustard under Retro, an olive `s.box1`
   capsule in a `s.stroke1` hairline under Lime, `#1A1A1A` in a 1px `#FF0000` ring with red
   numerals under Grunge, `#FFF9F2` dashed 7, 7 in terracotta at radius 10 under Editorial, whose
-  card and stat cells are dashed too and whose numerals are terracotta) at a `perPage` of **1**, so `page` is
+  card and stat cells are dashed too and whose numerals are terracotta, and Scheme 5's teal
+  `box/1` in a 4px violet ring at radius 50 under Pop, its arrows the lines' violet where the
+  frame binds yellow — a user call, 2026-10-08 — whose four stat cells stand on Schemes 6 / 2 /
+  3 / 4 by index, each lettered in its own `text/2`) at a `perPage` of **1**, so `page` is
   the only list state it reads — `sel` reaches nothing there, the way the testimonials' `cur`
   reaches nothing in their wall; its other state is layout 3's `zoom`, on the same radial
   raster, ring labels and zoom controls (QA, 2026-09-15) — and the arrows **wrap** at both ends
@@ -105,14 +108,15 @@ another `notes/` file.
   of its own and stretches to the wall at desktop, so there the wall's grid holds two rows at the
   cell's minimum whatever it lists. That is a floor on the grid, not on the viewport: the
   seeded wall renders under the frame's 555 × 0.82, so a viewport floor lifted every seeded page.
-  **A card's value is fitted to its widest word** under Lime, Grunge and Editorial (JP-110, user
-  call, 2026-10-06): `vm.mapStats[].wordEms` is `navFace` over the value, per row (the quotes'
+  **A card's value is fitted to its widest word** under Lime, Grunge, Editorial and Pop (JP-110,
+  user call, 2026-10-06; Pop since its layout-4 map, 2026-10-08, the gate `vm.limeTree`):
+  `vm.mapStats[].wordEms` is `navFace` over the value, per row (the quotes'
   `wordEms`), the cell is an `inline-size` container, and the size is
   `faced(min(token, 100cqi / wordEms))`, so a city wraps between words and never inside one.
   There is no floor (the user's call): *Wolverhampton* sets 12.5 in Editorial's 119 cell at 390.
-  `overflowWrap: 'anywhere'` stays as the last resort. Retro's half (Retro, and Pop through it)
-  keeps the flat numeral, and Gloock's seed sets *MANCHESTER, / UK* where its 390 frame breaks
-  MANCHEST / ER. Its section stands on the
+  `overflowWrap: 'anywhere'` stays as the last resort. Retro's half (Retro alone now) keeps the
+  flat numeral, and Gloock's and Titan's seeds set *MANCHESTER, / UK* where their 390 frames
+  break MANCHEST / ER. Its section stands on the
   page ground, so the root's `darkMap` flag stays layout 1's.
 - **Layout 1's two labels are the artist's** (JP-090, user call, 2026-09-30), on every template,
   since Retro's body prints them as the `s.limeTree` block does (Retro's frame `964:58581`,

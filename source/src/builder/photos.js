@@ -72,6 +72,7 @@ import editorialGallery6 from './photos/editorial-gallery-6.jpg'
 import editorialGallery7 from './photos/editorial-gallery-7.jpg'
 import popHero from './photos/pop-hero.jpg'
 import popHeaderAvatar from './photos/pop-header-avatar.jpg'
+import popStackedAvatar from './photos/pop-stacked-avatar.jpg'
 import popStage from './photos/pop-stage.jpg'
 import popCalendar from './photos/pop-calendar.jpg'
 import popAvatar from './photos/pop-avatar.jpg'
@@ -244,6 +245,12 @@ export const GRUNGE_HEADER_AVATAR = grungeHeaderAvatar
 export const EDITORIAL_HEADER_AVATAR = editorialHeaderAvatar
 // Pop's is a circle, the top square of its source (the frame's own CROP).
 export const POP_HEADER_AVATAR = popHeaderAvatar
+// Its Stacked card (964:73128) fills a 113 × 180 stadium with the same source
+// (0b079033) whole, at FILL, so the top square crops a different window: a
+// centred cover of it diffs 58 in 255 from the render, where a cover of the
+// whole source diffs 2. So design 3 seeds the whole source, at 480 × 600
+// (Editorial's arch's size), and the circle keeps its square.
+export const POP_STACKED_AVATAR = popStackedAvatar
 
 // Fixed decoration rather than user content, so these are not in FIELDS. The
 // grain is Retro's, Grunge's and Editorial's (its tape); the map raster is every designed template's
@@ -260,6 +267,8 @@ export const RETRO_TEXTURE = { grain, map: mapTile, mapRadial }
 //   photo  — the enquiry form's scene (`photo` key)
 //   layouts — a section photograph that one layout's frame draws differently,
 //             by design index, then category; it wins over `photos` there
+//   avatars — the header's portrait, where one header design's frame draws
+//             it from a different crop, by design index; it wins over `avatar`
 //
 // Retro's bio at layout 3 is the ID card's 798 × 380 landscape slot, and its
 // frame (964:68631) fills it with the whole Velvet Note stage shot — the
@@ -285,7 +294,7 @@ const SEEDS = {
   Lime: { photos: LIME_PHOTOS, avatar: LIME_HEADER_AVATAR, photo: limeFormPhoto, layouts: { 2: { bio: limeBioStage }, 3: { bio: limeBioStage } } },
   Grunge: { photos: GRUNGE_PHOTOS, avatar: GRUNGE_HEADER_AVATAR, photo: grungeFormPhoto },
   Editorial: { photos: EDITORIAL_PHOTOS, avatar: EDITORIAL_HEADER_AVATAR, photo: editorialHero },
-  Pop: { photos: POP_PHOTOS, avatar: POP_HEADER_AVATAR, photo: popHero },
+  Pop: { photos: POP_PHOTOS, avatar: POP_HEADER_AVATAR, avatars: { 3: POP_STACKED_AVATAR }, photo: popHero },
 }
 
 // Resolvers for the two shapes. Both return undefined for an unseeded theme.
@@ -304,7 +313,7 @@ const SEEDS = {
 export const defaultImage = (cat, themeName, key = 'image', design) => {
   const seed = SEEDS[themeName]
   if (!seed) return undefined
-  if (key === 'avatar') return cat === 'header' ? seed.avatar : undefined
+  if (key === 'avatar') return cat === 'header' ? (seed.avatars?.[design] ?? seed.avatar) : undefined
   if (key === 'photo') return cat === 'form' ? seed.photo : undefined
   const v = seed.layouts?.[design]?.[cat] ?? seed.photos[cat]
   return Array.isArray(v) ? undefined : v

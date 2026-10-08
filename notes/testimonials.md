@@ -86,7 +86,7 @@ another `notes/` file.
   card per review as everywhere else; the arrows are derived from the list and **not drawn at
   one page**, which the seeded five never are. The hue is the **seat's** and not the review's, the media player's fan
   rule, and its cost is that the fourth seat (Retro's rust card, Lime's page-ink card,
-  Grunge's red one, Editorial's bare paper one) is
+  Grunge's red one, Editorial's bare paper one, Pop's bare teal one) is
   unreachable at 768 and 390 at any
   count, and needing four reviews at 1440. It is the section's second full-bleed sheet and its
   first mustard one — `s.pillBg` with a `pillFg` head, the enquiry form's layout-2 pair on the
@@ -99,7 +99,13 @@ another `notes/` file.
   Grunge's no-sheet route for the opposite reason, with the head and the discs paper, the
   register written fresh (`box/1` in paper 56%, an ink cell off `s.onScheme[1]` in a terracotta
   ring, `box/1` again, and a bare paper fourth cell, as the frame draws it), every cell square,
-  and the head fitted to its widest word at every width — so the root's `cream` flag stays layout 1's for the fourth time. `when`,
+  and the head fitted to its widest word at every width — and under Pop the same no-sheet route
+  stands on Scheme 4's blue, painted by the root, with the head and the discs teal, a 10px teal
+  rule at the sheet's foot at 1440 and 768, the head fitted as Editorial's, the desktop cell 430
+  under its two-line head, and the register **four seats, one each** (`SEATS = [0, 1, 2, 3]`):
+  Scheme 4's `box/1` lettered yellow, a black cell off `s.onScheme[1]` lettered pink, a pink one
+  off `s.onScheme[3]` lettered violet, and a bare teal fourth cell lettered blue, as the frame
+  draws it — so the root's `cream` flag stays layout 1's for the fifth time. `when`,
   `sub` and `cta` reach none of it, which leaves `when` a layout-1 column and `cta`
   layout 2 alone.
 - **Layout 2's eyebrow is `kicker`** (JP-095 (a), user call, 2026-10-01). It had been the frame's

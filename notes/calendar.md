@@ -132,7 +132,9 @@ another `notes/` file.
   right edge on its own line: at 390 in Gloock that happens from step 1 (Back 129 + Next Step
   174.4 in the 290; the frame fits 121 + 161), where Noto's held one row until step 3's Send
   Enquiry (accepted, `plans/editorial/display-face.md` step 4, layout 4, user call,
-  2026-10-06). **Send
+  2026-10-06). Pop's widens the same block and takes the same row: its Titan pills (Back 122.5 +
+  Next Step 163.8 at 390, the frame's 124 + 162) hold one row at step 1, and step 3's Send Enquiry
+  takes its own line there, as Noto's did (Pop layout 4, section 8). **Send
   Enquiry mails, like the form** (JP-053, user call, 2026-09-23 — it was a fragment link to
   `calBookTo`, which lost every answer): both pills are an `<a href="mailto:">` composed by
   `vm.calMailto` over the type, the date as typed, step 2's four answers, the package and the
@@ -152,7 +154,8 @@ another `notes/` file.
   address; a typed address that is refused is left to `UrlInput`'s own line. The click asks
   `vm.calCheck` — step 3's name and email by `formErrors()`' rules — and a refusal marks the boxes
   (`wErrs`, appended, cleared per box: Retro's hairline doubled inside, Lime's 2px of `s.tx`,
-  Editorial's 2px of solid `s.stroke2` terracotta with the idle ink dash gone),
+  Editorial's 2px of solid `s.stroke2` terracotta with the idle ink dash gone, Pop's 4px of
+  violet `s.tx` against its 4px pink idle ring — the idle ring's own weight, a colour change),
   prints `vm.calWizard.prompt` and, from the foot pill, walks to step 3. A valid send (`wSent`)
   swaps the wizard card's parts for a confirmation printing the address in plain text, with
   *Start again*, which keeps every answer and opens step 1; the pills are spans until then. The
@@ -168,14 +171,19 @@ another `notes/` file.
   Grunge's, which widens that block, is the same stack one binding over: `#1A1A1A` `s.box1`
   rows under the white card (ringed 1px in `s.stroke2`) on a `#0E0E0E` `s.box3` panel.
   Editorial's is Lime's stack on Lime's keys: `#FFF9F2` `s.box1` rows dashed in terracotta under
-  the ink card on the `#EDE6DC` `s.box2` panel, every one square.
+  the ink card on the `#EDE6DC` `s.box2` panel, every one square. Pop's is Lime's stack again:
+  `#F5F5F5` `s.box1` rows ringed 1px pink under the violet card (ringed 1px pink too, its GUESTS
+  `text/1` pink) on the `#EBEBEB` `s.box2` panel, the wizard card, its idle chips and the date
+  box ringed 4px pink, every card Lime's rounded shape (the wizard 50 at every width); Back is
+  Scheme 3's lime lettered pink and the foot's Send Enquiry Scheme 2's pink lettered and disced
+  lime.
 - **Layout 1's head is the frame's under Lime, Grunge, Editorial and Pop** (JP-089, user call,
   2026-09-30, reversing Lime layout 1's "AVAILABILITY where the frame types BOOK NOW"; Pop's
-  frame 964:58631 reads the same since its layout-1 pass, 2026-10-02). Their `s.limeTree` block,
-  which Pop widens, prints `s.title` over the month. With `heading` absent at `d === 0`,
-  `sectionVm` sets it to `CAL_HEADING_1`, "Book Now", beside the `HEADING_3` / `HEADING_4`
-  arms, and `EditPanel`'s chain has the same arm; both gates name Pop beside the group
-  (`vm.limeTree || vm.pop`, `limeTreeTheme(…) || themeName === 'Pop'`), `tiersSeed()`'s way.
+  frame 964:58631 reads the same since its layout-1 pass, 2026-10-02). Their `s.limeTree` block
+  prints `s.title` over the month. With `heading` absent at `d === 0`, `sectionVm` sets it to
+  `CAL_HEADING_1`, "Book Now", beside the `HEADING_3` / `HEADING_4` arms, and `EditPanel`'s
+  chain has the same arm; both gates are the group (`vm.limeTree`, `limeTreeTheme(…)`), which
+  names Pop since its layout-4 sweep folded the pair in, `tiersSeed()`'s way.
   Retro's layout 1 prints no head, so it keeps `TITLES.calendar`, "Availability", which also
   stays the seed at layout 2. An emptied heading behaves as before.
 - **Layout 1's foot is the frame's under Lime, Grunge, Editorial and Pop: the line alone, and the
