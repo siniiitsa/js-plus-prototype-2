@@ -301,7 +301,7 @@ desktop id — each block's fit comment cites them); it is the gate the session 
 | 2 | `bio` | `964:73157` *(Section `964:73129`, head `964:73151`)* | 664 × 720 | `971:10844` *(Section `971:10837`, head `971:10838`)* | 708 × 720 | `977:14276` *(Section `977:14269`, head `977:14270`)* | 370 × 536 | Section **3**; card **2 / 2 / 3**; Tags 1 | `964:72850` / `971:5300` / `977:8868` *(Sections)* | `964:73039` / `971:9539` / `977:13157` | `if (s.v3 && s.limeTree)` ahead of `Bio`'s `if (s.v3)` | **done** — `bf3b9c0` |
 | 3 | `media` | `964:73164` *(band `964:73158`, head `964:73159`)* | 1440 × 671 | `971:10851` *(band `971:10845`, head `971:10846`)* | 768 × 569 | `977:14406` *(band `977:14400`, head `977:14401`)* | 390 × **830** | band **2** (head `Section` **1**; 768 / 390 instance `Device: Tablet`) | `964:72858` / `971:6533` / `977:8999` *(bands)* | `964:73047` / `971:9547` / `977:13288` | `if (s.v3 && s.limeTree)` ahead of `Media`'s `if (s.v3)` | **done** — `5c31482` |
 | 4 | `gallery` | `964:73214` *(wrapper `964:73173`, head `964:73174`)* | 874 × 646 | `971:10894` *(wrapper `971:10859`, head `971:10860`)* | 768 × 594 | `977:14572` *(wrapper `977:14537`, head `977:14538`)* | 390 × 585.3 | **3** (discs / pills **4**) | `964:72874` / `971:5562` / `977:9136` *(wrappers)* | `964:73061` / `971:9558` / `977:13425` | `if (s.limeTree)` inside `Gallery`'s `if (s.v3)`, after `from` | **done** — `f06d582` |
-| 5 | `repertoire` | `964:73220` *(Section `964:73215`, panel `964:73216`)* | 1208 × **482** | `971:10900` *(Section `971:10895`, panel `971:10896`)* | 608 × **540** | `977:14579` *(Section `977:14574`, panel `977:14575`)* | 310 × **608** | **3** | `964:72911` / `971:5599` / `977:9173` *(Sections)* | `964:73098` / `971:9595` / `977:13462` | `if (s.limeTree)` inside `Repertoire`'s `if (s.v3)`, after `jump` | |
+| 5 | `repertoire` | `964:73220` *(Section `964:73215`, panel `964:73216`)* | 1208 × **482** | `971:10900` *(Section `971:10895`, panel `971:10896`)* | 608 × **540** | `977:14579` *(Section `977:14574`, panel `977:14575`)* | 310 × **608** | **3** | `964:72911` / `971:5599` / `977:9173` *(Sections)* | `964:73098` / `971:9595` / `977:13462` | `if (s.limeTree)` inside `Repertoire`'s `if (s.v3)`, after `jump` | **done** — `ebeb027` |
 | 6 | `map` | `964:73228` *(Frame 319 `964:73222`, head `964:73223`)* | 1440 × 747 | `971:10907` *(Frame 319 `971:10901`, head `971:10902`)* | 768 × 870 | `977:14587` *(Frame 319 `977:14581`, head `977:14582`)* | 390 × 680 | 1 (viewport **3**; stat cells **6 / 2 / 3 / 4**; ticker **5**) | `964:72918` / `971:5606` / `977:9180` *(Frame 319s)* | `964:73104` / `971:9602` / `977:13469` | `if (s.limeTree)` inside `EventsMap`'s `if (s.v3)`, after `zoomScale` | |
 | 7 | `pricing` | `964:73229` | 1440 × **514** | `971:10908` | 768 × **762** | `977:14588` | 390 × **805** | 1 | `964:72926` / `971:5613` / `977:9187` | `964:73111` / `971:9609` / `977:13476` | `if (s.limeTree)` inside `Pricing`'s `if (s.v3)`, after `bleedX` | |
 | 8 | `calendar` | `964:73230` *(Section; Frame 324 `964:73231`; wizard 680 × 506)* | 1440 × **909** | `971:10909` *(Frame 324 `971:10910`; wizard 608 × 469)* | 768 × **1315** | `977:14589` *(Frame 324 `977:14590`; wizard 350 × 467)* | 390 × **1154** | 1 (wizard 1; **Back 3**; **Send Enquiry 2**) | `964:72927` / `971:5614` / `977:9188` *(Sections)* | `964:73112` / `971:9610` / `977:13477` | `if (s.limeTree)` inside `Calendar`'s `if (s.v3)`, after `onNextTag` | |
@@ -1058,7 +1058,8 @@ Retro's bullets; name them.
   media session owed no widest-word fit at 13 letters; at 20, Pop's head ran 43 past the 390 page
   (Retro, Lime and Grunge held it), so it took the fit. The gallery's, repertoire's, map's, Book
   Us', form's and testimonials' heads are the next twins' heads to probe at 390. *The gallery's
-  holds the ramp on its seed and took the fit* (section 4).
+  holds the ramp on its seed and took the fit* (section 4). *So does the repertoire's*
+  (section 5: *Supercalifragilistic* ran past nothing once fitted, 339.2 of 340).
 - **A ring of another colour hides a photograph's edge no better than the sheet's own**
   (section 4). Layout 3's bullet says a coloured twin ring, darker than the leak, hides it.
   Pop's lime ring is lighter than the photograph, so at each round corner the outer
@@ -1073,7 +1074,21 @@ Retro's bullets; name them.
   further at 768 and 27 at 390, into the sun, so it went behind the head (layout 3's *a sticker
   the frame seats beside its own short copy*). Measure the uppercased seed against each
   sticker's ink before keeping the frame's paint order. The repertoire's starburst is the next
-  sticker on this page that stands near copy.
+  sticker on this page that stands near copy. *It met the same case* (section 5): the 390
+  master's mixed-case "Repertoire" stops 20 short of it, our REPERTOIRE runs 8 under it, so it
+  went behind the head at every width. It was the last sticker beside copy on this page.
+- **A twin's width-bound collapse is re-probed in Titan, and Editorial's cap can carry**
+  (section 5; Editorial's *a twin's `flex: none` beside an ellipsis* bullet). Lime's and Grunge's
+  blocks keep the artist whole; under a 29-letter artist at 390 Titan left the title **17** wide,
+  Gloock's case, where Lime's keeps 103 and Grunge's 112. Editorial's 60% cap was the fix, widened
+  to `(ed || pop)`, since the seed's widest artist is 51% of the row in Titan and does not
+  ellipsize. Check the seed's widest string under the cap before widening it.
+- **A baseline row is read by its clean edges, not a tailed glyph's** (section 5). Titan's Q and
+  J descend where Chunko's do not, so a title's ink floor against the frame's is the tail, not
+  the row. Read the title's cap top and an untailed neighbour's floor (the artist) against the
+  row's top instead: both sat 2.2 / 2.1 / 3.2px low, Display/Title's 0.1em, and the row lifted as
+  one. Then scan every tailed glyph against its own clip with the clip on and off: equal is no
+  shave.
 
 ### Seen at planning time, per section
 
@@ -1743,6 +1758,106 @@ From the walks and the renders — impressions to confirm, not measurements.
   layout-4 readers gain the gallery's discs on `s.onScheme[4]` and the stickers' tints on
   `s.onScheme[1]`.
 
+### Settled in section 5 (the repertoire)
+
+- **The block widened inside `Repertoire`'s `if (s.v3)`, after `jump`: `if (s.limeTree ||
+  s.pop)`, `const pop = s.pop`**, no `G` (Editorial's shape: every leaf resolves through the
+  twins' keys with a `pop` arm), its comment saying the pair folds into `limeTree` in the sweep.
+  The rail's seam is shared whole, so the published jump, the clamp, JP-083's `#` cell and the
+  sticky needed nothing new. Every Lime, Grunge and Editorial arm is byte-identical. The read was
+  the node walker over the three Sections (bindings with their collections, per-side weights,
+  radii, text styles, `explicitVariableModes`; the rail and the groups past the first elided
+  narrow): 94 nodes at 1440, Lime's tree node for node less the foot arc, plus the starburst.
+  **Every paint is bound**; the walk found no raw hex. Section Scheme 3 at every width, the
+  instance Primitives only, no Device override, no effect.
+- **What reads what, under the Scheme 3 seat** (trap 1, Editorial's arm first):
+  - **the band** `s.bg` pink (`ed || pop`), sampled `rgb(255, 45, 160)`, and **the panel**
+    `sem/box/1` `s.box1` `#FF63B8`, at radius 60 / **50** / 60 (`pop && tab ? 50`; Lime's block
+    draws 60 at every width), padded 60 / 50 / 40 · 30 as the twins';
+  - **`sem/text/1` lime** (`ink = s.ac`: the head, the titles, the rail's 1px rings and letters,
+    the lit cell's fill) and **`sem/text/2` violet** (`ink2 = s.tx`: the sub, the group letters,
+    the artists, *No songs yet.*); the lit cell is lettered `sem/bg`, `s.bg` pink. Read live:
+    lime filled, lettered `rgb(255, 45, 160)`, on the `#FF63B8` panel; idle cells transparent
+    in lime rings. Both read (the frame's own pairs);
+  - **the rules are Lime's inset shadows, solid**: `rule = pop ? s.stroke1 : …`, opaque violet,
+    2px under a group letter and 1px under a row (read off the DOM: `-1.6px` / `-0.8px` at
+    desktop, `-2px` / `-1px` narrow). Not Editorial's `DashRule` (its two `ed ?` arms stay
+    `ed`), nor Lime's ink at .15;
+  - **the 10px rule** is the band's own last 10, `inset 0 -${u(10)} 0 s.stroke1` at `!s.mob`
+    (read off the DOM: `-8.2px` / `-10px`, none at 390); the frame binds `sem/stroke/1` violet
+    on the Section at 1440 and 768. `ArcEdge` is `!ed && !pop`. The 390 Section pads **40**
+    below, Editorial's (830 = 30 + 760 + 40).
+- **Type** (the walk's text styles, `THEME_RAMP.Pop`): the head Display/LG 82 / 51 / 36 at .89
+  (`s.dispLg`); the titles **Display/Title 28 / 22 / 20** at 1.1, a literal (`vm.title`
+  shadows the ramp); the artists Display/List `s.list` at 1.2; the sub and the group letters
+  Body/LG `s.bodyLg`; the rail Body/SM 12 at `s.radiusChip` 8. All display strings uppercase.
+- **The head fits its widest word** (`(ed || pop) && s.titleWordEms`, the panel an
+  `inline-size` container): the seed holds the ramp (65.66 / 49.98 / 35.28, one line at every
+  width, ending 472.8 / 372.4 / 257.6 in the panel); *Supercalifragilistic* sets at 25.82 at 390,
+  ending 339.2 of 340, and the ramp wide; *Repertoire tonight* takes two lines at 390, the
+  second ending 190.6, clear of the starburst. No root scrolls sideways.
+- **The starburst** is `POP_STAR_D` verbatim (the walk's 105.43 × 104.67, `sem/text/2`,
+  unrotated, absolute in the panel at (1095.28, 60) / (559.59, 20.17) / (249.28, 19.67)), drawn
+  `s.tx` violet at `u()`, anchored **from the right** (127.29 / 42.98 / 15.29), so a wider
+  phone keeps it in the corner. Measured: 897.3 · 49.2, 86.5 × 85.8 on the canvas (898.1 ·
+  49.2; the panel is 1088.2 against 1328 × 0.82), 559.6 · 20.2 and 249.3 · 19.7 narrow. **It
+  goes behind the head** (`zIndex: -1` in a `position: relative; isolation: isolate` panel):
+  the 390 master's mixed-case "Repertoire" ink ends at 229.4, 20 short of it, and our REPERTOIRE
+  ends at 257.6, 8 under it (a DPR-3 shot: the E over the starburst's left point). At 768 and
+  1440 the seed ends 187 and 424 short (*Conventions*; open question 16).
+- **The lifts, scanned** (each string alone on white at DPR 4, against the frame's
+  `absoluteRenderBounds`):
+  - **the head** `top: −0.14em`: ink top −0.007 / −0.020 / −0.012em and floor 0.188 / 0.198 /
+    0.190, against the frame's −0.015 / 0.185 — the gallery's numbers again;
+  - **the row lifts as one by the title's 0.1em** (`rowLift`, `calc(titleSize × −0.1)` on both
+    spans): the title's floor is Titan's descending Q, so the row was read by the title's cap
+    top and the artist's floor against the row's top (*Conventions*). Unlifted both sat 2.2 /
+    2.1 / 3.2px low; lifted, 10.69 / 26.94 against the frame's 10.76 / 27.06 on the canvas,
+    12.36 / 27.86 against 12.38 / 28 at 768, and 13.05 / 27.05 against 11.8 / 26 at 390 (Blink's
+    per-size rounding at the smallest token, as layout 3's 390 read).
+  - **No clip shaves a tail**: J and Q ink in *Jump Jive an Wail*, *Queen of Jiggy*, *Joe
+    Jackson* and *Jay Jay Johanson* end 1.3 / 1.2 / 0.23px inside the title's clip and ~2 inside
+    the capped artist's, identical with the clip released (DPR 4). No pad owed.
+- **The artist stops at 60% of the row**, Editorial's cap widened to `(ed || pop)` (the plan did
+  not ask; the probe did, *Conventions*): with *Christopher Featherstonehaugh* at 390 the title
+  was **17** wide beside a 287 artist (Lime 103, Grunge 112, Editorial capped 118). The seed's
+  widest at 390 is EARTH, WIND & FIRE at 159 of 310 (51%), so the seed does not ellipsize.
+- **Measured** (harness, the seed; × 0.82 at desktop, the frame's number in brackets): the sub
+  at 141.6 / 135.4 / 112 in the panel (141.9 / 135 / 112); rows 41.7 / 44.2 / 43 (41.8 / 44 /
+  42); group heads 19.5 / 22.5 / 22.5 (19.7 / 23 / 23); the rail six / fifteen / seven a row.
+  **The frame's own six songs** (`&cj=`) land the Section at **789.5 / 974.6 / 834** (791.3 /
+  975 / 830) with D lit, as the frame lights it, so the seed's twelve songs in eight groups are
+  the whole of the content-tall 1252 / 1492.3 / 1344.5 (the twins' named diff). The 390 row's
+  extra pixel is the baseline row: the artist's Titan box ends 1 under the title's.
+- **`live=1`** (harness, trusted clicks, desktop and 390): only the eight lit letters carry a
+  pointer (`CDIMRSUV`), none on the canvas; S lights S and calls `scrollIntoView` on the S group,
+  Q changes nothing; the desktop rail pins (A at 41, the 50 indent × 0.82, under top 0). `n=0`
+  prints *No songs yet.* in violet beside a full, unlit rail; `n=1` lights S alone. With *99
+  Problems* in the list there are 27 cells, `#` first, lit lime with a pointer. No page error.
+- **Digest: themes 0, 1, 2 and 3 zero files of 660, canvas and `live=1`** (a fresh `:5195`,
+  both labels there, no one-row file in any of the four labels); theme 4 moved exactly
+  **repertoire arch 3 at three widths** on each surface (6 files).
+- **In the builder** (`page-check.mjs Pop 3` on `:5195`, plus one scratch script): four modal
+  cards, no error or warning; Repertoire → `#repertoire` from the nav and the footer; the rail
+  letters change the section (C already lit); the player plays; the form refuses and composes;
+  `overflow390` 0; the 390 burger 1 → 11. **In the editor** (card 4, *Use this header*, the
+  device tabs) the gallery's bottom is the repertoire's top to the hundredth at 1180 / 768 / 390
+  (2992.47 / 3816.72 / 3675.88), both `rgb(255, 45, 160)`, and the repertoire's bottom is the
+  white map's top, its violet rule on at 1180 and 768, none at 390. **In the published tab**
+  the 1440 repertoire is 1528 tall (1252 × 1.22); after trusted clicks on I and S the rail's A
+  stands at 50 (41 × 1.22), pinned, and after V, the last group, the row's foot carries it to
+  −67 (sticky's containing-block rule, the twins'). The seam clips: one pink ground from the
+  gallery, and the violet rule into the white map at 1440; straight at 390.
+- **`FIELDS.repertoire` has no template-keyed row**, so no `reach.mjs` run was owed.
+- **Named diffs**, the twins' but where said: twelve seeded songs in eight groups against the
+  frame's six in three (C lit, the frame's D); the 390 title *I WANNA DANCE* ellipsizing beside
+  WHITNEY HOUSTON; the 390 row's extra pixel; the starburst behind the 390 head's last E (open
+  question 16); the artist's 60% cap (Pop's and Editorial's alone, open question 17).
+- **For the sweep's CLAUDE.md pass**: nothing in CLAUDE.md names the layout-4 repertoire's colours
+  or rings; the A–Z rail sentence is template-free. CONVENTIONS D4's repertoire row gains a Pop
+  column (no `G`, Editorial's keys on the seat, Lime's solid rules in `s.stroke1`, the starburst,
+  the 60% cap).
+
 ### Inherited and used
 
 *(The running list the sweep folds into [`../CONVENTIONS.md`](../CONVENTIONS.md): each time a
@@ -1843,6 +1958,32 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
   committed* (lime/layout-1); *the whole-page published check* (lime/layout-1) — `page-check.mjs
   Pop 3`; *the lens, checked in the editor* (lime/layout-4, D4) — the meeting at three tabs.
 
+- Section 5: *where the seam lives inside the branch, the block goes after the seam*
+  (lime/layout-1) — after `jump`, the rail's seam shared whole; *a widened block can need no `G`
+  at all* (grunge/layout-3) — Editorial's keys with `pop` arms; *the node walker, kept*
+  (grunge/layout-2) — the three Sections, bindings with their collections; *a Lime block paints
+  its ground from Scheme 1 keys* (editorial/layout-4, trap 1) — the band `s.bg`, the panel
+  `s.box1`; *an Editorial `s.onScheme[n]` arm names Sienna Vale's scheme by number*
+  (pop/layout-4) — turned round: no nested scheme, every key the seat's; *a frame's inside
+  stroke is an inset `boxShadow`* (lime/layout-2) — the rules and the 10px foot; *`vm.title`
+  shadows the ramp's `title` size* (lime/layout-1) — Display/Title 28 / 22 / 20; *a head that
+  must fit its measure is fitted to its widest word* (editorial/layout-1) — Titan's
+  `titleWordEms`; *probe a display string with a long word* (editorial/layout-4) — two heads,
+  three widths; *before transcribing a sticker, test layout 1's at another scale*
+  (pop/layout-3) — `POP_STAR_D` verbatim; *a sticker the frame seats beside its own short copy
+  goes behind the artist's longer copy* (pop/layout-3) — the starburst; *a stand-in face's glyph
+  floor is measured per site* (editorial/layout-3), *Titan at Display/Title takes 0.1em*
+  (pop/layout-3) and *a baseline-aligned row lifts as one* (editorial/layout-3) — 0.14 and the
+  row's 0.1; *scan a glyph floor with the string drawn alone* (pop/layout-3); *a twin's `flex:
+  none` beside an ellipsis is a width-bound call too* (editorial/layout-4) and *a twin's
+  width-bound call is re-measured in the new face* (editorial/layout-2) — the 60% cap;
+  *Editorial's ellipsis clips clear the J* (editorial/layout-4, section 5) — turned round: Titan's
+  tails clear with no pad; *a seeded page cannot show an empty slot* (lime/layout-1) — `n=0`,
+  `n=1`, the frame's six songs; *a frame's `sticky` is evidence and a declaration*
+  (retro/layout-4) — pinned in the popup; *the digest is committed* (lime/layout-1); *the whole-
+  page published check* (lime/layout-1) — `page-check.mjs Pop 3`; *the lens, checked in the
+  editor* (lime/layout-4, D4) — the gallery's pink into the repertoire at three tabs.
+
 ## Open questions
 
 1. ~~**Decision 1** — the seats.~~ Not a user call; session 0 writes the row.
@@ -1909,6 +2050,14 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
    behind the head's last letters, layout 3's rule for a sticker beside the artist's copy.
    Followed and named. Worth a line to the designer with question 4: either the narrow heads were
    meant in mixed case, or the sun wants room beside the capitals at those two widths.
+16. **The 390 repertoire head runs under the starburst in capitals** (section 5), question 15's
+   case again: the master's mixed-case "Repertoire" ends 229.4 in the 370 panel, 20 short of the
+   starburst (249.3); our REPERTOIRE in Titan ends 257.6, so the starburst stands behind its last
+   E at every width. Followed and named; worth the same line to the designer as question 15.
+17. **Pop's layout-4 artist stops at 60% of the row**, Editorial's cap widened (section 5): a
+   29-letter artist left the 390 title 17 wide in Titan. Lime's and Grunge's blocks still let a
+   long artist collapse the title (Editorial's sweep raised the same as a cross-template
+   candidate). Named here for the designer's notes, beside Editorial's.
 
 ## Notes for the designer
 
