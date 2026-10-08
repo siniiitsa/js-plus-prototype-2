@@ -28548,9 +28548,31 @@ function EnquiryForm({ s }) {
   // layout 3's ink, since the idle dash is terracotta: colour, weight and
   // dash at once. Every master's "KAI MERCER" is the component's default and
   // the head stays "Contact Us" (JP-081's reply, a named diff).
-  if (s.v3 && s.limeTree) {
+  //
+  // ── Pop: the same block a fourth time (Pop layout 4, section 9) ─────────
+  // The desktop master is at last an instance, `964:73243` (1440 × 723), with
+  // `971:10922` / `977:14602` narrow: 59 = 59 nodes against Lime's at all
+  // three widths, by traversal order, Pop's Scheme 1 on the root and the
+  // submit, no Device override, no effect, every paint bound to the key this
+  // block reads — so the mode swaps the values: a pink head over a 1px pink
+  // rule, violet ENQUIRE, labels and steps, white boxes with pink
+  // placeholders, pink step squares lettered white, the violet pill lettered
+  // and disced white round a violet arrow. Its `stroke/1` is full pink, not
+  // Lime's .15, so the head and step rules are the frame's as they stand.
+  // One binding lands on another value, Grunge's: the boxes ring 1px of
+  // `sem/stroke/2`, lime here, where Lime's block writes its own `s.ac` —
+  // so `ring` reads `s.stroke2`. Display/Title is 28 / 22 / 20, the strings
+  // go uppercase through `disp`, and Titan's glyphs lift by token (below).
+  // The refused box keeps Lime's 2px of `s.tx`: violet against the idle 1px
+  // lime, colour and weight at once, and the calendar's violet beside it.
+  // The 1440 master prints "CONTACT US", the narrow two the component's
+  // "KAI MERCER"; the head stays "Contact Us" and fits its widest word.
+  // The pair `(s.limeTree || s.pop)` folds into `limeTree` in the sweep
+  // (plans/pop/layout-4.md, decision 2).
+  if (s.v3 && (s.limeTree || s.pop)) {
     const grunge = s.grunge
     const ed = s.editorial
+    const pop = s.pop
     const desk = !s.narrow
     const z = desk ? 0.82 : 1
     const u = (v) => `${Math.round(v * z * 10) / 10}px`
@@ -28560,14 +28582,18 @@ function EnquiryForm({ s }) {
     // Anton at the frame's glyph size, in capitals; a no-op under Lime.
     // Under Editorial `faced` scales Gloock's taller cap to Fisterra's.
     const disp = (size, lh, extra) => type(s.display, faced(s, size), facedLh(s, lh), {
-      ...((grunge || ed) && { textTransform: 'uppercase' }), ...extra,
+      ...((grunge || ed || pop) && { textTransform: 'uppercase' }), ...extra,
     })
-    const ring = grunge ? s.stroke2 : s.ac
+    const ring = grunge || pop ? s.stroke2 : s.ac
     const title = ed ? (desk ? u(32) : s.mob ? '23px' : '25px')
+      : pop ? (desk ? u(28) : s.mob ? '20px' : '22px')
       : desk ? u(36) : s.mob ? '26px' : '28px'
     // Editorial's display lines sit low in Gloock (below); a glyph lift, since
     // every one stands in a `VERTICAL MIN` column over another line.
-    const lift = ed ? { position: 'relative', top: '-0.055em' } : null
+    // Under Pop the ENQUIRE line takes Titan's Display/Title 0.1em and the
+    // head its own 0.14 (at the h2).
+    const lift = ed ? { position: 'relative', top: '-0.055em' }
+      : pop ? { position: 'relative', top: '-0.1em' } : null
     // Display/List in `s.tx`, typed in caps. Under Editorial lifted 0.06em:
     // Gloock's ink floor stood 0.236 / 0.238 / 0.241em above the line box
     // against the frames' 0.279 / 0.303 / 0.320 (EMAIL, EVENT DATE and
@@ -28575,6 +28601,7 @@ function EnquiryForm({ s }) {
     // under 0.4px off (display-face.md step 4, layout 4; Noto took 0.07em).
     const caps = disp(s.list, 1.2, {
       color: s.tx, textTransform: 'uppercase', ...(ed && { position: 'relative', top: '-0.06em' }),
+      ...(pop && { position: 'relative', top: '-0.08em' }),
     })
     // 1px, unramped, drawn inside the frame on all three masters.
     const hairline = `inset 0 -1px 0 ${s.stroke1}`
@@ -28745,16 +28772,21 @@ function EnquiryForm({ s }) {
             at lh .89 and 0.238 / 0.228 / 0.248 at 1.1 (the untailed Display
             nodes: Fisterra's R and Q run under both boxes). Lifted they stand
             0.125 / 0.135 / 0.138 and 0.261 / 0.219 / 0.226, each under 0.7px
-            off (display-face.md step 4, layout 4; Noto took 0.08em). */}
+            off (display-face.md step 4, layout 4; Noto took 0.08em).
+            Under Pop the same fit is Titan's ems, and the head lifts 0.14em:
+            its floor reads 0.184 / 0.194 / 0.187em against the frame's
+            0.185 (CONTACT US / KAI MERCER, whose Chunko has no tail). */}
         <div style={{
           boxShadow: ed ? undefined : grunge ? `inset 0 -1px 0 ${ring}` : hairline,
           paddingBottom: u(ed ? 42 : 12), width: '100%',
           ...(ed && { position: 'relative', containerType: 'inline-size' }),
+          ...(pop && { containerType: 'inline-size' }),
         }}>
           {ed && <DashRule dash={10 * z} colour={s.stroke2} />}
-          <h2 style={distressed(s, disp(ed && s.titleWordEms
+          <h2 style={distressed(s, disp((ed || pop) && s.titleWordEms
             ? `min(${s.dispLg}, calc(100cqi / ${s.titleWordEms}))` : s.dispLg, 0.89, {
             margin: 0, color: s.ac, overflowWrap: 'break-word', ...lift,
+            ...(pop && { top: '-0.14em' }),
           }))}>{s.title}</h2>
         </div>
         {s.formSub && (
