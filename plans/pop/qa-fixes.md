@@ -167,7 +167,7 @@ Screenshots (the tester's):
 | 7 | JP-117 | the scribble under the word | **Confirmed, and recorded**: the frame's offsets kept against a Titan word they were not measured on | S | entry 1: **A**, the frame's fractions | **done** (2026-10-08) |
 | 8 | JP-114 · JP-115 | the logo on two lines · the nav wraps | **Confirmed, and recorded** (layout-1.md `:1085`): JP-091's rule under Pop's room (77px at the 12px floor); the cap is not the lever | M | **user**: **B**, the floor 11 at desktop layout 1; no C; Pop alone (Editorial named) | **done** (2026-10-08) |
 | 9 | JP-116 | section gaps off the frames | **Confirmed, and recorded as inherited** in every section's *Settled*; the two "content" seams measure as the map's own insets | M–L | **user**: A (Pop alone) · A (pad the map) · A (arrows at 60, 1440 and 768) · A (footer on every page) | **done** (2026-10-08) |
-| 10 | — | End-of-pass sweep | — | S | — | open |
+| 10 | — | End-of-pass sweep | 58 of 660 a surface against `main`, exactly the named union; every repro holds; `index.html` refreshed | S | — | **done** (2026-10-08) |
 
 **Why this order:**
 - **The decisions first.** Entry 1 writes no code. JP-111 is the PO's and the BA's question, and it
@@ -1934,35 +1934,294 @@ design at every width.
    `Thu, 08 Oct 2026 12:09:04 GMT`, 9,908,045 bytes). **Ask for a fresh number for JP-120 (gallery).**
 8. *Notes for the designer* at the plan's foot.
 
+**Settled** (2026-10-08, all eight steps, on `b956cde`, then `43d00c7` and `a6e3d3a`; the push, the
+PR, the merge and the deployed build stamp are the user's).
+- **1. Digest against `main`: 58 of 660 on the canvas and 58 of 660 at `live=1`**, exactly the
+  union of the named after-diffs, file for file.
+  - **The harness.** A scratchpad worktree of `main` (`a35a92c`, `git worktree add --detach`), its
+    `source/node_modules` a `cp -Rc` clone with `.vite` removed, served on **:5174**. The tree was
+    served fresh on **:5177**. :5173, :5175 and :5176 were left alone. Every category × themes
+    **`0,1,2,3,4` explicit** × three widths, the canvas and `live=1`, 660 each with the footer's
+    `page=2` render. Each file was compared with `localhost:517[0-9]` masked and the photo `?t=`
+    stamp normalised, then re-based per root (`rebase.mjs`). **No file on any of the four labels is
+    a one-row (blank) render.**
+  - **The two surfaces' file lists are identical**, and so is every file's re-based shape. `live=1`
+    adds only the media's hidden 0×0 `<audio>` row, as JP-116 named.
+
+    | Entry | Named | Differ | Row shape (each file, both surfaces) |
+    |---|---|---|---|
+    | JP-118 | the footer `arch 0` and `page=2` × themes 0–4 × three widths (30) | 30 | The small print's span: its text, and its width at desktop and tablet. At 390 the text alone, except Pop's right-packed row (x −0.4, width +0.4). Themes 0–3 move that one row and nothing else |
+    | JP-116 | theme 4: eight sections' `arch 0` × three widths (24), the footer's `arch 0` and `page=2` at desktop and 390 (4, inside JP-118's 30), the testimonials at desktop and 768 (2) | 26 + 4 | Each root moves by its inset change and its content rigidly by the top's: bio −34.1 / +4 / −20, media −34.1 / −26 / −34, gallery −34.1 / −26 / −24, repertoire −1.3 / +4 / −4, map +23.3 / +4 / −14, pricing +2 / +4 / −20, calendar +2 / +44 / +16, form +18.4 / −26 / −14, footer −34.1 / 0 / +12. The rows left behind are the root's own edges (the 10px rules and their root-sized layers, the footer's hairline and Line 19, the seal's 0×0 `<defs>` / `<path>`). The testimonials move their arrows alone, ±3.3 at desktop and ±30 at 768 |
+    | JP-112 | repertoire `arch 0` × theme 4 × desktop (1, inside JP-116's) | — | The root 815.1 → 889.6: the seat's +77.1 less JP-116's 2 × 1.3. The content box +77.1, the heart +75.7 (its +77.1 under the top's −1.3), the seat's two rows appended (760, 50.9; 766.6, 44.3), every other row −1.3 |
+    | JP-117 | map `arch 0` × theme 4 × desktop (1, inside JP-116's) | — | The `svg` and `path` rows: x +9.3, and y −0.5 after the re-base (JP-117's −23.8 under JP-116's +23.3). Their size and matrix do not move |
+    | JP-114 · JP-115 | header `arch 0` and `arch 4` × theme 4 × desktop (2) | 2 | 15 rows each: the left half and the wordmark (117.7 × 38.4 → 138 × 29.5), the name (77.2 × 38.4 → 97.5 × 19.2, one line), the right half and the nav (746.7 → 726.4), the links' row (12.008 → 11.6806px) and the nine links (11.77 → 11.45 faced). The root, the capsule and the pill do not move |
+    | JP-120 (gallery) · JP-113 · JP-119 | 0 | 0 | — |
+
+    **58 = 30 + 26 + 2.** Nothing else moves: themes 0–3 move only their footers' small print, and
+    Pop's header at 768 and 390, its other header layouts, its layouts 2–4 and its 390
+    testimonials move nothing.
+  - **Not in the digest:** the `&name=` / `&cj=` controls (each entry took them against its HEAD),
+    `::placeholder` (JP-119), and the editor's 1088 Desktop canvas (step 6).
+- **2. Every ticket's repro, re-run on the final tree (:5177), reads its entry's *Settled*.** Each
+  entry's own probe, copied from its session's scratchpad and run through `createRequire`, so no file
+  landed in `source/scripts/`. Every run passed `BASE=:5177` (the probes default to :5174, which is
+  `main` here). Reduced motion where the probe sets it; rows appended to JSONL sinks; one template per
+  process under `perl -e 'alarm N'`. **No page or console error on any run.**
+  - **JP-113** (`jp113.mjs`, card 1 of all five, 13 cases × the Mobile, Tablet and Desktop canvases
+    and the tab at 360 / 390 / 414 / 768 / 1440; 520 reads). In every read the gallery's text stays
+    inside its root, **the back link keeps one line**, and no word breaks inside itself except the
+    45-letter word under Pop and Retro (wider than the measure). **The tester's five names,
+    *…Windsor* and the long *Gallery labels* scroll no page: 0 of 275 tab reads.** The page scrolls
+    only with the one-word names entry 4 named, from the footer: Lime 396 (45 letters), Editorial
+    361 (34, at 360) and 479–491 (45), Retro 404–416 (34) and 539–551 (45). Pop scrolls with none.
+  - **JP-120 (gallery)** (`sweep.mjs`, card 1 of all five; the canvas's three tabs and the tab at
+    1440 / 768 / 390):
+    - **marked:** every gallery text field takes its marker, and the only literals left are the
+      siblings: *YouTube*, *Instagram*, *TikTok* (desktop), the ←, *Kai Mercer*, the counter, and
+      Retro's rail *Gallery*;
+    - **emptied** (Pop, the four label keys alone): no kicker and no credit line; *Back to
+      beginning* and, at desktop, the row's *Gallery* again;
+    - **long** (Pop, 85 characters): no text past the root, and the page its width at all three;
+    - the marked back link rewinds (05 → 01), and **no gallery field reads "Not shown in this
+      layout"** in the panel.
+  - **JP-114 · JP-115** (`probe114.mjs`, Pop and Editorial card 1, the five names; the 1088 canvas
+    and the tab at 1180 / 1440 / 1920). Pop reads the *Settled* table to the hundredth (faced sizes
+    ÷ 0.98):
+    - *Kai Mercer* one line at 16 with the links at 11.68 on one row;
+    - *Florence* and *Chemical* two lines at 16;
+    - *Maximilian* 12.1 (12.04 at 1920) and *Supercali* 11.72 (11.67), the links one row at 11.01;
+    - on the 1088 canvas the seed's links one row at 11.01 and the long names wrapping *Reviews*
+      (or *Enquiries* and *Reviews*), as named.
+
+    Everywhere: nothing past the capsule, the pill on the row (top 8.19, 44.27 tall), the name clear
+    of the nav by 36.5 at least and never broken inside a word, the bar 60.64, and the tab's title
+    the name. **Editorial**, for the new ticket: its seed sets two lines at 16.78 with the links on
+    one row, and **all four long names wrap *Reviews* at 1180, 1440 and 1920** (two lines at the 12
+    floor).
+  - **JP-112** (`heart.mjs`, Pop card 1, the tab at 1440 / 768 / 390):
+    - **12 and 13 songs read identically at 1440:** the root 1086.6 and the heart 908.6–999.6, 12.1
+      below the rows' foot (896.5), with no song row's title, artist or pill under it. The root is
+      JP-112's 1089.8 less JP-116's 2 × 1.3 × 1.22.
+    - 240 songs: the same. 6 songs: the seat, and clear.
+    - 768: no heart. 390: the heart over the → disc (and the last page pill at 13 and 240), and 6
+      songs' 12 over the last pill's ring, as decided.
+    - Every pager disc hit-tests to itself. No sideways scroll.
+  - **JP-117** (`probe117.mjs`, Pop card 1, 4× isolation scans): at 1440 **the ink tops 0.466 of the
+    cap below the cap's top and starts 0.3815 into the word**, the svg at `left` / `top` 180.363 /
+    −0.932. Its foot runs 0.735 of the cap past the baseline, and it ends 0.1225 of the word past the
+    word's end. Those are JP-117's numbers. The map root is 1075.6, JP-117's 988.7 plus JP-116's
+    +71.2 × 1.22. 768: none. 390: the svg at 59.06 / 16.46, unchanged.
+  - **JP-119** (`ph-probe.mjs`, eight cards, 132 rows): **Pop card 1's five boxes at 0.8, 3.0 : 1, at
+    all three widths** (15 rows). Every other box reads entry 5's value: Pop's repertoire search .45,
+    Pop's cards 2 and 3 at JP-093's 1, Pop's card 4 at .45, and Lime's, Grunge's, Editorial's and
+    Retro's card 1 at .45.
+  - **JP-116** (`seams.mjs`, Pop card 1). **Every seam is within 0.1 of its frame at 1440, 768 and
+    390**, the *Settled* table to the tenth. `frames.json` was corrected first: it still held
+    *Measured*'s first reading of bio → media at 768 and 390 (83.38 and 40), not the corrected 90 and
+    50. The arrows stand at 60.0 in the 1440 tab, 60 at 768 and 60 at 390. **Lime's, Grunge's and
+    Editorial's card 1 read the same on the tree as on `main`: 12 of 12** (each section's box,
+    padding, ink and seams at 1180, 1440, 768 and 390).
+  - **JP-118** (`smallprint.mjs`, card 1 of all five): `© 2026 Kai Mercer` in the panel, on the
+    canvas and on the tab at three widths. CDP names one web face at ×17 for every reading (×16 at
+    Retro's two-line 390, the break space): Titan One, Bebas Neue, Anton, Gloock and Fraunces.
+- **3. Reach: only JP-120 (gallery)'s four rows moved, and each reads its `in`.** `git diff main..HEAD
+  -- source/src/builder/data.js` changes four `in` rows and no other. `reach.mjs`, filtered to the
+  gallery's probes plus `gallery.heading` as the control (a scratchpad copy through `createRequire`),
+  themes `0,1,2,3,4`, 1,200 renders a server:
+
+  | Key | The tree (:5177), all five templates | `main` (:5174) | `in` |
+  |---|---|---|---|
+  | `kicker` | layouts 1 and 4 | — (no key) | `[0, 3]` |
+  | `railLabel` | layout 1, and layout 2 at 2/6 (tablet, JP-098) | layout 2 at 2/6 | `[0, 1]` |
+  | `backLabel` | layout 1 | — (no key) | `[0]` |
+  | `sourceLabel` | layout 1 at 2/6 (desktop, canvas and live) | — (no key) | `[0]` |
+  | `heading` (control) | layouts 1–4 | layouts 1–4 | — |
+
+  In Node, `fieldReach(f, name, a % designCount('gallery', name))` gives the same designs under all
+  five theme names, and `fieldNowhere` is false for all four.
+- **4. The real app, card 1 of all five templates** (`page-check.mjs <template> 0`, `BASE=:5177`,
+  `OUT` in the scratchpad; one template per process). The tester's steps per ticket are step 2's
+  probes, which drive the same app: Pop card 1 → the edit, then Publish → Open, the tab at 1440,
+  768 and 390. This is the whole-page walk on top of them, Pop's first.
+
+  | Card 1 | Errors · warnings | Links (nav, Book, footer) | Audio · form | `overflow390` · burger | Footer at 1440 |
+  |---|---|---|---|---|---|
+  | Pop | 0 · 0 | 22, each to its section | plays · mailto composed | 0 · opens | 481 |
+  | Lime | 0 · 0 | 23, each to its section | plays · mailto composed | 0 · opens | 522 |
+  | Grunge | 0 · 0 | 23, each to its section | plays · mailto composed | 0 · opens | 522 |
+  | Editorial | 0 · 0 | 22, each to its section | plays · mailto composed | 0 · opens | 522 |
+  | Retro | 0 · 0 | 23, each to its section | plays · mailto composed | 0 · opens | 597 |
+
+  - **Every probed control changes state** but two on every template: the *All* chip and the
+    gallery's picked tile, which are already the active ones. Pop's report is identical to entry
+    9's (`page-check.mjs Pop 0` on its tree) in its controls, links, `overflow390`, burger and
+    warnings.
+  - Pop's section heights at 1440 are entry 9's: the bio 769, media 1055, gallery 789, repertoire
+    1087, map 1076, pricing 775, calendar 885, form 854, testimonials 730, footer 481.
+  - The 1440 and 390 seam clips are clean on all five. The tab's title is *Kai Mercer*.
+  - Retro's gallery and footer, the two sections it shares with the batch (JP-113, JP-118, JP-120
+    (gallery)), are step 2's `jp113.mjs`, `sweep.mjs` and `smallprint.mjs` rows.
+- **5. JP-111's comment** (`43d00c7`). `TITAN_EM`'s comment (`data.js:763`) no longer calls Chunko
+  Bold Demo caps-only: the frames type it in capitals, and the face draws a full lowercase (open
+  question 12). No other comment, note or doc says it. A canvas re-digest of the tree after the edit
+  against the step-1 label: **0 of 660**.
+- **6. The root `index.html`** (`a6e3d3a`, its own commit). `npm run build:standalone` on `43d00c7`
+  gives **9,910,327 bytes, up from 9,908,045** (the deployed build's size). The repo root was served
+  on :8931, and `build-digest.mjs` walked the committed `index.html` (`?v=old`, before the copy) and
+  `source/dist-standalone/index.html`: the picker, the setup modal's first card, then the editor's
+  Desktop, Tablet and Mobile tabs under all five templates. The Desktop tab is the **1088 canvas**.
+  A scratchpad copy tagged every row with its section root and re-based it there.
+  - **Themes 0–3: the footer's © span alone**, at all three tabs: its text, and its width at Desktop
+    and Tablet (Retro +2.6 / +3.2, Lime +7.1 / +6.8, Grunge +3.0 / +2.9, Editorial +1.9 / +1.6).
+  - **Theme 4, Tablet and Mobile:** the dev digest's rows exactly. JP-116's eight roots, the footer
+    at 390, the 768 arrows ±30, and the © span.
+  - **Theme 4, the 1088 Desktop canvas, named:**
+    - **the header** (JP-114 · JP-115), 15 rows: the name 12 → **11.42** nominal, still KAI /
+      MERCER, and the links' row from two rows (*Reviews* wrapped on `main`) to **one row at 11.01**;
+      the bar is unchanged;
+    - the bio, media and gallery roots −68.3 with their content −34.1; the repertoire 815.1 → 889.6
+      with the seat's two rows appended and the heart +75.7; the map +71.2 (content +23.3) with its
+      svg x +9.3; **pricing 647.3 → 651.3**, as entry 9 named for 1088; the calendar +4; the form
+      +36.8;
+    - the testimonials' arrows ±3.3, and the footer −34.1 with Line 19 and the © span.
+
+    Nothing else moves. The rest is the seals' 0×0 `<defs>` / `<path>`, which report the viewport
+    origin. The modal offers four cards under every template, as before.
+  - **Pop card 1 walked on the built file** (`page-check.mjs`, `BASE` the :8931 copy): identical to
+    the dev server's walk in every field but the audio's playback position.
+- **7.** `plans/README.md`'s row says the pass is swept. The replies are below, under the retest line,
+  with the request for a fresh number for JP-120 (gallery). Five items found by the entries are
+  logged there for new tickets: the twins' layout-1 insets and Editorial's long-name nav wrap first,
+  as the sweep was asked, then the three other *Named* items. At the sweep the deployed build
+  still read `Thu, 08 Oct 2026 12:09:04 GMT`, 9,908,045 bytes (19:43 GMT), which is `main`'s root
+  `index.html`.
+  - **One named item was widened by the sweep.** JP-117 found Pop's 390 map heading scrolling the
+    page with a long one-word heading and left the twins unprobed. The harness at 390 (`live=1`,
+    themes 0–4) puts the word's right edge at 433 / 416 under Pop (*Supercalifragilistic* /
+    *Featherstonehaugh*) and **539 / 547 under Editorial**. Lime (378 / 365), Grunge (291 / 278)
+    and Retro (348 / 351) fit.
+- **8.** *Notes for the designer* are finalised and numbered, seven of them. Notes 1, 4, 5 and 7 end
+  on the designer's question: the © in the frames, a desktop frame in Pop's mode, the map's pager
+  seat, and nine links against the frames' eight. Note 5 adds the 390 heart, as decided in JP-112.
+- **Named, not fixed, found by the sweep:** none new. Step 7's widening is item 4 of the list below.
+- **Torn down:** :5174, :5177 and :8931, then the `main` worktree (`git worktree remove --force`,
+  its `node_modules` clone with it; `git worktree prune`). :5173, :5175 and :5176 are not this
+  session's and still run. The probes and their sinks stay in the session's scratchpad.
+
+## Replies
+
+**Retest against the Pages build whose `last-modified` is later than `Thu, 08 Oct 2026 12:09:04
+GMT`** (9,908,045 bytes; `curl -sI https://siniiitsa.github.io/js-plus-prototype-2/`). All ten tickets
+were filed against that build, which was still the deployed one at the sweep, so an older tab or a
+cached build still shows every one of them. The refreshed build is 9,910,327 bytes.
+
+**Please give JP-120 (gallery) a fresh number.** JP-120 is already the merged ticket *the layout-2
+form's 390 credit row yields to a long name* (PR #53). Until the new one is renumbered, this batch, its
+commits and its docs call it **JP-120 (gallery)**.
+
+One line per ticket. Each full reply stands under its entry above, as *Reply* (JP-111's under its
+**Decided**).
+- **JP-111** (the display face is Titan One, not Chunko) — **needs the PO**, and a BA call. Titan One
+  is a deliberate stand-in, chosen by rendering against the frame. *Chunko Bold Demo* is a
+  personal-use demo and cannot ship, and no licence on sale covers a builder's published sites. The
+  PO's question goes to Zarma Type; the BA decides whether Titan's soft corners do meanwhile.
+- **JP-112** (the heart covers song 12) — **fixed**. At desktop the Repertoire keeps the pager's row
+  when there is one page of songs, so the heart stands beside the last row, as designed.
+- **JP-113** (390: a long name runs the gallery's label off the screen) — **fixed**, on every
+  template. The name drops under *Back to beginning* and wraps. A one-word name of 34 letters or
+  more still scrolls the phone page from the footer (logged, 3).
+- **JP-114** (the logo on two lines at 1440) — **fixed**. *KAI MERCER* sits on one line at its
+  design size.
+- **JP-115** (a long name pushes REVIEWS to a second row) — **fixed**. Pop's menu now sets down to
+  about 13px in a 1440 window, which holds every name in the report on one bar. Editorial has the
+  same wrap (logged, 2).
+- **JP-116** (the gaps between sections) — **fixed**. Every Pop gap matches the design to 0.1px at
+  1440, 768 and 390, and the Testimonials arrows stand 60px in. The map section is still 116px
+  shorter than the design's, which is not a gap. The other templates' gaps are logged (1).
+- **JP-117** (the scribble under MANCHESTER) — **fixed**. It crosses the lower half of the word, by
+  the design's own relation. Its lower arm reaches further below the word than in the design, by
+  design: the design's heading is drawn in Bebas, a mode leak.
+- **JP-118** (*C 2026*) — **fixed**, on every template. The small print reads *© 2026 &lt;name&gt;*,
+  and small print the artist typed is untouched.
+- **JP-119** (the placeholders at 45%) — **fixed**. Pop's *Hero* form draws them at the design's 80%
+  on the published page, 3.0 : 1.
+- **JP-120 (gallery)** (four texts no field reaches) — **fixed**, on every template. *Kicker*,
+  *Gallery label*, *Back link* and *Gallery row label* edit them, and *Gallery label* no longer
+  reads "Not shown in this layout".
+
+**Logged for new tickets.** Each was found by an entry and left out of this batch on purpose.
+1. **Lime's, Grunge's and Editorial's layout-1 section gaps** (JP-116's *Named*; the user took scope
+   A, Pop alone). Their card 1 pads 80 / 56 / 44 everywhere, so their 1440 gaps run +40.6 to +43.3
+   wide on the first four seams (Lime's and Grunge's gallery → repertoire 195.3 against 152), Lime's
+   pricing → calendar 188.3 against 148, and their 768 and 390 seams −52 to +26. Their frames agree
+   with Pop's insets in the bio, gallery, repertoire and pricing (and the map at 1440), and part from
+   them in the media (98 / 108), the calendar (48 / 98 or 98 / 98), the form (Grunge's 170) and the
+   narrow map. Their bands bleed off `padY` (`ArcEdge`, `TornEdge`, `Grain`), so a fix is
+   per-template rows plus those rewrites (decided 1's B or C).
+2. **Editorial's long-name nav wrap under Gloock** (JP-114 · JP-115's *Named*). At 1180, 1440 and
+   1920, all four long names in the report set two lines at the 12px floor and wrap *Reviews* (the
+   sweep re-measured it). Nine Gloock links are 59.979 em, which leaves the name 70.87 at 1180.
+   JP-091's settled rows held in Noto and have not held since the Gloock swap (2026-10-05). On the
+   editor's 1088 canvas the seed wraps *Reviews* too. Its seed's two lines at 16.78 are a user call.
+   Pop's fix (an 11 floor at layout 1) is gated to Pop; Editorial needs its own measure.
+3. **A one-word name of 34 letters or more scrolls the 390 page from the footer** (JP-113's *Named*,
+   which its reply promises). Retro 404 (34 letters) and 539 (45) at 360 and 390, 416 / 551 at 414;
+   Lime 396 (45); Editorial 361 (34, at 360) and 479–491 (45). Pop fits. Hiding the footer brings
+   each page back to its width. The long-name family (JP-092, JP-102, JP-109).
+4. **A long one-word map heading scrolls the 390 page** (JP-117's *Named*, widened by the sweep).
+   The layout-1 `s.limeTree` map's `h2` sets no `overflowWrap` and no fit, so *Supercalifragilistic*
+   runs to 433 under Pop and 539 under Editorial, and *Featherstonehaugh* to 416 and 547. Lime,
+   Grunge and Retro fit.
+5. **The layout-1 testimonials arrows stand at `padX` under every template but Pop** (JP-116's
+   *Named*, re-read by the sweep): 45.9 on the canvas, 56 in a 1440 tab and 30 at 768, under Lime,
+   Grunge, Editorial and Retro alike (60 at 390, which matches). Lime's and Retro's masters seat them
+   at 60; Grunge's and Editorial's masters were not read. Pop's moved to 60 in JP-116.
+
+Already open, so not new: Pop layout 4's capsule reads the same 12px link floor, and its seed wraps
+*Reviews* (`layout-4.md`, open question 10). JP-114 · JP-115 gated the 11 floor to layout 1.
+
 ---
 
 ## Notes for the designer
 
-Gathered as the entries run; the sweep finalises them. Seeded at triage:
-- **Every footer frame types `C 2026`, a capital C, not ©** (JP-118), on all five templates. Entry 2
-  seeds `© 2026` instead (decided A). Pop's frame face, Chunko Bold Demo, has no © glyph (nor ’,
-  “ ” or ·), which probably explains the C there.
-- **Pop's display face is a personal-use demo** (JP-111). Titan One stands in for it until the PO
-  hears from Zarma Type about a licence (`layout-1.md` open question 12).
-- **The gallery's back link is typed *BEGININNING*** in Pop's and Retro's layout-1 frames
-  (`964:58627`, `964:58579`). The build spells it right.
-- **The desktop page frame is still in Lime's mode**, so the map's heading renders in Bebas 130,
-  not Chunko 82 (JP-117's anchor). That makes the frame's map 29.5 taller on the canvas than
-  Pop's face would draw it, which moves no gap: JP-116 measured the −28 above it as the map's own
-  126 top inset. The map's scribble is drawn to
-  that Bebas word. JP-117 places it by its relation to the word and keeps its size, so against the
-  shorter Chunko or Titan cap its lower arm runs further below the word. A frame in Pop's mode would
-  settle the size.
-- **The repertoire and the map draw a pager the seeded page does not have** (twelve songs, five
-  gigs), so a sticker that hangs off the pager has nothing to stand on (JP-112). The map is 61.4
-  shorter on the canvas for it, and no gap moves (JP-116: the −55 under it was the map's own 156
-  foot).
-- **Lime's, Grunge's and Editorial's layout-1 frames state their own section insets** (JP-116),
-  which the build does not pad yet: their 1440 gaps run about 41 wide on the first four seams.
-  Their frames agree with Pop's in the bio, gallery, repertoire and pricing, and part from them in
-  the media (98 / 108), the calendar (48 / 98 or 98 / 98) and the form (Grunge's 170).
-- **The frames' nav draws eight links**, and the seeded page carries a ninth, *Availability*
-  (JP-114 · JP-115). Nine Titan links do not fit beside the name at the frame's 16. So Pop's
-  layout-1 menu now sets down to 11 on the 1180 layout, about 13 in a 1440 window, which keeps the
-  name on one line. Eight links at the frame's size would hold the frame's row (confirmed by
-  render).
+Gathered as the entries ran, seeded at triage and finalised by the sweep (2026-10-08).
+
+1. **Every footer frame types `C 2026`, a capital C, not ©** (JP-118), on all five templates. The
+   build now seeds `© 2026 <name>` on every template (decided A), drawn in each footer's own face.
+   Pop's frame face, Chunko Bold Demo, has no © glyph (nor ’, “ ” or ·), which probably explains the
+   C there. **Could the frames carry the ©**, so the next comparison against them agrees?
+2. **Pop's display face is a personal-use demo** (JP-111). Titan One stands in for it until the PO
+   hears from Zarma Type about a licence (`layout-1.md` open question 12). The demo draws a full
+   lowercase, so the frames' capitals are a styling choice, and Pop sets them per site. A licensed
+   file's character set matters too: the demo lacks © ’ “ ” ·, which the build sets.
+3. **The gallery's back link is typed *BEGININNING*** in Pop's and Retro's layout-1 frames
+   (`964:58627`, `964:58579`). The build spells it right, and the text is now the artist's *Back
+   link* field (JP-120 (gallery)).
+4. **The desktop page frame is still in Lime's mode**, so the map's heading renders in Bebas 130,
+   not Chunko 82 (JP-117's anchor). That makes the frame's map 29.5 taller on the canvas than Pop's
+   face would draw it, which moves no gap: JP-116 measured the −28 above it as the map's own 126 top
+   inset. The map's scribble is drawn to that Bebas word. JP-117 places it by its relation to the
+   word and keeps its size, so against the shorter Chunko or Titan cap its lower arm runs further
+   below the word (0.735 of the cap past the baseline, against the frame's 0.265). **A frame in
+   Pop's mode would settle the stroke's size.**
+5. **The repertoire and the map draw a pager the seeded page does not have** (twelve songs, five
+   gigs), so a sticker that hangs off the pager has nothing to stand on (JP-112).
+   - Pop's repertoire now keeps the pager's seat at desktop whenever one page of songs is shown, so
+     its heart stands beside the last row as the frame draws it. The section is 94 taller for it in
+     a 1440 window.
+   - **The map does not** (JP-112's call was the repertoire's alone): it is 61.4 shorter on the
+     canvas than its frame, and no gap moves (JP-116: the −55 under it was the map's own 156 foot).
+     **Should the map keep a pager's seat too, or is the shorter map right?**
+   - At 390 the heart runs over the → disc, as the master draws it. With six songs or fewer (no
+     pager at 390) it crosses the last song pill's ring by 12, over no text. That was left as is.
+6. **Lime's, Grunge's and Editorial's layout-1 frames state their own section insets** (JP-116),
+   which the build does not pad yet: their 1440 gaps run about 41 wide on the first four seams. Their
+   frames agree with Pop's in the bio, gallery, repertoire and pricing, and part from them in the
+   media (98 / 108), the calendar (48 / 98 or 98 / 98) and the form (Grunge's 170). Logged for a
+   ticket of its own.
+7. **The frames' nav draws eight links**, and the seeded page carries a ninth, *Availability*
+   (JP-114 · JP-115). Nine Titan links do not fit beside the name at the frame's 16. So Pop's
+   layout-1 menu now sets down to 11 on the 1180 layout, about 13 in a 1440 window, which keeps the
+   name on one line. Eight links at the frame's size would hold the frame's row (confirmed by
+   render). **Is the smaller menu acceptable, or should the frames make room for nine?** Editorial's
+   Gloock menu has the same squeeze with a long name (logged).
