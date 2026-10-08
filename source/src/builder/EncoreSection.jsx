@@ -15185,9 +15185,13 @@ function Gallery({ s }) {
       // Editorial's types the same break in one tone, `sem/text/1`, and Pop's in
       // `s.tx`, lifted by Titan One's glyph floor.
       const titleWords = String(s.title || '').split(/\s+/).filter(Boolean)
+      // The kicker, the back link and the credit's second line are the
+      // artist's (JP-120 (gallery)), so a typed one wraps where the seed's
+      // `nowrap` would run it off a 390 page (JP-090's fix).
+      const wrap = { whiteSpace: 'normal', overflowWrap: 'anywhere', minWidth: 0 }
       const head = (
         <div style={col(s.mob ? '10px' : u(36), pop ? { position: 'relative' } : undefined)}>
-          {pop ? pt('Media', 11, 1.5, { color: s.text3 }) : eyebrow('Media')}
+          {s.galKicker && (pop ? pt(s.galKicker, 11, 1.5, { color: s.text3, ...wrap }) : eyebrow(s.galKicker, wrap))}
           {grunge || ed || pop ? (
             <h2 style={distressed(s, {
               margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispLg), lineHeight: facedLh(s, 0.89),
@@ -15314,11 +15318,13 @@ function Gallery({ s }) {
           <span onClick={s.live ? () => setPick(0) : undefined}
                 style={row(u(8), { color: G.top, cursor: s.live ? 'pointer' : undefined })}>
             <span style={{ fontFamily: s.body, fontSize: pop ? u(14) : s.bodyMd, lineHeight: pop ? 'normal' : 1.5 }}>←</span>
-            {pop ? pt('Back to beginning', 10, 1) : eyebrow('Back to beginning', { color: G.top })}
+            {pop ? pt(s.galBackLabel, 10, 1, wrap) : eyebrow(s.galBackLabel, { color: G.top, ...wrap })}
           </span>
           <span style={col(u(2), { alignItems: 'flex-end' })}>
             {pop ? pt(s.brand, 11, 2, { fontFamily: s.body, fontWeight: 700 }) : eyebrow(s.brand, { color: G.top })}
-            {pop ? pt('Gallery', 9, 2) : eyebrow('Gallery', { color: s.ac })}
+            {s.galRailLabel && (pop
+              ? pt(s.galRailLabel, 9, 2, { textAlign: 'right', ...wrap })
+              : eyebrow(s.galRailLabel, { color: s.ac, textAlign: 'right', ...wrap }))}
           </span>
         </div>
       )
@@ -15559,8 +15565,12 @@ function Gallery({ s }) {
             }}>
               {g.on && <Grain s={s} radius={rowR} />}
               {iconSq(g, srcIcons[i] || ImageIcon, 49, 24)}
+              {/* The labels may wrap, since the open row's is the artist's
+                  (JP-120 (gallery)): a long one wraps rather than pushing the
+                  cross out. The services' names are short. */}
               <span style={labelStyle(s, '18px', {
                 flex: 1, position: 'relative', color: g.on ? s.pillFg : ink,
+                whiteSpace: 'normal', overflowWrap: 'anywhere', minWidth: 0,
               })}>{g.label}</span>
               {g.on
                 ? <X size={25} strokeWidth={2.4} style={{ position: 'relative' }} />
@@ -15625,10 +15635,12 @@ function Gallery({ s }) {
             })}
           >
             <span style={{ fontSize: desk ? '11.5px' : '14px', color: s.tx }}>←</span>
+            {/* The artist's word (JP-120 (gallery)), so it may wrap. */}
             <span style={{
               fontFamily: s.mono, fontSize: desk ? '8.2px' : '10px', letterSpacing: desk ? '0.8px' : '1px',
               textTransform: 'uppercase', color: s.ac,
-            }}>Back to beginning</span>
+              whiteSpace: 'normal', overflowWrap: 'anywhere', minWidth: 0,
+            }}>{s.galBackLabel}</span>
           </span>
           {/* The frame's credit is Inter Bold over Space Mono, both tracked 2,
               not the Anton label. Desktop is the frame × 0.82. */}
@@ -15637,7 +15649,12 @@ function Gallery({ s }) {
             letterSpacing: desk ? '1.6px' : '2px', textTransform: 'uppercase', whiteSpace: 'nowrap',
           })}>
             <span style={{ fontWeight: 700, fontSize: desk ? '9px' : '11px' }}>{s.brand}</span>
-            <span style={{ fontFamily: s.mono, fontSize: desk ? '7.4px' : '9px' }}>Gallery</span>
+            {s.galRailLabel && (
+              <span style={{
+                fontFamily: s.mono, fontSize: desk ? '7.4px' : '9px',
+                whiteSpace: 'normal', overflowWrap: 'anywhere', minWidth: 0, textAlign: 'right',
+              }}>{s.galRailLabel}</span>
+            )}
           </span>
         </div>
 
@@ -15706,11 +15723,15 @@ function Gallery({ s }) {
       }}>
         <div style={col(desk ? '33px' : tab ? '40px' : '20px', { minWidth: 0 })}>
           <div style={col(desk ? '30px' : tab ? '36px' : '10px')}>
-            {/* Space Mono 11 tracked 1.5 in all three masters. */}
-            <span style={{
-              fontFamily: s.mono, fontSize: desk ? '9px' : '11px', lineHeight: 'normal',
-              letterSpacing: desk ? '1.2px' : '1.5px', textTransform: 'uppercase', whiteSpace: 'nowrap', color: s.ac,
-            }}>Media</span>
+            {/* Space Mono 11 tracked 1.5 in all three masters. The word is
+                the artist's (JP-120 (gallery)), so a typed one wraps. */}
+            {s.galKicker && (
+              <span style={{
+                fontFamily: s.mono, fontSize: desk ? '9px' : '11px', lineHeight: 'normal',
+                letterSpacing: desk ? '1.2px' : '1.5px', textTransform: 'uppercase', color: s.ac,
+                whiteSpace: 'normal', overflowWrap: 'anywhere', minWidth: 0,
+              }}>{s.galKicker}</span>
+            )}
             <h2 style={{
               margin: 0, fontFamily: s.display, fontSize: s.dispLg, lineHeight: 0.89,
               letterSpacing: s.dls, color: s.ac,
@@ -16940,10 +16961,13 @@ function Gallery({ s }) {
               alignItems: 'flex-start', ...(desk ? { width: u(454), flex: 'none' } : null),
               ...(ed || pop ? { containerType: 'inline-size' } : null),
             })}>
-              <span style={{
-                fontFamily: s.body, fontWeight: 700, fontSize: s.eyebrow, lineHeight: 1.3,
-                letterSpacing: s.dls, textTransform: 'uppercase', color: G.eyebrow,
-              }}>Media</span>
+              {/* Layout 1's kicker, the same word (JP-120 (gallery)). */}
+              {s.galKicker && (
+                <span style={{
+                  fontFamily: s.body, fontWeight: 700, fontSize: s.eyebrow, lineHeight: 1.3,
+                  letterSpacing: s.dls, textTransform: 'uppercase', color: G.eyebrow, overflowWrap: 'anywhere',
+                }}>{s.galKicker}</span>
+              )}
               {/* Editorial's head shrinks only when its widest word would
                   outrun the column (Gloock's capitals are wider than the
                   frame's face), and Pop's in Titan's; the twins' never meets
@@ -17112,12 +17136,15 @@ function Gallery({ s }) {
         })}>
           {/* The page's own eyebrow, and the one this section already writes:
               v0's identity block letters it "Media" too, so the frame's string
-              costs no literal that was not here (the bio's `{initials} Bio`
-              pattern, which this wrapper's label does not follow). */}
-          <span style={{
-            fontFamily: s.body, fontWeight: 700, fontSize: u(T.eyebrow),
-            lineHeight: 1.3, textTransform: 'uppercase', color: cream,
-          }}>Media</span>
+              is layout 1's kicker, the artist's since JP-120 (gallery) (the
+              bio's `{initials} Bio` pattern, which this wrapper's label does
+              not follow). */}
+          {s.galKicker && (
+            <span style={{
+              fontFamily: s.body, fontWeight: 700, fontSize: u(T.eyebrow),
+              lineHeight: 1.3, textTransform: 'uppercase', color: cream, overflowWrap: 'anywhere',
+            }}>{s.galKicker}</span>
+          )}
           <h2 style={{
             margin: 0, fontFamily: s.display, fontSize: tab ? s.h1 : s.dispLg,
             lineHeight: 0.89, letterSpacing: s.dls, color: mustard,

@@ -160,7 +160,7 @@ Screenshots (the tester's):
 |---|---|---|---|---|---|---|
 | 1 | JP-111 · JP-117 · JP-118 · JP-119 | the face · the scribble · © · the placeholders | four calls; no code | — (decisions) | **user**: A · A · A · A | **done** (2026-10-08) |
 | 2 | JP-118 | *C 2026* where © is meant | **Confirmed, but the frames type it**: all five footer frames carry a capital C (U+0043); the seed copies them | S | entry 1: **A**, © on every template | **done** (2026-10-08) |
-| 3 | JP-120 (gallery) | four literals, the label "Not shown" | **Confirmed**: JP-090's rule, four more sites, both bodies | S–M | **user**: the shape, the emptied back link | open |
+| 3 | JP-120 (gallery) | four literals, the label "Not shown" | **Confirmed**: JP-090's rule, four more sites, both bodies | S–M | **user**: 1A (three keys + `railLabel`), 2A (an emptied control label reads its seed) | **done** (2026-10-08) |
 | 4 | JP-113 | 390 credit runs off the page | **Confirmed, and named** (Editorial's retest sweep, `:688`, `:1241`): every `s.limeTree` template | S | no (JP-120 (form)'s shape) | open |
 | 5 | JP-119 | live placeholders at .45 | **Confirmed, and recorded**: the canvas draws the frame's .8; the live box keeps JP-093's .45 | S | entry 1: **A**, `--ph: 0.8` | open |
 | 6 | JP-112 | the heart over song 12 | **Confirmed, and recorded**: seated off the content's foot because the seed draws no pager | S | **user**: the pager's seat | open |
@@ -505,6 +505,139 @@ control, reading the seed).
 - `notes/gallery.md`.
 - `reach.mjs` probes.
 
+**Decided** (user, 2026-10-08): **1A, 2A**, both recommendations.
+1. **Three new keys, and `railLabel` widened.** Each key is seeded with the literal it replaces,
+   byte for byte, and uncased:
+   - `gallery.kicker` *Kicker* (`Media`). It also reaches **layout 4's `Media` eyebrow**
+     (`:16946`, `:17120`), the same word doing the same job, by JP-071's rule. `reach.mjs`
+     should read `[0, 3]`. Emptied, it is not drawn.
+   - `gallery.backLabel` *Back link* (`Back to beginning`).
+   - `gallery.sourceLabel` *Gallery row label* (`Gallery`), seeded off `GALLERY_SOURCES[0].l`. The
+     three services keep their names.
+   - `railLabel` also prints **layout 1's credit line**, under the artist's name, at every width.
+     Its hint is rewritten. Emptied, the line is not drawn.
+2. **An emptied *Back link* or *Gallery row label* reads its seed again**: the rule of `venueCta` /
+   `routeCta`, `prompt` and `typeLabel`. The back link is a control on the published page, and the
+   open row always stands (`srcRows` keeps `i === 0`), so each keeps its word.
+
+**Retro's rail wordmark stays a literal**, the third *Gallery*, which only Retro draws and the tester
+did not report (Pop has no rail). The question named it, and the user did not fold it in.
+
+Asked over what the session found first, on HEAD (`e0d6287`):
+- **Every *Evidence* line held** at the triage's numbers (`e0d6287`'s edit sits at `data.js:2444`,
+  after every gallery reference).
+- **One row of the table was wrong.** Retro's open-row label (`:15562`) sits in the `desk` branch of
+  `sources` (`:15514`). The narrow branch draws icon-only tiles. So the open row prints its label
+  **at desktop alone in both bodies**, and `sourceLabel`'s reach is a desktop partial at layout 1,
+  as `railLabel`'s is at layout 2.
+- **Reproduced in the real app** (puppeteer on the HEAD worktree, :5174; card 1 of Pop, Lime,
+  Grunge, Editorial and Retro). The canvas's three tabs and the published tab at 1440, 768 and 390
+  print *Media*, *Back to beginning* and the credit's *Gallery* at every width. The open row's
+  *Gallery* prints at desktop only. Retro adds its rail's *Gallery* at every width. In the panel,
+  *Gallery label* reads "Not shown in this layout" under all five. No page errors, and no page
+  scroll at any width.
+- **The harness was proven first**: a HEAD worktree at `e0d6287` on :5174 against a fresh tree
+  server on :5177, every category, themes 0–4, three widths: **0 of 660 on each surface**.
+- **Expected after-diff, named before the code: zero** on the seed, every category, both surfaces.
+
+**Settled** (2026-10-08).
+- **`data.js`.**
+  - `GALLERY_KICKER` "Media" and `GALLERY_BACK_LABEL` "Back to beginning" sit beside
+    `GALLERY_RAIL_LABEL`.
+  - `FIELDS.gallery` adds `kicker` *Kicker* (`in: [0, 3]`, ahead of `heading`), `backLabel` *Back
+    link* (`in: [0]`) and `sourceLabel` *Gallery row label* (`in: [0]`, `d: GALLERY_SOURCES[0].l`).
+  - `railLabel` is `in: [0, 1]`. Its hint names layout 1's credit line and layout 2's tablet row.
+  - `sourceLabel`'s hint says "on desktop only", since `in` names no width. Each new hint says
+    what emptying does.
+  - `EditPanel`'s chain needed nothing: every seed is a plain `d`, and the gallery's `kicker` falls
+    through the map's and the testimonials' arms, which are gated on their categories.
+- **`sectionVm`.**
+  - `vm.galKicker = cv('kicker', GALLERY_KICKER)`, dropped when emptied.
+  - `vm.galBackLabel` is trimmed and reads `GALLERY_BACK_LABEL` again when emptied (`venueCta`'s
+    shape).
+  - `vm.gallerySources[0].label` reads `sourceLabel` the same way, uncased. The other three rows
+    keep `cased(g.l)`, and `cased()` is a passthrough under every theme today (`casing: 'title'`),
+    so dropping it from row 0 moved nothing.
+  - `vm.galRailLabel` is unchanged.
+- **`EncoreSection`, both bodies.**
+  - **Layout 1**: the kicker, the back link and the credit's second line print the keys. The
+    kicker and the credit line are not rendered when empty.
+  - **Layout 4's eyebrow** (`s.limeTree` and Retro's) prints `s.galKicker`, with
+    `overflowWrap: 'anywhere'`, since its column is `flex-start`. Retro's comment there, "costs no
+    literal", now says the word is layout 1's kicker.
+  - **The wrap.** Each layout-1 label site takes `whiteSpace: 'normal'`, `overflowWrap: 'anywhere'`
+    and `minWidth: 0` (JP-090's fix). The Lime-tree sites pass them to `eyebrow()` / `pt()` through
+    `extra`, so the helpers are untouched (the counter still uses them `nowrap`). The credit line
+    is also `textAlign: 'right'`, the column's own `flex-end`.
+  - **Retro's open-row label wraps** rather than pushing the cross out. The Lime-tree capsule's
+    label keeps its ellipsis, because the capsule is a fixed height.
+  - **Left alone**: the head row's own wrap and the name's `nowrap`, which are JP-113's, below.
+- **Digest** (the HEAD worktree on :5174 against :5177, every category, themes 0–4, three widths,
+  port and photo stamps normalised): **0 of 660 on each surface**, as named. No empty renders.
+- **Reach** (`reach.mjs`, three new rows plus `railLabel`'s, run from a filtered scratchpad copy
+  with `gallery.heading` as the control, themes 0–4, 1,200 renders). Every template reads the
+  same:
+  - `kicker`: layouts 1 and 4;
+  - `railLabel`: layout 1, and layout 2 at 2/6 (tablet, as JP-098 left it);
+  - `backLabel`: layout 1;
+  - `sourceLabel`: layout 1 at 2/6, the desktop canvas and live renders;
+  - `heading`: layouts 1–4, unchanged.
+
+  `fieldReach` gives the same designs in Node under all five theme names, and `fieldNowhere` is
+  false for all four.
+- **States** (a scratch harness probe, 2,040 renders). Each key at gallery layouts 1–4 × themes
+  0–4 × three widths × both surfaces, as a marker, emptied, 85 characters and one 53-character
+  word:
+  - **A marker moves exactly its own text row**, at exactly the designs reach names, with no root
+    height change.
+  - **Emptied**: the kicker removes exactly its node at layouts 1 and 4, and the credit line
+    removes exactly its own at layout 1 and at layout 2's tablet row. The root shrinks by the line
+    and its gap where that column sets the height (tablet kicker −52). The back link and the row
+    label read their seeds again, so nothing moves.
+  - **Long and one-word labels**: no text `Range` runs past the section root's edge, outside an
+    ancestor that clips it (the Lime-tree capsule's ellipsis), at any width or surface.
+- **One interaction, left for JP-113.** Under Lime, Grunge, Editorial and Pop, the layout-1 head
+  row is a no-wrap `space-between` row. So a long credit line now squeezes the back link, which
+  can shrink since its word wraps, onto 2–4 lines: Pop at 390 reads 4, breaking inside
+  *BEGINNING*. On HEAD, the same credit would have run off the page. Retro's row already wraps,
+  so its back link keeps its line. JP-113's `flexWrap` on that row gives the back link its line
+  back, and its verify should type a long *Gallery label* as well as a long name.
+- **The real app** (puppeteer on :5177, card 1 of Pop, Lime, Grunge, Editorial and Retro;
+  content written through `st`'s dispatch; the canvas's three tabs, then Publish, Open, at 1440,
+  768 and 390):
+  - **The tester's set**: a unique marker in every `FIELDS.gallery` text field, and an address in
+    each social field. No literal is left but the siblings: *YouTube*, *Instagram* and *TikTok*
+    (desktop), the ←, the counter, and Retro's rail *Gallery*.
+  - **Emptied** (the four label keys alone, `??`): no kicker and no credit line. The page prints
+    *Back to beginning* and, at desktop, the row's *Gallery* again.
+  - **Long**: the page's `scrollWidth` equals its width at all three widths, under all five.
+  - **Live**: the marked back link rewinds (05 → 01) after a step, emptied or seeded alike.
+  - **The panel** shows the four seeds. No gallery field reads "Not shown in this layout" at
+    layout 1, *Gallery label* included.
+  - No page errors.
+- **Build.** `npm run build` is clean. The root `index.html` is not refreshed; the sweep does
+  that.
+- **Docs.**
+  - CLAUDE.md's label paragraph: JP-098's `railLabel` sentence no longer says `in: [1]`, and a
+    JP-120 (gallery) sentence names the four keys, `railLabel`'s reach and the empty rules. Retro's
+    rail wordmark joins the siblings list, and *YouTube* / *Instagram* / *TikTok* are named as the
+    services' names.
+  - `notes/gallery.md`: a bullet, and `backLabel` beside the rewind.
+  - `reach.mjs`: three probes, and `railLabel`'s comment.
+
+Reply: **JP-120 (gallery) — fixed.** The four texts in the Gallery's layout 1 are now editable on
+every template, in the editor and on the published page. Each starts as the design's text.
+- **Kicker**: the "MEDIA" line over the heading. It also changes the same line in Gallery
+  layout 4. Left empty, it is not drawn.
+- **Gallery label**: the "GALLERY" under the artist's name. It no longer says "Not shown in this
+  layout", and still sets the tablet label in layout 2. Left empty, it is not drawn.
+- **Back link**: "BACK TO BEGINNING". **Gallery row label**: the first row's "GALLERY", shown on
+  desktop. Each left empty shows its original text again, since the link and the row always
+  stand.
+- A long text wraps rather than running off a phone screen. *YouTube*, *Instagram* and *TikTok*
+  stay the services' names, the "04 — 07" counter is a count, and Retro's sideways "Gallery"
+  beside the photo stays as the design draws it.
+
 ---
 
 ## JP-113 — 390: a long name runs the gallery's credit off the page
@@ -553,6 +686,9 @@ Mercer* fits one row at every width, and the digest does not record `whiteSpace`
   except one wider than the measure (the 20-letter single word). The back link keeps its line.
 - At 768 and 1440 nothing moves (the tester's control).
 - Retro with the long single word.
+- **A long *Gallery label* as well** (JP-120 (gallery)'s *Settled*): the credit's second line is
+  the artist's now, and in the no-wrap Lime-tree row it squeezes the back link onto 2–4 lines on
+  HEAD. With the row wrapping, the back link keeps its line.
 
 **Docs.** The head row's comment. `notes/gallery.md`. The *answered* pointers at
 `../editorial/retest-qa-fixes.md:688` and `:1241`.

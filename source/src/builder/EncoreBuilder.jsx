@@ -44,7 +44,7 @@ import {
   MEDIA_CHIP_LABEL, MEDIA_COUNT_LABEL, MEDIA_TOTAL_LABEL, GALLERY_RAIL_LABEL, TIER_KEYS, tiersSeed, limeTreeTheme, PRICE_UNIT, QUOTES,
   CITIES, PINS, EXAMPLE_PAGE,
   NOW_PLAYING, TRACK_AUDIO, SONGS, REP_ALL,
-  GIGS, MAP_BASE, MAP_TERMS, MAP_TRAVEL_TIME, MAP_FEE, directionsUrl, GALLERY_SOURCES,
+  GIGS, MAP_BASE, MAP_TERMS, MAP_TRAVEL_TIME, MAP_FEE, directionsUrl, GALLERY_SOURCES, GALLERY_KICKER, GALLERY_BACK_LABEL,
   MAP_STATUS, MAP_UPDATED, MAP_RINGS, MAP_EXPAND,
   PRICING_REVIEWS, PRICING_RATING, PRICING_CTA, PRICING_NOTE, PRICING_OFFER,
   FORM_PROMISES, FORM_STEPS, STEP_KEYS, FORM_FIELDS, FORM_FIELDS_CARD, FORM_FIELDS_4, FORM_FIELD_KEYS, FORM_EMAIL_LABEL, FORM_KINDS, FORM_TYPES, FORM_MESSAGE, FORM_MSG_LABEL,
@@ -1383,7 +1383,15 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   vm.gal4 = vm.gal.slice(0, 4)
   // JP-098 — layout 2's 768 head row over the small photos, the frame's word,
   // uncased; emptied, the row goes. The heading is the caption's, at every width.
+  // JP-120 (gallery) prints it as layout 1's credit line too, under the name.
   vm.galRailLabel = cv('railLabel', GALLERY_RAIL_LABEL)
+  // JP-120 (gallery), user call, 2026-10-08 — layout 1's eyebrow (layout 4's
+  // too) and its back link, the frames' words, uncased. An emptied kicker is
+  // not drawn; the back link is a control that stands whatever it says, so
+  // emptied, it reads its seed again (venueCta's rule), as the open source
+  // row's label below does.
+  vm.galKicker = cv('kicker', GALLERY_KICKER)
+  vm.galBackLabel = String(cv('backLabel', GALLERY_BACK_LABEL)).trim() || GALLERY_BACK_LABEL
   // Tag order per the Figma gallery frame: Gallery/YouTube/Instagram/TikTok
   // tiles read accent-red, olive, purple, yellow — tags 1, 3, 0, 2 in Retro.
   //
@@ -1392,10 +1400,15 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // the thumbnails already navigate. Normalised through extUrl for the same
   // <base href> reason as the Soundcloud button, and an empty field leaves the
   // row a picture rather than a dead link.
+  //
+  // The first row's label is the artist's (`sourceLabel`, JP-120 (gallery)),
+  // uncased, and reads its seed again when emptied: the row always stands. The
+  // other three are the services' own names.
   vm.gallerySources = GALLERY_SOURCES.map((g, i) => {
     const cbg = T.tags[[1, 3, 0, 2][i] % T.tags.length]
     return {
-      label: cased(g.l), bg: cbg, fg: contrast(cbg), ink: legible(cbg), on: i === 0,
+      label: i === 0 ? String(cv('sourceLabel', g.l)).trim() || g.l : cased(g.l),
+      bg: cbg, fg: contrast(cbg), ink: legible(cbg), on: i === 0,
       url: g.k ? extUrl(cv(g.k, '')) : '',
     }
   })

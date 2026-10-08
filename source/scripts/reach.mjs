@@ -130,8 +130,14 @@ const PROBES = [
   { name: 'map.venueCta', cats: ['map'], param: 'cj', value: { venueCta: Z } },
   { name: 'map.routeCta', cats: ['map'], param: 'cj', value: { routeCta: Z } },
   // JP-098: the gallery's 768 head row, read at tablet alone — so layout 2
-  // moves in 2 of its 6 renders (tablet, canvas and live), by design.
+  // moves in 2 of its 6 renders (tablet, canvas and live), by design. JP-120
+  // (gallery) widened it to layout 1's credit line, at every width.
   { name: 'gallery.railLabel', cats: ['gallery'], param: 'cj', value: { railLabel: Z } },
+  // JP-120 (gallery): layout 1's kicker (layout 4's eyebrow too), its back link
+  // and its open source row's label, the last at desktop alone.
+  { name: 'gallery.kicker', cats: ['gallery'], param: 'cj', value: { kicker: Z } },
+  { name: 'gallery.backLabel', cats: ['gallery'], param: 'cj', value: { backLabel: Z } },
+  { name: 'gallery.sourceLabel', cats: ['gallery'], param: 'cj', value: { sourceLabel: Z } },
   // JP-066: a song's length and layout 3's set details. The length is a column
   // of `songs`, so both sides carry the same one-song list and only the length
   // differs; the sets key a live tag, or nothing could move.

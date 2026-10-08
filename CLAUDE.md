@@ -241,11 +241,18 @@ mutated through a single `patch()` helper.
   leaves its value alone. The pills `venueCta` / `routeCta` read their seed again when emptied.
   Venue Link wraps only once typed longer than its seed (`vm.mapVenueCtaWraps`), because Lime's 768
   seed runs 1px into the disc's gap. **And the gallery's 768 head row** (JP-098, user call,
-  2026-10-01): `railLabel`, seeded *Gallery*, `in: [1]` but read at tablet alone (the hint says
+  2026-10-01): `railLabel`, seeded *Gallery*, read at layout 2 at tablet alone (the hint says
   so, since `in` names no width), dropped when emptied; the heading it used to hold is the caption
-  pill's first line at every width. The unreported siblings stay literals: the bio's `Bio` eyebrow, the calendar legend and its slot line's
-  " selected", the repertoire's `All` chip and search placeholder, and the footer's *A JustPay
-  Product*.
+  pill's first line at every width. **And the gallery's layout 1, every template** (JP-120
+  (gallery), user call, 2026-10-08): `kicker` (*Media*, which layout 4's eyebrow prints too, so
+  `in: [0, 3]`), and `railLabel` again as the credit line under the name, at every width (`in:
+  [0, 1]`), each dropped when emptied; `backLabel` (*Back to beginning*) and `sourceLabel` (the
+  open source row's *Gallery*, printed at desktop alone in both bodies), which read their seed
+  again when emptied, since the link and the row always stand. Typed, each wraps. The unreported
+  siblings stay literals: the bio's `Bio` eyebrow, the calendar legend and its slot line's
+  " selected", the repertoire's `All` chip and search placeholder, Retro's gallery rail wordmark
+  *Gallery*, and the footer's *A JustPay Product*. The gallery's *YouTube*, *Instagram* and
+  *TikTok* are the services' names, not labels.
 - A page section is `{ id, cat, arch, c }` — category, layout index, sparse content overrides.
   Colours are per-section only where a template's frames make them so: every section renders in
   the active theme's single `palette`, **unless its frames stand it on another colour scheme** —
