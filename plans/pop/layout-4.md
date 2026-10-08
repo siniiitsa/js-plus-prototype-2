@@ -304,7 +304,7 @@ desktop id — each block's fit comment cites them); it is the gate the session 
 | 5 | `repertoire` | `964:73220` *(Section `964:73215`, panel `964:73216`)* | 1208 × **482** | `971:10900` *(Section `971:10895`, panel `971:10896`)* | 608 × **540** | `977:14579` *(Section `977:14574`, panel `977:14575`)* | 310 × **608** | **3** | `964:72911` / `971:5599` / `977:9173` *(Sections)* | `964:73098` / `971:9595` / `977:13462` | `if (s.limeTree)` inside `Repertoire`'s `if (s.v3)`, after `jump` | **done** — `ebeb027` |
 | 6 | `map` | `964:73228` *(Frame 319 `964:73222`, head `964:73223`)* | 1440 × 747 | `971:10907` *(Frame 319 `971:10901`, head `971:10902`)* | 768 × 870 | `977:14587` *(Frame 319 `977:14581`, head `977:14582`)* | 390 × 680 | 1 (viewport **3**; stat cells **6 / 2 / 3 / 4**; ticker **5**) | `964:72918` / `971:5606` / `977:9180` *(Frame 319s)* | `964:73104` / `971:9602` / `977:13469` | `if (s.limeTree)` inside `EventsMap`'s `if (s.v3)`, after `zoomScale` | **done** — `b142f89` |
 | 7 | `pricing` | `964:73229` | 1440 × **514** | `971:10908` | 768 × **762** | `977:14588` | 390 × **805** | 1 | `964:72926` / `971:5613` / `977:9187` | `964:73111` / `971:9609` / `977:13476` | `if (s.limeTree)` inside `Pricing`'s `if (s.v3)`, after `bleedX` | **done** — `24d4407` |
-| 8 | `calendar` | `964:73230` *(Section; Frame 324 `964:73231`; wizard 680 × 506)* | 1440 × **909** | `971:10909` *(Frame 324 `971:10910`; wizard 608 × 469)* | 768 × **1315** | `977:14589` *(Frame 324 `977:14590`; wizard 350 × 467)* | 390 × **1154** | 1 (wizard 1; **Back 3**; **Send Enquiry 2**) | `964:72927` / `971:5614` / `977:9188` *(Sections)* | `964:73112` / `971:9610` / `977:13477` | `if (s.limeTree)` inside `Calendar`'s `if (s.v3)`, after `onNextTag` | |
+| 8 | `calendar` | `964:73230` *(Section; Frame 324 `964:73231`; wizard 680 × 506)* | 1440 × **909** | `971:10909` *(Frame 324 `971:10910`; wizard 608 × 469)* | 768 × **1315** | `977:14589` *(Frame 324 `977:14590`; wizard 350 × 467)* | 390 × **1154** | 1 (wizard 1; **Back 3**; **Send Enquiry 2**) | `964:72927` / `971:5614` / `977:9188` *(Sections)* | `964:73112` / `971:9610` / `977:13477` | `if (s.limeTree)` inside `Calendar`'s `if (s.v3)`, after `onNextTag` | **done** — `823add7` |
 | 9 | `form` | **`964:73243`** *(an instance, at last)* | 1440 × **723** | `971:10922` | 768 × **970** | `977:14602` | 390 × **928** | 1 (submit 1) | `964:72940` / `971:5627` / `977:9201` | `725:3049` *(component)* / `971:9623` / `977:13490` | `if (s.v3 && s.limeTree)` ahead of `EnquiryForm`'s `if (s.v3)` | |
 | 10 | `testimonials` | `964:73244` | 1440 × 716 | `971:10923` | 768 × **588.4** | `977:14603` | 390 × **576.4** | **4** (discs 4; cell 2 **1**, cell 3 **3**) | `964:72941` / `971:5628` / `977:9202` | `964:73125` / `971:9624` / `977:13491` | `if (s.limeTree)` inside `Testimonials`' `if (s.v3)`, after `padBot` | |
 | — | `footer` | `964:73245` | 1440 × 479.5 | `971:10924` | 768 × 720.4 | `977:14604` | 390 × 720.4 | *(no mode; unbound)* — row 0's 3, layout 1's pink | — | — | — | **out of scope**: layout 1's Pop footer, closed at planning time |
@@ -1112,7 +1112,18 @@ Retro's bullets; name them.
 - **A hand-off's trap is checked against the block before it is coded** (section 7). The
   prompt said pricing's pill owed `discFg: s.ac`; the Lime block had passed it since Lime's
   pass. Read the call site and the DOM first: a trap from another section's pill may already
-  be closed here.
+  be closed here. *Section 8 met it a second time*: of the calendar's three pills, Next Step was
+  right as it stood (the block's own `s.ac` / `s.bg` pill, not `BookPill`) and Back took
+  Editorial's arm whole; only the foot's Send Enquiry, `BookPill`'s black default, owed props.
+- **A refusal's weight follows a thick idle ring** (section 8). CONVENTIONS C says a refused box
+  changes colour, not weight alone, and the twins' 2px reads as a mark beside a 1px hairline or
+  a dash. Beside Pop's 4px pink idle ring a 2px ring reads as the box getting *lighter*, so the
+  refusal keeps the idle ring's 4px and changes only its colour, to the other text token. Read
+  the idle ring's weight before carrying a twin's refusal width.
+- **A twin's narrow corner from a second component is re-read per master** (section 8). Lime's
+  wizard card is 16 at 768 and 390 because those masters instance another component; Pop's
+  narrow masters keep 50, and its panel is 50 at 768 where Lime's is 60. A radius that differs
+  by width on the twin can be flat here, and the other way round.
 
 ### Seen at planning time, per section
 
@@ -2084,6 +2095,123 @@ From the walks and the renders — impressions to confirm, not measurements.
   row gains a Pop column (no `G`, Grunge's `s.stroke2` rule, `s.onScheme[1]`'s four seats by index,
   the hairline dropped, the pill as it stands).
 
+### Settled in section 8 (the booking calendar)
+
+- **The block widened inside `Calendar`'s `if (s.v3)`, after `onNextTag`: `if (s.limeTree ||
+  s.pop)`, `const pop = s.pop`**, no `G` (Editorial's shape: `pop` arms beside its `ed` ones, two
+  new consts, `ring` and `S2`), its comment saying the pair folds into `limeTree` in the sweep.
+  Every Lime, Grunge and Editorial arm is byte-identical. The seam is shared whole, so the steps,
+  chips and boxes, *Package ›*, the summary column, JP-052's cards, JP-053's mailto and its
+  refusal, and JP-076's own address needed nothing new. The read was the node walker over the
+  three `Frame 324`s, paired with Lime's by traversal order and case-insensitively, bindings with
+  their collections: **98 = 98 nodes at every width**, Pop's Scheme 1, the wizard instance `Pop |
+  Scheme 1`, Back Scheme 3, Send Enquiry Scheme 2, no Device override, no effect, **every paint
+  bound**. Every box is Lime's but the type, the radii and five noted below.
+- **What reads what** (Scheme 1; the stack three levels, the twins' keys):
+  - **the panel** `sem/box/2` `s.box2` `#EBEBEB`, unstroked, at radius **60 / 50 / 30** (`pop &&
+    !desk ? 50`; Lime's 60 / 60 / 30), padded Lime's 60 / 60 · 50 / 30 · 10;
+  - **the wizard card** `sem/box/1` `s.box1` `#F5F5F5` in a **4px** `sem/stroke/1` pink ring
+    (`ring`, `inset 0 0 0 u(4)`: 3.3 / 4 / 4), at radius **50 at every width** (Lime's narrow 16
+    is its narrow component's; *Conventions*), padded Lime's 40 / 48 and 30;
+  - **the idle chips and the date box** `box/2` in the same 4px ring, the dot `text/1` pink, the
+    label `text/2` violet; the picked chip `text/1` pink lettered and dotted `sem/bg` white, the
+    dot at `s.radiusChip` 8 — Lime's keys; the step discs, numerals and rules Lime's keys too
+    (the lit disc in a 1px `stroke/2` lime ring, the others `stroke/1` pink);
+  - **the summary card** `sem/text/2` `s.tx` violet lettered `box/2`, **ringed 1px `stroke/1`
+    pink** (`hair`), which Lime's frame binds and leaves undrawn (pale at .15); **GUESTS binds
+    `text/1`**, pink (`s.ac`), where Lime's and Editorial's bind `sem/bg` — a moved binding the
+    hand-off did not name; the date and package cards `box/1` in Lime's 1px `hair`; every card
+    pads **24** at the sides (`grunge || ed || pop`);
+  - **Back** is Scheme 3: `text/1` lime lettered and disced `sem/bg` pink round a lime arrow —
+    Editorial's `S3` arm, widened (`ed || pop`), read live `rgb(198, 242, 0)` / `rgb(255, 45,
+    160)`; **Next Step** needed nothing (the block's own `s.ac` pill lettered and disced `s.bg`
+    white round a pink arrow, the frame's exactly); **Send Enquiry** at the foot is Scheme 2's
+    pair, `bg={S2.ac}` pink, `fg={S2.bg}` lime, the arrow `BookPill`'s `discFg` default (the
+    pill's own pink) — `BookPill`'s default `pillBg` would have been Scheme 1's black (trap 5).
+    Read live: `rgb(255, 45, 160)` lettered `rgb(198, 242, 0)`. Step 3's Send is Next Step's pill
+    under the frame's label, as on every twin.
+- **The refused box is 4px of violet `s.tx`** (this session's call, CONVENTIONS C and
+  *Conventions*): the idle ring is already 4px of full pink, so the twins' `2px s.tx` would change
+  the colour but read thinner than the box it marks. At the idle ring's own weight the refusal is
+  a colour change alone, to the other text token. Read live `rgb(107, 44, 255) 0px 0px 0px 3.3px
+  inset` / `4px`; a typed name clears its box back to pink alone. A 390 shot on step 3 reads the
+  two violet boxes as marked under the prompt, apart from the pink chips and pills.
+- **Type**: the walk's styles are `THEME_RAMP.Pop` to the token — Display/LG 82 / 51 / 36 for the
+  head, Display/Title **28 / 22 / 20** (a literal, `vm.title` shadowing the ramp), Display/List
+  20 / 16 / 15 for the pills, body-lg 16 / 15 / 15, body-md 14 / 13 / 13, body-sm 12, chip
+  12 / 11 / 11. `disp` uppercases under `pop` (the head, the wizard's title, GUESTS, the date and
+  package lines, the pills). The 768 and 390 masters type "Book Us" mixed case; uppercased.
+- **The lifts, scanned** (each string alone on white at DPR 4, its ink against its own box in
+  the token's em, against the frame's `absoluteRenderBounds`):
+  - **the head** sat 0.13 / 0.12–0.13 / 0.13–0.14em low (ink top and floor; the frame's caps
+    meet the box top, floor 0.185) → `top: −0.14em`, Display/LG's token;
+  - **the stacked Display/Title lines** (the wizard's title, GUESTS, the date and package lines,
+    the confirmation) sat **0.096 / 0.097 / 0.147em** low against the frame's ink tops 0.111 /
+    0.108 / 0.090 (read off GUESTS; the title's apostrophe and ? rise past the caps in Titan) →
+    `−0.1em`, layout 3's token, through the block's `lift`. The 390 residue is 1px, Blink's
+    per-size rounding at 19.6px, layout 3's *BOOK ME* again. The frame's rows are `VERTICAL MIN`
+    over a line of type, so each glyph lifts alone (Editorial's section 8).
+  - The pills' labels are left: Back and Next are the block's own spans and Send is `BookPill`'s
+    Pop label, open question 20's one shared fix.
+- **The head fits its widest word** (`(ed || pop) && s.titleWordEms`, the panel an `inline-size`
+  container under `pop`): the seed and *Unforgettable* keep the ramp (65.66 / 49.98 / 35.28) on
+  one line at every width; *Supercalifragilistic* sets at **29.15 at 390, ending 359.1 of 360**,
+  and on the ramp wide; *Christopher Featherstonehaugh live* takes two / three / three lines,
+  30.08 at 390. No word breaks inside itself; no root scrolls sideways. Lime, the control, runs
+  *Supercalifragilistic* to 378.4 at 390 (its own unfitted head).
+- **The pill row is Editorial's**: `SPACE_BETWEEN` with no CSS column gap and a wrap, the
+  forward pill kept right (`ed || pop`). At 390 Titan's pills are 122.5 + 163.8 in the 290 (the
+  frame's 124 + 162), so step 1 holds one row, 3.7 apart (the frame's 4); step 3's Send Enquiry
+  takes its own line, as Noto's did (Editorial's named diff).
+- **Measured** (harness; × 0.82 at desktop, the frame in brackets):
+  - **desktop**: panel 1088.2 × 612.5 (1089 × 614.2) at radius 49.2; h2 65.66px, its box 59.6
+    (59.9); wizard 557.2 × 413.5 (557.6 × 414.9) at radius 41; summary card 391.7 × 189 (392 ×
+    190.2); rows 70.5 (70.5); foot pill 44.3; Back 110.4 (113.2), Next Step 154.4 (154.2);
+  - **768**: panel 708 × 1213 (1215) at radius 50; wizard 467.5 (469) at radius 50; summary
+    220.2 (221); rows 79 (79); pills 54, Back 125.3 (127), Next Step 169.2 (167);
+  - **390**: panel 370 × 1070.9 (1074); h2 32 (32); wizard 465.3 (467); summary 218 (219); rows
+    76.8 (77); pill 54.
+  - Each shortfall is Titan's line boxes against Figma's whole pixels (the twins' 1–2px). Roots
+    772.5 / 1325 / 1158.9: the root's `padY` 80 / 56 / 44 against the Section's 80 × 0.82 / 50 /
+    **40** (the twins' 50 at 390), the map's named diff. No root scrolls sideways.
+- **`live=1`** (harness, trusted clicks and typing, desktop and 390, a capture-phase
+  `preventDefault` on mailto): the first paint's Back is a lime span with no pointer, Next Step
+  live, the foot pill already a `mailto:`; the summary's cells *e.g.* placeholders at .45.
+  Festival turns pink lettered white and Wedding goes back to `#EBEBEB` in its 4px pink ring;
+  `14/11/2026` gives *Sat, November 14 · 2026*; Next, 300 / 5 hrs / £3,000 / Needed and
+  *Package ›* give those four and *The Wedding Set £650*; Next, then an empty Send, refuses both
+  boxes (4px violet) and prints the prompt; Ana Lopes / `ana@example.com` composes exactly
+  JP-053's body to `bookings@kaimercer.co.uk` and shows the confirmation, the foot pill turning
+  to a span; *Start again* (the Scheme 3 pill) returns to step 1 with Festival and the date kept.
+  Flags at desktop: `&email=none` leaves all three pills spans; `&tiers=none` drops the package
+  card; `&booked=2026-11-14&today=2026-09-30` refuses a typed 14/11/2026 with *Not available.
+  Pick another date*, the date at .38; `&open=2026-11-05` gives *Thu, November 5*.
+  `&noimage=1`: violet *KM* on the `#EBEBEB` disc. No page error.
+- **Digest: themes 0, 1, 2 and 3 zero files of 660, canvas and `live=1`** (a fresh `:5198`, both
+  labels there, no one-row file in any of the four labels); theme 4 moved exactly **calendar
+  arch 3 at three widths** on each surface (6 files).
+- **`reach.mjs`, calendar probes only** (a scratchpad copy filtered to the calendar, theme 4):
+  `heading`, `open` and `prompt` reach all four; `image` and `time` 1 and 4; `slots`, `dateLabel`
+  and `availLabel` 2; `cta`, `types`, `&tiers` and `who.location` 4; `email` 4 (3 of 6, the live
+  renders). Those are the stored rows, so `FIELDS.calendar` did not move.
+- **In the builder** (`page-check.mjs Pop 3` on `:5198`): four modal cards, no error or warning;
+  Availability → `#calendar`, every nav and footer link and Book Now land; the player plays; the
+  form refuses and composes; `overflow390` 0; the 390 burger 1 → 11. The published calendar is
+  **937** at 1440 and 1135 at 390 (the published first paint prints *Pick a date to enquire*,
+  the seeded `open` being past: JP-052's named diff). The seam clips: pricing's white into the
+  calendar's white at 1440 and 390, and the calendar into the form's white, straight.
+- **Named diffs**, the twins' and JP-052's unless marked: *Package ›* at body-lg where the frame's
+  is 12; the date card's year line where the frame reads *Arrival 6pm*; the package card's price
+  where the frame has a line-up; the canvas's seeded Manchester location and The House Party; the
+  root `padY` (above); the 390 step-3 Send on its own line (Editorial's); the 390 Display/Title
+  lines 1px low; the refusal's 4px violet (this session's call).
+- **For the sweep's CLAUDE.md pass**: `notes/calendar.md` carries Pop's stack, its refused box
+  and its 390 pill row (written in this session's commit). The scheme bullet's layout-4 readers
+  gain the calendar's Back on `s.onScheme[3]` and Send Enquiry on `s.onScheme[2]`. CONVENTIONS C's
+  *refused box* row gains a Pop (layout 4) cell — the idle ring's 4px kept, colour alone — and
+  D4's calendar row a Pop column (no `G`, Lime's keys, the 4px `ring`, GUESTS on `text/1`, the
+  wizard at 50, Back off Editorial's `S3` arm, Send on `S2`'s pair).
+
 ### Inherited and used
 
 *(The running list the sweep folds into [`../CONVENTIONS.md`](../CONVENTIONS.md): each time a
@@ -2251,6 +2379,31 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
   (lime/layout-1) — `n=0`, `n=1`, `n=8`; *the digest is committed* (lime/layout-1); *the whole-page
   published check* (lime/layout-1) — `page-check.mjs Pop 3`.
 
+- Section 8: *where the seam lives inside the branch, the block goes after the seam*
+  (lime/layout-1) — after `onNextTag`, the wizard's seam shared whole; *a widened block can need
+  no `G` at all* (grunge/layout-3) — `pop` arms, `ring` and `S2`; *the paired diff walk*
+  (grunge/layout-2) — 98 = 98 against Lime's `Frame 324`s, bindings with their collections;
+  *read every nested node's scheme off the master* (grunge/layout-3) — Back 3, Send Enquiry 2;
+  *a scheme that did not move can still move the binding* (grunge/layout-3) — GUESTS on `text/1`;
+  *an Editorial `s.onScheme[n]` arm names Sienna Vale's scheme by number* (pop/layout-4) — `S3`
+  re-read, lime and pink; *a pill that leans on `BookPill`'s black default* (pop/layout-3) — the
+  foot's Send Enquiry; *a hand-off's trap is checked against the block before it is coded*
+  (pop/layout-4, section 7) — Next Step needed nothing; *a refused box changes colour, not weight
+  alone* (CLAUDE.md) — 4px violet at the idle ring's weight; *a frame's inside stroke is an inset
+  `boxShadow`* (lime/layout-2) — the 4px and 1px rings; *Figma's `SPACE_BETWEEN` ignores
+  `itemSpacing`* (editorial/layout-4) — the pill row's 0 gap; *`vm.title` shadows the ramp's
+  `title` size* (lime/layout-1) — Display/Title 28 / 22 / 20; *a stand-in face's glyph floor is
+  measured per site* (editorial/layout-3), *Titan at Display/Title takes 0.1em* (pop/layout-3)
+  and *the calendar's are stacked* (editorial/layout-4, section 8) — 0.14 on the head, 0.1 on the
+  stacked lines; *scan a glyph floor with the string drawn alone* (pop/layout-3); *a head that
+  must fit its measure is fitted to its widest word* (editorial/layout-1) and *probe a display
+  string with a long word* (editorial/layout-4) — three heads, three widths, a Lime control; *a
+  twin's frame-less control is checked against its own surround* (editorial/layout-3) — the
+  refused box on `#F5F5F5`; *a seeded page cannot show an empty slot* (lime/layout-1) —
+  `&noimage=1`, `&tiers=none`, `&email=none`; *field reach is measured* (CLAUDE.md) — the
+  calendar's probes; *the digest is committed* (lime/layout-1); *the whole-page published check*
+  (lime/layout-1) — `page-check.mjs Pop 3`.
+
 ## Open questions
 
 1. ~~**Decision 1** — the seats.~~ Not a user call; session 0 writes the row.
@@ -2342,6 +2495,11 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
    alone, *lift the label, never the ring*) would move theme 4 at arches 0–2 and is outside a
    section session. Named; a candidate for the sweep or its own small pass, with a five-theme
    digest scoped to `s.pop`.
+
+21. **The calendar's refused box is 4px of violet** (section 8, the session's call): the idle
+   ring is already 4px of full pink, so the twins' 2px would read thinner than the box it marks.
+   It keeps the idle weight and changes colour to the other text token. No frame draws the state;
+   the other answer (the twins' 2px) is a one-line arm.
 
 ## Notes for the designer
 
