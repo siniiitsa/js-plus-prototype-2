@@ -303,7 +303,7 @@ desktop id — each block's fit comment cites them); it is the gate the session 
 | 4 | `gallery` | `964:73214` *(wrapper `964:73173`, head `964:73174`)* | 874 × 646 | `971:10894` *(wrapper `971:10859`, head `971:10860`)* | 768 × 594 | `977:14572` *(wrapper `977:14537`, head `977:14538`)* | 390 × 585.3 | **3** (discs / pills **4**) | `964:72874` / `971:5562` / `977:9136` *(wrappers)* | `964:73061` / `971:9558` / `977:13425` | `if (s.limeTree)` inside `Gallery`'s `if (s.v3)`, after `from` | **done** — `f06d582` |
 | 5 | `repertoire` | `964:73220` *(Section `964:73215`, panel `964:73216`)* | 1208 × **482** | `971:10900` *(Section `971:10895`, panel `971:10896`)* | 608 × **540** | `977:14579` *(Section `977:14574`, panel `977:14575`)* | 310 × **608** | **3** | `964:72911` / `971:5599` / `977:9173` *(Sections)* | `964:73098` / `971:9595` / `977:13462` | `if (s.limeTree)` inside `Repertoire`'s `if (s.v3)`, after `jump` | **done** — `ebeb027` |
 | 6 | `map` | `964:73228` *(Frame 319 `964:73222`, head `964:73223`)* | 1440 × 747 | `971:10907` *(Frame 319 `971:10901`, head `971:10902`)* | 768 × 870 | `977:14587` *(Frame 319 `977:14581`, head `977:14582`)* | 390 × 680 | 1 (viewport **3**; stat cells **6 / 2 / 3 / 4**; ticker **5**) | `964:72918` / `971:5606` / `977:9180` *(Frame 319s)* | `964:73104` / `971:9602` / `977:13469` | `if (s.limeTree)` inside `EventsMap`'s `if (s.v3)`, after `zoomScale` | **done** — `b142f89` |
-| 7 | `pricing` | `964:73229` | 1440 × **514** | `971:10908` | 768 × **762** | `977:14588` | 390 × **805** | 1 | `964:72926` / `971:5613` / `977:9187` | `964:73111` / `971:9609` / `977:13476` | `if (s.limeTree)` inside `Pricing`'s `if (s.v3)`, after `bleedX` | |
+| 7 | `pricing` | `964:73229` | 1440 × **514** | `971:10908` | 768 × **762** | `977:14588` | 390 × **805** | 1 | `964:72926` / `971:5613` / `977:9187` | `964:73111` / `971:9609` / `977:13476` | `if (s.limeTree)` inside `Pricing`'s `if (s.v3)`, after `bleedX` | **done** — `24d4407` |
 | 8 | `calendar` | `964:73230` *(Section; Frame 324 `964:73231`; wizard 680 × 506)* | 1440 × **909** | `971:10909` *(Frame 324 `971:10910`; wizard 608 × 469)* | 768 × **1315** | `977:14589` *(Frame 324 `977:14590`; wizard 350 × 467)* | 390 × **1154** | 1 (wizard 1; **Back 3**; **Send Enquiry 2**) | `964:72927` / `971:5614` / `977:9188` *(Sections)* | `964:73112` / `971:9610` / `977:13477` | `if (s.limeTree)` inside `Calendar`'s `if (s.v3)`, after `onNextTag` | |
 | 9 | `form` | **`964:73243`** *(an instance, at last)* | 1440 × **723** | `971:10922` | 768 × **970** | `977:14602` | 390 × **928** | 1 (submit 1) | `964:72940` / `971:5627` / `977:9201` | `725:3049` *(component)* / `971:9623` / `977:13490` | `if (s.v3 && s.limeTree)` ahead of `EnquiryForm`'s `if (s.v3)` | |
 | 10 | `testimonials` | `964:73244` | 1440 × 716 | `971:10923` | 768 × **588.4** | `977:14603` | 390 × **576.4** | **4** (discs 4; cell 2 **1**, cell 3 **3**) | `964:72941` / `971:5628` / `977:9202` | `964:73125` / `971:9624` / `977:13491` | `if (s.limeTree)` inside `Testimonials`' `if (s.v3)`, after `padBot` | |
@@ -1103,6 +1103,16 @@ Retro's bullets; name them.
   ink 120 mi ring, which vanished at .3 on the dark raster; Pop's binds the same `sem/bg`, which
   is pink here, and reads (≈ +31 in red on a dash). Sample the node in this mode before
   inheriting a twin's redraw: a redraw is the scheme's call, not the node's.
+- **A twin's seat rule is read off the frame's second row, not its first** (section 7). Lime's
+  and Editorial's feature pills seat by parity, Grunge's by index, and every first row reads the
+  same either way. Pop's second row re-seats its four labels by their place in the chip row
+  above (blue / teal / lime / pink), which only index explains, and its bindings stop at
+  `tag4`, so the seats are four, not the scheme's seven. Read the row that breaks the tie, and
+  count the seats the frame binds before cycling a longer list.
+- **A hand-off's trap is checked against the block before it is coded** (section 7). The
+  prompt said pricing's pill owed `discFg: s.ac`; the Lime block had passed it since Lime's
+  pass. Read the call site and the DOM first: a trap from another section's pill may already
+  be closed here.
 
 ### Seen at planning time, per section
 
@@ -1986,6 +1996,94 @@ From the walks and the renders — impressions to confirm, not measurements.
   ticker list and stat-value sentence carry Pop (written in this session's commit); JP-110's
   designer note 4 loses its Pop half.
 
+### Settled in section 7 (pricing)
+
+- **The block widened inside `Pricing`'s `if (s.v3)`, after `bleedX`: `if (s.limeTree || s.pop)`,
+  `const pop = s.pop`**, no `G` (Editorial's shape: five `pop` arms beside its `ed` ones), its
+  comment saying the pair folds into `limeTree` in the sweep. Every Lime, Grunge and Editorial arm
+  is byte-identical. The branch has no state, so the published pill needed nothing new. The node
+  walker over the three instances (bindings with their collections, per-side weights, radii, text
+  styles, `explicitVariableModes`) was the whole read: **61 = 61 nodes** at every width, Lime's
+  tree by traversal order (the 768 dividers in row order, as Grunge's and Editorial's), the
+  instance `Primitives: Pop` on the page's Scheme 1, no Device override, no effect, **every paint
+  bound but the four `#F2FFD0` 15% hairlines**. `get_variable_defs` is `THEME_RAMP.Pop` to the
+  token (display-sm 36 / 29 / 24, label-sm 16 / 13 / 12, list 20 / 16 / 15, chip 12 / 11 / 11,
+  label-xs 20 / 14 / 12, body-md 14 / 13 / 13, body-lg 16 / 15 / 15, eyebrow 15 / 12 / 11), so
+  there is no `T` arm.
+- **What reads what** (Scheme 1; every text `sem/text/1` pink, `s.ac`, the twins' key):
+  - **the rule** `sem/stroke/2` lime, 4px INSIDE the foot of every row but the last —
+    `s.stroke2`, Grunge's key (`grunge || pop`), since Lime's `s.ac` is the pink type here. The
+    inset shadow stands (read off the DOM: `rgb(198, 242, 0) 0px -3.3px` / `-4px`);
+  - **the feature pills are `s.onScheme[1].chips.slice(0, 4)` by index**, lime / pink / blue /
+    teal at `s.radiusChip` 8. The frame binds `scheme/1/tag1–4` and no fifth, and its second row
+    re-seats the same four labels blue / teal / lime / pink — each label's place in its chip row,
+    so **index, not the twins' parity** (*Conventions*). A fifth feature cycles back to lime
+    rather than reaching Scheme 1's violet `tag5`, which the section never shows. Each takes its
+    own seat's ink (the header's call, trap 7): lime `#141414` and pink `#F6F0E8` are the frame's;
+    blue is lettered `#F6F0E8` where it binds `scheme/3/inactive/text` `#FFFFFF`, and teal
+    `#000000` where it binds `scheme/4/tag1/text` `#141414` — named;
+  - **the tag chips' hairline is dropped** (`ed || pop`, trap 6): Lime's unbound `#F2FFD0` at 15%
+    is invisible on white, and Grunge's `s.stroke1` is opaque pink here;
+  - **the name and the numeral** are Titan through `disp` (`grunge || ed || pop`: `faced`,
+    `facedLh(1)`, uppercase); the kind goes through `labelStyle`, which faces and uppercases it;
+  - **the price column's floor is 225** (`u(pop ? 225 : …)`), the frame's hug of both rows (its
+    "Star Enquiry" pill is each column's widest child).
+- **The pill needed nothing — trap 5 has no site here.** The hand-off feared `BookPill`'s disc rule
+  would ink the arrow the pill's violet, but the block already passes `bg={s.tx} fg={s.bg}
+  discFg={s.ac}`, which under Scheme 1 is the frame's exactly: `text/2` violet, lettered and disced
+  `sem/bg` white round a `text/1` pink arrow. Read off the DOM: `rgb(107, 44, 255)` /
+  `rgb(255, 255, 255)` / disc white / arrow `rgb(255, 45, 160)` at all three widths. It is 194.6 ×
+  44.3 / 209.4 × 54 / 201.4 × 54 against the frame's 225 × 0.82 = 184.5 / 197 / 190: Titan's
+  width and our "Start Enquiry" against the frame's "Star Enquiry", the twins' named diff.
+  **Its label stands 2–3px under the frame's** (ink centre 1.24 / 1.38 / 0.75 px below the pill's
+  centre, the frame's 1.64 / 2 / 1.25 above). That is `BookPill`'s Pop label, shared by every Pop
+  pill at every layout, so it is named, not lifted here (open question 20).
+- **The lifts, scanned** (each string alone on white at DPR 4, against the frame's
+  `absoluteRenderBounds`): the name sat **0.155 / 0.141 / 0.127em** low at lh 1 and the numeral's
+  floor **0.147 / 0.139 / 0.129em** → `top: −0.14em` on both, Display/SM's token, the numeral
+  alone on its `MAX` row (Editorial's *a bottom-aligned row lifts its display glyph alone*; Inter's
+  "from" sat within 0.5px of the frame's). The kind, Label/SM at lh 1.1, sat 0.11–0.15em low wide
+  and 0.06–0.09 at 390 → `−0.1em`, Display/Title's token at the same height. After, read against
+  the row's top so the lift cannot move the reference: the name's ink top 41.03 / 31.53 / 30.72
+  (the frame's 40.54 / 31.41 / 30.96), the numeral's floor 48.6 / 43.2 under its column's top
+  narrow (48.3 / 43.2) and 86.6 at desktop (86.4), the kind 40.9 (40.7) — every one within 0.75px.
+- **Measured** (harness; × 0.82 at desktop, the frame in brackets): the name 335.4 wide (409 ×
+  0.82) at 29.4px; feature pills 28.3 / 27.6 / 25.1 tall (28.7 / 28 / 25, Lime's reading); tag
+  chips 18.2 / 21 / 21; the price column at x 939.5, 194.6 wide (950.4, 184.5), since the pill is
+  wider; rows 199.8 / 370.4 / 389.9 for the first (187 / 336 / 342) — the seeded rows' tag row and
+  four or five features, the twins' named diff; the section 644.4 / 1234.1 / 1286.2. No root
+  scrolls sideways.
+- **A long name, re-measured in Titan** (Editorial's *a twin's width-bound call*): *Featherstonehaugh*
+  (17) and *Supercalifragilistic* (20) break inside the word at 1440 alone, in the 335.4 name box
+  (ending 363 / 379 against its right edge at 381); at 768 (708) and 390 (370) both hold on one
+  line, and *The Featherstonehaugh Wedding Extravaganza* wraps between words there. **Named, not
+  fitted**, Editorial's precedent: a package name is not `vm.title`, so a fit would need a per-tier
+  key for a word no seed comes near (the seed's longest, FESTIVAL, holds easily).
+- **`live=1`** (harness, desktop, 768 and 390): every pill is `<a href="#form">`, a span on the
+  canvas, which has no link and three pointer leaves (BookPill's own unconditional cursor, the
+  twins'); `n=0` prints *No packages yet.* in `s.tx` violet on white, unruled, with no pill;
+  `n=1` one row with no rule; `n=8` seven lime rules and eight links. No page error.
+- **Digest: themes 0, 1, 2 and 3 zero files of 660, canvas and `live=1`** (a fresh `:5197`, both
+  labels there, no one-row file in any of the four labels); theme 4 moved exactly **pricing arch
+  3 at three widths** on each surface (6 files). No `_arch_7_` file exists (`digest.mjs` caps
+  pricing at 4).
+- **In the builder** (`page-check.mjs Pop 3` on `:5197`): four modal cards, no error or warning;
+  Pricing → `#pricing` from the nav and the footer, all three Start Enquiry pills → `#form`; the
+  player plays; the form refuses and composes; `overflow390` 0; the 390 burger 1 → 11. The
+  published pricing is **787** at 1440 (644.4 × 1.22) and 1286 at 390. The seam clips: the map's
+  white into pricing's white at 1440, the ticker onto pricing's white at 390, straight.
+- **`FIELDS.pricing` has no template-keyed `in` row**, so no `reach.mjs` run was owed (the twins'
+  finding, re-checked).
+- **Named diffs**, the twins' but where said: the seeded rows (a tag row on every row, four or
+  five features); `tierKind` prints EVENT on every row; "Start Enquiry" against "Star Enquiry", and
+  Titan's width, so the pill and the price column are wider; the blue and teal seats' inks (above);
+  the frame's tags and features typed in capitals where ours print the artist's casing; a 17-letter
+  name breaks inside the word at 1440; the pill's label 2–3px low (open question 20).
+- **For the sweep's CLAUDE.md pass**: `notes/pricing.md`'s layout-4 paragraph carries Pop (written
+  in this session's commit). CLAUDE.md names no pricing layout-4 colour. CONVENTIONS D4's pricing
+  row gains a Pop column (no `G`, Grunge's `s.stroke2` rule, `s.onScheme[1]`'s four seats by index,
+  the hairline dropped, the pill as it stands).
+
 ### Inherited and used
 
 *(The running list the sweep folds into [`../CONVENTIONS.md`](../CONVENTIONS.md): each time a
@@ -2136,6 +2234,23 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
   (lime/layout-1) — `n=0`, `n=1`, `stats: []`; *the digest is committed* (lime/layout-1); *the
   whole-page published check* (lime/layout-1) — `page-check.mjs Pop 3`.
 
+- Section 7: *where the seam lives inside the branch, the block goes after the seam*
+  (lime/layout-1) — after `bleedX`; *a widened block can need no `G` at all* (grunge/layout-3) —
+  five `pop` arms; *the node walker, kept* (grunge/layout-2) — the three instances, bindings with
+  their collections; *a node can name another scheme's variable outright* (editorial/layout-3) —
+  the feature pills' `scheme/1/tag1–4` and their inks from Schemes 3 and 4; *leaked tops are
+  followed where they show, dropped where they don't* (lime/layout-1) — the `#F2FFD0` hairline,
+  dropped; *a frame's inside stroke is an inset `boxShadow`* (lime/layout-2) — the 4px rule;
+  *a pill whose fill is the frame's own still owes its arrow* (pop/layout-4, section 1) — turned
+  round: the block already passed it; *a stand-in face's glyph floor is measured per site*
+  (editorial/layout-3), *scan a glyph floor with the string drawn alone* (pop/layout-3) and *a
+  bottom-aligned row lifts its display glyph alone* (editorial/layout-4) — 0.14 on the name and
+  numeral, 0.1 on the kind; *a twin's width-bound call is re-measured in the new face*
+  (editorial/layout-2) — the 225 floor and the 17-letter name, named; *read a hug's number at more
+  than one row* (retro/layout-4) — 225 at both; *a seeded page cannot show an empty slot*
+  (lime/layout-1) — `n=0`, `n=1`, `n=8`; *the digest is committed* (lime/layout-1); *the whole-page
+  published check* (lime/layout-1) — `page-check.mjs Pop 3`.
+
 ## Open questions
 
 1. ~~**Decision 1** — the seats.~~ Not a user call; session 0 writes the row.
@@ -2220,6 +2335,13 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
    its `box/1` `#14F4D8`, 1.2 : 1, all but gone in the frame's render. They are controls here, so
    they take the lines' `text/1` violet (user call, 2026-10-08). Worth a line to the designer: if
    the yellow was meant, the ticker wants another fill.
+20. **`BookPill`'s Pop label stands 2–3px under the frame's** (section 7): in pricing's pill its
+   ink centre is 1.24 / 1.38 / 0.75 px below the pill's centre where the frame's Chunko sits 1.64 /
+   2 / 1.25 above. The label is `BookPill`'s Lime branch through `labelStyle` (Display/List at lh
+   1.2), shared by every Pop pill at every layout, so a lift there (likely ~0.14em on the text
+   alone, *lift the label, never the ring*) would move theme 4 at arches 0–2 and is outside a
+   section session. Named; a candidate for the sweep or its own small pass, with a five-theme
+   digest scoped to `s.pop`.
 
 ## Notes for the designer
 
