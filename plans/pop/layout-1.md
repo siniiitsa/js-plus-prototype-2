@@ -318,7 +318,8 @@ Seven traps in those tables and that walk:
 
 *Settled in session 0 (2026-10-02):* the user chose Titan One, the recommendation off the measured
 table (*Conventions → Settled in session 0*). The rest of this heading is kept as the record of the
-question.
+question. *JP-111 (2026-10-08, user call) re-asked it: Titan One stays, and the licence is open
+question 12, the PO's. The face is not caps-only (see there).*
 
 The mode names **Chunko Bold Demo** for display and label, a demo licence (Fisterra Fora's
 situation again; `fonts.googleapis.com` has no Chunko). What the frames show, for the user: a very
@@ -2470,7 +2471,8 @@ sweep) — `Pop 0,1,2,3`; *field reach is measured* (CLAUDE.md) — `reach.mjs 4
 
 ## Open questions
 
-1. ~~**Chunko Bold Demo**~~ — settled in session 0: Titan One at `faceK` 0.98.
+1. ~~**Chunko Bold Demo**~~ — settled in session 0: Titan One at `faceK` 0.98. Its licence is open
+   question 12 (JP-111).
 2. ~~**Casing**~~ — settled in session 0: `'title'`.
 3. ~~**Seats or literals**~~ — settled in session 0: route A′, four seats.
 4. ~~**The raw leaks**~~ — settled in session 0: follow every hex; the three faces and the two
@@ -2515,3 +2517,60 @@ sweep) — `Pop 0,1,2,3`; *field reach is measured* (CLAUDE.md) — `reach.mjs 4
     media's and the calendar's still carry 38 `s.retro` tests whose other side no template reaches,
     and `s.designed` is true for every template. Neither was on the sweep's list; folding them is a
     five-theme digest at zero rows, Retro's bodies alone.
+12. **Chunko Bold Demo's licence: the PO's question** (JP-111, [`qa-fixes.md`](./qa-fixes.md), user
+    call, 2026-10-08). Titan One stays (decision 1). The next step is the PO's: ask Zarma Type in
+    writing whether any licence covers a builder that embeds the face on every artist site it
+    publishes. What was found on 2026-10-08:
+    - **The face.** It is *Chunko Bold* by Zarma Type. The frames' *Chunko Bold Demo* is its free
+      demo (FontSpace, befonts), marked "PERSONAL USE ONLY (NO COMMERCIAL USE ALLOWED)". The demo
+      file's name table reads `Chunko Bold Demo`, "Copyright © 2025 by Zarma Type". Its ink widths
+      match session 0's six frame strings to 0.1% (*KAI MERCER* 5.943 em against 5.945), so it is
+      the frames' face.
+    - **Zarma Type, direct** (`zarmatype.com/font/chunko-bold/`, `/license/`, `/terms-conditions/`):
+      - Desktop: $19.
+      - **Webfont / E-Pub: $79.** "1 Domain. Unlimited Sub-domains, blogs, pages, and content." "Up
+        to 500,000 monthly web page views." "Embedding fonts via @font-face."
+      - Extended: $349. "Up to 3,000,000 monthly web page views. Only for Small & Medium
+        Enterprise."
+      - **Server: $649.** "1 Server. 1 Website. Unlimited monthly active users. Allow users to use
+        the font to create a custom design/POD (Print on Demand) application."
+      - Corporate: $3,499. "1 Corporate/Brand … Unlimited monthly web page views … For Big
+        Enterprise."
+      - Formats: "OTF, TTF, WOFF, WOFF2".
+      - The terms: "You are not allowed to resell, redistribute, convert, duplicate, or modify our
+        products in whole or in part, for any reason without our permission." There are no refunds.
+        Nothing is said about site builders, templates or SaaS, or about traffic over a tier.
+    - **Creative Market** (Zarma's shop there) sells Desktop at $22, Webfont $29, E-pub $149 and App
+      $199. Its font terms let a webfont go on "more than one distinct website", with combined
+      traffic under the page-view limit on the receipt. But it is "only … in websites the Licensee
+      owns or controls", and the App licence bars "Cloud-based apps allowing third-party, End User
+      Font usage".
+    - **Fontspring** lists it from $22, "Worry-Free". Its page refused the fetch (403), so its tiers
+      were **not read**. Fontspring's standard EULA ties a web font to page-view tiers and to
+      websites the licensee "owns or controls".
+    - **So no licence on sale plainly covers the builder.**
+      - Zarma's Webfont fits only if every published site is a sub-domain of one platform domain,
+        and the sites stay under 500,000 views a month between them.
+      - Its Server licence is the closest in intent (users designing with the font), but it names one
+        website and print-on-demand.
+      - Creative Market's terms exclude it.
+
+      The question for Zarma: a licence for a site builder whose published artist sites embed the
+      face through `@font-face`. How many sites, what traffic, at what price, and whether the sites
+      may stand on the artists' own domains.
+    - **It is not caps-only.** The demo draws a full lowercase: every a–z differs from its capital in
+      advance and ink, with an x-height ≈ 0.51 em and ascenders above the cap. The frames type every
+      Chunko string in capitals, so under Chunko decision 2's per-site `textTransform: 'uppercase'`
+      is *necessary*, not merely harmless. It is already in place. `data.js:763`'s comment ("the
+      caps-only Chunko Bold Demo") is wrong, and the QA sweep corrects it.
+    - **Glyphs.** The demo's cmap (`fc-query`) is U+0020–005E, U+0061–007D, `˜` and `€`. It has `"`,
+      `&` and the straight `'`. It lacks **©** (U+00A9), **’** (U+2019), **“ ”** and **·** (U+00B7).
+      `TITAN_EM` lists `·`, `“` and `”` because Pop's display strings set them, so a Chunko build
+      would fall back on them, as on JP-118's © (decided A), unless the commercial file has them.
+      **The commercial file's set could not be verified.** The listings say "Multilingual Support"
+      and "Complete Punctuation Set" but print no glyph list, and befonts' © is its showcase image,
+      not the cmap. Ask Zarma for the character set with the licence quote.
+    - **Not re-read**: whether every display node in the frames names the face. Session 0's census
+      stands (the header is bound and the rest raw; three heads leak Bebas, open question 5).
+    - **If a licence is bought**: JP-111's option B in `qa-fixes.md` lists the cost. It is its own plan
+      (`plans/pop/display-face.md`), on its own branch after the QA batch merges.

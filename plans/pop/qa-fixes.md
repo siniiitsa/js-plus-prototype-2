@@ -158,13 +158,13 @@ Screenshots (the tester's):
 
 | Order | ID | Report (short) | Verdict | Size | Decision | Status |
 |---|---|---|---|---|---|---|
-| 1 | JP-111 · JP-117 · JP-118 · JP-119 | the face · the scribble · © · the placeholders | four calls; no code | — (decisions) | **user**, four questions | open |
-| 2 | JP-118 | *C 2026* where © is meant | **Confirmed, but the frames type it**: all five footer frames carry a capital C (U+0043); the seed copies them | S | entry 1 | open |
+| 1 | JP-111 · JP-117 · JP-118 · JP-119 | the face · the scribble · © · the placeholders | four calls; no code | — (decisions) | **user**: A · A · A · A | **done** (2026-10-08) |
+| 2 | JP-118 | *C 2026* where © is meant | **Confirmed, but the frames type it**: all five footer frames carry a capital C (U+0043); the seed copies them | S | entry 1: **A**, © on every template | open |
 | 3 | JP-120 (gallery) | four literals, the label "Not shown" | **Confirmed**: JP-090's rule, four more sites, both bodies | S–M | **user**: the shape, the emptied back link | open |
 | 4 | JP-113 | 390 credit runs off the page | **Confirmed, and named** (Editorial's retest sweep, `:688`, `:1241`): every `s.limeTree` template | S | no (JP-120 (form)'s shape) | open |
-| 5 | JP-119 | live placeholders at .45 | **Confirmed, and recorded**: the canvas draws the frame's .8; the live box keeps JP-093's .45 | S | entry 1 | open |
+| 5 | JP-119 | live placeholders at .45 | **Confirmed, and recorded**: the canvas draws the frame's .8; the live box keeps JP-093's .45 | S | entry 1: **A**, `--ph: 0.8` | open |
 | 6 | JP-112 | the heart over song 12 | **Confirmed, and recorded**: seated off the content's foot because the seed draws no pager | S | **user**: the pager's seat | open |
-| 7 | JP-117 | the scribble under the word | **Confirmed, and recorded**: the frame's offsets kept against a Titan word they were not measured on | S | entry 1 | open |
+| 7 | JP-117 | the scribble under the word | **Confirmed, and recorded**: the frame's offsets kept against a Titan word they were not measured on | S | entry 1: **A**, the frame's fractions | open |
 | 8 | JP-114 · JP-115 | the logo on two lines · the nav wraps | **Confirmed, and recorded** (layout-1.md `:1085`): JP-091's rule under Pop's room and cap | M | **measure, then decide** | open |
 | 9 | JP-116 | section gaps off the frames | **Confirmed, and recorded as inherited** in every section's *Settled*; two of the six seams are content shortfalls, not padding | M–L | **measure, then decide** the scope | open |
 | 10 | — | End-of-pass sweep | — | S | — | open |
@@ -296,6 +296,40 @@ measurement, rather than arguing it.
 
 **Docs.** On A: `layout-1.md`, a new open question holding the facts, and the reply.
 
+**Decided** (user, 2026-10-08): **A.** The answer is a reply. Titan One stays, the stand-in session 0
+chose by rendering. The next step is the PO's: a written question to Zarma Type, since no licence on
+sale plainly covers the builder. The facts are open question 12 in [`layout-1.md`](./layout-1.md),
+gathered in entry 1, with their sources and quotes. In short:
+- **The face.** It is Zarma Type's *Chunko Bold*. The frames' *Chunko Bold Demo* is its free demo,
+  for personal use only. The demo file is the frames' face: its six strings match session 0's widths
+  to 0.1%.
+- **The licences.** Zarma sells:
+  - Webfont at $79: 1 domain and its sub-domains, up to 500,000 views a month;
+  - Server at $649: "1 Website", written for print-on-demand design apps;
+  - Corporate at $3,499: unlimited views, one brand.
+
+  Creative Market's terms keep a webfont to sites the licensee "owns or controls" and bar end-user
+  font use in cloud apps. Fontspring's page was not readable (403).
+- **Not caps-only.** The demo draws a full, distinct lowercase. So under Chunko, Pop's per-site
+  uppercase is necessary, and it is already in place.
+- **Glyphs.** The demo lacks © ’ “ ” · (its cmap ends at U+007D, plus `˜` and `€`), and has `"`,
+  `&` and `'`. The commercial file's set could not be verified.
+
+**The reply** (a draft for the sweep's list), opening on who holds the next step, per the warning
+above:
+
+> *JP-111 — needs the PO.* Titan One is a deliberate stand-in. It was chosen by rendering thirteen
+> free faces against the frame: it has Chunko's weight, its cap height and its widths within 1.2%
+> (`layout-1.md` decision 1). Its corners are soft, where Chunko's are squared. *Chunko Bold Demo* is
+> Zarma Type's personal-use demo and cannot ship. **PO:** ask Zarma Type for a licence that covers a
+> builder whose published artist sites embed the face. None on sale covers it: the $79 Webfont is one
+> domain at 500,000 views a month, and the $649 Server is one website. Ask for the character set with
+> the quote, since the demo has no © ’ “ ” ·. **BA:** whether Titan's soft corners are acceptable in
+> the meantime.
+
+**Left for the sweep:** `data.js:763`'s comment calls Chunko "caps-only". Correct it (comment only, 0
+files).
+
 ---
 
 ## JP-118 — the copyright reads *C 2026*, where © is meant
@@ -345,6 +379,16 @@ face. A typed small print stays the artist's at every layout. The edit panel sho
 
 **Docs.** The `copyrightOf` comment. `notes/footer.md` if it states the seed. A *Notes for the
 designer* line.
+
+**Decided** (user, 2026-10-08): **A.** `copyrightOf()` seeds `© 2026 ${name}` on every template,
+since the five frames are one string and the © reading holds for all of them. Small print the
+artist typed stays theirs. Entry 2 checks that each footer face draws its own ©, not a fallback, and
+that the row moves only by ©'s advance against C's.
+
+A fact found in entry 1, for the reply and the designer: **Pop's frame face, Chunko Bold Demo, has
+no © at all** (its cmap, JP-111). So the designer could not have typed the sign in it. Grunge's and
+Editorial's footers are set in demo faces too (Stones Crush, Fisterra Fora), so the same may hold
+there. That was not checked, so it supports A without proving it for all five.
 
 ---
 
@@ -525,6 +569,23 @@ layout-1 forms are unchanged.
 **Docs.** The live input's comment. CLAUDE.md's `--ph` paragraph and `index.css`'s comment. A
 *reversed* pointer at layout-1.md `:1933`. `notes/form.md`.
 
+**Decided** (user, 2026-10-08): **A.** `'--ph': 0.8` goes on every live box that Pop's layout-1 form
+block draws: each input and the message textarea.
+- **The count.** The seed draws **five** boxes, not the "three inputs" above: `FORM_FIELDS` at
+  `d === 0` has four rows (Name, Email, Event date, Guests), and the message is the fifth. So the fix
+  goes on each live control, or on `box()` where the live controls use it, rather than on a count.
+- **The colour, checked in entry 1.** The box's `color` is `G.on` = `S3.text3` = `#FFFFFF`
+  (`data.js:411`). So `::placeholder`'s `color: inherit` at 0.8 is exactly the frame's
+  `rgba(255, 255, 255, 0.8)`, and the fix needs no colour.
+- **The contrast.** The composite over `#EE138B` is **3.0 : 1** at 0.8 and **1.7 : 1** at today's
+  .45 (WCAG luminance). Those are the tester's numbers.
+- **What stays.** Pop's repertoire search keeps its accepted .45, since B was not taken.
+- **The rule.** CLAUDE.md's becomes: "a box whose frame states its placeholder's strength sets it;
+  every other placeholder is a hint at .45".
+
+The Evidence lines drift by one on HEAD: the live input is `:26512`–`:26520`, its canvas comment
+`:26522`–`:26524`, and the textarea `:26759`.
+
 ---
 
 ## JP-112 — the heart covers song 12 when there is no pager
@@ -612,6 +673,16 @@ starting 0.38 into the word. A screenshot beside the frame's, for the user. The 
 and a long typed heading: the scribble stays inside the root, and the root's clip does not cut it.
 
 **Docs.** The `scribble()` comment. A *reversed* pointer at layout-1.md `:1564`.
+
+**Decided** (user, 2026-10-08): **A.** The scribble is re-anchored to the Titan word's ink by the
+frame's fractions: its ink top sits 0.468 of the cap below the cap's top, and it starts 0.382 into
+the word's ink. Both are set in ems of the heading, so they follow its size. 768 (not drawn) and 390
+(under the radius label) are unchanged. This reverses layout-1.md's "not re-anchored" call
+(`:1564`–`:1570`).
+
+**Nothing was measured in entry 1.** The fractions are the frame's, read at triage (`964:58629`).
+Entry 7 takes every number on HEAD before writing code: where the stroke's ink sits today against
+the Titan cap, and the turned box's offsets that the fractions imply.
 
 ---
 
@@ -800,21 +871,27 @@ the insets.
 4. Walk Pop card 1 in the real app and the published tab at 1440 / 768 / 390, the tester's steps for
    each ticket. Then walk Lime's, Grunge's and Editorial's card 1 once, and Retro's card 1 for the
    gallery and the footer.
-5. `npm run build:standalone`, then `cp source/dist-standalone/index.html index.html`, in its own
+5. JP-111's comment fix: `data.js:763` stops calling Chunko caps-only, since the demo draws a full
+   lowercase (open question 12). It is a comment only, so 0 files.
+6. `npm run build:standalone`, then `cp source/dist-standalone/index.html index.html`, in its own
    commit. Then a two-build digest (`build-digest.mjs`), whose diff should be only the named rows.
    Check the editor's 1088 Desktop canvas by name.
-6. `plans/README.md`'s Pop *QA fixes* row, and one reply line per ticket for QA (fixed / by design /
-   needs PO). Head them with the retest-against-the-stamp line
-   (`curl -sI https://siniiitsa.github.io/js-plus-prototype-2/`; the triage read
+7. `plans/README.md`'s Pop *QA fixes* row, and one reply line per ticket for QA (fixed / by design /
+   needs PO). JP-111's is drafted under its **Decided**. Head them with the
+   retest-against-the-stamp line (`curl -sI https://siniiitsa.github.io/js-plus-prototype-2/`; the triage read
    `Thu, 08 Oct 2026 12:09:04 GMT`, 9,908,045 bytes). **Ask for a fresh number for JP-120 (gallery).**
-7. *Notes for the designer* at the plan's foot.
+8. *Notes for the designer* at the plan's foot.
 
 ---
 
 ## Notes for the designer
 
 Gathered as the entries run; the sweep finalises them. Seeded at triage:
-- **Every footer frame types `C 2026`, a capital C, not ©** (JP-118), on all five templates.
+- **Every footer frame types `C 2026`, a capital C, not ©** (JP-118), on all five templates. Entry 2
+  seeds `© 2026` instead (decided A). Pop's frame face, Chunko Bold Demo, has no © glyph (nor ’,
+  “ ” or ·), which probably explains the C there.
+- **Pop's display face is a personal-use demo** (JP-111). Titan One stands in for it until the PO
+  hears from Zarma Type about a licence (`layout-1.md` open question 12).
 - **The gallery's back link is typed *BEGININNING*** in Pop's and Retro's layout-1 frames
   (`964:58627`, `964:58579`). The build spells it right.
 - **The desktop page frame is still in Lime's mode**, so the map's heading renders in Bebas 130,
