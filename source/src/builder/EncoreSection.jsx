@@ -14505,15 +14505,48 @@ function Repertoire({ s }) {
     //    / 26), which is the 55 / 48 / 45 row and the 506 / 564 / 626 instance;
     //  · the 390 Section pads **40** below (859 = 30 + 789 + 40), and no
     //    seam: Lime's foot arc is not drawn.
-    if (s.limeTree) {
+    //
+    // ── Pop ────────────────────────────────────────────────────────────────
+    // Pop layout 4 (964:73220 · 971:10900 · 977:14579, in the 964:73215 /
+    // 971:10895 / 977:14574 Sections) is this block in Pop's mode on the
+    // Scheme 3 seat: Lime's tree node for node less its foot arc, plus a
+    // starburst. The pair `(s.limeTree || s.pop)` folds into `limeTree` in the
+    // sweep (plans/pop/layout-4.md, decision 2). Every paint is bound, and
+    // every leaf reads Editorial's keys on Pop's seat:
+    //  · **the band is `s.bg` pink and the panel `sem/box/1` `s.box1`
+    //    #FF63B8**, at radius 60 / **50** / 60 (trap 1);
+    //  · `sem/text/1` is lime (`s.ac`: the head, the titles, the rail's rings
+    //    and letters, the lit cell's fill) and `sem/text/2` violet (`s.tx`:
+    //    the sub, the group letters, the artists); the lit cell is lettered
+    //    `sem/bg`, the band's pink;
+    //  · **the rules are Lime's, solid**: `sem/stroke/1` is opaque violet,
+    //    `s.stroke1`, 2px under a group letter and 1px under a row, inset
+    //    shadows — not Editorial's dashes, nor Lime's ink at .15;
+    //  · the titles are **Display/Title 28 / 22 / 20** at 1.1, the 51 / 44 /
+    //    42 row and the 482 / 540 / 608 instance; the head Display/LG, upper,
+    //    fitted to its widest word in Titan's ems and lifted 0.14em;
+    //  · the Section closes on a **10px `sem/stroke/1` violet rule**, inside,
+    //    at 1440 and 768 (none at 390), and pads 40 below at 390, Editorial's;
+    //  · the **starburst** (`POP_STAR_D` verbatim, 105.43 × 104.67,
+    //    `sem/text/2` violet, upright) stands in the panel's top right, 127.29
+    //    / 42.98 / 15.29 in from its right edge and 60 / 20.17 / 19.67 down.
+    //    The frame paints it over the head, beside a mixed-case "Repertoire";
+    //    our capitals run under it at 390, so it goes behind the head at every
+    //    width (layout 3's rule for a sticker beside the artist's copy).
+    if (s.limeTree || s.pop) {
       const grunge = s.grunge
       const ed = s.editorial
-      const lime3 = ed ? s.box1 : grunge ? '#F52E34' : '#CCFA61' // Scheme 3 `sem/box/1` / `sem/box/2` / `sem/box/1` — the panel
-      const ink = ed ? s.ac : s.bg // Scheme 3 `sem/text/1` (= `sem/text/2` under Lime)
-      const ink2 = grunge || ed ? s.tx : ink // Scheme 3 `sem/text/2`
-      const rule = `${ink}26` // `sem/stroke/1` — the ink at .15
-      const upper = grunge || ed ? { textTransform: 'uppercase' } : null
-      const titleSize = faced(s, ed ? (desk ? u(32) : tab ? '25px' : '23px') : desk ? u(36) : tab ? '28px' : '26px') // Display/Title
+      const pop = s.pop
+      const lime3 = ed || pop ? s.box1 : grunge ? '#F52E34' : '#CCFA61' // Scheme 3 `sem/box/1` / `sem/box/2` / `sem/box/1` — the panel
+      const ink = ed || pop ? s.ac : s.bg // Scheme 3 `sem/text/1` (= `sem/text/2` under Lime)
+      const ink2 = grunge || ed || pop ? s.tx : ink // Scheme 3 `sem/text/2`
+      const rule = pop ? s.stroke1 : `${ink}26` // `sem/stroke/1` — the ink at .15, Pop's opaque violet
+      const upper = grunge || ed || pop ? { textTransform: 'uppercase' } : null
+      const titleSize = faced(s, pop ? (desk ? u(28) : tab ? '22px' : '20px') : ed ? (desk ? u(32) : tab ? '25px' : '23px') : desk ? u(36) : tab ? '28px' : '26px') // Display/Title
+      // Titan sits 0.1em low at Display/Title (2.2 / 2.1 / 3.2px against the
+      // frame, title and artist alike), and the row is baseline-aligned, so
+      // both halves lift by the title's 0.1em, as one.
+      const rowLift = pop ? { position: 'relative', top: `calc(${titleSize} * -0.1)` } : null
       const bodyLg = { fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5, letterSpacing: s.dls, color: ink2 }
 
       const railCell = (l) => {
@@ -14529,7 +14562,7 @@ function Repertoire({ s }) {
               borderRadius: s.radiusChip,
               boxShadow: `inset 0 0 0 ${u(1)} ${ink}`,
               background: l === at ? ink : 'transparent',
-              color: l === at ? (ed ? s.bg : s.ac) : ink,
+              color: l === at ? (ed || pop ? s.bg : s.ac) : ink,
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
               fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4, letterSpacing: s.dls,
               cursor: s.live && on ? 'pointer' : undefined,
@@ -14587,6 +14620,7 @@ function Repertoire({ s }) {
                     // SEPTEMBER and SUPERSTITION lose a few px beside their
                     // artists, where the frame fits them (accepted, layout 4).
                     ...(ed ? { paddingBottom: '0.02em', marginBottom: '-0.02em' } : null),
+                    ...rowLift,
                   })}>{sg.title}</span>
                   {sg.artist && (
                     <span style={{
@@ -14601,7 +14635,11 @@ function Repertoire({ s }) {
                       // & FIRE at 390, is 56% in Gloock) and ellipsizes past it.
                       // In its 1.2 box Gloock's J ends 0.069em or more inside
                       // the clip, so it takes no pad (Noto's 0.24em J took 0.1em).
-                      ...(ed ? { maxWidth: '60%', overflow: 'hidden', textOverflow: 'ellipsis' } : null),
+                      // Titan's left Pop's 390 title 17 wide beside the same
+                      // artist, so Pop's stops there too (the seed's widest is
+                      // 51% at 390 in Titan).
+                      ...(ed || pop ? { maxWidth: '60%', overflow: 'hidden', textOverflow: 'ellipsis' } : null),
+                      ...rowLift,
                     }}>· {sg.artist}</span>
                   )}
                 </div>
@@ -14614,27 +14652,40 @@ function Repertoire({ s }) {
       return (
         <div style={{
           margin: `calc(-1 * ${s.padY}) calc(-1 * ${s.padX})`,
-          background: ed ? s.bg : s.ac, color: ink, position: 'relative',
+          background: ed || pop ? s.bg : s.ac, color: ink, position: 'relative',
           padding: `${u(s.mob ? 30 : 100)} `
                  + `calc(${s.surplus} + ${desk ? u(56) : tab ? '30px' : '10px'}) `
-                 + `${u(s.mob ? (grunge ? 60 : ed ? 40 : 100) : 150)}`,
+                 + `${u(s.mob ? (grunge ? 60 : ed || pop ? 40 : 100) : 150)}`,
+          // Pop's 10px rule is the Section's own last 10, inside its foot.
+          ...(pop && !s.mob ? { boxShadow: `inset 0 -${u(10)} 0 ${s.stroke1}` } : null),
         }}>
           {grunge
             ? <TornEdge s={s} grunge side="bottom" bleed={false} height={desk ? 52.8 * z : tab ? 44 : 43} colour={s.bg} />
-            : !ed && <ArcEdge s={s} side="bottom" height={44.24 * z} bleed={false} />}
+            : !ed && !pop && <ArcEdge s={s} side="bottom" height={44.24 * z} bleed={false} />}
           <div style={col(u(40), {
-            background: lime3, borderRadius: u(ed ? 0 : 60),
+            background: lime3, borderRadius: u(ed ? 0 : pop && tab ? 50 : 60),
             padding: s.mob ? `${u(40)} ${u(30)}` : u(tab ? 50 : 60),
-            ...(ed ? { containerType: 'inline-size' } : null),
+            ...(ed || pop ? { containerType: 'inline-size' } : null),
+            // Pop's starburst stands behind the head inside the panel.
+            ...(pop ? { position: 'relative', isolation: 'isolate' } : null),
           })}>
+            {pop && (
+              <svg viewBox="0 0 105.44 104.67" aria-hidden="true" style={{
+                position: 'absolute', display: 'block', zIndex: -1, pointerEvents: 'none',
+                width: u(105.43), height: u(104.67),
+                right: u(desk ? 127.29 : tab ? 42.98 : 15.29), top: u(desk ? 60 : tab ? 20.17 : 19.67),
+              }}><path d={POP_STAR_D} fill={s.tx} /></svg>
+            )}
             {/* Editorial's head shrinks only when its widest word would outrun
                 the panel: Gloock's capitals are wider than the frame's face (in
-                Noto, a 13-letter word ran 31 past the 390 column). */}
+                Noto, a 13-letter word ran 31 past the 390 column), and so are
+                Titan's. Titan sits 0.14em low at Display/LG. */}
             <h2 style={distressed(s, {
               margin: 0, fontFamily: s.display,
-              fontSize: faced(s, ed && s.titleWordEms ? `min(${s.dispLg}, calc(100cqi / ${s.titleWordEms}))` : s.dispLg),
+              fontSize: faced(s, (ed || pop) && s.titleWordEms ? `min(${s.dispLg}, calc(100cqi / ${s.titleWordEms}))` : s.dispLg),
               lineHeight: facedLh(s, 0.89), letterSpacing: s.dls, color: ink,
               ...upper,
+              ...(pop ? { position: 'relative', top: '-0.14em' } : null),
             })}>{s.title}</h2>
             <div style={col(u(24), grunge && desk ? { padding: u(32) } : undefined)}>
               <span style={bodyLg}>All songs · A–Z</span>
