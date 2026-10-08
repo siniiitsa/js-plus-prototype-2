@@ -23177,11 +23177,54 @@ function EventsMap({ s }) {
     //  · the head's 1440 measure is its own fixed 1019.18 text box, which is
     //    what sets it on two lines; narrow, its frame's. It shrinks only where
     //    its widest word would outrun that (`s.titleWordEms`, Gloock's ems).
-    if (s.limeTree) {
+    //
+    // ── Pop ────────────────────────────────────────────────────────────────
+    // Pop layout 4 (964:73228 · 971:10907 · 977:14587, in the `Frame 319`s
+    // 964:73222 / 971:10901 / 977:14581) is this tree again, node for node —
+    // 61 / 61 / 61 against Lime's and Editorial's — on the page's Scheme 1,
+    // every paint bound. The gate is the widened pair, which folds into
+    // `limeTree` in the pass's sweep (plans/pop/layout-4.md, decision 2).
+    // What moves, in `G`'s fourth arm, Editorial's read first:
+    //  · Lime's rounded shapes in Pop's 4px rings: the card `box/1` #F5F5F5
+    //    in a `stroke/1` pink ring at radius 50, the cells at 25 and the
+    //    ticker at 50 (`G.ringW`, the twins' 1px by default);
+    //  · **the four cells are four seats**, Schemes 6 / 2 / 3 / 4 by index off
+    //    each cell's own `explicitVariableModes` (violet, lime, pink, blue):
+    //    `box/1` in that scheme's `stroke/1`, and the label, value and sub its
+    //    `text/2` — so the violet cell letters all three pink, as the frame
+    //    does (a user call, 2026-10-08: followed, though the label and sub
+    //    read faint). Display/SM 36 / 29 and Display/Title 20 at lh 1.1 at
+    //    390, fitted to the widest word (JP-110, the pair at `wordEms`);
+    //  · **the ticker is Scheme 5**: `box/1` teal in a violet `stroke/1` ring,
+    //    its two lines `text/1` violet. The frame's arrows bind `text/2`,
+    //    yellow on teal (1.2 : 1, gone in its own render), so they take the
+    //    lines' violet (a user call, 2026-10-08: they are controls);
+    //  · the viewport is Scheme 3, every leaf off `s.onScheme[3]` as under
+    //    Editorial: the rings, labels, the marker's head and tail `sem/bg`
+    //    pink, their type and the marker's ring and glyph `text/2` violet,
+    //    the zoom `box/2` #F0138C in a 1px violet `stroke/1`, the dots violet
+    //    at the frame's .6. **All three rings are followed**: sampled on the
+    //    1440 master's render, the pink 120 mi dash at .3 reads (Δ red +31 a
+    //    dash), where Editorial's ink one vanished. The 390 viewport is
+    //    370 × **272**;
+    //  · the head is Editorial's: the 1019.18 box at 1440, the widest-word
+    //    fit in Titan's ems, uppercased.
+    if (s.limeTree || s.pop) {
       const grunge = s.grunge
       const ed = s.editorial
-      const S3 = ed ? s.onScheme[3] : null
-      const G = ed
+      const pop = s.pop
+      const S3 = ed || pop ? s.onScheme[3] : null
+      const S5 = pop ? s.onScheme[5] : null
+      const G = pop
+        ? { r: 50, cellR: 25, tickR: 50, ringW: u(4), vpInk: S3.tx, acc: S3.bg, dot: S3.tx, dotOp: 0.6,
+            lit: S3.bg, plate: S3.box1, lift: S3.box2, inkHair: S3.stroke1, cellMin: desk ? 227.5 : 140,
+            tickBg: S5.box1, tickRing: S5.stroke1, tickInk: S5.ac,
+            seats: [6, 2, 3, 4].map((n) => s.onScheme[n]),
+            // Titan's glyph floor, scanned alone against the frame's: the head
+            // sat 0.13–0.14em low, the numerals 0.14–0.16 (Display/Title at 390
+            // too), so both lift the token's 0.14, glyphs only.
+            headLift: '-0.14em', numLift: '-0.14em' }
+        : ed
         ? { r: 6, cellR: 0, tickR: 10, dash: s.stroke2, num: s.ac, vpInk: S3.tx, acc: S3.bg, ring0: S3.ac,
             dot: S3.tx, dotOp: 0.6, lit: S3.bg, plate: S3.box1, lift: S3.box2, inkHair: S3.stroke1,
             cellMin: desk ? 227.5 : 140 }
@@ -23190,7 +23233,7 @@ function EventsMap({ s }) {
             dotOp: 0.6, lift: '#F52E34', inkHair: '#00000026', cellMin: desk ? 227.5 : 140 }
         : { r: 50, cellR: 25, cellRing: s.ac, tickRing: s.stroke1, num: s.tx, vpInk: s.bg,
             dotOp: 1, lift: '#D9FF7F', inkHair: '#15180F26', cellMin: desk ? 226.5 : 139.5 }
-      const upper = grunge || ed ? { textTransform: 'uppercase' } : null
+      const upper = grunge || ed || pop ? { textTransform: 'uppercase' } : null
       const ink = s.tx // sem/text/2 on the card, the cells and the ticker
       // Editorial's viewport keys, falling back to the twins' own.
       const acc = G.acc ?? s.ac // the rings, labels and the marker's head and tail
@@ -23200,7 +23243,8 @@ function EventsMap({ s }) {
       const dashAll = (r) => <DashRule side="all" dash={7 * z} colour={G.dash} radius={r * z} />
       const lift = G.lift // Scheme 3 sem/box/2 — the zoom buttons
       const inkHair = G.inkHair // Scheme 3 sem/stroke/1, 15% — the zoom buttons' ring
-      const ring = (c) => `inset 0 0 0 1px ${c}`
+      // Pop's card, cells and ticker ring 4 wide; the zoom stays 1px.
+      const ring = (c, w = '1px') => `inset 0 0 0 ${w} ${c}`
       const chipL = {
         fontFamily: s.body, fontWeight: 700, fontSize: s.chip, lineHeight: 1,
         letterSpacing: '-0.06em', textTransform: 'uppercase', whiteSpace: 'nowrap',
@@ -23208,7 +23252,7 @@ function EventsMap({ s }) {
       const bodySmL = { fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4, letterSpacing: s.dls }
       // The numeral's token, unfaced: the stat value fits it to its widest
       // word (below), and `faced()` wraps the fit.
-      const numeralSize = s.mob ? (ed ? '23px' : '26px') : s.dispSm
+      const numeralSize = s.mob ? (pop ? '20px' : ed ? '23px' : '26px') : s.dispSm
       const numeralLh = facedLh(s, s.mob ? 1.1 : 1)
       // Outer first: diameter, inside stroke, opacity.
       const ringLine = [[480, 1, 0.3], [300, 1.5, 0.5], [140, 2, 0.8]]
@@ -23216,7 +23260,14 @@ function EventsMap({ s }) {
       const viewportL = (
         <div style={{
           position: 'relative', background: plate, minWidth: 0, overflow: 'hidden',
-          ...(desk ? null : { aspectRatio: tab ? '708 / 320' : ed ? '370 / 263' : '370 / 251' }),
+          ...(desk ? null : { aspectRatio: tab ? '708 / 320' : pop ? '370 / 272' : ed ? '370 / 263' : '370 / 251' }),
+          // Pop's 4px pink ring does not hide the raster's anti-aliased edge
+          // at the card's round corners (a dark fringe outside the ring, the
+          // gallery's section-4 case), so the raster stops 2px inside the
+          // card's outer sides, under the ring — not on the panel's side.
+          ...(pop ? { clipPath: desk
+            ? `inset(2px 0 2px 2px round ${G.r * z - 2}px 0 0 ${G.r * z - 2}px)`
+            : `inset(2px 2px 0 2px round ${G.r * z - 2}px ${G.r * z - 2}px 0 0)` } : null),
         }}>
           <div style={{
             position: 'absolute', inset: 0, transform: `scale(${zoomScale})`,
@@ -23313,10 +23364,14 @@ function EventsMap({ s }) {
             // whatever the list holds, so a shorter wall cannot halve the map.
             ...(desk ? { gridTemplateRows: `repeat(2, minmax(${u(G.cellMin)}, auto))` } : null),
           }}>
-            {s.mapStats.map((st, i) => (
+            {s.mapStats.map((st, i) => {
+              // Pop's seat by index (the four cells' four schemes); none else.
+              const seat = G.seats?.[i % G.seats.length]
+              return (
               <div key={i} style={col(u(8), {
-                background: s.box1, borderRadius: u(G.cellR),
-                ...(ed ? { position: 'relative' } : { boxShadow: ring(G.cellRing) }),
+                background: seat?.box1 ?? s.box1, borderRadius: u(G.cellR),
+                ...(seat ? { color: seat.tx } : null),
+                ...(ed ? { position: 'relative' } : { boxShadow: ring(seat?.stroke1 ?? G.cellRing, G.ringW) }),
                 padding: `${u(18)} ${u(20)}`, alignItems: 'flex-start', minWidth: 0,
                 // The value's measure (JP-110): `100cqi` is the content box.
                 containerType: 'inline-size',
@@ -23344,17 +23399,19 @@ function EventsMap({ s }) {
                     // MANCHEST / ER, departed from on purpose). `anywhere` is the
                     // last resort for a word the table under-reads.
                     fontSize: faced(s, st.wordEms ? `min(${numeralSize}, calc(100cqi / ${st.wordEms}))` : numeralSize),
-                    overflowWrap: 'anywhere', color: G.num, ...upper,
+                    overflowWrap: 'anywhere', color: G.num ?? seat?.tx, ...upper,
                     // Gloock sits 0.06–0.09em under the frame's face at lh 1 and
                     // 1.1, over the sub 8 below: layout 3's lift, glyphs only,
                     // lifted to 0.190 / 0.193 / 0.241, each under 0.5px off
                     // (display-face.md step 4, layout 4; Noto took 0.09em).
                     ...(ed ? { position: 'relative', top: '-0.07em' } : null),
+                    ...(G.numLift ? { position: 'relative', top: G.numLift } : null),
                   })}>{st.value}</span>
                 )}
                 {!!st.sub && <span style={bodySmL}>{st.sub}</span>}
               </div>
-            ))}
+              )
+            })}
           </div>
         </div>
       )
@@ -23368,16 +23425,18 @@ function EventsMap({ s }) {
       const clipL = { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }
 
       return (
-        <div style={col(desk ? u(56) : '30px', ed ? { containerType: 'inline-size' } : undefined)}>
-          {/* Editorial's head: the frame's fixed 1019.18 box at 1440, and a
-              size that shrinks only when its widest word would outrun that. */}
+        <div style={col(desk ? u(56) : '30px', ed || pop ? { containerType: 'inline-size' } : undefined)}>
+          {/* Editorial's head (Pop's too): the frame's fixed 1019.18 box at
+              1440, and a size that shrinks only when its widest word would
+              outrun that. */}
           <h2 style={distressed(s, {
             margin: 0, fontFamily: s.display,
-            fontSize: faced(s, ed && s.titleWordEms
+            fontSize: faced(s, (ed || pop) && s.titleWordEms
               ? `min(${s.dispLg}, calc(${desk ? `min(100cqi, ${u(1019.18)})` : '100cqi'} / ${s.titleWordEms}))`
               : s.dispLg),
             lineHeight: facedLh(s, 0.89), letterSpacing: s.dls, color: s.ac, ...upper,
-            ...(ed && desk ? { maxWidth: u(1019.18) } : null),
+            ...((ed || pop) && desk ? { maxWidth: u(1019.18) } : null),
+            ...(G.headLift ? { position: 'relative', top: G.headLift } : null),
           })}>{s.title}</h2>
 
           <div style={col(u(16))}>
@@ -23398,15 +23457,16 @@ function EventsMap({ s }) {
               {ed ? dashAll(G.r) : (
                 <span aria-hidden style={{
                   position: 'absolute', inset: 0, borderRadius: 'inherit',
-                  boxShadow: ring(s.stroke1), pointerEvents: 'none',
+                  boxShadow: ring(s.stroke1, G.ringW), pointerEvents: 'none',
                 }} />
               )}
             </div>
 
             {!!gig && (
               <div style={row(u(14), {
-                background: s.box1, color: ink,
-                ...(ed ? { position: 'relative' } : { boxShadow: ring(G.tickRing) }),
+                // Pop's ticker is Scheme 5, its arrows the lines' violet.
+                background: G.tickBg ?? s.box1, color: G.tickInk ?? ink,
+                ...(ed ? { position: 'relative' } : { boxShadow: ring(G.tickRing, G.ringW) }),
                 borderRadius: u(G.tickR ?? G.r), overflow: 'hidden', padding: `${u(12)} ${u(16)}`,
               })}>
                 {ed && dashAll(G.tickR)}

@@ -1813,9 +1813,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
         // The value's widest word in the display face's ems × `faceK`
         // (`navFace`'s table) — the quotes' `wordEms`, per row (JP-110, user
         // call, 2026-10-06). The `s.limeTree` stat cell fits the numeral to it,
-        // so a city wraps between words and never inside one. Undefined off
-        // Lime, Grunge and Editorial.
-        wordEms: vm.limeTree ? +Math.max(0, ...value.split(/\s+/).map(navFace)).toFixed(3) : undefined,
+        // so a city wraps between words and never inside one — Pop's too since
+        // its layout-4 map took the block (Titan's ems, `navFace`'s; the pair
+        // folds into `limeTree` in that pass's sweep). Undefined under Retro.
+        wordEms: (vm.limeTree || vm.pop) ? +Math.max(0, ...value.split(/\s+/).map(navFace)).toFixed(3) : undefined,
       }
     })
   // Gigs to a page in the compact tile. It is PINS.length rather than a literal
