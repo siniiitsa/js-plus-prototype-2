@@ -760,10 +760,11 @@ export const gloockEms = (text) => {
   return chs.reduce((w, ch, i) => w + (GLOOCK_EM[ch] ?? 0.657) + (i ? GLOOCK_KERN[chs[i - 1] + ch] ?? 0 : 0), 0)
 }
 
-// Titan One's — Pop's display and label face, standing in for the caps-only
-// Chunko Bold Demo, so set in caps as well — read off the rendered DOM in the
-// harness (spans at 100px in the loaded face, untracked: Pop's mode states 0),
-// not canvas measureText. Titan One kerns a few capital pairs, so the sums
+// Titan One's — Pop's display and label face, standing in for Chunko Bold
+// Demo, which the frames type in capitals throughout (the face itself draws a
+// full lowercase, plans/pop/layout-1.md open question 12), so set in caps as
+// well — read off the rendered DOM in the harness (spans at 100px in the
+// loaded face, untracked: Pop's mode states 0), not canvas measureText. Titan One kerns a few capital pairs, so the sums
 // land on most labels exactly and over on the rest — "AVAILABILITY" by 3.6%,
 // "SHOWS/COVERAGE" by 1.3% — never under. The face is set at 0.98 of the
 // token (`faced`), so a width in ems of the token is this sum × 0.98, which
