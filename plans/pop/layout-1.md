@@ -2597,7 +2597,8 @@ sweep) — `Pop 0,1,2,3`; *field reach is measured* (CLAUDE.md) — `reach.mjs 4
       advance and ink, with an x-height ≈ 0.51 em and ascenders above the cap. The frames type every
       Chunko string in capitals, so under Chunko decision 2's per-site `textTransform: 'uppercase'`
       is *necessary*, not merely harmless. It is already in place. `data.js:763`'s comment ("the
-      caps-only Chunko Bold Demo") is wrong, and the QA sweep corrects it.
+      caps-only Chunko Bold Demo") is wrong, and the QA sweep corrects it (corrected, 2026-10-08,
+      `43d00c7`).
     - **Glyphs.** The demo's cmap (`fc-query`) is U+0020–005E, U+0061–007D, `˜` and `€`. It has `"`,
       `&` and the straight `'`. It lacks **©** (U+00A9), **’** (U+2019), **“ ”** and **·** (U+00B7).
       `TITAN_EM` lists `·`, `“` and `”` because Pop's display strings set them, so a Chunko build

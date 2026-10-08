@@ -2141,8 +2141,8 @@ One line per ticket. Each full reply stands under its entry above, as *Reply* (J
 - **JP-117** (the scribble under MANCHESTER) — **fixed**. It crosses the lower half of the word, by
   the design's own relation. Its lower arm reaches further below the word than in the design, by
   design: the design's heading is drawn in Bebas, a mode leak.
-- **JP-118** (*C 2026*) — **fixed**, on every template. The small print reads *© 2026 &lt;name&gt;*,
-  and small print the artist typed is untouched.
+- **JP-118** (*C 2026*) — **fixed**, on every template. The small print reads *© 2026* and the
+  artist's name, and small print the artist typed is untouched.
 - **JP-119** (the placeholders at 45%) — **fixed**. Pop's *Hero* form draws them at the design's 80%
   on the published page, 3.0 : 1.
 - **JP-120 (gallery)** (four texts no field reaches) — **fixed**, on every template. *Kicker*,
