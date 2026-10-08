@@ -302,7 +302,7 @@ desktop id — each block's fit comment cites them); it is the gate the session 
 | 3 | `media` | `964:73164` *(band `964:73158`, head `964:73159`)* | 1440 × 671 | `971:10851` *(band `971:10845`, head `971:10846`)* | 768 × 569 | `977:14406` *(band `977:14400`, head `977:14401`)* | 390 × **830** | band **2** (head `Section` **1**; 768 / 390 instance `Device: Tablet`) | `964:72858` / `971:6533` / `977:8999` *(bands)* | `964:73047` / `971:9547` / `977:13288` | `if (s.v3 && s.limeTree)` ahead of `Media`'s `if (s.v3)` | **done** — `5c31482` |
 | 4 | `gallery` | `964:73214` *(wrapper `964:73173`, head `964:73174`)* | 874 × 646 | `971:10894` *(wrapper `971:10859`, head `971:10860`)* | 768 × 594 | `977:14572` *(wrapper `977:14537`, head `977:14538`)* | 390 × 585.3 | **3** (discs / pills **4**) | `964:72874` / `971:5562` / `977:9136` *(wrappers)* | `964:73061` / `971:9558` / `977:13425` | `if (s.limeTree)` inside `Gallery`'s `if (s.v3)`, after `from` | **done** — `f06d582` |
 | 5 | `repertoire` | `964:73220` *(Section `964:73215`, panel `964:73216`)* | 1208 × **482** | `971:10900` *(Section `971:10895`, panel `971:10896`)* | 608 × **540** | `977:14579` *(Section `977:14574`, panel `977:14575`)* | 310 × **608** | **3** | `964:72911` / `971:5599` / `977:9173` *(Sections)* | `964:73098` / `971:9595` / `977:13462` | `if (s.limeTree)` inside `Repertoire`'s `if (s.v3)`, after `jump` | **done** — `ebeb027` |
-| 6 | `map` | `964:73228` *(Frame 319 `964:73222`, head `964:73223`)* | 1440 × 747 | `971:10907` *(Frame 319 `971:10901`, head `971:10902`)* | 768 × 870 | `977:14587` *(Frame 319 `977:14581`, head `977:14582`)* | 390 × 680 | 1 (viewport **3**; stat cells **6 / 2 / 3 / 4**; ticker **5**) | `964:72918` / `971:5606` / `977:9180` *(Frame 319s)* | `964:73104` / `971:9602` / `977:13469` | `if (s.limeTree)` inside `EventsMap`'s `if (s.v3)`, after `zoomScale` | |
+| 6 | `map` | `964:73228` *(Frame 319 `964:73222`, head `964:73223`)* | 1440 × 747 | `971:10907` *(Frame 319 `971:10901`, head `971:10902`)* | 768 × 870 | `977:14587` *(Frame 319 `977:14581`, head `977:14582`)* | 390 × 680 | 1 (viewport **3**; stat cells **6 / 2 / 3 / 4**; ticker **5**) | `964:72918` / `971:5606` / `977:9180` *(Frame 319s)* | `964:73104` / `971:9602` / `977:13469` | `if (s.limeTree)` inside `EventsMap`'s `if (s.v3)`, after `zoomScale` | **done** — `b142f89` |
 | 7 | `pricing` | `964:73229` | 1440 × **514** | `971:10908` | 768 × **762** | `977:14588` | 390 × **805** | 1 | `964:72926` / `971:5613` / `977:9187` | `964:73111` / `971:9609` / `977:13476` | `if (s.limeTree)` inside `Pricing`'s `if (s.v3)`, after `bleedX` | |
 | 8 | `calendar` | `964:73230` *(Section; Frame 324 `964:73231`; wizard 680 × 506)* | 1440 × **909** | `971:10909` *(Frame 324 `971:10910`; wizard 608 × 469)* | 768 × **1315** | `977:14589` *(Frame 324 `977:14590`; wizard 350 × 467)* | 390 × **1154** | 1 (wizard 1; **Back 3**; **Send Enquiry 2**) | `964:72927` / `971:5614` / `977:9188` *(Sections)* | `964:73112` / `971:9610` / `977:13477` | `if (s.limeTree)` inside `Calendar`'s `if (s.v3)`, after `onNextTag` | |
 | 9 | `form` | **`964:73243`** *(an instance, at last)* | 1440 × **723** | `971:10922` | 768 × **970** | `977:14602` | 390 × **928** | 1 (submit 1) | `964:72940` / `971:5627` / `977:9201` | `725:3049` *(component)* / `971:9623` / `977:13490` | `if (s.v3 && s.limeTree)` ahead of `EnquiryForm`'s `if (s.v3)` | |
@@ -1067,7 +1067,10 @@ Retro's bullets; name them.
   the frame's is (244, 82, 130). Read the corner pixel against the segment between the two
   colours, not by eye. Where a well paints under the photograph, clip the well too, or it leaks
   the same fringe in its own colour. Every ringed round photograph on this page is the next to
-  read.
+  read. *The map's raster was* (section 6): under the card's 4px pink ring its corners read 44–84
+  off the pink-to-white segment, so the viewport clips 2px on the card's outer sides only — never
+  on a side another child of the card meets, where the clip would open a strip of the card's own
+  fill.
 - **Uppercasing a narrow master's mixed-case head can run it under a sticker on the seed
   itself** (section 4). The narrow masters type their heads in mixed case (open question 4), so
   their stickers sit beside a shorter string than ours. The gallery's capitals in Titan run 59
@@ -1089,6 +1092,17 @@ Retro's bullets; name them.
   row's top instead: both sat 2.2 / 2.1 / 3.2px low, Display/Title's 0.1em, and the row lifted as
   one. Then scan every tailed glyph against its own clip with the clip on and off: equal is no
   shave.
+- **A control's ink is read against its own fill, not only its scheme** (section 6). The map
+  ticker binds Scheme 5 throughout, and its arrows' `text/2` is yellow on that scheme's teal
+  `box/1`, 1.2 : 1, all but invisible in the frame's own render, where every other node read
+  fine. A set of bindings all on one scheme can still pair two light keys. Sample each control's
+  glyph against the fill behind it before following it; here the arrows took the lines'
+  `text/1` (a user call). Its sibling, the violet stat cell's pink type at 1.35 : 1, is no
+  control and was followed.
+- **A frame state the twins redrew can read in this mode** (section 6). Editorial redrew its
+  ink 120 mi ring, which vanished at .3 on the dark raster; Pop's binds the same `sem/bg`, which
+  is pink here, and reads (≈ +31 in red on a dash). Sample the node in this mode before
+  inheriting a twin's redraw: a redraw is the scheme's call, not the node's.
 
 ### Seen at planning time, per section
 
@@ -1858,6 +1872,120 @@ From the walks and the renders — impressions to confirm, not measurements.
   column (no `G`, Editorial's keys on the seat, Lime's solid rules in `s.stroke1`, the starburst,
   the 60% cap).
 
+### Settled in section 6 (the events map)
+
+- **The block widened inside `EventsMap`'s `if (s.v3)`, after `zoomScale`: `if (s.limeTree ||
+  s.pop)`, `const pop = s.pop`**, a fourth arm at the head of `G`, its comment saying the pair folds
+  into `limeTree` in the sweep. New leaves fall back through `??` or a default (`ringW`, `seats`,
+  `tickBg`, `tickInk`, `headLift`, `numLift`; `ring(c, w = '1px')`), so every Lime, Grunge and
+  Editorial arm is byte-identical. The ticker's seam is shared whole, so the wrapping arrows, the
+  by-identity lit pin, the zoom clamp and the `extLink` needed nothing new. The node walker over
+  the three `Frame 319`s (bindings with their collections, per-side weights, radii, text styles,
+  `explicitVariableModes`) was the whole read: Lime's tree node for node, **every paint bound**,
+  no raw hex, no effect, no Device override. The instance pads 56 / 30 / 10 with a 16 gap, the
+  Frame 319s 80 · 40 / 80 · 40 / 40 · 40 (gap 20 at 390).
+- **What reads what** (the page's Scheme 1; nested schemes off each node's own mode):
+  - **the card** `sem/box/1` `#F5F5F5` (`s.box1`) in a **4px** `sem/stroke/1` pink ring
+    (`s.stroke1`) at radius 50 — Lime's last-child overlay at `G.ringW` (3.3 / 4 / 4); the panel's
+    1px left rule `stroke/1` pink, desktop only (Lime's reading: narrow it lies inside the card's
+    own 4px pink ring and paints nothing);
+  - **the four cells are four seats**, `G.seats = [6, 2, 3, 4]` by index off each cell's
+    `explicitVariableModes` (the same at all three widths; CONVENTIONS A, written fresh, not
+    JP-077's twin table): each cell `box/1` in its own `stroke/1` at **4px**, radius 25, and its
+    label, value and sub all its own **`text/2`** — `#8451FA` ringed lime lettered **pink**,
+    `#D7FF23` ringed violet lettered violet, `#FF63B8` ringed violet lettered violet, `#3F76FF`
+    ringed teal lettered **yellow**. The cell's `color` carries the seat's ink and the value
+    reads `G.num ?? seat.tx`. Minimums Grunge's 227.5 / 140;
+  - **the violet cell is followed** (user call, 2026-10-08, open question 18): pink on violet is
+    1.35 : 1, so its 36px numeral reads but its 12px label and sub barely do — the frame's own;
+  - **the ticker is Scheme 5**: `box/1` `#14F4D8` in a 4px violet `stroke/1` at radius 50, its
+    venue and meta lines `text/1` violet (`S5.ac`). **Its arrows bind `text/2`, yellow on teal,
+    1.2 : 1** — sampled on the frame's render, the glyph is drawn and all but gone — **so they
+    take the lines' violet** (user call, 2026-10-08, open question 19: they are controls; layout
+    3's *a frame's own state can vanish by the scheme*);
+  - **the viewport is Scheme 3**, every leaf off `s.onScheme[3]`, Editorial's keys: the rings,
+    ring labels, marker head and tail `sem/bg` pink (`G.acc`), the labels' type and the marker's
+    2px ring and glyph `text/2` violet (`G.vpInk`), the zoom `box/2` `#F0138C` in a 1px violet
+    `stroke/1` (full strength, not Lime's 15%), the dots violet at the frame's .6, the plate
+    `box/1` `#FF63B8` (inert under the raster). The lit pin, which no frame draws, is the marker's
+    pair (Editorial's): a pink disc in a 2px violet ring. The 390 viewport is **370 × 272**;
+  - **the head** `text/1` pink at Display/LG, uppercased, Editorial's 1019.18 box at 1440 and its
+    widest-word fit in Titan's ems (`(ed || pop)` at the three sites).
+- **Open question 3, settled by sampling: all three rings followed.** On the 1440 master's
+  render, round each ring's circumference (the label band skipped) against the mean 4px either
+  side: 30 mi Δ red **+127**, 60 mi **+73**, the dashed 120 mi **+15.6** averaged with its gaps
+  (≈ +31 on a dash; Editorial's ink ring read −2 and its terracotta redraw +12.7). The 390
+  master's 30 and 60 mi read +136 / +74 and its 120 mi lies off the viewport, as ours does. The
+  dots (80, 43, 164) on a (42, 44, 29) plate read. No `ring0` arm.
+- **JP-110's gate widened in `sectionVm`**: `vm.mapStats[].wordEms` is `(vm.limeTree || vm.pop)`,
+  the comment saying the pair folds in the sweep. The value's token is `s.dispSm` wide and
+  **Display/Title 20** at 390 (`numeralSize`, a literal: `vm.title` shadows the ramp). Probed
+  (the Base value replaced, per-word `Range` rects against the cell's content box, three widths):
+  the seed sets **MANCHESTER, / UK** at 28.64 at 1440 (the frame's two lines), one line at 28.42
+  at 768 (the frame's), and two lines at 16.37 at 390, where the frame breaks MANCHEST / ER
+  (JP-110's departure, designer note 4 closed for Pop); *Wolverhampton* 21.77 / 28.42 / 12.44 and
+  *Llanfairpwllgwyngyll* 15.59 / 20.67 / 8.91, one line each. **No word breaks inside itself, no
+  word passes its cell, no root scrolls sideways.** Positive control: Retro, unfitted, breaks
+  *Wolverhampton* at 1440 and 390 and the 20-letter word at all three — note 4's own list.
+- **The corner fringe, a third time** (section 4's *every ringed round photograph on this page is
+  the next to read*). Sampled along each raster corner's 45° normal at DPR 1, the outermost pixel
+  read (181, 115, 147) at the desktop BL corner and (218, 45, 137) / (216, 187, 201) narrow — darker
+  than any blend of the pink ring and the white page (44–84 off the segment). So under `pop` the
+  viewport clips `inset(2px … round r − 2px)` **on the card's outer sides only** (left, top and
+  bottom at desktop; top and both sides narrow), never on the panel's side, where it would open a
+  2px `#F5F5F5` strip beside the rule. After, every outer pixel lies within 5 of the segment.
+- **The lifts, scanned** (each string alone on white at DPR 4, against the frame's
+  `absoluteRenderBounds`): the head sat 9.2 / 6.6 / 4.6 px low (0.14 / 0.13 / 0.13em) → `top:
+  −0.14em`; the numerals 4.3 / 4.0 / 3.1 px (0.147 / 0.139 / 0.157em, their ink tops agreeing) →
+  `−0.14em` at every width, Display/Title at 390 included (it scanned 0.157, not layout 3's 0.1),
+  the glyph alone (the cell is `MAX`, Editorial's *bottom-aligned row*). After, the numerals'
+  floors 6.9 / 6.7 / 5.5 px against the frame's 7.1 / 6.7 / 5.8, the head within 1px.
+- **The head holds the frame's lines in Titan**: two at 1440 (835.7 × 119.3 against 835.7 ×
+  119.7), one at 768 (708 × 45.4 against 45), two at 390 (64.1 against 64) — the 768 and 390
+  masters' mixed case set no differently in capitals here. Probed with `&cj=` heads: the seed
+  keeps the ramp everywhere; *Supercalifragilistic* sets 30.8 at 390 ending 369 of 370;
+  *Unforgettable Featherstonehaugh* two lines at the ramp wide, 31.8 at 390; no word breaks and
+  no root scrolls.
+- **Measured** (harness, relative to the card; × 0.82 at desktop, the frame in brackets):
+  - **desktop**: card 1088.2 × 455.2 (1089 × 455.1), the halves 544.1; panel pad 23 / 26.2;
+    grid at 49.4 (49.2); cells 241 × 186.5 (241.1 × 186.6); label 153.9 (154.6), numeral 170.5
+    (171), sub 207.1 (207.05); BASE's label 321.8 (321.4); ticker at 468.3 (468.2), **51.7**
+    (52.5);
+  - **768**: card 708 × 731 (731), viewport 320, panel 379; head row 380, grid 411, cells 316 ×
+    140, label 460.2 / numeral 479.2 / sub 516.2 (460 / 479 / 516); ticker at 747 (747), **62.3**
+    (63);
+  - **390**: viewport 370 × 272; cells 101.8 / 116.5 (102 / 124) — the second row the fitted
+    MANCHESTER, / UK's 36.8 against the frame's broken 44 — so the card is **573.3** (581); ticker
+    62.3 (63).
+  - Roots 845.1 / 996.7 / 833.7: the twins' root padY (80 / 56 / 44 over the head, the frame's 80
+    / 80 / 40, and the foot's the same) — at 390 Pop's 40 is 4 under our 44, the twins' 30 was
+    14. The published 1440 map is **1031** (845.1 × 1.22; the frame's 1013).
+- **`live=1`** (trusted clicks, desktop and 390, `n=8`): the first paint reads "Next: Venue number
+  1" and lights pin 0; › → gig 2 and its pin, ‹ back, ‹ again wraps to gig 8 ("Leeds · AUG 18"),
+  › wraps to "Next:" again; a linked gig is `<a>`, an unlinked one a `div`; + + scales the layer to
+  1.5625 and − back to 1.25. The pointers are `+ − ‹ ›` and a linked gig's block; the canvas has
+  none. **Pink on pink**: at 390 gig 5's lit pin lands on the pink 30 mi ring (a DPR-3 shot), and
+  its violet ring parts it. `n=0` drops the ticker (780.3 / 755.4), `n=1` draws it with no arrows,
+  `stats: []` keeps the desktop card at 455.2 (JP-078's floor) and hugs the narrow ones to 439 /
+  343. No page error.
+- **Digest: themes 0, 1, 2 and 3 zero files of 660, canvas and `live=1`** (a fresh `:5196`, all
+  four labels there, no one-row file); theme 4 moved exactly **map arch 3 at three widths** on each
+  surface (6 files). `wordEms` is read by no other arch.
+- **In the builder** (`page-check.mjs Pop 3` on `:5196`): four modal cards, no error or warning;
+  Shows/Coverage → `#map`; the map's `+ − ‹ ›` all live; the published map 1031 at 1440 and 834 at
+  390; `overflow390` 0; the 390 burger 1 → 11. The seam clips: the repertoire's violet rule into
+  the white map at 1440, pink into white straight at 390, the map into pricing white on white.
+- **`FIELDS.map` needed nothing**: every `in` row is a flat array, so no `reach.mjs` run was owed
+  (Grunge's and Editorial's section 6 finding).
+- **Named diffs**: the root padY (above); the ticker 51.7 / 62.3 against 52.5 / 63, Inter's line
+  boxes; the 390 BASE on two fitted lines against the frame's MANCHEST / ER; the arrows violet
+  against the frame's yellow (a user call); › in the frame's × seat and "Next:" on gig 1 alone
+  (JP-080); the canvas lighting gig 0's pin (JP-080 2A); the dots at our five `vm.pins` seats.
+- **For the sweep's CLAUDE.md pass**: the scheme bullet's layout-4 readers gain the map's
+  `s.onScheme[3]` viewport, `[6]` / `[2]` / `[3]` / `[4]` cells and `[5]` ticker; `notes/map.md`'s
+  ticker list and stat-value sentence carry Pop (written in this session's commit); JP-110's
+  designer note 4 loses its Pop half.
+
 ### Inherited and used
 
 *(The running list the sweep folds into [`../CONVENTIONS.md`](../CONVENTIONS.md): each time a
@@ -1984,16 +2112,42 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
   page published check* (lime/layout-1) — `page-check.mjs Pop 3`; *the lens, checked in the
   editor* (lime/layout-4, D4) — the gallery's pink into the repertoire at three tabs.
 
+- Section 6: *where the seam lives inside the branch, the block goes after the seam*
+  (lime/layout-1) — after `zoomScale`, the ticker's seam shared whole; *the `G` lookup at the
+  block's head* (grunge/layout-1) — a fourth arm, new leaves through `??`; *the node walker, kept*
+  (grunge/layout-2) — the three `Frame 319`s, bindings with their collections; *read every nested
+  node's scheme off the master* (grunge/layout-3) and *seat the schemes off the master, never
+  remap the twin's register* (CONVENTIONS A) — the cells 6 / 2 / 3 / 4, the ticker 5, the
+  viewport 3; *a register's ink is read per cell* (pop/layout-3) — each cell's own `text/2`; *an
+  Editorial `s.onScheme[n]` arm names Sienna Vale's scheme by number* (pop/layout-4) — `[3]`
+  re-read, pink and violet; *a followed binding can vanish on one node of a set*
+  (editorial/layout-4) — sampled ring by ring, all three read; *a frame's own state can vanish by
+  the scheme* (layout 3) — the ticker's yellow arrows, redrawn violet (a user call); *a frame's
+  inside stroke is an inset `boxShadow`, on an overlay* (lime/layout-2) — the 4px card ring;
+  *a ring of another colour hides a photograph's edge no better than the sheet's own*
+  (pop/layout-4, section 4) — the raster's corners, the 2px clip on the outer sides; *`vm.title`
+  shadows the ramp's `title` size* (lime/layout-1) — Display/Title 20 at 390; *a head that must
+  fit its measure is fitted to its widest word* (editorial/layout-1) — the head and JP-110's
+  values; *probe a display string with a long word* (editorial/layout-4) — three heads, three
+  values, three widths, with a Retro positive control; *a stand-in face's glyph floor is measured
+  per site* (editorial/layout-3) and *scan a glyph floor with the string drawn alone*
+  (pop/layout-3) — 0.14 on the head and the numerals; *a bottom-aligned row lifts its display
+  glyph alone* (editorial/layout-4) — the numeral; *a seeded page cannot show an empty slot*
+  (lime/layout-1) — `n=0`, `n=1`, `stats: []`; *the digest is committed* (lime/layout-1); *the
+  whole-page published check* (lime/layout-1) — `page-check.mjs Pop 3`.
+
 ## Open questions
 
 1. ~~**Decision 1** — the seats.~~ Not a user call; session 0 writes the row.
 2. ~~**Decision 2 — the fold.** A (fold in the sweep), B (keep the pairs), C (fold in session 0,
    rejected). Session 0 asks.~~ **A** (user call, 2026-10-07): the sweep folds.
-3. **The map viewport's pink rings on the dark raster.** Scheme 3 binds the rings, their labels and
+3. ~~**The map viewport's pink rings on the dark raster.** Scheme 3 binds the rings, their labels and
    the pin's disc to `sem/bg` pink at .3 / .5 / .8 over the plate. Editorial's ink 120 mi ring
    vanished there and was redrawn; Pop's pink may read. Default: sample the render; follow what
    reads, and for what has vanished take layout 3's rule (redraw in the other text token at the
-   frame's opacity) or follow it and name it. The map session decides.
+   frame's opacity) or follow it and name it. The map session decides.~~ *Section 6: all three
+   followed — sampled on the render, the pink 120 mi dash at .3 reads (Δ red ≈ +31 a dash), where
+   Editorial's ink one vanished.*
 4. **The narrow masters type six display heads in mixed case** where 1440 types capitals — layout
    3's case slip on every head now. Uppercased everywhere (layout 3's decision 2). Worth telling the
    designer.
@@ -2058,6 +2212,14 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
    29-letter artist left the 390 title 17 wide in Titan. Lime's and Grunge's blocks still let a
    long artist collapse the title (Editorial's sweep raised the same as a cross-template
    candidate). Named here for the designer's notes, beside Editorial's.
+18. **The map's violet stat cell is lettered pink** (section 6): Scheme 6 binds its label, value
+   and sub to `text/2`, `#FF2DA0` on `#8451FA`, 1.35 : 1. The 36px numeral reads; the 12px label
+   and sub barely do, in the frame's own render too. Followed (user call, 2026-10-08). Worth a line
+   to the designer: Scheme 6's `text/1` lime reads on that violet, as the cell's own ring does.
+19. **The map ticker's arrows bind yellow on teal** (section 6): Scheme 5's `text/2` `#FFF600` on
+   its `box/1` `#14F4D8`, 1.2 : 1, all but gone in the frame's render. They are controls here, so
+   they take the lines' `text/1` violet (user call, 2026-10-08). Worth a line to the designer: if
+   the yellow was meant, the ticker wants another fill.
 
 ## Notes for the designer
 
