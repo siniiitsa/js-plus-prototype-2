@@ -305,7 +305,7 @@ desktop id — each block's fit comment cites them); it is the gate the session 
 | 6 | `map` | `964:73228` *(Frame 319 `964:73222`, head `964:73223`)* | 1440 × 747 | `971:10907` *(Frame 319 `971:10901`, head `971:10902`)* | 768 × 870 | `977:14587` *(Frame 319 `977:14581`, head `977:14582`)* | 390 × 680 | 1 (viewport **3**; stat cells **6 / 2 / 3 / 4**; ticker **5**) | `964:72918` / `971:5606` / `977:9180` *(Frame 319s)* | `964:73104` / `971:9602` / `977:13469` | `if (s.limeTree)` inside `EventsMap`'s `if (s.v3)`, after `zoomScale` | **done** — `b142f89` |
 | 7 | `pricing` | `964:73229` | 1440 × **514** | `971:10908` | 768 × **762** | `977:14588` | 390 × **805** | 1 | `964:72926` / `971:5613` / `977:9187` | `964:73111` / `971:9609` / `977:13476` | `if (s.limeTree)` inside `Pricing`'s `if (s.v3)`, after `bleedX` | **done** — `24d4407` |
 | 8 | `calendar` | `964:73230` *(Section; Frame 324 `964:73231`; wizard 680 × 506)* | 1440 × **909** | `971:10909` *(Frame 324 `971:10910`; wizard 608 × 469)* | 768 × **1315** | `977:14589` *(Frame 324 `977:14590`; wizard 350 × 467)* | 390 × **1154** | 1 (wizard 1; **Back 3**; **Send Enquiry 2**) | `964:72927` / `971:5614` / `977:9188` *(Sections)* | `964:73112` / `971:9610` / `977:13477` | `if (s.limeTree)` inside `Calendar`'s `if (s.v3)`, after `onNextTag` | **done** — `823add7` |
-| 9 | `form` | **`964:73243`** *(an instance, at last)* | 1440 × **723** | `971:10922` | 768 × **970** | `977:14602` | 390 × **928** | 1 (submit 1) | `964:72940` / `971:5627` / `977:9201` | `725:3049` *(component)* / `971:9623` / `977:13490` | `if (s.v3 && s.limeTree)` ahead of `EnquiryForm`'s `if (s.v3)` | |
+| 9 | `form` | **`964:73243`** *(an instance, at last)* | 1440 × **723** | `971:10922` | 768 × **970** | `977:14602` | 390 × **928** | 1 (submit 1) | `964:72940` / `971:5627` / `977:9201` | `725:3049` *(component)* / `971:9623` / `977:13490` | `if (s.v3 && s.limeTree)` ahead of `EnquiryForm`'s `if (s.v3)` | **done** — `c13fc52` |
 | 10 | `testimonials` | `964:73244` | 1440 × 716 | `971:10923` | 768 × **588.4** | `977:14603` | 390 × **576.4** | **4** (discs 4; cell 2 **1**, cell 3 **3**) | `964:72941` / `971:5628` / `977:9202` | `964:73125` / `971:9624` / `977:13491` | `if (s.limeTree)` inside `Testimonials`' `if (s.v3)`, after `padBot` | |
 | — | `footer` | `964:73245` | 1440 × 479.5 | `971:10924` | 768 × 720.4 | `977:14604` | 390 × 720.4 | *(no mode; unbound)* — row 0's 3, layout 1's pink | — | — | — | **out of scope**: layout 1's Pop footer, closed at planning time |
 | — | `video` | `964:73165` | 1440 × 1143 | `971:10852` | 768 × 627 | `977:14407` | 390 × 383 | 1 (white) | — | — | — | **not in the project**; the three earlier layout-4 passes declined restoring it, and this pass does the same |
@@ -1115,11 +1115,21 @@ Retro's bullets; name them.
   be closed here. *Section 8 met it a second time*: of the calendar's three pills, Next Step was
   right as it stood (the block's own `s.ac` / `s.bg` pill, not `BookPill`) and Back took
   Editorial's arm whole; only the foot's Send Enquiry, `BookPill`'s black default, owed props.
+  *Section 9 a third*: the form's submit is the block's own inline pill on `s.tx` / `s.bg` with
+  an `s.tx` arrow, the frame's violet / white / violet exactly — `BookPill`'s disc rule has no
+  site in it.
+- **Chunko's R and Q do not tail where Fisterra's do** (section 9). Editorial's form could not
+  read a floor off its head or ENQUIRE (`browser-tool-choice`'s Fisterra trap); Pop's frame
+  floors are all positive — CONTACT US / KAI MERCER 0.185em at lh .89, ENQUIRE 0.26–0.29 at 1.1
+  — so the head's own node was the reference. Titan's Q does descend, so ENQUIRE is read by its
+  cap top (0.109 / 0.107 / 0.152 against the frame's 0.111 / 0.108 / 0.090), section 5's rule.
 - **A refusal's weight follows a thick idle ring** (section 8). CONVENTIONS C says a refused box
   changes colour, not weight alone, and the twins' 2px reads as a mark beside a 1px hairline or
   a dash. Beside Pop's 4px pink idle ring a 2px ring reads as the box getting *lighter*, so the
   refusal keeps the idle ring's 4px and changes only its colour, to the other text token. Read
-  the idle ring's weight before carrying a twin's refusal width.
+  the idle ring's weight before carrying a twin's refusal width. *Section 9 read it the other
+  way*: the form's idle ring is 1px of lime, so Lime's 2px of violet `s.tx` changes colour and
+  weight at once and stands with no arm — the rule is the idle weight's, not the page's.
 - **A twin's narrow corner from a second component is re-read per master** (section 8). Lime's
   wizard card is 16 at 768 and 390 because those masters instance another component; Pop's
   narrow masters keep 50, and its panel is 50 at 768 where Lime's is 60. A radius that differs
@@ -2212,6 +2222,104 @@ From the walks and the renders — impressions to confirm, not measurements.
   D4's calendar row a Pop column (no `G`, Lime's keys, the 4px `ring`, GUESTS on `text/1`, the
   wizard at 50, Back off Editorial's `S3` arm, Send on `S2`'s pair).
 
+### Settled in section 9 (the enquiry form)
+
+- **The block widened ahead of `EnquiryForm`'s `if (s.v3)`: `if (s.v3 && (s.limeTree ||
+  s.pop))`, `const pop = s.pop`**, no `G` (Grunge's and Editorial's shape), its comment saying
+  the pair folds into `limeTree` in the sweep. Every Lime, Grunge and Editorial arm is
+  byte-identical. The live seam is hoisted above the block, so the boxes, the refusal, the
+  mailto, the sent card and *Write another* needed nothing new. **The desktop master is an
+  instance at last**, `964:73243` (1440 × 723, `Primitives: Pop`, padding 40 / 56 / 56 / 56, gap
+  24): no main-component stand-in, unlike every twin's 1440 form.
+- **The read was the paired diff walk against Lime's three masters**, by traversal order and
+  case-insensitively, bindings with their collections: **59 = 59 nodes at every width**, every
+  binding Lime's key on every node (the walk compared the binding names and found none moved),
+  the text styles Lime's names, the submit an explicit Scheme 1, no Device override, no effect,
+  no image, **no raw paint**. Only the values and the type-hugging boxes differ. So the mode swaps
+  the values through the block's own keys: the head, the placeholders, the step squares and ↘
+  `text/1` pink (`s.ac`); ENQUIRE, the labels, WHAT HAPPENS NEXT and the step lines `text/2`
+  violet (`s.tx`); the boxes `sem/bg` white; the numerals `sem/bg` white; the head rule and the
+  step rules 1px `stroke/1` — **full pink here, not Lime's .15**, so Lime's `hairline` is the
+  frame's as it stands.
+- **One arm on a key, Grunge's**: the boxes ring 1px of **`sem/stroke/2` lime**, which Lime's
+  block writes as its own `s.ac` (Lime's `stroke2` is its accent); under Pop `s.ac` is pink, so
+  `ring` reads `s.stroke2` (`grunge || pop`). Read live `rgb(198, 242, 0) 0px 0px 0px 1px inset`
+  on all five boxes and the message box.
+- **The pill needed nothing** (*Conventions*, a hand-off's trap checked first, a third time): the
+  block's inline pill is `s.tx` violet lettered `s.bg` white round an `s.bg` disc carrying an
+  `s.tx` arrow — the frame's `text/2` / `sem/bg` / `sem/bg` / `text/2` exactly. Read live
+  `rgb(107, 44, 255)` / white, disc white round `rgb(107, 44, 255)`, at radius 999 (the frame's
+  67 on a 54 pill). `BookPill` is not on this site.
+- **The refusal needed no arm**: the idle ring is 1px, so section 8's keep-the-idle-weight rule
+  does not reach it, and Lime's 2px of `s.tx` is **violet against the idle lime, colour and
+  weight at once** (CONVENTIONS C) — and the calendar's refused violet a section above. Pink was
+  the other token, and would have read as the placeholders' own ink. Named the session's reading,
+  not a user call: it is Lime's line unchanged.
+- **Type is `THEME_RAMP.Pop` to the token**: Display/LG 82 / 51 / 36 at .89 (`s.dispLg`; 65.66 /
+  49.98 / 35.28 rendered through `faced`), Display/List 20 / 16 / 15 at 1.2 (`s.list`), body-md 14
+  / 13 / 13, body-sm 12 (the step subs: 10 / 12 / 12 rendered, 12 × 0.82 at desktop), body-lg 16
+  / 15 / 15. **Display/Title 28 / 22 / 20** is a literal arm in `title` (`vm.title` shadows the
+  ramp). `disp` uppercases under `pop` (the head, ENQUIRE, the pill, the sent h3); the labels
+  were already uppercase through `caps`. The narrow masters type CHECK AVAILABILITY in capitals
+  where Lime's type it mixed — the same string once uppercased.
+- **The lifts, scanned** (each string alone on white at DPR 4, ink against its unlifted box in
+  token em, against the frame's `absoluteRenderBounds`; *Conventions* on Chunko's tails):
+  - **the head** `top: −0.14em` (after `lift`, on the h2): floor 0.184 / 0.194 / 0.187em and
+    ink top −0.007 / −0.020 / −0.012 against the frame's 0.185 / 0.186 / 0.184 and 0;
+  - **ENQUIRE** `−0.1em` through `lift` (Display/Title's token): cap top 0.109 / 0.107 / 0.152
+    against 0.111 / 0.108 / 0.090 — the 390 residue 1px, Blink's per-size rounding again
+    (section 8's);
+  - **the labels and WHAT HAPPENS NEXT** `−0.08em` in `caps` (Display/List over a line): EMAIL's
+    floor 0.341 / 0.341 / 0.345 and top 0.156 / 0.156 / 0.155 against 0.35 / 0.31 / 0.333 and
+    0.15 / 0.175 / 0.167;
+  - **the pill's label is left** (sections 7 and 8): its ink centre stands 0.23 below / 0.63
+    above / 0.25 above the pill's centre where the frame's stands 1.64 / 1.1 / 1.25 above —
+    0.5–1.9px low, open question 20's shape, here on the block's own span pill.
+- **The head fits its widest word** (`(ed || pop) && s.titleWordEms`, the head's div an
+  `inline-size` container under `pop`): the seed keeps the ramp on one line at every width;
+  *Supercalifragilistic* sets at **30.8 at 390, ending 1 inside the 370**, on the ramp wide;
+  *Christopher Featherstonehaugh live* takes two / two / three lines, 31.8 at 390. No word
+  breaks inside itself; no root scrolls sideways. Lime, the control, holds *Supercalifragilistic*
+  unfitted at 54px (1.6 inside), so the fit is Titan's need, not the block's.
+- **Measured** (harness; × 0.82 at desktop, the frame in brackets): head block 69.4 / 57.4 / 44
+  (69.7 / 57 / 44); h2 59.6 / 45.4 / 32 (59.9 / 45 / 32); ENQUIRE's box top, unlifted, 122.0 /
+  111.5 / 92.1 (122.2 / 111 / 92); boxes 258.1 × 36.9 / 347 × 44 / 178 × 44 (258.3 × 36.9 / 347 ×
+  44 / 178 × 44); message 527.7 × 73.8 / 708 × 90 / 370 × 90 at 19.7 / 24; pill 527.7 × 44.3 /
+  708 × 54 / 370 × 54 with a 37.7 × 36.1 / 46 × 44 disc; step rows 72.1 / 88 / 88, squares 45.9
+  at 6.6 / 56 at 8. Roots 624.4 / 971.6 / 932 against 592.9 / 970 / 928: the foot's `padY` 80 /
+  56 / 44 against the instance's 56 / 56 / 40 (the twins' named diff) and Titan's line boxes.
+  No root scrolls sideways.
+- **`live=1`** (puppeteer, trusted clicks and typing, desktop and 390, a capture-phase
+  `preventDefault` on the mailto): idle, five 1px lime rings and one pointer control; an empty
+  submit rings the five boxes **2px `rgb(107, 44, 255)`** with the heights unchanged (36.9 / 44)
+  and prints *Add the missing details and try again.* in violet; typing a name clears its box
+  alone; filled, the href is `mailto:bookings@kaimercer.co.uk?subject=Enquiry` with the five
+  values and `Message:` over the message; the click swaps in the sent card (*CHECK YOUR MAIL
+  APP*, Titan, uppercase, pink) and *Write another* restores all six values. `n=0`: the message
+  box and the pill alone over the steps; `n=5` one lone box at the full measure; `steps: []`: no
+  column, the form alone. No page error.
+- **Digest: themes 0, 1, 2 and 3 zero files of 660, canvas and `live=1`** (a fresh `:5200`, both
+  labels there, no one-row file in any of the four labels); theme 4 moved exactly **form arch 3
+  at three widths** on each surface (6 files).
+- **`FIELDS.form` has no template-keyed `in` row** (checked in Node), so no `reach.mjs` run was
+  owed — the twins' finding, a fourth time.
+- **In the builder** (`page-check.mjs Pop 3` on `:5200`): four modal cards, no error or warning;
+  every nav link lands, Enquiries and Book Now on `#form`; the published form's rings read 1px
+  lime idle and 2px violet refused (the message box idle), and the mailto composes; the player
+  plays; `overflow390` 0; the 390 burger 1 → 11. The published form is **762** at 1440 (624.4 ×
+  1.22) and 932 at 390. The seam clips: the calendar's `#EBEBEB` panel on white into the form's
+  white, straight at 1440 and 390; the form into the testimonials is still the flat arm's teal
+  sheet, which section 10 replaces.
+- **Named diffs**: "Contact Us" against the narrow masters' "KAI MERCER" (open question 8,
+  JP-081's reply); the foot's `padY`; Titan against Chunko (the labels and the pill wider, the
+  head 509 → 534 at 1440 in the frame's units); the pill label 0.5–1.9px low (open question 20);
+  the 390 ENQUIRE 1px low; the published placeholders at `::placeholder`'s .45.
+- **For the sweep's CLAUDE.md pass**: `notes/form.md`'s layout-4 paragraph carries Pop (written
+  in this session's commit). CONVENTIONS C's *refused box* row gains a Pop (layout 4) form cell —
+  Lime's 2px violet against the 1px lime, no arm — and *a head that must fit its measure* a form
+  cell; D4's form row a Pop column (no `G`, Grunge's `ring`, the pill and the refusal as they
+  stand, the fit widened).
+
 ### Inherited and used
 
 *(The running list the sweep folds into [`../CONVENTIONS.md`](../CONVENTIONS.md): each time a
@@ -2404,6 +2512,27 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
   calendar's probes; *the digest is committed* (lime/layout-1); *the whole-page published check*
   (lime/layout-1) — `page-check.mjs Pop 3`.
 
+- Section 9: *a section whose live seam is hoisted above its branches can always take a block*
+  (lime/layout-1) — ahead of `if (s.v3)`, the seam shared whole; *a widened block can need no
+  `G` at all* (grunge/layout-3) — four `pop` arms; *the paired diff walk* (grunge/layout-2) —
+  59 = 59 against Lime's at three widths, the whole read; *a scheme that did not move can still
+  move the binding* (grunge/layout-3) — turned round: no binding moved, but `stroke/2` is not
+  Lime's `s.ac` here, Grunge's `ring`; *a hand-off's trap is checked against the block before it
+  is coded* (pop/layout-4, section 7) — the pill, a third time; *a refused box changes colour,
+  not weight alone* (CLAUDE.md) and *a refusal's weight follows a thick idle ring*
+  (pop/layout-4, section 8) — turned round: a thin idle ring, so Lime's 2px stands; *`vm.title`
+  shadows the ramp's `title` size* (lime/layout-1) — Display/Title 28 / 22 / 20; *a stand-in
+  face's glyph floor is measured per site* (editorial/layout-3), *Titan at Display/Title takes
+  0.1em* (pop/layout-3) and *scan a glyph floor with the string drawn alone* (pop/layout-3) —
+  0.14 / 0.1 / 0.08; *a baseline row is read by its clean edges* (pop/layout-4, section 5) —
+  ENQUIRE's Q; *a head that must fit its measure is fitted to its widest word*
+  (editorial/layout-1) and *probe a display string with a long word* (editorial/layout-4) —
+  two heads, three widths, a Lime control; *a twin's frame-less control is checked against its
+  own surround* (editorial/layout-3) — the refused box on white; *a seeded page cannot show an
+  empty slot* (lime/layout-1) — `n=0`, `n=5`, `steps: []`; *field reach is measured* (CLAUDE.md)
+  — no template-keyed row; *the digest is committed* (lime/layout-1); *the whole-page published
+  check* (lime/layout-1) — `page-check.mjs Pop 3`.
+
 ## Open questions
 
 1. ~~**Decision 1** — the seats.~~ Not a user call; session 0 writes the row.
@@ -2496,7 +2625,10 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
    1.2), shared by every Pop pill at every layout, so a lift there (likely ~0.14em on the text
    alone, *lift the label, never the ring*) would move theme 4 at arches 0–2 and is outside a
    section session. Named; a candidate for the sweep or its own small pass, with a five-theme
-   digest scoped to `s.pop`.
+   digest scoped to `s.pop`. *Section 9 found the same on the form's submit*, which is the
+   block's own inline pill (a span label beside its disc), not `BookPill`: 0.23 below / 0.63 /
+   0.25 above the pill's centre where the frame's Chunko stands 1.64 / 1.1 / 1.25 above. Left with
+   the rest, so one fix moves every Pop pill together.
 
 21. **The calendar's refused box is 4px of violet** (section 8, the session's call): the idle
    ring is already 4px of full pink, so the twins' 2px would read thinner than the box it marks.
