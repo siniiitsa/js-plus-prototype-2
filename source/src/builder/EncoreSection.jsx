@@ -25812,29 +25812,44 @@ function Testimonials({ s }) {
     // and **324 × 382** cells; every cell is **square**; the register is read
     // off the cells (below); and the head fits its widest word, since the
     // twins' `break-word` splits a long one in Gloock (and did in Noto).
-    if (s.limeTree) {
+    //
+    // Pop (964:73244 · 971:10923 · 977:14603) widens it a third time, the pair
+    // `(s.limeTree || s.pop)` folding into `limeTree` in the sweep (Pop
+    // layout 4's decision 2): 41 = 41 / 33 = 33 / 41 = 41 nodes against Lime's,
+    // every box Lime's — the 56 / 30·30·48·30 / 30·10 insets, the 30 corners,
+    // the 73.6 discs — but the desktop cell, **430** (716 = 56 + 146 + 28 +
+    // 430 + 56, the head two lines of Display/LG 82). **Seated on Scheme 4,
+    // blue**, so it takes Grunge's and Editorial's no-sheet `G`: Lime's
+    // `s.tx` would lay a yellow sheet over the root. Its own: the register is
+    // four seats (below), the head fits its widest word as Editorial's does,
+    // and the sheet's foot is a 10px teal rule at 1440 and 768.
+    if (s.limeTree || s.pop) {
       const grunge = s.grunge
       const ed = s.editorial
+      const pop = s.pop
       const mist = '#D5E3B2'   // Scheme 4 `sem/box/1` — the two light cells
       const hair = '#15180F26' // `sem/stroke/1` on a light scheme, 15% ink
       const ring = (c) => `inset 0 0 0 1px ${c}`
       // Scheme 4's `sem/bg` and `sem/text/1`, which Lime's block wrote as the
       // resolved `s.tx` / `s.bg`: pale and ink under Lime, the page's black and
       // red under Grunge, and the seat's own terracotta and paper under
-      // Editorial — the root's ground, painted again.
-      const G = grunge || ed
+      // Editorial — the root's ground, painted again. Under Pop the seat's
+      // blue and teal.
+      const G = grunge || ed || pop
         ? { sheet: s.bg, ink: s.ac }
         : { sheet: s.tx, ink: s.bg }
       // The display face, Grunge's three moves behind one flag (a no-op under
       // Lime): Anton scaled to Stones Crush's glyph, its leading divided back
-      // out, uppercase. Editorial uppercases too (`faced` is its identity).
+      // out, uppercase. Editorial uppercases too (`faced` is its identity), and
+      // Pop sets Titan through `faced` at 0.98.
       const disp = (size, lh) => ({
         fontSize: faced(s, size), lineHeight: facedLh(s, lh),
-        ...(grunge || ed ? { textTransform: 'uppercase' } : {}),
+        ...(grunge || ed || pop ? { textTransform: 'uppercase' } : {}),
       })
-      // Editorial's desktop inset and cell, and its square corners.
+      // Editorial's desktop inset and cell, and its square corners; Pop's
+      // taller desktop cell under its two-line head.
       const radius = ed ? 0 : u(30)
-      const cellH = u(desk ? (ed ? 382 : 344) : 392.4)
+      const cellH = u(desk ? (ed ? 382 : pop ? 430 : 344) : 392.4)
       const pad = ed && desk
         ? `${u(48)} calc(${s.surplus} + ${u(48)}) ${u(48)}`
         : `${padTop} ${padH} ${padBot}`
@@ -25866,8 +25881,30 @@ function Testimonials({ s }) {
       // Scheme 4's `text/1` paper, **unstroked** — left bare, as Grunge left
       // its red one — lettered terracotta round a terracotta disc in a paper-56
       // ring. The frame's order is the twins' `SEATS`.
-      const S1 = ed && s.onScheme[1]
-      const REG = ed ? [
+      //
+      // Pop's wall is blue / black / pink / teal, **four seats**, where every
+      // twin's third cell repeats its first: two cells bind `box/1`, on
+      // Schemes 4 and 3. Read off each cell's `explicitVariableModes` and
+      // bindings at 1440 and 768: Scheme 4's `box/1` `#3F76FF` in its
+      // `stroke/1` teal, lettered `text/2` yellow, round a teal `text/1` disc
+      // lettered `sem/bg` blue; a cell naming **Scheme 1**, `box/3` black in
+      // its `stroke/1` pink (not Editorial's `stroke/2`, which is lime here),
+      // lettered `text/1` pink round a pink disc lettered white; a cell naming
+      // **Scheme 3**, `box/1` `#FF63B8` in a violet `stroke/1`, lettered
+      // `text/2` violet round a lime disc lettered pink; and Scheme 4's
+      // `text/1` teal, **unstroked** and left bare as the twins leave theirs,
+      // lettered `sem/bg` blue round a blue disc in a teal ring. The 390
+      // master disagrees on the two cells it barely shows (the black cell's
+      // copy `text/2` violet, the third cell Scheme 4's blue); 1440's and
+      // 768's reading stands, since the seat owns the hue at every width.
+      const S1 = (ed || pop) && s.onScheme[1]
+      const S3 = pop && s.onScheme[3]
+      const REG = pop ? [
+        { bg: s.box1, fg: s.tx, edge: s.stroke1, av: s.ac, avFg: s.bg, avEdge: s.stroke1 },
+        { bg: S1.box3, fg: S1.ac, edge: S1.stroke1, av: S1.ac, avFg: S1.bg, avEdge: S1.stroke1 },
+        { bg: S3.box1, fg: S3.tx, edge: S3.stroke1, av: S3.ac, avFg: S3.bg, avEdge: S3.stroke1 },
+        { bg: s.ac, fg: s.bg, edge: 'transparent', av: s.bg, avFg: s.ac, avEdge: s.stroke1 },
+      ] : ed ? [
         { bg: s.box1, fg: s.tx, edge: s.stroke1, av: s.ac, avFg: s.bg, avEdge: s.stroke1 },
         { bg: S1.box3, fg: S1.ac, edge: S1.stroke2, av: S1.ac, avFg: S1.bg, avEdge: S1.stroke2 },
         { bg: s.ac, fg: s.bg, edge: 'transparent', av: s.bg, avFg: s.ac, avEdge: s.stroke1 },
@@ -25882,8 +25919,9 @@ function Testimonials({ s }) {
       ]
       // Retro's own seat order, and Retro's own cost: the fourth seat (the ink
       // card here, the rust one there) is unreachable at 768 and 390 at any
-      // count, because the hue belongs to the seat and not the review.
-      const SEATS = [0, 1, 0, 2]
+      // count, because the hue belongs to the seat and not the review. Pop's
+      // four registers take one seat each, so its teal cell pays the same.
+      const SEATS = pop ? [0, 1, 2, 3] : [0, 1, 0, 2]
 
       // The frame's own → vector (21.22 × 18.48, `exportAsync` off the node),
       // drawn in the disc's `currentColor`; the back arrow is the frame's
@@ -25899,8 +25937,10 @@ function Testimonials({ s }) {
       )
       // Scheme 4's `text/1` disc with a `sem/bg` glyph: ink on the pale sheet
       // with a pale arrow (a red disc with a black arrow on the black page
-      // under Grunge). 73.6 at `radius/pill`, 5 apart, read off the handler
-      // for the cursor — Pager's rule.
+      // under Grunge; a teal disc with a blue arrow on the blue sheet under
+      // Pop, whose 1px `sem/bg` rim is the sheet's own blue again, and whose
+      // blur 24 stands behind an opaque fill). 73.6 at `radius/pill`, 5 apart,
+      // read off the handler for the cursor — Pager's rule.
       const disc = (back, onClick, key) => (
         <span key={key} onClick={onClick} style={{
           width: u(73.6), height: u(73.6), flex: 'none', borderRadius: '999px',
@@ -25924,10 +25964,14 @@ function Testimonials({ s }) {
             background: r.bg, color: r.fg, boxShadow: ring(r.edge), borderRadius: radius,
             padding: u(24), overflow: 'hidden',
             // The stated box, Retro's `minHeight` reading: 344 at desktop (the
-            // 716 less its two-line head; Editorial's 382, 716 less its 48s),
-            // 392.4 on both narrow masters.
+            // 716 less its two-line head; Editorial's 382, 716 less its 48s;
+            // Pop's 430), 392.4 on both narrow masters.
             minHeight: cellH,
           })}>
+            {/* Pop's mark is Titan at Label/LG, lh 1.1, so it lifts inside the
+                disc by layout 3's token, 0.12em: its ink centre then stands
+                0.95 / 2.63 / 0.88px over the disc's against the frame's 1.15 /
+                1.6 / 1.4 (Blink's per-size rounding at 768). Never the disc. */}
             {!!q.who && (
               <span style={{
                 width: u(56), height: u(56), flex: 'none', borderRadius: '999px',
@@ -25935,7 +25979,7 @@ function Testimonials({ s }) {
                 display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                 overflow: 'hidden',
                 fontFamily: s.label, ...disp(s.labelLg, 1.1), letterSpacing: s.dls,
-              }}>{q.mark}</span>
+              }}>{pop ? <span style={{ position: 'relative', top: '-0.12em' }}>{q.mark}</span> : q.mark}</span>
             )}
             {!!q.quote && (
               <p style={{
@@ -25977,13 +26021,14 @@ function Testimonials({ s }) {
           </div>
         )]
 
-      // The head. Under Editorial it stands in its own `inline-size`
+      // The head. Under Editorial and Pop it stands in its own `inline-size`
       // container, which takes the row's fill in its place.
+      const fit = ed || pop
       const h2 = (
         <h2 style={distressed(s, {
-          margin: 0, ...(ed ? {} : { flex: '1 1 0', minWidth: 0 }),
+          margin: 0, ...(fit ? {} : { flex: '1 1 0', minWidth: 0 }),
           fontFamily: s.display,
-          ...disp(ed && s.titleWordEms ? `min(${s.dispLg}, calc(100cqi / ${s.titleWordEms}))` : s.dispLg, 0.89),
+          ...disp(fit && s.titleWordEms ? `min(${s.dispLg}, calc(100cqi / ${s.titleWordEms}))` : s.dispLg, 0.89),
           letterSpacing: s.dls, color: G.ink,
           overflowWrap: 'break-word',
           // The row is bottom-aligned with the discs (MAX at every width), so
@@ -25991,12 +26036,16 @@ function Testimonials({ s }) {
           // the line box at .89 against the frame's 0.132 / 0.138 / 0.133, so
           // the glyphs lift alone (section 7's rule), 0.055em, to 0.125 /
           // 0.135 / 0.150, each under 0.85px off (display-face.md step 4,
-          // layout 4; Noto took 0.08em).
-          ...(ed ? { position: 'relative', top: '-0.055em' } : {}),
+          // layout 4; Noto took 0.08em). Titan's ink stood 0.133 / 0.120 /
+          // 0.128em under its box top with its floor 0.044 / 0.066 / 0.045
+          // against the frame's 0 and 0.185 / 0.186 / 0.184, so Pop's head
+          // takes its token, 0.14em (plans/pop/layout-4.md, section 10).
+          ...(ed ? { position: 'relative', top: '-0.055em' }
+            : pop ? { position: 'relative', top: '-0.14em' } : {}),
         })}>{s.title}</h2>
       )
       const head = !s.title ? null
-        : ed ? <div style={{ flex: '1 1 0', minWidth: 0, containerType: 'inline-size' }}>{h2}</div>
+        : fit ? <div style={{ flex: '1 1 0', minWidth: 0, containerType: 'inline-size' }}>{h2}</div>
         : h2
 
       return (
@@ -26004,10 +26053,13 @@ function Testimonials({ s }) {
           // The sheet: Scheme 4's pale `sem/bg`, out to the section's own
           // edges past the root's padding, with the frames' own insets back.
           // Under Grunge `sem/bg` is the page itself, so it paints nothing new,
-          // and under Editorial it is the seat the root already paints.
+          // and under Editorial and Pop it is the seat the root already paints.
           margin: `calc(-1 * ${s.padY}) calc(-1 * ${s.padX})`,
           background: G.sheet, color: G.ink,
           padding: pad,
+          // Pop's 10px teal rule is the sheet's own last 10, inside its foot;
+          // the 390 master draws none.
+          ...(pop && !s.mob ? { boxShadow: `inset 0 -${u(10)} 0 ${s.stroke1}` } : null),
           ...col(u(28)),
         }}>
           {/* The head fills at every width, Retro's call: the 1440 master hugs
