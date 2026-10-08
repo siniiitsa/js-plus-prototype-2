@@ -159,7 +159,7 @@ Screenshots (the tester's):
 | Order | ID | Report (short) | Verdict | Size | Decision | Status |
 |---|---|---|---|---|---|---|
 | 1 | JP-111 · JP-117 · JP-118 · JP-119 | the face · the scribble · © · the placeholders | four calls; no code | — (decisions) | **user**: A · A · A · A | **done** (2026-10-08) |
-| 2 | JP-118 | *C 2026* where © is meant | **Confirmed, but the frames type it**: all five footer frames carry a capital C (U+0043); the seed copies them | S | entry 1: **A**, © on every template | open |
+| 2 | JP-118 | *C 2026* where © is meant | **Confirmed, but the frames type it**: all five footer frames carry a capital C (U+0043); the seed copies them | S | entry 1: **A**, © on every template | **done** (2026-10-08) |
 | 3 | JP-120 (gallery) | four literals, the label "Not shown" | **Confirmed**: JP-090's rule, four more sites, both bodies | S–M | **user**: the shape, the emptied back link | open |
 | 4 | JP-113 | 390 credit runs off the page | **Confirmed, and named** (Editorial's retest sweep, `:688`, `:1241`): every `s.limeTree` template | S | no (JP-120 (form)'s shape) | open |
 | 5 | JP-119 | live placeholders at .45 | **Confirmed, and recorded**: the canvas draws the frame's .8; the live box keeps JP-093's .45 | S | entry 1: **A**, `--ph: 0.8` | open |
@@ -389,6 +389,43 @@ A fact found in entry 1, for the reply and the designer: **Pop's frame face, Chu
 no © at all** (its cmap, JP-111). So the designer could not have typed the sign in it. Grunge's and
 Editorial's footers are set in demo faces too (Stones Crush, Fisterra Fora), so the same may hold
 there. That was not checked, so it supports A without proving it for all five.
+
+**Settled** (2026-10-08, on `96d0e44`).
+- **The evidence held** at triage's lines: `data.js:2400` and `:2444`, `EncoreBuilder.jsx:2050`
+  and `:4270`, `EncoreSection.jsx:29586` (the `s.limeTree` body) and `:29789` (Retro's).
+- **Reproduced** on HEAD, card 1 of all five templates: the canvas (Desktop, Tablet and Mobile
+  tabs), the edit panel's *Small print* box and the published tab at 1440, 768 and 390 all read
+  `C 2026 Kai Mercer` (capitals under Grunge, Editorial and Pop, by CSS `text-transform`).
+- **The code**: `copyrightOf()` returns `` `© 2026 ${name}` ``, and its comment says why the seed
+  leaves the frames' C. `sectionVm` and `EditPanel`'s chain both call it, so neither changed.
+  `notes/footer.md` and CLAUDE.md name the function, not its string, so neither changed either.
+- **Each face draws its own ©.** The build's small-print faces are **Fraunces** (Retro), **Bebas
+  Neue** (Lime), **Anton** (Grunge), **Gloock** (Editorial) and **Titan One** (Pop): the frames'
+  Soulway, Stones Crush, Fisterra Fora and Chunko are not shipped. CDP's
+  `CSS.getPlatformFontsForNode` on the span names one web face at ×17 on every reading (×16 at
+  Retro's two-line 390, the break space, as on HEAD), so nothing fell back. The row grew by the
+  glyph's own advance and nothing else. The whole text's `Range` grew by as much as the first
+  character's did, on the desktop canvas: Lime +7.09 against +7.10, Grunge +3.00 against +3.00,
+  Retro +2.61 against +2.59, Editorial +1.94 against +1.93, Pop +0.35 against +0.34. The fonts are Google's full families (the `latin` subset
+  holds U+00A9) in `index.html`, `preview.html` and the standalone build alike.
+- **Casing**: no theme cases `'upper'` today, and `vm.copyright` never passes through `caseText`.
+  `caseText('© 2026 Kai Mercer', 'upper')` keeps U+00A9, and CSS `text-transform: uppercase`
+  renders `© 2026 KAI MERCER` (`innerText`, all three uppercase templates).
+- **Digest** (all categories, themes 0–4, three widths, canvas and `live=1`; HEAD worktree :5174
+  against a fresh tree server :5177). Before the edit: 0 of 660 a surface. After: **30 of 660 a
+  surface, every one `cat=footer`** (arch 0 and `page=2`), one row each, the small print's span:
+  - its text at every width;
+  - its width at desktop and tablet (Retro +2.6 / +3.2, Lime +7.1 / +6.8, Grunge +3.0 / +2.9,
+    Editorial +1.9 / +1.6, Pop +0.4 / +0.4);
+  - at 390 the text alone (the span is a fixed half), except Pop's right-packed row, x −0.4 and
+    width +0.4. Retro's two-line 390 keeps its 39.5 height.
+  Every other section: 0.
+- **Typed small print stays the artist's**: `C 2026 Mercer Music Ltd` through `st`'s dispatch,
+  on card 1 of all five, reads unchanged on the canvas, in the panel and on the published tab at
+  three widths. Through the harness (`&cj=`), seed and typed across pages 0–3, themes 0–4, three
+  widths, both surfaces: 120 of 120 `© 2026 Kai Mercer` and 120 of 120 the typed line.
+- **The edit panel** shows `© 2026 Kai Mercer` as the box's value under every template.
+- The designer note was seeded at triage, so it is not repeated.
 
 ---
 

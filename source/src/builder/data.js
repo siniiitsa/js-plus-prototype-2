@@ -2441,7 +2441,11 @@ export function caseText(t, casing) {
 }
 
 // The footer's small print, off the artist's name. sectionVm and EditPanel both read it.
-export const copyrightOf = (name) => `C 2026 ${name}`
+// The sign, not the letter (JP-118, user call, 2026-10-08): all five footer frames
+// type a capital C ("C 2026 Kai Mercer"), Pop's in a face with no © to type, and the
+// seed copied it until the tester read it as the © it stands for. Each template's
+// footer face draws its own ©; a small print the artist typed is never touched.
+export const copyrightOf = (name) => `© 2026 ${name}`
 // The enquiry form's layout-3 head, off the artist's name for the same reason
 // (JP-070, user call, 2026-09-29): every layout-3 frame reads "Book Kai for /
 // your event", which names its mock artist. Only while the heading key is
