@@ -130,7 +130,8 @@ another `notes/` file.
   `s.stroke2`, `#FF0000`, in the same widened block; an inset shadow
   rather than a border so the frame's row height holds; under Editorial it is 1px of
   `s.stroke2` terracotta dashed 10, 10, a `DashRule` on the row, and the tag chips' leaked
-  hairline is dropped, invisible on paper) — and
+  hairline is dropped, invisible on paper; under Pop it is Grunge's 4px `s.stroke2`, lime, and the
+  hairline is dropped as Editorial's, invisible on white) — and
   that rule is the one thing in the branch that **bleeds**: the row cancels the root's padding and
   puts the identical value straight back, so the border reaches the page edges and the content
   keeps the section's column, which is the frame's 56 / 30 / 10 inset because `padX` is now that
@@ -143,14 +144,18 @@ another `notes/` file.
   **`vm.tierFeatSeats`** (`vm.chips`' construction, a seat per index rather than a hue per
   feature; under Lime the seats are the layout-4 header's own chip pair, `s.box1` / `s.ac` by
   parity, inlined in the block, and under Editorial `s.onScheme[1].chips` by parity, blush and
-  terracotta, the pair the frame names outright). `unit` moves with it: nothing prints a suffix after the price here, so **`vm.tierKind`**
+  terracotta, the pair the frame names outright, and under Pop its first four seats **by index**,
+  lime / pink / blue / teal, since the frame binds `scheme/1/tag1–4` and re-seats a row's pills by
+  each label's place in its chip row). `unit` moves with it: nothing prints a suffix after the price here, so **`vm.tierKind`**
   — the unit with its leading slash dropped — stands above the numeral where the frame writes
   SET / PROJECT, which is one section-wide word against the frame's different one per row.
   **Under Editorial the name and the numeral are `faced`** (Display/SM through `faced` /
   `facedLh`, Grunge's arm; `plans/editorial/display-face.md` step 4, layout 4, user call,
   2026-10-06): the frame states Fisterra there, and raw, Gloock's taller cap set THE HOUSE PARTY
   and THE WEDDING SET on two lines in the 1440 name's 335.4. Faced they are 326.3 and 333.7 on
-  one. The numeral is lifted 0.045em (Noto took 0.07).
+  one. The numeral is lifted 0.045em (Noto took 0.07). **Under Pop** they are Titan, `faced`
+  and upper, the name and the numeral lifted 0.14em and the kind 0.1em, the price column's floor
+  225 (`plans/pop/layout-4.md`, section 7).
 - **Layout 2's two labels are the artist's** (JP-095 (a), user call, 2026-10-01, the label shape of
   JP-071 and JP-090): `kicker`, the `[ PRICING ]` over the heading, and `featsLabel`, the
   `WHAT’S INCLUDED` over the plan card's features, both `in: [1]` and read by both bodies. They are

@@ -12065,11 +12065,40 @@ function Pricing({ s }) {
     //     every display string is upper.
     // The pill is the twins' turned-round pair, and under Scheme 1 it is the
     // frame's: ink, lettered and disced paper round a terracotta arrow.
-    if (s.limeTree) {
+    //
+    // Pop (964:73229 at 1440 × 514; 971:10908 at 768 × 762; 977:14588 at 390
+    // × 805) is this tree node for node at all three widths (61 = 61 by
+    // traversal order; the 768 master stacks its dividers in row order, as
+    // Grunge's and Editorial's do), on Pop's Scheme 1 with no Device override
+    // and no effect, every paint bound but the hairlines. Every size is
+    // `THEME_RAMP.Pop`'s `s.*` to the token (display-sm 36 / 29 / 24, label-sm
+    // 16 / 13 / 12, list 20 / 16 / 15) and every text `sem/text/1` pink, `s.ac`,
+    // so what moves is:
+    //   · the rule, `sem/stroke/2` lime (`s.stroke2`, Grunge's key, since
+    //     Pop's `s.ac` is the pink type), 4px INSIDE the foot, the inset shadow;
+    //   · the feature pills, `scheme/1/tag1–4` **by index**, lime / pink / blue
+    //     / teal — `s.onScheme[1].chips`, its first four seats alone: the frame
+    //     binds those four and no fifth, and the second row re-seats its pills
+    //     by each label's place in its chip row, which is index, not parity.
+    //     Each takes its own seat's ink (the header's call, trap 7): blue
+    //     cream where the frame letters it `scheme/3/inactive/text` white,
+    //     teal black where it binds `scheme/4/tag1/text` #141414;
+    //   · the tag chips' hairline, Lime's unbound #F2FFD0 at 15%, invisible on
+    //     white — dropped, Editorial's call (Grunge's `s.stroke1` is opaque
+    //     pink here);
+    //   · the price column hugs at **225**, the frame's "Star Enquiry" pill;
+    //   · the name and the numeral are Titan, `faced` / `facedLh` and upper;
+    //     both lifted (below).
+    // The pill is the twins' pair again: violet `text/2`, lettered and disced
+    // white `sem/bg` round a pink `text/1` arrow — which `discFg={s.ac}`
+    // already says. The pair `(s.limeTree || s.pop)` folds into `limeTree` in
+    // the sweep (plans/pop/layout-4.md, decision 2).
+    if (s.limeTree || s.pop) {
       const grunge = s.grunge
       const ed = s.editorial
-      const featSeats = ed ? s.onScheme[1].chips : grunge ? s.chips : [{ bg: s.box1, fg: s.ac }, { bg: s.ac, fg: s.activeFg }]
-      const disp = grunge || ed
+      const pop = s.pop
+      const featSeats = pop ? s.onScheme[1].chips.slice(0, 4) : ed ? s.onScheme[1].chips : grunge ? s.chips : [{ bg: s.box1, fg: s.ac }, { bg: s.ac, fg: s.activeFg }]
+      const disp = grunge || ed || pop
         ? { fontSize: faced(s, s.dispSm), lineHeight: facedLh(s, 1), textTransform: 'uppercase' }
         : { fontSize: s.dispSm, lineHeight: 1 }
       const chip = {
@@ -12079,7 +12108,7 @@ function Pricing({ s }) {
       const limeRow = (last) => ({
         ...(desk ? row(u(40), { alignItems: 'flex-start' }) : col('32px', { alignItems: 'flex-start' })),
         ...bleedX, paddingTop: pad, paddingBottom: pad,
-        boxShadow: last || ed ? undefined : `inset 0 ${u(-4)} 0 0 ${grunge ? s.stroke2 : s.ac}`,
+        boxShadow: last || ed ? undefined : `inset 0 ${u(-4)} 0 0 ${grunge || pop ? s.stroke2 : s.ac}`,
         color: s.ac,
         ...(ed ? { position: 'relative' } : {}),
       })
@@ -12092,6 +12121,10 @@ function Pricing({ s }) {
               fontFamily: s.display, ...disp,
               letterSpacing: s.dls, overflowWrap: 'break-word', textTransform: 'uppercase',
               ...(desk ? { width: u(409), flex: 'none' } : { width: '100%' }),
+              // Titan's cap sits 0.155 / 0.141 / 0.127em under Chunko's at lh 1
+              // (each string alone on white, against the frame's
+              // `absoluteRenderBounds`): Display/SM's token, 0.14.
+              ...(pop ? { position: 'relative', top: '-0.14em' } : {}),
             })}>{t.name}</span>
           )}
 
@@ -12103,7 +12136,7 @@ function Pricing({ s }) {
               <div style={row(u(8), { flexWrap: 'wrap' })}>
                 {t.tagLabels.map((g, j) => (
                   <span key={j} style={{
-                    ...chip, boxShadow: ed ? undefined : `inset 0 0 0 1px ${s.stroke1}`, borderRadius: s.btnR,
+                    ...chip, boxShadow: ed || pop ? undefined : `inset 0 0 0 1px ${s.stroke1}`, borderRadius: s.btnR,
                     padding: `${u(5)} ${u(10)}`,
                   }}>{g}</span>
                 ))}
@@ -12135,9 +12168,13 @@ function Pricing({ s }) {
 
           <div style={col(u(12), {
             alignItems: 'flex-start',
-            ...(desk ? { flex: 'none', minWidth: u(ed ? 218 : grunge ? 177 : 184) } : { width: '100%' }),
+            ...(desk ? { flex: 'none', minWidth: u(pop ? 225 : ed ? 218 : grunge ? 177 : 184) } : { width: '100%' }),
           })}>
-            {!!s.tierKind && <span style={labelStyle(s, s.labelSm)}>{s.tierKind}</span>}
+            {/* Pop's Label/SM at lh 1.1 sat 0.11–0.15em low wide and
+                0.06–0.09 at 390; Display/Title's 0.1 at the same height. */}
+            {!!s.tierKind && (
+              <span style={labelStyle(s, s.labelSm, pop ? { position: 'relative', top: '-0.1em' } : undefined)}>{s.tierKind}</span>
+            )}
             {!!t.price && (
               <span style={row(u(20), { alignItems: 'flex-end' })}>
                 <span style={{
@@ -12149,11 +12186,14 @@ function Pricing({ s }) {
                     up its box against Fisterra's 0.180 / 0.175 / 0.180
                     (`absoluteRenderBounds`), so the numeral alone is lifted
                     0.045em, to 0.166 / 0.169 / 0.197, each under 0.6px off
-                    (display-face.md step 4, layout 4; Noto took 0.07). */}
+                    (display-face.md step 4, layout 4; Noto took 0.07).
+                    Titan's floor stood 0.147 / 0.139 / 0.129em under
+                    Chunko's 0.24, so Pop's numeral takes the token's 0.14,
+                    alone, leaving "from" where it sits. */}
                 <span style={distressed(s, {
                   fontFamily: s.display, ...disp,
                   letterSpacing: s.dls, overflowWrap: 'break-word', minWidth: 0,
-                  ...(ed ? { position: 'relative', top: '-0.045em' } : {}),
+                  ...(ed ? { position: 'relative', top: '-0.045em' } : pop ? { position: 'relative', top: '-0.14em' } : {}),
                 })}>{t.price}</span>
               </span>
             )}
