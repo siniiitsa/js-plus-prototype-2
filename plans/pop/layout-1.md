@@ -1574,6 +1574,13 @@ counters and ink traps: its corners are soft. Rubik 900 is the squarer drawing, 
     foot, which is the page's idiom (the hero's and this frame's own 390 scribble sit under their
     heads), so it was not re-anchored. Measured: the turned box at (165.7, 47.0) 338.6 × 100.9 off
     the content's corner against the frame × 0.82 (165.7, 46.7) 338.6 × 100.9.
+    *Reversed* (JP-117, user call, 2026-10-08, [`qa-fixes.md`](./qa-fixes.md)). The offsets were
+    the leaked Bebas box's, so the stroke's ink topped 0.96 of the Titan cap down, at the word's
+    foot, where the frame's crosses its lower half. It is now anchored by the frame's own relation
+    to its word: the ink tops 0.468 of the cap below the cap's top and starts 0.382 into the word's
+    ink, set in ems of the heading off the seeded word (2.686em, 0.330em) less the turned path's
+    own ink offset. The stroke keeps the frame's size, so against the smaller Titan cap its foot
+    runs 0.735 of the cap past the baseline (the frame's 0.265).
   - **768: not drawn.** The master keeps the desktop's numbers in a 768 frame, where the tile, its
     later sibling, covers it whole — a leak that does not show (the render agrees).
   - **390: off the radius label**, (59.06, 16.46) at 0.2662 (the master's own scale, 108.42 ×

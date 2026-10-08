@@ -20143,10 +20143,27 @@ function EventsMap({ s }) {
       // Pop's scribble, the node's own `#C6F200` (`s.stroke2`) — not the
       // stickers' duller POP_STICKER_LIME — turned Figma −3.98 → CSS +3.98
       // about its own corner, which the `relativeTransform` places. It hangs
-      // off the heading's start at 1440, (208.68, 27.91) from the text box's
-      // corner, and off the radius label's at 390, (59.06, 16.46) at 0.2662;
-      // the 768 master keeps the desktop's numbers in a 768 frame, where the
-      // tile, painted after it, covers it whole — not drawn.
+      // off the radius label's corner at 390, (59.06, 16.46) at 0.2662; the 768
+      // master keeps the desktop's numbers in a 768 frame, where the tile,
+      // painted after it, covers it whole — not drawn.
+      //
+      // At 1440 it crosses the heading by the frame's own relation to its word
+      // (JP-117, user call, 2026-10-08, *reversed*: the fit kept the frame's
+      // (208.68, 27.91) off the text box, which is a Bebas 130 leak, and so
+      // swept the stroke under the shorter Titan word). In 964:58629 the
+      // stroke's ink tops 0.468 of the cap below the cap's top and starts 0.382
+      // into the word's ink. The seeded MANCHESTER in Titan at Display/LG
+      // inks from 0.0406 to 6.9670em across and from −0.0119 to 0.7182em
+      // down, off the h2's box (its 0.14em lift inside those), so the ink's
+      // corner is (2.686em, 0.330em), and the box's is that less the turned
+      // path's own: its ink starts 4.93 left of the box's corner and tops
+      // 27.59 below it (viewBox units, × 0.82 here), 410.85 × 74.22 in all —
+      // the frame's 410.85 × 74.20,
+      // so the path and the turn are the frame's. The ems are the heading's
+      // (the svg's parent is the section's 16px), so the anchor follows its
+      // size; a typed heading keeps the seed's offsets. The stroke keeps the
+      // frame's size against the smaller Titan cap, so its foot runs further
+      // past the baseline than the frame's 0.265 of the cap.
       const scribble = (left, top, k) => (
         <svg viewBox="0 0 407.35 95.01" aria-hidden style={{
           position: 'absolute', left, top, width: `${Math.round(407.35 * k * 100) / 100}px`,
@@ -20187,7 +20204,10 @@ function EventsMap({ s }) {
             {pop ? (
               <div style={{ position: 'relative', minWidth: 0 }}>
                 {h2}
-                {!s.narrow && scribble(u(208.68), u(27.91), z)}
+                {!s.narrow && scribble(
+                  `calc(${faced(s, s.dispLg)} * 2.686 + ${u(4.93)})`,
+                  `calc(${faced(s, s.dispLg)} * 0.33 - ${u(27.59)})`, z,
+                )}
               </div>
             ) : h2}
             {/* Label/LG under Lime; Grunge's frame sets it in Display/Title,

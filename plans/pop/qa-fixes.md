@@ -164,7 +164,7 @@ Screenshots (the tester's):
 | 4 | JP-113 | 390 credit runs off the page | **Confirmed, and named** (Editorial's retest sweep, `:688`, `:1241`): every `s.limeTree` template; on HEAD a squeeze of the back link since JP-120 (gallery) | S | no (JP-120 (form)'s shape) | **done** (2026-10-08) |
 | 5 | JP-119 | live placeholders at .45 | **Confirmed, and recorded**: the canvas draws the frame's .8; the live box keeps JP-093's .45 | S | entry 1: **A**, `--ph: 0.8` | **done** (2026-10-08) |
 | 6 | JP-112 | the heart over song 12 | **Confirmed, and recorded**: seated off the content's foot because the seed draws no pager | S | **user**: **A**, the pager's seat at desktop; 390 as is | **done** (2026-10-08) |
-| 7 | JP-117 | the scribble under the word | **Confirmed, and recorded**: the frame's offsets kept against a Titan word they were not measured on | S | entry 1: **A**, the frame's fractions | open |
+| 7 | JP-117 | the scribble under the word | **Confirmed, and recorded**: the frame's offsets kept against a Titan word they were not measured on | S | entry 1: **A**, the frame's fractions | **done** (2026-10-08) |
 | 8 | JP-114 · JP-115 | the logo on two lines · the nav wraps | **Confirmed, and recorded** (layout-1.md `:1085`): JP-091's rule under Pop's room and cap | M | **measure, then decide** | open |
 | 9 | JP-116 | section gaps off the frames | **Confirmed, and recorded as inherited** in every section's *Settled*; two of the six seams are content shortfalls, not padding | M–L | **measure, then decide** the scope | open |
 | 10 | — | End-of-pass sweep | — | S | — | open |
@@ -1138,6 +1138,109 @@ the word's ink. Both are set in ems of the heading, so they follow its size. 768
 Entry 7 takes every number on HEAD before writing code: where the stroke's ink sits today against
 the Titan cap, and the turned box's offsets that the fractions imply.
 
+**Re-checked on HEAD** (`db4c109`, entry 7). The triage's lines had drifted by +61. `scribble()`'s
+comment and definition are `:20143`–`:20157`, `POP_MAP_SCRIBBLE_D` is at `:444`, the `h2` (lifted
+`top: −0.14em` under Pop) is `:20161`–`:20164`, the Pop-only wrapper and the desktop call
+`!s.narrow && scribble(u(208.68), u(27.91), z)` are `:20188`–`:20191`, and the 390 call under the
+radius label is `:20195`–`:20199`. `designCount('map')` is 4, the digest's four map layouts, so
+`arch 0` alone renders design 0.
+
+**Reproduced in the real app.** This was puppeteer on a HEAD worktree (:5174): Pop card 1, Publish,
+Open. Every scan isolates one node: the map root is hidden for the reference, then only the `h2` is
+shown, then only the svg. Each is clipped at 4× and read at 50% coverage. The desktop tab is zoomed
+1.2203.
+- **1440, the seed:** the Titan word inks 555 × 58.5 tab px (454.8 × 47.9 on the canvas). **The
+  stroke's ink tops 0.962 of the cap below the cap's top**, 2.2 px above the baseline, and starts
+  0.362 into the word. Its foot runs 1.23 of the cap past the baseline, and it ends 0.103 of the
+  width past the word's end. So it sits under the word, the tester's picture. The frame's are 0.468
+  and 0.382.
+- **768:** no scribble. **390:** the svg at (59.06, 16.46) under the radius label.
+- No sideways scroll and no page errors.
+
+**What the fractions imply, measured before the code** (canvas px off the `h2`'s wrapper, the
+heading at 65.66):
+- **The turned path's own ink** (`getPointAtLength` over `POP_MAP_SCRIBBLE_D`, turned +3.98° about
+  the box's corner) is 410.85 × 74.22 viewBox units, the frame's 410.85 × 74.20. So the path and the
+  turn are the frame's. Its ink starts 4.93 left of the box's corner and tops 27.59 below it.
+- **The seeded word** inks x 2.66 → 457.45 and y −0.78 → 47.16, the 0.14em lift included. In ems
+  that is 0.0406 → 6.9670 across and −0.0119 → 0.7182 down.
+- So the frame's relation puts the stroke's ink corner at (176.39, 21.65) = **(2.686em, 0.330em)**,
+  and the box's corner at (180.4, −0.97), where HEAD has it at (171.1, 22.9).
+
+**The harness was proven first.** The HEAD worktree (`db4c109`, :5174) against a fresh tree server
+(:5177), every category, themes 0–4, three widths: **0 of 660** on the canvas and **0 of 660** on
+`live=1`. No one-row renders.
+
+**Expected after-diff, named before the code:**
+- `cat_map_arch_0_theme_4_w_desktop`, on the canvas and on `live=1`: **1 file a surface**. Inside it
+  are exactly the `svg` and `path` rows, whose x and y move. Their size and the matrix do not, nor
+  does the `h2` or the wrapper.
+- Themes 0–3: **0**. Pop at 768 and 390: **0**.
+
+**Settled** (2026-10-08).
+- **`EncoreSection`, the `s.limeTree` map block: the desktop call alone.** It is now
+  `scribble(calc(fs × 2.686 + u(4.93)), calc(fs × 0.33 − u(27.59)), z)`, where `fs` is
+  `faced(s, s.dispLg)`, the `h2`'s own size string.
+  - The ems are the heading's through that string. The svg's parent is the wrapper, whose font is
+    the section's 16px, so a bare `em` would be wrong by 4×. A `fontSize` on the wrapper would add
+    a row to the diff.
+  - `scribble()` and the 390 call are untouched, so the 390 box is byte-identical.
+  - The size stays the frame's × 0.82, as the decision fixed only the top and the start.
+- **Digest** (the HEAD worktree :5174 against the tree :5177, every category, themes 0–4, three
+  widths): **1 of 660 on the canvas and 1 of 660 on `live=1`**, the named
+  `cat_map_arch_0_theme_4_w_desktop`. Inside it, the `svg` and `path` rows move (271.6, 127) →
+  (280.9, 103.2): +9.3 and −23.8. They stay 338.6 × 100.9 under the same matrix. Every other row is
+  unchanged (the port normalised). No one-row renders.
+- **The real app, Pop card 1, Publish, Open** (:5177, 4× scans):
+  - **1440, the seed: the ink tops 0.466 of the cap below the cap's top and starts 0.3815 into the
+    word**, 0.13 and 0.25 tab px off the frame's 0.468 and 0.382. The root (988.7) and the `h2` are
+    unchanged.
+  - The stroke keeps the frame's size against the smaller Titan cap. So **its foot runs 0.735 of the
+    cap past the baseline (the frame's 0.265), and it ends 0.123 of the word's width past the word's
+    end (the frame's 0.173)**. The lower arm reads further below the word than in the frame. That
+    is the decision's consequence, not a slip.
+  - **768:** still none. **390:** the svg box byte-identical to HEAD's.
+  - **Typed headings at 1440** (written through the fiber `st` dispatch into the map's `heading`):
+    *Maximilian Featherstonehaugh*, *Supercalifragilistic*, *Florence and the Machine*, *Manchester,
+    Liverpool, Leeds and Sheffield* and *Leeds*.
+    - The stroke keeps its em offsets off the heading's start, so on a two-line heading it crosses
+      the first line.
+    - It stays inside the root (tab x 271.0–682.3 in 1440; the root's overflow is visible, so
+      nothing clips it) and clear of the radius label (from x 1227.5).
+    - There is no sideways scroll.
+    - A short word (*Leeds*) leaves it running past the word's end, as the seed's offsets imply.
+  - **The editor's 1088 Desktop canvas** (1440 window, header panel open): the `h2` at 65.66 and the
+    svg's `left` / `top` at 180.363 / −0.932, the published tab's unzoomed values. The word's Range
+    in the wrapper is identical. The svg's right edge (559.5) is clear of the radius label (913.9).
+  - **The comparison shot**, the frame `964:58629` (`get_screenshot`) over HEAD's and the tree's
+    published 1440, cropped off each kicker's corner, was shown to the user.
+  - No page errors.
+- **Named, not fixed (for the sweep).** At 390 a long single-word map heading scrolls the page
+  sideways: *Supercalifragilistic* to 433, *Maximilian Featherstonehaugh* to 416. HEAD does the same.
+  The heading does not break inside a word. It is not the scribble's: the 390 call is unchanged. The
+  shared `s.limeTree` block's `h2` sets no `overflowWrap`, so the twins likely do the same; they
+  were not probed.
+- **Build.** `npm run build` is clean. The root `index.html` is not refreshed; the sweep does that.
+- **Docs.**
+  - The `scribble()` comment (*reversed*): the 390 anchor kept, the desktop relation and its numbers
+    written out.
+  - A *reversed* pointer under layout-1.md's scribble bullet (`:1570`).
+  - No `notes/`, CLAUDE.md or README line states the anchor. `notes/templates.md:312` and README
+    `:653` / `:666` only list the scribble as a sticker. The block comment's "a lime scribble
+    crosses the heading at 1440" is now true as written.
+
+Reply: **JP-117 — fixed.** On Pop's *Hero* layout at desktop, the lime scribble now crosses the
+lower half of MANCHESTER, as the design draws it, instead of running under the word.
+- **What changed:** the stroke is placed by the design's own relation to the word. Its top sits
+  about halfway down the letters and it starts about 38% of the way into the word. It is set
+  relative to the heading's size.
+- **What stays the same:**
+  - tablet draws no scribble, as before;
+  - mobile is unchanged, the scribble under *12 MILE RADIUS*.
+- **One difference from the frame, by design:** the stroke keeps the design's size, while the
+  build's heading face is shorter than the frame's (the frame renders this heading in Bebas, a mode
+  leak). So its lower arm reaches further below the word than in the frame.
+
 ---
 
 ## JP-114 · JP-115 — the logo wraps on the seed, and a long name wraps the nav
@@ -1349,7 +1452,10 @@ Gathered as the entries run; the sweep finalises them. Seeded at triage:
 - **The gallery's back link is typed *BEGININNING*** in Pop's and Retro's layout-1 frames
   (`964:58627`, `964:58579`). The build spells it right.
 - **The desktop page frame is still in Lime's mode**, so the map's heading renders in Bebas 130,
-  not Chunko 82 (JP-116's Repertoire → Shows −28, JP-117's anchor).
+  not Chunko 82 (JP-116's Repertoire → Shows −28, JP-117's anchor). The map's scribble is drawn to
+  that Bebas word. JP-117 places it by its relation to the word and keeps its size, so against the
+  shorter Chunko or Titan cap its lower arm runs further below the word. A frame in Pop's mode would
+  settle the size.
 - **The repertoire and the map draw a pager the seeded page does not have** (twelve songs, five
   gigs), so a sticker or a height that hangs off the pager has nothing to stand on (JP-112, JP-116).
 - **The frames' nav draws eight links**, and the seeded page carries a ninth, *Availability*
