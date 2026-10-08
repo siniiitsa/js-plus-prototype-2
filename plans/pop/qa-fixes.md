@@ -163,7 +163,7 @@ Screenshots (the tester's):
 | 3 | JP-120 (gallery) | four literals, the label "Not shown" | **Confirmed**: JP-090's rule, four more sites, both bodies | S–M | **user**: 1A (three keys + `railLabel`), 2A (an emptied control label reads its seed) | **done** (2026-10-08) |
 | 4 | JP-113 | 390 credit runs off the page | **Confirmed, and named** (Editorial's retest sweep, `:688`, `:1241`): every `s.limeTree` template; on HEAD a squeeze of the back link since JP-120 (gallery) | S | no (JP-120 (form)'s shape) | **done** (2026-10-08) |
 | 5 | JP-119 | live placeholders at .45 | **Confirmed, and recorded**: the canvas draws the frame's .8; the live box keeps JP-093's .45 | S | entry 1: **A**, `--ph: 0.8` | **done** (2026-10-08) |
-| 6 | JP-112 | the heart over song 12 | **Confirmed, and recorded**: seated off the content's foot because the seed draws no pager | S | **user**: the pager's seat | open |
+| 6 | JP-112 | the heart over song 12 | **Confirmed, and recorded**: seated off the content's foot because the seed draws no pager | S | **user**: **A**, the pager's seat at desktop; 390 as is | **done** (2026-10-08) |
 | 7 | JP-117 | the scribble under the word | **Confirmed, and recorded**: the frame's offsets kept against a Titan word they were not measured on | S | entry 1: **A**, the frame's fractions | open |
 | 8 | JP-114 · JP-115 | the logo on two lines · the nav wraps | **Confirmed, and recorded** (layout-1.md `:1085`): JP-091's rule under Pop's room and cap | M | **measure, then decide** | open |
 | 9 | JP-116 | section gaps off the frames | **Confirmed, and recorded as inherited** in every section's *Settled*; two of the six seams are content shortfalls, not padding | M–L | **measure, then decide** the scope | open |
@@ -982,6 +982,106 @@ artist `Range` clear of the heart's box), and the heart beside the rows' foot as
 drawn. The pager's discs still hit-test to themselves.
 
 **Docs.** The layer's comment (*reversed*). A *reversed* pointer at layout-1.md `:1471`.
+
+**Re-checked on HEAD** (`40c1041`, entry 6). The layer's comment is `:12795`–`:12806` and the `pop &&`
+layer `:12807`–`:12823`. The pager is `:13010`–`:13020`, inside `paddingTop: u(8)`, and the column's
+gap `col(u(32))` is at `:12794`. `POP_HEART_D` is at `:426` (the triage said `:418`).
+
+**Reproduced in the real app.** Puppeteer on the HEAD worktree (:5174): Pop card 1, Publish, Open,
+the songs written through the fiber `st` dispatch. All numbers are tab px off the repertoire root's
+top-left, and the desktop is zoomed 1.22.
+- **1440, the seeded 12:** there is no pager. The heart is at y 816.1–907.1 and x 1222.7–1323.2,
+  and the rows' foot is 898.1. **Row 12's pill and its "· AMY WINEHOUSE" Range are under the heart**,
+  the tester's picture. The root is 995.7.
+- **1440, 13 and 240 songs:** the pager stands at 930.1–992.2. The heart is at 910.2–1001.2: 12.1
+  below the rows' foot and its own foot 9.0 past the pager's (7.4 × 1.22), the frame's. No row is
+  hit. The root is **1089.8, so the pager's seat is 94.1** (26.2 + 6.6 + 44.3 on the canvas, × 1.22:
+  the column gap, the wrapper's 8 and the pager's 54).
+- **6 songs at 1440 reproduces it too** (row 6's pill and artist). So the condition is *no pager*,
+  not *twelve*. A live chip or search that leaves one page is the same state.
+- **768:** no heart at any count.
+- **390:** the pager stands at 12, 13 and 240 songs, and the heart runs over the → disc (and the
+  last page pill at 13 and 240), as the master draws it. Every disc hit-tests to itself at three
+  inner points.
+- **390 with 6 songs** (off the seed: the narrow page holds 6, so no pager): the heart's top crosses
+  the last pill's lower-right ring by 12. No text is under it.
+- No sideways scroll anywhere. No page errors.
+
+**The harness was proven first.** The HEAD worktree (:5174) against a fresh tree server (:5177),
+every category, themes 0–4, three widths: **0 of 660** on the canvas and on `live=1`. The repertoire
+at `&n=240`, themes 0–4, three widths: **0 of 60** on each surface. No empty renders.
+
+**Decided** (user, 2026-10-08): **A**, and **390 is left as is**.
+- **The desktop keeps the pager's seat.** While no pager is drawn, the column ends in an empty seat
+  of the pager's size: the column's gap, the wrapper's `paddingTop: u(8)` and a `u(54)` box. The gate
+  is `pop && !s.narrow && labels.length === 0`, not a count, so it covers 12 songs or fewer, a live
+  chip or search that leaves one page, and the empty list's "No songs match that.".
+- **The section grows by the seat**, 995.7 → 1089.8 in the tab, the 13-song height. The heart lands
+  where it stands with 13 songs. The rows do not move.
+- **390 with 6 songs or fewer keeps the 12 over the ring.** No text is covered, it is the overlap the
+  master draws over the → disc, and the seed always pages there.
+- **JP-116** re-measures the Repertoire → Shows seam afterwards. The section's box grows by 94.1, and
+  the heart's foot stays 9 past the content's foot.
+
+**Expected after-diff, named before the code:**
+- `cat_repertoire_arch_0_theme_4_w_desktop`, on the canvas and on `live=1`: **1 file a surface**. The
+  root grows by the seat, the heart moves down by it, and the seat's two rows appear (the wrapper and
+  its box). The rows do not move.
+- `&n=240`: **0** (the pager stands).
+- Themes 0–3: **0**. 768 and 390: **0**.
+
+**Settled** (2026-10-08).
+- **`EncoreSection`, the `s.limeTree` repertoire block: one sibling after the pager.** It reads
+  `pop && !s.narrow && labels.length === 0` and draws `<div aria-hidden style={{ paddingTop: u(8) }}>`
+  round a `u(54)`-tall box: the pager's own wrapper and the height of its row. The column's
+  `col(u(32))` gap comes with it as a flex child.
+  - The structure mirrors the pager rather than summing one height, so the border-box reset cannot
+    shrink it, and the seat is the pager's box to the 1/64 px: 50.9 on the canvas, round a 44.3 box.
+  - The heart's layer is unchanged. It still reads `s.padY`, and the content's foot is now the
+    pager's row in every desktop state.
+  - The pager's own block is untouched, so every paged render is byte-identical.
+- **Digest** (the HEAD worktree :5174 against the tree :5177, every category, themes 0–4, three
+  widths): **1 of 660 on the canvas and 1 of 660 on `live=1`**, the named
+  `cat_repertoire_arch_0_theme_4_w_desktop`. Inside it:
+  - the root and its content box grow by 77.1 (815.1 → 892.2);
+  - the heart moves 668 → 745;
+  - the seat's two rows appear (761.3, 50.9 tall; 767.9, 44.3);
+  - every other row is unchanged.
+  The repertoire at `&n=240`: **0 of 60** on each surface. No empty renders.
+- **The real app, Pop card 1, Publish, Open** (:5177; tab px off the root, zoom 1.22):
+  - **1440, the seeded 12:** the root is **1089.8** and the heart **910.2–1001.2**, both exactly the
+    13-song values. The rows' foot is unchanged at 898.1, so the heart is 12.1 below it, beside the
+    rows as in `964:58628`. **No song row's title, artist Range or pill is under the heart.**
+  - **13 and 240 songs:** byte-identical to HEAD, with the heart in the pager row.
+  - **6 songs at 1440:** +94.1 (681.3 → 775.4) and clear.
+  - **768:** no heart, unchanged. **390:** unchanged at every count, including 6 songs' 12 over the
+    ring (decided).
+  - **The live states, 13 songs at 1440:** each chip that leaves one page (Weddings 7 rows, Pubs 5,
+    Birthdays 7) and a search that matches nothing draw the seat. The heart is 12.1 below the rows'
+    foot, or under "No songs match that.", in every one.
+  - **Hit-tests:** every pager disc at 1440, 768 and 390 hit-tests to itself at three inner points,
+    the → disc under the 390 heart included. No sideways scroll at any width. No page errors.
+- **Build.** `npm run build` is clean. The root `index.html` is not refreshed; the sweep does that.
+- **Docs.**
+  - The layer's comment (*reversed*) and the seat's own comment.
+  - A *reversed* pointer at `layout-1.md:1480`.
+  - No `notes/`, CLAUDE.md or README line states the old seat. `notes/templates.md:312` and
+    README `:652` only list the heart as a sticker.
+- **For JP-116.** Pop's repertoire root at desktop under the seed is now **94.1 taller in the tab**
+  (77.1 on the canvas). So the Repertoire → Shows seam is measured on this tree, not on the
+  triage's numbers. The heart's layer still reads `s.padY` (`:1258`'s double-count trap stands). The
+  map's missing pager (`:1251`, `:1288`) is unanswered: JP-112's call was Pop's repertoire alone.
+
+Reply: **JP-112 — fixed.** On Pop's *Hero* layout at desktop, the Repertoire keeps the pager's row
+even when there is only one page of songs. The teal heart stands in that row, beside the last row of
+songs, as the design draws it, and no longer covers *· AMY WINEHOUSE*.
+- **What changed:** with 12 songs or fewer, or when a filter chip or the search leaves a single
+  page, the section is as tall as it is with a pager (about 94px more at 1440). The heart sits where
+  it does with 13 songs.
+- **What stays the same:**
+  - with 13 songs or more the page is unchanged;
+  - tablet still draws no heart;
+  - mobile is unchanged, the heart over the → button as designed.
 
 ---
 

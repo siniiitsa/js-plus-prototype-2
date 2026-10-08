@@ -1477,6 +1477,11 @@ counters and ink traps: its corners are soft. Rubik 900 is the squarer drawing, 
     it runs over the → disc's lower corner and the root's clip cuts it at the section's foot, as
     the master renders it. **It hit-tests clear**: `elementFromPoint` at three points of the 390 →
     disc under the heart finds the disc, and Next steps 1 → 2 from there.
+    *Reversed* at 1440 (JP-112, user call, 2026-10-08, [`qa-fixes.md`](./qa-fixes.md)). With no
+    pager the content's foot is the last row, so the heart stood over song 12's artist, which the
+    render check missed. The 1440 list now keeps the pager's seat while no pager is drawn, so the
+    content's foot is the pager's row either way, and the heart stands where it does with 13 songs.
+    390 is unchanged: six songs or fewer put its top 12 over the last pill's ring.
 - **The glyph floor is 0.14em again** (lh 0.89; the bio's and the gallery's): a lime-ink row scan
   puts the heading at 24–70 against the frame's 23.0–69.7 (× 0.82, off the content's top), 29–64
   against 28–63 at 768 and 30–54 against 29–53 at 390 — the narrow +1 is the eyebrow's line box

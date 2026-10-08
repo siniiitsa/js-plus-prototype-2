@@ -12799,11 +12799,17 @@ function Repertoire({ s }) {
               9 past the content's — and at 390, 2 from the page edge and 12
               above the content's foot, so it runs over the → disc's lower
               corner and the root cuts it off, as the master draws it. Both
-              are seated off the content's foot rather than the pager, which
-              the seeded twelve songs do not draw at 1440. The 768 master keeps
-              the desktop's x in a 768 frame, wholly clipped, so it draws none
-              there. It takes no pointer, so the disc under it hit-tests to
-              the disc. */}
+              are seated off the content's foot, which in both masters is the
+              pager's row. *Reversed* (JP-112, user call, 2026-10-08): the fit
+              seated it there "rather than the pager, which the seeded twelve
+              songs do not draw at 1440", and so it stood over song 12's
+              artist. Now the 1440 list keeps the pager's seat while no pager
+              is drawn (below), so the content's foot is the pager's row
+              either way. 390 keeps no seat: six songs or fewer put the
+              heart's top 12 over the last pill's ring, as over the → disc.
+              The 768 master keeps the desktop's x in a 768 frame, wholly
+              clipped, so it draws none there. It takes no pointer, so the
+              disc under it hit-tests to the disc. */}
           {pop && (
             <div aria-hidden style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none' }}>
               <div style={{
@@ -13016,6 +13022,17 @@ function Repertoire({ s }) {
                   ? (dir) => setPage(Math.max(0, Math.min(pages - 1, pg + dir)))
                   : undefined,
               }} />
+            </div>
+          )}
+          {/* Pop's heart stands in the pager's row, so with no pager at 1440
+              (twelve songs or fewer, or a chip or search leaving one page)
+              the list keeps that row's seat: the column's gap, the wrapper's
+              8 and the pager's 54, as the pager draws them. The heart then
+              stands beside the rows' foot, as the frame draws it, rather
+              than over the last row (JP-112). */}
+          {pop && !s.narrow && labels.length === 0 && (
+            <div aria-hidden style={{ paddingTop: u(8) }}>
+              <div style={{ height: u(54) }} />
             </div>
           )}
         </div>
