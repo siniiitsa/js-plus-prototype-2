@@ -11363,7 +11363,8 @@ function Pricing({ s }) {
     // sides — the component frame's stroke, which layout 2's pricing declined
     // for the same reason (stacked bands would double it). Grunge's and
     // Editorial's masters draw it, so their arms below put it back. The 390 master's 60 top
-    // and bottom inset is the root's `padY`'s, as everywhere.
+    // and bottom inset and its 20 sides are the root's padding (JP-126: `sectionVm`
+    // pads this section 60 / 20 at 390 under all four templates, `padX` included).
     //
     // Grunge — the same three masters in Static Youth's mode (964:68712 at
     // 1440, 984:13925 at 768, 984:13956 at 390), widened rather than branched.

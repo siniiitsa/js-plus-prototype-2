@@ -693,7 +693,9 @@ These are intentional limits, not oversights — see §12 for the full list. The
   line, and a sheet that bleeds and puts `u(56)` back lands where the page-ground section
   beside it does (JP-038, user call, 2026-09-24; `scripts/inset.mjs` measures each section's
   edges). The 390 masters themselves part — layout 1's bio, media, repertoire and pricing and
-  layout 3's pricing draw 20 — and 10 was chosen so neighbours always agree. The *vertical*
+  layout 3's pricing draw 20 — and 10 was chosen so neighbours always agree. Layout 3's pricing
+  has since taken its 20, and its master's 60 top and foot, under Lime, Grunge, Editorial and Pop
+  (JP-126, user call, 2026-10-09): `sectionVm` sets that one section's `padX` at 390. The *vertical*
   inset is the page's `padY` (80 / 56 / 44) wherever no frame says otherwise, but under Lime,
   Grunge and Editorial, layouts 2 and 3 stand each section on its own frame's top and foot
   (and under Pop, layouts 2 and 3, whose frames state the twins' numbers to the pixel), and so

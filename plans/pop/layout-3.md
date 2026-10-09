@@ -1881,14 +1881,14 @@ From the renders and the planning walk — impressions to confirm, not measureme
     54); the includes stacked under the pill. Section 1372.6 against 1419.
 - **Named diffs, the twins'**:
   - the section's 768 and 390 tops are the shared `padY` 56 / 44, not 30 / 60, and the 390 foot
-    `padY` 44 against 60 (JP-103's arm is desktop alone);
+    `padY` 44 against 60 (JP-103's arm is desktop alone); *(**Reversed** at 390 by JP-126, 2026-10-09, `../pop/layout-3-qa-fixes.md`: the four templates' 390 stack pads the master's 60 / 20 / 60 / 20.)*
   - the seeded intro is the frame's second sentence (`PRICING_INTRO_3`, JP-070 (rest)), one line at
     1440 and 768 where the frame's two-sentence paragraph is two;
   - the capsule rests with no chip lit (JP-089 (rest)), where the frame lights *Duo* over all three
     rows;
   - the unit is `/event` (`tierUnit`) where the frame types "— £1,400";
   - the 390 rows are 370 wide against the frame's 350 (JP-038's `padX` 10 against the root's 20),
-    so the second row's blurb holds one line (375.6 against 390);
+    so the second row's blurb holds one line (375.6 against 390); *(**Reversed** at 390 by JP-126, 2026-10-09, `../pop/layout-3-qa-fixes.md`: the four templates' 390 stack pads the master's 60 / 20 / 60 / 20.)*
   - Pop's rounded desktop tokens (`list` 16 against 16.4, `bodyMd` 11 against 11.48).
 - **Lime on lime, followed** (Grunge's red-on-red precedent): the badge's `box/1` `#D7FF23` on the
   row's `#C6F200` is **1.13 : 1**, so the tile all but vanishes and the word does the work (violet

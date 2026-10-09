@@ -1144,7 +1144,7 @@ Append as the pass goes. Do not repeat layouts 1's and 2's, Lime's or Retro's bu
 - **`vm.pad`'s `d === 2` pricing arm takes Grunge too**: the three masters pad 56 / 30 / 60 at
   the head and **32 / 32 / 60** at the foot, Lime's own numbers, so the arm's
   `Z.dev !== 'mobile'` foot of 32 is both templates' and 390 keeps its `padY` 44 under the
-  master's 60.
+  master's 60. *(**Reversed** at 390 by JP-126, 2026-10-09, `../pop/layout-3-qa-fixes.md`: the four templates' 390 stack pads the master's 60 / 20 / 60 / 20.)*
 - **Type**: `disp(lh)` is `facedLh(s, lh)` plus `textTransform: 'uppercase'` behind `grunge`
   (identity off it), beside `faced(s, size)`, on the heading (`u(36)` / 28 / 26 at lh 1.1),
   the package name (`s.list` at 1.2) and the numeral (`s.dispMd` at 1) — 22.125 / 21 / 19.5px

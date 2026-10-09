@@ -137,7 +137,8 @@ another `notes/` file.
   puts the identical value straight back, so the border reaches the page edges and the content
   keeps the section's column, which is the frame's 56 / 30 / 10 inset because `padX` is now that
   inset on every section and layout (JP-038, user call, 2026-09-24; the layout-4-only arm it
-  replaced is gone), the footer included. It is
+  replaced is gone), the footer included. The one exception is layout 3's 390 stack under the
+  Lime tree, below. It is
   the first pricing layout to draw **no heading at all**, so `heading` reaches layouts 1, 2 and 3
   alone; and the only one to read a package's **tags and its features together** — the tags as the
   frame's small hairline chips, cased in `sectionVm` as `vm.tiers[].tagLabels` because `t.tags`
@@ -195,3 +196,10 @@ another `notes/` file.
   pill passes `s.ac` (`G.pillBg`), since `BookPill`'s default `pillBg` is black on Pop's Scheme 1.
   The root's 1px pink ring is drawn at every width (layout 2's was narrow only). The heading is
   lifted 0.1em and the numeral 0.14em; the names, at lh 1.2, are left.
+- **Layout 3's 390 stack pads 60 / 20 / 60 / 20 under Lime, Grunge, Editorial and Pop** (JP-126,
+  user call, 2026-10-09, reversing the layout-3 passes' named diff "390 keeps its 44" and JP-038's
+  `padX` 10 for this one section). All four 390 masters stand the head, the capsule, the 350 rows
+  and the small print 20 in, 60 from the top and 60 above the foot. `sectionVm`'s layout-3 pricing
+  arm sets `vm.padX` to `20px` at mobile, the only section outside `column` to move it, and no
+  node in the block reads `padX`. 768 keeps `padY` 56 over its head (JP-103: reported as
+  matching), and Retro's own body keeps `padY` / `padX`.
