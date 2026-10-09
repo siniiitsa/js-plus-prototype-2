@@ -14650,9 +14650,15 @@ function Repertoire({ s }) {
     //  · the **starburst** (`POP_STAR_D` verbatim, 105.43 × 104.67,
     //    `sem/text/2` violet, upright) stands in the panel's top right, 127.29
     //    / 42.98 / 15.29 in from its right edge and 60 / 20.17 / 19.67 down.
-    //    The frame paints it over the head, beside a mixed-case "Repertoire";
-    //    our capitals run under it at 390, so it goes behind the head at every
-    //    width (layout 3's rule for a sticker beside the artist's copy).
+    //    The frame paints it over the head, beside a mixed-case "Repertoire"
+    //    whose ink stops 19.93 short of it at 390; our capitals ran 7 onto it
+    //    at 390 and 37 at 360. So at 768 and on a phone the head's measure
+    //    stops 19.93 short of its ink (JP-128, user call, 2026-10-09): the
+    //    starburst's ink is `W − 98.41` / `W − 90.72` in the panel's content
+    //    box (its `right` and width less the padding), so the measure is
+    //    `100cqi − 118.34` / `− 110.65`, and REPERTOIRE shrinks to fit it on a
+    //    phone. It stays behind the head (`zIndex: -1`), at 1440 too, where
+    //    the measure is the panel.
     if (s.limeTree) {
       const grunge = s.grunge
       const ed = s.editorial
@@ -14662,6 +14668,9 @@ function Repertoire({ s }) {
       const ink2 = grunge || ed || pop ? s.tx : ink // Scheme 3 `sem/text/2`
       const rule = pop ? s.stroke1 : `${ink}26` // `sem/stroke/1` — the ink at .15, Pop's opaque violet
       const upper = grunge || ed || pop ? { textTransform: 'uppercase' } : null
+      // The head's measure: the panel, or under Pop at 768 and on a phone the
+      // panel short of the starburst's ink by the frame's 19.93 (JP-128, above).
+      const headMeasure = pop && !desk ? `calc(100cqi - ${tab ? 118.34 : 110.65}px)` : '100cqi'
       const titleSize = faced(s, pop ? (desk ? u(28) : tab ? '22px' : '20px') : ed ? (desk ? u(32) : tab ? '25px' : '23px') : desk ? u(36) : tab ? '28px' : '26px') // Display/Title
       // Titan sits 0.1em low at Display/Title (2.2 / 2.1 / 3.2px against the
       // frame, title and artist alike), and the row is baseline-aligned, so
@@ -14799,13 +14808,15 @@ function Repertoire({ s }) {
             {/* Editorial's head shrinks only when its widest word would outrun
                 the panel: Gloock's capitals are wider than the frame's face (in
                 Noto, a 13-letter word ran 31 past the 390 column), and so are
-                Titan's. Titan sits 0.14em low at Display/LG. */}
+                Titan's. Titan sits 0.14em low at Display/LG. Pop's narrow head
+                fits and wraps in `headMeasure`, short of the starburst. */}
             <h2 style={distressed(s, {
               margin: 0, fontFamily: s.display,
-              fontSize: faced(s, (ed || pop) && s.titleWordEms ? `min(${s.dispLg}, calc(100cqi / ${s.titleWordEms}))` : s.dispLg),
+              fontSize: faced(s, (ed || pop) && s.titleWordEms ? `min(${s.dispLg}, calc(${headMeasure} / ${s.titleWordEms}))` : s.dispLg),
               lineHeight: facedLh(s, 0.89), letterSpacing: s.dls, color: ink,
               ...upper,
               ...(pop ? { position: 'relative', top: '-0.14em' } : null),
+              ...(pop && !desk ? { maxWidth: headMeasure } : null),
             })}>{s.title}</h2>
             <div style={col(u(24), grunge && desk ? { padding: u(32) } : undefined)}>
               <span style={bodyLg}>All songs · A–Z</span>
@@ -16858,14 +16869,23 @@ function Gallery({ s }) {
     // asterisk its last 4.6. The asterisk keeps the frame's paint order, over
     // the spotlight's corner at 768 and 390, and is anchored off the sheet's
     // foot, so a longer head keeps it on that corner. The sun sits beside the
-    // frame's mixed-case Chunko head, but Titan's capitals run 59 further at
-    // 768 and 27 at 390, under it; so it goes behind the head at every width
-    // (layout 3's rule for a sticker beside the artist's copy).
+    // frame's mixed-case Chunko head, and Titan's capitals ran 59 further at
+    // 768 and 27 at 390, onto it. So at 768 and on a phone the head's measure
+    // stops where the frame's own head ink stops (JP-128, user call,
+    // 2026-10-09): 552.5 / 285.24 in the head column, the sun's disc ink
+    // (559.44 / 298.45, fixed from the column's left, since the surplus
+    // offsets both) less the frame's 6.94 / 13.21. The seed then wraps at 768
+    // (SNAPS FROM THE / NIGHT) and rebreaks at 390 (SNAPS FROM / THE NIGHT).
+    // The sun stays behind the head (`zIndex: -1`), at 1440 too, where it
+    // stands above the head.
     if (s.limeTree) {
       const grunge = s.grunge
       const ed = s.editorial
       const pop = s.pop
       const un = (v) => Math.round(v * z * 10) / 10
+      // The head's measure: the column, or under Pop at 768 and on a phone
+      // the frame's own head ink end, short of the sun (JP-128, above).
+      const headMeasure = pop && !desk ? `min(100cqi, ${tab ? 552.5 : 285.24}px)` : '100cqi'
       const G = pop
         ? { well3: s.box3, well1: s.chips[0].bg, mist: s.onScheme[4].box3, ring: s.onScheme[4].bg,
             arrow: s.mob ? s.onScheme[4].ac : s.onScheme[4].stroke2, eyebrow: s.tx, photoR: s.mob ? 30 : 50,
@@ -17040,7 +17060,8 @@ function Gallery({ s }) {
                  + `${u(desk ? 56 : tab ? 30 : 40)}`,
           ...col(u(desk ? 112 : tab ? 60 : 24)),
           // Pop's wrapper clips its stickers, and the sun stands behind the
-          // head (`zIndex: -1` inside the sheet's own stacking context).
+          // head (`zIndex: -1` inside the sheet's own stacking context), which
+          // the narrow head's measure (`headMeasure`) keeps short of it.
           ...(pop ? { overflow: 'clip', isolation: 'isolate' } : null),
         }}>
           {grunge
@@ -17068,12 +17089,15 @@ function Gallery({ s }) {
               {/* Editorial's head shrinks only when its widest word would
                   outrun the column (Gloock's capitals are wider than the
                   frame's face), and Pop's in Titan's; the twins' never meets
-                  a long enough word. Titan sits 0.14em low at Display/LG. */}
+                  a long enough word. Titan sits 0.14em low at Display/LG.
+                  Pop's narrow head fits and wraps in `headMeasure`, which
+                  stops short of the sun (JP-128, above). */}
               <h2 style={distressed(s, {
                 margin: 0, fontFamily: s.display,
-                fontSize: faced(s, (ed || pop) && s.titleWordEms ? `min(${s.dispLg}, calc(100cqi / ${s.titleWordEms}))` : s.dispLg),
+                fontSize: faced(s, (ed || pop) && s.titleWordEms ? `min(${s.dispLg}, calc(${headMeasure} / ${s.titleWordEms}))` : s.dispLg),
                 lineHeight: facedLh(s, 0.89), letterSpacing: s.dls, color: G.head ?? s.bg, ...disp,
                 ...(pop ? { position: 'relative', top: '-0.14em' } : null),
+                ...(pop && !desk ? { maxWidth: headMeasure } : null),
               })}>{s.title}</h2>
             </div>
             {s.mob

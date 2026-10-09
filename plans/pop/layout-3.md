@@ -863,7 +863,10 @@ Retro's bullets; name them.
   frame.
 - **A sticker the frame seats beside its own short copy goes behind the artist's longer copy**
   (section 2; layout 1's hero scribble at −1): the 390 sparkle clears "DJ & / SELECTOR" and covered
-  "MANCHESTER, UK". Where it covers no copy it keeps the frame's paint order.
+  "MANCHESTER, UK". Where it covers no copy it keeps the frame's paint order. *Not for a frame
+  head*: where a sticker stands beside a frame's own head, layout 4's JP-128 (user call,
+  2026-10-09, [`layout-4-qa-fixes.md`](./layout-4-qa-fixes.md)) keeps the head's measure short of
+  it by the frame's clearance instead.
 - **A pill's height is its shape, so a pill row pins at its division result** (section 3). Where a
   master's rows `FILL` a stated list height and each row is a pill (radius 999), give each row
   the division result as its `minHeight`, never the list the stated height as a minimum: under

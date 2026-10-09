@@ -100,8 +100,11 @@ another `notes/` file.
   photograph and its well are clipped 2px inside every ring, the spotlight's and each thumb's:
   a lime ring on the pink sheet hides the photograph's anti-aliased edge no better than layout
   3's lime-on-lime did, so the corner's outer pixel read darker than the clean pink-to-lime
-  blend. Two stickers ride on the sheet, which clips them: the smiley sun behind the head (Titan's
-  capitals run under it at 768 and 390, where the frame's mixed case stops short) and the
+  blend. Two stickers ride on the sheet, which clips them: the smiley sun behind the head, which
+  never reaches it (JP-128, user call, 2026-10-09: at 768 and on a phone the head fits and wraps in
+  a measure that ends where the frame's own mixed-case head ink ends, 552.5 / 285.24 in the head
+  column, the sun's ink less the frame's 6.94 / 13.21; so the seed reads SNAPS FROM THE / NIGHT at
+  768, the root ~45 taller than the frame's 751, and SNAPS FROM / THE NIGHT at 390), and the
   asterisk over the spotlight's lower-left corner at 768 and 390, anchored off the sheet's foot.
   Its
   **390 master runs its strip off its own page** (six fixed 121px tiles in a 370 frame, so three

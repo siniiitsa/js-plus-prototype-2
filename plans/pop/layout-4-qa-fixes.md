@@ -126,7 +126,7 @@ Screenshots (the tester's):
 | Order | ID | Report (short) | Verdict | Size | Decision | Status |
 |---|---|---|---|---|---|---|
 | 1 | JP-127 | nine links wrap REVIEWS at desktop, on the seed | **Confirmed, and recorded** (open question 10; JP-091's and JP-114's scope) | S (a gate), M with the name fit | **user**, after measuring: **B** (the 11 floor and the name fit), **Pop alone** | **done** |
-| 2 | JP-128 | 768 and 390 heads over their stickers | **Confirmed, and recorded** (Settled §4 and §5; open questions 15 and 16) | S–M | **user**: the lever (A / B / C / D), and at 768 whether the gallery head wraps or shrinks | todo |
+| 2 | JP-128 | 768 and 390 heads over their stickers | **Confirmed, and recorded** (Settled §4 and §5; open questions 15 and 16) | S–M | **user**, after measuring: **A** (the measure stops short), the frame's own clearance, 768 and phones only, `zIndex: -1` kept | **done** |
 | 3 | — | End-of-pass sweep | — | S | — | todo |
 
 **Why this order.** JP-127 is the smaller change, with the most precedent: JP-114 · JP-115's
@@ -509,6 +509,185 @@ B, the 768 gallery file moves the head's size, not its line count, and the root 
   - designer note 4's paragraph (`:2935`).
 - `layout-3.md`'s *Conventions* bullet at `:864` is a cross-layout rule. It gets a pointer, not a
   rewrite, since layout 3's sparkle covered the artist's copy, not a frame head.
+
+**Measured** (2026-10-09, on HEAD `8ccf90e`).
+- **Every *Evidence* site held**, cited by gate: `Gallery`'s `if (s.v3)` → `if (s.limeTree ||
+  s.pop)` block, its h2's `(ed || pop) && s.titleWordEms` fit on the head column's
+  `containerType: 'inline-size'`, and `PopSun` at `zIndex: -1` in the `isolation: isolate` sheet;
+  `Repertoire`'s layout-4 `s.limeTree` block, the same h2 rule on the panel's container, and the
+  `POP_STAR_D` svg at `zIndex: -1`. Only the line numbers drifted.
+- **How.** A scratchpad puppeteer probe (`app.mjs` + `m.js`) on a HEAD worktree (:5174): Pop card
+  4, *Use this header*, each heading written to both sections through the fiber `st` dispatch,
+  Publish → Open, the popup resized to 768, 390, 360, 414 and 1440. The head's lines come off
+  per-character `Range`s, each line's ink end off the canvas's `actualBoundingBoxRight` in the h2's
+  own font and tracking. The sticker's ink is its path outline sampled (`getPointAtLength`, 4000
+  points a path) and mapped through its box and its `rotate()`. Every x below is **in the head
+  column's own coordinates** (the gallery's head column, the repertoire's panel content box), and
+  every clearance is the sticker's leftmost ink less the widest line's ink end. The harness
+  (`hp.mjs`, `cat=gallery|repertoire&arch=3&theme=4`, `&cj=`) reads the same numbers to the
+  hundredth at 768 and 390.
+- **The stickers' ink edges, as expressions.**
+  - **The sun is fixed from the column's left.** Its `left` is `s.surplus + u(588.44 | 307.45)`
+    off the sheet and the column starts `s.surplus + 30 | 10` in, so the surplus cancels. Its
+    disc's ink starts 1.0 inside its untransformed box (the turned box's corner is 26.6 further
+    out). So the sun's ink is at **559.44** in the column at 768–1179 (708 wide) and **298.45**
+    on every phone (the column is 370 from 390 up and `w − 20` below: 340 at 360). At 360 the sun
+    is 41.5 from the column's right edge, at 390 and 414 71.5.
+  - **The starburst is fixed from the panel's right.** Its bbox is its ink (its left point). It
+    stands `u(15.29 | 42.98 | 127.29)` in from the panel's border-box right, inside a padding of
+    30 / 50 / `u(60)`, so its ink is at **`W − 90.72`** on a phone, **`W − 98.41`** at 768 and
+    **`W − 141.67`** at desktop, `W` being the panel's content width (310 at 390 and 414, 280 at
+    360, 608 at 768, 989.8 at desktop).
+- **The frames' own clearances** (`absoluteRenderBounds`, the text node's against the sticker's
+  outer vector; the column's left is the text node's `x`):
+
+  | Site | Frame's head ink ends | Sticker's ink | Frame's clearance |
+  |---|---|---|---|
+  | gallery 768 (`971:10863` · `971:11743`) | 552.50 (*Snaps from the night*, one line) | 559.44 | **6.94** |
+  | gallery 390 (`977:14541` · `977:17357`) | 285.24 (*Snaps from the* / *night*) | 298.45 | **13.21** |
+  | repertoire 390 (`977:14576` · `977:17362`) | 199.35 (*Repertoire*) | 219.28 | **19.93** |
+  | repertoire 768 (`971:10897` · `971:11838`) | 282.41 | 509.59 | 227.18 (nothing near) |
+  | repertoire 1440 (`964:73217` · `964:73221`) | 496.60 | 1035.28 | 538.68 (nothing near) |
+  | gallery 1440 (`964:73177` · `964:73209`) | 390.98 | 331.44 | none: the sun stands *above* the head |
+
+  Our sun and starburst land on the frame's ink to 0.1 (559.41 / 298.52 / 219.32 / 509.62). So
+  the gap the tester compares against is 6.9 / 13.2 / 19.9, not the pass's 6 / 11 / 20.
+- **HEAD, the published tab** (the widest line's ink end → clearance; a negative runs onto the
+  sticker; harness identical at 768 and 390):
+
+  | Heading | gallery 768 | gallery 390 · 414 | gallery 360 | repertoire 768 | repertoire 390 · 414 | repertoire 360 | repertoire 1440 |
+  |---|---|---|---|---|---|---|---|
+  | seed | one line, 610.4 → **−51.0** | SNAPS FROM THE / NIGHT, 311.6 → **−13.1** | **−13.1** | 320.9 → +188.7 | REPERTOIRE 226.5 → **−7.2** | **−37.2** | +426.6 |
+  | *Supercalifragilistic* | 597.1 → −37.7 | 368.1 at 30.82 → −69.5 | 338.2 at 28.32 → −39.7 | 597.1 → −87.4 | 308.5 at 25.82 → −89.1 | 278.6 at 23.32 → −89.3 | +63.8 |
+  | *Unforgettable nights at the Comedy Club* | 2 lines, 705.7 → −146.3 | 3 lines, 302.4 → −3.9 | −3.9 | 3 lines, 603.4 → −93.7 | 3 lines, 302.4 → −83.1 | −86.5 | **−78.9** (UNFORGETTABLE NIGHTS AT) |
+  | *Repertoire tonight* | one line, 560.2 → −0.8 | 2 lines → +72.0 | +72.0 | one line, 560.2 → −50.6 | 2 lines, 226.5 → −7.2 | −37.2 | +112.2 |
+
+  - **The tester's three overlaps are confirmed**, on the seed: NIGHT's HT under the sun at 768,
+    THE's E at 390, REPERTOIRE's last E at 390. **360 is worse in the repertoire** (−37.2: the
+    starburst follows the narrower panel's right edge while REPERTOIRE keeps its size), and 414 is
+    390 exactly (the surplus moves both the column and its sticker).
+  - **The 1440 gallery never meets the sun** in this set: the sun stands above the head, and no
+    line's cap band reaches its ink (the 3-line *Unforgettable…* stays 36 under it).
+  - **The 1440 repertoire does, with a long heading**: *Unforgettable nights at the Comedy Club*'s
+    first line runs 78.9 under the starburst. The seed ends 426.6 short, so the ticket's case does
+    not reach it. Not in the report, and outside the plan's "1440 is byte-for-byte HEAD".
+  - The roots: gallery 751 / 733.5 (the frames' 751 / 733.26), repertoire 1492.3 / 1344.5. No
+    sideways scroll at any width, no page error.
+- **What lever A would set** (the head's measure ends at the sticker's ink less the clearance,
+  and the fit divides that measure, not `100cqi`):
+  - with the frame's own clearance: the gallery's measure is **552.5** at 768 and **285.24** on a
+    phone (`min(100cqi, …)`), which is the frame's own head ink end at each width; the
+    repertoire's is `W − 110.65` on a phone (199.35 at 390, 169.35 at 360). At 768 the frame
+    states no clearance (227 to spare), so the 390 one carries: `W − 118.34`.
+  - so the seed: the 768 gallery wraps SNAPS FROM THE / NIGHT (the root ~+44.5); the 390 gallery
+    rebreaks SNAPS FROM / THE NIGHT; REPERTOIRE shrinks to ~31 at 390 and 414 and ~26.4 at 360;
+    the 768 repertoire's seed box narrows with no visible change.
+
+**Decided** (user, 2026-10-09, over the numbers above):
+1. **A: the head's measure stops short of the sticker**, at 768 and on phones, under Pop. The
+   measure is both the h2's `maxWidth` and the fit's dividend (`min(s.dispLg, calc(M /
+   titleWordEms))`, where HEAD reads `100cqi`), so a long word shrinks and a long heading wraps
+   inside it. The 768 gallery's seed takes two lines and its root grows past the frame's 751.
+2. **The frame's own clearance**: 6.94 (gallery 768), 13.21 (gallery, phones) and 19.93
+   (repertoire, phones, carried to 768, where the frame states none). So:
+   - the gallery's measure is `min(100cqi, 552.5px)` at 768 and `min(100cqi, 285.24px)` on a
+     phone, which is the frame's own head ink end, the sun being fixed from the column's left;
+   - the repertoire's is `calc(100cqi − 118.34px)` at 768 and `calc(100cqi − 110.65px)` on a
+     phone (the starburst's ink, `W − 98.41` / `W − 90.72`, less 19.93), fixed from the panel's
+     right.
+3. **768 and phones only.** 1440 is byte-for-byte HEAD. The 1440 repertoire's long-heading overlap
+   (*Unforgettable nights at the Comedy Club*, −78.9) is logged for a new ticket; the seed ends
+   426.6 short there.
+4. **Keep `zIndex: -1`** on both stickers. With 1440 out of scope it is what keeps a 1440 long
+   heading in front of the starburst.
+
+This reverses the layout-4 pass's Settled §4 sun bullet and §5 starburst bullet, open questions 15
+and 16, and qualifies its *Conventions* bullet.
+
+**Expected after-diff, named before the code.** Both gates are Pop's and `!desk`. Neither
+category has a folded twin at arch 3 under Pop.
+- **4 files a surface**, canvas and `live=1`: `cat_gallery_arch_3_theme_4_w_tablet`,
+  `cat_gallery_arch_3_theme_4_w_mobile`, `cat_repertoire_arch_3_theme_4_w_tablet` and
+  `cat_repertoire_arch_3_theme_4_w_mobile`.
+  - **gallery tablet**: the h2 takes a second line (SNAPS FROM THE / NIGHT), so its box, the
+    head column, the row and everything under it move down, and the root grows ~44.5. The sun
+    holds (it is set from the top). The asterisk holds its offset from the foot.
+  - **gallery mobile**: the h2 rebreaks (SNAPS FROM / THE NIGHT), so its box narrows. Its size
+    and height hold, and so does the root.
+  - **repertoire tablet**: the h2's box narrows to 489.66 (608 − 118.34). Size, lines and height
+    hold.
+  - **repertoire mobile**: the h2's size drops (~35.3 → ~31) and its box narrows to 199.35, so
+    everything under it moves up by the line-height difference, and the root shrinks.
+- **Every other render is 0**: themes 0–3, Pop at desktop, Pop's other gallery and repertoire
+  layouts, and every other category.
+
+
+**Settled** (2026-10-09).
+- **Code: two blocks in `EncoreSection.jsx`, one `headMeasure` each** (the bio's name for the
+  same thing, `Bio`'s layout-4 head).
+  - `Gallery`'s layout-4 `s.limeTree` block: `headMeasure = pop && !desk ? min(100cqi,
+    552.5px | 285.24px) : '100cqi'`.
+  - `Repertoire`'s: `headMeasure = pop && !desk ? calc(100cqi - 118.34px | 110.65px) :
+    '100cqi'`.
+  - In each h2 the fit reads `min(${s.dispLg}, calc(${headMeasure} / ${s.titleWordEms}))`, and
+    under `pop && !desk` the h2 takes `maxWidth: headMeasure`. With `'100cqi'` the fit's string
+    is HEAD's byte for byte, so Lime, Grunge, Editorial and Pop's desktop are untouched.
+  - Both stickers keep `zIndex: -1` and the sheet's / panel's `isolation: isolate`. No view-model
+    key and no field moved.
+- **Digest** (HEAD worktree :5174 at `8ccf90e` against the tree :5177, themes 0–4, three widths,
+  ports normalised): **4 of 660 on the canvas and 4 of 660 on `live=1`**, the four named files.
+  - Each `&cj=` set (*Supercalifragilistic*, *Unforgettable nights at the Comedy Club*,
+    *Repertoire tonight*; gallery and repertoire, themes 0–4) is **4 of 120** on each surface,
+    the same four. No file is one row long.
+  - **gallery tablet** (50 of 53 rows): the h2 552.5 × 90.8 (HEAD 611.4 × 45.4), and the
+    spotlight, the thumbs, the discs and the asterisk all +45.4 together; the root **796.4**
+    (751). The sun and the eyebrow hold.
+  - **gallery mobile** (1 row): the h2's box 370 → 285.2; size and height hold.
+  - **repertoire tablet** (1 row): the h2's box 608 → 489.7; size and height hold.
+  - **repertoire mobile** (89 of 90 rows): the h2 at the smaller size, everything under it up,
+    the root 1344.5 → 1340.6.
+- **The real app** (`app.mjs` on :5177, Pop card 4, Publish → Open; clearance = the sticker's
+  ink less the widest line's ink end, in the column):
+
+  | Heading | gallery 768 | gallery 390 · 414 · 360 | repertoire 768 | repertoire 390 · 414 | repertoire 360 |
+  |---|---|---|---|---|---|
+  | seed | SNAPS FROM THE / NIGHT at 49.98, **+117.9** | SNAPS FROM / THE NIGHT at 35.28, **+65.3** | +188.7 (unchanged) | REPERTOIRE at **30.9**, **+20.9** | at **26.25**, **+20.8** |
+  | *Supercalifragilistic* | one line at 46.02, +9.8 | at 23.76, +14.8 | at 40.78, +22.5 | at 16.6, +21.0 | at 14.11, +20.9 |
+  | *Unforgettable nights at the Comedy Club* | 3 lines at 49.98, +131.0 | 3 lines at 32.78, +17.6 | 3 lines, +81.2 | 3 lines at 22.91, +23.0 | at 19.46, +22.5 |
+  | *Repertoire tonight* | 2 lines, +238.5 | 2 lines, +72.0 | 2 lines, +188.7 | 2 lines at 30.9, +20.9 | at 26.25, +20.8 |
+
+  - **Every narrow reading clears by the decided value or more**: the gallery ≥ 6.94 at 768 and
+    ≥ 13.21 on a phone, the repertoire ≥ 19.93. A one-word heading lands on it within a pixel
+    (the fit sets the word's advance to the measure, and the ink stops a side bearing short).
+  - No word breaks inside itself, no root scrolls sideways at 768, 390, 360 or 414, and no page
+    error.
+  - **1440 reads HEAD's numbers** for every heading, including the 1440 repertoire's −78.9 under
+    *Unforgettable…* (Decided, 3).
+  - The roots: gallery 796.4 at 768 for the seed (the frame's 751), 733.5 at 390; repertoire
+    1340.6 at 390.
+  - Shots at 768, 390 and 360 (DPR 1): the heads stand clear of the sun's rays and the
+    starburst's points.
+  - **Lime's, Grunge's, Editorial's and Retro's card 4**: 10 of 10 readings identical to HEAD
+    each (gallery and repertoire at five widths).
+- **Build.** `npm run build` is clean. The root `index.html` is not refreshed; the sweep does that.
+- **Torn down:** :5174, :5177 and the HEAD worktree. :5173 is the user's, and :5175, :5176, :5187
+  and :5197 belong to other jobs; all still run.
+- **Docs.**
+  - The two blocks' Pop comments, the sheet's comment and both h2 comments.
+  - `notes/gallery.md`: the sun sentence now states the measure, not "behind the head".
+  - `layout-4.md`: *Reversed* pointers at the sun bullet (§4) and the starburst bullet (§5), open
+    questions 15 and 16; a *Since JP-128* line under §4's head bullet; the §4 and §5 named-diffs
+    lines struck through as *fixed*; the *Conventions* bullet *qualified*; designer note 4
+    rewritten to the new state.
+  - `layout-3.md`'s *Conventions* sticker bullet: a pointer (*not for a frame head*).
+  - No CLAUDE.md or README line states the old call.
+- **For the sweep's replies and log:**
+  - The frame's gaps are 6.9 / 13.2 / 19.9, not the pass's 6 / 11 / 20.
+  - 360 was worse than the tester's 390 in the repertoire (−37.2 on HEAD), and 414 equals 390.
+  - Named: the 768 gallery's seed now takes two lines, so the section is 796 tall against the
+    frame's 751, and the 390 REPERTOIRE is 30.9 against the frame's Display/LG 36 (35.28 faced).
+  - *Logged for new tickets:* the 1440 repertoire's long heading still runs behind the starburst
+    (*Unforgettable nights at the Comedy Club*, −78.9).
 
 ---
 
