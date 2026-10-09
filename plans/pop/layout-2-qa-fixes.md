@@ -1306,7 +1306,8 @@ and the deployed build stamp are the user's).
 **Retest against the Pages build whose `last-modified` is later than `Thu, 08 Oct 2026 20:39:30
 GMT`** (9,910,327 bytes; `curl -sI https://siniiitsa.github.io/js-plus-prototype-2/`). All four
 tickets were filed against that build, which was still the deployed one at the sweep. An older tab
-or a cached build still shows every one of them. The refreshed build is 9,912,242 bytes.
+or a cached build still shows every one of them. The refreshed build is 9,912,242 bytes: the fixed
+build is the one whose `last-modified` reads `Fri, 09 Oct 2026 14:41:46 GMT` (PR #57).
 
 One line per ticket. Each full reply stands under its entry above, as *Reply*.
 - **JP-121** (390: a long name over the burger, BOOK NOW off the page) — **fixed** for Pop, and for
