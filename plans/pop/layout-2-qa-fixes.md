@@ -137,11 +137,11 @@ Screenshots (the tester's):
 
 | Order | ID | Report (short) | Verdict | Size | Decision | Status |
 |---|---|---|---|---|---|---|
-| 1 | JP-124 | *12 mile radius* at layout 2 | **Confirmed, and recorded**: JP-105 kept layouts 1 and 2 on `MAP_RADIUS` on purpose, layout 2's *100 mi* parked for the designer; the frame itself says 100 once and 120 three times | S | **user**: *120 mi* or *100 mi*. **Decided A, *120 mi*** (2026-10-09) | **done** (30 of 660 + 30 of 660, the named set; Retro's 768 card 22.5 shorter) |
+| 1 | JP-124 | *12 mile radius* at layout 2 | **Confirmed, and recorded**: JP-105 kept layouts 1 and 2 on `MAP_RADIUS` on purpose, layout 2's *100 mi* parked for the designer; the frame itself says 100 once and 120 three times | S | **user**: *120 mi* or *100 mi*. **Decided A, *120 mi*** (2026-10-09) | **done** (15 of 660 + 15 of 660, the named set; Retro's 768 card 22.5 shorter) |
 | 2 | JP-121 | 390: a long name over the burger, the pill off the page | **Confirmed, shared, and named** (Editorial retest's *Seen at triage, not filed*, `:1104`–`:1111`): the layout-2 bar's 390 name has no fit; Editorial reproduces it too | S–M | **user**: fix or accept, the scope, the room. **Decided A with Editorial kept out** (its 2026-10-07 acceptance stands), **room A** (2026-10-09) | **done** (0 of 660 per surface on the seed; `&name=` 4 of 180, Pop's 390 alone) |
 | 3 | JP-122 | 390 footer: the copyright under the sun, the name under the seal | **Confirmed, two faults**: (a) Pop's small print keeps no corner for the sun; (b) the wordmark's measure ignores the seal, under Pop, Editorial and Retro | S–M | **user**: (b)'s scope, (a)'s shape. **Decided (b) A, every seal footer; (a) A, the row wraps as a whole** (2026-10-09) | **done** (0 of 660 per surface on the seed; `&name=` 4 / 4 / 6 / 2 of 30 per surface, as named) |
 | 4 | JP-123 | an edited slot row freezes the dates in 2025 | **Confirmed, every template, and recorded twice**: the first-edit write-out (JP-052) and the full-ink past row (2026-09-17), whose own comment states a premise JP-052 retired | M | **user**: four questions. **Decided 1 A, 2 A, 3 A, 4 A** (2026-10-09) | **done** (0 of 660 per surface on the seed, 0 of 60 live with `&today=`; the mixed `&cj=` rows move as named) |
-| 5 | — | End-of-pass sweep | — | S | — | open |
+| 5 | — | End-of-pass sweep | — | S | — | **done** (15 + 15 of 660 against `main`, JP-124's set exactly; every repro reads its entry's after-sink; root `index.html` refreshed, `67d4356`) |
 
 **Why this order:**
 - **By footprint, smallest first.** JP-124 is one arm in `mapRadiusSeed` with a named text diff.
@@ -316,8 +316,10 @@ contradicts the frame's 120s.
   - The field keeps `d: MAP_RADIUS` and `in: [0, 1, 2]`, so no `reach.mjs` run is owed. Its hint
     (`:2237`–`:2239`) adds "…as Max travel on the travel card, where it starts from “120 mi”", and
     its comment names JP-124.
-- **Digest: 30 of 660 per surface, the named set and nothing else**, themes 0–4, against a HEAD
-  worktree on :5174 and a fresh tree server on :5177. The harness was proved first: 0 of 660 per
+- **Digest: 15 of 660 per surface, 30 in all, the named set and nothing else** (first written
+  "30 of 660 per surface"; the sweep corrected the count, since map `arch 1` × five themes ×
+  three widths is 15 a surface), themes 0–4, against a HEAD worktree on :5174 and a fresh tree
+  server on :5177. The harness was proved first: 0 of 660 per
   surface, unedited. The 30 are map `arch 1` × themes 0–4 × three widths × canvas and `live=1`.
   - **28 files: one row each**, the value `<span>`'s text, *12 mile radius* → *120 mi*. No
     geometry moves.
@@ -1170,19 +1172,190 @@ and clearing it makes the row count again.
    GMT`, 9,910,327 bytes). JP-121's reply answers the tester's 07.10 question with the user's answer.
 7. *Notes for the designer* at the plan's foot.
 
+**Settled** (2026-10-09, all seven steps, on `fdbdc7f`, then `67d4356`; the push, the PR, the merge
+and the deployed build stamp are the user's).
+- **1. Digest against `main`: 15 of 660 on the canvas and 15 of 660 at `live=1`**, exactly JP-124's
+  named set, file for file. JP-121, JP-122 and JP-123 add none on the seed, as each *Settled*
+  says.
+  - **The harness.** A scratchpad worktree of `main` (`d36797f`, `git worktree add --detach`), its
+    `source/node_modules` a `cp -Rc` clone with `.vite` removed, served on **:5174**. The tree was
+    served fresh on **:5177**. :5173, :5175 and :5176 were left alone. Every category × themes
+    **`0,1,2,3,4` explicit** × three widths, canvas and `live=1`, 660 each with the footer's
+    `page=2` render. Each file was compared with `localhost:517[0-9]` masked and the photo `?t=`
+    stamp normalised. **Proved first:** a second canvas run on each server diffed **0 of 660**
+    against its first, and **no file on any label is a one-row (blank) render.**
+  - **The 15, the same on both surfaces:** map `arch 1` × themes 0–4 × three widths.
+    - **14 files: one row**, the Max travel value `<span>`'s text, *12 mile radius* → *120 mi*.
+      Its box is the cell, so nothing else moves.
+    - **Retro at tablet: 77 rows**, JP-124's *Settled* to the row. The span 45 → 22.5, its cell
+      65.8 → 43.3, the stat row 91.8 → 69.3, the root 771 → 748.5, the right column's map card
+      and viewport 22.5 shorter with its rings and pins, and the rows under the stat row 22.5 up.
+  - **JP-124's count, corrected.** Its *Settled* and the Status row first said "30 of 660 per
+    surface". Map `arch 1` × five themes × three widths is 15 a surface, and its own list (28
+    one-row files plus Retro's two) is 30 in all. Both now read 15 + 15.
+  - **`&today=`:** the calendar at `live=1&today=2026-10-09`, themes 0–4, three widths, is **0 of
+    60**. The seed counts from today and has no past row, so JP-123's dim cannot show there.
+  - **`textContent`** (map `arch 0`–`3` × themes 0–4 × three widths, both surfaces, on :5177):
+    layout 1 prints *12 mile radius* in 15 of 15 a surface, layout 2 *Max travel 120 mi* in 15 of
+    15 and no *12 mile radius*, layout 3 *… 120 mi radius* in 15 of 15, and layout 4 none.
+- **2. Every ticket's repro, re-run on the final tree (:5177), reads its entry's after-sink.** Each
+  probe was copied from its session's scratchpad and run through `createRequire`, so no file
+  landed in `source/scripts/`. Rows went to JSONL sinks, one template per process under
+  `perl -e 'alarm N'`. **No page or console error on any run, and no React style warning**: the
+  sinks and logs were grepped for `borderColor` and `Removing`, with no hit.
+  - **JP-121** (`repro.mjs`, card 2, the five names plus *…Windsor*, the tab at 360 / 390 / 414 /
+    768, the burger clicked at 360 and 390). **Pop, Lime, Grunge and Editorial: 24 of 24 rows
+    each equal JP-121's after-sink.** Every name clears the capsule and the pill as its table
+    says, the pill ends at the row's end, and the burger opens and closes. Retro, which the entry
+    did not walk, reads `main` (:5174) row for row (24 of 24). Its bar still pushes the pill to
+    426 and 490 and scrolls the page, as named.
+  - **JP-122** (`walk.mjs`, Pop cards 1 and 2, then Editorial, Retro, Lime and Grunge card 2, the
+    six names, 360 / 390 / 414 / 768). **144 of 144 rows equal JP-122's after-sink** on every key
+    it took. The probe has since gained `over`, `textR` and `groupMax`. In every row the name's
+    last glyph hits the name, and so does every name line's end. Every copyright line's first
+    glyph hits the copyright, and no Pop copyright glyph touches the sun's painted path. The
+    footer's text never ends past the page.
+    - **Found by the probe, the same on `main`:** Pop card 2's header root reads `scrollWidth` 385
+      at 360 and 783 at 768. Card 1's pricing root reads 382 / 411 / 423 at 360 / 390 / 414. Both
+      are clipped inside their roots, and the document's `scrollWidth` stays the window's. Not
+      chased.
+    - **The pages that scroll sideways are the header's:** Editorial 365 / 407 / 419 / 476 / 488,
+      by JP-121's call, and Retro 389 / 367 / 426 / 438 / 490 / 502, Retro's bar. The footer adds
+      none.
+  - **JP-123.**
+    - **`repro.mjs`, all five templates' card 2** (seed, kind, price, back, a past date, remount,
+      a future date, clear, remove, add, empty; the tab at 1440 / 768 / 390; today 2026-10-09 in
+      every tab row): **33 of 33 tab rows and 11 of 11 canvas rows equal JP-123's after-sink
+      under each template.** The edited rows publish OCT 09 / 11 / 17 / NOV 01, and each picks.
+      A typed SEP 29 dims under the four and mutes under Retro, and clearing it counts again.
+    - **`harness.mjs`, the mixed `&cj=` rows** (themes 0–4, three widths): **15 of 15** live rows
+      equal the entry's after-sink, and 15 of 15 canvas. `main` reads the entry's HEAD sink, 15 of
+      15 on each surface. Live under themes 1–4, SEP 29 and the dated OCT 01 stand at .38 with no
+      handler, and the offset row reads OCT 14 and picks. On the canvas the offset row reads JUN
+      17, and nothing dims.
+    - **`keys.mjs`** (Pop, the date box's keyboard) reads the *Settled*'s `draft` and `shown`
+      behaviour step for step:
+      - Backspace on a seeded row empties the box until blur, which shows the count again.
+      - A date typed by segments never snaps back.
+      - 31 September stays empty until the day is fixed to the 29th, then warns after blur and
+        clears back to the count.
+      - A 6-digit year shows as typed and clears.
+  - **JP-124**: step 1's `textContent`.
+- **3. Reach: no `in` moved, so `reach.mjs` was not rendered.** `git diff main..HEAD --
+  source/src/builder/data.js` changes no `in` row. In Node, both `data.js` files give the same
+  `in` and the same `fieldReach(f, name, d)` for all 141 fields × five theme names × four
+  designs: 0 differ. The field set is unchanged too. JP-123's `after` is a slot row's key, not a
+  field. Earlier sweeps rendered only the rows that moved, and here there were none.
+- **4. The real app** (`page-check.mjs`, `BASE=:5177`; Pop card 2 first, then Pop card 1 and
+  Lime's, Grunge's, Editorial's and Retro's card 2; one template per process). The tester's
+  steps per ticket are step 2's probes, which drive the same app: card 2, the edit, Publish,
+  Open, the tab at 1440, 768 and 390. This walk covers the whole page on top of them. **Each
+  report equals `main`'s (:5174, the same six runs) in every field but the audio's playback
+  position.**
+
+  | Card | Errors · warnings | Links (nav, anchors, footer) | Audio · form | `overflow390` · burger | Footer at 1440 |
+  |---|---|---|---|---|---|
+  | Pop card 2 | 0 · 0 | 21, each to its section | plays · mailto composed | 0 · opens | 481 |
+  | Pop card 1 | 0 · 0 | 22, each to its section | plays · mailto composed | 0 · opens | 481 |
+  | Lime card 2 | 0 · 0 | 21, each to its section | plays · mailto composed | 0 · opens | 522 |
+  | Grunge card 2 | 0 · 0 | 21, each to its section | plays · mailto composed | 0 · opens | 522 |
+  | Editorial card 2 | 0 · 0 | 21, each to its section | plays · mailto composed | 0 · opens | 522 |
+  | Retro card 2 | 0 · 0 | 21, each to its section | plays · mailto composed | 0 · opens | 597 |
+
+  Retro's card 2 walk covers the calendar and the map, the two sections it shares with the batch,
+  alongside step 2's `repro.mjs` rows (JP-123) and JP-124's harness. Pop card 1 is the footer's
+  walk (JP-122's `walk.mjs` rows, and this report).
+- **5. The root `index.html`** (`67d4356`, its own commit, after the teardown below).
+  `npm run build:standalone` on `fdbdc7f` gives **9,912,242 bytes, up from 9,910,327** (`main`'s
+  and the deployed build's size). The repo root was served on :8931, and `build-digest.mjs` walked
+  the committed `index.html` (`?v=old`, before the copy) and `source/dist-standalone/index.html`.
+  It took the picker, the setup modal's card, then the editor's Desktop, Tablet and Mobile tabs
+  under all five templates. **`CARD=1`** walked the batch's layout-2 page and **`CARD=0`** layout
+  1's. A second walk of the old build, taken after the new labels, diffed **0 of 15**.
+  - **`CARD=0`: 0 of 15.**
+  - **`CARD=1`: 15 of 15 files, JP-124's row and nothing else.**
+    - **The 1088 Desktop canvas, named:** every Desktop tab's root is 1088 wide, and each
+      template's tab moves **one row**, the Max travel value's text. Its cell is 142 under Retro
+      and 151.8 under the others, one line on both builds.
+    - **The Mobile tabs: one row each**, the same text.
+    - **The Tablet tabs: one row each under themes 1–4.** Retro moves 197 rows. Split by
+      row, **30 are the map's own** (the root, the card, the left column, the stat row, its cell,
+      the span, the right column's card, viewport, rings and pins), and **166 are a rigid −22.5
+      shift** with every other column equal: the map's lower rows and every section under it. The
+      build digest measures from the header's origin, so the shift does not re-base away. The
+      dev digest's 77 rows, seen from the page.
+    - JP-121, JP-122 and JP-123 move nothing on either card. Both rules are gated on `s.mob`, and
+      the seed's name fits. The canvas keeps June 2025.
+    - The modal offers four cards under every template, as before.
+  - **Pop card 2 walked on the built file** (`page-check.mjs`, `BASE` the :8931 copy) equals the
+    dev server's walk in every field but the audio's playback position.
+- **6.** `plans/README.md`'s row says the pass is swept. The replies are below, under the retest
+  line. At the sweep (14:08 GMT) the deployed build still read `Thu, 08 Oct 2026 20:39:30 GMT`,
+  9,910,327 bytes, which is `main`'s root `index.html` (`a6e3d3a`).
+- **7.** *Notes for the designer* are finalised and numbered, two of them. JP-121 and JP-123 add
+  none of their own.
+- **Named, not fixed, found by the sweep:** none new. Step 2's root `scrollWidth`s are the same on
+  `main` and scroll no page.
+- **Torn down** before either commit: :5174, :5177 and :8931 were stopped, then the `main` worktree
+  was removed (`git worktree remove --force`, its `node_modules` clone with it; `git worktree
+  prune`). :5173, :5175 and :5176 are not this session's and still run. The probes and their sinks
+  stay in the session's scratchpad.
+
+## Replies
+
+**Retest against the Pages build whose `last-modified` is later than `Thu, 08 Oct 2026 20:39:30
+GMT`** (9,910,327 bytes; `curl -sI https://siniiitsa.github.io/js-plus-prototype-2/`). All four
+tickets were filed against that build, which was still the deployed one at the sweep. An older tab
+or a cached build still shows every one of them. The refreshed build is 9,912,242 bytes.
+
+One line per ticket. Each full reply stands under its entry above, as *Reply*.
+- **JP-121** (390: a long name over the burger, BOOK NOW off the page) — **fixed** for Pop, and for
+  Lime and Grunge with longer names. The name stays centred while it fits, else wraps onto two
+  balanced lines and shrinks only as far as it must, and the menu button can be tapped again.
+  **Your 07.10 question:** yes, Editorial layout 2 was accepted on 07.10 as a remainder of JP-101,
+  and that call stands, so Editorial is left as it is.
+- **JP-122** (390 footer: the copyright under the starburst, the name under the seal) —
+  **fixed**, for Pop and for every template whose footer has a seal. The name stops before the
+  seal and wraps between words. Pop's bottom row keeps clear of the starburst on Hero and Feature
+  spread alike. At 360 the default *A JustPay Product* drops under the copyright. A single word of
+  34 letters or more still reaches the seal (logged under Pop's first batch).
+- **JP-123** (an edited date row moves every date into 2025) — **fixed**, on every template. An
+  edited row keeps counting from today on the published page, and every row can be picked. A
+  typed date that has passed is flagged in the editor, and on Lime, Grunge, Editorial and Pop it
+  is faded on the page, like a booked one.
+- **JP-124** (*12 mile radius* on Events Map layout 2) — **fixed**, on every template. Max travel
+  reads *120 mi*, matching the page's other 120s, and at 768 it ends 55px clear of *~2 hrs*. The
+  design's *100 mi* there went to the designer. Layout 1 keeps *12 mile radius*.
+
+**Logged for new tickets.** Each was found by an entry and left out of this batch on purpose.
+1. **Retro's layout-2 390 bar** (JP-121's *Siblings, not filed*): the name sets at 17 between two
+   `flex: 1` spacers, so a long name squeezes the burger's capsule from 64 to 38 and pushes the
+   pill off the page. *Featherstonehaugh* runs the pill to 426, *…Windsor* to 490. The page
+   scrolls at 360–414: 389 / 367 / 426 / 438 / 490 / 502.
+2. **Layout 3's centred name at 390** (`HeaderV2`'s `s.limeTree` row, JP-121's *Siblings, not
+   filed*): its right cell lets the pill overrun into the spacer, so a long name runs *over* the
+   pill under Pop and Editorial. Pop's *Florence* sets 93.9–296.1 against the pill at 245.5.
+   Lime and Retro fit. Named in `layout-3.md` section 1 and `notes/nav.md`.
+
+Already logged, so not new: a one-word name of 34 letters or more reaches the 390 footer's seal
+(JP-122's edge case) and scrolls the page. It is Pop's first batch's logged item 3. Editorial's
+layout-2 390 bar is accepted, not logged (JP-121, decided 1).
+
 ---
 
 ## Notes for the designer
 
-Gathered as the entries run; the sweep finalises them. Seeded at triage:
-- **Layout 2's travel card says *Max travel 100 mi*** beside a map whose rings run to 120mi and whose
-  data bar reads *UK · 8 pins · 120 mi radius*. On the same page, the header's place card claims
-  *120 mi standard travel radius*. The build now seeds *120 mi* in the cell (JP-124, user call,
-  2026-10-09). If 100 is meant, the cell, the rings, the data bar and the page's other three 120s
-  all have to change together. Layout 1's frame does the same with *12 Mile Radius* beside *120 mi
-  standard · further on request*. The build keeps layout 1's *12 mile radius*.
-- **The 390 header and footer frames are drawn for *Kai Mercer*'s ten letters.** No frame shows a
-  name that does not fit between the burger and the pill, or a copyright that reaches the corner
-  sun (JP-121, JP-122). At 360 even the seed's copyright reaches a ray of the sun, so the build drops
-  its credit under it there (JP-122, user call, 2026-10-09). If the frame's single line matters at
-  360, the sun has to move or shrink there.
+Gathered as the entries ran, seeded at triage and finalised by the sweep (2026-10-09).
+
+1. **Layout 2's travel card says *Max travel 100 mi*** beside a map whose rings run to 120mi and
+   whose data bar reads *UK · 8 pins · 120 mi radius*. On the same page, the header's place card
+   claims *120 mi standard travel radius*. The build now seeds *120 mi* in the cell (JP-124, user
+   call, 2026-10-09). **If 100 is meant**, the cell, the rings, the data bar and the page's other
+   three 120s all have to change together. Layout 1's frame does the same with *12 Mile Radius*
+   beside *120 mi standard · further on request*. The build keeps layout 1's *12 mile radius*.
+2. **The 390 header and footer frames are drawn for *Kai Mercer*'s ten letters.** No frame shows
+   a name that does not fit between the burger and the pill, or a copyright that reaches the
+   corner sun (JP-121, JP-122). The build wraps such a name between the burger and the pill and
+   keeps the footer's small print clear of the sun. At 360 even the seed's copyright reaches a ray
+   of the sun, so the build drops its credit under it there (JP-122, user call, 2026-10-09).
+   **If the frame's single line matters at 360**, the sun has to move or shrink there.
