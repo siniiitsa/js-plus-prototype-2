@@ -1607,7 +1607,7 @@ sections are where the twins' dark-ground assumptions break (trap 6).
   desktop) and the pills' display labels were not lifted.
 - **`vm.pad`'s `d === 2` pricing foot takes Editorial**: the three masters pad 56 / 30 / 60 at
   the head and **32 / 32 / 60** at the foot, the twins' own, so the arm is three templates'.
-  390 keeps its `padY` 44 under the master's 60, the twins' named diff.
+  390 keeps its `padY` 44 under the master's 60, the twins' named diff. *(**Reversed** at 390 by JP-126, 2026-10-09, `../pop/layout-3-qa-fixes.md`: the four templates' 390 stack pads the master's 60 / 20 / 60 / 20.)*
 - **Measured against the masters' content edges** (harness, DPR 2; the frame × 0.82 in
   brackets): **desktop** heading 26.2px, 28.8 tall (28.7); rows **1088.2 × 211** (1089 × 211.6)
   13 apart (13.1), padding 23 (23), radius 0, dashed 8.2, 8.2; includes 560.5 into the row
@@ -1617,7 +1617,7 @@ sections are where the twins' dark-ground assumptions break (trap 6).
   column's edge; foot 32. **390** rows 370 × **313.9** (314) / 352.1 / 337, the pill 54 `full`.
 - **Named diffs**:
   - **the 390 rows are 370 wide against the frame's 350** (JP-038's `padX` of 10 against the
-    root's 20), so the second row's *Peak-time dance floor* and the featured blurb hold one
+    root's 20) *(**Reversed** at 390 by JP-126, 2026-10-09, `../pop/layout-3-qa-fixes.md`: the four templates' 390 stack pads the master's 60 / 20 / 60 / 20.)*, so the second row's *Peak-time dance floor* and the featured blurb hold one
     line in our 314 column where the frame's 294 wraps them: 352.1 / 337 against 367 / 352.
     The twins' 390 carries the same width now; Grunge's "exact" 346-wide rows predate JP-038;
   - the twins': the section's top pad is the shared `padY` 80 / 56 / 44, not 56 × 0.82 / 30 /

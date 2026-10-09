@@ -11236,6 +11236,9 @@ function Pricing({ s }) {
   // WHAT'S INCLUDED over a feature grid down the right. Under the stack, the
   // small print. Every row is outlined on the page ground except the last one
   // on show, which is *filled* in the same hue and carries a FEATURED badge.
+  // The label over the features is `featsLabel` and the badge `badgeLabel`
+  // (JP-125, user call, 2026-10-09): each emptied is not drawn, and the
+  // featured row keeps its fill without its badge.
   //
   // The section stands on the page ground — `sem/bg` is #EAD7B8 and the row's
   // own fill is that same beige at stddev 0, so there is no sheet, no grain, no
@@ -11277,7 +11280,7 @@ function Pricing({ s }) {
   //    the unit — so a typed "£450 — £1,400" is the frame's own three nodes,
   //    and a unit after it a fourth. One split for all three, so a page prints
   //    a `price` the same way whichever layout is picked.
-  //  - "FEATURED" is a literal on a derived seat — see below.
+  //  - "FEATURED" is `s.tierBadge` (JP-125) on a derived seat — see below.
   //
   // Every box number is the desktop component's own at all three widths — the
   // 24 between the section's blocks, the 12 in the head, the 16 between rows,
@@ -11360,7 +11363,8 @@ function Pricing({ s }) {
     // sides — the component frame's stroke, which layout 2's pricing declined
     // for the same reason (stacked bands would double it). Grunge's and
     // Editorial's masters draw it, so their arms below put it back. The 390 master's 60 top
-    // and bottom inset is the root's `padY`'s, as everywhere.
+    // and bottom inset and its 20 sides are the root's padding (JP-126: `sectionVm`
+    // pads this section 60 / 20 at 390 under all four templates, `padX` included).
     //
     // Grunge — the same three masters in Static Youth's mode (964:68712 at
     // 1440, 984:13925 at 768, 984:13956 at 390), widened rather than branched.
@@ -11496,11 +11500,11 @@ function Pricing({ s }) {
                   fontFamily: s.display, fontSize: faced(s, s.list), ...disp(1.2),
                   letterSpacing: s.dls,
                 }}>{t.name}</span>
-                {feat && (
+                {feat && !!s.tierBadge && (
                   <span style={{
                     ...chip, background: G.badgeBg, color: G.badgeFg,
                     borderRadius: u(4), padding: `${u(3)} ${u(8)}`,
-                  }}>FEATURED</span>
+                  }}>{s.tierBadge}</span>
                 )}
               </div>
               {/* Desktop hugs; both narrow masters FILL the numeral, which
@@ -11571,7 +11575,8 @@ function Pricing({ s }) {
                 ...(desk ? { flex: '1 1 0', minWidth: 0 }
                   : tab ? { width: u(G.incW), flex: 'none' } : { width: '100%' }),
               })}>
-                <span style={chip}>WHAT&rsquo;S INCLUDED</span>
+                {/* `featsLabel`, layout 2's field (JP-125). */}
+                {!!s.featsLabel && <span style={chip}>{s.featsLabel}</span>}
                 {/* One grid, Retro's normalisation: the 768 master spaces a
                     pair's two items 9 apart and the pairs 8, a hand-set 1px. */}
                 <div style={{
@@ -11769,11 +11774,11 @@ function Pricing({ s }) {
               <span style={{
                 fontFamily: s.display, fontSize: u(T.list), lineHeight: 1.2, letterSpacing: s.dls,
               }}>{t.name}</span>
-              {feat && (
+              {feat && !!s.tierBadge && (
                 <span style={{
                   ...chipType, background: h.badge, color: ink,
                   borderRadius: u(4), padding: `${u(3)} ${u(8)}`,
-                }}>FEATURED</span>
+                }}>{s.tierBadge}</span>
               )}
             </div>
             {/* The narrow masters give this row the column's whole width and let
@@ -11837,14 +11842,16 @@ function Pricing({ s }) {
 
           {/* Dropped whole rather than left as a bare label when a package lists
               nothing — the frame has no such row, and "WHAT'S INCLUDED" over
-              nothing is the empty-span state the testimonials' card refuses. */}
+              nothing is the empty-span state the testimonials' card refuses.
+              The label is `featsLabel` (JP-125), not drawn when emptied. */}
           {t.feats.length > 0 && (
             <div style={col(u(12), {
               alignItems: 'flex-start',
               ...(desk ? { flex: '1 1 0', minWidth: 0 }
                 : tab ? { width: u(248), flex: 'none' } : { width: '100%' }),
             })}>
-              <span style={chipType}>WHAT&rsquo;S INCLUDED</span>
+              {/* `featsLabel`, layout 2's field (JP-125). */}
+              {!!s.featsLabel && <span style={chipType}>{s.featsLabel}</span>}
               {/* One grid, where the frame pairs the features two to a sub-frame
                   and then spaces the pair by 9 against the pairs' own 8 — a 1px
                   hand-set difference, normalised (the deck's rule). The column

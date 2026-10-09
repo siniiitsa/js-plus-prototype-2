@@ -1043,6 +1043,9 @@ export const mapListLabelSeed = (d) => (d === 1 ? MAP_LIST_LABEL_2 : MAP_LIST_LA
 // again (FORM_MSG_LABEL's rule).
 export const PRICING_KICKER = 'PRICING'
 export const PRICING_FEATS_LABEL = 'WHAT’S INCLUDED'
+// Layout 3's badge on the featured package (JP-125, user call, 2026-10-09),
+// in the capitals the frame types and printed as typed, JP-095 (a)'s shape.
+export const PRICING_BADGE = 'FEATURED'
 export const CAL_DATE_LABEL = 'Date'
 export const CAL_AVAIL_LABEL = 'Availability'
 export const CAL_PROMPT = 'Pick a date to enquire'
@@ -2035,7 +2038,7 @@ export const FIELDS = {
           + 'and 3, whatever comes before the price’s first digit — a £, or a word like From — '
           + 'prints small beside it, and so does whatever follows its first number, such as the '
           + 'second half of a range. Tick Featured '
-          + 'to give a package layout 3’s FEATURED badge; with none ticked, it goes to the last '
+          + 'to give a package layout 3’s Featured badge; with none ticked, it goes to the last '
           + 'package on show.' },
     { k: 'unit',    l: 'Price unit', d: PRICE_UNIT,
       hint: 'Printed after the price in layouts 1, 2 and 3. Layout 4 stands it above the price '
@@ -2067,9 +2070,16 @@ export const FIELDS = {
     { k: 'note',    l: 'Line beside the plan card button', d: PRICING_NOTE, in: PRICING_CARD,
       hint: 'Layout 2 only. A phone stacks it under the pill.' },
     // JP-095 (a): the label over the plan card's features, in the frame's
-    // capitals. Drawn while the package has features, as the list is.
-    { k: 'featsLabel', l: 'Features label', d: PRICING_FEATS_LABEL, in: [1],
-      hint: 'The label over the plan card’s features. Left empty, it is not drawn.' },
+    // capitals. Drawn while the package has features, as the list is. Layout
+    // 3 prints it over every package's features too (JP-125, 2026-10-09).
+    { k: 'featsLabel', l: 'Features label', d: PRICING_FEATS_LABEL, in: [1, 2],
+      hint: 'The label over the features, on layout 2’s plan card and on each of layout 3’s '
+          + 'packages. Left empty, it is not drawn.' },
+    // JP-125 (user call, 2026-10-09): layout 3's FEATURED badge. Emptied, the
+    // badge goes and the featured package keeps its fill.
+    { k: 'badgeLabel', l: 'Featured badge', d: PRICING_BADGE, in: [2],
+      hint: 'The badge on layout 3’s featured package. Left empty, it is not drawn; the package '
+          + 'stays highlighted.' },
     // Every package's pill (JP-070): layout 4's row pill until then, and
     // layouts 1 and 3 printed the section's unfielded "Book Now". `d` is
     // layout 1's word; sectionVm and EditPanel resolve layouts 3 and 4's.

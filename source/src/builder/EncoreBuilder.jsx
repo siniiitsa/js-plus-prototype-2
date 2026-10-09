@@ -40,7 +40,7 @@ import {
   BIO_REF_LABEL, FORM_TYPE_LABEL, mapKickerSeed, mapListLabelSeed, mapRadiusSeed, testiKickerSeed,
   MAP_HOME_LABEL, MAP_HOME_CAPTION, MAP_VENUE_LABEL, MAP_VENUE_CAPTION, MAP_RADIUS_LABEL, MAP_TIME_LABEL,
   MAP_FEE_LABEL, MAP_VENUE_CTA, MAP_ROUTE_CTA,
-  PRICING_KICKER, PRICING_FEATS_LABEL, CAL_DATE_LABEL, CAL_AVAIL_LABEL, CAL_PROMPT,
+  PRICING_KICKER, PRICING_FEATS_LABEL, PRICING_BADGE, CAL_DATE_LABEL, CAL_AVAIL_LABEL, CAL_PROMPT,
   MEDIA_CHIP_LABEL, MEDIA_COUNT_LABEL, MEDIA_TOTAL_LABEL, GALLERY_RAIL_LABEL, TIER_KEYS, tiersSeed, limeTreeTheme, PRICE_UNIT, QUOTES,
   CITIES, PINS, EXAMPLE_PAGE,
   NOW_PLAYING, TRACK_AUDIO, SONGS, REP_ALL,
@@ -87,7 +87,9 @@ const SIZES = {
 // `padX` is the frames' own side inset — 56 × 0.82, 30 and 10 — which every
 // 1440 and 768 master draws (JP-038; user call, 2026-09-24). At 390 the masters
 // part: layout 1's bio, media, repertoire and pricing and layout 3's pricing
-// stand at 20, the rest at 10, and 10 was chosen so neighbours always agree. It
+// stand at 20, the rest at 10, and 10 was chosen so neighbours always agree.
+// Layout 3's pricing has since taken its 20 under the Lime tree (JP-126,
+// `sectionVm`'s layout-3 pricing arm sets that section's `padX`). It
 // is the value the sheets' `u(56)` puts back after bleeding, so a page-ground
 // section and a sheet beside it start their type on one line. It is not whole
 // at desktop, so every reader takes it with `parseFloat`, never `parseInt`.
@@ -610,19 +612,28 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     vm.pad = `${vm.padY} ${vm.padX} ${Math.round(56 * 0.82)}px`
   }
   // The pricing stack's footnote stands 32 above the section's foot at 1440
-  // and 768 (964:68680 · 984:10765). 390 keeps its 44, under the master's 60.
-  // Grunge's three masters state the same 32 / 32 / 60 (964:68712 · 984:13925
-  // · 984:13956), and so do Editorial's (964:68745 · 984:16837 · 984:16868)
-  // and Pop's (964:68777 · 984:15381 · 984:15412, padded 56 / 56 / 32 / 56,
-  // 30 / 30 / 32 / 30 and 60 / 20 / 60 / 20; plans/pop/layout-3.md, section
-  // 7), so the arm is all four templates'. Its desktop top is the frames' 56
-  // under the gallery's band (JP-103, above); 768 keeps `padY`.
+  // and 768 (964:68680 · 984:10765). Grunge's three masters state the same
+  // 32 / 32 / 60 (964:68712 · 984:13925 · 984:13956), and so do Editorial's
+  // (964:68745 · 984:16837 · 984:16868) and Pop's (964:68777 · 984:15381 ·
+  // 984:15412, padded 56 / 56 / 32 / 56, 30 / 30 / 32 / 30 and 60 / 20 / 60 /
+  // 20; plans/pop/layout-3.md, section 7), so the arm is all four templates'.
+  // Its desktop top is the frames' 56 under the gallery's band (JP-103,
+  // above); 768 keeps `padY`. **390 is the master's 60 / 20 / 60 / 20**
+  // (JP-126, user call, 2026-10-09, reversing "390 keeps its 44" and JP-038's
+  // `padX` 10 for this one section): the head, the capsule, the rows and the
+  // small print all stand 20 in, so `padX` itself is 20 here, the one section
+  // outside `column` to move it. Nothing in the block reads `padX`.
   if ((T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial' || T.name === 'Pop')
-    && d === 2 && cat === 'pricing' && Z.dev !== 'mobile') {
-    const desk = Z.dev === 'desktop'
-    vm.pad = desk
-      ? `${Math.round(56 * 0.82)}px ${vm.padX} ${Math.round(32 * 0.82)}px`
-      : `${vm.padY} ${vm.padX} 32px`
+    && d === 2 && cat === 'pricing') {
+    if (Z.dev === 'mobile') {
+      vm.padX = '20px'
+      vm.pad = `60px ${vm.padX} 60px`
+    } else {
+      const desk = Z.dev === 'desktop'
+      vm.pad = desk
+        ? `${Math.round(56 * 0.82)}px ${vm.padX} ${Math.round(32 * 0.82)}px`
+        : `${vm.padY} ${vm.padX} 32px`
+    }
   }
   // The form's card ends 90 / 60 above its foot and the testimonials' head
   // stands 56 / 30 below their top (964:68682 + 964:68683 · 984:10767 +
@@ -1116,6 +1127,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // markup's. '' when emptied.
   vm.pricingKicker = cv('kicker', PRICING_KICKER)
   vm.featsLabel = cv('featsLabel', PRICING_FEATS_LABEL)
+  // JP-125: layout 3 prints `featsLabel` over every package's features, and
+  // its FEATURED badge is this, the same shape; '' drops the badge alone.
+  vm.tierBadge = cv('badgeLabel', PRICING_BADGE)
   // A card's four colours, given the ground it stands on. Layout 1 walks that
   // ground round T.tags, one hue per card; layout 2 has a single card and pins
   // it, so both go through here and the pairing rule is written once.
