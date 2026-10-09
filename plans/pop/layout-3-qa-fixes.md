@@ -146,11 +146,15 @@ show 0.
 - **The published tab** (`scripts/inset.mjs Pop,Lime,Grunge,Editorial 3`, HEAD and tree): the one
   line that moved under each template is pricing at 390, `pad 10, text left 10` → `pad 20, text
   left 20`. 1600, 1440 and 768 read HEAD's. `scrollWidth` equals the window at every width.
+- **360 and 414** (the published tab resized, the same four templates on card 3): pricing pads 20
+  and its text starts at 20 at both. `scrollWidth` equals the window, and every row's Book pill
+  stands inside its row (rows 20–340 at 360, 20–394 at 414).
 - **Build.** `npm run build` is clean.
 - **Docs.** README's JP-038 paragraph now says layout 3's pricing took its 20. `notes/pricing.md`
   has a new bullet, and its layout-4 bullet names the exception. The arm's comment in `sectionVm`
   and the Lime block's comment state the 60 / 20. *Reversed* pointers went at `layout-3.md`'s
-  named diffs (two), `../editorial/layout-3.md` (two) and `../grunge/layout-3.md` (one). Lime's
+  named diffs (two), `../editorial/layout-3.md` (two) and `../grunge/layout-3.md` (one). The `Z`
+  tables' `padX` comment at the head of `EncoreBuilder.jsx` names the exception. Lime's
   plan predates JP-038's `padX` and records no 390 inset diff, so it has no pointer.
 
 Reply (JP-126): **fixed.** On Pricing layout 3 at 390, the heading, the filter, the package cards
@@ -190,3 +194,10 @@ ends 60 under the small print. This applies to Pop, Lime, Grunge and Editorial, 
 design. 768 and 1440 are unchanged. Under Pop and Lime the third card's *Visual sync available*
 wraps to two lines where the design's text overflows its cell, so that card is 16px taller than the
 design's.
+
+## Notes for the designer
+
+- **Pricing layout 3 at 390 (Pop and Lime):** the third card's *Visual sync available* is a
+  113-wide text box inside a 125 item that does not wrap. The build wraps it in its 123 cell, so
+  the card is 16px taller than the frame's (375.6 against 360 under Pop). Under Editorial the
+  same words fit.

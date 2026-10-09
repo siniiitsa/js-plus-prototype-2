@@ -87,7 +87,9 @@ const SIZES = {
 // `padX` is the frames' own side inset — 56 × 0.82, 30 and 10 — which every
 // 1440 and 768 master draws (JP-038; user call, 2026-09-24). At 390 the masters
 // part: layout 1's bio, media, repertoire and pricing and layout 3's pricing
-// stand at 20, the rest at 10, and 10 was chosen so neighbours always agree. It
+// stand at 20, the rest at 10, and 10 was chosen so neighbours always agree.
+// Layout 3's pricing has since taken its 20 under the Lime tree (JP-126,
+// `sectionVm`'s layout-3 pricing arm sets that section's `padX`). It
 // is the value the sheets' `u(56)` puts back after bleeding, so a page-ground
 // section and a sheet beside it start their type on one line. It is not whole
 // at desktop, so every reader takes it with `parseFloat`, never `parseInt`.
