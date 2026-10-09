@@ -55,6 +55,7 @@ plans/
     layout-4.md
     qa-fixes.md
     layout-2-qa-fixes.md
+    layout-3-qa-fixes.md
 ```
 
 A pass that fits layout N of every section is `layout-N.md`. A pass of some other kind gets a
