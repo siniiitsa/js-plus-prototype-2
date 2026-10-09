@@ -40,7 +40,7 @@ import {
   BIO_REF_LABEL, FORM_TYPE_LABEL, mapKickerSeed, mapListLabelSeed, mapRadiusSeed, testiKickerSeed,
   MAP_HOME_LABEL, MAP_HOME_CAPTION, MAP_VENUE_LABEL, MAP_VENUE_CAPTION, MAP_RADIUS_LABEL, MAP_TIME_LABEL,
   MAP_FEE_LABEL, MAP_VENUE_CTA, MAP_ROUTE_CTA,
-  PRICING_KICKER, PRICING_FEATS_LABEL, CAL_DATE_LABEL, CAL_AVAIL_LABEL, CAL_PROMPT,
+  PRICING_KICKER, PRICING_FEATS_LABEL, PRICING_BADGE, CAL_DATE_LABEL, CAL_AVAIL_LABEL, CAL_PROMPT,
   MEDIA_CHIP_LABEL, MEDIA_COUNT_LABEL, MEDIA_TOTAL_LABEL, GALLERY_RAIL_LABEL, TIER_KEYS, tiersSeed, limeTreeTheme, PRICE_UNIT, QUOTES,
   CITIES, PINS, EXAMPLE_PAGE,
   NOW_PLAYING, TRACK_AUDIO, SONGS, REP_ALL,
@@ -1116,6 +1116,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // markup's. '' when emptied.
   vm.pricingKicker = cv('kicker', PRICING_KICKER)
   vm.featsLabel = cv('featsLabel', PRICING_FEATS_LABEL)
+  // JP-125: layout 3 prints `featsLabel` over every package's features, and
+  // its FEATURED badge is this, the same shape; '' drops the badge alone.
+  vm.tierBadge = cv('badgeLabel', PRICING_BADGE)
   // A card's four colours, given the ground it stands on. Layout 1 walks that
   // ground round T.tags, one hue per card; layout 2 has a single card and pins
   // it, so both go through here and the pairing rule is written once.

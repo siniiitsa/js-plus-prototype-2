@@ -164,7 +164,11 @@ another `notes/` file.
   text layers are named so), and printed as typed: the sites carry no casing, so none was added, and the seed is
   the rendered bytes, curly apostrophe included. The brackets are the markup's. Emptied, each is
   not drawn; the features label still stands only while the package has features. A long one
-  wraps.
+  wraps. **`featsLabel` reaches layout 3 too** (JP-125, user call, 2026-10-09): both bodies print
+  it over every package's features, so it is `in: [1, 2]`. Layout 3's FEATURED badge is
+  **`FIELDS.pricing.badgeLabel`** (`vm.tierBadge`, seeded `PRICING_BADGE`, `in: [2]`), the same
+  shape: printed as typed, and emptied it is not drawn while the featured row keeps its fill,
+  ring and inks.
 - **Pop's layout-1 deck is three seats** (its layout-1 pass, section 7, 2026-10-02): by rendered
   index, Retro's tilt rule and Retro's angles (`TILT`, CSS +1 / −3 / +2), each seat a card ground
   off `s.onScheme[6]` / `[2]` / `[3]` with its own inks and Book pill pair, and the middle seat

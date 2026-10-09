@@ -226,7 +226,8 @@ mutated through a single `patch()` helper.
   `sectionVm` and `EditPanel`'s chain alike, so `kicker` now reaches layouts 1 and 3. A typed
   label wraps rather than outrun a 390 page. **Eight more at layout 2, every template** (JP-095
   (a), user call, 2026-10-01): pricing's `kicker` and `featsLabel` (`[ PRICING ]` and
-  `WHAT’S INCLUDED`, seeded in the capitals the frame types and printed as typed), the
+  `WHAT’S INCLUDED`, seeded in the capitals the frame types and printed as typed; layout 3
+  prints `featsLabel` too, and its FEATURED badge is `badgeLabel`, JP-125), the
   calendar's `dateLabel` / `availLabel` over the slot list (the `↓` the markup's; an emptied
   Date keeps its seat, and both emptied drop the row), media's `chipLabel` (the fan's
   `● Featured`) and the counter's `countLabel` / `totalLabel` ("5 Featured / 5 Max", layouts 2
