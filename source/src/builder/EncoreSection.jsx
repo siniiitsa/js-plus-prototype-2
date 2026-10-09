@@ -29505,40 +29505,6 @@ function Footer({ s }) {
       }} />
     )
 
-    // "Group 6" is LimeGlobeMark's own drawing at 27.37, inked in the 15%
-    // hairline — it stands dim beside the name. Editorial's is the sparkle
-    // (39.87 × 40.24, GrungeStar's path at its own ratio) in `sem/tag/1/bg`,
-    // seated in flow, and it sets the row's 40.24. The bar beside it binds the
-    // same `sem/tag/1/bg`, which is `s.tx`'s paper under layout 1's Scheme 3
-    // and blush under the Scheme 2 layout 3 seats the footer on (the page
-    // row), so Editorial reads the binding rather than the coincidence.
-    //
-    // The 150 rule yields to a long name, as NavBar's §10.2 rule does (JP-092):
-    // it takes what the name leaves, up to its 150, down to a 30 floor at 768
-    // and 390. Its basis is 0, not 150, so it shrinks to that floor before the
-    // name gives a pixel (a 150 basis would share the deficit and wrap the name
-    // early); past the floor the name wraps between words, never inside one.
-    const wordmark = (
-      <span style={row(u(20))}>
-        <span style={row(u(10))}>
-          {ed
-            ? <GrungeStar s={s} fill={s.chips[0].bg} style={{
-                position: 'relative', flex: 'none', width: px(39.87), height: px(40.24),
-              }} />
-            : <LimeGlobeMark size={27.37 * scale} color={pop ? POP_FOOT.pale : s.stroke1} />}
-          <span style={pop
-            ? popType(13.5, 16, { color: POP_FOOT.pale })
-            : grunge || ed
-              ? labelStyle(s, s.labelMd, { color: s.tx, whiteSpace: 'normal' })
-              : { ...face, color: s.tx }}>{s.brand}</span>
-        </span>
-        <span style={{
-          height: u(2), background: ed ? s.chips[0].bg : pop ? POP_FOOT.pale : s.tx,
-          flex: '1 1 0', maxWidth: u(150), minWidth: s.narrow ? '30px' : '0px',
-        }} />
-      </span>
-    )
-
     // Display/MD with the frame's typed break after "make", folding the rest in
     // its 439.59 box. That box holds the frame's picture only at 1440, where it
     // makes three lines: at 768 "YOUR NIGHT UNFORGETTABLE." is 8.87em in our
@@ -29629,6 +29595,51 @@ function Footer({ s }) {
       }} />
     )
 
+    // "Group 6" is LimeGlobeMark's own drawing at 27.37, inked in the 15%
+    // hairline — it stands dim beside the name. Editorial's is the sparkle
+    // (39.87 × 40.24, GrungeStar's path at its own ratio) in `sem/tag/1/bg`,
+    // seated in flow, and it sets the row's 40.24. The bar beside it binds the
+    // same `sem/tag/1/bg`, which is `s.tx`'s paper under layout 1's Scheme 3
+    // and blush under the Scheme 2 layout 3 seats the footer on (the page
+    // row), so Editorial reads the binding rather than the coincidence.
+    //
+    // The 150 rule yields to a long name, as NavBar's §10.2 rule does (JP-092):
+    // it takes what the name leaves, up to its 150, down to a 30 floor at 768
+    // and 390. Its basis is 0, not 150, so it shrinks to that floor before the
+    // name gives a pixel (a 150 basis would share the deficit and wrap the name
+    // early); past the floor the name wraps between words, never inside one.
+    //
+    // At 390 the seal stands over the row's right end, its equator level with
+    // the name, so the name's measure is the row less the disc (JP-122, user
+    // call, 2026-10-09): the mark and name stop the row's own 20 short of the
+    // disc's left edge, `inX` plus its radius in from the column's right. The
+    // rule still runs on under the seal, as every 390 frame draws it, and it
+    // still yields first; then the name wraps. A word wider than that room
+    // keeps the group's min-content, so it pushes the rule as before rather
+    // than running over it. A hidden seal frees the room. At 768 and 1440 no
+    // disc reaches the row, so the measure stays the row.
+    const sealRoom = s.mob && s.showBadge === 'show' ? inX * scale + disc / 2 + 20 : 0
+    const wordmark = (
+      <span style={row(u(20))}>
+        <span style={row(u(10), sealRoom ? { maxWidth: `calc(100% - ${Math.round(sealRoom * 100) / 100}px)`, minWidth: 'min-content' } : null)}>
+          {ed
+            ? <GrungeStar s={s} fill={s.chips[0].bg} style={{
+                position: 'relative', flex: 'none', width: px(39.87), height: px(40.24),
+              }} />
+            : <LimeGlobeMark size={27.37 * scale} color={pop ? POP_FOOT.pale : s.stroke1} />}
+          <span style={pop
+            ? popType(13.5, 16, { color: POP_FOOT.pale })
+            : grunge || ed
+              ? labelStyle(s, s.labelMd, { color: s.tx, whiteSpace: 'normal' })
+              : { ...face, color: s.tx }}>{s.brand}</span>
+        </span>
+        <span style={{
+          height: u(2), background: ed ? s.chips[0].bg : pop ? POP_FOOT.pale : s.tx,
+          flex: '1 1 0', maxWidth: u(150), minWidth: s.narrow ? '30px' : '0px',
+        }} />
+      </span>
+    )
+
     // Label/SM, 23 between the line boxes and the same 23 before the pill,
     // which is BookPill's Lime default exactly — `full` at 390, where the frame
     // keeps it 54 tall.
@@ -29696,13 +29707,26 @@ function Footer({ s }) {
     //
     // Pop's is a raw Chunko 14.51 on its 86% line, white; its 390 row packs
     // both strings to the right, 10 apart, rather than halving the row.
+    //
+    // That row keeps the corner sun's room (JP-122, user call, 2026-10-09):
+    // the sun's ink reaches 54.25 past the column's edge at the height the
+    // type stands at (its ray at the row's middle, mapped row by row; the ray
+    // at the foot reaches 59), so the row starts the row's own 10 past that,
+    // under the seed's 68.75 at 390. While the two strings fit they stand side
+    // by side as the frame sets them; otherwise the row wraps as a whole — the
+    // credit drops under the copyright, both right-aligned, the lines centred
+    // in a row that grows rather than spill — and a copyright longer than the
+    // room wraps between words, inside one only when a word outruns it. At
+    // 360 the seed's own credit drops, where it used to put the © on a ray.
     const popEnd = pop && s.mob
     const half = s.mob && !popEnd ? { flex: '1 1 0', minWidth: 0 } : {}
     const safe = s.live ? 'env(safe-area-inset-bottom)' : '0'
+    const rowH = s.live ? `calc(${u(68)} + env(safe-area-inset-bottom))` : u(68)
     const smallPrint = (
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: popEnd ? 'flex-end' : 'space-between',
-        gap: popEnd ? u(10) : s.mob ? 0 : u(16), borderTop: hair,
+        ...(popEnd ? { flexWrap: 'wrap', alignContent: 'center' } : null),
+        gap: popEnd ? `0 ${u(10)}` : s.mob ? 0 : u(16), borderTop: hair,
         // Editorial's small print is Label/MD, uppercase, where the twins' is
         // Display/List; it may still wrap, as theirs does.
         ...(pop ? popType(14.51, 14.51 * 0.86) : ed ? labelStyle(s, s.labelMd, { whiteSpace: 'normal' }) : face),
@@ -29715,12 +29739,12 @@ function Footer({ s }) {
         // a home indicator the bottom ~20px sit under it, and the band (not
         // the type) should be what runs there. The canvas never reaches the
         // viewport's edge, so it keeps the frame's 68.
-        height: s.live ? `calc(${u(68)} + env(safe-area-inset-bottom))` : u(68),
+        ...(popEnd ? { minHeight: rowH } : { height: rowH }),
         ...(s.narrow
-          ? { padding: `0 ${s.mob ? 0 : '56px'} ${safe}`, marginBottom: `calc(-1 * ${s.padFoot})` }
+          ? { padding: `0 ${s.mob ? 0 : '56px'} ${safe} ${popEnd ? px(64.25) : s.mob ? 0 : '56px'}`, marginBottom: `calc(-1 * ${s.padFoot})` }
           : { margin: `0 calc(-1 * ${s.padX}) calc(-1 * ${s.padFoot})`, padding: `0 ${s.padX} ${safe}` }),
       }}>
-        <span style={half}>{s.copyright}</span>
+        <span style={popEnd ? { flex: '0 1 auto', minWidth: 0, textAlign: 'right', overflowWrap: 'anywhere' } : half}>{s.copyright}</span>
         <span style={{ ...half, textAlign: 'right' }}>{s.footerCredit}</span>
       </div>
     )
@@ -29830,10 +29854,13 @@ function Footer({ s }) {
   // 27 row and pull everything under it up by four. A floor, not a height: a
   // long name wraps, below. The rule yields to it as Lime's tree's does (JP-092,
   // the comment there): up to 150, down to 30 at 768 and 390, basis 0 so it
-  // gives way before the name wraps.
+  // gives way before the name wraps. At 390 the name's measure also stops the
+  // row's 20 short of the seal's disc, whose left edge is its `right` plus its
+  // size in from the column's right (JP-122, the comment in Lime's tree).
+  const sealRoom = s.mob && s.showBadge === 'show' ? parseFloat(sealPos.right) + sealSize + 20 : 0
   const wordmark = (
     <span style={row(u(20), { minHeight: u(31) })}>
-      <span style={row(u(10))}>
+      <span style={row(u(10), sealRoom ? { maxWidth: `calc(100% - ${sealRoom}px)`, minWidth: 'min-content' } : null)}>
         <GlobeMark size={Math.round(27.37 * scale)} color={s.ac} />
         <span style={labelStyle(s, u(21.4), { color: s.ac, whiteSpace: 'normal' })}>{s.brand}</span>
       </span>

@@ -139,7 +139,7 @@ Screenshots (the tester's):
 |---|---|---|---|---|---|---|
 | 1 | JP-124 | *12 mile radius* at layout 2 | **Confirmed, and recorded**: JP-105 kept layouts 1 and 2 on `MAP_RADIUS` on purpose, layout 2's *100 mi* parked for the designer; the frame itself says 100 once and 120 three times | S | **user**: *120 mi* or *100 mi*. **Decided A, *120 mi*** (2026-10-09) | **done** (30 of 660 + 30 of 660, the named set; Retro's 768 card 22.5 shorter) |
 | 2 | JP-121 | 390: a long name over the burger, the pill off the page | **Confirmed, shared, and named** (Editorial retest's *Seen at triage, not filed*, `:1104`–`:1111`): the layout-2 bar's 390 name has no fit; Editorial reproduces it too | S–M | **user**: fix or accept, the scope, the room. **Decided A with Editorial kept out** (its 2026-10-07 acceptance stands), **room A** (2026-10-09) | **done** (0 of 660 per surface on the seed; `&name=` 4 of 180, Pop's 390 alone) |
-| 3 | JP-122 | 390 footer: the copyright under the sun, the name under the seal | **Confirmed, two faults**: (a) Pop's small print keeps no corner for the sun; (b) the wordmark's measure ignores the seal, under Pop, Editorial and Retro | S–M | **user**: (b)'s scope, (a)'s shape | open |
+| 3 | JP-122 | 390 footer: the copyright under the sun, the name under the seal | **Confirmed, two faults**: (a) Pop's small print keeps no corner for the sun; (b) the wordmark's measure ignores the seal, under Pop, Editorial and Retro | S–M | **user**: (b)'s scope, (a)'s shape. **Decided (b) A, every seal footer; (a) A, the row wraps as a whole** (2026-10-09) | **done** (0 of 660 per surface on the seed; `&name=` 4 / 4 / 6 / 2 of 30 per surface, as named) |
 | 4 | JP-123 | an edited slot row freezes the dates in 2025 | **Confirmed, every template, and recorded twice**: the first-edit write-out (JP-052) and the full-ink past row (2026-09-17), whose own comment states a premise JP-052 retired | M | **user**: four questions | open |
 | 5 | — | End-of-pass sweep | — | S | — | open |
 
@@ -711,6 +711,207 @@ width alone.
 **Docs.** The two comments (`wordmark`, `smallPrint`). `notes/footer.md`. An *answered* pointer at
 JP-092 (rest)'s Settled.
 
+**Re-checked** (2026-10-09, HEAD `780abdb`). Every *Evidence* line sits 30 lower, as JP-121's +30
+above the footer predicted. In `EncoreSection.jsx`:
+- `Footer` is at `:29418`, the `wordmark` at `:29521`–`:29540` (its JP-092 comment at `:29516`);
+- the seal at `:29613`–`:29630` (its placement comment at `:29587`–`:29612`);
+- `popEnd` / `smallPrint` at `:29699`–`:29726`, the sun at `:29736`–`:29743`;
+- the narrow layout at `:29750`–`:29773`: the column's `containerType` at `:29757`, the corner sun at
+  `:29770`;
+- Retro's `sealSize` / `sealPos` at `:29818`–`:29825`, its `wordmark` at `:29834`–`:29845` (the
+  name at `:29838`), its seal at `:29857` and its `smallPrint` at `:29913`.
+
+**Reproduced** (2026-10-09). Puppeteer ran from the scratchpad against a HEAD worktree on :5174. The
+recipe was JP-121's: template → card → *Use this header* → the Title through `st` → Publish → Open,
+with the tab at 360, 390, 414 and 768. It walked Pop card 2 and card 1, Editorial, Retro, Lime and
+Grunge card 2, with the five names. There were no console errors. The harness was proved first: the
+HEAD worktree against a fresh tree server on :5177, every category, themes 0–4, three widths, gave
+**0 of 660 per surface**.
+- **The tester's hit test.** `elementFromPoint` at the name's last glyph returns the seal's
+  `circle` / `textPath` where the name runs under it. For the sun it proves nothing: `PopSun` is
+  `pointer-events: none`, so the test returns the copyright on HEAD too. The sun is tested on its
+  painted path instead: its `pointer-events` are turned on for the probe alone, and a glyph counts
+  as covered when an inner point hits a sun `path`, not the svg's box.
+- **The sun's ink**, mapped row by row over the small print's 68 (section px): it reaches **64.25**
+  across the band where one to three lines can stand (dy 15–53), and 69 only at the row's foot
+  (dy 62). The frame (`986:52442`, `absoluteRenderBounds`) prints *C 2026 KAI MERCER* from 81.14
+  and the credit from 233, one line at y 680–690.5, with the sun clipped to x 0–94.
+- **The seal's disc** is the wrapper's computed width / 2 about the box's centre. At 390 (section
+  px), the disc's left edge and radius are:
+
+  | Template | Left · R |
+  |---|---|
+  | Retro | 266 · 42.5 |
+  | Lime | 280.5 · 39.25 |
+  | Grunge | 274.22 · 37.2 |
+  | Editorial | 276.69 · 38.31 |
+  | Pop | 266.41 · 42.02 |
+
+  Each disc's equator lies within the wordmark row.
+- **The name under the seal** (glyph box to disc, negative = under; the last glyph's hit is the
+  seal):
+
+  | Template | Name | Widths |
+  |---|---|---|
+  | Pop | *Featherstonehaugh* | 360 (−42), 390 (−19.66), 414 |
+  | Pop | *Florence* | 360 (−5.86) |
+  | Editorial | *Featherstonehaugh* | 360 (−35.4), 390 (−8.93), 414 |
+  | Retro | *Florence* | 360 (−39.1), 390 (−9.09), 414 |
+  | Retro | *Chemical* | 360 (−12.5) |
+  | Retro | *Featherstonehaugh* | 390 and 414 (−42.5); at 360 it already wraps clear |
+
+  Editorial's *Florence* at 360 grazes the disc (−0.15). Lime and Grunge clear every name by 16.7
+  or more.
+- **The copyright under the sun** (Pop, cards 1 and 2 alike): every long name starts the copyright
+  at x 10 (360, 390) or 22 (414), with 3–6 glyphs per line on the sun's ink. **The seed itself
+  touches it at 360**: it starts at 48.75, and its © is on a ray (the ink reaches 65.25 there).
+  At 390 and 414 the seed starts at 78.75 and 90.75, clear.
+- The pages that scroll sideways (Editorial 365 / 407 / 419, Retro 389 / 367 / 426 / 438) are the
+  layout-2 headers' scrolls, already named and called (JP-121, Retro's hero). The footer adds none.
+- **768 and desktop**: no seal reaches its wordmark row under any of the five. Each disc's top sits
+  below the row's foot (768: 43.5–53; desktop: 39.6–73). The nearest name to a disc is 224.76 at
+  768 (Retro *Featherstonehaugh*) and 111.31 at desktop (Editorial *Featherstonehaugh*).
+
+**Decided** (user, 2026-10-09):
+1. **(b) A, every footer whose seal stands over the wordmark row**: the `s.limeTree` block and
+   Retro's body, at 390 alone. The name group stops the wordmark's own 20 short of the disc's left
+   edge, and the rule still runs under the seal. A hidden seal frees the room. Retro's *The
+   Chemical Brothers* newly wraps at 390, where HEAD left it 17.5 clear. A single word wider than
+   the room still reaches the seal, as before (JP-113's named footer item).
+2. **(a) A, the row keeps the sun's corner and wraps as a whole.** It starts right of the sun's ink
+   at the text's height (54.25 past the column's edge) plus the row's 10. The two strings stand side
+   by side while they fit; otherwise the credit drops under the copyright, both right-aligned. At
+   360 the seeded *Kai Mercer* row changes: its credit drops, since HEAD's © sits on a ray there.
+
+**Expected after-diff, named before the code.**
+- **The seed: 0 of 660 per surface**, themes 0–4, canvas and `live=1`, the `page=2` footer
+  included. *Kai Mercer*'s group never reaches a cap (it ends at 143.9 at most, under Retro, against
+  caps of 236 or more). Pop's pad of 64.25 is under the seed's own start at 390 (68.75 past the
+  column's edge). `flexWrap`, `alignContent`, `paddingLeft`, `maxWidth`, `overflowWrap` and
+  `textAlign` move no seeded rect.
+- **The harness never renders 360**, so the seed's 360 change is a real-app check.
+- **Positive control** (`&name=`, mobile, `arch 0` and `page=2`, per surface):
+
+  | Name | Moves | Files of 30 |
+  |---|---|---|
+  | *Florence*, *Chemical* | Pop (a), Retro (b) | 4 each |
+  | *Featherstonehaugh* | Pop (a + b), Retro, Editorial | 6 |
+  | *Supercalifragilistic* | Pop (a) | 2 |
+  | *Kai Mercer* | nothing | 0 |
+
+  Lime and Grunge stay at 0, and so does every 768 and desktop render.
+
+**Settled** (2026-10-09).
+- **The code** (`EncoreSection.jsx`, `Footer`).
+  - **The `s.limeTree` block, (b).** The `wordmark` moved below the seal so it can read the disc,
+    at `:29612`–`:29644`. `sealRoom` (`:29621`) is `inX × scale + disc / 2 + 20` at `s.mob` with
+    the seal shown, and 0 otherwise. Under it the mark-and-name group takes `maxWidth: calc(100% −
+    sealRoom)` and `minWidth: 'min-content'`. The rooms are Pop's 133.6, Editorial's 123.34,
+    Lime's 119.5 and Grunge's 125.8.
+  - **The same block, (a).** Under `popEnd` (`:29711`–`:29747`) the row takes `flexWrap: 'wrap'`
+    and `alignContent: 'center'`. Its `gap` is `0 10px`, the same shorthand at every width, so a
+    resize logs no "Removing a style property". Its left padding is `px(64.25)`, and its height
+    a `minHeight`. The copyright takes `0 1 auto`, `minWidth: 0`, `textAlign: 'right'` and
+    `overflowWrap: 'anywhere'`. Every other template's row is HEAD's.
+  - **Retro's body, (b).** `sealRoom` (`:29860`) is `parseFloat(sealPos.right) + sealSize + 20`,
+    134 at 390, and its group takes the same two properties.
+- **Digest: 0 of 660 per surface on the seed**, themes 0–4, canvas and `live=1`, as named. It ran
+  against the HEAD worktree on :5174 from the tree's fresh server on :5177, and the harness had
+  been proved first, 0 of 660 per surface, unedited. No label held an empty render.
+- **Positive control, as named** (footer, themes 0–4, three widths, `arch 0` and `page=2`): per
+  surface, *Florence* 4 of 30, *Chemical* 4, *Featherstonehaugh* 6, *Supercalifragilistic* 2 and
+  *Kai Mercer* 0. Lime, Grunge, 768 and desktop are 0, and the canvas and `live=1` alike.
+  - **Pop, *Florence*: 2 rows.** The copyright stands on one line from 117.3 to the row's end,
+    and the credit drops under it.
+  - **Editorial, *Featherstonehaugh*: 3 rows.** The group goes 275.8 → 246.7 and the name 1 → 2
+    lines. The rule goes 74.2 → 103.3, and the row keeps the star's 40.2.
+  - **Pop, *Featherstonehaugh*: 43 rows.** The group goes 276.1 → 236.4, the row 27.4 → 32, and
+    the footer +4.6. The small print moves too.
+  - **Retro, *Chemical*: 41 rows.** The group goes 238.5 → 236, the row 31 → 46.2, and the
+    footer +15.2.
+- **The real app** (:5177). The same walk as *Reproduced* covered Pop cards 1 and 2 and Editorial,
+  Retro, Lime and Grunge card 2, with the five names plus *Maximilian Featherstonehaugh Windsor*,
+  at 360, 390, 414 and 768. There were no console errors. In the Pop table, "clear of the seal"
+  is the glyph box's distance to the disc.
+
+  | Pop, 390 | Name: lines · clear of the seal | Copyright starts · lines | Credit |
+  |---|---|---|---|
+  | Kai Mercer | 1 · 136.77 | 78.75 · 1 (HEAD) | beside it |
+  | Florence and the Machine | 1 · 24.14 | 117.34 · 1 | under it |
+  | The Chemical Brothers | 1 · 45.16 | 139.92 · 1 | under it |
+  | Maximilian Featherstonehaugh | **2** · 67.17 (HEAD −19.66) | 237 / 216.5 · 2 | under it |
+  | Supercalifragilistic | 1 · 60.59 | 156.52 · 1 | under it |
+  | …Windsor | 3 · 67.17 | 237 / 142.75 · 2 | under it |
+
+  - **The tester's tests pass.** At 360, 390 and 414 no name's last glyph hits a seal. The seal
+    test is valid as the plan states it. No copyright glyph touches the sun's painted path; the
+    plan's hit test is vacuous for the sun, since `PopSun` is `pointer-events: none`. HEAD had 3–6
+    glyphs per line on it.
+  - **The layout.** The copyright's lines end at the row's end, right-aligned, and the credit
+    keeps one line. 414 reads 390's row 12 to the right.
+  - **The seed at 360** changed as named. The copyright stands from 208.31, and the credit drops
+    under it. On HEAD the © sat on a ray. At 360 *Florence* (58.69 clear) and *Chemical* take
+    two name lines too, since the room is 30 shorter there.
+  - **Editorial**: *Featherstonehaugh* takes two lines at 360–414 (42.05 / 71.88 clear), and
+    *Florence* takes two at 360, where HEAD grazed the disc.
+  - **Retro**: *Florence* and *Chemical* take two lines at 360–414; *Chemical* is newly wrapped at
+    390, as named. *Featherstonehaugh* takes two lines at 18.88 / 48.88 clear.
+  - **Lime and Grunge.** Under Lime, *Featherstonehaugh* now wraps at 360, where HEAD left it
+    16.67 clear, and *…Windsor* wraps at 360–414. Grunge's cap (`calc(100% − 125.8px)`, read off
+    the group) is reached only by a four-word name, which wraps clear by 69.83.
+  - **Retro's *Supercalifragilistic* at 360** is the one-word case. It is wider than the room, so
+    it keeps HEAD's place, 9.8 clear of the disc.
+  - **No footer scrolls a page.** Every section root's own `scrollWidth` was read. The sideways
+    scrolls left are all the header's: Editorial 365 / 407 / 419 / 476 / 488, by JP-121's call,
+    and Retro 389 / 367 / 426 / 438 / 490 / 502, Retro's layout-2 hero. The footer's text ends at
+    the row's end in every case.
+  - **768 equals HEAD on all six cards** (names, rules, copyright, credit and discs).
+- **1088 Desktop canvas, 768 and the published desktop: unchanged by construction.** Both caps
+  and every `popEnd` property are gated on `s.mob`, every other branch is HEAD's, and the positive
+  control's 768 and 1180 renders are 0.
+- **The editor's Mobile canvas** (Pop, Retro and Editorial card 2, the device tab through
+  `pointerdown`) reads the harness's and the tab's 390 to the hundredth, on HEAD and on the tree.
+- **Edge cases, harness, against HEAD.**
+  - **A hidden seal** (`&cj={"showBadge":"hide"}`) gives HEAD's name back under all five: no cap.
+  - **A 34-letter one-word name** leaves the name and the rule exactly as HEAD under all five. Its
+    word still reaches the seal, JP-113's named footer item. Pop's copyright with it now stands
+    from 86.53, where HEAD began it at 6.3, past the column's edge.
+  - **A long typed Small print** under Pop sets four lines from 84.05 with none on the sun. HEAD
+    ran four lines from x 10 onto the ink, and broke the credit over three.
+- **The sun's ink and the pad.** Mapped row by row (*Reproduced*), the ink reaches 54.25 past the
+  column's edge where one to three lines stand, and 59 at the foot. Above the row it stays under
+  10. So the 64.25 pad clears every height a grown row can reach.
+- **Build.** `npm run build` is clean. The root `index.html` is not refreshed.
+- **Torn down** before the commit. :5174 and :5177 were stopped and the HEAD worktree removed.
+  The probes stayed in the session's scratchpad. :5173, :5175 and :5176 are not this session's.
+- **Docs.**
+  - The two comments: the `wordmark`'s in both trees, Retro's pointing at Lime's, and the
+    `smallPrint`'s Pop paragraph.
+  - `notes/footer.md` has a bullet after JP-092's.
+  - An *answered* pointer went at JP-092 (rest)'s Settled in `../editorial/retest-qa-fixes.md`.
+  - A line went in *Notes for the designer* below.
+  - CLAUDE.md, README and `notes/templates.md` state no rule about the footer's name or small
+    print, so they are unchanged. The grep was for *small print*, *wordmark*, *PopSun* and
+    *JP-092*.
+
+Reply (JP-122): **fixed, for Pop and for every template whose footer has a seal.** At phone
+width a long name in the footer now stops before the round seal and wraps onto a second line,
+breaking between words. With *Maximilian Featherstonehaugh* it takes two lines and stays about
+67px clear of the seal at 390. The decorative line beside it still runs under the seal, as in the
+design. The same applies on Editorial and Retro, where the name also reached the seal, and on Lime
+and Grunge with longer names.
+- **The copyright under Pop's starburst.** The bottom row keeps clear of the starburst. While the
+  copyright and *A JustPay Product* fit one line they stand side by side, as in the design.
+  Otherwise *A JustPay Product* drops under the copyright, both right-aligned. *© 2026 Florence
+  and the Machine* now reads in full, clear of the starburst, on Pop's Hero and Feature spread
+  alike.
+- **360, which was not checked.** Even the default *Kai Mercer* line reached a ray there, so at
+  360 *A JustPay Product* drops under it.
+- **What stays the same.** 768 and 1440 do not change, and neither does the default footer at 390
+  and 414.
+- **Not changed, logged.** A single word wider than the room (34 letters or more) still reaches
+  the seal.
+
 ---
 
 ## JP-123 — editing a slot row writes the canvas's 2025 dates, and the published rows die
@@ -845,4 +1046,6 @@ Gathered as the entries run; the sweep finalises them. Seeded at triage:
   standard · further on request*. The build keeps layout 1's *12 mile radius*.
 - **The 390 header and footer frames are drawn for *Kai Mercer*'s ten letters.** No frame shows a
   name that does not fit between the burger and the pill, or a copyright that reaches the corner
-  sun (JP-121, JP-122).
+  sun (JP-121, JP-122). At 360 even the seed's copyright reaches a ray of the sun, so the build drops
+  its credit under it there (JP-122, user call, 2026-10-09). If the frame's single line matters at
+  360, the sun has to move or shrink there.
