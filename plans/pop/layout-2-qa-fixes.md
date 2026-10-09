@@ -137,7 +137,7 @@ Screenshots (the tester's):
 
 | Order | ID | Report (short) | Verdict | Size | Decision | Status |
 |---|---|---|---|---|---|---|
-| 1 | JP-124 | *12 mile radius* at layout 2 | **Confirmed, and recorded**: JP-105 kept layouts 1 and 2 on `MAP_RADIUS` on purpose, layout 2's *100 mi* parked for the designer; the frame itself says 100 once and 120 three times | S | **user**: *120 mi* or *100 mi* | open |
+| 1 | JP-124 | *12 mile radius* at layout 2 | **Confirmed, and recorded**: JP-105 kept layouts 1 and 2 on `MAP_RADIUS` on purpose, layout 2's *100 mi* parked for the designer; the frame itself says 100 once and 120 three times | S | **user**: *120 mi* or *100 mi*. **Decided A, *120 mi*** (2026-10-09) | **done** (30 of 660 + 30 of 660, the named set; Retro's 768 card 22.5 shorter) |
 | 2 | JP-121 | 390: a long name over the burger, the pill off the page | **Confirmed, shared, and named** (Editorial retest's *Seen at triage, not filed*, `:1104`–`:1111`): the layout-2 bar's 390 name has no fit; Editorial reproduces it too | S–M | **user**: fix or accept, the scope, the room | open |
 | 3 | JP-122 | 390 footer: the copyright under the sun, the name under the seal | **Confirmed, two faults**: (a) Pop's small print keeps no corner for the sun; (b) the wordmark's measure ignores the seal, under Pop, Editorial and Retro | S–M | **user**: (b)'s scope, (a)'s shape | open |
 | 4 | JP-123 | an edited slot row freezes the dates in 2025 | **Confirmed, every template, and recorded twice**: the first-edit write-out (JP-052) and the full-ink past row (2026-09-17), whose own comment states a premise JP-052 retired | M | **user**: four questions | open |
@@ -261,6 +261,107 @@ those files by template and width before the code. Map `arch 0`, `2` and `3`: 0.
 `notes/map.md`'s JP-105 bullet; *answered* pointers at `../grunge/layout-4-qa-fixes.md:2120` (layout
 2 now) and at JP-105's Settled in `../editorial/layout-3-qa-fixes.md` ("layouts 1 and 2 stay open").
 A designer note.
+
+**Re-checked** (2026-10-09, HEAD `41425f3`). Every *Evidence* line holds as the triage gave it:
+`MAP_RADIUS` / `MAP_RADIUS_3` / `mapRadiusSeed` at `data.js:1277`–`:1279` under the comment at
+`:1270`–`:1276`; the stat-row comment `:1296`–`:1303`; the field `:2232` (`in: [0, 1, 2]`), its hint
+`:2233`–`:2235`; `vm.mapRadius` `EncoreBuilder.jsx:1907`; the chain arm `:4340`; the stats array
+`EncoreSection.jsx:20818`, drawn at `:21038` (the `s.limeTree` block, `row(0, …)`) and `:21472`
+(Retro's body, `row(u(18), …)`). `PLACE_BODY` `data.js:985`, `MAP_TERMS` `:1281` (printed at
+`EncoreSection.jsx:21349` and `:21789`), `FORM_PROMISES` `:1321`.
+
+**Reproduced** (2026-10-09, a HEAD worktree on :5174; puppeteer from the scratchpad: template → card
+2 → *Back to page list* → Events Map → Publish → Open, the tab at 1440, 768 and 390). Under all five
+templates the panel reads *Events Map layout 2* and its *Coverage* box *12 mile radius*, and the stat
+row prints it as Max travel at every width. No console errors. In the tab (1440 is zoomed 1.22):
+
+| Template | 1440: cell · ink · gap to *~2 hrs* | 768: cell · ink · lines · gap | 390: cell · ink · gap |
+|---|---|---|---|
+| Pop, Lime, Grunge, Editorial | 203.98 · 102.05 · 101.94 | **100.66 · 96.52 · 1 · 4.14** | 110 · 96.52 · 13.48 |
+| Retro | 192.09 · 102.83 · 107.31 | 88.66 · 48.63 · **2** · 58.03 | 98 · 96.52 · 19.48 |
+
+The tester's 768 touch is the first row: the twins' and Pop's cells are the frame's thirds (100.67,
+`row(0, …)`), and the value fills 96% of one and ends 4.14 short of the next value. Retro's body
+gaps its cells 18, so its 768 third is 88.66 and *12 mile radius* wraps to two lines there (the row
+91.8 tall against 69.3 at 390). Nothing wraps at 1440 or 390.
+
+**Measured before asking** (the harness, map `arch 1`, themes 0–4, three widths, canvas and
+`live=1`, on :5174; the two surfaces agree in every render, and the desktop render is the tab's 1440
+÷ 1.22). With `&cj={"radius":"120 mi"}` the value inks 45.7 at 768 and 390 (39.61 at desktop; Retro
+39.92) and with `"100 mi"` 46.03 (39.89; Retro 40.2): **one line under every template at every
+width, and at least 54.6 clear of *~2 hrs* at 768.** So A and B cure the touch alike; the choice is
+the number. Retro's 768 row drops 91.8 → 69.3 under either, and its section 771.02 → 748.52; no
+other height moves. The value `<span>` is stretched to its cell (`col()`'s default
+`align-items`), so its box is the cell's under every value.
+
+**Expected after-diff, named before the code** (on A or B). Map `arch 1` × themes 0–4 × three widths
+× both surfaces, **30 files**:
+- **28 files: the value `<span>`'s text alone.** Its box is the cell, so no geometry moves.
+- **2 files, Retro (theme 0) at tablet, canvas and `live=1`:** the span 45 → 22.5 tall, its cell
+  and the stat row 91.8 → 69.3, the travel card and the root 22.5 shorter (771.02 → 748.52), and
+  every row under the stat row 22.5 up.
+- Map `arch 0`, `2` and `3`: **0 files.** On C, map `arch 0` × themes 0–4 × 3 × 2 moves as well.
+
+**Decided** (user, 2026-10-09): **A. *120 mi* at layout 2**, `MAP_RADIUS_2`, returned by
+`mapRadiusSeed` at `d === 1`. Layout 1 keeps *12 mile radius*. The designer is told the cell's 100
+contradicts the frame's 120s.
+
+**Settled** (2026-10-09).
+- **The code** (`data.js` and one comment in `EncoreBuilder.jsx`; `EncoreSection.jsx` is untouched).
+  - `data.js:1280`: `MAP_RADIUS_2 = '120 mi'`, and `mapRadiusSeed` (`:1282`) returns it at `d ===
+    1`, so `sectionVm` (`EncoreBuilder.jsx:1908`) and `EditPanel`'s chain arm (`:4341`) both take it
+    with no edit of their own. The comment above (`:1270`–`:1278`) names each layout's source and
+    JP-124's reason. The stat-row comment (`:1300`–`:1304`) now says Max travel is `radius`, and
+    that layout 2's seed is the page's 120.
+  - The field keeps `d: MAP_RADIUS` and `in: [0, 1, 2]`, so no `reach.mjs` run is owed. Its hint
+    (`:2237`–`:2239`) adds "…as Max travel on the travel card, where it starts from “120 mi”", and
+    its comment names JP-124.
+- **Digest: 30 of 660 per surface, the named set and nothing else**, themes 0–4, against a HEAD
+  worktree on :5174 and a fresh tree server on :5177. The harness was proved first: 0 of 660 per
+  surface, unedited. The 30 are map `arch 1` × themes 0–4 × three widths × canvas and `live=1`.
+  - **28 files: one row each**, the value `<span>`'s text, *12 mile radius* → *120 mi*. No
+    geometry moves.
+  - **Retro (theme 0) at tablet, canvas and `live=1`: 77 rows each.** The span 45 → 22.5, its cell
+    65.8 → 43.3, the stat row 91.8 → 69.3, the travel card and the left column 22.5 shorter, and
+    the root 771 → 748.5. The pill row and the gig list beneath move 22.5 up.
+  - **Not in the named diff:** the right column moves too. The map card stretches to the left
+    column's height (Retro's 768 master states both at 703; its fit declined that stretch,
+    `../retro/layout-2.md:1232`, so the card follows its neighbour's content). So the card and its
+    viewport are 22.5 shorter (659 → 636.5, 467 → 444.5). The rings, centred in the viewport, move
+    11.2–11.3 up. The pins, placed in % of it, move 5.8–17.1 up. The terms bar at its foot moves
+    22.5 up. No other template's row wrapped, so none of this happens there.
+  - Map `arch 0`, `2` and `3`, and every other category: 0.
+- **`textContent`**: the Max travel value reads *120 mi* in all 30 renders. In the digest, layout
+  1 prints *12 mile radius* in 30 files and layout 3 *… 5 pins · 120 mi radius* in 30.
+- **A typed Coverage still wins, and emptied matches HEAD.** `&cj={"radius":"ZQ coverage"}` and
+  `{"radius":""}` on map `arch 0`–`3` × themes 0–4 × three widths × both surfaces: **0 of 60** per
+  label against HEAD. Typed, the marker prints at `arch 0`, `1` and `2` (30 of 30 each) and not at
+  `arch 3`, and no seed prints anywhere. Emptied, no seed and no layout-3 coverage clause print.
+- **The real app** (:5177, the edited tree; the repro above re-run). On card 2 under all five
+  templates the panel's *Coverage* reads *120 mi*. The tab prints it once as Max travel at 1440,
+  768 and 390, one line everywhere. At 768 its ink is 45.7, and it ends **54.96** short of *~2 hrs*
+  (Retro **60.96**; the cells' gap is 0 and 18). The section heights match HEAD at every width,
+  except Retro's 768 (771.02 → 748.52). Cards 1 and 3 keep *12 mile radius* and *120 mi radius*
+  in the panel and the tab under all five. *45 miles* typed into card 2's box, under Pop and
+  Retro, prints on the canvas and in the tab at all three widths. No console errors.
+- **Build.** `npm run build` is clean. The root `index.html` is not refreshed.
+- **Torn down** before the commit: :5174 and :5177 were stopped and the HEAD worktree removed. The
+  probes stayed in the session's scratchpad, so nothing landed in `source/scripts/`. :5173 and :5175
+  (this tree) and :5176 (another job's worktree) are not this session's and still run.
+- **Docs.** `notes/map.md`'s JP-105 bullet now states layout 2's seed and why, and its JP-096
+  *unfiled seats* line points at it. *Answered* pointers went at `../grunge/layout-4-qa-fixes.md`'s
+  `MAP_RADIUS` follow-up and designer note 10, at JP-105's Settled in
+  `../editorial/layout-3-qa-fixes.md` ("layouts 1 and 2 stay open"), and at the unfiled seat in
+  `../editorial/layout-2-qa-fixes.md`'s JP-096 table. CLAUDE.md and README name no coverage seed,
+  so they are unchanged. The designer note below is updated.
+
+Reply (JP-124): **fixed.** Events Map layout 2 now shows *120 mi* under Max travel by default. That
+matches the rest of the page (*120 mi standard travel radius* in the header, *120 mi standard*
+under the map) and the design's own 120 mi rings and data bar. At 768 it now ends well clear of
+*~2 hrs*: 55px under every template, where it used to come within 4px (under Retro it used to
+wrap). The design's *100 mi* in that cell contradicts its own 120s, so it went to the designer.
+Layout 1 keeps *12 mile radius*, from its own design, and anything typed into Coverage still shows
+on every layout.
 
 ---
 
@@ -578,8 +679,10 @@ at the 2026-09-17 call's own record (the session greps for it).
 Gathered as the entries run; the sweep finalises them. Seeded at triage:
 - **Layout 2's travel card says *Max travel 100 mi*** beside a map whose rings run to 120mi and whose
   data bar reads *UK · 8 pins · 120 mi radius*. On the same page, the header's place card claims
-  *120 mi standard travel radius* (JP-124). Layout 1's frame does the same with *12 Mile Radius*
-  beside *120 mi standard · further on request*.
+  *120 mi standard travel radius*. The build now seeds *120 mi* in the cell (JP-124, user call,
+  2026-10-09). If 100 is meant, the cell, the rings, the data bar and the page's other three 120s
+  all have to change together. Layout 1's frame does the same with *12 Mile Radius* beside *120 mi
+  standard · further on request*. The build keeps layout 1's *12 mile radius*.
 - **The 390 header and footer frames are drawn for *Kai Mercer*'s ten letters.** No frame shows a
   name that does not fit between the burger and the pill, or a copyright that reaches the corner
   sun (JP-121, JP-122).

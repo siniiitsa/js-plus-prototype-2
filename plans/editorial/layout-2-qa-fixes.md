@@ -932,7 +932,7 @@ radius].join(' · ')` (`:19688`, `:20108`). The header's `location` (`vm.locatio
 | card h2 | Venue Distance | MANCHESTER | `FIELDS.map.heading`, `d: 'Manchester'` (`TITLES.map`), no `d === 1` seed (`TESTI_HEADING_2`'s arm is the pattern, `EncoreBuilder.jsx:1075`, chain `:4048`) |
 | chip | ● Confirmed | ● Jul 12 · 22:00 | `g.when`, JP-060's decision A |
 | venue | Lake District | Manchester | the featured gig, which falls back to the page's first; the frame features its third |
-| Max travel | 100 mi | 12 mile radius | `MAP_RADIUS` (`data.js:943`), already a follow-up with the designer (`../grunge/layout-4-qa-fixes.md:2120`–`2123`, note 10) |
+| Max travel | 100 mi | 12 mile radius | `MAP_RADIUS` (`data.js:943`), already a follow-up with the designer (`../grunge/layout-4-qa-fixes.md:2120`–`2123`, note 10). *Answered by JP-124 (2026-10-09): seeded "120 mi", `../pop/layout-2-qa-fixes.md`* |
 
 **Evidence.** The two tables, and `notes/map.md:31` (*Other upcoming* is derived: only the words are
 a literal), `:94`–`107` (JP-090: `mapKickerSeed`, the chain arm gated on `map`, the list label as

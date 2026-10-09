@@ -1903,7 +1903,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // its fit runs the one-line label 1px into the gap; a label free to wrap
   // breaks there onto two lines and lifts the pill 1.6px.
   vm.mapVenueCtaWraps = vm.mapVenueCta.length > MAP_VENUE_CTA.length
-  // JP-105 — layout 3's line under the map seeds its frames' "120 mi radius".
+  // JP-105 — layout 3's line under the map seeds its frames' "120 mi radius";
+  // JP-124 — layout 2's Max travel "120 mi".
   vm.mapRadius = cv('radius', mapRadiusSeed(d))
   vm.mapBase = cv('base', MAP_BASE)
   vm.mapTerms = cv('terms', MAP_TERMS)
