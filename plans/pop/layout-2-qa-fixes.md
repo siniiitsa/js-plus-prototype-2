@@ -138,7 +138,7 @@ Screenshots (the tester's):
 | Order | ID | Report (short) | Verdict | Size | Decision | Status |
 |---|---|---|---|---|---|---|
 | 1 | JP-124 | *12 mile radius* at layout 2 | **Confirmed, and recorded**: JP-105 kept layouts 1 and 2 on `MAP_RADIUS` on purpose, layout 2's *100 mi* parked for the designer; the frame itself says 100 once and 120 three times | S | **user**: *120 mi* or *100 mi*. **Decided A, *120 mi*** (2026-10-09) | **done** (30 of 660 + 30 of 660, the named set; Retro's 768 card 22.5 shorter) |
-| 2 | JP-121 | 390: a long name over the burger, the pill off the page | **Confirmed, shared, and named** (Editorial retest's *Seen at triage, not filed*, `:1104`–`:1111`): the layout-2 bar's 390 name has no fit; Editorial reproduces it too | S–M | **user**: fix or accept, the scope, the room | open |
+| 2 | JP-121 | 390: a long name over the burger, the pill off the page | **Confirmed, shared, and named** (Editorial retest's *Seen at triage, not filed*, `:1104`–`:1111`): the layout-2 bar's 390 name has no fit; Editorial reproduces it too | S–M | **user**: fix or accept, the scope, the room. **Decided A with Editorial kept out** (its 2026-10-07 acceptance stands), **room A** (2026-10-09) | **done** (0 of 660 per surface on the seed; `&name=` 4 of 180, Pop's 390 alone) |
 | 3 | JP-122 | 390 footer: the copyright under the sun, the name under the seal | **Confirmed, two faults**: (a) Pop's small print keeps no corner for the sun; (b) the wordmark's measure ignores the seal, under Pop, Editorial and Retro | S–M | **user**: (b)'s scope, (a)'s shape | open |
 | 4 | JP-123 | an edited slot row freezes the dates in 2025 | **Confirmed, every template, and recorded twice**: the first-edit write-out (JP-052) and the full-ink past row (2026-09-17), whose own comment states a premise JP-052 retired | M | **user**: four questions | open |
 | 5 | — | End-of-pass sweep | — | S | — | open |
@@ -475,6 +475,166 @@ Mercer* fits one line under all five, and the cells' new minimum is under their 
 layout 2, and its layout-3 clause on C. The `vm.navNameFit` comment. *Answered* pointers at
 `../editorial/retest-qa-fixes.md:1104` and `../editorial/layout-2-qa-fixes.md:638`. On C, a pointer
 at `layout-3.md:1182`.
+
+**Re-checked** (2026-10-09, HEAD `7349509`). Every *Evidence* line holds as the triage gave it:
+`HeaderV1` `:2420`, its nav row `:2548`–`:2642` (`navInset` `:2520`, `minHeight` `:2550`,
+`containerType` `:2551`, the left cell `:2571`, the name `:2594`, the right cell `:2595`, `BookPill`
+`:2631`); `fitName` / `fitBox` / `fitRow` `:888`–`:895`; NavBar's narrow `fit` `:1915`–`:1931`;
+`navFace` … `vm.navNameFit` `EncoreBuilder.jsx:796`–`:850`, built at `:842` for designs 0 and 3.
+Retro's bar name is `:3002`, `HeaderV2`'s centred name `:3389`. `vm.navNameFit` is read by `NavBar`
+alone (`:1925`–`:1930`), and `HeaderV1` calls no `NavBar`, so building it at design 1 reaches this
+row and nothing else.
+
+**Reproduced** (2026-10-09, a HEAD worktree on :5174; puppeteer from the scratchpad: template → card
+2 → *Use this header* → the Title through `st` → Publish → Open, the tab at 360, 390, 414 and 768;
+the name's text `Range`, the burger's capsule and the pill, x in page px). No console errors.
+- **Pop**, the tester's numbers to the pixel: *Florence* 41.36–243.48 over the capsule (20–82),
+  *Featherstonehaugh* 36–283.55 and the pill 299.55–**410.06** at 390. At 360 *Florence* (36),
+  *Chemical* (36) and *Supercalifragilistic* (49.17) run over the capsule too, and the pill ends at
+  364.64 and 410.06. At 414 the 390 row again (the row is 350 at both). **Pop's tab clips the
+  pill**: the document's `scrollWidth` stays the window's.
+- **Editorial**: the same overlaps (*Florence* from 40.56, *Featherstonehaugh* from 36, the pill to
+  407.2 at 390), and **its page scrolls sideways**: `scrollWidth` 407 at 390, 419 at 414, and 365 at
+  360 with *Florence*.
+- **Lime and Grunge fit all five names at 360, 390 and 414**: the name never reaches the capsule,
+  and the pill ends at the row's end.
+- **768 fits every name under all four**, the tester's control.
+- **The harness** (header `arch 1` and `5`, themes 0–4, `w=mobile`, canvas and `live=1`) gives the
+  triage table to the hundredth, the two surfaces alike, and `arch 5` alike to `arch 1` under themes
+  1–4 (Retro's six do not fold). Retro's *Florence* also squeezes its burger capsule to 38 and runs
+  its pill 8.6 past the row's inset (388.63).
+- **The room, measured** (390; at 360 every row is 30 shorter): the row 350 (Lime 370); the capsule
+  62 (`26 + 2 × 18`); the gaps 2 × 16; the pill 110.52 (Pop), 81.95 (Lime), 90.53 (Grunge), 112.05
+  (Editorial). The pill's box in the faces' ems (`navNameFit.pill`, the label at 12.07 or Label/SM,
+  plus `(4.27 + 17.92 + 8.53 + 27.6) × 0.7547`) comes to Lime's and Grunge's to the hundredth and
+  0.4 wide under Editorial and Pop, the safe side. **Grunge's label is Anton at an unfaced 12.07**
+  (`fontSize` spread after `labelStyle`), so its term divides `faceK` back out of `navFace`'s 0.75.
+- **What the two rooms do to the set** (the fit in the faces' ems, size / lines). Room A (the row
+  less the capsule, the pill and the gaps) is Pop's 145.5 at 390 and 115.5 at 360. *Florence* and
+  *Chemical* take two lines at 13.72. *Featherstonehaugh* sets at 12.38 at 390 and 9.83 at 360, and
+  *Supercalifragilistic* at 12 and 9.52. Room B (the row less twice the pill and the gaps) is 97
+  and 67. Under it *Featherstonehaugh* sets at 8.25 and 5.7, and **at 360 the seed wraps** under Pop
+  and Editorial. Under Lime and Grunge both rooms leave every name its size, one line at 390.
+
+**Decided** (user, 2026-10-09):
+1. **A, the `s.limeTree` block, but Editorial stays out.** The tester's *accepted on 07.10* was a
+   call: on 2026-10-07 the user accepted Editorial's layout-2 case as a remainder of JP-101, and it
+   stands. It was never written down, so this entry records it. The fit is Lime's, Grunge's and
+   Pop's. Editorial's 390 row stays HEAD's, its page scrolling sideways with
+   *Featherstonehaugh*. Retro's bar and layout 3's centred name stay named for their own tickets.
+2. **A, centred while it fits, sliding when not**: the desktop bar's rule, both cells pinned at
+   their content, the name's room the row less the capsule, the pill and the two gaps.
+
+**Expected after-diff, named before the code.** Everything is gated on `s.mob` and `!ed`. So 768,
+the published 1180 / 1440 desktop and the editor's **1088 Desktop canvas** cannot move by
+construction, and neither can Editorial or Retro (its own body). The row becomes a query
+container at 390 (it already is one at desktop). Chrome 151 makes no containing block of it for
+NavMenu's `position: fixed` panel (proved in the scratchpad: a fixed `inset: 0` child of a
+`container-type: inline-size` box measures the viewport).
+- **The seed: 0 of 660 per surface**, themes 0–4. The files at risk are header `arch 1` and `5` ×
+  mobile × themes 1, 2 and 4 × both surfaces. *Kai Mercer* fits room A at its own size under all
+  three, the cells' minimum is under their seeded width, and `containerType`, `whiteSpace`,
+  `maxWidth` and `textAlign` are not digest columns.
+- **Positive control, `&name=`**: *Florence and the Machine* and *Maximilian Featherstonehaugh*
+  each move **4 files per name**: header `arch 1` and `5` × mobile × Pop × canvas and `live=1`. The
+  moving rows are the name's (its size, box and lines) and the left cell's: on HEAD the cell
+  collapses to 0 and the capsule overflows it, and now the cell holds the capsule's 62. The pill's
+  row moves where HEAD pushed it (*Featherstonehaugh*). Lime and Grunge fit every name at 390, so they show
+  0, as do Editorial (out), Retro, and every 768 and desktop render. Lime and Grunge would move
+  only at 360, which the harness does not render.
+
+**Settled** (2026-10-09).
+- **The code** (`EncoreSection.jsx` and `EncoreBuilder.jsx`).
+  - `HeaderV1`'s `s.limeTree` row (`EncoreSection.jsx:2549`–`:2572`): `fit`, built at `s.mob` and
+    not under Editorial. Its room is `100cqi` less the capsule (`26px + 2 × u(18)`), the pill and
+    `2 × u(16)`. The pill is BookPill's padding, gap and disc as the call below passes them
+    (`pp(17.92)`, `pp(8.53)`, `27.6 × pk`, `pp(4.27)`) plus `pillEms` × the label's size. That is
+    12.07 under Pop and Grunge, and Grunge's ems are `navNameFit.pill / s.faceK`, since its label
+    is Anton unfaced. Elsewhere it is `s.labelSm`. `two` and `word` come from `navNameFit`, and the
+    floor is 12 (Grunge 16).
+  - The row is the query container at 390 under `fit` (`:2576`). The left cell's minimum is
+    `max-content` under `fit` (`:2599`), and so is the right cell's (`:2625`). The name takes
+    `fitName` / `fitBox` and `textAlign: center` (`:2622`–`:2624`). With no `fit` every value is
+    HEAD's.
+  - `sectionVm` builds `navNameFit` at design 1 too (`EncoreBuilder.jsx:845`). `NavBar` is its
+    only other reader, and `HeaderV1` calls none.
+- **Digest: 0 of 660 per surface on the seed**, themes 0–4, as named, against the HEAD worktree on
+  :5174 from a fresh tree server on :5177. The harness was proved first, 0 of 660 per surface,
+  unedited. No label held an empty render.
+- **Positive control, as named:** the header digest with `&name=` (themes 0–4, three widths,
+  both surfaces) differs in **4 of 180 files per name**: header `arch 1` and `5` × mobile × Pop ×
+  canvas and `live=1`. Retro, Lime, Grunge and Editorial show 0, and so does every 768 and desktop
+  render.
+  - *Florence*: 2 rows. The left cell goes 5.4 → 62.4, and the name's box 202.1 × 15.4 → 145.1 ×
+    30.8, two lines at its 13.72.
+  - *Featherstonehaugh*: 8 rows. The cell goes 0 → 62.4, the name's box 247.5 → 145.1 at 12.35 on
+    two lines, and the right cell, the pill and its disc move 40 left.
+  - The cell's 62.4 is the capsule's 62 plus the pill estimate's 0.4 spare under Pop. `arch 5`
+    moves as `arch 1`, and `live=1` as the canvas (the pill is an `A` there).
+- **The real app** (:5177; Pop, Lime, Grunge and Editorial card 2; the tester's steps through
+  `st`; the five names plus *Maximilian Featherstonehaugh Windsor*; the tab at 360, 390, 414 and
+  768). HEAD was walked beside it. No console errors.
+
+  | Pop, 390 | Size · lines | Ink | To the capsule · to the pill | Pill |
+  |---|---|---|---|---|
+  | Kai Mercer | 13.72 · 1 | 152.33–237.66 | 70.33 · 21.82 (HEAD) | 259.48–370 |
+  | Florence and the Machine | 13.72 · 2 | 118.53–223.36 | 36.53 · 36.12 | 259.48–370 |
+  | The Chemical Brothers | 13.72 · 2 | 120.3–221.59 | 38.3 · 37.89 | 259.48–370 |
+  | Maximilian Featherstonehaugh | 12.35 · 2 | 99.95–241.94 | 17.95 · 17.54 | 259.48–370 |
+  | Supercalifragilistic | 11.96 · 1 | 100.25–243.48 | 18.25 · 16 | 259.48–370 |
+  | …Windsor | 11.76 · **3** | 103.3–238.61 | 21.3 · 20.87 | 259.48–370 |
+
+  - **Every name clears the capsule by 17.6 or more and the pill by 16 or more**, at 360, 390 and
+    414. The pill ends at the row's end, the document's `scrollWidth` is the window's, and no word
+    breaks inside itself.
+  - At 360, *Featherstonehaugh* sets at 9.79 and *Supercalifragilistic* at 9.49, each widest word
+    filling the room under the floor, as JP-101's rule says. 414 reads 390's row 12 to the right.
+  - **A wrapped name's box is the room**, so its lines centre between the capsule and the pill,
+    not on the row. *Florence* sits 36.5 from each, 24 left of the row's centre. CSS cannot
+    shrink a box to its balanced lines.
+  - **The spread moves only for a third line**: *…Windsor* at 390 and 414 grows the bar 34 → 39.61,
+    and the spread drops 90 → 95.61. Every other name keeps HEAD's 90. Two lines at 13.72 fit the
+    bar's 34.
+  - **The burger opens and closes** (a trusted click) for every name at 360 and 390. Its fixed
+    panel measures the viewport (360 × 900, 390 × 900), so the row being a container does not
+    trap it. **On HEAD Pop's burger could not be opened** with *Florence* or *Featherstonehaugh*
+    at 360 or 390: the name covered it, and the tap landed on the name.
+  - **The seed and 768 are HEAD's** under all four. Lime and Grunge read HEAD's numbers for the
+    five names at 360–414. *…Windsor* moves under them, on HEAD 66.17 / 64.36 over the capsule at
+    360. Lime's now wraps at 360, and Grunge's at 360–414, where at 390 it stood 12.4 from the
+    capsule, inside the gap.
+  - **Editorial reads HEAD everywhere**, by the call. Its page still scrolls sideways (407 with
+    *Featherstonehaugh* at 390, 476 with *…Windsor*). Its burger cannot be opened where the name
+    covers the burger's centre: *Florence* at 360 and 390, *Chemical* at 360, and
+    *Featherstonehaugh* and *…Windsor* at both.
+  - Grunge's pill estimate is 0.01 short, so with *…Windsor* its pill ends at 370.02, past the
+    row's end by 0.02 and inside the page's 10 inset.
+- **The editor's Mobile canvas** (Pop card 2, the device tab through `pointerdown`) reads the
+  published 390 to the hundredth. On HEAD the pill ran to 1083 and 1154 past the frame's 1043.
+- **1088 Desktop canvas, 768 and the published desktop: unchanged by construction.** `fit` is
+  `s.mob` only, every other branch is HEAD's, and the positive control's 768 and 1180 renders are
+  0.
+- **Build.** `npm run build` is clean. The root `index.html` is not refreshed.
+- **Torn down** before the commit. :5174 and :5177 were stopped and the HEAD worktree removed. The
+  probes stayed in the session's scratchpad, so nothing landed in `source/scripts/`. :5173 and
+  :5175 (this tree) and :5176 (another job's) are not this session's and still run.
+- **Docs.** `notes/nav.md` has a new bullet beside JP-101's: layout 2's bar, Editorial's call, and
+  what stays named. The `fitName` comment, the `vm.navNameFit` comment and the row's comments in
+  `HeaderV1` are updated. *Answered* pointers went at `../editorial/retest-qa-fixes.md`'s *Seen at
+  triage, not filed*. An *accepted* pointer went at `../editorial/layout-2-qa-fixes.md`'s
+  *Editorial's 390 nav at 360*, which records the 2026-10-07 call. CLAUDE.md and README do not
+  describe the nav's name, so they are unchanged. Checked by grep: `JP-101`, *centred*, *Feature
+  spread* and *burger* find only README's generic burger line (`:259`).
+
+Reply (JP-121): **fixed for Pop, and for Lime and Grunge with longer names; Editorial stays as
+accepted.** On layout 2 at 390, a long name now gives way between the menu button and BOOK NOW.
+It stays centred while it fits. Otherwise it wraps onto two balanced lines, and shrinks only as
+far as it must: *Florence and the Machine* keeps its size on two lines, and *Maximilian
+Featherstonehaugh* sets at about 12px. BOOK NOW stays whole inside the page, and the menu
+button can be tapped again (on the old build a long name covered it). 768 and 1440 are
+unchanged, and so is the default *Kai Mercer*. Editorial layout 2 is left as it is: you accepted
+it on 07.10 as a remainder of JP-101, and that stands. Lime and Grunge fit every name in your
+set already; the change only shows there with a longer name.
 
 ---
 

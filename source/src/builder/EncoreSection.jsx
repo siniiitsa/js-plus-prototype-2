@@ -884,7 +884,8 @@ function LogoMark({ s, size = 18, color, glyph }) {
 // reach the pill, and its floor yields to a word too wide for the room
 // (`word`, the widest one's ems). Its row is `flex: none`: the seed already
 // runs past its half into the halves' gap, which the room counts, and a
-// shrinkable row would wrap it there.
+// shrinkable row would wrap it there. Layout 2's 390 bar (HeaderV1) passes
+// the same narrow fit to its own centred name span (JP-121).
 const fitName = (fit, base) => !fit ? base : fit.narrow
   ? `min(${base}, max(min(${fit.floor}, calc(${fit.room} / ${fit.word})), calc(${fit.room} / ${fit.two})))`
   : `min(${base}, max(${fit.floor}, calc(${fit.room} / ${fit.one}), min(${fit.cap}, calc(${fit.room} / ${fit.two}))))`
@@ -2545,10 +2546,34 @@ function HeaderV1({ s }) {
     // a bar capped at `s.list`. So Grunge's links can only shrink from their
     // 9.84 to 9 before the capsule wraps, which the seeded nine never reach.
     const linkSize = `clamp(12px, calc((100cqi - ${reserve}) / ${s.navEms}), ${s.labelSm})`
+    // At 390 the name gives way between the burger and the pill (JP-121,
+    // user call, 2026-10-09), which a long one ran over and pushed off the
+    // page: both cells hold their content, so the name stays centred while
+    // it fits and slides toward the narrower side when it does not, and its
+    // room is the row (the query container at this width too) less the
+    // burger's capsule (26 and 18 + 18), the pill and the row's two gaps. In
+    // that room it takes NavBar's narrow fit (JP-101): its size while one line
+    // fits, else two balanced lines at the size the longer fits, a 12 floor
+    // (Grunge's nominal 16), a third line below it, and a word too wide even
+    // at the floor under it. The pill is BookPill's box at this width — the
+    // padding, gap and disc it is given below, × `pk`, and its label in the
+    // faces' ems: 12.07 under Pop and Grunge, whose 390 label is Anton
+    // unfaced (`style` below), so its ems shed `navFace`'s 0.75; Label/SM
+    // elsewhere. The bar states its height as a minimum, so a third line
+    // grows it. Editorial keeps its row (user call, 2026-10-07): its accepted
+    // remainder of JP-101.
+    const pillEms = grunge ? +(s.navNameFit?.pill / s.faceK).toFixed(3) : s.navNameFit?.pill
+    const fit = s.mob && !ed && s.navNameFit ? {
+      narrow: true,
+      room: `(100cqi - 26px - 2 * ${u(18)} - ${pp(17.92)} - ${pp(8.53)} - ${27.6 * pk}px - ${pp(4.27)}`
+        + ` - ${pillEms} * ${pop || grunge ? '12.07px' : s.labelSm} - 2 * ${u(16)})`,
+      two: s.navNameFit.two, word: s.navNameFit.word, floor: grunge ? '16px' : '12px',
+    } : undefined
+    const namePx = fitName(fit, s.labelLg)
     const nav = (
       <div style={row(u(16), {
         minHeight: u(navH), margin: `calc(${u(navTop)} - ${s.padY}) ${navInset} 0`,
-        containerType: nar ? undefined : 'inline-size',
+        containerType: nar && !fit ? undefined : 'inline-size',
       })}>
         {/* The frame's thirds are two equal cells round the wordmark (its two
             1px "rules" are empty frames that only spread them), so the name is
@@ -2567,10 +2592,11 @@ function HeaderV1({ s }) {
             (`s.navFits`, summed in sectionVm at this bar's own sizes — JP-039):
             at Label/SM with no budget to divide, the cell pinned at the
             capsule's own width so it cannot wrap. The seeded nine do not fit,
-            and keep the burger. */}
+            and keep the burger. At 390 (`fit`) the burger's capsule is pinned
+            the same way, so a long name can no longer run over it. */}
         <div style={{
           flex: '1 1 0', display: 'flex',
-          minWidth: nar ? (s.navFits ? 'max-content' : 0) : `min(calc(${s.navEms} * ${linkSize} + ${u(36)} + ${navGaps}), calc(100cqi - ${reserve} + ${u(36)} + ${navGaps}))`,
+          minWidth: nar ? (s.navFits || fit ? 'max-content' : 0) : `min(calc(${s.navEms} * ${linkSize} + ${u(36)} + ${navGaps}), calc(100cqi - ${reserve} + ${u(36)} + ${navGaps}))`,
         }}>
           {nar && !s.navFits ? (
             <span style={{ ...capsule, borderRadius: s.btnR, display: 'flex' }}>
@@ -2590,9 +2616,13 @@ function HeaderV1({ s }) {
           )}
         </div>
         {/* Pop's name is `sem/text/1`, pink, at 1440 and 768 and `text/2`,
-            violet, at 390 — the burger's ink there, NavMenu's `s.tx`. */}
-        <span style={labelStyle(s, s.labelLg, { color: pop && !s.mob ? s.ac : s.tx, flex: 'none' })}>{s.brand}</span>
-        <div style={row(u(12), { flex: '1 1 0', justifyContent: 'flex-end' })}>
+            violet, at 390 — the burger's ink there, NavMenu's `s.tx`. A
+            wrapped name centres its lines in the room, as the bar centres the
+            name. */}
+        <span style={labelStyle(s, namePx, {
+          color: pop && !s.mob ? s.ac : s.tx, flex: 'none', ...fitBox(fit, namePx), ...(fit && { textAlign: 'center' }),
+        })}>{s.brand}</span>
+        <div style={row(u(12), { flex: '1 1 0', justifyContent: 'flex-end', ...(fit && { minWidth: 'max-content' }) })}>
           {/* ListenLink's base weight is 700, which Bebas Neue (one cut) can
               only synthesise. 390 drops the link, as Retro's master does.
               Pop's is `sem/text/1`, pink. */}
