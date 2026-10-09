@@ -49,7 +49,7 @@ import {
   PRICING_REVIEWS, PRICING_RATING, PRICING_CTA, PRICING_NOTE, PRICING_OFFER,
   FORM_PROMISES, FORM_STEPS, STEP_KEYS, FORM_FIELDS, FORM_FIELDS_CARD, FORM_FIELDS_4, FORM_FIELD_KEYS, FORM_EMAIL_LABEL, FORM_KINDS, FORM_TYPES, FORM_MESSAGE, FORM_MSG_LABEL,
   FOOTER_LINKS, FOOTER_TARGETS, FOOTER_CREDIT, FOOTER_STATEMENT,
-  CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN, SLOT_KEYS, slotSeed, parseDayFirst, pageTiers, CAL_SLOT_CTA, CAL_SEND_4, FORM_EMAIL, pageEmail, MONTHS, DAY_FULL,
+  CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN, CAL_SLOTS, SLOT_KEYS, slotDate, parseDayFirst, pageTiers, CAL_SLOT_CTA, CAL_SEND_4, FORM_EMAIL, pageEmail, MONTHS, DAY_FULL,
   TESTI_HEADING_2, CARD_LINE_3, TESTI_STARS, TESTI_RATING,
   CAL_HEADING_3, REP_HEADING_3, GALLERY_HEADING_3, PRICING_HEADING_3, PRICING_INTRO_3, MAP_HEADING_3, TESTI_HEADING_3,
   CAL_HEADING_4, REP_HEADING_4, GALLERY_HEADING_4, MAP_HEADING_4, TESTI_HEADING_4, FORM_HEADING_4, FORM_SUB_4, CAL_HEADING_1, formBtnSeed, CAL_TYPES, PRICING_ROW_CTA, PRICING_ROW_CTA_3, MAP_SPAN, MAP_STATS_4, STAT_KEYS,FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
@@ -838,8 +838,11 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // At 390 the capsule of layouts 1 and 4 gives the name way to the pill
   // (JP-101), so design 3 builds it too (NavBar keeps the desktop rule to
   // design 0), and `word`, the widest word with the same spare, is the floor
-  // a name too long even at 12px yields to there.
-  if (navFace && cat === 'header' && (d === 0 || d === 3)) {
+  // a name too long even at 12px yields to there. Layout 2's 390 bar, whose
+  // centred name stands between the burger and the pill, takes the same
+  // narrow fit (JP-121), so design 1 builds it as well; HeaderV1 reads it
+  // there, and under Editorial does not.
+  if (navFace && cat === 'header' && (d === 0 || d === 1 || d === 3)) {
     const words = vm.brand.split(/\s+/).filter(Boolean)
     const two = words.length < 2 ? navFace(vm.brand) : Math.min(...words.slice(1).map((_, i) =>
       Math.max(navFace(words.slice(0, i + 1).join(' ')), navFace(words.slice(i + 1).join(' ')))))
@@ -1678,9 +1681,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // §10.2 layout 2 — the named slots, which it tables (layout 4 stacked them
     // too until JP-052). The rows are the artist's named slots (SlotsField),
     // resolved by the `songs` rule: absent means the seed, an emptied array
-    // means none, and there is no null sentinel. The seed is dated from `open`,
-    // or live from max(open, today) by day — slotSeed(), layout 1's F20 rule —
-    // and a blank row is not a row (JP-051's pattern). Everything
+    // means none, and there is no null sentinel. A seeded row is dated from
+    // `open`, or live from max(open, today) by day — slotDate(), layout 1's F20
+    // rule — and keeps counting after the artist edits it, until a date is
+    // typed into it (JP-123); a blank row is not a row (JP-051's pattern). Everything
     // the row prints is composed here, the way every cell above carries its own
     // enquiry line — EncoreSection looks a row up rather than working a date
     // out. `booked` reaches the list too: a slot the artist has blocked is a
@@ -1691,9 +1695,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // §4.3a's rule for a link whose target is missing; it cannot happen from
     // the seed.
     const slotBase = nowIso && openIso < nowIso ? now : open
-    const slots = (Array.isArray(c.slots) ? c.slots : slotSeed(slotBase)).filter((sl) => !blankRow(sl, SLOT_KEYS))
+    const slots = (Array.isArray(c.slots) ? c.slots : CAL_SLOTS).filter((sl) => !blankRow(sl, SLOT_KEYS))
     vm.calSlots = slots.map((sl) => {
-      const at = parseDate(sl.date)
+      const at = slotDate(sl, slotBase)
       const iso = at ? isoDate(at.y, at.m, at.d) : ''
       return {
         iso,
@@ -1903,7 +1907,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // its fit runs the one-line label 1px into the gap; a label free to wrap
   // breaks there onto two lines and lifts the pill 1.6px.
   vm.mapVenueCtaWraps = vm.mapVenueCta.length > MAP_VENUE_CTA.length
-  // JP-105 — layout 3's line under the map seeds its frames' "120 mi radius".
+  // JP-105 — layout 3's line under the map seeds its frames' "120 mi radius";
+  // JP-124 — layout 2's Max travel "120 mi".
   vm.mapRadius = cv('radius', mapRadiusSeed(d))
   vm.mapBase = cv('base', MAP_BASE)
   vm.mapTerms = cv('terms', MAP_TERMS)
@@ -3277,70 +3282,118 @@ function GigsField({ value, max, design, onChange }) {
  * 2 tables these rows, and until JP-052 they were a seed no field edited,
  * dated 2025 and so dead on every published page. Row shape is
  * { date, kind, price }, CAL_SLOTS' own comment: a date, what the artist
- * plays that night, and what it starts from. `date` is a native date input
+ * plays that night, and what it starts from — plus a seeded row's `after`
+ * (below). `date` is a native date input
  * because sectionVm parses it as ISO (parseDate) — a row it cannot parse
  * keeps its place and does not pick.
  *
  * GigsField's house rules: whole-array rewrite per keystroke, numbered
  * rows, a round X, a dashed add, an "n of max" footnote, no reordering —
  * order is entry order, and it is the order the table lists.
+ *
+ * A seeded row is CAL_SLOTS' own `{ after, kind, price }` (JP-123, user
+ * call, 2026-10-09): the rewrite keeps its `after`, so editing a kind or a
+ * price never fixes its day. Its box shows the day `slotDate()` counts from
+ * `open`, the canvas's, and a line says the published page counts it from
+ * today once `open` has passed. Typing writes `date`, which wins; emptying
+ * the box hands the count back. While the box has focus it shows its own
+ * value, NameInput's draft: a native date box reports '' for a cleared or
+ * half-typed segment, and the count's date put back on that keystroke would
+ * refill the box under the artist's fingers. Leaving it shows the count again.
+ * A typed day before today warns under the
+ * row, derived from the stored value (UrlInput's rule, so a remount shows it
+ * at once) and held while the box has focus. That reads the clock once per
+ * mount, BookedField's rule; nothing on the canvas does.
  * ------------------------------------------------------------------- */
 
 const BLANK_SLOT_HINT = 'Empty slots aren’t shown.'
+const PAST_SLOT_LINE = 'This date has passed, so visitors can’t pick it.'
+// The count line under a seeded row whose date box is not typed in.
+const slotCountHint = (after) => `${after
+  ? `${after} day${after === 1 ? '' : 's'} after Opens on, or after today`
+  : 'The Opens on date, or today'} on the published page once that has passed. Type a date to fix it.`
 
-function SlotsField({ value, max, onChange }) {
+function SlotsField({ value, max, open, onChange }) {
   const list = Array.isArray(value) ? value : []
+  const [today] = useState(() => new Date().toISOString().slice(0, 10))
+  // { i, v }: the focused row's box, as the box itself reports it.
+  const [draft, setDraft] = useState(null)
 
   const setAt = (i, k, v) => onChange(list.map((g, j) => (j === i ? { ...g, [k]: v } : g)))
   const removeAt = (i) => onChange(list.filter((_, j) => j !== i))
   const add = () => onChange([...list, { date: '', kind: '', price: '' }])
 
-  const row = (i, g) => (
-    <div key={i} style={{
-      border: '1px solid #E9E7E0', borderRadius: '10px', padding: '8px',
-      display: 'flex', flexDirection: 'column', gap: '6px', background: '#FCFBF8',
-    }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
-        <span style={{
-          width: '18px', flex: 'none', fontSize: '10px', fontWeight: 700,
-          color: '#98958A', textAlign: 'center',
-        }}>{i + 1}</span>
-        <Input
-          type="date" value={g.date ?? ''} aria-label={`Slot ${i + 1} date`} onClick={stopE}
-          onChange={(e) => setAt(i, 'date', e.target.value)}
-          className="h-auto" style={{ ...SONG_ROW_INPUT, fontWeight: 600 }}
-        />
-        <button
-          type="button" aria-label={`Remove slot ${i + 1}`}
-          onClick={(e) => { stopE(e); removeAt(i) }}
-          className="hover:bg-destructive/10"
-          style={{
-            width: '22px', height: '22px', flex: 'none', borderRadius: '999px',
-            border: '1px solid #E2DFD7', background: '#FFFFFF', color: '#B3261E',
-            cursor: 'pointer', display: 'inline-flex', alignItems: 'center',
-            justifyContent: 'center', padding: 0,
-          }}
-        ><X size={11} /></button>
-      </div>
-      <div style={{ paddingLeft: '25px', paddingRight: '29px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-        <div style={{ display: 'flex', gap: '6px' }}>
+  const row = (i, g) => {
+    const typed = !!String(g.date ?? '').trim()
+    const at = slotDate(g, open)
+    const iso = at ? isoDate(at.y, at.m, at.d) : ''
+    // A typed date shows as typed, so one parseDate refuses (Chrome's year
+    // runs to 275760) can still be seen and cleared; else the count's day.
+    const shown = typed ? g.date : iso
+    const counted = !typed && Number.isInteger(g.after)
+    const editing = draft?.i === i
+    const past = typed && !!iso && iso < today && !editing
+    return (
+      <div key={i} style={{
+        border: '1px solid #E9E7E0', borderRadius: '10px', padding: '8px',
+        display: 'flex', flexDirection: 'column', gap: '6px', background: '#FCFBF8',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+          <span style={{
+            width: '18px', flex: 'none', fontSize: '10px', fontWeight: 700,
+            color: '#98958A', textAlign: 'center',
+          }}>{i + 1}</span>
           <Input
-            value={g.kind ?? ''} placeholder="Evening" onClick={stopE}
-            onChange={(e) => setAt(i, 'kind', e.target.value)}
-            className="h-auto" style={SONG_ROW_INPUT}
+            type="date" value={editing ? draft.v : shown} aria-label={`Slot ${i + 1} date`} onClick={stopE}
+            aria-invalid={past ? true : undefined}
+            onChange={(e) => {
+              const v = e.target.value
+              setDraft((d) => (d?.i === i ? { i, v } : d))
+              setAt(i, 'date', v)
+            }}
+            onFocus={() => setDraft({ i, v: shown })}
+            onBlur={() => setDraft(null)}
+            className="h-auto"
+            // The whole `border` shorthand, FIELD_BOX's own, so React never
+            // drops a lone `borderColor` beside it when the warning clears.
+            style={{ ...SONG_ROW_INPUT, fontWeight: 600, ...(past ? { border: `1px solid ${ERR_RED}` } : null) }}
           />
-          <Input
-            value={g.price ?? ''} placeholder="From £1,200" onClick={stopE}
-            onChange={(e) => setAt(i, 'price', e.target.value)}
-            className="h-auto" style={SONG_ROW_INPUT}
-          />
+          <button
+            type="button" aria-label={`Remove slot ${i + 1}`}
+            onClick={(e) => { stopE(e); removeAt(i) }}
+            className="hover:bg-destructive/10"
+            style={{
+              width: '22px', height: '22px', flex: 'none', borderRadius: '999px',
+              border: '1px solid #E2DFD7', background: '#FFFFFF', color: '#B3261E',
+              cursor: 'pointer', display: 'inline-flex', alignItems: 'center',
+              justifyContent: 'center', padding: 0,
+            }}
+          ><X size={11} /></button>
         </div>
-        {blankRow(g, SLOT_KEYS) && (
-          <p style={{ margin: 0, fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>{BLANK_SLOT_HINT}</p>
-        )}
+        <div style={{ paddingLeft: '25px', paddingRight: '29px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+          <div style={{ display: 'flex', gap: '6px' }}>
+            <Input
+              value={g.kind ?? ''} placeholder="Evening" onClick={stopE}
+              onChange={(e) => setAt(i, 'kind', e.target.value)}
+              className="h-auto" style={SONG_ROW_INPUT}
+            />
+            <Input
+              value={g.price ?? ''} placeholder="From £1,200" onClick={stopE}
+              onChange={(e) => setAt(i, 'price', e.target.value)}
+              className="h-auto" style={SONG_ROW_INPUT}
+            />
+          </div>
+          {past && <p role="alert" style={ERR_LINE}>{PAST_SLOT_LINE}</p>}
+          {counted && (
+            <p style={{ margin: 0, fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>{slotCountHint(g.after)}</p>
+          )}
+          {blankRow(g, SLOT_KEYS) && (
+            <p style={{ margin: 0, fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>{BLANK_SLOT_HINT}</p>
+          )}
+        </div>
       </div>
-    </div>
-  )
+    )
+  }
 
   return (
     <div onClick={stopE} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -4263,10 +4316,11 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
   // would page BookedField from a month the calendar is not on.
   const bookedVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : CAL_BOOKED)
   const openVal = (k) => parseDate(sec.c[k] ?? CAL_OPEN) ?? parseDate(CAL_OPEN)
-  // Layout 2's slots (JP-052): the seed dated from the canvas's `open`, which
-  // is exactly what sectionVm resolves off the clock, so the first edit writes
-  // out the dates the canvas shows.
-  const slotsVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : slotSeed(openVal('open')))
+  // Layout 2's slots (JP-052): CAL_SLOTS itself, the rows sectionVm resolves,
+  // so the first edit writes out the seed's offsets, not the canvas's dates
+  // (JP-123). SlotsField dates them from `open` for its boxes, slotDate() as
+  // sectionVm does off the clock.
+  const slotsVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : CAL_SLOTS)
   // And the events map's layout-4 stat wall (JP-077): MAP_STATS_4 is written as
   // the { label, value, sub } row StatsField edits, the gigs' one-liner again.
   const statsVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : MAP_STATS_4)
@@ -4394,7 +4448,7 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                       ) : f.type === 'links' ? (
                         <LinksField value={linksVal(f.k)} max={f.max} navSections={navSections} onChange={(v) => set(v)} />
                       ) : f.type === 'slots' ? (
-                        <SlotsField value={slotsVal(f.k)} max={f.max} onChange={(v) => set(v)} />
+                        <SlotsField value={slotsVal(f.k)} max={f.max} open={openVal('open')} onChange={(v) => set(v)} />
                       ) : f.type === 'stats' ? (
                         <StatsField value={statsVal(f.k)} max={f.max} onChange={(v) => set(v)} />
                       ) : f.type === 'steps' ? (

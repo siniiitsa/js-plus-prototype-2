@@ -637,7 +637,11 @@ console errors.
   - **Retro's half** (Decided A): the table above.
   - **Editorial's 390 nav at 360**: with *Featherstonehaugh* the Book pill ends at **361.42**, so
     the header reads 361 / 360. Its wordmark ends at 246. At 390 and 414 it fits, and so does
-    *Supercalifragilistic* at 360.
+    *Supercalifragilistic* at 360. **Accepted** (user call, 2026-10-07, as a remainder of JP-101;
+    recorded by JP-121, [`../pop/layout-2-qa-fixes.md`](../pop/layout-2-qa-fixes.md),
+    2026-10-09). Since the Gloock swap, *Featherstonehaugh* pushes the pill to 407 at 390 as well,
+    and the page scrolls sideways. JP-121 fitted the same bar under Lime, Grunge and Pop and left
+    Editorial's row as it is, by that call.
   - **The footer's rule**: the 2 × 150 `flex: 0 0 auto` rule beside the footer's name is pushed
     past the page by a long word. This is now what scrolls the page. With *Featherstonehaugh* it
     ends at 424.95 under Editorial, 403.83 under Lime and 491.63 under Retro at 390 (436.95 /
@@ -932,7 +936,7 @@ radius].join(' · ')` (`:19688`, `:20108`). The header's `location` (`vm.locatio
 | card h2 | Venue Distance | MANCHESTER | `FIELDS.map.heading`, `d: 'Manchester'` (`TITLES.map`), no `d === 1` seed (`TESTI_HEADING_2`'s arm is the pattern, `EncoreBuilder.jsx:1075`, chain `:4048`) |
 | chip | ● Confirmed | ● Jul 12 · 22:00 | `g.when`, JP-060's decision A |
 | venue | Lake District | Manchester | the featured gig, which falls back to the page's first; the frame features its third |
-| Max travel | 100 mi | 12 mile radius | `MAP_RADIUS` (`data.js:943`), already a follow-up with the designer (`../grunge/layout-4-qa-fixes.md:2120`–`2123`, note 10) |
+| Max travel | 100 mi | 12 mile radius | `MAP_RADIUS` (`data.js:943`), already a follow-up with the designer (`../grunge/layout-4-qa-fixes.md:2120`–`2123`, note 10). *Answered by JP-124 (2026-10-09): seeded "120 mi", `../pop/layout-2-qa-fixes.md`* |
 
 **Evidence.** The two tables, and `notes/map.md:31` (*Other upcoming* is derived: only the words are
 a literal), `:94`–`107` (JP-090: `mapKickerSeed`, the chain arm gated on `map`, the list label as

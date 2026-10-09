@@ -2125,7 +2125,9 @@ user's).
     3's line under the map with its frames' "120 mi radius", moving map `arch 2` alone. Layouts
     1 and 2 keep "12 mile radius": layout 1's frame prints "12 Mile Radius" beside its
     heading, and layout 2's "100 mi" is still with the designer.
-    `../editorial/layout-3-qa-fixes.md`, entry 4.)*
+    `../editorial/layout-3-qa-fixes.md`, entry 4.)* *(Answered for layout 2 by JP-124, user call,
+    2026-10-09: layout 2's Max travel seeds "120 mi", the page's other 120s, moving map `arch 1`
+    alone. Layout 1 keeps "12 mile radius". `../pop/layout-2-qa-fixes.md`, JP-124.)*
   - **CLAUDE.md's ticker sentence** was already corrected by JP-080 ("stands **without its
     arrows** and is gone at none", `:535`), so nothing was edited.
   - A *closed* pointer on `./layout-4.md`'s open question 2 (`:1620`, where the triage's
@@ -2233,4 +2235,7 @@ in the layout-3 batch's shape. Each is shipped as described.)*
     *(Answered for layout 3 by JP-105, 2026-10-06: its frames print "120 mi radius", and so
     does its seed now. Layout 1's frame prints "12 Mile Radius" beside "120 mi standard", and
     layout 2's frame prints "100 mi". Both keep "12 mile radius", so the question stands for
-    them. `../editorial/layout-3-qa-fixes.md`, entry 4.)*
+    them. `../editorial/layout-3-qa-fixes.md`, entry 4.)* *(Answered for layout 2 by JP-124,
+    2026-10-09: it seeds "120 mi", with the frame's data bar and rings, and the cell's "100 mi"
+    goes back to the designer as a contradiction inside the frame. Layout 1 alone still asks.
+    `../pop/layout-2-qa-fixes.md`, JP-124.)*

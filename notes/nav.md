@@ -129,3 +129,20 @@ another `notes/` file.
   are named in the entry, not fitted. Pop's layout-3 name is that span too (the block is shared),
   and with a long name it runs under the 390 pill the same way (`plans/pop/layout-3.md`,
   section 1), named, not fitted.
+- **Layout 2's 390 bar takes the same fit, between the burger and the pill** (JP-121, user call,
+  2026-10-09, `plans/pop/layout-2-qa-fixes.md`), under Lime, Grunge and Pop. Its name is centred
+  between two cells (`HeaderV1`'s `s.limeTree` row), and a long one used to run over the burger's
+  capsule, whose cell could collapse, and push the pill off the page. At 390 both cells now hold
+  their content (`minWidth: max-content`), so the name stays centred while it fits and slides
+  toward the narrower side when not. Its room is the row less the capsule, the pill and the two
+  gaps, with the row the query container at 390 as at desktop. In that room the name takes the
+  `narrow` fit above: one line at its size, else two balanced lines, the 12 floor (Grunge's 16),
+  a third line, then `word`. A wrapped name's box is the whole room, so its lines centre between
+  the capsule and the pill. The pill's box is summed in the faces' ems (`navNameFit.pill`); under
+  Grunge its 390 label is Anton at an unfaced 12.07, so the term divides `faceK` back out. So
+  `sectionVm` builds `navNameFit` at design 1 too. Lime's and Grunge's smaller faces fit every
+  reported name at 390 and 414 anyway, so only Pop moves there. **Editorial keeps its row**: the
+  user accepted its layout-2 case as a remainder of JP-101 on 2026-10-07, and that call stands. So
+  with *Featherstonehaugh* its pill still runs to 407 and its page scrolls sideways. Retro's bar
+  (`labelStyle` at 17 between two spacers, its pill to 426) and every layout-3 centred name are
+  still named, not fitted.

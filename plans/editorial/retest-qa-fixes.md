@@ -456,6 +456,10 @@ rule alone.
   bullet: the rule yields, basis 0, the name wraps past the floor. *Answered* pointers at
   `layout-2-qa-fixes.md` JP-092's footer item and its reply's *Not changed* line, and at
   `qa-fixes.md` JP-086's footer item.
+- *Answered by JP-122 (b)* (`../pop/layout-2-qa-fixes.md`, user call, 2026-10-09). This entry's
+  measure was the column, so at 390 a long name could still run under the seal before it wrapped.
+  That happened under Pop, Editorial and Retro, Retro's *Florence* among them. The name's measure
+  now also stops the row's 20 short of the disc, in both trees.
 - **The reply line:**
   - **JP-092 — fixed.** At 390 a long name no longer makes the page scroll sideways. The footer's
     decorative line beside the name now gets shorter to make room for it, down to 30px. A name too
@@ -1108,7 +1112,11 @@ anyone's ticket):
   placeholder card while `pop-layout-3` runs) with *Florence and the Machine* to 434 and
   *Featherstonehaugh* to 480. Layout 3's is for `../pop/layout-3.md`'s header session; layout 2's
   is Retro's named layout-2 item on another template, and a candidate for the sweep's
-  tickets-list note.
+  tickets-list note. **Layout 2's is answered by JP-121**
+  ([`../pop/layout-2-qa-fixes.md`](../pop/layout-2-qa-fixes.md), 2026-10-09): at 390 the bar's
+  name takes JP-101's narrow fit between the burger and the pill, under Lime, Grunge and Pop.
+  Editorial's own layout-2 case was accepted as a remainder of JP-101 (user call, 2026-10-07,
+  recorded there), so its row is unchanged. Layout 3's centred name is still named.
 - The probe's section `scrollWidth` read 783 for Pop's layout-2 header at 768 with every name, the
   seed included. `scrollWidth` counts clipped overflow, so this may be a clipped decoration and
   not a scroll; the sweep reads the published document's `scrollWidth` at 768 under Pop once.

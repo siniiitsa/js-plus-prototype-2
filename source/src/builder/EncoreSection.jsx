@@ -884,7 +884,8 @@ function LogoMark({ s, size = 18, color, glyph }) {
 // reach the pill, and its floor yields to a word too wide for the room
 // (`word`, the widest one's ems). Its row is `flex: none`: the seed already
 // runs past its half into the halves' gap, which the room counts, and a
-// shrinkable row would wrap it there.
+// shrinkable row would wrap it there. Layout 2's 390 bar (HeaderV1) passes
+// the same narrow fit to its own centred name span (JP-121).
 const fitName = (fit, base) => !fit ? base : fit.narrow
   ? `min(${base}, max(min(${fit.floor}, calc(${fit.room} / ${fit.word})), calc(${fit.room} / ${fit.two})))`
   : `min(${base}, max(${fit.floor}, calc(${fit.room} / ${fit.one}), min(${fit.cap}, calc(${fit.room} / ${fit.two}))))`
@@ -2545,10 +2546,34 @@ function HeaderV1({ s }) {
     // a bar capped at `s.list`. So Grunge's links can only shrink from their
     // 9.84 to 9 before the capsule wraps, which the seeded nine never reach.
     const linkSize = `clamp(12px, calc((100cqi - ${reserve}) / ${s.navEms}), ${s.labelSm})`
+    // At 390 the name gives way between the burger and the pill (JP-121,
+    // user call, 2026-10-09), which a long one ran over and pushed off the
+    // page: both cells hold their content, so the name stays centred while
+    // it fits and slides toward the narrower side when it does not, and its
+    // room is the row (the query container at this width too) less the
+    // burger's capsule (26 and 18 + 18), the pill and the row's two gaps. In
+    // that room it takes NavBar's narrow fit (JP-101): its size while one line
+    // fits, else two balanced lines at the size the longer fits, a 12 floor
+    // (Grunge's nominal 16), a third line below it, and a word too wide even
+    // at the floor under it. The pill is BookPill's box at this width — the
+    // padding, gap and disc it is given below, × `pk`, and its label in the
+    // faces' ems: 12.07 under Pop and Grunge, whose 390 label is Anton
+    // unfaced (`style` below), so its ems shed `navFace`'s 0.75; Label/SM
+    // elsewhere. The bar states its height as a minimum, so a third line
+    // grows it. Editorial keeps its row (user call, 2026-10-07): its accepted
+    // remainder of JP-101.
+    const pillEms = grunge ? +(s.navNameFit?.pill / s.faceK).toFixed(3) : s.navNameFit?.pill
+    const fit = s.mob && !ed && s.navNameFit ? {
+      narrow: true,
+      room: `(100cqi - 26px - 2 * ${u(18)} - ${pp(17.92)} - ${pp(8.53)} - ${27.6 * pk}px - ${pp(4.27)}`
+        + ` - ${pillEms} * ${pop || grunge ? '12.07px' : s.labelSm} - 2 * ${u(16)})`,
+      two: s.navNameFit.two, word: s.navNameFit.word, floor: grunge ? '16px' : '12px',
+    } : undefined
+    const namePx = fitName(fit, s.labelLg)
     const nav = (
       <div style={row(u(16), {
         minHeight: u(navH), margin: `calc(${u(navTop)} - ${s.padY}) ${navInset} 0`,
-        containerType: nar ? undefined : 'inline-size',
+        containerType: nar && !fit ? undefined : 'inline-size',
       })}>
         {/* The frame's thirds are two equal cells round the wordmark (its two
             1px "rules" are empty frames that only spread them), so the name is
@@ -2567,10 +2592,11 @@ function HeaderV1({ s }) {
             (`s.navFits`, summed in sectionVm at this bar's own sizes — JP-039):
             at Label/SM with no budget to divide, the cell pinned at the
             capsule's own width so it cannot wrap. The seeded nine do not fit,
-            and keep the burger. */}
+            and keep the burger. At 390 (`fit`) the burger's capsule is pinned
+            the same way, so a long name can no longer run over it. */}
         <div style={{
           flex: '1 1 0', display: 'flex',
-          minWidth: nar ? (s.navFits ? 'max-content' : 0) : `min(calc(${s.navEms} * ${linkSize} + ${u(36)} + ${navGaps}), calc(100cqi - ${reserve} + ${u(36)} + ${navGaps}))`,
+          minWidth: nar ? (s.navFits || fit ? 'max-content' : 0) : `min(calc(${s.navEms} * ${linkSize} + ${u(36)} + ${navGaps}), calc(100cqi - ${reserve} + ${u(36)} + ${navGaps}))`,
         }}>
           {nar && !s.navFits ? (
             <span style={{ ...capsule, borderRadius: s.btnR, display: 'flex' }}>
@@ -2590,9 +2616,13 @@ function HeaderV1({ s }) {
           )}
         </div>
         {/* Pop's name is `sem/text/1`, pink, at 1440 and 768 and `text/2`,
-            violet, at 390 — the burger's ink there, NavMenu's `s.tx`. */}
-        <span style={labelStyle(s, s.labelLg, { color: pop && !s.mob ? s.ac : s.tx, flex: 'none' })}>{s.brand}</span>
-        <div style={row(u(12), { flex: '1 1 0', justifyContent: 'flex-end' })}>
+            violet, at 390 — the burger's ink there, NavMenu's `s.tx`. A
+            wrapped name centres its lines in the room, as the bar centres the
+            name. */}
+        <span style={labelStyle(s, namePx, {
+          color: pop && !s.mob ? s.ac : s.tx, flex: 'none', ...fitBox(fit, namePx), ...(fit && { textAlign: 'center' }),
+        })}>{s.brand}</span>
+        <div style={row(u(12), { flex: '1 1 0', justifyContent: 'flex-end', ...(fit && { minWidth: 'max-content' }) })}>
           {/* ListenLink's base weight is 700, which Bebas Neue (one cut) can
               only synthesise. 390 drops the link, as Retro's master does.
               Pop's is `sem/text/1`, pink. */}
@@ -18077,9 +18107,10 @@ function Calendar({ s }) {
         : type(s.display, size, lh, extra))
       // Lime's frames draw no blocked slot; layout 1's Lime calendar settled
       // its own — opacity .38, no strike — and the row takes it, handlerless.
-      // Only a *booked* row dims (user call, 2026-09-17): a past (`dead`) one
-      // stays handlerless but at full ink, the frame's own row, since the
-      // seeded slots have no editor and are all past on a published page.
+      // A past (`dead`) row dims too, as Retro's mutes it (JP-123, user call,
+      // 2026-10-09, reversing 2026-09-17's full ink, made while the seeded
+      // slots had no editor and were all past on a published page: they count
+      // from today there now, so only a date the artist typed can have passed).
       const dim = (off) => (off ? { opacity: 0.38 } : null)
 
       const flow = (
@@ -18114,14 +18145,14 @@ function Calendar({ s }) {
         // mark, rows 94.)
         const mark = (
           <span style={distressed(s, disp(s.dispLg, 0.89, {
-            whiteSpace: 'nowrap', flex: 'none', minWidth: pin, color: G.marks?.[i % 4], ...dim(sl.booked),
+            whiteSpace: 'nowrap', flex: 'none', minWidth: pin, color: G.marks?.[i % 4], ...dim(blocked(sl)),
             ...(ed ? { position: 'relative', top: '-0.05em' }
               : pop ? { position: 'relative', top: '-0.14em' } : null),
           }))}>{sl.mark}</span>
         )
         const day = (
           <span style={type(s.ui, s.labelXs, 1.26, {
-            flex: s.mob ? 'none' : '1 1 0', minWidth: 0, ...dim(sl.booked),
+            flex: s.mob ? 'none' : '1 1 0', minWidth: 0, ...dim(blocked(sl)),
           })}>{sl.day}</span>
         )
         return (
@@ -18136,7 +18167,7 @@ function Calendar({ s }) {
               ? <div style={col('0', { flex: '1 1 0', minWidth: 0 })}>{mark}{day}</div>
               : <>{mark}{day}</>}
             <div style={col(u(2), {
-              flex: 'none', alignItems: 'flex-end', textAlign: 'right', ...dim(sl.booked),
+              flex: 'none', alignItems: 'flex-end', textAlign: 'right', ...dim(blocked(sl)),
             })}>
               {!!sl.kind && (
                 <span style={type(s.body, s.bodyMd, 1.5, { whiteSpace: 'nowrap' })}>{sl.kind}</span>
@@ -29475,40 +29506,6 @@ function Footer({ s }) {
       }} />
     )
 
-    // "Group 6" is LimeGlobeMark's own drawing at 27.37, inked in the 15%
-    // hairline — it stands dim beside the name. Editorial's is the sparkle
-    // (39.87 × 40.24, GrungeStar's path at its own ratio) in `sem/tag/1/bg`,
-    // seated in flow, and it sets the row's 40.24. The bar beside it binds the
-    // same `sem/tag/1/bg`, which is `s.tx`'s paper under layout 1's Scheme 3
-    // and blush under the Scheme 2 layout 3 seats the footer on (the page
-    // row), so Editorial reads the binding rather than the coincidence.
-    //
-    // The 150 rule yields to a long name, as NavBar's §10.2 rule does (JP-092):
-    // it takes what the name leaves, up to its 150, down to a 30 floor at 768
-    // and 390. Its basis is 0, not 150, so it shrinks to that floor before the
-    // name gives a pixel (a 150 basis would share the deficit and wrap the name
-    // early); past the floor the name wraps between words, never inside one.
-    const wordmark = (
-      <span style={row(u(20))}>
-        <span style={row(u(10))}>
-          {ed
-            ? <GrungeStar s={s} fill={s.chips[0].bg} style={{
-                position: 'relative', flex: 'none', width: px(39.87), height: px(40.24),
-              }} />
-            : <LimeGlobeMark size={27.37 * scale} color={pop ? POP_FOOT.pale : s.stroke1} />}
-          <span style={pop
-            ? popType(13.5, 16, { color: POP_FOOT.pale })
-            : grunge || ed
-              ? labelStyle(s, s.labelMd, { color: s.tx, whiteSpace: 'normal' })
-              : { ...face, color: s.tx }}>{s.brand}</span>
-        </span>
-        <span style={{
-          height: u(2), background: ed ? s.chips[0].bg : pop ? POP_FOOT.pale : s.tx,
-          flex: '1 1 0', maxWidth: u(150), minWidth: s.narrow ? '30px' : '0px',
-        }} />
-      </span>
-    )
-
     // Display/MD with the frame's typed break after "make", folding the rest in
     // its 439.59 box. That box holds the frame's picture only at 1440, where it
     // makes three lines: at 768 "YOUR NIGHT UNFORGETTABLE." is 8.87em in our
@@ -29599,6 +29596,51 @@ function Footer({ s }) {
       }} />
     )
 
+    // "Group 6" is LimeGlobeMark's own drawing at 27.37, inked in the 15%
+    // hairline — it stands dim beside the name. Editorial's is the sparkle
+    // (39.87 × 40.24, GrungeStar's path at its own ratio) in `sem/tag/1/bg`,
+    // seated in flow, and it sets the row's 40.24. The bar beside it binds the
+    // same `sem/tag/1/bg`, which is `s.tx`'s paper under layout 1's Scheme 3
+    // and blush under the Scheme 2 layout 3 seats the footer on (the page
+    // row), so Editorial reads the binding rather than the coincidence.
+    //
+    // The 150 rule yields to a long name, as NavBar's §10.2 rule does (JP-092):
+    // it takes what the name leaves, up to its 150, down to a 30 floor at 768
+    // and 390. Its basis is 0, not 150, so it shrinks to that floor before the
+    // name gives a pixel (a 150 basis would share the deficit and wrap the name
+    // early); past the floor the name wraps between words, never inside one.
+    //
+    // At 390 the seal stands over the row's right end, its equator level with
+    // the name, so the name's measure is the row less the disc (JP-122, user
+    // call, 2026-10-09): the mark and name stop the row's own 20 short of the
+    // disc's left edge, `inX` plus its radius in from the column's right. The
+    // rule still runs on under the seal, as every 390 frame draws it, and it
+    // still yields first; then the name wraps. A word wider than that room
+    // keeps the group's min-content, so it pushes the rule as before rather
+    // than running over it. A hidden seal frees the room. At 768 and 1440 no
+    // disc reaches the row, so the measure stays the row.
+    const sealRoom = s.mob && s.showBadge === 'show' ? inX * scale + disc / 2 + 20 : 0
+    const wordmark = (
+      <span style={row(u(20))}>
+        <span style={row(u(10), sealRoom ? { maxWidth: `calc(100% - ${Math.round(sealRoom * 100) / 100}px)`, minWidth: 'min-content' } : null)}>
+          {ed
+            ? <GrungeStar s={s} fill={s.chips[0].bg} style={{
+                position: 'relative', flex: 'none', width: px(39.87), height: px(40.24),
+              }} />
+            : <LimeGlobeMark size={27.37 * scale} color={pop ? POP_FOOT.pale : s.stroke1} />}
+          <span style={pop
+            ? popType(13.5, 16, { color: POP_FOOT.pale })
+            : grunge || ed
+              ? labelStyle(s, s.labelMd, { color: s.tx, whiteSpace: 'normal' })
+              : { ...face, color: s.tx }}>{s.brand}</span>
+        </span>
+        <span style={{
+          height: u(2), background: ed ? s.chips[0].bg : pop ? POP_FOOT.pale : s.tx,
+          flex: '1 1 0', maxWidth: u(150), minWidth: s.narrow ? '30px' : '0px',
+        }} />
+      </span>
+    )
+
     // Label/SM, 23 between the line boxes and the same 23 before the pill,
     // which is BookPill's Lime default exactly — `full` at 390, where the frame
     // keeps it 54 tall.
@@ -29666,13 +29708,26 @@ function Footer({ s }) {
     //
     // Pop's is a raw Chunko 14.51 on its 86% line, white; its 390 row packs
     // both strings to the right, 10 apart, rather than halving the row.
+    //
+    // That row keeps the corner sun's room (JP-122, user call, 2026-10-09):
+    // the sun's ink reaches 54.25 past the column's edge at the height the
+    // type stands at (its ray at the row's middle, mapped row by row; the ray
+    // at the foot reaches 59), so the row starts the row's own 10 past that,
+    // under the seed's 68.75 at 390. While the two strings fit they stand side
+    // by side as the frame sets them; otherwise the row wraps as a whole — the
+    // credit drops under the copyright, both right-aligned, the lines centred
+    // in a row that grows rather than spill — and a copyright longer than the
+    // room wraps between words, inside one only when a word outruns it. At
+    // 360 the seed's own credit drops, where it used to put the © on a ray.
     const popEnd = pop && s.mob
     const half = s.mob && !popEnd ? { flex: '1 1 0', minWidth: 0 } : {}
     const safe = s.live ? 'env(safe-area-inset-bottom)' : '0'
+    const rowH = s.live ? `calc(${u(68)} + env(safe-area-inset-bottom))` : u(68)
     const smallPrint = (
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: popEnd ? 'flex-end' : 'space-between',
-        gap: popEnd ? u(10) : s.mob ? 0 : u(16), borderTop: hair,
+        ...(popEnd ? { flexWrap: 'wrap', alignContent: 'center' } : null),
+        gap: popEnd ? `0 ${u(10)}` : s.mob ? 0 : u(16), borderTop: hair,
         // Editorial's small print is Label/MD, uppercase, where the twins' is
         // Display/List; it may still wrap, as theirs does.
         ...(pop ? popType(14.51, 14.51 * 0.86) : ed ? labelStyle(s, s.labelMd, { whiteSpace: 'normal' }) : face),
@@ -29685,12 +29740,12 @@ function Footer({ s }) {
         // a home indicator the bottom ~20px sit under it, and the band (not
         // the type) should be what runs there. The canvas never reaches the
         // viewport's edge, so it keeps the frame's 68.
-        height: s.live ? `calc(${u(68)} + env(safe-area-inset-bottom))` : u(68),
+        ...(popEnd ? { minHeight: rowH } : { height: rowH }),
         ...(s.narrow
-          ? { padding: `0 ${s.mob ? 0 : '56px'} ${safe}`, marginBottom: `calc(-1 * ${s.padFoot})` }
+          ? { padding: `0 ${s.mob ? 0 : '56px'} ${safe} ${popEnd ? px(64.25) : s.mob ? 0 : '56px'}`, marginBottom: `calc(-1 * ${s.padFoot})` }
           : { margin: `0 calc(-1 * ${s.padX}) calc(-1 * ${s.padFoot})`, padding: `0 ${s.padX} ${safe}` }),
       }}>
-        <span style={half}>{s.copyright}</span>
+        <span style={popEnd ? { flex: '0 1 auto', minWidth: 0, textAlign: 'right', overflowWrap: 'anywhere' } : half}>{s.copyright}</span>
         <span style={{ ...half, textAlign: 'right' }}>{s.footerCredit}</span>
       </div>
     )
@@ -29800,10 +29855,13 @@ function Footer({ s }) {
   // 27 row and pull everything under it up by four. A floor, not a height: a
   // long name wraps, below. The rule yields to it as Lime's tree's does (JP-092,
   // the comment there): up to 150, down to 30 at 768 and 390, basis 0 so it
-  // gives way before the name wraps.
+  // gives way before the name wraps. At 390 the name's measure also stops the
+  // row's 20 short of the seal's disc, whose left edge is its `right` plus its
+  // size in from the column's right (JP-122, the comment in Lime's tree).
+  const sealRoom = s.mob && s.showBadge === 'show' ? parseFloat(sealPos.right) + sealSize + 20 : 0
   const wordmark = (
     <span style={row(u(20), { minHeight: u(31) })}>
-      <span style={row(u(10))}>
+      <span style={row(u(10), sealRoom ? { maxWidth: `calc(100% - ${sealRoom}px)`, minWidth: 'min-content' } : null)}>
         <GlobeMark size={Math.round(27.37 * scale)} color={s.ac} />
         <span style={labelStyle(s, u(21.4), { color: s.ac, whiteSpace: 'normal' })}>{s.brand}</span>
       </span>

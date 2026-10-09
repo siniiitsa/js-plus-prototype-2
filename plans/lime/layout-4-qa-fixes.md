@@ -479,7 +479,10 @@ Settled before the code (each changes what gets built):
   from the base date** (0 / +2 / +8 / +23). The base is `open` on the canvas and in the editor, and
   `max(open, today)` by day on the published page, which is layout 1's F20 diff, already accepted. The
   offsets reproduce Jun 12 / 14 / 20 / Jul 05 from `CAL_OPEN`. `slotsVal` materialises the
-  canvas's dates on the first edit. Layout 4 no longer reads the slots, so `vm.calCue` goes.
+  canvas's dates on the first edit. *Reversed by JP-123* ([`../pop/layout-2-qa-fixes.md`](../pop/layout-2-qa-fixes.md),
+  user call, 2026-10-09): that write-out froze a published list in 2025 on the first keystroke of
+  a kind or a price. A seeded row now keeps its `after` until a date is typed into it, and an
+  emptied date box gives the count back (`slotDate()` in `data.js`). Layout 4 no longer reads the slots, so `vm.calCue` goes.
 - **`booked` at layout 4** is now read only through a typed date, live. Its hint says so.
 
 **Expected after-diff (named before the code).** Calendar `arch 3` × themes 0, 1, 2 × three

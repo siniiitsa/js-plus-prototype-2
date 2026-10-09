@@ -2048,7 +2048,8 @@ it here in one line, with the plan it came from, a blank line between sessions.)
   Minimal at `d === 1` and the 768 fit (five links), `navFits`' Grunge arm, the bio's divider,
   the map's compact pager, plate and `zoom`, pricing's pill and its followed chip, the calendar's
   dimmed and full-ink past rows (the Lime block's `dim` reads no template, so Editorial inherits
-  both), the form's terracotta sheet, 6, 6 refusal and two-tone stars, and the testimonials'
+  both; the full ink was *reversed by JP-123*, user call, 2026-10-09, `../pop/layout-2-qa-fixes.md`:
+  a past row dims like a booked one), the form's terracotta sheet, 6, 6 refusal and two-tone stars, and the testimonials'
   filling tiles and `pre-wrap` head. README took the same at its four Editorial sites. Two code
   comments were stale — `FIELDS`' header-`in` note ("one fitted card and three placeholders")
   and `photos.js`' head (Grunge's later frames only) — and were fixed; `navModeDefault`'s and

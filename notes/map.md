@@ -169,16 +169,20 @@ another `notes/` file.
       stands on its own line under Venue Link.
     - The unfiled seats on the tester's screenshot: the h2 (*Venue Distance*), the chip (*●
       Confirmed*, JP-060), the featured venue (the frame features its third gig) and *100 mi*
-      (`MAP_RADIUS`).
+      (`MAP_RADIUS`; seeded *120 mi* since JP-124, below).
 - **The coverage seeds per layout** (JP-105, user call, 2026-10-06). `radius` reads layouts 1–3.
   Its absent key resolves through `mapRadiusSeed(d)` in `data.js`, which `sectionVm` and
   `EditPanel`'s chain both call (`mapKickerSeed`'s shape; the chain's arm is gated on `map`).
   Layout 3's line under the map, `[base, "N pins", radius]` joined by ` · `, seeds its frames'
   *120 mi radius* (`MAP_RADIUS_3`), the outermost ring's. All twelve masters (Retro, Lime, Grunge
-  and Editorial at 1440, 768 and 390) read "UK · 8 pins · 120 mi radius". Layouts 1 and 2 keep
-  `MAP_RADIUS`, *12 mile radius*: layout 1's frame prints *12 Mile Radius* beside its heading,
-  and layout 2's *100 mi* is with the designer. A page shows the map at one layout, so a seeded
-  page still claims one coverage. `base` keeps *Based in Manchester* at layout 3, where the frames
-  print *UK* (Retro's fit seated it in this line, `../plans/retro/layout-3.md:959`). So the 768
-  line still wraps to two lines under every template, as it did before (the layout-3 fits' named
-  diff, Retro's through Lime and Grunge).
+  and Editorial at 1440, 768 and 390) read "UK · 8 pins · 120 mi radius". Layout 2's Max travel
+  seeds *120 mi* (`MAP_RADIUS_2`; JP-124, user call, 2026-10-09). Its frame's cell types *100
+  mi* (`I986:17577;861:11188`), but its data bar and rings say 120, and so do the header's place
+  card (`PLACE_BODY`), the line under the map (`MAP_TERMS`) and the form's third promise on the
+  same page, so the 100 went to the designer. *12 mile radius* filled the 768 cell's third to
+  4px of *~2 hrs*, and wrapped in Retro's narrower 88.66. Layout 1 keeps `MAP_RADIUS`, *12 mile
+  radius*, since its frame prints *12 Mile Radius* beside its heading. A page shows the map at
+  one layout, so a seeded page still claims one coverage. `base` keeps *Based in Manchester* at
+  layout 3, where the frames print *UK* (Retro's fit seated it in this line,
+  `../plans/retro/layout-3.md:959`). So the 768 line still wraps to two lines under every
+  template, as it did before (the layout-3 fits' named diff, Retro's through Lime and Grunge).

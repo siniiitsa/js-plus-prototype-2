@@ -8,7 +8,9 @@ another `notes/` file.
   player's tracks, the events map's gigs, the pricing section's packages, the enquiry form's
   boxes, the testimonials' reviews, the footer's links, the booking calendar's layout-2
   slots** (`SlotsField`, JP-052: `{ date, kind, price }`, `SLOT_KEYS`, `slotsVal`, the gigs'
-  plain shape but for a seed dated from `open` — above), **the events map's layout-4 stat
+  plain shape but for a seed dated from `open` — above; a seeded row also carries `after`, its
+  day offset, which the rewrite keeps until a date is typed, and `SLOT_KEYS` counts it, so a
+  seeded row emptied of kind and price is still a row — JP-123), **the events map's layout-4 stat
   wall** (`StatsField`, JP-077: `{ label, value, sub }`, `STAT_KEYS`, `statsVal`, seeded
   `MAP_STATS_4`, the gigs' plain shape — above) **and the enquiry form's layout-4 steps**
   (`StepsField`, JP-079: `{ title, sub }`, `STEP_KEYS`, `stepsVal`, seeded `FORM_STEPS`, the

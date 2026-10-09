@@ -60,6 +60,29 @@ another `notes/` file.
   between words, never inside one (CLAUDE.md JP-062's rule for a display name), so Retro's row
   is a `minHeight` of 31, not a `height`. The seeded name never fills the row, so the rule keeps
   its 150 (123 on the desktop canvas) everywhere.
+- **At 390 the name's measure stops short of the seal, and Pop's small print keeps the sun's
+  corner** (JP-122, user call, 2026-10-09, `plans/pop/layout-2-qa-fixes.md`). Every 390 frame
+  stands its seal absolute over the wordmark row's right end, with the disc's equator level with
+  the name. So with JP-092's measure alone, a long name ran under the disc: Pop's, Editorial's
+  and Retro's *Featherstonehaugh*, and Retro's *Florence*.
+  - **The seal.** In both trees the mark-and-name group is capped at the row less the disc's left
+    edge and the row's own 20. That edge is `inX` plus the radius in from the column's right in
+    Lime's tree, and `sealPos.right` plus `sealSize` in Retro's. The rule still runs on under the
+    seal, as the frames draw it, and still yields first; then the name wraps between words.
+  - **The group keeps its `min-content`**, so a single word wider than the room pushes the rule
+    as before rather than running over it. It still reaches the seal: JP-113's named one-word
+    footer item.
+  - **The cap's reach.** A hidden seal frees the room. 768 and 1440 are uncapped: no disc reaches
+    its row there.
+  - **Pop's small print.** Pop's 390 row packed both strings right, so a long copyright wrapped
+    from the column's edge, under the corner sun. The row now starts the row's own 10 past the
+    sun's ink at the type's height (54.25 past the column's edge, mapped row by row; the foot ray
+    reaches 59). The two strings stand side by side while they fit. Past that the row wraps as a
+    whole: the credit drops under the copyright, both right-aligned, and the copyright wraps
+    between words. The row is a `minHeight` there, so a long typed Small print grows it rather
+    than spill.
+  - **The seed.** It keeps the frame's one line at 390 and 414. At 360 its credit drops, where
+    the © used to sit on a ray.
 - **At 390 the second link column fills the row and breaks after its slash, under Pop and
   Editorial** (Pop's frame, FILL 173, SHOWS/ over COVERAGE; Editorial's on a user call,
   2026-10-06, `plans/editorial/display-face.md` step 5). The column is `flex: 1 1 0` with

@@ -395,13 +395,15 @@ That distinction is the whole design, and it buys two things:
   a month of the artist's own to click, because one row per blocked date is the wrong shape for a
   June with eight of them. It pages the same twelve-month window the *published* section does —
   from today's month once `open` has passed, with the days before today faded and unclickable
-  unless already blocked — which makes it the editor's one reader of the clock. `para` went
+  unless already blocked — which makes it one of the editor's two readers of the clock (the other
+  is `SlotsField`'s line under a typed slot date that has passed, JP-123). `para` went
   with `DEFS.calPara` — it rendered in neither calendar layout.
 
   Layout 2's named slots are the artist's too since JP-052 (`FIELDS.calendar.slots`, a
   `SlotsField` repeater of `{ date, kind, price }`). Their seed is four day offsets from `open`
   rather than four 2025 dates, and on the published page from today when `open` has passed, so a
-  published slot list is never all past. Layout 4's right-hand column, which had been fitted as
+  published slot list is never all past. A seeded row keeps its offset when its kind or price is
+  edited, until a date is typed into it, and an emptied date box gives the count back (JP-123). Layout 4's right-hand column, which had been fitted as
   those same slots stacked, is the **enquiry wizard's summary**, which is how its frame reads: the
   event type over the four step-2 answers (the canvas prints the frame's examples, the published
   page the visitor's answers or a faint "e.g." placeholder), a date card that shows the typed

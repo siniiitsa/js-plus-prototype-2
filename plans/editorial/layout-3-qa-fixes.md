@@ -791,7 +791,8 @@ section (824.6 → 807.8). Desktop and 390 move no height on either.
 - **Build.** `npm run build` is clean. The root `index.html` is not refreshed.
 - **Docs.** `notes/map.md` gains a bullet on the per-layout seed. *Answered* pointers go at
   `../grunge/layout-4-qa-fixes.md`'s `MAP_RADIUS` follow-up and its designer note 10 (layout 3
-  alone: layouts 1 and 2 stay open). Pointers also go at `../lime/layout-3.md:966` and
+  alone: layouts 1 and 2 stay open; *layout 2 answered by JP-124, 2026-10-09: it seeds "120 mi",
+  `../pop/layout-2-qa-fixes.md`*). Pointers also go at `../lime/layout-3.md:966` and
   `../grunge/layout-3.md:1275`, which name the 768 wrap: it holds, and `base` is now its cause.
   CLAUDE.md and README name no coverage seed, so they are unchanged.
 
