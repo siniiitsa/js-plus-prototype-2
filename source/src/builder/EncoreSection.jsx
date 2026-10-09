@@ -18107,9 +18107,10 @@ function Calendar({ s }) {
         : type(s.display, size, lh, extra))
       // Lime's frames draw no blocked slot; layout 1's Lime calendar settled
       // its own — opacity .38, no strike — and the row takes it, handlerless.
-      // Only a *booked* row dims (user call, 2026-09-17): a past (`dead`) one
-      // stays handlerless but at full ink, the frame's own row, since the
-      // seeded slots have no editor and are all past on a published page.
+      // A past (`dead`) row dims too, as Retro's mutes it (JP-123, user call,
+      // 2026-10-09, reversing 2026-09-17's full ink, made while the seeded
+      // slots had no editor and were all past on a published page: they count
+      // from today there now, so only a date the artist typed can have passed).
       const dim = (off) => (off ? { opacity: 0.38 } : null)
 
       const flow = (
@@ -18144,14 +18145,14 @@ function Calendar({ s }) {
         // mark, rows 94.)
         const mark = (
           <span style={distressed(s, disp(s.dispLg, 0.89, {
-            whiteSpace: 'nowrap', flex: 'none', minWidth: pin, color: G.marks?.[i % 4], ...dim(sl.booked),
+            whiteSpace: 'nowrap', flex: 'none', minWidth: pin, color: G.marks?.[i % 4], ...dim(blocked(sl)),
             ...(ed ? { position: 'relative', top: '-0.05em' }
               : pop ? { position: 'relative', top: '-0.14em' } : null),
           }))}>{sl.mark}</span>
         )
         const day = (
           <span style={type(s.ui, s.labelXs, 1.26, {
-            flex: s.mob ? 'none' : '1 1 0', minWidth: 0, ...dim(sl.booked),
+            flex: s.mob ? 'none' : '1 1 0', minWidth: 0, ...dim(blocked(sl)),
           })}>{sl.day}</span>
         )
         return (
@@ -18166,7 +18167,7 @@ function Calendar({ s }) {
               ? <div style={col('0', { flex: '1 1 0', minWidth: 0 })}>{mark}{day}</div>
               : <>{mark}{day}</>}
             <div style={col(u(2), {
-              flex: 'none', alignItems: 'flex-end', textAlign: 'right', ...dim(sl.booked),
+              flex: 'none', alignItems: 'flex-end', textAlign: 'right', ...dim(blocked(sl)),
             })}>
               {!!sl.kind && (
                 <span style={type(s.body, s.bodyMd, 1.5, { whiteSpace: 'nowrap' })}>{sl.kind}</span>

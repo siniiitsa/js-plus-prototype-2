@@ -140,7 +140,7 @@ Screenshots (the tester's):
 | 1 | JP-124 | *12 mile radius* at layout 2 | **Confirmed, and recorded**: JP-105 kept layouts 1 and 2 on `MAP_RADIUS` on purpose, layout 2's *100 mi* parked for the designer; the frame itself says 100 once and 120 three times | S | **user**: *120 mi* or *100 mi*. **Decided A, *120 mi*** (2026-10-09) | **done** (30 of 660 + 30 of 660, the named set; Retro's 768 card 22.5 shorter) |
 | 2 | JP-121 | 390: a long name over the burger, the pill off the page | **Confirmed, shared, and named** (Editorial retest's *Seen at triage, not filed*, `:1104`–`:1111`): the layout-2 bar's 390 name has no fit; Editorial reproduces it too | S–M | **user**: fix or accept, the scope, the room. **Decided A with Editorial kept out** (its 2026-10-07 acceptance stands), **room A** (2026-10-09) | **done** (0 of 660 per surface on the seed; `&name=` 4 of 180, Pop's 390 alone) |
 | 3 | JP-122 | 390 footer: the copyright under the sun, the name under the seal | **Confirmed, two faults**: (a) Pop's small print keeps no corner for the sun; (b) the wordmark's measure ignores the seal, under Pop, Editorial and Retro | S–M | **user**: (b)'s scope, (a)'s shape. **Decided (b) A, every seal footer; (a) A, the row wraps as a whole** (2026-10-09) | **done** (0 of 660 per surface on the seed; `&name=` 4 / 4 / 6 / 2 of 30 per surface, as named) |
-| 4 | JP-123 | an edited slot row freezes the dates in 2025 | **Confirmed, every template, and recorded twice**: the first-edit write-out (JP-052) and the full-ink past row (2026-09-17), whose own comment states a premise JP-052 retired | M | **user**: four questions | open |
+| 4 | JP-123 | an edited slot row freezes the dates in 2025 | **Confirmed, every template, and recorded twice**: the first-edit write-out (JP-052) and the full-ink past row (2026-09-17), whose own comment states a premise JP-052 retired | M | **user**: four questions. **Decided 1 A, 2 A, 3 A, 4 A** (2026-10-09) | **done** (0 of 660 per surface on the seed, 0 of 60 live with `&today=`; the mixed `&cj=` rows move as named) |
 | 5 | — | End-of-pass sweep | — | S | — | open |
 
 **Why this order:**
@@ -987,6 +987,16 @@ The Major part is the silence. Before any edit the panel's four date boxes alrea
    - **B. The row stays undated**: `date: ''`, listed but never picked, as an emptied date is today.
      Only removing the row or *Start fresh* brings the seed back.
 
+**Decided** (user, 2026-10-09): **1 A, 2 A, 3 A, 4 A.**
+1. **A seeded row keeps its offset until a date is typed into it.** It stays `{ after, kind, price }`,
+   and the published page counts it from `max(open, today)`. A row the artist adds is dated by hand.
+2. **A past row dims like a booked one** under Lime, Grunge, Editorial and Pop: .38, no strike. This
+   reverses 2026-09-17.
+3. **A typed date before today gets a line under its row**: "This date has passed, so visitors can't
+   pick it."
+4. **Clearing a typed date on a seeded row gives the count back.** The row keeps `after` beside a
+   typed `date`.
+
 **Expected after-diff: zero** on the seed, themes 0–4, both surfaces. The digest edits nothing, and
 `today` is opt-in. 2A moves only a live render holding a past slot. Probe it with `&today=` and
 `&cj={"slots":[…]}` (a typed past date, a typed future one, an offset row), and name the rows: under
@@ -1007,6 +1017,133 @@ the Lime tree, the past row's opacity.
 `:27`–`:28`). `notes/list-editors.md` (the row shape). The `CAL_SLOTS` comment. The `open` and
 `slots` hints. The dim rule's comment. *Reversed* pointers at `../lime/layout-4-qa-fixes.md:477` and
 at the 2026-09-17 call's own record (the session greps for it).
+
+**Reproduced** (2026-10-09, HEAD `c0f533d` on :5174). The real app ran Pop, Lime, Grunge, Editorial
+and Retro card 2. `SlotsField` was driven through its own inputs (the native value setter and an
+input event). Then Publish → Open, and at 1440, 768 and 390 the tab took a trusted click on every
+row. Today was 2026-10-09.
+- **The seed** publishes OCT 09 / 11 / 17 / NOV 01 under all five templates, and every row picks.
+  The tester's OCT 08 … OCT 31 are the same rows one day earlier.
+- **Row 1's kind → *Late set*** stores `{ date: '2025-06-12', … }` × 4 in `st`. Every template
+  then publishes JUN 12 / 14 / 20 / JUL 05 at all three widths, with `cursor: auto` and no pick.
+  The foot stays *Pick a date to enquire*. The price edit and typing the old text back leave
+  the same rows.
+- **The look.** Under Lime, Grunge, Editorial and Pop the dead rows read opacity 1, the full ink.
+  Retro's mute to `rgba(17, 17, 17, .64)`.
+- **The panel's boxes read June 2025** before any edit, and nothing warns.
+- **The harness** (calendar `arch 1`, themes 0–4, three widths, `live=1&today=2026-10-09`) read
+  the triage facts. Its `&cj=` rows were a typed past date (SEP 29), a typed future one (NOV 18),
+  an offset row `{ after: 5 }`, and `{ after: 2, date: '2026-10-01' }`. The two past rows are
+  handlerless at opacity 1 under themes 1–4, and muted under Retro. The offset row has no date
+  on either surface, since HEAD reads `date` alone.
+
+**Settled** (2026-10-09).
+- **The code.**
+  - **`data.js`.** `slotDate(row, base)` (`:1541`) replaces `slotSeed()`. A trimmed `date` wins
+    (null if it does not parse, so the row keeps its place and does not pick). Otherwise an
+    integer `after` counts days from `base`. Otherwise the row has no date. `SLOT_KEYS`
+    (`:1535`) gains `after`. Since `blankRow` stringifies with `??`, `after: 0` is `'0'`, so a
+    seeded row emptied of kind and price keeps its date. The `CAL_SLOTS` comment carries the
+    reversal. The `open` hint now says layout 2's seeded dates count from it "until you type a
+    date of your own", and from today on the published page once it has passed. The `slots`
+    hint (`:2188`) says the same, adding that a cleared date counts again.
+  - **`sectionVm`** (`EncoreBuilder.jsx:1698`) resolves `c.slots`, else `CAL_SLOTS`, and dates
+    each row by `slotDate(sl, slotBase)` over HEAD's `slotBase`.
+  - **`slotsVal`** (`:4310`) returns `CAL_SLOTS` itself. It and `sectionVm` resolve the same
+    rows (the repeater rule), and the first edit writes `{ after, kind, price }` out.
+  - **`SlotsField`** (`:3312`) takes `open` (`openVal('open')`, BookedField's prop, `:4438`) and
+    reads today once per mount.
+    - Each box shows `slotDate(g, open)`, the canvas's date.
+    - A row counted by `after` prints `slotCountHint()` under it: "The Opens on date, or today on
+      the published page once that has passed. Type a date to fix it." Other rows read "N days
+      after Opens on, or after today …".
+    - A typed date before today prints `PAST_SLOT_LINE` (`role="alert"`, `ERR_LINE`) and rings
+      the box red. Both are derived from the stored value and held while the box has focus,
+      `UrlInput`'s rule.
+    - The ring is the whole `border` shorthand, because a lone `borderColor` logged React's
+      "Removing borderColor border" warning when the line cleared. The first walk caught it.
+    - **While the box has focus it shows its own value** (`draft`, NameInput's pattern). A native
+      date box reports `''` for a cleared or half-typed segment. The first build put the count's
+      date back on that keystroke, so Backspace on a seeded row did nothing visible, and an
+      invalid step (31 September, a month of 20) refilled the box under the artist's typing. A
+      keyboard probe on the headless shell (day-first segments) caught it after the commit.
+      Now Backspace empties the box until blur, which shows the count again (4A), and a date
+      typed segment by segment never snaps back.
+    - **A typed date shows as typed** (`shown`), not as `slotDate` parses it. Chrome's year runs
+      to 275760, so a stray digit stores `202655-07-05`, which `parseDate` refuses. Showing the
+      parse would leave an empty box that could not be cleared. HEAD showed the raw value too.
+  - **`EncoreSection.jsx`**: the Lime tree's `dim` reads `blocked(sl)` at its three sites
+    (`:18148`, `:18155`, `:18170`), so a past row takes the booked row's .38. Its comment
+    (`:18108`–`:18113`) carries the reversal. Retro's body is untouched.
+- **Digest: 0 of 660 per surface on the seed**, themes 0–4, canvas and `live=1`, against the HEAD
+  worktree on :5174 from a fresh tree server on :5177. Also **0 of 60** for the calendar at
+  `live=1&today=2026-10-09`, since the seed counts from today and has no past row. The harness was
+  proved first, 0 of 660 per surface and 0 of 60, unedited. No label held a one-row file. The
+  `draft` and `shown` follow-ups came after the digest, and they touch `SlotsField` alone, which
+  no harness render draws.
+- **Positive control, as named** (the harness's mixed `&cj=` rows, themes 0–4, three widths).
+  - Live, themes 1–4: SEP 29 and the dated OCT 01 go from opacity 1 to **.38** on every leaf,
+    with no handler.
+  - The offset row gains **OCT 14** (today + 5), takes a pointer, and a click prints *Wednesday
+    koffset selected*.
+  - Retro: the offset row gains its date and its pick. Its past rows keep HEAD's muted colour.
+  - Canvas: the offset row reads **JUN 17** (`open` + 5). Nothing else moves, and nothing is
+    dimmed or pickable.
+- **The real app** (:5177, all five templates' card 2, at 1440, 768 and 390). The walk was the
+  tester's steps, then a typed past date, a panel remount, a typed future date, a cleared date,
+  remove, add, and an emptied kind and price.
+  - **Kind, price and the old text back** keep OCT 09 / 11 / 17 / NOV 01. Every row picks, and
+    the foot prints its line (*Friday late set selected*). `st` holds
+    `{ after, kind, price }` rows with no `date` key.
+  - **A typed SEP 29** publishes dimmed (.38) and handlerless under the four, and muted under
+    Retro. The panel warns under it, the line survives *Back to page list* and reopening, and
+    the canvas prints SEP 29.
+  - **A typed NOV 18** stays put on both surfaces, with no warning.
+  - **Clearing SEP 29** gives the count back. The box reads 2025-06-14 again with its count line,
+    the canvas reads JUN 14, and the tab reads OCT 11. `st` holds `date: ''` beside `after: 2`
+    (4A).
+  - **Remove** drops the row, and **Add** prints *Empty slots aren't shown.* and nothing else.
+  - **Emptying row 1's kind and price** keeps JUN 12 on the canvas and OCT 09 in the tab, a
+    dated row with no kind. The foot reads *Friday selected*.
+  - **The canvas keeps June 2025 on the seed.** No console errors, after the border fix (Pop and
+    Retro re-walked).
+  - **After the `draft` fix**, Pop was re-walked on :5175 (this tree) at 1440 and 390 through the
+    native setter, with the same rows. The keyboard probe covered Backspace on a seeded row, a
+    date typed by segments, an invalid 31 September fixed to the 29th, which warns after blur
+    and clears back to the count, and a 6-digit year shown and cleared. No console errors.
+- **Named diffs.** None on the seed. A seeded row the artist edits now keeps counting from today
+  on the published page, where HEAD froze it in 2025. A past typed date under Lime, Grunge,
+  Editorial and Pop dims. The panel's box for a seeded row still reads the canvas's June 2025,
+  with its count line beside it.
+- **Build.** `npm run build` is clean. The root `index.html` is not refreshed.
+- **Torn down** before the commit. :5174 and :5177 were stopped and the HEAD worktree removed.
+  The probes stayed in the session's scratchpad. :5173, :5175 and :5176 are not this session's.
+- **Docs.**
+  - `notes/calendar.md`: the past-row exception rewritten (`:28`–`:31`), the seed's sentence and a
+    new paragraph on the edited row, the panel and the warning (`:61`–`:76`), and `SlotsField`
+    beside `BookedField` as a reader of the clock.
+  - `notes/list-editors.md`: the row shape's `after`.
+  - README's calendar passage: the clock's two readers, and the edited seeded row.
+  - *Reversed* pointers at `../lime/layout-4-qa-fixes.md` (JP-052's write-out bullet) and at the
+    two plan records of the full-ink row, `./layout-2.md` (section 7's notes bullet) and
+    `../editorial/layout-2.md` (the sweep's CLAUDE.md pass).
+  - **The 2026-09-17 call has no plan record of its own.** Its only sources were commit
+    `9590959`'s message, the code comment and `notes/calendar.md` (moved out of CLAUDE.md on
+    2026-09-30). All three now state the reversal, the commit by this one.
+  - CLAUDE.md names neither rule, so it is unchanged. Its repeater rule holds as written. The
+    grep was for `slotsVal`, *first edit*, *full ink*, *past row* and `slotSeed`.
+
+Reply (JP-123): **fixed, on every template.** Editing a date row's text (*Evening* → *Late set*,
+or a price) no longer moves its date. The default dates keep counting from today on the
+published page, however long after the edit it is opened, and every row can be picked. The
+editor keeps showing the design's June dates for those rows, with a line under each saying the
+published page counts it from today. A date only stops counting once you type one into the row,
+and clearing it makes the row count again.
+- **No more silent past dates.** If you type a date that has passed, the editor says so under
+  the row ("This date has passed, so visitors can't pick it.").
+- **The look.** On Lime, Grunge, Editorial and Pop such a row is now faded on the published page,
+  like a booked one. Before, it looked like any other row and just did nothing. Retro already
+  faded it.
 
 ---
 

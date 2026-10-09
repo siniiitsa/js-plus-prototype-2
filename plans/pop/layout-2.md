@@ -1526,7 +1526,8 @@ and its **lime** cards add a third ground the twins never had.
 - **Digest: themes 0, 1, 2 and 3 zero files of 660, canvas and `live=1`**; theme 4 exactly
   calendar arch 1 at three widths on both surfaces (6 files), no `_arch_0_` file, no one-row file.
 - **`notes/calendar.md`** now names Pop beside the three wherever its layout-2 sentences named the
-  `s.limeTree` block's states (the past row's full ink, the dimmed booked row, JP-100's one-row
+  `s.limeTree` block's states (the past row's full ink — *reversed by JP-123*, user call,
+  2026-10-09: a past row dims like a booked one, `layout-2-qa-fixes.md` — the dimmed booked row, JP-100's one-row
   foot), drops Pop from *Retro's foot never wraps* and JP-095 (a)'s ellipsis clause (both were
   Pop on Retro's body), and carries the marks bullet.
 - **For the sweep's CLAUDE.md pass**: CLAUDE.md names no layout-2 calendar state (the dimmed row

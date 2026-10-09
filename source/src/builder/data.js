@@ -1508,12 +1508,18 @@ export const CAL_SPAN   = 12
 // line rather than printing a bare "From".
 //
 // The seed is **not** four dates. It is four day offsets from a base date
-// (`slotSeed()`), because a hardcoded 2025 is past on every published page and
+// (`slotDate()`), because a hardcoded 2025 is past on every published page and
 // every row would be dead (JP-052). The base is `open` on the canvas and in the
 // editor — so slot one is CAL_OPEN, the seeded page opens with that row already
 // picked, and the reference picture matches the frame (Jun 12 / 14 / 20 /
 // Jul 05) — and max(open, today) by day on the published page, layout 1's F20
-// rule. SlotsField writes the canvas's dates out on its first edit.
+// rule. A seeded row keeps its `after` when the artist edits it (JP-123, user
+// call, 2026-10-09, reversing JP-052's "SlotsField writes the canvas's dates
+// out on its first edit", which froze a published list in 2025 on the first
+// keystroke): SlotsField writes these very rows, so an edited kind or price
+// still counts from the base, and only a typed `date` fixes a row's day. An
+// emptied date box gives the count back. A row the artist adds has no
+// `after`, so it is dated by hand.
 //
 // Layout 4 read these rows too until JP-052, which found its right-hand column
 // is the enquiry wizard's summary, not a slot list.
@@ -1523,15 +1529,22 @@ export const CAL_SLOTS  = [
   { after: 8,  kind: 'Late',     price: 'From £1,400' },
   { after: 23, kind: 'Wedding',  price: 'From £2,800' },
 ]
-// Every key a slot row carries — what `blankRow()` asks of it.
-export const SLOT_KEYS = ['date', 'kind', 'price']
-// The seeded slots, dated from `base` (a parsed date): the rows SlotsField
-// edits and sectionVm reads when the key is absent.
-export function slotSeed(base) {
-  return CAL_SLOTS.map(({ after, kind, price }) => {
-    const d = new Date(Date.UTC(base.y, base.m, base.d + after))
-    return { date: isoDate(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()), kind, price }
-  })
+// Every key a slot row carries — what `blankRow()` asks of it. `after` counts
+// (a number, so 0 is not blank): a seeded row whose kind and price are emptied
+// keeps its date, as it did while the date was written out.
+export const SLOT_KEYS = ['date', 'after', 'kind', 'price']
+// A slot row's day (JP-123), `{ y, m, d }` or null: a typed `date` wins while
+// the box holds one (null if it does not parse, which keeps the row's place
+// and does not pick), else the seed's `after` days from `base`, a parsed date,
+// else none. sectionVm and SlotsField both ask it, so the panel's box and the
+// canvas print one date.
+export function slotDate(row, base) {
+  const typed = String(row?.date ?? '').trim()
+  if (typed) return parseDate(typed)
+  const after = row?.after
+  if (!Number.isInteger(after) || !base) return null
+  const d = new Date(Date.UTC(base.y, base.m, base.d + after))
+  return { y: d.getUTCFullYear(), m: d.getUTCMonth(), d: d.getUTCDate() }
 }
 
 // Testimonials layout 2's own heading fallback — its frame's two-line display
@@ -2144,9 +2157,9 @@ export const FIELDS = {
     { k: 'open',    l: 'Opens on', type: 'date', d: CAL_OPEN,
       hint: 'The month the calendar opens on, and the date it opens picked. '
           + `Layouts 1 and 3 page through ${CAL_SPAN} months from there, layout 2's seeded `
-          + "dates count from it until you edit them, and layout 4's date card shows it. "
-          + "On the published page, days before today can't be picked, and a past date "
-          + "opens it on today's month." },
+          + "dates count from it until you type a date of your own, and layout 4's date card "
+          + "shows it. On the published page, days before today can't be picked, and a past "
+          + "date opens it on today's month and counts layout 2's seeded dates from today." },
     { k: 'booked',  l: 'Booked dates', type: 'booked',
       hint: 'Click a day to block it. A blocked day cannot be picked on the published page, '
           + "and layout 4's date card refuses it when a visitor types it. "
@@ -2173,7 +2186,9 @@ export const FIELDS = {
           + 'empty this. Under Retro it is also layout 1’s button. The other templates’ '
           + 'layout 1 has no button: its “Enquiry for …” line is the link.' },
     { k: 'slots',   l: 'Dates on offer', type: 'slots', max: 8, in: [1],
-      hint: 'The dates layout 2 lists, each with what you play and what it starts from.' },
+      hint: 'The dates layout 2 lists, each with what you play and what it starts from. '
+          + 'The seeded dates count from Opens on (on the published page, from today once that '
+          + 'has passed) until you type one; clear it and the row counts again.' },
     // JP-095 (a): the two column labels over that list; the ↓ is the markup's.
     { k: 'dateLabel',  l: 'Date column label', d: CAL_DATE_LABEL, in: [1],
       hint: 'The label over the list’s dates. Left empty, it is not drawn.' },

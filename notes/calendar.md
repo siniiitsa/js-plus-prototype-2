@@ -19,14 +19,16 @@ another `notes/` file.
   out, the way it draws the pin `sectionVm` paired with a gig. Nothing on the canvas reads the
   clock: the canvas opens on the artist's date, not on today, or its picture would drift off the
   reference frame's June overnight. **The published tab knows what day it is** (F20), and so
-  does `BookedField` (below), which pages the published window and nothing else:
+  do `BookedField` (below), which pages the published window and nothing else, and
+  `SlotsField`'s past-date line (JP-123, below):
   `PublishedPage` reads today once, in UTC, and passes it to `sectionVm` as the ISO `today`,
   which is honoured only when `live`. With it, a day or slot before today carries **`dead`**
   beside `booked` — `EncoreSection`'s one `blocked()` test, so the two behave identically in all
   four layouts: no handler, no enquiry line, never the pick, and the booked look **without the
-  strike** (except Lime's layout 2 — and Grunge's, Editorial's and Pop's, which widen its block — whose past rows keep full ink and only lose the handler —
-  user call, 2026-09-17, made while its seeded slots had no editor and were all past; Lime's
-  layout-4 exception went with JP-052; and layout 3 on every template, whose legend names the
+  strike** (Lime's layout 2 — and Grunge's, Editorial's and Pop's, which widen its block — dims a
+  past row to .38 like a booked one since JP-123, user call, 2026-10-09, reversing 2026-09-17's
+  full ink, made while its seeded slots had no editor and were all past; Lime's
+  layout-4 exception went with JP-052; except layout 3 on every template, whose legend names the
   booked fill *Booked*, so a past day there is the *free* dot at .38, booked or not, lest the
   month before today read as taken — JP-064, user call, 2026-09-28) — a cued `open` in the past cues nothing and the foot prints `vm.calPrompt`, and a
   past `open` month gives way to today's as the first month, `CAL_SPAN` counting from there
@@ -57,10 +59,23 @@ another `notes/` file.
   arrows, its `sel` and its blocked cue are layout 3's as well (below). Layout 2 is a
   bold list of named slots — `c.slots`, maintained by `SlotsField` (JP-052) and resolved by
   the `songs` rule onto `vm.calSlots`. Its seed is **not four dates**: `CAL_SLOTS` is four day
-  offsets (`slotSeed()` in `data.js`) from `open` on the canvas and in the editor — which
+  offsets (`CAL_SLOTS`, dated by `slotDate()` in `data.js`) from `open` on the canvas and in the editor — which
   reproduces the frame's Jun 12 / 14 / 20 / Jul 05 from `CAL_OPEN` — and from
   `max(open, today)` by day on the published page, layout 1's F20 diff, so a published page is
-  never all past; `slotsVal` writes the canvas's dates out on the first edit. It has no month,
+  never all past. **A seeded row keeps its offset when it is edited** (JP-123, user call,
+  2026-10-09, reversing JP-052's "`slotsVal` writes the canvas's dates out on the first edit",
+  which froze a published list in 2025 on the first keystroke of a kind or a price): `slotsVal`
+  hands `SlotsField` `CAL_SLOTS` itself, so the rewrite stores `{ after, kind, price }`, and
+  `slotDate()` dates a row for `sectionVm` and the panel alike — a typed `date` wins, else
+  `after` days from the base, else none. An emptied date box gives the count back; a row the
+  artist adds has no `after` and is dated by hand. `after` is in `SLOT_KEYS`, so a seeded row
+  whose kind and price are emptied keeps its date. The panel's box shows an offset row's
+  canvas date with a line saying it counts from today on the published page once `open` has
+  passed (while the box has focus it shows its own value, so a cleared or half-typed segment,
+  which a native date box reports as `''`, is not refilled under the artist's typing), and a
+  typed date before today warns under its row ("This date has passed, so
+  visitors can't pick it."), derived from the stored value and held while the box has focus
+  (`UrlInput`'s rule) — `SlotsField` reads the clock once per mount, `BookedField`'s rule. It has no month,
   so no arrows and no `mi`. Everything else it shares whole:
   `sel` is the same ISO date, `open` cues the same day (slot one *is* `CAL_OPEN`, so the
   seeded page opens on the frame's picture), `booked` kills a row there as it strikes a cell
