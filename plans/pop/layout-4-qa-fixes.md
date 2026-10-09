@@ -125,7 +125,7 @@ Screenshots (the tester's):
 
 | Order | ID | Report (short) | Verdict | Size | Decision | Status |
 |---|---|---|---|---|---|---|
-| 1 | JP-127 | nine links wrap REVIEWS at desktop, on the seed | **Confirmed, and recorded** (open question 10; JP-091's and JP-114's scope) | S (a gate), M with the name fit | **user**, after measuring: the lever (A / B), and the scope (Pop, or Pop and Editorial) | todo |
+| 1 | JP-127 | nine links wrap REVIEWS at desktop, on the seed | **Confirmed, and recorded** (open question 10; JP-091's and JP-114's scope) | S (a gate), M with the name fit | **user**, after measuring: **B** (the 11 floor and the name fit), **Pop alone** | **done** |
 | 2 | JP-128 | 768 and 390 heads over their stickers | **Confirmed, and recorded** (Settled §4 and §5; open questions 15 and 16) | S–M | **user**: the lever (A / B / C / D), and at 768 whether the gallery head wraps or shrinks | todo |
 | 3 | — | End-of-pass sweep | — | S | — | todo |
 
@@ -252,6 +252,158 @@ keep 12") and the `fit` comment ("Layout 4's capsule … keeps its wrap"), plus 
 comment. `notes/nav.md:88`–`:107`. *Reversed* pointers at `layout-4.md` `:1398` (the links bullet)
 and open question 10 (`:2826`). A line under `qa-fixes.md`'s *Already open, so not new* (`:2180`).
 On Editorial in scope, a pointer at its layout-4 plan's capsule bullet.
+
+**Measured** (2026-10-09, on HEAD `b122d93`).
+- **Every *Evidence* line held.** `NavBar` `:1882`, its `floor` `:1900`, the desktop `fit`'s gate
+  `:1929`, the `links` clamp `:1998`, the shared clamp `:2001`; `HeaderV3`'s `<NavBar>` `:4252`;
+  `vm.navEms` `:811`, `vm.navNameFit` `:860`.
+- **How.** A scratchpad puppeteer probe (`cap.mjs`) on a HEAD worktree (:5174), card 4 of Pop,
+  Editorial, Lime and Grunge, and card 1 of Pop as the control.
+  - Each name was written through the fiber `st` dispatch, and the tab's `<title>` read back as the
+    name.
+  - The editor's Desktop canvas was read (1088 in a 1440 window, the header's panel open). Then
+    Publish → Open, and the popup was read at 1180, 1440 and 1920.
+  - Widths are in layout px (a rect ÷ the zoom). Lines are read off per-character `Range`s. Sizes
+    are nominal, the faced size (× 0.98) in brackets where it matters.
+- **The capsule** is layout 1's to the pixel.
+  - Inner **1063.6** at 1180 and 1440 (1062.9 at 1920), **971.6** on the 1088 canvas.
+  - The mark 29.5 and its 11, the halves' 24.6, the pill's 19, and the pill **155.45 × 44.27**:
+    the same boxes as layout 1's capsule.
+  - The name is `s.labelLg` 20 (19.6), KAI MERCER on one line, 121.9 wide. So **the nav has
+    702.2** at 1180–1920, and 610.2 on the canvas.
+- **The nine links are 61.13 Titan em** (measured, as laid out), so they need **733.6 at the 12px
+  floor and 672.5 at 11**. The pass's 733.6 holds. The tester's "~865 of need" was low: the row
+  wants 895 in a 1440 tab, against their 857 of room.
+- **The bar does not grow.** It is **60.64 at 1180, 1440 and 1920 for every name** in the set,
+  with *Reviews* on a second row inside it. The report's "the capsule gets taller" is wrong on the
+  published tab. On the 1088 canvas a third row does grow it: *Maximilian Featherstonehaugh* sets
+  three rows there, and the bar reads 90.48.
+- **The frame's eight** (the calendar taken out of the page's sections, so *Reviews* stays) are
+  52.9 em, 635.1 at 12. They hold **one row at the 13 cap** at 1180–1920. On the 1088 canvas they
+  still wrap *Reviews* at 12, so the canvas misses even the frame's count.
+- **HEAD, card 4** (links' rows; the bar is 60.64 on every published row):
+
+  | Name | Pop nav, 1180–1920 | Pop, 1088 canvas | Editorial nav, 1180–1920 | Editorial, 1088 canvas |
+  |---|---|---|---|---|
+  | Kai Mercer | 702.2: **Reviews** wraps | 610.2: Enquiries, Reviews wrap | 680.5: **Reviews** wraps | 588.5: Enquiries, Reviews |
+  | Florence and the Machine | 535.3: Availability, Enquiries, Reviews | 443.3: Pricing → Reviews | 511.0: Availability → Reviews | 419.0: Pricing → Reviews |
+  | The Chemical Brothers | 566.5: Availability → Reviews | 474.5: Pricing → Reviews | 543.0: Availability → Reviews | 451.0: Pricing → Reviews |
+  | Maximilian Featherstonehaugh | 470.4: Pricing → Reviews | 378.4: three rows, bar 90.48 | 451.3: Pricing → Reviews | 359.3: three rows, bar 93.7 |
+  | Supercalifragilistic | 589.3: Enquiries, Reviews | 497.3: Availability → Reviews | 578.6: Enquiries, Reviews | 486.6: Availability → Reviews |
+
+  - **Editorial** needs 718.8 at 12 and **658.9 at 11** (Gloock), against 680.5. So 11 would hold
+    its seed by 21.6, and none of its long names (511–579 of nav).
+  - **Lime and Grunge hold one row with every name**, at 1180–1920 and on the canvas. Lime's links
+    shrink (20 → 15.7 at 1180, 13.2 on the canvas). Grunge's stay 16.
+  - **Pop card 1** reads exactly JP-114 · JP-115's *Settled* table.
+  - Nothing runs past any capsule, the pill stays on the row (x 924.55, top 8.19), and nothing
+    scrolls sideways.
+- **The two levers, prototyped in the tree** (:5177, Pop card 4; reverted before asking):
+
+  | Name | A (floor 11): 1180–1920 | A: 1088 canvas | B (A + the name fit): 1180–1920 | B: 1088 canvas |
+  |---|---|---|---|---|
+  | Kai Mercer | **one row at 11.29**, name 20 on one line | Reviews wraps | **one row at 11.29**, name 20 on one line | one row at 11.01; name **11.47, KAI / MERCER** |
+  | Florence and the Machine | Enquiries, Reviews wrap | Availability → Reviews | **one row**; name **18.45** (the cap), two lines | Reviews wraps; name 11, two lines |
+  | The Chemical Brothers | Enquiries, Reviews wrap | Availability → Reviews | **one row**; name 18.45, two lines | Reviews wraps; name 11, two lines |
+  | Maximilian Featherstonehaugh | Availability → Reviews | three rows, bar 84.28 | **one row**; name 12.12, two lines | Enquiries, Reviews; name 11, two lines |
+  | Supercalifragilistic | Enquiries, Reviews wrap | Availability → Reviews | **one row**; name 11.74, one line | Enquiries, Reviews; name 11, one line |
+
+  - In a 1440 tab A's 11.29 reads 13.77 (HEAD's 12 reads 14.64; the frame's links are 16).
+  - **B is a gate, not a re-derivation** (the entry expected one). The layout-4 capsule's boxes are
+    layout 1's, so the `fit`'s room constants and its 18.45 cap carry over unchanged, and
+    `vm.navNameFit` is already built for design 3 (JP-101's 390 fit). B is A's floor gate plus
+    `(s.v0 || pop && s.v3)` on the `fit`'s gate. Lime's layout-4 capsule passes no `links` either,
+    hence the `pop`.
+  - **B's price is the 1088 canvas seed:** KAI MERCER drops to 11.47 on two lines there, where
+    A keeps it at 20 and wraps *Reviews*. At 1180–1920 A and B draw the seed identically.
+  - **Editorial** can take A only. Its capsule passes `links`, so its fix is an arm in the `links`
+    clamp's literal 12. A name fit there would need a new room, since that clamp counts the gaps as
+    fixed px, not `navEms × floor`.
+
+**Decided** (user, 2026-10-09, over the numbers above):
+1. **B: the 11 floor and JP-091's name fit, in layout 4's capsule under Pop.** `floor`'s gate
+   takes `s.v3` beside `s.v0`, and so does the desktop `fit`'s, behind `pop`. The room's constants
+   and the cap are layout 1's, unchanged.
+   - At 1180–1920 the seed holds one row with KAI MERCER at its own 20 on one line (JP-127).
+   - Every name in the long-name set holds the row there too, the name giving way first.
+   - On the 1088 canvas the seed's name takes two lines at about 11.5, and the long names still
+     wrap there. Named, as JP-114's reply named its canvas.
+   - This reverses JP-091's scope at layout 4 ("Layout 4's capsule … keeps its wrap") for Pop,
+     and the pass's open question 10.
+2. **Pop alone.** Editorial's layout-4 capsule keeps its wrap, logged a second time for its own
+   ticket. Lime's, Grunge's, Editorial's and Retro's card 4 stay byte-for-byte HEAD.
+3. *Availability* stays (the 2026-09-18 call).
+
+**Expected after-diff, named before the code.** Both gates are Pop's, desktop's (`!s.narrow`) and
+design 3's. Pop's header has four designs, so header arch 3 has no folded twin.
+- **The seed:** `cat_header_arch_3_theme_4_w_desktop`, on the canvas and on `live=1`, so **1 file a
+  surface**. In it the links' row size moves 12 → about 11.29, and so does every link's x, width,
+  size and row. The name keeps 20 on one line, so its box and the left half hold (the `fit`'s
+  `whiteSpace` / `maxWidth` / `containerType` are not digest columns). The mark, the pill, the
+  glass, the capsule and the root hold.
+- **The `&name=` renders** (header, themes 0–4, three widths, both surfaces): the same 1 file a
+  surface. In it the name's size, lines and box, the left half and the nav move as well.
+- **Every other render is 0:** themes 0–3, Pop at 768 and 390, Pop's header arch 0, 1, 2, 4 and 5,
+  and every other category.
+- **Not in the digest:** the 1088 canvas, where the seed's name moves to two lines (above).
+
+**Settled** (2026-10-09).
+- **Code: `NavBar`, two gates.**
+  - `floor` is now `s.grunge ? 16 : pop && (s.v0 || s.v3) && !s.narrow && !links ? 11 : 12`.
+  - The desktop `fit`'s gate is now `!s.narrow && !links && (s.v0 || pop && s.v3)`.
+  - The room's constants, the 18.45 cap and `vm.navNameFit` are untouched. The 390 fit (`s.mob`)
+    and the 768 burger (`s.narrow`) keep 12.
+- **Digest** (HEAD worktree :5174 against the tree :5177, themes 0–4, three widths, ports
+  normalised): **1 of 660 on the canvas and 1 of 660 on `live=1`**, the named
+  `cat_header_arch_3_theme_4_w_desktop`.
+  - Each `&name=` set (the four long names, header, themes 0–4) is **1 of 90** on each surface,
+    the same render.
+  - Inside the seed's file exactly 11 rows move: the nav, its row (12 → 11.29) and the nine links
+    (11.76 → 11.07 faced), all now on one row. The name, the mark, the left half, the pill, the
+    capsule and the root hold.
+  - Inside the long names' files the left half and the name's box and size move as well.
+  - No file is one row long (no empty renders).
+- **The real app** (`cap.mjs` on :5177, Pop card 4; nominal sizes; the bar 60.64 on every row):
+
+  | Name | 1180 / 1440 / 1920 | 1088 canvas |
+  |---|---|---|
+  | Kai Mercer | **links one row at 11.29**; KAI MERCER 20, one line | links one row at 11.01; KAI / MERCER at 11.47 (HEAD: 20, Enquiries and Reviews wrapped) |
+  | Florence and the Machine | **one row** at 11.01; 18.45, FLORENCE AND / THE MACHINE (18.36 at 1920) | Reviews wraps; 11, two lines |
+  | The Chemical Brothers | **one row** at 11.01; 18.45, two lines | Reviews wraps; 11, two lines |
+  | Maximilian Featherstonehaugh | **one row** at 11.01; 12.12, two lines (12.06 at 1920) | Enquiries, Reviews wrap; 11, two lines |
+  | Supercalifragilistic | **one row** at 11.04; 11.74, one line (11.68 at 1920) | Enquiries, Reviews wrap; 11, one line |
+
+  - **Every reading passes** at 1180–1920:
+    - the links on one row;
+    - nothing past the capsule;
+    - the pill on the row (top 8.19, 44.27 tall);
+    - the name clear of the nav by 36.2 at least, and never broken inside a word;
+    - the bar 60.64;
+    - the tab's title the name;
+    - no sideways scroll and no page errors.
+  - **Editorial's, Lime's and Grunge's card 4: 60 of 60 readings identical to HEAD. Pop card 1:
+    20 of 20 identical.** Retro's card 4 was read too and is identical, but only as a control: the
+    probe takes its pill (an `<a>` inside its `nav`) for a link, so its rows do not describe its
+    bar. Its real control is the digest's theme 0, which shows 0.
+  - **The 1088 canvas, named:** the seed now holds one row there, with its name on two lines at
+    11.47. The long names still wrap there (Decided, 1).
+- **Build.** `npm run build` is clean. The root `index.html` is not refreshed; the sweep does that.
+- **Torn down:** :5174, :5177 and the HEAD worktree. :5173 is the user's, and :5175 and :5176
+  belong to other jobs; all three still run.
+- **Docs.**
+  - `NavBar`: the `floor` comment, the `fit` comment, and the shared clamp's comment.
+  - `notes/nav.md`: a paragraph for Pop's layout-4 capsule under JP-091's bullet, *reversing* the
+    old "wraps the same way" lines. Editorial's layout-4 wrap is named there again.
+  - *Reversed* pointers at `layout-4.md`'s links bullet (section 1) and open question 10, and a
+    *Fixed* line under `qa-fixes.md`'s *Already open, so not new*.
+  - No CLAUDE.md or README line states the floor or the fit's scope.
+- **For the sweep's replies and log:**
+  - The report's "the capsule gets taller" is wrong on the published tab: the bar held 60.64 on
+    HEAD, with Reviews on a second row inside it.
+  - The tester's "~865 of need" was low: nine links need 733.6 layout px at 12, which is 895 in a
+    1440 tab.
+  - *Logged for new tickets:* Editorial's layout-4 capsule (its seed wraps Reviews at 1180–1920),
+    and the 1088 canvas, where the long names still wrap.
 
 ---
 

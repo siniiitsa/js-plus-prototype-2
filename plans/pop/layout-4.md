@@ -1404,7 +1404,10 @@ From the walks and the renders — impressions to confirm, not measurements.
   the capsule**. The fixed reading would need 746.5, worse. **Editorial's layout-4 capsule does
   the same on HEAD** (Gloock: 718.8 in 680.5, two rows), so it is the layout-4 capsule's own wrap,
   which JP-091 left in place (*"Layout 4's capsule … keeps its wrap"*), not a Pop regression.
-  Named; open question 10.
+  Named; open question 10. *Reversed* by JP-127 (user call, 2026-10-09,
+  [`layout-4-qa-fixes.md`](./layout-4-qa-fixes.md)): under Pop the capsule now takes layout 1's
+  11 floor and JP-091's name fit, so the seed holds one row at 1180–1920 and the long names give
+  way first. Editorial's keeps its wrap.
 - **The seal's name in Titan runs into its equator rings** (the frame sets Lime's Bebas Neue Bold
   17.61, a face the component carries unbound): each copy spans ~170° of the ring at the faced
   14.05, so "…MERCER" meets "KAI…" across each ring. Editorial's accepted Gloock seal does exactly
@@ -2831,6 +2834,9 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
    scope leaves it. The other answer is a user call for both templates: give layout 4's capsule
    JP-091's name fit (`NavBar`'s `fit` gate takes `s.v3` beside `s.v0`, so the seed's name gives
    way first — not measured here), or lower the links' floor there.
+   *Reversed* for Pop by JP-127 (user call, 2026-10-09, [`layout-4-qa-fixes.md`](./layout-4-qa-fixes.md)):
+   both, the 11 floor and the name fit, which turned out to need no new constants. Editorial's
+   capsule keeps its wrap, logged again for its own ticket.
 11. **The bio's "Genres" is pink on the pink band** (section 2): the `Tags` instance is Scheme 1,
    whose `text/1` is the Section's own `sem/bg`, so the label is invisible at 1440 and 768 and the
    390 instance drops it — Lime's and Grunge's frames do the same in their colours. Not drawn (user

@@ -867,7 +867,8 @@ function LogoMark({ s, size = 18, color, glyph }) {
 // `size` overrides the name's type — additive, `BookPill`'s `size` precedent,
 // and read under Lime alone: its 390 hero master is set in the Tablet device
 // mode, so the name there is the 768 ramp's 21 where `s.labelLg` is 14.
-// `fit` is the layout-1 capsule's (JP-091, NavBar): `room` is the width its
+// `fit` is the layout-1 capsule's, and Pop's layout-4 one's (JP-091, JP-127,
+// NavBar): `room` is the width its
 // links and pill leave the name, `one` / `two` the name's ems on one line and
 // on its best two (`vm.navNameFit`), `cap` the size two lines fit the capsule
 // at. The name keeps its own size while one line fits the room, shrinks on one
@@ -1895,9 +1896,10 @@ function NavBar({ s, colour, rule, pill, nameSize, nameColour, mark, links, clea
   // 746px at 12, which left the name 77: KAI MERCER on two lines at its own
   // 16, and a long name at the floor with Reviews on a second row. At 11 the
   // room is 139, so the seed sets on one line and the long-name set holds the
-  // row. Desktop design 0 alone: layout 4's capsule, which passes no `links`
-  // either, and the 390 fit keep 12.
-  const floor = s.grunge ? 16 : pop && s.v0 && !s.narrow && !links ? 11 : 12
+  // row. Layout 4's capsule takes it too (JP-127, user call, 2026-10-09): its
+  // boxes are layout 1's, and the same nine needed 733.6 of its 702.2, so the
+  // seed wrapped Reviews. Desktop alone: the 390 fit keeps 12.
+  const floor = s.grunge ? 16 : pop && (s.v0 || s.v3) && !s.narrow && !links ? 11 : 12
   const glyph = mark?.glyph ?? (lime ? (!s.narrow ? (ed ? 36.84 : 29.5) : s.grunge || pop ? 27.37 : ed ? 44.93 : 36) : s.narrow ? 27 : undefined)
   const corner = s.narrow ? s.btnR : '30.35px'
   const glass = pop && !fill
@@ -1908,11 +1910,17 @@ function NavBar({ s, colour, rule, pill, nameSize, nameColour, mark, links, clea
   // padding, gap and disc × 0.82, and its label at `s.list`), less the links
   // at their floor. `cap` is the size two lines of the name (line 1.1) fit
   // the pill's 44.28 at, so the bar never grows. Wordmark does the sizing.
-  // Layout 4's capsule, which passes `links`, keeps its wrap (JP-091's scope).
+  // Layout 4's capsule keeps its wrap where it passes `links` (Grunge's and
+  // Editorial's; JP-091's scope).
   // Pop's name stands at line 1.2, so its two lines fit the pill at 18.45,
   // and its floor is 11 (above): the cap over its own 16 means a name that
   // misses one line takes two at 16 rather than shrink on one, so it is the
   // room, not the cap, that keeps the seed on one line.
+  // Pop's layout-4 capsule takes the fit as well (JP-127, user call,
+  // 2026-10-09; its name is `s.labelLg` 20, over the same cap). Its mark, gaps
+  // and pill are this one's to the pixel, so the room's constants hold, and
+  // the long-name set keeps the row there too. Lime's layout-4 capsule passes
+  // no `links` either, and wraps nothing, hence the `pop`.
   // At 390 the name gives way to the pill (JP-101, user call, 2026-10-05), in
   // layouts 1 and 4 alike, since there the links are behind the burger. Its
   // room is up to the pill: the left half, which is the query container
@@ -1926,7 +1934,7 @@ function NavBar({ s, colour, rule, pill, nameSize, nameColour, mark, links, clea
   const fit = !lime || !s.navNameFit ? undefined : s.mob ? {
     narrow: true, room: `(100cqi + ${halves} - ${glyph}px - ${markGap})`,
     two: s.navNameFit.two, word: s.navNameFit.word, floor: `${floor}px`,
-  } : !s.narrow && !links && s.v0 ? {
+  } : !s.narrow && !links && (s.v0 || pop && s.v3) ? {
     room: `(100cqi - ${+(glyph + 11 + 24.6 + 19 + 82 * 0.82).toFixed(2)}px - ${s.navNameFit.pill} * ${s.list} - ${s.navEms} * ${floor}px)`,
     one: s.navNameFit.one, two: s.navNameFit.two, cap: pop ? '18.45px' : '20.1px', floor: `${floor}px`,
   } : undefined
@@ -1977,16 +1985,17 @@ function NavBar({ s, colour, rule, pill, nameSize, nameColour, mark, links, clea
         // than the frame's eight. So the links take the room the wordmark and
         // the pill leave, and their type is that room divided by the row's own
         // width in ems (`s.navEms`, Bebas Neue's advances summed in sectionVm),
-        // capped at the frame's `s.list` and floored at 12px (Pop's layout 1 at
-        // 11, JP-114 · JP-115, the `floor` above). The gaps are ems
+        // capped at the frame's `s.list` and floored at 12px (Pop's layouts 1 and 4
+        // at 11, JP-114 · JP-115 and JP-127, the `floor` above). The gaps are ems
         // too, so the row shrinks as one. `nav` is the query container and the
         // row inside it takes the size: `cqi` resolves against an *ancestor*.
         // Below the floor it wrapped, "the least bad of the options left" —
         // *reversed* for layout 1 (JP-091, user call, 2026-10-01): there the
         // name gives way first (`fit` above), so the links keep one row at the
         // floor whatever the artist is called. They still wrap in layout 4's
-        // capsule (`links`), and in layout 1 only when a pill label leaves the
-        // name nothing but its own floor.
+        // capsule where it passes `links` (Grunge's and Editorial's; Pop's took
+        // the name fit too, JP-127), and in layouts 1 and 4 only when a pill label
+        // leaves the name nothing but its own floor.
         // Grunge's labels are `faced`, 0.75 of the row's size, so its floor is
         // 16 to keep them at 12, and `s.navEms` already counts them at 0.75.
         <span style={row('19px', { flex: '1 1 0', minWidth: 0, justifyContent: 'flex-end', ...(glass && { position: 'relative' }) })}>
