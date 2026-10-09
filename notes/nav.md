@@ -91,18 +91,29 @@ another `notes/` file.
   *Florence and the Machine*, *Maximilian Featherstonehaugh* and *Supercalifragilistic* reached the
   floor and wrapped *Reviews*. At 11 the room is 139. The seed sets on one line at 16, and every
   name in the long-name set holds the row at 1180–1920. A single word past about 12.5 Titan em
-  (about 18 letters) still takes the last resort above. The lower floor is design 0's at desktop
-  alone. Layout 4's capsule and the 390 fit keep 12. **Editorial sits where Pop did**, named
+  (about 18 letters) still takes the last resort above. The lower floor is desktop's alone: the
+  390 fit keeps 12. Pop's layout-4 capsule takes it too, with the name fit (below). **Editorial
+  sits where Pop did**, named
   there and not changed: since the Gloock swap its nine links need 720 at 12, which leaves the
   name 70.9, and all four long names wrap *Reviews* at 1180–1920.
 
-  At desktop this is design 0's alone (NavBar's `s.v0`). **Layout 4's capsule** (NavBar's
-  `links`) and **Retro's bar** (whose pill drops to a second row with a long name) keep their
-  wrap, and are named in `plans/editorial/qa-fixes.md`'s JP-091 for their own tickets. Pop's
-  layout-4 capsule passes no `links` — its Label/SM 16 links a fixed 23 apart are the em
-  reading (`navGapEm`'s 23/16 at `d === 3`) at the cap — and wraps the same way, the seeded
-  nine needing 733.6 of 702.2 at the 12px floor, Reviews alone on a second row
-  (`plans/pop/layout-4.md`, open question 10).
+  At desktop this is design 0's alone (NavBar's `s.v0`), and Pop's design 3 (below). **Layout
+  4's capsule** where it passes `links` (Grunge's and Editorial's) and **Retro's bar** (whose
+  pill drops to a second row with a long name) keep their wrap, and are named in
+  `plans/editorial/qa-fixes.md`'s JP-091 for their own tickets. Editorial's layout-4 seed wraps
+  *Reviews* at 1180–1920 (Gloock, 718.8 at 12 in 680.5), named again by JP-127.
+
+  **Pop's layout-4 capsule gives the name away too** (JP-127, user call, 2026-10-09,
+  `plans/pop/layout-4-qa-fixes.md`; *reversing* JP-091's scope there and `plans/pop/layout-4.md`
+  open question 10). It passes no `links`: its Label/SM 16 links a fixed 23 apart are the em
+  reading (`navGapEm`'s 23/16 at `d === 3`) at the cap. Its mark, gaps and pill are layout 1's
+  to the pixel, and its name is `s.labelLg` 20 under the same 18.45 cap, so NavBar's `floor` and
+  `fit` take `s.v3` beside `s.v0`, behind `pop`, with the room's constants unchanged. The seeded
+  nine needed 733.6 of 702.2 at 12, so *Reviews* sat alone on a second row (the bar held 60.64).
+  At 11 they need 672.5: the seed holds one row at about 11.3 with KAI MERCER at 20 on one line,
+  and every name in the long-name set holds the row at 1180–1920, *Florence and the Machine* at
+  the 18.45 cap on two lines and *Supercalifragilistic* at 11.7 on one. On the 1088 editor canvas
+  the seed's name takes two lines at about 11.5, and the long names still wrap there.
 - **At 390 the name gives way to the pill, in layouts 1 and 4** (JP-101, user call, 2026-10-05,
   `plans/editorial/retest-qa-fixes.md`). The narrow capsule has no links, only the wordmark,
   the pill and the burger, and the name used to stay `nowrap` at a flat size, so a long one ran

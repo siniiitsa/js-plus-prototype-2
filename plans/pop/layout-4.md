@@ -1080,6 +1080,13 @@ Retro's bullets; name them.
   sticker on this page that stands near copy. *It met the same case* (section 5): the 390
   master's mixed-case "Repertoire" stops 20 short of it, our REPERTOIRE runs 8 under it, so it
   went behind the head at every width. It was the last sticker beside copy on this page.
+  *Qualified* by JP-128 (user call, 2026-10-09,
+  [`layout-4-qa-fixes.md`](./layout-4-qa-fixes.md)): behind the head only where the head's
+  measure cannot be kept short of the sticker. Where the sticker beside a *frame head* stands at a
+  fixed place in the head's column, end the head's measure (the fit's dividend and its
+  `maxWidth`) at the sticker's ink less the frame's own clearance, read off
+  `absoluteRenderBounds`. The tester compares against that gap. Keep `zIndex: -1` as a backstop
+  at any width the measure does not cover.
 - **A twin's width-bound collapse is re-probed in Titan, and Editorial's cap can carry**
   (section 5; Editorial's *a twin's `flex: none` beside an ellipsis* bullet). Lime's and Grunge's
   blocks keep the artist whole; under a 29-letter artist at 390 Titan left the title **17** wide,
@@ -1404,7 +1411,10 @@ From the walks and the renders — impressions to confirm, not measurements.
   the capsule**. The fixed reading would need 746.5, worse. **Editorial's layout-4 capsule does
   the same on HEAD** (Gloock: 718.8 in 680.5, two rows), so it is the layout-4 capsule's own wrap,
   which JP-091 left in place (*"Layout 4's capsule … keeps its wrap"*), not a Pop regression.
-  Named; open question 10.
+  Named; open question 10. *Reversed* by JP-127 (user call, 2026-10-09,
+  [`layout-4-qa-fixes.md`](./layout-4-qa-fixes.md)): under Pop the capsule now takes layout 1's
+  11 floor and JP-091's name fit, so the seed holds one row at 1180–1920 and the long names give
+  way first. Editorial's keeps its wrap.
 - **The seal's name in Titan runs into its equator rings** (the frame sets Lime's Bebas Neue Bold
   17.61, a face the component carries unbound): each copy spans ~170° of the ring at the faced
   14.05, so "…MERCER" meets "KAI…" across each ring. Editorial's accepted Gloock seal does exactly
@@ -1761,13 +1771,19 @@ From the walks and the renders — impressions to confirm, not measurements.
   the sheet (`isolation: isolate` under `pop`) at every width. At 768 "…HT" lies over the blue
   disc, and at 390 the E of THE over its edge. At 1440 the seed covers nothing, and a longer
   head rises toward it behind. The asterisk keeps the frame's order, over the spotlight's
-  corner at 768 and 390.
+  corner at 768 and 390. *Reversed* at 768 and on a phone by JP-128 (user call, 2026-10-09,
+  [`layout-4-qa-fixes.md`](./layout-4-qa-fixes.md)): the head now fits and wraps in a measure that ends where the frame's own head
+  ink ends (552.5 / 285.24 in the column; the sun's ink, 559.44 / 298.45, less the frame's 6.94 /
+  13.21, read off `absoluteRenderBounds`), so no heading reaches the sun there. The sun keeps
+  `zIndex: -1`.
 - **The head holds the frame's lines in Titan**: SNAPS / FROM THE / NIGHT in 372.3 at 65.66;
   one line at 768 (611.4 in 708); two at 390 (SNAPS FROM THE is 312.7 in 370). It is fitted to
   its widest word (`(ed || pop) && s.titleWordEms`, the column an `inline-size` container):
   - *Supercalifragilistic* sets at 31.0 / 49.98 / 30.8, ending 417.2 / 628.6 / 379 inside
     418.2 / 738 / 380;
   - *Unforgettable nights at the Comedy Club* sets at 42.8 at 1440 and on the ramp narrow;
+  - *Since JP-128* the narrow head fits in its shorter measure: the seed takes two lines at 768
+    (SNAPS FROM THE / NIGHT, the root ~45 past 751) and rebreaks SNAPS FROM / THE NIGHT at 390;
   - no word breaks inside itself, and no root scrolls sideways.
 - **The lift, scanned**. Each string was drawn alone on white at DPR 4, against the frame's
   `absoluteRenderBounds` at 1440: ink top −0.015em, floor 0.185em. The narrow masters' mixed
@@ -1807,7 +1823,8 @@ From the walks and the renders — impressions to confirm, not measurements.
   - seven thumbs against the frame's six;
   - the seeded strip against the frame's Retro placeholders (layout 1's call), top-anchored;
   - the 390 strip's three tiles (the twins' window), where the frame runs a fourth off the page;
-  - the 768 and 390 heads' last letters over the sun (above; open question 15).
+  - ~~the 768 and 390 heads' last letters over the sun (above; open question 15).~~ *Fixed* by
+    JP-128: in its place, the 768 head's second line and the root past the frame's 751.
 - **For the sweep's CLAUDE.md pass**: `notes/gallery.md` carries Pop's layout-4 sentence (written
   in this session's commit). CLAUDE.md names no gallery layout-4 colour. The scheme bullet's
   layout-4 readers gain the gallery's discs on `s.onScheme[4]` and the stickers' tints on
@@ -1859,7 +1876,11 @@ From the walks and the renders — impressions to confirm, not measurements.
   goes behind the head** (`zIndex: -1` in a `position: relative; isolation: isolate` panel):
   the 390 master's mixed-case "Repertoire" ink ends at 229.4, 20 short of it, and our REPERTOIRE
   ends at 257.6, 8 under it (a DPR-3 shot: the E over the starburst's left point). At 768 and
-  1440 the seed ends 187 and 424 short (*Conventions*; open question 16).
+  1440 the seed ends 187 and 424 short (*Conventions*; open question 16). *Reversed* at 768 and
+  on a phone by JP-128 (user call, 2026-10-09, [`layout-4-qa-fixes.md`](./layout-4-qa-fixes.md)): the head's measure stops 19.93
+  (the 390 frame's clearance) short of the starburst's ink, `W − 98.41` / `W − 90.72` in the
+  panel, so REPERTOIRE shrinks to ~30.9 at 390 and ~26.3 at 360. It keeps `zIndex: -1`, and 1440
+  is unchanged: a long heading still runs behind it there (logged).
 - **The lifts, scanned** (each string alone on white at DPR 4, against the frame's
   `absoluteRenderBounds`):
   - **the head** `top: −0.14em`: ink top −0.007 / −0.020 / −0.012em and floor 0.188 / 0.198 /
@@ -1906,8 +1927,8 @@ From the walks and the renders — impressions to confirm, not measurements.
 - **`FIELDS.repertoire` has no template-keyed row**, so no `reach.mjs` run was owed.
 - **Named diffs**, the twins' but where said: twelve seeded songs in eight groups against the
   frame's six in three (C lit, the frame's D); the 390 title *I WANNA DANCE* ellipsizing beside
-  WHITNEY HOUSTON; the 390 row's extra pixel; the starburst behind the 390 head's last E (open
-  question 16); the artist's 60% cap (Pop's and Editorial's alone, open question 17).
+  WHITNEY HOUSTON; the 390 row's extra pixel; ~~the starburst behind the 390 head's last E (open
+  question 16)~~ (*fixed* by JP-128: the 390 head is smaller than the frame's instead); the artist's 60% cap (Pop's and Editorial's alone, open question 17).
 - **For the sweep's CLAUDE.md pass**: nothing in CLAUDE.md names the layout-4 repertoire's colours
   or rings; the A–Z rail sentence is template-free. CONVENTIONS D4's repertoire row gains a Pop
   column (no `G`, Editorial's keys on the seat, Lime's solid rules in `s.stroke1`, the starburst,
@@ -2831,6 +2852,9 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
    scope leaves it. The other answer is a user call for both templates: give layout 4's capsule
    JP-091's name fit (`NavBar`'s `fit` gate takes `s.v3` beside `s.v0`, so the seed's name gives
    way first — not measured here), or lower the links' floor there.
+   *Reversed* for Pop by JP-127 (user call, 2026-10-09, [`layout-4-qa-fixes.md`](./layout-4-qa-fixes.md)):
+   both, the 11 floor and the name fit, which turned out to need no new constants. Editorial's
+   capsule keeps its wrap, logged again for its own ticket.
 11. **The bio's "Genres" is pink on the pink band** (section 2): the `Tags` instance is Scheme 1,
    whose `text/1` is the Section's own `sem/bg`, so the label is invisible at 1440 and 768 and the
    390 instance drops it — Lime's and Grunge's frames do the same in their colours. Not drawn (user
@@ -2861,10 +2885,16 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
    behind the head's last letters, layout 3's rule for a sticker beside the artist's copy.
    Followed and named. Worth a line to the designer with question 4: either the narrow heads were
    meant in mixed case, or the sun wants room beside the capitals at those two widths.
+   *Reversed* by JP-128 (user call, 2026-10-09, [`layout-4-qa-fixes.md`](./layout-4-qa-fixes.md)): the head's measure stops short of
+   the sun by the frame's own clearance (6.94 / 13.21), so the capitals wrap at 768 and rebreak at
+   390 instead of running behind it.
 16. **The 390 repertoire head runs under the starburst in capitals** (section 5), question 15's
    case again: the master's mixed-case "Repertoire" ends 229.4 in the 370 panel, 20 short of the
    starburst (249.3); our REPERTOIRE in Titan ends 257.6, so the starburst stands behind its last
    E at every width. Followed and named; worth the same line to the designer as question 15.
+   *Reversed* at 768 and on a phone by JP-128 (user call, 2026-10-09, [`layout-4-qa-fixes.md`](./layout-4-qa-fixes.md)): the head's
+   measure stops 19.93 short of the starburst, so REPERTOIRE shrinks instead. At 1440 a long
+   heading still runs behind it (*Unforgettable nights at the Comedy Club*, −78.9), logged.
 17. **Pop's layout-4 artist stops at 60% of the row**, Editorial's cap widened (section 5): a
    29-letter artist left the 390 title 17 wide in Titan. Lime's and Grunge's blocks still let a
    long artist collapse the title (Editorial's sweep raised the same as a cross-template
@@ -2938,9 +2968,11 @@ answer is a one-line change. Layouts 1's, 2's and 3's notes still stand.)*
    and 3's slip again). Two stickers then stand where the shorter mixed-case copy left them room:
    the gallery's sun at 768 and 390 and the repertoire's starburst at 390 sit beside the
    lower-case heads, and the capitals run 59 and 27px further in the gallery and 28 in the
-   repertoire, into them, so the page draws each sticker
-   behind the head's last letters. Either the narrow heads were meant in mixed case, or the
-   stickers want room beside the capitals. *(4, 15, 16)*
+   repertoire, into them. The page first drew each sticker behind the head's last letters; since
+   JP-128 (QA) the narrow heads stop short of their stickers by the frames' own gaps, so the 768
+   gallery head takes two lines and the 390 REPERTOIRE sets smaller than the frame's. Either the
+   narrow heads were meant in mixed case, or the stickers want room beside the capitals.
+   *(4, 15, 16)*
 5. **The form's head says "CONTACT US" at 1440 and the component's "KAI MERCER" at 768 and
    390** — the one Pop frame that disagrees with itself between widths. The page prints "Contact
    Us" at every width, the shared seed. And the 1440 form is on the page this time, an instance

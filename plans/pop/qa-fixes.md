@@ -2179,6 +2179,8 @@ One line per ticket. Each full reply stands under its entry above, as *Reply* (J
 
 Already open, so not new: Pop layout 4's capsule reads the same 12px link floor, and its seed wraps
 *Reviews* (`layout-4.md`, open question 10). JP-114 · JP-115 gated the 11 floor to layout 1.
+*Fixed* by JP-127 (user call, 2026-10-09, [`layout-4-qa-fixes.md`](./layout-4-qa-fixes.md)):
+layout 4's capsule now takes the 11 floor and the name fit under Pop.
 
 ---
 
