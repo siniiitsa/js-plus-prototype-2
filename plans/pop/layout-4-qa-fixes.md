@@ -127,7 +127,7 @@ Screenshots (the tester's):
 |---|---|---|---|---|---|---|
 | 1 | JP-127 | nine links wrap REVIEWS at desktop, on the seed | **Confirmed, and recorded** (open question 10; JP-091's and JP-114's scope) | S (a gate), M with the name fit | **user**, after measuring: **B** (the 11 floor and the name fit), **Pop alone** | **done** |
 | 2 | JP-128 | 768 and 390 heads over their stickers | **Confirmed, and recorded** (Settled §4 and §5; open questions 15 and 16) | S–M | **user**, after measuring: **A** (the measure stops short), the frame's own clearance, 768 and phones only, `zIndex: -1` kept | **done** |
-| 3 | — | End-of-pass sweep | — | S | — | todo |
+| 3 | — | End-of-pass sweep | — | S | — | **done** |
 
 **Why this order.** JP-127 is the smaller change, with the most precedent: JP-114 · JP-115's
 measure, options and probe carry over almost whole, and on lever A its footprint is one file per
@@ -707,17 +707,158 @@ category has a folded twin at arch 3 under Pop.
   wraps), and the designer's notes.
 - Tear down every port and worktree the batch started. :5173 is the user's.
 
+**Settled** (2026-10-09, on `30511c1`; the push, the PR, the merge and the deployed build stamp are
+the user's).
+- **The digest against `main`: 5 of 660 on the canvas and 5 of 660 at `live=1`**, exactly the
+  union of the two entries' named files, file for file.
+  - **The harness.** A scratchpad worktree of `main` (`6c989b7`, `git worktree add --detach`, its
+    `source/node_modules` a symlink to the tree's) on **:5174**, the tree fresh on **:5177**.
+    Every category × themes **`0,1,2,3,4` explicit** × three widths, the footer's `page=2` render
+    included, canvas and `live=1`. Files compared with `localhost:517[0-9]` masked and the photo
+    `?t=` stamp normalised. **No file on any label is a one-row (blank) render.**
+  - **The five, the same on both surfaces**, each moving the rows its entry's *Settled* names:
+    - `cat_header_arch_3_theme_4_w_desktop` (JP-127): 11 of 68 rows, the nav, its row and the
+      nine links. The root holds 738.
+    - `cat_gallery_arch_3_theme_4_w_tablet` (JP-128): 50 of 54 rows, the root 751 → **796.4**.
+    - `cat_gallery_arch_3_theme_4_w_mobile`: 1 row, the h2's box. The root holds 733.5.
+    - `cat_repertoire_arch_3_theme_4_w_tablet`: 1 row, the h2's box. The root holds 1492.3.
+    - `cat_repertoire_arch_3_theme_4_w_mobile`: 89 of 91 rows, the root 1344.5 → 1340.6.
+  - **The `&name=` set** (*Florence and the Machine*, *The Chemical Brothers*, *Maximilian
+    Featherstonehaugh*, *Supercalifragilistic*; header, themes 0–4, three widths): **1 of 90 a
+    surface for each name**, the header's `arch 3` desktop file.
+  - **The `&cj=` heading set** (*Supercalifragilistic*, *Unforgettable nights at the Comedy Club*,
+    *Repertoire tonight*; gallery and repertoire, themes 0–4, three widths): **4 of 120 a surface
+    for each heading**, the four JP-128 files. So neither entry reaches the other's surface.
+- **`reach.mjs` is not owed**: neither entry adds or moves a field.
+- **The real app** (the entries' probes, `cap.mjs` and `app.mjs` + `m.js`, copied into this
+  session's scratchpad and run through `createRequire`, so no file landed in `source/scripts/`;
+  each template's card through *Use this header*, each name or heading through the fiber `st`
+  dispatch, then Publish → Open, on :5174 and on :5177). **No page error on any run.**
+  - **JP-127, Pop card 4** (the 1088 canvas, then the tab at 1180, 1440 and 1920; the long-name
+    set). **All 20 tree rows equal JP-127's after-sink, and all 20 `main` rows its HEAD sink.**
+    - On `main` the seed wraps *Reviews* at 1180–1920, and *Enquiries* and *Reviews* on the canvas.
+    - On the tree the seed holds one row at 11.29 (faced 11.07), KAI MERCER at its own 20 on one
+      line, 36.6 clear of the nav at the closest.
+    - Every long name holds the row at 11.01–11.04, the name giving way first (18.45 nominal on
+      two lines for *Florence* and *The Chemical Brothers*, 12.12 on two for *Maximilian
+      Featherstonehaugh*, 11.74 on one for *Supercalifragilistic*).
+    - Nothing runs past the capsule, the bar is **60.64 on every row** (the report's "taller" is
+      wrong on both builds), the tab's title is the name, and nothing scrolls sideways.
+    - **The 1088 canvas, named:** the seed holds one row there, its name on two lines at 11.47;
+      the long names still wrap (*Reviews*, or *Enquiries* and *Reviews*), the name at the fit's
+      11. Logged below.
+  - **JP-127's control, Pop card 1**: 20 of 20 rows identical to `main`, and to JP-127's sinks.
+  - **JP-128, Pop card 4** (the tab at 768, 390, 360, 414 and 1440; the seed and the `&cj=` set).
+    **Every x, size, line and clearance equals JP-128's sinks on both sides**; only the
+    viewport-relative tops differ, the popup's scroll position.
+    - The seed on the tree: the 768 gallery SNAPS FROM THE / NIGHT at 49.98, **+117.9** clear of
+      the sun (`main` −51.0), the root 796.4; the gallery at 390, 360 and 414 SNAPS FROM / THE
+      NIGHT at 35.28, **+65.3** (`main` −13.1); REPERTOIRE at **30.9**, **+20.9** at 390 and 414
+      (`main` −7.2), and at 26.25, **+20.8** at 360 (`main` −37.2). The 768 repertoire is
+      unchanged at +188.7.
+    - Every narrow reading of the set clears by its decided value or more (the gallery ≥ 6.94 at
+      768 and ≥ 13.21 on a phone, the repertoire ≥ 19.93). No word breaks inside itself and no
+      page scrolls sideways.
+    - **1440 reads `main`'s numbers** for every heading, including the repertoire's −78.9 under
+      *Unforgettable nights at the Comedy Club* (logged below).
+  - **The controls for both, Lime's, Grunge's, Editorial's and Retro's card 4**: 20 of 20
+    capsule rows each (the canvas and 1180 / 1440 / 1920) and 10 of 10 gallery and repertoire
+    rows each (five widths) identical to `main`, and to the entries' tree sinks. Editorial's seed
+    still wraps *Reviews*, as decided.
+- **The build.** `npm run build` is clean (only the bundle's usual chunk-size warning).
+  `npm run build:standalone` gives **9,912,767 bytes, up from 9,912,591** (`main`'s and the
+  deployed build's), and `cp source/dist-standalone/index.html index.html` refreshes the root
+  `index.html`. Both `headMeasure`s are in it and absent from `main`'s.
+- **The deployed build at the sweep** read `Fri, 09 Oct 2026 16:04:42 GMT`, 9,912,591 bytes: PR
+  #59's, without either fix.
+- `plans/README.md`'s *Layout 4 QA fixes* row says the pass is swept, with its outcome.
+- **Torn down** before the commit: :5174 and :5177 stopped, and the `main` worktree removed
+  (`git worktree remove --force`; `git worktree prune`). :5173 is the user's, and :5175, :5176,
+  :5187 and :5197 belong to other jobs; all still run. The probes and their sinks stay in the
+  session's scratchpad.
+
 ## Replies
 
-*Written by the sweep.*
+**Retest against the Pages build whose `last-modified` is later than `Fri, 09 Oct 2026 16:04:42
+GMT`** (9,912,591 bytes; `curl -sI https://siniiitsa.github.io/js-plus-prototype-2/`). That is PR
+#59's build, the deployed one at the sweep, and it still shows both tickets. The fixed build is the
+one published after this branch merges.
+
+**JP-127 (desktop: the layout-4 menu wraps REVIEWS on the default name): fixed, for Pop.** On
+*Stacked* the whole menu now holds one row with *Kai Mercer*. The nine links set down to about 11.3
+on the 1180 layout, which is about 13.8 in a 1440 window (the design's are 16), and the name keeps
+its own size on one line. 1280 and 1366 are the same 1180 layout zoomed, and past 1440 only the
+gutters grow, so one measurement answers every desktop width; it was checked at 1180, 1440 and 1920.
+A long name now gives way first, as on *Hero* since JP-115: it shrinks and takes two lines, and the
+menu keeps its row. Three corrections to the report:
+- **The capsule does not get taller.** On the old build it held its height (60.64, 74 in a 1440
+  window), with REVIEWS on a second row inside it. It still does.
+- **The menu needed 895px in a 1440 window, not ~865** (733.6 on the 1180 layout at the old 12px
+  floor), against the 857 of room you measured.
+- **The *Availability* link is the 2026-09-18 call**: a ninth link, for the booking calendar,
+  which no design's menu draws. It stays. The 23.09 call is a different one, the menu's Full /
+  Minimal mode.
+
+Not covered: the editor's Desktop canvas (1088 wide in a 1440 window) has 92px less room. There the
+default name takes two lines at about 11.5 to keep the menu on one row, and a long name still wraps
+REVIEWS. Editorial's *Stacked* menu wraps REVIEWS the same way on its default name. Both are logged
+below.
+
+**JP-128 (768 and 390: the section heads run onto their stickers): fixed, for Pop at 768 and on
+phones.** On *Stacked*, the Gallery and Repertoire heads now stop short of their stickers by the
+design's own gaps: 6.9px before the sun at 768, 13.2 on a phone, and 19.9 before the Repertoire
+starburst (the pass had read them as 6 / 11 / 20). The heads stay in capitals, as at every other
+width. The narrow designs type them in mixed case, which is shorter, and that question has gone to
+the designer. So:
+- **At 768** SNAPS FROM THE NIGHT takes two lines (SNAPS FROM THE / NIGHT) at its full size. The
+  Gallery section is now 796 tall against the design's 751.
+- **At 390 and 414** the Gallery head rebreaks to SNAPS FROM / THE NIGHT at the same size and
+  height. REPERTOIRE sets at 30.9 (the design's is 36) so that it ends before the starburst.
+- **At 360** the old build was worse than the 390 you reported: REPERTOIRE's last E ran 37.2px under
+  the starburst. It now clears it at 26.25. 414 behaves as 390.
+- A longer heading typed in the editor wraps or shrinks inside the same space, so it cannot reach
+  either sticker at these widths. 1440 is unchanged.
+
+**Logged for new tickets.** Each was found by an entry and left out of this batch on purpose.
+1. **Editorial's layout-4 capsule wraps *Reviews* on its seed** at 1180–1920 (JP-127, decided 2:
+   Pop alone). Nine Gloock links need 718.8 at its literal 12px floor against 680.5 of nav, and every
+   long name wraps two to four links. An 11 floor would hold the seed (658.9) by 21.6 and no long
+   name. Its capsule passes `links`, so its fix is an arm in that clamp, with a name fit of its own
+   for the long names. Its layout-1 sibling is Pop's first batch's logged item 2. Its bar holds
+   61.64 with the wrap, as Pop's held 60.64.
+2. **Long names on the editor's 1088 Desktop canvas** (JP-127's named price). The tab is clean at
+   1180–1920, but the canvas has 92 less room. *Florence and the Machine* and *The Chemical
+   Brothers* still wrap *Reviews*, and *Maximilian Featherstonehaugh* and *Supercalifragilistic*
+   wrap *Enquiries* and *Reviews*, with the name at the fit's 11 floor, on two lines and one line
+   respectively. The seed holds one row there, its name on two lines at 11.47.
+3. **The 1440 repertoire's long heading runs behind the starburst** (JP-128, decided 3: 768 and
+   phones only). *Unforgettable nights at the Comedy Club*'s first line, UNFORGETTABLE NIGHTS AT,
+   runs 78.9 under the starburst's left point, and the head paints over it (`zIndex: -1`, kept).
+   The seed ends 426.6 short of it. The 1440 gallery never meets its sun, which stands above the
+   head.
+
+Already open, so not new: dropping *Availability* (JP-114's option E, declined again).
+
+---
 
 ## Notes for the designer
 
-Seeded at triage. The sweep finalises them.
+Seeded at triage and finalised by the sweep (2026-10-09). Layout 4's own notes (`layout-4.md`)
+still stand; note 2 here is its note 4 brought up to date.
 
-1. **The layout-4 nav draws eight links, and the page carries nine** (*Availability*). Layout 1's
-   note 7 in `qa-fixes.md` asks the same question. The answer now covers both layouts.
-2. **The narrow masters type the display heads in mixed case**, where 1440 types capitals
-   (`layout-4.md` note 4). The stickers were placed beside the shorter mixed-case string. If the
-   capitals are meant at every width, the stickers want the room the capitals take. If mixed case is
-   meant narrow, say so, and the build can follow it.
+1. **The layout-4 nav draws eight links, and the page carries nine** (*Availability*, a link to
+   the booking calendar, 2026-09-18). It is the question of `qa-fixes.md`'s note 7 at layout 1, and
+   the answer now covers both layouts. Nine Titan links do not fit beside the name at the frame's
+   16. So Pop's menu now sets down to 11 on the 1180 layout at layouts 1 and 4, about 13.8 in a 1440
+   window at layout 4, and a long name shrinks and wraps before the menu does (JP-127, user call,
+   2026-10-09). The frame's eight hold one row at 13 on the 1180 layout. **Is the smaller menu
+   acceptable, or should the frames make room for nine?**
+2. **The narrow masters type the gallery's and repertoire's heads in mixed case** (*Snaps from the
+   night*, *Repertoire*), where 1440 types capitals. The page sets capitals at every width, and the
+   sun and the starburst stand where the shorter mixed-case copy left them room. Since JP-128 (user
+   call, 2026-10-09) the narrow heads stop short of their stickers by the frames' own gaps (6.9 at
+   the 768 gallery, 13.2 on a phone, 19.9 at the 390 repertoire). That costs two things against the
+   frames: the 768 gallery head takes two lines, so the section is 796 tall against 751, and the 390
+   REPERTOIRE sets at 30.9 against Display/LG 36. **If mixed case is meant at 768 and 390, say so**,
+   and the build can follow it, which gives back the one line and the full size. If capitals are
+   meant, the stickers want the room the capitals take.
