@@ -140,7 +140,7 @@ Screenshots (the tester's):
 | 1 | JP-124 | *12 mile radius* at layout 2 | **Confirmed, and recorded**: JP-105 kept layouts 1 and 2 on `MAP_RADIUS` on purpose, layout 2's *100 mi* parked for the designer; the frame itself says 100 once and 120 three times | S | **user**: *120 mi* or *100 mi* | open |
 | 2 | JP-121 | 390: a long name over the burger, the pill off the page | **Confirmed, shared, and named** (Editorial retest's *Seen at triage, not filed*, `:1104`–`:1111`): the layout-2 bar's 390 name has no fit; Editorial reproduces it too | S–M | **user**: fix or accept, the scope, the room | open |
 | 3 | JP-122 | 390 footer: the copyright under the sun, the name under the seal | **Confirmed, two faults**: (a) Pop's small print keeps no corner for the sun; (b) the wordmark's measure ignores the seal, under Pop, Editorial and Retro | S–M | **user**: (b)'s scope, (a)'s shape | open |
-| 4 | JP-123 | an edited slot row freezes the dates in 2025 | **Confirmed, every template, and recorded twice**: the first-edit write-out (JP-052) and the full-ink past row (2026-09-17), whose own comment states a premise JP-052 retired | M | **user**: three questions | open |
+| 4 | JP-123 | an edited slot row freezes the dates in 2025 | **Confirmed, every template, and recorded twice**: the first-edit write-out (JP-052) and the full-ink past row (2026-09-17), whose own comment states a premise JP-052 retired | M | **user**: four questions | open |
 | 5 | — | End-of-pass sweep | — | S | — | open |
 
 **Why this order:**
@@ -318,6 +318,10 @@ call (question 1) and quotes the answer in the reply.
 - `HeaderV1` (`:2420`); its block's nav row (`:2548`–`:2642`): `navInset` 10 at 390 (`:2520`), the
   row's `minHeight` (`:2550`), the left cell (`:2571`), the name (`:2594`), the right cell (`:2595`)
   and `BookPill` at 12.07 (`:2631`).
+- **The row is no query container at 390**: `containerType: nar ? undefined : 'inline-size'`
+  (`:2551`), so a `cqi` room resolves against nothing there. JP-101 made the capsule's left half the
+  container (`NavBar`, `:1953`); here the row, or a wrapper round the name, has to become one at
+  narrow.
 - The desktop bar's own rule, in the comment at `:2553`–`:2570`: "the name stays centred whenever
   the links fit their half and slides right when they do not".
 - `fitName` / `fitBox` / `fitRow` (`:888`–`:895`), and NavBar's narrow `fit` (`:1915`–`:1931`).
@@ -360,7 +364,8 @@ Mercer* fits one line under all five, and the cells' new minimum is under their 
 - The long-name set at 360, 390 and 414 on the published tab and the canvas at Mobile, under all
   five templates. The name's `Range` is clear of the capsule and the pill by at least the row's gap.
   The pill ends inside the page, and the document's `scrollWidth` is its width. No word breaks
-  inside itself, except one wider than the room at the floor. The burger opens (`live`).
+  inside itself: a word wider than the room at the floor takes a size under it (JP-101's Verify).
+  The burger opens (`live`).
 - 768 and 1440 do not move (the tester's control), and neither does Pop layout 1's capsule.
 - Card 2 in the real app with *Maximilian Featherstonehaugh*: the spread under the bar does not move
   unless the name took a third line.
@@ -418,8 +423,9 @@ width alone.
    - **B. Pop alone**, what was filed.
 2. **(a)'s shape.**
    - **A (recommended). The row keeps the sun's corner and wraps as a whole.** It starts right of the
-     sun's ink at the row's height. The session measures that ink; since the seed's copyright starts
-     at 78.8, a pad up to there moves nothing. While the copyright and the credit fit one line, they
+     sun's ink at the row's height. The session measures that ink. The seed's copyright starts at
+     78.8, so a pad up to the seed's own start (about 69 past the column's edge at x 10) moves
+     nothing. While the copyright and the credit fit one line, they
      stand side by side as now. Otherwise the credit drops under the copyright, both right-aligned (the
      seed's packing). A copyright longer than the room wraps between words, and breaks inside a word
      only when one outruns it. The row's 68 holds three lines of 12.48.
@@ -487,13 +493,14 @@ The Major part is the silence. Before any edit the panel's four date boxes alrea
 - CLAUDE.md's repeater rule: each seed resolver in `EditPanel` resolves exactly what `sectionVm`
   resolves. `notes/list-editors.md` (`SlotsField`, `blankRow`).
 
-**Decision (three questions).**
+**Decision (four questions).**
 1. **What a seeded row keeps when the artist edits its kind or price.**
    - **A (recommended). Its offset, until its date is typed.** A seeded row stays `{ after, kind,
      price }`, `CAL_SLOTS`' own shape. `sectionVm` dates it from the base it already uses: `open` on
-     the canvas, `max(open, today)` live. Typing a date writes `date` and drops `after`. So the
-     canvas keeps the frame's picture, the published page keeps counting from today however long
-     after the edit it is opened, and the hint becomes true as read.
+     the canvas, `max(open, today)` live. Typing a date writes `date`, which wins while it is there
+     (question 4 says what clearing it does). So the canvas keeps the frame's picture, the published
+     page keeps counting from today however long after the edit it is opened, and the hint becomes
+     true as read. A row the artist adds has no `after`: it is dated by hand, as now.
      - Costs: `SLOT_KEYS` and `blankRow` learn `after`, and `slotsVal` stops dating the seed.
      - The panel's date box shows an offset row's canvas date, with a line saying the published page
        counts it from today. The session picks the wording.
@@ -512,6 +519,11 @@ The Major part is the silence. Before any edit the panel's four date boxes alrea
      so visitors can't pick it." It reads today as BookedField does, and it is derived from the
      stored value (`UrlInput`'s pattern). On 1A a seeded row never warns, since it counts from today.
    - **B. None.**
+4. **Clearing a typed date on a seeded row** (on 1A; a one-way door otherwise).
+   - **A (recommended). The row counts from today again.** It keeps its `after` beside a typed
+     `date`, and an empty date box gives the count back, so the artist can always undo a date.
+   - **B. The row stays undated**: `date: ''`, listed but never picked, as an emptied date is today.
+     Only removing the row or *Start fresh* brings the seed back.
 
 **Expected after-diff: zero** on the seed, themes 0–4, both surfaces. The digest edits nothing, and
 `today` is opt-in. 2A moves only a live render holding a past slot. Probe it with `&today=` and
@@ -525,7 +537,7 @@ the Lime tree, the past row's opacity.
 - Then type a date. It stays put on both surfaces. A past one dims live (2A) and warns in the panel
   (3A).
 - Remove a row, add one, and empty a seeded row's kind and price: the row keeps its date on 1A, as
-  `blankRow` now says.
+  `blankRow` now says. Type a date into a seeded row and clear it: on 4A it counts from today again.
 - The canvas keeps June 2025 on the seed (the frame's picture, by design).
 - `slotsVal` and `sectionVm` resolve the same rows (the repeater rule).
 
