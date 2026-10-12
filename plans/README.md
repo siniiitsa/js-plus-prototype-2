@@ -11,6 +11,7 @@ One folder per template, one file per pass:
 ```
 plans/
   CONVENTIONS.md   ← the conventions every template shares, named and located
+  photo-focus-qa-fixes.md ← a QA batch filed against every template at once
   retro/
     layout-2.md
     layout-3.md
@@ -204,5 +205,11 @@ widening of every Lime layout-4 block, and its trap 1), groups A, B, C and **D4*
 QA batches (Lime's JP-052 … JP-054 and JP-038, Grunge's JP-076 … JP-084, Editorial's JP-108 …
 JP-110), Retro layout 4's *Conventions* and 2026-09-15 Addendum, and Lime layout 4's *Per-session
 procedure*.
+
+## Every template
+
+| Pass | Plan | Branch | Fitted |
+|---|---|---|---|
+| Photo focus QA fixes | [`photo-focus-qa-fixes.md`](./photo-focus-qa-fixes.md) | `photo-focus-qa-fixes`, forked from `main` (`2136fc1`, after PR #61; fixed, with the root `index.html` refreshed in the working tree; commit, push, PR and merge still open) | Not a fit: the tester's JP-129 … JP-133, seeded photographs whose performer lost their head at the gallery's layout-3 tiles and layout-1 spotlight, the layout-3 bio at 390 and the layout-1 and layout-4 heroes narrow. One cause (the frames' centred FILL) and one fix: a per-seed `object-position` (`FOCUS` in `photos.js`, `vm.imagePos` / `vm.imagesPos`), read by those five sites. Fitted crops win, and uploads keep the centred cover (user calls, 2026-10-12). 42 of 210 header / bio / gallery renders move, `object-position` alone, and the two-build digest moves nothing else. |
 
 `SPEC.md`, which the plans number against, lives in git history: `git show 8fa8ff4:SPEC.md`.
