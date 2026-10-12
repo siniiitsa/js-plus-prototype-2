@@ -852,8 +852,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // a name too long even at 12px yields to there. Layout 2's 390 bar, whose
   // centred name stands between the burger and the pill, takes the same
   // narrow fit (JP-121), so design 1 builds it as well; HeaderV1 reads it
-  // there, and under Editorial does not.
-  if (navFace && cat === 'header' && (d === 0 || d === 1 || d === 3)) {
+  // there, and under Editorial does not. So does layout 3's (HeaderV2's
+  // `s.limeTree` row, JP-121's retest, user call, 2026-10-12), so design 2
+  // builds it too, read the same way.
+  if (navFace && cat === 'header' && (d === 0 || d === 1 || d === 2 || d === 3)) {
     const words = vm.brand.split(/\s+/).filter(Boolean)
     const two = words.length < 2 ? navFace(vm.brand) : Math.min(...words.slice(1).map((_, i) =>
       Math.max(navFace(words.slice(0, i + 1).join(' ')), navFace(words.slice(i + 1).join(' ')))))

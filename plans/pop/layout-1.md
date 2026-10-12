@@ -2610,3 +2610,9 @@ sweep) — `Pop 0,1,2,3`; *field reach is measured* (CLAUDE.md) — `reach.mjs 4
       stands (the header is bound and the rest raw; three heads leak Bebas, open question 5).
     - **If a licence is bought**: JP-111's option B in `qa-fixes.md` lists the cost. It is its own plan
       (`plans/pop/display-face.md`), on its own branch after the QA batch merges.
+    - **Re-filed on the retest** (2026-10-12, [`retest-qa-fixes.md`](./retest-qa-fixes.md)), with
+      "no mask or texture over the font either". The frames carry none: the hero's *KAI MERCER*
+      (`I964:58624;446:422`, rendered at 1×) is a flat white fill, and the layout-1 census found
+      no texture on any Pop section (`:501`). What the tester sees is Chunko's drawing, its squared
+      counters and ink traps, which Titan One does not have. Titan stays (user call, 2026-10-12);
+      the licence is still the PO's question.
