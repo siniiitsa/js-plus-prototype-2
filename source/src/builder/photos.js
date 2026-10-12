@@ -297,6 +297,47 @@ const SEEDS = {
   Pop: { photos: POP_PHOTOS, avatar: POP_HEADER_AVATAR, avatars: { 3: POP_STACKED_AVATAR }, photo: popHero },
 }
 
+// Where each seeded photograph keeps its performer, as the `object-position`
+// a cover crop of it takes (JP-129 … JP-133, user call, 2026-10-12). The
+// frames' fills are centred covers, and in the gallery's layout-3 tiles and
+// layout-1 spotlight, the layout-3 bio's 390 box and the layout-1 and layout-4
+// heroes narrow, a centred cover of these files cuts the head off. One string
+// per file is enough, because a cover only ever crops one axis: a box wider
+// than the file reads the y, a narrower one the x. Keyed by the imported URL,
+// so an upload — a data URI of its own — never matches and keeps the site's
+// crop, and a seed left in an edited gallery array keeps its entry. A file
+// with no entry is centred. Each value is read off a render of every box the
+// file stands in, not computed. sectionVm resolves it (`vm.imagePos`,
+// `vm.imagesPos`); a site whose crop was fitted to its frame keeps its own.
+const FOCUS = new Map([
+  [gallery1, '50% 0%'],
+  [gallery2, '50% 0%'],
+  [gallery3, '50% 0%'],
+  [gallery4, '50% 0%'],
+  [gallery5, '50% 0%'],
+  [gallery6, '50% 0%'],
+  [gallery7, '50% 0%'],
+  [limeHero, '30% 50%'],
+  [grungeStage, '50% 25%'],
+  [grungeSinger, '50% 0%'],
+  [grungeGallery4, '50% 0%'],
+  [grungeGallery7, '50% 0%'],
+  [editorialHero, '68% 50%'],
+  [editorialStage, '50% 0%'],
+  [editorialHeaderAvatar, '50% 0%'],
+  [editorialGallery4, '50% 0%'],
+  [editorialGallery6, '50% 0%'],
+  [editorialGallery7, '50% 0%'],
+  [popGallery1, '50% 0%'],
+  [popGallery2, '50% 0%'],
+  [popStage, '50% 0%'],
+  [popGallery4, '50% 0%'],
+  [popCalendar, '50% 0%'],
+  [popAvatar, '50% 0%'],
+])
+
+export const seedFocus = (url) => (url ? FOCUS.get(url) : undefined)
+
 // Resolvers for the two shapes. Both return undefined for an unseeded theme.
 //
 // The header and the enquiry form are the two categories with two independent

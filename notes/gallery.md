@@ -139,3 +139,11 @@ another `notes/` file.
   link keeps its line. Before, the Lime-tree row did not wrap, so a long name squeezed the back
   link a few glyphs wide (Pop's *Maximilian Featherstonehaugh Windsor* at 360: 15 lines, the page
   379), and Retro's credit column was `nowrap`.
+- **A seed keeps its performer's head** (JP-129, JP-131, user call, 2026-10-12). Layout 3's
+  tiles and layout 1's spotlight (both bodies, the Lime tree's polaroid and Retro's viewer) set
+  `objectPosition: s.imagesPos[i]`, the slot's seed focus (`notes/photography.md`). The masters'
+  FILL is centred, and a centred cover of the strip files into those wide boxes cut most heads
+  off, at the eyes or above the chin. An upload has no entry and keeps the centred cover. The
+  layout-2 and layout-4 strips keep their own `50% 0%` anchors, and the thumbnail strips under
+  the spotlight are untouched. Lime's spotlight seed, `lime-gallery-4`, has no entry, so Lime's
+  layout 1 does not move.

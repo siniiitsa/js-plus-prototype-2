@@ -36,3 +36,23 @@ another `notes/` file.
   and `soft` are rgba of the **page's** text colour, so a section standing on its own sheet has
   to pass a pair that reads there (`Pager`'s `idle` precedent — additive, every earlier caller
   untouched).
+- **A seed carries its own crop** (JP-129 … JP-133, user call, 2026-10-12). `FOCUS` in
+  `photos.js` maps an imported seed URL to the `object-position` a cover crop of that file
+  takes, and `seedFocus(url)` reads it. `sectionVm` resolves `vm.imagePos` (for `vm.image`) and
+  `vm.imagesPos` (per slot of `vm.images`). Both are values, not closures, and `undefined` for an
+  upload, an empty slot or a file with no entry. Lookup is by URL, not by "absent key", so an
+  upload (a data URI of its own) never matches, and a seed left in an edited gallery array
+  keeps its entry. In the standalone build the seeds are data URIs, and that is the string
+  `vm.image` carries too. **One string per file is enough**: a cover only ever crops one axis, so
+  a box wider than the file reads the y and a narrower one the x. The same entry serves a
+  gallery tile and a 390 hero. Values are read off renders of every box the file stands in, not
+  computed: the strip files are top-anchored (`50% 0%`), Grunge's drummer `50% 25%` (a top
+  anchor left him at the tile's foot), Lime's hero `30% 50%` and Editorial's `68% 50%`. A file
+  with no entry is centred. **Five sites read it, opt-in**: the gallery's layout-3 tiles and
+  layout-1 spotlight (`notes/gallery.md`), the layout-3 bio's photograph wherever no crop was
+  fitted (390 on the Lime tree), and the layout-1 and layout-4 heroes at 768 and 390. A crop
+  fitted to a frame wins at the widths it was fitted for: the bio's desktop and 768 percentages,
+  HeaderV0's desktop `50% 0%`, HeaderV3's desktop centre under Lime's flip. Every one of these
+  sites departs from its frame, whose FILL is centred and cuts the same heads. A new site joins
+  by reading `s.imagePos` / `s.imagesPos[i]`, and a new seed by an entry measured the same way.
+  An editable focus for uploads is the tester's rival fix and an open product question.
