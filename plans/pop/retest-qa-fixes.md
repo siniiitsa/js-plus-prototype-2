@@ -90,17 +90,19 @@ plainly would move Pop's seed about 8 toward the burger.
   not on the cell.
   - The cell's min-content counts the margin, so a long name stops 7 short of the pill.
   - A cell wider than its pill never sees the margin, so the seed stays centred where it stood.
-  - On the cell itself, the margin would have widened both flex shares and moved the seed 4.5 right.
+  - On the cell itself, the margin would widen both flex shares (not measured, since it was not
+    shipped).
 - **The probe, after.** The 360 and 414 rows narrow the harness root's 390 box.
   - **390, Pop:** *Kai Mercer* 152.3–237.7 (unchanged). *Florence* sets two lines, 116–220.9. *…Featherstonehaugh* sets two lines at 11.93, 99.9–237.0: the word under the floor, JP-101's `word`. *Charlotte Elizabeth Mountbatten-Windsor* sets two lines at 10.39. The box runs 98.4–238.5 against the capsule's 82 and the pill's 245.5.
   - **390, Lime:** *…Featherstonehaugh* sets one line, 112.7–257.8, 16 off the pill at 273.8. *…Windsor* sets two lines.
   - **390, Grunge:** the same as Lime: one line for *…Featherstonehaugh*, two for *…Windsor*.
-  - **360:** Pop's names end at 208.5 or less, against the pill at 215.5. *…Featherstonehaugh* sets at 9.37 and *…Windsor* at 8.17: the `word` rule, as at layout 2.
+  - **360:** Pop's names end at 208.5 or less, against the pill at 215.5. *…Featherstonehaugh* sets at 9.37 and *…Windsor* at 8.17: the `word` rule, as at layout 2. **The seed moves here, by design.** On HEAD *Kai Mercer* sat centred at 137.3–222.7, 7.2 *under* the pill. It now stands at 123.2–208.5, 7 clear of it. The seed is kept at 390, the master's width, alone.
   - **414:** every name is clear.
   - Editorial and Retro are byte-identical to HEAD at every width.
 - **Digest** (a HEAD worktree on :5178 against the tree on :5179, every category, themes 0–4, three
   widths, port normalised): **0 of 660 on the canvas, 0 of 660 live**, beside JP-119's three named
-  files below. The header `arch 2` seed does not move under any theme.
+  files below. The header `arch 2` seed does not move under any theme. The digest's mobile is 390;
+  the 360 and 414 rows are the harness probe, not the published tab.
 
 **Reply:**
 
@@ -125,7 +127,8 @@ frame's 50%, which goes to the designer (note 1).
 - The live input spreads `...(G.hintOp && { '--ph': G.hintOp })`. Only Pop's arm sets `hintOp`, so
   no other template's box carries it.
 - **Digest:** exactly the three expected files differ, `cat=repertoire&arch=0&theme=4` at three
-  widths. In each, only the hint span's `opacity` moves, from 0.5 to 0.8. Live: 0 of 660.
+  widths. In each, only the hint span's `opacity` field moves, from 0.5 to 0.8 (field by field).
+  Live: 0 of 660.
 - **`::placeholder` probe** (repertoire and form, `arch` 0–3, themes 0–4, desktop and mobile, 60
   rows):
   - exactly Pop's layout-1 search moves, from 0.45 to **0.8**, in `rgb(255, 255, 255)`;
@@ -140,6 +143,13 @@ frame's 50%, which goes to the designer (note 1).
 > 1, the same strength as the Enquiry Form's. This applies on the editor's canvas and on the
 > published page, at every width. The design states 50%, which would be only 2.07 : 1, so this is a
 > deliberate departure, noted for the designer.
+
+## Logged for new tickets
+
+1. **Pop's layout-2 repertoire search draws its hint at 2.13 : 1.** It is the live box at `arch 1`,
+   violet `#6B2CFF` at the .45 hint on `#F5F5F5`, at all three widths (probe, 2026-10-12). It is
+   the same family as this retest's search, and the tester has not filed it. Pop's layouts 3 and 4
+   draw no live search box. Its frame's stated strength was not read.
 
 ## Notes for the designer
 
