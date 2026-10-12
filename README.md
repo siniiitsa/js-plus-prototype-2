@@ -79,8 +79,9 @@ Do not try to unify them. Only three hand-written CSS classes cross the boundary
 `.hv-indent`, `.hv-acbord`, `.hv-acfill` — because each reads the `--ac` / `--acFg` custom
 properties set per section at runtime. One more rule reads a custom property the same way:
 `input::placeholder` is `opacity: var(--ph, .45)`, and a box whose frame states its placeholder's
-strength sets `--ph` inline: the enquiry form's label-in-box inputs `1` (JP-093), and Pop's
-layout-1 form `0.8` (JP-119).
+strength sets `--ph` inline: the enquiry form's label-in-box inputs `1` (JP-093), Pop's
+layout-1 form `0.8` (JP-119), and Pop's layout-1 repertoire search `0.8` (JP-119's retest, a
+user call over the frame's 50%).
 
 Every section is projected through `sectionVm()` into a flat, fully-resolved view-model before
 rendering, so `EncoreSection` does zero colour maths. The enquiry form and the calendar's
@@ -482,7 +483,9 @@ That distinction is the whole design, and it buys two things:
   full, as the canvas does (JP-093, reversing the accepted diff for those two layouts). Pop's
   layout-1 frame states its hint's strength, white at 80%, and the canvas span always drew that, so
   its five live boxes set `--ph: 0.8`: 3.0:1 on the pink box, where the .45 drew 1.7:1 (JP-119,
-  reversing the accepted diff there alone).
+  reversing the accepted diff there alone). Pop's layout-1 repertoire search followed on the
+  retest (user call, 2026-10-12): its frame states 50%, 2.07:1 on the violet box, and the canvas
+  and the live box both draw 80% instead, 3.07:1, the form's strength.
 
   **The testimonials carousel, which pages.** It was the last §10.2 section that was a picture
   on *both* sides rather than only on the canvas: the two arrows flanking the quote card carried

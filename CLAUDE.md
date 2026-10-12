@@ -60,11 +60,12 @@ Do not try to unify them. Only `.hv-indent`, `.hv-acbord` and `.hv-acfill` cross
 because each reads the per-section `--ac` / `--acFg` custom properties. One rule reads a custom
 property the same way (JP-093, user call, 2026-10-01): `index.css`'s `::placeholder` is
 `opacity: var(--ph, .45)`, and a box whose frame states its placeholder's strength sets `--ph`
-inline. Two sets do. The enquiry form's four label-in-box inputs (layouts 2 and 3, both bodies)
+inline. Three sets do. The enquiry form's four label-in-box inputs (layouts 2 and 3, both bodies)
 set `--ph: 1`, because their placeholder is the box's only label. Pop's layout-1 form sets
-`--ph: 0.8` on each live box, its frame's white at 80% (JP-119, user call, 2026-10-08). Every
-other placeholder is a hint at .45. That includes Pop's repertoire search, whose frame states 50%
-(JP-119's option B, not taken), so a box joins by a call, not by the rule alone.
+`--ph: 0.8` on each live box, its frame's white at 80% (JP-119, user call, 2026-10-08). Pop's
+layout-1 repertoire search sets `--ph: 0.8` too, and its canvas span draws the same, though its
+frame states 50% (JP-119's retest, user call, 2026-10-12: 3.07:1 where 50% is 2.07:1). Every
+other placeholder is a hint at .45, so a box joins by a call, not by the rule alone.
 
 Every section is projected through **`sectionVm()`** into a flat, fully-resolved view-model
 before rendering, so `EncoreSection` does zero colour maths. `sectionVm` takes `themeIdx` as an

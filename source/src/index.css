@@ -120,7 +120,8 @@ a:hover { opacity: .72; }
 /* A hint draws at .45. A box whose frame states its placeholder's strength sets
    --ph inline, as --ac is set per section: 1 where the placeholder is the box's
    only label (the enquiry form's layouts 2 and 3, JP-093), 0.8 on Pop's
-   layout-1 form (JP-119). */
+   layout-1 form (JP-119) and on its layout-1 repertoire search, by a call
+   over the frame's 50% (JP-119's retest). */
 input::placeholder, textarea::placeholder { color: inherit; opacity: var(--ph, .45); }
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-thumb { background: #c9c6be; border-radius: 6px; border: 2px solid transparent; background-clip: padding-box; }

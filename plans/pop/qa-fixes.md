@@ -853,6 +853,9 @@ block draws: each input and the message textarea.
 - **The contrast.** The composite over `#EE138B` is **3.0 : 1** at 0.8 and **1.7 : 1** at today's
   .45 (WCAG luminance). Those are the tester's numbers.
 - **What stays.** Pop's repertoire search keeps its accepted .45, since B was not taken.
+  *Reversed* by the tester's retest (user call, 2026-10-12,
+  [`retest-qa-fixes.md`](./retest-qa-fixes.md)): the search draws 80% on the canvas and the live
+  box, 3.07 : 1, over the frame's 50%.
 - **The rule.** CLAUDE.md's becomes: "a box whose frame states its placeholder's strength sets it;
   every other placeholder is a hint at .45".
 

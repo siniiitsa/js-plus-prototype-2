@@ -12849,7 +12849,7 @@ function Repertoire({ s }) {
       const G = pop ? {
         field: POP_REP.pill, fieldR: '999px', fieldRing: POP_REP.ring, tile: POP_REP.glow, tileR: '999px',
         tileRule: undefined, glyph: s.bg, hintInk: s.text3,
-        hintFace: s.mono, hintSize: u(13), hintLh: 'normal', hintOp: 0.5,
+        hintFace: s.mono, hintSize: u(13), hintLh: 'normal', hintOp: 0.8,
         chipSize: u(12.5), chipLh: 'normal', chipWeight: 700, chipOn: s.bg, chipOff: POP_REP.chip,
         song: s.narrow ? (tab ? '22px' : '20px') : u(28),
       } : ed ? {
@@ -12998,8 +12998,11 @@ function Repertoire({ s }) {
               {/* Body/MD. The published field takes the same type, so it
                   measures the same; its placeholder draws at `::placeholder`'s
                   .45, Retro's accepted diff. Pop's hint is Space Mono 13 in
-                  white at the node's 50%; its typed text is the white whole,
-                  and its placeholder the same .45, a shade under the frame. */}
+                  white, its typed text the white whole. The node states 50%,
+                  2.07 : 1 on the box's violet; the canvas and the live box
+                  both draw 80% instead, 3.07 : 1, the form's strength (JP-119's
+                  retest, user call, 2026-10-12, reversing its "B not taken"):
+                  `G.hintOp`, which the live box sets as `--ph`. */}
               {s.live ? (
                 <input
                   value={q} placeholder={hint}
@@ -13007,7 +13010,7 @@ function Repertoire({ s }) {
                   style={body(G.hintSize ?? s.bodyMd, G.hintLh ?? 1.5, {
                     fontFamily: G.hintFace ?? s.body,
                     color: G.hintInk, flex: 1, minWidth: 0, border: 'none', outline: 'none',
-                    background: 'transparent', padding: 0,
+                    background: 'transparent', padding: 0, ...(G.hintOp && { '--ph': G.hintOp }),
                   })}
                 />
               ) : (
