@@ -1183,7 +1183,9 @@ From the renders and the planning walk — impressions to confirm, not measureme
   wraps the card's name (JP-062's measure); *Florence and the Machine* sets the h1 on two lines at
   desktop and the card's name on three. **Named, not fitted**: at 390 the nav's centred name runs
   under the pill with a long name — the block's own span, which JP-101 named and did not fit
-  under any twin (`notes/nav.md`).
+  under any twin (`notes/nav.md`). *Fixed* by JP-121's retest (user call, 2026-10-12,
+  [`retest-qa-fixes.md`](./retest-qa-fixes.md)) under Lime, Grunge and Pop; Editorial's stays
+  named.
 - **`FIELDS.header` under Pop** (`scripts/reach.mjs 4` over the fitted card): **`cardLine`
   `[2]`** (decision 3, as written) and **the kicker `[0, 3]`** — it lost design 2, JP-061's
   prediction once the card stopped being Retro's polaroid, so Pop's row is the twins'. Unchanged:

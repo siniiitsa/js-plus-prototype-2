@@ -137,9 +137,8 @@ another `notes/` file.
   step 4, layout 1; in Noto it wrapped at 360 alone, having run 22.8px under the pill). Its
   layout-4 seed keeps one line at all three. Lime, Grunge, Editorial and Pop; 768 fits every name, and
   **Retro** (no ems table) and **Editorial's layout-3 centred name** (`HeaderV2`, its own span)
-  are named in the entry, not fitted. Pop's layout-3 name is that span too (the block is shared),
-  and with a long name it runs under the 390 pill the same way (`plans/pop/layout-3.md`,
-  section 1), named, not fitted.
+  are named in the entry, not fitted. Pop's layout-3 name is that span too (the block is shared);
+  it ran under the 390 pill the same way until JP-121's retest fitted it (below).
 - **Layout 2's 390 bar takes the same fit, between the burger and the pill** (JP-121, user call,
   2026-10-09, `plans/pop/layout-2-qa-fixes.md`), under Lime, Grunge and Pop. Its name is centred
   between two cells (`HeaderV1`'s `s.limeTree` row), and a long one used to run over the burger's
@@ -155,5 +154,15 @@ another `notes/` file.
   reported name at 390 and 414 anyway, so only Pop moves there. **Editorial keeps its row**: the
   user accepted its layout-2 case as a remainder of JP-101 on 2026-10-07, and that call stands. So
   with *Featherstonehaugh* its pill still runs to 407 and its page scrolls sideways. Retro's bar
-  (`labelStyle` at 17 between two spacers, its pill to 426) and every layout-3 centred name are
-  still named, not fitted.
+  (`labelStyle` at 17 between two spacers, its pill to 426) is still named, not fitted.
+- **Layout 3's 390 bar takes it too** (JP-121's retest, user call, 2026-10-12,
+  `plans/pop/retest-qa-fixes.md`), under Lime, Grunge and Pop: `HeaderV2`'s `s.limeTree` row,
+  the same two pinned cells, the row the query container at 390, and the same `narrow` fit in
+  the room the capsule, the pill (BookPill's box, its Label/SM label faced as `navFace` is, so
+  no `faceK` term) and the two gaps leave. So `sectionVm` builds `navNameFit` at design 2 as well.
+  **Pop's pill keeps the master's overrun**: its 390 master runs the pill 8.2 into the gap beside
+  *Kai Mercer*, which kept the name centred, so the pill carries `marginLeft: -9px` (`allow`).
+  Its cell's min-content counts the margin, and a cell wider than the pill never sees it, so the
+  seed stands where it stood (digest 0) and a longer name stops 7 short of the pill. Lime's and
+  Grunge's pills fit their half, so their `allow` is 0. **Editorial keeps its row** here as at
+  layout 2: named, not fitted, its pill overrunning freely. Retro's layout 3 fits by itself.

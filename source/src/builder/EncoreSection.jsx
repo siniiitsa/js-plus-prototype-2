@@ -3396,15 +3396,40 @@ function HeaderV2({ s }) {
       boxShadow: ring('1px', ed || pop ? s.onScheme[1].stroke1 : grunge ? s.stroke2 : s.stroke1),
       padding: `${u(8)} ${u(18)}`,
     }
+    // At 390 the name gives way between the burger and the pill (JP-121's
+    // retest, user call, 2026-10-12), which a long one ran under and, past
+    // that, over the burger's capsule: HeaderV1's layout-2 fit, under Lime,
+    // Grunge and Pop. Both cells hold their content, so the name stays centred
+    // while it fits and slides toward the burger when it does not, and its
+    // room is the row (the query container at this width too) less the
+    // capsule (26 and 18 + 18), the pill and the row's two gaps, in which it
+    // takes NavBar's narrow fit (JP-101). The pill is BookPill's box: its
+    // padding, gap and disc, and its label at Label/SM in the faces' ems,
+    // faced as `navFace` is. Pop's master lets its pill run into the gap
+    // beside the seed's name (by 8.2, the name 7.8 off it), which kept that
+    // name centred, so Pop's pill keeps that much overrun (`allow`, a negative
+    // margin on the pill, which its cell's min-content counts and a cell
+    // wider than the pill never sees) and the seed stands where it stood; a
+    // longer name stops `allow` short of the gap. Lime's and Grunge's
+    // pills fit their half. Editorial keeps its row, named, not fitted, as at
+    // layout 2 (its call, 2026-10-07, was that layout's).
+    const allow = pop ? 9 : 0
+    const fit = s.mob && !ed && s.navNameFit ? {
+      narrow: true,
+      room: `(100cqi - 26px - 2 * ${u(18)} - ${u(17.92)} - ${u(8.53)} - ${27.6 * z}px - ${u(4.27)}`
+        + ` - ${s.navNameFit.pill} * ${s.labelSm} - 2 * ${u(16)} + ${allow}px)`,
+      two: s.navNameFit.two, word: s.navNameFit.word, floor: grunge ? '16px' : '12px',
+    } : undefined
+    const namePx = fitName(fit, s.labelLg)
     const nav = (
       <div style={row(u(16), {
         width: '100%', padding: `${s.mob ? '10px' : u(16)} 0`,
-        containerType: desk ? 'inline-size' : undefined,
+        containerType: desk || fit ? 'inline-size' : undefined,
       })}>
         <div style={{
           flex: '1 1 0', display: 'flex',
           minWidth: desk ? `min(calc(${s.navEms} * ${linkSize} + ${u(36)} + ${navGaps}), calc(100cqi - ${reserve} + ${u(36)} + ${navGaps}))`
-            : links ? 'max-content' : 0,
+            : links || fit ? 'max-content' : 0,
         }}>
           {links ? (
             // Corner at the one-row half-height, so a capsule that has to wrap
@@ -3425,10 +3450,19 @@ function HeaderV2({ s }) {
             </span>
           )}
         </div>
-        <span style={labelStyle(s, s.labelLg, { color: pop ? s.text3 : s.tx, flex: 'none' })}>{brand()}</span>
-        {/* At 390 the pill is wider than its half; the master lets it overrun
-            into the spacer, which keeps the name centred, and so does this. */}
-        <div style={row(u(12), { flex: '1 1 0', justifyContent: 'flex-end', minWidth: s.mob ? 0 : undefined })}>
+        {/* A wrapped name centres its lines in the room, as the bar centres
+            the name. */}
+        <span style={labelStyle(s, namePx, {
+          color: pop ? s.text3 : s.tx, flex: 'none', ...fitBox(fit, namePx), ...(fit && { textAlign: 'center' }),
+        })}>{brand()}</span>
+        {/* At 390 the pill is wider than its half under Pop and Editorial; the
+            master lets it overrun into the spacer, which keeps the name
+            centred, and so does this — by `allow` at most once the name fits
+            (above), and freely under Editorial. */}
+        <div style={row(u(12), {
+          flex: '1 1 0', justifyContent: 'flex-end',
+          minWidth: fit ? 'max-content' : s.mob ? 0 : undefined,
+        })}>
           {!s.mob && (
             <ListenLink s={s} to={s.listenTo}
                         style={labelStyle(s, s.labelSm, { color: pop ? s.text3 : s.tx, fontWeight: 400 })} />
@@ -3452,6 +3486,7 @@ function HeaderV2({ s }) {
                     style={{
                       padding: `${u(4.27)} ${u(4.27)} ${u(4.27)} ${u(17.92)}`,
                       gap: u(8.53), lineHeight: 1.1,
+                      ...(fit && allow && { marginLeft: `-${allow}px` }),
                     }} />
         </div>
       </div>

@@ -1336,7 +1336,9 @@ One line per ticket. Each full reply stands under its entry above, as *Reply*.
 2. **Layout 3's centred name at 390** (`HeaderV2`'s `s.limeTree` row, JP-121's *Siblings, not
    filed*): its right cell lets the pill overrun into the spacer, so a long name runs *over* the
    pill under Pop and Editorial. Pop's *Florence* sets 93.9–296.1 against the pill at 245.5.
-   Lime and Retro fit. Named in `layout-3.md` section 1 and `notes/nav.md`.
+   Lime and Retro fit. Named in `layout-3.md` section 1 and `notes/nav.md`. *Fixed* by the
+   tester's retest of JP-121 (user call, 2026-10-12, [`retest-qa-fixes.md`](./retest-qa-fixes.md))
+   under Lime, Grunge and Pop; Editorial's stays named.
 
 Already logged, so not new: a one-word name of 34 letters or more reaches the 390 footer's seal
 (JP-122's edge case) and scrolls the page. It is Pop's first batch's logged item 3. Editorial's
