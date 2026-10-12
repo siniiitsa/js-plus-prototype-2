@@ -60,7 +60,7 @@ import {
   layoutCount, designCount, pageLayout, pageOrder, pageRows, COLUMN_SPLIT, bebasEms, antonEms, gloockEms, titanEms,
   headerLayout, headerLayoutLabel, setupHeaderCount,
 } from './data.js'
-import { defaultImage, defaultImages, defaultTrackArt, RETRO_TEXTURE } from './photos.js'
+import { defaultImage, defaultImages, defaultTrackArt, seedFocus, RETRO_TEXTURE } from './photos.js'
 
 /* ------------------------------------------------------------------ *
  * §5.5 Axis B — canvas device preview sizing
@@ -742,6 +742,11 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // an empty slot falls through to the section's initials placeholder. An
   // explicitly emptied array is already distinguishable, so no sentinel is needed.
   vm.images = Array.isArray(c.images) ? c.images : (defaultImages(cat, T.name) ?? [])
+  // Where a seeded photograph keeps its performer (photos.js `FOCUS`, JP-129 …
+  // JP-133): an `object-position` string, or undefined for an upload, an
+  // empty slot or a file centred already. The sites that read it say so.
+  vm.imagePos = seedFocus(vm.image)
+  vm.imagesPos = vm.images.map(seedFocus)
   // Fixed decoration — paper grain and the events-map raster (§10.2). The grain
   // is Retro's and Grunge's (Lime's frames carry no texture); the raster is the
   // same image in Lime's map frame, so every designed template takes it.

@@ -482,7 +482,7 @@ file is loaded into every session and holds only what is cross-cutting.
 | [`notes/testimonials.md`](./notes/testimonials.md) | Testimonials: `cur`, the tile rail, the bento wall, the paging wall |
 | [`notes/footer.md`](./notes/footer.md) | The footer: `LinksField`, the two derived columns, the Book pill |
 | [`notes/list-editors.md`](./notes/list-editors.md) | The ten repeaters, `BookedField`, `SetsField`, `blankRow`, the seed resolvers |
-| [`notes/photography.md`](./notes/photography.md) | Seeded photography: `SEEDS`, `null` vs absent, the two-slot categories |
+| [`notes/photography.md`](./notes/photography.md) | Seeded photography: `SEEDS`, `null` vs absent, the two-slot categories, `FOCUS` (a seed's own crop) |
 | [`notes/templates.md`](./notes/templates.md) | Retro, Lime, Grunge, Editorial and Pop: the `s.lime` / `s.limeTree` / `s.pop` blocks, faces, decoration, header families |
 
 ## Load-bearing rules from the notes

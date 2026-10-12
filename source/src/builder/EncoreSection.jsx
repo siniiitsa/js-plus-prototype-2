@@ -2154,8 +2154,13 @@ function HeaderV0({ s }) {
           photograph's own 1.92, so the anchor is inert there; Lime's is a 1.5
           photograph already cropped at 1180, so it keeps the centred crop its
           fitted frame was matched against — and so do Grunge's and
-          Editorial's, each a plain FILL of a photograph no taller. */}
-      <div style={{ position: 'absolute', inset: 0 }}><Photo s={s} backdrop style={lime ? undefined : { objectPosition: '50% 0%' }} /></div>
+          Editorial's, each a plain FILL of a photograph no taller. Narrow,
+          a seed takes its own focus, whose x is all a side crop reads: the
+          centred cut put Lime's DJ half off the left edge and Editorial's
+          singer off the right (JP-132). An upload keeps the anchor. */}
+      <div style={{ position: 'absolute', inset: 0 }}>
+        <Photo s={s} backdrop style={{ objectPosition: (s.narrow && s.imagePos) || (lime ? undefined : '50% 0%') }} />
+      </div>
       <div style={{ position: 'absolute', inset: 0, background: grunge ? SCRIM.grunge : ed ? SCRIM.editorial : pop ? SCRIM.pop : lime ? SCRIM.lime : SCRIM.hero }} />
       {/* Grunge lays Retro's sheet the same way — `image 1`, lighten at .5 —
           over the photograph alone: its portrait card carries none. The
@@ -4254,9 +4259,11 @@ function HeaderV3({ s }) {
             (read off `scaleMode`: the layout-3 header's lesson the other way
             round). The flip is the composition's: it stands the subject at
             the right, clear of the name. Its cost is a mirrored upload at
-            desktop alone, named here rather than declined. */}
+            desktop alone, named here rather than declined. Narrow, a seed
+            takes its own focus, HeaderV0's (JP-133); desktop stays centred,
+            where Lime's flip would mirror any x. */}
         <div aria-hidden style={{ position: 'absolute', inset: 0 }}>
-          <Photo s={s} backdrop style={desk && s.lime ? { transform: 'scaleX(-1)' } : undefined} />
+          <Photo s={s} backdrop style={desk ? (s.lime ? { transform: 'scaleX(-1)' } : undefined) : { objectPosition: s.imagePos }} />
         </div>
         {/* Scheme 3's `sem/bg` — `s.ac` — off the floor to a transparent stop
             in Scheme 1's `sem/bg` at the top, the frame's own two stops.
@@ -5778,12 +5785,15 @@ function Bio({ s }) {
                 rows 6.4–42.1% of `popStage`: a cover at 10% at desktop
                 (0.994 against the render), the squashed 768 band's broad
                 sweep peak 7.5% (0.565), 390 centred (0.992). Its well is
-                black, so its initials are white. */}
+                black, so its initials are white. Those 390 centred covers
+                put Editorial's singer and Pop's comic from the chin down
+                (JP-130), so wherever no crop was fitted a seed takes its
+                own focus, `s.imagePos`; an upload stays centred. */}
             <div style={{ position: 'absolute', inset: 0 }}>
               <Photo s={s} initialsSize={desk ? 64 : tab ? 56 : 40} ink={ed || pop ? s.bg : s.tx}
-                     style={(grunge || ed || pop) && !s.mob
-                       ? { objectPosition: `50% ${pop ? (tab ? 7.5 : 10) : ed ? (tab ? 16 : 19.2) : tab ? 22.7 : 27.3}%` }
-                       : undefined} />
+                     style={{ objectPosition: (grunge || ed || pop) && !s.mob
+                       ? `50% ${pop ? (tab ? 7.5 : 10) : ed ? (tab ? 16 : 19.2) : tab ? 22.7 : 27.3}%`
+                       : s.imagePos }} />
             </div>
             {grunge
               ? <Grain s={s} exact grunge blend="screen" opacity={1} />
@@ -15519,8 +15529,10 @@ function Gallery({ s }) {
       const bracket = pop ? POP_GAL.bracket : s.inactiveLine
       const well = (
         <>
+          {/* A seed takes its own focus (JP-131): Editorial's 768 polaroid
+              cut its singer at the eyes. */}
           <div style={{ position: 'absolute', inset: 0 }}>
-            <Photo s={s} initialsSize={52} src={s.images[active]} ink={s.tx} />
+            <Photo s={s} initialsSize={52} src={s.images[active]} ink={s.tx} style={{ objectPosition: s.imagesPos[active] }} />
           </div>
           {!s.mob && [['left', 14, 'borderLeft'], ['right', 15, 'borderRight']].map(([side, off, edge]) => (
             <span key={side} aria-hidden style={{
@@ -15822,7 +15834,7 @@ function Gallery({ s }) {
             borderRadius: s.retro ? '4px' : s.radiusSm,
             overflow: 'hidden', position: 'relative',
           }}>
-            <Photo s={s} initialsSize={52} src={s.images[active]} />
+            <Photo s={s} initialsSize={52} src={s.images[active]} style={{ objectPosition: s.imagesPos[active] }} />
             {s.retro && !s.mob && (
               <>
                 <span style={{
@@ -16396,8 +16408,9 @@ function Gallery({ s }) {
   // tile is **square**. The desktop tile is **326 / 174.667**, the residue rule
   // over this page's 105 head, 118 × 0.89 ((789 − 112 − 105 − 32 − 16) / 3), and
   // the 390 one Grunge's 83 again ((587 − 120 − 43 − 32 − 60) / 4); 768 states
-  // the same 660 grid. The tiles keep the twins' centred cover: the frame's own
-  // FILL on our stage shot (its third tile) is centred at every width.
+  // the same 660 grid. The frame's own FILL on our stage shot (its third tile)
+  // is centred at every width, and so were these tiles until JP-129: every
+  // template's seeds now take their `FOCUS` (photos.js), `s.imagesPos[i]`.
   //
   // **Pop (964:68776 · 984:15380 · 984:15411) is that tree a fifth time**, 17
   // nodes against both twins', so it widens the same ternaries under `pop`.
@@ -16599,12 +16612,16 @@ function Gallery({ s }) {
                     default is `s.muted`, an rgba of the PAGE's text colour,
                     which on Lime is the same pale lime the sheet is. Pop's
                     `s.tx` is violet at 2.2:1 on its olive well, so its
-                    initials take the seat's `text/3`, black, at 7.5:1. */}
+                    initials take the seat's `text/3`, black, at 7.5:1.
+                    A seed takes its own focus (JP-129): the masters' FILL
+                    is centred, and a centred cover of our strip files into
+                    these wide tiles took most performers' heads off. An
+                    upload has none and keeps the centred cover. */}
                 <Photo
                   s={s} src={s.images[i]}
                   initialsSize={desk ? 32 : tab ? 28 : 14}
                   ink={s.retro ? undefined : pop ? s.text3 : s.limeTree ? s.tx : s.paperFg}
-                  style={s.limeTree ? { background: well } : undefined}
+                  style={{ ...(s.limeTree ? { background: well } : null), objectPosition: s.imagesPos[i] }}
                 />
               </span>
               {/* The INSIDE ring over the photograph, as the frame paints it.
