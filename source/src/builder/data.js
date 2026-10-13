@@ -2551,6 +2551,58 @@ export const pageEmail = (sections) => {
 
 export function fieldDefault(f) { return f.def ? DEFS[f.def] : (f.d != null ? f.d : '') }
 
+// Layouts 3 and 4's heading fallbacks, per category — each page's own heads
+// (layout 4's QA, 2026-09-15, the form's, JP-054, and the repertoire's, JP-081;
+// layout 3's JP-070, 2026-09-28, which took in the calendar's "Book Me").
+// sectionVm and fieldSeed both read these, and at layouts 3 and 4 the
+// repertoire's wins over its song count in both.
+export const HEADING_3 = {
+  repertoire: REP_HEADING_3, gallery: GALLERY_HEADING_3, pricing: PRICING_HEADING_3,
+  calendar: CAL_HEADING_3, map: MAP_HEADING_3, testimonials: TESTI_HEADING_3,
+}
+export const HEADING_4 = {
+  repertoire: REP_HEADING_4, calendar: CAL_HEADING_4, gallery: GALLERY_HEADING_4, map: MAP_HEADING_4,
+  testimonials: TESTI_HEADING_4, form: FORM_HEADING_4,
+}
+
+// What a field shows while its key is absent — EditPanel's box, and the seed
+// scripts/limits.mjs measures against. The fields whose default is computed
+// rather than written down: the header's title is the artist's name, the
+// footer's small print and the form's layout-3 head are composed from it, the
+// repertoire's heading counts the songs, and a few seeds follow the layout.
+// Each mirrors what sectionVm resolves, so panel and canvas never disagree.
+// The calendar's address is the form's until one is typed (JP-076). The
+// header's kicker left the chain with JP-061: its `d` is its seed at every
+// layout, and the layout-3 card's line is a field of its own. The map's kicker
+// joined it with JP-090 (mapKickerSeed), the testimonials' with JP-095 (a)
+// (testiKickerSeed), and the map's list label with JP-095 (b)
+// (mapListLabelSeed; gated on `map`, since media carries a `listLabel` too),
+// and the map's coverage with JP-105 (mapRadiusSeed). Layouts 3 and 4's heads
+// come ahead of the song count, which sectionVm's later assignment says the
+// other way round (JP-070, JP-081).
+export function fieldSeed({ cat, f, themeName, design, c = {}, artistName, email }) {
+  const songs = Array.isArray(c.songs) ? c.songs : SONGS
+  return (f.k === 'title' || f.k === 'badgeText') && cat === 'header' ? artistName
+    : f.k === 'copyright' && cat === 'footer' ? copyrightOf(artistName)
+    : f.k === 'email' && cat === 'calendar' ? email
+    : f.k === 'heading' && cat === 'form' && design === 2 ? formHeading3(artistName)
+    : f.k === 'heading' && design === 2 && HEADING_3[cat] ? HEADING_3[cat]
+    : f.k === 'heading' && design === 3 && HEADING_4[cat] ? HEADING_4[cat]
+    : f.k === 'heading' && cat === 'calendar' && design === 0 && limeTreeTheme(themeName) ? CAL_HEADING_1
+    : f.k === 'heading' && cat === 'repertoire' ? `${songs.filter((t) => !blankRow(t, SONG_KEYS)).length} Songs`
+    : f.k === 'heading' && cat === 'testimonials' && design === 1 ? TESTI_HEADING_2
+    : f.k === 'navMode' && cat === 'header' ? navModeDefault(themeName, design)
+    : f.k === 'button' && cat === 'form' ? formBtnSeed(themeName, design)
+    : f.k === 'kicker' && cat === 'map' ? mapKickerSeed(design)
+    : f.k === 'listLabel' && cat === 'map' ? mapListLabelSeed(design)
+    : f.k === 'radius' && cat === 'map' ? mapRadiusSeed(design)
+    : f.k === 'kicker' && cat === 'testimonials' ? testiKickerSeed(design)
+    : f.k === 'cta' && cat === 'calendar' && design === 3 ? CAL_SEND_4
+    : f.k === 'rowCta' && cat === 'pricing' && design === 2 ? PRICING_ROW_CTA_3
+    : f.k === 'rowCta' && cat === 'pricing' && design === 3 ? PRICING_ROW_CTA
+    : fieldDefault(f)
+}
+
 // Whether a section's current design reads field `f` — `design` being
 // `arch % designCount`, never the raw `arch`. `f.in` is resolved per template,
 // its `'*'` standing for any template it does not name; a template it does not
@@ -2567,6 +2619,162 @@ export function fieldReach(f, themeName, design) {
 // `shared` one, which other sections print (the header's identity keys).
 export function fieldShown(f, themeName, design) {
   return !!f.shared || fieldReach(f, themeName, design)
+}
+
+// Character caps (plans/char-limits.md, user calls, 2026-10-13). A cap is
+// measured per template and design — Figma says how many lines a text block
+// draws, scripts/limits.mjs how many characters fit them at all three widths —
+// and written on the field as `chars`, in `in`'s shape: a number, an array
+// indexed by design (`null` for no cap), or an object keyed by template with
+// `'*'` for the rest. A list field (`list: ','` or `list: '\n'`) caps each item
+// by `chars` and the items by `count`, in the same shape. A repeater caps its
+// columns through `cols: { [col]: spec }`, a spec being a `chars` value or
+// `{ chars, count, list }` for a column that is itself a list (a song's tags).
+// IDENTITY_CHARS holds the caps of the sections that print the header's keys
+// (and the artist's name, `title`) with no field of their own.
+//
+// EditPanel stops typing at a cap (`maxLength`, or a refused edit for a list)
+// and sectionVm clamps what it renders, so copy typed under one layout's cap
+// keeps its full text in `c` and is shortened on the page of a tighter one.
+export const IDENTITY_CHARS = {}
+const specAt = (spec, themeName, design) => {
+  if (spec == null) return undefined
+  if (typeof spec === 'number') return spec
+  if (Array.isArray(spec)) return spec[design] ?? undefined
+  return specAt(spec[themeName] ?? spec['*'], themeName, design)
+}
+const isColObj = (spec) => spec != null && typeof spec === 'object' && !Array.isArray(spec) && 'chars' in spec
+// The resolved cap of a field or column: { chars, count, list } or null.
+const capOf = (spec, count, list, themeName, design) => {
+  const chars = specAt(spec, themeName, design)
+  const n = specAt(count, themeName, design)
+  return chars == null && n == null ? null : { chars, count: n, list }
+}
+export function fieldCap(f, themeName, design) {
+  return capOf(f.chars, f.count, f.list, themeName, design)
+}
+export function colCaps(f, themeName, design) {
+  if (!f.cols) return null
+  const out = {}
+  for (const [k, spec] of Object.entries(f.cols)) {
+    const cap = isColObj(spec) ? capOf(spec.chars, spec.count, spec.list, themeName, design)
+      : capOf(spec, undefined, undefined, themeName, design)
+    if (cap) out[k] = cap
+  }
+  return Object.keys(out).length ? out : null
+}
+const NO_CLAMP = new Set(['image', 'images', 'url', 'email', 'date', 'select', 'booked'])
+// A section's own cap for a header key it prints: its IDENTITY_CHARS entry, and
+// the header's field besides (the header prints its own keys off `c`).
+function identityCapOf(cat, key, themeName, design) {
+  const own = cat === 'header'
+    ? (FIELDS.header.find((f) => f.k === key) ?? null) : null
+  const ownCap = own ? fieldCap(own, themeName, design) : null
+  const ext = IDENTITY_CHARS[cat]?.[key]
+  const extCap = ext == null ? null : isColObj(ext)
+    ? capOf(ext.chars, ext.count, key === 'tags' ? ',' : undefined, themeName, design)
+    : capOf(ext, undefined, key === 'tags' ? ',' : undefined, themeName, design)
+  return minCap(ownCap, extCap)
+}
+const minOf = (a, b) => (a == null ? b : b == null ? a : Math.min(a, b))
+function minCap(a, b) {
+  if (!a) return b
+  if (!b) return a
+  return { chars: minOf(a.chars, b.chars), count: minOf(a.count, b.count), list: a.list ?? b.list }
+}
+// The cap EditPanel enforces on one of the header's shared keys (and the
+// artist's name, `title`): the tightest among the page's sections at their
+// current designs (user call, 2026-10-13). A section moved to a tighter
+// layout later is covered by its own render clamp.
+export function identityCap(key, sections, themeName) {
+  let cap = null
+  for (const s of sections) {
+    const n = designCount(s.cat, themeName) || 1
+    cap = minCap(cap, identityCapOf(s.cat, key, themeName, ((s.arch % n) + n) % n))
+  }
+  return cap
+}
+
+// `s` cut to `n` characters, the ellipsis inside them: at the last space past
+// 60% of the cap, else mid-word. Untouched at or under the cap.
+export function clampText(s, n) {
+  if (typeof s !== 'string' || n == null || s.length <= n) return s
+  let cut = s.slice(0, Math.max(0, n - 1))
+  const sp = cut.lastIndexOf(' ')
+  if (sp >= n * 0.6) cut = cut.slice(0, sp)
+  return `${cut.trimEnd()}…`
+}
+const listItems = (s, sep) => s.split(sep)
+// Each item clamped to `chars` (its leading space kept, so a list that fits
+// rejoins byte for byte) and the list cut after `count` non-blank items.
+export function clampList(s, cap) {
+  if (typeof s !== 'string' || !cap) return s
+  let kept = 0
+  const out = []
+  for (const it of listItems(s, cap.list)) {
+    if (it.trim()) {
+      if (cap.count != null && kept >= cap.count) break
+      kept++
+    }
+    const lead = it.match(/^\s*/)[0]
+    out.push(lead + clampText(it.slice(lead.length), cap.chars))
+  }
+  return out.join(cap.list)
+}
+export const clampCapped = (v, cap) => (!cap || typeof v !== 'string' ? v
+  : cap.list ? clampList(v, cap) : clampText(v, cap.chars))
+// How far a value is past its cap: the characters over, plus one per item over
+// the count. 0 is within it. EditPanel refuses a list edit that raises it.
+export function capExcess(v, cap) {
+  if (!cap || typeof v !== 'string') return 0
+  if (!cap.list) return cap.chars == null ? 0 : Math.max(0, v.length - cap.chars)
+  const items = listItems(v, cap.list).map((t) => t.trim()).filter(Boolean)
+  const over = cap.chars == null ? 0 : items.reduce((n, t) => n + Math.max(0, t.length - cap.chars), 0)
+  return over + (cap.count == null ? 0 : Math.max(0, items.length - cap.count))
+}
+const clampRows = (rows, caps) => {
+  let moved = false
+  const map = (r) => {
+    if (!r || typeof r !== 'object') return r
+    let row = r
+    for (const [k, cap] of Object.entries(caps)) {
+      const v = clampCapped(r[k], cap)
+      if (v !== r[k]) { if (row === r) row = { ...r }; row[k] = v; moved = true }
+    }
+    return row
+  }
+  if (Array.isArray(rows)) { const out = rows.map(map); return moved ? out : rows }
+  const out = Object.fromEntries(Object.entries(rows).map(([k, r]) => [k, map(r)]))
+  return moved ? out : rows
+}
+// A section's content with every capped key clamped for this template and
+// design — `c` itself when nothing is over, so a page within its caps renders
+// exactly as it did before any cap existed. sectionVm calls it at its head.
+export function clampContent(cat, c, themeName, design) {
+  let out = c
+  for (const f of FIELDS[cat] ?? []) {
+    const v = c[f.k]
+    if (v == null || NO_CLAMP.has(f.type)) continue
+    let next = v
+    if (typeof v === 'string') next = clampCapped(v, fieldCap(f, themeName, design))
+    else if (typeof v === 'object') {
+      const caps = colCaps(f, themeName, design)
+      if (caps) next = clampRows(v, caps)
+    }
+    if (next !== v) { if (out === c) out = { ...c }; out[f.k] = next }
+  }
+  return out
+}
+// The header's keys and the artist's name as section `cat` prints them,
+// clamped to its own caps (the header's fields, or IDENTITY_CHARS).
+export function clampIdentity(cat, identity, artistName, themeName, design) {
+  let id = identity
+  for (const k of ['kicker', 'location', 'tags']) {
+    const v = clampCapped(identity?.[k], identityCapOf(cat, k, themeName, design))
+    if (v !== identity?.[k]) { if (id === identity) id = { ...identity }; id[k] = v }
+  }
+  const nameCap = identityCapOf(cat, 'title', themeName, design)
+  return { identity: id, artistName: clampCapped(artistName, nameCap) }
 }
 
 // Why a user-typed outbound address cannot be linked, or null if it can (an
