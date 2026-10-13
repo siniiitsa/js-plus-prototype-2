@@ -1030,3 +1030,164 @@ header layout 2 (Feature spread), the canvas at 1440.
   fit) are open for the user. Judgement 6 shows that every earlier `IDENTITY_CHARS` row was
   measured under the old box test. The sweep's full `--check` re-runs them, and this session's
   `paints` fix only loosens.
+
+## Session 7: the booking calendar (2026-10-13)
+
+**Scope.** These are the calendar's own text keys: `heading`, `time` (`in: [0, 3]`), `prompt`,
+`cta`, `dateLabel`, `availLabel` and `slotCta` (`in: [1]`), the `slots` columns `kind` and
+`price` (`in: [1]`), and `types` (`in: [3]`, a ',' list: item and count). `image`, `open` (a
+date), `booked` and `email` are skipped. `IDENTITY_CHARS.calendar` is session 1's, re-verified by
+`--check` (judgement 6). Layout 3 stands the calendar in the composed desktop column
+(`&column=right`), the first section since the media to have one. The probe ran on a fresh Vite at
+:5199. Its per-width readout is
+[`char-limits/session-7-probe.md`](./char-limits/session-7-probe.md), and the decisions are in
+`notes/calendar.md`.
+
+**Rules.** These are session 1's calls, unchanged. `rules.mjs` gains three sized keys: `cta`
+(Retro's layout-1 pill and layout 4's Send Enquiry), `slotCta` (layout 2's Start Enquiry pill)
+and `types[]` (the wizard's event-type chips). There are no blocks: `types` is `type: 'area'`
+but a ',' list, so it takes item and count caps. `prompt` is metadata. It is a pill's label at
+layout 3 and a line at layouts 1, 2 and 4, and the layout-3 measure binds on its own.
+Everything else is metadata.
+
+**The caps written** (by layout 1, 2, 3, 4; `–` where the layout does not read the field). None
+reports `floor` under `--check`; the `types` count is the seed's own 4, and four prose items pass
+(judgement 4).
+
+| field | rule | Retro | Lime | Grunge | Editorial | Pop |
+|---|---|---|---|---|---|---|
+| `heading` | meta | – 25 36 18 | 25 22 32 18 | 28 24 35 23 | 14 14 21 11 | 13 20 24 15 |
+| `time` | meta | 33 – – 34 | 13 – – 32 | 13 – – 37 | 13 – – 33 | 28 – – 33 |
+| `prompt` | meta | 33 24 39 50 | 44 23 33 47 | 44 24 36 50 | 44 29 24 50 | 31 32 24 50 |
+| `cta` | sized | 24 – – 24 | – – – 24 | same | same | same |
+| `slotCta` | sized | – 26 | – 26 | – 26 | – 25 | – 26 |
+| `dateLabel` | meta (joint) | – 16 | same | same | same | same |
+| `availLabel` | meta (joint) | – 33 | – 38 | – 38 | – 38 | – 38 |
+| `slots.kind` | meta (row) | – 33 | – 36 | – 40 | – 33 | – 36 |
+| `slots.price` | meta | – 36 | – 40 | – 43 | – 36 | – 40 |
+| `types` per chip | sized | – – – 13 | same | same | same | same |
+| `types` count | count | – – – 4 | same | same | same | same |
+| `IDENTITY_CHARS.calendar.location` | (session 1) | **19** – – 67 | – – – 64 | – – – 55 | – – – 67 | – – – 67 |
+
+**Judgement calls.**
+1. **The slot price takes prose, not `KEY_SAMPLES`' digit-led samples** (decided before the
+   probe). Both bodies set `sl.price` whole, in a `bodySm` `nowrap` span, with no `priceParts()`
+   split. So a long price grows in the body face like any other line, and prose measures it.
+   Session 4's judgement 1 is about pricing's split numeral and does not reach here.
+2. **A slot's kind is capped by its row, not by the foot line.** The kind is printed twice: in
+   its row, over the price, and in the foot's composed line (*Thursday evening selected*), since
+   `open` cues slot one. The first run read the foot: 12–13 under Retro, Lime and Grunge, 16
+   under Pop and 20 under Editorial, all at 390, where *Thursday kestrel nights selected* takes
+   a fourth line beside the chip. That line is composed copy whose spill is already designed
+   (`notes/calendar.md`): the Lime tree's line wraps, and drops under the chip when its widest
+   word cannot stand beside it; Retro's ellipsizes at 1440 and 768. That is decision 6's
+   fallback, session 5's judgement 5 shape. So the probe reads the kind in its row alone
+   (`KEY_CJ` books the cued day, and the foot prints the prompt instead): 33–40, at 390. Checked
+   in screenshots at 33 (*Ceremony, drinks and evening part*): the row's right column holds it on
+   one line, the Lime-tree foot wraps it to five lines at 390, and Retro's 1440 foot runs it on
+   one line. **This one is the user's to overrule.** The foot-bound numbers are the readout's
+   second table.
+3. **`dateLabel` and `availLabel` are a joint split.** The two share the slot list's head row,
+   each `overflowWrap: anywhere`. Each was read beside the other's seed: Date 41–45 and
+   Availability 41–52. Both at those caps took two lines each at 768 and 390 on every template (a
+   scratchpad check, `joint7.mjs`; 40 of 120 renders failed). Bisected jointly at 768 and 390
+   under all four samples (1440 passed at the solo caps): with Date at 16, Availability holds 33
+   under Retro and 38 under the rest; with Date at 20, 29 and 33. Written: Date 16 (four times
+   *Date*), Availability 33 / 38. The joint check passes with both at their caps: 0 failures in
+   120 renders. Giving Date more and Availability less is the user's call.
+4. **The event types are 13 a chip and 4 in all.** At 390 the wizard sets its chips in a
+   two-column grid of fixed cells, and a 14-character type wraps its chip. The sized rule's 18 is
+   above that, so the chip takes the measure. The count is the seed's 4, because the grid is two
+   rows of two, and a fifth type starts a third row (lines 3 > 2 at every width). With one row
+   more (`--extra-lines=types#`) it reads 6. The wizard card hugs its rows, so a third row
+   pushes nothing, but it is not the frame's. **This one is the user's to overrule.**
+5. **Layout 1's enquiry time is 13 under Lime, Grunge and Editorial.** The foot's *Enquiry for
+   Thursday, June 12 at 9:00pm* is one line in their frames, the link that replaces the pill
+   (JP-088), and at 390 a wider 14-character time takes a second line. *9pm till late* fits.
+   Retro's foot reads 33 and Pop's 28.
+6. **`IDENTITY_CHARS.calendar.location` at Retro's layout 1 drops from 22 to 19.** `--check`
+   failed session 1's 22 at all three widths, and the re-probe reads 19 (overlap). The stamp sits
+   on the front polaroid's foot, and at 22 the screenshot is clean. Its new overlaps are the
+   photographs of the two polaroids behind, which the front card covers. `paints` (session 6)
+   hit-tests with `elementsFromPoint`, which returns covered elements too. At the seed, the short
+   stamp's meet box missed those photographs' ink, so they were not in the reference, and a
+   longer stamp's met them. Session 6 said the fix "only loosens". It loosens the reference too,
+   and here that tightened the reading. The prompt's rule is to lower a failing `who.*` row and
+   never loosen the check, so it is 19 (seed 14). **For the sweep (12):** `paints` should ignore
+   an element covered by the seat's own card; then this stamp can go back to its clean 22.
+7. **`kind` and `price` are stacked, not side by side.** They are one `flex: none` column, each
+   `nowrap` and right-aligned, so the column is as wide as the wider of the two, and each read
+   beside the other's seed already is the joint reading. The joint check sets both at their caps
+   in row 0 against the mark and weekday: 0 failures.
+8. **The sized seats.** `cta` is max(2 × 12, 12 + 8) = 24 at both layouts, under every measure
+   (27–53; Editorial's and Lime's layout 4 scroll the 390 page at 28 and 47). `slotCta` is 26,
+   and Editorial's measure of 25 binds: its Gloock pill clips there. At 25 it stays one line and
+   drops under the chip and line, which `notes/calendar.md` describes as the designed wrap.
+
+**Probe fixes** (`scripts/limits.mjs`; they apply to every later section, and the sweep's full
+`--check` re-runs earlier sections under them).
+- **A seat is compared with the reference's seat at its own path first** (`verdict`), and by
+  index only when no path matches. Layout 2's head link list prints the section's own nav label,
+  *● Availability*, a literal that is also the heading's and `availLabel`'s seed. The seed's
+  render seated the link and the h2, the value's render the h2 alone, and by index the h2 met the
+  link's box. The heading read 1 (`box`) on every template and `availLabel` 1 on the four
+  Lime-tree templates; they read 14–25 and 41–52 under the fix. The ring test already matched by
+  path.
+- **`KEY_CJ`**: content a key needs before it prints. The prompt shows only while no day is cued,
+  so it is staged on `booked: [CAL_OPEN]`, `reach.mjs`'s staging, and `slots.kind` takes the
+  same staging under judgement 2.
+
+**Checks.**
+- `--seeds` over every calendar key: 0 seeds over their caps.
+- `--check` over every calendar key, with the three samples and the lower-case one: 0 failures
+  and 0 floors in 210 rows. The `who.*` rows are included, so `IDENTITY_CHARS.calendar` is
+  re-verified: the title at layout 2 (64), the location at layouts 1 and 4, and Retro's layout-1
+  seal (19). The `kicker` and `tags` rows are `unseen`. The first run failed 1 row, judgement 6's
+  location.
+- The joint check (`joint7.mjs`, every template and width, four samples): the head row and the
+  slot row, each pair at its caps, 0 failures in 120 renders.
+
+**Real app.** Tested with chrome-devtools on the :5199 server: a Lime page laid out by header
+layout 2 (Feature spread), the canvas at 1440.
+- **Calendar at layout 2.** The panel showed Heading 22, Prompt 23 (its counter already at
+  `22 / 23`, past 80%), each slot's kind 36 and price 40, Date 16, Availability 38 and Start
+  Enquiry 26. *Date of the evening gig* stopped at `Date of the even` (`16 / 16`), and the
+  canvas head printed `Date of the even ↓`. *Open dates this summer, book now* stopped at `Open
+  dates this summer` (`22 / 22`).
+- **The layout picker.** The thumbnails printed the full heading at layouts 1–3 and 5, and `Open
+  dates this…` at layout 4 (18).
+- **Calendar to layout 4.** The canvas printed `Open dates this…`. The box kept all 22 characters
+  (`maxLength` 18), and the counter read `22 / 18 · shortened on the page` in red. The panel
+  showed Enquiry time 32, Prompt 47 and Button 24.
+- **The event types** (a `type: 'area'` list, the first capped). The box has no `maxLength`; the
+  list guard holds it. Its counter read `longest 9 / 13 · 4 of 4`. Typing *, Private party night*
+  after the four seeds was refused at its first letter (the comma and spaces went in, an empty
+  item not counting). Retyping *Festival* as *Festival weekender* stopped at `Festival week`
+  (`longest 13 / 13 · 4 of 4`), and the canvas chip printed it.
+- **Published tab** (through the dialog's *Open*). It printed `Open dates this…` and the chip
+  `Festival week`, and its `<title>` was the name.
+- **Live alone, spot-checked in the published tab.** At layout 4, a click on *Birthday* moved the
+  summary card's head line to `Birthday`; *Package ›* stepped the package from *The Wedding Set*
+  to *The Festival Set*; *Next Step* opened `Step 2 of 3` with its four boxes live. At layout 1
+  (republished), the heading printed in full (25); the month opened on today's, *October 2026*,
+  since `open` has passed; the foot read the prompt as a span; a click on the 20th made it the
+  link *Enquiry for Tuesday, October 20 at 9:00pm* (`#form`, JP-088's line-as-link); and the
+  arrows stepped to *November 2026* and back.
+- **Back to layout 2.** The canvas printed the full heading, and the counter read `22 / 22` in
+  grey.
+- **`SlotsField` with a counter showing** (session 0's open item, for this repeater). Slot 1's
+  kind, typed *Ceremony, drinks and evening party*, took all 34 (`34 / 36`), and the kind and
+  price boxes stayed level (both 31px tall, at one top) under the row's date box.
+
+**Notes for later sessions.**
+- **Map (8).** The gig rows' venue · city · time share a line: measure them jointly
+  (`joint7.mjs`'s head-row split, bisected per template). Its layout-2 travel card's labels and
+  values (session 1's `IDENTITY_CHARS.map.location` is there too) and layout 4's ticker are next.
+  `seedRows` gives `D.GIGS`, so look at every seeded gig before the floors.
+- **Every later session.** `verdict` now matches a seat to its reference by path first, so a
+  literal printing the seed no longer misaligns the comparison. `KEY_CJ` stages content a key
+  needs before it prints.
+- **For the sweep (12).** Judgements 2 (the slot kind's row vs foot), 3 (the head row's split),
+  4 (the types count) and 6 (`paints` and covered ink; the stamp's 22) are open for the user.
+  The path-first match changes how earlier sections compare their seats, so the full `--check`
+  re-runs them under it.

@@ -2271,7 +2271,8 @@ export const FIELDS = {
     { k: 'image',   l: 'Photo', type: 'image', in: [0, 3],
       hint: 'Fills the polaroid stack beside the month in layout 1, and the small disc on '
           + "layout 4's summary card. Layouts 2 and 3 draw no photograph." },
-    { k: 'heading', l: 'Heading', d: 'Availability', in: { Lime: [0, 1, 2, 3], Grunge: [0, 1, 2, 3], Editorial: [0, 1, 2, 3], Pop: [0, 1, 2, 3], '*': [1, 2, 3] } },
+    { k: 'heading', l: 'Heading', d: 'Availability', in: { Lime: [0, 1, 2, 3], Grunge: [0, 1, 2, 3], Editorial: [0, 1, 2, 3], Pop: [0, 1, 2, 3], '*': [1, 2, 3] },
+      chars: { Retro: [null, 25, 36, 18], Lime: [25, 22, 32, 18], Grunge: [28, 24, 35, 23], Editorial: [14, 14, 21, 11], Pop: [13, 20, 24, 15] } },
     { k: 'open',    l: 'Opens on', type: 'date', d: CAL_OPEN,
       hint: 'The month the calendar opens on, and the date it opens picked. '
           + `Layouts 1 and 3 page through ${CAL_SPAN} months from there, layout 2's seeded `
@@ -2284,11 +2285,13 @@ export const FIELDS = {
           + 'The months here are the published ones, so they start at today when the opening '
           + 'date has passed.' },
     { k: 'time',    l: 'Enquiry time', d: CAL_TIME, in: [0, 3],
+      chars: { Retro: [33, null, null, 34], Lime: [13, null, null, 32], Grunge: [13, null, null, 37], Editorial: [13, null, null, 33], Pop: [28, null, null, 33] },
       hint: "Printed in layout 1's enquiry line, and on its own in layout 4's "
           + 'date card. Leave it empty and the line stops at the date.' },
     // JP-095 (a): the line every layout prints while no day is cued. Cased in
     // sectionVm, as the slot line beside it is; emptied, the seed again.
     { k: 'prompt',  l: 'Prompt', d: CAL_PROMPT,
+      chars: { Retro: [33, 24, 39, 50], Lime: [44, 23, 33, 47], Grunge: [44, 24, 36, 50], Editorial: [44, 29, 24, 50], Pop: [31, 32, 24, 50] },
       hint: 'The line where the picked date goes while none is picked: on the published page, '
           + 'until a visitor picks one, when the opening date is booked or has passed. Left empty, '
           + 'it shows “Pick a date to enquire” again.' },
@@ -2299,22 +2302,29 @@ export const FIELDS = {
     // enquiry line is the link.
     { k: 'cta',     l: 'Button', d: 'Check a date',
       in: { Lime: [3], Grunge: [3], Editorial: [3], Pop: [3], '*': [0, 3] },
+      chars: { Retro: [24, null, null, 24], '*': [null, null, null, 24] },
       hint: 'Layout 4’s Send Enquiry, on the last step of the enquiry wizard and at the foot '
           + 'of the summary; it starts from “Send Enquiry” there, and shows it again if you '
           + 'empty this. Under Retro it is also layout 1’s button. The other templates’ '
           + 'layout 1 has no button: its “Enquiry for …” line is the link.' },
     { k: 'slots',   l: 'Dates on offer', type: 'slots', max: 8, in: [1],
+      cols: { kind: { Retro: [null, 33], Lime: [null, 36], Grunge: [null, 40], Editorial: [null, 33], Pop: [null, 36] },
+        price: { Retro: [null, 36], Lime: [null, 40], Grunge: [null, 43], Editorial: [null, 36], Pop: [null, 40] } },
       hint: 'The dates layout 2 lists, each with what you play and what it starts from. '
           + 'The seeded dates count from Opens on (on the published page, from today once that '
           + 'has passed) until you type one; clear it and the row counts again.' },
     // JP-095 (a): the two column labels over that list; the ↓ is the markup's.
     { k: 'dateLabel',  l: 'Date column label', d: CAL_DATE_LABEL, in: [1],
+      chars: [null, 16],
       hint: 'The label over the list’s dates. Left empty, it is not drawn.' },
     { k: 'availLabel', l: 'Availability column label', d: CAL_AVAIL_LABEL, in: [1],
+      chars: { Retro: [null, 33], '*': [null, 38] },
       hint: 'The label over what you play each night. Left empty, it is not drawn; with both '
           + 'labels empty, their row goes.' },
-    { k: 'slotCta', l: 'Button (layout 2)', d: CAL_SLOT_CTA, in: [1] },
-    { k: 'types',   l: 'Event types', type: 'area', d: CAL_TYPES.join(', '), in: [3],
+    { k: 'slotCta', l: 'Button (layout 2)', d: CAL_SLOT_CTA, in: [1],
+      chars: { Editorial: [null, 25], '*': [null, 26] } },
+    { k: 'types',   l: 'Event types', type: 'area', d: CAL_TYPES.join(', '), in: [3], list: ',',
+      chars: [null, null, null, 13], count: [null, null, null, 4],
       hint: "The choices on the first step of layout 4's enquiry wizard, separated by commas." },
     // JP-076 — no `d`: while the key is absent it follows the Enquiry Form's
     // address (sectionVm's `email` argument, and EditPanel's chain shows it),
@@ -2764,7 +2774,7 @@ export const IDENTITY_CHARS = {
   },
   calendar: {
     title: [null, 64],
-    location: { Retro: [22, null, null, 67], Lime: [null, null, null, 64], Grunge: [null, null, null, 55],
+    location: { Retro: [19, null, null, 67], Lime: [null, null, null, 64], Grunge: [null, null, null, 55],
       '*': [null, null, null, 67] },
     seal: { Retro: [19] },
   },

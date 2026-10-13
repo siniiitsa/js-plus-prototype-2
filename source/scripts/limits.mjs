@@ -231,10 +231,16 @@ function queryOf(p, themeName, design, v) {
     let next
     if (Array.isArray(rows)) next = rows.map((r, i) => (i === 0 ? { ...(Array.isArray(r) ? {} : r), [p.col]: v } : r))
     else { const [k0] = Object.keys(rows); next = { ...rows, [k0]: { ...rows[k0], [p.col]: v } } }
-    return `&cj=${encodeURIComponent(JSON.stringify({ [p.f.k]: next }))}`
+    return `&cj=${encodeURIComponent(JSON.stringify({ ...KEY_CJ[`${p.cat}.${p.key}`], [p.f.k]: next }))}`
   }
-  return `&cj=${encodeURIComponent(JSON.stringify({ ...twinsOf(p, themeName, design), [p.f.k]: v }))}`
+  return `&cj=${encodeURIComponent(JSON.stringify({ ...KEY_CJ[`${p.cat}.${p.key}`], ...twinsOf(p, themeName, design), [p.f.k]: v }))}`
 }
+// Content a key needs on the page before it prints at all: the calendar's
+// prompt shows only while no day is cued, so the cued day (`open`) is booked,
+// reach.mjs's staging (session 7). A slot's kind is read in its row alone: the
+// foot's composed line ("Thursday evening selected") wraps or ellipsizes by
+// design, so the cued day is booked and the foot prints the prompt instead.
+const KEY_CJ = { 'calendar.prompt': { booked: [D.CAL_OPEN] }, 'calendar.slots.kind': { booked: [D.CAL_OPEN] } }
 // A sibling field whose seed prints the same string (media layout 2's counter
 // and fan chip are both "Featured") would be a seat of the probe's reference
 // as well, so it is renamed for the probe: the reference seats this field alone.
@@ -489,7 +495,11 @@ function verdict(m, ref, allowed, p) {
   const ringProbe = p.ring || p.key === 'badgeText'
   if (ringProbe && !m.seats.some((s) => s.ring)) return 'unseen'
   for (const [i, s] of m.seats.entries()) {
-    const r = ref.seats[i] ?? ref.seats[0]
+    // A seat is compared with the reference's seat at its own path first: a
+    // literal printing the seed seats the reference and not the value (calendar
+    // layout 2's head link, "● Availability", ahead of the h2), and by index
+    // the h2 met the link's box (session 7).
+    const r = ref.seats.find((x) => x.path === s.path) ?? ref.seats[i] ?? ref.seats[0]
     // A seal's ring: no copy runs off its path, the copies never meet, and no
     // copy meets a mark it did not meet at the reference. Its seats take no
     // other test (their boxes are an arc's bounding box), and only the seal's
