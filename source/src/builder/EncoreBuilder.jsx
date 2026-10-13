@@ -3243,9 +3243,10 @@ function GigsField({ caps, value, max, design, onChange }) {
 
   // The short fields that share a line: city and time, and month, day and
   // year. Wider than this panel's width would push them to wrap, which reads
-  // as two rows rather than one.
+  // as two rows rather than one. Top-aligned, or a counter under a capped box
+  // stretches the uncapped year beside it (SongsField's row, session 5).
   const pair = (...xs) => (
-    <div style={{ display: 'flex', gap: '6px' }}>{xs}</div>
+    <div style={{ display: 'flex', gap: '6px', alignItems: 'flex-start' }}>{xs}</div>
   )
 
   const row = (i, g) => (

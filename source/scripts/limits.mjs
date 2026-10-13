@@ -11,6 +11,7 @@
 //   --prose                                    prose for every key (no KEY_SAMPLES override)
 //   --designs=0,1                              only these designs (0-based)
 //   --extra-lines=songs.title                  these keys one line past the frame's
+//   --no-floor=stats.value                     these keys may shrink without bound
 //
 // A key is `heading`, `tracks.title` (a repeater column, row 0 of the seed),
 // `tags[]` (a list's item, item 0) or `tags#` (a list's item count), or
@@ -108,6 +109,9 @@ const EXTRA_LINES = { title: 1, 'who.title': 1 }
 // alternative a user call would allow (JP-104's two-line title at repertoire
 // layout 3's 768 and 390, session 5), as --prose reads session 4's.
 for (const k of (opt('extra-lines', '') || '').split(',').filter(Boolean)) EXTRA_LINES[k] = 1
+// --no-floor=stats.value lets a key's fitted seat shrink without bound, to read
+// a fit the user left floorless (map layout 4's stat value, JP-110, session 8).
+for (const k of (opt('no-floor', '') || '').split(',').filter(Boolean)) FLOOR[k] = 0
 // A repeater's list count whose chip row is the union over every row (session 5).
 const UNION_COUNT = new Set(['songs.tags#'])
 
@@ -131,6 +135,13 @@ const KEY_SAMPLES = flag('prose') ? {} : {
     `From £1,250 + VAT for the full day, ceremony to last dance${PROSE_TAIL}`,
     `£685 per set, two sets of ninety minutes with a break${PROSE_TAIL}`,
   ],
+  // A gig's month and day are date parts, set in fixed stamps and discs and
+  // in the composed meta lines (session 8). The month is the artist's free
+  // text, matched by its first three letters (gigStamp), so it is read as month
+  // names; the day as a date's digits, led by a pair no seed or literal on the
+  // map prints ("12" is inside "12 mile radius" and "120").
+  'gigs.month': ['September', 'February', 'December'].map((m) => `${m}${PROSE_TAIL}`),
+  'gigs.day': ['28th–30th', '31st & 1st', '17th to 19th'].map((d) => `${d}${PROSE_TAIL}`),
 }
 const samplesOf = (p) => {
   const ks = KEY_SAMPLES[p.key]
@@ -228,13 +239,18 @@ function queryOf(p, themeName, design, v) {
   if (p.who) return `&who=${encodeURIComponent(JSON.stringify({ [p.who]: v }))}`
   if (p.col) {
     const rows = seedRows(p.cat, p.f, themeName, design)
+    const at = rowsAt(p, design)
     let next
-    if (Array.isArray(rows)) next = rows.map((r, i) => (i === 0 ? { ...(Array.isArray(r) ? {} : r), [p.col]: v } : r))
+    if (Array.isArray(rows)) next = rows.map((r, i) => (at.includes(i) ? { ...(Array.isArray(r) ? {} : r), [p.col]: v } : r))
     else { const [k0] = Object.keys(rows); next = { ...rows, [k0]: { ...rows[k0], [p.col]: v } } }
     return `&cj=${encodeURIComponent(JSON.stringify({ ...KEY_CJ[`${p.cat}.${p.key}`], [p.f.k]: next }))}`
   }
   return `&cj=${encodeURIComponent(JSON.stringify({ ...KEY_CJ[`${p.cat}.${p.key}`], ...twinsOf(p, themeName, design), [p.f.k]: v }))}`
 }
+// The rows a column's value is written into: row 0, and at map layout 2 row 1
+// as well, since its panel features the page's first gig and its list is the
+// page minus that gig, so row 0 never reaches a list row (session 8).
+const rowsAt = (p, design) => (p.cat === 'map' && p.f?.type === 'gigs' && design === 1 ? [0, 1] : [0])
 // Content a key needs on the page before it prints at all: the calendar's
 // prompt shows only while no day is cued, so the cued day (`open`) is booked,
 // reach.mjs's staging (session 7). A slot's kind is read in its row alone: the
@@ -629,9 +645,14 @@ async function runProbe(pg, p, t) {
       while (hi - lo > 1) { const mid = (lo + hi) >> 1; if (await ok(mid)) lo = mid; else hi = mid }
       // Confirm against non-monotonic wraps: step down until the length and
       // the two below it all pass (a longer value can fit where a shorter one
-      // does not, when its widest word shrinks a fitted head).
+      // does not, when its widest word shrinks a fitted head). A length under
+      // the seed's is never a cap, so it is not tested: a one-character value
+      // seats unrelated text ("2" is inside the radius line), and the map's
+      // two-character day stepped down from 3 to 2 on it (session 8).
+      const fl = floorOf(p, themeName, a)
+      const okAbove = async (n) => n < fl || (await ok(n))
       for (let first = true; lo > 1; lo--, first = false) {
-        if ((first || (await ok(lo))) && (lo <= 2 || ((await ok(lo - 1)) && (await ok(lo - 2))))) break
+        if ((first || (await ok(lo))) && (lo <= 2 || ((await okAbove(lo - 1)) && (await okAbove(lo - 2))))) break
       }
       const why = verdict(await at(0, lo + 1), ref, allowed, p)
       // How wide the seat has grown at the cap, against the seed's: a one-line

@@ -2342,6 +2342,17 @@ export const FIELDS = {
   // emptied array means no gigs, and there is no null sentinel.
   map: [
     { k: 'gigs',    l: 'Upcoming gigs', type: 'gigs', max: 12,
+      // Session 8 of the character-limits pass: the venue, the city · time line,
+      // the date stamp and disc (a month read as month names, the day as dates),
+      // split jointly where they share a line (plans/char-limits.md).
+      cols: {
+        venue: { Retro: [34, 21, 41, 36], Lime: [32, 18, 37, 40], Grunge: [36, 20, 41, 40], Editorial: [19, 18, 25, 40],
+          Pop: [18, 18, 28, 40] },
+        city: { Retro: [22, 14, 20, 13], Editorial: [29, 13, 23, 13], Pop: [13, 13, 20, 13], '*': [20, 13, 20, 13] },
+        time: { Retro: [13, 5, 13, 10], Pop: [8, 5, 13, 13], '*': [13, 5, 13, 13] },
+        month: { Retro: [7, 4, 11, 9], Lime: [5, 3, 12, 9], Pop: [9, 5, 12, 9], '*': [5, 5, 12, 9] },
+        day: { Retro: [5, 5, 5, 5], '*': [6, 3, 5, 5] },
+      },
       // The page size is PINS.length, not a literal — see vm.gigPage — except
       // in layout 4, whose whole list is a one-gig ticker. The cities are read
       // a second time in layout 3, where they derive the split list's filter
@@ -2361,14 +2372,18 @@ export const FIELDS = {
     // 2's "Travel radius", its seeds there (mapKickerSeed(), in sectionVm and
     // EditPanel's chain alike).
     { k: 'kicker',  l: 'Kicker', d: MAP_KICKER, in: [0, 1, 2],
+      chars: { Retro: [44, 30, 58], Lime: [67, 26, 53], Pop: [44, 30, 58], '*': [67, 30, 58] },
       hint: 'The small line over the heading. Layout 1 starts from “Shows/coverage” and layout 2 from '
           + '“Travel radius”. Left empty, it is not drawn.' },
     // JP-090: layout 1's label over the gig list; the "· 5" count is the page's.
     // JP-095 (b): layout 2's "Other upcoming · 4" too (mapListLabelSeed()).
     { k: 'listLabel', l: 'List label', d: MAP_LIST_LABEL, in: [0, 1],
+      chars: { Retro: [37, 54], Lime: [40, 50], Grunge: [41, 54], Editorial: [46, 54], Pop: [31, 54] },
       hint: 'The label over the list of gigs, before its count. Layout 2 starts from “Other upcoming”. '
           + 'Left empty, neither is drawn.' },
-    { k: 'heading', l: 'Heading', d: 'Manchester' },
+    { k: 'heading', l: 'Heading', d: 'Manchester',
+      chars: { Retro: [20, 20, 39, 25], Lime: [19, 17, 34, 24], Grunge: [16, 20, 37, 25], Editorial: [11, 19, 22, 22],
+        Pop: [17, 21, 25, 23] } },
     // Layouts 1–3 print it, once each (reach.mjs's `map.radius`). It was
     // "Coverage badge", after layout 1's reading, until JP-060: layout 2's Lime
     // block printed it in the travel card's chip as well as its Max travel, and
@@ -2377,6 +2392,7 @@ export const FIELDS = {
     // radius" (mapRadiusSeed(), in sectionVm and EditPanel's chain alike), and
     // JP-124 layout 2 "120 mi".
     { k: 'radius',  l: 'Coverage', d: MAP_RADIUS, in: [0, 1, 2],
+      chars: { Retro: [26, 11, 25], Lime: [51, 13, 20], Grunge: [44, 13, 26], Editorial: [14, 13, 26], Pop: [29, 13, 26] },
       hint: 'How far you travel. Layout 1 prints it beside the heading, layout 2 as Max travel on '
           + 'the travel card, where it starts from “120 mi”, and layout 3 in the line under the '
           + 'map, where it starts from “120 mi radius”.' },
@@ -2384,34 +2400,47 @@ export const FIELDS = {
     // own "Based in" label (JP-096, user call, 2026-10-01): the frame's value is
     // the town alone, and this field's copy says "Based in" itself.
     { k: 'base',    l: 'Based in',       d: MAP_BASE, in: [0, 2],
+      chars: { Retro: [29, null, 33], Lime: [35, null, 27], Grunge: [39, null, 33], '*': [24, null, 33] },
       hint: 'Layout 1 prints it beside the map and layout 3 under it. Layout 2’s travel card '
           + 'shows the Location you typed on the header instead.' },
-    { k: 'terms',   l: 'Travel terms',   d: MAP_TERMS, in: [0, 1] },
-    { k: 'travelTime', l: 'Travel time (layout 2)', d: MAP_TRAVEL_TIME, in: [1] },
-    { k: 'fee',        l: 'Booking fee (layout 2)', d: MAP_FEE, in: [1] },
+    { k: 'terms',   l: 'Travel terms',   d: MAP_TERMS, in: [0, 1],
+      chars: { Retro: [59, 50], Lime: [58, 41], Pop: [45, 51], '*': [58, 51] } },
+    { k: 'travelTime', l: 'Travel time (layout 2)', d: MAP_TRAVEL_TIME, in: [1],
+      chars: { Retro: [null, 11], '*': [null, 13] } },
+    { k: 'fee',        l: 'Booking fee (layout 2)', d: MAP_FEE, in: [1],
+      chars: { Retro: [null, 11], '*': [null, 13] } },
     // JP-095 (b) · JP-096 (user call, 2026-10-01): layout 2's travel card, the
     // frame's own words, uncased. A label or caption left empty is not drawn; a
     // stat's label goes with its value, as the cell always did; the two pills
     // read their seed again, since a pill always stands.
     { k: 'homeLabel',   l: 'Home label',   d: MAP_HOME_LABEL, in: [1],
+      chars: { Lime: [null, 16], '*': [null, 18] },
       hint: 'The small line over your home town on the travel card. The town is the header’s Location. '
           + 'Left empty, it is not drawn.' },
     { k: 'homeCaption', l: 'Home caption', d: MAP_HOME_CAPTION, in: [1],
+      chars: { Lime: [null, 16], '*': [null, 18] },
       hint: 'The small line under your home town. Left empty, it is not drawn.' },
     { k: 'venueLabel',  l: 'Venue label',  d: MAP_VENUE_LABEL, in: [1],
+      chars: [null, 20],
       hint: 'The small line over the featured gig’s city. Left empty, it is not drawn.' },
     { k: 'venueCaption', l: 'Venue caption', d: MAP_VENUE_CAPTION, in: [1],
+      chars: { Lime: [null, 16], '*': [null, 18] },
       hint: 'The small line under the featured gig’s city. Left empty, it is not drawn.' },
     { k: 'radiusLabel', l: 'Max travel label', d: MAP_RADIUS_LABEL, in: [1],
+      chars: { Retro: [null, 14], Lime: [null, 15], '*': [null, 17] },
       hint: 'Over Coverage on the travel card. Left empty, the value stands alone.' },
     { k: 'travelTimeLabel', l: 'Travel time label', d: MAP_TIME_LABEL, in: [1],
+      chars: { Retro: [null, 14], Lime: [null, 15], '*': [null, 17] },
       hint: 'Over Travel time on the travel card. Left empty, the value stands alone.' },
     { k: 'feeLabel',    l: 'Booking fee label', d: MAP_FEE_LABEL, in: [1],
+      chars: { Retro: [null, 14], Lime: [null, 15], '*': [null, 17] },
       hint: 'Over Booking fee on the travel card. Left empty, the value stands alone.' },
     { k: 'venueCta',    l: 'Venue link button', d: MAP_VENUE_CTA, in: [1],
+      chars: { Retro: [null, 11], Lime: [null, 10], Grunge: [null, 10], Editorial: [null, 19], Pop: [null, 20] },
       hint: 'Opens the featured gig’s tickets link on the published page. Left empty, it shows '
           + '“Venue Link” again.' },
     { k: 'routeCta',    l: 'Directions button', d: MAP_ROUTE_CTA, in: [1],
+      chars: { Retro: [null, 22], Lime: [null, 17], Grunge: [null, 19], Editorial: [null, 24], Pop: [null, 28] },
       hint: 'Opens directions to the featured gig on the published page. Left empty, it shows '
           + '“Get Directions” again.' },
     // Layout 3's foot pill, the frame's "See all gigs", and the only layout that
@@ -2419,23 +2448,31 @@ export const FIELDS = {
     // filter; where the list is already one page it stays a picture (the
     // Soundcloud rule). An emptied label drops the pill.
     { k: 'cta',     l: 'Button (layout 3)', d: 'See all gigs', in: [2],
+      chars: [null, null, 24],
       hint: 'Lists every gig at once on the published page, when there is more than one page of them.' },
     // Layout 3's QA fields, which layout 2 reads as well since JP-040 (its fit
     // had dropped all four as claims). None names a layout in its label: the
     // panel lists them only where the design reads them.
     { k: 'status',  l: 'Map tag', d: MAP_STATUS, in: [1, 2],
+      chars: { Retro: [null, 18, 20], Lime: [null, 13, 20], Grunge: [null, 18, 20], '*': [null, 10, 20] },
       hint: 'The tag above the featured gig. Layout 2 also prints it as the chip on every gig row.' },
-    { k: 'updated', l: 'Map note', d: MAP_UPDATED, in: [1, 2] },
+    { k: 'updated', l: 'Map note', d: MAP_UPDATED, in: [1, 2],
+      chars: { Lime: [null, 31, 31], '*': [null, 35, 34] } },
     { k: 'rings',   l: 'Ring labels', d: MAP_RINGS, in: [1, 2, 3],
+      // Chips on the rings, sliced to the three rings the map draws.
+      list: ',', chars: [null, 13, 13, 13], count: [null, 3, 3, 3],
       hint: 'Up to three, inner ring first, separated by commas.' },
     { k: 'expand',  l: 'Map link', d: MAP_EXPAND, in: [1, 2],
+      chars: [null, 22, 22],
       hint: 'Opens directions to the gig the panel is showing, on the published page. Leave empty to hide it.' },
     { k: 'span',    l: 'Panel note (layout 4)', d: MAP_SPAN, in: [3],
+      chars: [null, null, null, 58],
       hint: 'Beside "Travel & reach" above the stat cards. Leave empty to hide it.' },
     // Layout 4's stat wall (JP-077 · JP-078 · JP-082, user call, 2026-09-29):
     // the ninth structured editor, { label, value, sub } per card, seeded with
     // the frame's four. Two to a row, so a third trails half-width.
     { k: 'stats',   l: 'Stats', type: 'stats', max: 4, in: [3],
+      cols: { label: [null, null, null, 19], value: [null, null, null, 14], sub: [null, null, null, 20] },
       hint: 'One card each, two to a row. A card prints only the parts you fill in; an empty row isn’t shown.' },
   ],
   testimonials: [

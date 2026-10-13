@@ -186,3 +186,36 @@ another `notes/` file.
   layout 3, where the frames print *UK* (Retro's fit seated it in this line,
   `../plans/retro/layout-3.md:959`). So the 768 line still wraps to two lines under every
   template, as it did before (the layout-3 fits' named diff, Retro's through Lime and Grunge).
+- **Character caps** (`plans/char-limits.md`, *Session 8*, 2026-10-13; the user's calls of
+  session 1, unchanged). Every text key has a `chars` spec, and both repeaters have `cols`. The
+  decisions that are this section's own:
+  - **A gig's city, time, month and day are one budget** wherever they share a line: the meta line
+    (*city · time* at layouts 1 and 3, *city · MONTH · time* in layout 2's list), layout 2's
+    when-chip and layout 4's ticker (*city · MON DD · time*). Their caps are a joint split, not
+    each column read beside the others' seeds:
+    - the date parts take a date's width: the month up to 9, the day up to 5;
+    - the time takes up to 13 (*9pm till late*);
+    - the city takes the rest, never under its floor of 13 (*Lake District*);
+    - then the time, the month and the day give way.
+
+    Layout 2's list line is full at the seeds at 768. So there the time is 5 (*22:00*), the month
+    3–5 and the city 13–14. The user may trade that for decision 6's ellipsis. A cap change to
+    any of the four is re-checked jointly (the session's `joint8.mjs`, every column at its cap at
+    once).
+  - **The venue has a line of its own** at every layout, so it is capped alone. At layout 2 the
+    panel features row 0 and the list prints the others, so a probe of a gig column writes rows 0
+    and 1 there (`rowsAt` in `scripts/limits.mjs`).
+  - **The month and day are read as dates**, not prose: month names, and digit-led days.
+    - Layout 1's stamp holds a 5-character month under Lime, Grunge and Editorial (*SEPT*, not
+      *SEPTEMBER*). Retro's holds 7 and Pop's 9, and layout 3's disc 11–12.
+    - A day longer than two digits prints, but `gigStamp` reads no weekday or status from it.
+      The cap is fit, not validation, and `GigsField`'s layout-3 warning is what says so.
+  - **`rings` is a ',' list of 3 at most**: the map slices its labels to its three rings. A ring
+    label is a chip, capped at 13 (the sized rule).
+  - **Venue Link stays at its seed's 10–11 under Retro, Lime and Grunge**, because the 768 pill
+    wraps any longer label (`vm.mapVenueCtaWraps`, above). **The stat value is 14**: one line,
+    as row 0's *120* is, floored at the seeded *Manchester, UK*, which already takes two lines at
+    390.
+  - **`GigsField`'s `pair()` rows are top-aligned**: a counter under the month (always showing at
+    layout 2, where *Jul* is 3 / 3) stretched the uncapped year box beside it. That is session
+    5's `SongsField` fix.

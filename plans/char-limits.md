@@ -1191,3 +1191,190 @@ layout 2 (Feature spread), the canvas at 1440.
   4 (the types count) and 6 (`paints` and covered ink; the stamp's 22) are open for the user.
   The path-first match changes how earlier sections compare their seats, so the full `--check`
   re-runs them under it.
+
+## Session 8: the events map (2026-10-13)
+
+**Scope.** These are the map's own text keys, the list built from `FIELDS.map`:
+- `kicker`, `listLabel`, `heading`, `radius`, `base`, `terms`, `travelTime` and `fee`;
+- layout 2's travel card: `homeLabel`, `homeCaption`, `venueLabel`, `venueCaption`,
+  `radiusLabel`, `travelTimeLabel`, `feeLabel`, `venueCta` and `routeCta`;
+- layout 3's `cta` (*See all gigs*), the panel's `status`, `updated`, `rings` (item and count)
+  and `expand`, and layout 4's `span`;
+- the `gigs` columns `venue`, `city`, `time`, `month` and `day`, and layout 4's `stats` columns
+  `label`, `value` and `sub`.
+
+`year` and `link` are not text seats. `IDENTITY_CHARS.map` (session 1's layout-2 *Based in*) was
+re-verified by `--check` and passes. The probe ran on a fresh Vite at :5199. Its per-width
+readout is [`char-limits/session-8-probe.md`](./char-limits/session-8-probe.md), and the decisions
+are in `notes/map.md`.
+
+**Rules.** These are session 1's calls, unchanged. `rules.mjs` gains six sized keys, each
+screenshotted first: the pills `venueCta`, `routeCta` and `cta`, the `status` chip (the panel's
+tab, and layout 2's chip on every gig row), the `expand` text link (session 6's back-link
+precedent) and the ring labels, `rings[]`, which are filled chips on the rings. There are no
+blocks. Everything else is metadata.
+
+**The caps written** (by layout 1, 2, 3, 4; `–` where the layout does not read the field; `f`
+marks a cap at its floor that prose fails at some width).
+
+| field | rule | Retro | Lime | Grunge | Editorial | Pop |
+|---|---|---|---|---|---|---|
+| `kicker` | meta | 44 30 58 | 67 26 53 | 67 30 58 | 67 30 58 | 44 30 58 |
+| `listLabel` | meta | 37 54 | 40 50 | 41 54 | 46 54 | 31 54 |
+| `heading` | meta | 20 20 39 25 | 19 17 34 24 | 16 20 37 25 | 11 19 22 22f | 17 21 25 23 |
+| `radius` | meta | 26 11 25 | 51 13 20 | 44 13 26 | 14 13 26 | 29 13 26 |
+| `base` | meta | 29 – 33 | 35 – 27 | 39 – 33 | 24 – 33 | 24 – 33 |
+| `terms` | meta | 59 50 | 58 41 | 58 51 | 58 51 | 45 51 |
+| `travelTime`, `fee` | meta | – 11 | – 13 | – 13 | – 13 | – 13 |
+| `homeLabel`, `homeCaption`, `venueCaption` | meta | – 18 | – 16 | – 18 | – 18 | – 18 |
+| `venueLabel` | meta | – 20f | – 20 | – 20f | – 20f | – 20f |
+| `radiusLabel`, `travelTimeLabel`, `feeLabel` | meta | – 14 | – 15 | – 17 | – 17 | – 17 |
+| `venueCta` | sized | – 11 | – 10 | – 10 | – 19 | – 20 |
+| `routeCta` | sized | – 22 | – 17 | – 19 | – 24 | – 28 |
+| `cta` | sized | – – 24 | same | same | same | same |
+| `status` | sized | – 18 20 | – 13 20 | – 18 20 | – 10f 20 | – 10f 20 |
+| `updated` | meta | – 35 34 | – 31 31 | – 35 34 | – 35 34 | – 35 34 |
+| `rings` per chip / count | sized / count | – 13 13 13 / 3 | same | same | same | same |
+| `expand` | sized | – 22 22 | same | same | same | same |
+| `span` | meta | – – – 58 | same | same | same | same |
+| `gigs.venue` | meta | 34 21 41 36 | 32 18 37 40 | 36 20 41 40 | 19 18f 25 40 | 18f 18f 28 40 |
+| `gigs.city` | meta (joint) | 22 14 20 13 | 20 13 20 13 | 20 13 20 13 | 29 13 23 13 | 13 13 20 13 |
+| `gigs.time` | meta (joint) | 13 5 13 10 | 13 5 13 13 | 13 5 13 13 | 13 5 13 13 | 8 5 13 13 |
+| `gigs.month` | meta (joint at 2, 4) | 7 4 11 9 | 5 3 12 9 | 5 5 12 9 | 5 5 12 9 | 9 5 12 9 |
+| `gigs.day` | meta (joint at 2, 4) | 5 5 5 5 | 6 3 5 5 | 6 3 5 5 | 6 3 5 5 | 6 3 5 5 |
+| `stats.label` | meta | – – – 19 | same | same | same | same |
+| `stats.value` | meta | – – – 14f | same | same | same | same |
+| `stats.sub` | meta | – – – 20 | same | same | same | same |
+
+**Judgement calls.**
+1. **The key list is `FIELDS.map`'s, not the handoff's.** The handoff named the travel card, the
+   pills, the gigs and the stats. The grep adds eleven keys: `radius`, `base`, `terms`,
+   `travelTime`, `fee`, `cta`, `status`, `updated`, `rings`, `expand` and `span`. All eleven are
+   probed and capped. **`rings`' count is 3 and was not probed:** every map slices the labels to
+   its three rings (`s.mapRings.slice(0, ringW.length)`), and the hint says "up to three". The
+   field gains `list: ','`, so the panel's list guard holds the items and the count.
+2. **A gig's city, time, month and day share one line, so they are a joint split.**
+   - **Where they meet.** City and time share the meta line at layouts 1 and 3. At layout 2 the
+     list line is *city · MONTH · time*, and the featured gig's when-chip is *Jul 12 · 22:00*.
+     Layout 4's ticker is *city · MON DD · time*. At layouts 1 and 3 the month and day sit in the
+     stamp or the disc, apart from the line.
+   - **The solo readings fail together.** Each column was first read beside the others' seeds.
+     All of them at those caps failed 137 of 240 joint renders (`joint8.mjs` in the scratchpad):
+     the lines wrap at layout 3 and clip or ellipsize at 1, 2 and 4.
+   - **The rule** (`split8.mjs`, every template, design and width, four samples):
+     - the date parts take a date's width: the month up to 9 (*September*), the day up to 5;
+     - the time takes up to 13 (*9pm till late*);
+     - the city takes the rest, never under its floor of 13 (*Lake District*);
+     - where the city at its floor still fails, the time gives way, then the month, then the day.
+   - **The result.** Layouts 1 and 3 hold a 20–29-character city beside a 13-character time; Pop's
+     layout 1 holds 13 beside 8. Layout 4 holds 13 beside 13 (Retro 10).
+   - **Layout 2 is the tight one.** Its list row's meta line at 768 is already full at the seeds
+     (*Manchester · JUL · 21:00*). It holds the city at 13–14, the time at 5 (*22:00*, its floor:
+     *9pm* fits and *9pm till late* does not), the month at 3–5 and the day at 3–5.
+   - **Checked.** The joint check passes with every column at its written cap: 0 failures in 240
+     renders.
+   - **The user's to overrule.** The line ellipsizes by design (decision 6, session 5's judgement
+     5 shape), so the solo caps would trade layout 2's room for an ellipsis there. Those are the
+     readout's numbers.
+   - **What the clamp prints there** (the real app, Lime). A *September* and a *28th*, typed at
+     layout 3 and moved to layout 2 (month and day caps 3), print `Manchester · SE… · 21:00` on the
+     list line and `28…` in the day chip. Both counters read red, `9 / 3` and `4 / 3 · shortened
+     on the page`, and each wraps to three lines under its narrow box. That is cosmetic, and
+     the boxes stay level.
+3. **The month and day take `KEY_SAMPLES`, decided before the probe** (session 7's judgement 1
+   shape). Both are date parts in fixed stamps and discs. The month is free text matched by its
+   first three letters (`gigStamp`), so it is read as month names. The day is read as digit-led
+   dates (*28th–30th*). A two-character prose needle would also seat *12 mile radius* and *120*.
+   - The month stamp at layout 1 holds 5 under Lime, Grunge and Editorial: *SEPT* fits and
+     *SEPTEMBER* does not. Retro's holds 7 and Pop's 9. Layout 3's disc holds 11–12.
+   - A day cap over 2 is fit, not validation. `gigStamp` reads 1–2 digits, so a *28th* prints
+     but has no weekday or Upcoming / Past pill, and `GigsField` already warns about that at
+     layout 3.
+4. **The stat value is held to one line, and 14 is its floor.** Row 0's *120* is one line in the
+   frame. Prose reads 9–13 before a second line: the census holds the box to one, and lines
+   bind, not JP-110's floorless fit, which never reached a shrink. The seeded fourth card,
+   *Manchester, UK* (14), already takes two lines at 390, so the cap is the floor. `--check`
+   reports `floor`. **The user's to overrule:** with one line more
+   (`--extra-lines=stats.value`, the readout's second table) it reads Retro 22, Lime 20,
+   Grunge 22, Editorial 15, Pop 17.
+5. **Venue Link is at its seed (10–11) under Retro, Lime and Grunge.** At 768 the pill wraps any
+   label longer than its seed (`vm.mapVenueCtaWraps`, the designed wrap of `notes/map.md`). So the
+   11th character takes a second line, and the sized rule's 20 is not reachable. Editorial and Pop
+   take 19 and 20.
+6. **Floors** (prose fails, the seed fits; `--check` reports `floor`, 15 rows):
+   - the venue holds *The Deaf Institute*'s 18 at Pop's layouts 1 and 2 and Editorial's layout 2
+     (17 read at 390);
+   - the heading holds *Distances we’ll Travel*'s 22 at Editorial's layout 4 (20 read);
+   - the stat value is 14 (judgement 4);
+   - the `status` chip holds *In transit*'s 10 at Editorial's and Pop's layout 2 (9 read);
+   - *Willing to travel to*'s 20 is the floor of `venueLabel` at 768 on four templates. That seed
+     already takes two lines there under Lime (`notes/map.md`), and prose reads 18.
+
+**Probe fixes** (`scripts/limits.mjs`; they apply to every later section, and the sweep's full
+`--check` re-runs earlier sections under them).
+- **`rowsAt`.** At map layout 2 a gig column's value is written into rows 0 and 1. The panel
+  features the page's first gig and the list is the page minus it, so row 0 never reached a list
+  row: the first check seated *Kestrel nights* in the panel's h3 alone.
+- **The confirm step does not test lengths under the seed's.** It tested `lo − 1` and `lo − 2`,
+  and at a two-character seed that is one character. The needle *2* seats unrelated, smaller
+  text, so it read `shrink`, and the day at layout 2 stepped down from 3 to 2. A length under
+  the seed's is never a cap. Twelve keys were re-probed under the fix, and only that day moved.
+  **For the sweep (12):** a seed of 3 or fewer characters measured before this fix can have been
+  under-read the same way (the bio's `since` at 9 is not one).
+- **`KEY_SAMPLES`** for `gigs.month` and `gigs.day` (judgement 3), and **`--no-floor=<keys>`**,
+  which lets a key's fitted seat shrink without bound. It was written for the stat value and
+  turned out not to be needed (judgement 4).
+
+**Checks.**
+- `--seeds` over every map key: 0 seeds over their caps.
+- `--check` over every map key, with the three samples and the lower-case one: 0 failures in
+  440 rows. The `who.*` rows are included: `IDENTITY_CHARS.map.location` at layout 2 (15–18)
+  passes on every template, and the `kicker`, `tags`, `title` and `seal` rows are `unseen`. 15
+  rows report `floor`, all of them judgement 6's.
+- The joint check (`joint8.mjs`): every gig column at its cap, rows 0 and 1 at layout 2, every
+  template, design and width, four samples. 0 failures in 240 renders.
+
+**Real app.** Tested with chrome-devtools on the :5199 server: a Lime page laid out by header
+layout 3 (Inset Hero), the canvas at 1440.
+- **Map at layout 3.** The panel showed venue 37, city 20, time 13, month 12, day 5, Kicker 53,
+  Heading 34, Coverage 20, Based in 27, See all gigs 24, Map tag 20, Map note 31 and Map link 22.
+  The ring labels have no `maxLength`, since the list guard holds them, and read
+  `5 / 13 · 3 of 3`.
+- **Typing.**
+  - *Where the summer weddings take me next* stopped at 34 (`34 / 34`).
+  - Map link showed no counter at 17 characters (80% of 22 is 17.6). *Open the full map view of
+    every gig* stopped at `Open the full map view` (`22 / 22`).
+- **The layout picker.** The thumbnails printed `Where the summer…` at layouts 1, 2 and 4 (19, 17,
+  24), and the full heading at layout 3.
+- **Map to layout 2.** The canvas printed `Where the summer…`. The box kept all 34 characters
+  (`maxLength` 17), and the counter read `34 / 17 · shortened on the page` in red. The published
+  tab (through the dialog's *Open*) printed `Where the summer…`, and its `<title>` was the name.
+- **`GigsField`'s `pair()` rows with counters showing** (session 0's open item, for this
+  repeater). Row 2's city, typed *Wolverhampton Wanderers*, stopped at `Wolverhampton`
+  (`13 / 13`), and the canvas line read `Wolverhampton · JUL · 21:00`. The city and time boxes
+  stayed level. **The month · day · year row did not.** At layout 2 the month's counter is always
+  showing (*Jul* is 3 / 3), and the uncapped year box stretched to 52px beside it. That is session
+  5's `SongsField` defect, and the same fix applies: `pair()` is top-aligned now, and the three
+  boxes stand at 31px on one top.
+- **Back to layout 3**, republished. The published tab printed the full heading.
+- **Live alone, spot-checked in the published tab**, with a sixth gig added (*Band on the Wall*,
+  Leeds, Sep 06 2026):
+  - Layout 2: a row click featured its gig in the panel (*Private wedding*), and `+` zoomed the
+    map from `scale(1)` to `scale(1.25)`.
+  - Layout 3: page 1 listed five rows, each with *Upcoming*. *See all gigs* listed all six, the
+    sixth with *Past* (its date is before today). The chips were *All · Manchester · 4 · Lake
+    District · 1 · Leeds · 1*, and *Leeds* filtered the list to that gig, which the panel then
+    featured.
+  - Layout 1: the head printed `Where the summer…` (19). The pager showed pages 1 and 2, with the
+    sixth gig alone on page 2. A row click lit *Mint Lounge* and its pin (an ink disc in a lime
+    ring, screenshotted), and a second click put both back.
+
+**Notes for later sessions.**
+- **Testimonials (9).** The quotes' who · role · when share a byline: measure them jointly, with
+  `joint8.mjs`'s shape (every column at its cap, every seat compared by path). Check whether a
+  layout's seat is fed by a row other than row 0, as map layout 2's list is (`rowsAt`). Layout
+  2's tile rail prints initials (*HL*, *AO*, …), which look derived from `who`; check before
+  probing them as a seat.
+- **For the sweep (12).** Judgements 2 (layout 2's meta line), 4 (the stat value's line) and 5
+  (Venue Link's wrap) are open for the user. The confirm-step fix can raise a short seed's earlier
+  cap, never lower it.
