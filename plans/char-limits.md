@@ -34,6 +34,8 @@ to `plans/README.md`.
 7. **Shared identity keys** (header `title`/artist name, `kicker`, `location`, `tags`) use the tightest
    cap among the sections on the page at their current layouts. A later layout change elsewhere is covered
    by that section's render clamp.
+   *Amended for the name in session 1 (user call, 2026-10-13):* the artist's name takes the header's own
+   cap, and every other seat that prints it (a byline, a display head, a seal's ring) clamps its own copy.
 8. **Lists** (`tags`, `types`, `promises`, tier features, `rings`, …) get a per-item cap and an item count.
    An edit that pushes any item past its cap, or the list past its count, is refused, and the page clamps
    any item that is over.
@@ -235,3 +237,167 @@ Each section session does the following:
 - The counter reads "shortened on the page" for a seed that sits over a cap, although seeds are
   never clamped. Real caps can't cause that, because `--seeds` fails it, so it is not a clamp
   bug.
+
+## Session 1: the header (2026-10-13)
+
+**User calls (2026-10-13), answering session 0's three and two the probe raised.**
+- **(a) The name** may take one line more than the frame and shrink to 75% of its seed's size.
+  That is `FLOOR` and `EXTRA_LINES` in `limits.mjs`, keyed `title`, for every seat the header
+  prints it in: the h1, the nav brand and the layout-3 card name. No other field gets either.
+- **(b) Block fields that come back `open`** cap at the lower of the measured break and 3× the
+  seed, rounded down to 10. A measured break is taken as it is.
+- **(c) One-line hug seats.** Most take the measured cap, which 390 binds. A seat the frame
+  clearly sizes caps at `min(measured, max(2 × seed, seed + 8))`. The sized seats are the
+  buttons and pills (`cta1`, `cta2`, `heroCta`, `availability`), the seal's `badgeText` and the
+  tag chips, both the header's and the bio's. `kicker`, `location`, `cardLine` and `faceTitle`
+  are metadata and take the measured number.
+- **(d) A seal's ring clamps its own copy of the name.** A seal sets the name twice round a
+  circle wherever Badge text is empty. That is the header's seal, the footer's on every page,
+  bio layouts 1 and 3, Retro's calendar layout 1, Pop's form layout 1 and Grunge's pricing
+  layout 1. Its fit is 10–19 characters. `sectionVm` shortens the ring's copy to that fit
+  (`sealCap()`), so the ring never caps the name.
+- **(e) The name's panel cap is the header's own** (it amends decision 7, above). Even with the
+  rings left out, consumer seats cap the name at 9–14:
+  - media layout 2's track byline runs into the ♡ at 11, on every template;
+  - form layout 3's *Book <name>* head caps it at 9–13;
+  - bio layout 3's ID-card name caps it at 14–20;
+  - Pop's footer brand line caps it at 10.
+
+  Each of those clamps its own copy (`IDENTITY_CHARS[cat].title`). EditPanel's Title box takes
+  `fieldCap(title)`. `kicker`, `location` and `tags` keep decision 7 (`identityCap`).
+
+**Judgement calls.**
+- **The consumers' copies of the name take (a) too** (`who.title` in `FLOOR` and `EXTRA_LINES`).
+  The user's call was about the h1. Display heads that print the name want the same rule: bio
+  layout 3's ID-card name and form layout 3's *Book <name>*. The bylines (media layout 2's track
+  line, Pop's footer brand line) get it by extension. That loosens their numbers against a strict
+  one-line reading, but under (e) they only clamp their own copy.
+- **A cap never goes under its seed's length.** The frame's own string fits where prose of that
+  length may not: "DJ · Live Act" is narrower than "Kestrel night". Four places hit this:
+  - the header's kicker at layout 4: 11–12 measured, 13 written;
+  - Retro's header name at layout 5: 6 measured at 768, 10 written. The card already covers the
+    nav brand at the seed, which is session 0's note;
+  - the bio's kicker at layout 3, in the composed column at 1440: 11 measured, 13 written;
+  - form layout 3's name under Editorial: 9 measured, 10 written.
+
+  `--check` reports a cap at the seed's length that fails prose as `floor`, not `FAIL`.
+- **The seal was unmeasurable by the box tests.** The first run read `badgeText` at cap 1. Its
+  seats are the ring's `textPath`s, at a fixed 9px, while its seed, the name, also seats in the
+  16px h1, and the copies' bounding boxes are arcs'. The probe now reads a ring by its geometry
+  (`ringOf()` in `measure`). Each copy's span is measured along the path from `startOffset`,
+  `text-anchor` and `getComputedTextLength()`, and each mark by its nearest point on the path.
+  A length fails if a copy runs off its path, meets the other copy, or meets a mark it did not
+  meet at the seed. Only the seal's probes read a ring: `badgeText` and the new `who.seal`. Every
+  other probe leaves ring seats alone, and the seal's probes leave every other seat alone.
+- **The consumers' name caps are written even where they cannot bind** (60–106, above any
+  header cap), as the measured record. A consumer never prints a name longer than the header's
+  cap anyway.
+- **Unseen readings are not caps.** Map layout 4's `who.location` matched a gig's city,
+  "Manchester, UK", not the location, so it is unseen, as the bio's layout 4 and the calendar's
+  kicker are. Nothing is written for them.
+- **The header's `tags`** gains `list: ','`, so `fieldCap` resolves its item and count caps.
+
+**What landed.**
+- **`data.js`.** `chars` on every header text field, plus `count` on `tags`. `IDENTITY_CHARS`
+  covers `bio`, `calendar`, `footer`, `form`, `gallery`, `map`, `media`, `pricing` and
+  `testimonials`. `sealCap(cat, themeName, design)` reads the header's `badgeText` cap, or
+  `IDENTITY_CHARS[cat].seal`.
+- **`EncoreBuilder.jsx`.** EditPanel's Title box (`NameInput`) takes the header's own
+  `fieldCap`. `vm.badgeText` is the name clamped to `sealCap` when no Badge text is set, unless
+  `clamp: false`. `EncoreSection.jsx` is unchanged.
+- **`plans/char-limits/rules.mjs` and `table.mjs`**, beside `census.js`. `rules.mjs` applies the
+  rules above to a probe JSONL and prints the `chars` specs. `table.mjs` prints the per-width
+  readout (`session-1-probe.md`). Run them as `node plans/char-limits/rules.mjs <file.jsonl…>`.
+- **`limits.mjs`.** `FLOOR` and `EXTRA_LINES` for the name. The ring test, and the `who.seal` and
+  `who.tags#` probes. `--check` now runs the fourth, all-lower-case sample the plan asked for and
+  session 0 had left out, and reports `floor` as above.
+
+**The caps written** (by layout 1, 2, …; `–` where the layout does not read the field). The
+probe's readout, per width, is [`char-limits/session-1-probe.md`](./char-limits/session-1-probe.md).
+
+| field | rule | Retro | Lime | Grunge | Editorial | Pop |
+|---|---|---|---|---|---|---|
+| `title` (name, panel) | name | 23 22 23 14 10 31 | 14 19 22 12 | 19 20 26 17 | 12 15 15 12 | 13 18 18 11 |
+| `kicker` | metadata | 59 – 17 13 – 39 | 55 – – 13 | 61 – – 13 | 33 – – 13 | 47 – – 13 |
+| `location` | metadata | 55 15 19 20 – 42 | 24 24 14 17 | 24 29 15 24 | 22 15 30 19 | 23 15 36 36 |
+| `cardLine` | metadata | – | – – 22 | – – 23 | – – 23 | – – 29 |
+| `faceTitle` | metadata | – 22 | – 24 | – 29 | – 19 | – 20 |
+| `cta1` | sized | 16 | 16 | 16 | 16 16 10 16 | 16 |
+| `cta2` | sized | 14 | 14 | 14 | 14 | 14 |
+| `heroCta` | sized | – 34 | – 35 | – 40 | – 21 | – 25 |
+| `availability` | sized | – 38 | – 44 | – 44 | – 44 | – 40 |
+| `badgeText` (ring) | sized | 19 | – – – 13 | 14 – – 14 | – – – 10 | 12 – – 10 |
+| `tags` per chip | sized | 22 – 22 22 15 22 | 22 – 22 22 | 22 – 22 22 | 22 – 22 22 | 22 – 22 22 |
+| `tags` count | count | 8 – 7 7 6 6 | 8 – 6 6 | 8 – 6 6 | 8 – 6 6 | 6 – 6 6 |
+| `subtitle` | block | – 310 – – 104 | – 310 | – 310 | – 310 | – 310 |
+| `faceBody` | block | – 180 | – 180 | – 180 | – 180 | – 180 |
+| `placeBody` | block | – 160 | – 160 | – 160 | – 160 | – 160 |
+
+| `IDENTITY_CHARS` | Retro | Lime | Grunge | Editorial | Pop |
+|---|---|---|---|---|---|
+| bio `kicker` | 19 20 13 47 | 20 23 21 47 | 20 20 13 47 | 20 20 13 47 | 26 22 13 47 |
+| bio `location` | 23 23 15 – | 24 26 25 – | 24 23 15 – | 24 33 15 – | 27 34 15 – |
+| bio `tags` per chip / count | – 22/7 – 22/7 | – 22/6 22/8 22/8 | same | same | same |
+| bio `title` | – 55 19 48 | – 49 20 49 | – 65 18 60 | – 37 14 31 | – 37 17 39 |
+| bio `seal` | 19 – 19 – | 13 – 22 – | 14 – 14 – | 16 – – – | – – 12 – |
+| form `kicker` | 43 38 | 30 40 | 30 40 | 30 40 | 39 40 |
+| form `title` | 76 50 13 | 61 40 13 | 50 85 23 | 27 42 10 | 55 54 11 |
+| form `seal` | – | – | – | – | 12 (1440 only) |
+| calendar `location` | 22 – – 67 | – – – 64 | – – – 55 | – – – 67 | – – – 67 |
+| calendar `title` | – 64 | – 64 | – 64 | – 64 | – 64 |
+| calendar `seal` | 19 | – | – | – | – |
+| map `location` | – 18 | – 15 | – 17 | – 17 | – 18 |
+| media `title` | 91 11 20 30 | 76 11 19 29 | 40 11 21 31 | 43 11 11 31 | 11 11 13 31 |
+| footer `title` / `seal` | 24 / 19 | 46 / 13 | 54 / 14 | 39 / 16 | 10 / 12 |
+| gallery `title` | 80 29 | 106 28 | 106 28 | 106 28 | 80 29 |
+| pricing `seal` | – | – | 14 – – – | – | – |
+| testimonials `title` | – – 65 | – – 60 | – – 67 | – – 67 | – – 67 |
+
+**Checks.** `--seeds` over the header and every consumer: 0 seeds over their caps.
+`--check` over the header (every field) and every consumer's `who.*` keys, with the three samples
+and the lower-case one: 0 failures. The first run failed Pop's header name at layout 1, written
+at 14. "Kestrel Bookin" (14) wraps the h1 into the seal where "Kestrel Booking" (15) does not,
+because its longer widest word shrinks the fitted head. The bisection's confirm step, from
+session 0, stepped down to 14 and then tested only 13 and 12, never 14 itself. The step now
+re-tests every length it lands on. Pop's layout-1 name re-measured at 13, which is written. Every
+other cap already passed `--check` at its written number. Ten caps report `floor`, all at their
+seed's length: the header's kicker at layout 4 (768, four templates), Retro's header name at
+layout 5 (768), the bio's kicker at layout 3 (1440 column, and 390 under Grunge and Pop) and
+Editorial's form name at layout 3 (1440).
+
+**Real app.** Tested with chrome-devtools on a Grunge page laid out by header layout 2 (Feature
+spread), every section at layout 2, the canvas at 1440.
+- **Kicker.** The header itself does not print it at layout 2. Its cap is the page's tightest,
+  bio layout 2's 20. Typing *Wedding DJ and Saxophonist* stopped at `Wedding DJ and Saxop` with
+  the counter at `20 / 20`. The bio and the form's credit row printed it in full.
+- **Bio to layout 3.** The layout picker's layout-3 thumbnail already printed `Wedding DJ…`. After
+  the pick, the canvas bio's Current role read `WEDDING DJ…` while the form kept the full 20.
+  Back in the header panel the kicker box's cap had tightened to 13, and the counter read
+  `20 / 13 · shortened on the page` in red. Location's cap moved from 17 to 15 the same way, both
+  bounds reading off the bio.
+- **The name.** Title's cap was the header's own 20, not the page's tightest (media layout 2's
+  11). *Florence and the Machine Tribute* stopped at `Florence and the Mac` (`20 / 20`):
+  - the nav brand, the h1 and the footer's copyright printed it whole;
+  - media layout 2's byline printed `Florence… · Single`;
+  - the footer's seal ring printed `FLORENCE AND…`, Grunge's fit of 14.
+- **Published tab.** It matched the canvas on all of the above, its `<title>` the full name.
+
+**Notes for later sessions.**
+- The bio session (2) inherits its `IDENTITY_CHARS.bio` row. Its own fields have no caps yet.
+  The kicker it prints at layout 3 (13 in the composed column) is the tightest kicker seat on any
+  page.
+- The form session (10): layout 3's head composes the name (`formHeading3`). It now clamps at
+  `IDENTITY_CHARS.form.title` (10–23), and the form's own `heading` field at layout 3 should be
+  measured with that in mind.
+- The media session (3): layout 2's track-card byline clamps the name at 11 on every template.
+- **For the sweep (12): the clamped string is never rendered.** `--check` renders N prose
+  characters at a cap, but a clamped page prints at most N−1 characters plus `…`, and the
+  ellipsis is wider than an average letter. On a seal ring at cap 10 (the Editorial and Pop
+  layout-4 headers) that margin is thin. Render the clamped string once per seat kind.
+- **For the sweep (12): the full name is printed in two places.** The published tab's `<title>`
+  and `copyrightOf()` read the unclamped name. A name typed under header layout 3 (Pop 18) and
+  moved to layout 4 (11) prints two spellings: the full one there, the clamped one in the h1.
+  Nothing overflows. Decide whether that is intended.
+- A section that gains a seal, or a seal that moves, needs a `who.seal` probe and an
+  `IDENTITY_CHARS[cat].seal` entry, or the ring's copy of a long name sets its two copies over
+  each other.

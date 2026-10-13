@@ -12,7 +12,7 @@
 // A key is `heading`, `tracks.title` (a repeater column, row 0 of the seed),
 // `tags[]` (a list's item, item 0) or `tags#` (a list's item count), or
 // `who.kicker` / `who.title` (a header key as another section prints it, through
-// &who= / &name=).
+// &who= / &name=), or `who.seal` (the name on the section's seal ring).
 //
 // Each render is preview.html with &noclamp=1, the field's value a prose sample
 // cut to N characters. Its seats are the smallest elements whose text holds the
@@ -27,7 +27,14 @@
 //            did not;
 //   page   — the section root scrolls sideways;
 //   overlap — its ink meets a text, image or control box a short value's did not;
-//   shrink — its font size falls below FLOOR (default: any shrink at all).
+//   shrink — its font size falls below FLOOR (default: any shrink at all);
+//   ring   — on a seal's ring (text on a circular path, set twice), a copy runs
+//            off its path, meets the other copy or meets a new mark. Only the
+//            seal's own probes read a ring (header `badgeText`, `who.seal`):
+//            the page clamps the ring's copy of the name apart (sealCap), so
+//            every other probe leaves ring seats alone, and the seal's probes
+//            leave every other seat alone.
+// The name (`title`, `who.title`) is allowed EXTRA_LINES past the frame's.
 // Block fields (`type: 'area'`, the quote and blurb columns) skip `lines`.
 // The cap is the largest passing N under all three samples, the minimum over
 // the widths (and layout 3's composed desktop column, where the section has one).
@@ -86,15 +93,23 @@ function censusLines(cat, themeName, design, w, seed) {
   const any = [...m].filter(([k]) => k.startsWith(`${i}|`)).map(([, n]) => n)
   return any.length ? Math.max(...any) : null
 }
-// A shrink seat's floor, as a fraction of its short-value font size (header session).
-const FLOOR = {}
+// A shrink seat's floor, as a fraction of its short-value font size, and the
+// lines a seat may take past the frame's: the artist's name (the h1, the nav
+// brand, the layout-3 card name and every consumer's display of it) may take
+// one line more than the frame and shrink to 75% of the seed's size (session 1,
+// user call, 2026-10-13). Every other seat keeps the frame's lines and size.
+const FLOOR = { title: 0.75, 'who.title': 0.75 }
+const EXTRA_LINES = { title: 1, 'who.title': 1 }
 
 const SAMPLES = [
   'Kestrel nights and golden hour sets for weddings, parties and late shows across the city and the coast, with live sax, warm vinyl and a dance floor that stays full until the very last song of the evening. Every booking is planned around your guests, your venue and the music you love most, from the first dance to the final encore and the taxi home.',
   'Kestrel Sound brings soulful house, disco classics and modern pop to every room it plays, reading the crowd from the opening record and building the night slowly towards a big finish. Ask about acoustic sets for ceremonies, drinks receptions and quiet dinners, or a full band with lights and staging for festival stages and summer parties outdoors.',
   'Kestrel Booking is open most weekends from early spring right through winter for private hire, corporate events and charity nights, with travel included across the north west and fair rates further afield. Send a date, a rough guest count and the kind of evening you have in mind, and you will hear back within a day with a quote and a short plan.',
 ]
-const textOf = (si, n) => SAMPLES[si].slice(0, n).replace(/\s+$/, (m) => 'x'.repeat(m.length))
+// --check adds a fourth, all lower-case (the plan's "three samples and an
+// all-lowercase one").
+const RUN_SAMPLES = flag('check') ? [...SAMPLES, SAMPLES[0].toLowerCase()] : SAMPLES
+const textOf = (si, n) => RUN_SAMPLES[si].slice(0, n).replace(/\s+$/, (m) => 'x'.repeat(m.length))
 
 // The text columns of each repeater, and the lists among them.
 const COLS = {
@@ -157,7 +172,9 @@ function probesOf(cat) {
   if (cat !== 'header') {
     for (const k of ['kicker', 'location']) ps.push({ key: `who.${k}`, cat, who: k, mode: 'text' })
     ps.push({ key: 'who.tags[]', cat, who: 'tags', list: ',', mode: 'item' })
+    ps.push({ key: 'who.tags#', cat, who: 'tags', list: ',', mode: 'count' })
     ps.push({ key: 'who.title', cat, who: 'title', mode: 'text' })
+    ps.push({ key: 'who.seal', cat, who: 'title', mode: 'text', ring: true })
   }
   return keysOnly ? ps.filter((p) => keysOnly.includes(p.key)) : ps
 }
@@ -249,6 +266,34 @@ function measure(needles) {
     for (let e = el; e && e !== root; e = e.parentElement) p.push([...e.parentElement.children].indexOf(e))
     return p.reverse().join('.')
   }
+  // A seal's ring (text on a circular path, set twice): each copy's span along
+  // the path and the spans of the marks turning with it, in path length.
+  const ringOf = (el) => {
+    const text = el.closest('text')
+    const tps = text ? [...text.querySelectorAll('textPath')] : []
+    if (!tps.length) return null
+    const path = text.ownerSVGElement.querySelector(tps[0].getAttribute('href'))
+    if (!path) return null
+    const P = path.getTotalLength()
+    const anchor = getComputedStyle(text).textAnchor
+    const spans = tps.map((tp) => {
+      const o = parseFloat(tp.getAttribute('startOffset') || '0') / 100 * P
+      const L = tp.getComputedTextLength()
+      const a = anchor === 'middle' ? o - L / 2 : anchor === 'end' ? o - L : o
+      return [a, a + L]
+    })
+    const pts = Array.from({ length: 720 }, (_, i) => { const t = (i / 720) * P; const q = path.getPointAtLength(t); return [t, q.x, q.y] })
+    const marks = []
+    for (const m of text.parentElement.querySelectorAll('circle, line, path, rect, polygon')) {
+      if (m.contains(text)) continue
+      const b = m.getBBox()
+      const cx = b.x + b.width / 2, cy = b.y + b.height / 2, r = Math.max(b.width, b.height) / 2
+      let best = pts[0], bd = Infinity
+      for (const q of pts) { const d = (q[1] - cx) ** 2 + (q[2] - cy) ** 2; if (d < bd) { bd = d; best = q } }
+      if (Math.sqrt(bd) <= r + 12) marks.push([best[0] - r, best[0] + r])
+    }
+    return { P, spans, marks }
+  }
   const res = seats.map((el) => {
     const ink = inkOf(el)
     const tops = []
@@ -261,11 +306,13 @@ function measure(needles) {
       const cut = clips && (a.scrollWidth > a.clientWidth + 1 || a.scrollHeight > a.clientHeight + 1)
       if (past || cut) boxes.push(pathOf(a))
     }
+    // Another copy of the value on a seal's ring is the ring test's, not this one's.
     const overlaps = others.filter((o) => !el.contains(o.el) && !o.el.contains(el)
+      && !(o.el.closest('svg') && seats.includes(o.el))
       && o.rs.some((r) => ink.some((k) => hit(r, k)))).map((o) => pathOf(o.el))
     const w = Math.round(el.getBoundingClientRect().width)
     return { path: pathOf(el), lines: tops.length, fs: parseFloat(getComputedStyle(el).fontSize), w, boxes, overlaps,
-      svg: !!el.closest('svg') }
+      svg: !!el.closest('svg'), ring: ringOf(el) }
   })
   return { seats: res, page: root.scrollWidth > Math.ceil(R.width) + 1 }
 }
@@ -318,19 +365,37 @@ function verdict(m, ref, allowed, p) {
   if (m.crash) return 'crash'
   if (!m.seats.length) return 'unseen'
   if (m.page && !ref.page) return 'page'
+  const ringProbe = p.ring || p.key === 'badgeText'
+  if (ringProbe && !m.seats.some((s) => s.ring)) return 'unseen'
   for (const [i, s] of m.seats.entries()) {
     const r = ref.seats[i] ?? ref.seats[0]
-    // Text on an SVG path (the seal's ring) has no lines or box to keep: it
-    // runs round its circle by design, so only the overlap test reads it.
+    // A seal's ring: no copy runs off its path, the copies never meet, and no
+    // copy meets a mark it did not meet at the reference. Its seats take no
+    // other test (their boxes are an arc's bounding box), and only the seal's
+    // own probes read them.
+    if (ringProbe !== !!(s.svg && s.ring)) continue
+    if (s.svg) {
+      if (!s.ring) continue
+      const rr = (ref.seats.find((x) => x.path === s.path) ?? r).ring
+      const meet = (a, b) => Math.min(a[1], b[1]) - Math.max(a[0], b[0]) > 0.3
+      if (s.ring.spans.some((sp) => sp[0] < -0.5 || sp[1] > s.ring.P + 0.5)) return 'ring off-path'
+      for (let a = 0; a < s.ring.spans.length; a++) for (let b = a + 1; b < s.ring.spans.length; b++) {
+        if (meet(s.ring.spans[a], s.ring.spans[b])) return 'ring copies'
+      }
+      for (const [ci, sp] of s.ring.spans.entries()) for (const [mi, mk] of s.ring.marks.entries()) {
+        if (meet(sp, mk) && !(rr?.spans[ci] && rr?.marks[mi] && meet(rr.spans[ci], rr.marks[mi]))) return 'ring mark'
+      }
+      continue
+    }
     // A seat may keep the reference's own line count where that is more than
     // the census allows (a seed that already wraps is reported, not failed).
-    const lim = allowed == null ? null : Math.max(allowed, r.lines)
-    if (!s.svg && !p.block && lim != null && s.lines > lim) return `lines ${s.lines}>${lim}`
+    const lim = allowed == null ? null : Math.max(allowed + (EXTRA_LINES[p.key] ?? 0), r.lines)
+    if (!p.block && lim != null && s.lines > lim) return `lines ${s.lines}>${lim}`
     // A seat's own box is 'self' on both sides, so a value whose seat is a
     // word span inside the reference's seat (a one-word name in a two-word
     // h1) is not failed for the path having moved.
     const refBoxes = r.boxes.map((b) => (b === r.path ? 'self' : b))
-    if (!s.svg && s.boxes.some((b) => !refBoxes.includes(b === s.path || b === r.path ? 'self' : b))) return 'box'
+    if (s.boxes.some((b) => !refBoxes.includes(b === s.path || b === r.path ? 'self' : b))) return 'box'
     if (s.overlaps.some((o) => !r.overlaps.includes(o))) return 'overlap'
     if (s.fs < r.fs * (FLOOR[p.key] ?? 1) - 0.01) return `shrink ${s.fs}<${r.fs}`
   }
@@ -348,7 +413,8 @@ async function runProbe(pg, p, t) {
   const themeName = D.THEMES[t].name
   for (const a of designsOf(p, themeName)) {
     const seed = seedOf(p, themeName, a)
-    const capNow = p.who ? D.identityCap(p.who, [{ cat: p.cat, arch: a }], themeName)
+    const capNow = p.ring ? D.sealCap(p.cat, themeName, a)
+      : p.who ? D.identityCap(p.who, [{ cat: p.cat, arch: a }], themeName)
       : p.col ? D.colCaps(p.f, themeName, a)?.[p.col] : D.fieldCap(p.f, themeName, a)
     const perSurface = {}
     let unseen = true
@@ -363,7 +429,9 @@ async function runProbe(pg, p, t) {
       const sq = art ? dressArt(qBase + queryOf(p, themeName, a, seed), art) : qBase + queryOf(p, themeName, a, seed)
       const sm = seed.trim() ? await render(pg, sq, needlesOf(p, seed)) : null
       const ref = sm?.seats.length ? sm : await at(0, p.mode === 'count' ? 1 : 7)
-      if (!ref.seats.length) { perSurface[`${w}${col ? `/${col}` : ''}`] = { n: null, why: 'unseen' }; continue }
+      // A seal's probe needs a ring at the reference; any other, a seat.
+      const seen = p.ring || p.key === 'badgeText' ? ref.seats.some((x) => x.ring) : ref.seats.length
+      if (!seen) { perSurface[`${w}${col ? `/${col}` : ''}`] = { n: null, why: 'unseen' }; continue }
       unseen = false
       const censusSeed = p.mode === 'item' ? seed.split(p.list)[0].trim() : seed
       let allowed = p.mode === 'count' ? null : censusLines(p.cat, themeName, a, w, censusSeed)
@@ -373,7 +441,7 @@ async function runProbe(pg, p, t) {
       const seedW = sm?.seats.length ? Math.max(...sm.seats.map((s) => s.w)) : null
       const seedLines = sm?.seats.length ? Math.max(...sm.seats.filter((x) => !x.svg).map((x) => x.lines), 0) : null
       const ok = async (n) => {
-        for (let si = 0; si < SAMPLES.length; si++) {
+        for (let si = 0; si < RUN_SAMPLES.length; si++) {
           if (p.mode === 'count' && si > 0) break
           if (verdict(await at(si, n), ref, allowed, p)) return false
         }
@@ -384,7 +452,9 @@ async function runProbe(pg, p, t) {
         if (capNow?.chars == null && capNow?.count == null) continue
         const n = p.mode === 'count' ? capNow.count : capNow.chars
         if (n == null) continue
-        perSurface[label] = { n, why: (await ok(n)) ? 'ok' : 'FAIL' }
+        // A cap at the seed's own length is the frame's floor (its own string
+        // fits where prose of that length may not): reported, not failed.
+        perSurface[label] = { n, why: (await ok(n)) ? 'ok' : n <= seedLenOf(p, seed) ? 'floor' : 'FAIL' }
         continue
       }
       // Bisect: the largest n in [1, hi] that passes. The upper bound starts
@@ -398,8 +468,12 @@ async function runProbe(pg, p, t) {
       }
       if (lo >= top) { perSurface[label] = { n: top, why: 'open', allowed, census: fromCensus }; continue }
       while (hi - lo > 1) { const mid = (lo + hi) >> 1; if (await ok(mid)) lo = mid; else hi = mid }
-      // Confirm against non-monotonic wraps: step down until the two below pass too.
-      while (lo > 2 && !((await ok(lo - 1)) && (await ok(lo - 2)))) lo--
+      // Confirm against non-monotonic wraps: step down until the length and
+      // the two below it all pass (a longer value can fit where a shorter one
+      // does not, when its widest word shrinks a fitted head).
+      for (let first = true; lo > 1; lo--, first = false) {
+        if ((first || (await ok(lo))) && (lo <= 2 || ((await ok(lo - 1)) && (await ok(lo - 2))))) break
+      }
       const why = verdict(await at(0, lo + 1), ref, allowed, p)
       // How wide the seat has grown at the cap, against the seed's: a one-line
       // pill that passes every test at five times its frame width is a call for
@@ -450,7 +524,8 @@ if (flag('seeds')) {
   for (const cat of cats) for (const p of probesOf(cat)) for (const t of themes) {
     const themeName = D.THEMES[t].name
     for (const a of designsOf(p, themeName)) {
-      const cap = p.who ? D.identityCap(p.who, [{ cat: p.cat, arch: a }], themeName)
+      const cap = p.ring ? D.sealCap(p.cat, themeName, a)
+        : p.who ? D.identityCap(p.who, [{ cat: p.cat, arch: a }], themeName)
         : p.col ? D.colCaps(p.f, themeName, a)?.[p.col] : D.fieldCap(p.f, themeName, a)
       if (!cap) continue
       const seed = seedOf(p, themeName, a)

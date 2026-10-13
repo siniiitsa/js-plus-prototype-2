@@ -54,7 +54,7 @@ import {
   PRICING_INTRO_3, FORM_SUB_4, CAL_HEADING_1, formBtnSeed, CAL_TYPES, PRICING_ROW_CTA, PRICING_ROW_CTA_3, MAP_SPAN, MAP_STATS_4, STAT_KEYS,FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
   parseDate, isoDate, calStart, headerIdentity, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav, navModeDefault,
-  catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldSeed, HEADING_3, HEADING_4, fieldReach, fieldShown, fieldCap, colCaps, identityCap, capExcess, clampContent, clampIdentity, copyrightOf, formHeading3, extUrl, urlProblem, emailProblem, emailAddr, songTags, repChips,
+  catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldSeed, HEADING_3, HEADING_4, fieldReach, fieldShown, fieldCap, colCaps, identityCap, sealCap, capExcess, clampCapped, clampContent, clampIdentity, copyrightOf, formHeading3, extUrl, urlProblem, emailProblem, emailAddr, songTags, repChips,
   tierFeats, priceParts, blankRow, SONG_KEYS, repSetsOf, repSetLine, TRACK_KEYS, GIG_KEYS, gigWeekday, gigStatus, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
   layoutCount, designCount, pageLayout, pageOrder, pageRows, COLUMN_SPLIT, bebasEms, antonEms, gloockEms, titanEms,
   headerLayout, headerLayoutLabel, setupHeaderCount,
@@ -715,7 +715,11 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // seat in Retro's polaroid. Uncased, as the four above.
   vm.cardLine = cv('cardLine', CARD_LINE_3)
   vm.showBadge = cv('showBadge', 'show')
-  vm.badgeText = cv('badgeText', name)
+  // Left empty, the seal's ring prints the name, shortened to the ring's fit
+  // (sealCap, data.js), so a long name never sets its two copies over each
+  // other; Badge text is capped to the same fit in the panel.
+  vm.badgeText = c.badgeText !== undefined ? c.badgeText
+    : clamp ? clampCapped(name, sealCap(cat, theme.name, d)) : name
   vm.navMode = cv('navMode', cat === 'header' ? navModeDefault(T.name, d) : 'sections')
   vm.align = cv('align', 'left')
   // Every template seeds its Figma pages' mock photography (photos.js). `undefined` already means "key
@@ -4440,9 +4444,11 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                   const val = sec.c[f.k] !== undefined ? sec.c[f.k] : fallback
                   const set = (v) => api.setContent(sec.id, f.k, v)
                   // The field's character cap at this design (plans/char-limits.md);
-                  // the header's shared keys and Title take the tightest among
-                  // the page's sections, since the others print them too.
-                  const cap = sec.cat === 'header' && (f.shared || f.k === 'title')
+                  // the header's shared keys take the tightest among the page's
+                  // sections, since the others print them too. Title is the
+                  // header's own: a section that prints the name tighter clamps
+                  // its own copy (session 1, user call, 2026-10-13).
+                  const cap = sec.cat === 'header' && f.shared
                     ? identityCap(f.k, sections.length ? sections : [sec], themeName)
                     : fieldCap(f, themeName, design)
                   const caps = colCaps(f, themeName, design)

@@ -468,3 +468,21 @@ another `notes/` file.
   half the line). The narrow columns are gapped instead, so there the seat would be a dead band
   of the gap and the line simply goes (Retro's 768 is ungapped and keeps it). A typed line wraps,
   inside a word too, where the seed's `nowrap` let an 85-character line run 200px past a 390 page.
+- **A seal's ring clamps its own copy of the name** (`plans/char-limits.md`, session 1, user call,
+  2026-10-13). Wherever Badge text is empty, `SealBadge` sets `vm.badgeText`, the artist's name,
+  twice round its circle. That is the header's seal, the footer's, bio layouts 1 and 3, Retro's
+  calendar layout 1, Pop's form layout 1 and Grunge's pricing layout 1. A long name used to set the
+  two copies over each other. `sectionVm` now clamps the fallback to the ring's fit, `sealCap(cat,
+  theme, design)` in `data.js`: the header's `badgeText` cap, or `IDENTITY_CHARS[cat].seal`. The
+  fit is measured by `scripts/limits.mjs`'s ring test, which reads each copy's span along the path
+  (`startOffset`, `text-anchor`, `getComputedTextLength()`) against the other copy and the marks
+  turning with it. It is one number per seal drawing:
+  - Retro's §10.2 seal: 19;
+  - Lime's: 13 (22 on its layout-3 bio, the classic seal);
+  - Grunge's: 14;
+  - Editorial's: 16 (10 on its layout-4 header);
+  - Pop's: 12 (10 on its layout-4 header, the Lime-disc tree).
+
+  Editorial's and Pop's layout-4 header seals fit the seed's ten characters exactly. A typed Badge
+  text is capped to the same fit in the panel. `EncoreSection` is unchanged. A section that gains
+  a seal needs an `IDENTITY_CHARS[cat].seal` entry, or its ring is unclamped.

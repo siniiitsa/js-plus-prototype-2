@@ -167,3 +167,13 @@ another `notes/` file.
   short of the pill. At 360 the seed moves: it sat 7 under the pill there, and now stands 7 clear. Lime's and
   Grunge's pills fit their half, so their `allow` is 0. **Editorial keeps its row** here as at
   layout 2: named, not fitted, its pill overrunning freely. Retro's layout 3 fits by itself.
+- **The name's character cap is the header's own** (`plans/char-limits.md`, session 1, user calls,
+  2026-10-13). `FIELDS.header.title.chars` is measured over every seat the header prints the name
+  in: the nav brand, the h1 and the layout-3 card name. Each may take one line more than its frame
+  draws, and shrink to 75% of the seed's size (`FLOOR` / `EXTRA_LINES` in `scripts/limits.mjs`).
+  So the fits above (`navNameFit`, JP-091's room, JP-101's narrow wrap, `vm.cardNameEms`) are what
+  the cap is measured through, and they stay as the fallback. The caps run 10–31 by template and
+  layout. The tightest are 11–12: Editorial's layouts 1 and 4 (Gloock), and Lime's and Pop's layout 4. Retro's layout 5 is held
+  at the seed's 10, since its card already covers the nav brand at 768. EditPanel's Title box takes
+  `fieldCap(title)`, not `identityCap`: a section that prints the name tighter clamps its own copy,
+  and the seal's ring clamps its copy to its fit (`sealCap`, `notes/templates.md`).

@@ -1837,6 +1837,8 @@ export const FIELDS = {
     // answers, as at layout 2.
     { k: 'kicker',    l: 'Kicker',           d: 'DJ · Live Act', shared: true,
       in: { Retro: [0, 2, 3, 5], Lime: [0, 3], Grunge: [0, 3], Editorial: [0, 3], Pop: [0, 3] },
+      chars: { Retro: [59, null, 17, 13, null, 39], Lime: [55, null, null, 13], Grunge: [61, null, null, 13],
+        Editorial: [33, null, null, 13], Pop: [47, null, null, 13] },
       hint: 'Your role. Every bio layout prints it too, and so do the enquiry form’s layouts 1 and 2.' },
     // The layout-3 portrait card's line under the name (JP-061): the card's
     // own copy, so the kicker is not seeded apart there and the bio's Current
@@ -1847,21 +1849,34 @@ export const FIELDS = {
     // is the name alone.
     { k: 'cardLine',  l: 'Portrait card line', d: CARD_LINE_3,
       in: { Lime: [2], Grunge: [2], Editorial: [2], Pop: [2], '*': [] },
+      chars: { Lime: [null, null, 22], Grunge: [null, null, 23], Editorial: [null, null, 23], Pop: [null, null, 29] },
       hint: 'The line under your name on the portrait card. The bio’s Performing since is a separate '
           + 'field, so change both if you name a year here. Left empty, it is not drawn.' },
-    { k: 'title',     l: 'Title' },                       // the artist's name, page-wide and required (NameInput) — special-cased
+    // The artist's name, page-wide and required (NameInput) — special-cased.
+    // Its cap is the header's own (the h1, the nav brand, the layout-3 card),
+    // which may take one line more than the frame and shrink to 75% of the
+    // seed's size; every other section that prints the name clamps its own
+    // copy (IDENTITY_CHARS, sealCap) rather than tightening this one
+    // (plans/char-limits.md, session 1, user calls, 2026-10-13).
+    { k: 'title',     l: 'Title',
+      chars: { Retro: [23, 22, 23, 14, 10, 31], Lime: [14, 19, 22, 12], Grunge: [19, 20, 26, 17],
+        Editorial: [12, 15, 15, 12], Pop: [13, 18, 18, 11] } },
     { k: 'subtitle',  l: 'Subtitle',         type: 'area', def: 'heroSub',
-      in: { Retro: [1, 4], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1] } },
+      in: { Retro: [1, 4], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1] },
+      chars: { Retro: [null, 310, null, null, 104], '*': [null, 310] } },
     { k: 'location',  l: 'Location',         d: 'Manchester, UK', shared: true,
       in: { Retro: [0, 1, 2, 3, 5], Lime: [0, 1, 2, 3], Grunge: [0, 1, 2, 3], Editorial: [0, 1, 2, 3], Pop: [0, 1, 2, 3] },
+      chars: { Retro: [55, 15, 19, 20, null, 42], Lime: [24, 24, 14, 17], Grunge: [24, 29, 15, 24],
+        Editorial: [22, 15, 30, 19], Pop: [23, 15, 36, 36] },
       hint: 'Where you are based. The bio prints it too in layouts 1 to 3, the booking '
           + 'calendar in layouts 1 and 4 (in Lime, Grunge, Editorial and Pop, layout 4 only), and the '
           + 'events map’s travel card in layout 2.' },
-    { k: 'cta1',      l: 'Primary button',   d: 'Book Now' },
+    { k: 'cta1',      l: 'Primary button',   d: 'Book Now', chars: { Editorial: [16, 16, 10, 16], '*': 16 } },
     // Layout 2's pill under the subtitle (JP-037). Its frame words it apart
     // from the nav's Book Now, so it is a field of its own. Emptied, no pill.
     { k: 'heroCta',   l: 'Hero button',      d: HERO_CTA,
       in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1] },
+      chars: { Retro: [null, 34], Lime: [null, 35], Grunge: [null, 40], Editorial: [null, 21], Pop: [null, 25] },
       hint: 'The button under the subtitle. Left empty, it is not drawn.' },
     // The rest of layout 2's copy (JP-059, reversing Lime's fit, which kept
     // them literals): the pill over the name and the two cards under the
@@ -1871,29 +1886,35 @@ export const FIELDS = {
     // Performing since is another field, which the hint says.
     { k: 'availability', l: 'Availability',  d: HERO_AVAIL,
       in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1] },
+      chars: { Retro: [null, 38], Pop: [null, 40], '*': [null, 44] },
       hint: 'The small pill over your name. Left empty, it is not drawn.' },
     { k: 'faceTitle', l: 'Face card title',  d: FACE_TITLE,
       in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1] },
+      chars: { Retro: [null, 22], Lime: [null, 24], Grunge: [null, 29], Editorial: [null, 19], Pop: [null, 20] },
       hint: 'The card beside your portrait, under the photograph. Left empty, it is not drawn.' },
     { k: 'faceBody',  l: 'Face card text',   type: 'area', d: FACE_BODY,
-      in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1] },
+      in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1] }, chars: [null, 180],
       hint: 'The line under the face card’s title. The bio’s Performing since is a separate field, '
           + 'so change both if you name a year here. Left empty, it is not drawn.' },
     { k: 'placeBody', l: 'Place card text',  type: 'area', d: PLACE_BODY,
-      in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1] },
+      in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1] }, chars: [null, 160],
       hint: 'The line under your Location on the card beside the pin. Left empty, it is not drawn.' },
     // Named `cta2` on the bio's own content too, which FIELDS.bio.cta2 edits
     // (JP-082): bio layout 4's Listen prints that, not this (JP-059's census).
     // `in` speaks for the header.
     { k: 'cta2',      l: 'Secondary button', d: 'Listen',
-      in: { Retro: [1, 2, 4], Lime: [1, 2], Grunge: [1, 2], Editorial: [1, 2], Pop: [1, 2] } },
+      in: { Retro: [1, 2, 4], Lime: [1, 2], Grunge: [1, 2], Editorial: [1, 2], Pop: [1, 2] }, chars: 14 },
     // The chips are the header's the way Kicker and Location are (JP-037,
     // headerIdentity): the bio prints the same list and honours the same
     // Show / Hide. An emptied list hides the row, as Hide does. The bio's
     // reach is measured (scripts/reach.mjs): layouts 2 and 4, and Lime's,
     // Grunge's, Editorial's and Pop's 3.
-    { k: 'tags',      l: 'Tags',             type: 'area', d: TAG_LABELS, shared: true,
+    // Its cap is per chip (`chars`) and chips (`count`), the bio's besides
+    // (IDENTITY_CHARS), each chip a sized seat held to twice the longest seed.
+    { k: 'tags',      l: 'Tags',             type: 'area', d: TAG_LABELS, shared: true, list: ',',
       in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3], Editorial: [0, 2, 3], Pop: [0, 2, 3] },
+      chars: { Retro: [22, null, 22, 22, 15, 22], '*': [22, null, 22, 22] },
+      count: { Retro: [8, null, 7, 7, 6, 6], Pop: [6, null, 6, 6], '*': [8, null, 6, 6] },
       hint: 'Separate them with commas. The bio prints them too in layouts 2 and 4 '
           + '(in Lime, Grunge, Editorial and Pop, layout 3 as well).' },
     { k: 'showTags',  l: 'Tag chips',        type: 'select', d: 'show', opts: SHOW_HIDE, shared: true,
@@ -1901,8 +1922,13 @@ export const FIELDS = {
       hint: 'Hides the bio’s chips as well.' },
     { k: 'showBadge', l: 'Corner badge',     type: 'select', d: 'show', opts: SHOW_HIDE,
       in: { Retro: [0, 1, 3, 4, 5], Lime: [0, 3], Grunge: [0, 3], Editorial: [0, 3], Pop: [0, 3] } },
+    // The seal's ring sets it twice round a circle, so its cap is the ring's
+    // fit (scripts/limits.mjs's ring test). Left empty, the ring prints the
+    // artist's name, clamped to the same fit (sealCap).
     { k: 'badgeText', l: 'Badge text',                    // defaults to the artist's name — special-cased
-      in: { Retro: [0, 1, 3, 4, 5], Lime: [3], Grunge: [0, 3], Editorial: [3], Pop: [0, 3] } },
+      in: { Retro: [0, 1, 3, 4, 5], Lime: [3], Grunge: [0, 3], Editorial: [3], Pop: [0, 3] },
+      chars: { Retro: 19, Lime: [null, null, null, 13], Grunge: [14, null, null, 14], Editorial: [null, null, null, 10],
+        Pop: [12, null, null, 10] } },
     { k: 'navMode',   l: 'Navigation links', type: 'select', d: 'sections', opts: [
       { v: 'sections', l: 'Follow my sections' },
       { v: 'minimal',  l: 'Minimal (Music · Gigs · About)' },
@@ -2631,12 +2657,66 @@ export function fieldShown(f, themeName, design) {
 // columns through `cols: { [col]: spec }`, a spec being a `chars` value or
 // `{ chars, count, list }` for a column that is itself a list (a song's tags).
 // IDENTITY_CHARS holds the caps of the sections that print the header's keys
-// (and the artist's name, `title`) with no field of their own.
+// (and the artist's name, `title`) with no field of their own, and `seal`, the
+// fit of the name on a section's seal ring.
 //
 // EditPanel stops typing at a cap (`maxLength`, or a refused edit for a list)
 // and sectionVm clamps what it renders, so copy typed under one layout's cap
 // keeps its full text in `c` and is shortened on the page of a tighter one.
-export const IDENTITY_CHARS = {}
+// Measured by scripts/limits.mjs's `who.*` probes (plans/char-limits.md,
+// session 1): `kicker`, `location` and `tags` tighten the header's fields on a
+// page that carries the section at that design (identityCap), and clamp what
+// the section prints when it moves to a tighter one. `title` and `seal` only
+// clamp: the name's panel cap is the header's own (user call, 2026-10-13), so
+// a byline, a display head or a seal ring tighter than the h1 shortens its own
+// copy with an ellipsis. Kicker and location never go under their seeds' own
+// lengths (the frame's string fits where prose of its length may not); a
+// chip is held to twice the longest seed (a sized seat).
+export const IDENTITY_CHARS = {
+  bio: {
+    title: { Retro: [null, 55, 19, 48], Lime: [null, 49, 20, 49], Grunge: [null, 65, 18, 60],
+      Editorial: [null, 37, 14, 31], Pop: [null, 37, 17, 39] },
+    kicker: { Retro: [19, 20, 13, 47], Lime: [20, 23, 21, 47], Pop: [26, 22, 13, 47], '*': [20, 20, 13, 47] },
+    location: { Retro: [23, 23, 15], Lime: [24, 26, 25], Grunge: [24, 23, 15], Editorial: [24, 33, 15],
+      Pop: [27, 34, 15] },
+    tags: { chars: { Retro: [null, 22, null, 22], '*': [null, 22, 22, 22] },
+      count: { Retro: [null, 7, null, 7], '*': [null, 6, 8, 8] } },
+    seal: { Retro: [19, null, 19], Lime: [13, null, 22], Grunge: [14, null, 14], Editorial: [16],
+      Pop: [null, null, 12] },
+  },
+  calendar: {
+    title: [null, 64],
+    location: { Retro: [22, null, null, 67], Lime: [null, null, null, 64], Grunge: [null, null, null, 55],
+      '*': [null, null, null, 67] },
+    seal: { Retro: [19] },
+  },
+  footer: {
+    title: { Retro: [24], Lime: [46], Grunge: [54], Editorial: [39], Pop: [10] },
+    seal: { Retro: 19, Lime: 13, Grunge: 14, Editorial: 16, Pop: 12 },
+  },
+  form: {
+    title: { Retro: [76, 50, 13], Lime: [61, 40, 13], Grunge: [50, 85, 23], Editorial: [27, 42, 10],
+      Pop: [55, 54, 11] },
+    kicker: { Retro: [43, 38], Pop: [39, 40], '*': [30, 40] },
+    seal: { Pop: [12] },
+  },
+  gallery: {
+    title: { Retro: [80, 29], Pop: [80, 29], '*': [106, 28] },
+  },
+  map: {
+    location: { Retro: [null, 18], Lime: [null, 15], Pop: [null, 18], '*': [null, 17] },
+  },
+  media: {
+    title: { Retro: [91, 11, 20, 30], Lime: [76, 11, 19, 29], Grunge: [40, 11, 21, 31],
+      Editorial: [43, 11, 11, 31], Pop: [11, 11, 13, 31] },
+  },
+  pricing: {
+    seal: { Grunge: [14] },
+  },
+  testimonials: {
+    title: { Retro: [null, null, 65], Lime: [null, null, 60], '*': [null, null, 67] },
+  },
+}
 const specAt = (spec, themeName, design) => {
   if (spec == null) return undefined
   if (typeof spec === 'number') return spec
@@ -2682,10 +2762,11 @@ function minCap(a, b) {
   if (!b) return a
   return { chars: minOf(a.chars, b.chars), count: minOf(a.count, b.count), list: a.list ?? b.list }
 }
-// The cap EditPanel enforces on one of the header's shared keys (and the
-// artist's name, `title`): the tightest among the page's sections at their
+// The cap EditPanel enforces on one of the header's shared keys (`kicker`,
+// `location`, `tags`): the tightest among the page's sections at their
 // current designs (user call, 2026-10-13). A section moved to a tighter
-// layout later is covered by its own render clamp.
+// layout later is covered by its own render clamp. The artist's name is not
+// one of them: its panel cap is the header's own field (session 1).
 export function identityCap(key, sections, themeName) {
   let cap = null
   for (const s of sections) {
@@ -2693,6 +2774,14 @@ export function identityCap(key, sections, themeName) {
     cap = minCap(cap, identityCapOf(s.cat, key, themeName, ((s.arch % n) + n) % n))
   }
   return cap
+}
+
+// The fit of the artist's name on section `cat`'s seal ring at this design:
+// the header's Badge text cap, or IDENTITY_CHARS[cat].seal. sectionVm clamps
+// the ring's copy of the name to it where no Badge text is set.
+export function sealCap(cat, themeName, design) {
+  if (cat === 'header') return fieldCap(FIELDS.header.find((f) => f.k === 'badgeText'), themeName, design)
+  return capOf(IDENTITY_CHARS[cat]?.seal, undefined, undefined, themeName, design)
 }
 
 // `s` cut to `n` characters, the ellipsis inside them: at the last space past
