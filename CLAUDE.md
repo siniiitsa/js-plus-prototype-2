@@ -176,7 +176,8 @@ mutated through a single `patch()` helper.
   `CARD_LINE_3`, "Performing since 2021", uncased, and dropped when emptied. Retro's polaroid
   prints the kicker in that seat. So the kicker has one seed, `'DJ · Live Act'`, at every layout,
   and the bio's *Current role* always prints what the Kicker field shows. At layout 3 the panel
-  therefore marks Kicker "Not shown in this layout" while the bio prints it, as at layout 2.
+  therefore still lists Kicker (a `shared` field) marked "Not shown in this layout" while the bio
+  prints it, as at layout 2.
   **That card's name and line wrap** (JP-062, user call, 2026-09-28). They wrap at the content box
   plus half the padding on each side. That is `100cqi` of the card, which is the container, plus
   one padding when the card is upright, and the room beside the portrait plus 10 at 390. The
@@ -353,12 +354,15 @@ mutated through a single `patch()` helper.
   Listen and location in the header; layout 4's white name in the header, the bio card's meta
   row and prose, and the media's black sleeve well and bar fill under Scheme 2).
 - **`FIELDS` exposes every key any layout reads. A layout that does not consume a key simply
-  ignores it, and the panel says so**: a field's `in` lists the designs that read it (0-based,
+  ignores it, and the panel hides it**: a field's `in` lists the designs that read it (0-based,
   `arch % designCount` and never the raw `arch`; an array, or an object keyed by template with
-  `'*'` for the rest), and `fieldReach()` in `data.js` is what `EditPanel` asks before printing
-  "Not shown in this layout" under the label ("…in this template" where `fieldNowhere()`
-  finds the template's row empty). The field stays editable — switching layouts
-  never discards copy. `in` is **measured, not read off the prose**: type into the field and
+  `'*'` for the rest), and `fieldShown()` in `data.js` (`fieldReach()`, or `shared`) is what
+  `EditPanel` filters its list by, so a field appears only at the layouts that draw it. Its copy
+  stays in `c` — switching layouts never discards it, and the field comes back with a layout that
+  reads it. The exception is `shared: true`, the header's four identity keys (`kicker`,
+  `location`, `tags`, `showTags`, user call, 2026-10-13): other sections print them and the
+  header panel is their only box, so they are listed at every header layout, marked "Not shown in
+  this layout" where the header itself does not draw them. `in` is **measured, not read off the prose**: type into the field and
   see whether the section's HTML moves, canvas and `live`, at all three widths. The header's
   `in` names all five templates (Grunge's row measured over its four fitted
   cards, 2026-09-24 — the first measurement with no placeholder card; Editorial's over its four
@@ -369,8 +373,8 @@ mutated through a single `patch()` helper.
   2026-10-06, which took design 2 off the kicker and gave `cardLine` a Pop row, the twins' rows
   exactly, and over fitted card 4, 2026-10-07, unchanged — the last placeholder card of any
   template gone, so every header row is now measured over fitted cards). One header row keeps a
-  `'*'`: `cardLine` (JP-061), whose `'*': []` marks Retro
-  "Not shown in this template", as `FIELDS.media.cta`'s row does, because only the `HeaderV2`
+  `'*'`: `cardLine` (JP-061), whose `'*': []` hides it under
+  Retro, as `FIELDS.media.cta`'s row does, because only the `HeaderV2`
   block Lime, Grunge, Editorial and Pop share reads it. A field no design reads is deleted, not kept at `in: []`: `bio.statement` and
   `map.sub` went that way with the fallthroughs that read them (the other seven NVAR-4
   sections still end in one after `v3`, which `arch % designCount` never reaches).
