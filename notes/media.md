@@ -46,9 +46,8 @@ another `notes/` file.
   self-exclusion since `media` is not in `CTA_TARGETS.book`, and an emptied label drops it, the
   footer pill's rule — and the Soundcloud pill stands beside it **only when filled**, in a
   wrapping row no master draws. `cta`'s `in` is `{ Lime: [0], Grunge: [0], '*': [] }`: the `'*'` row is what
-  prints "Not shown in this template" on the other templates (`fieldNowhere()`: an empty row
-  means no layout of that template reads the key, so the note does not promise one), an
-  uncovered template being left unmarked.
+  hides the field on the other templates (an empty row means no layout of that template reads
+  the key), an uncovered template counting as read everywhere.
   Layout 2's fan is a **carousel**: the seats are fixed and symmetric about the middle, and the tracks
   rotate *through* them, wrapping, so the centre seat always holds the track the player is on.
   Do not centre the seats on `at` instead — `at` is 0 until a visitor picks, and the fan would

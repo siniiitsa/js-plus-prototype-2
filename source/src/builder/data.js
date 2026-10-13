@@ -1774,14 +1774,17 @@ export const BLANK_PAGE = [
 
 /* ------------------------------------------------------------------ *
  * §4.8 FIELDS — editable content per category
- * { k, l, type?, opts?, d?, def?, in? }
+ * { k, l, type?, opts?, d?, def?, in?, shared? }
  *
  * `in` is the designs that read the key, 0-based like `arch % designCount`
  * (so layout 1 is 0). It is an array when every template reads the key in
  * the same designs, or an object keyed by template name when one differs —
  * `'*'` standing for any template the object does not name. A field with no
- * `in` is read by every design. EditPanel says so beside a field the section's
- * current design does not read; see fieldReach() below.
+ * `in` is read by every design. EditPanel hides a field the section's current
+ * design does not read, and lists it again with a layout that does; its copy
+ * stays in `c` either way. A `shared: true` field is listed at every design,
+ * since other sections print it (the header's identity keys); see fieldShown()
+ * below.
  *
  * `type: 'url'` is a plain text box that also says, on blur, why urlProblem()
  * refuses what was typed. The repeaters' address columns use the same input,
@@ -1800,7 +1803,7 @@ const PRICING_CREDIT = [1]
 export const FIELDS = {
   // Every element appearing in any header layout is exposed. A layout that
   // does not consume a key simply ignores it, so swapping layouts never
-  // silently discards copy the user typed — and the panel says so, off `in`.
+  // silently discards copy the user typed — and the panel hides it, off `in`.
   // The exception, named and left for a later batch (JP-059's census): Retro's
   // undesigned layout 5 prints "4.9 ★ / Experience", "5 pcs / Line-up" and a
   // "Tell me your date" pill that no field reaches.
@@ -1829,9 +1832,10 @@ export const FIELDS = {
     // Lime's, Grunge's, Editorial's and Pop's layout 3 prints `cardLine` in
     // Retro's kicker seat (JP-061), so their row is [0, 3] (reach.mjs,
     // 2026-09-28; Pop's over its fitted card 3, 2026-10-06).
-    // The panel then says "Not shown in this layout" there while the bio prints
-    // the kicker, which the hint answers, as at layout 2.
-    { k: 'kicker',    l: 'Kicker',           d: 'DJ · Live Act',
+    // The panel still lists it there (`shared`, as every identity key is), with
+    // "Not shown in this layout" while the bio prints the kicker, which the hint
+    // answers, as at layout 2.
+    { k: 'kicker',    l: 'Kicker',           d: 'DJ · Live Act', shared: true,
       in: { Retro: [0, 2, 3, 5], Lime: [0, 3], Grunge: [0, 3], Editorial: [0, 3], Pop: [0, 3] },
       hint: 'Your role. Every bio layout prints it too, and so do the enquiry form’s layouts 1 and 2.' },
     // The layout-3 portrait card's line under the name (JP-061): the card's
@@ -1848,7 +1852,7 @@ export const FIELDS = {
     { k: 'title',     l: 'Title' },                       // the artist's name, page-wide and required (NameInput) — special-cased
     { k: 'subtitle',  l: 'Subtitle',         type: 'area', def: 'heroSub',
       in: { Retro: [1, 4], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1] } },
-    { k: 'location',  l: 'Location',         d: 'Manchester, UK',
+    { k: 'location',  l: 'Location',         d: 'Manchester, UK', shared: true,
       in: { Retro: [0, 1, 2, 3, 5], Lime: [0, 1, 2, 3], Grunge: [0, 1, 2, 3], Editorial: [0, 1, 2, 3], Pop: [0, 1, 2, 3] },
       hint: 'Where you are based. The bio prints it too in layouts 1 to 3, the booking '
           + 'calendar in layouts 1 and 4 (in Lime, Grunge, Editorial and Pop, layout 4 only), and the '
@@ -1888,11 +1892,11 @@ export const FIELDS = {
     // Show / Hide. An emptied list hides the row, as Hide does. The bio's
     // reach is measured (scripts/reach.mjs): layouts 2 and 4, and Lime's,
     // Grunge's, Editorial's and Pop's 3.
-    { k: 'tags',      l: 'Tags',             type: 'area', d: TAG_LABELS,
+    { k: 'tags',      l: 'Tags',             type: 'area', d: TAG_LABELS, shared: true,
       in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3], Editorial: [0, 2, 3], Pop: [0, 2, 3] },
       hint: 'Separate them with commas. The bio prints them too in layouts 2 and 4 '
           + '(in Lime, Grunge, Editorial and Pop, layout 3 as well).' },
-    { k: 'showTags',  l: 'Tag chips',        type: 'select', d: 'show', opts: SHOW_HIDE,
+    { k: 'showTags',  l: 'Tag chips',        type: 'select', d: 'show', opts: SHOW_HIDE, shared: true,
       in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3], Editorial: [0, 2, 3], Pop: [0, 2, 3] },
       hint: 'Hides the bio’s chips as well.' },
     { k: 'showBadge', l: 'Corner badge',     type: 'select', d: 'show', opts: SHOW_HIDE,
@@ -2008,7 +2012,8 @@ export const FIELDS = {
           + 'appears once this is filled; in the other templates an empty one stays a picture.' },
     // Lime's and Grunge's layout 1 alone: their frames' Book Now pill, on the
     // page's booking target. `'*': []` and not an absent row — an uncovered
-    // template is left unmarked by fieldReach, and no other template reads this.
+    // template is read everywhere by fieldReach, and no other template reads
+    // this, so the panel hides it under them.
     { k: 'cta', l: 'Button', d: 'Book Now', in: { Lime: [0], Grunge: [0], '*': [] },
       hint: 'Scrolls to your enquiry form, or the next place to book. Empty drops the button.' },
   ],
@@ -2054,9 +2059,8 @@ export const FIELDS = {
     // seeded with the frame's own copy. Every one is emptiable and drops what
     // it fills; the row goes when all three of its fields are empty. Lime's
     // layout 2 draws all five as well (the pill's label and its line since
-    // JP-036). None of the five names a layout in its label: the "Not shown
-    // in this layout" note is what knows the design. The hints say where
-    // instead.
+    // JP-036). None of the five names a layout in its label: the panel
+    // lists them at layout 2 alone. The hints say where instead.
     { k: 'images',  l: 'Reviewer photos', type: 'images', max: 3, in: PRICING_CREDIT,
       hint: 'Small faces under the plan card’s quote.' },
     { k: 'reviews', l: 'Review count', d: PRICING_REVIEWS, in: PRICING_CREDIT,
@@ -2304,7 +2308,7 @@ export const FIELDS = {
       hint: 'Lists every gig at once on the published page, when there is more than one page of them.' },
     // Layout 3's QA fields, which layout 2 reads as well since JP-040 (its fit
     // had dropped all four as claims). None names a layout in its label: the
-    // "Not shown in this layout" note is what knows the design.
+    // panel lists them only where the design reads them.
     { k: 'status',  l: 'Map tag', d: MAP_STATUS, in: [1, 2],
       hint: 'The tag above the featured gig. Layout 2 also prints it as the chip on every gig row.' },
     { k: 'updated', l: 'Map note', d: MAP_UPDATED, in: [1, 2] },
@@ -2550,9 +2554,8 @@ export function fieldDefault(f) { return f.def ? DEFS[f.def] : (f.d != null ? f.
 // Whether a section's current design reads field `f` — `design` being
 // `arch % designCount`, never the raw `arch`. `f.in` is resolved per template,
 // its `'*'` standing for any template it does not name; a template it does not
-// cover at all is left unmarked (true), which is how Pop's header
-// stays silent. Read by EditPanel alone: nothing on the canvas consults it,
-// so a field the design ignores keeps its copy for the next layout.
+// cover at all reads it (true). Read by EditPanel alone: nothing on the canvas
+// consults it, so a field the design ignores keeps its copy for the next layout.
 const reachOf = (f, themeName) => (
   !f.in || Array.isArray(f.in) ? f.in : (f.in[themeName] ?? f.in['*'])
 )
@@ -2560,12 +2563,10 @@ export function fieldReach(f, themeName, design) {
   const r = reachOf(f, themeName)
   return !r || r.includes(design)
 }
-// Whether *no* design of this template reads `f` — an empty row, as
-// FIELDS.media.cta's `'*'` is. EditPanel then says "template" rather than
-// "layout" (JP-036): switching layouts would never bring the field back.
-export function fieldNowhere(f, themeName) {
-  const r = reachOf(f, themeName)
-  return !!r && r.length === 0
+// Whether EditPanel lists field `f` for this design: one the design reads, or a
+// `shared` one, which other sections print (the header's identity keys).
+export function fieldShown(f, themeName, design) {
+  return !!f.shared || fieldReach(f, themeName, design)
 }
 
 // Why a user-typed outbound address cannot be linked, or null if it can (an

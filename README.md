@@ -710,11 +710,12 @@ These are intentional limits, not oversights — see §12 for the full list. The
   layout-1 arm is JP-116's (user call, 2026-10-08). It also covers the footer, the same
   component on all four of Pop's pages. A block that reaches across the root's padding to its
   edge reads `padTop` / `padFoot`, the root's own top and foot, never `padY`.
-- **Fields a layout does not read stay editable.** Each section's panel lists every field any
-  of its layouts reads, so switching layouts never discards copy. A field the current layout
-  ignores says "Not shown in this layout" under its label, off the field's `in` list and
-  `fieldReach()` in `data.js` — or "Not shown in this template" where no layout of the active
-  template reads it (`fieldNowhere()`). The header's `in` names all five templates' layouts,
+- **Fields a layout does not read are hidden, not discarded.** Each section's panel lists only
+  the fields its current layout reads, off the field's `in` list and `fieldShown()` in `data.js`.
+  A hidden field keeps its copy, so switching to a layout that reads it brings it back with
+  whatever was typed. The header's four identity fields (Kicker, Location, Tags, Tag chips) are
+  `shared`: other sections print them, so they are listed at every header layout, marked "Not
+  shown in this layout" where the header itself does not draw them. The header's `in` names all five templates' layouts,
   each measured over fitted cards alone since Pop's Stacked was fitted.
 - **Accessibility is scoped to the chrome.** Radix supplies focus management, keyboard
   navigation and ARIA there. The rendered preview is deliberately not accessible: it is a

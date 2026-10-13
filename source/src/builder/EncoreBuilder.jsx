@@ -55,7 +55,7 @@ import {
   CAL_HEADING_4, REP_HEADING_4, GALLERY_HEADING_4, MAP_HEADING_4, TESTI_HEADING_4, FORM_HEADING_4, FORM_SUB_4, CAL_HEADING_1, formBtnSeed, CAL_TYPES, PRICING_ROW_CTA, PRICING_ROW_CTA_3, MAP_SPAN, MAP_STATS_4, STAT_KEYS,FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
   parseDate, isoDate, calStart, headerIdentity, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav, navModeDefault,
-  catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldDefault, fieldReach, fieldNowhere, copyrightOf, formHeading3, extUrl, urlProblem, emailProblem, emailAddr, songTags, repChips,
+  catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldDefault, fieldReach, fieldShown, copyrightOf, formHeading3, extUrl, urlProblem, emailProblem, emailAddr, songTags, repChips,
   tierFeats, priceParts, blankRow, SONG_KEYS, repSetsOf, repSetLine, TRACK_KEYS, GIG_KEYS, gigWeekday, gigStatus, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
   layoutCount, designCount, pageLayout, pageOrder, pageRows, COLUMN_SPLIT, bebasEms, antonEms, gloockEms, titanEms,
   headerLayout, headerLayoutLabel, setupHeaderCount,
@@ -4279,13 +4279,15 @@ function LinksField({ value, max, navSections = [], onChange }) {
  * ------------------------------------------------------------------ */
 
 function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx, navSections }) {
-  const fields = FIELDS[sec.cat] ?? []
   const locked = vm.locked
 
   // The panel has to resolve the seeded photos exactly as sectionVm does, or a
   // Retro section would show a photo on the canvas and an empty dropzone here.
   const themeName = THEMES[themeIdx].name
   const design = sec.arch % (designCount(sec.cat, themeName) || 1)
+  // Only the fields this design reads, and the header's shared ones
+  // (fieldShown). A hidden field keeps its copy in `c` for the next layout.
+  const fields = (FIELDS[sec.cat] ?? []).filter((f) => fieldShown(f, themeName, design))
   const imgVal = (k) => (sec.c[k] !== undefined ? (sec.c[k] ?? undefined) : defaultImage(sec.cat, themeName, k, design))
   const imgsVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : defaultImages(sec.cat, themeName))
   // Same trap as the photos above: the panel has to resolve the seeded songs
@@ -4422,18 +4424,17 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                     : fieldDefault(f)
                   const val = sec.c[f.k] !== undefined ? sec.c[f.k] : fallback
                   const set = (v) => api.setContent(sec.id, f.k, v)
-                  // A field this design does not read stays editable — the copy
-                  // is kept for the next layout — but says so, and says
-                  // "template" where no layout of this one reads it.
+                  // Only a shared field is listed where this design does not
+                  // read it — the header's identity keys, which other sections
+                  // print — and it says so; its hint says where it does print.
                   const unread = !fieldReach(f, themeName, design)
-                  const nowhere = unread && fieldNowhere(f, themeName)
                   const noMail = f.k === 'email' && sec.cat === 'calendar' && !unread
                     && !emailAddr(val) && !(String(val).trim() && emailProblem(val))
                   return (
                     <div key={f.k}>
                       <Label style={{ fontSize: '11px', fontWeight: 600, color: '#6B685E', display: 'block', marginBottom: f.hint || unread ? '2px' : '5px' }}>{f.l}</Label>
                       {unread && (
-                        <p style={{ margin: '0 0 6px', fontSize: '10px', color: '#98958A', lineHeight: 1.45, fontStyle: 'italic' }}>{nowhere ? 'Not shown in this template' : 'Not shown in this layout'}</p>
+                        <p style={{ margin: '0 0 6px', fontSize: '10px', color: '#98958A', lineHeight: 1.45, fontStyle: 'italic' }}>Not shown in this layout</p>
                       )}
                       {f.hint && (
                         <p style={{ margin: '0 0 6px', fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>{f.hint}</p>
