@@ -1940,23 +1940,30 @@ export const FIELDS = {
   ],
   bio: [
     { k: 'image',     l: 'Photo', type: 'image', hint: "Fills the bio's portrait card." },
-    { k: 'heading',   l: 'Heading', d: 'Reads the room.', in: [0, 2, 3] },
+    // Caps: plans/char-limits.md, session 2. Where 1440 stacks the heading a
+    // word a line (Lime's, Editorial's and Pop's layout 1, Pop's layout 4), a
+    // word longer than the seed's runs past its column or into a neighbour at
+    // any length, so the cap there is the seed's own 15 (notes/bio.md).
+    { k: 'heading',   l: 'Heading', d: 'Reads the room.', in: [0, 2, 3],
+      chars: { Retro: [20, null, 19, 23], Lime: [15, null, 18, 21], Grunge: [21, null, 20, 18],
+        Editorial: [15, null, 15, 17], Pop: [15, null, 17, 15] } },
     // JP-090: layout 1's line under the heading, the frames' own, uncased
     // (every site upper-cases it). The whole line is the field.
     { k: 'refLabel',  l: 'Reference line', d: BIO_REF_LABEL, in: [0],
+      chars: { Retro: [30], Lime: [40], Grunge: [36], Editorial: [36], Pop: [50] },
       hint: 'The small line at the foot of the heading. Left empty, it is not drawn.' },
     // Layout 2's pill over the paragraph (JP-059), seeded with the frame's
     // copy and cased as a label; emptied, it is not drawn.
-    { k: 'tag',       l: 'Pill', d: BIO_TAG, in: [1],
+    { k: 'tag',       l: 'Pill', d: BIO_TAG, in: [1], chars: [null, 18],
       hint: 'The small pill over the first paragraph. Left empty, it is not drawn.' },
-    { k: 'para1',     l: 'Paragraph 1', type: 'area', def: 'bioP1' },
-    { k: 'para2',     l: 'Paragraph 2', type: 'area', def: 'bioP2', in: [2, 3] },
+    { k: 'para1',     l: 'Paragraph 1', type: 'area', def: 'bioP1', chars: 390 },
+    { k: 'para2',     l: 'Paragraph 2', type: 'area', def: 'bioP2', in: [2, 3], chars: [null, null, 340, 340] },
     // Layout 2's foot row (JP-037): the frame's two-tone line, whose first
     // three words take the accent (`vm.bioCredit`), and the pill beside it.
     // Each drops when emptied, and the row with both.
-    { k: 'credit',    l: 'Credit line', d: BIO_CREDIT, in: [1],
+    { k: 'credit',    l: 'Credit line', d: BIO_CREDIT, in: [1], chars: [null, 43],
       hint: 'The line at the foot of the card. Its first three words take the accent colour.' },
-    { k: 'cta',       l: 'Button', d: BIO_CTA, in: [1],
+    { k: 'cta',       l: 'Button', d: BIO_CTA, in: [1], chars: [null, 16],
       hint: 'The button beside the credit line. Left empty, it is not drawn.' },
     // Layout 3's ID card draws a row of stats, and the frame's first one is
     // "Performing since: June 2021". Seeded with the frame's copy (QA,
@@ -1964,6 +1971,7 @@ export const FIELDS = {
     // so the seeded card draws the frame's three columns; emptied, the column
     // is not drawn.
     { k: 'since',     l: 'Performing since', def: 'since', in: [2, 3],
+      chars: { Retro: [null, null, 9, 31], Lime: [null, null, 22, 31], '*': [null, null, 20, 31] },
       hint: 'The ID card’s first stat (layout 3) and the overlay card’s middle line (layout 4), where it reads “Performing since …”. Just the date, then. Left empty, neither is drawn.' },
     // JP-071 (user call, 2026-09-29, reversing the fit's "a frame label stays
     // a literal" for these): the ID card's labels, each seeded with the
@@ -1971,25 +1979,28 @@ export const FIELDS = {
     // A stat's label goes with its value as well: Current role and Based in
     // print the header's Kicker and Location. The line break before the last
     // word is sectionVm's, so each is one line here.
-    { k: 'sinceLabel', l: 'Performing since label', d: BIO_SINCE_LABEL, in: [2],
+    { k: 'sinceLabel', l: 'Performing since label', d: BIO_SINCE_LABEL, in: [2], chars: [null, null, 17],
       hint: 'The label over the date on the ID card. It breaks before its last word. '
           + 'Left empty, the date stands alone.' },
-    { k: 'roleLabel',  l: 'Current role label', d: BIO_ROLE_LABEL, in: [2],
+    { k: 'roleLabel',  l: 'Current role label', d: BIO_ROLE_LABEL, in: [2], chars: [null, null, 14],
       hint: 'The label over the Header’s Kicker on the ID card. Left empty, the kicker stands alone.' },
     { k: 'baseLabel',  l: 'Based in label', d: BIO_BASE_LABEL, in: [2],
+      chars: { Retro: [null, null, 16], Lime: [null, null, 16], '*': [null, null, 19] },
       hint: 'The label over the Header’s Location on the ID card. Left empty, the location stands alone.' },
     { k: 'aboutLabel', l: 'About label', d: BIO_ABOUT_LABEL, in: [2],
+      chars: { Editorial: [null, null, 59], Pop: [null, null, 48], '*': [null, null, 56] },
       hint: 'The bracketed label over the paragraphs on the ID card. Left empty, it is not drawn.' },
     // Layout 4 draws it under Retro and Editorial alone: Lime's, Grunge's and
     // Pop's frames ink it the band's own colour, so it is not drawn there (Pop's
     // user call, 2026-10-07, plans/pop/layout-4.md section 2).
     { k: 'tagsLabel',  l: 'Genres label', d: BIO_TAGS_LABEL,
       in: { Lime: [2], Grunge: [2], Editorial: [2, 3], Pop: [2], '*': [3] },
+      chars: { Retro: [null, null, null, 58], Editorial: [null, null, 49, 49], '*': [null, null, 49] },
       hint: 'The line over the Header’s tag chips, drawn while they are shown. Left empty, the chips stand alone.' },
     // Layout 4's "Listen ↗" (JP-082, user call, 2026-09-29): the key the bio
     // already read, `vm.cta2` off its own content, which no field reached
     // (JP-059's census named it a control). Uncased; the ↗ is the markup's.
-    { k: 'cta2',      l: 'Listen link', d: 'Listen', in: [3],
+    { k: 'cta2',      l: 'Listen link', d: 'Listen', in: [3], chars: [null, null, null, 14],
       hint: 'The link beside Performing since, to your Media Player on the published page. '
           + 'Leave it empty to hide it.' },
   ],

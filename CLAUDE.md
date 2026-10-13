@@ -476,6 +476,7 @@ file is loaded into every session and holds only what is cross-cutting.
 
 | Notes file | Covers |
 |---|---|
+| [`notes/bio.md`](./notes/bio.md) | The bio: the layout-1 reference line, the character caps and their word-bound heading |
 | [`notes/media.md`](./notes/media.md) | The media player: `<audio>`, `cur`, the layout-2 fan, layout 4's sleeve and grid |
 | [`notes/gallery.md`](./notes/gallery.md) | The gallery: `pick`, the strip and its mobile window, social rows, the layout-3 viewer |
 | [`notes/map.md`](./notes/map.md) | The events map: pager, pin/row pairing, city chips, zoom, the ticker, the stat wall |

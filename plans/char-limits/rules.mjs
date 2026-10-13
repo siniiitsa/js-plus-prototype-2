@@ -7,8 +7,9 @@ import fs from 'node:fs'
 const rows = process.argv.slice(2).flatMap((f) => fs.readFileSync(f, 'utf8').split('\n').filter(Boolean).map((l) => JSON.parse(l)))
 const TH = ['Retro', 'Lime', 'Grunge', 'Editorial', 'Pop']
 const ND = { Retro: { header: 6 }, '*': {} }
-const SIZED = new Set(['header.cta1', 'header.cta2', 'header.heroCta', 'header.availability', 'header.badgeText', 'header.tags[]', 'bio.who.tags[]'])
-const BLOCK = new Set(['header.subtitle', 'header.faceBody', 'header.placeBody'])
+const SIZED = new Set(['header.cta1', 'header.cta2', 'header.heroCta', 'header.availability', 'header.badgeText', 'header.tags[]', 'bio.who.tags[]',
+  'bio.tag', 'bio.cta', 'bio.cta2'])
+const BLOCK = new Set(['header.subtitle', 'header.faceBody', 'header.placeBody', 'bio.para1', 'bio.para2'])
 const ruleOf = (k) => (k.endsWith('#') ? 'count' : SIZED.has(k) ? 'sized' : BLOCK.has(k) ? 'block' : 'meta')
 function capOf(r) {
   const rule = ruleOf(r.key)

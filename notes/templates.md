@@ -457,17 +457,8 @@ another `notes/` file.
   refused box 4px of violet at the idle ring's own weight, and the form's Lime's 2px of violet
   against its 1px lime ring. The desktop form is an instance at last (`964:73243`), and it prints
   "CONTACT US" where the narrow masters print "KAI MERCER"; ours keeps "Contact Us".
-- **The bio's layout-1 reference line is the artist's** (JP-090, user call, 2026-09-30; the bio
-  has no notes file of its own). `FIELDS.bio.refLabel`, *Reference line*, `in: [0]`, is seeded
-  with the whole `[ 001 ] Structure · Bio_01` that every template's frame types under the
-  heading (Editorial's `964:58613`, Retro's `964:58577`), brackets and index included, since the
-  `001` is an index and not a count. `vm.bioRef`, uncased: all three bodies upper-case it in CSS
-  (the widened block's eyebrow for Grunge and Editorial and its Space Mono line for Pop, Body/SM
-  for Lime, and Retro's flank `label()`). Emptied, an empty `<span>` keeps the desktop heading column's three
-  rows, so the heading does not slide to the foot of its `space-between` column (it moves by
-  half the line). The narrow columns are gapped instead, so there the seat would be a dead band
-  of the gap and the line simply goes (Retro's 768 is ungapped and keeps it). A typed line wraps,
-  inside a word too, where the seed's `nowrap` let an 85-character line run 200px past a 390 page.
+- **The bio's layout-1 reference line** (JP-090) moved to `notes/bio.md` on 2026-10-13, when the bio
+  got a notes file of its own.
 - **A seal's ring clamps its own copy of the name** (`plans/char-limits.md`, session 1, user call,
   2026-10-13). Wherever Badge text is empty, `SealBadge` sets `vm.badgeText`, the artist's name,
   twice round its circle. That is the header's seal, the footer's, bio layouts 1 and 3, Retro's

@@ -401,3 +401,105 @@ spread), every section at layout 2, the canvas at 1440.
 - A section that gains a seal, or a seal that moves, needs a `who.seal` probe and an
   `IDENTITY_CHARS[cat].seal` entry, or the ring's copy of a long name sets its two copies over
   each other.
+
+## Session 2: the bio (2026-10-13)
+
+**Scope.** These are the bio's fourteen own text keys: `heading`, `refLabel`, `tag`, `para1`,
+`para2`, `credit`, `cta`, `since`, `sinceLabel`, `roleLabel`, `baseLabel`, `aboutLabel`,
+`tagsLabel` and `cta2`. `IDENTITY_CHARS.bio` is session 1's and was not re-measured. The probe
+ran on a fresh Vite server (`BASE=http://localhost:5199`), since the :5173 one had been up for
+three weeks. Its per-width readout is
+[`char-limits/session-2-probe.md`](./char-limits/session-2-probe.md). The decisions are in
+`notes/bio.md`, a new file, now in `CLAUDE.md`'s notes table. The JP-090 bullet moved there from
+`notes/templates.md`.
+
+**Rules.** These are session 1's calls, unchanged. `rules.mjs` gains the bio's sized keys
+(`tag`, `cta`, `cta2`) and blocks (`para1`, `para2`). Everything else is metadata.
+
+**The caps written** (by layout 1, 2, 3, 4; `–` where the layout does not read the field; `15f`
+is the seed's floor).
+
+| field | rule | Retro | Lime | Grunge | Editorial | Pop |
+|---|---|---|---|---|---|---|
+| `heading` | meta | 20 – 19 23 | 15f – 18 21 | 21 – 20 18 | 15f – 15 17 | 15f – 17 15f |
+| `refLabel` | meta | 30 | 40 | 36 | 36 | 50 |
+| `tag` | sized | – 18 | – 18 | – 18 | – 18 | – 18 |
+| `credit` | meta | – 43 | – 43 | – 43 | – 43 | – 43 |
+| `cta` | sized | – 16 | – 16 | – 16 | – 16 | – 16 |
+| `para1` | block | 390 | 390 | 390 | 390 | 390 |
+| `para2` | block | – – 340 340 | same | same | same | same |
+| `since` | meta | – – 9f 31 | – – 22 31 | – – 20 31 | – – 20 31 | – – 20 31 |
+| `sinceLabel` | meta | – – 17f | – – 17f | – – 17f | – – 17f | – – 17f |
+| `roleLabel` | meta | – – 14 | – – 14 | – – 14 | – – 14 | – – 14 |
+| `baseLabel` | meta | – – 16 | – – 16 | – – 19 | – – 19 | – – 19 |
+| `aboutLabel` | meta | – – 56 | – – 56 | – – 56 | – – 59 | – – 48 |
+| `tagsLabel` | meta | – – – 58 | – – 49 | – – 49 | – – 49 49 | – – 49 |
+| `cta2` | sized | – – – 14 | – – – 14 | – – – 14 | – – – 14 | – – – 14 |
+
+**Judgement calls.**
+1. **The heading is word-bound at 1440 in four designs: Lime's, Editorial's and Pop's layout 1,
+   and Pop's layout 4.** This one is open, and it is the user's call. Each design stacks the
+   heading one word to a line beside the photograph. At the seed's own size, a seven-letter
+   word runs under the arch or past its column, or into Pop's dot grid. The probe read 5–6 there
+   (box or overlap), because every sample opens with "Kestrel". That number is the widest word,
+   not a length. The floor rule writes 15, the seed's length, and `--check` reports it as
+   `floor`. Session 1's floors were 1–2 characters off the seed. This one is a different kind:
+   **a cap cannot hold it**. A 15-character heading with a word longer than about six letters
+   still overruns at 1440, and `--check` passes it. The fix is a widest-word fit, the header's
+   JP-092 / JP-102 / JP-109 shape (`vm.cardNameEms` / `titleWordEms`). That changes
+   `EncoreSection`, so it is outside this pass. Session 1's (a) also gave `FLOOR` and
+   `EXTRA_LINES` to the name alone. The same four designs take 15–24 at 768 and 390.
+2. **Retro's `since` at layout 3 is 9, the seed's floor.** In the composed 1440 column the ID
+   card's stat cell holds "June 2021" (80px) and nothing longer. A tenth character wraps it out of
+   the cell. So "March 2019" is refused, and in the real app "September 2021" stopped at
+   "September". The other templates take 20–22 there.
+3. **`sinceLabel` is 17, the seed's floor; 14 was measured.** `sectionVm` breaks each ID-card
+   label before its last word, so the label draws two lines and the first one binds. "Kestrel
+   Sound" wraps where "Performing" does not. That happens at 768 on every template, in the column
+   on Retro and Lime, and at 390 on Retro, Grunge and Pop. `roleLabel` (14, seed 13) and
+   `baseLabel` (16–19, seed 9) did not need a floor.
+4. **The sized seats are well under their measures.** At 390 the pill measured 41–79, the button
+   41–79 and the Listen link 44. The sized rule writes 18, 16 and 14. Lime's and Grunge's 390
+   button was the one place the page scrolled sideways (at 72 and 79).
+5. **The blocks came back open** at 400 at every width and design (the cards hug their copy). So
+   they take 3 × the seed, rounded down to 10: `para1` 390 (seed 131) and `para2` 340 (seed 114).
+6. **The one-word labels take long caps.** *About* is 48–59, *Genres* 49–58 and the
+   reference line 30–50. They are metadata, and 390 binds them on one line. Their seats are
+   stretched blocks, so `×grow` reads 1.
+7. **Retro's layout 4 draws no Genres line at 390** (`!s.mob`). Its row there is `unseen`, and
+   its 58 comes from 1440 and 768.
+
+**Checks.**
+- `--seeds` over every bio key: 0 seeds over their caps.
+- `--check` over every bio key, with the three samples and the lower-case one: 0 failures. The
+  `who.*` row is included, so `IDENTITY_CHARS.bio` is re-verified. Thirteen rows report `floor`,
+  and only the expected ones:
+  - the heading at 1440 in the four word-bound designs (judgement 1);
+  - `sinceLabel` (judgement 3);
+  - session 1's `who.kicker` at layout 3: in the 1440 column on four templates, and at 390 on
+    Grunge and Pop.
+- Retro's `since` at 9 passes outright: prose of nine characters fits where ten does not.
+
+**Real app.** Tested with chrome-devtools on the :5199 server: a Retro page laid out by header
+layout 4 (Stacked), the canvas at 1440.
+- **Bio at layout 4.** Every field showed its cap: heading 23, paragraphs 390 / 340, Performing
+  since 31, Genres 58, Listen 14. Typing *Reads the room and the floor* stopped at 23, with the
+  counter at `23 / 23`.
+- **The layout picker.** With the heading at *Reads the room and more* (23), the thumbnails
+  printed `Reads the room and…` at layout 1 (20) and `Reads the room…` at layout 3 (19), and the
+  full text at layout 4.
+- **Bio to layout 3.** The canvas printed `Reads the room…`. The box kept all 23 characters
+  (`maxLength` 19), and the counter read `23 / 19 · shortened on the page` in red. Performing
+  since took 9: typing *September 2021* stopped at `September` (`9 / 9`). The ID card's labels
+  showed their counters at the seed (`17 / 17`, `13 / 14`).
+- **Published tab.** It printed `Reads the room…`, and its `<title>` was the name.
+- **Back to layout 4.** The canvas printed the full text, and the counter read `23 / 23`. Opening
+  the tab again re-rendered it with the full heading. A republish only reaches an open tab
+  through the dialog's *Open*.
+
+**Notes for later sessions.**
+- **Media (3).** Layout 2's track-card byline clamps the name at 11 on every template (session 1).
+  Layout 3 has a composed 1440 column (`COLUMN.media = 'left'`). Judging by the bio's ID card,
+  that is where its labels will bind.
+- **For the sweep (12), or a session of its own.** The bio heading's widest-word fit (judgement 1)
+  is the user's call.
