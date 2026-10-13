@@ -8,6 +8,8 @@
 //   node scripts/limits.mjs <cats> --check     every cap in FIELDS re-rendered at the cap
 //   node scripts/limits.mjs <cats> --seeds     every seed within its cap, no browser
 //   node scripts/limits.mjs x --seed-list      the census's seed strings (census/seeds.json)
+//   --prose                                    prose for every key (no KEY_SAMPLES override)
+//   --designs=0,1                              only these designs (0-based)
 //
 // A key is `heading`, `tracks.title` (a repeater column, row 0 of the seed),
 // `tags[]` (a list's item, item 0) or `tags#` (a list's item count), or
@@ -50,6 +52,7 @@ const cats = (argv.find((a) => !a.startsWith('--')) || '').split(',').filter(Boo
 if (!cats.length) { console.error('usage: node scripts/limits.mjs <cat[,cat]> [--themes=] [--keys=] [--check|--seeds]'); process.exit(1) }
 const themes = opt('themes', '0,1,2,3,4').split(',').map(Number)
 const keysOnly = opt('keys', '') ? opt('keys', '').split(',') : null
+const designsOnly = opt('designs', '') ? opt('designs', '').split(',').map(Number) : null // 0-based
 const widths = opt('widths', 'desktop,tablet,mobile').split(',')
 const out = opt('out', '')
 const base = process.env.BASE || 'http://localhost:5173'
@@ -109,7 +112,24 @@ const SAMPLES = [
 // --check adds a fourth, all lower-case (the plan's "three samples and an
 // all-lowercase one").
 const RUN_SAMPLES = flag('check') ? [...SAMPLES, SAMPLES[0].toLowerCase()] : SAMPLES
-const textOf = (si, n) => RUN_SAMPLES[si].slice(0, n).replace(/\s+$/, (m) => 'x'.repeat(m.length))
+// A key whose realistic value is not prose. A package's price splits at its
+// first digit (priceParts: a small lead, the big amount, a small tail), so it
+// grows in its tail: "£475 — £1,450 per evening". Prose has no digit and sets
+// whole in the big numeral, the "Price on application" case, read with
+// --prose (session 4).
+const PROSE_TAIL = ' and a short plan for the whole evening, with travel, sound and lighting all included in the quote you are sent within a day of asking, across the north west and further afield on request for the right date and the right room, from the first dance to the very last song of the night.'
+const KEY_SAMPLES = flag('prose') ? {} : {
+  'tiers.price': [
+    `£475 — £1,450 per evening, plus travel beyond fifty miles${PROSE_TAIL}`,
+    `From £1,250 + VAT for the full day, ceremony to last dance${PROSE_TAIL}`,
+    `£685 per set, two sets of ninety minutes with a break${PROSE_TAIL}`,
+  ],
+}
+const samplesOf = (p) => {
+  const ks = KEY_SAMPLES[p.key]
+  return !ks ? RUN_SAMPLES : flag('check') ? [...ks, ks[0].toLowerCase()] : ks
+}
+const textOf = (si, n, p) => samplesOf(p)[si].slice(0, n).replace(/\s+$/, (m) => 'x'.repeat(m.length))
 
 // The text columns of each repeater, and the lists among them.
 const COLS = {
@@ -156,7 +176,9 @@ function probesOf(cat) {
       for (const [col, spec] of Object.entries(COLS[f.type])) {
         if (spec.list) {
           ps.push({ key: `${f.k}.${col}[]`, cat, f, col, list: spec.list, mode: 'item' })
-          ps.push({ key: `${f.k}.${col}#`, cat, f, col, list: spec.list, mode: 'count' })
+          // A list one item a line (a package's features) grows down its card, so its
+          // count is a block's: bound by box, overlap and page, not lines (session 4).
+          ps.push({ key: `${f.k}.${col}#`, cat, f, col, list: spec.list, mode: 'count', block: spec.list === '\n' })
         } else ps.push({ key: `${f.k}.${col}`, cat, f, col, mode: 'text', block: !!spec.block })
       }
       continue
@@ -216,17 +238,29 @@ function twinsOf(p, themeName, design) {
   for (const f of D.FIELDS[p.cat] ?? []) {
     if (f === p.f || SKIP.has(f.type) || COLS[f.type] || !D.fieldReach(f, themeName, design)) continue
     const v = D.fieldSeed({ cat: p.cat, f, themeName, design, artistName: 'Kai Mercer', email: D.FORM_EMAIL })
-    if (typeof v === 'string' && alnum(v) === seed) out[f.k] = 'Zq'
+    // A sibling that holds the seed inside its own copy is a twin too: the
+    // layout-3 intro's "booking" seats the Book pill's seed "Book" (session 4).
+    if (typeof v === 'string' && (alnum(v) === seed || (seed.length >= 3 && alnum(v).includes(seed)))) out[f.k] = 'Zq'
   }
   return out
 }
 // The value at length n: the text, a list whose item 0 is the text, or a list
 // of n items cut from the seed's own (cycled).
-function valueAt(p, seed, si, n) {
-  if (p.mode === 'text') return textOf(si, n)
+function valueAt(p, seed, si, n, themeName, design) {
+  if (p.mode === 'text') return textOf(si, n, p)
   const items = seed.split(p.list).map((t) => t.trim()).filter(Boolean)
   const j = p.list === ',' ? ', ' : '\n'
-  if (p.mode === 'item') return [textOf(si, n), ...items.slice(1)].join(j)
+  if (p.mode === 'item') return [textOf(si, n, p), ...items.slice(1)].join(j)
+  // A repeater column's items are drawn from every seeded row's list and kept
+  // distinct (a numbered copy past the pool): a chip row built from them
+  // (repChips) drops a repeat, so row 0's lone "Solo" cycled would draw two
+  // chips at any count (session 4).
+  if (p.col) {
+    const pool = [...new Set(seedsOf(p, themeName, design).flatMap((v) => v.split(p.list).map((t) => t.trim()).filter(Boolean)))]
+    if (!pool.length) pool.push('Kestrel')
+    return Array.from({ length: n }, (_, i) => (i === 0 ? 'Kestrel'
+      : i < pool.length ? pool[i] : `${pool[i % pool.length]} ${Math.floor(i / pool.length) + 1}`)).join(j)
+  }
   const pool = items.length ? items : ['Kestrel']
   return Array.from({ length: n }, (_, i) => (i === 0 ? `Kestrel ${pool[0]}`.slice(0, Math.max(7, pool[0].length)) : pool[i % pool.length])).join(j)
 }
@@ -310,8 +344,19 @@ function measure(needles) {
   }
   const res = seats.map((el) => {
     const ink = inkOf(el)
+    // Lines are counted with every turned ancestor set upright: a transform
+    // never moves a line break, but a leant card (Retro's and Pop's decks, Pop's
+    // plan card) drifts one line's rects apart in `top` (session 4).
+    const turned = []
+    for (let a = el; a && a !== document.body; a = a.parentElement) {
+      const cs = getComputedStyle(a)
+      if (cs.transform !== 'none' || (cs.rotate && cs.rotate !== 'none')) {
+        turned.push([a, a.style.transform, a.style.rotate]); a.style.transform = 'none'; a.style.rotate = 'none'
+      }
+    }
     const tops = []
-    for (const r of ink) if (!tops.some((t) => Math.abs(t - r.top) < r.height / 2)) tops.push(r.top)
+    for (const r of turned.length ? inkOf(el) : ink) if (!tops.some((t) => Math.abs(t - r.top) < r.height / 2)) tops.push(r.top)
+    for (const [a, t, r] of turned) { a.style.transform = t; a.style.rotate = r }
     const boxes = []
     for (let a = el; a && a !== root.parentElement; a = a.parentElement) {
       const b = a.getBoundingClientRect(), cs = getComputedStyle(a)
@@ -371,6 +416,7 @@ const dressArt = (q, art) => q.replace(/%22%40art(\d)%22/g, (_, i) => encodeURIC
 const designsOf = (p, themeName) => {
   const n = D.designCount(p.cat, themeName) || 1
   return Array.from({ length: n }, (_, a) => a).filter((a) => !p.f || D.fieldReach(p.f, themeName, a))
+    .filter((a) => !designsOnly || designsOnly.includes(a))
 }
 // The surfaces a design renders at: each width, plus layout 3's composed column.
 const COLUMN = { bio: 'left', media: 'left', calendar: 'right' }
@@ -426,12 +472,22 @@ const seedLenOf = (p, seed) => (p.mode === 'text' ? seed.length
 
 // Every seeded value a probe's field can hold: a repeater column's seed is
 // every seeded row's, not row 0's alone (the media's "Late Lights" is 11, its
-// "Manchester at 3am" 17), so the floor and --seeds read them all.
+// "Manchester at 3am" 17), so the floor and --seeds read them all. A list
+// column (a package's tags or features) is read the same way: its floor is the
+// longest item and the most items in any seeded row's list.
+// The rows are every design's of the template, not this design's alone: the
+// first edit stores whichever seed was showing, and the list keeps it at every
+// layout (Lime's layout-1 "Private Event" moved to layout 3, session 4).
 function seedsOf(p, themeName, design) {
-  if (!p.col || p.mode !== 'text') return [seedOf(p, themeName, design)]
-  const rows = seedRows(p.cat, p.f, themeName, design)
-  const all = Array.isArray(rows) ? rows : rows ? Object.values(rows) : []
-  return all.map((r) => String(r?.[p.col] ?? ''))
+  if (!p.col) return [seedOf(p, themeName, design)]
+  const n = D.designCount(p.cat, themeName) || 1
+  const out = new Set()
+  for (const d of new Set([design, ...Array.from({ length: n }, (_, i) => i)])) {
+    const rows = seedRows(p.cat, p.f, themeName, d)
+    const all = Array.isArray(rows) ? rows : rows ? Object.values(rows) : []
+    for (const r of all) out.add(String(r?.[p.col] ?? ''))
+  }
+  return [...out]
 }
 // The frame's floor: the longest seed (characters, longest item, or items).
 const floorOf = (p, themeName, design) => Math.max(0, ...seedsOf(p, themeName, design).map((v) => seedLenOf(p, v)))
@@ -451,7 +507,7 @@ async function runProbe(pg, p, t) {
       const qBase = `cat=${p.cat}&arch=${a}&theme=${t}&w=${w}${col ? `&column=${col}` : ''}`
       const art = p.f?.type === 'tracks' ? await artOf(pg, themeName) : null
       const q = (v) => (art ? dressArt(qBase + queryOf(p, themeName, a, v), art) : qBase + queryOf(p, themeName, a, v))
-      const at = (si, n) => { const v = valueAt(p, seed, si, n); return render(pg, q(v), needlesOf(p, v)) }
+      const at = (si, n) => { const v = valueAt(p, seed, si, n, themeName, a); return render(pg, q(v), needlesOf(p, v)) }
       // The reference every test is against: the seed's own render (the
       // frame's copy, so its look is the frame's), or a short value's where
       // the seed is empty or does not print.
@@ -470,7 +526,7 @@ async function runProbe(pg, p, t) {
       const seedW = sm?.seats.length ? Math.max(...sm.seats.map((s) => s.w)) : null
       const seedLines = sm?.seats.length ? Math.max(...sm.seats.filter((x) => !x.svg).map((x) => x.lines), 0) : null
       const ok = async (n) => {
-        for (let si = 0; si < RUN_SAMPLES.length; si++) {
+        for (let si = 0; si < samplesOf(p).length; si++) {
           if (p.mode === 'count' && si > 0) break
           if (verdict(await at(si, n), ref, allowed, p)) return false
         }

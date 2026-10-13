@@ -615,3 +615,142 @@ Pop's layout 4. The media's heading floors are line packing, not that, and need 
   row 0's list, which is the same row-0 under-read judgement 1 fixed for titles. `tiersSeed()`
   also differs by template and design. Extend it to every row's list before trusting pricing's
   floors, while no probe is running.
+
+## Session 4: pricing (2026-10-13)
+
+**Scope.** These are pricing's own text keys: `kicker`, `heading`, `unit`, `intro`, `offer`,
+`quote`, `reviews`, `rating`, `cta`, `note`, `featsLabel`, `badgeLabel`, `rowCta` and `sub`, and
+the `tiers` columns `name`, `price`, `tags` (item and count), `blurb` and `feats` (item and
+count). `images` is skipped. `IDENTITY_CHARS.pricing` (Grunge's layout-1 seal) is session 1's and
+was not re-measured. The probe ran on a fresh Vite at :5199. Its per-width readout is
+[`char-limits/session-4-probe.md`](./char-limits/session-4-probe.md), and the decisions are in
+`notes/pricing.md`.
+
+**Rules.** These are session 1's calls, unchanged. `rules.mjs` gains the sized keys `cta`,
+`rowCta`, `badgeLabel` and `tiers.tags[]`, and the blocks `intro`, `quote` and `tiers.blurb`.
+`offer` is metadata: screenshots show it as plain text beside the chip capsule, not a pill.
+Everything else is metadata, and the two counts take the measure.
+
+**The caps written** (by layout 1, 2, 3, 4; `–` where the layout does not read the field; `f`
+marks a cap at its floor that prose fails at some width).
+
+| field | rule | Retro | Lime | Grunge | Editorial | Pop |
+|---|---|---|---|---|---|---|
+| `kicker` | meta | – 74 | same | same | same | same |
+| `heading` | meta | 42f 42f 44 | 50 42f 37 | 55 44 41 | 42f 42 25 | 48 42f 28 |
+| `unit` | meta | 7 37 32 69 | 13 40 28 88 | 15 41 33 98 | 12 37 29 53 | 11 39 27 51 |
+| `intro` | block | – – 240 | same | same | same | same |
+| `offer` | meta | – – 63 | – – 59 | – – 59 | – – 59 | – – 59 |
+| `quote` | block | – 260 | same | same | same | same |
+| `reviews` | meta | – 54 | – 55 | – 55 | – 55 | – 55 |
+| `rating` | meta | – 47 | same | same | same | same |
+| `cta` | sized | – 40 | – 39 | – 40 | – 23 | – 27 |
+| `note` | meta | – 54 | – 55 | – 55 | – 55 | – 55 |
+| `featsLabel` | meta | – 48 57 | – 68 51 | – 68 55 | – 68 55 | – 35 57 |
+| `badgeLabel` | sized | – – 16 | same | same | same | same |
+| `rowCta` | sized | 12 – 12 26 | 14 – 12 26 | 16 – 12 26 | 9 – 12 26 | 10 – 12 26 |
+| `sub` | meta | 133 67 67 67 | 67 67 63 67 | 53f 67 63 67 | 67 67 63 67 | 80 67 63 67 |
+| `tiers.name` | meta | 19 18 53 16f | 30 28 42 23 | 40 34 51 25 | 22 18 27 16f | 16f 16f 30 18 |
+| `tiers.price` | meta | 8 33 31 25 | 12 35 25 29 | 14 35 30 34 | 11 33 27 20 | 10 34 25 23 |
+| `tiers.tags` per chip | sized | 12 – 12 12 | 26 – 26 26 | same | same | same |
+| `tiers.tags` count | count | 4 – 5 6 | 4 – 4 5 | 4 – 4 5 | 4 – 4 5 | 3 – 4 5 |
+| `tiers.blurb` | block | 160 | 160 | 160 | 160 | 160 |
+| `tiers.feats` per line | meta | 24f 24f 24f 59 | 24 24 24f 62 | 25 24 24f 62 | 25 24 24f 60 | 26 24f 24f 62 |
+| `tiers.feats` count | count | 15 15 15 5 | same | same | same | same |
+
+**Judgement calls.**
+1. **The price is read with digit-led samples.** `priceParts()` sets everything before the first
+   digit small, the first number big and the rest small, so a long price grows in its tail:
+   *£475 — £1,450 per evening…*, *From £1,250 + VAT…*, *£685 per set…* (`KEY_SAMPLES` in
+   `limits.mjs`). Prose has no digit, so it sets whole in the big numeral. That is the *Price on
+   application* case, and `--prose` reads it (second table in the readout):
+   Retro 6 9 20 26, Lime 12 22 19 27, Grunge 14 26 23 33, Editorial 11 14 13 18, Pop 9 18 15 22.
+   The written caps are the digit-led ones, so a no-digit price at the cap can wrap the numeral.
+   **This one is the user's to overrule.** Layout 1's deck holds 8–14, so the frames' own range
+   form (*£450 — £1,400*, 13) does not fit every deck card.
+2. **A column's floor is the longest seed of any design** (an extension of session 3's
+   judgement 1). The first edit stores the seed that was showing, and that list then stands at
+   every layout. `tiersSeed()` differs by template and design, and only in the tags. Under Lime,
+   Grunge, Editorial and Pop the seeds hold *Private Event* (13, layout 1), so a tag chip is
+   max(2 × 13, 13 + 8) = 26 at every design. Retro's seeds are *Solo*, *Trio*, *Band* and *Duo*,
+   which gives 12. The tag count's floor is 3. `seedsOf()` now reads every design's rows.
+3. **`tags` at layout 2 is not a cap.** Layout 2 prints no tags. The probe's 1 was the seed *Solo*
+   seated inside the feature *Solo DJ setup*.
+4. **The feature count is 15 at layouts 1–3 and 5 at layout 4.** One a line, the list grows down
+   a hugging card. Its count was first read at 4 everywhere by the lines test (row 0 draws four).
+   Tested as a block, it was open to the probe's 16, so it takes the block ceiling, three times
+   the seed's 5. Layout 4 draws the features as a wrapping chip row, and the lines test bounds
+   that at 5.
+5. **Editorial's layout-1 Book pill is 9** (seed 8). The deck fits that label by its ems
+   (`vm.tierRowCtaEms`), so the next character shrinks it at 390. A shrink floor for it, like the
+   name's `FLOOR`, is the user's call. Pop's layout 1 reads 10 and Retro's 12, both on one line.
+6. **`rating` is metadata (47)** because the session's sized list does not name it. Its seat grows
+   8–18× its seed's width before 390 binds. If it should be sized, the rule gives 11.
+7. **Floors** (prose fails, the seed fits; `--check` reports `floor`):
+   - the heading at layouts 1 and 2 (line packing: 39–41 read);
+   - the names at Pop's layouts 1 and 2 and at layout 4 under Retro and Editorial (14–15 read);
+   - the features at layout 3 on every template (19–22 read) and at Retro's layouts 1–2 and Pop's
+     layout 2;
+   - Grunge's small print at layout 1, which already takes two lines at 390 (36 read).
+
+**Probe fixes** (`scripts/limits.mjs`; they apply to every later session, and the sweep's full
+`--check` re-runs earlier sections under them).
+- **Lines are counted upright.** The deck cards at Retro's and Pop's layout 1 and Pop's layout-2
+  plan card are turned, and a turned line's rects drift apart in `top`. `measure` sets every
+  transformed ancestor upright while it counts lines, then restores them. Pop's layout-2 price
+  went from 4 to 34. Pop's ±1° media cards (session 3) were read the old way, too strictly and
+  never too loosely.
+- **`twinsOf()` matches a sibling that holds the seed inside its own copy** (seeds of 3+
+  characters). Layout 3's intro, *…covers the whole booking*, seated the Book pill's *Book*,
+  and `rowCta` read 1 under Editorial and Retro.
+- **A one-a-line list's count is a block** (`block` on the `#` probe of a `'\n'` column).
+- **`seedsOf()` covers item and count columns and every design's rows** (judgement 2). The count
+  probe's items are drawn from that pool and kept distinct, numbered past it. A chip row built
+  by `repChips()` drops a repeat, so row 0's lone *Solo*, cycled, drew two chips at any count.
+- **`KEY_SAMPLES`** overrides the prose for a key (`tiers.price`), and `--prose` turns it off.
+  **`--designs=`** runs only the listed designs (0-based).
+
+**Checks.**
+- `--seeds` over every pricing key: 0 seeds over their caps.
+- `--check` over every pricing key, with the samples and the lower-case one: 0 failures. The
+  `who.*` row is included, so `IDENTITY_CHARS.pricing` is re-verified. 18 rows report `floor`,
+  all of them judgement 7's. The first run failed `tags#` at layout 4 at 390 under the four
+  Lime-tree templates, because judgement 2's wider pool adds *Private Event* and *Club Night*.
+  Re-probed with that pool it reads 5, which is now written and passes.
+
+**Real app.** Tested with chrome-devtools on the :5199 server: a Lime page laid out by header
+layout 1 (Hero), the canvas at 1440.
+- **Pricing at layout 1.** The panel showed heading 50, name 30, price 12, blurb 160, unit 13,
+  Package button 14 and small print 67. Typing *Pick the night that suits your party and your
+  guests best* stopped at 50 (`50 / 50`). Package 1's name, typed *The Midsummer Garden Party
+  Package Deluxe*, stopped at 30 (`30 / 30`).
+- **TiersField with caps on.** Each row kept its layout: the counter sits under the name, the
+  price and tags pair splits evenly (94.5 px each), and the features read
+  `longest 24 / 24 · 5 of 15`.
+- **A tag.** Typing *, Sunset Rooftop Cocktail Hour Special* after *Private Event* stopped the
+  new tag at 26 (`longest 26 / 26 · 2 of 4`). Pasting it whole (`insertText`) was refused, and
+  the box kept *Private Event*.
+- **The layout picker.** The thumbnails printed the heading in full at layout 1, as *…party and…*
+  at layout 2 (42) and as *…suits your…* at layout 3 (37). The name printed in full at layouts 1
+  and 3, as *…Party…* at layout 2 (28) and as *…Garden…* at layout 4 (23).
+- **Pricing to layout 3.** The canvas printed `Pick the night that suits your…`. The box kept all
+  50 characters (`maxLength` 37), and the counter read `50 / 37 · shortened on the page` in red.
+- **Published tab** (through the dialog's *Open*). It printed the same clamped heading, the
+  name in full, and the artist's name as `<title>`.
+- **Back to layout 1.** The canvas printed the full heading, and the counter read `50 / 50`.
+  Opening the tab again re-rendered it in full.
+
+**Notes for later sessions.**
+- **Repertoire (5).** `songs.tags` is a list column, and its chip row is `repChips()` too. The
+  count probe now draws distinct items, so the reading is real. The repertoire's row carries
+  `All`, so it holds one chip more than pricing's.
+- **Any section whose seeds differ by design** (form's `FORM_FIELDS*`, session 10): `seedsOf()`
+  already reads every design's rows, so the floor is the longest of them.
+- **Calendar (7).** `KEY_SAMPLES` is keyed `tiers.price`. The slots' `price` column is a price
+  too, and it gets prose unless session 7 gives it its own entry: judgement 1's call again.
+- **Form (10).** The count-as-block rule covers the `#` probe of a repeater column's `'\n'` list
+  only. The form's `promises` is a field-level `'\n'` list (`LISTS`), so it still takes the lines
+  test. Session 10 decides whether it should.
+- **For the sweep (12).** Judgements 1 (price samples), 5 (Editorial's Book pill fit) and 6
+  (`rating`) are open for the user. The probe fixes above change how earlier sections measure,
+  so the sweep's full `--check` is their first re-run.

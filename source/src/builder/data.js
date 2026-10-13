@@ -2076,11 +2076,28 @@ export const FIELDS = {
     // JP-095 (a): layout 2's eyebrow over the heading, in the capitals the
     // frame types; the brackets are the markup's.
     { k: 'kicker',  l: 'Kicker', d: PRICING_KICKER, in: [1],
+      chars: [null, 74],
       hint: 'The small line over the heading, in brackets. Left empty, it is not drawn.' },
     { k: 'heading', l: 'Heading', d: "Choose the set that's right for your night", in: [0, 1, 2],
+      chars: { Retro: [42, 42, 44], Lime: [50, 42, 37], Grunge: [55, 44, 41], Editorial: [42, 42, 25],
+        Pop: [48, 42, 28] },
       hint: 'Layouts 1, 2 and 3 only. Layout 4 is a stack of service rows and heads them with '
           + 'the package names alone, so it draws no title.' },
     { k: 'tiers',   l: 'Packages', type: 'tiers', max: 6,
+      // Session 4 of the character-limits pass: a package's tags are chips (twice
+      // the longest seed of any design, since a stored list keeps it at every
+      // layout) and its features one a line, their count bound at layout 4 alone.
+      cols: {
+        name: { Retro: [19, 18, 53, 16], Lime: [30, 28, 42, 23], Grunge: [40, 34, 51, 25], Editorial: [22, 18, 27, 16],
+          Pop: [16, 16, 30, 18] },
+        price: { Retro: [8, 33, 31, 25], Lime: [12, 35, 25, 29], Grunge: [14, 35, 30, 34], Editorial: [11, 33, 27, 20],
+          Pop: [10, 34, 25, 23] },
+        tags: { list: ',', chars: { Retro: [12, null, 12, 12], '*': [26, null, 26, 26] },
+          count: { Retro: [4, null, 5, 6], Pop: [3, null, 4, 5], '*': [4, null, 4, 5] } },
+        blurb: 160,
+        feats: { list: '\n', chars: { Retro: [24, 24, 24, 59], Grunge: [25, 24, 24, 62], Editorial: [25, 24, 24, 60],
+          Pop: [26, 24, 24, 62], '*': [24, 24, 24, 62] }, count: [15, 15, 15, 5] },
+      },
       hint: 'Tags become the filter chips above the packages in layouts 1 and 3 — separate '
           + 'them with commas. Layout 3 starts the packages tagged Duo where the other layouts '
           + 'have Solo, and layout 1 in Lime, Grunge, Editorial and Pop starts them on Private Event, '
@@ -2094,14 +2111,19 @@ export const FIELDS = {
           + 'to give a package layout 3’s Featured badge; with none ticked, it goes to the last '
           + 'package on show.' },
     { k: 'unit',    l: 'Price unit', d: PRICE_UNIT,
+      chars: { Retro: [7, 37, 32, 69], Lime: [13, 40, 28, 88], Grunge: [15, 41, 33, 98], Editorial: [12, 37, 29, 53],
+        Pop: [11, 39, 27, 51] },
       hint: 'Printed after the price in layouts 1, 2 and 3. Layout 4 stands it above the price '
           + 'instead, as the kind of booking being priced, and drops a leading slash.' },
     { k: 'intro',   l: 'Intro line', type: 'area', d: PRICING_INTRO_3, in: [2],
+      chars: [null, null, 240],
       hint: 'A line under the heading. Layout 3 only.' },
     { k: 'offer',   l: 'Offer line', d: PRICING_OFFER, in: [2],
+      chars: { Retro: [null, null, 63], '*': [null, null, 59] },
       hint: 'A short line beside the filter chips, such as a discount. Layout 3 only. '
           + 'Empty it to drop the line.' },
     { k: 'quote',   l: 'Quote', type: 'area', def: 'pricingQuote', in: [1],
+      chars: [null, 260],
       hint: 'A line of praise beside the plan. Layout 2 only.' },
     // Layout 2's credit row under the quote and the line beside its pill, all
     // seeded with the frame's own copy. Every one is emptiable and drops what
@@ -2112,33 +2134,42 @@ export const FIELDS = {
     { k: 'images',  l: 'Reviewer photos', type: 'images', max: 3, in: PRICING_CREDIT,
       hint: 'Small faces under the plan card’s quote.' },
     { k: 'reviews', l: 'Review count', d: PRICING_REVIEWS, in: PRICING_CREDIT,
+      chars: { Retro: [null, 54], '*': [null, 55] },
       hint: 'In the credit row under the quote, after the stars.' },
     { k: 'rating',  l: 'Rating', d: PRICING_RATING, in: PRICING_CREDIT,
+      chars: [null, 47],
       hint: 'The five stars beside it are drawn while this is filled.' },
     // Named for its card rather than numbered, so it still reads apart from
     // the package button below.
     { k: 'cta',     l: 'Plan card button', d: PRICING_CTA, in: PRICING_CARD,
+      chars: { Retro: [null, 40], Lime: [null, 39], Grunge: [null, 40], Editorial: [null, 23], Pop: [null, 27] },
       hint: 'The pill under the price on layout 2’s plan card. Empty it to drop the pill.' },
     { k: 'note',    l: 'Line beside the plan card button', d: PRICING_NOTE, in: PRICING_CARD,
+      chars: { Retro: [null, 54], '*': [null, 55] },
       hint: 'Layout 2 only. A phone stacks it under the pill.' },
     // JP-095 (a): the label over the plan card's features, in the frame's
     // capitals. Drawn while the package has features, as the list is. Layout
     // 3 prints it over every package's features too (JP-125, 2026-10-09).
     { k: 'featsLabel', l: 'Features label', d: PRICING_FEATS_LABEL, in: [1, 2],
+      chars: { Retro: [null, 48, 57], Lime: [null, 68, 51], Pop: [null, 35, 57], '*': [null, 68, 55] },
       hint: 'The label over the features, on layout 2’s plan card and on each of layout 3’s '
           + 'packages. Left empty, it is not drawn.' },
     // JP-125 (user call, 2026-10-09): layout 3's FEATURED badge. Emptied, the
     // badge goes and the featured package keeps its fill.
     { k: 'badgeLabel', l: 'Featured badge', d: PRICING_BADGE, in: [2],
+      chars: [null, null, 16],
       hint: 'The badge on layout 3’s featured package. Left empty, it is not drawn; the package '
           + 'stays highlighted.' },
     // Every package's pill (JP-070): layout 4's row pill until then, and
     // layouts 1 and 3 printed the section's unfielded "Book Now". `d` is
     // layout 1's word; sectionVm and EditPanel resolve layouts 3 and 4's.
     { k: 'rowCta',  l: 'Package button', d: 'Book Now', in: [0, 2, 3],
+      chars: { Retro: [12, null, 12, 26], Lime: [14, null, 12, 26], Grunge: [16, null, 12, 26],
+        Editorial: [9, null, 12, 26], Pop: [10, null, 12, 26] },
       hint: 'The pill on every package. Layout 3 starts from “Book” and layout 4 from '
           + '“Start Enquiry”. Layout 2 has its own plan card button. Empty it to drop the pill.' },
-    { k: 'sub',     l: 'Small print', def: 'pricingSub' },
+    { k: 'sub',     l: 'Small print', def: 'pricingSub',
+      chars: { Retro: [133, 67, 67, 67], Grunge: [53, 67, 63, 67], Pop: [80, 67, 63, 67], '*': [67, 67, 63, 67] } },
   ],
   // The other list-shaped content type with a structured editor rather than a
   // textarea (see `media` above): `songs` is an array of
