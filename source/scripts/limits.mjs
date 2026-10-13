@@ -210,7 +210,9 @@ function probesOf(cat) {
     const list = f.list ?? LISTS[f.k]
     if (list) {
       ps.push({ key: `${f.k}[]`, cat, f, list, mode: 'item' })
-      ps.push({ key: `${f.k}#`, cat, f, list, mode: 'count' })
+      // The form's promises are one a line down a hugging column, the package
+      // features' shape, so their count is a block's too (session 10).
+      ps.push({ key: `${f.k}#`, cat, f, list, mode: 'count', block: list === '\n' })
     // A heading is a display head, held to its frame's lines, though it is a
     // textarea where a layout keeps a typed break (testimonials layout 2, the
     // form's): `type: 'area'` there is the box, not a paragraph (session 9).

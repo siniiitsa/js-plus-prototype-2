@@ -222,3 +222,21 @@ another `notes/` file.
   in the subject (`Wedding enquiry`) and the body carries no row for it, so an edited or emptied
   label sends the same mail. The four live lines (`formPrompt`, `formSentTitle`, `formSentBody`,
   `formAgain`) and layout 4's `formStepsLabel` are still literals the view-model owns.
+- **Character caps** (`plans/char-limits.md`, session 10, 2026-10-13; the table and the readout are
+  there). Every text key and both repeaters' columns carry a cap per template and layout.
+  - **The heading is a display head**, held to its frame's lines though it is a textarea for layout
+    2's typed break. At layout 3 its cap is a typed head's: a typed head replaces
+    `formHeading3(name)` whole, and the composed line's copy of the name clamps apart, at
+    `IDENTITY_CHARS.form.title`. The untouched box shows the composed seed with the real name, so a
+    name 1–2 characters short of its own cap can turn the counter red over a head the page prints
+    whole; flooring layout 3's cap at 20 + that cap is the user's call.
+  - **`promises` is a `'\n'` list** (`list` on the field): each promise one line, 9 a column (6 at
+    Editorial's layout 1, whose bottom-aligned column climbs into the head at 7). Its count is a
+    block's, the package features' rule.
+  - **`types` is a `','` list**: 15 a chip, 5 chips under Lime and Grunge and 8 elsewhere.
+  - **`fields.placeholder` is uncapped at layouts 2 and 3**, which print no placeholder while a
+    label is set; a box with an emptied label prints its placeholder there uncapped.
+  - **The price row wraps by design** (`flexWrap: 'wrap'` in every block): price and unit are capped
+    apart, and a long price drops the unit under it.
+  - **The mailto heads an answer with the label as the page prints it**, clamped at a layout that
+    shortens it, since `formMailto` reads the clamped `vm.formFields`. Left for the sweep.

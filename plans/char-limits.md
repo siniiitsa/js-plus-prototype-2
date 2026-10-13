@@ -1525,3 +1525,176 @@ layout 2 (Feature spread), the canvas at 1440.
   (Editorial's layout-4 heading fit) are open for the user. The repeaters' first rows (a number, a
   box and a ✕, centred) drop their number and ✕ by half a counter's height when the box shows one
   (the *Real app* note above): one pass over every repeater.
+
+## Session 10: the enquiry form (2026-10-13)
+
+**Scope.** These are the form's own text keys, the list built from `FIELDS.form` (`image`, `photo`
+and `email` skipped): `heading`, `sub`, `para`, `promises` (item and count), `types` (item and
+count), `typeLabel`, `message`, `messageLabel`, `button`, layouts 2 and 3's card (`price`,
+`priceUnit`, `bookings`, `cta`, `note`) and layout 3's `available`, and the `steps` columns `title`
+and `sub` and the `fields` columns `label` and `placeholder`. The grep adds eight keys the handoff
+had not named: `sub`, `message`, `price`, `priceUnit`, `bookings`, `cta`, `note` and `available`;
+all eight are probed and capped. `IDENTITY_CHARS.form` (session 1's) was re-verified by `--check`
+and passes. The probe ran on a fresh Vite at :5199. Its per-width readout is
+[`char-limits/session-10-probe.md`](./char-limits/session-10-probe.md), and the decisions are in
+`notes/form.md`.
+
+**Rules.** These are session 1's calls, unchanged. `rules.mjs` gains three sized keys, each
+screenshotted first: `button` and `cta` (the submits, full-measure pills) and `types[]` (the
+event-type chips). It gains one block, `para`. Everything else is metadata: `available` is a plain
+eyebrow line, not a pill, and the heading is a display head (session 9, judgement 1).
+
+**The caps written** (by layout 1, 2, 3, 4; `–` where the layout does not read the field; `f`
+marks a cap at its floor that prose fails at some width).
+
+| field | rule | Retro | Lime | Grunge | Editorial | Pop |
+|---|---|---|---|---|---|---|
+| `heading` | meta (head) | 45 36f 32 20 | 37 37 32 19 | 36f 40 41 25 | 36f 42 30f 12 | 36f 40 30 17 |
+| `sub` | meta | – – – 33 | – – – 40 | – – – 44 | – – – 27 | – – – 30 |
+| `para` | block | – – 210 | same | same | same | same |
+| `promises` per line | meta | 45 32 | 34 34 | 34 34 | 34 29f | 42 31 |
+| `promises` count | count (block) | 9 9 | 9 9 | 9 9 | 6 9 | 9 9 |
+| `types` per chip | sized | 15 | same | same | same | same |
+| `types` count | count | 8 | 5 | 5 | 8 | 8 |
+| `typeLabel` | meta | 51 | 52 | 58 | 37 | 33 |
+| `message` | meta | 39 – – 53 | 42 – – 54 | 42 – – 54 | 44 – – 58 | 35 – – 54 |
+| `messageLabel` | meta | 51 – – 45 | 52 – – 59 | 58 – – 64 | 37 – – 35 | 33 – – 41 |
+| `button` | sized | 16 – – 36 | 15 – – 36 | 15 – – 36 | 15 – – 27 | 15 – – 32 |
+| `price` | meta (row) | – 32 39 | – 28 35 | – 32 39 | – 19 23 | – 22 26 |
+| `priceUnit` | meta (row) | – 47 54 | – 43 54 | – 47 54 | – 47 54 | – 47 54 |
+| `bookings` | meta | – 35 41 | – 32 42 | – 36 42 | – 36 42 | – 36 42 |
+| `cta` | sized | – 36 36 | – 30 36 | – 33 36 | – 18 22 | – 20 26 |
+| `note` | meta | – 47 54 | – 43 54 | – 47 54 | – 47 54 | – 47 54 |
+| `available` | meta | – – 61 | same | same | same | same |
+| `steps.title` | meta | – – – 41 | same | same | same | same |
+| `steps.sub` | meta | – – – 44 | same | same | same | same |
+| `fields.label` | meta | 49 46 57 22 | 47 52 69 27 | 52 62 76 30 | 24 33 41 14 | 32 33 40 19 |
+| `fields.placeholder` | meta | 37 – – 23 | 41 – – 24 | 41 – – 24 | 41 – – 25 | 35 – – 24 |
+
+**Judgement calls.**
+1. **Layout 3's heading cap is a typed head's, not the composed line's** (decided before the
+   probe). `sectionVm` composes `formHeading3(name)` only while `heading` is absent, and a typed
+   head replaces it whole, so the field's cap measures what the key holds. The composed line is the
+   name's business: its copy of the name clamps at `IDENTITY_CHARS.form.title` (10–23), which
+   `--check`'s `who.title` rows re-verify. The floor is the seed with the probe's *Kai Mercer*, 30.
+   **One panel edge follows, and it is the user's call.** An untouched layout-3 heading box shows
+   the composed seed with the artist's real name, and its counter compares that with the cap. With
+   the name at its own layout-3 cap the seed is 20 + that cap: Retro 33, Lime 33, Grunge 43,
+   Editorial 30, Pop 31, against the written 32, 32, 41, 30, 30. So a name of 12–13 characters
+   (Retro, Lime), 22–23 (Grunge) or 11 (Pop) turns the counter red, *shortened on the page*, over a
+   head the page prints whole. Session 0's note that real caps cannot do this does not hold for a
+   seed composed from the name. The fix would floor layout 3's cap at 20 + `IDENTITY_CHARS.form.title`
+   and teach `floorOf` the same, so `--check` reports it as `floor`.
+2. **The heading's floors** (`--check` reports `floor`):
+   - layout 1 under Grunge (30 read), Editorial (26) and Pop (30): line packing. The seed's typed
+     break and its long last word set the frame's lines, and prose of 36 cannot. Editorial's head is
+     fitted to its widest word, so prose, whose widest word is shorter than *unforgettable.*, sets
+     *larger* and takes a fifth line (the seat 0.61–0.92 the seed's width);
+   - Retro's layout 2 at 768 (24 read). Sample 3, *Kestrel Booking is open*, fills the 768 column
+     exactly, and its last glyph's side bearing runs a fraction of a pixel past it (`box`, `past`),
+     at 25, 27 and 36. The lines bound is somewhere in 37–71 (1440 reads 88, 390 reads 60), so the
+     seed's 36 is written, a floor of the box test's strictness rather than of the frame;
+   - Editorial's layout 3 at 1440 (27 read), line packing in the fitted half column.
+3. **The promises' count is a block** (decided before the probe). Both layouts set the promises one
+   a line down a column that hugs them, the package features' shape (session 4, judgement 4).
+   `probesOf` now gives the count of a field-level `'\n'` list the block exemption. It reads open
+   to 16 but at layout 1 under Editorial and Pop. There the column is bottom-aligned beside the
+   head, so a seventh promise climbs into Editorial's head and a tenth into Pop's scribble
+   (screenshotted). Open takes three times the seed's 3, so 9; Editorial's layout 1 is 6.
+   `rules.mjs` now writes 3 × seed for a count that is open everywhere, which is how session 4's 15
+   for the features was reached by hand. Each promise is held to its one line (29–45, 390 binding;
+   Editorial's layout 2 holds *Covers 120 mi from Manchester*'s 29, a floor).
+4. **Row 0 is every repeater's narrowest row, so `rowsAt` is unchanged** (a scratchpad check,
+   `rowseats10.mjs`). Every box of a layout stands in one width, but layout 4's odd fifth (528 / 708 /
+   370 against 258 / 347 / 178), and the three steps share one width. The column floors are the
+   longest seed of any design: a label 10 (*Event date*, *Event type*, *Your email*), a placeholder
+   15 (*Wedding, party…*), a step title 20 and a sub 24.
+5. **The placeholders print, and only at layouts 1 and 4.** On the canvas every reachable layout
+   draws a placeholder as a text span; the one `<input readOnly placeholder>` branch is layout 5+,
+   which `NVAR.form` (4) never reaches. Layouts 2 and 3 set the label in the box and print no
+   placeholder while a label is there, so `placeholder` is unseen and uncapped at both. A box whose
+   label is emptied prints its placeholder there instead, uncapped; that is the one gap.
+6. **The message placeholder is held to the frame's one line** (39–58). It sits in a three-row box,
+   so a second line would not crowd anything. With one line more (`--extra-lines=message`, the
+   readout's second table) it reads 66–86 at layout 1 and 106–114 at layout 4. **The user's to
+   overrule.**
+7. **The price takes prose** (decided before the probe): the card sets it whole in the display face,
+   with no `priceParts()` split, session 7's judgement 1. **The price row wraps by design.** Price
+   and unit share a baseline row that is `flexWrap: 'wrap'` in every template's block, so the
+   frame's one row (*£1,200 from / event*) holds at the seeds, and a price of about ten characters
+   or more drops the unit under it. With both at their caps (`joint10.mjs`, every template, both
+   designs and width, four samples) the row wraps in 110–114 of 120 renders, and nothing fails
+   jointly. The ten failures each run reports follow the substitute lead word the joint check
+   gives one key (*Osprey* for *Kestrel*): swapping the leads moves them from the unit to the price.
+   That is the prose method's sensitivity at an exact edge (session 6, judgement 6), not the pair.
+   Holding the row to one line would be a joint split: **the user's to overrule.**
+8. **The sized seats.** The layout-1 submit is max(2 × 8, 8 + 8) = 16 under Retro (*Book Now*) and
+   max(2 × 7, 7 + 8) = 15 under the twins and Pop (*Enquire*), under every measure (19–42). Layout 4's
+   *Check Availability* is 36, and Editorial's 27 and Pop's 32 bind. The card's submit is 36, and
+   layout 2's measures bind under Lime (30), Grunge (33), Editorial (18, the seed: a 19th character
+   wraps its Gloock pill at 768) and Pop (20). A type chip is 15, under every measure (42–54).
+9. **The type count** is the seed's 5 under Lime and Grunge, whose 390 chip row wraps a sixth chip,
+   and 8 under Retro, Editorial and Pop.
+10. **Found in the real app, for the sweep (12): the mailto heads an answer with the clamped label.**
+    `formMailto` is bound over `vm.formFields`, which reads `c` after the clamp at `sectionVm`'s
+    head. So at a layout that shortens a label, the email reads `Preferred date of the…: Sat 14
+    June 2027`. It matches the page, but the artist's full label is the better head for the email.
+
+**Probe fixes** (`scripts/limits.mjs` and `rules.mjs`; they apply to every later section).
+- **A field-level `'\n'` list's count is a block** (judgement 3). `promises` is the only one.
+- **`rules.mjs` writes 3 × seed for a count that is open everywhere** (judgement 3).
+
+**Checks.**
+- `--seeds` over every form key: 0 seeds over their caps.
+- `--check` over every form key, with the three samples and the lower-case one: 0 failures in 321
+  rows. The `who.*` rows are included: `IDENTITY_CHARS.form`'s kicker (layouts 1–2), name (layouts
+  1–3) and Pop's layout-1 seal pass on every template, and the `location` and `tags` rows are
+  `unseen`. 7 rows report `floor`: judgement 2's five heading rows, Editorial's layout-2 promise
+  line, and session 1's Editorial name at layout 3 (10).
+- The joint check (`joint10.mjs`): 10 failures in 120 renders on each run, every one the key
+  carrying the substitute lead word, and none of the pair (judgement 7).
+
+**Real app.** Tested with chrome-devtools on the :5199 server: a Lime page laid out by header
+layout 2 (Feature spread), the canvas at 1440.
+- **The form at layout 2.** The panel showed Heading 37 (its counter at the seed, `36 / 37`, the
+  typed break counting one), Promises `longest 29 / 34 · 3 of 9`, each box's label 52 with the
+  placeholder uncapped, Price 28, Price note 43, Bookings 32, Button 30 and Note 43.
+- **A label.** Box 1's label, typed *Preferred date of the wedding ceremony and the evening party*,
+  stopped at 52 (`52 / 52`), and the canvas box printed it. Cut back to 41 the counter was gone,
+  and at 42 it read `42 / 52` (80% of 52 is 41.6).
+- **The heading.** *Plan the night your guests talk about for years* stopped at 37 (`37 / 37`).
+  The layout picker's thumbnails printed it in full at layouts 1, 2, 5 and 6, as `Plan the night
+  your guests…` at layout 3 (32) and as `Plan the night…` at layout 4 (19).
+- **The form to layout 4.** The canvas printed `Plan the night…`. The box kept all 37 characters
+  (`maxLength` 19), and the counter read `37 / 19 · shortened on the page` in red
+  (`rgb(179, 38, 30)`). The 42-character label read `42 / 27 · shortened on the page` and printed
+  `Preferred date of the…`. The panel showed Line under the heading 40, step titles 41 and subs 44,
+  labels 27, placeholders 24, Message placeholder 54, Message label 59 and Button 36.
+- **`FormFieldsField` and `StepsField` with counters showing** (session 0's open item, for these
+  two). A placeholder typed *Any Saturday from June to late August* stopped at 24 (`24 / 24`). Its
+  kind select stands under the box, not beside it, so nothing stretches: every box is 31 tall. Step
+  1's title, typed *Send me your date, venue, guest count and a rough budget*, stopped at 41
+  (`41 / 41`), and the canvas printed it. Both rows' number and ✕ centre on the box and its
+  counter, the first-row pattern session 9 left for the sweep.
+- **Published tab** (through the dialog's *Open*). It printed `Plan the night…`, `Preferred date
+  of the…` and the step in full, and its `<title>` was the name.
+- **Back to layout 1.** The canvas printed the full heading, and the counter read `37 / 37` in grey.
+  The types read `longest 7 / 15 · 5 of 5`. A sixth, *, Corporate*, was refused at its first
+  letter. *Other* retyped as *Corporate summer party* stopped at `Corporate summe` (`longest 15 / 15 ·
+  5 of 5`), and the canvas chip printed it. A fourth promise, *Travel included anywhere in the North
+  West*, stopped at 34 (`longest 34 / 34 · 4 of 9`).
+- **Live alone, spot-checked in the published tab.** At layout 4 the boxes are inputs carrying
+  the typed placeholders, and the submit is an `<a href="mailto:">`. Filled from the opener, its
+  address read `subject=Enquiry` (layout 4 draws no chips), with each answer and the message in the
+  body (judgement 10). At layout 1 (republished) the subject opened on chip 0, `Wedding enquiry`. A
+  click on `Corporate summe` made it `Corporate summe enquiry`, and the body headed the first answer
+  with the label in full (42, under Lime's 47 there).
+
+**Notes for later sessions.**
+- **The footer (11).** `statement` is `type: 'area'`, a display statement fitted to its widest word
+  under Editorial and Pop (`vm.footerWordEms`). Decide before the probe whether it is a block or a
+  head, given that Editorial's layout-1 form head here read *more* lines with prose, because the fit
+  sets shorter widest words larger (judgement 2). `copyright` is composed from the name
+  (`copyrightOf`), judgement 1's panel edge in another seat.
+- **For the sweep (12).** Judgements 1 (layout 3's floor through the name), 6 (the message's one
+  line), 7 (the price row's wrap) and 10 (the mailto's clamped label) are open for the user.
