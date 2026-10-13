@@ -2229,20 +2229,25 @@ export const FIELDS = {
       hint: 'One per tile. Layout 1 shows the highlighted one in its viewer; layouts 2 and 4 show it as the large photo beside the others.' },
     // JP-120 (gallery): the eyebrow over the heading, the frames' word, uncased.
     { k: 'kicker',  l: 'Kicker', d: GALLERY_KICKER, in: [0, 3],
+      chars: { Retro: [44, null, null, 49], Pop: [44, null, null, 39], '*': [55, null, null, 51] },
       hint: 'The small line over the heading. Left empty, it is not drawn.' },
-    { k: 'heading', l: 'Heading', d: 'See us in action' },
+    { k: 'heading', l: 'Heading', d: 'See us in action',
+      chars: { Retro: [20, 27, 18, 24], Lime: [19, 26, 18, 23], Grunge: [29, 26, 23, 24], Editorial: [16, 26, 11, 20],
+        Pop: [16, 27, 15, 20] } },
     // JP-098: the 768 head row's word, the frame's, uncased. `in` cannot name a
     // width, so the hint does. JP-120 (gallery): layout 1's credit line too.
     { k: 'railLabel', l: 'Gallery label', d: GALLERY_RAIL_LABEL, in: [0, 1],
+      chars: { Retro: [49, 70], Lime: [55, 64], Editorial: [32, 70], Pop: [49, 70], '*': [55, 70] },
       hint: 'The line under your name over the large photo in layout 1, and the label over the small '
           + 'photos in layout 2, on a tablet only. Left empty, neither is drawn.' },
     // JP-120 (gallery): two words that head a control or a row standing
     // whatever they say, so an emptied one reads its seed again (venueCta's
     // rule). The row's label prints at desktop alone, so the hint says so.
-    { k: 'backLabel', l: 'Back link', d: GALLERY_BACK_LABEL, in: [0],
+    { k: 'backLabel', l: 'Back link', d: GALLERY_BACK_LABEL, in: [0], chars: [34],
       hint: 'The link over the large photo that goes back to the first one. Left empty, it shows '
           + '“Back to beginning” again.' },
     { k: 'sourceLabel', l: 'Gallery row label', d: GALLERY_SOURCES[0].l, in: [0],
+      chars: { Retro: [42], Lime: [49], Grunge: [58], Editorial: [37], Pop: [50] },
       hint: 'The first row, above YouTube, Instagram and TikTok, on desktop only. Left empty, it '
           + 'shows “Gallery” again.' },
     { k: 'youtube',   l: 'YouTube link', type: 'url', d: '', in: [0],
@@ -2773,8 +2778,10 @@ export const IDENTITY_CHARS = {
     kicker: { Retro: [43, 38], Pop: [39, 40], '*': [30, 40] },
     seal: { Pop: [12] },
   },
+  // Layout 2's caption line ellipsizes at 390 past 26–27 (session 6's re-run;
+  // session 1 read 28–29 before the box test told a clip from an overshoot).
   gallery: {
-    title: { Retro: [80, 29], Pop: [80, 29], '*': [106, 28] },
+    title: { Retro: [80, 27], Pop: [80, 27], '*': [106, 26] },
   },
   map: {
     location: { Retro: [null, 18], Lime: [null, 15], Pop: [null, 18], '*': [null, 17] },

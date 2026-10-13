@@ -312,6 +312,13 @@ function measure(needles) {
   // Text, image and control boxes, for the overlap test: an element's own text
   // lines, or its box when it is a picture or a control.
   const others = []
+  const turnedUp = (e) => {
+    for (let a = e; a && a !== root; a = a.parentElement) {
+      const cs = getComputedStyle(a)
+      if (cs.transform !== 'none' || (cs.rotate && cs.rotate !== 'none')) return true
+    }
+    return false
+  }
   for (const el of all) {
     const cs = getComputedStyle(el)
     if (cs.visibility === 'hidden' || cs.display === 'none') continue
@@ -319,10 +326,37 @@ function measure(needles) {
     const pic = ['IMG', 'SVG', 'VIDEO', 'CANVAS', 'BUTTON', 'INPUT', 'TEXTAREA'].includes(el.tagName.toUpperCase())
       || /url\(/.test(cs.backgroundImage)
     if (own.length) others.push({ el, rs: own.flatMap(textRects) })
-    else if (pic) others.push({ el, rs: [el.getBoundingClientRect()] })
+    // A drawing or a turned picture is met by its painted pixels, not its box
+    // (`paints`): the box of a turned square is wider than its ink (session 6).
+    else if (pic) others.push({ el, rs: [el.getBoundingClientRect()], loose: el.tagName.toUpperCase() === 'SVG' || turnedUp(el) })
   }
   const hit = (a, b) => Math.max(0, Math.min(a.right, b.right) - Math.max(a.left, b.left))
     * Math.max(0, Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top)) > 2
+  // Whether `el` paints anywhere in the meet of boxes a and b: a 6 × 6 grid of
+  // hit tests. Pop's layout-4 sun and Editorial's layout-1 tape met a gallery
+  // label's line box by their turned squares' corners, where neither has ink.
+  // Pointer events are switched on for the test (a sticker sets them off) and
+  // restored to the old value; an SVG root hit-tests its box, so only its
+  // shapes count; a point is scrolled into the viewport first.
+  const paints = (el, a, b) => {
+    const l = Math.max(a.left, b.left), r = Math.min(a.right, b.right)
+    const t = Math.max(a.top, b.top), btm = Math.min(a.bottom, b.bottom)
+    const svg = el.tagName.toUpperCase() === 'SVG'
+    const targets = [el, ...el.querySelectorAll('*')]
+    const saved = targets.map((x) => [x, x.style.pointerEvents])
+    for (const x of targets) x.style.pointerEvents = 'auto'
+    const sx = scrollX, sy = scrollY
+    let met = false
+    for (let i = 0; i < 6 && !met; i++) for (let j = 0; j < 6 && !met; j++) {
+      const x = l + (r - l) * (i + 0.5) / 6, y = t + (btm - t) * (j + 0.5) / 6
+      scrollTo(sx, sy + y - innerHeight / 2)
+      const at = document.elementsFromPoint(x - (scrollX - sx), y - (scrollY - sy))
+      met = at.some((e) => (svg ? e !== el && el.contains(e) : el.contains(e)))
+    }
+    scrollTo(sx, sy)
+    for (const [x, v] of saved) x.style.pointerEvents = v
+    return met
+  }
   const pathOf = (el) => {
     const p = []
     for (let e = el; e && e !== root; e = e.parentElement) p.push([...e.parentElement.children].indexOf(e))
@@ -392,7 +426,7 @@ function measure(needles) {
     const overlaps = others.filter((o) => !el.contains(o.el) && !o.el.contains(el)
       && !(o.el.closest('svg') && seats.includes(o.el))
       && !(o.rs.length === 1 && encloses(o.rs[0]))
-      && o.rs.some((r) => ink.some((k) => hit(r, k)))).map((o) => pathOf(o.el))
+      && o.rs.some((r) => ink.some((k) => hit(r, k) && (!o.loose || paints(o.el, r, k))))).map((o) => pathOf(o.el))
     const w = Math.round(el.getBoundingClientRect().width)
     return { path: pathOf(el), lines: tops.length, fs: parseFloat(getComputedStyle(el).fontSize), w, boxes, overlaps,
       svg: !!el.closest('svg'), ring: ringOf(el) }
@@ -540,7 +574,12 @@ async function runProbe(pg, p, t) {
       const sm = seed.trim() ? await render(pg, sq, needlesOf(p, seed)) : null
       const ref = sm?.seats.length ? sm : await at(0, p.mode === 'count' ? 1 : 7)
       // A seal's probe needs a ring at the reference; any other, a seat.
-      const seen = p.ring || p.key === 'badgeText' ? ref.seats.some((x) => x.ring) : ref.seats.length
+      // A seed a literal prints too seats the reference where the field itself
+      // does not print: Retro's rail wordmark is *Gallery*, `sourceLabel`'s seed,
+      // and the source rows print no label at 768 and 390. There the value at
+      // the seed's length has no seat, so the surface is unseen (session 6).
+      const literal = p.mode === 'text' && sm?.seats.length && !(await at(0, Math.max(7, seed.length))).seats.length
+      const seen = literal ? 0 : p.ring || p.key === 'badgeText' ? ref.seats.some((x) => x.ring) : ref.seats.length
       if (!seen) { perSurface[`${w}${col ? `/${col}` : ''}`] = { n: null, why: 'unseen' }; continue }
       unseen = false
       const censusSeed = p.mode === 'item' ? seed.split(p.list)[0].trim() : seed

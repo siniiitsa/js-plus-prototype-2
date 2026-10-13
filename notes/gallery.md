@@ -147,3 +147,32 @@ another `notes/` file.
   layout-2 and layout-4 strips keep their own `50% 0%` anchors, and the thumbnail strips under
   the spotlight are untouched. Lime's spotlight seed, `lime-gallery-4`, has no entry, so Lime's
   layout 1 does not move.
+- **The labels and the heading have character caps** (character-limit pass, session 6,
+  2026-10-13; `plans/char-limits.md`, *Session 6*). `chars` is on `kicker`, `heading`,
+  `railLabel`, `backLabel` and `sourceLabel`. The three social addresses are urls and take none.
+  - **Two caps are width-gated.** `railLabel` is layout 1's credit line at every width, but at
+    layout 2 it prints at 768 alone, so layout 2's cap (64–70) is a tablet reading.
+    `sourceLabel` prints at desktop alone, so its cap (37–58) is a 1440 reading. The narrow source
+    rows are icon-only tiles.
+  - **Retro's `sourceLabel` is desktop's 42.** The probe's own column reads 1, because the seed
+    *Gallery* is also Retro's rail wordmark, a literal, which the seed's render seats at 768 and
+    390, where the row prints no label.
+  - **The back link is sized**, 34 (`max(2 × 17, 17 + 8)`), on the bio's Listen-link precedent:
+    a text link that is a control, not a pill, and that reads its seed again when emptied. It
+    measured 48–52 at 390. **This one is the user's to overrule.**
+  - **Editorial's layout-1 credit line is 32**, against 49–55 elsewhere. At 390 the credit drops
+    under the back link and runs into the tilted tape over the viewer.
+  - **Pop's layout-4 kicker is 39**, against 51 on the twins. At 1440 its line runs into the
+    smiley sun's spike.
+  - **The heading's floors.** Editorial's and Pop's layout 1 hold *See us in action*'s 16. That
+    is line packing (*KESTREL NIGHTS* cannot share a line), and Pop's head also meets the
+    asterisk at 11. Editorial's layout 4 holds *Snaps from the night*'s 20, because the head is
+    fitted to its widest word and any seven-letter word shrinks it (to 90% at 1440). A shrink
+    floor for that fit, like the name's 75%, is the user's call. Editorial's layout 3 is 11, a
+    one-line head that fills its taupe band.
+  - **The name in layout 2's caption is clamped at 26–27** (`IDENTITY_CHARS.gallery.title`,
+    lowered from session 1's 28–29). Its caption line ellipsizes past that at 390. A name of wide
+    capitals ellipsizes sooner, and the caption's ellipsis is the fallback.
+  - **Layout 1's head row was checked jointly**: back link, name and credit, each at its cap, on
+    every template and width. The row wraps as JP-113 designed it, and nothing meets the tape,
+    the viewer or the sun.

@@ -904,3 +904,129 @@ layout 2 (Feature spread), the canvas at 1440.
 - **For the sweep (12).** Judgements 2 (the tag count), 3 (the set line's split) and 4 (JP-104's
   second line) are open for the user. `clampList`'s fix changes nothing at a seed, but a stored
   list with a space after an item at its cap renders differently from before.
+
+## Session 6: the gallery (2026-10-13)
+
+**Scope.** These are the gallery's own text keys: `kicker` (`in: [0, 3]`), `heading`, `railLabel`
+(`in: [0, 1]`), `backLabel` and `sourceLabel` (`in: [0]`). The three social addresses are urls
+and are skipped. The gallery has no repeater, no list and no composed column. The probe ran on a
+fresh Vite at :5199. Its per-width readout is
+[`char-limits/session-6-probe.md`](./char-limits/session-6-probe.md), and the decisions are in
+`notes/gallery.md`.
+
+**Rules.** These are session 1's calls, unchanged. `rules.mjs` gains one sized key,
+`gallery.backLabel` (judgement 1). There are no blocks. Everything else is metadata. Layout 2's
+heading is the caption pill's first line. Sized or not, it takes the measure, because the sized
+rule's 32 is above the 26–27 read.
+
+**The caps written** (by layout 1, 2, 3, 4; `–` where the layout does not read the field; `f`
+marks a cap at its floor that prose fails at some width).
+
+| field | rule | Retro | Lime | Grunge | Editorial | Pop |
+|---|---|---|---|---|---|---|
+| `kicker` | meta | 44 – – 49 | 55 – – 51 | 55 – – 51 | 55 – – 51 | 44 – – 39 |
+| `heading` | meta | 20 27 18 24 | 19 26 18 23 | 29 26 23 24 | 16f 26 11 20f | 16f 27 15 20 |
+| `railLabel` | meta | 49 70 | 55 64 | 55 70 | 32 70 | 49 70 |
+| `backLabel` | sized | 34 | 34 | 34 | 34 | 34 |
+| `sourceLabel` | meta | 42 | 49 | 58 | 37 | 50 |
+| `IDENTITY_CHARS.gallery.title` | (session 1) | 80 27 | 106 26 | 106 26 | 106 26 | 80 27 |
+
+**Judgement calls.**
+1. **The back link is sized: 34.** It is a text link, not a pill, but it is a control and reads
+   its seed again when emptied. Session 2 put the bio's Listen link, which is drawn the same way
+   (`ListenLink`, a `nowrap` uppercase text link), in SIZED. So it takes
+   max(2 × 17, 17 + 8) = 34. It measured 48–52 at 390. **This one is the user's to overrule.**
+2. **Two caps are width-gated, which `in` cannot say.** `railLabel` at layout 2 prints at 768
+   alone (64–70). At layout 1 it is the credit line at every width (49–55, Editorial's 32).
+   `sourceLabel` prints at desktop alone (37–58), because the narrow rows are icon-only tiles.
+   Their other surfaces are `unseen`.
+3. **Retro's `sourceLabel` is desktop's 42**, though the probe's own column reads 1. Its seed
+   *Gallery* is also Retro's rail wordmark, a literal, which the seed's render seats at 768 and
+   390, where the row prints no label. `rules.mjs` already dropped those surfaces. `--check`
+   failed them until the probe learnt to tell a literal's seat from the field's (*Probe fixes*).
+4. **Editorial's layout-1 credit is 32** (49–55 elsewhere). At 390 the credit wraps under the back
+   link and then meets the tilted tape over the viewer. **Pop's layout-4 kicker is 39** (51 on
+   the twins). At 1440, a 40th character's line runs into the smiley sun's spike (screenshot).
+5. **The heading's floors** (`--check` reports `floor`):
+   - Editorial's and Pop's layout 1 hold *See us in action*'s 16, measured at 14 and 10. That is
+     line packing (*KESTREL NIGHTS* cannot share a line, media's judgement 2), and Pop's
+     one-line head also meets the asterisk at 11.
+   - Editorial's layout 4 holds *Snaps from the night*'s 20, measured at 6. That head is fitted to
+     its widest word, so the first seven-letter word shrinks it, to 90% at 1440. A shrink floor
+     for that fit, like the name's 75% (`FLOOR`), is the user's call. Session 4's judgement 5
+     (Editorial's Book pill) is the same shape.
+   - Editorial's layout 3 is 11 (seed 7): one line that fills its taupe band.
+6. **`IDENTITY_CHARS.gallery.title` at layout 2 drops from 28–29 to 26–27.** `--check` failed
+   session 1's numbers at 390. Layout 2's caption line ellipsizes past 26–27, and session 1's
+   box test, which did not yet tell a clip from an overshoot (session 5), missed it.
+   `EncoreSection` has not changed since session 1. A name of wide capitals
+   (*Wolstenholme-Baxter*, *Featherstonehaugh*) ellipsizes there sooner, at 26. That is the
+   prose method's limit, and decision 6's ellipsis is the fallback the caption already has. It
+   is a consumer seat, so it only clamps its own copy.
+
+**Joint checks** (a scratchpad script, `joint6.mjs`; every template and width, four samples).
+- **Layout 1's head row** holds the back link (34), the name (the template's widest header cap,
+  up to Retro's 31) and the credit (`railLabel` at its cap). Every value is at its cap at once,
+  with lines, page scroll and painted hits compared with the seed's render. 0 failures. At 390
+  the row wraps as JP-113 designed it: the back link keeps its line and the credit drops under
+  it, clear of Editorial's tape.
+- **Layout 2's caption pill** holds the heading at its cap over the name at its cap. The only
+  failures are judgement 6's wide-capital names, which ellipsize without the heading too.
+
+**Probe fixes** (`scripts/limits.mjs`; they apply to every later section, and the sweep's full
+`--check` re-runs earlier sections under them).
+- **A drawing or a turned picture is met by its painted pixels, not its box** (`paints`). The
+  overlap test met Pop's layout-4 sun and Editorial's tilted tape by their turned squares'
+  bounding boxes, where neither has ink. So an SVG or a turned picture's box hit is confirmed by
+  a 6 × 6 grid of `elementsFromPoint` tests in the meet of the two boxes. Pointer events are
+  switched on for the test and restored, a point is scrolled into view first, and an SVG root
+  counts only through its shapes. The first run read Pop's layout-4 kicker at 33 and heading at 9,
+  and Editorial's credit at 13. They read 39, 20 and 32 under the fix. Pop's layout-1 heading,
+  where the asterisk really meets the head, still reads 10, which is the positive control. This
+  fix only loosens false overlaps. Its scroll was checked: the preview's document is the
+  scroller (1439–1446 tall at 390 under testimonials layout 3 and pricing layout 1), and a point
+  1000px down is hit-testable after `scrollTo`, so a seat below the probe's 900px viewport is
+  tested, not dismissed.
+- **A seed a literal prints too is unseen where the field does not print.** Where the value at
+  the seed's length has no seat but the seed's render had one, the reference seated a literal
+  (Retro's wordmark), and the surface is `unseen` (judgement 3).
+
+**Checks.**
+- `--seeds` over every gallery key: 0 seeds over their caps.
+- `--check` over every gallery key, with the three samples and the lower-case one: 0 failures
+  in 170 rows. The `who.*` rows are included, so `IDENTITY_CHARS.gallery` is re-verified, with its
+  `kicker`, `location` and `tags` rows `unseen`, because the gallery prints none of them. 3 rows
+  report `floor`, all of them judgement 5's: the heading at Editorial's and Pop's layout 1 and at
+  Editorial's layout 4. The first run failed 6. Five were judgement 6's `who.title`, and one was
+  judgement 3's Retro `sourceLabel` at 768 and 390.
+
+**Real app.** Tested with chrome-devtools on the :5199 server: an Editorial page laid out by
+header layout 2 (Feature spread), the canvas at 1440.
+- **Gallery at layout 2.** The panel showed Heading 26 and Gallery label 70. Typing *Snapshots from
+  a summer of weddings* stopped at `Snapshots from a summer of` (`26 / 26`).
+- **The layout picker.** The thumbnails printed `Snapshots from…` at layout 1 (16), the full
+  heading at layout 2, `Snapshots…` at layout 3 (11) and `Snapshots from a…` at layout 4 (20).
+- **Gallery to layout 3.** The canvas printed `Snapshots…`. The box kept all 26 characters
+  (`maxLength` 11), and the counter read `26 / 11 · shortened on the page` in red. The published
+  tab (through the dialog's *Open*) printed `Snapshots…`, and its `<title>` was the name.
+- **Back to layout 2.** The canvas printed the full heading, and the counter read `26 / 26` in
+  grey. Opening the tab again re-rendered it in full.
+- **Layout 1.** The panel showed Kicker 55, Heading 16 (red, shortened), Gallery label 32, Back
+  link 34 and Gallery row label 37. *Back to the very first photograph of the night* stopped at 34
+  (`34 / 34`), and *Photographs by Harriet Lowe at the Midland Hotel* stopped at 32 (`32 / 32`).
+  At 390 the head row wrapped, the credit under the back link and clear of the tape.
+- **Live alone, spot-checked.** In the published tab at layout 1, the next arrow stepped the
+  counter `01 — 07` to `02 — 07`, a thumbnail click moved it to `01 — 07`, and the typed back link
+  rewound it. At layout 3, a tile opened the fullscreen viewer, which took focus and locked the
+  page (`overflow: hidden`), and Escape closed it and unlocked the page. Layout 1's 390 source row
+  (the harness with `&live=1`, every template, three addresses set) scrolls sideways when live
+  (`overflow-x: auto`, 10–68px of run-off) and is `clip` on the canvas.
+
+**Notes for later sessions.**
+- **Calendar (7).** The slots' kind and price share a line, so measure them jointly. Decide
+  whether the slot price takes `KEY_SAMPLES`' digit-led samples, as `tiers.price` does (session 4,
+  judgement 1).
+- **For the sweep (12).** Judgements 1 (the back link sized) and 5 (Editorial's layout-4 heading
+  fit) are open for the user. Judgement 6 shows that every earlier `IDENTITY_CHARS` row was
+  measured under the old box test. The sweep's full `--check` re-runs them, and this session's
+  `paints` fix only loosens.
