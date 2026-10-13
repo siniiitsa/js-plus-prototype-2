@@ -754,3 +754,153 @@ layout 1 (Hero), the canvas at 1440.
 - **For the sweep (12).** Judgements 1 (price samples), 5 (Editorial's Book pill fit) and 6
   (`rating`) are open for the user. The probe fixes above change how earlier sections measure,
   so the sweep's full `--check` is their first re-run.
+
+## Session 5: the repertoire (2026-10-13)
+
+**Scope.** These are the repertoire's own text keys: `heading`, the `songs` columns `title`,
+`artist`, `length` and `tags` (item and count), and the `sets` columns `mood` and `length`. The
+repertoire prints no header key, so it has no `IDENTITY_CHARS` row. The probe ran on a fresh Vite
+at :5199. Its per-width readout is
+[`char-limits/session-5-probe.md`](./char-limits/session-5-probe.md). The decisions are in
+`notes/repertoire.md`, a new file, now in `CLAUDE.md`'s notes table.
+
+**Rules.** These are session 1's calls, unchanged. `rules.mjs` gains one sized key,
+`songs.tags[]`. Screenshots show the set cards' mood and length as a plain small-caps line under
+the set's name, not pills, so `sets.*` is metadata. There are no blocks. The heading has no `d`:
+its seed is *12 Songs* at layouts 1 and 2, *Curated sets* at 3 and *Repertoire* at 4.
+
+**The caps written** (by layout 1, 2, 3, 4; `–` where the layout does not read the field; `f`
+marks a cap at its floor that prose fails at some width).
+
+| field | rule | Retro | Lime | Grunge | Editorial | Pop |
+|---|---|---|---|---|---|---|
+| `heading` | meta | 14 31 20 17 | 11 32 19 15 | 13 38 25 20 | 8f 21 12 10 | 11 25 17 10f |
+| `songs.title` | meta | 17f 25 25 25 | 44 24 17 22 | 33 26 23 26 | 17 17f 17f 17f | 17f 17 17f 17f |
+| `songs.artist` | meta | 32 25 – 41 | 73 25 – 37 | 74 25 – 42 | 35 25 – 18f | 18f 25 – 19 |
+| `songs.length` | meta | – – 23 | – – 17 | – – 22 | – – 17 | – – 14 |
+| `songs.tags` per chip | sized | 18 18 18 18 | same | same | same | same |
+| `songs.tags` count | count | 4 4 3 3 | 4 4 3 3 | 4 4 3 3 | 3 4 3 3 | 4 4 3 3 |
+| `sets.mood` | meta (joint) | – – 17 | – – 14 | – – 17 | – – 17 | – – 14 |
+| `sets.length` | meta (joint) | – – 10 | – – 7 | – – 10 | – – 10 | – – 10 |
+
+**Judgement calls.**
+1. **A tag's cap is one number, 18, at every layout and template**, layout 4 included, which
+   prints no tags. The sized rule gives max(2 × 9, 9 + 8) = 18 off *Birthdays*, under every
+   measure (20–23 at layout 3, 43–61 at layouts 1 and 2). At layout 3 a tag is also the key of
+   its set's details (`c.sets`, case-folded). A tag clamped by a layout or template switch would
+   be another key, and the page would lose its mood and length. One number means a stored tag is
+   never clamped.
+2. **A tag count cannot bound the chip row.** The row, and layout 3's set cards, is the union of
+   every song's tags, and the per-song count is the only lever. The first run read row 0's count
+   with a *Kestrel* lead while the other rows kept *Weddings*, so every count drew one chip more
+   than it named, and it read 2, the seed's own floor. The count probe now draws the seeded tags
+   first (`UNION_COUNT` in `limits.mjs`), so it reads how many distinct chips the binding row holds:
+   4 at layouts 1 and 2 at 390 (3 under Editorial at layout 1), and 3 at layout 3, where a fourth
+   set card starts a second row. Counts 1–3 all draw the seed's three tags, so a reading under 3
+   is 3. Layout 4 takes the tightest, 3. A page with more distinct tags than a row holds still
+   wraps the row. That is the page's content, not one song's, and no cap reaches it. **This one is
+   the user's to overrule.**
+3. **The set line is one budget** (`repSetLine()`, a `nowrap` span that clips with no ellipsis).
+   Mood and length were each read beside the other's seed, mood 16–22 and length 14–20. Both at
+   those caps clipped the line mid-word at 768 (*KESTREL NIGHTS AND GOLDEN · KE*). The written caps
+   are a joint split, bisected with both at their caps under all four samples (a scratchpad check,
+   `joint.mjs`). The length takes up to 10 (*90 minutes*) and the mood the rest, never under its
+   seed's 14 (*Easy listening*):
+   - Retro, Grunge and Editorial: mood 17, length 10;
+   - Pop: mood 14, length 10;
+   - Lime: mood 14, length 7, because its 768 card is already full at the seed.
+
+   Giving the mood more and the length less is the user's call.
+4. **JP-104's two-line title at layout 3 is not in the caps.** The census holds layout 3's title
+   to one line, and JP-104 (user call, 2026-10-06) wraps a long one to a second at 768 and 390,
+   clamped by CSS. The seeded *Dancing Queen* already takes that second line under Pop and
+   Editorial. The strict reading is written: Retro 25, Lime 17, Grunge 23, Editorial 17 and Pop 17.
+   With one line more (`--extra-lines=songs.title`, the readout's second table) it is Retro 25,
+   Lime 31, Grunge 41, Editorial 20 and Pop 19. **The user's to overrule.**
+5. **The title and the artist share a row.** Each was read beside the other's seed. An artist at
+   its cap (73–74 at Lime's and Grunge's layout 1) squeezes the title to *KESTREL …*. That is
+   decision 6's ellipsis, which the seeds already show (Pop's 390 *SEPTEM…* beside *Earth, Wind &
+   Fire*), so it is left as it is.
+6. **Floors** (prose fails, the seed fits; `--check` reports `floor`):
+   - the title holds *Don't Stop Me Now*'s 17 at seven designs (10–15 read): Retro's layout 1,
+     Editorial's layouts 2–4 and Pop's 1, 3 and 4. The seeds already ellipsize or wrap there;
+   - the artist holds *Earth, Wind & Fire*'s 18 at Pop's layout 1 and Editorial's layout 4, both
+     at 390, where the seeds ellipsize the title beside them (Editorial's artist stops at 60%);
+   - the heading holds *12 Songs*' 8 at Editorial's layout 1 at 768 (7 read: an eight-letter word
+     outruns its column into the search box, session 2's word-bound heading) and *Repertoire*'s 10
+     at Pop's layout 4 at 390 (9 read).
+7. **The heading binds at layout 1** (8–14 at 768 and 390) more tightly than any earlier
+   section's heading. A custom heading such as *Wedding favourites* (18) does not fit there.
+
+**Probe fixes** (`scripts/limits.mjs`; they apply to every later section, and the sweep's full
+`--check` re-runs earlier sections under them).
+- **An enclosing box is a frame, not an overlap.** Editorial layout 2's chip capsule draws its
+  dashed ring as an SVG after the chips. A new chip moved the ring's path, and `tags[]` read 1 on
+  every width. An `others` box that encloses all of the seat's ink is now skipped.
+- **The box test is tagged by kind**, `past` (ink over the box) or `cut` (the box clips its text).
+  The set line's span is tracked −0.06em, so its ink overshoots its own box at the seed, and the
+  seat counted as `self` on both sides. Its clip at 22 characters went unseen until the card's
+  box failed, so `sets.mood` read 21–25 where the line clipped at 16–22. **Every earlier session
+  measured under the old test.** A seat whose seed overshoots its own box was read too loosely,
+  never too strictly. The sweep's `--check` is the place this shows.
+- **`UNION_COUNT`** (judgement 2) and **`--extra-lines=<keys>`** (judgement 4).
+
+**Checks.**
+- `--seeds` over every repertoire key: 0 seeds over their caps.
+- `--check` over every repertoire key, with the three samples and the lower-case one: 0 failures.
+  The `who.*` rows are all `unseen`: the repertoire prints no header key. 11 rows report `floor`,
+  all of them judgement 6's: the title (7), the artist (2) and the heading (2).
+- The set line, checked jointly with both columns at their caps, every template and width, four
+  samples each: 0 clips.
+
+**Real app.** Tested with chrome-devtools on the :5199 server: a Lime page laid out by header
+layout 2 (Feature spread), the canvas at 1440.
+- **Repertoire at layout 2.** The panel showed heading 32, title 24 and artist 25, with the length
+  uncapped (layout 2 does not print it). Song 1's title, typed *Midnight on the Northern Line
+  Again*, stopped at `Midnight on the Northern` (`24 / 24`). The heading took *Wedding favourites
+  and more* whole (`27 / 32`).
+- **A tag.** Typing *, Sunset Rooftop Cocktail Hour* after *Weddings, Pubs* stopped the new tag at
+  18 (`longest 18 / 18 · 3 of 4`). Pasting *Weddings, Sunset Rooftop Cocktail Hour* (`insertText`)
+  was refused, and the box kept its list.
+- **The layout picker.** The thumbnails printed `Wedding…` at layout 1 (11), the full heading at
+  layout 2, `Wedding favourites…` and `Midnight on the…` at layout 3 (19, 17), and `Wedding
+  favour…` at layout 4 (15).
+- **Repertoire to layout 1.** The canvas printed `Wedding…`. The box kept all 27 characters
+  (`maxLength` 11), and the counter read `27 / 11 · shortened on the page` in red.
+- **Published tab** (through the dialog's *Open*). It printed `Wedding…`, and its `<title>` was
+  the name.
+- **Back to layout 2.** The canvas printed the full heading, and the counter read `27 / 32` in
+  grey. Opening the tab again re-rendered it in full.
+- **Layout 3** (a page laid out by Inset Hero). The panel showed the song length 17, mood 14 and
+  set length 7. The Weddings mood, typed *Mellow and romantic first dances*, stopped at `Mellow and
+  rom` (`14 / 14`), and the canvas line `Mellow and rom · 45 min` did not clip. Song 1's length,
+  typed *3:54 with the long extended outro*, stopped at 17 (`17 / 17`) under its 64px box, the
+  box's width unchanged (session 0's open item, closed).
+- **Live alone, spot-checked in the published tab.** Layout 3's *View full set* revealed
+  *September* and *Rather Be* in the Weddings card, and the link went. The typed length printed
+  live. At layout 4, with song 1 retitled *99 Luftballons*, the A–Z rail led with a `#` cell and
+  the list with a `#` group. A click on `S`, and then on `#`, scrolled that group to the top.
+
+**Two fixes the real app found.**
+- **`clampList` counted an item's trailing space** (`data.js`, session 0's mechanism). It kept an
+  item's leading whitespace aside but not its trailing whitespace, while `capExcess`, the panel's
+  guard and counter, trims both. So an item at exactly its cap with a space typed after it, the
+  ordinary way to start the next tag, passed the panel but was clamped on the page:
+  `Sunset Rooftop Coc ` printed as `Sunset Rooftop…` on the canvas and in every thumbnail. Both
+  sides of the whitespace are now kept aside, so a list that fits rejoins byte for byte. This
+  covers every list field (the header's tags, pricing's tags and features). `--seeds` over the
+  header, bio, media, pricing and repertoire still reports 0.
+- **A counter under one box stretched its neighbour.** In `SongsField`'s artist and length row,
+  the uncapped artist box (layout 3) is a bare `Input` in a stretching flex row. It grew to 49px
+  beside the length's counter. The row is top-aligned now, and so is `SetsField`'s.
+
+**Notes for later sessions.**
+- **Gallery (6).** The probe's two fixes this session (the enclosing frame and the kind-tagged
+  box test) are in force, and earlier sections have not been re-measured under them; the sweep's
+  full `--check` is that re-run. The gallery has no repeater text columns.
+- **Every repeater session.** Where two columns share one line, measure them jointly (a scratchpad
+  check like this session's `joint.mjs`). Each column read beside the other's seed overstates the
+  pair. The map's gig rows (venue · city · time) and the calendar's slots (kind · price) are next.
+- **For the sweep (12).** Judgements 2 (the tag count), 3 (the set line's split) and 4 (JP-104's
+  second line) are open for the user. `clampList`'s fix changes nothing at a seed, but a stored
+  list with a space after an item at its cap renders differently from before.

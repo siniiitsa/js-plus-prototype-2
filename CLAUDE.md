@@ -478,6 +478,7 @@ file is loaded into every session and holds only what is cross-cutting.
 |---|---|
 | [`notes/bio.md`](./notes/bio.md) | The bio: the layout-1 reference line, the character caps and their word-bound heading |
 | [`notes/media.md`](./notes/media.md) | The media player: `<audio>`, `cur`, the layout-2 fan, layout 4's sleeve and grid |
+| [`notes/repertoire.md`](./notes/repertoire.md) | The repertoire: the character caps, the tag as a set's key, the shared set line |
 | [`notes/gallery.md`](./notes/gallery.md) | The gallery: `pick`, the strip and its mobile window, social rows, the layout-3 viewer |
 | [`notes/map.md`](./notes/map.md) | The events map: pager, pin/row pairing, city chips, zoom, the ticker, the stat wall |
 | [`notes/nav.md`](./notes/nav.md) | The header's nav: anchors, `navHref()`, nav labels, Minimal, `navFits` at 768 |

@@ -2184,14 +2184,34 @@ export const FIELDS = {
     // Layouts 3 and 4 start from their frames' "Curated sets" (JP-070) and
     // "Repertoire" (JP-081) instead, which count nothing. An emptied heading
     // stays empty at every layout.
-    { k: 'heading', l: 'Heading' },
+    { k: 'heading', l: 'Heading',
+      chars: { Retro: [14, 31, 20, 17], Lime: [11, 32, 19, 15], Grunge: [13, 38, 25, 20], Editorial: [8, 21, 12, 10],
+        Pop: [11, 25, 17, 10] } },
     // `in` is per field, and every layout reads the songs, so the hint says
     // which column each layout leaves out (JP-107): the reviews' date shape.
+    // Session 5 of the character-limits pass: a tag is a chip, and at layout 3
+    // the key of its set (`c.sets`), so its cap is one number at every layout
+    // and template, and a stored tag is never clamped into another key. Its
+    // count is how many distinct chips the binding row holds; layout 4 prints
+    // no tags and takes the tightest, so a list typed there is not cut elsewhere.
     { k: 'songs',   l: 'Songs', type: 'songs', max: 60,
+      cols: {
+        title: { Retro: [17, 25, 25, 25], Lime: [44, 24, 17, 22], Grunge: [33, 26, 23, 26], Editorial: 17, Pop: 17 },
+        artist: { Retro: [32, 25, null, 41], Lime: [73, 25, null, 37], Grunge: [74, 25, null, 42],
+          Editorial: [35, 25, null, 18], Pop: [18, 25, null, 19] },
+        length: { Retro: [null, null, 23], Lime: [null, null, 17], Grunge: [null, null, 22], Editorial: [null, null, 17],
+          Pop: [null, null, 14] },
+        tags: { list: ',', chars: 18, count: { Editorial: [3, 4, 3, 3], '*': [4, 4, 3, 3] } },
+      },
       hint: 'Tags become the filter chips above the list — separate them with commas. Layout 4 draws no chips: it indexes the whole list A–Z instead. '
           + 'Layout 3 groups the songs into one set per tag and shows each song’s length in place of its artist; '
           + 'the other layouts show the artist and not the length.' },
+    // The mood and length share one clipped line (`repSetLine()`), so they split
+    // its budget, measured together: the length takes up to 10 ("90 minutes"),
+    // the mood the rest, never under its seed's 14 (session 5).
     { k: 'sets',    l: 'Sets', type: 'sets', in: [2],
+      cols: { mood: { Retro: [null, null, 17], Lime: [null, null, 14], Grunge: [null, null, 17], Editorial: [null, null, 17],
+        Pop: [null, null, 14] }, length: { Lime: [null, null, 7], '*': [null, null, 10] } },
       hint: 'One per tag on your songs. The mood and length show under the set’s name in layout 3; with both empty, it shows the song count.' },
   ],
   // The three social addresses follow the photos, and follow `media.soundcloud`
@@ -2847,8 +2867,10 @@ export function clampText(s, n) {
   return `${cut.trimEnd()}…`
 }
 const listItems = (s, sep) => s.split(sep)
-// Each item clamped to `chars` (its leading space kept, so a list that fits
-// rejoins byte for byte) and the list cut after `count` non-blank items.
+// Each item clamped to `chars` (its leading and trailing space kept, so a list
+// that fits rejoins byte for byte, and an item at its cap with a space typed
+// after it is not over: capExcess trims both) and the list cut after `count`
+// non-blank items.
 export function clampList(s, cap) {
   if (typeof s !== 'string' || !cap) return s
   let kept = 0
@@ -2859,7 +2881,8 @@ export function clampList(s, cap) {
       kept++
     }
     const lead = it.match(/^\s*/)[0]
-    out.push(lead + clampText(it.slice(lead.length), cap.chars))
+    const body = it.slice(lead.length).trimEnd()
+    out.push(lead + clampText(body, cap.chars) + it.slice(lead.length + body.length))
   }
   return out.join(cap.list)
 }

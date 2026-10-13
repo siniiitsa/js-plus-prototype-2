@@ -2895,9 +2895,10 @@ function SongsField({ caps, value, max, onChange }) {
           and three inputs do not fit side by side at its width. The 25px
           gutter keeps both lower fields aligned under the title. The length
           (JP-066) is four glyphs, so it rides beside the artist in a narrow
-          box rather than taking a line of its own. */}
+          box rather than taking a line of its own. Top-aligned, so a counter
+          under one box does not stretch the other. */}
       <div style={{ paddingLeft: '25px', paddingRight: '29px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-        <div style={{ display: 'flex', gap: '6px' }}>
+        <div style={{ display: 'flex', gap: '6px', alignItems: 'flex-start' }}>
           <CappedText cap={caps?.artist}
             value={sg.artist ?? ''} placeholder="Artist" onClick={stopE}
             onChange={(e) => setAt(i, 'artist', e.target.value)}
@@ -2989,7 +2990,7 @@ function SetsField({ caps, value, songs, onChange }) {
           }}>
             <span style={{ fontSize: '12px', fontWeight: 600, color: '#1B1A17', overflowWrap: 'anywhere' }}>{ch.label}</span>
             {/* shadcn Input for its focus ring — see SongsField above. */}
-            <div style={{ display: 'flex', gap: '6px' }}>
+            <div style={{ display: 'flex', gap: '6px', alignItems: 'flex-start' }}>
               <CappedText cap={caps?.mood}
                 value={d.mood ?? ''} placeholder="Mood" aria-label={`${ch.label} mood`} onClick={stopE}
                 onChange={(e) => setAt(key, 'mood', e.target.value)}

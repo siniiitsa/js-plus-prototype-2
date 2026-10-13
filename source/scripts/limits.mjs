@@ -10,6 +10,7 @@
 //   node scripts/limits.mjs x --seed-list      the census's seed strings (census/seeds.json)
 //   --prose                                    prose for every key (no KEY_SAMPLES override)
 //   --designs=0,1                              only these designs (0-based)
+//   --extra-lines=songs.title                  these keys one line past the frame's
 //
 // A key is `heading`, `tracks.title` (a repeater column, row 0 of the seed),
 // `tags[]` (a list's item, item 0) or `tags#` (a list's item count), or
@@ -103,6 +104,12 @@ function censusLines(cat, themeName, design, w, seed) {
 // user call, 2026-10-13). Every other seat keeps the frame's lines and size.
 const FLOOR = { title: 0.75, 'who.title': 0.75 }
 const EXTRA_LINES = { title: 1, 'who.title': 1 }
+// --extra-lines=songs.title gives a key one line past the frame's, to read the
+// alternative a user call would allow (JP-104's two-line title at repertoire
+// layout 3's 768 and 390, session 5), as --prose reads session 4's.
+for (const k of (opt('extra-lines', '') || '').split(',').filter(Boolean)) EXTRA_LINES[k] = 1
+// A repeater's list count whose chip row is the union over every row (session 5).
+const UNION_COUNT = new Set(['songs.tags#'])
 
 const SAMPLES = [
   'Kestrel nights and golden hour sets for weddings, parties and late shows across the city and the coast, with live sax, warm vinyl and a dance floor that stays full until the very last song of the evening. Every booking is planned around your guests, your venue and the music you love most, from the first dance to the final encore and the taxi home.',
@@ -258,6 +265,13 @@ function valueAt(p, seed, si, n, themeName, design) {
   if (p.col) {
     const pool = [...new Set(seedsOf(p, themeName, design).flatMap((v) => v.split(p.list).map((t) => t.trim()).filter(Boolean)))]
     if (!pool.length) pool.push('Kestrel')
+    // The songs' chip row is the union of every song's tags, and the other rows
+    // keep the seed's, so a "Kestrel" lead adds a chip at any count. Leading with
+    // the seeded tags reads what the count can mean: how many distinct chips the
+    // row holds, so one song may carry every chip it shows (session 5).
+    if (UNION_COUNT.has(p.key)) {
+      return Array.from({ length: n }, (_, i) => (i < pool.length ? pool[i] : `Kestrel ${i + 1}`)).join(j)
+    }
     return Array.from({ length: n }, (_, i) => (i === 0 ? 'Kestrel'
       : i < pool.length ? pool[i] : `${pool[i % pool.length]} ${Math.floor(i / pool.length) + 1}`)).join(j)
   }
@@ -363,11 +377,21 @@ function measure(needles) {
       const clips = /hidden|clip/.test(cs.overflowX + cs.overflowY)
       const past = ink.some((r) => r.left < b.left - 0.5 || r.right > b.right + 0.5 || r.top < b.top - 0.5 || r.bottom > b.bottom + 0.5)
       const cut = clips && (a.scrollWidth > a.clientWidth + 1 || a.scrollHeight > a.clientHeight + 1)
-      if (past || cut) boxes.push(pathOf(a))
+      // Tagged by kind: a seat whose tracked ink overshoots its own box at the
+      // seed ('past') must still fail when it starts clipping its text ('cut'),
+      // the set line's nowrap span at repertoire layout 3 (session 5).
+      if (past) boxes.push(`${pathOf(a)}:past`)
+      if (cut) boxes.push(`${pathOf(a)}:cut`)
     }
     // Another copy of the value on a seal's ring is the ring test's, not this one's.
+    // A box that encloses all of the seat's ink is a frame round it, not a
+    // collision: Editorial's chip capsule draws its dashed ring as an SVG after
+    // the chips, so a new chip moves the ring's path (session 5).
+    const encloses = (r) => ink.length && ink.every((k) => k.left >= r.left - 0.5 && k.right <= r.right + 0.5
+      && k.top >= r.top - 0.5 && k.bottom <= r.bottom + 0.5)
     const overlaps = others.filter((o) => !el.contains(o.el) && !o.el.contains(el)
       && !(o.el.closest('svg') && seats.includes(o.el))
+      && !(o.rs.length === 1 && encloses(o.rs[0]))
       && o.rs.some((r) => ink.some((k) => hit(r, k)))).map((o) => pathOf(o.el))
     const w = Math.round(el.getBoundingClientRect().width)
     return { path: pathOf(el), lines: tops.length, fs: parseFloat(getComputedStyle(el).fontSize), w, boxes, overlaps,
@@ -457,8 +481,9 @@ function verdict(m, ref, allowed, p) {
     // A seat's own box is 'self' on both sides, so a value whose seat is a
     // word span inside the reference's seat (a one-word name in a two-word
     // h1) is not failed for the path having moved.
-    const refBoxes = r.boxes.map((b) => (b === r.path ? 'self' : b))
-    if (s.boxes.some((b) => !refBoxes.includes(b === s.path || b === r.path ? 'self' : b))) return 'box'
+    const selfOf = (b, ...own) => { const i = b.lastIndexOf(':'); const p = b.slice(0, i); return `${own.includes(p) ? 'self' : p}${b.slice(i)}` }
+    const refBoxes = r.boxes.map((b) => selfOf(b, r.path))
+    if (s.boxes.some((b) => !refBoxes.includes(selfOf(b, s.path, r.path)))) return 'box'
     if (s.overlaps.some((o) => !r.overlaps.includes(o))) return 'overlap'
     if (s.fs < r.fs * (FLOOR[p.key] ?? 1) - 0.01) return `shrink ${s.fs}<${r.fs}`
   }

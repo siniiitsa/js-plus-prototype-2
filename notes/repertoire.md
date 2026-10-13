@@ -1,0 +1,46 @@
+# The repertoire — working notes
+
+Created on 2026-10-13 for the character-limit pass (`plans/char-limits.md`, session 5). The
+songs, the sets and the heading's fallbacks are in `notes/list-editors.md` (`SongsField`,
+`SetsField`, `repSetsOf`, `HEADING_3` / `HEADING_4`). "Above" and "below" may point into
+`CLAUDE.md` or another `notes/` file.
+
+- **Character caps** (session 5 of the character-limits pass, 2026-10-13;
+  `plans/char-limits.md`, *Session 5*, and the per-width readout in
+  `plans/char-limits/session-5-probe.md`). `heading` has a `chars` row, `songs` has `cols` for
+  `title`, `artist`, `length` and `tags` (item and count), and `sets` has `cols` for `mood` and
+  `length`. The calls to keep:
+  - **The heading is the song count at layouts 1 and 2** (*12 Songs*, 8), and layout 1 binds it
+    hard: 8–14 at 768 and 390, its display head beside the search box. Editorial's 768 is the
+    tightest: an eight-letter word in Gloock outruns the head's column into the search, where
+    *12 SONGS*' narrow digits fit, so it holds the seed's 8 as a floor (session 2's word-bound
+    heading again). Layout 2's head has room (21–38), and layouts 3 and 4 read 10–25 against
+    *Curated sets* and *Repertoire*. Pop's layout 4 holds *Repertoire*'s 10 as a floor at 390.
+  - **A column's floor is the longest seeded row**: *Don't Stop Me Now* (17) for the title,
+    *Earth, Wind & Fire* (18) for the artist. Seven designs read the title under 17, and the
+    seeds already show what a longer title does there: at 390 the title ellipsizes beside its
+    artist (Pop's *SEPTEM…*, Editorial's layout-4 *DON'T STOP ME NO…*), and at layout 3's 768 the
+    seeded *Dancing Queen* and *Don't Stop Me Now* already take JP-104's second line.
+  - **The title and the artist share a row**, and each is measured beside the other's seed. An
+    artist at its cap (73–74 under Lime and Grunge at layout 1) squeezes the title to its first
+    word and an ellipsis. That is decision 6's fallback, the one the seeds already show, and it
+    is left as it is.
+  - **A tag is 18 at every layout and template** (the sized rule on *Birthdays*' 9). A tag is a
+    chip at layouts 1 and 2 and a set's name at layout 3, and there it is also the key of the
+    set's details in `c.sets` (case-folded). A clamped tag would be a different key and lose its
+    mood and length on the page, so the cap is one number everywhere and a stored tag is never
+    clamped by a layout or template switch. Layout 4 prints no tags and takes the same 18.
+  - **A tag count bounds one song, never the page.** The chip row (and layout 3's set cards) is
+    the union of every song's tags. Twelve songs with two distinct tags each draw 24 chips, and
+    no per-song cap can stop that. The count is how many distinct chips the binding row holds,
+    so one song can carry every chip the row shows: 4 at layouts 1 and 2 (3 at Editorial's layout
+    1, at 390), and 3 at layout 3, where a fourth set card starts a new row. Layout 4 takes the
+    tightest, 3, so a list typed there is not cut elsewhere.
+  - **The set line is one budget.** `repSetLine()` prints *MOOD · LENGTH* in a `nowrap` span
+    that clips without an ellipsis, so each column at its own measure (mood 16–22, length 14–20)
+    clipped mid-word with both full. The caps are a joint split, verified with both at their caps:
+    the length takes up to 10 (*90 minutes*) and the mood the rest, never under *Easy listening*'s
+    14. That gives mood 17 and length 10 under Retro, Grunge and Editorial, 14 and 10 under Pop,
+    and 14 and 7 under Lime, whose 768 card the seed already fills.
+  - **The song's length is layout 3's alone** (14–23), and the artist is every other layout's.
+    Each column is capped only where it prints.
