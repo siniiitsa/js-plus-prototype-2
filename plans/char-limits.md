@@ -1378,3 +1378,150 @@ layout 3 (Inset Hero), the canvas at 1440.
 - **For the sweep (12).** Judgements 2 (layout 2's meta line), 4 (the stat value's line) and 5
   (Venue Link's wrap) are open for the user. The confirm-step fix can raise a short seed's earlier
   cap, never lower it.
+
+## Session 9: the testimonials (2026-10-13)
+
+**Scope.** These are the testimonials' own text keys, the list built from `FIELDS.testimonials`:
+`kicker`, `heading`, `sub`, `rating`, `stars` and `cta`, and the `quotes` columns `who`, `quote`,
+`role` and `when`. The grep adds three keys the handoff had not named, `rating`, `stars` and
+`cta`; all three are probed and capped. `sub` resolves through `DEFS.testiSub` at every design
+(`fieldSeed` has no testimonials arm for it), so it has one seed. `IDENTITY_CHARS.testimonials`
+(layout 3's stat card, 60–67) is session 1's and was re-verified by `--check`. The probe ran on a
+fresh Vite at :5199. Its per-width readout is
+[`char-limits/session-9-probe.md`](./char-limits/session-9-probe.md), and the decisions are in
+`notes/testimonials.md`.
+
+**Rules.** These are session 1's calls, unchanged. `rules.mjs` gains one sized key, `cta` (the
+Book Now pill under layout 2's card, screenshotted), and one block, `quotes.quote`. Everything
+else is metadata: `sub` is a plain line, not `type: 'area'`, and the heading is a display head
+(judgement 1).
+
+**The caps written** (by layout 1, 2, 3, 4; `–` where the layout does not read the field; `f`
+marks a cap at its floor that prose fails at some width).
+
+| field | rule | Retro | Lime | Grunge | Editorial | Pop |
+|---|---|---|---|---|---|---|
+| `kicker` | meta | – 61 61 | same | same | same | same |
+| `heading` | meta (head) | – 38f 26 24 | – 43 26 23 | – 38f 30 30 | – 38f 17 22f | – 45 22 22 |
+| `sub` | meta | – 114 86 | – 114 87 | – 114 67f | – 114 67f | – 114 67f |
+| `rating` | meta | – – 8 | – – 7 | – – 9 | – – 5 | – – 7 |
+| `stars` | meta | – 44 35 | – 44 32 | – 44 36 | – 44 36 | – 44 36 |
+| `cta` | sized | – 16 | same | same | same | same |
+| `quotes.who` | meta (joint) | 28 48 25 27 | 39 45 20 27 | 28 50 25 27 | 17 27 13f 27 | 18 32 15 27 |
+| `quotes.quote` | block | 190 190 190 190 | 66f 190 190 190 | 68 190 190 190 | 66f 190 190 190 | 190 190 190 190 |
+| `quotes.role` | meta (joint) | 28 48 26f 29 | 45 48 26f 27 | 28 48 26f 29 | 26f 48 26f 29 | 26f 48 26f 29 |
+| `quotes.when` | meta | 30 | 46 | 46 | 46 | 30 |
+
+**Judgement calls.**
+1. **The heading is a display head, not a block** (decided before the probe). It is
+   `type: 'area'` only so layout 2's typed break holds; plan decision 4 lists headings among the
+   seats held to their frame's lines. So it takes the measured cap, and `probesOf` gives no
+   `heading` the block exemption (the form's heading, session 10, inherits this). The samples carry
+   no line break, so a heading typed with one is not what `--check` renders. In the real app a typed
+   break counts one character in Chrome's `maxLength`, as in `capExcess`: box and counter agree.
+2. **A review is written into every row** (`rowsAt`, decided before the probe). Layouts 1 and 2
+   show `cur` (row 0 on the canvas), but the walls give each row a cell of its own width: layout
+   3's trailing 1440 cell (row 4) is 177–187 wide where rows 0–3 stand in 367–379, and at 768 rows
+   0–3 are the 138–153 cells. Row 0 alone would read a wide cell. The reference is row 0's seed in
+   every row. Layout 2's tile rail prints `mark`, two initials at most (`initialsOf`), so it is
+   never a seat (checked).
+3. **The quote is a block: 190**, three times the seeded 66 (*The room did not sit down once…*,
+   row 1). The walls and layout 2 read open at 400, and at 190 every cell grows with its copy
+   (screenshotted at Editorial's square layout-4 cells and Lime's layout-3 768 wall). Layout 1's
+   desktop card has a 420 floor (`minHeight`) with the pills on it. Once the copy uses the floor up,
+   the quote's line box meets the pill row: Lime at 65, Editorial at 57 and Grunge at 68. Lime and
+   Editorial hold the seed's 66 (`floor`); Editorial's own row-1 seed already sets the pills flush.
+   Retro's and Pop's cards keep a gap between quote and pills and grow, so they read open. The
+   quote's `wordEms` fit (Editorial, Pop) never shrank: the seed's widest word, *"Professional*,
+   is wider than any word in the samples, so no `--no-floor=quotes.quote` table was needed.
+4. **Retro's layout-1 byline wraps by design.** Retro composes *HANNAH L. · PRIVATE HOST* into
+   one span over the two pills, `whiteSpace: 'normal'` ("so it wraps rather than running off the
+   card"), and the seeded row 1 takes two lines at 390. The first run read that span (who 16, role
+   18). The pills under it are `nowrap`. Re-read with the byline allowed one line more, they hold
+   28 each. That allowance is now standing (`EXTRA_AT` in `limits.mjs`, Retro's design 0 alone), so
+   `--check` reads the same. Its first `--check` failed both keys at 28 for that reason.
+5. **who · role · when were checked jointly** (`joint9.mjs` in the scratchpad: every column at its
+   cap in every row, every template, design and width, four samples, the byline exempt from the
+   lines test as judgement 4). Every failure, 26 of 240 renders, is the role at its floor taking a
+   second line, which the solo probe reads too (judgement 7). Nothing fails jointly that fails
+   alone. At layouts 2–4 the name and the role are stacked, and at the twins' layout 1 the two
+   pills share a wrapping row, so no line is shared but Retro's byline.
+6. **The layout-1 pills are metadata, not sized.** They print the artist's content (a name, a role),
+   the frame's own second reading of the card. Sized, `who` would be 26 at layout 1 where Lime
+   reads 39 and Retro and Grunge 28; `role`'s 52 never binds. **The user's to overrule.**
+7. **Floors** (prose fails, the seed fits; `--check` reports `floor`, 16 rows):
+   - the role holds *Venue manager, Albert Hall*'s 26 at layout 3 on every template (768, 22–25
+     read) and at Editorial's and Pop's layout 1 (768 and 390, 17–18 read). That seed already takes
+     a second line in those cells and pills;
+   - the name holds *Dan Whitfield*'s 13 at Editorial's layout 3 (768);
+   - the quote holds 66 at Lime's and Editorial's layout 1 (judgement 3);
+   - the heading holds layout 2's 38 at 390 under Retro, Grunge and Editorial (21–31 read): the
+     seed's typed break packs the frame's two lines, and prose with no break cannot (media's
+     judgement 2, line packing). Editorial's layout-4 head holds 22: it is fitted to its widest
+     word, so strict prose shrinks it at once (6 read). With `--no-floor=heading` it reads 21
+     (lines at 390), so 22 either way. A shrink floor for that fit is session 6's judgement 5 shape;
+   - `sub` holds its 67 on layout 3's stat card under Grunge, Editorial and Pop (64 read, 1440 and
+     768): line packing again.
+8. **The rating takes prose** (decided before the probe): one numeral set whole beside a literal
+   `/5`, with no `priceParts()` split (session 7's judgement 1). It reads 5–9; Editorial's numeral
+   row wraps first, at 1440. `stars` has no letters, so the census has no row for it, and it reads
+   32–44 as metadata.
+9. **The Book pill is 16** (`max(2 × 8, 8 + 8)`), under every measure (28–54; Editorial's and Pop's
+   390 page scrolls at 29 and 35).
+
+**Probe fixes** (`scripts/limits.mjs`; they apply to every later section, and the sweep's full
+`--check` re-runs earlier sections under them).
+- **A heading is never a block** (judgement 1). No earlier section's heading was `type: 'area'`.
+- **`rowsAt` writes a review into every row** (judgement 2).
+- **`EXTRA_AT`**: one line more for one key at one template's design (judgement 4).
+
+**Checks.**
+- `--seeds` over every testimonials key: 0 seeds over their caps.
+- `--check` over every testimonials key, with the three samples and the lower-case one: 0
+  failures in 255 rows. The `who.*` rows are included: `IDENTITY_CHARS.testimonials.title` at
+  layout 3 (60–67) passes on every template, and the `kicker`, `location`, `tags` and `seal` rows
+  are `unseen`. 16 rows report `floor`, all of them judgement 7's. The first run failed 2,
+  judgement 4's Retro pills.
+- The joint check (`joint9.mjs`): 26 failures in 240 renders, every one the role at its floor
+  (judgement 5).
+
+**Real app.** Tested with chrome-devtools on the :5199 server: a Lime page laid out by header
+layout 2 (Feature spread), the canvas at 1440.
+- **Testimonials at layout 2.** The panel showed Kicker 61, Heading 43, Intro line 114, each
+  review's name 45, quote 190 and role 48, the date uncapped (layout 2 does not print it), Stars
+  44 and Button 16.
+- **Typing.** *Book your wedding date now* stopped at `Book your weddin` (`16 / 16`), and the canvas
+  pill printed `BOOK YOUR WEDDIN`. The counter showed at 13 (`13 / 16`) and not at 12. *Honest
+  feedback from every couple who booked us* stopped at 43 (`43 / 43`).
+- **`QuotesField` with a counter showing** (session 0's open item, for this repeater). Row 2's
+  role, typed *Venue manager, Albert Hall and Stoller Hall Manchester*, stopped at 48 (`48 / 48`).
+  The uncapped date box beside it stretched to 49px against the role's 31: sessions 5's and 8's
+  defect. `pair()` is top-aligned now, and both boxes stand at 31px on one top. The reviewer row
+  is not: with a counter under the name (a 46-character name stopped at 45), the row number and
+  the ✕ centre on box and counter, about 8px below the box's centre. `SongsField`'s title row is
+  built the same way (`alignItems: 'center'`), so this is the repeaters' shared pattern, left for
+  the sweep rather than patched in one of them.
+- **The layout picker.** With the heading at *Honest words from every couple who booked* (41), the
+  thumbnails printed it in full at layout 2, `Honest words from every…` at layout 3 (26) and
+  `Honest words from…` at layout 4 (23). The role printed `Venue manager, Albert…` at both.
+- **Testimonials to layout 4.** The canvas printed `Honest words from…`. The box kept all 41
+  characters (`maxLength` 23), and the counter read `41 / 23 · shortened on the page` in red; the
+  role read `48 / 27 · shortened on the page`. The published tab (through the dialog's *Open*)
+  printed the same, and its `<title>` was the name.
+- **Back to layout 2.** The canvas printed the full heading, and the counters read `41 / 43` and
+  `48 / 48` in grey. Opening the tab again re-rendered it in full.
+- **Live alone, spot-checked.** In the published tab at layout 4, the next disc moved the row from
+  *Hannah L. … Imran K.* to *Amara Okafor … Olivia B.*, and two clicks back wrapped to *Olivia B.*
+  first. At layout 2, the tiles *AO*, *OB* and *HL* each put their review on the card. Layout 1's
+  arrows (the harness with `&live=1`, Retro, Lime and Editorial) stepped to *Amara Okafor*, back,
+  and back again to *Olivia B.*, wrapping.
+
+**Notes for later sessions.**
+- **The form (10).** Its `heading` is `type: 'area'` too, and the probe now reads every heading
+  with the lines test (judgement 1). Layout 3's head composes the name (`formHeading3`,
+  `IDENTITY_CHARS.form.title` 10–23). `promises` is a field-level `'\n'` list, so its count still
+  takes the lines test (session 4's note).
+- **For the sweep (12).** Judgements 3 (layout 1's 420 floor), 6 (the pills as metadata) and 7
+  (Editorial's layout-4 heading fit) are open for the user. The repeaters' first rows (a number, a
+  box and a ✕, centred) drop their number and ✕ by half a counter's height when the box shows one
+  (the *Real app* note above): one pass over every repeater.

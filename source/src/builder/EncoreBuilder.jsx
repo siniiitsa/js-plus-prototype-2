@@ -4108,9 +4108,11 @@ function QuotesField({ caps, value, max, onChange }) {
 
   // The role and the date line share a line, as the gigs' city and time do:
   // both are short, and stacking them would push the add button below the fold
-  // of the mobile edit sheet once there are three reviews.
+  // of the mobile edit sheet once there are three reviews. Top-aligned: the
+  // date is uncapped at layouts 2-4, and a bare box stretched beside the
+  // role's counter (SongsField's and GigsField's fix).
   const pair = (a, b) => (
-    <div style={{ display: 'flex', gap: '6px' }}>{a}{b}</div>
+    <div style={{ display: 'flex', gap: '6px', alignItems: 'flex-start' }}>{a}{b}</div>
   )
 
   const row = (i, r) => (

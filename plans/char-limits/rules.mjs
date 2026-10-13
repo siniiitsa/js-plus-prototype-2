@@ -11,9 +11,9 @@ const SIZED = new Set(['header.cta1', 'header.cta2', 'header.heroCta', 'header.a
   'bio.tag', 'bio.cta', 'bio.cta2', 'media.cta', 'media.chipLabel',
   'pricing.cta', 'pricing.rowCta', 'pricing.badgeLabel', 'pricing.tiers.tags[]', 'repertoire.songs.tags[]',
   'gallery.backLabel', 'calendar.cta', 'calendar.slotCta', 'calendar.types[]',
-  'map.venueCta', 'map.routeCta', 'map.cta', 'map.status', 'map.expand', 'map.rings[]'])
+  'map.venueCta', 'map.routeCta', 'map.cta', 'map.status', 'map.expand', 'map.rings[]', 'testimonials.cta'])
 const BLOCK = new Set(['header.subtitle', 'header.faceBody', 'header.placeBody', 'bio.para1', 'bio.para2',
-  'pricing.intro', 'pricing.quote', 'pricing.tiers.blurb'])
+  'pricing.intro', 'pricing.quote', 'pricing.tiers.blurb', 'testimonials.quotes.quote'])
 const ruleOf = (k) => (k.endsWith('#') ? 'count' : SIZED.has(k) ? 'sized' : BLOCK.has(k) ? 'block' : 'meta')
 function capOf(r) {
   const rule = ruleOf(r.key)

@@ -2479,11 +2479,15 @@ export const FIELDS = {
     // JP-071: layout 3's eyebrow over the heading, the frame's word, uncased.
     // JP-095 (a) took it to layout 2's "✎ What clients say", its seed there
     // (testiKickerSeed(), in sectionVm and EditPanel's chain alike).
-    { k: 'kicker',  l: 'Kicker', d: TESTI_KICKER, in: [1, 2],
+    { k: 'kicker',  l: 'Kicker', d: TESTI_KICKER, in: [1, 2], chars: [null, 61, 61],
       hint: 'The small line over the heading, after a ✎ in layout 2 and a dot in layout 3. '
           + 'Layout 2 starts from “What clients say”. Left empty, it is not drawn.' },
     // A textarea, because layout 2's default breaks onto a second line.
+    // Session 9 of the character-limits pass: a display head, held to its
+    // frame's lines (not a block), though a textarea for layout 2's typed break.
     { k: 'heading', l: 'Heading', type: 'area', d: 'Word of Mouth', in: [1, 2, 3],
+      chars: { Retro: [null, 38, 26, 24], Lime: [null, 43, 26, 23], Grunge: [null, 38, 30, 30],
+        Editorial: [null, 38, 17, 22], Pop: [null, 45, 22, 22] },
       hint: 'Layouts 2, 3 and 4 each start from their own heading. A line break you type is '
           + 'kept in layout 2.' },
     // Layout 2 was the first design to head this section, so both of the plain
@@ -2492,6 +2496,7 @@ export const FIELDS = {
     // `sub` a second seat: its stat card sets the sentence the frame fills with
     // a fabricated event count.
     { k: 'sub',     l: 'Intro line', def: 'testiSub', in: [1, 2],
+      chars: { Retro: [null, 114, 86], Lime: [null, 114, 87], '*': [null, 114, 67] },
       hint: 'The line under the heading in layout 2, and the sentence on the stat '
           + 'card in layout 3.' },
     // The seventh structured editor and the sixth repeater. Replaces a flattened
@@ -2499,6 +2504,18 @@ export const FIELDS = {
     // add a fourth — which is the pricing packages' case, not a textarea's.
     // Follows the `songs` rule: absent means the seeded QUOTES, [] means none.
     { k: 'quotes',  l: 'Reviews', type: 'quotes', max: 8,
+      // Session 9 of the character-limits pass: read in every row at once, since
+      // the walls (layouts 3 and 4) seat each row in a cell of its own width;
+      // the quote is a block, and who · role · when were split jointly
+      // (plans/char-limits.md).
+      cols: {
+        who: { Retro: [28, 48, 25, 27], Lime: [39, 45, 20, 27], Grunge: [28, 50, 25, 27],
+          Editorial: [17, 27, 13, 27], Pop: [18, 32, 15, 27] },
+        quote: { Lime: [66, 190, 190, 190], Grunge: [68, 190, 190, 190], Editorial: [66, 190, 190, 190],
+          '*': [190, 190, 190, 190] },
+        role: { Retro: [28, 48, 26, 29], Lime: [45, 48, 26, 27], Grunge: [28, 48, 26, 29], '*': [26, 48, 26, 29] },
+        when: { Retro: [30], Pop: [30], '*': [46] },
+      },
       hint: 'Each row is one review. Layouts 1, 2 and 4 page through them; layout 3 '
           + 'gives each one a card on its wall, and a row with no name or role '
           + 'becomes a plain quote card there. The date line is the small type '
@@ -2506,11 +2523,14 @@ export const FIELDS = {
           + 'initials — layout 4 marks its card with the same initials; layouts 2, 3 '
           + 'and 4 have no seat for the date.' },
     { k: 'rating',  l: 'Rating', d: TESTI_RATING, in: [2],
+      chars: { Retro: [null, null, 8], Lime: [null, null, 7], Grunge: [null, null, 9], Editorial: [null, null, 5],
+        Pop: [null, null, 7] },
       hint: 'The big number on the stat card, printed out of 5. Empty it to show how many reviews there are instead.' },
     { k: 'stars',   l: 'Stars', d: TESTI_STARS, in: [1, 2],
+      chars: { Retro: [null, 44, 35], Lime: [null, 44, 32], '*': [null, 44, 36] },
       hint: 'Layout 2 prints them in the corner of the card, beside the reviewer; layout 3 beside '
           + 'the faces on its stat card. Empty it to drop them.' },
-    { k: 'cta',     l: 'Button', d: 'Book Now', in: [1],
+    { k: 'cta',     l: 'Button', d: 'Book Now', in: [1], chars: [null, 16],
       hint: 'The pill under the card, which scrolls to wherever the page takes a '
           + 'booking. Emptying it drops the pill. Layout 2 only.' },
   ],

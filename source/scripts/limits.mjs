@@ -39,7 +39,7 @@
 //            every other probe leaves ring seats alone, and the seal's probes
 //            leave every other seat alone.
 // The name (`title`, `who.title`) is allowed EXTRA_LINES past the frame's.
-// Block fields (`type: 'area'`, the quote and blurb columns) skip `lines`.
+// Block fields (`type: 'area'` but a heading, the quote and blurb columns) skip `lines`.
 // The cap is the largest passing N under all three samples, the minimum over
 // the widths (and layout 3's composed desktop column, where the section has one).
 import puppeteer from 'puppeteer-core'
@@ -109,6 +109,11 @@ const EXTRA_LINES = { title: 1, 'who.title': 1 }
 // alternative a user call would allow (JP-104's two-line title at repertoire
 // layout 3's 768 and 390, session 5), as --prose reads session 4's.
 for (const k of (opt('extra-lines', '') || '').split(',').filter(Boolean)) EXTRA_LINES[k] = 1
+// One line more at one template's design: Retro's testimonials layout 1
+// composes who · role into a byline whose wrap is designed (whiteSpace normal;
+// the seeded row 1 takes two lines at 390), so the pills under it, which are
+// nowrap and fail by box, bound the two columns (session 9).
+const EXTRA_AT = { 'testimonials.quotes.who': { Retro: [0] }, 'testimonials.quotes.role': { Retro: [0] } }
 // --no-floor=stats.value lets a key's fitted seat shrink without bound, to read
 // a fit the user left floorless (map layout 4's stat value, JP-110, session 8).
 for (const k of (opt('no-floor', '') || '').split(',').filter(Boolean)) FLOOR[k] = 0
@@ -206,7 +211,10 @@ function probesOf(cat) {
     if (list) {
       ps.push({ key: `${f.k}[]`, cat, f, list, mode: 'item' })
       ps.push({ key: `${f.k}#`, cat, f, list, mode: 'count' })
-    } else ps.push({ key: f.k, cat, f, mode: 'text', block: f.type === 'area' })
+    // A heading is a display head, held to its frame's lines, though it is a
+    // textarea where a layout keeps a typed break (testimonials layout 2, the
+    // form's): `type: 'area'` there is the box, not a paragraph (session 9).
+    } else ps.push({ key: f.k, cat, f, mode: 'text', block: f.type === 'area' && f.k !== 'heading' })
   }
   // The header's keys as the other sections print them.
   if (cat !== 'header') {
@@ -249,8 +257,11 @@ function queryOf(p, themeName, design, v) {
 }
 // The rows a column's value is written into: row 0, and at map layout 2 row 1
 // as well, since its panel features the page's first gig and its list is the
-// page minus that gig, so row 0 never reaches a list row (session 8).
-const rowsAt = (p, design) => (p.cat === 'map' && p.f?.type === 'gigs' && design === 1 ? [0, 1] : [0])
+// page minus that gig, so row 0 never reaches a list row (session 8). A review
+// goes into every row: the testimonials' walls (layouts 3 and 4) seat each row
+// in a cell of its own width, and row 0's is not the narrowest (session 9).
+const rowsAt = (p, design) => (p.f?.type === 'quotes' ? Array.from({ length: p.f.max ?? 8 }, (_, i) => i)
+  : p.cat === 'map' && p.f?.type === 'gigs' && design === 1 ? [0, 1] : [0])
 // Content a key needs on the page before it prints at all: the calendar's
 // prompt shows only while no day is cued, so the cued day (`open`) is booked,
 // reach.mjs's staging (session 7). A slot's kind is read in its row alone: the
@@ -613,6 +624,7 @@ async function runProbe(pg, p, t) {
       const fromCensus = allowed != null
       // With no census entry, the reference's own line count.
       if (allowed == null && !p.block) allowed = Math.max(...ref.seats.map((s) => s.lines))
+      if (allowed != null && EXTRA_AT[`${p.cat}.${p.key}`]?.[themeName]?.includes(a)) allowed += 1
       const seedW = sm?.seats.length ? Math.max(...sm.seats.map((s) => s.w)) : null
       const seedLines = sm?.seats.length ? Math.max(...sm.seats.filter((x) => !x.svg).map((x) => x.lines), 0) : null
       const ok = async (n) => {
