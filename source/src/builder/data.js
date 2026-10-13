@@ -2018,24 +2018,34 @@ export const FIELDS = {
   // one until a visitor picks another — and a second copy of that, editable
   // apart from the list, could only ever contradict it.
   media: [
+    // A column's floor is its longest seeded row (session 3): Manchester at 3am
+    // (17) and Live at the Deaf Institute · 7:01 (33), which the frames draw.
     { k: 'tracks',  l: 'Tracks', type: 'tracks', max: 8,
+      cols: { title: { Retro: [17, 17, 25, 17], Lime: [40, 17, 19, 17], Grunge: [27, 17, 21, 17], '*': [17, 17, 17, 17] },
+        sub: 33 },
       hint: 'Each row is one card in the stack, with its own artwork and audio file. '
           + "The player shows the track it is on, so track one's artwork is the sleeve." },
-    { k: 'kicker',  l: 'Kicker', d: 'Top tracks', in: [0, 2] },
-    { k: 'heading', l: 'Heading', d: 'Five worth your ear.' },
+    { k: 'kicker',  l: 'Kicker', d: 'Top tracks', in: [0, 2],
+      chars: { Retro: [46, null, 51], Pop: [42, null, 55], '*': [55, null, 55] } },
+    { k: 'heading', l: 'Heading', d: 'Five worth your ear.',
+      chars: { Retro: [20, 20, 25, 20], Grunge: [30, 20, 20, 25], Pop: [20, 20, 20, 23], '*': [20, 20, 20, 20] } },
     // JP-071: the "● Popular" over the track list, the frame's word, uncased.
     { k: 'listLabel', l: 'List label', d: MEDIA_LIST_LABEL, in: [1, 2],
+      chars: { Retro: [null, 29, 41], '*': [null, 34, 41] },
       hint: 'The label over the track list, after a dot. Left empty, it is not drawn.' },
     // JP-095 (a): the counter's two words, the counts the page's. An emptied
     // word takes its count (and the " / ") with it; both emptied, no counter.
     // Pop's layout-1 frame draws no counter (plans/pop/layout-1.md, section 3).
     { k: 'countLabel', l: 'Counter label', d: MEDIA_COUNT_LABEL, in: { Pop: [1, 2], '*': [0, 1, 2] },
+      chars: { Retro: [42, 40, 51], Grunge: [30, 44, 51], Pop: [null, 44, 51], '*': [51, 44, 51] },
       hint: 'The word after the track count over the list, as in “5 Featured / 5 Max” (“5 / 5 Featured” '
           + 'in layout 1). Left empty, it goes with its count.' },
     { k: 'totalLabel', l: 'Counter total label', d: MEDIA_TOTAL_LABEL, in: [1, 2],
+      chars: { Retro: [null, 35, 46], '*': [null, 39, 46] },
       hint: 'The word after the second count, the “Max” of “5 Featured / 5 Max”. Left empty, it goes with its count.' },
     // JP-095 (a): the chip on the fan's front card, the frame's word, uncased.
     { k: 'chipLabel', l: 'Card chip', d: MEDIA_CHIP_LABEL, in: [1],
+      chars: { Retro: [null, 14], Lime: [null, 12], '*': [null, 13] },
       hint: 'The chip on the front card of the fan, after a dot. Left empty, it is not drawn.' },
     // Retro's layout-1 frame (446:2265) draws the Soundcloud pill, and so does
     // Editorial's (964:58614), so there and on Pop an empty address leaves it a
@@ -2052,6 +2062,7 @@ export const FIELDS = {
     // template is read everywhere by fieldReach, and no other template reads
     // this, so the panel hides it under them.
     { k: 'cta', l: 'Button', d: 'Book Now', in: { Lime: [0], Grunge: [0], '*': [] },
+      chars: { Lime: [16], Grunge: [16] },
       hint: 'Scrolls to your enquiry form, or the next place to book. Empty drops the button.' },
   ],
   // The fourth list-shaped content with a structured editor, and the one that

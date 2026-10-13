@@ -136,7 +136,7 @@ scratchpad.
 | 0 | `plans/char-limits.md`, the mechanism (no caps), `limits.mjs`, the Figma census for all frames, and a pilot on Retro's header to validate the method |
 | 1 | header: its own keys, the artist name, the identity consumers' `IDENTITY_CHARS`, and the h1 and card-name shrink floors |
 | 2–11 | bio, media, pricing, repertoire, gallery, calendar, map, testimonials, form, footer: one section per session |
-| 12 | Sweep: the full `--check` and `--seeds`; the build digest at seeds byte-identical to `main`; one cross-cutting bullet in `CLAUDE.md` and a README paragraph; `npm run build:standalone` and copying it to the root `index.html` |
+| 12 | Sweep: the bio heading's widest-word fit at 1440 (session 2, judgement 1; user call, 2026-10-13); the full `--check` and `--seeds`; the build digest at seeds byte-identical to `main`; one cross-cutting bullet in `CLAUDE.md` and a README paragraph; `npm run build:standalone` and copying it to the root `index.html` |
 
 Each section session does the following:
 1. Probe its fields over all five templates, its designs and the three widths.
@@ -503,3 +503,115 @@ layout 4 (Stacked), the canvas at 1440.
   that is where its labels will bind.
 - **For the sweep (12), or a session of its own.** The bio heading's widest-word fit (judgement 1)
   is the user's call.
+
+## Session 3: the media player (2026-10-13)
+
+**Scope.** These are the media's own text keys: `kicker`, `heading`, `listLabel`, `countLabel`,
+`totalLabel`, `chipLabel` and `cta`, and the first repeater columns, `tracks.title` and
+`tracks.sub`. `soundcloud` is a url and is skipped. `IDENTITY_CHARS.media` is session 1's (the
+layout-2 byline's 11) and was not re-measured. The probe ran on a fresh Vite at :5199. Its
+per-width readout is [`char-limits/session-3-probe.md`](./char-limits/session-3-probe.md), and
+the decisions are in `notes/media.md`.
+
+**Rules.** These are session 1's calls, unchanged. `rules.mjs` gains the media's sized keys,
+`cta` and `chipLabel`; the chip is a pill on the fan's front card. There are no blocks.
+Everything else is metadata.
+
+**The caps written** (by layout 1, 2, 3, 4; `–` where the layout does not read the field; `f`
+marks a cap at its floor that prose fails at some width).
+
+| field | rule | Retro | Lime | Grunge | Editorial | Pop |
+|---|---|---|---|---|---|---|
+| `kicker` | meta | 46 – 51 | 55 – 55 | 55 – 55 | 55 – 55 | 42 – 55 |
+| `heading` | meta | 20 20 25 20 | 20 20 20f 20f | 30 20f 20f 25 | 20f 20f 20 20 | 20f 20f 20 23 |
+| `listLabel` | meta | – 29 41 | – 34 41 | same | same | same |
+| `countLabel` | meta | 42 40 51 | 51 44 51 | 30 44 51 | 51 44 51 | – 44 51 |
+| `totalLabel` | meta | – 35 46 | – 39 46 | same | same | same |
+| `chipLabel` | sized | – 14 | – 12 | – 13 | – 13 | – 13 |
+| `cta` | sized | – | 16 | 16 | – | – |
+| `tracks.title` | meta | 17f 17f 25 17f | 40 17f 19 17f | 27 17f 21 17f | 17 17f 17f 17f | 17f 17f 17f 17f |
+| `tracks.sub` | meta | 33f 33f 33f 33f | 33 33f 33f 33f | 33 33f 33f 33f | 33 33f 33f 33f | 33f 33f 33f 33f |
+
+**Judgement calls.**
+1. **A repeater column's floor is its longest seeded row** (the advisor's catch, taken). The
+   probe changes row 0, *Late Lights* (11) and *Single · 5:42* (13), but the seeded list holds
+   *Manchester at 3am* (17) and *Live at the Deaf Institute · 7:01* (33), and the frames draw
+   both. Seeds are an absent key, so nothing is clamped at first. But the first edit to any row
+   stores the whole array, and a cap under 17 would then shorten the seeded titles and paint
+   their counters red. So `tracks.title` is 17 wherever the probe read less: layouts 2 and 4 on
+   every template (10–15), Retro's layout 1, Editorial's layout 3 and Pop's layouts 1 and 3.
+   Editorial's layout 1 measured 17 exactly. `sub` is 33 at every design. The probe read 11–33,
+   and Lime's, Grunge's and Editorial's layout 1 measured 33 and pass outright. At 17 a title behaves as the seeded *Manchester at
+   3am* already does, checked in screenshots:
+   - the layout-2 fan clips it under the next card;
+   - the layout-4 tiles and the layout-2 bar ellipsize it;
+   - the layout-4 now-playing title takes a second line (Editorial's seed already does at 1440).
+   Decision 6's ellipsis is the fallback there. The census has the same row-0 bias:
+   `latelights` is 1 line at Retro's layout 1 and `manchesterat3am` 2. That is why Retro's 768
+   read 12.
+2. **The heading is held at its seed, 20, at most designs, and eight of them are floors.** The
+   frame's box is two lines at a fixed width. *FIVE WORTH / YOUR EAR.* fills it, while prose
+   whose first two words cannot share a line takes three (*KESTREL SOUND / B* at 15, Editorial
+   390 and Pop 768, which read 14). This is line packing, not session 2's widest-word bound.
+   *Kestrel* fits a line here. A length cap cannot do better, and `--check` reports `floor`.
+   Retro's layout 3 (25), Grunge's layouts 1 (30) and 4 (25) and Pop's layout 4 (23) have room.
+3. **`countLabel` read 1 at layout 2 on every template.** That was a probe artefact: the fan
+   chip's seed is the same *Featured*, so the seed's render seated both, and the counter was
+   compared with the chip. Re-probed with the twin renamed, it reads 40–44. `chipLabel`'s first
+   reading had the same flaw and re-read the same (12–15), its ×grow now ≥1.
+4. **The sized seats are well under their measures.** The Book pill measured 46–51 at 390, so
+   it is 16. The chip measured 12–15, so it takes the measure.
+5. **The counter's words are long** (40–51), and Grunge's layout-1 counter is 30. It is metadata
+   in a row that wraps, and 390 binds it. At Grunge's 390 the next length overlaps a neighbouring
+   seat.
+
+**Probe fixes** (`scripts/limits.mjs`; they apply to every later session).
+- **`artOf()` reads the seeded track art on the worker's own page**, cached as a promise. It used
+  `pages[0]`, which another worker could be navigating, and the first run died with
+  `ERR_ABORTED`.
+- **`twinsOf()`.** A text probe renames any sibling field whose seed prints the same string
+  (judgement 3).
+- **`seedsOf()` / `floorOf()`.** A repeater column's seed is every seeded row. `--seeds` checks
+  each row, and `--check`'s `floor` and the row's `seedLen` read the longest one (judgement 1).
+
+**Checks.**
+- `--seeds` over every media key: 0 seeds over their caps, with every seeded track row checked.
+- `--check` over every media key, with the three samples and the lower-case one: 0 failures
+  in 231 rows. The `who.*` row is included, so `IDENTITY_CHARS.media` is re-verified. 39 rows
+  report `floor`, all expected: `tracks.title` (14) and `tracks.sub` (17) under judgement 1, and
+  the heading (8) under judgement 2.
+
+**Real app.** Tested with chrome-devtools on the :5199 server: a Retro page laid out by header
+layout 3 (Inset Hero), with the media in the composed column at 1440.
+- **Media at layout 3.** The panel showed track title 25, sub 33, kicker 51, heading 25, list
+  41, counter 51 / 46. The track rows kept their layout, with the counter under the box
+  (`29 / 33` under the seeded subs).
+- **Typing.** Track 1's title, typed *Midnight on the Northern Line*, stopped at `Midnight on the
+  Northern ` (`25 / 25`). The heading, typed *Songs for the late crowd. Always.*, stopped at
+  `Songs for the late crowd.` (`25 / 25`).
+- **The layout picker.** The thumbnails printed `Songs for the late…` and `Midnight on the…` at
+  layouts 1, 2 and 4, and the full text at layout 3.
+- **Media to layout 1.** The canvas printed `Songs for the late…` and `MIDNIGHT ON THE…` in the
+  stack and the player. Both boxes kept their 25 characters, with the counters red:
+  `25 / 20 · shortened on the page` and `25 / 17 · shortened on the page`. The seeded *Manchester
+  at 3am* read `17 / 17`, unclamped.
+- **Published tab** (through the dialog's *Open*). It printed the same clamped heading and
+  title, and its `<title>` was the name.
+- **Back to layout 3.** The canvas printed the full text, and the counters read `25 / 25`.
+  Opening the tab again re-rendered it in full.
+
+**User call (2026-10-13): the bio heading's widest-word fit is left to the sweep (12).** This is
+session 2's judgement 1: the bio heading at 1440 in Lime's, Editorial's and Pop's layout 1 and
+Pop's layout 4. The media's heading floors are line packing, not that, and need nothing.
+
+**Notes for later sessions.**
+- **Every repeater session (4 pricing, 5 repertoire, 7 calendar, 8 map, 9 testimonials, 10 form,
+  11 footer).** The column floor is the longest seeded row (`floorOf`). Look at the seeded rows
+  before reading the table, because a short row 0 under-reads the floor.
+- **Fields sharing a seed string** are now separated by `twinsOf`. A probe that reads 1 at a
+  layout where the seat is plainly fine is the first thing to suspect.
+- **Pricing (4), first thing: `seedsOf()` covers text columns only.** For an item or count
+  column (`tiers.tags[]` / `#`, `tiers.feats[]` / `#`, and later `songs.tags[]`) it still returns
+  row 0's list, which is the same row-0 under-read judgement 1 fixed for titles. `tiersSeed()`
+  also differs by template and design. Extend it to every row's list before trusting pricing's
+  floors, while no probe is running.

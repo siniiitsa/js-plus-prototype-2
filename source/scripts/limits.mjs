@@ -204,7 +204,21 @@ function queryOf(p, themeName, design, v) {
     else { const [k0] = Object.keys(rows); next = { ...rows, [k0]: { ...rows[k0], [p.col]: v } } }
     return `&cj=${encodeURIComponent(JSON.stringify({ [p.f.k]: next }))}`
   }
-  return `&cj=${encodeURIComponent(JSON.stringify({ [p.f.k]: v }))}`
+  return `&cj=${encodeURIComponent(JSON.stringify({ ...twinsOf(p, themeName, design), [p.f.k]: v }))}`
+}
+// A sibling field whose seed prints the same string (media layout 2's counter
+// and fan chip are both "Featured") would be a seat of the probe's reference
+// as well, so it is renamed for the probe: the reference seats this field alone.
+function twinsOf(p, themeName, design) {
+  const seed = alnum(seedOf(p, themeName, design))
+  const out = {}
+  if (!seed) return out
+  for (const f of D.FIELDS[p.cat] ?? []) {
+    if (f === p.f || SKIP.has(f.type) || COLS[f.type] || !D.fieldReach(f, themeName, design)) continue
+    const v = D.fieldSeed({ cat: p.cat, f, themeName, design, artistName: 'Kai Mercer', email: D.FORM_EMAIL })
+    if (typeof v === 'string' && alnum(v) === seed) out[f.k] = 'Zq'
+  }
+  return out
 }
 // The value at length n: the text, a list whose item 0 is the text, or a list
 // of n items cut from the seed's own (cycled).
@@ -339,12 +353,15 @@ async function render(pg, q, needles) {
 }
 // The tracks' seeded artwork, per theme, out of photos.js in the page.
 const ART = {}
-async function artOf(themeName) {
-  if (ART[themeName]) return ART[themeName]
-  await pages[0].goto(`${base}/preview.html?cat=media&arch=0`, { waitUntil: 'load' })
-  ART[themeName] = await pages[0].evaluate(async (t) => {
-    const p = await import('/src/builder/photos.js'); return p.defaultTrackArt('media', t) ?? []
-  }, themeName)
+// Read on the worker's own page (another worker may be navigating pages[0]),
+// and cached as a promise so two workers on one theme share the read.
+function artOf(pg, themeName) {
+  ART[themeName] ??= (async () => {
+    await pg.goto(`${base}/preview.html?cat=media&arch=0`, { waitUntil: 'load' })
+    return pg.evaluate(async (t) => {
+      const p = await import('/src/builder/photos.js'); return p.defaultTrackArt('media', t) ?? []
+    }, themeName)
+  })()
   return ART[themeName]
 }
 const dressArt = (q, art) => q.replace(/%22%40art(\d)%22/g, (_, i) => encodeURIComponent(JSON.stringify(art[+i] ?? null)))
@@ -407,6 +424,18 @@ const seedLenOf = (p, seed) => (p.mode === 'text' ? seed.length
   : p.mode === 'item' ? Math.max(0, ...seed.split(p.list).map((x) => x.trim().length))
   : seed.split(p.list).filter((x) => x.trim()).length)
 
+// Every seeded value a probe's field can hold: a repeater column's seed is
+// every seeded row's, not row 0's alone (the media's "Late Lights" is 11, its
+// "Manchester at 3am" 17), so the floor and --seeds read them all.
+function seedsOf(p, themeName, design) {
+  if (!p.col || p.mode !== 'text') return [seedOf(p, themeName, design)]
+  const rows = seedRows(p.cat, p.f, themeName, design)
+  const all = Array.isArray(rows) ? rows : rows ? Object.values(rows) : []
+  return all.map((r) => String(r?.[p.col] ?? ''))
+}
+// The frame's floor: the longest seed (characters, longest item, or items).
+const floorOf = (p, themeName, design) => Math.max(0, ...seedsOf(p, themeName, design).map((v) => seedLenOf(p, v)))
+
 const rows = []
 const jsonl = out ? fs.createWriteStream(out, { flags: 'a' }) : null
 async function runProbe(pg, p, t) {
@@ -420,7 +449,7 @@ async function runProbe(pg, p, t) {
     let unseen = true
     for (const { w, col } of surfacesOf(p.cat, a)) {
       const qBase = `cat=${p.cat}&arch=${a}&theme=${t}&w=${w}${col ? `&column=${col}` : ''}`
-      const art = p.f?.type === 'tracks' ? await artOf(themeName) : null
+      const art = p.f?.type === 'tracks' ? await artOf(pg, themeName) : null
       const q = (v) => (art ? dressArt(qBase + queryOf(p, themeName, a, v), art) : qBase + queryOf(p, themeName, a, v))
       const at = (si, n) => { const v = valueAt(p, seed, si, n); return render(pg, q(v), needlesOf(p, v)) }
       // The reference every test is against: the seed's own render (the
@@ -454,7 +483,7 @@ async function runProbe(pg, p, t) {
         if (n == null) continue
         // A cap at the seed's own length is the frame's floor (its own string
         // fits where prose of that length may not): reported, not failed.
-        perSurface[label] = { n, why: (await ok(n)) ? 'ok' : n <= seedLenOf(p, seed) ? 'floor' : 'FAIL' }
+        perSurface[label] = { n, why: (await ok(n)) ? 'ok' : n <= floorOf(p, themeName, a) ? 'floor' : 'FAIL' }
         continue
       }
       // Bisect: the largest n in [1, hi] that passes. The upper bound starts
@@ -484,7 +513,7 @@ async function runProbe(pg, p, t) {
         grow: seedW && capW ? +(capW / seedW).toFixed(2) : null }
     }
     const ns = Object.values(perSurface).map((s) => s.n).filter((n) => n != null)
-    const row = { key: `${p.cat}.${p.key}`, theme: themeName, design: a, seedLen: seedLenOf(p, seed),
+    const row = { key: `${p.cat}.${p.key}`, theme: themeName, design: a, seedLen: floorOf(p, themeName, a),
       cap: unseen ? null : ns.length ? Math.min(...ns) : null, surfaces: perSurface }
     rows.push(row)
     jsonl?.write(`${JSON.stringify(row)}\n`)
@@ -528,9 +557,10 @@ if (flag('seeds')) {
         : p.who ? D.identityCap(p.who, [{ cat: p.cat, arch: a }], themeName)
         : p.col ? D.colCaps(p.f, themeName, a)?.[p.col] : D.fieldCap(p.f, themeName, a)
       if (!cap) continue
-      const seed = seedOf(p, themeName, a)
-      if (D.capExcess(seed, p.mode === 'text' ? { chars: cap.chars } : { ...cap, list: p.list }) > 0) {
-        bad++; console.log(`SEED OVER  ${cat}.${p.key} | ${themeName} | layout ${a + 1} | ${JSON.stringify(seed)} vs ${JSON.stringify(cap)}`)
+      for (const seed of seedsOf(p, themeName, a)) {
+        if (D.capExcess(seed, p.mode === 'text' ? { chars: cap.chars } : { ...cap, list: p.list }) > 0) {
+          bad++; console.log(`SEED OVER  ${cat}.${p.key} | ${themeName} | layout ${a + 1} | ${JSON.stringify(seed)} vs ${JSON.stringify(cap)}`)
+        }
       }
     }
   }
