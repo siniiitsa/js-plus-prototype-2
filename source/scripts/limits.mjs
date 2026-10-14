@@ -39,7 +39,7 @@
 //            every other probe leaves ring seats alone, and the seal's probes
 //            leave every other seat alone.
 // The name (`title`, `who.title`) is allowed EXTRA_LINES past the frame's.
-// Block fields (`type: 'area'` but a heading, the quote and blurb columns) skip `lines`.
+// Block fields (`type: 'area'` but a heading or the footer's statement, the quote and blurb columns) skip `lines`.
 // The cap is the largest passing N under all three samples, the minimum over
 // the widths (and layout 3's composed desktop column, where the section has one).
 import puppeteer from 'puppeteer-core'
@@ -113,7 +113,17 @@ for (const k of (opt('extra-lines', '') || '').split(',').filter(Boolean)) EXTRA
 // composes who · role into a byline whose wrap is designed (whiteSpace normal;
 // the seeded row 1 takes two lines at 390), so the pills under it, which are
 // nowrap and fail by box, bound the two columns (session 9).
-const EXTRA_AT = { 'testimonials.quotes.who': { Retro: [0] }, 'testimonials.quotes.role': { Retro: [0] } }
+// The footer's second link column at 390 under Pop and Editorial fills the row
+// and wraps (SHOWS/ over COVERAGE, notes/footer.md), the frame's own second line
+// in a seat the reference holds with "About"; every other link seat is nowrap,
+// so the line is inert there (session 11).
+const EXTRA_AT = { 'testimonials.quotes.who': { Retro: [0] }, 'testimonials.quotes.role': { Retro: [0] },
+  'footer.links.label': { Pop: [0], Editorial: [0] } }
+// A literal a row drops under the value by design, which the overlap test lets
+// it meet: Pop's 390 small print wraps as a whole past its room, the credit under
+// the copyright (JP-122), and at its 0.86 line the two lines' text boxes overlap
+// where their ink does not (session 11).
+const DROPS = { 'footer.copyright': { Pop: [D.FOOTER_CREDIT] } }
 // --no-floor=stats.value lets a key's fitted seat shrink without bound, to read
 // a fit the user left floorless (map layout 4's stat value, JP-110, session 8).
 for (const k of (opt('no-floor', '') || '').split(',').filter(Boolean)) FLOOR[k] = 0
@@ -170,6 +180,8 @@ const COLS = {
 }
 const LISTS = { tags: ',', types: ',', rings: ',', promises: '\n' }
 const SKIP = new Set(['image', 'images', 'url', 'email', 'date', 'select', 'booked'])
+// `type: 'area'` keys that are display heads, not blocks (probesOf).
+const HEADS = new Set(['heading', 'statement'])
 
 // The seed rows a repeater's column is probed in, EditPanel's resolvers. Tracks
 // take their artwork in the page (photos.js imports images), filled in later.
@@ -215,8 +227,9 @@ function probesOf(cat) {
       ps.push({ key: `${f.k}#`, cat, f, list, mode: 'count', block: list === '\n' })
     // A heading is a display head, held to its frame's lines, though it is a
     // textarea where a layout keeps a typed break (testimonials layout 2, the
-    // form's): `type: 'area'` there is the box, not a paragraph (session 9).
-    } else ps.push({ key: f.k, cat, f, mode: 'text', block: f.type === 'area' && f.k !== 'heading' })
+    // form's): `type: 'area'` there is the box, not a paragraph (session 9). The
+    // footer's statement is the same hand-scaled head (session 11).
+    } else ps.push({ key: f.k, cat, f, mode: 'text', block: f.type === 'area' && !HEADS.has(f.k) })
   }
   // The header's keys as the other sections print them.
   if (cat !== 'header') {
@@ -262,7 +275,11 @@ function queryOf(p, themeName, design, v) {
 // page minus that gig, so row 0 never reaches a list row (session 8). A review
 // goes into every row: the testimonials' walls (layouts 3 and 4) seat each row
 // in a cell of its own width, and row 0's is not the narrowest (session 9).
+// A footer link goes into every row: the rows are halved into two columns side
+// by side, so a label in one column pushes or is pushed by the other, and the
+// second column's last row stands beside Pop's sun (session 11).
 const rowsAt = (p, design) => (p.f?.type === 'quotes' ? Array.from({ length: p.f.max ?? 8 }, (_, i) => i)
+  : p.f?.type === 'links' ? D.FOOTER_LINKS.map((_, i) => i)
   : p.cat === 'map' && p.f?.type === 'gigs' && design === 1 ? [0, 1] : [0])
 // Content a key needs on the page before it prints at all: the calendar's
 // prompt shows only while no day is cued, so the cued day (`open`) is booked,
@@ -326,7 +343,7 @@ function needlesOf(p, v) {
 
 // In the page: the seats holding every needle (the smallest such elements) and
 // their measurements.
-function measure(needles) {
+function measure(needles, drops = []) {
   const root = document.getElementById('root').firstElementChild
   const R = root.getBoundingClientRect()
   const squash = (t) => t.replace(/\s+/g, '').toLowerCase()
@@ -459,6 +476,7 @@ function measure(needles) {
     const encloses = (r) => ink.length && ink.every((k) => k.left >= r.left - 0.5 && k.right <= r.right + 0.5
       && k.top >= r.top - 0.5 && k.bottom <= r.bottom + 0.5)
     const overlaps = others.filter((o) => !el.contains(o.el) && !o.el.contains(el)
+      && !drops.includes(o.el.textContent.trim())
       && !(o.el.closest('svg') && seats.includes(o.el))
       && !(o.rs.length === 1 && encloses(o.rs[0]))
       && o.rs.some((r) => ink.some((k) => hit(r, k) && (!o.loose || paints(o.el, r, k))))).map((o) => pathOf(o.el))
@@ -473,7 +491,7 @@ const browser = await puppeteer.launch({ executablePath: headlessShell(), headle
 const pages = await Promise.all(Array.from({ length: 6 }, async () => {
   const pg = await browser.newPage(); await pg.setViewport({ width: 1300, height: 900 }); return pg
 }))
-async function render(pg, q, needles) {
+async function render(pg, q, needles, drops = []) {
   for (let attempt = 0; ; attempt++) {
     try {
       await pg.goto(`${base}/preview.html?${q}&noclamp=1`, { waitUntil: 'load' })
@@ -482,7 +500,7 @@ async function render(pg, q, needles) {
       const drawn = await pg.waitForFunction(() => document.getElementById('root')?.firstElementChild, { timeout: 10000 })
         .then(() => true, () => false)
       if (!drawn) return { seats: [], page: false, crash: true }
-      return await pg.evaluate(measure, needles)
+      return await pg.evaluate(measure, needles, drops)
     } catch (e) {
       if (attempt >= 2 || !/context was destroyed|navigat|detached/i.test(e.message)) throw e
       await new Promise((r) => setTimeout(r, 1000))
@@ -604,13 +622,14 @@ async function runProbe(pg, p, t) {
     for (const { w, col } of surfacesOf(p.cat, a)) {
       const qBase = `cat=${p.cat}&arch=${a}&theme=${t}&w=${w}${col ? `&column=${col}` : ''}`
       const art = p.f?.type === 'tracks' ? await artOf(pg, themeName) : null
+      const drops = DROPS[`${p.cat}.${p.key}`]?.[themeName] ?? []
       const q = (v) => (art ? dressArt(qBase + queryOf(p, themeName, a, v), art) : qBase + queryOf(p, themeName, a, v))
-      const at = (si, n) => { const v = valueAt(p, seed, si, n, themeName, a); return render(pg, q(v), needlesOf(p, v)) }
+      const at = (si, n) => { const v = valueAt(p, seed, si, n, themeName, a); return render(pg, q(v), needlesOf(p, v), drops) }
       // The reference every test is against: the seed's own render (the
       // frame's copy, so its look is the frame's), or a short value's where
       // the seed is empty or does not print.
       const sq = art ? dressArt(qBase + queryOf(p, themeName, a, seed), art) : qBase + queryOf(p, themeName, a, seed)
-      const sm = seed.trim() ? await render(pg, sq, needlesOf(p, seed)) : null
+      const sm = seed.trim() ? await render(pg, sq, needlesOf(p, seed), drops) : null
       const ref = sm?.seats.length ? sm : await at(0, p.mode === 'count' ? 1 : 7)
       // A seal's probe needs a ring at the reference; any other, a seat.
       // A seed a literal prints too seats the reference where the field itself

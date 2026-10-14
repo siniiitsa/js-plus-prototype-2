@@ -1698,3 +1698,158 @@ layout 2 (Feature spread), the canvas at 1440.
   (`copyrightOf`), judgement 1's panel edge in another seat.
 - **For the sweep (12).** Judgements 1 (layout 3's floor through the name), 6 (the message's one
   line), 7 (the price row's wrap) and 10 (the mailto's clamped label) are open for the user.
+
+## Session 11: the footer (2026-10-14)
+
+**Scope.** These are the footer's own text keys, the list built from `FIELDS.footer` (`showBadge` is
+a select): `statement`, `cta`, `copyright` and the `links` column `label`. The grep found no key the
+handoff had not named. The two link columns are derived from the rows (`vm.footerCols`, the rendered
+list halved), so they are read through `links.label`. `IDENTITY_CHARS.footer` (session 1's) was
+re-verified by `--check` and passes. The probe ran on a fresh Vite at :5199. Its per-width readout is
+[`char-limits/session-11-probe.md`](./char-limits/session-11-probe.md), and the decisions are in
+`notes/footer.md`.
+
+**Rules.** These are session 1's calls, unchanged. `rules.mjs` gains two sized keys, each
+screenshotted first: `cta` (the Book pill, a filled stadium with its arrow disc) and `links.label`
+(text-link controls, session 6's back link and session 8's expand link). There are no blocks: the
+statement is a display head (judgement 1). `copyright` is metadata.
+
+**The caps written** (the footer has one design; `f` marks a cap at its floor that prose fails at
+some width).
+
+| field | rule | Retro | Lime | Grunge | Editorial | Pop |
+|---|---|---|---|---|---|---|
+| `statement` | meta (head) | 36f | 36f | 45 | 36f | 36f |
+| `links.label` | sized (joint) | 19 | 28 | 28 | 20 | 14f |
+| `cta` | sized (joint) | 16 | 16 | 16 | 12 | 11 |
+| `copyright` | meta | 31 | 28 | 32 | 24 | 35 |
+| `IDENTITY_CHARS.footer` title / seal | (session 1) | 24 / 19 | 46 / 13 | 54 / 14 | 39 / 16 | 10 / 12 |
+
+**Judgement calls.**
+1. **The statement is a display head, not a block** (decided before the probe). It is a hand-scaled
+   h2 in a fixed measure, drawing the frame's three lines, `type: 'area'` only for its typed break
+   after *make*: session 9's judgement 1 shape. `probesOf` now reads `HEADS` (`heading`,
+   `statement`). Read as a block (probed with the lines test off) it would be Editorial 80 (390
+   overlap) and Grunge 46 (1440), and 36 elsewhere, since the seal below binds there too; the
+   768 surfaces are open. With one line more
+   (`--extra-lines=statement`) it reads Grunge 46, Editorial 32, the rest under their floor.
+   **The user's to overrule.**
+2. **The statement's floors are two kinds, and one a cap cannot hold.**
+   - **The seal at 390** (Retro 13, Lime 19, Pop 10 read). At 390 the seal's disc stands over the
+     right end of the statement's first line. The seed's typed break keeps that line to *Let's
+     make*, so the frame's disc clears it; a statement with no break fills the line and runs under
+     the disc (screenshotted: *Kestrel nights and golden hour sets* under Retro's and Pop's discs,
+     Lime's ring touching the N). Any first line past 10–19 characters does, so 36 does not bound
+     it. The fix is layout, not length: the statement's first line keeping the disc's room at 390,
+     JP-122's `sealRoom` for the wordmark row. That changes `EncoreSection`, so it is outside this
+     pass: **for the sweep (12), the user's call**, session 2's judgement 1 shape.
+   - **Editorial, every width** (24–31 read): line packing at 1440 and 768, where the seed's break
+     packs the fixed 397 / 326 box's three lines; and at 390 session 10's warning, met. The head is
+     fitted to its widest word, and the seed's *UNFORGETTABLE.* sets it at 41px where prose sets at
+     the frame's 56, so prose takes a fifth line.
+3. **A link label is written into every row** (`rowsAt`, decided before the probe). The rows are
+   halved into two columns side by side: the first hugs its widest label or the pill, and the
+   second starts after it (`rowseats11.mjs`: at 390 column 2 has 113–196px against column 1's
+   139–231). So one column's label pushes the other's, and the joint reading is both at the cap.
+   The reference prints *About* in every row. Under Pop and Editorial the second column fills the
+   row at 390 and wraps by design (*SHOWS/* over *COVERAGE*, `notes/footer.md`), which the
+   reference's *About* does not show, so that seat takes the frame's second line (`EXTRA_AT`,
+   inert on every `nowrap` seat). Sized, a label is max(2 × 14, 14 + 8) = 28 off *Shows/Coverage*;
+   Retro's 19 and Editorial's 20 bind (390 and 768 boxes, Editorial's 390 third line).
+4. **Pop's link label is held at its floor, 14, and the sun can still meet it.** Prose reads 10 at
+   1440: the second column's last row meets the corner sun from 11 characters, and a 14-character
+   one touches its ray (screenshotted). The seeded *Shows/Coverage* stands in row 5, clear of it,
+   as the frame placed the sun. At 768 and 390 it reads 13. A cap under the seed's 14 would clamp
+   the frame's own label. **The user's to overrule**; the fix would be the sun's, not the cap's.
+   At 390 Pop's second column breaks inside a word that outruns it (`overflowWrap: anywhere`, the
+   designed wrap), which the seeded *Enquiries* does not.
+5. **The pill and the labels share column 1's width, so they are a joint split** (`joint11.mjs`,
+   every template and width, four samples). Under Retro, Lime and Grunge the sized 16 passes beside
+   labels at their caps. At 390:
+   - **Editorial** holds pill 16 with labels 14, or pill 12 with labels 20. Written: 12 and 20,
+     which keeps a sitemap label's room over the pill's. **The user's to overrule.**
+   - **Pop's pill pushes the seeded labels.** A 12-character pill breaks *Shows/Coverage* into three
+     lines (and at 15, *COVERA / GE*, *ENQUIRI / ES*, *REVIEW / S*: screenshotted), so it is 11
+     (`pill11.mjs`: every seeded label keeps its lines beside *Book Now*). Beside labels of 13 it
+     holds 15. The joint check reports 4 failures in 60 renders, all Pop's label at its floor,
+     which fail with the pill at its seed too.
+6. **Found by a screenshot: the probe reads a seat, not what it pushes.** The `cta` probe read Pop's
+   pill at 33, because its tests watch the pill's own seats. The seeded labels it squeezed broke
+   mid-word, and no test saw them. **For the sweep (12):** a seat that moves a neighbour it does not
+   hold (a pill in a column, a chip in a row) can have been read too loosely the same way.
+7. **The copyright is read beside the credit.** *A JustPay Product* is `FOOTER_CREDIT`, a literal,
+   so the solo probe is the row's joint reading. At Pop's 390 the row wraps as a whole past its
+   room, the credit dropping under the copyright (JP-122). At the row's 0.86 line the two lines'
+   text boxes overlap where their ink does not, and the first run read that as an overlap at 16. The
+   probe now lets the copyright meet the credit there (`DROPS`), and it reads 35, the copyright's
+   own one line. With one line more (`--extra-lines=copyright`) it reads Retro 44, Lime 56,
+   Grunge 60, Editorial 42, Pop 64.
+8. **The copyright box's counter, through the name** (session 10's judgement 1, in another seat).
+   An untouched box shows `copyrightOf()` with the artist's real name, up to the header's cap,
+   and its counter compares that with the cap. The page prints the name clamped to
+   `IDENTITY_CHARS.footer.title` (24 / 46 / 54 / 39 / 10). The two disagree at the edges:
+   - **A red counter over a whole line**: under Lime a 22-character name (the header's layout-3
+     cap) makes the seed 29 against 28, and under Grunge a 26-character one 33 against 32. The page
+     prints both whole.
+   - **No counter over a shortened line**: under Pop a name of 11–13 characters prints
+     `© 2026 Kestrel…` on the page (the real app, *Kestrel Sound*), while the box shows
+     `© 2026 Kestrel Sound` at 20 / 35 with no counter. Retro's names past 24 are both red and
+     shortened, so they agree.
+   **The user's call**: flooring the cap at 7 + the header's widest name under Lime and Grunge (29,
+   33), and teaching the counter the name's footer clamp.
+9. **The page's seat moves no text** (checked before the probe). The footer's colour seat is read
+   off the page (`SCHEMES_OF[theme][page].footer`, `footerBand`), but every text rect and every
+   ring `textPath` reads the same at `&page=` 0–3 as without it, at all fifteen surfaces
+   (`rowseats11.mjs --pages`; the SVG text of Pop's spinning seal excluded, since its rects move
+   with the spin). So the probe's page-less render is the one reading, and `in` / `chars` need no
+   page.
+
+**Probe fixes** (`scripts/limits.mjs`; they apply to every later run).
+- **`HEADS`**: `statement` is a display head, as `heading` is (judgement 1).
+- **`rowsAt` writes a link label into every row** (judgement 3), and **`EXTRA_AT`** gives Pop's and
+  Editorial's link seats the frame's second line.
+- **`DROPS`**: a literal a row drops under the value by design, which the overlap test lets it
+  meet (judgement 7). `measure` takes it as a second argument.
+
+**Checks.**
+- `--seeds` over every footer key: 0 seeds over their caps.
+- `--check` over every footer key, with the three samples and the lower-case one: 0 failures in 50
+  rows. The `who.*` rows are included: `IDENTITY_CHARS.footer`'s name (the brand line and the
+  copyright's copy) and its seal's ring pass on every template, and the `kicker`, `location` and
+  `tags` rows are `unseen`. 5 rows report `floor`: the statement under Retro, Lime and Pop (390) and
+  Editorial (every width), and Pop's link label (every width).
+- The joint check (`joint11.mjs`): 4 failures in 60 renders, all Pop's label floor (judgement 5).
+  `pill11.mjs`: every template's seeded labels keep their lines beside the written pill.
+
+**Real app.** Tested with chrome-devtools on the :5199 server: a Grunge page laid out by header
+layout 1 (Hero), the canvas at 1440.
+- **The footer under Grunge.** The panel showed Statement 45, each link label 28, Button 16 and
+  Small print 32. The statement, typed *Let's make your wedding night one to remember forever*,
+  stopped at 45 (`45 / 45`), and the canvas head printed it. Cut back, the counter read `36 / 45`
+  at 36 and was gone at 35.
+- **`LinksField` with a counter showing.** Row 5's label, typed *Upcoming shows and the travel map*,
+  stopped at 28 (`28 / 28`), and the canvas column printed it. The target select stands under the
+  box, so nothing stretches. The row's number and ✕ centre on the box and its counter, the
+  repeaters' first-row pattern left for the sweep. The Button, typed *Book your wedding date now*,
+  stopped at `Book your weddin` (`16 / 16`).
+- **A template switch to Pop** (the footer has one design, so the tighter cap is a template's). The
+  canvas printed `Let's make your wedding night one…` and `Upcoming show…`. The boxes kept their
+  text, and the counters read `45 / 36 · shortened on the page` in red (`rgb(179, 38, 30)`) and
+  `28 / 14 · shortened on the page`. The published tab (through the dialog's *Open*) printed the
+  same, its `<title>` the name.
+- **The copyright's copy of the name** (judgement 8). With the name *Kestrel Sound* (Pop's header
+  stopped *Kestrel Soundsystem* at 13), the canvas printed `© 2026 Kestrel…`. So session 1's sweep
+  note that `copyrightOf()` reads the unclamped name is stale for the footer: `vm.copyright` is
+  built after the clamp at `sectionVm`'s head. The published `<title>` reads the full name.
+- **Back to Grunge.** The canvas printed everything in full (`© 2026 Kestrel Sound` too), and the
+  counters read `45 / 45` and `28 / 28` in grey. Opening the tab again re-rendered it in full.
+- **Live alone, spot-checked in the published tab.** Every link carried its section's anchor
+  (`#bio` … `#testimonials`, the pill `#form`). A click on *Pricing*, on the Book pill and on the
+  clamped *Upcoming show…* scrolled `#pricing`, `#form` and `#map` to the top.
+
+**Notes for later sessions.**
+- **For the sweep (12).** Judgements 1 (the statement as a head), 2 (the statement's first line
+  under the seal at 390: layout, not a cap), 4 (Pop's last link row and the sun), 5 (Editorial's
+  pill-and-label split), 6 (seats that push a neighbour), 7 (the copyright's one line) and 8 (the
+  copyright counter through the name) are open for the user. The probe fixes above change no
+  earlier section's reading, but `HEADS` and `DROPS` are new names the full `--check` runs under.

@@ -2644,22 +2644,31 @@ export const FIELDS = {
       hint: 'The small line above the heading. Leave it empty to hide it.' },
   ],
   footer: [
-    { k: 'statement', l: 'Statement', type: 'area', d: FOOTER_STATEMENT },
+    // Session 11 of the character-limits pass (plans/char-limits.md): a display
+    // head held to its frame's lines, the seed's 36 its floor on four templates.
+    { k: 'statement', l: 'Statement', type: 'area', d: FOOTER_STATEMENT,
+      chars: { Grunge: [45], '*': [36] } },
     // The eighth structured editor and the seventh repeater — and the section's
     // whole sitemap, which was a constant no field could reach. Follows the
     // `songs` rule: an absent key means the seeded FOOTER_LINKS, an emptied
     // array means no links at all, and there is no null sentinel.
     { k: 'links',    l: 'Footer links', type: 'links', max: 10,
+      // Read in every row at once: the two columns stand side by side (session 11).
+      cols: { label: { Retro: [19], Lime: [28], Grunge: [28], Editorial: [20], Pop: [14] } },
       hint: 'The list is halved into two columns, in order. A link scrolls to a section on the page, or opens a web address in a new tab.' },
     // Dead until the pill was given a target — the calendar's `cta`, which was
     // a field that edited nothing until it labelled that section's foot pill.
-    { k: 'cta',      l: 'Button', d: 'Book Now',
+    // Its cap is a joint split with the link labels, which share its column
+    // (session 11).
+    { k: 'cta',      l: 'Button', d: 'Book Now', chars: { Editorial: [12], Pop: [11], '*': [16] },
       hint: 'Books at the enquiry form, the calendar or the pricing section — whichever the page carries. Empty drops the button.' },
     // The same key the header's seal takes: `vm.showBadge` already reads this
     // section's own content, so the footer's seal was hidable by nothing only
     // because no field here named it.
     { k: 'showBadge', l: 'Seal', type: 'select', opts: SHOW_HIDE, d: 'show' },
-    { k: 'copyright', l: 'Small print' },                 // defaults to copyrightOf(name) — special-cased
+    // Defaults to copyrightOf(name), special-cased.
+    { k: 'copyright', l: 'Small print',
+      chars: { Retro: [31], Lime: [28], Grunge: [32], Editorial: [24], Pop: [35] } },
   ],
 }
 

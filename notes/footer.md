@@ -91,3 +91,28 @@ another `notes/` file.
   page scrolled 23px sideways and a 390 one ran 3 into the frame's 10 inset; Noto's ended at
   337.7. So Editorial's seed breaks at 390 too, where its frame sets one line. Lime, Grunge and
   Retro keep their `nowrap` columns.
+- **Character caps** (`plans/char-limits.md`, session 11, 2026-10-14; the per-width readout is
+  `plans/char-limits/session-11-probe.md`). The footer has one design, so each cap is one number a
+  template, and a template switch is the only move to a tighter one.
+  - **The statement is a display head**, held to its frame's three lines, not a block: 36, the
+    seed's own length (*Let's make\nyour night unforgettable.*), and 45 under Grunge. Two things
+    under 36 are not caps. At 390 the seal's disc stands over the right end of the first line,
+    which the seed's typed break keeps short; a statement typed without a break runs under the disc
+    from 10–19 characters (Retro, Lime, Pop). That wants the first line to keep the disc's room,
+    JP-122's `sealRoom` for the wordmark row, and is the user's call. Editorial's fitted head sets
+    prose larger than the seed (whose *UNFORGETTABLE.* pulls it to 41px), so prose takes a line
+    more there.
+  - **A link label is read in every row at once**, since the rows are halved into two columns side
+    by side and each pushes the other. Sized at 28 (Lime, Grunge); Retro 19, Editorial 20, Pop 14,
+    its floor. Pop's corner sun stands under the second column's last row at 1440, clear of the
+    seeded *Shows/Coverage* in row 5 but met by a last-row label of 11 characters or more.
+  - **The Book pill and the labels share column 1's width**: 16, but Editorial 12 (beside labels of
+    20; 16 would need labels of 14) and Pop 11, where a 12th character squeezes the seeded second
+    column so *Shows/Coverage* takes three lines.
+  - **The copyright** is read beside the credit, a literal: Retro 31, Lime 28, Grunge 32, Editorial
+    24, Pop 35. Pop's 390 row may drop the credit under it (JP-122). `vm.copyright` is composed after
+    `sectionVm`'s clamp, so it prints the name at `IDENTITY_CHARS.footer.title` (Pop 10:
+    `© 2026 Kestrel…`), while the panel's box shows the composed seed with the full name, and its
+    counter knows nothing of that clamp.
+  - **The page's seat moves no text**: every text rect and ring `textPath` reads the same at
+    `&page=` 0–3, so the harness's page-less render measures every page.
