@@ -176,3 +176,22 @@ another `notes/` file.
   - **Layout 1's head row was checked jointly**: back link, name and credit, each at its cap, on
     every template and width. The row wraps as JP-113 designed it, and nothing meets the tape,
     the viewer or the sun.
+- **The YouTube row plays in the viewer** (user call, 2026-10-14, layout 1, every template). When
+  the address names one video, short, live stream or playlist, `youtubeEmbed()` in `data.js`
+  resolves it to a `youtube-nocookie.com/embed/…` address, which `sectionVm` hands down as
+  `vm.gallerySources[1].embed`. On the published tab the row is then **not a link but the other
+  stop of the viewer**: `src` (state beside `pick`) is 0 for the photographs and the row's index
+  for the player, `open` is `src` only while that row has an `embed` (so the canvas is always 0,
+  the Figma picture), and `srcRows` maps each row's `on` to `i === open`, so the open look
+  (cross, tilt, fill) follows with no change to the row styling. Clicking the row again, the
+  Gallery row, a thumbnail, an arrow or the back link returns to photographs (`go()` also resets
+  `src`). The player replaces the photograph in its seat (the Lime tree's `well`, Retro's photo
+  box) and, in the Lime tree, hides the arrow discs, which would sit over its controls; the
+  thumbnail strip stays so the height does not move, and marks no photograph while the player is
+  up (`lit`). An address that names no video (channel, @handle, bare site) has no `embed` and
+  keeps the outbound link. Instagram and TikTok stay links. **The embed needs a Referer**: YouTube
+  answers an embed with none with Error 153, and an `about:blank` popup sends none. So when the
+  builder is served over http(s) the Publish tab opens on `public/published.html`, an empty
+  same-origin page (`openPublished`), and is dressed once its navigation has committed. The
+  double-clickable `file://` build has no such page and no origin, so a player there shows
+  Error 153 whatever is done; the row is still live and still toggles.

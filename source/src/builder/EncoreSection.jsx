@@ -15090,6 +15090,9 @@ function Gallery({ s }) {
   // thumbnail on the canvas would both change the viewer and select the
   // section.
   const [pick, setPick] = useState(-1)
+  // Which source row the gallery's viewer is on: 0 is the photographs, and a
+  // YouTube row with an embeddable address is the other stop. Layout 1 only.
+  const [src, setSrc] = useState(0)
 
   const tile = (label, aspect, extra) => (
     <div key={label} style={{
@@ -15114,7 +15117,9 @@ function Gallery({ s }) {
     // has to be clamped against the artist's list the way Media clamps `cur`.
     // Everything that writes `pick` walks the same fixed seven.
     const active = s.live && pick >= 0 ? pick : galActive(s)
-    const go = (i) => setPick(((i % strip.length) + strip.length) % strip.length)
+    // Any photo action — an arrow, a thumbnail, the back link — also leaves the
+    // video, so it always lands on the photograph it names.
+    const go = (i) => { setSrc(0); setPick(((i % strip.length) + strip.length) % strip.length) }
     // Mobile draws four of the seven tiles. Rather than stranding photos 5–7
     // where no phone can reach them, the four slide once the visitor walks past
     // the fourth — and the window is anchored at 0 for the first four, so the
@@ -15192,9 +15197,39 @@ function Gallery({ s }) {
     // single tile where Figma draws a row of them — with no clue that the other
     // three are a field away. The index is carried through the filter because
     // `srcIcons` is positional.
+    //
+    // A row whose address embeds (`g.embed`, YouTube's video or playlist) is not
+    // a link on the published page but the other stop of the viewer: clicking it
+    // swaps the photograph for the player, and clicking it again, or the Gallery
+    // row, brings the photographs back. `open` is the row the viewer is on, and
+    // `on` follows it, so the rows' open look needs no other change. The canvas
+    // is never live, so it stays on row 0, the Figma picture. An address that
+    // names no video has no `embed` and keeps its outbound link.
+    const open = s.live && s.gallerySources[src]?.embed ? src : 0
+    const video = open ? s.gallerySources[open].embed : ''
     const srcRows = s.gallerySources
-      .map((g, i) => ({ g, i }))
+      .map((g, i) => ({ g: { ...g, on: i === open }, i }))
       .filter(({ g, i }) => !s.live || i === 0 || !!g.url)
+    // The row's props: a link, a switch (embeddable), or the Gallery row's way
+    // back from the video. Null leaves the row a picture, as before.
+    const srcAct = (g, i) => {
+      if (!s.live) return null
+      if (g.embed) return { onClick: () => setSrc(open === i ? 0 : i) }
+      if (i === 0) return open ? { onClick: () => setSrc(0) } : null
+      return extLink(s, g.url)
+    }
+    // The player, in the photograph's seat. The iframe is created by the click,
+    // so autoplay is the visitor's own.
+    const player = (
+      <iframe
+        key={video} src={video} title="YouTube video player"
+        allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowFullScreen
+        referrerPolicy="strict-origin-when-cross-origin"
+        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', border: 0, display: 'block' }}
+      />
+    )
+    // No photograph is the viewer's while the player is, so none is marked.
+    const lit = video ? -1 : active
 
     // Lime layout 1 (964:58591 · 986:39880 at 768 · 989:22110 at 390) is the
     // component below in Lime's mode, and like the bio and the media player it
@@ -15382,8 +15417,8 @@ function Gallery({ s }) {
       // `sem/active`, the closed ones `sem/box/1` under the frame's hard 7 / 9
       // shadow.
       const srcEls = srcRows.map(({ g, i }) => {
-        const link = extLink(s, g.url)
-        const Tag = link ? 'a' : 'div'
+        const link = srcAct(g, i)
+        const Tag = link?.href ? 'a' : 'div'
         const ink = pop ? (g.on ? POP_GAL.lime : POP_GAL.ink) : g.on ? s.activeFg : s.ac
         return (
           <Tag key={i} {...link} style={{
@@ -15476,7 +15511,7 @@ function Gallery({ s }) {
           {/* The frame's arrow is a Body/MD character, not an icon. */}
           {/* Pop's is Inter 14 before Space Mono 10, over a credit in Inter
               Bold 11 and Space Mono 9, all pink: Retro's own row. */}
-          <span onClick={s.live ? () => setPick(0) : undefined}
+          <span onClick={s.live ? () => go(0) : undefined}
                 style={row(u(8), { color: G.top, cursor: s.live ? 'pointer' : undefined })}>
             <span style={{ fontFamily: s.body, fontSize: pop ? u(14) : s.bodyMd, lineHeight: pop ? 'normal' : 1.5 }}>←</span>
             {pop ? pt(s.galBackLabel, 10, 1, wrap) : eyebrow(s.galBackLabel, { color: G.top, ...wrap })}
@@ -15542,7 +15577,7 @@ function Gallery({ s }) {
       // and 192 down. Its brackets are Retro's ink, and its counter Space
       // Mono 11 on the re-inked chip.
       const bracket = pop ? POP_GAL.bracket : s.inactiveLine
-      const well = (
+      const well = video ? player : (
         <>
           {/* A seed takes its own focus (JP-131): Editorial's 768 polaroid
               cut its singer at the eyes. */}
@@ -15596,7 +15631,7 @@ function Gallery({ s }) {
           }}>
             <div style={{ position: 'relative', overflow: 'hidden', height: '100%', background: s.bg }}>{well}</div>
           </div>
-          {arrowRow}
+          {!video && arrowRow}
         </div>
       ) : (
         <div style={{
@@ -15606,7 +15641,7 @@ function Gallery({ s }) {
           boxShadow: G.cardShadow,
         }}>
           {well}
-          {arrowRow}
+          {!video && arrowRow}
         </div>
       )
 
@@ -15618,7 +15653,7 @@ function Gallery({ s }) {
       const thumbs = (
         <div style={row(u(10), { alignItems: 'stretch' })}>
           {(ed ? strip : strip.slice(from, from + shown)).map((i) => (
-            <span key={i} onClick={s.live ? () => setPick(i) : undefined} style={{
+            <span key={i} onClick={s.live ? () => go(i) : undefined} style={{
               flex: '1 1 0', minWidth: 0, height: u(76), position: 'relative', overflow: 'hidden',
               borderRadius: ed ? undefined : u(20), background: G.thumbBg, cursor: s.live ? 'pointer' : undefined,
             }}>
@@ -15632,12 +15667,12 @@ function Gallery({ s }) {
               <span aria-hidden style={{
                 position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
                 boxShadow: ed
-                  ? `inset 0 0 0 ${i === active ? u(8) : '1px'} ${s.stroke2}`
+                  ? `inset 0 0 0 ${i === lit ? u(8) : '1px'} ${s.stroke2}`
                   : grunge
-                  ? (i === active ? `inset 0 0 0 1px ${s.ac}` : 'none')
+                  ? (i === lit ? `inset 0 0 0 1px ${s.ac}` : 'none')
                   : pop
-                  ? (i === active ? `inset 0 0 ${u(18)} ${POP_GAL.thumbGlow}` : `inset 0 0 0 1px ${POP_GAL.thumbRing}`)
-                  : i === active ? `inset 0 0 ${u(18)} ${s.glow}` : `inset 0 0 0 1px ${s.stroke2}`,
+                  ? (i === lit ? `inset 0 0 ${u(18)} ${POP_GAL.thumbGlow}` : `inset 0 0 0 1px ${POP_GAL.thumbRing}`)
+                  : i === lit ? `inset 0 0 ${u(18)} ${s.glow}` : `inset 0 0 0 1px ${s.stroke2}`,
               }} />
             </span>
           ))}
@@ -15685,8 +15720,8 @@ function Gallery({ s }) {
     const sources = !desk ? (
       <div style={row('20px', { alignItems: 'stretch', ...srcScroll })}>
         {srcRows.map(({ g, i }) => {
-          const link = extLink(s, g.url)
-          const Tag = link ? 'a' : 'div'
+          const link = srcAct(g, i)
+          const Tag = link?.href ? 'a' : 'div'
           return (
             <Tag key={i} {...link} style={{
               ...(tab ? { flex: 1, minWidth: 0, height: '92px' } : { flex: 'none' }),
@@ -15714,8 +15749,8 @@ function Gallery({ s }) {
           // when that is low-contrast (TikTok's yellow); the legible() fallback
           // stays on for the flat themes.
           const ink = s.retro ? g.bg : g.ink
-          const link = extLink(s, g.url)
-          const Tag = link ? 'a' : 'div'
+          const link = srcAct(g, i)
+          const Tag = link?.href ? 'a' : 'div'
           return (
             <Tag key={i} {...link} style={{
               ...row('16px'),
@@ -15793,7 +15828,7 @@ function Gallery({ s }) {
           {/* All three masters set the link in Space Mono 10 tracked 1 after an
               Inter 14 "←" character, not an icon. Desktop is the frame × 0.82. */}
           <span
-            onClick={s.live ? () => setPick(0) : undefined}
+            onClick={s.live ? () => go(0) : undefined}
             style={row(desk ? '6.5px' : '8px', {
               fontFamily: s.body, lineHeight: 'normal', whiteSpace: 'nowrap',
               cursor: s.live ? 'pointer' : undefined,
@@ -15849,8 +15884,8 @@ function Gallery({ s }) {
             borderRadius: s.retro ? '4px' : s.radiusSm,
             overflow: 'hidden', position: 'relative',
           }}>
-            <Photo s={s} initialsSize={52} src={s.images[active]} style={{ objectPosition: s.imagesPos[active] }} />
-            {s.retro && !s.mob && (
+            {video ? player : <Photo s={s} initialsSize={52} src={s.images[active]} style={{ objectPosition: s.imagesPos[active] }} />}
+            {!video && s.retro && !s.mob && (
               <>
                 <span style={{
                   position: 'absolute', left: desk ? '11px' : '14px', bottom: desk ? '11px' : '14px',
@@ -15864,7 +15899,7 @@ function Gallery({ s }) {
                 }} />
               </>
             )}
-            {s.retro && desk && (
+            {!video && s.retro && desk && (
               <span style={labelStyle(s, '9px', {
                 position: 'absolute', right: '12px', bottom: '12px', letterSpacing: '1px',
                 background: 'rgba(17,17,17,0.55)', color: s.ac, borderRadius: '4px', padding: '3px 8px',
@@ -15876,10 +15911,10 @@ function Gallery({ s }) {
 
         <div style={row(desk ? '10px' : '12px', { overflow: 'hidden', marginTop: desk ? '13px' : '16px' })}>
           {strip.slice(from, from + shown).map((i) => (
-            <span key={i} onClick={s.live ? () => setPick(i) : undefined} style={{
+            <span key={i} onClick={s.live ? () => go(i) : undefined} style={{
               flex: 1, minWidth: 0, aspectRatio: '1', overflow: 'hidden',
               borderRadius: s.retro ? (desk ? '16px' : '20px') : s.radiusSm,
-              border: `${desk ? '4px' : '5px'} solid ${i === active ? s.pillBg : s.ac}`,
+              border: `${desk ? '4px' : '5px'} solid ${i === lit ? s.pillBg : s.ac}`,
               cursor: s.live ? 'pointer' : undefined,
             }}><Photo s={s} initialsSize={12} src={s.images[i]} /></span>
           ))}

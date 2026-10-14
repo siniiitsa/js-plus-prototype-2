@@ -54,7 +54,7 @@ import {
   PRICING_INTRO_3, FORM_SUB_4, CAL_HEADING_1, formBtnSeed, CAL_TYPES, PRICING_ROW_CTA, PRICING_ROW_CTA_3, MAP_SPAN, MAP_STATS_4, STAT_KEYS,FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
   parseDate, isoDate, calStart, headerIdentity, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav, navModeDefault,
-  catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldSeed, HEADING_3, HEADING_4, fieldReach, fieldShown, fieldCap, colCaps, identityCap, sealCap, capExcess, clampCapped, clampContent, clampIdentity, copyrightOf, formHeading3, extUrl, urlProblem, emailProblem, emailAddr, songTags, repChips,
+  catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldSeed, HEADING_3, HEADING_4, fieldReach, fieldShown, fieldCap, colCaps, identityCap, sealCap, capExcess, clampCapped, clampContent, clampIdentity, copyrightOf, formHeading3, extUrl, youtubeEmbed, urlProblem, emailProblem, emailAddr, songTags, repChips,
   tierFeats, priceParts, blankRow, SONG_KEYS, repSetsOf, repSetLine, TRACK_KEYS, GIG_KEYS, gigWeekday, gigStatus, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
   layoutCount, designCount, pageLayout, pageOrder, pageRows, COLUMN_SPLIT, bebasEms, antonEms, gloockEms, titanEms,
   headerLayout, headerLayoutLabel, setupHeaderCount,
@@ -1472,6 +1472,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
       label: i === 0 ? String(cv('sourceLabel', g.l)).trim() || g.l : cased(g.l),
       bg: cbg, fg: contrast(cbg), ink: legible(cbg), on: i === 0,
       url: g.k ? extUrl(cv(g.k, '')) : '',
+      // A YouTube video or playlist plays in the viewer instead of leaving the
+      // page; '' for every other row and for an address that names no video.
+      embed: g.k === 'youtube' ? youtubeEmbed(extUrl(cv(g.k, ''))) : '',
     }
   })
 
@@ -5236,6 +5239,7 @@ function dressPublishedWindow(win, artistName, pageBg) {
   const doc = win.document
   const el = (tag, attrs) => Object.assign(doc.createElement(tag), attrs)
 
+  doc.body.replaceChildren()
   doc.head.appendChild(el('base', { href: location.href }))
   doc.head.appendChild(el('meta', { name: 'viewport', content: 'width=device-width, initial-scale=1.0, viewport-fit=cover' }))
 
@@ -5410,27 +5414,52 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
 
     // window.open has to happen inside the click or the popup blocker eats
     // it, so it cannot wait behind anything asynchronous.
-    const win = open ? pubWin.current : window.open('', '_blank')
+    //
+    // Served over http(s), the tab opens on `public/published.html`, an empty
+    // same-origin page, not on about:blank: a window with no address sends no
+    // Referer, and YouTube refuses an embed without one (Error 153), so the
+    // gallery's player would never play. The file:// build has no such page
+    // to open (the single file is all there is), so it keeps about:blank and
+    // the YouTube row stays a picture of a player that cannot start there.
+    const real = /^https?:$/.test(location.protocol)
+    const win = open ? pubWin.current
+      : window.open(real ? `${import.meta.env.BASE_URL}published.html` : '', '_blank')
     if (!win) { toast('Allow pop-ups to open your published site'); return }
 
-    if (!open) {
-      pubWin.current = win
-      pubRoot.current = createRoot(dressPublishedWindow(win, artistName, THEMES[st.theme].palette[0]))
-      win.addEventListener('pagehide', closePublished)
-    } else {
-      win.document.documentElement.style.background = THEMES[st.theme].palette[0]
-      win.document.title = artistName
+    const render = () => {
+      // Publishing again re-renders the tab that is already open rather than
+      // piling up tabs — the edit-and-republish loop is the demo.
+      pubRoot.current?.render(
+        <PublishedPage
+          themeIdx={st.theme} sections={st.sections} artistName={artistName} win={win}
+        />,
+      )
+      win.focus()
+      patch({ published: false })
     }
 
-    // Publishing again re-renders the tab that is already open rather than
-    // piling up tabs — the edit-and-republish loop is the demo.
-    pubRoot.current.render(
-      <PublishedPage
-        themeIdx={st.theme} sections={st.sections} artistName={artistName} win={win}
-      />,
-    )
-    win.focus()
-    patch({ published: false })
+    if (open) {
+      win.document.documentElement.style.background = THEMES[st.theme].palette[0]
+      win.document.title = artistName
+      render()
+      return
+    }
+
+    // A window opened on an address has not loaded it yet: its document is
+    // still the initial about:blank until the navigation commits, and anything
+    // written there is thrown away with it. Wait until it has, then dress it.
+    // The tab is held in the ref at once, so a second click focuses it and the
+    // root arrives with the load.
+    pubWin.current = win
+    const dress = () => {
+      if (win.closed) { closePublished(); return }
+      if (win.location.href === 'about:blank' && real) { setTimeout(dress, 15); return }
+      if (!win.document.body) { setTimeout(dress, 15); return }
+      pubRoot.current = createRoot(dressPublishedWindow(win, artistName, THEMES[st.theme].palette[0]))
+      win.addEventListener('pagehide', closePublished)
+      render()
+    }
+    dress()
   }, [artistName, closePublished, patch, st.sections, st.theme, toast])
 
   /* ---- mutations (§5.6) ------------------------------------------- */

@@ -404,7 +404,7 @@ mutated through a single `patch()` helper.
 ## Intentional limits — not bugs
 
 - **No persistence.** Reload loses everything, including uploaded images. No URL sync.
-- **Publish opens a second tab, and that tab is a live React root** (the *Publish* block in
+- **Publish opens a second tab, and that tab is a live React root** (opened on `public/published.html` over http(s), for the gallery's YouTube embed: notes/gallery.md; about:blank under `file://`) (the *Publish* block in
   `EncoreBuilder.jsx`; it is post-SPEC, so it carries no § number),
   not a serialised snapshot — it has to be, because `EncoreSection` has no media queries and
   would otherwise be frozen at the editor's width. `PublishedPage` calls `sectionVm` directly,

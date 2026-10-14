@@ -2251,7 +2251,8 @@ export const FIELDS = {
       hint: 'The first row, above YouTube, Instagram and TikTok, on desktop only. Left empty, it '
           + 'shows “Gallery” again.' },
     { k: 'youtube',   l: 'YouTube link', type: 'url', d: '', in: [0],
-      hint: 'Where the YouTube row goes on the published page. Leave empty and it stays a picture. Layout 1 only.' },
+      hint: 'A video, short or playlist link plays inside the section when the YouTube row is clicked on the '
+          + 'published page; any other YouTube address opens in a new tab. Leave empty and it stays a picture. Layout 1 only.' },
     { k: 'instagram', l: 'Instagram link', type: 'url', d: '', in: [0],
       hint: 'Where the Instagram row goes on the published page. Leave empty and it stays a picture. Layout 1 only.' },
     { k: 'tiktok',    l: 'TikTok link', type: 'url', d: '', in: [0],
@@ -3155,6 +3156,46 @@ export function extUrl(v, web = false) {
   const t = String(v ?? '').trim()
   if (!t || urlProblem(t, web)) return ''
   return /^(https?|mailto|tel):/i.test(t) ? t : `https://${t}`
+}
+
+// A YouTube address → the address of its embeddable player, or '' when the
+// link names no single video or playlist (a channel, an @handle, the bare
+// site, another host), which the gallery's YouTube row then keeps as the
+// outbound link it always was. Takes extUrl()'s output, so it is absolute.
+// Resolved here and in sectionVm so EncoreSection does no address maths.
+//
+// youtube-nocookie.com is YouTube's own privacy-enhanced embed host: no
+// cookie until the visitor plays. `autoplay` is safe because the iframe only
+// exists after the visitor clicked the row.
+export function youtubeEmbed(url) {
+  let u
+  try { u = new URL(String(url ?? '')) } catch { return '' }
+  if (!/^https?:$/.test(u.protocol)) return ''
+  const host = u.hostname.toLowerCase().replace(/^(www|m|music)\./, '')
+  const path = u.pathname.split('/').filter(Boolean)
+  const ID = /^[\w-]{11}$/
+  const LIST = /^[\w-]+$/
+  let id = ''
+  if (host === 'youtu.be') id = path[0] || ''
+  else if (host === 'youtube.com' || host === 'youtube-nocookie.com') {
+    if (path[0] === 'watch') id = u.searchParams.get('v') || ''
+    else if (['shorts', 'live', 'embed', 'v'].includes(path[0])) id = path[1] || ''
+  } else return ''
+  const list = u.searchParams.get('list') || ''
+  const hasList = LIST.test(list)
+  if (!ID.test(id)) {
+    // A playlist page, or an /embed/videoseries address, names a list alone.
+    const listOnly = hasList && (path[0] === 'playlist' || path[1] === 'videoseries')
+    return listOnly ? `https://www.youtube-nocookie.com/embed/videoseries?list=${list}&autoplay=1&rel=0` : ''
+  }
+  // t=90, t=90s, t=1m30s or start=90 — seconds the video opens at.
+  const at = u.searchParams.get('start') || u.searchParams.get('t') || ''
+  const m = /^(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s?)?$/.exec(at)
+  const start = m ? (+m[1] || 0) * 3600 + (+m[2] || 0) * 60 + (+m[3] || 0) : 0
+  const q = [
+    hasList && `list=${list}`, 'autoplay=1', 'rel=0', start > 0 && `start=${start}`,
+  ].filter(Boolean).join('&')
+  return `https://www.youtube-nocookie.com/embed/${id}?${q}`
 }
 
 // The events map's layout-2 Get Directions pill: a Google Maps route to the
