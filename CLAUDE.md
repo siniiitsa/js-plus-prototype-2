@@ -137,6 +137,22 @@ mutated through a single `patch()` helper.
   (iPad Air landscape; `useTabletCap`) caps it at tablet and disables the Desktop tab, since
   the desktop composition squeezed beside the sidebar breaks; at most 820 the phone chrome
   forces mobile, as before. Read `device`, never `st.device`, for anything drawn.
+- **`st.preview` is the published page, live, in an overlay over the editor** (user call, 2026-10-14).
+  The top bar's *Preview* button (an eye icon on a phone) mounts `PreviewOverlay`, which renders
+  `PublishedPage` with `frameW`: its width is told rather than measured, so the overlay's scroller
+  on desktop, 768 / 390 inside a bezel for the narrow frames (laid out at 768×1024 and 390×844 and scaled down to fit the
+  window, so a tablet stays portrait), the scroller on a phone. The editor
+  stays mounted and goes `inert` (selection, panel and canvas scroll are there on Exit), and the
+  overlay is its sibling, so a click in it never reaches `closeAll`. It reads `st.device`, so
+  switching device in Preview switches the canvas too. Three details are load-bearing: the
+  scroller is what every sticky box sticks to; the wrapper round it carries a `transform` so the
+  layout-3 gallery viewer, a `position: fixed` box, is confined to the frame instead of covering
+  the bar (on the wrapper, not the scroller: a fixed box in a scrolling containing block scrolls);
+  and Escape is a `window` listener, since closing that viewer unmounts the focused node and leaves
+  focus on `<body>`. The viewer stops its own Escape, so the first closes it and the second exits.
+  `#` links go through `scrollToFragment`, shared with the published tab. It opens on the selected
+  section's anchor. Its state is fresh each open. *Publish* inside it exits first, then opens the
+  dialog. YouTube needs an http(s) origin, as in the published tab.
 - **`st.removed` is `{ [cat]: { arch, c, at, before } }`, the last deleted section of each
   category**, so re-adding a category restores its content (data-URI uploads and all) and the
   add composer opens on its old layout; the composer's *Start fresh* tick (`st.add.fresh`) opts

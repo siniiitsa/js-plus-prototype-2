@@ -237,6 +237,9 @@ tab with none of the builder around it. There is no backend and there never will
 "published" means a second tab rather than a URL — but it is a *live React root*, not a snapshot
 of the canvas DOM.
 
+Preview (the top bar's eye button) renders the same `PublishedPage` in an overlay over the editor
+instead of a tab; see CLAUDE.md, `st.preview`.
+
 That distinction is the whole design, and it buys two things:
 
 - **The published page is responsive.** `EncoreSection` carries no media queries — its

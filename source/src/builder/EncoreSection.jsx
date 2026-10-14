@@ -16581,7 +16581,7 @@ function Gallery({ s }) {
           }
         }}
         onKeyDown={(e) => {
-          if (e.key === 'Escape') setPick(-1)
+          if (e.key === 'Escape') { e.stopPropagation(); setPick(-1) }
           else if (e.key === 'ArrowLeft' && filled.length > 1) step(-1)
           else if (e.key === 'ArrowRight' && filled.length > 1) step(1)
         }}

@@ -208,3 +208,10 @@ another `notes/` file.
   crop (`seedFocus` looks up the URL) and `pick` (published-tab state) is untouched. `ImagesField`
   is shared, so pricing's *Reviewer photos* reorder too; every other repeater stays "order is
   entry order".
+- **Preview confines the layout-3 viewer** (user call, 2026-10-14). The viewer is `position: fixed`
+  and, in the published tab, the window's. In the editor's Preview overlay the wrapper round the
+  scroller (and the tablet / mobile bezel) carries a `transform`, which makes it the viewer's
+  containing block, so it covers the page, not the bar. Its Escape is stopped
+  (`e.stopPropagation()`), so the overlay's own Escape exits only on a second press. The scroll lock
+  still targets `<html>` / `<body>`, which is not what scrolls there, so the page scrolls behind
+  the scrim with the wheel.

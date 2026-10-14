@@ -6,7 +6,7 @@ import { createRoot } from 'react-dom/client'
 import {
   GripVertical, ChevronUp, ChevronDown, ArrowUp, ArrowDown, MoreHorizontal,
   Pencil, Palette, X, Trash2, ChevronLeft, ChevronRight, ArrowRight,
-  Layers, Plus, Check, Upload, Lock, ExternalLink,
+  Layers, Plus, Check, Upload, Lock, ExternalLink, Eye,
 } from 'lucide-react'
 import { toast as sonnerToast, Toaster } from 'sonner'
 
@@ -5356,12 +5356,16 @@ function HeaderChoices({ themeIdx, artistName, sel, onSelect }) {
 // Everything the page needs and nothing the editor adds. Deliberately not
 // makeVm(), which layers on selection, hover, dim and the header's hover
 // preview — none of which a published site has.
-function PublishedPage({ themeIdx, sections, artistName, win }) {
+function PublishedPage({ themeIdx, sections, artistName, win, frameW }) {
   // documentElement.clientWidth, not innerWidth: on a classic-scrollbar OS the
   // latter counts the scrollbar, which would overshoot the surplus below and
   // leave the column a scrollbar's width narrower than the editor's.
+  //
+  // `frameW` is the Preview overlay's width, handed down because that page is
+  // not the window: a 390 frame in a 1440 window must lay out at 390.
   const measure = () => win.document.documentElement.clientWidth
-  const [w, setW] = useState(measure)
+  const [measured, setW] = useState(() => (frameW == null ? measure() : 0))
+  const w = frameW ?? measured
   // Today, in UTC like every other date sum here, read once when the tab's
   // root mounts — one of the builder's two clock reads, BookedField's being the
   // other; the canvas makes none. A republish re-renders
@@ -5369,6 +5373,7 @@ function PublishedPage({ themeIdx, sections, artistName, win }) {
   const [today] = useState(() => new Date().toISOString().slice(0, 10))
 
   useEffect(() => {
+    if (frameW != null) return undefined
     // Re-measure once: the first read happens before there is any content, so
     // before the vertical scrollbar exists, and would otherwise leave the
     // column a scrollbar's width narrow until the window was next resized.
@@ -5376,7 +5381,7 @@ function PublishedPage({ themeIdx, sections, artistName, win }) {
     const onResize = () => setW(measure())
     win.addEventListener('resize', onResize)
     return () => win.removeEventListener('resize', onResize)
-  }, [win])
+  }, [win, frameW])
 
   // The Figma frames are 390 / 768 / 1440, and the page picks its own.
   const key = w < 768 ? 'mobile' : w < 1180 ? 'tablet' : 'desktop'
@@ -5430,6 +5435,188 @@ function PublishedPage({ themeIdx, sections, artistName, win }) {
     })} />
   )))
   return k === 1 ? page : <div style={{ zoom: k }}>{page}</div>
+}
+
+/* ------------------------------------------------------------------ *
+ * Preview — the published page, live, inside the editor.
+ *
+ * `PublishedPage` again, not a second renderer: it is the one thing that
+ * builds every section live, so what a visitor can do (the gallery's viewer,
+ * the filters, the calendar, the nav's scroll) is exactly what Preview shows.
+ * It mounts in a fixed overlay over the editor, which stays mounted and goes
+ * `inert` — selection, panel and canvas scroll are all there on Exit — and it
+ * is told its width (`frameW`) rather than measuring a window it is not: the
+ * overlay's own scroller on desktop, 768 / 390 inside a bezel for the narrow
+ * frames, the scroller's width on a phone.
+ *
+ * Two details are load-bearing. The scroller is what every sticky box sticks
+ * to, as the window is for the published tab. And the wrapper round it carries
+ * a `transform`, which makes it the containing block of the gallery's layout-3
+ * viewer, a `position: fixed` box: without it the viewer would cover the
+ * window, bar included. The transform is on the wrapper, not the scroller,
+ * since a fixed box inside a scrolling containing block scrolls with it.
+ * ------------------------------------------------------------------ */
+
+const PREVIEW_FRAME = { tablet: 768, mobile: 390 }
+// The screen's height: a portrait iPad and a phone. Drawn at that size, shrunk to fit the window.
+const PREVIEW_FRAME_H = { tablet: 1024, mobile: 844 }
+const PREVIEW_DEVICES = [['desktop', 'Desktop'], ['tablet', 'Tablet'], ['mobile', 'Mobile']]
+let previewHinted = false
+
+function PreviewOverlay({
+  themeIdx, sections, artistName, device, tabletCap, isMobile, focusCat, onDevice, onExit, onPublish,
+}) {
+  const T = THEMES[themeIdx]
+  const scrollRef = useRef(null)
+  const exitRef = useRef(null)
+  const framed = !isMobile && device !== 'desktop'
+  // The scroller's width, remembered with the shape it was measured in, so the
+  // switch between a frame and the full window never lays out at the old one.
+  const [meas, setMeas] = useState({ w: 0, framed })
+  const sw = meas.framed === framed ? meas.w : 0
+  const frameW = framed ? PREVIEW_FRAME[device] : sw
+  // The room the page has under the bar, and the scale that fits the frame in it.
+  const areaRef = useRef(null)
+  const [area, setArea] = useState({ w: 0, h: 0 })
+  useEffect(() => {
+    const el = areaRef.current
+    const read = () => setArea({ w: el.clientWidth, h: el.clientHeight })
+    read()
+    const ro = new ResizeObserver(read)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
+  const outerW = framed ? PREVIEW_FRAME[device] + 20 : 0
+  const outerH = framed ? PREVIEW_FRAME_H[device] + 20 : 0
+  const scale = framed && area.h > 0
+    ? Math.max(0.3, Math.min(1, (area.h - 32) / outerH, (area.w - 32) / outerW)) : 1
+  const scaleRef = useRef(1)
+  scaleRef.current = scale
+
+  useEffect(() => {
+    const el = scrollRef.current
+    if (!el) return undefined
+    const read = () => setMeas({ w: el.clientWidth, framed })
+    read()
+    const ro = new ResizeObserver(read)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [framed])
+
+  useEffect(() => { exitRef.current?.focus() }, [])
+
+  // On the window, not the overlay: closing the gallery's viewer unmounts the
+  // node that held focus, which leaves it on <body>, outside the overlay. The
+  // viewer stops its own Escape, so this one only sees the keys it did not use.
+  useEffect(() => {
+    const onKey = (e) => { if (e.key === 'Escape') onExit() }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [onExit])
+
+  // Open on the section that was being edited, and again after a device switch
+  // (the page is a new tree then).
+  const seated = useRef(null)
+  useEffect(() => {
+    if (!frameW || !area.h || seated.current === device) return
+    seated.current = device
+    const sc = scrollRef.current
+    const el = focusCat && sc?.querySelector(`#${CSS.escape(focusCat)}`)
+    // The frame may be drawn smaller than it is: distances come back scaled.
+    if (el) sc.scrollTop += (el.getBoundingClientRect().top - sc.getBoundingClientRect().top) / scaleRef.current
+  }, [frameW, area.h, device, focusCat])
+
+  const bar = isMobile ? '52px' : '56px'
+  const ground = framed ? '#D6D2C6' : T.palette[0]
+  const page = frameW > 0 && (
+    <PublishedPage themeIdx={themeIdx} sections={sections} artistName={artistName} win={window} frameW={frameW} />
+  )
+
+  return (
+    <div
+      role="dialog" aria-modal="true" aria-label="Preview"
+      onClick={(e) => scrollToFragment(e, window)}
+      style={{
+        position: 'fixed', inset: 0, zIndex: 60, display: 'flex', flexDirection: 'column',
+        background: ground, fontFamily: "'Archivo', sans-serif",
+      }}
+    >
+      <div style={{
+        height: bar, flex: 'none', boxSizing: 'border-box', padding: isMobile ? '0 12px' : '0 20px',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px',
+        background: '#1B1A17', color: '#FFFFFF',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', minWidth: 0 }}>
+          <button ref={exitRef} type="button" onClick={onExit}
+            className="hover:bg-white/10"
+            style={{
+              height: '36px', display: 'flex', alignItems: 'center', gap: '8px', padding: '0 14px 0 11px',
+              border: '1px solid rgba(255,255,255,.35)', borderRadius: '10px', background: 'transparent',
+              color: '#FFFFFF', fontSize: '13px', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', flex: 'none',
+            }}
+          ><X size={15} />{isMobile ? 'Exit' : 'Exit preview'}</button>
+          {!isMobile && (
+            <span style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: 'rgba(255,255,255,.78)', whiteSpace: 'nowrap' }}>
+              <Eye size={15} />
+              <span><strong style={{ fontWeight: 600, color: '#FFFFFF' }}>Previewing</strong> · nothing is published</span>
+            </span>
+          )}
+        </div>
+
+        {!isMobile && (
+          <div role="group" aria-label="Device" style={{ display: 'flex', gap: '3px', padding: '3px', background: 'rgba(255,255,255,.12)', borderRadius: '11px' }}>
+            {PREVIEW_DEVICES.map(([v, l]) => {
+              const off = tabletCap && v === 'desktop'
+              const on = device === v
+              return (
+                <button
+                  key={v} type="button" aria-pressed={on} disabled={off}
+                  title={off ? 'Widen the window past 1180px to preview desktop' : undefined}
+                  onClick={() => onDevice(v)}
+                  style={{
+                    border: 0, borderRadius: '8px', padding: '6px 15px', fontFamily: 'inherit', fontSize: '13px',
+                    fontWeight: on ? 600 : 500, cursor: off ? 'not-allowed' : 'pointer',
+                    background: on ? '#FFFFFF' : 'transparent',
+                    color: on ? '#1B1A17' : off ? 'rgba(255,255,255,.35)' : 'rgba(255,255,255,.78)',
+                  }}
+                >{l}</button>
+              )
+            })}
+          </div>
+        )}
+
+        <button type="button" onClick={onPublish}
+          className="hover:bg-white/90"
+          style={{
+            height: '36px', border: 0, borderRadius: '10px', padding: '0 22px', background: '#FFFFFF',
+            color: '#1B1A17', fontSize: '13px', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', flex: 'none',
+          }}
+        >Publish</button>
+      </div>
+
+      <div ref={areaRef} style={{
+        flex: 1, minHeight: 0, position: 'relative', transform: 'translateZ(0)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+      }}>
+        {framed ? (
+          <div style={{ width: `${outerW * scale}px`, height: `${outerH * scale}px`, flex: 'none' }}>
+            <div style={{
+              width: `${outerW}px`, height: `${outerH}px`, boxSizing: 'border-box',
+              border: '10px solid #1B1A17', borderRadius: device === 'mobile' ? '48px' : '28px',
+              overflow: 'hidden', background: T.palette[0], boxShadow: '0 18px 40px rgba(20,18,12,.28)',
+              transform: `scale(${scale})`, transformOrigin: '0 0',
+            }}>
+              <div ref={scrollRef} style={{ height: '100%', overflowY: 'auto', scrollbarWidth: 'none' }}>{page}</div>
+            </div>
+          </div>
+        ) : (
+          <div ref={scrollRef} style={{
+            position: 'absolute', inset: 0, overflowY: 'auto', scrollbarGutter: 'stable', background: T.palette[0],
+          }}>{page}</div>
+        )}
+      </div>
+    </div>
+  )
 }
 
 // Lays out `pageRows` (data.js): a plain row is its section's own element, and
@@ -5488,6 +5675,22 @@ function arrangeRows(rows, { gutter, bg }, els) {
 
 // Turns a fresh popup into a page that can host a React root. Returns the
 // mount node. Called once per window; re-publishing into an open tab skips it.
+// The click half of the nav's scroll, shared by the published tab's document and
+// the Preview overlay: swallow a fragment link and scroll to the section it
+// names, by hand, against the live document's own ids.
+function scrollToFragment(e, win) {
+  const doc = win.document
+  const a = e.target.closest?.('a')
+  const href = a ? a.getAttribute('href') || '' : ''
+  if (!href.startsWith('#')) return
+  e.preventDefault()
+  const target = href.length > 1 && doc.getElementById(href.slice(1))
+  if (!target) return
+  // Read at click time, not once: the OS setting can change under an open tab.
+  const still = win.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+  target.scrollIntoView({ behavior: still ? 'auto' : 'smooth', block: 'start' })
+}
+
 function dressPublishedWindow(win, artistName, pageBg) {
   const doc = win.document
   const el = (tag, attrs) => Object.assign(doc.createElement(tag), attrs)
@@ -5521,17 +5724,7 @@ function dressPublishedWindow(win, artistName, pageBg) {
   // Minimal label whose target section has been deleted is not rendered here at
   // all, sectionVm having dropped it, and a pill with no target carries no href,
   // so neither reaches this listener; the swallow is what catches the rest.
-  doc.addEventListener('click', (e) => {
-    const a = e.target.closest?.('a')
-    const href = a ? a.getAttribute('href') || '' : ''
-    if (!href.startsWith('#')) return
-    e.preventDefault()
-    const target = href.length > 1 && doc.getElementById(href.slice(1))
-    if (!target) return
-    // Read at click time, not once: the OS setting can change under an open tab.
-    const still = win.matchMedia?.('(prefers-reduced-motion: reduce)').matches
-    target.scrollIntoView({ behavior: still ? 'auto' : 'smooth', block: 'start' })
-  })
+  doc.addEventListener('click', (e) => scrollToFragment(e, win))
 
   const mount = el('div', { id: 'root' })
   doc.body.appendChild(mount)
@@ -5626,6 +5819,8 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
       // The publish success dialog. The tab it opens is held in a ref, not
       // in state: nothing renders from it.
       published: false,
+      // Preview: the published page, live, in an overlay over the editor.
+      preview: false,
       // The last deleted section of each category, as `{ arch, c, at, before }`,
       // so adding that category again brings its content back (uploads
       // included, as the data URIs they are) to the seat it left: `before` is
@@ -5811,6 +6006,22 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
     }
     dress()
   }, [artistName, closePublished, patch, st.sections, st.theme, toast])
+
+  /* ---- preview ------------------------------------------------------ */
+
+  const previewBtn = useRef(null)
+  const openPreview = useCallback(() => {
+    patch({ preview: true, menuFor: null })
+    if (!previewHinted) {
+      previewHinted = true
+      toast('Galleries, filters and links work here, as they will when published.')
+    }
+  }, [patch, toast])
+  const exitPreview = useCallback(() => {
+    patch({ preview: false })
+    // The editor is inert until this render lands; the button takes focus after.
+    requestAnimationFrame(() => previewBtn.current?.focus())
+  }, [patch])
 
   /* ---- mutations (§5.6) ------------------------------------------- */
 
@@ -6273,6 +6484,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
   return (
     <TooltipProvider delayDuration={200}>
       <div
+        inert={st.preview}
         onPointerDownCapture={(e) => { downRef.current = e.target }}
         onClick={closeAll}
         style={{
@@ -6291,6 +6503,11 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
             <span style={{ fontFamily: "'Alfa Slab One', serif", fontSize: '16px' }}>JustPay+</span>
             <span style={{ fontSize: '11px', fontWeight: 600, color: '#6B685E' }}>{T.name}</span>
             <span style={{ flex: 1 }} />
+            <button ref={previewBtn} type="button" aria-label="Preview" disabled={st.onboard}
+              onClick={(e) => { stopE(e); openPreview() }}
+              className="hover:bg-muted"
+              style={{ padding: '6px 9px', borderRadius: '9px', border: '1px solid #D8D5CC', background: '#FFFFFF', color: '#1B1A17', cursor: 'pointer', lineHeight: 0 }}
+            ><Eye size={15} /></button>
             <button type="button" onClick={(e) => { stopE(e); patch({ published: true }) }}
               className="hover:bg-primary/90"
               style={{ fontSize: '12px', fontWeight: 700, padding: '7px 14px', borderRadius: '9px', background: '#1B1A17', color: '#FFFFFF', border: 0, cursor: 'pointer' }}
@@ -6339,6 +6556,16 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
 
             <span style={{ flex: 1 }} />
 
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button ref={previewBtn} type="button" disabled={st.onboard}
+                  onClick={(e) => { stopE(e); openPreview() }}
+                  className="hover:bg-muted"
+                  style={{ display: 'flex', alignItems: 'center', gap: '7px', fontSize: '13px', fontWeight: 600, padding: '7px 15px', borderRadius: '9px', border: '1px solid #1B1A17', background: '#FFFFFF', color: '#1B1A17', cursor: 'pointer', marginRight: '-6px' }}
+                ><Eye size={15} />Preview</button>
+              </TooltipTrigger>
+              <TooltipContent>See your page as visitors do. Nothing is published.</TooltipContent>
+            </Tooltip>
             <button type="button" onClick={(e) => { stopE(e); patch({ published: true }) }}
               className="hover:bg-primary/90"
               style={{ fontSize: '13px', fontWeight: 700, padding: '8px 18px', borderRadius: '9px', background: '#1B1A17', color: '#FFFFFF', border: 0, cursor: 'pointer' }}
@@ -6583,6 +6810,15 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
           toastOptions={{ unstyled: true, style: { zIndex: 100 } }}
         />
       </div>
+
+      {st.preview && (
+        <PreviewOverlay
+          themeIdx={st.theme} sections={st.sections} artistName={artistName}
+          device={device} tabletCap={tabletCap} isMobile={isMobile} focusCat={selectedSec?.cat}
+          onDevice={(v) => patch({ device: v })} onExit={exitPreview}
+          onPublish={() => patch({ preview: false, published: true })}
+        />
+      )}
     </TooltipProvider>
   )
 }
