@@ -159,3 +159,64 @@ frame's 50%, which goes to the designer (note 1).
 2. **Layout 3's 390 header is drawn for *Kai Mercer***, with BOOK NOW already running 8px into the
    gap beside it. The build wraps a longer name between the burger and the pill. It keeps that
    8px overrun, so the seed stands where the frame puts it.
+
+---
+
+# Second retest — build `Tue, 13 Oct 2026 08:45:12 GMT` (etag `6acdef98-9745b9`)
+
+The tester re-files two items: **JP-111** (Pop's heads are still Titan One) and **JP-116** (three
+pairs re-measured; the rest "nothing to compare with"). No code changed in this round.
+
+## JP-111 — third filing: still Titan One
+
+**Verdict: unchanged, and not ours to close.** `chunko` appears 0 times in the build, as it must:
+Chunko Bold Demo is Zarma Type's personal-use demo (`layout-1.md` open question 12). Titan One was
+chosen by rendering thirteen candidates (decision 1) and re-confirmed on 2026-10-08 and 2026-10-12.
+
+**Reply** (names the owners, since two replies that only named the stand-in were re-filed):
+
+> *JP-111 — blocked on the PO, no change.* Titan One is the deliberate stand-in. Chunko Bold Demo
+> is a personal-use demo and cannot ship, and no licence on sale covers a builder that publishes
+> artist sites. **PO:** request a quote from Zarma Type, with the character set. **BA:** whether
+> Titan's soft corners are acceptable until then. Nothing in the build can close this.
+
+## JP-116 — three pairs "112 / 112 / 62", the tester's design reads 120 / 119 / ≈69
+
+**The design was walked again (2026-10-14)**, independently of the 2026-10-08 read: the three page
+frames of Pop's layout 1 (`964:58623`, `986:52418`, `986:52431`), every section's painted insets
+by `use_figma` (visible, non-empty nodes; decorations and the section's own full-bleed fills left
+out; both layout boxes and render/ink bounds). Against the published tab on HEAD.
+
+| Pair, 1440 | Tester: build / "design" | Build | Frames, box to box | Frames, ink |
+|---|---|---|---|---|
+| Bio → Top Tracks (media) | 112 / 120 | 112 | 56 + 56 = **112** | 58.4 + 56 = 114.4 |
+| Top Tracks → Media (gallery) | 112 / 119 | 112 | 56 + 56 = **112** | 56 + 58.9 = 114.9 |
+| Footer top → first row | 62 / ≈69 | 61.7 | **61.68** (the wordmark text: 56 + 5.68); the link column starts at **56** | same |
+
+- The build equals the frames on every pair. Nothing in the frames reads 120, 119 or ≈69, by box,
+  by ink, or on the media's sticker (which stands 6.6 above its card: 105.4 on that basis).
+- The tester's 12.10 footer reading (56) and this one (62) are the link column and the wordmark.
+  Both are the frame's.
+- **The other seams, re-read** (insets, frame / build, 1440 · 768 · 390): bio 56 · 60 · 24 top and
+  56 · 60 · 40 foot; media 56 · 30 · 10; gallery 56 · 30 · 20 / 56 · 30 · 30; repertoire 96 · 60 ·
+  40; map 126 / 156 · 60 / 60 · 30 / 10; pricing 100 · 60 · 24 top, the rings 13 / 16 / 40 under its
+  foot; calendar 100 / 100 · 100 / 50 · 60 / 40; form 120 / 120 · 30 / 60 · 30 / 30. Every one is
+  the build's `vm.pad` arm, to 0.1. Seams at 1440, frame = build: header → bio 56, bio → media 112,
+  media → gallery 112, gallery → repertoire 152, repertoire → map 222, map → pricing 256, pricing
+  → calendar 200, calendar → form 220, form → testimonials 120. The tablet row's insets are the
+  same read.
+- **Where the read is noisy.** The repertoire's, calendar's and form's *decorations* (the heart,
+  the scribbles, the sticker) poke into the inset and read as 54 / 87, 13 / 100 and 51 / 120 if
+  counted. The 2026-10-08 pass left them out as decoration and the tab stands on the text and card
+  boxes. That is the same call, not a difference.
+
+**Reply:**
+
+> *JP-116 — matches the design; please check the reference values.* At 1440 the published page
+> reads Bio → Top Tracks 112, Top Tracks → Media 112 and the footer's top → wordmark 61.7. The
+> Figma frames give 112, 112 and 61.68 (the bio's content ends 56 above its foot, the media's
+> starts 56 below its top, and the footer's wordmark row sits 56 down, plus 5.68 for its text).
+> We re-read every section's insets at 1440, 768 and 390 against the build, and they match. We
+> can't find 120, 119 or ≈69 in the frames. Please send the node ids you measured.
+
+**Open (user):** close on this reply, or ask the designer which frame the 120 / 119 / ≈69 come from.
