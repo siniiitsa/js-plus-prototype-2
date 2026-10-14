@@ -213,6 +213,23 @@ the only module that imports them.
 - The layout picker, the template spotlight and the header setup modal all resolve through the
   same `sectionVm()`, so each shows the photography without any extra wiring.
 
+## Character limits
+
+Every text field, list item and repeater column has a character cap per template and per layout,
+because long copy would otherwise wrap a pill the frame draws on one line, run out of a fixed
+card or overlap a neighbour (`plans/char-limits.md`, user calls of 2026-10-13). Each number was
+measured, not guessed: the Figma census (`plans/char-limits/census/`) says how many lines the
+frame draws a seat in, and `source/scripts/limits.mjs` renders realistic prose into the preview
+harness at all three widths until a seat breaks that look. The caps sit on `FIELDS` as `chars`
+(with `in`'s shape: a number, an array by design, or an object by template), with `list` and
+`count` on a list field and `cols` on a repeater. The header's name, kicker, town and tags, as
+the other sections print them, are `IDENTITY_CHARS`. The panel stops typing at the cap
+(`maxLength`, or a guard for a list) and shows `n / cap` from 80%. A layout or template switch
+never deletes copy: `sectionVm` clamps what it renders at its head (`clampContent`,
+`clampIdentity`, at a word, ending in `…`), `c` keeps the full text, and the counter turns red,
+*shortened on the page*, until a layout that fits it comes back. Seeds are absent keys, so they
+are never clamped, and `limits.mjs --seeds` proves each one fits its cap.
+
 ## Publishing
 
 **Publish** shows a success dialog naming the site, and **Open** puts the page in a new browser

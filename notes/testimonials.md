@@ -115,3 +115,40 @@ another `notes/` file.
   `mapKickerSeed`'s shape, called by `sectionVm` and by an arm of `EditPanel`'s chain of its own,
   since the map's arm is gated on `map`. The field is `in: [1, 2]`, both bodies. The `✎` is the
   markup's and goes with an emptied word, as layout 3's `●` does. A long one wraps.
+- **Character caps** (`plans/char-limits.md`, session 9, 2026-10-13). Every text key and the four
+  `quotes` columns carry a `chars` / `cols` cap per template and design; the readout is
+  `plans/char-limits/session-9-probe.md`. The calls that shape them:
+  - **The heading is a display head, not a block.** It is `type: 'area'` only so layout 2's typed
+    break holds, so it takes the measured cap with its frame's lines, and the probe's `probesOf`
+    gives no `heading` the block exemption (the form's, session 10, inherits that). Layout 2 holds
+    the seed's 38 (*Honest feedback / from people who booked*) under Retro, Grunge and Editorial:
+    the typed break packs the frame's two lines, and prose with no break reads 21–31 at 390.
+    Editorial's layout-4 head is fitted to its widest word, so strict prose shrinks it at once (6);
+    floorless it reads 21, so 22, the seed, either way.
+  - **A review is read in every row at once.** Layouts 1 and 2 show `cur` (row 0 on the canvas),
+    but the walls give each row a cell of its own width: layout 3's trailing 1440 cell (row 4) is
+    177–187 wide where rows 0–3 stand in 367–379, and at 768 rows 0–3 are the 138–153 cells.
+    Layout 2's rail prints `mark`, two initials at most (`initialsOf`), so it is never a seat.
+  - **The quote is a block: 190** (3 × the seeded 66, *The room did not sit down once…*). The walls
+    and layout 2 read open at 400; at 190 every cell grows with its copy (screenshotted). Layout 1's
+    desktop card is a 420 floor (`minHeight`) with its pills on it, and once the copy uses the
+    floor up the quote's line box meets the pill row under Lime (65), Editorial (57) and Grunge
+    (68). Lime and Editorial therefore hold the seed's 66, whose own render under Editorial already
+    sets the pills flush. Retro's and Pop's cards keep a gap and grow, open. `wordEms` (Editorial,
+    Pop) never shrank: the seed's widest word, *"Professional*, outruns the samples' words.
+  - **Retro's layout-1 byline wraps by design** (`whiteSpace: 'normal'`; the seeded row 1 takes two
+    lines at 390), so `who` and `role` there are read by the pills under it (`nowrap`): 28 each.
+    The probe's allowance is standing, `EXTRA_AT` in `scripts/limits.mjs` (Retro's design 0
+    alone), so `--check` passes 28 there; the joint check exempts the same composed span.
+  - **The role's floor is 26** (*Venue manager, Albert Hall*), which already takes a second line
+    in layout 3's 768 cells and in Editorial's and Pop's layout-1 pill; prose reads 17–25 there.
+    The name's floor, 13 (*Dan Whitfield*), binds Editorial's layout 3 at 768.
+  - **The layout-1 pills are metadata, not sized**: they print the artist's content (a name, a
+    role), the frame's own reading of the card. Sized, the name would be 26 where Lime reads 39 and
+    Retro and Grunge 28. The user's to overrule.
+  - **The rating takes prose** (one numeral beside a literal `/5`, no split): 5–9, Editorial's
+    numeral row wrapping first at 1440. `stars` is metadata (32–44), `cta` sized (16).
+  - **`QuotesField`'s role · date pair is top-aligned**, sessions 5's and 8's fix: the date has no
+    cap at layouts 2–4, and the bare box stretched beside the role's counter.
+  - **The heading's typed break counts one character** in Chrome's `maxLength` as in `capExcess`:
+    *Honest feedback⏎from everyone who ever book* stopped at 43 with the counter at `43 / 43`.

@@ -203,3 +203,33 @@ another `notes/` file.
   arm sets `vm.padX` to `20px` at mobile, the only section outside `column` to move it, and no
   node in the block reads `padX`. 768 keeps `padY` 56 over its head (JP-103: reported as
   matching), and Retro's own body keeps `padY` / `padX`.
+- **Character caps** (session 4 of the character-limits pass, 2026-10-13;
+  `plans/char-limits.md`, *Session 4*, and the per-width readout in
+  `plans/char-limits/session-4-probe.md`). Every own text key has a `chars` row, and `tiers` has
+  `cols` for `name`, `price`, `tags` (item and count), `blurb` and `feats` (item and count). The
+  calls to keep:
+  - **The price is measured as a price.** `priceParts()` splits it at its first digit, so a long
+    price grows in its small tail (*£475 — £1,450 per evening*), and the probe reads it with
+    digit-led samples. Prose has no digit and sets whole in the big numeral; that reading (a long
+    *Price on application*) is lower, and is kept in the readout for the user to overrule. Layout
+    1's narrow deck holds 8–14, so the range form the layout-3 frames draw (13) does not fit every
+    deck card; layouts 2–4 take 20–35.
+  - **A column's floor is the longest seed of any design**, not this design's: the first edit
+    stores the seed that was showing, and it then stands at every layout. Under the Lime-tree
+    templates a tag chip is therefore 26 at every design (twice *Private Event*, layout 1's), and
+    Retro's 12 (its seeds are *Solo*, *Trio*, *Band* and *Duo*). Layout 2 prints no tags and has no
+    tag cap.
+  - **The features' count is 15 at layouts 1–3 and 5 at layout 4.** One a line, the list grows
+    down a hugging card and never broke up to the probe's 16, so it takes the block ceiling of
+    three times the seed's five. Layout 4 draws them as a wrapping chip row, and a sixth wraps it.
+  - **Floors.** The heading holds its seed's 42 at layouts 1 and 2 where line packing read 39–41.
+    The names hold 16 (*The Festival Set*) at Pop's layouts 1 and 2 and at layout 4 under Retro
+    and Editorial. The features hold 24 (*Drinks + dinner ambience*) at layout 3 on every template
+    and at Retro's layouts 1–2 and Pop's layout 2. Grunge's small print holds 53 at layout 1,
+    where the seed already takes two lines at 390.
+  - **Editorial's layout-1 Book pill caps at 9**, one past *Book Now*: the deck fits the label by
+    its ems (above), so a longer one shrinks at once. A shrink floor for it, as the name has, is
+    the user's call.
+  - **The leant cards' lines are counted upright** (`scripts/limits.mjs`): Retro's and Pop's
+    layout-1 decks and Pop's layout-2 plan card turn, and the probe sets every turned ancestor
+    upright while it counts a seat's lines.

@@ -254,6 +254,8 @@ const s = sectionVm({
   identity, tiers, email, Z: Z[device], mob: device === 'mobile', live: q.get('live') === '1', navSections, today,
   ...(column ? { column } : null),
   ...(page !== undefined ? { page } : null),
+  // &noclamp=1 renders past the character caps (scripts/limits.mjs measures there).
+  ...(q.get('noclamp') === '1' ? { clamp: false } : null),
 })
 
 createRoot(document.getElementById('root')).render(

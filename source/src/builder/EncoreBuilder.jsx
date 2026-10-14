@@ -41,7 +41,7 @@ import {
   MAP_HOME_LABEL, MAP_HOME_CAPTION, MAP_VENUE_LABEL, MAP_VENUE_CAPTION, MAP_RADIUS_LABEL, MAP_TIME_LABEL,
   MAP_FEE_LABEL, MAP_VENUE_CTA, MAP_ROUTE_CTA,
   PRICING_KICKER, PRICING_FEATS_LABEL, PRICING_BADGE, CAL_DATE_LABEL, CAL_AVAIL_LABEL, CAL_PROMPT,
-  MEDIA_CHIP_LABEL, MEDIA_COUNT_LABEL, MEDIA_TOTAL_LABEL, GALLERY_RAIL_LABEL, TIER_KEYS, tiersSeed, limeTreeTheme, PRICE_UNIT, QUOTES,
+  MEDIA_CHIP_LABEL, MEDIA_COUNT_LABEL, MEDIA_TOTAL_LABEL, GALLERY_RAIL_LABEL, TIER_KEYS, tiersSeed, PRICE_UNIT, QUOTES,
   CITIES, PINS, EXAMPLE_PAGE,
   NOW_PLAYING, TRACK_AUDIO, SONGS, REP_ALL,
   GIGS, MAP_BASE, MAP_TERMS, MAP_TRAVEL_TIME, MAP_FEE, directionsUrl, GALLERY_SOURCES, GALLERY_KICKER, GALLERY_BACK_LABEL,
@@ -51,11 +51,10 @@ import {
   FOOTER_LINKS, FOOTER_TARGETS, FOOTER_CREDIT, FOOTER_STATEMENT,
   CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN, CAL_SLOTS, SLOT_KEYS, slotDate, parseDayFirst, pageTiers, CAL_SLOT_CTA, CAL_SEND_4, FORM_EMAIL, pageEmail, MONTHS, DAY_FULL,
   TESTI_HEADING_2, CARD_LINE_3, TESTI_STARS, TESTI_RATING,
-  CAL_HEADING_3, REP_HEADING_3, GALLERY_HEADING_3, PRICING_HEADING_3, PRICING_INTRO_3, MAP_HEADING_3, TESTI_HEADING_3,
-  CAL_HEADING_4, REP_HEADING_4, GALLERY_HEADING_4, MAP_HEADING_4, TESTI_HEADING_4, FORM_HEADING_4, FORM_SUB_4, CAL_HEADING_1, formBtnSeed, CAL_TYPES, PRICING_ROW_CTA, PRICING_ROW_CTA_3, MAP_SPAN, MAP_STATS_4, STAT_KEYS,FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
+  PRICING_INTRO_3, FORM_SUB_4, CAL_HEADING_1, formBtnSeed, CAL_TYPES, PRICING_ROW_CTA, PRICING_ROW_CTA_3, MAP_SPAN, MAP_STATS_4, STAT_KEYS,FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
   parseDate, isoDate, calStart, headerIdentity, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav, navModeDefault,
-  catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldDefault, fieldReach, fieldShown, copyrightOf, formHeading3, extUrl, urlProblem, emailProblem, emailAddr, songTags, repChips,
+  catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldSeed, HEADING_3, HEADING_4, fieldReach, fieldShown, fieldCap, colCaps, identityCap, sealCap, capExcess, clampCapped, clampContent, clampIdentity, copyrightOf, formHeading3, extUrl, urlProblem, emailProblem, emailAddr, songTags, repChips,
   tierFeats, priceParts, blankRow, SONG_KEYS, repSetsOf, repSetLine, TRACK_KEYS, GIG_KEYS, gigWeekday, gigStatus, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
   layoutCount, designCount, pageLayout, pageOrder, pageRows, COLUMN_SPLIT, bebasEms, antonEms, gloockEms, titanEms,
   headerLayout, headerLayoutLabel, setupHeaderCount,
@@ -255,20 +254,6 @@ const flatScheme = ({ palette: [bg, ac, tx], sem: { tagFg, ...sem }, tags }) => 
   chips: tags.map((h, i) => ({ bg: h, fg: tagFg?.[i] ?? contrast(h) })),
 })
 
-// Layouts 3 and 4's heading fallbacks, per category — each page's own heads
-// (layout 4's QA, 2026-09-15, the form's, JP-054, and the repertoire's, JP-081;
-// layout 3's JP-070, 2026-09-28, which took in the calendar's "Book Me").
-// sectionVm and EditPanel both read these, and at layouts 3 and 4 the
-// repertoire's wins over its song count in both.
-const HEADING_3 = {
-  repertoire: REP_HEADING_3, gallery: GALLERY_HEADING_3, pricing: PRICING_HEADING_3,
-  calendar: CAL_HEADING_3, map: MAP_HEADING_3, testimonials: TESTI_HEADING_3,
-}
-const HEADING_4 = {
-  repertoire: REP_HEADING_4, calendar: CAL_HEADING_4, gallery: GALLERY_HEADING_4, map: MAP_HEADING_4,
-  testimonials: TESTI_HEADING_4, form: FORM_HEADING_4,
-}
-
 // The page's layout, for the one section that cannot say it itself: the footer
 // has a single design, so its own `arch` is always 0. The header is the
 // section the setup modal lays the whole page out from, so its design stands
@@ -281,10 +266,18 @@ export const pageDesignOf = (sections, themeName) => {
   return ((h.arch % n) + n) % n
 }
 
-export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = {}, tiers = [], email = '', Z, mob, live = false, navSections = [], column = false, today, page = -1 }) {
+export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = {}, tiers = [], email = '', Z, mob, live = false, navSections = [], column = false, today, page = -1, clamp = true }) {
   const theme = THEMES[themeIdx]
   const nDesign = designCount(cat, theme.name)
   const d = ((arch % nDesign) + nDesign) % nDesign
+  // The character caps (plans/char-limits.md): copy typed under another
+  // layout's cap is shortened here, before anything below reads it, and keeps
+  // its full text in the section's `c`. Inert within the caps, so seeds are
+  // never touched. `clamp: false` is the harness's, for measuring past a cap.
+  if (clamp) {
+    c = clampContent(cat, c, theme.name, d)
+    ;({ identity, artistName } = clampIdentity(cat, identity, artistName, theme.name, d))
+  }
   // The section's own scheme (SCHEMES_OF, data.js), laid over the theme before
   // any colour is read, so everything derived below — `muted`, `paper`, the
   // pill pair, `legible()`, the chip seats, the `sem` keys — is the section's
@@ -722,7 +715,11 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // seat in Retro's polaroid. Uncased, as the four above.
   vm.cardLine = cv('cardLine', CARD_LINE_3)
   vm.showBadge = cv('showBadge', 'show')
-  vm.badgeText = cv('badgeText', name)
+  // Left empty, the seal's ring prints the name, shortened to the ring's fit
+  // (sealCap, data.js), so a long name never sets its two copies over each
+  // other; Badge text is capped to the same fit in the panel.
+  vm.badgeText = c.badgeText !== undefined ? c.badgeText
+    : clamp ? clampCapped(name, sealCap(cat, theme.name, d)) : name
   vm.navMode = cv('navMode', cat === 'header' ? navModeDefault(T.name, d) : 'sections')
   vm.align = cv('align', 'left')
   // Every template seeds its Figma pages' mock photography (photos.js). `undefined` already means "key
@@ -2755,12 +2752,12 @@ function UrlInput({ value, onChange, style, className, placeholder, web = false,
 // agrees with the h1 — and leaving the box puts that name back. There is
 // therefore no empty state for Publish to meet, and no fallback to the
 // profile name once the artist has typed one.
-function NameInput({ value, onChange, style }) {
+function NameInput({ value, onChange, style, cap }) {
   const [draft, setDraft] = useState(null)
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', minWidth: 0 }}>
       <Input
-        value={draft ?? value} onClick={stopE}
+        value={draft ?? value} onClick={stopE} maxLength={cap?.chars ?? undefined}
         onChange={(e) => {
           const v = e.target.value
           if (v.trim()) { setDraft(null); onChange(v) } else setDraft(v)
@@ -2773,6 +2770,65 @@ function NameInput({ value, onChange, style }) {
           Your name is required. The page keeps &ldquo;{String(value).trim()}&rdquo; until you type another.
         </p>
       )}
+      <CharCount value={draft ?? value} cap={cap} />
+    </div>
+  )
+}
+
+// The character caps (plans/char-limits.md, user calls, 2026-10-13). A capped
+// box is a hard stop — `maxLength`, so typing and pasting stop at the cap; a
+// list (`cap.list`) refuses an edit that takes any item past `cap.chars` or the
+// list past `cap.count` — with a counter under it from 80% of the cap. Copy
+// already over the cap (typed under another layout's) stays editable, reads
+// red, and is shortened on the page by sectionVm's clamp. With no cap the bare
+// box renders, exactly as before.
+const COUNT_LINE = { margin: 0, fontSize: '10px', lineHeight: 1.45, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }
+function capCount(value, cap) {
+  const v = String(value ?? '')
+  if (!cap.list) {
+    if (cap.chars == null || v.length < cap.chars * 0.8) return null
+    return { text: `${v.length} / ${cap.chars}`, over: v.length > cap.chars }
+  }
+  const items = v.split(cap.list).map((t) => t.trim()).filter(Boolean)
+  const longest = items.reduce((n, t) => Math.max(n, t.length), 0)
+  const near = (cap.chars != null && longest >= cap.chars * 0.8) || (cap.count != null && items.length >= cap.count)
+  if (!near) return null
+  const parts = []
+  if (cap.chars != null) parts.push(`longest ${longest} / ${cap.chars}`)
+  if (cap.count != null) parts.push(`${items.length} of ${cap.count}`)
+  return { text: parts.join(' · '), over: capExcess(v, cap) > 0 }
+}
+function CharCount({ value, cap }) {
+  const n = cap && capCount(value, cap)
+  if (!n) return null
+  return (
+    <p style={{ ...COUNT_LINE, color: n.over ? '#B3261E' : '#98958A' }}>
+      {n.text}{n.over ? ' · shortened on the page' : ''}
+    </p>
+  )
+}
+const WRAP_KEYS = new Set([
+  'flex', 'flexGrow', 'flexShrink', 'flexBasis', 'width', 'minWidth', 'maxWidth', 'alignSelf',
+  'margin', 'marginTop', 'marginRight', 'marginBottom', 'marginLeft',
+])
+function CappedText({ area = false, cap, value, onChange, style, ...rest }) {
+  const Box = area ? Textarea : Input
+  const change = (e) => {
+    const v = e.target.value
+    if (cap?.list && capExcess(v, cap) > capExcess(String(value ?? ''), cap)) return
+    onChange(e)
+  }
+  if (!cap) return <Box value={value} onChange={onChange} style={style} {...rest} />
+  // The box's own placing (a row's flex, a fixed width, a margin) moves to the
+  // column round it, which otherwise takes the box's full-width default.
+  const wrap = { display: 'flex', flexDirection: 'column', gap: '3px', minWidth: 0, flex: '1 1 auto', width: '100%' }
+  const box = {}
+  for (const [k, v] of Object.entries(style ?? {})) (WRAP_KEYS.has(k) ? wrap : box)[k] = v
+  return (
+    <div style={wrap}>
+      <Box value={value} onChange={change} maxLength={cap.list ? undefined : cap.chars ?? undefined}
+        style={{ ...box, width: '100%' }} {...rest} />
+      <CharCount value={value} cap={cap} />
     </div>
   )
 }
@@ -2793,10 +2849,17 @@ function NameInput({ value, onChange, style }) {
  * ------------------------------------------------------------------- */
 
 const SONG_ROW_INPUT = { ...FIELD_BOX, padding: '6px 8px', fontSize: '12px' }
+// A repeater row's head: its number and ✕ centre on the box, not on the box
+// and its counter, so the row is top-aligned and each stands in the box's own
+// height (SONG_ROW_INPUT's 31: 12px type on the Input's line, 6px padding and
+// a 1px border; plans/char-limits.md, session 12).
+const ROW_HEAD = { display: 'flex', alignItems: 'flex-start', gap: '7px' }
+const ROW_BOX_H = '31px'
+const ROW_X_TOP = '4.5px'
 
 const BLANK_SONG_HINT = 'Empty songs aren’t shown.'
 
-function SongsField({ value, max, onChange }) {
+function SongsField({ caps, value, max, onChange }) {
   const list = Array.isArray(value) ? value : []
 
   // Every keystroke rewrites the whole array — the list is short, and it keeps
@@ -2810,15 +2873,15 @@ function SongsField({ value, max, onChange }) {
       border: '1px solid #E9E7E0', borderRadius: '10px', padding: '8px',
       display: 'flex', flexDirection: 'column', gap: '6px', background: '#FCFBF8',
     }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+      <div style={{ ...ROW_HEAD }}>
         <span style={{
-          width: '18px', flex: 'none', fontSize: '10px', fontWeight: 700,
+          width: '18px', flex: 'none', fontSize: '10px', fontWeight: 700, height: ROW_BOX_H, lineHeight: ROW_BOX_H,
           color: '#98958A', textAlign: 'center',
         }}>{i + 1}</span>
         {/* shadcn Input rather than a bare one, for its focus ring: FIELD_BOX
             sets `outline: none`, so a raw input would tab through twelve rows
             showing nothing. `h-auto` lets the compact padding win over h-9. */}
-        <Input
+        <CappedText cap={caps?.title}
           value={sg.title ?? ''} placeholder="Song title" onClick={stopE}
           onChange={(e) => setAt(i, 'title', e.target.value)}
           className="h-auto" style={{ ...SONG_ROW_INPUT, fontWeight: 600 }}
@@ -2828,7 +2891,7 @@ function SongsField({ value, max, onChange }) {
           onClick={(e) => { stopE(e); removeAt(i) }}
           className="hover:bg-destructive/10"
           style={{
-            width: '22px', height: '22px', flex: 'none', borderRadius: '999px',
+            width: '22px', height: '22px', flex: 'none', borderRadius: '999px', marginTop: ROW_X_TOP,
             border: '1px solid #E2DFD7', background: '#FFFFFF', color: '#B3261E',
             cursor: 'pointer', display: 'inline-flex', alignItems: 'center',
             justifyContent: 'center', padding: 0,
@@ -2839,21 +2902,22 @@ function SongsField({ value, max, onChange }) {
           and three inputs do not fit side by side at its width. The 25px
           gutter keeps both lower fields aligned under the title. The length
           (JP-066) is four glyphs, so it rides beside the artist in a narrow
-          box rather than taking a line of its own. */}
+          box rather than taking a line of its own. Top-aligned, so a counter
+          under one box does not stretch the other. */}
       <div style={{ paddingLeft: '25px', paddingRight: '29px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-        <div style={{ display: 'flex', gap: '6px' }}>
-          <Input
+        <div style={{ display: 'flex', gap: '6px', alignItems: 'flex-start' }}>
+          <CappedText cap={caps?.artist}
             value={sg.artist ?? ''} placeholder="Artist" onClick={stopE}
             onChange={(e) => setAt(i, 'artist', e.target.value)}
             className="h-auto" style={{ ...SONG_ROW_INPUT, flex: 1, minWidth: 0 }}
           />
-          <Input
+          <CappedText cap={caps?.length}
             value={sg.length ?? ''} placeholder="3:54" aria-label="Length" onClick={stopE}
             onChange={(e) => setAt(i, 'length', e.target.value)}
             className="h-auto" style={{ ...SONG_ROW_INPUT, width: '64px', flex: 'none' }}
           />
         </div>
-        <Input
+        <CappedText cap={caps?.tags}
           value={sg.tags ?? ''} placeholder="Tags — weddings, pubs" onClick={stopE}
           onChange={(e) => setAt(i, 'tags', e.target.value)}
           className="h-auto" style={SONG_ROW_INPUT}
@@ -2909,7 +2973,7 @@ function SongsField({ value, max, onChange }) {
  * field shows only the live sets.
  * ------------------------------------------------------------------- */
 
-function SetsField({ value, songs, onChange }) {
+function SetsField({ caps, value, songs, onChange }) {
   const map = value && typeof value === 'object' && !Array.isArray(value) ? value : {}
   const sets = repChips((songs || []).filter((t) => !blankRow(t, SONG_KEYS))).slice(1)
   const setAt = (key, k, v) => onChange({ ...map, [key]: { ...(map[key] || {}), [k]: v } })
@@ -2933,13 +2997,13 @@ function SetsField({ value, songs, onChange }) {
           }}>
             <span style={{ fontSize: '12px', fontWeight: 600, color: '#1B1A17', overflowWrap: 'anywhere' }}>{ch.label}</span>
             {/* shadcn Input for its focus ring — see SongsField above. */}
-            <div style={{ display: 'flex', gap: '6px' }}>
-              <Input
+            <div style={{ display: 'flex', gap: '6px', alignItems: 'flex-start' }}>
+              <CappedText cap={caps?.mood}
                 value={d.mood ?? ''} placeholder="Mood" aria-label={`${ch.label} mood`} onClick={stopE}
                 onChange={(e) => setAt(key, 'mood', e.target.value)}
                 className="h-auto" style={{ ...SONG_ROW_INPUT, flex: 1, minWidth: 0 }}
               />
-              <Input
+              <CappedText cap={caps?.length}
                 value={d.length ?? ''} placeholder="45 min" aria-label={`${ch.label} length`} onClick={stopE}
                 onChange={(e) => setAt(key, 'length', e.target.value)}
                 className="h-auto" style={{ ...SONG_ROW_INPUT, width: '76px', flex: 'none' }}
@@ -3040,7 +3104,7 @@ function RowThumb({ value, label, onChange, onToast, onFail, failed }) {
 
 const BLANK_TRACK_HINT = 'Empty tracks aren’t shown.'
 
-function TracksField({ value, max, onChange, onToast }) {
+function TracksField({ caps, value, max, onChange, onToast }) {
   const list = Array.isArray(value) ? value : []
 
   // Same shape as SongsField: every keystroke rewrites the whole array, which
@@ -3074,9 +3138,9 @@ function TracksField({ value, max, onChange, onToast }) {
       {/* Stacked rather than side by side: this panel is also the mobile edit
           sheet, and a thumbnail plus two inputs across does not fit at its width. */}
       <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '6px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+        <div style={{ ...ROW_HEAD, gap: '6px' }}>
           {/* shadcn Input for its focus ring — see SongsField above. */}
-          <Input
+          <CappedText cap={caps?.title}
             value={t.title ?? ''} placeholder="Track title" onClick={stopE}
             onChange={(e) => setAt(i, 'title', e.target.value)}
             className="h-auto" style={{ ...SONG_ROW_INPUT, fontWeight: 600 }}
@@ -3086,14 +3150,14 @@ function TracksField({ value, max, onChange, onToast }) {
             onClick={(e) => { stopE(e); removeAt(i) }}
             className="hover:bg-destructive/10"
             style={{
-              width: '22px', height: '22px', flex: 'none', borderRadius: '999px',
+              width: '22px', height: '22px', flex: 'none', borderRadius: '999px', marginTop: ROW_X_TOP,
               border: '1px solid #E2DFD7', background: '#FFFFFF', color: '#B3261E',
               cursor: 'pointer', display: 'inline-flex', alignItems: 'center',
               justifyContent: 'center', padding: 0,
             }}
           ><X size={11} /></button>
         </div>
-        <Input
+        <CappedText cap={caps?.sub}
           value={t.sub ?? ''} placeholder="Release · 5:42" onClick={stopE}
           onChange={(e) => setAt(i, 'sub', e.target.value)}
           className="h-auto" style={{ ...SONG_ROW_INPUT, marginRight: '28px', width: 'auto' }}
@@ -3177,7 +3241,7 @@ const BLANK_GIG_HINT = 'Empty gigs aren’t shown.'
 // neither, so the line names both.
 const NO_WEEKDAY_HINT = 'No weekday and no Upcoming / Past: the date needs a real day and a four-digit year.'
 
-function GigsField({ value, max, design, onChange }) {
+function GigsField({ caps, value, max, design, onChange }) {
   const list = Array.isArray(value) ? value : []
 
   const setAt = (i, k, v) => onChange(list.map((g, j) => (j === i ? { ...g, [k]: v } : g)))
@@ -3186,9 +3250,10 @@ function GigsField({ value, max, design, onChange }) {
 
   // The short fields that share a line: city and time, and month, day and
   // year. Wider than this panel's width would push them to wrap, which reads
-  // as two rows rather than one.
+  // as two rows rather than one. Top-aligned, or a counter under a capped box
+  // stretches the uncapped year beside it (SongsField's row, session 5).
   const pair = (...xs) => (
-    <div style={{ display: 'flex', gap: '6px' }}>{xs}</div>
+    <div style={{ display: 'flex', gap: '6px', alignItems: 'flex-start' }}>{xs}</div>
   )
 
   const row = (i, g) => (
@@ -3196,13 +3261,13 @@ function GigsField({ value, max, design, onChange }) {
       border: '1px solid #E9E7E0', borderRadius: '10px', padding: '8px',
       display: 'flex', flexDirection: 'column', gap: '6px', background: '#FCFBF8',
     }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+      <div style={{ ...ROW_HEAD }}>
         <span style={{
-          width: '18px', flex: 'none', fontSize: '10px', fontWeight: 700,
+          width: '18px', flex: 'none', fontSize: '10px', fontWeight: 700, height: ROW_BOX_H, lineHeight: ROW_BOX_H,
           color: '#98958A', textAlign: 'center',
         }}>{i + 1}</span>
         {/* shadcn Input for its focus ring — see SongsField above. */}
-        <Input
+        <CappedText cap={caps?.venue}
           value={g.venue ?? ''} placeholder="Venue" onClick={stopE}
           onChange={(e) => setAt(i, 'venue', e.target.value)}
           className="h-auto" style={{ ...SONG_ROW_INPUT, fontWeight: 600 }}
@@ -3212,7 +3277,7 @@ function GigsField({ value, max, design, onChange }) {
           onClick={(e) => { stopE(e); removeAt(i) }}
           className="hover:bg-destructive/10"
           style={{
-            width: '22px', height: '22px', flex: 'none', borderRadius: '999px',
+            width: '22px', height: '22px', flex: 'none', borderRadius: '999px', marginTop: ROW_X_TOP,
             border: '1px solid #E2DFD7', background: '#FFFFFF', color: '#B3261E',
             cursor: 'pointer', display: 'inline-flex', alignItems: 'center',
             justifyContent: 'center', padding: 0,
@@ -3223,29 +3288,29 @@ function GigsField({ value, max, design, onChange }) {
           fields line up under the venue and clear the remove button. */}
       <div style={{ paddingLeft: '25px', paddingRight: '29px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
         {pair(
-          <Input
+          <CappedText cap={caps?.city}
             key="city" value={g.city ?? ''} placeholder="City" onClick={stopE}
             onChange={(e) => setAt(i, 'city', e.target.value)}
             className="h-auto" style={SONG_ROW_INPUT}
           />,
-          <Input
+          <CappedText cap={caps?.time}
             key="time" value={g.time ?? ''} placeholder="22:00" onClick={stopE}
             onChange={(e) => setAt(i, 'time', e.target.value)}
             className="h-auto" style={SONG_ROW_INPUT}
           />,
         )}
         {pair(
-          <Input
+          <CappedText cap={caps?.month}
             key="month" value={g.month ?? ''} placeholder="Jul" onClick={stopE}
             onChange={(e) => setAt(i, 'month', e.target.value)}
             className="h-auto" style={SONG_ROW_INPUT}
           />,
-          <Input
+          <CappedText cap={caps?.day}
             key="day" value={g.day ?? ''} placeholder="12" onClick={stopE}
             onChange={(e) => setAt(i, 'day', e.target.value)}
             className="h-auto" style={SONG_ROW_INPUT}
           />,
-          <Input
+          <CappedText cap={caps?.year}
             key="year" value={g.year ?? ''} placeholder="Year" inputMode="numeric" onClick={stopE}
             onChange={(e) => setAt(i, 'year', e.target.value)}
             className="h-auto" style={SONG_ROW_INPUT}
@@ -3334,7 +3399,7 @@ const slotCountHint = (after) => `${after
   ? `${after} day${after === 1 ? '' : 's'} after Opens on, or after today`
   : 'The Opens on date, or today'} on the published page once that has passed. Type a date to fix it.`
 
-function SlotsField({ value, max, open, onChange }) {
+function SlotsField({ caps, value, max, open, onChange }) {
   const list = Array.isArray(value) ? value : []
   const [today] = useState(() => new Date().toISOString().slice(0, 10))
   // { i, v }: the focused row's box, as the box itself reports it.
@@ -3359,9 +3424,9 @@ function SlotsField({ value, max, open, onChange }) {
         border: '1px solid #E9E7E0', borderRadius: '10px', padding: '8px',
         display: 'flex', flexDirection: 'column', gap: '6px', background: '#FCFBF8',
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+        <div style={{ ...ROW_HEAD }}>
           <span style={{
-            width: '18px', flex: 'none', fontSize: '10px', fontWeight: 700,
+            width: '18px', flex: 'none', fontSize: '10px', fontWeight: 700, height: ROW_BOX_H, lineHeight: ROW_BOX_H,
             color: '#98958A', textAlign: 'center',
           }}>{i + 1}</span>
           <Input
@@ -3384,7 +3449,7 @@ function SlotsField({ value, max, open, onChange }) {
             onClick={(e) => { stopE(e); removeAt(i) }}
             className="hover:bg-destructive/10"
             style={{
-              width: '22px', height: '22px', flex: 'none', borderRadius: '999px',
+              width: '22px', height: '22px', flex: 'none', borderRadius: '999px', marginTop: ROW_X_TOP,
               border: '1px solid #E2DFD7', background: '#FFFFFF', color: '#B3261E',
               cursor: 'pointer', display: 'inline-flex', alignItems: 'center',
               justifyContent: 'center', padding: 0,
@@ -3393,12 +3458,12 @@ function SlotsField({ value, max, open, onChange }) {
         </div>
         <div style={{ paddingLeft: '25px', paddingRight: '29px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
           <div style={{ display: 'flex', gap: '6px' }}>
-            <Input
+            <CappedText cap={caps?.kind}
               value={g.kind ?? ''} placeholder="Evening" onClick={stopE}
               onChange={(e) => setAt(i, 'kind', e.target.value)}
               className="h-auto" style={SONG_ROW_INPUT}
             />
-            <Input
+            <CappedText cap={caps?.price}
               value={g.price ?? ''} placeholder="From £1,200" onClick={stopE}
               onChange={(e) => setAt(i, 'price', e.target.value)}
               className="h-auto" style={SONG_ROW_INPUT}
@@ -3455,7 +3520,7 @@ function SlotsField({ value, max, open, onChange }) {
 
 const BLANK_STAT_HINT = 'Empty stats aren’t shown.'
 
-function StatsField({ value, max, onChange }) {
+function StatsField({ caps, value, max, onChange }) {
   const list = Array.isArray(value) ? value : []
 
   const setAt = (i, k, v) => onChange(list.map((r, j) => (j === i ? { ...r, [k]: v } : r)))
@@ -3467,12 +3532,12 @@ function StatsField({ value, max, onChange }) {
       border: '1px solid #E9E7E0', borderRadius: '10px', padding: '8px',
       display: 'flex', flexDirection: 'column', gap: '6px', background: '#FCFBF8',
     }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+      <div style={{ ...ROW_HEAD }}>
         <span style={{
-          width: '18px', flex: 'none', fontSize: '10px', fontWeight: 700,
+          width: '18px', flex: 'none', fontSize: '10px', fontWeight: 700, height: ROW_BOX_H, lineHeight: ROW_BOX_H,
           color: '#98958A', textAlign: 'center',
         }}>{i + 1}</span>
-        <Input
+        <CappedText cap={caps?.label}
           value={r.label ?? ''} placeholder="Radius" onClick={stopE}
           onChange={(e) => setAt(i, 'label', e.target.value)}
           className="h-auto" style={{ ...SONG_ROW_INPUT, fontWeight: 600 }}
@@ -3482,7 +3547,7 @@ function StatsField({ value, max, onChange }) {
           onClick={(e) => { stopE(e); removeAt(i) }}
           className="hover:bg-destructive/10"
           style={{
-            width: '22px', height: '22px', flex: 'none', borderRadius: '999px',
+            width: '22px', height: '22px', flex: 'none', borderRadius: '999px', marginTop: ROW_X_TOP,
             border: '1px solid #E2DFD7', background: '#FFFFFF', color: '#B3261E',
             cursor: 'pointer', display: 'inline-flex', alignItems: 'center',
             justifyContent: 'center', padding: 0,
@@ -3491,12 +3556,12 @@ function StatsField({ value, max, onChange }) {
       </div>
       <div style={{ paddingLeft: '25px', paddingRight: '29px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
         <div style={{ display: 'flex', gap: '6px' }}>
-          <Input
+          <CappedText cap={caps?.value}
             value={r.value ?? ''} placeholder="120" onClick={stopE}
             onChange={(e) => setAt(i, 'value', e.target.value)}
             className="h-auto" style={SONG_ROW_INPUT}
           />
-          <Input
+          <CappedText cap={caps?.sub}
             value={r.sub ?? ''} placeholder="miles · standard" onClick={stopE}
             onChange={(e) => setAt(i, 'sub', e.target.value)}
             className="h-auto" style={SONG_ROW_INPUT}
@@ -3548,7 +3613,7 @@ function StatsField({ value, max, onChange }) {
 
 const BLANK_STEP_HINT = 'Empty steps aren’t shown.'
 
-function StepsField({ value, max, onChange }) {
+function StepsField({ caps, value, max, onChange }) {
   const list = Array.isArray(value) ? value : []
 
   const setAt = (i, k, v) => onChange(list.map((r, j) => (j === i ? { ...r, [k]: v } : r)))
@@ -3560,12 +3625,12 @@ function StepsField({ value, max, onChange }) {
       border: '1px solid #E9E7E0', borderRadius: '10px', padding: '8px',
       display: 'flex', flexDirection: 'column', gap: '6px', background: '#FCFBF8',
     }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+      <div style={{ ...ROW_HEAD }}>
         <span style={{
-          width: '18px', flex: 'none', fontSize: '10px', fontWeight: 700,
+          width: '18px', flex: 'none', fontSize: '10px', fontWeight: 700, height: ROW_BOX_H, lineHeight: ROW_BOX_H,
           color: '#98958A', textAlign: 'center',
         }}>{i + 1}</span>
-        <Input
+        <CappedText cap={caps?.title}
           value={r.title ?? ''} placeholder="Send your details" onClick={stopE}
           onChange={(e) => setAt(i, 'title', e.target.value)}
           className="h-auto" style={{ ...SONG_ROW_INPUT, fontWeight: 600 }}
@@ -3575,7 +3640,7 @@ function StepsField({ value, max, onChange }) {
           onClick={(e) => { stopE(e); removeAt(i) }}
           className="hover:bg-destructive/10"
           style={{
-            width: '22px', height: '22px', flex: 'none', borderRadius: '999px',
+            width: '22px', height: '22px', flex: 'none', borderRadius: '999px', marginTop: ROW_X_TOP,
             border: '1px solid #E2DFD7', background: '#FFFFFF', color: '#B3261E',
             cursor: 'pointer', display: 'inline-flex', alignItems: 'center',
             justifyContent: 'center', padding: 0,
@@ -3583,7 +3648,7 @@ function StepsField({ value, max, onChange }) {
         ><X size={11} /></button>
       </div>
       <div style={{ paddingLeft: '25px', paddingRight: '29px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-        <Input
+        <CappedText cap={caps?.sub}
           value={r.sub ?? ''} placeholder="Date, type & location" onClick={stopE}
           onChange={(e) => setAt(i, 'sub', e.target.value)}
           className="h-auto" style={SONG_ROW_INPUT}
@@ -3651,7 +3716,7 @@ const TIER_AREA = { ...SONG_ROW_INPUT, resize: 'vertical', lineHeight: 1.45 }
 
 const BLANK_TIER_HINT = 'Empty packages aren’t shown.'
 
-function TiersField({ value, max, onChange }) {
+function TiersField({ caps, value, max, onChange }) {
   const list = Array.isArray(value) ? value : []
 
   const setAt = (i, k, v) => onChange(list.map((t, j) => (j === i ? { ...t, [k]: v } : t)))
@@ -3678,13 +3743,13 @@ function TiersField({ value, max, onChange }) {
       border: '1px solid #E9E7E0', borderRadius: '10px', padding: '8px',
       display: 'flex', flexDirection: 'column', gap: '6px', background: '#FCFBF8',
     }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+      <div style={{ ...ROW_HEAD }}>
         <span style={{
-          width: '18px', flex: 'none', fontSize: '10px', fontWeight: 700,
+          width: '18px', flex: 'none', fontSize: '10px', fontWeight: 700, height: ROW_BOX_H, lineHeight: ROW_BOX_H,
           color: '#98958A', textAlign: 'center',
         }}>{i + 1}</span>
         {/* shadcn Input for its focus ring — see SongsField above. */}
-        <Input
+        <CappedText cap={caps?.name}
           value={t.name ?? ''} placeholder="Package name" onClick={stopE}
           onChange={(e) => setAt(i, 'name', e.target.value)}
           className="h-auto" style={{ ...SONG_ROW_INPUT, fontWeight: 600 }}
@@ -3694,7 +3759,7 @@ function TiersField({ value, max, onChange }) {
           onClick={(e) => { stopE(e); removeAt(i) }}
           className="hover:bg-destructive/10"
           style={{
-            width: '22px', height: '22px', flex: 'none', borderRadius: '999px',
+            width: '22px', height: '22px', flex: 'none', borderRadius: '999px', marginTop: ROW_X_TOP,
             border: '1px solid #E2DFD7', background: '#FFFFFF', color: '#B3261E',
             cursor: 'pointer', display: 'inline-flex', alignItems: 'center',
             justifyContent: 'center', padding: 0,
@@ -3704,23 +3769,23 @@ function TiersField({ value, max, onChange }) {
       {/* Same 25px gutter and 29px right inset as the three above. */}
       <div style={{ paddingLeft: '25px', paddingRight: '29px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
         {pair(
-          <Input
+          <CappedText cap={caps?.price}
             key="price" value={t.price ?? ''} placeholder="£450" onClick={stopE}
             onChange={(e) => setAt(i, 'price', e.target.value)}
             className="h-auto" style={SONG_ROW_INPUT}
           />,
-          <Input
+          <CappedText cap={caps?.tags}
             key="tags" value={t.tags ?? ''} placeholder="Tags — solo, trio" onClick={stopE}
             onChange={(e) => setAt(i, 'tags', e.target.value)}
             className="h-auto" style={SONG_ROW_INPUT}
           />,
         )}
-        <Textarea
+        <CappedText area cap={caps?.blurb}
           rows={2} value={t.blurb ?? ''} placeholder="What the package is for" onClick={stopE}
           onChange={(e) => setAt(i, 'blurb', e.target.value)}
           style={TIER_AREA}
         />
-        <Textarea
+        <CappedText area cap={caps?.feats}
           rows={4} value={t.feats ?? ''} placeholder={'What it includes\nOne feature a line'}
           onClick={stopE}
           onChange={(e) => setAt(i, 'feats', e.target.value)}
@@ -3804,7 +3869,7 @@ const FORM_EMAIL_HINT = 'Visitors need somewhere to leave an address.'
 const BLANK_FIELD_HINT = 'Empty fields aren’t shown.'
 const EMAIL_LABEL_HINT = `Shown as ${FORM_EMAIL_LABEL}.`
 
-function FormFieldsField({ value, max, design, onChange }) {
+function FormFieldsField({ caps, value, max, design, onChange }) {
   const list = Array.isArray(value) ? value : []
   const emails = list.filter((f) => f?.kind === 'email').length
   const lastEmail = (f) => f.kind === 'email' && emails === 1
@@ -3818,12 +3883,12 @@ function FormFieldsField({ value, max, design, onChange }) {
       border: '1px solid #E9E7E0', borderRadius: '10px', padding: '8px',
       display: 'flex', flexDirection: 'column', gap: '6px', background: '#FCFBF8',
     }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+      <div style={{ ...ROW_HEAD }}>
         <span style={{
-          width: '18px', flex: 'none', fontSize: '10px', fontWeight: 700,
+          width: '18px', flex: 'none', fontSize: '10px', fontWeight: 700, height: ROW_BOX_H, lineHeight: ROW_BOX_H,
           color: '#98958A', textAlign: 'center',
         }}>{i + 1}</span>
-        <Input
+        <CappedText cap={caps?.label}
           value={f.label ?? ''} placeholder="Label — Name" onClick={stopE}
           onChange={(e) => setAt(i, 'label', e.target.value)}
           className="h-auto" style={{ ...SONG_ROW_INPUT, fontWeight: 600 }}
@@ -3834,7 +3899,7 @@ function FormFieldsField({ value, max, design, onChange }) {
           onClick={(e) => { stopE(e); removeAt(i) }}
           className="hover:bg-destructive/10 disabled:bg-transparent"
           style={{
-            width: '22px', height: '22px', flex: 'none', borderRadius: '999px',
+            width: '22px', height: '22px', flex: 'none', borderRadius: '999px', marginTop: ROW_X_TOP,
             border: '1px solid #E2DFD7', background: '#FFFFFF', color: '#B3261E',
             cursor: lastEmail(f) ? 'not-allowed' : 'pointer', opacity: lastEmail(f) ? 0.35 : 1,
             display: 'inline-flex', alignItems: 'center',
@@ -3843,7 +3908,7 @@ function FormFieldsField({ value, max, design, onChange }) {
         ><X size={11} /></button>
       </div>
       <div style={{ paddingLeft: '25px', paddingRight: '29px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-        <Input
+        <CappedText cap={caps?.placeholder}
           value={f.placeholder ?? ''} placeholder="Placeholder — Full name" onClick={stopE}
           onChange={(e) => setAt(i, 'placeholder', e.target.value)}
           className="h-auto" style={SONG_ROW_INPUT}
@@ -4041,7 +4106,7 @@ function BookedField({ value, open, onChange }) {
 
 const BLANK_QUOTE_HINT = 'Empty reviews aren’t shown.'
 
-function QuotesField({ value, max, onChange }) {
+function QuotesField({ caps, value, max, onChange }) {
   const list = Array.isArray(value) ? value : []
 
   const setAt = (i, k, v) => onChange(list.map((r, j) => (j === i ? { ...r, [k]: v } : r)))
@@ -4050,9 +4115,11 @@ function QuotesField({ value, max, onChange }) {
 
   // The role and the date line share a line, as the gigs' city and time do:
   // both are short, and stacking them would push the add button below the fold
-  // of the mobile edit sheet once there are three reviews.
+  // of the mobile edit sheet once there are three reviews. Top-aligned: the
+  // date is uncapped at layouts 2-4, and a bare box stretched beside the
+  // role's counter (SongsField's and GigsField's fix).
   const pair = (a, b) => (
-    <div style={{ display: 'flex', gap: '6px' }}>{a}{b}</div>
+    <div style={{ display: 'flex', gap: '6px', alignItems: 'flex-start' }}>{a}{b}</div>
   )
 
   const row = (i, r) => (
@@ -4060,13 +4127,13 @@ function QuotesField({ value, max, onChange }) {
       border: '1px solid #E9E7E0', borderRadius: '10px', padding: '8px',
       display: 'flex', flexDirection: 'column', gap: '6px', background: '#FCFBF8',
     }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+      <div style={{ ...ROW_HEAD }}>
         <span style={{
-          width: '18px', flex: 'none', fontSize: '10px', fontWeight: 700,
+          width: '18px', flex: 'none', fontSize: '10px', fontWeight: 700, height: ROW_BOX_H, lineHeight: ROW_BOX_H,
           color: '#98958A', textAlign: 'center',
         }}>{i + 1}</span>
         {/* shadcn Input for its focus ring — see SongsField above. */}
-        <Input
+        <CappedText cap={caps?.who}
           value={r.who ?? ''} placeholder="Reviewer" onClick={stopE}
           onChange={(e) => setAt(i, 'who', e.target.value)}
           className="h-auto" style={{ ...SONG_ROW_INPUT, fontWeight: 600 }}
@@ -4076,7 +4143,7 @@ function QuotesField({ value, max, onChange }) {
           onClick={(e) => { stopE(e); removeAt(i) }}
           className="hover:bg-destructive/10"
           style={{
-            width: '22px', height: '22px', flex: 'none', borderRadius: '999px',
+            width: '22px', height: '22px', flex: 'none', borderRadius: '999px', marginTop: ROW_X_TOP,
             border: '1px solid #E2DFD7', background: '#FFFFFF', color: '#B3261E',
             cursor: 'pointer', display: 'inline-flex', alignItems: 'center',
             justifyContent: 'center', padding: 0,
@@ -4086,18 +4153,18 @@ function QuotesField({ value, max, onChange }) {
       {/* Same 25px gutter and 29px right inset as SongsField, so the lower
           fields line up under the reviewer and clear the remove button. */}
       <div style={{ paddingLeft: '25px', paddingRight: '29px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-        <Textarea
+        <CappedText area cap={caps?.quote}
           rows={3} value={r.quote ?? ''} placeholder="What they said" onClick={stopE}
           onChange={(e) => setAt(i, 'quote', e.target.value)}
           style={TIER_AREA}
         />
         {pair(
-          <Input
+          <CappedText cap={caps?.role}
             key="role" value={r.role ?? ''} placeholder="Private host" onClick={stopE}
             onChange={(e) => setAt(i, 'role', e.target.value)}
             className="h-auto" style={SONG_ROW_INPUT}
           />,
-          <Input
+          <CappedText cap={caps?.when}
             key="when" value={r.when ?? ''} placeholder="Reviewed 6 days ago" onClick={stopE}
             onChange={(e) => setAt(i, 'when', e.target.value)}
             className="h-auto" style={SONG_ROW_INPUT}
@@ -4176,7 +4243,7 @@ const calNoMailHint = (following, hasForm) => `Send Enquiry needs an email addre
 
 const BLANK_LINK_HINT = 'Empty links aren’t shown.'
 
-function LinksField({ value, max, navSections = [], onChange }) {
+function LinksField({ caps, value, max, navSections = [], onChange }) {
   const list = Array.isArray(value) ? value : []
   // A section target the page does not carry. sectionVm resolves the same test,
   // and the published footer leaves the row out, so the editor says so here.
@@ -4193,12 +4260,12 @@ function LinksField({ value, max, navSections = [], onChange }) {
       border: '1px solid #E9E7E0', borderRadius: '10px', padding: '8px',
       display: 'flex', flexDirection: 'column', gap: '6px', background: '#FCFBF8',
     }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+      <div style={{ ...ROW_HEAD }}>
         <span style={{
-          width: '18px', flex: 'none', fontSize: '10px', fontWeight: 700,
+          width: '18px', flex: 'none', fontSize: '10px', fontWeight: 700, height: ROW_BOX_H, lineHeight: ROW_BOX_H,
           color: '#98958A', textAlign: 'center',
         }}>{i + 1}</span>
-        <Input
+        <CappedText cap={caps?.label}
           value={r.label ?? ''} placeholder="Link — About" onClick={stopE}
           onChange={(e) => setAt(i, 'label', e.target.value)}
           className="h-auto" style={{ ...SONG_ROW_INPUT, fontWeight: 600 }}
@@ -4208,7 +4275,7 @@ function LinksField({ value, max, navSections = [], onChange }) {
           onClick={(e) => { stopE(e); removeAt(i) }}
           className="hover:bg-destructive/10"
           style={{
-            width: '22px', height: '22px', flex: 'none', borderRadius: '999px',
+            width: '22px', height: '22px', flex: 'none', borderRadius: '999px', marginTop: ROW_X_TOP,
             border: '1px solid #E2DFD7', background: '#FFFFFF', color: '#B3261E',
             cursor: 'pointer', display: 'inline-flex', alignItems: 'center',
             justifyContent: 'center', padding: 0,
@@ -4278,7 +4345,7 @@ function LinksField({ value, max, navSections = [], onChange }) {
  * §8.5 EditPanel — shared by the sidebar and the mobile edit sheet
  * ------------------------------------------------------------------ */
 
-function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx, navSections }) {
+function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx, navSections, sections = [] }) {
   const locked = vm.locked
 
   // The panel has to resolve the seeded photos exactly as sectionVm does, or a
@@ -4381,49 +4448,21 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {fields.map((f) => {
-                  // The fields whose default is computed rather than written
-                  // down: the header's title is the artist's name, the footer's
-                  // small print and the form's layout-3 head are composed from
-                  // it, the repertoire's heading counts the songs, and a few seeds follow
-                  // the layout. Each mirrors what sectionVm resolves, so panel
-                  // and canvas never disagree. The calendar's address is the
-                  // form's until one is typed (JP-076). The header's kicker left the chain with
-                  // JP-061: its `d` is its seed at every layout, and the
-                  // layout-3 card's line is a field of its own. The map's
-                  // kicker joined it with JP-090 (mapKickerSeed), the
-                  // testimonials' with JP-095 (a) (testiKickerSeed), and the
-                  // map's list label with JP-095 (b) (mapListLabelSeed; gated on
-                  // `map`, since media carries a `listLabel` too), and the map's
-                  // coverage with JP-105 (mapRadiusSeed). Layouts 3 and
-                  // 4's heads come ahead of the song count, which sectionVm's
-                  // later assignment says the other way round (JP-070, JP-081).
-                  const fallback = (f.k === 'title' || f.k === 'badgeText') && sec.cat === 'header' ? artistName
-                    : f.k === 'copyright' && sec.cat === 'footer' ? copyrightOf(artistName)
-                    : f.k === 'email' && sec.cat === 'calendar' ? email
-                    : f.k === 'heading' && sec.cat === 'form' && design === 2 ? formHeading3(artistName)
-                    : f.k === 'heading' && sec.arch % (designCount(sec.cat, themeName) || 1) === 2
-                      && HEADING_3[sec.cat] ? HEADING_3[sec.cat]
-                    : f.k === 'heading' && sec.arch % (designCount(sec.cat, themeName) || 1) === 3
-                      && HEADING_4[sec.cat] ? HEADING_4[sec.cat]
-                    : f.k === 'heading' && sec.cat === 'calendar' && design === 0
-                      && limeTreeTheme(themeName) ? CAL_HEADING_1
-                    : f.k === 'heading' && sec.cat === 'repertoire' ? `${songsVal('songs').filter((t) => !blankRow(t, SONG_KEYS)).length} Songs`
-                    : f.k === 'heading' && sec.cat === 'testimonials'
-                      && sec.arch % (designCount(sec.cat, themeName) || 1) === 1 ? TESTI_HEADING_2
-                    : f.k === 'navMode' && sec.cat === 'header' ? navModeDefault(themeName, design)
-                    : f.k === 'button' && sec.cat === 'form' ? formBtnSeed(themeName, design)
-                    : f.k === 'kicker' && sec.cat === 'map' ? mapKickerSeed(design)
-                    : f.k === 'listLabel' && sec.cat === 'map' ? mapListLabelSeed(design)
-                    : f.k === 'radius' && sec.cat === 'map' ? mapRadiusSeed(design)
-                    : f.k === 'kicker' && sec.cat === 'testimonials' ? testiKickerSeed(design)
-                    : f.k === 'cta' && sec.cat === 'calendar' && design === 3 ? CAL_SEND_4
-                    : f.k === 'rowCta' && sec.cat === 'pricing'
-                      && sec.arch % (designCount(sec.cat, themeName) || 1) === 2 ? PRICING_ROW_CTA_3
-                    : f.k === 'rowCta' && sec.cat === 'pricing'
-                      && sec.arch % (designCount(sec.cat, themeName) || 1) === 3 ? PRICING_ROW_CTA
-                    : fieldDefault(f)
+                  // A field's seed when its key is absent (fieldSeed, data.js):
+                  // the computed ones mirror what sectionVm resolves, so panel
+                  // and canvas never disagree.
+                  const fallback = fieldSeed({ cat: sec.cat, f, themeName, design, c: sec.c, artistName, email })
                   const val = sec.c[f.k] !== undefined ? sec.c[f.k] : fallback
                   const set = (v) => api.setContent(sec.id, f.k, v)
+                  // The field's character cap at this design (plans/char-limits.md);
+                  // the header's shared keys take the tightest among the page's
+                  // sections, since the others print them too. Title is the
+                  // header's own: a section that prints the name tighter clamps
+                  // its own copy (session 1, user call, 2026-10-13).
+                  const cap = sec.cat === 'header' && f.shared
+                    ? identityCap(f.k, sections.length ? sections : [sec], themeName)
+                    : fieldCap(f, themeName, design)
+                  const caps = colCaps(f, themeName, design)
                   // Only a shared field is listed where this design does not
                   // read it — the header's identity keys, which other sections
                   // print — and it says so; its hint says where it does print.
@@ -4452,29 +4491,29 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                       ) : f.type === 'images' ? (
                         <ImagesField value={imgsVal(f.k)} max={f.max} onChange={(v) => set(v)} onToast={api.toast} />
                       ) : f.type === 'songs' ? (
-                        <SongsField value={songsVal(f.k)} max={f.max} onChange={(v) => set(v)} />
+                        <SongsField caps={caps} value={songsVal(f.k)} max={f.max} onChange={(v) => set(v)} />
                       ) : f.type === 'sets' ? (
                         // Takes the songs as a second value, BookedField's
                         // `open` rule: the sets are the songs' tags.
-                        <SetsField value={setsVal()} songs={songsVal('songs')} onChange={(v) => set(v)} />
+                        <SetsField caps={caps} value={setsVal()} songs={songsVal('songs')} onChange={(v) => set(v)} />
                       ) : f.type === 'tracks' ? (
-                        <TracksField value={tracksVal(f.k)} max={f.max} onChange={(v) => set(v)} onToast={api.toast} />
+                        <TracksField caps={caps} value={tracksVal(f.k)} max={f.max} onChange={(v) => set(v)} onToast={api.toast} />
                       ) : f.type === 'gigs' ? (
-                        <GigsField value={gigsVal(f.k)} max={f.max} design={design} onChange={(v) => set(v)} />
+                        <GigsField caps={caps} value={gigsVal(f.k)} max={f.max} design={design} onChange={(v) => set(v)} />
                       ) : f.type === 'tiers' ? (
-                        <TiersField value={tiersVal(f.k)} max={f.max} onChange={(v) => set(v)} />
+                        <TiersField caps={caps} value={tiersVal(f.k)} max={f.max} onChange={(v) => set(v)} />
                       ) : f.type === 'formFields' ? (
-                        <FormFieldsField value={formFieldsVal(f.k)} max={f.max} design={design} onChange={(v) => set(v)} />
+                        <FormFieldsField caps={caps} value={formFieldsVal(f.k)} max={f.max} design={design} onChange={(v) => set(v)} />
                       ) : f.type === 'quotes' ? (
-                        <QuotesField value={quotesVal(f.k)} max={f.max} onChange={(v) => set(v)} />
+                        <QuotesField caps={caps} value={quotesVal(f.k)} max={f.max} onChange={(v) => set(v)} />
                       ) : f.type === 'links' ? (
-                        <LinksField value={linksVal(f.k)} max={f.max} navSections={navSections} onChange={(v) => set(v)} />
+                        <LinksField caps={caps} value={linksVal(f.k)} max={f.max} navSections={navSections} onChange={(v) => set(v)} />
                       ) : f.type === 'slots' ? (
-                        <SlotsField value={slotsVal(f.k)} max={f.max} open={openVal('open')} onChange={(v) => set(v)} />
+                        <SlotsField caps={caps} value={slotsVal(f.k)} max={f.max} open={openVal('open')} onChange={(v) => set(v)} />
                       ) : f.type === 'stats' ? (
-                        <StatsField value={statsVal(f.k)} max={f.max} onChange={(v) => set(v)} />
+                        <StatsField caps={caps} value={statsVal(f.k)} max={f.max} onChange={(v) => set(v)} />
                       ) : f.type === 'steps' ? (
-                        <StepsField value={stepsVal(f.k)} max={f.max} onChange={(v) => set(v)} />
+                        <StepsField caps={caps} value={stepsVal(f.k)} max={f.max} onChange={(v) => set(v)} />
                       ) : f.type === 'booked' ? (
                         // A rung that takes a second value, as SetsField's
                         // does and the way TracksField is the one that takes a
@@ -4502,19 +4541,21 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                         // Stored as typed, so a space mid-name survives the
                         // render; a stored blank (none the editor can make)
                         // shows the name the page prints.
-                        <NameInput value={String(val).trim() ? val : artistName} onChange={set} style={FIELD_BOX} />
+                        <NameInput value={String(val).trim() ? val : artistName} onChange={set} style={FIELD_BOX} cap={cap} />
                       ) : f.type === 'url' ? (
                         <UrlInput value={val} onChange={set} style={FIELD_BOX} />
                       ) : f.type === 'email' ? (
                         <UrlInput value={val} onChange={set} style={FIELD_BOX} check={emailProblem} />
                       ) : f.type === 'area' ? (
-                        <Textarea
+                        <CappedText
+                          area cap={cap}
                           rows={3} value={val} onClick={stopE}
                           onChange={(e) => set(e.target.value)}
                           style={{ ...FIELD_BOX, resize: 'vertical', lineHeight: 1.45 }}
                         />
                       ) : (
-                        <Input
+                        <CappedText
+                          cap={cap}
                           value={val} onClick={stopE}
                           onChange={(e) => set(e.target.value)}
                           style={FIELD_BOX}
@@ -5922,6 +5963,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
                   <EditPanel
                     key={selectedSec.id} sec={selectedSec} vm={selectedVm} api={api}
                     artistName={artistName} identity={identity} tiers={tiers} email={email} themeIdx={st.theme} navSections={navSections}
+                    sections={st.sections}
                   />
                 </>
               ) : (
@@ -6101,6 +6143,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
               <EditPanel
                 key={selectedSec.id} sec={selectedSec} vm={selectedVm} api={api}
                 artistName={artistName} identity={identity} tiers={tiers} email={email} themeIdx={st.theme} navSections={navSections}
+                sections={st.sections}
               />
             )}
           </DrawerContent>

@@ -232,3 +232,29 @@ another `notes/` file.
   where the twins' all bind `text/2`. Because the last three are not one colour, this is a row
   palette, not a pick state: `G.marks[i % 4]` by rendered row, so `&n=8` cycles it and a booked
   row dims its mark with the rest. The pick's cue is still the foot's chip alone.
+- **Character caps** (`plans/char-limits.md`, session 7, 2026-10-13; the readout is
+  `plans/char-limits/session-7-probe.md`). Every own text key has a `chars` cap per template and
+  layout, the slots' `kind` and `price` have `cols`, and `types` is a ',' list (`list`, `chars`
+  per chip, `count`). The calls a later change to this section has to keep in mind:
+  - **The slot price is set whole** (no `priceParts()` split), so it is measured with prose, not
+    pricing's digit-led samples. A change that splits it like a package price needs re-measuring.
+  - **A slot's kind is capped by its row, not by the foot line** (33–40). The foot's *Thursday …
+    selected* prints the cued slot's kind too, and its wrap (the Lime tree) or ellipsis (Retro)
+    is the fallback. Read with the foot, the kind would be 12–20 at 390. That is the user's to
+    overrule.
+  - **`dateLabel` and `availLabel` share the head row, so their caps are a joint split**: Date
+    16, Availability 33 under Retro and 38 under the rest. Each alone reads 41–52, and both at
+    those take two lines each at 768 and 390.
+  - **`kind` and `price` are stacked** in one `flex: none` column, so their caps are already
+    joint: the column is the wider of the two. A change that sets them side by side needs a
+    joint split.
+  - **The event types are 13 a chip and 4 in all**: the 390 grid's fixed half-width cells hold
+    13, and a fifth type starts a third row of chips. With a third row allowed the count would
+    be 6, the user's to overrule.
+  - **Layout 1's `time` is 13 under Lime, Grunge and Editorial**, because the foot's enquiry
+    line is one line in their frames (JP-088's link).
+  - **`IDENTITY_CHARS.calendar.location` at Retro's layout 1 is 19**, lowered from session 1's
+    22 by `--check`. Its overlap is with the photographs of the polaroids behind the front card,
+    which the card covers; the probe does not yet tell covered ink from shown ink.
+  - The probe stages `prompt` (and `slots.kind`) on `booked: [CAL_OPEN]` (`KEY_CJ` in
+    `limits.mjs`), because the prompt prints only while no day is cued.

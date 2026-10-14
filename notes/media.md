@@ -113,3 +113,24 @@ another `notes/` file.
   The glyphs are inert spans at every width. A title the box cuts ellipsises in it: the
   canvas's SLOW BURN under Pop, and the cued LATE LIGHTS under Editorial and Pop at 390 and
   under every template at 360.
+- **Character caps** (session 3 of the character-limits pass, 2026-10-13;
+  `plans/char-limits.md`, *Session 3*, and the per-width readout in
+  `plans/char-limits/session-3-probe.md`). Every own text key has a `chars` row, and `tracks` has
+  the first `cols` (`title`, `sub`). Three calls to keep:
+  - **A track column's floor is its longest seeded row**, not row 0's: *Manchester at 3am* (17)
+    and *Live at the Deaf Institute · 7:01* (33), strings the frames draw. Once the artist edits
+    any row the seeded array is stored, and a cap under them would clamp the seeds and paint
+    their counters red. So the title caps at 17 wherever the probe read less (layouts 2 and 4 on
+    every template read 10–15), and `sub` is 33 everywhere. A title of that length behaves as the
+    seeded *Manchester at 3am* already does. The fan clips it under the next card, the layout-4
+    tiles and the layout-2 bar ellipsize it, and the layout-4 now-playing title takes a second
+    line (Editorial's seed already does at 1440). The ellipsis is the fallback (decision 6).
+    Looser layouts take their measure: Retro 25 and Lime / Grunge 19–21 at layout 3, Lime 40 and
+    Grunge 27 at layout 1.
+  - **The heading is 20, its seed, at most designs.** Its frame box is two lines at a fixed
+    width. *FIVE WORTH / YOUR EAR.* fills it, and prose of 15 can take three lines when its first
+    two words cannot share one (*KESTREL SOUND / B*, Editorial 390 and Pop 768). That is a
+    line-packing bound, not the bio's widest-word one, and a length cap cannot do better.
+  - **`countLabel` and `chipLabel` share the seed *Featured*.** The probe renames a sibling field
+    whose seed prints the same string (`twinsOf()` in `scripts/limits.mjs`), or the reference
+    seats both and the layout-2 counter reads 1.

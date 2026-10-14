@@ -4720,9 +4720,18 @@ function Bio({ s }) {
       }}>{t}</span>
     )
 
+    // Lime's, Editorial's and Pop's heads are fitted to their widest word
+    // (`s.titleWordEms`, each face's ems) in the flank, the header name's rule
+    // (JP-092): at 1440 the seed stacks one word to a line there, and a
+    // seven-letter word ran past the flank, or under Editorial's arch, at the
+    // token (plans/char-limits.md, session 12). Lime's and Pop's seeds do not
+    // bind; Editorial's does, its Gloock ROOM. 59 past the flank and into the
+    // seal's disc at the token, so its 1440 head sets at 0.82 of it, clear of the
+    // seal. Grunge's Anton has no fit, and its seeded room holds.
     const h2 = (
       <h2 style={distressed(s, {
-        margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispLg), lineHeight: facedLh(s, 0.89),
+        margin: 0, fontFamily: s.display, lineHeight: facedLh(s, 0.89),
+        fontSize: faced(s, !grunge && s.titleWordEms ? `min(${s.dispLg}, calc(100cqi / ${s.titleWordEms}))` : s.dispLg),
         letterSpacing: s.dls, color: grunge ? s.tx : s.ac,
         textTransform: grunge || ed || pop ? 'uppercase' : undefined,
         // Titan One sets its glyphs 0.14em lower than Chunko in the same line
@@ -4756,6 +4765,8 @@ function Bio({ s }) {
     const heading = (
       <div style={col(s.narrow ? '29px' : '0', {
         justifyContent: 'space-between', height: '100%', alignItems: 'flex-start',
+        // The head's fit measures the flank (`100cqi`).
+        ...(!grunge && s.titleWordEms && { containerType: 'inline-size' }),
         // The narrow masters close the column on an empty 11.78 frame (the
         // desktop scribble's, emptied) under the usual 14: stated space.
         ...(pop && s.narrow && { paddingBottom: '25.78px' }),
@@ -6319,9 +6330,13 @@ function Bio({ s }) {
     // seed does not bind, but it sets three lines at 1440 and 768 where the
     // frames set two: READS THE is 521 of the 469.8 measure and 574.7 of
     // 572.9 (Noto's held two). Accepted (display-face.md step 4, layout 4).
-    // Pop's is fitted the same way, in Titan's ems.
+    // Pop's is fitted the same way, in Titan's ems, and at 1440 to the room
+    // left of its dot grid (533.97 of the frame's 572.9, the grid's 589.97 less
+    // the 56 inset), so a seven-letter word no longer runs into the dots; the
+    // seed's widest word, 348 of that 437.9, does not bind (plans/char-limits.md,
+    // session 12).
     const headSize = ed && desk ? s.dispLg : s.dispXl
-    const headMeasure = s.mob ? '100cqi' : `min(100cqi, ${u(572.9)})`
+    const headMeasure = s.mob ? '100cqi' : `min(100cqi, ${u(pop && desk ? 533.97 : 572.9)})`
     const head = (
       <div style={{
         ...(desk

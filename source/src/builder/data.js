@@ -1837,6 +1837,8 @@ export const FIELDS = {
     // answers, as at layout 2.
     { k: 'kicker',    l: 'Kicker',           d: 'DJ · Live Act', shared: true,
       in: { Retro: [0, 2, 3, 5], Lime: [0, 3], Grunge: [0, 3], Editorial: [0, 3], Pop: [0, 3] },
+      chars: { Retro: [59, null, 17, 13, null, 39], Lime: [55, null, null, 13], Grunge: [61, null, null, 13],
+        Editorial: [33, null, null, 13], Pop: [47, null, null, 13] },
       hint: 'Your role. Every bio layout prints it too, and so do the enquiry form’s layouts 1 and 2.' },
     // The layout-3 portrait card's line under the name (JP-061): the card's
     // own copy, so the kicker is not seeded apart there and the bio's Current
@@ -1847,21 +1849,34 @@ export const FIELDS = {
     // is the name alone.
     { k: 'cardLine',  l: 'Portrait card line', d: CARD_LINE_3,
       in: { Lime: [2], Grunge: [2], Editorial: [2], Pop: [2], '*': [] },
+      chars: { Lime: [null, null, 22], Grunge: [null, null, 23], Editorial: [null, null, 23], Pop: [null, null, 29] },
       hint: 'The line under your name on the portrait card. The bio’s Performing since is a separate '
           + 'field, so change both if you name a year here. Left empty, it is not drawn.' },
-    { k: 'title',     l: 'Title' },                       // the artist's name, page-wide and required (NameInput) — special-cased
+    // The artist's name, page-wide and required (NameInput) — special-cased.
+    // Its cap is the header's own (the h1, the nav brand, the layout-3 card),
+    // which may take one line more than the frame and shrink to 75% of the
+    // seed's size; every other section that prints the name clamps its own
+    // copy (IDENTITY_CHARS, sealCap) rather than tightening this one
+    // (plans/char-limits.md, session 1, user calls, 2026-10-13).
+    { k: 'title',     l: 'Title',
+      chars: { Retro: [23, 22, 14, 14, 10, 31], Lime: [14, 19, 22, 12], Grunge: [19, 20, 26, 17],
+        Editorial: [12, 15, 15, 12], Pop: [13, 18, 18, 11] } },
     { k: 'subtitle',  l: 'Subtitle',         type: 'area', def: 'heroSub',
-      in: { Retro: [1, 4], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1] } },
+      in: { Retro: [1, 4], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1] },
+      chars: { Retro: [null, 310, null, null, 104], Grunge: [null, 197], '*': [null, 310] } },
     { k: 'location',  l: 'Location',         d: 'Manchester, UK', shared: true,
       in: { Retro: [0, 1, 2, 3, 5], Lime: [0, 1, 2, 3], Grunge: [0, 1, 2, 3], Editorial: [0, 1, 2, 3], Pop: [0, 1, 2, 3] },
+      chars: { Retro: [55, 15, 19, 20, null, 42], Lime: [20, 24, 14, 17], Grunge: [19, 29, 15, 24],
+        Editorial: [19, 15, 30, 19], Pop: [20, 15, 36, 36] },
       hint: 'Where you are based. The bio prints it too in layouts 1 to 3, the booking '
           + 'calendar in layouts 1 and 4 (in Lime, Grunge, Editorial and Pop, layout 4 only), and the '
           + 'events map’s travel card in layout 2.' },
-    { k: 'cta1',      l: 'Primary button',   d: 'Book Now' },
+    { k: 'cta1',      l: 'Primary button',   d: 'Book Now', chars: { Editorial: [16, 16, 10, 16], '*': 16 } },
     // Layout 2's pill under the subtitle (JP-037). Its frame words it apart
     // from the nav's Book Now, so it is a field of its own. Emptied, no pill.
     { k: 'heroCta',   l: 'Hero button',      d: HERO_CTA,
       in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1] },
+      chars: { Retro: [null, 34], Lime: [null, 35], Grunge: [null, 40], Editorial: [null, 21], Pop: [null, 25] },
       hint: 'The button under the subtitle. Left empty, it is not drawn.' },
     // The rest of layout 2's copy (JP-059, reversing Lime's fit, which kept
     // them literals): the pill over the name and the two cards under the
@@ -1871,29 +1886,35 @@ export const FIELDS = {
     // Performing since is another field, which the hint says.
     { k: 'availability', l: 'Availability',  d: HERO_AVAIL,
       in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1] },
+      chars: { Retro: [null, 38], Pop: [null, 40], '*': [null, 44] },
       hint: 'The small pill over your name. Left empty, it is not drawn.' },
     { k: 'faceTitle', l: 'Face card title',  d: FACE_TITLE,
       in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1] },
+      chars: { Retro: [null, 22], Lime: [null, 24], Grunge: [null, 29], Editorial: [null, 19], Pop: [null, 20] },
       hint: 'The card beside your portrait, under the photograph. Left empty, it is not drawn.' },
     { k: 'faceBody',  l: 'Face card text',   type: 'area', d: FACE_BODY,
-      in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1] },
+      in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1] }, chars: [null, 180],
       hint: 'The line under the face card’s title. The bio’s Performing since is a separate field, '
           + 'so change both if you name a year here. Left empty, it is not drawn.' },
     { k: 'placeBody', l: 'Place card text',  type: 'area', d: PLACE_BODY,
-      in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1] },
+      in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1] }, chars: [null, 160],
       hint: 'The line under your Location on the card beside the pin. Left empty, it is not drawn.' },
     // Named `cta2` on the bio's own content too, which FIELDS.bio.cta2 edits
     // (JP-082): bio layout 4's Listen prints that, not this (JP-059's census).
     // `in` speaks for the header.
     { k: 'cta2',      l: 'Secondary button', d: 'Listen',
-      in: { Retro: [1, 2, 4], Lime: [1, 2], Grunge: [1, 2], Editorial: [1, 2], Pop: [1, 2] } },
+      in: { Retro: [1, 2, 4], Lime: [1, 2], Grunge: [1, 2], Editorial: [1, 2], Pop: [1, 2] }, chars: 14 },
     // The chips are the header's the way Kicker and Location are (JP-037,
     // headerIdentity): the bio prints the same list and honours the same
     // Show / Hide. An emptied list hides the row, as Hide does. The bio's
     // reach is measured (scripts/reach.mjs): layouts 2 and 4, and Lime's,
     // Grunge's, Editorial's and Pop's 3.
-    { k: 'tags',      l: 'Tags',             type: 'area', d: TAG_LABELS, shared: true,
+    // Its cap is per chip (`chars`) and chips (`count`), the bio's besides
+    // (IDENTITY_CHARS), each chip a sized seat held to twice the longest seed.
+    { k: 'tags',      l: 'Tags',             type: 'area', d: TAG_LABELS, shared: true, list: ',',
       in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3], Editorial: [0, 2, 3], Pop: [0, 2, 3] },
+      chars: { Retro: [22, null, 22, 22, 15, 22], '*': [22, null, 22, 22] },
+      count: { Retro: [8, null, 7, 7, 6, 6], Pop: [6, null, 6, 6], '*': [8, null, 6, 6] },
       hint: 'Separate them with commas. The bio prints them too in layouts 2 and 4 '
           + '(in Lime, Grunge, Editorial and Pop, layout 3 as well).' },
     { k: 'showTags',  l: 'Tag chips',        type: 'select', d: 'show', opts: SHOW_HIDE, shared: true,
@@ -1901,8 +1922,13 @@ export const FIELDS = {
       hint: 'Hides the bio’s chips as well.' },
     { k: 'showBadge', l: 'Corner badge',     type: 'select', d: 'show', opts: SHOW_HIDE,
       in: { Retro: [0, 1, 3, 4, 5], Lime: [0, 3], Grunge: [0, 3], Editorial: [0, 3], Pop: [0, 3] } },
+    // The seal's ring sets it twice round a circle, so its cap is the ring's
+    // fit (scripts/limits.mjs's ring test). Left empty, the ring prints the
+    // artist's name, clamped to the same fit (sealCap).
     { k: 'badgeText', l: 'Badge text',                    // defaults to the artist's name — special-cased
-      in: { Retro: [0, 1, 3, 4, 5], Lime: [3], Grunge: [0, 3], Editorial: [3], Pop: [0, 3] } },
+      in: { Retro: [0, 1, 3, 4, 5], Lime: [3], Grunge: [0, 3], Editorial: [3], Pop: [0, 3] },
+      chars: { Retro: 19, Lime: [null, null, null, 13], Grunge: [14, null, null, 14], Editorial: [null, null, null, 10],
+        Pop: [12, null, null, 10] } },
     { k: 'navMode',   l: 'Navigation links', type: 'select', d: 'sections', opts: [
       { v: 'sections', l: 'Follow my sections' },
       { v: 'minimal',  l: 'Minimal (Music · Gigs · About)' },
@@ -1914,23 +1940,30 @@ export const FIELDS = {
   ],
   bio: [
     { k: 'image',     l: 'Photo', type: 'image', hint: "Fills the bio's portrait card." },
-    { k: 'heading',   l: 'Heading', d: 'Reads the room.', in: [0, 2, 3] },
+    // Caps: plans/char-limits.md, session 2. Where 1440 stacks the heading a
+    // word a line (Lime's, Editorial's and Pop's layout 1, Pop's layout 4), the
+    // head is fitted to its widest word (session 12) and may shrink to 75% of
+    // the seed's size, the name's floor; 768 and 390 bind there (notes/bio.md).
+    { k: 'heading',   l: 'Heading', d: 'Reads the room.', in: [0, 2, 3],
+      chars: { Retro: [20, null, 19, 23], Lime: [19, null, 18, 21], Grunge: [21, null, 20, 18],
+        Editorial: [15, null, 15, 17], Pop: [17, null, 17, 19] } },
     // JP-090: layout 1's line under the heading, the frames' own, uncased
     // (every site upper-cases it). The whole line is the field.
     { k: 'refLabel',  l: 'Reference line', d: BIO_REF_LABEL, in: [0],
+      chars: { Retro: [30], Lime: [40], Grunge: [36], Editorial: [36], Pop: [50] },
       hint: 'The small line at the foot of the heading. Left empty, it is not drawn.' },
     // Layout 2's pill over the paragraph (JP-059), seeded with the frame's
     // copy and cased as a label; emptied, it is not drawn.
-    { k: 'tag',       l: 'Pill', d: BIO_TAG, in: [1],
+    { k: 'tag',       l: 'Pill', d: BIO_TAG, in: [1], chars: [null, 18],
       hint: 'The small pill over the first paragraph. Left empty, it is not drawn.' },
-    { k: 'para1',     l: 'Paragraph 1', type: 'area', def: 'bioP1' },
-    { k: 'para2',     l: 'Paragraph 2', type: 'area', def: 'bioP2', in: [2, 3] },
+    { k: 'para1',     l: 'Paragraph 1', type: 'area', def: 'bioP1', chars: 390 },
+    { k: 'para2',     l: 'Paragraph 2', type: 'area', def: 'bioP2', in: [2, 3], chars: [null, null, 340, 340] },
     // Layout 2's foot row (JP-037): the frame's two-tone line, whose first
     // three words take the accent (`vm.bioCredit`), and the pill beside it.
     // Each drops when emptied, and the row with both.
-    { k: 'credit',    l: 'Credit line', d: BIO_CREDIT, in: [1],
+    { k: 'credit',    l: 'Credit line', d: BIO_CREDIT, in: [1], chars: [null, 43],
       hint: 'The line at the foot of the card. Its first three words take the accent colour.' },
-    { k: 'cta',       l: 'Button', d: BIO_CTA, in: [1],
+    { k: 'cta',       l: 'Button', d: BIO_CTA, in: [1], chars: [null, 16],
       hint: 'The button beside the credit line. Left empty, it is not drawn.' },
     // Layout 3's ID card draws a row of stats, and the frame's first one is
     // "Performing since: June 2021". Seeded with the frame's copy (QA,
@@ -1938,6 +1971,7 @@ export const FIELDS = {
     // so the seeded card draws the frame's three columns; emptied, the column
     // is not drawn.
     { k: 'since',     l: 'Performing since', def: 'since', in: [2, 3],
+      chars: { Retro: [null, null, 9, 31], Lime: [null, null, 22, 31], '*': [null, null, 20, 31] },
       hint: 'The ID card’s first stat (layout 3) and the overlay card’s middle line (layout 4), where it reads “Performing since …”. Just the date, then. Left empty, neither is drawn.' },
     // JP-071 (user call, 2026-09-29, reversing the fit's "a frame label stays
     // a literal" for these): the ID card's labels, each seeded with the
@@ -1945,25 +1979,28 @@ export const FIELDS = {
     // A stat's label goes with its value as well: Current role and Based in
     // print the header's Kicker and Location. The line break before the last
     // word is sectionVm's, so each is one line here.
-    { k: 'sinceLabel', l: 'Performing since label', d: BIO_SINCE_LABEL, in: [2],
+    { k: 'sinceLabel', l: 'Performing since label', d: BIO_SINCE_LABEL, in: [2], chars: [null, null, 17],
       hint: 'The label over the date on the ID card. It breaks before its last word. '
           + 'Left empty, the date stands alone.' },
-    { k: 'roleLabel',  l: 'Current role label', d: BIO_ROLE_LABEL, in: [2],
+    { k: 'roleLabel',  l: 'Current role label', d: BIO_ROLE_LABEL, in: [2], chars: [null, null, 14],
       hint: 'The label over the Header’s Kicker on the ID card. Left empty, the kicker stands alone.' },
     { k: 'baseLabel',  l: 'Based in label', d: BIO_BASE_LABEL, in: [2],
+      chars: { Retro: [null, null, 16], Lime: [null, null, 16], Pop: [null, null, 14], '*': [null, null, 19] },
       hint: 'The label over the Header’s Location on the ID card. Left empty, the location stands alone.' },
     { k: 'aboutLabel', l: 'About label', d: BIO_ABOUT_LABEL, in: [2],
+      chars: { Editorial: [null, null, 59], Pop: [null, null, 48], '*': [null, null, 56] },
       hint: 'The bracketed label over the paragraphs on the ID card. Left empty, it is not drawn.' },
     // Layout 4 draws it under Retro and Editorial alone: Lime's, Grunge's and
     // Pop's frames ink it the band's own colour, so it is not drawn there (Pop's
     // user call, 2026-10-07, plans/pop/layout-4.md section 2).
     { k: 'tagsLabel',  l: 'Genres label', d: BIO_TAGS_LABEL,
       in: { Lime: [2], Grunge: [2], Editorial: [2, 3], Pop: [2], '*': [3] },
+      chars: { Retro: [null, null, null, 58], Editorial: [null, null, 49, 49], '*': [null, null, 49] },
       hint: 'The line over the Header’s tag chips, drawn while they are shown. Left empty, the chips stand alone.' },
     // Layout 4's "Listen ↗" (JP-082, user call, 2026-09-29): the key the bio
     // already read, `vm.cta2` off its own content, which no field reached
     // (JP-059's census named it a control). Uncased; the ↗ is the markup's.
-    { k: 'cta2',      l: 'Listen link', d: 'Listen', in: [3],
+    { k: 'cta2',      l: 'Listen link', d: 'Listen', in: [3], chars: [null, null, null, 14],
       hint: 'The link beside Performing since, to your Media Player on the published page. '
           + 'Leave it empty to hide it.' },
   ],
@@ -1981,24 +2018,34 @@ export const FIELDS = {
   // one until a visitor picks another — and a second copy of that, editable
   // apart from the list, could only ever contradict it.
   media: [
+    // A column's floor is its longest seeded row (session 3): Manchester at 3am
+    // (17) and Live at the Deaf Institute · 7:01 (33), which the frames draw.
     { k: 'tracks',  l: 'Tracks', type: 'tracks', max: 8,
+      cols: { title: { Retro: [17, 17, 20, 17], Lime: [40, 17, 19, 17], Grunge: [24, 17, 21, 17], '*': [17, 17, 17, 17] },
+        sub: 33 },
       hint: 'Each row is one card in the stack, with its own artwork and audio file. '
           + "The player shows the track it is on, so track one's artwork is the sleeve." },
-    { k: 'kicker',  l: 'Kicker', d: 'Top tracks', in: [0, 2] },
-    { k: 'heading', l: 'Heading', d: 'Five worth your ear.' },
+    { k: 'kicker',  l: 'Kicker', d: 'Top tracks', in: [0, 2],
+      chars: { Retro: [46, null, 51], Pop: [42, null, 55], '*': [55, null, 55] } },
+    { k: 'heading', l: 'Heading', d: 'Five worth your ear.',
+      chars: { Retro: [20, 20, 25, 20], Grunge: [30, 20, 20, 25], Pop: [20, 20, 20, 23], '*': [20, 20, 20, 20] } },
     // JP-071: the "● Popular" over the track list, the frame's word, uncased.
     { k: 'listLabel', l: 'List label', d: MEDIA_LIST_LABEL, in: [1, 2],
+      chars: { Retro: [null, 29, 41], '*': [null, 34, 41] },
       hint: 'The label over the track list, after a dot. Left empty, it is not drawn.' },
     // JP-095 (a): the counter's two words, the counts the page's. An emptied
     // word takes its count (and the " / ") with it; both emptied, no counter.
     // Pop's layout-1 frame draws no counter (plans/pop/layout-1.md, section 3).
     { k: 'countLabel', l: 'Counter label', d: MEDIA_COUNT_LABEL, in: { Pop: [1, 2], '*': [0, 1, 2] },
+      chars: { Retro: [42, 40, 51], Grunge: [30, 44, 51], Pop: [null, 44, 51], '*': [51, 44, 51] },
       hint: 'The word after the track count over the list, as in “5 Featured / 5 Max” (“5 / 5 Featured” '
           + 'in layout 1). Left empty, it goes with its count.' },
     { k: 'totalLabel', l: 'Counter total label', d: MEDIA_TOTAL_LABEL, in: [1, 2],
+      chars: { Retro: [null, 35, 46], '*': [null, 39, 46] },
       hint: 'The word after the second count, the “Max” of “5 Featured / 5 Max”. Left empty, it goes with its count.' },
     // JP-095 (a): the chip on the fan's front card, the frame's word, uncased.
     { k: 'chipLabel', l: 'Card chip', d: MEDIA_CHIP_LABEL, in: [1],
+      chars: { Retro: [null, 10], Lime: [null, 9], '*': [null, 10] },
       hint: 'The chip on the front card of the fan, after a dot. Left empty, it is not drawn.' },
     // Retro's layout-1 frame (446:2265) draws the Soundcloud pill, and so does
     // Editorial's (964:58614), so there and on Pop an empty address leaves it a
@@ -2015,6 +2062,7 @@ export const FIELDS = {
     // template is read everywhere by fieldReach, and no other template reads
     // this, so the panel hides it under them.
     { k: 'cta', l: 'Button', d: 'Book Now', in: { Lime: [0], Grunge: [0], '*': [] },
+      chars: { Lime: [16], Grunge: [16] },
       hint: 'Scrolls to your enquiry form, or the next place to book. Empty drops the button.' },
   ],
   // The fourth list-shaped content with a structured editor, and the one that
@@ -2028,11 +2076,28 @@ export const FIELDS = {
     // JP-095 (a): layout 2's eyebrow over the heading, in the capitals the
     // frame types; the brackets are the markup's.
     { k: 'kicker',  l: 'Kicker', d: PRICING_KICKER, in: [1],
+      chars: [null, 74],
       hint: 'The small line over the heading, in brackets. Left empty, it is not drawn.' },
     { k: 'heading', l: 'Heading', d: "Choose the set that's right for your night", in: [0, 1, 2],
+      chars: { Retro: [42, 42, 44], Lime: [50, 42, 37], Grunge: [55, 44, 41], Editorial: [42, 42, 25],
+        Pop: [48, 42, 28] },
       hint: 'Layouts 1, 2 and 3 only. Layout 4 is a stack of service rows and heads them with '
           + 'the package names alone, so it draws no title.' },
     { k: 'tiers',   l: 'Packages', type: 'tiers', max: 6,
+      // Session 4 of the character-limits pass: a package's tags are chips (twice
+      // the longest seed of any design, since a stored list keeps it at every
+      // layout) and its features one a line, their count bound at layout 4 alone.
+      cols: {
+        name: { Retro: [19, 18, 53, 16], Lime: [30, 28, 42, 23], Grunge: [40, 34, 51, 25], Editorial: [22, 18, 27, 16],
+          Pop: [16, 16, 30, 18] },
+        price: { Retro: [8, 33, 31, 25], Lime: [12, 35, 25, 29], Grunge: [14, 35, 30, 34], Editorial: [11, 33, 27, 20],
+          Pop: [10, 34, 25, 23] },
+        tags: { list: ',', chars: { Retro: [12, null, 12, 12], '*': [26, null, 26, 26] },
+          count: { Retro: [4, null, 5, 6], Pop: [3, null, 4, 5], '*': [4, null, 4, 5] } },
+        blurb: 160,
+        feats: { list: '\n', chars: { Retro: [24, 24, 24, 59], Grunge: [25, 24, 24, 62], Editorial: [25, 24, 24, 60],
+          Pop: [26, 24, 24, 62], '*': [24, 24, 24, 62] }, count: [15, 15, 15, 5] },
+      },
       hint: 'Tags become the filter chips above the packages in layouts 1 and 3 — separate '
           + 'them with commas. Layout 3 starts the packages tagged Duo where the other layouts '
           + 'have Solo, and layout 1 in Lime, Grunge, Editorial and Pop starts them on Private Event, '
@@ -2046,14 +2111,19 @@ export const FIELDS = {
           + 'to give a package layout 3’s Featured badge; with none ticked, it goes to the last '
           + 'package on show.' },
     { k: 'unit',    l: 'Price unit', d: PRICE_UNIT,
+      chars: { Retro: [7, 37, 32, 69], Lime: [13, 40, 28, 88], Grunge: [15, 41, 33, 98], Editorial: [12, 37, 29, 53],
+        Pop: [11, 39, 27, 51] },
       hint: 'Printed after the price in layouts 1, 2 and 3. Layout 4 stands it above the price '
           + 'instead, as the kind of booking being priced, and drops a leading slash.' },
     { k: 'intro',   l: 'Intro line', type: 'area', d: PRICING_INTRO_3, in: [2],
+      chars: [null, null, 240],
       hint: 'A line under the heading. Layout 3 only.' },
     { k: 'offer',   l: 'Offer line', d: PRICING_OFFER, in: [2],
+      chars: { Retro: [null, null, 63], '*': [null, null, 59] },
       hint: 'A short line beside the filter chips, such as a discount. Layout 3 only. '
           + 'Empty it to drop the line.' },
     { k: 'quote',   l: 'Quote', type: 'area', def: 'pricingQuote', in: [1],
+      chars: [null, 260],
       hint: 'A line of praise beside the plan. Layout 2 only.' },
     // Layout 2's credit row under the quote and the line beside its pill, all
     // seeded with the frame's own copy. Every one is emptiable and drops what
@@ -2064,33 +2134,42 @@ export const FIELDS = {
     { k: 'images',  l: 'Reviewer photos', type: 'images', max: 3, in: PRICING_CREDIT,
       hint: 'Small faces under the plan card’s quote.' },
     { k: 'reviews', l: 'Review count', d: PRICING_REVIEWS, in: PRICING_CREDIT,
+      chars: { Retro: [null, 54], '*': [null, 55] },
       hint: 'In the credit row under the quote, after the stars.' },
     { k: 'rating',  l: 'Rating', d: PRICING_RATING, in: PRICING_CREDIT,
+      chars: [null, 47],
       hint: 'The five stars beside it are drawn while this is filled.' },
     // Named for its card rather than numbered, so it still reads apart from
     // the package button below.
     { k: 'cta',     l: 'Plan card button', d: PRICING_CTA, in: PRICING_CARD,
+      chars: { Retro: [null, 40], Lime: [null, 39], Grunge: [null, 40], Editorial: [null, 23], Pop: [null, 27] },
       hint: 'The pill under the price on layout 2’s plan card. Empty it to drop the pill.' },
     { k: 'note',    l: 'Line beside the plan card button', d: PRICING_NOTE, in: PRICING_CARD,
+      chars: { Retro: [null, 54], '*': [null, 55] },
       hint: 'Layout 2 only. A phone stacks it under the pill.' },
     // JP-095 (a): the label over the plan card's features, in the frame's
     // capitals. Drawn while the package has features, as the list is. Layout
     // 3 prints it over every package's features too (JP-125, 2026-10-09).
     { k: 'featsLabel', l: 'Features label', d: PRICING_FEATS_LABEL, in: [1, 2],
+      chars: { Retro: [null, 48, 57], Lime: [null, 68, 51], Pop: [null, 35, 57], '*': [null, 68, 55] },
       hint: 'The label over the features, on layout 2’s plan card and on each of layout 3’s '
           + 'packages. Left empty, it is not drawn.' },
     // JP-125 (user call, 2026-10-09): layout 3's FEATURED badge. Emptied, the
     // badge goes and the featured package keeps its fill.
     { k: 'badgeLabel', l: 'Featured badge', d: PRICING_BADGE, in: [2],
+      chars: [null, null, 16],
       hint: 'The badge on layout 3’s featured package. Left empty, it is not drawn; the package '
           + 'stays highlighted.' },
     // Every package's pill (JP-070): layout 4's row pill until then, and
     // layouts 1 and 3 printed the section's unfielded "Book Now". `d` is
     // layout 1's word; sectionVm and EditPanel resolve layouts 3 and 4's.
     { k: 'rowCta',  l: 'Package button', d: 'Book Now', in: [0, 2, 3],
+      chars: { Retro: [12, null, 12, 26], Lime: [14, null, 12, 26], Grunge: [16, null, 12, 26],
+        Editorial: [9, null, 12, 26], Pop: [10, null, 12, 26] },
       hint: 'The pill on every package. Layout 3 starts from “Book” and layout 4 from '
           + '“Start Enquiry”. Layout 2 has its own plan card button. Empty it to drop the pill.' },
-    { k: 'sub',     l: 'Small print', def: 'pricingSub' },
+    { k: 'sub',     l: 'Small print', def: 'pricingSub',
+      chars: { Retro: [133, 67, 67, 67], Grunge: [53, 67, 63, 67], Pop: [80, 67, 63, 67], '*': [67, 67, 63, 67] } },
   ],
   // The other list-shaped content type with a structured editor rather than a
   // textarea (see `media` above): `songs` is an array of
@@ -2105,14 +2184,34 @@ export const FIELDS = {
     // Layouts 3 and 4 start from their frames' "Curated sets" (JP-070) and
     // "Repertoire" (JP-081) instead, which count nothing. An emptied heading
     // stays empty at every layout.
-    { k: 'heading', l: 'Heading' },
+    { k: 'heading', l: 'Heading',
+      chars: { Retro: [14, 31, 20, 17], Lime: [11, 32, 19, 15], Grunge: [13, 38, 25, 20], Editorial: [8, 21, 12, 10],
+        Pop: [11, 25, 17, 10] } },
     // `in` is per field, and every layout reads the songs, so the hint says
     // which column each layout leaves out (JP-107): the reviews' date shape.
+    // Session 5 of the character-limits pass: a tag is a chip, and at layout 3
+    // the key of its set (`c.sets`), so its cap is one number at every layout
+    // and template, and a stored tag is never clamped into another key. Its
+    // count is how many distinct chips the binding row holds; layout 4 prints
+    // no tags and takes the tightest, so a list typed there is not cut elsewhere.
     { k: 'songs',   l: 'Songs', type: 'songs', max: 60,
+      cols: {
+        title: { Retro: [17, 25, 25, 25], Lime: [44, 24, 17, 22], Grunge: [33, 26, 23, 26], Editorial: 17, Pop: 17 },
+        artist: { Retro: [32, 25, null, 41], Lime: [73, 25, null, 37], Grunge: [74, 25, null, 42],
+          Editorial: [35, 25, null, 18], Pop: [18, 25, null, 19] },
+        length: { Retro: [null, null, 23], Lime: [null, null, 17], Grunge: [null, null, 22], Editorial: [null, null, 17],
+          Pop: [null, null, 14] },
+        tags: { list: ',', chars: 18, count: { Editorial: [3, 4, 3, 3], '*': [4, 4, 3, 3] } },
+      },
       hint: 'Tags become the filter chips above the list — separate them with commas. Layout 4 draws no chips: it indexes the whole list A–Z instead. '
           + 'Layout 3 groups the songs into one set per tag and shows each song’s length in place of its artist; '
           + 'the other layouts show the artist and not the length.' },
+    // The mood and length share one clipped line (`repSetLine()`), so they split
+    // its budget, measured together: the length takes up to 10 ("90 minutes"),
+    // the mood the rest, never under its seed's 14 (session 5).
     { k: 'sets',    l: 'Sets', type: 'sets', in: [2],
+      cols: { mood: { Retro: [null, null, 17], Lime: [null, null, 14], Grunge: [null, null, 17], Editorial: [null, null, 17],
+        Pop: [null, null, 14] }, length: { Lime: [null, null, 7], '*': [null, null, 10] } },
       hint: 'One per tag on your songs. The mood and length show under the set’s name in layout 3; with both empty, it shows the song count.' },
   ],
   // The three social addresses follow the photos, and follow `media.soundcloud`
@@ -2130,20 +2229,25 @@ export const FIELDS = {
       hint: 'One per tile. Layout 1 shows the highlighted one in its viewer; layouts 2 and 4 show it as the large photo beside the others.' },
     // JP-120 (gallery): the eyebrow over the heading, the frames' word, uncased.
     { k: 'kicker',  l: 'Kicker', d: GALLERY_KICKER, in: [0, 3],
+      chars: { Retro: [44, null, null, 49], Pop: [44, null, null, 39], '*': [55, null, null, 51] },
       hint: 'The small line over the heading. Left empty, it is not drawn.' },
-    { k: 'heading', l: 'Heading', d: 'See us in action' },
+    { k: 'heading', l: 'Heading', d: 'See us in action',
+      chars: { Retro: [20, 27, 18, 24], Lime: [19, 26, 18, 23], Grunge: [29, 26, 23, 24], Editorial: [16, 26, 11, 20],
+        Pop: [16, 27, 15, 20] } },
     // JP-098: the 768 head row's word, the frame's, uncased. `in` cannot name a
     // width, so the hint does. JP-120 (gallery): layout 1's credit line too.
     { k: 'railLabel', l: 'Gallery label', d: GALLERY_RAIL_LABEL, in: [0, 1],
+      chars: { Retro: [49, 70], Lime: [55, 64], Editorial: [32, 70], Pop: [49, 70], '*': [55, 70] },
       hint: 'The line under your name over the large photo in layout 1, and the label over the small '
           + 'photos in layout 2, on a tablet only. Left empty, neither is drawn.' },
     // JP-120 (gallery): two words that head a control or a row standing
     // whatever they say, so an emptied one reads its seed again (venueCta's
     // rule). The row's label prints at desktop alone, so the hint says so.
-    { k: 'backLabel', l: 'Back link', d: GALLERY_BACK_LABEL, in: [0],
+    { k: 'backLabel', l: 'Back link', d: GALLERY_BACK_LABEL, in: [0], chars: [34],
       hint: 'The link over the large photo that goes back to the first one. Left empty, it shows '
           + '“Back to beginning” again.' },
     { k: 'sourceLabel', l: 'Gallery row label', d: GALLERY_SOURCES[0].l, in: [0],
+      chars: { Retro: [42], Lime: [49], Grunge: [58], Editorial: [37], Pop: [50] },
       hint: 'The first row, above YouTube, Instagram and TikTok, on desktop only. Left empty, it '
           + 'shows “Gallery” again.' },
     { k: 'youtube',   l: 'YouTube link', type: 'url', d: '', in: [0],
@@ -2167,7 +2271,8 @@ export const FIELDS = {
     { k: 'image',   l: 'Photo', type: 'image', in: [0, 3],
       hint: 'Fills the polaroid stack beside the month in layout 1, and the small disc on '
           + "layout 4's summary card. Layouts 2 and 3 draw no photograph." },
-    { k: 'heading', l: 'Heading', d: 'Availability', in: { Lime: [0, 1, 2, 3], Grunge: [0, 1, 2, 3], Editorial: [0, 1, 2, 3], Pop: [0, 1, 2, 3], '*': [1, 2, 3] } },
+    { k: 'heading', l: 'Heading', d: 'Availability', in: { Lime: [0, 1, 2, 3], Grunge: [0, 1, 2, 3], Editorial: [0, 1, 2, 3], Pop: [0, 1, 2, 3], '*': [1, 2, 3] },
+      chars: { Retro: [null, 25, 36, 18], Lime: [25, 22, 32, 18], Grunge: [28, 24, 35, 23], Editorial: [14, 14, 21, 11], Pop: [13, 20, 24, 15] } },
     { k: 'open',    l: 'Opens on', type: 'date', d: CAL_OPEN,
       hint: 'The month the calendar opens on, and the date it opens picked. '
           + `Layouts 1 and 3 page through ${CAL_SPAN} months from there, layout 2's seeded `
@@ -2180,11 +2285,13 @@ export const FIELDS = {
           + 'The months here are the published ones, so they start at today when the opening '
           + 'date has passed.' },
     { k: 'time',    l: 'Enquiry time', d: CAL_TIME, in: [0, 3],
+      chars: { Retro: [33, null, null, 34], Lime: [13, null, null, 32], Grunge: [13, null, null, 37], Editorial: [13, null, null, 33], Pop: [28, null, null, 33] },
       hint: "Printed in layout 1's enquiry line, and on its own in layout 4's "
           + 'date card. Leave it empty and the line stops at the date.' },
     // JP-095 (a): the line every layout prints while no day is cued. Cased in
     // sectionVm, as the slot line beside it is; emptied, the seed again.
     { k: 'prompt',  l: 'Prompt', d: CAL_PROMPT,
+      chars: { Retro: [33, 24, 39, 50], Lime: [44, 23, 33, 47], Grunge: [44, 24, 36, 50], Editorial: [44, 29, 24, 50], Pop: [31, 32, 24, 50] },
       hint: 'The line where the picked date goes while none is picked: on the published page, '
           + 'until a visitor picks one, when the opening date is booked or has passed. Left empty, '
           + 'it shows “Pick a date to enquire” again.' },
@@ -2195,22 +2302,29 @@ export const FIELDS = {
     // enquiry line is the link.
     { k: 'cta',     l: 'Button', d: 'Check a date',
       in: { Lime: [3], Grunge: [3], Editorial: [3], Pop: [3], '*': [0, 3] },
+      chars: { Retro: [24, null, null, 24], '*': [null, null, null, 24] },
       hint: 'Layout 4’s Send Enquiry, on the last step of the enquiry wizard and at the foot '
           + 'of the summary; it starts from “Send Enquiry” there, and shows it again if you '
           + 'empty this. Under Retro it is also layout 1’s button. The other templates’ '
           + 'layout 1 has no button: its “Enquiry for …” line is the link.' },
     { k: 'slots',   l: 'Dates on offer', type: 'slots', max: 8, in: [1],
+      cols: { kind: { Retro: [null, 33], Lime: [null, 36], Grunge: [null, 40], Editorial: [null, 33], Pop: [null, 36] },
+        price: { Retro: [null, 36], Lime: [null, 40], Grunge: [null, 43], Editorial: [null, 36], Pop: [null, 40] } },
       hint: 'The dates layout 2 lists, each with what you play and what it starts from. '
           + 'The seeded dates count from Opens on (on the published page, from today once that '
           + 'has passed) until you type one; clear it and the row counts again.' },
     // JP-095 (a): the two column labels over that list; the ↓ is the markup's.
     { k: 'dateLabel',  l: 'Date column label', d: CAL_DATE_LABEL, in: [1],
+      chars: [null, 16],
       hint: 'The label over the list’s dates. Left empty, it is not drawn.' },
     { k: 'availLabel', l: 'Availability column label', d: CAL_AVAIL_LABEL, in: [1],
+      chars: { Retro: [null, 33], '*': [null, 38] },
       hint: 'The label over what you play each night. Left empty, it is not drawn; with both '
           + 'labels empty, their row goes.' },
-    { k: 'slotCta', l: 'Button (layout 2)', d: CAL_SLOT_CTA, in: [1] },
-    { k: 'types',   l: 'Event types', type: 'area', d: CAL_TYPES.join(', '), in: [3],
+    { k: 'slotCta', l: 'Button (layout 2)', d: CAL_SLOT_CTA, in: [1],
+      chars: { Editorial: [null, 25], '*': [null, 26] } },
+    { k: 'types',   l: 'Event types', type: 'area', d: CAL_TYPES.join(', '), in: [3], list: ',',
+      chars: [null, null, null, 13], count: [null, null, null, 4],
       hint: "The choices on the first step of layout 4's enquiry wizard, separated by commas." },
     // JP-076 — no `d`: while the key is absent it follows the Enquiry Form's
     // address (sectionVm's `email` argument, and EditPanel's chain shows it),
@@ -2228,6 +2342,17 @@ export const FIELDS = {
   // emptied array means no gigs, and there is no null sentinel.
   map: [
     { k: 'gigs',    l: 'Upcoming gigs', type: 'gigs', max: 12,
+      // Session 8 of the character-limits pass: the venue, the city · time line,
+      // the date stamp and disc (a month read as month names, the day as dates),
+      // split jointly where they share a line (plans/char-limits.md).
+      cols: {
+        venue: { Retro: [34, 21, 41, 36], Lime: [32, 18, 37, 40], Grunge: [36, 20, 41, 40], Editorial: [19, 18, 25, 40],
+          Pop: [18, 18, 28, 40] },
+        city: { Retro: [22, 14, 20, 13], Editorial: [29, 13, 23, 13], Pop: [13, 13, 20, 13], '*': [20, 13, 20, 13] },
+        time: { Retro: [13, 5, 13, 10], Pop: [8, 5, 13, 13], '*': [13, 5, 13, 13] },
+        month: { Retro: [7, 4, 11, 9], Lime: [5, 3, 12, 9], Pop: [9, 5, 12, 9], '*': [5, 5, 12, 9] },
+        day: { Retro: [5, 5, 5, 5], '*': [6, 3, 5, 5] },
+      },
       // The page size is PINS.length, not a literal — see vm.gigPage — except
       // in layout 4, whose whole list is a one-gig ticker. The cities are read
       // a second time in layout 3, where they derive the split list's filter
@@ -2247,14 +2372,18 @@ export const FIELDS = {
     // 2's "Travel radius", its seeds there (mapKickerSeed(), in sectionVm and
     // EditPanel's chain alike).
     { k: 'kicker',  l: 'Kicker', d: MAP_KICKER, in: [0, 1, 2],
+      chars: { Retro: [44, 30, 58], Lime: [67, 26, 53], Pop: [44, 30, 58], '*': [67, 30, 58] },
       hint: 'The small line over the heading. Layout 1 starts from “Shows/coverage” and layout 2 from '
           + '“Travel radius”. Left empty, it is not drawn.' },
     // JP-090: layout 1's label over the gig list; the "· 5" count is the page's.
     // JP-095 (b): layout 2's "Other upcoming · 4" too (mapListLabelSeed()).
     { k: 'listLabel', l: 'List label', d: MAP_LIST_LABEL, in: [0, 1],
+      chars: { Retro: [37, 54], Lime: [40, 50], Grunge: [41, 54], Editorial: [46, 54], Pop: [31, 54] },
       hint: 'The label over the list of gigs, before its count. Layout 2 starts from “Other upcoming”. '
           + 'Left empty, neither is drawn.' },
-    { k: 'heading', l: 'Heading', d: 'Manchester' },
+    { k: 'heading', l: 'Heading', d: 'Manchester',
+      chars: { Retro: [20, 20, 39, 25], Lime: [19, 17, 34, 24], Grunge: [16, 20, 37, 25], Editorial: [11, 19, 22, 22],
+        Pop: [17, 21, 25, 23] } },
     // Layouts 1–3 print it, once each (reach.mjs's `map.radius`). It was
     // "Coverage badge", after layout 1's reading, until JP-060: layout 2's Lime
     // block printed it in the travel card's chip as well as its Max travel, and
@@ -2263,6 +2392,7 @@ export const FIELDS = {
     // radius" (mapRadiusSeed(), in sectionVm and EditPanel's chain alike), and
     // JP-124 layout 2 "120 mi".
     { k: 'radius',  l: 'Coverage', d: MAP_RADIUS, in: [0, 1, 2],
+      chars: { Retro: [26, 11, 25], Lime: [51, 13, 20], Grunge: [44, 13, 26], Editorial: [14, 13, 26], Pop: [29, 13, 26] },
       hint: 'How far you travel. Layout 1 prints it beside the heading, layout 2 as Max travel on '
           + 'the travel card, where it starts from “120 mi”, and layout 3 in the line under the '
           + 'map, where it starts from “120 mi radius”.' },
@@ -2270,34 +2400,47 @@ export const FIELDS = {
     // own "Based in" label (JP-096, user call, 2026-10-01): the frame's value is
     // the town alone, and this field's copy says "Based in" itself.
     { k: 'base',    l: 'Based in',       d: MAP_BASE, in: [0, 2],
+      chars: { Retro: [29, null, 33], Lime: [35, null, 27], Grunge: [39, null, 33], '*': [24, null, 33] },
       hint: 'Layout 1 prints it beside the map and layout 3 under it. Layout 2’s travel card '
           + 'shows the Location you typed on the header instead.' },
-    { k: 'terms',   l: 'Travel terms',   d: MAP_TERMS, in: [0, 1] },
-    { k: 'travelTime', l: 'Travel time (layout 2)', d: MAP_TRAVEL_TIME, in: [1] },
-    { k: 'fee',        l: 'Booking fee (layout 2)', d: MAP_FEE, in: [1] },
+    { k: 'terms',   l: 'Travel terms',   d: MAP_TERMS, in: [0, 1],
+      chars: { Retro: [59, 50], Lime: [58, 41], Pop: [45, 51], '*': [58, 51] } },
+    { k: 'travelTime', l: 'Travel time (layout 2)', d: MAP_TRAVEL_TIME, in: [1],
+      chars: { Retro: [null, 11], '*': [null, 13] } },
+    { k: 'fee',        l: 'Booking fee (layout 2)', d: MAP_FEE, in: [1],
+      chars: { Retro: [null, 11], '*': [null, 13] } },
     // JP-095 (b) · JP-096 (user call, 2026-10-01): layout 2's travel card, the
     // frame's own words, uncased. A label or caption left empty is not drawn; a
     // stat's label goes with its value, as the cell always did; the two pills
     // read their seed again, since a pill always stands.
     { k: 'homeLabel',   l: 'Home label',   d: MAP_HOME_LABEL, in: [1],
+      chars: { Lime: [null, 16], '*': [null, 18] },
       hint: 'The small line over your home town on the travel card. The town is the header’s Location. '
           + 'Left empty, it is not drawn.' },
     { k: 'homeCaption', l: 'Home caption', d: MAP_HOME_CAPTION, in: [1],
+      chars: { Lime: [null, 16], '*': [null, 18] },
       hint: 'The small line under your home town. Left empty, it is not drawn.' },
     { k: 'venueLabel',  l: 'Venue label',  d: MAP_VENUE_LABEL, in: [1],
+      chars: [null, 20],
       hint: 'The small line over the featured gig’s city. Left empty, it is not drawn.' },
     { k: 'venueCaption', l: 'Venue caption', d: MAP_VENUE_CAPTION, in: [1],
+      chars: { Lime: [null, 16], '*': [null, 18] },
       hint: 'The small line under the featured gig’s city. Left empty, it is not drawn.' },
     { k: 'radiusLabel', l: 'Max travel label', d: MAP_RADIUS_LABEL, in: [1],
+      chars: { Retro: [null, 14], Lime: [null, 15], '*': [null, 17] },
       hint: 'Over Coverage on the travel card. Left empty, the value stands alone.' },
     { k: 'travelTimeLabel', l: 'Travel time label', d: MAP_TIME_LABEL, in: [1],
+      chars: { Retro: [null, 14], Lime: [null, 15], '*': [null, 17] },
       hint: 'Over Travel time on the travel card. Left empty, the value stands alone.' },
     { k: 'feeLabel',    l: 'Booking fee label', d: MAP_FEE_LABEL, in: [1],
+      chars: { Retro: [null, 14], Lime: [null, 15], '*': [null, 17] },
       hint: 'Over Booking fee on the travel card. Left empty, the value stands alone.' },
     { k: 'venueCta',    l: 'Venue link button', d: MAP_VENUE_CTA, in: [1],
+      chars: { Retro: [null, 11], Lime: [null, 10], Grunge: [null, 10], Editorial: [null, 19], Pop: [null, 20] },
       hint: 'Opens the featured gig’s tickets link on the published page. Left empty, it shows '
           + '“Venue Link” again.' },
     { k: 'routeCta',    l: 'Directions button', d: MAP_ROUTE_CTA, in: [1],
+      chars: { Retro: [null, 22], Lime: [null, 17], Grunge: [null, 19], Editorial: [null, 24], Pop: [null, 28] },
       hint: 'Opens directions to the featured gig on the published page. Left empty, it shows '
           + '“Get Directions” again.' },
     // Layout 3's foot pill, the frame's "See all gigs", and the only layout that
@@ -2305,34 +2448,46 @@ export const FIELDS = {
     // filter; where the list is already one page it stays a picture (the
     // Soundcloud rule). An emptied label drops the pill.
     { k: 'cta',     l: 'Button (layout 3)', d: 'See all gigs', in: [2],
+      chars: [null, null, 24],
       hint: 'Lists every gig at once on the published page, when there is more than one page of them.' },
     // Layout 3's QA fields, which layout 2 reads as well since JP-040 (its fit
     // had dropped all four as claims). None names a layout in its label: the
     // panel lists them only where the design reads them.
     { k: 'status',  l: 'Map tag', d: MAP_STATUS, in: [1, 2],
+      chars: { Retro: [null, 18, 20], Lime: [null, 13, 20], Grunge: [null, 18, 20], '*': [null, 10, 20] },
       hint: 'The tag above the featured gig. Layout 2 also prints it as the chip on every gig row.' },
-    { k: 'updated', l: 'Map note', d: MAP_UPDATED, in: [1, 2] },
+    { k: 'updated', l: 'Map note', d: MAP_UPDATED, in: [1, 2],
+      chars: { Lime: [null, 31, 31], '*': [null, 35, 34] } },
     { k: 'rings',   l: 'Ring labels', d: MAP_RINGS, in: [1, 2, 3],
+      // Chips on the rings, sliced to the three rings the map draws.
+      list: ',', chars: [null, 13, 13, 13], count: [null, 3, 3, 3],
       hint: 'Up to three, inner ring first, separated by commas.' },
     { k: 'expand',  l: 'Map link', d: MAP_EXPAND, in: [1, 2],
+      chars: [null, 22, 22],
       hint: 'Opens directions to the gig the panel is showing, on the published page. Leave empty to hide it.' },
     { k: 'span',    l: 'Panel note (layout 4)', d: MAP_SPAN, in: [3],
+      chars: [null, null, null, 58],
       hint: 'Beside "Travel & reach" above the stat cards. Leave empty to hide it.' },
     // Layout 4's stat wall (JP-077 · JP-078 · JP-082, user call, 2026-09-29):
     // the ninth structured editor, { label, value, sub } per card, seeded with
     // the frame's four. Two to a row, so a third trails half-width.
     { k: 'stats',   l: 'Stats', type: 'stats', max: 4, in: [3],
+      cols: { label: [null, null, null, 19], value: [null, null, null, 14], sub: [null, null, null, 20] },
       hint: 'One card each, two to a row. A card prints only the parts you fill in; an empty row isn’t shown.' },
   ],
   testimonials: [
     // JP-071: layout 3's eyebrow over the heading, the frame's word, uncased.
     // JP-095 (a) took it to layout 2's "✎ What clients say", its seed there
     // (testiKickerSeed(), in sectionVm and EditPanel's chain alike).
-    { k: 'kicker',  l: 'Kicker', d: TESTI_KICKER, in: [1, 2],
+    { k: 'kicker',  l: 'Kicker', d: TESTI_KICKER, in: [1, 2], chars: [null, 61, 61],
       hint: 'The small line over the heading, after a ✎ in layout 2 and a dot in layout 3. '
           + 'Layout 2 starts from “What clients say”. Left empty, it is not drawn.' },
     // A textarea, because layout 2's default breaks onto a second line.
+    // Session 9 of the character-limits pass: a display head, held to its
+    // frame's lines (not a block), though a textarea for layout 2's typed break.
     { k: 'heading', l: 'Heading', type: 'area', d: 'Word of Mouth', in: [1, 2, 3],
+      chars: { Retro: [null, 38, 26, 24], Lime: [null, 43, 26, 23], Grunge: [null, 38, 30, 30],
+        Editorial: [null, 38, 17, 22], Pop: [null, 45, 22, 22] },
       hint: 'Layouts 2, 3 and 4 each start from their own heading. A line break you type is '
           + 'kept in layout 2.' },
     // Layout 2 was the first design to head this section, so both of the plain
@@ -2341,6 +2496,7 @@ export const FIELDS = {
     // `sub` a second seat: its stat card sets the sentence the frame fills with
     // a fabricated event count.
     { k: 'sub',     l: 'Intro line', def: 'testiSub', in: [1, 2],
+      chars: { Retro: [null, 114, 86], Lime: [null, 114, 87], '*': [null, 114, 67] },
       hint: 'The line under the heading in layout 2, and the sentence on the stat '
           + 'card in layout 3.' },
     // The seventh structured editor and the sixth repeater. Replaces a flattened
@@ -2348,6 +2504,18 @@ export const FIELDS = {
     // add a fourth — which is the pricing packages' case, not a textarea's.
     // Follows the `songs` rule: absent means the seeded QUOTES, [] means none.
     { k: 'quotes',  l: 'Reviews', type: 'quotes', max: 8,
+      // Session 9 of the character-limits pass: read in every row at once, since
+      // the walls (layouts 3 and 4) seat each row in a cell of its own width;
+      // the quote is a block, and who · role · when were split jointly
+      // (plans/char-limits.md).
+      cols: {
+        who: { Retro: [28, 48, 25, 27], Lime: [39, 45, 20, 27], Grunge: [28, 50, 25, 27],
+          Editorial: [17, 27, 13, 27], Pop: [18, 32, 15, 27] },
+        quote: { Lime: [66, 190, 190, 190], Grunge: [68, 190, 190, 190], Editorial: [66, 190, 190, 190],
+          '*': [190, 190, 190, 190] },
+        role: { Retro: [28, 48, 26, 29], Lime: [45, 48, 26, 27], Grunge: [28, 48, 26, 29], '*': [26, 48, 26, 29] },
+        when: { Retro: [30], Pop: [30], '*': [46] },
+      },
       hint: 'Each row is one review. Layouts 1, 2 and 4 page through them; layout 3 '
           + 'gives each one a card on its wall, and a row with no name or role '
           + 'becomes a plain quote card there. The date line is the small type '
@@ -2355,11 +2523,14 @@ export const FIELDS = {
           + 'initials — layout 4 marks its card with the same initials; layouts 2, 3 '
           + 'and 4 have no seat for the date.' },
     { k: 'rating',  l: 'Rating', d: TESTI_RATING, in: [2],
+      chars: { Retro: [null, null, 8], Lime: [null, null, 7], Grunge: [null, null, 9], Editorial: [null, null, 5],
+        Pop: [null, null, 7] },
       hint: 'The big number on the stat card, printed out of 5. Empty it to show how many reviews there are instead.' },
     { k: 'stars',   l: 'Stars', d: TESTI_STARS, in: [1, 2],
+      chars: { Retro: [null, 44, 35], Lime: [null, 44, 32], '*': [null, 44, 36] },
       hint: 'Layout 2 prints them in the corner of the card, beside the reviewer; layout 3 beside '
           + 'the faces on its stat card. Empty it to drop them.' },
-    { k: 'cta',     l: 'Button', d: 'Book Now', in: [1],
+    { k: 'cta',     l: 'Button', d: 'Book Now', in: [1], chars: [null, 16],
       hint: 'The pill under the card, which scrolls to wherever the page takes a '
           + 'booking. Emptying it drops the pill. Layout 2 only.' },
   ],
@@ -2377,29 +2548,49 @@ export const FIELDS = {
     // keeps the break, the others read it as a space. Layout 3 starts from
     // formHeading3(name) and layout 4 from FORM_HEADING_4 — special-cased, as
     // `copyright` is, in sectionVm and EditPanel's fallback chain.
+    // Session 10 of the character-limits pass: a display head held to its
+    // frame's lines, as the testimonials' is; at layout 3 the cap is a typed
+    // head's, which replaces the composed one (plans/char-limits.md).
     { k: 'heading',  l: 'Heading', type: 'area', d: "Let's make\nyour night unforgettable.",
+      chars: { Retro: [45, 36, 32, 20], Lime: [37, 37, 32, 19], Grunge: [36, 40, 41, 25],
+        Editorial: [36, 42, 30, 12], Pop: [36, 40, 30, 17] },
       hint: 'Layout 3 starts from your name (“Book … for your event”) and follows it until you '
           + 'type your own; layout 4 starts from “Contact Us”. A line break you type is kept in '
           + 'layout 2.' },
     // Layout 4's small-caps line under the head, which printed the artist's
     // name until JP-054 gave it the frame's own word. Emptiable: it drops.
     { k: 'sub',      l: 'Line under the heading', d: FORM_SUB_4, in: [3],
+      chars: { Retro: [null, null, null, 33], Lime: [null, null, null, 40], Grunge: [null, null, null, 44],
+        Editorial: [null, null, null, 27], Pop: [null, null, null, 30] },
       hint: 'Layout 4 only. Leave it empty to hide it.' },
-    { k: 'para',     l: 'Paragraph', type: 'area', def: 'formPara', in: [2],
+    { k: 'para',     l: 'Paragraph', type: 'area', def: 'formPara', in: [2], chars: [null, null, 210],
       hint: 'The line under the heading. Layout 3 only.' },
-    { k: 'promises', l: 'Promises', type: 'area', d: FORM_PROMISES.join('\n'), in: [0, 1],
+    // One a line down a column that hugs them, so the count is a block's
+    // (session 10): open but where the column climbs into the head.
+    { k: 'promises', l: 'Promises', type: 'area', d: FORM_PROMISES.join('\n'), in: [0, 1], list: '\n',
+      chars: { Retro: [45, 32], Pop: [42, 31], Editorial: [34, 29], '*': [34, 34] },
+      count: { Editorial: [6, 9], '*': [9, 9] },
       hint: 'One per line — the ticked list beside the form.' },
     // Layout 4's *What happens next* column (JP-079 · JP-081, user call,
     // 2026-09-29): the tenth repeater, { title, sub } per step, seeded with the
     // frames' three. It numbered the promises until then, one line a row.
     { k: 'steps',    l: 'Steps', type: 'steps', max: 6, in: [3],
+      cols: { title: [null, null, null, 41], sub: [null, null, null, 44] },
       hint: 'Numbered down the column beside the form, a title over a second line. A step prints '
           + 'only the lines you fill in; an empty row isn’t shown, and with none the column goes.' },
     // The sixth structured editor and the fifth repeater. Follows the `songs`
     // rule: an absent key means the seeded FORM_FIELDS (FORM_FIELDS_CARD at
     // layouts 2 and 3, JP-070; FORM_FIELDS_4 at layout 4, JP-054), an emptied
     // array means no boxes at all, and there is no null sentinel.
+    // Session 10: the placeholder prints at layouts 1 and 4 alone (2 and 3 set
+    // the label in the box), so it is uncapped there.
     { k: 'fields',   l: 'Form fields', type: 'formFields', max: 8,
+      cols: {
+        label: { Retro: [49, 46, 57, 22], Lime: [47, 52, 69, 27], Grunge: [52, 62, 76, 30],
+          Editorial: [24, 33, 41, 14], Pop: [32, 33, 40, 19] },
+        placeholder: { Retro: [37, null, null, 23], Lime: [41, null, null, 24], Grunge: [41, null, null, 24],
+          Editorial: [41, null, null, 25], Pop: [35, null, null, 24] },
+      },
       hint: 'One box each — two to a row in layouts 1 and 4 (layout 1 stacks them on a phone), '
           + 'one to a row in layouts 2 and 3, '
           + 'which set the label inside the box and draw no placeholder. An odd last box '
@@ -2407,50 +2598,77 @@ export const FIELDS = {
           + 'form emails you what the visitor types. Layouts 2 and 3 start on their card’s three '
           + 'boxes and layout 4 on its own five until you edit them; after that your list shows '
           + 'in every layout.' },
-    { k: 'types',    l: 'Event types', type: 'area', d: FORM_TYPES.join(', '), in: [0],
+    { k: 'types',    l: 'Event types', type: 'area', d: FORM_TYPES.join(', '), in: [0], list: ',',
+      chars: [15], count: { Lime: [5], Grunge: [5], '*': [8] },
       hint: 'Comma separated. The form opens on the first; empty hides the row. Layout 1 only.' },
     // The chip row's label (JP-090), messageLabel's rule: the row it heads
     // stands whatever it says, so an emptied label reads the seed again.
     { k: 'typeLabel', l: 'Event type label', d: FORM_TYPE_LABEL, in: [0],
+      chars: { Retro: [51], Lime: [52], Grunge: [58], Editorial: [37], Pop: [33] },
       hint: 'The label over the event types. Layout 1 only. Left empty, it shows Event type.' },
-    { k: 'message',  l: 'Message placeholder', d: FORM_MESSAGE, in: [0, 3], hint: 'Layouts 1 and 4.' },
+    { k: 'message',  l: 'Message placeholder', d: FORM_MESSAGE, in: [0, 3],
+      chars: { Retro: [39, null, null, 53], Lime: [42, null, null, 54], Grunge: [42, null, null, 54],
+        Editorial: [44, null, null, 58], Pop: [35, null, null, 54] },
+      hint: 'Layouts 1 and 4.' },
     // The message box's label (JP-082): the one box label that was a literal.
     { k: 'messageLabel', l: 'Message label', d: FORM_MSG_LABEL, in: [0, 3],
+      chars: { Retro: [51, null, null, 45], Lime: [52, null, null, 59], Grunge: [58, null, null, 64],
+        Editorial: [37, null, null, 35], Pop: [33, null, null, 41] },
       hint: 'Layouts 1 and 4. Also heads the message in the email you receive. Left empty, it shows Message.' },
     // Dead until the submit was made real — this is now what the form is for.
     { k: 'email',    l: 'Email address', type: 'email', d: FORM_EMAIL,
       hint: 'Enquiries are mailed here: the button opens the visitor’s mail app with the form filled in, and so does the Booking Calendar’s layout-4 Send Enquiry, until the calendar has an address of its own. Empty leaves the button a picture. An address that isn’t valid also leaves the button a picture.' },
     { k: 'button',   l: 'Button', d: 'Book Now', in: [0, 3],
+      chars: { Retro: [16, null, null, 36], Editorial: [15, null, null, 27], Pop: [15, null, null, 32],
+        '*': [15, null, null, 36] },
       hint: 'Layouts 1 and 4. Layout 4 starts from “Check Availability”, and layout 1 from “Enquire” in Lime, Grunge, Editorial and Pop.' },
     // Layouts 2 and 3's card — the same component in both frames. Every one is
     // emptiable and drops what it fills, except the button: it is the submit,
     // so an emptied label falls back to `button`.
-    { k: 'price',     l: 'Price (layouts 2 and 3)', d: FORM_PRICE, in: [1, 2] },
-    { k: 'priceUnit', l: 'Price note (layouts 2 and 3)', d: FORM_PRICE_UNIT, in: [1, 2] },
+    // Session 10: the price is set whole (no priceParts split), so it is read
+    // as prose; it shares a wrapping row with its unit (plans/char-limits.md).
+    { k: 'price',     l: 'Price (layouts 2 and 3)', d: FORM_PRICE, in: [1, 2],
+      chars: { Retro: [null, 32, 39], Lime: [null, 28, 35], Grunge: [null, 32, 39], Editorial: [null, 19, 23],
+        Pop: [null, 22, 26] } },
+    { k: 'priceUnit', l: 'Price note (layouts 2 and 3)', d: FORM_PRICE_UNIT, in: [1, 2],
+      chars: { Lime: [null, 43, 54], '*': [null, 47, 54] } },
     { k: 'bookings',  l: 'Bookings line (layouts 2 and 3)', d: FORM_BOOKINGS, in: [1, 2],
+      chars: { Retro: [null, 35, 41], Lime: [null, 32, 42], '*': [null, 36, 42] },
       hint: 'The five stars before it are drawn while this is filled.' },
-    { k: 'cta',       l: 'Button (layouts 2 and 3)', d: FORM_CTA, in: [1, 2] },
-    { k: 'note',      l: 'Line under the button (layouts 2 and 3)', d: FORM_NOTE, in: [1, 2] },
-    { k: 'available', l: 'Eyebrow (layout 3)', d: FORM_AVAILABLE, in: [2],
+    { k: 'cta',       l: 'Button (layouts 2 and 3)', d: FORM_CTA, in: [1, 2],
+      chars: { Retro: [null, 36, 36], Lime: [null, 30, 36], Grunge: [null, 33, 36], Editorial: [null, 18, 22],
+        Pop: [null, 20, 26] } },
+    { k: 'note',      l: 'Line under the button (layouts 2 and 3)', d: FORM_NOTE, in: [1, 2],
+      chars: { Lime: [null, 43, 54], '*': [null, 47, 54] } },
+    { k: 'available', l: 'Eyebrow (layout 3)', d: FORM_AVAILABLE, in: [2], chars: [null, null, 61],
       hint: 'The small line above the heading. Leave it empty to hide it.' },
   ],
   footer: [
-    { k: 'statement', l: 'Statement', type: 'area', d: FOOTER_STATEMENT },
+    // Session 11 of the character-limits pass (plans/char-limits.md): a display
+    // head held to its frame's lines, the seed's 36 its floor on four templates.
+    { k: 'statement', l: 'Statement', type: 'area', d: FOOTER_STATEMENT,
+      chars: { Grunge: [45], '*': [36] } },
     // The eighth structured editor and the seventh repeater — and the section's
     // whole sitemap, which was a constant no field could reach. Follows the
     // `songs` rule: an absent key means the seeded FOOTER_LINKS, an emptied
     // array means no links at all, and there is no null sentinel.
     { k: 'links',    l: 'Footer links', type: 'links', max: 10,
+      // Read in every row at once: the two columns stand side by side (session 11).
+      cols: { label: { Retro: [19], Lime: [28], Grunge: [28], Editorial: [20], Pop: [14] } },
       hint: 'The list is halved into two columns, in order. A link scrolls to a section on the page, or opens a web address in a new tab.' },
     // Dead until the pill was given a target — the calendar's `cta`, which was
     // a field that edited nothing until it labelled that section's foot pill.
-    { k: 'cta',      l: 'Button', d: 'Book Now',
+    // Its cap is a joint split with the link labels, which share its column
+    // (session 11).
+    { k: 'cta',      l: 'Button', d: 'Book Now', chars: { Editorial: [12], Pop: [11], '*': [16] },
       hint: 'Books at the enquiry form, the calendar or the pricing section — whichever the page carries. Empty drops the button.' },
     // The same key the header's seal takes: `vm.showBadge` already reads this
     // section's own content, so the footer's seal was hidable by nothing only
     // because no field here named it.
     { k: 'showBadge', l: 'Seal', type: 'select', opts: SHOW_HIDE, d: 'show' },
-    { k: 'copyright', l: 'Small print' },                 // defaults to copyrightOf(name) — special-cased
+    // Defaults to copyrightOf(name), special-cased.
+    { k: 'copyright', l: 'Small print',
+      chars: { Retro: [31], Lime: [28], Grunge: [32], Editorial: [24], Pop: [35] } },
   ],
 }
 
@@ -2551,6 +2769,58 @@ export const pageEmail = (sections) => {
 
 export function fieldDefault(f) { return f.def ? DEFS[f.def] : (f.d != null ? f.d : '') }
 
+// Layouts 3 and 4's heading fallbacks, per category — each page's own heads
+// (layout 4's QA, 2026-09-15, the form's, JP-054, and the repertoire's, JP-081;
+// layout 3's JP-070, 2026-09-28, which took in the calendar's "Book Me").
+// sectionVm and fieldSeed both read these, and at layouts 3 and 4 the
+// repertoire's wins over its song count in both.
+export const HEADING_3 = {
+  repertoire: REP_HEADING_3, gallery: GALLERY_HEADING_3, pricing: PRICING_HEADING_3,
+  calendar: CAL_HEADING_3, map: MAP_HEADING_3, testimonials: TESTI_HEADING_3,
+}
+export const HEADING_4 = {
+  repertoire: REP_HEADING_4, calendar: CAL_HEADING_4, gallery: GALLERY_HEADING_4, map: MAP_HEADING_4,
+  testimonials: TESTI_HEADING_4, form: FORM_HEADING_4,
+}
+
+// What a field shows while its key is absent — EditPanel's box, and the seed
+// scripts/limits.mjs measures against. The fields whose default is computed
+// rather than written down: the header's title is the artist's name, the
+// footer's small print and the form's layout-3 head are composed from it, the
+// repertoire's heading counts the songs, and a few seeds follow the layout.
+// Each mirrors what sectionVm resolves, so panel and canvas never disagree.
+// The calendar's address is the form's until one is typed (JP-076). The
+// header's kicker left the chain with JP-061: its `d` is its seed at every
+// layout, and the layout-3 card's line is a field of its own. The map's kicker
+// joined it with JP-090 (mapKickerSeed), the testimonials' with JP-095 (a)
+// (testiKickerSeed), and the map's list label with JP-095 (b)
+// (mapListLabelSeed; gated on `map`, since media carries a `listLabel` too),
+// and the map's coverage with JP-105 (mapRadiusSeed). Layouts 3 and 4's heads
+// come ahead of the song count, which sectionVm's later assignment says the
+// other way round (JP-070, JP-081).
+export function fieldSeed({ cat, f, themeName, design, c = {}, artistName, email }) {
+  const songs = Array.isArray(c.songs) ? c.songs : SONGS
+  return (f.k === 'title' || f.k === 'badgeText') && cat === 'header' ? artistName
+    : f.k === 'copyright' && cat === 'footer' ? copyrightOf(artistName)
+    : f.k === 'email' && cat === 'calendar' ? email
+    : f.k === 'heading' && cat === 'form' && design === 2 ? formHeading3(artistName)
+    : f.k === 'heading' && design === 2 && HEADING_3[cat] ? HEADING_3[cat]
+    : f.k === 'heading' && design === 3 && HEADING_4[cat] ? HEADING_4[cat]
+    : f.k === 'heading' && cat === 'calendar' && design === 0 && limeTreeTheme(themeName) ? CAL_HEADING_1
+    : f.k === 'heading' && cat === 'repertoire' ? `${songs.filter((t) => !blankRow(t, SONG_KEYS)).length} Songs`
+    : f.k === 'heading' && cat === 'testimonials' && design === 1 ? TESTI_HEADING_2
+    : f.k === 'navMode' && cat === 'header' ? navModeDefault(themeName, design)
+    : f.k === 'button' && cat === 'form' ? formBtnSeed(themeName, design)
+    : f.k === 'kicker' && cat === 'map' ? mapKickerSeed(design)
+    : f.k === 'listLabel' && cat === 'map' ? mapListLabelSeed(design)
+    : f.k === 'radius' && cat === 'map' ? mapRadiusSeed(design)
+    : f.k === 'kicker' && cat === 'testimonials' ? testiKickerSeed(design)
+    : f.k === 'cta' && cat === 'calendar' && design === 3 ? CAL_SEND_4
+    : f.k === 'rowCta' && cat === 'pricing' && design === 2 ? PRICING_ROW_CTA_3
+    : f.k === 'rowCta' && cat === 'pricing' && design === 3 ? PRICING_ROW_CTA
+    : fieldDefault(f)
+}
+
 // Whether a section's current design reads field `f` — `design` being
 // `arch % designCount`, never the raw `arch`. `f.in` is resolved per template,
 // its `'*'` standing for any template it does not name; a template it does not
@@ -2567,6 +2837,230 @@ export function fieldReach(f, themeName, design) {
 // `shared` one, which other sections print (the header's identity keys).
 export function fieldShown(f, themeName, design) {
   return !!f.shared || fieldReach(f, themeName, design)
+}
+
+// Character caps (plans/char-limits.md, user calls, 2026-10-13). A cap is
+// measured per template and design — Figma says how many lines a text block
+// draws, scripts/limits.mjs how many characters fit them at all three widths —
+// and written on the field as `chars`, in `in`'s shape: a number, an array
+// indexed by design (`null` for no cap), or an object keyed by template with
+// `'*'` for the rest. A list field (`list: ','` or `list: '\n'`) caps each item
+// by `chars` and the items by `count`, in the same shape. A repeater caps its
+// columns through `cols: { [col]: spec }`, a spec being a `chars` value or
+// `{ chars, count, list }` for a column that is itself a list (a song's tags).
+// IDENTITY_CHARS holds the caps of the sections that print the header's keys
+// (and the artist's name, `title`) with no field of their own, and `seal`, the
+// fit of the name on a section's seal ring.
+//
+// EditPanel stops typing at a cap (`maxLength`, or a refused edit for a list)
+// and sectionVm clamps what it renders, so copy typed under one layout's cap
+// keeps its full text in `c` and is shortened on the page of a tighter one.
+// Measured by scripts/limits.mjs's `who.*` probes (plans/char-limits.md,
+// session 1): `kicker`, `location` and `tags` tighten the header's fields on a
+// page that carries the section at that design (identityCap), and clamp what
+// the section prints when it moves to a tighter one. `title` and `seal` only
+// clamp: the name's panel cap is the header's own (user call, 2026-10-13), so
+// a byline, a display head or a seal ring tighter than the h1 shortens its own
+// copy with an ellipsis. Kicker and location never go under their seeds' own
+// lengths (the frame's string fits where prose of its length may not); a
+// chip is held to twice the longest seed (a sized seat).
+export const IDENTITY_CHARS = {
+  bio: {
+    title: { Retro: [null, 55, 19, 48], Lime: [null, 49, 20, 49], Grunge: [null, 65, 18, 60],
+      Editorial: [null, 37, 14, 31], Pop: [null, 37, 17, 39] },
+    kicker: { Retro: [19, 20, 13, 47], Lime: [20, 23, 21, 47], Pop: [26, 22, 13, 47], '*': [20, 20, 13, 47] },
+    location: { Retro: [18, 23, 15], Lime: [24, 26, 25], Grunge: [24, 23, 15], Editorial: [24, 33, 15],
+      Pop: [27, 34, 15] },
+    tags: { chars: { Retro: [null, 22, null, 22], '*': [null, 22, 22, 22] },
+      count: { Retro: [null, 7, null, 7], '*': [null, 6, 8, 8] } },
+    seal: { Retro: [19, null, 19], Lime: [13, null, 22], Grunge: [14, null, 14], Editorial: [16],
+      Pop: [null, null, 12] },
+  },
+  calendar: {
+    title: [null, 64],
+    location: { Retro: [19, null, null, 67], Lime: [null, null, null, 64], Grunge: [null, null, null, 55],
+      '*': [null, null, null, 67] },
+    seal: { Retro: [19] },
+  },
+  footer: {
+    title: { Retro: [24], Lime: [46], Grunge: [54], Editorial: [39], Pop: [10] },
+    seal: { Retro: 19, Lime: 13, Grunge: 14, Editorial: 16, Pop: 12 },
+  },
+  form: {
+    title: { Retro: [76, 50, 13], Lime: [61, 40, 13], Grunge: [50, 85, 23], Editorial: [27, 42, 10],
+      Pop: [55, 54, 11] },
+    kicker: { Retro: [43, 38], Pop: [39, 40], '*': [30, 40] },
+    seal: { Pop: [12] },
+  },
+  // Layout 2's caption line ellipsizes at 390 past 26–27 (session 6's re-run;
+  // session 1 read 28–29 before the box test told a clip from an overshoot).
+  gallery: {
+    title: { Retro: [80, 27], Pop: [80, 27], '*': [106, 26] },
+  },
+  map: {
+    location: { Retro: [null, 18], Lime: [null, 15], Pop: [null, 18], '*': [null, 17] },
+  },
+  media: {
+    title: { Retro: [91, 11, 20, 30], Lime: [76, 11, 19, 29], Grunge: [40, 11, 21, 31],
+      Editorial: [43, 11, 11, 31], Pop: [11, 11, 13, 31] },
+  },
+  pricing: {
+    seal: { Grunge: [14] },
+  },
+  testimonials: {
+    title: { Retro: [null, null, 65], Lime: [null, null, 60], '*': [null, null, 67] },
+  },
+}
+const specAt = (spec, themeName, design) => {
+  if (spec == null) return undefined
+  if (typeof spec === 'number') return spec
+  if (Array.isArray(spec)) return spec[design] ?? undefined
+  return specAt(spec[themeName] ?? spec['*'], themeName, design)
+}
+const isColObj = (spec) => spec != null && typeof spec === 'object' && !Array.isArray(spec) && 'chars' in spec
+// The resolved cap of a field or column: { chars, count, list } or null.
+const capOf = (spec, count, list, themeName, design) => {
+  const chars = specAt(spec, themeName, design)
+  const n = specAt(count, themeName, design)
+  return chars == null && n == null ? null : { chars, count: n, list }
+}
+export function fieldCap(f, themeName, design) {
+  return capOf(f.chars, f.count, f.list, themeName, design)
+}
+export function colCaps(f, themeName, design) {
+  if (!f.cols) return null
+  const out = {}
+  for (const [k, spec] of Object.entries(f.cols)) {
+    const cap = isColObj(spec) ? capOf(spec.chars, spec.count, spec.list, themeName, design)
+      : capOf(spec, undefined, undefined, themeName, design)
+    if (cap) out[k] = cap
+  }
+  return Object.keys(out).length ? out : null
+}
+const NO_CLAMP = new Set(['image', 'images', 'url', 'email', 'date', 'select', 'booked'])
+// A section's own cap for a header key it prints: its IDENTITY_CHARS entry, and
+// the header's field besides (the header prints its own keys off `c`).
+function identityCapOf(cat, key, themeName, design) {
+  const own = cat === 'header'
+    ? (FIELDS.header.find((f) => f.k === key) ?? null) : null
+  const ownCap = own ? fieldCap(own, themeName, design) : null
+  const ext = IDENTITY_CHARS[cat]?.[key]
+  const extCap = ext == null ? null : isColObj(ext)
+    ? capOf(ext.chars, ext.count, key === 'tags' ? ',' : undefined, themeName, design)
+    : capOf(ext, undefined, key === 'tags' ? ',' : undefined, themeName, design)
+  return minCap(ownCap, extCap)
+}
+const minOf = (a, b) => (a == null ? b : b == null ? a : Math.min(a, b))
+function minCap(a, b) {
+  if (!a) return b
+  if (!b) return a
+  return { chars: minOf(a.chars, b.chars), count: minOf(a.count, b.count), list: a.list ?? b.list }
+}
+// The cap EditPanel enforces on one of the header's shared keys (`kicker`,
+// `location`, `tags`): the tightest among the page's sections at their
+// current designs (user call, 2026-10-13). A section moved to a tighter
+// layout later is covered by its own render clamp. The artist's name is not
+// one of them: its panel cap is the header's own field (session 1).
+export function identityCap(key, sections, themeName) {
+  let cap = null
+  for (const s of sections) {
+    const n = designCount(s.cat, themeName) || 1
+    cap = minCap(cap, identityCapOf(s.cat, key, themeName, ((s.arch % n) + n) % n))
+  }
+  return cap
+}
+
+// The fit of the artist's name on section `cat`'s seal ring at this design:
+// the header's Badge text cap, or IDENTITY_CHARS[cat].seal. sectionVm clamps
+// the ring's copy of the name to it where no Badge text is set.
+export function sealCap(cat, themeName, design) {
+  if (cat === 'header') return fieldCap(FIELDS.header.find((f) => f.k === 'badgeText'), themeName, design)
+  return capOf(IDENTITY_CHARS[cat]?.seal, undefined, undefined, themeName, design)
+}
+
+// `s` cut to `n` characters, the ellipsis inside them: at the last space past
+// 60% of the cap, else mid-word. Untouched at or under the cap.
+export function clampText(s, n) {
+  if (typeof s !== 'string' || n == null || s.length <= n) return s
+  let cut = s.slice(0, Math.max(0, n - 1))
+  const sp = cut.lastIndexOf(' ')
+  if (sp >= n * 0.6) cut = cut.slice(0, sp)
+  return `${cut.trimEnd()}…`
+}
+const listItems = (s, sep) => s.split(sep)
+// Each item clamped to `chars` (its leading and trailing space kept, so a list
+// that fits rejoins byte for byte, and an item at its cap with a space typed
+// after it is not over: capExcess trims both) and the list cut after `count`
+// non-blank items.
+export function clampList(s, cap) {
+  if (typeof s !== 'string' || !cap) return s
+  let kept = 0
+  const out = []
+  for (const it of listItems(s, cap.list)) {
+    if (it.trim()) {
+      if (cap.count != null && kept >= cap.count) break
+      kept++
+    }
+    const lead = it.match(/^\s*/)[0]
+    const body = it.slice(lead.length).trimEnd()
+    out.push(lead + clampText(body, cap.chars) + it.slice(lead.length + body.length))
+  }
+  return out.join(cap.list)
+}
+export const clampCapped = (v, cap) => (!cap || typeof v !== 'string' ? v
+  : cap.list ? clampList(v, cap) : clampText(v, cap.chars))
+// How far a value is past its cap: the characters over, plus one per item over
+// the count. 0 is within it. EditPanel refuses a list edit that raises it.
+export function capExcess(v, cap) {
+  if (!cap || typeof v !== 'string') return 0
+  if (!cap.list) return cap.chars == null ? 0 : Math.max(0, v.length - cap.chars)
+  const items = listItems(v, cap.list).map((t) => t.trim()).filter(Boolean)
+  const over = cap.chars == null ? 0 : items.reduce((n, t) => n + Math.max(0, t.length - cap.chars), 0)
+  return over + (cap.count == null ? 0 : Math.max(0, items.length - cap.count))
+}
+const clampRows = (rows, caps) => {
+  let moved = false
+  const map = (r) => {
+    if (!r || typeof r !== 'object') return r
+    let row = r
+    for (const [k, cap] of Object.entries(caps)) {
+      const v = clampCapped(r[k], cap)
+      if (v !== r[k]) { if (row === r) row = { ...r }; row[k] = v; moved = true }
+    }
+    return row
+  }
+  if (Array.isArray(rows)) { const out = rows.map(map); return moved ? out : rows }
+  const out = Object.fromEntries(Object.entries(rows).map(([k, r]) => [k, map(r)]))
+  return moved ? out : rows
+}
+// A section's content with every capped key clamped for this template and
+// design — `c` itself when nothing is over, so a page within its caps renders
+// exactly as it did before any cap existed. sectionVm calls it at its head.
+export function clampContent(cat, c, themeName, design) {
+  let out = c
+  for (const f of FIELDS[cat] ?? []) {
+    const v = c[f.k]
+    if (v == null || NO_CLAMP.has(f.type)) continue
+    let next = v
+    if (typeof v === 'string') next = clampCapped(v, fieldCap(f, themeName, design))
+    else if (typeof v === 'object') {
+      const caps = colCaps(f, themeName, design)
+      if (caps) next = clampRows(v, caps)
+    }
+    if (next !== v) { if (out === c) out = { ...c }; out[f.k] = next }
+  }
+  return out
+}
+// The header's keys and the artist's name as section `cat` prints them,
+// clamped to its own caps (the header's fields, or IDENTITY_CHARS).
+export function clampIdentity(cat, identity, artistName, themeName, design) {
+  let id = identity
+  for (const k of ['kicker', 'location', 'tags']) {
+    const v = clampCapped(identity?.[k], identityCapOf(cat, k, themeName, design))
+    if (v !== identity?.[k]) { if (id === identity) id = { ...identity }; id[k] = v }
+  }
+  const nameCap = identityCapOf(cat, 'title', themeName, design)
+  return { identity: id, artistName: clampCapped(artistName, nameCap) }
 }
 
 // Why a user-typed outbound address cannot be linked, or null if it can (an
