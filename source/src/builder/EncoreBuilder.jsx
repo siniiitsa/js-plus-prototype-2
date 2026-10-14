@@ -5367,6 +5367,28 @@ function scrollFieldIntoView(scroller, wrap, node, isMobile) {
   scroller.scrollTo({ top: Math.max(0, scroller.scrollTop + r.top - want), behavior: 'smooth' })
 }
 
+// A moved section keeps its place on screen. `markFollow` notes where the
+// section stands in the canvas scroller before the move; `followSection` runs
+// once the new order is laid out and scrolls by however far it travelled, so
+// its toolbar stays under the pointer and a second click carries on. A section
+// that was out of view (a move from the sidebar) is scrolled to instead.
+function markFollow(scroller, id, isMobile) {
+  const wrap = scroller?.querySelector(`[data-sid="${id}"]`)
+  if (!wrap) return null
+  const sr = scroller.getBoundingClientRect()
+  const r = wrap.getBoundingClientRect()
+  const bandBottom = isMobile ? Math.min(sr.bottom, window.innerHeight * 0.16) : sr.bottom
+  return { id, offset: r.top - sr.top, seen: r.top < bandBottom && r.bottom > sr.top }
+}
+
+function followSection(scroller, mark, isMobile) {
+  const wrap = scroller?.querySelector(`[data-sid="${mark.id}"]`)
+  if (!wrap) return
+  if (!mark.seen) { scrollFieldIntoView(scroller, wrap, null, isMobile); return }
+  const now = wrap.getBoundingClientRect().top - scroller.getBoundingClientRect().top
+  scroller.scrollTop += now - mark.offset
+}
+
 /* ------------------------------------------------------------------ *
  * §5–§9 The builder
  * ------------------------------------------------------------------ */
@@ -5580,27 +5602,47 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
 
   const closeAll = useCallback(() => patch({ menuFor: null, selectedId: null }), [patch])
 
-  const move = useCallback((id, dir) => patch((s) => {
-    if (!canMove(s.sections, id, dir)) return {}
-    const i = s.sections.findIndex((x) => x.id === id)
-    const next = s.sections.slice()
-    const [x] = next.splice(i, 1)
-    next.splice(i + dir, 0, x)
-    return { sections: next }
-  }), [patch])
+  // The section being moved, as it stood on screen: the layout effect above
+  // `move` scrolls the canvas by how far it travelled (`followSection`).
+  const followRef = useRef(null)
+
+  const move = useCallback((id, dir) => {
+    if (canMove(sections, id, dir)) followRef.current = markFollow(canvasRef.current, id, isMobile)
+    patch((s) => {
+      if (!canMove(s.sections, id, dir)) return {}
+      const i = s.sections.findIndex((x) => x.id === id)
+      const next = s.sections.slice()
+      const [x] = next.splice(i, 1)
+      next.splice(i + dir, 0, x)
+      return { sections: next }
+    })
+  }, [patch, sections, isMobile])
 
   // §5.4 — the drag equivalent of move(): drop `from` at `to`, with the same
   // rule that the header keeps index 0 and the footer stays last.
-  const reorder = useCallback((from, to) => patch((s) => {
-    const sec = s.sections[from]
-    if (!sec || from === to) return {}
-    if (sec.cat === 'header' || sec.cat === 'footer') return {}
-    if (to < 1 || to > s.sections.length - 2) return {}
-    const next = s.sections.slice()
-    const [x] = next.splice(from, 1)
-    next.splice(to, 0, x)
-    return { sections: next }
-  }), [patch])
+  const reorder = useCallback((from, to) => {
+    const sec = sections[from]
+    if (sec && from !== to && sec.cat !== 'header' && sec.cat !== 'footer' && to >= 1 && to <= sections.length - 2) {
+      followRef.current = markFollow(canvasRef.current, sec.id, isMobile)
+    }
+    patch((s) => {
+      const sec = s.sections[from]
+      if (!sec || from === to) return {}
+      if (sec.cat === 'header' || sec.cat === 'footer') return {}
+      if (to < 1 || to > s.sections.length - 2) return {}
+      const next = s.sections.slice()
+      const [x] = next.splice(from, 1)
+      next.splice(to, 0, x)
+      return { sections: next }
+    })
+  }, [patch, sections, isMobile])
+
+  useLayoutEffect(() => {
+    const mark = followRef.current
+    if (!mark) return
+    followRef.current = null
+    followSection(canvasRef.current, mark, isMobile)
+  }, [st.sections, isMobile])
 
   const setContent = useCallback((id, k, v) => patch((s) => ({
     sections: s.sections.map((x) => {
