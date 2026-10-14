@@ -77,9 +77,11 @@ another `notes/` file.
   note beside it, `rings` labels each ring's right edge at the midline (layout 4 too), and
   `expand` is the foot's link on the featured gig's `directions` — a span on the canvas and
   where there is no route, and in layout 2 the travel card's Get Directions a second time, as
-  the frame offers both. Layout 2 alone also prints `status` as the chip on **every** gig row:
-  one section-wide word, not a per-gig status (pricing's `unit` precedent), with the row's own
-  hour, which held that seat, moved into the meta line. Each drops when emptied. Layout 2's
+  the frame offers both. Layout 2 drew `status` as the chip on every gig row and as the panel's tab,
+  with the row's own hour moved into the meta line; **it draws neither any more** (user call,
+  2026-10-14, every template): the rows end at the meta line (the hour stays there), the panel's
+  head row is the `updated` note alone, and `status` is a layout-3 field again (`in: [2]`).
+  Each drops when emptied. Layout 2's
   Lime block (Grunge's, Editorial's and Pop's too, widened) reads layout 3's `zoom`; Retro's layout 2 draws no zoom controls. **Layout 4 is the
   pager alone**: its whole gig list is one ticker (mustard under Retro, an olive `s.box1`
   capsule in a `s.stroke1` hairline under Lime, `#1A1A1A` in a 1px `#FF0000` ring with red

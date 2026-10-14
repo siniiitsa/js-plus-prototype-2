@@ -20933,11 +20933,6 @@ function EventsMap({ s }) {
     // layout 1 stands its whole section on, which is the same idea one level in.
     const plate = s.retro ? '#292A1C' : s.mapBg
     const plateFg = s.retro ? '#FBF6EA' : s.mapFg
-    // The panel's own tab. Rust on cream under Retro; the accent is not
-    // guaranteed against `paper` elsewhere (Lime's is acid green on pale lime),
-    // so the flat four keep the panel's ink.
-    const tabFg = s.retro ? s.ac : s.paperFg
-    const tabBg = s.retro ? '#FBF6EA' : s.soft
 
     // The page of gigs, exactly as layout 1 pages it: `gigPage` is PINS.length,
     // so a page's worth of gigs is one set of distinct pin positions.
@@ -21080,27 +21075,27 @@ function EventsMap({ s }) {
       const S3 = ed || pop ? s.onScheme[3] : null
       const G = grunge ? {
         card: '#F52E34', hair: '#00000026', ink: s.tx, zoom: '#F52E34',
-        panel: s.box1, status: s.bg, r: u(15), panelR: u(15), mapR: u(8),
+        panel: s.box1, r: u(15), panelR: u(15), mapR: u(8),
         aspect: desk ? '588 / 512' : tab ? '318 / 520' : '346 / 298',
       } : ed ? {
         card: S3.box1, hair: S3.stroke1, ink: S3.tx, zoom: S3.box2,
-        panel: S2.box1, status: S2.bg, r: 0, panelR: 0, mapR: 0,
+        panel: S2.box1, r: 0, panelR: 0, mapR: 0,
         aspect: desk ? '588 / 492' : tab ? '318 / 523' : '346 / 302',
         // Editorial's own leaves, each read through `??` below.
         title: desk ? u(32) : tab ? '25px' : '23px',
         pillBg: S3.ac, pillFg: S3.bg, statRule: S3.stroke2,
         acc: S3.bg, dot: S3.tx, dotOp: 0.6,
-        statusFg: S2.ac, feat: S2.ac, frame: S2.stroke1, arrow: S2.bg,
+        feat: S2.ac, frame: S2.stroke1, arrow: S2.bg,
       } : pop ? {
         card: S3.box1, hair: S3.stroke1, ink: S3.tx, zoom: S3.box2,
-        panel: S2.box1, status: S2.bg, r: u(30), panelR: u(30), mapR: desk ? u(8) : '19px',
+        panel: S2.box1, r: u(30), panelR: u(30), mapR: desk ? u(8) : '19px',
         aspect: desk ? '588 / 471' : tab ? '318 / 527' : '346 / 305',
         title: desk ? u(28) : tab ? '22px' : '20px',
         pillBg: S3.ac, pillFg: S3.bg, acc: S3.bg, dot: S3.tx, dotOp: 0.6,
-        statusFg: S2.ac, frame: S2.stroke1, arrow: S2.bg,
+        frame: S2.stroke1, arrow: S2.bg,
       } : {
         card: '#CCFA61', hair: '#15180F26', ink: s.bg, zoom: '#D9FF7F',
-        panel: s.box2, status: s.box1, r: u(50), panelR: u(s.mob ? 30 : 50),
+        panel: s.box2, r: u(50), panelR: u(s.mob ? 30 : 50),
         mapR: desk ? u(13) : tab ? '42px' : '25px',
         aspect: desk ? '588 / 519' : tab ? '318 / 518' : '346 / 298',
       }
@@ -21311,14 +21306,6 @@ function EventsMap({ s }) {
                 {!!gg.time && ` · ${gg.time}`}
               </span>
             </div>
-            {/* Retro's call (JP-040): the chip is `status`, the hour joins
-                the meta line. */}
-            {!!s.mapStatus && (
-              <span style={{
-                ...bodySm, flex: 'none', boxShadow: ring(s.stroke1), borderRadius: '999px',
-                padding: `${u(4)} ${u(10)}`, whiteSpace: 'nowrap',
-              }}>{s.mapStatus}</span>
-            )}
           </div>
         )
       }
@@ -21393,10 +21380,10 @@ function EventsMap({ s }) {
           borderRadius: G.panelR,
         })}>
           <div style={col(u(12), { width: '100%', alignItems: 'flex-start' })}>
-            {/* The frame's Scheme 2 status pill and its note, on layout 3's
-                two fields (JP-040); each drops when emptied, the row with
-                both. */}
-            {(!!s.mapStatus || !!s.mapUpdated) && (
+            {/* The frame's note, on layout 3's `updated` (JP-040); it drops when
+                emptied. The frame's Scheme 2 status pill is not drawn at layout 2
+                (user call, 2026-10-14). */}
+            {!!s.mapUpdated && (
               <div style={row(u(12), {
                 width: '100%', justifyContent: 'space-between',
                 // `rowGap` at every width, inert without the wrap: dropping it
@@ -21404,18 +21391,7 @@ function EventsMap({ s }) {
                 // when the published tab is resized into or out of 390.
                 ...(s.mob ? { flexWrap: 'wrap' } : null), rowGap: u(6),
               })}>
-                {!!s.mapStatus && (
-                  <span style={row(u(8), {
-                    background: G.status, color: G.statusFg ?? s.ac, borderRadius: '999px', flex: 'none',
-                    padding: `${u(6)} ${u(12)}`, ...chip,
-                  })}>
-                    <span style={{ width: u(6), height: u(6), borderRadius: '999px', background: G.statusFg ?? s.ac, flex: 'none' }} />
-                    {s.mapStatus}
-                  </span>
-                )}
-                {!!s.mapUpdated && (
-                  <span style={{ ...bodySm, flex: 'none', opacity: 0.6, marginLeft: 'auto' }}>{s.mapUpdated}</span>
-                )}
+                <span style={{ ...bodySm, flex: 'none', opacity: 0.6, marginLeft: 'auto' }}>{s.mapUpdated}</span>
               </div>
             )}
             <div style={col(u(4), { width: '100%', minWidth: 0 })}>
@@ -21759,18 +21735,6 @@ function EventsMap({ s }) {
               {!!gg.time && ` · ${gg.time}`}
             </span>
           </div>
-          {/* The frame's "In transit" chip is `status` (JP-040, PO call): one
-              section-wide word on every row, the artist's claim rather than
-              the page's — the pricing `unit` precedent — and not a per-gig
-              status. The row's own hour, which held this seat while the fit
-              declined the claim, joins the meta line; an emptied `status`
-              drops the chip rather than printing an empty pill. */}
-          {!!s.mapStatus && (
-            <span style={{
-              ...label12, flex: 'none', border: `1px solid ${hair}`, borderRadius: '999px',
-              padding: `calc(${u(4)} - 1px) calc(${u(10)} - 1px)`, whiteSpace: 'nowrap',
-            }}>{s.mapStatus}</span>
-          )}
         </div>
       )
     }
@@ -21831,28 +21795,15 @@ function EventsMap({ s }) {
         border: s.retro ? undefined : `${s.bw} solid ${hair}`,
       })}>
         <div style={col(u(12), { width: '100%', alignItems: 'flex-start' })}>
-          {/* The frame's "● IN TRANSIT" tab and its "Updated 2m ago" note, on
-              layout 3's `status` and `updated` (JP-040, PO call): the fit had
-              declined both as claims and printed "Featured" here; as fields
-              they are the artist's claims. Each drops when emptied, and the
-              row with both. */}
-          {(!!s.mapStatus || !!s.mapUpdated) && (
+          {/* The frame's "Updated 2m ago" note, on layout 3's `updated` (JP-040,
+              PO call). The frame's "● IN TRANSIT" tab is not drawn at layout 2
+              (user call, 2026-10-14). Drops when emptied. */}
+          {!!s.mapUpdated && (
             <div style={row(u(12), {
               width: '100%', justifyContent: 'space-between',
               ...(s.mob ? { flexWrap: 'wrap' } : null), rowGap: u(6),
             })}>
-              {!!s.mapStatus && (
-                <span style={row(u(8), {
-                  background: tabBg, color: tabFg, borderRadius: '999px', flex: 'none',
-                  padding: `${u(6)} ${u(12)}`, ...chip12,
-                })}>
-                  <span style={{ width: u(6), height: u(6), borderRadius: '999px', background: tabFg, flex: 'none' }} />
-                  {s.mapStatus}
-                </span>
-              )}
-              {!!s.mapUpdated && (
-                <span style={{ ...label12, flex: 'none', opacity: 0.6, marginLeft: 'auto' }}>{s.mapUpdated}</span>
-              )}
+              <span style={{ ...label12, flex: 'none', opacity: 0.6, marginLeft: 'auto' }}>{s.mapUpdated}</span>
             </div>
           )}
           {g ? (

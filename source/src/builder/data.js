@@ -2453,11 +2453,12 @@ export const FIELDS = {
       chars: [null, null, 24],
       hint: 'Lists every gig at once on the published page, when there is more than one page of them.' },
     // Layout 3's QA fields, which layout 2 reads as well since JP-040 (its fit
-    // had dropped all four as claims). None names a layout in its label: the
+    // had dropped all four as claims) — all but `status`, which layout 2 does
+    // not draw (user call, 2026-10-14). None names a layout in its label: the
     // panel lists them only where the design reads them.
-    { k: 'status',  l: 'Map tag', d: MAP_STATUS, in: [1, 2],
-      chars: { Retro: [null, 18, 20], Lime: [null, 13, 20], Grunge: [null, 18, 20], '*': [null, 10, 20] },
-      hint: 'The tag above the featured gig. Layout 2 also prints it as the chip on every gig row.' },
+    { k: 'status',  l: 'Map tag', d: MAP_STATUS, in: [2],
+      chars: [null, null, 20],
+      hint: 'The tag above the featured gig.' },
     { k: 'updated', l: 'Map note', d: MAP_UPDATED, in: [1, 2],
       chars: { Lime: [null, 31, 31], '*': [null, 35, 34] } },
     { k: 'rings',   l: 'Ring labels', d: MAP_RINGS, in: [1, 2, 3],

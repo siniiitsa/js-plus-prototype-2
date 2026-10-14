@@ -1306,7 +1306,7 @@ marks a cap at its floor that prose fails at some width).
      (17 read at 390);
    - the heading holds *Distances we’ll Travel*'s 22 at Editorial's layout 4 (20 read);
    - the stat value is 14 (judgement 4);
-   - the `status` chip holds *In transit*'s 10 at Editorial's and Pop's layout 2 (9 read);
+   - ~~the `status` chip holds *In transit*'s 10 at Editorial's and Pop's layout 2 (9 read)~~ — moot since 2026-10-14: layout 2 no longer draws `status`;
    - *Willing to travel to*'s 20 is the floor of `venueLabel` at 768 on four templates. That seed
      already takes two lines there under Lime (`notes/map.md`), and prose reads 18.
 
