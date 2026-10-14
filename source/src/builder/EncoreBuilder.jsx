@@ -2625,8 +2625,14 @@ function ImageField({ value, aspect, onChange, onToast }) {
 /* ------------------------------------------------------------------ *
  * §8.6 — the multi-photo variant, for the sections whose design shows
  * several images at once (the gallery strip, the media artwork column).
- * Order is meaningful: slot n fills the nth tile of the layout.
+ * Order is meaningful: slot n fills the nth tile of the layout, so a tile's
+ * grip reorders it — the one repeater that does. Pointer events, as in
+ * SectionList, so mouse, touch and pen share it; the grip mirrors the arrow
+ * keys. The DOM order never changes mid-drag (a moved node would lose its
+ * pointer capture): every tile is translated to the cell it will land in.
  * ------------------------------------------------------------------ */
+
+const PHOTO_COLS = 3
 
 function ImagesField({ value, max, aspect, onChange, onToast }) {
   const inputRef = useRef(null)
@@ -2662,6 +2668,83 @@ function ImagesField({ value, max, aspect, onChange, onToast }) {
 
   const removeAt = (i) => onChange(list.filter((_, j) => j !== i))
 
+  const gridRef = useRef(null)
+  // `dragRef` is the source of truth and `drag` only mirrors it for rendering,
+  // as in SectionList: pointerup commits what it can see now.
+  const dragRef = useRef(null)
+  const [drag, setDrag] = useState(null)
+  // The grip a keyboard move leaves focus on: its tile is a different node now.
+  const refocus = useRef(null)
+  useEffect(() => {
+    if (refocus.current == null) return
+    gridRef.current?.querySelectorAll('[data-grip]')[refocus.current]?.focus()
+    refocus.current = null
+  }, [value])
+
+  const moveTo = (from, to) => {
+    if (from === to || to < 0 || to >= list.length) return
+    const next = list.slice()
+    next.splice(to, 0, next.splice(from, 1)[0])
+    onChange(next)
+  }
+  // Cell boxes in the grid's own coordinates (offset* ignores transforms, and a
+  // scroll of the panel mid-drag moves the grid with the pointer).
+  const cells = () => [...gridRef.current.querySelectorAll('[data-photo]')]
+    .map((el) => ({ x: el.offsetLeft, y: el.offsetTop, w: el.offsetWidth, h: el.offsetHeight }))
+  const inGrid = (e) => {
+    const r = gridRef.current.getBoundingClientRect()
+    return { x: e.clientX - r.left, y: e.clientY - r.top }
+  }
+  const grab = (e, idx) => {
+    if (e.button > 0) return
+    stopE(e)
+    try { e.currentTarget.setPointerCapture(e.pointerId) } catch { /* not captured */ }
+    dragRef.current = { idx, to: idx, start: inGrid(e), dx: 0, dy: 0, cells: cells() }
+    setDrag(dragRef.current)
+  }
+  const dragMove = (e) => {
+    const d = dragRef.current
+    if (!d) return
+    const p = inGrid(e)
+    // The cell the pointer is in, else the nearest centre (a drop in the gap
+    // or past the grid still lands somewhere).
+    let to = d.cells.findIndex((c) => p.x >= c.x && p.x < c.x + c.w && p.y >= c.y && p.y < c.y + c.h)
+    if (to < 0) {
+      let best = Infinity
+      d.cells.forEach((c, j) => {
+        const dist = (p.x - c.x - c.w / 2) ** 2 + (p.y - c.y - c.h / 2) ** 2
+        if (dist < best) { best = dist; to = j }
+      })
+    }
+    const dx = p.x - d.start.x
+    const dy = p.y - d.start.y
+    if (d.dx === dx && d.dy === dy && d.to === to) return
+    dragRef.current = { ...d, dx, dy, to }
+    setDrag(dragRef.current)
+  }
+  const drop = () => {
+    const d = dragRef.current
+    dragRef.current = null
+    setDrag(null)
+    if (d) moveTo(d.idx, d.to)
+  }
+  // Where tile `i` is drawn while a drag is open: the dragged one under the
+  // pointer, the ones between its two seats a place along, the rest at home.
+  const seatOf = (i) => {
+    if (!drag) return i
+    if (i === drag.idx) return drag.to
+    if (drag.to > drag.idx && i > drag.idx && i <= drag.to) return i - 1
+    if (drag.to < drag.idx && i >= drag.to && i < drag.idx) return i + 1
+    return i
+  }
+  const shiftOf = (i) => {
+    if (!drag) return null
+    if (i === drag.idx) return { x: drag.dx, y: drag.dy }
+    const a = drag.cells[i]
+    const b = drag.cells[seatOf(i)]
+    return a && b && b !== a ? { x: b.x - a.x, y: b.y - a.y } : null
+  }
+
   return (
     <div onClick={stopE}>
       <input
@@ -2669,9 +2752,21 @@ function ImagesField({ value, max, aspect, onChange, onToast }) {
         onChange={(e) => { take(e.target.files); e.target.value = '' }}
         style={FILE_INPUT}
       />
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
-        {list.map((src, i) => (
-          <div key={i} style={{ position: 'relative' }}>
+      <div ref={gridRef} style={{ display: 'grid', gridTemplateColumns: `repeat(${PHOTO_COLS}, 1fr)`, gap: '8px', position: 'relative' }}>
+        {list.map((src, i) => {
+          const sh = shiftOf(i)
+          const lifted = drag?.idx === i
+          return (
+          <div
+            key={i} data-photo
+            style={{
+              position: 'relative',
+              transform: sh ? `translate(${sh.x}px, ${sh.y}px)${lifted ? ' scale(1.05)' : ''}` : undefined,
+              zIndex: lifted ? 2 : undefined,
+              filter: lifted ? 'drop-shadow(0 10px 12px rgba(20,18,12,.22))' : undefined,
+              transition: drag && !lifted ? 'transform .12s' : undefined,
+            }}
+          >
             <button
               type="button" aria-label={`Edit photo ${i + 1}`}
               onClick={(e) => { stopE(e); editImages([{ src, aspect, edit: true, onApply: (u) => onChange(list.map((x, j) => (j === i ? u : x))) }]) }}
@@ -2686,7 +2781,33 @@ function ImagesField({ value, max, aspect, onChange, onToast }) {
               position: 'absolute', left: '4px', bottom: '4px', background: 'rgba(27,26,23,.72)',
               color: '#FFFFFF', fontSize: '9px', fontWeight: 700, borderRadius: '5px', padding: '1px 5px',
               pointerEvents: 'none',
-            }}>{i + 1}</span>
+            }}>{seatOf(i) + 1}</span>
+            {list.length > 1 && (
+              <span
+                role="button" tabIndex={0} data-grip
+                aria-label={`Move photo ${i + 1}`}
+                onPointerDown={(e) => grab(e, i)}
+                onPointerMove={dragMove}
+                onPointerUp={drop}
+                onPointerCancel={drop}
+                onKeyDown={(e) => {
+                  const by = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -PHOTO_COLS, ArrowDown: PHOTO_COLS }[e.key]
+                  if (!by) return
+                  e.preventDefault(); stopE(e)
+                  const to = Math.max(0, Math.min(list.length - 1, i + by))
+                  if (to === i) return
+                  refocus.current = to
+                  moveTo(i, to)
+                }}
+                className="hover:text-foreground"
+                style={{
+                  position: 'absolute', right: '4px', bottom: '4px', width: '20px', height: '20px',
+                  borderRadius: '999px', border: '1px solid #E2DFD7', background: '#FFFFFF',
+                  color: '#98958A', cursor: lifted ? 'grabbing' : 'grab', touchAction: 'none',
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                }}
+              ><GripVertical size={11} /></span>
+            )}
             <button
               type="button" aria-label={`Remove photo ${i + 1}`}
               onClick={(e) => { stopE(e); removeAt(i) }}
@@ -2699,7 +2820,8 @@ function ImagesField({ value, max, aspect, onChange, onToast }) {
               }}
             ><X size={11} /></button>
           </div>
-        ))}
+          )
+        })}
 
         {room > 0 && (
           <div
@@ -2721,6 +2843,7 @@ function ImagesField({ value, max, aspect, onChange, onToast }) {
       </div>
       <p style={{ margin: '6px 0 0', fontSize: '10px', color: '#98958A' }}>
         {list.length} of {max} · PNG or JPG up to 4 MB · from your device
+        {list.length > 1 && <><br />Drag a photo’s grip to reorder.</>}
       </p>
       {/* Kept while the grid is full as well: a refused file is still news
           when the good ones in its batch filled the last slot. */}

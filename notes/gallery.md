@@ -195,3 +195,16 @@ another `notes/` file.
   same-origin page (`openPublished`), and is dressed once its navigation has committed. The
   double-clickable `file://` build has no such page and no origin, so a player there shows
   Error 153 whatever is done; the row is still live and still toggles.
+- **The Photos field reorders** (user call, 2026-10-14). Each tile of `ImagesField` carries a grip
+  (bottom-right, drawn from two photos on) that drags the photo to another cell, or moves it on
+  ←/→ (one place) and ↑/↓ (a row, `PHOTO_COLS`). Pointer events on the grip, `SectionList`'s shape,
+  so touch works in the mobile Edit drawer (`touchAction: 'none'` on the grip alone; the tile body
+  still scrolls the panel and opens the editor on a click). **The DOM never reorders mid-drag**: a
+  node moved by React's keyed reconcile would lose its pointer capture, so every tile is
+  translated to the cell it will land in and `c.images` is written once, on drop. Cell boxes are
+  read as `offsetLeft` / `offsetTop` in the grid's own coordinates, which ignore transforms and
+  survive a panel scroll. A keyboard move remounts nothing but hands focus to the grip at the new
+  index (an effect on `value`). The array stays strings, so a seed moved to another slot keeps its
+  crop (`seedFocus` looks up the URL) and `pick` (published-tab state) is untouched. `ImagesField`
+  is shared, so pricing's *Reviewer photos* reorder too; every other repeater stays "order is
+  entry order".
