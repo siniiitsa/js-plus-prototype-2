@@ -2863,6 +2863,91 @@ function CappedText({ area = false, cap, value, onChange, style, ...rest }) {
 }
 
 /* ------------------------------------------------------------------ *
+ * LineListField — a delimited list (`list: ','`) edited as one box per item,
+ * with a round X per row and an add button, for the fields that set `rows`
+ * (the header's Tags). The stored value is unchanged: the same string, items
+ * joined with the separator and a space, so the data model, the clamp and the
+ * caps all read it as before. A blank row (just added, not typed in yet) lives
+ * only here and is dropped from what is stored; `emitted` is the last string
+ * this box wrote, so a different value arriving from outside (a layout swap, an
+ * undo) rebuilds the rows and our own echo does not. A separator typed or
+ * pasted into a row splits it into rows, since it would on the page.
+ * ------------------------------------------------------------------- */
+
+function LineListField({ value, cap, placeholder, addLabel, onChange }) {
+  const sep = cap?.list ?? ','
+  const parse = (v) => String(v ?? '').split(sep).map((t) => t.trim()).filter(Boolean)
+  const join = (r) => r.map((t) => t.trim()).filter(Boolean).join(`${sep} `)
+  const incoming = String(value ?? '')
+  const [rows, setRows] = useState(() => parse(incoming))
+  const emitted = useRef(incoming)
+  if (incoming !== emitted.current) {
+    emitted.current = incoming
+    setRows(parse(incoming))
+  }
+  const max = cap?.count ?? Infinity
+  const commit = (next) => {
+    setRows(next)
+    emitted.current = join(next)
+    onChange(emitted.current)
+  }
+  const edit = (i, raw) => {
+    // A single item is kept as typed (a trailing space is the next word); the
+    // pieces of a paste are trimmed.
+    const pieces = raw.split(sep)
+    const parts = (pieces.length > 1 ? pieces.map((t) => t.trim()) : pieces)
+      .map((t) => (cap?.chars != null ? t.slice(0, cap.chars) : t))
+    const next = [...rows.slice(0, i), ...parts, ...rows.slice(i + 1)]
+    commit(next.length > max ? next.slice(0, Math.max(max, i + 1)) : next)
+  }
+
+  return (
+    <div onClick={stopE} style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+      {rows.map((t, i) => (
+        <div key={i} style={{ ...ROW_HEAD }}>
+          <span style={{
+            width: '18px', flex: 'none', fontSize: '10px', fontWeight: 700, height: ROW_BOX_H, lineHeight: ROW_BOX_H,
+            color: '#98958A', textAlign: 'center',
+          }}>{i + 1}</span>
+          <Input
+            value={t} placeholder={placeholder} onClick={stopE}
+            maxLength={cap?.chars ?? undefined}
+            onChange={(e) => edit(i, e.target.value)}
+            className="h-auto" style={SONG_ROW_INPUT}
+          />
+          <button
+            type="button" aria-label={`Remove ${t.trim() || `item ${i + 1}`}`}
+            onClick={(e) => { stopE(e); commit(rows.filter((_, j) => j !== i)) }}
+            className="hover:bg-destructive/10"
+            style={{
+              width: '22px', height: '22px', flex: 'none', borderRadius: '999px', marginTop: ROW_X_TOP,
+              border: '1px solid #E2DFD7', background: '#FFFFFF', color: '#B3261E',
+              cursor: 'pointer', display: 'inline-flex', alignItems: 'center',
+              justifyContent: 'center', padding: 0,
+            }}
+          ><X size={11} /></button>
+        </div>
+      ))}
+      {rows.length < max && (
+        <button
+          type="button" onClick={(e) => { stopE(e); setRows([...rows, '']) }}
+          className="hover:border-foreground"
+          style={{
+            border: '1.5px dashed #C9C6BB', borderRadius: '10px', padding: '9px',
+            background: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center',
+            justifyContent: 'center', gap: '5px', fontFamily: 'inherit',
+          }}
+        >
+          <Plus size={13} style={{ color: '#B9B6AA' }} />
+          <span style={{ fontSize: '12px', fontWeight: 600, color: '#5B5850' }}>{addLabel}</span>
+        </button>
+      )}
+      <CharCount value={join(rows)} cap={cap} />
+    </div>
+  )
+}
+
+/* ------------------------------------------------------------------ *
  * §8.6b SongsField — the repertoire's song list. The first of the ten
  * list-shaped fields with a structured editor rather than a delimited
  * textarea (TracksField, GigsField, TiersField, FormFieldsField and the rest
@@ -4588,6 +4673,8 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                         <UrlInput value={val} onChange={set} style={FIELD_BOX} />
                       ) : f.type === 'email' ? (
                         <UrlInput value={val} onChange={set} style={FIELD_BOX} check={emailProblem} />
+                      ) : f.rows ? (
+                        <LineListField value={val} cap={cap} placeholder={f.rows.placeholder} addLabel={f.rows.add} onChange={set} />
                       ) : f.type === 'area' ? (
                         <CappedText
                           area cap={cap}

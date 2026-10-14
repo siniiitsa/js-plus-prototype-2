@@ -128,3 +128,16 @@ another `notes/` file.
   resolve exactly what `sectionVm` resolves, or the canvas lists rows the repeater has never heard
   of — which is why `GIGS`, `TIERS`, `FORM_FIELDS`, `QUOTES`, `FOOTER_LINKS`, `MAP_STATS_4` and `FORM_STEPS` are written in the row shape their repeater edits, tags and
   features as the strings the artist types, and only `TRACKS` needs dressing.
+
+## Delimited lists as rows — `LineListField` (user call, 2026-10-14)
+
+The header's **Tags** is edited as one box per tag with a round X and an *Add tag* button, not a comma
+textarea. A `FIELDS` entry opts in with `rows: { placeholder, add }`; `EditPanel` dispatches on `f.rows`
+ahead of the `area` arm. **The stored value is still the comma string** (items joined with `, `), so
+`sectionVm`, the clamp, `identityCap` and `limits.mjs` are untouched, and `cap.chars` / `cap.count` become
+each row's `maxLength` and the hiding of *Add*. A blank row exists only in the component's state and is
+dropped from what is stored; a value arriving from outside (layout swap, undo) rebuilds the rows, via the
+`emitted` ref. A separator typed or pasted into a row splits it into rows (pieces trimmed; a single item is
+kept as typed so a trailing space can start the next word). Emptying every row stores `''`, which hides the
+chip row as before. Other `list: ','` / `'\n'` fields (event types, promises, tier features) can opt in the
+same way.

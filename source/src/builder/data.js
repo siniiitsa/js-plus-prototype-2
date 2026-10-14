@@ -1915,7 +1915,8 @@ export const FIELDS = {
       in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3], Editorial: [0, 2, 3], Pop: [0, 2, 3] },
       chars: { Retro: [22, null, 22, 22, 15, 22], '*': [22, null, 22, 22] },
       count: { Retro: [8, null, 7, 7, 6, 6], Pop: [6, null, 6, 6], '*': [8, null, 6, 6] },
-      hint: 'Separate them with commas. The bio prints them too in layouts 2 and 4 '
+      rows: { placeholder: 'Tag', add: 'Add tag' },
+      hint: 'The bio prints them too in layouts 2 and 4 '
           + '(in Lime, Grunge, Editorial and Pop, layout 3 as well).' },
     { k: 'showTags',  l: 'Tag chips',        type: 'select', d: 'show', opts: SHOW_HIDE, shared: true,
       in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3], Editorial: [0, 2, 3], Pop: [0, 2, 3] },
