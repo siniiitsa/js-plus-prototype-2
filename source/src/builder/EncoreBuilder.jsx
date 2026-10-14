@@ -33,6 +33,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 import EncoreSection from './EncoreSection.jsx'
+import { ImageEditorHost, editImages, editorBusy } from './ImageEditor.jsx'
 import {
   THEMES, SCHEMES_OF, CATS, NVAR, FLAG, FIELDS, TITLES, DEFS, TRACKS, TAGS, TAG_LABELS, HERO_CTA, BIO_CREDIT, BIO_CTA,
   HERO_AVAIL, FACE_TITLE, FACE_BODY, PLACE_BODY, BIO_TAG,
@@ -203,6 +204,9 @@ const stopE = (e) => e.stopPropagation()
 const keepOnToast = (e) => {
   if (e.target?.closest?.('[data-sonner-toaster]')) e.preventDefault()
 }
+// The image editor is a dialog over the sheet that opened it; closing it must
+// not read as the sheet losing focus (ImageEditor.jsx, editorBusy).
+const keepOnEditor = (e) => { if (editorBusy()) e.preventDefault() }
 
 // The site address the publish dialog shows, off the artist's name. Letters in
 // any script survive (an IDN host is legal); an unnamed page gets a stand-in.
@@ -2545,7 +2549,7 @@ const FILE_INPUT = {
   overflow: 'hidden', clip: 'rect(0 0 0 0)', whiteSpace: 'nowrap', border: 0,
 }
 
-function ImageField({ value, onChange, onToast }) {
+function ImageField({ value, aspect, onChange, onToast }) {
   const inputRef = useRef(null)
   const [over, setOver] = useState(false)
   const [err, setErr] = useState(null)
@@ -2555,7 +2559,8 @@ function ImageField({ value, onChange, onToast }) {
     const v = vetImages(files ? [...files].slice(0, 1) : [], onToast)
     if (!v) return
     setErr(v.msg)
-    v.ok.forEach((f) => readImage(f, onChange))
+    // A pick goes through the editor first (ImageEditor.jsx); Cancel there writes nothing.
+    v.ok.forEach((f) => readImage(f, (src) => editImages([{ src, aspect, onApply: onChange }])))
   }
   // The filled photo is a dropzone too, and a drop there replaces it — without
   // these the browser takes the drop itself and opens the file in the tab.
@@ -2579,6 +2584,11 @@ function ImageField({ value, onChange, onToast }) {
             border: `1px solid ${over ? '#1B1A17' : err ? ERR_RED : '#E2DFD7'}`,
           }} />
           <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+            <button
+              type="button" onClick={() => editImages([{ src: value, aspect, edit: true, onApply: onChange }])}
+              className="hover:bg-muted"
+              style={{ ...IMG_BTN, color: '#5B5850' }}
+            >Edit</button>
             <button
               type="button" onClick={() => inputRef.current?.click()}
               className="hover:bg-muted"
@@ -2618,7 +2628,7 @@ function ImageField({ value, onChange, onToast }) {
  * Order is meaningful: slot n fills the nth tile of the layout.
  * ------------------------------------------------------------------ */
 
-function ImagesField({ value, max, onChange, onToast }) {
+function ImagesField({ value, max, aspect, onChange, onToast }) {
   const inputRef = useRef(null)
   const [over, setOver] = useState(false)
   const list = Array.isArray(value) ? value : []
@@ -2637,8 +2647,17 @@ function ImagesField({ value, max, onChange, onToast }) {
     setErr(v.msg)
     // Each read is async, so accumulate against the latest list rather than a
     // stale copy — otherwise a multi-select drops all but the last file.
+    // The reads land in any order, so the batch is held until it is whole and
+    // then edited in pick order, one photo at a time.
+    const picked = v.ok.slice(0, room)
+    const urls = []
+    let read = 0
     let next = list
-    v.ok.slice(0, room).forEach((f) => readImage(f, (url) => { next = [...next, url]; onChange(next) }))
+    picked.forEach((f, i) => readImage(f, (url) => {
+      urls[i] = url
+      if (++read < picked.length) return
+      editImages(urls.map((src) => ({ src, aspect, onApply: (u) => { next = [...next, u]; onChange(next) } })))
+    }))
   }
 
   const removeAt = (i) => onChange(list.filter((_, j) => j !== i))
@@ -2653,13 +2672,20 @@ function ImagesField({ value, max, onChange, onToast }) {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
         {list.map((src, i) => (
           <div key={i} style={{ position: 'relative' }}>
-            <img src={src} alt="" style={{
-              height: '62px', width: '100%', objectFit: 'cover', borderRadius: '9px',
-              border: '1px solid #E2DFD7', display: 'block',
-            }} />
+            <button
+              type="button" aria-label={`Edit photo ${i + 1}`}
+              onClick={(e) => { stopE(e); editImages([{ src, aspect, edit: true, onApply: (u) => onChange(list.map((x, j) => (j === i ? u : x))) }]) }}
+              style={{ display: 'block', width: '100%', padding: 0, border: 0, background: 'none', cursor: 'pointer' }}
+            >
+              <img src={src} alt="" style={{
+                height: '62px', width: '100%', objectFit: 'cover', borderRadius: '9px',
+                border: '1px solid #E2DFD7', display: 'block',
+              }} />
+            </button>
             <span style={{
               position: 'absolute', left: '4px', bottom: '4px', background: 'rgba(27,26,23,.72)',
               color: '#FFFFFF', fontSize: '9px', fontWeight: 700, borderRadius: '5px', padding: '1px 5px',
+              pointerEvents: 'none',
             }}>{i + 1}</span>
             <button
               type="button" aria-label={`Remove photo ${i + 1}`}
@@ -3056,7 +3082,7 @@ function RowThumb({ value, label, onChange, onToast, onFail, failed }) {
     const v = vetImages(files ? [...files].slice(0, 1) : [], onToast)
     if (!v) return
     onFail(v.msg)
-    v.ok.forEach((f) => readImage(f, onChange))
+    v.ok.forEach((f) => readImage(f, (src) => editImages([{ src, aspect: [1, 1], onApply: onChange }])))
   }
 
   return (
@@ -3067,8 +3093,13 @@ function RowThumb({ value, label, onChange, onToast, onFail, failed }) {
         style={FILE_INPUT}
       />
       <button
-        type="button" aria-label={value ? `Replace ${label}` : `Add ${label}`}
-        onClick={(e) => { stopE(e); inputRef.current?.click() }}
+        type="button" aria-label={value ? `Edit ${label}` : `Add ${label}`}
+        // A filled thumb opens the editor; Remove, then add, picks another file.
+        onClick={(e) => {
+          stopE(e)
+          if (value) editImages([{ src: value, aspect: [1, 1], edit: true, onApply: onChange }])
+          else inputRef.current?.click()
+        }}
         onDragOver={(e) => { e.preventDefault(); setOver(true) }}
         onDragLeave={() => setOver(false)}
         onDrop={(e) => { e.preventDefault(); setOver(false); take(e.dataTransfer.files) }}
@@ -4498,9 +4529,9 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                         </p>
                       )}
                       {f.type === 'image' ? (
-                        <ImageField value={imgVal(f.k)} onChange={(v) => set(v)} onToast={api.toast} />
+                        <ImageField value={imgVal(f.k)} aspect={f.aspect} onChange={(v) => set(v)} onToast={api.toast} />
                       ) : f.type === 'images' ? (
-                        <ImagesField value={imgsVal(f.k)} max={f.max} onChange={(v) => set(v)} onToast={api.toast} />
+                        <ImagesField value={imgsVal(f.k)} max={f.max} aspect={f.aspect} onChange={(v) => set(v)} onToast={api.toast} />
                       ) : f.type === 'songs' ? (
                         <SongsField caps={caps} value={songsVal(f.k)} max={f.max} onChange={(v) => set(v)} />
                       ) : f.type === 'sets' ? (
@@ -6195,7 +6226,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
             a bottom drawer on mobile. There is no right-hand panel. */}
         {isMobile && (
           <Drawer open={!!st.add} onOpenChange={(v) => { if (!v) closeAdd() }}>
-            <DrawerContent onClick={stopE} onPointerDownOutside={keepOnToast} className={`${PILL} !max-h-[82vh]`} style={{ ...sheetShell, maxHeight: '82vh' }}>
+            <DrawerContent onClick={stopE} onPointerDownOutside={keepOnToast} onInteractOutside={keepOnEditor} className={`${PILL} !max-h-[82vh]`} style={{ ...sheetShell, maxHeight: '82vh' }}>
               <DrawerTitle className="sr-only">Add a section</DrawerTitle>
               <DrawerDescription className="sr-only">Choose a section and its layout</DrawerDescription>
               {addHeader(closeAdd)}
@@ -6208,7 +6239,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
 
         {/* §8.9 Sections sheet */}
         <Drawer open={isMobile && st.sheet === 'sections'} onOpenChange={(v) => { if (!v) patch({ sheet: null }) }}>
-          <DrawerContent onClick={stopE} onPointerDownOutside={keepOnToast} className={`${PILL} !max-h-[78vh]`} style={{ ...sheetShell, maxHeight: '78vh' }}>
+          <DrawerContent onClick={stopE} onPointerDownOutside={keepOnToast} onInteractOutside={keepOnEditor} className={`${PILL} !max-h-[78vh]`} style={{ ...sheetShell, maxHeight: '78vh' }}>
             <DrawerDescription className="sr-only">The sections on this page</DrawerDescription>
             {sheetHead(`Page · ${sections.length} sections`, () => patch({ sheet: null }))}
             <ScrollArea className="flex-1 min-h-0">
@@ -6220,7 +6251,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
 
         {/* §8.9 Theme sheet */}
         <Drawer open={isMobile && st.sheet === 'theme'} onOpenChange={(v) => { if (!v) patch({ sheet: null }) }}>
-          <DrawerContent onClick={stopE} onPointerDownOutside={keepOnToast} className={`${PILL} !max-h-[60vh]`} style={{ ...sheetShell, height: '60vh' }}>
+          <DrawerContent onClick={stopE} onPointerDownOutside={keepOnToast} onInteractOutside={keepOnEditor} className={`${PILL} !max-h-[60vh]`} style={{ ...sheetShell, height: '60vh' }}>
             <DrawerDescription className="sr-only">Choose a template</DrawerDescription>
             {sheetHead('Theme', () => patch({ sheet: null }))}
             <ScrollArea className="flex-1 min-h-0">
@@ -6255,7 +6286,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
           open={isMobile && st.editSheet && !!selectedSec}
           onOpenChange={(v) => { if (!v) patch({ editSheet: false, selectedId: null }) }}
         >
-          <DrawerContent onClick={stopE} onPointerDownOutside={keepOnToast} className={`${PILL} !max-h-[84vh]`} style={{ ...sheetShell, height: '84vh' }}>
+          <DrawerContent onClick={stopE} onPointerDownOutside={keepOnToast} onInteractOutside={keepOnEditor} className={`${PILL} !max-h-[84vh]`} style={{ ...sheetShell, height: '84vh' }}>
             <DrawerDescription className="sr-only">Edit this section</DrawerDescription>
             {selectedSec && sheetHead(
               `${catName(selectedSec.cat)} — ${selectedVm.layoutLabel}`,
@@ -6273,6 +6304,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
 
         {headerModal}
         {publishModal}
+        <ImageEditorHost />
 
         {/* On a phone the toast clears the bottom nav — but a drawer covers
             that nav and would lose its own foot (the composer's Add section)

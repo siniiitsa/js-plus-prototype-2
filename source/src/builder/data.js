@@ -1815,9 +1815,9 @@ export const FIELDS = {
   // measured in its layout-1 sweep and re-measured in each later header
   // session, the last over its fitted card 4 (2026-10-07), unchanged.
   header: [
-    { k: 'image',     l: 'Background photo', type: 'image',
+    { k: 'image',     l: 'Background photo', type: 'image', aspect: [16, 9],
       hint: 'Fills the header behind the type.' },
-    { k: 'avatar',    l: 'Artist photo',     type: 'image',
+    { k: 'avatar',    l: 'Artist photo',     type: 'image', aspect: [1, 1],
       hint: 'The portrait card and the small round avatar.' },
     // Kicker and Location are the artist's role and home town, so they also
     // reach the bio, the booking calendar, the enquiry form and the events map
@@ -1939,7 +1939,7 @@ export const FIELDS = {
     ] },
   ],
   bio: [
-    { k: 'image',     l: 'Photo', type: 'image', hint: "Fills the bio's portrait card." },
+    { k: 'image',     l: 'Photo', type: 'image', aspect: [4, 5], hint: "Fills the bio's portrait card." },
     // Caps: plans/char-limits.md, session 2. Where 1440 stacks the heading a
     // word a line (Lime's, Editorial's and Pop's layout 1, Pop's layout 4), the
     // head is fitted to its widest word (session 12) and may shrink to 75% of
@@ -2131,7 +2131,7 @@ export const FIELDS = {
     // layout 2 draws all five as well (the pill's label and its line since
     // JP-036). None of the five names a layout in its label: the panel
     // lists them at layout 2 alone. The hints say where instead.
-    { k: 'images',  l: 'Reviewer photos', type: 'images', max: 3, in: PRICING_CREDIT,
+    { k: 'images',  l: 'Reviewer photos', type: 'images', max: 3, aspect: [1, 1], in: PRICING_CREDIT,
       hint: 'Small faces under the plan card’s quote.' },
     { k: 'reviews', l: 'Review count', d: PRICING_REVIEWS, in: PRICING_CREDIT,
       chars: { Retro: [null, 54], '*': [null, 55] },
@@ -2225,7 +2225,7 @@ export const FIELDS = {
   // carries layout 1's four rows as a `hidden` frame — so each hint says which
   // layout it edits.
   gallery: [
-    { k: 'images',  l: 'Photos', type: 'images', max: 7,
+    { k: 'images',  l: 'Photos', type: 'images', max: 7, aspect: [3, 2],
       hint: 'One per tile. Layout 1 shows the highlighted one in its viewer; layouts 2 and 4 show it as the large photo beside the others.' },
     // JP-120 (gallery): the eyebrow over the heading, the frames' word, uncased.
     { k: 'kicker',  l: 'Kicker', d: GALLERY_KICKER, in: [0, 3],
@@ -2269,7 +2269,7 @@ export const FIELDS = {
   // (JP-052), and `email` the address layout 4's Send Enquiry mails (JP-076).
   // `in` records each key's reach.
   calendar: [
-    { k: 'image',   l: 'Photo', type: 'image', in: [0, 3],
+    { k: 'image',   l: 'Photo', type: 'image', aspect: [1, 1], in: [0, 3],
       hint: 'Fills the polaroid stack beside the month in layout 1, and the small disc on '
           + "layout 4's summary card. Layouts 2 and 3 draw no photograph." },
     { k: 'heading', l: 'Heading', d: 'Availability', in: { Lime: [0, 1, 2, 3], Grunge: [0, 1, 2, 3], Editorial: [0, 1, 2, 3], Pop: [0, 1, 2, 3], '*': [1, 2, 3] },
@@ -2536,14 +2536,14 @@ export const FIELDS = {
           + 'booking. Emptying it drops the pill. Layout 2 only.' },
   ],
   form: [
-    { k: 'image',    l: 'Portrait', type: 'image', in: [0, 1],
+    { k: 'image',    l: 'Portrait', type: 'image', aspect: [1, 1], in: [0, 1],
       hint: 'The round photo beside your name. Layouts 1 and 2 — layouts 3 and 4 draw no credit row.' },
     // Layout 2's stage shot. The section's two photographs are the artist and
     // the scene — the header's pair the other way up,
     // this one's `image` having been the artist since layout 1 drew it as an
     // avatar. FIELDS.media.soundcloud's case: it reaches one layout, so the
     // hint says which.
-    { k: 'photo',    l: 'Stage photo', type: 'image', in: [1],
+    { k: 'photo',    l: 'Stage photo', type: 'image', aspect: [3, 2], in: [1],
       hint: 'The big picture above the heading. Layout 2 only.' },
     // A textarea, because the default breaks after "Let's make" — layout 2
     // keeps the break, the others read it as a space. Layout 3 starts from
