@@ -44,3 +44,7 @@ songs, the sets and the heading's fallbacks are in `notes/list-editors.md` (`Son
     and 14 and 7 under Lime, whose 768 card the seed already fills.
   - **The song's length is layout 3's alone** (14–23), and the artist is every other layout's.
     Each column is capped only where it prints.
+  - **The panel's Length box follows that** (user call, 2026-10-14): `SongsField` draws it only
+    where `colCaps` gives `length` a cap, so layouts 1, 2 and 4 show Artist full width. Stored
+    lengths stay in `c.songs` and return with layout 3. The Artist box is still drawn at layout 3
+    (its cap is `null` there), which prints no artist.

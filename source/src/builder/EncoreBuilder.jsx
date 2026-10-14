@@ -3025,11 +3025,15 @@ function SongsField({ caps, value, max, onChange }) {
             onChange={(e) => setAt(i, 'artist', e.target.value)}
             className="h-auto" style={{ ...SONG_ROW_INPUT, flex: 1, minWidth: 0 }}
           />
-          <CappedText cap={caps?.length}
-            value={sg.length ?? ''} placeholder="3:54" aria-label="Length" onClick={stopE}
-            onChange={(e) => setAt(i, 'length', e.target.value)}
-            className="h-auto" style={{ ...SONG_ROW_INPUT, width: '64px', flex: 'none' }}
-          />
+          {/* Only where a layout prints it: `cols.length` has a cap at layout 3
+              alone, so elsewhere there is no box. The copy stays in `sg`. */}
+          {caps?.length && (
+            <CappedText cap={caps.length}
+              value={sg.length ?? ''} placeholder="3:54" aria-label="Length" onClick={stopE}
+              onChange={(e) => setAt(i, 'length', e.target.value)}
+              className="h-auto" style={{ ...SONG_ROW_INPUT, width: '64px', flex: 'none' }}
+            />
+          )}
         </div>
         <CappedText cap={caps?.tags}
           value={sg.tags ?? ''} placeholder="Tags — weddings, pubs" onClick={stopE}
