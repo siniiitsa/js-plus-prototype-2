@@ -1498,7 +1498,7 @@ export const CAL_BOOKED = []
 // today's when that is later (calStart). The
 // arrows wrap at both ends of it rather than clamping — see EncoreSection's
 // Calendar.
-export const CAL_SPAN   = 12
+export const CAL_SPAN   = 24
 
 // §10.2 layout 2 — the named slots. Where layout 1 draws a month and lets the
 // visitor pick any unbooked day out of it, layout 2 draws a short list of named
