@@ -1,7 +1,7 @@
 // §5–§9 — all state, all chrome, all interaction.
 // Deliberately monolithic (§12.11): only SectionRow and EditPanel are extracted.
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import {
   GripVertical, ChevronUp, ChevronDown, ArrowUp, ArrowDown, MoreHorizontal,
@@ -4348,7 +4348,7 @@ function LinksField({ caps, value, max, navSections = [], onChange }) {
  * §8.5 EditPanel — shared by the sidebar and the mobile edit sheet
  * ------------------------------------------------------------------ */
 
-function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx, navSections, sections = [] }) {
+function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx, navSections, sections = [], onFocusField, onBlurField }) {
   const locked = vm.locked
 
   // The panel has to resolve the seeded photos exactly as sectionVm does, or a
@@ -4473,7 +4473,15 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                   const noMail = f.k === 'email' && sec.cat === 'calendar' && !unread
                     && !emailAddr(val) && !(String(val).trim() && emailProblem(val))
                   return (
-                    <div key={f.k}>
+                    <div
+                      key={f.k}
+                      // Focus walks the canvas to what this field prints (the
+                      // builder's `onFocusField`); typing keeps its box on the
+                      // new text. Blur only counts once focus leaves the field.
+                      onFocus={() => onFocusField?.(sec.id, f, val)}
+                      onInput={(e) => onFocusField?.(sec.id, f, e.target.value, true)}
+                      onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget)) onBlurField?.() }}
+                    >
                       <Label style={{ fontSize: '11px', fontWeight: 600, color: '#6B685E', display: 'block', marginBottom: f.hint || unread ? '2px' : '5px' }}>{f.l}</Label>
                       {unread && (
                         <p style={{ margin: '0 0 6px', fontSize: '10px', color: '#98958A', lineHeight: 1.45, fontStyle: 'italic' }}>Not shown in this layout</p>
@@ -5286,6 +5294,49 @@ function dressPublishedWindow(win, artistName, pageBg) {
 }
 
 /* ------------------------------------------------------------------ *
+ * Panel field → canvas
+ * ------------------------------------------------------------------ */
+
+// The smallest visible element inside `root` (a section's rendered page) whose
+// text holds `text`, or null. Whitespace and case are ignored: the page caps
+// copy (`cased()`), splits names into spans and clamps at a word, so a longer
+// copy is tried again by its first words.
+const squash = (v) => String(v).replace(/\s+/g, '').toLowerCase()
+function findFieldNode(root, text) {
+  if (!root) return null
+  const first = String(text).split('\n').find((l) => l.trim()) || ''
+  for (const n of [40, 16]) {
+    const want = squash(first).slice(0, n)
+    if (!want) return null
+    let best = null
+    for (const el of root.querySelectorAll('*')) {
+      if (!squash(el.textContent).includes(want)) continue
+      const r = el.getBoundingClientRect()
+      if (!r.width || !r.height) continue
+      if (!best || best.contains(el)) best = el
+    }
+    if (best) return best
+  }
+  return null
+}
+
+// Brings `node` (or, with none, its section `wrap`) into the canvas scroller's
+// visible band, only when it is not there already. On a phone the Edit drawer
+// covers all but the top 16vh, so that strip is the band.
+function scrollFieldIntoView(scroller, wrap, node, isMobile) {
+  const sr = scroller.getBoundingClientRect()
+  const bandTop = sr.top
+  const bandBottom = isMobile ? Math.min(sr.bottom, window.innerHeight * 0.16) : sr.bottom
+  const r = (node || wrap).getBoundingClientRect()
+  const inView = node
+    ? r.top >= bandTop + 16 && r.top <= bandBottom - Math.min(r.height, 48) - 8
+    : r.top < bandBottom && r.bottom > bandTop
+  if (inView) return
+  const want = node ? bandTop + (isMobile ? 12 : Math.max(24, (bandBottom - bandTop) * 0.3)) : bandTop + 16
+  scroller.scrollTo({ top: Math.max(0, scroller.scrollTop + r.top - want), behavior: 'smooth' })
+}
+
+/* ------------------------------------------------------------------ *
  * §5–§9 The builder
  * ------------------------------------------------------------------ */
 
@@ -5389,6 +5440,38 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
   // window too narrow for the desktop frame.
   const device = tabletCap && st.device === 'desktop' ? 'tablet' : st.device
   const Z = isMobile ? { ...SIZES.mobile, canvasW: '100%' } : SIZES[device]
+
+  // A panel field walks the canvas to what it prints. The mapping is
+  // by text, in builder chrome, so `EncoreSection` carries no field markers:
+  // `focusF` is the focused field's section and printed copy, `focusBox` the
+  // box round that copy, in its section's own coordinates.
+  const canvasRef = useRef(null)
+  const [focusF, setFocusF] = useState(null)
+  const [focusBox, setFocusBox] = useState(null)
+
+  const onFocusField = useCallback((sid, f, val, typing) => {
+    const text = (f.type === undefined || f.type === 'area' || f.type === 'url' || f.type === 'email') && typeof val === 'string' ? val : ''
+    setFocusF({ sid, text })
+    if (typing) return
+    const scroller = canvasRef.current
+    const wrap = scroller?.querySelector(`[data-sid="${sid}"]`)
+    if (!wrap) return
+    scrollFieldIntoView(scroller, wrap, text && findFieldNode(wrap.firstElementChild, text), isMobile)
+  }, [isMobile])
+  const onBlurField = useCallback(() => setFocusF(null), [])
+
+  // The box follows the copy as it is typed, wraps, or changes width.
+  useLayoutEffect(() => {
+    const wrap = focusF && canvasRef.current?.querySelector(`[data-sid="${focusF.sid}"]`)
+    const node = wrap && focusF.text ? findFieldNode(wrap.firstElementChild, focusF.text) : null
+    if (!node) { setFocusBox(null); return }
+    const w = wrap.getBoundingClientRect()
+    const r = node.getBoundingClientRect()
+    setFocusBox({ sid: focusF.sid, x: r.left - w.left, y: r.top - w.top, w: r.width, h: r.height })
+  }, [focusF, st.sections, device, st.theme])
+
+  // A box belongs to the section whose panel is open.
+  useEffect(() => { if (focusF && focusF.sid !== st.selectedId) setFocusF(null) }, [focusF, st.selectedId])
 
   // §4.8 — nav links follow the optional sections currently on the page, and
   // carry the category as the anchor the published page scrolls to (§4.3a).
@@ -5992,7 +6075,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
                   <EditPanel
                     key={selectedSec.id} sec={selectedSec} vm={selectedVm} api={api}
                     artistName={artistName} identity={identity} tiers={tiers} email={email} themeIdx={st.theme} navSections={navSections}
-                    sections={st.sections}
+                    sections={st.sections} onFocusField={onFocusField} onBlurField={onBlurField}
                   />
                 </>
               ) : (
@@ -6013,7 +6096,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
           )}
 
           {/* §8.7 canvas */}
-          <div style={{
+          <div ref={canvasRef} style={{
             flex: 1, minWidth: 0, overflowY: 'auto', background: '#E4E1DA',
             padding: isMobile ? '14px 10px 40px' : '28px 28px 64px',
             display: 'flex', justifyContent: 'center', alignItems: 'flex-start',
@@ -6031,12 +6114,22 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
                 return (
                   <div
                     key={sec.id}
+                    data-sid={sec.id}
                     style={{ position: 'relative' }}
                     onMouseEnter={isMobile ? undefined : () => patch({ hoverId: sec.id })}
                     onMouseLeave={isMobile ? undefined : () => patch((s) => (s.hoverId === sec.id ? { hoverId: null } : {}))}
                     onClick={(e) => { stopE(e); patch({ selectedId: sec.id, menuFor: null }) }}
                   >
                     <EncoreSection s={vm} />
+
+                    {focusBox && focusBox.sid === sec.id && (
+                      <div style={{
+                        position: 'absolute', left: focusBox.x - 5, top: focusBox.y - 5,
+                        width: focusBox.w + 10, height: focusBox.h + 10, boxSizing: 'border-box',
+                        border: '2px solid #2B6BE4', borderRadius: '6px', background: 'rgba(43,107,228,.08)',
+                        pointerEvents: 'none', zIndex: 21, animation: 'fadeIn .15s ease',
+                      }} />
+                    )}
 
                     {vm.showOverlay && (
                       <div style={{
@@ -6172,7 +6265,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
               <EditPanel
                 key={selectedSec.id} sec={selectedSec} vm={selectedVm} api={api}
                 artistName={artistName} identity={identity} tiers={tiers} email={email} themeIdx={st.theme} navSections={navSections}
-                sections={st.sections}
+                sections={st.sections} onFocusField={onFocusField} onBlurField={onBlurField}
               />
             )}
           </DrawerContent>

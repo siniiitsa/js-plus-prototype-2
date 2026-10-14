@@ -123,6 +123,15 @@ mutated through a single `patch()` helper.
   yet. The editor opens with the header `selectedId` so the sidebar
   lands on its edit panel; the mobile edit drawer stays shut, or it would cover the page before
   it has been seen.
+- **A focused panel field walks the canvas to what it prints** (user call, 2026-10-14). `EditPanel`'s
+  per-field wrapper reports focus (and typing) to `EncoreBuilder`'s `onFocusField`, which finds the
+  smallest visible element in that section whose text holds the field's value (`findFieldNode`: case
+  and whitespace ignored, first line, retried on its first words, so `cased()`, word-split spans and
+  a clamp's `…` still match), scrolls the canvas scroller (`canvasRef`) only if it is not already in
+  view — on a phone into the top 16vh the Edit drawer leaves free — and draws a box round it inside
+  the section's `data-sid` wrapper. It is **matched by text, in chrome, so `EncoreSection` carries no
+  field markers**; a field with no printed text (photos, repeaters, selects) scrolls to its section and
+  draws no box. Do not tag `EncoreSection` for this without a reason the text match cannot meet.
 - `st.theme` is an **integer index** into `THEMES`, not a name or object.
 - **`st.device` is the toggle, `device` is what the canvas draws.** A window at most 1180 wide
   (iPad Air landscape; `useTabletCap`) caps it at tablet and disables the Desktop tab, since
