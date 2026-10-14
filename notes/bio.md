@@ -26,19 +26,24 @@ into `CLAUDE.md` or another `notes/` file.
     rounded down to 10: `para1` 390 and `para2` 340.
   - The header's keys as the bio prints them (`kicker`, `location`, the tags, the name and the
     seal) are `IDENTITY_CHARS.bio`, from session 1.
-- **The heading is word-bound at 1440 in four designs** (open, the user's call). These are
-  Lime's, Editorial's and Pop's layout 1 and Pop's layout 4. At 1440 each stacks the heading
-  one word to a line beside the photograph, at display size (107px under Lime, 66px under
-  Pop at layout 1). "Reads", "the" and "room." fit there,
-  but a seven-letter word does not. At the seed's own size, "KESTREL" runs under the arch
-  (Editorial) or past its column (Lime, Pop layout 1), or into the dot grid (Pop layout 4).
-  The probe read 5–6 characters at those four surfaces, because every sample opens with a
-  seven-letter word. That number is the widest word, not a length. The cap is the seed's 15
-  (the floor rule), and `--check` reports it as `floor`. **A cap cannot hold this seat**: a
-  15-character heading with a word longer than about six letters still overruns at 1440. The
-  fix would be a widest-word fit, the header's JP-092 / JP-102 / JP-109 shape
-  (`vm.cardNameEms`, `titleWordEms`). That touches `EncoreSection`, so it is outside the
-  character pass. In the same four designs, 768 and 390 allow 15–24 characters.
+- **The heading is fitted to its widest word where 1440 stacks it a word a line**
+  (`plans/char-limits.md`, session 12; the user's call of 2026-10-13 left it to the sweep).
+  These are Lime's, Editorial's and Pop's layout 1 and Pop's layout 4. At the token a
+  seven-letter word ran past the flank (Lime, Pop layout 1), under Editorial's arch, or into Pop's
+  layout-4 dot grid, and no length cap could hold that. Now:
+  - **Layout 1** sets the h2 at `min(dispLg, 100cqi / vm.titleWordEms)` on the flank, an
+    `inline-size` container (the header name's JP-092 rule, `navFace`'s ems, `faced()` outside
+    the fit). Grunge has no ems table and no fit; its seeded room holds.
+  - **Editorial's seed binds.** Its Gloock *ROOM.* at the token, 93.8px, ran 59px past the flank
+    and about 19px into the seal's disc on the seeded 1440 page. The fit sets it at 77.3px, 0.82
+    of the token, 7px clear of the seal. That is the one seeded change, desktop only.
+  - **Pop's layout 4** was already fitted, to the frame's 572.9 measure, which lays over the dot
+    grid: *KESTREL* ran 16px into the dots. At 1440 the fit's measure is now the room left of the
+    grid, 533.97 (437.9px). The seed's widest word takes 348 of it, so it does not bind.
+  - **The caps**: the head may shrink to 75% of the seed's size there (the name's floor,
+    `FLOOR_AT` in `limits.mjs`), and 768 and 390 now bind: Lime 19, Editorial 15, Pop 17 at
+    layout 1 and 19 at layout 4. Editorial's 1440 reads 14 under the floor, so it reports
+    `floor`; with no floor it reads 21.
 - **Retro's Performing since is 9 at layout 3**, the seed's own "June 2021". In the composed
   1440 column the ID card's stat cell is 80px wide, so a tenth character wraps the value out of
   its cell. So "March 2019" is refused, and typing "September 2021" stops at "September". Lime

@@ -1853,3 +1853,89 @@ layout 1 (Hero), the canvas at 1440.
   pill-and-label split), 6 (seats that push a neighbour), 7 (the copyright's one line) and 8 (the
   copyright counter through the name) are open for the user. The probe fixes above change no
   earlier section's reading, but `HEADS` and `DROPS` are new names the full `--check` runs under.
+
+## Session 12: the sweep (2026-10-14)
+
+**Landed.** The bio heading's widest-word fit, the full `--check` and `--seeds`, the build digest, both
+builds and the root `index.html`, the repeaters' first-row centring, and the cross-cutting `CLAUDE.md`
+bullet and README paragraph.
+
+**1. The bio heading's fit** (session 2, judgement 1; `notes/bio.md`).
+- Layout 1's h2 is `min(dispLg, 100cqi / vm.titleWordEms)` on the flank, now an `inline-size`
+  container, for Lime, Editorial and Pop (`!grunge`; Grunge's Anton has no ems table). It is the header
+  name's JP-092 shape, with `faced()` outside the fit.
+- **Pop's layout 4 was already fitted**, to the frame's 572.9 measure, which lies over its dot grid
+  (grid at 589.97 × 0.82, head from 56 × 0.82): *KESTREL* ran into the dots. At 1440 the measure is now
+  533.97 (`headMeasure`); 768 and 390 are unchanged.
+- **Editorial's layout-1 seed binds.** Gloock *ROOM.* at the token (93.8px) ran 59px past the 273px
+  flank into the seal's disc. It now sets at 77.3px at 1440 (0.82) and **64.3px on the editor's 1088
+  Desktop canvas (0.69, under the name's 0.75 floor)**. Lime, Pop and every other width are unchanged.
+- **Caps.** `limits.mjs` gains `FLOOR_AT` (the heading may shrink to 0.75 at those four designs; `--no-floor`
+  still reads it floorless). Written: Lime layout 1 **19** (was 15f), Pop layout 1 **17** (15f), Pop
+  layout 4 **19** (15f), Editorial layout 1 stays 15 (768 binds; 1440 reads 14 under the floor, 21
+  floorless; `--check` reports `floor`).
+
+**2. `--seeds` and the full `--check`** (fresh Vite on :5199, four samples, one batch of categories per
+server). `--seeds` over all eleven: 0 seeds over their caps. `--check`, first run, 2,735 rows:
+
+| cat | rows | FAIL | floor |
+|---|---|---|---|
+| header | 168 | 6 | 5 |
+| bio | 226 | 2 | 10 |
+| media | 231 | 7 | 40 |
+| pricing | 385 | 0 | 17 |
+| repertoire | 250 | 0 | 11 |
+| gallery | 170 | 0 | 3 |
+| calendar | 210 | 0 | 0 |
+| map | 440 | 0 | 15 |
+| testimonials | 255 | 0 | 16 |
+| form | 320 | 0 | 7 |
+| footer | 50 | 0 | 5 |
+
+The 15 FAILs, each re-measured (`--keys` / `--themes` / `--designs`) and rewritten; none loosened a
+check. After the rewrite, `--check` over header, bio and media: 0 failures, and `--seeds`: 0.
+
+| row | was | now | binds |
+|---|---|---|---|
+| header `title`, Retro layout 3 | 23 | 14 | 1440 (768 and 390 read 20) |
+| header `subtitle`, Grunge layout 2 | 310 | 197 | 390 |
+| header `location`, layout 1: Lime / Grunge / Editorial / Pop | 24 / 24 / 22 / 23 | 20 / 19 / 19 / 20 | 1440 |
+| bio `baseLabel`, Pop layout 3 | 19 | 14 | 390 |
+| `IDENTITY_CHARS.bio.location`, Retro layout 1 (a `who.*` row) | 23 | 18 | 390 (overlap) |
+| media `tracks.title`, Grunge layout 1 / Retro layout 3 | 27 / 25 | 24 / 20 | 390 |
+| media `chipLabel`, layout 2: Retro / Lime / the rest | 14 / 12 / 13 | 10 / 9 / 10 | 1440, overlap |
+
+Every one is a row an earlier session wrote under the old probe: the box test (session 5), `paints`
+(6), path-first matching (7). Their readings now are the same seat read by the stricter, later test.
+The five `chipLabel` rows all moved together, which fits a probe change, not five frame facts. All
+seven categories after media passed first time.
+
+**3. The build digest** (`build-digest.mjs`, `old` = the root `index.html`, which equals `main`'s;
+`new` = `dist-standalone`; cards 0 and 3, 16 files each, `cmp` per file). Card 3 (layout 4, Pop's
+fit): byte-identical. Card 0: identical but for **one row**, Editorial's bio `H2` on the 1088 canvas
+(item 1: 93.8 → 64.3px, its height 259 → 177.6). Lime's and Pop's seeds do not bind.
+
+**4. Builds.** `npm run build` and `npm run build:standalone` pass (9,930,747 bytes, +16,962);
+copied to the root `index.html`.
+
+**5. The repeaters' first row** (sessions 9–11). All ten head rows (Songs, Tracks, Gigs, Slots, Stats, Steps, Tiers,
+FormFields, Quotes, Links; Sets has none) share one head row, now
+`ROW_HEAD` (top-aligned), the number `ROW_BOX_H` (31px) high, the ✕ `ROW_X_TOP` down, so each stands in
+the box's own height. Measured in the real app on Lime pages at layouts 1, 2 and 4, with and without
+the counter showing: the number and ✕ sit within 0.1px of the box's centre in every repeater
+(0.1px of 31.1). (The Slots row's counter did not show in that run: its box was not reached.)
+
+**6. Docs.** `CLAUDE.md` gains one bullet (the cap mechanism), `README.md` a *Character limits*
+section, `notes/bio.md` the heading's new state, `plans/README.md` the status row.
+
+**Not done / honest limits.** The bio heading's fit was verified in the harness (sizes, edges, the dot
+grid, the probe), not walked in the published tab. Items 1–6 are uncommitted.
+
+### Open calls (every one the user's to overrule)
+See the list printed at the end of the session; it is the handoff's list plus these four from this
+session: **S12-a** Editorial layout 1's seed shrinks (0.82 at 1440, **0.69 at 1088**, below the 0.75
+floor); alternative, a floor at 0.75 that lets the word touch the seal at 1088. **S12-b** the bio
+heading's shrink floor is the name's 0.75 (`FLOOR_AT`); alternative, floorless (Editorial 21). **S12-c**
+Pop layout 4's measure is the room left of the dot grid, not the frame's measure; alternative, keep the
+frame's and let a long word cross the dots. **S12-d** 15 caps were lowered under later, stricter
+probes (table above), `chipLabel` most, where Lime's 9 is a character past its seed.

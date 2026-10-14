@@ -127,6 +127,11 @@ const DROPS = { 'footer.copyright': { Pop: [D.FOOTER_CREDIT] } }
 // --no-floor=stats.value lets a key's fitted seat shrink without bound, to read
 // a fit the user left floorless (map layout 4's stat value, JP-110, session 8).
 for (const k of (opt('no-floor', '') || '').split(',').filter(Boolean)) FLOOR[k] = 0
+// The bio heading is fitted to its widest word at the four designs that stack it
+// one word to a line at 1440 (session 12): it takes the name's floor there.
+// --no-floor=heading still lets it shrink without bound.
+const FLOOR_AT = { 'bio.heading': { Lime: [0], Editorial: [0], Pop: [0, 3] } }
+const shrinkFloor = (p, themeName, a) => FLOOR[p.key] ?? (FLOOR_AT[`${p.cat}.${p.key}`]?.[themeName]?.includes(a) ? 0.75 : 1)
 // A repeater's list count whose chip row is the union over every row (session 5).
 const UNION_COUNT = new Set(['songs.tags#'])
 
@@ -535,7 +540,7 @@ const surfacesOf = (cat, a) => widths.flatMap((w) => (w === 'desktop' && a === 2
   ? [{ w, col: '' }, { w, col: COLUMN[cat] }] : [{ w, col: '' }]))
 
 // One surface's verdict on length n: null for a pass, else the failing test.
-function verdict(m, ref, allowed, p) {
+function verdict(m, ref, allowed, p, floor = FLOOR[p.key] ?? 1) {
   if (m.crash) return 'crash'
   if (!m.seats.length) return 'unseen'
   if (m.page && !ref.page) return 'page'
@@ -576,7 +581,7 @@ function verdict(m, ref, allowed, p) {
     const refBoxes = r.boxes.map((b) => selfOf(b, r.path))
     if (s.boxes.some((b) => !refBoxes.includes(selfOf(b, s.path, r.path)))) return 'box'
     if (s.overlaps.some((o) => !r.overlaps.includes(o))) return 'overlap'
-    if (s.fs < r.fs * (FLOOR[p.key] ?? 1) - 0.01) return `shrink ${s.fs}<${r.fs}`
+    if (s.fs < r.fs * floor - 0.01) return `shrink ${s.fs}<${r.fs}`
   }
   return null
 }
@@ -651,7 +656,7 @@ async function runProbe(pg, p, t) {
       const ok = async (n) => {
         for (let si = 0; si < samplesOf(p).length; si++) {
           if (p.mode === 'count' && si > 0) break
-          if (verdict(await at(si, n), ref, allowed, p)) return false
+          if (verdict(await at(si, n), ref, allowed, p, shrinkFloor(p, themeName, a))) return false
         }
         return true
       }
@@ -687,7 +692,7 @@ async function runProbe(pg, p, t) {
       for (let first = true; lo > 1; lo--, first = false) {
         if ((first || (await ok(lo))) && (lo <= 2 || ((await okAbove(lo - 1)) && (await okAbove(lo - 2))))) break
       }
-      const why = verdict(await at(0, lo + 1), ref, allowed, p)
+      const why = verdict(await at(0, lo + 1), ref, allowed, p, shrinkFloor(p, themeName, a))
       // How wide the seat has grown at the cap, against the seed's: a one-line
       // pill that passes every test at five times its frame width is a call for
       // the section's session, not a cap to take as read.

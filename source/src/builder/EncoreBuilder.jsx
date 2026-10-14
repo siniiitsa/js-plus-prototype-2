@@ -2849,6 +2849,13 @@ function CappedText({ area = false, cap, value, onChange, style, ...rest }) {
  * ------------------------------------------------------------------- */
 
 const SONG_ROW_INPUT = { ...FIELD_BOX, padding: '6px 8px', fontSize: '12px' }
+// A repeater row's head: its number and ✕ centre on the box, not on the box
+// and its counter, so the row is top-aligned and each stands in the box's own
+// height (SONG_ROW_INPUT's 31: 12px type on the Input's line, 6px padding and
+// a 1px border; plans/char-limits.md, session 12).
+const ROW_HEAD = { display: 'flex', alignItems: 'flex-start', gap: '7px' }
+const ROW_BOX_H = '31px'
+const ROW_X_TOP = '4.5px'
 
 const BLANK_SONG_HINT = 'Empty songs aren’t shown.'
 
@@ -2866,9 +2873,9 @@ function SongsField({ caps, value, max, onChange }) {
       border: '1px solid #E9E7E0', borderRadius: '10px', padding: '8px',
       display: 'flex', flexDirection: 'column', gap: '6px', background: '#FCFBF8',
     }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+      <div style={{ ...ROW_HEAD }}>
         <span style={{
-          width: '18px', flex: 'none', fontSize: '10px', fontWeight: 700,
+          width: '18px', flex: 'none', fontSize: '10px', fontWeight: 700, height: ROW_BOX_H, lineHeight: ROW_BOX_H,
           color: '#98958A', textAlign: 'center',
         }}>{i + 1}</span>
         {/* shadcn Input rather than a bare one, for its focus ring: FIELD_BOX
@@ -2884,7 +2891,7 @@ function SongsField({ caps, value, max, onChange }) {
           onClick={(e) => { stopE(e); removeAt(i) }}
           className="hover:bg-destructive/10"
           style={{
-            width: '22px', height: '22px', flex: 'none', borderRadius: '999px',
+            width: '22px', height: '22px', flex: 'none', borderRadius: '999px', marginTop: ROW_X_TOP,
             border: '1px solid #E2DFD7', background: '#FFFFFF', color: '#B3261E',
             cursor: 'pointer', display: 'inline-flex', alignItems: 'center',
             justifyContent: 'center', padding: 0,
@@ -3131,7 +3138,7 @@ function TracksField({ caps, value, max, onChange, onToast }) {
       {/* Stacked rather than side by side: this panel is also the mobile edit
           sheet, and a thumbnail plus two inputs across does not fit at its width. */}
       <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '6px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+        <div style={{ ...ROW_HEAD, gap: '6px' }}>
           {/* shadcn Input for its focus ring — see SongsField above. */}
           <CappedText cap={caps?.title}
             value={t.title ?? ''} placeholder="Track title" onClick={stopE}
@@ -3143,7 +3150,7 @@ function TracksField({ caps, value, max, onChange, onToast }) {
             onClick={(e) => { stopE(e); removeAt(i) }}
             className="hover:bg-destructive/10"
             style={{
-              width: '22px', height: '22px', flex: 'none', borderRadius: '999px',
+              width: '22px', height: '22px', flex: 'none', borderRadius: '999px', marginTop: ROW_X_TOP,
               border: '1px solid #E2DFD7', background: '#FFFFFF', color: '#B3261E',
               cursor: 'pointer', display: 'inline-flex', alignItems: 'center',
               justifyContent: 'center', padding: 0,
@@ -3254,9 +3261,9 @@ function GigsField({ caps, value, max, design, onChange }) {
       border: '1px solid #E9E7E0', borderRadius: '10px', padding: '8px',
       display: 'flex', flexDirection: 'column', gap: '6px', background: '#FCFBF8',
     }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+      <div style={{ ...ROW_HEAD }}>
         <span style={{
-          width: '18px', flex: 'none', fontSize: '10px', fontWeight: 700,
+          width: '18px', flex: 'none', fontSize: '10px', fontWeight: 700, height: ROW_BOX_H, lineHeight: ROW_BOX_H,
           color: '#98958A', textAlign: 'center',
         }}>{i + 1}</span>
         {/* shadcn Input for its focus ring — see SongsField above. */}
@@ -3270,7 +3277,7 @@ function GigsField({ caps, value, max, design, onChange }) {
           onClick={(e) => { stopE(e); removeAt(i) }}
           className="hover:bg-destructive/10"
           style={{
-            width: '22px', height: '22px', flex: 'none', borderRadius: '999px',
+            width: '22px', height: '22px', flex: 'none', borderRadius: '999px', marginTop: ROW_X_TOP,
             border: '1px solid #E2DFD7', background: '#FFFFFF', color: '#B3261E',
             cursor: 'pointer', display: 'inline-flex', alignItems: 'center',
             justifyContent: 'center', padding: 0,
@@ -3417,9 +3424,9 @@ function SlotsField({ caps, value, max, open, onChange }) {
         border: '1px solid #E9E7E0', borderRadius: '10px', padding: '8px',
         display: 'flex', flexDirection: 'column', gap: '6px', background: '#FCFBF8',
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+        <div style={{ ...ROW_HEAD }}>
           <span style={{
-            width: '18px', flex: 'none', fontSize: '10px', fontWeight: 700,
+            width: '18px', flex: 'none', fontSize: '10px', fontWeight: 700, height: ROW_BOX_H, lineHeight: ROW_BOX_H,
             color: '#98958A', textAlign: 'center',
           }}>{i + 1}</span>
           <Input
@@ -3442,7 +3449,7 @@ function SlotsField({ caps, value, max, open, onChange }) {
             onClick={(e) => { stopE(e); removeAt(i) }}
             className="hover:bg-destructive/10"
             style={{
-              width: '22px', height: '22px', flex: 'none', borderRadius: '999px',
+              width: '22px', height: '22px', flex: 'none', borderRadius: '999px', marginTop: ROW_X_TOP,
               border: '1px solid #E2DFD7', background: '#FFFFFF', color: '#B3261E',
               cursor: 'pointer', display: 'inline-flex', alignItems: 'center',
               justifyContent: 'center', padding: 0,
@@ -3525,9 +3532,9 @@ function StatsField({ caps, value, max, onChange }) {
       border: '1px solid #E9E7E0', borderRadius: '10px', padding: '8px',
       display: 'flex', flexDirection: 'column', gap: '6px', background: '#FCFBF8',
     }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+      <div style={{ ...ROW_HEAD }}>
         <span style={{
-          width: '18px', flex: 'none', fontSize: '10px', fontWeight: 700,
+          width: '18px', flex: 'none', fontSize: '10px', fontWeight: 700, height: ROW_BOX_H, lineHeight: ROW_BOX_H,
           color: '#98958A', textAlign: 'center',
         }}>{i + 1}</span>
         <CappedText cap={caps?.label}
@@ -3540,7 +3547,7 @@ function StatsField({ caps, value, max, onChange }) {
           onClick={(e) => { stopE(e); removeAt(i) }}
           className="hover:bg-destructive/10"
           style={{
-            width: '22px', height: '22px', flex: 'none', borderRadius: '999px',
+            width: '22px', height: '22px', flex: 'none', borderRadius: '999px', marginTop: ROW_X_TOP,
             border: '1px solid #E2DFD7', background: '#FFFFFF', color: '#B3261E',
             cursor: 'pointer', display: 'inline-flex', alignItems: 'center',
             justifyContent: 'center', padding: 0,
@@ -3618,9 +3625,9 @@ function StepsField({ caps, value, max, onChange }) {
       border: '1px solid #E9E7E0', borderRadius: '10px', padding: '8px',
       display: 'flex', flexDirection: 'column', gap: '6px', background: '#FCFBF8',
     }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+      <div style={{ ...ROW_HEAD }}>
         <span style={{
-          width: '18px', flex: 'none', fontSize: '10px', fontWeight: 700,
+          width: '18px', flex: 'none', fontSize: '10px', fontWeight: 700, height: ROW_BOX_H, lineHeight: ROW_BOX_H,
           color: '#98958A', textAlign: 'center',
         }}>{i + 1}</span>
         <CappedText cap={caps?.title}
@@ -3633,7 +3640,7 @@ function StepsField({ caps, value, max, onChange }) {
           onClick={(e) => { stopE(e); removeAt(i) }}
           className="hover:bg-destructive/10"
           style={{
-            width: '22px', height: '22px', flex: 'none', borderRadius: '999px',
+            width: '22px', height: '22px', flex: 'none', borderRadius: '999px', marginTop: ROW_X_TOP,
             border: '1px solid #E2DFD7', background: '#FFFFFF', color: '#B3261E',
             cursor: 'pointer', display: 'inline-flex', alignItems: 'center',
             justifyContent: 'center', padding: 0,
@@ -3736,9 +3743,9 @@ function TiersField({ caps, value, max, onChange }) {
       border: '1px solid #E9E7E0', borderRadius: '10px', padding: '8px',
       display: 'flex', flexDirection: 'column', gap: '6px', background: '#FCFBF8',
     }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+      <div style={{ ...ROW_HEAD }}>
         <span style={{
-          width: '18px', flex: 'none', fontSize: '10px', fontWeight: 700,
+          width: '18px', flex: 'none', fontSize: '10px', fontWeight: 700, height: ROW_BOX_H, lineHeight: ROW_BOX_H,
           color: '#98958A', textAlign: 'center',
         }}>{i + 1}</span>
         {/* shadcn Input for its focus ring — see SongsField above. */}
@@ -3752,7 +3759,7 @@ function TiersField({ caps, value, max, onChange }) {
           onClick={(e) => { stopE(e); removeAt(i) }}
           className="hover:bg-destructive/10"
           style={{
-            width: '22px', height: '22px', flex: 'none', borderRadius: '999px',
+            width: '22px', height: '22px', flex: 'none', borderRadius: '999px', marginTop: ROW_X_TOP,
             border: '1px solid #E2DFD7', background: '#FFFFFF', color: '#B3261E',
             cursor: 'pointer', display: 'inline-flex', alignItems: 'center',
             justifyContent: 'center', padding: 0,
@@ -3876,9 +3883,9 @@ function FormFieldsField({ caps, value, max, design, onChange }) {
       border: '1px solid #E9E7E0', borderRadius: '10px', padding: '8px',
       display: 'flex', flexDirection: 'column', gap: '6px', background: '#FCFBF8',
     }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+      <div style={{ ...ROW_HEAD }}>
         <span style={{
-          width: '18px', flex: 'none', fontSize: '10px', fontWeight: 700,
+          width: '18px', flex: 'none', fontSize: '10px', fontWeight: 700, height: ROW_BOX_H, lineHeight: ROW_BOX_H,
           color: '#98958A', textAlign: 'center',
         }}>{i + 1}</span>
         <CappedText cap={caps?.label}
@@ -3892,7 +3899,7 @@ function FormFieldsField({ caps, value, max, design, onChange }) {
           onClick={(e) => { stopE(e); removeAt(i) }}
           className="hover:bg-destructive/10 disabled:bg-transparent"
           style={{
-            width: '22px', height: '22px', flex: 'none', borderRadius: '999px',
+            width: '22px', height: '22px', flex: 'none', borderRadius: '999px', marginTop: ROW_X_TOP,
             border: '1px solid #E2DFD7', background: '#FFFFFF', color: '#B3261E',
             cursor: lastEmail(f) ? 'not-allowed' : 'pointer', opacity: lastEmail(f) ? 0.35 : 1,
             display: 'inline-flex', alignItems: 'center',
@@ -4120,9 +4127,9 @@ function QuotesField({ caps, value, max, onChange }) {
       border: '1px solid #E9E7E0', borderRadius: '10px', padding: '8px',
       display: 'flex', flexDirection: 'column', gap: '6px', background: '#FCFBF8',
     }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+      <div style={{ ...ROW_HEAD }}>
         <span style={{
-          width: '18px', flex: 'none', fontSize: '10px', fontWeight: 700,
+          width: '18px', flex: 'none', fontSize: '10px', fontWeight: 700, height: ROW_BOX_H, lineHeight: ROW_BOX_H,
           color: '#98958A', textAlign: 'center',
         }}>{i + 1}</span>
         {/* shadcn Input for its focus ring — see SongsField above. */}
@@ -4136,7 +4143,7 @@ function QuotesField({ caps, value, max, onChange }) {
           onClick={(e) => { stopE(e); removeAt(i) }}
           className="hover:bg-destructive/10"
           style={{
-            width: '22px', height: '22px', flex: 'none', borderRadius: '999px',
+            width: '22px', height: '22px', flex: 'none', borderRadius: '999px', marginTop: ROW_X_TOP,
             border: '1px solid #E2DFD7', background: '#FFFFFF', color: '#B3261E',
             cursor: 'pointer', display: 'inline-flex', alignItems: 'center',
             justifyContent: 'center', padding: 0,
@@ -4253,9 +4260,9 @@ function LinksField({ caps, value, max, navSections = [], onChange }) {
       border: '1px solid #E9E7E0', borderRadius: '10px', padding: '8px',
       display: 'flex', flexDirection: 'column', gap: '6px', background: '#FCFBF8',
     }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+      <div style={{ ...ROW_HEAD }}>
         <span style={{
-          width: '18px', flex: 'none', fontSize: '10px', fontWeight: 700,
+          width: '18px', flex: 'none', fontSize: '10px', fontWeight: 700, height: ROW_BOX_H, lineHeight: ROW_BOX_H,
           color: '#98958A', textAlign: 'center',
         }}>{i + 1}</span>
         <CappedText cap={caps?.label}
@@ -4268,7 +4275,7 @@ function LinksField({ caps, value, max, navSections = [], onChange }) {
           onClick={(e) => { stopE(e); removeAt(i) }}
           className="hover:bg-destructive/10"
           style={{
-            width: '22px', height: '22px', flex: 'none', borderRadius: '999px',
+            width: '22px', height: '22px', flex: 'none', borderRadius: '999px', marginTop: ROW_X_TOP,
             border: '1px solid #E2DFD7', background: '#FFFFFF', color: '#B3261E',
             cursor: 'pointer', display: 'inline-flex', alignItems: 'center',
             justifyContent: 'center', padding: 0,

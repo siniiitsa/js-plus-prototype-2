@@ -1859,15 +1859,15 @@ export const FIELDS = {
     // copy (IDENTITY_CHARS, sealCap) rather than tightening this one
     // (plans/char-limits.md, session 1, user calls, 2026-10-13).
     { k: 'title',     l: 'Title',
-      chars: { Retro: [23, 22, 23, 14, 10, 31], Lime: [14, 19, 22, 12], Grunge: [19, 20, 26, 17],
+      chars: { Retro: [23, 22, 14, 14, 10, 31], Lime: [14, 19, 22, 12], Grunge: [19, 20, 26, 17],
         Editorial: [12, 15, 15, 12], Pop: [13, 18, 18, 11] } },
     { k: 'subtitle',  l: 'Subtitle',         type: 'area', def: 'heroSub',
       in: { Retro: [1, 4], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1] },
-      chars: { Retro: [null, 310, null, null, 104], '*': [null, 310] } },
+      chars: { Retro: [null, 310, null, null, 104], Grunge: [null, 197], '*': [null, 310] } },
     { k: 'location',  l: 'Location',         d: 'Manchester, UK', shared: true,
       in: { Retro: [0, 1, 2, 3, 5], Lime: [0, 1, 2, 3], Grunge: [0, 1, 2, 3], Editorial: [0, 1, 2, 3], Pop: [0, 1, 2, 3] },
-      chars: { Retro: [55, 15, 19, 20, null, 42], Lime: [24, 24, 14, 17], Grunge: [24, 29, 15, 24],
-        Editorial: [22, 15, 30, 19], Pop: [23, 15, 36, 36] },
+      chars: { Retro: [55, 15, 19, 20, null, 42], Lime: [20, 24, 14, 17], Grunge: [19, 29, 15, 24],
+        Editorial: [19, 15, 30, 19], Pop: [20, 15, 36, 36] },
       hint: 'Where you are based. The bio prints it too in layouts 1 to 3, the booking '
           + 'calendar in layouts 1 and 4 (in Lime, Grunge, Editorial and Pop, layout 4 only), and the '
           + 'events map’s travel card in layout 2.' },
@@ -1941,12 +1941,12 @@ export const FIELDS = {
   bio: [
     { k: 'image',     l: 'Photo', type: 'image', hint: "Fills the bio's portrait card." },
     // Caps: plans/char-limits.md, session 2. Where 1440 stacks the heading a
-    // word a line (Lime's, Editorial's and Pop's layout 1, Pop's layout 4), a
-    // word longer than the seed's runs past its column or into a neighbour at
-    // any length, so the cap there is the seed's own 15 (notes/bio.md).
+    // word a line (Lime's, Editorial's and Pop's layout 1, Pop's layout 4), the
+    // head is fitted to its widest word (session 12) and may shrink to 75% of
+    // the seed's size, the name's floor; 768 and 390 bind there (notes/bio.md).
     { k: 'heading',   l: 'Heading', d: 'Reads the room.', in: [0, 2, 3],
-      chars: { Retro: [20, null, 19, 23], Lime: [15, null, 18, 21], Grunge: [21, null, 20, 18],
-        Editorial: [15, null, 15, 17], Pop: [15, null, 17, 15] } },
+      chars: { Retro: [20, null, 19, 23], Lime: [19, null, 18, 21], Grunge: [21, null, 20, 18],
+        Editorial: [15, null, 15, 17], Pop: [17, null, 17, 19] } },
     // JP-090: layout 1's line under the heading, the frames' own, uncased
     // (every site upper-cases it). The whole line is the field.
     { k: 'refLabel',  l: 'Reference line', d: BIO_REF_LABEL, in: [0],
@@ -1985,7 +1985,7 @@ export const FIELDS = {
     { k: 'roleLabel',  l: 'Current role label', d: BIO_ROLE_LABEL, in: [2], chars: [null, null, 14],
       hint: 'The label over the Header’s Kicker on the ID card. Left empty, the kicker stands alone.' },
     { k: 'baseLabel',  l: 'Based in label', d: BIO_BASE_LABEL, in: [2],
-      chars: { Retro: [null, null, 16], Lime: [null, null, 16], '*': [null, null, 19] },
+      chars: { Retro: [null, null, 16], Lime: [null, null, 16], Pop: [null, null, 14], '*': [null, null, 19] },
       hint: 'The label over the Header’s Location on the ID card. Left empty, the location stands alone.' },
     { k: 'aboutLabel', l: 'About label', d: BIO_ABOUT_LABEL, in: [2],
       chars: { Editorial: [null, null, 59], Pop: [null, null, 48], '*': [null, null, 56] },
@@ -2021,7 +2021,7 @@ export const FIELDS = {
     // A column's floor is its longest seeded row (session 3): Manchester at 3am
     // (17) and Live at the Deaf Institute · 7:01 (33), which the frames draw.
     { k: 'tracks',  l: 'Tracks', type: 'tracks', max: 8,
-      cols: { title: { Retro: [17, 17, 25, 17], Lime: [40, 17, 19, 17], Grunge: [27, 17, 21, 17], '*': [17, 17, 17, 17] },
+      cols: { title: { Retro: [17, 17, 20, 17], Lime: [40, 17, 19, 17], Grunge: [24, 17, 21, 17], '*': [17, 17, 17, 17] },
         sub: 33 },
       hint: 'Each row is one card in the stack, with its own artwork and audio file. '
           + "The player shows the track it is on, so track one's artwork is the sleeve." },
@@ -2045,7 +2045,7 @@ export const FIELDS = {
       hint: 'The word after the second count, the “Max” of “5 Featured / 5 Max”. Left empty, it goes with its count.' },
     // JP-095 (a): the chip on the fan's front card, the frame's word, uncased.
     { k: 'chipLabel', l: 'Card chip', d: MEDIA_CHIP_LABEL, in: [1],
-      chars: { Retro: [null, 14], Lime: [null, 12], '*': [null, 13] },
+      chars: { Retro: [null, 10], Lime: [null, 9], '*': [null, 10] },
       hint: 'The chip on the front card of the fan, after a dot. Left empty, it is not drawn.' },
     // Retro's layout-1 frame (446:2265) draws the Soundcloud pill, and so does
     // Editorial's (964:58614), so there and on Pop an empty address leaves it a
@@ -2869,7 +2869,7 @@ export const IDENTITY_CHARS = {
     title: { Retro: [null, 55, 19, 48], Lime: [null, 49, 20, 49], Grunge: [null, 65, 18, 60],
       Editorial: [null, 37, 14, 31], Pop: [null, 37, 17, 39] },
     kicker: { Retro: [19, 20, 13, 47], Lime: [20, 23, 21, 47], Pop: [26, 22, 13, 47], '*': [20, 20, 13, 47] },
-    location: { Retro: [23, 23, 15], Lime: [24, 26, 25], Grunge: [24, 23, 15], Editorial: [24, 33, 15],
+    location: { Retro: [18, 23, 15], Lime: [24, 26, 25], Grunge: [24, 23, 15], Editorial: [24, 33, 15],
       Pop: [27, 34, 15] },
     tags: { chars: { Retro: [null, 22, null, 22], '*': [null, 22, 22, 22] },
       count: { Retro: [null, 7, null, 7], '*': [null, 6, 8, 8] } },

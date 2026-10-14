@@ -378,6 +378,26 @@ mutated through a single `patch()` helper.
   block Lime, Grunge, Editorial and Pop share reads it. A field no design reads is deleted, not kept at `in: []`: `bio.statement` and
   `map.sub` went that way with the fallthroughs that read them (the other seven NVAR-4
   sections still end in one after `v3`, which `arch % designCount` never reaches).
+- **Every text field has a measured character cap** (`plans/char-limits.md`, user calls,
+  2026-10-13). A `FIELDS` entry carries `chars` in `in`'s shape (a number, an array by design,
+  an object by template with `'*'`); a list field adds `list: ','` / `'\n'` and `count`, `chars`
+  then being the per-item cap; a repeater adds `cols: { <col>: <chars spec> }`. The sections
+  that print the header's `title` / `kicker` / `location` / `tags`, or the name on a seal's ring,
+  have no field for it, so their caps are `IDENTITY_CHARS[cat]` (`seal` read through
+  `sealCap()`). `fieldCap` / `colCaps` / `identityCap` resolve them; the panel's Title box takes
+  the header's own cap, and its kicker, location and tags the tightest over the page's sections
+  (`identityCap`). **The clamp is at `sectionVm`'s head**, once `design` is known and before any
+  read of `c`, `identity` or `artistName` (`clampContent`, `clampIdentity`; `clamp: false`, the
+  harness's `&noclamp=1`, switches it off): stored copy is never trimmed, only what renders, at a
+  word with `…`, so canvas, published tab, picker thumbnails and modal all clamp at once and a
+  layout that fits brings the text back. `EncoreSection` knows nothing of it. The panel's boxes
+  are `CappedText` (`maxLength`, or a guard that refuses an over-long list edit, and `CharCount`'s
+  `n / cap` from 80%, red with *shortened on the page* past it). Seeds are absent keys, so the
+  clamp never touches one, and **every seed must fit its cap**: a cap is measured with
+  `node scripts/limits.mjs <cat>` and re-checked with `--check` (every cap, four samples) and
+  `--seeds` (no browser). A field, column or seat added later needs its cap probed, and a section
+  that gains a seal a `who.seal` row. Per-section caps and their judgement calls live in each
+  `notes/` file.
 - The `startTheme` prop in `App.jsx` skips the template picker (and the onboarding with it) when
   it names a real theme (`"Picker"` deliberately matches nothing, giving the full flow).
 
