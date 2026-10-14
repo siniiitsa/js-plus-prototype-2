@@ -5691,7 +5691,15 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
 
   /* ---- mutations (§5.6) ------------------------------------------- */
 
-  const closeAll = useCallback(() => patch({ menuFor: null, selectedId: null }), [patch])
+  // A press and release on different elements fire their click on the common
+  // ancestor, which is this root: a text selection dragged from a panel field
+  // out over the canvas would read as a click on bare background. Only a click
+  // that ends on the element it began on closes.
+  const downRef = useRef(null)
+  const closeAll = useCallback((e) => {
+    if (e && e.target !== downRef.current) return
+    patch({ menuFor: null, selectedId: null })
+  }, [patch])
 
   // The section being moved, as it stood on screen: the layout effect above
   // `move` scrolls the canvas by how far it travelled (`followSection`).
@@ -6142,6 +6150,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
   return (
     <TooltipProvider delayDuration={200}>
       <div
+        onPointerDownCapture={(e) => { downRef.current = e.target }}
         onClick={closeAll}
         style={{
           height: '100dvh', display: 'flex', flexDirection: 'column',
