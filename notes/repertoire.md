@@ -23,8 +23,16 @@ songs, the sets and the heading's fallbacks are in `notes/list-editors.md` (`Son
     seeded *Dancing Queen* and *Don't Stop Me Now* already take JP-104's second line.
   - **The title and the artist share a row**, and each is measured beside the other's seed. An
     artist at its cap (73–74 under Lime and Grunge at layout 1) squeezes the title to its first
-    word and an ellipsis. That is decision 6's fallback, the one the seeds already show, and it
-    is left as it is.
+    word and an ellipsis. That was decision 6's fallback, left as it was until JP-136 (QA,
+    2026-10-15: *Don't Stop Me Now* beside *Earth, Wind & Fire, The Emotions* read "Don'…" in
+    every template). **Layout 1's row now wraps**: the inner row is `flexWrap: wrap`, the
+    title and the artist each `maxWidth: 100%` with their own ellipsis, so an artist that
+    cannot stand beside its title drops under it, at the left, and a row that fits stays on one
+    line (the seeds are byte-identical). **Pop takes the other course** (user call, 2026-10-15): its row is a
+    pill, and a wrapped pill would be a tall oval, so the title keeps its width (`flex: none`)
+    and the artist is what gives way — `flex: 0 1 auto`, still capped at 60%, with its own
+    ellipsis. At 390 *Don't Stop Me Now* now shows whole beside "· EART…", where it read
+    "DON'T ST…"; the seeded row's title shows whole too, so Pop's 390 seed moves.
   - **A tag is 18 at every layout and template** (the sized rule on *Birthdays*' 9). A tag is a
     chip at layouts 1 and 2 and a set's name at layout 3, and there it is also the key of the
     set's details in `c.sets` (case-folded). A clamped tag would be a different key and lose its

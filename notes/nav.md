@@ -154,7 +154,11 @@ another `notes/` file.
   reported name at 390 and 414 anyway, so only Pop moves there. **Editorial keeps its row**: the
   user accepted its layout-2 case as a remainder of JP-101 on 2026-10-07, and that call stands. So
   with *Featherstonehaugh* its pill still runs to 407 and its page scrolls sideways. Retro's bar
-  (`labelStyle` at 17 between two spacers, its pill to 426) is still named, not fitted.
+  was named, not fitted, until JP-137 (QA, 2026-10-15; the name at its cap of 22 beside the
+  label *Book a Free Call* put the pill 18px off a 390 page): at 390 the name is now a
+  `flex: 1 1 0` cell between the burger and the pill, centred and wrapping balanced, a word wider
+  than the room breaking, the burger's capsule `flex: none` and the two spacers gone. No ems
+  table, since Retro has no `navFace`; the seeded bar is the same to the pixel.
 - **Layout 3's 390 bar takes it too** (JP-121's retest, user call, 2026-10-12,
   `plans/pop/retest-qa-fixes.md`), under Lime, Grunge and Pop: `HeaderV2`'s `s.limeTree` row,
   the same two pinned cells, the row the query container at 390, and the same `narrow` fit in

@@ -34,7 +34,13 @@ does it for you:
 
 ```bash
 cp source/dist-standalone/index.html index.html
+cp source/public/published.html published.html
 ```
+
+**Both files go to the root.** The site is served from the repo root, and Publish → Open requests
+`published.html` beside `index.html`; if it is missing the host answers with its own 404, whose CSP
+blocks Google Fonts and the YouTube iframe (JP-134). `openPublished` detects that (it looks for
+`<meta name="encore-published">`) and falls back to `about:blank`, but the fallback cannot play YouTube.
 
 ## Source files
 

@@ -3290,12 +3290,18 @@ export function tierFeats(str) {
 // assumed. Named and left: 'Up to 120 guests: £900' is 'Up to' + '120' +
 // 'guests: £900', '£1.2k' sets a small 'k', and a thousands space ('£1 200')
 // sets '1' big and '200' small.
+const PRICE_PROSE_MIN = 8
 export function priceParts(str) {
   const s = String(str ?? '').trim()
   const m = s.match(/\d[\d,.]*/)
-  if (!m) return { lead: '', amount: s, tail: '' }
+  // `prose` (JP-135): a long run with no digit is a sentence, not a numeral
+  // ('Contact me for a custom quote'). It still takes the amount's seat, but a
+  // renderer must let it wrap and step down a size: set whole in the big
+  // numeral it outruns the card and the page. 'POA' and 'TBC' stay a numeral.
+  if (!m) return { lead: '', amount: s, tail: '', prose: s.length > PRICE_PROSE_MIN }
   const amount = m[0].replace(/[.,]+$/, '')
   return {
+    prose: false,
     lead: s.slice(0, m.index).trim(), amount,
     tail: s.slice(m.index + amount.length).trim(),
   }

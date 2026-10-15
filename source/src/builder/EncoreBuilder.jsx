@@ -5995,10 +5995,26 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
     // written there is thrown away with it. Wait until it has, then dress it.
     // The tab is held in the ref at once, so a second click focuses it and the
     // root arrives with the load.
+    //
+    // And it has to be *our* page. Where `published.html` is not deployed the
+    // host answers with its own 404, whose CSP blocks the fonts and the
+    // YouTube iframe, and a document's CSP cannot be shaken off from inside
+    // it (JP-134). Such a tab is sent to about:blank instead, which inherits
+    // the opener's origin and none of the host's policy: the page renders
+    // properly, only the YouTube row cannot start, as under file://.
     pubWin.current = win
+    let fellBack = false
     const dress = () => {
       if (win.closed) { closePublished(); return }
-      if (win.location.href === 'about:blank' && real) { setTimeout(dress, 15); return }
+      if (win.location.href === 'about:blank' && real && !fellBack) { setTimeout(dress, 15); return }
+      if (fellBack ? win.location.href !== 'about:blank' : !win.document.body) { setTimeout(dress, 15); return }
+      if (real && !fellBack && !win.document.querySelector('meta[name="encore-published"]')) {
+        fellBack = true
+        win.location.replace('about:blank')
+        toast('published.html is not deployed here, so YouTube cannot play on this page')
+        setTimeout(dress, 15)
+        return
+      }
       if (!win.document.body) { setTimeout(dress, 15); return }
       pubRoot.current = createRoot(dressPublishedWindow(win, artistName, THEMES[st.theme].palette[0]))
       win.addEventListener('pagehide', closePublished)

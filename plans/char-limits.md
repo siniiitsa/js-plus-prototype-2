@@ -668,6 +668,14 @@ marks a cap at its floor that prose fails at some width).
    The written caps are the digit-led ones, so a no-digit price at the cap can wrap the numeral.
    **This one is the user's to overrule.** Layout 1's deck holds 8–14, so the frames' own range
    form (*£450 — £1,400*, 13) does not fit every deck card.
+   **Overruled by JP-135** (QA, 2026-10-15): *Contact me for a custom quote* (29 of 35) pushed the
+   Lime layout-2 page to 1535 at 1440 and 490 at 390, and ran Grunge layout 3's numeral over its
+   feature list. A digit-less price longer than 8 characters now carries `prose: true`
+   (`priceParts()`), and the four nowrap numeral sites (layouts 1, 2 and 3 of the Lime tree, Retro
+   layout 3 narrow) wrap it (`PROSE_AMOUNT` in `EncoreSection.jsx`: `overflowWrap: anywhere`,
+   `flex: 0 1 auto`), a size down at layouts 2 and 3. The caps stand. `--prose` still counts a
+   second line as a failure, so its readout stays below the written caps: the page no longer
+   overflows, it wraps.
 2. **A column's floor is the longest seed of any design** (an extension of session 3's
    judgement 1). The first edit stores the seed that was showing, and that list then stands at
    every layout. `tiersSeed()` differs by template and design, and only in the tags. Under Lime,
@@ -820,7 +828,9 @@ marks a cap at its floor that prose fails at some width).
 5. **The title and the artist share a row.** Each was read beside the other's seed. An artist at
    its cap (73–74 at Lime's and Grunge's layout 1) squeezes the title to *KESTREL …*. That is
    decision 6's ellipsis, which the seeds already show (Pop's 390 *SEPTEM…* beside *Earth, Wind &
-   Fire*), so it is left as it is.
+   Fire*), so it is left as it is. **Overruled by JP-136 (QA, 2026-10-15):**
+   layout 1's row wraps the artist under the title (`notes/repertoire.md`); Pop's pill cannot
+   wrap, so there the title holds its width and the artist takes the ellipsis.
 6. **Floors** (prose fails, the seed fits; `--check` reports `floor`):
    - the title holds *Don't Stop Me Now*'s 17 at seven designs (10–15 read): Retro's layout 1,
      Editorial's layouts 2–4 and Pop's 1, 3 and 4. The seeds already ellipsize or wrap there;

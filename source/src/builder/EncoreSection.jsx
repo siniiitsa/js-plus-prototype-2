@@ -98,6 +98,9 @@ const facedLh = (s, lh) => (s.faceK !== 1 && typeof lh === 'number' ? +(lh / s.f
 // since a nested mask multiplies, nor onto a node that paints a box, which the
 // mask would speckle (plans/grunge/display-face.md, step 1). Repeat and
 // position are the defaults.
+// A digit-less price long enough to be a sentence (`t.prose`, JP-135): the
+// amount's seat lets it wrap and shrink instead of running past the card.
+const PROSE_AMOUNT = { whiteSpace: 'normal', minWidth: 0, overflowWrap: 'anywhere', flex: '0 1 auto' }
 const distressed = (s, style) => (s.distress ? {
   ...style,
   maskImage: s.distress.image, WebkitMaskImage: s.distress.image,
@@ -3003,6 +3006,8 @@ function HeaderV1({ s }) {
       background: s.bg, border: `1px solid ${olive}`, borderRadius: '999px',
       padding: nar ? '8px 18px' : '7px 15px', minWidth: 0,
       ...row(nar ? '18px' : '15px', { flexWrap: 'wrap' }),
+      // At 390 the burger holds its size and the name gives way (JP-137).
+      ...(s.mob && { flex: 'none' }),
     }}>{kids}</nav>
   )
 
@@ -3036,15 +3041,26 @@ function HeaderV1({ s }) {
             <a key={l.label} href={navHref(s, l.to)}
                style={labelStyle(s, tab ? '16px' : '13px', { color: s.ac, cursor: 'pointer' })}>{l.label}</a>
           )))}
-      <span style={{ flex: 1 }} />
+      {!s.mob && <span style={{ flex: 1 }} />}
       {/* The masters emit `size/label-lg, 24px` here, which is the component's
           default and not either instance's: measured off the renders' own cap
           bands and set widths, 768 draws the wordmark at the desktop canvas's
           own 20 and 390 a register under it. The frames' face is ~0.80 of
           Anton's set width, so widths only compare once that is divided out —
           cap height is the invariant to size against. */}
-      <span style={labelStyle(s, s.mob ? '17px' : '20px', { color: ink })}>{s.brand}</span>
-      <span style={{ flex: 1 }} />
+      {/* At 390 the name takes the room between the burger and the pill and
+          wraps in it, balanced, centred as the two spacers centred it: a name
+          and a label at their caps (*The Midnight Hour Band*, *Book a Free
+          Call*) no longer push the pill off the page (JP-137). A word wider
+          than the room breaks rather than reach the pill. */}
+      <span style={labelStyle(s, s.mob ? '17px' : '20px', {
+        color: ink,
+        ...(s.mob && {
+          flex: '1 1 0', minWidth: 0, textAlign: 'center', whiteSpace: 'normal',
+          textWrap: 'balance', overflowWrap: 'anywhere',
+        }),
+      })}>{s.brand}</span>
+      {!s.mob && <span style={{ flex: 1 }} />}
       <span style={row(nar ? '12px' : '10px', { flex: 'none' })}>
         {!s.mob && (
           <ListenLink s={s} to={s.listenTo} style={labelStyle(s, tab ? '16px' : '13px', { color: ink })} />
@@ -10301,6 +10317,7 @@ function Pricing({ s }) {
                         fontFamily: s.display, fontSize: faced(s, pop ? u(36) : s.dispSm), lineHeight: facedLh(s, pop ? 23.34 / 36 : 1),
                         letterSpacing: s.dls, color: pop ? seat.num : s.ac, whiteSpace: 'nowrap',
                         flex: s.narrow && !pop ? '1 1 auto' : 'none',
+                        ...(t.prose && PROSE_AMOUNT),
                       })}>{t.amount}</span>
                       {!!t.tail && (
                         <span style={pop ? pt(s.mono, 18, { fontWeight: 700, color: seat.ink }) : body(s.bodyLg, 1.5, { color: ink })}>{t.tail}</span>
@@ -10815,6 +10832,7 @@ function Pricing({ s }) {
       const lead = t ? t.lead : ''
       const amount = t ? t.amount : ''
       const tail = t ? t.tail : ''
+      const sentence = !!(t && t.prose)
 
       const head = (
         <div style={col(u(20), {
@@ -10906,8 +10924,9 @@ function Pricing({ s }) {
             <span style={row(u(6), { alignItems: 'flex-end', alignSelf: 'stretch' })}>
               {!!lead && <span style={body(s.bodyLg, 1.5, { color: s.tx })}>{lead}</span>}
               <span style={distressed(s, {
-                ...disp(s.dispMd), color: G.cardAc ?? s.ac, whiteSpace: 'nowrap',
+                ...disp(sentence ? s.dispSm : s.dispMd), color: G.cardAc ?? s.ac, whiteSpace: 'nowrap',
                 flex: desk ? 'none' : '1 1 auto',
+                ...(sentence && PROSE_AMOUNT),
               })}>{amount}</span>
               {!!tail && <span style={body(s.bodyLg, 1.5, { color: s.tx })}>{tail}</span>}
               {!!s.tierUnit && (
@@ -11185,6 +11204,7 @@ function Pricing({ s }) {
                   <span style={{
                     fontFamily: s.display, fontSize: u(T.dispMd), lineHeight: 1,
                     letterSpacing: s.dls, color: h.acc,
+                    ...(t && t.prose && { minWidth: 0, overflowWrap: 'anywhere' }),
                   }}>{amount}</span>
                   {!!tail && <span style={{ fontFamily: s.body, fontSize: u(T.bodyLg), lineHeight: 1.5 }}>{tail}</span>}
                   <span style={{
@@ -11598,9 +11618,10 @@ function Pricing({ s }) {
                       stands 5.9 / 3.3 / 0.8, frame px (display-face.md step
                       4, layout 3; Noto took 0.09). */}
                   <span style={distressed(s, {
-                    fontFamily: s.display, fontSize: faced(s, s.dispMd), ...disp(1),
+                    fontFamily: s.display, fontSize: faced(s, t.prose ? s.dispSm : s.dispMd), ...disp(1),
                     letterSpacing: s.dls, color: feat ? G.featNum : s.ac, whiteSpace: 'nowrap',
                     ...(desk ? {} : { flex: '1 0 auto' }),
+                    ...(t.prose && PROSE_AMOUNT),
                     ...(ed ? { position: 'relative', top: '-0.08em' } : {}),
                     // Titan sits 0.14em low at lh 1 (Pop's every display
                     // site): unlifted, its floor stood 0.101 / 0.104 / 0.097
@@ -11869,6 +11890,7 @@ function Pricing({ s }) {
                   fontFamily: s.display, fontSize: u(T.dispMd), lineHeight: 1,
                   letterSpacing: s.dls, color: acc,
                   ...(desk ? {} : { flex: '1 0 auto' }),
+                  ...(t.prose && PROSE_AMOUNT),
                 }}>{t.amount}</span>
                 {/* A range's second half (JP-074): the lead's face, and free
                     to wrap where the lead holds its line. */}
@@ -13114,20 +13136,30 @@ function Repertoire({ s }) {
                         fontFamily: s.ui, fontSize: pop ? u(16) : s.labelXs, lineHeight: pop ? 'normal' : 1.26,
                         letterSpacing: s.dls, color: pop ? POP_REP.song : s.ac,
                       }}>{t.n}</span>
+                      {/* An artist too long to stand beside its title wraps under
+                          it (JP-136) instead of crushing the title to "Don'…":
+                          each keeps its own ellipsis at the row's width. Pop's
+                          pill cannot wrap, so there the title keeps its width
+                          and the artist is what is clipped. */}
                       <span style={row(u(pop ? 4 : 12), {
                         flex: 1, minWidth: 0, alignItems: 'baseline', justifyContent: 'space-between',
+                        ...(pop ? null : { flexWrap: 'wrap', rowGap: u(2) }),
                       })}>
                         {/* Label/LG over Label/SM. */}
                         <span style={bebas(G.song, {
                           color: pop ? POP_REP.song : s.tx, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis',
+                          maxWidth: '100%',
+                          ...(pop ? { flex: 'none' } : null),
                         })}>{t.title}</span>
                         {/* Pop's pill clips its row (the frame's own
-                            `clipsContent`), so a long artist stops at 60% of
-                            it rather than crushing the title or crossing the
-                            ring — Editorial's layout-4 cap. */}
+                            `clipsContent`) and cannot wrap, so the title holds
+                            its width (JP-136) and a long artist gives way
+                            instead, to 60% of the row at most and its own
+                            ellipsis — Editorial's layout-4 cap. */}
                         <span style={bebas(pop ? u(16) : s.labelSm, {
                           color: pop ? s.tx : s.ac, flex: 'none',
-                          ...(pop ? { maxWidth: '60%', overflow: 'hidden', textOverflow: 'ellipsis' } : null),
+                          overflow: 'hidden', textOverflow: 'ellipsis',
+                          ...(pop ? { maxWidth: '60%', flex: '0 1 auto', minWidth: 0 } : { maxWidth: '100%' }),
                         })}>· {t.artist}</span>
                       </span>
                     </div>
@@ -13299,6 +13331,7 @@ function Repertoire({ s }) {
                   }}>{t.n}</span>
                   <span style={row('12px', {
                     flex: 1, minWidth: 0, alignItems: 'baseline', justifyContent: 'space-between',
+                    flexWrap: 'wrap', rowGap: '2px',
                   })}>
                     {/* Literal, not `s.title`: the view-model's content `title`
                         shadows the RAMP size of the same name, so that key does
@@ -13309,11 +13342,12 @@ function Repertoire({ s }) {
                         display face pushes the whole column past the canvas. */}
                     <span style={{
                       fontFamily: s.display, fontSize: s.mob ? '26px' : tab ? '28px' : '20px',
-                      lineHeight: 1.1, letterSpacing: s.dls, color: hue, minWidth: 0,
+                      lineHeight: 1.1, letterSpacing: s.dls, color: hue, minWidth: 0, maxWidth: '100%',
                       overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                     }}>{t.title}</span>
+                    {/* Wraps under the title when it cannot stand beside it (JP-136). */}
                     <span style={labelStyle(s, s.narrow ? '15px' : s.eyebrow, {
-                      color: s.ac, flex: 'none',
+                      color: s.ac, flex: 'none', maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis',
                     })}>· {t.artist}</span>
                   </span>
                   {/* Two rows of squares closing the card, over its bottom edge. */}

@@ -32,6 +32,7 @@ After a standalone build, copy the result to the repo root to refresh the double
 
 ```bash
 cp dist-standalone/index.html ../index.html
+cp public/published.html ../published.html   # Publish → Open needs it beside index.html
 ```
 
 ## Layout
@@ -584,7 +585,10 @@ That distinction is the whole design, and it buys two things:
   whose href is `navHref()` or `extLink()`, so it needs none of the `useState` the sections above
   it take.
 
-Two limits worth naming before demoing it: the tab's address bar reads `about:blank` — the fake
+Two limits worth naming before demoing it: served over http(s) the tab opens on `published.html`
+(an empty page that gives it a real address, so YouTube gets a Referer; it has to be deployed
+beside `index.html`, and `openPublished` falls back to `about:blank` when it is not), and under
+`file://` the address bar reads `about:blank` — the fake
 domain is in the dialog copy, and the alternative (`document.write`) would make the tab claim the
 builder's own URL and reload into the builder. That is also why a nav link is never *followed*:
 `<base href>` pins the popup's fragment hrefs to the opener's URL, so one delegated click listener

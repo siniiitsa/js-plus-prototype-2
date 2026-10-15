@@ -211,7 +211,10 @@ another `notes/` file.
   - **The price is measured as a price.** `priceParts()` splits it at its first digit, so a long
     price grows in its small tail (*£475 — £1,450 per evening*), and the probe reads it with
     digit-led samples. Prose has no digit and sets whole in the big numeral; that reading (a long
-    *Price on application*) is lower, and is kept in the readout for the user to overrule. Layout
+    *Price on application*) is lower. **JP-135 overruled it**: a digit-less price over 8
+    characters is `prose` (from `priceParts()`) and wraps in its numeral's seat, a size smaller at
+    layouts 2 and 3, instead of running past the card; *POA* and *TBC* stay a numeral. The caps
+    did not move. Layout
     1's narrow deck holds 8–14, so the range form the layout-3 frames draw (13) does not fit every
     deck card; layouts 2–4 take 20–35.
   - **A column's floor is the longest seed of any design**, not this design's: the first edit
