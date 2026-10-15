@@ -1859,7 +1859,7 @@ export const FIELDS = {
     // copy (IDENTITY_CHARS, sealCap) rather than tightening this one
     // (plans/char-limits.md, session 1, user calls, 2026-10-13).
     { k: 'title',     l: 'Title',
-      chars: { Retro: [23, 22, 14, 14, 10, 31], Lime: [14, 19, 22, 12], Grunge: [19, 20, 26, 17],
+      chars: { Retro: [23, 22, 14, 14, 20, 31], Lime: [14, 19, 22, 12], Grunge: [19, 20, 26, 17],
         Editorial: [12, 15, 15, 12], Pop: [13, 18, 18, 11] } },
     { k: 'subtitle',  l: 'Subtitle',         type: 'area', def: 'heroSub',
       in: { Retro: [1, 4], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1] },

@@ -4550,32 +4550,39 @@ function HeaderV3({ s }) {
 }
 
 // v4 — Header layout 5 · Overlay card
+// Layouts 5 and 6 have no Figma page, so their ratio is a floor, not a frame
+// (JP-138..140). `overflow: clip` paints the radius but is no scroll container,
+// so the box's automatic minimum height follows its in-flow content: where the
+// content fits, the hero is the ratio's box and nothing moves; where it does
+// not (768's wrapped nav, a long name) the hero grows instead of clipping.
 function HeaderV4({ s }) {
   return (
+    // The hero itself is the grid, so its ratio height is definite and the two
+    // outer rows split what is left: the card stands in the middle row and is
+    // centred on the hero while the nav above it leaves room, and below that
+    // the nav row alone grows (the card never reaches the links). The photo,
+    // scrim and seal are absolute, so they are no grid items; the two in-flow
+    // children are `relative` to paint over the scrim.
     <div style={{
       position: 'relative', aspectRatio: s.mob ? '4 / 5.4' : '16 / 8.5',
-      borderRadius: s.radius, overflow: 'hidden',
+      borderRadius: s.radius, overflow: 'clip', display: 'grid',
+      gridTemplateRows: 'minmax(auto, 1fr) auto minmax(auto, 1fr)',
+      padding: s.mob ? '18px' : '24px', color: '#FFFFFF',
     }}>
       <div style={{ position: 'absolute', inset: 0 }}><Photo s={s} initialsSize={72} /></div>
       <div style={{ position: 'absolute', inset: 0, background: SCRIM.v1 }} />
-      <div style={{
-        position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column',
-        padding: s.mob ? '18px' : '24px', color: '#FFFFFF',
-      }}>
-        <div style={row('16px', { justifyContent: 'space-between', flexWrap: 'wrap' })}>
-          <NavLinks s={s} color="#FFFFFF" pills />
-          <Wordmark s={s} color="#FFFFFF" />
-          <span style={row('14px')}>
-            <ListenLink s={s} color="#FFFFFF" to={s.listenTo} />
-            <BookPill s={s} to={s.bookTo} />
-          </span>
-        </div>
+      <div style={row('16px', { justifyContent: 'space-between', flexWrap: 'wrap', alignSelf: 'start', position: 'relative' })}>
+        <NavLinks s={s} color="#FFFFFF" pills />
+        <Wordmark s={s} color="#FFFFFF" />
+        <span style={row('14px')}>
+          <ListenLink s={s} color="#FFFFFF" to={s.listenTo} />
+          <BookPill s={s} to={s.bookTo} />
+        </span>
       </div>
       <div style={{
-        position: 'absolute', left: s.mob ? '18px' : '36px', right: s.mob ? '18px' : 'auto',
-        top: '50%', transform: 'translateY(-50%)', maxWidth: '380px',
+        gridRow: 2, margin: s.mob ? '12px 0' : '12px 0 12px 12px', maxWidth: '380px',
         background: s.ac, color: s.acFg, borderRadius: s.radius, padding: '24px',
-        ...col('14px'),
+        position: 'relative', ...col('14px'),
       }}>
         <div style={row('12px')}>
           <div style={{ width: '36px', height: '36px', borderRadius: '999px', overflow: 'hidden', flex: 'none' }}>
@@ -4615,13 +4622,13 @@ function HeaderV5({ s }) {
   return (
     <div style={{
       position: 'relative', aspectRatio: s.mob ? '4 / 5' : '16 / 7.5',
-      borderRadius: s.radius, overflow: 'hidden',
+      borderRadius: s.radius, overflow: 'clip', ...col('0'),
     }}>
       <div style={{ position: 'absolute', inset: 0 }}><Photo s={s} initialsSize={72} /></div>
       <div style={{ position: 'absolute', inset: 0, background: SCRIM.v5 }} />
       <div style={{
-        position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column',
-        justifyContent: 'space-between', padding: s.mob ? '18px' : '24px', color: '#FFFFFF',
+        position: 'relative', flex: 1, display: 'flex', flexDirection: 'column',
+        justifyContent: 'space-between', gap: '20px', padding: s.mob ? '18px' : '24px', color: '#FFFFFF',
       }}>
         <div style={row('16px', { justifyContent: 'space-between', flexWrap: 'wrap', paddingRight: sealGap(s) })}>
           <Wordmark s={s} logo color="#FFFFFF" />
@@ -4637,7 +4644,7 @@ function HeaderV5({ s }) {
             <Title s={s} size={s.mob ? s.h2 : s.h1} color="#FFFFFF" />
             <LocationLine s={s} color="rgba(255,255,255,.75)" />
           </div>
-          <div style={{ maxWidth: '46%', minWidth: '160px' }}>
+          <div style={{ maxWidth: '46%', minWidth: '160px', marginLeft: 'auto' }}>
             <TagChips s={s} justify="flex-end" />
           </div>
         </div>

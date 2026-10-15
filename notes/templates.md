@@ -477,3 +477,17 @@ another `notes/` file.
   Editorial's and Pop's layout-4 header seals fit the seed's ten characters exactly. A typed Badge
   text is capped to the same fit in the panel. `EncoreSection` is unchanged. A section that gains
   a seal needs an `IDENTITY_CHARS[cat].seal` entry, or its ring is unclamped.
+
+- **Retro's header layouts 5 and 6 grow to fit** (JP-138 · JP-139 · JP-140, QA, 2026-10-15). They have
+  no Figma page, so their `aspectRatio` is a floor, not a frame. Each root is `overflow: clip` (the
+  radius, but no scroll container, so `min-height: auto` follows the in-flow content) and its content
+  is in flow. Where it fits, the hero is the ratio's box to the pixel (layout 6 at desktop and 390 digest
+  to zero); where it does not (768's wrapped link row, a name that takes three lines) the hero takes the
+  height. **`HeaderV4` is the grid itself** (rows `minmax(auto,1fr) auto minmax(auto,1fr)`, padding
+  24 / 18): the nav row, the card in the middle row with a 12px margin, the photo, scrim and seal
+  absolute. A wrapper between the ratio box and the grid made the fr rows indefinite and the hero
+  overgrew by 38px at 1440. The card used to be centred on the hero by `top: 50%`, whatever the nav
+  did, and sat on the links at 768; now it centres while the nav leaves room and drops below it
+  when not. At 1440 it moved 15px down, because the old card overlapped the nav's box by 3px and
+  the 12px margin is new. The in-flow children are `position: relative`, or the absolute scrim paints over them.
+  `HeaderV5`'s tag block takes `marginLeft: auto`, so it stays at the right when it wraps onto its own line.

@@ -1949,3 +1949,16 @@ heading's shrink floor is the name's 0.75 (`FLOOR_AT`); alternative, floorless (
 Pop layout 4's measure is the room left of the dot grid, not the frame's measure; alternative, keep the
 frame's and let a long word cross the dots. **S12-d** 15 caps were lowered under later, stricter
 probes (table above), `chipLabel` most, where Lime's 9 is a character past its seed.
+
+## JP-138 · JP-139 · JP-140 (QA, 2026-10-15): Retro's header layouts 5 and 6
+
+Retro header layouts 5 and 6 clipped at 768 and with a long name: a fixed `aspectRatio` box held a
+content layer that did not fit. The fix makes the hero grow to its content (`notes/templates.md`), so
+no cap moves for want of room.
+- **Layout 5's name: 10 → 20.** 10 was the seed's length, held "since the card covers the nav brand at
+  768" (session 1, judgement call). JP-138 removed that reason. `limits.mjs header --themes=0
+  --keys=title --designs=4` measures 20 (mobile, `box`), and `--check` passes at 20 at all three widths.
+- **Layout 6's name: stays 31.** The probe now measures 39 (mobile, `overlap`), up from 31, because the
+  hero grows. 31 is kept: JP-140 reports a 30-character name (*The Midnight Hour Wedding Band*) as the
+  case to hold, and a longer one makes the hero taller still. **User's call to raise it.**
+- `--seeds` over header, bio, media, form and footer: 0 over.

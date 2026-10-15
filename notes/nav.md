@@ -177,7 +177,8 @@ another `notes/` file.
   draws, and shrink to 75% of the seed's size (`FLOOR` / `EXTRA_LINES` in `scripts/limits.mjs`).
   So the fits above (`navNameFit`, JP-091's room, JP-101's narrow wrap, `vm.cardNameEms`) are what
   the cap is measured through, and they stay as the fallback. The caps run 10–31 by template and
-  layout. The tightest are 11–12: Editorial's layouts 1 and 4 (Gloock), and Lime's and Pop's layout 4. Retro's layout 5 is held
-  at the seed's 10, since its card already covers the nav brand at 768. EditPanel's Title box takes
+  layout. The tightest are 11–12: Editorial's layouts 1 and 4 (Gloock), and Lime's and Pop's layout 4. Retro's layout 5 was held
+  at the seed's 10, since its card covered the nav brand at 768; JP-138 put the card below the nav, and
+  the measured 20 is written (`notes/templates.md`). EditPanel's Title box takes
   `fieldCap(title)`, not `identityCap`: a section that prints the name tighter clamps its own copy,
   and the seal's ring clamps its copy to its fit (`sealCap`, `notes/templates.md`).
