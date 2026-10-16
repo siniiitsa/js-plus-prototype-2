@@ -130,14 +130,32 @@ mutated through a single `patch()` helper.
   lands on its edit panel; the mobile edit drawer stays shut, or it would cover the page before
   it has been seen.
 - **A focused panel field walks the canvas to what it prints** (user call, 2026-10-14). `EditPanel`'s
-  per-field wrapper reports focus (and typing) to `EncoreBuilder`'s `onFocusField`, which finds the
-  smallest visible element in that section whose text holds the field's value (`findFieldNode`: case
-  and whitespace ignored, first line, retried on its first words, so `cased()`, word-split spans and
-  a clamp's `…` still match), scrolls the canvas scroller (`canvasRef`) only if it is not already in
-  view — on a phone into the top 16vh the Edit drawer leaves free — and draws a box round it inside
-  the section's `data-sid` wrapper. It is **matched by text, in chrome, so `EncoreSection` carries no
-  field markers**; a field with no printed text (photos, repeaters, selects) scrolls to its section and
-  draws no box. Do not tag `EncoreSection` for this without a reason the text match cannot meet.
+  per-field wrapper reports focus (and typing) to `EncoreBuilder`'s `onFocusField` — an input or
+  textarea reports its own value, so a tag row reports the row and not the whole comma string
+  (JP-147) — which finds the smallest visible element in that section whose text holds the
+  field's value (`findFieldNode(root, text, key)`: case and whitespace ignored, first line, and
+  if not found whole, retried by its first *words*, longest first, down to two words and 8
+  squashed characters (JP-149), so `cased()`, word-split spans and a clamp's `…` still match),
+  scrolls the canvas scroller (`canvasRef`) only if it is not already in view — on a phone into
+  the top 16vh the Edit drawer leaves free — and draws a box round it inside the section's
+  `data-sid` wrapper. A section with no node to box (photos, repeaters, selects) counts as in view
+  only when at least `min(its height, half the band)` of it is inside the band (JP-150), not on
+  any overlap. It is **matched by text, in chrome, so `EncoreSection` carries no field markers**.
+  Do not tag `EncoreSection` for this without a reason the text match cannot meet.
+  **Text cannot tell two fields with the same text apart** (JP-146, user call, 2026-10-16), and the
+  default state is a collision on every template: Title, Badge text, the nav brand and the seal's
+  ring all hold the artist's name. So `findFieldNode` collects every minimal match and the
+  field's `key` (carried in `focusF`, so the box-following layout effect and the scroll pick the
+  same node) ranks them: `title` the largest type, `badgeText` the match inside an svg, any other
+  key the first in document order. A tag row (`tags`) takes only the chip that *is* the row (or
+  its `…`), else none: a one-word tag such as "Live" sits inside other copy, and a layout that
+  draws no chips has no box. Measured over header layouts 1–4 of all five templates (and
+  Retro's 5), plus bio and calendar: no collision the ranking cannot settle, and every other key
+  picks the node it always did. **A seal is boxed as its disc** (JP-148): a node inside an svg is
+  boxed through `fieldRect`, which takes the outermost svg's `getScreenCTM()` and viewBox to
+  the disc's centre and diameter, because the ring's own box is one `<textPath>` arc that swings
+  with `seal-spin` and the tilted svg's is 1.38x the disc. All four `SealBadge` arms draw the
+  same viewBox-is-the-disc svg, so one rule covers them.
 - `st.theme` is an **integer index** into `THEMES`, not a name or object.
 - **`st.device` is the toggle, `device` is what the canvas draws.** A window at most 1180 wide
   (iPad Air landscape; `useTabletCap`) caps it at tablet and disables the Desktop tab, since

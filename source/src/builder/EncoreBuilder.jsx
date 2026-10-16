@@ -4752,7 +4752,10 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                       // Focus walks the canvas to what this field prints (the
                       // builder's `onFocusField`); typing keeps its box on the
                       // new text. Blur only counts once focus leaves the field.
-                      onFocus={() => onFocusField?.(sec.id, f, val)}
+                      // A row of a list reports its own text, as typing does
+                      // (JP-147): `val` is the whole comma string, which no
+                      // element on the page holds.
+                      onFocus={(e) => onFocusField?.(sec.id, f, e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement ? e.target.value : val)}
                       onInput={(e) => onFocusField?.(sec.id, f, e.target.value, true)}
                       onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget)) onBlurField?.() }}
                     >
@@ -5768,38 +5771,92 @@ function dressPublishedWindow(win, artistName, pageBg) {
 
 // The smallest visible element inside `root` (a section's rendered page) whose
 // text holds `text`, or null. Whitespace and case are ignored: the page caps
-// copy (`cased()`), splits names into spans and clamps at a word, so a longer
-// copy is tried again by its first words.
+// copy (`cased()`), splits names into spans and clamps at a word with `…`, so
+// a copy that is not found whole is tried again by its first words, longest
+// first, down to two words and ~8 characters.
+//
+// Several elements can hold the same text (the default name is the nav brand,
+// the title, the badge and the seal's ring all at once), and text cannot tell
+// the fields apart, so the field's `key` picks among the minimal matches:
+// `title` the largest type, `badgeText` the one inside an svg (the seal's
+// ring). A tag row takes only the chip that is the row, or none. Any other
+// key takes the first in document order, which is what a field with one
+// match always got.
 const squash = (v) => String(v).replace(/\s+/g, '').toLowerCase()
-function findFieldNode(root, text) {
+const FIELD_PREFIX_MIN = 8
+function findFieldNode(root, text, key) {
   if (!root) return null
-  const first = String(text).split('\n').find((l) => l.trim()) || ''
-  for (const n of [40, 16]) {
-    const want = squash(first).slice(0, n)
-    if (!want) return null
-    let best = null
-    for (const el of root.querySelectorAll('*')) {
-      if (!squash(el.textContent).includes(want)) continue
+  const words = (String(text).split('\n').find((l) => l.trim()) || '').trim().split(/\s+/).filter(Boolean)
+  if (!words.length) return null
+  const all = []
+  for (const el of root.querySelectorAll('*')) {
+    all.push({ el, sq: squash(el.textContent) })
+  }
+  for (let k = words.length; k >= 1; k--) {
+    const want = squash(words.slice(0, k).join(''))
+    if (k < words.length && (k < 2 || want.length < FIELD_PREFIX_MIN)) return null
+    const hits = []
+    for (const { el, sq } of all) {
+      if (!sq.includes(want)) continue
+      // A tag row is a chip of its own (or its clamped `…`): a word inside a
+      // sentence is not it, and a layout that draws no chips has no box.
+      if (key === 'tags' && !(sq === want || (sq.startsWith(want) && sq.length - want.length <= 1))) continue
       const r = el.getBoundingClientRect()
       if (!r.width || !r.height) continue
-      if (!best || best.contains(el)) best = el
+      hits.push({ el, sq })
     }
-    if (best) return best
+    if (!hits.length) continue
+    // The minimal matches: those with no matching element inside them. Hits
+    // are in document order, so a descendant of one is the very next hit.
+    const min = hits.filter((h, i) => !(hits[i + 1] && h.el.contains(hits[i + 1].el)))
+    if (min.length > 1) {
+      let pick
+      if (key === 'title') {
+        let big = 0
+        for (const h of min) {
+          const fs = parseFloat(getComputedStyle(h.el).fontSize) || 0
+          if (fs > big) { big = fs; pick = h }
+        }
+      } else if (key === 'badgeText') {
+        pick = min.find((h) => h.el.closest('svg'))
+      }
+      if (pick) return pick.el
+    }
+    return min[0].el
   }
   return null
 }
 
+// The rectangle to box for `node`. A node inside an svg (the seal's ring) is
+// boxed as its seal: the svg's disc, which is a circle, so its square is the
+// same whatever the tilt and `seal-spin` do to the ring inside it (the ring's
+// own bounding box swings with the spin, and the tilted svg's is 1.38x too
+// big). The screen matrix turns the viewBox into the disc's centre and size.
+function fieldRect(node) {
+  let svg = node.closest?.('svg')
+  if (!svg) return node.getBoundingClientRect()
+  while (svg.parentElement?.closest('svg')) svg = svg.parentElement.closest('svg')
+  const m = svg.getScreenCTM()
+  const vb = svg.viewBox?.baseVal
+  if (!m || !vb || !vb.width) return svg.getBoundingClientRect()
+  const d = vb.width * Math.hypot(m.a, m.b)
+  const c = new DOMPoint(vb.x + vb.width / 2, vb.y + vb.height / 2).matrixTransform(m)
+  return new DOMRect(c.x - d / 2, c.y - d / 2, d, d)
+}
+
 // Brings `node` (or, with none, its section `wrap`) into the canvas scroller's
 // visible band, only when it is not there already. On a phone the Edit drawer
-// covers all but the top 16vh, so that strip is the band.
+// covers all but the top 16vh, so that strip is the band. A section counts as
+// in view only when a real share of it is: at least half the band, or all of
+// it if it is shorter (JP-150: a 69px strip of a tall section is not in view).
 function scrollFieldIntoView(scroller, wrap, node, isMobile) {
   const sr = scroller.getBoundingClientRect()
   const bandTop = sr.top
   const bandBottom = isMobile ? Math.min(sr.bottom, window.innerHeight * 0.16) : sr.bottom
-  const r = (node || wrap).getBoundingClientRect()
+  const r = (node ? fieldRect(node) : wrap.getBoundingClientRect())
   const inView = node
     ? r.top >= bandTop + 16 && r.top <= bandBottom - Math.min(r.height, 48) - 8
-    : r.top < bandBottom && r.bottom > bandTop
+    : Math.min(r.bottom, bandBottom) - Math.max(r.top, bandTop) >= Math.min(r.height, (bandBottom - bandTop) / 2)
   if (inView) return
   const want = node ? bandTop + (isMobile ? 12 : Math.max(24, (bandBottom - bandTop) * 0.3)) : bandTop + 16
   scroller.scrollTo({ top: Math.max(0, scroller.scrollTop + r.top - want), behavior: 'smooth' })
@@ -5944,22 +6001,22 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
 
   const onFocusField = useCallback((sid, f, val, typing) => {
     const text = (f.type === undefined || f.type === 'area' || f.type === 'url' || f.type === 'email') && typeof val === 'string' ? val : ''
-    setFocusF({ sid, text })
+    setFocusF({ sid, text, key: f.k })
     if (typing) return
     const scroller = canvasRef.current
     const wrap = scroller?.querySelector(`[data-sid="${sid}"]`)
     if (!wrap) return
-    scrollFieldIntoView(scroller, wrap, text && findFieldNode(wrap.firstElementChild, text), isMobile)
+    scrollFieldIntoView(scroller, wrap, text && findFieldNode(wrap.firstElementChild, text, f.k), isMobile)
   }, [isMobile])
   const onBlurField = useCallback(() => setFocusF(null), [])
 
   // The box follows the copy as it is typed, wraps, or changes width.
   useLayoutEffect(() => {
     const wrap = focusF && canvasRef.current?.querySelector(`[data-sid="${focusF.sid}"]`)
-    const node = wrap && focusF.text ? findFieldNode(wrap.firstElementChild, focusF.text) : null
+    const node = wrap && focusF.text ? findFieldNode(wrap.firstElementChild, focusF.text, focusF.key) : null
     if (!node) { setFocusBox(null); return }
     const w = wrap.getBoundingClientRect()
-    const r = node.getBoundingClientRect()
+    const r = fieldRect(node)
     setFocusBox({ sid: focusF.sid, x: r.left - w.left, y: r.top - w.top, w: r.width, h: r.height })
   }, [focusF, st.sections, device, st.theme])
 
