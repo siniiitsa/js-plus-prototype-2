@@ -12,6 +12,7 @@ One folder per template, one file per pass:
 plans/
   CONVENTIONS.md   ← the conventions every template shares, named and located
   photo-focus-qa-fixes.md ← a QA batch filed against every template at once
+  editor-qa-fixes.md ← the editor's tag rows, field→canvas box and move-follow (JP-141 … JP-151)
   char-limits.md   ← the character-limit pass, every template (char-limits/ holds its census)
   retro/
     layout-2.md
@@ -212,6 +213,7 @@ procedure*.
 | Pass | Plan | Branch | Fitted |
 |---|---|---|---|
 | Photo focus QA fixes | [`photo-focus-qa-fixes.md`](./photo-focus-qa-fixes.md) | `photo-focus-qa-fixes`, forked from `main` (`2136fc1`, after PR #61; fixed, with the root `index.html` refreshed in the working tree; commit, push, PR and merge still open) | Not a fit: the tester's JP-129 … JP-133, seeded photographs whose performer lost their head at the gallery's layout-3 tiles and layout-1 spotlight, the layout-3 bio at 390 and the layout-1 and layout-4 heroes narrow. One cause (the frames' centred FILL) and one fix: a per-seed `object-position` (`FOCUS` in `photos.js`, `vm.imagePos` / `vm.imagesPos`), read by those five sites. Fitted crops win, and uploads keep the centred cover (user calls, 2026-10-12). 42 of 210 header / bio / gallery renders move, `object-position` alone, and the two-build digest moves nothing else. |
+| Editor QA fixes | [`editor-qa-fixes.md`](./editor-qa-fixes.md) | `editor-qa-fixes`, to fork from `main` (`ae7b47a`; planned, nothing fixed yet) | Not a fit: the tester's JP-141 … JP-151 against the 14 Oct editor work, all in builder chrome. Three sessions: the header's tag rows (typed comma, count limit, over-limit edits), the panel field → canvas box (same-text fields, clamped copy, the seal, tag rows, the in-view floor), and a moved section on a phone (the 16vh band only while a drawer covers the canvas). |
 | Character limits | [`char-limits.md`](./char-limits.md) | `char-limits`, forked from `main` (`7b02852`, after PR #63; sessions 0–12 done: the mechanism, the header, the bio, the media, pricing, the repertoire, the gallery, the calendar, the map, the testimonials, the enquiry form, the footer, the sweep, with the root `index.html` refreshed; commit, push and PR open) | Not a fit: a per-template, per-layout character cap on every text field and repeater column, measured (the Figma census for the intended lines, `scripts/limits.mjs` for the number), enforced by `maxLength` and a counter in the panel and a clamp at `sectionVm`'s head (user calls, 2026-10-13). One section per session. |
 
 `SPEC.md`, which the plans number against, lives in git history: `git show 8fa8ff4:SPEC.md`.
