@@ -5844,21 +5844,27 @@ function fieldRect(node) {
   return new DOMRect(c.x - d / 2, c.y - d / 2, d, d)
 }
 
+// The part of the canvas scroller the artist can see: all of it, unless
+// `covered` (a phone with a drawer open over the canvas: the Edit drawer or
+// the Sections / Theme sheet), when only the top 16vh is left free. A phone
+// with no drawer open sees the whole scroller (JP-151).
+function canvasBand(scroller, covered) {
+  const sr = scroller.getBoundingClientRect()
+  return { top: sr.top, bottom: covered ? Math.min(sr.bottom, window.innerHeight * 0.16) : sr.bottom }
+}
+
 // Brings `node` (or, with none, its section `wrap`) into the canvas scroller's
-// visible band, only when it is not there already. On a phone the Edit drawer
-// covers all but the top 16vh, so that strip is the band. A section counts as
+// visible band, only when it is not there already. A section counts as
 // in view only when a real share of it is: at least half the band, or all of
 // it if it is shorter (JP-150: a 69px strip of a tall section is not in view).
-function scrollFieldIntoView(scroller, wrap, node, isMobile) {
-  const sr = scroller.getBoundingClientRect()
-  const bandTop = sr.top
-  const bandBottom = isMobile ? Math.min(sr.bottom, window.innerHeight * 0.16) : sr.bottom
+function scrollFieldIntoView(scroller, wrap, node, covered) {
+  const { top: bandTop, bottom: bandBottom } = canvasBand(scroller, covered)
   const r = (node ? fieldRect(node) : wrap.getBoundingClientRect())
   const inView = node
     ? r.top >= bandTop + 16 && r.top <= bandBottom - Math.min(r.height, 48) - 8
     : Math.min(r.bottom, bandBottom) - Math.max(r.top, bandTop) >= Math.min(r.height, (bandBottom - bandTop) / 2)
   if (inView) return
-  const want = node ? bandTop + (isMobile ? 12 : Math.max(24, (bandBottom - bandTop) * 0.3)) : bandTop + 16
+  const want = node ? bandTop + (covered ? 12 : Math.max(24, (bandBottom - bandTop) * 0.3)) : bandTop + 16
   scroller.scrollTo({ top: Math.max(0, scroller.scrollTop + r.top - want), behavior: 'smooth' })
 }
 
@@ -5867,19 +5873,18 @@ function scrollFieldIntoView(scroller, wrap, node, isMobile) {
 // once the new order is laid out and scrolls by however far it travelled, so
 // its toolbar stays under the pointer and a second click carries on. A section
 // that was out of view (a move from the sidebar) is scrolled to instead.
-function markFollow(scroller, id, isMobile) {
+function markFollow(scroller, id, covered) {
   const wrap = scroller?.querySelector(`[data-sid="${id}"]`)
   if (!wrap) return null
-  const sr = scroller.getBoundingClientRect()
+  const band = canvasBand(scroller, covered)
   const r = wrap.getBoundingClientRect()
-  const bandBottom = isMobile ? Math.min(sr.bottom, window.innerHeight * 0.16) : sr.bottom
-  return { id, offset: r.top - sr.top, seen: r.top < bandBottom && r.bottom > sr.top }
+  return { id, offset: r.top - band.top, seen: r.top < band.bottom && r.bottom > band.top }
 }
 
-function followSection(scroller, mark, isMobile) {
+function followSection(scroller, mark, covered) {
   const wrap = scroller?.querySelector(`[data-sid="${mark.id}"]`)
   if (!wrap) return
-  if (!mark.seen) { scrollFieldIntoView(scroller, wrap, null, isMobile); return }
+  if (!mark.seen) { scrollFieldIntoView(scroller, wrap, null, covered); return }
   const now = wrap.getBoundingClientRect().top - scroller.getBoundingClientRect().top
   scroller.scrollTop += now - mark.offset
 }
@@ -6143,8 +6148,12 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
   // `move` scrolls the canvas by how far it travelled (`followSection`).
   const followRef = useRef(null)
 
+  // A phone's drawer over the canvas: the Edit drawer (open on a section) or
+  // the Sections / Theme sheet. Then only the top 16vh of the canvas is free.
+  const covered = isMobile && ((st.editSheet && sections.some((s) => s.id === st.selectedId)) || !!st.sheet)
+
   const move = useCallback((id, dir) => {
-    if (canMove(sections, id, dir)) followRef.current = markFollow(canvasRef.current, id, isMobile)
+    if (canMove(sections, id, dir)) followRef.current = markFollow(canvasRef.current, id, covered)
     patch((s) => {
       if (!canMove(s.sections, id, dir)) return {}
       const i = s.sections.findIndex((x) => x.id === id)
@@ -6153,14 +6162,14 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
       next.splice(i + dir, 0, x)
       return { sections: next }
     })
-  }, [patch, sections, isMobile])
+  }, [patch, sections, covered])
 
   // §5.4 — the drag equivalent of move(): drop `from` at `to`, with the same
   // rule that the header keeps index 0 and the footer stays last.
   const reorder = useCallback((from, to) => {
     const sec = sections[from]
     if (sec && from !== to && sec.cat !== 'header' && sec.cat !== 'footer' && to >= 1 && to <= sections.length - 2) {
-      followRef.current = markFollow(canvasRef.current, sec.id, isMobile)
+      followRef.current = markFollow(canvasRef.current, sec.id, covered)
     }
     patch((s) => {
       const sec = s.sections[from]
@@ -6172,14 +6181,14 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
       next.splice(to, 0, x)
       return { sections: next }
     })
-  }, [patch, sections, isMobile])
+  }, [patch, sections, covered])
 
   useLayoutEffect(() => {
     const mark = followRef.current
     if (!mark) return
     followRef.current = null
-    followSection(canvasRef.current, mark, isMobile)
-  }, [st.sections, isMobile])
+    followSection(canvasRef.current, mark, covered)
+  }, [st.sections, covered])
 
   const setContent = useCallback((id, k, v) => patch((s) => ({
     sections: s.sections.map((x) => {

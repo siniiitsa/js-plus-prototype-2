@@ -67,7 +67,7 @@ reproducing its tickets (step 1 of the procedure) and corrects this file where t
 | JP-148 | `findFieldNode` on the seal | **Reproduced**: the seal's name is two `<textPath>`s, the first of them the match, so the box is one arc's bounding box (rotated, `seal-spin`), not the disc; and the tilted svg's own box is 1.38x the disc, so the fix reads the disc off `getScreenCTM()` | S | fixed (session 2) |
 | JP-149 | `findFieldNode`'s retry | **Reproduced**: the second try is the first *16 characters*, "themidnighthourw", and the page holds "themidnighthour…" | S | fixed (session 2) |
 | JP-150 | `scrollFieldIntoView`, no-node arm | **Read off the code** (the 69 px strip cannot be set up exactly, scroll range clamps it; checked after the fix at 148 / 300 / 500 px visible of a 422 threshold: scrolls, scrolls, stays): "in view" is any overlap of the section with the band, so a 69 px strip passes | S | fixed (session 2) |
-| JP-151 | `markFollow` / `scrollFieldIntoView` band | **Likely**: on a phone the band is the top 16vh *always*, though it is the Edit drawer that leaves only that strip. With the drawer shut, a section at 250 is "unseen" and is scrolled to the top | S | open |
+| JP-151 | `markFollow` / `scrollFieldIntoView` band | **Reproduced** (Retro, 390×844, Bio 250 → 67.8, toolbar 262 → 79.8; a section already at the top stays put): on a phone the band is the top 16vh *always*, though it is the Edit drawer that leaves only that strip. With the drawer shut, a section at 250 is "unseen" and is scrolled to the top | S | fixed (session 3) |
 
 ## Calls
 

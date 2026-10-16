@@ -137,7 +137,10 @@ mutated through a single `patch()` helper.
   if not found whole, retried by its first *words*, longest first, down to two words and 8
   squashed characters (JP-149), so `cased()`, word-split spans and a clamp's `…` still match),
   scrolls the canvas scroller (`canvasRef`) only if it is not already in view — on a phone into
-  the top 16vh the Edit drawer leaves free — and draws a box round it inside the section's
+  the top 16vh a drawer over the canvas leaves free, and only while one is open: `canvasBand`'s
+  `covered` is the Edit drawer on a section or the Sections / Theme sheet, and with none open the
+  whole scroller is the band, so a section moved from the canvas toolbar stays put (JP-151, user
+  call, 2026-10-16) — and draws a box round it inside the section's
   `data-sid` wrapper. A section with no node to box (photos, repeaters, selects) counts as in view
   only when at least `min(its height, half the band)` of it is inside the band (JP-150), not on
   any overlap. It is **matched by text, in chrome, so `EncoreSection` carries no field markers**.
