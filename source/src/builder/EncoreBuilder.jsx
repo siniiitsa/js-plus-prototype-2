@@ -3014,14 +3014,45 @@ function LineListField({ value, cap, placeholder, addLabel, onChange }) {
     emitted.current = join(next)
     onChange(emitted.current)
   }
-  const edit = (i, raw) => {
-    // A single item is kept as typed (a trailing space is the next word); the
-    // pieces of a paste are trimmed.
+  // Rows are keyed by index, so a split's focus move waits for the commit: `edit`
+  // names the row and column that hold the caret, the layout effect applies it.
+  const refs = useRef([])
+  const pending = useRef(null)
+  useLayoutEffect(() => {
+    const p = pending.current
+    if (!p) return
+    pending.current = null
+    const el = refs.current[p.row]
+    if (el) { el.focus(); el.setSelectionRange(p.col, p.col) }
+  })
+  const edit = (i, raw, caret) => {
+    // A single item is kept as typed but for its leading space; the pieces of a
+    // paste are trimmed, and a blank one is dropped unless the caret is in it
+    // (a comma typed at the end of an item leaves the caret in a fresh row).
     const pieces = raw.split(sep)
-    const parts = (pieces.length > 1 ? pieces.map((t) => t.trim()) : pieces)
-      .map((t) => (cap?.chars != null ? t.slice(0, cap.chars) : t))
+    let parts, at = 0, col = caret
+    if (pieces.length === 1) {
+      const lead = raw.length - raw.trimStart().length
+      parts = [raw.slice(lead)]
+      col = Math.max(0, caret - lead)
+    } else {
+      const starts = []
+      pieces.reduce((n, t) => { starts.push(n); return n + t.length + sep.length }, 0)
+      const hit = starts.findLastIndex((n) => n <= caret)
+      const lead = pieces[hit].length - pieces[hit].trimStart().length
+      col = Math.min(pieces[hit].trim().length, Math.max(0, caret - starts[hit] - lead))
+      parts = []
+      pieces.forEach((t, k) => { if (k === hit) at = parts.length; if (t.trim() || k === hit) parts.push(t.trim()) })
+    }
     const next = [...rows.slice(0, i), ...parts, ...rows.slice(i + 1)]
-    commit(next.length > max ? next.slice(0, Math.max(max, i + 1)) : next)
+    // Refuse what takes the list further past its caps, `CappedText`'s rule: an
+    // edit that does not raise the excess is always allowed, so a list left over
+    // its limit by a layout swap stays editable and nothing is trimmed. `join`
+    // drops blank rows, so a blank one past the count needs its own test.
+    if (capExcess(join(next), cap) > capExcess(join(rows), cap)) return
+    if (next.length > max && next.length > rows.length) return
+    if (pieces.length > 1 || parts[0] !== raw) pending.current = { row: i + at, col }
+    commit(next)
   }
 
   return (
@@ -3034,8 +3065,8 @@ function LineListField({ value, cap, placeholder, addLabel, onChange }) {
           }}>{i + 1}</span>
           <Input
             value={t} placeholder={placeholder} onClick={stopE}
-            maxLength={cap?.chars ?? undefined}
-            onChange={(e) => edit(i, e.target.value)}
+            ref={(el) => { refs.current[i] = el }}
+            onChange={(e) => edit(i, e.target.value, e.target.selectionStart)}
             className="h-auto" style={SONG_ROW_INPUT}
           />
           <button
