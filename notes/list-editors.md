@@ -129,15 +129,38 @@ another `notes/` file.
   of — which is why `GIGS`, `TIERS`, `FORM_FIELDS`, `QUOTES`, `FOOTER_LINKS`, `MAP_STATS_4` and `FORM_STEPS` are written in the row shape their repeater edits, tags and
   features as the strings the artist types, and only `TRACKS` needs dressing.
 
-## Delimited lists as rows — `LineListField` (user call, 2026-10-14)
+## Delimited lists as rows — `LineListField` (user call, 2026-10-14; JP-141 … 145, 2026-10-16)
 
 The header's **Tags** is edited as one box per tag with a round X and an *Add tag* button, not a comma
 textarea. A `FIELDS` entry opts in with `rows: { placeholder, add }`; `EditPanel` dispatches on `f.rows`
 ahead of the `area` arm. **The stored value is still the comma string** (items joined with `, `), so
-`sectionVm`, the clamp, `identityCap` and `limits.mjs` are untouched, and `cap.chars` / `cap.count` become
-each row's `maxLength` and the hiding of *Add*. A blank row exists only in the component's state and is
-dropped from what is stored; a value arriving from outside (layout swap, undo) rebuilds the rows, via the
-`emitted` ref. A separator typed or pasted into a row splits it into rows (pieces trimmed; a single item is
-kept as typed so a trailing space can start the next word). Emptying every row stores `''`, which hides the
-chip row as before. Other `list: ','` / `'\n'` fields (event types, promises, tier features) can opt in the
-same way.
+`sectionVm`, the clamp, `identityCap` and `limits.mjs` are untouched. `cap.count` hides *Add* at the
+limit; `cap.chars` is checked per item by the guard below. A blank row exists only in the component's state
+and is dropped from what is stored; a value arriving from outside (layout swap, undo) rebuilds the rows, via the
+`emitted` ref. Emptying every row stores `''`, which hides the chip row as before. Other `list: ','` / `'\n'`
+fields (event types, promises, tier features) can opt in the same way and inherit what follows.
+
+**One guard, `CappedText`'s rule** (user call, 2026-10-16: over a limit, refuse the edit whole). `edit` builds
+`next` and returns, so the controlled box snaps back, when `capExcess(join(next)) > capExcess(join(rows))`,
+and also when `next.length > max && next.length > rows.length`. The first is the characters-and-count test
+the other list boxes run; the second is needed on top because `join` drops blank rows, so a typed comma at
+8 of 8 would otherwise add a blank row the excess never sees and nobody could type in (JP-142). An edit that
+does not raise the excess is always allowed, so a list left over its limit by a layout swap (8 of 6, a 22-char
+tag at cap 15) can still be edited, shortened and Removed, and **nothing is trimmed by an edit** (JP-143, 144);
+the clamp at render does that, and the counter (`n of cap · shortened on the page`) says why. An over-long
+paste is refused whole, as in every other list (JP-145).
+
+**No `maxLength` on the row inputs.** The browser applies it to a *paste* by total length before `edit` sees
+the text, so "Corporate Events, Weddings, Festivals" into a 22-cap row arrived as "Corporate Events, Wedd" — two
+pieces, the second mangled, no count limit involved. The guard checks each item instead, so a multi-item paste
+whose items fit arrives whole and a character typed past a row's cap is refused. (`CappedText` omits it for list
+fields for the same reason.) A refused keystroke leaves the caret at the end of the row, as it does there.
+
+**Focus after a split.** A separator typed or pasted into a row splits it into rows (pieces trimmed; a blank piece
+is dropped unless the caret is in it, so a comma typed at the end of an item leaves the caret in a fresh row, and
+"Jazz,,Soul" makes two rows). `edit` works the caret out of `e.target.selectionStart` against the pieces'
+untrimmed offsets and sets `pending = { row, col }`; rows are keyed by index, so a layout effect applies it
+(`refs.current[row].focus()` and `setSelectionRange`) once the rows are committed. A typed comma lands at the
+*start* of the remainder (the new row, or the second half of a row split in the middle); a paste lands at the end
+of the last piece. A single item is kept as typed except for its **leading** space (`trimStart`; the trailing one
+starts the next word), and the caret follows when that space is dropped.

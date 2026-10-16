@@ -3014,14 +3014,45 @@ function LineListField({ value, cap, placeholder, addLabel, onChange }) {
     emitted.current = join(next)
     onChange(emitted.current)
   }
-  const edit = (i, raw) => {
-    // A single item is kept as typed (a trailing space is the next word); the
-    // pieces of a paste are trimmed.
+  // Rows are keyed by index, so a split's focus move waits for the commit: `edit`
+  // names the row and column that hold the caret, the layout effect applies it.
+  const refs = useRef([])
+  const pending = useRef(null)
+  useLayoutEffect(() => {
+    const p = pending.current
+    if (!p) return
+    pending.current = null
+    const el = refs.current[p.row]
+    if (el) { el.focus(); el.setSelectionRange(p.col, p.col) }
+  })
+  const edit = (i, raw, caret) => {
+    // A single item is kept as typed but for its leading space; the pieces of a
+    // paste are trimmed, and a blank one is dropped unless the caret is in it
+    // (a comma typed at the end of an item leaves the caret in a fresh row).
     const pieces = raw.split(sep)
-    const parts = (pieces.length > 1 ? pieces.map((t) => t.trim()) : pieces)
-      .map((t) => (cap?.chars != null ? t.slice(0, cap.chars) : t))
+    let parts, at = 0, col = caret
+    if (pieces.length === 1) {
+      const lead = raw.length - raw.trimStart().length
+      parts = [raw.slice(lead)]
+      col = Math.max(0, caret - lead)
+    } else {
+      const starts = []
+      pieces.reduce((n, t) => { starts.push(n); return n + t.length + sep.length }, 0)
+      const hit = starts.findLastIndex((n) => n <= caret)
+      const lead = pieces[hit].length - pieces[hit].trimStart().length
+      col = Math.min(pieces[hit].trim().length, Math.max(0, caret - starts[hit] - lead))
+      parts = []
+      pieces.forEach((t, k) => { if (k === hit) at = parts.length; if (t.trim() || k === hit) parts.push(t.trim()) })
+    }
     const next = [...rows.slice(0, i), ...parts, ...rows.slice(i + 1)]
-    commit(next.length > max ? next.slice(0, Math.max(max, i + 1)) : next)
+    // Refuse what takes the list further past its caps, `CappedText`'s rule: an
+    // edit that does not raise the excess is always allowed, so a list left over
+    // its limit by a layout swap stays editable and nothing is trimmed. `join`
+    // drops blank rows, so a blank one past the count needs its own test.
+    if (capExcess(join(next), cap) > capExcess(join(rows), cap)) return
+    if (next.length > max && next.length > rows.length) return
+    if (pieces.length > 1 || parts[0] !== raw) pending.current = { row: i + at, col }
+    commit(next)
   }
 
   return (
@@ -3034,8 +3065,8 @@ function LineListField({ value, cap, placeholder, addLabel, onChange }) {
           }}>{i + 1}</span>
           <Input
             value={t} placeholder={placeholder} onClick={stopE}
-            maxLength={cap?.chars ?? undefined}
-            onChange={(e) => edit(i, e.target.value)}
+            ref={(el) => { refs.current[i] = el }}
+            onChange={(e) => edit(i, e.target.value, e.target.selectionStart)}
             className="h-auto" style={SONG_ROW_INPUT}
           />
           <button
@@ -4721,7 +4752,10 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                       // Focus walks the canvas to what this field prints (the
                       // builder's `onFocusField`); typing keeps its box on the
                       // new text. Blur only counts once focus leaves the field.
-                      onFocus={() => onFocusField?.(sec.id, f, val)}
+                      // A row of a list reports its own text, as typing does
+                      // (JP-147): `val` is the whole comma string, which no
+                      // element on the page holds.
+                      onFocus={(e) => onFocusField?.(sec.id, f, e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement ? e.target.value : val)}
                       onInput={(e) => onFocusField?.(sec.id, f, e.target.value, true)}
                       onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget)) onBlurField?.() }}
                     >
@@ -5737,40 +5771,100 @@ function dressPublishedWindow(win, artistName, pageBg) {
 
 // The smallest visible element inside `root` (a section's rendered page) whose
 // text holds `text`, or null. Whitespace and case are ignored: the page caps
-// copy (`cased()`), splits names into spans and clamps at a word, so a longer
-// copy is tried again by its first words.
+// copy (`cased()`), splits names into spans and clamps at a word with `…`, so
+// a copy that is not found whole is tried again by its first words, longest
+// first, down to two words and ~8 characters.
+//
+// Several elements can hold the same text (the default name is the nav brand,
+// the title, the badge and the seal's ring all at once), and text cannot tell
+// the fields apart, so the field's `key` picks among the minimal matches:
+// `title` the largest type, `badgeText` the one inside an svg (the seal's
+// ring). A tag row takes only the chip that is the row, or none. Any other
+// key takes the first in document order, which is what a field with one
+// match always got.
 const squash = (v) => String(v).replace(/\s+/g, '').toLowerCase()
-function findFieldNode(root, text) {
+const FIELD_PREFIX_MIN = 8
+function findFieldNode(root, text, key) {
   if (!root) return null
-  const first = String(text).split('\n').find((l) => l.trim()) || ''
-  for (const n of [40, 16]) {
-    const want = squash(first).slice(0, n)
-    if (!want) return null
-    let best = null
-    for (const el of root.querySelectorAll('*')) {
-      if (!squash(el.textContent).includes(want)) continue
+  const words = (String(text).split('\n').find((l) => l.trim()) || '').trim().split(/\s+/).filter(Boolean)
+  if (!words.length) return null
+  const all = []
+  for (const el of root.querySelectorAll('*')) {
+    all.push({ el, sq: squash(el.textContent) })
+  }
+  for (let k = words.length; k >= 1; k--) {
+    const want = squash(words.slice(0, k).join(''))
+    if (k < words.length && (k < 2 || want.length < FIELD_PREFIX_MIN)) return null
+    const hits = []
+    for (const { el, sq } of all) {
+      if (!sq.includes(want)) continue
+      // A tag row is a chip of its own (or its clamped `…`): a word inside a
+      // sentence is not it, and a layout that draws no chips has no box.
+      if (key === 'tags' && !(sq === want || (sq.startsWith(want) && sq.length - want.length <= 1))) continue
       const r = el.getBoundingClientRect()
       if (!r.width || !r.height) continue
-      if (!best || best.contains(el)) best = el
+      hits.push({ el, sq })
     }
-    if (best) return best
+    if (!hits.length) continue
+    // The minimal matches: those with no matching element inside them. Hits
+    // are in document order, so a descendant of one is the very next hit.
+    const min = hits.filter((h, i) => !(hits[i + 1] && h.el.contains(hits[i + 1].el)))
+    if (min.length > 1) {
+      let pick
+      if (key === 'title') {
+        let big = 0
+        for (const h of min) {
+          const fs = parseFloat(getComputedStyle(h.el).fontSize) || 0
+          if (fs > big) { big = fs; pick = h }
+        }
+      } else if (key === 'badgeText') {
+        pick = min.find((h) => h.el.closest('svg'))
+      }
+      if (pick) return pick.el
+    }
+    return min[0].el
   }
   return null
 }
 
-// Brings `node` (or, with none, its section `wrap`) into the canvas scroller's
-// visible band, only when it is not there already. On a phone the Edit drawer
-// covers all but the top 16vh, so that strip is the band.
-function scrollFieldIntoView(scroller, wrap, node, isMobile) {
+// The rectangle to box for `node`. A node inside an svg (the seal's ring) is
+// boxed as its seal: the svg's disc, which is a circle, so its square is the
+// same whatever the tilt and `seal-spin` do to the ring inside it (the ring's
+// own bounding box swings with the spin, and the tilted svg's is 1.38x too
+// big). The screen matrix turns the viewBox into the disc's centre and size.
+function fieldRect(node) {
+  let svg = node.closest?.('svg')
+  if (!svg) return node.getBoundingClientRect()
+  while (svg.parentElement?.closest('svg')) svg = svg.parentElement.closest('svg')
+  const m = svg.getScreenCTM()
+  const vb = svg.viewBox?.baseVal
+  if (!m || !vb || !vb.width) return svg.getBoundingClientRect()
+  const d = vb.width * Math.hypot(m.a, m.b)
+  const c = new DOMPoint(vb.x + vb.width / 2, vb.y + vb.height / 2).matrixTransform(m)
+  return new DOMRect(c.x - d / 2, c.y - d / 2, d, d)
+}
+
+// The part of the canvas scroller the artist can see: all of it, unless
+// `covered` (a phone with a drawer open over the canvas: the Edit drawer or
+// the Sections / Theme sheet), when only the top 16vh is left free. A phone
+// with no drawer open sees the whole scroller (JP-151).
+function canvasBand(scroller, covered) {
   const sr = scroller.getBoundingClientRect()
-  const bandTop = sr.top
-  const bandBottom = isMobile ? Math.min(sr.bottom, window.innerHeight * 0.16) : sr.bottom
-  const r = (node || wrap).getBoundingClientRect()
+  return { top: sr.top, bottom: covered ? Math.min(sr.bottom, window.innerHeight * 0.16) : sr.bottom }
+}
+
+// Brings `node` (or, with none, its section `wrap`) into the canvas scroller's
+// visible band, only when it is not there already. A section counts as
+// in view only when a real share of it is: at least half the band, or all of
+// it if it is shorter (JP-150: a 69px strip of a tall section is not in view).
+function scrollFieldIntoView(scroller, wrap, node, covered) {
+  const { top: bandTop, bottom: bandBottom } = canvasBand(scroller, covered)
+  const r = (node ? fieldRect(node) : wrap.getBoundingClientRect())
   const inView = node
     ? r.top >= bandTop + 16 && r.top <= bandBottom - Math.min(r.height, 48) - 8
-    : r.top < bandBottom && r.bottom > bandTop
+    : Math.min(r.bottom, bandBottom) - Math.max(r.top, bandTop) >= Math.min(r.height, (bandBottom - bandTop) / 2)
   if (inView) return
-  const want = node ? bandTop + (isMobile ? 12 : Math.max(24, (bandBottom - bandTop) * 0.3)) : bandTop + 16
+  const want = node ? bandTop + (covered ? 12 : Math.max(24, (bandBottom - bandTop) * 0.3)) : bandTop + 16
   scroller.scrollTo({ top: Math.max(0, scroller.scrollTop + r.top - want), behavior: 'smooth' })
 }
 
@@ -5779,19 +5873,18 @@ function scrollFieldIntoView(scroller, wrap, node, isMobile) {
 // once the new order is laid out and scrolls by however far it travelled, so
 // its toolbar stays under the pointer and a second click carries on. A section
 // that was out of view (a move from the sidebar) is scrolled to instead.
-function markFollow(scroller, id, isMobile) {
+function markFollow(scroller, id, covered) {
   const wrap = scroller?.querySelector(`[data-sid="${id}"]`)
   if (!wrap) return null
-  const sr = scroller.getBoundingClientRect()
+  const band = canvasBand(scroller, covered)
   const r = wrap.getBoundingClientRect()
-  const bandBottom = isMobile ? Math.min(sr.bottom, window.innerHeight * 0.16) : sr.bottom
-  return { id, offset: r.top - sr.top, seen: r.top < bandBottom && r.bottom > sr.top }
+  return { id, offset: r.top - band.top, seen: r.top < band.bottom && r.bottom > band.top }
 }
 
-function followSection(scroller, mark, isMobile) {
+function followSection(scroller, mark, covered) {
   const wrap = scroller?.querySelector(`[data-sid="${mark.id}"]`)
   if (!wrap) return
-  if (!mark.seen) { scrollFieldIntoView(scroller, wrap, null, isMobile); return }
+  if (!mark.seen) { scrollFieldIntoView(scroller, wrap, null, covered); return }
   const now = wrap.getBoundingClientRect().top - scroller.getBoundingClientRect().top
   scroller.scrollTop += now - mark.offset
 }
@@ -5913,22 +6006,22 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
 
   const onFocusField = useCallback((sid, f, val, typing) => {
     const text = (f.type === undefined || f.type === 'area' || f.type === 'url' || f.type === 'email') && typeof val === 'string' ? val : ''
-    setFocusF({ sid, text })
+    setFocusF({ sid, text, key: f.k })
     if (typing) return
     const scroller = canvasRef.current
     const wrap = scroller?.querySelector(`[data-sid="${sid}"]`)
     if (!wrap) return
-    scrollFieldIntoView(scroller, wrap, text && findFieldNode(wrap.firstElementChild, text), isMobile)
+    scrollFieldIntoView(scroller, wrap, text && findFieldNode(wrap.firstElementChild, text, f.k), isMobile)
   }, [isMobile])
   const onBlurField = useCallback(() => setFocusF(null), [])
 
   // The box follows the copy as it is typed, wraps, or changes width.
   useLayoutEffect(() => {
     const wrap = focusF && canvasRef.current?.querySelector(`[data-sid="${focusF.sid}"]`)
-    const node = wrap && focusF.text ? findFieldNode(wrap.firstElementChild, focusF.text) : null
+    const node = wrap && focusF.text ? findFieldNode(wrap.firstElementChild, focusF.text, focusF.key) : null
     if (!node) { setFocusBox(null); return }
     const w = wrap.getBoundingClientRect()
-    const r = node.getBoundingClientRect()
+    const r = fieldRect(node)
     setFocusBox({ sid: focusF.sid, x: r.left - w.left, y: r.top - w.top, w: r.width, h: r.height })
   }, [focusF, st.sections, device, st.theme])
 
@@ -6055,8 +6148,12 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
   // `move` scrolls the canvas by how far it travelled (`followSection`).
   const followRef = useRef(null)
 
+  // A phone's drawer over the canvas: the Edit drawer (open on a section) or
+  // the Sections / Theme sheet. Then only the top 16vh of the canvas is free.
+  const covered = isMobile && ((st.editSheet && sections.some((s) => s.id === st.selectedId)) || !!st.sheet)
+
   const move = useCallback((id, dir) => {
-    if (canMove(sections, id, dir)) followRef.current = markFollow(canvasRef.current, id, isMobile)
+    if (canMove(sections, id, dir)) followRef.current = markFollow(canvasRef.current, id, covered)
     patch((s) => {
       if (!canMove(s.sections, id, dir)) return {}
       const i = s.sections.findIndex((x) => x.id === id)
@@ -6065,14 +6162,14 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
       next.splice(i + dir, 0, x)
       return { sections: next }
     })
-  }, [patch, sections, isMobile])
+  }, [patch, sections, covered])
 
   // §5.4 — the drag equivalent of move(): drop `from` at `to`, with the same
   // rule that the header keeps index 0 and the footer stays last.
   const reorder = useCallback((from, to) => {
     const sec = sections[from]
     if (sec && from !== to && sec.cat !== 'header' && sec.cat !== 'footer' && to >= 1 && to <= sections.length - 2) {
-      followRef.current = markFollow(canvasRef.current, sec.id, isMobile)
+      followRef.current = markFollow(canvasRef.current, sec.id, covered)
     }
     patch((s) => {
       const sec = s.sections[from]
@@ -6084,14 +6181,14 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
       next.splice(to, 0, x)
       return { sections: next }
     })
-  }, [patch, sections, isMobile])
+  }, [patch, sections, covered])
 
   useLayoutEffect(() => {
     const mark = followRef.current
     if (!mark) return
     followRef.current = null
-    followSection(canvasRef.current, mark, isMobile)
-  }, [st.sections, isMobile])
+    followSection(canvasRef.current, mark, covered)
+  }, [st.sections, covered])
 
   const setContent = useCallback((id, k, v) => patch((s) => ({
     sections: s.sections.map((x) => {
