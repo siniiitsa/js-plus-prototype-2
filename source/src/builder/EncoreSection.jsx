@@ -17497,7 +17497,8 @@ function Calendar({ s }) {
     // The month on show, and the day that is lit. The canvas pins both to what
     // the view-model resolved, which is the frame's June with its 12th picked.
     const nMonths = s.calMonths.length
-    const at = s.live ? ((mi % nMonths) + nMonths) % nMonths : 0
+    const clampMo = (v) => Math.min(Math.max(v, 0), nMonths - 1)
+    const at = s.live ? clampMo(mi) : 0
     const month = s.calMonths[at]
     // The cell the pick names, looked up rather than composed — sectionVm wrote a
     // line onto every one of them. The whole window is searched, not just the
@@ -17512,13 +17513,18 @@ function Calendar({ s }) {
     const cur = hit && !blocked(hit) ? hit.iso : ''
     const line = cur ? hit.line : s.calPrompt
 
-    // The month arrows. They *wrap* at both ends of the window rather than
-    // clamping: a clamped first month would open the published page on a
-    // dead-looking left arrow, which is a diff from the canvas — the media
-    // player's transport takes the same view. The cursor is read off the
-    // handler, Pager's rule, so the canvas no longer offers a pointer over a
-    // button that does nothing.
-    const step = (dir) => (s.live ? () => setMi((v) => v + dir) : undefined)
+    // The month arrows. They *stop* at both ends of the window (JP-152): the
+    // arrow that cannot go further is handlerless, and each draw dims it
+    // (`opacity .38`, live only) so the end is signalled. `mi` is clamped at
+    // the write too, so it never runs past an end and needs two clicks back.
+    // The canvas, pinned to month 0, keeps both arrows solid. The cursor is
+    // read off the handler, Pager's rule, so no pointer sits over a button
+    // that does nothing.
+    const step = (dir) => (
+      s.live && (dir < 0 ? at > 0 : at < nMonths - 1)
+        ? () => setMi((v) => clampMo(v + dir))
+        : undefined
+    )
 
     // Lime — the scheduler frames 964:58595 / 986:39884 / 986:39896, as a block
     // after the seam (the gallery's, repertoire's, map's and pricing's
@@ -17623,6 +17629,7 @@ function Calendar({ s }) {
             background: G.disc, boxShadow: G.discRing ?? `inset 0 0 0 1px ${s.stroke1}`, color: G.arrow,
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
             cursor: onClick ? 'pointer' : undefined,
+            opacity: s.live && !onClick ? 0.38 : undefined,
           }}><LimeArrow back={back} z={z} /></span>
         )
       }
@@ -17886,6 +17893,7 @@ function Calendar({ s }) {
           background: s.pillBg, color: s.pillFg, border: `${s.bw} solid ${s.tx}`,
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
           cursor: onClick ? 'pointer' : undefined,
+          opacity: s.live && !onClick ? 0.38 : undefined,
         }}>{icon}</span>
       )
     }
@@ -18729,9 +18737,9 @@ function Calendar({ s }) {
   // three pickable days on a published page opened late in the month. So a
   // pair of arrows follows the month name in the head. They are layout
   // 1's `mi` and `step`: live only, with no cursor on the canvas, and they
-  // wrap at both ends of CAL_SPAN. Each template draws them as its own free
-  // dot with an arrow in it, since a round ring on the card is the only
-  // control this design owns.
+  // stop at both ends of CAL_SPAN, the end's arrow dimmed (JP-152). Each
+  // template draws them as its own free dot with an arrow in it, since a
+  // round ring on the card is the only control this design owns.
   if (s.v2) {
     const desk = !s.narrow
     const z = desk ? 0.82 : 1
@@ -18769,7 +18777,10 @@ function Calendar({ s }) {
     // is never picked: publishing again re-renders the open tab, so the artist
     // can block the day a visitor had lit.
     const nMonths = s.calMonths.length
-    const month = s.calMonths[s.live ? ((mi % nMonths) + nMonths) % nMonths : 0]
+    const clampMo = (v) => Math.min(Math.max(v, 0), nMonths - 1)
+    // The month index. Not `at`, below, which is the pick's cell in this month.
+    const mAt = s.live ? clampMo(mi) : 0
+    const month = s.calMonths[mAt]
     const want = (s.live && sel) || s.calPick
     const pick = want
       ? s.calMonths.reduce((f, mo) => f || mo.cells.find((c) => c.iso === want), null)
@@ -18784,7 +18795,11 @@ function Calendar({ s }) {
     const at = picked ? month.cells.indexOf(picked) : -1
     const hit = at >= 0 ? picked : null
     const line = picked ? picked.short : s.calPrompt
-    const step = (dir) => (s.live ? () => setMi((v) => v + dir) : undefined)
+    const step = (dir) => (
+      s.live && (dir < 0 ? mAt > 0 : mAt < nMonths - 1)
+        ? () => setMi((v) => clampMo(v + dir))
+        : undefined
+    )
 
     // Lime — the frames 964:68677 / 984:10763 / 984:10794, as a block after
     // the seam: `month`, `at`, `hit`, `line` and `step` are shared whole, so
@@ -18937,6 +18952,7 @@ function Calendar({ s }) {
             boxShadow: `inset 0 0 0 ${ed ? '1px' : pop ? lu(2) : lu(2.559)} ${s.stroke1}`,
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
             cursor: onClick ? 'pointer' : undefined,
+            opacity: s.live && !onClick ? 0.38 : undefined,
           }}><LimeArrow back={back} z={lz} /></span>
         )
       }
@@ -19044,6 +19060,7 @@ function Calendar({ s }) {
           border: `${u(2.559)} solid ${ink}`, color: ink,
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
           cursor: onClick ? 'pointer' : undefined,
+          opacity: s.live && !onClick ? 0.38 : undefined,
         }}>{icon}</span>
       )
     }
@@ -24087,8 +24104,8 @@ function Testimonials({ s }) {
     // the index, or Math.min(cur, -1) reads off the front of the list.
     const at = s.live && n ? Math.min(cur, n - 1) : 0
     const q = n ? s.quotes[at] : null
-    // Wrapping at both ends, the media player's transport rule and the
-    // calendar's: a clamped first arrow opens the published page looking dead.
+    // Wrapping at both ends, the media player's transport rule: a clamped
+    // first arrow opens the published page looking dead.
     // The empty guard is `goTo`'s: nothing wires this up at one review, but a
     // modulo by zero is NaN rather than an error, so it would strand `cur`.
     const go = (i) => { if (n) setCur(((i % n) + n) % n) }

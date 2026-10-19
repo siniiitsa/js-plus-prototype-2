@@ -36,9 +36,25 @@ another `notes/` file.
   can block every day a visitor can pick; it fades the days before today and takes no click on
   them unless they are already blocked). So the published first paint is the canvas's picture only while `open`
   is today or later: a named, accepted diff. The harness takes `&today=` (opt-in, so a `live=1`
-  digest never moves with the date). The arrows **wrap** at both ends rather than clamping, the
-  media player's rule — a clamped first month opens the published page on a dead-looking arrow,
-  a diff from the canvas — and their cursor is read off the handler, `Pager`'s rule. `sel` is an
+  digest never moves with the date). The arrows **stop** at both ends of the window, **dimmed** (JP-152,
+  user call, 2026-10-19, reversing the media player's wrap, whose reason was a first month
+  opening on a dead-looking arrow: the dim is now the end being signalled, which is what the
+  tester asked for). The arrow that cannot go further has **no handler** — `step(dir)` is
+  `undefined` at the end in its direction — and each draw (Retro's `nav`, the Lime-family disc,
+  layout 3's two) adds `opacity: s.live && !onClick ? 0.38 : undefined`, so the cursor, read off
+  the handler as `Pager`'s rule has it, drops for free. **Live only: a named canvas/live diff.**
+  The canvas is pinned to month 0 and keeps both arrows solid, while the published opening
+  month's ‹ is dimmed (the same kind of diff as the foot's Book pill and the empty prompt).
+  **`mi` is clamped at the write** (`setMi(v => clampMo(v + dir))`), not only on the read, so it
+  can never run past an end and need two clicks back; the read clamp stays as a guard. A
+  one-month window would dim both arrows, with no special case. The pick is an ISO date
+  searched through the whole window, so it survives the far end and back. Every other pager
+  still wraps (the media player, gallery, map, testimonials and the wizard's *Package ›*): a
+  dated window has real ends, a carousel does not, and that call was not put again. **The
+  editor's `BookedField` picker follows**: the end's button is `disabled` (opacity .4,
+  `cursor: default`, as its own past-day cells) and `mi` clamps at the write there too, to
+  `CAL_SPAN - 1` whatever `start` is, so changing `open` while at an end cannot leave it out of
+  range. `sel` is an
   **ISO date, not an index**, because it must survive the month turning, and the **empty string is
   this section's `-1`**: nothing chosen, so `vm.calPick` renders and the published first paint is
   the canvas's picture by construction, the clock aside. Blocking the *cued* day cues nothing (`vm.calPick` is
@@ -55,7 +71,7 @@ another `notes/` file.
   month needing six rows grows one where June needs five, the grid never being padded to 35.
   The unreachable fallthrough after layout 4 still draws the hardcoded `CITIES` and reads
   none of this.
-  **Everything in this paragraph from "The arrows *wrap*" on is layout 1's**, except that its
+  **Everything in this paragraph from "The arrows **stop**" on is layout 1's**, except that its
   arrows, its `sel` and its blocked cue are layout 3's as well (below). Layout 2 is a
   bold list of named slots — `c.slots`, maintained by `SlotsField` (JP-052) and resolved by
   the `songs` rule onto `vm.calSlots`. Its seed is **not four dates**: `CAL_SLOTS` is four day
@@ -106,7 +122,10 @@ another `notes/` file.
   of arrows follows the month name on its own line, on both surfaces. Each is the template's own
   free dot a size down (24, so the pair does not read as two more days and fits inside the
   month's line box) round layout 1's arrow glyph. They step layout 1's `mi`: live only, with no
-  cursor on the canvas, wrapping at both ends, and the canvas pinned to month 0. The pick is
+  cursor on the canvas, stopping at both ends with the end's arrow dimmed (JP-152, above), and
+  the canvas pinned to month 0. **Layout 3's `at` is the pick's cell index in the month on
+  show, not the month index** (layout 1's `at` is the month), so its month index is `mAt`,
+  and `step` reads that. The pick is
   searched through the whole window, layout 1's `reduce`, so the foot pill names a July pick
   from June. The head's numeral and weekday are the pick's only while it is in the month on
   show; otherwise the head reads the month alone, since "15" over "JUNE" names the wrong date.
