@@ -71,7 +71,7 @@ another `notes/` file.
   month needing six rows grows one where June needs five, the grid never being padded to 35.
   The unreachable fallthrough after layout 4 still draws the hardcoded `CITIES` and reads
   none of this.
-  **Everything in this paragraph from "The arrows *wrap*" on is layout 1's**, except that its
+  **Everything in this paragraph from "The arrows **stop**" on is layout 1's**, except that its
   arrows, its `sel` and its blocked cue are layout 3's as well (below). Layout 2 is a
   bold list of named slots — `c.slots`, maintained by `SlotsField` (JP-052) and resolved by
   the `songs` rule onto `vm.calSlots`. Its seed is **not four dates**: `CAL_SLOTS` is four day

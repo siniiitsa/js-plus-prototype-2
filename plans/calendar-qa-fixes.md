@@ -171,11 +171,27 @@ line is unchanged throughout.
 - **`CLAUDE.md`**: nothing, unless the sweep finds its calendar sentence says the arrows wrap
   (the grep found none).
 
-## Sweep (after the fix)
+## Sweep (after the fix) — done, session 2, 2026-10-19
 
-- `npm run build` and `npm run build:standalone` clean.
-- Refresh `index.html` and `published.html` as the separate step `CLAUDE.md` describes.
-- A last look at `notes/calendar.md` and the `data.js` comment for the word "wrap".
+- [x] `npm run build` and `npm run build:standalone` clean.
+- [x] `index.html` refreshed (`published.html` is byte-identical to `main`'s, so it did not move).
+- [x] A last look at `notes/calendar.md` and the `data.js` comment for the word "wrap": `data.js`
+  clean (`CAL_SPAN`'s comment says the arrows stop). `notes/calendar.md` had one stale anchor,
+  line 74's "Everything in this paragraph from *The arrows wrap* on is layout 1's", now *The
+  arrows stop*; the other hits are the wizard's *Package ›* and layout-4 / foot wraps of text.
+  The README's media / gallery / map lines, `notes/media.md`, `notes/testimonials.md` and
+  EncoreSection's player / testimonials comments are the other pagers, which still wrap.
+
+**Two-build digest** (`index.html` at `main`'s `44c2461` against the refreshed one, both served
+from one origin, reduced motion on, `.seal-spin` skipped):
+
+- *Editor canvas* (`scripts/build-digest.mjs`, `CARD=0` and `CARD=2`, every theme, Desktop —
+  the 1088 canvas — Tablet and Mobile): **0 of 32 files differ**.
+- *Published tab* (a scratchpad walk of `#calendar` after Publish → Open, five templates × header
+  cards 0–3 × 1440 / 768 / 390, live): **30 of 60 differ** — cards 0 and 2 (layouts 1 and 3),
+  every template, every width — and each in **one arrow**: the opening month's ‹ goes
+  opacity 1 → .38 and its cursor `pointer` → `auto`. Cards 1 and 3 (layouts 2 and 4): 0 differ.
+  No other row moves.
 
 ## Not done / out of scope
 
