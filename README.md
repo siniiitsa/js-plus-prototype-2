@@ -516,8 +516,8 @@ That distinction is the whole design, and it buys two things:
   and no field could add a fourth review or drop one. The reviews are now the artist's list
   (`FIELDS.testimonials.quotes`, a `QuotesField` repeater of `{ quote, who, role, when }` — the
   sixth repeater and the seventh structured editor), and
-  on the published page the arrows walk them, wrapping at both ends the way the calendar's
-  months and the player's tracks do.
+  on the published page the arrows walk them, wrapping at both ends the way the player's
+  tracks do (the calendar's months stop at their ends since JP-152).
 
   `cur` starts at **0** rather than the "nothing chosen" `-1` the player, the gallery and the map
   start at: the frame draws a filled card, so here the picture already *is* a choice — the

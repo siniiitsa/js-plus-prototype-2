@@ -34,9 +34,15 @@ file where the cause differs.
 
 | Ticket | Site | Verdict (from the code) | Size | Status |
 |---|---|---|---|---|
-| JP-152 (published) | `Calendar`, `EncoreSection.jsx`: layout 1's `at = ((mi % n) + n) % n` (~17500) and `step`'s `setMi(v => v + dir)` (~17521); layout 3's `calMonths[((mi % n) + n) % n]` and its own `step` (~18772, ~18787) | **Read off the code.** The wrap is deliberate, written into the code, the `data.js` comment on `CAL_SPAN` and `notes/calendar.md` ("The arrows *wrap* at both ends rather than clamping, the media player's rule — a clamped first month opens the published page on a dead-looking arrow"). So `mi` is an unbounded counter, wrapped on read. Layouts 1 and 5 are one design (the calendar has four, `arch % 4`), layout 3 is `s.v2`; layouts 2 (slot list) and 4 (wizard) draw no month arrows. The four arrow draws (~17619 Lime-family disc, ~17882 Retro `nav`, ~18932 and ~19040 layout 3) all read `step(dir)` and take their cursor off whether it is a handler | M | open |
-| JP-152 (editor) | `BookedField`, `EncoreBuilder.jsx` ~4284: `at = ((mi % CAL_SPAN) + CAL_SPAN) % CAL_SPAN`, `setMi(v => v + dir)` | **Read off the code.** Written to wrap "the way the published arrows do". `mi` is likewise unbounded | S | open |
-| (the stale line) | the foot line / pill keep the pick across the jump | **Not a separate bug.** The pick is an ISO date searched through the whole window on purpose (JP-063), so it survives any month turn; with no wrap the "date over the wrong grid" picture goes away because the window's ends are real ends | — | follows JP-152 |
+| JP-152 (published) | `Calendar`, `EncoreSection.jsx`: layout 1's `at = ((mi % n) + n) % n` (~17500) and `step`'s `setMi(v => v + dir)` (~17521); layout 3's `calMonths[((mi % n) + n) % n]` and its own `step` (~18772, ~18787) | **Read off the code.** The wrap is deliberate, written into the code, the `data.js` comment on `CAL_SPAN` and `notes/calendar.md` ("The arrows *wrap* at both ends rather than clamping, the media player's rule — a clamped first month opens the published page on a dead-looking arrow"). So `mi` is an unbounded counter, wrapped on read. Layouts 1 and 5 are one design (the calendar has four, `arch % 4`), layout 3 is `s.v2`; layouts 2 (slot list) and 4 (wizard) draw no month arrows. The four arrow draws (~17619 Lime-family disc, ~17882 Retro `nav`, ~18932 and ~19040 layout 3) all read `step(dir)` and take their cursor off whether it is a handler | M | **fixed** (reproduced first, below) |
+| JP-152 (editor) | `BookedField`, `EncoreBuilder.jsx` ~4284: `at = ((mi % CAL_SPAN) + CAL_SPAN) % CAL_SPAN`, `setMi(v => v + dir)` | **Read off the code.** Written to wrap "the way the published arrows do". `mi` is likewise unbounded | S | **fixed** |
+| (the stale line) | the foot line / pill keep the pick across the jump | **Not a separate bug.** The pick is an ISO date searched through the whole window on purpose (JP-063), so it survives any month turn; with no wrap the "date over the wrong grid" picture goes away because the window's ends are real ends | — | follows JP-152 (confirmed: the picked line is unchanged by a click at an end) |
+
+**Reproduced** (session 1, 2026-10-19, puppeteer on the committed pre-fix `index.html`, Retro,
+header card 0): the editor's ‹ from October 2026 reads September 2028 and › returns to October
+2026; the published ← on the first month reads September 2028 under the unchanged line
+"Enquiry for Saturday, October 24 at 9:00pm"; thirty › clicks land on April 2027 (30 mod 24 = 6).
+The cause is the one triaged, in both sites, and no row of the table changed.
 
 ## Calls
 
@@ -128,6 +134,32 @@ One session; git and this file are the memory.
 - `npm run build` clean. `scripts/digest.mjs`: with `live` off the diff is **nothing** (the dim
   is live-only); a `live=1` digest moves only the opening month's ‹ and, at the end, › — and
   only in layout 1 and 3 of the calendar. A diff elsewhere is a finding.
+
+## Check — as run (session 1, 2026-10-19)
+
+Puppeteer on the dev server, real clicks, one script per template (`arrows.mjs` / `arrows3.mjs`,
+scratchpad, deleted with it). Every row: the first-month ‹ and last-month › do nothing and are
+dimmed (`.38`, cursor `auto`); one click leaves an end (so the write clamp holds); the pick's
+line is unchanged throughout.
+
+- **The ticket**: editor and published, Retro layout 1 — as filed, now stopping.
+- **Templates × layouts × widths**: Retro, Lime, Grunge, Editorial and Pop; layout 1 (header card
+  0) and layout 3 (card 2) at 1440, and Retro and Pop at 768 and 390 for both. The arrows were
+  found by position *inside* `#calendar`, so the dimmed one is the ‹ at every width. **Layout 5
+  is design 0** (`arch % 4`), the same code path as card 0's, so it was not driven separately.
+  Layouts 2 and 4 draw no arrows: the `live=1` digest moves only arch 0 and 2.
+- **Digest** (`scripts/digest.mjs`, calendar, five themes × four layouts × three widths, HEAD on
+  a scratch worktree at :5174 against the tree at :5173): `live` off, **0 of 60 files differ**;
+  `live=1`, 30 differ — arch 0 and arch 2, all five themes, all three widths — and each differs
+  in **one row, one column (opacity 1 → .38)**. (The row's x in the aggregate is the harness
+  centring the section in its 1300 root, not a different arrow.)
+- **Editor picker**: ‹ disabled on the first month and › on the last (opacity .4, cursor
+  `default`), one click leaves an end; blocked-day toggling from a paged month (March 2027)
+  still sets and clears `aria-pressed`.
+- **`open` changed with `mi` at an end**: safe by construction — `at = clampMo(mi)` is bounded by
+  `CAL_SPAN - 1` whatever `start` is. Not run in the app.
+- **`&today=` at a month boundary**: not applicable, the clamp reads no date.
+- `npm run build` clean.
 
 ## Notes to write
 

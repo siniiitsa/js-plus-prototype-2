@@ -1496,8 +1496,8 @@ export const CAL_BOOKED = []
 // How far ahead the calendar reaches, in months from the opening month — the
 // `open` field's, or on the published page and in the editor's BookedField
 // today's when that is later (calStart). The
-// arrows wrap at both ends of it rather than clamping — see EncoreSection's
-// Calendar.
+// arrows stop at both ends of it, the end's arrow dimmed (JP-152) — see
+// EncoreSection's Calendar.
 export const CAL_SPAN   = 24
 
 // §10.2 layout 2 — the named slots. Where layout 1 draws a month and lets the

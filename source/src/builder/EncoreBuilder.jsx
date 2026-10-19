@@ -4254,7 +4254,7 @@ function FormFieldsField({ caps, value, max, design, onChange }) {
  *
  * It pages the same CAL_SPAN window the *published* section does —
  * calStart(), so from today's month once `open` has passed (F20) — and
- * wraps at both ends the way the published arrows do, so every date a
+ * stops at both ends as the published arrows do, so every date a
  * visitor can pick is one it can block. That makes it the editor's one
  * reader of the clock, once per mount, as PublishedPage reads it; the
  * canvas still never does, so with a past `open` the panel pages months
@@ -4281,7 +4281,8 @@ function BookedField({ value, open, onChange }) {
   const list = Array.isArray(value) ? value : []
   const start = calStart(open, today)
 
-  const at = ((mi % CAL_SPAN) + CAL_SPAN) % CAL_SPAN
+  const clampMo = (v) => Math.min(Math.max(v, 0), CAL_SPAN - 1)
+  const at = clampMo(mi)
   const abs = start.m + at
   const y = start.y + Math.floor(abs / 12)
   const mo = ((abs % 12) + 12) % 12
@@ -4291,13 +4292,19 @@ function BookedField({ value, open, onChange }) {
     list.includes(iso) ? list.filter((d) => d !== iso) : [...list, iso].sort(),
   )
 
-  const arrow = (icon, dir) => (
-    <button
-      type="button" aria-label={dir < 0 ? 'Previous month' : 'Next month'}
-      onClick={(e) => { stopE(e); setMi((v) => v + dir) }}
-      className="hover:border-foreground" style={CAL_NAV_BTN}
-    >{icon}</button>
-  )
+  // The end's button is disabled, as the past-day cells are below.
+  const arrow = (icon, dir) => {
+    const end = dir < 0 ? at === 0 : at === CAL_SPAN - 1
+    return (
+      <button
+        type="button" aria-label={dir < 0 ? 'Previous month' : 'Next month'}
+        disabled={end}
+        onClick={(e) => { stopE(e); setMi((v) => clampMo(v + dir)) }}
+        className={end ? undefined : 'hover:border-foreground'}
+        style={end ? { ...CAL_NAV_BTN, cursor: 'default', opacity: 0.4 } : CAL_NAV_BTN}
+      >{icon}</button>
+    )
+  }
 
   const cells = [
     ...Array.from({ length: lead }, (_, i) => <span key={`b${i}`} />),
