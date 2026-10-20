@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
-import { RectangleHorizontal, RectangleVertical, RotateCcw, RotateCw, ZoomIn, ZoomOut } from 'lucide-react'
+import { RotateCcw, RotateCw, ZoomIn, ZoomOut } from 'lucide-react'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Slider } from '@/components/ui/slider'
@@ -25,7 +25,6 @@ const ORIGINALS_MAX = 40
 // bakedUrl → { original, tf }; insertion-ordered, oldest dropped past the cap.
 const ORIGINALS = new Map()
 
-const RATIOS = [['orig', 'Original'], ['1:1', '1:1'], ['4:5', '4:5'], ['3:2', '3:2'], ['16:9', '16:9']]
 const ZOOM_MAX = 4
 
 let queue = []
@@ -55,10 +54,9 @@ export function ImageEditorHost() {
 }
 
 const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v))
-const keyOf = (a) => (a ? `${a[0]}:${a[1]}` : 'orig')
 
-function startTf(aspect) {
-  return { cx: 0, cy: 0, zoom: 1, quarter: 0, fine: 0, ratio: keyOf(aspect), flip: false }
+function startTf() {
+  return { cx: 0, cy: 0, zoom: 1, quarter: 0, fine: 0 }
 }
 
 // Everything the view and the bake share: the frame (fw × fh screen px), the
@@ -75,18 +73,18 @@ function geometry(tf, iw, ih, fw, fh) {
   return { th, s, cx: clamp(tf.cx, -mx, mx), cy: clamp(tf.cy, -my, my) }
 }
 
-function frameRatio(tf, iw, ih) {
-  if (tf.ratio === 'orig') return tf.quarter % 2 ? ih / iw : iw / ih
-  const [a, b] = tf.ratio.split(':').map(Number)
-  return tf.flip ? b / a : a / b
+// The frame is the field's own aspect; with none, the photo's shape at this quarter turn.
+function frameRatio(aspect, tf, iw, ih) {
+  if (aspect) return aspect[0] / aspect[1]
+  return tf.quarter % 2 ? ih / iw : iw / ih
 }
 
 function mimeOf(src) {
   return /^data:image\/png|\.png(\?|$)/i.test(src) ? 'image/png' : 'image/jpeg'
 }
 
-function bake(img, iw, ih, tf, src) {
-  const R = frameRatio(tf, iw, ih)
+function bake(img, iw, ih, tf, src, aspect) {
+  const R = frameRatio(aspect, tf, iw, ih)
   const g = geometry(tf, iw, ih, R, 1) // frame of height 1: only its shape matters
   // The cropped region in natural px, then capped to MAX_EDGE on its long edge.
   const rw = R / g.s
@@ -114,7 +112,7 @@ function Editor({ item }) {
   const original = saved?.original ?? item.src
   const [dim, setDim] = useState(null) // { img, w, h }
   const [failed, setFailed] = useState(false)
-  const [tf, setTf] = useState(() => saved?.tf ?? startTf(item.aspect))
+  const [tf, setTf] = useState(() => saved?.tf ?? startTf())
   const [stage, setStage] = useState({ w: 0, h: 300 })
   const stageRef = useRef(null)
   const pointers = useRef(new Map())
@@ -141,7 +139,7 @@ function Editor({ item }) {
 
   const iw = dim?.w ?? 1
   const ih = dim?.h ?? 1
-  const R = frameRatio(tf, iw, ih)
+  const R = frameRatio(item.aspect, tf, iw, ih)
   const room = { w: Math.max(40, stage.w - 32), h: Math.max(40, stage.h - 32) }
   const fw = Math.min(room.w, room.h * R)
   const fh = fw / R
@@ -195,7 +193,7 @@ function Editor({ item }) {
   }
   const apply = () => {
     try {
-      const url = bake(dim.img, iw, ih, { ...tf, cx: g.cx, cy: g.cy }, original)
+      const url = bake(dim.img, iw, ih, { ...tf, cx: g.cx, cy: g.cy }, original, item.aspect)
       ORIGINALS.set(url, { original, tf: { ...tf, cx: g.cx, cy: g.cy } })
       if (ORIGINALS.size > ORIGINALS_MAX) ORIGINALS.delete(ORIGINALS.keys().next().value)
       finish(url)
@@ -205,9 +203,6 @@ function Editor({ item }) {
   }
   const cancel = () => shift()
 
-  const swappable = tf.ratio !== 'orig' && tf.ratio !== '1:1'
-  const presets = RATIOS.some(([k]) => k === keyOf(item.aspect)) || !item.aspect
-    ? RATIOS : [...RATIOS, [keyOf(item.aspect), keyOf(item.aspect)]]
   const batch = item.total > 1
 
   return (
@@ -260,21 +255,6 @@ function Editor({ item }) {
           )}
         </div>
 
-        <div className="flex flex-wrap items-center gap-1.5" role="group" aria-label="Frame shape">
-          {presets.map(([k, label]) => (
-            <Button
-              key={k} type="button" size="sm" variant={tf.ratio === k ? 'default' : 'outline'}
-              className="h-7 px-2.5 text-xs" aria-pressed={tf.ratio === k}
-              onClick={() => upd({ ratio: k, flip: false })}
-            >{label}</Button>
-          ))}
-          <Button
-            type="button" size="sm" variant="outline" className="h-7 px-2" disabled={!swappable}
-            aria-label={tf.flip ? 'Make the frame wide' : 'Make the frame tall'}
-            onClick={() => upd({ flip: !tf.flip })}
-          >{(tf.flip ? R > 1 : R < 1) ? <RectangleHorizontal size={14} /> : <RectangleVertical size={14} />}</Button>
-        </div>
-
         <div className="grid gap-3 sm:grid-cols-2">
           <label className="flex items-center gap-2 text-xs text-muted-foreground">
             <ZoomOut size={14} className="shrink-0" />
@@ -297,7 +277,7 @@ function Editor({ item }) {
         </div>
 
         <DialogFooter className="gap-2 sm:justify-between">
-          <Button type="button" variant="ghost" size="sm" onClick={() => setTf(startTf(item.aspect))}>Reset</Button>
+          <Button type="button" variant="ghost" size="sm" onClick={() => setTf(startTf())}>Reset</Button>
           <div className="flex flex-wrap justify-end gap-2">
             <Button type="button" variant="outline" size="sm" onClick={cancel}>{batch ? 'Skip photo' : 'Cancel'}</Button>
             <Button type="button" variant="outline" size="sm" onClick={() => finish(original)}>Use original</Button>
