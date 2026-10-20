@@ -159,6 +159,11 @@ for the seal. `findFieldNode`, `scrollFieldIntoView`, `onFocusField` and the Edi
 - **JP-149.** Retry by *word prefixes*, longest first (all the first line's words, then one fewer,
   …), not a fixed 40 / 16 characters. A prefix is tried only down to two words or ~8 squashed
   characters, to keep a lone "The" from matching a paragraph.
+  **Retest (2026-10-20):** a clamp that cuts inside the second word (`The Midnigh…`, `THE MIDNIG…`)
+  matched no whole-word prefix and the loop gave up at one word. `findFieldNode` now ends with a
+  second pass: an element whose whole text is a stem (≥ 4 squashed characters, a strict prefix of
+  the field's first line) plus `…` is the clamped copy; the longest stem wins, ranked by key as
+  before. Equality, not `includes`, so a paragraph holding the stem cannot match.
 - **JP-146.** `findFieldNode(root, text, key)` collects every minimal match (today's loop, kept
   as the default: the first) and ranks by the field's key, per call 2. **The key rides in
   `focusF`** (`{ sid, text, key }`): the box-following `useLayoutEffect` calls `findFieldNode`
