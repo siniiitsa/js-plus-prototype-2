@@ -829,8 +829,9 @@ marks a cap at its floor that prose fails at some width).
    its cap (73–74 at Lime's and Grunge's layout 1) squeezes the title to *KESTREL …*. That is
    decision 6's ellipsis, which the seeds already show (Pop's 390 *SEPTEM…* beside *Earth, Wind &
    Fire*), so it is left as it is. **Overruled by JP-136 (QA, 2026-10-15):**
-   layout 1's row wraps the artist under the title (`notes/repertoire.md`); Pop's pill cannot
-   wrap, so there the title holds its width and the artist takes the ellipsis.
+   layout 1's row wraps the artist under the title (`notes/repertoire.md`); Pop's pill
+   held its title and clipped the artist at every width, until the 2026-10-20 retest: at 390 it
+   now wraps too (768 and 1440 keep the clip).
 6. **Floors** (prose fails, the seed fits; `--check` reports `floor`):
    - the title holds *Don't Stop Me Now*'s 17 at seven designs (10–15 read): Retro's layout 1,
      Editorial's layouts 2–4 and Pop's 1, 3 and 4. The seeds already ellipsize or wrap there;
