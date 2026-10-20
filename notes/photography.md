@@ -60,16 +60,18 @@ another `notes/` file.
 ## The image editor (user call, 2026-10-14)
 
 Every upload opens `src/builder/ImageEditor.jsx` before it is placed: move, zoom, rotate (90° steps
-plus ±45° straighten) and a frame ratio (Original / 1:1 / 4:5 / 3:2 / 16:9). **The edit is baked**:
+plus ±45° straighten) inside a fixed frame. **The edit is baked**:
 Apply renders the frame to a canvas (long edge ≤ 1600, source PNG stays PNG, JPEG q .9) and stores
 the new data-URI *string*, so `c.image` / `c.images` / `tracks[].image` keep their shapes and
 `Photo`, `seedFocus`, `NO_CLAMP` and `reach.mjs` know nothing of it. Metadata applied at render time
 was rejected: it would touch every `Photo` site and the ones that hard-code `50% 0%`.
 
-- The default frame is `aspect: [w, h]` on the field's `FIELDS` entry (header image 16:9, avatar 1:1,
+- The frame is `aspect: [w, h]` on the field's `FIELDS` entry (header image 16:9, avatar 1:1,
   bio 4:5, gallery 3:2, calendar / form portrait / pricing faces / track art 1:1, form stage 3:2).
-  A baked crop is still drawn `cover` in boxes of another shape (the 390 hero is portrait), so the
-  ratio is a default the user can change, not a fit for every layout.
+  There is no ratio picker (user call, 2026-10-20, removing the Original / 1:1 / 4:5 / 3:2 / 16:9
+  presets and the wide/tall flip): the frame is that `aspect`, or the photo's own shape for a caller
+  that passes none. A baked crop is still drawn `cover` in boxes of another shape (the 390 hero is
+  portrait), so the ratio is not a fit for every layout.
 - `ORIGINALS` (module-level, bakedUrl → `{ original, tf }`, capped at 40) lets **Edit** reopen the
   source at its last transform instead of cropping cropped pixels. It is in memory only, like
   uploads; a baked image that fell out of it edits from its own pixels.
