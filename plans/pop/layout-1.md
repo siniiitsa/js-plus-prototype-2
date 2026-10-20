@@ -1500,7 +1500,8 @@ counters and ink traps: its corners are soft. Rubik 900 is the squarer drawing, 
   is lifted.
 - **A long artist is capped at 60% of its row** under Pop (`maxWidth`, ellipsis — Editorial
   layout 4's cap): the frame's rows clip their content, and the harness's synthetic artist at 390
-  otherwise crushed the title to nothing and ran past the ring. The twins' flush rows keep
+  otherwise crushed the title to nothing and ran past the ring. At 390 the cap is lifted and the
+  row wraps (JP-136 retest, 2026-10-20); it holds at 768 and 1440. The twins' flush rows keep
   `flex: none`, untouched. Re-shot at 390: row 4 reads "SONG NU…" beside "· ARTIST NUMBER 4 …",
   both inside the ring.
 - **The empty list is not drawn by any frame, and `s.muted` vanished on the seat**: pink at 64% on

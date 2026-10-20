@@ -12892,6 +12892,8 @@ function Repertoire({ s }) {
       const grunge = s.grunge
       const ed = s.editorial
       const pop = s.pop
+      // Pop's pill wraps its artist at 390 alone (JP-136, retest).
+      const popWrap = pop && s.mob
       const z = s.narrow ? 1 : 0.82
       const u = (v) => `${Math.round(v * z * 10) / 10}px`
       const body = (size, lh, extra) => ({
@@ -13146,27 +13148,30 @@ function Repertoire({ s }) {
                       {/* An artist too long to stand beside its title wraps under
                           it (JP-136) instead of crushing the title to "Don'…":
                           each keeps its own ellipsis at the row's width. Pop's
-                          pill cannot wrap, so there the title keeps its width
-                          and the artist is what is clipped. */}
+                          pill wraps at 390 too (the retest: both columns must
+                          read, and the pill's 999px radius stays round on two
+                          lines); at 768 and 1440 the frame's single line fits,
+                          so the title keeps its width and the artist gives way. */}
                       <span style={row(u(pop ? 4 : 12), {
                         flex: 1, minWidth: 0, alignItems: 'baseline', justifyContent: 'space-between',
-                        ...(pop ? null : { flexWrap: 'wrap', rowGap: u(2) }),
+                        ...(pop && !popWrap ? null : { flexWrap: 'wrap', rowGap: u(2) }),
                       })}>
                         {/* Label/LG over Label/SM. */}
                         <span style={bebas(G.song, {
                           color: pop ? POP_REP.song : s.tx, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis',
                           maxWidth: '100%',
-                          ...(pop ? { flex: 'none' } : null),
+                          ...(pop && !popWrap ? { flex: 'none' } : null),
                         })}>{t.title}</span>
                         {/* Pop's pill clips its row (the frame's own
-                            `clipsContent`) and cannot wrap, so the title holds
-                            its width (JP-136) and a long artist gives way
-                            instead, to 60% of the row at most and its own
-                            ellipsis — Editorial's layout-4 cap. */}
+                            `clipsContent`); at 768 and 1440 the title holds its
+                            width (JP-136) and a long artist gives way instead,
+                            to 60% of the row at most and its own ellipsis —
+                            Editorial's layout-4 cap. At 390 it wraps like the
+                            other templates. */}
                         <span style={bebas(pop ? u(16) : s.labelSm, {
                           color: pop ? s.tx : s.ac, flex: 'none',
                           overflow: 'hidden', textOverflow: 'ellipsis',
-                          ...(pop ? { maxWidth: '60%', flex: '0 1 auto', minWidth: 0 } : { maxWidth: '100%' }),
+                          ...(pop && !popWrap ? { maxWidth: '60%', flex: '0 1 auto', minWidth: 0 } : { maxWidth: '100%' }),
                         })}>· {t.artist}</span>
                       </span>
                     </div>

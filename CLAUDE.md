@@ -135,7 +135,9 @@ mutated through a single `patch()` helper.
   (JP-147) — which finds the smallest visible element in that section whose text holds the
   field's value (`findFieldNode(root, text, key)`: case and whitespace ignored, first line, and
   if not found whole, retried by its first *words*, longest first, down to two words and 8
-  squashed characters (JP-149), so `cased()`, word-split spans and a clamp's `…` still match),
+  squashed characters (JP-149), so `cased()`, word-split spans and a clamp's `…` still match;
+  failing that, an element whose whole text is a stem of the value plus `…` — a clamp that cut
+  inside a word, `The Midnigh…` — of at least 4 squashed characters, longest stem first),
   scrolls the canvas scroller (`canvasRef`) only if it is not already in view — on a phone into
   the top 16vh a drawer over the canvas leaves free, and only while one is open: `canvasBand`'s
   `covered` is the Edit drawer on a section or the Sections / Theme sheet, and with none open the

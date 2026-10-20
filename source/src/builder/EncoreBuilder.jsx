@@ -5791,6 +5791,7 @@ function dressPublishedWindow(win, artistName, pageBg) {
 // match always got.
 const squash = (v) => String(v).replace(/\s+/g, '').toLowerCase()
 const FIELD_PREFIX_MIN = 8
+const FIELD_STEM_MIN = 4
 function findFieldNode(root, text, key) {
   if (!root) return null
   const words = (String(text).split('\n').find((l) => l.trim()) || '').trim().split(/\s+/).filter(Boolean)
@@ -5799,20 +5800,16 @@ function findFieldNode(root, text, key) {
   for (const el of root.querySelectorAll('*')) {
     all.push({ el, sq: squash(el.textContent) })
   }
-  for (let k = words.length; k >= 1; k--) {
-    const want = squash(words.slice(0, k).join(''))
-    if (k < words.length && (k < 2 || want.length < FIELD_PREFIX_MIN)) return null
+  // The element to box among the visible ones `test` passes, or null.
+  const pickBy = (test) => {
     const hits = []
     for (const { el, sq } of all) {
-      if (!sq.includes(want)) continue
-      // A tag row is a chip of its own (or its clamped `…`): a word inside a
-      // sentence is not it, and a layout that draws no chips has no box.
-      if (key === 'tags' && !(sq === want || (sq.startsWith(want) && sq.length - want.length <= 1))) continue
+      if (!test(sq)) continue
       const r = el.getBoundingClientRect()
       if (!r.width || !r.height) continue
       hits.push({ el, sq })
     }
-    if (!hits.length) continue
+    if (!hits.length) return null
     // The minimal matches: those with no matching element inside them. Hits
     // are in document order, so a descendant of one is the very next hit.
     const min = hits.filter((h, i) => !(hits[i + 1] && h.el.contains(hits[i + 1].el)))
@@ -5831,7 +5828,25 @@ function findFieldNode(root, text, key) {
     }
     return min[0].el
   }
-  return null
+  for (let k = words.length; k >= 1; k--) {
+    const want = squash(words.slice(0, k).join(''))
+    if (k < words.length && (k < 2 || want.length < FIELD_PREFIX_MIN)) break
+    // A tag row is a chip of its own (or its clamped `…`): a word inside a
+    // sentence is not it, and a layout that draws no chips has no box.
+    const el = pickBy((sq) => sq.includes(want) &&
+      !(key === 'tags' && !(sq === want || (sq.startsWith(want) && sq.length - want.length <= 1))))
+    if (el) return el
+  }
+  // A clamp that cuts inside a word leaves one whole word and a stem (`The
+  // Midnigh…`), which no whole-word prefix matches. Such an element's whole
+  // text is a stem of the copy and `…`, so equality (not `includes`) keeps a
+  // paragraph that merely holds the stem out. The longest stem wins.
+  const full = squash(words.join(''))
+  let best = 0
+  const stemOk = (sq) => sq.endsWith('…') && sq.length - 1 >= FIELD_STEM_MIN &&
+    sq.length - 1 < full.length && full.startsWith(sq.slice(0, -1))
+  for (const { sq } of all) if (stemOk(sq)) best = Math.max(best, sq.length)
+  return best ? pickBy((sq) => sq.length === best && stemOk(sq)) : null
 }
 
 // The rectangle to box for `node`. A node inside an svg (the seal's ring) is
