@@ -164,3 +164,22 @@ untrimmed offsets and sets `pending = { row, col }`; rows are keyed by index, so
 *start* of the remainder (the new row, or the second half of a row split in the middle); a paste lands at the end
 of the last piece. A single item is kept as typed except for its **leading** space (`trimStart`; the trailing one
 starts the next word), and the caret follows when that space is dropped.
+
+## Inline editing (plans/inline-edit-all.md, Phase 0, 2026-10-21)
+
+Every repeater's rows are read for the canvas's inline editor through `repeaterRows(sec, k, themeName)`, and
+every `*Val` closure in `EditPanel` is that one call — `songsVal`, `tracksVal`, `gigsVal`, `tiersVal`,
+`formFieldsVal`, `quotesVal`, `linksVal`, and since Phase 0 `slotsVal` (`CAL_SLOTS`, its `after` offsets kept on a
+rewrite), `statsVal` (`MAP_STATS_4`) and `stepsVal` (`FORM_STEPS`). **`setsVal` is the exception**: `c.sets` is an
+object keyed by case-folded tag, so `repeaterRows('sets')` returns the *drawn* sets as rows `{ key, mood, length }`
+(the sets `repChips()` derives from the songs less blank rows, in page order, each with what `repSetsOf()` holds for
+it), `slotWrite` puts the whole resolved object back as `SetsField` does, and the panel keeps reading the object. A
+set's card prints `mood · length` as one line (`LINE_PAIRS`, the gigs' city and time shape); with both empty it prints
+the song count, which is derived, so there is no slot to click. The text columns the canvas offers are `INLINE_ROWS`;
+`tiers.tags` and `songs.tags` (derived filter chips) are in `INLINE_OFF` for every template; the slots' `date` and
+the booked dates are dates, not text, and stay in the panel.
+**Repertoire layout 3 draws a song once per tag it carries**, so the nth-peer rule (document order is row order)
+is wrong there for repeated copy: row 0 (*Valerie*, tagged Weddings and Pubs) is drawn in both cards, the seed's
+row 11 (also *Valerie*) is drawn in neither of the four rows a card shows, and a click on the Pubs card's *Valerie*
+was paired with row 11 as the second of two. Found by the probe's sentinel check, open until pass 10
+(Retro layout 3) and its template twins.

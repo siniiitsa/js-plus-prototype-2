@@ -2842,6 +2842,51 @@ export function fieldShown(f, themeName, design) {
   return !!f.shared || fieldReach(f, themeName, design)
 }
 
+// Inline editing on the canvas (plans/inline-edit.md · plans/inline-edit-all.md).
+// A text, area or list field that `fieldShown` says the design reads is editable
+// where it is printed, and so is every text cell of a repeater, unless the
+// ledger below says otherwise. The three tables are keyed by a *group*,
+// `cat.key` for a field and `cat.key.col[.part]` for a repeater's cell or a
+// part of one, with an optional scope in front: `Template.design.` (design is
+// the 0-based `arch % designCount`, as `in` reads it), `Template.*.`, `*.design.`
+// or `*.*.`. A key also covers the groups under it (`pricing.tiers.price` is its
+// lead, amount and tail). A page is only *known* to work because
+// scripts/inline-probe.mjs passed it.
+//
+// INLINE_OFF is the ledger: each row a group the canvas does not edit, with the
+// reason, one of: live-only copy, not drawn at the widths we edit, not text, the
+// field has no node or the page prints a derived value, or a node text can never
+// settle (a user call). INLINE_MARKED names copy the page prints under another
+// field's words, so `EncoreSection` marks the node (`data-inline`). INLINE_PART
+// names copy the page prints inside a longer line.
+export const INLINE_OFF = {
+  'Retro.0.repertoire.songs.length': 'not drawn: only layout 3 prints a song’s length',
+  'Retro.0.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
+  '*.*.pricing.tiers.tags': 'derived value: the filter chips are the distinct tags of every package',
+  '*.*.repertoire.songs.tags': 'derived value: the filter chips are the distinct tags of every song',
+}
+export const INLINE_MARKED = {
+  'gallery.railLabel': true,
+  'gallery.sourceLabel': true,
+}
+export const INLINE_PART = {
+  'media.countLabel': true,
+  'map.listLabel': true,
+  'calendar.time': true,
+  'repertoire.songs.artist': true,
+}
+export function inlineRule(table, themeName, design, group) {
+  const parts = String(group).split('.')
+  for (let n = parts.length; n >= 2; n--) {
+    const g = parts.slice(0, n).join('.')
+    for (const scope of [`${themeName}.${design}.`, `${themeName}.*.`, `*.${design}.`, '*.*.', '']) {
+      const v = table[scope + g]
+      if (v !== undefined) return v
+    }
+  }
+  return undefined
+}
+
 // Character caps (plans/char-limits.md, user calls, 2026-10-13). A cap is
 // measured per template and design — Figma says how many lines a text block
 // draws, scripts/limits.mjs how many characters fit them at all three widths —

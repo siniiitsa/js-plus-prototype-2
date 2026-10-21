@@ -11,14 +11,15 @@ section starts the edit (the first click still only selects); no phones, where t
   types, a package's features), one cell of a repeater row, or a part (a price's lead / amount / tail, a gig's city
   or time inside `City · time`, the media counter's `Featured`, the calendar's time). `inlineSlots` enumerates them
   from the values the panel shows (`fieldValue`, `repeaterRows`), so panel and canvas resolve the same seed.
-  `INLINE_KEYS` lists the fields, `INLINE_ROWS` the repeater cells.
+  Every text / area / list field the layout reads is a slot, and `INLINE_ROWS` lists the repeater cells (`INLINE_OFF` in
+  `data.js` takes out what cannot be edited, with the reason).
 - **Click → slot.** `inlineFieldAt` walks the click's ancestors; a node is edited when it **prints exactly the
   slot's copy** (`squash` equal), or, for a part slot, holds it inside a longer line with the click near the words.
   Repeated copy maps the *n*th such node to the *n*th slot. The same text in two different fields is ambiguous
   and is skipped, except where a mark settles it.
 - **Marks.** The gallery's credit line and its source label both read "Gallery", as does the vertical wordmark, and
   text cannot tell them apart. `EncoreSection` carries `data-inline="railLabel"` and `data-inline="sourceLabel"`
-  on the two (inert attributes, no behaviour); `INLINE_MARKED` names the keys that need one. Add no more where
+  on the two (inert attributes, no behaviour); `INLINE_MARKED` (`data.js`) names the groups that need one. Add no more where
   text can decide.
 - **Where the box goes.** `inlineBox` uses the union of the node's text-line rectangles (a `Range`), not its box,
   and moves the top by half of `line-height` minus the font's content height. Under a tilt (`tiltChain`: the bio's
@@ -56,16 +57,19 @@ opens its own slot, the sentinel lands on the clicked node, and Escape restores 
 `when`. Footer: `statement` `cta` `copyright`, links `label`.
 
 ## What is still out
-- Derived filter chips (`tiers.tags`, `songs.tags`) and `songs.length`, which the page does not draw: panel only.
-- The calendar's `prompt`, which shows only while no day is cued and so is unreachable by default.
+Retro layout 1's ledger (`INLINE_OFF` in `data.js`, read off `scripts/inline-probe.mjs --theme Retro --layout 1`):
+- Derived filter chips (`tiers.tags`, `songs.tags`): panel only, for every template and layout (`*.*`).
+- `songs.length`, which Retro's layout 1 does not draw (layout 3 prints it), and the calendar's `prompt`, which shows only
+  while no day is cued and so is unreachable by default.
+- Rows a pager or carousel does not draw: the testimonials' reviews after the first, the repertoire's songs past the first
+  page at 768. Reported by the probe as *paged*, not a gap.
 - Vertical-writing text (the gallery's wordmark, a literal anyway).
 - An emptied label has no node to click; refill it from the panel.
 - Copy over its cap (typed under another layout) is shown clamped by the page but whole in the box.
-- Retro layouts 2–4, Lime, Grunge, Editorial and Pop (`inlineOn` gates on Retro and design 0), and the fields no
-  repeater slot yet covers (`sets`, `slots`, `stats`, `steps`, `booked`, `images`).
+- The fields no repeater slot covers: `booked` and `images`.
 - Phones.
 
-## Expanding
-Lift the `inlineOn` gate (template / design) and measure each node with the sentinel probe first; a key whose copy
-several nodes hold needs a mark or a rank. Another template's frames bring their own transforms, faces and
-clamps, so each layout is a probe pass, not a flag.
+## Beyond Retro layout 1
+Taken further by `plans/inline-edit-all.md`: the gate is no longer an allowlist (`INLINE_KEYS` and `inlineOn` are gone). A
+field is editable when `fieldShown` says the layout reads it, less the ledger. A page is *known* to work only because
+`scripts/inline-probe.mjs` passed it, one pass per template and layout; until a page's pass it is on but unproved.

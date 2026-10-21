@@ -10,7 +10,7 @@ passes, the pass's memory written back into its own file as it goes.
 section the pass touches, and [`notes/templates.md`](../notes/templates.md).
 
 Branch: **`inline-edit-all`**, with one commit per pass (`inline-edit-<template>-layout-<n>` if a pass needs its own
-branch). The Retro layout-1 work is uncommitted at the time of writing; step 0 of Phase 0 is to commit it.
+branch). The Retro layout-1 work is commit `2b985a3`; Phase 0 is the commit after it.
 
 ## What "all" means (the done test)
 
@@ -59,7 +59,7 @@ Retro layout 1 uses a fraction of those keys (the others are read at layouts 2�
 most of the work is *proving* keys at new layouts, not writing new code. The new code is: the gate, four
 repeaters (`sets`, `slots`, `stats`, `steps`), and whatever the hit-test needs for decoration.
 
-## Phase 0 — foundations (one session, before any pass)
+## Phase 0 — foundations (one session, before any pass) — DONE 2026-10-21, see the log below
 
 0. **Commit the Retro layout-1 work** (user's say-so) so every later diff is a pass.
 1. **Make the probe a committed script.** The sentinel probe lives only in a browser page (`window.__probe`).
@@ -92,6 +92,80 @@ repeaters (`sets`, `slots`, `stats`, `steps`), and whatever the hit-test needs f
    files" paragraph then names it. Decide at the end of step 4, not before.
 6. **Exit check:** Retro layout 1 re-run through the committed probe with `--check` passes and matches the old
    result (the ledger for that pass = the four "still out" items in `inline-edit.md`).
+
+### Phase 0 log
+
+**0 · commit.** Already `2b985a3` when the session began (tree clean).
+
+**1 · the probe** — `source/scripts/inline-probe.mjs`, flags in its header. What it does that the plan did not say:
+- `--width 768` keeps the window at 1440 and **clicks the Tablet tab**; a 768 window is the phone chrome, where inline
+  editing is off. `App.jsx`'s `startTheme` is hard-wired to `"Picker"`, so the probe drives the picker as `page-check.mjs`
+  does (template → *Open the editor* → the modal's card N−1 → *Use this header*).
+- The universe is the app's own: `inlineSlots(sec, theme, name, true)` (exported) lists every slot with its `off` reason,
+  so the probe and the editor cannot disagree about what a field is. Each box carries `data-inline-slot` (an id,
+  `cat.key[row].col#item.part`) and `data-inline-float`.
+- Phase 1 clicks the middle of every text node's first line. Phase 2 re-aims at the *words* of any part slot still
+  unhit (a long line's middle is not its time or its artist). Then each universe slot with no hit is `MISSING` if a node
+  prints it (counted against its rank among slots with the same words, and with exact-other-field copy discounted),
+  `paged` if its row is not drawn but the column's other rows are hit, `not drawn` otherwise, `off` if in the ledger.
+- WRONG is a box on a slot that does not print the clicked copy (punctuation-only nodes excepted) **or** a sentinel that
+  did not land under the box; NOT-RESTORED compares `c` (hashed, off the fiber's `st`) and the section's HTML after
+  Escape. Controls: the header title must open `header.title` first (exit 2 otherwise), and breaking `onRevert` makes
+  it report NOT-RESTORED.
+- One run is ~4 minutes per width for a whole page; a JSONL row per click goes to `$OUT/inline-probe/`.
+
+**2 · default-on.** `INLINE_KEYS` and `inlineOn` are gone. `INLINE_OFF`, `INLINE_MARKED`, `INLINE_PART` and `inlineRule`
+are in `data.js` (keys `Template.design.cat.key[.col[.part]]`, `*` wildcards). Default-on exposed **no new key at Retro
+layout 1**: everything the layout reads was already covered, or sits in the ledger. It did surface three things the
+allowlist had hidden, all fixed in shared code:
+- `header.badgeText` joined the exact-text map and made the Title ambiguous (both read the artist's name); the seal is
+  reached through its svg, so it stays out of that map.
+- **A part slot's words inside another field's copy**: the artist *Queen* is inside the title *Dancing Queen*, and the
+  row holding both became a "peer", so *Queen* never opened. Peers are now taken minimal first, then the exact copy of
+  another field is dropped.
+- **A pager hides the second of two equal rows** (the seed repeats *Valerie*; 768 draws six songs): `prefixSlot` pairs
+  the nth drawn node with the nth slot when what is drawn of the column reads as the head of its slots.
+
+**3 · the hit-test spike** (Grunge and Pop layout 1, desktop). Result, against the plan's hypothesis:
+
+| | Grunge L1 | Pop L1 |
+|---|---|---|
+| `e.target` alone | 155 hit · 0 WRONG · 0 MISSING | 151 hit · 2 WRONG · 2 MISSING |
+| stack walked top first, first slot wins | same hits, **1 WRONG** (a seal over the pricing small print opened it) | identical to `e.target` |
+| `e.target` + the smallest text box under the pointer wins (shipped) | 155 hit · 0 WRONG · 0 MISSING | 153 hit · 0 WRONG · 0 MISSING |
+
+No tape, sticker or grain hid a slot from `e.target` at layout 1 on either template (the two clicks "under an overlay"
+are a literal range and a form seal with no slot). What does go wrong is a **box over another field's text**: Pop's title
+words stand across its kicker and location. Range rects are the font's content box, so "on the glyphs" cannot tell a
+display word from small text beside it; the smaller box wins. A non-slot element on top (a seal) keeps `e.target`'s
+answer (nothing), because letting a lower slot win past it was the regression. Passes 2–4 should expect the stack to
+matter less than the plan said: **Grunge and Pop layout 1 already pass at 1440 with only the 15 undrawn/ledger slots to
+record** (`songs.length`, `calendar.prompt`, and `gallery.railLabel` / `sourceLabel`, which those two templates'
+layout 1 does not draw at desktop), so their passes are tablet, screenshots and the ledger.
+
+**4 · the four repeaters.** `repeaterRows` gains `sets` (the drawn sets as `{ key, mood, length }`; `slotWrite` puts the
+whole `repSetsOf` object back), `slots`, `stats` and `steps`; `INLINE_ROWS` lists their text cells; `slotsVal`,
+`statsVal` and `stepsVal` delegate (`setsVal` keeps the object). Run on the pages that draw them: Retro L2 calendar
+`slots` kind/price ×4, L3 `sets` mood/length ×3, L4 map `stats` ×12 cells and form `steps` ×6, all hit and restored.
+**Not proved by step 6 (nothing at Retro layout 1 draws them): their first proof is passes 5, 10 and 15.**
+
+**5 · module split — not done.** The inline block is ~530 lines of `EncoreBuilder.jsx`, but the tables the plan's ~60-line
+test measures went to `data.js` and are ~35 lines with five rows of ledger. Revisit when `INLINE_OFF` passes ~60 lines.
+
+**6 · exit check.** `node scripts/inline-probe.mjs --theme Retro --layout 1 --width 1440,768 --check` → exit 0, `PASS`:
+156 slots hit at 1440 and 143 at 768, 0 WRONG, 0 NOT-RESTORED, 0 MISSING. Against the legacy-allowlist baseline run
+first: no slot lost, three gained (*Queen*, the second *Valerie* at 768, the calendar time — the last because the old
+ad-hoc probe aimed at a line's middle). The ledger is the plan's four items plus the pager:
+`tiers.tags` and `songs.tags` (derived chips, `*.*`), `Retro.0` `songs.length` and `calendar.prompt` (not drawn),
+and *paged* rows (the testimonials after the first, the repertoire past the sixth song at 768).
+`gallery.sourceLabel` is "not drawn" at 768 and hit at 1440: desktop alone, no ledger row (the union rule).
+
+**Open for later passes, found on the way.**
+- *Repertoire layout 3 draws a song once per tag*, so document order is not row order: a click on the Pubs card's *Valerie*
+  (row 0 again) was paired with row 11. Pass 10 and its twins; see `notes/list-editors.md`.
+- Retro L2 calendar: the heading and `availLabel` both read *Availability* (pass 5). Retro L4 map: the top gig's city
+  and time are not reached (pass 15). These and the other misses on layouts 2–4 are the passes' baselines.
+- Every page is now editable but only Retro layout 1 is proved. Nothing is published (`index.html` is untouched).
 
 ## The passes
 
