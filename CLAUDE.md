@@ -161,6 +161,20 @@ mutated through a single `patch()` helper.
   the disc's centre and diameter, because the ring's own box is one `<textPath>` arc that swings
   with `seal-spin` and the tilted svg's is 1.38x the disc. All four `SealBadge` arms draw the
   same viewBox-is-the-disc svg, so one rule covers them.
+- **Clicking text on the canvas edits it there** (pilot, user calls, 2026-10-20: Retro's layout 1, the whole page,
+  desktop and tablet; `plans/inline-edit.md`). A click on the text of an already-selected section maps to a
+  *slot* (`inlineSlots`: a scalar field, one item of a list field, one cell of a repeater row, or a part of a
+  price or composed line) by `inlineFieldAt`: the node must print exactly the slot's copy, or a part slot's words
+  inside a longer line. `InlineEditor` opens a `<textarea>` over the text's own line rectangles (`inlineBox`)
+  with transparent type and a caret, so the page keeps drawing the copy; a tilted card's box is given the
+  tilt's matrix (`placeBox`), and the header seal's badge text edits in a floating box. It writes through
+  `setContent` and the panel's caps (`fieldCapOf`, `colCaps`), and the header's Title keeps `NameInput`'s
+  never-empty rule. The repeaters' seeds come from `repeaterRows`, which `EditPanel`'s `*Val` closures share.
+  `EncoreSection` carries **two inert `data-inline` marks and no other** (the gallery's credit line and source
+  label, which text cannot tell from its vertical wordmark); do not add more where text can decide. Nothing in
+  the published tab, the preview or the thumbnails mounts the editor. A key joins `INLINE_KEYS` only once it is
+  probed: its node opens its own slot and typing changes that node. Enter inserts a line break only where the
+  node's `white-space` keeps one (`pre-*`).
 - `st.theme` is an **integer index** into `THEMES`, not a name or object.
 - **`st.device` is the toggle, `device` is what the canvas draws.** A window at most 1180 wide
   (iPad Air landscape; `useTabletCap`) caps it at tablet and disables the Desktop tab, since

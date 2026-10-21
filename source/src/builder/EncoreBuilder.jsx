@@ -4644,7 +4644,7 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
   // Same trap as the photos above: the panel has to resolve the seeded songs
   // exactly as sectionVm does, or the canvas would list twelve songs while the
   // repeater showed none.
-  const songsVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : SONGS)
+  const songsVal = (k) => repeaterRows(sec, k, themeName)
   // Layout 3's set details (JP-066), through sectionVm's own resolver.
   const setsVal = () => repSetsOf(sec.c)
   // And the same again for the media player's tracks, whose seed is TRACKS
@@ -4652,37 +4652,30 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
   // materialises this whole array into `c.tracks`, photographs and sound files
   // included, so nothing the user could see — or hear — disappears the moment
   // they rename track one.
-  const tracksVal = (k) => {
-    if (Array.isArray(sec.c[k])) return sec.c[k]
-    const art = defaultTrackArt(sec.cat, themeName) ?? []
-    return TRACKS.map(([name, dur, rel], i) => ({
-      title: name, sub: `${rel} · ${dur}`, image: art[i] ?? null, audio: TRACK_AUDIO[i] ?? '',
-    }))
-  }
+  const tracksVal = (k) => repeaterRows(sec, k, themeName)
   // And once more for the events map's gigs, whose seed needs no dressing —
   // GIGS is already the row shape GigsField writes.
-  const gigsVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : GIGS)
+  const gigsVal = (k) => repeaterRows(sec, k, themeName)
   // And for the pricing packages, whose seed needs none either: TIERS carries
   // its tags as the comma string and its features as the newline one, which is
   // exactly what TiersField edits and what sectionVm splits — tiersSeed(), the
   // function sectionVm calls (TIERS_3 at layout 3, JP-070; TIERS_1 at Lime's,
   // Grunge's, Editorial's and Pop's layout 1, JP-089), so the two resolve one list.
-  const tiersVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : tiersSeed(themeName, design))
+  const tiersVal = (k) => repeaterRows(sec, k, themeName)
   // And for the enquiry form's boxes, whose seed needs no dressing either:
   // FORM_FIELDS is written as the { label, placeholder, kind } row that
   // FormFieldsField edits and sectionVm reads — FORM_FIELDS_4 at layout 4
   // (JP-054) and FORM_FIELDS_CARD at layouts 2 and 3 (JP-070), sectionVm's own
   // gates, so the two resolve one list.
-  const formFieldsVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k]
-    : design === 3 ? FORM_FIELDS_4 : design === 1 || design === 2 ? FORM_FIELDS_CARD : FORM_FIELDS)
+  const formFieldsVal = (k) => repeaterRows(sec, k, themeName)
   // And for the testimonials' reviews: QUOTES is written as the
   // { quote, who, role, when } row QuotesField edits, so this is the gigs' and
   // the packages' one-liner rather than the tracks' dressing.
-  const quotesVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : QUOTES)
+  const quotesVal = (k) => repeaterRows(sec, k, themeName)
   // And for the footer's sitemap: FOOTER_LINKS is written as the
   // { label, to } row LinksField edits — a `url` only appears on a row the
   // artist points at a web address — so this is the gigs' one-liner again.
-  const linksVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : FOOTER_LINKS)
+  const linksVal = (k) => repeaterRows(sec, k, themeName)
   // The booking calendar's two. `bookedVal` is the songs' rule with an empty
   // seed; `openVal` has to run sectionVm's whole expression rather than just
   // its default, because clearing a date input stores '' — which the canvas
@@ -4743,9 +4736,7 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                   // sections, since the others print them too. Title is the
                   // header's own: a section that prints the name tighter clamps
                   // its own copy (session 1, user call, 2026-10-13).
-                  const cap = sec.cat === 'header' && f.shared
-                    ? identityCap(f.k, sections.length ? sections : [sec], themeName)
-                    : fieldCap(f, themeName, design)
+                  const cap = fieldCapOf(sec, f, sections, themeName, design)
                   const caps = colCaps(f, themeName, design)
                   // Only a shared field is listed where this design does not
                   // read it — the header's identity keys, which other sections
@@ -5866,6 +5857,433 @@ function fieldRect(node) {
   return new DOMRect(c.x - d / 2, c.y - d / 2, d, d)
 }
 
+// Inline editing on the canvas (plans/inline-edit.md). A click on a section's
+// text, once that section is selected, opens a box over that text and writes
+// through the panel's own `setContent`. It is a pilot on Retro's layout 1:
+// every section there. `EncoreSection` is not tagged; the click is mapped to
+// its copy by text, the way the panel's focus is mapped to its node.
+//
+// The unit is a *slot*: one piece of copy the artist can type, which is a
+// field's value, one item of a list field (a tag, a promise), or one cell of a
+// repeater's row (a song's title, a gig's city), or one item of a list in such
+// a cell (a package's feature). `inlineSlots` enumerates them from the same
+// values the panel shows, and `inlineFieldAt` finds the slot a click is on.
+const INLINE_KEYS = {
+  header: ['title', 'kicker', 'location', 'cta1', 'tags'],
+  bio: ['heading', 'refLabel', 'para1'],
+  media: ['kicker', 'heading', 'countLabel'],
+  pricing: ['heading', 'sub', 'unit', 'rowCta'],
+  repertoire: ['heading'],
+  gallery: ['kicker', 'heading', 'railLabel', 'sourceLabel', 'backLabel'],
+  calendar: ['cta', 'time'],
+  map: ['kicker', 'heading', 'radius', 'base', 'terms', 'listLabel'],
+  form: ['heading', 'promises', 'typeLabel', 'types', 'messageLabel', 'message', 'button'],
+  footer: ['statement', 'cta', 'copyright'],
+}
+// A repeater's text columns, by section and key. A column that is a list in the
+// row (a package's features, one per line) is edited an item at a time.
+const INLINE_ROWS = {
+  media: { tracks: ['title', 'sub'] },
+  pricing: { tiers: ['name', 'price', 'blurb', 'feats'] },
+  repertoire: { songs: ['title', 'artist', 'length'] },
+  map: { gigs: ['venue', 'city', 'time', 'month', 'day'] },
+  testimonials: { quotes: ['quote', 'who', 'role', 'when'] },
+  form: { fields: ['label', 'placeholder'] },
+  footer: { links: ['label'] },
+}
+const ROW_LISTS = { feats: '\n' }
+// Copy that a word prints elsewhere on the page, so the text cannot say which node
+// is the field's: the gallery's credit line and its first source row both read
+// `Gallery`, beside a wordmark that is no field. `EncoreSection` marks the node
+// (`data-inline`), and only a marked node is the slot.
+const INLINE_MARKED = new Set(['gallery.railLabel', 'gallery.sourceLabel'])
+// Copy the page prints inside a longer line (`5 / 5 Featured`, `Upcoming gigs · 5`,
+// `· Amy Winehouse`): the box sits on its own words in the line, found by text.
+const INLINE_PART = new Set(['media.countLabel', 'map.listLabel', 'calendar.time', 'repertoire.songs.artist'])
+const inlineDesign = (sec, themeName) => sec.arch % (designCount(sec.cat, themeName) || 1)
+const inlineOn = (sec, themeName) => themeName === 'Retro' && inlineDesign(sec, themeName) === 0
+
+// The cap EditPanel and the inline box both enforce on `f` (plans/char-limits.md).
+function fieldCapOf(sec, f, sections, themeName, design) {
+  return sec.cat === 'header' && f.shared
+    ? identityCap(f.k, sections.length ? sections : [sec], themeName)
+    : fieldCap(f, themeName, design)
+}
+
+// The field's current copy, as the panel resolves it.
+function fieldValue(sec, f, themeName, artistName) {
+  const design = inlineDesign(sec, themeName)
+  const val = sec.c[f.k] !== undefined ? sec.c[f.k] : fieldSeed({ cat: sec.cat, f, themeName, design, c: sec.c, artistName })
+  return sec.cat === 'header' && f.k === 'title' && !String(val).trim() ? artistName : String(val ?? '')
+}
+
+// A repeater's rows as the panel resolves them: the stored array, or the seed
+// sectionVm draws while the key is absent. EditPanel's `songsVal` and the rest
+// are this, so the panel and the page box always read one list.
+function repeaterRows(sec, k, themeName) {
+  if (Array.isArray(sec.c[k])) return sec.c[k]
+  const design = inlineDesign(sec, themeName)
+  switch (k) {
+    case 'songs': return SONGS
+    case 'tracks': {
+      // The seed is TRACKS dressed in the Retro artwork and the demo audio. The
+      // first keystroke materialises this whole array into `c.tracks`, photographs
+      // and sound files included, so nothing the user could see — or hear —
+      // disappears the moment they rename track one.
+      const art = defaultTrackArt(sec.cat, themeName) ?? []
+      return TRACKS.map(([name, dur, rel], i) => ({
+        title: name, sub: `${rel} · ${dur}`, image: art[i] ?? null, audio: TRACK_AUDIO[i] ?? '',
+      }))
+    }
+    case 'gigs': return GIGS
+    // tiersSeed() is what sectionVm calls too (TIERS_3 at layout 3, TIERS_1 at Lime's...).
+    case 'tiers': return tiersSeed(themeName, design)
+    // FORM_FIELDS_4 at layout 4 and FORM_FIELDS_CARD at layouts 2 and 3: sectionVm's own gates.
+    case 'fields': return design === 3 ? FORM_FIELDS_4 : design === 1 || design === 2 ? FORM_FIELDS_CARD : FORM_FIELDS
+    case 'quotes': return QUOTES
+    case 'links': return FOOTER_LINKS
+    default: return []
+  }
+}
+
+// A list field's items, as the page reads them (the panel's rows): the value
+// split on its separator, trimmed, blanks dropped. `joinItems` is its inverse,
+// the separator `LineListField` writes.
+const listItems = (value, sep) => String(value ?? '').split(sep).map((t) => t.trim()).filter(Boolean)
+const joinItems = (items, sep) => items.join(sep === ',' ? ', ' : sep)
+
+// Every slot a section offers inline, in the order the panel lists them.
+function inlineSlots(sec, themeName, artistName) {
+  const design = inlineDesign(sec, themeName)
+  const fields = FIELDS[sec.cat] ?? []
+  const out = []
+  const add = (slot) => {
+    const group = `${sec.cat}.${slot.k}${slot.col ? '.' + slot.col : ''}${slot.sub ? '.' + slot.sub : ''}`
+    if (slot.text.trim()) out.push({ ...slot, group, part: INLINE_PART.has(group) || !!slot.line })
+  }
+  for (const k of INLINE_KEYS[sec.cat] ?? []) {
+    const f = fields.find((x) => x.k === k)
+    if (!f || !fieldShown(f, themeName, design)) continue
+    const value = fieldValue(sec, f, themeName, artistName)
+    if (f.list) listItems(value, f.list).forEach((text, item) => add({ f, k, item, text }))
+    else add({ f, k, text: value })
+  }
+  for (const [k, cols] of Object.entries(INLINE_ROWS[sec.cat] ?? {})) {
+    const f = fields.find((x) => x.k === k)
+    if (!f || !fieldShown(f, themeName, design)) continue
+    repeaterRows(sec, k, themeName).forEach((row, r) => {
+      if (!row || typeof row !== 'object') return
+      for (const col of cols) {
+        const raw = String(row[col] ?? '')
+        if (ROW_LISTS[col]) listItems(raw, ROW_LISTS[col]).forEach((text, item) => add({ f, k, row: r, col, item, text }))
+        else if (col === 'price') {
+          // A price is drawn as three nodes, the lead (£), the numeral and the tail.
+          const pp = priceParts(raw)
+          for (const sub of ['lead', 'amount', 'tail']) add({ f, k, row: r, col, sub, text: pp[sub] })
+        } else if (k === 'gigs' && (col === 'city' || col === 'time') && String(row.city ?? '').trim() && String(row.time ?? '').trim()) {
+          // The page prints the city and the time as one line, `Manchester · 22:00`.
+          add({ f, k, row: r, col, text: raw, line: `${String(row.city).trim()} · ${String(row.time).trim()}` })
+        } else add({ f, k, row: r, col, text: raw })
+      }
+    })
+  }
+  return out
+}
+
+// A slot's current text, and the stored value that writing `text` into it makes
+// (`[key, value]`, for `setContent`). A list item or a cell replaces its own
+// place in the string or row and leaves the rest; the separator can't be typed.
+function slotText(sec, ed, themeName, artistName) {
+  if (ed.row != null) {
+    const cell = String((repeaterRows(sec, ed.k, themeName)[ed.row] ?? {})[ed.col] ?? '')
+    return ed.item != null ? listItems(cell, ROW_LISTS[ed.col])[ed.item] ?? '' : ed.sub ? priceParts(cell)[ed.sub] : cell
+  }
+  const value = fieldValue(sec, ed.f, themeName, artistName)
+  return ed.item != null ? listItems(value, ed.f.list)[ed.item] ?? '' : value
+}
+function slotWrite(sec, ed, text, themeName, artistName) {
+  const put = (sep, current) => {
+    const items = listItems(current, sep)
+    items[ed.item] = sep === ',' ? text.replace(/,\s*/g, ' ') : text
+    return joinItems(items, sep)
+  }
+  if (ed.row != null) {
+    const rows = repeaterRows(sec, ed.k, themeName)
+    const cell = String((rows[ed.row] ?? {})[ed.col] ?? '')
+    const next = ed.item != null ? put(ROW_LISTS[ed.col], cell) : ed.sub ? priceWrite(cell, ed.sub, text) : text
+    return [ed.k, rows.map((row, r) => (r === ed.row ? { ...row, [ed.col]: next } : row))]
+  }
+  return [ed.k, ed.item != null ? put(ed.f.list, fieldValue(sec, ed.f, themeName, artistName)) : text]
+}
+// A price with one of its three drawn parts replaced, the rest of the string
+// (its spaces included) left as it was typed.
+function priceWrite(raw, sub, text) {
+  const m = String(raw).match(/\d[\d,.]*/)
+  if (!m) return sub === 'amount' ? text : raw
+  const amount = m[0].replace(/[.,]+$/, '')
+  const head = raw.slice(0, m.index), tail = raw.slice(m.index + amount.length)
+  if (sub === 'lead') return text + head.slice(head.trimEnd().length) + amount + tail
+  if (sub === 'tail') return head + amount + tail.slice(0, tail.length - tail.trimStart().length) + text
+  return head + text + tail
+}
+// The cap on a slot's text: a field's, or one item's or one cell's `chars`.
+function slotCap(sec, slot, sections, themeName) {
+  const design = inlineDesign(sec, themeName)
+  if (slot.row != null) {
+    const c = colCaps(slot.f, themeName, design)?.[slot.col]
+    return c?.chars != null ? { chars: c.chars } : null
+  }
+  const cap = fieldCapOf(sec, slot.f, sections, themeName, design)
+  return slot.item != null ? (cap?.chars != null ? { chars: cap.chars } : null) : cap
+}
+
+// Copy on a tilted card is edited in a box tilted to match. `tiltChain` is the
+// transformed elements from `node` up to `root` (innermost first), or null for
+// type set vertically, which a box cannot follow.
+function tiltChain(node, root) {
+  const chain = []
+  for (let el = node; el && el !== root.parentElement; el = el.parentElement) {
+    const cs = getComputedStyle(el)
+    if (cs.writingMode && cs.writingMode !== 'horizontal-tb') return null
+    if (cs.transform !== 'none') chain.push(el)
+  }
+  return chain
+}
+
+// Runs `fn` with the transforms of `chain` (and their transitions) switched off,
+// which changes no layout, so `fn` measures the text where the page lays it out.
+// All inside one task: nothing paints between, and React is not involved.
+function untilted(chain, fn) {
+  const props = ['transform', 'transition']
+  const saved = chain.map((el) => props.map((k) => [k, el.style.getPropertyValue(k), el.style.getPropertyPriority(k)]))
+  for (const el of chain) {
+    el.style.setProperty('transform', 'none', 'important')
+    el.style.setProperty('transition', 'none', 'important')
+  }
+  try { return fn() } finally {
+    chain.forEach((el, i) => saved[i].forEach(([k, v, pr]) => (v ? el.style.setProperty(k, v, pr) : el.style.removeProperty(k))))
+  }
+}
+
+// `inlineBox`, for a node that may sit on a tilted card: the box is measured
+// where the page lays the text out, and `tf` is the matrix that carries it to
+// where the card draws it. Each tilted ancestor turns about its own origin, in
+// the space its parent lays out in, so the matrices compose from the innermost
+// out; the box's own translation is what the composed map does to its corner.
+function placeBox(node, root, rel, part) {
+  const chain = tiltChain(node, root)
+  if (!chain) return null
+  if (!chain.length) return inlineBox(node, rel, part)
+  const info = chain.map((el) => {
+    const cs = getComputedStyle(el)
+    return { m: new DOMMatrix(cs.transform), o: cs.transformOrigin.split(' ').map(parseFloat) }
+  })
+  return untilted(chain, () => {
+    const b = inlineBox(node, rel, part)
+    if (!b) return null
+    let g = new DOMMatrix()
+    chain.forEach((el, i) => {
+      const r = el.getBoundingClientRect()
+      const px = r.left + info[i].o[0], py = r.top + info[i].o[1]
+      g = new DOMMatrix().translate(px, py).multiply(info[i].m).translate(-px, -py).multiply(g)
+    })
+    const q = new DOMPoint(b.x + rel.left, b.y + rel.top)
+    const t = g.transformPoint(q)
+    return { ...b, tf: `matrix(${g.a}, ${g.b}, ${g.c}, ${g.d}, ${t.x - q.x}, ${t.y - q.y})` }
+  })
+}
+
+// The range over `text` inside `node` (case-insensitive, the first occurrence),
+// or over all of the node's text with none. Null when the text is not there.
+function textRange(node, text) {
+  const range = document.createRange()
+  if (text == null) { range.selectNodeContents(node); return range }
+  const walker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT)
+  const parts = []
+  let all = ''
+  for (let t = walker.nextNode(); t; t = walker.nextNode()) { parts.push([t, all.length]); all += t.data }
+  const at = all.toLowerCase().indexOf(String(text).toLowerCase())
+  if (at < 0 || !text) return null
+  const end = at + String(text).length
+  const find = (pos, atEnd) => parts.find(([t, o]) => (atEnd ? pos > o && pos <= o + t.data.length : pos >= o && pos < o + t.data.length))
+  const s0 = find(at, false), e0 = find(end, true)
+  if (!s0 || !e0) return null
+  range.setStart(s0[0], at - s0[1])
+  range.setEnd(e0[0], end - e0[1])
+  return range
+}
+
+// Every element that prints `sq` (a squashed copy) and has none inside it that
+// does, in document order: the nodes a repeated copy stands on.
+function minimalPeers(root, test) {
+  const hits = [...root.querySelectorAll('*')].filter((e) => !e.closest('svg') && test(e) && e.getBoundingClientRect().width)
+  return hits.filter((h) => !hits.some((o) => o !== h && h.contains(o)))
+}
+
+// The inline slot a click on `target` (at `pt`) lands in, or null: the slot, the
+// node it is printed on, and whether it is edited in a floating field. A node has
+// to print exactly the slot's copy, or (INLINE_PART) hold it inside a longer line
+// with the click on its own words; one that holds more (a bullet glyph before a
+// label) would put the caret off the glyphs. Where several slots print the same
+// words (each row's Valerie) the nth node is the nth slot, and where that cannot
+// be told (the counts differ, or two fields print the same word) there is no
+// slot, and the panel is the way in.
+function inlineFieldAt(sec, wrap, target, pt, themeName, artistName) {
+  const root = wrap?.firstElementChild
+  if (!root || !inlineOn(sec, themeName) || !target) return null
+  const slots = inlineSlots(sec, themeName, artistName)
+
+  // The header's seal: the ring's text is the name twice over, and it turns, so
+  // the whole disc is the target and the field floats beside it.
+  const svg = sec.cat === 'header' ? target.closest?.('svg') : null
+  if (svg) {
+    const f = FIELDS.header.find((x) => x.k === 'badgeText')
+    if (f && fieldShown(f, themeName, inlineDesign(sec, themeName))) {
+      const outer = svg.parentElement?.closest('svg') ?? svg
+      const value = fieldValue(sec, f, themeName, artistName) || artistName
+      if (squash(outer.textContent).includes(squash(value))) return { f, k: 'badgeText', text: value, node: outer, float: true, group: 'header.badgeText' }
+    }
+    return null
+  }
+
+  // A marked node is its slot's, whatever else prints the same word.
+  const mark = target.closest?.('[data-inline]')
+  if (mark && root.contains(mark)) {
+    const slot = slots.find((sl) => sl.k === mark.dataset.inline && INLINE_MARKED.has(sl.group))
+    return slot && tiltChain(mark, root) ? { ...slot, node: mark } : null
+  }
+  const exact = new Map()
+  for (const sl of slots) if (!sl.part && !INLINE_MARKED.has(sl.group)) { const q = squash(sl.text); (exact.get(q) ?? exact.set(q, []).get(q)).push(sl) }
+  const parts = slots.filter((sl) => sl.part)
+  for (let a = target; a && a !== root.parentElement; a = a.parentElement) {
+    const tc = a.textContent
+    const sq = squash(tc)
+    if (!sq) continue
+    const here = exact.get(sq)
+    if (here && a.getBoundingClientRect().width) {
+      if (new Set(here.map((x) => x.group)).size > 1) continue
+      const peers = minimalPeers(root, (e) => squash(e.textContent) === sq)
+      const n = peers.indexOf(a)
+      const slot = here.length === 1 ? here[0] : peers.length === here.length && n >= 0 ? here[n] : null
+      if (slot && tiltChain(a, root)) return { ...slot, node: a }
+    }
+    // A slot inside a longer line: found by the line it is printed in (`line`)
+    // or by its own words, and chosen by the click being on them.
+    const cands = parts.filter((sl) => (sl.line ? squash(sl.line) === sq
+      : tc.toLowerCase().includes(String(sl.text).toLowerCase()) && ![...a.children].some((c) => c.textContent.toLowerCase().includes(String(sl.text).toLowerCase()))))
+    for (const slot of cands) {
+      const low = String(slot.text).toLowerCase()
+      const same = parts.filter((x) => x.group === slot.group && (slot.line ? squash(x.line ?? '') === sq : squash(x.text) === squash(slot.text)))
+      const peers = slot.line ? minimalPeers(root, (e) => squash(e.textContent) === sq) : minimalPeers(root, (e) => e.textContent.toLowerCase().includes(low))
+      const n = peers.indexOf(a)
+      if (same.length !== peers.length || n < 0 || same[n] !== slot) continue
+      // The click has to be on the slot's own words (or just beside them).
+      const rects = [...(textRange(a, slot.text)?.getClientRects() ?? [])]
+      const near = !pt || rects.some((r) => pt.x >= r.left - 4 && pt.x <= r.right + 4 && pt.y >= r.top - 4 && pt.y <= r.bottom + 4)
+      if (near && tiltChain(a, root)) return { ...slot, node: a }
+    }
+  }
+  return null
+}
+
+// Where `node`'s text paints, in the box's own terms: the union of its line
+// rectangles, not the node's box, which a pill's padding or a flex-centred
+// button leaves well away from the glyphs. A range's rectangles are the font's
+// content area, and a line box is `line-height` tall, so the top is moved by
+// half the difference. `part` narrows it to the words of a slot inside a longer
+// line. Null when nothing is drawn. `rel` is the section's origin on screen.
+function inlineBox(node, rel, part) {
+  const range = textRange(node, part)
+  if (!range) return null
+  const rects = [...range.getClientRects()].filter((r) => r.width && r.height)
+  if (!rects.length) return null
+  let l = Infinity, t = Infinity, r = -Infinity
+  const tops = new Set()
+  for (const q of rects) { l = Math.min(l, q.left); t = Math.min(t, q.top); r = Math.max(r, q.right); tops.add(Math.round(q.top)) }
+  const cs = getComputedStyle(node)
+  const H = rects[0].height
+  const lh = parseFloat(cs.lineHeight)
+  const L = Number.isFinite(lh) ? lh : H
+  // A little room either side, so a measure that is a fraction short does not
+  // wrap the line; a centred or right-aligned line keeps its edge.
+  const align = cs.textAlign
+  const slack = 2
+  const x = align === 'center' ? l - slack / 2 : align === 'right' || align === 'end' ? l - slack : l
+  return { x: x - rel.left, y: t - (L - H) / 2 - rel.top, w: r - l + slack, h: tops.size * L, lh: L }
+}
+
+// A field beside copy that a straight box cannot sit on (a tilted card's text,
+// the seal): under the node's bounding box, kept inside the section.
+function floatBox(node, rel, wide) {
+  const r = fieldRect(node)
+  const w = Math.min(wide ? 320 : 240, Math.max(160, r.width), rel.width - 16)
+  const x = Math.max(8, Math.min(r.left + r.width / 2 - w / 2 - rel.left, rel.width - w - 8))
+  const h = wide ? 76 : 30
+  const below = r.bottom - rel.top + 8
+  const y = below + h > rel.height - 4 ? Math.max(4, r.top - rel.top - h - 8) : below
+  return { x, y, w, h, lh: 0 }
+}
+
+// The box over the text: transparent type and a visible caret on top of the
+// real node, so the page keeps drawing the copy itself (two tones, case and
+// all) and the caret sits where the glyphs are, in the node's own face. It is
+// a textarea so copy that wraps on the page wraps the same way here.
+// A floating field (`ed.float`) is an ordinary field with visible type instead.
+// Some boxes are not committed empty: the name, and a list item or a cell, whose
+// removal would unmount the node under the box. Such a draft is held here, and
+// the page keeps what it had; the panel removes or clears.
+function InlineEditor({ ed, value, cap, onChange, onRevert, onClose }) {
+  const [draft, setDraft] = useState(null)
+  const held = (ed.f.k === 'title' && ed.cat === 'header') || ed.item != null || ed.row != null
+  const shown = draft ?? value
+  const note = held && draft !== null
+    ? (ed.item != null ? 'Remove an item in the panel' : ed.row != null ? 'Clear it in the panel' : 'Your name is required')
+    : null
+  const focusIn = useCallback((el) => { if (el) { el.focus(); el.select() } }, [])
+  // A field whose text the page sets with its line breaks kept (`white-space:
+  // pre-*`, the footer's statement) takes Enter as a break and closes on
+  // ⌘/Ctrl+Enter. Every other box closes on Enter and takes none, area fields
+  // included: the page runs a break there into a space, so a break typed would
+  // show in the box and nowhere else.
+  const multi = ed.nl && ed.item == null
+  const style = ed.float
+    ? {
+      position: 'absolute', left: ed.x, top: ed.y, width: ed.w, height: ed.h, zIndex: 23, boxSizing: 'border-box',
+      margin: 0, padding: '5px 9px', border: '2px solid #2B6BE4', borderRadius: '8px', outline: 0, resize: 'none',
+      background: '#FFFFFF', color: '#1B1A17', font: '500 13px/1.35 Inter, system-ui, sans-serif',
+      boxShadow: '0 6px 18px rgba(20,18,12,.25)', textTransform: 'none', letterSpacing: 'normal',
+    }
+    : {
+      position: 'absolute', left: ed.x, top: ed.y, width: ed.w, height: ed.h, zIndex: 22,
+      boxSizing: 'border-box', margin: 0, padding: 0, border: 0, outline: 0, background: 'transparent',
+      resize: 'none', overflow: 'hidden', color: 'transparent', caretColor: ed.caret, ...ed.css,
+      ...(ed.tf ? { transform: ed.tf, transformOrigin: '0 0' } : null),
+    }
+  return (
+    <>
+      <textarea
+        ref={focusIn} className={ed.float ? undefined : 'inline-edit'} data-inline-edit="" value={shown} aria-label={ed.label} rows={1} spellCheck={false}
+        maxLength={cap?.chars ?? undefined} onClick={stopE}
+        onChange={(e) => {
+          const v = multi ? e.target.value : e.target.value.replace(/\s*\n\s*/g, ' ')
+          if (held && !v.trim()) setDraft(v)
+          else { setDraft(null); onChange(v) }
+        }}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' && (!multi || e.metaKey || e.ctrlKey)) { e.preventDefault(); onClose() }
+          else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); onRevert(); onClose() }
+        }}
+        onBlur={onClose}
+        style={style}
+      />
+      <div style={{ position: 'absolute', left: ed.x, top: ed.y + ed.h + 8, zIndex: 24, pointerEvents: 'none', display: note || capCount(shown, cap ?? {}) ? 'block' : 'none',
+        background: '#FFFFFF', borderRadius: '6px', padding: '3px 8px', boxShadow: '0 4px 14px rgba(20,18,12,.2)' }}>
+        {note ? <p style={{ ...COUNT_LINE, textAlign: 'left', color: '#6B685E' }}>{note}</p> : cap ? <CharCount value={shown} cap={cap} /> : null}
+      </div>
+    </>
+  )
+}
+
 // The part of the canvas scroller the artist can see: all of it, unless
 // `covered` (a phone with a drawer open over the canvas: the Edit drawer or
 // the Sections / Theme sheet), when only the top 16vh is left free. A phone
@@ -6037,18 +6455,70 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
   }, [isMobile])
   const onBlurField = useCallback(() => setFocusF(null), [])
 
+  // Inline editing (INLINE_KEYS): the box over the clicked text. Its own state,
+  // not derived from `focusBox`, because an emptied Title has no node to box
+  // and the editor has to stay up while the page keeps the last name.
+  const [inline, setInline] = useState(null)
+  const closeInline = useCallback(() => { setInline(null); setFocusF(null) }, [])
+  // The node being edited: with a label that repeats (each tier's Book pill)
+  // the panel's single match is not the one that was clicked.
+  const inlineNode = useRef(null)
+  const startInline = (sec, wrap, hit) => {
+    const w = wrap.getBoundingClientRect()
+    const wide = hit.text.length > 44
+    const b = hit.float ? floatBox(hit.node, w, wide) : placeBox(hit.node, wrap.firstElementChild, w, hit.part ? hit.text : null)
+    if (!b) return false
+    const cs = getComputedStyle(hit.node)
+    const tone = hit.node.firstElementChild ? getComputedStyle(hit.node.firstElementChild).color : cs.color
+    inlineNode.current = hit.node
+    setFocusF({ sid: sec.id, text: hit.text, key: hit.k })
+    setInline({
+      sid: sec.id, cat: sec.cat, f: hit.f, k: hit.k, row: hit.row, col: hit.col, item: hit.item, part: hit.part, float: hit.float,
+      label: hit.row != null ? `${hit.f.l}: ${hit.col}` : hit.f.l, raw: sec.c[hit.k], nl: !hit.float && /^pre/.test(cs.whiteSpace),
+      cap: slotCap(sec, hit, sections, T.name),
+      x: b.x, y: b.y, w: b.w, h: b.h, tf: b.tf, caret: tone,
+      css: {
+        fontFamily: cs.fontFamily, fontSize: cs.fontSize, fontWeight: cs.fontWeight, fontStyle: cs.fontStyle,
+        lineHeight: `${b.lh}px`, letterSpacing: cs.letterSpacing, textTransform: cs.textTransform,
+        textAlign: cs.textAlign, whiteSpace: cs.whiteSpace, textWrap: cs.textWrap, overflowWrap: cs.overflowWrap,
+        wordBreak: cs.wordBreak, textIndent: '0px',
+      },
+    })
+    return true
+  }
+  // The text cursor says a click edits: the selected section's own copy only,
+  // looked up at most every 120ms (findFieldNode reads the whole section).
+  const hoverProbe = useRef(0)
+  const probeInline = (e, sec) => {
+    const now = performance.now()
+    if (now - hoverProbe.current < 120) return
+    hoverProbe.current = now
+    const wrap = e.currentTarget
+    wrap.style.cursor = inlineFieldAt(sec, wrap, e.target, { x: e.clientX, y: e.clientY }, T.name, artistName) ? 'text' : ''
+  }
+
   // The box follows the copy as it is typed, wraps, or changes width.
   useLayoutEffect(() => {
     const wrap = focusF && canvasRef.current?.querySelector(`[data-sid="${focusF.sid}"]`)
-    const node = wrap && focusF.text ? findFieldNode(wrap.firstElementChild, focusF.text, focusF.key) : null
+    const mine = inlineNode.current?.isConnected && wrap?.contains(inlineNode.current) ? inlineNode.current : null
+    const node = wrap && focusF.text ? mine ?? findFieldNode(wrap.firstElementChild, focusF.text, focusF.key) : null
     if (!node) { setFocusBox(null); return }
     const w = wrap.getBoundingClientRect()
     const r = fieldRect(node)
     setFocusBox({ sid: focusF.sid, x: r.left - w.left, y: r.top - w.top, w: r.width, h: r.height })
+    // The inline editor sits on the same node, and grows and shrinks with it. A
+    // floating field stays where it opened.
+    setInline((p) => {
+      if (!p || p.sid !== focusF.sid || p.k !== focusF.key || p.float) return p
+      const b = placeBox(node, wrap.firstElementChild, w, p.part ? focusF.text : null)
+      return !b || (p.x === b.x && p.y === b.y && p.w === b.w && p.h === b.h && p.tf === b.tf) ? p : { ...p, x: b.x, y: b.y, w: b.w, h: b.h, tf: b.tf }
+    })
   }, [focusF, st.sections, device, st.theme])
 
   // A box belongs to the section whose panel is open.
   useEffect(() => { if (focusF && focusF.sid !== st.selectedId) setFocusF(null) }, [focusF, st.selectedId])
+  // And so does an inline editor; a phone's drawer covers the canvas, so none there.
+  useEffect(() => { if (inline && (inline.sid !== st.selectedId || isMobile)) closeInline() }, [inline, st.selectedId, isMobile, closeInline])
 
   // §4.8 — nav links follow the optional sections currently on the page, and
   // carry the category as the anchor the published page scrolls to (§4.3a).
@@ -6775,8 +7245,16 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
                     data-sid={sec.id}
                     style={{ position: 'relative' }}
                     onMouseEnter={isMobile ? undefined : () => patch({ hoverId: sec.id })}
-                    onMouseLeave={isMobile ? undefined : () => patch((s) => (s.hoverId === sec.id ? { hoverId: null } : {}))}
-                    onClick={(e) => { stopE(e); patch({ selectedId: sec.id, menuFor: null }) }}
+                    onMouseLeave={isMobile ? undefined : (e) => { e.currentTarget.style.cursor = ''; patch((s) => (s.hoverId === sec.id ? { hoverId: null } : {})) }}
+                    onMouseMove={isMobile || st.selectedId !== sec.id ? undefined : (e) => probeInline(e, sec)}
+                    onClick={(e) => {
+                      stopE(e)
+                      // A click on the selected section's own copy edits it there.
+                      const hit = !isMobile && st.selectedId === sec.id
+                        ? inlineFieldAt(sec, e.currentTarget, e.target, { x: e.clientX, y: e.clientY }, T.name, artistName) : null
+                      if (hit && startInline(sec, e.currentTarget, hit)) { /* editing */ }
+                      else patch({ selectedId: sec.id, menuFor: null })
+                    }}
                   >
                     <EncoreSection s={vm} />
 
@@ -6787,6 +7265,20 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
                         border: '2px solid #2B6BE4', borderRadius: '6px', background: 'rgba(43,107,228,.08)',
                         pointerEvents: 'none', zIndex: 21, animation: 'fadeIn .15s ease',
                       }} />
+                    )}
+
+                    {inline && inline.sid === sec.id && (
+                      <InlineEditor
+                        ed={inline} cap={inline.cap}
+                        value={slotText(sec, inline, T.name, artistName)}
+                        onChange={(v) => {
+                          const [k, val] = slotWrite(sec, inline, v, T.name, artistName)
+                          api.setContent(sec.id, k, val)
+                          setFocusF({ sid: sec.id, text: v, key: k })
+                        }}
+                        onRevert={() => api.setContent(sec.id, inline.k, inline.raw)}
+                        onClose={closeInline}
+                      />
                     )}
 
                     {vm.showOverlay && (

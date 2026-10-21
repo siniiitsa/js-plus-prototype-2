@@ -15814,7 +15814,7 @@ function Gallery({ s }) {
               {/* The labels may wrap, since the open row's is the artist's
                   (JP-120 (gallery)): a long one wraps rather than pushing the
                   cross out. The services' names are short. */}
-              <span style={labelStyle(s, '18px', {
+              <span data-inline={g.on ? 'sourceLabel' : undefined} style={labelStyle(s, '18px', {
                 flex: 1, position: 'relative', color: g.on ? s.pillFg : ink,
                 whiteSpace: 'normal', overflowWrap: 'anywhere', minWidth: 0,
               })}>{g.label}</span>
@@ -15904,7 +15904,7 @@ function Gallery({ s }) {
               whiteSpace: 'normal', overflowWrap: 'anywhere', minWidth: 0, textAlign: 'right',
             }}>{s.brand}</span>
             {s.galRailLabel && (
-              <span style={{
+              <span data-inline="railLabel" style={{
                 fontFamily: s.mono, fontSize: desk ? '7.4px' : '9px',
                 whiteSpace: 'normal', overflowWrap: 'anywhere', minWidth: 0, textAlign: 'right',
               }}>{s.galRailLabel}</span>
