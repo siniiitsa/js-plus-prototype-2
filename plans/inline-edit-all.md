@@ -112,6 +112,12 @@ repeaters (`sets`, `slots`, `stats`, `steps`), and whatever the hit-test needs f
   did not land under the box; NOT-RESTORED compares `c` (hashed, off the fiber's `st`) and the section's HTML after
   Escape. Controls: the header title must open `header.title` first (exit 2 otherwise), and breaking `onRevert` makes
   it report NOT-RESTORED.
+- **What `--check` fails on:** WRONG, NOT-RESTORED, MISSING, and **UNLEDGERED** — a slot that no width draws, no click
+  reached and `INLINE_OFF` does not name. UNLEDGERED needs both widths in one invocation (`--width 1440,768`; with one
+  it says it skipped), because a field only one width draws (`gallery.sourceLabel`) is undrawn at the other. So green
+  means the done test holds: every slot is hit, ledgered, or drawn nowhere *and* ledgered. `not drawn` at one width
+  and `paged` are listed but do not fail. `paged` is a row nothing prints in a column whose earlier rows are hit and
+  whose later rows are all undrawn (the app's `prefixSlot` reading), so a mid-column gap is a MISSING, not paging.
 - One run is ~4 minutes per width for a whole page; a JSONL row per click goes to `$OUT/inline-probe/`.
 
 **2 · default-on.** `INLINE_KEYS` and `inlineOn` are gone. `INLINE_OFF`, `INLINE_MARKED`, `INLINE_PART` and `inlineRule`
@@ -138,10 +144,17 @@ No tape, sticker or grain hid a slot from `e.target` at layout 1 on either templ
 are a literal range and a form seal with no slot). What does go wrong is a **box over another field's text**: Pop's title
 words stand across its kicker and location. Range rects are the font's content box, so "on the glyphs" cannot tell a
 display word from small text beside it; the smaller box wins. A non-slot element on top (a seal) keeps `e.target`'s
-answer (nothing), because letting a lower slot win past it was the regression. Passes 2–4 should expect the stack to
-matter less than the plan said: **Grunge and Pop layout 1 already pass at 1440 with only the 15 undrawn/ledger slots to
-record** (`songs.length`, `calendar.prompt`, and `gallery.railLabel` / `sourceLabel`, which those two templates'
-layout 1 does not draw at desktop), so their passes are tablet, screenshots and the ledger.
+answer (nothing), because letting a lower slot win past it was the regression. **The tie-break is a judgement call the
+probe cannot test**: a text box is a rectangle, not the glyphs, and the probe aims at the small text's centre, so it
+always agrees with the rule. Where the pointer is on a display word's ink and a small label's box lies under the same
+pixel, the label wins. It is the default (small type sits on a display line's box far more often than the reverse) and
+is in the class of the table's last row, "a node text can never settle", decided by default and checked by eye: the
+pass procedure's step 3 screenshots, not `--check`, are what test it. Passes 2–4 should expect the stack to
+matter less than the plan said: **Grunge and Pop layout 1 already pass at 1440 with only the 15 undrawn slots to
+record** (`songs.length`, `calendar.prompt`, and `gallery.railLabel` / `sourceLabel`, which the probe finds drawn at no
+width on either), and Grunge also passes at 768 (143 hit, 0 WRONG, 0 MISSING; Pop's 768 is unmeasured). With the
+UNLEDGERED rule, `--width 1440,768 --check` on Grunge L1 fails today on exactly those four groups, which is the
+ledger rows its pass adds (`Grunge.0.…`).
 
 **4 · the four repeaters.** `repeaterRows` gains `sets` (the drawn sets as `{ key, mood, length }`; `slotWrite` puts the
 whole `repSetsOf` object back), `slots`, `stats` and `steps`; `INLINE_ROWS` lists their text cells; `slotsVal`,
@@ -215,7 +228,8 @@ A pass's file is created when its session starts (not now) from the template bel
      needs the reason in the pass file and a check that no text rule can do it instead. Budget: a handful over the
      whole plan, not per page.
    - *panel-only* — an `INLINE_OFF` row with one of the accepted reasons above.
-3. Re-run to green (`--check`, both widths). Also eyeball a screenshot of the box over a decorated node per
+3. Re-run to green (`--check`, `--width 1440,768` in one invocation, which is what lets it fail on UNLEDGERED: every
+   slot that no width draws needs an `INLINE_OFF` row with a reason). Also eyeball a screenshot of the box over a decorated node per
    section: the probe proves the node, not that the textarea lies exactly on the glyphs.
 4. Record: the pass file (ledger: every `INLINE_OFF` row, mark and part slot with its reason, and what was
    learned), the touched sections' `notes/` files (a short *Inline editing* heading — section-level decisions live

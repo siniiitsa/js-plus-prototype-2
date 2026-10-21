@@ -15,7 +15,7 @@
 //              The window stays 1440 wide in both: at 820 or under the editor
 //              turns into the phone chrome, where inline editing is off.
 //   --cat      only these sections (default: the whole page)
-//   --check    exit 1 on any WRONG, NOT-RESTORED or MISSING
+//   --check    exit 1 on any WRONG, NOT-RESTORED, MISSING or UNLEDGERED
 //   --limit N  at most N text nodes per section (debugging)
 //
 // Per text node it records one of
@@ -32,8 +32,12 @@
 // and, once the section is walked, every slot of the *universe* — the fields the
 // layout reads and the repeater cells, before any exclusion — that no click hit:
 //   MISSING    some node prints it and no click reached it. Fails --check.
-//   not drawn  nothing prints it at this width. Listed, not failing: it needs a
-//              ledger row in the pass file (INLINE_OFF carries it when decided).
+//   not drawn  nothing prints it at this width. Listed; fails --check as
+//              UNLEDGERED only if no width draws it (run --width 1440,768) and
+//              INLINE_OFF does not name it, so a gap is never left out silently.
+//   paged      a row the layout does not draw, in a column whose earlier rows are hit
+//              and whose later rows are all undrawn too (a pager, a carousel, as the
+//              app's `prefixSlot` reads it). Not failing.
 //   off        the universe slot is in INLINE_OFF; its reason is printed.
 // A positive control runs first: the header's title must open its box, or the
 // harness itself is broken (exit 2).
@@ -378,17 +382,28 @@ async function runCombo(theme, layout, width) {
       }
 
       // The slots of this section that no click reached.
+      const rowOf = (id) => Number((id.match(/\[(\d+)\]/) ?? [])[1] ?? -1)
+      const printedOf = new Map()
+      for (const slot of universe) {
+        if (res.hits.has(slot.id)) { printedOf.set(slot.id, true); continue }
+        if (slot.off || !walked) continue
+        // The nth slot with these words is printed only if more than n nodes print them.
+        const rank = universe.filter((x, j) => j < universe.indexOf(slot) && x.group === slot.group && sq(x.text) === sq(slot.text)).length
+        const others = universe.filter((x) => !x.part && x.group !== slot.group).map((x) => sq(x.text))
+        printedOf.set(slot.id, (await page.evaluate((sid, slot, others) => window.__printed(sid, slot, others), sec.id, slot, others)) > rank)
+      }
       for (const slot of universe) {
         if (res.hits.has(slot.id)) continue
         if (slot.off) { res.off.push({ sec: sec.cat, id: slot.id, why: slot.off }); continue }
         if (!walked) continue
-        // The nth slot with these words is printed only if more than n nodes print them.
-        const rank = universe.filter((x, j) => j < universe.indexOf(slot) && x.group === slot.group && sq(x.text) === sq(slot.text)).length
-        const others = universe.filter((x) => !x.part && x.group !== slot.group).map((x) => sq(x.text))
-        const printed = (await page.evaluate((sid, slot, others) => window.__printed(sid, slot, others), sec.id, slot, others)) > rank
-        // A row nothing prints, in a column whose other rows are hit, is a row the
-        // layout does not draw (a pager, a carousel): paged, not a gap.
-        const paged = !printed && /\[\d+\]/.test(slot.id) && [...res.hits.keys()].some((h) => colKey(h) === colKey(slot.id))
+        const printed = printedOf.get(slot.id)
+        // A row nothing prints is *paged* only when the layout draws the head of the
+        // column (a pager, a carousel) — it is a suffix of its rows, as `prefixSlot`
+        // reads it, and an earlier row is drawn. A gap with drawn rows after it is a
+        // miss that only looks like paging (a clamp's `…`, a word-split span).
+        const r = rowOf(slot.id)
+        const paged = !printed && r >= 0 && [...res.hits.keys()].some((h) => colKey(h) === colKey(slot.id))
+          && universe.every((x) => colKey(x.id) !== colKey(slot.id) || rowOf(x.id) < r || !printedOf.get(x.id))
         ;(printed ? res.missing : paged ? res.paged : res.notDrawn).push({ sec: sec.cat, id: slot.id, text: slot.text.slice(0, 40) })
       }
       for (const m of [...res.missing, ...res.notDrawn, ...res.paged, ...res.off].filter((x) => x.sec === sec.cat)) emit({ kind: 'slot', ...m, result: res.missing.includes(m) ? 'MISSING' : res.off.includes(m) ? 'off' : res.paged.includes(m) ? 'paged' : 'not drawn' })
@@ -403,6 +418,8 @@ async function runCombo(theme, layout, width) {
 }
 
 let failing = 0
+// Per theme and layout, across the widths run: what was hit, ledgered or undrawn.
+const acc = new Map()
 for (const theme of themes) for (const layout of layouts) for (const width of widths) {
   console.log(`${theme} layout ${layout} @ ${width}`)
   let res
@@ -428,8 +445,30 @@ for (const theme of themes) for (const layout of layouts) for (const width of wi
   if (res.errors.length) console.log(`  page errors: ${[...new Set(res.errors)].slice(0, 3).join(' | ')}`)
   const bad = res.wrong.length + res.nr.length + res.missing.length
   if (bad) failing++
+  const a = acc.get(`${theme}|${layout}`) ?? acc.set(`${theme}|${layout}`, { widths: [], hit: new Set(), off: new Set(), notDrawn: [] }).get(`${theme}|${layout}`)
+  a.widths.push(width)
+  for (const id of res.hits.keys()) a.hit.add(id)
+  for (const m of res.off) a.off.add(m.id)
+  a.notDrawn.push(new Map(res.notDrawn.map((m) => [m.id, m])))
   console.log(`inline-probe ${res.theme} L${res.layout} @${res.width}: ${res.hits.size} slots hit · ${res.wrong.length} WRONG · ${res.nr.length} NOT-RESTORED · ${res.missing.length} MISSING · ${res.notDrawn.length} not drawn · ${res.paged.length} paged · ${res.off.length} off · ${res.unhit} unhit · ${res.hidden} hidden · ${res.covered.length} unhit under an overlay`)
   fs.appendFileSync(path.join(outDir, `${res.tag}.jsonl`), JSON.stringify({ kind: 'summary', hits: [...res.hits].map(([slot, h]) => ({ slot, ...h })), wrong: res.wrong, nr: res.nr, missing: res.missing, notDrawn: res.notDrawn, paged: res.paged, off: res.off, covered: res.covered }) + '\n')
+}
+// The done test leaves nothing out silently: a slot no width draws, that no click
+// reached and the ledger (INLINE_OFF) does not name, fails --check. It needs both
+// widths in one run, since a field only one of them draws (`railLabel`, `sourceLabel`)
+// is undrawn at the other.
+for (const [key, a] of acc) {
+  const [theme, layout] = key.split('|')
+  if (!(a.widths.includes(1440) && a.widths.includes(768))) {
+    console.log(`${theme} layout ${layout}: unledgered check skipped (it needs --width 1440,768)`)
+    continue
+  }
+  const gone = [...a.notDrawn[0].values()].filter((m) => !a.hit.has(m.id) && !a.off.has(m.id) && a.notDrawn.every((w) => w.has(m.id)))
+  if (!gone.length) continue
+  failing++
+  const g = new Map()
+  for (const m of gone) { const k = colKey(m.id); const e = g.get(k) ?? { n: 0, first: m }; e.n++; g.set(k, e) }
+  for (const [k, e] of g) console.log(`  UNLEDGERED   ${k}${e.n > 1 ? ` ×${e.n}` : ''}  "${e.first.text}" — drawn at no width: add an INLINE_OFF row with its reason`)
 }
 await browser.close()
 console.log(`inline-probe: ${failing ? 'FAIL' : 'PASS'}`)

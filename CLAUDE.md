@@ -172,8 +172,8 @@ mutated through a single `patch()` helper.
   for any, a key covers the groups under it), its value the reason. `INLINE_MARKED` and `INLINE_PART` are keyed the same
   way (`inlineRule`). A page is *known* to work only because **`scripts/inline-probe.mjs --theme T --layout N --width
   1440,768 --check`** passed it: it clicks every text node with a real mouse, types a sentinel, presses Escape, and
-  reports WRONG, NOT-RESTORED and MISSING (see the script's header for the flags and what each means; its last line is
-  `inline-probe: PASS` or `FAIL`). `--width 768` clicks the Tablet tab and keeps the window at 1440, because a window
+  reports WRONG, NOT-RESTORED, MISSING and (across both widths) UNLEDGERED, a slot drawn nowhere that `INLINE_OFF`
+  does not name (see the script's header for the flags; its last line is `inline-probe: PASS` or `FAIL`). `--width 768` clicks the Tablet tab and keeps the window at 1440, because a window
   at 820 or under is the phone chrome. Until a page's pass in `plans/inline-edit-all.md` it is on and unproved.
   `InlineEditor` opens a `<textarea>` over the text's own line rectangles (`inlineBox`)
   with transparent type and a caret, so the page keeps drawing the copy; a tilted card's box is given the
