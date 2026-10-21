@@ -190,7 +190,8 @@ mutated through a single `patch()` helper.
   nodes than there are slots with the same copy, the nth node is the nth slot only if what is drawn of that column
   reads as the head of the slots (`prefixSlot`).
   `EncoreSection` carries **two inert `data-inline` marks and no other** (the gallery's credit line and source
-  label, which text cannot tell from its vertical wordmark); do not add more where text can decide. Nothing in
+  label, `railLabel` and `sourceLabel`, which text cannot tell from each other or from Retro's vertical wordmark; set
+  in the gallery's two layout-1 blocks, Retro's and the Lime tree's); do not add more where text can decide. Nothing in
   the published tab, the preview or the thumbnails mounts the editor. Enter inserts a line break only where the
   node's `white-space` keeps one (`pre-*`).
 - `st.theme` is an **integer index** into `THEMES`, not a name or object.

@@ -152,7 +152,9 @@ is in the class of the table's last row, "a node text can never settle", decided
 pass procedure's step 3 screenshots, not `--check`, are what test it. Passes 2–4 should expect the stack to
 matter less than the plan said: **Grunge and Pop layout 1 already pass at 1440 with only the 15 undrawn slots to
 record** (`songs.length`, `calendar.prompt`, and `gallery.railLabel` / `sourceLabel`, which the probe finds drawn at no
-width on either), and Grunge also passes at 768 (143 hit, 0 WRONG, 0 MISSING; Pop's 768 is unmeasured). With the
+width on either — *corrected by pass 1: those two are drawn, and were missing their `data-inline` marks in the Lime
+tree's gallery block, now added; Grunge, Editorial and Pop L1's galleries pass with them, so passes 2–4 ledger only
+`songs.length` and `calendar.prompt`*), and Grunge also passes at 768 (143 hit, 0 WRONG, 0 MISSING; Pop's 768 is unmeasured). With the
 UNLEDGERED rule, `--width 1440,768 --check` on Grunge L1 fails today on exactly those four groups, which is the
 ledger rows its pass adds (`Grunge.0.…`).
 
@@ -189,7 +191,7 @@ Retro, Lime, Grunge, Editorial, Pop (build order).
 
 | # | Page | Plan file | Expect | Status |
 |---|---|---|---|---|
-| 1 | Lime L1 | `lime/inline-layout-1.md` | the shared `s.v0` DOM: mostly free | |
+| 1 | Lime L1 | `lime/inline-layout-1.md` | the shared `s.v0` DOM: mostly free | **done 2026-10-21**: `--check` PASS (156 / 143 hit), two marks added in the Lime tree's gallery, two `Lime.0` ledger rows |
 | 2 | Grunge L1 | `grunge/inline-layout-1.md` | tape and rotation: `placeBox` | |
 | 3 | Editorial L1 | `editorial/inline-layout-1.md` | `cased()`, Gloock one weight, per-design schemes | |
 | 4 | Pop L1 | `pop/inline-layout-1.md` | stickers (`pointer-events`), 80% placeholders | |

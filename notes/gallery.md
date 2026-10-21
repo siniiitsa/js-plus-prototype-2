@@ -215,3 +215,12 @@ another `notes/` file.
   (`e.stopPropagation()`), so the overlay's own Escape exits only on a second press. The scroll lock
   still targets `<html>` / `<body>`, which is not what scrolls there, so the page scrolls behind
   the scrim with the wheel.
+
+## Inline editing (plans/inline-edit-all.md, Lime layout 1, 2026-10-21)
+
+Canvas inline editing reaches every gallery text field the layout reads. Layout 1 prints *Gallery* twice at desktop —
+the open source row's label and the credit line's second line — and text cannot tell the two fields apart, so each
+carries an inert `data-inline` mark (`sourceLabel`, `railLabel`; `INLINE_MARKED`). They stand in **both** layout-1
+blocks: Retro's, and the Lime tree's shared by Lime, Grunge, Editorial and Pop (the block's `eyebrow` / `pt` helpers
+take a `mark`; the row label's rule is Retro's, `g.on ? 'sourceLabel' : undefined`). The row label prints at desktop
+alone, so at 768 it is *not drawn* and needs no ledger row (the probe's union rule). No other gallery key is marked.

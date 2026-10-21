@@ -15397,8 +15397,8 @@ function Gallery({ s }) {
       }
       // Body/Eyebrow — Inter bold, the kicker, the back link, the credit and
       // the counter.
-      const eyebrow = (t, extra) => (
-        <span style={{
+      const eyebrow = (t, extra, mark) => (
+        <span data-inline={mark} style={{
           fontFamily: s.body, fontWeight: 700, fontSize: s.eyebrow, lineHeight: 1.3,
           letterSpacing: s.dls, whiteSpace: 'nowrap', color: ed ? s.ac : s.tx, textTransform: 'uppercase', ...extra,
         }}>{t}</span>
@@ -15407,8 +15407,8 @@ function Gallery({ s }) {
       // Pop's small type is Retro's, not Lime's Body/Eyebrow: Space Mono (and
       // Inter Bold for the brand) at the auto line height, tracked, typed in
       // capitals, in `s.ac` unless the caller says otherwise.
-      const pt = (t, size, ls, extra) => (
-        <span style={{
+      const pt = (t, size, ls, extra, mark) => (
+        <span data-inline={mark} style={{
           fontFamily: s.mono, fontSize: u(size), lineHeight: 'normal', letterSpacing: u(ls),
           whiteSpace: 'nowrap', color: s.ac, textTransform: 'uppercase', ...extra,
         }}>{t}</span>
@@ -15502,7 +15502,7 @@ function Gallery({ s }) {
               // Display/List; Editorial's is Label/MD, Pop's a raw 13.88.
               // Editorial's is faced too, since Gloock's cap stands 3.4% over
               // Fisterra's (`faceK` 0.967, plans/editorial/display-face.md).
-              <span style={{
+              <span data-inline={g.on ? 'sourceLabel' : undefined} style={{
                 flex: 1, minWidth: 0, fontFamily: s.display,
                 fontSize: faced(s, ed ? s.labelMd : pop ? u(13.88) : s.list), lineHeight: facedLh(s, ed ? 1.1 : 1.2),
                 letterSpacing: s.dls, color: ink,
@@ -15567,8 +15567,8 @@ function Gallery({ s }) {
               ? pt(s.brand, 11, 2, { fontFamily: s.body, fontWeight: 700, textAlign: 'right', ...wrap })
               : eyebrow(s.brand, { color: G.top, textAlign: 'right', ...wrap })}
             {s.galRailLabel && (pop
-              ? pt(s.galRailLabel, 9, 2, { textAlign: 'right', ...wrap })
-              : eyebrow(s.galRailLabel, { color: s.ac, textAlign: 'right', ...wrap }))}
+              ? pt(s.galRailLabel, 9, 2, { textAlign: 'right', ...wrap }, 'railLabel')
+              : eyebrow(s.galRailLabel, { color: s.ac, textAlign: 'right', ...wrap }, 'railLabel'))}
           </span>
         </div>
       )
