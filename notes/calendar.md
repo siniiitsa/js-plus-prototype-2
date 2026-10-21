@@ -277,3 +277,9 @@ another `notes/` file.
     which the card covers; the probe does not yet tell covered ink from shown ink.
   - The probe stages `prompt` (and `slots.kind`) on `booked: [CAL_OPEN]` (`KEY_CJ` in
     `limits.mjs`), because the prompt prints only while no day is cued.
+
+## Inline editing (plans/inline-edit-all.md, Grunge layout 1, 2026-10-21)
+
+`prompt` (*Pick a date to enquire*) prints only while no day is cued and the canvas opens with one cued, so it is
+*not drawn*: ledgered as `<Template>.0.calendar.prompt` in `INLINE_OFF`, per template, as Retro's, Lime's and Grunge's
+are. Its `heading` and the slot's `time` are hit at both widths; no other calendar field is drawn at layout 1.

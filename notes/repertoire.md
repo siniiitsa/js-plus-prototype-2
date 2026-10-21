@@ -59,3 +59,9 @@ songs, the sets and the heading's fallbacks are in `notes/list-editors.md` (`Son
     where `colCaps` gives `length` a cap, so layouts 1, 2 and 4 show Artist full width. Stored
     lengths stay in `c.songs` and return with layout 3. The Artist box is still drawn at layout 3
     (its cap is `null` there), which prints no artist.
+
+## Inline editing (plans/inline-edit-all.md, Grunge layout 1, 2026-10-21)
+
+`songs.length` is *not drawn* at Lime's and Grunge's layout 1 (only layout 3 prints a song's length): ledgered as
+`<Template>.0.repertoire.songs.length` in `INLINE_OFF`, one row per template, and the song's `title` / `artist` are
+hit at 1440 and (the first six songs) at 768. Rows past the pager are *paged*, not a gap.

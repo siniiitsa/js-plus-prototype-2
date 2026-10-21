@@ -6119,10 +6119,19 @@ function placeBox(node, root, rel, part) {
 }
 
 // The range over `text` inside `node` (case-insensitive, the first occurrence),
-// or over all of the node's text with none. Null when the text is not there.
+// or over all of the node's text with none (first text to last, so a pill's arrow
+// after its label adds no line rectangle). Null when the text is not there.
 function textRange(node, text) {
   const range = document.createRange()
-  if (text == null) { range.selectNodeContents(node); return range }
+  if (text == null) {
+    const walker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT)
+    let first = null, last = null
+    for (let t = walker.nextNode(); t; t = walker.nextNode()) if (t.data.trim()) { first ??= t; last = t }
+    if (!first) { range.selectNodeContents(node); return range }
+    range.setStart(first, 0)
+    range.setEnd(last, last.data.length)
+    return range
+  }
   const walker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT)
   const parts = []
   let all = ''

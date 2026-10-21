@@ -2864,6 +2864,8 @@ export const INLINE_OFF = {
   'Retro.0.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
   'Lime.0.repertoire.songs.length': 'not drawn: only layout 3 prints a song’s length',
   'Lime.0.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
+  'Grunge.0.repertoire.songs.length': 'not drawn: only layout 3 prints a song’s length',
+  'Grunge.0.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
   '*.*.pricing.tiers.tags': 'derived value: the filter chips are the distinct tags of every package',
   '*.*.repertoire.songs.tags': 'derived value: the filter chips are the distinct tags of every song',
 }

@@ -22,7 +22,8 @@ section starts the edit (the first click still only selects); no phones, where t
   on the two (inert attributes, no behaviour), in each of the gallery's two layout-1 blocks (Retro's, and the Lime
   tree's that Lime, Grunge, Editorial and Pop share, Lime pass 1); `INLINE_MARKED` (`data.js`) names the groups that
   need one. Add no more where text can decide.
-- **Where the box goes.** `inlineBox` uses the union of the node's text-line rectangles (a `Range`), not its box,
+- **Where the box goes.** `inlineBox` uses the union of the node's text-line rectangles (a `Range` from its first text to its last, so an
+  icon after a label adds none, Grunge pass 2), not its box,
   and moves the top by half of `line-height` minus the font's content height. Under a tilt (`tiltChain`: the bio's
   polaroid, pricing's 1–3° cards) `placeBox` measures the text untilted (`untilted`), composes each ancestor's
   matrix about its origin and gives the textarea that `matrix(...)`, so the box lies on the text. Vertical writing

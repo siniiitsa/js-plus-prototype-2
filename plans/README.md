@@ -35,6 +35,7 @@ plans/
     retest-qa-fixes.md
   grunge/
     layout-1.md
+    inline-layout-1.md  ← inline editing, pass 2 of plans/inline-edit-all.md
     layout-2.md
     layout-3.md
     layout-4.md

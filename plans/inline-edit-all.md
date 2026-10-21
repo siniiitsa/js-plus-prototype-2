@@ -192,7 +192,7 @@ Retro, Lime, Grunge, Editorial, Pop (build order).
 | # | Page | Plan file | Expect | Status |
 |---|---|---|---|---|
 | 1 | Lime L1 | `lime/inline-layout-1.md` | the shared `s.v0` DOM: mostly free | **done 2026-10-21**: `--check` PASS (156 / 143 hit), two marks added in the Lime tree's gallery, two `Lime.0` ledger rows |
-| 2 | Grunge L1 | `grunge/inline-layout-1.md` | tape and rotation: `placeBox` | |
+| 2 | Grunge L1 | `grunge/inline-layout-1.md` | tape and rotation: `placeBox` | **done 2026-10-21**: `--check` PASS (157 / 144 hit), two `Grunge.0` ledger rows, one generic fix (`textRange` no longer spans a pill's arrow); Retro, Lime and Grunge L1 re-run, all PASS |
 | 3 | Editorial L1 | `editorial/inline-layout-1.md` | `cased()`, Gloock one weight, per-design schemes | |
 | 4 | Pop L1 | `pop/inline-layout-1.md` | stickers (`pointer-events`), 80% placeholders | |
 | 5 | Retro L2 | `retro/inline-layout-2.md` | media fan (overlapping cards), tile rails | |
