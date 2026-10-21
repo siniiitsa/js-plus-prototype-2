@@ -281,5 +281,5 @@ another `notes/` file.
 ## Inline editing (plans/inline-edit-all.md, Grunge layout 1, 2026-10-21)
 
 `prompt` (*Pick a date to enquire*) prints only while no day is cued and the canvas opens with one cued, so it is
-*not drawn*: ledgered as `<Template>.0.calendar.prompt` in `INLINE_OFF`, per template, as Retro's, Lime's and Grunge's
-are. Its `heading` and the slot's `time` are hit at both widths; no other calendar field is drawn at layout 1.
+*not drawn*: ledgered as `<Template>.0.calendar.prompt` in `INLINE_OFF`, per template, as Retro's, Lime's, Grunge's,
+Editorial's and Pop's are. Its `heading` and the slot's `time` are hit at both widths; no other calendar field is drawn at layout 1.

@@ -62,6 +62,6 @@ songs, the sets and the heading's fallbacks are in `notes/list-editors.md` (`Son
 
 ## Inline editing (plans/inline-edit-all.md, Grunge layout 1, 2026-10-21)
 
-`songs.length` is *not drawn* at Lime's and Grunge's layout 1 (only layout 3 prints a song's length): ledgered as
+`songs.length` is *not drawn* at layout 1 of Lime, Grunge, Editorial and Pop (only layout 3 prints a song's length): ledgered as
 `<Template>.0.repertoire.songs.length` in `INLINE_OFF`, one row per template, and the song's `title` / `artist` are
 hit at 1440 and (the first six songs) at 768. Rows past the pager are *paged*, not a gap.

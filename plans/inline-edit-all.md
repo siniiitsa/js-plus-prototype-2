@@ -194,7 +194,7 @@ Retro, Lime, Grunge, Editorial, Pop (build order).
 | 1 | Lime L1 | `lime/inline-layout-1.md` | the shared `s.v0` DOM: mostly free | **done 2026-10-21**: `--check` PASS (156 / 143 hit), two marks added in the Lime tree's gallery, two `Lime.0` ledger rows |
 | 2 | Grunge L1 | `grunge/inline-layout-1.md` | tape and rotation: `placeBox` | **done 2026-10-21**: `--check` PASS (157 / 144 hit), two `Grunge.0` ledger rows, one generic fix (`textRange` no longer spans a pill's arrow); Retro, Lime and Grunge L1 re-run, all PASS |
 | 3 | Editorial L1 | `editorial/inline-layout-1.md` | `cased()`, Gloock one weight, per-design schemes | **done 2026-10-21**: `--check` PASS (155 / 142 hit), no code change, two `Editorial.0` ledger rows; `text-transform` and Gloock's 400 hold in the box |
-| 4 | Pop L1 | `pop/inline-layout-1.md` | stickers (`pointer-events`), 80% placeholders | |
+| 4 | Pop L1 | `pop/inline-layout-1.md` | stickers (`pointer-events`), 80% placeholders | **done 2026-10-21**: `--check` PASS (155 / 142 hit), no code change, two `Pop.0` ledger rows; the tie-break tested on real ink (title ink never under the small type's box); an over-cap title kills the header's clicks (open, in the pass file) |
 | 5 | Retro L2 | `retro/inline-layout-2.md` | media fan (overlapping cards), tile rails | |
 | 6 | Lime L2 | `lime/inline-layout-2.md` | | |
 | 7 | Grunge L2 | `grunge/inline-layout-2.md` | | |
@@ -270,7 +270,8 @@ Branch · probe command lines · baseline (hits / WRONG / NOT-RESTORED / MISSING
 - **Width-split fields:** `fieldShown` does not know widths (`railLabel` is tablet-only at layout 2), so the probe
   takes the union of desktop and tablet; a field neither width draws is in the ledger as "390 only".
 - **The clamp:** text over its cap is whole in the box and clamped on the page. Known and accepted; the box does
-  not shrink a typed value.
+  not shrink a typed value. A clamped word is no slot, and where it stands over another field's copy (Pop's layout-1
+  title over its kicker and location) it shadows that copy too: see pass 4's file.
 - **`sectionVm` mirrors:** a repeater's seeds must match `EditPanel`'s resolver exactly (list-editors rule). Each
   new repeater case is a pair-edit; the probe's Escape-restore check catches a mismatch as NOT-RESTORED.
 
