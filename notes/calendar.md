@@ -291,3 +291,8 @@ Layout 2's slot list is the first page whose `slots` repeater is proved: `kind` 
 `● Availability`, prints it too: `availLabel` declares its line in `INLINE_LINES` (`'{} ↓'`, the arrow is the markup's),
 which leaves the heading the one bare node of its words. `dateLabel` (`Date ↓`) is an `INLINE_PART` row. `prompt` is
 ledgered as `Retro.1.calendar.prompt`, as at layout 1.
+
+## Inline editing (plans/inline-edit-all.md, Lime layout 2, 2026-10-21)
+
+Retro layout 2's rows carry over (`availLabel`'s `'{} ↓'` line, `dateLabel` a part row); `slots` `kind` / `price` ×4 hit. `prompt` is
+ledgered as `Lime.1.calendar.prompt`.

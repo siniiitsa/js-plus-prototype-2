@@ -148,3 +148,8 @@ prints every track again, so a title has two nodes for one slot (`here.length ==
 **`tracks.sub` is ledgered** (`Retro.1.media.tracks.sub`, a derived value): the seeded page prints the release and the
 running time as two nodes (`rel`, `dur`), and the whole line only once the list is stored, when `rel` and `dur` both
 become the row's subtitle. `INLINE_OFF` is state-blind, so the cell stays in the panel even then.
+
+## Inline editing (plans/inline-edit-all.md, Lime layout 2, 2026-10-21)
+
+The Retro layout-2 rows (`*.1.media.…`) carry over unchanged: the fan, the list rows, `chipLabel`, `listLabel`, `totalLabel` and
+`countLabel` all hit on Lime's page. `tracks.sub` is ledgered again, `Lime.1.media.tracks.sub`, for the same seeded shape.

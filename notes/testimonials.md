@@ -158,3 +158,8 @@ another `notes/` file.
 The initial tiles in the rail print `mark`, two initials of a `who`, not a field, so they are no slots; the reviews after the
 first are *paged* (the canvas draws one), and `quotes.when` has no seat at layout 2, so it is ledgered
 (`Retro.1.testimonials.quotes.when`). `kicker` (`✎ What clients say`) is an `INLINE_PART` row.
+
+## Inline editing (plans/inline-edit-all.md, Lime layout 2, 2026-10-21)
+
+`quotes.when` is drawn only by the `s.v0` branch, so layout 2 has no seat for it at any template: `Lime.1.testimonials.quotes.when`.
+`kicker` is the `*.1.` part row, as at Retro.

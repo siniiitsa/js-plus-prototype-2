@@ -247,3 +247,9 @@ The sticky card's box follows the card as the canvas scrolls (`EncoreBuilder` re
 measured at 1440 and 768, 60 and 120 px under a stuck card). The card's boxes print the *label*, so
 `fields.placeholder` is ledgered (`Retro.1.form.fields.placeholder`): it prints only once the label is emptied, and the
 ledger takes it out of the canvas whatever the label holds. `bookings` (`★★★★★  42 bookings`) is an `INLINE_PART` row.
+
+## Inline editing (plans/inline-edit-all.md, Lime layout 2, 2026-10-21)
+
+Lime's layout-2 card prints the uppercased label in each box and no placeholder (checked in the card's HTML), so
+`Lime.1.form.fields.placeholder` is ledgered as Retro's is. The sticky card's box tracks a stuck card at 1440 and 768 (within 1 px at 0, +60
+and +120 px of scroll). `bookings` is the `*.1.` part row.

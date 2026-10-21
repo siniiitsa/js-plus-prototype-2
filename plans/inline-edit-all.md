@@ -196,7 +196,7 @@ Retro, Lime, Grunge, Editorial, Pop (build order).
 | 3 | Editorial L1 | `editorial/inline-layout-1.md` | `cased()`, Gloock one weight, per-design schemes | **done 2026-10-21**: `--check` PASS (155 / 142 hit), no code change, two `Editorial.0` ledger rows; `text-transform` and Gloock's 400 hold in the box |
 | 4 | Pop L1 | `pop/inline-layout-1.md` | stickers (`pointer-events`), 80% placeholders | **done 2026-10-21**: `--check` PASS (155 / 142 hit), no code change, two `Pop.0` ledger rows; the tie-break tested on real ink (title ink never under the small type's box); an over-cap title kills the header's clicks (open, in the pass file) |
 | 5 | Retro L2 | `retro/inline-layout-2.md` | media fan (overlapping cards), tile rails | **done 2026-10-21**: `--check` PASS (156 / 157 hit); five generic fixes (`INLINE_LINES`, claims and ranks for exact collisions, the box follows a sticky card, vertical type, the gallery marks scoped to layout 1), 11 part rows, 7 ledger rows; Retro, Lime, Grunge, Editorial and Pop L1 re-run, all PASS |
-| 6 | Lime L2 | `lime/inline-layout-2.md` | | |
+| 6 | Lime L2 | `lime/inline-layout-2.md` | the `*.1.` rows carry over; Lime's own header | **done 2026-10-21**: `--check` PASS (155 / 156 hit), no code change, seven `Lime.1` ledger rows; the pass-5 part and line rows proved on Lime; no earlier page re-run |
 | 7 | Grunge L2 | `grunge/inline-layout-2.md` | | |
 | 8 | Editorial L2 | `editorial/inline-layout-2.md` | `[desktop, tablet, mobile]` seats | |
 | 9 | Pop L2 | `pop/inline-layout-2.md` | lime cards on white, `onScheme` nodes | |
