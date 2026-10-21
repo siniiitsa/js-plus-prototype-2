@@ -2870,18 +2870,58 @@ export const INLINE_OFF = {
   'Editorial.0.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
   'Pop.0.repertoire.songs.length': 'not drawn: only layout 3 prints a song’s length',
   'Pop.0.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
+  'Retro.1.header.kicker': 'not drawn: the layout-2 header prints no kicker (a shared identity key; the bio’s role line and the form print it)',
+  'Retro.1.header.tags': 'not drawn: the layout-2 header prints no tag chips (a shared identity key; the bio prints them)',
+  'Retro.1.repertoire.songs.length': 'not drawn: only layout 3 prints a song’s length',
+  'Retro.1.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
+  'Retro.1.form.fields.placeholder': 'not drawn: the card’s boxes print the label, and a placeholder only once the label is emptied',
+  'Retro.1.testimonials.quotes.when': 'not drawn: layout 2’s card has no seat for it',
+  'Retro.1.media.tracks.sub': 'derived value: the seeded page prints the release and the running time as two nodes, and the whole line only once the list is stored',
   '*.*.pricing.tiers.tags': 'derived value: the filter chips are the distinct tags of every package',
   '*.*.repertoire.songs.tags': 'derived value: the filter chips are the distinct tags of every song',
 }
+// The two marks stand in layout 1's gallery blocks alone; layout 2 draws its
+// `railLabel` once (at 768) and text can tell it from the heading.
 export const INLINE_MARKED = {
-  'gallery.railLabel': true,
-  'gallery.sourceLabel': true,
+  '*.0.gallery.railLabel': true,
+  '*.0.gallery.sourceLabel': true,
 }
 export const INLINE_PART = {
   'media.countLabel': true,
   'map.listLabel': true,
   'calendar.time': true,
   'repertoire.songs.artist': true,
+  // Layout 2 prints these inside a longer line: a bullet, an arrow or a count
+  // beside the words (`● Popular`, `5 Featured / 5 Max`, `[ PRICING ]`,
+  // `32 reviews · 4.9 ★`, `Expand view→`). The words are unique on the page,
+  // so the box narrows to them and no frame is needed.
+  '*.1.header.availability': true,
+  '*.1.media.listLabel': true,
+  '*.1.media.totalLabel': true,
+  '*.1.pricing.kicker': true,
+  '*.1.pricing.reviews': true,
+  '*.1.pricing.rating': true,
+  '*.1.calendar.dateLabel': true,
+  '*.1.map.terms': true,
+  '*.1.map.expand': true,
+  '*.1.form.bookings': true,
+  '*.1.testimonials.kicker': true,
+}
+// INLINE_LINES names the forms a slot's copy is printed in when the words alone
+// cannot tell its node from another field's: each template is one line as the
+// page draws it (spaces and case do not matter), `{}` the slot's own copy and
+// `{cell}` a sibling cell of its row. A slot with a template is edited from a
+// node that prints exactly that line, on its own words, and a line another
+// field's node prints is not a peer of this slot's words. Scoped like the rest.
+export const INLINE_LINES = {
+  '*.1.calendar.availLabel': ['{} ↓'],
+  '*.1.media.chipLabel': ['● {}'],
+  // The map's rows 1-4 print `City · Mon · 21:00`; the featured gig (row 0) lifts
+  // its date and time into the travel card's chip, `● Jul 12 · 22:00`.
+  '*.1.map.gigs.city': ['{city} · {month} · {time}'],
+  '*.1.map.gigs.month': ['{city} · {month} · {time}', '● {month} {day} · {time}'],
+  '*.1.map.gigs.day': ['● {month} {day} · {time}'],
+  '*.1.map.gigs.time': ['{city} · {month} · {time}', '● {month} {day} · {time}'],
 }
 export function inlineRule(table, themeName, design, group) {
   const parts = String(group).split('.')

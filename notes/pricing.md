@@ -236,3 +236,9 @@ another `notes/` file.
   - **The leant cards' lines are counted upright** (`scripts/limits.mjs`): Retro's and Pop's
     layout-1 decks and Pop's layout-2 plan card turn, and the probe sets every turned ancestor
     upright while it counts a seat's lines.
+
+## Inline editing (plans/inline-edit-all.md, Retro layout 2, 2026-10-21)
+
+Layout 2 draws the first plan only: the other tiers' price, blurb and features are *paged* (the chip row is live-only), the
+probe's `paged` reading. `kicker` (`[ PRICING ]`), `reviews` and `rating` (`32 reviews · 4.9 ★`) are `INLINE_PART` rows: the
+brackets, the dot and the star are the markup's, the words unique on the page.

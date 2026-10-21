@@ -224,3 +224,6 @@ carries an inert `data-inline` mark (`sourceLabel`, `railLabel`; `INLINE_MARKED`
 blocks: Retro's, and the Lime tree's shared by Lime, Grunge, Editorial and Pop (the block's `eyebrow` / `pt` helpers
 take a `mark`; the row label's rule is Retro's, `g.on ? 'sourceLabel' : undefined`). The row label prints at desktop
 alone, so at 768 it is *not drawn* and needs no ledger row (the probe's union rule). No other gallery key is marked.
+
+The two marks are scoped to layout 1 (`*.0.gallery.…` in `INLINE_MARKED`; Retro layout 2, 2026-10-21): layout 2 draws
+`railLabel` once, at 768, where text tells it from the heading, and no `data-inline` stands in its block.

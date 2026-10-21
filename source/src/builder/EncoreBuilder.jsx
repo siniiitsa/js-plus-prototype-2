@@ -55,7 +55,7 @@ import {
   PRICING_INTRO_3, FORM_SUB_4, CAL_HEADING_1, formBtnSeed, CAL_TYPES, PRICING_ROW_CTA, PRICING_ROW_CTA_3, MAP_SPAN, MAP_STATS_4, STAT_KEYS,FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
   parseDate, isoDate, calStart, headerIdentity, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav, navModeDefault,
-  catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldSeed, HEADING_3, HEADING_4, fieldReach, fieldShown, INLINE_OFF, INLINE_MARKED, INLINE_PART, inlineRule, fieldCap, colCaps, identityCap, sealCap, capExcess, clampCapped, clampContent, clampIdentity, copyrightOf, formHeading3, extUrl, youtubeEmbed, urlProblem, emailProblem, emailAddr, songTags, repChips,
+  catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldSeed, HEADING_3, HEADING_4, fieldReach, fieldShown, INLINE_OFF, INLINE_MARKED, INLINE_PART, INLINE_LINES, inlineRule, fieldCap, colCaps, identityCap, sealCap, capExcess, clampCapped, clampContent, clampIdentity, copyrightOf, formHeading3, extUrl, youtubeEmbed, urlProblem, emailProblem, emailAddr, songTags, repChips,
   tierFeats, priceParts, blankRow, SONG_KEYS, repSetsOf, repSetLine, TRACK_KEYS, GIG_KEYS, gigWeekday, gigStatus, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
   layoutCount, designCount, pageLayout, pageOrder, pageRows, COLUMN_SPLIT, bebasEms, antonEms, gloockEms, titanEms,
   headerLayout, headerLayoutLabel, setupHeaderCount,
@@ -5972,8 +5972,20 @@ export function inlineSlots(sec, themeName, artistName, all = false) {
     if (!slot.text.trim()) return
     const off = inlineRule(INLINE_OFF, themeName, design, group)
     if (off && !all) return
+    // The forms the page prints this copy in (`INLINE_LINES`, or the pair's line):
+    // each template with its `{}` and its row's `{cell}`s filled in; one with a
+    // blank cell is dropped, since the page drops the separator with it.
+    const tpl = inlineRule(INLINE_LINES, themeName, design, group)
+    const lines = tpl
+      ? tpl.map((t) => {
+        let blank = false
+        const line = t.replace(/\{(\w*)\}/g, (_, c) => { const v = c ? String(slot.cells?.[c] ?? '').trim() : slot.text; if (!v) blank = true; return v })
+        return blank ? null : line
+      }).filter(Boolean)
+      : slot.line ? [slot.line] : []
+    const { cells, ...rest } = slot
     out.push({
-      ...slot, group, id: slotId(sec, slot), off: off ?? null,
+      ...rest, group, id: slotId(sec, slot), off: off ?? null, lines,
       part: !!inlineRule(INLINE_PART, themeName, design, group) || !!slot.line,
       marked: !!inlineRule(INLINE_MARKED, themeName, design, group),
     })
@@ -5998,10 +6010,11 @@ export function inlineSlots(sec, themeName, artistName, all = false) {
           // A price is drawn as three nodes, the lead (£), the numeral and the tail.
           const pp = priceParts(raw)
           for (const sub of ['lead', 'amount', 'tail']) add({ f, k, row: r, col, sub, text: pp[sub] })
-        } else if (pair?.includes(col) && pair.every((p) => String(row[p] ?? '').trim())) {
+        } else if (pair?.includes(col) && pair.every((p) => String(row[p] ?? '').trim())
+          && !inlineRule(INLINE_LINES, themeName, design, `${sec.cat}.${k}.${col}`)) {
           // The page prints the pair as one line, `Manchester · 22:00`.
           add({ f, k, row: r, col, text: raw, line: pair.map((p) => String(row[p]).trim()).join(' · ') })
-        } else add({ f, k, row: r, col, text: raw })
+        } else add({ f, k, row: r, col, text: raw, cells: row })
       }
     })
   }
@@ -6066,6 +6079,13 @@ function slotCap(sec, slot, sections, themeName) {
 // transformed elements from `node` up to `root` (innermost first), or null for
 // type set vertically, which a box cannot follow.
 function tiltChain(node, root) {
+  // Vertical type anywhere inside the node counts too: a wrapper that prints the
+  // same words as its vertical span (the header polaroid's edge line) would
+  // otherwise be boxed as horizontal text.
+  for (const el of [node, ...node.querySelectorAll('*')]) {
+    const wm = getComputedStyle(el).writingMode
+    if (wm && wm !== 'horizontal-tb') return null
+  }
   const chain = []
   for (let el = node; el && el !== root.parentElement; el = el.parentElement) {
     const cs = getComputedStyle(el)
@@ -6190,6 +6210,25 @@ function inlineFieldAt(sec, wrap, target, pt, themeName, artistName) {
   const seen = new Set()
   let exact = null
   const parts = slots.filter((sl) => sl.part)
+  const framed = slots.filter((sl) => sl.lines.length)
+  // A slot whose line the page draws is spoken for: the nodes that print its bare
+  // copy (`Manchester` over a list of rows) belong to the fields left. Per line
+  // and per field, the first rows are claimed as many times as nodes print it.
+  let claims = null
+  const claimed = (sl) => {
+    if (!sl.lines.length) return false
+    if (!claims) {
+      claims = new Set()
+      const byLine = new Map()
+      for (const x of framed) for (const l of x.lines) { const q = squash(l); (byLine.get(q) ?? byLine.set(q, []).get(q)).push(x) }
+      for (const [q, xs] of byLine) {
+        const m = minimalPeers(root, (e) => squash(e.textContent) === q).length
+        const seenIn = new Map()
+        for (const x of xs) { const c = seenIn.get(x.group) ?? 0; if (c < m) claims.add(x); seenIn.set(x.group, c + 1) }
+      }
+    }
+    return claims.has(sl)
+  }
 
   const from = (start) => {
     // The header's seal: the ring's text is the name twice over, and it turns, so
@@ -6223,10 +6262,29 @@ function inlineFieldAt(sec, wrap, target, pt, themeName, artistName) {
       const tc = a.textContent
       const sq = squash(tc)
       if (!sq) continue
-      const here = exact.get(sq)
-      if (here && a.getBoundingClientRect().width) {
-        if (new Set(here.map((x) => x.group)).size > 1) continue
-        const peers = minimalPeers(root, (e) => squash(e.textContent) === sq)
+      let here = exact.get(sq)?.filter((x) => !claimed(x))
+      if (here?.length && a.getBoundingClientRect().width) {
+        let pool = null
+        if (new Set(here.map((x) => x.group)).size > 1) {
+          // Two fields print the same words. Settled by what text can still say:
+          // the copy as typed (`120 mi` is the stat, `120mi` the ring), else the
+          // heading or title standing on the largest type among the nodes, as the
+          // panel's focus box ranks them (JP-146).
+          const lit = here.filter((x) => String(x.text).trim() === tc.trim())
+          if (lit.length && new Set(lit.map((x) => x.group)).size === 1) here = lit
+          else {
+            const top = here.filter((x) => /\.(heading|title)$/.test(x.group))
+            if (top.length && new Set(top.map((x) => x.group)).size === 1) {
+              const all = minimalPeers(root, (e) => squash(e.textContent) === sq)
+              const size = (e) => parseFloat(getComputedStyle(e).fontSize)
+              const big = all.reduce((m, e) => (size(e) > size(m) ? e : m), all[0])
+              pool = (e) => (e === big) === (a === big)
+              here = a === big ? top : here.filter((x) => !top.includes(x))
+            }
+          }
+          if (new Set(here.map((x) => x.group)).size > 1) continue
+        }
+        const peers = minimalPeers(root, (e) => squash(e.textContent) === sq).filter((e) => !pool || pool(e))
         const n = peers.indexOf(a)
         let slot = here.length === 1 ? here[0] : peers.length === here.length && n >= 0 ? here[n] : null
         if (!slot && n >= 0 && peers.length < here.length) {
@@ -6240,20 +6298,23 @@ function inlineFieldAt(sec, wrap, target, pt, themeName, artistName) {
       }
       // A slot inside a longer line: found by the line it is printed in (`line`)
       // or by its own words, and chosen by the click being on them.
-      const cands = parts.filter((sl) => (sl.line ? squash(sl.line) === sq
-        : tc.toLowerCase().includes(String(sl.text).toLowerCase()) && ![...a.children].some((c) => c.textContent.toLowerCase().includes(String(sl.text).toLowerCase()))))
+      const printsLine = (x) => x.lines.some((l) => squash(l) === sq)
+      const cands = [...framed.filter(printsLine), ...parts.filter((sl) => !sl.lines.length
+        && tc.toLowerCase().includes(String(sl.text).toLowerCase()) && ![...a.children].some((c) => c.textContent.toLowerCase().includes(String(sl.text).toLowerCase())))]
       for (const slot of cands) {
         const low = String(slot.text).toLowerCase()
-        const same = parts.filter((x) => x.group === slot.group && (slot.line ? squash(x.line ?? '') === sq : squash(x.text) === squash(slot.text)))
-        // A node that prints exactly another field's copy is that field's, not a
-        // peer of this one: an artist `Queen` is not "Dancing Queen" (a title).
-        const others = new Set(slots.filter((x) => !x.part && x.group !== slot.group).map((x) => squash(x.text)))
-        const peers = slot.line
+        const lined = slot.lines.length > 0
+        const same = lined ? slots.filter((x) => x.group === slot.group && printsLine(x)) : parts.filter((x) => x.group === slot.group && squash(x.text) === squash(slot.text))
+        // A node that prints exactly another field's copy, or its line, is that
+        // field's, not a peer of this one: an artist `Queen` is not "Dancing Queen"
+        // (a title), nor `● Featured` the counter's `Featured`.
+        const others = new Set(slots.filter((x) => x.group !== slot.group).flatMap((x) => [...(x.part ? [] : [squash(x.text)]), ...x.lines.map(squash)]))
+        const peers = lined
           ? minimalPeers(root, (e) => squash(e.textContent) === sq)
           : minimalPeers(root, (e) => e.textContent.toLowerCase().includes(low)).filter((e) => !others.has(squash(e.textContent)))
         const n = peers.indexOf(a)
         let mine = same[n]
-        if (n >= 0 && peers.length < same.length && !slot.line) {
+        if (n >= 0 && peers.length < same.length && !lined) {
           const col = parts.filter((x) => x.group === slot.group)
           const drawn = minimalPeers(root, (e) => col.some((x) => e.textContent.toLowerCase().includes(String(x.text).toLowerCase())))
             .filter((e) => !others.has(squash(e.textContent)))
@@ -6578,14 +6639,19 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
   const startInline = (sec, wrap, hit) => {
     const w = wrap.getBoundingClientRect()
     const wide = hit.text.length > 44
-    const b = hit.float ? floatBox(hit.node, w, wide) : placeBox(hit.node, wrap.firstElementChild, w, hit.part ? hit.text : null)
+    const words = !hit.float && (hit.part || hit.lines?.length) ? hit.text : null
+    const b = hit.float ? floatBox(hit.node, w, wide) : placeBox(hit.node, wrap.firstElementChild, w, words)
     if (!b) return false
-    const cs = getComputedStyle(hit.node)
-    const tone = hit.node.firstElementChild ? getComputedStyle(hit.node.firstElementChild).color : cs.color
+    // The box is typed in the face the words are drawn in: for copy inside a longer
+    // line that is the element holding them (a month in its own uppercase span),
+    // not the line's.
+    const styled = (words && textRange(hit.node, words)?.startContainer.parentElement) || hit.node
+    const cs = getComputedStyle(styled)
+    const tone = styled.firstElementChild ? getComputedStyle(styled.firstElementChild).color : cs.color
     inlineNode.current = hit.node
     setFocusF({ sid: sec.id, text: hit.text, key: hit.k })
     setInline({
-      sid: sec.id, id: hit.id ?? slotId(sec, hit), cat: sec.cat, f: hit.f, k: hit.k, row: hit.row, col: hit.col, item: hit.item, part: hit.part, float: hit.float,
+      sid: sec.id, id: hit.id ?? slotId(sec, hit), cat: sec.cat, f: hit.f, k: hit.k, row: hit.row, col: hit.col, item: hit.item, part: hit.part || !!hit.lines?.length, float: hit.float,
       label: hit.row != null ? `${hit.f.l}: ${hit.col}` : hit.f.l, raw: sec.c[hit.k], nl: !hit.float && /^pre/.test(cs.whiteSpace),
       cap: slotCap(sec, hit, sections, T.name),
       x: b.x, y: b.y, w: b.w, h: b.h, tf: b.tf, caret: tone,
@@ -6609,15 +6675,18 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
     wrap.style.cursor = inlineFieldAt(sec, wrap, e.target, { x: e.clientX, y: e.clientY }, T.name, artistName) ? 'text' : ''
   }
 
-  // The box follows the copy as it is typed, wraps, or changes width.
-  useLayoutEffect(() => {
+  // The box follows the copy as it is typed, wraps, or changes width, and as the
+  // canvas scrolls under a sticky card (the form's layout-2 card, the composed
+  // row's cell), which moves inside its section while the section's origin does not.
+  const refit = () => {
     const wrap = focusF && canvasRef.current?.querySelector(`[data-sid="${focusF.sid}"]`)
     const mine = inlineNode.current?.isConnected && wrap?.contains(inlineNode.current) ? inlineNode.current : null
     const node = wrap && focusF.text ? mine ?? findFieldNode(wrap.firstElementChild, focusF.text, focusF.key) : null
     if (!node) { setFocusBox(null); return }
     const w = wrap.getBoundingClientRect()
     const r = fieldRect(node)
-    setFocusBox({ sid: focusF.sid, x: r.left - w.left, y: r.top - w.top, w: r.width, h: r.height })
+    const next = { sid: focusF.sid, x: r.left - w.left, y: r.top - w.top, w: r.width, h: r.height }
+    setFocusBox((p) => (p && p.sid === next.sid && p.x === next.x && p.y === next.y && p.w === next.w && p.h === next.h ? p : next))
     // The inline editor sits on the same node, and grows and shrinks with it. A
     // floating field stays where it opened.
     setInline((p) => {
@@ -6625,7 +6694,18 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
       const b = placeBox(node, wrap.firstElementChild, w, p.part ? focusF.text : null)
       return !b || (p.x === b.x && p.y === b.y && p.w === b.w && p.h === b.h && p.tf === b.tf) ? p : { ...p, x: b.x, y: b.y, w: b.w, h: b.h, tf: b.tf }
     })
-  }, [focusF, st.sections, device, st.theme])
+  }
+  useLayoutEffect(refit, [focusF, st.sections, device, st.theme])
+  const refitRef = useRef(refit)
+  refitRef.current = refit
+  useEffect(() => {
+    const sc = canvasRef.current
+    if (!focusF || !sc) return undefined
+    let raf = 0
+    const on = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(() => refitRef.current()) }
+    sc.addEventListener('scroll', on, { passive: true })
+    return () => { sc.removeEventListener('scroll', on); cancelAnimationFrame(raf) }
+  }, [focusF])
 
   // A box belongs to the section whose panel is open.
   useEffect(() => { if (focusF && focusF.sid !== st.selectedId) setFocusF(null) }, [focusF, st.selectedId])

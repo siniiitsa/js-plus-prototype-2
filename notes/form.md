@@ -240,3 +240,10 @@ another `notes/` file.
     apart, and a long price drops the unit under it.
   - **The mailto heads an answer with the label as the page prints it**, clamped at a layout that
     shortens it, since `formMailto` reads the clamped `vm.formFields`. Left for the sweep.
+
+## Inline editing (plans/inline-edit-all.md, Retro layout 2, 2026-10-21)
+
+The sticky card's box follows the card as the canvas scrolls (`EncoreBuilder` re-places the box on the scroller's scroll;
+measured at 1440 and 768, 60 and 120 px under a stuck card). The card's boxes print the *label*, so
+`fields.placeholder` is ledgered (`Retro.1.form.fields.placeholder`): it prints only once the label is emptied, and the
+ledger takes it out of the canvas whatever the label holds. `bookings` (`★★★★★  42 bookings`) is an `INLINE_PART` row.

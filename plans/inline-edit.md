@@ -22,12 +22,20 @@ section starts the edit (the first click still only selects); no phones, where t
   on the two (inert attributes, no behaviour), in each of the gallery's two layout-1 blocks (Retro's, and the Lime
   tree's that Lime, Grunge, Editorial and Pop share, Lime pass 1); `INLINE_MARKED` (`data.js`) names the groups that
   need one. Add no more where text can decide.
+- **Lines.** Where the words alone cannot tell a node from another field's (a bullet, arrow or bracket the markup adds,
+  or a word two fields share), `INLINE_LINES` (`data.js`, scoped like `INLINE_PART`) names the forms the slot's copy is
+  printed in, `{}` its own words and `{cell}` a sibling cell of its row: `'● {}'`, `'{} ↓'`, `'{city} · {month} · {time}'`.
+  A node that prints exactly one is the slot's, edited on its words; a node that prints exactly another field's line is not
+  a peer of this one's words. Where the exact copy stands in several fields at once, a slot whose line is drawn is
+  *claimed* (the bare nodes go to the fields left), then the copy as typed decides, then the heading or title on the
+  largest type. Retro layout 2 (`plans/retro/inline-layout-2.md`) is where this was built.
 - **Where the box goes.** `inlineBox` uses the union of the node's text-line rectangles (a `Range` from its first text to its last, so an
   icon after a label adds none, Grunge pass 2), not its box,
   and moves the top by half of `line-height` minus the font's content height. Under a tilt (`tiltChain`: the bio's
   polaroid, pricing's 1–3° cards) `placeBox` measures the text untilted (`untilted`), composes each ancestor's
   matrix about its origin and gives the textarea that `matrix(...)`, so the box lies on the text. Vertical writing
-  is left to the panel.
+  is left to the panel, in the node or anywhere inside it. The box is re-placed as the canvas scrolls, so it keeps to a
+  sticky card.
 - **The box.** `InlineEditor` is a `<textarea>` with the node's computed face, **its type transparent and its
   caret visible**; the page keeps drawing the copy, so nothing doubles. Selects all on open. The header seal's
   `badgeText` is the exception: the ring is one rotating `<textPath>`, so it opens a visible floating box

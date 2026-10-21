@@ -134,3 +134,17 @@ another `notes/` file.
   - **`countLabel` and `chipLabel` share the seed *Featured*.** The probe renames a sibling field
     whose seed prints the same string (`twinsOf()` in `scripts/limits.mjs`), or the reference
     seats both and the layout-2 counter reads 1.
+
+## Inline editing (plans/inline-edit-all.md, Retro layout 2, 2026-10-21)
+
+Layout 2 prints the list label, the fan's chip and the counter's words inside decoration: `● Popular`, `● Featured`,
+`5 Featured / 5 Max`. `listLabel` and `totalLabel` are `INLINE_PART` rows (`*.1.media.…`, their words are unique on
+the page); `countLabel` already was. **`chipLabel` and `countLabel` both read *Featured*** and sit in two nodes, so the chip
+declares its line in `INLINE_LINES` (`'● {}'`): a node that prints exactly another field's line is not a peer of the
+counter's words, and the counter's click settles on the words it is near. The fan is edited card by card: the topmost
+card's title opens its own box, a card behind it opens by the part of its title still in view (the box is the title's
+whole line and may run under the front card), and the box takes each card's tilt through `placeBox`. The list under it
+prints every track again, so a title has two nodes for one slot (`here.length === 1`).
+**`tracks.sub` is ledgered** (`Retro.1.media.tracks.sub`, a derived value): the seeded page prints the release and the
+running time as two nodes (`rel`, `dur`), and the whole line only once the list is stored, when `rel` and `dur` both
+become the row's subtitle. `INLINE_OFF` is state-blind, so the cell stays in the panel even then.

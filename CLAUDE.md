@@ -189,6 +189,11 @@ mutated through a single `patch()` helper.
   (a seal over a small-print line opened the line), so only slots compete. Where a pager or carousel draws fewer
   nodes than there are slots with the same copy, the nth node is the nth slot only if what is drawn of that column
   reads as the head of the slots (`prefixSlot`).
+  **Where the words are not enough, `INLINE_LINES` names the forms the copy is printed in** (`'● {}'`, `'{} ↓'`, a gig's
+  `'{city} · {month} · {time}'`; scoped like `INLINE_PART`, built in `plans/retro/inline-layout-2.md`): a node that prints
+  exactly one is the slot's, and exact copy standing in several fields is settled by claims (a slot whose line is drawn
+  is spoken for), then the copy as typed, then the heading on the largest type. The box is re-placed on the canvas's
+  scroll, so it keeps to a sticky card; vertical type anywhere in a node leaves it to the panel.
   `EncoreSection` carries **two inert `data-inline` marks and no other** (the gallery's credit line and source
   label, `railLabel` and `sourceLabel`, which text cannot tell from each other or from Retro's vertical wordmark; set
   in the gallery's two layout-1 blocks, Retro's and the Lime tree's); do not add more where text can decide. Nothing in

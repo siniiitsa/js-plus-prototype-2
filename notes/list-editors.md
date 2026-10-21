@@ -183,3 +183,7 @@ is wrong there for repeated copy: row 0 (*Valerie*, tagged Weddings and Pubs) is
 row 11 (also *Valerie*) is drawn in neither of the four rows a card shows, and a click on the Pubs card's *Valerie*
 was paired with row 11 as the second of two. Found by the probe's sentinel check, open until pass 10
 (Retro layout 3) and its template twins.
+
+`media.tracks.sub` is the one repeater cell that is *derived at the seed*: the seeded page prints it as the release and the
+running time in two nodes at layout 2, so Retro layout 2 ledgers it (`Retro.1.media.tracks.sub`). Once the list is stored,
+`rel` and `dur` are both the row's subtitle. A state-aware ledger row would let the stored shape be edited inline.

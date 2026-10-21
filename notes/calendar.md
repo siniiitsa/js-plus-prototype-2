@@ -283,3 +283,11 @@ another `notes/` file.
 `prompt` (*Pick a date to enquire*) prints only while no day is cued and the canvas opens with one cued, so it is
 *not drawn*: ledgered as `<Template>.0.calendar.prompt` in `INLINE_OFF`, per template, as Retro's, Lime's, Grunge's,
 Editorial's and Pop's are. Its `heading` and the slot's `time` are hit at both widths; no other calendar field is drawn at layout 1.
+
+## Inline editing (plans/inline-edit-all.md, Retro layout 2, 2026-10-21)
+
+Layout 2's slot list is the first page whose `slots` repeater is proved: `kind` and `price` ×4 are hit and restored (the
+`after` offsets survive a rewrite). `heading` and `availLabel` both read *Availability*, and a third literal, the top bar's
+`● Availability`, prints it too: `availLabel` declares its line in `INLINE_LINES` (`'{} ↓'`, the arrow is the markup's),
+which leaves the heading the one bare node of its words. `dateLabel` (`Date ↓`) is an `INLINE_PART` row. `prompt` is
+ledgered as `Retro.1.calendar.prompt`, as at layout 1.

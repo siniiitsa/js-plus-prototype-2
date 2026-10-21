@@ -189,13 +189,13 @@ function pageHelpers() {
   window.__printed = (sid, slot, others) => {
     const root = rootOf(sid)
     if (slot.marked) { const m = root.querySelector(`[data-inline="${slot.k}"]`); return m && m.getBoundingClientRect().width > 0 ? 1 : 0 }
-    const want = squash(slot.line ?? slot.text)
+    const wants = (slot.lines ?? []).map(squash)
     const part = squash(slot.text)
     const skip = new Set(others)
     const hits = [...root.querySelectorAll('*')].filter((e) => {
       if (!e.getBoundingClientRect().width) return false
       const q = squash(e.textContent)
-      return q === want || q === part || (slot.part && q.includes(part))
+      return wants.includes(q) || q === part || (slot.part && q.includes(part))
     })
     return hits.filter((h) => !hits.some((o) => o !== h && h.contains(o)) && !(slot.part && skip.has(squash(h.textContent)))).length
   }
@@ -290,7 +290,7 @@ async function runCombo(theme, layout, width) {
         const sec = st.sections.find((x) => x.id === sid)
         const mod = await import('/src/builder/EncoreBuilder.jsx')
         const name = String(st.sections.find((x) => x.cat === 'header')?.c?.title ?? '').trim() || 'Kai Mercer'
-        return mod.inlineSlots(sec, themeName, name, true).map((s) => ({ id: s.id, k: s.k, group: s.group, text: s.text, line: s.line, part: s.part, marked: !!s.marked, off: s.off ?? null }))
+        return mod.inlineSlots(sec, themeName, name, true).map((s) => ({ id: s.id, k: s.k, group: s.group, text: s.text, lines: s.lines, part: s.part, marked: !!s.marked, off: s.off ?? null }))
       }, sec.id, info.theme)
       const byId = new Map(universe.map((u) => [u.id, u]))
       const n = await page.evaluate((sid) => window.__nodes(sid).length, sec.id)
@@ -324,7 +324,7 @@ async function runCombo(theme, layout, width) {
         // punctuation (the `·` before an artist) is beside the words, not wrong.
         const u = byId.get(ed.slot)
         const q = sq(row.text)
-        const prints = !hasWord(row.text) ? !!u : !!u && (sq(u.text).includes(q) || q.includes(sq(u.text)) || (u.line && sq(u.line).includes(q)))
+        const prints = !hasWord(row.text) ? !!u : !!u && (sq(u.text).includes(q) || q.includes(sq(u.text)) || u.lines?.some((l) => sq(l).includes(q)))
         const result = !landed || !prints ? 'WRONG' : restored ? 'hit' : 'NOT-RESTORED'
         const out = { result, slot: ed.slot, label: ed.label, stack }
         if (!restored) out.restore = { open: !!still, c: after.c === before.c, html: after.html === before.html }
@@ -365,7 +365,7 @@ async function runCombo(theme, layout, width) {
       // on its own words, which the middle of the line is not. Aim at them.
       const walked = n <= limit
       for (const slot of universe) {
-        if (!walked || res.hits.has(slot.id) || slot.off || !slot.part || slot.marked) continue
+        if (!walked || res.hits.has(slot.id) || slot.off || !(slot.part || slot.lines?.length) || slot.marked) continue
         const needle = slot.text
         const idx = await page.evaluate((sid, nd) => window.__withText(sid, nd), sec.id, needle)
         for (const i of idx) {
@@ -389,7 +389,7 @@ async function runCombo(theme, layout, width) {
         if (slot.off || !walked) continue
         // The nth slot with these words is printed only if more than n nodes print them.
         const rank = universe.filter((x, j) => j < universe.indexOf(slot) && x.group === slot.group && sq(x.text) === sq(slot.text)).length
-        const others = universe.filter((x) => !x.part && x.group !== slot.group).map((x) => sq(x.text))
+        const others = universe.filter((x) => x.group !== slot.group).flatMap((x) => [...(x.part ? [] : [sq(x.text)]), ...(x.lines ?? []).map(sq)])
         printedOf.set(slot.id, (await page.evaluate((sid, slot, others) => window.__printed(sid, slot, others), sec.id, slot, others)) > rank)
       }
       for (const slot of universe) {

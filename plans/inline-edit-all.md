@@ -178,8 +178,8 @@ and *paged* rows (the testimonials after the first, the repertoire past the sixt
 **Open for later passes, found on the way.**
 - *Repertoire layout 3 draws a song once per tag*, so document order is not row order: a click on the Pubs card's *Valerie*
   (row 0 again) was paired with row 11. Pass 10 and its twins; see `notes/list-editors.md`.
-- Retro L2 calendar: the heading and `availLabel` both read *Availability* (pass 5). Retro L4 map: the top gig's city
-  and time are not reached (pass 15). These and the other misses on layouts 2–4 are the passes' baselines.
+- Retro L2 calendar: the heading and `availLabel` both read *Availability* (settled in pass 5 by a line, `INLINE_LINES`). Retro L4 map: the top gig's city
+  and time are not reached (pass 15; the same shape as layout 2's featured gig, pass 5's `INLINE_LINES` rows are the tool). These and the other misses on layouts 2–4 are the passes' baselines.
 - Every page is now editable but only Retro layout 1 is proved. Nothing is published (`index.html` is untouched).
 
 ## The passes
@@ -195,7 +195,7 @@ Retro, Lime, Grunge, Editorial, Pop (build order).
 | 2 | Grunge L1 | `grunge/inline-layout-1.md` | tape and rotation: `placeBox` | **done 2026-10-21**: `--check` PASS (157 / 144 hit), two `Grunge.0` ledger rows, one generic fix (`textRange` no longer spans a pill's arrow); Retro, Lime and Grunge L1 re-run, all PASS |
 | 3 | Editorial L1 | `editorial/inline-layout-1.md` | `cased()`, Gloock one weight, per-design schemes | **done 2026-10-21**: `--check` PASS (155 / 142 hit), no code change, two `Editorial.0` ledger rows; `text-transform` and Gloock's 400 hold in the box |
 | 4 | Pop L1 | `pop/inline-layout-1.md` | stickers (`pointer-events`), 80% placeholders | **done 2026-10-21**: `--check` PASS (155 / 142 hit), no code change, two `Pop.0` ledger rows; the tie-break tested on real ink (title ink never under the small type's box); an over-cap title kills the header's clicks (open, in the pass file) |
-| 5 | Retro L2 | `retro/inline-layout-2.md` | media fan (overlapping cards), tile rails | |
+| 5 | Retro L2 | `retro/inline-layout-2.md` | media fan (overlapping cards), tile rails | **done 2026-10-21**: `--check` PASS (156 / 157 hit); five generic fixes (`INLINE_LINES`, claims and ranks for exact collisions, the box follows a sticky card, vertical type, the gallery marks scoped to layout 1), 11 part rows, 7 ledger rows; Retro, Lime, Grunge, Editorial and Pop L1 re-run, all PASS |
 | 6 | Lime L2 | `lime/inline-layout-2.md` | | |
 | 7 | Grunge L2 | `grunge/inline-layout-2.md` | | |
 | 8 | Editorial L2 | `editorial/inline-layout-2.md` | `[desktop, tablet, mobile]` seats | |

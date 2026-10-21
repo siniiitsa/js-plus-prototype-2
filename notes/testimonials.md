@@ -152,3 +152,9 @@ another `notes/` file.
     cap at layouts 2–4, and the bare box stretched beside the role's counter.
   - **The heading's typed break counts one character** in Chrome's `maxLength` as in `capExcess`:
     *Honest feedback⏎from everyone who ever book* stopped at 43 with the counter at `43 / 43`.
+
+## Inline editing (plans/inline-edit-all.md, Retro layout 2, 2026-10-21)
+
+The initial tiles in the rail print `mark`, two initials of a `who`, not a field, so they are no slots; the reviews after the
+first are *paged* (the canvas draws one), and `quotes.when` has no seat at layout 2, so it is ledgered
+(`Retro.1.testimonials.quotes.when`). `kicker` (`✎ What clients say`) is an `INLINE_PART` row.

@@ -221,3 +221,16 @@ another `notes/` file.
   - **`GigsField`'s `pair()` rows are top-aligned**: a counter under the month (always showing at
     layout 2, where *Jul* is 3 / 3) stretched the uncapped year box beside it. That is session
     5's `SongsField` fix.
+
+## Inline editing (plans/inline-edit-all.md, Retro layout 2, 2026-10-21)
+
+Layout 2's gig cells print in three shapes, declared in `INLINE_LINES` (`*.1.map.gigs.…`): rows 1–4 as one line,
+`Manchester · Jul · 21:00` (city, month, time; the bare month and day nodes inside and beside it are still edited from
+their own nodes), and the featured gig (row 0) as the travel card's chip `● Jul 12 · 22:00` (month, day, time), with its
+city alone under the venue. **The city *Manchester* is printed by five different fields' nodes**: the heading (seeded as
+the first gig's city), the travel card's *Willing to travel to* (the featured city), the featured panel (the same city),
+and rows 1, 3 and 4. The page's text cannot settle that, so `inlineFieldAt` does: a slot whose line is drawn is *claimed*
+(per field, as many rows as nodes print the line), the bare nodes belong to the fields left, and between a heading and
+another field the largest type is the heading. `radius` (`120 mi`) and the outermost ring (`120mi`) differ only in the
+space, so the copy as typed decides. `terms` (`… · 5 pins`) and `expand` (`Expand view→`) are `INLINE_PART` rows. The
+list is rows 1–4 of the gigs, the featured gig is row 0.
