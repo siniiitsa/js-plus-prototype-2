@@ -159,3 +159,11 @@ The Retro layout-2 rows (`*.1.media.…`) carry over unchanged: the fan, the lis
 The `*.1.media.…` rows carry over: the fan (cards tilted about ±10.6° and ±5.3°, the box follows each card's `matrix()`), the list rows,
 `chipLabel`, `listLabel`, `totalLabel` and `countLabel` all hit on Grunge's page. `tracks.sub` is ledgered again, `Grunge.1.media.tracks.sub`,
 for the same seeded shape.
+
+## Inline editing (plans/inline-edit-all.md, Editorial layout 2, 2026-10-22)
+
+The `*.1.media.…` rows carry over: the fan (the same tilts, the box follows each card's `matrix()`), the list rows, `chipLabel`, `listLabel`,
+`totalLabel` and `countLabel` all hit on Editorial's page; `tracks.sub` is ledgered again, `Editorial.1.media.tracks.sub`. **Gloock is wider than the
+other faces, so the back card *Manchester at 3am* wraps to two lines and the middle of its first line lies under the front card's *Slow Burn***: a click
+there opens *Slow Burn*, which is what is on top, and the probe counts that as a click under an overlay, not a WRONG (`plans/editorial/inline-layout-2.md`,
+generic fix 2). The back card is reached by the words that show beside the front card, and the same slot by its list row.

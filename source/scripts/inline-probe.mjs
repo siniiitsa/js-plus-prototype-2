@@ -23,8 +23,9 @@
 //              an id the builder gives the slot: cat.key[row].col#item.part),
 //              the sentinel typed into it landed on glyphs under the box, and
 //              Escape put the section's content (`c`) and DOM back
-//   WRONG      a box opened on a slot that does not print this node's copy, or
-//              the sentinel did not land under the box
+//   WRONG      a box opened on a slot that does not print this node's copy (or the
+//              text of the element on top of the click point: that is "unhit under
+//              an overlay"), or the sentinel did not land under the box
 //   NOT-RESTORED  Escape left a box open, or `c` / the section's HTML differs
 //   unhit      no box (literal copy, panel-only fields, a repeat it cannot pair)
 //   hidden     the node paints nothing the pointer can reach (clipped, covered
@@ -144,7 +145,7 @@ function pageHelpers() {
     }
     const above = (depth < 0 ? stack.slice(0, stack.findIndex((e) => t.el.contains(e))) : stack.slice(0, depth))
       .filter((e) => !t.el.contains(e))
-    return { x, y, text, svg: t.svg, over: above.length ? describe(above[0]) : null, pe: above.length ? getComputedStyle(above[0]).pointerEvents : null }
+    return { x, y, text, svg: t.svg, over: above.length ? describe(above[0]) : null, overText: above.length ? above[0].textContent : null, pe: above.length ? getComputedStyle(above[0]).pointerEvents : null }
   }
   function describe(e) {
     if (!e) return null
@@ -325,7 +326,12 @@ async function runCombo(theme, layout, width) {
         const u = byId.get(ed.slot)
         const q = sq(row.text)
         const prints = !hasWord(row.text) ? !!u : !!u && (sq(u.text).includes(q) || q.includes(sq(u.text)) || u.lines?.some((l) => sq(l).includes(q)))
-        const result = !landed || !prints ? 'WRONG' : restored ? 'hit' : 'NOT-RESTORED'
+        // The click point can sit inside this node's box with another slot's text on
+        // top of it (a back card's title under the front card's, Editorial's wider
+        // Gloock): the app answers for what is on top, which is right, so a slot that
+        // prints exactly the covering element's text is "unhit under an overlay".
+        const onTop = !prints && !!aim.overText && !!u && (sq(u.text) === sq(aim.overText) || !!u.lines?.some((l) => sq(l) === sq(aim.overText)))
+        const result = !landed || (!prints && !onTop) ? 'WRONG' : !restored ? 'NOT-RESTORED' : onTop ? 'unhit' : 'hit'
         const out = { result, slot: ed.slot, label: ed.label, stack }
         if (!restored) out.restore = { open: !!still, c: after.c === before.c, html: after.html === before.html }
         if (result === 'WRONG') out.why = !prints ? (u ? `slot prints "${u.text.slice(0, 30)}"` : 'slot not in the universe') : 'the sentinel did not land under the box'

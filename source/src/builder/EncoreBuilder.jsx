@@ -6645,9 +6645,14 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
     // The box is typed in the face the words are drawn in: for copy inside a longer
     // line that is the element holding them (a month in its own uppercase span),
     // not the line's.
-    const styled = (words && textRange(hit.node, words)?.startContainer.parentElement) || hit.node
+    const from = words && textRange(hit.node, words)?.startContainer
+    const styled = from?.parentElement || hit.node
     const cs = getComputedStyle(styled)
-    const tone = styled.firstElementChild ? getComputedStyle(styled.firstElementChild).color : cs.color
+    // The caret is the colour of the element holding the first of the words, so a
+    // two-tone line's accent lead is its own, and a pill's trailing arrow disc, whose
+    // colour is the pill's ground, is not (an invisible caret on a Book pill).
+    const lead = from?.nodeType === Node.TEXT_NODE ? from : document.createTreeWalker(styled, NodeFilter.SHOW_TEXT, { acceptNode: (t) => (t.data.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP) }).nextNode()
+    const tone = getComputedStyle(lead?.parentElement ?? styled).color
     inlineNode.current = hit.node
     setFocusF({ sid: sec.id, text: hit.text, key: hit.k })
     setInline({

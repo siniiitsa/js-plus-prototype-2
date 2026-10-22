@@ -2891,6 +2891,13 @@ export const INLINE_OFF = {
   'Grunge.1.form.fields.placeholder': 'not drawn: the card’s boxes print the label, and a placeholder only once the label is emptied',
   'Grunge.1.testimonials.quotes.when': 'not drawn: layout 2’s card has no seat for it',
   'Grunge.1.media.tracks.sub': 'derived value: the seeded page prints the release and the running time as two nodes, and the whole line only once the list is stored',
+  'Editorial.1.header.kicker': 'not drawn: the layout-2 header prints no kicker (a shared identity key; the bio’s role line and the form print it)',
+  'Editorial.1.header.tags': 'not drawn: the layout-2 header prints no tag chips (a shared identity key; the bio prints them)',
+  'Editorial.1.repertoire.songs.length': 'not drawn: only layout 3 prints a song’s length',
+  'Editorial.1.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
+  'Editorial.1.form.fields.placeholder': 'not drawn: the card’s boxes print the label, and a placeholder only once the label is emptied',
+  'Editorial.1.testimonials.quotes.when': 'not drawn: layout 2’s card has no seat for it',
+  'Editorial.1.media.tracks.sub': 'derived value: the seeded page prints the release and the running time as two nodes, and the whole line only once the list is stored',
   '*.*.pricing.tiers.tags': 'derived value: the filter chips are the distinct tags of every package',
   '*.*.repertoire.songs.tags': 'derived value: the filter chips are the distinct tags of every song',
 }
