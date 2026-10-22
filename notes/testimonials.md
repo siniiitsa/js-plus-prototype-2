@@ -177,3 +177,9 @@ is a `*.2.` part row and `quotes.when` is ledgered (`Retro.2.testimonials.quotes
 ## Inline editing (plans/inline-edit-all.md, Lime layout 3, 2026-10-22)
 
 As Retro's layout 3: the wall repeats no copy, `kicker` is a `*.2.` part row and `quotes.when` is ledgered (`Lime.2.testimonials.quotes.when`).
+
+## Inline editing (plans/inline-edit-all.md, Pop layout 3, 2026-10-22)
+
+As Retro's layout 3: the wall repeats no copy, `kicker` is a `*.2.` part row and `quotes.when` is ledgered (`Pop.2.testimonials.quotes.when`). One thing Pop adds, at 1440 only: the heading is lifted
+`-0.14em`, so its element box starts 6 px inside the kicker line, and a click on the lower half of the kicker's `●` (a markup glyph, no slot) opens `heading`; the kicker's word is unaffected. Left
+(plans/pop/inline-layout-3.md, *Learned*). No code change.
