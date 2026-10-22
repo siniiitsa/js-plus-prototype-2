@@ -264,7 +264,9 @@ async function runCombo(theme, layout, width) {
       await select(hd.id)
       await wait(250)
       const ns = await page.evaluate((sid) => window.__nodes(sid).map((t, i) => ({ i, text: t.svg ? '' : t.n.data.trim(), size: parseFloat(getComputedStyle(t.el).fontSize) })), hd.id)
-      const cand = ns.filter((n) => n.text === 'Kai Mercer' || n.text.toLowerCase() === 'kai mercer').sort((a, b) => b.size - a.size)[0]
+      // The name whole, or one of its words: Grunge's layout-3 title stands in two spans
+      // (`Kai`, `Mercer`), and a click on either is on the h1 that prints the title.
+      const cand = ns.filter((n) => ['kai mercer', 'kai', 'mercer'].includes(n.text.toLowerCase())).sort((a, b) => b.size - a.size)[0]
       let ok = false
       if (cand) {
         const aim = await page.evaluate((sid, i) => window.__aim(sid, i), hd.id, cand.i)
