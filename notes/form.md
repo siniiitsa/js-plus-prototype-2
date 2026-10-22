@@ -273,3 +273,7 @@ the boxes print) as at layout 2.
 ## Inline editing (plans/inline-edit-all.md, Lime layout 3, 2026-10-22)
 
 `bookings` is the `*.2.` part row (`★★★★★ 42 bookings`); `fields.placeholder` is ledgered (`Lime.2.form.fields.placeholder`: the boxes print the uppercased label).
+
+## Inline editing (plans/inline-edit-all.md, Retro layout 4, 2026-10-22)
+
+`steps` has its first proof here: the three `title` / `sub` pairs are six slots, hit at both widths, and Escape restores `c.steps` (`FORM_STEPS` and the panel's `stepsVal` resolve alike). The numerals (`01`–`03`) and arrows are literal. `fields.placeholder` hits (layout 4 prints the placeholders in its boxes).

@@ -185,3 +185,7 @@ and the running time are two nodes).
 ## Inline editing (plans/inline-edit-all.md, Lime layout 3, 2026-10-22)
 
 `listLabel` and `totalLabel` are the `*.2.` part rows (Lime draws the `●` in its own span, so `Popular` is a bare node); `tracks.sub` is ledgered again (`Lime.2.media.tracks.sub`).
+
+## Inline editing (plans/inline-edit-all.md, Retro layout 4, 2026-10-22)
+
+`tracks.sub` is ledgered (`Retro.3.media.tracks.sub`): the list tile prints the release alone (`Single`) and the `02:28` / `04:22` are the player's clock, so the field's line (`Single · 5:42`) is in no node. Title, heading and the rest hit.

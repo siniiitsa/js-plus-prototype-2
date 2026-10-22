@@ -183,3 +183,7 @@ As Retro's layout 3: the wall repeats no copy, `kicker` is a `*.2.` part row and
 As Retro's layout 3: the wall repeats no copy, `kicker` is a `*.2.` part row and `quotes.when` is ledgered (`Pop.2.testimonials.quotes.when`). One thing Pop adds, at 1440 only: the heading is lifted
 `-0.14em`, so its element box starts 6 px inside the kicker line, and a click on the lower half of the kicker's `●` (a markup glyph, no slot) opens `heading`; the kicker's word is unaffected. Left
 (plans/pop/inline-layout-3.md, *Learned*). No code change.
+
+## Inline editing (plans/inline-edit-all.md, Retro layout 4, 2026-10-22)
+
+Layout 4 pages from its arrow discs, so the canvas draws the first four reviews at 1440 and the first three at 768 (the rest *paged*). `quotes.when` is ledgered (`Retro.3.testimonials.quotes.when`: no *Reviewed …* anywhere in the section).

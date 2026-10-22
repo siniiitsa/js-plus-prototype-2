@@ -2934,6 +2934,11 @@ export const INLINE_OFF = {
   'Pop.2.form.fields.placeholder': 'not drawn: the card’s boxes print the label, and a placeholder only once the label is emptied',
   'Pop.2.testimonials.quotes.when': 'not drawn: layout 3’s wall has no seat for it',
   'Pop.2.media.tracks.sub': 'derived value: the seeded page prints the release and the running time as two nodes, and the whole line only once the list is stored',
+  'Retro.3.repertoire.songs.length': 'not drawn: only layout 3 prints a song’s length',
+  'Retro.3.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
+  'Retro.3.testimonials.quotes.when': 'not drawn: layout 4’s wall has no seat for it',
+  'Retro.3.media.tracks.sub': 'derived value: the page prints the release alone (the list tile’s Single); the running times are the player’s clock',
+  'Retro.3.pricing.unit': 'derived value: layout 4 drops the leading slash, so the page prints event, not the field’s /event',
   '*.*.pricing.tiers.tags': 'derived value: the filter chips are the distinct tags of every package',
   '*.*.repertoire.songs.tags': 'derived value: the filter chips are the distinct tags of every song',
 }
@@ -2983,6 +2988,13 @@ export const INLINE_PART = {
   '*.2.map.expand': true,
   '*.2.form.bookings': true,
   '*.2.testimonials.kicker': true,
+  // Layout 4: the bio's overlay card prints `Performing since <date>` in one span
+  // and the Listen link beside its arrow, a price its `£` and numeral in one node,
+  // and the map's ticker `Next: <venue>` (page 0 alone, which the canvas is).
+  '*.3.bio.since': true,
+  '*.3.bio.cta2': true,
+  '*.3.pricing.tiers.price': true,
+  '*.3.map.gigs.venue': true,
 }
 // INLINE_LINES names the forms a slot's copy is printed in when the words alone
 // cannot tell its node from another field's: each template is one line as the
@@ -2990,6 +3002,7 @@ export const INLINE_PART = {
 // `{cell}` a sibling cell of its row. A slot with a template is edited from a
 // node that prints exactly that line, on its own words, and a line another
 // field's node prints is not a peer of this slot's words. Scoped like the rest.
+const GIG_TICKER_LINES = ['{city} · {month} {day} · {time}', '{city} · {month} {day}', '{month} {day} · {time}', '{month} {day}', '{city} · {time}']
 export const INLINE_LINES = {
   '*.1.calendar.availLabel': ['{} ↓'],
   '*.1.media.chipLabel': ['● {}'],
@@ -2999,6 +3012,14 @@ export const INLINE_LINES = {
   '*.1.map.gigs.month': ['{city} · {month} · {time}', '● {month} {day} · {time}'],
   '*.1.map.gigs.day': ['● {month} {day} · {time}'],
   '*.1.map.gigs.time': ['{city} · {month} · {time}', '● {month} {day} · {time}'],
+  // Layout 4's ticker prints the one gig on one line, `Manchester · JUL 12 · 22:00`
+  // (`vm.gigs[].meta`), and drops a piece the artist emptied with its separator,
+  // so each shorter form it can print is a line too. Per column: the venue is
+  // printed on another line (`Next: …`, a part row).
+  '*.3.map.gigs.city': GIG_TICKER_LINES,
+  '*.3.map.gigs.month': GIG_TICKER_LINES,
+  '*.3.map.gigs.day': GIG_TICKER_LINES,
+  '*.3.map.gigs.time': GIG_TICKER_LINES,
 }
 export function inlineRule(table, themeName, design, group) {
   const parts = String(group).split('.')

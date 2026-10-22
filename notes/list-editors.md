@@ -192,3 +192,7 @@ running time in two nodes at layout 2, so Retro layout 2 ledgers it (`Retro.1.me
 The repertoire's **song-per-tag pairing** (Phase 0's open item) is settled by the ledger, not the click: `INLINE_HEAD` + `drawnRows()` mark the rows
 layout 3's cards do not draw as `off`, so the drawn copy and the drawn slots agree (`notes/repertoire.md`). `repeaterRows('sets')` has its first proof:
 `sets[0..2].mood` / `.length` hit at both widths and Escape restores `c.sets`.
+
+## Inline editing (plans/inline-edit-all.md, Retro layout 4, 2026-10-22)
+
+`stats` and `steps`, which Phase 0 wrote with no page to prove them, are proved on Retro layout 4: the twelve stat cells and the six step cells hit at 1440 and 768 and Escape restores `c` (0 NOT-RESTORED), so `statsVal` / `stepsVal` resolve what `sectionVm` does. The ledger rule's second `INLINE_OFF` member of the *derived value* class beside `tracks.sub`: `pricing.unit` at layout 4 (the page drops the slash).

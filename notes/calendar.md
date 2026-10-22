@@ -311,3 +311,7 @@ its release, and at 768, where nothing composes, it follows the in-flow section 
 ## Inline editing (plans/inline-edit-all.md, Lime layout 3, 2026-10-22)
 
 `prompt` is ledgered (`Lime.2.calendar.prompt`). `heading` (*Book Me*) is the one slot drawn; in the sticky right column the box stays 1.8 px under the node while the cell is stuck and through its release, and 1.1 px at 768. No code change.
+
+## Inline editing (plans/inline-edit-all.md, Retro layout 4, 2026-10-22)
+
+The wizard is live-only; the canvas draws its first step. Slots that hit: `heading`, the four event types, `time` and `cta`; `prompt` is ledgered (`Retro.3.calendar.prompt`). The summary column echoes the chosen type, so *Wedding* is drawn twice (the chip and the summary): both open `types#0`, the two-*Valerie* shape, and the summary mirrors the chip by construction. Every other node (step titles, *Guests*, *Budget*, the date card) is literal or derived.

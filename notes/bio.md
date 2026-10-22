@@ -63,3 +63,7 @@ into `CLAUDE.md` or another `notes/` file.
 ## Inline editing (plans/inline-edit-all.md, Retro layout 3, 2026-10-22)
 
 Layout 3's `aboutLabel` is printed `[ About ]` (three text nodes of one span): a `*.2.` part row, box on the word, brackets left out.
+
+## Inline editing (plans/inline-edit-all.md, Retro layout 4, 2026-10-22)
+
+Layout 4's overlay card prints `Performing since <date>` in one span and the Listen link beside its arrow (`Listen ↗`), so `since` and `cta2` are `*.3.` part rows (`INLINE_PART`, design index 3), box on the date and on `Listen`; the literal *Performing since* and the `↗` open nothing. The card's name, role line and six tag chips are the header's identity keys with no bio field: unhit, as at every layout (the open cross-section question).
