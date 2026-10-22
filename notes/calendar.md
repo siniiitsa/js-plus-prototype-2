@@ -296,3 +296,8 @@ ledgered as `Retro.1.calendar.prompt`, as at layout 1.
 
 Retro layout 2's rows carry over (`availLabel`'s `'{} ↓'` line, `dateLabel` a part row); `slots` `kind` / `price` ×4 hit. `prompt` is
 ledgered as `Lime.1.calendar.prompt`.
+
+## Inline editing (plans/inline-edit-all.md, Grunge layout 2, 2026-10-22)
+
+The Retro/Lime rows carry over unchanged (`availLabel`'s `'{} ↓'` line, `dateLabel` a part row); `slots` `kind` / `price` ×4 hit.
+`prompt` is ledgered as `Grunge.1.calendar.prompt`.

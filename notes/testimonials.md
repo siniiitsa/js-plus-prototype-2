@@ -163,3 +163,8 @@ first are *paged* (the canvas draws one), and `quotes.when` has no seat at layou
 
 `quotes.when` is drawn only by the `s.v0` branch, so layout 2 has no seat for it at any template: `Lime.1.testimonials.quotes.when`.
 `kicker` is the `*.1.` part row, as at Retro.
+
+## Inline editing (plans/inline-edit-all.md, Grunge layout 2, 2026-10-22)
+
+`quotes.when` is drawn only by the `s.v0` branch (no `Reviewed` in Grunge's layout-2 HTML): `Grunge.1.testimonials.quotes.when`. `kicker` is the
+`*.1.` part row.

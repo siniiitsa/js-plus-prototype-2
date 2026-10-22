@@ -69,3 +69,7 @@ hit at 1440 and (the first six songs) at 768. Rows past the pager are *paged*, n
 ## Inline editing (plans/inline-edit-all.md, Lime layout 2, 2026-10-21)
 
 Layout 2 draws no song length: `Lime.1.repertoire.songs.length`. `title` / `artist` hit; the last two songs are *paged*.
+
+## Inline editing (plans/inline-edit-all.md, Grunge layout 2, 2026-10-22)
+
+Layout 2 draws no song length: `Grunge.1.repertoire.songs.length`. `title` / `artist` hit; the last two songs are *paged*.

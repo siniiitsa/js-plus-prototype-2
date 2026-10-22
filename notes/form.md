@@ -253,3 +253,9 @@ ledger takes it out of the canvas whatever the label holds. `bookings` (`★★�
 Lime's layout-2 card prints the uppercased label in each box and no placeholder (checked in the card's HTML), so
 `Lime.1.form.fields.placeholder` is ledgered as Retro's is. The sticky card's box tracks a stuck card at 1440 and 768 (within 1 px at 0, +60
 and +120 px of scroll). `bookings` is the `*.1.` part row.
+
+## Inline editing (plans/inline-edit-all.md, Grunge layout 2, 2026-10-22)
+
+Grunge's layout-2 card prints the uppercased label in each box and no placeholder (checked in the card's HTML), so
+`Grunge.1.form.fields.placeholder` is ledgered as Lime's is. The sticky card's box sits exactly on the node at 1440 and 768 at 0, +60 and
++120 px of scroll, and follows the card's release at the row's foot. `bookings` is the `*.1.` part row.

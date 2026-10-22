@@ -153,3 +153,9 @@ become the row's subtitle. `INLINE_OFF` is state-blind, so the cell stays in the
 
 The Retro layout-2 rows (`*.1.media.…`) carry over unchanged: the fan, the list rows, `chipLabel`, `listLabel`, `totalLabel` and
 `countLabel` all hit on Lime's page. `tracks.sub` is ledgered again, `Lime.1.media.tracks.sub`, for the same seeded shape.
+
+## Inline editing (plans/inline-edit-all.md, Grunge layout 2, 2026-10-22)
+
+The `*.1.media.…` rows carry over: the fan (cards tilted about ±10.6° and ±5.3°, the box follows each card's `matrix()`), the list rows,
+`chipLabel`, `listLabel`, `totalLabel` and `countLabel` all hit on Grunge's page. `tracks.sub` is ledgered again, `Grunge.1.media.tracks.sub`,
+for the same seeded shape.
