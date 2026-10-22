@@ -2959,6 +2959,9 @@ export const INLINE_OFF = {
   'Pop.3.testimonials.quotes.when': 'not drawn: layout 4’s wall has no seat for it',
   'Pop.3.media.tracks.sub': 'derived value: the page prints the release alone (the list tile’s Single); the running times are the player’s clock',
   'Pop.3.pricing.unit': 'derived value: layout 4 drops the leading slash, so the page prints event, not the field’s /event',
+  // Retro's layout 5 (the Overlay card) is a header-only design: the body under it is layout 1's page.
+  'Retro.4.header.kicker': 'not drawn: the layout-5 Overlay card prints no kicker (a shared identity key; the bio’s role line and the form print it)',
+  'Retro.4.header.location': 'not drawn: the layout-5 Overlay card prints no location (a shared identity key; the bio and the calendar print it)',
   '*.*.pricing.tiers.tags': 'derived value: the filter chips are the distinct tags of every package',
   '*.*.repertoire.songs.tags': 'derived value: the filter chips are the distinct tags of every song',
 }
@@ -3026,6 +3029,10 @@ const GIG_TICKER_LINES = ['{city} · {month} {day} · {time}', '{city} · {month
 export const INLINE_LINES = {
   '*.1.calendar.availLabel': ['{} ↓'],
   '*.1.media.chipLabel': ['● {}'],
+  // Retro's layout 6 prints the kicker twice: bare, in the inset card under the name,
+  // and as `● DJ · LIVE ACT` above the title. A slot with a line is spoken for by it,
+  // so the bare form is listed too, or the card's copy would stop opening.
+  '*.5.header.kicker': ['{}', '● {}'],
   // The map's rows 1-4 print `City · Mon · 21:00`; the featured gig (row 0) lifts
   // its date and time into the travel card's chip, `● Jul 12 · 22:00`.
   '*.1.map.gigs.city': ['{city} · {month} · {time}'],

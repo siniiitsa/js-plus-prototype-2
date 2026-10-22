@@ -10,7 +10,7 @@
 //
 // Flags (comma lists run every combination, each in a fresh editor):
 //   --theme    Retro | Lime | Grunge | Editorial | Pop        (default Retro)
-//   --layout   1..4 (Retro's header also has 5 and 6)         (default 1)
+//   --layout   1..4 (Retro also 5 and 6: the header alone, on page 1)  (default 1)
 //   --width    1440 (the Desktop tab) | 768 (the Tablet tab)  (default 1440)
 //              The window stays 1440 wide in both: at 820 or under the editor
 //              turns into the phone chrome, where inline editing is off.
@@ -236,10 +236,19 @@ async function openEditor(theme, layout, width) {
   await (await page.waitForSelector(`button[aria-label^="Open the editor with the ${theme} template"]`)).click()
   await page.waitForSelector('[role=dialog] button[aria-pressed]')
   const cards = await page.$$('[role=dialog] button[aria-pressed]')
-  if (!cards[layout - 1]) throw new Error(`${theme}: the modal offers ${cards.length} cards, no layout ${layout}`)
-  await cards[layout - 1].click()
+  // The modal stops at four cards (`setupHeaderCount`); Retro's layouts 5 and 6 are reached as a user
+  // reaches them, from the sidebar's layout picker, on the page card 1 laid out. What `pickHeader(i)`
+  // would write for them is that page (`pageLayout` folds every body section to design 0 and
+  // `pageOrder` to layout 1's), so only the header's `arch` moves.
+  const extra = layout > cards.length
+  if (extra && !(theme === 'Retro' && layout <= 6)) throw new Error(`${theme}: the modal offers ${cards.length} cards, no layout ${layout}`)
+  await cards[extra ? 0 : layout - 1].click()
   await (await byText(page, 'Use this header')).click()
   await wait(500)
+  if (extra) {
+    await page.evaluate((arch) => { const { set } = window.__fh(); set((s) => ({ ...s, sections: s.sections.map((x) => (x.cat === 'header' ? { ...x, arch } : x)) })) }, layout - 1)
+    await wait(500)
+  }
   if (width !== 1440) {
     if (width !== 768) throw new Error('--width is 1440 or 768')
     await page.waitForSelector('[role=tab]')
