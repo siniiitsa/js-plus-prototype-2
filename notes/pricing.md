@@ -250,3 +250,7 @@ Layout 4 prints a plan's price as one node (`£450`): `price.lead` and `price.am
 ## Inline editing (plans/inline-edit-all.md, Lime layout 4, 2026-10-22)
 
 The `*.3.` price part row carries over: a price is one node (`£450`), two slots settled on the click, in Bebas Neue (box `line-height` against the content rect flags it in `boxcheck`, harmless). `unit` is ledgered (`Lime.3.pricing.unit`: the page prints `event`, the field holds `/event`).
+
+## Inline editing (plans/inline-edit-all.md, Grunge layout 4, 2026-10-22)
+
+The `*.3.` price part row carries over: a price is one node (`£450`), two slots settled on the click, in Anton (box `line-height` against the content rect flags it in `boxcheck`, harmless). `unit` is ledgered (`Grunge.3.pricing.unit`: the page prints `event`, the field holds `/event`).

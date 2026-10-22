@@ -248,3 +248,7 @@ hit as pairs; the featured gig's chip is layout 2's. The city chips and *See all
 ## Inline editing (plans/inline-edit-all.md, Lime layout 4, 2026-10-22)
 
 Pass 15's rows carry over unchanged (`INLINE_LINES` and the venue part row are `*.3.`): Lime's olive-capsule ticker prints the same two lines, and every column of the one-line gig opens, also with the time emptied. The stat cells are fitted per word (`wordEms`) and the Base value `Manchester, UK` wraps to two lines at 1440 (one at 768): a click on either word opens `map.stats[3].value` and the box covers both lines. No claim or rank was needed. Same known limit as Retro (an emptied month or day alone opens nothing; the stored `Jul` sits under the drawn `JUL`).
+
+## Inline editing (plans/inline-edit-all.md, Grunge layout 4, 2026-10-22)
+
+Pass 15's rows carry over unchanged (`INLINE_LINES` and the venue part row are `*.3.`): Grunge's ticker prints the same two lines and every column of the one-line gig opens, also with the time emptied (`blank.mjs`). The Base stat's `Manchester, UK` wraps to two lines at 1440 and the box covers both. No ledger row.
