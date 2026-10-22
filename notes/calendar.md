@@ -301,3 +301,9 @@ ledgered as `Lime.1.calendar.prompt`.
 
 The Retro/Lime rows carry over unchanged (`availLabel`'s `'{} ↓'` line, `dateLabel` a part row); `slots` `kind` / `price` ×4 hit.
 `prompt` is ledgered as `Grunge.1.calendar.prompt`.
+
+## Inline editing (plans/inline-edit-all.md, Retro layout 3, 2026-10-22)
+
+`prompt` is ledgered (`Retro.2.calendar.prompt`: it shows only while no day is cued). `heading` (*Book Me*) is the one slot layout 3 draws. At 1440 the calendar stands in
+`pageRows`' sticky right column: a box opened on *Book Me* stays 1.1 px under the node while the cell is stuck (y 162 from scrollTop 806 to the row's end) and through
+its release, and at 768, where nothing composes, it follows the in-flow section (1.5 px). `sticky3.mjs`'s shape; no code change.

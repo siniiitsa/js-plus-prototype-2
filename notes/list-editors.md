@@ -181,9 +181,14 @@ the booked dates are dates, not text, and stay in the panel.
 **Repertoire layout 3 draws a song once per tag it carries**, so the nth-peer rule (document order is row order)
 is wrong there for repeated copy: row 0 (*Valerie*, tagged Weddings and Pubs) is drawn in both cards, the seed's
 row 11 (also *Valerie*) is drawn in neither of the four rows a card shows, and a click on the Pubs card's *Valerie*
-was paired with row 11 as the second of two. Found by the probe's sentinel check, open until pass 10
-(Retro layout 3) and its template twins.
+was paired with row 11 as the second of two. Found by the probe's sentinel check; settled in pass 10 (Retro layout 3, below).
 
 `media.tracks.sub` is the one repeater cell that is *derived at the seed*: the seeded page prints it as the release and the
 running time in two nodes at layout 2, so Retro layout 2 ledgers it (`Retro.1.media.tracks.sub`). Once the list is stored,
 `rel` and `dur` are both the row's subtitle. A state-aware ledger row would let the stored shape be edited inline.
+
+## Inline editing (plans/inline-edit-all.md, Retro layout 3, 2026-10-22)
+
+The repertoire's **song-per-tag pairing** (Phase 0's open item) is settled by the ledger, not the click: `INLINE_HEAD` + `drawnRows()` mark the rows
+layout 3's cards do not draw as `off`, so the drawn copy and the drawn slots agree (`notes/repertoire.md`). `repeaterRows('sets')` has its first proof:
+`sets[0..2].mood` / `.length` hit at both widths and Escape restores `c.sets`.

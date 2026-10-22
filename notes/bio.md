@@ -59,3 +59,7 @@ into `CLAUDE.md` or another `notes/` file.
   `tagsLabel` cap of 58 comes from 1440 and 768. The one-word labels, *About* (48–59) and
   *Genres* (49–58), take their measured numbers. Their seats are stretched blocks, so the probe's
   `×grow` reads 1.
+
+## Inline editing (plans/inline-edit-all.md, Retro layout 3, 2026-10-22)
+
+Layout 3's `aboutLabel` is printed `[ About ]` (three text nodes of one span): a `*.2.` part row, box on the word, brackets left out.

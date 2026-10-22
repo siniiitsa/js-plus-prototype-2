@@ -168,3 +168,8 @@ first are *paged* (the canvas draws one), and `quotes.when` has no seat at layou
 
 `quotes.when` is drawn only by the `s.v0` branch (no `Reviewed` in Grunge's layout-2 HTML): `Grunge.1.testimonials.quotes.when`. `kicker` is the
 `*.1.` part row.
+
+## Inline editing (plans/inline-edit-all.md, Retro layout 3, 2026-10-22)
+
+Layout 3's wall repeats no copy (five distinct reviewers), so no claim or rank was needed and every `quote` / `who` / `role` hits; `kicker` (`● Testimonials`)
+is a `*.2.` part row and `quotes.when` is ledgered (`Retro.2.testimonials.quotes.when`: the wall has no seat for it).

@@ -55,7 +55,7 @@ import {
   PRICING_INTRO_3, FORM_SUB_4, CAL_HEADING_1, formBtnSeed, CAL_TYPES, PRICING_ROW_CTA, PRICING_ROW_CTA_3, MAP_SPAN, MAP_STATS_4, STAT_KEYS,FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
   parseDate, isoDate, calStart, headerIdentity, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav, navModeDefault,
-  catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldSeed, HEADING_3, HEADING_4, fieldReach, fieldShown, INLINE_OFF, INLINE_MARKED, INLINE_PART, INLINE_LINES, inlineRule, fieldCap, colCaps, identityCap, sealCap, capExcess, clampCapped, clampContent, clampIdentity, copyrightOf, formHeading3, extUrl, youtubeEmbed, urlProblem, emailProblem, emailAddr, songTags, repChips,
+  catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldSeed, HEADING_3, HEADING_4, fieldReach, fieldShown, INLINE_OFF, INLINE_HEAD, INLINE_MARKED, INLINE_PART, INLINE_LINES, inlineRule, fieldCap, colCaps, identityCap, sealCap, capExcess, clampCapped, clampContent, clampIdentity, copyrightOf, formHeading3, extUrl, youtubeEmbed, urlProblem, emailProblem, emailAddr, songTags, repChips,
   tierFeats, priceParts, blankRow, SONG_KEYS, repSetsOf, repSetLine, TRACK_KEYS, GIG_KEYS, gigWeekday, gigStatus, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
   layoutCount, designCount, pageLayout, pageOrder, pageRows, COLUMN_SPLIT, bebasEms, antonEms, gloockEms, titanEms,
   headerLayout, headerLayoutLabel, setupHeaderCount,
@@ -5949,6 +5949,21 @@ function repeaterRows(sec, k, themeName) {
   }
 }
 
+// The rows of a repeater the canvas draws, for those `INLINE_HEAD` names (null: all
+// of them). Repertoire layout 3 stands the songs in one card per tag, four rows a
+// card, three cards a page (`EncoreSection`'s `cap` and `perPage`; the All card
+// closes the list when a song has no tag), so a song is drawn once per card it is
+// in and not at all past the fourth. Row numbers are the stored array's, blank
+// rows included, as the slots' are.
+function drawnRows(sec, k, themeName) {
+  if (sec.cat !== 'repertoire' || k !== 'songs') return null
+  const live = repeaterRows(sec, 'songs', themeName).map((t, i) => [t, i]).filter(([t]) => !blankRow(t, SONG_KEYS))
+  const cards = repChips(live.map(([t]) => t)).slice(1)
+    .map((ch) => live.filter(([t]) => songTags(t?.tags).some((x) => x.toLowerCase() === ch.tag.toLowerCase())))
+  if (new Set(cards.flat().map(([, i]) => i)).size < live.length) cards.push(live)
+  return new Set(cards.slice(0, 3).flatMap((card) => card.slice(0, 4).map(([, i]) => i)))
+}
+
 // A list field's items, as the page reads them (the panel's rows): the value
 // split on its separator, trimmed, blanks dropped. `joinItems` is its inverse,
 // the separator `LineListField` writes.
@@ -5967,10 +5982,18 @@ export function inlineSlots(sec, themeName, artistName, all = false) {
   const design = inlineDesign(sec, themeName)
   const fields = FIELDS[sec.cat] ?? []
   const out = []
+  const drawn = new Map()
   const add = (slot) => {
     const group = `${sec.cat}.${slot.k}${slot.col ? '.' + slot.col : ''}${slot.sub ? '.' + slot.sub : ''}`
     if (!slot.text.trim()) return
-    const off = inlineRule(INLINE_OFF, themeName, design, group)
+    let off = inlineRule(INLINE_OFF, themeName, design, group)
+    // A row the canvas does not draw (INLINE_HEAD) is ledgered, not editable: nothing
+    // is there to click, and it keeps a repeated title paired with the rows drawn.
+    const head = !off && slot.row != null ? inlineRule(INLINE_HEAD, themeName, design, group) : undefined
+    if (head) {
+      if (!drawn.has(slot.k)) drawn.set(slot.k, drawnRows(sec, slot.k, themeName))
+      if (drawn.get(slot.k) && !drawn.get(slot.k).has(slot.row)) off = head
+    }
     if (off && !all) return
     // The forms the page prints this copy in (`INLINE_LINES`, or the pair's line):
     // each template with its `{}` and its row's `{cell}`s filled in; one with a
@@ -5985,7 +6008,7 @@ export function inlineSlots(sec, themeName, artistName, all = false) {
       : slot.line ? [slot.line] : []
     const { cells, ...rest } = slot
     out.push({
-      ...rest, group, id: slotId(sec, slot), off: off ?? null, lines,
+      ...rest, group, id: slotId(sec, slot), off: off ?? null, head: !!head && off === head, lines,
       part: !!inlineRule(INLINE_PART, themeName, design, group) || !!slot.line,
       marked: !!inlineRule(INLINE_MARKED, themeName, design, group),
     })

@@ -175,3 +175,9 @@ The `*.1.media.…` rows carry over: the fan, the list rows, `chipLabel`, `listL
 behind it** (*Echo & The Floor* opened *Roomtone*, whose box is smaller and lies under the card in front): the stack rule skips a slot that something opaque
 covers (`paintsOver` in `EncoreBuilder.jsx`, `plans/pop/inline-layout-2.md`, generic fix 1). Checked by clicking every visible character of the five
 titles, which the probe's line-middle aim cannot do.
+
+## Inline editing (plans/inline-edit-all.md, Retro layout 3, 2026-10-22)
+
+Layout 3 is a numbered list, not a fan: no card overlaps another, and every visible character of every title opens its own track (a character sweep).
+`listLabel` (`● Popular`) and `totalLabel` (`5 Featured / 5 Max`) are `*.2.` part rows; `tracks.sub` is ledgered again (`Retro.2.media.tracks.sub`: the release
+and the running time are two nodes).

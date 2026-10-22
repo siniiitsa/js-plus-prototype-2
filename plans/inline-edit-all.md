@@ -177,7 +177,7 @@ and *paged* rows (the testimonials after the first, the repertoire past the sixt
 
 **Open for later passes, found on the way.**
 - *Repertoire layout 3 draws a song once per tag*, so document order is not row order: a click on the Pubs card's *Valerie*
-  (row 0 again) was paired with row 11. Pass 10 and its twins; see `notes/list-editors.md`.
+  (row 0 again) was paired with row 11. **Settled in pass 10** by `INLINE_HEAD` / `drawnRows` (the rows a card does not draw are ledgered); see `notes/list-editors.md`.
 - Retro L2 calendar: the heading and `availLabel` both read *Availability* (settled in pass 5 by a line, `INLINE_LINES`). Retro L4 map: the top gig's city
   and time are not reached (pass 15; the same shape as layout 2's featured gig, pass 5's `INLINE_LINES` rows are the tool). These and the other misses on layouts 2–4 are the passes' baselines.
 - Every page is now editable but only Retro layout 1 is proved. Nothing is published (`index.html` is untouched).
@@ -200,7 +200,7 @@ Retro, Lime, Grunge, Editorial, Pop (build order).
 | 7 | Grunge L2 | `grunge/inline-layout-2.md` | the `*.1.` rows carry over; tilt on the fan | **done 2026-10-22**: `--check` PASS (155 / 156 hit), no code change, seven `Grunge.1` ledger rows; the fan's tilted boxes and the sticky form card checked, and the featured chip has no dead zone on Grunge; no earlier page re-run |
 | 8 | Editorial L2 | `editorial/inline-layout-2.md` | `[desktop, tablet, mobile]` seats | **done 2026-10-22**: `--check` PASS (155 / 156 hit), seven `Editorial.1` ledger rows; two generic fixes (the caret was the arrow disc's colour on every Book pill, so invisible on its own pill; the probe no longer calls a click on a covered node WRONG); the width seats, Gloock's 400, the sticky card and the chip checked; Retro, Lime, Grunge, Editorial and Pop L1 and Retro, Lime and Grunge L2 re-run, all PASS with their old counts |
 | 9 | Pop L2 | `pop/inline-layout-2.md` | lime cards on white, `onScheme` nodes | **done 2026-10-22**: `--check` PASS (155 / 156 hit), seven `Pop.1` ledger rows; one generic fix (a slot under an opaque element is not what the pointer is on: a click on a visible glyph of a back card's title in the media fan opened the card behind it, on all five templates; found by a per-character sweep, not by `--check`); Retro, Lime, Grunge, Editorial and Pop L1 and Retro, Lime, Grunge, Editorial and Pop L2 re-run, all PASS with their old counts; the lime cards, `onScheme` seats, Titan One's 400 and `uppercase`, the sticky card and the chip checked |
-| 10 | Retro L3 | `retro/inline-layout-3.md` | composed page (`column: true`, sticky cell), `sets`, the 5-cell wall | |
+| 10 | Retro L3 | `retro/inline-layout-3.md` | composed page (`column: true`, sticky cell), `sets`, the 5-cell wall | **done 2026-10-22**: `--check` PASS (166 / 166 hit), five `Retro.2` ledger rows plus the `INLINE_HEAD` rule, eight `*.2.` part rows; one generic mechanism (`INLINE_HEAD` / `drawnRows`: the songs a layout-3 card does not draw are ledgered by row, which settles the *Valerie* pairing); the sticky cell's box (calendar and the left column), `sets`, every visible character and the tilted polaroid checked; Retro, Lime, Grunge, Editorial and Pop L1 and L2 re-run with Retro L3 |
 | 11 | Lime L3 | `lime/inline-layout-3.md` | | |
 | 12 | Grunge L3 | `grunge/inline-layout-3.md` | | |
 | 13 | Editorial L3 | `editorial/inline-layout-3.md` | | |

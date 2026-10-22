@@ -234,3 +234,9 @@ and rows 1, 3 and 4. The page's text cannot settle that, so `inlineFieldAt` does
 another field the largest type is the heading. `radius` (`120 mi`) and the outermost ring (`120mi`) differ only in the
 space, so the copy as typed decides. `terms` (`… · 5 pins`) and `expand` (`Expand view→`) are `INLINE_PART` rows. The
 list is rows 1–4 of the gigs, the featured gig is row 0.
+
+## Inline editing (plans/inline-edit-all.md, Retro layout 3, 2026-10-22)
+
+Layout 3's line under the map, `Based in Manchester · 5 pins · 120 mi radius`, is one node holding two slots: `base` and `radius` are `*.2.` part rows,
+settled on the click (`5 pins` is derived and a `·` opens nothing). `expand` (`Expand view→`) is a part row too. The gig rows print `City · time` and
+hit as pairs; the featured gig's chip is layout 2's. The city chips and *See all gigs* need no ledger row (derived, or the field `cta`).

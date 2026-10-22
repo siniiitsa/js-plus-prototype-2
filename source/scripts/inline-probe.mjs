@@ -39,7 +39,9 @@
 //   paged      a row the layout does not draw, in a column whose earlier rows are hit
 //              and whose later rows are all undrawn too (a pager, a carousel, as the
 //              app's `prefixSlot` reads it). Not failing.
-//   off        the universe slot is in INLINE_OFF; its reason is printed.
+//   off        the universe slot is in INLINE_OFF (or INLINE_HEAD: a row the app says the canvas does not draw);
+//              its reason is printed. A head row some node does print (and no other row shares its words)
+//              is MISSING instead: `drawnRows` is out of step with the section.
 // A positive control runs first: the header's title must open its box, or the
 // harness itself is broken (exit 2).
 //
@@ -291,7 +293,7 @@ async function runCombo(theme, layout, width) {
         const sec = st.sections.find((x) => x.id === sid)
         const mod = await import('/src/builder/EncoreBuilder.jsx')
         const name = String(st.sections.find((x) => x.cat === 'header')?.c?.title ?? '').trim() || 'Kai Mercer'
-        return mod.inlineSlots(sec, themeName, name, true).map((s) => ({ id: s.id, k: s.k, group: s.group, text: s.text, lines: s.lines, part: s.part, marked: !!s.marked, off: s.off ?? null }))
+        return mod.inlineSlots(sec, themeName, name, true).map((s) => ({ id: s.id, k: s.k, group: s.group, text: s.text, lines: s.lines, part: s.part, marked: !!s.marked, off: s.off ?? null, head: !!s.head }))
       }, sec.id, info.theme)
       const byId = new Map(universe.map((u) => [u.id, u]))
       const n = await page.evaluate((sid) => window.__nodes(sid).length, sec.id)
@@ -392,15 +394,18 @@ async function runCombo(theme, layout, width) {
       const printedOf = new Map()
       for (const slot of universe) {
         if (res.hits.has(slot.id)) { printedOf.set(slot.id, true); continue }
-        if (slot.off || !walked) continue
+        // A row the app ledgered as not drawn (INLINE_HEAD) is checked too: a node that does print it means `drawnRows` is out of step with the section.
+        if ((slot.off && !slot.head) || !walked) continue
         // The nth slot with these words is printed only if more than n nodes print them.
         const rank = universe.filter((x, j) => j < universe.indexOf(slot) && x.group === slot.group && sq(x.text) === sq(slot.text)).length
         const others = universe.filter((x) => x.group !== slot.group).flatMap((x) => [...(x.part ? [] : [sq(x.text)]), ...(x.lines ?? []).map(sq)])
-        printedOf.set(slot.id, (await page.evaluate((sid, slot, others) => window.__printed(sid, slot, others), sec.id, slot, others)) > rank)
+        // A ledgered row whose words another row shares (the second *Valerie*) cannot be told from the first's drawn nodes: not checked.
+        const twin = slot.head && universe.some((x) => x !== slot && x.group === slot.group && sq(x.text) === sq(slot.text))
+        printedOf.set(slot.id, !twin && (await page.evaluate((sid, slot, others) => window.__printed(sid, slot, others), sec.id, slot, others)) > rank)
       }
       for (const slot of universe) {
         if (res.hits.has(slot.id)) continue
-        if (slot.off) { res.off.push({ sec: sec.cat, id: slot.id, why: slot.off }); continue }
+        if (slot.off && !(slot.head && printedOf.get(slot.id))) { res.off.push({ sec: sec.cat, id: slot.id, why: slot.off }); continue }
         if (!walked) continue
         const printed = printedOf.get(slot.id)
         // A row nothing prints is *paged* only when the layout draws the head of the

@@ -2905,8 +2905,22 @@ export const INLINE_OFF = {
   'Pop.1.form.fields.placeholder': 'not drawn: the card’s boxes print the label, and a placeholder only once the label is emptied',
   'Pop.1.testimonials.quotes.when': 'not drawn: layout 2’s card has no seat for it',
   'Pop.1.media.tracks.sub': 'derived value: the seeded page prints the release and the running time as two nodes, and the whole line only once the list is stored',
+  'Retro.2.repertoire.songs.artist': 'not drawn: layout 3 prints a song’s length in the seat the artist holds elsewhere',
+  'Retro.2.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
+  'Retro.2.form.fields.placeholder': 'not drawn: the card’s boxes print the label, and a placeholder only once the label is emptied',
+  'Retro.2.testimonials.quotes.when': 'not drawn: layout 3’s wall has no seat for it',
+  'Retro.2.media.tracks.sub': 'derived value: the seeded page prints the release and the running time as two nodes, and the whole line only once the list is stored',
   '*.*.pricing.tiers.tags': 'derived value: the filter chips are the distinct tags of every package',
   '*.*.repertoire.songs.tags': 'derived value: the filter chips are the distinct tags of every song',
+}
+// INLINE_HEAD names a repeater the canvas draws only a head of, by a cap and a
+// pager: repertoire layout 3 draws a song under every tag it carries, four a card
+// and three cards a page, so a song can stand twice and a later one not at all (the
+// rest are behind a card's *View full set*, live only). The group stays editable
+// where it is drawn; a row `drawnRows` (EncoreBuilder.jsx) does not list is in the
+// ledger with this reason, which is also what keeps the nth-peer pairing honest.
+export const INLINE_HEAD = {
+  '*.2.repertoire.songs': 'live-only copy: this song is behind a card’s View full set, or on a page of the pager',
 }
 // The two marks stand in layout 1's gallery blocks alone; layout 2 draws its
 // `railLabel` once (at 768) and text can tell it from the heading.
@@ -2934,6 +2948,17 @@ export const INLINE_PART = {
   '*.1.map.expand': true,
   '*.1.form.bookings': true,
   '*.1.testimonials.kicker': true,
+  // Layout 3 the same: `[ About ]`, `● Popular`, `5 Featured / 5 Max`, the map's
+  // `Based in Manchester · 5 pins · 120 mi radius` and `Expand view→`, the form's
+  // `★★★★★ 42 bookings`, `● Testimonials`.
+  '*.2.bio.aboutLabel': true,
+  '*.2.media.listLabel': true,
+  '*.2.media.totalLabel': true,
+  '*.2.map.base': true,
+  '*.2.map.radius': true,
+  '*.2.map.expand': true,
+  '*.2.form.bookings': true,
+  '*.2.testimonials.kicker': true,
 }
 // INLINE_LINES names the forms a slot's copy is printed in when the words alone
 // cannot tell its node from another field's: each template is one line as the

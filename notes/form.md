@@ -264,3 +264,8 @@ Grunge's layout-2 card prints the uppercased label in each box and no placeholde
 
 The sticky card's box follows it on Pop's blue band as on the other templates (0 px at every scroll step, 1440 and 768). `fields.placeholder` is ledgered
 (`Pop.1.form.fields.placeholder`): the layout-2 card prints the uppercased label, no `input` stands in the section on the canvas, and the 80% `--ph` is layout 1's.
+
+## Inline editing (plans/inline-edit-all.md, Retro layout 3, 2026-10-22)
+
+Layout 3's `bookings` is printed `★★★★★ 42 bookings` (a `*.2.` part row); `fields.placeholder` is ledgered (`Retro.2.form.fields.placeholder`, the label is what
+the boxes print) as at layout 2.

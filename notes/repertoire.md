@@ -73,3 +73,13 @@ Layout 2 draws no song length: `Lime.1.repertoire.songs.length`. `title` / `arti
 ## Inline editing (plans/inline-edit-all.md, Grunge layout 2, 2026-10-22)
 
 Layout 2 draws no song length: `Grunge.1.repertoire.songs.length`. `title` / `artist` hit; the last two songs are *paged*.
+
+## Inline editing (plans/inline-edit-all.md, Retro layout 3, 2026-10-22)
+
+Layout 3 draws **a song once per tag, four rows a card, three cards a page** (`EncoreSection`'s `cap` and `perPage`; the All card closes the list
+when a song has no tag and stands on the next page), so a song can be drawn twice and a later one not at all. `INLINE_HEAD` (`*.2.repertoire.songs`,
+`data.js`) names the group; `drawnRows()` (`EncoreBuilder.jsx`) works out which rows the cards draw from the same tags, and `inlineSlots` ledgers the rest
+(*live-only copy*: behind *View full set* or the pager). The seed's row 11 (*Valerie*, Pubs) is the Pubs card's fifth song, so the two drawn *Valerie*s both
+open row 0, and typing in either rewrites both. `songs.artist` is not drawn (`Retro.2.repertoire.songs.artist`); `title` and `length` hit; `sets.mood` /
+`sets.length` are parts of the set line (`Mellow · 45 min`). The 4 and 3 are copied from the section: change them there, change them in `drawnRows`.
+Two different rows with one title, both drawn, open nothing (the counts differ); the panel is the way in.

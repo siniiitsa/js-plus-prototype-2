@@ -83,3 +83,5 @@ Retro layout 1's ledger (`INLINE_OFF` in `data.js`, read off `scripts/inline-pro
 Taken further by `plans/inline-edit-all.md`: the gate is no longer an allowlist (`INLINE_KEYS` and `inlineOn` are gone). A
 field is editable when `fieldShown` says the layout reads it, less the ledger. A page is *known* to work only because
 `scripts/inline-probe.mjs` passed it, one pass per template and layout; until a page's pass it is on but unproved.
+Retro layout 3 (pass 10) added `INLINE_HEAD`: a repeater the canvas draws only a head of (repertoire layout 3's set cards) ledgers the rows it does not
+draw, by row and state-aware (`drawnRows` in `EncoreBuilder.jsx`).
