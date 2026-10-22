@@ -29,6 +29,11 @@ section starts the edit (the first click still only selects); no phones, where t
   a peer of this one's words. Where the exact copy stands in several fields at once, a slot whose line is drawn is
   *claimed* (the bare nodes go to the fields left), then the copy as typed decides, then the heading or title on the
   largest type. Retro layout 2 (`plans/retro/inline-layout-2.md`) is where this was built.
+- **The stack under the pointer.** `e.target` is corrected by `elementsFromPoint`: among the slots the stack holds, the one
+  whose text box under the pointer is the smallest wins, unless an element above it paints a ground; and **text that is no slot**
+  (the kicker's `●`) whose box is strictly under the pointer and smaller than the slot's wins, so the click opens nothing
+  (Pop layout 3's lifted heading, pass 21). Every node that prints a slot's copy opens it, not one of them (pass 20); the probe's `dead click`
+  report lists the exceptions: nodes under another element, vertical type, and markup.
 - **Where the box goes.** `inlineBox` uses the union of the node's text-line rectangles (a `Range` from its first text to its last, so an
   icon after a label adds none, Grunge pass 2), not its box,
   and moves the top by half of `line-height` minus the font's content height. Under a tilt (`tiltChain`: the bio's
@@ -67,7 +72,8 @@ opens its own slot, the sentinel lands on the clicked node, and Escape restores 
 `when`. Footer: `statement` `cta` `copyright`, links `label`.
 
 ## What is still out
-Retro layout 1's ledger (`INLINE_OFF` in `data.js`, read off `scripts/inline-probe.mjs --theme Retro --layout 1`):
+Retro layout 1's ledger (`INLINE_OFF` in `data.js`, read off `scripts/inline-probe.mjs --theme Retro --layout 1`), then the
+classes the other pages added (the whole ledger, checked in pass 21 against all 22 runs):
 - Derived filter chips (`tiers.tags`, `songs.tags`): panel only, for every template and layout (`*.*`).
 - `songs.length`, which Retro's layout 1 does not draw (layout 3 prints it), and the calendar's `prompt`, which shows only
   while no day is cued and so is unreachable by default.
@@ -78,6 +84,14 @@ Retro layout 1's ledger (`INLINE_OFF` in `data.js`, read off `scripts/inline-pro
 - Copy over its cap (typed under another layout) is shown clamped by the page but whole in the box.
 - The fields no repeater slot covers: `booked` and `images`.
 - Phones.
+- **Added by layouts 2–4 and the other templates** (`INLINE_OFF`, one row per template and design, reasons in `data.js`):
+  `songs.length` where the layout does not print it (all but layout 3) and `songs.artist` where layout 3 prints the length in its seat;
+  `calendar.prompt` everywhere; `form.fields.placeholder` at layouts 2 and 3 and `testimonials.quotes.when` at layouts 2–4 (no seat);
+  `media.tracks.sub` at layouts 2–4 (two nodes, or the release alone) and `pricing.unit` at layout 4 (the slash dropped); the header's
+  `kicker` and `tags` where a layout draws neither (layout 2; layout 3's card prints the card line; Retro's layout 5 prints neither kicker nor location).
+  Live-only copy (the wizard's steps, *View full set*, the city chips) has no row because the canvas never draws it, and the rows of a repeater the canvas
+  draws only a head of are `INLINE_HEAD` (repertoire layout 3). `tracks.sub` and `pricing.unit` are not state-aware: a stored list or an emptied value
+  changes what the page prints (an open item, with the bio→header question).
 
 ## Beyond Retro layout 1
 Taken further by `plans/inline-edit-all.md`: the gate is no longer an allowlist (`INLINE_KEYS` and `inlineOn` are gone). A

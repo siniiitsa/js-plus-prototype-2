@@ -6366,6 +6366,31 @@ function inlineFieldAt(sec, wrap, target, pt, themeName, artistName) {
     const area = hit && !hit.float ? textBoxUnder(hit.node, pt) : Infinity
     if (area < bestArea) { best = hit; bestArea = area }
   }
+  // The other way about: copy that is no slot (a bullet the markup adds) and whose
+  // text box is the pointer's, smaller than the slot's, is what was clicked. Pop
+  // lifts the testimonials' heading over its kicker, so the heading's box holds the
+  // lower half of the kicker's `●`. Only text the click is strictly on counts, and
+  // not text the slot's own node holds or sits in.
+  if (!Number.isFinite(bestArea)) return best
+  for (const [i, el] of stack.entries()) {
+    if (!root.contains(el) || best.node.contains(el) || el.contains(best.node)) continue
+    if (stack.slice(0, i).some((e) => root.contains(e) && !el.contains(e) && paintsOver(e))) continue
+    if (ownTextBoxUnder(el, pt) < bestArea && !from(el)) return null
+  }
+  return best
+}
+
+// Like `textBoxUnder`, for the text nodes `el` holds itself and with no margin.
+function ownTextBoxUnder(el, pt) {
+  const range = document.createRange()
+  let best = Infinity
+  for (const t of el.childNodes) {
+    if (t.nodeType !== 3 || !t.data.trim()) continue
+    range.selectNodeContents(t)
+    for (const q of range.getClientRects()) {
+      if (pt.x >= q.left && pt.x <= q.right && pt.y >= q.top && pt.y <= q.bottom) best = Math.min(best, q.width * q.height)
+    }
+  }
   return best
 }
 

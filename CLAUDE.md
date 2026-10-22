@@ -173,7 +173,14 @@ mutated through a single `patch()` helper.
   way (`inlineRule`). A page is *known* to work only because **`scripts/inline-probe.mjs --theme T --layout N --width
   1440,768 --check`** passed it: it clicks every text node with a real mouse, types a sentinel, presses Escape, and
   reports WRONG, NOT-RESTORED, MISSING and (across both widths) UNLEDGERED, a slot drawn nowhere that `INLINE_OFF`
-  does not name (see the script's header for the flags; its last line is `inline-probe: PASS` or `FAIL`). `--width 768` clicks the Tablet tab and keeps the window at 1440, because a window
+  does not name (see the script's header for the flags; its last line is `inline-probe: PASS` or `FAIL`). **Retro also
+  takes `--layout 5` and `6`**, its header-only designs, whose body is layout 1's page. It also *reports*, without failing, a
+  **dead click**: a node that prints a hit slot's copy and opens nothing while another node opens it, which `--check` counts as
+  hit. **The rule is every node the pointer can reach**: the field's copy opens its box wherever the page prints it. The
+  exceptions are the ones the probe skips or the audit shows as noise: a node under another element (the media fan's back
+  cards), vertical type (Retro layout 2's `Manchester, UK` rail, the gallery's `Gallery` wordmark) and markup that is not the
+  field's copy (`·`, a song's row number). Pass 20 found the kicker dead on one of two nodes and fixed it with an
+  `INLINE_LINES` row, not a ledger row. `--width 768` clicks the Tablet tab and keeps the window at 1440, because a window
   at 820 or under is the phone chrome. Until a page's pass in `plans/inline-edit-all.md` it is on and unproved.
   `InlineEditor` opens a `<textarea>` over the text's own line rectangles (`inlineBox`)
   with transparent type and a caret, so the page keeps drawing the copy; a tilted card's box is given the
@@ -186,7 +193,7 @@ mutated through a single `patch()` helper.
   (`elementsFromPoint`): among the slots the stack holds, the one whose own text box under the pointer is the smallest
   wins (Pop's title words stand across its kicker and location). Measured on Grunge's and Pop's layout 1, nothing
   painted over the copy hid it from `e.target`, and letting a lower slot win past a non-slot element on top was worse
-  (a seal over a small-print line opened the line), so only slots compete, **and a lower slot does not compete when an element above it in the stack, one that does not contain it, paints a ground** (`paintsOver`: an image, gradient or colour at alpha ≥ .5): the media fan's back card lies under the front one, and its smaller box won a click on the front card's visible glyphs (Pop pass 9, every template). Where a pager or carousel draws fewer
+  (a seal over a small-print line opened the line), so only slots compete, **and a lower slot does not compete when an element above it in the stack, one that does not contain it, paints a ground** (`paintsOver`: an image, gradient or colour at alpha ≥ .5): the media fan's back card lies under the front one, and its smaller box won a click on the front card's visible glyphs (Pop pass 9, every template), **and a click on text that is no slot, the smaller box under the pointer, is not the slot's** (pass 21): Pop lifts the testimonials' heading 0.14em over its kicker, so the heading's box held the lower half of the kicker's `●`, and `ownTextBoxUnder` now vetoes the slot when a text node outside the chosen node, outside what holds it and not covered by a ground, has a smaller box strictly under the pointer. Where a pager or carousel draws fewer
   nodes than there are slots with the same copy, the nth node is the nth slot only if what is drawn of that column
   reads as the head of the slots (`prefixSlot`).
   **Where the words are not enough, `INLINE_LINES` names the forms the copy is printed in** (`'● {}'`, `'{} ↓'`, a gig's

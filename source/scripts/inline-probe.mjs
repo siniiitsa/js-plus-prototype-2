@@ -39,6 +39,10 @@
 //   paged      a row the layout does not draw, in a column whose earlier rows are hit
 //              and whose later rows are all undrawn too (a pager, a carousel, as the
 //              app's `prefixSlot` reads it). Not failing.
+//   dead click a node that prints a hit slot's copy (the same words) and opens nothing, while another node of the
+//              section opens it: `--check` counts the slot hit and cannot see the dead node. Not failing. Known
+//              noise: the gallery's vertical `Gallery` wordmark, a row's own number (`12`), vertical type
+//              (Retro layout 2's `Manchester, UK` rail), and punctuation (`·`, skipped).
 //   off        the universe slot is in INLINE_OFF (or INLINE_HEAD: a row the app says the canvas does not draw);
 //              its reason is printed. A head row some node does print (and no other row shares its words)
 //              is MISSING instead: `drawnRows` is out of step with the section.
@@ -274,7 +278,7 @@ async function runCombo(theme, layout, width) {
   fs.writeFileSync(sink, '')
   const emit = (row) => fs.appendFileSync(sink, JSON.stringify(row) + '\n')
   const { page, errors } = await openEditor(theme, layout, width)
-  const res = { tag, theme, layout, width, hits: new Map(), wrong: [], nr: [], missing: [], notDrawn: [], paged: [], off: [], unhit: 0, hidden: 0, clicks: 0, covered: [] }
+  const res = { tag, theme, layout, width, hits: new Map(), wrong: [], nr: [], missing: [], notDrawn: [], paged: [], dead: [], off: [], unhit: 0, hidden: 0, clicks: 0, covered: [] }
   try {
     const info = await inEditor(page)
     if (info.has !== 'function') throw new Error('EncoreBuilder.jsx exports no inlineSlots')
@@ -375,6 +379,7 @@ async function runCombo(theme, layout, width) {
       }
 
       // Phase 1: every text node, clicked in the middle of its first line.
+      const clicked = []
       for (let i = 0; i < Math.min(n, limit); i++) {
         const row = { kind: 'click', sec: sec.cat, i, text: texts[i].slice(0, 60) }
         res.clicks++
@@ -390,8 +395,16 @@ async function runCombo(theme, layout, width) {
           res.unhit++; secRow.unhit++
           if (aim.over) res.covered.push({ sec: sec.cat, text: row.text.slice(0, 40), ...r.stack })
         } else record(r, row)
+        clicked.push({ text: row.text, result: r.result, slot: r.slot, covered: !!aim.over })
         emit({ ...row, result: r.result, slot: r.slot, label: r.label, ...r.stack, restore: r.restore, why: r.why })
       }
+
+      // A node printing a slot's copy that opens nothing while another node of the section opens
+      // it: the slot counts as hit, so `--check` cannot see the dead one. Reported, not failing.
+      // Not counted: a node under another element (`covered`), and one with no word in it (`·`).
+      const opened = new Map(clicked.filter((x) => x.result === 'hit').map((x) => [sq(x.text), x.slot]))
+      for (const x of clicked) if (x.result === 'unhit' && !x.covered && hasWord(x.text) && opened.has(sq(x.text))) res.dead.push({ sec: sec.cat, id: opened.get(sq(x.text)), text: x.text.slice(0, 40) })
+      for (const d of res.dead.filter((x) => x.sec === sec.cat)) emit({ kind: 'slot', ...d, result: 'dead click' })
 
       // Phase 2: a slot the page prints inside a longer line is reached by a click
       // on its own words, which the middle of the line is not. Aim at them.
@@ -476,6 +489,7 @@ for (const theme of themes) for (const layout of layouts) for (const width of wi
   }
   grouped(res.notDrawn, 'not drawn')
   grouped(res.paged, 'paged')
+  grouped(res.dead, 'dead click')
   grouped(res.off, 'off', true)
   if (res.errors.length) console.log(`  page errors: ${[...new Set(res.errors)].slice(0, 3).join(' | ')}`)
   const bad = res.wrong.length + res.nr.length + res.missing.length
@@ -485,8 +499,8 @@ for (const theme of themes) for (const layout of layouts) for (const width of wi
   for (const id of res.hits.keys()) a.hit.add(id)
   for (const m of res.off) a.off.add(m.id)
   a.notDrawn.push(new Map(res.notDrawn.map((m) => [m.id, m])))
-  console.log(`inline-probe ${res.theme} L${res.layout} @${res.width}: ${res.hits.size} slots hit · ${res.wrong.length} WRONG · ${res.nr.length} NOT-RESTORED · ${res.missing.length} MISSING · ${res.notDrawn.length} not drawn · ${res.paged.length} paged · ${res.off.length} off · ${res.unhit} unhit · ${res.hidden} hidden · ${res.covered.length} unhit under an overlay`)
-  fs.appendFileSync(path.join(outDir, `${res.tag}.jsonl`), JSON.stringify({ kind: 'summary', hits: [...res.hits].map(([slot, h]) => ({ slot, ...h })), wrong: res.wrong, nr: res.nr, missing: res.missing, notDrawn: res.notDrawn, paged: res.paged, off: res.off, covered: res.covered }) + '\n')
+  console.log(`inline-probe ${res.theme} L${res.layout} @${res.width}: ${res.hits.size} slots hit · ${res.wrong.length} WRONG · ${res.nr.length} NOT-RESTORED · ${res.missing.length} MISSING · ${res.notDrawn.length} not drawn · ${res.paged.length} paged · ${res.dead.length} dead click · ${res.off.length} off · ${res.unhit} unhit · ${res.hidden} hidden · ${res.covered.length} unhit under an overlay`)
+  fs.appendFileSync(path.join(outDir, `${res.tag}.jsonl`), JSON.stringify({ kind: 'summary', hits: [...res.hits].map(([slot, h]) => ({ slot, ...h })), wrong: res.wrong, nr: res.nr, missing: res.missing, notDrawn: res.notDrawn, paged: res.paged, dead: res.dead, off: res.off, covered: res.covered }) + '\n')
 }
 // The done test leaves nothing out silently: a slot no width draws, that no click
 // reached and the ledger (INLINE_OFF) does not name, fails --check. It needs both

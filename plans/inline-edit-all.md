@@ -18,6 +18,13 @@ For every (template, layout, section), every `FIELDS` key of type text, area or 
 repeater, that **`fieldShown` says the layout reads and the canvas actually draws**, opens its own box on a click
 at desktop or tablet (the union of the two), types into the clicked node, and Escape restores it.
 
+**"A click" means every node, not any one** (decided in pass 21 from pass 20's finding). Layout 6's header printed the
+kicker twice and only the bare copy opened a box, while `--check` was green, because a slot is *hit* when any node opens
+it. The code answers "every node the pointer can reach that prints the field's copy": pass 20 fixed the dead one with
+an `INLINE_LINES` row rather than ledgering it. What `--check` cannot see, the probe's **dead click** report does (a node
+printing a hit slot's copy that opens nothing). The nodes it may still list are the accepted ones: covered by another
+element, vertical type, and markup that is not the field's copy.
+
 What the canvas does not draw is **panel-only, and written down**: the pass file's ledger lists each such field
 with its reason. The only reasons accepted are:
 
@@ -211,7 +218,40 @@ Retro, Lime, Grunge, Editorial, Pop (build order).
 | 18 | Editorial L4 | `editorial/inline-layout-4.md` | the `*.3.` part and line rows carry over; Gloock, scheme seats | **done 2026-10-22**: `--check` PASS (152 / 149 hit), no code change, five `Editorial.3` ledger rows (Grunge's, one for one, each read off Editorial's own DOM, case-insensitively); the `*.3.` part and line rows hit on Editorial unchanged; `bio.tagsLabel` is read at Editorial's layout 4 (`Editorial: [2, 3]`), so the *Genres* line is hit and the counts are Retro's; no tape or tilted text (the only rotation is the two seal rings), the one-node title, the wrapping Base stat value, `stats` and `steps`, both *Valerie*s, the sticky A–Z rail, every visible character and the seats (0 mismatches on all eleven sections at both widths; Gloock 400 and `uppercase` hold in the box) checked; no shared code moved, so no earlier page re-run |
 | 19 | Pop L4 | `pop/inline-layout-4.md` | the four `SealBadge` arms | **done 2026-10-22**: `--check` PASS (151 / 148 hit), no app code change, five `Pop.3` ledger rows (Editorial's, one for one, each read off Pop's own DOM, case-insensitively); one generic fix, in the probe: `__aim` aims at what a clipping ancestor leaves of a node (Pop's 768 media tile clamps *Manchester at 3am* to `MANCH…`, and the middle of its range lay in the clip, so the probe called a working slot MISSING; a click on the visible glyphs always opened it); all 19 earlier pages re-run with `--check`, all PASS with their old counts; the `*.3.` part and line rows hit on Pop unchanged; `bio.tagsLabel` is not read at Pop's layout 4 (`Pop: [2]`), so Pop hits one slot fewer than Retro; the header's seal (Lime's disc tree on Scheme 4, no longer the Pop arm) opens `header.badgeText` in the floating box with the field box on its disc at both widths, the footer's seal (the Pop arm) has no field; every sticker is `pointer-events: none` and covers no slot; Titan One's 400 and `uppercase` and the layout-4 seats (0 mismatches on all eleven sections at both widths), the wrapping Base stat value, `stats` and `steps`, both *Valerie*s, the sticky A–Z rail and every visible character checked |
 | 20 | Retro headers 5 and 6 | `retro/inline-header-5-6.md` | header-only designs | **done 2026-10-22**: `--check` PASS on both (156 / 143 hit each: the body is Retro layout 1's page, so its ledger is the existing `Retro.0` set); the probe now reaches `--layout 5` / `6` (card 1's page, the header's `arch` moved); two `Retro.4.header` ledger rows (the Overlay card draws no kicker or location) and one `*.5.header.kicker` `INLINE_LINES` row: layout 6's `● DJ · LIVE ACT` opened nothing while `--check` was green, since the inset card prints the same copy bare and counted the field as hit; no shared app code moved, so no earlier page re-run; the header's seal (Retro's arm, floating box, field box on the disc), seats (0 mismatches on 12 / 14 boxes), tilt, every visible character and the boxes checked |
-| 21 | End-of-plan sweep | — | all 20 pages `--check`ed once more, docs, `index.html` refresh | |
+| 21 | End-of-plan sweep | — | all 20 pages `--check`ed once more, docs, `index.html` refresh | **done 2026-10-23**: `--check` PASS on all 22 runs (the 20 pages plus Retro 5 and 6), `--width 1440,768`, every count the table's own (Retro 156/143 · 156/157 · 166/166 · 152/149 and layouts 5 and 6 at 156/143; Lime 156/143 · 155/156 · 167/167 · 151/148; Grunge 157/144 · 155/156 · 167/167 · 151/148; Editorial 155/142 · 155/156 · 167/167 · 152/149; Pop 155/142 · 155/156 · 167/167 · 151/148), 0 WRONG / NOT-RESTORED / MISSING / UNLEDGERED; one generic fix, run once, before the sweep: open item (e), the Pop L3 testimonials kicker's `●`, closed by `inlineFieldAt` (below); the dead-click audit over all 22 JSONLs found only the known classes (see below), now a non-failing probe class; the module split was put to the user and **left**; docs, then the `index.html` and `published.html` refresh |
+
+### Pass 21 — the sweep
+
+**Open item (e), fixed first.** Pop lifts the testimonials heading 0.14em (`position: relative; top: -0.14em`), so its box starts 6 px inside the kicker line
+and holds the lower half of the kicker's `●` (a span of the markup, no slot): `e.target` was the heading, and nothing competed. `inlineFieldAt` now ends with the
+other half of the stack rule: **a text node outside the chosen node (and outside what holds it), not under a ground that paints over it, whose own text box is
+strictly under the pointer and smaller than the slot's, is what was clicked, and it is no slot** (`ownTextBoxUnder`; only when the pointer is on the slot's text box at all,
+so a pill's padding keeps `e.target`'s). Measured by `dot2.mjs`: y 103–115 at the `●` opens nothing, the kicker's word from x 377 still opens `testimonials.kicker` at every y. Because the
+rule is generic, nothing was trusted until it had been seen not to move a click elsewhere: **a per-character sweep** (`charsweep`, every visible character) on Pop L3 matches pass 14's per-section
+`opened` counts exactly but for the testimonials' one `●` click (182 → 181), and on Retro, Grunge and Pop L1 matches a baseline taken with the edit stashed, section for section. Then the sweep ran once, after the fix.
+
+**The sweep** (`scratchpad/runone.sh` under `xargs -P 4`, one `OUT` per run, about 15 minutes a batch, 22 runs): all PASS at the expected counts (row above). `scripts/inline-probe.mjs` changed
+twice this pass: pass 20's `openEditor` (layouts 5 and 6, Retro) was exercised by the same runs, so layouts 1–4 took the old expression and every one passed; and the **dead-click report** below.
+
+**The dead-click audit** (every `unhit` click, not covered, whose words a `hit` click in the same section opens), over the 22 JSONLs: 5 groups, all noise.
+The script's first run listed 36 groups; the other 31 were the media fan's back cards on layout 2 (`Echo & The Floor`, `Roomtone`, `Manchester at 3am`, `Late Lights`), which the probe already marks as under another element
+(`over`), and the map's and repertoire's `·` separators; both are filtered. What is left:
+
+| Group | Why it is not a gap |
+|---|---|
+| `Gallery` (Retro 1, 5, 6) | the vertical wordmark of the rail: vertical type is left to the panel, and the credit line's `railLabel` opens by its mark |
+| `Manchester, UK` (Retro 2, header) | the vertical rail beside the photograph (`writing-mode: vertical-rl`); the place card opens `header.location` |
+| `12` (Grunge 1, repertoire) | the twelfth song's row number, markup; the heading's `12` (of `12 Songs`) opens the heading |
+
+It is now a **non-failing report** of the probe, `dead click`, like `paged`: `--check` cannot fail on it because the three rows above are legitimate, so a new group is read, not gated.
+
+**Docs.** CLAUDE.md's inline bullet names `--layout 5` and `6`, the dead-click report, the "every node" rule and the new hit-test rule; `plans/inline-edit.md` gains the rule and its "still out" list is brought to the final ledger.
+
+**The module split (Phase 0 step 5)** was put to the user (do it / leave it): **left**. `EncoreBuilder.jsx` keeps the inline block, so the sweep certified the code that ships. If it is ever done, one page's `--check` per template proves the move.
+
+**Open, carried as written:** (a) a state-aware ledger for `tracks.sub` and `pricing.unit`; (b) the bio→header cross-section question (the bio's role line, the form's credit and the calendar's stamp print the header's kicker
+and location with no field, so on Retro layout 5, where the header draws neither, the panel is the only way in); (c) pass 4's over-cap title finding; (d) two different rows with the same title both drawn at layout 3 open nothing.
+(e) is closed.
 
 A pass's file is created when its session starts (not now) from the template below and filled as it goes.
 
