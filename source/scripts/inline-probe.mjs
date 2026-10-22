@@ -134,6 +134,19 @@ function pageHelpers() {
       const at = needle ? t.n.data.toLowerCase().indexOf(needle.toLowerCase()) : -1
       if (at >= 0) { range.setStart(t.n, at); range.setEnd(t.n, at + needle.length) } else range.selectNodeContents(t.n)
       r = [...range.getClientRects()].find((q) => q.width > 0.5 && q.height > 0.5)
+      // A clamped title (`overflow: hidden; text-overflow: ellipsis`) has a range as wide as the
+      // whole copy, whose middle is the clipped part. Aim at the part a clipping ancestor leaves.
+      if (r) {
+        const root = rootOf(sid)
+        for (let e = t.el; e && e !== root.parentElement; e = e.parentElement) {
+          const cs = getComputedStyle(e)
+          if (cs.overflowX === 'visible' && cs.overflowY === 'visible') continue
+          const b = e.getBoundingClientRect()
+          const l = cs.overflowX === 'visible' ? r.left : Math.max(r.left, b.left), rt = cs.overflowX === 'visible' ? r.left + r.width : Math.min(r.left + r.width, b.right)
+          const tp = cs.overflowY === 'visible' ? r.top : Math.max(r.top, b.top), bt = cs.overflowY === 'visible' ? r.top + r.height : Math.min(r.top + r.height, b.bottom)
+          if (rt - l > 0.5 && bt - tp > 0.5) r = { left: l, top: tp, width: rt - l, height: bt - tp }
+        }
+      }
     }
     if (!r) return { hidden: 'no box', text }
     const x = r.left + r.width / 2, y = r.top + r.height / 2

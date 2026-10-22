@@ -79,3 +79,7 @@ The `*.3.` part rows (`since`, `cta2`) carry over and hit on Grunge. `tagsLabel`
 ## Inline editing (plans/inline-edit-all.md, Editorial layout 4, 2026-10-22)
 
 The `*.3.` part rows (`since`, `cta2`) carry over and hit on Editorial. **Unlike Lime and Grunge, Editorial reads `tagsLabel` at layout 4** (`in: { Editorial: [2, 3], … }`), so the *Genres* line over the chips is a slot and opens `bio.tagsLabel` (Retro's count). The overlay card and its Gloock name are upright; no tape or tilt over any text.
+
+## Inline editing (plans/inline-edit-all.md, Pop layout 4, 2026-10-22)
+
+The `*.3.` part rows (`since`, `cta2`) carry over and hit on Pop. **Like Lime and Grunge, Pop does not read `tagsLabel` at layout 4** (`in: { Pop: [2], … }`: the Genres line is inked the band's own colour, so it is not drawn), so the bio is five slots, one fewer than Retro's and Editorial's. The overlay card is upright and its stickers (dot grid, scribble) are `pointer-events: none`; nothing covers a slot.

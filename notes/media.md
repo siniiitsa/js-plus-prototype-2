@@ -201,3 +201,7 @@ Ledgered as on Retro and Lime (`Grunge.3.media.tracks.sub`): the list tile print
 ## Inline editing (plans/inline-edit-all.md, Editorial layout 4, 2026-10-22)
 
 Ledgered as on the other templates (`Editorial.3.media.tracks.sub`): the list tile prints `Single` alone and `02:28` / `04:22` are the player's clock.
+
+## Inline editing (plans/inline-edit-all.md, Pop layout 4, 2026-10-22)
+
+Ledgered as on the other templates (`Pop.3.media.tracks.sub`): the list tile prints `Single` alone and `02:28` / `04:22` are the player's clock. **The list tile's title is clamped** (`overflow: hidden; text-overflow: ellipsis`, `nowrap`): at 768 Pop's tiles are 136 wide and `MANCHESTER AT 3AM` reads `MANCH…`, its range 172 wide with its middle in the clipped part. A hand on the visible glyphs opens `tracks[1].title` (it always did); the probe aimed at the middle of the range and called it covered, and now aims at what a clipping ancestor leaves (`scripts/inline-probe.mjs`, `__aim`). The box is as wide as the whole title, past the `…`.
