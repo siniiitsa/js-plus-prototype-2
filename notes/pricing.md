@@ -246,3 +246,7 @@ brackets, the dot and the star are the markup's, the words unique on the page.
 ## Inline editing (plans/inline-edit-all.md, Retro layout 4, 2026-10-22)
 
 Layout 4 prints a plan's price as one node (`£450`): `price.lead` and `price.amount` are one `*.3.` part row (`pricing.tiers.price`), two slots in a node settled on the click (the tail is empty, so never a slot). **`unit` is ledgered** (`Retro.3.pricing.unit`): the layout drops the leading slash, so the page prints `event` where the field holds `/event`; the box could not lie on the stored text. All three plans are drawn (no paging at this layout).
+
+## Inline editing (plans/inline-edit-all.md, Lime layout 4, 2026-10-22)
+
+The `*.3.` price part row carries over: a price is one node (`£450`), two slots settled on the click, in Bebas Neue (box `line-height` against the content rect flags it in `boxcheck`, harmless). `unit` is ledgered (`Lime.3.pricing.unit`: the page prints `event`, the field holds `/event`).

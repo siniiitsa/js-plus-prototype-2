@@ -67,3 +67,7 @@ Layout 3's `aboutLabel` is printed `[ About ]` (three text nodes of one span): a
 ## Inline editing (plans/inline-edit-all.md, Retro layout 4, 2026-10-22)
 
 Layout 4's overlay card prints `Performing since <date>` in one span and the Listen link beside its arrow (`Listen ↗`), so `since` and `cta2` are `*.3.` part rows (`INLINE_PART`, design index 3), box on the date and on `Listen`; the literal *Performing since* and the `↗` open nothing. The card's name, role line and six tag chips are the header's identity keys with no bio field: unhit, as at every layout (the open cross-section question).
+
+## Inline editing (plans/inline-edit-all.md, Lime layout 4, 2026-10-22)
+
+The `*.3.` part rows (`since`, `cta2`) carry over and hit on Lime. `tagsLabel` is **not read** at Lime's layout 4 (`in: { Lime: [2], … }`), so the overlay card draws the six chips with no *Genres* line and the field is outside the universe, unlike Retro's layout 4, which hits it.

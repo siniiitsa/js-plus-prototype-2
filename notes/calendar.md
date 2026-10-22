@@ -315,3 +315,7 @@ its release, and at 768, where nothing composes, it follows the in-flow section 
 ## Inline editing (plans/inline-edit-all.md, Retro layout 4, 2026-10-22)
 
 The wizard is live-only; the canvas draws its first step. Slots that hit: `heading`, the four event types, `time` and `cta`; `prompt` is ledgered (`Retro.3.calendar.prompt`). The summary column echoes the chosen type, so *Wedding* is drawn twice (the chip and the summary): both open `types#0`, the two-*Valerie* shape, and the summary mirrors the chip by construction. Every other node (step titles, *Guests*, *Budget*, the date card) is literal or derived.
+
+## Inline editing (plans/inline-edit-all.md, Lime layout 4, 2026-10-22)
+
+The wizard is live-only; the canvas draws its first step and `prompt` is ledgered (`Lime.3.calendar.prompt`: the page prints the cued day, no *Pick a date*). Everything else hits, as on Retro.

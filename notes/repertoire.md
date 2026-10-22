@@ -91,3 +91,7 @@ Lime's `limeCard` draws the same four rows a card and three cards a page as Retr
 ## Inline editing (plans/inline-edit-all.md, Retro layout 4, 2026-10-22)
 
 Layout 4 draws **every song, sorted by title** (all twelve seeded songs at both widths), so `INLINE_HEAD` does not apply and the two seeded *Valerie*s are two drawn nodes: the first opens row 0, the second row 11, and typing in one leaves the other (`valerie.mjs`, both widths). `songs.length` is not drawn (`Retro.3.repertoire.songs.length`). The A–Z rail is the one sticky box on the page (1440 only) and carries no slot; a box on a title scrolls with its row at a constant 1.2 px (768: 1.5 px).
+
+## Inline editing (plans/inline-edit-all.md, Lime layout 4, 2026-10-22)
+
+Layout 4 draws every song sorted by title, so `INLINE_HEAD` has no work and both *Valerie*s open their own rows (`valerie.mjs`, both widths). `songs.length` is ledgered (`Lime.3.repertoire.songs.length`: no song length is printed). The A–Z rail is the only sticky box (1440 alone) and holds no slot.

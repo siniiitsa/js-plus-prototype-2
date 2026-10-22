@@ -86,3 +86,4 @@ field is editable when `fieldShown` says the layout reads it, less the ledger. A
 Retro layout 3 (pass 10) added `INLINE_HEAD`: a repeater the canvas draws only a head of (repertoire layout 3's set cards) ledgers the rows it does not
 draw, by row and state-aware (`drawnRows` in `EncoreBuilder.jsx`).
 Retro layout 4 (pass 15) first proved the map's `stats` wall and the form's `steps`, and gave the map ticker's one-line gig (`Manchester · JUL 12 · 22:00`) its `INLINE_LINES` rows, with the shorter forms the page prints when a piece is emptied.
+Lime layout 4 (pass 16) was the first carry-over of the layout-4 rows: Pass 15's `*.3.` part and line rows hit on Lime unchanged, so the pass was five ledger rows.

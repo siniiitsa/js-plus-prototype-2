@@ -189,3 +189,7 @@ and the running time are two nodes).
 ## Inline editing (plans/inline-edit-all.md, Retro layout 4, 2026-10-22)
 
 `tracks.sub` is ledgered (`Retro.3.media.tracks.sub`): the list tile prints the release alone (`Single`) and the `02:28` / `04:22` are the player's clock, so the field's line (`Single · 5:42`) is in no node. Title, heading and the rest hit.
+
+## Inline editing (plans/inline-edit-all.md, Lime layout 4, 2026-10-22)
+
+Ledgered as on Retro (`Lime.3.media.tracks.sub`): the list tile prints `Single` alone and `02:28` / `04:22` are the player's clock.

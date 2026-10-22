@@ -187,3 +187,7 @@ As Retro's layout 3: the wall repeats no copy, `kicker` is a `*.2.` part row and
 ## Inline editing (plans/inline-edit-all.md, Retro layout 4, 2026-10-22)
 
 Layout 4 pages from its arrow discs, so the canvas draws the first four reviews at 1440 and the first three at 768 (the rest *paged*). `quotes.when` is ledgered (`Retro.3.testimonials.quotes.when`: no *Reviewed …* anywhere in the section).
+
+## Inline editing (plans/inline-edit-all.md, Lime layout 4, 2026-10-22)
+
+Layout 4 pages from its arrow discs, so the canvas draws the first four reviews at 1440 and three at 768 (the rest *paged*). `quotes.when` is ledgered (`Lime.3.testimonials.quotes.when`: no *Reviewed …* in the section).
