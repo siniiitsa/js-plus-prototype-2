@@ -323,3 +323,7 @@ The wizard is live-only; the canvas draws its first step and `prompt` is ledgere
 ## Inline editing (plans/inline-edit-all.md, Grunge layout 4, 2026-10-22)
 
 As on Retro and Lime: the wizard is live-only, the canvas draws its first step, and `prompt` is ledgered (`Grunge.3.calendar.prompt`: the page prints the cued day, no *Pick a date*). Everything else hits.
+
+## Inline editing (plans/inline-edit-all.md, Editorial layout 4, 2026-10-22)
+
+As on Retro, Lime and Grunge: the wizard is live-only, the canvas draws its first step, and `prompt` is ledgered (`Editorial.3.calendar.prompt`: the page prints the cued day, no *Pick a date*). Everything else hits.

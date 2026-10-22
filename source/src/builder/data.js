@@ -2949,6 +2949,11 @@ export const INLINE_OFF = {
   'Grunge.3.testimonials.quotes.when': 'not drawn: layout 4’s wall has no seat for it',
   'Grunge.3.media.tracks.sub': 'derived value: the page prints the release alone (the list tile’s Single); the running times are the player’s clock',
   'Grunge.3.pricing.unit': 'derived value: layout 4 drops the leading slash, so the page prints event, not the field’s /event',
+  'Editorial.3.repertoire.songs.length': 'not drawn: only layout 3 prints a song’s length',
+  'Editorial.3.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
+  'Editorial.3.testimonials.quotes.when': 'not drawn: layout 4’s wall has no seat for it',
+  'Editorial.3.media.tracks.sub': 'derived value: the page prints the release alone (the list tile’s Single); the running times are the player’s clock',
+  'Editorial.3.pricing.unit': 'derived value: layout 4 drops the leading slash, so the page prints event, not the field’s /event',
   '*.*.pricing.tiers.tags': 'derived value: the filter chips are the distinct tags of every package',
   '*.*.repertoire.songs.tags': 'derived value: the filter chips are the distinct tags of every song',
 }

@@ -252,3 +252,7 @@ Pass 15's rows carry over unchanged (`INLINE_LINES` and the venue part row are `
 ## Inline editing (plans/inline-edit-all.md, Grunge layout 4, 2026-10-22)
 
 Pass 15's rows carry over unchanged (`INLINE_LINES` and the venue part row are `*.3.`): Grunge's ticker prints the same two lines and every column of the one-line gig opens, also with the time emptied (`blank.mjs`). The Base stat's `Manchester, UK` wraps to two lines at 1440 and the box covers both. No ledger row.
+
+## Inline editing (plans/inline-edit-all.md, Editorial layout 4, 2026-10-22)
+
+Pass 15's rows carry over unchanged (`INLINE_LINES` and the venue part row are `*.3.`): Editorial's ticker prints the same two lines and every column of the one-line gig opens, also with the time emptied (`blank.mjs`). The Base stat's `Manchester, UK` (Gloock, uppercase) wraps to two lines at 1440 and the box covers both. No ledger row.

@@ -254,3 +254,7 @@ The `*.3.` price part row carries over: a price is one node (`£450`), two slots
 ## Inline editing (plans/inline-edit-all.md, Grunge layout 4, 2026-10-22)
 
 The `*.3.` price part row carries over: a price is one node (`£450`), two slots settled on the click, in Anton (box `line-height` against the content rect flags it in `boxcheck`, harmless). `unit` is ledgered (`Grunge.3.pricing.unit`: the page prints `event`, the field holds `/event`).
+
+## Inline editing (plans/inline-edit-all.md, Editorial layout 4, 2026-10-22)
+
+The `*.3.` price part row carries over: a price is one node (`£450`), two slots settled on the click, in Gloock (400, uppercase; the box `line-height` against the content rect flags it in `boxcheck`, harmless). `unit` is ledgered (`Editorial.3.pricing.unit`: the page prints `event`, the field holds `/event`).

@@ -197,3 +197,7 @@ Ledgered as on Retro (`Lime.3.media.tracks.sub`): the list tile prints `Single` 
 ## Inline editing (plans/inline-edit-all.md, Grunge layout 4, 2026-10-22)
 
 Ledgered as on Retro and Lime (`Grunge.3.media.tracks.sub`): the list tile prints `Single` alone and `02:28` / `04:22` are the player's clock.
+
+## Inline editing (plans/inline-edit-all.md, Editorial layout 4, 2026-10-22)
+
+Ledgered as on the other templates (`Editorial.3.media.tracks.sub`): the list tile prints `Single` alone and `02:28` / `04:22` are the player's clock.
