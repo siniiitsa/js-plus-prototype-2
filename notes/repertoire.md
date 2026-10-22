@@ -83,3 +83,7 @@ when a song has no tag and stands on the next page), so a song can be drawn twic
 open row 0, and typing in either rewrites both. `songs.artist` is not drawn (`Retro.2.repertoire.songs.artist`); `title` and `length` hit; `sets.mood` /
 `sets.length` are parts of the set line (`Mellow · 45 min`). The 4 and 3 are copied from the section: change them there, change them in `drawnRows`.
 Two different rows with one title, both drawn, open nothing (the counts differ); the panel is the way in.
+
+## Inline editing (plans/inline-edit-all.md, Lime layout 3, 2026-10-22)
+
+Lime's `limeCard` draws the same four rows a card and three cards a page as Retro's, so `INLINE_HEAD` / `drawnRows` carry over unchanged: the seed's rows 7, 8, 10 and 11 are ledgered and the two drawn *Valerie*s open row 0 (`valerie.mjs`). `songs.artist` is not drawn (`Lime.2.repertoire.songs.artist`); `sets.mood` / `sets.length` are parts of the set line.

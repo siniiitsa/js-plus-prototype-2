@@ -181,3 +181,7 @@ titles, which the probe's line-middle aim cannot do.
 Layout 3 is a numbered list, not a fan: no card overlaps another, and every visible character of every title opens its own track (a character sweep).
 `listLabel` (`● Popular`) and `totalLabel` (`5 Featured / 5 Max`) are `*.2.` part rows; `tracks.sub` is ledgered again (`Retro.2.media.tracks.sub`: the release
 and the running time are two nodes).
+
+## Inline editing (plans/inline-edit-all.md, Lime layout 3, 2026-10-22)
+
+`listLabel` and `totalLabel` are the `*.2.` part rows (Lime draws the `●` in its own span, so `Popular` is a bare node); `tracks.sub` is ledgered again (`Lime.2.media.tracks.sub`).

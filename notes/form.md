@@ -269,3 +269,7 @@ The sticky card's box follows it on Pop's blue band as on the other templates (0
 
 Layout 3's `bookings` is printed `★★★★★ 42 bookings` (a `*.2.` part row); `fields.placeholder` is ledgered (`Retro.2.form.fields.placeholder`, the label is what
 the boxes print) as at layout 2.
+
+## Inline editing (plans/inline-edit-all.md, Lime layout 3, 2026-10-22)
+
+`bookings` is the `*.2.` part row (`★★★★★ 42 bookings`); `fields.placeholder` is ledgered (`Lime.2.form.fields.placeholder`: the boxes print the uppercased label).

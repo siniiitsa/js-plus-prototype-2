@@ -2910,6 +2910,12 @@ export const INLINE_OFF = {
   'Retro.2.form.fields.placeholder': 'not drawn: the card’s boxes print the label, and a placeholder only once the label is emptied',
   'Retro.2.testimonials.quotes.when': 'not drawn: layout 3’s wall has no seat for it',
   'Retro.2.media.tracks.sub': 'derived value: the seeded page prints the release and the running time as two nodes, and the whole line only once the list is stored',
+  'Lime.2.header.kicker': 'not drawn: the layout-3 card prints the card line in the kicker’s seat (a shared identity key; the bio’s role line prints it)',
+  'Lime.2.repertoire.songs.artist': 'not drawn: layout 3 prints a song’s length in the seat the artist holds elsewhere',
+  'Lime.2.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
+  'Lime.2.form.fields.placeholder': 'not drawn: the card’s boxes print the label, and a placeholder only once the label is emptied',
+  'Lime.2.testimonials.quotes.when': 'not drawn: layout 3’s wall has no seat for it',
+  'Lime.2.media.tracks.sub': 'derived value: the seeded page prints the release and the running time as two nodes, and the whole line only once the list is stored',
   '*.*.pricing.tiers.tags': 'derived value: the filter chips are the distinct tags of every package',
   '*.*.repertoire.songs.tags': 'derived value: the filter chips are the distinct tags of every song',
 }

@@ -173,3 +173,7 @@ first are *paged* (the canvas draws one), and `quotes.when` has no seat at layou
 
 Layout 3's wall repeats no copy (five distinct reviewers), so no claim or rank was needed and every `quote` / `who` / `role` hits; `kicker` (`● Testimonials`)
 is a `*.2.` part row and `quotes.when` is ledgered (`Retro.2.testimonials.quotes.when`: the wall has no seat for it).
+
+## Inline editing (plans/inline-edit-all.md, Lime layout 3, 2026-10-22)
+
+As Retro's layout 3: the wall repeats no copy, `kicker` is a `*.2.` part row and `quotes.when` is ledgered (`Lime.2.testimonials.quotes.when`).
