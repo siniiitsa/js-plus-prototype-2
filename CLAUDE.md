@@ -186,7 +186,7 @@ mutated through a single `patch()` helper.
   (`elementsFromPoint`): among the slots the stack holds, the one whose own text box under the pointer is the smallest
   wins (Pop's title words stand across its kicker and location). Measured on Grunge's and Pop's layout 1, nothing
   painted over the copy hid it from `e.target`, and letting a lower slot win past a non-slot element on top was worse
-  (a seal over a small-print line opened the line), so only slots compete. Where a pager or carousel draws fewer
+  (a seal over a small-print line opened the line), so only slots compete, **and a lower slot does not compete when an element above it in the stack, one that does not contain it, paints a ground** (`paintsOver`: an image, gradient or colour at alpha ≥ .5): the media fan's back card lies under the front one, and its smaller box won a click on the front card's visible glyphs (Pop pass 9, every template). Where a pager or carousel draws fewer
   nodes than there are slots with the same copy, the nth node is the nth slot only if what is drawn of that column
   reads as the head of the slots (`prefixSlot`).
   **Where the words are not enough, `INLINE_LINES` names the forms the copy is printed in** (`'● {}'`, `'{} ↓'`, a gig's

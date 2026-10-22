@@ -6333,13 +6333,28 @@ function inlineFieldAt(sec, wrap, target, pt, themeName, artistName) {
   const first = from(target)
   if (!pt || !first || first.float) return first
   let best = first, bestArea = textBoxUnder(first.node, pt)
-  for (const start of document.elementsFromPoint(pt.x, pt.y)) {
+  const stack = document.elementsFromPoint(pt.x, pt.y)
+  for (const [i, start] of stack.entries()) {
     if (start === target || !root.contains(start)) continue
+    // Text under something opaque (the card in front of it in the media fan) is not
+    // what the pointer is on, whatever its box holds.
+    if (stack.slice(0, i).some((e) => root.contains(e) && !start.contains(e) && paintsOver(e))) continue
     const hit = from(start)
     const area = hit && !hit.float ? textBoxUnder(hit.node, pt) : Infinity
     if (area < bestArea) { best = hit; bestArea = area }
   }
   return best
+}
+
+// Whether `el` paints a ground of its own (a colour that is mostly opaque, or an
+// image or gradient), which hides what lies under it.
+function paintsOver(el) {
+  const cs = getComputedStyle(el)
+  if (cs.backgroundImage !== 'none') return true
+  const m = cs.backgroundColor.match(/rgba?\(([^)]+)\)/)
+  if (!m) return false
+  const a = m[1].split(/[ ,/]+/)[3]
+  return a == null || parseFloat(a) >= 0.5
 }
 
 // The area of the smallest line box of `node`'s text that holds `pt` (within a few

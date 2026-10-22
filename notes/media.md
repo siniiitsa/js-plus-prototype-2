@@ -167,3 +167,11 @@ The `*.1.media.…` rows carry over: the fan (the same tilts, the box follows ea
 other faces, so the back card *Manchester at 3am* wraps to two lines and the middle of its first line lies under the front card's *Slow Burn***: a click
 there opens *Slow Burn*, which is what is on top, and the probe counts that as a click under an overlay, not a WRONG (`plans/editorial/inline-layout-2.md`,
 generic fix 2). The back card is reached by the words that show beside the front card, and the same slot by its list row.
+
+## Inline editing (plans/inline-edit-all.md, Pop layout 2, 2026-10-22)
+
+The `*.1.media.…` rows carry over: the fan, the list rows, `chipLabel`, `listLabel`, `totalLabel` and `countLabel` all hit on Pop's page, and
+`tracks.sub` is ledgered again, `Pop.1.media.tracks.sub`. **The fan's cards overlap, and a click on a back card's visible glyphs used to open the card
+behind it** (*Echo & The Floor* opened *Roomtone*, whose box is smaller and lies under the card in front): the stack rule skips a slot that something opaque
+covers (`paintsOver` in `EncoreBuilder.jsx`, `plans/pop/inline-layout-2.md`, generic fix 1). Checked by clicking every visible character of the five
+titles, which the probe's line-middle aim cannot do.

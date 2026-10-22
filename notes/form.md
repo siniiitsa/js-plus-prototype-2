@@ -259,3 +259,8 @@ and +120 px of scroll). `bookings` is the `*.1.` part row.
 Grunge's layout-2 card prints the uppercased label in each box and no placeholder (checked in the card's HTML), so
 `Grunge.1.form.fields.placeholder` is ledgered as Lime's is. The sticky card's box sits exactly on the node at 1440 and 768 at 0, +60 and
 +120 px of scroll, and follows the card's release at the row's foot. `bookings` is the `*.1.` part row.
+
+## Inline editing (plans/inline-edit-all.md, Pop layout 2, 2026-10-22)
+
+The sticky card's box follows it on Pop's blue band as on the other templates (0 px at every scroll step, 1440 and 768). `fields.placeholder` is ledgered
+(`Pop.1.form.fields.placeholder`): the layout-2 card prints the uppercased label, no `input` stands in the section on the canvas, and the 80% `--ph` is layout 1's.
