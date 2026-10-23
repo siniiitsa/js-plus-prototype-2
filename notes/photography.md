@@ -172,9 +172,10 @@ Code in `EncoreBuilder.jsx` beside `inlineSlots`: `photoSlots` (exported), `phot
   pointer is still settling). Found as the layout-2 driver's unexplained "first point missed": a script that moves in `steps` inside 120 ms leaves the
   hover on the approach point; a move, a 170 ms wait, a second move shows the box at once. The text rule shares it. Not fixed (a user's pointer keeps
   generating events), recorded so a driver waits between moves.
-- **An emptied photo field has one focus target: its hidden file input** (layout 3, Step 3). The drop zone is a plain `div` with an `onClick`, so a mouse
-  click on it opens the picker and focuses nothing, and the panel -> canvas box does not fire; Tab reaches the field only through the `FILE_INPUT`
-  (see the layout-2 log in `plans/photo-edit.md`), and that focus does walk the canvas and box the placeholder. Focus it with `preventScroll`.
+- **An emptied photo field's focus target is its drop zone** (user call, 2026-10-24, replacing Step 3's "its hidden file input"). `ImageField`'s empty zone and `ImagesField`'s Add tile are
+  `role="button" tabIndex={0}` with an `aria-label` (*Upload a photo*, *Add photos*) and `openOnKey` (Enter / Space on the zone itself opens the picker); `RowThumb` is a `<button>` already. The three hidden
+  `<input type=file style={FILE_INPUT}>` carry `tabIndex={-1} aria-hidden`, so Tab no longer lands in the app shell below the fold (it scrolled 1079px on pricing's *Reviewer photos*). Focusing the zone
+  walks the canvas and boxes the placeholder like any field (the focus wrapper is `onFocus`, which bubbles). A mouse click still opens the picker and focuses nothing.
 - **Dropping a file on a canvas photo replaces it (Step 4, user call 2026-10-23: build it unless it fights the text editor or needs an effect in `EncoreSection`; it did neither).**
   `onDragOver` / `onDragLeave` / `onDrop` on the section wrapper in `EncoreBuilder.jsx`, on the selected section only and never on a phone, beside `startPhoto`; `EncoreSection` is not touched.
   Only a drag whose `dataTransfer.types` holds `Files` is the canvas's, so a text drag (the text editor's textarea, a selection) is never cancelled. **Every file drag over the selected section is
@@ -183,8 +184,10 @@ Code in `EncoreBuilder.jsx` beside `inlineSlots`: `photoSlots` (exported), `phot
   the drop highlight (`photoHover`, cleared on `dragleave` to outside the wrapper and on drop). The drop frames the file in the crop editor (title *Frame your photo*, `frameFile`: vet, read,
   `editImages`; the same call the panel's drop zone makes, and now the root file input's too), a filled slot and an empty one alike, never the file picker; one file, the first;
   Cancel writes nothing; Apply writes through `photoPut`, so the list-append and track-row rules are the click's. Open inline text editor: the drop still lands (its textarea blurs when the dialog opens).
-  **Left alone: an unselected section and a phone take no handler**, so a file dropped there is the browser's (it opens the file in the tab). That hazard predates this branch (the panel's
-  drop zones are the only cancelled targets); cancelling file drags canvas-wide would close it, and is the user's call.
+  **An unselected section and a phone take no photo handler, but a file dropped there no longer reaches the browser** (user call, 2026-10-24, closing the hazard that predates this branch, where the file
+  opened in the builder's tab and the page and its uploads were gone): the editor's outer div carries `onDragOver` / `onDrop` that cancel any file drag the targets below it did not
+  (`hasFiles(e) && !e.defaultPrevented`, `dropEffect` `none`), so the selected section's photos (`copy`) and the panel's drop zones keep their own effect and everything else is refused. A text drag is not touched.
+  The template picker stage is outside it (nothing to lose there).
   **Proved by `photo-probe --drop`**: a `DragEvent` carrying a `File` at the aimed points, the `drop` sent only if the `dragover` was cancelled with a drop effect (as a browser does; the probe
   shadows `dropEffect`, which a script-built `DataTransfer` ignores), the dialog titled *Frame your photo*, Escape and Apply as in the click walk; with negative controls (a text drag is not
   cancelled; a file drag over a header link or its copy is cancelled with no effect). Also by hand: a real CDP `Input.dispatchDragEvent` file drag highlights and opens the dialog.

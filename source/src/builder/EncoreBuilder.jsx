@@ -2508,6 +2508,13 @@ const FILE_INPUT = {
   overflow: 'hidden', clip: 'rect(0 0 0 0)', whiteSpace: 'nowrap', border: 0,
 }
 
+// Enter / Space on a drop zone opens the picker, as a click does; the hidden input is out of the tab order.
+const openOnKey = (inputRef) => (e) => {
+  if (e.target !== e.currentTarget || (e.key !== 'Enter' && e.key !== ' ')) return
+  e.preventDefault()
+  inputRef.current?.click()
+}
+
 function ImageField({ value, aspect, onChange, onToast }) {
   const inputRef = useRef(null)
   const [over, setOver] = useState(false)
@@ -2534,7 +2541,7 @@ function ImageField({ value, aspect, onChange, onToast }) {
       <input
         ref={inputRef} type="file" accept="image/png,image/jpeg"
         onChange={(e) => { take(e.target.files); e.target.value = '' }}
-        style={FILE_INPUT}
+        style={FILE_INPUT} tabIndex={-1} aria-hidden
       />
       {value ? (
         <div {...dropZone}>
@@ -2562,7 +2569,9 @@ function ImageField({ value, aspect, onChange, onToast }) {
         </div>
       ) : (
         <div
+          role="button" tabIndex={0} aria-label="Upload a photo"
           onClick={() => inputRef.current?.click()}
+          onKeyDown={openOnKey(inputRef)}
           {...dropZone}
           className="hover:border-foreground"
           style={{
@@ -2709,7 +2718,7 @@ function ImagesField({ value, max, aspect, onChange, onToast }) {
       <input
         ref={inputRef} type="file" accept="image/png,image/jpeg" multiple
         onChange={(e) => { take(e.target.files); e.target.value = '' }}
-        style={FILE_INPUT}
+        style={FILE_INPUT} tabIndex={-1} aria-hidden
       />
       <div ref={gridRef} style={{ display: 'grid', gridTemplateColumns: `repeat(${PHOTO_COLS}, 1fr)`, gap: '8px', position: 'relative' }}>
         {list.map((src, i) => {
@@ -2784,7 +2793,9 @@ function ImagesField({ value, max, aspect, onChange, onToast }) {
 
         {room > 0 && (
           <div
+            role="button" tabIndex={0} aria-label="Add photos"
             onClick={() => inputRef.current?.click()}
+            onKeyDown={openOnKey(inputRef)}
             onDragOver={(e) => { e.preventDefault(); setOver(true) }}
             onDragLeave={() => setOver(false)}
             onDrop={(e) => { e.preventDefault(); setOver(false); take(e.dataTransfer.files) }}
@@ -3292,7 +3303,7 @@ function RowThumb({ value, label, onChange, onToast, onFail, failed }) {
       <input
         ref={inputRef} type="file" accept="image/png,image/jpeg"
         onChange={(e) => { take(e.target.files); e.target.value = '' }}
-        style={FILE_INPUT}
+        style={FILE_INPUT} tabIndex={-1} aria-hidden
       />
       <button
         type="button" aria-label={value ? `Edit ${label}` : `Add ${label}`}
@@ -7541,6 +7552,10 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
       <div
         inert={st.preview}
         onPointerDownCapture={(e) => { downRef.current = e.target }}
+        // A file dropped on nothing that takes it is the browser's: it opens the file in this tab and the
+        // page is gone. The targets that take a file have cancelled the drag by here; the rest are refused.
+        onDragOver={(e) => { if (hasFiles(e) && !e.defaultPrevented) { e.preventDefault(); e.dataTransfer.dropEffect = 'none' } }}
+        onDrop={(e) => { if (hasFiles(e) && !e.defaultPrevented) e.preventDefault() }}
         onClick={closeAll}
         style={{
           height: '100dvh', display: 'flex', flexDirection: 'column',

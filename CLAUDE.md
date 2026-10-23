@@ -226,7 +226,7 @@ mutated through a single `patch()` helper.
   **A file dropped on a selected section's photo replaces it** (Step 4, 2026-10-23; the handlers are the wrapper's, `EncoreSection` is not touched): a drag that carries files is
   cancelled anywhere over the selected section, a photo under it or not, with `dropEffect` `copy` over a photo `photoFieldAt` would open and `none` elsewhere (or the browser opens the file in the
   tab and the page is gone); the drop frames the file in the crop editor, filled slot or empty, and Apply writes through the same `photoPut`. Where a click opens, a drop lands: copy and controls
-  over a photo take no drop. A text drag is left alone, an unselected section and a phone take no handlers (the browser's own default there), and the hover box doubles as the drop highlight.
+  over a photo take no drop. A text drag is left alone, an unselected section and a phone take no photo handlers, and the hover box doubles as the drop highlight. **A file drag over nothing that takes it is cancelled with `dropEffect: none`** (user call, 2026-10-24: a root `onDragOver` / `onDrop` on the editor's outer div, acting only when `hasFiles(e) && !e.defaultPrevented`, so the selected section's photos and the panel's drop zones, which cancel first, keep their effect): a miss never opens the file in the builder's tab.
   `photo-probe --drop` proves it the way `--check` proves the click.
 - `st.theme` is an **integer index** into `THEMES`, not a name or object.
 - **`st.device` is the toggle, `device` is what the canvas draws.** A window at most 1180 wide

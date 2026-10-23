@@ -440,3 +440,14 @@ throttle's missing trailing call, and the glass card's cut (above).
    generating events, so unfixed; a trailing timer would fix it, and the text rule shares it.
 4. **New, from the drop:** a file dropped on an *unselected* section, or on a phone, is the browser's: it opens the file in the builder's tab and the page is lost (uploads included). Predates this branch (only the panel's
    drop zones cancel a file drag). Cancelling file drags canvas-wide (`dropEffect: none` outside the selected section) would close it in a few lines; the drop would then wait for a selected section, as the click does.
+
+**Step 4 · the user's four calls — decided 2026-10-24.**
+1. **Glass card: keep reaching** (no change). `blocksPhoto`'s cut stays .9; the face outside its copy opens the bio photo.
+2. **`FILE_INPUT` tab stop: done.** `ImageField`'s empty zone and `ImagesField`'s Add tile became `role="button" tabIndex={0}` with `openOnKey`; the three hidden inputs got `tabIndex={-1} aria-hidden`.
+   Measured with a throwaway driver (Retro 2, Pop 2, Grunge 3; every section with an emptied photo field): focusing each zone boxes the canvas (header, bio, gallery, form: 1 box each, 12 of 12 filled
+   zones focused; pricing's *Reviewer photos* draws no face once emptied, so no node to box, as the `--blank` note has it); a 40-press Tab sweep from the first zone met **0** file inputs and the app shell's `scrollTop` stayed 0
+   (before: 1079); Enter and Space on a zone each open the picker (2 picks); no page errors.
+3. **Hover throttle: left** as is.
+4. **File drags canvas-wide: done.** Root `onDragOver` / `onDrop` on the editor's outer div, only when `hasFiles(e) && !e.defaultPrevented`. Checked by synthetic `DragEvent` at 1440 and 800 (phone chrome): a file drag over an unselected
+   section or the top bar is cancelled with `dropEffect` `none`, a text drag is not. **Re-run:** `photo-probe --check --drop` on layouts 1 and 4 of all five templates (default), layouts 2 and 3 of all five (`--blank`) and Retro 5, both widths:
+   **all PASS** (the selected section's `copy` effect is untouched, since its handler cancels first). The click walk is not reached by the change (no hit-test or `EncoreSection` edit).
