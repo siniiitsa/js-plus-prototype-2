@@ -6470,8 +6470,12 @@ function floatBox(node, rel, wide) {
 // the page keeps what it had; the panel removes or clears.
 function InlineEditor({ ed, value, cap, onChange, onRevert, onClose }) {
   const [draft, setDraft] = useState(null)
+  // What was just typed, kept while the page's value only differs by the spaces around it: a list item
+  // and a price's lead or tail are trimmed when read back, so a space typed at the end of a word
+  // (`Very `) would be taken out of the box before the next letter, and no two words could be typed.
+  const [typed, setTyped] = useState(null)
   const held = (ed.f.k === 'title' && ed.cat === 'header') || ed.item != null || ed.row != null
-  const shown = draft ?? value
+  const shown = draft ?? (typed !== null && typed.trim() === value.trim() ? typed : value)
   const note = held && draft !== null
     ? (ed.item != null ? 'Remove an item in the panel' : ed.row != null ? 'Clear it in the panel' : 'Your name is required')
     : null
@@ -6503,7 +6507,7 @@ function InlineEditor({ ed, value, cap, onChange, onRevert, onClose }) {
         onChange={(e) => {
           const v = multi ? e.target.value : e.target.value.replace(/\s*\n\s*/g, ' ')
           if (held && !v.trim()) setDraft(v)
-          else { setDraft(null); onChange(v) }
+          else { setDraft(null); setTyped(v); onChange(v) }
         }}
         onKeyDown={(e) => {
           if (e.key === 'Enter' && (!multi || e.metaKey || e.ctrlKey)) { e.preventDefault(); onClose() }
@@ -6719,7 +6723,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
     inlineNode.current = hit.node
     setFocusF({ sid: sec.id, text: hit.text, key: hit.k })
     setInline({
-      sid: sec.id, id: hit.id ?? slotId(sec, hit), cat: sec.cat, f: hit.f, k: hit.k, row: hit.row, col: hit.col, item: hit.item, part: hit.part || !!hit.lines?.length, float: hit.float,
+      sid: sec.id, id: hit.id ?? slotId(sec, hit), cat: sec.cat, f: hit.f, k: hit.k, row: hit.row, col: hit.col, sub: hit.sub, item: hit.item, part: hit.part || !!hit.lines?.length, float: hit.float,
       label: hit.row != null ? `${hit.f.l}: ${hit.col}` : hit.f.l, raw: sec.c[hit.k], nl: !hit.float && /^pre/.test(cs.whiteSpace),
       cap: slotCap(sec, hit, sections, T.name),
       x: b.x, y: b.y, w: b.w, h: b.h, tf: b.tf, caret: tone,

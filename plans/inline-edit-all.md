@@ -245,6 +245,14 @@ The script's first run listed 36 groups; the other 31 were the media fan's back 
 
 It is now a **non-failing report** of the probe, `dead click`, like `paged`: `--check` cannot fail on it because the three rows above are legitimate, so a new group is read, not gated.
 
+**Found by clicking through the committed `index.html` by hand, after the sweep had passed (two bugs, both there since the first inline commit `2b985a3`, both invisible to `--check`):**
+1. **A price part overwrote the whole price.** `startInline` built the inline state without `sub`, so `slotWrite` took its "no part" branch: typing `475` over the amount of `£450` stored `475`, a lead edit stored only the lead, a tail edit only the tail. Fix: `sub: hit.sub` in `setInline`. Measured on a real keyboard on all five templates (`£450` → `£475`; lead `£` → `$`; tail ` + VAT` → ` + TAX`; the other parts kept, Escape restores).
+2. **A list item or price part lost every space typed after a word.** The box's value is the stored value, and a list item and a price's lead or tail are trimmed when read back, so `Very ` became `Very` before the next letter: `Very Hot Act` typed into a tag chip stored `VeryHotAct`, a feature line `Twodecksetupnow`. Only pasting worked. Fix: `InlineEditor` keeps what was typed (`typed`) while it differs from the stored value only by surrounding whitespace.
+
+Why the probe passed both: it types one word, `ZZQ`, with no digit and no space, and compares hashes after Escape; a sentinel that replaces a price whole still "lands". It now also fails a slot as **WRONG** when typing into it changes another slot of the same cell (the price's other parts, the list's other items) and when a space typed after the sentinel in a list item or price part is lost. Negative control: with both fixes reverted, Pop layout 3's header and pricing report 26 WRONG (all six tag chips, the feature lines, the price leads and amounts); with them, none. Because both fixes are in shared code and the probe is stricter, the whole sweep is run again (22 runs).
+
+**Not seen, noted:** one run of four showed an inline box open on the hero title straight after "Use this header" with no click on the canvas; not reproduced in three more attempts. A lead typed with a space inside (`Fr €`) leaves a space before the amount (`Fr € 650`), the artefact of keeping the rest of the string as it was.
+
 **Docs.** CLAUDE.md's inline bullet names `--layout 5` and `6`, the dead-click report, the "every node" rule and the new hit-test rule; `plans/inline-edit.md` gains the rule and its "still out" list is brought to the final ledger.
 
 **The module split (Phase 0 step 5)** was put to the user (do it / leave it): **left**. `EncoreBuilder.jsx` keeps the inline block, so the sweep certified the code that ships. If it is ever done, one page's `--check` per template proves the move.

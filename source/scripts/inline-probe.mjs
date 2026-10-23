@@ -179,6 +179,14 @@ function pageHelpers() {
     const r = ta.getBoundingClientRect()
     return { slot: ta.dataset.inlineSlot, label: ta.getAttribute('aria-label'), float: ta.hasAttribute('data-inline-float'), value: ta.value, rect: [r.left, r.top, r.width, r.height] }
   }
+  // Every slot's text, by id, as the builder reads it now (what `inlineSlots` lists).
+  window.__slotTexts = async (sid, themeName) => {
+    const { st } = window.__fh()
+    const sec = st.sections.find((x) => x.id === sid)
+    const mod = await import('/src/builder/EncoreBuilder.jsx')
+    const name = String(st.sections.find((x) => x.cat === 'header')?.c?.title ?? '').trim() || 'Kai Mercer'
+    return Object.fromEntries(mod.inlineSlots(sec, themeName, name, true).map((x) => [x.id, x.text]))
+  }
   // Did the sentinel land on glyphs under the box (or, for a seal, in its svg)?
   window.__landed = (sid, rect, float, sentinel) => {
     const root = rootOf(sid)
@@ -340,9 +348,22 @@ async function runCombo(theme, layout, width) {
           await page.keyboard.press('Escape'); await wait(120)
           return { result: 'other', slot: ed.slot, stack }
         }
+        const slotsBefore = await page.evaluate((sid, t) => window.__slotTexts(sid, t), sec.id, info.theme)
         await page.keyboard.type(SENTINEL)
         await wait(140)
         const ed2 = (await page.evaluate(() => window.__editor())) ?? ed
+        // The edit must stay in its own slot: typing into one price part or one list item leaves the
+        // others of that cell as they were (the first inline commit wrote a price part over the whole cell).
+        const cellOf = (id) => id.replace(/#\d+.*$/, '').replace(/\.(lead|amount|tail)$/, '')
+        const slotsAfter = await page.evaluate((sid, t) => window.__slotTexts(sid, t), sec.id, info.theme)
+        const collateral = Object.keys(slotsBefore).filter((id) => id !== ed.slot && cellOf(id) === cellOf(ed.slot) && slotsBefore[id] !== slotsAfter[id])
+        // A space typed after a word of a list item or a price part has to stay in the box: those values
+        // are trimmed when read back, so the box once dropped it and no two words could be typed.
+        let spaceLost = false
+        if (/#\d+|\.(lead|amount|tail)$/.test(ed.slot)) {
+          await page.keyboard.type(' Z'); await wait(140)
+          spaceLost = ((await page.evaluate(() => window.__editor()))?.value ?? '').endsWith(`${SENTINEL}Z`)
+        }
         const landed = (await page.evaluate((sid, rect, float, z) => window.__landed(sid, rect, float, z), sec.id, ed.rect, ed.float, SENTINEL))
           || (await page.evaluate((sid, rect, float, z) => window.__landed(sid, rect, float, z), sec.id, ed2.rect, ed2.float, SENTINEL))
         await page.keyboard.press('Escape')
@@ -361,10 +382,10 @@ async function runCombo(theme, layout, width) {
         // Gloock): the app answers for what is on top, which is right, so a slot that
         // prints exactly the covering element's text is "unhit under an overlay".
         const onTop = !prints && !!aim.overText && !!u && (sq(u.text) === sq(aim.overText) || !!u.lines?.some((l) => sq(l) === sq(aim.overText)))
-        const result = !landed || (!prints && !onTop) ? 'WRONG' : !restored ? 'NOT-RESTORED' : onTop ? 'unhit' : 'hit'
+        const result = !landed || (!prints && !onTop) || collateral.length || spaceLost ? 'WRONG' : !restored ? 'NOT-RESTORED' : onTop ? 'unhit' : 'hit'
         const out = { result, slot: ed.slot, label: ed.label, stack }
         if (!restored) out.restore = { open: !!still, c: after.c === before.c, html: after.html === before.html }
-        if (result === 'WRONG') out.why = !prints ? (u ? `slot prints "${u.text.slice(0, 30)}"` : 'slot not in the universe') : 'the sentinel did not land under the box'
+        if (result === 'WRONG') out.why = collateral.length ? `typing here changed ${collateral.join(', ')}` : spaceLost ? 'a space typed after a word was dropped from the box' : !prints ? (u ? `slot prints "${u.text.slice(0, 30)}"` : 'slot not in the universe') : 'the sentinel did not land under the box'
         // A box that would not close would swallow the next clicks.
         if (still) { await page.mouse.click(2, 2); await wait(150) }
         return out

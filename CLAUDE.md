@@ -174,7 +174,9 @@ mutated through a single `patch()` helper.
   1440,768 --check`** passed it: it clicks every text node with a real mouse, types a sentinel, presses Escape, and
   reports WRONG, NOT-RESTORED, MISSING and (across both widths) UNLEDGERED, a slot drawn nowhere that `INLINE_OFF`
   does not name (see the script's header for the flags; its last line is `inline-probe: PASS` or `FAIL`). **Retro also
-  takes `--layout 5` and `6`**, its header-only designs, whose body is layout 1's page. It also *reports*, without failing, a
+  takes `--layout 5` and `6`**, its header-only designs, whose body is layout 1's page. It also fails a slot as WRONG when typing
+  into it changes another slot of the same cell (a price's other parts, a list's other items) or drops a space typed after a word of
+  a list item or price part (pass 21: both were bugs, invisible to a one-word sentinel). It also *reports*, without failing, a
   **dead click**: a node that prints a hit slot's copy and opens nothing while another node opens it, which `--check` counts as
   hit. **The rule is every node the pointer can reach**: the field's copy opens its box wherever the page prints it. The
   exceptions are the ones the probe skips or the audit shows as noise: a node under another element (the media fan's back
