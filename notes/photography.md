@@ -136,7 +136,17 @@ Code in `EncoreBuilder.jsx` beside `inlineSlots`: `photoSlots` (exported), `phot
 - **Hover and focus.** `probeInline` sets `pointer` and a 2px box (`photoHover`) round the part of the photo that shows
   (`visibleRect` clips by every overflow ancestor). `onFocusField` carries `photo: f.k` for an `image` / `images` field and
   `refit` boxes `photoNodeOf` (the largest visible node of that key). Tilted frames are boxed by their bounding rect.
-- **Measured by hand** (a throwaway script clicking every `[data-photo]` node): every photo opens on Retro 1, Pop 1, Editorial 2,
-  Lime 3, Grunge 4 except nodes the page clips away (`hidden`); end to end on Retro 1, a header avatar, bio photo, gallery tile 2,
-  track 1 and an emptied bio photo each wrote only their own key, row or index. Text probe `--check` unchanged: Retro 156/143 hit, Pop 155/142.
+- **Proved by `scripts/photo-probe.mjs`** (`--theme T --layout N --width 1440,768 --check`, the photo twin of `inline-probe.mjs`; its header
+  lists every flag and verdict). It clicks every `[data-photo]` node with a real mouse, checks that the crop dialog opens on the picture
+  the panel shows (or the file picker, for an empty slot), that Escape leaves `c` and the HTML alone, and, once per slot, that a fixture PNG
+  Applied through the dialog changes only that slot's key, list index or track row. `--blank` empties every photo first, track rows too (placeholders,
+  the picker path, the append). A page is known good only once it passed; Step 1 passed Retro layout 1 (17 slots, both widths, filled and blank).
+  `PHOTO_OFF` is empty: no page has needed a row yet.
+- **Decorations do not open a photo, and that is on purpose.** An `svg` over the picture (a seal, a sticker, a sparkle, an icon) blocks
+  `photoFieldAt` as `blocksPhoto` has it, like a control or copy; measured on Pop layouts 1 to 4 it costs a photo a few percent of its area,
+  never the middle of it (the probe's `partial` line says what is lost and to what). Do not let an svg through to gain it back: a click on a
+  seal's disc would replace the hero behind it.
+- **Past the end of a list, a click appends** (kept after Step 1). On Retro 1, Pop 1, Lime 3, Editorial 2 and Grunge 4 in their default state no
+  tile lies past its list; one does after the panel's Remove has spliced the list (other layouts: a default-state `appended` line is a finding); the panel's Add tile appends, and so does the canvas. The photo lands on the first free tile, which is the clicked one unless
+  two or more are free.
 

@@ -171,3 +171,58 @@ Open for Step 1 (the probe): the stack rule has only been measured on Retro 1, P
 rather than a centre click; Pop's sparkles and any decoration that is not `pointer-events: none` may block a photo (an `svg` blocks by rule);
 a header avatar was `hidden` on Lime 3 (under another element or clipped: check whether that is a real dead spot).
 
+**Step 1 · the probe — done 2026-10-23 on branch `photo-edit`. No app code changed; the one new file is `source/scripts/photo-probe.mjs`.**
+- **What it is.** A sibling of `inline-probe.mjs` (its page helpers copied, since that file runs on import): `--theme --layout --width 1440,768
+  --cat --check`, plus `--blank` (empties every photo slot first: single photos `null`, lists `[]`, track rows rewritten as a title and no picture, so the file-picker path,
+  the initials / gradient placeholders and the append write are the ones walked) and `--every` (the write test on every node, not once per
+  slot). Universe = `photoSlots(sec, theme, true)`. Per `[data-photo]` node it aims at a grid of points over the node's visible rect (centre
+  first, keeping points where the node is in the stack with no other photo above it), clicks with the real mouse until one opens something, and
+  records **hit** / **WRONG** / **NOT-RESTORED** / **blocked** / **copy** / **hidden**, then per slot MISSING / not drawn / off, and
+  UNLEDGERED across both widths. A *hit* is: the crop dialog titled *Edit photo* framing the very picture the panel shows (filled), or the
+  file picker (empty); Escape leaves `c` and the section's HTML as they were; and, on the first node of each mark, a fixture PNG pushed
+  through the dialog's input and Applied changes **only** that slot's key, list index or track row, in no other section, with the list's other
+  items and the row's other cells untouched; then `c` is put back. A native picker never opens: `HTMLElement.prototype.click` on a file input is
+  hooked, and the probe hands the tagged input the fixture. Last line `photo-probe: PASS|FAIL`; positive control first (a header photo must open
+  and write its own slot, exit 2 otherwise). It also reports **partial** (not failing): per node, the share of a 12 x 12 grid of its visible area
+  where the app's own `photoFieldAt` opens it, and what stops the rest.
+- **It can fail.** Two mutations, run and reverted: `photoWrite` writing `list[0]` instead of `list[idx]` → 6 WRONG ("item 0 changed; item N is
+  not the upload") and 5 MISSING on Retro 1's gallery; `PHOTO_OFF = { 'Retro.*.gallery.images': … }` → the seven gallery slots `off`, their nodes
+  open nothing, PASS.
+- **Retro layout 1, `--width 1440,768 --check`: PASS**, 17 slots hit at each width (header image + avatar, bio, five tracks, seven gallery tiles,
+  calendar, form), 0 WRONG / NOT-RESTORED / MISSING / not drawn / blocked / copy / hidden / UNLEDGERED, and the same with `--blank` (all
+  the above on empty slots: 7 gallery appends). Pricing, repertoire, map, testimonials and the footer carry no photo on layout 1. `PHOTO_OFF`
+  stays empty.
+- **Re-run with the final file** (after the last edits to the script): Retro 1 default and `--blank`, Editorial 2 `--blank`, both widths, `--check`: PASS.
+- **Also run, same flags, all PASS and not yet claimed as passes** (Step 3 / the pass files re-run them): Pop 1, Lime 3, Editorial 2, Grunge 4,
+  default state and `--blank`. Editorial 2's `--blank` lists pricing's three faces as *not drawn*: an emptied list draws none of them, so there is
+  nothing to click and the panel's Add stays the only way to start them (`--blank` therefore skips the UNLEDGERED check; the default run owns it).
+
+**Open questions from Step 0, settled by the probe:**
+- **Pop's decorations.** Nothing is a dead spot: every Pop node on layouts 1 to 4 opens at its first point, 0 blocked (layout 1 at both widths with `--check`; layouts 2 to 4 at 1440 only, no `--check`). What the
+  `svg` rule costs is a small share of a photo's area: the Pop layout-1 gallery tile 3 loses 5 of 144 points to stickers, the header hero 3 to 4
+  of ~140 to its seal / sparkle (circle, path), the layout-3 bio 13 of 144 to the seal ring. The larger shares are copy (a caption, a nav link:
+  header heroes keep 78 to 85% of their area, the layout-4 bio card 76%, which is "copy first" working as designed) and the media rows' play
+  discs and numerals. Decision: **keep `blocksPhoto` as it is** (an `svg` blocks). Letting a non-interactive svg through would make a click on a
+  seal's disc replace the hero behind it, where a seal is its own thing (its badge text is a text slot), and gains a few percent of area. No
+  `PHOTO_OFF` row.
+- **Lime layout 3's hidden avatar.** Did not reproduce. The header avatar opens at 1440 and 768, with 140 of 140 grid points open at 1440. Why the
+  Step 0 throwaway saw it `hidden` is not known (its point grid, or a different state); the probe never goes under 1440, so 390 is unmeasured, and a
+  phone is out of scope for the feature anyway.
+- **The append call. Keep it.** On the five pages run in the default state (Retro 1, Pop 1, Lime 3, Editorial 2, Grunge 4) `appended` is 0: the seeded
+  list covers every tile drawn. (Step 0's note that Lime / Pop galleries draw more tiles than the seed holds was not borne out on Lime 3 or Pop 1; the
+  other layouts' galleries are Step 3's to check, and any default-state `appended` line the probe prints there is a finding to record, not noise.)
+  Past the end of a list a tile exists after the panel's Remove has spliced it, and then the panel's own Add tile is the one thing that can fill
+  it, and it appends. So a canvas click that appends is the panel's behaviour reached from the picture.
+  The alternatives stay worse: padding with `null` flips every tile in between from the section-photo fallback to a placeholder, and collides
+  with Remove-writes-`null`. What is lost is exact only when two or more tiles are free and the click is not on the first: the photo lands on
+  the first free tile. Pass files note it once; nothing to build. `--blank` pins the behaviour (list length + 1, earlier items untouched, the
+  upload at the end).
+
+`--blank` walks track rows too (all 21 Retro 1 nodes empty, picker path). Not covered by the probe: the phone (the canvas editor is off there; the probe's window never goes under 1440), hover outline and cursor, the
+panel → canvas box, and a refused file from an empty slot (checked by hand in Step 0).
+
+**Next: Step 2, the Retro layout-1 pilot** (`plans/retro/photo-edit-layout-1.md` or a section here): the probe is green on the page, so what is
+left is the by-hand pass over every Retro layout-1 photo (hover box and cursor on tilted / arched frames, the panel → canvas box, an emptied slot
+on each of the 17, a refused file from the picker, `inline-probe --check` on Retro / Pop 1 for a text-click regression) and the
+sweep-level docs: CLAUDE.md's bullet already says the probe is Step 1, update it once the pilot closes.
+
