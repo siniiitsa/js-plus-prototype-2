@@ -135,7 +135,12 @@ Code in `EncoreBuilder.jsx` beside `inlineSlots`: `photoSlots` (exported), `phot
   `photoPick` ref; `vetImages` → `readImage` → `editImages` (a fresh pick, so no `edit`). Cancel anywhere writes nothing.
 - **Hover and focus.** `probeInline` sets `pointer` and a 2px box (`photoHover`) round the part of the photo that shows
   (`visibleRect` clips by every overflow ancestor). `onFocusField` carries `photo: f.k` for an `image` / `images` field and
-  `refit` boxes `photoNodeOf` (the largest visible node of that key). Tilted frames are boxed by their bounding rect.
+  `refit` boxes `photoNodeOf` (the largest visible node of that key). A media track's art button is not an `image` field, so `EditPanel`'s
+  focus wrapper reads its label (`Edit` / `Add artwork for track N`) and reports `tracks:N-1`, the row's own mark. **Both boxes are drawn by
+  `photoBox`**: a photo on a tilted card is measured untilted (`tiltChain` / `untilted`) and carried by the card's matrix, as `placeBox` does for
+  text, so the outline turns with the picture (pilot, Step 2: a bounding rectangle overshot a 15-degree polaroid by 31%). `untilted` restores
+  `transform` and `transition`, which would start a transition on a tilted ancestor that has one: none on any template's layout 1, to be
+  re-measured per layout. A round frame gets a square outline.
 - **Proved by `scripts/photo-probe.mjs`** (`--theme T --layout N --width 1440,768 --check`, the photo twin of `inline-probe.mjs`; its header
   lists every flag and verdict). It clicks every `[data-photo]` node with a real mouse, checks that the crop dialog opens on the picture
   the panel shows (or the file picker, for an empty slot), that Escape leaves `c` and the HTML alone, and, once per slot, that a fixture PNG
@@ -146,6 +151,10 @@ Code in `EncoreBuilder.jsx` beside `inlineSlots`: `photoSlots` (exported), `phot
   `photoFieldAt` as `blocksPhoto` has it, like a control or copy; measured on Pop layouts 1 to 4 it costs a photo a few percent of its area,
   never the middle of it (the probe's `partial` line says what is lost and to what). Do not let an svg through to gain it back: a click on a
   seal's disc would replace the hero behind it.
+- **The solid-ground and copy-first rules, measured (Pop 1 and Retro 1, Step 2).** No element above a photo on either page has a translucent
+  ground, so the `alpha >= .9` cut changes no click there. What stops a click is copy (a hero loses 22%, nearly all title words, nav and pills),
+  an svg (4 to 9 of ~250 points) and a real card (Pop pulls each media row's opaque card up over the previous row's art by ~4 of 50px). Kept.
+  A refused file from an empty slot gets a toast alone (the canvas has no control to hold the inline line the dialog prints).
 - **Past the end of a list, a click appends** (kept after Step 1). On Retro 1, Pop 1, Lime 3, Editorial 2 and Grunge 4 in their default state no
   tile lies past its list; one does after the panel's Remove has spliced the list (other layouts: a default-state `appended` line is a finding); the panel's Add tile appends, and so does the canvas. The photo lands on the first free tile, which is the clicked one unless
   two or more are free.

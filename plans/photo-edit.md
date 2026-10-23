@@ -221,8 +221,47 @@ a header avatar was `hidden` on Lime 3 (under another element or clipped: check 
 `--blank` walks track rows too (all 21 Retro 1 nodes empty, picker path). Not covered by the probe: the phone (the canvas editor is off there; the probe's window never goes under 1440), hover outline and cursor, the
 panel → canvas box, and a refused file from an empty slot (checked by hand in Step 0).
 
-**Next: Step 2, the Retro layout-1 pilot** (`plans/retro/photo-edit-layout-1.md` or a section here): the probe is green on the page, so what is
-left is the by-hand pass over every Retro layout-1 photo (hover box and cursor on tilted / arched frames, the panel → canvas box, an emptied slot
-on each of the 17, a refused file from the picker, `inline-probe --check` on Retro / Pop 1 for a text-click regression) and the
-sweep-level docs: CLAUDE.md's bullet already says the probe is Step 1, update it once the pilot closes.
+**Step 2 · the Retro layout-1 pilot — done 2026-10-23 on branch `photo-edit`.** By hand (puppeteer drivers over the dev server, screenshots read
+by eye; the drivers are throwaways) and the Pop layout-1 hit-test spike. Two code fixes came out of it, both in `EncoreBuilder.jsx`.
+- **Hover.** All 17 slots (21 nodes) on a selected section: wrapper cursor `pointer` and a box on every node a click can reach, filled and with
+  `--blank`'s placeholders alike. Measured on a 60 x 60 grid over each node's painted area (the node topmost of its photos): the box misses
+  at most 3% of what shows and, before the fix, overshot a **tilted** frame by 18% (bio card, 6 degrees) and 31% (the front calendar polaroid, 15
+  degrees). **Fix: `photoBox`** (beside `photoNodeOf`) measures the visible rect untilted and carries it by the card's own matrix, `placeBox`'s
+  rule (`tiltChain` / `untilted`), so the outline turns with the picture; read on screenshots of the bio card, both calendar polaroids and
+  the gallery's tilted spotlight. The hover box and the panel's focus box both draw through it. No tilted ancestor on any template's layout 1 carries a
+  transition or animation (measured, 5 templates), which `untilted`'s restore would otherwise start; **Step 3 re-measures that per layout.**
+  Round frames (the header avatar, the form's 39px disc) get a square outline: the same pixels as before, accepted.
+  A node whose centre lies under another card's solid frame (the calendar's back polaroid) shows no box there and opens nothing: the rule working.
+- **Panel -> canvas.** Focusing a photo field walks the canvas and boxes it, 6 of 7 fields (header image + avatar, bio, gallery, calendar,
+  form), after the smooth scroll lands. **Gap found and fixed: the five media tracks.** `tracks` is a repeater, not an `image` field, so a focus on a
+  row's art button reported no photo. `EditPanel`'s focus wrapper now reads the button's label (`Edit` / `Add artwork for track N`) and reports
+  `tracks:N-1` as the photo, which `photoNodeOf` finds as its mark. Tested on a track thumb: the box is that row's art. Remaining, accepted:
+  a tall photo counts as in view once its *top* is in the band (`scrollFieldIntoView`'s text rule), so a 487px bio photo can stand half below the fold.
+- **Emptied slots.** `photo-probe --blank --check` (below): picker, crop, placed, on all 17 (7 gallery appends), both widths.
+- **Refused files from an empty slot.** A GIF and a 4.5 MB PNG: the picker opens, the file is refused with the toast (*Please choose a PNG or
+  JPG*, *That image is 4.8 MB, the limit is 4 MB*), no dialog opens, `c.image` stays `null`. **Toast only, no inline line:** the canvas has no control to
+  hold a line (the plan's "toast + line" holds in the dialog, where *Upload another* prints one, checked in Step 0).
+- **Copy, selection, phone.** A click on the header title with the header selected opens the text box, not the photo. The first click on an
+  unselected section only selects (no dialog, no picker; the second click opens it). A 390-wide window: a selected section's tile gives no
+  cursor, no dialog, no picker. Nit, not fixed: deselecting with Escape while the pointer rests on a photo leaves the wrapper's `pointer` cursor
+  until the pointer moves (the text rule's `text` cursor does the same).
+- **The hit-test spike, Pop layout 1 (both widths, `--check`: PASS, 17 slots each).** Per-node share of the node's reachable area (14 x 14 grid, the
+  app's own `photoFieldAt`) that a click opens: gallery tiles 96-100%, header avatar 100%, header hero 78%, media rows 94-100%.
+  *What stops the rest, header hero (22%):* copy: the title words (25 of 246 points), nav links (5), the tag pills and Book now (8); decoration: the
+  seal and sparkle's svg (9); nothing else (0 unexplained points). *Media rows 0 and 2 (6%):* the **next row's opaque card**, which Pop pulls up
+  over the previous row's art by about 4 of its 50px: a real occlusion, so a click there is rightly row 2's card, not a dead spot. *Gallery tile 3
+  (4%):* two stickers' svg and a counter. **No element above any photo on Pop layout 1 or Retro layout 1 has a translucent ground** (alpha in
+  (0, .9): none at any of 17 + 17 slots), so the `alpha >= .9` threshold is not exercised by either page: it cannot be wrong there, and
+  neither a lower nor a higher cut would change one click. **Decision: `blocksPhoto` and copy-first stay as built; the svg-blocks decision
+  stays** (the spike showed no dead spot: every lost point is copy, a control, an svg or a real card). Pop layouts 2 to 4 are Step 3's, which
+  is where a translucent ground, if any page has one, will show.
+- **Regressions, after the last edit.** `inline-probe --theme Retro,Pop --layout 1 --width 1440,768 --check`: **PASS**, the counts of Step 0 (Retro 156 / 143
+  slots hit, Pop 155 / 142; 0 WRONG / NOT-RESTORED / MISSING; Retro's one dead click is the report-only kind it had). `photo-probe --check`: **PASS**,
+  Retro 1 default and `--blank` and Pop 1, both widths, 17 slots each, 0 WRONG / NOT-RESTORED / MISSING / blocked (`--blank`: 7 gallery appends).
+  `npm run build` and `npm run build:standalone` succeed; `index.html` not touched.
 
+**Next: Step 3, the layout-major passes** (layout 2 across the five templates, then 3, 4, and Retro's header-only 5 and 6). Per page:
+`photo-probe --theme T --layout N --width 1440,768 --check`, default and `--blank`, then the by-hand pass this one did (hover outline on
+every tilted or clipped frame, panel -> canvas for each field, an emptied slot, `inline-probe --check` on the page). Carry forward: the
+`transition` check on tilted ancestors (`photoBox`), any default-state `appended` line, any translucent ground above a photo, and the tracks'
+panel focus on every layout that draws media art. CLAUDE.md's bullet says what the pilot closed.

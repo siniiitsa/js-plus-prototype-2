@@ -4715,7 +4715,12 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                       // A row of a list reports its own text, as typing does
                       // (JP-147): `val` is the whole comma string, which no
                       // element on the page holds.
-                      onFocus={(e) => onFocusField?.(sec.id, f, e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement ? e.target.value : val)}
+                      onFocus={(e) => {
+                        // A track's artwork thumb is a photo slot of its own (`tracks:<row>`): it walks the canvas to that row's art.
+                        const art = f.type === 'tracks' && e.target.getAttribute?.('aria-label')?.match(/^(?:Edit|Add) artwork for track (\d+)$/)
+                        if (art) onFocusField?.(sec.id, { ...f, type: 'image', k: `${f.k}:${art[1] - 1}` }, null)
+                        else onFocusField?.(sec.id, f, e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement ? e.target.value : val)
+                      }}
                       onInput={(e) => onFocusField?.(sec.id, f, e.target.value, true)}
                       onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget)) onBlurField?.() }}
                     >
@@ -6118,6 +6123,38 @@ export function photoFieldAt(sec, wrap, pt, themeName) {
   return null
 }
 
+// The outline for a photo, in `rel`'s coordinates (the section wrapper's): the part that
+// shows, grown by `pad` each side. A photo on a tilted card (a polaroid, a rotated frame) is
+// measured where the page lays it out and carried by the card's own matrix, as `placeBox`
+// does for text, so the outline turns with the picture instead of boxing its bounding
+// rectangle. `tf` is for a box that sits at (x - pad, y - pad) with origin 0 0.
+function photoBox(node, root, rel, pad = 0) {
+  const chain = tiltChain(node, root) ?? []
+  const place = (r, g) => {
+    const box = { x: r.left - rel.left, y: r.top - rel.top, w: r.width, h: r.height }
+    if (!g) return box
+    const q = new DOMPoint(r.left - pad, r.top - pad)
+    const t = g.transformPoint(q)
+    return { ...box, tf: `matrix(${g.a}, ${g.b}, ${g.c}, ${g.d}, ${t.x - q.x}, ${t.y - q.y})` }
+  }
+  if (!chain.length) { const r = visibleRect(node, root); return r && place(r) }
+  const info = chain.map((el) => {
+    const cs = getComputedStyle(el)
+    return { m: new DOMMatrix(cs.transform), o: cs.transformOrigin.split(' ').map(parseFloat) }
+  })
+  return untilted(chain, () => {
+    const r = visibleRect(node, root)
+    if (!r) return null
+    let g = new DOMMatrix()
+    chain.forEach((el, i) => {
+      const b = el.getBoundingClientRect()
+      const px = b.left + info[i].o[0], py = b.top + info[i].o[1]
+      g = new DOMMatrix().translate(px, py).multiply(info[i].m).translate(-px, -py).multiply(g)
+    })
+    return place(r, g)
+  })
+}
+
 // The node a panel photo field walks the canvas to: the largest visible one of its marks.
 function photoNodeOf(root, k) {
   let best = null, area = 0
@@ -6834,10 +6871,9 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
     if (text) { wrap.style.cursor = 'text'; setPhotoHover(null); return }
     // Not copy: a photo says a click edits it with a pointer and a thin box round the part that shows.
     wrap.style.cursor = ph ? 'pointer' : ''
-    const r = ph && visibleRect(ph.node, wrap.firstElementChild)
-    const w = wrap.getBoundingClientRect()
-    const next = r ? { sid: sec.id, id: ph.id, x: r.left - w.left, y: r.top - w.top, w: r.width, h: r.height } : null
-    setPhotoHover((p) => (p === next || (p && next && p.sid === next.sid && p.id === next.id && p.x === next.x && p.y === next.y && p.w === next.w && p.h === next.h) ? p : next))
+    const b = ph && photoBox(ph.node, wrap.firstElementChild, wrap.getBoundingClientRect())
+    const next = b ? { sid: sec.id, id: ph.id, ...b } : null
+    setPhotoHover((p) => (p === next || (p && next && p.sid === next.sid && p.id === next.id && p.x === next.x && p.y === next.y && p.w === next.w && p.h === next.h && p.tf === next.tf) ? p : next))
   }
 
   // Photos on the canvas (photoSlots): a filled one opens the image editor on it, with Upload
@@ -6871,9 +6907,10 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
       : wrap && focusF.photo ? photoNodeOf(wrap.firstElementChild, focusF.photo) : null
     if (!node) { setFocusBox(null); return }
     const w = wrap.getBoundingClientRect()
-    const r = focusF.photo && !focusF.text ? visibleRect(node, wrap.firstElementChild) ?? fieldRect(node) : fieldRect(node)
-    const next = { sid: focusF.sid, x: r.left - w.left, y: r.top - w.top, w: r.width, h: r.height }
-    setFocusBox((p) => (p && p.sid === next.sid && p.x === next.x && p.y === next.y && p.w === next.w && p.h === next.h ? p : next))
+    const pb = focusF.photo && !focusF.text ? photoBox(node, wrap.firstElementChild, w, 5) : null
+    const r = pb ? null : fieldRect(node)
+    const next = pb ? { sid: focusF.sid, ...pb } : { sid: focusF.sid, x: r.left - w.left, y: r.top - w.top, w: r.width, h: r.height }
+    setFocusBox((p) => (p && p.sid === next.sid && p.x === next.x && p.y === next.y && p.w === next.w && p.h === next.h && p.tf === next.tf ? p : next))
     // The inline editor sits on the same node, and grows and shrinks with it. A
     // floating field stays where it opened.
     setInline((p) => {
@@ -7645,6 +7682,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
                         width: focusBox.w + 10, height: focusBox.h + 10, boxSizing: 'border-box',
                         border: '2px solid #2B6BE4', borderRadius: '6px', background: 'rgba(43,107,228,.08)',
                         pointerEvents: 'none', zIndex: 21, animation: 'fadeIn .15s ease',
+                        ...(focusBox.tf ? { transform: focusBox.tf, transformOrigin: '0 0' } : null),
                       }} />
                     )}
 
@@ -7653,6 +7691,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
                         position: 'absolute', left: photoHover.x, top: photoHover.y, width: photoHover.w, height: photoHover.h,
                         boxSizing: 'border-box', border: '2px solid #2B6BE4', background: 'rgba(43,107,228,.08)',
                         pointerEvents: 'none', zIndex: 21,
+                        ...(photoHover.tf ? { transform: photoHover.tf, transformOrigin: '0 0' } : null),
                       }} />
                     )}
 

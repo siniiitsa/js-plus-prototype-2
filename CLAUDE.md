@@ -219,10 +219,10 @@ mutated through a single `patch()` helper.
   slot calls `editImages` as the panel's Edit does, with **Upload another** inside the dialog; an empty one opens the file
   picker, then the editor. `photoSlots` is the universe (every image field `fieldShown` says the layout reads, each index of an
   `images` field, each track row), `PHOTO_OFF` in `data.js` its ledger, `photoWrite` the panel's own writes: a list index past
-  the end *appends*, so the photo lands on the first free tile. Hover draws a thin box and a pointer; focusing a photo field in
-  the panel boxes the picture. Remove, reorder and Add stay in the panel. A page is *known* to work only because
+  the end *appends*, so the photo lands on the first free tile. Hover draws a thin box and a pointer, turned with a tilted card (`photoBox`); focusing a photo field in
+  the panel boxes the picture, and a media track's art button boxes its row's. Remove, reorder and Add stay in the panel. A page is *known* to work only because
   **`scripts/photo-probe.mjs --theme T --layout N --width 1440,768 --check`** passed it (`--blank` walks the empty slots; its header lists the
-  verdicts). Retro layout 1 has passed; the other pages are the plan's Step 3.
+  verdicts). Retro layout 1 has passed, by hand too (the Step 2 pilot, with Pop layout 1's hit-test spike); the other pages are the plan's Step 3.
 - `st.theme` is an **integer index** into `THEMES`, not a name or object.
 - **`st.device` is the toggle, `device` is what the canvas draws.** A window at most 1180 wide
   (iPad Air landscape; `useTabletCap`) caps it at tablet and disables the Desktop tab, since
