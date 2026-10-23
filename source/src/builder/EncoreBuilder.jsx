@@ -6073,15 +6073,18 @@ function photoWrite(sec, slot, url, themeName) {
 }
 
 // `node`'s rectangle as the page shows it: clipped by every ancestor up to `root`
-// that clips (an arch, a rounded well), so a photo is not outlined past its crop.
-function visibleRect(node, root) {
+// that clips (an arch, a rounded well), so a photo is not outlined past its crop; `upTo` stops the climb
+// at that ancestor (included).
+function visibleRect(node, root, upTo) {
   let r = node.getBoundingClientRect()
   let left = r.left, top = r.top, right = r.right, bottom = r.bottom
   for (let el = node.parentElement; el && el !== root.parentElement; el = el.parentElement) {
     const cs = getComputedStyle(el)
-    if (cs.overflowX === 'visible' && cs.overflowY === 'visible') continue
-    const q = el.getBoundingClientRect()
-    left = Math.max(left, q.left); top = Math.max(top, q.top); right = Math.min(right, q.right); bottom = Math.min(bottom, q.bottom)
+    if (cs.overflowX !== 'visible' || cs.overflowY !== 'visible') {
+      const q = el.getBoundingClientRect()
+      left = Math.max(left, q.left); top = Math.max(top, q.top); right = Math.min(right, q.right); bottom = Math.min(bottom, q.bottom)
+    }
+    if (el === upTo) break
   }
   return right > left && bottom > top ? { left, top, right, bottom, width: right - left, height: bottom - top } : null
 }
@@ -6142,8 +6145,11 @@ function photoBox(node, root, rel, pad = 0) {
     const cs = getComputedStyle(el)
     return { m: new DOMMatrix(cs.transform), o: cs.transformOrigin.split(' ').map(parseFloat) }
   })
+  // Untilted, only the clips that turn with the card are measured (`upTo`, its outermost tilted element,
+  // included): a clip above it stands still, and the card laid flat can reach past it (the calendar
+  // card's edge cut the front polaroid's outline to 85% of the picture).
   return untilted(chain, () => {
-    const r = visibleRect(node, root)
+    const r = visibleRect(node, root, chain[chain.length - 1])
     if (!r) return null
     let g = new DOMMatrix()
     chain.forEach((el, i) => {

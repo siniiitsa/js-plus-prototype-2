@@ -348,8 +348,55 @@ Calendar, pricing, form, repertoire, map, testimonials and footer carry no photo
   made, the drop zone wants a `tabIndex={0}` and `role="button"` of its own, or the panel -> canvas walk is lost for an emptied field.
 - **Drivers.** Throwaway puppeteer scripts over the dev server in the job's scratch directory (the probe's page helpers); nothing new is committed in `scripts/`.
 
-**Next: Step 3 continues: layout 4 across the five templates, then Retro's header-only 5 and 6** (layouts 2 and 3 are done, above). Per page:
-`photo-probe --theme T --layout N --width 1440,768 --check`, default and `--blank`, then the by-hand pass this one did (hover outline on
-every tilted or clipped frame, panel -> canvas for each field, an emptied slot, `inline-probe --check` on the page). Carry forward: the
-`transition` check on tilted ancestors (`photoBox`), any default-state `appended` line, any translucent ground above a photo, and the tracks'
-panel focus on every layout that draws media art. CLAUDE.md's bullet says what the pilot closed. Layout 4 re-measures the `transition` check (Retro's tilted polaroid is the only tilted ancestor so far) and, if its pages draw one, the clipped-frame and back-card outlines; drive the hover with a 170 ms gap between moves, and reset `overflow: hidden` scroll offsets after any `scrollIntoView`.
+**Step 3 · layout 4, Retro · Lime · Grunge · Editorial · Pop, and Retro's layouts 5 and 6 — done 2026-10-23 on branch `photo-edit`. One code fix, in `photoBox`** (below); `PHOTO_OFF`
+stays empty. Layout 4 draws sixteen slots on every template (18 nodes): header image + avatar, bio, five media tracks (a sleeve and a grid of tiles: track 0 is drawn twice, as the
+sleeve and as its tile, tracks 1 to 4 once), seven gallery tiles, and the calendar's `image` (design `[0, 3]`). Pricing, form, repertoire, map, testimonials and footer carry none.
+- **`photo-probe --theme T --layout 4 --width 1440,768 --check`: PASS on all five, 16 slots hit at both widths**, 0 WRONG / NOT-RESTORED / MISSING / not drawn / dead spot / off / blocked /
+  copy / hidden. **`appended` is 0 in the default state on all five**: the carried-forward check found nothing. `--blank`: PASS on all five, 16 slots hit, the seven gallery tiles `appended`
+  (list + 1, earlier items untouched). `partial` is copy (`p`, `span`), nav and svg: the bio photo 120 of 144 points open under Editorial (24 are the card's prose), the tracks' tiles
+  114 to 135 of 132 to 144 (spans), the header hero 112 of 129 (copy, a seal's svg). One flake, not reproduced: the first Editorial run, five browsers at once, reported one WRONG at 768
+  (*the dialog frames null*, `header.avatar`: the probe read the dialog before its `<img>` had mounted). Alone: 3 of 3 header runs and a full default run PASS; the five-at-once load is the likely
+  cause, not isolated. Run the probe a few at a time.
+- **Retro layouts 5 and 6, `photo-probe --theme Retro --layout 5|6 --width 1440,768 --check`: PASS, default and `--blank`, 17 slots hit at both widths** (their body is layout 1's page, so it is
+  Retro layout 1's 17: header image + avatar, bio, five tracks, seven tiles, calendar, form; the header is the only section that differs). 0 WRONG / NOT-RESTORED / MISSING / blocked; `appended` 0
+  default, 7 `--blank`. Layout 5's header hero is the most covered photo of the pass (99 of 144 open at 1440, 76 of 143 at 768: divs, spans, links and the title's copy, none unexplained).
+- **`inline-probe --theme T --layout 4 --width 1440,768 --check`: PASS on all five** (Retro 152 / 149 slots hit, the others 151-152 / 148-149; 0 WRONG / NOT-RESTORED / MISSING / dead click).
+  `--cat header` on Retro 5 and 6, both widths: PASS (11 slots hit each; 5 has 2 `off`). The rest of those two pages is layout 1's, whose full inline pass is Step 2's; not re-run.
+- **Transition / animation on a tilted ancestor (carried forward): closed, layouts 1 to 6 measured.** Layout 4: Retro's gallery tile (-2 degrees), Editorial's track-0 sleeve (-2.3) and gallery tile (-1), and
+  Lime's header hero, whose `img` is itself rotated 180 degrees (the node). Retro 5 and 6, as layout 1: the hero (-6), the five track cards (+-1), the gallery spotlight (-2), the calendar's three
+  polaroids (28.7, 3.2 and 15). **None has a transition duration or an animation** (`0s`, `none`), so `untilted`'s restore starts nothing.
+- **Translucent ground above a photo (carried forward): the range is now exercised, one finding, kept.** Layout 4's bio is a photograph with an overlay card of copy, and the card is a glass
+  panel: `backdrop-filter: blur`, background alpha **.5 Grunge, .71 Lime, .8 Editorial and Pop** (Retro's card is opaque). It lies over **84 of the photo's 196 grid points at 1440** (60 to 72 at
+  768), 43% of its area. The `alpha >= .9` cut lets a click through it, so a click on the card face (outside its copy and Listen link, which win as text and a control) opens the bio photo.
+  **Kept, the model's call, flagged for the user:** no other slot lives on the card face, so a blocking card would leave 43% of the picture a dead spot and open nothing; the outline boxes the
+  whole picture, under the card too, which says what the click replaces. No cut is more principled than another: .5 would block Grunge's, Lime's, Editorial's and Pop's cards, .75 only
+  Editorial's and Pop's, and the rule stays one number. **Small ones, found by the same survey (a 14 x 14 grid over every photo node, the stack above it read for background alpha, backdrop
+  filter and blend mode):** a 92 x 97 element at alpha .18 over Retro's header hero on layouts 1 and 4 (2 to 6 of ~190 points), .12 on layout 5's (4), and a `span` at .15 over Lime layout 1's
+  track-0 art (10 of 192, the one on a media photo). All let the click through and cost nothing visible. **Step 2's "no translucent ground on Retro layout 1" was wrong by that one element;**
+  layouts 2 and 3 have none (re-surveyed here, five templates, both widths), so the earlier steps' conclusions about *their* pages stand.
+- **Hover outline, every node (18 per page x 10 pages for layout 4, 21 for 5 and 6; a real mouse with a 200 ms gap between moves, a 40 x 40 grid over the painted area).** A box and the `pointer`
+  cursor on every node; painted points outside the box: 0% on every upright node, **0.1 to 0.3% on a tilted one**, and on Retro 1, 5 and 6's calendar polaroids 2.8, 1.2 and 0.6%
+  (after the fix below). The box's area equals the node's own layout area on every tilted card (quad / layout 1.00). **Clipped frames keep a square outline** (the pilot's call): Pop's pill
+  gallery tiles show 18 to 22% of the box beyond the picture, the calendar's 999px disc 16 to 19%, Pop's avatar 12%, Retro's 20px gallery tiles 5 to 6%, Lime's header and the other rounded
+  wells 0.5 to 3%. **Back-card outlines: none on layout 4** (the media is a sleeve and a grid, no fan; the sleeve's own tilt, Editorial's, is carried by the matrix). **Retro 5 and 6 (layout 1's body) have one:
+  the calendar's polaroid stack.** The two back polaroids' outlines are their whole (tilted) rectangles and run over the front card, 86 and 91% of each box lying off its own painted pixels,
+  the fan's class (layout 2); the click rule is right (the front card wins), only the outline over-promises. Read on screenshots: Retro's front polaroid and both back ones, Pop's bio card.
+- **The fix: `photoBox` clipped a tilted photo by a clip that does not tilt.** With the card laid flat, `visibleRect` still intersected the photo with every `overflow` ancestor up to the section,
+  and an ancestor above the tilted card stands still while the flat card can reach past it: on Retro's calendar (layouts 1, 5 and 6, 1440) the 15-degree front polaroid was laid past the calendar
+  card's `overflow: hidden` edge, and its outline was cut to 240 of the picture's 282 px, **68%, 15% and 7% of the three polaroids' painted points outside the box** (Step 2 read this page as
+  at most 3%; its driver is gone and the difference is not isolated). `visibleRect(node, root, upTo)` now stops at `upTo`, and `photoBox` passes the card's outermost tilted element: only the clips that turn
+  with the card are measured, those above it are not. The outline can now overshoot where a tilted card really is cut by a standing clip (none on any page measured). Re-measured after the fix over layouts 1 to 4,
+  five templates, 1440 and 768 (hover on every node): a box and the pointer on every node, worst painted-outside 2.8% (the polaroid at 1440), no node moved for the worse.
+- **Panel -> canvas (19 targets per page x 10 pages for layout 4, 21 for 5 and 6; header Background photo and Artist photo, bio Photo, gallery Photos, calendar Photo, each track's art button;
+  the tracks, gallery and photo fields from the top of the page and from the bottom).** The canvas scrolls and the box lands on the picture, **overlap 1.00, inside the scroller: 19 of 19 (21 of 21)
+  on every page, default and with every slot emptied** (the hidden file input and the `Add artwork for track N` buttons). **Which node a track's art button boxes on layout 4: the largest visible
+  one with that mark.** Track 0 is the sleeve (249 x 282 at 1440), not its grid tile; tracks 1 to 4 their one tile (206 x 192). That is the node a user wants (the picture they are choosing), and both open the same row.
+- **An emptied slot:** the `--blank` runs above (picker, crop, placement, 7 gallery appends), both widths, six pages x five templates (layout 4) and layouts 5, 6.
+- **Drivers.** Throwaway puppeteer scripts over the dev server in the job's scratch directory (the probe's page helpers cut into a new file); nothing new is committed in `scripts/`.
+
+**Step 3 is closed**: layouts 1 to 4 on all five templates and Retro's 5 and 6 are proved by `photo-probe --check` (default and `--blank`) and `inline-probe --check`, hover and panel focus measured on every page.
+**Next: Step 4, the sweep and docs.** (1) Re-run `photo-probe --check` over every page of Steps 1 to 3 after the `photoBox` change (it touches hover and panel-focus boxes only, so the hit-test is
+unchanged, but the plan says re-run after any shared-code change); (2) the optional file-drop on a canvas photo (cut if it fights the text editor's drag); (3) CLAUDE.md and `notes/photography.md` already
+carry the feature, update what Step 4 settles; (4) `npm run build` and `npm run build:standalone`; `index.html` and `published.html` are refreshed only by the separate deliberate copy step.
+Open for the user, none blocking: the `FILE_INPUT` tab stop (layout 2's log; fixing it removes an emptied field's only focus route, so give the drop zone a `tabIndex` and role first), the hover
+throttle's missing trailing call, and the glass card's cut (above).
