@@ -260,7 +260,45 @@ by eye; the drivers are throwaways) and the Pop layout-1 hit-test spike. Two cod
   Retro 1 default and `--blank` and Pop 1, both widths, 17 slots each, 0 WRONG / NOT-RESTORED / MISSING / blocked (`--blank`: 7 gallery appends).
   `npm run build` and `npm run build:standalone` succeed; `index.html` not touched.
 
-**Next: Step 3, the layout-major passes** (layout 2 across the five templates, then 3, 4, and Retro's header-only 5 and 6). Per page:
+**Step 3 · layout 2, Retro · Lime · Grunge · Editorial · Pop — done 2026-10-23 on branch `photo-edit`. No app code changed** (nothing to fix; the
+probe's `PHOTO_OFF` stays empty). Layout 2 is the same twenty slots on every template: header image + avatar, bio, five media tracks (fan card +
+list row each, 11 nodes), seven gallery tiles, three pricing faces, form stage photo + portrait.
+- **`photo-probe --theme T --layout 2 --width 1440,768 --check`: PASS on all five, 20 slots hit at both widths**, 0 WRONG / NOT-RESTORED / MISSING / not
+  drawn / dead spot / off / blocked / copy / hidden (Retro 31 clicks, the others 35). **`appended` is 0 in the default state on all five**: the seeded
+  `c.images` covers every gallery tile and every pricing face layout 2 draws, so the carried-forward "default-state appended is a finding" check found nothing.
+  `--blank`: PASS on all five, 17 slots hit, the 7 gallery tiles `appended` (the pinned behaviour: list + 1, earlier items untouched), and pricing's three faces
+  *not drawn* (an emptied list draws none; the panel's Add is the only way to start them: as Editorial 2's was in Step 1; `--blank` skips UNLEDGERED).
+  What `partial` reports is copy, controls and cards, never the middle of a photo: bio 83-86% open (copy), fan cards 82-85% (**the next card over them, below**),
+  pricing faces 82-92% (static spans, i.e. copy), gallery tile 3 93-99%.
+- **`inline-probe --theme T --layout 2 --width 1440,768 --check`: PASS on all five** (155-157 slots hit, 0 WRONG / NOT-RESTORED / MISSING; Retro's one dead click is
+  `header.location`, the vertical `Manchester, UK` rail, which the script's header names as a skipped kind). The marks changed no text hit-testing.
+- **Transition / animation on a tilted ancestor (carried forward; `photoBox` relies on `untilted` restoring `transform` and `transition`).** Re-measured on every
+  photo node of layout 2, five templates, both widths: the transformed ancestors of a photo are the header hero's 2 degrees (Retro only, desktop) and the media
+  fan's five cards (a 0 degree card among them). **None has a transition duration or an animation** (`transition-duration: 0s`, `animation-name: none`
+  on all 5-6 per page, 10 pages), so `untilted`'s restore starts nothing. Layout 1's measurement (Step 2) still holds; layouts 3 and 4 re-measure.
+- **Translucent ground above a photo (carried forward). One finding, kept.** The only thing above a photo with a non-opaque paint is the media fan: each card
+  but the front sits at `opacity: .82` (a dimmed card, an opaque background at 82%) and lies over the outer cards' art: `tracks:1`'s card over `tracks:0`'s,
+  `tracks:3`'s over `tracks:4`'s (Editorial's desktop `tracks:2` too), at 11-12 of 66-74 sampled points per outer card; no `rgba` background below `.9` and no
+  `backdrop-filter` or blend mode over any photo. `blocksPhoto` reads the colour's alpha, so the card (background alpha 1) blocks: a click there opens nothing of the back
+  card, which is right, because what the user sees is a card face. **Do not fold `opacity` into that read**: .82 x 1 < .9 would let the click through to a photo
+  the user sees only through the card, and the probe's own count (0 blocked, 0 copy) says no node loses its middle. The alpha-in-(0, .9) range remains
+  unexercised by any page of layouts 1 and 2; layouts 3 and 4 carry the question forward.
+- **Hover outline, every node (26 per page x 10 pages, a real mouse over the app's own `photoFieldAt` points, 60 x 60 grid over the painted area).** A box on
+  every node, cursor `pointer`; of the painted points that fall outside the box: Retro's header hero (2 degrees) 0.4%, the fan's tilted cards 0-3%
+  (Retro 2.9% worst), everything upright 0%; the box's area equals the node's own layout area on every tilted card (quad / layout = 1.00, so the outline
+  turns with the picture and does not take its bounding rectangle, which is 7-36% larger). Read on screenshots too: Retro's tilted hero and fan card, Pop's
+  fan card, Editorial's arch and gallery spotlight, Pop's bio card. **Clipped frames keep a square outline**: the Editorial arch (header and bio) and Pop's
+  rounded bio card draw the 2px box over their corners, the tint on the paper beyond the arch; the pilot's "round frame gets a square outline" call,
+  kept, and the arch is its most visible case. If it is ever fixed, `visibleRect` knows which ancestor clipped and could hand the box its `border-radius`.
+- **Panel -> canvas (12 targets per page x 10 pages).** Focusing each photo field's control (header Background photo and Artist photo, bio Photo, gallery Photos,
+  pricing Reviewer photos, form Portrait and Stage photo) and each of the five tracks' art buttons: the canvas scrolls (smooth, from the top of the page) and the box
+  lands on the picture, overlap 1.00, inside the viewport, 12 of 12 on all ten pages. Two harness lessons, not app findings: the first control inside a field
+  wrapper can be the hidden 1 x 1 `<input type=file>` (pricing's), which sits outside the panel's scroller and scrolls the app shell when focused, so the
+  driver now takes the visible button; and a hover test that takes one point per node reads "no box" on a 19px face (the throwaway now tries up to six).
+- **An emptied slot** (the picker, the crop, the placement): the `--blank` run above, all 17 slots, both widths, five templates.
+- **Drivers.** The by-hand measurements are throwaway puppeteer scripts over the dev server (the probe's page helpers); nothing new is committed in `scripts/`.
+
+**Next: Step 3 continues: layout 3 across the five templates, then layout 4, then Retro's header-only 5 and 6** (layout 2 is done, above). Per page:
 `photo-probe --theme T --layout N --width 1440,768 --check`, default and `--blank`, then the by-hand pass this one did (hover outline on
 every tilted or clipped frame, panel -> canvas for each field, an emptied slot, `inline-probe --check` on the page). Carry forward: the
 `transition` check on tilted ancestors (`photoBox`), any default-state `appended` line, any translucent ground above a photo, and the tracks'

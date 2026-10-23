@@ -139,13 +139,13 @@ Code in `EncoreBuilder.jsx` beside `inlineSlots`: `photoSlots` (exported), `phot
   focus wrapper reads its label (`Edit` / `Add artwork for track N`) and reports `tracks:N-1`, the row's own mark. **Both boxes are drawn by
   `photoBox`**: a photo on a tilted card is measured untilted (`tiltChain` / `untilted`) and carried by the card's matrix, as `placeBox` does for
   text, so the outline turns with the picture (pilot, Step 2: a bounding rectangle overshot a 15-degree polaroid by 31%). `untilted` restores
-  `transform` and `transition`, which would start a transition on a tilted ancestor that has one: none on any template's layout 1, to be
+  `transform` and `transition`, which would start a transition on a tilted ancestor that has one: none on any template's layout 1 or 2 (measured), to be
   re-measured per layout. A round frame gets a square outline.
 - **Proved by `scripts/photo-probe.mjs`** (`--theme T --layout N --width 1440,768 --check`, the photo twin of `inline-probe.mjs`; its header
   lists every flag and verdict). It clicks every `[data-photo]` node with a real mouse, checks that the crop dialog opens on the picture
   the panel shows (or the file picker, for an empty slot), that Escape leaves `c` and the HTML alone, and, once per slot, that a fixture PNG
   Applied through the dialog changes only that slot's key, list index or track row. `--blank` empties every photo first, track rows too (placeholders,
-  the picker path, the append). A page is known good only once it passed; Step 1 passed Retro layout 1 (17 slots, both widths, filled and blank).
+  the picker path, the append). A page is known good only once it passed; Step 1 passed Retro layout 1 (17 slots, both widths, filled and blank). Step 3 passed layout 2 on all five templates (20 slots, both widths, filled and `--blank`).
   `PHOTO_OFF` is empty: no page has needed a row yet.
 - **Decorations do not open a photo, and that is on purpose.** An `svg` over the picture (a seal, a sticker, a sparkle, an icon) blocks
   `photoFieldAt` as `blocksPhoto` has it, like a control or copy; measured on Pop layouts 1 to 4 it costs a photo a few percent of its area,
@@ -154,6 +154,9 @@ Code in `EncoreBuilder.jsx` beside `inlineSlots`: `photoSlots` (exported), `phot
 - **The solid-ground and copy-first rules, measured (Pop 1 and Retro 1, Step 2).** No element above a photo on either page has a translucent
   ground, so the `alpha >= .9` cut changes no click there. What stops a click is copy (a hero loses 22%, nearly all title words, nav and pills),
   an svg (4 to 9 of ~250 points) and a real card (Pop pulls each media row's opaque card up over the previous row's art by ~4 of 50px). Kept.
+- **A dimmed card is a card (layout 2's media fan, Step 3).** Each fan card but the front sits at `opacity: .82` over an opaque background and lies over the
+  outer cards' art. `blocksPhoto` reads the background's alpha (1), so the card blocks, which is what the user sees. Do not multiply `opacity` in: .82 would fall under
+  the .9 cut and let a click through to art that shows only through a card face. No page of layouts 1 or 2 has a background alpha in (0, .9) above a photo.
   A refused file from an empty slot gets a toast alone (the canvas has no control to hold the inline line the dialog prints).
 - **Past the end of a list, a click appends** (kept after Step 1). On Retro 1, Pop 1, Lime 3, Editorial 2 and Grunge 4 in their default state no
   tile lies past its list; one does after the panel's Remove has spliced the list (other layouts: a default-state `appended` line is a finding); the panel's Add tile appends, and so does the canvas. The photo lands on the first free tile, which is the clicked one unless
