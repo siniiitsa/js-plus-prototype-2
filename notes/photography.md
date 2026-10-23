@@ -90,3 +90,22 @@ was rejected: it would touch every `Photo` site and the ones that hard-code `50%
   file prints its line under the stage and toasts (`ImageEditorHost`'s `onToast`). The vetting helpers (`imageProblem`,
   `readImage`, `vetImages`, `IMAGE_MAX`) moved to `src/builder/imageFiles.js` so the dialog and the panel share them.
 - Not done: a live preview of how the crop sits at 1440 / 768 / 390.
+
+## The photo mark (plans/photo-edit.md, user call, 2026-10-23)
+
+`Photo` in `EncoreSection.jsx` carries an inert **`data-photo="<slot>"`** on all three of its arms (the `<img>`, the
+`backdrop` gradient, the initials well), and so does the media layout-4 tile's raw `<img>` and its numeral. It is the
+canvas photo editor's only way to know which *field* a picture is: text cannot say (a seed URL is shared by several
+fields, an empty gallery tile draws the section photo as its fallback, a placeholder is no `<img>`). It breaks
+CLAUDE.md's old "two marks and no other", which was about text; CLAUDE.md now says so. No effect, no handler.
+
+- **Slot names:** `image`, `avatar`, `photo` (the form's stage shot), `images:<i>` (index into `c.images`, the gallery strip and
+  pricing's faces), `tracks:<row>` (row in `c.tracks`). Derived inside `Photo` where a caller passes no `src` (`avatar` →
+  `avatar`, `src === undefined` → `image`); a caller that passes its own `src` passes `slot` too, or the node carries no mark.
+- **`vm.tracks[].row`** is the track's index in `c.tracks`. The rows the page prints skip blank ones (`blankRow`), so the rank
+  (`n`) is not the row the panel edits; the mark names the row. The sleeve and the now-playing disc take it from the track they
+  show (`sleeveSlot`, `nowSlot`). The seeded list has `row === i`.
+- **Pricing's reviewer faces** keep the stored index through the `filter(Boolean)` that skips a removed slot (`faces` is
+  `{ src, idx }`), so face 2 stays `images:2` when face 1 was removed.
+- Checked over every cat × layout × width × template (`preview.html`): no `<img>` without a mark, no slot reading `undefined`;
+  testimonials, map, repertoire and footer carry none. `digest.mjs` before / after: 660 renders, 0 files differ.

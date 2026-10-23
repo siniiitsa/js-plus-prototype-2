@@ -206,7 +206,7 @@ mutated through a single `patch()` helper.
   rows from the same tags and `inlineSlots` puts the others in the ledger (`off`, *live-only copy*), which also keeps the exact-copy pairing honest
   (plans/retro/inline-layout-3.md). The box is re-placed on the canvas's
   scroll, so it keeps to a sticky card; vertical type anywhere in a node leaves it to the panel.
-  `EncoreSection` carries **two inert `data-inline` marks and no other** (the gallery's credit line and source
+  `EncoreSection` carries **two inert `data-inline` marks and no other text mark** (photos carry `data-photo`, below; the gallery's credit line and source
   label, `railLabel` and `sourceLabel`, which text cannot tell from each other or from Retro's vertical wordmark; set
   in the gallery's two layout-1 blocks, Retro's and the Lime tree's); do not add more where text can decide. Nothing in
   the published tab, the preview or the thumbnails mounts the editor. Enter inserts a line break only where the

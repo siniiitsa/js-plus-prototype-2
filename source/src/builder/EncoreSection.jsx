@@ -1680,14 +1680,19 @@ function Checkerboard({ s, style, cell = 14, colour }) {
 // standing on its own ground needs it: `muted` is rgba(tx, .64) computed
 // against the PAGE (the repertoire's lesson), so on a palette whose text colour
 // is also the sheet's the placeholder came back invisible.
-function Photo({ s, style, initialsSize = 44, backdrop = false, avatar = false, src, ink }) {
+// `slot` is an inert `data-photo` mark naming the field this picture is, for the canvas editor to read (notes/photography.md,
+// plans/photo-edit.md): `image`, `avatar`, `photo`, `images:<i>`, `tracks:<row>`. Text cannot say which field a photo is — a
+// seed is shared by several, an empty slot draws another's fallback, a placeholder is no <img> — so every arm carries it.
+// A caller that passes its own `src` also passes `slot`; the other two derive theirs.
+function Photo({ s, style, initialsSize = 44, backdrop = false, avatar = false, src, ink, slot }) {
   const url = avatar ? s.avatar : (src === undefined ? s.image : src)
+  const mark = slot ?? (avatar ? 'avatar' : src === undefined ? 'image' : undefined)
   if (url) {
-    return <img src={url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', ...style }} />
+    return <img data-photo={mark} src={url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', ...style }} />
   }
   if (backdrop) {
     return (
-      <div style={{
+      <div data-photo={mark} style={{
         width: '100%', height: '100%',
         background: s.pop ? (s.v2 ? s.box2 : s.v3 ? s.box3 : s.tx) : s.limeTree
           ? `linear-gradient(150deg, ${s.box1}, ${s.bg} 55%, ${s.box3})`
@@ -1697,7 +1702,7 @@ function Photo({ s, style, initialsSize = 44, backdrop = false, avatar = false, 
     )
   }
   return (
-    <div style={{
+    <div data-photo={mark} style={{
       width: '100%', height: '100%', background: s.soft, display: 'flex',
       alignItems: 'center', justifyContent: 'center', ...style,
     }}>
@@ -6906,6 +6911,8 @@ function Media({ s }) {
   // which for the media player is now nothing, so it lands on the initials
   // placeholder — the card rows keep their `null` and must not do this.
   const sleeve = track?.img ?? undefined
+  // Which track row the sleeve shows, for the canvas editor's mark (notes/photography.md).
+  const sleeveSlot = track ? `tracks:${track.row}` : undefined
 
   // Lime layout 1 (964:58590 · 986:39879 at 768 · 986:39891 at 390) is Retro's
   // component below in Lime's mode, and like the bio it is not the same tree
@@ -7086,7 +7093,7 @@ function Media({ s }) {
               <span style={{
                 width: u(60), height: u(60), flex: 'none', position: 'relative',
                 borderRadius: u(13), overflow: 'hidden',
-              }}><Photo s={s} initialsSize={14} src={t.img} ink={ink} /></span>
+              }}><Photo s={s} slot={`tracks:${t.row}`} initialsSize={14} src={t.img} ink={ink} /></span>
             </div>
           )
         })}
@@ -7136,7 +7143,7 @@ function Media({ s }) {
         ...col(u(18), { alignItems: 'center' }),
       }}>
         <div aria-hidden style={{ position: 'absolute', inset: 0 }}>
-          <Photo s={s} initialsSize={44} src={sleeve} ink={s.tx} />
+          <Photo s={s} slot={sleeveSlot} initialsSize={44} src={sleeve} ink={s.tx} />
         </div>
         <div aria-hidden style={{ position: 'absolute', inset: 0, background: SCRIM.limeSleeve }} />
         <span style={{ position: 'relative', fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5, color: grunge ? s.activeFg : undefined }}>{'<'}</span>
@@ -7494,7 +7501,7 @@ function Media({ s }) {
                 // card's own ink, where `s.muted` violet vanished on the red
                 // and the blue.
                 border: pop ? undefined : filled ? 'none' : `1px solid ${ink}`,
-              }}><Photo s={s} initialsSize={14} src={t.img} ink={pop ? seat.ink : undefined} /></span>
+              }}><Photo s={s} slot={`tracks:${t.row}`} initialsSize={14} src={t.img} ink={pop ? seat.ink : undefined} /></span>
               {filled && <Grain s={s} exact blend="screen" opacity={0.4} />}
             </div>
           )
@@ -7539,7 +7546,7 @@ function Media({ s }) {
           width: desk ? '207px' : '252px', maxWidth: '100%',
           aspectRatio: s.mob ? undefined : '1', flex: s.mob ? 1 : 'none', minHeight: s.mob ? 0 : undefined,
           borderRadius: desk ? '41px' : '50px', overflow: 'hidden', position: 'relative',
-        }}><Photo s={s} initialsSize={44} src={sleeve}
+        }}><Photo s={s} slot={sleeveSlot} initialsSize={44} src={sleeve}
                   ink={pop ? S6.text3 : undefined} style={pop ? { background: POP_PLAYER.well } : undefined} /></div>
         <div style={col(pop ? u(4) : '4px', { alignItems: 'center', position: 'relative' })}>
           {/* The frame sets the now-playing block in the body face, like a real
@@ -7776,6 +7783,7 @@ function Media({ s }) {
     const centre = s.tracks[anchor]
     const nowTitle = s.live || !centre ? now.track : centre.name
     const nowArt = s.live || !centre ? sleeve : (centre.img ?? undefined)
+    const nowSlot = s.live || !centre ? sleeveSlot : `tracks:${centre.row}`
     // And the line under the title is that track's own `byline`, the artist
     // and its release, as every layout-2 frame types it: "Kai Mercer ·
     // Single" (JP-097). With no track it is the artist alone, `now.by`.
@@ -7916,12 +7924,12 @@ function Media({ s }) {
       // tile and not a hole, with initials that read on it. Pop's list discs
       // stand on their row's own well and ink, under a 4px inside ring that
       // paints over the photograph.
-      const art = (src, size, radius, initials, well = dusk, ink = s.tx, ring) => (
+      const art = (src, size, radius, initials, well = dusk, ink = s.tx, ring, slot) => (
         <span style={{
           width: size, height: size, flex: 'none', display: 'block', position: 'relative',
           borderRadius: radius, overflow: 'hidden', background: well,
         }}>
-          <Photo s={s} initialsSize={initials} src={src} ink={ink} />
+          <Photo s={s} slot={slot} initialsSize={initials} src={src} ink={ink} />
           {ring && (
             <span aria-hidden style={{
               position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
@@ -7999,7 +8007,7 @@ function Media({ s }) {
                 <span style={{
                   position: 'relative', height: u(g.art), flex: 'none', display: 'block',
                   borderRadius: u(4), overflow: 'hidden', background: C ? C.box2 : dusk,
-                }}><Photo s={s} initialsSize={20} src={t.img} ink={C ? C.tx : s.tx} /></span>
+                }}><Photo s={s} slot={`tracks:${t.row}`} initialsSize={20} src={t.img} ink={C ? C.tx : s.tx} /></span>
                 <div style={col(u(4), { minWidth: 0, alignItems: 'stretch' })}>
                   {/* Display/List over Body/SM. */}
                   <span style={{ fontFamily: s.display, fontSize: faced(s, s.list), lineHeight: facedLh(s, 1.2), letterSpacing: s.dls, ...disp, ...clip }}>{t.name}</span>
@@ -8073,7 +8081,7 @@ function Media({ s }) {
             flex: 1, minWidth: 0, background: ed ? undefined : pop ? barBg : cardBg, borderRadius: u(80),
             padding: `${u(10)} ${desk ? (ed ? 0 : u(12)) : tab ? '30px' : 0} ${u(10)} ${s.mob || (desk && ed) ? 0 : u(10)}`,
           })}>
-            {!s.mob && art(nowArt, u(60), '999px', 16)}
+            {!s.mob && art(nowArt, u(60), '999px', 16, undefined, undefined, undefined, nowSlot)}
             <span style={col(u(2), { flex: 1, minWidth: 0, alignItems: 'stretch' })}>
               <span style={distressed(s, titleType)}>{nowTitle}</span>
               <span style={{ ...bodySm, ...clip }}>{nowBy}</span>
@@ -8175,7 +8183,7 @@ function Media({ s }) {
                   : t.n}</span>
                 {/* Pop's cover is a disc on the row's own well, ringed 4px
                     in `scheme/1/stroke/2` — lime, named outright. */}
-                {R ? art(t.img, u(64), '999px', 16, R.S.box2, R.S.ac, s.onScheme[1].stroke2) : art(t.img, u(64), u(4), 16)}
+                {R ? art(t.img, u(64), '999px', 16, R.S.box2, R.S.ac, s.onScheme[1].stroke2, `tracks:${t.row}`) : art(t.img, u(64), u(4), 16, undefined, undefined, undefined, `tracks:${t.row}`)}
                 {/* Display/Title over Body/SM. */}
                 <span style={col(u(4), { flex: 1, minWidth: 0, alignItems: 'stretch' })}>
                   <span style={distressed(s, titleType)}>{t.name}</span>
@@ -8326,7 +8334,7 @@ function Media({ s }) {
               <div style={{
                 position: 'relative', height: u(g.art), flex: 'none',
                 borderRadius: u(4), overflow: 'hidden',
-              }}><Photo s={s} initialsSize={20} src={t.img} /></div>
+              }}><Photo s={s} slot={`tracks:${t.row}`} initialsSize={20} src={t.img} /></div>
               <div style={col(u(4), { minWidth: 0 })}>
                 <span style={{ ...titleType(16), lineHeight: 1.2 }}>{t.name}</span>
                 <span style={subType}>{t.rel || t.sub}</span>
@@ -8400,7 +8408,7 @@ function Media({ s }) {
             <span style={{
               width: u(60), height: u(60), flex: 'none',
               borderRadius: '999px', overflow: 'hidden', position: 'relative',
-            }}><Photo s={s} initialsSize={16} src={nowArt} /></span>
+            }}><Photo s={s} slot={nowSlot} initialsSize={16} src={nowArt} /></span>
           )}
           <span style={col(u(2), { flex: 1, minWidth: 0 })}>
             {/* `size/title` ramps 24 → 19 → 18 across the three masters. */}
@@ -8521,7 +8529,7 @@ function Media({ s }) {
               <span style={{
                 width: u(64), height: u(64), flex: 'none', display: 'block',
                 borderRadius: u(4), overflow: 'hidden', position: 'relative',
-              }}><Photo s={s} initialsSize={16} src={t.img} /></span>
+              }}><Photo s={s} slot={`tracks:${t.row}`} initialsSize={16} src={t.img} /></span>
               <span style={col(u(4), { flex: 1, minWidth: 0 })}>
                 <span style={titleType(24)}>{t.name}</span>
                 <span style={subType}>{t.rel}</span>
@@ -8960,7 +8968,7 @@ function Media({ s }) {
                     width: u(64), height: u(64), flex: 'none', display: 'block', position: 'relative',
                     borderRadius: R ? '999px' : u(4), overflow: 'hidden', background: R ? R.S.box2 : s.box2,
                   }}>
-                    <Photo s={s} initialsSize={16} src={t.img} ink={R ? R.S.ac : s.tx} />
+                    <Photo s={s} slot={`tracks:${t.row}`} initialsSize={16} src={t.img} ink={R ? R.S.ac : s.tx} />
                     {R && (
                       <span aria-hidden style={{
                         position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
@@ -9115,7 +9123,7 @@ function Media({ s }) {
               <span style={{
                 width: u(64), height: u(64), flex: 'none', display: 'block',
                 borderRadius: u(4), overflow: 'hidden', position: 'relative',
-              }}><Photo s={s} initialsSize={16} src={t.img} /></span>
+              }}><Photo s={s} slot={`tracks:${t.row}`} initialsSize={16} src={t.img} /></span>
               <span style={col(u(4), { flex: 1, minWidth: 0 })}>
                 <span style={distressed(s, titleType)}>{t.name}</span>
                 {/* Rendered or not, rather than printed blank: a typed
@@ -9386,7 +9394,7 @@ function Media({ s }) {
         ...(ed && { transform: 'rotate(-2.33deg)', margin: s.mob ? '2% 0' : undefined }),
       }}>
         <span style={{ position: 'absolute', inset: 0, overflow: ed ? 'hidden' : undefined }}>
-          <Photo s={s} initialsSize={un(56)} src={sleeve} ink={s.bg} style={{ background: well }} />
+          <Photo s={s} slot={sleeveSlot} initialsSize={un(56)} src={sleeve} ink={s.bg} style={{ background: well }} />
         </span>
         <span aria-hidden style={{
           position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none', boxShadow: glow,
@@ -9466,7 +9474,7 @@ function Media({ s }) {
             ...col(u(4), { alignItems: 'flex-start', justifyContent: 'flex-end' }),
           }}>
             <span style={{ position: 'absolute', inset: 0 }}>
-              <Photo s={s} initialsSize={un(26)} src={t.img} ink={s.tx} style={{ background: G.band }} />
+              <Photo s={s} slot={`tracks:${t.row}`} initialsSize={un(26)} src={t.img} ink={s.tx} style={{ background: G.band }} />
             </span>
             {/* The scrim, carrying the seat's glow: `at` is 0 until the visitor
                 picks, so the canvas draws the frame's own glowing first tile.
@@ -9737,7 +9745,7 @@ function Media({ s }) {
             four and mid-edit — and `ink` is owed by every section on its own
             sheet, `s.muted` being an rgba of the *page's* text colour. */}
         <span style={{ position: 'absolute', inset: 0 }}>
-          <Photo s={s} initialsSize={un(56)} src={sleeve}
+          <Photo s={s} slot={sleeveSlot} initialsSize={un(56)} src={sleeve}
                  ink={s.retro ? undefined : s.paperFg} />
         </span>
       </div>
@@ -9830,7 +9838,7 @@ function Media({ s }) {
             ...col(u(4), { alignItems: 'flex-start', justifyContent: 'flex-end' }),
           }}>
             <span style={{ position: 'absolute', inset: 0 }}>
-              <Photo s={s} initialsSize={un(26)} src={t.img}
+              <Photo s={s} slot={`tracks:${t.row}`} initialsSize={un(26)} src={t.img}
                      ink={s.retro ? undefined : s.paperFg} />
             </span>
             {/* The mark is an **inset ring on the scrim**, not a border on the
@@ -9941,8 +9949,8 @@ function Media({ s }) {
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
               {t.img
-                ? <img src={t.img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-                : <span style={{ fontFamily: s.display, fontSize: '26px', color: s.muted, letterSpacing: s.dls }}>{t.n}</span>}
+                ? <img data-photo={`tracks:${t.row}`} src={t.img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                : <span data-photo={`tracks:${t.row}`} style={{ fontFamily: s.display, fontSize: '26px', color: s.muted, letterSpacing: s.dls }}>{t.n}</span>}
             </div>
             <div style={row('12px', { justifyContent: 'space-between' })}>
               <div style={{ minWidth: 0 }}>
@@ -10709,7 +10717,7 @@ function Pricing({ s }) {
         : { chip: 11, dispMd: 38, dispSm: 32, bodyLg: 15, bodyMd: 13, bodySm: 12, labelXs: 14, eyebrow: 12, list: 12 }
     // The credit row's faces: a slot the artist removed is skipped rather than
     // drawn as a placeholder, since a face is the whole of what it shows.
-    const faces = s.images.slice(0, 3).filter(Boolean)
+    const faces = s.images.slice(0, 3).map((src, idx) => ({ src, idx })).filter((f) => f.src)
     const hasCredit = faces.length > 0 || !!s.pricingReviews || !!s.pricingRating
     // The card's own four colours, pinned in the view-model rather than taken
     // from the selected package: the hue belongs to the seat, so toggling
@@ -10873,13 +10881,13 @@ function Pricing({ s }) {
                 <div style={row(u(12), { flexWrap: 'wrap' })}>
                   {faces.length > 0 && (
                     <span style={row(0, { flex: 'none' })}>
-                      {faces.map((src, i) => (
+                      {faces.map(({ src, idx }, i) => (
                         <span key={i} style={{
                           width: u(28), height: u(28), flex: 'none', overflow: 'hidden',
                           border: G.faceRing, borderRadius: G.faceR,
                           background: s.box1,
                           marginRight: i < faces.length - 1 ? u(-8) : 0,
-                        }}><Photo s={s} src={src} /></span>
+                        }}><Photo s={s} src={src} slot={`images:${idx}`} /></span>
                       ))}
                     </span>
                   )}
@@ -11114,13 +11122,13 @@ function Pricing({ s }) {
               <div style={row(u(12), { flexWrap: 'wrap' })}>
                 {faces.length > 0 && (
                   <span style={row(0, { flex: 'none' })}>
-                    {faces.map((src, i) => (
+                    {faces.map(({ src, idx }, i) => (
                       <span key={i} style={{
                         width: u(28), height: u(28), flex: 'none', overflow: 'hidden',
                         border: `2px solid ${s.tx}`, borderRadius: u(14),
                         background: s.retro ? '#FAECD5' : s.paper,
                         marginRight: i < faces.length - 1 ? u(-8) : 0,
-                      }}><Photo s={s} src={src} /></span>
+                      }}><Photo s={s} src={src} slot={`images:${idx}`} /></span>
                     ))}
                   </span>
                 )}
@@ -15628,7 +15636,7 @@ function Gallery({ s }) {
           {/* A seed takes its own focus (JP-131): Editorial's 768 polaroid
               cut its singer at the eyes. */}
           <div style={{ position: 'absolute', inset: 0 }}>
-            <Photo s={s} initialsSize={52} src={s.images[active]} ink={s.tx} style={{ objectPosition: s.imagesPos[active] }} />
+            <Photo s={s} slot={`images:${active}`} initialsSize={52} src={s.images[active]} ink={s.tx} style={{ objectPosition: s.imagesPos[active] }} />
           </div>
           {!s.mob && [['left', 14, 'borderLeft'], ['right', 15, 'borderRight']].map(([side, off, edge]) => (
             <span key={side} aria-hidden style={{
@@ -15706,7 +15714,7 @@ function Gallery({ s }) {
               {/* An empty tile stands on the frame's own `sem/text/2` fill, so
                   its initials take the ground's ink. */}
               <div style={{ position: 'absolute', inset: 0 }}>
-                <Photo s={s} initialsSize={12} src={s.images[i]} ink={G.thumbInk} />
+                <Photo s={s} slot={`images:${i}`} initialsSize={12} src={s.images[i]} ink={G.thumbInk} />
               </div>
               {/* Grunge rings the viewer's tile in 1px of accent and the rest
                   in nothing — `effects: []`, so no glow here either. */}
@@ -15930,7 +15938,7 @@ function Gallery({ s }) {
             borderRadius: s.retro ? '4px' : s.radiusSm,
             overflow: 'hidden', position: 'relative',
           }}>
-            {video ? player : <Photo s={s} initialsSize={52} src={s.images[active]} style={{ objectPosition: s.imagesPos[active] }} />}
+            {video ? player : <Photo s={s} slot={`images:${active}`} initialsSize={52} src={s.images[active]} style={{ objectPosition: s.imagesPos[active] }} />}
             {!video && s.retro && !s.mob && (
               <>
                 <span style={{
@@ -15962,7 +15970,7 @@ function Gallery({ s }) {
               borderRadius: s.retro ? (desk ? '16px' : '20px') : s.radiusSm,
               border: `${desk ? '4px' : '5px'} solid ${i === lit ? s.pillBg : s.ac}`,
               cursor: s.live ? 'pointer' : undefined,
-            }}><Photo s={s} initialsSize={12} src={s.images[i]} /></span>
+            }}><Photo s={s} slot={`images:${i}`} initialsSize={12} src={s.images[i]} /></span>
           ))}
         </div>
       </div>
@@ -16238,7 +16246,7 @@ function Gallery({ s }) {
                         over Retro's placeholder strip, not its seeds — and a
                         centred stage portrait loses the singer's head in the
                         right column's first tile, so the anchor stays. */}
-                    <Photo s={s} initialsSize={desk ? 26 : tab ? 20 : 10} src={s.images[at]} ink={wellInk}
+                    <Photo s={s} slot={`images:${at}`} initialsSize={desk ? 26 : tab ? 20 : 10} src={s.images[at]} ink={wellInk}
                       style={{ ...well, objectPosition: '50% 0%' }} />
                   </span>
                   {/* An inset ring over the photograph rather than a thicker
@@ -16352,7 +16360,7 @@ function Gallery({ s }) {
                 into the seat lose the singer's head at 1440. The frame's
                 anchor is evidence for its own slot only, so under Pop `home`
                 is centred and a pick keeps the twins' top anchor. */}
-            <Photo s={s} initialsSize={desk ? 52 : tab ? 34 : 26} src={s.images[active]} ink={wellInk}
+            <Photo s={s} slot={`images:${active}`} initialsSize={desk ? 52 : tab ? 34 : 26} src={s.images[active]} ink={wellInk}
               style={{ ...well, objectPosition: ed ? (desk ? '50% 18.5%' : '50% 50%') : pop && active === home ? '50% 50%' : '50% 0%' }} />
           </span>
           {caption}
@@ -16714,7 +16722,7 @@ function Gallery({ s }) {
                     these wide tiles took most performers' heads off. An
                     upload has none and keeps the centred cover. */}
                 <Photo
-                  s={s} src={s.images[i]}
+                  s={s} src={s.images[i]} slot={`images:${i}`}
                   initialsSize={desk ? 32 : tab ? 28 : 14}
                   ink={s.retro ? undefined : pop ? s.text3 : s.limeTree ? s.tx : s.paperFg}
                   style={{ ...(s.limeTree ? { background: well } : null), objectPosition: s.imagesPos[i] }}
@@ -17083,7 +17091,7 @@ function Gallery({ s }) {
                 own tiles are `FILL` centred, but its sources are landscape
                 crops where ours are the tall strip photographs, and a centred
                 cover of those into a 121 × 68 pill is a torso with no head. */}
-            <Photo s={s} src={s.images[i]} initialsSize={un(26)} ink={G.thumbInk ?? s.tx}
+            <Photo s={s} slot={`images:${i}`} src={s.images[i]} initialsSize={un(26)} ink={G.thumbInk ?? s.tx}
                    style={{ background: G.well1, objectPosition: '50% 0%' }} />
           </span>
           {/* The ring, over the photograph as Figma strokes it: 1px, the
@@ -17153,7 +17161,7 @@ function Gallery({ s }) {
           boxShadow: `${u(5)} ${u(4)} ${u(4)} rgba(0, 0, 0, 0.25)`,
         }}>
           <div style={{ width: '100%', height: '100%', position: 'relative', overflow: 'hidden', background: well3 }}>
-            <Photo s={s} src={s.images[active]} initialsSize={un(88)} ink={G.initials}
+            <Photo s={s} slot={`images:${active}`} src={s.images[active]} initialsSize={un(88)} ink={G.initials}
                    style={{ background: well3 }} />
           </div>
         </div>
@@ -17176,7 +17184,7 @@ function Gallery({ s }) {
                 photograph (its well with it) is clipped 2px inside the ring,
                 or its anti-aliased edge darkened the corners' outer pixel
                 past the lime: layout 3's tiles, on a ring of another colour. */}
-            <Photo s={s} src={s.images[active]} initialsSize={un(88)} ink={G.initials}
+            <Photo s={s} slot={`images:${active}`} src={s.images[active]} initialsSize={un(88)} ink={G.initials}
                    style={{
                      background: well3, objectPosition: pop && active === galActive(s) ? '50% 50%' : '50% 0%',
                      ...(pop ? { clipPath: `inset(2px round calc(${u(G.photoR)} - 2px))` } : null),
@@ -17296,7 +17304,7 @@ function Gallery({ s }) {
               Top-anchored: the pill is far wider than the square photographs,
               so cover keeps a thin horizontal slice, and a centred slice was a
               torso with no head. Every seeded slot frames its face high. */}
-          <Photo s={s} src={s.images[i]} initialsSize={T.tile}
+          <Photo s={s} slot={`images:${i}`} src={s.images[i]} initialsSize={T.tile}
                  ink={s.retro ? undefined : s.pillFg} style={{ objectPosition: '50% 0%' }} />
         </span>
       </span>
@@ -17372,7 +17380,7 @@ function Gallery({ s }) {
           {/* Top-anchored, the rail's rule: the spotlight is wider than
               gallery-4's 1200 × 1320 at every width, so cover crops its height
               and a centred crop clipped the singer's hair. */}
-          <Photo s={s} src={s.images[active]} initialsSize={T.mark}
+          <Photo s={s} slot={`images:${active}`} src={s.images[active]} initialsSize={T.mark}
                  ink={s.retro ? undefined : s.paperFg} style={{ objectPosition: '50% 0%' }} />
         </div>
         {/* Last and over everything, the way the frame paints its 635px sheet:
@@ -27621,7 +27629,7 @@ function EnquiryForm({ s }) {
           }}>
             {/* `null`, Retro's reason: an emptied stage photo must not fall
                 through to `s.image`, which is the credit row's portrait. */}
-            <Photo s={s} src={s.formPhoto ?? null} ink={ink} initialsSize={desk ? 56 : 40} />
+            <Photo s={s} slot="photo" src={s.formPhoto ?? null} ink={ink} initialsSize={desk ? 56 : 40} />
             <span style={{
               position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
               boxShadow: G.photoRing,
@@ -28021,7 +28029,7 @@ function EnquiryForm({ s }) {
                 Both `initialsSize`s in this block are invented — the frames are
                 photographs throughout and Retro seeds them, so they are only
                 ever seen on the flat four and mid-edit. */}
-            <Photo s={s} src={s.formPhoto ?? null} ink={cardInk} initialsSize={desk ? 56 : 40} />
+            <Photo s={s} slot="photo" src={s.formPhoto ?? null} ink={cardInk} initialsSize={desk ? 56 : 40} />
           </div>
           <h2 style={{
             margin: 0, fontFamily: s.display,

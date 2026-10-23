@@ -1071,14 +1071,16 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   const by = cased(artistName)
   const byline = (rel) => [by, rel].filter(Boolean).join(' · ')
   if (Array.isArray(c.tracks)) {
-    vm.tracks = c.tracks.filter((t) => !blankRow(t, TRACK_KEYS)).map((t, i) => {
+    // `row` is the track's place in `c.tracks`, which blank rows leave gaps in: the canvas editor's photo mark
+    // names the row the panel edits, not the rank the page prints.
+    vm.tracks = c.tracks.map((t, row) => ({ t, row })).filter(({ t }) => !blankRow(t, TRACK_KEYS)).map(({ t, row }, i) => {
       const sub = (t?.sub ?? '').trim()
-      return { n: '0' + (i + 1), name: cased(t?.title ?? ''), dur: sub, sub, rel: sub, byline: byline(sub),
+      return { row, n: '0' + (i + 1), name: cased(t?.title ?? ''), dur: sub, sub, rel: sub, byline: byline(sub),
                img: t?.image ?? null, src: extUrl(t?.audio ?? '', true) || null }
     })
   } else {
     vm.tracks = TRACKS.map(([name, dur, rel], i) => ({
-      n: '0' + (i + 1), name: cased(name), dur, sub: `${rel} · ${dur}`, rel, byline: byline(rel),
+      row: i, n: '0' + (i + 1), name: cased(name), dur, sub: `${rel} · ${dur}`, rel, byline: byline(rel),
       img: seedArt[i] ?? null, src: TRACK_AUDIO[i] ?? null,
     }))
   }
