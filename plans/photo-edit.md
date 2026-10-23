@@ -375,8 +375,8 @@ sleeve and as its tile, tracks 1 to 4 once), seven gallery tiles, and the calend
   track-0 art (10 of 192, the one on a media photo). All let the click through and cost nothing visible. **Step 2's "no translucent ground on Retro layout 1" was wrong by that one element;**
   layouts 2 and 3 have none (re-surveyed here, five templates, both widths), so the earlier steps' conclusions about *their* pages stand.
 - **Hover outline, every node (18 per page x 10 pages for layout 4, 21 for 5 and 6; a real mouse with a 200 ms gap between moves, a 40 x 40 grid over the painted area).** A box and the `pointer`
-  cursor on every node; painted points outside the box: 0% on every upright node, **0.1 to 0.3% on a tilted one**, and on Retro 1, 5 and 6's calendar polaroids 2.8, 1.2 and 0.6%
-  (after the fix below). The box's area equals the node's own layout area on every tilted card (quad / layout 1.00). **Clipped frames keep a square outline** (the pilot's call): Pop's pill
+  cursor on every node; painted points outside the box: 0% on every upright node, **0.1 to 0.3% on a tilted one**, and on the calendar's three polaroids (Retro 1, 5 and 6 share the page) 2.8 / 1.2 / 0.6% on layout 1, 2.3 / 1.2 / 0.4 on 5 and 2.4 / 2.3 / 0.4 on 6 at 1440, at most 1.2% at 768
+  (all re-measured after the fix below; before it, 68 / 15 / 7%). The box's area equals the node's own layout area on every tilted card (quad / layout 1.00). **Clipped frames keep a square outline** (the pilot's call): Pop's pill
   gallery tiles show 18 to 22% of the box beyond the picture, the calendar's 999px disc 16 to 19%, Pop's avatar 12%, Retro's 20px gallery tiles 5 to 6%, Lime's header and the other rounded
   wells 0.5 to 3%. **Back-card outlines: none on layout 4** (the media is a sleeve and a grid, no fan; the sleeve's own tilt, Editorial's, is carried by the matrix). **Retro 5 and 6 (layout 1's body) have one:
   the calendar's polaroid stack.** The two back polaroids' outlines are their whole (tilted) rectangles and run over the front card, 86 and 91% of each box lying off its own painted pixels,
@@ -385,11 +385,16 @@ sleeve and as its tile, tracks 1 to 4 once), seven gallery tiles, and the calend
   and an ancestor above the tilted card stands still while the flat card can reach past it: on Retro's calendar (layouts 1, 5 and 6, 1440) the 15-degree front polaroid was laid past the calendar
   card's `overflow: hidden` edge, and its outline was cut to 240 of the picture's 282 px, **68%, 15% and 7% of the three polaroids' painted points outside the box** (Step 2 read this page as
   at most 3%; its driver is gone and the difference is not isolated). `visibleRect(node, root, upTo)` now stops at `upTo`, and `photoBox` passes the card's outermost tilted element: only the clips that turn
-  with the card are measured, those above it are not. The outline can now overshoot where a tilted card really is cut by a standing clip (none on any page measured). Re-measured after the fix over layouts 1 to 4,
+  with the card are measured, those above it are not. The outline can now overshoot where a tilted card really is cut by a standing clip (none on any page measured). **Edge:** a node that is itself the only transformed element (Lime layout 4's
+  180-degree hero `img`) has `upTo === node`, and the climb starts at its parent, so every standing clip still applies there, as before the fix; at 180 degrees a rotated rectangle is its own rect, so
+  nothing moves, and no other page has one. **Untouched:** the hit-test (`photoFieldAt`, `blocksPhoto`) and `photoNodeOf` (`visibleRect(n, root)`, no `upTo`, the same walk), which is why the
+  probes were re-run on Retro 1 and Editorial 4 alone and Step 4 re-runs the rest. Re-measured after the fix over layouts 1 to 4,
   five templates, 1440 and 768 (hover on every node): a box and the pointer on every node, worst painted-outside 2.8% (the polaroid at 1440), no node moved for the worse.
 - **Panel -> canvas (19 targets per page x 10 pages for layout 4, 21 for 5 and 6; header Background photo and Artist photo, bio Photo, gallery Photos, calendar Photo, each track's art button;
   the tracks, gallery and photo fields from the top of the page and from the bottom).** The canvas scrolls and the box lands on the picture, **overlap 1.00, inside the scroller: 19 of 19 (21 of 21)
-  on every page, default and with every slot emptied** (the hidden file input and the `Add artwork for track N` buttons). **Which node a track's art button boxes on layout 4: the largest visible
+  on every page, default and with every slot emptied** (the hidden file input and the `Add artwork for track N` buttons). The layout-4 pages and the `--blank` runs were measured before the `photoBox`
+  change (it touches no layout-4 node's box: none has a standing clip above a tilted card); Retro 1 and 5, default, both widths, were re-run after it: 21 of 21. **That check is coarse on a tilted
+  node:** it compares the focus box's bounding rectangle with the node's, so it would not have caught the polaroid's 85% clip; the hover grid above is the tilt check. **Which node a track's art button boxes on layout 4: the largest visible
   one with that mark.** Track 0 is the sleeve (249 x 282 at 1440), not its grid tile; tracks 1 to 4 their one tile (206 x 192). That is the node a user wants (the picture they are choosing), and both open the same row.
 - **An emptied slot:** the `--blank` runs above (picker, crop, placement, 7 gallery appends), both widths, six pages x five templates (layout 4) and layouts 5, 6.
 - **Drivers.** Throwaway puppeteer scripts over the dev server in the job's scratch directory (the probe's page helpers cut into a new file); nothing new is committed in `scripts/`.

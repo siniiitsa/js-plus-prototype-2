@@ -141,7 +141,7 @@ Code in `EncoreBuilder.jsx` beside `inlineSlots`: `photoSlots` (exported), `phot
   text, so the outline turns with the picture (pilot, Step 2: a bounding rectangle overshot a 15-degree polaroid by 31%). `untilted` restores
   `transform` and `transition`, which would start a transition on a tilted ancestor that has one: none on any template's layouts 1 to 4 or Retro's 5 and 6 (measured, Step 3).
   **The card laid flat is clipped only by the clips that turn with it** (`visibleRect(node, root, upTo)`, `upTo` the outermost tilted element): a standing
-  `overflow` ancestor above it cut Retro's front calendar polaroid's outline to 85% of the picture until Step 3's layout-4 pass. A round frame gets a square outline.
+  `overflow` ancestor above it cut Retro's front calendar polaroid's outline to 85% of the picture until Step 3's layout-4 pass. (A node that is itself the only transformed element, Lime layout 4's 180-degree hero, keeps every clip: harmless, a rotated rectangle is its own rect.) The hit-test and `photoNodeOf` do not use `upTo`. A round frame gets a square outline.
 - **Proved by `scripts/photo-probe.mjs`** (`--theme T --layout N --width 1440,768 --check`, the photo twin of `inline-probe.mjs`; its header
   lists every flag and verdict). It clicks every `[data-photo]` node with a real mouse, checks that the crop dialog opens on the picture
   the panel shows (or the file picker, for an empty slot), that Escape leaves `c` and the HTML alone, and, once per slot, that a fixture PNG
