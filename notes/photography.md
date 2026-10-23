@@ -145,7 +145,7 @@ Code in `EncoreBuilder.jsx` beside `inlineSlots`: `photoSlots` (exported), `phot
   lists every flag and verdict). It clicks every `[data-photo]` node with a real mouse, checks that the crop dialog opens on the picture
   the panel shows (or the file picker, for an empty slot), that Escape leaves `c` and the HTML alone, and, once per slot, that a fixture PNG
   Applied through the dialog changes only that slot's key, list index or track row. `--blank` empties every photo first, track rows too (placeholders,
-  the picker path, the append). A page is known good only once it passed; Step 1 passed Retro layout 1 (17 slots, both widths, filled and blank). Step 3 passed layout 2 on all five templates (20 slots, both widths, filled and `--blank`).
+  the picker path, the append). A page is known good only once it passed; Step 1 passed Retro layout 1 (17 slots, both widths, filled and blank). Step 3 passed layout 3 on all five templates (15 slots: header image + avatar, bio, five tracks, seven gallery tiles; both widths, filled and `--blank`) and layout 2 on all five templates (20 slots, both widths, filled and `--blank`).
   `PHOTO_OFF` is empty: no page has needed a row yet.
 - **Decorations do not open a photo, and that is on purpose.** An `svg` over the picture (a seal, a sticker, a sparkle, an icon) blocks
   `photoFieldAt` as `blocksPhoto` has it, like a control or copy; measured on Pop layouts 1 to 4 it costs a photo a few percent of its area,
@@ -161,4 +161,12 @@ Code in `EncoreBuilder.jsx` beside `inlineSlots`: `photoSlots` (exported), `phot
 - **Past the end of a list, a click appends** (kept after Step 1). On Retro 1, Pop 1, Lime 3, Editorial 2 and Grunge 4 in their default state no
   tile lies past its list; one does after the panel's Remove has spliced the list (other layouts: a default-state `appended` line is a finding); the panel's Add tile appends, and so does the canvas. The photo lands on the first free tile, which is the clicked one unless
   two or more are free.
+- **The hover probe is throttled, with no trailing call (layout 3, Step 3).** `probeInline` returns early within 120 ms of its last run, so the
+  *last* `mousemove` of a quick approach can be dropped and the cursor and box stay at the position the previous one saw (a few px, and only while the
+  pointer is still settling). Found as the layout-2 driver's unexplained "first point missed": a script that moves in `steps` inside 120 ms leaves the
+  hover on the approach point; a move, a 170 ms wait, a second move shows the box at once. The text rule shares it. Not fixed (a user's pointer keeps
+  generating events), recorded so a driver waits between moves.
+- **An emptied photo field has one focus target: its hidden file input** (layout 3, Step 3). The drop zone is a plain `div` with an `onClick`, so a mouse
+  click on it opens the picker and focuses nothing, and the panel -> canvas box does not fire; Tab reaches the field only through the `FILE_INPUT`
+  (see the layout-2 log in `plans/photo-edit.md`), and that focus does walk the canvas and box the placeholder. Focus it with `preventScroll`.
 

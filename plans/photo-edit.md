@@ -307,8 +307,49 @@ painted pixels on the four tilted fan cards (the upright centre card: 0), on eve
 - **An emptied slot** (the picker, the crop, the placement): the `--blank` run above, all 17 slots, both widths, five templates.
 - **Drivers.** The by-hand measurements are throwaway puppeteer scripts over the dev server (the probe's page helpers); nothing new is committed in `scripts/`.
 
-**Next: Step 3 continues: layout 3 across the five templates, then layout 4, then Retro's header-only 5 and 6** (layout 2 is done, above). Per page:
+**Step 3 · layout 3, Retro · Lime · Grunge · Editorial · Pop — done 2026-10-23 on branch `photo-edit`. No app code changed** (nothing to fix; `PHOTO_OFF` stays
+empty). Layout 3 draws fifteen slots on every template: header image + avatar, bio, five media tracks (one row each: no fan, 5 nodes), seven gallery tiles.
+Calendar, pricing, form, repertoire, map, testimonials and footer carry no photo here (the calendar's and the form's `image` read designs `[0, 3]` / `[0, 1]`).
+- **`photo-probe --theme T --layout 3 --width 1440,768 --check`: PASS on all five, 15 slots hit at both widths**, 0 WRONG / NOT-RESTORED / MISSING / not drawn /
+  dead spot / off / blocked / copy / hidden, 16 clicks per page. **`appended` is 0 in the default state on all five** (the seeded `c.images` covers all seven
+  gallery tiles): the carried-forward check found nothing. `--blank`: PASS on all five, both widths, 15 slots hit, the seven gallery tiles `appended` (list + 1,
+  earlier items untouched). `partial` is copy and nav on the header hero (108-123 of 124-143 points open, spans, two nav links) and the seal's ring on Lime's and Pop's
+  bio (127-128 of 144: circle, textpath, svg): the svg-blocks rule, as in Step 1.
+- **`inline-probe --theme T --layout 3 --width 1440,768 --check`: PASS on all five** (Retro 166, the others 167 slots hit; 0 WRONG / NOT-RESTORED / MISSING / dead click).
+- **The composed row, measured first.** At 1440 on every template bio and media stand in the left cell (646px wide, x 370) and the calendar in the sticky right
+  cell (305px, `position: sticky; top: 0`); the cell holds no photo, so nothing of this feature sits on the sticky box. Both left sections are `column: true`
+  (no horizontal padding) and are ordinary static wrappers, so `visibleRect` and `photoBox` behave as on layouts 1-2: hover boxes on the bio photo and the five
+  track arts cover the painted area (0% of painted points outside the box). **Panel -> canvas inside the row:** bio Photo and the track art buttons (tracks 1, 3, 5),
+  each started from the top of the page and from the bottom (the scroll is smooth, so the driver waits for `scrollTop` to settle): the box lands on the picture,
+  overlap 1.00, inside the scroller, 14 of 14 per page x 5 pages at 1440 and 768, and the same with every slot emptied (`--blank`, through the hidden file input).
+  At 768 nothing composes (full-width sections), same result.
+- **Transition / animation on a tilted ancestor (carried forward).** Re-measured on every photo node of layout 3, five templates, 1440 and 768: **Retro's header
+  avatar is the only transformed ancestor of any photo** (a polaroid, `matrix(.997, .077, ...)`, about 4.4 degrees), with `transition-duration: 0s` and
+  `animation-name: none`; the other four templates carry none. `untilted`'s restore starts nothing. Layouts 1 to 3 are measured now; layout 4 re-measures.
+- **Translucent ground above a photo (carried forward). None.** Layout 3 has no media fan, and no element above a photo has a background alpha in (0, .9)
+  (the probe's `blocked` is 0 and the partial lists name only spans, nav, svg and a div). The range stays unexercised by any page of layouts 1 to 3.
+- **Hover outline, every node (15 per page x 10 pages, a real mouse, 40 x 40 grid over the painted area).** A box and the `pointer` cursor on every node; 0% of painted
+  points outside the box on all but Retro's tilted avatar (0.3% at 1440, 0.4% at 768, the same class as layout 2's polaroid), where the box carries the card's matrix.
+  Read on full screenshots: Retro's tilted polaroid (the outline turns with the picture), Pop's bio photo, Editorial's header hero and its arch-framed avatar, Lime's
+  gallery tile, Grunge's media row art. **Clipped frames keep a square outline**, unchanged (Lime's rounded gallery tiles, Editorial's arch avatar, whose box shows
+  over the corners). **Back-card outline: none on this layout**, since layout 3's media has no fan; each row's art is an upright 63px square, boxed alone.
+- **Panel -> canvas, tracks (carried forward).** Layout 3 draws media art in each row: the art buttons box their row on all five templates, default and blank.
+  Header image and avatar, bio, gallery: overlap 1.00 on all ten pages. Two things the driver is not a finding for: on **tablet the header's tall photo** (1004px
+  against an 844px scroller) cannot fit, so its top is in view and the box runs past the fold (the Step 2 "a tall photo counts as in view once its top is in the band"
+  rule), and the 200px **avatar** can stand with its foot below the fold on Retro and Editorial at 768 (the pilot's accepted nit).
+- **Two findings about the harness and one about chrome, none fixed (the user's call).**
+  (1) **The hover is throttled with no trailing call** (`probeInline`, 120 ms): the last `mousemove` of a quick approach can be dropped, leaving the cursor and box at the
+  previous position. This is the cause of layout 2's "first grid point missed" on 19px faces (a move with `steps` inside 120 ms reproduces it; a 170 ms gap does not).
+  Not fixed: a real pointer keeps generating events, and the text rule shares it. (2) **`scrollIntoView` in a driver scrolls `overflow: hidden` boxes**: the probe's and
+  the driver's aim (`block: 'center', inline: 'center'`) shifted Grunge's header image inside its clipped box by (93, 191) and the panel focus box then looked 63%
+  off; resetting those `scrollLeft` / `scrollTop` first cleared it. A harness artefact (the app's own scroll never calls `scrollIntoView`); photo-probe is unaffected
+  (it clicks at the point it measured). (3) **An emptied field's only focus target is its hidden file input** (see `notes/photography.md`): a click on the drop zone
+  opens the picker and does not walk the canvas, Tab does. The `FILE_INPUT` tab-stop fix from layout 2 stays open; note it would also *remove* this route, so if it is
+  made, the drop zone wants a `tabIndex={0}` and `role="button"` of its own, or the panel -> canvas walk is lost for an emptied field.
+- **Drivers.** Throwaway puppeteer scripts over the dev server in the job's scratch directory (the probe's page helpers); nothing new is committed in `scripts/`.
+
+**Next: Step 3 continues: layout 4 across the five templates, then Retro's header-only 5 and 6** (layouts 2 and 3 are done, above). Per page:
 `photo-probe --theme T --layout N --width 1440,768 --check`, default and `--blank`, then the by-hand pass this one did (hover outline on
 every tilted or clipped frame, panel -> canvas for each field, an emptied slot, `inline-probe --check` on the page). Carry forward: the
 `transition` check on tilted ancestors (`photoBox`), any default-state `appended` line, any translucent ground above a photo, and the tracks'
-panel focus on every layout that draws media art. CLAUDE.md's bullet says what the pilot closed.
+panel focus on every layout that draws media art. CLAUDE.md's bullet says what the pilot closed. Layout 4 re-measures the `transition` check (Retro's tilted polaroid is the only tilted ancestor so far) and, if its pages draw one, the clipped-frame and back-card outlines; drive the hover with a 170 ms gap between moves, and reset `overflow: hidden` scroll offsets after any `scrollIntoView`.
