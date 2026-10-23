@@ -3048,6 +3048,11 @@ export const INLINE_LINES = {
   '*.3.map.gigs.day': GIG_TICKER_LINES,
   '*.3.map.gigs.time': GIG_TICKER_LINES,
 }
+// The canvas photo editor's ledger (plans/photo-edit.md): the photo groups a click does not open, keyed
+// `Template.design.cat.key` like INLINE_OFF (`inlineRule` resolves both), the value the reason. A photo
+// field is clickable when `fieldShown` says the layout reads it, less these. Empty until a pass measures one.
+export const PHOTO_OFF = {}
+
 export function inlineRule(table, themeName, design, group) {
   const parts = String(group).split('.')
   for (let n = parts.length; n >= 2; n--) {

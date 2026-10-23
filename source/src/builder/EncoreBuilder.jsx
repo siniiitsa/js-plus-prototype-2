@@ -56,7 +56,7 @@ import {
   PRICING_INTRO_3, FORM_SUB_4, CAL_HEADING_1, formBtnSeed, CAL_TYPES, PRICING_ROW_CTA, PRICING_ROW_CTA_3, MAP_SPAN, MAP_STATS_4, STAT_KEYS,FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
   parseDate, isoDate, calStart, headerIdentity, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav, navModeDefault,
-  catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldSeed, HEADING_3, HEADING_4, fieldReach, fieldShown, INLINE_OFF, INLINE_HEAD, INLINE_MARKED, INLINE_PART, INLINE_LINES, inlineRule, fieldCap, colCaps, identityCap, sealCap, capExcess, clampCapped, clampContent, clampIdentity, copyrightOf, formHeading3, extUrl, youtubeEmbed, urlProblem, emailProblem, emailAddr, songTags, repChips,
+  catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldSeed, HEADING_3, HEADING_4, fieldReach, fieldShown, INLINE_OFF, PHOTO_OFF, INLINE_HEAD, INLINE_MARKED, INLINE_PART, INLINE_LINES, inlineRule, fieldCap, colCaps, identityCap, sealCap, capExcess, clampCapped, clampContent, clampIdentity, copyrightOf, formHeading3, extUrl, youtubeEmbed, urlProblem, emailProblem, emailAddr, songTags, repChips,
   tierFeats, priceParts, blankRow, SONG_KEYS, repSetsOf, repSetLine, TRACK_KEYS, GIG_KEYS, gigWeekday, gigStatus, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
   layoutCount, designCount, pageLayout, pageOrder, pageRows, COLUMN_SPLIT, bebasEms, antonEms, gloockEms, titanEms,
   headerLayout, headerLayoutLabel, setupHeaderCount,
@@ -4598,8 +4598,9 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
   // Only the fields this design reads, and the header's shared ones
   // (fieldShown). A hidden field keeps its copy in `c` for the next layout.
   const fields = (FIELDS[sec.cat] ?? []).filter((f) => fieldShown(f, themeName, design))
-  const imgVal = (k) => (sec.c[k] !== undefined ? (sec.c[k] ?? undefined) : defaultImage(sec.cat, themeName, k, design))
-  const imgsVal = (k) => (Array.isArray(sec.c[k]) ? sec.c[k] : defaultImages(sec.cat, themeName))
+  // photoValue / photoList are the canvas photo editor's too, so a click and the panel read one picture.
+  const imgVal = (k) => photoValue(sec, k, themeName, design)
+  const imgsVal = (k) => photoList(sec, k, themeName)
   // Same trap as the photos above: the panel has to resolve the seeded songs
   // exactly as sectionVm does, or the canvas would list twelve songs while the
   // repeater showed none.
@@ -6003,6 +6004,130 @@ export function inlineSlots(sec, themeName, artistName, all = false) {
   return out
 }
 
+/* ------------------------------------------------------------------ *
+ * Photos on the canvas (plans/photo-edit.md, user call, 2026-10-23). A click on a
+ * photo of the selected section opens the image editor on it (`editImages`), or
+ * the file picker when the slot is empty. Which field a picture is comes from
+ * `EncoreSection`'s inert `data-photo` mark (notes/photography.md), never from
+ * its url: a seed is shared by several fields and a placeholder is no <img>.
+ * ------------------------------------------------------------------ */
+
+// A single photo as the panel resolves it: the stored value, `null` (removed) as no
+// picture, or the seed sectionVm draws while the key is absent.
+const photoValue = (sec, k, themeName, design) => (
+  sec.c[k] !== undefined ? (sec.c[k] ?? undefined) : defaultImage(sec.cat, themeName, k, design)
+)
+// A photo list the same way (the gallery strip, pricing's faces).
+const photoList = (sec, k, themeName) => (Array.isArray(sec.c[k]) ? sec.c[k] : defaultImages(sec.cat, themeName))
+
+// Every photo slot a section offers on the canvas, in the order the panel lists
+// them: each image field the design reads, each index of an `images` field up to
+// its `max`, each row of the tracks. `mark` is what `EncoreSection` writes in
+// `data-photo`. `value` is what the panel shows (a url, or undefined: empty).
+// With `all`, the ledger's slots too, each carrying its reason in `off`.
+export function photoSlots(sec, themeName, all = false) {
+  const design = inlineDesign(sec, themeName)
+  const out = []
+  for (const f of FIELDS[sec.cat] ?? []) {
+    if (!['image', 'images', 'tracks'].includes(f.type) || !fieldShown(f, themeName, design)) continue
+    const off = inlineRule(PHOTO_OFF, themeName, design, `${sec.cat}.${f.k}`) ?? null
+    if (off && !all) continue
+    const add = (mark, value, extra) => out.push({
+      f, k: f.k, mark, id: `${sec.cat}.${mark}`, value: value || undefined, empty: !value,
+      aspect: f.type === 'tracks' ? [1, 1] : f.aspect, off, ...extra,
+    })
+    if (f.type === 'image') add(f.k, photoValue(sec, f.k, themeName, design))
+    else if (f.type === 'images') {
+      const list = photoList(sec, f.k, themeName)
+      for (let i = 0; i < f.max; i++) add(`${f.k}:${i}`, list[i], { idx: i })
+    } else {
+      repeaterRows(sec, f.k, themeName).forEach((row, r) => add(`${f.k}:${r}`, row?.image, { row: r }))
+    }
+  }
+  return out
+}
+
+// What writing `url` into the slot stores (`[key, value]`, for `setContent`), the
+// panel's own writes: a single photo replaces its key; a list replaces its index, or
+// APPENDS when the slot lies past the end (ImagesField's Add tile: padding the gap
+// with `null` would turn the tiles between from the fallback photo into placeholders);
+// a track row keeps the rest of the row.
+function photoWrite(sec, slot, url, themeName) {
+  if (slot.idx != null) {
+    const list = [...photoList(sec, slot.k, themeName)]
+    if (slot.idx < list.length) list[slot.idx] = url
+    else list.push(url)
+    return [slot.k, list]
+  }
+  if (slot.row != null) {
+    const rows = [...repeaterRows(sec, slot.k, themeName)]
+    rows[slot.row] = { ...rows[slot.row], image: url }
+    return [slot.k, rows]
+  }
+  return [slot.k, url]
+}
+
+// `node`'s rectangle as the page shows it: clipped by every ancestor up to `root`
+// that clips (an arch, a rounded well), so a photo is not outlined past its crop.
+function visibleRect(node, root) {
+  let r = node.getBoundingClientRect()
+  let left = r.left, top = r.top, right = r.right, bottom = r.bottom
+  for (let el = node.parentElement; el && el !== root.parentElement; el = el.parentElement) {
+    const cs = getComputedStyle(el)
+    if (cs.overflowX === 'visible' && cs.overflowY === 'visible') continue
+    const q = el.getBoundingClientRect()
+    left = Math.max(left, q.left); top = Math.max(top, q.top); right = Math.min(right, q.right); bottom = Math.min(bottom, q.bottom)
+  }
+  return right > left && bottom > top ? { left, top, right, bottom, width: right - left, height: bottom - top } : null
+}
+
+const INTERACTIVE = 'a,button,input,select,textarea,label,summary,[role=button],[role=tab],[role=link]'
+
+// Whether `el`, above a photo in the stack under the pointer, hides it from a click:
+// a control, an icon, text under the pointer's own line boxes, or a solid ground (a
+// card standing on the hero). A scrim (a gradient), grain and an empty wrapper let
+// the click through to the photo. (Not `cursor`: it inherits, and the wrapper's is
+// set to `pointer` while a photo is hovered.)
+function blocksPhoto(el, pt) {
+  if (el.matches(INTERACTIVE) || el.closest('svg')) return true
+  if ([...el.childNodes].some((n) => n.nodeType === Node.TEXT_NODE && n.data.trim()) && textBoxUnder(el, pt) < Infinity) return true
+  const cs = getComputedStyle(el)
+  if (cs.backgroundImage.includes('url(')) return true
+  const m = cs.backgroundColor.match(/rgba?\(([^)]+)\)/)
+  const a = m ? m[1].split(/[ ,/]+/)[3] : '0'
+  return a == null || parseFloat(a) >= 0.9
+}
+
+// The photo slot under the pointer, in the selected section `sec`, or null. Walks the
+// stack top-down: the first photo mark wins; anything that blocks one first, or that
+// lies outside the section's own markup (its toolbar), ends the walk.
+export function photoFieldAt(sec, wrap, pt, themeName) {
+  const root = wrap.firstElementChild
+  if (!root) return null
+  for (const el of document.elementsFromPoint(pt.x, pt.y)) {
+    if (!wrap.contains(el)) continue
+    if (!root.contains(el)) return null
+    const node = el.closest('[data-photo]')
+    if (node && root.contains(node)) {
+      const mark = node.getAttribute('data-photo')
+      const slot = photoSlots(sec, themeName).find((x) => x.mark === mark)
+      return slot ? { ...slot, node } : null
+    }
+    if (blocksPhoto(el, pt)) return null
+  }
+  return null
+}
+
+// The node a panel photo field walks the canvas to: the largest visible one of its marks.
+function photoNodeOf(root, k) {
+  let best = null, area = 0
+  for (const n of root.querySelectorAll(`[data-photo="${k}"], [data-photo^="${k}:"]`)) {
+    const r = visibleRect(n, root)
+    if (r && r.width * r.height > area) { best = n; area = r.width * r.height }
+  }
+  return best
+}
+
 // A slot's current text, and the stored value that writing `text` into it makes
 // (`[key, value]`, for `setContent`). A list item or a cell replaces its own
 // place in the string or row and leaves the rest; the separator can't be typed.
@@ -6645,12 +6770,14 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
 
   const onFocusField = useCallback((sid, f, val, typing) => {
     const text = (f.type === undefined || f.type === 'area' || f.type === 'url' || f.type === 'email') && typeof val === 'string' ? val : ''
-    setFocusF({ sid, text, key: f.k })
+    // A photo field has no copy to find: it walks the canvas to the picture, by its `data-photo` mark.
+    const photo = f.type === 'image' || f.type === 'images' ? f.k : null
+    setFocusF({ sid, text, key: f.k, photo })
     if (typing) return
     const scroller = canvasRef.current
     const wrap = scroller?.querySelector(`[data-sid="${sid}"]`)
     if (!wrap) return
-    scrollFieldIntoView(scroller, wrap, text && findFieldNode(wrap.firstElementChild, text, f.k), isMobile)
+    scrollFieldIntoView(scroller, wrap, text ? findFieldNode(wrap.firstElementChild, text, f.k) : photo ? photoNodeOf(wrap.firstElementChild, photo) : text, isMobile)
   }, [isMobile])
   const onBlurField = useCallback(() => setFocusF(null), [])
 
@@ -6703,7 +6830,35 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
     if (now - hoverProbe.current < 120) return
     hoverProbe.current = now
     const wrap = e.currentTarget
-    wrap.style.cursor = inlineFieldAt(sec, wrap, e.target, { x: e.clientX, y: e.clientY }, T.name, artistName) ? 'text' : ''
+    const { text, photo: ph } = targetAt(sec, wrap, e.target, { x: e.clientX, y: e.clientY })
+    if (text) { wrap.style.cursor = 'text'; setPhotoHover(null); return }
+    // Not copy: a photo says a click edits it with a pointer and a thin box round the part that shows.
+    wrap.style.cursor = ph ? 'pointer' : ''
+    const r = ph && visibleRect(ph.node, wrap.firstElementChild)
+    const w = wrap.getBoundingClientRect()
+    const next = r ? { sid: sec.id, id: ph.id, x: r.left - w.left, y: r.top - w.top, w: r.width, h: r.height } : null
+    setPhotoHover((p) => (p === next || (p && next && p.sid === next.sid && p.id === next.id && p.x === next.x && p.y === next.y && p.w === next.w && p.h === next.h) ? p : next))
+  }
+
+  // Photos on the canvas (photoSlots): a filled one opens the image editor on it, with Upload
+  // another inside; an empty one has nothing to crop yet, so it opens the file picker, and the
+  // editor follows the pick. Cancel writes nothing, as the panel's controls do.
+  const [photoHover, setPhotoHover] = useState(null)
+  // What a click at `pt` in the selected section `sec` means: its copy, else its photo. A text
+  // node that wraps the picture under the pointer (a gallery tile whose only copy is its
+  // heading's wrapper) is not the click's: the picture is.
+  const targetAt = (sec, wrap, target, pt) => {
+    const text = inlineFieldAt(sec, wrap, target, pt, T.name, artistName)
+    const photo = photoFieldAt(sec, wrap, pt, T.name)
+    return text && photo && text.node?.contains(photo.node) ? { text: null, photo } : { text, photo: text ? null : photo }
+  }
+  const photoFile = useRef(null)
+  const photoPick = useRef(null)
+  const startPhoto = (sec, slot) => {
+    setPhotoHover(null)
+    const put = (url) => { const [k, v] = photoWrite(sec, slot, url, T.name); api.setContent(sec.id, k, v) }
+    if (slot.empty) { photoPick.current = { put, aspect: slot.aspect }; photoFile.current?.click() }
+    else editImages([{ src: slot.value, aspect: slot.aspect, edit: true, onApply: put }])
   }
 
   // The box follows the copy as it is typed, wraps, or changes width, and as the
@@ -6712,10 +6867,11 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
   const refit = () => {
     const wrap = focusF && canvasRef.current?.querySelector(`[data-sid="${focusF.sid}"]`)
     const mine = inlineNode.current?.isConnected && wrap?.contains(inlineNode.current) ? inlineNode.current : null
-    const node = wrap && focusF.text ? mine ?? findFieldNode(wrap.firstElementChild, focusF.text, focusF.key) : null
+    const node = wrap && focusF.text ? mine ?? findFieldNode(wrap.firstElementChild, focusF.text, focusF.key)
+      : wrap && focusF.photo ? photoNodeOf(wrap.firstElementChild, focusF.photo) : null
     if (!node) { setFocusBox(null); return }
     const w = wrap.getBoundingClientRect()
-    const r = fieldRect(node)
+    const r = focusF.photo && !focusF.text ? visibleRect(node, wrap.firstElementChild) ?? fieldRect(node) : fieldRect(node)
     const next = { sid: focusF.sid, x: r.left - w.left, y: r.top - w.top, w: r.width, h: r.height }
     setFocusBox((p) => (p && p.sid === next.sid && p.x === next.x && p.y === next.y && p.w === next.w && p.h === next.h ? p : next))
     // The inline editor sits on the same node, and grows and shrinks with it. A
@@ -7468,14 +7624,16 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
                     data-sid={sec.id}
                     style={{ position: 'relative' }}
                     onMouseEnter={isMobile ? undefined : () => patch({ hoverId: sec.id })}
-                    onMouseLeave={isMobile ? undefined : (e) => { e.currentTarget.style.cursor = ''; patch((s) => (s.hoverId === sec.id ? { hoverId: null } : {})) }}
+                    onMouseLeave={isMobile ? undefined : (e) => { e.currentTarget.style.cursor = ''; setPhotoHover(null); patch((s) => (s.hoverId === sec.id ? { hoverId: null } : {})) }}
                     onMouseMove={isMobile || st.selectedId !== sec.id ? undefined : (e) => probeInline(e, sec)}
                     onClick={(e) => {
                       stopE(e)
                       // A click on the selected section's own copy edits it there.
-                      const hit = !isMobile && st.selectedId === sec.id
-                        ? inlineFieldAt(sec, e.currentTarget, e.target, { x: e.clientX, y: e.clientY }, T.name, artistName) : null
+                      const { text: hit, photo: ph } = !isMobile && st.selectedId === sec.id
+                        ? targetAt(sec, e.currentTarget, e.target, { x: e.clientX, y: e.clientY }) : {}
                       if (hit && startInline(sec, e.currentTarget, hit)) { /* editing */ }
+                      // Then a photo of the selected section opens the image editor.
+                      else if (ph) { patch({ menuFor: null }); startPhoto(sec, ph) }
                       else patch({ selectedId: sec.id, menuFor: null })
                     }}
                   >
@@ -7487,6 +7645,14 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
                         width: focusBox.w + 10, height: focusBox.h + 10, boxSizing: 'border-box',
                         border: '2px solid #2B6BE4', borderRadius: '6px', background: 'rgba(43,107,228,.08)',
                         pointerEvents: 'none', zIndex: 21, animation: 'fadeIn .15s ease',
+                      }} />
+                    )}
+
+                    {photoHover && photoHover.sid === sec.id && st.selectedId === sec.id && !inline && (
+                      <div style={{
+                        position: 'absolute', left: photoHover.x, top: photoHover.y, width: photoHover.w, height: photoHover.h,
+                        boxSizing: 'border-box', border: '2px solid #2B6BE4', background: 'rgba(43,107,228,.08)',
+                        pointerEvents: 'none', zIndex: 21,
                       }} />
                     )}
 
@@ -7647,6 +7813,16 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
         {headerModal}
         {publishModal}
         <ImageEditorHost onToast={toast} />
+        <input
+          ref={photoFile} type="file" accept="image/png,image/jpeg" className="sr-only" tabIndex={-1} aria-hidden
+          onChange={(e) => {
+            const pick = photoPick.current
+            const v = vetImages(e.target.files ? [...e.target.files].slice(0, 1) : [], toast)
+            e.target.value = ''
+            if (!v || !pick) return
+            v.ok.forEach((f) => readImage(f, (src) => editImages([{ src, aspect: pick.aspect, onApply: pick.put }])))
+          }}
+        />
 
         {/* On a phone the toast clears the bottom nav — but a drawer covers
             that nav and would lose its own foot (the composer's Add section)

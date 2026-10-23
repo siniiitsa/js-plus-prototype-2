@@ -109,3 +109,34 @@ CLAUDE.md's old "two marks and no other", which was about text; CLAUDE.md now sa
   `{ src, idx }`), so face 2 stays `images:2` when face 1 was removed.
 - Checked over every cat × layout × width × template (`preview.html`): no `<img>` without a mark, no slot reading `undefined`;
   testimonials, map, repertoire and footer carry none. `digest.mjs` before / after: 660 renders, 0 files differ.
+
+## Clicking a photo on the canvas (plans/photo-edit.md, user call, 2026-10-23)
+
+Code in `EncoreBuilder.jsx` beside `inlineSlots`: `photoSlots` (exported), `photoWrite`, `photoFieldAt` (exported), `blocksPhoto`,
+`visibleRect`, `photoNodeOf`; `startPhoto` / `targetAt` / the hover box in the component.
+
+- **Slot = mark.** `photoSlots` gives each slot a `mark` equal to the `data-photo` value (`image`, `images:2`, `tracks:1`), a `value`
+  (what the panel shows: a url, or undefined = empty) and an `aspect`. `photoValue` / `photoList` are the panel's `imgVal` /
+  `imgsVal`, so a click and the panel read one picture. A mark whose field the layout does not read, or `PHOTO_OFF` names, opens
+  nothing (the walk ends at it).
+- **Hit-test.** `document.elementsFromPoint` top-down. First `[data-photo]` wins. Before it, `blocksPhoto` ends the walk for a
+  control or `svg`, an element whose own text lies under the pointer (`textBoxUnder`), a `url()` background, or a background colour at
+  alpha ≥ .9. A gradient (every scrim), grain, an empty wrapper or a translucent fill lets the click through. It does **not** read
+  `cursor`: it inherits, and the section wrapper's is set to `pointer` while a photo is hovered. Elements outside the section's own
+  markup (its toolbar) end the walk too.
+- **Copy first, except a wrapper.** `targetAt` asks the text rule, then the photo rule; a text node that *contains* the photo
+  under the pointer loses to it. Found on Lime layout 3's gallery, whose heading's wrapper holds the tiles, so a click on a tile
+  opened the heading's box.
+- **Write.** Single → `setContent(k, url)`. `images` → the resolved list with the index replaced, or **appended** when the index
+  is past the end (Lime/Pop galleries draw more tiles than the seed list holds; `null`-padding would turn the tiles in between
+  from the section-photo fallback into placeholders). Product call, flagged for the pass files. `tracks` → the row with its
+  `image` replaced.
+- **Empty slot.** One hidden `<input type=file>` at the builder root (outside any popup that could unmount mid-pick) and a
+  `photoPick` ref; `vetImages` → `readImage` → `editImages` (a fresh pick, so no `edit`). Cancel anywhere writes nothing.
+- **Hover and focus.** `probeInline` sets `pointer` and a 2px box (`photoHover`) round the part of the photo that shows
+  (`visibleRect` clips by every overflow ancestor). `onFocusField` carries `photo: f.k` for an `image` / `images` field and
+  `refit` boxes `photoNodeOf` (the largest visible node of that key). Tilted frames are boxed by their bounding rect.
+- **Measured by hand** (a throwaway script clicking every `[data-photo]` node): every photo opens on Retro 1, Pop 1, Editorial 2,
+  Lime 3, Grunge 4 except nodes the page clips away (`hidden`); end to end on Retro 1, a header avatar, bio photo, gallery tile 2,
+  track 1 and an emptied bio photo each wrote only their own key, row or index. Text probe `--check` unchanged: Retro 156/143 hit, Pop 155/142.
+

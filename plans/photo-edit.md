@@ -154,3 +154,20 @@ preview of the crop at 1440 / 768 / 390 (already "not done" in `notes/photograph
   re-run `inline-probe.mjs --check` on Retro / Pop layout 1 after the `Photo` sweep (must stay PASS: the marks must not
   change text hit-testing); `node scripts/digest.mjs` before / after the sweep shows no style change (marks only).
 - `npm run build` and `npm run build:standalone` succeed.
+
+## Log
+
+**Step 0 · foundations — done 2026-10-23 on branch `photo-edit`, three commits.**
+- *a. Upload another* (`dfbb6cb`): `imageFiles.js` + the dialog button; tested from the panel's Edit: a GIF and a 4.2 MB PNG are refused
+  with the line and the toast, a good pick swaps the source and resets the frame (title *Frame your photo*), Apply writes, Cancel writes nothing.
+- *b. `data-photo` sweep* (`d30b613`): `digest.mjs` before / after over 660 renders (5 templates × 3 widths × every cat × layout): **0 files
+  differ**. A scan of the same renders: no `<img>` without a mark, no slot reading `undefined`; testimonials, map, repertoire and footer carry none.
+  `vm.tracks[].row` added (the index in `c.tracks`; the printed rank skips blank rows). `inline-probe --check` stayed PASS (Retro 156/143, Pop 155/142).
+- *c. the canvas feature*: see `notes/photography.md` ("Clicking a photo on the canvas"). Smoke-tested by hand, not yet by a committed probe.
+
+Found on the way: a text node can wrap a photo (Lime layout 3's gallery heading), so `targetAt` lets the photo win over a text hit that contains it.
+
+Open for Step 1 (the probe): the stack rule has only been measured on Retro 1, Pop 1, Editorial 2, Lime 3 and Grunge 4, with a point-grid search
+rather than a centre click; Pop's sparkles and any decoration that is not `pointer-events: none` may block a photo (an `svg` blocks by rule);
+a header avatar was `hidden` on Lime 3 (under another element or clipped: check whether that is a real dead spot).
+

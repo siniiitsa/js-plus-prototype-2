@@ -211,6 +211,17 @@ mutated through a single `patch()` helper.
   in the gallery's two layout-1 blocks, Retro's and the Lime tree's); do not add more where text can decide. Nothing in
   the published tab, the preview or the thumbnails mounts the editor. Enter inserts a line break only where the
   node's `white-space` keeps one (`pre-*`).
+- **Clicking a photo on the canvas opens the image editor on it** (user call, 2026-10-23; `plans/photo-edit.md`; desktop and
+  tablet, an already-selected section, never a phone). `photoFieldAt` takes the stack under the pointer top-down: the first
+  `[data-photo]` node wins (`Photo`'s inert mark, `notes/photography.md`), and anything that `blocksPhoto` first (a control,
+  an icon, text under the pointer's own line boxes, a solid ground) ends the walk; scrims, grain and empty wrappers let the
+  click through. **Copy goes first** (`targetAt`), except that a text node *wrapping* the picture is not the click's. A filled
+  slot calls `editImages` as the panel's Edit does, with **Upload another** inside the dialog; an empty one opens the file
+  picker, then the editor. `photoSlots` is the universe (every image field `fieldShown` says the layout reads, each index of an
+  `images` field, each track row), `PHOTO_OFF` in `data.js` its ledger, `photoWrite` the panel's own writes: a list index past
+  the end *appends*, so the photo lands on the first free tile. Hover draws a thin box and a pointer; focusing a photo field in
+  the panel boxes the picture. Remove, reorder and Add stay in the panel. Proved so far on Retro layout 1 by hand only; the
+  probe is Step 1 of the plan.
 - `st.theme` is an **integer index** into `THEMES`, not a name or object.
 - **`st.device` is the toggle, `device` is what the canvas draws.** A window at most 1180 wide
   (iPad Air landscape; `useTabletCap`) caps it at tablet and disables the Desktop tab, since
