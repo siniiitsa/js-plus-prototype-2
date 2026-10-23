@@ -278,9 +278,9 @@ list row each, 11 nodes), seven gallery tiles, three pricing faces, form stage p
   on all 5-6 per page, 10 pages), so `untilted`'s restore starts nothing. Layout 1's measurement (Step 2) still holds; layouts 3 and 4 re-measure.
 - **Translucent ground above a photo (carried forward). One finding, kept.** The only thing above a photo with a non-opaque paint is the media fan: each card
   but the front sits at `opacity: .82` (a dimmed card, an opaque background at 82%) and lies over the outer cards' art: `tracks:1`'s card over `tracks:0`'s,
-  `tracks:3`'s over `tracks:4`'s (Editorial's desktop `tracks:2` too), at 11-12 of 66-74 sampled points per outer card; no `rgba` background below `.9` and no
+  `tracks:3`'s over `tracks:4`'s (Editorial's desktop list-row node of `tracks:2` carries one as well), at 11-12 of 66-74 sampled points per outer card; no `rgba` background below `.9` and no
   `backdrop-filter` or blend mode over any photo. `blocksPhoto` reads the colour's alpha, so the card (background alpha 1) blocks: a click there opens nothing of the back
-  card, which is right, because what the user sees is a card face. **Do not fold `opacity` into that read**: .82 x 1 < .9 would let the click through to a photo
+  card, which is right, because what the user sees is a card face. **Do not fold `opacity` into that read** (the model's call, not the user's): .82 x 1 < .9 would let the click through to a photo
   the user sees only through the card, and the probe's own count (0 blocked, 0 copy) says no node loses its middle. The alpha-in-(0, .9) range remains
   unexercised by any page of layouts 1 and 2; layouts 3 and 4 carry the question forward.
 - **Hover outline, every node (26 per page x 10 pages, a real mouse over the app's own `photoFieldAt` points, 60 x 60 grid over the painted area).** A box on
@@ -292,9 +292,18 @@ list row each, 11 nodes), seven gallery tiles, three pricing faces, form stage p
   kept, and the arch is its most visible case. If it is ever fixed, `visibleRect` knows which ancestor clipped and could hand the box its `border-radius`.
 - **Panel -> canvas (12 targets per page x 10 pages).** Focusing each photo field's control (header Background photo and Artist photo, bio Photo, gallery Photos,
   pricing Reviewer photos, form Portrait and Stage photo) and each of the five tracks' art buttons: the canvas scrolls (smooth, from the top of the page) and the box
-  lands on the picture, overlap 1.00, inside the viewport, 12 of 12 on all ten pages. Two harness lessons, not app findings: the first control inside a field
-  wrapper can be the hidden 1 x 1 `<input type=file>` (pricing's), which sits outside the panel's scroller and scrolls the app shell when focused, so the
-  driver now takes the visible button; and a hover test that takes one point per node reads "no box" on a 19px face (the throwaway now tries up to six).
+  lands on the picture, overlap 1.00, inside the viewport, 12 of 12 on all ten pages. **One real finding, not a harness quirk (chrome a11y, predates this branch: `FILE_INPUT`, commit 2342c2f).**
+The panel's `ImageField`, `ImagesField` and `RowThumb` each hold a visually hidden `<input type=file style={FILE_INPUT}>` with no `tabIndex`, so Tab reaches it,
+and its `position: absolute` has no positioned ancestor inside the panel's scroller, so it sits in the `overflow: hidden` app shell below the fold. Measured on pricing's
+*Reviewer photos* (Retro 2, 1440): Tab from the textarea above it focuses the input and the shell scrolls 1079px (the canvas scroller's top goes 56 -> -1023), the
+whole app shifted up a screen with no scrollbar to undo it. A keyboard user tabbing down the pricing panel hits it. (Measured on `ImagesField` only; `ImageField` and `RowThumb` share `FILE_INPUT` and are not tested.) Fix, not made here (outside this feature, the
+user's call): `tabIndex={-1}` on the three inputs (the visible button does `inputRef.click()`, so nothing is lost), as the new root-level `photoFile` input already has.
+The driver now focuses the visible button instead. **The hover "no box" on 19px faces** in the first driver run was the driver's first grid point: a direct move onto a
+face's centre shows the box and the pointer cursor at once (checked, all three faces, with and without an approach step), so it is not a lost hover; the cause of the first point
+missing is not isolated.
+**The fan's hover box draws over the front card** (new here, the same class as the arch): a back card's photo is partly under the next card, and the outline is the photo's
+whole (tilted) rectangle, so on `tracks:1` it runs across the front card's *Slow Burn* title. Measured: 950-1300 of 3600 grid points inside the box are not the node's
+painted pixels on the four tilted fan cards (the upright centre card: 0), on every template. The click rule is right (the front card wins there); only the outline over-promises.
 - **An emptied slot** (the picker, the crop, the placement): the `--blank` run above, all 17 slots, both widths, five templates.
 - **Drivers.** The by-hand measurements are throwaway puppeteer scripts over the dev server (the probe's page helpers); nothing new is committed in `scripts/`.
 
