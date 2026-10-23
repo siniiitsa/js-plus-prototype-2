@@ -349,9 +349,15 @@ async function runCombo(theme, layout, width) {
           return { result: 'other', slot: ed.slot, stack }
         }
         const slotsBefore = await page.evaluate((sid, t) => window.__slotTexts(sid, t), sec.id, info.theme)
-        await page.keyboard.type(SENTINEL)
+        // A price is split from its lead at the first digit, so a word typed into its amount (`ZZQ`) makes the
+        // whole price the amount and the lead goes with it, by design (the price is free text): a price's
+        // amount takes a number.
+        const tag = /\.amount$/.test(ed.slot) ? '77' : SENTINEL
+        await page.keyboard.type(tag)
         await wait(140)
         const ed2 = (await page.evaluate(() => window.__editor())) ?? ed
+        const landed = (await page.evaluate((sid, rect, float, z) => window.__landed(sid, rect, float, z), sec.id, ed.rect, ed.float, tag))
+          || (await page.evaluate((sid, rect, float, z) => window.__landed(sid, rect, float, z), sec.id, ed2.rect, ed2.float, tag))
         // The edit must stay in its own slot: typing into one price part or one list item leaves the
         // others of that cell as they were (the first inline commit wrote a price part over the whole cell).
         const cellOf = (id) => id.replace(/#\d+.*$/, '').replace(/\.(lead|amount|tail)$/, '')
@@ -362,10 +368,8 @@ async function runCombo(theme, layout, width) {
         let spaceLost = false
         if (/#\d+|\.(lead|amount|tail)$/.test(ed.slot)) {
           await page.keyboard.type(' Z'); await wait(140)
-          spaceLost = ((await page.evaluate(() => window.__editor()))?.value ?? '').endsWith(`${SENTINEL}Z`)
+          spaceLost = ((await page.evaluate(() => window.__editor()))?.value ?? '').endsWith(`${tag}Z`)
         }
-        const landed = (await page.evaluate((sid, rect, float, z) => window.__landed(sid, rect, float, z), sec.id, ed.rect, ed.float, SENTINEL))
-          || (await page.evaluate((sid, rect, float, z) => window.__landed(sid, rect, float, z), sec.id, ed2.rect, ed2.float, SENTINEL))
         await page.keyboard.press('Escape')
         await wait(150)
         let still = await page.evaluate(() => window.__editor())
