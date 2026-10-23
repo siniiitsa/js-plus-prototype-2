@@ -83,4 +83,10 @@ was rejected: it would touch every `Photo` site and the ones that hard-code `50%
 - Cancel on a fresh pick writes nothing; *Use original* stores the file as picked. **Remove still
   writes `null`.** A filled `RowThumb` opens the editor on click (it used to open the file picker);
   its replacement is Remove, then add. Seeded photos can be edited too, which bakes the seed.
+- **Upload another** (plans/photo-edit.md, user call, 2026-10-23): a footer button swaps the picture under the frame for
+  a fresh pick without leaving the dialog (not in a multi-file batch, where it would fight *Skip photo*). `Editor` holds
+  its source in state; the swap resets the transform, drops the `ORIGINALS` lookup and flips the title to *Frame your
+  photo*; `onApply`, the aspect and the queue seat are the item's, unchanged, and Cancel still writes nothing. A refused
+  file prints its line under the stage and toasts (`ImageEditorHost`'s `onToast`). The vetting helpers (`imageProblem`,
+  `readImage`, `vetImages`, `IMAGE_MAX`) moved to `src/builder/imageFiles.js` so the dialog and the panel share them.
 - Not done: a live preview of how the crop sits at 1440 / 768 / 390.
