@@ -59,3 +59,27 @@ into `CLAUDE.md` or another `notes/` file.
   `tagsLabel` cap of 58 comes from 1440 and 768. The one-word labels, *About* (48–59) and
   *Genres* (49–58), take their measured numbers. Their seats are stretched blocks, so the probe's
   `×grow` reads 1.
+
+## Inline editing (plans/inline-edit-all.md, Retro layout 3, 2026-10-22)
+
+Layout 3's `aboutLabel` is printed `[ About ]` (three text nodes of one span): a `*.2.` part row, box on the word, brackets left out.
+
+## Inline editing (plans/inline-edit-all.md, Retro layout 4, 2026-10-22)
+
+Layout 4's overlay card prints `Performing since <date>` in one span and the Listen link beside its arrow (`Listen ↗`), so `since` and `cta2` are `*.3.` part rows (`INLINE_PART`, design index 3), box on the date and on `Listen`; the literal *Performing since* and the `↗` open nothing. The card's name, role line and six tag chips are the header's identity keys with no bio field: unhit, as at every layout (the open cross-section question).
+
+## Inline editing (plans/inline-edit-all.md, Lime layout 4, 2026-10-22)
+
+The `*.3.` part rows (`since`, `cta2`) carry over and hit on Lime. `tagsLabel` is **not read** at Lime's layout 4 (`in: { Lime: [2], … }`), so the overlay card draws the six chips with no *Genres* line and the field is outside the universe, unlike Retro's layout 4, which hits it.
+
+## Inline editing (plans/inline-edit-all.md, Grunge layout 4, 2026-10-22)
+
+The `*.3.` part rows (`since`, `cta2`) carry over and hit on Grunge. `tagsLabel` is **not read** at Grunge's layout 4 (`in: { Grunge: [2], … }`), so the overlay card draws the six chips with no *Genres* line and the field is outside the universe. The card and its `Kai` / `Mercer` name are upright: no tape or tilt over any text.
+
+## Inline editing (plans/inline-edit-all.md, Editorial layout 4, 2026-10-22)
+
+The `*.3.` part rows (`since`, `cta2`) carry over and hit on Editorial. **Unlike Lime and Grunge, Editorial reads `tagsLabel` at layout 4** (`in: { Editorial: [2, 3], … }`), so the *Genres* line over the chips is a slot and opens `bio.tagsLabel` (Retro's count). The overlay card and its Gloock name are upright; no tape or tilt over any text.
+
+## Inline editing (plans/inline-edit-all.md, Pop layout 4, 2026-10-22)
+
+The `*.3.` part rows (`since`, `cta2`) carry over and hit on Pop. **Like Lime and Grunge, Pop does not read `tagsLabel` at layout 4** (`in: { Pop: [2], … }`: the Genres line is inked the band's own colour, so it is not drawn), so the bio is five slots, one fewer than Retro's and Editorial's. The overlay card is upright and its stickers (dot grid, scribble) are `pointer-events: none`; nothing covers a slot.

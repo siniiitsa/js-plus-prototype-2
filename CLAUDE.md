@@ -161,6 +161,56 @@ mutated through a single `patch()` helper.
   the disc's centre and diameter, because the ring's own box is one `<textPath>` arc that swings
   with `seal-spin` and the tilted svg's is 1.38x the disc. All four `SealBadge` arms draw the
   same viewBox-is-the-disc svg, so one rule covers them.
+- **Clicking text on the canvas edits it there** (user calls, 2026-10-20: piloted on Retro's layout 1, then rolled out
+  to every template and layout by `plans/inline-edit-all.md`; desktop and tablet, never a phone;
+  `plans/inline-edit.md`). A click on the text of an already-selected section maps to a *slot* (`inlineSlots`: a
+  scalar field, one item of a list field, one cell of a repeater row, or a part of a price or composed line) by
+  `inlineFieldAt`: the node must print exactly the slot's copy, or a part slot's words inside a longer line.
+  **The gate is a default and a ledger, not an allowlist.** Every text / area / list field `fieldShown` says the
+  design reads, and every text cell of a repeater (`INLINE_ROWS`), is a slot, less **`INLINE_OFF`** in `data.js`: one
+  row per group the canvas does not edit, keyed `Template.design.cat.key[.col]` (design 0-based as `in` reads it, `*`
+  for any, a key covers the groups under it), its value the reason. `INLINE_MARKED` and `INLINE_PART` are keyed the same
+  way (`inlineRule`). A page is *known* to work only because **`scripts/inline-probe.mjs --theme T --layout N --width
+  1440,768 --check`** passed it: it clicks every text node with a real mouse, types a sentinel, presses Escape, and
+  reports WRONG, NOT-RESTORED, MISSING and (across both widths) UNLEDGERED, a slot drawn nowhere that `INLINE_OFF`
+  does not name (see the script's header for the flags; its last line is `inline-probe: PASS` or `FAIL`). **Retro also
+  takes `--layout 5` and `6`**, its header-only designs, whose body is layout 1's page. It also fails a slot as WRONG when typing
+  into it changes another slot of the same cell (a price's other parts, a list's other items) or drops a space typed after a word of
+  a list item or price part (pass 21: both were bugs, invisible to a one-word sentinel). It also *reports*, without failing, a
+  **dead click**: a node that prints a hit slot's copy and opens nothing while another node opens it, which `--check` counts as
+  hit. **The rule is every node the pointer can reach**: the field's copy opens its box wherever the page prints it. The
+  exceptions are the ones the probe skips or the audit shows as noise: a node under another element (the media fan's back
+  cards), vertical type (Retro layout 2's `Manchester, UK` rail, the gallery's `Gallery` wordmark) and markup that is not the
+  field's copy (`·`, a song's row number). Pass 20 found the kicker dead on one of two nodes and fixed it with an
+  `INLINE_LINES` row, not a ledger row. `--width 768` clicks the Tablet tab and keeps the window at 1440, because a window
+  at 820 or under is the phone chrome. Until a page's pass in `plans/inline-edit-all.md` it is on and unproved.
+  `InlineEditor` opens a `<textarea>` over the text's own line rectangles (`inlineBox`)
+  with transparent type and a caret, so the page keeps drawing the copy; a tilted card's box is given the
+  tilt's matrix (`placeBox`), and the header seal's badge text edits in a floating box (a slot reached through its
+  svg, never by text, so `header.badgeText` stays out of the exact-text map). It writes through
+  `setContent` and the panel's caps (`fieldCapOf`, `colCaps`), and the header's Title keeps `NameInput`'s
+  never-empty rule. The repeaters' seeds come from `repeaterRows`, which `EditPanel`'s `*Val` closures share — all of
+  them but `setsVal`: layout 3's set details are an object, so `repeaterRows('sets')` is the sets the songs make, and
+  the panel keeps the object `SetsField` writes. **The node is `e.target`'s, corrected by the stack under the pointer**
+  (`elementsFromPoint`): among the slots the stack holds, the one whose own text box under the pointer is the smallest
+  wins (Pop's title words stand across its kicker and location). Measured on Grunge's and Pop's layout 1, nothing
+  painted over the copy hid it from `e.target`, and letting a lower slot win past a non-slot element on top was worse
+  (a seal over a small-print line opened the line), so only slots compete, **and a lower slot does not compete when an element above it in the stack, one that does not contain it, paints a ground** (`paintsOver`: an image, gradient or colour at alpha ≥ .5): the media fan's back card lies under the front one, and its smaller box won a click on the front card's visible glyphs (Pop pass 9, every template), **and a click on text that is no slot, the smaller box under the pointer, is not the slot's** (pass 21): Pop lifts the testimonials' heading 0.14em over its kicker, so the heading's box held the lower half of the kicker's `●`, and `ownTextBoxUnder` now vetoes the slot when a text node outside the chosen node, outside what holds it and not covered by a ground, has a smaller box strictly under the pointer. Where a pager or carousel draws fewer
+  nodes than there are slots with the same copy, the nth node is the nth slot only if what is drawn of that column
+  reads as the head of the slots (`prefixSlot`).
+  **Where the words are not enough, `INLINE_LINES` names the forms the copy is printed in** (`'● {}'`, `'{} ↓'`, a gig's
+  `'{city} · {month} · {time}'`; scoped like `INLINE_PART`, built in `plans/retro/inline-layout-2.md`): a node that prints
+  exactly one is the slot's, and exact copy standing in several fields is settled by claims (a slot whose line is drawn
+  is spoken for), then the copy as typed, then the heading on the largest type. **Where the canvas draws only a head of a repeater, `INLINE_HEAD` ledgers the rows it does not draw**: repertoire layout 3
+  stands each song in a card per tag, four rows a card and three cards a page, so a song is drawn twice or not at all; `drawnRows()` works out the drawn
+  rows from the same tags and `inlineSlots` puts the others in the ledger (`off`, *live-only copy*), which also keeps the exact-copy pairing honest
+  (plans/retro/inline-layout-3.md). The box is re-placed on the canvas's
+  scroll, so it keeps to a sticky card; vertical type anywhere in a node leaves it to the panel.
+  `EncoreSection` carries **two inert `data-inline` marks and no other** (the gallery's credit line and source
+  label, `railLabel` and `sourceLabel`, which text cannot tell from each other or from Retro's vertical wordmark; set
+  in the gallery's two layout-1 blocks, Retro's and the Lime tree's); do not add more where text can decide. Nothing in
+  the published tab, the preview or the thumbnails mounts the editor. Enter inserts a line break only where the
+  node's `white-space` keeps one (`pre-*`).
 - `st.theme` is an **integer index** into `THEMES`, not a name or object.
 - **`st.device` is the toggle, `device` is what the canvas draws.** A window at most 1180 wide
   (iPad Air landscape; `useTabletCap`) caps it at tablet and disables the Desktop tab, since

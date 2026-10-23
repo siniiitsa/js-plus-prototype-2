@@ -152,3 +152,54 @@ another `notes/` file.
     cap at layouts 2–4, and the bare box stretched beside the role's counter.
   - **The heading's typed break counts one character** in Chrome's `maxLength` as in `capExcess`:
     *Honest feedback⏎from everyone who ever book* stopped at 43 with the counter at `43 / 43`.
+
+## Inline editing (plans/inline-edit-all.md, Retro layout 2, 2026-10-21)
+
+The initial tiles in the rail print `mark`, two initials of a `who`, not a field, so they are no slots; the reviews after the
+first are *paged* (the canvas draws one), and `quotes.when` has no seat at layout 2, so it is ledgered
+(`Retro.1.testimonials.quotes.when`). `kicker` (`✎ What clients say`) is an `INLINE_PART` row.
+
+## Inline editing (plans/inline-edit-all.md, Lime layout 2, 2026-10-21)
+
+`quotes.when` is drawn only by the `s.v0` branch, so layout 2 has no seat for it at any template: `Lime.1.testimonials.quotes.when`.
+`kicker` is the `*.1.` part row, as at Retro.
+
+## Inline editing (plans/inline-edit-all.md, Grunge layout 2, 2026-10-22)
+
+`quotes.when` is drawn only by the `s.v0` branch (no `Reviewed` in Grunge's layout-2 HTML): `Grunge.1.testimonials.quotes.when`. `kicker` is the
+`*.1.` part row.
+
+## Inline editing (plans/inline-edit-all.md, Retro layout 3, 2026-10-22)
+
+Layout 3's wall repeats no copy (five distinct reviewers), so no claim or rank was needed and every `quote` / `who` / `role` hits; `kicker` (`● Testimonials`)
+is a `*.2.` part row and `quotes.when` is ledgered (`Retro.2.testimonials.quotes.when`: the wall has no seat for it).
+
+## Inline editing (plans/inline-edit-all.md, Lime layout 3, 2026-10-22)
+
+As Retro's layout 3: the wall repeats no copy, `kicker` is a `*.2.` part row and `quotes.when` is ledgered (`Lime.2.testimonials.quotes.when`).
+
+## Inline editing (plans/inline-edit-all.md, Pop layout 3, 2026-10-22)
+
+As Retro's layout 3: the wall repeats no copy, `kicker` is a `*.2.` part row and `quotes.when` is ledgered (`Pop.2.testimonials.quotes.when`). One thing Pop adds, at 1440 only: the heading is lifted
+`-0.14em`, so its element box starts 6 px inside the kicker line, and a click on the lower half of the kicker's `●` (a markup glyph, no slot) opens `heading`; the kicker's word is unaffected. Left
+(plans/pop/inline-layout-3.md, *Learned*). No code change.
+
+## Inline editing (plans/inline-edit-all.md, Retro layout 4, 2026-10-22)
+
+Layout 4 pages from its arrow discs, so the canvas draws the first four reviews at 1440 and the first three at 768 (the rest *paged*). `quotes.when` is ledgered (`Retro.3.testimonials.quotes.when`: no *Reviewed …* anywhere in the section).
+
+## Inline editing (plans/inline-edit-all.md, Lime layout 4, 2026-10-22)
+
+Layout 4 pages from its arrow discs, so the canvas draws the first four reviews at 1440 and three at 768 (the rest *paged*). `quotes.when` is ledgered (`Lime.3.testimonials.quotes.when`: no *Reviewed …* in the section).
+
+## Inline editing (plans/inline-edit-all.md, Grunge layout 4, 2026-10-22)
+
+Layout 4 pages from its arrow discs, so the canvas draws the first four reviews at 1440 and three at 768 (the rest *paged*). `quotes.when` is ledgered (`Grunge.3.testimonials.quotes.when`: no *Reviewed …* in the section).
+
+## Inline editing (plans/inline-edit-all.md, Editorial layout 4, 2026-10-22)
+
+Layout 4 pages from its arrow discs, so the canvas draws the first four reviews at 1440 and three at 768 (the rest *paged*). `quotes.when` is ledgered (`Editorial.3.testimonials.quotes.when`: no *Reviewed …* in the section).
+
+## Inline editing (plans/inline-edit-all.md, Pop layout 4, 2026-10-22)
+
+Layout 4 pages from its arrow discs, so the canvas draws the first four reviews at 1440 and three at 768 (the rest *paged*). `quotes.when` is ledgered (`Pop.3.testimonials.quotes.when`: no *Reviewed …* in the section).

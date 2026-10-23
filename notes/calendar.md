@@ -277,3 +277,57 @@ another `notes/` file.
     which the card covers; the probe does not yet tell covered ink from shown ink.
   - The probe stages `prompt` (and `slots.kind`) on `booked: [CAL_OPEN]` (`KEY_CJ` in
     `limits.mjs`), because the prompt prints only while no day is cued.
+
+## Inline editing (plans/inline-edit-all.md, Grunge layout 1, 2026-10-21)
+
+`prompt` (*Pick a date to enquire*) prints only while no day is cued and the canvas opens with one cued, so it is
+*not drawn*: ledgered as `<Template>.0.calendar.prompt` in `INLINE_OFF`, per template, as Retro's, Lime's, Grunge's,
+Editorial's and Pop's are. Its `heading` and the slot's `time` are hit at both widths; no other calendar field is drawn at layout 1.
+
+## Inline editing (plans/inline-edit-all.md, Retro layout 2, 2026-10-21)
+
+Layout 2's slot list is the first page whose `slots` repeater is proved: `kind` and `price` ×4 are hit and restored (the
+`after` offsets survive a rewrite). `heading` and `availLabel` both read *Availability*, and a third literal, the top bar's
+`● Availability`, prints it too: `availLabel` declares its line in `INLINE_LINES` (`'{} ↓'`, the arrow is the markup's),
+which leaves the heading the one bare node of its words. `dateLabel` (`Date ↓`) is an `INLINE_PART` row. `prompt` is
+ledgered as `Retro.1.calendar.prompt`, as at layout 1.
+
+## Inline editing (plans/inline-edit-all.md, Lime layout 2, 2026-10-21)
+
+Retro layout 2's rows carry over (`availLabel`'s `'{} ↓'` line, `dateLabel` a part row); `slots` `kind` / `price` ×4 hit. `prompt` is
+ledgered as `Lime.1.calendar.prompt`.
+
+## Inline editing (plans/inline-edit-all.md, Grunge layout 2, 2026-10-22)
+
+The Retro/Lime rows carry over unchanged (`availLabel`'s `'{} ↓'` line, `dateLabel` a part row); `slots` `kind` / `price` ×4 hit.
+`prompt` is ledgered as `Grunge.1.calendar.prompt`.
+
+## Inline editing (plans/inline-edit-all.md, Retro layout 3, 2026-10-22)
+
+`prompt` is ledgered (`Retro.2.calendar.prompt`: it shows only while no day is cued). `heading` (*Book Me*) is the one slot layout 3 draws. At 1440 the calendar stands in
+`pageRows`' sticky right column: a box opened on *Book Me* stays 1.1 px under the node while the cell is stuck (y 162 from scrollTop 806 to the row's end) and through
+its release, and at 768, where nothing composes, it follows the in-flow section (1.5 px). `sticky3.mjs`'s shape; no code change.
+
+## Inline editing (plans/inline-edit-all.md, Lime layout 3, 2026-10-22)
+
+`prompt` is ledgered (`Lime.2.calendar.prompt`). `heading` (*Book Me*) is the one slot drawn; in the sticky right column the box stays 1.8 px under the node while the cell is stuck and through its release, and 1.1 px at 768. No code change.
+
+## Inline editing (plans/inline-edit-all.md, Retro layout 4, 2026-10-22)
+
+The wizard is live-only; the canvas draws its first step. Slots that hit: `heading`, the four event types, `time` and `cta`; `prompt` is ledgered (`Retro.3.calendar.prompt`). The summary column echoes the chosen type, so *Wedding* is drawn twice (the chip and the summary): both open `types#0`, the two-*Valerie* shape, and the summary mirrors the chip by construction. Every other node (step titles, *Guests*, *Budget*, the date card) is literal or derived.
+
+## Inline editing (plans/inline-edit-all.md, Lime layout 4, 2026-10-22)
+
+The wizard is live-only; the canvas draws its first step and `prompt` is ledgered (`Lime.3.calendar.prompt`: the page prints the cued day, no *Pick a date*). Everything else hits, as on Retro.
+
+## Inline editing (plans/inline-edit-all.md, Grunge layout 4, 2026-10-22)
+
+As on Retro and Lime: the wizard is live-only, the canvas draws its first step, and `prompt` is ledgered (`Grunge.3.calendar.prompt`: the page prints the cued day, no *Pick a date*). Everything else hits.
+
+## Inline editing (plans/inline-edit-all.md, Editorial layout 4, 2026-10-22)
+
+As on Retro, Lime and Grunge: the wizard is live-only, the canvas draws its first step, and `prompt` is ledgered (`Editorial.3.calendar.prompt`: the page prints the cued day, no *Pick a date*). Everything else hits.
+
+## Inline editing (plans/inline-edit-all.md, Pop layout 4, 2026-10-22)
+
+As on the other four templates: the wizard is live-only, the canvas draws its first step, and `prompt` is ledgered (`Pop.3.calendar.prompt`: the page prints the cued day, no *Pick a date*). Everything else hits.

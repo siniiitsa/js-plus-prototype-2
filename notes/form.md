@@ -240,3 +240,40 @@ another `notes/` file.
     apart, and a long price drops the unit under it.
   - **The mailto heads an answer with the label as the page prints it**, clamped at a layout that
     shortens it, since `formMailto` reads the clamped `vm.formFields`. Left for the sweep.
+
+## Inline editing (plans/inline-edit-all.md, Retro layout 2, 2026-10-21)
+
+The sticky card's box follows the card as the canvas scrolls (`EncoreBuilder` re-places the box on the scroller's scroll;
+measured at 1440 and 768, 60 and 120 px under a stuck card). The card's boxes print the *label*, so
+`fields.placeholder` is ledgered (`Retro.1.form.fields.placeholder`): it prints only once the label is emptied, and the
+ledger takes it out of the canvas whatever the label holds. `bookings` (`★★★★★  42 bookings`) is an `INLINE_PART` row.
+
+## Inline editing (plans/inline-edit-all.md, Lime layout 2, 2026-10-21)
+
+Lime's layout-2 card prints the uppercased label in each box and no placeholder (checked in the card's HTML), so
+`Lime.1.form.fields.placeholder` is ledgered as Retro's is. The sticky card's box tracks a stuck card at 1440 and 768 (within 1 px at 0, +60
+and +120 px of scroll). `bookings` is the `*.1.` part row.
+
+## Inline editing (plans/inline-edit-all.md, Grunge layout 2, 2026-10-22)
+
+Grunge's layout-2 card prints the uppercased label in each box and no placeholder (checked in the card's HTML), so
+`Grunge.1.form.fields.placeholder` is ledgered as Lime's is. The sticky card's box sits exactly on the node at 1440 and 768 at 0, +60 and
++120 px of scroll, and follows the card's release at the row's foot. `bookings` is the `*.1.` part row.
+
+## Inline editing (plans/inline-edit-all.md, Pop layout 2, 2026-10-22)
+
+The sticky card's box follows it on Pop's blue band as on the other templates (0 px at every scroll step, 1440 and 768). `fields.placeholder` is ledgered
+(`Pop.1.form.fields.placeholder`): the layout-2 card prints the uppercased label, no `input` stands in the section on the canvas, and the 80% `--ph` is layout 1's.
+
+## Inline editing (plans/inline-edit-all.md, Retro layout 3, 2026-10-22)
+
+Layout 3's `bookings` is printed `★★★★★ 42 bookings` (a `*.2.` part row); `fields.placeholder` is ledgered (`Retro.2.form.fields.placeholder`, the label is what
+the boxes print) as at layout 2.
+
+## Inline editing (plans/inline-edit-all.md, Lime layout 3, 2026-10-22)
+
+`bookings` is the `*.2.` part row (`★★★★★ 42 bookings`); `fields.placeholder` is ledgered (`Lime.2.form.fields.placeholder`: the boxes print the uppercased label).
+
+## Inline editing (plans/inline-edit-all.md, Retro layout 4, 2026-10-22)
+
+`steps` has its first proof here: the three `title` / `sub` pairs are six slots, hit at both widths, and Escape restores `c.steps` (`FORM_STEPS` and the panel's `stepsVal` resolve alike). The numerals (`01`–`03`) and arrows are literal. `fields.placeholder` hits (layout 4 prints the placeholders in its boxes).

@@ -14,6 +14,8 @@ plans/
   photo-focus-qa-fixes.md ← a QA batch filed against every template at once
   editor-qa-fixes.md ← the editor's tag rows, field→canvas box and move-follow (JP-141 … JP-151)
   calendar-qa-fixes.md ← the booking calendar's month arrows stop at the ends of the window (JP-152)
+  inline-edit.md   ← clicking text on the canvas edits it there (pilot: Retro layout 1's whole page)
+  inline-edit-all.md ← the plan to take inline editing to every template and layout (Phase 0, then 20 passes)
   char-limits.md   ← the character-limit pass, every template (char-limits/ holds its census)
   retro/
     layout-2.md
@@ -22,6 +24,7 @@ plans/
     qa-fixes.md
   lime/
     layout-1.md
+    inline-layout-1.md  ← inline editing, pass 1 of plans/inline-edit-all.md
     layout-2.md
     layout-3.md
     layout-4.md
@@ -32,6 +35,7 @@ plans/
     retest-qa-fixes.md
   grunge/
     layout-1.md
+    inline-layout-1.md  ← inline editing, pass 2 of plans/inline-edit-all.md
     layout-2.md
     layout-3.md
     layout-4.md

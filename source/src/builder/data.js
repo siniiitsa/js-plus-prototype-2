@@ -2842,6 +2842,224 @@ export function fieldShown(f, themeName, design) {
   return !!f.shared || fieldReach(f, themeName, design)
 }
 
+// Inline editing on the canvas (plans/inline-edit.md · plans/inline-edit-all.md).
+// A text, area or list field that `fieldShown` says the design reads is editable
+// where it is printed, and so is every text cell of a repeater, unless the
+// ledger below says otherwise. The three tables are keyed by a *group*,
+// `cat.key` for a field and `cat.key.col[.part]` for a repeater's cell or a
+// part of one, with an optional scope in front: `Template.design.` (design is
+// the 0-based `arch % designCount`, as `in` reads it), `Template.*.`, `*.design.`
+// or `*.*.`. A key also covers the groups under it (`pricing.tiers.price` is its
+// lead, amount and tail). A page is only *known* to work because
+// scripts/inline-probe.mjs passed it.
+//
+// INLINE_OFF is the ledger: each row a group the canvas does not edit, with the
+// reason, one of: live-only copy, not drawn at the widths we edit, not text, the
+// field has no node or the page prints a derived value, or a node text can never
+// settle (a user call). INLINE_MARKED names copy the page prints under another
+// field's words, so `EncoreSection` marks the node (`data-inline`). INLINE_PART
+// names copy the page prints inside a longer line.
+export const INLINE_OFF = {
+  'Retro.0.repertoire.songs.length': 'not drawn: only layout 3 prints a song’s length',
+  'Retro.0.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
+  'Lime.0.repertoire.songs.length': 'not drawn: only layout 3 prints a song’s length',
+  'Lime.0.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
+  'Grunge.0.repertoire.songs.length': 'not drawn: only layout 3 prints a song’s length',
+  'Grunge.0.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
+  'Editorial.0.repertoire.songs.length': 'not drawn: only layout 3 prints a song’s length',
+  'Editorial.0.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
+  'Pop.0.repertoire.songs.length': 'not drawn: only layout 3 prints a song’s length',
+  'Pop.0.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
+  'Retro.1.header.kicker': 'not drawn: the layout-2 header prints no kicker (a shared identity key; the bio’s role line and the form print it)',
+  'Retro.1.header.tags': 'not drawn: the layout-2 header prints no tag chips (a shared identity key; the bio prints them)',
+  'Retro.1.repertoire.songs.length': 'not drawn: only layout 3 prints a song’s length',
+  'Retro.1.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
+  'Retro.1.form.fields.placeholder': 'not drawn: the card’s boxes print the label, and a placeholder only once the label is emptied',
+  'Retro.1.testimonials.quotes.when': 'not drawn: layout 2’s card has no seat for it',
+  'Retro.1.media.tracks.sub': 'derived value: the seeded page prints the release and the running time as two nodes, and the whole line only once the list is stored',
+  'Lime.1.header.kicker': 'not drawn: the layout-2 header prints no kicker (a shared identity key; the bio’s role line and the form print it)',
+  'Lime.1.header.tags': 'not drawn: the layout-2 header prints no tag chips (a shared identity key; the bio prints them)',
+  'Lime.1.repertoire.songs.length': 'not drawn: only layout 3 prints a song’s length',
+  'Lime.1.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
+  'Lime.1.form.fields.placeholder': 'not drawn: the card’s boxes print the label, and a placeholder only once the label is emptied',
+  'Lime.1.testimonials.quotes.when': 'not drawn: layout 2’s card has no seat for it',
+  'Lime.1.media.tracks.sub': 'derived value: the seeded page prints the release and the running time as two nodes, and the whole line only once the list is stored',
+  'Grunge.1.header.kicker': 'not drawn: the layout-2 header prints no kicker (a shared identity key; the bio’s role line and the form print it)',
+  'Grunge.1.header.tags': 'not drawn: the layout-2 header prints no tag chips (a shared identity key; the bio prints them)',
+  'Grunge.1.repertoire.songs.length': 'not drawn: only layout 3 prints a song’s length',
+  'Grunge.1.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
+  'Grunge.1.form.fields.placeholder': 'not drawn: the card’s boxes print the label, and a placeholder only once the label is emptied',
+  'Grunge.1.testimonials.quotes.when': 'not drawn: layout 2’s card has no seat for it',
+  'Grunge.1.media.tracks.sub': 'derived value: the seeded page prints the release and the running time as two nodes, and the whole line only once the list is stored',
+  'Editorial.1.header.kicker': 'not drawn: the layout-2 header prints no kicker (a shared identity key; the bio’s role line and the form print it)',
+  'Editorial.1.header.tags': 'not drawn: the layout-2 header prints no tag chips (a shared identity key; the bio prints them)',
+  'Editorial.1.repertoire.songs.length': 'not drawn: only layout 3 prints a song’s length',
+  'Editorial.1.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
+  'Editorial.1.form.fields.placeholder': 'not drawn: the card’s boxes print the label, and a placeholder only once the label is emptied',
+  'Editorial.1.testimonials.quotes.when': 'not drawn: layout 2’s card has no seat for it',
+  'Editorial.1.media.tracks.sub': 'derived value: the seeded page prints the release and the running time as two nodes, and the whole line only once the list is stored',
+  'Pop.1.header.kicker': 'not drawn: the layout-2 header prints no kicker (a shared identity key; the bio’s role line and the form print it)',
+  'Pop.1.header.tags': 'not drawn: the layout-2 header prints no tag chips (a shared identity key; the bio prints them)',
+  'Pop.1.repertoire.songs.length': 'not drawn: only layout 3 prints a song’s length',
+  'Pop.1.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
+  'Pop.1.form.fields.placeholder': 'not drawn: the card’s boxes print the label, and a placeholder only once the label is emptied',
+  'Pop.1.testimonials.quotes.when': 'not drawn: layout 2’s card has no seat for it',
+  'Pop.1.media.tracks.sub': 'derived value: the seeded page prints the release and the running time as two nodes, and the whole line only once the list is stored',
+  'Retro.2.repertoire.songs.artist': 'not drawn: layout 3 prints a song’s length in the seat the artist holds elsewhere',
+  'Retro.2.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
+  'Retro.2.form.fields.placeholder': 'not drawn: the card’s boxes print the label, and a placeholder only once the label is emptied',
+  'Retro.2.testimonials.quotes.when': 'not drawn: layout 3’s wall has no seat for it',
+  'Retro.2.media.tracks.sub': 'derived value: the seeded page prints the release and the running time as two nodes, and the whole line only once the list is stored',
+  'Lime.2.header.kicker': 'not drawn: the layout-3 card prints the card line in the kicker’s seat (a shared identity key; the bio’s role line prints it)',
+  'Lime.2.repertoire.songs.artist': 'not drawn: layout 3 prints a song’s length in the seat the artist holds elsewhere',
+  'Lime.2.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
+  'Lime.2.form.fields.placeholder': 'not drawn: the card’s boxes print the label, and a placeholder only once the label is emptied',
+  'Lime.2.testimonials.quotes.when': 'not drawn: layout 3’s wall has no seat for it',
+  'Lime.2.media.tracks.sub': 'derived value: the seeded page prints the release and the running time as two nodes, and the whole line only once the list is stored',
+  'Grunge.2.header.kicker': 'not drawn: the layout-3 card prints the card line in the kicker’s seat (a shared identity key; the bio’s role line prints it)',
+  'Grunge.2.repertoire.songs.artist': 'not drawn: layout 3 prints a song’s length in the seat the artist holds elsewhere',
+  'Grunge.2.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
+  'Grunge.2.form.fields.placeholder': 'not drawn: the card’s boxes print the label, and a placeholder only once the label is emptied',
+  'Grunge.2.testimonials.quotes.when': 'not drawn: layout 3’s wall has no seat for it',
+  'Grunge.2.media.tracks.sub': 'derived value: the seeded page prints the release and the running time as two nodes, and the whole line only once the list is stored',
+  'Editorial.2.header.kicker': 'not drawn: the layout-3 card prints the card line in the kicker’s seat (a shared identity key; the bio’s role line prints it)',
+  'Editorial.2.repertoire.songs.artist': 'not drawn: layout 3 prints a song’s length in the seat the artist holds elsewhere',
+  'Editorial.2.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
+  'Editorial.2.form.fields.placeholder': 'not drawn: the card’s boxes print the label, and a placeholder only once the label is emptied',
+  'Editorial.2.testimonials.quotes.when': 'not drawn: layout 3’s wall has no seat for it',
+  'Editorial.2.media.tracks.sub': 'derived value: the seeded page prints the release and the running time as two nodes, and the whole line only once the list is stored',
+  'Pop.2.header.kicker': 'not drawn: the layout-3 card prints the card line in the kicker’s seat (a shared identity key; the bio’s role line prints it)',
+  'Pop.2.repertoire.songs.artist': 'not drawn: layout 3 prints a song’s length in the seat the artist holds elsewhere',
+  'Pop.2.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
+  'Pop.2.form.fields.placeholder': 'not drawn: the card’s boxes print the label, and a placeholder only once the label is emptied',
+  'Pop.2.testimonials.quotes.when': 'not drawn: layout 3’s wall has no seat for it',
+  'Pop.2.media.tracks.sub': 'derived value: the seeded page prints the release and the running time as two nodes, and the whole line only once the list is stored',
+  'Retro.3.repertoire.songs.length': 'not drawn: only layout 3 prints a song’s length',
+  'Retro.3.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
+  'Retro.3.testimonials.quotes.when': 'not drawn: layout 4’s wall has no seat for it',
+  'Retro.3.media.tracks.sub': 'derived value: the page prints the release alone (the list tile’s Single); the running times are the player’s clock',
+  'Retro.3.pricing.unit': 'derived value: layout 4 drops the leading slash, so the page prints event, not the field’s /event',
+  'Lime.3.repertoire.songs.length': 'not drawn: only layout 3 prints a song’s length',
+  'Lime.3.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
+  'Lime.3.testimonials.quotes.when': 'not drawn: layout 4’s wall has no seat for it',
+  'Lime.3.media.tracks.sub': 'derived value: the page prints the release alone (the list tile’s Single); the running times are the player’s clock',
+  'Lime.3.pricing.unit': 'derived value: layout 4 drops the leading slash, so the page prints event, not the field’s /event',
+  'Grunge.3.repertoire.songs.length': 'not drawn: only layout 3 prints a song’s length',
+  'Grunge.3.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
+  'Grunge.3.testimonials.quotes.when': 'not drawn: layout 4’s wall has no seat for it',
+  'Grunge.3.media.tracks.sub': 'derived value: the page prints the release alone (the list tile’s Single); the running times are the player’s clock',
+  'Grunge.3.pricing.unit': 'derived value: layout 4 drops the leading slash, so the page prints event, not the field’s /event',
+  'Editorial.3.repertoire.songs.length': 'not drawn: only layout 3 prints a song’s length',
+  'Editorial.3.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
+  'Editorial.3.testimonials.quotes.when': 'not drawn: layout 4’s wall has no seat for it',
+  'Editorial.3.media.tracks.sub': 'derived value: the page prints the release alone (the list tile’s Single); the running times are the player’s clock',
+  'Editorial.3.pricing.unit': 'derived value: layout 4 drops the leading slash, so the page prints event, not the field’s /event',
+  'Pop.3.repertoire.songs.length': 'not drawn: only layout 3 prints a song’s length',
+  'Pop.3.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
+  'Pop.3.testimonials.quotes.when': 'not drawn: layout 4’s wall has no seat for it',
+  'Pop.3.media.tracks.sub': 'derived value: the page prints the release alone (the list tile’s Single); the running times are the player’s clock',
+  'Pop.3.pricing.unit': 'derived value: layout 4 drops the leading slash, so the page prints event, not the field’s /event',
+  // Retro's layout 5 (the Overlay card) is a header-only design: the body under it is layout 1's page.
+  'Retro.4.header.kicker': 'not drawn: the layout-5 Overlay card prints no kicker (a shared identity key; the bio’s role line and the form print it)',
+  'Retro.4.header.location': 'not drawn: the layout-5 Overlay card prints no location (a shared identity key; the bio and the calendar print it)',
+  '*.*.pricing.tiers.tags': 'derived value: the filter chips are the distinct tags of every package',
+  '*.*.repertoire.songs.tags': 'derived value: the filter chips are the distinct tags of every song',
+}
+// INLINE_HEAD names a repeater the canvas draws only a head of, by a cap and a
+// pager: repertoire layout 3 draws a song under every tag it carries, four a card
+// and three cards a page, so a song can stand twice and a later one not at all (the
+// rest are behind a card's *View full set*, live only). The group stays editable
+// where it is drawn; a row `drawnRows` (EncoreBuilder.jsx) does not list is in the
+// ledger with this reason, which is also what keeps the nth-peer pairing honest.
+export const INLINE_HEAD = {
+  '*.2.repertoire.songs': 'live-only copy: this song is behind a card’s View full set, or on a page of the pager',
+}
+// The two marks stand in layout 1's gallery blocks alone; layout 2 draws its
+// `railLabel` once (at 768) and text can tell it from the heading.
+export const INLINE_MARKED = {
+  '*.0.gallery.railLabel': true,
+  '*.0.gallery.sourceLabel': true,
+}
+export const INLINE_PART = {
+  'media.countLabel': true,
+  'map.listLabel': true,
+  'calendar.time': true,
+  'repertoire.songs.artist': true,
+  // Layout 2 prints these inside a longer line: a bullet, an arrow or a count
+  // beside the words (`● Popular`, `5 Featured / 5 Max`, `[ PRICING ]`,
+  // `32 reviews · 4.9 ★`, `Expand view→`). The words are unique on the page,
+  // so the box narrows to them and no frame is needed.
+  '*.1.header.availability': true,
+  '*.1.media.listLabel': true,
+  '*.1.media.totalLabel': true,
+  '*.1.pricing.kicker': true,
+  '*.1.pricing.reviews': true,
+  '*.1.pricing.rating': true,
+  '*.1.calendar.dateLabel': true,
+  '*.1.map.terms': true,
+  '*.1.map.expand': true,
+  '*.1.form.bookings': true,
+  '*.1.testimonials.kicker': true,
+  // Layout 3 the same: `[ About ]`, `● Popular`, `5 Featured / 5 Max`, the map's
+  // `Based in Manchester · 5 pins · 120 mi radius` and `Expand view→`, the form's
+  // `★★★★★ 42 bookings`, `● Testimonials`.
+  '*.2.bio.aboutLabel': true,
+  '*.2.media.listLabel': true,
+  '*.2.media.totalLabel': true,
+  '*.2.map.base': true,
+  '*.2.map.radius': true,
+  '*.2.map.expand': true,
+  '*.2.form.bookings': true,
+  '*.2.testimonials.kicker': true,
+  // Layout 4: the bio's overlay card prints `Performing since <date>` in one span
+  // and the Listen link beside its arrow, a price its `£` and numeral in one node,
+  // and the map's ticker `Next: <venue>` (page 0 alone, which the canvas is).
+  '*.3.bio.since': true,
+  '*.3.bio.cta2': true,
+  '*.3.pricing.tiers.price': true,
+  '*.3.map.gigs.venue': true,
+}
+// INLINE_LINES names the forms a slot's copy is printed in when the words alone
+// cannot tell its node from another field's: each template is one line as the
+// page draws it (spaces and case do not matter), `{}` the slot's own copy and
+// `{cell}` a sibling cell of its row. A slot with a template is edited from a
+// node that prints exactly that line, on its own words, and a line another
+// field's node prints is not a peer of this slot's words. Scoped like the rest.
+const GIG_TICKER_LINES = ['{city} · {month} {day} · {time}', '{city} · {month} {day}', '{month} {day} · {time}', '{month} {day}', '{city} · {time}']
+export const INLINE_LINES = {
+  '*.1.calendar.availLabel': ['{} ↓'],
+  '*.1.media.chipLabel': ['● {}'],
+  // Retro's layout 6 prints the kicker twice: bare, in the inset card under the name,
+  // and as `● DJ · LIVE ACT` above the title. A slot with a line is spoken for by it,
+  // so the bare form is listed too, or the card's copy would stop opening.
+  '*.5.header.kicker': ['{}', '● {}'],
+  // The map's rows 1-4 print `City · Mon · 21:00`; the featured gig (row 0) lifts
+  // its date and time into the travel card's chip, `● Jul 12 · 22:00`.
+  '*.1.map.gigs.city': ['{city} · {month} · {time}'],
+  '*.1.map.gigs.month': ['{city} · {month} · {time}', '● {month} {day} · {time}'],
+  '*.1.map.gigs.day': ['● {month} {day} · {time}'],
+  '*.1.map.gigs.time': ['{city} · {month} · {time}', '● {month} {day} · {time}'],
+  // Layout 4's ticker prints the one gig on one line, `Manchester · JUL 12 · 22:00`
+  // (`vm.gigs[].meta`), and drops a piece the artist emptied with its separator,
+  // so each shorter form it can print is a line too. Per column: the venue is
+  // printed on another line (`Next: …`, a part row).
+  '*.3.map.gigs.city': GIG_TICKER_LINES,
+  '*.3.map.gigs.month': GIG_TICKER_LINES,
+  '*.3.map.gigs.day': GIG_TICKER_LINES,
+  '*.3.map.gigs.time': GIG_TICKER_LINES,
+}
+export function inlineRule(table, themeName, design, group) {
+  const parts = String(group).split('.')
+  for (let n = parts.length; n >= 2; n--) {
+    const g = parts.slice(0, n).join('.')
+    for (const scope of [`${themeName}.${design}.`, `${themeName}.*.`, `*.${design}.`, '*.*.', '']) {
+      const v = table[scope + g]
+      if (v !== undefined) return v
+    }
+  }
+  return undefined
+}
+
 // Character caps (plans/char-limits.md, user calls, 2026-10-13). A cap is
 // measured per template and design — Figma says how many lines a text block
 // draws, scripts/limits.mjs how many characters fit them at all three widths —

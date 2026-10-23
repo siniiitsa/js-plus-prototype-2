@@ -221,3 +221,42 @@ another `notes/` file.
   - **`GigsField`'s `pair()` rows are top-aligned**: a counter under the month (always showing at
     layout 2, where *Jul* is 3 / 3) stretched the uncapped year box beside it. That is session
     5's `SongsField` fix.
+
+## Inline editing (plans/inline-edit-all.md, Retro layout 2, 2026-10-21)
+
+Layout 2's gig cells print in three shapes, declared in `INLINE_LINES` (`*.1.map.gigs.…`): rows 1–4 as one line,
+`Manchester · Jul · 21:00` (city, month, time; the bare month and day nodes inside and beside it are still edited from
+their own nodes), and the featured gig (row 0) as the travel card's chip `● Jul 12 · 22:00` (month, day, time), with its
+city alone under the venue. **The city *Manchester* is printed by five different fields' nodes**: the heading (seeded as
+the first gig's city), the travel card's *Willing to travel to* (the featured city), the featured panel (the same city),
+and rows 1, 3 and 4. The page's text cannot settle that, so `inlineFieldAt` does: a slot whose line is drawn is *claimed*
+(per field, as many rows as nodes print the line), the bare nodes belong to the fields left, and between a heading and
+another field the largest type is the heading. `radius` (`120 mi`) and the outermost ring (`120mi`) differ only in the
+space, so the copy as typed decides. `terms` (`… · 5 pins`) and `expand` (`Expand view→`) are `INLINE_PART` rows. The
+list is rows 1–4 of the gigs, the featured gig is row 0.
+
+## Inline editing (plans/inline-edit-all.md, Retro layout 3, 2026-10-22)
+
+Layout 3's line under the map, `Based in Manchester · 5 pins · 120 mi radius`, is one node holding two slots: `base` and `radius` are `*.2.` part rows,
+settled on the click (`5 pins` is derived and a `·` opens nothing). `expand` (`Expand view→`) is a part row too. The gig rows print `City · time` and
+hit as pairs; the featured gig's chip is layout 2's. The city chips and *See all gigs* need no ledger row (derived, or the field `cta`).
+
+## Inline editing (plans/inline-edit-all.md, Retro layout 4, 2026-10-22)
+
+**`stats` has its first proof**: the wall's twelve cells (`label` / `value` / `sub` ×4) hit at both widths and Escape restores `c.stats`. **The ticker is one gig on one line** (`vm.gigs[].meta`, `Manchester · JUL 12 · 22:00`, the month upper-cased in the string, not by CSS) under `Next: <venue>` (page 0 alone, which the canvas always is). `INLINE_LINES`, per column and scoped `*.3.` (a single `map.gigs` row would hand the venue the same line), names that line and the shorter forms the page prints when a piece is emptied (no time, no city, date only, no date). The venue is an `INLINE_PART` row on `Next: …`. **No claim or rank was needed**: the line repeats no other field's copy (the stat's *Manchester, UK* is a different string and the heading is not a gig's city). Rows 1–4 are *paged* (the arrows are live-only). Known limit: an emptied month or day alone (the page prints `Manchester · JUL · 22:00`) matches no line and opens nothing; the panel is the way in. The textarea holds the stored `Jul` where the page draws `JUL`: the first slot whose node case differs from the stored copy by the markup, not CSS. The box lies on the glyphs and the sentinel lands.
+
+## Inline editing (plans/inline-edit-all.md, Lime layout 4, 2026-10-22)
+
+Pass 15's rows carry over unchanged (`INLINE_LINES` and the venue part row are `*.3.`): Lime's olive-capsule ticker prints the same two lines, and every column of the one-line gig opens, also with the time emptied. The stat cells are fitted per word (`wordEms`) and the Base value `Manchester, UK` wraps to two lines at 1440 (one at 768): a click on either word opens `map.stats[3].value` and the box covers both lines. No claim or rank was needed. Same known limit as Retro (an emptied month or day alone opens nothing; the stored `Jul` sits under the drawn `JUL`).
+
+## Inline editing (plans/inline-edit-all.md, Grunge layout 4, 2026-10-22)
+
+Pass 15's rows carry over unchanged (`INLINE_LINES` and the venue part row are `*.3.`): Grunge's ticker prints the same two lines and every column of the one-line gig opens, also with the time emptied (`blank.mjs`). The Base stat's `Manchester, UK` wraps to two lines at 1440 and the box covers both. No ledger row.
+
+## Inline editing (plans/inline-edit-all.md, Editorial layout 4, 2026-10-22)
+
+Pass 15's rows carry over unchanged (`INLINE_LINES` and the venue part row are `*.3.`): Editorial's ticker prints the same two lines and every column of the one-line gig opens, also with the time emptied (`blank.mjs`). The Base stat's `Manchester, UK` (Gloock, uppercase) wraps to two lines at 1440 and the box covers both. No ledger row.
+
+## Inline editing (plans/inline-edit-all.md, Pop layout 4, 2026-10-22)
+
+Pass 15's rows carry over unchanged: Pop's ticker prints the same two lines and every column of the one-line gig opens, also with the time emptied (`blank.mjs`). The Base stat's `Manchester, UK` (Titan One, uppercase) wraps to two lines at 1440 and the box covers both; at 768 it is one line. No ledger row.

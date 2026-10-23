@@ -164,3 +164,35 @@ untrimmed offsets and sets `pending = { row, col }`; rows are keyed by index, so
 *start* of the remainder (the new row, or the second half of a row split in the middle); a paste lands at the end
 of the last piece. A single item is kept as typed except for its **leading** space (`trimStart`; the trailing one
 starts the next word), and the caret follows when that space is dropped.
+
+## Inline editing (plans/inline-edit-all.md, Phase 0, 2026-10-21)
+
+Every repeater's rows are read for the canvas's inline editor through `repeaterRows(sec, k, themeName)`, and
+every `*Val` closure in `EditPanel` is that one call — `songsVal`, `tracksVal`, `gigsVal`, `tiersVal`,
+`formFieldsVal`, `quotesVal`, `linksVal`, and since Phase 0 `slotsVal` (`CAL_SLOTS`, its `after` offsets kept on a
+rewrite), `statsVal` (`MAP_STATS_4`) and `stepsVal` (`FORM_STEPS`). **`setsVal` is the exception**: `c.sets` is an
+object keyed by case-folded tag, so `repeaterRows('sets')` returns the *drawn* sets as rows `{ key, mood, length }`
+(the sets `repChips()` derives from the songs less blank rows, in page order, each with what `repSetsOf()` holds for
+it), `slotWrite` puts the whole resolved object back as `SetsField` does, and the panel keeps reading the object. A
+set's card prints `mood · length` as one line (`LINE_PAIRS`, the gigs' city and time shape); with both empty it prints
+the song count, which is derived, so there is no slot to click. The text columns the canvas offers are `INLINE_ROWS`;
+`tiers.tags` and `songs.tags` (derived filter chips) are in `INLINE_OFF` for every template; the slots' `date` and
+the booked dates are dates, not text, and stay in the panel.
+**Repertoire layout 3 draws a song once per tag it carries**, so the nth-peer rule (document order is row order)
+is wrong there for repeated copy: row 0 (*Valerie*, tagged Weddings and Pubs) is drawn in both cards, the seed's
+row 11 (also *Valerie*) is drawn in neither of the four rows a card shows, and a click on the Pubs card's *Valerie*
+was paired with row 11 as the second of two. Found by the probe's sentinel check; settled in pass 10 (Retro layout 3, below).
+
+`media.tracks.sub` is the one repeater cell that is *derived at the seed*: the seeded page prints it as the release and the
+running time in two nodes at layout 2, so Retro layout 2 ledgers it (`Retro.1.media.tracks.sub`). Once the list is stored,
+`rel` and `dur` are both the row's subtitle. A state-aware ledger row would let the stored shape be edited inline.
+
+## Inline editing (plans/inline-edit-all.md, Retro layout 3, 2026-10-22)
+
+The repertoire's **song-per-tag pairing** (Phase 0's open item) is settled by the ledger, not the click: `INLINE_HEAD` + `drawnRows()` mark the rows
+layout 3's cards do not draw as `off`, so the drawn copy and the drawn slots agree (`notes/repertoire.md`). `repeaterRows('sets')` has its first proof:
+`sets[0..2].mood` / `.length` hit at both widths and Escape restores `c.sets`.
+
+## Inline editing (plans/inline-edit-all.md, Retro layout 4, 2026-10-22)
+
+`stats` and `steps`, which Phase 0 wrote with no page to prove them, are proved on Retro layout 4: the twelve stat cells and the six step cells hit at 1440 and 768 and Escape restores `c` (0 NOT-RESTORED), so `statsVal` / `stepsVal` resolve what `sectionVm` does. The ledger rule's second `INLINE_OFF` member of the *derived value* class beside `tracks.sub`: `pricing.unit` at layout 4 (the page drops the slash).

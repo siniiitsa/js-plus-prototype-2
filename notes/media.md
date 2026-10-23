@@ -134,3 +134,74 @@ another `notes/` file.
   - **`countLabel` and `chipLabel` share the seed *Featured*.** The probe renames a sibling field
     whose seed prints the same string (`twinsOf()` in `scripts/limits.mjs`), or the reference
     seats both and the layout-2 counter reads 1.
+
+## Inline editing (plans/inline-edit-all.md, Retro layout 2, 2026-10-21)
+
+Layout 2 prints the list label, the fan's chip and the counter's words inside decoration: `● Popular`, `● Featured`,
+`5 Featured / 5 Max`. `listLabel` and `totalLabel` are `INLINE_PART` rows (`*.1.media.…`, their words are unique on
+the page); `countLabel` already was. **`chipLabel` and `countLabel` both read *Featured*** and sit in two nodes, so the chip
+declares its line in `INLINE_LINES` (`'● {}'`): a node that prints exactly another field's line is not a peer of the
+counter's words, and the counter's click settles on the words it is near. The fan is edited card by card: the topmost
+card's title opens its own box, a card behind it opens by the part of its title still in view (the box is the title's
+whole line and may run under the front card), and the box takes each card's tilt through `placeBox`. The list under it
+prints every track again, so a title has two nodes for one slot (`here.length === 1`).
+**`tracks.sub` is ledgered** (`Retro.1.media.tracks.sub`, a derived value): the seeded page prints the release and the
+running time as two nodes (`rel`, `dur`), and the whole line only once the list is stored, when `rel` and `dur` both
+become the row's subtitle. `INLINE_OFF` is state-blind, so the cell stays in the panel even then.
+
+## Inline editing (plans/inline-edit-all.md, Lime layout 2, 2026-10-21)
+
+The Retro layout-2 rows (`*.1.media.…`) carry over unchanged: the fan, the list rows, `chipLabel`, `listLabel`, `totalLabel` and
+`countLabel` all hit on Lime's page. `tracks.sub` is ledgered again, `Lime.1.media.tracks.sub`, for the same seeded shape.
+
+## Inline editing (plans/inline-edit-all.md, Grunge layout 2, 2026-10-22)
+
+The `*.1.media.…` rows carry over: the fan (cards tilted about ±10.6° and ±5.3°, the box follows each card's `matrix()`), the list rows,
+`chipLabel`, `listLabel`, `totalLabel` and `countLabel` all hit on Grunge's page. `tracks.sub` is ledgered again, `Grunge.1.media.tracks.sub`,
+for the same seeded shape.
+
+## Inline editing (plans/inline-edit-all.md, Editorial layout 2, 2026-10-22)
+
+The `*.1.media.…` rows carry over: the fan (the same tilts, the box follows each card's `matrix()`), the list rows, `chipLabel`, `listLabel`,
+`totalLabel` and `countLabel` all hit on Editorial's page; `tracks.sub` is ledgered again, `Editorial.1.media.tracks.sub`. **Gloock is wider than the
+other faces, so the back card *Manchester at 3am* wraps to two lines and the middle of its first line lies under the front card's *Slow Burn***: a click
+there opens *Slow Burn*, which is what is on top, and the probe counts that as a click under an overlay, not a WRONG (`plans/editorial/inline-layout-2.md`,
+generic fix 2). The back card is reached by the words that show beside the front card, and the same slot by its list row.
+
+## Inline editing (plans/inline-edit-all.md, Pop layout 2, 2026-10-22)
+
+The `*.1.media.…` rows carry over: the fan, the list rows, `chipLabel`, `listLabel`, `totalLabel` and `countLabel` all hit on Pop's page, and
+`tracks.sub` is ledgered again, `Pop.1.media.tracks.sub`. **The fan's cards overlap, and a click on a back card's visible glyphs used to open the card
+behind it** (*Echo & The Floor* opened *Roomtone*, whose box is smaller and lies under the card in front): the stack rule skips a slot that something opaque
+covers (`paintsOver` in `EncoreBuilder.jsx`, `plans/pop/inline-layout-2.md`, generic fix 1). Checked by clicking every visible character of the five
+titles, which the probe's line-middle aim cannot do.
+
+## Inline editing (plans/inline-edit-all.md, Retro layout 3, 2026-10-22)
+
+Layout 3 is a numbered list, not a fan: no card overlaps another, and every visible character of every title opens its own track (a character sweep).
+`listLabel` (`● Popular`) and `totalLabel` (`5 Featured / 5 Max`) are `*.2.` part rows; `tracks.sub` is ledgered again (`Retro.2.media.tracks.sub`: the release
+and the running time are two nodes).
+
+## Inline editing (plans/inline-edit-all.md, Lime layout 3, 2026-10-22)
+
+`listLabel` and `totalLabel` are the `*.2.` part rows (Lime draws the `●` in its own span, so `Popular` is a bare node); `tracks.sub` is ledgered again (`Lime.2.media.tracks.sub`).
+
+## Inline editing (plans/inline-edit-all.md, Retro layout 4, 2026-10-22)
+
+`tracks.sub` is ledgered (`Retro.3.media.tracks.sub`): the list tile prints the release alone (`Single`) and the `02:28` / `04:22` are the player's clock, so the field's line (`Single · 5:42`) is in no node. Title, heading and the rest hit.
+
+## Inline editing (plans/inline-edit-all.md, Lime layout 4, 2026-10-22)
+
+Ledgered as on Retro (`Lime.3.media.tracks.sub`): the list tile prints `Single` alone and `02:28` / `04:22` are the player's clock.
+
+## Inline editing (plans/inline-edit-all.md, Grunge layout 4, 2026-10-22)
+
+Ledgered as on Retro and Lime (`Grunge.3.media.tracks.sub`): the list tile prints `Single` alone and `02:28` / `04:22` are the player's clock.
+
+## Inline editing (plans/inline-edit-all.md, Editorial layout 4, 2026-10-22)
+
+Ledgered as on the other templates (`Editorial.3.media.tracks.sub`): the list tile prints `Single` alone and `02:28` / `04:22` are the player's clock.
+
+## Inline editing (plans/inline-edit-all.md, Pop layout 4, 2026-10-22)
+
+Ledgered as on the other templates (`Pop.3.media.tracks.sub`): the list tile prints `Single` alone and `02:28` / `04:22` are the player's clock. **The list tile's title is clamped** (`overflow: hidden; text-overflow: ellipsis`, `nowrap`): at 768 Pop's tiles are 136 wide and `MANCHESTER AT 3AM` reads `MANCH…`, its range 172 wide with its middle in the clipped part. A hand on the visible glyphs opens `tracks[1].title` (it always did); the probe aimed at the middle of the range and called it covered, and now aims at what a clipping ancestor leaves (`scripts/inline-probe.mjs`, `__aim`). The box is as wide as the whole title, past the `…`.
