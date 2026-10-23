@@ -222,7 +222,12 @@ mutated through a single `patch()` helper.
   the end *appends*, so the photo lands on the first free tile. Hover draws a thin box and a pointer, turned with a tilted card (`photoBox`); focusing a photo field in
   the panel boxes the picture, and a media track's art button boxes its row's. Remove, reorder and Add stay in the panel. A page is *known* to work only because
   **`scripts/photo-probe.mjs --theme T --layout N --width 1440,768 --check`** passed it (`--blank` walks the empty slots; its header lists the
-  verdicts). Retro layout 1 has passed, by hand too (the Step 2 pilot, with Pop layout 1's hit-test spike), and layouts 2, 3 and 4 on all five templates and Retro's 5 and 6 (Step 3, 2026-10-23; Step 3 is closed, Step 4 is the sweep and docs).
+  verdicts). Retro layout 1 has passed, by hand too (the Step 2 pilot, with Pop layout 1's hit-test spike), and layouts 2, 3 and 4 on all five templates and Retro's 5 and 6 (Step 3, 2026-10-23), then re-run whole at Step 4 (all 22 pages, both widths, filled and `--blank`: PASS, with `--drop` too).
+  **A file dropped on a selected section's photo replaces it** (Step 4, 2026-10-23; the handlers are the wrapper's, `EncoreSection` is not touched): a drag that carries files is
+  cancelled anywhere over the selected section, a photo under it or not, with `dropEffect` `copy` over a photo `photoFieldAt` would open and `none` elsewhere (or the browser opens the file in the
+  tab and the page is gone); the drop frames the file in the crop editor, filled slot or empty, and Apply writes through the same `photoPut`. Where a click opens, a drop lands: copy and controls
+  over a photo take no drop. A text drag is left alone, an unselected section and a phone take no handlers (the browser's own default there), and the hover box doubles as the drop highlight.
+  `photo-probe --drop` proves it the way `--check` proves the click.
 - `st.theme` is an **integer index** into `THEMES`, not a name or object.
 - **`st.device` is the toggle, `device` is what the canvas draws.** A window at most 1180 wide
   (iPad Air landscape; `useTabletCap`) caps it at tablet and disables the Desktop tab, since

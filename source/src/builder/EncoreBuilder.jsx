@@ -6896,11 +6896,39 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
   }
   const photoFile = useRef(null)
   const photoPick = useRef(null)
+  const photoPut = (sec, slot) => (url) => { const [k, v] = photoWrite(sec, slot, url, T.name); api.setContent(sec.id, k, v) }
+  // A picked or dropped file goes through the editor first, as the panel's drop zone has it; one file, the first.
+  const frameFile = (files, put, aspect) => {
+    const v = vetImages(files ? [...files].slice(0, 1) : [], toast)
+    if (!v) return
+    v.ok.forEach((f) => readImage(f, (src) => editImages([{ src, aspect, onApply: put }])))
+  }
   const startPhoto = (sec, slot) => {
     setPhotoHover(null)
-    const put = (url) => { const [k, v] = photoWrite(sec, slot, url, T.name); api.setContent(sec.id, k, v) }
+    const put = photoPut(sec, slot)
     if (slot.empty) { photoPick.current = { put, aspect: slot.aspect }; photoFile.current?.click() }
     else editImages([{ src: slot.value, aspect: slot.aspect, edit: true, onApply: put }])
+  }
+  // A file dropped on the selected section's photo replaces it, where a click would open it (the panel's
+  // drop zone, from the picture). Only a drag that carries files is the canvas's: a text drag is left alone.
+  // Every such drag over the section is cancelled, a photo under it or not, or the browser opens the
+  // file in this tab and the page is gone.
+  const hasFiles = (e) => [...(e.dataTransfer?.types ?? [])].includes('Files')
+  const dropOver = (e, sec) => {
+    if (!hasFiles(e)) return
+    e.preventDefault()
+    const ph = photoFieldAt(sec, e.currentTarget, { x: e.clientX, y: e.clientY }, T.name)
+    e.dataTransfer.dropEffect = ph ? 'copy' : 'none'
+    const b = ph && photoBox(ph.node, e.currentTarget.firstElementChild, e.currentTarget.getBoundingClientRect())
+    const next = b ? { sid: sec.id, id: ph.id, ...b } : null
+    setPhotoHover((p) => (p === next || (p && next && p.sid === next.sid && p.id === next.id && p.x === next.x && p.y === next.y && p.w === next.w && p.h === next.h && p.tf === next.tf) ? p : next))
+  }
+  const dropFile = (e, sec) => {
+    if (!hasFiles(e)) return
+    e.preventDefault()
+    setPhotoHover(null)
+    const ph = photoFieldAt(sec, e.currentTarget, { x: e.clientX, y: e.clientY }, T.name)
+    if (ph) frameFile(e.dataTransfer.files, photoPut(sec, ph), ph.aspect)
   }
 
   // The box follows the copy as it is typed, wraps, or changes width, and as the
@@ -7669,6 +7697,9 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
                     onMouseEnter={isMobile ? undefined : () => patch({ hoverId: sec.id })}
                     onMouseLeave={isMobile ? undefined : (e) => { e.currentTarget.style.cursor = ''; setPhotoHover(null); patch((s) => (s.hoverId === sec.id ? { hoverId: null } : {})) }}
                     onMouseMove={isMobile || st.selectedId !== sec.id ? undefined : (e) => probeInline(e, sec)}
+                    onDragOver={isMobile || st.selectedId !== sec.id ? undefined : (e) => dropOver(e, sec)}
+                    onDragLeave={isMobile || st.selectedId !== sec.id ? undefined : (e) => { if (!e.currentTarget.contains(e.relatedTarget)) setPhotoHover(null) }}
+                    onDrop={isMobile || st.selectedId !== sec.id ? undefined : (e) => dropFile(e, sec)}
                     onClick={(e) => {
                       stopE(e)
                       // A click on the selected section's own copy edits it there.
@@ -7862,10 +7893,9 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
           ref={photoFile} type="file" accept="image/png,image/jpeg" className="sr-only" tabIndex={-1} aria-hidden
           onChange={(e) => {
             const pick = photoPick.current
-            const v = vetImages(e.target.files ? [...e.target.files].slice(0, 1) : [], toast)
+            const files = e.target.files ? [...e.target.files] : []
             e.target.value = ''
-            if (!v || !pick) return
-            v.ok.forEach((f) => readImage(f, (src) => editImages([{ src, aspect: pick.aspect, onApply: pick.put }])))
+            if (pick) frameFile(files, pick.put, pick.aspect)
           }}
         />
 

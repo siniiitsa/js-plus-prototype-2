@@ -405,3 +405,38 @@ unchanged, but the plan says re-run after any shared-code change); (2) the optio
 carry the feature, update what Step 4 settles; (4) `npm run build` and `npm run build:standalone`; `index.html` and `published.html` are refreshed only by the separate deliberate copy step.
 Open for the user, none blocking: the `FILE_INPUT` tab stop (layout 2's log; fixing it removes an emptied field's only focus route, so give the drop zone a `tabIndex` and role first), the hover
 throttle's missing trailing call, and the glass card's cut (above).
+
+**Step 4 · sweep + docs — done 2026-10-23 on branch `photo-edit`.** One feature added (the file drop, in `EncoreBuilder.jsx`); `photo-probe.mjs` gained `--drop`; `PHOTO_OFF` stays empty.
+- **Re-run after the `photoBox` change, nothing changed.** `photo-probe --theme T --layout N --width 1440,768 --check`, default and `--blank`, over all 22 pages (Retro / Lime / Grunge /
+  Editorial / Pop x layouts 1 to 4, Retro 5 and 6), three browsers at a time: **44 of 44 runs PASS** (88 page-widths: 0 WRONG / NOT-RESTORED / MISSING / blocked / copy / hidden; default `appended` 0 on
+  every page; `--blank` 7 gallery appends on every page; slots hit: layout 1 17, layout 2 20 (17 `--blank`, pricing's three faces not drawn), layout 3 15, layout 4 16, Retro 5 and 6 17). No flake at three at
+  a time (Step 3's one came from five at once). `inline-probe --theme Retro,Pop --layout 1 --width 1440,768 --check`: **PASS**, the counts of Step 0 (Retro 156 / 143 slots hit, Pop 155 / 142; 0 WRONG /
+  NOT-RESTORED / MISSING; Retro's one dead click the report-only kind it had).
+- **The file drop: built, not cut.** The two cut conditions did not hold. *Text editor:* the editor is a `<textarea>` and a mouse selection; the drop handlers take only a drag whose types hold `Files`,
+  so a text drag is never cancelled (negative control in the probe). *`EncoreSection`:* the handlers are the wrapper's, in chrome; the file keeps its two inert marks and no effect.
+  Design in `notes/photography.md` ("Dropping a file on a canvas photo"). `photoPut` and `frameFile` were factored out of `startPhoto` and the root file input, which now share them with the drop.
+  **Decisions:** (1) the hit-test is the click's, so a drop lands where a click opens; a drop on the title over a hero does nothing (a letter-by-letter alternative would let a drop through copy, and
+  say less truthfully what a click would do); (2) a file drag over the selected section is cancelled even off a photo (`dropEffect: none`) so a near miss does not open the file in the tab; (3) the hover
+  box is the drop highlight, cleared on `dragleave` to outside the wrapper.
+- **`photo-probe --drop`** (header documents it): a `DragEvent` with a `File` at each node's aimed points, the `drop` sent only if the `dragover` was cancelled with an effect, then the click walk's own
+  checks (the dialog titled *Frame your photo* on the dropped file, Escape writes nothing, Apply changes only that slot's key / index / row). A script-built `DataTransfer` ignores `dropEffect`, so the probe shadows it.
+  Negative controls first: a text drag over a header photo is not cancelled and opens nothing; a file drag over a header link (or its copy, narrow) is cancelled with effect `none`. **Mutation:** the drop write
+  disabled -> FAIL (positive control), reverted. **All 22 pages, 1440 and 768, default and `--blank`: 44 of 44 runs PASS** (88 page-widths, 0 WRONG / NOT-RESTORED / MISSING, the same slot counts as the click
+  walk; `--blank` appends 7 on the gallery). Two harness fixes on the way, both in the negative control (no link to drop on at 768 where the nav collapses -> fall back to a line of copy; an emptied photo's initials
+  are the photo's own copy -> skipped); the first sweep of layouts 1, 3 and 4 failed on those and was re-run whole.
+- **By hand (throwaway drivers in the job's scratch).** Highlight appears on `dragover` over a photo and clears on `dragleave` to outside; with the inline text box open, a drop on the photo opens the crop dialog and
+  closes the box, Escape leaves `c` untouched; a drop on the title copy is cancelled with no effect and opens nothing; an unselected section and an 800-wide (phone chrome) window do not cancel a file drag
+  (the browser's default); no page errors. **A real browser drag (CDP `Input.dispatchDragEvent` with the fixture as a file) highlights and opens *Frame your photo*.**
+- **Builds.** `npm run build` and `npm run build:standalone` succeed (`dist-standalone/index.html` 10.0 MB). `index.html` and `published.html` are not touched: the copy is the separate deliberate step.
+- **Docs.** `CLAUDE.md`'s photo bullet and `notes/photography.md` updated.
+
+**Open for the user (not decided here):**
+1. **The glass card (layout 4's bio, alpha .5 Grunge / .71 Lime / .8 Editorial and Pop).** Still a click on the card face outside its copy opens the bio photo (43% of the picture); a drop does the same. Kept as
+   built; if the face should block, the cut is one number in `blocksPhoto` (.5 blocks four of five cards, .75 two) and the face becomes a dead 43% of the picture.
+2. **`FILE_INPUT`'s tab stop.** `ImageField`, `ImagesField` and `RowThumb` hold a visually hidden `<input type=file>` with no `tabIndex`; Tab reaches it, and on pricing's *Reviewer photos* it scrolled the app shell 1079px.
+   `tabIndex={-1}` fixes that but removes an emptied field's only focus route (the drop zone is a plain `div`), so the panel -> canvas walk would be lost for an emptied field: the drop zone wants `tabIndex={0}` and
+   `role="button"` (with Enter / Space opening the picker) first. Not made, outside this feature.
+3. **The hover throttle's missing trailing call** (`probeInline`, 120 ms): the last `mousemove` of a quick approach can be dropped, leaving the box and cursor at the previous position. A real pointer keeps
+   generating events, so unfixed; a trailing timer would fix it, and the text rule shares it.
+4. **New, from the drop:** a file dropped on an *unselected* section, or on a phone, is the browser's: it opens the file in the builder's tab and the page is lost (uploads included). Predates this branch (only the panel's
+   drop zones cancel a file drag). Cancelling file drags canvas-wide (`dropEffect: none` outside the selected section) would close it in a few lines; the drop would then wait for a selected section, as the click does.

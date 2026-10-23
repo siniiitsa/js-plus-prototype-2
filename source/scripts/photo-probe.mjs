@@ -20,6 +20,11 @@
 //              picture), so the
 //              file-picker path and the append write are the ones walked
 //   --every    take the write test (upload + Apply) on every node, not once per photo slot
+//   --drop     drop the fixture file on each node instead of clicking it (a DragEvent with a File, at the same
+//              aimed points). The drag must be cancelled over the node (else a real browser never sends the
+//              drop), the crop dialog must open on the dropped picture ("Frame your photo"), Escape writes
+//              nothing, and Apply writes only that slot, as a click's upload does. A text drag must not be
+//              cancelled. Filled and (with --blank) empty slots alike: a drop never opens the file picker.
 //   --check    exit 1 on any WRONG, NOT-RESTORED, MISSING or UNLEDGERED
 //
 // The universe is `photoSlots(sec, theme, true)`: every photo slot the layout reads, the
@@ -70,6 +75,7 @@ const widths = list(opt('width', '1440')).map(Number)
 const onlyCats = opt('cat') ? list(opt('cat')) : null
 const every = flag('every')
 const blank = flag('blank')
+const drop = flag('drop')
 const check = flag('check')
 const base = process.env.BASE || 'http://localhost:5173'
 const outRoot = process.env.OUT || path.join(os.tmpdir(), 'encore-photo-probe')
@@ -296,7 +302,7 @@ async function openEditor(theme, layout, width) {
 const diffKeys = (a, b) => [...new Set([...Object.keys(a), ...Object.keys(b)])].filter((k) => JSON.stringify(a[k]) !== JSON.stringify(b[k]))
 
 async function runCombo(theme, layout, width) {
-  const tag = `${theme}-L${layout}-${width}${blank ? '-blank' : ''}`
+  const tag = `${theme}-L${layout}-${width}${blank ? '-blank' : ''}${drop ? '-drop' : ''}`
   const sink = path.join(outDir, `${tag}.jsonl`)
   fs.writeFileSync(sink, '')
   const emit = (row) => fs.appendFileSync(sink, JSON.stringify(row) + '\n')
@@ -343,11 +349,39 @@ async function runCombo(theme, layout, width) {
       return page.evaluate((p0) => ({ dialog: window.__dialog(), picked: window.__picks > p0, text: window.__textBox() }), picks0)
     }
 
+    // What a file dropped at `pt` does: the events a browser sends for a file dragged over the page, the drop
+    // only if the dragover was cancelled with a drop effect. Returns what the dragover said and what opened.
+    const FIXTURE_B64 = fs.readFileSync(FIXTURE).toString('base64')
+    async function dropAt(pt, kind = 'file') {
+      const r = await page.evaluate((pt, b64, kind) => {
+        const dt = new DataTransfer()
+        // A DataTransfer built by script ignores a write to dropEffect (only a real drag takes one): shadow it.
+        let eff = 'none'
+        Object.defineProperty(dt, 'dropEffect', { get: () => eff, set: (v) => { eff = v } })
+        if (kind === 'file') dt.items.add(new File([Uint8Array.from(atob(b64), (c) => c.charCodeAt(0))], 'drop.png', { type: 'image/png' }))
+        else dt.setData('text/plain', 'some words')
+        const el = document.elementFromPoint(pt.x, pt.y)
+        if (!el) return { gone: true }
+        const mk = (type) => new DragEvent(type, { bubbles: true, cancelable: true, clientX: pt.x, clientY: pt.y, dataTransfer: dt })
+        el.dispatchEvent(mk('dragenter'))
+        const over = mk('dragover')
+        el.dispatchEvent(over)
+        const allowed = over.defaultPrevented && dt.dropEffect !== 'none'
+        if (allowed) el.dispatchEvent(mk('drop'))
+        return { cancelled: over.defaultPrevented, effect: dt.dropEffect, allowed }
+      }, pt, FIXTURE_B64, kind)
+      await wait(300)
+      const o = await page.evaluate(() => ({ dialog: window.__dialog(), text: window.__textBox() }))
+      return { ...r, ...o, picked: false }
+    }
+
     // The write test: with the editor open on a slot (the dialog up, or the picker's input tagged),
     // push the fixture through, Apply, and read which keys of which sections changed. Then put `c` back.
     async function writeTest(sec, slot, opened) {
       const before = await page.evaluate(() => window.__cs())
-      if (opened.picked) {
+      if (opened.drop) {
+        // Nothing to upload: the drop framed the fixture already.
+      } else if (opened.picked) {
         const input = await page.$('input[data-probe-pick]')
         if (!input) return { error: 'the picker opened but its input is not in the page' }
         await input.uploadFile(FIXTURE)
@@ -431,7 +465,7 @@ async function runCombo(theme, layout, width) {
       let opened = null, at = null
       for (const pt of aim.pts) {
         res.clicks++
-        const o = await clickAt(pt)
+        const o = drop ? await dropAt(pt) : await clickAt(pt)
         if (o.text) { sawText.push(pt); await settle(); continue }
         if (o.dialog || o.picked) { opened = o; at = pt; break }
         out.over = pt.over
@@ -447,7 +481,15 @@ async function runCombo(theme, layout, width) {
         return { result: 'WRONG', why: `${slot ? 'PHOTO_OFF names it' : 'no slot reads it'}, and the click opened the editor`, at }
       }
       const fail = []
-      if (slot.empty) { if (!opened.picked) fail.push('an empty slot opened the crop dialog, not the file picker') }
+      if (drop) {
+        // A drop frames the dropped file, whether the slot was filled or empty.
+        if (!opened.dialog) fail.push('the drop opened no crop dialog')
+        else {
+          if (!/^Frame your photo$/.test(opened.dialog.title)) fail.push(`dialog title "${opened.dialog.title}"`)
+          if (!String(opened.dialog.src ?? '').startsWith('data:image') && !String(opened.dialog.src ?? '').startsWith('blob:')) fail.push(`the dialog frames ${String(opened.dialog.src).slice(0, 60)}, not the dropped file`)
+        }
+        if (!opened.allowed) fail.push('the dialog opened without the dragover being cancelled')
+      } else if (slot.empty) { if (!opened.picked) fail.push('an empty slot opened the crop dialog, not the file picker') }
       else {
         if (!opened.dialog) fail.push('a filled slot opened no crop dialog')
         else {
@@ -474,7 +516,7 @@ async function runCombo(theme, layout, width) {
       let wrote = null
       if (!fail.length && !nr && (every || !written.has(slot.mark))) {
         written.add(slot.mark)
-        const again = await clickAt(at)
+        const again = drop ? { ...(await dropAt(at)), drop: true } : await clickAt(at)
         if (again.dialog || again.picked) {
           wrote = await writeTest(sec, slot, again)
           if (wrote.error) fail.push(wrote.error)
@@ -503,9 +545,38 @@ async function runCombo(theme, layout, width) {
       for (const n of pick) {
         const r = await walkNode(hd, n, slotBy, new Set())
         if (r.result === 'hit' && r.wrote) { ok = true; break }
-        why = `${n.mark}: ${r.result} ${r.why ?? ''}`
+        why = `${why.startsWith('the header') ? '' : `${why} | `}${n.mark}: ${r.result} ${r.why ?? ''}`
       }
       if (!ok) throw Object.assign(new Error(`positive control failed: a click on a header photo did not open and write its own slot (${theme} L${layout} ${width}: ${why})`), { control: true })
+      if (drop) {
+        // Negative control: a text drag over the photo is the page's own (not cancelled, nothing opens), and a
+        // file drag over a point that is not a photo is cancelled with no effect (the browser must not open it).
+        const aim = await page.evaluate((sid, i) => window.__aimPhoto(sid, i), hd.id, pick[0].i)
+        const t = aim.pts?.[0] && await dropAt(aim.pts[0], 'text')
+        if (!t || t.cancelled || t.dialog) throw Object.assign(new Error(`negative control failed: a text drag over a photo was ${t?.cancelled ? 'cancelled' : t?.dialog ? 'opened' : 'unaimed'}`), { control: true })
+        // A control of the header (a nav link, the Book pill) hides every photo from a click, so from a drop.
+        const off = await page.evaluate((sid) => {
+          for (const a of document.querySelectorAll(`[data-sid="${sid}"] a, [data-sid="${sid}"] button`)) {
+            const r = a.getBoundingClientRect()
+            const pt = { x: r.left + r.width / 2, y: r.top + r.height / 2 }
+            if (r.width > 4 && r.height > 4 && document.elementFromPoint(pt.x, pt.y)?.closest('a,button') === a) return pt
+          }
+          // Narrow, the nav collapses: a line of the header's own copy hides photos the same way.
+          for (const el of document.querySelectorAll(`[data-sid="${sid}"] *`)) {
+            const tn = [...el.childNodes].find((n) => n.nodeType === Node.TEXT_NODE && n.data.trim())
+            if (!tn || el.closest('[data-photo]')) continue // an emptied photo's initials are the photo's own
+            const rg = document.createRange(); rg.selectNodeContents(tn)
+            const r = rg.getBoundingClientRect()
+            const pt = { x: r.left + r.width / 2, y: r.top + r.height / 2 }
+            if (r.width > 4 && r.height > 4 && document.elementFromPoint(pt.x, pt.y) === el) return pt
+          }
+          return null
+        }, hd.id)
+        if (!off) throw Object.assign(new Error('negative control: the header draws no link, button or copy to drop on'), { control: true })
+        const f = await dropAt(off, 'file')
+        if (!f.cancelled || f.allowed || f.dialog) throw Object.assign(new Error(`negative control failed: a file drag over a section corner was ${!f.cancelled ? 'not cancelled' : f.allowed ? 'allowed' : 'opened'}`), { control: true })
+        await settle()
+      }
       await settle()
     }
 
