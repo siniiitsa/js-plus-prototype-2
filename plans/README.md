@@ -16,6 +16,7 @@ plans/
   calendar-qa-fixes.md ← the booking calendar's month arrows stop at the ends of the window (JP-152)
   inline-edit.md   ← clicking text on the canvas edits it there (pilot: Retro layout 1's whole page)
   inline-edit-all.md ← the plan to take inline editing to every template and layout (Phase 0, then 20 passes)
+  photo-edit.md   ← clicking a photo on the canvas opens the crop editor with Upload another (every template and layout)
   char-limits.md   ← the character-limit pass, every template (char-limits/ holds its census)
   retro/
     layout-2.md

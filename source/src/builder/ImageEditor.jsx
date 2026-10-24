@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
-import { RotateCcw, RotateCw, ZoomIn, ZoomOut } from 'lucide-react'
+import { RotateCcw, RotateCw, Upload, ZoomIn, ZoomOut } from 'lucide-react'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Slider } from '@/components/ui/slider'
+import { readImage, vetImages } from './imageFiles.js'
 
 /* ------------------------------------------------------------------ *
  * The image editor — move, zoom, rotate and crop an upload before it is
@@ -48,9 +49,10 @@ export function editImages(items) {
   emit()
 }
 
-export function ImageEditorHost() {
+// onToast: where "Upload another" prints a refusal (the builder's toast).
+export function ImageEditorHost({ onToast }) {
   const head = useSyncExternalStore(subscribe, getQueue)[0]
-  return head ? <Editor key={head.id} item={head} /> : null
+  return head ? <Editor key={head.id} item={head} onToast={onToast} /> : null
 }
 
 const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v))
@@ -107,12 +109,18 @@ function bake(img, iw, ih, tf, src, aspect) {
   return canvas.toDataURL(mime, 0.9)
 }
 
-function Editor({ item }) {
-  const saved = ORIGINALS.get(item.src)
-  const original = saved?.original ?? item.src
+function Editor({ item, onToast }) {
+  // The source is state because "Upload another" swaps it in place: the item's
+  // onApply, aspect and queue seat stay, only the picture under the frame changes.
+  const [src, setSrc] = useState(item.src)
+  const [swapped, setSwapped] = useState(false)
+  const [pickErr, setPickErr] = useState(null)
+  const saved = swapped ? undefined : ORIGINALS.get(src)
+  const original = saved?.original ?? src
   const [dim, setDim] = useState(null) // { img, w, h }
   const [failed, setFailed] = useState(false)
   const [tf, setTf] = useState(() => saved?.tf ?? startTf())
+  const fileRef = useRef(null)
   const [stage, setStage] = useState({ w: 0, h: 300 })
   const stageRef = useRef(null)
   const pointers = useRef(new Map())
@@ -203,6 +211,21 @@ function Editor({ item }) {
   }
   const cancel = () => shift()
 
+  // A fresh pick replaces the source and starts the frame over, as a first upload would.
+  const swapIn = (files) => {
+    const v = vetImages(files ? [...files].slice(0, 1) : [], (m) => onToast?.(m))
+    if (!v) return
+    setPickErr(v.msg)
+    if (!v.ok.length) return
+    readImage(v.ok[0], (url) => {
+      setSrc(url)
+      setSwapped(true)
+      setDim(null)
+      setFailed(false)
+      setTf(startTf())
+    })
+  }
+
   const batch = item.total > 1
 
   return (
@@ -214,7 +237,7 @@ function Editor({ item }) {
       >
         <DialogHeader>
           <DialogTitle className="text-base">
-            {item.edit ? 'Edit photo' : 'Frame your photo'}{batch ? ` · ${item.pos} of ${item.total}` : ''}
+            {item.edit && !swapped ? 'Edit photo' : 'Frame your photo'}{batch ? ` · ${item.pos} of ${item.total}` : ''}
           </DialogTitle>
           <DialogDescription className="text-xs">
             Drag to move, pinch or use the slider to zoom. Only what is inside the frame is kept.
@@ -255,6 +278,8 @@ function Editor({ item }) {
           )}
         </div>
 
+        {pickErr && <p role="alert" className="text-xs text-destructive">{pickErr}</p>}
+
         <div className="grid gap-3 sm:grid-cols-2">
           <label className="flex items-center gap-2 text-xs text-muted-foreground">
             <ZoomOut size={14} className="shrink-0" />
@@ -277,7 +302,20 @@ function Editor({ item }) {
         </div>
 
         <DialogFooter className="gap-2 sm:justify-between">
-          <Button type="button" variant="ghost" size="sm" onClick={() => setTf(startTf())}>Reset</Button>
+          <div className="flex flex-wrap gap-2">
+            <Button type="button" variant="ghost" size="sm" onClick={() => setTf(startTf())}>Reset</Button>
+            {!batch && (
+              <>
+                <input
+                  ref={fileRef} type="file" accept="image/png,image/jpeg" className="sr-only" tabIndex={-1}
+                  onChange={(e) => { swapIn(e.target.files); e.target.value = '' }}
+                />
+                <Button type="button" variant="outline" size="sm" onClick={() => fileRef.current?.click()}>
+                  <Upload size={14} /> Upload another
+                </Button>
+              </>
+            )}
+          </div>
           <div className="flex flex-wrap justify-end gap-2">
             <Button type="button" variant="outline" size="sm" onClick={cancel}>{batch ? 'Skip photo' : 'Cancel'}</Button>
             <Button type="button" variant="outline" size="sm" onClick={() => finish(original)}>Use original</Button>
