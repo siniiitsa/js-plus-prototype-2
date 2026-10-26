@@ -3029,6 +3029,13 @@ const GIG_TICKER_LINES = ['{city} · {month} {day} · {time}', '{city} · {month
 export const INLINE_LINES = {
   '*.1.calendar.availLabel': ['{} ↓'],
   '*.1.media.chipLabel': ['● {}'],
+  // Retro's layout-1 testimonial prints the attribution as one node, `Hannah L. · Private
+  // host` (`vm.byline`), above the two pills that print `who` and `role` bare, so each
+  // keeps its bare form. The other templates split the line into spans of their own, and
+  // Retro's other layouts print no such line. A blank half drops the line and its
+  // separator, which `inlineSlots`' fill does, since the page drops both too.
+  'Retro.0.testimonials.quotes.who': ['{}', '{who} · {role}'],
+  'Retro.0.testimonials.quotes.role': ['{}', '{who} · {role}'],
   // Retro's layout 6 prints the kicker twice: bare, in the inset card under the name,
   // and as `● DJ · LIVE ACT` above the title. A slot with a line is spoken for by it,
   // so the bare form is listed too, or the card's copy would stop opening.
@@ -3039,6 +3046,13 @@ export const INLINE_LINES = {
   '*.1.map.gigs.month': ['{city} · {month} · {time}', '● {month} {day} · {time}'],
   '*.1.map.gigs.day': ['● {month} {day} · {time}'],
   '*.1.map.gigs.time': ['{city} · {month} · {time}', '● {month} {day} · {time}'],
+  // Layout 3 prints each row's pair, `Manchester · 22:00` (the pair's own line, which
+  // naming the column here replaces), and the feature card under the list prints the
+  // first row's city bare. The card shows one row where four share the city, so the bare
+  // form is the head of the column (`inlineFieldAt`'s lined branch): the canvas is never
+  // live, and the card is the first row there. Time is not printed bare, so it keeps the
+  // pair; the card prints no date.
+  '*.2.map.gigs.city': ['{city} · {time}', '{}'],
   // Layout 4's ticker prints the one gig on one line, `Manchester · JUL 12 · 22:00`
   // (`vm.gigs[].meta`), and drops a piece the artist emptied with its separator,
   // so each shorter form it can print is a line too. Per column: the venue is
@@ -3508,25 +3522,52 @@ export function tierFeats(str) {
 // trimmed — so a range sets its second half small, as every layout-3 frame
 // draws it: '£450 — £1,400' is '£' + '450' + '— £1,400', and '£450 + VAT' is
 // '£' + '450' + '+ VAT'. A separator ending the run goes to the tail rather
-// than being lost ('£450.' → a small '.'). A price with no digit ('POA') has
-// neither seat and stands whole. The price is free text, so no currency is
-// assumed. Named and left: 'Up to 120 guests: £900' is 'Up to' + '120' +
-// 'guests: £900', '£1.2k' sets a small 'k', and a thousands space ('£1 200')
-// sets '1' big and '200' small.
+// than being lost ('£450.' → a small '.'). The price is free text, so no
+// currency is assumed. Named and left: 'Up to 120 guests: £900' is 'Up to' +
+// '120' + 'guests: £900', '£1.2k' sets a small 'k', and a thousands space
+// ('£1 200') sets '1' big and '200' small.
+// A price with no digit has no numeral to cut at, so it is cut where its words
+// start (JP-156, user call, 2026-10-26): the leading run of characters that are
+// neither letters nor digits is the lead, trimmed, and the words are the amount.
+// '£TBC' is '£' + 'TBC' and '$ POA' is '$' + 'POA', drawn as '£650' is, which is
+// also what lets the inline box cover 'TBC' alone. 'POA', 'TBC' and 'Contact me
+// for a quote' start with a letter, so they have no lead and stand whole; so
+// does 'From £POA', whose symbol is not leading. A price made of symbols alone
+// ('£', left behind when its words are deleted) is all lead with an empty
+// amount, so the next word typed keeps the sign. `tail` is empty without a
+// digit. `prose` is judged on the amount, so '£Contact me for a custom quote'
+// is prose as 'Contact me for a custom quote' is.
+//
+// `priceCuts` is the one place a price is cut: `priceParts` reads the three
+// parts off it and `priceWrite` (EncoreBuilder.jsx) splices a typed part back at
+// the same offsets, so the page, the inline box and the write cannot drift.
+// `at` and `end` index the string as given, untrimmed: `[0, at)` is the lead's
+// seat, `[at, end)` the amount and `[end, length)` the tail's.
 const PRICE_PROSE_MIN = 8
+export function priceCuts(str) {
+  const raw = String(str ?? '')
+  const m = raw.match(/\d[\d,.]*/)
+  if (m) {
+    const amount = m[0].replace(/[.,]+$/, '')
+    return { at: m.index, end: m.index + amount.length, prose: false }
+  }
+  const end = raw.trimEnd().length
+  const lead = raw.match(/^[^\p{L}\p{N}]*/u)[0]
+  // Leading space alone is not a lead; symbols reach `end` when nothing follows.
+  const at = lead.trim() ? Math.min(lead.length, end) : lead.length
+  return { at, end, prose: end - at > PRICE_PROSE_MIN }
+}
 export function priceParts(str) {
-  const s = String(str ?? '').trim()
-  const m = s.match(/\d[\d,.]*/)
+  const raw = String(str ?? '')
+  const { at, end, prose } = priceCuts(raw)
   // `prose` (JP-135): a long run with no digit is a sentence, not a numeral
   // ('Contact me for a custom quote'). It still takes the amount's seat, but a
   // renderer must let it wrap and step down a size: set whole in the big
   // numeral it outruns the card and the page. 'POA' and 'TBC' stay a numeral.
-  if (!m) return { lead: '', amount: s, tail: '', prose: s.length > PRICE_PROSE_MIN }
-  const amount = m[0].replace(/[.,]+$/, '')
   return {
-    prose: false,
-    lead: s.slice(0, m.index).trim(), amount,
-    tail: s.slice(m.index + amount.length).trim(),
+    prose,
+    lead: raw.slice(0, at).trim(), amount: raw.slice(at, end),
+    tail: raw.slice(end).trim(),
   }
 }
 

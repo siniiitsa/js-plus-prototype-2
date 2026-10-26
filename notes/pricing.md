@@ -237,6 +237,32 @@ another `notes/` file.
     layout-1 decks and Pop's layout-2 plan card turn, and the probe sets every turned ancestor
     upright while it counts a seat's lines.
 
+- **A price with no digit is cut where its words start** (JP-156, user call, 2026-10-26;
+  `plans/inline-qa-fixes.md`, Session 2). `priceParts()` cuts at the first digit; with none, the
+  leading run of characters that are neither letters nor digits is the `lead` (trimmed) and the
+  words are the `amount`: `£TBC` is `£` + `TBC`, `$ POA` is `$` + `POA`, drawn as `£650` is (small
+  sign, big numeral), and the inline box on the numeral covers `TBC` alone. `TBC`, `POA` and
+  `Contact me…` start with a letter, so they have no lead and stand whole, and so does `From £POA`,
+  whose sign is not leading (prose after a symbol is left alone, the default taken in the plan).
+  `prose` is judged on the amount, so `£Contact me for a custom quote` is still prose, now with a
+  small `£` before it. `tail` is empty without a digit. **A price of symbols alone** (`£`, what is
+  left when the words are deleted) is all lead with an empty amount, so the next word typed keeps the
+  sign: without it, delete-then-type lost the `£` by the same route as the ticket. A lone `—` is cut
+  the same way (a small dash, empty numeral).
+  **One helper cuts the price: `priceCuts(raw)` in `data.js`**, returning `{ at, end, prose }`
+  offsets into the string as given (`[0, at)` the lead's seat, `[at, end)` the amount, `[end, …)` the
+  tail's). `priceParts()` reads the three parts off it and `priceWrite()` in `EncoreBuilder.jsx`
+  splices a typed part back at the same offsets, keeping the other two as stored; `slotText` and
+  `inlineSlots` read `priceParts()`. They drifted once (the write kept a regex of its own and had
+  no lead for a no-digit price, so a typed `450` over `£TBC` came back as `450`); do not copy the
+  regex into a third place. Not covered, named: a leading bracket or quote (`(TBC)`) is a lead like
+  any other symbol run, since the rule assumes no currency.
+  Measured at the change: the two-build digest of all five templates' seeded pages moved 0 of 16 files
+  (no seed is a symbol without a digit); `limits.mjs pricing --seeds` 0 over their caps and `--check` 0
+  failing; `inline-probe --cat pricing --check` PASS on layouts 1 and 4 of all five templates at 1440 and 768.
+  A side effect: `£Contact me…` clamped on the page (`£Contac…`) opened nothing on the old cut, since the
+  clamp stem was `£`-led; with the `£` in its own node the numeral opens.
+
 ## Inline editing (plans/inline-edit-all.md, Retro layout 2, 2026-10-21)
 
 Layout 2 draws the first plan only: the other tiers' price, blurb and features are *paged* (the chip row is live-only), the

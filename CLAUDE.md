@@ -163,7 +163,9 @@ mutated through a single `patch()` helper.
   same viewBox-is-the-disc svg, so one rule covers them.
 - **Clicking text on the canvas edits it there** (user calls, 2026-10-20: piloted on Retro's layout 1, then rolled out
   to every template and layout by `plans/inline-edit-all.md`; desktop and tablet, never a phone;
-  `plans/inline-edit.md`). A click on the text of an already-selected section maps to a *slot* (`inlineSlots`: a
+  `plans/inline-edit.md`). **A click on a section's text selects it and edits it in the one click** (JP-154, user call, 2026-10-26,
+reversing 2026-10-20's "an already-selected section": the `text` cursor shows on any section's copy; a phone is unchanged),
+**with the caret at the clicked character, not the text selected** (JP-155, `caretAt`). It maps to a *slot* (`inlineSlots`: a
   scalar field, one item of a list field, one cell of a repeater row, or a part of a price or composed line) by
   `inlineFieldAt`: the node must print exactly the slot's copy, or a part slot's words inside a longer line.
   **The gate is a default and a ledger, not an allowlist.** Every text / area / list field `fieldShown` says the
@@ -201,7 +203,7 @@ mutated through a single `patch()` helper.
   **Where the words are not enough, `INLINE_LINES` names the forms the copy is printed in** (`'● {}'`, `'{} ↓'`, a gig's
   `'{city} · {month} · {time}'`; scoped like `INLINE_PART`, built in `plans/retro/inline-layout-2.md`): a node that prints
   exactly one is the slot's, and exact copy standing in several fields is settled by claims (a slot whose line is drawn
-  is spoken for), then the copy as typed, then the heading on the largest type. **Where the canvas draws only a head of a repeater, `INLINE_HEAD` ledgers the rows it does not draw**: repertoire layout 3
+  is spoken for), then the copy as typed, then the heading on the largest type. A line drawn **fewer times than rows print it** is the column head's (the map's layout-3 card prints the first row's bare city, JP-158), and a line **one slot prints** is that slot's however many nodes draw it (an emptied role leaves Retro's byline and its pill both `Hannah L.`, JP-157). **Where the canvas draws only a head of a repeater, `INLINE_HEAD` ledgers the rows it does not draw**: repertoire layout 3
   stands each song in a card per tag, four rows a card and three cards a page, so a song is drawn twice or not at all; `drawnRows()` works out the drawn
   rows from the same tags and `inlineSlots` puts the others in the ledger (`off`, *live-only copy*), which also keeps the exact-copy pairing honest
   (plans/retro/inline-layout-3.md). The box is re-placed on the canvas's
@@ -212,7 +214,8 @@ mutated through a single `patch()` helper.
   the published tab, the preview or the thumbnails mounts the editor. Enter inserts a line break only where the
   node's `white-space` keeps one (`pre-*`).
 - **Clicking a photo on the canvas opens the image editor on it** (user call, 2026-10-23; `plans/photo-edit.md`; desktop and
-  tablet, an already-selected section, never a phone). `photoFieldAt` takes the stack under the pointer top-down: the first
+  tablet, an already-selected section, never a phone; **text no longer waits for the selection, photos still do**: JP-154 changed the
+text rule alone, so a later session must not unify the two). `photoFieldAt` takes the stack under the pointer top-down: the first
   `[data-photo]` node wins (`Photo`'s inert mark, `notes/photography.md`), and anything that `blocksPhoto` first (a control,
   an icon, text under the pointer's own line boxes, a solid ground) ends the walk; scrims, grain and empty wrappers let the
   click through. **Copy goes first** (`targetAt`), except that a text node *wrapping* the picture is not the click's. A filled

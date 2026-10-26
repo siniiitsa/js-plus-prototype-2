@@ -57,7 +57,7 @@ import {
   parseDate, isoDate, calStart, headerIdentity, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav, navModeDefault,
   catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldSeed, HEADING_3, HEADING_4, fieldReach, fieldShown, INLINE_OFF, PHOTO_OFF, INLINE_HEAD, INLINE_MARKED, INLINE_PART, INLINE_LINES, inlineRule, fieldCap, colCaps, identityCap, sealCap, capExcess, clampCapped, clampContent, clampIdentity, copyrightOf, formHeading3, extUrl, youtubeEmbed, urlProblem, emailProblem, emailAddr, songTags, repChips,
-  tierFeats, priceParts, blankRow, SONG_KEYS, repSetsOf, repSetLine, TRACK_KEYS, GIG_KEYS, gigWeekday, gigStatus, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
+  tierFeats, priceParts, priceCuts, blankRow, SONG_KEYS, repSetsOf, repSetLine, TRACK_KEYS, GIG_KEYS, gigWeekday, gigStatus, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
   layoutCount, designCount, pageLayout, pageOrder, pageRows, COLUMN_SPLIT, bebasEms, antonEms, gloockEms, titanEms,
   headerLayout, headerLayoutLabel, setupHeaderCount,
 } from './data.js'
@@ -6221,12 +6221,11 @@ function slotWrite(sec, ed, text, themeName, artistName) {
   return [ed.k, ed.item != null ? put(ed.f.list, fieldValue(sec, ed.f, themeName, artistName)) : text]
 }
 // A price with one of its three drawn parts replaced, the rest of the string
-// (its spaces included) left as it was typed.
+// (its spaces included) left as it was typed. Cut where `priceParts` cuts.
 function priceWrite(raw, sub, text) {
-  const m = String(raw).match(/\d[\d,.]*/)
-  if (!m) return sub === 'amount' ? text : raw
-  const amount = m[0].replace(/[.,]+$/, '')
-  const head = raw.slice(0, m.index), tail = raw.slice(m.index + amount.length)
+  raw = String(raw)
+  const { at, end } = priceCuts(raw)
+  const head = raw.slice(0, at), amount = raw.slice(at, end), tail = raw.slice(end)
   if (sub === 'lead') return text + head.slice(head.trimEnd().length) + amount + tail
   if (sub === 'tail') return head + amount + tail.slice(0, tail.length - tail.trimStart().length) + text
   return head + text + tail
@@ -6332,6 +6331,41 @@ function textRange(node, text) {
   range.setStart(s0[0], at - s0[1])
   range.setEnd(e0[0], end - e0[1])
   return range
+}
+
+// Where in a slot's `text` a click at `pt` landed (JP-155), as the index the box's caret
+// takes: the page's own caret under the pointer, counted in non-space characters from
+// where the slot's words start inside `node` (`words`: a part of a longer line, else all
+// of the node's text), then stepped to the same count in the slot's text. Counting
+// without spaces is the matcher's `squash`, since the page collapses runs of space and
+// cases the type with CSS. The end of the text when the point is on no text of the node
+// (a clamp's `…` overruns the count too), never a selection of all of it.
+function caretAt(node, words, text, pt) {
+  const end = text.length
+  if (!pt || !end) return end
+  const cp = document.caretPositionFromPoint?.(pt.x, pt.y)
+  const hit = cp ? { n: cp.offsetNode, o: cp.offset } : (() => { const r = document.caretRangeFromPoint?.(pt.x, pt.y); return r && { n: r.startContainer, o: r.startOffset } })()
+  const from = textRange(node, words)
+  if (!hit || hit.n.nodeType !== 3 || !from || !node.contains(hit.n)) return end
+  const nonSpace = (s) => s.replace(/\s+/g, '').length
+  const before = (tn, off) => {
+    const walker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT)
+    let sum = 0
+    for (let t = walker.nextNode(); t; t = walker.nextNode()) {
+      if (t === tn) return sum + nonSpace(t.data.slice(0, off))
+      sum += nonSpace(t.data)
+    }
+    return null
+  }
+  const a = before(hit.n, hit.o), b = before(from.startContainer, from.startOffset)
+  if (a == null || b == null || a < b) return end
+  let n = a - b
+  if (n > nonSpace(text)) return end
+  for (let i = 0; i < end; i++) {
+    if (n === 0) return i
+    if (!/\s/.test(text[i])) n--
+  }
+  return end
 }
 
 // Every element that prints `sq` (a squashed copy) and has none inside it that
@@ -6501,6 +6535,17 @@ function inlineFieldAt(sec, wrap, target, pt, themeName, artistName) {
           const drawn = minimalPeers(root, (e) => col.some((x) => e.textContent.toLowerCase().includes(String(x.text).toLowerCase())))
             .filter((e) => !others.has(squash(e.textContent)))
           mine = prefixSlot(col, drawn, a, (e, x) => e.textContent.toLowerCase().includes(String(x.text).toLowerCase()))
+        } else if (n >= 0 && peers.length < same.length && lined
+          && slots.filter((x) => x.group === slot.group).slice(0, peers.length).every(printsLine)) {
+          // A line drawn fewer times than rows print it, and the rows that open the column
+          // are among them: the feature card's bare city (`Manchester`) under a list of
+          // four rows in Manchester. The canvas is never live, so the card shows the first
+          // row and the nth node is the nth of the rows that print the line (JP-158).
+          mine = same[n]
+        } else if (lined && same.length === 1 && peers.length > 1) {
+          // One slot, a line it is drawn on twice: Retro's byline and its pill both print a
+          // lone `Hannah L.` once the role is emptied. Whichever node it is, it is that slot's.
+          mine = same[0]
         } else if (same.length !== peers.length) mine = null
         if (n < 0 || !mine || mine !== slot) continue
         // The click has to be on the slot's own words (or just beside them).
@@ -6638,7 +6683,9 @@ function InlineEditor({ ed, value, cap, onChange, onRevert, onClose }) {
   const note = held && draft !== null
     ? (ed.item != null ? 'Remove an item in the panel' : ed.row != null ? 'Clear it in the panel' : 'Your name is required')
     : null
-  const focusIn = useCallback((el) => { if (el) { el.focus(); el.select() } }, [])
+  // A caret at the clicked character, as in any text field (JP-155), not the whole text selected: a
+  // first key would replace all of it. `ed.at` is fixed for the box's life, so this stays one callback.
+  const focusIn = useCallback((el) => { if (el) { el.focus(); const a = Math.min(ed.at ?? el.value.length, el.value.length); el.setSelectionRange(a, a) } }, [ed.at])
   // A field whose text the page sets with its line breaks kept (`white-space:
   // pre-*`, the footer's statement) takes Enter as a break and closes on
   // ⌘/Ctrl+Enter. Every other box closes on Enter and takes none, area fields
@@ -6864,7 +6911,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
   // The node being edited: with a label that repeats (each tier's Book pill)
   // the panel's single match is not the one that was clicked.
   const inlineNode = useRef(null)
-  const startInline = (sec, wrap, hit) => {
+  const startInline = (sec, wrap, hit, pt) => {
     const w = wrap.getBoundingClientRect()
     const wide = hit.text.length > 44
     const words = !hit.float && (hit.part || hit.lines?.length) ? hit.text : null
@@ -6882,12 +6929,14 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
     const lead = from?.nodeType === Node.TEXT_NODE ? from : document.createTreeWalker(styled, NodeFilter.SHOW_TEXT, { acceptNode: (t) => (t.data.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP) }).nextNode()
     const tone = getComputedStyle(lead?.parentElement ?? styled).color
     inlineNode.current = hit.node
+    // The caret is read off the page before the box mounts; a floating field has no copy under it.
+    const at = hit.float ? hit.text.length : caretAt(hit.node, words, hit.text, pt)
     setFocusF({ sid: sec.id, text: hit.text, key: hit.k })
     setInline({
       sid: sec.id, id: hit.id ?? slotId(sec, hit), cat: sec.cat, f: hit.f, k: hit.k, row: hit.row, col: hit.col, sub: hit.sub, item: hit.item, part: hit.part || !!hit.lines?.length, float: hit.float,
       label: hit.row != null ? `${hit.f.l}: ${hit.col}` : hit.f.l, raw: sec.c[hit.k], nl: !hit.float && /^pre/.test(cs.whiteSpace),
       cap: slotCap(sec, hit, sections, T.name),
-      x: b.x, y: b.y, w: b.w, h: b.h, tf: b.tf, caret: tone,
+      x: b.x, y: b.y, w: b.w, h: b.h, tf: b.tf, caret: tone, at,
       css: {
         fontFamily: cs.fontFamily, fontSize: cs.fontSize, fontWeight: cs.fontWeight, fontStyle: cs.fontStyle,
         lineHeight: `${b.lh}px`, letterSpacing: cs.letterSpacing, textTransform: cs.textTransform,
@@ -6897,16 +6946,18 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
     })
     return true
   }
-  // The text cursor says a click edits: the selected section's own copy only,
-  // looked up at most every 120ms (findFieldNode reads the whole section).
+  // The text cursor says a click edits: any section's copy (JP-154), looked up at most
+  // every 120ms (findFieldNode reads the whole section). A photo's pointer and box are
+  // the selected section's alone, since a click on a photo only opens it there.
   const hoverProbe = useRef(0)
-  const probeInline = (e, sec) => {
+  const probeInline = (e, sec, selected) => {
     const now = performance.now()
     if (now - hoverProbe.current < 120) return
     hoverProbe.current = now
     const wrap = e.currentTarget
     const { text, photo: ph } = targetAt(sec, wrap, e.target, { x: e.clientX, y: e.clientY })
     if (text) { wrap.style.cursor = 'text'; setPhotoHover(null); return }
+    if (!selected) { wrap.style.cursor = ''; return }
     // Not copy: a photo says a click edits it with a pointer and a thin box round the part that shows.
     wrap.style.cursor = ph ? 'pointer' : ''
     const b = ph && photoBox(ph.node, wrap.firstElementChild, wrap.getBoundingClientRect())
@@ -7732,18 +7783,20 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
                     style={{ position: 'relative' }}
                     onMouseEnter={isMobile ? undefined : () => patch({ hoverId: sec.id })}
                     onMouseLeave={isMobile ? undefined : (e) => { e.currentTarget.style.cursor = ''; setPhotoHover(null); patch((s) => (s.hoverId === sec.id ? { hoverId: null } : {})) }}
-                    onMouseMove={isMobile || st.selectedId !== sec.id ? undefined : (e) => probeInline(e, sec)}
+                    onMouseMove={isMobile ? undefined : (e) => probeInline(e, sec, st.selectedId === sec.id)}
                     onDragOver={isMobile || st.selectedId !== sec.id ? undefined : (e) => dropOver(e, sec)}
                     onDragLeave={isMobile || st.selectedId !== sec.id ? undefined : (e) => { if (!e.currentTarget.contains(e.relatedTarget)) setPhotoHover(null) }}
                     onDrop={isMobile || st.selectedId !== sec.id ? undefined : (e) => dropFile(e, sec)}
                     onClick={(e) => {
                       stopE(e)
-                      // A click on the selected section's own copy edits it there.
-                      const { text: hit, photo: ph } = !isMobile && st.selectedId === sec.id
-                        ? targetAt(sec, e.currentTarget, e.target, { x: e.clientX, y: e.clientY }) : {}
-                      if (hit && startInline(sec, e.currentTarget, hit)) { /* editing */ }
-                      // Then a photo of the selected section opens the image editor.
-                      else if (ph) { patch({ menuFor: null }); startPhoto(sec, ph) }
+                      // A click on a section's copy selects it and edits it there, in the one click
+                      // (JP-154); the box opens on the same batch as the selection, so the effects that
+                      // close a box on another section's selection see both.
+                      const pt = { x: e.clientX, y: e.clientY }
+                      const { text: hit, photo: ph } = isMobile ? {} : targetAt(sec, e.currentTarget, e.target, pt)
+                      if (hit) { patch({ selectedId: sec.id, menuFor: null }); startInline(sec, e.currentTarget, hit, pt) }
+                      // A photo opens the image editor only on a section that is already selected.
+                      else if (ph && st.selectedId === sec.id) { patch({ menuFor: null }); startPhoto(sec, ph) }
                       else patch({ selectedId: sec.id, menuFor: null })
                     }}
                   >
