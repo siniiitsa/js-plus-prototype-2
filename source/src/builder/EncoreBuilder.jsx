@@ -57,7 +57,7 @@ import {
   parseDate, isoDate, calStart, headerIdentity, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav, navModeDefault,
   catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldSeed, HEADING_3, HEADING_4, fieldReach, fieldShown, INLINE_OFF, PHOTO_OFF, INLINE_HEAD, INLINE_MARKED, INLINE_PART, INLINE_LINES, inlineRule, fieldCap, colCaps, identityCap, sealCap, capExcess, clampCapped, clampContent, clampIdentity, copyrightOf, formHeading3, extUrl, youtubeEmbed, urlProblem, emailProblem, emailAddr, songTags, repChips,
-  tierFeats, priceParts, blankRow, SONG_KEYS, repSetsOf, repSetLine, TRACK_KEYS, GIG_KEYS, gigWeekday, gigStatus, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
+  tierFeats, priceParts, priceCuts, blankRow, SONG_KEYS, repSetsOf, repSetLine, TRACK_KEYS, GIG_KEYS, gigWeekday, gigStatus, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
   layoutCount, designCount, pageLayout, pageOrder, pageRows, COLUMN_SPLIT, bebasEms, antonEms, gloockEms, titanEms,
   headerLayout, headerLayoutLabel, setupHeaderCount,
 } from './data.js'
@@ -6221,12 +6221,11 @@ function slotWrite(sec, ed, text, themeName, artistName) {
   return [ed.k, ed.item != null ? put(ed.f.list, fieldValue(sec, ed.f, themeName, artistName)) : text]
 }
 // A price with one of its three drawn parts replaced, the rest of the string
-// (its spaces included) left as it was typed.
+// (its spaces included) left as it was typed. Cut where `priceParts` cuts.
 function priceWrite(raw, sub, text) {
-  const m = String(raw).match(/\d[\d,.]*/)
-  if (!m) return sub === 'amount' ? text : raw
-  const amount = m[0].replace(/[.,]+$/, '')
-  const head = raw.slice(0, m.index), tail = raw.slice(m.index + amount.length)
+  raw = String(raw)
+  const { at, end } = priceCuts(raw)
+  const head = raw.slice(0, at), amount = raw.slice(at, end), tail = raw.slice(end)
   if (sub === 'lead') return text + head.slice(head.trimEnd().length) + amount + tail
   if (sub === 'tail') return head + amount + tail.slice(0, tail.length - tail.trimStart().length) + text
   return head + text + tail

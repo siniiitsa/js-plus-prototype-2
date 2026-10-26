@@ -11378,8 +11378,8 @@ function Pricing({ s }) {
   //    price. The small "£" before the numeral is `t.lead` and the numeral
   //    `t.amount`, the split layouts 1 and 2 read too (JP-058: `priceParts()`
   //    in `sectionVm`): everything before the first digit, so "From £1,200"
-  //    sets "From £" small, and a price with no digit ("POA") has no lead and
-  //    stands whole. The numeral is the first number alone, and whatever the
+  //    sets "From £" small, and a price with no digit cuts at its words
+  //    (JP-156: "£TBC" is "£" + "TBC"; "POA" has no lead and stands whole). The numeral is the first number alone, and whatever the
   //    artist types after it is `t.tail` (JP-074), set small between it and
   //    the unit — so a typed "£450 — £1,400" is the frame's own three nodes,
   //    and a unit after it a fourth. One split for all three, so a page prints
