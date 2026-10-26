@@ -6334,6 +6334,41 @@ function textRange(node, text) {
   return range
 }
 
+// Where in a slot's `text` a click at `pt` landed (JP-155), as the index the box's caret
+// takes: the page's own caret under the pointer, counted in non-space characters from
+// where the slot's words start inside `node` (`words`: a part of a longer line, else all
+// of the node's text), then stepped to the same count in the slot's text. Counting
+// without spaces is the matcher's `squash`, since the page collapses runs of space and
+// cases the type with CSS. The end of the text when the point is on no text of the node
+// (a clamp's `…` overruns the count too), never a selection of all of it.
+function caretAt(node, words, text, pt) {
+  const end = text.length
+  if (!pt || !end) return end
+  const cp = document.caretPositionFromPoint?.(pt.x, pt.y)
+  const hit = cp ? { n: cp.offsetNode, o: cp.offset } : (() => { const r = document.caretRangeFromPoint?.(pt.x, pt.y); return r && { n: r.startContainer, o: r.startOffset } })()
+  const from = textRange(node, words)
+  if (!hit || hit.n.nodeType !== 3 || !from || !node.contains(hit.n)) return end
+  const nonSpace = (s) => s.replace(/\s+/g, '').length
+  const before = (tn, off) => {
+    const walker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT)
+    let sum = 0
+    for (let t = walker.nextNode(); t; t = walker.nextNode()) {
+      if (t === tn) return sum + nonSpace(t.data.slice(0, off))
+      sum += nonSpace(t.data)
+    }
+    return null
+  }
+  const a = before(hit.n, hit.o), b = before(from.startContainer, from.startOffset)
+  if (a == null || b == null || a < b) return end
+  let n = a - b
+  if (n > nonSpace(text)) return end
+  for (let i = 0; i < end; i++) {
+    if (n === 0) return i
+    if (!/\s/.test(text[i])) n--
+  }
+  return end
+}
+
 // Every element that prints `sq` (a squashed copy) and has none inside it that
 // does, in document order: the nodes a repeated copy stands on.
 function minimalPeers(root, test) {
@@ -6638,7 +6673,9 @@ function InlineEditor({ ed, value, cap, onChange, onRevert, onClose }) {
   const note = held && draft !== null
     ? (ed.item != null ? 'Remove an item in the panel' : ed.row != null ? 'Clear it in the panel' : 'Your name is required')
     : null
-  const focusIn = useCallback((el) => { if (el) { el.focus(); el.select() } }, [])
+  // A caret at the clicked character, as in any text field (JP-155), not the whole text selected: a
+  // first key would replace all of it. `ed.at` is fixed for the box's life, so this stays one callback.
+  const focusIn = useCallback((el) => { if (el) { el.focus(); const a = Math.min(ed.at ?? el.value.length, el.value.length); el.setSelectionRange(a, a) } }, [ed.at])
   // A field whose text the page sets with its line breaks kept (`white-space:
   // pre-*`, the footer's statement) takes Enter as a break and closes on
   // ⌘/Ctrl+Enter. Every other box closes on Enter and takes none, area fields
@@ -6864,7 +6901,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
   // The node being edited: with a label that repeats (each tier's Book pill)
   // the panel's single match is not the one that was clicked.
   const inlineNode = useRef(null)
-  const startInline = (sec, wrap, hit) => {
+  const startInline = (sec, wrap, hit, pt) => {
     const w = wrap.getBoundingClientRect()
     const wide = hit.text.length > 44
     const words = !hit.float && (hit.part || hit.lines?.length) ? hit.text : null
@@ -6882,12 +6919,14 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
     const lead = from?.nodeType === Node.TEXT_NODE ? from : document.createTreeWalker(styled, NodeFilter.SHOW_TEXT, { acceptNode: (t) => (t.data.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP) }).nextNode()
     const tone = getComputedStyle(lead?.parentElement ?? styled).color
     inlineNode.current = hit.node
+    // The caret is read off the page before the box mounts; a floating field has no copy under it.
+    const at = hit.float ? hit.text.length : caretAt(hit.node, words, hit.text, pt)
     setFocusF({ sid: sec.id, text: hit.text, key: hit.k })
     setInline({
       sid: sec.id, id: hit.id ?? slotId(sec, hit), cat: sec.cat, f: hit.f, k: hit.k, row: hit.row, col: hit.col, sub: hit.sub, item: hit.item, part: hit.part || !!hit.lines?.length, float: hit.float,
       label: hit.row != null ? `${hit.f.l}: ${hit.col}` : hit.f.l, raw: sec.c[hit.k], nl: !hit.float && /^pre/.test(cs.whiteSpace),
       cap: slotCap(sec, hit, sections, T.name),
-      x: b.x, y: b.y, w: b.w, h: b.h, tf: b.tf, caret: tone,
+      x: b.x, y: b.y, w: b.w, h: b.h, tf: b.tf, caret: tone, at,
       css: {
         fontFamily: cs.fontFamily, fontSize: cs.fontSize, fontWeight: cs.fontWeight, fontStyle: cs.fontStyle,
         lineHeight: `${b.lh}px`, letterSpacing: cs.letterSpacing, textTransform: cs.textTransform,
@@ -6897,16 +6936,18 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
     })
     return true
   }
-  // The text cursor says a click edits: the selected section's own copy only,
-  // looked up at most every 120ms (findFieldNode reads the whole section).
+  // The text cursor says a click edits: any section's copy (JP-154), looked up at most
+  // every 120ms (findFieldNode reads the whole section). A photo's pointer and box are
+  // the selected section's alone, since a click on a photo only opens it there.
   const hoverProbe = useRef(0)
-  const probeInline = (e, sec) => {
+  const probeInline = (e, sec, selected) => {
     const now = performance.now()
     if (now - hoverProbe.current < 120) return
     hoverProbe.current = now
     const wrap = e.currentTarget
     const { text, photo: ph } = targetAt(sec, wrap, e.target, { x: e.clientX, y: e.clientY })
     if (text) { wrap.style.cursor = 'text'; setPhotoHover(null); return }
+    if (!selected) { wrap.style.cursor = ''; return }
     // Not copy: a photo says a click edits it with a pointer and a thin box round the part that shows.
     wrap.style.cursor = ph ? 'pointer' : ''
     const b = ph && photoBox(ph.node, wrap.firstElementChild, wrap.getBoundingClientRect())
@@ -7732,18 +7773,20 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
                     style={{ position: 'relative' }}
                     onMouseEnter={isMobile ? undefined : () => patch({ hoverId: sec.id })}
                     onMouseLeave={isMobile ? undefined : (e) => { e.currentTarget.style.cursor = ''; setPhotoHover(null); patch((s) => (s.hoverId === sec.id ? { hoverId: null } : {})) }}
-                    onMouseMove={isMobile || st.selectedId !== sec.id ? undefined : (e) => probeInline(e, sec)}
+                    onMouseMove={isMobile ? undefined : (e) => probeInline(e, sec, st.selectedId === sec.id)}
                     onDragOver={isMobile || st.selectedId !== sec.id ? undefined : (e) => dropOver(e, sec)}
                     onDragLeave={isMobile || st.selectedId !== sec.id ? undefined : (e) => { if (!e.currentTarget.contains(e.relatedTarget)) setPhotoHover(null) }}
                     onDrop={isMobile || st.selectedId !== sec.id ? undefined : (e) => dropFile(e, sec)}
                     onClick={(e) => {
                       stopE(e)
-                      // A click on the selected section's own copy edits it there.
-                      const { text: hit, photo: ph } = !isMobile && st.selectedId === sec.id
-                        ? targetAt(sec, e.currentTarget, e.target, { x: e.clientX, y: e.clientY }) : {}
-                      if (hit && startInline(sec, e.currentTarget, hit)) { /* editing */ }
-                      // Then a photo of the selected section opens the image editor.
-                      else if (ph) { patch({ menuFor: null }); startPhoto(sec, ph) }
+                      // A click on a section's copy selects it and edits it there, in the one click
+                      // (JP-154); the box opens on the same batch as the selection, so the effects that
+                      // close a box on another section's selection see both.
+                      const pt = { x: e.clientX, y: e.clientY }
+                      const { text: hit, photo: ph } = isMobile ? {} : targetAt(sec, e.currentTarget, e.target, pt)
+                      if (hit) { patch({ selectedId: sec.id, menuFor: null }); startInline(sec, e.currentTarget, hit, pt) }
+                      // A photo opens the image editor only on a section that is already selected.
+                      else if (ph && st.selectedId === sec.id) { patch({ menuFor: null }); startPhoto(sec, ph) }
                       else patch({ selectedId: sec.id, menuFor: null })
                     }}
                   >

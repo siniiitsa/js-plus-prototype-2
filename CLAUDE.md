@@ -163,7 +163,9 @@ mutated through a single `patch()` helper.
   same viewBox-is-the-disc svg, so one rule covers them.
 - **Clicking text on the canvas edits it there** (user calls, 2026-10-20: piloted on Retro's layout 1, then rolled out
   to every template and layout by `plans/inline-edit-all.md`; desktop and tablet, never a phone;
-  `plans/inline-edit.md`). A click on the text of an already-selected section maps to a *slot* (`inlineSlots`: a
+  `plans/inline-edit.md`). **A click on a section's text selects it and edits it in the one click** (JP-154, user call, 2026-10-26,
+reversing 2026-10-20's "an already-selected section": the `text` cursor shows on any section's copy; a phone is unchanged),
+**with the caret at the clicked character, not the text selected** (JP-155, `caretAt`). It maps to a *slot* (`inlineSlots`: a
   scalar field, one item of a list field, one cell of a repeater row, or a part of a price or composed line) by
   `inlineFieldAt`: the node must print exactly the slot's copy, or a part slot's words inside a longer line.
   **The gate is a default and a ledger, not an allowlist.** Every text / area / list field `fieldShown` says the
@@ -212,7 +214,8 @@ mutated through a single `patch()` helper.
   the published tab, the preview or the thumbnails mounts the editor. Enter inserts a line break only where the
   node's `white-space` keeps one (`pre-*`).
 - **Clicking a photo on the canvas opens the image editor on it** (user call, 2026-10-23; `plans/photo-edit.md`; desktop and
-  tablet, an already-selected section, never a phone). `photoFieldAt` takes the stack under the pointer top-down: the first
+  tablet, an already-selected section, never a phone; **text no longer waits for the selection, photos still do**: JP-154 changed the
+text rule alone, so a later session must not unify the two). `photoFieldAt` takes the stack under the pointer top-down: the first
   `[data-photo]` node wins (`Photo`'s inert mark, `notes/photography.md`), and anything that `blocksPhoto` first (a control,
   an icon, text under the pointer's own line boxes, a solid ground) ends the walk; scrims, grain and empty wrappers let the
   click through. **Copy goes first** (`targetAt`), except that a text node *wrapping* the picture is not the click's. A filled

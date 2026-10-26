@@ -3,8 +3,9 @@
 A click on text in the editor canvas edits it there, instead of only in the sidebar. **Scope:** Retro's layout 1,
 every section on the page, desktop and tablet. User calls, 2026-10-20: the header first (title, kicker, location),
 then the rest of the page, then the multi-line fields and the header's Book Now button, then everything that was
-left (tag chips, badge text, tilted cards, composed lines, repeaters). A click on the text of an already-selected
-section starts the edit (the first click still only selects); no phones, where the Edit drawer covers the canvas.
+left (tag chips, badge text, tilted cards, composed lines, repeaters). A click on the text of a section starts the
+edit, and selects the section in the same click (JP-154, user call, 2026-10-26: it began as "the first click still only
+selects", on an already-selected section alone); no phones, where the Edit drawer covers the canvas.
 
 ## How it works (in chrome; `EncoreSection` carries two inert `data-inline` marks, below)
 - **Slots.** Each editable piece of copy is a slot: a scalar field, one item of a list field (tags, promises, event
@@ -42,7 +43,8 @@ section starts the edit (the first click still only selects); no phones, where t
   is left to the panel, in the node or anywhere inside it. The box is re-placed as the canvas scrolls, so it keeps to a
   sticky card.
 - **The box.** `InlineEditor` is a `<textarea>` with the node's computed face, **its type transparent and its
-  caret visible**; the page keeps drawing the copy, so nothing doubles. Selects all on open. The header seal's
+  caret visible**; the page keeps drawing the copy, so nothing doubles. The caret opens at the clicked character, not
+the whole text selected (JP-155, below). The header seal's
   `badgeText` is the exception: the ring is one rotating `<textPath>`, so it opens a visible floating box
   (`floatBox`) beside the disc.
 - **Line breaks.** Enter closes the box, a newline typed or pasted becomes a space, **unless the node's computed
@@ -59,6 +61,33 @@ section starts the edit (the first click still only selects); no phones, where t
 - **State.** `inline` is its own `useState`, not derived from `focusBox`; `inlineNode` (a ref) keeps the clicked
   node, since a list row is re-keyed on each keystroke; `focusF` is set so the blue box follows the typing. It
   closes when the selection moves or on a phone. The cursor is `text` over editable copy, probed every 120 ms.
+
+## QA fixes, 2026-10-26 (`plans/inline-qa-fixes.md`, session 1: the click path)
+- **JP-154, the first click edits** (user call, 2026-10-26, reversing 2026-10-20's "the first click still only selects").
+  The section's `onClick` asks `targetAt` on every section on a non-phone, not only the selected one; on a text hit it
+  patches `selectedId` and calls `startInline` in the same handler, so the two effects that close a box when
+  `inline.sid !== st.selectedId` see both in one batch. The patch comes first, so a `placeBox` that fails still selects.
+  `probeInline` runs on every section, so the `text` cursor shows on any section's copy; the photo pointer and hover box
+  stay the selected section's (`probeInline(e, sec, selected)`). **Photos keep their rule**: a click on a photo of an
+  unselected section only selects (`plans/photo-edit.md`, 2026-10-23); only text opens on the first click. The sidebar
+  swapping from the list to `EditPanel` reflows the canvas card (~1098 → ~1020), and `startInline` places the box on the
+  pre-reflow geometry; `refit`, a layout effect on `focusF`, re-places it after the commit (measured: the box sits on the
+  kicker's glyphs after a real first click, at 1440 and 768). Nothing in `EditPanel` takes focus on mount, which is what
+  would close the box through `onBlur`. *Phone:* unchanged, a tap selects and no inline box is built (the drawer covers
+  the canvas). The tester's Mobile expectation is out of scope for the box; if the BA wants the AC met there, a tap on
+  copy opening the Edit drawer on that field (the field → canvas walk run backwards) is a separate piece of work.
+  *Cost:* a click meant to select a section that lands on its text now opens a box, which blur or Escape closes with no write.
+- **JP-155, the caret goes where the click was** (user call, 2026-10-26). `InlineEditor`'s `focusIn` does
+  `setSelectionRange(at, at)` instead of `select()`. `startInline` computes `at` from the page before the box mounts
+  (`caretAt`): `caretPositionFromPoint` (`caretRangeFromPoint` in WebKit) gives a text node and offset; the non-space
+  characters before it, less those before where the slot's words start in the node (`textRange`, so a part slot counts from
+  its own words), are stepped through the slot's text. Counting without spaces is `squash`'s rule, since the page collapses
+  runs of space and cases the type with CSS. A point on no text of the node, a clamped `…` and the seal's floating box
+  (no copy under it) take the end of the text, never a select-all. A double-click selects a word natively (the second
+  click lands on the box). Escape still restores.
+- **The probe** selects all itself before typing its sentinel (`selectAll` in `scripts/inline-probe.mjs`): the platform's
+  chord with `commands: ['selectAll']` (the headless shell maps no chord to the command), and a harness failure (exit 2)
+  if the box's selection is not the whole value afterwards.
 
 ## What is in
 Probed by clicking every text node of Retro layout 1's page at desktop and tablet and typing a sentinel: each click

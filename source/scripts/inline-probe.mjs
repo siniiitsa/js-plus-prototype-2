@@ -1,7 +1,8 @@
 // The coverage proof for canvas inline editing (plans/inline-edit-all.md): the
 // builder walked from the template picker to the editor under one template and
 // layout, then every text node of every section clicked with a real mouse, a
-// sentinel typed into the box that opens, Escape pressed, and what came of it
+// sentinel typed into the box that opens (after a select-all, since the box opens with a
+// caret at the click, not the text selected), Escape pressed, and what came of it
 // recorded. Needs `npm run dev` (or any served build) — BASE= names it.
 //
 //   node scripts/inline-probe.mjs --theme Retro --layout 1 --width 1440,768 --check
@@ -74,6 +75,16 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms))
 // A slot's column: `pricing.tiers[2].feats#1` → `pricing.tiers[].feats`.
 const colKey = (id) => id.replace(/\[\d+\]/, '[]').replace(/#\d+/, '')
 const SENTINEL = 'ZZQ'
+// The box opens with a caret at the click (JP-155), so a probe that wants to *replace* the copy selects
+// all of it first, as a hand does: the platform's chord (Ctrl+A is line-start in a macOS text field),
+// with the editing command it stands for, since the headless shell has no layer that maps one to the other.
+// Returns false when the selection is not the whole value, a harness fault (the caller throws).
+async function selectAll(page) {
+  const mod = process.platform === 'darwin' ? 'Meta' : 'Control'
+  await page.keyboard.down(mod); await page.keyboard.press('KeyA', { commands: ['selectAll'] }); await page.keyboard.up(mod)
+  const ed = await page.evaluate(() => window.__editor())
+  return !!ed && ed.sel[0] === 0 && ed.sel[1] === ed.value.length
+}
 
 // --- in the page ------------------------------------------------------------
 // Defined once per document, before the app loads.
@@ -177,7 +188,7 @@ function pageHelpers() {
     const ta = document.querySelector('textarea[data-inline-edit]')
     if (!ta) return null
     const r = ta.getBoundingClientRect()
-    return { slot: ta.dataset.inlineSlot, label: ta.getAttribute('aria-label'), float: ta.hasAttribute('data-inline-float'), value: ta.value, rect: [r.left, r.top, r.width, r.height] }
+    return { slot: ta.dataset.inlineSlot, label: ta.getAttribute('aria-label'), float: ta.hasAttribute('data-inline-float'), value: ta.value, sel: [ta.selectionStart, ta.selectionEnd], rect: [r.left, r.top, r.width, r.height] }
   }
   // Every slot's text, by id, as the builder reads it now (what `inlineSlots` lists).
   window.__slotTexts = async (sid, themeName) => {
@@ -353,6 +364,7 @@ async function runCombo(theme, layout, width) {
         // whole price the amount and the lead goes with it, by design (the price is free text): a price's
         // amount takes a number.
         const tag = /\.amount$/.test(ed.slot) ? '77' : SENTINEL
+        if (!(await selectAll(page))) throw Object.assign(new Error(`select-all did not select the whole box of ${ed.slot} (${theme} L${layout} ${width})`), { control: true })
         await page.keyboard.type(tag)
         await wait(140)
         const ed2 = (await page.evaluate(() => window.__editor())) ?? ed
