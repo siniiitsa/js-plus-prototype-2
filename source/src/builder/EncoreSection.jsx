@@ -21920,6 +21920,10 @@ function EventsMap({ s }) {
               master's picture. */}
           <div style={{
             position: 'relative', width: '100%', background: plate, flex: '1 1 auto',
+            // The viewport clips, not the card round it and its foot bar (JP-159): the
+            // outer ring is 480 across in a 307 viewport at 390, and an unclipped one
+            // lay a 477px, aria-hidden, pointer-events-auto circle over the foot's text.
+            overflow: 'hidden',
             ...(s.mob ? { aspectRatio: '346 / 307' } : { minHeight: u(desk ? 300 : 360) }),
           }}>
             {/* §10.2's street raster, inverted onto the dark plate so the roads

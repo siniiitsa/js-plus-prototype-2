@@ -12,11 +12,13 @@
 // Flags (comma lists run every combination, each in a fresh editor):
 //   --theme    Retro | Lime | Grunge | Editorial | Pop        (default Retro)
 //   --layout   1..4 (Retro also 5 and 6: the header alone, on page 1)  (default 1)
-//   --width    1440 (the Desktop tab) | 768 (the Tablet tab)  (default 1440)
-//              The window stays 1440 wide in both: at 820 or under the editor
-//              turns into the phone chrome, where inline editing is off.
+//   --width    1440 (the Desktop tab) | 768 (the Tablet tab) | 390 (the Mobile tab)  (default 1440)
+//              The window stays 1440 wide in all three: at 820 or under the editor
+//              turns into the phone chrome, where inline editing is off. 390 is the
+//              canvas a tester sees on the Mobile tab (JP-159 lived only there); the
+//              plan's sweep runs 1440,768, and the UNLEDGERED check wants those two.
 //   --cat      only these sections (default: the whole page)
-//   --check    exit 1 on any WRONG, NOT-RESTORED, MISSING or UNLEDGERED
+//   --check    exit 1 on any WRONG, NOT-RESTORED, MISSING, UNREACHED, COVERED or UNLEDGERED
 //   --limit N  at most N text nodes per section (debugging)
 //
 // Per text node it records one of
@@ -40,6 +42,23 @@
 //   paged      a row the layout does not draw, in a column whose earlier rows are hit
 //              and whose later rows are all undrawn too (a pager, a carousel, as the
 //              app's `prefixSlot` reads it). Not failing.
+//   UNREACHED  a node that prints an *active* slot's copy (not ledgered, not marked), whole or inside a
+//              longer line, and a click on the slot's own words opens nothing. Fails --check. It is
+//              `dead click` made a failure and widened to partial copy: JP-157's `Hannah L. · Private
+//              host` (the pills opened `who` and `role`, the line neither) and JP-158's bare
+//              `Manchester` in the feature card (the list's pair opened `city`) both passed the
+//              script, since `--check` counted a slot as hit when any one node opened it. A copy found
+//              *inside* a longer node counts from two words or eight squashed characters (a one-word
+//              tag such as `Live` sits inside other copy); a node that is the copy counts at any length.
+//              Stays out: vertical type, a node under a non-decorative element, a seal's svg, a node that
+//              is exactly another field's copy (a slot's, or the header's name, role, town or tags,
+//              which other sections print with no field: the map's `Manchester, UK`), and `·`.
+//   COVERED    the same, with an `aria-hidden` element carrying pointer events on the words: the click
+//              lands on a ring or a pin, not the copy (JP-159: a 477px map ring over the foot bar's
+//              text at 390). Fails --check. The same cover over copy that is no slot's is listed as
+//              `covered lit`, not failing.
+//   accepted   an UNREACHED / COVERED node that ACCEPTED (top of the script) names, with its reason: the
+//              layout-3 city chips (`Manchester · 4`) and layout 2's `● Availability`. Listed, not failing.
 //   dead click a node that prints a hit slot's copy (the same words) and opens nothing, while another node of the
 //              section opens it: `--check` counts the slot hit and cannot see the dead node. Not failing. Known
 //              noise: the gallery's vertical `Gallery` wordmark, a row's own number (`12`), vertical type
@@ -74,6 +93,15 @@ fs.mkdirSync(outDir, { recursive: true })
 const wait = (ms) => new Promise((r) => setTimeout(r, ms))
 // A slot's column: `pricing.tiers[2].feats#1` → `pricing.tiers[].feats`.
 const colKey = (id) => id.replace(/\[\d+\]/, '[]').replace(/#\d+/, '')
+const sq = (v) => String(v).replace(/\s+/g, '').toLowerCase()
+// Nodes UNREACHED / COVERED do not fail for: copy a node prints on purpose with no field behind it. One row per
+// node, `cat` and the node's whole text (case and space ignored), its reason printed as `accepted`. A node is
+// added here only once a notes/ file says it opens nothing by design; a row is a call, not a way to quiet a probe.
+const ACCEPTED = [
+  { cat: 'map', text: /^.+ · \d+$/, why: 'the city filter chip (layout 3): derived from the gigs\' cities with a count, live-only (notes/map.md, JP-047, JP-158)' },
+  { cat: 'calendar', text: /^● availability$/i, why: 'layout 2\'s top bar, a literal that shares the heading\'s seeded words (notes/calendar.md)' },
+]
+const acceptedBy = (cat, text) => ACCEPTED.find((a) => a.cat === cat && a.text.test(String(text).replace(/\s+/g, ' ').trim()))
 const SENTINEL = 'ZZQ'
 // The box opens with a caret at the click (JP-155), so a probe that wants to *replace* the copy selects
 // all of it first, as a hand does: the platform's chord (Ctrl+A is line-start in a macOS text field),
@@ -108,6 +136,13 @@ function pageHelpers() {
   }
   const squash = (v) => String(v).replace(/\s+/g, '').toLowerCase()
   window.__sq = squash
+  // Where a slot's words stand in a node's text: whitespace-tolerant and case-folded, since the page
+  // collapses runs of space and cases with CSS or `cased()`. null when they are not there.
+  const locate = (data, needle) => {
+    const words = String(needle).trim().split(/\s+/).filter(Boolean).map((w) => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+    const m = words.length ? new RegExp(words.join('\\s+'), 'i').exec(data) : null
+    return m ? { at: m.index, len: m[0].length } : null
+  }
   const rootOf = (sid) => document.querySelector(`[data-sid="${sid}"]`)?.firstElementChild
   window.__root = rootOf
   // The text nodes a click can be aimed at, in document order. A seal's text is
@@ -146,8 +181,8 @@ function pageHelpers() {
     if (t.svg) { const b = t.el.getBoundingClientRect(); r = { left: b.left, top: b.top, width: b.width, height: b.height } }
     else {
       const range = document.createRange()
-      const at = needle ? t.n.data.toLowerCase().indexOf(needle.toLowerCase()) : -1
-      if (at >= 0) { range.setStart(t.n, at); range.setEnd(t.n, at + needle.length) } else range.selectNodeContents(t.n)
+      const found = needle ? locate(t.n.data, needle) : null
+      if (found) { range.setStart(t.n, found.at); range.setEnd(t.n, found.at + found.len) } else range.selectNodeContents(t.n)
       r = [...range.getClientRects()].find((q) => q.width > 0.5 && q.height > 0.5)
       // A clamped title (`overflow: hidden; text-overflow: ellipsis`) has a range as wide as the
       // whole copy, whose middle is the clipped part. Aim at the part a clipping ancestor leaves.
@@ -175,7 +210,14 @@ function pageHelpers() {
     }
     const above = (depth < 0 ? stack.slice(0, stack.findIndex((e) => t.el.contains(e))) : stack.slice(0, depth))
       .filter((e) => !t.el.contains(e))
-    return { x, y, text, svg: t.svg, over: above.length ? describe(above[0]) : null, overText: above.length ? above[0].textContent : null, pe: above.length ? getComputedStyle(above[0]).pointerEvents : null }
+    // Vertical type (the app leaves it to the panel, `writingMode !== 'horizontal-tb'` anywhere in the node).
+    let vertical = false
+    for (let e = t.el; e && e !== root.parentElement; e = e.parentElement) { const wm = getComputedStyle(e).writingMode; if (wm && wm !== 'horizontal-tb') vertical = true }
+    // A decorative element on top of the point: `aria-hidden` itself or inside one (a ring, a pin, a sticker), and
+    // not `pointer-events: none` (`elementsFromPoint` never returns one that is, so this guards the reading, not
+    // the stack). It is what a click on the text lands on instead (JP-159).
+    const decor = above.find((e) => { const h = e.closest('[aria-hidden="true"]'); return h && root.contains(h) && getComputedStyle(e).pointerEvents !== 'none' })
+    return { x, y, text, svg: t.svg, vertical, decor: decor ? describe(decor) : null, over: above.length ? describe(above[0]) : null, overText: above.length ? above[0].textContent : null, pe: above.length ? getComputedStyle(above[0]).pointerEvents : null }
   }
   function describe(e) {
     if (!e) return null
@@ -273,12 +315,13 @@ async function openEditor(theme, layout, width) {
     await wait(500)
   }
   if (width !== 1440) {
-    if (width !== 768) throw new Error('--width is 1440 or 768')
+    if (width !== 768 && width !== 390) throw new Error('--width is 1440, 768 or 390')
     await page.waitForSelector('[role=tab]')
     const tab = await page.$$('[role=tab]')
+    const name = width === 768 ? 'Tablet' : 'Mobile'
     let done = false
-    for (const t of tab) if ((await t.evaluate((e) => e.textContent.trim())) === 'Tablet') { await t.click(); done = true }
-    if (!done) throw new Error('no Tablet tab')
+    for (const t of tab) if ((await t.evaluate((e) => e.textContent.trim())) === name) { await t.click(); done = true }
+    if (!done) throw new Error(`no ${name} tab`)
     await wait(700)
   }
   return { page, errors }
@@ -297,7 +340,7 @@ async function runCombo(theme, layout, width) {
   fs.writeFileSync(sink, '')
   const emit = (row) => fs.appendFileSync(sink, JSON.stringify(row) + '\n')
   const { page, errors } = await openEditor(theme, layout, width)
-  const res = { tag, theme, layout, width, hits: new Map(), wrong: [], nr: [], missing: [], notDrawn: [], paged: [], dead: [], off: [], unhit: 0, hidden: 0, clicks: 0, covered: [] }
+  const res = { tag, theme, layout, width, hits: new Map(), wrong: [], nr: [], missing: [], notDrawn: [], paged: [], dead: [], off: [], unreached: [], coveredSlots: [], coveredLit: [], accepted: [], unhit: 0, hidden: 0, clicks: 0, covered: [] }
   try {
     const info = await inEditor(page)
     if (info.has !== 'function') throw new Error('EncoreBuilder.jsx exports no inlineSlots')
@@ -327,8 +370,18 @@ async function runCombo(theme, layout, width) {
       if (!ok) throw Object.assign(new Error(`positive control failed: a click on the header's title opened no header.title box (${theme} L${layout} ${width})`), { control: true })
     }
 
-    const sq = (v) => String(v).replace(/\s+/g, '').toLowerCase()
     const hasWord = (v) => /[\p{L}\p{N}]/u.test(v)
+
+    // The header's own copy (name, role, town, tags), which other sections print with no field of their own
+    // (the map's travel card: `Manchester, UK`): a node that is exactly one of them is the header's, not a slot
+    // of the section it stands in, however many of that section's words sit inside it.
+    const hdId = info.sections.find((s) => s.cat === 'header').id
+    const identity = new Set((await page.evaluate(async (sid, themeName) => {
+      const { st } = window.__fh()
+      const mod = await import('/src/builder/EncoreBuilder.jsx')
+      const name = String(st.sections.find((x) => x.cat === 'header')?.c?.title ?? '').trim() || 'Kai Mercer'
+      return mod.inlineSlots(st.sections.find((x) => x.id === sid), themeName, name, true).flatMap((u) => [u.text, ...(u.lines ?? [])])
+    }, hdId, info.theme)).filter(Boolean).map(sq))
 
     for (const sec of info.sections) {
       if (onlyCats && !onlyCats.includes(sec.cat)) continue
@@ -432,7 +485,7 @@ async function runCombo(theme, layout, width) {
           res.unhit++; secRow.unhit++
           if (aim.over) res.covered.push({ sec: sec.cat, text: row.text.slice(0, 40), ...r.stack })
         } else record(r, row)
-        clicked.push({ text: row.text, result: r.result, slot: r.slot, covered: !!aim.over })
+        clicked.push({ i, full: texts[i], text: row.text, result: r.result, slot: r.slot, covered: !!aim.over, decor: aim.decor, vertical: aim.vertical })
         emit({ ...row, result: r.result, slot: r.slot, label: r.label, ...r.stack, restore: r.restore, why: r.why })
       }
 
@@ -460,6 +513,55 @@ async function runCombo(theme, layout, width) {
           const r = await clickAt(aim2, row, slot.id)
           emit({ ...row, want: slot.id, result: r.result, slot: r.slot, label: r.label, restore: r.restore, why: r.why })
           if (r.result === 'hit' || r.result === 'WRONG' || r.result === 'NOT-RESTORED') { record(r, row); if (r.result === 'hit') break }
+        }
+      }
+
+      // Phase 3: a node that prints an active slot's copy, whole or inside a longer line, and opened nothing.
+      // `dead click` saw only a node whose words another node's click had opened, and Phase 2 aims only at a
+      // part or lined slot, so JP-157's `Hannah L. · Private host` (the pills open `who` and `role`, the line
+      // opened neither) and JP-158's bare `Manchester` (the list's pair opens `city`) went by. Every such
+      // node is clicked again on the slot's own words:
+      //   UNREACHED  nothing opens. Fails --check.
+      //   COVERED    nothing opens and an `aria-hidden` element with pointer events lies on the words: the
+      //              click lands on a ring or a pin, not the copy (JP-159). Fails --check.
+      // Ledgered slots (INLINE_OFF / INLINE_HEAD), marked slots, vertical type, a node under another element that
+      // is not decorative, a seal's svg and a node that is exactly another field's copy stay out. A copy found
+      // *inside* a longer node is counted from two words or eight squashed characters, or a one-word tag
+      // (`Live`) inside the kicker fires on every header; a node that *is* the copy counts at any length.
+      const norm = (v) => String(v).replace(/\s+/g, ' ').trim().toLowerCase()
+      const esc = (v) => v.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+      const printsCopy = (node, copy) => {
+        const n = norm(node), c = norm(copy)
+        if (!c || !hasWord(c)) return false
+        if (sq(node) === sq(copy)) return true
+        if (c.split(' ').length < 2 && sq(copy).length < 8) return false
+        return new RegExp(`(^|[^\\p{L}\\p{N}])${esc(c)}($|[^\\p{L}\\p{N}])`, 'u').test(n)
+      }
+      const active = universe.filter((u) => !u.off && !u.marked && u.text)
+      for (const x of clicked) {
+        if (x.result !== 'unhit' || x.vertical || !hasWord(x.full) || (x.covered && !x.decor)) continue
+        const exactOther = (u) => sq(u.text) !== sq(x.full) && (universe.some((o) => o.group !== u.group && !o.part && sq(o.text) === sq(x.full)) || (sec.cat !== 'header' && identity.has(sq(x.full))))
+        const owners = []
+        for (const u of active) if (printsCopy(x.full, u.text) && !exactOther(u) && !owners.some((o) => sq(o.text) === sq(u.text))) owners.push(u)
+        if (!owners.length) {
+          if (x.decor) { res.coveredLit.push({ sec: sec.cat, text: x.text, over: x.decor }); emit({ kind: 'node', sec: sec.cat, text: x.text, result: 'covered literal', over: x.decor }) }
+          continue
+        }
+        for (const u of owners.sort((a, b) => b.text.length - a.text.length).slice(0, 3)) {
+          const aim = await page.evaluate((sid, i, text, nd) => window.__aim(sid, i, text, nd), sec.id, x.i, x.full, u.text)
+          if (aim.x == null || aim.vertical || (aim.over && !aim.decor)) continue
+          await wait(100)
+          const aim2 = await page.evaluate((sid, i, text, nd) => window.__aim(sid, i, text, nd), sec.id, x.i, x.full, u.text)
+          if (aim2.x == null || (aim2.over && !aim2.decor)) continue
+          const row = { kind: 'owned', sec: sec.cat, i: x.i, text: u.text.slice(0, 60) }
+          const r = await clickAt(aim2, row)
+          if (r.result === 'unhit') {
+            const found = { sec: sec.cat, id: u.id, text: x.full.slice(0, 50), copy: u.text.slice(0, 40), over: aim2.decor }
+            const ok = acceptedBy(sec.cat, x.full)
+            if (ok) { if (!res.accepted.some((a) => a.sec === sec.cat && a.text === found.text)) res.accepted.push({ ...found, why: ok.why }); continue }
+            ;(aim2.decor ? res.coveredSlots : res.unreached).push(found)
+            emit({ ...row, node: x.full.slice(0, 60), result: aim2.decor ? 'COVERED' : 'UNREACHED', slot: u.id, over: aim2.decor })
+          } else { record(r, row); emit({ ...row, result: r.result, slot: r.slot, why: r.why }) }
         }
       }
 
@@ -518,6 +620,8 @@ for (const theme of themes) for (const layout of layouts) for (const width of wi
   for (const w of res.wrong) console.log(`  WRONG        ${w.sec}  "${w.text}" opened ${w.slot}`)
   for (const w of res.nr) console.log(`  NOT-RESTORED ${w.sec}  "${w.text}" ${w.slot} ${JSON.stringify({ open: w.open, c: w.c, html: w.html })}`)
   for (const m of res.missing) console.log(`  MISSING      ${m.id}  "${m.text}"`)
+  for (const m of res.unreached) console.log(`  UNREACHED    ${m.sec}  "${m.text}" prints ${m.id} "${m.copy}" and a click on it opens nothing`)
+  for (const m of res.coveredSlots) console.log(`  COVERED      ${m.sec}  "${m.text}" prints ${m.id} "${m.copy}" under ${m.over}`)
   // The non-failing lists, one line per column.
   const grouped = (rows, label, why) => {
     const g = new Map()
@@ -526,18 +630,21 @@ for (const theme of themes) for (const layout of layouts) for (const width of wi
   }
   grouped(res.notDrawn, 'not drawn')
   grouped(res.paged, 'paged')
-  grouped(res.dead, 'dead click')
+  // A dead click UNREACHED / COVERED already names is not listed twice.
+  grouped(res.dead.filter((d) => ![...res.unreached, ...res.coveredSlots].some((u) => u.sec === d.sec && sq(u.text).startsWith(sq(d.text)))), 'dead click')
+  for (const m of res.accepted) console.log(`  accepted     ${m.sec}  "${m.text}" — ${m.why}`)
+  grouped(res.coveredLit.map((m, k) => ({ ...m, id: `${m.sec}.literal${k}`, why: m.over })), 'covered lit', true)
   grouped(res.off, 'off', true)
   if (res.errors.length) console.log(`  page errors: ${[...new Set(res.errors)].slice(0, 3).join(' | ')}`)
-  const bad = res.wrong.length + res.nr.length + res.missing.length
+  const bad = res.wrong.length + res.nr.length + res.missing.length + res.unreached.length + res.coveredSlots.length
   if (bad) failing++
   const a = acc.get(`${theme}|${layout}`) ?? acc.set(`${theme}|${layout}`, { widths: [], hit: new Set(), off: new Set(), notDrawn: [] }).get(`${theme}|${layout}`)
   a.widths.push(width)
   for (const id of res.hits.keys()) a.hit.add(id)
   for (const m of res.off) a.off.add(m.id)
   a.notDrawn.push(new Map(res.notDrawn.map((m) => [m.id, m])))
-  console.log(`inline-probe ${res.theme} L${res.layout} @${res.width}: ${res.hits.size} slots hit · ${res.wrong.length} WRONG · ${res.nr.length} NOT-RESTORED · ${res.missing.length} MISSING · ${res.notDrawn.length} not drawn · ${res.paged.length} paged · ${res.dead.length} dead click · ${res.off.length} off · ${res.unhit} unhit · ${res.hidden} hidden · ${res.covered.length} unhit under an overlay`)
-  fs.appendFileSync(path.join(outDir, `${res.tag}.jsonl`), JSON.stringify({ kind: 'summary', hits: [...res.hits].map(([slot, h]) => ({ slot, ...h })), wrong: res.wrong, nr: res.nr, missing: res.missing, notDrawn: res.notDrawn, paged: res.paged, dead: res.dead, off: res.off, covered: res.covered }) + '\n')
+  console.log(`inline-probe ${res.theme} L${res.layout} @${res.width}: ${res.hits.size} slots hit · ${res.wrong.length} WRONG · ${res.nr.length} NOT-RESTORED · ${res.missing.length} MISSING · ${res.unreached.length} UNREACHED · ${res.coveredSlots.length} COVERED · ${res.notDrawn.length} not drawn · ${res.paged.length} paged · ${res.dead.length} dead click · ${res.accepted.length} accepted · ${res.off.length} off · ${res.unhit} unhit · ${res.hidden} hidden · ${res.covered.length} unhit under an overlay`)
+  fs.appendFileSync(path.join(outDir, `${res.tag}.jsonl`), JSON.stringify({ kind: 'summary', hits: [...res.hits].map(([slot, h]) => ({ slot, ...h })), wrong: res.wrong, nr: res.nr, missing: res.missing, unreached: res.unreached, accepted: res.accepted, coveredSlots: res.coveredSlots, coveredLit: res.coveredLit, notDrawn: res.notDrawn, paged: res.paged, dead: res.dead, off: res.off, covered: res.covered }) + '\n')
 }
 // The done test leaves nothing out silently: a slot no width draws, that no click
 // reached and the ledger (INLINE_OFF) does not name, fails --check. It needs both
