@@ -5932,12 +5932,18 @@ function repeaterRows(sec, k, themeName) {
 // in and not at all past the fourth. Row numbers are the stored array's, blank
 // rows included, as the slots' are.
 function drawnRows(sec, k, themeName) {
+  const seq = drawnSeq(sec, k, themeName)
+  return seq && new Set(seq)
+}
+
+// The same rows in the order the cards draw them, a row once for every card it is in.
+function drawnSeq(sec, k, themeName) {
   if (sec.cat !== 'repertoire' || k !== 'songs') return null
   const live = repeaterRows(sec, 'songs', themeName).map((t, i) => [t, i]).filter(([t]) => !blankRow(t, SONG_KEYS))
   const cards = repChips(live.map(([t]) => t)).slice(1)
     .map((ch) => live.filter(([t]) => songTags(t?.tags).some((x) => x.toLowerCase() === ch.tag.toLowerCase())))
   if (new Set(cards.flat().map(([, i]) => i)).size < live.length) cards.push(live)
-  return new Set(cards.slice(0, 3).flatMap((card) => card.slice(0, 4).map(([, i]) => i)))
+  return cards.slice(0, 3).flatMap((card) => card.slice(0, 4).map(([, i]) => i))
 }
 
 // A list field's items, as the page reads them (the panel's rows): the value
@@ -6424,6 +6430,15 @@ function inlineFieldAt(sec, wrap, target, pt, themeName, artistName) {
       const sq = squash(tc)
       if (!sq) continue
       let here = exact.get(sq)?.filter((x) => !claimed(x))
+      // Copy over its cap is drawn clamped, `Kai Mercer…` (`clampContent`), and is no
+      // slot's exact words. A node whose whole text is a stem of one field's copy and
+      // `…` is that field's, as the panel's focus box reads it (`findFieldNode`); a stem
+      // shared by two fields is left alone.
+      if (!here?.length && sq.endsWith('…') && sq.length - 1 >= FIELD_STEM_MIN) {
+        const stem = sq.slice(0, -1)
+        const hit = [...exact].filter(([q]) => q.length > stem.length && q.startsWith(stem)).flatMap(([, xs]) => xs.filter((x) => !claimed(x)))
+        if (hit.length && new Set(hit.map((x) => x.group)).size === 1) here = hit
+      }
       if (here?.length && a.getBoundingClientRect().width) {
         let pool = null
         if (new Set(here.map((x) => x.group)).size > 1) {
@@ -6448,6 +6463,12 @@ function inlineFieldAt(sec, wrap, target, pt, themeName, artistName) {
         const peers = minimalPeers(root, (e) => squash(e.textContent) === sq).filter((e) => !pool || pool(e))
         const n = peers.indexOf(a)
         let slot = here.length === 1 ? here[0] : peers.length === here.length && n >= 0 ? here[n] : null
+        if (!slot && n >= 0 && here.length > 1 && here[0].row != null) {
+          // Rows with the same copy, some drawn more than once (layout 3 stands a song in
+          // a card per tag): the nth node is the nth draw of those rows, in page order.
+          const seq = drawnSeq(sec, here[0].k, themeName)?.filter((r) => here.some((x) => x.row === r))
+          if (seq?.length === peers.length) slot = here.find((x) => x.row === seq[n]) ?? null
+        }
         if (!slot && n >= 0 && peers.length < here.length) {
           // A pager or carousel draws the first rows only. Where what is drawn of this
           // column reads as the head of its slots, the nth node is the nth slot.

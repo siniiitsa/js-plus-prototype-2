@@ -257,9 +257,15 @@ Why the probe passed both: it types one word, `ZZQ`, with no digit and no space,
 
 **The module split (Phase 0 step 5)** was put to the user (do it / leave it): **left**. `EncoreBuilder.jsx` keeps the inline block, so the sweep certified the code that ships. If it is ever done, one page's `--check` per template proves the move.
 
-**Open, carried as written:** (a) a state-aware ledger for `tracks.sub` and `pricing.unit`; (b) the bio→header cross-section question (the bio's role line, the form's credit and the calendar's stamp print the header's kicker
+**Open, carried as written (c and d since closed, below):** (a) a state-aware ledger for `tracks.sub` and `pricing.unit`; (b) the bio→header cross-section question (the bio's role line, the form's credit and the calendar's stamp print the header's kicker
 and location with no field, so on Retro layout 5, where the header draws neither, the panel is the only way in); (c) pass 4's over-cap title finding; (d) two different rows with the same title both drawn at layout 3 open nothing.
 (e) is closed.
+
+**Closed after pass 21 (2026-10-24):** (c) and (d), both in `inlineFieldAt`. (c): a node whose whole text is a stem of one field's copy and `…`
+(`FIELD_STEM_MIN`, the panel focus box's rule) is that field's, so an over-cap title (`Kai Mercer…`) opens `header.title` and no longer leaves the
+header dead (Pop L1 with `Kai Mercer Jrr`, Retro and Grunge with a long name). (d): rows with the same copy, some drawn more than once, pair with the
+nodes by draw order (`drawnSeq`, `drawnRows`' sequence), so two *Valerie* rows at layout 3 open rows 0, 1 and 0. `--check` re-run on all 22 pages,
+`--width 1440,768`: PASS, every count the table's own. Still open: (a) and (b).
 
 A pass's file is created when its session starts (not now) from the template below and filled as it goes.
 
