@@ -265,6 +265,28 @@ found). Update the probe's header comment.
   and JP-158's fix is also a script check now.
 - Refresh `index.html` and `published.html` as the separate step `CLAUDE.md` describes.
 
+## Sweep — result (2026-10-26, tree `88469b8`, uncommitted)
+
+- `npm run build` and `npm run build:standalone` clean.
+- Two-build digest (`build-digest.mjs`, old = committed `index.html` at `18a79cc`, new = `dist-standalone`): **0 of 16 files differ** at `CARD=0` (layout 1's seeded page) **and** at `CARD=1` (layout 2's page, which draws Retro's map). The digest cannot see Session 2's change (no symbol-only price is seeded) or `overflow: hidden` (it reads geometry, not clipping), so those two are backed by the probes and Session 4's hand checks, not by the digest.
+- `inline-probe --check`, all 22 pages at 1440 and 768: **PASS ×5 themes** (0 WRONG, NOT-RESTORED, MISSING, UNREACHED, COVERED, UNLEDGERED). Listed, not failing: the two `accepted` nodes (layout-3 city chips, layout 2's `● Availability`) and the known dead-click noise (the gallery's vertical `Gallery`, Retro's vertical `Manchester, UK`, a row number `12`).
+- `photo-probe --check`, plain / `--blank` / `--drop` / `--drop --blank`, all 22 pages at 1440 and 768: **PASS in all four modes, all five themes**.
+- `refresh`: `index.html` copied from `dist-standalone`; `published.html` was already identical to `source/public/published.html`.
+
+**The optional 390 walk** (`inline-probe --width 390`, all 22 pages) fails on every theme. **Nothing in it is from this batch**; filed, none fixed (none is a one-line change). "Verified" = re-run with this tree's probe against a worktree at `18a79cc` (the pre-batch tree); "same slot" = the identical slot on a sibling template, not re-run there.
+
+| Page @390 | Finding | Evidence |
+|---|---|---|
+| Retro L1 (and L5, L6, the same page) pricing | `pricing.tiers[0..2].price.lead` `£`: **NOT-RESTORED** (`c` differs after Escape, the DOM restored) plus MISSING. **390 only**: at 1440 and 768 the lead is hit and restored. A different severity from "opens nothing" | Verified on `18a79cc`: the same 3 NOT-RESTORED + 3 MISSING. Not Session 2's |
+| Retro L2 header | `header.cta1` `Book Now`: MISSING; UNREACHED | Verified on `18a79cc` |
+| Lime L2 and L3, Grunge L2 and L3, Editorial L3, Pop L3 header | the same `header.cta1` `Book Now` | Pop L3 verified on `18a79cc`; the rest same slot |
+| Retro L3 repertoire, map | `repertoire.songs[1,2,3,5].title` / `.length` (the 22 hidden nodes) and `map.rings#1` `60mi`: MISSING | Verified on `18a79cc` |
+| Lime, Grunge, Editorial, Pop L3 repertoire, map | the same 8 song slots and `map.rings#1` | Same slot |
+
+- **A free positive control:** on `18a79cc` Retro L3 @390 also shows `map.gigs[1..3].city` MISSING and the bare `Manchester` UNREACHED (JP-158). The fixed tree shows neither, so JP-158's fix holds at 390 and the 390 walk is sensitive to it.
+- Retro L2 @390 no longer shows COVERED (JP-159), and the one remaining Retro L2 row is the `Book Now` above.
+- **Not run:** Session 2's behaviour on a *seeded* symbol-only price in the built app (no seed carries one); it was checked by hand in Session 2.
+
 ## Not done / out of scope
 
 - An inline box on a phone (JP-154's Mobile): the drawer rule stands; the alternative, a tap that opens the
