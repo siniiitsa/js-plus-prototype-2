@@ -6535,6 +6535,17 @@ function inlineFieldAt(sec, wrap, target, pt, themeName, artistName) {
           const drawn = minimalPeers(root, (e) => col.some((x) => e.textContent.toLowerCase().includes(String(x.text).toLowerCase())))
             .filter((e) => !others.has(squash(e.textContent)))
           mine = prefixSlot(col, drawn, a, (e, x) => e.textContent.toLowerCase().includes(String(x.text).toLowerCase()))
+        } else if (n >= 0 && peers.length < same.length && lined
+          && slots.filter((x) => x.group === slot.group).slice(0, peers.length).every(printsLine)) {
+          // A line drawn fewer times than rows print it, and the rows that open the column
+          // are among them: the feature card's bare city (`Manchester`) under a list of
+          // four rows in Manchester. The canvas is never live, so the card shows the first
+          // row and the nth node is the nth of the rows that print the line (JP-158).
+          mine = same[n]
+        } else if (lined && same.length === 1 && peers.length > 1) {
+          // One slot, a line it is drawn on twice: Retro's byline and its pill both print a
+          // lone `Hannah L.` once the role is emptied. Whichever node it is, it is that slot's.
+          mine = same[0]
         } else if (same.length !== peers.length) mine = null
         if (n < 0 || !mine || mine !== slot) continue
         // The click has to be on the slot's own words (or just beside them).

@@ -203,3 +203,11 @@ Layout 4 pages from its arrow discs, so the canvas draws the first four reviews 
 ## Inline editing (plans/inline-edit-all.md, Pop layout 4, 2026-10-22)
 
 Layout 4 pages from its arrow discs, so the canvas draws the first four reviews at 1440 and three at 768 (the rest *paged*). `quotes.when` is ledgered (`Pop.3.testimonials.quotes.when`: no *Reviewed …* in the section).
+
+## Inline editing — the attribution line (JP-157, plans/inline-qa-fixes.md, Session 3, 2026-10-26)
+
+Retro's layout-1 card prints `vm.quotes[].byline` as **one node**, `HANNAH L. · PRIVATE HOST` (the `s.v0` branch's `labelStyle` span), above the two pills that print `who` and `role` bare. The pills opened their slots; the line opened nothing, on the name or the role. It is measured, not assumed, that **no other page prints the composed line**: over all five templates, layouts 1–4 (and Retro's 5 and 6, whose body is layout 1's) at 1440, 768 and 390, the only leaf holding a `·` is that span. Every other design splits the byline into a `who` span and a `role` span of its own, so those are bare slots already.
+
+`INLINE_LINES`, scoped `Retro.0.` (not `*`): `quotes.who` and `quotes.role` are each `['{}', '{who} · {role}']`. The bare `{}` stays because a slot with a line is *spoken for* by it (`claimed`), and the pills would stop opening without their own form (the layout-6 kicker's precedent). A blank half drops the line, since `inlineSlots` drops a template with an empty cell, and the page drops the separator the same way (`[who, role].filter(Boolean).join(' · ')`).
+
+**The blank half needed one more rule in `inlineFieldAt`.** With the role emptied the byline *is* `Hannah L.`, so the bare line is drawn twice (the byline span and the pill) and only one slot prints it. The lined branch demands as many nodes as slots, so both nodes went dead (the exact path used to open both, before the slot was claimed). A line that exactly one slot prints belongs to that slot however many nodes draw it (`same.length === 1`). Measured with each half emptied: both nodes open `who` (or `role`).

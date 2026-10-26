@@ -3029,6 +3029,13 @@ const GIG_TICKER_LINES = ['{city} · {month} {day} · {time}', '{city} · {month
 export const INLINE_LINES = {
   '*.1.calendar.availLabel': ['{} ↓'],
   '*.1.media.chipLabel': ['● {}'],
+  // Retro's layout-1 testimonial prints the attribution as one node, `Hannah L. · Private
+  // host` (`vm.byline`), above the two pills that print `who` and `role` bare, so each
+  // keeps its bare form. The other templates split the line into spans of their own, and
+  // Retro's other layouts print no such line. A blank half drops the line and its
+  // separator, which `inlineSlots`' fill does, since the page drops both too.
+  'Retro.0.testimonials.quotes.who': ['{}', '{who} · {role}'],
+  'Retro.0.testimonials.quotes.role': ['{}', '{who} · {role}'],
   // Retro's layout 6 prints the kicker twice: bare, in the inset card under the name,
   // and as `● DJ · LIVE ACT` above the title. A slot with a line is spoken for by it,
   // so the bare form is listed too, or the card's copy would stop opening.
@@ -3039,6 +3046,13 @@ export const INLINE_LINES = {
   '*.1.map.gigs.month': ['{city} · {month} · {time}', '● {month} {day} · {time}'],
   '*.1.map.gigs.day': ['● {month} {day} · {time}'],
   '*.1.map.gigs.time': ['{city} · {month} · {time}', '● {month} {day} · {time}'],
+  // Layout 3 prints each row's pair, `Manchester · 22:00` (the pair's own line, which
+  // naming the column here replaces), and the feature card under the list prints the
+  // first row's city bare. The card shows one row where four share the city, so the bare
+  // form is the head of the column (`inlineFieldAt`'s lined branch): the canvas is never
+  // live, and the card is the first row there. Time is not printed bare, so it keeps the
+  // pair; the card prints no date.
+  '*.2.map.gigs.city': ['{city} · {time}', '{}'],
   // Layout 4's ticker prints the one gig on one line, `Manchester · JUL 12 · 22:00`
   // (`vm.gigs[].meta`), and drops a piece the artist emptied with its separator,
   // so each shorter form it can print is a line too. Per column: the venue is

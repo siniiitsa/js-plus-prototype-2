@@ -203,7 +203,7 @@ reversing 2026-10-20's "an already-selected section": the `text` cursor shows on
   **Where the words are not enough, `INLINE_LINES` names the forms the copy is printed in** (`'● {}'`, `'{} ↓'`, a gig's
   `'{city} · {month} · {time}'`; scoped like `INLINE_PART`, built in `plans/retro/inline-layout-2.md`): a node that prints
   exactly one is the slot's, and exact copy standing in several fields is settled by claims (a slot whose line is drawn
-  is spoken for), then the copy as typed, then the heading on the largest type. **Where the canvas draws only a head of a repeater, `INLINE_HEAD` ledgers the rows it does not draw**: repertoire layout 3
+  is spoken for), then the copy as typed, then the heading on the largest type. A line drawn **fewer times than rows print it** is the column head's (the map's layout-3 card prints the first row's bare city, JP-158), and a line **one slot prints** is that slot's however many nodes draw it (an emptied role leaves Retro's byline and its pill both `Hannah L.`, JP-157). **Where the canvas draws only a head of a repeater, `INLINE_HEAD` ledgers the rows it does not draw**: repertoire layout 3
   stands each song in a card per tag, four rows a card and three cards a page, so a song is drawn twice or not at all; `drawnRows()` works out the drawn
   rows from the same tags and `inlineSlots` puts the others in the ledger (`off`, *live-only copy*), which also keeps the exact-copy pairing honest
   (plans/retro/inline-layout-3.md). The box is re-placed on the canvas's
