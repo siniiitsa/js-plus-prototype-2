@@ -10084,8 +10084,42 @@ function Video({ s }) {
     //     at 768 and 390, which contradicts its own 02:05 / 03:57; `s.ac` at
     //     `videoPct`, as everywhere. The artist row's `#141414` fill is hidden
     //     in all three masters and is not drawn.
-    const lime = s.lime || s.grunge
+    //
+    // **Editorial (964:64607 · 986:15666 · 986:15685, mode Sienna Vale, Scheme
+    // 1 resolved at all three: no mode leak, no nested node on another scheme,
+    // so no `SCHEMES_OF` row) is the same tree a third time** (`ed`;
+    // plans/video.md, session 6). The gate is `s.lime || s.grunge || s.editorial`,
+    // never `s.limeTree`, which would turn Lime's dress on for Pop. It takes
+    // Lime's bound tokens (`box/1` `#FFF9F2`, `text/2` `#141414`, the opaque
+    // `stroke/1` hairline, `box/2` `#EDE6DC` under the list's small circles),
+    // Grunge's sizes (the 21.7 narrow discs on an 8 padding, the narrow
+    // thumbnail's own badge and 7.46 triangle, 150 thumbnails, the faced
+    // uppercase row titles: `gd`) and is its own in six places:
+    //   · Nothing is rounded: the player and the panel are `radius/sharp`
+    //     (0), and so is the transport bar, a paper rectangle on the photograph.
+    //   · The panel's ring is **dashed 10, 10** in `text/1` (`s.ac`) and the
+    //     artist row's top rule dashed 10, 10 in `stroke/2` (`s.stroke2`, the
+    //     same terracotta), both `DashRule`s at the node's pattern × 0.82 on
+    //     desktop. The frame's 14 / 30 / 10 inset and 15 over the row are from
+    //     the outer edge, stroke inside, so neither takes a border out of it.
+    //   · The pause, skip and top-corner discs are circles; the volume,
+    //     maximize and ⋮ discs are `radius/control` 6 (4.65 on the 390's 21.7).
+    //   · The thumbnail's play disc is R6 (R4.1 on the narrow masters' 21.1,
+    //     10 from the right and 9.1 from the foot of our 85.7 box).
+    //   · The poster reads `s.imagePos`, Grunge's call and for its reason: the
+    //     hash `9d20fe0d` is the bio's arch (`editorialStage`, 820 × 1025), the
+    //     1440 master's `CROP` is y .065 to .532 (the face in), and the 768 and
+    //     390 masters are a centred `FILL` (y .267 to .733), which drops the
+    //     head and shows a chest and a microphone. The file's own `'50% 0%'`
+    //     keeps the face at every width and is 6.5% of the height off the 1440
+    //     crop; an upload has none and stays centred.
+    //   · The frame's `03:57` / `02:05`, the `Follow` pill and the action discs
+    //     are as Lime's; the fill stays `s.ac` at `videoPct` (the frame's is
+    //     200 / 215 · 215 / 215 · 65.9 / 65.9 against its own 02:05).
+    const ed = s.editorial
     const gr = s.grunge
+    const gd = gr || ed
+    const lime = s.lime || gr || ed
     const labelSz = lime ? s.labelMd : tab ? '14px' : s.mob ? '13px' : u(20)
     const rowSz = lime ? s.list : tab ? '12px' : s.mob ? '13px' : u(16)
     const bodySz = lime ? s.bodyMd : nar ? '13px' : u(14)
@@ -10122,11 +10156,13 @@ function Video({ s }) {
     // 768 as at 1440, and 22 at 390, where the bar has to seat six of them, two
     // clocks and a progress track inside the player's 330. Its glyph goes with
     // it, and so do the two gaps below.
-    const cd = s.mob ? (gr ? 21.7 : 22) : 28
+    const cd = s.mob ? (gd ? 21.7 : 22) : 28
     const cg = s.mob ? 9 : 11
     // Grunge's pause, volume, maximize and ⋮ discs are rounded squares: R8 on
     // the 28, and the 390's 21.7 takes it down with the disc (6.2).
-    const sq = gr ? { borderRadius: u(8 * cd / 28) } : null
+    // Editorial's three are R6 (`radius/control`) and its pause a circle.
+    const sq = gr ? { borderRadius: u(8 * cd / 28) } : ed ? { borderRadius: u(6 * cd / 28) } : null
+    const sqPause = gr ? sq : null
     //
     // Lime's are all one pairing: `box/1` discs in the page's pale, held by the
     // hairline (the frame rounds the volume, maximize and ⋮ discs at 13 and the
@@ -10165,7 +10201,7 @@ function Video({ s }) {
     const player = (
       <div style={{
         position: 'relative', width: '100%', aspectRatio: '819 / 478',
-        background: cream, borderRadius: u(gr ? 15 : lime ? 50 : 40), overflow: 'hidden',
+        background: cream, borderRadius: u(gr ? 15 : ed ? 0 : lime ? 50 : 40), overflow: 'hidden',
         padding: u(20),
         ...col('0', { alignItems: 'center', justifyContent: 'space-between' }),
       }}>
@@ -10174,7 +10210,7 @@ function Video({ s }) {
             the seed's own focus (`50% 25%`, the file's one string) stands for
             all three, and an upload has none. */}
         <span style={{ position: 'absolute', inset: 0 }}>
-          <Photo s={s} initialsSize={44} style={gr ? { objectPosition: s.imagePos } : undefined} />
+          <Photo s={s} initialsSize={44} style={gd ? { objectPosition: s.imagePos } : undefined} />
         </span>
         {/* Two hairline discs in the top corner, cream on the photograph. */}
         <span style={row(u(8), { alignSelf: 'flex-end', position: 'relative' })}>
@@ -10191,8 +10227,8 @@ function Video({ s }) {
             inside a card. `maxWidth` because the 390 canvas cannot seat it. */}
         <span style={{
           position: 'relative', maxWidth: '100%',
-          background: s.bg, color: s.tx, borderRadius: '999px',
-          padding: `${u(s.mob ? (gr ? 8 : 7) : 8)} ${u(12)}`, ...row(u(s.mob ? 6 : 10)),
+          background: s.bg, color: s.tx, borderRadius: ed ? 0 : '999px',
+          padding: `${u(s.mob ? (gd ? 8 : 7) : 8)} ${u(12)}`, ...row(u(s.mob ? 6 : 10)),
         }}>
           <span style={row(u(s.mob ? 4 : 5), { flex: 'none' })}>
             <span style={ctl}>{lime
@@ -10200,7 +10236,7 @@ function Video({ s }) {
               : <SkipBack size={cg} fill="currentColor" />}</span>
             {/* A player caught mid-song, which is the picture the frame
                 draws — and the picture is all this section is. */}
-            <span style={{ ...ctl, ...sq }}>{lime ? limePause : <Pause size={cg} fill="currentColor" />}</span>
+            <span style={{ ...ctl, ...sqPause }}>{lime ? limePause : <Pause size={cg} fill="currentColor" />}</span>
             <span style={ctl}>{lime
               ? <LimeSkip width={13.0215 * gz} color={s.tx} />
               : <SkipForward size={cg} fill="currentColor" />}</span>
@@ -10284,10 +10320,13 @@ function Video({ s }) {
             `flexWrap`, which wraps wherever the artist's name happens to run
             out and puts the spacer in an unpredictable place. */}
         <div style={{
-          borderTop: `1px solid ${s.retro ? '#111111' : lime ? s.stroke1 : s.line2}`,
+          // Editorial's rule is a dashed 10, 10 `stroke/2` drawn inside the
+          // 15 of padding, so it takes no border here (`DashRule`, below).
+          ...(ed ? { position: 'relative' } : { borderTop: `1px solid ${s.retro ? '#111111' : lime ? s.stroke1 : s.line2}` }),
           paddingTop: u(15), paddingBottom: u(20),
           ...(s.mob ? col('25px') : row(u(12), { flexWrap: 'wrap' })),
         }}>
+          {ed && <DashRule dash={10 * z} colour={s.stroke2} side="top" />}
           {s.mob ? <span style={row(u(12), { minWidth: 0 })}>{artist}</span> : artist}
           {!s.mob && <span style={{ flex: 1, minWidth: 0 }} />}
           {s.mob ? <span style={row('5px', { flex: 'none' })}>{actions}</span> : actions}
@@ -10304,7 +10343,11 @@ function Video({ s }) {
         // Lime's panel draws no outline at all, and its radius is the frame's
         // 13 (`radius/control`) at all three widths.
         border: gr ? `1px solid ${s.ac}` : lime ? 'none' : `${u(3)} solid ${rust}`,
-        borderRadius: u(gr ? 8 : lime ? 13 : 14),
+        borderRadius: u(gr ? 8 : ed ? 0 : lime ? 13 : 14),
+        // Editorial's ring is dashed 10, 10 in `text/1`, an overlay (below),
+        // inside the box: the frame's insets are from its outer edge as they
+        // are, with no border to take out.
+        ...(ed ? { position: 'relative' } : null),
         // The frames' inset, which Figma states *including* the 3px stroke it
         // draws inside the box — so all three of these run 3px wide, the
         // repertoire's `calc(padding − border)` case. Left as it is because the
@@ -10315,6 +10358,7 @@ function Video({ s }) {
         padding: gr ? `calc(${desk ? u(14) : tab ? '30px' : '10px'} - 1px)` : desk ? u(14) : tab ? '30px' : '10px',
         ...col(u(10), { minWidth: 0 }),
       }}>
+        {ed && <DashRule dash={10 * z} colour={s.ac} side="all" />}
         <div style={row('0', {
           flex: 'none', justifyContent: 'space-between', paddingBottom: u(6), gap: u(10),
         })}>
@@ -10358,7 +10402,8 @@ function Video({ s }) {
                 position: 'relative', flex: 'none',
                 width: desk ? u(142.9) : s.lime ? '154px' : '150px', maxWidth: desk ? '42%' : '100%',
                 aspectRatio: '140 / 80', background: s.bg,
-                borderRadius: u(8), overflow: 'hidden',
+                // Editorial's thumbnails are square (no radius on the frame).
+                borderRadius: ed ? 0 : u(8), overflow: 'hidden',
               }}>
                 <Photo s={s} initialsSize={16} src={v.img} />
                 {v.length && (
@@ -10369,7 +10414,7 @@ function Video({ s }) {
                     fontFamily: s.body, fontSize: smSz, lineHeight: 1.4, whiteSpace: 'nowrap',
                     // The narrow masters' badge is its own, smaller box on a 10
                     // inset: 8.55 type in 1.42 / 4.27 padding, radius 2.8.
-                    ...(gr && !desk ? {
+                    ...(gd && !desk ? {
                       left: '10px', top: '10px', borderRadius: '2.8px',
                       padding: '1.4249px 4.2746px', fontSize: '8.549px',
                     } : null),
@@ -10383,13 +10428,14 @@ function Video({ s }) {
                   // Grunge's is a rounded square (R8 on the 24), and the
                   // narrow masters draw a 21.1 one (R5.4) on a 10 inset.
                   ...(gr ? { borderRadius: desk ? u(8) : '5.4px' } : null),
-                  ...(gr && !desk ? { width: '21.1px', height: '21.1px', right: '10px', bottom: '9.4px' } : null),
+                  ...(ed ? { borderRadius: desk ? u(6) : '4.1px' } : null),
+                  ...(gd && !desk ? { width: '21.1px', height: '21.1px', right: '10px', bottom: gr ? '9.4px' : '9.1px' } : null),
                 }}>{lime
                   // The frame's own 24 disc: the triangle is 8.22 × 9.5 and
                   // sits a hair right of centre, which lucide's does not. The
                   // narrow Grunge disc's is its own 7.46 polygon, a smaller
                   // triangle, not the same one scaled.
-                  ? (gr && !desk
+                  ? (gd && !desk
                     ? <svg viewBox="0 0 21.1016 21.1016" width="100%" height="100%" aria-hidden style={{ display: 'block' }}>
                         <path d="M14.283 10.5507L8.6845 13.783L8.6845 7.3184L14.283 10.5507Z" fill={s.tx} />
                       </svg>
@@ -10403,7 +10449,7 @@ function Video({ s }) {
                   fontFamily: s.display, fontSize: rowSz, lineHeight: 1.2,
                   letterSpacing: s.dls,
                   // Anton at the faced size, in capitals (`list` takes no distress).
-                  ...(gr ? { fontSize: faced(s, rowSz), lineHeight: facedLh(s, 1.2), textTransform: 'uppercase' } : null),
+                  ...(gd ? { fontSize: faced(s, rowSz), lineHeight: facedLh(s, 1.2), textTransform: 'uppercase' } : null),
                   // The accent is not guaranteed to read on `paper` (Lime's is
                   // acid green on pale lime), so only Retro's frame-literal
                   // rust goes here; the flat four take the paper's own ink.

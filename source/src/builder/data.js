@@ -2164,7 +2164,10 @@ export const FIELDS = {
       // narrower); its layout 4 holds 19 (390 binds: 28 at 1440, 24 at 768; session 3).
       // Grunge's layout 2 holds 91 (the box binds at 390: Anton in capitals is narrower again;
       // session 4); its layout 4 holds 25 (390 binds: 32 at 1440, 27 at 768; session 5).
-      chars: { Lime: [null, 82, null, 19], Grunge: [null, 91, null, 25], '*': [null, 64, null, 20] },
+      // Editorial's layout 2 holds 48 (390's box binds: Gloock in capitals is the widest of the
+      // five faces; session 6); its layout-4 slot is Retro's default until session 7.
+      chars: { Lime: [null, 82, null, 19], Grunge: [null, 91, null, 25], Editorial: [null, 48, null, 20],
+        '*': [null, 64, null, 20] },
       hint: 'Layout 2 prints it over the description, layout 4 as the band’s large head.' },
     { k: 'description', l: 'Description', type: 'area', def: 'videoDesc', in: [1],
       // One ellipsized line: prose clips at 64 at 390 but the 69-character seed fits,
@@ -3242,8 +3245,10 @@ export const IDENTITY_CHARS = {
   // (390 binds; 149 at 1440, 96 at 768), and the other two are read in theirs.
   video: {
     // Grunge's layout 2: 49, Retro's number again (138 / 114 / 49 at 1440 / 768 / 390); its
-    // layout 4: 55 (163 / 105 / 55; 390 binds), session 5.
-    title: { Retro: [null, 49, null, 54], Lime: [null, 49, null, 50], Grunge: [null, 49, null, 55] },
+    // layout 4: 55 (163 / 105 / 55; 390 binds), session 5. Editorial's layout 2: 49 again
+    // (138 / 114 / 49), session 6; its layout 4 is read in session 7.
+    title: { Retro: [null, 49, null, 54], Lime: [null, 49, null, 50], Grunge: [null, 49, null, 55],
+      Editorial: [null, 49, null, null] },
   },
   calendar: {
     title: [null, 64],
