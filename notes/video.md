@@ -606,7 +606,79 @@ Frames: *Video Players — A · Dashboard player* `964:64569` 1440×782 · `986:
 - `&n=` has no video entry in the harness (call 4); `description`, `allCta`, `followCta` and `duration` emptied are the Retro, Lime,
   Grunge and Editorial behaviours.
 
+## Pop · layout 4 (session 9, 2026-10-27)
+
+Frames: band `Frame 318` `964:73165` 1440×1143 · `971:10852` 768×627 · `977:14407` 390×383, inner *Cinematic minimal*
+`964:73169` · `971:10856` · `977:14411`. Band `sem/bg` white; Section y 156 / 60 / **40** (Editorial's 390 top, Lime's and Grunge's
+is 60), x 56 / 30 / 10; head Chunko 82 / 51 / 36 at .89 (73 / 45 / 64 tall, the 390 two lines in a 268 box, `sem/text/1` pink), a
+fixed 1019.18 measure at 1440 that is declined as in the other templates; head → instance 60 / 60 / 30; foot 100 / 60 / 40. Read with
+a hand-recursed walk of every node of each band (the Section, the inner Frame and the instance, which `findAll` does not enter).
+
+- **Bound, no mode leak, no seat, and none of Lime L4's traps.** All three instances state only `1 · Primitives: Pop` on the root, the
+  band and its Section carry an **explicit `2 · Scheme: Scheme 1`** (Editorial L4's shape), and `resolvedVariableModes` is Scheme 1 at
+  every node of all three (Device Desktop / Tablet / Mobile is the width). **So `SCHEMES_OF.Pop[3]` gains no `video` row**: the plan's
+  "gains a seat" was the expectation, and white under a lime rule is Scheme 1, which is no row. Nothing reads `s.onScheme[n]`, and the
+  root is the page's white with no `cardOnPage`. The three Lime traps, each looked for: (1) **no leak** (Lime's was the 390, Editorial's
+  the 768); (2) the head band's type is `sem/text/2` violet at all three widths, never `sem/bg`, so the on-film type is `s.tx` as Lime's
+  and **no `s.bg` arm** (Editorial's was the one that needed it); (3) the progress fill is `sem/text/1` pink at all three (no `box/1`
+  fill) over a `box/1` track, Lime's arm and not Grunge's `box/2`. The fill is 364 of 988 / 369 of 369 / 59 of 59 against its own 02:05 /
+  03:57, so it stays `s.ac` at `videoPct`, as everywhere. **The 768 instance clips its own composition** (708×402 over a 567 child at y
+  −82.5): drawn whole. No stroke or effect on any node of any instance (layout 2's discs carry a pink ring; these carry none). Raw
+  paints in the three trees: the hidden `soulway` `the` / `room.` leftovers, and the sticker.
+- **The gate is now `s.limeTree` for `v3` too** (the decision session 8 recorded for `v1`). Lime, Grunge, Editorial and Pop are all
+  fitted at layout 4, so `const lime = s.limeTree` is exactly the old `s.lime || gd` plus Pop; `const pop = s.pop`, `gd = gr || ed || pop`.
+  A fifth designed template would no longer fall onto Retro's literals here either.
+- **Where Pop takes Lime's arm** (all bound): `box/1` `#F5F5F5` (`s.box1`) for the discs, the chips and the track, `text/2` violet
+  (`s.tx`) for every line of type on the film (the arrow, the name, both clocks, *HD*), `text/1` pink (`s.ac`) for the head, the glyphs
+  and the played fill; the vectors are Lime's (`LimeSkip`, the two-bar pause), the player's radius 30 stays. **Grunge's:** the volume and
+  settings chips are `radius/control` **8** (`u(ed ? 6 : gr || pop ? 8 : 14)`), the pause stays a circle, and the poster reads
+  `s.imagePos`. Type is the ramp: `THEME_RAMP.Pop`'s `dispLg` 67 / 51 / 36 is the frame × .82 / the masters, `list` 16 / 16 / 15, `bodyLg`
+  13 / 15 / 15, `bodySm` 10 / 12 / 12, `chip` 10 / 11 / 11.
+- **Pop is its own in three places.** (1) **The head is Titan in capitals, fitted and lifted as the gallery's is**: `faced` /
+  `facedLh`, uppercase through `gd` (layout 3's decision 2: the 768 and 390 masters type it mixed case, uppercased at every width), fitted
+  to its widest word in the column through `titleWordEms` (the column is a size container, `ed || pop`), and Titan's 0.14em lift
+  (`position: relative; top: -0.14em`, which also puts it above the arrow). (2) **The media's squiggle arrow** (`Vector` `964:73172` ·
+  `971:11724` · `977:17354`): drawn, and not a leak: it is `POP_ARROW_D` verbatim, 209.11 × 126.41 before its −135° turn at 1440, the same
+  shape ×0.844 at 768 (176.49 × 106.69) and ×0.4602 at 390 (96.23 × 58.17), filled the raw `#C6F200` (no binding, **Scheme 1's `tag/1/bg`
+  to the byte**, so `s.chips[0].bg`, the bio's scribble's key). **The walker's x / y is the pivot of the turn, not the box** (the
+  metadata's 237² bounding box and the 1211 / −14.9 pivot disagree by 215 px): placed by the turned box's centre in the band,
+  (1148.4, 170.4) · (619.4, 75.8) · (305.5, 82.0), from `absoluteBoundingBox` and checked against `absoluteRenderBounds` (the ink at
+  1052 / 538 / 261 from the band's left), CSS `rotate(135deg)`. The root is the band, so these are root coordinates (+ `s.surplus`), and
+  the svg is the column's **sibling**, not its child: `container-type` implies layout containment, which would make the column its
+  containing block. It is the first child, so the positioned head paints over it (JP-128's backstop); the frame stands it above the
+  player, which its ink never meets. (3) **The band's 10px lime foot rule** — `sem/stroke/2`, an INSIDE bottom stroke on the band at 1440
+  and 768 and **none at 390**: `popVideoRule` in the root, an inset `boxShadow` of 8.2 / 10px in `s.stroke2`, `!s.mob`.
+- **The head's measure at 768 and 390** is JP-128's rule (stop short of the sticker's ink), with a judged clearance. The frame's narrow
+  heads are mixed-case Chunko ending 75.5 and 72.8 short of the arrow's ink (462.5 / 188.3 against 538.0 / 261.1); our capitals run
+  further (one line is 8.9em: 446 at 768). **Held to the frame's gap the seed takes a second line at 768 and the band 673 against the
+  frame's 627** (the gallery accepted that trade at its 768, the repertoire a smaller 390 head); the frame's 75 is the slack of a
+  shorter string, not a clearance it draws, so the measure is the arrow's ink **less 30**: `min(100cqi, 478px)` at 768 and 221 at
+  390, where the seed sets one line and two as the frame's does. One constant: 432.5 / 178.3 is the frame's-gap reading. At 1440 the
+  frame's gap is 293 and the measure is the column.
+- **Poster: `popStage`, the frame's own, no new FOCUS row.** `51d06990` is the bio's arch (layout 2's reading): the 1440 master is a `CROP`
+  at y .09 to .516 (`imageTransform` 1 / 0.426 / 0.09, unmirrored), the 768 and 390 masters a centred `FILL` that drops the head. So the
+  video's `Photo` reads `s.imagePos` under Pop at layout 4 (`gd`), the file's `'50% 0%'`; an upload has none and stays centred
+  (JP-129). The frame's 1440 foot fade and its three gradient layers are the scrim the branch already draws.
+- **Left out, as at every template:** the *551 539 views* count and *— Late Lights*, the 🔊 / ⚙ emoji (lucide's icons again). The violet
+  type over the photograph is the frame's own binding and **judged, not fixed**: `text/2` on a near-black scrim is about 3.4 : 1 at best
+  and lower over the jacket at 390 (the frame draws it the same); the other four templates' on-film type reads against it.
+- **The seam.** `vm.pad`'s `d === 3` video row is Pop's too (`156 / 100`, `60 / 60`, `40 / 40`: the 390 top is `Editorial || Pop` 40).
+  **Old seam:** no Pop row, so `padY` (80 / 56 / 44 each end) and the flat-arm head: sections **897.0 / 627.4 / 362.6**. **New:**
+  **936.5 / 627.4 / 383.1** in the harness against the frames' 1143 × .82 = 937.3, 627 and 383 (published 1440, page-check: **1143, the
+  frame's own**; 390 383). **The lens where the video was:** with a video between them, the page reads lime media → the media's violet rule →
+  the video's white → the video's lime rule → the gallery's pink, every edge straight at 1440 and 768 and rule-less at 390 (pictures at
+  1440 and 390, `page-check`'s seam clips; the frames' own order). **Neither the media nor the gallery changed**: no Pop site reads
+  `videoAbove` / `videoBelow` (the `ArcEdge` sites exclude Pop, the violet rule is the media's own foot and the lime rule the video's),
+  so `&below=video` / `&above=video` digest to zero for them, and `mediaAbove` has no Pop reader (Grunge's 390 head tear is its only one).
+- **Caps (`limits.mjs video --themes=4 --designs=3`).** `heading` measured 20 at 1440 (the arrow: *overlap*), **15** at 768 and 17 at 390;
+  the 16-character seed is the frame's own string and fits one line, so the cap is the seed's length, **16** (Editorial's rule; `Pop:
+  [null, 47, null, 16]`). `duration` 39 at 390 (held to 8) and `IDENTITY_CHARS.video.title` **35** (108 / 66 / 35, 390's box binds, Titan
+  in capitals beside the arrow; `Pop: [null, 49, null, 35]`). `--check` and `--seeds`: 0 failing, 0 over, for every theme and layout.
+- **Probes** (`--theme Pop --layout 4 --width 1440,768 --cat video`, committed tree `059f807`): `inline-probe --check` PASS (2 slots hit at
+  both widths, nothing wrong, unledgered or unreached); `photo-probe --check`, `--blank` and `--drop` PASS (1 slot, the poster).
+  `npm run build` clean. `page-check.mjs Pop 3,0,1,2`: no console error or warning on any card, 390 overflow 0, the video on the
+  layout-2 and layout-4 cards only, the setup modal's four cards. The two-server digest against `3c3f9e5` (720 renders, five themes, three widths, port normalised): **only Pop's video at arch 2 and 3** (layout 4's folded pair, six files) moved; Pop's layout 2, the other four themes' video and every other section are byte-identical. `&below=video` / `&above=video` over Pop's media, gallery and video: only the video moved (36 renders each), so the media's and the gallery's seams are untouched; the arrow and the rule are the video's own, proved by pictures at 1440, 768 and 390.
+
 ## Other templates
 
-Until session 9, Pop's layout 4 renders the same `s.retro ? literal : flat` arms in the theme's colours but not the frame's
-decoration. Each session ports one template's frame, then re-measures `in`, the caps and the two probes for it.
+All five templates are fitted at layouts 2 and 4 (sessions 1 to 9); what is left is `plans/video.md`'s session 10, the sweep.

@@ -127,7 +127,7 @@ Editorial's bands at the same width, **by traversal order**:
 | header | 61 / 57 / 57 | **61 / 57 / 57** — node for node | **61 / 57 / 57** | nothing; the seal is **Lime's disc tree** (Ellipses 5 / 6, Rectangles 7–10, `Frame 179`, a `TEXT_PATH` name), not Pop's smiley-globe |
 | bio (Section) | 55 / 55 / 52 | **33 / 33 / 30** — all of Lime's | 34 / 34 / 30 | a **dot grid** (`Union`, 414 × 343 / 414 × 343 / 231.7 × 192, 20 dots); **`Frame 255`**, the dimmer Grunge and Editorial also draw |
 | media (band) | 76 / 76 / 97 | 55 / 54 / 55 | 54 / 54 / 54 | a **dot grid** in `Left` (149 × 123.4, 20 dots; **two** at 390); **drops Lime's two arcs** (`Vector 1` / `Vector 2`); no tape (Editorial's `Frame 210`); the 768 band is `Frame 326` where Lime's is `Frame 325` (a rename) |
-| *video* (`Frame 318`) | 40 / 40 / 40 | — | — | — *not in the project* |
+| *video* (`Frame 318`) | 40 / 40 / 40 | — | — | — *restored by the video session, [`plans/video.md`](../video.md) session 9: the media's squiggle arrow beside the head and a 10px lime foot rule at 1440 and 768* |
 | gallery (wrapper) | 28 / 28 / 29 | 22 / 22 / 23 | 19 / 19 / 20 | the **smiley sun** (`Layer_1`, 154) and the **asterisk** (`Vector` 93 × 95) in the head frame `Frame 182`; **drops Lime's four 18 × 18 corner brackets** (`Frame 37`'s) and the 1440 arc `Vector 1`. Lime's well (`Frame` / `Frame 37` / `IMAGE`), **not** Editorial's tilted `Frame 183` |
 | repertoire (Section) | 94 / 94 / 94 | 93 / 93 / 93 | **93 / 93 / 93** | the **starburst** (`Vector` 105.43 × 104.67) in the panel; drops Lime's foot arc `Vector 2` |
 | map (`Frame 319`) | 61 / 61 / 61 | **61 / 61 / 61** | **61 / 61 / 61** | — (Lime's 1440 carries a no-op 62nd node) |
@@ -204,7 +204,7 @@ renders*). Keep the running *Inherited and used* list below; the sweep folds it 
 
 Lime's section holds unread, as under Grunge and Editorial. `pageOrder(3)` falls to
 `PAGE_ORDERS[0]`, `EXAMPLE_PAGE`'s order, and all three Pop pages stack exactly that (with the video
-band between media and gallery, which the project does not carry): header, bio, media, gallery,
+band between media and gallery when the page has one, which the setup modal's card 4 inserts: `plans/video.md`): header, bio, media, gallery,
 repertoire, map, pricing, calendar, form, testimonials, footer. **Expect no change to `PAGE_ORDERS`,
 `pageRows`, `NVAR`, `CATS` or `HEADER_COUNT`.** `preview.jsx`'s `&column=` and `&page=` are
 layout 3's and are not read here.
@@ -308,7 +308,7 @@ desktop id — each block's fit comment cites them); it is the gate the session 
 | 9 | `form` | **`964:73243`** *(an instance, at last)* | 1440 × **723** | `971:10922` | 768 × **970** | `977:14602` | 390 × **928** | 1 (submit 1) | `964:72940` / `971:5627` / `977:9201` | `725:3049` *(component)* / `971:9623` / `977:13490` | `if (s.v3 && s.limeTree)` ahead of `EnquiryForm`'s `if (s.v3)` | **done** — `c13fc52` |
 | 10 | `testimonials` | `964:73244` | 1440 × 716 | `971:10923` | 768 × **588.4** | `977:14603` | 390 × **576.4** | **4** (discs 4; cell 2 **1**, cell 3 **3**) | `964:72941` / `971:5628` / `977:9202` | `964:73125` / `971:9624` / `977:13491` | `if (s.limeTree)` inside `Testimonials`' `if (s.v3)`, after `padBot` | **done** — `19dd78f` |
 | — | `footer` | `964:73245` | 1440 × 479.5 | `971:10924` | 768 × 720.4 | `977:14604` | 390 × 720.4 | *(no mode; unbound)* — row 0's 3, layout 1's pink | — | — | — | **out of scope**: layout 1's Pop footer, closed at planning time |
-| — | `video` | `964:73165` | 1440 × 1143 | `971:10852` | 768 × 627 | `977:14407` | 390 × 383 | 1 (white) | — | — | — | **not in the project**; the three earlier layout-4 passes declined restoring it, and this pass does the same |
+| — | `video` | `964:73165` | 1440 × 1143 | `971:10852` | 768 × 627 | `977:14407` | 390 × 383 | 1 (white) | — | — | — | **not in the project when this pass ran**; the three earlier layout-4 passes declined restoring it, and this pass did the same. Restored by [`plans/video.md`](../video.md) session 9 (2026-10-27), which reads these three nodes: Scheme 1 at every node, so **no seat** |
 
 **Three nodes change scheme between widths**: the header's seal (Scheme 4 at 1440 and 768, 5 at
 390 — Grunge's seal moved 4 / 3 / 3, Editorial's not at all), the bio's card (Scheme 2 at 1440 and
@@ -478,7 +478,7 @@ sequence is identical at 1440, 768 and 390**:
 | 1 | header | the photograph over `#C20A6F`, fading to **pink** `#FF2DA0` at the floor | the **white** capsule nav, the lime-ringed stadium avatar, the identity block, the **blue** seal (teal at 390) |
 | 2 | bio | **pink** (Scheme 3) — one pink ground with the header's floor; a **10px teal rule** at its foot (1440, 768) | "KM BIO", the lime head, ~~Genres~~ the chips (Genres is pink on pink, not drawn — section 2), the lime dot grid; the card with its **lime** glass (pink at 390) |
 | 3 | media | **lime** `#C6F200` (Scheme 2); a **10px violet rule** at its foot (1440, 768) | the pink head and dot grid, the upright sleeve in its violet ring, six rounded tiles |
-| — | *video* | *white, under a 10px lime rule* | *not in the project* — so on our page the lime band meets the gallery's pink directly, a straight edge under the media's violet rule |
+| — | *video* | *white, under a 10px lime rule at 1440 and 768* | *not in the project when this pass ran* — so on a page without one the lime band meets the gallery's pink directly, a straight edge under the media's violet rule. **With a video** (video session 9) the sequence is lime → the media's violet rule → white → the video's own lime rule → pink, every edge straight, and no rule at 390; the media and the gallery draw nothing different |
 | 4 | gallery | **pink** (Scheme 3) | the lime head, the sun and the asterisk, the lime-ringed spotlight, the pill thumbs, the blue discs |
 | 5 | repertoire | **pink** (Scheme 3), one band with the gallery; a **10px violet rule** at its foot (1440, 768) | the `#FF63B8` panel, its violet rules, the lime rail, the violet starburst |
 | 6 | map | white (the page) | the `#F5F5F5` card ringed pink, the dark raster, the four coloured stat cells, the teal ticker |
@@ -771,7 +771,7 @@ masters:
 | map | `Map Texture` 664 × 555 / 708 × 320 / 370 × 272 | `e089bd11` | `vm.mapRadialSrc` | ✓ — on Scheme 3's viewport; sample the plate, and whether the pink rings read on it (Editorial's ink 120 mi ring vanished) |
 | calendar | the summary card's 48 × 48 disc | `dc450d0a` | `popCalendar` (`image`) | the twins' reading: the frame's disc is the shared placeholder, and the fit draws `image` there |
 | testimonials | — | — | — | no photographs: the marks are `vm.quotes[].mark` discs |
-| video | `51d06990` (`CROP`) | — | — | not in the project |
+| video | `51d06990` (`CROP` y .09–.516 at 1440, `FILL` narrow) | `POP_PHOTOS.video` (`popStage`) | ✓ — the frame's own; the narrow fills drop the head, so the video's `Photo` reads `s.imagePos` | restored by the video session (`plans/video.md`, session 9) |
 
 ## What already renders, and the traps in it
 
@@ -989,7 +989,7 @@ Written now from what the plan can see; the sections add to it. One session, in 
    *Package ›*, a refused and a valid Send Enquiry, the form's refused and valid submits, the
    testimonials' discs, the burger at 820) — then viewport seam shots at 1440 and 390: the header's
    pink floor into the pink bio as one ground, bio → lime media under the teal rule, **media →
-   gallery** (lime into pink under the violet rule, where the frame has its white video between),
+   gallery** (lime into pink under the violet rule, where the frame has its white video between — the video session's, where a page carries one),
    the gallery and repertoire's one pink ground, repertoire → the white map under the violet rule,
    form → the blue testimonials, testimonials → the pink footer under the teal rule; at 390 every
    edge straight with no rule.
@@ -2758,7 +2758,7 @@ Conventions, name it here in one line, with the plan it came from, a blank line 
   - **Seams** (page-check's `captureBeyondViewport` clips at each section's top, read at 1440
     and stacked at 390 on the headless canvas): the header's pink floor and the bio one ground,
     the bio's teal rule into the lime media, the media's violet rule into the pink gallery (where
-    the frame has its white video between), the gallery and the repertoire one pink ground, the
+    the frame has its white video between, which `plans/video.md` session 9 restored), the gallery and the repertoire one pink ground, the
     repertoire's violet rule into the white map, white onto the blue testimonials, and the
     sheet's teal rule onto the pink footer; at 390 every edge straight with no rule. None
     garbled; nothing to fix.
