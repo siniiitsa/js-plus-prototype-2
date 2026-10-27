@@ -588,9 +588,12 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // 41, which the branch carries. Editorial's (964:73054 · 971:9551 · 977:13295)
   // states the same 156 / 60 over the head and 100 / 60 under the player, but
   // its 390 Section stands **40** from the band's top, not 60. Lime's, Grunge's
-  // and Editorial's alone until Pop's session reads its frames (plans/video.md).
-  if (d === 3 && cat === 'video' && (T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial')) {
-    const inset = [[156, 100], [60, 60], [T.name === 'Editorial' ? 40 : 60, 40]][DEV_SEAT[Z.dev]]
+  // and Editorial's until Pop's session (964:73165 · 971:10852 · 977:14407),
+  // which states the same 156 / 60 over the head and 100 / 60 under the
+  // player and Editorial's 40 at 390; the 10px lime rule is inside that foot
+  // (plans/video.md, session 9).
+  if (d === 3 && cat === 'video' && (T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial' || T.name === 'Pop')) {
+    const inset = [[156, 100], [60, 60], [T.name === 'Editorial' || T.name === 'Pop' ? 40 : 60, 40]][DEV_SEAT[Z.dev]]
     const z = (v) => `${Z.dev === 'desktop' ? Math.round(v * 0.82 * 10) / 10 : v}px`
     vm.pad = `${z(inset[0])} ${vm.padX} ${z(inset[1])}`
   }

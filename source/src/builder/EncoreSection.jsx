@@ -10142,8 +10142,7 @@ function Video({ s }) {
     const gd = gr || ed || pop
     // All four designed templates are fitted at layout 2 now, so the gate is the
     // family flag: `s.limeTree` is Lime, Grunge, Editorial and Pop, which is the
-    // old `s.lime || gr || ed` plus Pop. (v3 below keeps the explicit arms until
-    // Pop's layout 4.)
+    // old `s.lime || gr || ed` plus Pop. (v3 below took the same flag in session 9.)
     const lime = s.limeTree
     const labelSz = lime ? s.labelMd : tab ? '14px' : s.mob ? '13px' : u(20)
     const rowSz = lime ? s.list : tab ? '12px' : s.mob ? '13px' : u(16)
@@ -10623,16 +10622,29 @@ function Video({ s }) {
   if (s.v3) {
     // Lime's dress, and Grunge's on the same tree (the Grunge band 964:72962 ·
     // 971:7956 · 977:12183, instances 964:72966 · 971:7960 · 977:12187, all in
-    // Static Youth: no mode leak). `gr` names what Grunge differs in; it is
-    // the pair and not `s.limeTree`, which Editorial and Pop's unfitted
-    // frames would also turn on.
+    // Static Youth: no mode leak). `gr` names what Grunge differs in. The gate
+    // was the pair until Editorial's and Pop's sessions, since `s.limeTree`
+    // would have turned Lime's dress on for their unfitted frames; it is the
+    // family now (`lime`, below).
     const gr = s.grunge
     // Editorial's band (964:73054 · 971:9551 · 977:13295, instances 964:73058 ·
     // 971:9555 · 977:13299) is the same tree on Scheme 1, paper. Its 768 instance
     // is in Static Youth's mode (a leak, below); the other two are Sienna Vale.
     const ed = s.editorial
-    const gd = gr || ed
-    const lime = s.lime || gd
+    // Pop's band (964:73165 · 971:10852 · 977:14407, instances 964:73169 ·
+    // 971:10856 · 977:14411) is the same tree, bound, in Pop's own mode with
+    // Scheme 1 resolved at every node of all three: no mode leak, no nested
+    // scheme (plans/video.md, session 9). It takes Lime's tokens (`box/1`
+    // `#F5F5F5` discs, text/2 violet on the film, text/1 pink glyphs and fill,
+    // a `box/1` track), Grunge's rounded-square chips and its `s.imagePos`
+    // poster, and is its own in three places: Titan's head fitted and lifted
+    // as the gallery's is, the lime squiggle arrow beside the head
+    // (`POP_ARROW_D`, the media's drawing) and the band's 10px lime foot rule.
+    const pop = s.pop
+    const gd = gr || ed || pop
+    // Lime, Grunge, Editorial and Pop are all fitted at layout 4 now, so the
+    // gate is the family flag, as `v1`'s since session 8.
+    const lime = s.limeTree
     const desk = !s.narrow
     const tab = isTablet(s)
     const z = desk ? 0.82 : 1
@@ -10678,6 +10690,19 @@ function Video({ s }) {
     const scrim = 'linear-gradient(180deg, rgba(0,0,0,0) 76.173%, #000000 100%)'
     // The frames' own page inset: 24 at both wide widths, 10 at 390.
     const padX = u(s.mob ? 10 : 24)
+    // The head's measure. Pop's narrow masters set the head mixed case in
+    // Chunko, one line at 768 and two at 390, its ink ending at 462.5 and 188.3
+    // in the band, 75.5 and 72.8 short of the arrow's ink (538.0 · 261.1). Our
+    // capitals in Titan run further (one line is 8.9em: 446 at 768), so the
+    // narrow head stops short of the arrow's ink as the gallery's does short of
+    // its sun (JP-128), by 30, not the frame's 75: that gap is the slack of a
+    // shorter mixed-case string and not a clearance the frame draws, and at 75
+    // the seed takes a second line at 768 (the band 673 against the frame's
+    // 627). 478 / 221 in the 708 / 370 column; the seed sets one line and two,
+    // as the frame's does. At 1440 the frame's gap is 293 and the seed sets
+    // well short of the arrow, so the measure is the column and the arrow
+    // stands behind a longer head.
+    const headMeasure = pop && !desk ? `min(100cqi, ${tab ? 478 : 221}px)` : '100cqi'
 
     const footType = {
       fontFamily: s.body, fontSize: lime ? s.bodySm : u(T.sm), lineHeight: 1.4,
@@ -10707,13 +10732,37 @@ function Video({ s }) {
     )
     const chip = (glyph) => (
       <span style={{
-        width: u(26), height: u(26), flex: 'none', borderRadius: u(ed ? 6 : gr ? 8 : 14),
+        width: u(26), height: u(26), flex: 'none', borderRadius: u(ed ? 6 : gr || pop ? 8 : 14),
         background: cream, color: creamInk, ...row('0', { justifyContent: 'center' }),
       }}>{glyph}</span>
     )
 
     return (
-      <div style={col(u(s.mob ? 30 : 60), { alignItems: 'stretch', ...(ed ? { containerType: 'inline-size' } : null) })}>
+      <>
+      {/* Pop's squiggle arrow (977:17354 · 971:11724 · 964:73172): the media's
+            drawing (`POP_ARROW_D`, 209.11 × 126.41 before its −135° turn), one
+            lime shape at ×0.844 at 768 and ×0.4602 at 390, the palette's
+            #C6F200 raw (no binding, Scheme 1's `tag/1/bg` to the byte). The
+            walker's x / y is the pivot of the turn, not the box: placed by the
+            turned box's centre in the band, (1148.4, 170.4) · (619.4, 75.8) ·
+            (305.5, 82.0), the root's own coordinates, since the root is the
+            band. It is the section's first child and the head is positioned,
+            so the head paints over it, as the gallery's sun (JP-128's
+            backstop); the frame's paint order stands it above the player,
+            which its ink never meets. It is the column's sibling, not its
+            child: `container-type` implies layout containment, which would make
+            the column the arrow's containing block. */}
+        {pop && (
+          <svg viewBox="0 0 209.11 126.41" aria-hidden="true" style={{
+            position: 'absolute', display: 'block', overflow: 'visible', pointerEvents: 'none',
+            left: `calc(${s.surplus} + ${desk ? u(1148.4) : tab ? '619.4px' : '305.5px'})`,
+            top: desk ? u(170.4) : tab ? '75.8px' : '82px',
+            width: desk ? u(209.11) : tab ? '176.49px' : '96.23px',
+            height: desk ? u(126.41) : tab ? '106.69px' : '58.17px',
+            transform: 'translate(-50%, -50%) rotate(135deg)',
+          }}><path d={POP_ARROW_D} fill={s.chips[0].bg} /></svg>
+        )}
+      <div style={col(u(s.mob ? 30 : 60), { alignItems: 'stretch', ...(ed || pop ? { containerType: 'inline-size' } : null) })}>
         {/* Grunge's 390 band is the one place the frames carry a seam in the
             video itself: a 1554 × 581 `Vector` (977:16056, Scheme 2's `sem/bg`,
             #171716) off the band's top-left, 32.2 of it inside, so the media's
@@ -10746,10 +10795,14 @@ function Video({ s }) {
         {s.title && <h2 style={distressed(s, {
           margin: 0, fontFamily: s.display,
           fontSize: gd
-            ? faced(s, ed && s.titleWordEms ? `min(${s.dispLg}, calc(100cqi / ${s.titleWordEms}))` : s.dispLg)
+            ? faced(s, (ed || pop) && s.titleWordEms ? `min(${s.dispLg}, calc(${headMeasure} / ${s.titleWordEms}))` : s.dispLg)
             : lime ? s.dispLg : u(T.disp),
           lineHeight: gd ? facedLh(s, 0.89) : 0.89, letterSpacing: s.dls, color: s.ac,
           textTransform: gd ? 'uppercase' : undefined,
+          // Titan sits 0.14em low at Display/LG (the gallery's scan). Positioned
+          // too, so it paints over the arrow, which is the first child.
+          ...(pop ? { position: 'relative', top: '-0.14em' } : null),
+          ...(pop && !desk ? { maxWidth: headMeasure } : null),
         })}>{s.title}</h2>}
         <div style={{
           position: 'relative', width: '100%',
@@ -10862,6 +10915,7 @@ function Video({ s }) {
           </div>
         </div>
       </div>
+      </>
     )
   }
   return null
@@ -31153,6 +31207,12 @@ export default function EncoreSection({ s }) {
   // inside in `scheme/1/stroke/2`, lime, at 1440 alone — visible, where the
   // twins' same stroke is a hidden paint; the narrow wrappers carry none.
   const popMediaRule = s.me && s.v1 && s.pop && !s.narrow
+  // Pop's layout-4 video band (964:73165 · 971:10852) strokes its foot 10px
+  // inside in `sem/stroke/2`, lime: the band's own last 10px of its 100 / 60
+  // foot, at 1440 and 768 alone (977:14407 carries no stroke). The band is
+  // this root, so the rule is its inset shadow; it is the seam into the
+  // gallery's pink, which the media's violet rule precedes on the other side.
+  const popVideoRule = s.vi && s.v3 && s.pop && !s.mob
   return (
     // The id is the nav's scroll target, and it is live-gated: the editor
     // document renders a dozen header previews at once through LayoutPicker
@@ -31163,7 +31223,8 @@ export default function EncoreSection({ s }) {
       fontFamily: s.body, padding: bleed ? 0 : s.pad,
       position: 'relative', overflowX: popClip || popFootClip ? 'clip' : undefined, overflowY: popFootClip ? 'clip' : undefined,
       boxShadow: grungeRule ? `inset 0 0 0 1px ${s.inactiveLine}` : editorialRule ? `inset 0 0 0 1px ${s.stroke2}`
-        : popMediaRule ? `inset 0 4.1px 0 ${s.onScheme[1].stroke2}, inset 0 -4.1px 0 ${s.onScheme[1].stroke2}` : undefined,
+        : popMediaRule ? `inset 0 4.1px 0 ${s.onScheme[1].stroke2}, inset 0 -4.1px 0 ${s.onScheme[1].stroke2}`
+        : popVideoRule ? `inset 0 -${s.narrow ? 10 : 8.2}px 0 ${s.stroke2}` : undefined,
       transition: 'background-color .45s ease, color .45s ease',
       '--ac': s.ac, '--acFg': s.acFg,
     }}>
