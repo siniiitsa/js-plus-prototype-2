@@ -9519,6 +9519,12 @@ function Media({ s }) {
               <TornEdge s={s} grunge side="bottom" bleed={false} height={desk ? 83 * z : 52} colour={s.bg} />
             </>)
           : !ed && !pop && <ArcEdge s={s} side="top" height={44.24 * z} colour={s.ac} bleed={false} />}
+        {/* The foot arc the frame draws (the page's `sem/bg`, turned 180°, into
+            the olive) is drawn only while a video band stands under the sheet:
+            with none, the sheet ends square and the gallery's own head arc is
+            the only seam (user call, 2026-09-18), so a deleted video brings
+            that page back (plans/video.md, session 3). */}
+        {!grunge && !ed && !pop && s.videoBelow && <ArcEdge s={s} side="bottom" height={44.24 * z} colour={s.bg} bleed={false} />}
         <div style={{
           padding: (ed || pop) && !desk
             ? `${u(tab ? 100 : 40)} calc(${s.surplus} + ${u(s.mob ? 10 : 56)}) ${u(tab ? 156 : 50)}`
@@ -10454,7 +10460,25 @@ function Video({ s }) {
   // playhead and the running time at one width only, which is the media
   // player's rule: a frame's own render is the artefact once it destroys its
   // own content. All three widths draw the whole thing.
+  //
+  // **Lime (964:72871 · 971:5436 · 977:9010 under Frame 318 964:72867 ·
+  // 971:5432 · 977:9006) is the same tree in its own mode, dressed in place**
+  // (`lime`, below; plans/video.md, session 3). Its 1440 and 768 instances
+  // bind box/1 `#2E3928` for every disc and the track, text/1 acid green for
+  // the glyphs and the head, and text/2 `#F2FFD0` for all the type on the
+  // photograph. **The 390 instance is in Retro's mode** (its mode collection
+  // reads Retro's: Soulway, `#EAD7B8`, `#FAECD5`, `#C8461C`, and a different
+  // photograph), a leak: nothing is read off it, and the three widths take
+  // the 1440 and 768 tokens. Two bindings that differ per variant are
+  // overridden, both toward the card's own legibility: the Mobile variant
+  // binds the head band's type to sem/bg (the dark page, unreadable on the
+  // poster), and the Desktop and Tablet variants bind the progress *fill* to
+  // box/1, the track's own colour, so the frame's bar shows no played portion.
+  // **The 768 instance clips its own component here too** (708 × 402 over a
+  // 567 tall child at y −82.5), so it is overridden the same way: the whole
+  // composition at all three widths.
   if (s.v3) {
+    const lime = s.lime
     const desk = !s.narrow
     const tab = isTablet(s)
     const z = desk ? 0.82 : 1
@@ -10476,18 +10500,18 @@ function Video({ s }) {
     // `sem/box/1` — every disc and the progress track. Retro's own `paper` IS
     // the beige page, so the cream is a literal here and the flat four have a
     // real second paper to take.
-    const cream = s.retro ? '#FAECD5' : s.paper
-    // `sem/text/2` #111111 on that cream.
-    const creamInk = s.retro ? '#111111' : s.paperFg
+    const cream = s.retro ? '#FAECD5' : lime ? s.box1 : s.paper
+    // `sem/text/2` #111111 on that cream. Lime's is the page's pale.
+    const creamInk = s.retro ? '#111111' : lime ? s.tx : s.paperFg
     // `sem/text/1`, which IS `s.ac` under Retro — so the head and the progress
     // fill need no literal and no arm. The transport glyph is the same token
     // resolving the other way; see the branch header.
-    const glyph = s.retro ? s.ac : s.paperFg
+    const glyph = s.retro || lime ? s.ac : s.paperFg
     // Cream type on the photograph. `paper` is documented as exactly this —
     // "the ink for type sitting over a photographic scrim" — and under Retro it
     // resolves to the frame's own `sem/bg` #EAD7B8 by construction, so this is
     // the one colour in the branch that needs no `s.retro` arm.
-    const onFilm = s.paper
+    const onFilm = lime ? s.tx : s.paper
     // The frame's foot fade: transparent to 76.173%, then black. Written in the
     // branch rather than added to SCRIM, the media player's rule — it belongs
     // to one design, and keeping it here keeps the whole diff inside the block.
@@ -10496,7 +10520,7 @@ function Video({ s }) {
     const padX = u(s.mob ? 10 : 24)
 
     const footType = {
-      fontFamily: s.body, fontSize: u(T.sm), lineHeight: 1.4,
+      fontFamily: s.body, fontSize: lime ? s.bodySm : u(T.sm), lineHeight: 1.4,
       color: onFilm, whiteSpace: 'nowrap', flex: 'none',
     }
     // The transport's two sizes. Both discs are cream with a rust glyph — the
@@ -10508,6 +10532,19 @@ function Video({ s }) {
     // The foot's two 26px controls. The frame sets an emoji in them at
     // `size/body-sm`; lucide's ink fills ~0.8 of its `size` box, so 14 draws
     // the 12 the emoji does (the audio player's size-an-icon-off-its-ink rule).
+    // Lime draws its transport as vectors: the skip is `LimeSkip`'s double
+    // triangle into a bar at the frame's 13.022 (the layout-2 player's glyph),
+    // the pause two 2.686 bars 3 apart (8.372 × 11.189). All three stand in
+    // discs that do not shrink at any width, so they take `z` alone.
+    const limePause = (
+      <svg viewBox="0 0 8.37221 11.1893" width={8.37221 * z} height={11.1893 * z} aria-hidden
+           style={{ display: 'block', flex: 'none' }}>
+        <g fill={glyph}>
+          <rect x="0" y="0" width="2.68611" height="11.1893" />
+          <rect x="5.6861" y="0" width="2.68611" height="11.1893" />
+        </g>
+      </svg>
+    )
     const chip = (glyph) => (
       <span style={{
         width: u(26), height: u(26), flex: 'none', borderRadius: u(14),
@@ -10530,7 +10567,7 @@ function Video({ s }) {
             Lime's acid green on pale lime being the cost the conventions
             already name twice. */}
         {s.title && <h2 style={{
-          margin: 0, fontFamily: s.display, fontSize: u(T.disp),
+          margin: 0, fontFamily: s.display, fontSize: lime ? s.dispLg : u(T.disp),
           lineHeight: 0.89, letterSpacing: s.dls, color: s.ac,
         }}>{s.title}</h2>}
         <div style={{
@@ -10557,10 +10594,10 @@ function Video({ s }) {
             ...row(u(16)),
           }}>
             <span style={{
-              fontFamily: s.body, fontSize: u(T.lg), lineHeight: 1.5, flex: 'none',
+              fontFamily: s.body, fontSize: lime ? s.bodyLg : u(T.lg), lineHeight: 1.5, flex: 'none',
             }}>←</span>
             <span style={{
-              fontFamily: s.display, fontSize: u(T.list), lineHeight: 1.2,
+              fontFamily: s.display, fontSize: lime ? s.list : u(T.list), lineHeight: 1.2,
               letterSpacing: s.dls, minWidth: 0,
               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
             }}>{s.brand}</span>
@@ -10579,14 +10616,18 @@ function Video({ s }) {
             position: 'absolute', left: '50%', top: '50%',
             transform: 'translate(-50%, -50%)', ...row(u(24)),
           }}>
-            <span style={ctl(40)}><SkipBack size={un(14.6)} fill="currentColor" /></span>
+            <span style={ctl(40)}>{lime
+              ? <LimeSkip width={13.0217 * z} color={glyph} back />
+              : <SkipBack size={un(14.6)} fill="currentColor" />}</span>
             {/* A player caught mid-song, which is the picture the frame draws
                 — and the picture is all this section is. Layout 2's bar says
                 the same thing with the same glyph. */}
-            <span style={ctl(64)}>
-              <Pause size={un(16.8)} fill="currentColor" strokeWidth={0} />
-            </span>
-            <span style={ctl(40)}><SkipForward size={un(14.6)} fill="currentColor" /></span>
+            <span style={ctl(64)}>{lime
+              ? limePause
+              : <Pause size={un(16.8)} fill="currentColor" strokeWidth={0} />}</span>
+            <span style={ctl(40)}>{lime
+              ? <LimeSkip width={13.0215 * z} color={glyph} />
+              : <SkipForward size={un(14.6)} fill="currentColor" />}</span>
           </div>
 
           {/* The foot band. `videoAt` and `videoDur` are rendered or not rather
@@ -10626,8 +10667,8 @@ function Video({ s }) {
                 emitted CSS freezes at the desktop −0.72px; the tracking ramps
                 with its token (the pricing lesson). */}
             <span style={{
-              fontFamily: s.body, fontWeight: 700, fontSize: u(T.chip), lineHeight: 1,
-              letterSpacing: u(-0.06 * T.chip), color: onFilm, flex: 'none',
+              fontFamily: s.body, fontWeight: 700, fontSize: lime ? s.chip : u(T.chip), lineHeight: 1,
+              letterSpacing: lime ? '-0.06em' : u(-0.06 * T.chip), color: onFilm, flex: 'none',
             }}>HD</span>
           </div>
         </div>
@@ -17881,7 +17922,7 @@ function Gallery({ s }) {
         }}>
           {grunge
             ? <TornEdge s={s} grunge side="top" bleed={false} height={desk ? 67.8 * z : tab ? 66.3 : 36.3} colour={s.bg} />
-            : !ed && !pop && <ArcEdge s={s} side="top" height={44.24 * z} colour={s.box1} bleed={false} />}
+            : !ed && !pop && <ArcEdge s={s} side="top" height={44.24 * z} colour={s.videoAbove ? s.bg : s.box1} bleed={false} />}
           {pop && (
             <PopSun size={un(154)} tilt={25.37} hue={s.onScheme[1].chips[2].bg} ink={s.onScheme[1].bg} style={{
               zIndex: -1,

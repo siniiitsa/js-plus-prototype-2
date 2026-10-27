@@ -272,7 +272,7 @@ export const pageDesignOf = (sections, themeName) => {
   return ((h.arch % n) + n) % n
 }
 
-export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = {}, tiers = [], email = '', Z, mob, live = false, navSections = [], column = false, today, page = -1, clamp = true }) {
+export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = {}, tiers = [], email = '', Z, mob, live = false, navSections = [], column = false, today, page = -1, above = '', below = '', clamp = true }) {
   const theme = THEMES[themeIdx]
   const nDesign = designCount(cat, theme.name)
   // A video has a frame at layouts 2 and 4 alone (plans/video.md, call 1), so
@@ -484,6 +484,12 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     footerBand: cat === 'footer' && page === 2
       ? (T.name === 'Lime' ? T.sem?.box1 : T.name === 'Grunge' ? '#171716' : undefined)
       : undefined,
+    // Whether the section beside it on the page is a video (`above` and `below`
+    // are the neighbours' categories, passed by the two callers that hold the
+    // page's array). Layout 4's media and gallery draw their seam against the
+    // band between them only while it stands there; a page whose video was
+    // deleted keeps the seams fitted without one (plans/video.md, session 3).
+    videoAbove: above === 'video', videoBelow: below === 'video',
   }
   // Pop's layout-1 sections stand on their own frames' insets too (JP-116, user
   // call, 2026-10-08, JP-094's shape at layout 1, reversing the fit's
@@ -555,6 +561,17 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     }[cat]?.[DEV_SEAT[Z.dev]]
     const z = (v) => (v == null ? vm.padY : `${Z.dev === 'desktop' ? Math.round(v * 0.82 * 10) / 10 : v}px`)
     if (inset) vm.pad = `${z(inset[0])} ${vm.padX} ${z(inset[1])}`
+  }
+  // Layout 4's video band (Lime's Frame 318: 964:72867 · 971:5432 · 977:9006)
+  // pads its Section 156 / 60 / 60 above the head and 100 / 60 / 40 under the
+  // player, on the page's own ground between the media sheet and the gallery's
+  // (both sheets bleed to their roots' edges, so the root's padding is the
+  // band's). `padY` gave 80 / 56 / 44 at both ends. Lime's alone until the
+  // other templates' sessions read their frames (plans/video.md).
+  if (d === 3 && cat === 'video' && T.name === 'Lime') {
+    const inset = [[156, 100], [60, 60], [60, 40]][DEV_SEAT[Z.dev]]
+    const z = (v) => `${Z.dev === 'desktop' ? Math.round(v * 0.82 * 10) / 10 : v}px`
+    vm.pad = `${z(inset[0])} ${vm.padX} ${z(inset[1])}`
   }
   // Lime layout 3's column heads — the bio's "KM BIO", the player's and the
   // calendar's "Book Me" — stand 50 below their row in all three frames
@@ -5486,6 +5503,7 @@ function PublishedPage({ themeIdx, sections, artistName, win, frameW }) {
       themeIdx, cat: sec.cat, arch: sec.arch, c: sec.c,
       artistName, identity, tiers, email, Z, mob: key === 'mobile', live: true, navSections,
       column: inColumns.get(i), today, page: pageDesignOf(sections, T.name),
+      above: sections[i - 1]?.cat, below: sections[i + 1]?.cat,
     })} />
   )))
   return k === 1 ? page : <div style={{ zoom: k }}>{page}</div>
@@ -7366,7 +7384,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
     const down = canMove(arr, sec.id, 1)
     const isHeader = sec.cat === 'header'
     return {
-      ...sectionVm({ themeIdx: st.theme, cat: sec.cat, arch: sec.arch, c: sec.c, artistName, identity, tiers, email, Z, mob: Z === SIZES.mobile || isMobile || device === 'mobile', navSections, column: inColumns.get(i), page: pageDesignOf(arr, T.name) }),
+      ...sectionVm({ themeIdx: st.theme, cat: sec.cat, arch: sec.arch, c: sec.c, artistName, identity, tiers, email, Z, mob: Z === SIZES.mobile || isMobile || device === 'mobile', navSections, column: inColumns.get(i), page: pageDesignOf(arr, T.name), above: arr[i - 1]?.cat, below: arr[i + 1]?.cat }),
       layoutLabel: isHeader
         ? headerLayoutLabel(T.name, sec.arch)
         : `${cat.name} layout ${sec.arch + 1}`,
