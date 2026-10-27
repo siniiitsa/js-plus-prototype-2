@@ -264,6 +264,7 @@ same layout, and Retro's two *Learned on the video section* blocks. Procedure pe
   and 1440; the preview overlay.
 - Fold the pass into `plans/CONVENTIONS.md` (rows leaned on three times), add the `plans/README.md` table
   row, finish `notes/video.md` and the `CLAUDE.md` row for it in the notes table.
+  `CLAUDE.md`'s `sectionVm` paragraph also gains `above` / `below` beside `page` (session 3's neighbour inputs).
 - Refresh `index.html` **and** `published.html` at the repo root (the two-file step in `CLAUDE.md`).
 
 ## Risks
