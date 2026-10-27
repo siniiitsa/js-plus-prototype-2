@@ -10588,7 +10588,12 @@ function Video({ s }) {
     // the pair and not `s.limeTree`, which Editorial and Pop's unfitted
     // frames would also turn on.
     const gr = s.grunge
-    const lime = s.lime || gr
+    // Editorial's band (964:73054 · 971:9551 · 977:13295, instances 964:73058 ·
+    // 971:9555 · 977:13299) is the same tree on Scheme 1, paper. Its 768 instance
+    // is in Static Youth's mode (a leak, below); the other two are Sienna Vale.
+    const ed = s.editorial
+    const gd = gr || ed
+    const lime = s.lime || gd
     const desk = !s.narrow
     const tab = isTablet(s)
     const z = desk ? 0.82 : 1
@@ -10624,7 +10629,10 @@ function Video({ s }) {
     // "the ink for type sitting over a photographic scrim" — and under Retro it
     // resolves to the frame's own `sem/bg` #EAD7B8 by construction, so this is
     // the one colour in the branch that needs no `s.retro` arm.
-    const onFilm = lime ? s.tx : s.paper
+    // Editorial's frames bind it to `sem/bg` too, and there that IS the paper
+    // (#F6F0E8), where Lime's and Grunge's `text/2` is the pale: `s.tx` is the
+    // ink here, black on the scrim.
+    const onFilm = ed ? s.bg : lime ? s.tx : s.paper
     // The frame's foot fade: transparent to 76.173%, then black. Written in the
     // branch rather than added to SCRIM, the media player's rule — it belongs
     // to one design, and keeping it here keeps the whole diff inside the block.
@@ -10660,13 +10668,13 @@ function Video({ s }) {
     )
     const chip = (glyph) => (
       <span style={{
-        width: u(26), height: u(26), flex: 'none', borderRadius: u(gr ? 8 : 14),
+        width: u(26), height: u(26), flex: 'none', borderRadius: u(ed ? 6 : gr ? 8 : 14),
         background: cream, color: creamInk, ...row('0', { justifyContent: 'center' }),
       }}>{glyph}</span>
     )
 
     return (
-      <div style={col(u(s.mob ? 30 : 60), { alignItems: 'stretch' })}>
+      <div style={col(u(s.mob ? 30 : 60), { alignItems: 'stretch', ...(ed ? { containerType: 'inline-size' } : null) })}>
         {/* Grunge's 390 band is the one place the frames carry a seam in the
             video itself: a 1554 × 581 `Vector` (977:16056, Scheme 2's `sem/bg`,
             #171716) off the band's top-left, 32.2 of it inside, so the media's
@@ -10690,11 +10698,19 @@ function Video({ s }) {
             booking calendar's check-whether-the-leak-does-anything rule,
             answered three times no. `sem/text/1` on the page ground is `s.ac`,
             Lime's acid green on pale lime being the cost the conventions
-            already name twice. */}
+            already name twice. Editorial's is Gloock in capitals at the
+            token's 97 / 73 / 48 (the frame's 118 × .82 and the masters' own),
+            fitted to its widest word in the column as the gallery's head is
+            (`titleWordEms`; the column is the container, `100cqi`), where the
+            frame's condensed Fisterra Fora sets "SEE ME IN ACTION" on one
+            line at every width and Gloock's wider capitals may take two. */}
         {s.title && <h2 style={distressed(s, {
-          margin: 0, fontFamily: s.display, fontSize: gr ? faced(s, s.dispLg) : lime ? s.dispLg : u(T.disp),
-          lineHeight: gr ? facedLh(s, 0.89) : 0.89, letterSpacing: s.dls, color: s.ac,
-          textTransform: gr ? 'uppercase' : undefined,
+          margin: 0, fontFamily: s.display,
+          fontSize: gd
+            ? faced(s, ed && s.titleWordEms ? `min(${s.dispLg}, calc(100cqi / ${s.titleWordEms}))` : s.dispLg)
+            : lime ? s.dispLg : u(T.disp),
+          lineHeight: gd ? facedLh(s, 0.89) : 0.89, letterSpacing: s.dls, color: s.ac,
+          textTransform: gd ? 'uppercase' : undefined,
         })}>{s.title}</h2>}
         <div style={{
           position: 'relative', width: '100%',
@@ -10710,8 +10726,11 @@ function Video({ s }) {
           {/* Grunge's poster is the bio's drummer, the frame's own (8031d0f3):
               a 1440 crop at y .087 to .554 and a centred fill narrow, which cuts
               him at the brow. `grungeStage`'s own focus keeps the head at every
-              width, layout 2's reading (an upload has none and stays centred). */}
-          <span style={{ position: 'absolute', inset: 0 }}><Photo s={s} backdrop style={gr ? { objectPosition: s.imagePos } : undefined} /></span>
+              width, layout 2's reading (an upload has none and stays centred).
+              Editorial's is `editorialStage` (9d20fe0d, the bio's arch) the same
+              way: a 1440 crop at y .081 to .535, a centred fill at 390 that
+              drops the face, and the file's `'50% 0%'` keeps it. */}
+          <span style={{ position: 'absolute', inset: 0 }}><Photo s={s} backdrop style={gd ? { objectPosition: s.imagePos } : undefined} /></span>
           <span aria-hidden style={{ position: 'absolute', inset: 0, background: scrim }} />
 
           {/* The head band. The frame states `overflow-clip` on it and hard-cuts
@@ -10727,9 +10746,9 @@ function Video({ s }) {
               fontFamily: s.body, fontSize: lime ? s.bodyLg : u(T.lg), lineHeight: 1.5, flex: 'none',
             }}>←</span>
             <span style={{
-              fontFamily: s.display, fontSize: gr ? faced(s, s.list) : lime ? s.list : u(T.list),
-              lineHeight: gr ? facedLh(s, 1.2) : 1.2,
-              letterSpacing: s.dls, minWidth: 0, textTransform: gr ? 'uppercase' : undefined,
+              fontFamily: s.display, fontSize: gd ? faced(s, s.list) : lime ? s.list : u(T.list),
+              lineHeight: gd ? facedLh(s, 1.2) : 1.2,
+              letterSpacing: s.dls, minWidth: 0, textTransform: gd ? 'uppercase' : undefined,
               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
             }}>{s.brand}</span>
           </div>

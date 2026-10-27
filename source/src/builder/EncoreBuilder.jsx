@@ -584,10 +584,12 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // band's). `padY` gave 80 / 56 / 44 at both ends. Grunge's (964:72962 ·
   // 971:7956 · 977:12183) states the same 156 / 60 / 60 over the head and
   // 100 / 60 / 40 under the player; its 390 head is the shorter Anton-fitted
-  // 41, which the branch carries. Lime's and Grunge's alone until the other
-  // templates' sessions read their frames (plans/video.md).
-  if (d === 3 && cat === 'video' && (T.name === 'Lime' || T.name === 'Grunge')) {
-    const inset = [[156, 100], [60, 60], [60, 40]][DEV_SEAT[Z.dev]]
+  // 41, which the branch carries. Editorial's (964:73054 · 971:9551 · 977:13295)
+  // states the same 156 / 60 over the head and 100 / 60 under the player, but
+  // its 390 Section stands **40** from the band's top, not 60. Lime's, Grunge's
+  // and Editorial's alone until Pop's session reads its frames (plans/video.md).
+  if (d === 3 && cat === 'video' && (T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial')) {
+    const inset = [[156, 100], [60, 60], [T.name === 'Editorial' ? 40 : 60, 40]][DEV_SEAT[Z.dev]]
     const z = (v) => `${Z.dev === 'desktop' ? Math.round(v * 0.82 * 10) / 10 : v}px`
     vm.pad = `${z(inset[0])} ${vm.padX} ${z(inset[1])}`
   }
