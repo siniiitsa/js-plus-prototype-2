@@ -70,7 +70,7 @@ for video as it does the header's). Only the poster and the avatar are `photoSlo
 the seed's and carry no `data-photo` (`photo-probe --cat video`: PASS, `--blank` and `--drop` too, no
 `PHOTO_OFF` row).
 
-## Caps (`node scripts/limits.mjs video`, Retro; Lime's layout 2 in session 2; the other three templates re-measure in their sessions)
+## Caps (`node scripts/limits.mjs video`, Retro; Lime's layout 2 in session 2; Grunge's layouts 2 and 4 in sessions 4 and 5; Editorial and Pop re-measure in theirs)
 
 | Field | Cap | Measured |
 |---|---|---|
@@ -315,8 +315,68 @@ artist row's two halves on two lines, the panel under, the list two to a line).
 - `&n=` has no video entry in the harness (call 4), so there is no emptied-list render; `description`,
   `allCta`, `followCta` and `duration` emptied are the Retro and Lime behaviours.
 
+## Grunge · layout 4 (session 5, 2026-10-27)
+
+Frames: band `Frame 318` `964:72962` 1440×1186 · `971:7956` 768×654 · `977:12183` 390×380, inner *Cinematic
+minimal* `964:72966` · `971:7960` · `977:12187`. Band `sem/bg` `#000000` (Scheme 1) at all three; Section y 156 / 60 / 60,
+x 56 / 30 / 10; head Stones Crush 130 / 81 / 46 at .89 (116 / 72 / 41 tall, `sem/text/1` `#DF262C`); head → instance
+60 / 60 / 30; foot 100 / 60 / 40. The 390 band carries the stray 1554×581 `Vector` `977:16056` (below).
+
+- **No mode leak, and no trap bound wrong.** All three instances are `1 · Primitives: Static Youth` (Lime's 390 was in
+  Retro's mode); the bar's `←`, the name and every clock bind `sem/text/2` white at all three widths (Lime's Mobile
+  variant bound the head band to `sem/bg`); the poster is the same `8031d0f3` at all three. Still true as at Lime: the
+  768 instance clips its own composition (708×402 over a 567 child at y −82.5) and is drawn whole; the 02:05 / 03:57
+  clocks and a progress fill of 364 / 369 / 59 of the track disagree, so the fill stays `s.ac` at `videoPct`.
+- **The gate** is the pair again: `const gr = s.grunge`, `const lime = s.lime || gr` at the head of `Video`'s `v3`
+  branch, never `s.limeTree`. Everything bound resolves through Lime's keys: discs, chips and badges `s.box1`
+  (`#1A1A1A`), type `s.tx` white, glyphs and fill `s.ac` (`#DF262C`, the skip and pause marks bind `sem/text/1`), the
+  Lime vectors (`LimeSkip` 13.022, the two-bar pause), the player's radius 30 (the instance's; the inner 8 is clipped),
+  no stroke and no effect anywhere in the tree.
+- **Where Grunge is its own (`gr` arms): five.** (1) **The progress track is `sem/box/2` `#383838`** (`s.box2`), where
+  Lime's binds `box/1` (a `track` const; the discs keep `cream`). (2) **The volume and settings chips are 26 with
+  `radius/control` 8**, rounded squares, where Lime's is the 14 circle (`u(gr ? 8 : 14)`; the skip and pause discs are
+  still circles, R20 / R32). (3) **The head and the artist's name are Anton** (`faced` / `facedLh` / uppercase; the head
+  through `distressed`, the name's `list` key not): 80.25 / 60.75 / 34.5 px over the frame's 116 / 72 / 41 line boxes.
+  (4) **The poster reads `s.imagePos`** (layout 2's reading, below). (5) **The 390 head tear** (the seam).
+- **Poster: `grungeStage`, the frame's own (`8031d0f3`, the bio's drummer), and no new FOCUS row.** The same hash and
+  the same crops as layout 2 (1440 a `CROP` at y .087 to .554, the two narrow a centred `FILL`), so the video's `Photo`
+  reads `s.imagePos` under Grunge alone (`objectPosition`; an upload has none and stays centred), exactly session 4's
+  call: the existing `'50% 25%'` keeps the faces at every width and is ~5% of the height off the 1440 crop. Not read for
+  any other template. Row art and the avatar are not drawn in layout 4.
+- **The seam is the neighbour read the plan expected, and it is small.** The frames' two Grunge seams were *already
+  drawn* by the media (a red head tear and a black foot tear at 1440 and 768, none at 390) and the gallery (a black head
+  tear, 67.8 × .82 / 66.3 / 36.3) and neither moves: the black foot tear meets the video's black band as it met the
+  gallery's black head tear, and the gallery's black tear hangs from the black band into the red. **Old seam** (a page
+  with no video, kept): the two black tears read as one dark torn band about two depths deep at 1440 and 768, and at 390
+  the media's `#171716` met the gallery's tear on a straight edge, 23 in 255 (the gallery's session named both).
+  **New seam, with a video between:** the black band separates the tears at 1440 and 768, and at 390 the frame's one
+  extra seam comes back: `977:16056`, a Scheme 2 `sem/bg` (`#171716`) `Vector` off the band's top-left of which 32.2
+  stands inside, so the media's dark band hangs into the black in a torn edge. It is `TornEdge grunge side="top"`,
+  height 32.2, `#171716` (the bio's foot tear's literal: Scheme 2 has no vm key), drawn in the video's root at 390 only
+  and **only while the media stands directly above** (`vm.mediaAbove`, `above === 'media'`, the third neighbour key
+  beside `videoAbove` / `videoBelow`): a video reordered away from the media keeps no half a band. So **neither the media
+  nor the gallery changed for Grunge**: `&below=video` and `&above=video` digest to zero for them, and the new key's
+  only reader is Grunge's video at 390.
+- **`vm.pad`'s `d === 3` video row is Grunge's too** (Lime's `[[156, 100], [60, 60], [60, 40]]`, the frame's own, the
+  condition now `Lime || Grunge`). **Old seam:** no Grunge row, so `padY` (80 / 56 / 44 each end) and Lime's flat-arm
+  head: sections 897 / 627.4 / 362.6, 75 / 26.6 / 17.3 under the frame. **New:** **972.1 / 654.0 / 379.9** against the
+  frames' 1186 × .82 = 972.5, 654 and 380 (the 390 head is 41, Lime's 48), and in the whole page (card 4, `page-check`)
+  media 1006 → video 380 → gallery 711.
+- **Caps (`limits.mjs video --themes=2 --designs=3`).** `heading` **25** (390 binds, a two-line wrap; 32 at 1440, 27 at
+  768; `Grunge: [null, 91, null, 25]`), `duration` 39 at 390 (held to 8, a time), `IDENTITY_CHARS.video.title` **55**
+  (163 / 105 / 55; `Grunge: [null, 49, null, 55]`). `--check` and `--seeds`: 0 failing, 0 over.
+- **Probes** (`--theme Grunge --layout 4 --width 1440,768 --cat video`, on the committed tree `56c320b`): `inline-probe
+  --check` PASS (2 slots hit at both widths, nothing wrong, unledgered or unreached); `photo-probe --check`, `--blank`
+  and `--drop` PASS (1 slot, the poster). `npm run build` clean. `page-check.mjs Grunge 3,0,1,2`: no console error or
+  warning, 390 overflow 0, the video on the layout-2 and layout-4 cards only, the setup modal's four cards. The
+  two-server digest against `b219803` (720 renders, five themes, three widths, port normalised): **only Grunge's video
+  at arch 2 and 3** (layout 4's folded pair) moved; the other four themes' video, Grunge's layout 2 and every other
+  section are byte-identical; `&below=video` / `&above=video` over media, gallery and video: again only Grunge's video;
+  `&above=media` moves Grunge's 390 video by one `svg` (32.2) and its `path`, and nothing at 1440 or 768. SVG fills are
+  the digest's blind spot, so the arcs were proved by pictures (media → video → gallery at all three widths).
+
 ## Other templates
 
-Until their sessions, Grunge's layout 4, and Editorial and Pop's layouts 2 and 4, render the same `s.retro ? literal : flat` arms, in the
+Until their sessions, Editorial and Pop's layouts 2 and 4 render the same `s.retro ? literal : flat` arms, in the
 theme's colours but not the frames' decoration. Each session
 ports one template's frame, then re-measures `in`, the caps and the two probes for it.

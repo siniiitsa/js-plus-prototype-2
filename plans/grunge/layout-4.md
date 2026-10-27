@@ -243,7 +243,7 @@ it is the gate this session widens.
 | 9 | `form` | **`725:2990`** *(the main component — no page instance at 1440)* | 1440 × 795 | `971:8151` | 768 × 1024 | `977:12378` | 390 × 964 | `964:72940` / `971:5627` / `977:9201` | `964:72845` / `964:79477` / `977:8663` | `if (s.v3 && s.lime)` ahead of `EnquiryForm`'s `if (s.v3)` | done `4fc0be4` |
 | 10 | `testimonials` | `964:73035` | 1440 × 716 | `971:8152` | 768 × 642.4 | `977:12379` | 390 × 603.4 | `964:72941` / `971:5628` / `977:9202` | `964:72846` / `964:79536` / `977:8764` | `if (s.lime)` inside `Testimonials`' `if (s.v3)`, after `padBot` | done `a662b2d` |
 | — | `footer` | `964:73036` | 1440 × 479.5 | `971:8153` | 768 × 647.4 | `977:12380` | 390 × 619.4 | `964:72942` | — | — | **out of scope**: Grunge's own layout-1 footer family at layout 1's sizes; `NVAR.footer` is 1 |
-| — | `video` | `964:72962` | 1440 × 1186 | `971:7956` | 768 × 654 | `977:12183` | 390 × 380 | — | — | — | **not in the project** (`d734992`); Retro's QA and Lime's pass declined restoring it on layout 4, and this pass does the same |
+| — | `video` | `964:72962` | 1440 × 1186 | `971:7956` | 768 × 654 | `977:12183` | 390 × 380 | — | — | — | **not in the project** (`d734992`); Retro's QA and Lime's pass declined restoring it on layout 4, and this pass did the same *(restored 2026-10-27, `plans/video.md` session 5)* |
 
 `EncoreSection.jsx`'s fit comments cite the Retro twin's and the Lime twin's node ids, so grep
 for either to find the branch and its block. **Cite branches by id, never by line number**: the
@@ -367,7 +367,7 @@ page with four red grounds and one dark band, and its seams are torn**:
 | 1 | header | photograph over `#82211B`, fading to **`#DF262C`** at the floor | — (a straight edge into the red bio band) | the black glass nav, the avatar tile, the identity panel, the seal |
 | 2 | bio | **red `#DF262C`** (Scheme 3) | none at 1440 / 768 · **at 390 a foot tear in `#1A1A1A`** (`977:16058`) | "KM BIO", the black head, the Genres chips; the card at radius 15 |
 | 3 | media | **`#171716`** (Scheme 2) | head **`#DF262C`** (the bio's red) · foot **`#000000`** — at 1440 and 768; **none at 390** | "Six Worth Your Ears" in red, the sleeve, the six tiles |
-| — | *video* | page | none | *not in the project* |
+| — | *video* | page `#000000` | none at 1440 and 768 · **at 390 a `#171716` head tear** (`977:16056`, 32.2 deep) | the head, the player; *restored 2026-10-27, `notes/video.md`* |
 | 4 | gallery | **red** (Scheme 3) | head **`#000000`** · none | the black head, the spotlight with its brackets, the rail, the dark discs |
 | 5 | repertoire | **red** (Scheme 3), one band with the gallery | none · foot **`#000000`** | the `#F52E34` panel at radius 60, its rows and the A–Z rail |
 | 6 | map | page | none (the 1440 `Vector 2`, 1437.8 × 44.24 on **Scheme 5**, is Lime's no-op leftover again — not drawn) | the `#1A1A1A` card, the viewport with red rings, four stat cards in `#FF0000`, the ticker |
@@ -403,6 +403,7 @@ black-run per column off the render). Node arithmetic, for the sessions to confi
   against the band's `#171716` (3 in 255). Open question 3; the default is to follow each master
   — the media's head at 1440 and 768, the bio's foot at 390 — in the **band's** `#171716`
   (layout 1's rule: a seam is the neighbour's ground), and name the 3-in-255.
+- *(Video session 5, 2026-10-27: with a video between them the two tears stand apart on a black band and neither section changed; the 390 gains the video's own `#171716` head tear, drawn only under a media. A page without one keeps what follows.)*
 - **The lens where the video was is not a lens here.** The media's foot and the gallery's head
   are both black and meet directly on our page — black on black between `#171716` and red, so it
   reads as one dark tear roughly the two depths deep, not Lime's visible 44 + 44 lens. Lime's
