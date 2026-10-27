@@ -144,6 +144,14 @@ page of each other template at both widths; `index.html` refresh by the delibera
 (`index.html` and `published.html`, both to the root); the tester's steps once more on the built file, Pop L3 and
 Retro L4, Apply untouched, published tab at 1440.
 
+**Done, 2026-10-27.** `photo-probe --check` at 1440 and 768: Pop L1–4, Retro L1–4, Editorial, Grunge and Lime L1 — PASS
+(0 WRONG, 0 NOT-RESTORED, 0 MISSING, 0 UNLEDGERED). `index.html` refreshed from `dist-standalone` (`published.html` is
+byte-identical to the root's). Tester's steps on the built file served over http, a real mouse, Desktop 1440: an untouched
+Apply on every gallery photo of Pop L3 (7 tiles) and Retro L4 (the spotlight and 7 tiles) leaves every canvas `<img>`'s
+`src`, `object-position` and box unchanged, and the published tab (15 and 18 imgs) is identical before and after. Positive
+control: the same script on `main`'s `index.html` reports CHANGED on all 7 Pop tiles and on Retro's spotlight, and the
+published tab differs.
+
 ## Open questions for the tester
 
 - Which of the 112 slots lose the face *with a real edit* (not an untouched Apply)? They are the residual
