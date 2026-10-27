@@ -584,10 +584,11 @@ Frames: *Video Players — A · Dashboard player* `964:64569` 1440×782 · `986:
   **715.5 / 1110.0 / 1113.5** against the frames' 782 × 0.82 = 641.2 / 1112.2 / 1107.8 (74 too tall at 1440). **New seam:** **641.4 / 1112.0 / 1106.8** in the harness. The
   1440 foot is 49 (Lime's 43, Grunge's 49, Editorial's 50): the clip takes ~7 off the artist row and Titan's caption box is
   Grunge's height. In the whole page (card 2, `page-check`, published 1440) the neighbours land on their frames: media 966 →
-  **video 782 (782)** → repertoire 793 (792); at 390 media 1420 → video 1107 (1107.8) → repertoire 594. **No seam is drawn between
-  them**: pictures at all three widths show the media's lime card (with its 5px lime rule at 1440, the media's own), the video
-  flush on the white page, and the repertoire's grey `box/1` sheet ringed 1px pink meeting it flush as the frames stand them. So
-  there is nothing to re-fit but the inset.
+  **video 782 (782)** → repertoire 793 (792); at 390 media 1420 → video 1107 (1107.8) → repertoire 594. At 768 the three roots stand on
+  their frames too (media 1541.4 (1541) → video 1112.0 (1112.2) → repertoire 791.9 (792)). **No seam is drawn between them**:
+  pictures at 1440 and 390 (the published page's stack) and the 768 media foot show the media's lime card (with its 5px lime
+  rule at 1440, the media's own), the video flush on the white page, and the repertoire's grey `box/1` sheet ringed 1px pink
+  meeting it flush as the frames stand them. So there is nothing to re-fit but the inset.
 - **Judged, not fixed: Titan's row titles clip a character sooner than the frame's.** The frame's 209-wide column clips the last
   glyph of *MANCHESTER AT 3AM* by 4px (it reads as the full string); ours ends in the ellipsis (`MANCHESTER AT 3…` at 1440), the
   branch's one truncation idiom, as Editorial's Gloock.
