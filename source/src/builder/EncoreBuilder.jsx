@@ -555,9 +555,15 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
       // above and the repertoire's sheet below. The 1440 foot is 56 less 13: the
       // frame's 670 stage clips the artist row's padding by that much, and ours
       // does not clip, so the root would stand 11 over the frame's 782 × 0.82.
-      // Lime's alone until the other three templates' sessions read their own
-      // frames (video.md).
-      video: T.name === 'Lime' ? [[56, 43], [60, 60], [40, 40]] : undefined,
+      // Grunge's (964:64626 · 986:13761 · 986:13780) states the same 56 / 60 / 40
+      // each side and the same 670 clip, but its caption is a shorter box (the
+      // label face's Anton), so the 1440 foot that lands the root on the frame's
+      // 782 × 0.82 is 49 here, not Lime's 43: 56 less the 7 the clip takes off
+      // the artist row. The narrow two are the frame's own.
+      // Lime's and Grunge's alone until the other two templates' sessions read
+      // their own frames (video.md).
+      video: T.name === 'Lime' ? [[56, 43], [60, 60], [40, 40]]
+        : T.name === 'Grunge' ? [[56, 49], [60, 60], [40, 40]] : undefined,
     }[cat]?.[DEV_SEAT[Z.dev]]
     const z = (v) => (v == null ? vm.padY : `${Z.dev === 'desktop' ? Math.round(v * 0.82 * 10) / 10 : v}px`)
     if (inset) vm.pad = `${z(inset[0])} ${vm.padX} ${z(inset[1])}`
