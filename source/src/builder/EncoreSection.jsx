@@ -10044,24 +10044,36 @@ function Video({ s }) {
     // The row title is the odd one — *larger* at 390 than at 768 — because the
     // 390 grid's columns are the wider pair (163.5 against 150.5). It is not a
     // slip; do not "correct" it.
-    const labelSz = tab ? '14px' : s.mob ? '13px' : u(20)
-    const rowSz = tab ? '12px' : s.mob ? '13px' : u(16)
-    const bodySz = nar ? '13px' : u(14)
+    //
+    // Lime (964:64588 · 986:11856 · 986:11875) is the same tree in its own mode
+    // (`lime`, below): its ramp is already the frame × 0.82, so the three masters'
+    // text boxes — label 24 → 17 → 13, list 24 → 19 → 18, body-md 14 → 13 → 13,
+    // body-sm 13 → 13 → 12 — are `s.labelMd` / `s.list` / `s.bodyMd` / `s.bodySm`
+    // at every width. Its boxes still go through `u()`.
+    const lime = s.lime
+    const labelSz = lime ? s.labelMd : tab ? '14px' : s.mob ? '13px' : u(20)
+    const rowSz = lime ? s.list : tab ? '12px' : s.mob ? '13px' : u(16)
+    const bodySz = lime ? s.bodyMd : nar ? '13px' : u(14)
+    const smSz = lime ? s.bodySm : u(12)
     const n = s.chips.length
     const mustard = s.chips[2 % n].bg
     const rust = s.ac
     // Figma box/1 — the bio's cream. Retro's own `paper` IS the beige page, so
     // the panel, the badges and the progress track need the literal; the flat
     // four have a real second paper and take it, with `paperFg` for the ink,
-    // because `s.tx` is chosen against the page and need not read on it.
-    const cream = s.retro ? '#FAECD5' : s.paper
-    const creamInk = s.retro ? '#111111' : s.paperFg
+    // because `s.tx` is chosen against the page and need not read on it. Lime's
+    // box/1 is the dark olive `#2E3928` (Scheme 1, which the section inherits)
+    // with the page's own pale as ink, so there the two are `s.box1` and `s.tx`.
+    const cream = s.retro ? '#FAECD5' : lime ? s.box1 : s.paper
+    const creamInk = s.retro ? '#111111' : lime ? s.tx : s.paperFg
     // Figma box/2, the ground under a photograph that has not loaded — one
     // step down from the cream, and never seen with the seeds in place.
-    const shade = s.retro ? '#E1CAA5' : s.soft
+    const shade = s.retro ? '#E1CAA5' : lime ? s.box1 : s.soft
+    // Lime's discs are held by `sem/stroke/1`, a hairline that does not ramp.
+    const hair = `1px solid ${s.stroke1}`
 
     const metaType = (extra) => ({
-      fontFamily: s.body, fontSize: u(12), lineHeight: 1.4,
+      fontFamily: s.body, fontSize: smSz, lineHeight: 1.4,
       overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', ...extra,
     })
     // The frame's two disc sizes. The transport's are rust filled and held by a
@@ -10077,18 +10089,36 @@ function Video({ s }) {
     // it, and so do the two gaps below.
     const cd = s.mob ? 22 : 28
     const cg = s.mob ? 9 : 11
+    //
+    // Lime's are all one pairing: `box/1` discs in the page's pale, held by the
+    // hairline (the frame rounds the volume, maximize and ⋮ discs at 13 and the
+    // rest at 17 or 26 — on a 28 box that is a circle all the same).
     const ctl = {
       width: u(cd), height: u(cd), flex: 'none', borderRadius: '999px',
-      background: s.retro ? rust : s.ac, color: s.retro ? mustard : s.acFg,
-      border: `1px solid ${s.retro ? mustard : s.acFg}`,
+      background: s.retro ? rust : lime ? s.box1 : s.ac, color: s.retro ? mustard : lime ? s.tx : s.acFg,
+      border: lime ? hair : `1px solid ${s.retro ? mustard : s.acFg}`,
       ...row('0', { justifyContent: 'center' }),
     }
     const act = {
       width: u(36), height: u(36), flex: 'none', borderRadius: '999px',
-      background: s.retro ? mustard : s.pillBg, color: s.retro ? rust : s.pillFg,
+      background: s.retro ? mustard : lime ? s.box1 : s.pillBg, color: s.retro ? rust : lime ? s.tx : s.pillFg,
       boxShadow: hard(s, rust, 4.1, 4.1),
+      ...(lime ? { border: hair } : null),
       ...row('0', { justifyContent: 'center' }),
     }
+    // The transport's three glyphs, which Lime draws as vectors: the skip is
+    // `LimeSkip`'s double triangle into a bar at the frame's 13.022 (the same
+    // 1.91 : 1), the pause two 2.686 bars 3 apart. They go with the disc at 390.
+    const gz = (s.mob ? 22 / 28 : 1) * z
+    const limePause = (
+      <svg viewBox="0 0 8.37221 11.1893" width={8.37221 * gz} height={11.1893 * gz} aria-hidden
+           style={{ display: 'block', flex: 'none' }}>
+        <g fill={s.tx}>
+          <rect x="0" y="0" width="2.68611" height="11.1893" />
+          <rect x="5.6861" y="0" width="2.68611" height="11.1893" />
+        </g>
+      </svg>
+    )
     // ⋮ and ⋯ stay text: lucide has both, but they are the two glyphs in this
     // frame that are typography rather than iconography, and the media
     // player's bar sets its own the same way.
@@ -10097,7 +10127,7 @@ function Video({ s }) {
     const player = (
       <div style={{
         position: 'relative', width: '100%', aspectRatio: '819 / 478',
-        background: cream, borderRadius: u(40), overflow: 'hidden',
+        background: cream, borderRadius: u(lime ? 50 : 40), overflow: 'hidden',
         padding: u(20),
         ...col('0', { alignItems: 'center', justifyContent: 'space-between' }),
       }}>
@@ -10107,7 +10137,7 @@ function Video({ s }) {
           {[<Settings key="s" size={13} />, dots('⋯')].map((g, i) => (
             <span key={i} style={{
               width: u(34), height: u(34), flex: 'none', borderRadius: '999px',
-              background: cream, color: creamInk, border: `1px solid ${creamInk}`,
+              background: cream, color: creamInk, border: lime ? hair : `1px solid ${creamInk}`,
               ...row('0', { justifyContent: 'center' }),
             }}>{g}</span>
           ))}
@@ -10121,11 +10151,15 @@ function Video({ s }) {
           padding: `${u(s.mob ? 7 : 8)} ${u(12)}`, ...row(u(s.mob ? 6 : 10)),
         }}>
           <span style={row(u(s.mob ? 4 : 5), { flex: 'none' })}>
-            <span style={ctl}><SkipBack size={cg} fill="currentColor" /></span>
+            <span style={ctl}>{lime
+              ? <LimeSkip width={13.0217 * gz} color={s.tx} back />
+              : <SkipBack size={cg} fill="currentColor" />}</span>
             {/* A player caught mid-song, which is the picture the frame
                 draws — and the picture is all this section is. */}
-            <span style={ctl}><Pause size={cg} fill="currentColor" /></span>
-            <span style={ctl}><SkipForward size={cg} fill="currentColor" /></span>
+            <span style={ctl}>{lime ? limePause : <Pause size={cg} fill="currentColor" />}</span>
+            <span style={ctl}>{lime
+              ? <LimeSkip width={13.0215 * gz} color={s.tx} />
+              : <SkipForward size={cg} fill="currentColor" />}</span>
           </span>
           {s.videoAt && <span style={metaType({ flex: 'none' })}>{s.videoAt}</span>}
           <span style={{
@@ -10136,7 +10170,7 @@ function Video({ s }) {
             // Retro's box/1 against the beige bar. A flat template's `paper`
             // is a near-white on a near-white bar and the unfilled half would
             // vanish, so there the track is a rule instead.
-            background: s.retro ? cream : s.line2,
+            background: s.retro || lime ? cream : s.line2,
           }}>
             <span style={{
               display: 'block', width: `${s.videoPct}%`, height: '100%',
@@ -10181,7 +10215,9 @@ function Video({ s }) {
             pill is drawn rather than wired. */}
         {s.videoFollow && <span style={{
           ...act, width: 'auto', height: 'auto', padding: `${u(8)} ${u(16)}`,
-          fontFamily: s.body, fontSize: u(12), lineHeight: 1.4, whiteSpace: 'nowrap',
+          // Lime's pill is the bare `box/1`; the three discs beside it are held.
+          ...(lime ? { border: 'none' } : null),
+          fontFamily: s.body, fontSize: smSz, lineHeight: 1.4, whiteSpace: 'nowrap',
         }}>{s.videoFollow}</span>}
       </>
     )
@@ -10204,7 +10240,7 @@ function Video({ s }) {
             `flexWrap`, which wraps wherever the artist's name happens to run
             out and puts the spacer in an unpredictable place. */}
         <div style={{
-          borderTop: `1px solid ${s.retro ? '#111111' : s.line2}`,
+          borderTop: `1px solid ${s.retro ? '#111111' : lime ? s.stroke1 : s.line2}`,
           paddingTop: u(15), paddingBottom: u(20),
           ...(s.mob ? col('25px') : row(u(12), { flexWrap: 'wrap' })),
         }}>
@@ -10221,13 +10257,15 @@ function Video({ s }) {
       <div style={{
         width: desk ? u(392) : '100%', flex: 'none',
         background: cream, color: creamInk,
-        border: `${u(3)} solid ${rust}`, borderRadius: u(14),
+        // Lime's panel draws no outline at all, and its radius is the frame's
+        // 13 (`radius/control`) at all three widths.
+        border: lime ? 'none' : `${u(3)} solid ${rust}`, borderRadius: u(lime ? 13 : 14),
         // The frames' inset, which Figma states *including* the 3px stroke it
         // draws inside the box — so all three of these run 3px wide, the
         // repertoire's `calc(padding − border)` case. Left as it is because the
         // desktop half of this very property already carries the same drift and
         // moving it is a signed-off change; consistency inside one branch, the
-        // bio's rule.
+        // bio's rule. Lime has no stroke, so its 14 / 30 / 10 are exact.
         padding: desk ? u(14) : tab ? '30px' : '10px',
         ...col(u(10), { minWidth: 0 }),
       }}>
@@ -10272,7 +10310,7 @@ function Video({ s }) {
               : row(u(12), { flex: 'none', alignItems: 'flex-start' })}>
               <span style={{
                 position: 'relative', flex: 'none',
-                width: desk ? u(142.9) : '150px', maxWidth: desk ? '42%' : '100%',
+                width: desk ? u(142.9) : lime ? '154px' : '150px', maxWidth: desk ? '42%' : '100%',
                 aspectRatio: '140 / 80', background: s.bg,
                 borderRadius: u(8), overflow: 'hidden',
               }}>
@@ -10282,7 +10320,7 @@ function Video({ s }) {
                     position: 'absolute', left: u(5), top: u(5),
                     background: cream, color: creamInk, borderRadius: u(4),
                     padding: `${u(2)} ${u(6)}`,
-                    fontFamily: s.body, fontSize: u(12), lineHeight: 1.4, whiteSpace: 'nowrap',
+                    fontFamily: s.body, fontSize: smSz, lineHeight: 1.4, whiteSpace: 'nowrap',
                   }}>{v.length}</span>
                 )}
                 <span style={{
@@ -10290,7 +10328,13 @@ function Video({ s }) {
                   width: u(24), height: u(24), borderRadius: '999px',
                   background: cream, color: creamInk,
                   ...row('0', { justifyContent: 'center' }),
-                }}><Play size={9} fill="currentColor" strokeWidth={0} /></span>
+                }}>{lime
+                  // The frame's own 24 disc: the triangle is 8.22 × 9.5 and
+                  // sits a hair right of centre, which lucide's does not.
+                  ? <svg viewBox="0 0 24 24" width="100%" height="100%" aria-hidden style={{ display: 'block' }}>
+                      <path d="M17.4831 12L9.25843 16.7485L9.25843 7.25146L17.4831 12Z" fill={s.tx} />
+                    </svg>
+                  : <Play size={9} fill="currentColor" strokeWidth={0} />}</span>
               </span>
               <span style={col(u(7.4), s.mob ? { minWidth: 0, width: '100%' } : { flex: 1, minWidth: 0 })}>
                 <span style={{
@@ -10299,14 +10343,16 @@ function Video({ s }) {
                   // The accent is not guaranteed to read on `paper` (Lime's is
                   // acid green on pale lime), so only Retro's frame-literal
                   // rust goes here; the flat four take the paper's own ink.
-                  color: s.retro ? rust : creamInk,
+                  // Lime's frame binds `sem/text/1` here, which is the acid
+                  // green on the olive box and reads.
+                  color: s.retro ? rust : lime ? s.ac : creamInk,
                   overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                 }}>{v.title}</span>
                 {v.sub && (
                   <span style={row(u(7.4), { minWidth: 0 })}>
                     <span style={{
                       width: u(19.8), height: u(19.8), flex: 'none', borderRadius: '999px',
-                      overflow: 'hidden', background: shade,
+                      overflow: 'hidden', background: lime ? s.box2 : shade,
                     }}><Photo s={s} avatar initialsSize={8} /></span>
                     <span style={metaType()}>{v.sub}</span>
                   </span>

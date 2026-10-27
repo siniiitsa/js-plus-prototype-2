@@ -2160,8 +2160,9 @@ export const FIELDS = {
     // band's display head. Two seeds, one field: HEADING_4 beside TITLES.
     { k: 'heading', l: 'Heading', d: TITLES.video, in: [1, 3],
       // Measured on Retro (limits.mjs): 64 at layout 2 (390), 20 at layout 4 (390; 30 at 1440
-      // would take a second line).
-      chars: { '*': [null, 64, null, 20] },
+      // would take a second line). Lime's layout 2 holds 82 (390's box binds; its label face is
+      // narrower); its layout 4 is Retro's until its own session.
+      chars: { Lime: [null, 82, null, 20], '*': [null, 64, null, 20] },
       hint: 'Layout 2 prints it over the description, layout 4 as the band’s large head.' },
     { k: 'description', l: 'Description', type: 'area', def: 'videoDesc', in: [1],
       // One ellipsized line: prose clips at 64 at 390 but the 69-character seed fits,
@@ -3235,9 +3236,10 @@ export const IDENTITY_CHARS = {
       Pop: [null, null, 12] },
   },
   // The artist's name as the video prints it: layout 2's artist row, layout 4's top
-  // bar. Retro's measure; the other four are read in their own sessions.
+  // bar. Retro's measure and Lime's layout 2 (also 49); Lime's layout 4 is Retro's until
+  // its own session, and the other three are read in theirs.
   video: {
-    title: { Retro: [null, 49, null, 54] },
+    title: { Retro: [null, 49, null, 54], Lime: [null, 49, null, 54] },
   },
   calendar: {
     title: [null, 64],

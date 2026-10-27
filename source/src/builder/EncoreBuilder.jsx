@@ -544,6 +544,14 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
       calendar: [[56, 56], [56, 56], [40, 40]],
       map: [[56, 56], [60, 60], [40, 40]],
       testimonials: [[56, 56], [60, 60], [40, 40]],
+      // The video's Dashboard player (Lime's 964:64588 · 986:11856 · 986:11875)
+      // pads its content 56 / 60 / 40 each side, so it stands flush on the media
+      // above and the repertoire's sheet below. The 1440 foot is 56 less 13: the
+      // frame's 670 stage clips the artist row's padding by that much, and ours
+      // does not clip, so the root would stand 11 over the frame's 782 × 0.82.
+      // Lime's alone until the other three templates' sessions read their own
+      // frames (video.md).
+      video: T.name === 'Lime' ? [[56, 43], [60, 60], [40, 40]] : undefined,
     }[cat]?.[DEV_SEAT[Z.dev]]
     const z = (v) => (v == null ? vm.padY : `${Z.dev === 'desktop' ? Math.round(v * 0.82 * 10) / 10 : v}px`)
     if (inset) vm.pad = `${z(inset[0])} ${vm.padX} ${z(inset[1])}`

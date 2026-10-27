@@ -127,9 +127,15 @@ export const RETRO_PHOTOS = {
 export const LIME_PHOTOS = {
   header: limeHero,
   bio: limeStage,
-  // Session 1's stand-in: the bio's shot, until this template's video session
-  // reads its frames' own poster (plans/video.md; Lime's is the open verdict).
-  video: limeStage,
+  // The video's poster is the hero, whole (hash 51d68654 in the Dashboard
+  // player, 964:64588 and its two masters), where the stand-in was the bio's
+  // portrait slice. The 768 and 390 masters fill it as a plain centred cover,
+  // and the 1440 one's CROP is centred on it too (y .109 to .891 of the source),
+  // so the player's own centred cover is the frame and the poster needs no
+  // FOCUS row of its own: the video reads none, and `limeHero`'s '30% 50%' is
+  // an x the 819 : 478 box would never read. The 1440 fill is also mirrored,
+  // which is declined (notes/video.md). Layout 4's poster is this one.
+  video: limeHero,
   calendar: limeCalendar,
   form: limeAvatar,
   gallery: [gallery1, gallery2, gallery3, limeGallery4, gallery5, gallery6, gallery7],

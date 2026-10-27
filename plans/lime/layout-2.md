@@ -124,7 +124,7 @@ Page order. Sizes are the frames' own. Each row's three masters are fitted in on
 | 1 | `header` | `964:64580` | 1440 × 900 | `986:11848` | 768 × 1024 | `986:11867` | 390 × 890 | `964:64637` / `984:34438` / `984:34636` | done `ab83542` |
 | 2 | `bio` | `964:64581` | 1440 × 760 | `986:11849` | 768 × 1191.8 | `986:11868` | 390 × 909.3 | `964:64638` / `984:34877` / `984:34834` | done `bbc6904` |
 | 3 | `media` | `964:64582` *(Section)* | 1440 × 965 | `986:11850` *(Frame 299)* | 768 × 1568 | `986:11869` *(Frame 299)* | 390 × 1452 | `964:64639` / `984:35122` / `984:35396` | done `5a9cf76` |
-| 4 | `video` | `964:64588` | 1440 × 782 | `986:11856` | 768 × 1123.2 | `986:11875` | 390 × 1125.8 | `964:64645` / `984:35259` / `984:35737` | **dropped** — the section is being removed from the project, so it is not fitted (its code still exists) |
+| 4 | `video` | `964:64588` | 1440 × 782 | `986:11856` | 768 × 1123.2 | `986:11875` | 390 × 1125.8 | `964:64645` / `984:35259` / `984:35737` | **dropped** — the section was being removed from the project, so it was not fitted; **fitted in the video restoration's session 2** (`plans/video.md`) |
 | 5 | `repertoire` | `964:64589` | 1440 × 792 | `986:11857` | 768 × 792 | `986:11876` | 390 × 594 | `964:64646` / `984:35876` / `984:35961` | done `405efb0` |
 | 6 | `gallery` | `964:64590` | 1440 × 675 | `986:11858` | 768 × 468 | `986:11877` | 390 × 364 | `964:64647` / `984:36046` / `984:36070` | done `3c0abaa` |
 | 7 | `pricing` | `964:64591` | 1440 × 730 | `986:11859` | 768 × 946 | `986:11878` | 390 × 879 | `964:64648` / `986:10425` / `986:10492` | done `d50a23c` |
@@ -270,7 +270,7 @@ picture from the one the frame shows. Image hashes, read off the frames:
 | header | portrait 107 × 107 | `e3790c2c` | `limeHeaderAvatar` | ✓ — check the crop at 107 |
 | bio | photo 433 × 648 | `fa453f7d` | `limeStage` | ✓ — layout 1 cropped it for a 488 × 648 arch; check this 433 × 648 box |
 | media | covers | the five shared covers | `ROW_ART.media` | ✓ |
-| video | poster 896 × 523 | **`51d68654`, the hero** | **`limeStage`** (`LIME_PHOTOS.video`) | **differs** — the video session decides; the poster (`FIELDS.video.image`) fills the player in layouts 2 **and 4**, so re-seeding it moves Lime's layout 4 too (unfitted, but say so) |
+| video | poster 896 × 523 | **`51d68654`, the hero** | ~~`limeStage`~~ **`limeHero`** (`LIME_PHOTOS.video`) | ✓ *since the video restoration's session 2 (2026-10-27)*: the hero, whole, as a centred cover (the 768 and 390 masters; the 1440 fill's mirror is declined) — `plans/video.md`, `notes/video.md`. It moved Lime's layout 4 too |
 | video | list thumbnails | Retro's gallery set | `ROW_ART.video` (`RETRO_VIDEO_ART`) | ✓ |
 | gallery | hero + six | Lime layout 1's set, spotlight `3a59b4d1` | `LIME_PHOTOS` gallery | ✓ |
 | pricing | three 28 × 28 `av` | Retro's | — | nothing: Retro's layout-2 fit dropped the credit row that carries them |

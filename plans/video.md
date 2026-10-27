@@ -174,7 +174,7 @@ prompt.
 |---|---|---|
 | 0 | Calls 1–4 above; settle which L4 node is "the section"; write the answers into this file. | No code. |
 | 1 | **Foundation, restored against current code, and Retro's L2 and L4 verified.** | Below. |
-| 2 | Lime · layout 2 | The `s.limeTree` L2 block, widened from Retro's `s.v1`. Settles the poster verdict. |
+| 2 | Lime · layout 2 | `s.lime` dress inside Retro's `s.v1`. Settled the poster verdict: the hero (see Status and `notes/video.md`). |
 | 3 | Lime · layout 4 | Re-opens "the lens where the video was" for Lime. |
 | 4 | Grunge · layout 2 | `(s.lime \|\| s.grunge)`-style widening, as every L2 section was. |
 | 5 | Grunge · layout 4 | Torn-seam pair where the video was. |
@@ -284,5 +284,6 @@ same layout, and Retro's two *Learned on the video section* blocks. Procedure pe
 |---|---|---|---|
 | 0 | Calls | `video-section` | **done 2026-10-27** — calls 1–4 settled (layout-bound · picture · head + two buttons as fields · no repeater); L4 section = `Frame 318` band |
 | 1 | Foundation + Retro | `video-section` | **done 2026-10-27** — mechanism gated on a Retro page (cards 1–4, picker, Add, delete + Undo); `limits.mjs` `--seeds` / `--check`, `inline-probe` and `photo-probe` (Retro L2 + L4, 1440 + 768, `--blank`, `--drop`) PASS; Retro's poster is the hero shot; `duration` kept; two-build digest (card 1 of every theme, three widths): identical, card 2 gains one root whose 154 rows are the video, header–media rows unmoved, later rows shift in y only; `notes/video.md` written |
-| 2–9 | Lime, Grunge, Editorial, Pop × layouts 2 and 4 | `video-section` | open — session 2 is Lime · layout 2 |
+| 2 | Lime · layout 2 | `video-section` | **done 2026-10-27** — `s.lime` dress inside the shared `s.v1` branch at three widths (frames `964:64588` · `986:11856` · `986:11875`; the session prompt's ids were Lime's layout 4); poster = `limeHero`, the 1440 mirror declined, no FOCUS row; `vm.pad` gains a Lime `video` row (56/43 · 60/60 · 40/40); caps re-measured (`heading` 82, identity 49); `inline-probe` and `photo-probe` (`--blank`, `--drop`) PASS, `page-check` clean, build clean; digest: only Lime's video moved (layout 4 by its poster alone); setup modal cards 1–4 on Lime as designed; `notes/video.md` |
+| 3–9 | Lime L4, then Grunge, Editorial, Pop × layouts 2 and 4 | `video-section` | open — session 3 is Lime · layout 4 |
 | 10 | Sweep | `video-section` | open |
