@@ -10536,7 +10536,13 @@ function Video({ s }) {
   // 567 tall child at y −82.5), so it is overridden the same way: the whole
   // composition at all three widths.
   if (s.v3) {
-    const lime = s.lime
+    // Lime's dress, and Grunge's on the same tree (the Grunge band 964:72962 ·
+    // 971:7956 · 977:12183, instances 964:72966 · 971:7960 · 977:12187, all in
+    // Static Youth: no mode leak). `gr` names what Grunge differs in; it is
+    // the pair and not `s.limeTree`, which Editorial and Pop's unfitted
+    // frames would also turn on.
+    const gr = s.grunge
+    const lime = s.lime || gr
     const desk = !s.narrow
     const tab = isTablet(s)
     const z = desk ? 0.82 : 1
@@ -10565,6 +10571,9 @@ function Video({ s }) {
     // fill need no literal and no arm. The transport glyph is the same token
     // resolving the other way; see the branch header.
     const glyph = s.retro || lime ? s.ac : s.paperFg
+    // The progress track binds `sem/box/2` (#383838) under Grunge where
+    // Lime's binds `box/1`, the discs' own colour.
+    const track = gr ? s.box2 : cream
     // Cream type on the photograph. `paper` is documented as exactly this —
     // "the ink for type sitting over a photographic scrim" — and under Retro it
     // resolves to the frame's own `sem/bg` #EAD7B8 by construction, so this is
@@ -10605,13 +10614,25 @@ function Video({ s }) {
     )
     const chip = (glyph) => (
       <span style={{
-        width: u(26), height: u(26), flex: 'none', borderRadius: u(14),
+        width: u(26), height: u(26), flex: 'none', borderRadius: u(gr ? 8 : 14),
         background: cream, color: creamInk, ...row('0', { justifyContent: 'center' }),
       }}>{glyph}</span>
     )
 
     return (
       <div style={col(u(s.mob ? 30 : 60), { alignItems: 'stretch' })}>
+        {/* Grunge's 390 band is the one place the frames carry a seam in the
+            video itself: a 1554 × 581 `Vector` (977:16056, Scheme 2's `sem/bg`,
+            #171716) off the band's top-left, 32.2 of it inside, so the media's
+            dark band comes down into the black in a torn edge. The wide
+            frames carry none (the media's own black foot tear meets the black
+            band as it does the gallery's head), so this is the narrow seam the
+            media session left to the bio's tear above it. Drawn only while the
+            media stands directly above; the literal is the bio's (Scheme 2 has
+            no vm key). */}
+        {gr && s.mob && s.mediaAbove && (
+          <TornEdge s={s} grunge side="top" bleed={false} height={32.2} colour="#171716" />
+        )}
         {/* The wrapper's head. `TITLES.video` stays "Live at Roomtone" — the
             frame's "See me in action" is the page's copy for this band, and the
             near-match with `TITLES.gallery`'s "See us in action" is a
@@ -10624,10 +10645,11 @@ function Video({ s }) {
             answered three times no. `sem/text/1` on the page ground is `s.ac`,
             Lime's acid green on pale lime being the cost the conventions
             already name twice. */}
-        {s.title && <h2 style={{
-          margin: 0, fontFamily: s.display, fontSize: lime ? s.dispLg : u(T.disp),
-          lineHeight: 0.89, letterSpacing: s.dls, color: s.ac,
-        }}>{s.title}</h2>}
+        {s.title && <h2 style={distressed(s, {
+          margin: 0, fontFamily: s.display, fontSize: gr ? faced(s, s.dispLg) : lime ? s.dispLg : u(T.disp),
+          lineHeight: gr ? facedLh(s, 0.89) : 0.89, letterSpacing: s.dls, color: s.ac,
+          textTransform: gr ? 'uppercase' : undefined,
+        })}>{s.title}</h2>}
         <div style={{
           position: 'relative', width: '100%',
           // Each master's own, the gallery's rule. The two wide instances agree
@@ -10639,7 +10661,11 @@ function Video({ s }) {
           // is the same 30 under Figma's corner smoothing (22 / 0.73).
           borderRadius: u(30), overflow: 'hidden',
         }}>
-          <span style={{ position: 'absolute', inset: 0 }}><Photo s={s} backdrop /></span>
+          {/* Grunge's poster is the bio's drummer, the frame's own (8031d0f3):
+              a 1440 crop at y .087 to .554 and a centred fill narrow, which cuts
+              him at the brow. `grungeStage`'s own focus keeps the head at every
+              width, layout 2's reading (an upload has none and stays centred). */}
+          <span style={{ position: 'absolute', inset: 0 }}><Photo s={s} backdrop style={gr ? { objectPosition: s.imagePos } : undefined} /></span>
           <span aria-hidden style={{ position: 'absolute', inset: 0, background: scrim }} />
 
           {/* The head band. The frame states `overflow-clip` on it and hard-cuts
@@ -10655,8 +10681,9 @@ function Video({ s }) {
               fontFamily: s.body, fontSize: lime ? s.bodyLg : u(T.lg), lineHeight: 1.5, flex: 'none',
             }}>←</span>
             <span style={{
-              fontFamily: s.display, fontSize: lime ? s.list : u(T.list), lineHeight: 1.2,
-              letterSpacing: s.dls, minWidth: 0,
+              fontFamily: s.display, fontSize: gr ? faced(s, s.list) : lime ? s.list : u(T.list),
+              lineHeight: gr ? facedLh(s, 1.2) : 1.2,
+              letterSpacing: s.dls, minWidth: 0, textTransform: gr ? 'uppercase' : undefined,
               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
             }}>{s.brand}</span>
           </div>
@@ -10709,7 +10736,7 @@ function Video({ s }) {
                 data.js already declines to reproduce. */}
             <span style={{
               flex: '1 0 0', minWidth: '1px', height: u(3),
-              borderRadius: u(2), background: cream, overflow: 'hidden',
+              borderRadius: u(2), background: track, overflow: 'hidden',
             }}>
               <span style={{
                 display: 'block', width: `${s.videoPct}%`, height: '100%',

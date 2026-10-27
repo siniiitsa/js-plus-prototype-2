@@ -490,6 +490,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // band between them only while it stands there; a page whose video was
     // deleted keeps the seams fitted without one (plans/video.md, session 3).
     videoAbove: above === 'video', videoBelow: below === 'video',
+    // …and whether the section above a video is the media player, whose band
+    // Grunge's 390 video continues into a torn head (977:16056, plans/video.md,
+    // session 5).
+    mediaAbove: above === 'media',
   }
   // Pop's layout-1 sections stand on their own frames' insets too (JP-116, user
   // call, 2026-10-08, JP-094's shape at layout 1, reversing the fit's
@@ -572,9 +576,12 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // pads its Section 156 / 60 / 60 above the head and 100 / 60 / 40 under the
   // player, on the page's own ground between the media sheet and the gallery's
   // (both sheets bleed to their roots' edges, so the root's padding is the
-  // band's). `padY` gave 80 / 56 / 44 at both ends. Lime's alone until the
-  // other templates' sessions read their frames (plans/video.md).
-  if (d === 3 && cat === 'video' && T.name === 'Lime') {
+  // band's). `padY` gave 80 / 56 / 44 at both ends. Grunge's (964:72962 ·
+  // 971:7956 · 977:12183) states the same 156 / 60 / 60 over the head and
+  // 100 / 60 / 40 under the player; its 390 head is the shorter Anton-fitted
+  // 41, which the branch carries. Lime's and Grunge's alone until the other
+  // templates' sessions read their frames (plans/video.md).
+  if (d === 3 && cat === 'video' && (T.name === 'Lime' || T.name === 'Grunge')) {
     const inset = [[156, 100], [60, 60], [60, 40]][DEV_SEAT[Z.dev]]
     const z = (v) => `${Z.dev === 'desktop' ? Math.round(v * 0.82 * 10) / 10 : v}px`
     vm.pad = `${z(inset[0])} ${vm.padX} ${z(inset[1])}`

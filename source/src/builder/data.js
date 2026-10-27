@@ -2163,8 +2163,8 @@ export const FIELDS = {
       // would take a second line). Lime's layout 2 holds 82 (390's box binds; its label face is
       // narrower); its layout 4 holds 19 (390 binds: 28 at 1440, 24 at 768; session 3).
       // Grunge's layout 2 holds 91 (the box binds at 390: Anton in capitals is narrower again;
-      // session 4); its layout 4 is session 5's, so it keeps the Retro default until then.
-      chars: { Lime: [null, 82, null, 19], Grunge: [null, 91, null, 20], '*': [null, 64, null, 20] },
+      // session 4); its layout 4 holds 25 (390 binds: 32 at 1440, 27 at 768; session 5).
+      chars: { Lime: [null, 82, null, 19], Grunge: [null, 91, null, 25], '*': [null, 64, null, 20] },
       hint: 'Layout 2 prints it over the description, layout 4 as the band’s large head.' },
     { k: 'description', l: 'Description', type: 'area', def: 'videoDesc', in: [1],
       // One ellipsized line: prose clips at 64 at 390 but the 69-character seed fits,
@@ -3239,10 +3239,11 @@ export const IDENTITY_CHARS = {
   },
   // The artist's name as the video prints it: layout 2's artist row, layout 4's top
   // bar. Retro's measure and Lime's layout 2 (also 49); Lime's layout 4 measured 50
-  // (390 binds; 149 at 1440, 96 at 768), and the other three are read in theirs.
+  // (390 binds; 149 at 1440, 96 at 768), and the other two are read in theirs.
   video: {
-    // Grunge's layout 2: 49, Retro's number again (138 / 114 / 49 at 1440 / 768 / 390); layout 4 is session 5's.
-    title: { Retro: [null, 49, null, 54], Lime: [null, 49, null, 50], Grunge: [null, 49, null, null] },
+    // Grunge's layout 2: 49, Retro's number again (138 / 114 / 49 at 1440 / 768 / 390); its
+    // layout 4: 55 (163 / 105 / 55; 390 binds), session 5.
+    title: { Retro: [null, 49, null, 54], Lime: [null, 49, null, 50], Grunge: [null, 49, null, 55] },
   },
   calendar: {
     title: [null, 64],
