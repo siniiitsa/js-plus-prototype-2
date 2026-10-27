@@ -544,7 +544,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // top, which its nav margin cancels, and pricing's desktop foot, which its
   // 1px foot rule bleeds through (the rule's 24 + 8 is the frame's 32). The
   // repertoire's sheet, the form's band and the footer keep theirs.
-  if (d === 1 && (T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial' || T.name === 'Pop')) {
+  if (d === 1 && (T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial' || T.name === 'Pop'
+    || (T.name === 'Retro' && cat === 'video'))) {
     const inset = {
       header: [[null, 56], [null, 60], [null, 10]],
       bio: [[56, 56], [60, 60], [30, 30]],
@@ -570,7 +571,14 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
       // 782 × 0.82 is 50 here (Lime's 43, Grunge's 49).
       // Pop's (964:64569 · 986:17571 · 986:17590) states the same 56 / 60 / 40
       // each side and the same 670 clip, with Titan as the caption's face.
-      video: T.name === 'Lime' ? [[56, 43], [60, 60], [40, 40]]
+      // Retro's (964:64645 · 984:35259 · 984:35737) states the same 56 / 60 / 40
+      // each side and the same 670 clip, with the label face of Retro's own: the
+      // 1440 foot that lands the root on the frame's 782 x 0.82 is 48.5 here. The
+      // narrow two are the frame's own; the panel's 3px rule runs the root 6 and
+      // 4 over the masters (1118 / 1105.5 against 1112.2 / 1101.8), the drift the
+      // narrow-master notes left in the panel (plans/retro/layout-2.md).
+      video: T.name === 'Retro' ? [[56, 48.5], [60, 60], [40, 40]]
+        : T.name === 'Lime' ? [[56, 43], [60, 60], [40, 40]]
         : T.name === 'Grunge' ? [[56, 49], [60, 60], [40, 40]]
         : T.name === 'Editorial' ? [[56, 50], [60, 60], [40, 40]]
         : T.name === 'Pop' ? [[56, 49], [60, 60], [40, 40]] : undefined,
@@ -591,8 +599,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // and Editorial's until Pop's session (964:73165 · 971:10852 · 977:14407),
   // which states the same 156 / 60 over the head and 100 / 60 under the
   // player and Editorial's 40 at 390; the 10px lime rule is inside that foot
-  // (plans/video.md, session 9).
-  if (d === 3 && cat === 'video' && (T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial' || T.name === 'Pop')) {
+  // (plans/video.md, session 9). Retro's (Frame 318 964:72773 · 964:76700 ·
+  // 971:15249, 1155 / 635 / 375) states the same 156 / 60 / 60 and 100 / 60 / 40
+  // and takes Lime's row, so the arm is every template's (session 11).
+  if (d === 3 && cat === 'video') {
     const inset = [[156, 100], [60, 60], [T.name === 'Editorial' || T.name === 'Pop' ? 40 : 60, 40]][DEV_SEAT[Z.dev]]
     const z = (v) => `${Z.dev === 'desktop' ? Math.round(v * 0.82 * 10) / 10 : v}px`
     vm.pad = `${z(inset[0])} ${vm.padX} ${z(inset[1])}`

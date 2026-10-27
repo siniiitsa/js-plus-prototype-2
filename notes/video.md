@@ -107,7 +107,7 @@ layout 4 897 / 627 / 363. The Figma L4 bands are 1155 / 635 / 375 at 1440 / 768 
 782 / 1112.2 / 1101.8 (the band's own padding is the difference at 1440, and the editor draws that frame at
 0.82). The composition matches the screenshots of both frames; contents land within a few px of the
 transcription, and a pixel-level re-measure is each template session's own gate. (Retro had
-no template session of its own, so its `vm.pad` seams were never re-measured: see *Sweep*, below.)
+no template session of its own, so its `vm.pad` seams were not re-measured until session 11: see *Retro seams*, below.)
 
 ## Lime · layout 2 (session 2, 2026-10-27)
 
@@ -718,7 +718,7 @@ first (`AskUserQuestion`): **Pop's narrow head measure stays 478 / 221** (the ar
   1300, 1440 and 1600 wide has no horizontal overflow and no page error, and the video's height follows the zoom (the
   layout-4 band at 1440 is 1186 Lime and Grunge, 1175 Editorial, 1143 Pop, the frames' own; layout 2's is 782, 784 Lime). The tab
   at 1100 is the tablet page (1110 to 1124 tall at layout 2, 627 to 654 at layout 4).
-- **Carried, not fixed — Retro's video seams are not fitted to its frames.** Sessions 2 to 9 each gave their template a `vm.pad`
+- **Carried, then fixed in session 11 (*Retro seams*, below) — Retro's video seams were not fitted to its frames.** Sessions 2 to 9 each gave their template a `vm.pad`
   row (layout 2's `d === 1` table, layout 4's `d === 3` row) and landed within a few px of the frame. Retro never had a session
   of its own, and session 1 recorded its section heights without a row: the harness reads layout 2 at **716 / 1110 / 1114**
   against the frames' 641.2 / 1112.2 / 1101.8 (the published 1440 page is 873 against 782) and layout 4 at **897 / 627 / 363**
@@ -726,7 +726,7 @@ first (`AskUserQuestion`): **Pop's narrow head measure stays 478 / 221** (the ar
   A Retro row would be the same two tables with Retro's frame numbers (layout 4's band insets 156 / 60 / 60 are the ones the plan recorded
   for Retro); it moves only Retro's video, and needs Retro's own probes and digest again. Left for a decision (the sweep's brief
   freezes `source/`).
-- **Observation — Add section on a layout-3 page breaks its composed row.** The video is seated after the media (layout 3's
+- **Observation, kept as is (user call, session 11) — Add section on a layout-3 page breaks its composed row.** The video is seated after the media (layout 3's
   desktop bio / media column), so the calendar leaves the right column and stands on its own full-width row (bio and media
   646 wide with the calendar at 305 beside them, then all three 1088 wide with a video between). This is the documented rule
   (*moving a section out of the run undoes it*) applied to a section the user chose to add on a page whose frames draw no
@@ -734,3 +734,19 @@ first (`AskUserQuestion`): **Pop's narrow head measure stays 478 / 221** (the ar
   measured.
 - **The 4 editor console errors** every template logs on a fresh editor ("a style property during rerender … shorthand")
   are React's, identical on `main`, and not the video's.
+
+## Retro seams (session 11, 2026-10-27)
+
+Two calls put to the user after the sweep. **Fit Retro before the PR** (taken; the alternative was to PR with the gap
+documented). **Add section → Video on a layout-3 page keeps its seat after the media** (user call): the composed row
+breaks as the rule *moving a section out of the run undoes it* says, and `addSection` is unchanged.
+
+- **Layout 2** gets Retro's `video` row in the `d === 1` inset table: `[[56, 48.5], [60, 60], [40, 40]]`, the frames' 56 / 60 / 40
+  each side (`964:64645` · `984:35259` · `984:35737`) with the 1440 foot tuned as Lime's 43 / Grunge's 49 / Editorial's 50 / Pop's 49
+  are, to land the root on 782 × 0.82. The `if` is widened with `(T.name === 'Retro' && cat === 'video')` so no other Retro
+  section reads the table. Harness 641.2 / 1118 / 1105.5 against 641.2 / 1112.2 / 1101.8: the narrow two stay 5.8 and 3.7
+  over, the panel's 3px rule (`plans/retro/layout-2.md`, *Figma states a padded, stroked box's inset including the stroke*), left as it was.
+- **Layout 4** takes the `d === 3` row Lime, Grunge, Editorial and Pop share (156 / 100, 60 / 60, 60 / 40, the band `Frame 318`
+  `964:72773` · `964:76700` · `971:15249`); the arm is now every template's. Harness 946.9 / 635.4 / 374.6 against 947.1 / 635 / 375.
+  Retro reads neither `above` nor `below`, so no seam changes.
+- Re-run on Retro: see the plan's status row 11.
