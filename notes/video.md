@@ -62,7 +62,8 @@ unledgered).
 
 `RETRO_PHOTOS.video` is the **hero** shot, not `stage`: the Retro frames show the whole hero image in
 the 16:9 box at both layouts, and the portrait slice `stage` cut the chest off. `LIME_PHOTOS.video`
-is `limeHero` too (session 2, below). Grunge, Editorial and Pop seed their `bio` photograph for now
+is `limeHero` too (session 2, below). `GRUNGE_PHOTOS.video` is `grungeStage`, the bio's drummer, and
+it is the frame's own (session 4, below). Editorial and Pop seed their `bio` photograph for now
 (`photos.js`, "Session 1's stand-in") until their own sessions read the frame. The list's six thumbnails are `RETRO_VIDEO_ART` (gallery 1, 2, 3, 5, 6, 7)
 through `ROW_ART.video`, and the small circles are the `avatar` (`defaultImage`'s avatar arm reads it
 for video as it does the header's). Only the poster and the avatar are `photoSlots`; the thumbnails are
@@ -87,6 +88,13 @@ Lime's layout 2 measured 82 for `heading` (Retro 64: the label face is narrower,
 19 (390 binds, a two-line wrap; 28 at 1440, 24 at 768 — Retro's 20), `duration` 39 at 390 (held to 8, a
 time) and `IDENTITY_CHARS.video.title` 50 (149 / 96 / 50; Retro's 54); `--check` and `--seeds`: 0 failing,
 0 over.
+
+**Grunge's layout 2 (session 4)** measured `heading` 91 (390's box binds; Anton in capitals is narrower than
+Lime's face, so `Grunge: [null, 91, null, 20]`, the layout-4 slot Retro's default until session 5), `description`
+64 prose / the seed's 69 as the cap (*floor*, as Retro and Lime), 41 / 40 / 70 for `allCta` / `followCta` /
+`duration` (held to 16 / 16 / 8) and `IDENTITY_CHARS.video.title` 49 (138 / 114 / 49 at 1440 / 768 / 390,
+Retro's and Lime's number; a `Grunge: [null, 49, null, null]` row, since the theme had none and an unlisted
+theme has no cap at all). `--check` and `--seeds`: 0 failing, 0 over.
 
 `--seeds` and `--check`: no seed over its cap, no capped field failing. A video prints neither the
 header's kicker, location nor tags, and has no seal (`who.*` probes: unseen).
@@ -223,8 +231,92 @@ the harness: **972 / 654 / 387** against the frames' 1186 × 0.82 = 972.5, 654 a
   `page-check.mjs Lime 3,0,1,2`: no console error or warning, no 390 overflow, the video on cards 2 and 4
   only (`sections390` heights, video 387).
 
+## Grunge · layout 2 (session 4, 2026-10-27)
+
+Frames: *Video Players — A · Dashboard player* `964:64626` 1440×782 · `986:13761` 768×1112.2 · `986:13780`
+390×1119.8 (the planning table's ids, as written; layout 2's nodes are the instances themselves, no band).
+`explicitVariableModes` on all three is `1 · Primitives: Static Youth` — **no mode leaks into the 390**
+(session 3's trap, checked and absent). Same tree as Retro's and Lime's at all three widths (the 390 puts the
+artist row's two halves on two lines, the panel under, the list two to a line).
+
+- **The gate is `(s.lime || s.grunge)`**, `const lime = s.lime || s.grunge` plus `const gr = s.grunge`, not
+  `s.limeTree`: the family flag is true for Editorial and Pop, whose frames are not fitted, so it would have
+  turned Lime's dress on for them. Editorial's and Pop's sessions widen to `limeTree` (or add their own `ed` /
+  `pop` arms) when they fit theirs. Grunge carries no `schemes`, so there is no `SCHEMES_OF` row.
+- **Where Grunge takes Lime's arm** (all bound tokens, read off the walk and resolved against `THEMES[2]`):
+  page `s.bg` `#000000` (`190:130`; the bar), box `s.box1` `#1A1A1A` (`290:138`; panel, discs, badges, track,
+  both avatar wells and the Follow pill), well `s.box2` `#383838` (`346:188`; the list's small circles),
+  `s.tx` white (`190:133`), hairline `s.stroke1` white .15 (`290:142`; every disc, the artist row's rule),
+  `s.ac` `#DF262C` (`290:128`; the progress fill, the row titles **and the panel's ring** — one variable, so
+  it is the accent, not `stroke/2`'s pure red). The ramp is Lime's rule: `THEME_RAMP.Grunge`'s `labelMd` 16 /
+  14 / 13, `list` 20 / 19 / 18, `bodyMd` 11 / 13 / 13 and `bodySm` 10 / 12 / 12 are the frame's 20 / 14 / 13,
+  24 / 19 / 18, 14 / 13 / 13 and 12 throughout. Glyphs are Lime's vectors (the skip is the same 13 × 6.8,
+  1.91 : 1; the pause the same 8.4 × 11.2; the thumbnail triangle the same 8.22 × 9.5, apex x 17.48 on the 24
+  disc). No effect anywhere in the tree, so `hard()` and the glow rule have nothing to do.
+- **Where Grunge differs (the `gr` arms):**
+  1. **Player radius 15** at all three widths (Lime 50, Retro 40), through `u()`.
+  2. **The panel is held by a 1px `s.ac` ring** and radius 8 (`u(8)`), where Lime's has no outline and 13. The
+     frame's 14 / 30 / 10 inset is from the box's outer edge, so the CSS padding is `calc(… - 1px)`.
+  3. **Transport discs are not all circles**: skip back and forward R17 (a circle), the pause and the volume,
+     maximize and ⋮ discs **R8** (a rounded square on 28; 6.2 on the 390's 21.7 disc). `sq` in the branch.
+     The two top-corner discs and the four action discs stay circles (R17, R18). At 390 the disc is **21.7**
+     and the bar's padding 8 (the bar is 37.7 tall); Retro's and Lime's 22 and 7 are untouched.
+  4. **The thumbnail's play disc is R8 on 24** (R5.4 on the narrow masters' 21.1) and the narrow masters' time
+     badge is its own 32.5 × 14.8 box (8.55 type, 1.42 / 4.27 padding, radius 2.8) on a 10 inset, the disc on
+     10 / 9.4. The narrow triangle is **its own 7.46 polygon, not a scaled one** (apex 14.28, 10.55 on the
+     21.1 disc: `M14.283 10.5507 L8.6845 13.783 L8.6845 7.3184`).
+  5. **Narrow thumbnails are 150 × 86**: the masters state 150, Lime's 154. The `'154px'` ternary is now
+     `s.lime`, so Lime is byte-identical.
+  6. **Row titles are Anton at `faced(s, list)`, `facedLh(1.2)`, uppercase** (the `list` key takes no
+     `distressed()`). The frame states `textCase: ORIGINAL` on them, but Stones Crush is all capitals; "Music
+     video" (UPPER) goes through `labelStyle`, which already does the same.
+- **Three overrides named**, each toward what the artist typed or what reads: (a) the progress fill is 200 / 215
+  at 1440 and the *whole* track at 768 and 390, which contradicts its own 02:05 / 03:57; kept `s.ac` at
+  `videoPct`, as at Retro and Lime. (b) The artist row's `#141414` fill is **hidden** in all three masters (the
+  leak Lime's narrow masters carry too) and not drawn. (c) The frame's viewcounts, follower count, like pair,
+  verified tick and the 👁 / 🔖 / 🔗 / 🔔 emoji are Retro's dropped metrics and Retro's lucide icons again.
+- **Poster: `grungeStage`, the frame's own, and the stand-in stays.** The player's hash `8031d0f3` is the bio's
+  drummer (photos.js: "the bio's portrait (8031d0f3, the drummer)"), 820 × 1024 (4 : 5). So the poster is the
+  whole source and needs no export. **The crop is the open call, and the answer is the file's existing
+  `FOCUS` row, not a new one.** The player's 1.713 box over a 0.8 source reads a window 46.7% of the height. The
+  1440 master's `CROP` is that window at y .087 to .554 (`object-position` ≈ `50% 16%`, the three musicians'
+  faces in); the 768 and 390 masters are a centred `FILL` (y .267 to .733), which cuts the drummer at the brow.
+  `grungeStage` already carries `'50% 25%'` (window .133 to .600; the gallery tiles' rule: *a top anchor left
+  him at the tile's foot*), which keeps the head at every width and is ~5% of the height off the 1440 crop. So the
+  video's `Photo` reads `s.imagePos` **under Grunge alone** (`objectPosition: s.imagePos`; undefined for an
+  upload, so an upload stays centred, JP-129): the narrow masters' centred fill is the frame, and this departs
+  from it on purpose, the way every `FOCUS` site does. Not read for Retro, Lime, Editorial or Pop, because a
+  style attribute appearing on another template's poster is a digest diff even where it renders the same
+  (`limeHero`'s `30% 50%` included); sessions 6 and 8 read their own. Changing the string would move the bio
+  and the gallery (one string per file), so the nine-point difference from the 1440 crop is the cost.
+  **Thumbnails stay `RETRO_VIDEO_ART`** (the frame draws Retro's colour stills too: hashes `b073b46f`,
+  `3f0c98b4`, `8f69a4a6`, `b35b6507`; the first, `3a59b4d1`, is the gallery spotlight the seed leaves out, as at
+  Lime), colour pictures on a template whose rule is "none in colour" — the frame's, so followed, and recorded
+  here. **The artist's circle is the `avatar`** (`grungeHeaderAvatar`), not the frame's `b35b6507` stock portrait.
+- **The seam** is a Grunge row in `vm.pad`'s layout-2 table: `video: [[56, 49], [60, 60], [40, 40]]`. **Old seam:**
+  no `video` row, so the section stood on `padY` (80 / 56 / 44 each end): sections 715.4 / 1104 / 1125.5 against
+  the frames' 782 × 0.82 = 641.2 / 1112.2 / 1119.8 — 74 too tall at 1440, 8 short and 6 over at the narrow
+  two. **New seam:** 641.4 / 1112 / 1117.5 in the harness; in the whole page (card 2) the neighbours land on
+  their frames: at 1440 media 966 (965) → video 782 (782) → repertoire 793 (792), and at 390 media 1438 (1438)
+  → video 1118 (1119.8) → repertoire 594 (594). The 1440 foot is 49 where Lime's is 43: the clip takes the 7
+  off the artist row (56 − 7), and Grunge's caption is a shorter box than Lime's (the label face), which Lime's
+  extra 6 made up. 390 is 2.3 under the frame's 1119.8 (the caption box), left, as Lime's was 1.4 under.
+  The repertoire's sheet (`#1A1A1A`) and the media's `#171716` panel on the black page both meet it flush, as
+  the frames stand them; no seam is drawn between them in Grunge's layout 2, so there is nothing to re-fit but
+  the inset.
+- **Probes** (`--theme Grunge --layout 2 --width 1440,768 --cat video`, on the committed tree `d1556db` and
+  its caps commit): `inline-probe --check` PASS (5 slots hit at both widths, nothing wrong, unledgered or
+  unreached); `photo-probe --check`, `--blank` and `--drop` PASS (2 slots hit, the poster and the avatar).
+  `page-check.mjs Grunge 1,0,2,3`: no console error or warning, 390 overflow 0, the video on cards 2 and 4 only,
+  the setup modal's four cards. The two-server digest against `433be5e` (720 renders, five themes, three widths, port normalised) moved only
+  Grunge's video at arch 0 and 1 (layout 2's folded pair): Grunge's arch 2 and 3 (layout 4), the other four
+  themes' video and every other section are byte-identical. (`page-check`'s card keys are 0-based designs, so
+  the layout-2 card is key `1`, the one given the full walk; key `2` is layout 3's page, no video.)
+- `&n=` has no video entry in the harness (call 4), so there is no emptied-list render; `description`,
+  `allCta`, `followCta` and `duration` emptied are the Retro and Lime behaviours.
+
 ## Other templates
 
-Until their sessions, Grunge, Editorial and Pop render the same `s.retro ? literal : flat` arms, in the
+Until their sessions, Grunge's layout 4, and Editorial and Pop's layouts 2 and 4, render the same `s.retro ? literal : flat` arms, in the
 theme's colours but not the frames' decoration. Each session
 ports one template's frame, then re-measures `in`, the caps and the two probes for it.
