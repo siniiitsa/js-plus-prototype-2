@@ -2168,8 +2168,10 @@ export const FIELDS = {
       // five faces; session 6); its layout 4 holds 16 (session 7: the measure is 15 at 768, 19 at
       // 1440 and 20 at 390, but the 16-character seed is the frame's own string and fits in one
       // line there, so the cap is the seed's length, `--check`'s 'floor' as the description's).
+      // Pop's layout 2 holds 47 (76 / 85 / 47: 390's box binds, Titan One in capitals; session 8);
+      // its layout-4 slot is Retro's 20 until session 9 reads its frames.
       chars: { Lime: [null, 82, null, 19], Grunge: [null, 91, null, 25], Editorial: [null, 48, null, 16],
-        '*': [null, 64, null, 20] },
+        Pop: [null, 47, null, 20], '*': [null, 64, null, 20] },
       hint: 'Layout 2 prints it over the description, layout 4 as the band’s large head.' },
     { k: 'description', l: 'Description', type: 'area', def: 'videoDesc', in: [1],
       // One ellipsized line: prose clips at 64 at 390 but the 69-character seed fits,
@@ -3249,9 +3251,10 @@ export const IDENTITY_CHARS = {
     // Grunge's layout 2: 49, Retro's number again (138 / 114 / 49 at 1440 / 768 / 390); its
     // layout 4: 55 (163 / 105 / 55; 390 binds), session 5. Editorial's layout 2: 49 again
     // (138 / 114 / 49), session 6; its layout 4: 29 (session 7: 89 / 58 / 29, 390's box binds
-    // — Gloock in capitals beside the arrow).
+    // — Gloock in capitals beside the arrow). Pop's layout 2: 49 again (138 / 114 / 49), session 8;
+    // its layout 4 is session 9's, so that slot has none yet.
     title: { Retro: [null, 49, null, 54], Lime: [null, 49, null, 50], Grunge: [null, 49, null, 55],
-      Editorial: [null, 49, null, 29] },
+      Editorial: [null, 49, null, 29], Pop: [null, 49, null, null] },
   },
   calendar: {
     title: [null, 64],

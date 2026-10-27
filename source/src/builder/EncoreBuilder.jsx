@@ -568,11 +568,12 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
       // 40 each side and the same 670 clip; its caption is the label face's
       // Gloock at 0.967, so the 1440 foot that lands the root on the frame's
       // 782 × 0.82 is 50 here (Lime's 43, Grunge's 49).
-      // Lime's, Grunge's and Editorial's alone until Pop's session reads its
-      // own frames (video.md).
+      // Pop's (964:64569 · 986:17571 · 986:17590) states the same 56 / 60 / 40
+      // each side and the same 670 clip, with Titan as the caption's face.
       video: T.name === 'Lime' ? [[56, 43], [60, 60], [40, 40]]
         : T.name === 'Grunge' ? [[56, 49], [60, 60], [40, 40]]
-        : T.name === 'Editorial' ? [[56, 50], [60, 60], [40, 40]] : undefined,
+        : T.name === 'Editorial' ? [[56, 50], [60, 60], [40, 40]]
+        : T.name === 'Pop' ? [[56, 49], [60, 60], [40, 40]] : undefined,
     }[cat]?.[DEV_SEAT[Z.dev]]
     const z = (v) => (v == null ? vm.padY : `${Z.dev === 'desktop' ? Math.round(v * 0.82 * 10) / 10 : v}px`)
     if (inset) vm.pad = `${z(inset[0])} ${vm.padX} ${z(inset[1])}`

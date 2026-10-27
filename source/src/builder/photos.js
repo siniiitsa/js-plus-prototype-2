@@ -224,8 +224,10 @@ export const EDITORIAL_PHOTOS = {
 export const POP_PHOTOS = {
   header: popHero,
   bio: popStage,
-  // Session 1's stand-in: the bio's shot, until this template's video session
-  // reads its frames' own poster (plans/video.md; Lime's is the open verdict).
+  // The frame's own poster, not a stand-in: layout 2's Player fills `51d06990`,
+  // the bio's arch, a CROP at y .086 to .524 at 1440 and a centred FILL at 768
+  // and 390 (plans/video.md, session 8). The video's `Photo` reads `popStage`'s
+  // '50% 0%' (below), which keeps the face where the narrow fills drop it.
   video: popStage,
   calendar: popCalendar,
   form: popAvatar,

@@ -10116,10 +10116,35 @@ function Video({ s }) {
     //   · The frame's `03:57` / `02:05`, the `Follow` pill and the action discs
     //     are as Lime's; the fill stays `s.ac` at `videoPct` (the frame's is
     //     200 / 215 · 215 / 215 · 65.9 / 65.9 against its own 02:05).
+    //
+    // **Pop (964:64569 · 986:17571 · 986:17590, mode Pop, Scheme 1 resolved at
+    // every node of all three: no mode leak, no nested scheme, so no
+    // `SCHEMES_OF` row) is the same tree a fourth time** (`pop`; plans/video.md,
+    // session 8). This page is bound, so every seat is read off the node. It
+    // takes Lime's tokens (`box/1` `#F5F5F5` for the panel, the discs, the
+    // badges and the track, `text/2` violet for the type, the pink `stroke/1`
+    // hairline round every disc and over the artist row, `box/2` under the
+    // list's small circles, `sem/bg` white for the bar and the thumbnails'
+    // ground), Grunge's sizes and radii (`gd`; the panel and the volume,
+    // maximize and ⋮ discs are `radius/control` 8, the thumbnail's play disc
+    // R8 on 24 and R5.4 on the narrow 21.1) and is its own in two places:
+    //   · The three action discs are three fills — violet, pink, lime — each
+    //     with the glyph ink that reads on it (`actPop`, above).
+    //   · The poster reads `s.imagePos`, as Grunge's and Editorial's: `51d06990`
+    //     is the bio's arch (`popStage`), the 1440 master's `CROP` is y .086 to
+    //     .524 and the 768 and 390 masters a centred `FILL` that drops the head;
+    //     the file's own `'50% 0%'` keeps it at every width.
+    // The pause is a circle (`radius/card` 24 on 28). The player is radius 50 at
+    // all three widths, as Lime's; the panel has no ring.
     const ed = s.editorial
     const gr = s.grunge
-    const gd = gr || ed
-    const lime = s.lime || gr || ed
+    const pop = s.pop
+    const gd = gr || ed || pop
+    // All four designed templates are fitted at layout 2 now, so the gate is the
+    // family flag: `s.limeTree` is Lime, Grunge, Editorial and Pop, which is the
+    // old `s.lime || gr || ed` plus Pop. (v3 below keeps the explicit arms until
+    // Pop's layout 4.)
+    const lime = s.limeTree
     const labelSz = lime ? s.labelMd : tab ? '14px' : s.mob ? '13px' : u(20)
     const rowSz = lime ? s.list : tab ? '12px' : s.mob ? '13px' : u(16)
     const bodySz = lime ? s.bodyMd : nar ? '13px' : u(14)
@@ -10161,7 +10186,9 @@ function Video({ s }) {
     // Grunge's pause, volume, maximize and ⋮ discs are rounded squares: R8 on
     // the 28, and the 390's 21.7 takes it down with the disc (6.2).
     // Editorial's three are R6 (`radius/control`) and its pause a circle.
-    const sq = gr ? { borderRadius: u(8 * cd / 28) } : ed ? { borderRadius: u(6 * cd / 28) } : null
+    // Pop's three are R8 as Grunge's (`radius/control`), its pause `radius/card`
+    // 24 on 28, a circle.
+    const sq = gr || pop ? { borderRadius: u(8 * cd / 28) } : ed ? { borderRadius: u(6 * cd / 28) } : null
     const sqPause = gr ? sq : null
     //
     // Lime's are all one pairing: `box/1` discs in the page's pale, held by the
@@ -10285,11 +10312,23 @@ function Video({ s }) {
         }}>{s.brand}</span>
       </>
     )
+    // Pop's three action discs are three fills, each held by the `stroke/1`
+    // hairline: 🔖 `text/2` violet, 🔗 `text/1` pink, 🔔 `tag/1/bg` lime. The
+    // frame binds every glyph `text/2`, which on the violet disc would be the
+    // disc's own colour — it only reads there because Figma draws the emoji in
+    // colour — so the glyph takes the ink that reads on its disc: the page's
+    // white on violet and on pink (3.4 : 1, an icon), the tag's own ink on lime.
+    // The Follow pill below is the bare `box/1` and takes none of this.
+    const actPop = pop ? [
+      { background: s.tx, color: s.bg },
+      { background: s.ac, color: s.bg },
+      { background: s.chips[0].bg, color: s.chips[0].fg },
+    ] : []
     const actions = (
       <>
-        <span style={act}><Bookmark size={13} /></span>
-        <span style={act}><Link2 size={13} /></span>
-        <span style={act}><Bell size={13} /></span>
+        <span style={{ ...act, ...actPop[0] }}><Bookmark size={13} /></span>
+        <span style={{ ...act, ...actPop[1] }}><Link2 size={13} /></span>
+        <span style={{ ...act, ...actPop[2] }}><Bell size={13} /></span>
         {/* A label with nowhere to go, like the frame's "View All ›" and
             layout 1's own play disc: this section is a picture, and the
             pill is drawn rather than wired. */}
@@ -10343,7 +10382,7 @@ function Video({ s }) {
         // Lime's panel draws no outline at all, and its radius is the frame's
         // 13 (`radius/control`) at all three widths.
         border: gr ? `1px solid ${s.ac}` : lime ? 'none' : `${u(3)} solid ${rust}`,
-        borderRadius: u(gr ? 8 : ed ? 0 : lime ? 13 : 14),
+        borderRadius: u(gr || pop ? 8 : ed ? 0 : lime ? 13 : 14),
         // Editorial's ring is dashed 10, 10 in `text/1`, an overlay (below),
         // inside the box: the frame's insets are from its outer edge as they
         // are, with no border to take out.
@@ -10427,7 +10466,7 @@ function Video({ s }) {
                   ...row('0', { justifyContent: 'center' }),
                   // Grunge's is a rounded square (R8 on the 24), and the
                   // narrow masters draw a 21.1 one (R5.4) on a 10 inset.
-                  ...(gr ? { borderRadius: desk ? u(8) : '5.4px' } : null),
+                  ...(gr || pop ? { borderRadius: desk ? u(8) : '5.4px' } : null),
                   ...(ed ? { borderRadius: desk ? u(6) : '4.1px' } : null),
                   ...(gd && !desk ? { width: '21.1px', height: '21.1px', right: '10px', bottom: gr ? '9.4px' : '9.1px' } : null),
                 }}>{lime
