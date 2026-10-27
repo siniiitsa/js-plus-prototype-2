@@ -707,9 +707,12 @@ These are intentional limits, not oversights — see §12 for the full list. The
   frame at all. It is lifted from the stacked header, which shares the same full-bleed
   photograph — a fixed band, unscaled at every breakpoint, run a third finer than the reference's
   24px so the squares read as texture: 16px tall, 8px squares.
-- **Layout folding.** Seven of the 10 non-header categories offer more layout numbers than
+- **Layout folding.** Seven of the 10 non-header, non-video categories offer more layout numbers than
   there are distinct designs, so e.g. `Pricing layout 1` and `5` render identically while
-  keeping their own labels. The header, the footer, the gallery and the map are level.
+  keeping their own labels. The header, the footer, the gallery and the map are level. **The video
+  section is the one layout-bound category** (`plans/video.md`, `notes/video.md`): the Figma frames draw it
+  at layouts 2 and 4 only, so it has four design slots with two holes, its picker offers two rows, and
+  the setup modal's cards 2 and 4 stand it after the media player while cards 1 and 3 leave it out.
 - **The desktop page is the 1440 frame at 0.82.** The editor draws it 1180 wide beside the
   sidebar — a 45.92px gutter (the frame's 56 × 0.82) and a 1088px column. The published tab
   zooms that page back up towards the frame: between 1180 and 1440 it is drawn

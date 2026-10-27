@@ -90,6 +90,12 @@ export const RETRO_PHOTOS = {
   // the stack is the same card offset and rotated, not three different shots.
   bio: stage,
   calendar: stage,
+  // The poster the video section's layouts 2 and 4 stand their player on: the
+  // hero, whole. Retro's Dashboard player (964:64645) and Cinematic minimal
+  // (964:72777) both fill it with the Velvet Note stage shot the header's
+  // backdrop is, where the old fit seeded `stage` (the portrait slice the bio
+  // crops), which a 16:9 box cuts at the chest (session 1, read off the frames).
+  video: hero,
   form: avatar,
   // `media` is deliberately absent: the player shows the artwork of the track it
   // is on, so the section has no photo of its own to seed. Its five track
@@ -121,6 +127,9 @@ export const RETRO_PHOTOS = {
 export const LIME_PHOTOS = {
   header: limeHero,
   bio: limeStage,
+  // Session 1's stand-in: the bio's shot, until this template's video session
+  // reads its frames' own poster (plans/video.md; Lime's is the open verdict).
+  video: limeStage,
   calendar: limeCalendar,
   form: limeAvatar,
   gallery: [gallery1, gallery2, gallery3, limeGallery4, gallery5, gallery6, gallery7],
@@ -149,6 +158,9 @@ export const LIME_PHOTOS = {
 export const GRUNGE_PHOTOS = {
   header: grungeHero,
   bio: grungeStage,
+  // Session 1's stand-in: the bio's shot, until this template's video session
+  // reads its frames' own poster (plans/video.md; Lime's is the open verdict).
+  video: grungeStage,
   calendar: grungeCalendar,
   form: grungeAvatar,
   gallery: [grungeStage, grungeSinger, grungeCalendar, grungeGallery4, grungeFormPhoto, grungeHero, grungeGallery7],
@@ -175,6 +187,9 @@ export const GRUNGE_PHOTOS = {
 export const EDITORIAL_PHOTOS = {
   header: editorialHero,
   bio: editorialStage,
+  // Session 1's stand-in: the bio's shot, until this template's video session
+  // reads its frames' own poster (plans/video.md; Lime's is the open verdict).
+  video: editorialStage,
   calendar: editorialCalendar,
   form: editorialHeaderAvatar,
   gallery: [editorialStage, editorialHeaderAvatar, editorialCalendar, editorialGallery4, editorialHero, editorialGallery6, editorialGallery7],
@@ -203,6 +218,9 @@ export const EDITORIAL_PHOTOS = {
 export const POP_PHOTOS = {
   header: popHero,
   bio: popStage,
+  // Session 1's stand-in: the bio's shot, until this template's video session
+  // reads its frames' own poster (plans/video.md; Lime's is the open verdict).
+  video: popStage,
   calendar: popCalendar,
   form: popAvatar,
   gallery: [popGallery1, popGallery2, popStage, popGallery4, popCalendar, popHero, popAvatar],
@@ -224,12 +242,20 @@ export const POP_PHOTOS = {
 // back to the initials placeholder.
 export const RETRO_TRACK_ART = [track1, track2, track3, track4, track5]
 
+// The same shape one category along: the thumbnails for the video section's
+// seeded VIDEOS, in list order. Figma dresses these rows with stock stills we
+// have no more right to ship than it had album covers, so they are the gallery
+// photography re-used in the 140×80 crop the panel draws — everything but
+// gallery slot 4, which is the gallery's own spotlight shot and should not be
+// the first thing two sections of one page both open with.
+export const RETRO_VIDEO_ART = [gallery1, gallery2, gallery3, gallery5, gallery6, gallery7]
+
 // Per-row artwork by category. The list seeds only the untouched default rows:
 // once the artist edits the list, the art travels in the row itself
 // (`c.tracks[i].image`), so a row they add past the seed has none and falls
 // back to the initials placeholder. Lime's frames dress the rows with the same
 // covers (identical hashes), so both templates share it.
-const ROW_ART = { media: RETRO_TRACK_ART }
+const ROW_ART = { media: RETRO_TRACK_ART, video: RETRO_VIDEO_ART }
 
 // The artist avatar, cropped from the §10.2 hero frame's `pp` card (Figma node
 // 964:58576) — a tight portrait from a different shot than the backdrop behind
@@ -263,7 +289,7 @@ export const RETRO_TEXTURE = { grain, map: mapTile, mapRadial }
 // Everything a template seeds, by `THEMES[].name`. A theme with no row seeds
 // nothing; every template has one now.
 //   photos — the section photographs above
-//   avatar — the header's artist portrait (`avatar` key)
+//   avatar — the header's and the video section's artist portrait (`avatar` key)
 //   photo  — the enquiry form's scene (`photo` key)
 //   layouts — a section photograph that one layout's frame draws differently,
 //             by design index, then category; it wins over `photos` there
@@ -354,7 +380,7 @@ export const seedFocus = (url) => (url ? FOCUS.get(url) : undefined)
 export const defaultImage = (cat, themeName, key = 'image', design) => {
   const seed = SEEDS[themeName]
   if (!seed) return undefined
-  if (key === 'avatar') return cat === 'header' ? (seed.avatars?.[design] ?? seed.avatar) : undefined
+  if (key === 'avatar') return cat === 'header' ? (seed.avatars?.[design] ?? seed.avatar) : cat === 'video' ? seed.avatar : undefined
   if (key === 'photo') return cat === 'form' ? seed.photo : undefined
   const v = seed.layouts?.[design]?.[cat] ?? seed.photos[cat]
   return Array.isArray(v) ? undefined : v
@@ -366,6 +392,7 @@ export const defaultImages = (cat, themeName) => {
 }
 
 // The third shape: artwork that belongs to a row of a list rather than to the
-// section. The media player's tracks have some, under every seeded theme.
+// section. The media player's tracks and the video section's list have some,
+// under every seeded theme.
 export const defaultTrackArt = (cat, themeName) =>
   (SEEDS[themeName] ? ROW_ART[cat] : undefined)

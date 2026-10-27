@@ -15,7 +15,7 @@ import puppeteer from 'puppeteer-core'
 import { headlessShell } from './headless-shell.mjs'
 
 const themes = (process.argv[2] || '0,1,2').split(',').map(Number)
-const CATS = { header: 6, bio: 4, media: 4, pricing: 4, repertoire: 4, gallery: 4, calendar: 4, map: 4, testimonials: 4, form: 4, footer: 1 }
+const CATS = { header: 6, bio: 4, media: 4, video: 4, pricing: 4, repertoire: 4, gallery: 4, calendar: 4, map: 4, testimonials: 4, form: 4, footer: 1 }
 const OTHERS = Object.keys(CATS).filter((c) => c !== 'header')
 const Z = 'ZZSENTINEL'
 const PROBES = [

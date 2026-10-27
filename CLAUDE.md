@@ -599,12 +599,19 @@ text rule alone, so a later session must not unify the two). `photoFieldAt` take
   what it can see rather than what the last render observed. Rows are a uniform height, so
   the drop index is the pointer delta in row-heights, not a hit test.
 - **Layout folding.** Every category offers at least as many layout numbers as it has distinct
-  designs, and seven of the eleven offer more — Pricing layouts 1 and 5 render identically on
-  purpose. The other four are level: the header and the footer always were, and the layout-4 pass
-  took `gallery` and `map` there by bumping their design counts to the four rows they offer.
-  **The categories are exactly the sections on Retro layout 1's Figma page** (`964:58575`):
-  `video`, `tags` and `audio` were removed from the project, every layout, because that page
-  draws none of them. The 10 non-header
+  designs, and seven of the twelve offer more — Pricing layouts 1 and 5 render identically on
+  purpose. The other five are level: the header and the footer always were, the layout-4 pass
+  took `gallery` and `map` there by bumping their design counts to the four rows they offer, and
+  `video` is level with holes (below).
+  **The categories are the sections on Retro layout 1's Figma page** (`964:58575`), **plus `video`**:
+  `tags` and `audio` were removed from the project, every layout, because that page draws none of
+  them. `video` was removed with them and came back (`plans/video.md`, user calls 2026-10-27)
+  because the frames draw it at **layouts 2 and 4 of all five templates**. It is the one
+  **layout-bound** category: `NVAR.video = 4` with designs 0 and 2 empty (`videoDesign()` folds them onto
+  1 and 3), the sidebar's `LayoutPicker` offers only layouts 2 and 4 (`layoutChoices`), and the setup
+  modal's cards 2 and 4 insert it after the media player and cards 1 and 3 drop it (`pickHeader`,
+  no `st.removed` write). It has no nav link (`CATS.video.noNav`) and no `live` seam — a picture of a
+  player (`notes/video.md`). The 10 non-header, non-video
   categories are also the ones that stay *numbered*: only the header's layouts have names
   (`headerLayout()` in `data.js`), because it is the one a first-time user is asked to choose.
 - **Accessibility is scoped to the chrome.** The rendered preview is a picture of a website,
@@ -622,6 +629,7 @@ file is loaded into every session and holds only what is cross-cutting.
 |---|---|
 | [`notes/bio.md`](./notes/bio.md) | The bio: the layout-1 reference line, the character caps and their word-bound heading |
 | [`notes/media.md`](./notes/media.md) | The media player: `<audio>`, `cur`, the layout-2 fan, layout 4's sleeve and grid |
+| [`notes/video.md`](./notes/video.md) | The video section: layout-bound to layouts 2 and 4, the setup modal's insert / drop, no nav link, a picture of a player |
 | [`notes/repertoire.md`](./notes/repertoire.md) | The repertoire: the character caps, the tag as a set's key, the shared set line |
 | [`notes/gallery.md`](./notes/gallery.md) | The gallery: `pick`, the strip and its mobile window, social rows, the layout-3 viewer |
 | [`notes/map.md`](./notes/map.md) | The events map: pager, pin/row pairing, city chips, zoom, the ticker, the stat wall |

@@ -123,6 +123,14 @@ options not taken are kept in one line each, so a later session knows what was w
    editable*. (Not taken: a thirteenth structured editor, which would have been its own step between
    sessions 1 and 2.)
 
+5. **No nav link for the video** (session 1, 2026-10-27, `AskUserQuestion`, recommended option). Session 0's
+   "the old row had none, so it is not in the nav" was wrong of current code: `navSectionsOf` lists every
+   non-header, non-footer category, and the nav (JP-033) postdates the removal. So `CATS.video` carries a
+   flag that `navSectionsOf` skips; the frames' navs draw eight links with or without a video, `navFits` at
+   768 and Minimal's triple do not move. Reached by scrolling and by the footer's target select (which lists
+   every category). (Not taken: a ninth/tenth *Video* link, the calendar's precedent; it would move `navFits`
+   and every L4 session's nav fit.)
+
 The dropped fabricated metrics are **not** a call: they stay dropped (Retro L2's sort-the-copy rule).
 
 ## Which L4 node is "the section" (settled in session 0)
@@ -140,18 +148,22 @@ the section is measured as.
 What the table in "What the Figma pages say" holds, against that rule (the ids are as the template plans
 recorded them; **no Figma call was made in session 0**, the MCP was not authenticated here):
 
-| Template | L4 1440 band (`Frame 318`) | L4 inner player instance (1440) | Notes |
+| Template | L4 band `Frame 318` — 1440 / 768 / 390 | L4 inner player instance — 1440 / 768 / 390 | Notes |
 |---|---|---|---|
-| Retro | `964:72773` 1440×1155 | `964:72777` 1328×754 | the table's id is the **instance**; head `964:72776`. 768 / 390: `964:78455` / `971:15414` are instances too, their bands unread |
-| Lime | unread (its `Frame 318`) | `964:72871` 1328×754 | the table's id is the **instance**; session 1 reads its band |
-| Grunge | `964:72962` 1440×1186 | unread | the table's id is the **band**; 768 / 390 `971:7956` / `977:12183` are bands |
-| Editorial | `964:73054` 1440×1175 | unread | the table's id is the **band**; 768 / 390 `971:9551` / `977:13295` are bands |
-| Pop | `964:73165` 1440×1143 | unread | the table's id is the **band**; 768 / 390 `971:10852` / `977:14407` are bands |
+| Retro | `964:72773` 1440×1155 · `964:76700` 768×635 · `971:15249` 390×375 | `964:72777` 1328×754 · `964:78455` 708×402 · `971:15414` 370×209 | the table above holds the **instances**. Band padding 156 / 60 / 60 top; head→instance gap 60 / 60 / 30 (head 96 / 60 / 40) |
+| Lime | `964:72867` 1440×1186 · `971:5432` 768×654 · `977:9006` 390×387 | `964:72871` · `971:5436` · `977:9010` | the table above holds the **instances**. Head 116 / 72 / 48 tall |
+| Grunge | `964:72962` 1440×1186 · `971:7956` 768×654 · `977:12183` 390×380 | `964:72966` · `971:7960` · `977:12187` | the table above holds the **bands**; the 390 band carries a stray 1554×581 `Vector` (`977:16056`) off its top-left |
+| Editorial | `964:73054` 1440×1175 · `971:9551` 768×647 · `977:13295` 390×362 | `964:73058` · `971:9555` · `977:13299` | the table above holds the **bands** |
+| Pop | `964:73165` 1440×1143 · `971:10852` 768×627 · `977:14407` 390×383 | `964:73169` · `971:10856` · `977:14411` | the table above holds the **bands**; each carries a `Vector` sticker (`964:73172` 237², `971:11724` 200², `977:17354` 109²) |
 
-**Session 1's first Figma step** is `get_metadata` on the ten rows' L4 nodes, filling this table's blank
-cells (the missing band or instance id at all three widths for every template) before any code, so the
-eight template sessions read like for like. Authenticate the Figma MCP first. Band heights differ
-(1155 / 1186 / 1175 / 1143) and are the first thing the sweep's digest reads.
+Every band is `Frame 318 → Section (y 156 / 60 / 40–60) → Frame (x 56 / 30 / 10; the head, the instance, and
+two **hidden** leftovers `the` / `room.`). Read in session 1 with `get_metadata` (the Retro narrow bands
+through `use_figma`'s parent chain, since their ids are not the instance's id − 4). Retro's L2 instances
+re-measured against the table: 1440×782, 768×1112.2, 390×1101.8, unchanged.
+
+**Session 1's first Figma step (done 2026-10-27)** filled the table above at all three widths. Band heights
+differ (1155 / 1186 / 1175 / 1143 at 1440) and are the first thing the sweep's digest reads. Lime's and
+Grunge's 1440 bands are the same 1186 tall.
 
 ## Sessions
 
@@ -271,6 +283,6 @@ same layout, and Retro's two *Learned on the video section* blocks. Procedure pe
 | # | Unit | Branch | Status |
 |---|---|---|---|
 | 0 | Calls | `video-section` | **done 2026-10-27** — calls 1–4 settled (layout-bound · picture · head + two buttons as fields · no repeater); L4 section = `Frame 318` band |
-| 1 | Foundation + Retro | `video-section` | open |
-| 2–9 | Lime, Grunge, Editorial, Pop × layouts 2 and 4 | `video-section` | open |
+| 1 | Foundation + Retro | `video-section` | **done 2026-10-27** — mechanism gated on a Retro page (cards 1–4, picker, Add, delete + Undo); `limits.mjs` `--seeds` / `--check`, `inline-probe` and `photo-probe` (Retro L2 + L4, 1440 + 768, `--blank`, `--drop`) PASS; Retro's poster is the hero shot; `duration` kept; two-build digest (card 1 of every theme, three widths): identical, card 2 gains one root whose 154 rows are the video, header–media rows unmoved, later rows shift in y only; `notes/video.md` written |
+| 2–9 | Lime, Grunge, Editorial, Pop × layouts 2 and 4 | `video-section` | open — session 2 is Lime · layout 2 |
 | 10 | Sweep | `video-section` | open |

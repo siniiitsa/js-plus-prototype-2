@@ -19,7 +19,7 @@ plans/
   inline-edit-all.md ← the plan to take inline editing to every template and layout (Phase 0, then 20 passes)
   photo-edit.md   ← clicking a photo on the canvas opens the crop editor with Upload another (every template and layout)
   photo-edit-qa-fixes.md ← an untouched Apply must not re-crop a seed (JP-160), and the photo half of JP-154
-  video.md   ← restoring the video section where Figma draws it: layouts 2 and 4 of all five templates (session 0 = four user calls)
+  video.md   ← restoring the video section where Figma draws it: layouts 2 and 4 of all five templates (session 0 = five user calls, session 1 = foundation + Retro)
   char-limits.md   ← the character-limit pass, every template (char-limits/ holds its census)
   retro/
     layout-2.md

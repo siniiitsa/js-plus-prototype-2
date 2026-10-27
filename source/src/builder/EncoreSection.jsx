@@ -33,6 +33,7 @@ import {
   Play, Pause, SkipBack, SkipForward, Check, ChevronLeft, ChevronRight,
   ArrowLeft, ArrowRight, ArrowUp, ArrowDown, Star, Plus, X, Search, MapPin, User,
   Image as ImageIcon, Youtube, Instagram, Music2,
+  Settings, Volume2, Maximize, Bookmark, Link2, Bell,
 } from 'lucide-react'
 
 /* ------------------------------------------------------------------ *
@@ -9979,6 +9980,615 @@ function Media({ s }) {
       )}
     </div>
   )
+}
+
+// The video section (plans/video.md, restored from d734992^ onto today's idioms).
+// It exists at layouts 2 and 4 alone — the only Figma pages that draw one — so
+// `sectionVm` folds its design onto 1 (v1, Dashboard player) or 3 (v3, Cinematic
+// minimal) and there is no branch for 0 or 2. A picture on both surfaces: no
+// <video>, no link, no `s.live` seam and no effect (call 2).
+function Video({ s }) {
+  // v1 — Video layout 2 · Dashboard player (Figma 964:64645)
+  //
+  // A stage on the left — the poster in a deep-rounded card with a transport
+  // bar floating in its foot — and under it the video's name, its description
+  // and the artist's own row. Beside it, a rust-outlined cream panel listing
+  // the other videos: a thumbnail carrying its running time, then the title,
+  // where it came from and when.
+  //
+  // Still a picture, on both surfaces. Video is one of the two categories with
+  // no `s.live` seam at all (CLAUDE.md, "Intentional limits") — there is no
+  // <video> element and no handler in here, so nothing carries a pointer
+  // cursor either: the calendar's rule that a cursor is read off the handler.
+  //
+  // What the frame draws and this does not: the view counts ("8,175M views",
+  // "25,284M View"), the follower count ("22.7M followers"), the like/dislike
+  // pair ("👍 509,325 · 👎 245", which the frame's own 158px title box clips
+  // away in any case) and the verified tick beside the name. Not one of them
+  // has a field or can be derived, and a published page that prints a number
+  // the artist never typed is making a claim — the gallery's rule about a tile
+  // promising a TikTok that does not exist, read one step on. Every line that
+  // does have a field takes it: the heading, the description, the running
+  // time, the artist's name and both photographs.
+  //
+  // Desktop numbers are the 1440 frame × 0.82 (§5.5) through `u()`. The frame's
+  // 56 inset is dropped for the page root's own padding, so the pair is the
+  // content width (1052) and not the frame's 1328 × 0.82. The 37px goes out of
+  // the *player*, which is an aspect-ratio box and simply gets shorter: the
+  // panel's row is a thumbnail beside two lines of nowrap type and is the one
+  // of the two that cannot give anything back.
+  //
+  // The 768 (984:35259) and 390 (984:35737) masters change the composition
+  // rather than narrowing it: the panel leaves the stage's side for a
+  // full-width block under it, and its list becomes two columns — a thumbnail
+  // beside its lines at 768 and above them at 390. Everything else is the
+  // desktop component at its own unscaled numbers, so `u()` is the identity
+  // there; only the type ramps, and the transport bar shrinks its discs at 390.
+  // See `z` below. Both masters' player is a *flattened raster* in Figma, so
+  // the bar's own geometry was measured off the two renders rather than read.
+  if (s.v1) {
+    const desk = !s.narrow
+    const tab = isTablet(s)
+    const nar = s.narrow
+    // The narrow-master scale, the media player's rule: both frames draw the
+    // desktop component's box dimensions verbatim, so nothing is ramped below
+    // 1180 except the type and the transport's discs.
+    const z = desk ? 0.82 : 1
+    const u = (v) => `${Math.round(v * z * 10) / 10}px`
+    // The type, measured off all three renders rather than read off the emitted
+    // `var(--size/…)`, whose values are the component's defaults at every width.
+    // Two readings agree on each: the text node's height over its own leading,
+    // and the six row titles' set widths as a ratio of the 1440 frame's.
+    //   label   20 → 14 → 13     display/list 16 → 12 → 13
+    //   body-md 14 → 13 → 13     body-sm      12 → 12 → 12  (Inter's does not move)
+    // The row title is the odd one — *larger* at 390 than at 768 — because the
+    // 390 grid's columns are the wider pair (163.5 against 150.5). It is not a
+    // slip; do not "correct" it.
+    const labelSz = tab ? '14px' : s.mob ? '13px' : u(20)
+    const rowSz = tab ? '12px' : s.mob ? '13px' : u(16)
+    const bodySz = nar ? '13px' : u(14)
+    const n = s.chips.length
+    const mustard = s.chips[2 % n].bg
+    const rust = s.ac
+    // Figma box/1 — the bio's cream. Retro's own `paper` IS the beige page, so
+    // the panel, the badges and the progress track need the literal; the flat
+    // four have a real second paper and take it, with `paperFg` for the ink,
+    // because `s.tx` is chosen against the page and need not read on it.
+    const cream = s.retro ? '#FAECD5' : s.paper
+    const creamInk = s.retro ? '#111111' : s.paperFg
+    // Figma box/2, the ground under a photograph that has not loaded — one
+    // step down from the cream, and never seen with the seeds in place.
+    const shade = s.retro ? '#E1CAA5' : s.soft
+
+    const metaType = (extra) => ({
+      fontFamily: s.body, fontSize: u(12), lineHeight: 1.4,
+      overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', ...extra,
+    })
+    // The frame's two disc sizes. The transport's are rust filled and held by a
+    // mustard hairline in mustard glyphs; the action row's below the rule
+    // invert that and throw a hard block with it. Retro's pairing is the
+    // frame's own two hues; the flat four have no such pairing and take the
+    // two the palette guarantees — the accent on its own foreground, and the
+    // Book pill's lightest-hue-and-accent-type pair (§10.2) — because
+    // `chips[2]` is an arbitrary tag colour that can land on the page ground.
+    // The transport disc is the one box either master shrinks: measured 28 at
+    // 768 as at 1440, and 22 at 390, where the bar has to seat six of them, two
+    // clocks and a progress track inside the player's 330. Its glyph goes with
+    // it, and so do the two gaps below.
+    const cd = s.mob ? 22 : 28
+    const cg = s.mob ? 9 : 11
+    const ctl = {
+      width: u(cd), height: u(cd), flex: 'none', borderRadius: '999px',
+      background: s.retro ? rust : s.ac, color: s.retro ? mustard : s.acFg,
+      border: `1px solid ${s.retro ? mustard : s.acFg}`,
+      ...row('0', { justifyContent: 'center' }),
+    }
+    const act = {
+      width: u(36), height: u(36), flex: 'none', borderRadius: '999px',
+      background: s.retro ? mustard : s.pillBg, color: s.retro ? rust : s.pillFg,
+      boxShadow: hard(s, rust, 4.1, 4.1),
+      ...row('0', { justifyContent: 'center' }),
+    }
+    // ⋮ and ⋯ stay text: lucide has both, but they are the two glyphs in this
+    // frame that are typography rather than iconography, and the media
+    // player's bar sets its own the same way.
+    const dots = (g) => <span style={{ fontFamily: s.body, fontSize: u(14), lineHeight: 1 }}>{g}</span>
+
+    const player = (
+      <div style={{
+        position: 'relative', width: '100%', aspectRatio: '819 / 478',
+        background: cream, borderRadius: u(40), overflow: 'hidden',
+        padding: u(20),
+        ...col('0', { alignItems: 'center', justifyContent: 'space-between' }),
+      }}>
+        <span style={{ position: 'absolute', inset: 0 }}><Photo s={s} initialsSize={44} /></span>
+        {/* Two hairline discs in the top corner, cream on the photograph. */}
+        <span style={row(u(8), { alignSelf: 'flex-end', position: 'relative' })}>
+          {[<Settings key="s" size={13} />, dots('⋯')].map((g, i) => (
+            <span key={i} style={{
+              width: u(34), height: u(34), flex: 'none', borderRadius: '999px',
+              background: cream, color: creamInk, border: `1px solid ${creamInk}`,
+              ...row('0', { justifyContent: 'center' }),
+            }}>{g}</span>
+          ))}
+        </span>
+        {/* The bar is the page's own beige on the photograph, not a cream —
+            the one place in the frame where the section ground reappears
+            inside a card. `maxWidth` because the 390 canvas cannot seat it. */}
+        <span style={{
+          position: 'relative', maxWidth: '100%',
+          background: s.bg, color: s.tx, borderRadius: '999px',
+          padding: `${u(s.mob ? 7 : 8)} ${u(12)}`, ...row(u(s.mob ? 6 : 10)),
+        }}>
+          <span style={row(u(s.mob ? 4 : 5), { flex: 'none' })}>
+            <span style={ctl}><SkipBack size={cg} fill="currentColor" /></span>
+            {/* A player caught mid-song, which is the picture the frame
+                draws — and the picture is all this section is. */}
+            <span style={ctl}><Pause size={cg} fill="currentColor" /></span>
+            <span style={ctl}><SkipForward size={cg} fill="currentColor" /></span>
+          </span>
+          {s.videoAt && <span style={metaType({ flex: 'none' })}>{s.videoAt}</span>}
+          <span style={{
+            // The frame's 215 wherever there is room for it; on the 390 canvas
+            // the track is what gives way, so the clocks and the glyphs do not.
+            width: u(215), maxWidth: '100%', flex: s.mob ? 1 : 'none', minWidth: u(40),
+            height: u(4), borderRadius: u(2), overflow: 'hidden',
+            // Retro's box/1 against the beige bar. A flat template's `paper`
+            // is a near-white on a near-white bar and the unfilled half would
+            // vanish, so there the track is a rule instead.
+            background: s.retro ? cream : s.line2,
+          }}>
+            <span style={{
+              display: 'block', width: `${s.videoPct}%`, height: '100%',
+              background: rust, borderRadius: u(2),
+            }} />
+          </span>
+          {s.videoDur && <span style={metaType({ flex: 'none' })}>{s.videoDur}</span>}
+          <span style={ctl}><Volume2 size={cg} /></span>
+          {/* The 390 master keeps all six discs and pays for them out of their
+              own size and spacing rather than by dropping the last two — which
+              is what the fallback this replaces did, on the media player's
+              rule at the same width. Its own bar fills the player's content
+              width exactly; ours is 24px narrower, and the track is what
+              absorbs that, down to its stated floor. */}
+          <span style={ctl}><Maximize size={cg} /></span>
+          <span style={ctl}>{dots('⋮')}</span>
+        </span>
+      </div>
+    )
+
+    // The two halves of the artist row, named because the 390 master puts them
+    // on separate lines and the other two do not.
+    const artist = (
+      <>
+        <span style={{
+          width: u(40), height: u(40), flex: 'none', borderRadius: '999px',
+          overflow: 'hidden', background: shade,
+        }}><Photo s={s} avatar initialsSize={14} /></span>
+        <span style={{
+          fontFamily: s.body, fontSize: bodySz, lineHeight: 1.5,
+          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+        }}>{s.brand}</span>
+      </>
+    )
+    const actions = (
+      <>
+        <span style={act}><Bookmark size={13} /></span>
+        <span style={act}><Link2 size={13} /></span>
+        <span style={act}><Bell size={13} /></span>
+        {/* A label with nowhere to go, like the frame's "View All ›" and
+            layout 1's own play disc: this section is a picture, and the
+            pill is drawn rather than wired. */}
+        {s.videoFollow && <span style={{
+          ...act, width: 'auto', height: 'auto', padding: `${u(8)} ${u(16)}`,
+          fontFamily: s.body, fontSize: u(12), lineHeight: 1.4, whiteSpace: 'nowrap',
+        }}>{s.videoFollow}</span>}
+      </>
+    )
+
+    const stage = (
+      <div style={col(u(14), { flex: 1, minWidth: 0 })}>
+        {player}
+        {/* The frame's name-and-metric block. Ours is the heading in the label
+            face over the description — the field layout 1 already prints —
+            and it takes the whole column rather than the frame's clipped 158,
+            because a sentence is not a two-word metric. */}
+        <div style={col(u(4), { padding: `${u(4)} 0`, minWidth: 0 })}>
+          <span style={labelStyle(s, labelSz, { overflow: 'hidden', textOverflow: 'ellipsis' })}>{s.title}</span>
+          {s.videoDesc && <span style={metaType()}>{s.videoDesc}</span>}
+        </div>
+        {/* The artist row. All three frames rule it off above and pad it 15/20;
+            what the 390 master changes is that the four controls drop to a line
+            of their own 25 under the name, at their own tighter 5px gap, rather
+            than sharing the row. That is transcribed rather than left to
+            `flexWrap`, which wraps wherever the artist's name happens to run
+            out and puts the spacer in an unpredictable place. */}
+        <div style={{
+          borderTop: `1px solid ${s.retro ? '#111111' : s.line2}`,
+          paddingTop: u(15), paddingBottom: u(20),
+          ...(s.mob ? col('25px') : row(u(12), { flexWrap: 'wrap' })),
+        }}>
+          {s.mob ? <span style={row(u(12), { minWidth: 0 })}>{artist}</span> : artist}
+          {!s.mob && <span style={{ flex: 1, minWidth: 0 }} />}
+          {s.mob ? <span style={row('5px', { flex: 'none' })}>{actions}</span> : actions}
+        </div>
+      </div>
+    )
+
+    // The panel holds its frame width and the player gives the 37 back, so this
+    // is a fixed column on desktop and the full width below it.
+    const panel = (
+      <div style={{
+        width: desk ? u(392) : '100%', flex: 'none',
+        background: cream, color: creamInk,
+        border: `${u(3)} solid ${rust}`, borderRadius: u(14),
+        // The frames' inset, which Figma states *including* the 3px stroke it
+        // draws inside the box — so all three of these run 3px wide, the
+        // repertoire's `calc(padding − border)` case. Left as it is because the
+        // desktop half of this very property already carries the same drift and
+        // moving it is a signed-off change; consistency inside one branch, the
+        // bio's rule.
+        padding: desk ? u(14) : tab ? '30px' : '10px',
+        ...col(u(10), { minWidth: 0 }),
+      }}>
+        <div style={row('0', {
+          flex: 'none', justifyContent: 'space-between', paddingBottom: u(6), gap: u(10),
+        })}>
+          <span style={{ fontFamily: s.body, fontSize: bodySz, lineHeight: 1.5, whiteSpace: 'nowrap' }}>
+            Top music video
+          </span>
+          {s.videoAll && <span style={metaType({ flex: 'none' })}>{s.videoAll}</span>}
+        </div>
+        {/* The frame's panel is a picture of a section with something in it.
+            An emptied list keeps the panel and prints the pricing deck's one
+            message inside it, rather than leaving a rust outline round
+            nothing. */}
+        {!s.videos.length && (
+          <span style={{ fontFamily: s.body, fontSize: bodySz, lineHeight: 1.5 }}>No videos yet.</span>
+        )}
+        {/* The frame sizes these rows by dividing the panel's height and lets
+            the thumbnail take its width from that — which only works while the
+            panel has a height to divide, and ours does not: the list is what
+            makes the panel tall, not the other way round. So the thumbnail is
+            sized by *width* instead, at the 142.9 the frame's own division
+            lands on, and the row's height follows the aspect. The two agree at
+            the seeded six; a longer list simply makes the panel taller, which
+            is what `items-start` on the pair is for.
+
+            Both narrow masters lay the same rows out **two to a line** instead,
+            at the same 23 in both directions — so the grid is what states it
+            there, and an odd count trails one half-width cell, the pricing
+            deck's rule. The thumbnail then stops being a fraction of a row and
+            becomes the frame's own 150: it is 48% of the 768 column and sits
+            *above* its lines at 390, where 150 is very nearly the whole of a
+            148.5px column. */}
+        <div style={desk ? col(u(23)) : {
+          display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+          gap: '23px', alignItems: 'start',
+        }}>
+          {s.videos.map((v, i) => (
+            <div key={i} style={s.mob
+              ? col('12px', { minWidth: 0 })
+              : row(u(12), { flex: 'none', alignItems: 'flex-start' })}>
+              <span style={{
+                position: 'relative', flex: 'none',
+                width: desk ? u(142.9) : '150px', maxWidth: desk ? '42%' : '100%',
+                aspectRatio: '140 / 80', background: s.bg,
+                borderRadius: u(8), overflow: 'hidden',
+              }}>
+                <Photo s={s} initialsSize={16} src={v.img} />
+                {v.length && (
+                  <span style={{
+                    position: 'absolute', left: u(5), top: u(5),
+                    background: cream, color: creamInk, borderRadius: u(4),
+                    padding: `${u(2)} ${u(6)}`,
+                    fontFamily: s.body, fontSize: u(12), lineHeight: 1.4, whiteSpace: 'nowrap',
+                  }}>{v.length}</span>
+                )}
+                <span style={{
+                  position: 'absolute', right: u(4.67), bottom: u(4.67),
+                  width: u(24), height: u(24), borderRadius: '999px',
+                  background: cream, color: creamInk,
+                  ...row('0', { justifyContent: 'center' }),
+                }}><Play size={9} fill="currentColor" strokeWidth={0} /></span>
+              </span>
+              <span style={col(u(7.4), s.mob ? { minWidth: 0, width: '100%' } : { flex: 1, minWidth: 0 })}>
+                <span style={{
+                  fontFamily: s.display, fontSize: rowSz, lineHeight: 1.2,
+                  letterSpacing: s.dls,
+                  // The accent is not guaranteed to read on `paper` (Lime's is
+                  // acid green on pale lime), so only Retro's frame-literal
+                  // rust goes here; the flat four take the paper's own ink.
+                  color: s.retro ? rust : creamInk,
+                  overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                }}>{v.title}</span>
+                {v.sub && (
+                  <span style={row(u(7.4), { minWidth: 0 })}>
+                    <span style={{
+                      width: u(19.8), height: u(19.8), flex: 'none', borderRadius: '999px',
+                      overflow: 'hidden', background: shade,
+                    }}><Photo s={s} avatar initialsSize={8} /></span>
+                    <span style={metaType()}>{v.sub}</span>
+                  </span>
+                )}
+                {v.when && <span style={metaType()}>{v.when}</span>}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+
+    // The frame's own `items-start`, and it has to stay that: the frame draws
+    // the two columns exactly as tall as each other because both are fixed, and
+    // ours are not — the panel's height is whatever its list makes it. Stretched
+    // instead, the taller column would have to hand its slack to something, and
+    // there is nothing in either that should take 250px of it at twelve videos.
+    // So the two simply end where they end; at the seeded six the panel runs
+    // about 20px past the stage's rule.
+    //
+    // Below 1180 the two are one column, which is what both masters draw. The
+    // 390 one sets the gap at nothing at all: the artist row's own 20px of
+    // bottom padding is the whole of the space between its Follow pill and the
+    // panel's outline, and that is the frame's picture rather than an oversight
+    // — it is the same 20 the 768 master stands 32 further off.
+    return (
+      <div style={desk
+        ? row(u(40), { alignItems: 'flex-start' })
+        : col(tab ? '32px' : '0', { alignItems: 'stretch' })}>
+        {stage}
+        {panel}
+      </div>
+    )
+  }
+
+  // v3 — Video layout 4 · Cinematic minimal (Figma 964:72777 · 964:78455 at 708
+  // · 971:15414 at 370), under the wrapper's own display head (964:72776).
+  //
+  // One rounded 16:9 card standing on the page ground, filled edge to edge by
+  // the poster, with three bands of chrome floating on it: the back arrow and
+  // the artist's name at the head, three transport discs dead centre, and a
+  // clock / progress / clock row along the foot. Nothing else — the design's
+  // own name is the whole brief.
+  //
+  // Still a picture, on both surfaces, like every other video layout: there is
+  // no <video> element and no handler in here, so nothing carries a pointer
+  // cursor either (the calendar's rule that a cursor is read off the handler).
+  //
+  // What the frame draws and this does not:
+  //   · "551 539 views", the section's own dropped-metric rule for the third
+  //     time — a published page printing a number the artist never typed is
+  //     making a claim.
+  //   · "— Late Lights" after the name. The wrapper's head above already draws
+  //     `s.title` at 96/60/40, and this section has exactly one heading field:
+  //     printing it twice is the pricing deck's stutter. The frame gets away
+  //     with it because its head lives outside the instance; ours does not.
+  //     So the bar is the arrow and `s.brand` alone — an intended diff, and
+  //     half the frame's top bar.
+  //   · `sem/box/3` #CEB081, the fill under the photograph. `Photo`'s own
+  //     `backdrop` is the better answer to the same state: this bar's cream
+  //     type has no scrim behind it (the gradient is transparent until 76%),
+  //     and #EAD7B8 on #CEB081 is 1.43 — a dark panel is what keeps the empty
+  //     poster legible, which is exactly what `backdrop` is documented for.
+  //   · The `+0.5px` on the transport's centre, which the 390 master drops too.
+  // Everything with a field or a derivation takes it: the head, the name, the
+  // playhead, the running time, the fill and the poster.
+  //
+  // One colour normalisation, the pricing deck's normalise-and-say-so rule:
+  // the frame sets `03:57` and `HD` in `sem/text/2` #111111, over the foot
+  // gradient's black, which renders them all but invisible in its own render —
+  // and the duration is content the artist typed (the media player's
+  // destroys-its-own-content rule). Both take the same `paper` the rest of the
+  // bar does.
+  //
+  // `sem/text/1` is the rust, `s.ac` on every palette, and it is the one token
+  // here that resolves two ways — the pricing deck's `sem/box/1` lesson. The
+  // head and the progress fill keep it: the head stands on the *page*, where
+  // Lime's acid green is the cost the conventions already name twice, and the
+  // fill has to read as the hot half of a bar whose other half is cream, where
+  // a hue that separates at 1.34 still tells the two apart and `paperFg` was
+  // worse by inspection — a near-black played portion vanished into the card's
+  // own scrim and the bar read as filled from the right. The transport glyph
+  // takes `paperFg` on the flat four, because it has no ground of its own to
+  // separate from: it is a 15px stroke *inside* the cream disc, which is
+  // exactly where the audio player's ▶ met this wall and took the same pair.
+  //
+  // Desktop numbers are the 1440 frame × 0.82 through `u()`; both narrow
+  // masters are the desktop component at its own unscaled numbers, so `z` is
+  // the identity there and only the type and three insets move. The card fills
+  // the content column (1052 against the frame's 1328 × 0.82 = 1089), so it
+  // stands 597 tall where the frame draws 618 — an aspect box simply gets
+  // shorter, and nothing in the composition has anything to give back.
+  //
+  // **The 768 master clips its own composition and is overridden.** Its
+  // instance is 708 × 402 — the page's number, and the same ~1.761 aspect the
+  // other two state — but the component inside it is `h-[567px] shrink-0`, so
+  // the instance's `overflow-clip` cuts the top and foot bands away and the
+  // render is three discs on a photograph. That loses the artist's name, the
+  // playhead and the running time at one width only, which is the media
+  // player's rule: a frame's own render is the artefact once it destroys its
+  // own content. All three widths draw the whole thing.
+  if (s.v3) {
+    const desk = !s.narrow
+    const tab = isTablet(s)
+    const z = desk ? 0.82 : 1
+    const u = (v) => `${Math.round(v * z * 10) / 10}px`
+    // The same number unsuffixed, for an icon's `size` — lucide writes it into
+    // the SVG's width/height, so it has to stay a number (the media player's).
+    const un = (v) => Math.round(v * z * 10) / 10
+    // `get_variable_defs` on all three masters, not the emitted CSS, which
+    // prints the desktop default at every width. `size/list` goes back *up* at
+    // 390 (16 → 12 → 13) for the fifth time in the pass family, and `disp` is
+    // Display/LG read off the head text node itself — 96/60/40 at leading .89,
+    // one line at all three widths (85 / 53 / 36 tall).
+    const T = desk
+      ? { disp: 96, lg: 16, list: 16, md: 14, sm: 12, chip: 12 }
+      : tab
+        ? { disp: 60, lg: 15, list: 12, md: 13, sm: 12, chip: 11 }
+        : { disp: 40, lg: 15, list: 13, md: 13, sm: 12, chip: 11 }
+
+    // `sem/box/1` — every disc and the progress track. Retro's own `paper` IS
+    // the beige page, so the cream is a literal here and the flat four have a
+    // real second paper to take.
+    const cream = s.retro ? '#FAECD5' : s.paper
+    // `sem/text/2` #111111 on that cream.
+    const creamInk = s.retro ? '#111111' : s.paperFg
+    // `sem/text/1`, which IS `s.ac` under Retro — so the head and the progress
+    // fill need no literal and no arm. The transport glyph is the same token
+    // resolving the other way; see the branch header.
+    const glyph = s.retro ? s.ac : s.paperFg
+    // Cream type on the photograph. `paper` is documented as exactly this —
+    // "the ink for type sitting over a photographic scrim" — and under Retro it
+    // resolves to the frame's own `sem/bg` #EAD7B8 by construction, so this is
+    // the one colour in the branch that needs no `s.retro` arm.
+    const onFilm = s.paper
+    // The frame's foot fade: transparent to 76.173%, then black. Written in the
+    // branch rather than added to SCRIM, the media player's rule — it belongs
+    // to one design, and keeping it here keeps the whole diff inside the block.
+    const scrim = 'linear-gradient(180deg, rgba(0,0,0,0) 76.173%, #000000 100%)'
+    // The frames' own page inset: 24 at both wide widths, 10 at 390.
+    const padX = u(s.mob ? 10 : 24)
+
+    const footType = {
+      fontFamily: s.body, fontSize: u(T.sm), lineHeight: 1.4,
+      color: onFilm, whiteSpace: 'nowrap', flex: 'none',
+    }
+    // The transport's two sizes. Both discs are cream with a rust glyph — the
+    // inverse of layout 2's, which fills the disc with the rust instead.
+    const ctl = (d) => ({
+      width: u(d), height: u(d), flex: 'none', borderRadius: '999px',
+      background: cream, color: glyph, ...row('0', { justifyContent: 'center' }),
+    })
+    // The foot's two 26px controls. The frame sets an emoji in them at
+    // `size/body-sm`; lucide's ink fills ~0.8 of its `size` box, so 14 draws
+    // the 12 the emoji does (the audio player's size-an-icon-off-its-ink rule).
+    const chip = (glyph) => (
+      <span style={{
+        width: u(26), height: u(26), flex: 'none', borderRadius: u(14),
+        background: cream, color: creamInk, ...row('0', { justifyContent: 'center' }),
+      }}>{glyph}</span>
+    )
+
+    return (
+      <div style={col(u(s.mob ? 30 : 60), { alignItems: 'stretch' })}>
+        {/* The wrapper's head. `TITLES.video` stays "Live at Roomtone" — the
+            frame's "See me in action" is the page's copy for this band, and the
+            near-match with `TITLES.gallery`'s "See us in action" is a
+            coincidence of that copy rather than evidence
+            (plans/retro/layout-4's own trap). Its stated 1019.18 measure is
+            declined at all three widths: at 1440 it is the string's own ink, at
+            768 it is that same leaked number overflowing a 708 frame and
+            wrapping nothing, and at 390 the master states the full column — the
+            booking calendar's check-whether-the-leak-does-anything rule,
+            answered three times no. `sem/text/1` on the page ground is `s.ac`,
+            Lime's acid green on pale lime being the cost the conventions
+            already name twice. */}
+        {s.title && <h2 style={{
+          margin: 0, fontFamily: s.display, fontSize: u(T.disp),
+          lineHeight: 0.89, letterSpacing: s.dls, color: s.ac,
+        }}>{s.title}</h2>}
+        <div style={{
+          position: 'relative', width: '100%',
+          // Each master's own, the gallery's rule. The two wide instances agree
+          // to four decimal places and 390 is 0.5% off; one aspect would cost a
+          // pixel at 346 and there is no reason to round either away.
+          aspectRatio: s.mob ? '370 / 209' : '1328 / 754',
+          // The instance's outer corner. Its inner frame states 8, which the
+          // 30 clips away — one radius, not two. The render's 22px corner walk
+          // is the same 30 under Figma's corner smoothing (22 / 0.73).
+          borderRadius: u(30), overflow: 'hidden',
+        }}>
+          <span style={{ position: 'absolute', inset: 0 }}><Photo s={s} backdrop /></span>
+          <span aria-hidden style={{ position: 'absolute', inset: 0, background: scrim }} />
+
+          {/* The head band. The frame states `overflow-clip` on it and hard-cuts
+              a long name; ours ellipsises instead, so the one thing this band
+              carries is never lost mid-glyph. */}
+          <div style={{
+            position: 'absolute', left: 0, right: 0, top: 0, height: u(60),
+            color: onFilm, overflow: 'hidden',
+            paddingTop: u(s.mob ? 10 : 20), paddingLeft: padX, paddingRight: padX,
+            ...row(u(16)),
+          }}>
+            <span style={{
+              fontFamily: s.body, fontSize: u(T.lg), lineHeight: 1.5, flex: 'none',
+            }}>←</span>
+            <span style={{
+              fontFamily: s.display, fontSize: u(T.list), lineHeight: 1.2,
+              letterSpacing: s.dls, minWidth: 0,
+              overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+            }}>{s.brand}</span>
+          </div>
+
+          {/* Dead centre at every width. The prev/next glyph is a 13.022 × 6.819
+              double triangle with a bar, which is the media player's layout-4
+              glyph at the ratio the two frames themselves state (0.813) — so it
+              is that branch's `un(18)` at 0.813, and the stroke stays on for
+              the same reason: lucide's SkipBack is one triangle and a bar, and
+              `strokeWidth={0}` would drop the bar and leave a play triangle
+              pointing backwards. The pause mark needs no such judgement: 8.372
+              wide and 11.189 tall are lucide's own 12 × 16 of 24 at 16.75 and
+              16.78, two readings agreeing to a hundredth. */}
+          <div style={{
+            position: 'absolute', left: '50%', top: '50%',
+            transform: 'translate(-50%, -50%)', ...row(u(24)),
+          }}>
+            <span style={ctl(40)}><SkipBack size={un(14.6)} fill="currentColor" /></span>
+            {/* A player caught mid-song, which is the picture the frame draws
+                — and the picture is all this section is. Layout 2's bar says
+                the same thing with the same glyph. */}
+            <span style={ctl(64)}>
+              <Pause size={un(16.8)} fill="currentColor" strokeWidth={0} />
+            </span>
+            <span style={ctl(40)}><SkipForward size={un(14.6)} fill="currentColor" /></span>
+          </div>
+
+          {/* The foot band. `videoAt` and `videoDur` are rendered or not rather
+              than printed blank — an emptied Duration parses to nothing, which
+              takes the playhead and the fill with it (see data.js's clockAt),
+              and the row closes up round the gap. */}
+          <div style={{
+            position: 'absolute', left: 0, right: 0, bottom: 0, height: u(56),
+            overflow: 'hidden',
+            paddingBottom: u(s.mob ? 10 : 16), paddingLeft: padX, paddingRight: padX,
+            ...row(u(12)),
+          }}>
+            {s.videoAt && <span style={footType}>{s.videoAt}</span>}
+            {/* The frame's own `flex-[1_0_0] min-w-px`, transcribed: the track
+                is what absorbs a narrow measure, and with the view count gone
+                it keeps ~130px even at 346. Its fill is `videoPct`, not the
+                masters' own — 364 of 988 at 1440 and the whole width at both
+                narrow widths, against a playhead of 02:05 in 03:57. The clock
+                and the bar are composed from one number here so that they
+                cannot disagree; the frame's three answers are the disagreement
+                data.js already declines to reproduce. */}
+            <span style={{
+              flex: '1 0 0', minWidth: '1px', height: u(3),
+              borderRadius: u(2), background: cream, overflow: 'hidden',
+            }}>
+              <span style={{
+                display: 'block', width: `${s.videoPct}%`, height: '100%',
+                background: s.ac, borderRadius: u(2),
+              }} />
+            </span>
+            {s.videoDur && <span style={footType}>{s.videoDur}</span>}
+            {chip(<Volume2 size={un(14)} />)}
+            {chip(<Settings size={un(14)} />)}
+            {/* Player chrome, not a claim about a file: the frame's own label,
+                in the register of the two discs beside it, and the media
+                player's "● Popular" precedent. Figma states −6%, which the
+                emitted CSS freezes at the desktop −0.72px; the tracking ramps
+                with its token (the pricing lesson). */}
+            <span style={{
+              fontFamily: s.body, fontWeight: 700, fontSize: u(T.chip), lineHeight: 1,
+              letterSpacing: u(-0.06 * T.chip), color: onFilm, flex: 'none',
+            }}>HD</span>
+          </div>
+        </div>
+      </div>
+    )
+  }
+  return null
 }
 
 // v0 — Pricing layout 1 · 3-col in soft panel (§10.2 reference design): cards,
@@ -30291,6 +30901,7 @@ export default function EncoreSection({ s }) {
       )}
       {s.bi && <Bio s={s} />}
       {s.me && <Media s={s} />}
+      {s.vi && <Video s={s} />}
       {s.pr && <Pricing s={s} />}
       {s.re && <Repertoire s={s} />}
       {s.ga && <Gallery s={s} />}

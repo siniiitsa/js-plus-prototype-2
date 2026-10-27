@@ -58,7 +58,8 @@ import {
   CTA_TARGETS, firstPresent, minimalNav, navModeDefault,
   catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldSeed, HEADING_3, HEADING_4, fieldReach, fieldShown, INLINE_OFF, PHOTO_OFF, INLINE_HEAD, INLINE_MARKED, INLINE_PART, INLINE_LINES, inlineRule, fieldCap, colCaps, identityCap, sealCap, capExcess, clampCapped, clampContent, clampIdentity, copyrightOf, formHeading3, extUrl, youtubeEmbed, urlProblem, emailProblem, emailAddr, songTags, repChips,
   tierFeats, priceParts, priceCuts, blankRow, SONG_KEYS, repSetsOf, repSetLine, TRACK_KEYS, GIG_KEYS, gigWeekday, gigStatus, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
-  layoutCount, designCount, pageLayout, pageOrder, pageRows, COLUMN_SPLIT, bebasEms, antonEms, gloockEms, titanEms,
+  layoutChoices, designCount, pageLayout, pageOrder, pageRows, videoDesign, videoStartArch,
+  VIDEOS, VIDEO_MARK, clockAt, VIDEO_ALL, VIDEO_FOLLOW, VIDEO_DURATION, COLUMN_SPLIT, bebasEms, antonEms, gloockEms, titanEms,
   headerLayout, headerLayoutLabel, setupHeaderCount,
 } from './data.js'
 import { defaultImage, defaultImages, defaultTrackArt, seedFocus, RETRO_TEXTURE } from './photos.js'
@@ -274,7 +275,10 @@ export const pageDesignOf = (sections, themeName) => {
 export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = {}, tiers = [], email = '', Z, mob, live = false, navSections = [], column = false, today, page = -1, clamp = true }) {
   const theme = THEMES[themeIdx]
   const nDesign = designCount(cat, theme.name)
-  const d = ((arch % nDesign) + nDesign) % nDesign
+  // A video has a frame at layouts 2 and 4 alone (plans/video.md, call 1), so
+  // the two holes fold onto the design beside them; nothing reaches them.
+  const d0 = ((arch % nDesign) + nDesign) % nDesign
+  const d = cat === 'video' ? videoDesign(d0) : d0
   // The character caps (plans/char-limits.md): copy typed under another
   // layout's cap is shortened here, before anything below reads it, and keeps
   // its full text in the section's `c`. Inert within the caps, so seeds are
@@ -1085,6 +1089,31 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     }))
   }
   vm.tracks3 = vm.tracks.slice(0, 3)
+
+  // video — the stage's own values, and the list of other videos beside it
+  // that layout 2 draws (plans/video.md). A picture on both surfaces: no
+  // <video>, no link, no `live` seam (call 2).
+  vm.videoDesc = cv('description', DEFS.videoDesc)
+  vm.videoDur = cv('duration', VIDEO_DURATION)
+  // Where the transport bar is caught. The section has no <video> element on
+  // either surface, so there is no playhead to read: `clockAt` composes one
+  // from the running time above and `videoPct` fills the bar to the same
+  // fraction, so the two cannot disagree. An unparseable duration leaves both
+  // empty rather than inventing a position for it.
+  vm.videoAt = clockAt(vm.videoDur, VIDEO_MARK)
+  vm.videoPct = vm.videoAt ? VIDEO_MARK * 100 : 0
+  // The two buttons (call 3), JP-071's shape: the frame's words, uncased,
+  // dropped when emptied.
+  vm.videoAll = cv('allCta', VIDEO_ALL)
+  vm.videoFollow = cv('followCta', VIDEO_FOLLOW)
+  // The seeded VIDEOS, always: the section has no repeater (call 4), so
+  // `c.videos` is never written; the shape is the `songs` rule's all the same.
+  // Artwork follows the tracks': `null`, not undefined, wherever a row has
+  // none, because Photo falls back to the *section* photo on undefined and a
+  // listed video must not inherit the poster.
+  vm.videos = VIDEOS.map((v, i) => ({
+    title: cased(v.title), sub: v.sub, length: v.length, when: v.when, img: seedArt[i] ?? null,
+  }))
 
   // The now-playing card is no longer content of its own: it names and shows
   // the track the player is on, which `Media` resolves from `vm.tracks`. What
@@ -4878,7 +4907,8 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
 function LayoutPicker({ cat, arch, themeIdx, artistName, identity, tiers, email, navSections, content = {}, onPick }) {
   const [open, setOpen] = useState(false)
   const themeName = THEMES[themeIdx].name
-  const n = layoutCount(cat, themeName)
+  // A video is offered layouts 2 and 4 only (plans/video.md, call 1).
+  const choices = layoutChoices(cat, themeName)
   // §4.4b — the header's layouts have names; every other category is numbered.
   const label = (i) => (cat === 'header'
     ? headerLayoutLabel(themeName, i)
@@ -4913,7 +4943,7 @@ function LayoutPicker({ cat, arch, themeIdx, artistName, identity, tiers, email,
           borderRadius: '10px', border: '1px solid #E2DFD7', boxShadow: '0 12px 28px rgba(20,18,12,.16)',
         }}
       >
-        {Array.from({ length: n }, (_, i) => {
+        {choices.map((i) => {
           const isCur = i === arch
           return (
             <DropdownMenuItem
@@ -4969,7 +4999,13 @@ const ADDABLE = CATS.filter((c) => c.id !== 'header' && c.id !== 'footer')
 const firstFreeCat = (present) =>
   (ADDABLE.find((c) => !present.includes(c.id)) ?? ADDABLE[0]).id
 
-function AddComposer({ add, present, removed, themeIdx, artistName, identity, tiers, email, navSections, onChange, onAdd, onCancel }) {
+// The layout the composer opens a category on: the one it had when it was
+// deleted, else layout 1 — except a video, which has no layout 1 and starts on
+// the page's own layout if that is 2 or 4, else on 2 (plans/video.md, call 1).
+const startArch = (cat, removed, pageD) =>
+  removed[cat]?.arch ?? (cat === 'video' ? videoStartArch(pageD) : 0)
+
+function AddComposer({ add, present, removed, pageD, themeIdx, artistName, identity, tiers, email, navSections, onChange, onAdd, onCancel }) {
   const groupLabel = { fontSize: '11px', fontWeight: 700, letterSpacing: '1.2px', textTransform: 'uppercase', color: '#8B887D', marginBottom: '8px', display: 'block' }
   const taken = present.includes(add.cat)
   // A category deleted earlier restores its content on add; Start fresh opts
@@ -4981,7 +5017,7 @@ function AddComposer({ add, present, removed, themeIdx, artistName, identity, ti
     <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
       <div>
         <Label style={groupLabel}>Section</Label>
-        <Select value={add.cat} onValueChange={(cat) => onChange({ cat, arch: removed[cat]?.arch ?? 0, fresh: false })}>
+        <Select value={add.cat} onValueChange={(cat) => onChange({ cat, arch: startArch(cat, removed, pageD), fresh: false })}>
           <SelectTrigger onClick={stopE} className="w-full h-auto" style={{ ...FIELD_BOX, paddingRight: '28px' }}>
             <SelectValue />
           </SelectTrigger>
@@ -7284,6 +7320,11 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
       if (kept) {
         const j = next.findIndex((x) => x.cat === kept.before)
         at = j >= 0 ? j : Math.min(kept.at, at)
+      } else if (cat === 'video') {
+        // Both pages that draw a video stand it straight after the media
+        // player (pageOrder); with no player on the page it keeps the foot.
+        const j = next.findIndex((x) => x.cat === 'media')
+        if (j >= 0) at = j + 1
       }
       next.splice(at, 0, sec)
       return { sections: next, add: null, removed }
@@ -7300,7 +7341,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
   // at the layout that category had when it was deleted, if it was.
   const openAdd = useCallback(() => patch((s) => {
     const cat = firstFreeCat(s.sections.map((x) => x.cat))
-    return { add: { cat, arch: s.removed[cat]?.arch ?? 0, fresh: false }, sheet: null, menuFor: null }
+    return { add: { cat, arch: startArch(cat, s.removed, pageDesignOf(s.sections, THEMES[s.theme].name)), fresh: false }, sheet: null, menuFor: null }
   }), [patch])
 
   const closeAdd = useCallback(() => patch({ add: null, sheet: null }), [patch])
@@ -7384,13 +7425,28 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
   // Figma page stacks its sections differently, and picking card 1 again
   // restores layout 1's order. The sort is stable and a category the order does
   // not name sinks to the end, though the page built here carries none.
+  //
+  // The video is the one section a card adds or drops (plans/video.md, call
+  // 1): the layout-2 and layout-4 pages draw it, straight after the media
+  // player, and the layout-1 and layout-3 pages do not, so `pageOrder(i)` naming
+  // it is the whole test. A dropped video writes no `st.removed` entry: the gate
+  // runs over a page nobody has touched, so there is no content to bring back.
   const pickHeader = useCallback((i) => patch((s) => {
+    const themeName = THEMES[s.theme].name
     const order = pageOrder(i)
     const rank = (cat) => { const r = order.indexOf(cat); return r < 0 ? order.length : r }
+    const had = s.sections.some((x) => x.cat === 'video')
+    const wants = order.includes('video')
+    let sections = s.sections
+    if (wants && !had) sections = [...sections, { id: ++uidRef.current, cat: 'video', arch: 0, c: {} }]
+    else if (!wants && had) sections = sections.filter((x) => x.cat !== 'video')
+    const gone = !wants && had ? s.sections.find((x) => x.cat === 'video').id : null
     return {
-      sections: s.sections
-        .map((x) => ({ ...x, arch: pageLayout(x.cat, i, THEMES[s.theme].name) }))
+      sections: sections
+        .map((x) => ({ ...x, arch: pageLayout(x.cat, i, themeName) }))
         .sort((a, b) => rank(a.cat) - rank(b.cat)),
+      ...(gone !== null && s.selectedId === gone ? { selectedId: null, editSheet: false } : null),
+      menuFor: null,
     }
   }), [patch])
 
@@ -7446,7 +7502,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
 
   const addComposer = st.add && (
     <AddComposer
-      add={st.add} present={present} removed={st.removed}
+      add={st.add} present={present} removed={st.removed} pageD={pageDesignOf(st.sections, T.name)}
       themeIdx={st.theme} artistName={artistName} identity={identity} tiers={tiers} email={email} navSections={navSections}
       onChange={(next) => patch({ add: next })}
       onAdd={addSection}
