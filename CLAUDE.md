@@ -84,6 +84,20 @@ address, the labels, the casing, the date parse and the booked and past tests �
 `sectionVm`, so `EncoreSection` hands over indexes and raw strings and composes nothing. They are
 the only function-valued keys on the whole view-model.
 
+**Three inputs name the rest of the page**, because a few seams are drawn against a neighbour that
+may or may not stand there. `page` is the header's design (the footer's seat, below). `above` and
+`below` are the *categories* of the sections either side (`plans/video.md`, session 3): the canvas
+and `PublishedPage`, the two callers that hold the page's array, pass `arr[i - 1]?.cat` and
+`arr[i + 1]?.cat`, and `sectionVm` folds them into booleans, `vm.videoAbove` / `vm.videoBelow` and
+`vm.mediaAbove` (`above === 'media'`). Lime's layout-4 media and gallery draw their arcs against
+the video's band only while it stands between them, and Grunge's 390 video continues the media's
+band in a torn head only while the media stands directly above. **A caller that passes none** (the
+layout picker's thumbnails, the setup modal's cards, the harness without `&above=` / `&below=`)
+renders the seam fitted without a video, so a page whose video was deleted or never added keeps
+the 2026-09-18 call. Editorial and Pop read neither `above` nor `below` (their seams are straight);
+the only readers of the two neighbour keys are Lime's media and gallery and Grunge's video
+(`notes/video.md`), while `page` is read by the footer's seat (below).
+
 ## Navigation and state
 
 No router, no context, no state library. One flat `useState` object `st` in `EncoreBuilder`,
@@ -122,8 +136,12 @@ mutated through a single `patch()` helper.
   `pageLayout()` in `data.js` — `i % designCount(cat)`, which is always a row the layout picker
   can highlight, and is the lowest `arch` rendering the design asked for. It also **reorders**
   the page into `pageOrder(i)` (`data.js`), because each Figma page stacks its sections in its
-  own order — layout 2's reads repertoire before gallery and map after calendar. That is the
-  setup modal alone: the sidebar's `LayoutPicker` still moves the one section it is opened on, and
+  own order — layout 2's reads repertoire before gallery and map after calendar. **It also adds
+  or drops the one section whose frames only some pages draw**: the video stands after the media
+  player on cards 2 and 4 and is gone on cards 1 and 3 (`pageOrder(i)` naming it is the whole
+  test; the drop writes no `st.removed` entry, since the gate runs over a page nobody has touched;
+  `plans/video.md` call 1, `notes/video.md`), so a card still lays out the whole page and
+  re-picking one round-trips. That is the setup modal alone: the sidebar's `LayoutPicker` still moves the one section it is opened on, and
   must keep doing so, or a later header swap would silently undo everything the user had tuned.
   The bulk write is only safe because the modal is a one-shot gate over a page nobody has touched
   yet. The editor opens with the header `selectedId` so the sidebar

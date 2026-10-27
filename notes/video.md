@@ -106,7 +106,8 @@ Rendered section heights in the preview harness, at the 1180 / 768 / 390 columns
 layout 4 897 / 627 / 363. The Figma L4 bands are 1155 / 635 / 375 at 1440 / 768 / 390 and Retro's L2 instances
 782 / 1112.2 / 1101.8 (the band's own padding is the difference at 1440, and the editor draws that frame at
 0.82). The composition matches the screenshots of both frames; contents land within a few px of the
-transcription, and a pixel-level re-measure is each template session's own gate.
+transcription, and a pixel-level re-measure is each template session's own gate. (Retro had
+no template session of its own, so its `vm.pad` seams were never re-measured: see *Sweep*, below.)
 
 ## Lime · layout 2 (session 2, 2026-10-27)
 
@@ -679,6 +680,57 @@ a hand-recursed walk of every node of each band (the Section, the inner Frame an
   `npm run build` clean. `page-check.mjs Pop 3,0,1,2`: no console error or warning on any card, 390 overflow 0, the video on the
   layout-2 and layout-4 cards only, the setup modal's four cards. The two-server digest against `3c3f9e5` (720 renders, five themes, three widths, port normalised): **only Pop's video at arch 2 and 3** (layout 4's folded pair, six files) moved; Pop's layout 2, the other four themes' video and every other section are byte-identical. `&below=video` / `&above=video` over Pop's media, gallery and video: only the video moved (36 renders each), so the media's and the gallery's seams are untouched; the arrow and the rule are the video's own, proved by pictures at 1440, 768 and 390.
 
-## Other templates
+## Sweep (session 10, 2026-10-27)
 
-All five templates are fitted at layouts 2 and 4 (sessions 1 to 9); what is left is `plans/video.md`'s session 10, the sweep.
+The tree under test is `25bd074` plus this session's docs: **no `source/` file changed**. The one open call went to the user
+first (`AskUserQuestion`): **Pop's narrow head measure stays 478 / 221** (the arrow's ink less 30), not the frame's gap
+432.5 / 178.3, because at the frame's gap the seed takes a second line at 768 and the band is 673 against the frame's 627.
+
+- **Probes, all ten pages at 1440 and 768** (`--check`, the whole page, so every other section is the UNLEDGERED check too):
+  `inline-probe --theme T --layout 2,4` PASS for all five (video 5 slots hit at layout 2, 2 at layout 4, nothing wrong,
+  unledgered or unreached; `--cat video` PASS first), and Retro's own `--layout 5,6` PASS; `photo-probe --check`, `--blank`
+  and `--drop` PASS for all five at layouts 2 and 4 and for Retro 5 and 6 (the video's nodes: 8 at layout 2, the poster and the avatar's seven
+  circles, and 1 at layout 4, the poster). `limits.mjs video --seeds`: 0 seeds over their caps; `--check`: 0 capped fields fail, every
+  theme and layout. `page-check.mjs <T> 1,0,2,3` and `<T> 3,0,1,2` for all five: no console error or warning on any card,
+  390 overflow 0, the video on the layout-2 and layout-4 cards only, 4 modal cards each.
+- **The two-build digest against `main` (`9e30e9e`)**, `digest.mjs` on two vite servers (a git worktree on 5174; port
+  normalised), 720 renders each, five themes, three widths, every category and layout, the footer once more at `page=2`:
+  **60 files differ and all 60 are `video`** (5 themes × layouts 1 to 4 × 3 widths; `main`'s harness draws a 794-byte
+  empty page for `cat=video`, which is the positive control). The other 660, layouts 1 and 3 of every section and the
+  footer at `page=2` among them, are byte-identical. The neighbour keys, branch against branch: `&below=video` over media and
+  gallery moves **only Lime's media layout 4** (the foot arc, three widths); `&above=video` moves nothing (the gallery's
+  arc is an SVG `fill`, the digest's blind spot, proved by pictures in session 3); `&above=media` over the video moves
+  **only Grunge's 390 video** at `arch` 2 and 3, layout 4's folded pair (the head tear). Each is the seam its session named.
+- **The setup modal, built** (`build-digest.mjs` on the committed root `index.html` against a standalone build of this tree,
+  `CARD=0..3`, five themes, three tabs, reduced motion): cards 1 and 3 (layouts 1 and 3, the composed page) are **byte-identical
+  in all 16 files**; cards 2 and 4 gain one root (11 to 12) of 154 to 164 rows (layout 2) or 38 to 45 (layout 4) and
+  lose none: every older row survives with its `y` alone moved. In the editor, a script reading `st` through the fiber
+  tree picked every card, then 0 · 1 · 3 · 1 · 2 · 0 · 3 · 1 on all five templates: the video stands straight after the media
+  at `arch` = the card on cards 2 and 4, is absent on 1 and 3, `st.removed` stays empty, a re-picked card reproduces its first
+  order and content, and the section list minus the video equals `main`'s card for card.
+- **Delete, Undo, Add section** (all five): the canvas toolbar's Delete writes `removed.video = { arch: 1, at: 3, before:
+  'repertoire' }`, Undo restores the same object at the same index and id and clears the entry, and Add section after a delete
+  opens the composer on the removed layout and puts the video back at index 3. A page that never had one: Add section → Video
+  opens on layout 2 (layout 4 on a layout-4 page, as `videoStartArch` says) and seats it after the media. The canvas draws
+  the video at Desktop, Tablet and Mobile with no horizontal overflow.
+- **The published tab and the preview overlay**: the preview overlay (`Preview`, then Escape) draws the video and exits on every
+  template; the header's nav lists no `#video` link on any card, in the overlay or the tab; the published tab at 1100, 1200,
+  1300, 1440 and 1600 wide has no horizontal overflow and no page error, and the video's height follows the zoom (the
+  layout-4 band at 1440 is 1186 Lime and Grunge, 1175 Editorial, 1143 Pop, the frames' own; layout 2's is 782, 784 Lime). The tab
+  at 1100 is the tablet page (1110 to 1124 tall at layout 2, 627 to 654 at layout 4).
+- **Carried, not fixed — Retro's video seams are not fitted to its frames.** Sessions 2 to 9 each gave their template a `vm.pad`
+  row (layout 2's `d === 1` table, layout 4's `d === 3` row) and landed within a few px of the frame. Retro never had a session
+  of its own, and session 1 recorded its section heights without a row: the harness reads layout 2 at **716 / 1110 / 1114**
+  against the frames' 641.2 / 1112.2 / 1101.8 (the published 1440 page is 873 against 782) and layout 4 at **897 / 627 / 363**
+  against 947.1 / 635 / 375 (1095 against the band's 1155). The other four templates are the same numbers *before* their rows.
+  A Retro row would be the same two tables with Retro's frame numbers (layout 4's band insets 156 / 60 / 60 are the ones the plan recorded
+  for Retro); it moves only Retro's video, and needs Retro's own probes and digest again. Left for a decision (the sweep's brief
+  freezes `source/`).
+- **Observation — Add section on a layout-3 page breaks its composed row.** The video is seated after the media (layout 3's
+  desktop bio / media column), so the calendar leaves the right column and stands on its own full-width row (bio and media
+  646 wide with the calendar at 305 beside them, then all three 1088 wide with a video between). This is the documented rule
+  (*moving a section out of the run undoes it*) applied to a section the user chose to add on a page whose frames draw no
+  video; A different seat for a video added to a layout-3 page (after the calendar) would be a change in `addSection`, if wanted; not
+  measured.
+- **The 4 editor console errors** every template logs on a fresh editor ("a style property during rerender … shorthand")
+  are React's, identical on `main`, and not the video's.

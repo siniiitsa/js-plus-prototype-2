@@ -163,7 +163,9 @@ Four things about it are load-bearing:
   *Feature spread* stands over the bio's split card and the testimonials' editorial feature,
   *Inset Hero* over the bento wall, and *Stacked* over the bio's portrait-with-overlays and the
   testimonials' video story wall. A card therefore writes `arch` to every section, folded by
-  `pageLayout()` into that category's own design count. The cards are named rather than
+  `pageLayout()` into that category's own design count. The one section a card also adds or
+  drops is the video: the frames draw it at layouts 2 and 4 only, so cards 2 and 4 stand it
+  straight after the media player and cards 1 and 3 leave it out (`plans/video.md`). The cards are named rather than
   numbered because the header is the one category whose layouts carry names (§4.4b). This is the setup modal only. The
   ordinary `LayoutPicker` in the sidebar still moves one section, so nothing the user has tuned
   by hand is ever overwritten; the modal can write the whole page because it is a one-shot gate
@@ -682,7 +684,7 @@ These are intentional limits, not oversights — see §12 for the full list. The
   sparkle — lime scribbles and squiggle arrows, dot grids and leant cards are `s.pop` arms
   inside Lime's layout-1 blocks, each widened per site to the pair `(s.limeTree || s.pop)` and
   folded into `s.limeTree` once the family closed, and inside Retro's media body. Titan One stands in for its demo display face. Its layout-2 page is Lime's layout-2 tree
-  in all ten sections, and **bound** to its variable mode where layout 1's was raw: a white page
+  in all ten sections (and the video's Dashboard player, `plans/video.md`), and **bound** to its variable mode where layout 1's was raw: a white page
   of lime, pink, coral and blue cards on seven schemes (media and the calendar lime cards on the
   white, Editorial's mechanism; the form a blue band), drawn in solid inside rings — 8, 5, 4, 3,
   2 and 1px — with no seams, glows or 10px rules but the media's 5px lime pair at 1440, the
