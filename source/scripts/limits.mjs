@@ -66,7 +66,7 @@ const CENSUS_SEEDS = (() => { try { return JSON.parse(fs.readFileSync(new URL('s
 const SEED_IDX = new Map(CENSUS_SEEDS.map((x, i) => [x, i]))
 const CENSUS = {}
 const SECTIONS = {
-  header: ['Hea'], bio: ['Bio', 'Tag'], media: ['Med', 'Vid'], gallery: ['Gal'], repertoire: ['Rep'],
+  header: ['Hea'], bio: ['Bio', 'Tag'], media: ['Med'], video: ['Vid'], gallery: ['Gal'], repertoire: ['Rep'],
   map: ['Eve'], pricing: ['Pri'], calendar: ['Boo'], form: ['Enq'], testimonials: ['Tes'], footer: ['Foo', 'Com'],
 }
 const WIDTHS = ['desktop', 'tablet', 'mobile']

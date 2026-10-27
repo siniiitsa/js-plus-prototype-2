@@ -112,6 +112,10 @@ frame in fourth place (`964:64626` / `986:13761` / `986:13780`); the section was
 project in the QA passes and no `Video` component exists, so the frame is not a row here. Lime's
 plan dropped it for the same reason one pass earlier.
 
+*(Since: the section came back, layout-bound to layouts 2 and 4 — `plans/video.md`. Grunge's layout 2 was
+fitted in that plan's session 4, 2026-10-27, as a `gr` arm of the shared `Video` branch; the decisions live in
+`notes/video.md` — "Grunge · layout 2". This pass's section list below is unchanged.)*
+
 ## The Figma source
 
 | Canvas | Frame | Node | Size |
@@ -165,7 +169,7 @@ for the block); it is the gate this session widens.
 | 9 | `form` | `964:64633` | 1440 × 812 | `986:13768` | 768 × 849 | `986:13787` | 390 × 929 | `964:64595` / `986:11863` / `986:11882` | `964:64652` / `986:11591` / `986:11633` | `if (s.v1 && s.lime)` ahead of `EnquiryForm`'s `if (s.v1)` | done `3e5e255` |
 | 10 | `testimonials` | `964:64634` | 1440 × 853.9 | `986:13769` | 768 × 803 | `986:13788` | 390 × 840 | `964:64596` / `986:11864` / `986:11883` | `964:64653` / `986:11675` / `986:11701` | `if (s.lime)` inside `Testimonials`' `if (s.v1)`, after `rail` | done `85ea218` |
 | — | `footer` | `964:64635` | 1440 × 479.5 | `986:13770` | 768 × 647.4 | `986:13789` | 390 × 619.4 | `964:64597` | — | — | **out of scope**, expected: the same tree as Lime's layout-2 footer but for the mock name and its seal frame, and `NVAR.footer` is 1. **Confirmed in section 1** against Grunge's own layout-1 footer (`964:58610` / `986:44068` / `986:44080`): the depth-6 `type:name` multisets are identical at all three widths, 47 nodes each, mock name and seal frame included. The row is closed. |
-| — | `video` | `964:64626` | 1440 × 782 | `986:13761` | 768 × 1112.2 | `986:13780` | 390 × 1119.8 | `964:64588` | — | — | **not a category** (above) |
+| — | `video` | `964:64626` | 1440 × 782 | `986:13761` | 768 × 1112.2 | `986:13780` | 390 × 1119.8 | `964:64588` | — | — | **fitted since, as `video-section`'s session 4** (`notes/video.md`) |
 
 `EncoreSection.jsx`'s fit comments cite the Retro twin's and the Lime twin's node ids, so grep for
 either to find the branch and its block. **Cite branches by id, never by line number**: the file

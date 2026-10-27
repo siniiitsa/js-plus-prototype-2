@@ -254,6 +254,9 @@ const s = sectionVm({
   identity, tiers, email, Z: Z[device], mob: device === 'mobile', live: q.get('live') === '1', navSections, today,
   ...(column ? { column } : null),
   ...(page !== undefined ? { page } : null),
+  // &above=video / &below=video stand a video beside the section, as the page's array does (layout 4's media and gallery seams).
+  ...(q.get('above') ? { above: q.get('above') } : null),
+  ...(q.get('below') ? { below: q.get('below') } : null),
   // &noclamp=1 renders past the character caps (scripts/limits.mjs measures there).
   ...(q.get('noclamp') === '1' ? { clamp: false } : null),
 })

@@ -114,7 +114,9 @@ of every visible node's `(depth, type, lower-cased name)` against the twins' des
   planning time.
 - **Video is not a category.** The pages carry a *Video Players — A · Dashboard player* frame in
   fourth place (`964:64569` / `986:17571` / `986:17590`); no `Video` component exists, so it is not a
-  row here, as on every twin's page.
+  row here, as on every twin's page. *(Superseded 2026-10-27: the section came back as a layout-bound
+  category, `plans/video.md`, and Pop's frames were fitted in its session 8 — `notes/video.md`,
+  "Pop · layout 2": Scheme 1 at every node, so no `SCHEMES_OF.Pop[1]` row.)*
 
 So, as under Editorial's layout 2: **no Pop-only branches and no Pop-only ternary trees.** The work
 is Pop deltas inside **Lime's layout-2 blocks**, each widened from `s.limeTree` to `(s.limeTree ||
@@ -204,7 +206,7 @@ testimonials' sub, a no-wrap line to 411 (*section 10*: 431 wide at x −20.5; i
 
 ## The sections
 
-Page order — `PAGE_ORDERS[1]`, which is the frames' order less the video frame. Sizes are the
+Page order — `PAGE_ORDERS[1]`, which is the frames' order (the video frame stands fourth since `plans/video.md`). Sizes are the
 frames' own. Each row's three masters are one session. **Lime block** is where that section's Lime
 layout-2 block sits in `EncoreSection.jsx` (grep a twin's desktop id to find it); it is the gate the
 session widens. The narrow twins are in Editorial's and Grunge's sections tables.
@@ -223,7 +225,7 @@ session widens. The narrow twins are in Editorial's and Grunge's sections tables
 | 9 | `form` | `964:64576` | 1440 × 784 | `986:17578` | 768 × 856 | `986:17597` | 390 × 910 | **4** (sidebar card **2**) | `964:64595` | `964:64614` | `if (s.v1 && s.limeTree)` ahead of `EnquiryForm`'s `if (s.v1)` | **done** `58b37a8` |
 | 10 | `testimonials` | `964:64577` | 1440 × 762.9 | `986:17579` | 768 × 730 | `986:17598` | 390 × 842 | 1 (big card **2**, picked tile **3**) | `964:64596` | `964:64615` | inside `Testimonials`' `if (s.v1)`, after `rail` | **done** `ab1ba50` |
 | — | `footer` | `964:64578` | 1440 × 479.5 | `986:17580` | 768 × 720.4 | `986:17599` | 390 × 720.4 | 3 | — | — | — | **out of scope**: layout 1's footer, closed at planning time (above) |
-| — | `video` | `964:64569` | 1440 × 782 | `986:17571` | 768 × 1112.2 | `986:17590` | 390 × 1107.8 | 1 | — | — | — | **not a category** |
+| — | `video` | `964:64569` | 1440 × 782 | `986:17571` | 768 × 1112.2 | `986:17590` | 390 × 1107.8 | 1 (resolved at every node) | — | — | the `pop` arm in `Video`'s `v1` branch | **done** `fb97d88` (`plans/video.md`, session 8) |
 
 **Cite branches by id, never by line number**: the file is ~28 100 lines and every session moves it.
 **Re-measure from the Pop frame; never reuse a twin's block sizes.**

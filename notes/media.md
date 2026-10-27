@@ -205,3 +205,7 @@ Ledgered as on the other templates (`Editorial.3.media.tracks.sub`): the list ti
 ## Inline editing (plans/inline-edit-all.md, Pop layout 4, 2026-10-22)
 
 Ledgered as on the other templates (`Pop.3.media.tracks.sub`): the list tile prints `Single` alone and `02:28` / `04:22` are the player's clock. **The list tile's title is clamped** (`overflow: hidden; text-overflow: ellipsis`, `nowrap`): at 768 Pop's tiles are 136 wide and `MANCHESTER AT 3AM` reads `MANCH…`, its range 172 wide with its middle in the clipped part. A hand on the visible glyphs opens `tracks[1].title` (it always did); the probe aimed at the middle of the range and called it covered, and now aims at what a clipping ancestor leaves (`scripts/inline-probe.mjs`, `__aim`). The box is as wide as the whole title, past the `…`.
+
+## Layout 4's foot arc is neighbour-aware (video section, session 3, 2026-10-27)
+
+Under Lime the media sheet ends square (user call, 2026-09-18) unless a video stands directly under it: then it draws the frame's own foot arc, `ArcEdge` `side="bottom"` in the page `s.bg`, gated on `s.videoBelow` (`sectionVm({ below })`, the next section's category). Grunge, Editorial and Pop are excluded at the site. See `notes/video.md`, *Lime · layout 4*, the seam bullet.

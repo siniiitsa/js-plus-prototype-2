@@ -227,3 +227,7 @@ alone, so at 768 it is *not drawn* and needs no ledger row (the probe's union ru
 
 The two marks are scoped to layout 1 (`*.0.gallery.…` in `INLINE_MARKED`; Retro layout 2, 2026-10-21): layout 2 draws
 `railLabel` once, at 768, where text tells it from the heading, and no `data-inline` stands in its block.
+
+## Layout 4's head arc is neighbour-aware (video section, session 3, 2026-10-27)
+
+Under Lime the head arc is the media's olive `s.box1` (user call, 2026-09-18), unless a video stands directly above the gallery: then it is the page `s.bg`, the frame's dome meeting the video band's ground, gated on `s.videoAbove` (`sectionVm({ above })`, the previous section's category). See `notes/video.md`, *Lime · layout 4*, the seam bullet.

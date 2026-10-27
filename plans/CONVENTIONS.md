@@ -58,6 +58,9 @@ recorded* or *—* where those passes never met them. Its sweep folded Pop's per
 Pop columns' "the pair" is history: C's gate row says where it went. Its stickers beside the
 artist's longer copy, which went behind it on three sections across two passes, stay in its plan
 with the rest of Pop's decorative language.
+The video section's passes (`plans/video.md`, sessions 1 to 9: one restored section fitted at layouts 2 and 4 of
+all five templates) are not a layout pass and leaned on groups A, B and C as they stood; the nine rows they added,
+each met three times or more, are group E.
 
 This file **names and locates; it does not restate.** Each line is the bullet's own bold title,
 the plan and heading it lives under, and the Grunge sections that leaned on it. Read the bullet
@@ -260,6 +263,26 @@ either — a 10px rule stands at four band feet at 1440 and 768 instead.
 | 8 calendar | *The eighth layout-4 block, inside its branch after the seam*; *two pills in other schemes, read off `explicitVariableModes`* (Send Enquiry is Scheme 2 again); *Reversed* (JP-052's summary column) | widened (no `G`); Back read off Scheme 3 and Send Enquiry turned round to Scheme 1 (`BookPill`'s defaults); JP-052's summary kept, the three-level stack holding | widened (no `G`); Back off Scheme 3 (Editorial's `S3`) and Send Enquiry back on Scheme 2's pair (Lime's); JP-052's summary kept, the three-level stack holding |
 | 9 form | *The ninth layout-4 block, ahead of its branch*; *both rules are inset shadows, not borders*; *a refused box changes colour, not only weight: 2px of `s.tx`* (white on red under Grunge, no arm); *the vertical inset is the root's, named*; *Reversed 2026-09-23* (JP-054's copy) | widened (no `G`); both rules replaced by `DashRule`s (the head's, the underline boxes', the steps' 2, 2); the refusal turned round — a 2px ink underline, the dash gone; the root's inset kept, named; JP-054's copy kept ("Contact Us" against the frames' "KAI MERCER") | widened (no `G`); both rules kept as Lime's inset shadows, full pink; the refusal Lime's 2px of `s.tx` violet against the 1px lime ring, no arm; the root's inset kept, named; JP-054's copy kept ("Contact Us", the 1440 frame's own head, against the narrow masters' "KAI MERCER") |
 | 10 testimonials | *The tenth layout-4 block, inside its branch after the seam*; *the desktop cell is 344, not Retro's 406*; *the glyph is the frame's own → path*; *named diffs, inherited* (the unreachable fourth seat — red under Grunge) | widened, Grunge's no-sheet arm taken and a third `REG`; the 344 cell turned round — 324 × 382 on this frame's 48 padding; the → path kept; the unreachable fourth seat kept, a bare paper cell | widened, Grunge's no-sheet `G` (the seat's blue) and a fourth `REG` of four seats; the 344 cell turned round — 430 on this frame's 56; the → path kept; the fourth seat a bare teal cell, unreachable at 768 and 390 |
+
+## E. The video section's passes
+
+Sources: [`../notes/video.md`](../notes/video.md), one block per session, and [`video.md`](./video.md). Sessions
+1 to 9 fitted Retro, then Lime, Grunge, Editorial and Pop at layouts 2 and 4, so a row here was met by
+at least three of the nine; the session numbers are `video.md`'s (1 Retro, 2 and 3 Lime layout 2 and 4, 4 and 5
+Grunge, 6 and 7 Editorial, 8 and 9 Pop). Groups A, B and C's rows were leaned on throughout and are not
+repeated.
+
+| Convention | Where | Leaned on in |
+|---|---|---|
+| *A progress fill that contradicts its own clock stays `s.ac` at `videoPct`* — the frames' fill is 200 / 215, or the whole track, against a 02:05 clock; a played bar that cannot be told from the unplayed one is a defect | notes/video.md, *Grunge · layout 2* (override (a)) | sessions 1 to 9, every one |
+| *A master that clips its own composition is drawn whole* — the 768 *Cinematic minimal* instance is 708 × 402 over a 567 child at y −82.5 | notes/video.md, *Lime · layout 4* | sessions 1, 3, 5, 7 and 9 |
+| *Read every instance's `resolvedVariableModes` at every node of all three widths before seating; a section on Scheme 1 gets no `SCHEMES_OF` row, and the absence is the result* | notes/video.md, *Editorial · layout 2* and *Editorial · layout 4* | sessions 2, 4, 6, 7, 8 and 9 (Lime, Grunge and Pop found none to add) |
+| *A mode leak is a different width each time, and nothing is read off it*: Lime's is the 390 (Retro's mode), Editorial's the 768 (Static Youth); the bound type can lie too (`sem/bg` on the head band is the paper under Editorial, which is the design) | notes/video.md, *Lime · layout 4* (the three traps) and *Editorial · layout 4* | sessions 3, 5, 7 and 9 |
+| *A narrow master's centred fill that drops the head: the poster reads the template's existing `FOCUS` string through `s.imagePos`, under that template alone, and no row is added* (one string per file would move the bio and the gallery; an upload has none and stays centred, JP-129) | notes/video.md, *Grunge · layout 2* | sessions 4, 5, 6, 7, 8 and 9 (Lime's cover reads the y axis only, so it reads none) |
+| *A seam the removal assumed away is re-fitted by a neighbour key, and a page without the neighbour keeps the old seam* — `sectionVm({ above, below })`, `vm.videoAbove` / `videoBelow` / `mediaAbove`; Editorial and Pop draw straight edges and read none | notes/video.md, *Lime · layout 4* (written there); CLAUDE.md, the `sectionVm` paragraph | sessions 3 (written), 5, 7 and 9 (read, and digested with `&below=video` / `&above=video`) |
+| *The section's `vm.pad` row is the frames' own inset, so the neighbours land on their frames* — layout 2's `d === 1` table, layout 4's `d === 3` row; the 1440 foot is the frame's less the 670 stage's clip | notes/video.md, *Lime · layout 2* and *Lime · layout 4* | sessions 2 to 9 |
+| *A family flag replaces a named pair only when every member is fitted at that layout* — `v1` took `s.limeTree` in session 8 and `v3` in session 9, and not before: earlier it would have turned Lime's dress on for a template not yet fitted | notes/video.md, *Grunge · layout 2* and *Pop · layout 2* | sessions 2, 4, 6, 8 and 9 |
+| *Retro's dropped metrics stay dropped* — view and follower counts, the like pair, the verified tick and the emoji are not drawn, and lucide's icons stand in | notes/video.md, *Grunge · layout 2* (override (c)); plans/retro/layout-2.md | sessions 1 to 9, every one |
 
 ## What is deliberately not here
 

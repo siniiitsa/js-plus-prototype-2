@@ -578,6 +578,12 @@ export const CATS = [
   { id: 'header', name: 'Header', n: 6 },   // header count is theme-dependent — see headerVariants()
   { id: 'bio', name: 'Bio', nav: 'About', n: 6 },
   { id: 'media', name: 'Media Player', nav: 'Top Tracks', n: 7 },
+  // Layout-bound (plans/video.md, call 1): only the layout-2 and layout-4 Figma
+  // pages draw a video, so the picker offers those two (`layoutChoices`), and
+  // `noNav` keeps it out of the header's links, which the frames draw the same
+  // with or without it (call 5). `n` is the design count: indices 0 and 2 are
+  // the holes layouts 1 and 3 leave.
+  { id: 'video', name: 'Video', n: 4, noNav: true },
   { id: 'pricing', name: 'Pricing', nav: 'Pricing', n: 8 },
   { id: 'repertoire', name: 'Repertoire', nav: 'Repertoire', n: 7 },
   { id: 'gallery', name: 'Gallery', nav: 'Media', n: 4 },
@@ -637,7 +643,7 @@ export const CTA_TARGETS = {
 // Category ids in page order → `navSections`. Ids, because its callers hold
 // three shapes: section objects, pageOrder()'s ids and EXAMPLE_PAGE's tuples.
 export const navSectionsOf = (cats) => cats
-  .filter((cat) => cat !== 'header' && cat !== 'footer')
+  .filter((cat) => cat !== 'header' && cat !== 'footer' && !catById(cat)?.noNav)
   .map((cat) => ({ cat, label: navLabel(cat) }))
 
 export const firstPresent = (prefs, navSections) =>
@@ -797,8 +803,14 @@ export const titanEms = (text) =>
  * inequality, never the surplus.
  * ------------------------------------------------------------------ */
 
+// `video` is 4 with holes at indices 0 and 2: its Figma pages exist at layouts
+// 2 and 4 only (plans/video.md, call 1), and keeping the count at four keeps
+// the invariant everything else reads off — design index = layout number − 1,
+// so `in`, the ledgers and `SCHEMES_OF` rows need no remapping. The holes are
+// never reached: `layoutChoices` offers 1 and 3, `pageLayout` folds onto them
+// and `sectionVm` folds `d` the same way.
 export const NVAR = {
-  header: 6, bio: 4, media: 4, pricing: 4,
+  header: 6, bio: 4, media: 4, video: 4, pricing: 4,
   repertoire: 4, gallery: 4, calendar: 4, map: 4, testimonials: 4, form: 4, footer: 1,
 }
 
@@ -860,10 +872,28 @@ export const designCount = (catId, themeName) =>
 // layout 3" rather than "Bio layout 6" for the identical render. Negative-safe,
 // sectionVm's own spelling, and `|| 1` for a category NVAR has no entry for —
 // `layoutCount` ends the same way.
+//
+// `video` is the one category with holes (plans/video.md, call 1): it has a
+// design at layouts 2 and 4 only, so the fold lands on the odd index, and the
+// header cards for layouts 1 and 3 drop the section rather than fold it
+// (EncoreBuilder's `pickHeader`).
+export const videoDesign = (i) => ((i % 4) + 4) % 4 | 1
 export const pageLayout = (catId, i, themeName) => {
   const n = designCount(catId, themeName) || 1
-  return ((i % n) + n) % n
+  const k = ((i % n) + n) % n
+  return catId === 'video' ? videoDesign(k) : k
 }
+
+// The `arch` values the layout picker offers a category: every index, except
+// that a video has a frame at layouts 2 and 4 alone.
+export const layoutChoices = (catId, themeName) => (catId === 'video'
+  ? [1, 3]
+  : Array.from({ length: layoutCount(catId, themeName) }, (_, i) => i))
+
+// The layout a video starts on when the composer adds one: the page's own if
+// that is one of the two it has (the header's design stands for the page's),
+// else layout 2. `pageD` is -1 or any design index.
+export const videoStartArch = (pageD) => (pageD === 3 ? 3 : 1)
 
 /* ------------------------------------------------------------------ *
  * §4.4b Header layout names.
@@ -908,7 +938,7 @@ export const headerLayoutLabel = (themeName, i) =>
  * ------------------------------------------------------------------ */
 
 export const FLAG = {
-  header: 'hd', bio: 'bi', media: 'me', pricing: 'pr',
+  header: 'hd', bio: 'bi', media: 'me', video: 'vi', pricing: 'pr',
   repertoire: 're', gallery: 'ga', calendar: 'ca', map: 'mp', testimonials: 'te',
   form: 'fo', footer: 'ft',
 }
@@ -951,6 +981,46 @@ export const TRACK_KEYS = ['title', 'sub', 'image', 'audio']
 // track here. A section with no tracks left draws neither: `sectionVm` stops
 // the clock at 00:00 under an empty bar and names `vm.mediaEmpty` instead.
 export const NOW_PLAYING = { at: '02:28', of: '04:22', pct: 34 }
+
+
+// The other videos, listed in the panel beside the stage in the video
+// section's layout 2 (plans/video.md, call 4): always the seed, because there
+// is no structured editor for them. Written in the row shape such an editor
+// would edit, so adding one later changes nothing in sectionVm. Only the
+// artwork needs dressing, which `defaultTrackArt('video')` does.
+//
+// `sub` is the frame's channel line — where the video came from, not who made
+// it — and `when` is the date the frame spends on a view count. Neither is a
+// number about how many people watched: the frames' view counts, follower
+// count and like pair are dropped, because a published page printing a number
+// the artist never typed is making a claim (Retro layout 2's rule).
+export const VIDEOS = [
+  { title: 'Manchester at 3am',  sub: 'Hidden Sessions', length: '03:50', when: 'April 2026' },
+  { title: 'Disco Maghreb (edit)', sub: 'Single',        length: '04:12', when: 'March 2026' },
+  { title: 'Slow Burn',          sub: 'Single',          length: '03:28', when: 'February 2026' },
+  { title: 'Echo & The Floor',   sub: 'Live set',        length: '05:04', when: 'November 2025' },
+  { title: 'Roomtone',           sub: 'Hidden Sessions', length: '02:57', when: 'October 2025' },
+  { title: 'Field Day (live)',   sub: 'Festival',        length: '06:41', when: 'August 2025' },
+]
+
+// Where the video section's transport bar is caught. The section has no
+// <video> element on either surface — it is a picture (call 2) — so the
+// playhead is composed from the running time the artist typed rather than read
+// off anything: VIDEO_MARK of it, formatted back. The fill under it takes the
+// same fraction, so the two agree. A duration that will not parse gives '',
+// and the bar renders empty rather than inventing a position for it.
+export const VIDEO_MARK = 0.48
+export const clockAt = (dur, frac) => {
+  const m = /^\s*(\d{1,3}):([0-5]\d)\s*$/.exec(String(dur ?? ''))
+  if (!m) return ''
+  const at = Math.round((Number(m[1]) * 60 + Number(m[2])) * frac)
+  return `${String(Math.floor(at / 60)).padStart(2, '0')}:${String(at % 60).padStart(2, '0')}`
+}
+// The frames' own words for the layout-2 panel's link and the artist row's
+// pill (plans/video.md, call 3), uncased like every JP-071 label.
+export const VIDEO_ALL = 'View All ›'
+export const VIDEO_FOLLOW = 'Follow'
+export const VIDEO_DURATION = '04:18'
 
 // TAGS is a palette as much as a list: `vm.chips` is one colour seat per entry,
 // and `s.chips[3].bg`, `s.chips[4 % n].bg` and friends are read as seats across
@@ -1455,6 +1525,7 @@ export const FOOTER_STATEMENT = "Let's make\nyour night unforgettable."
 // layouts 3 and 4 starts from REP_HEADING_3 / REP_HEADING_4, so a literal here
 // would never be read.
 export const TITLES = { bio: 'Reads the room.', media: 'Five worth your ear.',
+  video: 'Live at Roomtone',
   pricing: "Choose the set that's right for your night",
   gallery: 'See us in action', calendar: 'Availability',
   map: 'Manchester', testimonials: 'Word of Mouth', form: "Let's make\nyour night unforgettable.", footer: '' }
@@ -1464,6 +1535,7 @@ export const DEFS = {
   bioP1:      'DJ and selector based in Manchester. Five years of reading rooms — house, disco, soul, 80s — chosen by the room, not the algorithm.',
   bioP2:      'Residencies at Roomtone and The Warehouse Project. Available for clubs, weddings and private events across the UK.',
   since:      'June 2021',
+  videoDesc:  'Full closing set, recorded live. One hour of the room at its loudest.',
   pricingSub: 'Prices may vary by date, location, and length of set.',
   // Layout 3's intro line is PRICING_INTRO_3 (JP-070), beside its head.
   // §10.2 layout 2 stands a line of praise beside the plan, where layout 1 has
@@ -1592,6 +1664,7 @@ export const CARD_LINE_3 = 'Performing since 2021'
 // song count as layout 3's "Curated sets" does. The other layouts keep the
 // shared TITLES defaults; sectionVm and EditPanel both resolve these at layout
 // 4 alone, the TESTI_HEADING_2 pattern.
+export const VIDEO_HEADING_4 = 'See me in action'
 export const CAL_HEADING_4 = 'Book Us'
 export const REP_HEADING_4 = 'Repertoire'
 export const GALLERY_HEADING_4 = 'Snaps from the night'
@@ -1715,12 +1788,18 @@ export const EXAMPLE_PAGE = [
 // player instead and the repertoire follows the columns — `pageRows` does that
 // regrouping, so one order serves all three widths. A page with no row here
 // takes layout 1's, which is EXAMPLE_PAGE's — true of layout 4's page.
+//
+// The video is the one section a page row can add or drop (plans/video.md, call
+// 1): layouts 2 and 4 draw it, straight after the media player, and layouts 1
+// and 3 do not. Layout 4's row is the first that differs from layout 1's only
+// in that.
 const PAGE_ORDERS = [
   EXAMPLE_PAGE.map(([cat]) => cat),
-  ['header', 'bio', 'media', 'repertoire', 'gallery', 'pricing', 'calendar', 'map',
+  ['header', 'bio', 'media', 'video', 'repertoire', 'gallery', 'pricing', 'calendar', 'map',
     'form', 'testimonials', 'footer'],
   ['header', 'bio', 'media', 'repertoire', 'calendar', 'gallery', 'pricing', 'map',
     'form', 'testimonials', 'footer'],
+  EXAMPLE_PAGE.flatMap(([cat]) => (cat === 'media' ? [cat, 'video'] : [cat])),
 ]
 
 export const pageOrder = (i) => PAGE_ORDERS[i] ?? PAGE_ORDERS[0]
@@ -2065,6 +2144,54 @@ export const FIELDS = {
     { k: 'cta', l: 'Button', d: 'Book Now', in: { Lime: [0], Grunge: [0], '*': [] },
       chars: { Lime: [16], Grunge: [16] },
       hint: 'Scrolls to your enquiry form, or the next place to book. Empty drops the button.' },
+  ],
+  // The video section (plans/video.md): a picture of a player, layout-bound to
+  // layouts 2 and 4, so every `in` below names designs 1 and/or 3. There is no
+  // repeater — the six videos beside the stage are seeded (call 4) — and no
+  // link: the player is not a player (call 2). The poster fills the player at
+  // both layouts and the artist photo is layout 2's alone (the artist row and
+  // the small circle beside each listed video).
+  video: [
+    { k: 'image',   l: 'Poster', type: 'image', aspect: [16, 9], in: [1, 3],
+      hint: 'Fills the player in layouts 2 and 4.' },
+    { k: 'avatar',  l: 'Artist photo', type: 'image', aspect: [1, 1], in: [1],
+      hint: 'The circle beside your name, and beside every video in the list. Layout 2 only.' },
+    // Layout 2 prints it as the label over the description; layout 4 as the
+    // band's display head. Two seeds, one field: HEADING_4 beside TITLES.
+    { k: 'heading', l: 'Heading', d: TITLES.video, in: [1, 3],
+      // Measured on Retro (limits.mjs): 64 at layout 2 (390), 20 at layout 4 (390; 30 at 1440
+      // would take a second line). Lime's layout 2 holds 82 (390's box binds; its label face is
+      // narrower); its layout 4 holds 19 (390 binds: 28 at 1440, 24 at 768; session 3).
+      // Grunge's layout 2 holds 91 (the box binds at 390: Anton in capitals is narrower again;
+      // session 4); its layout 4 holds 25 (390 binds: 32 at 1440, 27 at 768; session 5).
+      // Editorial's layout 2 holds 48 (390's box binds: Gloock in capitals is the widest of the
+      // five faces; session 6); its layout 4 holds 16 (session 7: the measure is 15 at 768, 19 at
+      // 1440 and 20 at 390, but the 16-character seed is the frame's own string and fits in one
+      // line there, so the cap is the seed's length, `--check`'s 'floor' as the description's).
+      // Pop's layout 2 holds 47 (76 / 85 / 47: 390's box binds, Titan One in capitals; session 8);
+      // its layout 4 holds 16 (session 9: the measure is 20 at 1440 (the arrow), 15 at 768 and
+      // 17 at 390, but the 16-character seed is the frame's own string and fits in one line
+      // there, so the cap is the seed's length, as Editorial's).
+      chars: { Lime: [null, 82, null, 19], Grunge: [null, 91, null, 25], Editorial: [null, 48, null, 16],
+        Pop: [null, 47, null, 16], '*': [null, 64, null, 20] },
+      hint: 'Layout 2 prints it over the description, layout 4 as the band’s large head.' },
+    { k: 'description', l: 'Description', type: 'area', def: 'videoDesc', in: [1],
+      // One ellipsized line: prose clips at 64 at 390 but the 69-character seed fits,
+      // so the cap is the seed's own length (the frame's string, `--check`'s 'floor').
+      chars: { '*': [null, 69] }, hint: 'Under the heading, layout 2 only.' },
+    { k: 'duration', l: 'Duration', d: VIDEO_DURATION, in: [1, 3],
+      chars: { '*': [null, 8, null, 8] },
+      hint: 'Minutes and seconds, as 04:18. The player’s clock and its bar are drawn from it; anything else leaves them empty.' },
+    // Call 3: the two buttons, JP-071's shape (the frame's own bytes, uncased,
+    // dropped when emptied). "Top music video" and the rest stay literals.
+    // Measured 39 and 37 at 390, a pill drawn ×4 its frame width there: held to 16 by
+    // judgement, as the repertoire's and the form's pills are.
+    { k: 'allCta',  l: 'List link', d: VIDEO_ALL, in: [1],
+      chars: { '*': [null, 16] },
+      hint: 'The link at the head of the list beside the player. Left empty, it is not drawn.' },
+    { k: 'followCta', l: 'Follow button', d: VIDEO_FOLLOW, in: [1],
+      chars: { '*': [null, 16] },
+      hint: 'The pill at the end of your name’s row. Left empty, it is not drawn.' },
   ],
   // The fourth list-shaped content with a structured editor, and the one that
   // replaced a flattened key set (t1n/t1p/…) rather than a textarea: `tiers` is
@@ -2782,6 +2909,9 @@ export const HEADING_3 = {
   calendar: CAL_HEADING_3, map: MAP_HEADING_3, testimonials: TESTI_HEADING_3,
 }
 export const HEADING_4 = {
+  // The video band's head is the frame's "See *me* in action", not the
+  // gallery's "See *us*" (Retro layout 4's recorded trap).
+  video: VIDEO_HEADING_4,
   repertoire: REP_HEADING_4, calendar: CAL_HEADING_4, gallery: GALLERY_HEADING_4, map: MAP_HEADING_4,
   testimonials: TESTI_HEADING_4, form: FORM_HEADING_4,
 }
@@ -3115,6 +3245,18 @@ export const IDENTITY_CHARS = {
       count: { Retro: [null, 7, null, 7], '*': [null, 6, 8, 8] } },
     seal: { Retro: [19, null, 19], Lime: [13, null, 22], Grunge: [14, null, 14], Editorial: [16],
       Pop: [null, null, 12] },
+  },
+  // The artist's name as the video prints it: layout 2's artist row, layout 4's top
+  // bar. Retro's measure and Lime's layout 2 (also 49); Lime's layout 4 measured 50
+  // (390 binds; 149 at 1440, 96 at 768), and the other two are read in theirs.
+  video: {
+    // Grunge's layout 2: 49, Retro's number again (138 / 114 / 49 at 1440 / 768 / 390); its
+    // layout 4: 55 (163 / 105 / 55; 390 binds), session 5. Editorial's layout 2: 49 again
+    // (138 / 114 / 49), session 6; its layout 4: 29 (session 7: 89 / 58 / 29, 390's box binds
+    // — Gloock in capitals beside the arrow). Pop's layout 2: 49 again (138 / 114 / 49), session 8;
+    // its layout 4: 35 (session 9: 108 / 66 / 35, 390's box binds — Titan in capitals beside the arrow).
+    title: { Retro: [null, 49, null, 54], Lime: [null, 49, null, 50], Grunge: [null, 49, null, 55],
+      Editorial: [null, 49, null, 29], Pop: [null, 49, null, 35] },
   },
   calendar: {
     title: [null, 64],

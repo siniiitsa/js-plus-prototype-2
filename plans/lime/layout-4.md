@@ -77,7 +77,7 @@ against Retro at each width):
 | header | 0.29 | 0.28 | 0.28 | **A different composition, not only decoration** — layout 3's header case. Retro's 157 nodes are mostly the checkerboard strip and the grain; Lime's are a radius-85 **glass nav capsule**, an upright avatar tile, an identity panel and the seal. See *The header*. |
 | bio (Section) | 0.97 | 0.22 | 0.21 | At 1440 only Retro's grain rect. The narrow scores are the two **checkerboard strips Retro reparents to the bio Section's foot** (layout 2's read-what-is-missing rule: 128 tile nodes on one side); the bio instances themselves are the same tree. |
 | media (band) | 0.13 | 0.90 | 0.95 | The desktop band parents both of Retro's checker strips (the 0.13); the narrow bands compare the instances. Lime's band has two **arc vectors** in their place. |
-| video | 1.00 | 0.16 | 0.16 | on the page, **not in the project** (below) |
+| video | 1.00 | 0.16 | 0.16 | on the page; **restored 2026-10-27** (`plans/video.md`, session 3; `notes/video.md`, *Lime · layout 4*). Written when it was not in the project |
 | gallery | 0.85 | 0.85 | 0.85 | Retro's grain rect and torn-edge vector; Lime's head arc |
 | repertoire | 0.97 | 0.97 | 0.97 | Retro's torn foot; Lime's foot arc |
 | map | 0.98 | 1.00 | 1.00 | one leftover vector at 1440 (below) |
@@ -112,7 +112,8 @@ layout 2's seam rule. **Do not write Lime-only section components.**
 `PAGE_ORDERS` has rows 0–2 and `pageOrder(3)` falls to `PAGE_ORDERS[0]`, which is
 `EXAMPLE_PAGE`'s order: header, bio, media, gallery, repertoire, map, pricing, calendar, form,
 testimonials, footer. Both Lime narrow pages stack exactly that (with the video band between
-media and gallery, which the project does not carry), and the 1440 page columns only *inside*
+media and gallery, which the project did not carry when this was written; a video now stands there
+on the setup modal's card 4), and the 1440 page columns only *inside*
 sections — the bio's head beside its card, the Book Us head over its two halves — which Retro's
 branches already draw. **Expect no change to `PAGE_ORDERS`, `pageRows`, `NVAR` or `CATS`**:
 every body category's `NVAR` is already 4, so every fold this pass meets is already in place.
@@ -174,7 +175,7 @@ Page order. Sizes are the frames' own. Each row's three masters are fitted in on
 | 9 | `form` | `964:72940` | 1440 × 795 | `971:5627` | 768 × 1024 | `977:9201` | 390 × 971 | `964:72845` / `964:79477` / `977:8663` | done `ff6b4e1` |
 | 10 | `testimonials` | `964:72941` | 1440 × 716 | `971:5628` | 768 × 642.4 | `977:9202` | 390 × 624.4 | `964:72846` / `964:79536` / `977:8764` | done `ebbf007` |
 | — | `footer` | `964:72942` | 1440 × 479.5 | `971:5629` | 768 × 647.4 | `977:9203` | 390 × 619.4 | — | **out of scope** — Lime layout 1's own component family at layout 1's sizes, fitted in that pass's section 11; `NVAR.footer` is 1 |
-| — | `video` | `964:72871` | 1328 × 754 | `971:5436` | 708 × 402 | `977:9010` | 370 × 209 | — | **not in the project** (`d734992`); Retro's QA declined restoring it on layout 4, and this pass does the same |
+| — | `video` | `964:72871` | 1328 × 754 | `971:5436` | 708 × 402 | `977:9010` | 370 × 209 | — | *(as written: not in the project, `d734992`; Retro's QA declined restoring it on layout 4, and this pass did the same.)* **Restored 2026-10-27** by `plans/video.md`, session 3, which fitted it: band `Frame 318` `964:72867` · `971:5432` · `977:9006`, `notes/video.md`, *Lime · layout 4* |
 
 The Retro twin's node id is what `EncoreSection.jsx`'s `v3` fit comments cite, so grep for it to
 find the branch. **Cite branches by that id, never by line number.**
@@ -274,7 +275,10 @@ head are **768** (not layout 1's leaked 1438) and the repertoire's foot is 768; 
 are **576.6** wide at x −93 / −82 (leaked). `ArcEdge` stretches to the section at every width,
 so the leak costs nothing.
 
-**The lens where the video was.** On the frame the media's foot arc (page colour) bulges into
+**The lens where the video was.** *(Re-fitted 2026-10-27, `plans/video.md` session 3: with the video
+back, a page that carries one draws the frame's own seams, the media's foot arc and the gallery's head
+arc in the page colour; a page without one keeps the 2026-09-18 call below. `notes/video.md`, *Lime ·
+layout 4*.)* On the frame the media's foot arc (page colour) bulges into
 the olive, then the video band is the page, then the gallery's head arc (`#101309`) bulges into
 the lime. Our page has no video, so media is followed by the gallery directly: olive, a dark
 arc, then a dark arc, then lime — a **44 + 44 dark lens** between the two coloured bands. That

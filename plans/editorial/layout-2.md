@@ -120,8 +120,10 @@ bullet to lean on. Keep the running *Inherited and used* list below; the sweep f
 file as a *Leaned on in Editorial (layout 2)* column.
 
 **Video is not a category.** The pages carry a *Video Players — A · Dashboard player* frame in
-fourth place (`964:64607` / `986:15666` / `986:15685`); no `Video` component exists, so it is not a
-row here, as on Lime's and Grunge's pages.
+fourth place (`964:64607` / `986:15666` / `986:15685`); no `Video` component existed when this pass ran, so it is not a
+row here, as on Lime's and Grunge's pages. **The video section came back afterwards** (`plans/video.md`, session 6,
+2026-10-27): Scheme 1, no seat, an `ed` arm in `Video`'s shared branch, an Editorial `video` row in `vm.pad`'s
+layout-2 table; see `notes/video.md`, *Editorial · layout 2*.
 
 ## The Figma source
 
@@ -167,7 +169,7 @@ to Lime) — but read a section node, never the page, all the same.
 
 ## The sections
 
-Page order — `PAGE_ORDERS[1]`, which is the frames' order less the video frame. Sizes are the
+Page order — `PAGE_ORDERS[1]`, which is the frames' order (the video frame sits after media, `plans/video.md`). Sizes are the
 frames' own. Each row's three masters are one session. **Lime block** is where that section's Lime
 layout-2 block sits in `EncoreSection.jsx` (grep the Lime or Grunge twin's desktop id to find it);
 it is the gate the session widens. The narrow twins are in Grunge's sections table.
@@ -186,7 +188,7 @@ it is the gate the session widens. The narrow twins are in Grunge's sections tab
 | 9 | `form` | `964:64614` | 1440 × 802 | `986:15673` | 768 × 877 | `986:15692` | 390 × 925 | **4** | `964:64595` | `964:64633` | `if (s.v1 && (s.lime \|\| s.grunge))` ahead of `EnquiryForm`'s `if (s.v1)` | **done** `a5c2801` |
 | 10 | `testimonials` | `964:64615` | 1440 × 831.9 | `986:15674` | 768 × 863 | `986:15693` | 390 × 939 | 1 (card and picked tile **3**) | `964:64596` | `964:64634` | inside `Testimonials`' `if (s.v1)`, after `rail` | **done** `e14c33a` |
 | — | `footer` | `964:64616` | 1440 × 479.5 | `986:15675` | 768 × 692.3 | `986:15694` | 390 × 736.3 | 3 | — | — | — | **out of scope**: layout 1's footer, closed at planning time (above) |
-| — | `video` | `964:64607` | 1440 × 782 | `986:15666` | 768 × 1111.2 | `986:15685` | 390 × 1118.8 | 1 | — | — | — | **not a category** |
+| — | `video` | `964:64607` | 1440 × 782 | `986:15666` | 768 × 1111.2 | `986:15685` | 390 × 1118.8 | 1 | — | — | — | **not a category** at this pass; restored in `plans/video.md` session 6 (Scheme 1, no seat) |
 
 **Cite branches by id, never by line number**: the file is ~24 500 lines and every session moves it.
 **Re-measure from the Editorial frame; never reuse Lime's or Grunge's block sizes.**

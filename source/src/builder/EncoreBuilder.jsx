@@ -58,7 +58,8 @@ import {
   CTA_TARGETS, firstPresent, minimalNav, navModeDefault,
   catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldSeed, HEADING_3, HEADING_4, fieldReach, fieldShown, INLINE_OFF, PHOTO_OFF, INLINE_HEAD, INLINE_MARKED, INLINE_PART, INLINE_LINES, inlineRule, fieldCap, colCaps, identityCap, sealCap, capExcess, clampCapped, clampContent, clampIdentity, copyrightOf, formHeading3, extUrl, youtubeEmbed, urlProblem, emailProblem, emailAddr, songTags, repChips,
   tierFeats, priceParts, priceCuts, blankRow, SONG_KEYS, repSetsOf, repSetLine, TRACK_KEYS, GIG_KEYS, gigWeekday, gigStatus, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
-  layoutCount, designCount, pageLayout, pageOrder, pageRows, COLUMN_SPLIT, bebasEms, antonEms, gloockEms, titanEms,
+  layoutChoices, designCount, pageLayout, pageOrder, pageRows, videoDesign, videoStartArch,
+  VIDEOS, VIDEO_MARK, clockAt, VIDEO_ALL, VIDEO_FOLLOW, VIDEO_DURATION, COLUMN_SPLIT, bebasEms, antonEms, gloockEms, titanEms,
   headerLayout, headerLayoutLabel, setupHeaderCount,
 } from './data.js'
 import { defaultImage, defaultImages, defaultTrackArt, seedFocus, RETRO_TEXTURE } from './photos.js'
@@ -271,10 +272,13 @@ export const pageDesignOf = (sections, themeName) => {
   return ((h.arch % n) + n) % n
 }
 
-export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = {}, tiers = [], email = '', Z, mob, live = false, navSections = [], column = false, today, page = -1, clamp = true }) {
+export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = {}, tiers = [], email = '', Z, mob, live = false, navSections = [], column = false, today, page = -1, above = '', below = '', clamp = true }) {
   const theme = THEMES[themeIdx]
   const nDesign = designCount(cat, theme.name)
-  const d = ((arch % nDesign) + nDesign) % nDesign
+  // A video has a frame at layouts 2 and 4 alone (plans/video.md, call 1), so
+  // the two holes fold onto the design beside them; nothing reaches them.
+  const d0 = ((arch % nDesign) + nDesign) % nDesign
+  const d = cat === 'video' ? videoDesign(d0) : d0
   // The character caps (plans/char-limits.md): copy typed under another
   // layout's cap is shortened here, before anything below reads it, and keeps
   // its full text in the section's `c`. Inert within the caps, so seeds are
@@ -480,6 +484,16 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     footerBand: cat === 'footer' && page === 2
       ? (T.name === 'Lime' ? T.sem?.box1 : T.name === 'Grunge' ? '#171716' : undefined)
       : undefined,
+    // Whether the section beside it on the page is a video (`above` and `below`
+    // are the neighbours' categories, passed by the two callers that hold the
+    // page's array). Layout 4's media and gallery draw their seam against the
+    // band between them only while it stands there; a page whose video was
+    // deleted keeps the seams fitted without one (plans/video.md, session 3).
+    videoAbove: above === 'video', videoBelow: below === 'video',
+    // …and whether the section above a video is the media player, whose band
+    // Grunge's 390 video continues into a torn head (977:16056, plans/video.md,
+    // session 5).
+    mediaAbove: above === 'media',
   }
   // Pop's layout-1 sections stand on their own frames' insets too (JP-116, user
   // call, 2026-10-08, JP-094's shape at layout 1, reversing the fit's
@@ -530,7 +544,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // top, which its nav margin cancels, and pricing's desktop foot, which its
   // 1px foot rule bleeds through (the rule's 24 + 8 is the frame's 32). The
   // repertoire's sheet, the form's band and the footer keep theirs.
-  if (d === 1 && (T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial' || T.name === 'Pop')) {
+  if (d === 1 && (T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial' || T.name === 'Pop'
+    || (T.name === 'Retro' && cat === 'video'))) {
     const inset = {
       header: [[null, 56], [null, 60], [null, 10]],
       bio: [[56, 56], [60, 60], [30, 30]],
@@ -540,9 +555,57 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
       calendar: [[56, 56], [56, 56], [40, 40]],
       map: [[56, 56], [60, 60], [40, 40]],
       testimonials: [[56, 56], [60, 60], [40, 40]],
+      // The video's Dashboard player (Lime's 964:64588 · 986:11856 · 986:11875)
+      // pads its content 56 / 60 / 40 each side, so it stands flush on the media
+      // above and the repertoire's sheet below. The 1440 foot is 56 less 13: the
+      // frame's 670 stage clips the artist row's padding by that much, and ours
+      // does not clip, so the root would stand 11 over the frame's 782 × 0.82.
+      // Grunge's (964:64626 · 986:13761 · 986:13780) states the same 56 / 60 / 40
+      // each side and the same 670 clip, but its caption is a shorter box (the
+      // label face's Anton), so the 1440 foot that lands the root on the frame's
+      // 782 × 0.82 is 49 here, not Lime's 43: 56 less the 7 the clip takes off
+      // the artist row. The narrow two are the frame's own.
+      // Editorial's (964:64607 · 986:15666 · 986:15685) states the same 56 / 60 /
+      // 40 each side and the same 670 clip; its caption is the label face's
+      // Gloock at 0.967, so the 1440 foot that lands the root on the frame's
+      // 782 × 0.82 is 50 here (Lime's 43, Grunge's 49).
+      // Pop's (964:64569 · 986:17571 · 986:17590) states the same 56 / 60 / 40
+      // each side and the same 670 clip, with Titan as the caption's face.
+      // Retro's (964:64645 · 984:35259 · 984:35737) states the same 56 / 60 / 40
+      // each side and the same 670 clip, with the label face of Retro's own: the
+      // 1440 foot that lands the root on the frame's 782 x 0.82 is 48.5 here. The
+      // narrow two are the frame's own; the panel's 3px rule runs the root 6 and
+      // 4 over the masters (1118 / 1105.5 against 1112.2 / 1101.8), the drift the
+      // narrow-master notes left in the panel (plans/retro/layout-2.md).
+      video: T.name === 'Retro' ? [[56, 48.5], [60, 60], [40, 40]]
+        : T.name === 'Lime' ? [[56, 43], [60, 60], [40, 40]]
+        : T.name === 'Grunge' ? [[56, 49], [60, 60], [40, 40]]
+        : T.name === 'Editorial' ? [[56, 50], [60, 60], [40, 40]]
+        : T.name === 'Pop' ? [[56, 49], [60, 60], [40, 40]] : undefined,
     }[cat]?.[DEV_SEAT[Z.dev]]
     const z = (v) => (v == null ? vm.padY : `${Z.dev === 'desktop' ? Math.round(v * 0.82 * 10) / 10 : v}px`)
     if (inset) vm.pad = `${z(inset[0])} ${vm.padX} ${z(inset[1])}`
+  }
+  // Layout 4's video band (Lime's Frame 318: 964:72867 · 971:5432 · 977:9006)
+  // pads its Section 156 / 60 / 60 above the head and 100 / 60 / 40 under the
+  // player, on the page's own ground between the media sheet and the gallery's
+  // (both sheets bleed to their roots' edges, so the root's padding is the
+  // band's). `padY` gave 80 / 56 / 44 at both ends. Grunge's (964:72962 ·
+  // 971:7956 · 977:12183) states the same 156 / 60 / 60 over the head and
+  // 100 / 60 / 40 under the player; its 390 head is the shorter Anton-fitted
+  // 41, which the branch carries. Editorial's (964:73054 · 971:9551 · 977:13295)
+  // states the same 156 / 60 over the head and 100 / 60 under the player, but
+  // its 390 Section stands **40** from the band's top, not 60. Lime's, Grunge's
+  // and Editorial's until Pop's session (964:73165 · 971:10852 · 977:14407),
+  // which states the same 156 / 60 over the head and 100 / 60 under the
+  // player and Editorial's 40 at 390; the 10px lime rule is inside that foot
+  // (plans/video.md, session 9). Retro's (Frame 318 964:72773 · 964:76700 ·
+  // 971:15249, 1155 / 635 / 375) states the same 156 / 60 / 60 and 100 / 60 / 40
+  // and takes Lime's row, so the arm is every template's (session 11).
+  if (d === 3 && cat === 'video') {
+    const inset = [[156, 100], [60, 60], [T.name === 'Editorial' || T.name === 'Pop' ? 40 : 60, 40]][DEV_SEAT[Z.dev]]
+    const z = (v) => `${Z.dev === 'desktop' ? Math.round(v * 0.82 * 10) / 10 : v}px`
+    vm.pad = `${z(inset[0])} ${vm.padX} ${z(inset[1])}`
   }
   // Lime layout 3's column heads — the bio's "KM BIO", the player's and the
   // calendar's "Book Me" — stand 50 below their row in all three frames
@@ -1085,6 +1148,31 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     }))
   }
   vm.tracks3 = vm.tracks.slice(0, 3)
+
+  // video — the stage's own values, and the list of other videos beside it
+  // that layout 2 draws (plans/video.md). A picture on both surfaces: no
+  // <video>, no link, no `live` seam (call 2).
+  vm.videoDesc = cv('description', DEFS.videoDesc)
+  vm.videoDur = cv('duration', VIDEO_DURATION)
+  // Where the transport bar is caught. The section has no <video> element on
+  // either surface, so there is no playhead to read: `clockAt` composes one
+  // from the running time above and `videoPct` fills the bar to the same
+  // fraction, so the two cannot disagree. An unparseable duration leaves both
+  // empty rather than inventing a position for it.
+  vm.videoAt = clockAt(vm.videoDur, VIDEO_MARK)
+  vm.videoPct = vm.videoAt ? VIDEO_MARK * 100 : 0
+  // The two buttons (call 3), JP-071's shape: the frame's words, uncased,
+  // dropped when emptied.
+  vm.videoAll = cv('allCta', VIDEO_ALL)
+  vm.videoFollow = cv('followCta', VIDEO_FOLLOW)
+  // The seeded VIDEOS, always: the section has no repeater (call 4), so
+  // `c.videos` is never written; the shape is the `songs` rule's all the same.
+  // Artwork follows the tracks': `null`, not undefined, wherever a row has
+  // none, because Photo falls back to the *section* photo on undefined and a
+  // listed video must not inherit the poster.
+  vm.videos = VIDEOS.map((v, i) => ({
+    title: cased(v.title), sub: v.sub, length: v.length, when: v.when, img: seedArt[i] ?? null,
+  }))
 
   // The now-playing card is no longer content of its own: it names and shows
   // the track the player is on, which `Media` resolves from `vm.tracks`. What
@@ -4878,7 +4966,8 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
 function LayoutPicker({ cat, arch, themeIdx, artistName, identity, tiers, email, navSections, content = {}, onPick }) {
   const [open, setOpen] = useState(false)
   const themeName = THEMES[themeIdx].name
-  const n = layoutCount(cat, themeName)
+  // A video is offered layouts 2 and 4 only (plans/video.md, call 1).
+  const choices = layoutChoices(cat, themeName)
   // §4.4b — the header's layouts have names; every other category is numbered.
   const label = (i) => (cat === 'header'
     ? headerLayoutLabel(themeName, i)
@@ -4913,7 +5002,7 @@ function LayoutPicker({ cat, arch, themeIdx, artistName, identity, tiers, email,
           borderRadius: '10px', border: '1px solid #E2DFD7', boxShadow: '0 12px 28px rgba(20,18,12,.16)',
         }}
       >
-        {Array.from({ length: n }, (_, i) => {
+        {choices.map((i) => {
           const isCur = i === arch
           return (
             <DropdownMenuItem
@@ -4969,7 +5058,13 @@ const ADDABLE = CATS.filter((c) => c.id !== 'header' && c.id !== 'footer')
 const firstFreeCat = (present) =>
   (ADDABLE.find((c) => !present.includes(c.id)) ?? ADDABLE[0]).id
 
-function AddComposer({ add, present, removed, themeIdx, artistName, identity, tiers, email, navSections, onChange, onAdd, onCancel }) {
+// The layout the composer opens a category on: the one it had when it was
+// deleted, else layout 1 — except a video, which has no layout 1 and starts on
+// the page's own layout if that is 2 or 4, else on 2 (plans/video.md, call 1).
+const startArch = (cat, removed, pageD) =>
+  removed[cat]?.arch ?? (cat === 'video' ? videoStartArch(pageD) : 0)
+
+function AddComposer({ add, present, removed, pageD, themeIdx, artistName, identity, tiers, email, navSections, onChange, onAdd, onCancel }) {
   const groupLabel = { fontSize: '11px', fontWeight: 700, letterSpacing: '1.2px', textTransform: 'uppercase', color: '#8B887D', marginBottom: '8px', display: 'block' }
   const taken = present.includes(add.cat)
   // A category deleted earlier restores its content on add; Start fresh opts
@@ -4981,7 +5076,7 @@ function AddComposer({ add, present, removed, themeIdx, artistName, identity, ti
     <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
       <div>
         <Label style={groupLabel}>Section</Label>
-        <Select value={add.cat} onValueChange={(cat) => onChange({ cat, arch: removed[cat]?.arch ?? 0, fresh: false })}>
+        <Select value={add.cat} onValueChange={(cat) => onChange({ cat, arch: startArch(cat, removed, pageD), fresh: false })}>
           <SelectTrigger onClick={stopE} className="w-full h-auto" style={{ ...FIELD_BOX, paddingRight: '28px' }}>
             <SelectValue />
           </SelectTrigger>
@@ -5442,6 +5537,7 @@ function PublishedPage({ themeIdx, sections, artistName, win, frameW }) {
       themeIdx, cat: sec.cat, arch: sec.arch, c: sec.c,
       artistName, identity, tiers, email, Z, mob: key === 'mobile', live: true, navSections,
       column: inColumns.get(i), today, page: pageDesignOf(sections, T.name),
+      above: sections[i - 1]?.cat, below: sections[i + 1]?.cat,
     })} />
   )))
   return k === 1 ? page : <div style={{ zoom: k }}>{page}</div>
@@ -7284,6 +7380,11 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
       if (kept) {
         const j = next.findIndex((x) => x.cat === kept.before)
         at = j >= 0 ? j : Math.min(kept.at, at)
+      } else if (cat === 'video') {
+        // Both pages that draw a video stand it straight after the media
+        // player (pageOrder); with no player on the page it keeps the foot.
+        const j = next.findIndex((x) => x.cat === 'media')
+        if (j >= 0) at = j + 1
       }
       next.splice(at, 0, sec)
       return { sections: next, add: null, removed }
@@ -7300,7 +7401,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
   // at the layout that category had when it was deleted, if it was.
   const openAdd = useCallback(() => patch((s) => {
     const cat = firstFreeCat(s.sections.map((x) => x.cat))
-    return { add: { cat, arch: s.removed[cat]?.arch ?? 0, fresh: false }, sheet: null, menuFor: null }
+    return { add: { cat, arch: startArch(cat, s.removed, pageDesignOf(s.sections, THEMES[s.theme].name)), fresh: false }, sheet: null, menuFor: null }
   }), [patch])
 
   const closeAdd = useCallback(() => patch({ add: null, sheet: null }), [patch])
@@ -7317,7 +7418,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
     const down = canMove(arr, sec.id, 1)
     const isHeader = sec.cat === 'header'
     return {
-      ...sectionVm({ themeIdx: st.theme, cat: sec.cat, arch: sec.arch, c: sec.c, artistName, identity, tiers, email, Z, mob: Z === SIZES.mobile || isMobile || device === 'mobile', navSections, column: inColumns.get(i), page: pageDesignOf(arr, T.name) }),
+      ...sectionVm({ themeIdx: st.theme, cat: sec.cat, arch: sec.arch, c: sec.c, artistName, identity, tiers, email, Z, mob: Z === SIZES.mobile || isMobile || device === 'mobile', navSections, column: inColumns.get(i), page: pageDesignOf(arr, T.name), above: arr[i - 1]?.cat, below: arr[i + 1]?.cat }),
       layoutLabel: isHeader
         ? headerLayoutLabel(T.name, sec.arch)
         : `${cat.name} layout ${sec.arch + 1}`,
@@ -7384,13 +7485,28 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
   // Figma page stacks its sections differently, and picking card 1 again
   // restores layout 1's order. The sort is stable and a category the order does
   // not name sinks to the end, though the page built here carries none.
+  //
+  // The video is the one section a card adds or drops (plans/video.md, call
+  // 1): the layout-2 and layout-4 pages draw it, straight after the media
+  // player, and the layout-1 and layout-3 pages do not, so `pageOrder(i)` naming
+  // it is the whole test. A dropped video writes no `st.removed` entry: the gate
+  // runs over a page nobody has touched, so there is no content to bring back.
   const pickHeader = useCallback((i) => patch((s) => {
+    const themeName = THEMES[s.theme].name
     const order = pageOrder(i)
     const rank = (cat) => { const r = order.indexOf(cat); return r < 0 ? order.length : r }
+    const had = s.sections.some((x) => x.cat === 'video')
+    const wants = order.includes('video')
+    let sections = s.sections
+    if (wants && !had) sections = [...sections, { id: ++uidRef.current, cat: 'video', arch: 0, c: {} }]
+    else if (!wants && had) sections = sections.filter((x) => x.cat !== 'video')
+    const gone = !wants && had ? s.sections.find((x) => x.cat === 'video').id : null
     return {
-      sections: s.sections
-        .map((x) => ({ ...x, arch: pageLayout(x.cat, i, THEMES[s.theme].name) }))
+      sections: sections
+        .map((x) => ({ ...x, arch: pageLayout(x.cat, i, themeName) }))
         .sort((a, b) => rank(a.cat) - rank(b.cat)),
+      ...(gone !== null && s.selectedId === gone ? { selectedId: null, editSheet: false } : null),
+      menuFor: null,
     }
   }), [patch])
 
@@ -7446,7 +7562,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
 
   const addComposer = st.add && (
     <AddComposer
-      add={st.add} present={present} removed={st.removed}
+      add={st.add} present={present} removed={st.removed} pageD={pageDesignOf(st.sections, T.name)}
       themeIdx={st.theme} artistName={artistName} identity={identity} tiers={tiers} email={email} navSections={navSections}
       onChange={(next) => patch({ add: next })}
       onAdd={addSection}
