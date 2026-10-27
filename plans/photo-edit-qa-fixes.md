@@ -32,7 +32,7 @@ the cause differs.
 
 | Ticket | Site | Verdict (from the code) | Size | Status |
 |---|---|---|---|---|
-| JP-160 | `ImageEditor.jsx`: `startTf()` is `{ cx: 0, cy: 0, … }` for every source, so the frame always opens centred; `apply()` always `bake()`s; the baked data URI has no `FOCUS` entry (`photos.js`, keyed by URL), so `vm.imagePos` / `vm.imagesPos[i]` come out `undefined` and the tile draws `cover` at centre | **Both causes confirmed on paper, and they stack.** The numbers: Pop's gallery seeds are 800×1000 (4:5). A centred 3:2 frame (`FIELDS.gallery.images.aspect`) keeps the middle 53% of the height (23%–77%), i.e. it already drops the top where the face is. The tile that shows it is wider still (~1.8 at 1440), so the centred `cover` of the *baked* 3:2 crop drops another ~8% top and bottom. Before Apply the same file was drawn `50% 0%`: the top 44–53% | M | open |
+| JP-160 | `ImageEditor.jsx`: `startTf()` is `{ cx: 0, cy: 0, … }` for every source, so the frame always opens centred; `apply()` always `bake()`s; the baked data URI has no `FOCUS` entry (`photos.js`, keyed by URL), so `vm.imagePos` / `vm.imagesPos[i]` come out `undefined` and the tile draws `cover` at centre | **Both causes confirmed on paper, and they stack.** The numbers: Pop's gallery seeds are 800×1000 (4:5). A centred 3:2 frame (`FIELDS.gallery.images.aspect`) keeps the middle 53% of the height (23%–77%), i.e. it already drops the top where the face is. The tile that shows it is wider still (~1.8 at 1440), so the centred `cover` of the *baked* 3:2 crop drops another ~8% top and bottom. Before Apply the same file was drawn `50% 0%`: the top 44–53% | M | **fixed, session 1** (reproduced on the old code, 7 of 7 Pop L3 tiles and Retro L4's spotlight changed on an untouched Apply; none do now) |
 | JP-154 (photo) | `EncoreBuilder.jsx` section `onClick` (~7799): `else if (ph && st.selectedId === sec.id)`; `probeInline` (~6957) shows the photo pointer and box only on a selected section; `onDragOver` / `onDrop` have the same gate | **As documented, a product call** (Call 2). `CLAUDE.md` says in terms that photos keep the already-selected rule and that "a later session must not unify the two"; `plans/inline-qa-fixes.md` Call 1 took the same decision on 2026-10-26 ("Photos keep their rule … the ticket is about text") | — | **decided: keep the rule** (Call 2); docs only |
 
 ## Calls
@@ -48,7 +48,7 @@ Put to the user. Neither is decidable by the tester or by the code. Call 2 is de
      agreed in JP-129 ("uploads: defaults only"). *Reset* returns to that start, not to zero.
    - **(b) An untouched Apply on a slot that already holds the source writes nothing.** For `item.edit &&
      !swapped`, if the transform still equals the one the dialog opened on (to within a natural pixel),
-     Apply calls `finish(src)` with the stored string unchanged instead of baking. The seed keeps its URL and so
+     Apply does `shift()` (as Cancel), writing nothing, instead of baking. The seed keeps its URL and so
      its `FOCUS` entry, at every site and width; a baked photo keeps its `ORIGINALS` entry. That is the ticket's
      Expected, literally, and it covers all 112 slots at once, including those whose tile shape the frame does
      not match. A fresh pick still bakes on an untouched Apply (the crop to the field's ratio is the point).
@@ -105,9 +105,9 @@ One session; git and this file are the memory.
   `img.onload`), and give `Reset` the same start. `swapIn` still resets to `startTf()` (a fresh pick, no focus).
   Keep a ref of the opening transform, clamped through `geometry()`, for the no-op test.
 - **No-op Apply.** In `apply()`: if `item.edit && !swapped` and `|g.cx − start.cx| < 1`, `|g.cy − start.cy| < 1`,
-  and `zoom`, `quarter`, `fine` equal the opening ones, `finish(src)` and return. `src` there is the string the
-  slot holds (`item.src`), not `original`: for a baked photo `original` is the pre-bake source, and writing it back
-  would undo the bake.
+  and `zoom`, `quarter`, `fine` equal the opening ones, `shift()` and return: write nothing, rather than the same
+  string back, which would pin a seed into `c.image` (an absent key is what lets a theme swap reseed it).
+  *Reset* returns to `home` (the focus of the **original**, else centre), apart from `start` (a saved edit's own).
 - Leave `Use original`, `Cancel`, the queue, `ORIGINALS` and `bake()` alone. `bake()` needs no change: the
   centre offset it takes is the same `cx` / `cy` the view uses.
 - **Check.**

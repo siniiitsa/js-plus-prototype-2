@@ -4,6 +4,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Button } from '@/components/ui/button'
 import { Slider } from '@/components/ui/slider'
 import { readImage, vetImages } from './imageFiles.js'
+import { seedFocus } from './photos.js'
 
 /* ------------------------------------------------------------------ *
  * The image editor — move, zoom, rotate and crop an upload before it is
@@ -59,6 +60,18 @@ const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v))
 
 function startTf() {
   return { cx: 0, cy: 0, zoom: 1, quarter: 0, fine: 0 }
+}
+
+// The frame a seeded photo shows on the canvas: the cover crop of the file at
+// its `FOCUS` object-position ('X% Y%'), for this frame's ratio. A cover crops one
+// axis only, so the x percentage moves the frame when it is narrower than the file
+// and the y when it is wider. Natural px, so it does not depend on the stage size.
+function focusTf(focus, iw, ih, R) {
+  const [px, py] = focus.split(/\s+/).map((v) => parseFloat(v) / 100)
+  const tf = startTf()
+  if (R < iw / ih) tf.cx = ((px ?? 0.5) - 0.5) * (iw - ih * R)
+  else tf.cy = ((py ?? 0.5) - 0.5) * (ih - iw / R)
+  return tf
 }
 
 // Everything the view and the bake share: the frame (fw × fh screen px), the
@@ -126,10 +139,23 @@ function Editor({ item, onToast }) {
   const pointers = useRef(new Map())
   const pinch = useRef(null)
   const geo = useRef(null)
+  // Where the frame opened, which Apply compares against: a saved edit's own transform, else
+  // the default (JP-160). `home` is the default alone, which Reset returns to: the focus a
+  // seed is drawn with (the original's, for a baked seed), else the centre.
+  const start = useRef(null)
+  const home = useRef(null)
 
   useEffect(() => {
     const el = new Image()
-    el.onload = () => setDim({ img: el, w: el.naturalWidth, h: el.naturalHeight })
+    el.onload = () => {
+      const w = el.naturalWidth
+      const h = el.naturalHeight
+      const focus = swapped ? undefined : seedFocus(original)
+      home.current = focus ? focusTf(focus, w, h, frameRatio(item.aspect, startTf(), w, h)) : startTf()
+      start.current = saved?.tf ?? home.current
+      setTf(start.current)
+      setDim({ img: el, w, h })
+    }
     el.onerror = () => setFailed(true)
     el.src = original
   }, [original])
@@ -199,7 +225,15 @@ function Editor({ item, onToast }) {
     item.onApply(url)
     shift()
   }
+  // Nothing moved since the frame opened, on a photo that already stands in the slot: Apply
+  // keeps it as it is (JP-160). Baking would crop it to the frame's shape and drop the focus
+  // the seed is drawn with; writing it back would pin a seed the theme otherwise reseeds.
+  const g0 = start.current && geometry(start.current, iw, ih, fw, fh)
+  const untouched = !!g0 && item.edit && !swapped
+    && tf.zoom === start.current.zoom && tf.quarter === start.current.quarter && tf.fine === start.current.fine
+    && Math.abs(g.cx - g0.cx) < 1 && Math.abs(g.cy - g0.cy) < 1
   const apply = () => {
+    if (untouched) { shift(); return }
     try {
       const url = bake(dim.img, iw, ih, { ...tf, cx: g.cx, cy: g.cy }, original, item.aspect)
       ORIGINALS.set(url, { original, tf: { ...tf, cx: g.cx, cy: g.cy } })
@@ -303,7 +337,7 @@ function Editor({ item, onToast }) {
 
         <DialogFooter className="gap-2 sm:justify-between">
           <div className="flex flex-wrap gap-2">
-            <Button type="button" variant="ghost" size="sm" onClick={() => setTf(startTf())}>Reset</Button>
+            <Button type="button" variant="ghost" size="sm" onClick={() => setTf(home.current ?? startTf())}>Reset</Button>
             {!batch && (
               <>
                 <input

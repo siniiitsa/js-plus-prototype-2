@@ -89,6 +89,18 @@ was rejected: it would touch every `Photo` site and the ones that hard-code `50%
   photo*; `onApply`, the aspect and the queue seat are the item's, unchanged, and Cancel still writes nothing. A refused
   file prints its line under the stage and toasts (`ImageEditorHost`'s `onToast`). The vetting helpers (`imageProblem`,
   `readImage`, `vetImages`, `IMAGE_MAX`) moved to `src/builder/imageFiles.js` so the dialog and the panel share them.
+- **A seed opens on the crop the canvas shows, and an untouched Apply keeps it** (JP-160, user call, 2026-10-27). The frame
+  used to open centred and Apply always baked, so a seed drawn at its `FOCUS` (`50% 0%`) lost its face the moment Apply was
+  pressed on an untouched dialog: a centred 3:2 frame keeps the middle 53% of a 4:5 file, and the baked data URI matches no
+  `FOCUS` entry. Now `focusTf(focus, iw, ih, R)` seats the frame where a cover crop at that `object-position` would sit, for the
+  frame's own ratio (natural px, so stage size does not enter); the source it reads is the *original* (`seedFocus(original)`),
+  so a baked seed's **Reset** returns to the focus too, not to the centre. A fresh upload, an upload with no entry and a swap
+  (**Upload another**) still open centred (JP-129: uploads take defaults only). `start` is the transform the dialog opened on
+  (a saved edit's own, else `home`); when `item.edit && !swapped` and zoom, quarter, fine and the clamped centre are within a
+  natural pixel of it, **Apply writes nothing** (`shift()`, as Cancel does), not the same string back: a write would pin a seed
+  into `c.image`, and an absent key is what lets a theme swap reseed it. A fresh pick still bakes untouched, since the crop to
+  the field's ratio is its point. Still true, and not part of this: a real edit of a seed bakes a frame-shaped crop that a tile
+  of another shape re-crops at the centre.
 - Not done: a live preview of how the crop sits at 1440 / 768 / 390.
 
 ## The photo mark (plans/photo-edit.md, user call, 2026-10-23)
