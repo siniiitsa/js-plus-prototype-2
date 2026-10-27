@@ -71,7 +71,7 @@ for video as it does the header's). Only the poster and the avatar are `photoSlo
 the seed's and carry no `data-photo` (`photo-probe --cat video`: PASS, `--blank` and `--drop` too, no
 `PHOTO_OFF` row).
 
-## Caps (`node scripts/limits.mjs video`, Retro; Lime's layout 2 in session 2; Grunge's layouts 2 and 4 in sessions 4 and 5; Editorial's layout 2 in session 6; Pop and Editorial's layout 4 re-measure in theirs)
+## Caps (`node scripts/limits.mjs video`, Retro; Lime's layout 2 in session 2; Grunge's layouts 2 and 4 in sessions 4 and 5; Editorial's layouts 2 and 4 in sessions 6 and 7; Pop's re-measure in theirs)
 
 | Field | Cap | Measured |
 |---|---|---|
@@ -459,8 +459,73 @@ Frames: *Video Players — A · Dashboard player* `964:64607` 1440×782 · `986:
 - `&n=` has no video entry in the harness (call 4); `description`, `allCta`, `followCta` and `duration` emptied are
   the Retro, Lime and Grunge behaviours.
 
+## Editorial · layout 4 (session 7, 2026-10-27)
+
+Frames: band `Frame 318` `964:73054` 1440×1175 · `971:9551` 768×647 · `977:13295` 390×362, inner *Cinematic minimal*
+`964:73058` · `971:9555` · `977:13299`. Band `sem/bg` `#F6F0E8` (Scheme 1, paper) at all three, and **`explicitVariableModes` on
+the band and its Section is `2 · Scheme: Scheme 1`**; Section y 156 / 60 / **40** (Lime's and Grunge's 390 is 60), x 56 / 30 / 10;
+head Fisterra Fora 118 / 73 / 48 at .89 (105 / 65 / 43 tall, `sem/text/1` `#C86E52`); head → instance 60 / 60 / 30; foot
+100 / 60 / 40. Read with a full recursive walk of all 35 nodes of each instance (a walker that skips children by index or
+stops at an instance's edge loses the bar's track and discs: `findAll` does not enter an instance, recurse by hand).
+
+- **The mode leak is the 768 instance, not the 390.** `971:9555` is `1 · Primitives: Static Youth` (Grunge's mode): the
+  drummer `8031d0f3`, `#1A1A1A` discs, `#DF262C` glyphs and fill, white `text/2` type, Stones Crush, `box/2` `#383838`
+  track, `radius/control` 8 chips. A leak, as Lime's 390 was: nothing is read off it, and 768 takes the 1440 and 390
+  tokens (both Sienna Vale). All 35 nodes of each instance resolve `2 · Scheme: Scheme 1`; **no explicit mode below the
+  instance root**, so **no `SCHEMES_OF.Editorial[3]` row and no `s.onScheme` read** (paper is Scheme 1, and Scheme 1 is no
+  row; the plan's "gains a `video` seat (paper)" was the plan's expectation, read and found to be the absence of one).
+- **Where the three Lime-L4 traps land.** (1) the leak: 768, not 390 (above). (2) The head band's type binds `sem/bg` at
+  1440 and 390 — which under Editorial **is the design**, not a defect: `sem/bg` is the paper `#F6F0E8`, light on the
+  scrimmed photograph, where Lime's is near black. So the on-film type (the arrow, the name, both clocks, `HD`) is
+  **`s.bg`**, not `s.tx` (`text/2` `#141414`, black on the scrim): `onFilm = ed ? s.bg : …`, the one arm that would
+  have been visibly wrong had `lime = s.lime || gr || ed` carried it. (3) The progress fill is `sem/text/1` at all three
+  widths (no `box/1` fill), the track `box/1` `#FFF9F2` at 1440 and 390: Lime's arm, no Grunge-style `box/2` track. The
+  fill is 364 of 988 / 369 of 369 / 59 of 59 against its own 02:05 / 03:57, so it stays `s.ac` at `videoPct`. The 768
+  instance still clips its own composition (708×402 over a 567 child at y −82.5): drawn whole.
+- **The gate** is `s.lime || gr || ed` at the head of `v3` (`ed = s.editorial`, `gd = gr || ed`), never `s.limeTree`. Editorial
+  takes Lime's tokens (cream `s.box1` `#FFF9F2`, glyphs `s.ac` `#C86E52`, chip ink `s.tx` `#141414`, the vectors) and is its
+  own in **five** places: (1) on-film type `s.bg` (above); (2) the volume and settings chips are `radius/control` **6**
+  (`u(ed ? 6 : gr ? 8 : 14)`), a rounded square on 26; (3) the head and the name are Gloock in capitals through
+  `gd` (`faced`, `facedLh`, uppercase), the name at `s.list` (20 / 19 / 18 against the frame's 24 / 19 / 18 × .82); (4) the
+  head is fitted to its widest word in the column as the gallery's L4 head is (`min(s.dispLg, calc(100cqi /
+  s.titleWordEms))`, `faced`), so the section's root column is a size container (`containerType: 'inline-size'`, `ed` only);
+  (5) the poster reads `s.imagePos` (below). The player's outer radius **30 stays**: the instance states 30 at all three
+  widths and the render is rounded (unlike layout 2's square player). No stroke, dash or effect anywhere in the tree, so no
+  `DashRule`.
+- **Poster: `editorialStage`, the frame's own, no new FOCUS row.** `9d20fe0d` is the bio's arch (as layout 2's); the 1440
+  master is a `CROP` at y .081 to .535 (no mirror), the 390 a centred `FILL` (y .274 to .726) that drops the head. The video's
+  `Photo` reads `s.imagePos` under Editorial too (`gd`): the file's existing `'50% 0%'` (window 0 to .467) keeps the face at
+  every width, ~8% of the height off the 1440 crop, and serves this box as it served layout 2's, so one string per file
+  stays. An upload has none and stays centred (JP-129). The 768's drummer is the leak, not read.
+- **The seam is the plan's "straight edge", and it needed no re-fit.** **Old seam** (a page with no video, kept): the media's
+  taupe sheet meets the gallery's ink directly, a straight edge. **New seam, a video between:** taupe → the video's paper band
+  → ink, all straight, exactly as the frames stand them (`plans/editorial/layout-4.md` line 395 was the one table row that
+  named the video "paper, not in the project"). Both `ArcEdge` sites (the media's foot, the gallery's head) already exclude
+  `ed`, and Editorial's media and gallery draw no seam of their own, so there is nothing to draw: **`&below=video` on the media
+  and `&above=video` on the gallery render byte-identical** at all three widths (`innerHTML` equal), and so does the video with
+  `&above=media&below=gallery`. Proved in pictures too (media foot → video → gallery head stacked at 1440, 768 and 390: three
+  ground changes, taupe / paper / ink, every one a straight edge, the root painting the paper). No new neighbour key has a reader.
+- **`vm.pad`'s `d === 3` video row is Editorial's too** (`156 / 100`, `60 / 60`, `40 / 40`; Lime's and Grunge's 390 top is 60, so
+  the 390 top is `T.name === 'Editorial' ? 40 : 60`). **Old seam:** no Editorial row, so `padY` (80 / 56 / 44 each end) and Lime's
+  flat-arm head: sections **897.0 / 627.4 / 362.6**. **New:** **963.2 / 646.9 / 404.4** in the harness against the frames' 1175 ×
+  .82 = 963.5, 647 and 362: 1440 and 768 on the frame, **390 is 42 over** because Gloock's capitals do not fit "SEE ME IN ACTION"
+  in one line at 48 where Fisterra Fora's condensed ones do (2 lines, 85.4 against the frame's 43; the head is one line at 1440,
+  86.3, and 768, 65.0). Judged, not fixed: the head is fitted to its widest word, as every Editorial head is, and wraps between
+  words (the gallery's L4 head does the same); a whole-string fit would shrink a typed 16-character head to unreadable at 390.
+  In the whole page (card 4, `page-check`): the published 1440 page stands the band at **1175 (the frame's own)** between the media
+  (1138) and the gallery (746); 390 media 1022 → video 404 → gallery 755, overflow 0.
+- **Caps (`limits.mjs video --themes=3 --designs=3`).** `heading` measured **15** at 768 (19 at 1440, a 2 > 1 line wrap, 20 at 390,
+  3 > 2), but the 16-character seed is the frame's own string and fits one line there, so the cap is the seed's length, **16**:
+  `--check` reports tablet *floor*, as `description`'s (`Editorial: [null, 48, null, 16]`). `duration` 39 at 390 (held to 8) and
+  `IDENTITY_CHARS.video.title` **29** (89 / 58 / 29; 390's box binds, Gloock's capitals beside the arrow;
+  `Editorial: [null, 49, null, 29]`). `--check` 0 failing at layouts 4 and 2, `--seeds` 0 over.
+- **Probes** (`--theme Editorial --layout 4 --width 1440,768 --cat video`, committed tree `95f0e78`): `inline-probe --check` PASS
+  (2 slots hit at both widths, nothing wrong, unledgered or unreached); `photo-probe --check`, `--blank` and `--drop` PASS (1 slot,
+  the poster). `npm run build` clean. `page-check.mjs Editorial 3,0,1,2`: no console error or warning, 390 overflow 0, the video
+  on the layout-2 and layout-4 cards only. The two-server digest against `0330e23` (720 renders, five themes, three widths, port normalised): **only Editorial's video at arch 2 and 3** (layout 4's folded pair) moved; the other four themes' video, Editorial's layout 2 and every other section are byte-identical; `&below=video` / `&above=video` over Editorial's media, gallery and video: zero diff.
+
 ## Other templates
 
-Until their sessions, Editorial's layout 4 and Pop's layouts 2 and 4 render the same `s.retro ? literal : flat` arms,
+Until their sessions, Pop's layouts 2 and 4 render the same `s.retro ? literal : flat` arms,
 in the theme's colours but not the frames' decoration. Each session
 ports one template's frame, then re-measures `in`, the caps and the two probes for it.

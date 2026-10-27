@@ -91,7 +91,7 @@ every visible node's `(depth, type, name)` against the twins' bands, **by traver
 | header | 61 / 57 / 57 | **61 / 57 / 57** — node for node | 59 of 62 | nothing; Grunge's extra node is its grain rect. The mock name is Lime's "Kai Mercer", unoverridden |
 | bio (Section) | 34 / 34 / 33 | 33 / 33 / 30 | 33 of 35 | **`Frame 255`**, the dimmer Grunge also has (1440 and 768 only); at 390 the Tags instance's **Genres** label and two frames Lime's 390 lacks |
 | media (band) | 57 / 57 / 57 | 54 / 53 / 54 | 54 of 57 | **`Frame 210` with its `image 1`** — layout 1's **tape** on the sleeve; **drops Lime's two arcs** (`Vector 1` / `Vector 2`) at every width. The 768 band is `Frame 326` where Lime's is `Frame 325` (a rename) |
-| *video* (`Frame 318`) | 39 / 39 / 39 | 39 / 39 / 39 | 39 of 39 | — *not in the project* |
+| *video* (`Frame 318`) | 39 / 39 / 39 | 39 / 39 / 39 | 39 of 39 | — *restored by `plans/video.md`, session 7 (2026-10-27): the band stands between media and gallery on the paper, `vm.pad`'s `d === 3` video row 156 / 100 · 60 / 60 · 40 / 40* |
 | gallery (wrapper) | 23 / 22 / 23 | 21 / 20 / 21 | 20 of 28 | **`Frame 183` → `Frame`**, a tilted print in a `#1D1D1D` mount under a drop shadow, in place of Lime's bracketed well (`Frame` / `Frame 37` / `IMAGE` / three `Frame`s); keeps Lime's `Vector 1` arc node at 1440 only (ink on the ink band — *not drawn*, below) |
 | repertoire (Section) | 93 / 93 / 93 | 93 / 93 / 93 | 93 of 94 | drops Lime's foot arc `Vector 2` |
 | map (`Frame 319`) | 61 / 61 / 61 | 61 / 61 / 61 | 61 of 62 | drops Lime's no-op `Vector 2` at 1440 |
@@ -263,7 +263,7 @@ Grunge twin's desktop id — each block's fit comment cites them); it is the gat
 | 9 | `form` | **`725:3049`** *(the main component — no page instance at 1440)* | 1440 × 809 | `971:9623` | 768 × 1044 | `977:13490` | 390 × 992 | 1 | `964:72940` / `971:5627` / `977:9201` | `725:2990` / `971:8151` / `977:12378` | `if (s.v3 && (s.lime \|\| s.grunge))` ahead of `EnquiryForm`'s `if (s.v3)` | **done** (`ffc9139`) |
 | 10 | `testimonials` | `964:73125` | 1440 × 716 | `971:9624` | 768 × **628.4** | `977:13491` | 390 × 609.4 | **4** — a real sheet (cell 2 **1**) | `964:72941` / `971:5628` / `977:9202` | `964:73035` / `971:8152` / `977:12379` | `if (s.lime \|\| s.grunge)` inside `Testimonials`' `if (s.v3)`, after `padBot` | **done** (`fdbaf85`) |
 | — | `footer` | `964:73126` | 1440 × 479.5 | `971:9625` | 768 × 692.3 | `977:13492` | 390 × 736.3 | 3 (row 0's) | — | — | — | **out of scope**: layout 1's Editorial footer on its own ink seat; `NVAR.footer` is 1 |
-| — | `video` | `964:73054` | 1440 × 1175 | `971:9551` | 768 × 647 | `977:13295` | 390 × 362 | 1 (paper) | — | — | — | **not in the project** (`d734992`); Retro's, Lime's and Grunge's layout-4 passes declined restoring it, and this pass does the same |
+| — | `video` | `964:73054` | 1440 × 1175 | `971:9551` | 768 × 647 | `977:13295` | 390 × 362 | 1 (paper) | — | — | — | **not in the project** (`d734992`) when this pass ran, and this pass declined to restore it; **restored by `plans/video.md` session 7** (2026-10-27), seated on Scheme 1 — no `SCHEMES_OF.Editorial[3]` row, no `s.onScheme` read; read in `notes/video.md` "Editorial · layout 4" |
 
 **No section changes scheme between widths on this page** (the paired diff: every seat and every
 nested mode reads the same at 1440, 768 and 390) — where Grunge's bio (1 / 3 / 3) and seal
@@ -392,7 +392,7 @@ sequence is identical at 1440, 768 and 390**:
 | 1 | header | the photograph over `#0E0E0E`, fading to **ink** `#141414` at the floor | the **paper** capsule nav, the arch avatar, the identity block, the terracotta seal |
 | 2 | bio | **ink** (Scheme 3) — one ink ground with the header's floor | "KM BIO", the terracotta head, Genres, the chips; the square card with its dimmed glass |
 | 3 | media | **taupe** `#AA958A` (Scheme 2) | the blush head, the tilted sleeve and its tape, six square tiles |
-| — | *video* | *paper* | *not in the project* — so on our page the taupe band meets the gallery's ink directly, a straight edge |
+| — | *video* | *paper* | *not in the project* when this pass ran, so the taupe band met the gallery's ink directly, a straight edge; **since `plans/video.md` session 7 a page with a video between them reads taupe → paper → ink, all straight**, and a page without one keeps the old edge (neither media nor gallery draws a seam under Editorial, so nothing moved: `&below=video` / `&above=video` render identically) |
 | 4 | gallery | **ink** (Scheme 3) | the terracotta head, the tilted print in its mount, the ringed thumbs, the `#BE6346` discs |
 | 5 | repertoire | **ink** (Scheme 3), one band with the gallery | the square `#1D1D1D` panel, its dashed rows and the rail |
 | 6 | map | paper (the page) | the `#FFF9F2` card dashed terracotta, the dark raster, the stat wall, the ticker |
