@@ -18,6 +18,7 @@ plans/
   inline-edit.md   ← clicking text on the canvas edits it there (pilot: Retro layout 1's whole page)
   inline-edit-all.md ← the plan to take inline editing to every template and layout (Phase 0, then 20 passes)
   photo-edit.md   ← clicking a photo on the canvas opens the crop editor with Upload another (every template and layout)
+  photo-edit-qa-fixes.md ← an untouched Apply must not re-crop a seed (JP-160), and the photo half of JP-154
   char-limits.md   ← the character-limit pass, every template (char-limits/ holds its census)
   retro/
     layout-2.md
