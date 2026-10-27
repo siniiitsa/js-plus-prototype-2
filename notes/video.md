@@ -64,14 +64,14 @@ unledgered).
 the 16:9 box at both layouts, and the portrait slice `stage` cut the chest off. `LIME_PHOTOS.video`
 is `limeHero` too (session 2, below). `GRUNGE_PHOTOS.video` is `grungeStage`, the bio's drummer, and
 it is the frame's own (session 4, below). `EDITORIAL_PHOTOS.video` is `editorialStage`, the bio's arch, and
-the frame's own (session 6, below). Pop seeds its `bio` photograph for now (`photos.js`, "Session 1's stand-in")
-until its own session reads the frame. The list's six thumbnails are `RETRO_VIDEO_ART` (gallery 1, 2, 3, 5, 6, 7)
+the frame's own (session 6, below). `POP_PHOTOS.video` is `popStage`, the bio's arch, and the frame's own
+(session 8, below). The list's six thumbnails are `RETRO_VIDEO_ART` (gallery 1, 2, 3, 5, 6, 7)
 through `ROW_ART.video`, and the small circles are the `avatar` (`defaultImage`'s avatar arm reads it
 for video as it does the header's). Only the poster and the avatar are `photoSlots`; the thumbnails are
 the seed's and carry no `data-photo` (`photo-probe --cat video`: PASS, `--blank` and `--drop` too, no
 `PHOTO_OFF` row).
 
-## Caps (`node scripts/limits.mjs video`, Retro; Lime's layout 2 in session 2; Grunge's layouts 2 and 4 in sessions 4 and 5; Editorial's layouts 2 and 4 in sessions 6 and 7; Pop's re-measure in theirs)
+## Caps (`node scripts/limits.mjs video`, Retro; Lime's layout 2 in session 2; Grunge's layouts 2 and 4 in sessions 4 and 5; Editorial's layouts 2 and 4 in sessions 6 and 7; Pop's layout 2 in session 8, its layout 4 in session 9)
 
 | Field | Cap | Measured |
 |---|---|---|
@@ -524,8 +524,88 @@ stops at an instance's edge loses the bar's track and discs: `findAll` does not 
   the poster). `npm run build` clean. `page-check.mjs Editorial 3,0,1,2`: no console error or warning, 390 overflow 0, the video
   on the layout-2 and layout-4 cards only. The two-server digest against `0330e23` (720 renders, five themes, three widths, port normalised): **only Editorial's video at arch 2 and 3** (layout 4's folded pair) moved; the other four themes' video, Editorial's layout 2 and every other section are byte-identical; `&below=video` / `&above=video` over Editorial's media, gallery and video: zero diff.
 
+## Pop · layout 2 (session 8, 2026-10-27)
+
+Frames: *Video Players — A · Dashboard player* `964:64569` 1440×782 · `986:17571` 768×1112.2 · `986:17590` 390×1107.8
+(layout 2's nodes are the instances themselves, no band). Same tree as the other four at all three widths: 136 / 136 /
+138 nodes (the 390's two extra are its `Frame 310` / `Frame 309` wrappers round the artist and the controls).
+
+- **Bound, no mode leak, no seat.** Pop's layout-2 page is bound (plans/pop/layout-2.md), so every seat is read off the
+  node and a raw hex is a leak. All three instances state **only** `1 · Primitives: Pop` on the root, and
+  `resolvedVariableModes` gives `2 · Scheme: Scheme 1` at the root and at every node walked (Device Desktop / Tablet /
+  Mobile on the text, which is the width and not a leak). **So `SCHEMES_OF.Pop[1]` gains no `video` row** (a section with
+  no row stands on Scheme 1), nothing reads `s.onScheme[n]`, and the root is the page's white `sem/bg` with no
+  `cardOnPage` / `vm.pageBg` (the video is no card on another ground: the lime card is the media's, the grey sheet the
+  repertoire's). The 768 instance clips nothing: its composition is the whole 708 × 992.2. Raw paints in the three
+  trees: the hidden `#141414` fill of the artist row (below) and nothing else; no effect on any node.
+- **The gate is now `s.limeTree` for `v1`.** Lime, Grunge, Editorial and Pop are all fitted at layout 2, so the family
+  flag is exactly the old `s.lime || gr || ed` plus Pop, and a fifth designed template would no longer fall silently onto
+  Retro's literals. `const lime = s.limeTree`, `const pop = s.pop`, `gd = gr || ed || pop`. **v3 is untouched**: it keeps
+  `s.lime || gr || ed` (Pop's layout 4 renders the flat arm, as it did, until session 9), and the digest proves Pop's
+  arch 2 and 3 byte-identical.
+- **Where Pop takes Lime's arm** (all bound): `box/1` `#F5F5F5` (`s.box1`) for the panel, the transport and corner discs,
+  the badges, the progress track, the avatar well and the Follow pill; `text/2` violet (`s.tx`) for every clock, label and
+  caption; `stroke/1` pink `#FF2DA0` (`s.stroke1`, opaque) as the 1px ring on every disc and as the artist row's top rule
+  (the row's own stroke is top-only: per-side weights 1 / 0 / 0 / 0); `text/1` pink (`s.ac`) for the progress fill and the
+  row titles; `box/2` `#EBEBEB` under the list's small circles; `sem/bg` white for the bar (a pill, no stroke) and for the
+  thumbnails' ground; the player's radius 50 at all three widths. **The ramp needs no literal**: Chunko 20 / 14 / 13 is
+  `labelMd` 16 / 14 / 13, the row titles 20 / 16 / 15 `list` 16 / 16 / 15, Inter 14 / 13 / 13 `bodyMd`, 12 `bodySm`
+  (`THEME_RAMP.Pop`, the frame × 0.82 at desktop). The vectors are Lime's (the skip 13 × 6.8, the pause 8.4 × 11.2, and the
+  thumbnail triangle `M17.4831 12L…` at 24, `M14.283 10.5507…` at 21.1: the frame's own polygon boxes, rotated −90°,
+  are the same to the hundredth).
+- **Where Pop takes Grunge's** (`gd`): the narrow discs 21.7 on an 8 padding, the narrow badge 32.55 × 14.85 on a 10 inset
+  (radius 2.85, Grunge's 2.8 left), the narrow play disc 21.1 on 10 / 9.1, 150-wide thumbnails, the row titles faced and
+  uppercase (Titan One for the frame's Chunko Bold Demo, `faceK` .98), and `radius/control` **8** on the panel (Lime's is 13),
+  on the volume, maximize and ⋮ discs (6.2 on the 390's 21.7) and on the thumbnail's play disc (R8 on 24, R5.4 on the 21.1).
+  **The pause is a circle** (`radius/card` 24 on 28), so `sqPause` stays Grunge's alone, as at Editorial. No ring on the panel.
+- **Pop is its own in two places:**
+  1. **The three action discs are three fills** — 🔖 `text/2` violet, 🔗 `text/1` pink, 🔔 `tag/1/bg` lime — each held by the
+     `stroke/1` ring, where the other four templates' are one. The frame binds every glyph `text/2`, which on the violet disc is
+     the disc's own colour (it only reads there because Figma draws the emoji in colour), so the glyph is redrawn in the ink
+     that reads: the page's white (`s.bg`) on violet and on pink (3.4 : 1, an icon) and the tag's own ink (`s.chips[0].fg`) on
+     lime. The Follow pill is the bare `box/1` and spreads none of it (`actPop`, per disc, not in `act`).
+  2. **The poster reads `s.imagePos`** (below).
+- **Three overrides named**, each toward what the artist typed or what reads: (a) the progress fill is 200 / 215 at 1440,
+  215 / 215 at 768 and 65.9 / 65.9 at 390, which contradicts its own 02:05 / 03:57: kept `s.ac` at `videoPct`, as everywhere.
+  (b) The artist row's solid `#141414` fill is **hidden** in all three masters (the leftover the other masters carry) and not
+  drawn. (c) The dropped metrics (viewcounts, `22.7M followers`, the like pair, the verified tick, the 👁 / 🔖 / 🔗 / 🔔 / 🔊 /
+  ⛶ emoji) are Retro's, and lucide's icons again. The 390's .776px disc strokes are 1px here, as Grunge's and Editorial's.
+- **Poster: `popStage`, the frame's own, and the stand-in was right.** The player's hash `51d06990` is the bio's arch
+  (photos.js: "the bio's arch (51d06990)", the comedian under the COMEDY CLUB neon), so `POP_PHOTOS.video` already was the frame's
+  photograph and only its comment said otherwise. The 1440 master is a `CROP` (`imageTransform` 1 / 0.438 / 0.086: y .086 to .524,
+  no mirror); the 768 and 390 masters are a centred `FILL`, which **drops the head** and draws a jacket, a belt and a hand (the
+  screenshots). So the video's `Photo` **reads `s.imagePos` under Pop too** (`gd`): the file's existing `'50% 0%'` (window 0 to
+  .467) keeps the face and the neon at every width, ~8.6% of the height off the 1440 crop. **No new `FOCUS` row**: one string per
+  file would move the bio's arch and the gallery's, and `'50% 0%'` already serves this box. An upload has none and stays centred
+  (JP-129). Not read for Retro or Lime. **Thumbnails stay `RETRO_VIDEO_ART`** (the frame draws the same Retro colour stills as
+  every other template: `3a59b4d1`, `b35b6507`, `b073b46f`, `3f0c98b4`, `8f69a4a6`), **the artist's circle is the `avatar`**.
+- **The seam** is a Pop row in `vm.pad`'s layout-2 table: `video: [[56, 49], [60, 60], [40, 40]]` (the frames state 56 / 60 / 40 each
+  side and the same 670 stage clip). **Old seam:** no Pop row, so the section stood on `padY` (80 / 56 / 44 each end): sections
+  **715.5 / 1110.0 / 1113.5** against the frames' 782 × 0.82 = 641.2 / 1112.2 / 1107.8 (74 too tall at 1440). **New seam:** **641.4 / 1112.0 / 1106.8** in the harness. The
+  1440 foot is 49 (Lime's 43, Grunge's 49, Editorial's 50): the clip takes ~7 off the artist row and Titan's caption box is
+  Grunge's height. In the whole page (card 2, `page-check`, published 1440) the neighbours land on their frames: media 966 →
+  **video 782 (782)** → repertoire 793 (792); at 390 media 1420 → video 1107 (1107.8) → repertoire 594. **No seam is drawn between
+  them**: pictures at all three widths show the media's lime card (with its 5px lime rule at 1440, the media's own), the video
+  flush on the white page, and the repertoire's grey `box/1` sheet ringed 1px pink meeting it flush as the frames stand them. So
+  there is nothing to re-fit but the inset.
+- **Judged, not fixed: Titan's row titles clip a character sooner than the frame's.** The frame's 209-wide column clips the last
+  glyph of *MANCHESTER AT 3AM* by 4px (it reads as the full string); ours ends in the ellipsis (`MANCHESTER AT 3…` at 1440), the
+  branch's one truncation idiom, as Editorial's Gloock.
+- **Caps (`limits.mjs video --themes=4 --designs=1`).** `heading` **47** (76 / 85 / 47: 390's box binds, Titan One in capitals;
+  `Pop: [null, 47, null, 20]`, the layout-4 slot Retro's default until session 9), `description` 64 prose / the seed's 69 as the cap
+  (*floor*, as the others), 40 / 37 / 22 for `allCta` / `followCta` / `duration` (held to 16 / 16 / 8) and
+  `IDENTITY_CHARS.video.title` **49** (138 / 114 / 49; `Pop: [null, 49, null, null]`, a new row: an unlisted theme has no cap at
+  all, and layout 4's slot is session 9's). `--check`: 0 failing at layout 2 for Pop and at layouts 2 and 4 for the other four
+  (Pop's layout 4 reports Retro's 20 failing at 390, the unfitted slot, session 9's); `--seeds`: 0 over.
+- **Probes** (`--theme Pop --layout 2 --width 1440,768 --cat video`, on the committed tree `fb97d88`): `inline-probe --check` PASS
+  (5 slots hit at both widths, nothing wrong, unledgered or unreached); `photo-probe --check`, `--blank` and `--drop` PASS (2 slots,
+  the poster and the avatar). `npm run build` clean. `page-check.mjs Pop 1,0,2,3` (card keys are 0-based designs): no console error
+  or warning, 390 overflow 0, the video on the layout-2 and layout-4 cards only, the setup modal's four cards. The two-server digest
+  against `ba1c411` (720 renders, five themes, three widths, port normalised): **only Pop's video at arch 0 and 1** (layout 2's folded pair, six files) moved; Pop's arch 2 and 3 (layout 4, so v3 untouched), the other four themes' video and every other section are byte-identical.
+- `&n=` has no video entry in the harness (call 4); `description`, `allCta`, `followCta` and `duration` emptied are the Retro, Lime,
+  Grunge and Editorial behaviours.
+
 ## Other templates
 
-Until their sessions, Pop's layouts 2 and 4 render the same `s.retro ? literal : flat` arms,
-in the theme's colours but not the frames' decoration. Each session
-ports one template's frame, then re-measures `in`, the caps and the two probes for it.
+Until session 9, Pop's layout 4 renders the same `s.retro ? literal : flat` arms in the theme's colours but not the frame's
+decoration. Each session ports one template's frame, then re-measures `in`, the caps and the two probes for it.
