@@ -59,7 +59,7 @@ import {
   catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldSeed, HEADING_3, HEADING_4, fieldReach, fieldShown, INLINE_OFF, PHOTO_OFF, INLINE_HEAD, INLINE_MARKED, INLINE_PART, INLINE_LINES, inlineRule, fieldCap, colCaps, identityCap, sealCap, capExcess, clampCapped, clampContent, clampIdentity, copyrightOf, formHeading3, extUrl, youtubeEmbed, youtubeThumb, youtubeParts, youtubeWatch, youtubeChannel, urlProblem, emailProblem, emailAddr, songTags, repChips,
   tierFeats, priceParts, priceCuts, blankRow, SONG_KEYS, repSetsOf, repSetLine, TRACK_KEYS, GIG_KEYS, gigWeekday, gigStatus, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
   layoutChoices, designCount, pageLayout, pageOrder, pageRows, videoDesign, videoStartArch,
-  VIDEOS, VIDEO_SEED, VIDEO_KEYS, VIDEO_MARK, clockAt, VIDEO_ALL, VIDEO_FOLLOW, VIDEO_DURATION, COLUMN_SPLIT, bebasEms, antonEms, gloockEms, titanEms,
+  VIDEOS, VIDEO_SEED, VIDEO_KEYS, videoSeedDesc, VIDEO_MARK, clockAt, VIDEO_ALL, VIDEO_FOLLOW, VIDEO_DURATION, COLUMN_SPLIT, bebasEms, antonEms, gloockEms, titanEms,
   headerLayout, headerLayoutLabel, setupHeaderCount,
 } from './data.js'
 import { defaultImage, defaultImages, defaultTrackArt, seedFocus, RETRO_TEXTURE } from './photos.js'
@@ -1187,7 +1187,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // VIDEOS' titles with no link, each row showing its `art` until a link gives
   // it a thumbnail. `embed` is the player the published tab mounts on a click
   // ('' for a link that names no video, which stays a picture row), and
-  // `thumb` YouTube's own picture of it. The other templates keep the seed.
+  // `thumb` YouTube's own picture of it. `line` is what the stage prints
+  // under the title: the row's `desc`, else `by` + the channel name oEmbed
+  // gave for this very link (`byFor`, so a changed link never shows the old
+  // channel). The other templates keep the seed.
   vm.videos = T.name === 'Retro'
     ? (Array.isArray(c.videos) ? c.videos : VIDEO_SEED).filter((r) => !blankRow(r, VIDEO_KEYS)).map((r) => {
         const url = extUrl(r?.url ?? '')
@@ -1197,6 +1200,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
           // that cannot embed sends the visitor; '' when it names no video.
           title: cased(String(r?.title ?? '').trim()), embed: youtubeEmbed(url), thumb,
           href: youtubeParts(url) ? url : '',
+          line: String(r?.desc ?? '').trim()
+            || (r?.by && r.byFor && r.byFor === youtubeWatch(url) ? `by ${String(r.by).trim()}` : ''),
           img: thumb || (Number.isInteger(r?.art) ? seedArt[r.art] : null) || null,
         }
       })
@@ -4051,19 +4056,23 @@ function StepsField({ caps, value, max, onChange }) {
  * VideosField — Retro's layout-2 video list (notes/video.md, "Retro ·
  * YouTube links", 2026-10-28).
  *
- * The eleventh repeater. Row shape is { url, title }, plus a seeded row's
- * `art` (VIDEO_SEED), which every write spreads through untouched. Order is
- * the list's order and the first row is the one the stage opens on, so the
- * rows move up and down, unlike the steps'.
+ * The eleventh repeater. Row shape is { url, title, desc }, plus a seeded
+ * row's `art` (VIDEO_SEED), which every write spreads through untouched, and
+ * `by` / `byFor`, the channel name oEmbed gave and the watch address it was
+ * for. Order is the list's order and the first row is the one the stage opens
+ * on, so the rows move up and down, unlike the steps'.
  *
  * The title fills itself in: once a link has settled (half a second without
  * a keystroke) on an address youtubeParts() accepts, YouTube's oEmbed
- * endpoint is asked for the video's title — the builder's first network
- * request; it answers CORS for an http origin and for file://'s `null`. The
- * answer lands only on a row still holding that link whose title is empty or
- * still the seed's, read off the latest rows, so a title the artist typed is
- * never overwritten and a row edited meanwhile is left alone. The full title
- * is stored; the page's clamp shortens what it prints.
+ * endpoint is asked for the video's title and channel — the builder's first
+ * network request; it answers CORS for an http origin and for file://'s
+ * `null`. The answer lands only on a row still holding that link, read off the
+ * latest rows: its title only where the title is empty or still the seed's,
+ * so a title the artist typed is never overwritten, and its channel name
+ * always (it is not the artist's copy), clearing a description that is still
+ * the seed's so the channel shows. The full title is stored; the page's clamp
+ * shortens what it prints. Answers are kept for the session (OEMBED), so a
+ * link pasted back, or a panel opened again, takes them without a request.
  * ------------------------------------------------------------------- */
 
 const VIDEO_NOT_YT = 'Not a YouTube video or playlist link, so it won’t play.'
@@ -4074,13 +4083,16 @@ const videoNeedsTitle = (r) => {
   const t = String(r?.title ?? '').trim()
   return !t || (Number.isInteger(r?.art) && t === VIDEOS[r.art]?.title)
 }
+const videoSeedDescOf = (r) => Number.isInteger(r?.art) && String(r?.desc ?? '').trim() === videoSeedDesc(VIDEOS[r.art])
 const videoWatchOf = (r) => youtubeWatch(extUrl(r?.url ?? ''))
+// Watch address → { title, by, channel } | 'busy', for the session.
+const OEMBED = {}
 
 function VideosField({ caps, value, max, onChange, needChannel = false, onChannel }) {
   const list = Array.isArray(value) ? value : []
-  // The lookups outlive a render: `seen` is watch address → 'busy' | 'done' |
-  // 'fail', and the two refs are what an answer arriving later writes through.
-  const seen = useRef({})
+  // `fail` holds the links this panel could not look up (asked again on a
+  // remount); the refs are what an answer arriving later writes through.
+  const fail = useRef({})
   const [, bump] = useState(0)
   const latest = useRef({ list, onChange, needChannel, onChannel })
   latest.current = { list, onChange, needChannel, onChannel }
@@ -4092,38 +4104,59 @@ function VideosField({ caps, value, max, onChange, needChannel = false, onChanne
   // leave it false and drop every answer.
   useEffect(() => { live.current = true; return () => { live.current = false } }, [])
 
+  // Lands the answers for `ws` on the latest rows in one write.
+  const apply = (ws) => {
+    const { list: cur, onChange: write, needChannel: needCh, onChannel: setCh } = latest.current
+    let hit = false
+    const next = cur.map((r) => {
+      const w = videoWatchOf(r)
+      const ans = ws.includes(w) ? OEMBED[w] : null
+      if (!ans || typeof ans !== 'object') return r
+      // Once per link on a row: a row that has had this link's answer keeps the
+      // title the artist leaves it, emptied or not.
+      if (r.byFor === w) return r
+      const title = videoNeedsTitle(r)
+      hit = true
+      return {
+        ...r, ...(title ? { title: ans.title } : null), by: ans.by, byFor: w,
+        ...(videoSeedDescOf(r) ? { desc: '' } : null),
+      }
+    })
+    if (hit) write(next)
+    // View All's address (`channel`), while the artist has not set one.
+    const ch = ws.map((w) => OEMBED[w]?.channel).find(Boolean)
+    if (ch && needCh && setCh && !chanSent.current) { chanSent.current = true; setCh(ch) }
+  }
   const lookup = (w) => {
-    seen.current[w] = 'busy'
+    OEMBED[w] = 'busy'
     bump((n) => n + 1)
     fetch(`https://www.youtube.com/oembed?url=${encodeURIComponent(w)}&format=json`)
       .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
       .then((j) => {
         const title = String(j?.title ?? '').trim()
         if (!title) throw new Error('no title')
-        seen.current[w] = 'done'
-        if (!live.current) return
-        const { list: cur, onChange: write, needChannel: needCh, onChannel: setCh } = latest.current
-        // View All's address (`channel`), while the artist has not set one.
-        const ch = youtubeChannel(j?.author_url)
-        if (ch && needCh && setCh && !chanSent.current) { chanSent.current = true; setCh(ch) }
-        let hit = false
-        const next = cur.map((r) => {
-          if (videoWatchOf(r) !== w || !videoNeedsTitle(r)) return r
-          hit = true
-          return { ...r, title }
-        })
-        if (hit) write(next)
+        OEMBED[w] = { title, by: String(j?.author_name ?? '').trim(), channel: youtubeChannel(j?.author_url) }
+        if (live.current) apply([w])
       })
-      .catch(() => { seen.current[w] = 'fail' })
+      .catch(() => { delete OEMBED[w]; fail.current[w] = true })
       .finally(() => { if (live.current) bump((n) => n + 1) })
   }
-  // Every link still waiting for a title (or, while View All has no address,
-  // any link) and not yet asked about, once the list has been still for 500ms.
-  const want = list.filter((r) => needChannel || videoNeedsTitle(r)).map(videoWatchOf).filter((w) => w && !seen.current[w])
+  // Every link whose row has not had its answer (or, while View All has no
+  // address, any link), not in flight and not failed here.
+  // Answers already held land at once; the rest are asked for once the list
+  // has been still for 500ms.
+  const wants = (r) => r.byFor !== videoWatchOf(r) || needChannel
+  const want = [...new Set(list.filter(wants).map(videoWatchOf))]
+    .filter((w) => w && !fail.current[w] && OEMBED[w] !== 'busy')
   const wantKey = want.join(' ')
   useEffect(() => {
     if (!wantKey) return undefined
-    const t = setTimeout(() => wantKey.split(' ').forEach((w) => { if (!seen.current[w]) lookup(w) }), 500)
+    const ws = wantKey.split(' ')
+    const held = ws.filter((w) => typeof OEMBED[w] === 'object')
+    if (held.length) apply(held)
+    const ask = ws.filter((w) => !OEMBED[w])
+    if (!ask.length) return undefined
+    const t = setTimeout(() => ask.forEach((w) => { if (!OEMBED[w]) lookup(w) }), 500)
     return () => clearTimeout(t)
   }, [wantKey]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -4153,10 +4186,11 @@ function VideosField({ caps, value, max, onChange, needChannel = false, onChanne
 
   const row = (i, r) => {
     const w = videoWatchOf(r)
-    const state = w ? seen.current[w] : undefined
     const thumb = youtubeThumb(extUrl(r.url ?? ''))
-    const note = state === 'busy' ? 'Looking up the title…'
-      : state === 'fail' && videoNeedsTitle(r) ? 'Couldn’t fetch the title. Type one.' : null
+    const note = w && OEMBED[w] === 'busy' ? 'Looking up the title…'
+      : w && fail.current[w] && videoNeedsTitle(r) ? 'Couldn’t fetch the title. Type one.' : null
+    // What the stage prints when the box is empty: the channel, for this link.
+    const by = w && r.byFor === w && String(r.by ?? '').trim()
     return (
       <div key={i} style={{
         border: '1px solid #E9E7E0', borderRadius: '10px', padding: '8px',
@@ -4202,6 +4236,11 @@ function VideosField({ caps, value, max, onChange, needChannel = false, onChanne
               value={r.title ?? ''} placeholder="Title" onClick={stopE}
               onChange={(e) => setAt(i, 'title', e.target.value)}
               className="h-auto" style={{ ...SONG_ROW_INPUT, fontWeight: 600 }}
+            />
+            <CappedText cap={caps?.desc}
+              value={r.desc ?? ''} placeholder={by ? `Description (empty shows “by ${by}”)` : 'Description'}
+              onClick={stopE} onChange={(e) => setAt(i, 'desc', e.target.value)}
+              className="h-auto" style={SONG_ROW_INPUT}
             />
             {note && <p style={{ margin: 0, fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>{note}</p>}
           </div>
@@ -6183,7 +6222,7 @@ const INLINE_ROWS = {
   testimonials: { quotes: ['quote', 'who', 'role', 'when'] },
   form: { fields: ['label', 'placeholder'], steps: ['title', 'sub'] },
   footer: { links: ['label'] },
-  video: { videos: ['title'] },
+  video: { videos: ['title', 'desc'] },
 }
 // Two cells the page prints as one line, `Manchester · 22:00`, `Mellow · 45 min`.
 const LINE_PAIRS = { gigs: ['city', 'time'], sets: ['mood', 'length'] }
@@ -6262,6 +6301,13 @@ function drawnRows(sec, k, themeName) {
 
 // The same rows in the order the cards draw them, a row once for every card it is in.
 function drawnSeq(sec, k, themeName) {
+  // Retro's layout-2 stage prints one video's description: on the canvas, the
+  // first row with a player, else the first row (`Video`'s `first`).
+  if (sec.cat === 'video' && k === 'videos') {
+    const live = repeaterRows(sec, 'videos', themeName).map((r, i) => [r, i]).filter(([r]) => !blankRow(r, VIDEO_KEYS))
+    const hit = live.find(([r]) => youtubeEmbed(extUrl(r?.url ?? ''))) ?? live[0]
+    return hit ? [hit[1]] : []
+  }
   if (sec.cat !== 'repertoire' || k !== 'songs') return null
   const live = repeaterRows(sec, 'songs', themeName).map((t, i) => [t, i]).filter(([t]) => !blankRow(t, SONG_KEYS))
   const cards = repChips(live.map(([t]) => t)).slice(1)

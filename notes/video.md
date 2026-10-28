@@ -48,9 +48,9 @@ and every template at layout 4, are still the picture this section describes.
 |---|---|---|
 | `image` | 2, 4 | The poster, 16:9. Retro L2: the stage while the current row has no YouTube thumbnail |
 | `avatar` | 2 (not Retro) | The artist's circle beside the name and beside each listed video, 1:1 |
-| `videos` | 2 (Retro only) | The list, `{ url, title }` per row, max 6 (`VideosField`; *Retro · YouTube links*) |
-| `heading` | 2, 4 | L2: the label over the description. L4: the band's display head. Seeds `TITLES.video` (*Live at Roomtone*) and `HEADING_4.video` (*See me in action*) |
-| `description` | 2 | One ellipsized line under the heading |
+| `videos` | 2 (Retro only) | The list, `{ url, title, desc }` per row (plus `by` / `byFor`), max 6 (`VideosField`; *Retro · YouTube links*) |
+| `heading` | 2 (not Retro), 4 | L2: the label over the description. L4: the band's display head. Seeds `TITLES.video` (*Live at Roomtone*) and `HEADING_4.video` (*See me in action*) |
+| `description` | 2 (not Retro) | One ellipsized line under the heading |
 | `duration` | 2 (not Retro), 4 | The clock, as `04:18`; the bar's fill is drawn from it (`vm.videoAt`, `VIDEO_MARK`, `clockAt`) |
 | `allCta` | 2 | *View All ›* over the list |
 | `channel` | 2 (Retro only) | Where Retro's *View All* goes when live; filled from the videos' oEmbed `author_url` while absent |
@@ -86,6 +86,7 @@ the seed's and carry no `data-photo` (`photo-probe --cat video`: PASS, `--blank`
 | `duration` | 8 | Measured 22 / 39; a time, held to its shape |
 | `allCta`, `followCta` | 16 | Measured 39 / 37 at 390, a pill drawn ×4 its frame width there — judged, as the other pills are |
 | `IDENTITY_CHARS.video.title` | 49 (L2), 54 (L4) | The artist's name in layout 2's artist row and layout 4's top bar; the clamp is an ellipsis. Retro's L2 seat is `null` since 2026-10-28: its artist row is gone |
+| `videos.desc` | 63 (Retro L2) | One ellipsized line under the stage's title; the 390 box binds (157 / 122 / 63) |
 | `videos.title` | 50 (Retro L2) | Two lines of the row title, then the clamp: 55 at 1440 takes a third line, 50 at 768 and 390 (`limits.mjs` gives `videos.title` one extra line, `EXTRA_LINES`) |
 
 Lime's layout 2 measured 82 for `heading` (Retro 64: the label face is narrower, and 390's box binds),
@@ -795,6 +796,15 @@ the same day (user call, 2026-10-28: "view all button is missing. Implement it a
   (`avatar`, `duration` at design 1, `followCta`) take `{ Retro: [], '*': [1] }`-shaped `in`, so
   the copy stays in `c`. The row title wraps to two lines and clamps (`-webkit-line-clamp`). At 390 the
   stage and the panel stand 20 apart (the artist row's padding was that gap).
+- **The heading and line under the stage follow the video** (user calls, 2026-10-28, each the recommended
+  option: "the video description is static now"). The label is the stage row's title, and the line under it is
+  `vm.videos[].line`: the row's `desc`, else `by <channel>`, the `author_name` oEmbed gave for that very link
+  (`by`, stored with `byFor`, its watch address, so a changed link never shows the old channel). oEmbed has
+  no description, and the Data API needs a key, so the description is the artist's own. `heading` and
+  `description` no longer reach Retro's design 1 (their copy stays in `c`). The seed rows carry a `desc` off
+  `VIDEOS`' source and date (`videoSeedDesc`), cleared when the row's first answer lands, so a pasted link
+  shows its channel and not a seeded line. `VIDEO_KEYS` counts `desc`. Inline, `desc` is a slot only on the
+  stage's row; the rest are `INLINE_HEAD`'s (`drawnSeq`'s video arm names the stage's row).
 - **View All goes to the artist's channel** (2026-10-28, after the first pass dropped it). `allCta` reaches
   Retro's design 1 again, and a new `channel` field (*List link address*, a `UrlInput`, Retro's design 1
   alone) is its address: `vm.videoAllHref` is `extUrl(c.channel)`, and live, with an address, the label is

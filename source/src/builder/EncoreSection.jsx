@@ -10415,11 +10415,13 @@ function Video({ s }) {
         {/* The frame's name-and-metric block. Ours is the heading in the label
             face over the description — the field layout 1 already prints —
             and it takes the whole column rather than the frame's clipped 158,
-            because a sentence is not a two-word metric. */}
-        <div style={col(u(4), { padding: `${u(4)} 0`, minWidth: 0 })}>
-          <span style={labelStyle(s, labelSz, { overflow: 'hidden', textOverflow: 'ellipsis' })}>{s.title}</span>
-          {s.videoDesc && <span style={metaType()}>{s.videoDesc}</span>}
-        </div>
+            because a sentence is not a two-word metric. Retro's prints the
+            stage's video instead: its title over its `line` (the row's
+            description, else its channel), so both follow a picked row. */}
+        {(!yt || now?.title || now?.line) && <div style={col(u(4), { padding: `${u(4)} 0`, minWidth: 0 })}>
+          <span style={labelStyle(s, labelSz, { overflow: 'hidden', textOverflow: 'ellipsis' })}>{yt ? now?.title : s.title}</span>
+          {(yt ? now?.line : s.videoDesc) && <span style={metaType()}>{yt ? now.line : s.videoDesc}</span>}
+        </div>}
         {/* The artist row. All three frames rule it off above and pad it 15/20;
             what the 390 master changes is that the four controls drop to a line
             of their own 25 under the name, at their own tighter 5px gap, rather

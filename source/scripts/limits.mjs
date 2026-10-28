@@ -180,7 +180,7 @@ const COLS = {
   slots: { kind: {}, price: {} },
   stats: { label: {}, value: {}, sub: {} },
   steps: { title: {}, sub: {} },
-  videos: { title: {} },
+  videos: { title: {}, desc: {} },
   tiers: { name: {}, price: {}, tags: { list: ',' }, blurb: { block: true }, feats: { list: '\n' } },
   formFields: { label: {}, placeholder: {} },
   quotes: { who: {}, quote: { block: true }, role: {}, when: {} },

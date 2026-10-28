@@ -1003,15 +1003,19 @@ export const VIDEOS = [
   { title: 'Field Day (live)',   sub: 'Festival',        length: '06:41', when: 'August 2025' },
 ]
 // Retro's layout 2 lists the artist's own YouTube links (notes/video.md,
-// "Retro · YouTube links"): `c.videos` is an array of { url, title }, edited by
-// VideosField. The seed is VIDEOS' titles with no link, each row carrying
+// "Retro · YouTube links"): `c.videos` is an array of { url, title, desc },
+// edited by VideosField, which also stores `by` / `byFor`, the channel name
+// oEmbed gave for the link `byFor` names (the line under the player when
+// `desc` is empty). The seed is VIDEOS' titles with no link, a line off their
+// source and date, each row carrying
 // `art`, the seed photograph it shows while it has no YouTube thumbnail — kept
 // through every rewrite, as a seeded slot keeps `after`, so a reorder or a
 // delete never hands a row another row's picture. Unlike SLOT_KEYS, `art` is
 // not in VIDEO_KEYS: a row with neither a link nor a title has nothing to play
 // or print, so emptying a seeded row drops it, art and all.
-export const VIDEO_KEYS = ['url', 'title']
-export const VIDEO_SEED = VIDEOS.map((v, i) => ({ url: '', title: v.title, art: i }))
+export const VIDEO_KEYS = ['url', 'title', 'desc']
+export const videoSeedDesc = (v) => (v ? `${v.sub} · ${v.when}` : '')
+export const VIDEO_SEED = VIDEOS.map((v, i) => ({ url: '', title: v.title, desc: videoSeedDesc(v), art: i }))
 
 // Where the video section's transport bar is caught. The section has no
 // <video> element on either surface — it is a picture (call 2) — so the
@@ -2174,12 +2178,15 @@ export const FIELDS = {
     // Retro's layout 2 alone (2026-10-28): the eleventh repeater, { url, title }
     // per video. Six, the frame's six seats.
     { k: 'videos',  l: 'Videos', type: 'videos', max: 6, in: { Retro: [1], '*': [] },
-      cols: { title: { Retro: [null, 50] } },
+      cols: { title: { Retro: [null, 50] }, desc: { Retro: [null, 63] } },
       hint: 'Paste a YouTube video, short or playlist link; the title fills itself in, and you can '
-          + 'change it. The videos play on the published page.' },
+          + 'change it. Under the player, the playing video’s title and description show; with no '
+          + 'description, its YouTube channel’s name. The videos play on the published page.' },
     // Layout 2 prints it as the label over the description; layout 4 as the
     // band's display head. Two seeds, one field: HEADING_4 beside TITLES.
-    { k: 'heading', l: 'Heading', d: TITLES.video, in: [1, 3],
+    // Retro's layout 2 prints the playing video's title and description in
+    // these two seats instead (2026-10-28), so neither reaches its design 1.
+    { k: 'heading', l: 'Heading', d: TITLES.video, in: { Retro: [3], '*': [1, 3] },
       // Measured on Retro (limits.mjs): 64 at layout 2 (390), 20 at layout 4 (390; 30 at 1440
       // would take a second line). Lime's layout 2 holds 82 (390's box binds; its label face is
       // narrower); its layout 4 holds 19 (390 binds: 28 at 1440, 24 at 768; session 3).
@@ -2196,7 +2203,7 @@ export const FIELDS = {
       chars: { Lime: [null, 82, null, 19], Grunge: [null, 91, null, 25], Editorial: [null, 48, null, 16],
         Pop: [null, 47, null, 16], '*': [null, 64, null, 20] },
       hint: 'Layout 2 prints it over the description, layout 4 as the band’s large head.' },
-    { k: 'description', l: 'Description', type: 'area', def: 'videoDesc', in: [1],
+    { k: 'description', l: 'Description', type: 'area', def: 'videoDesc', in: { Retro: [], '*': [1] },
       // One ellipsized line: prose clips at 64 at 390 but the 69-character seed fits,
       // so the cap is the seed's own length (the frame's string, `--check`'s 'floor').
       chars: { '*': [null, 69] }, hint: 'Under the heading, layout 2 only.' },
@@ -3129,6 +3136,7 @@ export const INLINE_OFF = {
 // where it is drawn; a row `drawnRows` (EncoreBuilder.jsx) does not list is in the
 // ledger with this reason, which is also what keeps the nth-peer pairing honest.
 export const INLINE_HEAD = {
+  'Retro.1.video.videos.desc': 'not drawn: only the video on the stage prints its description',
   '*.2.repertoire.songs': 'live-only copy: this song is behind a card’s View full set, or on a page of the pager',
 }
 // The two marks stand in layout 1's gallery blocks alone; layout 2 draws its

@@ -199,7 +199,7 @@ layout 3's cards do not draw as `off`, so the drawn copy and the drawn slots agr
 
 ## VideosField (Retro's layout-2 video list, 2026-10-28)
 
-The eleventh repeater: `c.videos` is `[{ url, title }]`, maintained by `VideosField`, Retro's layout 2 alone
+The eleventh repeater: `c.videos` is `[{ url, title, desc }]`, maintained by `VideosField`, Retro's layout 2 alone
 (`notes/video.md`, *Retro · YouTube links*). Its seed `VIDEO_SEED` is the one `repeaterRows` and `sectionVm`
 both read (`videosVal` is the steps' one-liner). Three things it does that no other repeater does:
 
@@ -214,3 +214,7 @@ both read (`videosVal` is the steps' one-liner). Three things it does that no ot
 - **It writes a key outside its own** (2026-10-28): the section's `channel`, View All's address, from the first
   answer's `author_url`, once, while `c.channel` is absent (`needChannel` / `onChannel`, EditPanel passing
   `api.setContent`). While it is absent every link is looked up, not only those waiting for a title.
+- **Each answer lands once per link on a row** (2026-10-28): the row records `by` (the channel's name) and
+  `byFor` (the watch address it was for), and a row whose `byFor` is its link is not written again, so an
+  emptied title stays empty. Answers are held for the session in a module map (`OEMBED`), so a link pasted
+  back, or a panel opened again, takes them without a request; a failed lookup is retried on a remount.
