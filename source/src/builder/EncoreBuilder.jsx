@@ -59,7 +59,7 @@ import {
   catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldSeed, HEADING_3, HEADING_4, fieldReach, fieldShown, INLINE_OFF, PHOTO_OFF, INLINE_HEAD, INLINE_MARKED, INLINE_PART, INLINE_LINES, inlineRule, fieldCap, colCaps, identityCap, sealCap, capExcess, clampCapped, clampContent, clampIdentity, copyrightOf, formHeading3, extUrl, youtubeEmbed, youtubeThumb, youtubeParts, youtubeWatch, youtubeChannel, urlProblem, emailProblem, emailAddr, songTags, repChips,
   tierFeats, priceParts, priceCuts, blankRow, SONG_KEYS, repSetsOf, repSetLine, TRACK_KEYS, GIG_KEYS, gigWeekday, gigStatus, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
   layoutChoices, designCount, pageLayout, pageOrder, pageRows, videoDesign, videoStartArch,
-  VIDEOS, VIDEO_SEED, VIDEO_KEYS, videoSeedDesc, VIDEO_MARK, clockAt, VIDEO_ALL, VIDEO_FOLLOW, VIDEO_DURATION, COLUMN_SPLIT, bebasEms, antonEms, gloockEms, titanEms,
+  VIDEOS, VIDEO_SEED, VIDEO_KEYS, videoSeedDesc, VIDEO_MARK, clockAt, VIDEO_ALL, VIDEO_DURATION, COLUMN_SPLIT, bebasEms, antonEms, gloockEms, titanEms,
   headerLayout, headerLayoutLabel, setupHeaderCount,
 } from './data.js'
 import { defaultImage, defaultImages, defaultTrackArt, seedFocus, RETRO_TEXTURE } from './photos.js'
@@ -422,7 +422,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // about:blank (a file:// builder, or a host without published.html) and a
     // file:// Preview cannot, and YouTube answers the iframe with Error 153 —
     // no `origin` or `widget_referrer` parameter stands in for it (checked
-    // 2026-10-28). Retro's video then links each row out to YouTube instead.
+    // 2026-10-28). The video's layout 2 then links each row out to YouTube instead.
     videoEmbeds: embeds !== false,
 
     // The section's own id on the published page, so a nav link can scroll to
@@ -1157,57 +1157,46 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   }
   vm.tracks3 = vm.tracks.slice(0, 3)
 
-  // video — the stage's own values, and the list of other videos beside it
-  // that layout 2 draws (plans/video.md). A picture on both surfaces: no
-  // <video>, no link, no `live` seam (call 2).
-  vm.videoDesc = cv('description', DEFS.videoDesc)
+  // video — layout 4's clock, and layout 2's list of the artist's YouTube
+  // links (plans/video.md; notes/video.md, "YouTube links").
   vm.videoDur = cv('duration', VIDEO_DURATION)
-  // Where the transport bar is caught. The section has no <video> element on
-  // either surface, so there is no playhead to read: `clockAt` composes one
+  // Where layout 4's transport bar is caught. That layout has no <video>
+  // element on either surface, so there is no playhead to read: `clockAt` composes one
   // from the running time above and `videoPct` fills the bar to the same
   // fraction, so the two cannot disagree. An unparseable duration leaves both
   // empty rather than inventing a position for it.
   vm.videoAt = clockAt(vm.videoDur, VIDEO_MARK)
   vm.videoPct = vm.videoAt ? VIDEO_MARK * 100 : 0
-  // The two buttons (call 3), JP-071's shape: the frame's words, uncased,
-  // dropped when emptied.
+  // View All (call 3), JP-071's shape: the frame's words, uncased, dropped
+  // when emptied.
   vm.videoAll = cv('allCta', VIDEO_ALL)
-  vm.videoFollow = cv('followCta', VIDEO_FOLLOW)
-  // Retro's View All goes to `channel` (the artist's YouTube channel, which
-  // VideosField fills in); '' leaves it a label, on the canvas always.
-  vm.videoAllHref = T.name === 'Retro' ? extUrl(c.channel ?? '') : ''
-  // The seeded VIDEOS, always: the section has no repeater (call 4), so
-  // `c.videos` is never written; the shape is the `songs` rule's all the same.
-  // Artwork follows the tracks': `null`, not undefined, wherever a row has
-  // none, because Photo falls back to the *section* photo on undefined and a
-  // listed video must not inherit the poster.
-  //
-  // Retro's layout 2 lists the artist's YouTube links instead (`c.videos`,
-  // VideosField, notes/video.md "Retro · YouTube links"), seeded VIDEO_SEED:
-  // VIDEOS' titles with no link, each row showing its `art` until a link gives
-  // it a thumbnail. `embed` is the player the published tab mounts on a click
-  // ('' for a link that names no video, which stays a picture row), and
-  // `thumb` YouTube's own picture of it. `line` is what the stage prints
-  // under the title: the row's `desc`, else `by` + the channel name oEmbed
-  // gave for this very link (`byFor`, so a changed link never shows the old
-  // channel). The other templates keep the seed.
-  vm.videos = T.name === 'Retro'
-    ? (Array.isArray(c.videos) ? c.videos : VIDEO_SEED).filter((r) => !blankRow(r, VIDEO_KEYS)).map((r) => {
-        const url = extUrl(r?.url ?? '')
-        const thumb = youtubeThumb(url)
-        return {
-          // `href` is the link as the artist gave it (extUrl'd), where a page
-          // that cannot embed sends the visitor; '' when it names no video.
-          title: cased(String(r?.title ?? '').trim()), embed: youtubeEmbed(url), thumb,
-          href: youtubeParts(url) ? url : '',
-          line: String(r?.desc ?? '').trim()
-            || (r?.by && r.byFor && r.byFor === youtubeWatch(url) ? `by ${String(r.by).trim()}` : ''),
-          img: thumb || (Number.isInteger(r?.art) ? seedArt[r.art] : null) || null,
-        }
-      })
-    : VIDEOS.map((v, i) => ({
-        title: cased(v.title), sub: v.sub, length: v.length, when: v.when, img: seedArt[i] ?? null,
-      }))
+  // It goes to `channel` (the artist's YouTube channel, which VideosField
+  // fills in); '' leaves it a label, on the canvas always.
+  vm.videoAllHref = extUrl(c.channel ?? '')
+  // Layout 2 lists the artist's YouTube links (`c.videos`, VideosField,
+  // notes/video.md "YouTube links"), seeded VIDEO_SEED: VIDEOS' titles with no
+  // link, each row showing its `art` until a link gives it a thumbnail.
+  // `embed` is the player the published tab mounts on a click ('' for a link
+  // that names no video, which stays a picture row), and `thumb` YouTube's own
+  // picture of it. `line` is what the stage prints under the title: the row's
+  // `desc`, else `by` + the channel name oEmbed gave for this very link
+  // (`byFor`, so a changed link never shows the old channel). Artwork is
+  // `null`, not undefined, wherever a row has none, because Photo falls back
+  // to the *section* photo on undefined and a listed video must not inherit
+  // the poster.
+  vm.videos = (Array.isArray(c.videos) ? c.videos : VIDEO_SEED).filter((r) => !blankRow(r, VIDEO_KEYS)).map((r) => {
+    const url = extUrl(r?.url ?? '')
+    const thumb = youtubeThumb(url)
+    return {
+      // `href` is the link as the artist gave it (extUrl'd), where a page
+      // that cannot embed sends the visitor; '' when it names no video.
+      title: cased(String(r?.title ?? '').trim()), embed: youtubeEmbed(url), thumb,
+      href: youtubeParts(url) ? url : '',
+      line: String(r?.desc ?? '').trim()
+        || (r?.by && r.byFor && r.byFor === youtubeWatch(url) ? `by ${String(r.by).trim()}` : ''),
+      img: thumb || (Number.isInteger(r?.art) ? seedArt[r.art] : null) || null,
+    }
+  })
 
   // The now-playing card is no longer content of its own: it names and shows
   // the track the player is on, which `Media` resolves from `vm.tracks`. What
@@ -4053,8 +4042,8 @@ function StepsField({ caps, value, max, onChange }) {
 }
 
 /* ------------------------------------------------------------------ *
- * VideosField — Retro's layout-2 video list (notes/video.md, "Retro ·
- * YouTube links", 2026-10-28).
+ * VideosField — the video section's layout-2 list, on every template
+ * (notes/video.md, "YouTube links", 2026-10-28).
  *
  * The eleventh repeater. Row shape is { url, title, desc }, plus a seeded
  * row's `art` (VIDEO_SEED), which every write spreads through untouched, and
@@ -5009,7 +4998,7 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
   // And the enquiry form's layout-4 steps (JP-079): FORM_STEPS is written as
   // the { title, sub } row StepsField edits, the stats' one-liner again.
   const stepsVal = (k) => repeaterRows(sec, k, themeName)
-  // And Retro's layout-2 videos: VIDEO_SEED is the { url, title, art } row
+  // And the layout-2 videos: VIDEO_SEED is the { url, title, desc, art } row
   // VideosField edits, the same one-liner.
   const videosVal = (k) => repeaterRows(sec, k, themeName)
 
@@ -6301,7 +6290,7 @@ function drawnRows(sec, k, themeName) {
 
 // The same rows in the order the cards draw them, a row once for every card it is in.
 function drawnSeq(sec, k, themeName) {
-  // Retro's layout-2 stage prints one video's description: on the canvas, the
+  // The video's layout-2 stage prints one video's description: on the canvas, the
   // first row with a player, else the first row (`Video`'s `first`).
   if (sec.cat === 'video' && k === 'videos') {
     const live = repeaterRows(sec, 'videos', themeName).map((r, i) => [r, i]).filter(([r]) => !blankRow(r, VIDEO_KEYS))

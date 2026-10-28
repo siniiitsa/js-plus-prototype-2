@@ -104,8 +104,8 @@ function censusLines(cat, themeName, design, w, seed) {
 // one line more than the frame and shrink to 75% of the seed's size (session 1,
 // user call, 2026-10-13). Every other seat keeps the frame's lines and size.
 const FLOOR = { title: 0.75, 'who.title': 0.75 }
-// Retro's video row titles wrap to two lines and clamp (notes/video.md, *Retro ·
-// YouTube links*): the seed's one line is not the frame's limit there.
+// The video's layout-2 row titles wrap to two lines and clamp (notes/video.md,
+// *YouTube links*): the seed's one line is not the frame's limit there.
 const EXTRA_LINES = { title: 1, 'who.title': 1, 'videos.title': 1 }
 // --extra-lines=songs.title gives a key one line past the frame's, to read the
 // alternative a user call would allow (JP-104's two-line title at repertoire

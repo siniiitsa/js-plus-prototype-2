@@ -297,7 +297,7 @@ export const RETRO_TEXTURE = { grain, map: mapTile, mapRadial }
 // Everything a template seeds, by `THEMES[].name`. A theme with no row seeds
 // nothing; every template has one now.
 //   photos — the section photographs above
-//   avatar — the header's and the video section's artist portrait (`avatar` key)
+//   avatar — the header's artist portrait (`avatar` key)
 //   photo  — the enquiry form's scene (`photo` key)
 //   layouts — a section photograph that one layout's frame draws differently,
 //             by design index, then category; it wins over `photos` there
@@ -388,7 +388,7 @@ export const seedFocus = (url) => (url ? FOCUS.get(url) : undefined)
 export const defaultImage = (cat, themeName, key = 'image', design) => {
   const seed = SEEDS[themeName]
   if (!seed) return undefined
-  if (key === 'avatar') return cat === 'header' ? (seed.avatars?.[design] ?? seed.avatar) : cat === 'video' ? seed.avatar : undefined
+  if (key === 'avatar') return cat === 'header' ? (seed.avatars?.[design] ?? seed.avatar) : undefined
   if (key === 'photo') return cat === 'form' ? seed.photo : undefined
   const v = seed.layouts?.[design]?.[cat] ?? seed.photos[cat]
   return Array.isArray(v) ? undefined : v

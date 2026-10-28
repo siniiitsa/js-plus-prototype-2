@@ -33,7 +33,7 @@ import {
   Play, Pause, SkipBack, SkipForward, Check, ChevronLeft, ChevronRight,
   ArrowLeft, ArrowRight, ArrowUp, ArrowDown, Star, Plus, X, Search, MapPin, User,
   Image as ImageIcon, Youtube, Instagram, Music2,
-  Settings, Volume2, Maximize, Bookmark, Link2, Bell,
+  Settings, Volume2,
 } from 'lucide-react'
 
 /* ------------------------------------------------------------------ *
@@ -9991,62 +9991,49 @@ function Media({ s }) {
 // The video section (plans/video.md, restored from d734992^ onto today's idioms).
 // It exists at layouts 2 and 4 alone — the only Figma pages that draw one — so
 // `sectionVm` folds its design onto 1 (v1, Dashboard player) or 3 (v3, Cinematic
-// minimal) and there is no branch for 0 or 2. A picture on both surfaces (call 2),
-// except Retro's layout 2, which lists the artist's YouTube links and plays them
-// when `s.live` (notes/video.md, "Retro · YouTube links"). No effect.
+// minimal) and there is no branch for 0 or 2. Layout 4 is a picture on both
+// surfaces (call 2); layout 2 lists the artist's YouTube links and plays them
+// when `s.live` (notes/video.md, "YouTube links"). No effect.
 function Video({ s }) {
-  // Retro's layout 2 alone: which listed video the stage holds (null: the first
-  // one that plays), and whether the visitor has started it — the iframe exists
-  // only after that click, which is what makes its `autoplay` the visitor's.
+  // Layout 2's: which listed video the stage holds (null: the first one that
+  // plays), and whether the visitor has started it — the iframe exists only
+  // after that click, which is what makes its `autoplay` the visitor's.
   const [cur, setCur] = useState(null)
   const [play, setPlay] = useState(false)
   // v1 — Video layout 2 · Dashboard player (Figma 964:64645)
   //
-  // A stage on the left — the poster in a deep-rounded card with a transport
-  // bar floating in its foot — and under it the video's name, its description
-  // and the artist's own row. Beside it, a rust-outlined cream panel listing
-  // the other videos: a thumbnail carrying its running time, then the title,
-  // where it came from and when.
+  // A stage on the left — the playing video's picture in a deep-rounded card
+  // under one play disc — and under it that video's title and line. Beside it,
+  // a panel listing the artist's YouTube links: a thumbnail, then the title.
   //
-  // Still a picture, on both surfaces, under Lime, Grunge, Editorial and Pop —
-  // no <video> element and no handler, so nothing carries a pointer cursor
-  // either: the calendar's rule that a cursor is read off the handler. **Retro
-  // is the exception** (`yt`, 2026-10-28): its list is the artist's YouTube
-  // links, and in the published tab and Preview (`s.live`) the stage and every
-  // row that plays carry the handler, and the cursor with it.
-  //
-  // What the frame draws and this does not: the view counts ("8,175M views",
-  // "25,284M View"), the follower count ("22.7M followers"), the like/dislike
-  // pair ("👍 509,325 · 👎 245", which the frame's own 158px title box clips
-  // away in any case) and the verified tick beside the name. Not one of them
-  // has a field or can be derived, and a published page that prints a number
-  // the artist never typed is making a claim — the gallery's rule about a tile
-  // promising a TikTok that does not exist, read one step on. Every line that
-  // does have a field takes it: the heading, the description, the running
-  // time, the artist's name and both photographs.
+  // The list is the artist's (`c.videos`, VideosField; notes/video.md,
+  // "YouTube links"), on every template since 2026-10-28. In the published tab
+  // and Preview (`s.live`) the stage and every row that plays carry the
+  // handler, and the cursor with it; on the canvas it is a picture, by the
+  // gallery's YouTube rule. The frame's transport bar, corner discs, artist row
+  // and the rows' running time, source and date are not drawn: none of them is
+  // anything a link or oEmbed can supply.
   //
   // Desktop numbers are the 1440 frame × 0.82 (§5.5) through `u()`. The frame's
   // 56 inset is dropped for the page root's own padding, so the pair is the
   // content width (1052) and not the frame's 1328 × 0.82. The 37px goes out of
-  // the *player*, which is an aspect-ratio box and simply gets shorter: the
-  // panel's row is a thumbnail beside two lines of nowrap type and is the one
-  // of the two that cannot give anything back.
+  // the *stage*, which is an aspect-ratio box and simply gets shorter: the
+  // panel's row is a thumbnail beside its title and is the one of the two that
+  // cannot give anything back.
   //
   // The 768 (984:35259) and 390 (984:35737) masters change the composition
   // rather than narrowing it: the panel leaves the stage's side for a
   // full-width block under it, and its list becomes two columns — a thumbnail
-  // beside its lines at 768 and above them at 390. Everything else is the
+  // beside its title at 768 and above it at 390. Everything else is the
   // desktop component at its own unscaled numbers, so `u()` is the identity
-  // there; only the type ramps, and the transport bar shrinks its discs at 390.
-  // See `z` below. Both masters' player is a *flattened raster* in Figma, so
-  // the bar's own geometry was measured off the two renders rather than read.
+  // there; only the type ramps. See `z` below.
   if (s.v1) {
     const desk = !s.narrow
     const tab = isTablet(s)
     const nar = s.narrow
     // The narrow-master scale, the media player's rule: both frames draw the
     // desktop component's box dimensions verbatim, so nothing is ramped below
-    // 1180 except the type and the transport's discs.
+    // 1180 except the type and the play disc.
     const z = desk ? 0.82 : 1
     const u = (v) => `${Math.round(v * z * 10) / 10}px`
     // The type, measured off all three renders rather than read off the emitted
@@ -10063,104 +10050,62 @@ function Video({ s }) {
     // (`lime`, below): its ramp is already the frame × 0.82, so the three masters'
     // text boxes — label 24 → 17 → 13, list 24 → 19 → 18, body-md 14 → 13 → 13,
     // body-sm 13 → 13 → 12 — are `s.labelMd` / `s.list` / `s.bodyMd` / `s.bodySm`
-    // at every width. Its boxes still go through `u()`.
+    // at every width. Its boxes still go through `u()`. Its panel draws no
+    // outline and is rounded 13; its narrow thumbnails are 154.
     //
     // **Grunge (964:64626 · 986:13761 · 986:13780, mode Static Youth) is the
-    // same tree again, dressed in place** (`gr`; plans/video.md, session 4). All
-    // three masters are in Static Youth: no mode leaks into the 390. Its ramp
-    // is Lime's rule too (label 20 → 14 → 13, list 24 → 19 → 18, body-md 14 →
-    // 13 → 13, body-sm 12 throughout, which `THEME_RAMP.Grunge` lands on), so
-    // the `lime` arms hold wherever the two agree and `gr` names where they do
-    // not. The gate is the pair `(s.lime || s.grunge)`, not `s.limeTree`:
-    // Editorial and Pop stand on the flat arms until their own sessions.
-    //   · The player is radius **15** at all three widths (Lime's is 50).
+    // same tree again, dressed in place** (`gr`; plans/video.md, session 4),
+    // on Lime's ramp:
+    //   · The stage is radius **15** at all three widths (Lime's is 50).
     //   · The panel is held by a **1px ring in `s.ac`** (`#DF262C`, the variable
-    //     the row titles and the progress fill bind too, not `stroke/2`'s pure
-    //     red) and rounded 8, where Lime's has no outline and 13. The frame
-    //     states its 14 / 30 / 10 inset from the box's outer edge, so the ring
-    //     is taken out of it.
-    //   · Not every transport disc is a circle: skip back and forward are, the
-    //     pause and the volume, maximize and ⋮ discs are rounded squares at 8
-    //     (6.2 on the 21.7 disc of the 390). The thumbnail's play disc is one
-    //     too (R8 on 24; R5.4 on the narrow masters' 21.1), and the narrow
-    //     thumbnails' badge and disc are their own smaller sizes, the badge
-    //     8.55 on a 10 inset.
+    //     the row titles bind too, not `stroke/2`'s pure red) and rounded 8,
+    //     where Lime's has no outline and 13. The frame states its 14 / 30 / 10
+    //     inset from the box's outer edge, so the ring is taken out of it.
+    //   · The frame's discs are rounded squares, so its play discs are: the
+    //     stage's R8 on 28 scaled to its size, the thumbnail's R8 on 24 (R5.4
+    //     on the narrow masters' 21.1, on a 10 inset).
     //   · Narrow thumbnails are 150 × 86 (Lime's masters state 154).
     //   · Row titles are Anton at the faced size, uppercase: Stones Crush is
     //     all capitals, whatever case the frame's text node states.
-    //   · The frame's progress fill is 200 / 215 at 1440 and the whole track
-    //     at 768 and 390, which contradicts its own 02:05 / 03:57; `s.ac` at
-    //     `videoPct`, as everywhere. The artist row's `#141414` fill is hidden
-    //     in all three masters and is not drawn.
     //
     // **Editorial (964:64607 · 986:15666 · 986:15685, mode Sienna Vale, Scheme
-    // 1 resolved at all three: no mode leak, no nested node on another scheme,
-    // so no `SCHEMES_OF` row) is the same tree a third time** (`ed`;
-    // plans/video.md, session 6). The gate is `s.lime || s.grunge || s.editorial`,
-    // never `s.limeTree`, which would turn Lime's dress on for Pop. It takes
-    // Lime's bound tokens (`box/1` `#FFF9F2`, `text/2` `#141414`, the opaque
-    // `stroke/1` hairline, `box/2` `#EDE6DC` under the list's small circles),
-    // Grunge's sizes (the 21.7 narrow discs on an 8 padding, the narrow
-    // thumbnail's own badge and 7.46 triangle, 150 thumbnails, the faced
-    // uppercase row titles: `gd`) and is its own in six places:
-    //   · Nothing is rounded: the player and the panel are `radius/sharp`
-    //     (0), and so is the transport bar, a paper rectangle on the photograph.
-    //   · The panel's ring is **dashed 10, 10** in `text/1` (`s.ac`) and the
-    //     artist row's top rule dashed 10, 10 in `stroke/2` (`s.stroke2`, the
-    //     same terracotta), both `DashRule`s at the node's pattern × 0.82 on
-    //     desktop. The frame's 14 / 30 / 10 inset and 15 over the row are from
-    //     the outer edge, stroke inside, so neither takes a border out of it.
-    //   · The pause, skip and top-corner discs are circles; the volume,
-    //     maximize and ⋮ discs are `radius/control` 6 (4.65 on the 390's 21.7).
+    // 1 resolved at all three: no `SCHEMES_OF` row) is the same tree a third
+    // time** (`ed`; plans/video.md, session 6). It takes Lime's bound tokens
+    // and Grunge's sizes (the narrow thumbnail's 21.1 disc, 150 thumbnails, the
+    // faced uppercase row titles: `gd`) and is its own in three places:
+    //   · Nothing is rounded: the stage, the panel and the thumbnails are
+    //     `radius/sharp` (0).
+    //   · The panel's ring is **dashed 10, 10** in `text/1` (`s.ac`), a
+    //     `DashRule` at the node's pattern × 0.82 on desktop. The frame's
+    //     14 / 30 / 10 inset is from the outer edge, stroke inside, so it takes
+    //     no border out of it.
     //   · The thumbnail's play disc is R6 (R4.1 on the narrow masters' 21.1,
     //     10 from the right and 9.1 from the foot of our 85.7 box).
-    //   · The poster reads `s.imagePos`, Grunge's call and for its reason: the
-    //     hash `9d20fe0d` is the bio's arch (`editorialStage`, 820 × 1025), the
-    //     1440 master's `CROP` is y .065 to .532 (the face in), and the 768 and
-    //     390 masters are a centred `FILL` (y .267 to .733), which drops the
-    //     head and shows a chest and a microphone. The file's own `'50% 0%'`
-    //     keeps the face at every width and is 6.5% of the height off the 1440
-    //     crop; an upload has none and stays centred.
-    //   · The frame's `03:57` / `02:05`, the `Follow` pill and the action discs
-    //     are as Lime's; the fill stays `s.ac` at `videoPct` (the frame's is
-    //     200 / 215 · 215 / 215 · 65.9 / 65.9 against its own 02:05).
     //
     // **Pop (964:64569 · 986:17571 · 986:17590, mode Pop, Scheme 1 resolved at
-    // every node of all three: no mode leak, no nested scheme, so no
-    // `SCHEMES_OF` row) is the same tree a fourth time** (`pop`; plans/video.md,
-    // session 8). This page is bound, so every seat is read off the node. It
-    // takes Lime's tokens (`box/1` `#F5F5F5` for the panel, the discs, the
-    // badges and the track, `text/2` violet for the type, the pink `stroke/1`
-    // hairline round every disc and over the artist row, `box/2` under the
-    // list's small circles, `sem/bg` white for the bar and the thumbnails'
-    // ground), Grunge's sizes and radii (`gd`; the panel and the volume,
-    // maximize and ⋮ discs are `radius/control` 8, the thumbnail's play disc
-    // R8 on 24 and R5.4 on the narrow 21.1) and is its own in two places:
-    //   · The three action discs are three fills — violet, pink, lime — each
-    //     with the glyph ink that reads on it (`actPop`, above).
-    //   · The poster reads `s.imagePos`, as Grunge's and Editorial's: `51d06990`
-    //     is the bio's arch (`popStage`), the 1440 master's `CROP` is y .086 to
-    //     .524 and the 768 and 390 masters a centred `FILL` that drops the head;
-    //     the file's own `'50% 0%'` keeps it at every width.
-    // The pause is a circle (`radius/card` 24 on 28). The player is radius 50 at
-    // all three widths, as Lime's; the panel has no ring.
+    // every node: no `SCHEMES_OF` row) is the same tree a fourth time** (`pop`;
+    // plans/video.md, session 8). It takes Lime's tokens (`box/1` `#F5F5F5`
+    // for the panel and the thumbnail's disc, `text/2` violet for the type),
+    // Grunge's sizes and radii (`gd`; the panel is `radius/control` 8 with no
+    // ring, the thumbnail's play disc R8 on 24 and R5.4 on the narrow 21.1).
+    //
+    // Grunge's, Editorial's and Pop's poster reads `s.imagePos`: each 1440
+    // master crops the face in where the 768 and 390 masters fill centred and
+    // drop the head, and the seed's own focus stands for all three widths. An
+    // upload has none and stays centred.
     const ed = s.editorial
     const gr = s.grunge
     const pop = s.pop
     const gd = gr || ed || pop
-    // All four designed templates are fitted at layout 2 now, so the gate is the
-    // family flag: `s.limeTree` is Lime, Grunge, Editorial and Pop, which is the
-    // old `s.lime || gr || ed` plus Pop. (v3 below took the same flag in session 9.)
+    // All four designed templates are fitted at layout 2, so the gate is the
+    // family flag: `s.limeTree` is Lime, Grunge, Editorial and Pop.
     const lime = s.limeTree
-    // Retro plays YouTube here (2026-10-28): the stage is the current video's
-    // picture under one play disc, or its player once a visitor has clicked; the
-    // drawn transport, the artist row and the rows' length, source and date are
-    // gone. Lime, Grunge, Editorial and Pop keep the Figma picture below.
-    const yt = s.retro
+    // Which listed video the stage holds (`cur` null: the first one that
+    // plays), clamped so a shorter list needs no effect.
     const first = Math.max(0, s.videos.findIndex((v) => v.embed))
     const at = Math.min(cur ?? first, Math.max(0, s.videos.length - 1))
     const now = s.videos[at]
-    const playing = yt && s.live && play && !!now?.embed
+    const playing = s.live && play && !!now?.embed
     const labelSz = lime ? s.labelMd : tab ? '14px' : s.mob ? '13px' : u(20)
     const rowSz = lime ? s.list : tab ? '12px' : s.mob ? '13px' : u(16)
     const bodySz = lime ? s.bodyMd : nar ? '13px' : u(14)
@@ -10169,86 +10114,31 @@ function Video({ s }) {
     const mustard = s.chips[2 % n].bg
     const rust = s.ac
     // Figma box/1 — the bio's cream. Retro's own `paper` IS the beige page, so
-    // the panel, the badges and the progress track need the literal; the flat
-    // four have a real second paper and take it, with `paperFg` for the ink,
-    // because `s.tx` is chosen against the page and need not read on it. Lime's
-    // box/1 is the dark olive `#2E3928` (Scheme 1, which the section inherits)
-    // with the page's own pale as ink, so there the two are `s.box1` and `s.tx`.
+    // the panel and the thumbnails' discs need the literal; the flat four have a
+    // real second paper and take it, with `paperFg` for the ink, because `s.tx`
+    // is chosen against the page and need not read on it. Lime's box/1 is the
+    // dark olive `#2E3928` (Scheme 1, which the section inherits) with the
+    // page's own pale as ink, so there the two are `s.box1` and `s.tx`.
     const cream = s.retro ? '#FAECD5' : lime ? s.box1 : s.paper
     const creamInk = s.retro ? '#111111' : lime ? s.tx : s.paperFg
-    // Figma box/2, the ground under a photograph that has not loaded — one
-    // step down from the cream, and never seen with the seeds in place.
-    const shade = s.retro ? '#E1CAA5' : lime ? s.box1 : s.soft
-    // Lime's discs are held by `sem/stroke/1`, a hairline that does not ramp.
+    // The four's discs are held by `sem/stroke/1`, a hairline that does not ramp.
     const hair = `1px solid ${s.stroke1}`
 
     const metaType = (extra) => ({
       fontFamily: s.body, fontSize: smSz, lineHeight: 1.4,
       overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', ...extra,
     })
-    // The frame's two disc sizes. The transport's are rust filled and held by a
-    // mustard hairline in mustard glyphs; the action row's below the rule
-    // invert that and throw a hard block with it. Retro's pairing is the
-    // frame's own two hues; the flat four have no such pairing and take the
-    // two the palette guarantees — the accent on its own foreground, and the
-    // Book pill's lightest-hue-and-accent-type pair (§10.2) — because
-    // `chips[2]` is an arbitrary tag colour that can land on the page ground.
-    // The transport disc is the one box either master shrinks: measured 28 at
-    // 768 as at 1440, and 22 at 390, where the bar has to seat six of them, two
-    // clocks and a progress track inside the player's 330. Its glyph goes with
-    // it, and so do the two gaps below.
-    const cd = s.mob ? (gd ? 21.7 : 22) : 28
-    const cg = s.mob ? 9 : 11
-    // Grunge's pause, volume, maximize and ⋮ discs are rounded squares: R8 on
-    // the 28, and the 390's 21.7 takes it down with the disc (6.2).
-    // Editorial's three are R6 (`radius/control`) and its pause a circle.
-    // Pop's three are R8 as Grunge's (`radius/control`), its pause `radius/card`
-    // 24 on 28, a circle.
-    const sq = gr || pop ? { borderRadius: u(8 * cd / 28) } : ed ? { borderRadius: u(6 * cd / 28) } : null
-    const sqPause = gr ? sq : null
-    //
-    // Lime's are all one pairing: `box/1` discs in the page's pale, held by the
-    // hairline (the frame rounds the volume, maximize and ⋮ discs at 13 and the
-    // rest at 17 or 26 — on a 28 box that is a circle all the same).
-    const ctl = {
-      width: u(cd), height: u(cd), flex: 'none', borderRadius: '999px',
-      background: s.retro ? rust : lime ? s.box1 : s.ac, color: s.retro ? mustard : lime ? s.tx : s.acFg,
-      border: lime ? hair : `1px solid ${s.retro ? mustard : s.acFg}`,
-      ...row('0', { justifyContent: 'center' }),
-    }
-    const act = {
-      width: u(36), height: u(36), flex: 'none', borderRadius: '999px',
-      background: s.retro ? mustard : lime ? s.box1 : s.pillBg, color: s.retro ? rust : lime ? s.tx : s.pillFg,
-      boxShadow: hard(s, rust, 4.1, 4.1),
-      ...(lime ? { border: hair } : null),
-      ...row('0', { justifyContent: 'center' }),
-    }
-    // The transport's three glyphs, which Lime draws as vectors: the skip is
-    // `LimeSkip`'s double triangle into a bar at the frame's 13.022 (the same
-    // 1.91 : 1), the pause two 2.686 bars 3 apart. They go with the disc at 390.
-    const gz = (s.mob ? cd / 28 : 1) * z
-    const limePause = (
-      <svg viewBox="0 0 8.37221 11.1893" width={8.37221 * gz} height={11.1893 * gz} aria-hidden
-           style={{ display: 'block', flex: 'none' }}>
-        <g fill={s.tx}>
-          <rect x="0" y="0" width="2.68611" height="11.1893" />
-          <rect x="5.6861" y="0" width="2.68611" height="11.1893" />
-        </g>
-      </svg>
-    )
-    // ⋮ and ⋯ stay text: lucide has both, but they are the two glyphs in this
-    // frame that are typography rather than iconography, and the media
-    // player's bar sets its own the same way.
-    const dots = (g) => <span style={{ fontFamily: s.body, fontSize: u(14), lineHeight: 1 }}>{g}</span>
 
-    // Retro's stage. The current row's YouTube picture (no `data-photo`: it is
-    // the link's, not an upload's), or the Poster while that row has none; live,
-    // a click on a row that plays mounts the gallery's player in its place.
+    // The stage. The current row's YouTube picture (no `data-photo`: it is the
+    // link's, not an upload's), or the Poster while that row has none; live, a
+    // click on a row that plays mounts the gallery's player in its place.
     // A page with no web origin cannot embed (`s.videoEmbeds`: YouTube answers
     // Error 153), so there the stage and every row that names a video are links
     // to it on YouTube, in a new tab (`extLink`), and nothing mounts a player.
-    const out = (v) => (yt && s.live && !s.videoEmbeds && v?.href ? extLink(s, v.href) : null)
-    const startable = yt && s.live && s.videoEmbeds && !!now?.embed && !playing
+    // Its ground is a player's black on every template: it shows only until the
+    // iframe paints, or round a missing picture.
+    const out = (v) => (s.live && !s.videoEmbeds && v?.href ? extLink(s, v.href) : null)
+    const startable = s.live && s.videoEmbeds && !!now?.embed && !playing
     const stageOut = out(now)
     const StageTag = stageOut ? 'a' : 'div'
     // YouTube's hqdefault is 4:3 with the 16:9 picture letterboxed in it. `cover`
@@ -10256,7 +10146,11 @@ function Video({ s }) {
     // rows (140:80) are a little narrower, so up to 4% of bar is left, and the
     // picture is scaled past it inside its clipped box.
     const ytCrop = { transform: 'scale(1.04)' }
-    const ytPlayer = yt && (
+    // The one play disc. Retro's is the frame's rust on mustard, thrown; the
+    // four's is the accent on its own ink, held by their hairline, and
+    // Grunge's is a rounded square, as every disc in its frame is.
+    const pd = s.mob ? 56 : 72
+    const player = (
       <StageTag
         {...(stageOut ? { ...stageOut, 'aria-label': `Watch ${now.title || 'the video'} on YouTube` } : null)}
         {...(startable ? {
@@ -10266,7 +10160,7 @@ function Video({ s }) {
         } : null)}
         style={{
           position: 'relative', width: '100%', aspectRatio: '819 / 478',
-          background: '#111111', borderRadius: u(40), overflow: 'hidden',
+          background: '#111111', borderRadius: u(gr ? 15 : ed ? 0 : lime ? 50 : 40), overflow: 'hidden',
           ...(startable || stageOut ? { cursor: 'pointer' } : null),
           ...(stageOut ? { display: 'block', color: 'inherit', textDecoration: 'none' } : null),
         }}>
@@ -10280,12 +10174,15 @@ function Video({ s }) {
         ) : (
           <>
             <span style={{ position: 'absolute', inset: 0 }}>
-              {now?.thumb ? <Photo s={s} initialsSize={44} src={now.thumb} style={ytCrop} /> : <Photo s={s} initialsSize={44} />}
+              {now?.thumb
+                ? <Photo s={s} initialsSize={44} src={now.thumb} style={ytCrop} />
+                : <Photo s={s} initialsSize={44} style={gd ? { objectPosition: s.imagePos } : undefined} />}
             </span>
             <span style={{
               position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)',
-              width: u(s.mob ? 56 : 72), height: u(s.mob ? 56 : 72), borderRadius: '999px',
-              background: rust, color: mustard, border: `1px solid ${mustard}`,
+              width: u(pd), height: u(pd), borderRadius: gr ? u(8 * pd / 28) : '999px',
+              background: rust, color: s.retro ? mustard : s.acFg,
+              border: lime ? hair : `1px solid ${mustard}`,
               boxShadow: hard(s, '#111111', 4.1, 4.1),
               ...row('0', { justifyContent: 'center' }),
             }}><Play size={s.mob ? 20 : 26} fill="currentColor" strokeWidth={0} style={{ marginLeft: '3px' }} /></span>
@@ -10293,157 +10190,23 @@ function Video({ s }) {
         )}
       </StageTag>
     )
-    const player = ytPlayer || (
-      <div style={{
-        position: 'relative', width: '100%', aspectRatio: '819 / 478',
-        background: cream, borderRadius: u(gr ? 15 : ed ? 0 : lime ? 50 : 40), overflow: 'hidden',
-        padding: u(20),
-        ...col('0', { alignItems: 'center', justifyContent: 'space-between' }),
-      }}>
-        {/* Grunge's 1440 frame crops the drummer's head in (a CROP at y .087 to
-            .554) where its 768 and 390 masters fill centred, which cuts it off;
-            the seed's own focus (`50% 25%`, the file's one string) stands for
-            all three, and an upload has none. */}
-        <span style={{ position: 'absolute', inset: 0 }}>
-          <Photo s={s} initialsSize={44} style={gd ? { objectPosition: s.imagePos } : undefined} />
-        </span>
-        {/* Two hairline discs in the top corner, cream on the photograph. */}
-        <span style={row(u(8), { alignSelf: 'flex-end', position: 'relative' })}>
-          {[<Settings key="s" size={13} />, dots('⋯')].map((g, i) => (
-            <span key={i} style={{
-              width: u(34), height: u(34), flex: 'none', borderRadius: '999px',
-              background: cream, color: creamInk, border: lime ? hair : `1px solid ${creamInk}`,
-              ...row('0', { justifyContent: 'center' }),
-            }}>{g}</span>
-          ))}
-        </span>
-        {/* The bar is the page's own beige on the photograph, not a cream —
-            the one place in the frame where the section ground reappears
-            inside a card. `maxWidth` because the 390 canvas cannot seat it. */}
-        <span style={{
-          position: 'relative', maxWidth: '100%',
-          background: s.bg, color: s.tx, borderRadius: ed ? 0 : '999px',
-          padding: `${u(s.mob ? (gd ? 8 : 7) : 8)} ${u(12)}`, ...row(u(s.mob ? 6 : 10)),
-        }}>
-          <span style={row(u(s.mob ? 4 : 5), { flex: 'none' })}>
-            <span style={ctl}>{lime
-              ? <LimeSkip width={13.0217 * gz} color={s.tx} back />
-              : <SkipBack size={cg} fill="currentColor" />}</span>
-            {/* A player caught mid-song, which is the picture the frame
-                draws — and the picture is all this section is. */}
-            <span style={{ ...ctl, ...sqPause }}>{lime ? limePause : <Pause size={cg} fill="currentColor" />}</span>
-            <span style={ctl}>{lime
-              ? <LimeSkip width={13.0215 * gz} color={s.tx} />
-              : <SkipForward size={cg} fill="currentColor" />}</span>
-          </span>
-          {s.videoAt && <span style={metaType({ flex: 'none' })}>{s.videoAt}</span>}
-          <span style={{
-            // The frame's 215 wherever there is room for it; on the 390 canvas
-            // the track is what gives way, so the clocks and the glyphs do not.
-            width: u(215), maxWidth: '100%', flex: s.mob ? 1 : 'none', minWidth: u(40),
-            height: u(4), borderRadius: u(2), overflow: 'hidden',
-            // Retro's box/1 against the beige bar. A flat template's `paper`
-            // is a near-white on a near-white bar and the unfilled half would
-            // vanish, so there the track is a rule instead.
-            background: s.retro || lime ? cream : s.line2,
-          }}>
-            <span style={{
-              display: 'block', width: `${s.videoPct}%`, height: '100%',
-              background: rust, borderRadius: u(2),
-            }} />
-          </span>
-          {s.videoDur && <span style={metaType({ flex: 'none' })}>{s.videoDur}</span>}
-          <span style={{ ...ctl, ...sq }}><Volume2 size={cg} /></span>
-          {/* The 390 master keeps all six discs and pays for them out of their
-              own size and spacing rather than by dropping the last two — which
-              is what the fallback this replaces did, on the media player's
-              rule at the same width. Its own bar fills the player's content
-              width exactly; ours is 24px narrower, and the track is what
-              absorbs that, down to its stated floor. */}
-          <span style={{ ...ctl, ...sq }}><Maximize size={cg} /></span>
-          <span style={{ ...ctl, ...sq }}>{dots('⋮')}</span>
-        </span>
-      </div>
-    )
-
-    // The two halves of the artist row, named because the 390 master puts them
-    // on separate lines and the other two do not.
-    const artist = (
-      <>
-        <span style={{
-          width: u(40), height: u(40), flex: 'none', borderRadius: '999px',
-          overflow: 'hidden', background: shade,
-        }}><Photo s={s} avatar initialsSize={14} /></span>
-        <span style={{
-          fontFamily: s.body, fontSize: bodySz, lineHeight: 1.5,
-          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-        }}>{s.brand}</span>
-      </>
-    )
-    // Pop's three action discs are three fills, each held by the `stroke/1`
-    // hairline: 🔖 `text/2` violet, 🔗 `text/1` pink, 🔔 `tag/1/bg` lime. The
-    // frame binds every glyph `text/2`, which on the violet disc would be the
-    // disc's own colour — it only reads there because Figma draws the emoji in
-    // colour — so the glyph takes the ink that reads on its disc: the page's
-    // white on violet and on pink (3.4 : 1, an icon), the tag's own ink on lime.
-    // The Follow pill below is the bare `box/1` and takes none of this.
-    const actPop = pop ? [
-      { background: s.tx, color: s.bg },
-      { background: s.ac, color: s.bg },
-      { background: s.chips[0].bg, color: s.chips[0].fg },
-    ] : []
-    const actions = (
-      <>
-        <span style={{ ...act, ...actPop[0] }}><Bookmark size={13} /></span>
-        <span style={{ ...act, ...actPop[1] }}><Link2 size={13} /></span>
-        <span style={{ ...act, ...actPop[2] }}><Bell size={13} /></span>
-        {/* A label with nowhere to go, like the frame's "View All ›" and
-            layout 1's own play disc: this section is a picture, and the
-            pill is drawn rather than wired. */}
-        {s.videoFollow && <span style={{
-          ...act, width: 'auto', height: 'auto', padding: `${u(8)} ${u(16)}`,
-          // Lime's pill is the bare `box/1`; the three discs beside it are held.
-          ...(lime ? { border: 'none' } : null),
-          fontFamily: s.body, fontSize: smSz, lineHeight: 1.4, whiteSpace: 'nowrap',
-        }}>{s.videoFollow}</span>}
-      </>
-    )
 
     const stage = (
       <div style={col(u(14), { flex: 1, minWidth: 0 })}>
         {player}
-        {/* The frame's name-and-metric block. Ours is the heading in the label
-            face over the description — the field layout 1 already prints —
-            and it takes the whole column rather than the frame's clipped 158,
-            because a sentence is not a two-word metric. Retro's prints the
-            stage's video instead: its title over its `line` (the row's
-            description, else its channel), so both follow a picked row. */}
-        {(!yt || now?.title || now?.line) && <div style={col(u(4), { padding: `${u(4)} 0`, minWidth: 0 })}>
-          <span style={labelStyle(s, labelSz, { overflow: 'hidden', textOverflow: 'ellipsis' })}>{yt ? now?.title : s.title}</span>
-          {(yt ? now?.line : s.videoDesc) && <span style={metaType()}>{yt ? now.line : s.videoDesc}</span>}
-        </div>}
-        {/* The artist row. All three frames rule it off above and pad it 15/20;
-            what the 390 master changes is that the four controls drop to a line
-            of their own 25 under the name, at their own tighter 5px gap, rather
-            than sharing the row. That is transcribed rather than left to
-            `flexWrap`, which wraps wherever the artist's name happens to run
-            out and puts the spacer in an unpredictable place. */}
-        {!yt && <div style={{
-          // Editorial's rule is a dashed 10, 10 `stroke/2` drawn inside the
-          // 15 of padding, so it takes no border here (`DashRule`, below).
-          ...(ed ? { position: 'relative' } : { borderTop: `1px solid ${s.retro ? '#111111' : lime ? s.stroke1 : s.line2}` }),
-          paddingTop: u(15), paddingBottom: u(20),
-          ...(s.mob ? col('25px') : row(u(12), { flexWrap: 'wrap' })),
-        }}>
-          {ed && <DashRule dash={10 * z} colour={s.stroke2} side="top" />}
-          {s.mob ? <span style={row(u(12), { minWidth: 0 })}>{artist}</span> : artist}
-          {!s.mob && <span style={{ flex: 1, minWidth: 0 }} />}
-          {s.mob ? <span style={row('5px', { flex: 'none' })}>{actions}</span> : actions}
+        {/* The frame's name-and-metric block, printing the stage's video: its
+            title in the label face over its `line` (the row's description,
+            else its channel), so both follow a picked row. It takes the whole
+            column rather than the frame's clipped 158, because a title is not
+            a two-word metric. */}
+        {(now?.title || now?.line) && <div style={col(u(4), { padding: `${u(4)} 0`, minWidth: 0 })}>
+          <span style={labelStyle(s, labelSz, { overflow: 'hidden', textOverflow: 'ellipsis' })}>{now?.title}</span>
+          {now?.line && <span style={metaType()}>{now.line}</span>}
         </div>}
       </div>
     )
 
-    // The panel holds its frame width and the player gives the 37 back, so this
+    // The panel holds its frame width and the stage gives the 37 back, so this
     // is a fixed column on desktop and the full width below it.
     const panel = (
       <div style={{
@@ -10474,9 +10237,9 @@ function Video({ s }) {
           <span style={{ fontFamily: s.body, fontSize: bodySz, lineHeight: 1.5, whiteSpace: 'nowrap' }}>
             Top music video
           </span>
-          {/* Retro's goes to the artist's channel when live (`videoAllHref`);
-              every other template's is a label, as the frame draws it. */}
-          {s.videoAll && (yt && extLink(s, s.videoAllHref)
+          {/* The artist's channel when live (`videoAllHref`); with no address,
+              and on the canvas, the label the frame draws. */}
+          {s.videoAll && (extLink(s, s.videoAllHref)
             ? <a {...extLink(s, s.videoAllHref)} style={metaType({ flex: 'none', color: 'inherit', textDecoration: 'none' })}>{s.videoAll}</a>
             : <span style={metaType({ flex: 'none' })}>{s.videoAll}</span>)}
         </div>
@@ -10508,8 +10271,8 @@ function Video({ s }) {
           gap: '23px', alignItems: 'start',
         }}>
           {s.videos.map((v, i) => {
-            // Live, a Retro row that plays puts itself on the stage, playing.
-            const pick = yt && s.live && s.videoEmbeds && v.embed ? () => { setCur(i); setPlay(true) } : null
+            // Live, a row that plays puts itself on the stage, playing.
+            const pick = s.live && s.videoEmbeds && v.embed ? () => { setCur(i); setPlay(true) } : null
             // …or, where the page cannot embed, opens it on YouTube.
             const link = out(v)
             const RowTag = link ? 'a' : 'div'
@@ -10534,28 +10297,14 @@ function Video({ s }) {
                 // Editorial's thumbnails are square (no radius on the frame).
                 borderRadius: ed ? 0 : u(8), overflow: 'hidden',
               }}>
-                <Photo s={s} initialsSize={16} src={v.img} style={yt && v.thumb ? ytCrop : undefined} />
+                <Photo s={s} initialsSize={16} src={v.img} style={v.thumb ? ytCrop : undefined} />
                 {/* The video the stage holds, on the canvas too, so the panel
                     does not change between the two surfaces. */}
-                {yt && i === at && (
+                {i === at && (
                   <span style={{
                     position: 'absolute', inset: 0, borderRadius: 'inherit',
                     border: `${u(3)} solid ${rust}`, pointerEvents: 'none',
                   }} />
-                )}
-                {v.length && (
-                  <span style={{
-                    position: 'absolute', left: u(5), top: u(5),
-                    background: cream, color: creamInk, borderRadius: u(4),
-                    padding: `${u(2)} ${u(6)}`,
-                    fontFamily: s.body, fontSize: smSz, lineHeight: 1.4, whiteSpace: 'nowrap',
-                    // The narrow masters' badge is its own, smaller box on a 10
-                    // inset: 8.55 type in 1.42 / 4.27 padding, radius 2.8.
-                    ...(gd && !desk ? {
-                      left: '10px', top: '10px', borderRadius: '2.8px',
-                      padding: '1.4249px 4.2746px', fontSize: '8.549px',
-                    } : null),
-                  }}>{v.length}</span>
                 )}
                 <span style={{
                   position: 'absolute', right: u(4.67), bottom: u(4.67),
@@ -10593,23 +10342,11 @@ function Video({ s }) {
                   // Lime's frame binds `sem/text/1` here, which is the acid
                   // green on the olive box and reads.
                   color: s.retro ? rust : lime ? s.ac : creamInk,
-                  overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                   // A YouTube title is a sentence: two lines, then the clamp.
-                  ...(yt ? {
-                    whiteSpace: 'normal', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
-                    overflowWrap: 'anywhere',
-                  } : null),
+                  overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'normal',
+                  display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
+                  overflowWrap: 'anywhere',
                 }}>{v.title}</span>
-                {v.sub && (
-                  <span style={row(u(7.4), { minWidth: 0 })}>
-                    <span style={{
-                      width: u(19.8), height: u(19.8), flex: 'none', borderRadius: '999px',
-                      overflow: 'hidden', background: lime ? s.box2 : shade,
-                    }}><Photo s={s} avatar initialsSize={8} /></span>
-                    <span style={metaType()}>{v.sub}</span>
-                  </span>
-                )}
-                {v.when && <span style={metaType()}>{v.when}</span>}
               </span>
             </RowTag>
             )
@@ -10622,20 +10359,16 @@ function Video({ s }) {
     // the two columns exactly as tall as each other because both are fixed, and
     // ours are not — the panel's height is whatever its list makes it. Stretched
     // instead, the taller column would have to hand its slack to something, and
-    // there is nothing in either that should take 250px of it at twelve videos.
-    // So the two simply end where they end; at the seeded six the panel runs
-    // about 20px past the stage's rule.
+    // there is nothing in either that should take 250px of it at six videos.
+    // So the two simply end where they end.
     //
     // Below 1180 the two are one column, which is what both masters draw. The
-    // 390 one sets the gap at nothing at all: the artist row's own 20px of
-    // bottom padding is the whole of the space between its Follow pill and the
-    // panel's outline, and that is the frame's picture rather than an oversight
-    // — it is the same 20 the 768 master stands 32 further off.
+    // 390 master's 20 between them was the artist row's bottom padding; with
+    // the row gone it is the column's own gap.
     return (
       <div style={desk
         ? row(u(40), { alignItems: 'flex-start' })
-        // Retro has no artist row, so its 20 is the column's own gap at 390.
-        : col(tab ? '32px' : yt ? '20px' : '0', { alignItems: 'stretch' })}>
+        : col(tab ? '32px' : '20px', { alignItems: 'stretch' })}>
         {stage}
         {panel}
       </div>

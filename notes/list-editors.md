@@ -197,10 +197,11 @@ layout 3's cards do not draw as `off`, so the drawn copy and the drawn slots agr
 
 `stats` and `steps`, which Phase 0 wrote with no page to prove them, are proved on Retro layout 4: the twelve stat cells and the six step cells hit at 1440 and 768 and Escape restores `c` (0 NOT-RESTORED), so `statsVal` / `stepsVal` resolve what `sectionVm` does. The ledger rule's second `INLINE_OFF` member of the *derived value* class beside `tracks.sub`: `pricing.unit` at layout 4 (the page drops the slash).
 
-## VideosField (Retro's layout-2 video list, 2026-10-28)
+## VideosField (the video's layout-2 list, 2026-10-28)
 
-The eleventh repeater: `c.videos` is `[{ url, title, desc }]`, maintained by `VideosField`, Retro's layout 2 alone
-(`notes/video.md`, *Retro · YouTube links*). Its seed `VIDEO_SEED` is the one `repeaterRows` and `sectionVm`
+The eleventh repeater: `c.videos` is `[{ url, title, desc }]`, maintained by `VideosField`, layout 2 on every
+template (`notes/video.md`, *YouTube links*: Retro's first, the other four the same day; the field is
+template-agnostic, so the rollout changed nothing in it). Its seed `VIDEO_SEED` is the one `repeaterRows` and `sectionVm`
 both read (`videosVal` is the steps' one-liner). Three things it does that no other repeater does:
 
 - **A seeded row carries `art`**, the index of the seed photograph it shows until its link gives it a YouTube
