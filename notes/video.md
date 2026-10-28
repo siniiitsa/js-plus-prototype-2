@@ -38,17 +38,23 @@ a section that somehow carries `arch` 0 or 2 draws layout 2 or 4 rather than not
 the bookmark / link / bell controls and `Follow` are drawn and dead, as in the frames. Nothing in
 the published tab, the preview or the thumbnails differs from the canvas.
 
+**Except Retro's layout 2** (2026-10-28, below: *Retro · YouTube links*), whose list is the artist's
+YouTube links and which plays them where `s.live` is set. Lime, Grunge, Editorial and Pop at layout 2,
+and every template at layout 4, are still the picture this section describes.
+
 ## Fields (`FIELDS.video`)
 
 | Key | Layouts | What it prints |
 |---|---|---|
-| `image` | 2, 4 | The poster, 16:9 |
-| `avatar` | 2 | The artist's circle beside the name and beside each listed video, 1:1 |
-| `heading` | 2, 4 | L2: the label over the description. L4: the band's display head. Seeds `TITLES.video` (*Live at Roomtone*) and `HEADING_4.video` (*See me in action*) |
-| `description` | 2 | One ellipsized line under the heading |
-| `duration` | 2, 4 | The clock, as `04:18`; the bar's fill is drawn from it (`vm.videoAt`, `VIDEO_MARK`, `clockAt`) |
+| `image` | 2, 4 | The poster, 16:9. Retro L2: the stage while the current row has no YouTube thumbnail |
+| `avatar` | 2 (not Retro) | The artist's circle beside the name and beside each listed video, 1:1 |
+| `videos` | 2 (Retro only) | The list, `{ url, title, desc }` per row (plus `by` / `byFor`), max 6 (`VideosField`; *Retro · YouTube links*) |
+| `heading` | 2 (not Retro), 4 | L2: the label over the description. L4: the band's display head. Seeds `TITLES.video` (*Live at Roomtone*) and `HEADING_4.video` (*See me in action*) |
+| `description` | 2 (not Retro) | One ellipsized line under the heading |
+| `duration` | 2 (not Retro), 4 | The clock, as `04:18`; the bar's fill is drawn from it (`vm.videoAt`, `VIDEO_MARK`, `clockAt`) |
 | `allCta` | 2 | *View All ›* over the list |
-| `followCta` | 2 | *Follow* at the end of the artist row |
+| `channel` | 2 (Retro only) | Where Retro's *View All* goes when live; filled from the videos' oEmbed `author_url` while absent |
+| `followCta` | 2 (not Retro) | *Follow* at the end of the artist row |
 
 `allCta` and `followCta` are JP-071's shape: the frame's own bytes, uncased, dropped when emptied.
 **`duration` is not in call 4's field list** — it was in the old `FIELDS`, so it is kept, and anything
@@ -79,7 +85,9 @@ the seed's and carry no `data-photo` (`photo-probe --cat video`: PASS, `--blank`
 | `description` | 69 | One ellipsized line: prose clips at 64 at 390, the seed is 69 and fits, so the cap is the seed's length (`--check` reports it as *floor*) |
 | `duration` | 8 | Measured 22 / 39; a time, held to its shape |
 | `allCta`, `followCta` | 16 | Measured 39 / 37 at 390, a pill drawn ×4 its frame width there — judged, as the other pills are |
-| `IDENTITY_CHARS.video.title` | 49 (L2), 54 (L4) | The artist's name in layout 2's artist row and layout 4's top bar; the clamp is an ellipsis |
+| `IDENTITY_CHARS.video.title` | 49 (L2), 54 (L4) | The artist's name in layout 2's artist row and layout 4's top bar; the clamp is an ellipsis. Retro's L2 seat is `null` since 2026-10-28: its artist row is gone |
+| `videos.desc` | 63 (Retro L2) | One ellipsized line under the stage's title; the 390 box binds (157 / 122 / 63) |
+| `videos.title` | 50 (Retro L2) | Two lines of the row title, then the clamp: 55 at 1440 takes a third line, 50 at 768 and 390 (`limits.mjs` gives `videos.title` one extra line, `EXTRA_LINES`) |
 
 Lime's layout 2 measured 82 for `heading` (Retro 64: the label face is narrower, and 390's box binds),
 64 for `description` (prose; the 69-character seed fits at 390, so the cap stays the seed's length and
@@ -750,3 +758,88 @@ breaks as the rule *moving a section out of the run undoes it* says, and `addSec
   `964:72773` · `964:76700` · `971:15249`); the arm is now every template's. Harness 946.9 / 635.4 / 374.6 against 947.1 / 635 / 375.
   Retro reads neither `above` nor `below`, so no seam changes.
 - Re-run on Retro: see the plan's status row 11.
+
+## Retro · YouTube links (2026-10-28)
+
+User calls, put with `AskUserQuestion`, each the recommended option: the **Dashboard player** (layout 2,
+what Add section opens on a layout-1 page and setup card 2 places) takes **the artist's YouTube links**;
+**titles auto-fill** from YouTube and stay editable; **they play only where `s.live` is set** (the published
+tab and Preview), the canvas staying a picture by the gallery's YouTube rule; and **the frame stays, the fake
+controls go**. Two calls the plan stated and the user approved with it: **Retro only** — `v1` is one JSX tree
+for all five templates, so every change sits behind `yt = s.retro` and the other four render byte-identical
+until a later rollout pass — and **more goes than the transport**: `View All ›` and the rows' length, source
+and date, none of which a URL or oEmbed can supply (oEmbed has no duration or date). `View All ›` came back
+the same day (user call, 2026-10-28: "view all button is missing. Implement it and make it work"), below.
+
+- **Data.** `c.videos` is `[{ url, title }]`, seeded `VIDEO_SEED`: `VIDEOS`' titles with no link, each row
+  carrying `art`, its seed photograph's index, which every rewrite spreads through (a seeded slot's `after`,
+  `notes/list-editors.md`). `VIDEO_KEYS` is `url` and `title` alone, so an emptied seeded row drops, art and
+  all — unlike `SLOT_KEYS`, on purpose: a row with neither has nothing to play or print.
+- **`sectionVm`** reads `c.videos` under Retro alone: `vm.videos[]` is `{ title, embed, thumb, img }`,
+  `embed` `youtubeEmbed(extUrl(url))` (`''` for a link naming no video, which stays a picture row), `thumb`
+  `youtubeThumb()` (`i.ytimg.com/vi/<id>/hqdefault.jpg`; a playlist alone has none), `img` the thumb, else
+  the row's seed art, else `null` (never undefined, or `Photo` falls back to the poster). The other four
+  read `VIDEOS` as before. `youtubeEmbed` is now built on `youtubeParts()`, which `youtubeThumb` and
+  `youtubeWatch` share; the gallery's addresses are unchanged (checked against `main` on twelve forms).
+- **The stage** is the current row's thumbnail (no `data-photo`: it is the link's, not an upload) or the
+  Poster while that row has none, under one rust-and-mustard play disc. Live, a click on it (or Enter /
+  Space) mounts the gallery's `<iframe>` — same `allow`, `referrerPolicy`, `key={embed}` — so `autoplay=1`
+  is the visitor's own click. A live row that plays is a `role="button"` that puts itself on the stage,
+  playing. `cur` / `play` are `useState` at the head of `Video` (the file still has no effect); `cur` starts
+  `null`, meaning the first row with an `embed`, and is read through `min(cur, n − 1)`, so a shorter list
+  needs no effect. The current row's thumbnail carries a 3px rust ring on both surfaces.
+- **hqdefault is 4:3 with the 16:9 picture letterboxed.** `cover` crops the bars only in a box at least
+  16:9, and the stage (819:478) and rows (140:80) are narrower, so a YouTube picture is drawn at
+  `scale(1.04)` inside its clipped box (`ytCrop`).
+- **Gone under Retro:** the transport bar and corner discs, the artist row with its avatar, the three
+  action discs and Follow, and the rows' length badge, source line and date. Their fields
+  (`avatar`, `duration` at design 1, `followCta`) take `{ Retro: [], '*': [1] }`-shaped `in`, so
+  the copy stays in `c`. The row title wraps to two lines and clamps (`-webkit-line-clamp`). At 390 the
+  stage and the panel stand 20 apart (the artist row's padding was that gap).
+- **The heading and line under the stage follow the video** (user calls, 2026-10-28, each the recommended
+  option: "the video description is static now"). The label is the stage row's title, and the line under it is
+  `vm.videos[].line`: the row's `desc`, else `by <channel>`, the `author_name` oEmbed gave for that very link
+  (`by`, stored with `byFor`, its watch address, so a changed link never shows the old channel). oEmbed has
+  no description, and the Data API needs a key, so the description is the artist's own. `heading` and
+  `description` no longer reach Retro's design 1 (their copy stays in `c`). The seed rows carry a `desc` off
+  `VIDEOS`' source and date (`videoSeedDesc`), cleared when the row's first answer lands, so a pasted link
+  shows its channel and not a seeded line. `VIDEO_KEYS` counts `desc`. Inline, `desc` is a slot only on the
+  stage's row; the rest are `INLINE_HEAD`'s (`drawnSeq`'s video arm names the stage's row).
+- **View All goes to the artist's channel** (2026-10-28, after the first pass dropped it). `allCta` reaches
+  Retro's design 1 again, and a new `channel` field (*List link address*, a `UrlInput`, Retro's design 1
+  alone) is its address: `vm.videoAllHref` is `extUrl(c.channel)`, and live, with an address, the label is
+  an `extLink` anchor in a new tab; with none, and on the canvas, it stays the frame's label. It is a plain
+  link, so it works from `file://` too. **It fills itself in:** while `c.channel` is absent, `VideosField`
+  asks oEmbed about every link (not only those waiting for a title) and offers the first answer's
+  `author_url` (`youtubeChannel()`: absolute for a video, a bare `/channel/…` path for some playlists, so it
+  is resolved against youtube.com) once, through `api.setContent`. An address the artist types or empties
+  is never replaced, since the key is then present. The other four templates keep their label.
+- **The height is no longer the frame's.** With the artist row and the rows' lines gone, Retro's layout 2
+  is shorter than session 11's 641 / 1112 / 1102; `vm.pad`'s Retro row is kept.
+- **`VideosField`** (`EncoreBuilder.jsx`, beside `StepsField`): a Link (`UrlInput`, whose check adds
+  *Not a YouTube video or playlist link, so it won't play.* to `urlProblem`) and a Title (`CappedText`) per
+  row, up / down arrows (the first row is the stage's), remove, *Add video*, a 55×31 thumbnail once the link
+  names a video. **The title lookup is the builder's first network request**: once the rows have been
+  still for 500 ms, every link still needing a title (empty, or still its seed row's) is asked of
+  `https://www.youtube.com/oembed?url=<youtubeWatch>&format=json`, which answers CORS for an http origin and
+  for `file://`'s `null` (checked 2026-10-28). The answer lands only on a row still holding that link and
+  still needing a title, read off the latest rows through a ref, so a typed title is never overwritten.
+  The full title is stored; the page's clamp shortens it. A failure reads *Couldn't fetch the title. Type
+  one.* and is not retried until the panel remounts. The unmount guard is re-armed on every mount:
+  StrictMode's mount, unmount, mount left it false and dropped every answer (found by hand).
+- **Inline editing:** `INLINE_ROWS.video = { videos: ['title'] }`; `inline-probe --cat video` Retro L2
+  8 hit (heading, description, six titles), L4 2, PASS at 1440 and 768. `photo-probe` (`--check`, `--blank`,
+  `--drop`) Retro L2 and L4 PASS: the seeded page draws the Poster. A page whose first row has a link draws
+  no Poster, so a probe of such a hand-built page would report the slot MISSING; the hint says when it shows.
+- **Playback needs an http(s) origin, and where there is none the rows link out** (user report, 2026-10-28:
+  "after publishing, videos are not playable"). YouTube refuses an embed whose page sends no Referer with
+  Error 153, and a published tab opened on `about:blank` sends none. That covers the double-clickable `file://`
+  builder, and a host with no `published.html` beside `index.html` (JP-134's fallback). The `file://` Preview
+  sends none either. Neither YouTube's `origin` nor its `widget_referrer` parameter stands in for the Referer
+  (tried in the `about:blank` tab, 2026-10-28). So `sectionVm({ embeds })`, which `PublishedPage` reads off its
+  own `win.location` (`/^https?:$/`), sets `vm.videoEmbeds`. Where it is false, the live stage and every row that
+  names a video are an `<a>` to the link as the artist gave it (`vm.videos[].href`), in a new tab (`extLink`),
+  and no iframe is mounted. Over http(s) nothing changes. The canvas never reads it, being not live. The root
+  `index.html` also has to be refreshed from the standalone build, or it is the old picture of a player.
+- **Open:** a playlist-only row has no `thumb` (`youtubeThumb` needs a video id), so it shows its seed art or
+  the shade ground. oEmbed does return a playlist's `thumbnail_url`; storing it on the row is the fix if wanted.

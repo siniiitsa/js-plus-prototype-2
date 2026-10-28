@@ -984,10 +984,10 @@ export const NOW_PLAYING = { at: '02:28', of: '04:22', pct: 34 }
 
 
 // The other videos, listed in the panel beside the stage in the video
-// section's layout 2 (plans/video.md, call 4): always the seed, because there
-// is no structured editor for them. Written in the row shape such an editor
-// would edit, so adding one later changes nothing in sectionVm. Only the
-// artwork needs dressing, which `defaultTrackArt('video')` does.
+// section's layout 2 (plans/video.md, call 4): always the seed under Lime,
+// Grunge, Editorial and Pop, which have no structured editor for them. Retro's
+// layout 2 has one (VIDEO_SEED, below, 2026-10-28). Only the artwork needs
+// dressing, which `defaultTrackArt('video')` does.
 //
 // `sub` is the frame's channel line — where the video came from, not who made
 // it — and `when` is the date the frame spends on a view count. Neither is a
@@ -1002,6 +1002,20 @@ export const VIDEOS = [
   { title: 'Roomtone',           sub: 'Hidden Sessions', length: '02:57', when: 'October 2025' },
   { title: 'Field Day (live)',   sub: 'Festival',        length: '06:41', when: 'August 2025' },
 ]
+// Retro's layout 2 lists the artist's own YouTube links (notes/video.md,
+// "Retro · YouTube links"): `c.videos` is an array of { url, title, desc },
+// edited by VideosField, which also stores `by` / `byFor`, the channel name
+// oEmbed gave for the link `byFor` names (the line under the player when
+// `desc` is empty). The seed is VIDEOS' titles with no link, a line off their
+// source and date, each row carrying
+// `art`, the seed photograph it shows while it has no YouTube thumbnail — kept
+// through every rewrite, as a seeded slot keeps `after`, so a reorder or a
+// delete never hands a row another row's picture. Unlike SLOT_KEYS, `art` is
+// not in VIDEO_KEYS: a row with neither a link nor a title has nothing to play
+// or print, so emptying a seeded row drops it, art and all.
+export const VIDEO_KEYS = ['url', 'title', 'desc']
+export const videoSeedDesc = (v) => (v ? `${v.sub} · ${v.when}` : '')
+export const VIDEO_SEED = VIDEOS.map((v, i) => ({ url: '', title: v.title, desc: videoSeedDesc(v), art: i }))
 
 // Where the video section's transport bar is caught. The section has no
 // <video> element on either surface — it is a picture (call 2) — so the
@@ -2145,20 +2159,34 @@ export const FIELDS = {
       chars: { Lime: [16], Grunge: [16] },
       hint: 'Scrolls to your enquiry form, or the next place to book. Empty drops the button.' },
   ],
-  // The video section (plans/video.md): a picture of a player, layout-bound to
-  // layouts 2 and 4, so every `in` below names designs 1 and/or 3. There is no
-  // repeater — the six videos beside the stage are seeded (call 4) — and no
-  // link: the player is not a player (call 2). The poster fills the player at
-  // both layouts and the artist photo is layout 2's alone (the artist row and
-  // the small circle beside each listed video).
+  // The video section (plans/video.md): layout-bound to layouts 2 and 4, so
+  // every `in` below names designs 1 and/or 3. A picture of a player (call 2),
+  // except Retro's layout 2, which lists the artist's YouTube links and plays
+  // them in the published tab (`videos`, 2026-10-28, notes/video.md): there the
+  // drawn transport, the artist row and its Follow pill, the List link and the
+  // rows' length, source and date are gone, so `avatar`, `duration` and
+  // `followCta` do not reach Retro's design 1. Its View All is kept and goes
+  // somewhere: `channel`, filled from the videos' oEmbed answers while absent
+  // (2026-10-28). The other four templates
+  // keep the seeded six (call 4). The poster fills the player at both layouts.
   video: [
     { k: 'image',   l: 'Poster', type: 'image', aspect: [16, 9], in: [1, 3],
-      hint: 'Fills the player in layouts 2 and 4.' },
-    { k: 'avatar',  l: 'Artist photo', type: 'image', aspect: [1, 1], in: [1],
+      hint: 'Fills the player in layouts 2 and 4. In layout 2 it shows on the stage while the '
+          + 'playing video has no YouTube thumbnail.' },
+    { k: 'avatar',  l: 'Artist photo', type: 'image', aspect: [1, 1], in: { Retro: [], '*': [1] },
       hint: 'The circle beside your name, and beside every video in the list. Layout 2 only.' },
+    // Retro's layout 2 alone (2026-10-28): the eleventh repeater, { url, title }
+    // per video. Six, the frame's six seats.
+    { k: 'videos',  l: 'Videos', type: 'videos', max: 6, in: { Retro: [1], '*': [] },
+      cols: { title: { Retro: [null, 50] }, desc: { Retro: [null, 63] } },
+      hint: 'Paste a YouTube video, short or playlist link; the title fills itself in, and you can '
+          + 'change it. Under the player, the playing video’s title and description show; with no '
+          + 'description, its YouTube channel’s name. The videos play on the published page.' },
     // Layout 2 prints it as the label over the description; layout 4 as the
     // band's display head. Two seeds, one field: HEADING_4 beside TITLES.
-    { k: 'heading', l: 'Heading', d: TITLES.video, in: [1, 3],
+    // Retro's layout 2 prints the playing video's title and description in
+    // these two seats instead (2026-10-28), so neither reaches its design 1.
+    { k: 'heading', l: 'Heading', d: TITLES.video, in: { Retro: [3], '*': [1, 3] },
       // Measured on Retro (limits.mjs): 64 at layout 2 (390), 20 at layout 4 (390; 30 at 1440
       // would take a second line). Lime's layout 2 holds 82 (390's box binds; its label face is
       // narrower); its layout 4 holds 19 (390 binds: 28 at 1440, 24 at 768; session 3).
@@ -2175,11 +2203,11 @@ export const FIELDS = {
       chars: { Lime: [null, 82, null, 19], Grunge: [null, 91, null, 25], Editorial: [null, 48, null, 16],
         Pop: [null, 47, null, 16], '*': [null, 64, null, 20] },
       hint: 'Layout 2 prints it over the description, layout 4 as the band’s large head.' },
-    { k: 'description', l: 'Description', type: 'area', def: 'videoDesc', in: [1],
+    { k: 'description', l: 'Description', type: 'area', def: 'videoDesc', in: { Retro: [], '*': [1] },
       // One ellipsized line: prose clips at 64 at 390 but the 69-character seed fits,
       // so the cap is the seed's own length (the frame's string, `--check`'s 'floor').
       chars: { '*': [null, 69] }, hint: 'Under the heading, layout 2 only.' },
-    { k: 'duration', l: 'Duration', d: VIDEO_DURATION, in: [1, 3],
+    { k: 'duration', l: 'Duration', d: VIDEO_DURATION, in: { Retro: [3], '*': [1, 3] },
       chars: { '*': [null, 8, null, 8] },
       hint: 'Minutes and seconds, as 04:18. The player’s clock and its bar are drawn from it; anything else leaves them empty.' },
     // Call 3: the two buttons, JP-071's shape (the frame's own bytes, uncased,
@@ -2189,7 +2217,13 @@ export const FIELDS = {
     { k: 'allCta',  l: 'List link', d: VIDEO_ALL, in: [1],
       chars: { '*': [null, 16] },
       hint: 'The link at the head of the list beside the player. Left empty, it is not drawn.' },
-    { k: 'followCta', l: 'Follow button', d: VIDEO_FOLLOW, in: [1],
+    // Retro's layout 2 alone: where its View All goes on the published page.
+    // VideosField fills it with the first channel an oEmbed answer names while
+    // the key is absent; an emptied box stays empty.
+    { k: 'channel', l: 'List link address', type: 'url', d: '', in: { Retro: [1], '*': [] },
+      hint: 'Where View All goes on the published page: your YouTube channel. It fills itself in from '
+          + 'your videos’ channel; change it to any page, or empty it to leave View All a label.' },
+    { k: 'followCta', l: 'Follow button', d: VIDEO_FOLLOW, in: { Retro: [], '*': [1] },
       chars: { '*': [null, 16] },
       hint: 'The pill at the end of your name’s row. Left empty, it is not drawn.' },
   ],
@@ -3102,6 +3136,7 @@ export const INLINE_OFF = {
 // where it is drawn; a row `drawnRows` (EncoreBuilder.jsx) does not list is in the
 // ledger with this reason, which is also what keeps the nth-peer pairing honest.
 export const INLINE_HEAD = {
+  'Retro.1.video.videos.desc': 'not drawn: only the video on the stage prints its description',
   '*.2.repertoire.songs': 'live-only copy: this song is behind a card’s View full set, or on a page of the pager',
 }
 // The two marks stand in layout 1's gallery blocks alone; layout 2 draws its
@@ -3255,7 +3290,9 @@ export const IDENTITY_CHARS = {
     // (138 / 114 / 49), session 6; its layout 4: 29 (session 7: 89 / 58 / 29, 390's box binds
     // — Gloock in capitals beside the arrow). Pop's layout 2: 49 again (138 / 114 / 49), session 8;
     // its layout 4: 35 (session 9: 108 / 66 / 35, 390's box binds — Titan in capitals beside the arrow).
-    title: { Retro: [null, 49, null, 54], Lime: [null, 49, null, 50], Grunge: [null, 49, null, 55],
+    // Retro's layout 2 prints no name since its artist row went (2026-10-28,
+    // YouTube links), so its design-1 seat is null.
+    title: { Retro: [null, null, null, 54], Lime: [null, 49, null, 50], Grunge: [null, 49, null, 55],
       Editorial: [null, 49, null, 29], Pop: [null, 49, null, 35] },
   },
   calendar: {
@@ -3539,19 +3576,14 @@ export function extUrl(v, web = false) {
   return /^(https?|mailto|tel):/i.test(t) ? t : `https://${t}`
 }
 
-// A YouTube address → the address of its embeddable player, or '' when the
-// link names no single video or playlist (a channel, an @handle, the bare
-// site, another host), which the gallery's YouTube row then keeps as the
-// outbound link it always was. Takes extUrl()'s output, so it is absolute.
-// Resolved here and in sectionVm so EncoreSection does no address maths.
-//
-// youtube-nocookie.com is YouTube's own privacy-enhanced embed host: no
-// cookie until the visitor plays. `autoplay` is safe because the iframe only
-// exists after the visitor clicked the row.
-export function youtubeEmbed(url) {
+// A YouTube address → { id, list, start }, or null when it names no single
+// video or playlist (a channel, an @handle, the bare site, another host).
+// `id` is '' for a playlist alone. Takes extUrl()'s output, so it is absolute.
+// The parse behind youtubeEmbed, youtubeThumb and youtubeWatch.
+export function youtubeParts(url) {
   let u
-  try { u = new URL(String(url ?? '')) } catch { return '' }
-  if (!/^https?:$/.test(u.protocol)) return ''
+  try { u = new URL(String(url ?? '')) } catch { return null }
+  if (!/^https?:$/.test(u.protocol)) return null
   const host = u.hostname.toLowerCase().replace(/^(www|m|music)\./, '')
   const path = u.pathname.split('/').filter(Boolean)
   const ID = /^[\w-]{11}$/
@@ -3561,22 +3593,63 @@ export function youtubeEmbed(url) {
   else if (host === 'youtube.com' || host === 'youtube-nocookie.com') {
     if (path[0] === 'watch') id = u.searchParams.get('v') || ''
     else if (['shorts', 'live', 'embed', 'v'].includes(path[0])) id = path[1] || ''
-  } else return ''
-  const list = u.searchParams.get('list') || ''
-  const hasList = LIST.test(list)
+  } else return null
+  const list0 = u.searchParams.get('list') || ''
+  const list = LIST.test(list0) ? list0 : ''
   if (!ID.test(id)) {
     // A playlist page, or an /embed/videoseries address, names a list alone.
-    const listOnly = hasList && (path[0] === 'playlist' || path[1] === 'videoseries')
-    return listOnly ? `https://www.youtube-nocookie.com/embed/videoseries?list=${list}&autoplay=1&rel=0` : ''
+    const listOnly = list && (path[0] === 'playlist' || path[1] === 'videoseries')
+    return listOnly ? { id: '', list, start: 0 } : null
   }
   // t=90, t=90s, t=1m30s or start=90 — seconds the video opens at.
   const at = u.searchParams.get('start') || u.searchParams.get('t') || ''
   const m = /^(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s?)?$/.exec(at)
   const start = m ? (+m[1] || 0) * 3600 + (+m[2] || 0) * 60 + (+m[3] || 0) : 0
+  return { id, list, start }
+}
+
+// A YouTube address → the address of its embeddable player, or '' when the
+// link names no single video or playlist, which the gallery's YouTube row then
+// keeps as the outbound link it always was. Resolved here and in sectionVm so
+// EncoreSection does no address maths.
+//
+// youtube-nocookie.com is YouTube's own privacy-enhanced embed host: no
+// cookie until the visitor plays. `autoplay` is safe because the iframe only
+// exists after the visitor clicked (the gallery's row, the video's stage or
+// one of its rows).
+export function youtubeEmbed(url) {
+  const p = youtubeParts(url)
+  if (!p) return ''
+  if (!p.id) return `https://www.youtube-nocookie.com/embed/videoseries?list=${p.list}&autoplay=1&rel=0`
   const q = [
-    hasList && `list=${list}`, 'autoplay=1', 'rel=0', start > 0 && `start=${start}`,
+    p.list && `list=${p.list}`, 'autoplay=1', 'rel=0', p.start > 0 && `start=${p.start}`,
   ].filter(Boolean).join('&')
-  return `https://www.youtube-nocookie.com/embed/${id}?${q}`
+  return `https://www.youtube-nocookie.com/embed/${p.id}?${q}`
+}
+
+// The video's own thumbnail, or '' (a playlist alone, or no video). hqdefault
+// exists for every video; it is 4:3 with the 16:9 picture letterboxed in it,
+// so `object-fit: cover` in a 16:9 box crops exactly the bars.
+export function youtubeThumb(url) {
+  const p = youtubeParts(url)
+  return p?.id ? `https://i.ytimg.com/vi/${p.id}/hqdefault.jpg` : ''
+}
+
+// The canonical page of a video or playlist, the address YouTube's oEmbed
+// endpoint is asked about (VideosField's title lookup), or ''.
+export function youtubeWatch(url) {
+  const p = youtubeParts(url)
+  if (!p) return ''
+  return p.id ? `https://www.youtube.com/watch?v=${p.id}` : `https://www.youtube.com/playlist?list=${p.list}`
+}
+
+// The channel an oEmbed answer names, as a page on youtube.com, or ''. Its
+// `author_url` is absolute for a video and a bare path for some playlists.
+export function youtubeChannel(u) {
+  try {
+    const x = new URL(String(u ?? ''), 'https://www.youtube.com')
+    return /(^|\.)youtube\.com$/i.test(x.hostname) && x.pathname.length > 1 ? `https://www.youtube.com${x.pathname}` : ''
+  } catch { return '' }
 }
 
 // The events map's layout-2 Get Directions pill: a Google Maps route to the

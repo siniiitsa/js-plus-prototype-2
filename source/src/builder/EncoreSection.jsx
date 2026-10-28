@@ -9991,9 +9991,15 @@ function Media({ s }) {
 // The video section (plans/video.md, restored from d734992^ onto today's idioms).
 // It exists at layouts 2 and 4 alone — the only Figma pages that draw one — so
 // `sectionVm` folds its design onto 1 (v1, Dashboard player) or 3 (v3, Cinematic
-// minimal) and there is no branch for 0 or 2. A picture on both surfaces: no
-// <video>, no link, no `s.live` seam and no effect (call 2).
+// minimal) and there is no branch for 0 or 2. A picture on both surfaces (call 2),
+// except Retro's layout 2, which lists the artist's YouTube links and plays them
+// when `s.live` (notes/video.md, "Retro · YouTube links"). No effect.
 function Video({ s }) {
+  // Retro's layout 2 alone: which listed video the stage holds (null: the first
+  // one that plays), and whether the visitor has started it — the iframe exists
+  // only after that click, which is what makes its `autoplay` the visitor's.
+  const [cur, setCur] = useState(null)
+  const [play, setPlay] = useState(false)
   // v1 — Video layout 2 · Dashboard player (Figma 964:64645)
   //
   // A stage on the left — the poster in a deep-rounded card with a transport
@@ -10002,10 +10008,12 @@ function Video({ s }) {
   // the other videos: a thumbnail carrying its running time, then the title,
   // where it came from and when.
   //
-  // Still a picture, on both surfaces. Video is one of the two categories with
-  // no `s.live` seam at all (CLAUDE.md, "Intentional limits") — there is no
-  // <video> element and no handler in here, so nothing carries a pointer
-  // cursor either: the calendar's rule that a cursor is read off the handler.
+  // Still a picture, on both surfaces, under Lime, Grunge, Editorial and Pop —
+  // no <video> element and no handler, so nothing carries a pointer cursor
+  // either: the calendar's rule that a cursor is read off the handler. **Retro
+  // is the exception** (`yt`, 2026-10-28): its list is the artist's YouTube
+  // links, and in the published tab and Preview (`s.live`) the stage and every
+  // row that plays carry the handler, and the cursor with it.
   //
   // What the frame draws and this does not: the view counts ("8,175M views",
   // "25,284M View"), the follower count ("22.7M followers"), the like/dislike
@@ -10144,6 +10152,15 @@ function Video({ s }) {
     // family flag: `s.limeTree` is Lime, Grunge, Editorial and Pop, which is the
     // old `s.lime || gr || ed` plus Pop. (v3 below took the same flag in session 9.)
     const lime = s.limeTree
+    // Retro plays YouTube here (2026-10-28): the stage is the current video's
+    // picture under one play disc, or its player once a visitor has clicked; the
+    // drawn transport, the artist row and the rows' length, source and date are
+    // gone. Lime, Grunge, Editorial and Pop keep the Figma picture below.
+    const yt = s.retro
+    const first = Math.max(0, s.videos.findIndex((v) => v.embed))
+    const at = Math.min(cur ?? first, Math.max(0, s.videos.length - 1))
+    const now = s.videos[at]
+    const playing = yt && s.live && play && !!now?.embed
     const labelSz = lime ? s.labelMd : tab ? '14px' : s.mob ? '13px' : u(20)
     const rowSz = lime ? s.list : tab ? '12px' : s.mob ? '13px' : u(16)
     const bodySz = lime ? s.bodyMd : nar ? '13px' : u(14)
@@ -10224,7 +10241,59 @@ function Video({ s }) {
     // player's bar sets its own the same way.
     const dots = (g) => <span style={{ fontFamily: s.body, fontSize: u(14), lineHeight: 1 }}>{g}</span>
 
-    const player = (
+    // Retro's stage. The current row's YouTube picture (no `data-photo`: it is
+    // the link's, not an upload's), or the Poster while that row has none; live,
+    // a click on a row that plays mounts the gallery's player in its place.
+    // A page with no web origin cannot embed (`s.videoEmbeds`: YouTube answers
+    // Error 153), so there the stage and every row that names a video are links
+    // to it on YouTube, in a new tab (`extLink`), and nothing mounts a player.
+    const out = (v) => (yt && s.live && !s.videoEmbeds && v?.href ? extLink(s, v.href) : null)
+    const startable = yt && s.live && s.videoEmbeds && !!now?.embed && !playing
+    const stageOut = out(now)
+    const StageTag = stageOut ? 'a' : 'div'
+    // YouTube's hqdefault is 4:3 with the 16:9 picture letterboxed in it. `cover`
+    // crops the bars only in a box at least 16:9; the stage (819:478) and the
+    // rows (140:80) are a little narrower, so up to 4% of bar is left, and the
+    // picture is scaled past it inside its clipped box.
+    const ytCrop = { transform: 'scale(1.04)' }
+    const ytPlayer = yt && (
+      <StageTag
+        {...(stageOut ? { ...stageOut, 'aria-label': `Watch ${now.title || 'the video'} on YouTube` } : null)}
+        {...(startable ? {
+          role: 'button', tabIndex: 0, 'aria-label': `Play ${now.title || 'video'}`,
+          onClick: () => setPlay(true),
+          onKeyDown: (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setPlay(true) } },
+        } : null)}
+        style={{
+          position: 'relative', width: '100%', aspectRatio: '819 / 478',
+          background: '#111111', borderRadius: u(40), overflow: 'hidden',
+          ...(startable || stageOut ? { cursor: 'pointer' } : null),
+          ...(stageOut ? { display: 'block', color: 'inherit', textDecoration: 'none' } : null),
+        }}>
+        {playing ? (
+          <iframe
+            key={now.embed} src={now.embed} title={now.title || 'YouTube video player'}
+            allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowFullScreen
+            referrerPolicy="strict-origin-when-cross-origin"
+            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', border: 0, display: 'block' }}
+          />
+        ) : (
+          <>
+            <span style={{ position: 'absolute', inset: 0 }}>
+              {now?.thumb ? <Photo s={s} initialsSize={44} src={now.thumb} style={ytCrop} /> : <Photo s={s} initialsSize={44} />}
+            </span>
+            <span style={{
+              position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)',
+              width: u(s.mob ? 56 : 72), height: u(s.mob ? 56 : 72), borderRadius: '999px',
+              background: rust, color: mustard, border: `1px solid ${mustard}`,
+              boxShadow: hard(s, '#111111', 4.1, 4.1),
+              ...row('0', { justifyContent: 'center' }),
+            }}><Play size={s.mob ? 20 : 26} fill="currentColor" strokeWidth={0} style={{ marginLeft: '3px' }} /></span>
+          </>
+        )}
+      </StageTag>
+    )
+    const player = ytPlayer || (
       <div style={{
         position: 'relative', width: '100%', aspectRatio: '819 / 478',
         background: cream, borderRadius: u(gr ? 15 : ed ? 0 : lime ? 50 : 40), overflow: 'hidden',
@@ -10346,18 +10415,20 @@ function Video({ s }) {
         {/* The frame's name-and-metric block. Ours is the heading in the label
             face over the description — the field layout 1 already prints —
             and it takes the whole column rather than the frame's clipped 158,
-            because a sentence is not a two-word metric. */}
-        <div style={col(u(4), { padding: `${u(4)} 0`, minWidth: 0 })}>
-          <span style={labelStyle(s, labelSz, { overflow: 'hidden', textOverflow: 'ellipsis' })}>{s.title}</span>
-          {s.videoDesc && <span style={metaType()}>{s.videoDesc}</span>}
-        </div>
+            because a sentence is not a two-word metric. Retro's prints the
+            stage's video instead: its title over its `line` (the row's
+            description, else its channel), so both follow a picked row. */}
+        {(!yt || now?.title || now?.line) && <div style={col(u(4), { padding: `${u(4)} 0`, minWidth: 0 })}>
+          <span style={labelStyle(s, labelSz, { overflow: 'hidden', textOverflow: 'ellipsis' })}>{yt ? now?.title : s.title}</span>
+          {(yt ? now?.line : s.videoDesc) && <span style={metaType()}>{yt ? now.line : s.videoDesc}</span>}
+        </div>}
         {/* The artist row. All three frames rule it off above and pad it 15/20;
             what the 390 master changes is that the four controls drop to a line
             of their own 25 under the name, at their own tighter 5px gap, rather
             than sharing the row. That is transcribed rather than left to
             `flexWrap`, which wraps wherever the artist's name happens to run
             out and puts the spacer in an unpredictable place. */}
-        <div style={{
+        {!yt && <div style={{
           // Editorial's rule is a dashed 10, 10 `stroke/2` drawn inside the
           // 15 of padding, so it takes no border here (`DashRule`, below).
           ...(ed ? { position: 'relative' } : { borderTop: `1px solid ${s.retro ? '#111111' : lime ? s.stroke1 : s.line2}` }),
@@ -10368,7 +10439,7 @@ function Video({ s }) {
           {s.mob ? <span style={row(u(12), { minWidth: 0 })}>{artist}</span> : artist}
           {!s.mob && <span style={{ flex: 1, minWidth: 0 }} />}
           {s.mob ? <span style={row('5px', { flex: 'none' })}>{actions}</span> : actions}
-        </div>
+        </div>}
       </div>
     )
 
@@ -10403,7 +10474,11 @@ function Video({ s }) {
           <span style={{ fontFamily: s.body, fontSize: bodySz, lineHeight: 1.5, whiteSpace: 'nowrap' }}>
             Top music video
           </span>
-          {s.videoAll && <span style={metaType({ flex: 'none' })}>{s.videoAll}</span>}
+          {/* Retro's goes to the artist's channel when live (`videoAllHref`);
+              every other template's is a label, as the frame draws it. */}
+          {s.videoAll && (yt && extLink(s, s.videoAllHref)
+            ? <a {...extLink(s, s.videoAllHref)} style={metaType({ flex: 'none', color: 'inherit', textDecoration: 'none' })}>{s.videoAll}</a>
+            : <span style={metaType({ flex: 'none' })}>{s.videoAll}</span>)}
         </div>
         {/* The frame's panel is a picture of a section with something in it.
             An emptied list keeps the panel and prints the pricing deck's one
@@ -10432,10 +10507,26 @@ function Video({ s }) {
           display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
           gap: '23px', alignItems: 'start',
         }}>
-          {s.videos.map((v, i) => (
-            <div key={i} style={s.mob
-              ? col('12px', { minWidth: 0 })
-              : row(u(12), { flex: 'none', alignItems: 'flex-start' })}>
+          {s.videos.map((v, i) => {
+            // Live, a Retro row that plays puts itself on the stage, playing.
+            const pick = yt && s.live && s.videoEmbeds && v.embed ? () => { setCur(i); setPlay(true) } : null
+            // …or, where the page cannot embed, opens it on YouTube.
+            const link = out(v)
+            const RowTag = link ? 'a' : 'div'
+            return (
+            <RowTag key={i}
+              {...(link ? { ...link, 'aria-label': `Watch ${v.title || 'the video'} on YouTube` } : null)}
+              {...(pick ? {
+                role: 'button', tabIndex: 0, 'aria-label': `Play ${v.title || 'video'}`, onClick: pick,
+                onKeyDown: (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick() } },
+              } : null)}
+              style={{
+                ...(s.mob
+                  ? col('12px', { minWidth: 0 })
+                  : row(u(12), { flex: 'none', alignItems: 'flex-start' })),
+                ...(pick || link ? { cursor: 'pointer' } : null),
+                ...(link ? { color: 'inherit', textDecoration: 'none' } : null),
+              }}>
               <span style={{
                 position: 'relative', flex: 'none',
                 width: desk ? u(142.9) : s.lime ? '154px' : '150px', maxWidth: desk ? '42%' : '100%',
@@ -10443,7 +10534,15 @@ function Video({ s }) {
                 // Editorial's thumbnails are square (no radius on the frame).
                 borderRadius: ed ? 0 : u(8), overflow: 'hidden',
               }}>
-                <Photo s={s} initialsSize={16} src={v.img} />
+                <Photo s={s} initialsSize={16} src={v.img} style={yt && v.thumb ? ytCrop : undefined} />
+                {/* The video the stage holds, on the canvas too, so the panel
+                    does not change between the two surfaces. */}
+                {yt && i === at && (
+                  <span style={{
+                    position: 'absolute', inset: 0, borderRadius: 'inherit',
+                    border: `${u(3)} solid ${rust}`, pointerEvents: 'none',
+                  }} />
+                )}
                 {v.length && (
                   <span style={{
                     position: 'absolute', left: u(5), top: u(5),
@@ -10495,6 +10594,11 @@ function Video({ s }) {
                   // green on the olive box and reads.
                   color: s.retro ? rust : lime ? s.ac : creamInk,
                   overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                  // A YouTube title is a sentence: two lines, then the clamp.
+                  ...(yt ? {
+                    whiteSpace: 'normal', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
+                    overflowWrap: 'anywhere',
+                  } : null),
                 }}>{v.title}</span>
                 {v.sub && (
                   <span style={row(u(7.4), { minWidth: 0 })}>
@@ -10507,8 +10611,9 @@ function Video({ s }) {
                 )}
                 {v.when && <span style={metaType()}>{v.when}</span>}
               </span>
-            </div>
-          ))}
+            </RowTag>
+            )
+          })}
         </div>
       </div>
     )
@@ -10529,7 +10634,8 @@ function Video({ s }) {
     return (
       <div style={desk
         ? row(u(40), { alignItems: 'flex-start' })
-        : col(tab ? '32px' : '0', { alignItems: 'stretch' })}>
+        // Retro has no artist row, so its 20 is the column's own gap at 390.
+        : col(tab ? '32px' : yt ? '20px' : '0', { alignItems: 'stretch' })}>
         {stage}
         {panel}
       </div>
