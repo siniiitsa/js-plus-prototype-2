@@ -104,7 +104,9 @@ function censusLines(cat, themeName, design, w, seed) {
 // one line more than the frame and shrink to 75% of the seed's size (session 1,
 // user call, 2026-10-13). Every other seat keeps the frame's lines and size.
 const FLOOR = { title: 0.75, 'who.title': 0.75 }
-const EXTRA_LINES = { title: 1, 'who.title': 1 }
+// Retro's video row titles wrap to two lines and clamp (notes/video.md, *Retro ·
+// YouTube links*): the seed's one line is not the frame's limit there.
+const EXTRA_LINES = { title: 1, 'who.title': 1, 'videos.title': 1 }
 // --extra-lines=songs.title gives a key one line past the frame's, to read the
 // alternative a user call would allow (JP-104's two-line title at repertoire
 // layout 3's 768 and 390, session 5), as --prose reads session 4's.
@@ -178,6 +180,7 @@ const COLS = {
   slots: { kind: {}, price: {} },
   stats: { label: {}, value: {}, sub: {} },
   steps: { title: {}, sub: {} },
+  videos: { title: {} },
   tiers: { name: {}, price: {}, tags: { list: ',' }, blurb: { block: true }, feats: { list: '\n' } },
   formFields: { label: {}, placeholder: {} },
   quotes: { who: {}, quote: { block: true }, role: {}, when: {} },
@@ -200,6 +203,7 @@ function seedRows(cat, f, themeName, design) {
     case 'slots': return D.CAL_SLOTS
     case 'stats': return D.MAP_STATS_4
     case 'steps': return D.FORM_STEPS
+    case 'videos': return D.VIDEO_SEED
     case 'formFields': return design === 3 ? D.FORM_FIELDS_4 : design === 1 || design === 2 ? D.FORM_FIELDS_CARD : D.FORM_FIELDS
     case 'sets': return D.repSetsOf({})
     case 'tracks': return D.TRACKS.map(([name, dur, rel], i) => ({ title: name, sub: `${rel} · ${dur}`, image: `@art${i}`, audio: D.TRACK_AUDIO[i] ?? '' }))
@@ -730,7 +734,7 @@ if (flag('seed-list')) {
     }
     for (let d = 0; d < 4; d++) add(D.tiersSeed(t.name, d))
   }
-  add([D.SONGS, D.GIGS, D.QUOTES, D.FOOTER_LINKS, D.CAL_SLOTS, D.MAP_STATS_4, D.FORM_STEPS, D.FORM_FIELDS,
+  add([D.SONGS, D.GIGS, D.QUOTES, D.FOOTER_LINKS, D.CAL_SLOTS, D.MAP_STATS_4, D.FORM_STEPS, D.VIDEO_SEED, D.FORM_FIELDS,
     D.FORM_FIELDS_CARD, D.FORM_FIELDS_4, D.repSetsOf({}), D.TRACKS, 'Kai Mercer', 'DJ · Live Act', D.TAG_LABELS])
   console.log(JSON.stringify([...set]))
   process.exit(0)
