@@ -82,7 +82,7 @@ header's alone); the thumbnails are the seed's or the link's and carry no `data-
 | `duration` | — | Deleted 2026-10-28 with layout 4's foot band (it was 8, a time, held to its shape) |
 | `allCta` | 16 | Measured 39 at 390, a pill drawn ×4 its frame width there — judged, as the other pills are |
 | `IDENTITY_CHARS.video.title` | — | The artist's name in layout 4's top bar until 2026-10-28 (Retro 54, Lime 50, Grunge 55, Editorial 29, Pop 35); the row is deleted, since neither layout prints the name now. The same seats are `videos.title`'s at L4 |
-| `videos.desc` | 63 (L2, all five; L4 draws none, `null`) | One ellipsized line under the stage's title; the 390 box binds (Retro 157 / 122 / 63, the four 138–153 / 114–122 / 63) |
+| `videos.desc` | 63 (L2, all five; L4 draws none but lists the box, so it keeps L2's 63: the copy is L2's) | One ellipsized line under the stage's title; the 390 box binds (Retro 157 / 122 / 63, the four 138–153 / 114–122 / 63) |
 | `videos.title` | Retro 50, Lime 39, Grunge 46, Pop 29, Editorial 21 (L2); Retro 54, Lime 50, Grunge 55, Editorial 29, Pop 35 (L4) | L2: two lines of the row title, then the clamp (`limits.mjs` gives `videos.title` one extra line, `EXTRA_LINES`). Pop's and Editorial's seeds already take two lines in Titan's and Gloock's capitals. L4: the top bar's one ellipsised line beside the arrow, 390's box binding on all five (`EXTRA_LINES` inert: the seat is `nowrap`) |
 
 Lime's layout 2 measured 82 for `heading` (Retro 64: the label face is narrower, and 390's box binds),
@@ -944,6 +944,10 @@ once Play was pressed, the very thing call 7 declined).
   `'*.3.video.videos.title'` an `INLINE_HEAD` row (*live-only copy*): the top bar prints the title of the row
   `drawnSeq`'s video arm already names (the first row with a player, else the first), so **`drawnSeq` needed no
   change**, and is not design-aware: `INLINE_HEAD` names the column per design.
+- **The Description box at layout 4.** `VideosField` lists it at every layout it is shown at, and a `null` seat would
+  have handed `CappedText` no cap (no counter, no `maxLength`), so copy typed at layout 4 could outrun layout 2's
+  seat unseen; the design-3 seat is layout 2's 63 instead. It clamps nothing at layout 4, which draws no description
+  (`limits.mjs --check --designs=3`: *unseen*, 0 failing).
 - **Caps** (`limits.mjs video --designs=3 --keys=videos.title`): Retro **54**, Lime **50**, Grunge **55**, Editorial
   **29**, Pop **35** (Retro 180 / 119 / 54, Lime 149 / 96 / 50, Grunge 163 / 105 / 55, Editorial 89 / 58 / 29, Pop
   108 / 66 / 35 at 1440 / 768 / 390: 390's box binds on all five), exactly the old `IDENTITY_CHARS.video.title` seats,

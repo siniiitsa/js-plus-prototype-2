@@ -2166,9 +2166,10 @@ export const FIELDS = {
       // Gloock's capitals are the widest, and their seeds already take two lines), the
       // stage's one meta line the description (63 at 390 on all five). At layout 4
       // the top bar's one ellipsised line beside the arrow binds the title (390's
-      // box), and no description is drawn.
+      // box), and no description is drawn, but the panel still lists the box, so it
+      // takes layout 2's 63: the copy is layout 2's.
       cols: { title: { Retro: [null, 50, null, 54], Lime: [null, 39, null, 50], Grunge: [null, 46, null, 55],
-        Editorial: [null, 21, null, 29], Pop: [null, 29, null, 35] }, desc: { '*': [null, 63, null, null] } },
+        Editorial: [null, 21, null, 29], Pop: [null, 29, null, 35] }, desc: { '*': [null, 63, null, 63] } },
       hint: 'Paste a YouTube video, short or playlist link; the title fills itself in, and you can '
           + 'change it. Layout 2 lists them beside the player, which shows the playing video’s title '
           + 'and description (with no description, its YouTube channel’s name). Layout 4 plays them '
