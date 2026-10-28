@@ -59,7 +59,7 @@ import {
   catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldSeed, HEADING_3, HEADING_4, fieldReach, fieldShown, INLINE_OFF, PHOTO_OFF, INLINE_HEAD, INLINE_MARKED, INLINE_PART, INLINE_LINES, inlineRule, fieldCap, colCaps, identityCap, sealCap, capExcess, clampCapped, clampContent, clampIdentity, copyrightOf, formHeading3, extUrl, youtubeEmbed, youtubeThumb, youtubeParts, youtubeWatch, youtubeChannel, urlProblem, emailProblem, emailAddr, songTags, repChips,
   tierFeats, priceParts, priceCuts, blankRow, SONG_KEYS, repSetsOf, repSetLine, TRACK_KEYS, GIG_KEYS, gigWeekday, gigStatus, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
   layoutChoices, designCount, pageLayout, pageOrder, pageRows, videoDesign, videoStartArch,
-  VIDEOS, VIDEO_SEED, VIDEO_KEYS, videoSeedDesc, VIDEO_MARK, clockAt, VIDEO_ALL, VIDEO_DURATION, COLUMN_SPLIT, bebasEms, antonEms, gloockEms, titanEms,
+  VIDEOS, VIDEO_SEED, VIDEO_KEYS, videoSeedDesc, VIDEO_ALL, COLUMN_SPLIT, bebasEms, antonEms, gloockEms, titanEms,
   headerLayout, headerLayoutLabel, setupHeaderCount,
 } from './data.js'
 import { defaultImage, defaultImages, defaultTrackArt, seedFocus, RETRO_TEXTURE } from './photos.js'
@@ -1157,23 +1157,15 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   }
   vm.tracks3 = vm.tracks.slice(0, 3)
 
-  // video — layout 4's clock, and layout 2's list of the artist's YouTube
-  // links (plans/video.md; notes/video.md, "YouTube links").
-  vm.videoDur = cv('duration', VIDEO_DURATION)
-  // Where layout 4's transport bar is caught. That layout has no <video>
-  // element on either surface, so there is no playhead to read: `clockAt` composes one
-  // from the running time above and `videoPct` fills the bar to the same
-  // fraction, so the two cannot disagree. An unparseable duration leaves both
-  // empty rather than inventing a position for it.
-  vm.videoAt = clockAt(vm.videoDur, VIDEO_MARK)
-  vm.videoPct = vm.videoAt ? VIDEO_MARK * 100 : 0
+  // video — the artist's YouTube links, which layouts 2 and 4 both play
+  // (plans/video.md, plans/video-youtube-4.md; notes/video.md, "YouTube links").
   // View All (call 3), JP-071's shape: the frame's words, uncased, dropped
   // when emptied.
   vm.videoAll = cv('allCta', VIDEO_ALL)
   // It goes to `channel` (the artist's YouTube channel, which VideosField
   // fills in); '' leaves it a label, on the canvas always.
   vm.videoAllHref = extUrl(c.channel ?? '')
-  // Layout 2 lists the artist's YouTube links (`c.videos`, VideosField,
+  // Layouts 2 and 4 play the artist's YouTube links (`c.videos`, VideosField,
   // notes/video.md "YouTube links"), seeded VIDEO_SEED: VIDEOS' titles with no
   // link, each row showing its `art` until a link gives it a thumbnail.
   // `embed` is the player the published tab mounts on a click ('' for a link
@@ -4042,14 +4034,16 @@ function StepsField({ caps, value, max, onChange }) {
 }
 
 /* ------------------------------------------------------------------ *
- * VideosField — the video section's layout-2 list, on every template
+ * VideosField — the video section's list, layouts 2 and 4, on every template
  * (notes/video.md, "YouTube links", 2026-10-28).
  *
  * The eleventh repeater. Row shape is { url, title, desc }, plus a seeded
  * row's `art` (VIDEO_SEED), which every write spreads through untouched, and
  * `by` / `byFor`, the channel name oEmbed gave and the watch address it was
- * for. Order is the list's order and the first row is the one the stage opens
- * on, so the rows move up and down, unlike the steps'.
+ * for. Order is the list's order and the first row is the one the player opens
+ * on (layout 4's skip discs step it in this order), so the rows move up and
+ * down, unlike the steps'. Layout 4 draws no View All, but the channel is
+ * still offered while `channel` is absent: it waits in `c` for layout 2.
  *
  * The title fills itself in: once a link has settled (half a second without
  * a keystroke) on an address youtubeParts() accepts, YouTube's oEmbed
@@ -4998,7 +4992,7 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
   // And the enquiry form's layout-4 steps (JP-079): FORM_STEPS is written as
   // the { title, sub } row StepsField edits, the stats' one-liner again.
   const stepsVal = (k) => repeaterRows(sec, k, themeName)
-  // And the layout-2 videos: VIDEO_SEED is the { url, title, desc, art } row
+  // And the videos (layouts 2 and 4): VIDEO_SEED is the { url, title, desc, art } row
   // VideosField edits, the same one-liner.
   const videosVal = (k) => repeaterRows(sec, k, themeName)
 
@@ -6290,8 +6284,10 @@ function drawnRows(sec, k, themeName) {
 
 // The same rows in the order the cards draw them, a row once for every card it is in.
 function drawnSeq(sec, k, themeName) {
-  // The video's layout-2 stage prints one video's description: on the canvas, the
-  // first row with a player, else the first row (`Video`'s `first`).
+  // The video prints one row's copy: layout 2's stage its description, layout 4's
+  // top bar its title. On the canvas that is the first row with a player, else
+  // the first row (`Video`'s `first`), at both layouts; INLINE_HEAD names the
+  // column per design, so this needs neither.
   if (sec.cat === 'video' && k === 'videos') {
     const live = repeaterRows(sec, 'videos', themeName).map((r, i) => [r, i]).filter(([r]) => !blankRow(r, VIDEO_KEYS))
     const hit = live.find(([r]) => youtubeEmbed(extUrl(r?.url ?? ''))) ?? live[0]

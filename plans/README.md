@@ -20,7 +20,7 @@ plans/
   photo-edit.md   ← clicking a photo on the canvas opens the crop editor with Upload another (every template and layout)
   photo-edit-qa-fixes.md ← an untouched Apply must not re-crop a seed (JP-160), and the photo half of JP-154
   video.md   ← restoring the video section where Figma draws it: layouts 2 and 4 of all five templates (sessions 0 to 10: five user calls, the foundation + Retro, one template and layout each, the sweep)
-  video-youtube-4.md   ← layout 4 of the video section made playable on all five templates (calls 7–10; one session, then the proof)
+  video-youtube-4.md   ← layout 4 of the video section made playable on all five templates (calls 7–11; one session and its proof, done 2026-10-28)
   char-limits.md   ← the character-limit pass, every template (char-limits/ holds its census)
   retro/
     layout-2.md

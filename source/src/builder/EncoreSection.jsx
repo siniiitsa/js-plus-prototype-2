@@ -33,7 +33,6 @@ import {
   Play, Pause, SkipBack, SkipForward, Check, ChevronLeft, ChevronRight,
   ArrowLeft, ArrowRight, ArrowUp, ArrowDown, Star, Plus, X, Search, MapPin, User,
   Image as ImageIcon, Youtube, Instagram, Music2,
-  Settings, Volume2,
 } from 'lucide-react'
 
 /* ------------------------------------------------------------------ *
@@ -9991,15 +9990,44 @@ function Media({ s }) {
 // The video section (plans/video.md, restored from d734992^ onto today's idioms).
 // It exists at layouts 2 and 4 alone — the only Figma pages that draw one — so
 // `sectionVm` folds its design onto 1 (v1, Dashboard player) or 3 (v3, Cinematic
-// minimal) and there is no branch for 0 or 2. Layout 4 is a picture on both
-// surfaces (call 2); layout 2 lists the artist's YouTube links and plays them
-// when `s.live` (notes/video.md, "YouTube links"). No effect.
+// minimal) and there is no branch for 0 or 2. Both layouts list the artist's
+// YouTube links and play them when `s.live` (notes/video.md, "YouTube links";
+// layout 4 since plans/video-youtube-4.md); on the canvas each is a picture of
+// its player. No effect.
 function Video({ s }) {
-  // Layout 2's: which listed video the stage holds (null: the first one that
-  // plays), and whether the visitor has started it — the iframe exists only
-  // after that click, which is what makes its `autoplay` the visitor's.
+  // Which listed video the player holds (null: the first one that plays), and
+  // whether the visitor has started it — the iframe exists only after that
+  // click, which is what makes its `autoplay` the visitor's. Layout 2's rows
+  // and layout 4's skip discs move `cur`; `play` outlives a move, so a skip
+  // while playing plays the next video.
   const [cur, setCur] = useState(null)
   const [play, setPlay] = useState(false)
+  // Shared by both layouts, so the two players cannot drift. `cur` is clamped,
+  // so a shorter list needs no effect.
+  const first = Math.max(0, s.videos.findIndex((v) => v.embed))
+  const at = Math.min(cur ?? first, Math.max(0, s.videos.length - 1))
+  const now = s.videos[at]
+  const playing = s.live && play && !!now?.embed
+  // A page with no web origin cannot embed (`s.videoEmbeds`: YouTube answers
+  // Error 153), so there a video that names one is a link to it on YouTube, in
+  // a new tab (`extLink`), and nothing mounts a player.
+  const out = (v) => (s.live && !s.videoEmbeds && v?.href ? extLink(s, v.href) : null)
+  const startable = s.live && s.videoEmbeds && !!now?.embed && !playing
+  // YouTube's hqdefault is 4:3 with the 16:9 picture letterboxed in it. `cover`
+  // crops the bars only in a box at least 16:9; layout 2's stage (819:478) and
+  // rows (140:80) are a little narrower, so up to 4% of bar is left, and the
+  // picture is scaled past it inside its clipped box. Layout 4's box (1328:754,
+  // 370:209 at 390) is nearer 16:9, about 1% of bar, which the same scale hides.
+  const ytCrop = { transform: 'scale(1.04)' }
+  // The gallery's player, over the whole of the player's box.
+  const frame = playing && (
+    <iframe
+      key={now.embed} src={now.embed} title={now.title || 'YouTube video player'}
+      allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowFullScreen
+      referrerPolicy="strict-origin-when-cross-origin"
+      style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', border: 0, display: 'block' }}
+    />
+  )
   // v1 — Video layout 2 · Dashboard player (Figma 964:64645)
   //
   // A stage on the left — the playing video's picture in a deep-rounded card
@@ -10100,12 +10128,6 @@ function Video({ s }) {
     // All four designed templates are fitted at layout 2, so the gate is the
     // family flag: `s.limeTree` is Lime, Grunge, Editorial and Pop.
     const lime = s.limeTree
-    // Which listed video the stage holds (`cur` null: the first one that
-    // plays), clamped so a shorter list needs no effect.
-    const first = Math.max(0, s.videos.findIndex((v) => v.embed))
-    const at = Math.min(cur ?? first, Math.max(0, s.videos.length - 1))
-    const now = s.videos[at]
-    const playing = s.live && play && !!now?.embed
     const labelSz = lime ? s.labelMd : tab ? '14px' : s.mob ? '13px' : u(20)
     const rowSz = lime ? s.list : tab ? '12px' : s.mob ? '13px' : u(16)
     const bodySz = lime ? s.bodyMd : nar ? '13px' : u(14)
@@ -10132,20 +10154,12 @@ function Video({ s }) {
     // The stage. The current row's YouTube picture (no `data-photo`: it is the
     // link's, not an upload's), or the Poster while that row has none; live, a
     // click on a row that plays mounts the gallery's player in its place.
-    // A page with no web origin cannot embed (`s.videoEmbeds`: YouTube answers
-    // Error 153), so there the stage and every row that names a video are links
-    // to it on YouTube, in a new tab (`extLink`), and nothing mounts a player.
+    // Where the page cannot embed (`out`), the stage and every row that names
+    // a video are links to it on YouTube instead.
     // Its ground is a player's black on every template: it shows only until the
     // iframe paints, or round a missing picture.
-    const out = (v) => (s.live && !s.videoEmbeds && v?.href ? extLink(s, v.href) : null)
-    const startable = s.live && s.videoEmbeds && !!now?.embed && !playing
     const stageOut = out(now)
     const StageTag = stageOut ? 'a' : 'div'
-    // YouTube's hqdefault is 4:3 with the 16:9 picture letterboxed in it. `cover`
-    // crops the bars only in a box at least 16:9; the stage (819:478) and the
-    // rows (140:80) are a little narrower, so up to 4% of bar is left, and the
-    // picture is scaled past it inside its clipped box.
-    const ytCrop = { transform: 'scale(1.04)' }
     // The one play disc. Retro's is the frame's rust on mustard, thrown; the
     // four's is the accent on its own ink, held by their hairline, and
     // Grunge's is a rounded square, as every disc in its frame is.
@@ -10164,14 +10178,7 @@ function Video({ s }) {
           ...(startable || stageOut ? { cursor: 'pointer' } : null),
           ...(stageOut ? { display: 'block', color: 'inherit', textDecoration: 'none' } : null),
         }}>
-        {playing ? (
-          <iframe
-            key={now.embed} src={now.embed} title={now.title || 'YouTube video player'}
-            allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowFullScreen
-            referrerPolicy="strict-origin-when-cross-origin"
-            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', border: 0, display: 'block' }}
-          />
-        ) : (
+        {playing ? frame : (
           <>
             <span style={{ position: 'absolute', inset: 0 }}>
               {now?.thumb
@@ -10379,50 +10386,49 @@ function Video({ s }) {
   // · 971:15414 at 370), under the wrapper's own display head (964:72776).
   //
   // One rounded 16:9 card standing on the page ground, filled edge to edge by
-  // the poster, with three bands of chrome floating on it: the back arrow and
-  // the artist's name at the head, three transport discs dead centre, and a
-  // clock / progress / clock row along the foot. Nothing else — the design's
-  // own name is the whole brief.
+  // the playing video's picture, with two bands of chrome floating on it: the
+  // back arrow and that video's title at the head, and three transport discs
+  // dead centre. Nothing else — the design's own name is the whole brief.
   //
-  // Still a picture, on both surfaces, like every other video layout: there is
-  // no <video> element and no handler in here, so nothing carries a pointer
-  // cursor either (the calendar's rule that a cursor is read off the handler).
+  // It plays layout 2's list (`s.videos`, plans/video-youtube-4.md, calls 7–11,
+  // 2026-10-28). The centre disc is Play and the two skip discs step through
+  // the list, drawn only while it has two or more rows; the frame's foot band
+  // (a clock and bar composed from a typed duration, dead volume, settings and
+  // HD chips) is gone, since once a video plays YouTube's own controls are the
+  // transport. In the published tab and Preview (`s.live`) a click on the
+  // picture or the play disc mounts the gallery's player over the whole card,
+  // and the head band, the play disc and the scrim go; the skip discs stay,
+  // moved to the card's two edges at mid-height (call 11), clear of YouTube's
+  // own centre button, title and bar. Where the page cannot embed (`out`) the
+  // picture is a link to the video on YouTube instead. On the canvas it is a
+  // picture: no handler, no link, no pointer cursor (the calendar's rule that a
+  // cursor is read off the handler).
+  //
+  // The clickable picture is a layer *under* the discs, their sibling, never
+  // their ancestor: a button inside a button or an <a> is invalid. The play
+  // disc and the head band let the pointer through to it (live only, or the
+  // canvas's inline editor could not reach the title).
   //
   // What the frame draws and this does not:
   //   · "551 539 views", the section's own dropped-metric rule for the third
   //     time — a published page printing a number the artist never typed is
   //     making a claim.
-  //   · "— Late Lights" after the name. The wrapper's head above already draws
-  //     `s.title` at 96/60/40, and this section has exactly one heading field:
-  //     printing it twice is the pricing deck's stutter. The frame gets away
-  //     with it because its head lives outside the instance; ours does not.
-  //     So the bar is the arrow and `s.brand` alone — an intended diff, and
-  //     half the frame's top bar.
+  //   · "— Late Lights" after the name. The bar prints the playing video's
+  //     title (call 9), which is the frame's own "Late Lights", and the artist's
+  //     name not at all.
   //   · `sem/box/3` #CEB081, the fill under the photograph. `Photo`'s own
   //     `backdrop` is the better answer to the same state: this bar's cream
   //     type has no scrim behind it (the gradient is transparent until 76%),
   //     and #EAD7B8 on #CEB081 is 1.43 — a dark panel is what keeps the empty
   //     poster legible, which is exactly what `backdrop` is documented for.
   //   · The `+0.5px` on the transport's centre, which the 390 master drops too.
-  // Everything with a field or a derivation takes it: the head, the name, the
-  // playhead, the running time, the fill and the poster.
-  //
-  // One colour normalisation, the pricing deck's normalise-and-say-so rule:
-  // the frame sets `03:57` and `HD` in `sem/text/2` #111111, over the foot
-  // gradient's black, which renders them all but invisible in its own render —
-  // and the duration is content the artist typed (the media player's
-  // destroys-its-own-content rule). Both take the same `paper` the rest of the
-  // bar does.
+  //   · The foot band (above).
   //
   // `sem/text/1` is the rust, `s.ac` on every palette, and it is the one token
   // here that resolves two ways — the pricing deck's `sem/box/1` lesson. The
-  // head and the progress fill keep it: the head stands on the *page*, where
-  // Lime's acid green is the cost the conventions already name twice, and the
-  // fill has to read as the hot half of a bar whose other half is cream, where
-  // a hue that separates at 1.34 still tells the two apart and `paperFg` was
-  // worse by inspection — a near-black played portion vanished into the card's
-  // own scrim and the bar read as filled from the right. The transport glyph
-  // takes `paperFg` on the flat four, because it has no ground of its own to
+  // head keeps it: it stands on the *page*, where Lime's acid green is the
+  // cost the conventions already name twice. The transport glyph takes
+  // `paperFg` on the flat four, because it has no ground of its own to
   // separate from: it is a 15px stroke *inside* the cream disc, which is
   // exactly where the audio player's ▶ met this wall and took the same pair.
   //
@@ -10437,27 +10443,24 @@ function Video({ s }) {
   // instance is 708 × 402 — the page's number, and the same ~1.761 aspect the
   // other two state — but the component inside it is `h-[567px] shrink-0`, so
   // the instance's `overflow-clip` cuts the top and foot bands away and the
-  // render is three discs on a photograph. That loses the artist's name, the
-  // playhead and the running time at one width only, which is the media
-  // player's rule: a frame's own render is the artefact once it destroys its
-  // own content. All three widths draw the whole thing.
+  // render is three discs on a photograph. That loses the top bar at one width
+  // only, which is the media player's rule: a frame's own render is the
+  // artefact once it destroys its own content. All three widths draw the
+  // whole thing.
   //
   // **Lime (964:72871 · 971:5436 · 977:9010 under Frame 318 964:72867 ·
   // 971:5432 · 977:9006) is the same tree in its own mode, dressed in place**
   // (`lime`, below; plans/video.md, session 3). Its 1440 and 768 instances
-  // bind box/1 `#2E3928` for every disc and the track, text/1 acid green for
-  // the glyphs and the head, and text/2 `#F2FFD0` for all the type on the
-  // photograph. **The 390 instance is in Retro's mode** (its mode collection
-  // reads Retro's: Soulway, `#EAD7B8`, `#FAECD5`, `#C8461C`, and a different
-  // photograph), a leak: nothing is read off it, and the three widths take
-  // the 1440 and 768 tokens. Two bindings that differ per variant are
-  // overridden, both toward the card's own legibility: the Mobile variant
-  // binds the head band's type to sem/bg (the dark page, unreadable on the
-  // poster), and the Desktop and Tablet variants bind the progress *fill* to
-  // box/1, the track's own colour, so the frame's bar shows no played portion.
-  // **The 768 instance clips its own component here too** (708 × 402 over a
-  // 567 tall child at y −82.5), so it is overridden the same way: the whole
-  // composition at all three widths.
+  // bind box/1 `#2E3928` for every disc, text/1 acid green for the glyphs and
+  // the head, and text/2 `#F2FFD0` for all the type on the photograph. **The
+  // 390 instance is in Retro's mode** (its mode collection reads Retro's:
+  // Soulway, `#EAD7B8`, `#FAECD5`, `#C8461C`, and a different photograph), a
+  // leak: nothing is read off it, and the three widths take the 1440 and 768
+  // tokens. The Mobile variant binds the head band's type to sem/bg (the dark
+  // page, unreadable on the poster), which is overridden toward the card's own
+  // legibility. **The 768 instance clips its own component here too** (708 ×
+  // 402 over a 567 tall child at y −82.5), so it is overridden the same way:
+  // the whole composition at all three widths.
   if (s.v3) {
     // Lime's dress, and Grunge's on the same tree (the Grunge band 964:72962 ·
     // 971:7956 · 977:12183, instances 964:72966 · 971:7960 · 977:12187, all in
@@ -10497,24 +10500,18 @@ function Video({ s }) {
     // Display/LG read off the head text node itself — 96/60/40 at leading .89,
     // one line at all three widths (85 / 53 / 36 tall).
     const T = desk
-      ? { disp: 96, lg: 16, list: 16, md: 14, sm: 12, chip: 12 }
+      ? { disp: 96, lg: 16, list: 16 }
       : tab
-        ? { disp: 60, lg: 15, list: 12, md: 13, sm: 12, chip: 11 }
-        : { disp: 40, lg: 15, list: 13, md: 13, sm: 12, chip: 11 }
+        ? { disp: 60, lg: 15, list: 12 }
+        : { disp: 40, lg: 15, list: 13 }
 
-    // `sem/box/1` — every disc and the progress track. Retro's own `paper` IS
-    // the beige page, so the cream is a literal here and the flat four have a
-    // real second paper to take.
+    // `sem/box/1` — every disc. Retro's own `paper` IS the beige page, so the
+    // cream is a literal here and the flat four have a real second paper to take.
     const cream = s.retro ? '#FAECD5' : lime ? s.box1 : s.paper
-    // `sem/text/2` #111111 on that cream. Lime's is the page's pale.
-    const creamInk = s.retro ? '#111111' : lime ? s.tx : s.paperFg
-    // `sem/text/1`, which IS `s.ac` under Retro — so the head and the progress
-    // fill need no literal and no arm. The transport glyph is the same token
-    // resolving the other way; see the branch header.
+    // `sem/text/1`, which IS `s.ac` under Retro — so the head needs no literal
+    // and no arm. The transport glyph is the same token resolving the other
+    // way; see the branch header.
     const glyph = s.retro || lime ? s.ac : s.paperFg
-    // The progress track binds `sem/box/2` (#383838) under Grunge where
-    // Lime's binds `box/1`, the discs' own colour.
-    const track = gr ? s.box2 : cream
     // Cream type on the photograph. `paper` is documented as exactly this —
     // "the ink for type sitting over a photographic scrim" — and under Retro it
     // resolves to the frame's own `sem/bg` #EAD7B8 by construction, so this is
@@ -10543,38 +10540,43 @@ function Video({ s }) {
     // stands behind a longer head.
     const headMeasure = pop && !desk ? `min(100cqi, ${tab ? 478 : 221}px)` : '100cqi'
 
-    const footType = {
-      fontFamily: s.body, fontSize: lime ? s.bodySm : u(T.sm), lineHeight: 1.4,
-      color: onFilm, whiteSpace: 'nowrap', flex: 'none',
-    }
-    // The transport's two sizes. Both discs are cream with a rust glyph — the
-    // inverse of layout 2's, which fills the disc with the rust instead.
+    // The transport's two sizes. Every disc is cream with a rust glyph — the
+    // inverse of layout 2's, which fills the disc with the rust instead — and a
+    // circle on every template (the frames' rounded squares were the foot's
+    // chips, which went with it).
     const ctl = (d) => ({
       width: u(d), height: u(d), flex: 'none', borderRadius: '999px',
       background: cream, color: glyph, ...row('0', { justifyContent: 'center' }),
     })
-    // The foot's two 26px controls. The frame sets an emoji in them at
-    // `size/body-sm`; lucide's ink fills ~0.8 of its `size` box, so 14 draws
-    // the 12 the emoji does (the audio player's size-an-icon-off-its-ink rule).
-    // Lime draws its transport as vectors: the skip is `LimeSkip`'s double
-    // triangle into a bar at the frame's 13.022 (the layout-2 player's glyph),
-    // the pause two 2.686 bars 3 apart (8.372 × 11.189). All three stand in
-    // discs that do not shrink at any width, so they take `z` alone.
-    const limePause = (
-      <svg viewBox="0 0 8.37221 11.1893" width={8.37221 * z} height={11.1893 * z} aria-hidden
-           style={{ display: 'block', flex: 'none' }}>
-        <g fill={glyph}>
-          <rect x="0" y="0" width="2.68611" height="11.1893" />
-          <rect x="5.6861" y="0" width="2.68611" height="11.1893" />
-        </g>
-      </svg>
-    )
-    const chip = (glyph) => (
-      <span style={{
-        width: u(26), height: u(26), flex: 'none', borderRadius: u(ed ? 6 : gr || pop ? 8 : 14),
-        background: cream, color: creamInk, ...row('0', { justifyContent: 'center' }),
-      }}>{glyph}</span>
-    )
+    // The skip discs, drawn while the list has two or more rows. Live, each
+    // steps `cur` with wrap-around and leaves `play` as it is: stopped, the
+    // picture and the title change; playing, the next video mounts and plays.
+    // They sit over the picture's layer, so they stop the click from reaching it.
+    const n = s.videos.length
+    const skip = (d, back, place) => {
+      const go = (e) => { e.stopPropagation(); setCur((at + d + n) % n) }
+      return (
+        <span
+          {...(s.live ? {
+            role: 'button', tabIndex: 0, 'aria-label': back ? 'Previous video' : 'Next video', onClick: go,
+            onKeyDown: (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(e) } },
+          } : null)}
+          style={{ ...ctl(40), ...(s.live ? { cursor: 'pointer', pointerEvents: 'auto' } : null), ...place }}>
+          {/* Lime draws its transport as vectors: the skip is `LimeSkip`'s
+              double triangle into a bar at the frame's 13.022 (the layout-2
+              player's glyph). The discs do not shrink at any width, so the
+              glyphs take `z` alone. */}
+          {lime
+            ? <LimeSkip width={(back ? 13.0217 : 13.0215) * z} color={glyph} back={back} />
+            : back ? <SkipBack size={un(14.6)} fill="currentColor" /> : <SkipForward size={un(14.6)} fill="currentColor" />}
+        </span>
+      )
+    }
+    // The picture's link where the page cannot embed, and the picture's layer:
+    // live, a button that starts the video, or that link; on the canvas, and
+    // on a row that names no video, nothing.
+    const picOut = out(now)
+    const PicTag = picOut ? 'a' : 'span'
 
     return (
       <>
@@ -10654,104 +10656,99 @@ function Video({ s }) {
           // is the same 30 under Figma's corner smoothing (22 / 0.73).
           borderRadius: u(30), overflow: 'hidden',
         }}>
-          {/* Grunge's poster is the bio's drummer, the frame's own (8031d0f3):
-              a 1440 crop at y .087 to .554 and a centred fill narrow, which cuts
-              him at the brow. `grungeStage`'s own focus keeps the head at every
-              width, layout 2's reading (an upload has none and stays centred).
-              Editorial's is `editorialStage` (9d20fe0d, the bio's arch) the same
-              way: a 1440 crop at y .081 to .535, a centred fill at 390 that
-              drops the face, and the file's `'50% 0%'` keeps it. */}
-          <span style={{ position: 'absolute', inset: 0 }}><Photo s={s} backdrop style={gd ? { objectPosition: s.imagePos } : undefined} /></span>
-          <span aria-hidden style={{ position: 'absolute', inset: 0, background: scrim }} />
+          {playing ? frame : <>
+            {/* The playing video's YouTube picture (no `data-photo`: it is the
+                link's, not an upload's), or the Poster while that row has none.
+                Grunge's poster is the bio's drummer, the frame's own (8031d0f3):
+                a 1440 crop at y .087 to .554 and a centred fill narrow, which cuts
+                him at the brow. `grungeStage`'s own focus keeps the head at every
+                width, layout 2's reading (an upload has none and stays centred).
+                Editorial's is `editorialStage` (9d20fe0d, the bio's arch) the same
+                way: a 1440 crop at y .081 to .535, a centred fill at 390 that
+                drops the face, and the file's `'50% 0%'` keeps it. */}
+            <span style={{ position: 'absolute', inset: 0 }}>
+              {now?.thumb
+                ? <Photo s={s} src={now.thumb} style={ytCrop} />
+                : <Photo s={s} backdrop style={gd ? { objectPosition: s.imagePos } : undefined} />}
+            </span>
+            <span aria-hidden style={{ position: 'absolute', inset: 0, background: scrim }} />
 
-          {/* The head band. The frame states `overflow-clip` on it and hard-cuts
-              a long name; ours ellipsises instead, so the one thing this band
-              carries is never lost mid-glyph. */}
-          <div style={{
-            position: 'absolute', left: 0, right: 0, top: 0, height: u(60),
-            color: onFilm, overflow: 'hidden',
-            paddingTop: u(s.mob ? 10 : 20), paddingLeft: padX, paddingRight: padX,
-            ...row(u(16)),
-          }}>
-            <span style={{
-              fontFamily: s.body, fontSize: lime ? s.bodyLg : u(T.lg), lineHeight: 1.5, flex: 'none',
-            }}>←</span>
-            <span style={{
-              fontFamily: s.display, fontSize: gd ? faced(s, s.list) : lime ? s.list : u(T.list),
-              lineHeight: gd ? facedLh(s, 1.2) : 1.2,
-              letterSpacing: s.dls, minWidth: 0, textTransform: gd ? 'uppercase' : undefined,
-              overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-            }}>{s.brand}</span>
-          </div>
+            {/* The picture's layer, over the scrim and under the chrome: live, a
+                click or Enter / Space on it starts the video, or opens it on
+                YouTube where the page cannot embed. A row that names no video
+                draws none, so its picture is a picture, as layout 2's stage. */}
+            {(startable || picOut) && (
+              <PicTag
+                {...(picOut
+                  ? { ...picOut, 'aria-label': `Watch ${now.title || 'the video'} on YouTube` }
+                  : {
+                    role: 'button', tabIndex: 0, 'aria-label': `Play ${now.title || 'video'}`,
+                    onClick: () => setPlay(true),
+                    onKeyDown: (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setPlay(true) } },
+                  })}
+                style={{ position: 'absolute', inset: 0, display: 'block', cursor: 'pointer' }} />
+            )}
 
-          {/* Dead centre at every width. The prev/next glyph is a 13.022 × 6.819
-              double triangle with a bar, which is the media player's layout-4
-              glyph at the ratio the two frames themselves state (0.813) — so it
-              is that branch's `un(18)` at 0.813, and the stroke stays on for
-              the same reason: lucide's SkipBack is one triangle and a bar, and
-              `strokeWidth={0}` would drop the bar and leave a play triangle
-              pointing backwards. The pause mark needs no such judgement: 8.372
-              wide and 11.189 tall are lucide's own 12 × 16 of 24 at 16.75 and
-              16.78, two readings agreeing to a hundredth. */}
-          <div style={{
-            position: 'absolute', left: '50%', top: '50%',
-            transform: 'translate(-50%, -50%)', ...row(u(24)),
-          }}>
-            <span style={ctl(40)}>{lime
-              ? <LimeSkip width={13.0217 * z} color={glyph} back />
-              : <SkipBack size={un(14.6)} fill="currentColor" />}</span>
-            {/* A player caught mid-song, which is the picture the frame draws
-                — and the picture is all this section is. Layout 2's bar says
-                the same thing with the same glyph. */}
-            <span style={ctl(64)}>{lime
-              ? limePause
-              : <Pause size={un(16.8)} fill="currentColor" strokeWidth={0} />}</span>
-            <span style={ctl(40)}>{lime
-              ? <LimeSkip width={13.0215 * z} color={glyph} />
-              : <SkipForward size={un(14.6)} fill="currentColor" />}</span>
-          </div>
-
-          {/* The foot band. `videoAt` and `videoDur` are rendered or not rather
-              than printed blank — an emptied Duration parses to nothing, which
-              takes the playhead and the fill with it (see data.js's clockAt),
-              and the row closes up round the gap. */}
-          <div style={{
-            position: 'absolute', left: 0, right: 0, bottom: 0, height: u(56),
-            overflow: 'hidden',
-            paddingBottom: u(s.mob ? 10 : 16), paddingLeft: padX, paddingRight: padX,
-            ...row(u(12)),
-          }}>
-            {s.videoAt && <span style={footType}>{s.videoAt}</span>}
-            {/* The frame's own `flex-[1_0_0] min-w-px`, transcribed: the track
-                is what absorbs a narrow measure, and with the view count gone
-                it keeps ~130px even at 346. Its fill is `videoPct`, not the
-                masters' own — 364 of 988 at 1440 and the whole width at both
-                narrow widths, against a playhead of 02:05 in 03:57. The clock
-                and the bar are composed from one number here so that they
-                cannot disagree; the frame's three answers are the disagreement
-                data.js already declines to reproduce. */}
-            <span style={{
-              flex: '1 0 0', minWidth: '1px', height: u(3),
-              borderRadius: u(2), background: track, overflow: 'hidden',
+            {/* The head band: the arrow, and the playing video's title (call 9),
+                which follows the skip discs. The frame states `overflow-clip` on
+                it and hard-cuts a long name; ours ellipsises instead, so the one
+                thing this band carries is never lost mid-glyph. A row with no
+                title leaves the arrow alone, as does an emptied list. Live, it
+                lets the pointer through to the picture. */}
+            <div style={{
+              position: 'absolute', left: 0, right: 0, top: 0, height: u(60),
+              color: onFilm, overflow: 'hidden',
+              paddingTop: u(s.mob ? 10 : 20), paddingLeft: padX, paddingRight: padX,
+              ...row(u(16)),
+              ...(s.live ? { pointerEvents: 'none' } : null),
             }}>
               <span style={{
-                display: 'block', width: `${s.videoPct}%`, height: '100%',
-                background: s.ac, borderRadius: u(2),
-              }} />
-            </span>
-            {s.videoDur && <span style={footType}>{s.videoDur}</span>}
-            {chip(<Volume2 size={un(14)} />)}
-            {chip(<Settings size={un(14)} />)}
-            {/* Player chrome, not a claim about a file: the frame's own label,
-                in the register of the two discs beside it, and the media
-                player's "● Popular" precedent. Figma states −6%, which the
-                emitted CSS freezes at the desktop −0.72px; the tracking ramps
-                with its token (the pricing lesson). */}
-            <span style={{
-              fontFamily: s.body, fontWeight: 700, fontSize: lime ? s.chip : u(T.chip), lineHeight: 1,
-              letterSpacing: lime ? '-0.06em' : u(-0.06 * T.chip), color: onFilm, flex: 'none',
-            }}>HD</span>
-          </div>
+                fontFamily: s.body, fontSize: lime ? s.bodyLg : u(T.lg), lineHeight: 1.5, flex: 'none',
+              }}>←</span>
+              {now?.title && <span style={{
+                fontFamily: s.display, fontSize: gd ? faced(s, s.list) : lime ? s.list : u(T.list),
+                lineHeight: gd ? facedLh(s, 1.2) : 1.2,
+                letterSpacing: s.dls, minWidth: 0, textTransform: gd ? 'uppercase' : undefined,
+                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+              }}>{now.title}</span>}
+            </div>
+
+            {/* Dead centre at every width. The prev/next glyph is a 13.022 × 6.819
+                double triangle with a bar, which is the media player's layout-4
+                glyph at the ratio the two frames themselves state (0.813) — so it
+                is that branch's `un(18)` at 0.813, and the stroke stays on for
+                the same reason: lucide's SkipBack is one triangle and a bar, and
+                `strokeWidth={0}` would drop the bar and leave a play triangle
+                pointing backwards. The play mark stands in the frame's pause's
+                place: Lime's is LIME_TRANSPORT's triangle at the pause's 11.189
+                height, lucide's `Play` at the pause's 16.8, each nudged right by
+                the offset layout 2's stage gives its own (3 on 26), since a
+                triangle's weight sits left of its box's centre. Live, the row
+                lets the pointer through to the picture, and the play disc with it;
+                only the skip discs take a click. With fewer than two videos the
+                play disc stands alone. */}
+            <div style={{
+              position: 'absolute', left: '50%', top: '50%',
+              transform: 'translate(-50%, -50%)', ...row(u(24)),
+              ...(s.live ? { pointerEvents: 'none' } : null),
+            }}>
+              {n > 1 && skip(-1, true)}
+              <span style={ctl(64)}>{lime
+                ? <span style={{ display: 'block', marginLeft: u(1.6) }}>
+                    <LimeTransportGlyph kind="play" height={11.1893 * z} color={glyph} />
+                  </span>
+                : <Play size={un(16.8)} fill="currentColor" strokeWidth={0} style={{ marginLeft: u(1.9) }} />}</span>
+              {n > 1 && skip(1, false)}
+            </div>
+          </>}
+
+          {/* While a video plays, the skip discs stay, at the card's two edges
+              at mid-height (call 11): YouTube draws its own button in the
+              centre, its title at the head and its bar at the foot. */}
+          {playing && n > 1 && <>
+            {skip(-1, true, { position: 'absolute', left: padX, top: '50%', transform: 'translateY(-50%)' })}
+            {skip(1, false, { position: 'absolute', right: padX, top: '50%', transform: 'translateY(-50%)' })}
+          </>}
         </div>
       </div>
       </>

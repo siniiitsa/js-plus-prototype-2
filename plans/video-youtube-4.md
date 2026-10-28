@@ -35,6 +35,13 @@ These reopen call 2 (*a picture, as before*) for layout 4, as rows 12 and 13 reo
     `pop` / `lime` arms), and every mechanism it needs already exists for layout 2: `youtubeEmbed` / `youtubeThumb`,
     the iframe, `vm.videoEmbeds` and the link-out fallback, `VideosField` with oEmbed, and `cur` / `play` at
     `Video`'s head. (Not taken: a Retro pilot behind a gate, then the four.)
+11. **While a video plays, the skip discs stay, at the card's two edges at mid-height** (2026-10-28, put during
+    the implementation session, the recommended option). The plan said the discs go while it plays, but its
+    proof expects *skip while playing plays the next*, and with no disc over the player the rest of the list is
+    unreachable once Play is pressed, which call 7 declined. So the head band, the play disc and the scrim go,
+    and the two skip discs move to the box's left and right edges (`padX` in), clear of YouTube's own centre
+    button, title and bar; only with two or more videos. (Not taken: the skips staying either side of the
+    centre, over YouTube's own play area; every disc going, as first written.)
 
 ## What layout 4 becomes
 
@@ -56,7 +63,8 @@ positioned inside the box, so taking them out moves no height, and the neighbour
   two rows, only the play disc is drawn.
 - **Live (`s.live`), with `s.videoEmbeds`:** a click on the play disc or the picture (or Enter / Space) sets `play`
   and mounts the same `<iframe>` as layout 2 (`key={embed}`, the same `allow` and `referrerPolicy`, `autoplay=1`
-  being the visitor's own click) over the whole box. The head band, the discs and the scrim go while it plays. A
+  being the visitor's own click) over the whole box. The head band, the play disc and the scrim go while it plays;
+  the skip discs move to the box's edges (call 11). A
   skip sets `cur` to the next or previous row with wrap-around and leaves `play` as it is: stopped, the picture and
   title change; playing, the next video mounts and plays. A row with no `embed` (a seed row, a link naming no
   video) is a picture: the play disc is drawn but inert, as layout 2's stage is.

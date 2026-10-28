@@ -1001,7 +1001,7 @@ export const VIDEOS = [
   { title: 'Roomtone',           sub: 'Hidden Sessions', when: 'October 2025' },
   { title: 'Field Day (live)',   sub: 'Festival',        when: 'August 2025' },
 ]
-// Layout 2 lists the artist's own YouTube links on every template
+// Layouts 2 and 4 list the artist's own YouTube links on every template
 // (notes/video.md, "YouTube links"): `c.videos` is an array of { url, title, desc },
 // edited by VideosField, which also stores `by` / `byFor`, the channel name
 // oEmbed gave for the link `byFor` names (the line under the player when
@@ -1016,23 +1016,9 @@ export const VIDEO_KEYS = ['url', 'title', 'desc']
 export const videoSeedDesc = (v) => (v ? `${v.sub} · ${v.when}` : '')
 export const VIDEO_SEED = VIDEOS.map((v, i) => ({ url: '', title: v.title, desc: videoSeedDesc(v), art: i }))
 
-// Where the video section's layout-4 transport bar is caught. That layout has
-// no <video> element on either surface — it is a picture (call 2) — so the
-// playhead is composed from the running time the artist typed rather than read
-// off anything: VIDEO_MARK of it, formatted back. The fill under it takes the
-// same fraction, so the two agree. A duration that will not parse gives '',
-// and the bar renders empty rather than inventing a position for it.
-export const VIDEO_MARK = 0.48
-export const clockAt = (dur, frac) => {
-  const m = /^\s*(\d{1,3}):([0-5]\d)\s*$/.exec(String(dur ?? ''))
-  if (!m) return ''
-  const at = Math.round((Number(m[1]) * 60 + Number(m[2])) * frac)
-  return `${String(Math.floor(at / 60)).padStart(2, '0')}:${String(at % 60).padStart(2, '0')}`
-}
 // The frame's own words for the layout-2 panel's link (plans/video.md,
 // call 3), uncased like every JP-071 label.
 export const VIDEO_ALL = 'View All ›'
-export const VIDEO_DURATION = '04:18'
 
 // TAGS is a palette as much as a list: `vm.chips` is one colour seat per entry,
 // and `s.chips[3].bg`, `s.chips[4 % n].bg` and friends are read as seats across
@@ -2157,32 +2143,36 @@ export const FIELDS = {
       hint: 'Scrolls to your enquiry form, or the next place to book. Empty drops the button.' },
   ],
   // The video section (plans/video.md): layout-bound to layouts 2 and 4, so
-  // every `in` below names designs 1 and/or 3. Layout 4 is a picture of a
-  // player (call 2). Layout 2 lists the artist's YouTube links and plays them in
-  // the published tab (`videos`, notes/video.md "YouTube links": Retro's on
-  // 2026-10-28, the other four the same day): its drawn transport, the artist
-  // row with its photo and Follow pill, and the rows' length, source and date
-  // are gone, and with them the `avatar`, `description` and `followCta` fields,
-  // which no design read any more; the stage's title and line are the playing
-  // video's, so `heading` and `duration` are layout 4's alone. View All is kept
-  // and goes somewhere: `channel`, filled from the videos' oEmbed answers while
-  // absent. The poster fills the player at both layouts.
+  // every `in` below names designs 1 and/or 3. Both layouts play the artist's
+  // YouTube links in the published tab (`videos`, notes/video.md "YouTube
+  // links": layout 2 on 2026-10-28, Retro's first and the other four the same
+  // day; layout 4 the same day again, its centre disc playing and its skip
+  // discs stepping the one list). Layout 2's drawn transport, the artist row
+  // with its photo and Follow pill, and the rows' length, source and date are
+  // gone, and with them the `avatar`, `description` and `followCta` fields;
+  // layout 4's foot band (clock, bar, volume, settings, HD) went with
+  // `duration`. Layout 2's stage prints the playing video's title and line,
+  // and layout 4's top bar its title, so `heading` is layout 4's alone. View
+  // All is layout 2's and goes somewhere: `channel`, filled from the videos'
+  // oEmbed answers while absent. The poster fills the player at both layouts.
   video: [
     { k: 'image',   l: 'Poster', type: 'image', aspect: [16, 9], in: [1, 3],
-      hint: 'Fills the player in layouts 2 and 4. In layout 2 it shows on the stage while the '
-          + 'playing video has no YouTube thumbnail.' },
-    // Layout 2 (2026-10-28): the eleventh repeater, { url, title, desc } per
-    // video. Six, the frame's six seats.
-    { k: 'videos',  l: 'Videos', type: 'videos', max: 6, in: [1],
-      // Measured 2026-10-28 (limits.mjs): the row's two-line clamp binds the title
-      // (Retro 50, Lime 39, Grunge 46, Pop 29, Editorial 21: Titan's and Gloock's
-      // capitals are the widest, and their seeds already take two lines), the
-      // stage's one meta line the description (63 at 390 on all five).
-      cols: { title: { Retro: [null, 50], Lime: [null, 39], Grunge: [null, 46], Editorial: [null, 21],
-        Pop: [null, 29] }, desc: { '*': [null, 63] } },
+      hint: 'Fills the player in layouts 2 and 4 while the playing video has no YouTube thumbnail.' },
+    // The eleventh repeater, { url, title, desc } per video. Six, the layout-2
+    // frame's six seats; layout 4 plays the same list, one at a time.
+    { k: 'videos',  l: 'Videos', type: 'videos', max: 6, in: [1, 3],
+      // Measured 2026-10-28 (limits.mjs): at layout 2 the row's two-line clamp binds
+      // the title (Retro 50, Lime 39, Grunge 46, Pop 29, Editorial 21: Titan's and
+      // Gloock's capitals are the widest, and their seeds already take two lines), the
+      // stage's one meta line the description (63 at 390 on all five). At layout 4
+      // the top bar's one ellipsised line beside the arrow binds the title (390's
+      // box), and no description is drawn.
+      cols: { title: { Retro: [null, 50, null, 54], Lime: [null, 39, null, 50], Grunge: [null, 46, null, 55],
+        Editorial: [null, 21, null, 29], Pop: [null, 29, null, 35] }, desc: { '*': [null, 63, null, null] } },
       hint: 'Paste a YouTube video, short or playlist link; the title fills itself in, and you can '
-          + 'change it. Under the player, the playing video’s title and description show; with no '
-          + 'description, its YouTube channel’s name. The videos play on the published page.' },
+          + 'change it. Layout 2 lists them beside the player, which shows the playing video’s title '
+          + 'and description (with no description, its YouTube channel’s name). Layout 4 plays them '
+          + 'one at a time under its title, stepped by the arrows. The videos play on the published page.' },
     // Layout 4's band's display head (HEADING_4). Layout 2 printed it over the
     // description until 2026-10-28, when the playing video's title took the
     // seat; the layout-2 measures below are kept as history, their seats null.
@@ -2203,9 +2193,6 @@ export const FIELDS = {
       chars: { Lime: [null, null, null, 19], Grunge: [null, null, null, 25], Editorial: [null, null, null, 16],
         Pop: [null, null, null, 16], '*': [null, null, null, 20] },
       hint: 'The band’s large head, layout 4 only.' },
-    { k: 'duration', l: 'Duration', d: VIDEO_DURATION, in: [3],
-      chars: { '*': [null, null, null, 8] },
-      hint: 'Minutes and seconds, as 04:18. The player’s clock and its bar are drawn from it; anything else leaves them empty.' },
     // Call 3: View All, JP-071's shape (the frame's own bytes, uncased, dropped
     // when emptied). "Top music video" stays a literal. Measured 39 at 390: held
     // to 16 by judgement, as the repertoire's and the form's pills are.
@@ -3119,16 +3106,19 @@ export const INLINE_OFF = {
   'Retro.4.header.kicker': 'not drawn: the layout-5 Overlay card prints no kicker (a shared identity key; the bio’s role line and the form print it)',
   'Retro.4.header.location': 'not drawn: the layout-5 Overlay card prints no location (a shared identity key; the bio and the calendar print it)',
   '*.*.pricing.tiers.tags': 'derived value: the filter chips are the distinct tags of every package',
+  '*.3.video.videos.desc': 'not drawn: layout 4 prints the playing video’s title alone',
   '*.*.repertoire.songs.tags': 'derived value: the filter chips are the distinct tags of every song',
 }
 // INLINE_HEAD names a repeater the canvas draws only a head of, by a cap and a
 // pager: repertoire layout 3 draws a song under every tag it carries, four a card
 // and three cards a page, so a song can stand twice and a later one not at all (the
-// rest are behind a card's *View full set*, live only). The group stays editable
-// where it is drawn; a row `drawnRows` (EncoreBuilder.jsx) does not list is in the
+// rest are behind a card's *View full set*, live only). The video prints one row's
+// copy: layout 2's stage its description, layout 4's top bar its title (the skip
+// discs step it, live only). The group stays editable where it is drawn; a row `drawnRows` (EncoreBuilder.jsx) does not list is in the
 // ledger with this reason, which is also what keeps the nth-peer pairing honest.
 export const INLINE_HEAD = {
   '*.1.video.videos.desc': 'not drawn: only the video on the stage prints its description',
+  '*.3.video.videos.title': 'live-only copy: layout 4’s top bar prints only the video in the player; the others are a skip away',
   '*.2.repertoire.songs': 'live-only copy: this song is behind a card’s View full set, or on a page of the pager',
 }
 // The two marks stand in layout 1's gallery blocks alone; layout 2 draws its
@@ -3273,20 +3263,8 @@ export const IDENTITY_CHARS = {
     seal: { Retro: [19, null, 19], Lime: [13, null, 22], Grunge: [14, null, 14], Editorial: [16],
       Pop: [null, null, 12] },
   },
-  // The artist's name as the video prints it: layout 4's top bar (layout 2's artist
-  // row, until 2026-10-28). Retro's measure and Lime's layout 2 (also 49); Lime's layout 4 measured 50
-  // (390 binds; 149 at 1440, 96 at 768), and the other two are read in theirs.
-  video: {
-    // Grunge's layout 2: 49, Retro's number again (138 / 114 / 49 at 1440 / 768 / 390); its
-    // layout 4: 55 (163 / 105 / 55; 390 binds), session 5. Editorial's layout 2: 49 again
-    // (138 / 114 / 49), session 6; its layout 4: 29 (session 7: 89 / 58 / 29, 390's box binds
-    // — Gloock in capitals beside the arrow). Pop's layout 2: 49 again (138 / 114 / 49), session 8;
-    // its layout 4: 35 (session 9: 108 / 66 / 35, 390's box binds — Titan in capitals beside the arrow).
-    // Layout 2 prints no name since its artist row went (2026-10-28, YouTube
-    // links), so every template's design-1 seat is null.
-    title: { Retro: [null, null, null, 54], Lime: [null, null, null, 50], Grunge: [null, null, null, 55],
-      Editorial: [null, null, null, 29], Pop: [null, null, null, 35] },
-  },
+  // No video row: layout 4's top bar printed the artist's name until 2026-10-28 and
+  // prints the playing video's title since (`videos.title`), and layout 2 none.
   calendar: {
     title: [null, 64],
     location: { Retro: [19, null, null, 67], Lime: [null, null, null, 64], Grunge: [null, null, null, 55],
