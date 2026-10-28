@@ -593,8 +593,9 @@ text rule alone, so a later session must not unify the two). `photoFieldAt` take
   reads it **not at all**: it is a wall of every review, so there is nothing to page),
   the **footer's link columns and its Book pill** (below),
   **Lime's media-player Book pill** (layout 1: `vm.mediaCta` on `vm.bookTo`, below),
-  **Retro's layout-2 video stage and rows**, which mount a YouTube embed on a click, or link out to YouTube where the tab has no http(s) origin (`notes/video.md`,
-  *Retro · YouTube links*; its panel's title lookup is the builder's one network request),
+  **the video's players** (every template): layout 2's stage and rows, and layout 4's picture and its two skip discs, which step
+  through the same list, so a click mounts a YouTube embed, or links out to YouTube where the tab has no http(s) origin (`notes/video.md`,
+  *YouTube links* and *Layout 4 plays the list*; its panel's title lookup is the builder's one network request),
   and the four sets of outbound links — the **media player's
   Soundcloud button**, the **gallery's YouTube / Instagram / TikTok rows**, the
   **events map's per-gig tickets link** and the **footer's web-address rows**
@@ -630,9 +631,9 @@ text rule alone, so a later session must not unify the two). `photoFieldAt` take
   **layout-bound** category: `NVAR.video = 4` with designs 0 and 2 empty (`videoDesign()` folds them onto
   1 and 3), the sidebar's `LayoutPicker` offers only layouts 2 and 4 (`layoutChoices`), and the setup
   modal's cards 2 and 4 insert it after the media player and cards 1 and 3 drop it (`pickHeader`,
-  no `st.removed` write). It has no nav link (`CATS.video.noNav`) and no `live` seam — a picture of a
-  player (`notes/video.md`) — except Retro's layout 2, which lists the artist's YouTube links and plays
-  them when live. The 10 non-header, non-video
+  no `st.removed` write). It has no nav link (`CATS.video.noNav`). Both its layouts, on every template, play the
+  artist's YouTube links when live (`notes/video.md`): layout 2 lists them beside a stage, layout 4 plays
+  them one at a time under its skip discs; on the canvas each is a picture of its player. The 10 non-header, non-video
   categories are also the ones that stay *numbered*: only the header's layouts have names
   (`headerLayout()` in `data.js`), because it is the one a first-time user is asked to choose.
 - **Accessibility is scoped to the chrome.** The rendered preview is a picture of a website,
@@ -650,7 +651,7 @@ file is loaded into every session and holds only what is cross-cutting.
 |---|---|
 | [`notes/bio.md`](./notes/bio.md) | The bio: the layout-1 reference line, the character caps and their word-bound heading |
 | [`notes/media.md`](./notes/media.md) | The media player: `<audio>`, `cur`, the layout-2 fan, layout 4's sleeve and grid |
-| [`notes/video.md`](./notes/video.md) | The video section: layout-bound to layouts 2 and 4, the setup modal's insert / drop, no nav link, a picture of a player but for Retro's layout-2 YouTube list |
+| [`notes/video.md`](./notes/video.md) | The video section: layout-bound to layouts 2 and 4, the setup modal's insert / drop, no nav link, the artist's playable YouTube list at both layouts (layout 4 one at a time, stepped by skip discs) |
 | [`notes/repertoire.md`](./notes/repertoire.md) | The repertoire: the character caps, the tag as a set's key, the shared set line |
 | [`notes/gallery.md`](./notes/gallery.md) | The gallery: `pick`, the strip and its mobile window, social rows, the layout-3 viewer |
 | [`notes/map.md`](./notes/map.md) | The events map: pager, pin/row pairing, city chips, zoom, the ticker, the stat wall |

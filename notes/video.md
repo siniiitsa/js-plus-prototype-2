@@ -1,8 +1,10 @@
 # Video
 
-The section `plans/video.md` restores: a picture of a video player, drawn where Figma draws one —
-**layouts 2 and 4 of all five templates**, and nowhere else. Read the plan for the calls (1–5) and
-which Figma node is the section; this file is what the code does about them.
+The section `plans/video.md` restores: a video player, drawn where Figma draws one — **layouts 2 and
+4 of all five templates**, and nowhere else — which plays the artist's YouTube links on the published
+page (layout 2 since `plans/video.md` rows 12 and 13, layout 4 since `plans/video-youtube-4.md`). Read
+the plans for the calls (1–5, then 7–11) and which Figma node is the section; this file is what the
+code does about them.
 
 ## Layout-bound: designs 1 and 3 only
 
@@ -31,38 +33,33 @@ a section that somehow carries `arch` 0 or 2 draws layout 2 or 4 rather than not
   so a video neither shows in the header's nav nor reaches `NAV_MINIMAL` or `CTA_TARGETS`: the
   frames' nav has no entry for it.
 
-## A picture, not a player
+## A player on the published page, a picture on the canvas
 
-`Video` in `EncoreSection.jsx` draws a player; it plays nothing, links nowhere and reads no
-`s.live` (call 2). The play disc, the scrubber, the settings and volume icons, `View All ›`,
-the bookmark / link / bell controls and `Follow` are drawn and dead, as in the frames. Nothing in
-the published tab, the preview or the thumbnails differs from the canvas.
-
-**Except Retro's layout 2** (2026-10-28, below: *Retro · YouTube links*), whose list is the artist's
-YouTube links and which plays them where `s.live` is set. Lime, Grunge, Editorial and Pop at layout 2,
-and every template at layout 4, are still the picture this section describes.
+Call 2 (2026-10-27) made `Video` a picture of a player: nothing played, linked or read `s.live`.
+**No layout is a picture any more.** Layout 2 lists the artist's YouTube links and plays them where
+`s.live` is set (2026-10-28, *YouTube links*: Retro first, then Lime, Grunge, Editorial and Pop the
+same day), and layout 4 plays the same list, one video at a time, stepped by its skip discs (the same
+day again, *Layout 4 plays the list*, below). On the canvas both stay pictures of their players, by the
+gallery's YouTube rule: no handler, no link, no pointer cursor. The drawn transports, clocks, bars,
+volume and settings icons, *HD*, the artist row and Follow, which a link or oEmbed cannot supply, are
+gone from both.
 
 ## Fields (`FIELDS.video`)
 
 | Key | Layouts | What it prints |
 |---|---|---|
-| `image` | 2, 4 | The poster, 16:9. Retro L2: the stage while the current row has no YouTube thumbnail |
-| `avatar` | 2 (not Retro) | The artist's circle beside the name and beside each listed video, 1:1 |
-| `videos` | 2 (Retro only) | The list, `{ url, title, desc }` per row (plus `by` / `byFor`), max 6 (`VideosField`; *Retro · YouTube links*) |
-| `heading` | 2 (not Retro), 4 | L2: the label over the description. L4: the band's display head. Seeds `TITLES.video` (*Live at Roomtone*) and `HEADING_4.video` (*See me in action*) |
-| `description` | 2 (not Retro) | One ellipsized line under the heading |
-| `duration` | 2 (not Retro), 4 | The clock, as `04:18`; the bar's fill is drawn from it (`vm.videoAt`, `VIDEO_MARK`, `clockAt`) |
+| `image` | 2, 4 | The poster, 16:9: the player while the current row has no YouTube thumbnail |
+| `videos` | 2, 4 | The list, `{ url, title, desc }` per row (plus `by` / `byFor`), max 6 (`VideosField`; *YouTube links*). L4 prints the playing row's title alone |
+| `heading` | 4 | The band's display head. Seeds `HEADING_4.video` (*See me in action*); `TITLES.video` (*Live at Roomtone*) is the seed layout 2 printed until 2026-10-28 |
 | `allCta` | 2 | *View All ›* over the list |
-| `channel` | 2 (Retro only) | Where Retro's *View All* goes when live; filled from the videos' oEmbed `author_url` while absent |
-| `followCta` | 2 (not Retro) | *Follow* at the end of the artist row |
+| `channel` | 2 | Where *View All* goes when live; filled from the videos' oEmbed `author_url` while absent |
 
-`allCta` and `followCta` are JP-071's shape: the frame's own bytes, uncased, dropped when emptied.
-**`duration` is not in call 4's field list** — it was in the old `FIELDS`, so it is kept, and anything
-that is not `mm:ss` leaves the clock and the bar empty. The rest of the copy — *Top music video*, the
-six rows' titles, kinds, dates and lengths — is a literal or seeded (`VIDEOS`), and has no repeater
-(call 4). The six rows are therefore **not** inline-editable and need no `INLINE_OFF` row: the
-canvas never offered them (`inline-probe --cat video`: Retro L2 5 slots hit, L4 2, PASS, nothing
-unledgered).
+`allCta` is JP-071's shape: the frame's own bytes, uncased, dropped when emptied. *Top music video*
+is a literal. **Deleted on 2026-10-28** (*YouTube links*, the rollout): `avatar`, `description` and
+`followCta`, which only layout 2's artist row and the rows' source line read, and which no design reads
+since; and the same day `duration` (layout 4's clock and bar, with `VIDEO_DURATION`, `VIDEO_MARK`,
+`clockAt` and `vm.videoDur` / `videoAt` / `videoPct`; *Layout 4 plays the list*). A page that stored one
+keeps the key in `c`, unread.
 
 ## Photography
 
@@ -72,22 +69,21 @@ is `limeHero` too (session 2, below). `GRUNGE_PHOTOS.video` is `grungeStage`, th
 it is the frame's own (session 4, below). `EDITORIAL_PHOTOS.video` is `editorialStage`, the bio's arch, and
 the frame's own (session 6, below). `POP_PHOTOS.video` is `popStage`, the bio's arch, and the frame's own
 (session 8, below). The list's six thumbnails are `RETRO_VIDEO_ART` (gallery 1, 2, 3, 5, 6, 7)
-through `ROW_ART.video`, and the small circles are the `avatar` (`defaultImage`'s avatar arm reads it
-for video as it does the header's). Only the poster and the avatar are `photoSlots`; the thumbnails are
-the seed's and carry no `data-photo` (`photo-probe --cat video`: PASS, `--blank` and `--drop` too, no
-`PHOTO_OFF` row).
+through `ROW_ART.video` (a seed row's `art`), until a link gives the row YouTube's thumbnail. Only the
+poster is a `photoSlot` since the `avatar` field went (2026-10-28; `defaultImage`'s avatar arm is the
+header's alone); the thumbnails are the seed's or the link's and carry no `data-photo` (`photo-probe
+--cat video`: PASS, `--blank` and `--drop` too, no `PHOTO_OFF` row).
 
 ## Caps (`node scripts/limits.mjs video`, Retro; Lime's layout 2 in session 2; Grunge's layouts 2 and 4 in sessions 4 and 5; Editorial's layouts 2 and 4 in sessions 6 and 7; Pop's layout 2 in session 8, its layout 4 in session 9)
 
 | Field | Cap | Measured |
 |---|---|---|
-| `heading` | 64 (L2), 20 (L4) | L4's 30 at 1440 would take a second line; 390 binds at 20 |
-| `description` | 69 | One ellipsized line: prose clips at 64 at 390, the seed is 69 and fits, so the cap is the seed's length (`--check` reports it as *floor*) |
-| `duration` | 8 | Measured 22 / 39; a time, held to its shape |
-| `allCta`, `followCta` | 16 | Measured 39 / 37 at 390, a pill drawn ×4 its frame width there — judged, as the other pills are |
-| `IDENTITY_CHARS.video.title` | 49 (L2), 54 (L4) | The artist's name in layout 2's artist row and layout 4's top bar; the clamp is an ellipsis. Retro's L2 seat is `null` since 2026-10-28: its artist row is gone |
-| `videos.desc` | 63 (Retro L2) | One ellipsized line under the stage's title; the 390 box binds (157 / 122 / 63) |
-| `videos.title` | 50 (Retro L2) | Two lines of the row title, then the clamp: 55 at 1440 takes a third line, 50 at 768 and 390 (`limits.mjs` gives `videos.title` one extra line, `EXTRA_LINES`) |
+| `heading` | 20 (L4) | L4's 30 at 1440 would take a second line; 390 binds at 20. Its L2 seats are `null` since 2026-10-28 (the measures below are history) |
+| `duration` | — | Deleted 2026-10-28 with layout 4's foot band (it was 8, a time, held to its shape) |
+| `allCta` | 16 | Measured 39 at 390, a pill drawn ×4 its frame width there — judged, as the other pills are |
+| `IDENTITY_CHARS.video.title` | — | The artist's name in layout 4's top bar until 2026-10-28 (Retro 54, Lime 50, Grunge 55, Editorial 29, Pop 35); the row is deleted, since neither layout prints the name now. The same seats are `videos.title`'s at L4 |
+| `videos.desc` | 63 (L2, all five; L4 draws none but lists the box, so it keeps L2's 63: the copy is L2's) | One ellipsized line under the stage's title; the 390 box binds (Retro 157 / 122 / 63, the four 138–153 / 114–122 / 63) |
+| `videos.title` | Retro 50, Lime 39, Grunge 46, Pop 29, Editorial 21 (L2); Retro 54, Lime 50, Grunge 55, Editorial 29, Pop 35 (L4) | L2: two lines of the row title, then the clamp (`limits.mjs` gives `videos.title` one extra line, `EXTRA_LINES`). Pop's and Editorial's seeds already take two lines in Titan's and Gloock's capitals. L4: the top bar's one ellipsised line beside the arrow, 390's box binding on all five (`EXTRA_LINES` inert: the seat is `nowrap`) |
 
 Lime's layout 2 measured 82 for `heading` (Retro 64: the label face is narrower, and 390's box binds),
 64 for `description` (prose; the 69-character seed fits at 390, so the cap stays the seed's length and
@@ -759,7 +755,7 @@ breaks as the rule *moving a section out of the run undoes it* says, and `addSec
   Retro reads neither `above` nor `below`, so no seam changes.
 - Re-run on Retro: see the plan's status row 11.
 
-## Retro · YouTube links (2026-10-28)
+## YouTube links (layout 2; Retro, then all five, 2026-10-28)
 
 User calls, put with `AskUserQuestion`, each the recommended option: the **Dashboard player** (layout 2,
 what Add section opens on a layout-1 page and setup card 2 places) takes **the artist's YouTube links**;
@@ -843,3 +839,141 @@ the same day (user call, 2026-10-28: "view all button is missing. Implement it a
   `index.html` also has to be refreshed from the standalone build, or it is the old picture of a player.
 - **Open:** a playlist-only row has no `thumb` (`youtubeThumb` needs a video id), so it shows its seed art or
   the shade ground. oEmbed does return a playlist's `thumbnail_url`; storing it on the row is the fix if wanted.
+
+### The rollout to Lime, Grunge, Editorial and Pop (2026-10-28)
+
+User calls, put with `AskUserQuestion`, each the recommended option: **layout 2 only** (layout 4 stays a
+picture on all five, Retro included); **the stage's play disc is the accent disc**; **the dead picture
+and its fields are deleted**, by CLAUDE.md's rule that a field no design reads is deleted.
+
+- **One tree, no gate.** `yt` is gone from `v1`: every template takes the YouTube path, and the drawn
+  transport, the corner discs, the artist row (avatar, name, the three action discs, Follow) and the rows'
+  running time, source line and date are deleted from the JSX, with `ctl`, `act`, `actPop`, `limePause`,
+  `dots`, `shade` and the lucide `Maximize` / `Bookmark` / `Link2` / `Bell` imports. Retro renders
+  byte-identical (the digest, below).
+- **What each template keeps of its own.** The stage takes the old player's radius
+  (`gr ? 15 : ed ? 0 : lime ? 50 : 40`: Grunge 15, Editorial square, Lime and Pop 50, Retro 40), and its
+  Poster fallback reads `s.imagePos` under Grunge, Editorial and Pop, as the old player's did. The panel
+  (Grunge's 1px ring, Editorial's dashed `DashRule`, Lime's and Pop's bare box), the thumbnails (Lime's 154
+  narrow, Editorial's square, the corner play disc and its per-template radii and triangles) and the faced
+  uppercase row titles are unchanged; the titles take the two-line clamp under every template.
+- **The play disc** is Retro's rust on mustard with its hard block, and under the four the accent on its own
+  ink, `s.ac` / `s.acFg`, held by the `stroke/1` hairline (`hair`), no shadow: Lime acid green, Grunge red,
+  Editorial terracotta, Pop pink. A circle, but Grunge's, a rounded square at its pause disc's R8 on 28,
+  scaled to the 72 / 56 disc, since every disc in its frame is one.
+- **The current row's ring** is `rust`, which is `s.ac` on every template, so it needed no arm; its
+  `borderRadius: 'inherit'` keeps Editorial's square. **The stage's ground** stays `#111111` on all five, a
+  player's black: it shows only before the iframe paints, or round a row with no picture.
+- **The 390 gap** between stage and panel is 20 on every template: it was the artist row's bottom padding.
+- **Data.** `vm.videos` and `vm.videoAllHref` read `c.videos` / `c.channel` under every template, and the
+  static `VIDEOS` arm is gone; `VIDEOS` stays as `VIDEO_SEED`'s source, less its unread `length`. `vm.videoDesc`
+  and `vm.videoFollow`, `DEFS.videoDesc` and `VIDEO_FOLLOW` are deleted, and so is `defaultImage`'s video
+  avatar arm. `videos` and `channel` are `in: [1]`, `heading` and `duration` `[3]`;
+  `IDENTITY_CHARS.video.title`'s design-1 seat is `null` on all five; `INLINE_HEAD`'s row is
+  `'*.1.video.videos.desc'`. `VideosField`, `drawnSeq` and `INLINE_ROWS.video` were already
+  template-agnostic and did not change.
+- **Caps** (`limits.mjs video --designs=1`): `videos.title` Lime 39, Grunge 46, Pop 29, Editorial 21 (Retro
+  re-measured 50); `videos.desc` 63 on all five (the 390 meta line binds). Pop's and Editorial's seeds already
+  take two lines in Titan's and Gloock's capitals, so their caps are the tightest, and a longer YouTube title
+  is clamped at a word with `…`; the full title is still stored.
+- **Proved** on the working tree: `npm run build` clean; `limits.mjs video` `--check` 0 failing, `--seeds` 0
+  over; `inline-probe --check` at layouts 2 and 4 and `photo-probe --check` / `--blank` / `--drop` at layout 2,
+  1440 and 768, PASS on all five templates (25 runs; the video's avatar is no longer a photo slot, and no run
+  reports it MISSING); `page-check T 1,0,2,3` on the four: no console error on any card, `overflow390` 0, and
+  the seams with the media above and the repertoire below meet cleanly (layout 2's are straight); two-build
+  digest against `af68856`, plain, `&above=media` and `&below=video` (720 renders each, port normalised):
+  **exactly 24 files differ in each**, the video at arch 0 and 1 under Lime, Grunge, Editorial and Pop at three
+  widths, and Retro, layout 4 and every other section are byte-identical. Driven by hand on setup card 2 of
+  each of the four: a `watch?v=`, a `youtu.be` and a playlist link fill their titles and channels and the
+  List link address (`@RickAstleyYT`); in Preview at Desktop, Tablet and Mobile the stage mounts the embed,
+  a row puts its video on the stage, the ring, heading and line follow, and View All is the channel; the
+  `file://` standalone build's published tab (`about:blank`) links the stage and all four rows out to YouTube
+  in a new tab, mounts no player, and keeps View All.
+
+## Layout 4 plays the list (all five, 2026-10-28)
+
+`plans/video-youtube-4.md`, calls 7–10 put with `AskUserQuestion` before the session and call 11 during it,
+each the recommended option; they reopen call 2 for layout 4, as rows 12 and 13 did for layout 2. **Layout 4
+plays layout 2's list** (`videos` `in: [1, 3]`, one `VideosField`, so a section moved between the two layouts
+keeps its links); **the controls become real and the fake ones go** (the centre disc is Play, the skip discs
+step the list, the foot band and `duration` are deleted); **the top bar prints the playing video's title**;
+**one session for all five**; and **while a video plays, the skip discs stay at the card's two edges**
+(call 11: the plan had them go with the head band, which would have left the rest of the list unreachable
+once Play was pressed, the very thing call 7 declined).
+
+- **One state, hoisted.** `cur` / `play`, `first` / `at` / `now` / `playing`, `out()`, `startable`, `ytCrop`
+  and the iframe (`frame`) stand at `Video`'s head above both branches, so the two players cannot drift.
+  `cur` is read through `min(cur ?? first, n − 1)` as before; the file still has no effect.
+- **The picture** is the playing row's `thumb` at `ytCrop` (no `data-photo`), else the Poster with `backdrop` and,
+  under Grunge, Editorial and Pop, `s.imagePos`, as before. The box is 1328:754 (370:209 at 390), about 1% of
+  hqdefault's bar against layout 2's 4%; the same `scale(1.04)` hides it. The scrim and `Photo backdrop` keep
+  their place.
+- **The top bar**: the arrow always, then the row's title (`now.title`, clamped by `videos.title`'s design-3 seat),
+  in the band's existing type and ellipsis, uppercased under Grunge, Editorial and Pop as the name was. An
+  untitled row and an emptied list leave the arrow alone (decided in code: the arrow is the frame's chrome, not
+  a label for the title).
+- **The centre row**: `[skip back] [play] [skip forward]` at 40 / 64 / 40, every disc a circle in its template's
+  cream and glyph (the frames' rounded squares were the foot's chips, which went). Lime's play mark is
+  `LIME_TRANSPORT`'s triangle (`LimeTransportGlyph kind="play"`) at the pause's 11.189 height; elsewhere lucide
+  `Play` at the pause's 16.8. Each is nudged right (1.6 / 1.9 × z) by layout 2's own 3-on-26 offset, since a
+  triangle's weight sits left of its box's centre. The skips keep `LimeSkip` / `SkipBack` / `SkipForward`, and are
+  drawn only while the list has two or more rows.
+- **Live, with embeds**: the picture's layer (a `role="button"` span, `inset: 0`, after the scrim and before the
+  chrome) starts the video on a click or Enter / Space; the head band and the centre row take
+  `pointer-events: none` (live only), so a click on the play disc or the title lands on the layer, and the skip
+  discs alone take `pointer-events: auto` and `stopPropagation`. The discs are the layer's siblings, never its
+  children: no control nests in another. Tab order: the picture (Play), Previous, Next. Playing, the iframe fills
+  the box and the head band, the play disc, the scrim and the picture go; the two skips stand at `padX` from the
+  box's left and right edges at mid-height. A skip sets `cur` to `(at ± 1) mod n` and leaves `play` alone: stopped,
+  the picture and the title change; playing, the next video mounts and plays. **Skipping while playing onto a row
+  with no video** (a seed row, a link naming none) shows its picture with the inert play disc and the discs back in
+  the centre, `play` still set, so the next skip onto a playable row plays it without another click (the
+  visitor's gesture, made on the skip).
+- **Live, without embeds** (`file://`, `about:blank`): the layer is an `extLink` anchor to the row's `href` in a new
+  tab, labelled *Watch … on YouTube*; no iframe mounts and the skips still step the picture, the title and the link.
+- **The canvas** draws the seeded or linked picture, the title and the discs, with no handler, link, role or cursor
+  (so `photo-probe` still reaches the Poster, and the inline editor the title).
+- **Data.** `FIELDS.video.duration`, `VIDEO_DURATION`, `VIDEO_MARK`, `clockAt` and `vm.videoDur` / `videoAt` /
+  `videoPct` are deleted (nothing outside the video read them: `grep -rn` over `source/`); `IDENTITY_CHARS.video`
+  is deleted, since every seat was `null` once layout 4 stopped printing the name (`identityCapOf` reads an absent
+  row as no cap, as for the header and the repertoire). `vm.videos` and `vm.videoEmbeds` were already resolved at
+  every design. `channel` / `allCta` stay `in: [1]`; `VideosField` still offers the channel at layout 4 while
+  `c.channel` is absent, where it waits for layout 2. In the lucide import, `Volume2` and `Settings` went (layout 4's
+  alone); `Pause` stays, for the media player.
+- **Inline ledger.** `'*.3.video.videos.desc'` is an `INLINE_OFF` row (*not drawn*), and
+  `'*.3.video.videos.title'` an `INLINE_HEAD` row (*live-only copy*): the top bar prints the title of the row
+  `drawnSeq`'s video arm already names (the first row with a player, else the first), so **`drawnSeq` needed no
+  change**, and is not design-aware: `INLINE_HEAD` names the column per design.
+- **The Description box at layout 4.** `VideosField` lists it at every layout it is shown at, and a `null` seat would
+  have handed `CappedText` no cap (no counter, no `maxLength`), so copy typed at layout 4 could outrun layout 2's
+  seat unseen; the design-3 seat is layout 2's 63 instead. It clamps nothing at layout 4, which draws no description
+  (`limits.mjs --check --designs=3`: *unseen*, 0 failing).
+- **Caps** (`limits.mjs video --designs=3 --keys=videos.title`): Retro **54**, Lime **50**, Grunge **55**, Editorial
+  **29**, Pop **35** (Retro 180 / 119 / 54, Lime 149 / 96 / 50, Grunge 163 / 105 / 55, Editorial 89 / 58 / 29, Pop
+  108 / 66 / 35 at 1440 / 768 / 390: 390's box binds on all five), exactly the old `IDENTITY_CHARS.video.title` seats,
+  as they should be (the same box and type). The longest seed title is 20, so `--seeds` reports 0 over; `--check` 0
+  failing, and `who.title` / `who.seal` read *unseen* at every video design.
+- **The height is the frame's still**: nothing in the band moved, the foot band and the transport being absolute
+  inside the box. `page-check` 1440 / 390: Retro 1156 / 375, Lime 1186 / 387, Grunge 1186 / 380, Editorial 1175 /
+  404, Pop 1143 / 383, the sessions' own numbers.
+- **Proved** on the working tree: `npm run build` clean; `limits.mjs video` `--check` 0 failing and `--seeds` 0 over;
+  `inline-probe --theme T --layout 2,4 --width 1440,768 --check` PASS on all five (whole page; the video at layout 4
+  hits `video.heading` and `video.videos[0].title`, rows 1–5 *live-only copy*, every `desc` *not drawn*; layout 2
+  unchanged at 9 video hits); `photo-probe --layout 4 --width 1440,768` `--blank` and `--drop` PASS on all five, and
+  `--check` PASS on Retro, Lime, Grunge and Pop. **Editorial's plain `--check` flakes** on another section's photo
+  (`header.image` or `media.tracks:2`, *the dialog frames null*: the crop dialog's image not yet loaded) in one run of
+  two, and the same probe against `7314ad8` fails it in two of two, so it predates this change; the video's poster hits
+  on every run. `page-check T 3,0,1,2` on all five: no console error or warning on any card, `overflow390` 0, the seams
+  to the media above and the gallery below as before. **Two-build digest against `7314ad8`** (720 renders each, port
+  normalised), plain, `&above=media` and `&below=video`: **exactly 30 files differ in each**, the video at arch 2 and 3
+  (layout 4's folded pair) under all five templates at three widths; layout 2 and every other section are
+  byte-identical, so the hoist leaked nothing, and Grunge's 390 torn head (`&above=media`) is still drawn. Driven by
+  hand on setup card 4 of each template (`yt4-hand.mjs`, headless shell): a `watch?v=`, a `youtu.be` and a playlist
+  link fill their titles, the top bar shows the first (clamped at the cap), the panel lists Videos at layout 4, and
+  layout 2 and back keep the list; in Preview at Desktop, Tablet and Mobile, a skip while stopped changes the picture
+  and title, Previous from the first wraps to the last (a seed row: the Poster, no play layer) and Next back to the
+  first, Play mounts the embed with the skips at the edges (24 / 1255 of 1319 at Desktop), skip while playing plays
+  the next video and then the playlist (`videoseries`), and a one-video list draws no skips and still plays. In the
+  `file://` standalone build's published tab (`about:blank`) the picture is *Watch … on YouTube* in a new tab, no
+  player mounts, and the skips step the title, picture and link. The root `index.html` and `published.html` are
+  refreshed from the standalone build.

@@ -197,23 +197,26 @@ layout 3's cards do not draw as `off`, so the drawn copy and the drawn slots agr
 
 `stats` and `steps`, which Phase 0 wrote with no page to prove them, are proved on Retro layout 4: the twelve stat cells and the six step cells hit at 1440 and 768 and Escape restores `c` (0 NOT-RESTORED), so `statsVal` / `stepsVal` resolve what `sectionVm` does. The ledger rule's second `INLINE_OFF` member of the *derived value* class beside `tracks.sub`: `pricing.unit` at layout 4 (the page drops the slash).
 
-## VideosField (Retro's layout-2 video list, 2026-10-28)
+## VideosField (the video's list, layouts 2 and 4, 2026-10-28)
 
-The eleventh repeater: `c.videos` is `[{ url, title, desc }]`, maintained by `VideosField`, Retro's layout 2 alone
-(`notes/video.md`, *Retro · YouTube links*). Its seed `VIDEO_SEED` is the one `repeaterRows` and `sectionVm`
+The eleventh repeater: `c.videos` is `[{ url, title, desc }]`, maintained by `VideosField`, layouts 2 and 4 on every
+template (`notes/video.md`, *YouTube links*: layout 2's Retro first, the other four the same day, then layout 4 on all
+five, *Layout 4 plays the list*; the field is template- and layout-agnostic, so neither rollout changed it: one list, so a
+section moved between the two layouts keeps its links). Its seed `VIDEO_SEED` is the one `repeaterRows` and `sectionVm`
 both read (`videosVal` is the steps' one-liner). Three things it does that no other repeater does:
 
 - **A seeded row carries `art`**, the index of the seed photograph it shows until its link gives it a YouTube
   thumbnail, and every write spreads it through — `CAL_SLOTS`' `after` again. **Unlike `SLOT_KEYS`, `VIDEO_KEYS`
   does not count it**: a seeded row emptied of link and title drops, because it has nothing to play or print.
-- **The rows reorder** with up / down arrows, since the first row is the one the stage opens on. Rows key on
+- **The rows reorder** with up / down arrows, since the first row is the one the player opens on (and layout 4's
+  skip discs step the rows in this order). Rows key on
   index, as everywhere; the lookup state is keyed on the watch address, not the index, so a move carries it.
 - **It makes the builder's first network request**: the title lookup from YouTube's oEmbed endpoint, which
   writes a title only into a row whose title is empty or still its seed row's, read off the latest rows
   through a ref. Its unmount guard is re-armed on every mount, or StrictMode's double mount drops every answer.
 - **It writes a key outside its own** (2026-10-28): the section's `channel`, View All's address, from the first
   answer's `author_url`, once, while `c.channel` is absent (`needChannel` / `onChannel`, EditPanel passing
-  `api.setContent`). While it is absent every link is looked up, not only those waiting for a title.
+  `api.setContent`). At layout 4, which draws no View All, it still does: the address waits in `c` for layout 2. While it is absent every link is looked up, not only those waiting for a title.
 - **Each answer lands once per link on a row** (2026-10-28): the row records `by` (the channel's name) and
   `byFor` (the watch address it was for), and a row whose `byFor` is its link is not written again, so an
   emptied title stays empty. Answers are held for the session in a module map (`OEMBED`), so a link pasted

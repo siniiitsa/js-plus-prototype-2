@@ -983,27 +983,26 @@ export const TRACK_KEYS = ['title', 'sub', 'image', 'audio']
 export const NOW_PLAYING = { at: '02:28', of: '04:22', pct: 34 }
 
 
-// The other videos, listed in the panel beside the stage in the video
-// section's layout 2 (plans/video.md, call 4): always the seed under Lime,
-// Grunge, Editorial and Pop, which have no structured editor for them. Retro's
-// layout 2 has one (VIDEO_SEED, below, 2026-10-28). Only the artwork needs
-// dressing, which `defaultTrackArt('video')` does.
+// The videos the video section's layout 2 is seeded with (plans/video.md,
+// call 4), through VIDEO_SEED below. Only the artwork needs dressing, which
+// `defaultTrackArt('video')` does.
 //
 // `sub` is the frame's channel line — where the video came from, not who made
-// it — and `when` is the date the frame spends on a view count. Neither is a
-// number about how many people watched: the frames' view counts, follower
-// count and like pair are dropped, because a published page printing a number
-// the artist never typed is making a claim (Retro layout 2's rule).
+// it — and `when` is the date the frame spends on a view count; the seed rows'
+// description is the two (`videoSeedDesc`). Neither is a number about how many
+// people watched: the frames' view counts, follower count and like pair are
+// dropped, because a published page printing a number the artist never typed
+// is making a claim (Retro layout 2's rule).
 export const VIDEOS = [
-  { title: 'Manchester at 3am',  sub: 'Hidden Sessions', length: '03:50', when: 'April 2026' },
-  { title: 'Disco Maghreb (edit)', sub: 'Single',        length: '04:12', when: 'March 2026' },
-  { title: 'Slow Burn',          sub: 'Single',          length: '03:28', when: 'February 2026' },
-  { title: 'Echo & The Floor',   sub: 'Live set',        length: '05:04', when: 'November 2025' },
-  { title: 'Roomtone',           sub: 'Hidden Sessions', length: '02:57', when: 'October 2025' },
-  { title: 'Field Day (live)',   sub: 'Festival',        length: '06:41', when: 'August 2025' },
+  { title: 'Manchester at 3am',  sub: 'Hidden Sessions', when: 'April 2026' },
+  { title: 'Disco Maghreb (edit)', sub: 'Single',        when: 'March 2026' },
+  { title: 'Slow Burn',          sub: 'Single',          when: 'February 2026' },
+  { title: 'Echo & The Floor',   sub: 'Live set',        when: 'November 2025' },
+  { title: 'Roomtone',           sub: 'Hidden Sessions', when: 'October 2025' },
+  { title: 'Field Day (live)',   sub: 'Festival',        when: 'August 2025' },
 ]
-// Retro's layout 2 lists the artist's own YouTube links (notes/video.md,
-// "Retro · YouTube links"): `c.videos` is an array of { url, title, desc },
+// Layouts 2 and 4 list the artist's own YouTube links on every template
+// (notes/video.md, "YouTube links"): `c.videos` is an array of { url, title, desc },
 // edited by VideosField, which also stores `by` / `byFor`, the channel name
 // oEmbed gave for the link `byFor` names (the line under the player when
 // `desc` is empty). The seed is VIDEOS' titles with no link, a line off their
@@ -1017,24 +1016,9 @@ export const VIDEO_KEYS = ['url', 'title', 'desc']
 export const videoSeedDesc = (v) => (v ? `${v.sub} · ${v.when}` : '')
 export const VIDEO_SEED = VIDEOS.map((v, i) => ({ url: '', title: v.title, desc: videoSeedDesc(v), art: i }))
 
-// Where the video section's transport bar is caught. The section has no
-// <video> element on either surface — it is a picture (call 2) — so the
-// playhead is composed from the running time the artist typed rather than read
-// off anything: VIDEO_MARK of it, formatted back. The fill under it takes the
-// same fraction, so the two agree. A duration that will not parse gives '',
-// and the bar renders empty rather than inventing a position for it.
-export const VIDEO_MARK = 0.48
-export const clockAt = (dur, frac) => {
-  const m = /^\s*(\d{1,3}):([0-5]\d)\s*$/.exec(String(dur ?? ''))
-  if (!m) return ''
-  const at = Math.round((Number(m[1]) * 60 + Number(m[2])) * frac)
-  return `${String(Math.floor(at / 60)).padStart(2, '0')}:${String(at % 60).padStart(2, '0')}`
-}
-// The frames' own words for the layout-2 panel's link and the artist row's
-// pill (plans/video.md, call 3), uncased like every JP-071 label.
+// The frame's own words for the layout-2 panel's link (plans/video.md,
+// call 3), uncased like every JP-071 label.
 export const VIDEO_ALL = 'View All ›'
-export const VIDEO_FOLLOW = 'Follow'
-export const VIDEO_DURATION = '04:18'
 
 // TAGS is a palette as much as a list: `vm.chips` is one colour seat per entry,
 // and `s.chips[3].bg`, `s.chips[4 % n].bg` and friends are read as seats across
@@ -1549,7 +1533,6 @@ export const DEFS = {
   bioP1:      'DJ and selector based in Manchester. Five years of reading rooms — house, disco, soul, 80s — chosen by the room, not the algorithm.',
   bioP2:      'Residencies at Roomtone and The Warehouse Project. Available for clubs, weddings and private events across the UK.',
   since:      'June 2021',
-  videoDesc:  'Full closing set, recorded live. One hour of the room at its loudest.',
   pricingSub: 'Prices may vary by date, location, and length of set.',
   // Layout 3's intro line is PRICING_INTRO_3 (JP-070), beside its head.
   // §10.2 layout 2 stands a line of praise beside the plan, where layout 1 has
@@ -2160,33 +2143,41 @@ export const FIELDS = {
       hint: 'Scrolls to your enquiry form, or the next place to book. Empty drops the button.' },
   ],
   // The video section (plans/video.md): layout-bound to layouts 2 and 4, so
-  // every `in` below names designs 1 and/or 3. A picture of a player (call 2),
-  // except Retro's layout 2, which lists the artist's YouTube links and plays
-  // them in the published tab (`videos`, 2026-10-28, notes/video.md): there the
-  // drawn transport, the artist row and its Follow pill, the List link and the
-  // rows' length, source and date are gone, so `avatar`, `duration` and
-  // `followCta` do not reach Retro's design 1. Its View All is kept and goes
-  // somewhere: `channel`, filled from the videos' oEmbed answers while absent
-  // (2026-10-28). The other four templates
-  // keep the seeded six (call 4). The poster fills the player at both layouts.
+  // every `in` below names designs 1 and/or 3. Both layouts play the artist's
+  // YouTube links in the published tab (`videos`, notes/video.md "YouTube
+  // links": layout 2 on 2026-10-28, Retro's first and the other four the same
+  // day; layout 4 the same day again, its centre disc playing and its skip
+  // discs stepping the one list). Layout 2's drawn transport, the artist row
+  // with its photo and Follow pill, and the rows' length, source and date are
+  // gone, and with them the `avatar`, `description` and `followCta` fields;
+  // layout 4's foot band (clock, bar, volume, settings, HD) went with
+  // `duration`. Layout 2's stage prints the playing video's title and line,
+  // and layout 4's top bar its title, so `heading` is layout 4's alone. View
+  // All is layout 2's and goes somewhere: `channel`, filled from the videos'
+  // oEmbed answers while absent. The poster fills the player at both layouts.
   video: [
     { k: 'image',   l: 'Poster', type: 'image', aspect: [16, 9], in: [1, 3],
-      hint: 'Fills the player in layouts 2 and 4. In layout 2 it shows on the stage while the '
-          + 'playing video has no YouTube thumbnail.' },
-    { k: 'avatar',  l: 'Artist photo', type: 'image', aspect: [1, 1], in: { Retro: [], '*': [1] },
-      hint: 'The circle beside your name, and beside every video in the list. Layout 2 only.' },
-    // Retro's layout 2 alone (2026-10-28): the eleventh repeater, { url, title }
-    // per video. Six, the frame's six seats.
-    { k: 'videos',  l: 'Videos', type: 'videos', max: 6, in: { Retro: [1], '*': [] },
-      cols: { title: { Retro: [null, 50] }, desc: { Retro: [null, 63] } },
+      hint: 'Fills the player in layouts 2 and 4 while the playing video has no YouTube thumbnail.' },
+    // The eleventh repeater, { url, title, desc } per video. Six, the layout-2
+    // frame's six seats; layout 4 plays the same list, one at a time.
+    { k: 'videos',  l: 'Videos', type: 'videos', max: 6, in: [1, 3],
+      // Measured 2026-10-28 (limits.mjs): at layout 2 the row's two-line clamp binds
+      // the title (Retro 50, Lime 39, Grunge 46, Pop 29, Editorial 21: Titan's and
+      // Gloock's capitals are the widest, and their seeds already take two lines), the
+      // stage's one meta line the description (63 at 390 on all five). At layout 4
+      // the top bar's one ellipsised line beside the arrow binds the title (390's
+      // box), and no description is drawn, but the panel still lists the box, so it
+      // takes layout 2's 63: the copy is layout 2's.
+      cols: { title: { Retro: [null, 50, null, 54], Lime: [null, 39, null, 50], Grunge: [null, 46, null, 55],
+        Editorial: [null, 21, null, 29], Pop: [null, 29, null, 35] }, desc: { '*': [null, 63, null, 63] } },
       hint: 'Paste a YouTube video, short or playlist link; the title fills itself in, and you can '
-          + 'change it. Under the player, the playing video’s title and description show; with no '
-          + 'description, its YouTube channel’s name. The videos play on the published page.' },
-    // Layout 2 prints it as the label over the description; layout 4 as the
-    // band's display head. Two seeds, one field: HEADING_4 beside TITLES.
-    // Retro's layout 2 prints the playing video's title and description in
-    // these two seats instead (2026-10-28), so neither reaches its design 1.
-    { k: 'heading', l: 'Heading', d: TITLES.video, in: { Retro: [3], '*': [1, 3] },
+          + 'change it. Layout 2 lists them beside the player, which shows the playing video’s title '
+          + 'and description (with no description, its YouTube channel’s name). Layout 4 plays them '
+          + 'one at a time under its title, stepped by the arrows. The videos play on the published page.' },
+    // Layout 4's band's display head (HEADING_4). Layout 2 printed it over the
+    // description until 2026-10-28, when the playing video's title took the
+    // seat; the layout-2 measures below are kept as history, their seats null.
+    { k: 'heading', l: 'Heading', d: TITLES.video, in: [3],
       // Measured on Retro (limits.mjs): 64 at layout 2 (390), 20 at layout 4 (390; 30 at 1440
       // would take a second line). Lime's layout 2 holds 82 (390's box binds; its label face is
       // narrower); its layout 4 holds 19 (390 binds: 28 at 1440, 24 at 768; session 3).
@@ -2200,32 +2191,21 @@ export const FIELDS = {
       // its layout 4 holds 16 (session 9: the measure is 20 at 1440 (the arrow), 15 at 768 and
       // 17 at 390, but the 16-character seed is the frame's own string and fits in one line
       // there, so the cap is the seed's length, as Editorial's).
-      chars: { Lime: [null, 82, null, 19], Grunge: [null, 91, null, 25], Editorial: [null, 48, null, 16],
-        Pop: [null, 47, null, 16], '*': [null, 64, null, 20] },
-      hint: 'Layout 2 prints it over the description, layout 4 as the band’s large head.' },
-    { k: 'description', l: 'Description', type: 'area', def: 'videoDesc', in: { Retro: [], '*': [1] },
-      // One ellipsized line: prose clips at 64 at 390 but the 69-character seed fits,
-      // so the cap is the seed's own length (the frame's string, `--check`'s 'floor').
-      chars: { '*': [null, 69] }, hint: 'Under the heading, layout 2 only.' },
-    { k: 'duration', l: 'Duration', d: VIDEO_DURATION, in: { Retro: [3], '*': [1, 3] },
-      chars: { '*': [null, 8, null, 8] },
-      hint: 'Minutes and seconds, as 04:18. The player’s clock and its bar are drawn from it; anything else leaves them empty.' },
-    // Call 3: the two buttons, JP-071's shape (the frame's own bytes, uncased,
-    // dropped when emptied). "Top music video" and the rest stay literals.
-    // Measured 39 and 37 at 390, a pill drawn ×4 its frame width there: held to 16 by
-    // judgement, as the repertoire's and the form's pills are.
+      chars: { Lime: [null, null, null, 19], Grunge: [null, null, null, 25], Editorial: [null, null, null, 16],
+        Pop: [null, null, null, 16], '*': [null, null, null, 20] },
+      hint: 'The band’s large head, layout 4 only.' },
+    // Call 3: View All, JP-071's shape (the frame's own bytes, uncased, dropped
+    // when emptied). "Top music video" stays a literal. Measured 39 at 390: held
+    // to 16 by judgement, as the repertoire's and the form's pills are.
     { k: 'allCta',  l: 'List link', d: VIDEO_ALL, in: [1],
       chars: { '*': [null, 16] },
       hint: 'The link at the head of the list beside the player. Left empty, it is not drawn.' },
-    // Retro's layout 2 alone: where its View All goes on the published page.
-    // VideosField fills it with the first channel an oEmbed answer names while
-    // the key is absent; an emptied box stays empty.
-    { k: 'channel', l: 'List link address', type: 'url', d: '', in: { Retro: [1], '*': [] },
+    // Layout 2: where View All goes on the published page. VideosField fills
+    // it with the first channel an oEmbed answer names while the key is
+    // absent; an emptied box stays empty.
+    { k: 'channel', l: 'List link address', type: 'url', d: '', in: [1],
       hint: 'Where View All goes on the published page: your YouTube channel. It fills itself in from '
           + 'your videos’ channel; change it to any page, or empty it to leave View All a label.' },
-    { k: 'followCta', l: 'Follow button', d: VIDEO_FOLLOW, in: { Retro: [], '*': [1] },
-      chars: { '*': [null, 16] },
-      hint: 'The pill at the end of your name’s row. Left empty, it is not drawn.' },
   ],
   // The fourth list-shaped content with a structured editor, and the one that
   // replaced a flattened key set (t1n/t1p/…) rather than a textarea: `tiers` is
@@ -3127,16 +3107,19 @@ export const INLINE_OFF = {
   'Retro.4.header.kicker': 'not drawn: the layout-5 Overlay card prints no kicker (a shared identity key; the bio’s role line and the form print it)',
   'Retro.4.header.location': 'not drawn: the layout-5 Overlay card prints no location (a shared identity key; the bio and the calendar print it)',
   '*.*.pricing.tiers.tags': 'derived value: the filter chips are the distinct tags of every package',
+  '*.3.video.videos.desc': 'not drawn: layout 4 prints the playing video’s title alone',
   '*.*.repertoire.songs.tags': 'derived value: the filter chips are the distinct tags of every song',
 }
 // INLINE_HEAD names a repeater the canvas draws only a head of, by a cap and a
 // pager: repertoire layout 3 draws a song under every tag it carries, four a card
 // and three cards a page, so a song can stand twice and a later one not at all (the
-// rest are behind a card's *View full set*, live only). The group stays editable
-// where it is drawn; a row `drawnRows` (EncoreBuilder.jsx) does not list is in the
+// rest are behind a card's *View full set*, live only). The video prints one row's
+// copy: layout 2's stage its description, layout 4's top bar its title (the skip
+// discs step it, live only). The group stays editable where it is drawn; a row `drawnRows` (EncoreBuilder.jsx) does not list is in the
 // ledger with this reason, which is also what keeps the nth-peer pairing honest.
 export const INLINE_HEAD = {
-  'Retro.1.video.videos.desc': 'not drawn: only the video on the stage prints its description',
+  '*.1.video.videos.desc': 'not drawn: only the video on the stage prints its description',
+  '*.3.video.videos.title': 'live-only copy: layout 4’s top bar prints only the video in the player; the others are a skip away',
   '*.2.repertoire.songs': 'live-only copy: this song is behind a card’s View full set, or on a page of the pager',
 }
 // The two marks stand in layout 1's gallery blocks alone; layout 2 draws its
@@ -3281,20 +3264,8 @@ export const IDENTITY_CHARS = {
     seal: { Retro: [19, null, 19], Lime: [13, null, 22], Grunge: [14, null, 14], Editorial: [16],
       Pop: [null, null, 12] },
   },
-  // The artist's name as the video prints it: layout 2's artist row, layout 4's top
-  // bar. Retro's measure and Lime's layout 2 (also 49); Lime's layout 4 measured 50
-  // (390 binds; 149 at 1440, 96 at 768), and the other two are read in theirs.
-  video: {
-    // Grunge's layout 2: 49, Retro's number again (138 / 114 / 49 at 1440 / 768 / 390); its
-    // layout 4: 55 (163 / 105 / 55; 390 binds), session 5. Editorial's layout 2: 49 again
-    // (138 / 114 / 49), session 6; its layout 4: 29 (session 7: 89 / 58 / 29, 390's box binds
-    // — Gloock in capitals beside the arrow). Pop's layout 2: 49 again (138 / 114 / 49), session 8;
-    // its layout 4: 35 (session 9: 108 / 66 / 35, 390's box binds — Titan in capitals beside the arrow).
-    // Retro's layout 2 prints no name since its artist row went (2026-10-28,
-    // YouTube links), so its design-1 seat is null.
-    title: { Retro: [null, null, null, 54], Lime: [null, 49, null, 50], Grunge: [null, 49, null, 55],
-      Editorial: [null, 49, null, 29], Pop: [null, 49, null, 35] },
-  },
+  // No video row: layout 4's top bar printed the artist's name until 2026-10-28 and
+  // prints the playing video's title since (`videos.title`), and layout 2 none.
   calendar: {
     title: [null, 64],
     location: { Retro: [19, null, null, 67], Lime: [null, null, null, 64], Grunge: [null, null, null, 55],
