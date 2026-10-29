@@ -23,6 +23,7 @@
 // photography: Retro's, Lime's, Grunge's, Editorial's and Pop's shoots.
 
 import hero from './photos/hero.jpg'
+import retroVideoPoster from './photos/retro-video-poster.jpg'
 import headerAvatar from './photos/header-avatar.jpg'
 import stage from './photos/stage.jpg'
 import bioStage from './photos/bio-stage.jpg'
@@ -91,11 +92,13 @@ export const RETRO_PHOTOS = {
   bio: stage,
   calendar: stage,
   // The poster the video section's layouts 2 and 4 stand their player on: the
-  // hero, whole. Retro's Dashboard player (964:64645) and Cinematic minimal
-  // (964:72777) both fill it with the Velvet Note stage shot the header's
-  // backdrop is, where the old fit seeded `stage` (the portrait slice the bio
-  // crops), which a 16:9 box cuts at the chest (session 1, read off the frames).
-  video: hero,
+  // Velvet Note club shot (the singer in a red velvet suit, tables, trumpet and
+  // saxophone, the neon sign), one file in Retro's Dashboard player (964:64645)
+  // and Cinematic minimal (964:72773 / 964:72777): both fill it with hash
+  // 000ea835, 1672 x 941, drawn as a plain centred cover. It is *not* the
+  // header's backdrop, the yellow-suit stage shot `hero` (JP-164; session 1
+  // misread the two as one). No FOCUS row: the frame centres it.
+  video: retroVideoPoster,
   form: avatar,
   // `media` is deliberately absent: the player shows the artwork of the track it
   // is on, so the section has no photo of its own to seed. Its five track

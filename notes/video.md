@@ -63,8 +63,13 @@ keeps the key in `c`, unread.
 
 ## Photography
 
-`RETRO_PHOTOS.video` is the **hero** shot, not `stage`: the Retro frames show the whole hero image in
-the 16:9 box at both layouts, and the portrait slice `stage` cut the chest off. `LIME_PHOTOS.video`
+`RETRO_PHOTOS.video` is **`retro-video-poster.jpg`**, the Velvet Note club shot (JP-164, 2026-10-29): the singer in a red
+velvet suit, the audience at tables, the trumpet and saxophone, the neon *The Velvet Note*. Frames `964:64645` (L2) and
+`964:72773` (L4, inner `964:72777`) fill their player with **one file, hash `000ea835`**, at all three widths (1672 × 941,
+a plain centred `FILL` / cover: the `imageTransform` they state is ignored under `FILL`), exported at 1440 wide, q60, 135 KB,
+and it takes **no `FOCUS` row**. It is *not* the header's `hero` (the yellow-suit stage shot, Retro's header hash
+`b74be8bc`), which this section said until session 3 of `plans/video-qa-fixes.md` (session 1 of `plans/video.md` read the
+two as one); the earlier sentence that the portrait slice `stage` cut the chest off still holds for `stage`. `LIME_PHOTOS.video`
 is `limeHero` too (session 2, below). `GRUNGE_PHOTOS.video` is `grungeStage`, the bio's drummer, and
 it is the frame's own (session 4, below). `EDITORIAL_PHOTOS.video` is `editorialStage`, the bio's arch, and
 the frame's own (session 6, below). `POP_PHOTOS.video` is `popStage`, the bio's arch, and the frame's own
@@ -73,6 +78,14 @@ through `ROW_ART.video` (a seed row's `art`), until a link gives the row YouTube
 poster is a `photoSlot` since the `avatar` field went (2026-10-28; `defaultImage`'s avatar arm is the
 header's alone); the thumbnails are the seed's or the link's and carry no `data-photo` (`photo-probe
 --cat video`: PASS, `--blank` and `--drop` too, no `PHOTO_OFF` row).
+
+**The other four templates' posters, re-read against their frames (JP-164's Call 4, 2026-10-29)**, every player instance at
+L2 and L4 and all three widths, by the largest image fill's hash: **no mismatch.** Lime `51d68654` (`limeHero`, and the
+header's own hero hash at layout 2, so the one template whose poster *is* its header's photo is the one that reads so) ·
+Grunge `8031d0f3` (`grungeStage`, the bio's drummer) · Editorial `9d20fe0d` (`editorialStage`, the bio's arch) · Pop
+`51d06990` (`popStage`, the bio's arch), each different from that template's header hash (Editorial `ae069c14`, Pop
+`f70d25d3`). Two stray masters are the mode leaks already recorded, not posters: Lime's 390 L4 inner `977:9010` (`000ea835`,
+Retro's) and Editorial's 768 L4 inner `971:9555` (`8031d0f3`, Grunge's). Retro's six instances are all `000ea835`.
 
 ## Caps (`node scripts/limits.mjs video`, Retro; Lime's layout 2 in session 2; Grunge's layouts 2 and 4 in sessions 4 and 5; Editorial's layouts 2 and 4 in sessions 6 and 7; Pop's layout 2 in session 8, its layout 4 in session 9)
 
