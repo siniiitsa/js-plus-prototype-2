@@ -49,7 +49,7 @@ code and the tester's screenshots, not yet reproduced**: each session starts by 
 
 | Ticket | Site | Verdict (from the code) | Size | Status |
 |---|---|---|---|---|
-| JP-154 (photo) | `index.html` / `published.html` at the repo root: last refreshed in `ed0602f` (2026-10-28); `f8337ca` is 2026-10-29 and `CLAUDE.md` says no build script refreshes them | **Not a code defect.** The tester is right: the deployed app is the old build. The fix is the deliberate two-`cp` step, after the sweep proves the fix on the *built* file. The Retro L2 reviewer photos are the developer's own noted limit (`pricing.images:1,:2`), and hers to check | S | open (Sweep) |
+| JP-154 (photo) | `index.html` / `published.html` at the repo root: last refreshed in `ed0602f` (2026-10-28); `f8337ca` is 2026-10-29 and `CLAUDE.md` says no build script refreshes them | **Not a code defect.** The tester is right: the deployed app is the old build. The fix is the deliberate two-`cp` step, after the sweep proves the fix on the *built* file. The Retro L2 reviewer photos are the developer's own noted limit (`pricing.images:1,:2`), and hers to check | S | **fixed by the refresh** (sweep, 2026-10-29) |
 | JP-161 | `EncoreBuilder.jsx` `VideosField`: `apply()` writes the answer's title only `if (videoNeedsTitle(r))` (empty, or still the seed's `VIDEOS[art].title`); the first answer sets the title and from then on the row *is* "typed", though the artist never typed it. `by` / `byFor` already follow the link (`r.byFor === w` guard), which is why *by Queen Official* was right beside a stale title. The channel: `needChannel = sec.c.channel === undefined`, offered once (`chanSent`), so after the first fill the key is present for ever and a later answer, or an empty list, never touches it | **Confirmed on paper**, two parts: the title (a row has no memory of *whose* title it holds) and the channel (the same, on `c.channel`) | M | **fixed, session 1** (reproduced, then driven by hand in the real app, headless: A → B, a typed title, A → typed → B, delete all, a typed and an emptied channel) |
 | JP-162 | `EncoreSection.jsx` `Video`: the discs are drawn unconditionally (L2 stage ~10190, row corner discs ~10300, L4 centre ~10700); only `startable` (`s.live && s.videoEmbeds && now.embed && !playing`) or `out()` attaches a handler, so a row with no `embed` / `href` gets a disc and no control. `!s.videos.length` prints `No videos yet.` (10258) on both surfaces. The seed rows (`VIDEO_SEED`) carry no url, so a page nobody has edited is the first case | **Confirmed.** `plans/video.md` call 2 made the canvas "a picture of a player", and the live rollout added the controls without taking the picture's dead parts out of the live page | M | **fixed, session 2** |
 | JP-163 | `EncoreSection.jsx` L4 head band (~10690): `onFilm` is `s.paper` (Pop: violet) over the picture; the only scrim is `linear-gradient(0 → 76% transparent, 100% #000)`, the old foot band's, so the head is bare. The frame's poster is dark, a YouTube thumbnail is not | **Confirmed**; Pop's 1.05:1 is the worst case, every template can fail on a bright thumbnail | M | **fixed, session 2** (the title takes the ground's ink, not the glyph colour: measured) |
@@ -229,6 +229,44 @@ After Session 3.
 - Retro L2's *Reviewer photos* (`pricing.images:1`, `:2`), which she will check separately: before she does,
   `photo-probe --theme Retro --layout 2 --width 1440,768 --check` is the developer's own answer; if it reports them
   as dead on the first click, it is a new ticket, not part of this batch.
+
+## Sweep result (2026-10-29, `7269c0f`)
+
+Run on the branch's tree at `7269c0f` (a fresh server) against `main` (`80e3627`) in a scratch worktree.
+
+- `limits.mjs video --seeds` 0 over cap; `--check` 0 capped fields fail.
+- `inline-probe --check`, layouts 2 and 4, 1440 and 768: **PASS** on all five templates.
+- `photo-probe --check` at layouts 2 and 4, 1440 and 768: `--blank` and `--drop` **PASS** on all five; the filled run
+  PASS on Lime, and one WRONG each on Retro, Pop, Grunge and Editorial, every one *the dialog frames null but the panel
+  shows …* on a **seeded header, gallery or track photo, never the video's** (the known crop-dialog load flake,
+  `memory/browser-tool-choice`). Rerun alone at layout 4: Retro, Pop and Grunge PASS; Editorial's `header.image` @768
+  failed once, then, six runs alternating tree and `main` on `--cat header`, **failed 1 of 3 on each** (tree 2, `main` 3).
+  Not the change.
+- `page-check` on all five for cards 2 and 4 (full walk on each): no errors, no warnings. Against `main` (Editorial,
+  cards 2 and 4) only the `video` section is missing from the published page, which is JP-162: the sections below it
+  move up by its 776px.
+- Two-build digest, `main` against the tree, 5 templates x 12 categories x layouts x 3 widths, plain,
+  `&above=media`, `&below=video`: **108 files differ, all `cat=video`, nothing else on the canvas.** Retro,
+  every video layout (arch 0 to 3): one `<img>` row, `hero.jpg` to `retro-video-poster.jpg`. Layout 4 (arch 2 and 3) on
+  all five: the head title on a pill (5 rows, 7 on Retro with the poster), root heights unchanged.
+- **The built file, served over http** (`npm run build:standalone`, built from `7269c0f`), real mouse: JP-154 photo,
+  Retro L1, Pricing selected from the sidebar then one click on Bio's photo opens the image editor, the same after a
+  Text selection (Pricing's copy opened, Escape) and a dropped file; the root `index.html` of 28.10 **fails all three**
+  (Bio selected, no editor, the drop opens nothing), so the control reproduces the tester's report. JP-161 on L2 and
+  L4: A to B takes the title (`Me at the zoo`), `by` and the channel to B's; a typed title survives a later link. Published
+  tab: no links, an empty list and a Vimeo-only list leave no video section; one YouTube link plays on L2 and L4 (an
+  iframe mounts); a Vimeo row beside a YouTube one has no disc at L2 and none at L4 after Next. L4's head: Pop 1440
+  title 5.62:1 on its pill (1.05:1 before), Retro 390 16.21:1. Retro's poster is the frames' Velvet Note shot at
+  `964:64645` and `964:72773`.
+- **Retro L2's *Reviewer photos*** (`pricing.images:1`, `:2`), the one the tester will check separately:
+  `photo-probe --theme Retro --layout 2 --width 1440,768 --check` has pricing at **3 hit, 0 WRONG, 0 blocked, 0 dead
+  spot** at both widths, each on a first click (the probe selects another section before every click). Each photo is
+  listed `partial` (100 to 106 of 110 to 117 points open, the rest under the text spans that sit over it), which is not a
+  dead click. So it is **not** a defect of the build; if she still sees one open on the second click only, it is a
+  new ticket with her steps.
+- The two `cp`s: `published.html` was byte-identical to the root's, so only `index.html` changed. The commit is `d6679b8`.
+- **Build.** `index.html` at `d6679b8` is `npm run build:standalone` of `7269c0f` (the source is the same at
+  `d6679b8`, which only adds this note). The 28.10 build it replaces is `ed0602f`'s.
 
 ## Open questions for the tester
 
