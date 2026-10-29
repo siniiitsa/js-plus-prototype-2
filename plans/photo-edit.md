@@ -12,7 +12,7 @@ to upload another photo in place of the current one. User calls (2026-10-23):
 - **Scope:** every photo field, every template and layout, plus empty slots (initials / gradient placeholder).
 
 Same gates as the text feature: desktop and tablet only (never a phone), only on an *already-selected* section
-(first click still just selects), nothing in the published tab, preview overlay or thumbnails mounts it.
+(first click still just selects; **reversed 2026-10-29, JP-154: the first click selects and opens, from any section**), nothing in the published tab, preview overlay or thumbnails mounts it.
 
 ## What exists (verified)
 

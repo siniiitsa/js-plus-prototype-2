@@ -55,7 +55,7 @@ the table where the cause differs.
 
 **JP-154, the photo half** (tester's evidence, 2026-10-27; screenshot `JP-154-photo-first-click-selects-only.jpg`): on an unselected
 section the first click on a photo only selects it and the second opens the editor (real mouse, Editorial L1, Booking Calendar).
-**Kept, user call 2026-10-27**, with 2026-10-23 and 2026-10-26: photos wait for a selected section and text does not. No new number
+**Kept, user call 2026-10-27**, with 2026-10-23 and 2026-10-26: photos wait for a selected section and text does not. **Reversed, user call 2026-10-29** (the tester reopened it): a photo opens on the first click too, from any section, the drop likewise; `plans/photo-edit-qa-fixes.md` Call 2. No new number
 (`plans/photo-edit-qa-fixes.md`, Call 2).
 
 ## Calls
