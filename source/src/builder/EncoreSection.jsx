@@ -10013,6 +10013,11 @@ function Video({ s }) {
   // a new tab (`extLink`), and nothing mounts a player.
   const out = (v) => (s.live && !s.videoEmbeds && v?.href ? extLink(s, v.href) : null)
   const startable = s.live && s.videoEmbeds && !!now?.embed && !playing
+  // Whether a row has something to do when pressed: live, a row that does not
+  // play (no link, or one naming no video) draws no play disc, since a disc is
+  // a promise (JP-162, plans/video-qa-fixes.md). The canvas is a picture of
+  // the page and keeps every disc.
+  const playsHere = (v) => !s.live || (s.videoEmbeds ? !!v?.embed : !!v?.href)
   // YouTube's hqdefault is 4:3 with the 16:9 picture letterboxed in it. `cover`
   // crops the bars only in a box at least 16:9; layout 2's stage (819:478) and
   // rows (140:80) are a little narrower, so up to 4% of bar is left, and the
@@ -10185,14 +10190,14 @@ function Video({ s }) {
                 ? <Photo s={s} initialsSize={44} src={now.thumb} style={ytCrop} />
                 : <Photo s={s} initialsSize={44} style={gd ? { objectPosition: s.imagePos } : undefined} />}
             </span>
-            <span style={{
+            {playsHere(now) && <span style={{
               position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)',
               width: u(pd), height: u(pd), borderRadius: gr ? u(8 * pd / 28) : '999px',
               background: rust, color: s.retro ? mustard : s.acFg,
               border: lime ? hair : `1px solid ${mustard}`,
               boxShadow: hard(s, '#111111', 4.1, 4.1),
               ...row('0', { justifyContent: 'center' }),
-            }}><Play size={s.mob ? 20 : 26} fill="currentColor" strokeWidth={0} style={{ marginLeft: '3px' }} /></span>
+            }}><Play size={s.mob ? 20 : 26} fill="currentColor" strokeWidth={0} style={{ marginLeft: '3px' }} /></span>}
           </>
         )}
       </StageTag>
@@ -10254,7 +10259,7 @@ function Video({ s }) {
             An emptied list keeps the panel and prints the pricing deck's one
             message inside it, rather than leaving a rust outline round
             nothing. */}
-        {!s.videos.length && (
+        {!s.videos.length && !s.live && (
           <span style={{ fontFamily: s.body, fontSize: bodySz, lineHeight: 1.5 }}>No videos yet.</span>
         )}
         {/* The frame sizes these rows by dividing the panel's height and lets
@@ -10313,7 +10318,7 @@ function Video({ s }) {
                     border: `${u(3)} solid ${rust}`, pointerEvents: 'none',
                   }} />
                 )}
-                <span style={{
+                {playsHere(v) && <span style={{
                   position: 'absolute', right: u(4.67), bottom: u(4.67),
                   width: u(24), height: u(24), borderRadius: '999px',
                   background: cream, color: creamInk,
@@ -10335,7 +10340,7 @@ function Video({ s }) {
                     : <svg viewBox="0 0 24 24" width="100%" height="100%" aria-hidden style={{ display: 'block' }}>
                         <path d="M17.4831 12L9.25843 16.7485L9.25843 7.25146L17.4831 12Z" fill={s.tx} />
                       </svg>)
-                  : <Play size={9} fill="currentColor" strokeWidth={0} />}</span>
+                  : <Play size={9} fill="currentColor" strokeWidth={0} />}</span>}
               </span>
               <span style={col(u(7.4), s.mob ? { minWidth: 0, width: '100%' } : { flex: 1, minWidth: 0 })}>
                 <span style={{
@@ -10512,6 +10517,10 @@ function Video({ s }) {
     // and no arm. The transport glyph is the same token resolving the other
     // way; see the branch header.
     const glyph = s.retro || lime ? s.ac : s.paperFg
+    // The ink for type on that ground (layout 2's panel prints its row titles
+    // in it): the glyph colour is a 16px mark, and as a title it measures
+    // 3.1 to 4.1 against the cream under four of the five templates.
+    const creamInk = s.retro ? '#111111' : lime ? s.tx : s.paperFg
     // Cream type on the photograph. `paper` is documented as exactly this —
     // "the ink for type sitting over a photographic scrim" — and under Retro it
     // resolves to the frame's own `sem/bg` #EAD7B8 by construction, so this is
@@ -10702,15 +10711,35 @@ function Video({ s }) {
               ...row(u(16)),
               ...(s.live ? { pointerEvents: 'none' } : null),
             }}>
-              <span style={{
-                fontFamily: s.body, fontSize: lime ? s.bodyLg : u(T.lg), lineHeight: 1.5, flex: 'none',
-              }}>←</span>
-              {now?.title && <span style={{
-                fontFamily: s.display, fontSize: gd ? faced(s, s.list) : lime ? s.list : u(T.list),
-                lineHeight: gd ? facedLh(s, 1.2) : 1.2,
-                letterSpacing: s.dls, minWidth: 0, textTransform: gd ? 'uppercase' : undefined,
-                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-              }}>{now.title}</span>}
+              {(() => {
+                const arrow = (
+                  <span style={{
+                    fontFamily: s.body, fontSize: lime ? s.bodyLg : u(T.lg), lineHeight: 1.5, flex: 'none',
+                  }}>←</span>
+                )
+                // With a title the pair stands on a pill in the transport discs'
+                // own ground, the arrow in their glyph colour and the title in
+                // that ground's ink (JP-163, call 2): the frame's poster is
+                // dark, a YouTube thumbnail is not, and the pill's contrast
+                // does not depend on the picture. An untitled row keeps the
+                // bare arrow, which is the frame's chrome and not a label.
+                if (!now?.title) return arrow
+                return (
+                  <span style={{
+                    ...row(u(16)), minWidth: 0, maxWidth: '100%', boxSizing: 'border-box',
+                    background: cream, color: glyph, borderRadius: '999px',
+                    padding: `${u(4)} ${u(18)} ${u(4)} ${u(16)}`,
+                  }}>
+                    {arrow}
+                    <span style={{ color: creamInk,
+                      fontFamily: s.display, fontSize: gd ? faced(s, s.list) : lime ? s.list : u(T.list),
+                      lineHeight: gd ? facedLh(s, 1.2) : 1.2,
+                      letterSpacing: s.dls, minWidth: 0, textTransform: gd ? 'uppercase' : undefined,
+                      overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                    }}>{now.title}</span>
+                  </span>
+                )
+              })()}
             </div>
 
             {/* Dead centre at every width. The prev/next glyph is a 13.022 × 6.819
@@ -10733,11 +10762,16 @@ function Video({ s }) {
               ...(s.live ? { pointerEvents: 'none' } : null),
             }}>
               {n > 1 && skip(-1, true)}
-              <span style={ctl(64)}>{lime
-                ? <span style={{ display: 'block', marginLeft: u(1.6) }}>
-                    <LimeTransportGlyph kind="play" height={11.1893 * z} color={glyph} />
-                  </span>
-                : <Play size={un(16.8)} fill="currentColor" strokeWidth={0} style={{ marginLeft: u(1.9) }} />}</span>
+              {/* Live, a row that does not play draws no disc (JP-162); the
+                  skips keep their seats round an empty one, so they do not
+                  move under the pointer when a skip lands on such a row. */}
+              {playsHere(now)
+                ? <span style={ctl(64)}>{lime
+                  ? <span style={{ display: 'block', marginLeft: u(1.6) }}>
+                      <LimeTransportGlyph kind="play" height={11.1893 * z} color={glyph} />
+                    </span>
+                  : <Play size={un(16.8)} fill="currentColor" strokeWidth={0} style={{ marginLeft: u(1.9) }} />}</span>
+                : n > 1 && <span aria-hidden style={{ width: u(64), height: u(64), flex: 'none' }} />}
               {n > 1 && skip(1, false)}
             </div>
           </>}

@@ -1016,6 +1016,17 @@ export const VIDEO_KEYS = ['url', 'title', 'desc']
 export const videoSeedDesc = (v) => (v ? `${v.sub} · ${v.when}` : '')
 export const VIDEO_SEED = VIDEOS.map((v, i) => ({ url: '', title: v.title, desc: videoSeedDesc(v), art: i }))
 
+// Whether a video section has a row that can play: a link that names a YouTube
+// video or playlist, which is what `embed` (a web origin) and `href` (the
+// `file://` link-out) both come from. The published page leaves a section
+// with no such row out (JP-162, plans/video-qa-fixes.md, call 1): the seed
+// rows carry no link, so a page nobody has edited, an emptied list and a list
+// of Vimeo links are all a player with nothing to play. Pure, so the page
+// can ask without building a view-model; the same rows `sectionVm` lists.
+export const videoPlayable = (section) => (
+  Array.isArray(section?.c?.videos) ? section.c.videos : VIDEO_SEED
+).some((r) => !blankRow(r, VIDEO_KEYS) && !!youtubeParts(extUrl(r?.url ?? '')))
+
 // The frame's own words for the layout-2 panel's link (plans/video.md,
 // call 3), uncased like every JP-071 label.
 export const VIDEO_ALL = 'View All ›'
@@ -2168,8 +2179,10 @@ export const FIELDS = {
       // the top bar's one ellipsised line beside the arrow binds the title (390's
       // box), and no description is drawn, but the panel still lists the box, so it
       // takes layout 2's 63: the copy is layout 2's.
-      cols: { title: { Retro: [null, 50, null, 54], Lime: [null, 39, null, 50], Grunge: [null, 46, null, 55],
-        Editorial: [null, 21, null, 29], Pop: [null, 29, null, 35] }, desc: { '*': [null, 63, null, 63] } },
+      // The layout-4 seats were 54 / 50 / 55 / 29 / 35 until the title took its pill
+      // (JP-163): the pill's padding binds the 390 box sooner.
+      cols: { title: { Retro: [null, 50, null, 48], Lime: [null, 39, null, 44], Grunge: [null, 46, null, 49],
+        Editorial: [null, 21, null, 27], Pop: [null, 29, null, 31] }, desc: { '*': [null, 63, null, 63] } },
       hint: 'Paste a YouTube video, short or playlist link; the title fills itself in, and you can '
           + 'change it. Layout 2 lists them beside the player, which shows the playing video’s title '
           + 'and description (with no description, its YouTube channel’s name). Layout 4 plays them '

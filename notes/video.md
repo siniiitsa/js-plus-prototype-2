@@ -988,3 +988,41 @@ once Play was pressed, the very thing call 7 declined).
   `file://` standalone build's published tab (`about:blank`) the picture is *Watch … on YouTube* in a new tab, no
   player mounts, and the skips step the title, picture and link. The root `index.html` and `published.html` are
   refreshed from the standalone build.
+
+## A player that cannot play is not drawn, and layout 4's pill (JP-162, JP-163; 2026-10-29)
+
+`plans/video-qa-fixes.md`, session 2; calls 1 and 2, user calls, the recommended option each.
+
+- **A video section with nothing to play is left out of the published page and Preview** (call 1 (A)).
+  `videoPlayable(section)` in `data.js` is true when some row of `c.videos` (the seed rows when the key is absent)
+  has a link that names a YouTube video or playlist, which is what both `embed` and `href` come from. It is pure,
+  so `PublishedPage` asks it without a view-model: `sections` is filtered at the head of the component, **before**
+  `navSections`, `pageRows`, `pageDesignOf` and the `above` / `below` the neighbours read, so Lime's layout-4
+  seams and Grunge's 390 torn head are drawn against the array that is drawn (the default page's media and gallery
+  meet as on a page with no video). The seed rows carry no link, so a page nobody has edited, an emptied list and
+  a list of Vimeo links are all left out. The canvas never filters. The Videos panel says so while it holds:
+  *Not shown on the published page until a YouTube link is added.* (no canvas-toolbar note: no room).
+- **A row that does not play draws no disc live** (call 1 (B)): `playsHere(row)` at `Video`'s head,
+  `!s.live || (s.videoEmbeds ? !!row.embed : !!row.href)`, gates layout 2's stage disc, each row's corner disc and
+  layout 4's centre disc. Layout 4 keeps a 64 spacer where the disc was while there are two or more rows, so the skip
+  discs do not move under the pointer when a skip lands on such a row. Layout 2's *No videos yet.* is the canvas's
+  alone (`!s.live`); it is unreachable live under (A) and gated anyway. The canvas keeps every disc.
+- **Layout 4's title is on a pill** (call 2). With a title, the arrow and the title stand on a chip in the transport
+  discs' own ground (`cream`), the arrow in their glyph colour and **the title in that ground's ink** (`creamInk`:
+  `#111` under Retro, `s.tx` under Lime, `s.paperFg` elsewhere, layout 2's panel's). The plan said the glyph
+  colour for both; measured, the glyph colour is a 16px mark and as a title it reads 4.14 / 3.69 / 3.46 / 3.14 on
+  Retro / Grunge / Editorial / Pop (Lime 8.0), so the title takes the ink: **16.2 / 11.5 / 17.4 / 17.6 / 5.6**
+  (Retro / Lime / Grunge / Editorial / Pop), the same at every width and over any picture. Padding 4 / 18 / 4 / 16
+  × z (6 clipped the pill a pixel under Lime, Grunge and Editorial at 1440), radius a pill, the title still
+  ellipsising (`minWidth: 0`). An untitled row keeps the bare arrow (call 9).
+- **Caps.** The pill's padding binds the 390 box sooner: `videos.title` at layout 4 is Retro **48**, Lime **44**,
+  Grunge **49**, Editorial **27**, Pop **31** (was 54 / 50 / 55 / 29 / 35; `limits.mjs video --designs=3
+  --keys=videos.title`), `--check` 0 failing and `--seeds` 0 over.
+- **Proved** on the working tree: default, one YouTube link, YouTube + Vimeo + YouTube, Vimeo alone and an empty list
+  on Retro cards 2 and 4, in the published tab over http (section absent for the default, Vimeo-only and empty; present
+  for the others; layout 2's mixed list has three discs, none on the Vimeo row; layout 4 plays and its skips stand);
+  the digest of the video category (themes 0–4, three widths, against `5ac9e64`), plain, `&above=media` and
+  `&below=video`: **exactly 30 files differ in each**, layout 4's arch 2 and 3 on all five templates, and layout 2
+  is byte-identical; `inline-probe --cat video --check` at layouts 2 and 4, 1440 and 768, Retro and Pop PASS (the
+  1 *unhit* at layout 4 is the baseline's too); `photo-probe --cat video --check` Retro and Pop PASS.
+

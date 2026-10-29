@@ -59,7 +59,7 @@ import {
   catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldSeed, HEADING_3, HEADING_4, fieldReach, fieldShown, INLINE_OFF, PHOTO_OFF, INLINE_HEAD, INLINE_MARKED, INLINE_PART, INLINE_LINES, inlineRule, fieldCap, colCaps, identityCap, sealCap, capExcess, clampCapped, clampContent, clampIdentity, copyrightOf, formHeading3, extUrl, youtubeEmbed, youtubeThumb, youtubeParts, youtubeWatch, youtubeChannel, urlProblem, emailProblem, emailAddr, songTags, repChips,
   tierFeats, priceParts, priceCuts, blankRow, SONG_KEYS, repSetsOf, repSetLine, TRACK_KEYS, GIG_KEYS, gigWeekday, gigStatus, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
   layoutChoices, designCount, pageLayout, pageOrder, pageRows, videoDesign, videoStartArch,
-  VIDEOS, VIDEO_SEED, VIDEO_KEYS, videoSeedDesc, VIDEO_ALL, COLUMN_SPLIT, bebasEms, antonEms, gloockEms, titanEms,
+  VIDEOS, VIDEO_SEED, VIDEO_KEYS, videoPlayable, videoSeedDesc, VIDEO_ALL, COLUMN_SPLIT, bebasEms, antonEms, gloockEms, titanEms,
   headerLayout, headerLayoutLabel, setupHeaderCount,
 } from './data.js'
 import { defaultImage, defaultImages, defaultTrackArt, seedFocus, RETRO_TEXTURE } from './photos.js'
@@ -5113,6 +5113,11 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                           {calNoMailHint(sec.c.email === undefined, navSections.some((n) => n.cat === 'form'))}
                         </p>
                       )}
+                      {f.type === 'videos' && !videoPlayable(sec) && (
+                        <p style={{ margin: '0 0 6px', fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>
+                          Not shown on the published page until a YouTube link is added.
+                        </p>
+                      )}
                       {f.type === 'image' ? (
                         <ImageField value={imgVal(f.k)} aspect={f.aspect} onChange={(v) => set(v)} onToast={api.toast} />
                       ) : f.type === 'images' ? (
@@ -5740,7 +5745,11 @@ function HeaderChoices({ themeIdx, artistName, sel, onSelect }) {
 // Everything the page needs and nothing the editor adds. Deliberately not
 // makeVm(), which layers on selection, hover, dim and the header's hover
 // preview — none of which a published site has.
-function PublishedPage({ themeIdx, sections, artistName, win, frameW }) {
+function PublishedPage({ themeIdx, sections: all, artistName, win, frameW }) {
+  // A video section with nothing to play is not on the page (JP-162): dropped
+  // here, before any neighbour is named, so `above` / `below` and the rows see
+  // the array that is drawn.
+  const sections = all.filter((sec) => sec.cat !== 'video' || videoPlayable(sec))
   // documentElement.clientWidth, not innerWidth: on a classic-scrollbar OS the
   // latter counts the scrollbar, which would overshoot the surplus below and
   // leave the column a scrollbar's width narrower than the editor's.
