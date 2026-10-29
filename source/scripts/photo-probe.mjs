@@ -3,7 +3,8 @@
 // every `[data-photo]` node of every section clicked with a real mouse, what opened recorded,
 // Escape pressed, and — once per photo slot — a fixture PNG pushed through the dialog and
 // Applied, to see which key, index or row the write landed on. Needs `npm run dev` (or any
-// served build) — BASE= names it. The sibling of inline-probe.mjs, which does the same for text.
+// served build) — BASE= names it. Another section stands selected before each walk, so every click is a
+// first click (JP-154). The sibling of inline-probe.mjs, which does the same for text.
 //
 //   node scripts/photo-probe.mjs --theme Retro --layout 1 --width 1440,768 --check
 //   node scripts/photo-probe.mjs --theme Pop,Grunge --layout 1 --cat header,gallery
@@ -317,6 +318,18 @@ async function runCombo(theme, layout, width) {
     })
     if (info.has !== 'function') throw new Error('EncoreBuilder.jsx exports no photoSlots')
     const select = (sid) => page.evaluate((sid) => { const { set } = window.__fh(); set((s) => ({ ...s, selectedId: sid })) }, sid)
+    // Every click and drop is the first one on its section (JP-154): another section stands selected.
+    let cur = null // the section being walked: re-armed before every click and drop, so none is a second click
+    // Selecting a section scrolls the canvas to it; the probe aimed at points on the section it is walking, so the scroll is put back.
+    const selectOther = async (sec) => {
+      cur = sec
+      const other = (info.sections.find((s) => s.id !== sec.id && s.cat === (sec.cat === 'header' ? 'footer' : 'header')) ?? info.sections.find((s) => s.id !== sec.id)).id
+      const sc = await page.evaluate(() => { const e = document.querySelector('[data-sid]'); let n = e; while (n && !(n.scrollHeight > n.clientHeight + 1 && /auto|scroll/.test(getComputedStyle(n).overflowY))) n = n.parentElement; return n ? n.scrollTop : null })
+      await select(other)
+      await wait(450)
+      if (sc != null) await page.evaluate((top) => { let n = document.querySelector('[data-sid]'); while (n && !(n.scrollHeight > n.clientHeight + 1 && /auto|scroll/.test(getComputedStyle(n).overflowY))) n = n.parentElement; if (n) n.scrollTop = top }, sc)
+      await wait(60)
+    }
 
     if (blank) {
       for (const sec of info.sections) {
@@ -344,6 +357,7 @@ async function runCombo(theme, layout, width) {
     // What a click at `pt` opens: the crop dialog (filled slot), the file picker (empty), a text box, or nothing.
     async function clickAt(pt) {
       const picks0 = await page.evaluate(() => window.__picks)
+      if (cur) { await selectOther(cur); await wait(60) }
       await page.mouse.click(pt.x, pt.y)
       await wait(160)
       return page.evaluate((p0) => ({ dialog: window.__dialog(), picked: window.__picks > p0, text: window.__textBox() }), picks0)
@@ -353,6 +367,7 @@ async function runCombo(theme, layout, width) {
     // only if the dragover was cancelled with a drop effect. Returns what the dragover said and what opened.
     const FIXTURE_B64 = fs.readFileSync(FIXTURE).toString('base64')
     async function dropAt(pt, kind = 'file') {
+      if (cur) { await selectOther(cur); await wait(60) }
       const r = await page.evaluate((pt, b64, kind) => {
         const dt = new DataTransfer()
         // A DataTransfer built by script ignores a write to dropEffect (only a real drag takes one): shadow it.
@@ -456,6 +471,8 @@ async function runCombo(theme, layout, width) {
     // One node: aim, click through its points until one opens something, check what opened, Escape, restore.
     async function walkNode(sec, nodeRow, slotBy, written) {
       const out = { result: 'hidden' }
+      // Aim in the state the click is made in: the page lays out a few px differently with another section selected.
+      await selectOther(sec)
       let aim = await page.evaluate((sid, i) => window.__aimPhoto(sid, i), sec.id, nodeRow.i)
       if (!(aim.gone || aim.hidden)) { await wait(100); aim = await page.evaluate((sid, i) => window.__aimPhoto(sid, i), sec.id, nodeRow.i) }
       if (aim.pts == null) return { result: 'hidden', why: aim.hidden ?? 'gone', over: aim.over }
@@ -535,7 +552,7 @@ async function runCombo(theme, layout, width) {
     // The positive control: a click on the header's photo must open the editor and write the header's slot.
     {
       const hd = info.sections.find((s) => s.cat === 'header')
-      await select(hd.id)
+      await selectOther(hd)
       await wait(300)
       const slots = await page.evaluate((sid, t) => window.__slots(sid, t), hd.id, info.theme)
       const slotBy = withSibs(slots.filter((s) => !s.off))
@@ -582,7 +599,7 @@ async function runCombo(theme, layout, width) {
 
     for (const sec of info.sections) {
       if (onlyCats && !onlyCats.includes(sec.cat)) continue
-      await select(sec.id)
+      await selectOther(sec)
       await wait(300)
       const secRow = { sec: sec.cat, hits: 0, wrong: 0, nr: 0, blocked: 0, hidden: 0, copy: 0 }
       const universe = await page.evaluate((sid, t) => window.__slots(sid, t), sec.id, info.theme)

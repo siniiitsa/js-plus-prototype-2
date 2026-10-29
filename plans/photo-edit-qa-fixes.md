@@ -61,7 +61,7 @@ Put to the user. Neither is decidable by the tester or by the code. Call 2 is de
    boxes of another shape"; "Not done: a live preview of how the crop sits at 1440 / 768 / 390"). The fix does
    not make it worse: (a) means the user starts from the crop the canvas shows. If the user wants it solved, it
    is a separate piece of work (a per-site ratio, or a preview), not part of this ticket.
-2. **JP-154, photos: first click selects, or selects and opens?** (**decided, user, 2026-10-27: keep the second-click rule**; docs only, no code.) *Recommended: keep the rule, record the
+2. **JP-154, photos: first click selects, or selects and opens?** (**decided, user, 2026-10-27: keep the second-click rule**; docs only, no code. **Reversed, user, 2026-10-29**, when the tester reopened it: the first click selects and opens, from any section; `EncoreBuilder.jsx` `onClick`, `probeInline`, the three drag handlers and `dropFile`, `photo-probe.mjs` selecting another section before each click and drop.) *Recommended: keep the rule, record the
    tester's repro as evidence on JP-154 as proposed, no code.* Reasons: it is a standing user call (2026-10-23,
    restated 2026-10-26) that `CLAUDE.md` forbids unifying; the cost of the change is a photo-sized click target
    that also *selects the section* and would now open a modal on every click meant only to select (a photo is

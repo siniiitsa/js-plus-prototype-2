@@ -6383,7 +6383,7 @@ export function inlineSlots(sec, themeName, artistName, all = false) {
 
 /* ------------------------------------------------------------------ *
  * Photos on the canvas (plans/photo-edit.md, user call, 2026-10-23). A click on a
- * photo of the selected section opens the image editor on it (`editImages`), or
+ * photo of any section selects it and opens the image editor on it (`editImages`), or
  * the file picker when the slot is empty. Which field a picture is comes from
  * `EncoreSection`'s inert `data-photo` mark (notes/photography.md), never from
  * its url: a seed is shared by several fields and a placeholder is no <img>.
@@ -6478,7 +6478,7 @@ function blocksPhoto(el, pt) {
   return a == null || parseFloat(a) >= 0.9
 }
 
-// The photo slot under the pointer, in the selected section `sec`, or null. Walks the
+// The photo slot under the pointer, in the section `sec`, or null. Walks the
 // stack top-down: the first photo mark wins; anything that blocks one first, or that
 // lies outside the section's own markup (its toolbar), ends the walk.
 export function photoFieldAt(sec, wrap, pt, themeName) {
@@ -7302,17 +7302,16 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
     return true
   }
   // The text cursor says a click edits: any section's copy (JP-154), looked up at most
-  // every 120ms (findFieldNode reads the whole section). A photo's pointer and box are
-  // the selected section's alone, since a click on a photo only opens it there.
+  // every 120ms (findFieldNode reads the whole section). A photo's pointer and box show on
+  // any section too, since a click on a photo opens it from any section.
   const hoverProbe = useRef(0)
-  const probeInline = (e, sec, selected) => {
+  const probeInline = (e, sec) => {
     const now = performance.now()
     if (now - hoverProbe.current < 120) return
     hoverProbe.current = now
     const wrap = e.currentTarget
     const { text, photo: ph } = targetAt(sec, wrap, e.target, { x: e.clientX, y: e.clientY })
     if (text) { wrap.style.cursor = 'text'; setPhotoHover(null); return }
-    if (!selected) { wrap.style.cursor = ''; return }
     // Not copy: a photo says a click edits it with a pointer and a thin box round the part that shows.
     wrap.style.cursor = ph ? 'pointer' : ''
     const b = ph && photoBox(ph.node, wrap.firstElementChild, wrap.getBoundingClientRect())
@@ -7324,7 +7323,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
   // another inside; an empty one has nothing to crop yet, so it opens the file picker, and the
   // editor follows the pick. Cancel writes nothing, as the panel's controls do.
   const [photoHover, setPhotoHover] = useState(null)
-  // What a click at `pt` in the selected section `sec` means: its copy, else its photo. A text
+  // What a click at `pt` in the section `sec` means: its copy, else its photo. A text
   // node that wraps the picture under the pointer (a gallery tile whose only copy is its
   // heading's wrapper) is not the click's: the picture is.
   const targetAt = (sec, wrap, target, pt) => {
@@ -7347,7 +7346,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
     if (slot.empty) { photoPick.current = { put, aspect: slot.aspect }; photoFile.current?.click() }
     else editImages([{ src: slot.value, aspect: slot.aspect, edit: true, onApply: put }])
   }
-  // A file dropped on the selected section's photo replaces it, where a click would open it (the panel's
+  // A file dropped on a section's photo replaces it, where a click would open it (the panel's
   // drop zone, from the picture). Only a drag that carries files is the canvas's: a text drag is left alone.
   // Every such drag over the section is cancelled, a photo under it or not, or the browser opens the
   // file in this tab and the page is gone.
@@ -7366,7 +7365,9 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
     e.preventDefault()
     setPhotoHover(null)
     const ph = photoFieldAt(sec, e.currentTarget, { x: e.clientX, y: e.clientY }, T.name)
-    if (ph) frameFile(e.dataTransfer.files, photoPut(sec, ph), ph.aspect)
+    if (!ph) return
+    patch({ selectedId: sec.id, menuFor: null })
+    frameFile(e.dataTransfer.files, photoPut(sec, ph), ph.aspect)
   }
 
   // The box follows the copy as it is typed, wraps, or changes width, and as the
@@ -8158,10 +8159,10 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
                     style={{ position: 'relative' }}
                     onMouseEnter={isMobile ? undefined : () => patch({ hoverId: sec.id })}
                     onMouseLeave={isMobile ? undefined : (e) => { e.currentTarget.style.cursor = ''; setPhotoHover(null); patch((s) => (s.hoverId === sec.id ? { hoverId: null } : {})) }}
-                    onMouseMove={isMobile ? undefined : (e) => probeInline(e, sec, st.selectedId === sec.id)}
-                    onDragOver={isMobile || st.selectedId !== sec.id ? undefined : (e) => dropOver(e, sec)}
-                    onDragLeave={isMobile || st.selectedId !== sec.id ? undefined : (e) => { if (!e.currentTarget.contains(e.relatedTarget)) setPhotoHover(null) }}
-                    onDrop={isMobile || st.selectedId !== sec.id ? undefined : (e) => dropFile(e, sec)}
+                    onMouseMove={isMobile ? undefined : (e) => probeInline(e, sec)}
+                    onDragOver={isMobile ? undefined : (e) => dropOver(e, sec)}
+                    onDragLeave={isMobile ? undefined : (e) => { if (!e.currentTarget.contains(e.relatedTarget)) setPhotoHover(null) }}
+                    onDrop={isMobile ? undefined : (e) => dropFile(e, sec)}
                     onClick={(e) => {
                       stopE(e)
                       // A click on a section's copy selects it and edits it there, in the one click
@@ -8170,8 +8171,8 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
                       const pt = { x: e.clientX, y: e.clientY }
                       const { text: hit, photo: ph } = isMobile ? {} : targetAt(sec, e.currentTarget, e.target, pt)
                       if (hit) { patch({ selectedId: sec.id, menuFor: null }); startInline(sec, e.currentTarget, hit, pt) }
-                      // A photo opens the image editor only on a section that is already selected.
-                      else if (ph && st.selectedId === sec.id) { patch({ menuFor: null }); startPhoto(sec, ph) }
+                      // A photo opens the image editor in the one click too, selecting its section.
+                      else if (ph) { patch({ selectedId: sec.id, menuFor: null }); startPhoto(sec, ph) }
                       else patch({ selectedId: sec.id, menuFor: null })
                     }}
                   >
@@ -8187,7 +8188,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
                       }} />
                     )}
 
-                    {photoHover && photoHover.sid === sec.id && st.selectedId === sec.id && !inline && (
+                    {photoHover && photoHover.sid === sec.id && !inline && (
                       <div style={{
                         position: 'absolute', left: photoHover.x, top: photoHover.y, width: photoHover.w, height: photoHover.h,
                         boxSizing: 'border-box', border: '2px solid #2B6BE4', background: 'rgba(43,107,228,.08)',

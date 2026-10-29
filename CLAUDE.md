@@ -232,8 +232,9 @@ reversing 2026-10-20's "an already-selected section": the `text` cursor shows on
   the published tab, the preview or the thumbnails mounts the editor. Enter inserts a line break only where the
   node's `white-space` keeps one (`pre-*`).
 - **Clicking a photo on the canvas opens the image editor on it** (user call, 2026-10-23; `plans/photo-edit.md`; desktop and
-  tablet, an already-selected section, never a phone; **text no longer waits for the selection, photos still do**: JP-154 changed the
-text rule alone, so a later session must not unify the two). `photoFieldAt` takes the stack under the pointer top-down: the first
+  tablet, never a phone; **on the first click, from any section**, like text: the click selects the section and opens the editor in
+  the one click, the pointer and hover box showing on every section. User call, 2026-10-29, JP-154's photo half, reversing 2026-10-23's
+  "an already-selected section" and 2026-10-27's keep). `photoFieldAt` takes the stack under the pointer top-down: the first
   `[data-photo]` node wins (`Photo`'s inert mark, `notes/photography.md`), and anything that `blocksPhoto` first (a control,
   an icon, text under the pointer's own line boxes, a solid ground) ends the walk; scrims, grain and empty wrappers let the
   click through. **Copy goes first** (`targetAt`), except that a text node *wrapping* the picture is not the click's. A filled
@@ -244,11 +245,11 @@ text rule alone, so a later session must not unify the two). `photoFieldAt` take
   the panel boxes the picture, and a media track's art button boxes its row's. Remove, reorder and Add stay in the panel. A page is *known* to work only because
   **`scripts/photo-probe.mjs --theme T --layout N --width 1440,768 --check`** passed it (`--blank` walks the empty slots; its header lists the
   verdicts). Retro layout 1 has passed, by hand too (the Step 2 pilot, with Pop layout 1's hit-test spike), and layouts 2, 3 and 4 on all five templates and Retro's 5 and 6 (Step 3, 2026-10-23), then re-run whole at Step 4 (all 22 pages, both widths, filled and `--blank`: PASS, with `--drop` too).
-  **A file dropped on a selected section's photo replaces it** (Step 4, 2026-10-23; the handlers are the wrapper's, `EncoreSection` is not touched): a drag that carries files is
-  cancelled anywhere over the selected section, a photo under it or not, with `dropEffect` `copy` over a photo `photoFieldAt` would open and `none` elsewhere (or the browser opens the file in the
+  **A file dropped on a section's photo replaces it** (Step 4, 2026-10-23; the handlers are the wrapper's, `EncoreSection` is not touched): a drag that carries files is
+  cancelled anywhere over a section, a photo under it or not, with `dropEffect` `copy` over a photo `photoFieldAt` would open and `none` elsewhere (or the browser opens the file in the
   tab and the page is gone); the drop frames the file in the crop editor, filled slot or empty, and Apply writes through the same `photoPut`. Where a click opens, a drop lands: copy and controls
-  over a photo take no drop. A text drag is left alone, an unselected section and a phone take no photo handlers, and the hover box doubles as the drop highlight. **A file drag over nothing that takes it is cancelled with `dropEffect: none`** (user call, 2026-10-24: a root `onDragOver` / `onDrop` on the editor's outer div, acting only when `hasFiles(e) && !e.defaultPrevented`, so the selected section's photos and the panel's drop zones, which cancel first, keep their effect): a miss never opens the file in the builder's tab.
-  `photo-probe --drop` proves it the way `--check` proves the click.
+  over a photo take no drop. A text drag is left alone, a phone takes no photo handlers, the drop selects the section as a click does, and the hover box doubles as the drop highlight. **A file drag over nothing that takes it is cancelled with `dropEffect: none`** (user call, 2026-10-24: a root `onDragOver` / `onDrop` on the editor's outer div, acting only when `hasFiles(e) && !e.defaultPrevented`, so a section's photos and the panel's drop zones, which cancel first, keep their effect): a miss never opens the file in the builder's tab.
+  `photo-probe --drop` proves it the way `--check` proves the click; the probe selects *another* section before every click and drop, so each is a first click.
 - `st.theme` is an **integer index** into `THEMES`, not a name or object.
 - **`st.device` is the toggle, `device` is what the canvas draws.** A window at most 1180 wide
   (iPad Air landscape; `useTabletCap`) caps it at tablet and disables the Desktop tab, since
