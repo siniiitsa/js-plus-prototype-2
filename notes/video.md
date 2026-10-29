@@ -837,6 +837,17 @@ the same day (user call, 2026-10-28: "view all button is missing. Implement it a
   names a video are an `<a>` to the link as the artist gave it (`vm.videos[].href`), in a new tab (`extLink`),
   and no iframe is mounted. Over http(s) nothing changes. The canvas never reads it, being not live. The root
   `index.html` also has to be refreshed from the standalone build, or it is the old picture of a player.
+- **A title this field filled in is not the artist's** (JP-161, `plans/video-qa-fixes.md`, user call 2026-10-29). The
+  answer's title is stored with `tAuto`, the same text; `videoNeedsTitle` treats a row whose `title` still equals
+  its `tAuto` like an empty one, so the next link's answer replaces it, and any edit after (the panel's box or the
+  canvas, which both write the row's `title`) ends the match, so a typed title stays. A link edit that changes the
+  row's watch address clears an auto title, `tAuto`, `by` and `byFor` in the same write (`setUrl`), so the old
+  video's title and channel name never stand under the new one while it is looked up or if the lookup fails; a
+  half-typed address names no video and clears too, and the cached answer restores it when the link comes back.
+  **View All follows the same rule**: `c.channelAuto` is the address `VideosField` wrote. While `c.channel` is
+  absent or equals it, the address is the first row's answer that has a channel (`syncChannel`), and it is
+  cleared, key and `channelAuto` both, when no row names a video; a row whose answer has not landed leaves it
+  where it is. An address the artist typed or emptied differs from `channelAuto` and is never touched.
 - **Open:** a playlist-only row has no `thumb` (`youtubeThumb` needs a video id), so it shows its seed art or
   the shade ground. oEmbed does return a playlist's `thumbnail_url`; storing it on the row is the fix if wanted.
 

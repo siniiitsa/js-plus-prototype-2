@@ -4050,38 +4050,49 @@ function StepsField({ caps, value, max, onChange }) {
  * endpoint is asked for the video's title and channel — the builder's first
  * network request; it answers CORS for an http origin and for file://'s
  * `null`. The answer lands only on a row still holding that link, read off the
- * latest rows: its title only where the title is empty or still the seed's,
+ * latest rows: its title only where the title is empty, still the seed's, or
+ * still the one this field filled in (`tAuto`, the text it wrote: any edit
+ * after, panel or canvas, makes the title the artist's, whatever the link does),
  * so a title the artist typed is never overwritten, and its channel name
  * always (it is not the artist's copy), clearing a description that is still
  * the seed's so the channel shows. The full title is stored; the page's clamp
  * shortens what it prints. Answers are kept for the session (OEMBED), so a
  * link pasted back, or a panel opened again, takes them without a request.
+ *
+ * A link edit that names another video (or none) takes an auto-filled title,
+ * and the channel name with it, off the row at once, so no title of the old
+ * video stands under the new one while it is looked up, or if the lookup
+ * fails. A typed title stays. The section's View All address (`channel`)
+ * follows the same rule one level up: while it is absent or is `channelAuto`,
+ * the address this field wrote, it is the first video's with an answer, and
+ * is cleared when no row names a video (JP-161, notes/video.md).
  * ------------------------------------------------------------------- */
 
 const VIDEO_NOT_YT = 'Not a YouTube video or playlist link, so it won’t play.'
 const videoUrlProblem = (v, web) => urlProblem(v, web)
   || (String(v ?? '').trim() && !youtubeParts(extUrl(v)) ? VIDEO_NOT_YT : '')
-// A row whose title is empty, or still the seed row's own, takes the looked-up one.
+// A row whose title is empty, or still the seed row's own, or still the text
+// this field filled in for an earlier link (`tAuto`), takes the looked-up one.
 const videoNeedsTitle = (r) => {
   const t = String(r?.title ?? '').trim()
   return !t || (Number.isInteger(r?.art) && t === VIDEOS[r.art]?.title)
+    || (r?.tAuto !== undefined && String(r.title ?? '') === r.tAuto)
 }
 const videoSeedDescOf = (r) => Number.isInteger(r?.art) && String(r?.desc ?? '').trim() === videoSeedDesc(VIDEOS[r.art])
 const videoWatchOf = (r) => youtubeWatch(extUrl(r?.url ?? ''))
 // Watch address → { title, by, channel } | 'busy', for the session.
 const OEMBED = {}
 
-function VideosField({ caps, value, max, onChange, needChannel = false, onChannel }) {
+function VideosField({ caps, value, max, onChange, channel, channelAuto, onChannel }) {
   const list = Array.isArray(value) ? value : []
   // `fail` holds the links this panel could not look up (asked again on a
   // remount); the refs are what an answer arriving later writes through.
   const fail = useRef({})
-  const [, bump] = useState(0)
-  const latest = useRef({ list, onChange, needChannel, onChannel })
-  latest.current = { list, onChange, needChannel, onChannel }
-  // The channel is offered once, the first answer's: two answers landing in
-  // one tick would otherwise both see the key absent.
-  const chanSent = useRef(false)
+  const [tick, bump] = useState(0)
+  // View All's address is ours to move while it is absent or is the one we wrote.
+  const chanMine = channel === undefined || channel === channelAuto
+  const latest = useRef({ list, onChange, channel, chanMine, onChannel })
+  latest.current = { list, onChange, channel, chanMine, onChannel }
   const live = useRef(true)
   // Re-armed on every mount: StrictMode's mount, unmount, mount would otherwise
   // leave it false and drop every answer.
@@ -4089,7 +4100,7 @@ function VideosField({ caps, value, max, onChange, needChannel = false, onChanne
 
   // Lands the answers for `ws` on the latest rows in one write.
   const apply = (ws) => {
-    const { list: cur, onChange: write, needChannel: needCh, onChannel: setCh } = latest.current
+    const { list: cur, onChange: write } = latest.current
     let hit = false
     const next = cur.map((r) => {
       const w = videoWatchOf(r)
@@ -4101,14 +4112,23 @@ function VideosField({ caps, value, max, onChange, needChannel = false, onChanne
       const title = videoNeedsTitle(r)
       hit = true
       return {
-        ...r, ...(title ? { title: ans.title } : null), by: ans.by, byFor: w,
+        ...r, ...(title ? { title: ans.title, tAuto: ans.title } : null), by: ans.by, byFor: w,
         ...(videoSeedDescOf(r) ? { desc: '' } : null),
       }
     })
     if (hit) write(next)
-    // View All's address (`channel`), while the artist has not set one.
-    const ch = ws.map((w) => OEMBED[w]?.channel).find(Boolean)
-    if (ch && needCh && setCh && !chanSent.current) { chanSent.current = true; setCh(ch) }
+    syncChannel(hit ? next : cur)
+  }
+  // View All's address while it is ours: the first row's answer that has a
+  // channel, and none once no row names a video. A row whose answer has not
+  // landed leaves it where it is (the answer syncs again); an address the
+  // artist typed or emptied is never touched.
+  const syncChannel = (rows) => {
+    const { channel: cur, chanMine: mine, onChannel: setCh } = latest.current
+    if (!mine || !setCh) return
+    const ws = rows.map(videoWatchOf).filter(Boolean)
+    const want = ws.map((w) => OEMBED[w]?.channel).find(Boolean)
+    if (want ? want !== cur : ws.length === 0 && cur !== undefined) setCh(want)
   }
   const lookup = (w) => {
     OEMBED[w] = 'busy'
@@ -4128,7 +4148,7 @@ function VideosField({ caps, value, max, onChange, needChannel = false, onChanne
   // address, any link), not in flight and not failed here.
   // Answers already held land at once; the rest are asked for once the list
   // has been still for 500ms.
-  const wants = (r) => r.byFor !== videoWatchOf(r) || needChannel
+  const wants = (r) => r.byFor !== videoWatchOf(r) || channel === undefined
   const want = [...new Set(list.filter(wants).map(videoWatchOf))]
     .filter((w) => w && !fail.current[w] && OEMBED[w] !== 'busy')
   const wantKey = want.join(' ')
@@ -4142,8 +4162,23 @@ function VideosField({ caps, value, max, onChange, needChannel = false, onChanne
     const t = setTimeout(() => ask.forEach((w) => { if (!OEMBED[w]) lookup(w) }), 500)
     return () => clearTimeout(t)
   }, [wantKey]) // eslint-disable-line react-hooks/exhaustive-deps
+  // A list that lost its last video, or an address that moved under us.
+  const listKey = list.map(videoWatchOf).join(' ')
+  useEffect(() => { syncChannel(latest.current.list) }, [listKey, channel, channelAuto, tick]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const setAt = (i, k, v) => onChange(list.map((r, j) => (j === i ? { ...r, [k]: v } : r)))
+  // A link that names another video (or none) takes an auto-filled title and
+  // the channel name off the row: the old video's, under the new one.
+  const setUrl = (i, v) => onChange(list.map((r, j) => {
+    if (j !== i) return r
+    const next = { ...r, url: v }
+    if (r.byFor !== undefined && r.byFor !== videoWatchOf(next)) {
+      delete next.by; delete next.byFor
+      if (r.tAuto !== undefined && String(r.title ?? '') === r.tAuto) next.title = ''
+      delete next.tAuto
+    }
+    return next
+  }))
   const removeAt = (i) => onChange(list.filter((_, j) => j !== i))
   const moveAt = (i, by) => {
     const j = i + by
@@ -4191,7 +4226,7 @@ function VideosField({ caps, value, max, onChange, needChannel = false, onChanne
           <div style={{ flex: 1, minWidth: 0 }}>
             <UrlInput
               value={r.url ?? ''} placeholder="https://youtu.be/…" check={videoUrlProblem}
-              onChange={(v) => setAt(i, 'url', v)}
+              onChange={(v) => setUrl(i, v)}
               className="h-auto" style={SONG_ROW_INPUT}
             />
           </div>
@@ -5108,8 +5143,8 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                         <StepsField caps={caps} value={stepsVal(f.k)} max={f.max} onChange={(v) => set(v)} />
                       ) : f.type === 'videos' ? (
                         <VideosField caps={caps} value={videosVal(f.k)} max={f.max} onChange={(v) => set(v)}
-                          needChannel={sec.c.channel === undefined}
-                          onChannel={(u) => api.setContent(sec.id, 'channel', u)} />
+                          channel={sec.c.channel} channelAuto={sec.c.channelAuto}
+                          onChannel={(u) => { api.setContent(sec.id, 'channel', u); api.setContent(sec.id, 'channelAuto', u) }} />
                       ) : f.type === 'booked' ? (
                         // A rung that takes a second value, as SetsField's
                         // does and the way TracksField is the one that takes a
