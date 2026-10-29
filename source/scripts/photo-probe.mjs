@@ -471,6 +471,8 @@ async function runCombo(theme, layout, width) {
     // One node: aim, click through its points until one opens something, check what opened, Escape, restore.
     async function walkNode(sec, nodeRow, slotBy, written) {
       const out = { result: 'hidden' }
+      // Aim in the state the click is made in: the page lays out a few px differently with another section selected.
+      await selectOther(sec)
       let aim = await page.evaluate((sid, i) => window.__aimPhoto(sid, i), sec.id, nodeRow.i)
       if (!(aim.gone || aim.hidden)) { await wait(100); aim = await page.evaluate((sid, i) => window.__aimPhoto(sid, i), sec.id, nodeRow.i) }
       if (aim.pts == null) return { result: 'hidden', why: aim.hidden ?? 'gone', over: aim.over }
