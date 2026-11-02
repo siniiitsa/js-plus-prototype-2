@@ -63,8 +63,13 @@ keeps the key in `c`, unread.
 
 ## Photography
 
-`RETRO_PHOTOS.video` is the **hero** shot, not `stage`: the Retro frames show the whole hero image in
-the 16:9 box at both layouts, and the portrait slice `stage` cut the chest off. `LIME_PHOTOS.video`
+`RETRO_PHOTOS.video` is **`retro-video-poster.jpg`**, the Velvet Note club shot (JP-164, 2026-10-29): the singer in a red
+velvet suit, the audience at tables, the trumpet and saxophone, the neon *The Velvet Note*. Frames `964:64645` (L2) and
+`964:72773` (L4, inner `964:72777`) fill their player with **one file, hash `000ea835`**, at all three widths (1672 × 941,
+a plain centred `FILL` / cover: the `imageTransform` they state is ignored under `FILL`), exported at 1440 wide, q60, 135 KB,
+and it takes **no `FOCUS` row**. It is *not* the header's `hero` (the yellow-suit stage shot, Retro's header hash
+`b74be8bc`), which this section said until session 3 of `plans/video-qa-fixes.md` (session 1 of `plans/video.md` read the
+two as one); the earlier sentence that the portrait slice `stage` cut the chest off still holds for `stage`. `LIME_PHOTOS.video`
 is `limeHero` too (session 2, below). `GRUNGE_PHOTOS.video` is `grungeStage`, the bio's drummer, and
 it is the frame's own (session 4, below). `EDITORIAL_PHOTOS.video` is `editorialStage`, the bio's arch, and
 the frame's own (session 6, below). `POP_PHOTOS.video` is `popStage`, the bio's arch, and the frame's own
@@ -73,6 +78,14 @@ through `ROW_ART.video` (a seed row's `art`), until a link gives the row YouTube
 poster is a `photoSlot` since the `avatar` field went (2026-10-28; `defaultImage`'s avatar arm is the
 header's alone); the thumbnails are the seed's or the link's and carry no `data-photo` (`photo-probe
 --cat video`: PASS, `--blank` and `--drop` too, no `PHOTO_OFF` row).
+
+**The other four templates' posters, re-read against their frames (JP-164's Call 4, 2026-10-29)**, every player instance at
+L2 and L4 and all three widths, by the largest image fill's hash: **no mismatch.** Lime `51d68654` (`limeHero`, and the
+header's own hero hash at layout 2, so the one template whose poster *is* its header's photo is the one that reads so) ·
+Grunge `8031d0f3` (`grungeStage`, the bio's drummer) · Editorial `9d20fe0d` (`editorialStage`, the bio's arch) · Pop
+`51d06990` (`popStage`, the bio's arch), each different from that template's header hash (Editorial `ae069c14`, Pop
+`f70d25d3`). Two stray masters are the mode leaks already recorded, not posters: Lime's 390 L4 inner `977:9010` (`000ea835`,
+Retro's) and Editorial's 768 L4 inner `971:9555` (`8031d0f3`, Grunge's). Retro's six instances are all `000ea835`.
 
 ## Caps (`node scripts/limits.mjs video`, Retro; Lime's layout 2 in session 2; Grunge's layouts 2 and 4 in sessions 4 and 5; Editorial's layouts 2 and 4 in sessions 6 and 7; Pop's layout 2 in session 8, its layout 4 in session 9)
 
@@ -837,6 +850,17 @@ the same day (user call, 2026-10-28: "view all button is missing. Implement it a
   names a video are an `<a>` to the link as the artist gave it (`vm.videos[].href`), in a new tab (`extLink`),
   and no iframe is mounted. Over http(s) nothing changes. The canvas never reads it, being not live. The root
   `index.html` also has to be refreshed from the standalone build, or it is the old picture of a player.
+- **A title this field filled in is not the artist's** (JP-161, `plans/video-qa-fixes.md`, user call 2026-10-29). The
+  answer's title is stored with `tAuto`, the same text; `videoNeedsTitle` treats a row whose `title` still equals
+  its `tAuto` like an empty one, so the next link's answer replaces it, and any edit after (the panel's box or the
+  canvas, which both write the row's `title`) ends the match, so a typed title stays. A link edit that changes the
+  row's watch address clears an auto title, `tAuto`, `by` and `byFor` in the same write (`setUrl`), so the old
+  video's title and channel name never stand under the new one while it is looked up or if the lookup fails; a
+  half-typed address names no video and clears too, and the cached answer restores it when the link comes back.
+  **View All follows the same rule**: `c.channelAuto` is the address `VideosField` wrote. While `c.channel` is
+  absent or equals it, the address is the first row's answer that has a channel (`syncChannel`), and it is
+  cleared, key and `channelAuto` both, when no row names a video; a row whose answer has not landed leaves it
+  where it is. An address the artist typed or emptied differs from `channelAuto` and is never touched.
 - **Open:** a playlist-only row has no `thumb` (`youtubeThumb` needs a video id), so it shows its seed art or
   the shade ground. oEmbed does return a playlist's `thumbnail_url`; storing it on the row is the fix if wanted.
 
@@ -977,3 +1001,41 @@ once Play was pressed, the very thing call 7 declined).
   `file://` standalone build's published tab (`about:blank`) the picture is *Watch … on YouTube* in a new tab, no
   player mounts, and the skips step the title, picture and link. The root `index.html` and `published.html` are
   refreshed from the standalone build.
+
+## A player that cannot play is not drawn, and layout 4's pill (JP-162, JP-163; 2026-10-29)
+
+`plans/video-qa-fixes.md`, session 2; calls 1 and 2, user calls, the recommended option each.
+
+- **A video section with nothing to play is left out of the published page and Preview** (call 1 (A)).
+  `videoPlayable(section)` in `data.js` is true when some row of `c.videos` (the seed rows when the key is absent)
+  has a link that names a YouTube video or playlist, which is what both `embed` and `href` come from. It is pure,
+  so `PublishedPage` asks it without a view-model: `sections` is filtered at the head of the component, **before**
+  `navSections`, `pageRows`, `pageDesignOf` and the `above` / `below` the neighbours read, so Lime's layout-4
+  seams and Grunge's 390 torn head are drawn against the array that is drawn (the default page's media and gallery
+  meet as on a page with no video). The seed rows carry no link, so a page nobody has edited, an emptied list and
+  a list of Vimeo links are all left out. The canvas never filters. The Videos panel says so while it holds:
+  *Not shown on the published page until a YouTube link is added.* (no canvas-toolbar note: no room).
+- **A row that does not play draws no disc live** (call 1 (B)): `playsHere(row)` at `Video`'s head,
+  `!s.live || (s.videoEmbeds ? !!row.embed : !!row.href)`, gates layout 2's stage disc, each row's corner disc and
+  layout 4's centre disc. Layout 4 keeps a 64 spacer where the disc was while there are two or more rows, so the skip
+  discs do not move under the pointer when a skip lands on such a row. Layout 2's *No videos yet.* is the canvas's
+  alone (`!s.live`); it is unreachable live under (A) and gated anyway. The canvas keeps every disc.
+- **Layout 4's title is on a pill** (call 2). With a title, the arrow and the title stand on a chip in the transport
+  discs' own ground (`cream`), the arrow in their glyph colour and **the title in that ground's ink** (`creamInk`:
+  `#111` under Retro, `s.tx` under Lime, `s.paperFg` elsewhere, layout 2's panel's). The plan said the glyph
+  colour for both; measured, the glyph colour is a 16px mark and as a title it reads 4.14 / 3.69 / 3.46 / 3.14 on
+  Retro / Grunge / Editorial / Pop (Lime 8.0), so the title takes the ink: **16.2 / 11.5 / 17.4 / 17.6 / 5.6**
+  (Retro / Lime / Grunge / Editorial / Pop), the same at every width and over any picture. Padding 4 / 18 / 4 / 16
+  × z (6 clipped the pill a pixel under Lime, Grunge and Editorial at 1440), radius a pill, the title still
+  ellipsising (`minWidth: 0`). An untitled row keeps the bare arrow (call 9).
+- **Caps.** The pill's padding binds the 390 box sooner: `videos.title` at layout 4 is Retro **48**, Lime **44**,
+  Grunge **49**, Editorial **27**, Pop **31** (was 54 / 50 / 55 / 29 / 35; `limits.mjs video --designs=3
+  --keys=videos.title`), `--check` 0 failing and `--seeds` 0 over.
+- **Proved** on the working tree: default, one YouTube link, YouTube + Vimeo + YouTube, Vimeo alone and an empty list
+  on Retro cards 2 and 4, in the published tab over http (section absent for the default, Vimeo-only and empty; present
+  for the others; layout 2's mixed list has three discs, none on the Vimeo row; layout 4 plays and its skips stand);
+  the digest of the video category (themes 0–4, three widths, against `5ac9e64`), plain, `&above=media` and
+  `&below=video`: **exactly 30 files differ in each**, layout 4's arch 2 and 3 on all five templates, and layout 2
+  is byte-identical; `inline-probe --cat video --check` at layouts 2 and 4, 1440 and 768, Retro and Pop PASS (the
+  1 *unhit* at layout 4 is the baseline's too); `photo-probe --cat video --check` Retro and Pop PASS.
+

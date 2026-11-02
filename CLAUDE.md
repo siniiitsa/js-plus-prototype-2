@@ -632,7 +632,7 @@ reversing 2026-10-20's "an already-selected section": the `text` cursor shows on
   **layout-bound** category: `NVAR.video = 4` with designs 0 and 2 empty (`videoDesign()` folds them onto
   1 and 3), the sidebar's `LayoutPicker` offers only layouts 2 and 4 (`layoutChoices`), and the setup
   modal's cards 2 and 4 insert it after the media player and cards 1 and 3 drop it (`pickHeader`,
-  no `st.removed` write). It has no nav link (`CATS.video.noNav`). Both its layouts, on every template, play the
+  no `st.removed` write). It has no nav link (`CATS.video.noNav`). **The published page and Preview leave it out while no row has a YouTube link** (`videoPlayable`, JP-162, `PublishedPage` filters before it names any neighbour; the canvas never does). Both its layouts, on every template, play the
   artist's YouTube links when live (`notes/video.md`): layout 2 lists them beside a stage, layout 4 plays
   them one at a time under its skip discs; on the canvas each is a picture of its player. The 10 non-header, non-video
   categories are also the ones that stay *numbered*: only the header's layouts have names
