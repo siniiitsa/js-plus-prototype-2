@@ -100,6 +100,10 @@ const facedLh = (s, lh) => (s.faceK !== 1 && typeof lh === 'number' ? +(lh / s.f
 // position are the defaults.
 // A digit-less price long enough to be a sentence (`t.prose`, JP-135): the
 // amount's seat lets it wrap and shrink instead of running past the card.
+// Artist copy with no space in it (a blurb typed as one 160-letter word) breaks
+// inside the word instead of running past its card. Inherited, so one rule on a
+// pricing layout's root covers its names, blurbs, features and chips.
+const WRAP_LONG = { overflowWrap: 'anywhere' }
 const PROSE_AMOUNT = { whiteSpace: 'normal', minWidth: 0, overflowWrap: 'anywhere', flex: '0 1 auto' }
 const distressed = (s, style) => (s.distress ? {
   ...style,
@@ -10994,7 +10998,7 @@ function Pricing({ s }) {
             </svg>
           </div>
         )}
-        <div style={col(u(32), grunge || pop ? { position: 'relative' } : undefined)}>
+        <div style={col(u(32), grunge || pop ? { ...WRAP_LONG, position: 'relative' } : WRAP_LONG)}>
           {/* Desktop centres the chips against the heading at the row's far
               end; both narrow masters stack them 24 under it — except
               Editorial's 390, whose head is SPACE_BETWEEN on a hugging
@@ -11250,7 +11254,7 @@ function Pricing({ s }) {
     }
 
     return (
-      <div style={col(s.narrow ? '32px' : '26px')}>
+      <div style={col(s.narrow ? '32px' : '26px', WRAP_LONG)}>
         <div style={s.narrow
           ? col('24px', { alignItems: 'flex-start' })
           : row('20px', { justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap' })}>
@@ -11822,7 +11826,7 @@ function Pricing({ s }) {
       )
 
       return (
-        <div style={col(u(24))}>
+        <div style={col(u(24), WRAP_LONG)}>
           <div style={desk
             ? row(u(48), { alignItems: 'flex-start', width: '100%' })
             : col('32px', { width: '100%' })}>
@@ -12126,6 +12130,7 @@ function Pricing({ s }) {
     const [padT, padS, padB] = desk ? [u(56), u(56), u(32)] : s.mob ? ['30px', '10px', '30px'] : ['60px', '30px', '60px']
     return (
       <div style={col(u(24), {
+        ...WRAP_LONG,
         margin: `calc(-1 * ${s.padY}) calc(-1 * ${s.padX})`,
         border: `1px solid ${s.retro ? s.tx : s.line2}`,
         padding: `${padT} calc(${padS} + ${s.surplus}) ${padB}`,
@@ -12514,7 +12519,7 @@ function Pricing({ s }) {
       }
 
       return (
-        <div style={col(u(24), { alignItems: 'flex-start' })}>
+        <div style={col(u(24), { ...WRAP_LONG, alignItems: 'flex-start' })}>
           <div style={col(u(12), { alignItems: 'flex-start', width: '100%' })}>
             {!!s.title && (
               <h2 style={distressed(s, {
@@ -12795,7 +12800,7 @@ function Pricing({ s }) {
     }
 
     return (
-      <div style={col(u(24), { alignItems: 'flex-start' })}>
+      <div style={col(u(24), { ...WRAP_LONG, alignItems: 'flex-start' })}>
         <div style={col(u(12), { alignItems: 'flex-start', width: '100%' })}>
           {!!s.title && (
             <h2 style={{
@@ -13182,7 +13187,7 @@ function Pricing({ s }) {
       // calendar below) it made each gap read as a hole (user call,
       // 2026-09-18).
       return (
-        <div style={col('0', { margin: `calc(-1 * ${s.padY}) 0` })}>
+        <div style={col('0', { ...WRAP_LONG, margin: `calc(-1 * ${s.padY}) 0` })}>
           {s.tiers.length === 0 ? (
             // Retro's one message, in the pale ink layout 3's Lime stack prints
             // it in; the frame draws no such state.
@@ -13350,7 +13355,7 @@ function Pricing({ s }) {
     )
 
     return (
-      <div style={col('0')}>
+      <div style={col('0', WRAP_LONG)}>
         {s.tiers.length === 0 ? (
           // Layout 1's and layout 3's one message. A stack of rows with nothing
           // in it is not one of this section's states, and one message and not
@@ -13372,7 +13377,7 @@ function Pricing({ s }) {
   }
 
   return (
-    <div>
+    <div style={WRAP_LONG}>
       <h2 style={{ margin: '0 0 28px', ...h2Style(s) }}>{s.title}</h2>
       {s.tiers.map((t, i) => (
         <div key={i} style={row('20px', {

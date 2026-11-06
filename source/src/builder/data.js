@@ -2248,8 +2248,12 @@ export const FIELDS = {
       cols: {
         name: { Retro: [19, 18, 53, 16], Lime: [30, 28, 42, 23], Grunge: [40, 34, 51, 25], Editorial: [22, 18, 27, 16],
           Pop: [16, 16, 30, 18] },
-        price: { Retro: [8, 33, 31, 25], Lime: [12, 35, 25, 29], Grunge: [14, 35, 30, 34], Editorial: [11, 33, 27, 20],
-          Pop: [10, 34, 25, 23] },
+        // `num` is the first number run, the big numeral: a price of digits alone
+        // sets whole in it, so it is measured apart from the total (`chars`, the
+        // price with its small tail). User call, 2026-11-06.
+        price: { chars: { Retro: [8, 33, 31, 25], Lime: [12, 35, 25, 29], Grunge: [14, 35, 30, 34], Editorial: [11, 33, 27, 20],
+          Pop: [10, 34, 25, 23] }, num: { Retro: [5, 6, 12, 12], Lime: [10, 12, 12, 12], Grunge: [11, 12, 12, 12], Editorial: [8, 12, 12, 12],
+          Pop: [7, 12, 12, 12] } },
         tags: { list: ',', chars: { Retro: [12, null, 12, 12], '*': [26, null, 26, 26] },
           count: { Retro: [4, null, 5, 6], Pop: [3, null, 4, 5], '*': [4, null, 4, 5] } },
         blurb: 160,
@@ -3325,10 +3329,12 @@ const specAt = (spec, themeName, design) => {
 }
 const isColObj = (spec) => spec != null && typeof spec === 'object' && !Array.isArray(spec) && 'chars' in spec
 // The resolved cap of a field or column: { chars, count, list } or null.
-const capOf = (spec, count, list, themeName, design) => {
+const capOf = (spec, count, list, themeName, design, num) => {
   const chars = specAt(spec, themeName, design)
   const n = specAt(count, themeName, design)
-  return chars == null && n == null ? null : { chars, count: n, list }
+  const nu = specAt(num, themeName, design)
+  if (chars == null && n == null && nu == null) return null
+  return nu == null ? { chars, count: n, list } : { chars, count: n, list, num: nu }
 }
 export function fieldCap(f, themeName, design) {
   return capOf(f.chars, f.count, f.list, themeName, design)
@@ -3337,7 +3343,7 @@ export function colCaps(f, themeName, design) {
   if (!f.cols) return null
   const out = {}
   for (const [k, spec] of Object.entries(f.cols)) {
-    const cap = isColObj(spec) ? capOf(spec.chars, spec.count, spec.list, themeName, design)
+    const cap = isColObj(spec) ? capOf(spec.chars, spec.count, spec.list, themeName, design, spec.num)
       : capOf(spec, undefined, undefined, themeName, design)
     if (cap) out[k] = cap
   }
@@ -3360,7 +3366,9 @@ const minOf = (a, b) => (a == null ? b : b == null ? a : Math.min(a, b))
 function minCap(a, b) {
   if (!a) return b
   if (!b) return a
-  return { chars: minOf(a.chars, b.chars), count: minOf(a.count, b.count), list: a.list ?? b.list }
+  const num = minOf(a.num, b.num)
+  return { chars: minOf(a.chars, b.chars), count: minOf(a.count, b.count), list: a.list ?? b.list,
+    ...(num == null ? null : { num }) }
 }
 // The cap EditPanel enforces on one of the header's shared keys (`kicker`,
 // `location`, `tags`): the tightest among the page's sections at their
@@ -3413,13 +3421,36 @@ export function clampList(s, cap) {
   }
   return out.join(cap.list)
 }
+// A price's first number run cut to `n` characters, no ellipsis (it would set in
+// the small tail, not the numeral). Only a run with a digit counts: a digit-less
+// price wraps as prose (JP-135) and 'POA' is a word, not a number. A cut that
+// lands after a comma or a point drops it: 1,200 cut to 2 reads 1.
+function numeralRun(v) {
+  const { at, end, prose } = priceCuts(v)
+  return !prose && /\d/.test(v.slice(at, end)) ? { at, end } : null
+}
+// The characters in a price's numeral, 0 where it has none (see `numeralRun`).
+export function numeralLen(v) {
+  const run = typeof v === 'string' ? numeralRun(v) : null
+  return run ? run.end - run.at : 0
+}
+export function clampNumeral(v, n) {
+  if (typeof v !== 'string' || n == null) return v
+  const run = numeralRun(v)
+  if (!run || run.end - run.at <= n) return v
+  return v.slice(0, run.at) + v.slice(run.at, run.at + n).replace(/[.,]+$/, '') + v.slice(run.end)
+}
 export const clampCapped = (v, cap) => (!cap || typeof v !== 'string' ? v
-  : cap.list ? clampList(v, cap) : clampText(v, cap.chars))
+  : cap.list ? clampList(v, cap) : clampText(clampNumeral(v, cap.num), cap.chars))
 // How far a value is past its cap: the characters over, plus one per item over
 // the count. 0 is within it. EditPanel refuses a list edit that raises it.
 export function capExcess(v, cap) {
   if (!cap || typeof v !== 'string') return 0
-  if (!cap.list) return cap.chars == null ? 0 : Math.max(0, v.length - cap.chars)
+  if (!cap.list) {
+    const run = cap.num == null ? null : numeralRun(v)
+    const num = run ? Math.max(0, run.end - run.at - cap.num) : 0
+    return num + (cap.chars == null ? 0 : Math.max(0, v.length - cap.chars))
+  }
   const items = listItems(v, cap.list).map((t) => t.trim()).filter(Boolean)
   const over = cap.chars == null ? 0 : items.reduce((n, t) => n + Math.max(0, t.length - cap.chars), 0)
   return over + (cap.count == null ? 0 : Math.max(0, items.length - cap.count))
