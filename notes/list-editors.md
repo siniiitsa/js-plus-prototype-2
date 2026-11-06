@@ -137,8 +137,12 @@ ahead of the `area` arm. **The stored value is still the comma string** (items j
 `sectionVm`, the clamp, `identityCap` and `limits.mjs` are untouched. `cap.count` hides *Add* at the
 limit; `cap.chars` is checked per item by the guard below. A blank row exists only in the component's state
 and is dropped from what is stored; a value arriving from outside (layout swap, undo) rebuilds the rows, via the
-`emitted` ref. Emptying every row stores `''`, which hides the chip row as before. Other `list: ','` / `'\n'`
-fields (event types, promises, tier features) can opt in the same way and inherit what follows.
+`emitted` ref. Emptying every row stores `''`, which hides the chip row as before. **Every other delimited field
+opts in too** (user call, 2026-11-06: no field asks the artist to type a separator): the form's and the calendar's
+*Event types*, the map's *Ring labels*, the form's *Promises* (`rows` in `FIELDS`), and the repeaters' `songs.tags`,
+`tiers.tags` and `tiers.feats` (a `<LineListField compact …>` in `SongsField` / `TiersField`; the tags no longer share
+the price's line). A comma list is stored `a, b`, a line list `a\nb` (`join` adds the space for a comma only). Enter
+opens the next row; a pasted block of lines on a line list splits into rows (`<input>` would flatten it).
 
 **One guard, `CappedText`'s rule** (user call, 2026-10-16: over a limit, refuse the edit whole). `edit` builds
 `next` and returns, so the controlled box snaps back, when `capExcess(join(next)) > capExcess(join(rows))`,

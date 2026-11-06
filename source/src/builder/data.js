@@ -2260,11 +2260,11 @@ export const FIELDS = {
         feats: { list: '\n', chars: { Retro: [24, 24, 24, 59], Grunge: [25, 24, 24, 62], Editorial: [25, 24, 24, 60],
           Pop: [26, 24, 24, 62], '*': [24, 24, 24, 62] }, count: [15, 15, 15, 5] },
       },
-      hint: 'Tags become the filter chips above the packages in layouts 1 and 3 — separate '
-          + 'them with commas. Layout 3 starts the packages tagged Duo where the other layouts '
+      hint: 'Tags become the filter chips above the packages in layouts 1 and 3. '
+          + 'Layout 3 starts the packages tagged Duo where the other layouts '
           + 'have Solo, and layout 1 in Lime, Grunge, Editorial and Pop starts them on Private Event, '
-          + 'Club Night and Festival; once you edit the list, it is the same at every layout. Features are one '
-          + 'to a line. Layout 2 shows one package at a '
+          + 'Club Night and Festival; once you edit the list, it is the same at every layout.'
+          + ' Layout 2 shows one package at a '
           + 'time and names them in its own chip row, so it reads no tags. Layout 4 has no '
           + 'filter: it prints the tags and the features on the package itself. In layouts 1, 2 '
           + 'and 3, whatever comes before the price’s first digit — a £, or a word like From — '
@@ -2365,7 +2365,7 @@ export const FIELDS = {
           Pop: [null, null, 14] },
         tags: { list: ',', chars: 18, count: { Editorial: [3, 4, 3, 3], '*': [4, 4, 3, 3] } },
       },
-      hint: 'Tags become the filter chips above the list — separate them with commas. Layout 4 draws no chips: it indexes the whole list A–Z instead. '
+      hint: 'Tags become the filter chips above the list. Layout 4 draws no chips: it indexes the whole list A–Z instead. '
           + 'Layout 3 groups the songs into one set per tag and shows each song’s length in place of its artist; '
           + 'the other layouts show the artist and not the length.' },
     // The mood and length share one clipped line (`repSetLine()`), so they split
@@ -2488,7 +2488,8 @@ export const FIELDS = {
       chars: { Editorial: [null, 25], '*': [null, 26] } },
     { k: 'types',   l: 'Event types', type: 'area', d: CAL_TYPES.join(', '), in: [3], list: ',',
       chars: [null, null, null, 13], count: [null, null, null, 4],
-      hint: "The choices on the first step of layout 4's enquiry wizard, separated by commas." },
+      rows: { placeholder: 'Event type', add: 'Add event type' },
+      hint: "The choices on the first step of layout 4's enquiry wizard." },
     // JP-076 — no `d`: while the key is absent it follows the Enquiry Form's
     // address (sectionVm's `email` argument, and EditPanel's chain shows it),
     // so the page has one address until the artist types a second here.
@@ -2625,7 +2626,8 @@ export const FIELDS = {
     { k: 'rings',   l: 'Ring labels', d: MAP_RINGS, in: [1, 2, 3],
       // Chips on the rings, sliced to the three rings the map draws.
       list: ',', chars: [null, 13, 13, 13], count: [null, 3, 3, 3],
-      hint: 'Up to three, inner ring first, separated by commas.' },
+      rows: { placeholder: 'Ring label', add: 'Add ring label' },
+      hint: 'Up to three, inner ring first.' },
     { k: 'expand',  l: 'Map link', d: MAP_EXPAND, in: [1, 2],
       chars: [null, 22, 22],
       hint: 'Opens directions to the gig the panel is showing, on the published page. Leave empty to hide it.' },
@@ -2734,7 +2736,8 @@ export const FIELDS = {
     { k: 'promises', l: 'Promises', type: 'area', d: FORM_PROMISES.join('\n'), in: [0, 1], list: '\n',
       chars: { Retro: [45, 32], Pop: [42, 31], Editorial: [34, 29], '*': [34, 34] },
       count: { Editorial: [6, 9], '*': [9, 9] },
-      hint: 'One per line — the ticked list beside the form.' },
+      rows: { placeholder: 'Promise', add: 'Add promise' },
+      hint: 'The ticked list beside the form.' },
     // Layout 4's *What happens next* column (JP-079 · JP-081, user call,
     // 2026-09-29): the tenth repeater, { title, sub } per step, seeded with the
     // frames' three. It numbered the promises until then, one line a row.
@@ -2764,7 +2767,8 @@ export const FIELDS = {
           + 'in every layout.' },
     { k: 'types',    l: 'Event types', type: 'area', d: FORM_TYPES.join(', '), in: [0], list: ',',
       chars: [15], count: { Lime: [5], Grunge: [5], '*': [8] },
-      hint: 'Comma separated. The form opens on the first; empty hides the row. Layout 1 only.' },
+      rows: { placeholder: 'Event type', add: 'Add event type' },
+      hint: 'The form opens on the first; empty hides the row. Layout 1 only.' },
     // The chip row's label (JP-090), messageLabel's rule: the row it heads
     // stands whatever it says, so an emptied label reads the seed again.
     { k: 'typeLabel', l: 'Event type label', d: FORM_TYPE_LABEL, in: [0],
