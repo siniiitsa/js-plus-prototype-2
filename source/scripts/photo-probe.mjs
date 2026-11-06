@@ -251,7 +251,8 @@ function pageHelpers() {
     const d = [...document.querySelectorAll('[role=dialog]')].find((e) => [...e.querySelectorAll('button')].some((b) => b.textContent.trim().startsWith('Apply')))
     if (!d) return null
     const img = d.querySelector('img')
-    return { title: d.querySelector('h2')?.textContent.trim() ?? '', src: img ? img.getAttribute('src') : null, hasImg: !!img }
+    const fr = d.querySelector('[data-crop-frame]')
+    return { title: d.querySelector('h2')?.textContent.trim() ?? '', src: img ? img.getAttribute('src') : null, hasImg: !!img, frame: fr ? fr.offsetWidth / fr.offsetHeight : null }
   }
   window.__abs = (u) => { try { return new URL(u, location.href).href } catch { return u } }
   window.__textBox = () => !!document.querySelector('textarea[data-inline-edit]')
@@ -413,6 +414,15 @@ async function runCombo(theme, layout, width) {
       }
       if (!ready) { await settle(); return { error: 'the dialog never showed the uploaded photo' } }
       const sw = await page.evaluate(() => window.__dialog()?.src)
+      // ASPECT: the crop frame is the shape of the field's largest photo on the canvas now (photoAspectOf),
+      // not the field's declared aspect. A frame within 2% of it (the stage rounds to whole px) passes.
+      const fr = await page.evaluate(async (sid, k) => {
+        const mod = await import('/src/builder/EncoreBuilder.jsx')
+        const want = mod.photoAspectOf(window.__root(sid), k, null)
+        return { frame: window.__dialog()?.frame ?? null, want: want ? want[0] / want[1] : null }
+      }, sec.id, slot.k)
+      const aspectBad = fr.want == null ? 'no photo node measured for the frame' : fr.frame == null ? 'no crop frame in the dialog'
+        : Math.abs(fr.frame / fr.want - 1) > 0.02 ? `ASPECT: frame ${fr.frame.toFixed(3)}, the page box ${fr.want.toFixed(3)}` : null
       await page.evaluate(() => window.__clickText('Apply'))
       let closed = false
       for (let i = 0; i < 25 && !closed; i++) { await wait(100); closed = !(await page.evaluate(() => !!window.__dialog())) }
@@ -463,6 +473,7 @@ async function runCombo(theme, layout, width) {
         } else if (!String(a).startsWith('data:image')) problems.push(`${slot.k} is not the upload`)
       }
       void sw
+      if (aspectBad) problems.push(aspectBad)
       return { problems, appended, keys: mine }
     }
 

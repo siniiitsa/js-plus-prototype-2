@@ -3391,7 +3391,7 @@ function SetsField({ caps, value, songs, onChange }) {
 // It has no room for a sentence, so it holds no refusal line of its own:
 // `onFail` hands the line (or null, on a clean pick) to the repeater, which
 // prints it under the whole row and says whether it is up, via `failed`.
-function RowThumb({ value, label, onChange, onToast, onFail, failed }) {
+function RowThumb({ value, label, aspect, onChange, onToast, onFail, failed }) {
   const inputRef = useRef(null)
   const [over, setOver] = useState(false)
 
@@ -3399,7 +3399,7 @@ function RowThumb({ value, label, onChange, onToast, onFail, failed }) {
     const v = vetImages(files ? [...files].slice(0, 1) : [], onToast)
     if (!v) return
     onFail(v.msg)
-    v.ok.forEach((f) => readImage(f, (src) => editImages([{ src, aspect: [1, 1], onApply: onChange }])))
+    v.ok.forEach((f) => readImage(f, (src) => editImages([{ src, aspect, onApply: onChange }])))
   }
 
   return (
@@ -3414,7 +3414,7 @@ function RowThumb({ value, label, onChange, onToast, onFail, failed }) {
         // A filled thumb opens the editor; Remove, then add, picks another file.
         onClick={(e) => {
           stopE(e)
-          if (value) editImages([{ src: value, aspect: [1, 1], edit: true, onApply: onChange }])
+          if (value) editImages([{ src: value, aspect, edit: true, onApply: onChange }])
           else inputRef.current?.click()
         }}
         onDragOver={(e) => { e.preventDefault(); setOver(true) }}
@@ -3455,7 +3455,7 @@ function RowThumb({ value, label, onChange, onToast, onFail, failed }) {
 
 const BLANK_TRACK_HINT = 'Empty tracks aren’t shown.'
 
-function TracksField({ caps, value, max, onChange, onToast }) {
+function TracksField({ caps, value, max, aspect, onChange, onToast }) {
   const list = Array.isArray(value) ? value : []
 
   // Same shape as SongsField: every keystroke rewrites the whole array, which
@@ -3481,7 +3481,7 @@ function TracksField({ caps, value, max, onChange, onToast }) {
         color: '#98958A', textAlign: 'center', paddingTop: '15px',
       }}>{i + 1}</span>
       <RowThumb
-        value={t.image ?? null} label={`artwork for track ${i + 1}`}
+        value={t.image ?? null} label={`artwork for track ${i + 1}`} aspect={aspect}
         onChange={(v) => setAt(i, 'image', v)} onToast={onToast}
         onFail={(msg) => setRefused(msg ? { i, msg } : refused?.i === i ? null : refused)}
         failed={refused?.i === i}
@@ -5119,9 +5119,9 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                         </p>
                       )}
                       {f.type === 'image' ? (
-                        <ImageField value={imgVal(f.k)} aspect={f.aspect} onChange={(v) => set(v)} onToast={api.toast} />
+                        <ImageField value={imgVal(f.k)} aspect={api.photoAspect(sec.id, f.k, f.aspect)} onChange={(v) => set(v)} onToast={api.toast} />
                       ) : f.type === 'images' ? (
-                        <ImagesField value={imgsVal(f.k)} max={f.max} aspect={f.aspect} onChange={(v) => set(v)} onToast={api.toast} />
+                        <ImagesField value={imgsVal(f.k)} max={f.max} aspect={api.photoAspect(sec.id, f.k, f.aspect)} onChange={(v) => set(v)} onToast={api.toast} />
                       ) : f.type === 'songs' ? (
                         <SongsField caps={caps} value={songsVal(f.k)} max={f.max} onChange={(v) => set(v)} />
                       ) : f.type === 'sets' ? (
@@ -5129,7 +5129,7 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                         // `open` rule: the sets are the songs' tags.
                         <SetsField caps={caps} value={setsVal()} songs={songsVal('songs')} onChange={(v) => set(v)} />
                       ) : f.type === 'tracks' ? (
-                        <TracksField caps={caps} value={tracksVal(f.k)} max={f.max} onChange={(v) => set(v)} onToast={api.toast} />
+                        <TracksField caps={caps} value={tracksVal(f.k)} max={f.max} aspect={api.photoAspect(sec.id, f.k, [1, 1])} onChange={(v) => set(v)} onToast={api.toast} />
                       ) : f.type === 'gigs' ? (
                         <GigsField caps={caps} value={gigsVal(f.k)} max={f.max} design={design} onChange={(v) => set(v)} />
                       ) : f.type === 'tiers' ? (
@@ -6587,6 +6587,24 @@ function photoNodeOf(root, k) {
   return best
 }
 
+// The frame the image editor crops to: the shape of the field's largest photo box on the canvas as
+// it is drawn now (this layout, this device), `[w, h]` in px. The declared `aspect` of a `FIELDS`
+// entry is one shape for every template, layout and width, and no photo is that shape everywhere:
+// the header hero is landscape on desktop and a tall strip on a phone, an Editorial portrait is an
+// arch. Measured, not tabulated, because most boxes are flex-filled or content-tall. `photoBox`
+// is the measure: a tilted card is laid flat and an `overflow` clip is applied, so what is read is
+// the picture that shows. A list field (gallery, faces, track art) reads its largest tile, since any
+// tile can be promoted to the hero or the sleeve. Clamped to 1:3 ... 3:1; `fallback` (the declared
+// aspect) when the slot is not drawn at this layout or device.
+const PHOTO_ASPECT_MAX = 3
+export function photoAspectOf(root, k, fallback) {
+  const node = root && photoNodeOf(root, k)
+  const b = node && photoBox(node, root, { left: 0, top: 0 })
+  if (!b || !(b.w > 1) || !(b.h > 1)) return fallback
+  const r = Math.min(PHOTO_ASPECT_MAX, Math.max(1 / PHOTO_ASPECT_MAX, b.w / b.h))
+  return [Math.round(r * 1000), 1000]
+}
+
 // A slot's current text, and the stored value that writing `text` into it makes
 // (`[key, value]`, for `setContent`). A list item or a cell replaces its own
 // place in the string or row and leaves the rest; the separator can't be typed.
@@ -7393,6 +7411,9 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
   }
   const photoFile = useRef(null)
   const photoPick = useRef(null)
+  // The frame the editor opens on: the field's largest photo on the canvas as drawn now, else its declared aspect.
+  // A function, so it is read when the editor is asked for, not when the handler was made.
+  const photoAspect = (sid, k, fallback) => () => photoAspectOf(canvasRef.current?.querySelector(`[data-sid="${sid}"]`)?.firstElementChild, k, fallback)
   const photoPut = (sec, slot) => (url) => { const [k, v] = photoWrite(sec, slot, url, T.name); api.setContent(sec.id, k, v) }
   // A picked or dropped file goes through the editor first, as the panel's drop zone has it; one file, the first.
   const frameFile = (files, put, aspect) => {
@@ -7403,8 +7424,9 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
   const startPhoto = (sec, slot) => {
     setPhotoHover(null)
     const put = photoPut(sec, slot)
-    if (slot.empty) { photoPick.current = { put, aspect: slot.aspect }; photoFile.current?.click() }
-    else editImages([{ src: slot.value, aspect: slot.aspect, edit: true, onApply: put }])
+    const aspect = photoAspect(sec.id, slot.k, slot.aspect)
+    if (slot.empty) { photoPick.current = { put, aspect }; photoFile.current?.click() }
+    else editImages([{ src: slot.value, aspect, edit: true, onApply: put }])
   }
   // A file dropped on a section's photo replaces it, where a click would open it (the panel's
   // drop zone, from the picture). Only a drag that carries files is the canvas's: a text drag is left alone.
@@ -7427,7 +7449,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
     const ph = photoFieldAt(sec, e.currentTarget, { x: e.clientX, y: e.clientY }, T.name)
     if (!ph) return
     patch({ selectedId: sec.id, menuFor: null })
-    frameFile(e.dataTransfer.files, photoPut(sec, ph), ph.aspect)
+    frameFile(e.dataTransfer.files, photoPut(sec, ph), photoAspect(sec.id, ph.k, ph.aspect))
   }
 
   // The box follows the copy as it is typed, wraps, or changes width, and as the
@@ -7732,7 +7754,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
 
   const closeAdd = useCallback(() => patch({ add: null, sheet: null }), [patch])
 
-  const api = { patch, move, reorder, setContent, setSection, del, openEdit, toast }
+  const api = { patch, move, reorder, setContent, setSection, del, openEdit, toast, photoAspect }
 
   /* ---- per-section view-model (§5.7) ------------------------------- */
 
