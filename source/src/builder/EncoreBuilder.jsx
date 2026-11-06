@@ -2534,7 +2534,7 @@ function SectionRow({ sec, vm, st, api, dragging, anyDrag, offset = 0, onGrab, o
 
       <button
         type="button"
-        onClick={(e) => { stopE(e); api.openEdit(sec.id) }}
+        onClick={(e) => { stopE(e); api.openEdit(sec.id, { reveal: true }) }}
         style={{ flex: 1, minWidth: 0, textAlign: 'left', cursor: 'pointer', background: 'none', border: 0, padding: 0 }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0 }}>
@@ -2586,7 +2586,7 @@ function SectionRow({ sec, vm, st, api, dragging, anyDrag, offset = 0, onGrab, o
           className="p-[5px]"
           style={{ width: '186px', borderRadius: '10px', border: '1px solid #E2DFD7', boxShadow: '0 12px 28px rgba(20,18,12,.16)' }}
         >
-          <DropdownMenuItem style={MENU_ITEM} onSelect={() => api.openEdit(sec.id)}>
+          <DropdownMenuItem style={MENU_ITEM} onSelect={() => api.openEdit(sec.id, { reveal: true })}>
             <Pencil size={14} /> Edit content
           </DropdownMenuItem>
           {!locked && <DropdownMenuSeparator style={{ margin: '4px 6px' }} />}
@@ -7153,6 +7153,22 @@ function scrollFieldIntoView(scroller, wrap, node, covered) {
   scroller.scrollTo({ top: Math.max(0, scroller.scrollTop + r.top - want), behavior: 'smooth' })
 }
 
+// A section picked in the sidebar is brought to the top of the canvas's visible
+// band, always (not only when out of view, unlike `scrollFieldIntoView`): the
+// click is the artist asking to see it. The header goes to the very top so the
+// canvas padding shows. The composed row's right cell is sticky, so its own
+// top is wherever it has stuck; the grid row it sits in is measured instead.
+function scrollToSection(scroller, id, first, covered) {
+  const wrap = scroller?.querySelector(`[data-sid="${id}"]`)
+  if (!wrap) return
+  const cell = wrap.parentElement
+  const seat = cell && getComputedStyle(cell).position === 'sticky' && cell.parentElement ? cell.parentElement : wrap
+  const { top: bandTop } = canvasBand(scroller, covered)
+  const want = first ? 0 : Math.max(0, scroller.scrollTop + seat.getBoundingClientRect().top - (bandTop + 16))
+  if (Math.abs(want - scroller.scrollTop) < 4) return
+  scroller.scrollTo({ top: want, behavior: 'smooth' })
+}
+
 // A moved section keeps its place on screen. `markFollow` notes where the
 // section stands in the canvas scroller before the move; `followSection` runs
 // once the new order is laid out and scrolls by however far it travelled, so
@@ -7696,10 +7712,16 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
     toast(`${catName(cat)} added`)
   }, [patch, toast, st.sections])
 
-  const openEdit = useCallback((id) => patch(
-    isMobile ? { selectedId: id, editSheet: true, sheet: null, menuFor: null }
-             : { selectedId: id, menuFor: null },
-  ), [patch, isMobile])
+  // `reveal` (the sidebar's rows) also scrolls the canvas to the section; the
+  // canvas toolbar's pencil does not, so the section stays under the pointer.
+  // A phone's Edit drawer is about to cover the canvas, so only its top 16vh counts.
+  const openEdit = useCallback((id, { reveal = false } = {}) => {
+    patch(
+      isMobile ? { selectedId: id, editSheet: true, sheet: null, menuFor: null }
+               : { selectedId: id, menuFor: null },
+    )
+    if (reveal) scrollToSection(canvasRef.current, id, sections[0]?.id === id, isMobile)
+  }, [patch, isMobile, sections])
 
   // §9.1 — the add composer opens on the first category not already used,
   // at the layout that category had when it was deleted, if it was.
