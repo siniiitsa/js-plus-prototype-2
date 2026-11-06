@@ -164,6 +164,9 @@ const KEY_SAMPLES = flag('prose') ? {} : {
   // map prints ("12" is inside "12 mile radius" and "120").
   'gigs.month': ['September', 'February', 'December'].map((m) => `${m}${PROSE_TAIL}`),
   'gigs.day': ['28th–30th', '31st & 1st', '17th to 19th'].map((d) => `${d}${PROSE_TAIL}`),
+  // The price's first number run, the big numeral (`cols.price.num`): digits
+  // alone, since a run sets whole in the numeral. Three digits, for the widest.
+  'tiers.price.num': ['8', '0', '4'].map((d) => d.repeat(400)),
 }
 const samplesOf = (p) => {
   const ks = KEY_SAMPLES[p.key]
@@ -225,6 +228,8 @@ function probesOf(cat) {
           ps.push({ key: `${f.k}.${col}#`, cat, f, col, list: spec.list, mode: 'count', block: spec.list === '\n' })
         } else ps.push({ key: `${f.k}.${col}`, cat, f, col, mode: 'text', block: !!spec.block })
       }
+      // A package's price also has the numeral cap: the same column, probed with digits.
+      if (f.type === 'tiers') ps.push({ key: 'tiers.price.num', cat, f, col: 'price', mode: 'text', num: true })
       continue
     }
     if (f.type === 'tracks' || f.type === 'songs') continue
@@ -591,7 +596,7 @@ function verdict(m, ref, allowed, p, floor = FLOOR[p.key] ?? 1) {
 }
 
 // A seed's measure in the probe's unit: characters, its longest item, or items.
-const seedLenOf = (p, seed) => (p.mode === 'text' ? seed.length
+const seedLenOf = (p, seed) => (p.num ? D.priceCuts(seed).end - D.priceCuts(seed).at : p.mode === 'text' ? seed.length
   : p.mode === 'item' ? Math.max(0, ...seed.split(p.list).map((x) => x.trim().length))
   : seed.split(p.list).filter((x) => x.trim()).length)
 
@@ -666,8 +671,8 @@ async function runProbe(pg, p, t) {
       }
       const label = `${w}${col ? `/${col}` : ''}`
       if (flag('check')) {
-        if (capNow?.chars == null && capNow?.count == null) continue
-        const n = p.mode === 'count' ? capNow.count : capNow.chars
+        if (capNow?.chars == null && capNow?.count == null && capNow?.num == null) continue
+        const n = p.num ? capNow.num : p.mode === 'count' ? capNow.count : capNow.chars
         if (n == null) continue
         // A cap at the seed's own length is the frame's floor (its own string
         // fits where prose of that length may not): reported, not failed.
@@ -751,7 +756,7 @@ if (flag('seeds')) {
         : p.col ? D.colCaps(p.f, themeName, a)?.[p.col] : D.fieldCap(p.f, themeName, a)
       if (!cap) continue
       for (const seed of seedsOf(p, themeName, a)) {
-        if (D.capExcess(seed, p.mode === 'text' ? { chars: cap.chars } : { ...cap, list: p.list }) > 0) {
+        if (D.capExcess(seed, p.num ? { num: cap.num } : p.mode === 'text' ? { chars: cap.chars } : { ...cap, list: p.list }) > 0) {
           bad++; console.log(`SEED OVER  ${cat}.${p.key} | ${themeName} | layout ${a + 1} | ${JSON.stringify(seed)} vs ${JSON.stringify(cap)}`)
         }
       }

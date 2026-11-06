@@ -237,6 +237,20 @@ another `notes/` file.
     layout-1 decks and Pop's layout-2 plan card turn, and the probe sets every turned ancestor
     upright while it counts a seat's lines.
 
+- **Long words break and the numeral is capped** (user call, 2026-11-06; `plans/char-limits.md`,
+  *Session 4*'s follow-up). Two inputs got past the caps above, which were read with prose and
+  digit-led prices: one word with no space (a 160-letter blurb) and a price of digits alone.
+  - `WRAP_LONG` in `EncoreSection.jsx` (`overflowWrap: 'anywhere'`) is on the root of each pricing
+    layout, Lime tree and Retro both, and inherits to every name, blurb, feature and chip. **Put a
+    new pricing layout's root on it too**, or a long word runs past its card again. It is not on
+    the numeral (`white-space: nowrap`; the digit-less prose path has its own, JP-135).
+  - `cols.price.num` caps the price's first number run (`priceCuts`), the big numeral, apart from
+    `chars`, the whole price: 5 6 12 12 for Retro, 10 12 12 12 Lime, 11 12 12 12 Grunge, 8 12 12 12
+    Editorial, 7 12 12 12 Pop (layouts 1–4). `clampNumeral` cuts the run on the page (no ellipsis);
+    `capExcess` counts it, so `CappedText` refuses an edit past it and the counter reads
+    `numeral n / cap`; the inline box reads it on the amount part only (`slotCap`). Not applied to a
+    price with no digit. `limits.mjs pricing --keys=tiers.price.num` measures it.
+
 - **A price with no digit is cut where its words start** (JP-156, user call, 2026-10-26;
   `plans/inline-qa-fixes.md`, Session 2). `priceParts()` cuts at the first digit; with none, the
   leading run of characters that are neither letters nor digits is the `lead` (trimmed) and the

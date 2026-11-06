@@ -748,6 +748,39 @@ layout 1 (Hero), the canvas at 1440.
 - **Back to layout 1.** The canvas printed the full heading, and the counter read `50 / 50`.
   Opening the tab again re-rendered it in full.
 
+**Follow-up: long words and the price's numeral (user call, 2026-11-06).** A tester typed one
+160-letter word into a blurb and a 35-digit price, and both overflowed at every layout of every
+template, inside the written caps. Session 4 measured prose and digit-led prices, so neither input
+had been read.
+- **A word with no space breaks inside itself.** `WRAP_LONG` (`overflowWrap: 'anywhere'`) stands on
+  each pricing layout's root in `EncoreSection.jsx` and inherits, so names, blurbs, features and
+  chips all break. The caps are unchanged: no count can bound a word's width. A render of a
+  160-letter blurb, a 24-letter name, tag and feature, at every template, layout and width (60 cells),
+  went from 60 overflowing to 0. The digest of the seeded pricing sections moved 0 of 60 files.
+- **The numeral has its own cap.** `cols.price` is now `{ chars, num }`: `chars` bounds the price
+  with its small tail, `num` its first number run (`priceCuts`), the big numeral. A price of digits
+  alone sets whole in the numeral, so a total of 35 let 35 digits through. `limits.mjs` reads it as
+  `tiers.price.num` (digits `8`, `0` and `4`, cut to N). Measured (the minimum over the widths):
+
+| layout | Retro | Lime | Grunge | Editorial | Pop |
+|---|---|---|---|---|---|
+| 1 | 4f | 11 | 12 | 8 | 7 |
+| 2 | 6 | 19 | 22 | 13 | 15 |
+| 3 | 14 | 17 | 19 | 12 | 13 |
+| 4 | 18 | 24 | 28 | 16 | 18 |
+
+  Written: the measured value, **at most 12** (no price needs a longer numeral, and a free 28 would
+  let a stray paste run a row) and **at least 5** (the seed's *1,200*; Retro's layout 1 reads 4 at
+  768 and passes the seed alone, reported as `floor`). Lime's layout 1 is written 10 and Grunge's
+  11, one under the table: a render at the cap overshot the page by 2–3 px at 768, a box the probe
+  excuses because the seed's own render overshoots it too. Written: Retro 5 6 12 12, Lime 10 12 12 12,
+  Grunge 11 12 12 12, Editorial 8 12 12 12, Pop 7 12 12 12.
+- **Where it applies.** The panel's price box refuses an edit that takes the numeral past it and
+  counts it (`numeral 9 / 10`, `capCount`); the inline box does the same on the amount part
+  (`slotCap`); the render cuts the run to `num` without an ellipsis (`clampNumeral`, since an `…`
+  would set in the small tail). A price with no digit is exempt: past 8 characters it is `prose`
+  and wraps (JP-135), and *POA* is a word.
+
 **Notes for later sessions.**
 - **Repertoire (5).** `songs.tags` is a list column, and its chip row is `repChips()` too. The
   count probe now draws distinct items, so the reading is real. The repertoire's row carries

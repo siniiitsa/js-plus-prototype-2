@@ -56,7 +56,7 @@ import {
   PRICING_INTRO_3, FORM_SUB_4, CAL_HEADING_1, formBtnSeed, CAL_TYPES, PRICING_ROW_CTA, PRICING_ROW_CTA_3, MAP_SPAN, MAP_STATS_4, STAT_KEYS,FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
   parseDate, isoDate, calStart, headerIdentity, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav, navModeDefault,
-  catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldSeed, HEADING_3, HEADING_4, fieldReach, fieldShown, INLINE_OFF, PHOTO_OFF, INLINE_HEAD, INLINE_MARKED, INLINE_PART, INLINE_LINES, inlineRule, fieldCap, colCaps, identityCap, sealCap, capExcess, clampCapped, clampContent, clampIdentity, copyrightOf, formHeading3, extUrl, youtubeEmbed, youtubeThumb, youtubeParts, youtubeWatch, youtubeChannel, urlProblem, emailProblem, emailAddr, songTags, repChips,
+  catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldSeed, HEADING_3, HEADING_4, fieldReach, fieldShown, INLINE_OFF, PHOTO_OFF, INLINE_HEAD, INLINE_MARKED, INLINE_PART, INLINE_LINES, inlineRule, fieldCap, colCaps, identityCap, sealCap, capExcess, numeralLen, clampCapped, clampContent, clampIdentity, copyrightOf, formHeading3, extUrl, youtubeEmbed, youtubeThumb, youtubeParts, youtubeWatch, youtubeChannel, urlProblem, emailProblem, emailAddr, songTags, repChips,
   tierFeats, priceParts, priceCuts, blankRow, SONG_KEYS, repSetsOf, repSetLine, TRACK_KEYS, GIG_KEYS, gigWeekday, gigStatus, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
   layoutChoices, designCount, pageLayout, pageOrder, pageRows, videoDesign, videoStartArch,
   VIDEOS, VIDEO_SEED, VIDEO_KEYS, videoPlayable, videoSeedDesc, VIDEO_ALL, COLUMN_SPLIT, bebasEms, antonEms, gloockEms, titanEms,
@@ -3012,8 +3012,15 @@ const COUNT_LINE = { margin: 0, fontSize: '10px', lineHeight: 1.45, textAlign: '
 function capCount(value, cap) {
   const v = String(value ?? '')
   if (!cap.list) {
-    if (cap.chars == null || v.length < cap.chars * 0.8) return null
-    return { text: `${v.length} / ${cap.chars}`, over: v.length > cap.chars }
+    // A price's big numeral has a cap of its own (`cap.num`), under the whole price's.
+    const nl = cap.num == null ? 0 : numeralLen(v)
+    const nearNum = cap.num != null && nl >= cap.num * 0.8
+    const nearAll = cap.chars != null && v.length >= cap.chars * 0.8
+    if (!nearNum && !nearAll) return null
+    const parts = []
+    if (nearAll || cap.chars != null && !nearNum) parts.push(`${v.length} / ${cap.chars}`)
+    if (nearNum) parts.push(`numeral ${nl} / ${cap.num}`)
+    return { text: parts.join(' · '), over: capExcess(v, cap) > 0 }
   }
   const items = v.split(cap.list).map((t) => t.trim()).filter(Boolean)
   const longest = items.reduce((n, t) => Math.max(n, t.length), 0)
@@ -3041,7 +3048,7 @@ function CappedText({ area = false, cap, value, onChange, style, ...rest }) {
   const Box = area ? Textarea : Input
   const change = (e) => {
     const v = e.target.value
-    if (cap?.list && capExcess(v, cap) > capExcess(String(value ?? ''), cap)) return
+    if ((cap?.list || cap?.num != null) && capExcess(v, cap) > capExcess(String(value ?? ''), cap)) return
     onChange(e)
   }
   if (!cap) return <Box value={value} onChange={onChange} style={style} {...rest} />
@@ -6652,7 +6659,9 @@ function slotCap(sec, slot, sections, themeName) {
   const design = inlineDesign(sec, themeName)
   if (slot.row != null) {
     const c = colCaps(slot.f, themeName, design)?.[slot.col]
-    return c?.chars != null ? { chars: c.chars } : null
+    // A price's numeral is the amount part alone: its cap is read there, not on the lead or the tail.
+    const num = slot.sub === 'amount' && c?.num != null ? { num: c.num } : null
+    return c?.chars != null ? { chars: c.chars, ...num } : null
   }
   const cap = fieldCapOf(sec, slot.f, sections, themeName, design)
   return slot.item != null ? (cap?.chars != null ? { chars: cap.chars } : null) : cap
@@ -7129,6 +7138,7 @@ function InlineEditor({ ed, value, cap, onChange, onRevert, onClose }) {
         maxLength={cap?.chars ?? undefined} onClick={stopE}
         onChange={(e) => {
           const v = multi ? e.target.value : e.target.value.replace(/\s*\n\s*/g, ' ')
+          if (cap?.num != null && capExcess(v, { num: cap.num }) > capExcess(shown, { num: cap.num })) return
           if (held && !v.trim()) setDraft(v)
           else { setDraft(null); setTyped(v); onChange(v) }
         }}
