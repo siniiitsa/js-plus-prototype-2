@@ -2798,7 +2798,7 @@ function HeaderV1({ s }) {
                color={s.tx} lh={0.89} inline twoTone={grunge} toneA={s.tx} toneB={s.ac}
                style={pop ? { position: 'relative', top: '-0.14em' } : undefined} />
         <p style={{
-          margin: 0, fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5, color: s.ac, width: '100%',
+          margin: 0, fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5, color: s.ac, width: '100%', whiteSpace: 'pre-line',
         }}>{s.subtitle}</p>
         {/* BookPill's Lime defaults exactly: 246 × 54 at 1440 is its 0.82, 212 at
             768 its full size, and 390 keeps the full size too. Pop's is its
@@ -3158,7 +3158,7 @@ function HeaderV1({ s }) {
              twoTone toneA={mustard} toneB={s.ac} />
       <p style={{
         margin: 0, fontFamily: s.body, fontSize: nar ? '16px' : '13px', lineHeight: 1.5,
-        color: s.ac, width: '100%',
+        color: s.ac, width: '100%', whiteSpace: 'pre-line',
       }}>{s.subtitle}</p>
       {/* Both narrow masters draw this pill at the *same* full-scale box the
           768 one does — `full` is what buys that at 390, where BookPill would
@@ -4595,7 +4595,7 @@ function HeaderV4({ s }) {
           </div>
           <Title s={s} size={s.h2} color={s.acFg} />
         </div>
-        <p style={{ margin: 0, fontSize: '13px', lineHeight: 1.55, opacity: 0.8 }}>{s.subtitle}</p>
+        <p style={{ margin: 0, fontSize: '13px', lineHeight: 1.55, opacity: 0.8, whiteSpace: 'pre-line' }}>{s.subtitle}</p>
         <TagChips s={s} />
         {!s.mob && (
           <div style={row('20px', { borderTop: `1px solid ${s.acFg25}`, paddingTop: '12px' })}>
@@ -4929,7 +4929,7 @@ function Bio({ s }) {
         {pop ? mono('About', 11, 1.5) : eyebrow('About')}
         {/* Body/MD; Pop's is a raw Inter 14 / 22 at every width. */}
         <p style={{
-          margin: 0, fontFamily: s.body, fontSize: pop ? u(14) : s.bodyMd, lineHeight: pop ? 22 / 14 : 1.5, ...ink,
+          margin: 0, fontFamily: s.body, fontSize: pop ? u(14) : s.bodyMd, lineHeight: pop ? 22 / 14 : 1.5, ...ink, whiteSpace: 'pre-line',
         }}>{s.bioP1}</p>
         {/* The frame's own flexible spacer on desktop; a 1px one below it. */}
         <span style={{ flex: 1, minHeight: '1px' }} />
@@ -5030,7 +5030,7 @@ function Bio({ s }) {
       })}>
         <div style={col('10px')}>
           <span style={{ fontFamily: s.body, fontWeight: 700, fontSize: s.labelXs, color: s.ac }}>About</span>
-          <p style={{ margin: 0, fontFamily: s.body, fontSize: s.labelXs, lineHeight: 1.5, color: s.ac }}>{s.bioP1}</p>
+          <p style={{ margin: 0, fontFamily: s.body, fontSize: s.labelXs, lineHeight: 1.5, color: s.ac, whiteSpace: 'pre-line' }}>{s.bioP1}</p>
         </div>
         <div style={col('10px')}>
           <span style={{ height: '1px', background: (s.retro && s.chips[0]?.bg) || s.line2, width: '100%' }} />
@@ -5232,7 +5232,7 @@ function Bio({ s }) {
             borderRadius: s.btnR, padding: `${u(5.67)} ${u(14.17)}`,
             whiteSpace: 'normal', maxWidth: '100%', boxSizing: 'border-box',
           })}>{s.bioTag}</span>}
-          <p style={{ margin: 0, ...text }}>{s.bioP1}</p>
+          <p style={{ margin: 0, ...text, whiteSpace: 'pre-line' }}>{s.bioP1}</p>
         </div>
         {ed && foot && (
           <div style={{ position: 'relative', flex: 'none', height: '1px' }}>
@@ -5418,7 +5418,7 @@ function Bio({ s }) {
             borderRadius: '999px', padding: nar ? '5.669px 14.174px' : '5px 12px',
             whiteSpace: 'normal', maxWidth: '100%', boxSizing: 'border-box',
           })}>{s.bioTag}</span>}
-          <p style={{ margin: 0, ...body }}>{s.bioP1}</p>
+          <p style={{ margin: 0, ...body, whiteSpace: 'pre-line' }}>{s.bioP1}</p>
         </div>
         <div style={col(nar ? '10px' : '8px', { padding: s.mob ? '10px 0' : undefined })}>
           {/* The frame drops the Tags section's own chip row in here, at its
@@ -5788,9 +5788,9 @@ function Bio({ s }) {
         {!s.mob && <div style={{ width: u(188), height: u(64), flex: 'none' }} />}
         <div style={col(u(12), { flex: '1 0 0', minWidth: 0, color: s.tx })}>
           {s.aboutLabel && <span style={{ ...chipType, ...labelInk }}>[ {s.aboutLabel} ]</span>}
-          <p style={{ margin: 0, fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5 }}>{s.bioP1}</p>
+          <p style={{ margin: 0, fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5, whiteSpace: 'pre-line' }}>{s.bioP1}</p>
           {s.bioP2 && (
-            <p style={{ margin: 0, fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5 }}>{s.bioP2}</p>
+            <p style={{ margin: 0, fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5, whiteSpace: 'pre-line' }}>{s.bioP2}</p>
           )}
         </div>
         {!s.mob && !pop && (ed ? sparkle : seal)}
@@ -6057,13 +6057,13 @@ function Bio({ s }) {
         {!s.mob && <div style={{ width: u(188), height: u(64), flex: 'none' }} />}
         <div style={col(u(12), { flex: '1 0 0', minWidth: 0, color: ink })}>
           {s.aboutLabel && <span style={chipType}>[ {s.aboutLabel} ]</span>}
-          <p style={{ margin: 0, fontFamily: s.body, fontSize: u(T.body), lineHeight: 1.5 }}>{s.bioP1}</p>
+          <p style={{ margin: 0, fontFamily: s.body, fontSize: u(T.body), lineHeight: 1.5, whiteSpace: 'pre-line' }}>{s.bioP1}</p>
           {/* The masters set one long paragraph here; the section has two, and
               `para2` had until now drawn in no layout at all. Emptied, it is
               not rendered rather than printed blank — the testimonials' rule —
               and the column's own 12 is the gap between them. */}
           {s.bioP2 && (
-            <p style={{ margin: 0, fontFamily: s.body, fontSize: u(T.body), lineHeight: 1.5 }}>{s.bioP2}</p>
+            <p style={{ margin: 0, fontFamily: s.body, fontSize: u(T.body), lineHeight: 1.5, whiteSpace: 'pre-line' }}>{s.bioP2}</p>
           )}
         </div>
         {!s.mob && seal}
@@ -6530,9 +6530,9 @@ function Bio({ s }) {
               borderRadius: u(pop ? 20 : ed ? 0 : grunge ? 2.5 : 13.5), padding: u(20),
               ...col(u(10), { alignItems: 'stretch' }),
             }}>
-              <p style={{ margin: 0, ...body, fontSize: s.bodyLg }}>{s.bioP1}</p>
+              <p style={{ margin: 0, ...body, fontSize: s.bodyLg, whiteSpace: 'pre-line' }}>{s.bioP1}</p>
               {s.bioP2 && (
-                <p style={{ margin: 0, ...body, fontSize: s.bodyLg }}>{s.bioP2}</p>
+                <p style={{ margin: 0, ...body, fontSize: s.bodyLg, whiteSpace: 'pre-line' }}>{s.bioP2}</p>
               )}
             </div>
           </div>
@@ -6748,9 +6748,9 @@ function Bio({ s }) {
                   is the layout-3 card's own 12: no master states one, and a
                   number consistent with the section's other branch beats a
                   second invented one. */}
-              <p style={{ margin: 0, position: 'relative', ...body, fontSize: u(T.prose) }}>{s.bioP1}</p>
+              <p style={{ margin: 0, position: 'relative', ...body, fontSize: u(T.prose), whiteSpace: 'pre-line' }}>{s.bioP1}</p>
               {s.bioP2 && (
-                <p style={{ margin: 0, position: 'relative', ...body, fontSize: u(T.prose) }}>{s.bioP2}</p>
+                <p style={{ margin: 0, position: 'relative', ...body, fontSize: u(T.prose), whiteSpace: 'pre-line' }}>{s.bioP2}</p>
               )}
             </div>
           </div>
@@ -11685,7 +11685,7 @@ function Pricing({ s }) {
           {(!!s.pricingQuote || hasCredit) && (
             <div style={col(u(16), { paddingTop: u(12), width: '100%', alignItems: 'flex-start' })}>
               {!!s.pricingQuote && (
-                <p style={body(s.bodyLg, 1.5, { margin: 0, color: s.tx })}>{s.pricingQuote}</p>
+                <p style={body(s.bodyLg, 1.5, { margin: 0, color: s.tx, whiteSpace: 'pre-line' })}>{s.pricingQuote}</p>
               )}
               {hasCredit && (
                 <div style={row(u(12), { flexWrap: 'wrap' })}>
@@ -11925,7 +11925,7 @@ function Pricing({ s }) {
             {!!s.pricingQuote && (
               <p style={{
                 margin: 0, width: '100%',
-                fontFamily: s.body, fontSize: u(T.bodyLg), lineHeight: 1.5, color: s.tx,
+                fontFamily: s.body, fontSize: u(T.bodyLg), lineHeight: 1.5, color: s.tx, whiteSpace: 'pre-line',
               }}>{s.pricingQuote}</p>
             )}
             {hasCredit && (
@@ -12533,7 +12533,7 @@ function Pricing({ s }) {
             {!!s.pricingIntro && (
               <p style={{
                 margin: 0, maxWidth: u(560), fontFamily: s.body, fontSize: s.bodyMd,
-                lineHeight: 1.5, letterSpacing: s.dls, color: s.tx,
+                lineHeight: 1.5, letterSpacing: s.dls, color: s.tx, whiteSpace: 'pre-line',
               }}>{s.pricingIntro}</p>
             )}
           </div>
@@ -12810,7 +12810,7 @@ function Pricing({ s }) {
           {!!s.pricingIntro && (
             <p style={{
               margin: 0, maxWidth: u(560),
-              fontFamily: s.body, fontSize: u(T.bodyMd), lineHeight: 1.5, color: s.tx,
+              fontFamily: s.body, fontSize: u(T.bodyMd), lineHeight: 1.5, color: s.tx, whiteSpace: 'pre-line',
             }}>{s.pricingIntro}</p>
           )}
         </div>
@@ -29308,7 +29308,7 @@ function EnquiryForm({ s }) {
               ...(ed && { position: 'relative', top: '-0.06em' }),
               ...(pop && { position: 'relative', top: '-0.14em' }),
             }))}>{s.title}</h2>
-            <p style={type(s.body, s.bodyMd, 1.5, { margin: 0 })}>{s.formPara}</p>
+            <p style={type(s.body, s.bodyMd, 1.5, { margin: 0, whiteSpace: 'pre-line' })}>{s.formPara}</p>
           </div>
 
           <div style={col(u(14), {
@@ -29489,7 +29489,7 @@ function EnquiryForm({ s }) {
               and reaches nothing out here: on Lime it is the near-black that
               reads on pale lime, which is that theme's page ground exactly. */}
           <p style={{
-            margin: 0, fontFamily: s.body, fontSize: u(T.bodyMd), lineHeight: 1.5,
+            margin: 0, fontFamily: s.body, fontSize: u(T.bodyMd), lineHeight: 1.5, whiteSpace: 'pre-line',
           }}>{s.formPara}</p>
         </div>
 
@@ -30348,7 +30348,7 @@ function EnquiryForm({ s }) {
   return (
     <div style={col('14px', { maxWidth: '560px', margin: '0 auto', textAlign: 'center' })}>
       <h2 style={{ margin: 0, ...h2Style(s), lineHeight: 1.04 }}>{s.title}</h2>
-      <p style={{ margin: '0 0 8px', fontSize: '15px', color: s.muted, lineHeight: 1.6 }}>{s.formPara}</p>
+      <p style={{ margin: '0 0 8px', fontSize: '15px', color: s.muted, lineHeight: 1.6, whiteSpace: 'pre-line' }}>{s.formPara}</p>
       {s.formFields.map((f, i) => (s.live ? (
         <input
           key={i} value={at(i)} placeholder={f.placeholder}

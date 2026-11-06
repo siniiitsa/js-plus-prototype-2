@@ -83,3 +83,7 @@ The `*.3.` part rows (`since`, `cta2`) carry over and hit on Editorial. **Unlike
 ## Inline editing (plans/inline-edit-all.md, Pop layout 4, 2026-10-22)
 
 The `*.3.` part rows (`since`, `cta2`) carry over and hit on Pop. **Like Lime and Grunge, Pop does not read `tagsLabel` at layout 4** (`in: { Pop: [2], … }`: the Genres line is inked the band's own colour, so it is not drawn), so the bio is five slots, one fewer than Retro's and Editorial's. The overlay card is upright and its stickers (dot grid, scribble) are `pointer-events: none`; nothing covers a slot.
+
+## Line breaks in the paragraphs (2026-11-06)
+
+`para1` and `para2` keep the artist's line breaks: every `<p>` that prints `s.bioP1` / `s.bioP2` sets `whiteSpace: 'pre-line'`, so `Hello⏎⏎World!` draws an empty line between the words (the same holds for the header's `subtitle`, pricing's `intro` and `quote` and the form's `para`). Runs of spaces still collapse and lines still wrap. Caps count characters, so blank lines add height beyond what `scripts/limits.mjs` measured; the cap is not tightened for it. On the canvas Enter now inserts a line break in these fields too (`pre-*` is what the inline editor looks for).
