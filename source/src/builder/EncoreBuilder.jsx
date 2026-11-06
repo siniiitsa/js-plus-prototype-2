@@ -3078,10 +3078,11 @@ function CappedText({ area = false, cap, value, onChange, style, ...rest }) {
  * pasted into a row splits it into rows, since it would on the page.
  * ------------------------------------------------------------------- */
 
-function LineListField({ value, cap, placeholder, addLabel, onChange }) {
+function LineListField({ value, cap, placeholder, addLabel, onChange, compact = false }) {
   const sep = cap?.list ?? ','
   const parse = (v) => String(v ?? '').split(sep).map((t) => t.trim()).filter(Boolean)
-  const join = (r) => r.map((t) => t.trim()).filter(Boolean).join(`${sep} `)
+  // A comma list reads `a, b`; a line list is stored `a\nb`, with no space leading a line.
+  const join = (r) => r.map((t) => t.trim()).filter(Boolean).join(sep === ',' ? ', ' : sep)
   const incoming = String(value ?? '')
   const [rows, setRows] = useState(() => parse(incoming))
   const emitted = useRef(incoming)
@@ -3148,6 +3149,24 @@ function LineListField({ value, cap, placeholder, addLabel, onChange }) {
             value={t} placeholder={placeholder} onClick={stopE}
             ref={(el) => { refs.current[i] = el }}
             onChange={(e) => edit(i, e.target.value, e.target.selectionStart)}
+            onPaste={(e) => {
+              // An <input> flattens a pasted block of lines into one, so a line
+              // list takes the paste here and splits it as a typed separator would.
+              if (sep === ',') return
+              const text = e.clipboardData.getData('text').replace(/\r\n?/g, '\n').replace(/\n+$/, '')
+              if (!text.includes(sep)) return
+              e.preventDefault()
+              const { value: v, selectionStart: a, selectionEnd: b } = e.target
+              edit(i, v.slice(0, a) + text + v.slice(b), a + text.length)
+            }}
+            onKeyDown={(e) => {
+              // Enter opens the next row under this one, as it would in a list.
+              if (e.key !== 'Enter' || e.nativeEvent.isComposing) return
+              e.preventDefault()
+              if (rows.length >= max || !t.trim()) return
+              pending.current = { row: i + 1, col: 0 }
+              setRows([...rows.slice(0, i + 1), '', ...rows.slice(i + 1)])
+            }}
             className="h-auto" style={SONG_ROW_INPUT}
           />
           <button
@@ -3168,13 +3187,13 @@ function LineListField({ value, cap, placeholder, addLabel, onChange }) {
           type="button" onClick={(e) => { stopE(e); setRows([...rows, '']) }}
           className="hover:border-foreground"
           style={{
-            border: '1.5px dashed #C9C6BB', borderRadius: '10px', padding: '9px',
+            border: '1.5px dashed #C9C6BB', borderRadius: compact ? '8px' : '10px', padding: compact ? '5px' : '9px',
             background: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center',
             justifyContent: 'center', gap: '5px', fontFamily: 'inherit',
           }}
         >
-          <Plus size={13} style={{ color: '#B9B6AA' }} />
-          <span style={{ fontSize: '12px', fontWeight: 600, color: '#5B5850' }}>{addLabel}</span>
+          <Plus size={compact ? 11 : 13} style={{ color: '#B9B6AA' }} />
+          <span style={{ fontSize: compact ? '11px' : '12px', fontWeight: 600, color: '#5B5850' }}>{addLabel}</span>
         </button>
       )}
       <CharCount value={join(rows)} cap={cap} />
@@ -3270,10 +3289,9 @@ function SongsField({ caps, value, max, onChange }) {
             />
           )}
         </div>
-        <CappedText cap={caps?.tags}
-          value={sg.tags ?? ''} placeholder="Tags — weddings, pubs" onClick={stopE}
-          onChange={(e) => setAt(i, 'tags', e.target.value)}
-          className="h-auto" style={SONG_ROW_INPUT}
+        <LineListField compact cap={caps?.tags}
+          value={sg.tags ?? ''} placeholder="Tag — weddings" addLabel="Add tag"
+          onChange={(v) => setAt(i, 'tags', v)}
         />
         {blankRow(sg, SONG_KEYS) && (
           <p style={{ margin: 0, fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>{BLANK_SONG_HINT}</p>
@@ -4345,13 +4363,6 @@ function TiersField({ caps, value, max, onChange }) {
     return on && j === i ? { ...rest, featured: true } : rest
   }))
 
-  // The price and the tags share a line, as the gigs' city and time do: both
-  // are short, and stacking them would push the two textareas below the fold of
-  // the mobile edit sheet.
-  const pair = (a, b) => (
-    <div style={{ display: 'flex', gap: '6px' }}>{a}{b}</div>
-  )
-
   const row = (i, t) => (
     <div key={i} style={{
       border: '1px solid #E9E7E0', borderRadius: '10px', padding: '8px',
@@ -4382,28 +4393,24 @@ function TiersField({ caps, value, max, onChange }) {
       </div>
       {/* Same 25px gutter and 29px right inset as the three above. */}
       <div style={{ paddingLeft: '25px', paddingRight: '29px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-        {pair(
-          <CappedText cap={caps?.price}
-            key="price" value={t.price ?? ''} placeholder="£450" onClick={stopE}
-            onChange={(e) => setAt(i, 'price', e.target.value)}
-            className="h-auto" style={SONG_ROW_INPUT}
-          />,
-          <CappedText cap={caps?.tags}
-            key="tags" value={t.tags ?? ''} placeholder="Tags — solo, trio" onClick={stopE}
-            onChange={(e) => setAt(i, 'tags', e.target.value)}
-            className="h-auto" style={SONG_ROW_INPUT}
-          />,
-        )}
+        {/* The tags are a row list now, too tall to share the price's line. */}
+        <CappedText cap={caps?.price}
+          value={t.price ?? ''} placeholder="£450" onClick={stopE}
+          onChange={(e) => setAt(i, 'price', e.target.value)}
+          className="h-auto" style={SONG_ROW_INPUT}
+        />
+        <LineListField compact cap={caps?.tags}
+          value={t.tags ?? ''} placeholder="Tag — solo" addLabel="Add tag"
+          onChange={(v) => setAt(i, 'tags', v)}
+        />
         <CappedText area cap={caps?.blurb}
           rows={2} value={t.blurb ?? ''} placeholder="What the package is for" onClick={stopE}
           onChange={(e) => setAt(i, 'blurb', e.target.value)}
           style={TIER_AREA}
         />
-        <CappedText area cap={caps?.feats}
-          rows={4} value={t.feats ?? ''} placeholder={'What it includes\nOne feature a line'}
-          onClick={stopE}
-          onChange={(e) => setAt(i, 'feats', e.target.value)}
-          style={TIER_AREA}
+        <LineListField compact cap={caps?.feats}
+          value={t.feats ?? ''} placeholder="What it includes" addLabel="Add feature"
+          onChange={(v) => setAt(i, 'feats', v)}
         />
         {/* A raw checkbox, the add composer's Start fresh precedent. */}
         <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: '#5B5850', cursor: 'pointer' }}>
