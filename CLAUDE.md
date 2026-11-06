@@ -243,7 +243,7 @@ reversing 2026-10-20's "an already-selected section": the `text` cursor shows on
   an icon, text under the pointer's own line boxes, a solid ground) ends the walk; scrims, grain and empty wrappers let the
   click through. **Copy goes first** (`targetAt`), except that a text node *wrapping* the picture is not the click's. A filled
   slot calls `editImages` as the panel's Edit does, with **Upload another** inside the dialog; an empty one opens the file
-  picker, then the editor. `photoSlots` is the universe (every image field `fieldShown` says the layout reads, each index of an
+  picker, then the editor. **The crop frame is the photo's box on the canvas now** (`photoAspectOf`; the field's `aspect` is only the fallback; `notes/photography.md`). `photoSlots` is the universe (every image field `fieldShown` says the layout reads, each index of an
   `images` field, each track row), `PHOTO_OFF` in `data.js` its ledger, `photoWrite` the panel's own writes: a list index past
   the end *appends*, so the photo lands on the first free tile. Hover draws a thin box and a pointer, turned with a tilted card (`photoBox`); focusing a photo field in
   the panel boxes the picture, and a media track's art button boxes its row's. Remove, reorder and Add stay in the panel. A page is *known* to work only because

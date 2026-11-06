@@ -1895,6 +1895,9 @@ export const FIELDS = {
   // undesigned layout 5 prints "4.9 ★ / Experience", "5 pcs / Line-up" and a
   // "Tell me your date" pill that no field reaches.
   //
+  // `aspect` on an image field is only the FALLBACK frame of the photo editor: it opens on the shape of the
+  // field's largest photo on the canvas as drawn now (photoAspectOf, EncoreBuilder.jsx), and falls back to this
+  // when the layout or device draws none.
   // The header's `in` is always an object naming all five templates: they have
   // different header families (six designs against four, four, four and four —
   // Grunge's, Editorial's and Pop's rows are each measured over four fitted

@@ -24,7 +24,10 @@ import { seedFocus } from './photos.js'
 
 const MAX_EDGE = 1600
 const ORIGINALS_MAX = 40
-// bakedUrl → { original, tf }; insertion-ordered, oldest dropped past the cap.
+// bakedUrl → { original, tf, R }; R is the frame ratio the edit was made at, so a reopen at a
+// frame of another shape (the page's box changed with the layout or the device) starts over
+// from the original instead of replaying a transform fitted to the old shape.
+// Insertion-ordered, oldest dropped past the cap.
 const ORIGINALS = new Map()
 
 const ZOOM_MAX = 4
@@ -43,10 +46,14 @@ const shift = () => { queue = queue.slice(1); closedAt = Date.now(); emit() }
 // itself and dismisses. The mobile sheets guard on this (EncoreBuilder).
 export const editorBusy = () => queue.length > 0 || Date.now() - closedAt < 500
 
-// items: [{ src, aspect?: [w, h], onApply(url) }] — one batch, edited in order.
+// items: [{ src, aspect?: [w, h] | () => [w, h], onApply(url) }] — one batch, edited in order.
+// An aspect given as a function is read here, when the editor is asked for: it is the photo's
+// box on the canvas right now, which the layout, the device and the template all move.
 export function editImages(items) {
   if (!items.length) return
-  queue = [...queue, ...items.map((it, i) => ({ ...it, id: nextId++, pos: i + 1, total: items.length }))]
+  queue = [...queue, ...items.map((it, i) => ({
+    ...it, aspect: typeof it.aspect === 'function' ? it.aspect() : it.aspect, id: nextId++, pos: i + 1, total: items.length,
+  }))]
   emit()
 }
 
@@ -128,8 +135,12 @@ function Editor({ item, onToast }) {
   const [src, setSrc] = useState(item.src)
   const [swapped, setSwapped] = useState(false)
   const [pickErr, setPickErr] = useState(null)
-  const saved = swapped ? undefined : ORIGINALS.get(src)
-  const original = saved?.original ?? src
+  const found = swapped ? undefined : ORIGINALS.get(src)
+  const original = found?.original ?? src
+  // The edit was made for a frame of another shape: its transform no longer fits, and an untouched
+  // Apply must bake (the stored string is cropped to the old shape), so only the original is kept.
+  const stale = !!found && !!item.aspect && !!found.R && Math.abs(found.R / (item.aspect[0] / item.aspect[1]) - 1) > 0.01
+  const saved = stale ? undefined : found
   const [dim, setDim] = useState(null) // { img, w, h }
   const [failed, setFailed] = useState(false)
   const [tf, setTf] = useState(() => saved?.tf ?? startTf())
@@ -229,14 +240,14 @@ function Editor({ item, onToast }) {
   // keeps it as it is (JP-160). Baking would crop it to the frame's shape and drop the focus
   // the seed is drawn with; writing it back would pin a seed the theme otherwise reseeds.
   const g0 = start.current && geometry(start.current, iw, ih, fw, fh)
-  const untouched = !!g0 && item.edit && !swapped
+  const untouched = !!g0 && item.edit && !swapped && !stale
     && tf.zoom === start.current.zoom && tf.quarter === start.current.quarter && tf.fine === start.current.fine
     && Math.abs(g.cx - g0.cx) < 1 && Math.abs(g.cy - g0.cy) < 1
   const apply = () => {
     if (untouched) { shift(); return }
     try {
       const url = bake(dim.img, iw, ih, { ...tf, cx: g.cx, cy: g.cy }, original, item.aspect)
-      ORIGINALS.set(url, { original, tf: { ...tf, cx: g.cx, cy: g.cy } })
+      ORIGINALS.set(url, { original, tf: { ...tf, cx: g.cx, cy: g.cy }, R: frameRatio(item.aspect, tf, iw, ih) })
       if (ORIGINALS.size > ORIGINALS_MAX) ORIGINALS.delete(ORIGINALS.keys().next().value)
       finish(url)
     } catch {
@@ -298,7 +309,7 @@ function Editor({ item, onToast }) {
                 }}
               />
               <div
-                aria-hidden
+                aria-hidden data-crop-frame
                 style={{
                   position: 'absolute', pointerEvents: 'none', width: fw, height: fh,
                   left: (stage.w - fw) / 2, top: (stage.h - fh) / 2,

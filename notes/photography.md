@@ -66,8 +66,19 @@ the new data-URI *string*, so `c.image` / `c.images` / `tracks[].image` keep the
 `Photo`, `seedFocus`, `NO_CLAMP` and `reach.mjs` know nothing of it. Metadata applied at render time
 was rejected: it would touch every `Photo` site and the ones that hard-code `50% 0%`.
 
-- The frame is `aspect: [w, h]` on the field's `FIELDS` entry (header image 16:9, avatar 1:1,
-  bio 4:5, gallery 3:2, calendar / form portrait / pricing faces / track art 1:1, form stage 3:2).
+- **The frame is the shape of the photo's box on the canvas now** (user call, 2026-11-06). `photoAspectOf(root, k, fallback)` in
+  `EncoreBuilder.jsx` measures the field's largest `[data-photo]` node (`photoNodeOf`, laid flat and clipped by `photoBox`) and
+  hands the editor `[w, h]`, clamped to 1:3 ... 3:1. It is read when the editor is asked for (`editImages` accepts an `aspect`
+  function), so the layout, the template and the Desktop / Tablet / Mobile tab all move it: a header hero opens 1.9:1 on desktop,
+  3:4 on a tablet and ~9:19 on a phone, Pop's layout-4 portrait a 0.63 stadium. A list field (gallery, faces, track art) reads its
+  largest tile, since any tile can be promoted to the hero or the sleeve. The result still cover-crops at the other two widths.
+  Every caller goes through it: the canvas click, drop and empty-slot picker (`photoAspect` in the component) and the panel's
+  `ImageField`, `ImagesField` and track `RowThumb` (`api.photoAspect`). A slot the layout does not draw at this width falls back to
+  `aspect: [w, h]` on the field's `FIELDS` entry (header image 16:9, avatar 1:1, bio 4:5, gallery 3:2, calendar / form portrait /
+  pricing faces / track art 1:1, form stage 3:2). `ORIGINALS` keeps the frame ratio `R` of each edit: a reopen at a frame more than 1%
+  off starts again from the original (its transform no longer fits) and Apply bakes rather than writing nothing. `scripts/photo-aspect.mjs`
+  prints declared against measured for every slot, template, layout and device; `photo-probe --check` fails an ASPECT when the dialog's
+  `[data-crop-frame]` is not that box. Retro layouts 5 and 6 included.
   There is no ratio picker (user call, 2026-10-20, removing the Original / 1:1 / 4:5 / 3:2 / 16:9
   presets and the wide/tall flip): the frame is that `aspect`, or the photo's own shape for a caller
   that passes none. A baked crop is still drawn `cover` in boxes of another shape (the 390 hero is
