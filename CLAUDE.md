@@ -179,6 +179,10 @@ mutated through a single `patch()` helper.
   the disc's centre and diameter, because the ring's own box is one `<textPath>` arc that swings
   with `seal-spin` and the tilted svg's is 1.38x the disc. All four `SealBadge` arms draw the
   same viewBox-is-the-disc svg, so one rule covers them.
+- **Picking a section in the sidebar scrolls the canvas to it** (`openEdit(id, { reveal: true })` from the list row and its
+  *Edit content* item; `scrollToSection`): its top goes 16px under the band's top, the header to scrollTop 0, and the composed
+  row's sticky cell is measured by its grid row. A click on the canvas and the canvas toolbar's pencil do not scroll, so the
+  section stays under the pointer.
 - **Clicking text on the canvas edits it there** (user calls, 2026-10-20: piloted on Retro's layout 1, then rolled out
   to every template and layout by `plans/inline-edit-all.md`; desktop and tablet, never a phone;
   `plans/inline-edit.md`). **A click on a section's text selects it and edits it in the one click** (JP-154, user call, 2026-10-26,
