@@ -141,7 +141,7 @@ another `notes/` file.
   artist never gave. The date card is `vm.calWizard.dateOf(typed)`, a closure (above): nothing
   typed shows the section's cue (`vm.calPick`, so *Opens on* moves it and a past or booked
   `open` shows `calPrompt`), a typed date is parsed day-first (`parseDayFirst()`), and a booked
-  or past one is **refused** there with the date dimmed; `vm.calTime` stands at its end. The
+  or past one is **refused** there with the date dimmed (the box itself is masked to `dd/mm/yyyy` by `EncoreSection`'s `maskDate`, digits only, so only the day's existence, booking and age are left to refuse; send is not gated on it); `vm.calTime` stands at its end. The
   package card is the **Pricing section's** packages, read across sections through
   `sectionVm({ tiers })` (`pageTiers(sections)` in `data.js`, the `identity` precedent; the
   harness takes `&tiers=<json>` or `&tiers=none`) onto `vm.calPackages`: name over price, and

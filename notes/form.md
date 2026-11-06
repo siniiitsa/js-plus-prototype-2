@@ -277,3 +277,7 @@ the boxes print) as at layout 2.
 ## Inline editing (plans/inline-edit-all.md, Retro layout 4, 2026-10-22)
 
 `steps` has its first proof here: the three `title` / `sub` pairs are six slots, hit at both widths, and Escape restores `c.steps` (`FORM_STEPS` and the panel's `stepsVal` resolve alike). The numerals (`01`–`03`) and arrows are literal. `fields.placeholder` hits (layout 4 prints the placeholders in its boxes).
+
+## Date boxes (2026-11-06)
+
+A row's `kind` is `text`, `email`, `number` or **`date`** (`FORM_KINDS`); the three seeded `Event date` rows (`FORM_FIELDS`, `_4`, `_CARD`) are `date`. A date box is a masked text input, never `type="date"` (the native picker cannot be styled onto the panels): `EnquiryForm`'s `setAt` runs `maskDate()` (a module-local helper in `EncoreSection`, which imports nothing from `data.js`), so only digits are kept and the slashes are put in as they type, `dd/mm/yyyy`; `inputMode` is `numeric`. `formErrors(fields, vals, today)` refuses a date row that is empty, is not a real day (`parseDayFirst`), or, once `today` is known (published tab only, `vm.formCheck` passes `sectionVm`'s), is before today. The marked box is the generic one; there is no per-box message. The placeholder keeps the frames' `dd / mm / yyyy`. The calendar wizard's `Approx. date` box is masked by the same helper (`setBox`).

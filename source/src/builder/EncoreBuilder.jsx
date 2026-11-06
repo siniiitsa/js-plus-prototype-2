@@ -2193,7 +2193,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   vm.formFields = formList.filter((f) => formGuarded(f) || !blankRow(f, FORM_FIELD_KEYS)).map((f) => ({
     label: String((f && f.label) ?? '').trim() || (formGuarded(f) ? FORM_EMAIL_LABEL : ''),
     placeholder: String((f && f.placeholder) ?? '').trim(),
-    kind: (f && (f.kind === 'email' || f.kind === 'number')) ? f.kind : 'text',
+    kind: (f && (f.kind === 'email' || f.kind === 'number' || f.kind === 'date')) ? f.kind : 'text',
   }))
   // Two to a row, paired HERE rather than in EncoreSection, which does no
   // maths — the gigs' pin rule. It is not decoration: all three §10.2 frames
@@ -2235,7 +2235,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     message: msg,
     msgLabel: vm.formMsgLabel,
   })
-  vm.formCheck = ({ vals }) => formErrors(vm.formFields, vals)
+  vm.formCheck = ({ vals }) => formErrors(vm.formFields, vals, today)
 
   // footer
   vm.copyright = cv('copyright', copyrightOf(artistName))

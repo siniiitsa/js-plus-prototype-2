@@ -983,6 +983,16 @@ const extLink = (s, url) => (s.live && url
   ? (/^(mailto|tel):/i.test(url) ? { href: url } : { href: url, target: '_blank', rel: 'noopener noreferrer' })
   : null)
 
+// A visitor's date box: digits only, day first, the slashes put in as they
+// type (`12/08/2031`). A slash goes in only when a digit follows it, so
+// backspacing over one is not undone. Whether it is a real day, or a past one,
+// is the vm's (formCheck, dateOf); this only keeps the box a date.
+const maskDate = (raw) => {
+  const d = String(raw ?? '').replace(/\D/g, '').slice(0, 8)
+  return d.length > 4 ? `${d.slice(0, 2)}/${d.slice(2, 4)}/${d.slice(4)}`
+    : d.length > 2 ? `${d.slice(0, 2)}/${d.slice(2)}` : d
+}
+
 // Seconds → mm:ss, for the media player's two clock labels. A track over an
 // hour long still counts in minutes; nothing here draws a third field. NaN is
 // what `duration` reads before the metadata arrives, hence the guard.
@@ -20198,7 +20208,8 @@ function Calendar({ s }) {
     // opens on step 1, where the next enquiry starts.
     const onAgain = () => { setWSent(false); setWStep(0) }
     // One box typed: the value, and that box's mark cleared, the form's setAt.
-    const setBox = (key, v) => {
+    const setBox = (key, raw) => {
+      const v = key === 'date' ? maskDate(raw) : raw
       setWVals((o) => ({ ...o, [key]: v }))
       setWErrs((e) => (e && e.f[key] ? { ...e, f: { ...e.f, [key]: false } } : e))
     }
@@ -20343,7 +20354,7 @@ function Calendar({ s }) {
           {s.live ? (
             <input value={wVals[key] ?? ''} placeholder={ph}
                    type={key === 'email' ? 'email' : 'text'}
-                   inputMode={key === 'guests' ? 'numeric' : undefined}
+                   inputMode={key === 'guests' || key === 'date' ? 'numeric' : undefined}
                    onChange={(e) => setBox(key, e.target.value)}
                    style={{
                      flex: 1, minWidth: 0, border: 0, outline: 'none', background: 'transparent',
@@ -20679,7 +20690,7 @@ function Calendar({ s }) {
             {s.live ? (
               <input value={wVals[key] ?? ''} placeholder={ph}
                      type={key === 'email' ? 'email' : 'text'}
-                     inputMode={key === 'guests' ? 'numeric' : undefined}
+                     inputMode={key === 'guests' || key === 'date' ? 'numeric' : undefined}
                      onChange={(e) => setBox(key, e.target.value)}
                      style={{
                        flex: 1, minWidth: 0, border: 0, outline: 'none', background: 'transparent',
@@ -27428,7 +27439,8 @@ function EnquiryForm({ s }) {
   // than a claim the visitor never made.
   const showTypes = !!s.v0 && nTypes > 0
   const at = (i) => vals[i] ?? ''
-  const setAt = (i, v) => {
+  const setAt = (i, raw) => {
+    const v = s.formFields[i]?.kind === 'date' ? maskDate(raw) : raw
     setVals((prev) => { const next = prev.slice(); next[i] = v; return next })
     setErrs((e) => (e ? { ...e, f: e.f.map((x, j) => (j === i ? false : x)) } : e))
   }
@@ -27634,7 +27646,7 @@ function EnquiryForm({ s }) {
               // Retro's branch says why: `email` for the phone keyboard,
               // `number` as inputMode only, a date as the artist's text.
               type={f.kind === 'email' ? 'email' : 'text'}
-              inputMode={f.kind === 'number' ? 'numeric' : undefined}
+              inputMode={f.kind === 'number' || f.kind === 'date' ? 'numeric' : undefined}
               // Pop's frame states its hint's strength, so the live box sets
               // it: `--ph` 0.8 on `G.on`'s white is `POP_FORM.ph` (JP-119).
               // The twins' hint keeps `::placeholder`'s .45.
@@ -28038,7 +28050,7 @@ function EnquiryForm({ s }) {
               // artist's placeholder: the native picker cannot be styled onto
               // mustard, and the frame draws a written date.
               type={f.kind === 'email' ? 'email' : 'text'}
-              inputMode={f.kind === 'number' ? 'numeric' : undefined}
+              inputMode={f.kind === 'number' || f.kind === 'date' ? 'numeric' : undefined}
               style={{ ...ctl(bad), outline: 'none' }}
             />
           ) : (
@@ -28573,7 +28585,7 @@ function EnquiryForm({ s }) {
                         // Retro's rule: `email` for the phone keyboard,
                         // `number` as inputMode only, a date as the artist's text.
                         type={f.kind === 'email' ? 'email' : 'text'}
-                        inputMode={f.kind === 'number' ? 'numeric' : undefined}
+                        inputMode={f.kind === 'number' || f.kind === 'date' ? 'numeric' : undefined}
                         // The placeholder is the box's only label, so `--ph`
                         // draws it full, as the canvas span is (JP-093).
                         style={{ ...box(bad), outline: 'none', '--ph': 1 }}
@@ -28978,7 +28990,7 @@ function EnquiryForm({ s }) {
                         // text box — the native picker cannot be styled onto
                         // this card.
                         type={f.kind === 'email' ? 'email' : 'text'}
-                        inputMode={f.kind === 'number' ? 'numeric' : undefined}
+                        inputMode={f.kind === 'number' || f.kind === 'date' ? 'numeric' : undefined}
                         // The placeholder is the box's only label, so `--ph`
                         // draws it full, as the canvas span is (JP-093).
                         style={{ ...boxShell(bad), outline: 'none', '--ph': 1 }}
@@ -29381,7 +29393,7 @@ function EnquiryForm({ s }) {
                         // Retro's rule: `email` for the phone keyboard,
                         // `number` as inputMode only, a date as the artist's text.
                         type={f.kind === 'email' ? 'email' : 'text'}
-                        inputMode={f.kind === 'number' ? 'numeric' : undefined}
+                        inputMode={f.kind === 'number' || f.kind === 'date' ? 'numeric' : undefined}
                         // The placeholder is the box's only label, so `--ph`
                         // draws it full, as the canvas span is (JP-093).
                         style={{ ...box(bad), outline: 'none', '--ph': 1 }}
@@ -29570,7 +29582,7 @@ function EnquiryForm({ s }) {
                       // date is a text box — the native picker cannot be
                       // styled onto this card.
                       type={f.kind === 'email' ? 'email' : 'text'}
-                      inputMode={f.kind === 'number' ? 'numeric' : undefined}
+                      inputMode={f.kind === 'number' || f.kind === 'date' ? 'numeric' : undefined}
                       // Layout 2's `--ph`: the placeholder is the box's only
                       // label, so it draws full, as the canvas span is (JP-093).
                       style={{ ...boxShell(bad), outline: 'none', '--ph': 1 }}
@@ -29821,7 +29833,7 @@ function EnquiryForm({ s }) {
               // Layouts 1–3's rule: `email` for the phone keyboard, `number`
               // as inputMode only, a date as the artist's text.
               type={f.kind === 'email' ? 'email' : 'text'}
-              inputMode={f.kind === 'number' ? 'numeric' : undefined}
+              inputMode={f.kind === 'number' || f.kind === 'date' ? 'numeric' : undefined}
               style={{ ...box(bad), outline: 'none' }}
             />
           ) : (
@@ -30158,7 +30170,7 @@ function EnquiryForm({ s }) {
               // break the stated height, and a date stays a text box carrying
               // the artist's placeholder.
               type={f.kind === 'email' ? 'email' : 'text'}
-              inputMode={f.kind === 'number' ? 'numeric' : undefined}
+              inputMode={f.kind === 'number' || f.kind === 'date' ? 'numeric' : undefined}
               style={{ ...boxShell(bad), outline: 'none' }}
             />
           ) : (
@@ -30359,7 +30371,7 @@ function EnquiryForm({ s }) {
           key={i} value={at(i)} placeholder={f.placeholder}
           onChange={(e) => setAt(i, e.target.value)}
           type={f.kind === 'email' ? 'email' : 'text'}
-          inputMode={f.kind === 'number' ? 'numeric' : undefined}
+          inputMode={f.kind === 'number' || f.kind === 'date' ? 'numeric' : undefined}
           style={flatCtl(!!(errs && errs.f[i]))}
         />
       ) : (

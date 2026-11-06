@@ -1422,10 +1422,11 @@ export const STEP_KEYS = ['title', 'sub']
 export const FORM_FIELDS = [
   { label: 'Name',       placeholder: 'Full name',      kind: 'text' },
   { label: 'Email',      placeholder: 'you@email.com',  kind: 'email' },
-  // Deliberately `text`, not a date kind: the native picker cannot be styled
-  // onto the mustard panel, so a date is the artist's placeholder and nothing
-  // more. `number` likewise never becomes type="number" — see EncoreSection.
-  { label: 'Event date', placeholder: 'dd / mm / yyyy', kind: 'text' },
+  // A `date` kind, drawn as a masked text box (dd/mm/yyyy, digits only), never
+  // type="date": the native picker cannot be styled onto the mustard panel.
+  // formErrors() refuses a day that does not exist or has passed. `number`
+  // never becomes type="number" — see EncoreSection.
+  { label: 'Event date', placeholder: 'dd / mm / yyyy', kind: 'date' },
   { label: 'Guests',     placeholder: 'approx.',        kind: 'number' },
 ]
 // Layout 4's own seed (JP-054, user call, 2026-09-24, reversing the 2026-09-23
@@ -1438,7 +1439,7 @@ export const FORM_FIELDS = [
 export const FORM_FIELDS_4 = [
   { label: 'Your name',  placeholder: 'Full name',       kind: 'text' },
   { label: 'Email',      placeholder: 'you@email.com',   kind: 'email' },
-  { label: 'Event date', placeholder: 'dd / mm / yyyy',  kind: 'text' },
+  { label: 'Event date', placeholder: 'dd / mm / yyyy',  kind: 'date' },
   { label: 'Event type', placeholder: 'Wedding, party…', kind: 'text' },
   { label: 'Location',   placeholder: 'Town / city',     kind: 'text' },
 ]
@@ -1450,7 +1451,7 @@ export const FORM_FIELDS_4 = [
 // the first time, which is safe: every reader finds it by `kind`, never by
 // place. Chosen by layout only while the key is absent, FORM_FIELDS_4's gate.
 export const FORM_FIELDS_CARD = [
-  { label: 'Event date', placeholder: 'dd / mm / yyyy',  kind: 'text' },
+  { label: 'Event date', placeholder: 'dd / mm / yyyy',  kind: 'date' },
   { label: 'Event type', placeholder: 'Wedding, party…', kind: 'text' },
   { label: 'Your email', placeholder: 'you@email.com',   kind: 'email' },
 ]
@@ -1464,12 +1465,13 @@ export const FORM_FIELD_KEYS = ['label', 'placeholder']
 // drops, or the form would have nowhere to be replied to; the seed's own word,
 // so a box and its mailto body line read the same.
 export const FORM_EMAIL_LABEL = 'Email'
-// The three kinds a row can be, in the { v, l } shape EditPanel's own select
+// The four kinds a row can be, in the { v, l } shape EditPanel's own select
 // branch reads. Anything else sectionVm resolves to 'text'.
 export const FORM_KINDS = [
   { v: 'text',   l: 'Text' },
   { v: 'email',  l: 'Email' },
   { v: 'number', l: 'Number' },
+  { v: 'date',   l: 'Date' },
 ]
 export const FORM_TYPES = ['Wedding', 'Event', 'Pub', 'Party', 'Other']
 export const FORM_MESSAGE = 'Tell me about your event…'
@@ -3718,11 +3720,19 @@ export function enquiryMailto(email, { type, fields, message, msgLabel }) {
 // Every box the artist put on the form is required: they chose to ask for it.
 // An `email` row must also look like an address, since it is where a reply
 // goes. A `number` row is required but not checked — "approx." invites "~150".
+// A `date` row must be a real day, day first (parseDayFirst), and, once the
+// clock is known (`today`, an ISO string: the published tab's, undefined on the
+// canvas), not before today.
 // The message is optional: the four boxes above it are the enquiry.
-export function formErrors(fields, vals) {
+export function formErrors(fields, vals, today) {
+  const now = parseDate(today)
   const f = (fields || []).map((fd, i) => {
     const v = String((vals || [])[i] ?? '').trim()
     if (!v) return true
+    if (fd.kind === 'date') {
+      const at = parseDayFirst(v)
+      return !at || (!!now && isoDate(at.y, at.m, at.d) < isoDate(now.y, now.m, now.d))
+    }
     return fd.kind === 'email' && !!emailProblem(v)
   })
   return { f, any: f.some(Boolean) }
