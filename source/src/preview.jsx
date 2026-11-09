@@ -259,6 +259,8 @@ const s = sectionVm({
   ...(q.get('below') ? { below: q.get('below') } : null),
   // &noclamp=1 renders past the character caps (scripts/limits.mjs measures there).
   ...(q.get('noclamp') === '1' ? { clamp: false } : null),
+  // The live events map (WebGL, network tiles) is off in the harness unless asked for, so digests stay deterministic.
+  ...(q.get('map') === '1' ? { realMap: true } : null),
 })
 
 createRoot(document.getElementById('root')).render(

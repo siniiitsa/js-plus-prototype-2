@@ -1349,25 +1349,69 @@ export const GIGS = [
 // What `blankRow()` asks of a GigsField row (the JP-051 sweep). `year` is in
 // it, so a row holding only a year is still a row.
 export const GIG_KEYS = ['venue', 'city', 'time', 'month', 'day', 'year', 'link']
-// The coverage an absent map `radius` stands for, by design (`d`). Layout 1's
-// frame prints "12 Mile Radius" beside its heading (964:58581). Layout 2's
-// Max travel cell is "120 mi" (JP-124, user call, 2026-10-09): the cell's own
-// frame types "100 mi", but its data bar and rings say 120 (986:17577), and so
-// do the header's place card, the line under the map and the form's promise on
-// the same page, so the designer has the 100. Layout 3's line under the map
-// reads its frames' "120 mi radius" (964:68649 / 68681 / 68713 / 68746, at
-// every width), the rings' outermost (JP-105, user call, 2026-10-06).
-// mapKickerSeed()'s shape, called by sectionVm and EditPanel's chain alike.
-export const MAP_RADIUS = '12 mile radius'
-export const MAP_RADIUS_2 = '120 mi'
-export const MAP_RADIUS_3 = '120 mi radius'
-export const mapRadiusSeed = (d) => (d === 1 ? MAP_RADIUS_2 : d === 2 ? MAP_RADIUS_3 : MAP_RADIUS)
+// The events map's real place and reach (user call, 2026-11-09). `c.place` is
+// `{ name, region, country, lat, lon }`, picked from the panel's lookup and
+// stored whole; `c.miles` is the radius in miles. Both are seeded here, and
+// every coverage string on the section is derived from them (the old free-text
+// `radius` and `rings` fields are gone). This reverses JP-105 (layout 1 kept
+// "12 mile radius" by its frame) and JP-096 (layout 2's "Based in" was the
+// header's Location): the map's own town and radius print everywhere now.
+export const MAP_PLACE = { name: 'Manchester', region: 'England', country: 'United Kingdom', cc: 'GB', lat: 53.4808, lon: -2.2426 }
+export const MAP_MILES = 120
+export const MAP_MILES_MIN = 5
+export const MAP_MILES_MAX = 500
+export const mapPlaceOf = (c) => {
+  const p = c?.place
+  return p && typeof p.name === 'string' && p.name.trim() && Number.isFinite(+p.lat) && Number.isFinite(+p.lon)
+    ? { name: p.name.trim(), region: String(p.region ?? ''), country: String(p.country ?? ''), cc: String(p.cc ?? '').toUpperCase(), lat: +p.lat, lon: +p.lon }
+    : MAP_PLACE
+}
+export const mapMilesOf = (c) => {
+  const n = Math.round(+c?.miles)
+  return Number.isFinite(n) && n > 0 ? Math.min(MAP_MILES_MAX, Math.max(MAP_MILES_MIN, n)) : MAP_MILES
+}
+// A town as a seed prints it: cut at a word with an ellipsis past `n`.
+const placeWord = (name, n) => (name.length <= n ? name : `${name.slice(0, Math.max(1, n - 1)).trimEnd()}…`)
+// Layout 1 "12 mile radius", 2 "120 mi" (Max travel), 3 "120 mi radius".
+export const mapRadiusText = (d, miles) => (d === 1 ? `${miles} mi` : d === 2 ? `${miles} mi radius` : `${miles} mile radius`)
+// The three rings' labels, inner ring first: a quarter, a half and the whole.
+export const mapRingLabels = (miles) => [miles / 4, miles / 2, miles]
+  .map((m) => `${m >= 10 ? Math.round(m) : +m.toFixed(1)}mi`)
+export const mapHeadingSeed = (c, themeName, design) => {
+  const f = FIELDS.map.find((x) => x.k === 'heading')
+  const cap = fieldCap(f, themeName, design)
+  return placeWord(mapPlaceOf(c).name, cap?.chars || 20)
+}
+export const mapBaseSeed = (c, themeName, design) => {
+  const f = FIELDS.map.find((x) => x.k === 'base')
+  const room = (fieldCap(f, themeName, design)?.chars || 24) - 'Based in '.length
+  return `Based in ${placeWord(mapPlaceOf(c).name, Math.max(6, room))}`
+}
+export const mapTermsSeed = (c) => `${mapMilesOf(c)} mi standard · further on request`
+// The stat wall's Base cell seed, "Manchester, UK": the town and its country code
+// (GB reads UK), the town alone once the two do not fit `n`.
+export const mapBaseStat = (c, n = 14) => {
+  const p = mapPlaceOf(c)
+  const cc = p.cc === 'GB' ? 'UK' : p.cc
+  const both = cc ? `${p.name}, ${cc}` : p.name
+  return both.length <= n ? both : placeWord(p.name, n)
+}
+// A town for the travel card's home value and the like.
+export const mapPlaceLabel = (c, n = 14) => placeWord(mapPlaceOf(c).name, n)
+// The stat wall's seed: the frame's four, its Radius and Base cells following
+// the picked radius and town.
+export const mapStatsSeed = (c) => MAP_STATS_4.map((r) => (
+  r.label === 'Radius' ? { ...r, value: String(mapMilesOf(c)) }
+    : r.label === 'Base' ? { ...r, value: mapBaseStat(c) } : r))
+// Web-Mercator zoom (512px tiles) at which `miles` spans `radiusPx` pixels at `lat`.
+export const mapZoomFor = (lat, miles, radiusPx) => (
+  Math.log2((78271.517 * Math.cos((lat * Math.PI) / 180) * Math.max(1, radiusPx)) / (miles * 1609.344))
+)
 export const MAP_BASE = 'Based in Manchester'
-export const MAP_TERMS = '120 mi standard · further on request'
+export const MAP_TERMS = '120 mi standard · further on request' // the seed at MAP_MILES; sectionVm derives it
 // Layout 3's map panel copy, the frame's own (964:68649), seeded and emptiable.
 export const MAP_STATUS = 'In transit'
 export const MAP_UPDATED = 'Updated 2m ago'
-export const MAP_RINGS = '30mi, 60mi, 120mi'
 export const MAP_EXPAND = 'Expand view'
 // Pricing layout 2's credit row and the line beside its pill, seeded with the
 // frame's own copy (964:64648).
@@ -2507,6 +2551,14 @@ export const FIELDS = {
   // tracks' — one key, one shape — so an absent key means the seeded GIGS, an
   // emptied array means no gigs, and there is no null sentinel.
   map: [
+    // The real map (user call, 2026-11-09): a town picked from a lookup of real
+    // places and a radius in miles. Neither is text the page prints as typed:
+    // the heading, "Based in", the coverage strings and the ring labels derive
+    // from them (mapPlaceOf / mapMilesOf), and the picture is a live map.
+    { k: 'place', l: 'Town or city', type: 'place', in: [0, 1, 2, 3],
+      hint: 'Search for a real town or city. The map centres on it, and the heading, “Based in” and the coverage lines follow it.' },
+    { k: 'miles', l: 'Radius (miles)', type: 'miles', in: [0, 1, 2, 3],
+      hint: 'How far you travel, from 5 to 500 miles. The map zooms so this distance reaches the outer ring.' },
     { k: 'gigs',    l: 'Upcoming gigs', type: 'gigs', max: 12,
       // Session 8 of the character-limits pass: the venue, the city · time line,
       // the date stamp and disc (a month read as month names, the day as dates),
@@ -2519,14 +2571,14 @@ export const FIELDS = {
         month: { Retro: [7, 4, 11, 9], Lime: [5, 3, 12, 9], Pop: [9, 5, 12, 9], '*': [5, 5, 12, 9] },
         day: { Retro: [5, 5, 5, 5], '*': [6, 3, 5, 5] },
       },
-      // The page size is PINS.length, not a literal — see vm.gigPage — except
-      // in layout 4, whose whole list is a one-gig ticker. The cities are read
+      // The page size is vm.gigPage (five) except in layout 4, whose whole
+      // list is a one-gig ticker. The cities are read
       // a second time in layout 3, where they derive the split list's filter
       // chips (vm.gigChips) the way the songs' tags derive the repertoire's —
       // so a row's city is a control there as well as a fact. Layout 4 no
       // longer counts them: its stat wall is `stats` (JP-077).
-      hint: 'Each row is one show, and one pin on the map. A row with a tickets link becomes '
-          + `a real link on the published page; the list pages ${PINS.length} at a time in `
+      hint: 'Each row is one show. A row with a tickets link becomes '
+          + 'a real link on the published page; the list pages five at a time in '
           + "layouts 1–3 (layout 3 shows one at a time on a phone) and one at a time in "
           + "layout 4's ticker. "
           + 'Layout 3 also turns the cities into its filter chips, and works out the weekday '
@@ -2548,20 +2600,9 @@ export const FIELDS = {
       hint: 'The label over the list of gigs, before its count. Layout 2 starts from “Other upcoming”. '
           + 'Left empty, neither is drawn.' },
     { k: 'heading', l: 'Heading', d: 'Manchester',
+      // Layouts 1 and 2 start from the picked town (mapHeadingSeed).
       chars: { Retro: [20, 20, 39, 25], Lime: [19, 17, 34, 24], Grunge: [16, 20, 37, 25], Editorial: [11, 19, 22, 22],
         Pop: [17, 21, 25, 23] } },
-    // Layouts 1–3 print it, once each (reach.mjs's `map.radius`). It was
-    // "Coverage badge", after layout 1's reading, until JP-060: layout 2's Lime
-    // block printed it in the travel card's chip as well as its Max travel, and
-    // that chip now takes Retro's gig date. Layout 4's Coverage card went with
-    // JP-077: its wall is `stats`. JP-105: layout 3 seeds its frames' "120 mi
-    // radius" (mapRadiusSeed(), in sectionVm and EditPanel's chain alike), and
-    // JP-124 layout 2 "120 mi".
-    { k: 'radius',  l: 'Coverage', d: MAP_RADIUS, in: [0, 1, 2],
-      chars: { Retro: [26, 11, 25], Lime: [51, 13, 20], Grunge: [44, 13, 26], Editorial: [14, 13, 26], Pop: [29, 13, 26] },
-      hint: 'How far you travel. Layout 1 prints it beside the heading, layout 2 as Max travel on '
-          + 'the travel card, where it starts from “120 mi”, and layout 3 in the line under the '
-          + 'map, where it starts from “120 mi radius”.' },
     // Layout 2's travel card prints the header's Location instead, under its
     // own "Based in" label (JP-096, user call, 2026-10-01): the frame's value is
     // the town alone, and this field's copy says "Based in" itself.
@@ -2625,11 +2666,6 @@ export const FIELDS = {
       hint: 'The tag above the featured gig.' },
     { k: 'updated', l: 'Map note', d: MAP_UPDATED, in: [1, 2],
       chars: { Lime: [null, 31, 31], '*': [null, 35, 34] } },
-    { k: 'rings',   l: 'Ring labels', d: MAP_RINGS, in: [1, 2, 3],
-      // Chips on the rings, sliced to the three rings the map draws.
-      list: ',', chars: [null, 13, 13, 13], count: [null, 3, 3, 3],
-      rows: { placeholder: 'Ring label', add: 'Add ring label' },
-      hint: 'Up to three, inner ring first.' },
     { k: 'expand',  l: 'Map link', d: MAP_EXPAND, in: [1, 2],
       chars: [null, 22, 22],
       hint: 'Opens directions to the gig the panel is showing, on the published page. Leave empty to hide it.' },
@@ -2986,7 +3022,9 @@ export function fieldSeed({ cat, f, themeName, design, c = {}, artistName, email
     : f.k === 'button' && cat === 'form' ? formBtnSeed(themeName, design)
     : f.k === 'kicker' && cat === 'map' ? mapKickerSeed(design)
     : f.k === 'listLabel' && cat === 'map' ? mapListLabelSeed(design)
-    : f.k === 'radius' && cat === 'map' ? mapRadiusSeed(design)
+    : f.k === 'heading' && cat === 'map' && design < 2 ? mapHeadingSeed(c, themeName, design)
+    : f.k === 'base' && cat === 'map' ? mapBaseSeed(c, themeName, design)
+    : f.k === 'terms' && cat === 'map' ? mapTermsSeed(c)
     : f.k === 'kicker' && cat === 'testimonials' ? testiKickerSeed(design)
     : f.k === 'cta' && cat === 'calendar' && design === 3 ? CAL_SEND_4
     : f.k === 'rowCta' && cat === 'pricing' && design === 2 ? PRICING_ROW_CTA_3
@@ -3175,13 +3213,12 @@ export const INLINE_PART = {
   '*.1.form.bookings': true,
   '*.1.testimonials.kicker': true,
   // Layout 3 the same: `[ About ]`, `● Popular`, `5 Featured / 5 Max`, the map's
-  // `Based in Manchester · 5 pins · 120 mi radius` and `Expand view→`, the form's
+  // `Based in Manchester · 5 gigs · 120 mi radius` and `Expand view→`, the form's
   // `★★★★★ 42 bookings`, `● Testimonials`.
   '*.2.bio.aboutLabel': true,
   '*.2.media.listLabel': true,
   '*.2.media.totalLabel': true,
   '*.2.map.base': true,
-  '*.2.map.radius': true,
   '*.2.map.expand': true,
   '*.2.form.bookings': true,
   '*.2.testimonials.kicker': true,
@@ -3355,7 +3392,7 @@ export function colCaps(f, themeName, design) {
   }
   return Object.keys(out).length ? out : null
 }
-const NO_CLAMP = new Set(['image', 'images', 'url', 'email', 'date', 'select', 'booked'])
+const NO_CLAMP = new Set(['image', 'images', 'url', 'email', 'date', 'select', 'booked', 'place', 'miles'])
 // A section's own cap for a header key it prints: its IDENTITY_CHARS entry, and
 // the header's field besides (the header prints its own keys off `c`).
 function identityCapOf(cat, key, themeName, design) {

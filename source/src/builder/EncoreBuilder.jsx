@@ -23,6 +23,7 @@ import {
   Drawer, DrawerContent, DrawerDescription, DrawerTitle,
 } from '@/components/ui/drawer'
 import { Input } from '@/components/ui/input'
+import { Slider } from '@/components/ui/slider'
 import { Label } from '@/components/ui/label'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import {
@@ -39,15 +40,15 @@ import {
   THEMES, SCHEMES_OF, CATS, NVAR, FLAG, FIELDS, TITLES, DEFS, TRACKS, TAGS, TAG_LABELS, HERO_CTA, BIO_CREDIT, BIO_CTA,
   HERO_AVAIL, FACE_TITLE, FACE_BODY, PLACE_BODY, BIO_TAG,
   BIO_SINCE_LABEL, BIO_ROLE_LABEL, BIO_BASE_LABEL, BIO_ABOUT_LABEL, BIO_TAGS_LABEL, MEDIA_LIST_LABEL,
-  BIO_REF_LABEL, FORM_TYPE_LABEL, mapKickerSeed, mapListLabelSeed, mapRadiusSeed, testiKickerSeed,
+  BIO_REF_LABEL, FORM_TYPE_LABEL, mapKickerSeed, mapListLabelSeed, mapPlaceOf, mapMilesOf, MAP_MILES_MIN, MAP_MILES_MAX, mapRadiusText, mapRingLabels, mapHeadingSeed, mapBaseSeed, mapTermsSeed, mapStatsSeed, mapBaseStat, testiKickerSeed,
   MAP_HOME_LABEL, MAP_HOME_CAPTION, MAP_VENUE_LABEL, MAP_VENUE_CAPTION, MAP_RADIUS_LABEL, MAP_TIME_LABEL,
   MAP_FEE_LABEL, MAP_VENUE_CTA, MAP_ROUTE_CTA,
   PRICING_KICKER, PRICING_FEATS_LABEL, PRICING_BADGE, CAL_DATE_LABEL, CAL_AVAIL_LABEL, CAL_PROMPT,
   MEDIA_CHIP_LABEL, MEDIA_COUNT_LABEL, MEDIA_TOTAL_LABEL, GALLERY_RAIL_LABEL, TIER_KEYS, tiersSeed, PRICE_UNIT, QUOTES,
   CITIES, PINS, EXAMPLE_PAGE,
   NOW_PLAYING, TRACK_AUDIO, SONGS, REP_ALL,
-  GIGS, MAP_BASE, MAP_TERMS, MAP_TRAVEL_TIME, MAP_FEE, directionsUrl, GALLERY_SOURCES, GALLERY_KICKER, GALLERY_BACK_LABEL,
-  MAP_STATUS, MAP_UPDATED, MAP_RINGS, MAP_EXPAND,
+  GIGS, MAP_TRAVEL_TIME, MAP_FEE, directionsUrl, GALLERY_SOURCES, GALLERY_KICKER, GALLERY_BACK_LABEL,
+  MAP_STATUS, MAP_UPDATED, MAP_EXPAND,
   PRICING_REVIEWS, PRICING_RATING, PRICING_CTA, PRICING_NOTE, PRICING_OFFER,
   FORM_PROMISES, FORM_STEPS, STEP_KEYS, FORM_FIELDS, FORM_FIELDS_CARD, FORM_FIELDS_4, FORM_FIELD_KEYS, FORM_EMAIL_LABEL, FORM_KINDS, FORM_TYPES, FORM_MESSAGE, FORM_MSG_LABEL,
   FOOTER_LINKS, FOOTER_TARGETS, FOOTER_CREDIT, FOOTER_STATEMENT,
@@ -272,7 +273,7 @@ export const pageDesignOf = (sections, themeName) => {
   return ((h.arch % n) + n) % n
 }
 
-export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = {}, tiers = [], email = '', Z, mob, live = false, embeds = true, navSections = [], column = false, today, page = -1, above = '', below = '', clamp = true }) {
+export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = {}, tiers = [], email = '', Z, mob, live = false, embeds = true, navSections = [], column = false, realMap = false, today, page = -1, above = '', below = '', clamp = true }) {
   const theme = THEMES[themeIdx]
   const nDesign = designCount(cat, theme.name)
   // A video has a frame at layouts 2 and 4 alone (plans/video.md, call 1), so
@@ -1413,6 +1414,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // the count instead.
   if (d === 2 && c.heading === undefined && HEADING_3[cat]) vm.title = cased(HEADING_3[cat])
   if (d === 3 && c.heading === undefined && HEADING_4[cat]) vm.title = cased(HEADING_4[cat])
+  // The map's layouts 1 and 2 are headed by the picked town (reverses the seeded 'Manchester').
+  if (cat === 'map' && d < 2 && c.heading === undefined) vm.title = cased(mapHeadingSeed(c, theme.name, d))
   // Lime's, Grunge's, Editorial's and Pop's layout-1 calendar head reads
   // "Book Now" (JP-089; Pop's frame 964:58631 too); Retro's layout 1 prints no
   // head. EditPanel mirrors it.
@@ -1882,10 +1885,17 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
 
   // map
   //
-  // `pins` is the raw five positions, which layout 4 draws whole — five seats
-  // over any number of gigs, the one on show lit by identity. The other
-  // layouts pair instead: every gig below carries the pin it lights.
+  // The real map (user call, 2026-11-09): `mapGeo` is the centre and radius the
+  // live map frames, and is null for a caller that does not opt in with
+  // `realMap` (the layout picker's thumbnails and the setup modal's cards mount
+  // every layout, and a WebGL context apiece is too many), which keep the
+  // seeded raster as a picture of one. The live map draws no pins and no zoom
+  // buttons (the view is fixed: a place and a reach); they stay for that
+  // raster stand-in only, so `pins` and each gig's `pin` are still resolved.
   vm.pins = PINS
+  const mapPlace = mapPlaceOf(c)
+  const mapMiles = mapMilesOf(c)
+  vm.mapGeo = realMap && cat === 'map' ? { lat: mapPlace.lat, lon: mapPlace.lon, miles: mapMiles } : null
   // The events map renders on `mapBg` for Retro rather than the page background,
   // so a row hue has to separate from that charcoal — Retro's near-black tag reads
   // fine on sand and disappears on the dark. Fall back to the cream, as §10.2 does.
@@ -1906,7 +1916,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // for the same <base href> reason as the Soundcloud button — a schemeless
   // address would resolve against the builder; and `pin`, the position this gig
   // lights on the map, paired by index because PINS is a fixed five over a fixed
-  // raster. The hue is computed over the *whole* list, never a page of it, or a
+  // raster (gone with the real map). The hue is computed over the *whole* list, never a page of it, or a
   // gig would change colour as the pager turned.
   //
   // A gig with nothing in it is dropped first (`blankRow()`, the JP-051 sweep),
@@ -1930,6 +1940,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
       // '' — no third line — for a row with no year or a date that is not one.
       // `year` itself is printed nowhere, so `when` and `meta` do not read it.
       weekday: gigWeekday(g?.year, g?.month, g?.day),
+      pin: PINS[i % PINS.length],
       // Layout 3's row pill, 'upcoming' | 'past' | '' (JP-106): the same date
       // against today, '' on the canvas and wherever the weekday is ''. A gig
       // dated today is upcoming.
@@ -1941,7 +1952,6 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
       // row printed until it took the frame's own three cells back.
       when: [`${g?.month ?? ''} ${g?.day ?? ''}`.trim(), String(g?.time ?? '').trim()]
         .filter(Boolean).join(' · '),
-      pin: PINS[i % PINS.length],
       // Layout 4's ticker prints the gig on one line — "Manchester · JUL 12 ·
       // 22:00", the frame's own second line — and every one of those three is
       // emptiable, so it is composed here rather than joined in the section:
@@ -1994,7 +2004,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // every key, JP-051's rule), so a blank row neither draws an empty card nor
   // takes a seat's hue. Each part is trimmed and left as typed: the card's CSS
   // upper-cases the label, and the frame's value and sub are its own casing.
-  vm.mapStats = (Array.isArray(c.stats) ? c.stats : MAP_STATS_4)
+  vm.mapStats = (Array.isArray(c.stats) ? c.stats : mapStatsSeed(c))
     .filter((r) => !blankRow(r, STAT_KEYS))
     .map((r) => {
       const value = String(r?.value ?? '').trim()
@@ -2041,16 +2051,22 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   vm.mapVenueCtaWraps = vm.mapVenueCta.length > MAP_VENUE_CTA.length
   // JP-105 — layout 3's line under the map seeds its frames' "120 mi radius";
   // JP-124 — layout 2's Max travel "120 mi".
-  vm.mapRadius = cv('radius', mapRadiusSeed(d))
-  vm.mapBase = cv('base', MAP_BASE)
-  vm.mapTerms = cv('terms', MAP_TERMS)
+  vm.mapRadius = mapRadiusText(d, mapMiles)
+  vm.mapBase = cv('base', mapBaseSeed(c, theme.name, d))
+  vm.mapTerms = cv('terms', mapTermsSeed(c))
+  // The home value on layout 2's travel card is the map's own town now
+  // (reverses JP-096), as the frame prints it, "Manchester, UK": the town and
+  // its country code, which also keeps it apart from a gig's bare city when a
+  // click on the canvas has to tell the two apart.
+  vm.mapHome = mapBaseStat(c, 16)
   vm.mapTravelTime = cv('travelTime', MAP_TRAVEL_TIME)
   vm.mapFee = cv('fee', MAP_FEE)
   // Layout 3's map panel copy — the frame's own, seeded and emptiable (QA,
   // 2026-09-15). The ring labels run inner ring first.
   vm.mapStatus = cv('status', MAP_STATUS)
   vm.mapUpdated = cv('updated', MAP_UPDATED)
-  vm.mapRings = String(cv('rings', MAP_RINGS) ?? '').split(',').map((x) => x.trim()).filter(Boolean)
+  vm.mapRings = mapRingLabels(mapMiles)
+  vm.mapMiles = mapMiles
   vm.mapExpand = cv('expand', MAP_EXPAND)
   // Layout 4's panel note beside "Travel & reach", the frame's own copy (QA,
   // 2026-09-15). Emptiable.
@@ -3617,6 +3633,120 @@ const BLANK_GIG_HINT = 'Empty gigs aren’t shown.'
 // neither, so the line names both.
 const NO_WEEKDAY_HINT = 'No weekday and no Upcoming / Past: the date needs a real day and a four-digit year.'
 
+// The events map's town (user call, 2026-11-09): a type-ahead over real places.
+// Photon (komoot's OpenStreetMap geocoder) is built for search-as-you-type, which
+// OSM's own Nominatim forbids; it is keyless and free within fair use, and this is
+// the builder's second network request after the video title lookup. A pick is
+// stored whole (`{ name, region, country, cc, lat, lon }`), so nothing on the page
+// needs the geocoder again, and a failed lookup leaves the current place alone.
+const PLACE_KINDS = new Set(['city', 'town', 'village', 'hamlet', 'municipality', 'borough', 'suburb'])
+const placeLine = (p) => [p.name, p.region, p.country].filter(Boolean).join(', ')
+function PlaceField({ value, onChange }) {
+  const [q, setQ] = useState('')
+  const [res, setRes] = useState(null) // null idle · [] none · [...] hits
+  const [busy, setBusy] = useState(false)
+  const [err, setErr] = useState(false)
+  const ctl = useRef(null)
+  const timer = useRef(0)
+  const search = (text) => {
+    ctl.current?.abort()
+    clearTimeout(timer.current)
+    setErr(false)
+    if (text.trim().length < 2) { setRes(null); setBusy(false); return }
+    setBusy(true)
+    timer.current = setTimeout(async () => {
+      const c = new AbortController()
+      ctl.current = c
+      try {
+        const r = await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(text.trim())}&limit=10&lang=en&osm_tag=place`, { signal: c.signal })
+        if (!r.ok) throw new Error(String(r.status))
+        const j = await r.json()
+        const seen = new Set()
+        const hits = []
+        for (const f of j.features ?? []) {
+          const pr = f.properties ?? {}
+          const [lon, lat] = f.geometry?.coordinates ?? []
+          if (!pr.name || !Number.isFinite(lat) || !Number.isFinite(lon)) continue
+          if (pr.osm_key && pr.osm_key !== 'place') continue
+          if (pr.osm_value && !PLACE_KINDS.has(pr.osm_value)) continue
+          const hit = { name: pr.name, region: pr.state || pr.county || '', country: pr.country || '', cc: pr.countrycode || '', lat, lon }
+          const key = placeLine(hit)
+          if (seen.has(key)) continue
+          seen.add(key)
+          hits.push(hit)
+          if (hits.length === 6) break
+        }
+        setRes(hits)
+        setBusy(false)
+      } catch (e) {
+        if (e?.name === 'AbortError') return
+        setErr(true)
+        setBusy(false)
+      }
+    }, 250)
+  }
+  const pick = (hit) => { onChange(hit); setQ(''); setRes(null); setErr(false) }
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }} onClick={stopE}>
+      <p style={{ margin: 0, fontSize: '12px', color: '#1B1A17', lineHeight: 1.4 }}>
+        <b>{placeLine(value)}</b>
+      </p>
+      <Input
+        value={q} placeholder="Search for a town or city…" autoComplete="off"
+        onChange={(e) => { setQ(e.target.value); search(e.target.value) }}
+        style={FIELD_BOX}
+      />
+      {busy && <p style={{ margin: 0, fontSize: '11px', color: '#98958A' }}>Searching…</p>}
+      {err && (
+        <p style={{ margin: 0, fontSize: '11px', color: '#B3261E', lineHeight: 1.4 }}>
+          The lookup isn’t reachable right now. Your current town is unchanged; try again in a moment.
+        </p>
+      )}
+      {res && res.length === 0 && !busy && <p style={{ margin: 0, fontSize: '11px', color: '#98958A' }}>No towns or cities found.</p>}
+      {res && res.length > 0 && (
+        <div role="listbox" style={{ border: '1px solid #D8D5CC', borderRadius: '8px', background: '#FFFFFF', overflow: 'hidden' }}>
+          {res.map((h) => (
+            <button key={placeLine(h)} type="button" role="option" aria-selected={false}
+                    onClick={() => pick(h)}
+                    style={{
+                      display: 'block', width: '100%', textAlign: 'left', padding: '8px 10px', border: 0,
+                      borderBottom: '1px solid #EFEDE6', background: 'transparent', cursor: 'pointer',
+                      fontSize: '12px', fontFamily: "'Archivo', sans-serif", color: '#1B1A17',
+                    }}>
+              {placeLine(h)}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// The map's radius in miles: a slider and a box that agree. The box keeps what is
+// typed until it is a number in range (so 30 can be typed through 3) and clamps on blur.
+function MilesField({ value, onChange }) {
+  const [txt, setTxt] = useState(String(value))
+  const clampN = (n) => Math.min(MAP_MILES_MAX, Math.max(MAP_MILES_MIN, n))
+  const commit = (n) => { onChange(n); setTxt(String(n)) }
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }} onClick={stopE}>
+      <Slider value={[value]} min={MAP_MILES_MIN} max={MAP_MILES_MAX} step={5}
+              onValueChange={([n]) => commit(n)} style={{ flex: '1 1 auto' }} aria-label="Radius in miles" />
+      <Input
+        type="number" inputMode="numeric" min={MAP_MILES_MIN} max={MAP_MILES_MAX} value={txt} aria-label="Miles"
+        onChange={(e) => {
+          setTxt(e.target.value)
+          const n = parseInt(e.target.value, 10)
+          if (Number.isFinite(n) && n >= MAP_MILES_MIN && n <= MAP_MILES_MAX) onChange(n)
+        }}
+        onBlur={() => { const n = parseInt(txt, 10); commit(clampN(Number.isFinite(n) ? n : value)) }}
+        style={{ ...FIELD_BOX, width: '76px', flex: 'none' }}
+      />
+      <span style={{ fontSize: '12px', color: '#6B685E' }}>mi</span>
+    </div>
+  )
+}
+
 function GigsField({ caps, value, max, design, onChange }) {
   const list = Array.isArray(value) ? value : []
 
@@ -5104,12 +5234,14 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                       // (JP-147): `val` is the whole comma string, which no
                       // element on the page holds.
                       onFocus={(e) => {
+                        // The town and radius are not copy the page prints as typed.
+                        if (f.type === 'place' || f.type === 'miles') return
                         // A track's artwork thumb is a photo slot of its own (`tracks:<row>`): it walks the canvas to that row's art.
                         const art = f.type === 'tracks' && e.target.getAttribute?.('aria-label')?.match(/^(?:Edit|Add) artwork for track (\d+)$/)
                         if (art) onFocusField?.(sec.id, { ...f, type: 'image', k: `${f.k}:${art[1] - 1}` }, null)
                         else onFocusField?.(sec.id, f, e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement ? e.target.value : val)
                       }}
-                      onInput={(e) => onFocusField?.(sec.id, f, e.target.value, true)}
+                      onInput={(e) => { if (f.type !== 'place' && f.type !== 'miles') onFocusField?.(sec.id, f, e.target.value, true) }}
                       onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget)) onBlurField?.() }}
                     >
                       <Label style={{ fontSize: '11px', fontWeight: 600, color: '#6B685E', display: 'block', marginBottom: f.hint || unread ? '2px' : '5px' }}>{f.l}</Label>
@@ -5144,6 +5276,10 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                         <SetsField caps={caps} value={setsVal()} songs={songsVal('songs')} onChange={(v) => set(v)} />
                       ) : f.type === 'tracks' ? (
                         <TracksField caps={caps} value={tracksVal(f.k)} max={f.max} aspect={api.photoAspect(sec.id, f.k, [1, 1])} onChange={(v) => set(v)} onToast={api.toast} />
+                      ) : f.type === 'place' ? (
+                        <PlaceField value={mapPlaceOf(sec.c)} onChange={(v) => set(v)} />
+                      ) : f.type === 'miles' ? (
+                        <MilesField value={mapMilesOf(sec.c)} onChange={(v) => set(v)} />
                       ) : f.type === 'gigs' ? (
                         <GigsField caps={caps} value={gigsVal(f.k)} max={f.max} design={design} onChange={(v) => set(v)} />
                       ) : f.type === 'tiers' ? (
@@ -5841,7 +5977,7 @@ function PublishedPage({ themeIdx, sections: all, artistName, win, frameW }) {
     <EncoreSection key={sec.id} s={sectionVm({
       themeIdx, cat: sec.cat, arch: sec.arch, c: sec.c,
       artistName, identity, tiers, email, Z, mob: key === 'mobile', live: true, embeds, navSections,
-      column: inColumns.get(i), today, page: pageDesignOf(sections, T.name),
+      column: inColumns.get(i), realMap: true, today, page: pageDesignOf(sections, T.name),
       above: sections[i - 1]?.cat, below: sections[i + 1]?.cat,
     })} />
   )))
@@ -6321,7 +6457,7 @@ function repeaterRows(sec, k, themeName) {
     case 'links': return FOOTER_LINKS
     // CAL_SLOTS carries `after` (a day offset), which a rewrite keeps (JP-123).
     case 'slots': return CAL_SLOTS
-    case 'stats': return MAP_STATS_4
+    case 'stats': return sec.cat === 'map' ? mapStatsSeed(sec.c) : MAP_STATS_4
     case 'steps': return FORM_STEPS
     // VIDEO_SEED carries `art` (a seed photograph's index), which a rewrite keeps.
     case 'videos': return VIDEO_SEED
@@ -7783,7 +7919,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
     const down = canMove(arr, sec.id, 1)
     const isHeader = sec.cat === 'header'
     return {
-      ...sectionVm({ themeIdx: st.theme, cat: sec.cat, arch: sec.arch, c: sec.c, artistName, identity, tiers, email, Z, mob: Z === SIZES.mobile || isMobile || device === 'mobile', navSections, column: inColumns.get(i), page: pageDesignOf(arr, T.name), above: arr[i - 1]?.cat, below: arr[i + 1]?.cat }),
+      ...sectionVm({ themeIdx: st.theme, cat: sec.cat, arch: sec.arch, c: sec.c, artistName, identity, tiers, email, Z, mob: Z === SIZES.mobile || isMobile || device === 'mobile', navSections, column: inColumns.get(i), realMap: true, page: pageDesignOf(arr, T.name), above: arr[i - 1]?.cat, below: arr[i + 1]?.cat }),
       layoutLabel: isHeader
         ? headerLayoutLabel(T.name, sec.arch)
         : `${cat.name} layout ${sec.arch + 1}`,
