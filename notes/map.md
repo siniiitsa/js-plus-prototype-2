@@ -4,6 +4,63 @@ Moved word for word out of `CLAUDE.md`'s *Intentional limits — not bugs* on 20
 loads only when a session works on it. "Above" and "below" may point into `CLAUDE.md` or
 another `notes/` file.
 
+## The real map (user call, 2026-11-09) — read this first
+
+The map is **a place and a reach**: a town picked from a lookup of real places and a radius in
+miles. It replaces the Manchester raster, the five fixed pins and the free-text coverage.
+Where an older paragraph below disagrees, this section wins; the superseded points are listed at the end.
+
+- **Data.** `c.place` is `{ name, region, country, cc, lat, lon }` (`FIELDS.map.place`, type `place`,
+  all four layouts), stored whole from a pick; `c.miles` is a whole number 5–500 (`type: 'miles'`).
+  Absent keys seed Manchester, UK and **120** (`MAP_PLACE`, `MAP_MILES`; `mapPlaceOf` / `mapMilesOf`
+  resolve them and reject a stored place with no usable coordinates). Neither is typed copy, so
+  neither is an inline slot, and `clampContent` skips both (`NO_CLAMP`).
+- **The lookup is Photon** (`photon.komoot.io`, OpenStreetMap, keyless, fair use), in `PlaceField`
+  (`EncoreBuilder.jsx`): 250 ms debounce, `AbortController`, two characters or more, `osm_tag=place`, results
+  kept to city / town / village-class places and de-duplicated by name, region and country. **Not Nominatim**:
+  its policy forbids search-as-you-type. A failed lookup says so and leaves the current place alone.
+  It is the builder's second network request, after the video title lookup.
+- **The picture is MapLibre GL over OpenFreeMap's `positron` style** (`RealMap.jsx`, a leaf module and
+  `EncoreSection`'s one library import besides lucide; it owns the effects, the section still has none).
+  `interactive: false`: the view is fixed, framed once with `jumpTo`, and re-framed when its box resizes (the
+  ResizeObserver is the element's own window's, since the published tab is another window).
+  `mapZoomFor(lat, miles, radiusPx)` in `data.js` is the Web-Mercator zoom at which `miles` spans `radiusPx`.
+  **The outer ring is the radius**: RealMap is given the outer ring's share of the viewport the section already draws
+  (`ringW[0] / 100`, or `rings[0].d / vw` in Retro's layout 3 block), so the three rings, their dress and their
+  clip are unchanged and only the picture under them is real. Layout 1 draws no rings, so it gets one dashed
+  ring and a centre dot (`GeoMark`, `GEO_FRAC` of the viewport's shorter side, `fit="min"`).
+- **Ring labels are computed from the rings**, not typed: `miLabel(s, ringShare)` is `vm.mapMiles` times the ring's
+  share of the outer one, so a label never disagrees with the picture. `FIELDS.map.radius` and `rings` are gone.
+- **Opt-in per caller.** `sectionVm({ realMap: true })` sets `vm.mapGeo = { lat, lon, miles }`; the canvas
+  (`makeVm`) and `PublishedPage` pass it, the layout picker's thumbnails and the setup modal's cards do not
+  (they mount every layout, and a WebGL context apiece is too many), and the harness takes `&map=1`. Without
+  it `mapGeo` is null and the section draws the seeded raster, pins and zoom buttons exactly as before.
+  So `vm.pins`, `gig.pin` and `PINS` stay: they are the stand-in's.
+- **The raster is also the fallback**: no WebGL, a style error or no `idle` within 12 s drops the canvas and
+  paints `mapSrc` / `mapRadialSrc` in the same layer (the layer's tint and blend are on RealMap's own span).
+- **No pins, no zoom buttons on the live map** (the five zoom blocks are gated `!s.mapGeo`; the pin lists are
+  skipped). Rows still light on a click, live. The gig list, ticker and stat wall are text beside the map.
+- **Attribution** is OpenFreeMap's licence: a static line drawn by RealMap (`attributionControl: false`, since the
+  built-in one is a live node with a toggle button), its links clickable only when `live`.
+- **Derived copy.** `vm.mapRadius` is `mapRadiusText(d, miles)`: layout 1 "N mile radius", layout 2 "N mi", layout 3
+  "N mi radius". The seeds of `heading` (layouts 1 and 2), `base`, `terms` and the stat wall's Radius and Base cells
+  follow the place and radius (`mapHeadingSeed`, `mapBaseSeed`, `mapTermsSeed`, `mapStatsSeed`, `mapBaseStat`),
+  in `sectionVm` **and** `fieldSeed`'s chain and `repeaterRows` alike, each cut to its cap with an ellipsis.
+  An artist who types over one keeps their copy. "N pins" in the layout-2 and layout-3 lines reads "N gigs"
+  on the live map (the stand-in keeps "pins").
+- **Reverses JP-096.** Layout 2's *Based in* value is `vm.mapHome`, the place as "Manchester, UK" (`mapBaseStat`),
+  not the header's Location. The country code is deliberate: a bare "Manchester" is the same text as a gig's
+  city, and a canvas click cannot tell the two apart (the Retro layout-2 probe failed on it).
+- **Reverses JP-105.** One radius prints at every layout; layout 1's "12 mile radius" is "120 mile radius" at the seed.
+- **Named, not fixed.** The form's third promise ("Covers 120 mi from Manchester") is the form's own seed and does
+  not follow the map. The published tab draws the map from the opener's `requestAnimationFrame`; whether tiles
+  finish painting while the builder tab is hidden has been tested only in an automation browser that never hides it.
+  The single-file `index.html` and `published.html` were not rebuilt (CLAUDE.md, *Commands*).
+
+**Superseded by the above:** the pin / row pairing's pin half, `PINS.length` as the page size's rationale (it
+stays 5 for the stand-in), the zoom controls, layout 3's `[base, "N pins", radius]` line, the `radius`, `rings`
+and `base` field paragraphs, JP-105's seeds and JP-096's home value.
+
 - **The events map pages and pairs, in the published tab only.** Layout 1's gig list is the
   artist's (`FIELDS.map.gigs`, above), so nothing about it can stay a fixed five. The pager is
   **derived** from the list the way the repertoire's is, `PAGES` is gone, and it is **not

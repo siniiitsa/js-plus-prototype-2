@@ -59,7 +59,8 @@ Two styling systems, deliberately (README §"Two styling systems, deliberately")
   utilities and shadcn/ui on the tokens in `src/index.css`.
 - **`EncoreSection.jsx`** uses **neither**. Every value is an inline `style={{}}`, because
   section colours are arbitrary runtime hexes (`background: s.bg` where `s.bg` is `#7A58A7`).
-  Its only library import is `lucide-react`; from React it takes `useId`, `useState` and `useRef`
+  Its only library imports are `lucide-react` and, for the events map, the leaf module `RealMap.jsx`
+  (MapLibre; `notes/map.md`, *The real map*); from React it takes `useId`, `useState` and `useRef`
   — and no effect.
 
 Do not try to unify them. Only `.hv-indent`, `.hv-acbord` and `.hv-acfill` cross the boundary,
@@ -600,7 +601,7 @@ reversing 2026-10-20's "an already-selected section": the `text` cursor shows on
   **Lime's media-player Book pill** (layout 1: `vm.mediaCta` on `vm.bookTo`, below),
   **the video's players** (every template): layout 2's stage and rows, and layout 4's picture and its two skip discs, which step
   through the same list, so a click mounts a YouTube embed, or links out to YouTube where the tab has no http(s) origin (`notes/video.md`,
-  *YouTube links* and *Layout 4 plays the list*; its panel's title lookup is the builder's one network request),
+  *YouTube links* and *Layout 4 plays the list*; its panel's title lookup is the builder's first network request, the events map's Photon town lookup its second),
   and the four sets of outbound links — the **media player's
   Soundcloud button**, the **gallery's YouTube / Instagram / TikTok rows**, the
   **events map's per-gig tickets link** and the **footer's web-address rows**

@@ -29,6 +29,7 @@
 // command, and a callback ref writes the map without an effect.
 
 import { useId, useRef, useState } from 'react'
+import RealMap from './RealMap.jsx'
 import {
   Play, Pause, SkipBack, SkipForward, Check, ChevronLeft, ChevronRight,
   ArrowLeft, ArrowRight, ArrowUp, ArrowDown, Star, Plus, X, Search, MapPin, User,
@@ -21043,6 +21044,33 @@ function Calendar({ s }) {
   )
 }
 
+// Layout 1's mark on the real map: the radius as one dashed ring, a share of the
+// viewport's shorter side (RealMap frames the radius to the same share, `fit:
+// 'min'`), round a centre dot. The other layouts draw their own rings.
+const GEO_FRAC = 0.84
+// A ring's label on the real map: the share of the radius it stands for (the
+// outer ring is the whole of it), so a label is never a number the map disagrees with.
+const miLabel = (s, frac) => {
+  const m = s.mapMiles * frac
+  return `${m >= 10 ? Math.round(m) : +m.toFixed(1)}mi`
+}
+function GeoMark({ color, ring = color, u }) {
+  return (
+    <>
+      <span aria-hidden style={{
+        position: 'absolute', left: '50%', top: '50%', height: `${GEO_FRAC * 100}%`, aspectRatio: '1',
+        transform: 'translate(-50%, -50%)', borderRadius: '999px', boxSizing: 'border-box',
+        border: `2px dashed ${ring}`, pointerEvents: 'none',
+      }} />
+      <span aria-hidden style={{
+        position: 'absolute', left: '50%', top: '50%', width: '12px', height: '12px',
+        transform: 'translate(-50%, -50%)', borderRadius: '999px', background: color,
+        boxShadow: `0 0 0 4px ${ring}`, pointerEvents: 'none',
+      }} />
+    </>
+  )
+}
+
 function EventsMap({ s }) {
   // The page of gigs, and the gig the visitor has picked out on the map. Both
   // are inert on the editor canvas, where the section is a picture of a website
@@ -21343,14 +21371,15 @@ function EventsMap({ s }) {
         })}>
           <div style={{
             position: 'relative', overflow: 'hidden', borderRadius: G.mapR, background: G.mapBg,
-            ...(s.mapSrc ? { backgroundImage: `url(${s.mapSrc})`, backgroundSize: 'cover', backgroundPosition: 'center' } : null),
+            ...(s.mapSrc && !s.mapGeo ? { backgroundImage: `url(${s.mapSrc})`, backgroundSize: 'cover', backgroundPosition: 'center' } : null),
             ...(s.narrow ? { flex: 'none', height: s.mob ? '298px' : G.mapH } : { flex: '1 1 auto', minHeight: u(219.84) }),
           }}>
+            {s.mapGeo && <RealMap geo={s.mapGeo} fit="min" ringFrac={GEO_FRAC} fallback={s.mapSrc} live={s.live} />}
             <span aria-hidden style={{
               position: 'absolute', inset: 0, background: G.tint,
               mixBlendMode: 'multiply', opacity: 0.6, pointerEvents: 'none',
             }} />
-            {pinsL}
+            {s.mapGeo ? <GeoMark color={G.pinOn} ring={G.pinOnRing} /> : pinsL}
           </div>
           <div style={col(u(4), { padding: s.mob ? '10px' : `${u(38)} ${u(30)}` })}>
             <span style={s.mob ? col('8px', { alignItems: 'flex-start' }) : row(u(8))}>
@@ -21575,13 +21604,14 @@ function EventsMap({ s }) {
           // §10.2 ships a real street-map raster for Retro; the crossed 1px grid
           // is the stand-in every other template still gets.
           ...(s.mapSrc
-            ? { backgroundImage: `url(${s.mapSrc})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+            ? (s.mapGeo ? null : { backgroundImage: `url(${s.mapSrc})`, backgroundSize: 'cover', backgroundPosition: 'center' })
             : {
               backgroundImage:
                 `linear-gradient(${s.ac55} 1px, transparent 1px), linear-gradient(90deg, ${s.ac55} 1px, transparent 1px)`,
               backgroundSize: '38px 38px',
             }),
         }}>
+          {s.mapGeo && <RealMap geo={s.mapGeo} fit="min" ringFrac={GEO_FRAC} fallback={s.mapSrc} live={s.live} />}
           {/* §10.2 tints the street map to the accent rather than showing it raw. */}
           {s.mapSrc && (
             <span aria-hidden style={{
@@ -21595,7 +21625,7 @@ function EventsMap({ s }) {
               mixBlendMode: 'multiply', opacity: 0.22, pointerEvents: 'none',
             }} />
           )}
-          {pins}
+          {s.mapGeo ? <GeoMark color={s.pillBg} ring={s.ac} /> : pins}
           <Grain s={s} opacity={0.25} />
         </div>
         {/* All three masters (964:58581, 986:38401, 986:38721) give the foot no
@@ -22065,10 +22095,10 @@ function EventsMap({ s }) {
               (JP-096): the home column is the header's Location, and it
               goes with the connector once that is emptied. */}
           <div style={row(u(18), { width: '100%', padding: `${u(8)} 0`, flexWrap: 'wrap' })}>
-            {!!s.location && (
+            {!!s.mapHome && (
               <div style={col(u(3), { flex: '1 1 0', minWidth: desk ? u(160) : 0 })}>
                 {!!s.mapHomeLabel && <span style={{ ...bodySm, ...wrap }}>{s.mapHomeLabel}</span>}
-                <span style={{ ...display(s.list, 1.2), ...lift }}>{s.location}</span>
+                <span style={{ ...display(s.list, 1.2), ...lift }}>{s.mapHome}</span>
                 {!!s.mapHomeCaption && <span style={{ ...bodySm, ...wrap }}>{s.mapHomeCaption}</span>}
               </div>
             )}
@@ -22076,7 +22106,7 @@ function EventsMap({ s }) {
               <>
                 {/* The frame's typed ──●── is 60 / 56 wide: drawn, as Retro's
                     is, at the typed glyph's own proportions. */}
-                {!!s.location && (
+                {!!s.mapHome && (
                   <span aria-hidden style={row(0, { flex: 'none' })}>
                     <span style={{ width: u(24), height: '1px', background: ink }} />
                     <span style={{ width: u(8), height: u(8), borderRadius: '999px', background: ink }} />
@@ -22325,7 +22355,11 @@ function EventsMap({ s }) {
                 position: 'absolute', inset: 0, transform: `scale(${s.live ? 1.25 ** zoom : 1})`,
                 transformOrigin: '50% 50%', transition: 'transform .25s ease',
               }}>
-                {s.mapSrc && (
+                {s.mapGeo ? (
+                  <RealMap geo={s.mapGeo} ringFrac={rings[0].d / vw} fallback={s.mapSrc} live={s.live} style={{
+                    filter: 'invert(1) grayscale(1) contrast(1.6)', opacity: 0.5, mixBlendMode: 'screen',
+                  }} />
+                ) : s.mapSrc && (
                   <span aria-hidden style={{
                     position: 'absolute', inset: 0, backgroundImage: `url(${s.mapSrc})`,
                     backgroundSize: 'cover', backgroundPosition: 'center',
@@ -22348,9 +22382,9 @@ function EventsMap({ s }) {
                     position: 'absolute', left: `${50 + rings[rings.length - 1 - k].d / vw * 50}%`, top: '50%',
                     transform: 'translate(-50%, -50%)', background: G.acc ?? s.ac, color: ink,
                     borderRadius: u(4), padding: `${u(2)} ${u(6)}`, ...chip, textTransform: 'none',
-                  }}>{label}</span>
+                  }}>{s.mapGeo ? miLabel(s, rings[rings.length - 1 - k].d / rings[0].d) : label}</span>
                 ))}
-                {lpins}
+                {s.mapGeo ? null : lpins}
                 {/* The centre pin: a lime disc in a 2px ink ring round the frame's
                     `user` glyph (lucide's, at its bounds), over a small lime tail.
                     The disc stands 16 above the rings' centre, as the frame's 24 ×
@@ -22373,7 +22407,8 @@ function EventsMap({ s }) {
               {/* The frame's Zoom In / Zoom Out, 4 apart and 16 in from the
                   viewport's corner: `sem/box/2` in a 1px `sem/stroke/1` ring,
                   an Inter Bold 20 glyph — layout 3's Lime pair exactly. */}
-              <div style={col(u(4), { position: 'absolute', right: u(16), bottom: u(16) })}>
+              {!s.mapGeo && (
+<div style={col(u(4), { position: 'absolute', right: u(16), bottom: u(16) })}>
                 {[['+', 1], ['−', -1]].map(([glyph, dir]) => (
                   <span key={glyph}
                         onClick={s.live ? () => setZoom((v) => Math.max(-2, Math.min(3, v + dir))) : undefined}
@@ -22386,6 +22421,7 @@ function EventsMap({ s }) {
                         }}>{glyph}</span>
                 ))}
               </div>
+)}
             </div>
             {/* Retro's allocation: the travel terms and the count on one line,
                 and the frame's "EXPAND VIEW" on `expand`, layout 3's link to
@@ -22395,7 +22431,7 @@ function EventsMap({ s }) {
               boxShadow: `inset 0 1px 0 ${G.frame ?? s.stroke1}`,
             })}>
               <span style={{ ...bodySm, minWidth: 0 }}>
-                {[s.mapTerms, `${s.gigs.length} pins`].filter(Boolean).join(' · ')}
+                {[s.mapTerms, `${s.gigs.length} ${s.mapGeo ? 'gigs' : 'pins'}`].filter(Boolean).join(' · ')}
               </span>
               {!!s.mapExpand && (
                 <Dir {...dir} style={row(u(4), {
@@ -22479,12 +22515,12 @@ function EventsMap({ s }) {
               both narrow masters draw them on one row beside the connector, and
               at 390 that is 306px of inner card for two columns and a 92px
               connector, so the minimum goes and the basis divides it. */}
-          {!!s.location && (
+          {!!s.mapHome && (
             <div style={col(u(3), { flex: '1 1 0', minWidth: desk ? u(160) : 0 })}>
               {!!s.mapHomeLabel && <span style={{ ...label12, ...wrap }}>{s.mapHomeLabel}</span>}
               <span style={{
                 fontFamily: s.display, fontSize: u(T.list), lineHeight: 1.2, letterSpacing: s.dls,
-              }}>{s.location}</span>
+              }}>{s.mapHome}</span>
               {!!s.mapHomeCaption && <span style={{ ...label12, ...wrap }}>{s.mapHomeCaption}</span>}
             </div>
           )}
@@ -22494,7 +22530,7 @@ function EventsMap({ s }) {
                   two columns, so it goes with them once the row wraps — which
                   on the desktop canvas is the only way the row ever loses it;
                   both narrow masters draw it — and with the home column. */}
-              {!!s.location && (
+              {!!s.mapHome && (
                 <span aria-hidden style={row(0, { flex: 'none' })}>
                   <span style={{ width: u(24), height: '1px', background: cardFg, opacity: 0.5 }} />
                   <span style={{ width: u(8), height: u(8), borderRadius: '999px', background: cardFg }} />
@@ -22755,14 +22791,19 @@ function EventsMap({ s }) {
             {/* §10.2's street raster, inverted onto the dark plate so the roads
                 read as light lines; the flat four keep layout 1's crossed grid,
                 there being no raster outside Retro. */}
+            {s.mapGeo && (
+              <RealMap geo={s.mapGeo} ringFrac={ringW[0] / 100} fallback={s.mapSrc} live={s.live} style={{
+                filter: 'invert(1) grayscale(1) contrast(1.6)', opacity: 0.55, mixBlendMode: 'screen',
+              }} />
+            )}
             <span aria-hidden style={{
               position: 'absolute', inset: 0,
               ...(s.mapSrc
-                ? {
+                ? (s.mapGeo ? { display: 'none' } : {
                   backgroundImage: `url(${s.mapSrc})`, backgroundSize: 'cover',
                   backgroundPosition: 'center', filter: 'invert(1) grayscale(1) contrast(1.6)',
                   opacity: 0.26, mixBlendMode: 'screen',
-                }
+                })
                 : {
                   backgroundImage:
                     `linear-gradient(${s.ac55} 1px, transparent 1px), `
@@ -22793,9 +22834,9 @@ function EventsMap({ s }) {
                 transform: 'translate(-50%, -50%)', background: s.retro ? '#5B5E2E' : s.ac,
                 color: s.retro ? plateFg : s.acFg,
                 borderRadius: u(4), padding: `${u(2)} ${u(6)}`, ...chip12, textTransform: 'none',
-              }}>{label}</span>
+              }}>{s.mapGeo ? miLabel(s, ringW[ringW.length - 1 - k] / ringW[0]) : label}</span>
             ))}
-            {pins}
+            {s.mapGeo ? null : pins}
             <span aria-hidden style={row(0, {
               position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)',
               background: s.retro ? '#5B5E2E' : s.ac, color: plateFg,
@@ -22814,7 +22855,7 @@ function EventsMap({ s }) {
                 the travel card's Get Directions a second time, as the frame
                 itself offers both. A picture where there is no route. */}
             <span style={{ ...label12, minWidth: 0 }}>
-              {[s.mapTerms, `${s.gigs.length} pins`].filter(Boolean).join(' · ')}
+              {[s.mapTerms, `${s.gigs.length} ${s.mapGeo ? 'gigs' : 'pins'}`].filter(Boolean).join(' · ')}
             </span>
             {!!s.mapExpand && (
               <Dir {...dir} style={row(u(4), {
@@ -23500,10 +23541,11 @@ function EventsMap({ s }) {
               }}>
                 <span aria-hidden style={{
                   position: 'absolute', inset: 0, background: s.box1,
-                  ...(s.mapRadialSrc
+                  ...(s.mapRadialSrc && !s.mapGeo
                     ? { backgroundImage: `url(${s.mapRadialSrc})`, backgroundSize: 'cover', backgroundPosition: 'center' }
                     : null),
                 }} />
+                {s.mapGeo && <RealMap geo={s.mapGeo} ringFrac={ringW[0] / 100} fallback={s.mapRadialSrc} live={s.live} />}
                 {ringW.map((w, i) => {
                   const [d, wt, op] = ringLine[i]
                   return (
@@ -23521,9 +23563,9 @@ function EventsMap({ s }) {
                     position: 'absolute', left: `${50 + ringW[ringW.length - 1 - k] / 2}%`, top: '50%',
                     transform: 'translate(-50%, -50%)', background: G.acc ?? s.ac, color: G.vpInk ?? ink,
                     borderRadius: u(4), padding: `${u(2)} ${u(6)}`, ...chipL, textTransform: 'none',
-                  }}>{label}</span>
+                  }}>{s.mapGeo ? miLabel(s, ringW[ringW.length - 1 - k] / ringW[0]) : label}</span>
                 ))}
-                {pinsL}
+                {s.mapGeo ? null : pinsL}
                 {/* The artist's marker: an accent head in a 2px ink ring round
                     an ink glyph, over an accent tail whose tip is the rings'
                     centre. */}
@@ -23543,7 +23585,8 @@ function EventsMap({ s }) {
                   }} />
                 </span>
               </div>
-              <div style={col(u(4), { position: 'absolute', right: u(16), bottom: u(16) })}>
+              {!s.mapGeo && (
+<div style={col(u(4), { position: 'absolute', right: u(16), bottom: u(16) })}>
                 {[['+', 1], ['−', -1]].map(([glyph, dir]) => (
                   <span key={glyph}
                         onClick={s.live ? () => setZoom((v) => Math.max(-2, Math.min(3, v + dir))) : undefined}
@@ -23556,6 +23599,7 @@ function EventsMap({ s }) {
                         }}>{glyph}</span>
                 ))}
               </div>
+)}
             </div>
             <div style={s.mob
               ? col(u(10), {
@@ -23567,7 +23611,7 @@ function EventsMap({ s }) {
                 ...barRule,
               })}>
               <span style={bodySm}>
-                {[s.mapBase, `${s.gigs.length} pins`, s.mapRadius].filter(Boolean).join(' · ')}
+                {[s.mapBase, `${s.gigs.length} ${s.mapGeo ? 'gigs' : 'pins'}`, s.mapRadius].filter(Boolean).join(' · ')}
               </span>
               {/* The frame strokes the arrow in the accent, faint on `lime3` —
                   and on Grunge's `#9E1F17`, where it is red on red, and on
@@ -23919,13 +23963,14 @@ function EventsMap({ s }) {
             {/* The frame's own radial street raster, drawn as it is (QA,
                 2026-09-15 — it was layout 1's Manchester tile, inverted); the
                 flat templates keep layout 1's crossed grid. */}
+            {s.mapGeo && <RealMap geo={s.mapGeo} ringFrac={ringW[0] / 100} fallback={s.mapRadialSrc} live={s.live} />}
             <span aria-hidden style={{
               position: 'absolute', inset: 0,
               ...(s.mapRadialSrc
-                ? {
+                ? (s.mapGeo ? { display: 'none' } : {
                   backgroundImage: `url(${s.mapRadialSrc})`, backgroundSize: 'cover',
                   backgroundPosition: 'center',
-                }
+                })
                 : {
                   backgroundImage:
                     `linear-gradient(${s.ac55} 1px, transparent 1px), `
@@ -23957,9 +24002,9 @@ function EventsMap({ s }) {
                 position: 'absolute', left: `${50 + ringW[ringW.length - 1 - k] / 2}%`, top: '50%',
                 transform: 'translate(-50%, -50%)', background: sheet, color: sheetFg,
                 borderRadius: u(4), padding: `${u(2)} ${u(6)}`, ...chip12, textTransform: 'none',
-              }}>{label}</span>
+              }}>{s.mapGeo ? miLabel(s, ringW[ringW.length - 1 - k] / ringW[0]) : label}</span>
             ))}
-            {pins}
+            {s.mapGeo ? null : pins}
             {/* The artist's own position, which is what the rings are drawn
                 around. A marker rather than layout 2's plain disc, because this
                 frame draws one: a ringed head over a tail, anchored so the
@@ -23983,7 +24028,8 @@ function EventsMap({ s }) {
             {/* The frame's zoom controls, 30 × 40 four apart, 16 in from the
                 viewport's corner at all three widths. Live they step the layer
                 above between 0.64× and 1.95×; on the canvas they are a picture. */}
-            <div style={col(u(4), { position: 'absolute', right: u(16), bottom: u(16) })}>
+            {!s.mapGeo && (
+<div style={col(u(4), { position: 'absolute', right: u(16), bottom: u(16) })}>
               {[['+', 1], ['−', -1]].map(([glyph, dir]) => (
                 <span key={glyph}
                       onClick={s.live ? () => setZoom((v) => Math.max(-2, Math.min(3, v + dir))) : undefined}
@@ -23995,6 +24041,7 @@ function EventsMap({ s }) {
                       }}>{glyph}</span>
               ))}
             </div>
+)}
           </div>
           {/* The frame's data line, "UK · 8 pins · 120 mi radius", composed from
               the artist's base, the gig count and the coverage, and its
@@ -24009,7 +24056,7 @@ function EventsMap({ s }) {
               borderTop: `1px solid ${cardLine}`,
             })}>
             <span style={body12}>
-              {[s.mapBase, `${s.gigs.length} pins`, s.mapRadius].filter(Boolean).join(' · ')}
+              {[s.mapBase, `${s.gigs.length} ${s.mapGeo ? 'gigs' : 'pins'}`, s.mapRadius].filter(Boolean).join(' · ')}
             </span>
             {!!s.mapExpand && (
               <Expand {...expand} style={row(u(4), {
@@ -24467,10 +24514,11 @@ function EventsMap({ s }) {
           }}>
             <span aria-hidden style={{
               position: 'absolute', inset: 0, background: plate,
-              ...(s.mapRadialSrc
+              ...(s.mapRadialSrc && !s.mapGeo
                 ? { backgroundImage: `url(${s.mapRadialSrc})`, backgroundSize: 'cover', backgroundPosition: 'center' }
                 : null),
             }} />
+            {s.mapGeo && <RealMap geo={s.mapGeo} ringFrac={ringW[0] / 100} fallback={s.mapRadialSrc} live={s.live} />}
             {ringW.map((w, i) => {
               const [d, wt, op] = ringLine[i]
               return (
@@ -24489,9 +24537,9 @@ function EventsMap({ s }) {
                 position: 'absolute', left: `${50 + ringW[ringW.length - 1 - k] / 2}%`, top: '50%',
                 transform: 'translate(-50%, -50%)', background: acc, color: G.vpInk,
                 borderRadius: u(4), padding: `${u(2)} ${u(6)}`, ...chipL, textTransform: 'none',
-              }}>{label}</span>
+              }}>{s.mapGeo ? miLabel(s, ringW[ringW.length - 1 - k] / ringW[0]) : label}</span>
             ))}
-            {s.pins.map((p, i) => {
+            {(s.mapGeo ? [] : s.pins).map((p, i) => {
               const on = !!gig && gig.pin === p
               return (
                 <span key={i} aria-hidden style={{
@@ -24522,7 +24570,8 @@ function EventsMap({ s }) {
               }} />
             </span>
           </div>
-          <div style={col(u(4), { position: 'absolute', right: u(16), bottom: u(16) })}>
+          {!s.mapGeo && (
+<div style={col(u(4), { position: 'absolute', right: u(16), bottom: u(16) })}>
             {[['+', 1], ['−', -1]].map(([glyph, dir]) => {
               const onClick = s.live ? () => setZoom((v) => Math.max(-2, Math.min(3, v + dir))) : undefined
               return (
@@ -24536,6 +24585,7 @@ function EventsMap({ s }) {
               )
             })}
           </div>
+)}
         </div>
       )
 
@@ -24701,13 +24751,14 @@ function EventsMap({ s }) {
         }}>
         {/* The frame's own radial street raster, drawn as it is — layout 3's
             picture. The flat four keep layout 1's crossed grid. */}
+        {s.mapGeo && <RealMap geo={s.mapGeo} ringFrac={ringW[0] / 100} fallback={s.mapRadialSrc} live={s.live} />}
         <span aria-hidden style={{
           position: 'absolute', inset: 0,
           ...(s.mapRadialSrc
-            ? {
+            ? (s.mapGeo ? { display: 'none' } : {
               backgroundImage: `url(${s.mapRadialSrc})`, backgroundSize: 'cover',
               backgroundPosition: 'center',
-            }
+            })
             : {
               backgroundImage:
                 `linear-gradient(${s.ac55} 1px, transparent 1px), `
@@ -24735,7 +24786,7 @@ function EventsMap({ s }) {
             position: 'absolute', left: `${50 + ringW[ringW.length - 1 - k] / 2}%`, top: '50%',
             transform: 'translate(-50%, -50%)', background: pinBg, color: plateFg,
             borderRadius: u(4), padding: `${u(2)} ${u(6)}`, ...chip12, textTransform: 'none',
-          }}>{label}</span>
+          }}>{s.mapGeo ? miLabel(s, ringW[ringW.length - 1 - k] / ringW[0]) : label}</span>
         ))}
         {/* The five pin seats. They are `vm.pins` rather than the frame's own
             five ellipses, which carry identical absolute pixels to all three
@@ -24745,7 +24796,7 @@ function EventsMap({ s }) {
             five objects — and with one gig to a page the section's
             never-light-a-dot-twice rule holds by construction. No handler: five
             seats over any number of gigs means a dot does not name one. */}
-        {s.pins.map((p, i) => {
+        {(s.mapGeo ? [] : s.pins).map((p, i) => {
           const on = !!gig && gig.pin === p
           return (
             <span key={i} aria-hidden style={{
@@ -24782,7 +24833,8 @@ function EventsMap({ s }) {
             viewport's corner, in `sem/box/2` on a hairline. Live they step the
             layer above between 0.64× and 1.95×, layout 3's hook and clamp; on
             the canvas they are a picture. */}
-        <div style={col(u(4), { position: 'absolute', right: u(16), bottom: u(16) })}>
+        {!s.mapGeo && (
+<div style={col(u(4), { position: 'absolute', right: u(16), bottom: u(16) })}>
           {[['+', 1], ['−', -1]].map(([glyph, dir]) => {
             const onClick = s.live ? () => setZoom((v) => Math.max(-2, Math.min(3, v + dir))) : undefined
             return (
@@ -24797,6 +24849,7 @@ function EventsMap({ s }) {
             )
           })}
         </div>
+)}
       </div>
     )
 
