@@ -323,9 +323,8 @@ reversing 2026-10-20's "an already-selected section": the `text` cursor shows on
   portrait card prints `FIELDS.header.cardLine` (`vm.cardLine`) under the name. It is seeded
   `CARD_LINE_3`, "Performing since 2021", uncased, and dropped when emptied. Retro's polaroid
   prints the kicker in that seat. So the kicker has one seed, `'DJ · Live Act'`, at every layout,
-  and the bio's *Current role* always prints what the Kicker field shows. At layout 3 the panel
-  therefore still lists Kicker (a `shared` field) marked "Not shown in this layout" while the bio
-  prints it, as at layout 2.
+  and the bio's *Current role* always prints what the Kicker field shows. At layout 3 the header's
+  panel therefore has no Kicker box; the bio's panel does (2026-11-09, `IDENTITY_READS`), as at layout 2.
   **That card's name and line wrap** (JP-062, user call, 2026-09-28). They wrap at the content box
   plus half the padding on each side. That is `100cqi` of the card, which is the container, plus
   one padding when the card is upright, and the room beside the portrait plus 10 at 390. The
@@ -508,9 +507,15 @@ reversing 2026-10-20's "an already-selected section": the `text` cursor shows on
   `EditPanel` filters its list by, so a field appears only at the layouts that draw it. Its copy
   stays in `c` — switching layouts never discards it, and the field comes back with a layout that
   reads it. The exception is `shared: true`, the header's four identity keys (`kicker`,
-  `location`, `tags`, `showTags`, user call, 2026-10-13): other sections print them and the
-  header panel is their only box, so they are listed at every header layout, marked "Not shown in
-  this layout" where the header itself does not draw them. `in` is **measured, not read off the prose**: type into the field and
+  `location`, `tags`, `showTags`): other sections print them, and the value is the header's alone.
+  **The panel lists such a key in every section whose layout draws it** (user call, 2026-11-09,
+  reversing 2026-10-13's "listed at every header layout, marked Not shown in this layout"): the
+  header's panel while its own `in` reads it, and the bio's, form's and calendar's panel while
+  `IDENTITY_READS` in `data.js` (measured by `scripts/reach.mjs`'s `who.*` probes, so re-measure
+  when a reader changes) says that section's design prints it. A hosted box reads and writes the
+  header section, so there is one copy; the hint ends *Also printed in: …* off the same table
+  (`identityHint`); a key no section on the page draws has no box. `fieldShown` is unchanged, since
+  the inline editor's universe and `INLINE_OFF` read it. `in` is **measured, not read off the prose**: type into the field and
   see whether the section's HTML moves, canvas and `live`, at all three widths. The header's
   `in` names all five templates (Grunge's row measured over its four fitted
   cards, 2026-09-24 — the first measurement with no placeholder card; Editorial's over its four

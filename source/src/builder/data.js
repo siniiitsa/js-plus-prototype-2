@@ -1975,7 +1975,7 @@ export const FIELDS = {
       in: { Retro: [0, 2, 3, 5], Lime: [0, 3], Grunge: [0, 3], Editorial: [0, 3], Pop: [0, 3] },
       chars: { Retro: [59, null, 17, 13, null, 39], Lime: [55, null, null, 13], Grunge: [61, null, null, 13],
         Editorial: [33, null, null, 13], Pop: [47, null, null, 13] },
-      hint: 'Your role. Every bio layout prints it too, and so do the enquiry form’s layouts 1 and 2.' },
+      hint: 'Your role.' },
     // The layout-3 portrait card's line under the name (JP-061): the card's
     // own copy, so the kicker is not seeded apart there and the bio's Current
     // role always prints what the Kicker field shows. Lime's, Grunge's,
@@ -2004,9 +2004,7 @@ export const FIELDS = {
       in: { Retro: [0, 1, 2, 3, 5], Lime: [0, 1, 2, 3], Grunge: [0, 1, 2, 3], Editorial: [0, 1, 2, 3], Pop: [0, 1, 2, 3] },
       chars: { Retro: [55, 15, 19, 20, null, 42], Lime: [20, 24, 14, 17], Grunge: [19, 29, 15, 24],
         Editorial: [19, 15, 30, 19], Pop: [20, 15, 36, 36] },
-      hint: 'Where you are based. The bio prints it too in layouts 1 to 3, the booking '
-          + 'calendar in layouts 1 and 4 (in Lime, Grunge, Editorial and Pop, layout 4 only), and the '
-          + 'events map’s travel card in layout 2.' },
+      hint: 'Where you are based.' },
     { k: 'cta1',      l: 'Primary button',   d: 'Book Now', chars: { Editorial: [16, 16, 10, 16], '*': 16 } },
     // Layout 2's pill under the subtitle (JP-037). Its frame words it apart
     // from the nav's Book Now, so it is a field of its own. Emptied, no pill.
@@ -2052,11 +2050,10 @@ export const FIELDS = {
       chars: { Retro: [22, null, 22, 22, 15, 22], '*': [22, null, 22, 22] },
       count: { Retro: [8, null, 7, 7, 6, 6], Pop: [6, null, 6, 6], '*': [8, null, 6, 6] },
       rows: { placeholder: 'Tag', add: 'Add tag' },
-      hint: 'The bio prints them too in layouts 2 and 4 '
-          + '(in Lime, Grunge, Editorial and Pop, layout 3 as well).' },
+      hint: 'Your genre chips.' },
     { k: 'showTags',  l: 'Tag chips',        type: 'select', d: 'show', opts: SHOW_HIDE, shared: true,
       in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3], Editorial: [0, 2, 3], Pop: [0, 2, 3] },
-      hint: 'Hides the bio’s chips as well.' },
+      hint: 'Show or hide the chips wherever they are printed.' },
     { k: 'showBadge', l: 'Corner badge',     type: 'select', d: 'show', opts: SHOW_HIDE,
       in: { Retro: [0, 1, 3, 4, 5], Lime: [0, 3], Grunge: [0, 3], Editorial: [0, 3], Pop: [0, 3] } },
     // The seal's ring sets it twice round a circle, so its cap is the ring's
@@ -3425,6 +3422,44 @@ export function identityCap(key, sections, themeName) {
     cap = minCap(cap, identityCapOf(s.cat, key, themeName, ((s.arch % n) + n) % n))
   }
   return cap
+}
+
+// Which sections print the header's identity keys, and at which designs: the
+// panel lists such a key in every section that draws it (the value is still the
+// header's, one copy). `FIELDS.header[].in` speaks for the header; this is every
+// other category, 0-based like `in`, an array or an object by template with
+// `'*'`. MEASURED, not read off prose: `node scripts/reach.mjs 0,1,2,3,4` probes
+// `who.kicker`, `who.location`, `who.tags` and `who.showTags=hide` per design;
+// change a reader, re-measure, change this.
+export const IDENTITY_READS = {
+  kicker: { bio: [0, 1, 2, 3], form: [0, 1] },
+  location: { bio: [0, 1, 2], calendar: { Retro: [0, 3], '*': [3] } },
+  tags: { bio: { Retro: [1, 3], '*': [1, 2, 3] } },
+  showTags: { bio: { Retro: [1, 3], '*': [1, 2, 3] } },
+}
+
+// The header's `shared` FIELDS entries that section `cat` draws at `design`.
+export function identityFieldsFor(cat, themeName, design) {
+  if (cat === 'header') return FIELDS.header.filter((f) => f.shared && fieldReach(f, themeName, design))
+  return FIELDS.header.filter((f) => {
+    const r = IDENTITY_READS[f.k]?.[cat]
+    const d = !r || Array.isArray(r) ? r : (r[themeName] ?? r['*'])
+    return !!d && d.includes(design)
+  })
+}
+
+// The line under an identity key's label: what it is, and where else the page
+// draws it, off the sections as they stand now (so it never goes stale).
+export function identityHint(f, sec, sections, themeName) {
+  const others = sections
+    .filter((s) => s.id !== sec.id)
+    .filter((s) => {
+      const n = designCount(s.cat, themeName) || 1
+      return identityFieldsFor(s.cat, themeName, ((s.arch % n) + n) % n).some((g) => g.k === f.k)
+    })
+    .map((s) => catName(s.cat))
+  const uniq = [...new Set(others)]
+  return uniq.length ? `${f.hint} Also printed in: ${uniq.join(', ')}.` : f.hint
 }
 
 // The fit of the artist's name on section `cat`'s seal ring at this design:

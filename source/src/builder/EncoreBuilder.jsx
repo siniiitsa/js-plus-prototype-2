@@ -57,7 +57,7 @@ import {
   PRICING_INTRO_3, FORM_SUB_4, CAL_HEADING_1, formBtnSeed, CAL_TYPES, PRICING_ROW_CTA, PRICING_ROW_CTA_3, MAP_SPAN, MAP_STATS_4, STAT_KEYS,FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
   parseDate, isoDate, calStart, headerIdentity, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav, navModeDefault,
-  catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldSeed, HEADING_3, HEADING_4, fieldReach, fieldShown, INLINE_OFF, PHOTO_OFF, INLINE_HEAD, INLINE_MARKED, INLINE_PART, INLINE_LINES, inlineRule, fieldCap, colCaps, identityCap, sealCap, capExcess, numeralLen, clampCapped, clampContent, clampIdentity, copyrightOf, formHeading3, extUrl, youtubeEmbed, youtubeThumb, youtubeParts, youtubeWatch, youtubeChannel, urlProblem, emailProblem, emailAddr, songTags, repChips,
+  catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldSeed, HEADING_3, HEADING_4, fieldReach, fieldShown, identityFieldsFor, identityHint, INLINE_OFF, PHOTO_OFF, INLINE_HEAD, INLINE_MARKED, INLINE_PART, INLINE_LINES, inlineRule, fieldCap, colCaps, identityCap, sealCap, capExcess, numeralLen, clampCapped, clampContent, clampIdentity, copyrightOf, formHeading3, extUrl, youtubeEmbed, youtubeThumb, youtubeParts, youtubeWatch, youtubeChannel, urlProblem, emailProblem, emailAddr, songTags, repChips,
   tierFeats, priceParts, priceCuts, blankRow, SONG_KEYS, repSetsOf, repSetLine, TRACK_KEYS, GIG_KEYS, gigWeekday, gigStatus, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
   layoutChoices, designCount, pageLayout, pageOrder, pageRows, videoDesign, videoStartArch,
   VIDEOS, VIDEO_SEED, VIDEO_KEYS, videoPlayable, videoSeedDesc, VIDEO_ALL, COLUMN_SPLIT, bebasEms, antonEms, gloockEms, titanEms,
@@ -5110,9 +5110,15 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
   // Retro section would show a photo on the canvas and an empty dropzone here.
   const themeName = THEMES[themeIdx].name
   const design = sec.arch % (designCount(sec.cat, themeName) || 1)
-  // Only the fields this design reads, and the header's shared ones
-  // (fieldShown). A hidden field keeps its copy in `c` for the next layout.
-  const fields = (FIELDS[sec.cat] ?? []).filter((f) => fieldShown(f, themeName, design))
+  // Only the fields this design reads (fieldShown). A hidden field keeps its copy in `c` for the next layout.
+  // The header's identity keys (`shared`) are listed where they are DRAWN: the header's panel while its
+  // layout draws one, and every other section's panel whose layout prints it (`identityFieldsFor`). They
+  // are still one value, the header's, so a hosted box reads and writes the header section.
+  const headerSec = sections.find((s) => s.cat === 'header')
+  const own = (FIELDS[sec.cat] ?? []).filter((f) => fieldShown(f, themeName, design) && (!f.shared || fieldReach(f, themeName, design)))
+  const hosted = sec.cat !== 'header' && headerSec
+    ? identityFieldsFor(sec.cat, themeName, design).map((f) => ({ ...f, hosted: true })) : []
+  const fields = [...own, ...hosted]
   // photoValue / photoList are the canvas photo editor's too, so a click and the panel read one picture.
   const imgVal = (k) => photoValue(sec, k, themeName, design)
   const imgsVal = (k) => photoList(sec, k, themeName)
@@ -5205,12 +5211,14 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {fields.map((f) => {
+                  // A hosted identity key lives on the header section, whatever panel lists it.
+                  const src = f.hosted ? headerSec : sec
                   // A field's seed when its key is absent (fieldSeed, data.js):
                   // the computed ones mirror what sectionVm resolves, so panel
                   // and canvas never disagree.
-                  const fallback = fieldSeed({ cat: sec.cat, f, themeName, design, c: sec.c, artistName, email })
-                  const val = sec.c[f.k] !== undefined ? sec.c[f.k] : fallback
-                  const set = (v) => api.setContent(sec.id, f.k, v)
+                  const fallback = fieldSeed({ cat: src.cat, f, themeName, design: f.hosted ? headerSec.arch % (designCount('header', themeName) || 1) : design, c: src.c, artistName, email })
+                  const val = src.c[f.k] !== undefined ? src.c[f.k] : fallback
+                  const set = (v) => api.setContent(src.id, f.k, v)
                   // The field's character cap at this design (plans/char-limits.md);
                   // the header's shared keys take the tightest among the page's
                   // sections, since the others print them too. Title is the
@@ -5218,15 +5226,13 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                   // its own copy (session 1, user call, 2026-10-13).
                   const cap = fieldCapOf(sec, f, sections, themeName, design)
                   const caps = colCaps(f, themeName, design)
-                  // Only a shared field is listed where this design does not
-                  // read it — the header's identity keys, which other sections
-                  // print — and it says so; its hint says where it does print.
-                  const unread = !fieldReach(f, themeName, design)
-                  const noMail = f.k === 'email' && sec.cat === 'calendar' && !unread
+                  // An identity key says where else the page prints it, off the same table that lists it.
+                  const hint = f.shared ? identityHint(f, sec, sections, themeName) : f.hint
+                  const noMail = f.k === 'email' && sec.cat === 'calendar'
                     && !emailAddr(val) && !(String(val).trim() && emailProblem(val))
                   return (
                     <div
-                      key={f.k}
+                      key={f.hosted ? `identity:${f.k}` : f.k}
                       // Focus walks the canvas to what this field prints (the
                       // builder's `onFocusField`); typing keeps its box on the
                       // new text. Blur only counts once focus leaves the field.
@@ -5244,12 +5250,9 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                       onInput={(e) => { if (f.type !== 'place' && f.type !== 'miles') onFocusField?.(sec.id, f, e.target.value, true) }}
                       onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget)) onBlurField?.() }}
                     >
-                      <Label style={{ fontSize: '11px', fontWeight: 600, color: '#6B685E', display: 'block', marginBottom: f.hint || unread ? '2px' : '5px' }}>{f.l}</Label>
-                      {unread && (
-                        <p style={{ margin: '0 0 6px', fontSize: '10px', color: '#98958A', lineHeight: 1.45, fontStyle: 'italic' }}>Not shown in this layout</p>
-                      )}
-                      {f.hint && (
-                        <p style={{ margin: '0 0 6px', fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>{f.hint}</p>
+                      <Label style={{ fontSize: '11px', fontWeight: 600, color: '#6B685E', display: 'block', marginBottom: hint ? '2px' : '5px' }}>{f.l}</Label>
+                      {hint && (
+                        <p style={{ margin: '0 0 6px', fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>{hint}</p>
                       )}
                       {deadNav.length > 0 && f.k === 'navMode' && val === 'minimal' && (
                         <p style={{ margin: '0 0 6px', fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>{navGoneHint(deadNav)}</p>
@@ -6407,7 +6410,7 @@ const inlineDesign = (sec, themeName) => sec.arch % (designCount(sec.cat, themeN
 
 // The cap EditPanel and the inline box both enforce on `f` (plans/char-limits.md).
 function fieldCapOf(sec, f, sections, themeName, design) {
-  return sec.cat === 'header' && f.shared
+  return f.shared
     ? identityCap(f.k, sections.length ? sections : [sec], themeName)
     : fieldCap(f, themeName, design)
 }
