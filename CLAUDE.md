@@ -171,7 +171,12 @@ mutated through a single `patch()` helper.
   ring all hold the artist's name. So `findFieldNode` collects every minimal match and the
   field's `key` (carried in `focusF`, so the box-following layout effect and the scroll pick the
   same node) ranks them: `title` the largest type, `badgeText` the match inside an svg, any other
-  key the first in document order. A tag row (`tags`) takes only the chip that *is* the row (or
+  key the first in document order. **The node a canvas click opened the inline editor on
+  (`inlineNode`) is the box's only while that editor is open on that field** (JP-165): it is dropped when the
+  editor closes and when a panel field takes the focus, or every later panel field of the section was
+  boxed on the last canvas click. `scripts/focus-probe.mjs --prime --check` proves it (it clicks canvas copy,
+  presses Escape, then focuses every panel control). A repeater's cell, a select and the town and radius draw no
+  box, by design. A tag row (`tags`) takes only the chip that *is* the row (or
   its `…`), else none: a one-word tag such as "Live" sits inside other copy, and a layout that
   draws no chips has no box. Measured over header layouts 1–4 of all five templates (and
   Retro's 5), plus bio and calendar: no collision the ranking cannot settle, and every other key

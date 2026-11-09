@@ -13,6 +13,7 @@ plans/
   CONVENTIONS.md   ← the conventions every template shares, named and located
   photo-focus-qa-fixes.md ← a QA batch filed against every template at once
   editor-qa-fixes.md ← the editor's tag rows, field→canvas box and move-follow (JP-141 … JP-151)
+  focus-box-qa-fixes.md ← the panel→canvas box stays on the last canvas click (a stale `inlineNode`), and the fields that draw none (JP-165, proposed)
   calendar-qa-fixes.md ← the booking calendar's month arrows stop at the ends of the window (JP-152)
   inline-qa-fixes.md ← canvas inline editing: first-click edit, caret, a no-digit price, three dead clicks (JP-154 … JP-159)
   inline-edit.md   ← clicking text on the canvas edits it there (pilot: Retro layout 1's whole page)
