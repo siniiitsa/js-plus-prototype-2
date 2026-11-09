@@ -7478,8 +7478,15 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
   const canvasRef = useRef(null)
   const [focusF, setFocusF] = useState(null)
   const [focusBox, setFocusBox] = useState(null)
+  // The node a canvas click opened the inline editor on: with a label that repeats (each
+  // tier's Book pill) the panel's single match is not the one that was clicked. It is the
+  // box's node only while that editor is open (`refit`), and it is dropped whenever the
+  // editor closes or a panel field takes the focus (JP-165): left set, every later panel
+  // field of the section was boxed on the last canvas click.
+  const inlineNode = useRef(null)
 
   const onFocusField = useCallback((sid, f, val, typing) => {
+    inlineNode.current = null
     const text = (f.type === undefined || f.type === 'area' || f.type === 'url' || f.type === 'email') && typeof val === 'string' ? val : ''
     // A photo field has no copy to find: it walks the canvas to the picture, by its `data-photo` mark.
     const photo = f.type === 'image' || f.type === 'images' ? f.k : null
@@ -7490,16 +7497,13 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
     if (!wrap) return
     scrollFieldIntoView(scroller, wrap, text ? findFieldNode(wrap.firstElementChild, text, f.k) : photo ? photoNodeOf(wrap.firstElementChild, photo) : text, isMobile)
   }, [isMobile])
-  const onBlurField = useCallback(() => setFocusF(null), [])
+  const onBlurField = useCallback(() => { inlineNode.current = null; setFocusF(null) }, [])
 
   // Inline editing (inlineSlots): the box over the clicked text. Its own state,
   // not derived from `focusBox`, because an emptied Title has no node to box
   // and the editor has to stay up while the page keeps the last name.
   const [inline, setInline] = useState(null)
-  const closeInline = useCallback(() => { setInline(null); setFocusF(null) }, [])
-  // The node being edited: with a label that repeats (each tier's Book pill)
-  // the panel's single match is not the one that was clicked.
-  const inlineNode = useRef(null)
+  const closeInline = useCallback(() => { inlineNode.current = null; setInline(null); setFocusF(null) }, [])
   const startInline = (sec, wrap, hit, pt) => {
     const w = wrap.getBoundingClientRect()
     const wide = hit.text.length > 44
@@ -7613,7 +7617,9 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
   // row's cell), which moves inside its section while the section's origin does not.
   const refit = () => {
     const wrap = focusF && canvasRef.current?.querySelector(`[data-sid="${focusF.sid}"]`)
-    const mine = inlineNode.current?.isConnected && wrap?.contains(inlineNode.current) ? inlineNode.current : null
+    // Only while the inline editor is open on this very field: a leftover node is no one's box.
+    const editing = inline && inline.sid === focusF?.sid && inline.k === focusF.key
+    const mine = editing && inlineNode.current?.isConnected && wrap?.contains(inlineNode.current) ? inlineNode.current : null
     const node = wrap && focusF.text ? mine ?? findFieldNode(wrap.firstElementChild, focusF.text, focusF.key)
       : wrap && focusF.photo ? photoNodeOf(wrap.firstElementChild, focusF.photo) : null
     if (!node) { setFocusBox(null); return }
