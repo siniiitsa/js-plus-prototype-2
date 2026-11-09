@@ -87,3 +87,7 @@ The `*.3.` part rows (`since`, `cta2`) carry over and hit on Pop. **Like Lime an
 ## Line breaks in the paragraphs (2026-11-06)
 
 `para1` and `para2` keep the artist's line breaks: every `<p>` that prints `s.bioP1` / `s.bioP2` sets `whiteSpace: 'pre-line'`, so `Hello⏎⏎World!` draws an empty line between the words (the same holds for the header's `subtitle`, pricing's `intro` and `quote` and the form's `para`). Runs of spaces still collapse and lines still wrap. Caps count characters, so blank lines add height beyond what `scripts/limits.mjs` measured; the cap is not tightened for it. On the canvas Enter now inserts a line break in these fields too (`pre-*` is what the inline editor looks for).
+
+## The header's identity keys are edited here too (2026-11-09)
+
+The bio's panel lists the header's `kicker` (every layout), `location` (layouts 1–3) and `tags` / `showTags` (layouts 2–4; Retro 2 and 4) as boxes of its own, since it prints them: `IDENTITY_READS` in `data.js`. They read and write the header section, so the value is one; the header's panel drops a key its layout does not draw (Lime's layout-3 header has no Kicker box, the bio does). The form (kicker, layouts 1–2) and the calendar (location, layout 4; Retro's layout 1 too) host the same way. Measured 2026-11-09: the map's layout-2 travel card no longer moves with the location (it reads its own `base` / place), so the map hosts none.
