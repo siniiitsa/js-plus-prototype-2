@@ -6476,9 +6476,14 @@ function Bio({ s }) {
         // Two `minmax(0, 1fr)` columns rather than two `flex: 1 1 0` halves:
         // a zero basis resolves against the content box, so the padded card
         // came out 24.6 wider than the head (the enquiry form's layout-3 trap).
+        // A grid at every width: the Mobile → Desktop switch restyles these
+        // nodes in place, and a `display` flip is what a WebKit keeps a stale
+        // row height across (notes/bio.md, layout 4's card). Narrow is one
+        // column with the old flex column's gap as `rowGap`.
+        display: 'grid', alignItems: 'stretch',
         ...(desk
-          ? { display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', alignItems: 'stretch' }
-          : col(u(tab || ed || pop ? 40 : grunge ? 10 : 15))),
+          ? { gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)' }
+          : { gridTemplateColumns: 'minmax(0, 1fr)', rowGap: u(tab || ed || pop ? 40 : grunge ? 10 : 15) }),
       }}>
         {pop && (
           <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none', zIndex: -1 }}>
@@ -6493,7 +6498,10 @@ function Bio({ s }) {
           // The frame's own height as a floor, HeaderV3's rule: the panel is
           // content-tall, so a second paragraph grows the card.
           minHeight: u(s.mob ? 536 : 720),
-          padding: u(s.mob ? 10 : 30),
+          // One value, never `padding` plus a phone-only `paddingTop`: a longhand
+          // that appears and disappears across the device switch is a stale
+          // padding waiting to happen. The phone's top is the clear stage below.
+          padding: s.mob ? `${stageH - stageOver}px 10px 10px` : u(30),
           // At 390 the content-tall panel covered all but the top ~130 of the
           // photograph, cutting the artist off at the forehead (user call,
           // 2026-09-18). So the phone keeps a clear stage above the panel: the
@@ -6505,7 +6513,6 @@ function Bio({ s }) {
           // the stage at the centred cover. Only an emptied slot keeps the
           // band, because `Photo` centres its initials, and in the card's full
           // height they would sit under the panel.
-          ...(s.mob ? { paddingTop: `${stageH - stageOver}px` } : null),
           ...col('0', { justifyContent: 'flex-end', alignItems: 'center' }),
         }}>
           <div style={s.mob && !s.image
