@@ -38,7 +38,7 @@ import { ImageEditorHost, editImages, editorBusy } from './ImageEditor.jsx'
 import { imageProblem, readImage, vetImages } from './imageFiles.js'
 import {
   THEMES, SCHEMES_OF, CATS, NVAR, FLAG, FIELDS, TITLES, DEFS, TRACKS, TAGS, TAG_LABELS, HERO_CTA, BIO_CREDIT, BIO_CTA,
-  HERO_AVAIL, FACE_TITLE, FACE_BODY, PLACE_BODY, BIO_TAG,
+  FACE_TITLE, FACE_BODY, BIO_TAG,
   BIO_SINCE_LABEL, BIO_ROLE_LABEL, BIO_BASE_LABEL, BIO_ABOUT_LABEL, BIO_TAGS_LABEL, MEDIA_LIST_LABEL,
   BIO_REF_LABEL, FORM_TYPE_LABEL, mapKickerSeed, mapListLabelSeed, mapPlaceOf, mapMilesOf, MAP_MILES_MIN, MAP_MILES_MAX, mapRadiusText, mapRingLabels, mapHeadingSeed, mapBaseSeed, mapTermsSeed, mapStatsSeed, mapBaseStat, testiKickerSeed,
   MAP_HOME_LABEL, MAP_HOME_CAPTION, MAP_VENUE_LABEL, MAP_VENUE_CAPTION, MAP_RADIUS_LABEL, MAP_TIME_LABEL,
@@ -56,7 +56,7 @@ import {
   TESTI_HEADING_2, CARD_LINE_3, TESTI_STARS, TESTI_RATING,
   PRICING_INTRO_3, FORM_SUB_4, CAL_HEADING_1, formBtnSeed, CAL_TYPES, PRICING_ROW_CTA, PRICING_ROW_CTA_3, MAP_SPAN, MAP_STATS_4, STAT_KEYS,FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
   parseDate, isoDate, calStart, headerIdentity, monthSpan, monthLabel, enquiryLine, weekdayOf,
-  CTA_TARGETS, firstPresent, minimalNav, navModeDefault,
+  CTA_TARGETS, firstPresent, minimalNav, navModeDefault, badgeOptsFor,
   catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldSeed, HEADING_3, HEADING_4, fieldReach, fieldShown, identityFieldsFor, identityHint, INLINE_OFF, PHOTO_OFF, INLINE_HEAD, INLINE_MARKED, INLINE_PART, INLINE_LINES, inlineRule, fieldCap, colCaps, identityCap, sealCap, capExcess, numeralLen, clampCapped, clampContent, legacyContent, clampIdentity, copyrightOf, formHeading3, extUrl, youtubeEmbed, youtubeThumb, youtubeParts, youtubeWatch, youtubeChannel, urlProblem, emailProblem, emailAddr, songTags, repChips,
   tierFeats, priceParts, priceCuts, blankRow, SONG_KEYS, repSetsOf, repSetLine, TRACK_KEYS, GIG_KEYS, gigWeekday, gigStatus, gigPart, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
   layoutChoices, designCount, pageLayout, pageOrder, pageRows, videoDesign, videoStartArch,
@@ -785,14 +785,23 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   vm.heroCta = cv('heroCta', HERO_CTA)
   // JP-059 — the rest of layout 2's copy: the pill over the name and the two
   // cards' text. Uncased too: each site keeps the casing its own style applies.
-  vm.heroAvail = cv('availability', HERO_AVAIL)
   vm.faceTitle = cv('faceTitle', FACE_TITLE)
   vm.faceBody = cv('faceBody', FACE_BODY)
-  vm.placeBody = cv('placeBody', PLACE_BODY)
   // JP-061 — the layout-3 portrait card's line under the name, the kicker's
   // seat in Retro's polaroid. Uncased, as the four above.
   vm.cardLine = cv('cardLine', CARD_LINE_3)
-  vm.showBadge = cv('showBadge', 'show')
+  // The header's badge has three states (header-nav ticket, 2026-11-11): its own
+  // `badgeMode`, which folds onto the two things every reader already asks —
+  // `showBadge` (drawn or not) and `badgeSpin` (the ring turns). Every other
+  // section keeps its own `showBadge` field (the footer's) or none, and spins.
+  if (cat === 'header') {
+    const mode = c.badgeMode ?? 'rotating'
+    vm.showBadge = mode === 'hidden' ? 'hide' : 'show'
+    vm.badgeSpin = mode !== 'static'
+  } else {
+    vm.showBadge = cv('showBadge', 'show')
+    vm.badgeSpin = true
+  }
   // Left empty, the seal's ring prints the name, shortened to the ring's fit
   // (sealCap, data.js), so a long name never sets its two copies over each
   // other; Badge text is capped to the same fit in the panel.
@@ -918,78 +927,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // and under Pop, whose layouts 2, 3 and 4 take all three blocks, in Titan.
   vm.cardNameEms = navFace ? +Math.max(0, ...vm.brand.split(/\s+/).map(navFace)).toFixed(3) : undefined
   vm.navCtaEms = navFace ? +(navFace(vm.cta1) + navFace(vm.cta2)).toFixed(3) : undefined
-  // The layout-1 capsule's name gives way before its links do (JP-091, user
-  // call, 2026-10-01): NavBar leaves the name what the links at their floor
-  // and the pill do not take, and the name keeps its size there, else shrinks
-  // on one line, else wraps onto two at no more than the capsule's height
-  // allows. So it needs the name on one line (`one`), its best two-line
-  // split's wider line (`two`, between words only; one word is its own
-  // split) and the pill's label (`pill`), in the same ems — the first two
-  // with `navEms`' 1% spare, so a fitted line never touches its box.
-  // At 390 the capsule of layouts 1 and 4 gives the name way to the pill
-  // (JP-101), so design 3 builds it too (NavBar keeps the desktop rule to
-  // design 0), and `word`, the widest word with the same spare, is the floor
-  // a name too long even at 12px yields to there. Layout 2's 390 bar, whose
-  // centred name stands between the burger and the pill, takes the same
-  // narrow fit (JP-121), so design 1 builds it as well; HeaderV1 reads it
-  // there, and under Editorial does not. So does layout 3's (HeaderV2's
-  // `s.limeTree` row, JP-121's retest, user call, 2026-10-12), so design 2
-  // builds it too, read the same way.
-  if (navFace && cat === 'header' && (d === 0 || d === 1 || d === 2 || d === 3)) {
-    const words = vm.brand.split(/\s+/).filter(Boolean)
-    const two = words.length < 2 ? navFace(vm.brand) : Math.min(...words.slice(1).map((_, i) =>
-      Math.max(navFace(words.slice(0, i + 1).join(' ')), navFace(words.slice(i + 1).join(' ')))))
-    vm.navNameFit = {
-      one: +(navFace(vm.brand) * 1.01).toFixed(3), two: +(two * 1.01).toFixed(3), pill: +navFace(vm.cta1).toFixed(3),
-      word: +(vm.cardNameEms * 1.01).toFixed(3),
-    }
-  }
-  // Whether the tablet header draws its links (JP-039). The 768 masters of
-  // layouts 2 and 3 draw Music / Gigs / About in the capsule, in Retro and Lime
-  // alike, where layouts 1 and 4 hide the links behind a burger — but
-  // `navLinks` is the artist's page, and the seeded nine come to more type
-  // than the bar is wide. So the links draw when the bar's one row holds them
-  // and the burger stands otherwise: the capsule, the wordmark, Listen and the
-  // pill, summed at the master's own sizes against the bar (708 in layout 2,
-  // the root's column since JP-038 took `padX` to the frame's 30; 684 in
-  // layout 3, whose card insets it 10 + 32 a side). `other` is every
-  // fixed box beside the type — Lime's is HeaderV1's desktop `reserve` unscaled
-  // (138.32, the capsule's 36 in it), Retro's the capsule's 36 + 2 of border,
-  // four 16 gaps, Listen's 12 and the pill's 59 of padding, gap and disc. An
-  // empty nav keeps the burger, and 390 always does: its master draws one.
-  // Grunge's layout 2 (986:13753) is Lime's bar box for box — the same 138.32
-  // — at its own 13 / 16 in Anton at 0.75 (`navFace`), plus the capsule's
-  // fixed 18 gaps, which its `navEms` leaves out (above). Its layout 3
-  // (984:13900) is Lime's layout-3 bar box for box, the same 138.32 against
-  // the same 684, with the links at Label/MD (14 at 768) where Lime's are
-  // Label/SM, and the same fixed 18 gaps. Editorial's layout 2 (986:15658) is
-  // Grunge's layout-2 bar box for box — the same 138.32, the same fixed 18
-  // gaps, its links at Label/SM 13 and its name at Label/LG 16 — in Gloock
-  // (`navFace`). Its layout 3 (984:16812) is that bar again against layout
-  // 3's 684: the same 138.32 and fixed 18 gaps, and the links still Label/SM,
-  // where Grunge's layout-3 links are Label/MD. Pop's layout 2 (986:17563) is
-  // Grunge's layout-2 bar box for box again — the same 138.32, fixed 18 gaps,
-  // links at Label/SM 13, name at Label/LG 16 — in Titan (`navFace`), but its
-  // nav is inset 26 a side, so the bar is 656. Its layout 3 (984:15356) is
-  // Editorial's layout-3 bar box for box — the same 138.32 against the same
-  // 684, fixed 18 gaps, links at Label/SM 13 and the name at Label/LG 16.
-  if (cat === 'header' && Z.dev === 'tablet' && vm.navLinks.length && (d === 1 || d === 2)) {
-    const px = (v) => parseFloat(v)
-    const row = d === 1 ? (T.name === 'Pop' ? 656 : 708) : 684
-    if (T.name === 'Lime') {
-      vm.navFits = vm.navEms * px(vm.labelSm) + vm.navNameEms * px(vm.labelLg)
-        + vm.navCtaEms * px(vm.labelSm) + 138.32 <= row
-    } else if (T.name === 'Grunge' || T.name === 'Editorial' || T.name === 'Pop') {
-      vm.navFits = vm.navEms * px(T.name === 'Grunge' && d === 2 ? vm.labelMd : vm.labelSm) + (vm.navLinks.length - 1) * 18
-        + vm.navNameEms * px(vm.labelLg) + vm.navCtaEms * px(vm.labelSm) + 138.32 <= row
-    } else if (T.name === 'Retro') {
-      const [link, name] = d === 1 ? [16, 20] : [13, 16]
-      vm.navFits = vm.navLinks.reduce((w, l) => w + antonEms(l.label), 0) * link
-        + (vm.navLinks.length - 1) * 18 + antonEms(vm.brand) * name
-        + (antonEms(vm.cta1) + antonEms(vm.cta2)) * link + 38 + 64 + 12 + 59 <= row
-    }
-  }
-
+  // `navNameFit` (the nav brand's one-line / two-line / floor fit, JP-091, JP-101,
+  // JP-121) and `navFits` (the tablet header's links-or-burger sum, JP-039) are
+  // gone: the bar of layouts 1–4 is the burger and the pill alone and carries no
+  // name or links (header-nav ticket, 2026-11-11).
   // The header's two CTAs point at a section as well: Book Now at wherever the
   // page takes a booking, Listen at wherever it plays something (§4.3a).
   vm.bookTo = firstPresent(CTA_TARGETS.book, navSections)
@@ -5336,14 +5277,24 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                           style={FIELD_BOX}
                         />
                       ) : f.type === 'select' ? (
-                        <Select value={val} onValueChange={set}>
-                          <SelectTrigger onClick={stopE} className="w-full h-auto" style={{ ...FIELD_BOX, paddingRight: '28px' }}>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent onClick={stopE}>
-                            {f.opts.map((o) => <SelectItem key={o.v} value={o.v}>{o.l}</SelectItem>)}
-                          </SelectContent>
-                        </Select>
+                        (() => {
+                        // The badge offers only the states its artwork has: a stored
+                        // "static" on a design with no ring to turn reads as Visible,
+                        // and is never overwritten (header-nav ticket, 2026-11-11).
+                        const opts = f.k === 'badgeMode' ? badgeOptsFor(themeName, design) : f.opts
+                        const shown = opts.some((o) => o.v === val) ? val : val === 'hidden' ? 'hidden' : opts[0].v
+                        return (
+                          <Select value={shown} onValueChange={set}>
+                            <SelectTrigger onClick={stopE} className="w-full h-auto" style={{ ...FIELD_BOX, paddingRight: '28px' }}>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent onClick={stopE}>
+                              {opts.map((o) => <SelectItem key={o.v} value={o.v}>{o.l}</SelectItem>)}
+                            </SelectContent>
+                          </Select>
+                        )
+                      })()
+
                       ) : f.k === 'title' && sec.cat === 'header' ? (
                         // Stored as typed, so a space mid-name survives the
                         // render; a stored blank (none the editor can make)

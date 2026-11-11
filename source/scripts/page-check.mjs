@@ -128,7 +128,25 @@ for (const card of cardList) {
 
   r.sections1440 = await seams(popup, 1440)
 
-  // Every fragment link in the header, the Book pill among them.
+  // The header's bar is the hamburger and Book Now (header-nav ticket,
+  // 2026-11-11): the Book pill first, with the menu shut, then every link in
+  // the menu, which closes after each click and is opened again for the next.
+  const openMenu = async () => {
+    // The previous link's smooth scroll is still in flight: let it settle, then jump.
+    await wait(1200)
+    await popup.evaluate(() => scrollTo({ top: 0, behavior: 'instant' })); await wait(300)
+    const pt = await popup.$$eval('#header span', (els) => {
+      // 26px, or its zoomed width: the published 1440 page runs under a CSS zoom.
+      const el = els.find((el) => getComputedStyle(el).cursor === 'pointer' && el.children.length === 3
+        && el.getBoundingClientRect().width >= 25 && el.getBoundingClientRect().width <= 36)
+      if (!el) return null
+      const b = el.getBoundingClientRect()
+      return { x: b.x + b.width / 2, y: b.y + b.height / 2 }
+    })
+    if (!pt) return false
+    await popup.mouse.click(pt.x, pt.y); await wait(250)
+    return true
+  }
   r.nav = []
   const n = await popup.$$eval('#header a[href^="#"]', (as) => as.length)
   for (let i = 0; i < n; i++) {
@@ -136,6 +154,18 @@ for (const card of cardList) {
     const label = await a.evaluate((el) => `${el.textContent.trim()} → ${el.getAttribute('href')}`)
     await a.click(); await wait(150)
     r.nav.push({ label, scrolled: await scrolled() })
+  }
+  r.menu = { opened: await openMenu() }
+  if (r.menu.opened) {
+    const links = await popup.$$eval('#header nav a[href^="#"]', (as) => as.map((a) => `${a.textContent.trim()} → ${a.getAttribute('href')}`))
+    r.menu.links = links.length
+    for (let i = 0; i < links.length; i++) {
+      if (i > 0 && !(await popup.$('#header nav a[href^="#"]'))) await openMenu()
+      const a = (await popup.$$('#header nav a[href^="#"]'))[i]
+      if (!a) { r.nav.push({ label: links[i], scrolled: 'link missing' }); continue }
+      await a.click(); await wait(250)
+      r.nav.push({ label: `menu: ${links[i]}`, scrolled: await scrolled(), closedAfter: !(await popup.$('#header nav a[href^="#"]')) })
+    }
   }
 
   // Every other fragment link on the page: the section pills, the calendar's

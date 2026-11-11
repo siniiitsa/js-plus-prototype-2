@@ -29,7 +29,8 @@ const PROBES = [
   { name: 'header.subtitle', cats: ['header'], param: 'cj', value: { subtitle: Z } },
   { name: 'header.location', cats: ['header'], param: 'cj', value: { location: Z } },
   { name: 'header.cta2', cats: ['header'], param: 'cj', value: { cta2: Z } },
-  { name: 'header.showBadge=hide', cats: ['header'], param: 'cj', value: { showBadge: 'hide' } },
+  { name: 'header.badgeMode=hidden', cats: ['header'], param: 'cj', value: { badgeMode: 'hidden' } },
+  { name: 'header.badgeMode=static', cats: ['header'], param: 'cj', value: { badgeMode: 'static' } },
   { name: 'header.badgeText', cats: ['header'], param: 'cj', value: { badgeText: Z } },
   { name: 'header.align=centre', cats: ['header'], param: 'cj', value: { align: 'centre' } },
   { name: 'header.tags', cats: ['header'], param: 'cj', value: { tags: Z } },
@@ -37,10 +38,8 @@ const PROBES = [
   { name: 'header.heroCta', cats: ['header'], param: 'cj', value: { heroCta: Z } },
   // JP-059: the rest of layout 2's copy — the pill over the name, the two
   // cards under the photograph, and the bio card's pill.
-  { name: 'header.availability', cats: ['header'], param: 'cj', value: { availability: Z } },
   { name: 'header.faceTitle', cats: ['header'], param: 'cj', value: { faceTitle: Z } },
   { name: 'header.faceBody', cats: ['header'], param: 'cj', value: { faceBody: Z } },
-  { name: 'header.placeBody', cats: ['header'], param: 'cj', value: { placeBody: Z } },
   // JP-061: the layout-3 portrait card's line, which was the kicker's there.
   { name: 'header.cardLine', cats: ['header'], param: 'cj', value: { cardLine: Z } },
   { name: 'bio.credit', cats: ['bio'], param: 'cj', value: { credit: Z } },

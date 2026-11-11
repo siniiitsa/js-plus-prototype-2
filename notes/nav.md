@@ -1,5 +1,13 @@
 # The header's navigation — working notes
 
+> **Superseded in part (header-nav ticket, 2026-11-11; `plans/header-nav.md`).** Layouts 1–4 of every
+> template no longer draw links, a wordmark or Listen in the bar: it is the hamburger and Book Now at
+> every width, and the menu opens in flow above the hero (`HeaderRoot` / `MenuPanel`). So `navFits`,
+> `navNameFit`, JP-091's name-gives-way fit, JP-101's and JP-121's narrow fits and the 768 fit-gating
+> below are **history**: the code is gone. What still holds: anchors and `navHref()`, labels, `navMode`
+> (its default is now *Follow my sections* at every layout; Minimal stays pickable) and Retro's layouts
+> 5 and 6, which keep `NavLinks`.
+
 Moved word for word out of `CLAUDE.md`'s *Intentional limits — not bugs* on 2026-09-30, so it
 loads only when a session works on it. "Above" and "below" may point into `CLAUDE.md` or
 another `notes/` file.

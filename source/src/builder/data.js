@@ -664,9 +664,7 @@ export const minimalNav = (navSections) =>
 // 964:68718, 984:16812), so it joins them. Pop's layout 2 does (964:64561,
 // 986:17563), so it joins at `d === 1`, and its layout 3 does (964:68751,
 // 984:15356), so at `d === 2` too.
-export const navModeDefault = (themeName, d) =>
-  ((themeName === 'Retro' || themeName === 'Lime' || themeName === 'Grunge' || themeName === 'Editorial')
-    && (d === 1 || d === 2)) || (themeName === 'Pop' && (d === 1 || d === 2)) ? 'minimal' : 'sections'
+export const navModeDefault = () => 'sections'
 
 // Bebas Neue's advance widths in em, capitals only — Lime's label face, which
 // sets every nav label in caps — read off the loaded face with canvas
@@ -1058,10 +1056,8 @@ export const BIO_CTA = 'Book Now'
 // type "/featured" cased UPPER, which the pill cases anyway. The "●" before
 // the availability is the markup's, not the field's. "Performing since 2021"
 // is the artist's copy, not the bio's `since` (CARD_LINE_3's precedent).
-export const HERO_AVAIL = 'Available for bookings'
 export const FACE_TITLE = 'The face of the act'
 export const FACE_BODY = "Same person you'll meet on the night. Performing since 2021."
-export const PLACE_BODY = 'Available across the UK · 120 mi standard travel radius.'
 export const BIO_TAG = '/Featured'
 // JP-071 — eight section labels the frames draw and no field reached, the
 // literals they replace: bio layout 3's three stat labels (one line each;
@@ -1927,6 +1923,17 @@ export const BLANK_PAGE = [
  * ------------------------------------------------------------------ */
 
 const SHOW_HIDE = [{ v: 'show', l: 'Show' }, { v: 'hide', l: 'Hide' }]
+export const BADGE_MODES = [
+  { v: 'rotating', l: 'Visible, rotating' },
+  { v: 'static',   l: 'Visible, static' },
+  { v: 'hidden',   l: 'Hidden' },
+]
+// The badge states a design's artwork supports: Lime's and Editorial's layout-1
+// badge is a static reticle / star, so a rotating one is not on offer there.
+export const badgeOptsFor = (themeName, design) =>
+  design === 0 && (themeName === 'Lime' || themeName === 'Editorial')
+    ? [{ v: 'rotating', l: 'Visible' }, { v: 'hidden', l: 'Hidden' }]
+    : BADGE_MODES
 
 // Pricing layout 2's card fields: the pill's label and the line beside it.
 // Lime's own layout 2 draws both, as its frame does (JP-036) — its pill used
@@ -1974,9 +1981,13 @@ export const FIELDS = {
     // "Not shown in this layout" while the bio prints the kicker, which the hint
     // answers, as at layout 2.
     { k: 'kicker',    l: 'Kicker',           d: 'DJ · Live Act', shared: true,
-      in: { Retro: [0, 2, 3, 5], Lime: [0, 3], Grunge: [0, 3], Editorial: [0, 3], Pop: [0, 3] },
-      chars: { Retro: [59, null, 17, 13, null, 39], Lime: [55, null, null, 13], Grunge: [61, null, null, 13],
-        Editorial: [33, null, null, 13], Pop: [47, null, null, 13] },
+      // Header-nav ticket (2026-11-11): layouts 1 and 4 no longer print the act type
+      // above the name, so only Retro's layout-3 polaroid and layout 6 read it. The
+      // rows of the designs that stopped have no cap either: `identityCap` reads
+      // this entry without asking `in`, and a cap here would still tighten the
+      // bio's hosted box.
+      in: { Retro: [2, 5], '*': [] },
+      chars: { Retro: [null, null, 17, null, null, 39] },
       hint: 'Your role.' },
     // The layout-3 portrait card's line under the name (JP-061): the card's
     // own copy, so the kicker is not seeded apart there and the bio's Current
@@ -1999,13 +2010,16 @@ export const FIELDS = {
     { k: 'title',     l: 'Title',
       chars: { Retro: [23, 22, 14, 14, 20, 31], Lime: [14, 19, 22, 12], Grunge: [19, 20, 26, 17],
         Editorial: [12, 15, 15, 12], Pop: [13, 18, 18, 11] } },
+    // Header-nav ticket (2026-11-11): layout 2 no longer prints the description
+    // under the name, so only Retro's layout 5 reads it.
     { k: 'subtitle',  l: 'Subtitle',         type: 'area', def: 'heroSub',
-      in: { Retro: [1, 4], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1] },
-      chars: { Retro: [null, 310, null, null, 104], Grunge: [null, 197], '*': [null, 310] } },
+      in: { Retro: [4], '*': [] },
+      chars: { Retro: [null, null, null, null, 104] } },
     { k: 'location',  l: 'Location',         d: 'Manchester, UK', shared: true,
-      in: { Retro: [0, 1, 2, 3, 5], Lime: [0, 1, 2, 3], Grunge: [0, 1, 2, 3], Editorial: [0, 1, 2, 3], Pop: [0, 1, 2, 3] },
-      chars: { Retro: [55, 15, 19, 20, null, 42], Lime: [20, 24, 14, 17], Grunge: [19, 29, 15, 24],
-        Editorial: [19, 15, 30, 19], Pop: [20, 15, 36, 36] },
+      // Header-nav ticket (2026-11-11): no header layout but Retro's 6 prints it
+      // any more (layouts 1–4 lost the line, layout 2 its place card and rail).
+      in: { Retro: [5], '*': [] },
+      chars: { Retro: [null, null, null, null, null, 42] },
       hint: 'Where you are based.' },
     { k: 'cta1',      l: 'Primary button',   d: 'Book Now', chars: { Editorial: [16, 16, 10, 16], '*': 16 } },
     // Layout 2's pill under the subtitle (JP-037). Its frame words it apart
@@ -2013,17 +2027,13 @@ export const FIELDS = {
     { k: 'heroCta',   l: 'Hero button',      d: HERO_CTA,
       in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1] },
       chars: { Retro: [null, 34], Lime: [null, 35], Grunge: [null, 40], Editorial: [null, 21], Pop: [null, 25] },
-      hint: 'The button under the subtitle. Left empty, it is not drawn.' },
+      hint: 'The button under your name. Left empty, it is not drawn.' },
     // The rest of layout 2's copy (JP-059, reversing Lime's fit, which kept
     // them literals): the pill over the name and the two cards under the
     // photograph, the place card titled by Location. Each is seeded with the
     // frame's text and drops when emptied; a card keeps its tile. The face
     // card's "Performing since 2021" is the artist's copy — the bio's own
     // Performing since is another field, which the hint says.
-    { k: 'availability', l: 'Availability',  d: HERO_AVAIL,
-      in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1] },
-      chars: { Retro: [null, 38], Pop: [null, 40], '*': [null, 44] },
-      hint: 'The small pill over your name. Left empty, it is not drawn.' },
     { k: 'faceTitle', l: 'Face card title',  d: FACE_TITLE,
       in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1] },
       chars: { Retro: [null, 22], Lime: [null, 24], Grunge: [null, 29], Editorial: [null, 19], Pop: [null, 20] },
@@ -2032,14 +2042,11 @@ export const FIELDS = {
       in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1] }, chars: [null, 180],
       hint: 'The line under the face card’s title. The bio’s Performing since is a separate field, '
           + 'so change both if you name a year here. Left empty, it is not drawn.' },
-    { k: 'placeBody', l: 'Place card text',  type: 'area', d: PLACE_BODY,
-      in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1] }, chars: [null, 160],
-      hint: 'The line under your Location on the card beside the pin. Left empty, it is not drawn.' },
     // Named `cta2` on the bio's own content too, which FIELDS.bio.cta2 edits
     // (JP-082): bio layout 4's Listen prints that, not this (JP-059's census).
     // `in` speaks for the header.
     { k: 'cta2',      l: 'Secondary button', d: 'Listen',
-      in: { Retro: [1, 2, 4], Lime: [1, 2], Grunge: [1, 2], Editorial: [1, 2], Pop: [1, 2] }, chars: 14 },
+      in: { Retro: [4], '*': [] }, chars: 14 },
     // The chips are the header's the way Kicker and Location are (JP-037,
     // headerIdentity): the bio prints the same list and honours the same
     // Show / Hide. An emptied list hides the row, as Hide does. The bio's
@@ -2056,7 +2063,13 @@ export const FIELDS = {
     { k: 'showTags',  l: 'Tag chips',        type: 'select', d: 'show', opts: SHOW_HIDE, shared: true,
       in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3], Editorial: [0, 2, 3], Pop: [0, 2, 3] },
       hint: 'Show or hide the chips wherever they are printed.' },
-    { k: 'showBadge', l: 'Corner badge',     type: 'select', d: 'show', opts: SHOW_HIDE,
+    // Three states (header-nav ticket, 2026-11-11): the seal is visible and
+    // turning (today's), visible and still, or hidden. `badgeMode` replaces the
+    // old `showBadge` Show / Hide on the header (the footer keeps its own), and
+    // `legacyContent` carries a stored `showBadge: 'hide'` over. Lime's and
+    // Editorial's layout-1 artwork (a reticle, a star) has no ring to turn, so
+    // EditPanel offers those two Show / Hide alone (`badgeOptsFor`).
+    { k: 'badgeMode', l: 'Corner badge',     type: 'select', d: 'rotating', opts: BADGE_MODES,
       in: { Retro: [0, 1, 3, 4, 5], Lime: [0, 3], Grunge: [0, 3], Editorial: [0, 3], Pop: [0, 3] } },
     // The seal's ring sets it twice round a circle, so its cap is the ring's
     // fit (scripts/limits.mjs's ring test). Left empty, the ring prints the
@@ -3169,6 +3182,38 @@ export const INLINE_OFF = {
   'Pop.3.testimonials.quotes.when': 'not drawn: layout 4’s wall has no seat for it',
   'Pop.3.media.tracks.sub': 'derived value: the page prints the release alone (the list tile’s Single); the running times are the player’s clock',
   'Pop.3.pricing.unit': 'derived value: layout 4 drops the leading slash, so the page prints event, not the field’s /event',
+  // Header-nav ticket (2026-11-11): layouts 1–4 of every template lost the location
+  // and, at layouts 1 and 4, the act type above the name.
+  'Retro.0.header.kicker': 'not drawn: the layout-1 header prints no act type any more (a shared identity key; the bio’s role line and the form print it)',
+  'Retro.3.header.kicker': 'not drawn: the layout-4 header prints no act type any more (a shared identity key; the bio’s role line and the form print it)',
+  'Lime.0.header.kicker': 'not drawn: the layout-1 header prints no act type any more (a shared identity key; the bio’s role line and the form print it)',
+  'Lime.3.header.kicker': 'not drawn: the layout-4 header prints no act type any more (a shared identity key; the bio’s role line and the form print it)',
+  'Grunge.0.header.kicker': 'not drawn: the layout-1 header prints no act type any more (a shared identity key; the bio’s role line and the form print it)',
+  'Grunge.3.header.kicker': 'not drawn: the layout-4 header prints no act type any more (a shared identity key; the bio’s role line and the form print it)',
+  'Editorial.0.header.kicker': 'not drawn: the layout-1 header prints no act type any more (a shared identity key; the bio’s role line and the form print it)',
+  'Editorial.3.header.kicker': 'not drawn: the layout-4 header prints no act type any more (a shared identity key; the bio’s role line and the form print it)',
+  'Pop.0.header.kicker': 'not drawn: the layout-1 header prints no act type any more (a shared identity key; the bio’s role line and the form print it)',
+  'Pop.3.header.kicker': 'not drawn: the layout-4 header prints no act type any more (a shared identity key; the bio’s role line and the form print it)',
+  'Retro.0.header.location': 'not drawn: layouts 1–4 print no location any more (a shared identity key; the bio, the calendar and the map print it)',
+  'Retro.1.header.location': 'not drawn: layouts 1–4 print no location any more (a shared identity key; the bio, the calendar and the map print it)',
+  'Retro.2.header.location': 'not drawn: layouts 1–4 print no location any more (a shared identity key; the bio, the calendar and the map print it)',
+  'Retro.3.header.location': 'not drawn: layouts 1–4 print no location any more (a shared identity key; the bio, the calendar and the map print it)',
+  'Lime.0.header.location': 'not drawn: layouts 1–4 print no location any more (a shared identity key; the bio, the calendar and the map print it)',
+  'Lime.1.header.location': 'not drawn: layouts 1–4 print no location any more (a shared identity key; the bio, the calendar and the map print it)',
+  'Lime.2.header.location': 'not drawn: layouts 1–4 print no location any more (a shared identity key; the bio, the calendar and the map print it)',
+  'Lime.3.header.location': 'not drawn: layouts 1–4 print no location any more (a shared identity key; the bio, the calendar and the map print it)',
+  'Grunge.0.header.location': 'not drawn: layouts 1–4 print no location any more (a shared identity key; the bio, the calendar and the map print it)',
+  'Grunge.1.header.location': 'not drawn: layouts 1–4 print no location any more (a shared identity key; the bio, the calendar and the map print it)',
+  'Grunge.2.header.location': 'not drawn: layouts 1–4 print no location any more (a shared identity key; the bio, the calendar and the map print it)',
+  'Grunge.3.header.location': 'not drawn: layouts 1–4 print no location any more (a shared identity key; the bio, the calendar and the map print it)',
+  'Editorial.0.header.location': 'not drawn: layouts 1–4 print no location any more (a shared identity key; the bio, the calendar and the map print it)',
+  'Editorial.1.header.location': 'not drawn: layouts 1–4 print no location any more (a shared identity key; the bio, the calendar and the map print it)',
+  'Editorial.2.header.location': 'not drawn: layouts 1–4 print no location any more (a shared identity key; the bio, the calendar and the map print it)',
+  'Editorial.3.header.location': 'not drawn: layouts 1–4 print no location any more (a shared identity key; the bio, the calendar and the map print it)',
+  'Pop.0.header.location': 'not drawn: layouts 1–4 print no location any more (a shared identity key; the bio, the calendar and the map print it)',
+  'Pop.1.header.location': 'not drawn: layouts 1–4 print no location any more (a shared identity key; the bio, the calendar and the map print it)',
+  'Pop.2.header.location': 'not drawn: layouts 1–4 print no location any more (a shared identity key; the bio, the calendar and the map print it)',
+  'Pop.3.header.location': 'not drawn: layouts 1–4 print no location any more (a shared identity key; the bio, the calendar and the map print it)',
   // Retro's layout 5 (the Overlay card) is a header-only design: the body under it is layout 1's page.
   'Retro.4.header.kicker': 'not drawn: the layout-5 Overlay card prints no kicker (a shared identity key; the bio’s role line and the form print it)',
   'Retro.4.header.location': 'not drawn: the layout-5 Overlay card prints no location (a shared identity key; the bio and the calendar print it)',
@@ -3203,7 +3248,6 @@ export const INLINE_PART = {
   // beside the words (`● Popular`, `5 Featured / 5 Max`, `[ PRICING ]`,
   // `32 reviews · 4.9 ★`, `Expand view→`). The words are unique on the page,
   // so the box narrows to them and no frame is needed.
-  '*.1.header.availability': true,
   '*.1.media.listLabel': true,
   '*.1.media.totalLabel': true,
   '*.1.pricing.kicker': true,
@@ -3561,6 +3605,12 @@ const clampRows = (rows, caps) => {
 // the frames' word, now empty), reads as empty, so the label goes from pages
 // begun before the change too. `c` itself when there is nothing to drop.
 export function legacyContent(cat, c) {
+  // The header's Show / Hide badge became three states (`badgeMode`); a stored
+  // `showBadge` is read once, here, and never again.
+  if (cat === 'header' && c && 'showBadge' in c) {
+    const { showBadge, ...rest } = c
+    return rest.badgeMode === undefined && showBadge === 'hide' ? { ...rest, badgeMode: 'hidden' } : rest
+  }
   if (cat !== 'gallery' || String(c?.kicker ?? '').trim() !== 'Media') return c
   const { kicker, ...rest } = c
   return rest

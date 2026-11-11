@@ -280,11 +280,11 @@ That distinction is the whole design, and it buys two things:
   *Minimal* triple resolves Music / Gigs / About to the nearest section the page actually carries.
   A label with no such section stays on the canvas, is named in a hint above the Navigation links select,
   and is left out of the published nav, the footer's rule.
-  Below the desktop frame the links collapse to a hamburger, which now opens a full-screen menu:
-  before, layout 1's glyph opened nothing and layouts 2–6 dropped their links outright, so a
-  published phone had no navigation at all. The panel is deliberately thin — no Escape key, no
-  scroll lock, no focus trap — because each of those wants an effect, and `EncoreSection` has no
-  effects.
+  At layouts 1–4 the bar is the hamburger and Book Now at every width, and the hamburger opens a
+  menu in flow above the hero (the photograph is pushed down, never covered); Retro's layouts 5 and 6
+  still collapse their links to a hamburger below the desktop frame, which opens a full-screen menu.
+  The panels are deliberately thin — no Escape key, no scroll lock, no focus trap — because each of
+  those wants an effect, and `EncoreSection` has no effects.
 
   **The media player, which plays.** The section owns one `<audio>` element, rendered only when
   `live`. A click anywhere on a track card loads that track and starts it; the transport under the

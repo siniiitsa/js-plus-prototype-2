@@ -32,7 +32,7 @@ import { useId, useRef, useState } from 'react'
 import RealMap from './RealMap.jsx'
 import {
   Play, Pause, SkipBack, SkipForward, Check, ChevronLeft, ChevronRight,
-  ArrowLeft, ArrowRight, ArrowUp, ArrowDown, Star, Plus, X, Search, MapPin, User,
+  ArrowLeft, ArrowRight, ArrowUp, ArrowDown, Star, Plus, X, Search, User,
   Image as ImageIcon, Youtube, Instagram, Music2,
 } from 'lucide-react'
 
@@ -1017,26 +1017,26 @@ const clock = (sec) => {
 // the canvas the glyph is the picture it has always been, because a menu that
 // opened there would cover the page it is meant to navigate and select the
 // header on the way.
-function NavMenu({ s, color }) {
+// The ground and ink the menu opens on (below). Shared by `HeaderRoot`'s in-flow
+// panel and the fixed one Retro's layouts 5 and 6 still open.
+function menuColours(s) {
+  return s.editorial ? [s.box3, s.paper] : s.pop && s.v2 ? [s.bg, s.text3]
+    : s.pop && s.v3 ? [s.mapBg, s.text3] : [s.mapBg, s.mapFg]
+}
+
+// Layouts 1–4 (`menu` given): the glyph only. It toggles `HeaderRoot`'s state,
+// and the links are listed by `MenuPanel`, an in-flow block above the hero that
+// pushes it down, so the photograph is never covered (user call, 2026-11-11).
+// Retro's layouts 5 and 6 (`NavLinks`, no `menu`) keep the full-viewport panel
+// below, which is why `open` stays declared unconditionally.
+function NavMenu({ s, color, menu }) {
   const [open, setOpen] = useState(false)
   const c = color || s.tx
-  // Under Editorial `mapBg` is no charcoal: Sienna Vale's darkest tag is its
-  // terracotta, so the panel came out the accent and swallowed the Book Now
-  // pill on it. Its `sem/box/3` is near-black in Schemes 1 and 3 alike — the
-  // capsule's own fill on card 1 — and `paper` is its paper in both.
-  // Pop's Inset Hero stands on Scheme 6, whose darkest tag is red and whose
-  // `paper` falls to Retro's cream, so `mapBg` there is a red panel no frame
-  // draws; it takes the seat's violet and its white `text/3`, the panel Pop's
-  // other cards open on Scheme 1. Its Stacked stands on Scheme 3, whose
-  // darkest tag is violet, so `mapBg` is cards 1 and 2's violet panel already,
-  // but `paper` falls to Retro's cream there too; it takes the seat's white
-  // `text/3`, the ink cards 1 and 2 open with.
-  const [ground, ink] = s.editorial ? [s.box3, s.paper] : s.pop && s.v2 ? [s.bg, s.text3]
-    : s.pop && s.v3 ? [s.mapBg, s.text3] : [s.mapBg, s.mapFg]
+  const [ground, ink] = menuColours(s)
   return (
     <>
       <span
-        onClick={s.live ? () => setOpen(true) : undefined}
+        onClick={menu ? menu.toggle : s.live ? () => setOpen(true) : undefined}
         style={col('5px', { width: '26px', flex: 'none', cursor: 'pointer' })}
       >
         {[0, 1, 2].map((i) => (
@@ -1046,13 +1046,7 @@ function NavMenu({ s, color }) {
         ))}
       </span>
 
-      {s.live && open && (
-        // The events map's lifted charcoal and its cream: a near-black ground
-        // is what reads under a photographic header, and both are already
-        // resolved on the view-model, so the panel does no colour maths of its
-        // own. `overflowY` is not optional — a phone in landscape cannot fit
-        // ten section names and the pill, and with no scroll lock there is
-        // nothing else to reach them by.
+      {!menu && s.live && open && (
         <div
           onClick={() => setOpen(false)}
           style={{
@@ -1074,6 +1068,56 @@ function NavMenu({ s, color }) {
           <BookPill s={s} to={s.bookTo} full />
         </div>
       )}
+    </>
+  )
+}
+
+// The open menu of layouts 1–4: an in-flow block above the hero with its own top
+// row (the X where the hamburger stood, Book Now where the pill stood) and the
+// artist's links in a column. The hero's bar is hidden while it is open.
+function MenuPanel({ s, menu }) {
+  const [ground, ink] = menuColours(s)
+  return (
+    <div style={{
+      background: ground, color: ink, position: 'relative', zIndex: 3,
+      // Layouts 3 and 4 bleed their hero out of the root's padding by a negative
+      // margin all round, which would pull it up under this panel by `padY`; the
+      // panel bleeds the same way and leaves that much below it. Layout 2's bar
+      // is hidden with `display: none` (its negative margin goes with it), and
+      // layout 1 has no padding to bleed past.
+      ...(s.v2 || s.v3 ? { margin: `calc(-1 * ${s.padY}) calc(-1 * ${s.padX}) ${s.padY}` } : null),
+      ...col('24px', {
+        alignItems: 'flex-start',
+        padding: s.v1 ? (s.mob ? '20px 16px 24px' : '24px 30px 30px') : `24px ${s.mob ? '20px' : s.padX} 30px`,
+      }),
+    }}>
+      <div style={row('16px', { justifyContent: 'space-between', width: '100%' })}>
+        <span onClick={menu.toggle} style={{ display: 'flex', cursor: 'pointer' }}>
+          <X size={26} style={{ flex: 'none' }} />
+        </span>
+        <BookPill s={s} to={s.bookTo} />
+      </div>
+      <nav onClick={menu.toggle} style={col('18px', { alignItems: 'flex-start' })}>
+        {s.navLinks.map((l) => (
+          <a key={l.label} href={navHref(s, l.to)}
+             style={labelStyle(s, s.dispSm, { color: ink, cursor: 'pointer' })}>{l.label}</a>
+        ))}
+      </nav>
+    </div>
+  )
+}
+
+// Header root: owns the one piece of state the menu needs. Only live (the
+// published tab and Preview) can open it; the canvas draws the closed bar.
+function HeaderRoot({ s }) {
+  const [open, setOpen] = useState(false)
+  const menu = { open: s.live && open, toggle: s.live ? () => setOpen((o) => !o) : undefined }
+  const Hero = s.v0 ? HeaderV0 : s.v1 ? HeaderV1 : s.v2 ? HeaderV2 : s.v3 ? HeaderV3 : null
+  if (!Hero) return s.v4 ? <HeaderV4 s={s} /> : <HeaderV5 s={s} />
+  return (
+    <>
+      {menu.open && <MenuPanel s={s} menu={menu} />}
+      <Hero s={s} menu={menu} />
     </>
   )
 }
@@ -1478,7 +1522,7 @@ function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32, ink: in
           <path d={POP_SEAL_GLOBE_D} fill={mk} />
           <circle cx={c} cy={c} r="24.24" fill={face ?? s.box3} />
           <path d={POP_SEAL_SMILE_D} fill={features ?? s.tx} />
-          <g className="seal-spin" style={{ transformOrigin: '50% 50%' }}>
+          <g className={s.badgeSpin === false ? undefined : 'seal-spin'} style={{ transformOrigin: '50% 50%' }}>
             <g fill={mk}>
               <circle cx="18.25" cy={c} r="5.475" />
               <circle cx="156.544" cy={c} r="5.475" />
@@ -1513,7 +1557,7 @@ function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32, ink: in
           </g>
           <path d={GRUNGE_STAR_D} fill={s.activeFg}
                 transform={`translate(${(50 - 72 * k).toFixed(3)} ${(50 - 72.667 * k).toFixed(3)}) scale(${k.toFixed(5)})`} />
-          <g className="seal-spin" style={{ transformOrigin: '50% 50%' }}>
+          <g className={s.badgeSpin === false ? undefined : 'seal-spin'} style={{ transformOrigin: '50% 50%' }}>
             <g fill="none" stroke={s.stroke1} strokeWidth="0.8">
               <circle cx="12.26" cy="50.33" r="5.18" />
               <circle cx="88.41" cy="50.33" r="5.18" />
@@ -1565,7 +1609,7 @@ function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32, ink: in
               <path d="M26.57 50H42.52M57.46 50H73.42M50 26.36V42.31M50 57.68V73.63" />
             </g>
           </g>
-          <g className="seal-spin" style={{ transformOrigin: '50% 50%' }}>
+          <g className={s.badgeSpin === false ? undefined : 'seal-spin'} style={{ transformOrigin: '50% 50%' }}>
             <g fill="none" stroke={mk} strokeWidth={s.pop ? '3.19' : '2.39'}>
               <circle cx="12.24" cy="50" r={s.pop ? '3.99' : '4.39'} />
               <circle cx="88.41" cy="50" r={s.pop ? '3.99' : '4.39'} />
@@ -1604,7 +1648,7 @@ function SealBadge({ s, style, hue, size: sizeProp, tilt: tiltDeg = -32, ink: in
         </defs>
         <circle cx="50" cy="50" r="50" fill={disc} />
         <circle cx="50" cy="50" r="45" fill="none" stroke={ink} strokeWidth="1.6" />
-        <g className="seal-spin" style={{ transformOrigin: '50% 50%' }}>
+        <g className={s.badgeSpin === false ? undefined : 'seal-spin'} style={{ transformOrigin: '50% 50%' }}>
           <text fill={nameInk || ink} style={{
             fontSize: '9px', letterSpacing: '1.4px', fontFamily: s.label,
           }}>
@@ -1835,223 +1879,50 @@ function LimePin({ s, width, height, radius, fill, ink, glyph }) {
   )
 }
 
-// §10.2 — the top bar of layouts 1 and 4, which draw the same Figma nav: its
-// 30/20/150/23 at 1440 are this component's 24/16/123/18 × 0.82, its narrow
-// masters hand the links to a burger beside the pill at exactly the 23 and 10
-// gaps below, and both rules ramp 150/150/70. (The footer builds its own
-// columns.) Below `desktop` the links collapse to a hamburger, as they do on
-// every narrow reference frame — and the hamburger now opens; see NavMenu.
+// The top bar of layouts 1 and 4, which draw the same Figma nav: the hamburger
+// at the left, Book Now at the right, and nothing else — no wordmark, no globe,
+// no links. The links live behind the hamburger (`NavMenu`, and `HeaderRoot`'s
+// panel); the artist's name is the h1 below, not a second copy here.
 //
-// `pill` is spread onto BookPill in both arms — `Pager`'s `idle` and
-// `BookPill`'s own `glyph` precedent, additive, so HeaderV0 (which passes
-// none) is a `...undefined` no-op. The stacked header needs it: its frame
-// stands a near-black pill under a mustard offset block where the hero's is
-// the mustard pill on rust that BookPill already defaults to.
+// Under Lime, Grunge, Editorial and Pop the bar is still the frames' capsule
+// (964:58588 "Frame 50": `sem/bg` at a pill radius, 8.2 / 16.4 padding at 1440,
+// 10 / 20 narrow); Retro's is bare. Pop's fill is the one capsule fill that is
+// not opaque — `#FFFFFF` at 12% under a blur — drawn on a layer of its own under
+// the two cells, since a `backdrop-filter` makes its element the containing
+// block of every `position: fixed` descendant (Retro's NavLinks panel is one).
 //
-// Under Lime the same bar is a capsule (964:58588 "Frame 50"): `sem/bg` at a
-// pill radius, 10/10/10/20 inside it at 1440 (right 20 on both narrow masters),
-// 30 between its halves, and no rule after the wordmark. Its `BACKGROUND_BLUR`
-// is dropped — the fill under it is opaque, so the blur draws nothing. The 390
-// master is in the Tablet device mode, so its name is the 768 ramp's 21px.
-// `nameSize` overrides that one number — additive, `pill`'s precedent — for
-// the stacked header, whose 390 master (977:8867) draws the same capsule in
-// the page's own Mobile mode and so sets the name at `s.labelLg`.
-//
-// Grunge's bar (964:58600 "Frame 49") is that capsule again, box for box, so
-// `lime` below reads "the capsule" and is true for both. Grunge's own numbers:
-// the fill is Scheme 2's `sem/box/1`, which is `s.bg`'s black exactly; the
-// wordmark is Display/Title in `sem/text/1` where the links are `text/2` —
-// hence `nameColour`, `nameSize`'s shape, additive; the globe is 27.37 on both
-// narrow masters; and the 390 master closes the capsule's gap to 10, which a
-// 28px name needs to hold one row. That master is in the Tablet device mode
-// too, so its name is the 768 ramp's 28.
-// `mark` ({ glyph, gap }) and `links` ({ gap, cap }) are Grunge's layout-4
-// capsule (964:72944 "Frame 49"), additive like `nameSize`: its narrow masters
-// keep the desktop globe (36, 13.15 from the name) where the hero's shrink it,
-// and its links sit a fixed 23 apart at Label/MD rather than 23/24 em at the
-// row's size — so the gaps come off `100cqi` and `s.navEms` counts the labels
-// alone (sectionVm's `navGapEm`). Every earlier caller passes neither.
-// `clean` goes to the Wordmark with the size: a caller whose `nameSize` is a
-// label key keeps the name out of Grunge's distress mask.
-//
-// Editorial's bar (964:58612 "Frame 49") is the capsule a third time, so
-// `lime` is `s.limeTree`. Its own numbers: the fill is `sem/box/3` (#0E0E0E
-// under Scheme 3, a step below the header's `sem/bg`), opaque, so its
-// `BACKGROUND_BLUR` 44 is dropped for Lime's reason; the mark is its sparkle at
-// 44.93, desktop × 0.82 and the full 44.93 on both narrow masters; the name
-// is Grunge's Display/Title node (25 at 390, the Tablet mode again) in paper,
-// the links' ink; the 390 capsule closes its gap to 10 as Grunge's does; and
-// its links are Label/SM 16 at lh 1.1 — Lime's are Display/List 24 at 1.2 —
-// still 23 apart, so the gap is 23/16 of the row's size and the cap
-// `s.labelSm`.
-// `fill` is the capsule's ground, additive like `mark`: Editorial's layout-4
-// capsule (964:73038 "Frame 49") is a Scheme 1 node inside a Scheme 3 header,
-// so its paper `sem/bg` is `s.onScheme[1].bg` and none of the seat's keys.
-// Every other caller passes none and keeps the arm's own fill.
-//
-// Pop's bar (964:58624 "Frame 49") is the capsule a fourth time, box for box,
-// so `lime` is true for it as well and `pop` names its deltas. Its links are
-// Editorial's — Label/SM 16 at lh 1.1, 23 apart — so they share that arm; its
-// name is Display/List (Wordmark's Pop arm), 16 on both narrow masters, the
-// 390 being in the Tablet device mode again; its globe is Grunge's 27.37
-// there; and the 390 capsule closes its gap to 10 as Grunge's and
-// Editorial's do. Its fill is the one capsule fill that is not opaque —
-// `#FFFFFF` at 12% under a `BACKGROUND_BLUR` of 44 — so the blur is the first
-// a capsule keeps: CSS blur(22px), Figma's radius being twice the CSS one, ×
-// 0.82 on the desktop canvas. It is drawn on a layer of its own under the
-// bar's two halves, never on the bar: a `backdrop-filter` makes its element
-// the containing block of every `position: fixed` descendant, and NavMenu's
-// panel is one — on the bar itself the published burger would open inside
-// the capsule. The halves are `position: relative` so they paint over it.
-function NavBar({ s, colour, rule, pill, nameSize, nameColour, mark, links, clean, fill }) {
+// `pill` is spread onto BookPill; `fill` is the capsule's ground (Editorial's and
+// Pop's layout-4 capsules are a Scheme 1 node inside a Scheme 3 header). While
+// the menu is open the panel above the hero carries its own X and Book Now, so
+// this bar is hidden, not removed: the hero keeps its geometry.
+function NavBar({ s, colour, pill, fill, menu }) {
   const c = colour || s.tx
-  const bar = rule || c
-  const tab = isTablet(s)
-  const ruleW = s.mob ? '70px' : tab ? '150px' : '123px'
   const pop = s.pop
   const lime = s.limeTree
   const ed = s.editorial
-  // Pop sets its links at Editorial's Label/SM: the two share every arm below.
-  const sm = ed || pop
-  // Pop's layout-1 capsule floors its links at 11 where every other row
-  // floors at 12 (JP-114 · JP-115, user call, 2026-10-08), and the name's
-  // floor is the links' own (`fit` below). Titan's nine seeded links need
-  // 746px at 12, which left the name 77: KAI MERCER on two lines at its own
-  // 16, and a long name at the floor with Reviews on a second row. At 11 the
-  // room is 139, so the seed sets on one line and the long-name set holds the
-  // row. Layout 4's capsule takes it too (JP-127, user call, 2026-10-09): its
-  // boxes are layout 1's, and the same nine needed 733.6 of its 702.2, so the
-  // seed wrapped Reviews. Desktop alone: the 390 fit keeps 12.
-  const floor = s.grunge ? 16 : pop && (s.v0 || s.v3) && !s.narrow && !links ? 11 : 12
-  const glyph = mark?.glyph ?? (lime ? (!s.narrow ? (ed ? 36.84 : 29.5) : s.grunge || pop ? 27.37 : ed ? 44.93 : 36) : s.narrow ? 27 : undefined)
   const corner = s.narrow ? s.btnR : '30.35px'
   const glass = pop && !fill
-  // The layout-1 capsule's name gives way before its links (JP-091, user
-  // call, 2026-10-01): the room it has is the capsule's content box — the bar
-  // is the query container, `nav`'s own `cqi` rule — less the mark and its
-  // 11, the halves' 24.6, the pill's 19 and the pill itself (BookPill's 82 of
-  // padding, gap and disc × 0.82, and its label at `s.list`), less the links
-  // at their floor. `cap` is the size two lines of the name (line 1.1) fit
-  // the pill's 44.28 at, so the bar never grows. Wordmark does the sizing.
-  // Layout 4's capsule keeps its wrap where it passes `links` (Grunge's and
-  // Editorial's; JP-091's scope).
-  // Pop's name stands at line 1.2, so its two lines fit the pill at 18.45,
-  // and its floor is 11 (above): the cap over its own 16 means a name that
-  // misses one line takes two at 16 rather than shrink on one, so it is the
-  // room, not the cap, that keeps the seed on one line.
-  // Pop's layout-4 capsule takes the fit as well (JP-127, user call,
-  // 2026-10-09; its name is `s.labelLg` 20, over the same cap). Its mark, gaps
-  // and pill are this one's to the pixel, so the room's constants hold, and
-  // the long-name set keeps the row there too. Lime's layout-4 capsule passes
-  // no `links` either, and wraps nothing, hence the `pop`.
-  // At 390 the name gives way to the pill (JP-101, user call, 2026-10-05), in
-  // layouts 1 and 4 alike, since there the links are behind the burger. Its
-  // room is up to the pill: the left half, which is the query container
-  // there, plus the halves' gap, less the mark and its gap. It keeps its size
-  // while one line fits, else wraps between words, balanced, onto two lines
-  // at the size the longer one fits, and the bar grows by the line. Below the
-  // floor it takes a third, and a word too wide even at the floor goes under
-  // it (`word`), so no name reaches the pill or breaks inside a word.
-  const halves = lime ? ((s.grunge || ed || pop) && s.mob ? '10px' : s.narrow ? '30px' : '24.6px') : s.mob ? '10px' : tab ? '30px' : '24px'
-  const markGap = mark?.gap ?? (s.lime || pop ? (pop ? '10px' : '13px') : '10px')
-  const fit = !lime || !s.navNameFit ? undefined : s.mob ? {
-    narrow: true, room: `(100cqi + ${halves} - ${glyph}px - ${markGap})`,
-    two: s.navNameFit.two, word: s.navNameFit.word, floor: `${floor}px`,
-  } : !s.narrow && !links && (s.v0 || pop && s.v3) ? {
-    room: `(100cqi - ${+(glyph + 11 + 24.6 + 19 + 82 * 0.82).toFixed(2)}px - ${s.navNameFit.pill} * ${s.list} - ${s.navEms} * ${floor}px)`,
-    one: s.navNameFit.one, two: s.navNameFit.two, cap: pop ? '18.45px' : '20.1px', floor: `${floor}px`,
-  } : undefined
   return (
-    <div style={row(halves, {
+    <div style={row(s.mob ? '10px' : '24px', {
       justifyContent: 'space-between', width: '100%',
-      // The desktop corner is the one-row bar's own half-height, 60.7 / 2,
-      // not the pill token: one row draws the frame's capsule exactly, and a
-      // page with so many sections that the links wrap even at their 12px
-      // floor (see the row below) gets a rounded bar, not a lozenge.
+      visibility: menu?.open ? 'hidden' : undefined,
       ...(lime ? {
         background: glass ? undefined : fill ?? (ed ? s.box3 : s.bg), borderRadius: corner,
         padding: s.narrow ? '10px 20px' : '8.2px 8.2px 8.2px 16.4px',
       } : null),
       ...(glass ? { position: 'relative' } : null),
-      ...(fit && !fit.narrow ? { containerType: 'inline-size' } : null),
     })}>
       {glass && <span aria-hidden style={{
         position: 'absolute', inset: 0, borderRadius: corner, pointerEvents: 'none',
         background: 'rgba(255,255,255,0.12)',
         backdropFilter: `blur(${s.narrow ? 22 : 18}px)`, WebkitBackdropFilter: `blur(${s.narrow ? 22 : 18}px)`,
       }} />}
-      <div style={row(s.narrow ? '20px' : '16px', {
-        flex: s.narrow ? 1 : '0 1 auto', minWidth: 0, ...(glass && { position: 'relative' }),
-        ...(fit?.narrow && { containerType: 'inline-size' }),
-      })}>
-        <Wordmark s={s} logo glyph={glyph}
-                  size={lime && s.mob ? (nameSize ?? (s.grunge ? '28px' : ed ? '25px' : pop ? '16px' : '21px')) : mark ? nameSize : undefined}
-                  gap={mark?.gap} color={nameColour || c} clean={clean} fit={fit} />
-        {/* §10.2 draws a 150px rule after the wordmark — 70px on the 390 frame,
-            123px on the 1180 canvas. It has to yield rather than push the Book
-            Now pill onto a second line: the nav carries the page's own section
-            names, which run longer than the reference's. */}
-        {!lime && <span style={{
-          height: '2px', background: bar, flex: `0 1 ${ruleW}`,
-          maxWidth: ruleW, minWidth: s.narrow ? '30px' : '0px',
-        }} />}
-      </div>
-      {s.narrow ? (
-        <span style={row(tab ? '23px' : '10px', glass ? { position: 'relative' } : undefined)}>
-          <BookPill s={s} to={s.bookTo} {...pill} />
-          <NavMenu s={s} color={c} />
-        </span>
-      ) : lime ? (
-        // Lime's frame holds its links and the pill on one row, and a capsule
-        // that wraps is not one of its states — but the links are the artist's
-        // section names, and the seeded eleven give nine that run far longer
-        // than the frame's eight. So the links take the room the wordmark and
-        // the pill leave, and their type is that room divided by the row's own
-        // width in ems (`s.navEms`, Bebas Neue's advances summed in sectionVm),
-        // capped at the frame's `s.list` and floored at 12px (Pop's layouts 1 and 4
-        // at 11, JP-114 · JP-115 and JP-127, the `floor` above). The gaps are ems
-        // too, so the row shrinks as one. `nav` is the query container and the
-        // row inside it takes the size: `cqi` resolves against an *ancestor*.
-        // Below the floor it wrapped, "the least bad of the options left" —
-        // *reversed* for layout 1 (JP-091, user call, 2026-10-01): there the
-        // name gives way first (`fit` above), so the links keep one row at the
-        // floor whatever the artist is called. They still wrap in layout 4's
-        // capsule where it passes `links` (Grunge's and Editorial's; Pop's took
-        // the name fit too, JP-127), and in layouts 1 and 4 only when a pill label
-        // leaves the name nothing but its own floor.
-        // Grunge's labels are `faced`, 0.75 of the row's size, so its floor is
-        // 16 to keep them at 12, and `s.navEms` already counts them at 0.75.
-        <span style={row('19px', { flex: '1 1 0', minWidth: 0, justifyContent: 'flex-end', ...(glass && { position: 'relative' }) })}>
-          <nav style={{ flex: '1 1 0', minWidth: 0, containerType: 'inline-size' }}>
-            <div style={{
-              display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'flex-end',
-              ...(links ? {
-                gap: links.gap,
-                fontSize: `clamp(12px, calc((100cqi - ${links.gap} * ${Math.max(0, s.navLinks.length - 1)}) / ${s.navEms}), ${links.cap})`,
-              } : {
-                gap: `${sm ? 23 / 16 : 23 / 24}em`,
-                fontSize: `clamp(${floor}px, calc(100cqi / ${s.navEms}), ${sm ? s.labelSm : s.list})`,
-              }),
-            }}>
-              {s.navLinks.map((l) => (
-                <a key={l.label} href={navHref(s, l.to)}
-                   style={labelStyle(s, '1em', { color: c, cursor: 'pointer', lineHeight: sm ? 1.1 : 1.2, letterSpacing: s.dls })}>{l.label}</a>
-              ))}
-            </div>
-          </nav>
-          <BookPill s={s} to={s.bookTo} {...pill} />
-        </span>
-      ) : (
-        <nav style={row('18px', {
-          flexWrap: 'wrap', justifyContent: 'flex-end', flex: '1 1 auto', minWidth: 0,
-        })}>
-          {s.navLinks.map((l) => (
-            <a key={l.label} href={navHref(s, l.to)}
-               style={labelStyle(s, s.labelMd, { color: c, cursor: 'pointer' })}>{l.label}</a>
-          ))}
-          <BookPill s={s} to={s.bookTo} {...pill} />
-        </nav>
-      )}
+      <span style={row('0px', glass ? { position: 'relative' } : undefined)}>
+        <NavMenu s={s} color={c} menu={menu} />
+      </span>
+      <span style={row('0px', glass ? { position: 'relative' } : undefined)}>
+        <BookPill s={s} to={s.bookTo} {...pill} />
+      </span>
     </div>
   )
 }
@@ -2071,7 +1942,7 @@ function NavBar({ s, colour, rule, pill, nameSize, nameColour, mark, links, clea
 // edge, the identity block sits on the floor of the frame, and the seal floats
 // in the upper right. This is the one section that breaks the root padding —
 // see the `bleed` flag on the root.
-function HeaderV0({ s }) {
+function HeaderV0({ s, menu }) {
   const centred = s.align === 'centre'
   // Both reference frames are transcribed verbatim (§5.5). 768: 30px gutters,
   // a 144px portrait card, identity stacked 40/24/36/30. 390: 10px gutters, a
@@ -2197,8 +2068,7 @@ function HeaderV0({ s }) {
              style={grunge ? { maskImage: `linear-gradient(0deg, transparent 0%, #000 ${s.narrow ? 16.3 : 31.4}%)` } : undefined} />
 
       <div style={{ position: 'relative' }}>
-        <NavBar s={s} colour={pop ? S3.ac : ink} rule={s.chips[3]?.bg || s.ac}
-                nameColour={grunge ? s.ac : undefined}
+        <NavBar s={s} menu={menu} colour={pop ? S3.ac : ink}
                 pill={grunge ? { fg: G2.bg } : pop ? { bg: S3.activeBg, fg: S3.bg } : undefined} />
       </div>
 
@@ -2277,35 +2147,9 @@ function HeaderV0({ s }) {
             width: s.mob ? '100%' : undefined,
             ...(ed || pop ? { containerType: 'inline-size', ...(!s.mob && { flex: '1 1 0' }) } : null),
           })}>
-            {lime ? (
-              // Lime: Display/List in `sem/text/2` and `sem/text/1`, after a
-              // 14px *ring* in `sem/stroke/2` where Retro's dot is filled.
-              // Editorial's kicker is `sem/text/2` as well, one ink for both.
-              // Pop's row is Label/SM at its 1.1 — 13 on both narrow masters,
-              // the 390's Tablet mode — the location in `sem/active/text`
-              // (`ink`) and the kicker in `sem/text/1`, Lime's.
-              <div style={row(s.narrow ? '30px' : '25px', { flexWrap: 'wrap' })}>
-                <span style={row(s.narrow ? '8px' : '6.6px')}>
-                  <span style={{
-                    width: s.narrow ? '14px' : '11.5px', height: s.narrow ? '14px' : '11.5px',
-                    borderRadius: '999px', border: `1px solid ${s.stroke2}`, flex: 'none',
-                  }} />
-                  <span style={labelStyle(s, pop ? tk.labelSm : tk.list, { color: ink, lineHeight: pop ? 1.1 : 1.2, letterSpacing: s.dls })}>{s.location}</span>
-                </span>
-                <span style={labelStyle(s, pop ? tk.labelSm : tk.list, { color: ed ? ink : s.ac, lineHeight: pop ? 1.1 : 1.2, letterSpacing: s.dls })}>{s.kicker}</span>
-              </div>
-            ) : (
-              <div style={row(s.mob || tab ? '30px' : '25px', { flexWrap: 'wrap' })}>
-                <span style={row('8px')}>
-                  <span style={{
-                    width: '14px', height: '14px', borderRadius: '7px',
-                    background: s.pillBg, flex: 'none',
-                  }} />
-                  <span style={labelStyle(s, s.labelMd, { color: ink })}>{s.location}</span>
-                </span>
-                <span style={labelStyle(s, s.labelMd, { color: ink })}>{s.kicker}</span>
-              </div>
-            )}
+            {/* The location, its marker and the act type above the name are gone
+                (header-nav ticket, 2026-11-11): the values still feed the bio, the
+                calendar and the form, and this block opens on the name. */}
             {/* Lime's title is one tone, `sem/text/1`. Grunge's is two again,
                 `text/2` then `text/1`, and its 390 master holds the 95 on
                 one line, so the words stay inline there and break only when
@@ -2455,7 +2299,7 @@ function HeaderV0({ s }) {
 // (`984:34636`) masters lead with the photograph instead of the identity block,
 // and both hand the links to NavMenu — the way every Retro header collapses
 // below desktop, and for the reason the nav's own comment gives.
-function HeaderV1({ s }) {
+function HeaderV1({ s, menu }) {
   if (s.limeTree) {
     // Lime's Feature spread (964:64580 at 1440, 986:11848 at 768, 986:11867 at
     // 390). The same skeleton as Retro's frame — a nav over two columns, the
@@ -2563,110 +2407,18 @@ function HeaderV1({ s }) {
     const capsule = {
       background: s.bg, boxShadow: ring(s.stroke2), padding: `${u(8)} ${u(18)}`,
     }
-    // Grunge's capsule gaps its links a fixed 18 at every width (16px type at
-    // 1440, 13 at 768), where Lime's block carries the gap in ems of the row.
-    // So under Grunge `s.navEms` is the labels alone (sectionVm strips the em
-    // gap term for this layout) and the gaps are a fixed box in the budget
-    // beside the capsule's padding. Editorial's capsule is gapped the same
-    // fixed 18 (at 16px type at 1440, 13 at 768), and sectionVm strips its em
-    // gap at this layout alone. So is Pop's, at 16px type and at 13.
-    const navGaps = grunge || ed || pop ? u(18 * Math.max(0, s.navLinks.length - 1)) : '0px'
-    // The desktop links' budget: the whole row (the query container) less the
-    // name, Listen and the pill's label (their Bebas ems at their own sizes,
-    // resolved in sectionVm beside `s.navEms`) and every fixed box beside them —
-    // the capsule's 18 + 18, the row's two 16 gaps, Listen's 12 and the pill's
-    // 17.92 + 4.27 padding, 8.53 gap and 27.6 disc.
-    const reserve = `(${s.navNameEms} * ${s.labelLg} + ${s.navCtaEms} * ${s.labelSm} + ${u(138.32)} + ${navGaps})`
-    // The 12 floor holds under Grunge too, though its labels are `faced` to
-    // 0.75 of it (9px): this bar caps its links at Label/SM, 13.12 unfaced,
-    // and a floor above the cap wins a `clamp` outright — NavBar's 16 is for
-    // a bar capped at `s.list`. So Grunge's links can only shrink from their
-    // 9.84 to 9 before the capsule wraps, which the seeded nine never reach.
-    const linkSize = `clamp(12px, calc((100cqi - ${reserve}) / ${s.navEms}), ${s.labelSm})`
-    // At 390 the name gives way between the burger and the pill (JP-121,
-    // user call, 2026-10-09), which a long one ran over and pushed off the
-    // page: both cells hold their content, so the name stays centred while
-    // it fits and slides toward the narrower side when it does not, and its
-    // room is the row (the query container at this width too) less the
-    // burger's capsule (26 and 18 + 18), the pill and the row's two gaps. In
-    // that room it takes NavBar's narrow fit (JP-101): its size while one line
-    // fits, else two balanced lines at the size the longer fits, a 12 floor
-    // (Grunge's nominal 16), a third line below it, and a word too wide even
-    // at the floor under it. The pill is BookPill's box at this width — the
-    // padding, gap and disc it is given below, × `pk`, and its label in the
-    // faces' ems: 12.07 under Pop and Grunge, whose 390 label is Anton
-    // unfaced (`style` below), so its ems shed `navFace`'s 0.75; Label/SM
-    // elsewhere. The bar states its height as a minimum, so a third line
-    // grows it. Editorial keeps its row (user call, 2026-10-07): its accepted
-    // remainder of JP-101.
-    const pillEms = grunge ? +(s.navNameFit?.pill / s.faceK).toFixed(3) : s.navNameFit?.pill
-    const fit = s.mob && !ed && s.navNameFit ? {
-      narrow: true,
-      room: `(100cqi - 26px - 2 * ${u(18)} - ${pp(17.92)} - ${pp(8.53)} - ${27.6 * pk}px - ${pp(4.27)}`
-        + ` - ${pillEms} * ${pop || grunge ? '12.07px' : s.labelSm} - 2 * ${u(16)})`,
-      two: s.navNameFit.two, word: s.navNameFit.word, floor: grunge ? '16px' : '12px',
-    } : undefined
-    const namePx = fitName(fit, s.labelLg)
+    // The bar is the burger's capsule on the left and the pill on the right and
+    // nothing between them (header-nav ticket, 2026-11-11): no links capsule, no
+    // centred name, no Listen. The links are `MenuPanel`'s, above the hero, and
+    // the bar hides while that is open.
     const nav = (
       <div style={row(u(16), {
         minHeight: u(navH), margin: `calc(${u(navTop)} - ${s.padY}) ${navInset} 0`,
-        containerType: nar && !fit ? undefined : 'inline-size',
+        justifyContent: 'space-between', ...(menu?.open ? { display: 'none' } : null),
       })}>
-        {/* The frame's thirds are two equal cells round the wordmark (its two
-            1px "rules" are empty frames that only spread them), so the name is
-            centred. The artist's section names rarely fit a third — the seeded
-            nine wrapped to two rows in the editor, the setup modal and the
-            published 1440 alike — and a capsule on two rows is not one of the
-            frame's states. So the links take the room the rest of the row
-            leaves (NavBar's Lime rule), capped at the frame's Label/SM and
-            floored at 12, and the left cell may not shrink below that one row:
-            the name stays centred whenever the links fit their half and slides
-            right when they do not. Only below the floor, where the one row
-            outgrows the room, does the cell stop at the room and the capsule
-            wrap, its corner the one-row half-height. The 390 master hands the
-            links to the burger, which stands in the same capsule. The 768 one
-            draws them, so tablet does too whenever the one row holds them
-            (`s.navFits`, summed in sectionVm at this bar's own sizes — JP-039):
-            at Label/SM with no budget to divide, the cell pinned at the
-            capsule's own width so it cannot wrap. The seeded nine do not fit,
-            and keep the burger. At 390 (`fit`) the burger's capsule is pinned
-            the same way, so a long name can no longer run over it. */}
-        <div style={{
-          flex: '1 1 0', display: 'flex',
-          minWidth: nar ? (s.navFits || fit ? 'max-content' : 0) : `min(calc(${s.navEms} * ${linkSize} + ${u(36)} + ${navGaps}), calc(100cqi - ${reserve} + ${u(36)} + ${navGaps}))`,
-        }}>
-          {nar && !s.navFits ? (
-            <span style={{ ...capsule, borderRadius: s.btnR, display: 'flex' }}>
-              <NavMenu s={s} color={s.tx} />
-            </span>
-          ) : (
-            <nav style={{
-              ...capsule, borderRadius: u(18), maxWidth: '100%',
-              display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: grunge || ed || pop ? u(18) : `${23 / 24}em`,
-              fontSize: nar ? s.labelSm : linkSize,
-            }}>
-              {s.navLinks.map((l) => (
-                <a key={l.label} href={navHref(s, l.to)}
-                   style={labelStyle(s, '1em', { color: s.ac, cursor: 'pointer' })}>{l.label}</a>
-              ))}
-            </nav>
-          )}
-        </div>
-        {/* Pop's name is `sem/text/1`, pink, at 1440 and 768 and `text/2`,
-            violet, at 390 — the burger's ink there, NavMenu's `s.tx`. A
-            wrapped name centres its lines in the room, as the bar centres the
-            name. */}
-        <span style={labelStyle(s, namePx, {
-          color: pop && !s.mob ? s.ac : s.tx, flex: 'none', ...fitBox(fit, namePx), ...(fit && { textAlign: 'center' }),
-        })}>{s.brand}</span>
-        <div style={row(u(12), { flex: '1 1 0', justifyContent: 'flex-end', ...(fit && { minWidth: 'max-content' }) })}>
-          {/* ListenLink's base weight is 700, which Bebas Neue (one cut) can
-              only synthesise. 390 drops the link, as Retro's master does.
-              Pop's is `sem/text/1`, pink. */}
-          {!s.mob && (
-            <ListenLink s={s} to={s.listenTo}
-                        style={labelStyle(s, s.labelSm, { color: pop ? s.ac : s.tx, fontWeight: 400 })} />
-          )}
+        <span style={{ ...capsule, borderRadius: s.btnR, display: 'flex', flex: 'none' }}>
+          <NavMenu s={s} color={s.tx} menu={menu} />
+        </span>
           {/* Scheme 4's pale pill. Its DROP_SHADOW 5 / 5 is `#15180F` on the
               `#15180F` page, so it draws nothing (sampled) and is not drawn. */}
           {/* Grunge's is the Scheme-3 node at 1440 and 768 — red under black
@@ -2704,7 +2456,6 @@ function HeaderV1({ s }) {
                       ...(grunge && s.mob ? { boxShadow: `3.77px 3.77px 0 ${s.ac}`, fontSize: '12.07px' } : null),
                       ...(pop ? { boxShadow: `${pp(5)} ${pp(5)} 0 ${navPill.ac}` } : null),
                     }} />
-        </div>
       </div>
     )
 
@@ -2789,11 +2540,6 @@ function HeaderV1({ s }) {
     // three, so the container moves nothing.
     const identity = (
       <div style={col(u(18), { alignItems: 'flex-start', minWidth: 0, containerType: 'inline-size' })}>
-        {s.heroAvail && <span style={{
-          boxShadow: ring(s.stroke2), borderRadius: s.btnR, padding: `${u(6)} ${u(12)}`,
-          fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4, color: s.ac,
-          whiteSpace: 'normal', maxWidth: '100%', boxSizing: 'border-box',
-        }}>{`● ${s.heroAvail}`}</span>}
         {/* Grunge's title is two-tone — `sem/text/2` then `text/1`, the hero's
             own split — where Lime's is one tone. It wraps between words, and
             shrinks below the ramp only when its widest word would outrun the
@@ -2812,9 +2558,6 @@ function HeaderV1({ s }) {
         <Title s={s} size={s.cardNameEms ? `min(${s.dispLg}, calc(100cqi / ${s.cardNameEms}))` : s.dispLg}
                color={s.tx} lh={0.89} inline twoTone={grunge} toneA={s.tx} toneB={s.ac}
                style={pop ? { position: 'relative', top: '-0.14em' } : undefined} />
-        <p style={{
-          margin: 0, fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5, color: s.ac, width: '100%', whiteSpace: 'pre-line',
-        }}>{s.subtitle}</p>
         {/* BookPill's Lime defaults exactly: 246 × 54 at 1440 is its 0.82, 212 at
             768 its full size, and 390 keeps the full size too. Pop's is its
             box again on Scheme 3: `text/1` lime under a `sem/bg` pink label
@@ -2910,29 +2653,8 @@ function HeaderV1({ s }) {
         {dashed}
       </div>
     )
-    // The place card is `sem/box/1/text` on Scheme 1, `#C7FF3C` — `s.hl` — in a
-    // `sem/bg` rule, and inked in `sem/bg` throughout. Grunge's is the same key
-    // (white) in a *white* rule — `scheme/3/stroke/2`, white on white, which
-    // the render confirms draws nothing — so the ring is the fill's own.
-    // Editorial's `s.hl` is ink under paper type, and its pin tile is
-    // 89 × 90.65 with no fill, only the `sem/bg` ring round the paper pin.
-    // Pop's stands on Scheme 6 and fills its `sem/text/2` — pink, not the
-    // scheme's violet — in a ring named outright, `scheme/3/stroke/2` (lime);
-    // its tile is an arch, 88 × 165 at 1440 and 107 × 165 narrow, with no
-    // fill, ringed and pinned in Scheme 6's `text/1` lime round the pin at
-    // its own size; its title is that lime and its body `text/3`, white.
-    const S6 = pop && s.onScheme[6]
-    const placeCard = (
-      <div style={card(pop ? S6.tx : s.hl, pop ? s.onScheme[3].stroke2 : grunge ? s.hl : s.bg, 18)}>
-        {ed
-          ? <LimePin s={s} width={u(89)} height={u(90.65)} radius={0} fill="transparent" />
-          : pop
-            ? <LimePin s={s} width={u(nar ? 107 : 88)} height={u(165)} radius={u(110)} fill="transparent" ink={S6.ac} glyph={u(88)} />
-            : <LimePin s={s} width={u(88)} height={u(89)} radius={u(20)} />}
-        {cardText(s.location, s.placeBody, pop ? S6.ac : s.bg, pop ? S6.text3 : s.bg)}
-        {dashed}
-      </div>
-    )
+    // The place card (the location as a card) is gone with the header's Location
+    // (header-nav ticket, 2026-11-11): the face card stands alone.
 
     return (
       <div style={col(u(navGap))}>
@@ -2942,7 +2664,7 @@ function HeaderV1({ s }) {
             {hero}
             <div style={col('30px')}>
               {identity}
-              <div style={col('16px')}>{faceCard}{placeCard}</div>
+              <div style={col('16px')}>{faceCard}</div>
             </div>
           </div>
         ) : tab ? (
@@ -2952,17 +2674,19 @@ function HeaderV1({ s }) {
                 twins' centre them. */}
             <div style={row('60px', ed ? { alignItems: 'flex-start' } : undefined)}>
               <div style={{ flex: '1 1 0', minWidth: 0 }}>{identity}</div>
-              <div style={col('16px', { flex: '1 1 0', minWidth: 0 })}>{faceCard}{placeCard}</div>
+              <div style={col('16px', { flex: '1 1 0', minWidth: 0 })}>{faceCard}</div>
             </div>
           </div>
         ) : (
           // Pop's spread is 762 tall, its photograph 74 taller than the twins'.
           <div style={row(u(56), { height: u(pop ? 762 : 688), alignItems: 'stretch' })}>
             {hero}
-            <div style={col(u(60), { flex: '1 1 0', minWidth: 0 })}>
+            <div style={col(u(60), { flex: '1 1 0', minWidth: 0, justifyContent: 'space-between' })}>
               {identity}
-              <div style={row(u(16), { flex: 1, minHeight: 0, alignItems: 'stretch' })}>
-                {faceCard}{placeCard}
+              {/* Pop's stadium clips a card as short as its content, so it keeps the
+                  stretched height the pair had; the others stand on the floor. */}
+              <div style={row(u(16), pop ? { flex: 1, minHeight: 0, alignItems: 'stretch' } : { flex: 'none', alignItems: 'stretch' })}>
+                {faceCard}
               </div>
             </div>
           </div>
@@ -2996,7 +2720,7 @@ function HeaderV1({ s }) {
         }
       : {
           flex: 1, minWidth: 0, borderRadius: '25px', padding: '23px 21px',
-          border: `2.5px solid ${olive}`, ...col('0', { justifyContent: 'space-between' }),
+          border: `2.5px solid ${olive}`, ...col('14px', { justifyContent: 'space-between' }),
         }),
   }
   // The cards' copy is the artist's (JP-059): each line drops when emptied,
@@ -3031,6 +2755,9 @@ function HeaderV1({ s }) {
     }}>{kids}</nav>
   )
 
+  // Hamburger left, Book Now right, nothing between (header-nav ticket,
+  // 2026-11-11): no centred name, no Listen, no links capsule. The bar hides
+  // while `MenuPanel` is open above the hero.
   const nav = (
     // The frame floats its nav 30px from the frame's own top, well above the
     // 144px inset the spread starts at — and the root's padding is the only
@@ -3041,56 +2768,14 @@ function HeaderV1({ s }) {
     // 390, where the whole bar sits much higher up the page.
     <div style={row(nar ? '16px' : '13px', {
       width: '100%', marginTop: `calc(${s.mob ? '18px' : '38px'} - ${s.padY})`,
+      justifyContent: 'space-between', ...(menu?.open ? { display: 'none' } : null),
     })}>
-      {/* The 768 master fills the capsule with links and the 390 one with the
-          burger — but its three links are the *component's* default, and
-          `navLinks` is the artist's page: the seeded eleven sections give
-          nine, which at the master's own 16px comes to 576px of type — 720
-          with the capsule's eight 18px gaps — inside a 688px canvas
-          that also seats the wordmark, Listen and the pill (measured on the
-          visitor's words, JP-033; the sidebar's names it used to print came to
-          651). So at 768 the links draw only when the bar's one row holds
-          them (`s.navFits`, summed in sectionVm — JP-039), at Listen's own
-          16, which Minimal's three do and the seeded nine do not; otherwise
-          the burger holds, as it does in Retro layouts 1 and 4 below desktop
-          (5 and 6 keep NavLinks' row down to 768). The capsule the burger
-          stands in is the master's either way. */}
-      {s.narrow && !s.navFits
-        ? navCapsule(<NavMenu s={s} color={ink} />)
-        : navCapsule(s.navLinks.map((l) => (
-            <a key={l.label} href={navHref(s, l.to)}
-               style={labelStyle(s, tab ? '16px' : '13px', { color: s.ac, cursor: 'pointer' })}>{l.label}</a>
-          )))}
-      {!s.mob && <span style={{ flex: 1 }} />}
-      {/* The masters emit `size/label-lg, 24px` here, which is the component's
-          default and not either instance's: measured off the renders' own cap
-          bands and set widths, 768 draws the wordmark at the desktop canvas's
-          own 20 and 390 a register under it. The frames' face is ~0.80 of
-          Anton's set width, so widths only compare once that is divided out —
-          cap height is the invariant to size against. */}
-      {/* At 390 the name takes the room between the burger and the pill and
-          wraps in it, balanced, centred as the two spacers centred it: a name
-          and a label at their caps (*The Midnight Hour Band*, *Book a Free
-          Call*) no longer push the pill off the page (JP-137). A word wider
-          than the room breaks rather than reach the pill. */}
-      <span style={labelStyle(s, s.mob ? '17px' : '20px', {
-        color: ink,
-        ...(s.mob && {
-          flex: '1 1 0', minWidth: 0, textAlign: 'center', whiteSpace: 'normal',
-          textWrap: 'balance', overflowWrap: 'anywhere',
-        }),
-      })}>{s.brand}</span>
-      {!s.mob && <span style={{ flex: 1 }} />}
-      <span style={row(nar ? '12px' : '10px', { flex: 'none' })}>
-        {!s.mob && (
-          <ListenLink s={s} to={s.listenTo} style={labelStyle(s, tab ? '16px' : '13px', { color: ink })} />
-        )}
-        {/* 768 takes BookPill's own tablet scale; 390's master draws it at
-            × 0.75 of that, where the `small` scale — cut for the *layout-1*
-            390 header — is × 0.62, so only the disc has to be named. */}
-        <BookPill s={s} to={s.bookTo} glyph="arrow"
-                  size={tab ? '16px' : undefined} disc={s.mob ? 21 : undefined} />
-      </span>
+      {navCapsule(<NavMenu s={s} color={ink} menu={menu} />)}
+      {/* 768 takes BookPill's own tablet scale; 390's master draws it at
+          × 0.75 of that, where the `small` scale — cut for the *layout-1*
+          390 header — is × 0.62, so only the disc has to be named. */}
+      <BookPill s={s} to={s.bookTo} glyph="arrow"
+                size={tab ? '16px' : undefined} disc={s.mob ? 21 : undefined} />
     </div>
   )
 
@@ -3100,46 +2785,14 @@ function HeaderV1({ s }) {
         position: 'relative', height: '100%', overflow: 'hidden',
         background: mount, borderRadius: nar ? '30px' : '25px', boxShadow: soft(s),
         transform: tilt(s, 2),
-        padding: tab ? '20px 0 20px 20px' : s.mob ? '10px 0 10px 10px' : '16px 0 16px 16px',
+        padding: tab ? '20px' : s.mob ? '10px' : '16px',
         ...row('0', { alignItems: 'stretch' }),
       }}>
         <div style={{ flex: 1, minWidth: 0, borderRadius: nar ? '11px' : '9px', overflow: 'hidden' }}>
           <Photo s={s} initialsSize={72} />
         </div>
-        {/* The mount's rail: the same globe-over-vertical-location column the
-            layout-1 bio's polaroid carries, in the frame's olive. 768 pins it at
-            90; 390 lets it take its content's width, which is the globe's. It
-            clips, because `s.location` is the artist's and the 390 card is only
-            206 tall — the frame's own rail carries `overflow-clip` for the same
-            reason. */}
-        <div style={col('0', {
-          width: tab ? '90px' : s.mob ? undefined : '74px', flex: 'none',
-          padding: nar ? '6px 12px' : '5px 10px', overflow: 'hidden',
-          alignItems: 'center', justifyContent: 'space-between',
-        })}>
-          <div style={col(nar ? '10px' : '8px', { alignItems: 'center', flex: 'none' })}>
-            <span style={{ transform: 'rotate(-90deg)' }}><GlobeMark size={nar ? 27 : 22} color={olive} /></span>
-            {/* vertical-rl reads top-down; the frame's label runs the other way.
-                Sized off the two renders' own set widths rather than off the
-                emitted `size/label-md`: the frames' face runs ~0.76 of Anton's
-                width, so transcribing its 20 would set this line a third longer
-                than the frame draws it — and at 390 that is a third of a rail
-                only 169 tall. */}
-            <span style={labelStyle(s, tab ? '17px' : '16px', {
-              color: olive, writingMode: 'vertical-rl', transform: 'rotate(180deg)',
-            })}>{s.location}</span>
-          </div>
-          {/* The rule is the one thing in the rail that is *not* the desktop
-              component's number at 390: the card is 206 tall there, so the frame
-              cuts 191 down to 37. It is also the only part of the rail that can
-              afford to give way, so it is the one that shrinks — `s.location` is
-              the artist's, and a long one would otherwise push the rule out of
-              the clip and leave the rail looking unfinished. */}
-          <span style={{
-            width: '2px', height: tab ? '191px' : s.mob ? '37px' : '157px',
-            background: olive, flex: s.mob ? '0 1 auto' : 'none', minHeight: 0,
-          }} />
-        </div>
+        {/* The mount's rail (the globe over the vertical location) went with the
+            header's Location (header-nav ticket, 2026-11-11). */}
         <Grain s={s} exact blend="screen" opacity={0.5} radius={nar ? '30px' : '25px'} />
       </div>
       {/* The 1440 frame hangs the seal off the mount's bottom-*left* corner; both
@@ -3157,24 +2810,12 @@ function HeaderV1({ s }) {
 
   const identity = (
     <div style={col(nar ? '18px' : '15px', { alignItems: 'flex-start' })}>
-      {/* The artist's (JP-059): emptied, no pill, and a long one wraps inside
-          the column, as the hero pill does. The "●" is the markup's. */}
-      {s.heroAvail && <span style={{
-        border: `1px solid ${olive}`, borderRadius: '999px',
-        padding: nar ? '6px 12px' : '5px 10px',
-        fontFamily: s.body, fontSize: nar ? '12px' : '10px', lineHeight: 1.4,
-        color: s.ac, whiteSpace: 'normal', maxWidth: '100%', boxSizing: 'border-box',
-      }}>{`● ${s.heroAvail}`}</span>}
       {/* 768 sets the hero at the canvas's own `h1`, which is the frame's 59.5
           to within half a pixel; 390 sets it a register smaller than that, at
           `dispLg`. Measured off both renders' cap bands, not off the emitted
           `size/display-lg`, whose 96 is the component's default. */}
       <Title s={s} size={tab ? s.h1 : s.dispLg} lh={0.89} inline
              twoTone toneA={mustard} toneB={s.ac} />
-      <p style={{
-        margin: 0, fontFamily: s.body, fontSize: nar ? '16px' : '13px', lineHeight: 1.5,
-        color: s.ac, width: '100%', whiteSpace: 'pre-line',
-      }}>{s.subtitle}</p>
       {/* Both narrow masters draw this pill at the *same* full-scale box the
           768 one does — `full` is what buys that at 390, where BookPill would
           otherwise take its `small` scale and hang a 46px disc off a pill
@@ -3202,26 +2843,13 @@ function HeaderV1({ s }) {
       )}
     </div>
   )
-  const placeCard = (
-    <div style={{ ...card, background: mustard }}>
-      <div style={{
-        width: nar ? '88px' : '72px', height: nar ? '88px' : '72px', flex: 'none',
-        borderRadius: nar ? '20px' : '16px', background: s.ac,
-        color: mustard, ...row('0', { justifyContent: 'center' }),
-      }}><MapPin size={nar ? 46 : 38} /></div>
-      {cardText(
-        cardTitle(s.location, s.ac),
-        cardBody(s.placeBody, ink),
-      )}
-    </div>
-  )
   // Side by side on the 1180 canvas, stacked on both narrow ones — where each
   // card has turned on its side, so the pair reads as two rows either way.
   const subCards = nar ? (
-    <div style={col('16px', { width: '100%' })}>{faceCard}{placeCard}</div>
+    <div style={col('16px', { width: '100%' })}>{faceCard}</div>
   ) : (
-    <div style={row('13px', { flex: 1, minHeight: 0, alignItems: 'stretch', width: '100%' })}>
-      {faceCard}{placeCard}
+    <div style={row('13px', { flex: 'none', alignItems: 'stretch', width: '100%' })}>
+      {faceCard}
     </div>
   )
 
@@ -3256,7 +2884,7 @@ function HeaderV1({ s }) {
       ) : (
         <div style={row('46px', { height: '540px', alignItems: 'stretch' })}>
           {photoCard}
-          <div style={col('49px', { flex: 1, minWidth: 0 })}>
+          <div style={col('49px', { flex: 1, minWidth: 0, justifyContent: 'space-between' })}>
             {identity}
             {subCards}
           </div>
@@ -3313,7 +2941,7 @@ function HeaderV1({ s }) {
 // ramped, the header's own layout-2 lesson holding for a third master. **Only
 // 390 reflows**: the polaroid leaves the corner for a centred row under the
 // checker, Listen is dropped, and the card's radius halves.
-function HeaderV2({ s }) {
+function HeaderV2({ s, menu }) {
   const desk = !s.narrow
   const tab = isTablet(s)
   const z = desk ? 0.82 : 1
@@ -3427,87 +3055,23 @@ function HeaderV2({ s }) {
     // `stroke/1`, the links its lime `text/1` — Lime's own keys under the
     // seat. The name and Listen are `text/3`, white; the burger's bars
     // `text/2`, the seat's pink `s.tx`.
-    const links = desk || !!s.navFits
-    const linkCap = grunge ? s.labelMd : s.labelSm
-    const navGaps = grunge || ed || pop ? u(18 * Math.max(0, s.navLinks.length - 1)) : '0px'
-    const reserve = `(${s.navNameEms} * ${s.labelLg} + ${s.navCtaEms} * ${s.labelSm} + ${u(138.32)} + ${navGaps})`
-    const linkSize = `clamp(12px, calc((100cqi - ${reserve}) / ${s.navEms}), ${linkCap})`
+    // Hamburger in its capsule on the left, the pill on the right, nothing
+    // between (header-nav ticket, 2026-11-11): no links capsule, no centred
+    // name, no Listen, at every width. The links are `MenuPanel`'s, above the
+    // hero, and this bar hides while that is open.
     const capsule = {
       background: ed ? s.onScheme[5].bg : grunge ? s.box1 : s.bg,
       boxShadow: ring('1px', ed || pop ? s.onScheme[1].stroke1 : grunge ? s.stroke2 : s.stroke1),
       padding: `${u(8)} ${u(18)}`,
     }
-    // At 390 the name gives way between the burger and the pill (JP-121's
-    // retest, user call, 2026-10-12), which a long one ran under and, past
-    // that, over the burger's capsule: HeaderV1's layout-2 fit, under Lime,
-    // Grunge and Pop. Both cells hold their content, so the name stays centred
-    // while it fits and slides toward the burger when it does not, and its
-    // room is the row (the query container at this width too) less the
-    // capsule (26 and 18 + 18), the pill and the row's two gaps, in which it
-    // takes NavBar's narrow fit (JP-101). The pill is BookPill's box: its
-    // padding, gap and disc, and its label at Label/SM in the faces' ems,
-    // faced as `navFace` is. Pop's master lets its pill run into the gap
-    // beside the seed's name (by 8.2, the name 7.8 off it), which kept that
-    // name centred, so Pop's pill keeps that much overrun (`allow`, a negative
-    // margin on the pill, which its cell's min-content counts and a cell
-    // wider than the pill never sees) and the seed stands where it stood; a
-    // longer name stops `allow` short of the gap. Lime's and Grunge's
-    // pills fit their half. Editorial keeps its row, named, not fitted, as at
-    // layout 2 (its call, 2026-10-07, was that layout's).
-    const allow = pop ? 9 : 0
-    const fit = s.mob && !ed && s.navNameFit ? {
-      narrow: true,
-      room: `(100cqi - 26px - 2 * ${u(18)} - ${u(17.92)} - ${u(8.53)} - ${27.6 * z}px - ${u(4.27)}`
-        + ` - ${s.navNameFit.pill} * ${s.labelSm} - 2 * ${u(16)} + ${allow}px)`,
-      two: s.navNameFit.two, word: s.navNameFit.word, floor: grunge ? '16px' : '12px',
-    } : undefined
-    const namePx = fitName(fit, s.labelLg)
     const nav = (
       <div style={row(u(16), {
         width: '100%', padding: `${s.mob ? '10px' : u(16)} 0`,
-        containerType: desk || fit ? 'inline-size' : undefined,
+        justifyContent: 'space-between', visibility: menu?.open ? 'hidden' : undefined,
       })}>
-        <div style={{
-          flex: '1 1 0', display: 'flex',
-          minWidth: desk ? `min(calc(${s.navEms} * ${linkSize} + ${u(36)} + ${navGaps}), calc(100cqi - ${reserve} + ${u(36)} + ${navGaps}))`
-            : links || fit ? 'max-content' : 0,
-        }}>
-          {links ? (
-            // Corner at the one-row half-height, so a capsule that has to wrap
-            // below the 12px floor keeps its ends rather than turning stadium.
-            <nav style={{
-              ...capsule, borderRadius: u(18), maxWidth: '100%',
-              display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: grunge || ed || pop ? u(18) : `${23 / 24}em`,
-              fontSize: desk ? linkSize : linkCap,
-            }}>
-              {s.navLinks.map((l) => (
-                <a key={l.label} href={navHref(s, l.to)}
-                   style={labelStyle(s, '1em', { color: ed ? s.onScheme[5].ac : grunge ? s.tx : s.ac, cursor: 'pointer' })}>{l.label}</a>
-              ))}
-            </nav>
-          ) : (
-            <span style={{ ...capsule, borderRadius: s.btnR, display: 'flex' }}>
-              <NavMenu s={s} color={s.tx} />
-            </span>
-          )}
-        </div>
-        {/* A wrapped name centres its lines in the room, as the bar centres
-            the name. */}
-        <span style={labelStyle(s, namePx, {
-          color: pop ? s.text3 : s.tx, flex: 'none', ...fitBox(fit, namePx), ...(fit && { textAlign: 'center' }),
-        })}>{brand()}</span>
-        {/* At 390 the pill is wider than its half under Pop and Editorial; the
-            master lets it overrun into the spacer, which keeps the name
-            centred, and so does this — by `allow` at most once the name fits
-            (above), and freely under Editorial. */}
-        <div style={row(u(12), {
-          flex: '1 1 0', justifyContent: 'flex-end',
-          minWidth: fit ? 'max-content' : s.mob ? 0 : undefined,
-        })}>
-          {!s.mob && (
-            <ListenLink s={s} to={s.listenTo}
-                        style={labelStyle(s, s.labelSm, { color: pop ? s.text3 : s.tx, fontWeight: 400 })} />
-          )}
+        <span style={{ ...capsule, borderRadius: s.btnR, display: 'flex', flex: 'none' }}>
+          <NavMenu s={s} color={s.tx} menu={menu} />
+        </span>
           {/* Scheme 3's pill is BookPill's Lime defaults — lime, lettered and
               disced in `sem/bg` round a lime arrow — at the frame's small box,
               which is the same 34.93 at all three widths (only Label/SM ramps),
@@ -3527,9 +3091,7 @@ function HeaderV2({ s }) {
                     style={{
                       padding: `${u(4.27)} ${u(4.27)} ${u(4.27)} ${u(17.92)}`,
                       gap: u(8.53), lineHeight: 1.1,
-                      ...(fit && allow && { marginLeft: `-${allow}px` }),
                     }} />
-        </div>
       </div>
     )
 
@@ -3584,17 +3146,6 @@ function HeaderV2({ s }) {
         <Title s={s} size={s.cardNameEms ? `min(${s.dispLg}, calc(100cqi / ${s.cardNameEms}))` : s.dispLg}
                color={pop ? s.ac : s.tx} lh={0.89} inline twoTone={grunge} toneA={s.tx} toneB={s.ac}
                style={pop ? { position: 'relative', top: '-0.14em' } : undefined} />
-        <span style={row(u(8))}>
-          {/* Editorial's dot is `sem/text/2`, the location's own paper, where
-              the twins' is the accent. Pop's location is `text/3`, white. */}
-          <span style={{
-            width: u(14), height: u(14), borderRadius: s.radiusChip, background: ed ? s.tx : s.ac, flex: 'none',
-          }} />
-          <span style={{
-            fontFamily: s.display, fontSize: faced(s, s.list), lineHeight: facedLh(s, 1.2), letterSpacing: s.dls,
-            color: pop ? s.text3 : s.tx, textTransform: grunge || ed || pop ? 'uppercase' : undefined,
-          }}>{s.location}</span>
-        </span>
       </div>
     )
     // The 390 band states 370.52 and stands its content on the floor: the
@@ -3794,16 +3345,10 @@ function HeaderV2({ s }) {
     chip: desk ? u(12) : '11px',                      // the polaroid's sub
   }
 
-  // The links pill and the burger stand in the same bordered capsule, layout 2's
-  // arrangement — and here the 390 master draws it literally, putting the burger
-  // inside the very pill the other two fill with links.
-  //
-  // The 768 master draws links too, and is followed on layout 2's terms: its
-  // three are the component's default where `navLinks` is the artist's page, and
-  // the seeded nine come to more type than a 684px bar holds. So tablet draws
-  // the links when the bar's one row holds them (`s.navFits`, summed in
-  // sectionVm — JP-039) and the burger otherwise, as Retro layouts 1 and 4 do
-  // below desktop (5 and 6 keep NavLinks' row down to 768).
+  // The burger in its bordered capsule on the left, the pill on the right
+  // (header-nav ticket, 2026-11-11): no links, no centred name, no Listen, at
+  // every width. The links are `MenuPanel`'s, above the hero; this bar hides
+  // while it is open.
   const capsule = (
     <nav style={{
       // This rule is *not* inside its padding, where the card's 5px one is: the
@@ -3814,33 +3359,16 @@ function HeaderV2({ s }) {
       padding: `${u(8)} ${u(18)}`, minWidth: 0,
       ...row(u(18), { flexWrap: 'wrap', alignItems: 'flex-start' }),
     }}>
-      {desk || s.navFits
-        ? s.navLinks.map((l) => (
-            <a key={l.label} href={navHref(s, l.to)}
-               style={labelStyle(s, T.labelSm, { color: s.ac, cursor: 'pointer' })}>{l.label}</a>
-          ))
-        : <NavMenu s={s} color={cream} />}
+      <NavMenu s={s} color={cream} menu={menu} />
     </nav>
   )
 
-  // Four flex children either side of the wordmark, exactly as the frame lays
-  // the bar out. The capsule's group is `1 1 auto` rather than the frame's
-  // `1 0 0`: past three links it has to be allowed to run past its quarter of
-  // the bar, and the two spacers are what give — the wordmark's centring is the
-  // thing that yields, not the artist's own section names.
   const nav = (
     <div style={row(u(16), {
       width: '100%', padding: `${desk || tab ? u(16) : '10px'} 0`, position: 'relative',
+      justifyContent: 'space-between', visibility: menu?.open ? 'hidden' : undefined,
     })}>
-      <div style={row(0, { flex: '1 1 auto', minWidth: 0 })}>{capsule}</div>
-      <span style={{ flex: '1 1 0' }} />
-      <span style={labelStyle(s, T.labelLg, { color: cream })}>{s.brand}</span>
-      <span style={{ flex: '1 1 0' }} />
-      <span style={row(u(12), { flex: 'none' })}>
-        {/* The 390 master drops Listen; the other two keep it. */}
-        {!s.mob && (
-          <ListenLink s={s} to={s.listenTo} style={labelStyle(s, T.labelSm, { color: cream })} />
-        )}
+      <div style={row(0, { flex: 'none' })}>{capsule}</div>
         {/* The frame's pill is BookPill's own full-scale box at all three widths
             — 4.267/17.921 padding, a 27.6 disc — which is the `full` scale to
             within a rounding, so only 390 has to opt back up to it (the pricing
@@ -3848,22 +3376,7 @@ function HeaderV2({ s }) {
             × 0.82. Its label is `size/label-sm`, where the automatic pick would
             draw 20px at 768 against the master's 13. */}
         <BookPill s={s} to={s.bookTo} glyph="arrow" full={s.mob} size={T.labelSm} />
-      </span>
     </div>
-  )
-
-  const locationLine = (
-    <span style={row(u(8))}>
-      {/* radius/chip 8 on a 14px square — a rounded block, not the ring
-          LocationLine draws. */}
-      <span style={{
-        width: u(14), height: u(14), borderRadius: u(8), background: s.ac, flex: 'none',
-      }} />
-      <span style={{
-        fontFamily: s.display, fontSize: T.list, lineHeight: 1.2,
-        letterSpacing: s.dls, color: cream,
-      }}>{s.location}</span>
-    </span>
   )
 
   // The identity column. `justifyContent: flex-end` is the master's own — on the
@@ -3881,7 +3394,6 @@ function HeaderV2({ s }) {
       ...(s.mob ? { minHeight: '568.13px' } : null),
     })}>
       <div style={col(u(12), { alignItems: 'flex-start', width: '100%' })}>
-        {locationLine}
         <Title s={s} size={T.disp} lh={0.89} color={cream} inline />
       </div>
       <TagChips s={s} radius={u(8)} />
@@ -4047,7 +3559,7 @@ function HeaderV2({ s }) {
 // with the chips in the corner at 1440, a stack at both narrow widths — the
 // page inset, which parts company between the nav and the body at 390 alone
 // (10 against 20), and the seal, which leaves the nav for the floor at 768.
-function HeaderV3({ s }) {
+function HeaderV3({ s, menu }) {
   const desk = !s.narrow
   const tab = isTablet(s)
   const z = desk ? 0.82 : 1
@@ -4174,15 +3686,8 @@ function HeaderV3({ s }) {
         ...(desk ? { flex: '1 0 0', minWidth: 0 } : { width: '100%' }),
         containerType: 'inline-size',
       })}>
-        {/* Display/Title in `scheme/1/text2`, pale — the frame types
-            "DJ · LIVE ACT", so the caps are the CSS's (Retro's reading). */}
-        <span style={distressed(s, {
-          fontFamily: s.display, fontSize: faced(s, kicker), lineHeight: facedLh(s, 1.1),
-          letterSpacing: s.dls, color: grunge ? s.bg : ed || pop ? s.ac : s.tx, textTransform: 'uppercase',
-          // Titan's glyph floor, by token: Display/Title at lh 1.1 (its cap
-          // top scanned 0.12 / 0.09 / 0.18em under the frame's).
-          ...(pop ? { position: 'relative', top: '-0.1em' } : null),
-        })}>{s.kicker}</span>
+        {/* The act type above the name and the location below it are gone
+            (header-nav ticket, 2026-11-11). */}
         {/* The 1440 master hand-breaks the name after its first word; both
             narrow masters set it `w-[min-content] min-w-full`, one line at
             their own sizes. `inline` at narrow only, Retro's reading. The .75
@@ -4228,21 +3733,6 @@ function HeaderV3({ s }) {
                  ...(pop ? { position: 'relative', top: '-0.14em' } : null),
                } : undefined}
                inline={s.narrow || grunge} twoTone={grunge} toneA={s.tx} toneB={s.bg} />
-        <span style={row(u(8), { minWidth: 0 })}>
-          {/* A 14 square at `radius/chip` in Scheme 3's `sem/box/2`, and the
-              location in Display/List inked `sem/text/1` — ink on the lime. */}
-          <span style={{
-            width: u(14), height: u(14), borderRadius: s.radiusChip, background: lift, flex: 'none',
-          }} />
-          <span style={{
-            fontFamily: s.display, fontSize: faced(s, s.list), lineHeight: facedLh(s, 1.2),
-            letterSpacing: s.dls, color: ed ? s.ac : pop ? s.tx : s.bg, whiteSpace: 'nowrap',
-            textTransform: grunge || ed || pop ? 'uppercase' : undefined,
-            // Display/List over a line: 0.11 / 0.08 / 0.06em low. The text
-            // lifts alone, so it centres on the dot as the frame's does.
-            ...(pop ? { position: 'relative', top: '-0.08em' } : null),
-          }}>{s.location}</span>
-        </span>
       </div>
     )
 
@@ -4336,10 +3826,7 @@ function HeaderV3({ s }) {
               a fixed 23 apart, which is NavBar's own em reading at the cap
               (`23 / 16` em of `s.labelSm`, `navGapEm`'s Pop arm), so it
               passes no `links`. */}
-          <NavBar s={s} colour={ed || pop ? s.onScheme[1].tx : s.tx} fill={ed || pop ? s.onScheme[1].bg : undefined}
-                  nameSize={s.mob || grunge || ed || pop ? s.labelLg : undefined} clean={s.mob || grunge}
-                  mark={grunge || ed || pop ? { glyph: desk ? 29.5 : 36, gap: desk ? '11px' : '13.15px' } : undefined}
-                  links={grunge || ed ? { gap: u(23), cap: s.labelMd } : undefined}
+          <NavBar s={s} menu={menu} colour={ed || pop ? s.onScheme[1].tx : s.tx} fill={ed || pop ? s.onScheme[1].bg : undefined}
                   pill={s.mob || ed || pop ? {
                     ...(ed || pop ? { bg: s.onScheme[1].pillBg, fg: s.onScheme[1].bg } : null),
                     ...(pop ? { discFg: s.onScheme[1].ac } : null),
@@ -4456,31 +3943,12 @@ function HeaderV3({ s }) {
       alignItems: 'flex-start',
       ...(desk ? { flex: '1 0 0', minWidth: 0 } : { width: '100%' }),
     })}>
-      {/* Display/Title, not a label token — the kicker is set in the display
-          face here where every other header sets it in Anton. The frame's own
-          string is "DJ · LIVE ACT" against our "DJ · Live Act", so the caps
-          are the CSS's (Retro's `casing` is passthrough by design). */}
-      <span style={{
-        fontFamily: s.display, fontSize: T.title, lineHeight: 1.1,
-        letterSpacing: s.dls, color: mustard, textTransform: 'uppercase',
-      }}>{s.kicker}</span>
       {/* The 1440 master hand-breaks the name into two lines inside a column
           twice as wide as it needs — that break IS the composition's name —
           and both narrow masters set it `w-[min-content] min-w-full`, which is
           one line at their own sizes. Hence `inline` at narrow only, the
           inverse of HeaderV0's. */}
       <Title s={s} size={T.disp} lh={0.75} color={cream} inline={s.narrow} />
-      <span style={row(u(8), { minWidth: 0 })}>
-        {/* radius/chip 8 on a 14px square — a rounded block, not the ring
-            LocationLine draws. HeaderV2's pair. */}
-        <span style={{
-          width: u(14), height: u(14), borderRadius: u(8), background: mustard, flex: 'none',
-        }} />
-        <span style={{
-          fontFamily: s.display, fontSize: T.list, lineHeight: 1.2,
-          letterSpacing: s.dls, color: mustard, whiteSpace: 'nowrap',
-        }}>{s.location}</span>
-      </span>
     </div>
   )
 
@@ -4525,7 +3993,7 @@ function HeaderV3({ s }) {
       <Grain s={s} exact blend="lighten" opacity={0.29} />
 
       <div style={{ position: 'relative', padding: `0 ${navPad}` }}>
-        <NavBar s={s} colour={cream} rule={s.chips[3]?.bg || s.ac}
+        <NavBar s={s} menu={menu} colour={cream}
                 pill={{ size: T.pill, ...(s.retro ? { bg: ink, fg: cream, shadow: mustard } : null) }} />
       </div>
 
@@ -31184,14 +30652,7 @@ export default function EncoreSection({ s }) {
       transition: 'background-color .45s ease, color .45s ease',
       '--ac': s.ac, '--acFg': s.acFg,
     }}>
-      {s.hd && (
-        s.v0 ? <HeaderV0 s={s} />
-          : s.v1 ? <HeaderV1 s={s} />
-          : s.v2 ? <HeaderV2 s={s} />
-          : s.v3 ? <HeaderV3 s={s} />
-          : s.v4 ? <HeaderV4 s={s} />
-          : <HeaderV5 s={s} />
-      )}
+      {s.hd && <HeaderRoot s={s} />}
       {s.bi && <Bio s={s} />}
       {s.me && <Media s={s} />}
       {s.vi && <Video s={s} />}

@@ -148,6 +148,31 @@ mutated through a single `patch()` helper.
   yet. The editor opens with the header `selectedId` so the sidebar
   lands on its edit panel; the mobile edit drawer stays shut, or it would cover the page before
   it has been seen.
+- **The header bar is a hamburger and Book Now, and nothing else** (header-nav ticket, user calls,
+  2026-11-11; `plans/header-nav.md`). At layouts 1–4 of every template the bar is the hamburger on the
+  left and `BookPill` on the right at every width: no wordmark, no globe, no inline links, no centred
+  name, no Listen, no links capsule. The links are behind the hamburger. **The menu opens in flow and
+  pushes the hero down, so it never covers the photograph**: `HeaderRoot` (`EncoreSection.jsx`) holds
+  the one `useState(open)` and passes `menu = { open, toggle }` as a *prop* (React state cannot be bound
+  in `sectionVm`) to `HeaderV0`–`V3`, `NavBar` and `NavMenu`; while open it renders `MenuPanel` above the
+  hero (its own X and Book Now row, then `s.navLinks`) and hides the hero's bar (`visibility: hidden`;
+  layout 2's is `display: none`, since its negative margin would pull the spread under the panel; layouts
+  3 and 4 bleed the panel past the root padding the way their hero does). Only `s.live` opens it. Retro's
+  layouts 5 and 6 (`NavLinks`) are out of scope and keep their inline row and `NavMenu`'s full-viewport
+  fixed panel. **Copy removed from the header** (stored values stay in `c` and keep feeding the other
+  sections): layouts 1 and 4 print no act type (kicker) or location; layout 2 no availability pill
+  (`availability` and `placeBody` are deleted from `FIELDS`), subtitle, place card or, in Retro, the photo
+  rail; layout 3 no location. `FIELDS.header` `kicker` / `location` / `subtitle` / `cta2` therefore read
+  only Retro's layouts 3, 5 and 6 (`in: { Retro: […], '*': [] }`; a template an `in` object does not name
+  *reads* the field), the shared ones still hosted by the bio, calendar and form, with `INLINE_OFF` rows for
+  every design that stopped drawing them. `navModeDefault` is *Follow my sections* at every layout (Minimal
+  stays pickable), and `vm.navFits` / `vm.navNameFit` are gone. **The badge has three states**: the header's
+  `badgeMode` (`'rotating'` default, `'static'`, `'hidden'`) replaces its `showBadge`; `sectionVm` folds it
+  into `vm.showBadge` (so every existing reader holds) and `vm.badgeSpin`, which `SealBadge` reads to drop
+  the `seal-spin` class from its ring (static = same artwork, text and placement). `legacyContent` turns a
+  stored header `showBadge: 'hide'` into `'hidden'`; the footer keeps its own `showBadge`. Lime's and
+  Editorial's layout-1 badge (a reticle, a star) has no ring to turn, so `badgeOptsFor()` offers those two
+  Visible / Hidden only.
 - **A focused panel field walks the canvas to what it prints** (user call, 2026-10-14). `EditPanel`'s
   per-field wrapper reports focus (and typing) to `EncoreBuilder`'s `onFocusField` — an input or
   textarea reports its own value, so a tag row reports the row and not the whole comma string
@@ -356,9 +381,10 @@ reversing 2026-10-20's "an already-selected section": the `text` cursor shows on
   `sectionVm`; each drops when emptied and the row with both (under Editorial, whose frame
   rules a dashed divider over the foot, the divider goes too once the chips are hidden as well).
   **So did the rest of layout 2's copy** (JP-059, user call, 2026-09-28, reversing Lime's fit):
-  the header's "● Available for bookings" pill is `availability`, and its two cards' copy under
-  the photograph is `faceTitle` / `faceBody` and `placeBody` (the place card's title was already
-  `location`), `vm.heroAvail` / `vm.faceTitle` / `vm.faceBody` / `vm.placeBody`; the bio card's
+  the header's "● Available for bookings" pill was `availability`, and its two cards' copy under
+  the photograph `faceTitle` / `faceBody` and `placeBody` (the place card's title was already
+  `location`); **the pill, the place card and the subtitle are gone since the header-nav ticket**
+  (above, *The header bar*), leaving `vm.faceTitle` / `vm.faceBody`; the bio card's
   "/Featured" pill is `FIELDS.bio.tag` (`vm.bioTag`), on every template, Pop included. Each is
   seeded with the frames' own bytes and uncased (every site keeps its own casing), and each drops
   when emptied; a card keeps its tile, and both pills wrap rather than widen a 390 page. The face
@@ -671,7 +697,7 @@ file is loaded into every session and holds only what is cross-cutting.
 | [`notes/repertoire.md`](./notes/repertoire.md) | The repertoire: the character caps, the tag as a set's key, the shared set line |
 | [`notes/gallery.md`](./notes/gallery.md) | The gallery: `pick`, the strip and its mobile window, social rows, the layout-3 viewer |
 | [`notes/map.md`](./notes/map.md) | The events map: pager, pin/row pairing, city chips, zoom, the ticker, the stat wall |
-| [`notes/nav.md`](./notes/nav.md) | The header's nav: anchors, `navHref()`, nav labels, Minimal, `navFits` at 768 |
+| [`notes/nav.md`](./notes/nav.md) | The header's nav: anchors, `navHref()`, nav labels, Minimal (the fit rules in it were retired by the header-nav ticket) |
 | [`notes/pricing.md`](./notes/pricing.md) | Pricing: chip filter, `tierHero` / `tierRow`, Featured, the Book pills |
 | [`notes/calendar.md`](./notes/calendar.md) | The booking calendar: `open` / `booked` / `today`, slots, the layout-4 wizard and its mailto |
 | [`notes/form.md`](./notes/form.md) | The enquiry form: the mailto submit, `formRows`, errors, every layout's card and seeds |
