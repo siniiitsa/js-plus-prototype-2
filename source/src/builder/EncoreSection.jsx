@@ -27495,7 +27495,7 @@ function EnquiryForm({ s }) {
   const setAt = (i, raw) => {
     const v = s.formFields[i]?.kind === 'date' ? maskDate(raw) : raw
     setVals((prev) => { const next = prev.slice(); next[i] = v; return next })
-    setErrs((e) => (e ? { ...e, f: e.f.map((x, j) => (j === i ? false : x)) } : e))
+    setErrs((e) => (e ? { ...e, f: e.f.map((x, j) => (j === i ? false : x)), m: (e.m || []).map((x, j) => (j === i ? '' : x)) } : e))
   }
 
   // The submit is an <a href="mailto:…">, never a <form>. A <form> here has no
@@ -27700,6 +27700,7 @@ function EnquiryForm({ s }) {
               // `number` as inputMode only, a date as the artist's text.
               type={f.kind === 'email' ? 'email' : 'text'}
               inputMode={f.kind === 'number' || f.kind === 'date' ? 'numeric' : undefined}
+              aria-invalid={bad || undefined}
               // Pop's frame states its hint's strength, so the live box sets
               // it: `--ph` 0.8 on `G.on`'s white is `POP_FORM.ph` (JP-119).
               // The twins' hint keeps `::placeholder`'s .45.
@@ -27964,7 +27965,7 @@ function EnquiryForm({ s }) {
               {s.formBtn}{disc}
             </Pill>
             {errs && (
-              <span style={type(s.body, s.bodySm, 1.4, { color: G.on, textAlign: 'center' })}>{s.formPrompt}</span>
+              <span style={type(s.body, s.bodySm, 1.4, { color: G.on, textAlign: 'center' })}>{errs?.m?.find(Boolean) || s.formPrompt}</span>
             )}
           </>
         )}
@@ -28104,6 +28105,7 @@ function EnquiryForm({ s }) {
               // mustard, and the frame draws a written date.
               type={f.kind === 'email' ? 'email' : 'text'}
               inputMode={f.kind === 'number' || f.kind === 'date' ? 'numeric' : undefined}
+              aria-invalid={bad || undefined}
               style={{ ...ctl(bad), outline: 'none' }}
             />
           ) : (
@@ -28282,7 +28284,7 @@ function EnquiryForm({ s }) {
               {errs && (
                 <span style={{
                   fontFamily: s.body, fontSize: u(12), color: formFg, textAlign: 'center',
-                }}>{s.formPrompt}</span>
+                }}>{errs?.m?.find(Boolean) || s.formPrompt}</span>
               )}
             </>
           )}
@@ -28639,6 +28641,7 @@ function EnquiryForm({ s }) {
                         // `number` as inputMode only, a date as the artist's text.
                         type={f.kind === 'email' ? 'email' : 'text'}
                         inputMode={f.kind === 'number' || f.kind === 'date' ? 'numeric' : undefined}
+                        aria-invalid={bad || undefined}
                         // The placeholder is the box's only label, so `--ph`
                         // draws it full, as the canvas span is (JP-093).
                         style={{ ...box(bad), outline: 'none', '--ph': 1 }}
@@ -28663,7 +28666,7 @@ function EnquiryForm({ s }) {
                   </Pill>
                 </div>
                 {errs && (
-                  <span style={type(s.body, s.bodySm, 1.4, { textAlign: 'center' })}>{s.formPrompt}</span>
+                  <span style={type(s.body, s.bodySm, 1.4, { textAlign: 'center' })}>{errs?.m?.find(Boolean) || s.formPrompt}</span>
                 )}
                 {/* Body/SM, centred: the frame's "No charge to enquire", which
                     is the `note` field Retro's layout 2 reads. Emptied, it drops. */}
@@ -29044,6 +29047,7 @@ function EnquiryForm({ s }) {
                         // this card.
                         type={f.kind === 'email' ? 'email' : 'text'}
                         inputMode={f.kind === 'number' || f.kind === 'date' ? 'numeric' : undefined}
+                        aria-invalid={bad || undefined}
                         // The placeholder is the box's only label, so `--ph`
                         // draws it full, as the canvas span is (JP-093).
                         style={{ ...boxShell(bad), outline: 'none', '--ph': 1 }}
@@ -29066,7 +29070,7 @@ function EnquiryForm({ s }) {
                 {errs && (
                   <span style={{
                     fontFamily: s.body, fontSize: u(T.bodySm), textAlign: 'center',
-                  }}>{s.formPrompt}</span>
+                  }}>{errs?.m?.find(Boolean) || s.formPrompt}</span>
                 )}
                 {foot}
               </>
@@ -29447,6 +29451,7 @@ function EnquiryForm({ s }) {
                         // `number` as inputMode only, a date as the artist's text.
                         type={f.kind === 'email' ? 'email' : 'text'}
                         inputMode={f.kind === 'number' || f.kind === 'date' ? 'numeric' : undefined}
+                        aria-invalid={bad || undefined}
                         // The placeholder is the box's only label, so `--ph`
                         // draws it full, as the canvas span is (JP-093).
                         style={{ ...box(bad), outline: 'none', '--ph': 1 }}
@@ -29472,7 +29477,7 @@ function EnquiryForm({ s }) {
                   </Pill>
                 </div>
                 {errs && (
-                  <span style={type(s.body, s.bodySm, 1.4, { textAlign: 'center' })}>{s.formPrompt}</span>
+                  <span style={type(s.body, s.bodySm, 1.4, { textAlign: 'center' })}>{errs?.m?.find(Boolean) || s.formPrompt}</span>
                 )}
                 {!!s.formNote && (
                   <p style={type(s.body, s.bodySm, 1.4, { margin: 0, textAlign: 'center' })}>{s.formNote}</p>
@@ -29636,6 +29641,7 @@ function EnquiryForm({ s }) {
                       // styled onto this card.
                       type={f.kind === 'email' ? 'email' : 'text'}
                       inputMode={f.kind === 'number' || f.kind === 'date' ? 'numeric' : undefined}
+                      aria-invalid={bad || undefined}
                       // Layout 2's `--ph`: the placeholder is the box's only
                       // label, so it draws full, as the canvas span is (JP-093).
                       style={{ ...boxShell(bad), outline: 'none', '--ph': 1 }}
@@ -29656,7 +29662,7 @@ function EnquiryForm({ s }) {
               {errs && (
                 <span style={{
                   fontFamily: s.body, fontSize: u(T.bodySm), textAlign: 'center',
-                }}>{s.formPrompt}</span>
+                }}>{errs?.m?.find(Boolean) || s.formPrompt}</span>
               )}
               {/* The frame's "No charge to enquire" — layout 2's `note`. Emptied,
                   the card simply ends on its pill. */}
@@ -29887,6 +29893,7 @@ function EnquiryForm({ s }) {
               // as inputMode only, a date as the artist's text.
               type={f.kind === 'email' ? 'email' : 'text'}
               inputMode={f.kind === 'number' || f.kind === 'date' ? 'numeric' : undefined}
+              aria-invalid={bad || undefined}
               style={{ ...box(bad), outline: 'none' }}
             />
           ) : (
@@ -29950,7 +29957,7 @@ function EnquiryForm({ s }) {
               {s.formBtn}{disc}
             </Pill>
             {errs && (
-              <span style={type(s.body, s.bodySm, 1.4, { textAlign: 'center' })}>{s.formPrompt}</span>
+              <span style={type(s.body, s.bodySm, 1.4, { textAlign: 'center' })}>{errs?.m?.find(Boolean) || s.formPrompt}</span>
             )}
           </>
         )}
@@ -30224,6 +30231,7 @@ function EnquiryForm({ s }) {
               // the artist's placeholder.
               type={f.kind === 'email' ? 'email' : 'text'}
               inputMode={f.kind === 'number' || f.kind === 'date' ? 'numeric' : undefined}
+              aria-invalid={bad || undefined}
               style={{ ...boxShell(bad), outline: 'none' }}
             />
           ) : (
@@ -30301,7 +30309,7 @@ function EnquiryForm({ s }) {
             {errs && (
               <span style={{
                 fontFamily: s.body, fontSize: u(T.bodySm), textAlign: 'center',
-              }}>{s.formPrompt}</span>
+              }}>{errs?.m?.find(Boolean) || s.formPrompt}</span>
             )}
           </>
         )}
@@ -30425,6 +30433,7 @@ function EnquiryForm({ s }) {
           onChange={(e) => setAt(i, e.target.value)}
           type={f.kind === 'email' ? 'email' : 'text'}
           inputMode={f.kind === 'number' || f.kind === 'date' ? 'numeric' : undefined}
+          aria-invalid={!!(errs && errs.f[i]) || undefined}
           style={flatCtl(!!(errs && errs.f[i]))}
         />
       ) : (
@@ -30446,7 +30455,7 @@ function EnquiryForm({ s }) {
         {s.formBtn}
       </Pill>
       {errs && (
-        <span style={{ fontSize: '13px', color: s.muted }}>{s.formPrompt}</span>
+        <span style={{ fontSize: '13px', color: s.muted }}>{errs?.m?.find(Boolean) || s.formPrompt}</span>
       )}
     </div>
   )

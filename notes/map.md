@@ -269,6 +269,11 @@ and `base` field paragraphs, JP-105's seeds and JP-096's home value.
       *SEPTEMBER*). Retro's holds 7 and Pop's 9, and layout 3's disc 11–12.
     - A day longer than two digits prints, but `gigStamp` reads no weekday or status from it.
       The cap is fit, not validation, and `GigsField`'s layout-3 warning is what says so.
+    - **What is typed is filtered** (QA, 2026-11-09 · 2026-11-11): `gigPart(col, raw, prev)` in `data.js`,
+      in the panel's `GigsField.setAt` and the inline box alike. Day and year keep digits (two and four);
+      the month is letters and a point, and only while it starts a month's name (`Ju`, `Sept`, `July`);
+      a refused key leaves the box as it was, and deleting is always allowed so a month stored before
+      can be cleared. Stored copy is not touched and the page still prints it as it stands.
   - **`rings` is a ',' list of 3 at most**: the map slices its labels to its three rings. A ring
     label is a chip, capped at 13 (the sized rule).
   - **Venue Link stays at its seed's 10–11 under Retro, Lime and Grunge**, because the 768 pill

@@ -245,8 +245,13 @@ another `notes/` file.
     new pricing layout's root on it too**, or a long word runs past its card again. It is not on
     the numeral (`white-space: nowrap`; the digit-less prose path has its own, JP-135).
   - `cols.price.num` caps the price's first number run (`priceCuts`), the big numeral, apart from
-    `chars`, the whole price: 5 6 12 12 for Retro, 10 12 12 12 Lime, 11 12 12 12 Grunge, 8 12 12 12
-    Editorial, 7 12 12 12 Pop (layouts 1–4). `clampNumeral` cuts the run on the page (no ellipsis);
+    `chars`, the whole price: **one number per template, the tightest layout's** (JP-168, user call,
+    2026-11-11, was per layout: 5 6 12 12 Retro, 10 12 12 12 Lime, …): Retro 5, Lime 10, Grunge 11,
+    Editorial 8, Pop 7, so a price typed at layout 2, 3 or 4 is not one the layout-1 deck then cuts.
+    `clampNumeral` cuts the run on the page to `num − 1` characters and an **`…`**, which sets in the
+    small tail (`priceParts` splits at the first non-number character): it was cut with no mark until
+    JP-168, and `£450000000000` read as `£4500000000`, a price 100x smaller. A price stored over it
+    (a layout swap, a legacy value) still renders cut, now marked;
     `capExcess` counts it, so `CappedText` refuses an edit past it and the counter reads
     `numeral n / cap`; the inline box reads it on the amount part only (`slotCap`). Not applied to a
     price with no digit. `limits.mjs pricing --keys=tiers.price.num` measures it.

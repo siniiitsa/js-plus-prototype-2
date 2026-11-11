@@ -2050,7 +2050,7 @@ export const FIELDS = {
       chars: { Retro: [22, null, 22, 22, 15, 22], '*': [22, null, 22, 22] },
       count: { Retro: [8, null, 7, 7, 6, 6], Pop: [6, null, 6, 6], '*': [8, null, 6, 6] },
       rows: { placeholder: 'Tag', add: 'Add tag' },
-      hint: 'Your genre chips.' },
+      hint: 'Your genre chips. One per row; a comma starts a new row.' },
     { k: 'showTags',  l: 'Tag chips',        type: 'select', d: 'show', opts: SHOW_HIDE, shared: true,
       in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3], Editorial: [0, 2, 3], Pop: [0, 2, 3] },
       hint: 'Show or hide the chips wherever they are printed.' },
@@ -2293,10 +2293,13 @@ export const FIELDS = {
           Pop: [16, 16, 30, 18] },
         // `num` is the first number run, the big numeral: a price of digits alone
         // sets whole in it, so it is measured apart from the total (`chars`, the
-        // price with its small tail). User call, 2026-11-06.
+        // price with its small tail). User call, 2026-11-06. The numeral's cap is
+        // one number per template, the tightest layout's (the deck at 768: Retro 5,
+        // Lime 10, Grunge 11, Editorial 8, Pop 7), so a price typed at layout 2, 3
+        // or 4 cannot be one the deck then cuts (JP-168, user call, 2026-11-11);
+        // what is stored over it renders cut to a `…`, clampNumeral().
         price: { chars: { Retro: [8, 33, 31, 25], Lime: [12, 35, 25, 29], Grunge: [14, 35, 30, 34], Editorial: [11, 33, 27, 20],
-          Pop: [10, 34, 25, 23] }, num: { Retro: [5, 6, 12, 12], Lime: [10, 12, 12, 12], Grunge: [11, 12, 12, 12], Editorial: [8, 12, 12, 12],
-          Pop: [7, 12, 12, 12] } },
+          Pop: [10, 34, 25, 23] }, num: { Retro: 5, Lime: 10, Grunge: 11, Editorial: 8, Pop: 7 } },
         tags: { list: ',', chars: { Retro: [12, null, 12, 12], '*': [26, null, 26, 26] },
           count: { Retro: [4, null, 5, 6], Pop: [3, null, 4, 5], '*': [4, null, 4, 5] } },
         blurb: 160,
@@ -2532,7 +2535,7 @@ export const FIELDS = {
     { k: 'types',   l: 'Event types', type: 'area', d: CAL_TYPES.join(', '), in: [3], list: ',',
       chars: [null, null, null, 13], count: [null, null, null, 4],
       rows: { placeholder: 'Event type', add: 'Add event type' },
-      hint: "The choices on the first step of layout 4's enquiry wizard." },
+      hint: "The choices on the first step of layout 4's enquiry wizard. One per row; a comma starts a new row." },
     // JP-076 — no `d`: while the key is absent it follows the Enquiry Form's
     // address (sectionVm's `email` argument, and EditPanel's chain shows it),
     // so the page has one address until the artist types a second here.
@@ -2803,7 +2806,7 @@ export const FIELDS = {
     { k: 'types',    l: 'Event types', type: 'area', d: FORM_TYPES.join(', '), in: [0], list: ',',
       chars: [15], count: { Lime: [5], Grunge: [5], '*': [8] },
       rows: { placeholder: 'Event type', add: 'Add event type' },
-      hint: 'The form opens on the first; empty hides the row. Layout 1 only.' },
+      hint: 'The form opens on the first; empty hides the row. Layout 1 only. One per row; a comma starts a new row.' },
     // The chip row's label (JP-090), messageLabel's rule: the row it heads
     // stands whatever it says, so an emptied label reads the seed again.
     { k: 'typeLabel', l: 'Event type label', d: FORM_TYPE_LABEL, in: [0],
@@ -3499,10 +3502,14 @@ export function clampList(s, cap) {
   }
   return out.join(cap.list)
 }
-// A price's first number run cut to `n` characters, no ellipsis (it would set in
-// the small tail, not the numeral). Only a run with a digit counts: a digit-less
-// price wraps as prose (JP-135) and 'POA' is a word, not a number. A cut that
-// lands after a comma or a point drops it: 1,200 cut to 2 reads 1.
+// A price's first number run cut to `n` characters, the last of them an `…`
+// (JP-168, user call, 2026-11-11, reopening the 'no ellipsis' call): a number
+// that lost digits without a mark read as another price, 100x smaller. The
+// mark sets in the small tail (priceParts() splits at the first non-number
+// character), so the numeral keeps `n - 1` digits. Only a run with a digit
+// counts: a digit-less price wraps as prose (JP-135) and 'POA' is a word, not
+// a number. A cut that lands after a comma or a point drops it: 1,200 cut to 2
+// reads 1.
 function numeralRun(v) {
   const { at, end, prose } = priceCuts(v)
   return !prose && /\d/.test(v.slice(at, end)) ? { at, end } : null
@@ -3516,7 +3523,7 @@ export function clampNumeral(v, n) {
   if (typeof v !== 'string' || n == null) return v
   const run = numeralRun(v)
   if (!run || run.end - run.at <= n) return v
-  return v.slice(0, run.at) + v.slice(run.at, run.at + n).replace(/[.,]+$/, '') + v.slice(run.end)
+  return v.slice(0, run.at) + v.slice(run.at, run.at + Math.max(1, n - 1)).replace(/[.,]+$/, '') + '…' + v.slice(run.end)
 }
 export const clampCapped = (v, cap) => (!cap || typeof v !== 'string' ? v
   : cap.list ? clampList(v, cap) : clampText(clampNumeral(v, cap.num), cap.chars))
@@ -3796,19 +3803,28 @@ export function enquiryMailto(email, { type, fields, message, msgLabel }) {
 // clock is known (`today`, an ISO string: the published tab's, undefined on the
 // canvas), not before today.
 // The message is optional: the four boxes above it are the enquiry.
+// `m` is a message per row where the box can say what is wrong: a date typed
+// but not a real day, or a day gone by. An empty or email row has none (the
+// form's own prompt says it), so the visitor still sees one line at a time.
 export function formErrors(fields, vals, today) {
   const now = parseDate(today)
+  const m = []
   const f = (fields || []).map((fd, i) => {
     const v = String((vals || [])[i] ?? '').trim()
+    m[i] = ''
     if (!v) return true
     if (fd.kind === 'date') {
       const at = parseDayFirst(v)
-      return !at || (!!now && isoDate(at.y, at.m, at.d) < isoDate(now.y, now.m, now.d))
+      if (!at) { m[i] = DATE_FORMAT_MSG; return true }
+      if (now && isoDate(at.y, at.m, at.d) < isoDate(now.y, now.m, now.d)) { m[i] = DATE_PAST_MSG; return true }
+      return false
     }
     return fd.kind === 'email' && !!emailProblem(v)
   })
-  return { f, any: f.some(Boolean) }
+  return { f, m, any: f.some(Boolean) }
 }
+export const DATE_FORMAT_MSG = 'Type the date as dd / mm / yyyy.'
+export const DATE_PAST_MSG = 'That date has already passed.'
 
 // A tagged row's raw `tags` string → its trimmed, non-empty labels. Song-named
 // for the list it was written for, but it reads nothing but the string: the
@@ -3939,11 +3955,14 @@ export function monthSpan(y, m) {
 // that does not exist (31 June, 30 February) is rejected rather than rolled
 // over, so an emptied or half-typed field falls back to the seed instead of
 // silently opening the calendar on a month the artist did not choose.
+// Date.UTC reads the years 0-99 as 1900-1999, so a four-digit year below 1900
+// ('0000', '0025') would name a day in the wrong century: it is not a date.
+export const MIN_YEAR = 1900
 export function parseDate(v) {
   const t = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(v ?? '').trim())
   if (!t) return null
   const y = +t[1], m = +t[2] - 1, d = +t[3]
-  if (m < 0 || m > 11 || d < 1 || d > monthSpan(y, m).length) return null
+  if (y < MIN_YEAR || m < 0 || m > 11 || d < 1 || d > monthSpan(y, m).length) return null
   return { y, m, d }
 }
 
@@ -3958,7 +3977,7 @@ export function parseDayFirst(v) {
   const t = /^(\d{1,2})\s*[/.-]\s*(\d{1,2})\s*[/.-]\s*(\d{4})$/.exec(s)
   if (!t) return null
   const y = +t[3], m = +t[2] - 1, d = +t[1]
-  if (m < 0 || m > 11 || d < 1 || d > monthSpan(y, m).length) return null
+  if (y < MIN_YEAR || m < 0 || m > 11 || d < 1 || d > monthSpan(y, m).length) return null
   return { y, m, d }
 }
 
@@ -3993,8 +4012,28 @@ export function gigStamp(year, month, day) {
   const m = key.length === 3 ? MONTHS.findIndex((n) => n.slice(0, 3).toLowerCase() === key) : -1
   if (!y || !d || m < 0) return null
   const n = +d[0]
-  if (n < 1 || n > monthSpan(+y[0], m).length) return null
+  if (+y[0] < MIN_YEAR || n < 1 || n > monthSpan(+y[0], m).length) return null
   return Date.UTC(+y[0], m, n)
+}
+
+// What a gig's month, day or year box takes as it is typed (QA, 2026-11-09: the
+// boxes took 'xyzqw' / '99ab' / 'abc12345' and the date disc printed them).
+// `col` is 'month' | 'day' | 'year'; returns the value to store, or `prev` when
+// the keystroke is refused. Day and year keep digits only (two and four); the
+// month is letters and a point, and only while it is the start of a month's
+// name ('Ju', 'Sept', 'July'), the rule gigStamp() reads it by. Stored copy
+// from before this is left as it is: only the typing is filtered.
+export function gigPart(col, raw, prev = '') {
+  const v = String(raw ?? '')
+  if (col === 'day') return v.replace(/\D/g, '').slice(0, 2)
+  if (col === 'year') return v.replace(/\D/g, '').slice(0, 4)
+  if (col !== 'month') return v
+  // Deleting is always allowed, so a month stored before this rule can be cleared a key at a time.
+  if (v.length < String(prev ?? '').length) return v
+  const key = v.trim().replace(/\./g, '').toLowerCase()
+  if (!key) return v.trim() ? prev : ''
+  if (!/^[a-z]+$/.test(key)) return prev
+  return MONTHS.some((n) => n.toLowerCase().startsWith(key)) ? v : prev
 }
 
 // A gig's weekday, for layout 3's date disc (JP-069, user call, 2026-09-29):
