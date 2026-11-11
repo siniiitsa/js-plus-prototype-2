@@ -589,7 +589,7 @@ export const CATS = [
   { id: 'gallery', name: 'Gallery', nav: 'Media', n: 4 },
   { id: 'calendar', name: 'Booking Calendar', nav: 'Availability', n: 5 },
   { id: 'map', name: 'Events Map', nav: 'Shows/Coverage', n: 4 },
-  { id: 'testimonials', name: 'Testimonials', nav: 'Reviews', n: 8 },
+  { id: 'testimonials', name: 'Testimonials', nav: 'Reviews', n: 4 },
   { id: 'form', name: 'Enquiry Form', nav: 'Enquiries', n: 6 },
   { id: 'footer', name: 'Footer', n: 1 },
 ]
@@ -793,12 +793,14 @@ export const titanEms = (text) =>
 /* ------------------------------------------------------------------ *
  * §4.4 NVAR — distinct rendered designs per category.
  * Every category offers at least as many layout choices as it has
- * designs; the rendered design is `arch % NVAR[cat]`. Seven of the
+ * designs; the rendered design is `arch % NVAR[cat]`. Six of the
  * eleven still offer strictly more, and the layout-4 pass is what
  * stopped that being all of them: `gallery` and `map` now offer exactly
  * four and render four, joining the header and the footer, which have
- * always been level. The invariant `pageLayout()` rests on is the
- * inequality, never the surplus.
+ * always been level. `testimonials` joined them (a ticket, 2026-11-11):
+ * its picker listed eight rows for four designs; a stored `arch` of 4–7
+ * still renders and is folded for display (`pageLayout`). The invariant
+ * `pageLayout()` rests on is the inequality, never the surplus.
  * ------------------------------------------------------------------ */
 
 // `video` is 4 with holes at indices 0 and 2: its Figma pages exist at layouts

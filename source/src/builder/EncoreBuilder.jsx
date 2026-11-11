@@ -5371,6 +5371,10 @@ function LayoutPicker({ cat, arch, themeIdx, artistName, identity, tiers, email,
   const themeName = THEMES[themeIdx].name
   // A video is offered layouts 2 and 4 only (plans/video.md, call 1).
   const choices = layoutChoices(cat, themeName)
+  // A stored `arch` past the picker's rows (a draft from when Testimonials
+  // offered eight) renders as `arch % designCount`, so it is shown as that row.
+  // A number the picker does offer is left alone: Pricing's layout 5 stays 5.
+  const cur = choices.includes(arch) ? arch : pageLayout(cat, arch, themeName)
   // §4.4b — the header's layouts have names; every other category is numbered.
   const label = (i) => (cat === 'header'
     ? headerLayoutLabel(themeName, i)
@@ -5389,7 +5393,7 @@ function LayoutPicker({ cat, arch, themeIdx, artistName, identity, tiers, email,
           }}
         >
           <span style={{ fontSize: '13px', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-            {label(arch)}
+            {label(cur)}
           </span>
           <ChevronDown size={14} style={{ color: '#8B887D', flex: 'none' }} />
         </button>
@@ -5406,7 +5410,7 @@ function LayoutPicker({ cat, arch, themeIdx, artistName, identity, tiers, email,
         }}
       >
         {choices.map((i) => {
-          const isCur = i === arch
+          const isCur = i === cur
           return (
             <DropdownMenuItem
               key={i} onSelect={() => onPick(i)}
@@ -7907,7 +7911,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
       ...sectionVm({ themeIdx: st.theme, cat: sec.cat, arch: sec.arch, c: sec.c, artistName, identity, tiers, email, Z, mob: Z === SIZES.mobile || isMobile || device === 'mobile', navSections, column: inColumns.get(i), realMap: true, page: pageDesignOf(arr, T.name), above: arr[i - 1]?.cat, below: arr[i + 1]?.cat }),
       layoutLabel: isHeader
         ? headerLayoutLabel(T.name, sec.arch)
-        : `${cat.name} layout ${sec.arch + 1}`,
+        : `${cat.name} layout ${(layoutChoices(sec.cat, T.name).includes(sec.arch) ? sec.arch : pageLayout(sec.cat, sec.arch, T.name)) + 1}`,
       // §6.2 — while the setup modal is up the header's own badge names the
       // layout, so the click that just re-laid the whole page is legible on the
       // page itself. It is the only badge showing, which is why the other ten

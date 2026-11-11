@@ -664,9 +664,11 @@ reversing 2026-10-20's "an already-selected section": the `text` cursor shows on
   what it can see rather than what the last render observed. Rows are a uniform height, so
   the drop index is the pointer delta in row-heights, not a hit test.
 - **Layout folding.** Every category offers at least as many layout numbers as it has distinct
-  designs, and seven of the twelve offer more — Pricing layouts 1 and 5 render identically on
-  purpose. The other five are level: the header and the footer always were, the layout-4 pass
-  took `gallery` and `map` there by bumping their design counts to the four rows they offer, and
+  designs, and six of the twelve offer more — Pricing layouts 1 and 5 render identically on
+  purpose. The other six are level: the header and the footer always were, the layout-4 pass
+  took `gallery` and `map` there by bumping their design counts to the four rows they offer,
+  `testimonials` followed (2026-11-11: its picker listed eight rows for four designs, so it offers
+  four, and a stored `arch` past the rows is shown as the row it renders, `pageLayout`), and
   `video` is level with holes (below).
   **The categories are the sections on Retro layout 1's Figma page** (`964:58575`), **plus `video`**:
   `tags` and `audio` were removed from the project, every layout, because that page draws none of

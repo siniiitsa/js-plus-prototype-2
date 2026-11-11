@@ -211,3 +211,10 @@ Retro's layout-1 card prints `vm.quotes[].byline` as **one node**, `HANNAH L. ·
 `INLINE_LINES`, scoped `Retro.0.` (not `*`): `quotes.who` and `quotes.role` are each `['{}', '{who} · {role}']`. The bare `{}` stays because a slot with a line is *spoken for* by it (`claimed`), and the pills would stop opening without their own form (the layout-6 kicker's precedent). A blank half drops the line, since `inlineSlots` drops a template with an empty cell, and the page drops the separator the same way (`[who, role].filter(Boolean).join(' · ')`).
 
 **The blank half needed one more rule in `inlineFieldAt`.** With the role emptied the byline *is* `Hannah L.`, so the bare line is drawn twice (the byline span and the pill) and only one slot prints it. The lined branch demands as many nodes as slots, so both nodes went dead (the exact path used to open both, before the slot was claimed). A line that exactly one slot prints belongs to that slot however many nodes draw it (`same.length === 1`). Measured with each half emptied: both nodes open `who` (or `role`).
+
+## Layout picker offers four rows (2026-11-11)
+
+`CATS.testimonials.n` is 4, level with `NVAR.testimonials`: it had been 8, so the picker listed
+layouts 5–8 that rendered exactly like 1–4. A draft that stored `arch` 4–7 still renders (the
+design is `arch % 4`), and `LayoutPicker` and the sidebar's `layoutLabel` show it as the row it
+renders when the number is not one the picker offers. Stored state is not rewritten.
