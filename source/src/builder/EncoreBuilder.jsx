@@ -57,7 +57,7 @@ import {
   PRICING_INTRO_3, FORM_SUB_4, CAL_HEADING_1, formBtnSeed, CAL_TYPES, PRICING_ROW_CTA, PRICING_ROW_CTA_3, MAP_SPAN, MAP_STATS_4, STAT_KEYS,FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
   parseDate, isoDate, calStart, headerIdentity, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav, navModeDefault,
-  catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldSeed, HEADING_3, HEADING_4, fieldReach, fieldShown, identityFieldsFor, identityHint, INLINE_OFF, PHOTO_OFF, INLINE_HEAD, INLINE_MARKED, INLINE_PART, INLINE_LINES, inlineRule, fieldCap, colCaps, identityCap, sealCap, capExcess, numeralLen, clampCapped, clampContent, clampIdentity, copyrightOf, formHeading3, extUrl, youtubeEmbed, youtubeThumb, youtubeParts, youtubeWatch, youtubeChannel, urlProblem, emailProblem, emailAddr, songTags, repChips,
+  catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldSeed, HEADING_3, HEADING_4, fieldReach, fieldShown, identityFieldsFor, identityHint, INLINE_OFF, PHOTO_OFF, INLINE_HEAD, INLINE_MARKED, INLINE_PART, INLINE_LINES, inlineRule, fieldCap, colCaps, identityCap, sealCap, capExcess, numeralLen, clampCapped, clampContent, legacyContent, clampIdentity, copyrightOf, formHeading3, extUrl, youtubeEmbed, youtubeThumb, youtubeParts, youtubeWatch, youtubeChannel, urlProblem, emailProblem, emailAddr, songTags, repChips,
   tierFeats, priceParts, priceCuts, blankRow, SONG_KEYS, repSetsOf, repSetLine, TRACK_KEYS, GIG_KEYS, gigWeekday, gigStatus, gigPart, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
   layoutChoices, designCount, pageLayout, pageOrder, pageRows, videoDesign, videoStartArch,
   VIDEOS, VIDEO_SEED, VIDEO_KEYS, videoPlayable, videoSeedDesc, VIDEO_ALL, COLUMN_SPLIT, bebasEms, antonEms, gloockEms, titanEms,
@@ -280,6 +280,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // the two holes fold onto the design beside them; nothing reaches them.
   const d0 = ((arch % nDesign) + nDesign) % nDesign
   const d = cat === 'video' ? videoDesign(d0) : d0
+  c = legacyContent(cat, c)
   // The character caps (plans/char-limits.md): copy typed under another
   // layout's cap is shortened here, before anything below reads it, and keeps
   // its full text in the section's `c`. Inert within the caps, so seeds are
@@ -5233,7 +5234,8 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                   // the computed ones mirror what sectionVm resolves, so panel
                   // and canvas never disagree.
                   const fallback = fieldSeed({ cat: src.cat, f, themeName, design: f.hosted ? headerSec.arch % (designCount('header', themeName) || 1) : design, c: src.c, artistName, email })
-                  const val = src.c[f.k] !== undefined ? src.c[f.k] : fallback
+                  const srcC = legacyContent(src.cat, src.c)
+                  const val = srcC[f.k] !== undefined ? srcC[f.k] : fallback
                   const set = (v) => api.setContent(src.id, f.k, v)
                   // The field's character cap at this design (plans/char-limits.md);
                   // the header's shared keys take the tightest among the page's
@@ -6434,7 +6436,8 @@ function fieldCapOf(sec, f, sections, themeName, design) {
 // The field's current copy, as the panel resolves it.
 function fieldValue(sec, f, themeName, artistName) {
   const design = inlineDesign(sec, themeName)
-  const val = sec.c[f.k] !== undefined ? sec.c[f.k] : fieldSeed({ cat: sec.cat, f, themeName, design, c: sec.c, artistName })
+  const c = legacyContent(sec.cat, sec.c)
+  const val = c[f.k] !== undefined ? c[f.k] : fieldSeed({ cat: sec.cat, f, themeName, design, c, artistName })
   return sec.cat === 'header' && f.k === 'title' && !String(val).trim() ? artistName : String(val ?? '')
 }
 

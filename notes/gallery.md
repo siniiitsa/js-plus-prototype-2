@@ -114,7 +114,9 @@ another `notes/` file.
   Figma wrapper carries layout 1's four as a `hidden` frame.
 - **Layout 1's labels are the artist's** (JP-120 (gallery), user call, 2026-10-08), in both
   bodies, each seeded with the frame's word and uncased, so the seeded page did not move:
-  - `kicker`, *Media* (`vm.galKicker`), which layout 4's eyebrow prints too, the same word;
+  - `kicker` (`vm.galKicker`), which layout 4's eyebrow prints too, the same word. **Seeded empty, so not drawn**
+    (user call, 2026-11-11, reversing the frames' *Media*): `legacyContent()` in `data.js` also reads a stored
+    `Media` as empty, at `sectionVm`'s head, the panel's box and the inline editor's `fieldValue`;
   - `railLabel`, *Gallery* (`vm.galRailLabel`), the credit's second line under the name at every
     width, as well as layout 2's 768 head row;
   - `backLabel`, *Back to beginning* (`vm.galBackLabel`), the rewind;

@@ -1142,8 +1142,10 @@ export const testiKickerSeed = (d) => (d === 1 ? TESTI_KICKER_2 : TESTI_KICKER)
 export const GALLERY_RAIL_LABEL = 'Gallery'
 // JP-120 (gallery), user call, 2026-10-08: layout 1's eyebrow, which layout 4's
 // prints as well, and its back link, the frames' words. The open source row's
-// label seeds off GALLERY_SOURCES[0].l.
-export const GALLERY_KICKER = 'Media'
+// label seeds off GALLERY_SOURCES[0].l. The eyebrow's seed was the frames'
+// word *Media*; user call, 2026-11-11, seeded it empty, so it is not drawn
+// until the artist types one (legacyContent reads a stored 'Media' as empty).
+export const GALLERY_KICKER = ''
 export const GALLERY_BACK_LABEL = 'Back to beginning'
 
 // Pricing — the packages beside the section's filter row, and the seed for
@@ -2438,7 +2440,7 @@ export const FIELDS = {
     // JP-120 (gallery): the eyebrow over the heading, the frames' word, uncased.
     { k: 'kicker',  l: 'Kicker', d: GALLERY_KICKER, in: [0, 3],
       chars: { Retro: [44, null, null, 49], Pop: [44, null, null, 39], '*': [55, null, null, 51] },
-      hint: 'The small line over the heading. Left empty, it is not drawn.' },
+      hint: 'A small line over the heading. Empty by default; type one to show it.' },
     { k: 'heading', l: 'Heading', d: 'See us in action',
       chars: { Retro: [20, 27, 18, 24], Lime: [19, 26, 18, 23], Grunge: [29, 26, 23, 24], Editorial: [16, 26, 11, 20],
         Pop: [16, 27, 15, 20] } },
@@ -3554,6 +3556,14 @@ const clampRows = (rows, caps) => {
   if (Array.isArray(rows)) { const out = rows.map(map); return moved ? out : rows }
   const out = Object.fromEntries(Object.entries(rows).map(([k, r]) => [k, map(r)]))
   return moved ? out : rows
+}
+// A draft that stores the gallery kicker's old seed, 'Media' (until 2026-11-11
+// the frames' word, now empty), reads as empty, so the label goes from pages
+// begun before the change too. `c` itself when there is nothing to drop.
+export function legacyContent(cat, c) {
+  if (cat !== 'gallery' || String(c?.kicker ?? '').trim() !== 'Media') return c
+  const { kicker, ...rest } = c
+  return rest
 }
 // A section's content with every capped key clamped for this template and
 // design — `c` itself when nothing is over, so a page within its caps renders
