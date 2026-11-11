@@ -50,7 +50,7 @@ the whole text selected (JP-155, below). The header seal's
 - **Line breaks.** Enter closes the box, a newline typed or pasted becomes a space, **unless the node's computed
   `white-space` is `pre-*`** (the footer statement): Enter inserts one and ⌘/Ctrl+Enter closes.
 - **Lists and rows.** A list item replaces its place in the stored string (`listItems` / `joinItems`; a comma typed
-  into a comma-list item becomes a space), a cell rewrites its row, a price part goes back through `priceWrite`.
+  into a comma-list item becomes a space, and the box's note says so, JP-169), a cell rewrites its row, a price part goes back through `priceWrite`.
   An item or cell emptied in the box is **held, not committed** (the Title's rule), since removing it unmounts the
   node under the box; the panel's X removes one.
 - **Write path = the panel's.** Every keystroke goes through `api.setContent`. Caps are `fieldCapOf` for a field and

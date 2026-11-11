@@ -58,7 +58,7 @@ import {
   parseDate, isoDate, calStart, headerIdentity, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav, navModeDefault,
   catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldSeed, HEADING_3, HEADING_4, fieldReach, fieldShown, identityFieldsFor, identityHint, INLINE_OFF, PHOTO_OFF, INLINE_HEAD, INLINE_MARKED, INLINE_PART, INLINE_LINES, inlineRule, fieldCap, colCaps, identityCap, sealCap, capExcess, numeralLen, clampCapped, clampContent, clampIdentity, copyrightOf, formHeading3, extUrl, youtubeEmbed, youtubeThumb, youtubeParts, youtubeWatch, youtubeChannel, urlProblem, emailProblem, emailAddr, songTags, repChips,
-  tierFeats, priceParts, priceCuts, blankRow, SONG_KEYS, repSetsOf, repSetLine, TRACK_KEYS, GIG_KEYS, gigWeekday, gigStatus, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
+  tierFeats, priceParts, priceCuts, blankRow, SONG_KEYS, repSetsOf, repSetLine, TRACK_KEYS, GIG_KEYS, gigWeekday, gigStatus, gigPart, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
   layoutChoices, designCount, pageLayout, pageOrder, pageRows, videoDesign, videoStartArch,
   VIDEOS, VIDEO_SEED, VIDEO_KEYS, videoPlayable, videoSeedDesc, VIDEO_ALL, COLUMN_SPLIT, bebasEms, antonEms, gloockEms, titanEms,
   headerLayout, headerLayoutLabel, setupHeaderCount,
@@ -3107,7 +3107,11 @@ function LineListField({ value, cap, placeholder, addLabel, onChange, compact = 
     setRows(parse(incoming))
   }
   const max = cap?.count ?? Infinity
+  // Why the last keystroke was refused, until the next one is taken (JP-169): a
+  // refusal reverts the box and, said nothing, looks like the character was lost.
+  const [refused, setRefused] = useState('')
   const commit = (next) => {
+    setRefused('')
     setRows(next)
     emitted.current = join(next)
     onChange(emitted.current)
@@ -3147,8 +3151,17 @@ function LineListField({ value, cap, placeholder, addLabel, onChange, compact = 
     // edit that does not raise the excess is always allowed, so a list left over
     // its limit by a layout swap stays editable and nothing is trimmed. `join`
     // drops blank rows, so a blank one past the count needs its own test.
-    if (capExcess(join(next), cap) > capExcess(join(rows), cap)) return
-    if (next.length > max && next.length > rows.length) return
+    if (capExcess(join(next), cap) > capExcess(join(rows), cap)) {
+      setRefused(cap?.chars != null && next.some((t) => t.length > cap.chars)
+        ? `An item can be ${cap.chars} characters at most.`
+        : `A list can hold ${cap?.count} items at most. Remove one to add another.`)
+      return
+    }
+    if (next.length > max && next.length > rows.length) {
+      setRefused(`A list can hold ${max} items at most. Remove one to add another.`
+        + (pieces.length > 1 ? ` A comma starts a new row, so it was not added.` : ''))
+      return
+    }
     if (pieces.length > 1 || parts[0] !== raw) pending.current = { row: i + at, col }
     commit(next)
   }
@@ -3179,7 +3192,8 @@ function LineListField({ value, cap, placeholder, addLabel, onChange, compact = 
               // Enter opens the next row under this one, as it would in a list.
               if (e.key !== 'Enter' || e.nativeEvent.isComposing) return
               e.preventDefault()
-              if (rows.length >= max || !t.trim()) return
+              if (rows.length >= max) { setRefused(`A list can hold ${max} items at most. Remove one to add another.`); return }
+              if (!t.trim()) return
               pending.current = { row: i + 1, col: 0 }
               setRows([...rows.slice(0, i + 1), '', ...rows.slice(i + 1)])
             }}
@@ -3212,6 +3226,7 @@ function LineListField({ value, cap, placeholder, addLabel, onChange, compact = 
           <span style={{ fontSize: compact ? '11px' : '12px', fontWeight: 600, color: '#5B5850' }}>{addLabel}</span>
         </button>
       )}
+      {refused && <p role="status" style={ERR_LINE}>{refused}</p>}
       <CharCount value={join(rows)} cap={cap} />
     </div>
   )
@@ -3750,7 +3765,8 @@ function MilesField({ value, onChange }) {
 function GigsField({ caps, value, max, design, onChange }) {
   const list = Array.isArray(value) ? value : []
 
-  const setAt = (i, k, v) => onChange(list.map((g, j) => (j === i ? { ...g, [k]: v } : g)))
+  // Month, day and year take what a date reads (gigPart); a refused key leaves the box as it was.
+  const setAt = (i, k, v) => onChange(list.map((g, j) => (j === i ? { ...g, [k]: gigPart(k, v, g[k]) } : g)))
   const removeAt = (i) => onChange(list.filter((_, j) => j !== i))
   const add = () => onChange([...list, { venue: '', city: '', time: '', month: '', day: '', year: '', link: '' }])
 
@@ -3812,7 +3828,7 @@ function GigsField({ caps, value, max, design, onChange }) {
             className="h-auto" style={SONG_ROW_INPUT}
           />,
           <CappedText cap={caps?.day}
-            key="day" value={g.day ?? ''} placeholder="12" onClick={stopE}
+            key="day" value={g.day ?? ''} placeholder="12" inputMode="numeric" onClick={stopE}
             onChange={(e) => setAt(i, 'day', e.target.value)}
             className="h-auto" style={SONG_ROW_INPUT}
           />,
@@ -7250,11 +7266,14 @@ function InlineEditor({ ed, value, cap, onChange, onRevert, onClose }) {
   // and a price's lead or tail are trimmed when read back, so a space typed at the end of a word
   // (`Very `) would be taken out of the box before the next letter, and no two words could be typed.
   const [typed, setTyped] = useState(null)
+  // A comma typed into a comma-list item is run into a space by the write (slotWrite), the one
+  // separator the page splits on; saying so beats the key silently not taking (JP-169).
+  const [comma, setComma] = useState(false)
   const held = (ed.f.k === 'title' && ed.cat === 'header') || ed.item != null || ed.row != null
   const shown = draft ?? (typed !== null && typed.trim() === value.trim() ? typed : value)
   const note = held && draft !== null
     ? (ed.item != null ? 'Remove an item in the panel' : ed.row != null ? 'Clear it in the panel' : 'Your name is required')
-    : null
+    : comma ? 'A comma starts a new item. Add one in the panel.' : null
   // A caret at the clicked character, as in any text field (JP-155), not the whole text selected: a
   // first key would replace all of it. `ed.at` is fixed for the box's life, so this stays one callback.
   const focusIn = useCallback((el) => { if (el) { el.focus(); const a = Math.min(ed.at ?? el.value.length, el.value.length); el.setSelectionRange(a, a) } }, [ed.at])
@@ -7283,7 +7302,13 @@ function InlineEditor({ ed, value, cap, onChange, onRevert, onClose }) {
         ref={focusIn} className={ed.float ? undefined : 'inline-edit'} data-inline-edit="" data-inline-slot={ed.id} data-inline-float={ed.float ? '' : undefined} value={shown} aria-label={ed.label} rows={1} spellCheck={false}
         maxLength={cap?.chars ?? undefined} onClick={stopE}
         onChange={(e) => {
-          const v = multi ? e.target.value : e.target.value.replace(/\s*\n\s*/g, ' ')
+          let v = multi ? e.target.value : e.target.value.replace(/\s*\n\s*/g, ' ')
+          // A gig's month and day take what the date reads (gigPart); a refused key leaves the box as it was.
+          if (ed.k === 'gigs' && ed.row != null && (ed.col === 'month' || ed.col === 'day')) {
+            v = gigPart(ed.col, v, shown)
+            if (v === shown && e.target.value !== shown) return
+          }
+          setComma(ed.item != null && (ed.row != null ? ROW_LISTS[ed.col] : ed.f.list) === ',' && v.includes(','))
           if (cap?.num != null && capExcess(v, { num: cap.num }) > capExcess(shown, { num: cap.num })) return
           if (held && !v.trim()) setDraft(v)
           else { setDraft(null); setTyped(v); onChange(v) }

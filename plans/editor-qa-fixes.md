@@ -219,3 +219,12 @@ Reads `CLAUDE.md`'s phone paragraph on the Edit drawer. `markFollow`, `followSec
   text undo stack; not taken.
 - Markers on `EncoreSection` for the field walk (see call 2).
 - The root `index.html` refresh and the commit, push and PR are the user's.
+
+## JP-169 (2026-11-11) — a comma typed into a list is lost without a word
+
+Reproduced as reading, not as a bug in the split: in the panel a comma starts a new row and is lost
+only when the list is already at its count (a refusal, JP-142, with no message), and the inline box
+turns it into a space by design. Fixed by saying so: the three comma-list hints, a *refused* line in
+`LineListField` and the inline note. No new storage format: a comma inside an item would need an escape
+in every reader (`songTags`, the chips, the seeds), and notes/list-editors.md's "no field asks the artist
+to type a separator" stands.

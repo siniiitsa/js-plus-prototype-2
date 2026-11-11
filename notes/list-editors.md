@@ -152,7 +152,11 @@ the other list boxes run; the second is needed on top because `join` drops blank
 does not raise the excess is always allowed, so a list left over its limit by a layout swap (8 of 6, a 22-char
 tag at cap 15) can still be edited, shortened and Removed, and **nothing is trimmed by an edit** (JP-143, 144);
 the clamp at render does that, and the counter (`n of cap · shortened on the page`) says why. An over-long
-paste is refused whole, as in every other list (JP-145).
+paste is refused whole, as in every other list (JP-145). **A refusal says why** (JP-169, 2026-11-11): `refused`
+under the rows (*A list can hold N items at most. Remove one to add another.*, with *A comma starts a new row*
+when it was a comma that would have added the row; *An item can be N characters at most.*), cleared by the next
+edit taken; the hints of the three comma lists (header Tags, calendar and form Event types) say *a comma starts
+a new row*. The inline editor still turns a comma into a space and now shows that in its note bubble.
 
 **No `maxLength` on the row inputs.** The browser applies it to a *paste* by total length before `edit` sees
 the text, so "Corporate Events, Weddings, Festivals" into a 22-cap row arrived as "Corporate Events, Wedd" — two
