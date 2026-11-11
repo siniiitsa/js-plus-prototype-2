@@ -553,14 +553,19 @@ const POP_SUN_FACE_D =
 // `height` is additive, for the footer's (964:58634's second "Layer_1"), which
 // is this drawing squeezed to 151.67 × 151; it defaults to `size`, so the
 // bio's stays square.
-function PopSun({ size, height = size, tilt, hue, ink, style }) {
+// `spin` is additive, for the bio's layout-1 badge (2026-11-11): the sun turns
+// inside its tilt like the seals' rings (`seal-spin`), unless the section's
+// badge is static. Every other caller leaves it unset and the sun stands still.
+function PopSun({ size, height = size, tilt, hue, ink, style, spin }) {
   return (
     <svg viewBox="0 0 154 154" preserveAspectRatio="none" aria-hidden="true" style={{
       position: 'absolute', display: 'block', overflow: 'visible', pointerEvents: 'none',
       width: size, height, transform: `rotate(${tilt}deg)`, ...style,
     }}>
-      <path d={POP_SUN_D} fill={hue} />
-      <path d={POP_SUN_FACE_D} fill={ink} />
+      <g className={spin ? 'seal-spin' : undefined} style={spin ? { transformOrigin: '50% 50%' } : undefined}>
+        <path d={POP_SUN_D} fill={hue} />
+        <path d={POP_SUN_FACE_D} fill={ink} />
+      </g>
     </svg>
   )
 }
@@ -4273,41 +4278,19 @@ function Bio({ s }) {
       </div>
     )
 
+    // The flank holds the heading alone (the `<initials> Bio` eyebrow and the
+    // `[ 001 ] Structure · Bio_01` line were removed, 2026-11-11: notes/bio.md).
+    // At desktop it is centred in the column, where its old `space-between`
+    // over three rows put it.
     const heading = (
-      <div style={col(s.narrow ? '29px' : '0', {
-        justifyContent: 'space-between', height: '100%', alignItems: 'flex-start',
+      <div style={col('0', {
+        justifyContent: s.narrow ? 'flex-start' : 'center', height: '100%', alignItems: 'flex-start',
         // The head's fit measures the flank (`100cqi`).
         ...(!grunge && s.titleWordEms && { containerType: 'inline-size' }),
-        // The narrow masters close the column on an empty 11.78 frame (the
-        // desktop scribble's, emptied) under the usual 14: stated space.
-        ...(pop && s.narrow && { paddingBottom: '25.78px' }),
+        // The scribble hangs off the head's foot (`head`'s own 14 margin); the
+        // narrow masters' empty 11.78 frame under it went with the line above.
       })}>
-        {/* Label/XS, in `font/ui`; Pop's is a raw 11 tracked 1.5. */}
-        <span style={{
-          fontFamily: s.ui, fontSize: pop ? u(11) : s.labelXs, lineHeight: pop ? 'normal' : 1.26, textTransform: 'uppercase',
-          whiteSpace: 'nowrap', ...ink, ...(pop && { letterSpacing: u(1.5) }),
-        }}>{s.initials} Bio</span>
         {head}
-        {/* Body/SM — Inter regular, not the eyebrow; Grunge's and Editorial's
-            are the eyebrow, Pop's Space Mono 10. The line is the artist's
-            `refLabel` (JP-090),
-            seeded with the frames' own; emptied, an empty seat keeps the
-            desktop column's three rows, so the heading does not slide to its
-            foot. The narrow column is gapped, not spaced, so there the seat
-            would be a dead 29 and the line simply goes.
-            It wraps, and inside a word, since a typed line can outrun a 390
-            column where the seed never does (JP-071's `listLabel` rule). */}
-        {!s.bioRef ? (s.narrow ? null : <span />)
-          : pop
-          ? mono(s.bioRef, 10, 0.5, { textTransform: 'uppercase', whiteSpace: 'normal', overflowWrap: 'anywhere', minWidth: 0 })
-          : grunge || ed
-          ? eyebrow(s.bioRef, { textTransform: 'uppercase', whiteSpace: 'normal', overflowWrap: 'anywhere', minWidth: 0 })
-          : (
-            <span style={{
-              fontFamily: s.body, fontSize: s.bodySm, lineHeight: 1.4, textTransform: 'uppercase',
-              whiteSpace: 'normal', overflowWrap: 'anywhere', minWidth: 0, ...ink,
-            }}>{s.bioRef}</span>
-          )}
       </div>
     )
 
@@ -4401,7 +4384,7 @@ function Bio({ s }) {
             }} />
           </div>
           {pop
-            ? <PopSun size={s.mob ? 78.54 : Math.round(154 * z * 10) / 10} tilt={25.37} hue={s.chips[2].bg} ink={s.bg} style={sun} />
+            ? s.showBadge === 'show' && <PopSun size={s.mob ? 78.54 : Math.round(154 * z * 10) / 10} tilt={25.37} hue={s.chips[2].bg} ink={s.bg} style={sun} spin={s.badgeSpin !== false} />
             : <SealBadge s={s} size={s.mob ? disc : Math.round(disc * z * 10) / 10} tilt={ed ? 25.03 : 26.06} style={seal} />}
         </div>
       </div>
@@ -4490,20 +4473,17 @@ function Bio({ s }) {
       </div>
     )
 
+    // The heading alone: the initials / Bio eyebrow and the reference line were
+    // removed (2026-11-11), so it stands mid-column where `space-between`
+    // over the three rows put it.
     const heading = (
-      <div style={col(s.mob ? '16px' : '0', {
-        justifyContent: 'space-between', height: '100%', alignItems: 'flex-start',
+      <div style={col('0', {
+        justifyContent: s.narrow ? 'flex-start' : 'center', height: '100%', alignItems: 'flex-start',
       })}>
-        <div style={col('6px')}>{label(s.initials)}{label('Bio')}</div>
         <h2 style={{
           margin: s.narrow ? '14px 0' : 0, fontFamily: s.display, fontSize: s.dispLg,
           lineHeight: 0.89, letterSpacing: s.dls, color: s.ac,
         }}>{s.title}</h2>
-        {/* `refLabel` (JP-090); emptied, an empty seat keeps the heading off
-            the foot of the column's space-between, except at 390, whose 16
-            gap would leave the seat a dead band. A typed line wraps. */}
-        {s.bioRef ? label(s.bioRef, { whiteSpace: 'normal', overflowWrap: 'anywhere', minWidth: 0 })
-          : s.mob ? null : <span />}
       </div>
     )
 
@@ -5260,15 +5240,22 @@ function Bio({ s }) {
         : { left: u(38.28), top: u(106), width: u(108), height: u(109) }} />
     )
 
+    // Lime's and Grunge's seal hangs in the about band's left margin; hidden, the
+    // margin goes with it.
+    const sealSeat = !ed && !pop && s.showBadge === 'show'
+
     // Pop's about band FILLs a card the 1440 and 768 instances state at 882
     // and 912, so it is 253 / 283 at the least; it pads 32 at 390 too.
     const about = (
       <div style={{
         display: 'flex', alignItems: 'flex-start', gap: u(40), overflow: 'hidden',
         padding: `${u(24)} ${pop ? u(32) : pad}`, position: 'relative',
-        ...(s.mob ? null : { minHeight: u(pop ? (tab ? 283 : 253) : ed ? 106 + 109 + 24 : sealTop + sealBox + 24) }),
+        // Lime's and Grunge's band reserves the seal's seat (a floor and the
+        // left column); a hidden badge (2026-11-11) frees both. Editorial's
+        // sparkle and Pop's card-corner seal keep theirs, which the seal is not.
+        ...(s.mob || (!ed && !pop && !sealSeat) ? null : { minHeight: u(pop ? (tab ? 283 : 253) : ed ? 106 + 109 + 24 : sealTop + sealBox + 24) }),
       }}>
-        {!s.mob && <div style={{ width: u(188), height: u(64), flex: 'none' }} />}
+        {!s.mob && (ed || pop || sealSeat) && <div style={{ width: u(188), height: u(64), flex: 'none' }} />}
         <div style={col(u(12), { flex: '1 0 0', minWidth: 0, color: s.tx })}>
           {s.aboutLabel && <span style={{ ...chipType, ...labelInk }}>[ {s.aboutLabel} ]</span>}
           <p style={{ margin: 0, fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5, whiteSpace: 'pre-line' }}>{s.bioP1}</p>
@@ -5359,10 +5346,6 @@ function Bio({ s }) {
         {/* The wrapper's head: Label/XS in `font/ui` (Chakra Petch) and
             Display/LG, both on the page ground. */}
         <div style={col(u(30), { alignItems: 'flex-start' })}>
-          <span style={{
-            fontFamily: s.ui, fontSize: s.labelXs, lineHeight: 1.26,
-            letterSpacing: s.dls, textTransform: 'uppercase', color: s.tx,
-          }}>{s.initials} Bio</span>
           {/* Grunge's head is one tone, `sem/text/1` throughout: layout 1's
               word-two accent was that frame's, not the template's. So is
               Pop's, uppercased at 768 and 390 where the masters type it mixed,
@@ -5393,13 +5376,9 @@ function Bio({ s }) {
             instance draws it. Editorial's 768 instance (984:16821) is the
             `Theme=Lime` variant, olive and lime, a leak; its row is drawn
             from Editorial's own chips, as the 1440 and 390 instances draw
-            it. The line is `tagsLabel` (JP-071), and an emptied one leaves
-            the chips alone. */}
+            it. The "Genres" line over the chips was removed (2026-11-11). */}
         {s.showTags === 'show' && (
           <div style={col(u(16), { alignItems: 'stretch' })}>
-            {s.tagsLabel && (
-              <span style={{ fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5, color: s.ac }}>{s.tagsLabel}</span>
-            )}
             <TagChips s={s} radius={s.radiusChip} />
           </div>
         )}
@@ -5532,12 +5511,13 @@ function Bio({ s }) {
         // seal's own bottom edge plus the band's stated 24 — every term
         // transcribed — because the card is `overflow-clip` and would
         // otherwise cut the sticker in half.
-        ...(s.mob ? null : { minHeight: u(sealTop + sealBox + 24) }),
+        // A hidden badge (2026-11-11) leaves no floor and no left column.
+        ...(s.mob || s.showBadge !== 'show' ? null : { minHeight: u(sealTop + sealBox + 24) }),
       }}>
         {/* Frame 9: an empty 188 × 64 box that reserves the left column the
             seal hangs in. Absent from the 390 sub-component, where the seal
-            moves to the photograph. */}
-        {!s.mob && <div style={{ width: u(188), height: u(64), flex: 'none' }} />}
+            moves to the photograph, and while the badge is hidden. */}
+        {!s.mob && s.showBadge === 'show' && <div style={{ width: u(188), height: u(64), flex: 'none' }} />}
         <div style={col(u(12), { flex: '1 0 0', minWidth: 0, color: ink })}>
           {s.aboutLabel && <span style={chipType}>[ {s.aboutLabel} ]</span>}
           <p style={{ margin: 0, fontFamily: s.body, fontSize: u(T.body), lineHeight: 1.5, whiteSpace: 'pre-line' }}>{s.bioP1}</p>
@@ -5558,10 +5538,6 @@ function Bio({ s }) {
         {/* The wrapper frame's head. Its eyebrow stands on the page ground, so
             it takes the page's own ink rather than the card's. */}
         <div style={col(u(30), { alignItems: 'flex-start' })}>
-          <span style={{
-            fontFamily: s.body, fontSize: u(T.eyebrow), lineHeight: 1.26,
-            textTransform: 'uppercase', color: s.tx,
-          }}>{s.initials} Bio</span>
           <h2 style={{
             margin: 0, fontFamily: s.display, fontSize: u(T.disp), lineHeight: 0.89,
             letterSpacing: s.dls, color: s.ac,
@@ -5803,31 +5779,23 @@ function Bio({ s }) {
     // literals — on the two narrow instances alone; Scheme 1's keys at 1440.
     // Editorial's instance is Scheme 3 at every width: the seat's own keys.
     const well = pop ? card.box3 : desk || ed ? s.box3 : grunge ? '#82211B' : '#263020'
-    // Grunge's instance is Scheme 1 at 1440 and Scheme 3 narrow, and its prose
-    // box is bound to `sem/box/1` where Lime's is `sem/box/2` (a moved binding).
-    // Pop's binds `box/1` too, on the card's scheme.
-    const dusk = pop ? card.box1 : ed ? s.box2 : desk ? (grunge ? s.box1 : s.box2) : grunge ? '#9E1F17' : '#43523B'
-    // Grunge's glass is Lime's #2E3928 at 1% (a leak, invisible) under
-    // `Frame 255`, a `sem/bg` dimmer at .5 over the whole panel and under the
-    // text — #000000 at 1440, Scheme 3's #DF262C narrow — drawn as the panel's
-    // own fill, one layer. Editorial's dimmer is the seat's ink at .8 at 1440
-    // and 768; its 390 glass has no dimmer and paints `sem/bg` opaque. Pop's is
-    // the card's `sem/bg` at .8 at every width, the blur reading through it.
-    const glass = pop ? `${card.bg}CC` : ed ? (s.mob ? s.bg : `${s.bg}CC`) : grunge ? `${desk ? s.bg : s.ac}80` : `${s.box1}B5`
     const upper = grunge || ed || pop ? { textTransform: 'uppercase' } : null
-    // Grunge's name is `sem/text/2` then `text/1` at the first space: white /
-    // red on Scheme 1 at 1440, white / black on Scheme 3 narrow.
+    // The band's own inks. The copy used to stand in a frosted panel over the
+    // portrait (name and meta line in `s.ac` / `card.text3`, on a dark glass);
+    // it stands on the band now (2026-11-11: notes/bio.md), so it takes the
+    // eyebrow's ink. Lime's and Grunge's band is `s.ac`, so their copy is `s.bg`
+    // or `s.tx` (white), never `s.ac`; Editorial's and Pop's band is `s.bg`.
+    // Pop's pink band reads `text/3`, white (its violet `s.tx` is 2.1 : 1 there).
+    const ink = pop ? s.text3 : grunge || ed ? s.tx : s.bg
+    const nameInk = ed || pop ? s.ac : grunge ? s.tx : s.bg
+    // Grunge's name is `text/2` (white) then, from the first space, the band's
+    // ground: `s.ac` is the band itself there, so it cannot be the accent.
     const brand = () => {
       if (!grunge) return s.brand
       const i = s.brand.indexOf(' ')
       if (i === -1) return s.brand
-      return <>{s.brand.slice(0, i)} <span style={{ color: desk ? s.ac : s.bg }}>{s.brand.slice(i + 1)}</span></>
+      return <>{s.brand.slice(0, i)} <span style={{ color: s.bg }}>{s.brand.slice(i + 1)}</span></>
     }
-    const panelPad = u(s.mob ? 20 : 30)
-    // The phone's clear stage (below): its height, and how far the panel
-    // stands up into it.
-    const stageH = 400
-    const stageOver = 60
     const body = { fontFamily: s.body, fontSize: s.bodyMd, lineHeight: 1.5 }
 
     // Editorial's chips are the Tags instance's Scheme 1 seats, each lettered
@@ -5848,17 +5816,35 @@ function Bio({ s }) {
     // session 12).
     const headSize = ed && desk ? s.dispLg : s.dispXl
     const headMeasure = s.mob ? '100cqi' : `min(100cqi, ${u(pop && desk ? 533.97 : 572.9)})`
+    const meta = (
+      <div style={{
+        ...row(u(18), {
+          width: '100%', color: ink, flexWrap: 'wrap', rowGap: u(8),
+          // The 390 master spreads the three items across the panel; the wide
+          // ones gap them 18. Wrapping rather than clipping is Retro's call.
+          ...(s.mob ? { justifyContent: 'space-between' } : null),
+        }),
+        ...body,
+      }}>
+        <span>{s.kicker}</span>
+        {s.since && <span>Performing since {s.since}</span>}
+        {/* `FIELDS.bio.cta2` (JP-082): emptied, the link goes with its arrow. */}
+        {s.cta2 && (
+          <ListenLink s={s} to={s.listenTo} color={ink} after=" ↗"
+                      style={{ ...body, fontWeight: 400, letterSpacing: s.dls, textTransform: 'none' }} />
+        )}
+      </div>
+    )
+
+    // The left column: heading, the Bio copy directly under it, then the artist's
+    // name and meta line, then the chips (user call, 2026-11-11). Top-aligned at
+    // every width; the portrait on the right carries nothing over it.
+    const gap = u(s.mob ? 20 : 30)
     const head = (
       <div style={{
-        ...(desk
-          ? col('0', { alignItems: 'flex-start', justifyContent: 'space-between', minWidth: 0 })
-          : col(u(s.mob && !ed && !pop ? 15 : 30), { alignItems: 'flex-start' })),
+        ...col(gap, { alignItems: 'flex-start', minWidth: 0 }),
         ...(ed || pop ? { containerType: 'inline-size' } : null),
       }}>
-        <span style={{
-          fontFamily: s.ui, fontSize: s.labelXs, lineHeight: 1.26,
-          letterSpacing: s.dls, textTransform: 'uppercase', color: grunge || ed || pop ? s.tx : s.bg,
-        }}>{s.initials} Bio</span>
         {/* The 572.9 measure is on the text node at 1440 and 768 and is what
             breaks the head — three lines at 1440, two at 768; the 390 master
             states the full 370. Editorial's 1440 master sets it Display/LG at
@@ -5873,41 +5859,31 @@ function Bio({ s }) {
           // floor alike (scanned at all three widths).
           ...(pop ? { position: 'relative', top: '-0.14em' } : null),
         })}>{s.title}</h2>
+        <div style={{ ...col(u(10), { alignItems: 'stretch' }), color: ink, maxWidth: s.mob ? undefined : u(572.9) }}>
+          <p style={{ margin: 0, ...body, fontSize: s.bodyLg, whiteSpace: 'pre-line' }}>{s.bioP1}</p>
+          {s.bioP2 && (
+            <p style={{ margin: 0, ...body, fontSize: s.bodyLg, whiteSpace: 'pre-line' }}>{s.bioP2}</p>
+          )}
+        </div>
+        <div style={col(u(16), { alignItems: 'flex-start', alignSelf: 'stretch' })}>
+          {/* Wraps, the layout-3 card's call: at leading 1 a clip would cut
+              the descenders off at the baseline. */}
+          <p style={distressed(s, {
+            margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispSm), lineHeight: facedLh(s, 1),
+            letterSpacing: s.dls, color: nameInk, wordBreak: 'break-word', ...upper,
+            // Titan sits 0.13–0.16em low at lh 1, as the header's does.
+            ...(pop ? { position: 'relative', top: '-0.14em' } : null),
+          })}>{brand()}</p>
+          {meta}
+        </div>
         {/* The Tags instance's own 457 at 1440 and 768 (six chips wrap to two
-            rows in it, as the frames show), the full measure at 390. Under
-            Editorial its "Genres" line (`tagsLabel`) stands 16 over the chips
-            at every width, Body/LG in the Section's terracotta. */}
+            rows in it, as the frames show), the full measure at 390. The
+            "Genres" line over them was removed (2026-11-11). */}
         {s.showTags === 'show' && (
-          <div style={{
-            alignSelf: 'stretch', maxWidth: s.mob ? undefined : u(457),
-            ...(ed ? col(u(16), { alignItems: 'flex-start' }) : null),
-          }}>
-            {ed && s.tagsLabel && (
-              <span style={{ fontFamily: s.body, fontSize: s.bodyLg, lineHeight: 1.5, color: s.ac }}>{s.tagsLabel}</span>
-            )}
+          <div style={{ alignSelf: 'stretch', maxWidth: s.mob ? undefined : u(457) }}>
             <TagChips s={s} radius={ed ? u(6) : s.radiusChip}
                       hues={tagSeats?.map((c) => c.bg)} inks={tagSeats?.map((c) => c.fg)} />
           </div>
-        )}
-      </div>
-    )
-
-    const meta = (
-      <div style={{
-        ...row(u(18), {
-          width: '100%', color: pop ? card.text3 : s.tx, flexWrap: 'wrap', rowGap: u(8),
-          // The 390 master spreads the three items across the panel; the wide
-          // ones gap them 18. Wrapping rather than clipping is Retro's call.
-          ...(s.mob ? { justifyContent: 'space-between' } : null),
-        }),
-        ...body,
-      }}>
-        <span>{s.kicker}</span>
-        {s.since && <span>Performing since {s.since}</span>}
-        {/* `FIELDS.bio.cta2` (JP-082): emptied, the link goes with its arrow. */}
-        {s.cta2 && (
-          <ListenLink s={s} to={s.listenTo} color={pop ? card.text3 : s.tx} after=" ↗"
-                      style={{ ...body, fontWeight: 400, letterSpacing: s.dls, textTransform: 'none' }} />
         )}
       </div>
     )
@@ -5919,11 +5895,44 @@ function Bio({ s }) {
     const padB = grunge && s.mob ? '60px' : ed && s.mob ? '40px' : padV
     // Pop's dot grid, off the Section's own origin (the content edge less the
     // frame's inset, so a published gutter carries it with the column).
+    // Narrow, the copy runs the sheet's full width over where the frames stood
+    // the grid, so it peeks over the portrait's top-right corner instead
+    // (2026-11-11), drawn by a wrapper round the portrait.
     const dots = desk
       ? { left: `calc(${s.surplus} + ${u(589.97)})`, top: u(66.53), width: u(414.04), height: u(342.97) }
       : tab
-        ? { left: `calc(${s.surplus} + 560.98px)`, top: '181.52px', width: '414.04px', height: '342.97px' }
-        : { left: `calc(${s.surplus} + 242.21px)`, top: '149px', width: '231.75px', height: '191.97px' }
+        ? { right: '40px', top: '-44px', width: '414.04px', height: '342.97px' }
+        : { right: '24px', top: '-30px', width: '231.75px', height: '191.97px' }
+    // The portrait, bare: nothing stands over it at any width (user call,
+    // 2026-11-11; the name, the meta line and the paragraphs moved to the left
+    // column). At 1440 it stretches to the column's height over the frame's 720
+    // floor; narrow it is a 4 : 5 portrait at 390 and the frame's 720 at 768,
+    // since a grid row has no content to size it.
+    const portrait = (
+      <div style={{
+        ...(desk ? { minWidth: 0, minHeight: u(720) } : s.mob ? { aspectRatio: '4 / 5' } : { height: '720px' }),
+        position: 'relative', overflow: 'hidden', background: well,
+        borderRadius: u(pop ? 25 : ed ? 0 : grunge ? 15 : 55),
+      }}>
+        <div style={{ position: 'absolute', inset: 0 }}>
+          <Photo s={s} initialsSize={desk ? 72 : tab ? 56 : 40} ink={pop ? card.text3 : s.tx} />
+        </div>
+        {/* Grunge's `image 1`: a 640-wide sheet centred on the card at every
+            width, card-tall, lighten .5, under a #0B0B0B foot paint to 16.3%
+            that is a mask under `lighten` (the layout-1 bio's recipe). */}
+        <Grain s={s} exact grunge blend="lighten" opacity={0.5} style={{
+          left: '50%', width: u(640), transform: 'translateX(-50%)',
+          maskImage: 'linear-gradient(0deg, transparent 0%, #000 16.3%)',
+        }} />
+        {!s.mob && (
+          <span style={{
+            position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
+            boxShadow: 'inset 0 0 0 1px #000000',
+          }} />
+        )}
+      </div>
+    )
+
     return (
       <div style={{
         // The sheet: out to the section's own edges, past the root's padding.
@@ -5953,86 +5962,18 @@ function Bio({ s }) {
           ? { gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)' }
           : { gridTemplateColumns: 'minmax(0, 1fr)', rowGap: u(tab || ed || pop ? 40 : grunge ? 10 : 15) }),
       }}>
-        {pop && (
+        {pop && desk && (
           <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none', zIndex: -1 }}>
             <PopDots hue={s.ac} style={dots} />
           </div>
         )}
         {head}
-        <div style={{
-          ...(desk ? { minWidth: 0 } : null),
-          position: 'relative', overflow: 'hidden', background: well,
-          borderRadius: u(pop ? 25 : ed ? 0 : grunge ? 15 : 55),
-          // The frame's own height as a floor, HeaderV3's rule: the panel is
-          // content-tall, so a second paragraph grows the card.
-          minHeight: u(s.mob ? 536 : 720),
-          // One value, never `padding` plus a phone-only `paddingTop`: a longhand
-          // that appears and disappears across the device switch is a stale
-          // padding waiting to happen. The phone's top is the clear stage below.
-          padding: s.mob ? `${stageH - stageOver}px 10px 10px` : u(30),
-          // At 390 the content-tall panel covered all but the top ~130 of the
-          // photograph, cutting the artist off at the forehead (user call,
-          // 2026-09-18). So the phone keeps a clear stage above the panel: the
-          // panel starts `stageH − stageOver` down the card. The photograph
-          // fills the whole card, as at 768 and 1440 and in all three 390
-          // masters, so it runs on under the panel to the card's foot (JP-108,
-          // user call, 2026-10-06, amending the 2026-09-18 call, whose
-          // photograph filled a `stageH` top band). The seeds' faces stay in
-          // the stage at the centred cover. Only an emptied slot keeps the
-          // band, because `Photo` centres its initials, and in the card's full
-          // height they would sit under the panel.
-          ...col('0', { justifyContent: 'flex-end', alignItems: 'center' }),
-        }}>
-          <div style={s.mob && !s.image
-            ? { position: 'absolute', top: 0, left: 0, right: 0, height: `${stageH}px` }
-            : { position: 'absolute', inset: 0 }}>
-            <Photo s={s} initialsSize={desk ? 72 : tab ? 56 : 40} ink={pop ? card.text3 : s.tx} />
+        {pop && !desk ? (
+          <div style={{ position: 'relative' }}>
+            <PopDots hue={s.ac} style={{ ...dots, zIndex: -1 }} />
+            {portrait}
           </div>
-          {/* Grunge's `image 1`: a 640-wide sheet centred on the card at every
-              width, card-tall, lighten .5, under a #0B0B0B foot paint to 16.3%
-              that is a mask under `lighten` (the layout-1 bio's recipe). */}
-          <Grain s={s} exact grunge blend="lighten" opacity={0.5} style={{
-            left: '50%', width: u(640), transform: 'translateX(-50%)',
-            maskImage: 'linear-gradient(0deg, transparent 0%, #000 16.3%)',
-          }} />
-          <div style={{
-            position: 'relative', width: '100%', overflow: 'hidden',
-            borderRadius: u(pop ? 38 : ed ? 0 : grunge ? 7.5 : 27), padding: panelPad,
-            // `s.box1` at .71 as an 8-digit hex (no `rgba()` in the file),
-            // over the frame's 54 backdrop blur, emitted as CSS 27.
-            background: glass,
-            backdropFilter: `blur(${u(27)})`, WebkitBackdropFilter: `blur(${u(27)})`,
-            ...col(panelPad, { alignItems: 'stretch' }),
-          }}>
-            <div style={col(u(16), { alignItems: 'flex-start' })}>
-              {/* Wraps, the layout-3 card's call: at leading 1 a clip would cut
-                  the descenders off at the baseline. */}
-              <p style={distressed(s, {
-                margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispSm), lineHeight: facedLh(s, 1),
-                letterSpacing: s.dls, color: pop ? card.ac : grunge ? s.tx : s.ac, wordBreak: 'break-word', ...upper,
-                // Titan sits 0.13–0.16em low at lh 1, as the header's does.
-                ...(pop ? { position: 'relative', top: '-0.14em' } : null),
-              })}>{brand()}</p>
-              {meta}
-            </div>
-            <div style={{
-              background: dusk, color: pop ? card.text3 : s.tx,
-              borderRadius: u(pop ? 20 : ed ? 0 : grunge ? 2.5 : 13.5), padding: u(20),
-              ...col(u(10), { alignItems: 'stretch' }),
-            }}>
-              <p style={{ margin: 0, ...body, fontSize: s.bodyLg, whiteSpace: 'pre-line' }}>{s.bioP1}</p>
-              {s.bioP2 && (
-                <p style={{ margin: 0, ...body, fontSize: s.bodyLg, whiteSpace: 'pre-line' }}>{s.bioP2}</p>
-              )}
-            </div>
-          </div>
-          {!s.mob && (
-            <span style={{
-              position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
-              boxShadow: 'inset 0 0 0 1px #000000',
-            }} />
-          )}
-        </div>
+        ) : portrait}
         {/* Grunge's 390 master gives the bio the tear between it and the
             media band (977:16058, #1A1A1A); drawn in the band's own #171716,
             layout 1's neighbour's-ground rule — 3 in 255 off the frame. */}
@@ -6068,60 +6009,7 @@ function Bio({ s }) {
     // an empty slot or a transparent upload.
     const edge = s.retro ? '#000000' : s.deep
     const under = s.retro ? '#3C3F1A' : s.deep
-    const panelPad = u(s.mob ? 20 : 30)
     const body = { fontFamily: s.body, fontSize: u(T.body), lineHeight: 1.5 }
-
-    // The wrapper's head, the layout-3 bio's rule: `FIELDS.bio.heading`'s
-    // default IS the frame's "Reads the room." and `s.initials` spells the
-    // "KM" of its "KM BIO", so nothing here is invented. The 30 between them
-    // is the two narrow wrappers' own gap; the 1440 one distributes its column
-    // absolutely over the card's 720 and states none.
-    const head = (
-      <div style={desk
-        ? col('0', { alignItems: 'flex-start', justifyContent: 'space-between', flex: '1 1 0', minWidth: 0 })
-        : col(u(30), { alignItems: 'flex-start' })}>
-        <span style={{
-          fontFamily: s.body, fontSize: u(T.eyebrow), lineHeight: 1.26,
-          textTransform: 'uppercase', color: cream,
-        }}>{s.initials} Bio</span>
-        {/* The heading's own 572.9 measure is what hand-breaks it — three
-            lines at 1440, two at 768 — and it is stated on the text node at
-            both wide widths. The 390 master states the full 370 instead, so
-            the cap stops there (the booking calendar's rule: check whether a
-            leaked desktop width still *does* something before dropping it).
-            Fraunces is the wider face at body sizes and the *narrower* one
-            here, so every master's break falls a line later than the frame's —
-            two lines at 1440 against its three, one at 768 and 390 against its
-            two.
-
-            Display/XL's leading is .75, and this is the first branch to take
-            it outside the header. At .75 a stacked line of caps collides in
-            every display face taller than Fraunces (Titan One and Bebas Neue
-            both overlap outright), so every template but Retro degrades to
-            .89 — no template now, since the Lime block above takes its
-            frames' own leading (Bebas Neue, and Anton, Gloock and Titan One
-            under Grunge, Editorial and Pop, which widen it) — which is the leading every other
-            display head in this file already sets — the page's own ramp
-            rather than an invented number. */}
-        <h2 style={{
-          margin: 0, fontFamily: s.display, fontSize: u(T.disp),
-          lineHeight: s.retro ? 0.75 : 0.89,
-          letterSpacing: s.dls, color: mustard,
-          maxWidth: s.mob ? undefined : u(572.9), wordBreak: 'break-word',
-        }}>{s.title}</h2>
-        {s.showTags === 'show' && (
-          <div style={col(u(16), { alignSelf: 'stretch', maxWidth: desk ? u(457) : undefined })}>
-            {/* `tagsLabel` (JP-071), layout 3's Genres line's key. */}
-            {!s.mob && s.tagsLabel && (
-              <span style={{
-                fontFamily: s.body, fontSize: u(T.genre), lineHeight: 1.5, color: s.ac,
-              }}>{s.tagsLabel}</span>
-            )}
-            <TagChips s={s} radius={u(8)} size={u(T.chip)} />
-          </div>
-        )}
-      </div>
-    )
 
     // The meta row. "DJ & selector" is `kicker` and "Performing since 2021" is
     // the literal over `FIELDS.bio.since` — the field layout 3 added for this
@@ -6160,6 +6048,53 @@ function Bio({ s }) {
       </div>
     )
 
+    // The left column (user call, 2026-11-11): the heading, the Bio copy directly
+    // under it, then the artist's name and meta line, then the chips. The
+    // `<initials> Bio` eyebrow and the "Genres" line are gone, and nothing
+    // stands over the portrait any more. Top-aligned at every width.
+    // The heading's own 572.9 measure is what hand-breaks it — three
+    // lines at 1440, two at 768 — and it is stated on the text node at
+    // both wide widths. The 390 master states the full 370 instead, so
+    // the cap stops there. Fraunces is the wider face at body sizes and the
+    // *narrower* one here, so every master's break falls a line later than the
+    // frame's. Display/XL's leading is .75 on Retro and .89 on the flat four.
+    const head = (
+      <div style={{
+        ...col(u(s.mob ? 20 : 30), { alignItems: 'flex-start' }),
+        ...(desk ? { flex: '1 1 0', minWidth: 0 } : null),
+      }}>
+        <h2 style={{
+          margin: 0, fontFamily: s.display, fontSize: u(T.disp),
+          lineHeight: s.retro ? 0.75 : 0.89,
+          letterSpacing: s.dls, color: mustard,
+          maxWidth: s.mob ? undefined : u(572.9), wordBreak: 'break-word',
+        }}>{s.title}</h2>
+        <div style={{ ...col(u(12), { alignItems: 'stretch' }), color: cream, maxWidth: s.mob ? undefined : u(572.9) }}>
+          <p style={{ margin: 0, ...body, fontSize: u(T.prose), whiteSpace: 'pre-line' }}>{s.bioP1}</p>
+          {s.bioP2 && (
+            <p style={{ margin: 0, ...body, fontSize: u(T.prose), whiteSpace: 'pre-line' }}>{s.bioP2}</p>
+          )}
+        </div>
+        <div style={col(u(16), { alignItems: 'flex-start', alignSelf: 'stretch' })}>
+          {/* Both wide masters set the name `whitespace-nowrap` inside an
+              `overflow-clip` frame and the 390 one gives it `w-full` — so
+              it wraps here, the layout-3 card's call: at leading 1 the
+              line box is exactly 1em and a clip cuts every descender off
+              at the baseline. */}
+          <p style={{
+            margin: 0, fontFamily: s.display, fontSize: u(T.name), lineHeight: 1,
+            letterSpacing: s.dls, color: mustard, wordBreak: 'break-word',
+          }}>{s.brand}</p>
+          {meta}
+        </div>
+        {s.showTags === 'show' && (
+          <div style={{ alignSelf: 'stretch', maxWidth: desk ? u(457) : undefined }}>
+            <TagChips s={s} radius={u(8)} size={u(T.chip)} />
+          </div>
+        )}
+      </div>
+    )
+
     return (
       <div style={{
         // The sheet: out to the section's own edges, past the root's padding.
@@ -6169,8 +6104,11 @@ function Bio({ s }) {
         ...(desk ? row(u(56), { alignItems: 'stretch' }) : col(u(40))),
       }}>
         {head}
+        {/* The portrait, bare. At 1440 it stretches to the column's height
+            over the frame's 720 floor; narrow it is a 4 : 5 portrait at 390
+            and the frame's 720 at 768. */}
         <div style={{
-          ...(desk ? { flex: '1 1 0', minWidth: 0 } : null),
+          ...(desk ? { flex: '1 1 0', minWidth: 0, minHeight: u(720) } : s.mob ? { aspectRatio: '4 / 5' } : { height: '720px' }),
           position: 'relative', overflow: 'hidden', background: under,
           borderRadius: u(30),
           // The masters outline the card at 1440 and 768 and not at 390 — the
@@ -6178,12 +6116,6 @@ function Bio({ s }) {
           // palettes, the card being a photograph rather than a fill that
           // could vanish into its ground.
           border: s.mob ? undefined : `1px solid ${edge}`,
-          // The frame's own height, as a floor: the panel is content-tall, so
-          // a second paragraph or a wrapped name grows the card where a stated
-          // height would clip it (HeaderV3's rule).
-          minHeight: u(s.mob ? 536 : 720),
-          padding: u(s.mob ? 10 : 30),
-          ...col('0', { justifyContent: 'flex-end', alignItems: 'center' }),
         }}>
           <div style={{ position: 'absolute', inset: 0 }}>
             {/* An invented ramp, only ever seen on the flat four or mid-edit:
@@ -6195,54 +6127,6 @@ function Bio({ s }) {
                 and a centred crop clipped the singer's hair. At 390 it is taller
                 than the photograph and crops the sides, where it is inert. */}
             <Photo s={s} initialsSize={desk ? 72 : tab ? 56 : 40} ink={cream} style={{ objectPosition: '50% 0%' }} />
-          </div>
-          <div style={{
-            position: 'relative', width: '100%', overflow: 'hidden',
-            borderRadius: u(15), padding: panelPad,
-            // The frame's own frosted wash: a 27px backdrop blur under an
-            // inset sheet of the band at 80%. Written as the opacity on an
-            // element the way Figma paints it, which is also the one spelling
-            // a translucent colour is allowed in this file.
-            backdropFilter: `blur(${u(27)})`, WebkitBackdropFilter: `blur(${u(27)})`,
-            ...col(panelPad, { alignItems: 'stretch' }),
-          }}>
-            <div aria-hidden style={{ position: 'absolute', inset: 0, background: band, opacity: 0.8 }} />
-            <div style={{ position: 'relative', ...col(u(16), { alignItems: 'flex-start' }) }}>
-              {/* Both wide masters set the name `whitespace-nowrap` inside an
-                  `overflow-clip` frame and the 390 one gives it `w-full` — so
-                  it wraps here, the layout-3 card's call: at leading 1 the
-                  line box is exactly 1em and a clip cuts every descender off
-                  at the baseline. */}
-              <p style={{
-                margin: 0, fontFamily: s.display, fontSize: u(T.name), lineHeight: 1,
-                letterSpacing: s.dls, color: mustard, wordBreak: 'break-word',
-              }}>{s.brand}</p>
-              {meta}
-            </div>
-            {/* `sem/box/1` #6D7040 is the band lifted 11% towards the cream —
-                arithmetic, not a third hue — and it is *opaque*: a column scan
-                reads it at exactly #6D7040 where the panel beside it varies
-                with the photograph behind. So it is the band again, with the
-                lift as its own 11% sheet, which gives the flat four the same
-                relationship without a `mix()` in this file. */}
-            <div style={{
-              position: 'relative', overflow: 'hidden', background: band,
-              borderRadius: u(7.5), padding: u(20),
-              ...col(u(12), { alignItems: 'stretch' }),
-            }}>
-              <div aria-hidden style={{ position: 'absolute', inset: 0, background: cream, opacity: 0.11 }} />
-              {/* The masters set one paragraph — the seeded `para1` behind a
-                  lead clause naming the mock artist (JP-081, a reply).
-                  The section has two, and an emptied `para2` is not rendered
-                  rather than printed blank (the testimonials' rule). Their gap
-                  is the layout-3 card's own 12: no master states one, and a
-                  number consistent with the section's other branch beats a
-                  second invented one. */}
-              <p style={{ margin: 0, position: 'relative', ...body, fontSize: u(T.prose), whiteSpace: 'pre-line' }}>{s.bioP1}</p>
-              {s.bioP2 && (
-                <p style={{ margin: 0, position: 'relative', ...body, fontSize: u(T.prose), whiteSpace: 'pre-line' }}>{s.bioP2}</p>
-              )}
-            </div>
           </div>
         </div>
       </div>

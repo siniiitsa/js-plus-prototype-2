@@ -170,7 +170,9 @@ mutated through a single `patch()` helper.
   `badgeMode` (`'rotating'` default, `'static'`, `'hidden'`) replaces its `showBadge`; `sectionVm` folds it
   into `vm.showBadge` (so every existing reader holds) and `vm.badgeSpin`, which `SealBadge` reads to drop
   the `seal-spin` class from its ring (static = same artwork, text and placement). `legacyContent` turns a
-  stored header `showBadge: 'hide'` into `'hidden'`; the footer keeps its own `showBadge`. Lime's and
+  stored header `showBadge: 'hide'` into `'hidden'`; the footer keeps its own `showBadge`. **The bio's circular badge takes the same three states** (2026-11-11): `FIELDS.bio.badgeMode`, read at layouts 1 and 3
+  (layout 5 folds onto 1; Editorial's layout 3 draws a sparkle, so it reads layout 1 alone), folded by `sectionVm` the way the header's is;
+  Pop's layout-1 sun (`PopSun`) turns too. Hidden frees the seal's seat (layout 3's left column and floor). Lime's and
   Editorial's layout-1 badge (a reticle, a star) has no ring to turn, so `badgeOptsFor()` offers those two
   Visible / Hidden only.
 - **A focused panel field walks the canvas to what it prints** (user call, 2026-10-14). `EditPanel`'s
@@ -393,13 +395,13 @@ reversing 2026-10-20's "an already-selected section": the `text` cursor shows on
   **And eight frame labels went the same way** (JP-071, user call, 2026-09-29, reversing Retro
   layout 2's "a frame label stays a literal" for the eight the tester reported): the bio's ID-card
   labels `sinceLabel` / `roleLabel` / `baseLabel` (one line each; `sectionVm` breaks them before
-  the last word, as the frames do) and `aboutLabel`, its Genres line `tagsLabel` (bio layout 4's
-  too), media's `listLabel` ("● Popular", layouts 2 and 3) and layout 3's `kicker` on the map and
+  the last word, as the frames do) and `aboutLabel` (its Genres line `tagsLabel` was removed 2026-11-11, with the bio's initials / Bio eyebrow;
+  notes/bio.md), media's `listLabel` ("● Popular", layouts 2 and 3) and layout 3's `kicker` on the map and
   the testimonials. JP-059's shape: seeded with the literal, uncased, dropped when emptied. The
   `●` and `[ ]` are the markup's and go with an emptied word; a stat's label also goes with its
-  value, as before. **Four more at layout 1, every template** (JP-090, user call, 2026-09-30):
-  the bio's `refLabel` (the whole `[ 001 ] Structure · Bio_01` line, since the `001` is no
-  count), the map's `listLabel` over the gig list (its `· N` the markup's), the form's
+  value, as before. **Three more at layout 1, every template** (JP-090, user call, 2026-09-30;
+  a fourth, the bio's `refLabel` `[ 001 ] Structure · Bio_01` line, was removed 2026-11-11):
+  the map's `listLabel` over the gig list (its `· N` the markup's), the form's
   `typeLabel` over the chip row, which reads its seed again when emptied (`messageLabel`'s
   rule; it never reaches the mailto, whose subject carries the chip), and the map's
   "Shows/coverage", which is `kicker`'s layout-1 seed — `mapKickerSeed(d)`, called by

@@ -1069,16 +1069,14 @@ export const BIO_SINCE_LABEL = 'Performing since:'
 export const BIO_ROLE_LABEL = 'Current role:'
 export const BIO_BASE_LABEL = 'Based in:'
 export const BIO_ABOUT_LABEL = 'About'
-export const BIO_TAGS_LABEL = 'Genres'
 export const MEDIA_LIST_LABEL = 'Popular'
 export const MAP_KICKER = 'Gigs & travel'
 export const TESTI_KICKER = 'Testimonials'
-// JP-090 (user call, 2026-09-30): four more, on every template at layout 1 —
-// the bio's reference line under the heading (the whole line, index and
-// brackets included, since the 001 is not a count), the map's eyebrow and the
-// label over its gig list (the "· N" is the markup's), and the form's label
-// over its chip row. The map's eyebrow is `kicker`'s layout-1 seed.
-export const BIO_REF_LABEL = '[ 001 ] Structure · Bio_01'
+// JP-090 (user call, 2026-09-30): three more, on every template at layout 1 —
+// the map's eyebrow and the label over its gig list (the "· N" is the
+// markup's), and the form's label over its chip row. The map's eyebrow is
+// `kicker`'s layout-1 seed. (The bio's reference line, the fourth, was removed
+// with the decorative labels, 2026-11-11: notes/bio.md.)
 export const MAP_KICKER_1 = 'Shows/coverage'
 export const MAP_LIST_LABEL = 'Upcoming gigs'
 export const FORM_TYPE_LABEL = 'Event type'
@@ -1930,8 +1928,8 @@ export const BADGE_MODES = [
 ]
 // The badge states a design's artwork supports: Lime's and Editorial's layout-1
 // badge is a static reticle / star, so a rotating one is not on offer there.
-export const badgeOptsFor = (themeName, design) =>
-  design === 0 && (themeName === 'Lime' || themeName === 'Editorial')
+export const badgeOptsFor = (themeName, design, cat = 'header') =>
+  cat === 'header' && design === 0 && (themeName === 'Lime' || themeName === 'Editorial')
     ? [{ v: 'rotating', l: 'Visible' }, { v: 'hidden', l: 'Hidden' }]
     : BADGE_MODES
 
@@ -2096,11 +2094,6 @@ export const FIELDS = {
     { k: 'heading',   l: 'Heading', d: 'Reads the room.', in: [0, 2, 3],
       chars: { Retro: [20, null, 19, 23], Lime: [19, null, 18, 21], Grunge: [21, null, 20, 18],
         Editorial: [15, null, 15, 17], Pop: [17, null, 17, 19] } },
-    // JP-090: layout 1's line under the heading, the frames' own, uncased
-    // (every site upper-cases it). The whole line is the field.
-    { k: 'refLabel',  l: 'Reference line', d: BIO_REF_LABEL, in: [0],
-      chars: { Retro: [30], Lime: [40], Grunge: [36], Editorial: [36], Pop: [50] },
-      hint: 'The small line at the foot of the heading. Left empty, it is not drawn.' },
     // Layout 2's pill over the paragraph (JP-059), seeded with the frame's
     // copy and cased as a label; emptied, it is not drawn.
     { k: 'tag',       l: 'Pill', d: BIO_TAG, in: [1], chars: [null, 18],
@@ -2139,13 +2132,12 @@ export const FIELDS = {
     { k: 'aboutLabel', l: 'About label', d: BIO_ABOUT_LABEL, in: [2],
       chars: { Editorial: [null, null, 59], Pop: [null, null, 48], '*': [null, null, 56] },
       hint: 'The bracketed label over the paragraphs on the ID card. Left empty, it is not drawn.' },
-    // Layout 4 draws it under Retro and Editorial alone: Lime's, Grunge's and
-    // Pop's frames ink it the band's own colour, so it is not drawn there (Pop's
-    // user call, 2026-10-07, plans/pop/layout-4.md section 2).
-    { k: 'tagsLabel',  l: 'Genres label', d: BIO_TAGS_LABEL,
-      in: { Lime: [2], Grunge: [2], Editorial: [2, 3], Pop: [2], '*': [3] },
-      chars: { Retro: [null, null, null, 58], Editorial: [null, null, 49, 49], '*': [null, null, 49] },
-      hint: 'The line over the Header’s tag chips, drawn while they are shown. Left empty, the chips stand alone.' },
+    // The circular badge at layouts 1, 3 and 5 (layout 5 folds onto design 0): the
+    // header's three states (2026-11-11). Editorial's layout 3 draws a sparkle, not
+    // a badge, so it reads this at layout 1 alone. `sectionVm` folds it into `showBadge` /
+    // `badgeSpin`; an absent key is today's rotating seal.
+    { k: 'badgeMode', l: 'Badge', type: 'select', d: 'rotating', opts: BADGE_MODES, in: { Editorial: [0], '*': [0, 2] },
+      hint: 'Show the circular badge turning, show it still, or hide it. Hidden leaves no gap.' },
     // Layout 4's "Listen ↗" (JP-082, user call, 2026-09-29): the key the bio
     // already read, `vm.cta2` off its own content, which no field reached
     // (JP-059's census named it a control). Uncased; the ↗ is the markup's.

@@ -4,17 +4,7 @@ Created on 2026-10-13 for the character-limit pass (`plans/char-limits.md`, sess
 JP-090 bullet came over word for word from `notes/templates.md`. "Above" and "below" may point
 into `CLAUDE.md` or another `notes/` file.
 
-- **The bio's layout-1 reference line is the artist's** (JP-090, user call, 2026-09-30).
-  `FIELDS.bio.refLabel`, *Reference line*, `in: [0]`, is seeded
-  with the whole `[ 001 ] Structure · Bio_01` that every template's frame types under the
-  heading (Editorial's `964:58613`, Retro's `964:58577`), brackets and index included, since the
-  `001` is an index and not a count. `vm.bioRef`, uncased: all three bodies upper-case it in CSS
-  (the widened block's eyebrow for Grunge and Editorial and its Space Mono line for Pop, Body/SM
-  for Lime, and Retro's flank `label()`). Emptied, an empty `<span>` keeps the desktop heading column's three
-  rows, so the heading does not slide to the foot of its `space-between` column (it moves by
-  half the line). The narrow columns are gapped instead, so there the seat would be a dead band
-  of the gap and the line simply goes (Retro's 768 is ungapped and keeps it). A typed line wraps,
-  inside a word too, where the seed's `nowrap` let an 85-character line run 200px past a 390 page.
+- **The layout-1 reference line (`refLabel`) is gone** (2026-11-11, see the section at the foot). Its JP-090 notes were retired with it.
 - **Every bio text field has a character cap** (`plans/char-limits.md`, session 2, the user's
   rules of 2026-10-13). The caps are `chars` on `FIELDS.bio`, per template and design, measured
   by `scripts/limits.mjs bio`. The readout is `plans/char-limits/session-2-probe.md`.
@@ -55,10 +45,7 @@ into `CLAUDE.md` or another `notes/` file.
   17. So its cap is the seed's 17, and `--check` reports `floor`. *Current role:* takes 14 and
   *Based in:* takes 16–19. With caps this close to the seeds, the 80% counter is already showing
   at the seed (`17 / 17`, `13 / 14`). That is the mechanism working, not a bug.
-- **Retro's layout 4 draws no Genres line at 390** (`!s.mob`, `EncoreSection.jsx`), so its
-  `tagsLabel` cap of 58 comes from 1440 and 768. The one-word labels, *About* (48–59) and
-  *Genres* (49–58), take their measured numbers. Their seats are stretched blocks, so the probe's
-  `×grow` reads 1.
+- **`aboutLabel` (*About*)** takes its measured number (48–59); its seat is a stretched block, so the probe's `×grow` reads 1. (*Genres*, `tagsLabel`, was removed 2026-11-11.)
 
 ## Inline editing (plans/inline-edit-all.md, Retro layout 3, 2026-10-22)
 
@@ -66,23 +53,7 @@ Layout 3's `aboutLabel` is printed `[ About ]` (three text nodes of one span): a
 
 ## Inline editing (plans/inline-edit-all.md, Retro layout 4, 2026-10-22)
 
-Layout 4's overlay card prints `Performing since <date>` in one span and the Listen link beside its arrow (`Listen ↗`), so `since` and `cta2` are `*.3.` part rows (`INLINE_PART`, design index 3), box on the date and on `Listen`; the literal *Performing since* and the `↗` open nothing. The card's name, role line and six tag chips are the header's identity keys with no bio field: unhit, as at every layout (the open cross-section question).
-
-## Inline editing (plans/inline-edit-all.md, Lime layout 4, 2026-10-22)
-
-The `*.3.` part rows (`since`, `cta2`) carry over and hit on Lime. `tagsLabel` is **not read** at Lime's layout 4 (`in: { Lime: [2], … }`), so the overlay card draws the six chips with no *Genres* line and the field is outside the universe, unlike Retro's layout 4, which hits it.
-
-## Inline editing (plans/inline-edit-all.md, Grunge layout 4, 2026-10-22)
-
-The `*.3.` part rows (`since`, `cta2`) carry over and hit on Grunge. `tagsLabel` is **not read** at Grunge's layout 4 (`in: { Grunge: [2], … }`), so the overlay card draws the six chips with no *Genres* line and the field is outside the universe. The card and its `Kai` / `Mercer` name are upright: no tape or tilt over any text.
-
-## Inline editing (plans/inline-edit-all.md, Editorial layout 4, 2026-10-22)
-
-The `*.3.` part rows (`since`, `cta2`) carry over and hit on Editorial. **Unlike Lime and Grunge, Editorial reads `tagsLabel` at layout 4** (`in: { Editorial: [2, 3], … }`), so the *Genres* line over the chips is a slot and opens `bio.tagsLabel` (Retro's count). The overlay card and its Gloock name are upright; no tape or tilt over any text.
-
-## Inline editing (plans/inline-edit-all.md, Pop layout 4, 2026-10-22)
-
-The `*.3.` part rows (`since`, `cta2`) carry over and hit on Pop. **Like Lime and Grunge, Pop does not read `tagsLabel` at layout 4** (`in: { Pop: [2], … }`: the Genres line is inked the band's own colour, so it is not drawn), so the bio is five slots, one fewer than Retro's and Editorial's. The overlay card is upright and its stickers (dot grid, scribble) are `pointer-events: none`; nothing covers a slot.
+Layout 4's meta line (the overlay card until 2026-11-11, now the left column) prints `Performing since <date>` in one span and the Listen link beside its arrow (`Listen ↗`), so `since` and `cta2` are `*.3.` part rows (`INLINE_PART`, design index 3), box on the date and on `Listen`; the literal *Performing since* and the `↗` open nothing. The name, role line and six tag chips are the header's identity keys with no bio field: unhit, as at every layout (the open cross-section question).
 
 ## Line breaks in the paragraphs (2026-11-06)
 
@@ -92,8 +63,11 @@ The `*.3.` part rows (`since`, `cta2`) carry over and hit on Pop. **Like Lime an
 
 The bio's panel lists the header's `kicker` (every layout), `location` (layouts 1–3) and `tags` / `showTags` (layouts 2–4; Retro 2 and 4) as boxes of its own, since it prints them: `IDENTITY_READS` in `data.js`. They read and write the header section, so the value is one; the header's panel drops a key its layout does not draw (Lime's layout-3 header has no Kicker box, the bio does). The form (kicker, layouts 1–2) and the calendar (location, layout 4; Retro's layout 1 too) host the same way. Measured 2026-11-09: the map's layout-2 travel card no longer moves with the location (it reads its own `base` / place), so the map hosts none.
 
-## Layout 4's card across the device switch (Lime, Grunge, Editorial, Pop; 2026-11-11)
+## Decorative labels removed, layout 4 recomposed, bio badge (2026-11-11)
 
-PREP QA reported the portrait card (Lime-tree block, `s.v3 && s.limeTree`) coming out far taller than the canvas after Mobile → Desktop in Safari, photo zoomed, blank beside it; Retro (its own block) was clean. **Not reproduced here**: Chromium and Playwright's WebKit give the same card (590 at 1440, 720 at 768, 1073 at 390 with both paragraphs at their caps) after Mobile → Desktop, Mobile → Tablet → Desktop and a fresh Desktop entry, on all four themes. The tall card matches the 390 card's height (≈1070), so the suspicion is a stale narrow layout surviving the in-place restyle (the editor keys sections by `sec.id`; a device switch does not remount).
+QA ticket, all five templates. User calls in the session that built it.
 
-Hardened anyway, with no computed value changed at any width (card and sheet geometry identical to the previous build, old vs new, in both engines): the card's padding is **one value** (`${stageH - stageOver}px 10px 10px` at 390, `u(30)` otherwise), no longer `padding` plus a phone-only `paddingTop` longhand; and the sheet is `display: grid` at every width (one `minmax(0, 1fr)` column with the old flex column's gap as `rowGap` below desktop), so no `display` flip. If Safari still shows it, the next suspect is the photo wrapper's `{top, left, right, height}` ↔ `{inset: 0}` flip at 390 (`s.mob && !s.image`).
+- **Gone**: the `<initials> BIO` eyebrow at layouts 1, 3 and 4 (Retro's layout-1 flank held two label rows), the layout-1 reference line (`refLabel`, field deleted) and the *Genres* line over the chips at layouts 3 and 4 (`tagsLabel`, field deleted). Stored `c.refLabel` / `c.tagsLabel` in old drafts are simply never read. The chips, their order and `showTags` are untouched; `aboutLabel` stays. Layout 1's heading column is now the heading alone, centred in the column at desktop (where its `space-between` over three rows seated it).
+- **Layout 4 (every template, `s.v3`)**: the portrait card is bare at every width. The left column is heading → both paragraphs → artist name + meta line (kicker · Performing since · Listen ↗) → chips, top-aligned, printed on the band in the band's own inks (Lime `s.bg`, Grunge `s.tx` with the name's second word `s.bg`, Editorial `s.tx`, Pop `s.text3` white, since its violet `s.tx` is 2.1 : 1 on the pink band, Retro cream). Narrow, the stack comes first and the portrait follows (4 : 5 at 390, 720 tall at 768). The frosted panel, its `dusk` box, the phone's clear-stage (`stageH` / `stageOver`) and the photograph wrapper's `{top,height}` ↔ `{inset:0}` flip are gone, which closes the Safari card report that used to stand here. Pop's dot grid is the sheet's at desktop and peeks over the portrait's top-right corner narrow (a wrapper round the portrait), since the full-width copy would otherwise sit on it.
+- **Badge**: `FIELDS.bio.badgeMode` (rotating default / static / hidden, `in: { Editorial: [0], '*': [0, 2] }`) at layouts 1, 3 and 5 (5 folds to design 0). `sectionVm` folds it for `cat === 'bio'` as for the header (`showBadge`, `badgeSpin`), so an absent key is today's rotating seal. `badgeOptsFor(theme, design, cat)` offers all three for the bio at every theme (its layout-1 artwork is the real ring; the Lime / Editorial reticle and star rule is the header's). **Pop's layout-1 sun (`PopSun`) is gated and turns** (`spin` prop, `seal-spin` on its paths inside the tilt). **Hidden frees the seat**: layout 3's Lime / Grunge / Retro about band drops its 188 px left spacer and the seal's floor height; the other seals are absolutely placed. Editorial's layout 3 draws a sparkle, not a badge, so the field is not offered there.
+- Measured: `scripts/reach.mjs` (bio rows), the badge states in all five themes × layouts 1, 3 × three widths (`seal-spin` present / absent, hidden → no svg), and layout 4 by eye at 1440 / 768 / 390.

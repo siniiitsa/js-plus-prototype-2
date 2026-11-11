@@ -31,6 +31,8 @@ const PROBES = [
   { name: 'header.cta2', cats: ['header'], param: 'cj', value: { cta2: Z } },
   { name: 'header.badgeMode=hidden', cats: ['header'], param: 'cj', value: { badgeMode: 'hidden' } },
   { name: 'header.badgeMode=static', cats: ['header'], param: 'cj', value: { badgeMode: 'static' } },
+  { name: 'bio.badgeMode=hidden', cats: ['bio'], param: 'cj', value: { badgeMode: 'hidden' } },
+  { name: 'bio.badgeMode=static', cats: ['bio'], param: 'cj', value: { badgeMode: 'static' } },
   { name: 'header.badgeText', cats: ['header'], param: 'cj', value: { badgeText: Z } },
   { name: 'header.align=centre', cats: ['header'], param: 'cj', value: { align: 'centre' } },
   { name: 'header.tags', cats: ['header'], param: 'cj', value: { tags: Z } },
@@ -90,13 +92,11 @@ const PROBES = [
   { name: 'bio.roleLabel', cats: ['bio'], param: 'cj', value: { roleLabel: Z } },
   { name: 'bio.baseLabel', cats: ['bio'], param: 'cj', value: { baseLabel: Z } },
   { name: 'bio.aboutLabel', cats: ['bio'], param: 'cj', value: { aboutLabel: Z } },
-  { name: 'bio.tagsLabel', cats: ['bio'], param: 'cj', value: { tagsLabel: Z } },
   { name: 'media.listLabel', cats: ['media'], param: 'cj', value: { listLabel: Z } },
   { name: 'map.kicker', cats: ['map'], param: 'cj', value: { kicker: Z } },
   { name: 'testimonials.kicker', cats: ['testimonials'], param: 'cj', value: { kicker: Z } },
   // JP-090: four more — the bio's reference line, the map's gig-list label and
   // the form's chip-row label, and layout 1's eyebrow on `map.kicker` above.
-  { name: 'bio.refLabel', cats: ['bio'], param: 'cj', value: { refLabel: Z } },
   { name: 'map.listLabel', cats: ['map'], param: 'cj', value: { listLabel: Z } },
   { name: 'form.typeLabel', cats: ['form'], param: 'cj', value: { typeLabel: Z } },
   // JP-095 (a): layout 2's labels — pricing's eyebrow and features label, the

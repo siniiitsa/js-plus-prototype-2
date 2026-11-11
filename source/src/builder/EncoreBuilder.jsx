@@ -39,8 +39,8 @@ import { imageProblem, readImage, vetImages } from './imageFiles.js'
 import {
   THEMES, SCHEMES_OF, CATS, NVAR, FLAG, FIELDS, TITLES, DEFS, TRACKS, TAGS, TAG_LABELS, HERO_CTA, BIO_CREDIT, BIO_CTA,
   FACE_TITLE, FACE_BODY, BIO_TAG,
-  BIO_SINCE_LABEL, BIO_ROLE_LABEL, BIO_BASE_LABEL, BIO_ABOUT_LABEL, BIO_TAGS_LABEL, MEDIA_LIST_LABEL,
-  BIO_REF_LABEL, FORM_TYPE_LABEL, mapKickerSeed, mapListLabelSeed, mapPlaceOf, mapMilesOf, MAP_MILES_MIN, MAP_MILES_MAX, mapRadiusText, mapRingLabels, mapHeadingSeed, mapBaseSeed, mapTermsSeed, mapStatsSeed, mapBaseStat, testiKickerSeed,
+  BIO_SINCE_LABEL, BIO_ROLE_LABEL, BIO_BASE_LABEL, BIO_ABOUT_LABEL, MEDIA_LIST_LABEL,
+  FORM_TYPE_LABEL, mapKickerSeed, mapListLabelSeed, mapPlaceOf, mapMilesOf, MAP_MILES_MIN, MAP_MILES_MAX, mapRadiusText, mapRingLabels, mapHeadingSeed, mapBaseSeed, mapTermsSeed, mapStatsSeed, mapBaseStat, testiKickerSeed,
   MAP_HOME_LABEL, MAP_HOME_CAPTION, MAP_VENUE_LABEL, MAP_VENUE_CAPTION, MAP_RADIUS_LABEL, MAP_TIME_LABEL,
   MAP_FEE_LABEL, MAP_VENUE_CTA, MAP_ROUTE_CTA,
   PRICING_KICKER, PRICING_FEATS_LABEL, PRICING_BADGE, CAL_DATE_LABEL, CAL_AVAIL_LABEL, CAL_PROMPT,
@@ -792,9 +792,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   vm.cardLine = cv('cardLine', CARD_LINE_3)
   // The header's badge has three states (header-nav ticket, 2026-11-11): its own
   // `badgeMode`, which folds onto the two things every reader already asks —
-  // `showBadge` (drawn or not) and `badgeSpin` (the ring turns). Every other
+  // `showBadge` (drawn or not) and `badgeSpin` (the ring turns). The bio's
+  // circular badge takes the same three states (2026-11-11); every other
   // section keeps its own `showBadge` field (the footer's) or none, and spins.
-  if (cat === 'header') {
+  if (cat === 'header' || cat === 'bio') {
     const mode = c.badgeMode ?? 'rotating'
     vm.showBadge = mode === 'hidden' ? 'hide' : 'show'
     vm.badgeSpin = mode !== 'static'
@@ -1014,10 +1015,6 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   vm.roleLabel = breakLast(cv('roleLabel', BIO_ROLE_LABEL))
   vm.baseLabel = breakLast(cv('baseLabel', BIO_BASE_LABEL))
   vm.aboutLabel = cv('aboutLabel', BIO_ABOUT_LABEL)
-  vm.tagsLabel = cv('tagsLabel', BIO_TAGS_LABEL)
-  // JP-090 — layout 1's line under the heading, the same shape: the frames'
-  // whole line as the seed, uncased, and '' when emptied.
-  vm.bioRef = cv('refLabel', BIO_REF_LABEL)
 
   // media
   vm.mediaKicker = cv('kicker', 'Top tracks')
@@ -5281,7 +5278,7 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                         // The badge offers only the states its artwork has: a stored
                         // "static" on a design with no ring to turn reads as Visible,
                         // and is never overwritten (header-nav ticket, 2026-11-11).
-                        const opts = f.k === 'badgeMode' ? badgeOptsFor(themeName, design) : f.opts
+                        const opts = f.k === 'badgeMode' ? badgeOptsFor(themeName, design, sec.cat) : f.opts
                         const shown = opts.some((o) => o.v === val) ? val : val === 'hidden' ? 'hidden' : opts[0].v
                         return (
                           <Select value={shown} onValueChange={set}>
