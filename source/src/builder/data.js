@@ -1122,7 +1122,8 @@ export const GALLERY_RAIL_LABEL = 'Gallery'
 // prints as well, and its back link, the frames' words. The open source row's
 // label seeds off GALLERY_SOURCES[0].l. The eyebrow's seed was the frames'
 // word *Media*; user call, 2026-11-11, seeded it empty, so it is not drawn
-// until the artist types one (legacyContent reads a stored 'Media' as empty).
+// until the artist types one. Typing *Media* itself shows it (QA 1amvuf5yjyz,
+// 2026-11-12: a legacyContent rule that read a stored 'Media' as empty was removed).
 export const GALLERY_KICKER = ''
 export const GALLERY_BACK_LABEL = 'Back to beginning'
 
@@ -3535,9 +3536,8 @@ const clampRows = (rows, caps) => {
   const out = Object.fromEntries(Object.entries(rows).map(([k, r]) => [k, map(r)]))
   return moved ? out : rows
 }
-// A draft that stores the gallery kicker's old seed, 'Media' (until 2026-11-11
-// the frames' word, now empty), reads as empty, so the label goes from pages
-// begun before the change too. `c` itself when there is nothing to drop.
+// Old stored content read under today's keys. `c` itself when there is nothing
+// to carry over.
 export function legacyContent(cat, c) {
   // The header's Show / Hide badge became three states (`badgeMode`); a stored
   // `showBadge` is read once, here, and never again.
@@ -3545,9 +3545,7 @@ export function legacyContent(cat, c) {
     const { showBadge, ...rest } = c
     return rest.badgeMode === undefined && showBadge === 'hide' ? { ...rest, badgeMode: 'hidden' } : rest
   }
-  if (cat !== 'gallery' || String(c?.kicker ?? '').trim() !== 'Media') return c
-  const { kicker, ...rest } = c
-  return rest
+  return c
 }
 // A section's content with every capped key clamped for this template and
 // design — `c` itself when nothing is over, so a page within its caps renders

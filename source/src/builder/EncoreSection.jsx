@@ -15657,9 +15657,6 @@ function Gallery({ s }) {
             {pop ? pt(s.galBackLabel, 10, 1, wrap) : eyebrow(s.galBackLabel, { color: G.top, ...wrap })}
           </span>
           <span style={col(u(2), { alignItems: 'flex-end', flex: '0 1 auto', minWidth: 0 })}>
-            {pop
-              ? pt(s.brand, 11, 2, { fontFamily: s.body, fontWeight: 700, textAlign: 'right', ...wrap })
-              : eyebrow(s.brand, { color: G.top, textAlign: 'right', ...wrap })}
             {s.galRailLabel && (pop
               ? pt(s.galRailLabel, 9, 2, { textAlign: 'right', ...wrap }, 'railLabel')
               : eyebrow(s.galRailLabel, { color: s.ac, textAlign: 'right', ...wrap }, 'railLabel'))}
@@ -15983,9 +15980,10 @@ function Gallery({ s }) {
             }}>{s.galBackLabel}</span>
           </span>
           {/* The frame's credit is Inter Bold over Space Mono, both tracked 2,
-              not the Anton label. Desktop is the frame × 0.82. The row wraps,
-              so a long name drops the credit under the back link, at the
-              row's start; the credit then shrinks to the measure and its
+              not the Anton label. Desktop is the frame × 0.82. The artist's name
+              over it is gone (QA 1amvuf5yjyz, 2026-11-12), so the credit is
+              `railLabel` alone. The row wraps, so a long label drops under the
+              back link, at the row's start; the credit then shrinks to the measure and its
               lines wrap, inside a word only when that word alone outruns it
               (JP-113). */}
           <span style={col('2px', {
@@ -15993,10 +15991,6 @@ function Gallery({ s }) {
             letterSpacing: desk ? '1.6px' : '2px', textTransform: 'uppercase', whiteSpace: 'nowrap',
             flex: '0 1 auto', minWidth: 0,
           })}>
-            <span style={{
-              fontWeight: 700, fontSize: desk ? '9px' : '11px',
-              whiteSpace: 'normal', overflowWrap: 'anywhere', minWidth: 0, textAlign: 'right',
-            }}>{s.brand}</span>
             {s.galRailLabel && (
               <span data-inline="railLabel" style={{
                 fontFamily: s.mono, fontSize: desk ? '7.4px' : '9px',

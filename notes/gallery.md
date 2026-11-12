@@ -115,10 +115,11 @@ another `notes/` file.
 - **Layout 1's labels are the artist's** (JP-120 (gallery), user call, 2026-10-08), in both
   bodies, each seeded with the frame's word and uncased, so the seeded page did not move:
   - `kicker` (`vm.galKicker`), which layout 4's eyebrow prints too, the same word. **Seeded empty, so not drawn**
-    (user call, 2026-11-11, reversing the frames' *Media*): `legacyContent()` in `data.js` also reads a stored
-    `Media` as empty, at `sectionVm`'s head, the panel's box and the inline editor's `fieldValue`;
-  - `railLabel`, *Gallery* (`vm.galRailLabel`), the credit's second line under the name at every
-    width, as well as layout 2's 768 head row;
+    (user call, 2026-11-11, reversing the frames' *Media*). Typing *Media* shows it like any word: a
+    `legacyContent()` rule that read a stored `Media` as empty hid it and was removed (QA 1amvuf5yjyz, 2026-11-12);
+  - `railLabel`, *Gallery* (`vm.galRailLabel`), layout 1's credit line at every width, as well as
+    layout 2's 768 head row. **The artist's name that stood over it is gone** (QA 1amvuf5yjyz,
+    user call, 2026-11-12), in both bodies, so the credit is this one line;
   - `backLabel`, *Back to beginning* (`vm.galBackLabel`), the rewind;
   - `sourceLabel`, *Gallery* (`vm.gallerySources[0].label`, seeded off `GALLERY_SOURCES[0].l`),
     the open source row, which prints its label at desktop alone in both bodies: the narrow rows
@@ -132,7 +133,7 @@ another `notes/` file.
   *Instagram*, *TikTok*), the counter and Retro's rail wordmark *Gallery* stay literals.
 - **Layout 1's head row wraps** (JP-113, 2026-10-08, both bodies, JP-120 (form)'s shape). The
   back link and the credit stand on one row, as every frame draws them, and the seed keeps it at
-  every width. A name or credit line too long for the row wraps it: the credit drops under the
+  every width. A credit line too long for the row wraps it (it once shared the credit with the artist's name): the credit drops under the
   back link, at the row's **start** (a lone item on a `space-between` line stands at its start,
   as Retro's row and the form's credit always did), shrinks to the measure (`flex: '0 1 auto'`,
   `minWidth: 0`), and its two lines wrap between words, right-aligned inside the credit, breaking
@@ -175,7 +176,7 @@ another `notes/` file.
   - **The name in layout 2's caption is clamped at 26–27** (`IDENTITY_CHARS.gallery.title`,
     lowered from session 1's 28–29). Its caption line ellipsizes past that at 390. A name of wide
     capitals ellipsizes sooner, and the caption's ellipsis is the fallback.
-  - **Layout 1's head row was checked jointly**: back link, name and credit, each at its cap, on
+  - **Layout 1's head row was checked jointly**: back link and credit (and, before 2026-11-12, the name), each at its cap, on
     every template and width. The row wraps as JP-113 designed it, and nothing meets the tape,
     the viewer or the sun.
 - **The YouTube row plays in the viewer** (user call, 2026-10-14, layout 1, every template). When
