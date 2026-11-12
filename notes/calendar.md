@@ -113,10 +113,12 @@ another `notes/` file.
   long enough to leave the line less than its widest word drops the pill under the group.
   Retro's foot never wraps: at 360 it breaks *Thursday* inside itself, as it always has. (Pop's
   layout 2 drew Retro's body until its layout-2 pass widened the Lime block to it, 2026-10-05.)
-  Its head's link list is `vm.calFlow` — `CTA_TARGETS.book` resolved against
-  the page, this section leading and dotted and never linking to itself, the footer's rule for
-  a link column. `heading`, which once headed only the unreachable fallthrough, heads it; `image` does not
-  reach it at all.
+  **Its head is the heading alone** (user call, 2026-11-12, every template): the artist's name
+  (`s.brand`) at the top left and the stacked *● Availability / Pricing / Enquiries* link list
+  (`vm.calFlow`, deleted) at the top right were removed, and with them the row that held them and
+  the 28px gap under it, so the heading is the head's first child. `IDENTITY_CHARS.calendar.title`
+  went too: the layout prints no name. `heading`, which once headed only the unreachable fallthrough,
+  heads it; `image` does not reach it at all.
   **Layout 3 pages the same window** (JP-063, user call, 2026-09-28). Its frames draw no month
   arrows, and the fit's month 0 left a visitor on 28 September three pickable days. So a pair
   of arrows follows the month name on its own line, on both surfaces. Each is the template's own

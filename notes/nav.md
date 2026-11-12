@@ -35,10 +35,8 @@ another `notes/` file.
   keeps every editor-side use, `FOOTER_TARGETS`' select included. One `navSectionsOf(cats)`
   builds the list for the editor, `PublishedPage`, the picker's `previewNav` and the harness, and
   `FOOTER_LINKS` seeds its labels from the same `navLabel()`, so a fresh page's two lists agree;
-  the footer's rows are then the artist's to reword and the nav's are not. `vm.calFlow` reads
-  these labels too, so calendar layout 2's head says "Availability · Pricing · Enquiries" where
-  its frame's flow says "Available dates · Packages · Enquire" (held when JP-041 reported it
-  again, 2026-09-21). **Minimal's triple is the frames' own** (JP-033, second pass): layouts 2
+  the footer's rows are then the artist's to reword and the nav's are not. (Calendar layout 2's
+  head once printed these labels as `vm.calFlow`; the link list was removed 2026-11-12.) **Minimal's triple is the frames' own** (JP-033, second pass): layouts 2
   and 3 draw Music / Gigs / About in Retro and Lime alike (and in Grunge's, Editorial's and Pop's), so
   `NAV_MINIMAL` is those three —
   Gigs on the map or the calendar, About on the bio, Book gone because its pill already stands

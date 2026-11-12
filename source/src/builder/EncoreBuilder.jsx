@@ -1790,24 +1790,6 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
           : '',
       }
     })
-    // The head's link list. The frame draws three — the section itself, marked
-    // with a dot, then packages and enquiries — which is CTA_TARGETS.book
-    // resolved against the page, the footer's rule for a link column rather
-    // than an invented nav. The current section leads and does not link to
-    // itself; a page carrying neither of the other two is left with one entry,
-    // which still reads as the head's own label.
-    // The words are the header nav's (`navLabel()`, JP-033) — "Availability ·
-    // Pricing · Enquiries" on the seed — where the frame's flow has a vocabulary
-    // of its own, "Available dates · Packages · Enquire": one word per section
-    // across the page outranks a second set nothing else prints.
-    const flow = navSections.filter((n) => CTA_TARGETS.book.includes(n.cat))
-    vm.calFlow = [
-      ...flow.filter((n) => n.cat === 'calendar'),
-      ...flow.filter((n) => n.cat !== 'calendar'),
-    ].map((n) => ({
-      label: cased(n.label), to: n.cat === 'calendar' ? undefined : n.cat,
-      on: n.cat === 'calendar',
-    }))
     // `bookTo` minus `calendar` itself — the tier pills' rule, and for the same
     // reason: CTA_TARGETS.book ends at this section, so the pill would otherwise
     // scroll the visitor to the panel they are already reading. With neither a

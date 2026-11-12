@@ -3355,7 +3355,6 @@ export const IDENTITY_CHARS = {
   // No video row: layout 4's top bar printed the artist's name until 2026-10-28 and
   // prints the playing video's title since (`videos.title`), and layout 2 none.
   calendar: {
-    title: [null, 64],
     location: { Retro: [19, null, null, 67], Lime: [null, null, null, 64], Grunge: [null, null, null, 55],
       '*': [null, null, null, 67] },
     seal: { Retro: [19] },

@@ -18299,9 +18299,10 @@ function Calendar({ s }) {
   // v1 — Booking Calendar layout 2 · Bold slot list, one composition across
   // three frames: the 768 (986:10607) and 390 (986:10800) masters verbatim, the
   // 1440 one (964:64650, 1328 × 896 on the page) on the 1180 canvas at × 0.82,
-  // which is the whole of `z` below. A rust head carrying the artist's mark,
-  // the booking flow's own links and the section heading, over a cream table of
-  // named slots, over a foot that names the one the visitor is on.
+  // which is the whole of `z` below. A rust head carrying the section heading
+  // alone (the artist's mark and the flow's links were removed, 2026-11-12),
+  // over a cream table of named slots, over a foot that names the one the
+  // visitor is on.
   //
   // Where layout 1 offers a month and lets the visitor find a free day in it,
   // this offers the four the artist is selling. The rows are `s.calSlots`, but
@@ -18505,20 +18506,6 @@ function Calendar({ s }) {
       // from today there now, so only a date the artist typed can have passed).
       const dim = (off) => (off ? { opacity: 0.38 } : null)
 
-      const flow = (
-        <div style={col(u(4), { alignItems: 'flex-start', flex: 'none' })}>
-          {s.calFlow.map((n) => {
-            const href = navHref(s, n.to)
-            const Tag = href ? 'a' : 'span'
-            return (
-              <Tag key={n.label} {...(href ? { href } : null)} style={type(s.body, s.bodySm, 1.4, {
-                color: G.bandInk ?? G.bg2, textDecoration: 'none', cursor: href ? 'pointer' : undefined,
-              })}>{n.on ? `● ${n.label}` : n.label}</Tag>
-            )
-          })}
-        </div>
-      )
-
       const slotRow = (sl, i) => {
         const onClick = s.live && sl.iso && !blocked(sl)
           ? () => setSel((v) => (v === sl.iso ? '' : sl.iso))
@@ -18583,10 +18570,6 @@ function Calendar({ s }) {
           <div style={col(u(28), {
             background: G.band ?? s.ac, color: G.bandInk ?? G.bg2, padding: `${u(28)} ${padX} ${u(36)}`,
           })}>
-            <div style={row(u(24), { justifyContent: 'space-between', alignItems: 'flex-start' })}>
-              <span style={type(s.body, s.bodyLg, 1.5)}>{s.brand}</span>
-              {flow}
-            </div>
             {/* Display/MD at lh 1, held to the 571.1 both wider masters state
                 (it binds inside the 768 column too); 390 states the full width.
                 Grunge draws the frame's 1px inside `sem/stroke/2` rule under
@@ -18691,35 +18674,10 @@ function Calendar({ s }) {
       )
     }
 
-    // The head's link list. `s.calFlow` is CTA_TARGETS.book resolved against
-    // the page, this section first and dotted; a link is keyed on its label,
-    // the header's rule, and the current one is a span because it would only
-    // scroll the visitor to what they are reading.
-    const flow = (
-      <div style={col(u(4), { alignItems: 'flex-start', flex: 'none' })}>
-        {s.calFlow.map((n) => {
-          const href = navHref(s, n.to)
-          const Tag = href ? 'a' : 'span'
-          return (
-            <Tag key={n.label} {...(href ? { href } : null)} style={{
-              fontFamily: s.body, fontSize: u(T.bodySm), lineHeight: 1.4,
-              color: headFg, textDecoration: 'none', cursor: href ? 'pointer' : undefined,
-            }}>{n.on ? `● ${n.label}` : n.label}</Tag>
-          )
-        })}
-      </div>
-    )
-
     const head = (
       <div style={col(u(28), {
         background: s.ac, padding: `${u(28)} ${padX} ${u(36)}`, alignItems: 'flex-start',
       })}>
-        <div style={row(u(24), { width: '100%', justifyContent: 'space-between', alignItems: 'flex-start' })}>
-          <span style={{
-            fontFamily: s.body, fontSize: u(T.bodyLg), lineHeight: 1.5, color: headFg,
-          }}>{s.brand}</span>
-          {flow}
-        </div>
         <div style={{ width: '100%', paddingBottom: u(20), borderBottom: `1px solid ${headRule}` }}>
           {/* The one thing the section already had that this frame left room
               for: `heading` once headed only the unreachable fallthrough, the scheduler frame
