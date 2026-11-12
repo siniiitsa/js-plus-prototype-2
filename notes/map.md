@@ -273,6 +273,13 @@ and `base` field paragraphs, JP-105's seeds and JP-096's home value.
       the month is letters and a point, and only while it starts a month's name (`Ju`, `Sept`, `July`);
       a refused key leaves the box as it was, and deleting is always allowed so a month stored before
       can be cleared. Stored copy is not touched and the page still prints it as it stands.
+      **Pass 2 (QA 1amvuf5xxq2, 2026-11-12):** "deleting" is `prev` with one run taken out (`isCut`), not
+      "shorter than `prev`": select-all over the seeded `Jul` and typing `x` reports `x`, shorter, and
+      skipped the filter (as did `9` over `12`, then `99`). The day also has to stay a possible 1–31
+      (`3`, `31`; never `32` or `99`), a letter typed over a selection is refused rather than emptying
+      the box, and the inline box filters the year too. The panel's date note (`gigDateNote`) now reads at
+      every layout — a year of one to three digits or before 1900, or a month and day that name no day —
+      since every layout prints the month and day on the disc; layout 3's line adds the weekday / pill.
   - **`rings` is a ',' list of 3 at most**: the map slices its labels to its three rings. A ring
     label is a chip, capped at 13 (the sized rule).
   - **Venue Link stays at its seed's 10–11 under Retro, Lime and Grunge**, because the 768 pill

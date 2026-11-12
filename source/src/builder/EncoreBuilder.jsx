@@ -58,7 +58,7 @@ import {
   parseDate, isoDate, calStart, headerIdentity, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav, navModeDefault, badgeOptsFor,
   catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldSeed, HEADING_3, HEADING_4, fieldReach, fieldShown, identityFieldsFor, identityHint, INLINE_OFF, PHOTO_OFF, INLINE_HEAD, INLINE_MARKED, INLINE_PART, INLINE_LINES, inlineRule, fieldCap, colCaps, identityCap, sealCap, capExcess, numeralLen, clampCapped, clampContent, legacyContent, clampIdentity, copyrightOf, formHeading3, extUrl, youtubeEmbed, youtubeThumb, youtubeParts, youtubeWatch, youtubeChannel, urlProblem, emailProblem, emailAddr, songTags, repChips,
-  tierFeats, priceParts, priceCuts, blankRow, SONG_KEYS, repSetsOf, repSetLine, TRACK_KEYS, GIG_KEYS, gigWeekday, gigStatus, gigPart, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
+  tierFeats, priceParts, priceCuts, blankRow, SONG_KEYS, repSetsOf, repSetLine, TRACK_KEYS, GIG_KEYS, gigWeekday, gigStatus, gigStamp, MIN_YEAR, gigPart, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
   layoutChoices, designCount, pageLayout, pageOrder, pageRows, videoDesign, videoStartArch,
   VIDEOS, VIDEO_SEED, VIDEO_KEYS, videoPlayable, videoSeedDesc, VIDEO_ALL, COLUMN_SPLIT, bebasEms, antonEms, gloockEms, titanEms,
   headerLayout, headerLayoutLabel, setupHeaderCount,
@@ -3556,6 +3556,16 @@ const BLANK_GIG_HINT = 'Empty gigs aren’t shown.'
 // row's Upcoming / Past pill (JP-106), and a date that names no day gets
 // neither, so the line names both.
 const NO_WEEKDAY_HINT = 'No weekday and no Upcoming / Past: the date needs a real day and a four-digit year.'
+// Every layout prints the month and day on the disc, so a date that is not a day is said at every layout
+// (QA 1amvuf5xxq2, pass 2: `201` typed into the year said nothing outside layout 3). The year is read by
+// layout 3 alone, so its consequence is named there only.
+function gigDateNote(g, design) {
+  const filled = [g.month, g.day, g.year].some((v) => String(v ?? '').trim())
+  if (!filled || gigStamp(g.year, g.month, g.day) != null) return ''
+  const y = String(g.year ?? '').trim()
+  if (y && (!/^\d{4}$/.test(y) || +y < MIN_YEAR)) return `The year needs four digits, ${MIN_YEAR} or later.`
+  return design === 2 ? NO_WEEKDAY_HINT : 'That date is not a real day: check the month and day.'
+}
 
 // The events map's town (user call, 2026-11-09): a type-ahead over real places.
 // Photon (komoot's OpenStreetMap geocoder) is built for search-as-you-type, which
@@ -3754,13 +3764,10 @@ function GigsField({ caps, value, max, design, onChange }) {
         />
         {blankRow(g, GIG_KEYS) ? (
           <p style={{ margin: 0, fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>{BLANK_GIG_HINT}</p>
-        ) : design === 2 && [g.month, g.day, g.year].some((v) => String(v ?? '').trim())
-          && !gigWeekday(g.year, g.month, g.day) && (
-          // Only layout 3 prints the weekday and the pill, so only there is a
-          // date that names no day worth a line, and only once a date box is
-          // filled, so a new row holding a venue alone is not scolded
-          // mid-edit. The row still shows, without either.
-          <p style={{ margin: 0, fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>{NO_WEEKDAY_HINT}</p>
+        ) : gigDateNote(g, design) && (
+          // Only once a date box is filled, so a new row holding a venue alone is not scolded
+          // mid-edit. The row still shows, without a weekday or a pill where those are read.
+          <p role="status" style={{ margin: 0, fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>{gigDateNote(g, design)}</p>
         )}
       </div>
     </div>
@@ -7229,7 +7236,7 @@ function InlineEditor({ ed, value, cap, onChange, onRevert, onClose }) {
         onChange={(e) => {
           let v = multi ? e.target.value : e.target.value.replace(/\s*\n\s*/g, ' ')
           // A gig's month and day take what the date reads (gigPart); a refused key leaves the box as it was.
-          if (ed.k === 'gigs' && ed.row != null && (ed.col === 'month' || ed.col === 'day')) {
+          if (ed.k === 'gigs' && ed.row != null && (ed.col === 'month' || ed.col === 'day' || ed.col === 'year')) {
             v = gigPart(ed.col, v, shown)
             if (v === shown && e.target.value !== shown) return
           }

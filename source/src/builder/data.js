@@ -4013,21 +4013,32 @@ export function gigStamp(year, month, day) {
 // What a gig's month, day or year box takes as it is typed (QA, 2026-11-09: the
 // boxes took 'xyzqw' / '99ab' / 'abc12345' and the date disc printed them).
 // `col` is 'month' | 'day' | 'year'; returns the value to store, or `prev` when
-// the keystroke is refused. Day and year keep digits only (two and four); the
-// month is letters and a point, and only while it is the start of a month's
+// the keystroke is refused. Day and year keep digits only (two and four) and
+// the day only while it can still become 1-31 ('3', '31', never '99' or '32');
+// the month is letters and a point, and only while it is the start of a month's
 // name ('Ju', 'Sept', 'July'), the rule gigStamp() reads it by. Stored copy
 // from before this is left as it is: only the typing is filtered.
+// A deletion is `prev` with one run of characters taken out, so Backspace, Delete
+// and Cut always pass and a month stored before the rule can be cleared. It is
+// NOT "shorter than prev": select-all-and-type over `Jul` reports `x`, which is
+// shorter and is a replacement (QA 1amvuf5xxq2, pass 2), so it takes the filter.
+const isCut = (v, prev) => {
+  if (v.length >= prev.length) return false
+  for (let i = 0; i <= v.length; i++) if (prev.startsWith(v.slice(0, i)) && prev.endsWith(v.slice(i))) return true
+  return false
+}
+const DAY_PREFIX = /^(|0|0[1-9]|[1-9]|[12]\d|3[01])$/
 export function gigPart(col, raw, prev = '') {
-  const v = String(raw ?? '')
-  if (col === 'day') return v.replace(/\D/g, '').slice(0, 2)
-  if (col === 'year') return v.replace(/\D/g, '').slice(0, 4)
-  if (col !== 'month') return v
-  // Deleting is always allowed, so a month stored before this rule can be cleared a key at a time.
-  if (v.length < String(prev ?? '').length) return v
+  const v = String(raw ?? ''), was = String(prev ?? '')
+  if (col !== 'month' && col !== 'day' && col !== 'year') return v
+  if (isCut(v, was)) return v
+  // A letter typed over a selection strips to nothing: refuse it rather than empty the box.
+  if (col === 'day') { const d = v.replace(/\D/g, '').slice(0, 2); return d && DAY_PREFIX.test(d) ? d : was }
+  if (col === 'year') return v.replace(/\D/g, '').slice(0, 4) || was
   const key = v.trim().replace(/\./g, '').toLowerCase()
-  if (!key) return v.trim() ? prev : ''
-  if (!/^[a-z]+$/.test(key)) return prev
-  return MONTHS.some((n) => n.toLowerCase().startsWith(key)) ? v : prev
+  if (!key) return v.trim() ? was : ''
+  if (!/^[a-z]+$/.test(key)) return was
+  return MONTHS.some((n) => n.toLowerCase().startsWith(key)) ? v : was
 }
 
 // A gig's weekday, for layout 3's date disc (JP-069, user call, 2026-09-29):

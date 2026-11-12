@@ -228,3 +228,10 @@ turns it into a space by design. Fixed by saying so: the three comma-list hints,
 `LineListField` and the inline note. No new storage format: a comma inside an item would need an escape
 in every reader (`songTags`, the chips, the seeds), and notes/list-editors.md's "no field asks the artist
 to type a separator" stands.
+
+## 1amvuf5xxq2 pass 2 (2026-11-12) — gig date typed over a selection skipped the filter
+
+QA, real keyboard, gig 1: month `xyzqw` → `x`, day `99ab` → `99`, year `20ab1` → `201`, the disc showing
+`X / 99`. Cause: `gigPart` let any shorter value through as a deletion, and the seeded `Jul` / `12` were
+replaced by select-all and a key. Fixed in `gigPart` (`isCut`, day 1–31), the inline year box and
+`gigDateNote` (all layouts). The probe's day sentinel is `27` now (`77` is not a day).
