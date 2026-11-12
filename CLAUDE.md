@@ -396,8 +396,8 @@ reversing 2026-10-20's "an already-selected section": the `text` cursor shows on
   layout 2's "a frame label stays a literal" for the eight the tester reported): the bio's ID-card
   labels `sinceLabel` / `roleLabel` / `baseLabel` (one line each; `sectionVm` breaks them before
   the last word, as the frames do) and `aboutLabel` (its Genres line `tagsLabel` was removed 2026-11-11, with the bio's initials / Bio eyebrow;
-  notes/bio.md), media's `listLabel` ("● Popular", layouts 2 and 3) and layout 3's `kicker` on the map and
-  the testimonials. JP-059's shape: seeded with the literal, uncased, dropped when emptied. The
+  notes/bio.md), media's `listLabel` ("● Popular", layouts 2 and 3) and layout 3's `kicker` on the map
+  (the testimonials' was removed 2026-11-12: notes/testimonials.md). JP-059's shape: seeded with the literal, uncased, dropped when emptied. The
   `●` and `[ ]` are the markup's and go with an emptied word; a stat's label also goes with its
   value, as before. **Three more at layout 1, every template** (JP-090, user call, 2026-09-30;
   a fourth, the bio's `refLabel` `[ 001 ] Structure · Bio_01` line, was removed 2026-11-11):
@@ -414,9 +414,8 @@ reversing 2026-10-20's "an already-selected section": the `text` cursor shows on
   Date keeps its seat, and both emptied drop the row), media's `chipLabel` (the fan's
   `● Featured`) and the counter's `countLabel` / `totalLabel` ("5 Featured / 5 Max", layouts 2
   and 3; `countLabel` is layout 1's "5 / 5 Featured" too; an emptied word takes its count with
-  it), and the testimonials' "✎ What clients say", which is `kicker`'s layout-2 seed —
-  `testiKickerSeed(d)`, `mapKickerSeed`'s shape with its own chain arm, so `kicker` reaches
-  layouts 2 and 3. The calendar's `prompt`, *Pick a date to enquire*, which every layout prints
+  it). (The testimonials' "✎ What clients say" went with its `kicker` field, 2026-11-12.)
+  The calendar's `prompt`, *Pick a date to enquire*, which every layout prints
   while no day is cued, reads its seed again when emptied and stays `cased()`. **And the map's
   layout-2 travel card and list, every template** (JP-095 (b) · JP-096, user call, 2026-10-01):
   `kicker` (*Travel radius*) and `listLabel` (*Other upcoming*) reach layout 2 through

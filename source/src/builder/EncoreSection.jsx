@@ -25030,11 +25030,6 @@ function Testimonials({ s }) {
       // h2 takes the page's 0.14em lift.
       const limeHead = (
         <div style={col(u(12), { width: '100%', alignItems: 'center', textAlign: 'center', color: s.tx })}>
-          {/* The eyebrow is `kicker` (JP-095 (a)), seeded "What clients say"
-              at this layout; the ✎ is the markup's. Emptied, not drawn. */}
-          {!!s.testiKicker && (
-            <span style={{ ...bodyType(s.bodySm, 1.4), maxWidth: '100%', overflowWrap: 'anywhere' }}>{`\u270E ${s.testiKicker}`}</span>
-          )}
           {!!s.title && (
             <h2 style={distressed(s, {
               margin: 0, ...dispType(s.dispLg, 0.89), overflowWrap: 'break-word', maxWidth: '100%',
@@ -25196,18 +25191,13 @@ function Testimonials({ s }) {
 
     const body12 = { fontFamily: s.body, fontSize: u(T.bodySm), lineHeight: 1.4 }
 
-    // The head. Its eyebrow is `kicker`, layout 3's "● Testimonials" (JP-071),
-    // which reaches it with JP-095 (a) through `testiKickerSeed()`: the frame's
-    // "What clients say" is its seed here, the ✎ the markup's, and emptied it
-    // is not drawn; the display line is the section's
+    // The head. The eyebrow ("✎ What clients say") was removed 2026-11-12
+    // (notes/testimonials.md); the display line is the section's
     // `heading`, which layout 1 draws nowhere; and the sentence under it is the
     // new `sub`. Each of the two fields is rendered or not rather than printed
     // blank, since a `col` gap is spent on an empty span the same as a full one.
     const head = (
       <div style={col(u(12), { width: '100%', alignItems: 'center', textAlign: 'center' })}>
-        {!!s.testiKicker && (
-          <span style={{ ...body12, maxWidth: '100%', overflowWrap: 'anywhere' }}>{`\u270E ${s.testiKicker}`}</span>
-        )}
         {!!s.title && (
           // `display-lg` 96 → 60 → 40, which is the page's own ramp read off
           // two different keys — the media player's `tab ? s.h1 : s.dispLg`,
@@ -26070,7 +26060,6 @@ function Testimonials({ s }) {
       return (
         <div style={col(u(24))}>
           <div style={col('0px', { width: '100%', color: s.tx })}>
-            {s.testiKicker && <span style={small}>&#9679; {s.testiKicker}</span>}
             {!!s.title && (
               <h2 style={distressed(s, {
                 margin: 0, ...disp(s.display, s.dispMd, 1),
@@ -26114,17 +26103,13 @@ function Testimonials({ s }) {
 
     return (
       <div style={col(u(24))}>
-        {/* The eyebrow is the frame's own word seeded into `kicker` (JP-071,
-            user call, 2026-09-29; it was a literal on the media player's
-            "● Popular" precedent, which went the same way), and an emptied
-            one drops it, dot and all; the display line is `heading`, which
-            layout 2 was the first design to draw. The 1440 master pins this column at 306 and
+        {/* The eyebrow ("● Testimonials") was removed 2026-11-12; the display line is
+            `heading`, which layout 2 was the first design to draw. The 1440 master pins this column at 306 and
             breaks "Experienc / es." mid-word inside an `overflow-clip` header —
             both narrow masters give it the full measure and set it on one line,
             so the cap is a leak that destroys its own content and is dropped
             (the bio's rule). */}
         <div style={col('0px', { width: '100%' })}>
-          {s.testiKicker && <span style={body12}>&#9679; {s.testiKicker}</span>}
           {!!s.title && (
             <h2 style={{
               margin: 0, fontFamily: s.display, fontSize: u(T.disp), lineHeight: 1,

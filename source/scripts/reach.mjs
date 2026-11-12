@@ -94,14 +94,13 @@ const PROBES = [
   { name: 'bio.aboutLabel', cats: ['bio'], param: 'cj', value: { aboutLabel: Z } },
   { name: 'media.listLabel', cats: ['media'], param: 'cj', value: { listLabel: Z } },
   { name: 'map.kicker', cats: ['map'], param: 'cj', value: { kicker: Z } },
-  { name: 'testimonials.kicker', cats: ['testimonials'], param: 'cj', value: { kicker: Z } },
   // JP-090: four more — the bio's reference line, the map's gig-list label and
   // the form's chip-row label, and layout 1's eyebrow on `map.kicker` above.
   { name: 'map.listLabel', cats: ['map'], param: 'cj', value: { listLabel: Z } },
   { name: 'form.typeLabel', cats: ['form'], param: 'cj', value: { typeLabel: Z } },
   // JP-095 (a): layout 2's labels — pricing's eyebrow and features label, the
-  // calendar's column labels, media's fan chip and its counter's two words —
-  // and `testimonials.kicker` above, re-scoped to layout 2. The prompt prints
+  // calendar's column labels, media's fan chip and its counter's two words.
+  // The prompt prints
   // only while no day is cued, which the clockless canvas never is, so both
   // sides block the cued day (CAL_OPEN).
   { name: 'pricing.kicker', cats: ['pricing'], param: 'cj', value: { kicker: Z } },

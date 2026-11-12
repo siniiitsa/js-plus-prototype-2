@@ -108,13 +108,12 @@ another `notes/` file.
   draws it — so the root's `cream` flag stays layout 1's for the fifth time. `when`,
   `sub` and `cta` reach none of it, which leaves `when` a layout-1 column and `cta`
   layout 2 alone.
-- **Layout 2's eyebrow is `kicker`** (JP-095 (a), user call, 2026-10-01). It had been the frame's
-  literal `✎ What clients say`, an unreported sibling JP-071 kept. Now `kicker` (JP-071's,
-  layout 3's `● Testimonials`) reaches layout 2 through a per-layout seed, `testiKickerSeed(d)`:
-  `TESTI_KICKER_2` "What clients say" at `d === 1` and `TESTI_KICKER` otherwise. That is
-  `mapKickerSeed`'s shape, called by `sectionVm` and by an arm of `EditPanel`'s chain of its own,
-  since the map's arm is gated on `map`. The field is `in: [1, 2]`, both bodies. The `✎` is the
-  markup's and goes with an emptied word, as layout 3's `●` does. A long one wraps.
+- **The eyebrow is gone** (user call, 2026-11-12). The small line over the heading, layout 2's
+  `✎ What clients say` and layout 3's `● Testimonials`, was `FIELDS.testimonials.kicker`
+  (`in: [1, 2]`; JP-071, JP-095 (a)). It is deleted, with `vm.testiKicker`, `testiKickerSeed` and
+  its seeds, its two `INLINE_PART` rows and its `reach.mjs` probe, as the bio's decorative labels
+  were. The heads are the heading and, at layouts 1 and 2, the sub. A stored `kicker` on an old
+  page is never read.
 - **Character caps** (`plans/char-limits.md`, session 9, 2026-10-13). Every text key and the four
   `quotes` columns carry a `chars` / `cols` cap per template and design; the readout is
   `plans/char-limits/session-9-probe.md`. The calls that shape them:
@@ -157,32 +156,27 @@ another `notes/` file.
 
 The initial tiles in the rail print `mark`, two initials of a `who`, not a field, so they are no slots; the reviews after the
 first are *paged* (the canvas draws one), and `quotes.when` has no seat at layout 2, so it is ledgered
-(`Retro.1.testimonials.quotes.when`). `kicker` (`✎ What clients say`) is an `INLINE_PART` row.
+(`Retro.1.testimonials.quotes.when`).
 
 ## Inline editing (plans/inline-edit-all.md, Lime layout 2, 2026-10-21)
 
 `quotes.when` is drawn only by the `s.v0` branch, so layout 2 has no seat for it at any template: `Lime.1.testimonials.quotes.when`.
-`kicker` is the `*.1.` part row, as at Retro.
 
 ## Inline editing (plans/inline-edit-all.md, Grunge layout 2, 2026-10-22)
 
-`quotes.when` is drawn only by the `s.v0` branch (no `Reviewed` in Grunge's layout-2 HTML): `Grunge.1.testimonials.quotes.when`. `kicker` is the
-`*.1.` part row.
+`quotes.when` is drawn only by the `s.v0` branch (no `Reviewed` in Grunge's layout-2 HTML): `Grunge.1.testimonials.quotes.when`.
 
 ## Inline editing (plans/inline-edit-all.md, Retro layout 3, 2026-10-22)
 
-Layout 3's wall repeats no copy (five distinct reviewers), so no claim or rank was needed and every `quote` / `who` / `role` hits; `kicker` (`● Testimonials`)
-is a `*.2.` part row and `quotes.when` is ledgered (`Retro.2.testimonials.quotes.when`: the wall has no seat for it).
+Layout 3's wall repeats no copy (five distinct reviewers), so no claim or rank was needed and every `quote` / `who` / `role` hits; `quotes.when` is ledgered (`Retro.2.testimonials.quotes.when`: the wall has no seat for it).
 
 ## Inline editing (plans/inline-edit-all.md, Lime layout 3, 2026-10-22)
 
-As Retro's layout 3: the wall repeats no copy, `kicker` is a `*.2.` part row and `quotes.when` is ledgered (`Lime.2.testimonials.quotes.when`).
+As Retro's layout 3: the wall repeats no copy and `quotes.when` is ledgered (`Lime.2.testimonials.quotes.when`).
 
 ## Inline editing (plans/inline-edit-all.md, Pop layout 3, 2026-10-22)
 
-As Retro's layout 3: the wall repeats no copy, `kicker` is a `*.2.` part row and `quotes.when` is ledgered (`Pop.2.testimonials.quotes.when`). One thing Pop adds, at 1440 only: the heading is lifted
-`-0.14em`, so its element box starts 6 px inside the kicker line, and a click on the lower half of the kicker's `●` (a markup glyph, no slot) opens `heading`; the kicker's word is unaffected. Left
-(plans/pop/inline-layout-3.md, *Learned*). No code change.
+As Retro's layout 3: the wall repeats no copy and `quotes.when` is ledgered (`Pop.2.testimonials.quotes.when`). (Pop's kicker-`●` finding, plans/pop/inline-layout-3.md, went with the kicker.)
 
 ## Inline editing (plans/inline-edit-all.md, Retro layout 4, 2026-10-22)
 

@@ -40,7 +40,7 @@ import {
   THEMES, SCHEMES_OF, CATS, NVAR, FLAG, FIELDS, TITLES, DEFS, TRACKS, TAGS, TAG_LABELS, HERO_CTA, BIO_CREDIT, BIO_CTA,
   FACE_TITLE, FACE_BODY, BIO_TAG,
   BIO_SINCE_LABEL, BIO_ROLE_LABEL, BIO_BASE_LABEL, BIO_ABOUT_LABEL, MEDIA_LIST_LABEL,
-  FORM_TYPE_LABEL, mapKickerSeed, mapListLabelSeed, mapPlaceOf, mapMilesOf, MAP_MILES_MIN, MAP_MILES_MAX, mapRadiusText, mapRingLabels, mapHeadingSeed, mapBaseSeed, mapTermsSeed, mapStatsSeed, mapBaseStat, testiKickerSeed,
+  FORM_TYPE_LABEL, mapKickerSeed, mapListLabelSeed, mapPlaceOf, mapMilesOf, MAP_MILES_MIN, MAP_MILES_MAX, mapRadiusText, mapRingLabels, mapHeadingSeed, mapBaseSeed, mapTermsSeed, mapStatsSeed, mapBaseStat,
   MAP_HOME_LABEL, MAP_HOME_CAPTION, MAP_VENUE_LABEL, MAP_VENUE_CAPTION, MAP_RADIUS_LABEL, MAP_TIME_LABEL,
   MAP_FEE_LABEL, MAP_VENUE_CTA, MAP_ROUTE_CTA,
   PRICING_KICKER, PRICING_FEATS_LABEL, PRICING_BADGE, CAL_DATE_LABEL, CAL_AVAIL_LABEL, CAL_PROMPT,
@@ -1383,9 +1383,6 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // emptied one gives the seat back to the review count (JP-065). Uncased, as
   // pricing's rating is.
   vm.testiRating = cv('rating', TESTI_RATING)
-  // JP-071 — layout 3's "● Testimonials" eyebrow; the dot is the markup's.
-  // JP-095 (a) took it to layout 2's "✎ What clients say", its seed there.
-  vm.testiKicker = cv('kicker', testiKickerSeed(d))
   // §10.2 layout 3 reads the same tags as a *grouping* rather than as a filter:
   // one card per tag, holding the songs that carry it. `repChips` leads with the
   // All chip, which is a filter reset and not a set, so the cards are the chips

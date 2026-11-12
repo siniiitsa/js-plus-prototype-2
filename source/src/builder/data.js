@@ -1073,7 +1073,6 @@ export const BIO_BASE_LABEL = 'Based in:'
 export const BIO_ABOUT_LABEL = 'About'
 export const MEDIA_LIST_LABEL = 'Popular'
 export const MAP_KICKER = 'Gigs & travel'
-export const TESTI_KICKER = 'Testimonials'
 // JP-090 (user call, 2026-09-30): three more, on every template at layout 1 —
 // the map's eyebrow and the label over its gig list (the "· N" is the
 // markup's), and the form's label over its chip row. The map's eyebrow is
@@ -1111,9 +1110,9 @@ export const mapListLabelSeed = (d) => (d === 1 ? MAP_LIST_LABEL_2 : MAP_LIST_LA
 // template — the plan card's eyebrow and its features label, in the capitals
 // the frame types (964:64610; the curly apostrophe is what renders); the slot
 // list's two column labels; the fan card's chip and the counter's two words
-// over the track list ("5 Featured / 5 Max", and layout 1's "5 / 5 Featured");
-// and the testimonials' eyebrow, `kicker`'s layout-2 seed. The "[ ]", "↓", "●"
-// and "✎" and the counts are the markup's. The calendar's prompt, which every
+// over the track list ("5 Featured / 5 Max", and layout 1's "5 / 5 Featured").
+// (The testimonials' eyebrow, a ninth, was removed 2026-11-12.) The "[ ]", "↓", "●"
+// and the counts are the markup's. The calendar's prompt, which every
 // layout prints while no day is cued, joins them; emptied, it reads its seed
 // again (FORM_MSG_LABEL's rule).
 export const PRICING_KICKER = 'PRICING'
@@ -1127,10 +1126,6 @@ export const CAL_PROMPT = 'Pick a date to enquire'
 export const MEDIA_CHIP_LABEL = 'Featured'
 export const MEDIA_COUNT_LABEL = 'Featured'
 export const MEDIA_TOTAL_LABEL = 'Max'
-export const TESTI_KICKER_2 = 'What clients say'
-// The testimonials' eyebrow an absent `kicker` stands for, by design:
-// mapKickerSeed()'s shape, called by sectionVm and EditPanel's chain alike.
-export const testiKickerSeed = (d) => (d === 1 ? TESTI_KICKER_2 : TESTI_KICKER)
 // JP-098 (user call, 2026-10-01): the gallery's 768 head row, over the small
 // photos, in the frame's title case (986:15668). Layout 2 at tablet alone; the
 // heading it used to hold went back to the caption. JP-120 (gallery) gave it
@@ -2689,12 +2684,6 @@ export const FIELDS = {
       hint: 'One card each, two to a row. A card prints only the parts you fill in; an empty row isn’t shown.' },
   ],
   testimonials: [
-    // JP-071: layout 3's eyebrow over the heading, the frame's word, uncased.
-    // JP-095 (a) took it to layout 2's "✎ What clients say", its seed there
-    // (testiKickerSeed(), in sectionVm and EditPanel's chain alike).
-    { k: 'kicker',  l: 'Kicker', d: TESTI_KICKER, in: [1, 2], chars: [null, 61, 61],
-      hint: 'The small line over the heading, after a ✎ in layout 2 and a dot in layout 3. '
-          + 'Layout 2 starts from “What clients say”. Left empty, it is not drawn.' },
     // A textarea, because layout 2's default breaks onto a second line.
     // Session 9 of the character-limits pass: a display head, held to its
     // frame's lines (not a block), though a textarea for layout 2's typed break.
@@ -3010,8 +2999,7 @@ export const HEADING_4 = {
 // The calendar's address is the form's until one is typed (JP-076). The
 // header's kicker left the chain with JP-061: its `d` is its seed at every
 // layout, and the layout-3 card's line is a field of its own. The map's kicker
-// joined it with JP-090 (mapKickerSeed), the testimonials' with JP-095 (a)
-// (testiKickerSeed), and the map's list label with JP-095 (b)
+// joined it with JP-090 (mapKickerSeed), and the map's list label with JP-095 (b)
 // (mapListLabelSeed; gated on `map`, since media carries a `listLabel` too),
 // and the map's coverage with JP-105 (mapRadiusSeed). Layouts 3 and 4's heads
 // come ahead of the song count, which sectionVm's later assignment says the
@@ -3034,7 +3022,6 @@ export function fieldSeed({ cat, f, themeName, design, c = {}, artistName, email
     : f.k === 'heading' && cat === 'map' && design < 2 ? mapHeadingSeed(c, themeName, design)
     : f.k === 'base' && cat === 'map' ? mapBaseSeed(c, themeName, design)
     : f.k === 'terms' && cat === 'map' ? mapTermsSeed(c)
-    : f.k === 'kicker' && cat === 'testimonials' ? testiKickerSeed(design)
     : f.k === 'cta' && cat === 'calendar' && design === 3 ? CAL_SEND_4
     : f.k === 'rowCta' && cat === 'pricing' && design === 2 ? PRICING_ROW_CTA_3
     : f.k === 'rowCta' && cat === 'pricing' && design === 3 ? PRICING_ROW_CTA
@@ -3251,17 +3238,15 @@ export const INLINE_PART = {
   '*.1.map.terms': true,
   '*.1.map.expand': true,
   '*.1.form.bookings': true,
-  '*.1.testimonials.kicker': true,
   // Layout 3 the same: `[ About ]`, `● Popular`, `5 Featured / 5 Max`, the map's
   // `Based in Manchester · 5 gigs · 120 mi radius` and `Expand view→`, the form's
-  // `★★★★★ 42 bookings`, `● Testimonials`.
+  // `★★★★★ 42 bookings`.
   '*.2.bio.aboutLabel': true,
   '*.2.media.listLabel': true,
   '*.2.media.totalLabel': true,
   '*.2.map.base': true,
   '*.2.map.expand': true,
   '*.2.form.bookings': true,
-  '*.2.testimonials.kicker': true,
   // Layout 4: the bio's overlay card prints `Performing since <date>` in one span
   // and the Listen link beside its arrow, a price its `£` and numeral in one node,
   // and the map's ticker `Next: <venue>` (page 0 alone, which the canvas is).
