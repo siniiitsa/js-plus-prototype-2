@@ -39,12 +39,12 @@ import { imageProblem, readImage, vetImages } from './imageFiles.js'
 import {
   THEMES, SCHEMES_OF, CATS, NVAR, FLAG, FIELDS, TITLES, DEFS, TRACKS, TAGS, TAG_LABELS, HERO_CTA, BIO_CREDIT, BIO_CTA,
   FACE_TITLE, FACE_BODY, BIO_TAG,
-  BIO_SINCE_LABEL, BIO_ROLE_LABEL, BIO_BASE_LABEL, BIO_ABOUT_LABEL, MEDIA_LIST_LABEL,
+  BIO_SINCE_LABEL, BIO_ROLE_LABEL, BIO_BASE_LABEL, BIO_ABOUT_LABEL,
   FORM_TYPE_LABEL, MAP_KICKER_2, MAP_LIST_LABEL, mapPlaceOf, mapMilesOf, MAP_MILES_MIN, MAP_MILES_MAX, mapRadiusText, mapRingLabels, mapHeadingSeed, mapBaseSeed, mapTermsSeed, mapStatsSeed, mapBaseStat,
   MAP_HOME_LABEL, MAP_HOME_CAPTION, MAP_VENUE_LABEL, MAP_VENUE_CAPTION, MAP_RADIUS_LABEL, MAP_TIME_LABEL,
   MAP_FEE_LABEL, MAP_VENUE_CTA, MAP_ROUTE_CTA,
   PRICING_FEATS_LABEL, PRICING_BADGE, CAL_DATE_LABEL, CAL_AVAIL_LABEL, CAL_PROMPT,
-  MEDIA_CHIP_LABEL, MEDIA_COUNT_LABEL, MEDIA_TOTAL_LABEL, GALLERY_RAIL_LABEL, TIER_KEYS, tiersSeed, PRICE_UNIT, QUOTES,
+  MEDIA_CHIP_LABEL, GALLERY_RAIL_LABEL, TIER_KEYS, tiersSeed, PRICE_UNIT, QUOTES,
   CITIES, PINS, EXAMPLE_PAGE,
   NOW_PLAYING, TRACK_AUDIO, SONGS, REP_ALL,
   GIGS, MAP_TRAVEL_TIME, MAP_FEE, directionsUrl, GALLERY_SOURCES, GALLERY_KICKER, GALLERY_BACK_LABEL,
@@ -1017,15 +1017,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   vm.aboutLabel = cv('aboutLabel', BIO_ABOUT_LABEL)
 
   // media
-  vm.mediaKicker = cv('kicker', 'Top tracks')
-  // JP-071 — layouts 2 and 3's "● Popular" over the list; the dot is the markup's.
-  vm.listLabel = cv('listLabel', MEDIA_LIST_LABEL)
-  // JP-095 (a) — layout 2's fan chip and the counter's two words over the list
-  // ("5 Featured / 5 Max", layout 1's "5 / 5 Featured"), the same shape. The
-  // counts are the markup's; an emptied word takes its own with it.
+  // JP-095 (a) — layout 2's fan chip. (The kicker, "● Popular" and the counter
+  // over the list were removed 2026-11-12: notes/media.md.)
   vm.mediaChip = cv('chipLabel', MEDIA_CHIP_LABEL)
-  vm.countLabel = cv('countLabel', MEDIA_COUNT_LABEL)
-  vm.totalLabel = cv('totalLabel', MEDIA_TOTAL_LABEL)
   // vm.nowPlaying is resolved under `tracks` below, because it reads them.
   // The Soundcloud button's destination, and the whole of its `live` seam.
   // Normalised to an absolute URL: the published tab carries a <base href> to

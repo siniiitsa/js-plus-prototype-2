@@ -1065,13 +1065,12 @@ export const BIO_TAG = '/Featured'
 // literals they replace: bio layout 3's three stat labels (one line each;
 // sectionVm breaks them before the last word, as the frames do), its
 // "[ About ]" and "Genres" (bio layout 4's too), media layouts 2 and 3's
-// "● Popular" over the list, and layout 3's eyebrows on the map and the
-// testimonials. The "●" and the brackets are the markup's.
+// "● Popular" over the list (removed 2026-11-12), and layout 3's eyebrows on
+// the map and the testimonials. The "●" and the brackets are the markup's.
 export const BIO_SINCE_LABEL = 'Performing since:'
 export const BIO_ROLE_LABEL = 'Current role:'
 export const BIO_BASE_LABEL = 'Based in:'
 export const BIO_ABOUT_LABEL = 'About'
-export const MEDIA_LIST_LABEL = 'Popular'
 // JP-090 (user call, 2026-09-30): three more, on every template at layout 1 —
 // the map's eyebrow and the label over its gig list (the "· N" is the
 // markup's), and the form's label over its chip row. (The bio's reference line,
@@ -1113,8 +1112,7 @@ export const CAL_DATE_LABEL = 'Date'
 export const CAL_AVAIL_LABEL = 'Availability'
 export const CAL_PROMPT = 'Pick a date to enquire'
 export const MEDIA_CHIP_LABEL = 'Featured'
-export const MEDIA_COUNT_LABEL = 'Featured'
-export const MEDIA_TOTAL_LABEL = 'Max'
+// (The media counter's `countLabel` / `totalLabel` words went 2026-11-12.)
 // JP-098 (user call, 2026-10-01): the gallery's 768 head row, over the small
 // photos, in the frame's title case (986:15668). Layout 2 at tablet alone; the
 // heading it used to hold went back to the caption. JP-120 (gallery) gave it
@@ -2152,24 +2150,10 @@ export const FIELDS = {
         sub: 33 },
       hint: 'Each row is one card in the stack, with its own artwork and audio file. '
           + "The player shows the track it is on, so track one's artwork is the sleeve." },
-    { k: 'kicker',  l: 'Kicker', d: 'Top tracks', in: [0, 2],
-      chars: { Retro: [46, null, 51], Pop: [42, null, 55], '*': [55, null, 55] } },
+    // (The kicker "Top tracks", the "● Popular" list label and the "5 Featured /
+    // 5 Max" counter's two words were removed 2026-11-12, user call: notes/media.md.)
     { k: 'heading', l: 'Heading', d: 'Five worth your ear.',
       chars: { Retro: [20, 20, 25, 20], Grunge: [30, 20, 20, 25], Pop: [20, 20, 20, 23], '*': [20, 20, 20, 20] } },
-    // JP-071: the "● Popular" over the track list, the frame's word, uncased.
-    { k: 'listLabel', l: 'List label', d: MEDIA_LIST_LABEL, in: [1, 2],
-      chars: { Retro: [null, 29, 41], '*': [null, 34, 41] },
-      hint: 'The label over the track list, after a dot. Left empty, it is not drawn.' },
-    // JP-095 (a): the counter's two words, the counts the page's. An emptied
-    // word takes its count (and the " / ") with it; both emptied, no counter.
-    // Pop's layout-1 frame draws no counter (plans/pop/layout-1.md, section 3).
-    { k: 'countLabel', l: 'Counter label', d: MEDIA_COUNT_LABEL, in: { Pop: [1, 2], '*': [0, 1, 2] },
-      chars: { Retro: [42, 40, 51], Grunge: [30, 44, 51], Pop: [null, 44, 51], '*': [51, 44, 51] },
-      hint: 'The word after the track count over the list, as in “5 Featured / 5 Max” (“5 / 5 Featured” '
-          + 'in layout 1). Left empty, it goes with its count.' },
-    { k: 'totalLabel', l: 'Counter total label', d: MEDIA_TOTAL_LABEL, in: [1, 2],
-      chars: { Retro: [null, 35, 46], '*': [null, 39, 46] },
-      hint: 'The word after the second count, the “Max” of “5 Featured / 5 Max”. Left empty, it goes with its count.' },
     // JP-095 (a): the chip on the fan's front card, the frame's word, uncased.
     { k: 'chipLabel', l: 'Card chip', d: MEDIA_CHIP_LABEL, in: [1],
       chars: { Retro: [null, 10], Lime: [null, 9], '*': [null, 10] },
@@ -3200,28 +3184,22 @@ export const INLINE_MARKED = {
   '*.0.gallery.sourceLabel': true,
 }
 export const INLINE_PART = {
-  'media.countLabel': true,
   'map.listLabel': true,
   'calendar.time': true,
   'repertoire.songs.artist': true,
   // Layout 2 prints these inside a longer line: a bullet, an arrow or a count
-  // beside the words (`● Popular`, `5 Featured / 5 Max`,
-  // `32 reviews · 4.9 ★`, `Expand view→`). The words are unique on the page,
-  // so the box narrows to them and no frame is needed.
-  '*.1.media.listLabel': true,
-  '*.1.media.totalLabel': true,
+  // beside the words (`32 reviews · 4.9 ★`, `Expand view→`). The words are
+  // unique on the page, so the box narrows to them and no frame is needed.
   '*.1.pricing.reviews': true,
   '*.1.pricing.rating': true,
   '*.1.calendar.dateLabel': true,
   '*.1.map.terms': true,
   '*.1.map.expand': true,
   '*.1.form.bookings': true,
-  // Layout 3 the same: `[ About ]`, `● Popular`, `5 Featured / 5 Max`, the map's
+  // Layout 3 the same: `[ About ]`, the map's
   // `Based in Manchester · 5 gigs · 120 mi radius` and `Expand view→`, the form's
   // `★★★★★ 42 bookings`.
   '*.2.bio.aboutLabel': true,
-  '*.2.media.listLabel': true,
-  '*.2.media.totalLabel': true,
   '*.2.map.base': true,
   '*.2.map.expand': true,
   '*.2.form.bookings': true,

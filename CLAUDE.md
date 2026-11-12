@@ -396,7 +396,7 @@ reversing 2026-10-20's "an already-selected section": the `text` cursor shows on
   layout 2's "a frame label stays a literal" for the eight the tester reported): the bio's ID-card
   labels `sinceLabel` / `roleLabel` / `baseLabel` (one line each; `sectionVm` breaks them before
   the last word, as the frames do) and `aboutLabel` (its Genres line `tagsLabel` was removed 2026-11-11, with the bio's initials / Bio eyebrow;
-  notes/bio.md), media's `listLabel` ("● Popular", layouts 2 and 3) and layout 3's `kicker` on the map
+  notes/bio.md), media's `listLabel` ("● Popular", layouts 2 and 3; removed 2026-11-12: notes/media.md) and layout 3's `kicker` on the map
   (the testimonials' was removed 2026-11-12: notes/testimonials.md). JP-059's shape: seeded with the literal, uncased, dropped when emptied. The
   `●` and `[ ]` are the markup's and go with an emptied word; a stat's label also goes with its
   value, as before. **Three more at layout 1, every template** (JP-090, user call, 2026-09-30;
@@ -409,10 +409,10 @@ reversing 2026-10-20's "an already-selected section": the `text` cursor shows on
   (a), user call, 2026-10-01): pricing's `featsLabel` (`WHAT’S INCLUDED`, seeded in the capitals the frame types and printed as typed; layout 3
   prints `featsLabel` too, and its FEATURED badge is `badgeLabel`, JP-125), the
   calendar's `dateLabel` / `availLabel` over the slot list (the `↓` the markup's; an emptied
-  Date keeps its seat, and both emptied drop the row), media's `chipLabel` (the fan's
-  `● Featured`) and the counter's `countLabel` / `totalLabel` ("5 Featured / 5 Max", layouts 2
-  and 3; `countLabel` is layout 1's "5 / 5 Featured" too; an emptied word takes its count with
-  it). (The testimonials' "✎ What clients say" went with its `kicker` field, 2026-11-12.)
+  Date keeps its seat, and both emptied drop the row) and media's `chipLabel` (the fan's
+  `● Featured`). (The media counter's `countLabel` / `totalLabel` — "5 Featured / 5 Max",
+  layout 1's "5 / 5 Featured" — went 2026-11-12 with the media `kicker` ("Top tracks") and
+  `listLabel`: notes/media.md. The testimonials' "✎ What clients say" went with its `kicker` field, 2026-11-12.)
   The calendar's `prompt`, *Pick a date to enquire*, which every layout prints
   while no day is cued, reads its seed again when emptied and stays `cased()`. **And the map's
   layout-2 travel card and list, every template** (JP-095 (b) · JP-096, user call, 2026-10-01):

@@ -6170,23 +6170,6 @@ const WAVE = [
 // not a count, because the meter's bar count is derived from the width.
 const WAVE_PLAYED = 17 / WAVE.length
 
-// Layouts 2 and 3's counter over the track list, "5 Featured / 5 Max", off
-// `countLabel` and `totalLabel` (JP-095 (a)): each word with its count, the
-// " / " only between two, in the four text nodes the literal made. Null when
-// both are emptied, and the row stays. Layout 1's "5 / 5 Featured" reads
-// `countLabel` alone, in place.
-const trackCount = (s) => {
-  const n = s.tracks.length, a = s.countLabel, b = s.totalLabel
-  if (a && b) return <>{n}{` ${a} / `}{n}{` ${b}`}</>
-  return a || b ? <>{n}{` ${a || b}`}</> : null
-}
-// The counter's span beside a wrapping `listLabel`: it keeps its own line and
-// right-hand seat, as the literal's `nowrap` did, until it is itself wider than
-// the row less the gap, and then it wraps.
-const trackCountFit = (gap) => ({
-  flex: 'none', maxWidth: `calc(100% - ${gap})`, whiteSpace: 'normal', overflowWrap: 'anywhere', textAlign: 'right',
-})
-
 function Media({ s }) {
   // Hooks before the layout branch — the older three-card design plays too.
   // `playing` mirrors the element's own play/pause events rather than being
@@ -6360,17 +6343,12 @@ function Media({ s }) {
     // three widths. An em measure between Bebas Neue's "Five worth" (3.59em)
     // and "Five worth your" (5.34em) reproduces it at every size; Retro's 5.8em
     // is Soulway's and would put "your" on the first line.
-    // The counter's word is `countLabel` (JP-095 (a)), the counts the page's;
-    // emptied, no counter. A long one wraps, and at desktop it keeps to half
-    // the row, so the heading keeps its column.
-    const featured = s.countLabel ? eyebrow(`${s.tracks.length} / ${s.tracks.length} ${s.countLabel}`, {
-      textTransform: 'uppercase', whiteSpace: 'normal', overflowWrap: 'anywhere',
-      ...(desk ? { maxWidth: '50%', textAlign: 'right' } : null),
-    }) : null
+    // The "Top tracks" kicker over the heading and the "5 / 5 Featured"
+    // counter beside it are gone (user call, 2026-11-12): the head is the
+    // heading alone.
     const titleWords = String(s.title || '').split(/\s+/).filter(Boolean)
     const titleBlock = (
       <div style={col(u(36), desk ? { flex: 1, minWidth: 0 } : undefined)}>
-        {eyebrow(s.mediaKicker, { textTransform: 'uppercase' })}
         {/* Grunge's frame types the same break and colours across it: "Five
             worth" in `sem/text/2`, "your ear." in `sem/text/1`. The string is
             the artist's, so the rule is positional — the first two words are
@@ -6396,8 +6374,8 @@ function Media({ s }) {
       </div>
     )
     const heading = desk
-      ? <div style={row('0', { alignItems: 'flex-end' })}>{titleBlock}{featured}</div>
-      : <div style={col('32px', { alignItems: 'flex-start' })}>{titleBlock}{featured}</div>
+      ? <div style={row('0', { alignItems: 'flex-end' })}>{titleBlock}</div>
+      : <div style={col('32px', { alignItems: 'flex-start' })}>{titleBlock}</div>
 
     // The rows divide a stated height rather than hugging: the player's 540 on
     // desktop (the list stretches beside it), 462 at 768 and 370 at 390. So the
@@ -6732,26 +6710,10 @@ function Media({ s }) {
       background: fill ? s.deepFg : 'transparent', color: fill ? s.deep : s.deepFg,
       display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
     })
-    // Figma sets the kicker and the counter in a small tracked mono, not Anton.
-    // Pop's is Space Mono 11 tracked 1.5 at its auto line height, in Scheme 3's
-    // white `text3` on the pink card.
-    const label = (t, extra) => (
-      <span style={{
-        fontFamily: s.body, fontSize: '11px', letterSpacing: '1.2px',
-        textTransform: 'uppercase', color: s.ac, whiteSpace: 'nowrap', ...extra,
-      }}>{t}</span>
-    )
-
-    // Full-width header: on desktop the track counter bottom-aligns with the
-    // display heading at the right edge; the narrow frames drop it under the
-    // heading instead, left-aligned.
-    // Its word is `countLabel` (JP-095 (a)), the counts the page's; emptied,
-    // no counter. A long one wraps, and at desktop it keeps to half the row.
-    // Pop's frame draws no counter, so `countLabel` reaches layout 1 nowhere
-    // there (its `in` has a Pop row).
-    const featured = s.countLabel && !pop ? label(`${s.tracks.length} / ${s.tracks.length} ${s.countLabel}`, {
-      whiteSpace: 'normal', overflowWrap: 'anywhere', ...(desk ? { maxWidth: '50%', textAlign: 'right' } : null),
-    }) : null
+    // Full-width header: the heading alone (the kicker and counter that stood
+    // with it are gone, 2026-11-12).
+    // The "Top tracks" kicker and the "5 / 5 Featured" counter are gone (user
+    // call, 2026-11-12): the head is the heading alone.
     // Pop's head is a hand-scaled 82.14 on a 68.45 line at 1440 and 768, and
     // Display/LG (36 at 0.89) at 390, in Scheme 3's lime `text1`, typed in
     // capitals with a break after "worth" at all three widths — Editorial's
@@ -6759,9 +6721,6 @@ function Media({ s }) {
     const titleWords = String(s.title || '').split(/\s+/).filter(Boolean)
     const titleBlock = (
       <div style={col(pop ? u(36) : desk ? '30px' : '36px', desk ? { flex: 1, minWidth: 0 } : undefined)}>
-        {label(s.mediaKicker, pop ? {
-          fontFamily: s.mono, fontSize: u(11), letterSpacing: u(1.5), lineHeight: 'normal', color: S3.text3,
-        } : undefined)}
         {/* The frame breaks the heading after "worth"; an em measure between
             width("Five worth") and width("Five worth your") forces the same
             break at every size. */}
@@ -6783,8 +6742,8 @@ function Media({ s }) {
       </div>
     )
     const heading = desk
-      ? <div style={row('16px', { alignItems: 'flex-end' })}>{titleBlock}{featured}</div>
-      : <div style={col('32px', { alignItems: 'flex-start' })}>{titleBlock}{featured}</div>
+      ? <div style={row('16px', { alignItems: 'flex-end' })}>{titleBlock}</div>
+      : <div style={col('32px', { alignItems: 'flex-start' })}>{titleBlock}</div>
 
     // Pop's stack: the five cards' centres stand 81.69 apart on average (the
     // frame's hand placement runs 80.64 to 83 between pairs) at every width,
@@ -7522,17 +7481,11 @@ function Media({ s }) {
       const list = (
         <div style={col(pop ? u(10) : '0', {
           minWidth: 0, alignItems: 'stretch',
-          minHeight: desk || !s.tracks.length ? undefined : '596px',
+          // The counter row's 44 (and Pop's 10 under it) is no longer in the
+          // column, so the stated 596 loses them and the rows keep their
+          // height (2026-11-12).
+          minHeight: desk || !s.tracks.length ? undefined : pop ? '542px' : '552px',
         })}>
-          <div style={row(u(12), {
-            flex: 'none', justifyContent: s.listLabel ? 'space-between' : 'flex-end', padding: `${u(16)} 0`,
-            color: s.tx, textTransform: 'uppercase',
-            ...(ed ? { position: 'relative' } : null),
-          })}>
-            {s.listLabel && <span style={{ ...chipType, whiteSpace: 'normal', minWidth: 0, overflowWrap: 'anywhere' }}>● {s.listLabel}</span>}
-            {!!trackCount(s) && <span style={{ ...chipType, ...trackCountFit(u(12)) }}>{trackCount(s)}</span>}
-            {ed && dash('bottom')}
-          </div>
           {s.tracks.map((t, i) => {
             const dur = t.dur && t.dur !== t.rel ? t.dur : ''
             const on = chosen && i === at
@@ -7844,7 +7797,9 @@ function Media({ s }) {
         // Both narrow masters state this column at 596 and let its five rows
         // divide what the counter row and the gaps leave: 44 + 5 × 96 + 5 × 10
         // is 574, so each row takes a fifth of the 22 over and stands at the
-        // 100.4 both renders measure. `minHeight` rather than a height, and the
+        // 100.4 both renders measure. The counter row is gone (2026-11-12), so
+        // the column states 596 less its 44 and one gap, 542, and the rows keep
+        // their 100.4. `minHeight` rather than a height, and the
         // rows' `1 1 auto` rather than desktop's `1 1 0`: past five tracks the
         // column grows and every row keeps its own 96 instead of being squeezed
         // into a twelfth of a fixed one. An emptied list drops it rather than
@@ -7852,21 +7807,10 @@ function Media({ s }) {
         // target, and with no rows there is nothing to divide. Desktop reserves
         // the space either way — there the height is the grid stretching this
         // column against the fan's, not a number this branch states.
-        minHeight: desk || !s.tracks.length ? undefined : '596px',
+        minHeight: desk || !s.tracks.length ? undefined : '542px',
       })}>
-        {/* The label is `listLabel` (JP-071). A long one wraps inside the row
-            rather than widening the page, 12 clear of the counter; emptied, the
-            counter keeps the right-hand end. */}
-        <div style={row(u(12), {
-          flex: 'none', justifyContent: s.listLabel ? 'space-between' : 'flex-end', padding: `${u(16)} 0`, color: ink,
-        })}>
-          {s.listLabel && <span style={chip({ textTransform: 'uppercase', whiteSpace: 'normal', minWidth: 0, overflowWrap: 'anywhere' })}>● {s.listLabel}</span>}
-          {/* Layout 1 derives its counter from the track count the same way.
-              Its words are `countLabel` and `totalLabel` (JP-095 (a)). */}
-          {!!trackCount(s) && (
-            <span style={chip({ textTransform: 'uppercase', ...trackCountFit(u(12)) })}>{trackCount(s)}</span>
-          )}
-        </div>
+        {/* The "● Popular" / count row over the list is gone (user call,
+            2026-11-12): the rows start at the column's top. */}
         {s.tracks.map((t, i) => {
           const r = ROWS[i % ROWS.length]
           const fg = s.retro ? r.fg : contrastInk(r.bg)
@@ -8062,16 +8006,12 @@ function Media({ s }) {
 
     // The wrapper head and the bar-meter card — see the banner above.
     const A = desk
-      ? { disp: 96, eyebrow: 20, list: 16, sm: 12 }
+      ? { disp: 96, list: 16, sm: 12 }
       : tab
-        ? { disp: 60, eyebrow: 14, list: 12, sm: 12 }
-        : { disp: 40, eyebrow: 12, list: 13, sm: 12 }
+        ? { disp: 60, list: 12, sm: 12 }
+        : { disp: 40, list: 13, sm: 12 }
     const head = (
       <div style={col(u(30), { alignItems: 'flex-start' })}>
-        <span style={{
-          fontFamily: s.body, fontSize: u(A.eyebrow), lineHeight: 1.26,
-          textTransform: 'uppercase', color: s.tx,
-        }}>{s.mediaKicker}</span>
         <h2 style={{
           margin: 0, fontFamily: s.display, fontSize: u(A.disp), lineHeight: 0.89,
           letterSpacing: s.dls, color: s.ac,
@@ -8230,10 +8170,6 @@ function Media({ s }) {
       // Display/LG, the bio's own recipe.
       const limeHead = (
         <div style={col(u(30), { alignItems: 'flex-start' })}>
-          <span style={{
-            fontFamily: s.ui, fontSize: s.labelXs, lineHeight: 1.26,
-            letterSpacing: s.dls, textTransform: 'uppercase', color: s.tx,
-          }}>{s.mediaKicker}</span>
           <h2 style={distressed(s, {
             margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispLg), lineHeight: facedLh(s, 0.89),
             letterSpacing: s.dls, color: s.ac, ...disp,
@@ -8292,20 +8228,13 @@ function Media({ s }) {
       )
 
       const gap = s.mob ? '14px' : u(20)
-      // Pop's pills stand 10 apart, and 10 under the counter row.
+      // Pop's pills stand 10 apart. The label / counter row over them is gone
+      // (user call, 2026-11-12).
       return (
         <div style={col(u(30), { alignItems: 'stretch' })}>
           {limeHead}
           {limeCard}
           <div style={col(pop ? u(10) : '0', { alignItems: 'stretch' })}>
-            <div style={row(u(12), {
-              flex: 'none', justifyContent: s.listLabel ? 'space-between' : 'flex-end', padding: `${u(16)} 0`, color: s.tx,
-              position: ed ? 'relative' : undefined,
-            })}>
-              {s.listLabel && <span style={{ ...chipType, whiteSpace: 'normal', minWidth: 0, overflowWrap: 'anywhere' }}>● {s.listLabel}</span>}
-              {!!trackCount(s) && <span style={{ ...chipType, ...trackCountFit(u(12)) }}>{trackCount(s)}</span>}
-              {footDash}
-            </div>
             {s.tracks.length === 0 && (
               <span style={{ ...bodySm, fontSize: s.bodyMd, color: s.muted }}>{s.mediaEmpty}</span>
             )}
@@ -8437,23 +8366,10 @@ function Media({ s }) {
         {head}
         {card}
         <div style={col(u(10), { alignItems: 'stretch' })}>
-        {/* The frame's own top line over the list. Its
-            two labels are separated by an unfilled `flex-[1_0_0]` spacer — a
-            gap, not a rule, and the render draws nothing there — so this is a
-            space-between row, which is what layout 2's counter row already is.
-            The count is derived, as it is in layouts 1 and 2, and the label
-            is `listLabel` (JP-071), layout 2's key. */}
-        <div style={row(u(12), {
-          flex: 'none', justifyContent: s.listLabel ? 'space-between' : 'flex-end',
-          padding: `${u(16)} 0`, color: s.tx,
-        })}>
-          {s.listLabel && <span style={{ ...chip, whiteSpace: 'normal', minWidth: 0, overflowWrap: 'anywhere' }}>● {s.listLabel}</span>}
-          {!!trackCount(s) && <span style={{ ...chip, ...trackCountFit(u(12)) }}>{trackCount(s)}</span>}
-        </div>
-
-        {/* An emptied list is a real state — the tracks are the artist's — and
-            the counter row above already names the count honestly, so this is
-            the audio player's one line rather than a hole. The pricing deck's
+        {/* The frame's top line over the list, "● Popular" and the count, is
+            gone (user call, 2026-11-12), so the list starts at its first row. */}
+        {/* An emptied list is a real state — the tracks are the artist's — so
+            this is the audio player's one line rather than a hole. The pricing deck's
             rule: any minimum height here would be an invented number, and it
             is only ever seen mid-edit. */}
         {s.tracks.length === 0 && (

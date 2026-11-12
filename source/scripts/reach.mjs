@@ -93,7 +93,7 @@ const PROBES = [
   { name: 'bio.roleLabel', cats: ['bio'], param: 'cj', value: { roleLabel: Z } },
   { name: 'bio.baseLabel', cats: ['bio'], param: 'cj', value: { baseLabel: Z } },
   { name: 'bio.aboutLabel', cats: ['bio'], param: 'cj', value: { aboutLabel: Z } },
-  { name: 'media.listLabel', cats: ['media'], param: 'cj', value: { listLabel: Z } },
+  // (Media's `kicker`, `listLabel`, `countLabel` and `totalLabel` were removed 2026-11-12.)
   { name: 'map.kicker', cats: ['map'], param: 'cj', value: { kicker: Z } },
   // JP-090: four more — the bio's reference line, the map's gig-list label and
   // the form's chip-row label, and layout 1's eyebrow on `map.kicker` above.
@@ -101,7 +101,7 @@ const PROBES = [
   { name: 'map.listLabel', cats: ['map'], param: 'cj', value: { listLabel: Z } },
   { name: 'form.typeLabel', cats: ['form'], param: 'cj', value: { typeLabel: Z } },
   // JP-095 (a): layout 2's labels — pricing's features label, the
-  // calendar's column labels, media's fan chip and its counter's two words.
+  // calendar's column labels and media's fan chip.
   // The prompt prints
   // only while no day is cued, which the clockless canvas never is, so both
   // sides block the cued day (CAL_OPEN).
@@ -111,8 +111,6 @@ const PROBES = [
   { name: 'calendar.prompt', cats: ['calendar'], param: 'cj',
     base: { booked: ['2025-06-12'] }, value: { booked: ['2025-06-12'], prompt: Z } },
   { name: 'media.chipLabel', cats: ['media'], param: 'cj', value: { chipLabel: Z } },
-  { name: 'media.countLabel', cats: ['media'], param: 'cj', value: { countLabel: Z } },
-  { name: 'media.totalLabel', cats: ['media'], param: 'cj', value: { totalLabel: Z } },
   // JP-095 (b) · JP-096: layout 2's travel card — the two locations' labels and
   // captions, the stat row's labels and the two pills — and `map.kicker`
   // above, now layout 2's alone. The home value is the header's

@@ -88,20 +88,24 @@ another `notes/` file.
   `s.bg`, Scheme 2 again — closed by a 10px violet rule inside its foot at 1440 and 768 and
   carrying a pink dot grid behind the sleeve (none at 390) — and the only media layout to draw
   those strips, arcs or tears.
-- **Layout 2's fan chip and the counter's words are the artist's** (JP-095 (a), user call,
-  2026-10-01, JP-071's label shape). `chipLabel` is the front card's `● Featured` (`in: [1]`,
-  both bodies; the dot is the markup's). It wraps inside the card at its own inset from each edge,
-  since the card clips. `countLabel` and `totalLabel` are the counter over the track list,
-  "5 Featured / 5 Max" at layouts 2 and 3, and `countLabel` is layout 1's "5 / 5 Featured" as
-  well (`in: [0, 1, 2]` and `[1, 2]`, measured) — on every template but Pop, whose layout-1 frame
-  draws no counter, so its row is `{ Pop: [1, 2], '*': [0, 1, 2] }` (measured, 2026-10-02). The counts stay derived: "Max" is the track count
-  again, not `TracksField`'s cap. An emptied word takes its count with it, and the ` / ` goes
-  unless both words stand; with both emptied there is no counter, and the row stays, with its
-  padding and Editorial's dash. `trackCount()` composes it in the four text nodes the literal
-  made (a different split moves the shaping by 0.1px, JP-090). The counter keeps its line and its
-  right-hand seat beside a wrapping `listLabel`, as the literal's `nowrap` did, and wraps only
-  once it is wider than the row less the gap. Layout 1's keeps to half the desktop row, so the
-  heading keeps its column.
+- **Layout 2's fan chip is the artist's** (JP-095 (a), user call, 2026-10-01, JP-071's label
+  shape). `chipLabel` is the front card's `● Featured` (`in: [1]`, both bodies; the dot is the
+  markup's). It wraps inside the card at its own inset from each edge, since the card clips.
+- **The small labels round the heading and the list are gone** (user call, 2026-11-12, brief
+  "Media Player — remove Top Tracks, Popular and featured track counters by layout", every
+  template, every width). Layouts 1 and 5: the `Top tracks` kicker over the heading and the
+  `5 / 5 Featured` counter beside it. Layouts 2 and 6: `● Popular` and the `5 Featured / 5 Max`
+  counter, so the track list starts at its first row (the fan's `● Featured` chip stays).
+  Layouts 3 and 7: the kicker, `● Popular` and the counter. Layout 4 never drew them. Four
+  fields went with them, `kicker`, `listLabel`, `countLabel` and `totalLabel`, deleted
+  from `FIELDS.media` along with their `vm` keys, seeds, `INLINE_PART` rows and `reach.mjs` probes (stored
+  values in `c` are simply never read), and `trackCount()` / `trackCountFit()` in
+  `EncoreSection`. The whole label row is removed, padding and Editorial's dash with it, so no
+  blank label row stands over a list; Editorial's per-row dashes stay. **Layout 2's narrow
+  column states 596 less the row's 44 and, where the rows are spaced, one 10 gap**
+  (542 for Retro and Pop, 552 for Lime, Grunge and Editorial), so each row keeps the height it had (100.4).
+  The `Top Tracks` *nav link* (`CATS.media.nav`) is not a label over the heading and stays.
+  Layout 2's flat rows (neither Editorial nor Pop) keep their hairline along the top; the first now opens the list.
 - **Layout 2's 390 bar draws ♡ ↓ ⋯ and drops the sleeve and the clock** (JP-099, user call,
   2026-10-05, reversing the 2026-10-01 reply and Retro's first-pass override). Both bodies
   do this: the `s.limeTree` bar (Pop's too) and Retro's. The master seats the icons by squeezing
@@ -131,9 +135,11 @@ another `notes/` file.
     width. *FIVE WORTH / YOUR EAR.* fills it, and prose of 15 can take three lines when its first
     two words cannot share one (*KESTREL SOUND / B*, Editorial 390 and Pop 768). That is a
     line-packing bound, not the bio's widest-word one, and a length cap cannot do better.
-  - **`countLabel` and `chipLabel` share the seed *Featured*.** The probe renames a sibling field
-    whose seed prints the same string (`twinsOf()` in `scripts/limits.mjs`), or the reference
-    seats both and the layout-2 counter reads 1.
+  - **`kicker`, `listLabel`, `countLabel` and `totalLabel` have no cap any more** (removed 2026-11-12, above); `chipLabel`'s
+    seed *Featured* has no sibling to twin with.
+
+**Superseded 2026-11-12:** the passes below record `listLabel`, `totalLabel`, `countLabel` and the kicker as slots that hit; those
+fields and their `INLINE_PART` rows are gone with the labels (above). Everything else they record stands.
 
 ## Inline editing (plans/inline-edit-all.md, Retro layout 2, 2026-10-21)
 
