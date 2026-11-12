@@ -10865,8 +10865,8 @@ function Pricing({ s }) {
   // and `⚡`. The frame's second price (`— £2,200/event`) becomes `s.tierUnit`,
   // which is the one the section already owns; a range the artist types in the
   // price itself sets its own second half small as `tail` (JP-074). What is
-  // kept as a literal is the two frame labels, `[ PRICING ]` and `WHAT'S
-  // INCLUDED`.
+  // kept as a literal is the frame label `WHAT'S
+  // INCLUDED` (the `[ PRICING ]` eyebrow was removed 2026-11-12).
   //
   // Desktop numbers are the 1440 frame × 0.82 (§5.5) through `u()`. The section
   // paints its own frame — a 1px ink border at its edges and the frame's own
@@ -11038,14 +11038,6 @@ function Pricing({ s }) {
           ...(desk ? { flex: '1 1 0', minWidth: 0 } : { width: '100%' }),
           alignItems: 'flex-start',
         })}>
-          {/* The eyebrow is `kicker` (JP-095 (a)), seeded in the frame's
-              capitals and printed as typed; the brackets are the markup's.
-              Emptied, it is not drawn. A long one wraps. */}
-          {!!s.pricingKicker && (
-            <span style={chipFace({ color: s.tx, whiteSpace: 'normal', minWidth: 0, overflowWrap: 'anywhere' })}>
-              {`[ ${s.pricingKicker} ]`}
-            </span>
-          )}
           {/* Display/MD at lh 1. The frame's break after "Personalised" is a
               typed one; the heading is the artist's, so it wraps on the
               column. */}
@@ -11281,13 +11273,6 @@ function Pricing({ s }) {
         ...(desk ? { flex: '1 1 0', minWidth: 0 } : { width: '100%' }),
         alignItems: 'flex-start',
       })}>
-        {/* `kicker` (JP-095 (a)): the frame's capitals as the seed, printed
-            as typed, the brackets the markup's; emptied, not drawn. */}
-        {!!s.pricingKicker && (
-          <span style={{ ...chipType, whiteSpace: 'normal', minWidth: 0, overflowWrap: 'anywhere' }}>
-            {`[ ${s.pricingKicker} ]`}
-          </span>
-        )}
         <h2 style={{
           margin: 0, fontFamily: s.display, fontSize: u(T.dispMd), lineHeight: 1,
           letterSpacing: s.dls, color: s.ac,
@@ -11539,8 +11524,8 @@ function Pricing({ s }) {
   // Where the frame's copy went:
   //
   //  - "Pricing" is `s.title`. It is set in the display face at `size/title`,
-  //    which is what a title is, where layout 2's `[ PRICING ]` kicker is set
-  //    in the chip face — so this is the heading seat and not an eyebrow.
+  //    which is what a title is, where layout 2's heading is set
+  //    in the display face too — so this is the heading seat and not an eyebrow.
   //  - The paragraph under it is `intro`, a field added for this layout, which
   //    no signed-off layout reads (the tags row's discriminator for question 7).
   //    Its default, PRICING_INTRO_3, is the frame's paragraph without "Four

@@ -158,12 +158,16 @@ another `notes/` file.
   one. The numeral is lifted 0.045em (Noto took 0.07). **Under Pop** they are Titan, `faced`
   and upper, the name and the numeral lifted 0.14em and the kind 0.1em, the price column's floor
   225 (`plans/pop/layout-4.md`, section 7).
-- **Layout 2's two labels are the artist's** (JP-095 (a), user call, 2026-10-01, the label shape of
-  JP-071 and JP-090): `kicker`, the `[ PRICING ]` over the heading, and `featsLabel`, the
-  `WHAT’S INCLUDED` over the plan card's features, both `in: [1]` and read by both bodies. They are
-  seeded `PRICING_KICKER` and `PRICING_FEATS_LABEL` in the capitals the frame types (`964:64610`'s
+- **The `[ PRICING ]` eyebrow is gone** (user call, 2026-11-12). The small bracketed line over layout 2's
+  heading (design 1, so layouts 2 and 6 of the picker) was `FIELDS.pricing.kicker` (JP-095 (a)). It is
+  deleted with `vm.pricingKicker`, `PRICING_KICKER`, its `INLINE_PART` row and its `reach.mjs` probe,
+  as the testimonials' and the bio's labels were. The head is the heading, the quote and the credit
+  row. A stored `kicker` on an old page is never read.
+- **Layout 2's features label is the artist's** (JP-095 (a), user call, 2026-10-01, the label shape of
+  JP-071 and JP-090): `featsLabel`, the `WHAT’S INCLUDED` over the plan card's features, `in: [1]` and
+  read by both bodies. It is seeded `PRICING_FEATS_LABEL` in the capitals the frame types (`964:64610`'s
   text layers are named so), and printed as typed: the sites carry no casing, so none was added, and the seed is
-  the rendered bytes, curly apostrophe included. The brackets are the markup's. Emptied, each is
+  the rendered bytes, curly apostrophe included. Emptied, it is
   not drawn; the features label still stands only while the package has features. A long one
   wraps. **`featsLabel` reaches layout 3 too** (JP-125, user call, 2026-10-09): both bodies print
   it over every package's features, so it is `in: [1, 2]`. Layout 3's FEATURED badge is
@@ -285,7 +289,7 @@ another `notes/` file.
 ## Inline editing (plans/inline-edit-all.md, Retro layout 2, 2026-10-21)
 
 Layout 2 draws the first plan only: the other tiers' price, blurb and features are *paged* (the chip row is live-only), the
-probe's `paged` reading. `kicker` (`[ PRICING ]`), `reviews` and `rating` (`32 reviews · 4.9 ★`) are `INLINE_PART` rows: the
+probe's `paged` reading. `reviews` and `rating` (`32 reviews · 4.9 ★`) are `INLINE_PART` rows: the
 brackets, the dot and the star are the markup's, the words unique on the page.
 
 ## Inline editing (plans/inline-edit-all.md, Retro layout 4, 2026-10-22)

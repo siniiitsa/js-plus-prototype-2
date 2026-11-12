@@ -1107,15 +1107,14 @@ export const mapKickerSeed = (d) => (d === 0 ? MAP_KICKER_1 : d === 1 ? MAP_KICK
 // layout 1's elsewhere. mapKickerSeed()'s shape.
 export const mapListLabelSeed = (d) => (d === 1 ? MAP_LIST_LABEL_2 : MAP_LIST_LABEL)
 // JP-095 (a) (user call, 2026-10-01): eight more, the layout-2 bodies' on every
-// template — the plan card's eyebrow and its features label, in the capitals
-// the frame types (964:64610; the curly apostrophe is what renders); the slot
+// template — the plan card's features label (its `[ PRICING ]` eyebrow was
+// removed 2026-11-12), in the capitals the frame types (964:64610; the curly apostrophe is what renders); the slot
 // list's two column labels; the fan card's chip and the counter's two words
 // over the track list ("5 Featured / 5 Max", and layout 1's "5 / 5 Featured").
 // (The testimonials' eyebrow, a ninth, was removed 2026-11-12.) The "[ ]", "↓", "●"
 // and the counts are the markup's. The calendar's prompt, which every
 // layout prints while no day is cued, joins them; emptied, it reads its seed
 // again (FORM_MSG_LABEL's rule).
-export const PRICING_KICKER = 'PRICING'
 export const PRICING_FEATS_LABEL = 'WHAT’S INCLUDED'
 // Layout 3's badge on the featured package (JP-125, user call, 2026-10-09),
 // in the capitals the frame types and printed as typed, JP-095 (a)'s shape.
@@ -2278,11 +2277,6 @@ export const FIELDS = {
   // sentinel. The tags are layout 1's filter row, the repertoire's rule; layout 2
   // names the packages themselves in its chip row and reads no tags at all.
   pricing: [
-    // JP-095 (a): layout 2's eyebrow over the heading, in the capitals the
-    // frame types; the brackets are the markup's.
-    { k: 'kicker',  l: 'Kicker', d: PRICING_KICKER, in: [1],
-      chars: [null, 74],
-      hint: 'The small line over the heading, in brackets. Left empty, it is not drawn.' },
     { k: 'heading', l: 'Heading', d: "Choose the set that's right for your night", in: [0, 1, 2],
       chars: { Retro: [42, 42, 44], Lime: [50, 42, 37], Grunge: [55, 44, 41], Editorial: [42, 42, 25],
         Pop: [48, 42, 28] },
@@ -3226,12 +3220,11 @@ export const INLINE_PART = {
   'calendar.time': true,
   'repertoire.songs.artist': true,
   // Layout 2 prints these inside a longer line: a bullet, an arrow or a count
-  // beside the words (`● Popular`, `5 Featured / 5 Max`, `[ PRICING ]`,
+  // beside the words (`● Popular`, `5 Featured / 5 Max`,
   // `32 reviews · 4.9 ★`, `Expand view→`). The words are unique on the page,
   // so the box narrows to them and no frame is needed.
   '*.1.media.listLabel': true,
   '*.1.media.totalLabel': true,
-  '*.1.pricing.kicker': true,
   '*.1.pricing.reviews': true,
   '*.1.pricing.rating': true,
   '*.1.calendar.dateLabel': true,
