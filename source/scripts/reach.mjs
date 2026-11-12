@@ -88,6 +88,7 @@ const PROBES = [
   { name: 'pricing.rowCta', cats: ['pricing'], param: 'cj', value: { rowCta: Z } },
   // JP-071: eight frame labels made fields — the bio's ID-card labels and its
   // Genres line, media's "● Popular", and layout 3's map and testimonials eyebrows.
+  // (`map.kicker` reads layout 2 alone since 2026-11-12.)
   { name: 'bio.sinceLabel', cats: ['bio'], param: 'cj', value: { sinceLabel: Z } },
   { name: 'bio.roleLabel', cats: ['bio'], param: 'cj', value: { roleLabel: Z } },
   { name: 'bio.baseLabel', cats: ['bio'], param: 'cj', value: { baseLabel: Z } },
@@ -96,6 +97,7 @@ const PROBES = [
   { name: 'map.kicker', cats: ['map'], param: 'cj', value: { kicker: Z } },
   // JP-090: four more — the bio's reference line, the map's gig-list label and
   // the form's chip-row label, and layout 1's eyebrow on `map.kicker` above.
+  // (`map.listLabel` reads layout 1 alone since 2026-11-12.)
   { name: 'map.listLabel', cats: ['map'], param: 'cj', value: { listLabel: Z } },
   { name: 'form.typeLabel', cats: ['form'], param: 'cj', value: { typeLabel: Z } },
   // JP-095 (a): layout 2's labels — pricing's features label, the
@@ -112,8 +114,8 @@ const PROBES = [
   { name: 'media.countLabel', cats: ['media'], param: 'cj', value: { countLabel: Z } },
   { name: 'media.totalLabel', cats: ['media'], param: 'cj', value: { totalLabel: Z } },
   // JP-095 (b) · JP-096: layout 2's travel card — the two locations' labels and
-  // captions, the stat row's labels and the two pills — and `map.kicker` and
-  // `map.listLabel` above, re-scoped to layout 2. The home value is the header's
+  // captions, the stat row's labels and the two pills — and `map.kicker`
+  // above, now layout 2's alone. The home value is the header's
   // location now, so `map.base` and `who.location` above moved too.
   { name: 'map.homeLabel', cats: ['map'], param: 'cj', value: { homeLabel: Z } },
   { name: 'map.homeCaption', cats: ['map'], param: 'cj', value: { homeCaption: Z } },

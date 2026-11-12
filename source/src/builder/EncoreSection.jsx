@@ -20613,11 +20613,7 @@ function EventsMap({ s }) {
 
       const head = (
         <div style={col(u(16))}>
-          {/* The artist's `kicker`, seeded "Shows/coverage" here (JP-090,
-              mapKickerSeed); emptied, it is not drawn. Typed longer, it wraps. */}
-          {s.mapKicker && <span style={pop
-            ? pt(s.body, 11, { fontWeight: 700, letterSpacing: u(1.5), textTransform: 'uppercase', color: G.kicker, whiteSpace: 'normal', overflowWrap: 'anywhere', minWidth: 0 })
-            : eyebrow({ color: G.kicker ?? G.head, whiteSpace: 'normal', overflowWrap: 'anywhere', minWidth: 0 })}>{s.mapKicker}</span>}
+          {/* No eyebrow over the heading (user call, 2026-11-12). */}
           {/* Display/LG over Label/LG, which stands at the row's right on
               desktop and 768 and stacks 10 under the heading at 390. */}
           <div style={s.mob ? col('10px', { alignItems: 'flex-start' }) : row(u(10), { justifyContent: 'space-between' })}>
@@ -20789,14 +20785,16 @@ function EventsMap({ s }) {
           // Editorial's panel is a leant print: Figma −1 → CSS +1, a 7px
           // `box/2` INSIDE ring under a DROP_SHADOW 3, 8 blur 9 at .25, and no
           // clip, so the tape rides over its top edge. Every master spaces it
-          // by its rotated box — the desktop column is that box (658.57 of
-          // 1328, the tile the 633.43 left), and the margin gives back
-          // H·sin 1° / 2 across and W·sin 1° / 2 down (0.873% of the column
-          // when it stands alone).
+          // by its rotated box; stacked, the margin gives back W·sin 1° / 2 down
+          // (0.873% of the column). Side by side it is the tile's width and
+          // height instead (2026-11-12), so the frame's 658.57 : 633.43
+          // columns and its margin are gone at desktop.
           ...(ed ? {
             position: 'relative', transform: 'rotate(1deg)',
             boxShadow: `inset 0 0 0 ${u(7)} ${s.box2}, ${u(3)} ${u(8)} ${u(9)} rgba(0, 0, 0, 0.25)`,
-            margin: s.narrow ? '0.873% 0' : `${u(5.58)} ${u(6.29)}`,
+            // Side by side the box is the tile's width and height (user call,
+            // 2026-11-12): no margin, the tilt kept.
+            margin: s.narrow ? '0.873% 0' : 0,
           } : null),
         })}>
           {/* Grunge's head is flush with the rows and its 1px rule is filled
@@ -20869,7 +20867,7 @@ function EventsMap({ s }) {
             ...(grunge ? { position: 'relative' } : null),
             display: 'grid',
             gridTemplateColumns: s.narrow ? 'minmax(0, 1fr)'
-              : ed ? 'minmax(0, 633.43fr) minmax(0, 658.57fr)' : 'minmax(0, 1fr) minmax(0, 1fr)',
+              : 'minmax(0, 1fr) minmax(0, 1fr)',
             // Editorial's 390 stack keeps 50 clear for the tape.
             gap: s.mob ? (ed ? '50px' : '10px') : tab ? '32px' : u(36), alignItems: 'stretch',
           }}>
@@ -20903,6 +20901,9 @@ function EventsMap({ s }) {
       }}>
         <div style={{
           position: 'relative', aspectRatio: '4 / 3.1', background: s.paper,
+          // Beside the gig panel the plate keeps its ratio as a floor and grows
+          // into the cell the panel's height sets.
+          ...(s.narrow ? null : { flex: '1 0 auto' }),
           // §10.2 ships a real street-map raster for Retro; the crossed 1px grid
           // is the stand-in every other template still gets.
           ...(s.mapSrc
@@ -21061,19 +21062,10 @@ function EventsMap({ s }) {
         <Checkerboard s={s} cell={12} colour={s.paper}
                       style={{ position: 'absolute', width: 'auto', ...bleedTo(s, 'bottom') }} />
 
-        {/* All three masters (964:58581, 986:38401, 986:38721) set the kicker
-            in Inter Bold 11 tracked 1.5 and the badge in Anton 32.3 on a 37
-            line, on the heading's own row and centred against it. Desktop is
-            the frame × 0.82. The kicker is the artist's, seeded
-            "Shows/coverage" here (JP-090, mapKickerSeed), and not drawn when
-            emptied. */}
+        {/* The radius badge is Anton 32.3 on a 37 line, on the heading's own
+            row and centred against it. Desktop is the frame × 0.82. The
+            "Shows/coverage" eyebrow over it was removed 2026-11-12. */}
         <div style={col(s.narrow ? '16px' : '13px')}>
-          {s.mapKicker && <span style={{
-            fontFamily: s.body, fontWeight: 700, fontSize: s.narrow ? '11px' : '9px', lineHeight: 'normal',
-            letterSpacing: s.narrow ? '1.5px' : '1.2px', textTransform: 'uppercase',
-            whiteSpace: 'normal', overflowWrap: 'anywhere', minWidth: 0,
-            color: s.retro ? s.mapFg : s.tx,
-          }}>{s.mapKicker}</span>}
           <div style={row('20px', { justifyContent: 'space-between', flexWrap: 'wrap' })}>
             <h2 style={{
               margin: 0, fontFamily: s.display, fontSize: s.dispLg, lineHeight: 0.95,
@@ -21090,8 +21082,10 @@ function EventsMap({ s }) {
             nowrap string, so a long one widened both cards past the page and
             the row's ellipsis never engaged. */}
         <div style={{
-          display: 'grid', gridTemplateColumns: s.narrow ? 'minmax(0, 1fr)' : 'minmax(0, 1fr) minmax(0, 1.15fr)',
-          gap: s.gGap, alignItems: 'start',
+          display: 'grid', gridTemplateColumns: s.narrow ? 'minmax(0, 1fr)' : 'minmax(0, 1fr) minmax(0, 1fr)',
+          // Side by side the two cards are one width and one height (user call,
+          // 2026-11-12): the tile's map takes what the gig panel's rows leave.
+          gap: s.gGap, alignItems: s.narrow ? 'start' : 'stretch',
         }}>
           {tile}{list}
         </div>
@@ -21547,12 +21541,6 @@ function EventsMap({ s }) {
       const lwin = pageWindow(pages, pg, true)
       const llist = (
         <div style={col(u(8), { width: '100%' })}>
-          {/* `listLabel`'s layout-2 seed (JP-095 (b)); the count is the
-              markup's and goes with an emptied label. Two text nodes, as the
-              literal was (JP-090's 0.1px). */}
-          {rest.length > 0 && !!s.mapListLabel && (
-            <span style={{ ...bodySm, color: s.tx, ...wrap }}>{`${s.mapListLabel} · `}{rest.length}</span>
-          )}
           {rest.map(lrow)}
           {lwin.labels.length > 0 && (
             <Pager s={s} frame={{
@@ -21976,13 +21964,6 @@ function EventsMap({ s }) {
 
     const list = (
       <div style={col(u(8), { width: '100%' })}>
-        {/* Dropped with the rows: the last page can hold the featured gig
-            alone, and a count of nothing over nothing is not a state. The
-            words are `listLabel`'s layout-2 seed (JP-095 (b)), and the count
-            goes with an emptied label. Two text nodes, as the literal was. */}
-        {rest.length > 0 && !!s.mapListLabel && (
-          <span style={{ ...label12, color: s.tx, ...wrap }}>{`${s.mapListLabel} · `}{rest.length}</span>
-        )}
         {rest.map(gigRow)}
         {/* Derived from the list and not drawn at one page, the repertoire's
             rule — so the seeded five gigs are one page and carry no pager, the
@@ -22565,7 +22546,6 @@ function EventsMap({ s }) {
       const popLift = (em) => (pop ? { position: 'relative', top: `-${em}em` } : null)
       const headL = (
         <div style={col(u(6), { alignItems: 'flex-start', maxWidth: '100%', color: ink })}>
-          {s.mapKicker && <span style={bodySm}>{s.mapKicker}</span>}
           <h2 style={distressed(s, { margin: 0, ...disp(titleSize, 1.1), ...(G.head ? { color: G.head } : null), ...popLift(0.1) })}>{s.title}</h2>
         </div>
       )
@@ -22972,17 +22952,8 @@ function EventsMap({ s }) {
 
     const head = (
       <div style={col(u(6), { alignItems: 'flex-start', maxWidth: '100%' })}>
-        {/* The eyebrow is the frame's own words, seeded into its own field,
-            `kicker` (JP-071, user call, 2026-09-29; it was a literal, as
-            layout 1's "Shows/coverage" was until JP-090 seated that in the
-            same key), and not drawn when emptied. `base` was tried here first, on the gallery's
-            prefer-a-field rule, and read back as a stutter: the head was then
-            `TITLES.map`'s "Manchester", so it printed "Based in Manchester"
-            over "Manchester" — the pricing deck's render-the-head-and-read-it
-            rule. It goes along the map's foot instead, where the frame's own
-            line already names a place. The head has been the frame's "Where
-            I'm playing." since JP-070. */}
-        {s.mapKicker && <span style={body12}>{s.mapKicker}</span>}
+        {/* The "Gigs & travel" eyebrow over the head was removed 2026-11-12.
+            The head has been the frame's "Where I'm playing." since JP-070. */}
         <h2 style={{
           margin: 0, fontFamily: s.display, fontSize: u(T.title), lineHeight: 1.1,
           letterSpacing: s.dls, color: hot,

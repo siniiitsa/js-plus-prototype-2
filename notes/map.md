@@ -177,27 +177,26 @@ and `base` field paragraphs, JP-105's seeds and JP-096's home value.
   flat numeral, and Gloock's and Titan's seeds set *MANCHESTER, / UK* where their 390 frames
   break MANCHEST / ER. Its section stands on the
   page ground, so the root's `darkMap` flag stays layout 1's.
-- **Layout 1's two labels are the artist's** (JP-090, user call, 2026-09-30), on every template,
-  since Retro's body prints them as the `s.limeTree` block does (Retro's frame `964:58581`,
-  Editorial's `964:58617`), and Pop goes through that block since its layout-1 pass (`964:58629`). The eyebrow over the heading, "Shows/coverage", is
-  **`kicker`'s layout-1 seed**: the field reached layout 3's "Gigs & travel" alone (JP-071), and
-  now `in: [0, 2]`, its absent key resolved by `mapKickerSeed(d)` in `data.js`, which `sectionVm`
-  and `EditPanel`'s chain both call (`formBtnSeed()`'s shape; the chain's arm is gated on `map`,
-  since the testimonials carry a `kicker` too). The label over the gig list is
-  `FIELDS.map.listLabel`, *List label*, `in: [0]`, seeded "Upcoming gigs" (`vm.mapListLabel`); the
-  `· N` count is the page's, and an emptied label takes the count with it (under Grunge the
-  row's rule too). Both are uncased and both wrap, inside a word too, once typed longer than the
-  seed: a long label ran up to 330px past a 390 page, and the gig label 60px past the Lime-tree
-  panel at desktop. The label is printed as two text nodes, `"<label> · "` and the count, as the
-  literal was: splitting the ` · ` into a third node moved its width by 0.1px under Lime and
-  Grunge. *(Both keys reach layout 2 since JP-095 (b), below.)*
+- **Three small labels are gone** (user call, 2026-11-12, the testimonials' and pricing's removals' shape).
+  Layout 1's "Shows/coverage" eyebrow over the heading (every template, both bodies), layout 2's
+  "Other upcoming · N" over the secondary gig list, and layout 3's "Gigs & travel" eyebrow over the heading are no
+  longer drawn; each head or list is the content alone, with no empty row or gap. `FIELDS.map.kicker` is now
+  `in: [1]` (layout 2's *Travel radius* alone) and `FIELDS.map.listLabel` `in: [0]` (layout 1's *Upcoming gigs · N*
+  alone); both seed from their `d` (`mapKickerSeed`, `mapListLabelSeed` and the other layouts' seeds are deleted),
+  and a stored value at a layout that no longer reads it is never drawn. `listLabel` (JP-090) is uncased, wraps inside a
+  word once typed longer than its seed, takes its `· N` with it when emptied (under Grunge the row's rule too) and
+  prints as two text nodes, `"<label> · "` and the count (a third node moved its width 0.1px under Lime and Grunge).
+- **Layout 1's two cards are one size side by side** (user call, 2026-11-12). At desktop the map tile (map plate and
+  the *Based in* foot) and the gig panel have the same outer width and height, top and bottom edges aligned: both
+  columns are `1fr` with `alignItems: stretch` (Retro was `1fr 1.15fr` and `start`; Editorial's frame columns
+  `633.43fr 658.57fr` and its tilted panel's rotated-box margin are gone at desktop), and Retro's map plate keeps its
+  4 / 3.1 ratio as a flex floor (`flex: 1 0 auto`) and grows into the cell. The panel's spare height falls under its rows.
+  Editorial's panel keeps its 1° tilt, so its rotated box swings about ±5px past the tile's; its layout box is equal.
+  Tablet and mobile stack the two cards, unchanged.
 - **Layout 2's travel card and list are the artist's too** (JP-095 (b) · JP-096, user call,
   2026-10-01), on every template, both bodies.
-  - **Two keys reach a third layout.** The eyebrow, *Travel radius*, is `kicker`'s layout-2 seed
-    (`mapKickerSeed(d)`, now `in: [0, 1, 2]`). The list's *Other upcoming · N* is `listLabel`'s,
-    through `mapListLabelSeed(d)`, `in: [0, 1]`. The chain's `listLabel` arm is gated on `map`,
-    since media carries a `listLabel` too. An emptied list label takes the count with it, as at
-    layout 1, and it prints as the same two text nodes.
+  - **One key is layout 2's alone now.** The eyebrow, *Travel radius*, is `kicker`, `in: [1]`.
+    (The list's *Other upcoming · N* was removed 2026-11-12, above.)
   - **Nine keys are new, all `in: [1]`.** Over and under the two values sit `homeLabel` *Based in*,
     `homeCaption` *Home location*, `venueLabel` *Willing to travel to* and `venueCaption` *Venue
     location*. The stat row's labels are `radiusLabel`, `travelTimeLabel` and `feeLabel`; an
@@ -231,7 +230,7 @@ and `base` field paragraphs, JP-105's seeds and JP-096's home value.
       (`MAP_RADIUS`; seeded *120 mi* since JP-124, below).
 - **The coverage seeds per layout** (JP-105, user call, 2026-10-06). `radius` reads layouts 1–3.
   Its absent key resolves through `mapRadiusSeed(d)` in `data.js`, which `sectionVm` and
-  `EditPanel`'s chain both call (`mapKickerSeed`'s shape; the chain's arm is gated on `map`).
+  `EditPanel`'s chain both call (`formBtnSeed()`'s shape; the chain's arm is gated on `map`).
   Layout 3's line under the map, `[base, "N pins", radius]` joined by ` · `, seeds its frames'
   *120 mi radius* (`MAP_RADIUS_3`), the outermost ring's. All twelve masters (Retro, Lime, Grunge
   and Editorial at 1440, 768 and 390) read "UK · 8 pins · 120 mi radius". Layout 2's Max travel

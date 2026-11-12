@@ -40,7 +40,7 @@ import {
   THEMES, SCHEMES_OF, CATS, NVAR, FLAG, FIELDS, TITLES, DEFS, TRACKS, TAGS, TAG_LABELS, HERO_CTA, BIO_CREDIT, BIO_CTA,
   FACE_TITLE, FACE_BODY, BIO_TAG,
   BIO_SINCE_LABEL, BIO_ROLE_LABEL, BIO_BASE_LABEL, BIO_ABOUT_LABEL, MEDIA_LIST_LABEL,
-  FORM_TYPE_LABEL, mapKickerSeed, mapListLabelSeed, mapPlaceOf, mapMilesOf, MAP_MILES_MIN, MAP_MILES_MAX, mapRadiusText, mapRingLabels, mapHeadingSeed, mapBaseSeed, mapTermsSeed, mapStatsSeed, mapBaseStat,
+  FORM_TYPE_LABEL, MAP_KICKER_2, MAP_LIST_LABEL, mapPlaceOf, mapMilesOf, MAP_MILES_MIN, MAP_MILES_MAX, mapRadiusText, mapRingLabels, mapHeadingSeed, mapBaseSeed, mapTermsSeed, mapStatsSeed, mapBaseStat,
   MAP_HOME_LABEL, MAP_HOME_CAPTION, MAP_VENUE_LABEL, MAP_VENUE_CAPTION, MAP_RADIUS_LABEL, MAP_TIME_LABEL,
   MAP_FEE_LABEL, MAP_VENUE_CTA, MAP_ROUTE_CTA,
   PRICING_FEATS_LABEL, PRICING_BADGE, CAL_DATE_LABEL, CAL_AVAIL_LABEL, CAL_PROMPT,
@@ -1941,13 +1941,11 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // five: a page's worth of gigs is what one set of distinct pin positions can
   // light, so the two counts have to move together.
   vm.gigPage = PINS.length
-  // JP-071 — layout 3's "Gigs & travel" eyebrow over the heading, uncased;
-  // JP-090 — layout 1's "Shows/coverage" in the same seat, off the same key
-  // with its own seed, and the label over layout 1's gig list; JP-095 (b) —
-  // layout 2's "Travel radius" and "Other upcoming", the same two keys' seeds
-  // there.
-  vm.mapKicker = cv('kicker', mapKickerSeed(d))
-  vm.mapListLabel = cv('listLabel', mapListLabelSeed(d))
+  // `kicker` is layout 2's "Travel radius" alone and `listLabel` layout 1's
+  // "Upcoming gigs" alone (JP-090, JP-095 (b); the other layouts' eyebrows and
+  // layout 2's list label were removed 2026-11-12).
+  vm.mapKicker = cv('kicker', MAP_KICKER_2)
+  vm.mapListLabel = cv('listLabel', MAP_LIST_LABEL)
   // JP-095 (b) · JP-096 — the rest of layout 2's travel card, uncased: the two
   // locations' labels and captions and the stat row's labels, each dropped
   // when emptied, and the two pills, which read their seed again

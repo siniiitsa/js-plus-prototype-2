@@ -1072,24 +1072,21 @@ export const BIO_ROLE_LABEL = 'Current role:'
 export const BIO_BASE_LABEL = 'Based in:'
 export const BIO_ABOUT_LABEL = 'About'
 export const MEDIA_LIST_LABEL = 'Popular'
-export const MAP_KICKER = 'Gigs & travel'
 // JP-090 (user call, 2026-09-30): three more, on every template at layout 1 —
 // the map's eyebrow and the label over its gig list (the "· N" is the
-// markup's), and the form's label over its chip row. The map's eyebrow is
-// `kicker`'s layout-1 seed. (The bio's reference line, the fourth, was removed
-// with the decorative labels, 2026-11-11: notes/bio.md.)
-export const MAP_KICKER_1 = 'Shows/coverage'
+// markup's), and the form's label over its chip row. (The bio's reference line,
+// the fourth, was removed with the decorative labels, 2026-11-11: notes/bio.md;
+// the map's eyebrow went at layouts 1 and 3 on 2026-11-12, notes/map.md.)
 export const MAP_LIST_LABEL = 'Upcoming gigs'
 export const FORM_TYPE_LABEL = 'Event type'
 // JP-095 (b) · JP-096 (user call, 2026-10-01): the map's layout-2 travel card
-// and list, on every template — the eyebrow (`kicker`'s layout-2 seed), the
-// two locations' labels over their values and captions under them, the stat
-// row's three labels, the two pills, and the label over the list
-// (`listLabel`'s layout-2 seed; the "· N" is the markup's). Each is the
+// and list, on every template — the eyebrow (`kicker`, layout 2 alone since
+// 2026-11-12), the two locations' labels over their values and captions under
+// them, the stat row's three labels and the two pills. (The label over the
+// list, "Other upcoming · N", was removed 2026-11-12.) Each is the
 // frame's own text (964:64613's layer names). The pills read their seed again
 // when emptied (FORM_MSG_LABEL's rule): a pill with no label is broken.
 export const MAP_KICKER_2 = 'Travel radius'
-export const MAP_LIST_LABEL_2 = 'Other upcoming'
 export const MAP_HOME_LABEL = 'Based in'
 export const MAP_HOME_CAPTION = 'Home location'
 export const MAP_VENUE_LABEL = 'Willing to travel to'
@@ -1099,13 +1096,6 @@ export const MAP_TIME_LABEL = 'Travel time'
 export const MAP_FEE_LABEL = 'Booking fee'
 export const MAP_VENUE_CTA = 'Venue Link'
 export const MAP_ROUTE_CTA = 'Get Directions'
-// The eyebrow an absent map `kicker` stands for, by design (`d`): layout 1's
-// and layout 2's frames' words, and layout 3's elsewhere. The one expression
-// sectionVm and EditPanel's chain both call, formBtnSeed()'s shape.
-export const mapKickerSeed = (d) => (d === 0 ? MAP_KICKER_1 : d === 1 ? MAP_KICKER_2 : MAP_KICKER)
-// The label an absent map `listLabel` stands for: layout 2's frames' words,
-// layout 1's elsewhere. mapKickerSeed()'s shape.
-export const mapListLabelSeed = (d) => (d === 1 ? MAP_LIST_LABEL_2 : MAP_LIST_LABEL)
 // JP-095 (a) (user call, 2026-10-01): eight more, the layout-2 bodies' on every
 // template — the plan card's features label (its `[ PRICING ]` eyebrow was
 // removed 2026-11-12), in the capitals the frame types (964:64610; the curly apostrophe is what renders); the slot
@@ -2583,20 +2573,17 @@ export const FIELDS = {
           + 'its date disc prints from the month, the day and the year (four digits). On the '
           + 'published page it also marks each show Upcoming or Past from that date, against '
           + 'the day the page is visited.' },
-    // JP-071: layout 3's eyebrow over the heading, the frame's words, uncased.
-    // JP-090 took it to layout 1's "Shows/coverage" and JP-095 (b) to layout
-    // 2's "Travel radius", its seeds there (mapKickerSeed(), in sectionVm and
-    // EditPanel's chain alike).
-    { k: 'kicker',  l: 'Kicker', d: MAP_KICKER, in: [0, 1, 2],
-      chars: { Retro: [44, 30, 58], Lime: [67, 26, 53], Pop: [44, 30, 58], '*': [67, 30, 58] },
-      hint: 'The small line over the heading. Layout 1 starts from “Shows/coverage” and layout 2 from '
-          + '“Travel radius”. Left empty, it is not drawn.' },
+    // JP-071: layout 3's eyebrow, JP-090: layout 1's, JP-095 (b): layout 2's
+    // "Travel radius". Layouts 1 and 3 stopped drawing it 2026-11-12, so the
+    // field is layout 2's alone and its seed is its `d`.
+    { k: 'kicker',  l: 'Kicker', d: MAP_KICKER_2, in: [1],
+      chars: { Retro: [null, 30], Lime: [null, 26], Pop: [null, 30], '*': [null, 30] },
+      hint: 'The small line over the travel card’s heading. Left empty, it is not drawn.' },
     // JP-090: layout 1's label over the gig list; the "· 5" count is the page's.
-    // JP-095 (b): layout 2's "Other upcoming · 4" too (mapListLabelSeed()).
-    { k: 'listLabel', l: 'List label', d: MAP_LIST_LABEL, in: [0, 1],
-      chars: { Retro: [37, 54], Lime: [40, 50], Grunge: [41, 54], Editorial: [46, 54], Pop: [31, 54] },
-      hint: 'The label over the list of gigs, before its count. Layout 2 starts from “Other upcoming”. '
-          + 'Left empty, neither is drawn.' },
+    // (Layout 2's "Other upcoming · 4", JP-095 (b), was removed 2026-11-12.)
+    { k: 'listLabel', l: 'List label', d: MAP_LIST_LABEL, in: [0],
+      chars: { Retro: [37], Lime: [40], Grunge: [41], Editorial: [46], Pop: [31] },
+      hint: 'The label over the list of gigs, before its count. Left empty, neither is drawn.' },
     { k: 'heading', l: 'Heading', d: 'Manchester',
       // Layouts 1 and 2 start from the picked town (mapHeadingSeed).
       chars: { Retro: [20, 20, 39, 25], Lime: [19, 17, 34, 24], Grunge: [16, 20, 37, 25], Editorial: [11, 19, 22, 22],
@@ -2993,9 +2980,9 @@ export const HEADING_4 = {
 // The calendar's address is the form's until one is typed (JP-076). The
 // header's kicker left the chain with JP-061: its `d` is its seed at every
 // layout, and the layout-3 card's line is a field of its own. The map's kicker
-// joined it with JP-090 (mapKickerSeed), and the map's list label with JP-095 (b)
-// (mapListLabelSeed; gated on `map`, since media carries a `listLabel` too),
-// and the map's coverage with JP-105 (mapRadiusSeed). Layouts 3 and 4's heads
+// and list label were in it (mapKickerSeed, mapListLabelSeed) until the
+// 2026-11-12 label removals left each one design, so `d` is their seed; the
+// map's coverage joined with JP-105 (mapRadiusSeed). Layouts 3 and 4's heads
 // come ahead of the song count, which sectionVm's later assignment says the
 // other way round (JP-070, JP-081).
 export function fieldSeed({ cat, f, themeName, design, c = {}, artistName, email }) {
@@ -3011,9 +2998,7 @@ export function fieldSeed({ cat, f, themeName, design, c = {}, artistName, email
     : f.k === 'heading' && cat === 'testimonials' && design === 1 ? TESTI_HEADING_2
     : f.k === 'navMode' && cat === 'header' ? navModeDefault(themeName, design)
     : f.k === 'button' && cat === 'form' ? formBtnSeed(themeName, design)
-    : f.k === 'kicker' && cat === 'map' ? mapKickerSeed(design)
-    : f.k === 'listLabel' && cat === 'map' ? mapListLabelSeed(design)
-    : f.k === 'heading' && cat === 'map' && design < 2 ? mapHeadingSeed(c, themeName, design)
+          : f.k === 'heading' && cat === 'map' && design < 2 ? mapHeadingSeed(c, themeName, design)
     : f.k === 'base' && cat === 'map' ? mapBaseSeed(c, themeName, design)
     : f.k === 'terms' && cat === 'map' ? mapTermsSeed(c)
     : f.k === 'cta' && cat === 'calendar' && design === 3 ? CAL_SEND_4

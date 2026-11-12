@@ -401,11 +401,10 @@ reversing 2026-10-20's "an already-selected section": the `text` cursor shows on
   `●` and `[ ]` are the markup's and go with an emptied word; a stat's label also goes with its
   value, as before. **Three more at layout 1, every template** (JP-090, user call, 2026-09-30;
   a fourth, the bio's `refLabel` `[ 001 ] Structure · Bio_01` line, was removed 2026-11-11):
-  the map's `listLabel` over the gig list (its `· N` the markup's), the form's
+  the map's `listLabel` over the gig list (its `· N` the markup's, layout 1 alone since 2026-11-12), the form's
   `typeLabel` over the chip row, which reads its seed again when emptied (`messageLabel`'s
-  rule; it never reaches the mailto, whose subject carries the chip), and the map's
-  "Shows/coverage", which is `kicker`'s layout-1 seed — `mapKickerSeed(d)`, called by
-  `sectionVm` and `EditPanel`'s chain alike, so `kicker` now reaches layouts 1 and 3. A typed
+  rule; it never reaches the mailto, whose subject carries the chip). (The map's "Shows/coverage" and
+  layout 3's "Gigs & travel" eyebrows were removed 2026-11-12: `kicker` is layout 2's "Travel radius" alone.) A typed
   label wraps rather than outrun a 390 page. **Eight more at layout 2, every template** (JP-095
   (a), user call, 2026-10-01): pricing's `featsLabel` (`WHAT’S INCLUDED`, seeded in the capitals the frame types and printed as typed; layout 3
   prints `featsLabel` too, and its FEATURED badge is `badgeLabel`, JP-125), the
@@ -417,9 +416,9 @@ reversing 2026-10-20's "an already-selected section": the `text` cursor shows on
   The calendar's `prompt`, *Pick a date to enquire*, which every layout prints
   while no day is cued, reads its seed again when emptied and stays `cased()`. **And the map's
   layout-2 travel card and list, every template** (JP-095 (b) · JP-096, user call, 2026-10-01):
-  `kicker` (*Travel radius*) and `listLabel` (*Other upcoming*) reach layout 2 through
-  `mapKickerSeed(d)` and `mapListLabelSeed(d)` (the chain's `listLabel` arm is gated on `map`,
-  since media has one too). The card's `homeLabel` / `homeCaption` and `venueLabel` /
+  `kicker` (*Travel radius*) reaches layout 2 alone; its *Other upcoming · N* list label was removed
+  2026-11-12, and `mapKickerSeed` / `mapListLabelSeed` went with the other layouts' labels (the fields' `d` is the
+  seed). The card's `homeLabel` / `homeCaption` and `venueLabel` /
   `venueCaption` (*Based in* / *Home location*, *Willing to travel to* / *Venue location*), and
   the stat row's `radiusLabel` / `travelTimeLabel` / `feeLabel`, are new; an emptied stat label
   leaves its value alone. The pills `venueCta` / `routeCta` read their seed again when emptied.
