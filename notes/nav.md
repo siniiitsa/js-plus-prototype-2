@@ -24,6 +24,12 @@ another `notes/` file.
   never be *followed* in the popup: `<base href>` pins it to the opener's URL, so the tab would
   reload the builder. On the canvas the links carry **no href at all** (not `#`, which would jump
   the builder to its own top); `navHref()` in `EncoreSection` is the whole of that gate.
+  **`scrollToFragment` scrolls on the next animation frame, not in the click** (2026-11-13, the
+  hamburger-overshoot ticket): a hamburger link closes the menu in the same click, and the open
+  `MenuPanel` is an in-flow block above the hero, so a `scrollIntoView` measured before React commits
+  the close lands the panel's height (414–620px by theme) past the heading. In Preview the nav's
+  `menu.toggle` and the overlay's `onClick` run in one React dispatch. `preventDefault` and the target
+  lookup stay synchronous, since the swallow must never wait.
   `navSections` is `{ cat, label }` and `vm.navLinks` is `{ label, to }` — key the map on `label`,
   because the label is what is distinct by construction in both modes; `to` is not promised to
   be (Minimal's old Shows and Book could land on one section, and today's three preference

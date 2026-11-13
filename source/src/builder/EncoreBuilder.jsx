@@ -6185,7 +6185,13 @@ function scrollToFragment(e, win) {
   if (!target) return
   // Read at click time, not once: the OS setting can change under an open tab.
   const still = win.matchMedia?.('(prefers-reduced-motion: reduce)').matches
-  target.scrollIntoView({ behavior: still ? 'auto' : 'smooth', block: 'start' })
+  // Next frame, not now: a hamburger link closes the menu in the same click, and
+  // the open panel is an in-flow block above the hero. Measured before React has
+  // committed that, the destination counts the panel's height (500-620px) and the
+  // scroll lands that far past the heading once it unmounts.
+  const go = () => target.scrollIntoView({ behavior: still ? 'auto' : 'smooth', block: 'start' })
+  if (win.requestAnimationFrame) win.requestAnimationFrame(go)
+  else go()
 }
 
 function dressPublishedWindow(win, artistName, pageBg) {
