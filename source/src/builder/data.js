@@ -1906,6 +1906,8 @@ export const BLANK_PAGE = [
  * ------------------------------------------------------------------ */
 
 const SHOW_HIDE = [{ v: 'show', l: 'Show' }, { v: 'hide', l: 'Hide' }]
+// The header's Tags visibility select sits beside the Tags list input, so its options name what they show.
+const SHOW_HIDE_TAGS = [{ v: 'show', l: 'Show tags' }, { v: 'hide', l: 'Hide tags' }]
 export const BADGE_MODES = [
   { v: 'rotating', l: 'Visible, rotating' },
   { v: 'static',   l: 'Visible, static' },
@@ -1963,7 +1965,7 @@ export const FIELDS = {
     // The panel still lists it there (`shared`, as every identity key is), with
     // "Not shown in this layout" while the bio prints the kicker, which the hint
     // answers, as at layout 2.
-    { k: 'kicker',    l: 'Kicker',           d: 'DJ · Live Act', shared: true,
+    { k: 'kicker',    l: 'Kicker',           hostedL: 'Small heading', d: 'DJ · Live Act', shared: true,
       // Header-nav ticket (2026-11-11): layouts 1 and 4 no longer print the act type
       // above the name, so only Retro's layout-3 polaroid and layout 6 read it. The
       // rows of the designs that stopped have no cap either: `identityCap` reads
@@ -1979,7 +1981,7 @@ export const FIELDS = {
     // in that seat. `'*': []` marks Retro, as FIELDS.media.cta does, because
     // only the `HeaderV2` block those four share reads it. Emptied, the card
     // is the name alone.
-    { k: 'cardLine',  l: 'Portrait card line', d: CARD_LINE_3,
+    { k: 'cardLine',  l: 'Line under your name', d: CARD_LINE_3,
       in: { Lime: [2], Grunge: [2], Editorial: [2], Pop: [2], '*': [] },
       chars: { Lime: [null, null, 22], Grunge: [null, null, 23], Editorial: [null, null, 23], Pop: [null, null, 29] },
       hint: 'The line under your name on the portrait card. The bio’s Performing since is a separate '
@@ -2004,10 +2006,10 @@ export const FIELDS = {
       in: { Retro: [5], '*': [] },
       chars: { Retro: [null, null, null, null, null, 42] },
       hint: 'Where you are based.' },
-    { k: 'cta1',      l: 'Primary button',   d: 'Book Now', chars: { Editorial: [16, 16, 10, 16], '*': 16 } },
+    { k: 'cta1',      l: 'Main button',   d: 'Book Now', chars: { Editorial: [16, 16, 10, 16], '*': 16 } },
     // Layout 2's pill under the subtitle (JP-037). Its frame words it apart
     // from the nav's Book Now, so it is a field of its own. Emptied, no pill.
-    { k: 'heroCta',   l: 'Hero button',      d: HERO_CTA,
+    { k: 'heroCta',   l: 'Button under subtitle',      d: HERO_CTA,
       in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1] },
       chars: { Retro: [null, 34], Lime: [null, 35], Grunge: [null, 40], Editorial: [null, 21], Pop: [null, 25] },
       hint: 'The button under your name. Left empty, it is not drawn.' },
@@ -2017,13 +2019,13 @@ export const FIELDS = {
     // frame's text and drops when emptied; a card keeps its tile. The face
     // card's "Performing since 2021" is the artist's copy — the bio's own
     // Performing since is another field, which the hint says.
-    { k: 'faceTitle', l: 'Face card title',  d: FACE_TITLE,
+    { k: 'faceTitle', l: 'Portrait caption title',  d: FACE_TITLE,
       in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1] },
       chars: { Retro: [null, 22], Lime: [null, 24], Grunge: [null, 29], Editorial: [null, 19], Pop: [null, 20] },
       hint: 'The card beside your portrait, under the photograph. Left empty, it is not drawn.' },
-    { k: 'faceBody',  l: 'Face card text',   type: 'area', d: FACE_BODY,
+    { k: 'faceBody',  l: 'Portrait caption text',   type: 'area', d: FACE_BODY,
       in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1] }, chars: [null, 180],
-      hint: 'The line under the face card’s title. The bio’s Performing since is a separate field, '
+      hint: 'The line under the portrait caption title. The bio’s Performing since is a separate field, '
           + 'so change both if you name a year here. Left empty, it is not drawn.' },
     // Named `cta2` on the bio's own content too, which FIELDS.bio.cta2 edits
     // (JP-082): bio layout 4's Listen prints that, not this (JP-059's census).
@@ -2043,9 +2045,9 @@ export const FIELDS = {
       count: { Retro: [8, null, 7, 7, 6, 6], Pop: [6, null, 6, 6], '*': [8, null, 6, 6] },
       rows: { placeholder: 'Tag', add: 'Add tag' },
       hint: 'Your genre chips. One per row; a comma starts a new row.' },
-    { k: 'showTags',  l: 'Tag chips',        type: 'select', d: 'show', opts: SHOW_HIDE, shared: true,
+    { k: 'showTags',  l: 'Tags',        type: 'select', d: 'show', opts: SHOW_HIDE_TAGS, shared: true,
       in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3], Editorial: [0, 2, 3], Pop: [0, 2, 3] },
-      hint: 'Show or hide the chips wherever they are printed.' },
+      hint: 'Show or hide the tag chips wherever they are printed.' },
     // Three states (header-nav ticket, 2026-11-11): the seal is visible and
     // turning (today's), visible and still, or hidden. `badgeMode` replaces the
     // old `showBadge` Show / Hide on the header (the footer keeps its own), and
@@ -2057,15 +2059,15 @@ export const FIELDS = {
     // The seal's ring sets it twice round a circle, so its cap is the ring's
     // fit (scripts/limits.mjs's ring test). Left empty, the ring prints the
     // artist's name, clamped to the same fit (sealCap).
-    { k: 'badgeText', l: 'Badge text',                    // defaults to the artist's name — special-cased
+    { k: 'badgeText', l: 'Corner badge text',                    // defaults to the artist's name — special-cased
       in: { Retro: [0, 1, 3, 4, 5], Lime: [3], Grunge: [0, 3], Editorial: [3], Pop: [0, 3] },
       chars: { Retro: 19, Lime: [null, null, null, 13], Grunge: [14, null, null, 14], Editorial: [null, null, null, 10],
         Pop: [12, null, null, 10] } },
-    { k: 'navMode',   l: 'Navigation links', type: 'select', d: 'sections', opts: [
+    { k: 'navMode',   l: 'Menu style', type: 'select', d: 'sections', opts: [
       { v: 'sections', l: 'Follow my sections' },
       { v: 'minimal',  l: 'Minimal (Music · Gigs · About)' },
     ] },
-    { k: 'align',     l: 'Alignment',        type: 'select', d: 'left', in: { Retro: [0], Lime: [0], Grunge: [0], Editorial: [0], Pop: [0] }, opts: [
+    { k: 'align',     l: 'Page alignment',        type: 'select', d: 'left', in: { Retro: [0], Lime: [0], Grunge: [0], Editorial: [0], Pop: [0] }, opts: [
       { v: 'left',   l: 'Left' },
       { v: 'centre', l: 'Centre' },
     ] },
@@ -2081,17 +2083,17 @@ export const FIELDS = {
         Editorial: [15, null, 15, 17], Pop: [17, null, 17, 19] } },
     // Layout 2's pill over the paragraph (JP-059), seeded with the frame's
     // copy and cased as a label; emptied, it is not drawn.
-    { k: 'tag',       l: 'Pill', d: BIO_TAG, in: [1], chars: [null, 18],
+    { k: 'tag',       l: 'Highlight tag', d: BIO_TAG, in: [1], chars: [null, 18],
       hint: 'The small pill over the first paragraph. Left empty, it is not drawn.' },
     { k: 'para1',     l: 'Paragraph 1', type: 'area', def: 'bioP1', chars: 390 },
     { k: 'para2',     l: 'Paragraph 2', type: 'area', def: 'bioP2', in: [2, 3], chars: [null, null, 340, 340] },
     // Layout 2's foot row (JP-037): the frame's two-tone line, whose first
     // three words take the accent (`vm.bioCredit`), and the pill beside it.
     // Each drops when emptied, and the row with both.
-    { k: 'credit',    l: 'Credit line', d: BIO_CREDIT, in: [1], chars: [null, 43],
+    { k: 'credit',    l: 'Footer line', d: BIO_CREDIT, in: [1], chars: [null, 43],
       hint: 'The line at the foot of the card. Its first three words take the accent colour.' },
     { k: 'cta',       l: 'Button', d: BIO_CTA, in: [1], chars: [null, 16],
-      hint: 'The button beside the credit line. Left empty, it is not drawn.' },
+      hint: 'The button beside the footer line. Left empty, it is not drawn.' },
     // Layout 3's ID card draws a row of stats, and the frame's first one is
     // "Performing since: June 2021". Seeded with the frame's copy (QA,
     // 2026-09-15 — layout 2's price row and bookings line were the precedent),
@@ -2106,15 +2108,15 @@ export const FIELDS = {
     // A stat's label goes with its value as well: Current role and Based in
     // print the header's Kicker and Location. The line break before the last
     // word is sectionVm's, so each is one line here.
-    { k: 'sinceLabel', l: 'Performing since label', d: BIO_SINCE_LABEL, in: [2], chars: [null, null, 17],
+    { k: 'sinceLabel', l: 'Performing since heading', d: BIO_SINCE_LABEL, in: [2], chars: [null, null, 17],
       hint: 'The label over the date on the ID card. It breaks before its last word. '
           + 'Left empty, the date stands alone.' },
-    { k: 'roleLabel',  l: 'Current role label', d: BIO_ROLE_LABEL, in: [2], chars: [null, null, 14],
+    { k: 'roleLabel',  l: 'Current role heading', d: BIO_ROLE_LABEL, in: [2], chars: [null, null, 14],
       hint: 'The label over the Header’s Kicker on the ID card. Left empty, the kicker stands alone.' },
-    { k: 'baseLabel',  l: 'Based in label', d: BIO_BASE_LABEL, in: [2],
+    { k: 'baseLabel',  l: 'Based in heading', d: BIO_BASE_LABEL, in: [2],
       chars: { Retro: [null, null, 16], Lime: [null, null, 16], Pop: [null, null, 14], '*': [null, null, 19] },
       hint: 'The label over the Header’s Location on the ID card. Left empty, the location stands alone.' },
-    { k: 'aboutLabel', l: 'About label', d: BIO_ABOUT_LABEL, in: [2],
+    { k: 'aboutLabel', l: 'About heading', d: BIO_ABOUT_LABEL, in: [2],
       chars: { Editorial: [null, null, 59], Pop: [null, null, 48], '*': [null, null, 56] },
       hint: 'The bracketed label over the paragraphs on the ID card. Left empty, it is not drawn.' },
     // The circular badge at layouts 1, 3 and 5 (layout 5 folds onto design 0): the
@@ -2156,7 +2158,7 @@ export const FIELDS = {
     { k: 'heading', l: 'Heading', d: 'Five worth your ear.',
       chars: { Retro: [20, 20, 25, 20], Grunge: [30, 20, 20, 25], Pop: [20, 20, 20, 23], '*': [20, 20, 20, 20] } },
     // JP-095 (a): the chip on the fan's front card, the frame's word, uncased.
-    { k: 'chipLabel', l: 'Card chip', d: MEDIA_CHIP_LABEL, in: [1],
+    { k: 'chipLabel', l: 'Track tag', d: MEDIA_CHIP_LABEL, in: [1],
       chars: { Retro: [null, 10], Lime: [null, 9], '*': [null, 10] },
       hint: 'The chip on the front card of the fan, after a dot. Left empty, it is not drawn.' },
     // Retro's layout-1 frame (446:2265) draws the Soundcloud pill, and so does
@@ -2299,7 +2301,7 @@ export const FIELDS = {
     { k: 'intro',   l: 'Intro line', type: 'area', d: PRICING_INTRO_3, in: [2],
       chars: [null, null, 240],
       hint: 'A line under the heading. Layout 3 only.' },
-    { k: 'offer',   l: 'Offer line', d: PRICING_OFFER, in: [2],
+    { k: 'offer',   l: 'Special offer text', d: PRICING_OFFER, in: [2],
       chars: { Retro: [null, null, 63], '*': [null, null, 59] },
       hint: 'A short line beside the filter chips, such as a discount. Layout 3 only. '
           + 'Empty it to drop the line.' },
@@ -2322,16 +2324,16 @@ export const FIELDS = {
       hint: 'The five stars beside it are drawn while this is filled.' },
     // Named for its card rather than numbered, so it still reads apart from
     // the package button below.
-    { k: 'cta',     l: 'Plan card button', d: PRICING_CTA, in: PRICING_CARD,
+    { k: 'cta',     l: 'Plan button', d: PRICING_CTA, in: PRICING_CARD,
       chars: { Retro: [null, 40], Lime: [null, 39], Grunge: [null, 40], Editorial: [null, 23], Pop: [null, 27] },
       hint: 'The pill under the price on layout 2’s plan card. Empty it to drop the pill.' },
-    { k: 'note',    l: 'Line beside the plan card button', d: PRICING_NOTE, in: PRICING_CARD,
+    { k: 'note',    l: 'Note beside plan button', d: PRICING_NOTE, in: PRICING_CARD,
       chars: { Retro: [null, 54], '*': [null, 55] },
       hint: 'Layout 2 only. A phone stacks it under the pill.' },
     // JP-095 (a): the label over the plan card's features, in the frame's
     // capitals. Drawn while the package has features, as the list is. Layout
     // 3 prints it over every package's features too (JP-125, 2026-10-09).
-    { k: 'featsLabel', l: 'Features label', d: PRICING_FEATS_LABEL, in: [1, 2],
+    { k: 'featsLabel', l: 'Package features heading', d: PRICING_FEATS_LABEL, in: [1, 2],
       chars: { Retro: [null, 48, 57], Lime: [null, 68, 51], Pop: [null, 35, 57], '*': [null, 68, 55] },
       hint: 'The label over the features, on layout 2’s plan card and on each of layout 3’s '
           + 'packages. Left empty, it is not drawn.' },
@@ -2348,7 +2350,7 @@ export const FIELDS = {
       chars: { Retro: [12, null, 12, 26], Lime: [14, null, 12, 26], Grunge: [16, null, 12, 26],
         Editorial: [9, null, 12, 26], Pop: [10, null, 12, 26] },
       hint: 'The pill on every package. Layout 3 starts from “Book” and layout 4 from '
-          + '“Start Enquiry”. Layout 2 has its own plan card button. Empty it to drop the pill.' },
+          + '“Start Enquiry”. Layout 2 has its own plan button. Empty it to drop the pill.' },
     { k: 'sub',     l: 'Small print', def: 'pricingSub',
       chars: { Retro: [133, 67, 67, 67], Grunge: [53, 67, 63, 67], Pop: [80, 67, 63, 67], '*': [67, 67, 63, 67] } },
   ],
@@ -2390,7 +2392,7 @@ export const FIELDS = {
     // The mood and length share one clipped line (`repSetLine()`), so they split
     // its budget, measured together: the length takes up to 10 ("90 minutes"),
     // the mood the rest, never under its seed's 14 (session 5).
-    { k: 'sets',    l: 'Sets', type: 'sets', in: [2],
+    { k: 'sets',    l: 'Set lists', type: 'sets', in: [2],
       cols: { mood: { Retro: [null, null, 17], Lime: [null, null, 14], Grunge: [null, null, 17], Editorial: [null, null, 17],
         Pop: [null, null, 14] }, length: { Lime: [null, null, 7], '*': [null, null, 10] } },
       hint: 'One per tag on your songs. The mood and length show under the set’s name in layout 3; with both empty, it shows the song count.' },
@@ -2409,7 +2411,7 @@ export const FIELDS = {
     { k: 'images',  l: 'Photos', type: 'images', max: 7, aspect: [3, 2],
       hint: 'One per tile. Layout 1 shows the highlighted one in its viewer; layouts 2 and 4 show it as the large photo beside the others.' },
     // JP-120 (gallery): the eyebrow over the heading, the frames' word, uncased.
-    { k: 'kicker',  l: 'Kicker', d: GALLERY_KICKER, in: [0, 3],
+    { k: 'kicker',  l: 'Small heading', d: GALLERY_KICKER, in: [0, 3],
       chars: { Retro: [44, null, null, 49], Pop: [44, null, null, 39], '*': [55, null, null, 51] },
       hint: 'A small line over the heading. Empty by default; type one to show it.' },
     { k: 'heading', l: 'Heading', d: 'See us in action',
@@ -2417,17 +2419,17 @@ export const FIELDS = {
         Pop: [16, 27, 15, 20] } },
     // JP-098: the 768 head row's word, the frame's, uncased. `in` cannot name a
     // width, so the hint does. JP-120 (gallery): layout 1's credit line too.
-    { k: 'railLabel', l: 'Gallery label', d: GALLERY_RAIL_LABEL, in: [0, 1],
+    { k: 'railLabel', l: 'Gallery caption', d: GALLERY_RAIL_LABEL, in: [0, 1],
       chars: { Retro: [49, 70], Lime: [55, 64], Editorial: [32, 70], Pop: [49, 70], '*': [55, 70] },
       hint: 'The line under your name over the large photo in layout 1, and the label over the small '
           + 'photos in layout 2, on a tablet only. Left empty, neither is drawn.' },
     // JP-120 (gallery): two words that head a control or a row standing
     // whatever they say, so an emptied one reads its seed again (venueCta's
     // rule). The row's label prints at desktop alone, so the hint says so.
-    { k: 'backLabel', l: 'Back link', d: GALLERY_BACK_LABEL, in: [0], chars: [34],
+    { k: 'backLabel', l: 'Back to first photo link', d: GALLERY_BACK_LABEL, in: [0], chars: [34],
       hint: 'The link over the large photo that goes back to the first one. Left empty, it shows '
           + '“Back to beginning” again.' },
-    { k: 'sourceLabel', l: 'Gallery row label', d: GALLERY_SOURCES[0].l, in: [0],
+    { k: 'sourceLabel', l: 'Social links heading', d: GALLERY_SOURCES[0].l, in: [0],
       chars: { Retro: [42], Lime: [49], Grunge: [58], Editorial: [37], Pop: [50] },
       hint: 'The first row, above YouTube, Instagram and TikTok, on desktop only. Left empty, it '
           + 'shows “Gallery” again.' },
@@ -2455,7 +2457,7 @@ export const FIELDS = {
           + "layout 4's summary card. Layouts 2 and 3 draw no photograph." },
     { k: 'heading', l: 'Heading', d: 'Availability', in: { Lime: [0, 1, 2, 3], Grunge: [0, 1, 2, 3], Editorial: [0, 1, 2, 3], Pop: [0, 1, 2, 3], '*': [1, 2, 3] },
       chars: { Retro: [null, 25, 36, 18], Lime: [25, 22, 32, 18], Grunge: [28, 24, 35, 23], Editorial: [14, 14, 21, 11], Pop: [13, 20, 24, 15] } },
-    { k: 'open',    l: 'Opens on', type: 'date', d: CAL_OPEN,
+    { k: 'open',    l: 'Calendar start date', type: 'date', d: CAL_OPEN,
       hint: 'The month the calendar opens on, and the date it opens picked. '
           + `Layouts 1 and 3 page through ${CAL_SPAN} months from there, layout 2's seeded `
           + "dates count from it until you type a date of your own, and layout 4's date card "
@@ -2466,13 +2468,13 @@ export const FIELDS = {
           + "and layout 4's date card refuses it when a visitor types it. "
           + 'The months here are the published ones, so they start at today when the opening '
           + 'date has passed.' },
-    { k: 'time',    l: 'Enquiry time', d: CAL_TIME, in: [0, 3],
+    { k: 'time',    l: 'Event start time', d: CAL_TIME, in: [0, 3],
       chars: { Retro: [33, null, null, 34], Lime: [13, null, null, 32], Grunge: [13, null, null, 37], Editorial: [13, null, null, 33], Pop: [28, null, null, 33] },
       hint: "Printed in layout 1's enquiry line, and on its own in layout 4's "
           + 'date card. Leave it empty and the line stops at the date.' },
     // JP-095 (a): the line every layout prints while no day is cued. Cased in
     // sectionVm, as the slot line beside it is; emptied, the seed again.
-    { k: 'prompt',  l: 'Prompt', d: CAL_PROMPT,
+    { k: 'prompt',  l: 'Calendar instruction text', d: CAL_PROMPT,
       chars: { Retro: [33, 24, 39, 50], Lime: [44, 23, 33, 47], Grunge: [44, 24, 36, 50], Editorial: [44, 29, 24, 50], Pop: [31, 32, 24, 50] },
       hint: 'The line where the picked date goes while none is picked: on the published page, '
           + 'until a visitor picks one, when the opening date is booked or has passed. Left empty, '
@@ -2489,17 +2491,17 @@ export const FIELDS = {
           + 'of the summary; it starts from “Send Enquiry” there, and shows it again if you '
           + 'empty this. Under Retro it is also layout 1’s button. The other templates’ '
           + 'layout 1 has no button: its “Enquiry for …” line is the link.' },
-    { k: 'slots',   l: 'Dates on offer', type: 'slots', max: 8, in: [1],
+    { k: 'slots',   l: 'Available dates', type: 'slots', max: 8, in: [1],
       cols: { kind: { Retro: [null, 33], Lime: [null, 36], Grunge: [null, 40], Editorial: [null, 33], Pop: [null, 36] },
         price: { Retro: [null, 36], Lime: [null, 40], Grunge: [null, 43], Editorial: [null, 36], Pop: [null, 40] } },
       hint: 'The dates layout 2 lists, each with what you play and what it starts from. '
-          + 'The seeded dates count from Opens on (on the published page, from today once that '
+          + 'The seeded dates count from the calendar start date (on the published page, from today once that '
           + 'has passed) until you type one; clear it and the row counts again.' },
     // JP-095 (a): the two column labels over that list; the ↓ is the markup's.
-    { k: 'dateLabel',  l: 'Date column label', d: CAL_DATE_LABEL, in: [1],
+    { k: 'dateLabel',  l: 'Dates heading', d: CAL_DATE_LABEL, in: [1],
       chars: [null, 16],
       hint: 'The label over the list’s dates. Left empty, it is not drawn.' },
-    { k: 'availLabel', l: 'Availability column label', d: CAL_AVAIL_LABEL, in: [1],
+    { k: 'availLabel', l: 'Availability heading', d: CAL_AVAIL_LABEL, in: [1],
       chars: { Retro: [null, 33], '*': [null, 38] },
       hint: 'The label over what you play each night. Left empty, it is not drawn; with both '
           + 'labels empty, their row goes.' },
@@ -2561,12 +2563,12 @@ export const FIELDS = {
     // JP-071: layout 3's eyebrow, JP-090: layout 1's, JP-095 (b): layout 2's
     // "Travel radius". Layouts 1 and 3 stopped drawing it 2026-11-12, so the
     // field is layout 2's alone and its seed is its `d`.
-    { k: 'kicker',  l: 'Kicker', d: MAP_KICKER_2, in: [1],
+    { k: 'kicker',  l: 'Small heading', d: MAP_KICKER_2, in: [1],
       chars: { Retro: [null, 30], Lime: [null, 26], Pop: [null, 30], '*': [null, 30] },
       hint: 'The small line over the travel card’s heading. Left empty, it is not drawn.' },
     // JP-090: layout 1's label over the gig list; the "· 5" count is the page's.
     // (Layout 2's "Other upcoming · 4", JP-095 (b), was removed 2026-11-12.)
-    { k: 'listLabel', l: 'List label', d: MAP_LIST_LABEL, in: [0],
+    { k: 'listLabel', l: 'List heading', d: MAP_LIST_LABEL, in: [0],
       chars: { Retro: [37], Lime: [40], Grunge: [41], Editorial: [46], Pop: [31] },
       hint: 'The label over the list of gigs, before its count. Left empty, neither is drawn.' },
     { k: 'heading', l: 'Heading', d: 'Manchester',
@@ -2580,7 +2582,7 @@ export const FIELDS = {
       chars: { Retro: [29, null, 33], Lime: [35, null, 27], Grunge: [39, null, 33], '*': [24, null, 33] },
       hint: 'Layout 1 prints it beside the map and layout 3 under it. Layout 2’s travel card '
           + 'shows the Location you typed on the header instead.' },
-    { k: 'terms',   l: 'Travel terms',   d: MAP_TERMS, in: [0, 1],
+    { k: 'terms',   l: 'Travel charges',   d: MAP_TERMS, in: [0, 1],
       chars: { Retro: [59, 50], Lime: [58, 41], Pop: [45, 51], '*': [58, 51] } },
     { k: 'travelTime', l: 'Travel time (layout 2)', d: MAP_TRAVEL_TIME, in: [1],
       chars: { Retro: [null, 11], '*': [null, 13] } },
@@ -2590,26 +2592,26 @@ export const FIELDS = {
     // frame's own words, uncased. A label or caption left empty is not drawn; a
     // stat's label goes with its value, as the cell always did; the two pills
     // read their seed again, since a pill always stands.
-    { k: 'homeLabel',   l: 'Home label',   d: MAP_HOME_LABEL, in: [1],
+    { k: 'homeLabel',   l: 'Home town heading',   d: MAP_HOME_LABEL, in: [1],
       chars: { Lime: [null, 16], '*': [null, 18] },
       hint: 'The small line over your home town on the travel card. The town is the header’s Location. '
           + 'Left empty, it is not drawn.' },
-    { k: 'homeCaption', l: 'Home caption', d: MAP_HOME_CAPTION, in: [1],
+    { k: 'homeCaption', l: 'Home town caption', d: MAP_HOME_CAPTION, in: [1],
       chars: { Lime: [null, 16], '*': [null, 18] },
       hint: 'The small line under your home town. Left empty, it is not drawn.' },
-    { k: 'venueLabel',  l: 'Venue label',  d: MAP_VENUE_LABEL, in: [1],
+    { k: 'venueLabel',  l: 'Venue heading',  d: MAP_VENUE_LABEL, in: [1],
       chars: [null, 20],
       hint: 'The small line over the featured gig’s city. Left empty, it is not drawn.' },
     { k: 'venueCaption', l: 'Venue caption', d: MAP_VENUE_CAPTION, in: [1],
       chars: { Lime: [null, 16], '*': [null, 18] },
       hint: 'The small line under the featured gig’s city. Left empty, it is not drawn.' },
-    { k: 'radiusLabel', l: 'Max travel label', d: MAP_RADIUS_LABEL, in: [1],
+    { k: 'radiusLabel', l: 'Max travel heading', d: MAP_RADIUS_LABEL, in: [1],
       chars: { Retro: [null, 14], Lime: [null, 15], '*': [null, 17] },
       hint: 'Over Coverage on the travel card. Left empty, the value stands alone.' },
-    { k: 'travelTimeLabel', l: 'Travel time label', d: MAP_TIME_LABEL, in: [1],
+    { k: 'travelTimeLabel', l: 'Travel time heading', d: MAP_TIME_LABEL, in: [1],
       chars: { Retro: [null, 14], Lime: [null, 15], '*': [null, 17] },
       hint: 'Over Travel time on the travel card. Left empty, the value stands alone.' },
-    { k: 'feeLabel',    l: 'Booking fee label', d: MAP_FEE_LABEL, in: [1],
+    { k: 'feeLabel',    l: 'Booking fee heading', d: MAP_FEE_LABEL, in: [1],
       chars: { Retro: [null, 14], Lime: [null, 15], '*': [null, 17] },
       hint: 'Over Booking fee on the travel card. Left empty, the value stands alone.' },
     { k: 'venueCta',    l: 'Venue link button', d: MAP_VENUE_CTA, in: [1],
@@ -2631,21 +2633,21 @@ export const FIELDS = {
     // had dropped all four as claims) — all but `status`, which layout 2 does
     // not draw (user call, 2026-10-14). None names a layout in its label: the
     // panel lists them only where the design reads them.
-    { k: 'status',  l: 'Map tag', d: MAP_STATUS, in: [2],
+    { k: 'status',  l: 'Map label', d: MAP_STATUS, in: [2],
       chars: [null, null, 20],
       hint: 'The tag above the featured gig.' },
-    { k: 'updated', l: 'Map note', d: MAP_UPDATED, in: [1, 2],
+    { k: 'updated', l: 'Map caption', d: MAP_UPDATED, in: [1, 2],
       chars: { Lime: [null, 31, 31], '*': [null, 35, 34] } },
-    { k: 'expand',  l: 'Map link', d: MAP_EXPAND, in: [1, 2],
+    { k: 'expand',  l: 'Map link text', d: MAP_EXPAND, in: [1, 2],
       chars: [null, 22, 22],
       hint: 'Opens directions to the gig the panel is showing, on the published page. Leave empty to hide it.' },
-    { k: 'span',    l: 'Panel note (layout 4)', d: MAP_SPAN, in: [3],
+    { k: 'span',    l: 'Map side note', d: MAP_SPAN, in: [3],
       chars: [null, null, null, 58],
       hint: 'Beside "Travel & reach" above the stat cards. Leave empty to hide it.' },
     // Layout 4's stat wall (JP-077 · JP-078 · JP-082, user call, 2026-09-29):
     // the ninth structured editor, { label, value, sub } per card, seeded with
     // the frame's four. Two to a row, so a third trails half-width.
-    { k: 'stats',   l: 'Stats', type: 'stats', max: 4, in: [3],
+    { k: 'stats',   l: 'Key numbers', type: 'stats', max: 4, in: [3],
       cols: { label: [null, null, null, 19], value: [null, null, null, 14], sub: [null, null, null, 20] },
       hint: 'One card each, two to a row. A card prints only the parts you fill in; an empty row isn’t shown.' },
   ],
@@ -2694,7 +2696,7 @@ export const FIELDS = {
       chars: { Retro: [null, null, 8], Lime: [null, null, 7], Grunge: [null, null, 9], Editorial: [null, null, 5],
         Pop: [null, null, 7] },
       hint: 'The big number on the stat card, printed out of 5. Empty it to show how many reviews there are instead.' },
-    { k: 'stars',   l: 'Stars', d: TESTI_STARS, in: [1, 2],
+    { k: 'stars',   l: 'Star rating', d: TESTI_STARS, in: [1, 2],
       chars: { Retro: [null, 44, 35], Lime: [null, 44, 32], '*': [null, 44, 36] },
       hint: 'Layout 2 prints them in the corner of the card, beside the reviewer; layout 3 beside '
           + 'the faces on its stat card. Empty it to drop them.' },
@@ -2735,7 +2737,7 @@ export const FIELDS = {
       hint: 'The line under the heading. Layout 3 only.' },
     // One a line down a column that hugs them, so the count is a block's
     // (session 10): open but where the column climbs into the head.
-    { k: 'promises', l: 'Promises', type: 'area', d: FORM_PROMISES.join('\n'), in: [0, 1], list: '\n',
+    { k: 'promises', l: 'Reasons to book', type: 'area', d: FORM_PROMISES.join('\n'), in: [0, 1], list: '\n',
       chars: { Retro: [45, 32], Pop: [42, 31], Editorial: [34, 29], '*': [34, 34] },
       count: { Editorial: [6, 9], '*': [9, 9] },
       rows: { placeholder: 'Promise', add: 'Add promise' },
@@ -2776,7 +2778,7 @@ export const FIELDS = {
     { k: 'typeLabel', l: 'Event type label', d: FORM_TYPE_LABEL, in: [0],
       chars: { Retro: [51], Lime: [52], Grunge: [58], Editorial: [37], Pop: [33] },
       hint: 'The label over the event types. Layout 1 only. Left empty, it shows Event type.' },
-    { k: 'message',  l: 'Message placeholder', d: FORM_MESSAGE, in: [0, 3],
+    { k: 'message',  l: 'Message box hint text', d: FORM_MESSAGE, in: [0, 3],
       chars: { Retro: [39, null, null, 53], Lime: [42, null, null, 54], Grunge: [42, null, null, 54],
         Editorial: [44, null, null, 58], Pop: [35, null, null, 54] },
       hint: 'Layouts 1 and 4.' },

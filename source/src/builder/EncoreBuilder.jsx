@@ -3850,8 +3850,8 @@ const BLANK_SLOT_HINT = 'Empty slots aren’t shown.'
 const PAST_SLOT_LINE = 'This date has passed, so visitors can’t pick it.'
 // The count line under a seeded row whose date box is not typed in.
 const slotCountHint = (after) => `${after
-  ? `${after} day${after === 1 ? '' : 's'} after Opens on, or after today`
-  : 'The Opens on date, or today'} on the published page once that has passed. Type a date to fix it.`
+  ? `${after} day${after === 1 ? '' : 's'} after the calendar start date, or after today`
+  : 'The calendar start date, or today'} on the published page once that has passed. Type a date to fix it.`
 
 function SlotsField({ caps, value, max, open, onChange }) {
   const list = Array.isArray(value) ? value : []
@@ -5199,7 +5199,7 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                       onInput={(e) => { if (f.type !== 'place' && f.type !== 'miles') onFocusField?.(sec.id, f, e.target.value, true) }}
                       onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget)) onBlurField?.() }}
                     >
-                      <Label style={{ fontSize: '11px', fontWeight: 600, color: '#6B685E', display: 'block', marginBottom: hint ? '2px' : '5px' }}>{f.l}</Label>
+                      <Label style={{ fontSize: '11px', fontWeight: 600, color: '#6B685E', display: 'block', marginBottom: hint ? '2px' : '5px' }}>{f.hosted && f.hostedL ? f.hostedL : f.l}</Label>
                       {hint && (
                         <p style={{ margin: '0 0 6px', fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>{hint}</p>
                       )}

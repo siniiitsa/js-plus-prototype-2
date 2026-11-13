@@ -495,3 +495,11 @@ another `notes/` file.
 ## Inline editing (plans/inline-edit-all.md, Retro headers 5 and 6, 2026-10-22)
 
 Layouts 5 (*Overlay card*) and 6 (*Stage wide*) are header-only designs: the modal stops at four cards, so the probe reaches them as a user does, with card 1's page and the header's `arch` moved (`--layout 5` / `6`), and the body under them is layout 1's. Layout 5's card reads title, subtitle, `cta1`, `cta2`, the six chips and the seal's badge text; it draws **no kicker and no location** (`Retro.4.header.kicker` / `.location` in the ledger, though `shared` keeps them in the panel). Layout 6 reads title, kicker, location, `cta1`, the chips and the badge; it draws **the kicker twice**, bare in the inset card under the name and as `● DJ · LIVE ACT` above the title, so `*.5.header.kicker` is `INLINE_LINES` `['{}', '● {}']` (the bare form is listed too, since a slot with a line is spoken for by it and the card's copy would stop opening). The `Kicker` component is used by `HeaderV5` alone. Layout 5's stats (`4.9 ★ Experience`, `5 pcs Line-up`) and *Tell me your date* are the frame's literals, which no field owns (`FIELDS.header`'s own comment). Both seals open `header.badgeText` in the floating box, the field box on the disc, as the other templates' header seals do.
+
+## Panel labels (2026-11-13, QA ticket: 47 field labels reworded)
+
+Display strings only: each is the `l:` of a `FIELDS` entry in `data.js`; keys, caps, `in` and stored values did not move.
+Two mechanics are not plain renames. The header's shared `kicker` carries `hostedL: 'Small heading'`, which `EditPanel`
+prints in the Bio and Form panels where the box is hosted, while the header's own Retro box keeps *Kicker*; Gallery and
+Map own a `kicker` and read *Small heading* outright. The header's `showTags` select is now labelled *Tags*, like the
+list input beside it, so its options read *Show tags* / *Hide tags* (`SHOW_HIDE_TAGS`; stored values stay `show` / `hide`).
