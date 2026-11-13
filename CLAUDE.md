@@ -150,7 +150,7 @@ mutated through a single `patch()` helper.
   it has been seen.
 - **The header bar is a hamburger and Book Now, and nothing else** (header-nav ticket, user calls,
   2026-11-11; `plans/header-nav.md`). At layouts 1–4 of every template the bar is the hamburger on the
-  left and `BookPill` on the right at every width: no wordmark, no globe, no inline links, no centred
+  left and `BookPill` on the right at every width: no strip or capsule behind the two (QA ticket, 2026-11-13; Pop layout 1's glass layer excepted), no wordmark, no globe, no inline links, no centred
   name, no Listen, no links capsule. The links are behind the hamburger. **The menu opens in flow and
   pushes the hero down, so it never covers the photograph**: `HeaderRoot` (`EncoreSection.jsx`) holds
   the one `useState(open)` and passes `menu = { open, toggle }` as a *prop* (React state cannot be bound

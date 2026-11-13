@@ -1889,30 +1889,28 @@ function LimePin({ s, width, height, radius, fill, ink, glyph }) {
 // no links. The links live behind the hamburger (`NavMenu`, and `HeaderRoot`'s
 // panel); the artist's name is the h1 below, not a second copy here.
 //
-// Under Lime, Grunge, Editorial and Pop the bar is still the frames' capsule
-// (964:58588 "Frame 50": `sem/bg` at a pill radius, 8.2 / 16.4 padding at 1440,
-// 10 / 20 narrow); Retro's is bare. Pop's fill is the one capsule fill that is
-// not opaque — `#FFFFFF` at 12% under a blur — drawn on a layer of its own under
-// the two cells, since a `backdrop-filter` makes its element the containing
-// block of every `position: fixed` descendant (Retro's NavLinks panel is one).
+// Under Lime, Grunge, Editorial and Pop the frames' 8.2 / 16.4 padding at 1440
+// (10 / 20 narrow) is kept so the two controls stand where they always did, but
+// the capsule ground that joined them is gone (QA ticket, 2026-11-13): the
+// photograph shows between them, and each control keeps its own styling. The one
+// exception is Pop's layout-1 hero (`glass`), a translucent layer — `#FFFFFF` at
+// 12% under a blur — drawn on a layer of its own under the two cells, since a
+// `backdrop-filter` makes its element the containing block of every
+// `position: fixed` descendant (Retro's NavLinks panel is one).
 //
-// `pill` is spread onto BookPill; `fill` is the capsule's ground (Editorial's and
-// Pop's layout-4 capsules are a Scheme 1 node inside a Scheme 3 header). While
-// the menu is open the panel above the hero carries its own X and Book Now, so
-// this bar is hidden, not removed: the hero keeps its geometry.
-function NavBar({ s, colour, pill, fill, menu }) {
+// `pill` is spread onto BookPill. While the menu is open the panel above the hero
+// carries its own X and Book Now, so this bar is hidden, not removed: the hero
+// keeps its geometry.
+function NavBar({ s, colour, pill, glass: glassOn, menu }) {
   const c = colour || s.tx
-  const pop = s.pop
   const lime = s.limeTree
-  const ed = s.editorial
   const corner = s.narrow ? s.btnR : '30.35px'
-  const glass = pop && !fill
+  const glass = !!(s.pop && glassOn)
   return (
     <div style={row(s.mob ? '10px' : '24px', {
       justifyContent: 'space-between', width: '100%',
       visibility: menu?.open ? 'hidden' : undefined,
       ...(lime ? {
-        background: glass ? undefined : fill ?? (ed ? s.box3 : s.bg), borderRadius: corner,
         padding: s.narrow ? '10px 20px' : '8.2px 8.2px 8.2px 16.4px',
       } : null),
       ...(glass ? { position: 'relative' } : null),
@@ -2073,7 +2071,7 @@ function HeaderV0({ s, menu }) {
              style={grunge ? { maskImage: `linear-gradient(0deg, transparent 0%, #000 ${s.narrow ? 16.3 : 31.4}%)` } : undefined} />
 
       <div style={{ position: 'relative' }}>
-        <NavBar s={s} menu={menu} colour={pop ? S3.ac : ink}
+        <NavBar s={s} menu={menu} colour={pop ? S3.ac : ink} glass
                 pill={grunge ? { fg: G2.bg } : pop ? { bg: S3.activeBg, fg: S3.bg } : undefined} />
       </div>
 
@@ -3831,7 +3829,7 @@ function HeaderV3({ s, menu }) {
               a fixed 23 apart, which is NavBar's own em reading at the cap
               (`23 / 16` em of `s.labelSm`, `navGapEm`'s Pop arm), so it
               passes no `links`. */}
-          <NavBar s={s} menu={menu} colour={ed || pop ? s.onScheme[1].tx : s.tx} fill={ed || pop ? s.onScheme[1].bg : undefined}
+          <NavBar s={s} menu={menu} colour={ed || pop ? s.onScheme[1].bg : s.tx}
                   pill={s.mob || ed || pop ? {
                     ...(ed || pop ? { bg: s.onScheme[1].pillBg, fg: s.onScheme[1].bg } : null),
                     ...(pop ? { discFg: s.onScheme[1].ac } : null),

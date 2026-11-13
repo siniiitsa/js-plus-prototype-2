@@ -20,3 +20,9 @@ controls"; the full plan was agreed in session):
 Bookkeeping done: `FIELDS.header` `in`/`chars`, `INLINE_OFF` rows, `reach.mjs` probes, docs. Not done /
 open: the Hero closed-menu images in the ticket were not seen; Stacked's 768 seal anchor
 (`bottom: 185.46px`) was calibrated against the old name block — check it.
+
+## 2026-11-13 — no bar between the two controls (QA ticket, P3)
+`NavBar` no longer paints a capsule ground (`background` / `borderRadius`) behind the hamburger and Book Now under Lime, Grunge,
+Editorial (layouts 1 and 4) and Pop (layout 4); its padding stays, so both controls keep their seats. The `fill` prop is gone; a
+`glass` prop marks Pop's layout-1 hero, the one translucent layer left (not in the ticket). Layout 4's Editorial / Pop hamburger now
+inks in `s.onScheme[1].bg` (the old capsule's cream / white), since the old dark ink would sit on the photograph.
