@@ -268,7 +268,7 @@ and `base` field paragraphs, JP-105's seeds and JP-096's home value.
       *SEPTEMBER*). Retro's holds 7 and Pop's 9, and layout 3's disc 11–12.
     - A day longer than two digits prints, but `gigStamp` reads no weekday or status from it.
       The cap is fit, not validation, and `GigsField`'s layout-3 warning is what says so.
-    - **What is typed is filtered** (QA, 2026-11-09 · 2026-11-11): `gigPart(col, raw, prev)` in `data.js`,
+    - **What is typed is filtered** (QA, 2026-11-09 · 2026-11-11): `gigPart(col, raw, prev, row)` in `data.js`,
       in the panel's `GigsField.setAt` and the inline box alike. Day and year keep digits (two and four);
       the month is letters and a point, and only while it starts a month's name (`Ju`, `Sept`, `July`);
       a refused key leaves the box as it was, and deleting is always allowed so a month stored before
@@ -277,9 +277,20 @@ and `base` field paragraphs, JP-105's seeds and JP-096's home value.
       "shorter than `prev`": select-all over the seeded `Jul` and typing `x` reports `x`, shorter, and
       skipped the filter (as did `9` over `12`, then `99`). The day also has to stay a possible 1–31
       (`3`, `31`; never `32` or `99`), a letter typed over a selection is refused rather than emptying
-      the box, and the inline box filters the year too. The panel's date note (`gigDateNote`) now reads at
+      the box, and the inline box filters the month and day too (the year has no canvas slot). The panel's date note (`gigDateNote`) now reads at
       every layout — a year of one to three digits or before 1900, or a month and day that name no day —
       since every layout prints the month and day on the disc; layout 3's line adds the weekday / pill.
+      **Pass 3 (QA 1amvuf5xxq2, 2026-11-13):** `gigPart(col, raw, prev, row)` also takes the gig's other two
+      boxes and refuses a keystroke that makes a date no day (`fitsRow`): day 31 against Feb or Jun, Feb
+      against a typed 31, and a whole year that leaves Feb 29 on a non-leap year or is before 1900. A change is
+      *refused*, never clamped, so editing one box does not rewrite another. With no year (or a part-typed
+      one) the check assumes a leap year, so Feb 29 stays typeable until a year says otherwise. **`201` cannot
+      be refused per keystroke** (it heads 2010–2019): the panel's year box takes it while it has focus and, on
+      leaving, gives back the last whole year (`GigsField`'s `lastYear`, `settleYear`); an emptied year is
+      left alone. The canvas has no year slot (the year is printed nowhere), so the inline box needs no revert;
+      it passes the row for the month and day only. Stored values from before the rule still print and show
+      `gigDateNote`; deleting is always allowed, so they can be cleared. `inline-probe`'s gig month sentinel is
+      `Aug`, not `Sep`, because Sep is refused against a seeded 31st.
   - **`rings` is a ',' list of 3 at most**: the map slices its labels to its three rings. A ring
     label is a chip, capped at 13 (the sized rule).
   - **Venue Link stays at its seed's 10–11 under Retro, Lime and Grunge**, because the 768 pill

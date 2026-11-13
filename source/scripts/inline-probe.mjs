@@ -417,8 +417,8 @@ async function runCombo(theme, layout, width) {
         // whole price the amount and the lead goes with it, by design (the price is free text): a price's
         // amount takes a number.
         // A gig's day takes digits and its month the start of a month's name (gigPart), so a word is
-        // refused there by design (QA, 2026-11-09): they get a value the box takes.
-        const tag = /\.amount$/.test(ed.slot) ? '77' : /\.day$/.test(ed.slot) ? '27' : /\.month$/.test(ed.slot) && /gigs\[/.test(ed.slot) ? 'Sep' : SENTINEL
+        // refused there by design (QA, 2026-11-09; 'Aug' not 'Sep': a month the seeded 31st fits, pass 3): they get a value the box takes.
+        const tag = /\.amount$/.test(ed.slot) ? '77' : /\.day$/.test(ed.slot) ? '27' : /\.month$/.test(ed.slot) && /gigs\[/.test(ed.slot) ? 'Aug' : SENTINEL
         if (!(await selectAll(page))) throw Object.assign(new Error(`select-all did not select the whole box of ${ed.slot} (${theme} L${layout} ${width})`), { control: true })
         await page.keyboard.type(tag)
         await wait(140)

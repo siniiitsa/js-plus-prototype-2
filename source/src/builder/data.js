@@ -3997,11 +3997,15 @@ export function weekdayOf(y, m, d) {
 // digits, because Date.UTC reads 25 as 1925; and a day the month does not have
 // (31 Jun) gives nothing rather than rolling over, parseDate()'s rule. The
 // weekday and the Upcoming / Past status both read it, so a date is one rule.
+// The month a gig's free-text box names (its first three letters), zero-based, or -1.
+const gigMonthIdx = (month) => {
+  const key = String(month ?? '').trim().slice(0, 3).toLowerCase()
+  return key.length === 3 ? MONTHS.findIndex((n) => n.slice(0, 3).toLowerCase() === key) : -1
+}
 export function gigStamp(year, month, day) {
   const y = /^\d{4}$/.exec(String(year ?? '').trim())
   const d = /^\d{1,2}$/.exec(String(day ?? '').trim())
-  const key = String(month ?? '').trim().slice(0, 3).toLowerCase()
-  const m = key.length === 3 ? MONTHS.findIndex((n) => n.slice(0, 3).toLowerCase() === key) : -1
+  const m = gigMonthIdx(month)
   if (!y || !d || m < 0) return null
   const n = +d[0]
   if (+y[0] < MIN_YEAR || n < 1 || n > monthSpan(+y[0], m).length) return null
@@ -4026,17 +4030,39 @@ const isCut = (v, prev) => {
   return false
 }
 const DAY_PREFIX = /^(|0|0[1-9]|[1-9]|[12]\d|3[01])$/
-export function gigPart(col, raw, prev = '') {
+// Pass 3 (QA 1amvuf5xxq2): a box is also refused when the date it makes with the row's other two is
+// not a day (Feb 31, Feb 29 2031, 31 Jun). `year` is the row's when it is four digits from MIN_YEAR,
+// else a leap year, so Feb 29 stays typeable until a year says otherwise; a part that is not complete
+// yet (a partial month or year, an empty day) decides nothing.
+const fitsRow = (month, day, year) => {
+  const m = gigMonthIdx(month)
+  const d = /^\d{1,2}$/.test(String(day ?? '').trim()) ? +String(day).trim() : 0
+  if (m < 0 || !d) return true
+  const y = /^\d{4}$/.test(String(year ?? '').trim()) && +String(year).trim() >= MIN_YEAR ? +String(year).trim() : 2024
+  return d <= monthSpan(y, m).length
+}
+export function gigPart(col, raw, prev = '', row = null) {
   const v = String(raw ?? ''), was = String(prev ?? '')
   if (col !== 'month' && col !== 'day' && col !== 'year') return v
   if (isCut(v, was)) return v
+  const r = row ?? {}
   // A letter typed over a selection strips to nothing: refuse it rather than empty the box.
-  if (col === 'day') { const d = v.replace(/\D/g, '').slice(0, 2); return d && DAY_PREFIX.test(d) ? d : was }
-  if (col === 'year') return v.replace(/\D/g, '').slice(0, 4) || was
+  if (col === 'day') {
+    const d = v.replace(/\D/g, '').slice(0, 2)
+    return d && DAY_PREFIX.test(d) && fitsRow(r.month, d, r.year) ? d : was
+  }
+  if (col === 'year') {
+    const y = v.replace(/\D/g, '').slice(0, 4)
+    if (!y) return was
+    // Only a whole year is decidable: `201` is the head of 2010–2019, and reverts on leaving the box.
+    if (y.length === 4 && (+y < MIN_YEAR || !fitsRow(r.month, r.day, y))) return was
+    return y
+  }
   const key = v.trim().replace(/\./g, '').toLowerCase()
   if (!key) return v.trim() ? was : ''
   if (!/^[a-z]+$/.test(key)) return was
-  return MONTHS.some((n) => n.toLowerCase().startsWith(key)) ? v : was
+  if (!MONTHS.some((n) => n.toLowerCase().startsWith(key))) return was
+  return fitsRow(v, r.day, r.year) ? v : was
 }
 
 // A gig's weekday, for layout 3's date disc (JP-069, user call, 2026-09-29):

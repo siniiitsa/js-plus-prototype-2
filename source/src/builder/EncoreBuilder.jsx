@@ -3559,6 +3559,7 @@ const NO_WEEKDAY_HINT = 'No weekday and no Upcoming / Past: the date needs a rea
 // Every layout prints the month and day on the disc, so a date that is not a day is said at every layout
 // (QA 1amvuf5xxq2, pass 2: `201` typed into the year said nothing outside layout 3). The year is read by
 // layout 3 alone, so its consequence is named there only.
+const gigYearOk = (y) => /^\d{4}$/.test(String(y ?? '').trim()) && +String(y).trim() >= MIN_YEAR
 function gigDateNote(g, design) {
   const filled = [g.month, g.day, g.year].some((v) => String(v ?? '').trim())
   if (!filled || gigStamp(g.year, g.month, g.day) != null) return ''
@@ -3685,7 +3686,20 @@ function GigsField({ caps, value, max, design, onChange }) {
   const list = Array.isArray(value) ? value : []
 
   // Month, day and year take what a date reads (gigPart); a refused key leaves the box as it was.
-  const setAt = (i, k, v) => onChange(list.map((g, j) => (j === i ? { ...g, [k]: gigPart(k, v, g[k]) } : g)))
+  // The row goes in too, so a box is refused when it makes a date that is no day with the other two.
+  const setAt = (i, k, v) => onChange(list.map((g, j) => {
+    if (j !== i) return g
+    const next = gigPart(k, v, g[k], g)
+    if (k === 'year' && gigYearOk(next)) lastYear.current[i] = next
+    return { ...g, [k]: next }
+  }))
+  // `201` is the head of 2010–2019, so the year box takes a part-typed year while it has focus and gives
+  // the last whole one back on leaving (QA 1amvuf5xxq2, pass 3). An emptied year is left alone.
+  const lastYear = useRef({})
+  const settleYear = (i) => {
+    const y = String(list[i]?.year ?? '').trim()
+    if (y && !gigYearOk(y)) onChange(list.map((g, j) => (j === i ? { ...g, year: lastYear.current[i] ?? '' } : g)))
+  }
   const removeAt = (i) => onChange(list.filter((_, j) => j !== i))
   const add = () => onChange([...list, { venue: '', city: '', time: '', month: '', day: '', year: '', link: '' }])
 
@@ -3753,6 +3767,8 @@ function GigsField({ caps, value, max, design, onChange }) {
           />,
           <CappedText cap={caps?.year}
             key="year" value={g.year ?? ''} placeholder="Year" inputMode="numeric" onClick={stopE}
+            onFocus={() => { lastYear.current[i] = gigYearOk(g.year) ? String(g.year).trim() : '' }}
+            onBlur={() => settleYear(i)}
             onChange={(e) => setAt(i, 'year', e.target.value)}
             className="h-auto" style={SONG_ROW_INPUT}
           />,
@@ -7198,7 +7214,7 @@ function floatBox(node, rel, wide) {
 // Some boxes are not committed empty: the name, and a list item or a cell, whose
 // removal would unmount the node under the box. Such a draft is held here, and
 // the page keeps what it had; the panel removes or clears.
-function InlineEditor({ ed, value, cap, onChange, onRevert, onClose }) {
+function InlineEditor({ ed, value, cap, row, onChange, onRevert, onClose }) {
   const [draft, setDraft] = useState(null)
   // What was just typed, kept while the page's value only differs by the spaces around it: a list item
   // and a price's lead or tail are trimmed when read back, so a space typed at the end of a word
@@ -7243,7 +7259,7 @@ function InlineEditor({ ed, value, cap, onChange, onRevert, onClose }) {
           let v = multi ? e.target.value : e.target.value.replace(/\s*\n\s*/g, ' ')
           // A gig's month and day take what the date reads (gigPart); a refused key leaves the box as it was.
           if (ed.k === 'gigs' && ed.row != null && (ed.col === 'month' || ed.col === 'day' || ed.col === 'year')) {
-            v = gigPart(ed.col, v, shown)
+            v = gigPart(ed.col, v, shown, row)
             if (v === shown && e.target.value !== shown) return
           }
           setComma(ed.item != null && (ed.row != null ? ROW_LISTS[ed.col] : ed.f.list) === ',' && v.includes(','))
@@ -8413,6 +8429,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
                     {inline && inline.sid === sec.id && (
                       <InlineEditor
                         ed={inline} cap={inline.cap}
+                        row={inline.k === 'gigs' && inline.row != null ? repeaterRows(sec, 'gigs', T.name)[inline.row] : null}
                         value={slotText(sec, inline, T.name, artistName)}
                         onChange={(v) => {
                           const [k, val] = slotWrite(sec, inline, v, T.name, artistName)
