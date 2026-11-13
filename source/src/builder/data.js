@@ -545,7 +545,7 @@ export const SCHEMES_OF = {
     // sheet and the map (964:68778 · 984:15382 · 984:15413) a Scheme 4 band.
     // The footer's instances set Scheme 2 on a tree that binds nothing, so it
     // keeps row 0's 3.
-    2: { header: 6, calendar: 2, gallery: 2, map: 4 },
+    2: { header: 6, gallery: 2, map: 4 },
     // Its layout-4 page (964:73127 · 971:10835 · 977:14267), bound, every seat
     // the same at all three widths — Editorial's row 3 in shape. The header
     // (964:73128 · 971:10836 · 977:14268), the bio's Section (964:73129 ·
@@ -587,7 +587,7 @@ export const CATS = [
   { id: 'pricing', name: 'Pricing', nav: 'Pricing', n: 8 },
   { id: 'repertoire', name: 'Repertoire', nav: 'Repertoire', n: 7 },
   { id: 'gallery', name: 'Gallery', nav: 'Media', n: 4 },
-  { id: 'calendar', name: 'Booking Calendar', nav: 'Availability', n: 5 },
+  { id: 'calendar', name: 'Booking Calendar', nav: 'Availability', n: 4 },
   { id: 'map', name: 'Events Map', nav: 'Shows/Coverage', n: 4 },
   { id: 'testimonials', name: 'Testimonials', nav: 'Reviews', n: 4 },
   { id: 'form', name: 'Enquiry Form', nav: 'Enquiries', n: 6 },
@@ -878,17 +878,31 @@ export const designCount = (catId, themeName) =>
 // header cards for layouts 1 and 3 drop the section rather than fold it
 // (EncoreBuilder's `pickHeader`).
 export const videoDesign = (i) => ((i % 4) + 4) % 4 | 1
-export const pageLayout = (catId, i, themeName) => {
+
+// The design a stored `arch` renders, folded past a category's holes. `video`
+// has no layouts 1 and 3 (above). The booking calendar lost its layout 3,
+// design 2 (2026-11-13), and a stored `arch` 2 — an in-session draft, a removed
+// section the composer restores, a harness `&arch=2` — renders as layout 1, the
+// nearest month grid. Every reader of `arch % designCount` goes through this, or
+// the panel, caps and inline editor would believe a design the canvas does not
+// draw.
+export const designOf = (catId, arch, themeName) => {
   const n = designCount(catId, themeName) || 1
-  const k = ((i % n) + n) % n
-  return catId === 'video' ? videoDesign(k) : k
+  const k = ((arch % n) + n) % n
+  if (catId === 'video') return videoDesign(k)
+  if (catId === 'calendar' && k === 2) return 0
+  return k
 }
+export const pageLayout = (catId, i, themeName) => designOf(catId, i, themeName)
 
 // The `arch` values the layout picker offers a category: every index, except
-// that a video has a frame at layouts 2 and 4 alone.
+// that a video has a frame at layouts 2 and 4 alone and the calendar at 1, 2
+// and 4 (no layout 3, no layout-5 duplicate of layout 1).
 export const layoutChoices = (catId, themeName) => (catId === 'video'
   ? [1, 3]
-  : Array.from({ length: layoutCount(catId, themeName) }, (_, i) => i))
+  : catId === 'calendar'
+    ? [0, 1, 3]
+    : Array.from({ length: layoutCount(catId, themeName) }, (_, i) => i))
 
 // The layout a video starts on when the composer adds one: the page's own if
 // that is one of the two it has (the header's design stands for the page's),
@@ -1858,7 +1872,7 @@ export const COLUMN_SPLIT = { left: 858, right: 405, gap: 55 }
 const COLUMN_LEFT = ['bio', 'media']
 
 export function pageRows(sections, themeName, wide) {
-  const at3 = (x) => x.arch % designCount(x.cat, themeName) === 2
+  const at3 = (x) => designOf(x.cat, x.arch, themeName) === 2
   const rows = []
   sections.forEach((x, i) => {
     if (wide && x.cat === 'calendar' && at3(x)) {
@@ -3076,31 +3090,26 @@ export const INLINE_OFF = {
   'Pop.1.testimonials.quotes.when': 'not drawn: layout 2’s card has no seat for it',
   'Pop.1.media.tracks.sub': 'derived value: the seeded page prints the release and the running time as two nodes, and the whole line only once the list is stored',
   'Retro.2.repertoire.songs.artist': 'not drawn: layout 3 prints a song’s length in the seat the artist holds elsewhere',
-  'Retro.2.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
   'Retro.2.form.fields.placeholder': 'not drawn: the card’s boxes print the label, and a placeholder only once the label is emptied',
   'Retro.2.testimonials.quotes.when': 'not drawn: layout 3’s wall has no seat for it',
   'Retro.2.media.tracks.sub': 'derived value: the seeded page prints the release and the running time as two nodes, and the whole line only once the list is stored',
   'Lime.2.header.kicker': 'not drawn: the layout-3 card prints the card line in the kicker’s seat (a shared identity key; the bio’s role line prints it)',
   'Lime.2.repertoire.songs.artist': 'not drawn: layout 3 prints a song’s length in the seat the artist holds elsewhere',
-  'Lime.2.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
   'Lime.2.form.fields.placeholder': 'not drawn: the card’s boxes print the label, and a placeholder only once the label is emptied',
   'Lime.2.testimonials.quotes.when': 'not drawn: layout 3’s wall has no seat for it',
   'Lime.2.media.tracks.sub': 'derived value: the seeded page prints the release and the running time as two nodes, and the whole line only once the list is stored',
   'Grunge.2.header.kicker': 'not drawn: the layout-3 card prints the card line in the kicker’s seat (a shared identity key; the bio’s role line prints it)',
   'Grunge.2.repertoire.songs.artist': 'not drawn: layout 3 prints a song’s length in the seat the artist holds elsewhere',
-  'Grunge.2.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
   'Grunge.2.form.fields.placeholder': 'not drawn: the card’s boxes print the label, and a placeholder only once the label is emptied',
   'Grunge.2.testimonials.quotes.when': 'not drawn: layout 3’s wall has no seat for it',
   'Grunge.2.media.tracks.sub': 'derived value: the seeded page prints the release and the running time as two nodes, and the whole line only once the list is stored',
   'Editorial.2.header.kicker': 'not drawn: the layout-3 card prints the card line in the kicker’s seat (a shared identity key; the bio’s role line prints it)',
   'Editorial.2.repertoire.songs.artist': 'not drawn: layout 3 prints a song’s length in the seat the artist holds elsewhere',
-  'Editorial.2.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
   'Editorial.2.form.fields.placeholder': 'not drawn: the card’s boxes print the label, and a placeholder only once the label is emptied',
   'Editorial.2.testimonials.quotes.when': 'not drawn: layout 3’s wall has no seat for it',
   'Editorial.2.media.tracks.sub': 'derived value: the seeded page prints the release and the running time as two nodes, and the whole line only once the list is stored',
   'Pop.2.header.kicker': 'not drawn: the layout-3 card prints the card line in the kicker’s seat (a shared identity key; the bio’s role line prints it)',
   'Pop.2.repertoire.songs.artist': 'not drawn: layout 3 prints a song’s length in the seat the artist holds elsewhere',
-  'Pop.2.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
   'Pop.2.form.fields.placeholder': 'not drawn: the card’s boxes print the label, and a placeholder only once the label is emptied',
   'Pop.2.testimonials.quotes.when': 'not drawn: layout 3’s wall has no seat for it',
   'Pop.2.media.tracks.sub': 'derived value: the seeded page prints the release and the running time as two nodes, and the whole line only once the list is stored',
@@ -3404,8 +3413,7 @@ function minCap(a, b) {
 export function identityCap(key, sections, themeName) {
   let cap = null
   for (const s of sections) {
-    const n = designCount(s.cat, themeName) || 1
-    cap = minCap(cap, identityCapOf(s.cat, key, themeName, ((s.arch % n) + n) % n))
+    cap = minCap(cap, identityCapOf(s.cat, key, themeName, designOf(s.cat, s.arch, themeName)))
   }
   return cap
 }
@@ -3440,8 +3448,7 @@ export function identityHint(f, sec, sections, themeName) {
   const others = sections
     .filter((s) => s.id !== sec.id)
     .filter((s) => {
-      const n = designCount(s.cat, themeName) || 1
-      return identityFieldsFor(s.cat, themeName, ((s.arch % n) + n) % n).some((g) => g.k === f.k)
+      return identityFieldsFor(s.cat, themeName, designOf(s.cat, s.arch, themeName)).some((g) => g.k === f.k)
     })
     .map((s) => catName(s.cat))
   const uniq = [...new Set(others)]

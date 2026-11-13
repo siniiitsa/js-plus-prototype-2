@@ -1,5 +1,12 @@
 # The booking calendar — working notes
 
+> **Layout 3 was removed 2026-11-13** (user call, every template). The picker offers layouts 1, 2 and 4
+> (`layoutChoices`; `CATS.calendar.n` 4, the layout-5 duplicate of layout 1 gone). `designOf()` in
+> `data.js` folds a stored `arch` 2 onto layout 1, so setup card 3 and any stored draft render
+> layout 1, and the picker highlights it. Everything below that describes layout 3 (the arrows, the
+> `mAt` / `at` rule, the composed sticky column, its inline-edit sections, `HEADING_3`, `heading` /
+> `prompt` `chars` slots) is **unreachable history**, left in the code as Video's holes are.
+
 Moved word for word out of `CLAUDE.md`'s *Intentional limits — not bugs* on 2026-09-30, so it
 loads only when a session works on it. "Above" and "below" may point into `CLAUDE.md` or
 another `notes/` file.

@@ -104,8 +104,9 @@ the only readers of the two neighbour keys are Lime's media and gallery and Grun
 No router, no context, no state library. One flat `useState` object `st` in `EncoreBuilder`,
 mutated through a single `patch()` helper.
 
-- **The page is rows, and nearly every row is one section.** The exception is layout 3's
-  composed page: at desktop, `pageRows()` in `data.js` stands a calendar on layout 3 in a
+- **The page is rows, and nearly every row is one section.** The exception was layout 3's
+  composed page (**dormant since 2026-11-13**: the calendar's layout 3 was removed, so no calendar
+  can stand in the column and `pageRows` never composes; the machinery is left in place): at desktop, `pageRows()` in `data.js` stands a calendar on layout 3 in a
   right column beside the bio / media sections on layout 3 directly above it, and
   `arrangeRows()` in `EncoreBuilder.jsx` draws that row as a 858fr : 405fr grid inside the
   page gutter. Both the editor canvas and `PublishedPage` go through the pair, and the
@@ -661,12 +662,20 @@ reversing 2026-10-20's "an already-selected section": the `text` cursor shows on
   what it can see rather than what the last render observed. Rows are a uniform height, so
   the drop index is the pointer delta in row-heights, not a hit test.
 - **Layout folding.** Every category offers at least as many layout numbers as it has distinct
-  designs, and six of the twelve offer more — Pricing layouts 1 and 5 render identically on
-  purpose. The other six are level: the header and the footer always were, the layout-4 pass
+  designs, and five of the twelve offer more — Pricing layouts 1 and 5 render identically on
+  purpose. The other seven are level: the header and the footer always were, the layout-4 pass
   took `gallery` and `map` there by bumping their design counts to the four rows they offer,
   `testimonials` followed (2026-11-11: its picker listed eight rows for four designs, so it offers
   four, and a stored `arch` past the rows is shown as the row it renders, `pageLayout`), and
-  `video` is level with holes (below).
+  `video` is level with holes (below), as is `calendar` since 2026-11-13: its layout 3 was removed
+  (user call; every template), so the picker offers layouts 1, 2 and 4 (`layoutChoices`) and the
+  layout-5 duplicate went with it (`n: 4`). **Design 2 stays in the code, unreachable**, like video's
+  holes, so `in`, caps and ledgers keep their index: `designOf()` in `data.js` folds a stored `arch`
+  2 onto layout 1 (the nearest month grid), and every reader of `arch % designCount` goes through it
+  (`sectionVm`, `EditPanel`, `inlineDesign`, `identityCap`, `identityHint`, `pageRows`), so setup card 3
+  gives the calendar layout 1 and a stored draft opens as layout 1. With no calendar on layout 3 the
+  composed row below never forms, and the bio / media on layout 3 stand full-width at desktop
+  (accepted).
   **The categories are the sections on Retro layout 1's Figma page** (`964:58575`), **plus `video`**:
   `tags` and `audio` were removed from the project, every layout, because that page draws none of
   them. `video` was removed with them and came back (`plans/video.md`, user calls 2026-10-27)

@@ -709,9 +709,9 @@ These are intentional limits, not oversights — see §12 for the full list. The
   frame at all. It is lifted from the stacked header, which shares the same full-bleed
   photograph — a fixed band, unscaled at every breakpoint, run a third finer than the reference's
   24px so the squares read as texture: 16px tall, 8px squares.
-- **Layout folding.** Six of the 10 non-header, non-video categories offer more layout numbers than
+- **Layout folding.** Five of the 10 non-header, non-video categories offer more layout numbers than
   there are distinct designs, so e.g. `Pricing layout 1` and `5` render identically while
-  keeping their own labels. The header, the footer, the gallery, the map and the testimonials are level (a stored testimonials layout 5–8 is shown as the row it renders). **The video
+  keeping their own labels. The header, the footer, the gallery, the map and the testimonials are level (a stored testimonials layout 5–8 is shown as the row it renders). **The booking calendar's layout 3 was removed (2026-11-13):** its picker offers layouts 1, 2 and 4, a stored layout 3 renders as layout 1 (`designOf()`), and with it the desktop composed bio / media / calendar row no longer forms. **The video
   section is the one layout-bound category** (`plans/video.md`, `notes/video.md`): the Figma frames draw it
   at layouts 2 and 4 only, so it has four design slots with two holes, its picker offers two rows, and
   the setup modal's cards 2 and 4 stand it after the media player while cards 1 and 3 leave it out.

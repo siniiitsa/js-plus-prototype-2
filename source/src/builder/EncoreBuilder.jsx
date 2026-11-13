@@ -59,7 +59,7 @@ import {
   CTA_TARGETS, firstPresent, minimalNav, navModeDefault, badgeOptsFor,
   catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldSeed, HEADING_3, HEADING_4, fieldReach, fieldShown, identityFieldsFor, identityHint, INLINE_OFF, PHOTO_OFF, INLINE_HEAD, INLINE_MARKED, INLINE_PART, INLINE_LINES, inlineRule, fieldCap, colCaps, identityCap, sealCap, capExcess, numeralLen, clampCapped, clampContent, legacyContent, clampIdentity, copyrightOf, formHeading3, extUrl, youtubeEmbed, youtubeThumb, youtubeParts, youtubeWatch, youtubeChannel, urlProblem, emailProblem, emailAddr, songTags, repChips,
   tierFeats, priceParts, priceCuts, blankRow, SONG_KEYS, repSetsOf, repSetLine, TRACK_KEYS, GIG_KEYS, gigWeekday, gigStatus, gigStamp, MIN_YEAR, gigPart, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
-  layoutChoices, designCount, pageLayout, pageOrder, pageRows, videoDesign, videoStartArch,
+  layoutChoices, designCount, designOf, pageLayout, pageOrder, pageRows, videoDesign, videoStartArch,
   VIDEOS, VIDEO_SEED, VIDEO_KEYS, videoPlayable, videoSeedDesc, VIDEO_ALL, COLUMN_SPLIT, bebasEms, antonEms, gloockEms, titanEms,
   headerLayout, headerLayoutLabel, setupHeaderCount,
 } from './data.js'
@@ -275,11 +275,10 @@ export const pageDesignOf = (sections, themeName) => {
 
 export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = {}, tiers = [], email = '', Z, mob, live = false, embeds = true, navSections = [], column = false, realMap = false, today, page = -1, above = '', below = '', clamp = true }) {
   const theme = THEMES[themeIdx]
-  const nDesign = designCount(cat, theme.name)
-  // A video has a frame at layouts 2 and 4 alone (plans/video.md, call 1), so
-  // the two holes fold onto the design beside them; nothing reaches them.
-  const d0 = ((arch % nDesign) + nDesign) % nDesign
-  const d = cat === 'video' ? videoDesign(d0) : d0
+  // A video has a frame at layouts 2 and 4 alone (plans/video.md, call 1) and
+  // the calendar none at layout 3: `designOf` folds a hole onto a design that
+  // exists, so a stored `arch` in one still renders.
+  const d = designOf(cat, arch, theme.name)
   c = legacyContent(cat, c)
   // The character caps (plans/char-limits.md): copy typed under another
   // layout's cap is shortened here, before anything below reads it, and keeps
@@ -5057,7 +5056,7 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
   // The panel has to resolve the seeded photos exactly as sectionVm does, or a
   // Retro section would show a photo on the canvas and an empty dropzone here.
   const themeName = THEMES[themeIdx].name
-  const design = sec.arch % (designCount(sec.cat, themeName) || 1)
+  const design = designOf(sec.cat, sec.arch, themeName)
   // Only the fields this design reads (fieldShown). A hidden field keeps its copy in `c` for the next layout.
   // The header's identity keys (`shared`) are listed where they are DRAWN: the header's panel while its
   // layout draws one, and every other section's panel whose layout prints it (`identityFieldsFor`). They
@@ -6375,7 +6374,7 @@ const INLINE_ROWS = {
 }
 // Two cells the page prints as one line, `Manchester · 22:00`, `Mellow · 45 min`.
 const LINE_PAIRS = { gigs: ['city', 'time'], sets: ['mood', 'length'] }
-const inlineDesign = (sec, themeName) => sec.arch % (designCount(sec.cat, themeName) || 1)
+const inlineDesign = (sec, themeName) => designOf(sec.cat, sec.arch, themeName)
 
 // The cap EditPanel and the inline box both enforce on `f` (plans/char-limits.md).
 function fieldCapOf(sec, f, sections, themeName, design) {
