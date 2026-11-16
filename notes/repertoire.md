@@ -107,3 +107,8 @@ Layout 4 draws every song sorted by title, so `INLINE_HEAD` has no work and both
 ## Inline editing (plans/inline-edit-all.md, Pop layout 4, 2026-10-22)
 
 Layout 4 draws every song sorted by title, so `INLINE_HEAD` has no work and both *Valerie*s open their own rows (`valerie.mjs`, both widths). `songs.length` is ledgered (`Pop.3.repertoire.songs.length`: no song length is printed). The A–Z rail is the only sticky box (1440 alone) and holds no slot.
+- **The live heading counts the filtered list** (QA, 2026-11-16). At layouts 1 and 2, while the heading is the
+  song-count fallback (`c.heading` absent), `sectionVm` sends `vm.repCountTitles`, the cased "N Songs" for every
+  count 0..songs, and `Repertoire` indexes it by `filtered.length` (chip and search, across all pages) when `s.live`.
+  The canvas and the panel keep the total. A typed heading, and layouts 3 and 4 (which overwrite the title), never
+  read it. Data, not a closure, so `EncoreSection` still does no casing.

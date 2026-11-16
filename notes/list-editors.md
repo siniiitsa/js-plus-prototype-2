@@ -116,7 +116,7 @@ another `notes/` file.
   under a blank row, and the repertoire's song-count heading counts the filtered list in both
   places. The one exception is the form's guarded email row, above. The chips are derived from the tags, so nothing sets them directly, and the
   heading falls back to the song count in `sectionVm` **and** in `EditPanel` — change one, change
-  both. Layouts 3 and 4 are the exceptions: there the frames' "Curated sets" (JP-070, user call,
+  both (the live page alone narrows the count with the chip and search: `vm.repCountTitles`, notes/repertoire.md). Layouts 3 and 4 are the exceptions: there the frames' "Curated sets" (JP-070, user call,
   2026-09-28) and "Repertoire" (JP-081, user call, 2026-09-29) win over the count. They come from
   **`HEADING_3`** and **`HEADING_4`**, the two layouts' tables of heads. `HEADING_3` also carries
   the gallery's "Gallery", pricing's "Pricing", the map's "Where I'm playing.", the testimonials'

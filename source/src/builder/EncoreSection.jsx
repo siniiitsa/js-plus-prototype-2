@@ -12912,6 +12912,9 @@ function Repertoire({ s }) {
       && (!needle || t.title.toLowerCase().includes(needle) || t.artist.toLowerCase().includes(needle))
     )
     const filtered = s.live ? s.songs.filter(hit) : s.songs
+    // The heading is the song count (sectionVm sends the cased strings, indexed by the
+    // number of matches), so on the live page it follows the chip and the search.
+    const title = s.live && s.repCountTitles ? s.repCountTitles[filtered.length] : s.title
     const pages = Math.max(1, Math.ceil(filtered.length / perPage))
     // Clamped rather than reset through an effect: a filter that shortens the
     // list must not strand the pager on a page that no longer exists.
@@ -13016,7 +13019,7 @@ function Repertoire({ s }) {
         chipSize: s.bodySm, chipLh: 1.4, chipOn: s.bg,
         song: s.labelLg,
       }
-      const words = String(s.title || '').split(' ')
+      const words = String(title || '').split(' ')
       const hint = 'Search songs or artists…'
       // Pop's glyphs are lifted 0.14em, Titan One setting its caps that much
       // lower in the line box than Chunko does (the bio's and the gallery's
@@ -13029,7 +13032,7 @@ function Repertoire({ s }) {
           ...(pop ? { position: 'relative', top: '-0.14em' } : null),
         })}>{grunge && words.length > 1
           ? <>{words[0]} <span style={{ color: s.tx }}>{words.slice(1).join(' ')}</span></>
-          : s.title}
+          : title}
           {ed && !s.narrow && (
             <GrungeStar s={s} fill={SIENNA_MEDIA} style={{ right: 0, top: u(0.13), width: u(80.67), height: u(81.42) }} />
           )}</h2>
@@ -13333,7 +13336,7 @@ function Repertoire({ s }) {
               margin: 0, fontFamily: s.display,
               fontSize: s.mob ? '54px' : tab ? '81px' : s.dispLg,
               lineHeight: 0.89, letterSpacing: s.dls, color: s.ac,
-            }}>{s.title}</h2>
+            }}>{title}</h2>
           </div>
           {/* Fraunces sets the heading a good deal wider than the frame's
               Soulway, so the field takes its width as a shrinkable basis: it
@@ -13627,6 +13630,9 @@ function Repertoire({ s }) {
       && (!needle || t.title.toLowerCase().includes(needle) || t.artist.toLowerCase().includes(needle))
     )
     const filtered = s.live ? s.songs.filter(hit) : s.songs
+    // The heading is the song count (sectionVm sends the cased strings, indexed by the
+    // number of matches), so on the live page it follows the chip and the search.
+    const title = s.live && s.repCountTitles ? s.repCountTitles[filtered.length] : s.title
     const pages = Math.max(1, Math.ceil(filtered.length / perPage))
     const pg = Math.min(page, pages - 1)
     const shown = filtered.slice(pg * perPage, (pg + 1) * perPage)
@@ -13761,7 +13767,7 @@ function Repertoire({ s }) {
               margin: 0, fontFamily: s.display, fontSize: faced(s, s.dispSm), lineHeight: facedLh(s, 1),
               letterSpacing: s.dls, color: s.tx, textTransform: grunge || ed || pop ? 'uppercase' : undefined,
               ...(pop ? { position: 'relative', top: '-0.14em' } : null),
-            })}>{s.title}</h2>
+            })}>{title}</h2>
             <div style={row(u(16), {
               justifyContent: 'space-between', flexWrap: 'wrap', rowGap: u(s.mob ? 10 : 12),
               flexDirection: s.mob ? 'column' : 'row',
@@ -14007,7 +14013,7 @@ function Repertoire({ s }) {
           <h2 style={{
             margin: 0, fontFamily: s.display, fontSize: u(desk ? 40 : tab ? 32 : 26),
             lineHeight: 1, letterSpacing: s.dls, color: s.ac,
-          }}>{s.title}</h2>
+          }}>{title}</h2>
           <div style={row(u(16), {
             // Stacked at 390, the column direction IS the row gap, so the
             // master's own 10 has to be set here and not in the 16 above —

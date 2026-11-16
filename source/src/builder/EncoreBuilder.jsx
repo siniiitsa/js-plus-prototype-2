@@ -1333,7 +1333,13 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // The heading counts the list unless the artist has written their own, so it
   // cannot go on claiming 240 songs over a list of twelve. EditPanel resolves
   // the same fallback, or the panel and the canvas would disagree.
-  if (cat === 'repertoire' && c.heading === undefined) vm.title = cased(`${vm.songs.length} Songs`)
+  if (cat === 'repertoire' && c.heading === undefined) {
+    vm.title = cased(`${vm.songs.length} Songs`)
+    // The live page counts the list the chip and the search leave, so the cased
+    // heading for every possible match count is sent as data, indexed by the
+    // count. Layouts 3 and 4 overwrite the title below and never read it.
+    vm.repCountTitles = Array.from({ length: vm.songs.length + 1 }, (_, n) => cased(`${n} Songs`))
+  }
   // Testimonials layout 2 heads the section with its frame's own two-line
   // display head; the other layouts keep the shared default. EditPanel mirrors
   // it. The stars sit in its card's corner.
