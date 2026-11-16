@@ -1474,7 +1474,7 @@ export const STEP_KEYS = ['title', 'sub']
 // Written in the row shape FormFieldsField edits and sectionVm reads — the
 // GIGS/TIERS rule, so the panel's seed resolver needs no dressing.
 export const FORM_FIELDS = [
-  { label: 'Name',       placeholder: 'Full name',      kind: 'text' },
+  { label: 'Name',       placeholder: 'Full name',      kind: 'name' },
   { label: 'Email',      placeholder: 'you@email.com',  kind: 'email' },
   // A `date` kind, drawn as a masked text box (dd/mm/yyyy, digits only), never
   // type="date": the native picker cannot be styled onto the mustard panel.
@@ -1491,7 +1491,7 @@ export const FORM_FIELDS = [
 // key is absent — FORM_BTN_4's rule, in sectionVm and EditPanel's formFieldsVal
 // alike — so a list the artist has edited is theirs at every layout.
 export const FORM_FIELDS_4 = [
-  { label: 'Your name',  placeholder: 'Full name',       kind: 'text' },
+  { label: 'Your name',  placeholder: 'Full name',       kind: 'name' },
   { label: 'Email',      placeholder: 'you@email.com',   kind: 'email' },
   { label: 'Event date', placeholder: 'dd / mm / yyyy',  kind: 'date' },
   { label: 'Event type', placeholder: 'Wedding, party…', kind: 'text' },
@@ -1519,10 +1519,12 @@ export const FORM_FIELD_KEYS = ['label', 'placeholder']
 // drops, or the form would have nowhere to be replied to; the seed's own word,
 // so a box and its mailto body line read the same.
 export const FORM_EMAIL_LABEL = 'Email'
-// The four kinds a row can be, in the { v, l } shape EditPanel's own select
-// branch reads. Anything else sectionVm resolves to 'text'.
+// The five kinds a row can be, in the { v, l } shape EditPanel's own select
+// branch reads. Anything else sectionVm resolves to 'text'. `name` is the
+// visitor's own name (QA, 2026-11-15): required, no digits.
 export const FORM_KINDS = [
   { v: 'text',   l: 'Text' },
+  { v: 'name',   l: 'Name' },
   { v: 'email',  l: 'Email' },
   { v: 'number', l: 'Number' },
   { v: 'date',   l: 'Date' },
@@ -3822,6 +3824,9 @@ export function enquiryMailto(email, { type, fields, message, msgLabel }) {
 // `m` is a message per row where the box can say what is wrong: a date typed
 // but not a real day, or a day gone by. An empty or email row has none (the
 // form's own prompt says it), so the visitor still sees one line at a time.
+//
+// This is the calendar wizard's check (`vm.calCheck`); the enquiry form's own
+// is enquiryErrors() below, which follows the QA rules (2026-11-15).
 export function formErrors(fields, vals, today) {
   const now = parseDate(today)
   const m = []
@@ -3841,6 +3846,62 @@ export function formErrors(fields, vals, today) {
 }
 export const DATE_FORMAT_MSG = 'Type the date as dd / mm / yyyy.'
 export const DATE_PAST_MSG = 'That date has already passed.'
+
+// The enquiry form's own check (QA, 2026-11-13 / 15). Only the name, the email
+// and the message (where the layout draws one) are required; a date, a guest
+// count and any other box are optional, a blank or whitespace-only value
+// counting as omitted, but a value that is supplied must pass its kind's rule.
+// A hand-over to the mail app waits on this: EnquiryForm composes no href
+// until `any` is false.
+export const NAME_MSG = 'Enter your name, using letters only (no digits).'
+export const EMAIL_MSG = 'Enter a valid email address.'
+export const NUMBER_MSG = 'Enter a whole number, 1 or more.'
+export const REQUIRED_MSG = 'This box is required.'
+export const MESSAGE_MSG = 'Write a short message.'
+// A name: at least one letter, no digit in any script (\p{N} also catches
+// ² and ٣), otherwise anything — spaces, ’ ' and - are ordinary name marks.
+export function nameProblem(v) {
+  const t = String(v ?? '').trim()
+  if (!t) return REQUIRED_MSG
+  return /\p{N}/u.test(t) || !/\p{L}/u.test(t) ? NAME_MSG : null
+}
+// A guest count: a whole number of at least 1 (digits only after trimming).
+export function countProblem(v) {
+  const t = String(v ?? '').trim()
+  return t && !(/^\d+$/.test(t) && +t >= 1) ? NUMBER_MSG : null
+}
+// Returns { f, m, msg, any, first }. `f` / `m` are index-aligned with the rows
+// as formErrors' are; `msg` is { bad, m } for the textarea (bad only when
+// `needMsg`); `first` is the first refused control in page order — a row's
+// index, or 'msg' — which is where focus goes.
+export function enquiryErrors(fields, vals, today, { message = '', needMsg = false } = {}) {
+  const now = parseDate(today)
+  const m = []
+  const f = (fields || []).map((fd, i) => {
+    const v = String((vals || [])[i] ?? '').trim()
+    m[i] = ''
+    if (fd.kind === 'name') { m[i] = nameProblem(v) || ''; return !!m[i] }
+    if (fd.kind === 'email') {
+      if (!v) { m[i] = EMAIL_MSG; return true }
+      if (/\s/.test(v) || emailProblem(v)) { m[i] = EMAIL_MSG; return true }
+      return false
+    }
+    if (!v) return false
+    if (fd.kind === 'number') { m[i] = countProblem(v) || ''; return !!m[i] }
+    if (fd.kind === 'date') {
+      const at = parseDayFirst(v)
+      if (!at) { m[i] = DATE_FORMAT_MSG; return true }
+      if (now && isoDate(at.y, at.m, at.d) < isoDate(now.y, now.m, now.d)) { m[i] = DATE_PAST_MSG; return true }
+    }
+    return false
+  })
+  const msgBad = !!needMsg && !String(message ?? '').trim()
+  const at = f.indexOf(true)
+  return {
+    f, m, msg: { bad: msgBad, m: msgBad ? MESSAGE_MSG : '' },
+    any: at >= 0 || msgBad, first: at >= 0 ? at : msgBad ? 'msg' : -1,
+  }
+}
 
 // A tagged row's raw `tags` string → its trimmed, non-empty labels. Song-named
 // for the list it was written for, but it reads nothing but the string: the

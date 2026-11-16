@@ -287,3 +287,30 @@ the boxes print) as at layout 2.
 ## Date boxes (2026-11-06)
 
 A row's `kind` is `text`, `email`, `number` or **`date`** (`FORM_KINDS`); the three seeded `Event date` rows (`FORM_FIELDS`, `_4`, `_CARD`) are `date`. A date box is a masked text input, never `type="date"` (the native picker cannot be styled onto the panels): `EnquiryForm`'s `setAt` runs `maskDate()` (a module-local helper in `EncoreSection`, which imports nothing from `data.js`), so only digits are kept and the slashes are put in as they type, `dd/mm/yyyy`; `inputMode` is `numeric`. `formErrors(fields, vals, today)` refuses a date row that is empty, is not a real day (`parseDayFirst`), or, once `today` is known (published tab only, `vm.formCheck` passes `sectionVm`'s), is before today. The marked box is the generic one and carries `aria-invalid`; `formErrors` also returns `m[]`, a message for a date row (*Type the date as dd / mm / yyyy.*, *That date has already passed.*), and the form's prompt line prints the first one in place of the generic prompt (2026-11-11, QA: `99/99/9999` showed no reason). A year below 1900 is not a date (`MIN_YEAR`: `Date.UTC` reads 0–99 as 1900–1999). The wizard's date is unchanged (not gated). The placeholder keeps the frames' `dd / mm / yyyy`. The calendar wizard's `Approx. date` box is masked by the same helper (`setBox`).
+
+## Validation before the handoff (QA, 2026-11-13 / 15)
+
+The form used to compose its mailto href on every render and only refuse on the click, so the link payload
+carried whatever was typed (`QA123`, `bad-email`, a past date, `0` guests) and no control reported a validity.
+Now **no href exists until every box the layout shows passes `formCheck`**, which is `enquiryErrors()` in
+`data.js` (the calendar wizard's `vm.calCheck` keeps the older `formErrors()`, unchanged).
+
+- **Rules.** Required: the **name** (a row of the new `name` kind, seeded as layout 1's *Name* and layout 4's
+  *Your name*; `nameProblem()`: trimmed, a letter, no `\p{N}` in any script, so accents, spaces, `'`, `’`, `-` pass),
+  the **email** (`emailProblem()` and no internal whitespace) and the **message** where the layout draws one
+  (`vm.formNeedsMsg`, layouts 1 and 4; whitespace alone is empty). Optional, checked only when typed: a
+  **`number`** row (`countProblem()`: digits only, at least 1, so `0`, `-1`, `1.5` and text fail) and a **`date`**
+  row (a real dd/mm/yyyy day, not before `today`; `today` is the published tab's and Preview's clock, never the canvas).
+  A blank or whitespace-only optional box is omitted. This reverses the old "every box is required".
+- **The pill.** Valid: `<a href="mailto:…">`, the click sets `sent`. Invalid but addressed: the same `<a>` with
+  **no href**, `role="button"` and `tabIndex=0`; click, Enter and Space all run `refuse()`: the errors are set,
+  the first refused control (`verdict.first`, a row index or `'msg'`) takes focus through the `ctls` ref map (set in
+  the handler, no effect), and every entry stays. Unaddressed (no recipient): the inert span, as before. Still no `<form>`.
+- **Per control.** `cp(key)` spreads `ref`, `aria-describedby` (the prompt line, which is `role="alert"` and carries
+  the first refused control's own message: *Enter your name…*, *Enter a valid email address.*, *Enter a whole number,
+  1 or more.*, the date messages, *Write a short message.*) and calls `setCustomValidity` with the current verdict,
+  so `input.validity` agrees with what the page says. The message box takes the layout's refused ring (`msgBad`).
+  A fresh callback ref each render is what keeps the custom message following the box's value.
+- **Probe.** `scripts/page-check.mjs` types valid data per kind; reading the href before the form is valid now
+  gives nothing. All 20 template × layout pages were driven at Desktop, Tablet and Mobile with the QA cases
+  (invalid blocks and focuses, valid hands off trimmed, guests / dates / spaces-only edge cases).

@@ -50,7 +50,7 @@ import {
   GIGS, MAP_TRAVEL_TIME, MAP_FEE, directionsUrl, GALLERY_SOURCES, GALLERY_KICKER, GALLERY_BACK_LABEL,
   MAP_STATUS, MAP_UPDATED, MAP_EXPAND,
   PRICING_REVIEWS, PRICING_RATING, PRICING_CTA, PRICING_NOTE, PRICING_OFFER,
-  FORM_PROMISES, FORM_STEPS, STEP_KEYS, FORM_FIELDS, FORM_FIELDS_CARD, FORM_FIELDS_4, FORM_FIELD_KEYS, FORM_EMAIL_LABEL, FORM_KINDS, FORM_TYPES, FORM_MESSAGE, FORM_MSG_LABEL,
+  FORM_PROMISES, FORM_STEPS, STEP_KEYS, FORM_FIELDS, FORM_FIELDS_CARD, FORM_FIELDS_4, FORM_FIELD_KEYS, FORM_EMAIL_LABEL, FORM_KINDS, enquiryErrors, FORM_TYPES, FORM_MESSAGE, FORM_MSG_LABEL,
   FOOTER_LINKS, FOOTER_TARGETS, FOOTER_CREDIT, FOOTER_STATEMENT,
   CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN, CAL_SLOTS, SLOT_KEYS, slotDate, parseDayFirst, pageTiers, CAL_SLOT_CTA, CAL_SEND_4, FORM_EMAIL, pageEmail, MONTHS, DAY_FULL,
   TESTI_HEADING_2, CARD_LINE_3, TESTI_STARS, TESTI_RATING,
@@ -2117,7 +2117,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   vm.formFields = formList.filter((f) => formGuarded(f) || !blankRow(f, FORM_FIELD_KEYS)).map((f) => ({
     label: String((f && f.label) ?? '').trim() || (formGuarded(f) ? FORM_EMAIL_LABEL : ''),
     placeholder: String((f && f.placeholder) ?? '').trim(),
-    kind: (f && (f.kind === 'email' || f.kind === 'number' || f.kind === 'date')) ? f.kind : 'text',
+    kind: (f && (f.kind === 'email' || f.kind === 'name' || f.kind === 'number' || f.kind === 'date')) ? f.kind : 'text',
   }))
   // Two to a row, paired HERE rather than in EncoreSection, which does no
   // maths — the gigs' pin rule. It is not decoration: all three §10.2 frames
@@ -2159,7 +2159,11 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     message: msg,
     msgLabel: vm.formMsgLabel,
   })
-  vm.formCheck = ({ vals }) => formErrors(vm.formFields, vals, today)
+  // The enquiry form's own verdict (QA, 2026-11-15; `enquiryErrors` in data.js):
+  // name, email and — where the layout draws a message box — the message are
+  // required, the rest checked only when typed. Layouts 1 and 4 draw it.
+  vm.formNeedsMsg = d === 0 || d === 3
+  vm.formCheck = ({ vals, msg }) => enquiryErrors(vm.formFields, vals, today, { message: msg, needMsg: vm.formNeedsMsg })
 
   // footer
   vm.copyright = cv('copyright', copyrightOf(artistName))

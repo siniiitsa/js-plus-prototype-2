@@ -26643,6 +26643,10 @@ function EnquiryForm({ s }) {
   // filled. No effect anywhere: set on the click, read on the render.
   const [errs, setErrs] = useState(null)
   const [sent, setSent] = useState(false)
+  // The refused control to focus, and the prompt line's id for aria-describedby:
+  // a ref and an id, never an effect — the focus is set in the click handler.
+  const ctls = useRef({})
+  const pid = useId()
 
   const nTypes = s.formTypes.length
   // Clamped like the pricing chips': the row is the artist's list now, so a
@@ -26658,6 +26662,10 @@ function EnquiryForm({ s }) {
   // than a claim the visitor never made.
   const showTypes = !!s.v0 && nTypes > 0
   const at = (i) => vals[i] ?? ''
+  const setMessage = (v) => {
+    setMsg(v)
+    setErrs((e) => (e ? { ...e, msg: { bad: false, m: '' } } : e))
+  }
   const setAt = (i, raw) => {
     const v = s.formFields[i]?.kind === 'date' ? maskDate(raw) : raw
     setVals((prev) => { const next = prev.slice(); next[i] = v; return next })
@@ -26678,13 +26686,46 @@ function EnquiryForm({ s }) {
   // artist has not addressed is still the picture their page is drawn around.
   // No target and no rel: a mailto in a new tab leaves an empty tab behind, and
   // the published document's delegated listener only ever swallows '#'.
-  const href = s.live && !sent ? s.formMailto({ vals, ti: showTypes ? ti : -1, msg }) : ''
-  const onSubmit = href ? (e) => {
-    const bad = s.formCheck({ vals })
-    if (bad.any) { e.preventDefault(); setErrs(bad) } else { setErrs(null); setSent(true) }
+  //
+  // Nothing reaches the href until every box the layout shows passes
+  // `formCheck` (QA, 2026-11-13 / 15): the link payload is what a handoff is,
+  // and a mail draft opened on `QA123` / `bad-email` / `0` guests is the bug.
+  // An invalid form is the same `<a>` without an href — `role="button"` and
+  // focusable, with Enter and Space running the same check as a click — so the
+  // pointer and the keyboard both get the inline errors and the first refused
+  // box's focus. A form whose artist has not addressed it (`mailto` empty)
+  // stays the inert span.
+  const mailto = s.live && !sent ? s.formMailto({ vals, ti: showTypes ? ti : -1, msg }) : ''
+  const verdict = mailto ? s.formCheck({ vals, msg }) : null
+  const href = mailto && !verdict.any ? mailto : ''
+  const refuse = (e) => {
+    e.preventDefault()
+    setErrs(verdict)
+    ctls.current[verdict.first]?.focus()
+  }
+  const onSubmit = mailto ? (e) => {
+    if (verdict.any) refuse(e); else { setErrs(null); setSent(true) }
   } : undefined
-  const Pill = href ? 'a' : 'span'
-  const pillLink = href ? { href } : null
+  const Pill = mailto ? 'a' : 'span'
+  const pillLink = href ? { href } : mailto ? {
+    role: 'button', tabIndex: 0,
+    onKeyDown: (e) => { if (e.key === 'Enter' || e.key === ' ') refuse(e) },
+  } : null
+  // A box's own props: the element for `.focus()`, the prompt line it is
+  // described by, and the verdict as the browser's own validity (a custom
+  // message, so `validity.valid` agrees with what the visitor would be told).
+  // `key` is the row index or 'msg'. The ref is a fresh function each render,
+  // so React re-runs it and the message follows the box's value.
+  const cp = (key) => ({
+    ref: (el) => {
+      if (!el) return
+      ctls.current[key] = el
+      const why = !verdict ? '' : key === 'msg' ? verdict.msg.m : verdict.m[key]
+      el.setCustomValidity(why || '')
+    },
+    'aria-describedby': errs ? pid : undefined,
+  })
+  const msgBad = !!(errs && errs.msg?.bad)
 
   // Lime — the split frames 964:58596 / 986:39885 / 986:39897, as a block
   // ahead of Retro's v0 branch (the bio's and the media player's placement):
@@ -26860,6 +26901,7 @@ function EnquiryForm({ s }) {
           {label(f.label)}
           {s.live ? (
             <input
+              {...cp(i)}
               value={at(i)} placeholder={f.placeholder}
               onChange={(e) => setAt(i, e.target.value)}
               // Retro's branch says why: `email` for the phone keyboard,
@@ -27111,9 +27153,10 @@ function EnquiryForm({ s }) {
               {/* 134 at every width — Retro's 390 master closes it to 100. */}
               {s.live ? (
                 <textarea
+                  {...cp('msg')}
                   value={msg} placeholder={s.formMessage}
-                  onChange={(e) => setMsg(e.target.value)}
-                  style={box(false, {
+                  onChange={(e) => setMessage(e.target.value)}
+                  style={box(msgBad, {
                     display: 'block', height: u(G.msgH), borderRadius: ed ? 0 : u(20),
                     padding: ed ? 0 : `${u(20)} ${u(24)}`, resize: 'none', outline: 'none',
                     ...(G.ph && { '--ph': 0.8 }), // Pop's 80%, as the inputs' (JP-119)
@@ -27125,13 +27168,13 @@ function EnquiryForm({ s }) {
                   ...(G.ph && { color: G.ph }),
                 })}>{s.formMessage}</span>
               )}
-              {foot(false)}
+              {foot(msgBad)}
             </div>
             <Pill {...pillLink} onClick={onSubmit} style={pill({ cursor: onSubmit ? 'pointer' : undefined })}>
               {s.formBtn}{disc}
             </Pill>
             {errs && (
-              <span style={type(s.body, s.bodySm, 1.4, { color: G.on, textAlign: 'center' })}>{errs?.m?.find(Boolean) || s.formPrompt}</span>
+              <span id={pid} role="alert" style={type(s.body, s.bodySm, 1.4, { color: G.on, textAlign: 'center' })}>{errs?.m?.find(Boolean) || errs?.msg?.m || s.formPrompt}</span>
             )}
           </>
         )}
@@ -27262,6 +27305,7 @@ function EnquiryForm({ s }) {
           {label(f.label)}
           {s.live ? (
             <input
+              {...cp(i)}
               value={at(i)} placeholder={f.placeholder}
               onChange={(e) => setAt(i, e.target.value)}
               // type="email" is free semantics and a phone keyboard; `number`
@@ -27414,10 +27458,11 @@ function EnquiryForm({ s }) {
                 {label(s.formMsgLabel)}
                 {s.live ? (
                   <textarea
+                    {...cp('msg')}
                     value={msg} placeholder={s.formMessage}
-                    onChange={(e) => setMsg(e.target.value)}
+                    onChange={(e) => setMessage(e.target.value)}
                     style={{
-                      ...ctl(false), display: 'block',
+                      ...ctl(msgBad), display: 'block',
                       borderRadius: u(20), height: u(s.mob ? 100 : 134),
                       padding: `${u(20)} ${u(24)}`,
                       // The box is the frame's; it cannot be dragged out of it.
@@ -27448,9 +27493,9 @@ function EnquiryForm({ s }) {
                 <Asterisk size={Math.round(20 * scale)} color={s.acFg} />
               </Pill>
               {errs && (
-                <span style={{
+                <span id={pid} role="alert" style={{
                   fontFamily: s.body, fontSize: u(12), color: formFg, textAlign: 'center',
-                }}>{errs?.m?.find(Boolean) || s.formPrompt}</span>
+                }}>{errs?.m?.find(Boolean) || errs?.msg?.m || s.formPrompt}</span>
               )}
             </>
           )}
@@ -27801,6 +27846,7 @@ function EnquiryForm({ s }) {
                     const bad = !!(errs && errs.f[i])
                     const el = s.live ? (
                       <input
+                        {...cp(i)}
                         key={i} value={at(i)} placeholder={up(f.label)}
                         onChange={(e) => setAt(i, e.target.value)}
                         // Retro's rule: `email` for the phone keyboard,
@@ -27832,7 +27878,7 @@ function EnquiryForm({ s }) {
                   </Pill>
                 </div>
                 {errs && (
-                  <span style={type(s.body, s.bodySm, 1.4, { textAlign: 'center' })}>{errs?.m?.find(Boolean) || s.formPrompt}</span>
+                  <span id={pid} role="alert" style={type(s.body, s.bodySm, 1.4, { textAlign: 'center' })}>{errs?.m?.find(Boolean) || errs?.msg?.m || s.formPrompt}</span>
                 )}
                 {/* Body/SM, centred: the frame's "No charge to enquire", which
                     is the `note` field Retro's layout 2 reads. Emptied, it drops. */}
@@ -28204,6 +28250,7 @@ function EnquiryForm({ s }) {
                     const bad = !!(errs && errs.f[i])
                     return s.live ? (
                       <input
+                        {...cp(i)}
                         key={i} value={at(i)} placeholder={up(f.label)}
                         onChange={(e) => setAt(i, e.target.value)}
                         // Layout 1's rule: type="email" is free semantics and a
@@ -28234,9 +28281,9 @@ function EnquiryForm({ s }) {
                 {/* Immediately under the pill, where layout 1 puts it, so the
                     note stays the card's last line. */}
                 {errs && (
-                  <span style={{
+                  <span id={pid} role="alert" style={{
                     fontFamily: s.body, fontSize: u(T.bodySm), textAlign: 'center',
-                  }}>{errs?.m?.find(Boolean) || s.formPrompt}</span>
+                  }}>{errs?.m?.find(Boolean) || errs?.msg?.m || s.formPrompt}</span>
                 )}
                 {foot}
               </>
@@ -28611,6 +28658,7 @@ function EnquiryForm({ s }) {
                     const bad = !!(errs && errs.f[i])
                     const el = s.live ? (
                       <input
+                        {...cp(i)}
                         key={i} value={at(i)} placeholder={up(f.label)}
                         onChange={(e) => setAt(i, e.target.value)}
                         // Retro's rule: `email` for the phone keyboard,
@@ -28643,7 +28691,7 @@ function EnquiryForm({ s }) {
                   </Pill>
                 </div>
                 {errs && (
-                  <span style={type(s.body, s.bodySm, 1.4, { textAlign: 'center' })}>{errs?.m?.find(Boolean) || s.formPrompt}</span>
+                  <span id={pid} role="alert" style={type(s.body, s.bodySm, 1.4, { textAlign: 'center' })}>{errs?.m?.find(Boolean) || errs?.msg?.m || s.formPrompt}</span>
                 )}
                 {!!s.formNote && (
                   <p style={type(s.body, s.bodySm, 1.4, { margin: 0, textAlign: 'center' })}>{s.formNote}</p>
@@ -28798,6 +28846,7 @@ function EnquiryForm({ s }) {
                   const bad = !!(errs && errs.f[i])
                   return s.live ? (
                     <input
+                      {...cp(i)}
                       key={i} value={at(i)} placeholder={up(f.label)}
                       onChange={(e) => setAt(i, e.target.value)}
                       // Layouts 1 and 2's rule: type="email" is free semantics
@@ -28826,9 +28875,9 @@ function EnquiryForm({ s }) {
                 </Pill>
               </div>
               {errs && (
-                <span style={{
+                <span id={pid} role="alert" style={{
                   fontFamily: s.body, fontSize: u(T.bodySm), textAlign: 'center',
-                }}>{errs?.m?.find(Boolean) || s.formPrompt}</span>
+                }}>{errs?.m?.find(Boolean) || errs?.msg?.m || s.formPrompt}</span>
               )}
               {/* The frame's "No charge to enquire" — layout 2's `note`. Emptied,
                   the card simply ends on its pill. */}
@@ -29022,9 +29071,9 @@ function EnquiryForm({ s }) {
     })
     // The same shell at the frame's stated 90 and its own 24 corner, padded
     // on all four sides so the line starts at the top (`items-start`).
-    // `formCheck` reads `fields` alone, so it is always the idle ring.
+    // A refused message (`errs.msg`) takes the field's own refused ring.
     const msgBox = {
-      ...box(false), display: 'block', height: u(90),
+      ...box(msgBad), display: 'block', height: u(90),
       borderRadius: ed ? 0 : u(24), padding: ed ? `${u(12)} 0` : u(12),
     }
     // Editorial's underline: an overlay on the column's foot, which is the
@@ -29053,6 +29102,7 @@ function EnquiryForm({ s }) {
           <span style={caps}>{f.label}</span>
           {s.live ? (
             <input
+              {...cp(i)}
               value={at(i)} placeholder={f.placeholder}
               onChange={(e) => setAt(i, e.target.value)}
               // Layouts 1–3's rule: `email` for the phone keyboard, `number`
@@ -29110,20 +29160,21 @@ function EnquiryForm({ s }) {
               <span style={caps}>{s.formMsgLabel}</span>
               {s.live ? (
                 <textarea
+                  {...cp('msg')}
                   value={msg} placeholder={s.formMessage}
-                  onChange={(e) => setMsg(e.target.value)}
+                  onChange={(e) => setMessage(e.target.value)}
                   style={{ ...msgBox, resize: 'none', outline: 'none' }}
                 />
               ) : (
                 <span style={msgBox}>{s.formMessage}</span>
               )}
-              {foot(false)}
+              {foot(msgBad)}
             </div>
             <Pill {...pillLink} onClick={onSubmit} style={pill({ cursor: onSubmit ? 'pointer' : undefined })}>
               {s.formBtn}{disc}
             </Pill>
             {errs && (
-              <span style={type(s.body, s.bodySm, 1.4, { textAlign: 'center' })}>{errs?.m?.find(Boolean) || s.formPrompt}</span>
+              <span id={pid} role="alert" style={type(s.body, s.bodySm, 1.4, { textAlign: 'center' })}>{errs?.m?.find(Boolean) || errs?.msg?.m || s.formPrompt}</span>
             )}
           </>
         )}
@@ -29329,8 +29380,8 @@ function EnquiryForm({ s }) {
     // No palette has a red, so a refused box thickens its own ring in the accent
     // — inset, so the stated height does not grow. Layout 2's rule, which is
     // layout 1's in the shape a 999px pill can wear. Only the five pill boxes
-    // ever draw it: `formCheck` reads `fields` alone, so the message box is
-    // always `boxShell(false)`, exactly as it is in layout 1.
+    // ever draw it; the message box takes the same ring when it is refused
+    // (`msgBad`, QA 2026-11-15).
     const boxShell = (bad) => ({
       border: `${s.bw} solid ${rule}`, borderRadius: '999px', background: 'transparent',
       height: desk ? u(45) : '44px', padding: `0 ${u(12)}`,
@@ -29342,7 +29393,7 @@ function EnquiryForm({ s }) {
     // corner, padded on all four sides so the line starts at the top the way the
     // frame's `items-start` puts it.
     const msgShell = {
-      ...boxShell(false), display: 'block',
+      ...boxShell(msgBad), display: 'block',
       height: u(90), borderRadius: u(24), padding: u(12),
     }
 
@@ -29389,6 +29440,7 @@ function EnquiryForm({ s }) {
           <span style={capsType}>{f.label}</span>
           {s.live ? (
             <input
+              {...cp(i)}
               value={at(i)} placeholder={f.placeholder}
               onChange={(e) => setAt(i, e.target.value)}
               // Layouts 1–3's rule: type="email" is free semantics and a phone
@@ -29457,8 +29509,9 @@ function EnquiryForm({ s }) {
               <span style={capsType}>{s.formMsgLabel}</span>
               {s.live ? (
                 <textarea
+                  {...cp('msg')}
                   value={msg} placeholder={s.formMessage}
-                  onChange={(e) => setMsg(e.target.value)}
+                  onChange={(e) => setMessage(e.target.value)}
                   // The box is the frame's; it cannot be dragged out of it.
                   style={{ ...msgShell, resize: 'none', outline: 'none' }}
                 />
@@ -29473,9 +29526,9 @@ function EnquiryForm({ s }) {
               {arrowDisc}
             </Pill>
             {errs && (
-              <span style={{
+              <span id={pid} role="alert" style={{
                 fontFamily: s.body, fontSize: u(T.bodySm), textAlign: 'center',
-              }}>{errs?.m?.find(Boolean) || s.formPrompt}</span>
+              }}>{errs?.m?.find(Boolean) || errs?.msg?.m || s.formPrompt}</span>
             )}
           </>
         )}
@@ -29595,6 +29648,7 @@ function EnquiryForm({ s }) {
       <p style={{ margin: '0 0 8px', fontSize: '15px', color: s.muted, lineHeight: 1.6, whiteSpace: 'pre-line' }}>{s.formPara}</p>
       {s.formFields.map((f, i) => (s.live ? (
         <input
+          {...cp(i)}
           key={i} value={at(i)} placeholder={f.placeholder}
           onChange={(e) => setAt(i, e.target.value)}
           type={f.kind === 'email' ? 'email' : 'text'}
@@ -29610,9 +29664,10 @@ function EnquiryForm({ s }) {
       )))}
       {s.live ? (
         <textarea
+          {...cp('msg')}
           rows={3} value={msg} placeholder={s.formMessage}
-          onChange={(e) => setMsg(e.target.value)}
-          style={{ ...flatCtl(false), resize: 'none' }}
+          onChange={(e) => setMessage(e.target.value)}
+          style={{ ...flatCtl(msgBad), resize: 'none' }}
         />
       ) : (
         <textarea rows={3} style={{ ...flatCtl(false), resize: 'none' }} placeholder={s.formMessage} readOnly />
@@ -29621,7 +29676,7 @@ function EnquiryForm({ s }) {
         {s.formBtn}
       </Pill>
       {errs && (
-        <span style={{ fontSize: '13px', color: s.muted }}>{errs?.m?.find(Boolean) || s.formPrompt}</span>
+        <span id={pid} role="alert" style={{ fontSize: '13px', color: s.muted }}>{errs?.m?.find(Boolean) || errs?.msg?.m || s.formPrompt}</span>
       )}
     </div>
   )

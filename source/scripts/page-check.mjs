@@ -249,7 +249,14 @@ for (const card of cardList) {
     for (const i of inputs) {
       const kind = await i.evaluate((el) => el.type)
       await i.evaluate((el) => el.scrollIntoView({ block: 'center' }))
-      await i.type(kind === 'email' ? 'visitor@example.com' : 'Test 12')
+      // Valid for every kind the form checks (QA, 2026-11-15): a name has no
+      // digit, a guest count or a date is optional, and a message is required.
+      const tag = await i.evaluate((el) => el.tagName)
+      const ph = await i.evaluate((el) => `${el.placeholder}`.toLowerCase())
+      if (kind === 'email') await i.type('visitor@example.com')
+      else if (tag === 'TEXTAREA') await i.type('Hello, I would like to book you.')
+      else if (/name/.test(ph)) await i.type('Test Visitor')
+      else if (!/date|dd|approx|guests/.test(ph)) await i.type('Test')
     }
     const hrefs = await popup.$$eval('#form a', (as) => as.map((a) => a.getAttribute('href')).filter((h) => h?.startsWith('mailto:')))
     const s = await submit()
