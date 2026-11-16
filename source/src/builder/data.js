@@ -590,7 +590,7 @@ export const CATS = [
   { id: 'calendar', name: 'Booking Calendar', nav: 'Availability', n: 4 },
   { id: 'map', name: 'Events Map', nav: 'Shows/Coverage', n: 4 },
   { id: 'testimonials', name: 'Testimonials', nav: 'Reviews', n: 4 },
-  { id: 'form', name: 'Enquiry Form', nav: 'Enquiries', n: 6 },
+  { id: 'form', name: 'Enquiry Form', nav: 'Enquiries', n: 4 },
   { id: 'footer', name: 'Footer', n: 1 },
 ]
 
@@ -799,7 +799,9 @@ export const titanEms = (text) =>
  * four and render four, joining the header and the footer, which have
  * always been level. `testimonials` joined them (a ticket, 2026-11-11):
  * its picker listed eight rows for four designs; a stored `arch` of 4–7
- * still renders and is folded for display (`pageLayout`). The invariant
+ * still renders and is folded for display (`pageLayout`). The enquiry form
+ * followed (2026-11-16): four rows, named (`LAYOUT_NAMES`), a stored 5 / 6
+ * folding onto 1 / 2. The invariant
  * `pageLayout()` rests on is the inequality, never the surplus.
  * ------------------------------------------------------------------ */
 
@@ -946,6 +948,19 @@ export const headerLayout = (themeName, i) =>
 // canvas overlay: the number is kept, because the layout picker still counts.
 export const headerLayoutLabel = (themeName, i) =>
   `Header layout ${i + 1} · ${headerLayout(themeName, i)[0]}`
+
+// A category whose layouts have names is shown by them alone, in the picker and
+// in the sidebar's summary alike (the enquiry form, 2026-11-16: four rows, no
+// layout-5 / 6 duplicates of 1 and 2). Every other category stays numbered.
+export const LAYOUT_NAMES = {
+  form: ['Classic form', 'Price & form', 'Simple form', 'Step by step'],
+}
+
+export const layoutLabel = (catId, themeName, i) => {
+  if (catId === 'header') return headerLayoutLabel(themeName, i)
+  const name = LAYOUT_NAMES[catId]?.[i]
+  return name ?? `${catName(catId)} layout ${i + 1}`
+}
 
 /* ------------------------------------------------------------------ *
  * §4.5 FLAG — category id → 2-letter view-model boolean key

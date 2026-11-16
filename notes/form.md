@@ -1,5 +1,11 @@
 # The enquiry form — working notes
 
+> **Four layouts, named (2026-11-16, user call, every template).** The picker offered six rows for four designs;
+> `CATS.form.n` is now 4 and the rows read *Classic form · Price & form · Simple form · Step by step*
+> (`LAYOUT_NAMES` / `layoutLabel()` in `data.js`, shared by `LayoutPicker` and `makeVm`'s `layoutLabel`). A stored
+> `arch` 4 / 5 (an in-session draft, a restored removed section, a harness `&arch=`) folds onto 1 / 2 through
+> `pageLayout`, content untouched; nothing else moved.
+
 Moved word for word out of `CLAUDE.md`'s *Intentional limits — not bugs* on 2026-09-30, so it
 loads only when a session works on it. "Above" and "below" may point into `CLAUDE.md` or
 another `notes/` file.

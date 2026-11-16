@@ -61,7 +61,7 @@ import {
   tierFeats, priceParts, priceCuts, blankRow, SONG_KEYS, repSetsOf, repSetLine, TRACK_KEYS, GIG_KEYS, gigWeekday, gigStatus, gigStamp, MIN_YEAR, gigPart, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
   layoutChoices, designCount, designOf, pageLayout, pageOrder, pageRows, videoDesign, videoStartArch,
   VIDEOS, VIDEO_SEED, VIDEO_KEYS, videoPlayable, videoSeedDesc, VIDEO_ALL, COLUMN_SPLIT, bebasEms, antonEms, gloockEms, titanEms,
-  headerLayout, headerLayoutLabel, setupHeaderCount,
+  headerLayout, headerLayoutLabel, layoutLabel, setupHeaderCount,
 } from './data.js'
 import { defaultImage, defaultImages, defaultTrackArt, seedFocus, RETRO_TEXTURE } from './photos.js'
 
@@ -5368,9 +5368,7 @@ function LayoutPicker({ cat, arch, themeIdx, artistName, identity, tiers, email,
   // A number the picker does offer is left alone: Pricing's layout 5 stays 5.
   const cur = choices.includes(arch) ? arch : pageLayout(cat, arch, themeName)
   // §4.4b — the header's layouts have names; every other category is numbered.
-  const label = (i) => (cat === 'header'
-    ? headerLayoutLabel(themeName, i)
-    : `${catName(cat)} layout ${i + 1}`)
+  const label = (i) => layoutLabel(cat, themeName, i)
 
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
@@ -7909,7 +7907,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
       ...sectionVm({ themeIdx: st.theme, cat: sec.cat, arch: sec.arch, c: sec.c, artistName, identity, tiers, email, Z, mob: Z === SIZES.mobile || isMobile || device === 'mobile', navSections, column: inColumns.get(i), realMap: true, page: pageDesignOf(arr, T.name), above: arr[i - 1]?.cat, below: arr[i + 1]?.cat }),
       layoutLabel: isHeader
         ? headerLayoutLabel(T.name, sec.arch)
-        : `${cat.name} layout ${(layoutChoices(sec.cat, T.name).includes(sec.arch) ? sec.arch : pageLayout(sec.cat, sec.arch, T.name)) + 1}`,
+        : layoutLabel(sec.cat, T.name, layoutChoices(sec.cat, T.name).includes(sec.arch) ? sec.arch : pageLayout(sec.cat, sec.arch, T.name)),
       // §6.2 — while the setup modal is up the header's own badge names the
       // layout, so the click that just re-laid the whole page is legible on the
       // page itself. It is the only badge showing, which is why the other ten

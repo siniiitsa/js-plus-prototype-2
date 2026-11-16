@@ -662,14 +662,17 @@ reversing 2026-10-20's "an already-selected section": the `text` cursor shows on
   what it can see rather than what the last render observed. Rows are a uniform height, so
   the drop index is the pointer delta in row-heights, not a hit test.
 - **Layout folding.** Every category offers at least as many layout numbers as it has distinct
-  designs, and five of the twelve offer more — Pricing layouts 1 and 5 render identically on
-  purpose. The other seven are level: the header and the footer always were, the layout-4 pass
+  designs, and four of the twelve offer more — Pricing layouts 1 and 5 render identically on
+  purpose. The other eight are level: the header and the footer always were, the layout-4 pass
   took `gallery` and `map` there by bumping their design counts to the four rows they offer,
   `testimonials` followed (2026-11-11: its picker listed eight rows for four designs, so it offers
   four, and a stored `arch` past the rows is shown as the row it renders, `pageLayout`), and
   `video` is level with holes (below), as is `calendar` since 2026-11-13: its layout 3 was removed
   (user call; every template), so the picker offers layouts 1, 2 and 4 (`layoutChoices`) and the
-  layout-5 duplicate went with it (`n: 4`). **Design 2 stays in the code, unreachable**, like video's
+  layout-5 duplicate went with it (`n: 4`). **The enquiry form is level too** (2026-11-16): it offered six rows for four designs, so it
+  offers four, **named** — Classic form, Price & form, Simple form, Step by step (`LAYOUT_NAMES`, `layoutLabel()`
+  in `data.js`, read by the picker and by the sidebar / canvas / drawer summary alike) — and a stored `arch` 4 / 5
+  is shown as, and renders, 1 / 2 (`pageLayout`), its content kept. **Design 2 stays in the code, unreachable**, like video's
   holes, so `in`, caps and ledgers keep their index: `designOf()` in `data.js` folds a stored `arch`
   2 onto layout 1 (the nearest month grid), and every reader of `arch % designCount` goes through it
   (`sectionVm`, `EditPanel`, `inlineDesign`, `identityCap`, `identityHint`, `pageRows`), so setup card 3
