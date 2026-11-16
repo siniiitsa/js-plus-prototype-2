@@ -576,16 +576,16 @@ export const SCHEMES_OF = {
 
 export const CATS = [
   { id: 'header', name: 'Header', n: 6 },   // header count is theme-dependent — see headerVariants()
-  { id: 'bio', name: 'Bio', nav: 'About', n: 6 },
-  { id: 'media', name: 'Media Player', nav: 'Top Tracks', n: 7 },
+  { id: 'bio', name: 'Bio', nav: 'About', n: 4 },
+  { id: 'media', name: 'Media Player', nav: 'Top Tracks', n: 4 },
   // Layout-bound (plans/video.md, call 1): only the layout-2 and layout-4 Figma
   // pages draw a video, so the picker offers those two (`layoutChoices`), and
   // `noNav` keeps it out of the header's links, which the frames draw the same
   // with or without it (call 5). `n` is the design count: indices 0 and 2 are
   // the holes layouts 1 and 3 leave.
   { id: 'video', name: 'Video', n: 4, noNav: true },
-  { id: 'pricing', name: 'Pricing', nav: 'Pricing', n: 8 },
-  { id: 'repertoire', name: 'Repertoire', nav: 'Repertoire', n: 7 },
+  { id: 'pricing', name: 'Pricing', nav: 'Pricing', n: 4 },
+  { id: 'repertoire', name: 'Repertoire', nav: 'Repertoire', n: 4 },
   { id: 'gallery', name: 'Gallery', nav: 'Media', n: 4 },
   { id: 'calendar', name: 'Booking Calendar', nav: 'Availability', n: 4 },
   { id: 'map', name: 'Events Map', nav: 'Shows/Coverage', n: 4 },
@@ -792,17 +792,12 @@ export const titanEms = (text) =>
 
 /* ------------------------------------------------------------------ *
  * §4.4 NVAR — distinct rendered designs per category.
- * Every category offers at least as many layout choices as it has
- * designs; the rendered design is `arch % NVAR[cat]`. Six of the
- * eleven still offer strictly more, and the layout-4 pass is what
- * stopped that being all of them: `gallery` and `map` now offer exactly
- * four and render four, joining the header and the footer, which have
- * always been level. `testimonials` joined them (a ticket, 2026-11-11):
- * its picker listed eight rows for four designs; a stored `arch` of 4–7
- * still renders and is folded for display (`pageLayout`). The enquiry form
- * followed (2026-11-16): four rows, named (`LAYOUT_NAMES`), a stored 5 / 6
- * folding onto 1 / 2. The invariant
- * `pageLayout()` rests on is the inequality, never the surplus.
+ * Every category now offers exactly as many layout choices as it has
+ * designs (QA ticket, 2026-11-16): the rendered design is `arch % NVAR[cat]`,
+ * and bio, media, pricing and repertoire were cut to four rows like gallery,
+ * map, testimonials and the form before them. A stored `arch` past the rows
+ * still renders and is shown as the row it renders (`pageLayout`). The
+ * invariant `pageLayout()` rests on is the inequality, never the surplus.
  * ------------------------------------------------------------------ */
 
 // `video` is 4 with holes at indices 0 and 2: its Figma pages exist at layouts
@@ -918,18 +913,17 @@ export const videoStartArch = (pageD) => (pageD === 3 ? 3 : 1)
  * category a first-time user is asked to choose before they know the
  * editor. These are the names the compositions already carry in
  * EncoreSection's §10.2 comments, promoted to the UI. Every other
- * category keeps its number — its layouts are variations of one idea,
- * and the numbering is honest about the folding (§4.4).
+ * category is named in `LAYOUT_NAMES` below (video alone stays numbered).
  * ------------------------------------------------------------------ */
 
 // [name, what it is] — index-aligned with HeaderV0…V5.
 const PHOTOGRAPHIC_NAMES = [
-  ['Hero', 'Full-bleed photo'],
-  ['Feature spread', 'Photo beside the details'],
-  ['Inset Hero', 'Framed photo on colour'],
+  ['Full photo', 'Full-bleed photo'],
+  ['Side by side', 'Photo beside the details'],
+  ['Framed photo', 'Framed photo on colour'],
   ['Stacked', 'Name stacked over the photo'],
-  ['Overlay card', 'Details on a card'],
-  ['Stage wide', 'Centred, wide'],
+  ['Floating card', 'Details on a card'],
+  ['Wide stage', 'Centred, wide'],
 ]
 const HEADER_NAMES = {
   photographic: PHOTOGRAPHIC_NAMES,
@@ -945,14 +939,22 @@ export const headerLayout = (themeName, i) =>
   HEADER_NAMES[headerFamily(themeName)][i] ?? [`Layout ${i + 1}`, '']
 
 // The label a header section carries in the sidebar, the edit panel and the
-// canvas overlay: the number is kept, because the layout picker still counts.
-export const headerLayoutLabel = (themeName, i) =>
-  `Header layout ${i + 1} · ${headerLayout(themeName, i)[0]}`
+// canvas overlay: the name alone, as every other category (2026-11-16).
+export const headerLayoutLabel = (themeName, i) => headerLayout(themeName, i)[0]
 
 // A category whose layouts have names is shown by them alone, in the picker and
-// in the sidebar's summary alike (the enquiry form, 2026-11-16: four rows, no
-// layout-5 / 6 duplicates of 1 and 2). Every other category stays numbered.
+// in the sidebar's summary alike (QA ticket, 2026-11-16: four rows each, no
+// surplus duplicates). Only `video` stays numbered.
 export const LAYOUT_NAMES = {
+  bio: ['Statement', 'Feature card', 'ID card', 'Story'],
+  media: ['Playlist', 'Card fan', 'Track list', 'Simple player'],
+  pricing: ['Package cards', 'Featured plan', 'Filter & compare', 'Service list'],
+  repertoire: ['Song list', 'Song cards', 'Curated sets', 'A–Z index'],
+  gallery: ['Photo viewer', 'Feature photo', 'Photo grid', 'Spotlight'],
+  map: ['Map & gig list', 'Travel card', 'Live map', 'Gig ticker'],
+  // Index 2 is the removed layout 3 (the ticket's "Simple calendar"); the picker skips it.
+  calendar: ['Polaroid calendar', 'Date table', 'Simple calendar', 'Calendar & enquiry'],
+  testimonials: ['Single quote', 'Review carousel', 'Rating summary', 'Review grid'],
   form: ['Classic form', 'Price & form', 'Simple form', 'Step by step'],
 }
 

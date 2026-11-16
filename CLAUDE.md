@@ -661,18 +661,24 @@ reversing 2026-10-20's "an already-selected section": the `text` cursor shows on
   source of truth and the `drag` state only mirrors it for rendering, so pointerup commits
   what it can see rather than what the last render observed. Rows are a uniform height, so
   the drop index is the pointer delta in row-heights, not a hit test.
-- **Layout folding.** Every category offers at least as many layout numbers as it has distinct
-  designs, and four of the twelve offer more — Pricing layouts 1 and 5 render identically on
-  purpose. The other eight are level: the header and the footer always were, the layout-4 pass
-  took `gallery` and `map` there by bumping their design counts to the four rows they offer,
-  `testimonials` followed (2026-11-11: its picker listed eight rows for four designs, so it offers
-  four, and a stored `arch` past the rows is shown as the row it renders, `pageLayout`), and
-  `video` is level with holes (below), as is `calendar` since 2026-11-13: its layout 3 was removed
-  (user call; every template), so the picker offers layouts 1, 2 and 4 (`layoutChoices`) and the
-  layout-5 duplicate went with it (`n: 4`). **The enquiry form is level too** (2026-11-16): it offered six rows for four designs, so it
-  offers four, **named** — Classic form, Price & form, Simple form, Step by step (`LAYOUT_NAMES`, `layoutLabel()`
-  in `data.js`, read by the picker and by the sidebar / canvas / drawer summary alike) — and a stored `arch` 4 / 5
-  is shown as, and renders, 1 / 2 (`pageLayout`), its content kept. **Design 2 stays in the code, unreachable**, like video's
+- **Layout folding.** Every category offers exactly as many layout choices as it has distinct designs
+  (user call, 2026-11-16, a QA ticket: four named layouts per section, Retro's header six). Bio, media,
+  pricing and repertoire were the last to offer more (6 / 7 / 8 / 7 rows for four designs) and were cut to
+  `n: 4`, joining the header and footer (always level), `gallery` and `map` (the layout-4 pass),
+  `testimonials` (2026-11-11), `video` (level with holes, below) and `calendar` since 2026-11-13: its
+  layout 3 was removed (user call; every template), so the picker offers layouts 1, 2 and 4
+  (`layoutChoices`) and the layout-5 duplicate went with it (`n: 4`). **Every picker row is named**, in the
+  picker and the sidebar / canvas / drawer summary alike (`LAYOUT_NAMES`, `layoutLabel()`, `headerLayout()` in
+  `data.js`; the names alone, no "Bio layout 3"): the header's Full photo, Side by side, Framed photo, Stacked
+  (+ Floating card, Wide stage on Retro); bio Statement / Feature card / ID card / Story; media Playlist /
+  Card fan / Track list / Simple player; gallery Photo viewer / Feature photo / Photo grid / Spotlight;
+  repertoire Song list / Song cards / Curated sets / A–Z index; map Map & gig list / Travel card / Live map /
+  Gig ticker; pricing Package cards / Featured plan / Filter & compare / Service list; calendar Polaroid
+  calendar / Date table / Calendar & enquiry (the ticket's *Simple calendar* is the removed layout 3);
+  testimonials Single quote / Review carousel / Rating summary / Review grid; form Classic form / Price & form /
+  Simple form / Step by step. Only `video` stays numbered. A stored `arch` past the rows (a draft from when
+  the picker offered more) is shown as, and renders, `arch % designCount` (`pageLayout`), its content kept.
+  **Design 2 stays in the code, unreachable**, like video's
   holes, so `in`, caps and ledgers keep their index: `designOf()` in `data.js` folds a stored `arch`
   2 onto layout 1 (the nearest month grid), and every reader of `arch % designCount` goes through it
   (`sectionVm`, `EditPanel`, `inlineDesign`, `identityCap`, `identityHint`, `pageRows`), so setup card 3

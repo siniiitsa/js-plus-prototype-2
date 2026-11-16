@@ -5358,8 +5358,7 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
  * runs the full width of the panel with the label underneath, because at
  * thumbnail size the layouts were indistinguishable from one another.
  *
- * For the 10 non-header categories more layouts are offered than there are
- * designs (§4.4), so some rows render identically. That is on purpose.
+ * Every category offers exactly its designs (§4.4), each row named.
  * ------------------------------------------------------------------ */
 
 function LayoutPicker({ cat, arch, themeIdx, artistName, identity, tiers, email, navSections, content = {}, onPick }) {
@@ -5368,10 +5367,10 @@ function LayoutPicker({ cat, arch, themeIdx, artistName, identity, tiers, email,
   // A video is offered layouts 2 and 4 only (plans/video.md, call 1).
   const choices = layoutChoices(cat, themeName)
   // A stored `arch` past the picker's rows (a draft from when Testimonials
-  // offered eight) renders as `arch % designCount`, so it is shown as that row.
-  // A number the picker does offer is left alone: Pricing's layout 5 stays 5.
+  // offered eight, or Pricing eight) renders as `arch % designCount`, so it is
+  // shown as that row. A number the picker does offer is left alone.
   const cur = choices.includes(arch) ? arch : pageLayout(cat, arch, themeName)
-  // §4.4b — the header's layouts have names; every other category is numbered.
+  // §4.4b — every row is named (`layoutLabel`).
   const label = (i) => layoutLabel(cat, themeName, i)
 
   return (
