@@ -17848,12 +17848,18 @@ function Calendar({ s }) {
               display: 'grid', gridTemplateColumns: s.narrow ? 'minmax(0, 1fr)' : 'repeat(2, minmax(0, 1fr))',
             }}>
               {grid}
-              {/* Stretched to the month at desktop, so a six-row month takes
-                  the photograph with it; stacked, the half states the frame's
-                  526 / 308. */}
+              {/* Pinned to the five-row month's height at every width: the
+                  frame's 526 / 308 stacked, and at desktop the 525.97 a
+                  five-row grid stands (2 x 40 padding + 54 head + 30.22 names
+                  + 5 x 55.89 + 4 x 10 + 2 x 21.15 gaps), so the photograph
+                  and its crop stay one size as the month pages. A six-row
+                  month grows the grid alone, the photo top-aligned (the
+                  tester's report, 2026-11-13); a four-row one leaves the
+                  panel at the photo's height. */}
               <div style={{
                 display: 'flex', padding: G.photoPad ?? u(20),
-                height: s.narrow ? (s.mob ? '308px' : '526px') : undefined,
+                height: s.narrow ? (s.mob ? '308px' : '526px') : u(525.97),
+                ...(s.narrow ? null : { alignSelf: 'start' }),
                 ...(ed ? { alignItems: 'center' } : null),
                 // Pop's half clips, as its frame does: the 390 dot grid runs
                 // past the panel's edge and over the foot's rule otherwise.
@@ -18108,10 +18114,14 @@ function Calendar({ s }) {
     const stack = (
       <div style={{
         position: 'relative',
-        // Stacked, the prints' half has no sibling column to take its height
-        // from and every print in it is absolute, so it states the frame's. On
-        // desktop the grid row is that height already.
-        height: s.narrow ? u(s.mob ? 324 : 553.398) : undefined,
+        // Every print in it is absolute, so the half states its own height:
+        // the frame's at 768 and 390, and at desktop the 551.22 a five-row
+        // month's grid stands (2 x 30.219 padding + the 52.8 head + 30.219
+        // names + 5 x 57.286 + 4 x 20 + 2 x 21.154 gaps, measured), so the
+        // prints keep their seat as the month pages: a six-row month grows
+        // the grid alone, the stack top-aligned in its stretched cell (the
+        // tester's report, 2026-11-13).
+        height: u(s.mob ? 324 : s.narrow ? 553.398 : 551.22),
       }}>
         {[0, 1, 2].map(print)}
         {/* Pinned to the half's corner, and gone on the 390 frame — which

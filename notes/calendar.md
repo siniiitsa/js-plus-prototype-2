@@ -76,6 +76,11 @@ another `notes/` file.
   edited nothing into a control (under Lime, Grunge, Editorial and Pop the line is the link
   instead, below, JP-088), and `para` went with `DEFS.calPara` because it rendered in neither layout; and a
   month needing six rows grows one where June needs five, the grid never being padded to 35.
+  **Only the grid grows: the photo half is pinned to the five-row height** (2026-11-16, tester report: the
+  photo went 486 → 552 → 486 px paging Dec 2026 → Jan → Feb 2027). At desktop it is `u(525.97)`, which is
+  what a five-row grid stands (the 768 master's `526px`), `alignSelf: start`; Retro's stack of prints takes `551.22` (its measured five-row grid; the 768 master's 553.398 stays narrow), so the photograph and its crop
+  are one size in a four-, five- or six-row month; a six-row month leaves 66px of panel ground under it, a
+  four-row one leaves the panel at the photo's height. The panel as a whole still grows, and the foot with it.
   The unreachable fallthrough after layout 4 still draws the hardcoded `CITIES` and reads
   none of this.
   **Everything in this paragraph from "The arrows **stop**" on is layout 1's**, except that its
