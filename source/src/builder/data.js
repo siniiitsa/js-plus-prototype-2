@@ -988,7 +988,8 @@ export const TRACKS = [
   ['Roomtone',           '5:24', 'Hidden Sessions Vol. 2'],
 ]
 
-// The audio behind the seeded tracks above, one per TRACKS row. Unlike the
+// The audio behind the seeded tracks above, one per TRACKS row (a row the artist
+// edits can also carry an uploaded `file`, which plays instead). Unlike the
 // seeded photography this is *not* gated on Retro: it is what makes the
 // published media player audible in every theme before the artist has typed
 // anything. They are remote files — the double-clickable build plays them only
@@ -1003,7 +1004,13 @@ export const TRACK_AUDIO = [
 ]
 // What `blankRow()` asks of a TracksField row (the JP-051 sweep): a track with
 // only a photograph, or only a sound file, is still a track.
-export const TRACK_KEYS = ['title', 'sub', 'image', 'audio']
+export const TRACK_KEYS = ['title', 'sub', 'image', 'audio', 'file']
+
+// A track's uploaded recording (`file`: a data:audio/ URI the panel's RowAudio
+// inlined, with `fileName` and `fileSize` beside it for the panel), or ''. It
+// wins over the row's `audio` link while it exists; Remove falls back to the
+// link. Only the shape is checked here — the panel vets the file at pick time.
+export const uploadedAudio = (t) => (typeof t?.file === 'string' && t.file.startsWith('data:audio/') ? t.file : '')
 
 // The clock on the "now playing" card beside the track stack — a player caught
 // mid-song, which is what the Figma frame draws. Only the editor canvas shows
@@ -2184,7 +2191,7 @@ export const FIELDS = {
     { k: 'tracks',  l: 'Tracks', type: 'tracks', max: 8,
       cols: { title: { Retro: [17, 17, 20, 17], Lime: [40, 17, 19, 17], Grunge: [24, 17, 21, 17], '*': [17, 17, 17, 17] },
         sub: 33 },
-      hint: 'Each row is one card in the stack, with its own artwork and audio file. '
+      hint: 'Each row is one card in the stack, with its own artwork and audio: upload a recording or paste a link. '
           + "The player shows the track it is on, so track one's artwork is the sleeve." },
     // (The kicker "Top tracks", the "● Popular" list label and the "5 Featured /
     // 5 Max" counter's two words were removed 2026-11-12, user call: notes/media.md.)

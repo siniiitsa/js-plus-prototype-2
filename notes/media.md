@@ -88,6 +88,17 @@ another `notes/` file.
   `s.bg`, Scheme 2 again — closed by a 10px violet rule inside its foot at 1440 and 768 and
   carrying a pink dot grid behind the sleeve (none at 390) — and the only media layout to draw
   those strips, arcs or tears.
+- **A track takes an uploaded recording as well as a link** (user calls, 2026-11-16, the "Upload recording" ticket). The row's
+  `file` (a `data:audio/` URI, like `image`), `fileName` and `fileSize` sit beside `audio`; `RowAudio` in `TracksField` is the
+  control (upload and drop target, then name, size, Replace, Remove). **The upload wins while it exists and Remove falls back to
+  the link**, so neither is lost (`uploadedAudio()` in `data.js`, read in `sectionVm`'s track map, ahead of `extUrl(audio, true)`;
+  `urlProblem` is unchanged, so a `data:` typed into the link box is still refused). MP3, M4A and WAV up to 10 MB (decimal, as
+  images; `audioFiles.js`), printed under the control before any pick. A pick is vetted by type (the extension when the browser
+  gives none; the data URI is rewritten to the canonical MIME), then by size, then **decoded by a detached `Audio`** (`verifyAudio`)
+  so a renamed text file is refused rather than becoming a dead track; each refusal toasts and prints under the row, and a refused
+  Replace leaves the file there. `'file'` is in `TRACK_KEYS`, so a row holding only an upload is still a track. Nothing in
+  `EncoreSection` changed: playback is the one `src` seam above. In-session persistence only (CLAUDE.md, *Intentional limits*).
+  Memory is the cost: 10 MB is ~13 MB of base64 a track.
 - **Layout 2's fan chip is the artist's** (JP-095 (a), user call, 2026-10-01, JP-071's label
   shape). `chipLabel` is the front card's `● Featured` (`in: [1]`, both bodies; the dot is the
   markup's). It wraps inside the card at its own inset from each edge, since the card clips.

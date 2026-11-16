@@ -6,7 +6,7 @@ import { createRoot } from 'react-dom/client'
 import {
   GripVertical, ChevronUp, ChevronDown, ArrowUp, ArrowDown, MoreHorizontal,
   Pencil, Palette, X, Trash2, ChevronLeft, ChevronRight, ArrowRight,
-  Layers, Plus, Check, Upload, Lock, ExternalLink, Eye,
+  Layers, Plus, Check, Upload, Lock, ExternalLink, Eye, Music,
 } from 'lucide-react'
 import { toast as sonnerToast, Toaster } from 'sonner'
 
@@ -37,6 +37,10 @@ import EncoreSection from './EncoreSection.jsx'
 import { ImageEditorHost, editImages, editorBusy } from './ImageEditor.jsx'
 import { imageProblem, readImage, vetImages } from './imageFiles.js'
 import {
+  AUDIO_ACCEPT, AUDIO_DECODE_FAIL, AUDIO_FORMATS_TEXT, AUDIO_READ_FAIL,
+  audioProblem, audioSizeText, readAudio, verifyAudio,
+} from './audioFiles.js'
+import {
   THEMES, SCHEMES_OF, CATS, NVAR, FLAG, FIELDS, TITLES, DEFS, TRACKS, TAGS, TAG_LABELS, HERO_CTA, BIO_CREDIT, BIO_CTA,
   FACE_TITLE, FACE_BODY, BIO_TAG,
   BIO_SINCE_LABEL, BIO_ROLE_LABEL, BIO_BASE_LABEL, BIO_ABOUT_LABEL,
@@ -58,7 +62,7 @@ import {
   parseDate, isoDate, calStart, headerIdentity, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav, navModeDefault, badgeOptsFor,
   catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldSeed, HEADING_3, HEADING_4, fieldReach, fieldShown, identityFieldsFor, identityHint, INLINE_OFF, PHOTO_OFF, INLINE_HEAD, INLINE_MARKED, INLINE_PART, INLINE_LINES, inlineRule, fieldCap, colCaps, identityCap, sealCap, capExcess, numeralLen, clampCapped, clampContent, legacyContent, clampIdentity, copyrightOf, formHeading3, extUrl, youtubeEmbed, youtubeThumb, youtubeParts, youtubeWatch, youtubeChannel, urlProblem, emailProblem, emailAddr, songTags, repChips,
-  tierFeats, priceParts, priceCuts, blankRow, SONG_KEYS, repSetsOf, repSetLine, TRACK_KEYS, GIG_KEYS, gigWeekday, gigStatus, gigStamp, MIN_YEAR, gigPart, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
+  tierFeats, priceParts, priceCuts, blankRow, SONG_KEYS, repSetsOf, repSetLine, TRACK_KEYS, uploadedAudio, GIG_KEYS, gigWeekday, gigStatus, gigStamp, MIN_YEAR, gigPart, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
   layoutChoices, designCount, designOf, pageLayout, pageOrder, pageRows, videoDesign, videoStartArch,
   VIDEOS, VIDEO_SEED, VIDEO_KEYS, videoPlayable, videoSeedDesc, VIDEO_ALL, COLUMN_SPLIT, bebasEms, antonEms, gloockEms, titanEms,
   headerLayout, headerLayoutLabel, layoutLabel, setupHeaderCount,
@@ -1080,7 +1084,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     vm.tracks = c.tracks.map((t, row) => ({ t, row })).filter(({ t }) => !blankRow(t, TRACK_KEYS)).map(({ t, row }, i) => {
       const sub = (t?.sub ?? '').trim()
       return { row, n: '0' + (i + 1), name: cased(t?.title ?? ''), dur: sub, sub, rel: sub, byline: byline(sub),
-               img: t?.image ?? null, src: extUrl(t?.audio ?? '', true) || null }
+               img: t?.image ?? null, src: uploadedAudio(t) || extUrl(t?.audio ?? '', true) || null }
     })
   } else {
     vm.tracks = TRACKS.map(([name, dur, rel], i) => ({
@@ -3352,9 +3356,11 @@ function SetsField({ caps, value, songs, onChange }) {
  * There is no per-index re-seeding once the array exists, so a row added
  * in the middle cannot inherit the photograph of the track it displaced.
  *
- * `audio` is an address rather than an upload: a sound file is two orders
- * of magnitude larger than the artwork, and every image here is inlined
- * as a data URI into a page that has no persistence to spill it into.
+ * A row's sound is one of two sources: `audio`, an address, or `file`, a
+ * recording uploaded from the device (RowAudio below; MP3, M4A or WAV up to
+ * 10 MB, inlined as a data URI like an image, with `fileName` and `fileSize`
+ * for the panel). The upload wins while it exists and Remove falls back to the
+ * link, so neither is lost. sectionVm folds the two onto `vm.tracks[].src`.
  * The published player is what plays it (§10.2a); the canvas never does.
  * ------------------------------------------------------------------- */
 
@@ -3427,6 +3433,97 @@ function RowThumb({ value, label, aspect, onChange, onToast, onFail, failed }) {
   )
 }
 
+// The recording control: an upload button and drop target when the row has none,
+// its name, size, Replace and Remove when it has. Like RowThumb it holds no
+// refusal line of its own (`onFail` hands the line, or null, to the repeater),
+// and a refused Replace leaves the file that is there. `onApply` takes the
+// whole { file, fileName, fileSize } triple so the three keys never part.
+const NO_FILE = { file: '', fileName: '', fileSize: 0 }
+function RowAudio({ file, fileName, fileSize, hasLink, label, onApply, onToast, onFail, failed }) {
+  const inputRef = useRef(null)
+  const [over, setOver] = useState(false)
+  const [busy, setBusy] = useState(false)
+
+  const refuse = (msg) => { onToast(msg); onFail(msg) }
+  const take = (files) => {
+    const f = files && files[0]
+    if (!f || busy) return
+    const bad = audioProblem(f)
+    if (bad) return refuse(bad)
+    onFail(null)
+    setBusy(true)
+    readAudio(f, async (src) => {
+      const ok = await verifyAudio(src)
+      setBusy(false)
+      if (!ok) return refuse(AUDIO_DECODE_FAIL)
+      onApply({ file: src, fileName: f.name, fileSize: f.size })
+    }, () => { setBusy(false); refuse(AUDIO_READ_FAIL) })
+  }
+  const pick = (e) => { stopE(e); if (!busy) inputRef.current?.click() }
+  const border = failed ? ERR_RED : '#C9C6BB'
+  const small = {
+    border: '1px solid #E2DFD7', background: '#FFFFFF', borderRadius: '7px', padding: '3px 8px',
+    fontSize: '11px', fontWeight: 600, color: '#5B5850', cursor: busy ? 'default' : 'pointer', fontFamily: 'inherit',
+  }
+
+  return (
+    <div style={{ marginRight: '28px', display: 'flex', flexDirection: 'column', gap: '4px', minWidth: 0 }}>
+      <input
+        ref={inputRef} type="file" accept={AUDIO_ACCEPT}
+        onChange={(e) => { take(e.target.files); e.target.value = '' }}
+        style={FILE_INPUT} tabIndex={-1} aria-hidden
+      />
+      {file ? (
+        <div
+          onDragOver={(e) => { e.preventDefault(); setOver(true) }}
+          onDragLeave={() => setOver(false)}
+          onDrop={(e) => { e.preventDefault(); setOver(false); take(e.dataTransfer.files) }}
+          style={{
+            display: 'flex', flexDirection: 'column', gap: '6px', minWidth: 0, padding: '7px 8px',
+            border: `1px solid ${failed ? ERR_RED : over ? '#1B1A17' : '#E2DFD7'}`, borderRadius: '8px', background: '#FFFFFF',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0 }}>
+            <Music size={13} style={{ color: '#98958A', flex: 'none' }} />
+            <span title={fileName} style={{ flex: 1, minWidth: 0, fontSize: '12px', color: '#1B1A17', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {fileName || 'Recording'}
+            </span>
+            <span style={{ flex: 'none', fontSize: '10px', color: '#98958A' }}>{busy ? 'Checking…' : audioSizeText(fileSize)}</span>
+          </div>
+          <div style={{ display: 'flex', gap: '6px' }}>
+            <button type="button" aria-label={`Replace ${label}`} disabled={busy} onClick={pick} className="hover:border-foreground" style={small}>Replace</button>
+            <button
+              type="button" aria-label={`Remove ${label}`} disabled={busy}
+              onClick={(e) => { stopE(e); onFail(null); onApply(NO_FILE) }}
+              className="hover:bg-destructive/10"
+              style={{ ...small, color: '#B3261E' }}
+            >Remove</button>
+          </div>
+        </div>
+      ) : (
+        <button
+          type="button" aria-label={`Upload ${label}`} onClick={pick} disabled={busy}
+          onDragOver={(e) => { e.preventDefault(); setOver(true) }}
+          onDragLeave={() => setOver(false)}
+          onDrop={(e) => { e.preventDefault(); setOver(false); take(e.dataTransfer.files) }}
+          className="hover:border-foreground"
+          style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '7px 8px',
+            border: `1.5px dashed ${over ? '#1B1A17' : border}`, borderRadius: '8px', background: 'none',
+            cursor: busy ? 'default' : 'pointer', fontFamily: 'inherit',
+          }}
+        >
+          <Upload size={13} style={{ color: '#B9B6AA' }} />
+          <span style={{ fontSize: '12px', fontWeight: 600, color: '#5B5850' }}>{busy ? 'Checking…' : 'Upload recording'}</span>
+        </button>
+      )}
+      <p style={{ margin: 0, fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>
+        {AUDIO_FORMATS_TEXT}{file && hasLink ? ' · the uploaded recording plays instead of the link' : ''}
+      </p>
+    </div>
+  )
+}
+
 const BLANK_TRACK_HINT = 'Empty tracks aren’t shown.'
 
 function TracksField({ caps, value, max, aspect, onChange, onToast }) {
@@ -3435,15 +3532,20 @@ function TracksField({ caps, value, max, aspect, onChange, onToast }) {
   // Same shape as SongsField: every keystroke rewrites the whole array, which
   // keeps `c.tracks` a plain value rather than something patched in place.
   const setAt = (i, k, v) => onChange(list.map((t, j) => (j === i ? { ...t, [k]: v } : t)))
+  const patchAt = (i, o) => onChange(list.map((t, j) => (j === i ? { ...t, ...o } : t)))
   // The artwork refusal line, held here rather than in RowThumb (see there).
   // Rows key on index, so a line held by the row would pass to the row that
   // moves up when one above it is deleted; this one moves with its track.
   const [refused, setRefused] = useState(null) // { i, msg } | null
+  // The recording's own line, held the same way and for the same reason.
+  const [refusedAudio, setRefusedAudio] = useState(null) // { i, msg } | null
+  const shift = (r, set, i) => { if (r) set(r.i === i ? null : r.i > i ? { ...r, i: r.i - 1 } : r) }
   const removeAt = (i) => {
-    if (refused) setRefused(refused.i === i ? null : refused.i > i ? { ...refused, i: refused.i - 1 } : refused)
+    shift(refused, setRefused, i)
+    shift(refusedAudio, setRefusedAudio, i)
     onChange(list.filter((_, j) => j !== i))
   }
-  const add = () => onChange([...list, { title: '', sub: '', image: null, audio: '' }])
+  const add = () => onChange([...list, { title: '', sub: '', image: null, audio: '', file: '', fileName: '', fileSize: 0 }])
 
   const row = (i, t) => (
     <div key={i} style={{
@@ -3494,10 +3596,20 @@ function TracksField({ caps, value, max, aspect, onChange, onToast }) {
             className="h-auto" style={SONG_ROW_INPUT}
           />
         </div>
+        <RowAudio
+          file={t.file || ''} fileName={t.fileName || ''} fileSize={t.fileSize || 0}
+          hasLink={!!String(t.audio ?? '').trim()} label={`recording for track ${i + 1}`}
+          onApply={(o) => patchAt(i, o)} onToast={onToast}
+          onFail={(msg) => setRefusedAudio(msg ? { i, msg } : refusedAudio?.i === i ? null : refusedAudio)}
+          failed={refusedAudio?.i === i}
+        />
       </div>
       {/* The row wraps, so this takes a line of its own, indented to the thumb. */}
       {refused?.i === i && (
         <p role="alert" style={{ ...ERR_LINE, flexBasis: '100%', paddingLeft: '20px', marginTop: '-2px' }}>{refused.msg}</p>
+      )}
+      {refusedAudio?.i === i && (
+        <p role="alert" style={{ ...ERR_LINE, flexBasis: '100%', paddingLeft: '20px', marginTop: '-2px' }}>{refusedAudio.msg}</p>
       )}
       {blankRow(t, TRACK_KEYS) && (
         <p style={{ margin: '-2px 0 0', flexBasis: '100%', paddingLeft: '20px', fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>{BLANK_TRACK_HINT}</p>
@@ -3523,7 +3635,7 @@ function TracksField({ caps, value, max, aspect, onChange, onToast }) {
         </button>
       )}
       <p style={{ margin: 0, fontSize: '10px', color: '#98958A' }}>
-        {list.length} of {max} · artwork PNG or JPG, from your device · audio by link
+        {list.length} of {max} · artwork PNG or JPG, from your device · audio: upload or link
       </p>
     </div>
   )

@@ -39,9 +39,10 @@ another `notes/` file.
   artist and the other layouts the artist and not the length (JP-107, user call, 2026-10-06, the
   reviews' "no seat for the date" shape, not `GigsField`'s design-aware line); `media`'s `c.tracks` is an array of `{ title, sub, image, audio }`,
   maintained by `TracksField`, and it is the only field whose *rows* carry a photograph
-  (`RowThumb`, the 46px cousin of `ImageField`) and a sound file. `audio` is an address, not an
-  upload — an image is inlined as a data URI and a track is two orders of magnitude larger —
-  and `sectionVm` normalises it through `extUrl()` onto `vm.tracks[].src`. `sectionVm` falls back to
+  (`RowThumb`, the 46px cousin of `ImageField`) and a sound file. `audio` is an address, and
+  a row may also carry an uploaded recording (`file`, a `data:audio/` URI, with `fileName` and
+  `fileSize`; `RowAudio`, `audioFiles.js`, `notes/media.md`). `sectionVm` folds the two onto
+  `vm.tracks[].src`: `uploadedAudio(t)` first, else `audio` through `extUrl()`. `sectionVm` falls back to
   the seeded `TRACKS` (dressed in `TRACK_AUDIO`) when the key is absent. Per-row art and audio are never
   re-seeded by index once the array exists, or a row inserted third would steal track three's
   photograph. `map`'s `c.gigs` is an array of `{ venue, city, time, month, day, year, link }`,
