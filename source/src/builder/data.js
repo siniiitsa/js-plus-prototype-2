@@ -2005,7 +2005,7 @@ export const FIELDS = {
     // The panel still lists it there (`shared`, as every identity key is), with
     // "Not shown in this layout" while the bio prints the kicker, which the hint
     // answers, as at layout 2.
-    { k: 'kicker',    l: 'Kicker',           hostedL: 'Small heading', d: 'DJ · Live Act', shared: true,
+    { k: 'kicker',    l: 'Small heading', d: 'DJ · Live Act', shared: true,
       // Header-nav ticket (2026-11-11): layouts 1 and 4 no longer print the act type
       // above the name, so only Retro's layout-3 polaroid and layout 6 read it. The
       // rows of the designs that stopped have no cap either: `identityCap` reads
@@ -2152,7 +2152,7 @@ export const FIELDS = {
       hint: 'The label over the date on the ID card. It breaks before its last word. '
           + 'Left empty, the date stands alone.' },
     { k: 'roleLabel',  l: 'Current role heading', d: BIO_ROLE_LABEL, in: [2], chars: [null, null, 14],
-      hint: 'The label over the Header’s Kicker on the ID card. Left empty, the kicker stands alone.' },
+      hint: 'The label over the Header’s Small heading on the ID card. Left empty, the kicker stands alone.' },
     { k: 'baseLabel',  l: 'Based in heading', d: BIO_BASE_LABEL, in: [2],
       chars: { Retro: [null, null, 16], Lime: [null, null, 16], Pop: [null, null, 14], '*': [null, null, 19] },
       hint: 'The label over the Header’s Location on the ID card. Left empty, the location stands alone.' },
@@ -4123,6 +4123,8 @@ const isCut = (v, prev) => {
   for (let i = 0; i <= v.length; i++) if (prev.startsWith(v.slice(0, i)) && prev.endsWith(v.slice(i))) return true
   return false
 }
+// A day the row can keep: 1–31. A lone `0` is typeable (it heads `05`) but is no day, so the boxes settle it on leaving.
+export const gigDayOk = (d) => /^\d{1,2}$/.test(String(d ?? '').trim()) && +String(d).trim() >= 1 && +String(d).trim() <= 31
 const DAY_PREFIX = /^(|0|0[1-9]|[1-9]|[12]\d|3[01])$/
 // Pass 3 (QA 1amvuf5xxq2): a box is also refused when the date it makes with the row's other two is
 // not a day (Feb 31, Feb 29 2031, 31 Jun). `year` is the row's when it is four digits from MIN_YEAR,

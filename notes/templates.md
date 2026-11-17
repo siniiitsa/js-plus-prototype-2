@@ -499,7 +499,7 @@ Layouts 5 (*Overlay card*) and 6 (*Stage wide*) are header-only designs: the mod
 ## Panel labels (2026-11-13, QA ticket: 47 field labels reworded)
 
 Display strings only: each is the `l:` of a `FIELDS` entry in `data.js`; keys, caps, `in` and stored values did not move.
-Two mechanics are not plain renames. The header's shared `kicker` carries `hostedL: 'Small heading'`, which `EditPanel`
-prints in the Bio and Form panels where the box is hosted, while the header's own Retro box keeps *Kicker*; Gallery and
+One mechanic is not a plain rename. The header's shared `kicker` was *Kicker* in Retro's header and *Small heading* in the Bio and
+Form panels where the box is hosted (`hostedL`); QA 2026-11-17 made it *Small heading* everywhere and `hostedL` is gone. Gallery and
 Map own a `kicker` and read *Small heading* outright. The header's `showTags` select is now labelled *Tags*, like the
 list input beside it, so its options read *Show tags* / *Hide tags* (`SHOW_HIDE_TAGS`; stored values stay `show` / `hide`).

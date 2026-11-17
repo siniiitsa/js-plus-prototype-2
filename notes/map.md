@@ -291,6 +291,10 @@ and `base` field paragraphs, JP-105's seeds and JP-096's home value.
       it passes the row for the month and day only. Stored values from before the rule still print and show
       `gigDateNote`; deleting is always allowed, so they can be cleared. `inline-probe`'s gig month sentinel is
       `Aug`, not `Sep`, because Sep is refused against a seeded 31st.
+      **Pass 4 (QA 1amvuf5xxq2, 2026-11-17):** a lone day `0` heads `05`, so it cannot be refused per keystroke and
+      was stored (`FEB 0`). It settles on leaving the box, as the year does: `GigsField`'s `lastDay` / `settleDay`
+      and the inline box's blur and Enter (`closeSettled`) give back the last real day (`gigDayOk`, 1–31) the box
+      held, or empty it. `00` was already refused. A stored `0` from before clears on the next focus and blur.
   - **`rings` is a ',' list of 3 at most**: the map slices its labels to its three rings. A ring
     label is a chip, capped at 13 (the sized rule).
   - **Venue Link stays at its seed's 10–11 under Retro, Lime and Grunge**, because the 768 pill

@@ -64,7 +64,7 @@ const sq = (v) => String(v ?? '').replace(/\s+/g, '').toLowerCase()
 // previous box": a row is a call, not a way to quiet the probe. One row per section and label.
 const LEDGER = [
   { cat: 'media', label: /^Counter (count|total) label$/, why: "layout 3's counter prints `5 Featured / 5 Max` as one line (notes/media.md)" },
-  { cat: 'bio', label: /^(Kicker|Location)$/, why: 'the role line `DJ · Live Act · Manchester, UK` prints both (the identity fields, CLAUDE.md)' },
+  { cat: 'bio', label: /^(Small heading|Kicker|Location)$/, why: 'the role line `DJ · Live Act · Manchester, UK` prints both (the identity fields, CLAUDE.md)' },
 ]
 const ledgered = (cat, label) => LEDGER.find((l) => l.cat === cat && l.label.test(label || ''))
 

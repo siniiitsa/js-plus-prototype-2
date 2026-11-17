@@ -62,7 +62,7 @@ import {
   parseDate, isoDate, calStart, headerIdentity, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav, navModeDefault, badgeOptsFor,
   catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldSeed, HEADING_3, HEADING_4, fieldReach, fieldShown, identityFieldsFor, identityHint, INLINE_OFF, PHOTO_OFF, INLINE_HEAD, INLINE_MARKED, INLINE_PART, INLINE_LINES, inlineRule, fieldCap, colCaps, identityCap, sealCap, capExcess, numeralLen, clampCapped, clampContent, legacyContent, clampIdentity, copyrightOf, formHeading3, extUrl, youtubeEmbed, youtubeThumb, youtubeParts, youtubeWatch, youtubeChannel, urlProblem, emailProblem, emailAddr, songTags, repChips,
-  tierFeats, priceParts, priceCuts, blankRow, SONG_KEYS, repSetsOf, repSetLine, TRACK_KEYS, uploadedAudio, GIG_KEYS, gigWeekday, gigStatus, gigStamp, MIN_YEAR, gigPart, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
+  tierFeats, priceParts, priceCuts, blankRow, SONG_KEYS, repSetsOf, repSetLine, TRACK_KEYS, uploadedAudio, GIG_KEYS, gigDayOk, gigWeekday, gigStatus, gigStamp, MIN_YEAR, gigPart, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
   layoutChoices, designCount, designOf, pageLayout, pageOrder, pageRows, videoDesign, videoStartArch,
   VIDEOS, VIDEO_SEED, VIDEO_KEYS, videoPlayable, videoSeedDesc, VIDEO_ALL, COLUMN_SPLIT, bebasEms, antonEms, gloockEms, titanEms,
   headerLayout, headerLayoutLabel, layoutLabel, setupHeaderCount,
@@ -3812,11 +3812,19 @@ function GigsField({ caps, value, max, design, onChange }) {
     if (j !== i) return g
     const next = gigPart(k, v, g[k], g)
     if (k === 'year' && gigYearOk(next)) lastYear.current[i] = next
+    if (k === 'day' && gigDayOk(next)) lastDay.current[i] = String(next).trim()
     return { ...g, [k]: next }
   }))
   // `201` is the head of 2010–2019, so the year box takes a part-typed year while it has focus and gives
   // the last whole one back on leaving (QA 1amvuf5xxq2, pass 3). An emptied year is left alone.
   const lastYear = useRef({})
+  // A lone `0` heads `05`, so the day box takes it while it has focus and gives back the last real day
+  // (or empties) on leaving: the page never prints `FEB 0` (QA 1amvuf5xxq2, pass 4).
+  const lastDay = useRef({})
+  const settleDay = (i) => {
+    const d = String(list[i]?.day ?? '').trim()
+    if (d && !gigDayOk(d)) onChange(list.map((g, j) => (j === i ? { ...g, day: lastDay.current[i] ?? '' } : g)))
+  }
   const settleYear = (i) => {
     const y = String(list[i]?.year ?? '').trim()
     if (y && !gigYearOk(y)) onChange(list.map((g, j) => (j === i ? { ...g, year: lastYear.current[i] ?? '' } : g)))
@@ -3883,6 +3891,8 @@ function GigsField({ caps, value, max, design, onChange }) {
           />,
           <CappedText cap={caps?.day}
             key="day" value={g.day ?? ''} placeholder="12" inputMode="numeric" onClick={stopE}
+            onFocus={() => { lastDay.current[i] = gigDayOk(g.day) ? String(g.day).trim() : '' }}
+            onBlur={() => settleDay(i)}
             onChange={(e) => setAt(i, 'day', e.target.value)}
             className="h-auto" style={SONG_ROW_INPUT}
           />,
@@ -5320,7 +5330,7 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                       onInput={(e) => { if (f.type !== 'place' && f.type !== 'miles') onFocusField?.(sec.id, f, e.target.value, true) }}
                       onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget)) onBlurField?.() }}
                     >
-                      <Label style={{ fontSize: '11px', fontWeight: 600, color: '#6B685E', display: 'block', marginBottom: hint ? '2px' : '5px' }}>{f.hosted && f.hostedL ? f.hostedL : f.l}</Label>
+                      <Label style={{ fontSize: '11px', fontWeight: 600, color: '#6B685E', display: 'block', marginBottom: hint ? '2px' : '5px' }}>{f.l}</Label>
                       {hint && (
                         <p style={{ margin: '0 0 6px', fontSize: '10px', color: '#98958A', lineHeight: 1.45 }}>{hint}</p>
                       )}
@@ -7341,6 +7351,11 @@ function InlineEditor({ ed, value, cap, row, onChange, onRevert, onClose }) {
   // A comma typed into a comma-list item is run into a space by the write (slotWrite), the one
   // separator the page splits on; saying so beats the key silently not taking (JP-169).
   const [comma, setComma] = useState(false)
+  // A gig's day may stand at a lone `0` (the head of `05`) while the box is open; on leaving it gives back
+  // the last real day it held, or empties (the panel's `settleDay`).
+  const isGigDay = ed.k === 'gigs' && ed.row != null && ed.col === 'day'
+  const lastDay = useRef(isGigDay && gigDayOk(value) ? String(value).trim() : '')
+  const closeSettled = () => { if (isGigDay && shown && !gigDayOk(shown)) onChange(lastDay.current); onClose() }
   const held = (ed.f.k === 'title' && ed.cat === 'header') || ed.item != null || ed.row != null
   const shown = draft ?? (typed !== null && typed.trim() === value.trim() ? typed : value)
   const note = held && draft !== null
@@ -7378,6 +7393,7 @@ function InlineEditor({ ed, value, cap, row, onChange, onRevert, onClose }) {
           // A gig's month and day take what the date reads (gigPart); a refused key leaves the box as it was.
           if (ed.k === 'gigs' && ed.row != null && (ed.col === 'month' || ed.col === 'day' || ed.col === 'year')) {
             v = gigPart(ed.col, v, shown, row)
+            if (isGigDay && gigDayOk(v)) lastDay.current = String(v).trim()
             if (v === shown && e.target.value !== shown) return
           }
           setComma(ed.item != null && (ed.row != null ? ROW_LISTS[ed.col] : ed.f.list) === ',' && v.includes(','))
@@ -7386,10 +7402,10 @@ function InlineEditor({ ed, value, cap, row, onChange, onRevert, onClose }) {
           else { setDraft(null); setTyped(v); onChange(v) }
         }}
         onKeyDown={(e) => {
-          if (e.key === 'Enter' && (!multi || e.metaKey || e.ctrlKey)) { e.preventDefault(); onClose() }
+          if (e.key === 'Enter' && (!multi || e.metaKey || e.ctrlKey)) { e.preventDefault(); closeSettled() }
           else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); onRevert(); onClose() }
         }}
-        onBlur={onClose}
+        onBlur={closeSettled}
         style={style}
       />
       <div style={{ position: 'absolute', left: ed.x, top: ed.y + ed.h + 8, zIndex: 24, pointerEvents: 'none', display: note || capCount(shown, cap ?? {}) ? 'block' : 'none',
