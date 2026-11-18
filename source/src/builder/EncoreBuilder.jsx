@@ -64,7 +64,7 @@ import {
   catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldSeed, HEADING_3, HEADING_4, fieldReach, fieldShown, identityFieldsFor, identityHint, INLINE_OFF, PHOTO_OFF, INLINE_HEAD, INLINE_MARKED, INLINE_PART, INLINE_LINES, inlineRule, fieldCap, colCaps, identityCap, sealCap, capExcess, numeralLen, clampCapped, clampContent, legacyContent, clampIdentity, copyrightOf, formHeading3, extUrl, youtubeEmbed, youtubeThumb, youtubeParts, youtubeWatch, youtubeChannel, urlProblem, emailProblem, emailAddr, songTags, repChips,
   tierFeats, priceParts, priceCuts, blankRow, SONG_KEYS, repSetsOf, repSetLine, TRACK_KEYS, uploadedAudio, GIG_KEYS, gigDayOk, gigWeekday, gigStatus, gigStamp, MIN_YEAR, gigPart, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
   layoutChoices, designCount, designOf, pageLayout, pageOrder, pageRows, videoDesign, videoStartArch,
-  VIDEOS, VIDEO_SEED, VIDEO_KEYS, videoPlayable, videoSeedDesc, VIDEO_ALL, COLUMN_SPLIT, bebasEms, antonEms, gloockEms, titanEms,
+  VIDEOS, VIDEO_SEED, VIDEO_KEYS, videoPlayable, videoSeedDesc, VIDEO_ALL, COLUMN_SPLIT, bebasEms, antonEms, gloockEms, titanEms, frauncesEms, titleFitK,
   headerLayout, headerLayoutLabel, layoutLabel, setupHeaderCount,
 } from './data.js'
 import { defaultImage, defaultImages, defaultTrackArt, seedFocus, RETRO_TEXTURE } from './photos.js'
@@ -277,7 +277,7 @@ export const pageDesignOf = (sections, themeName) => {
   return ((h.arch % n) + n) % n
 }
 
-export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = {}, tiers = [], email = '', Z, mob, live = false, embeds = true, navSections = [], column = false, realMap = false, today, page = -1, above = '', below = '', clamp = true }) {
+export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = {}, tiers = [], email = '', Z, mob, live = false, embeds = true, navSections = [], column = false, realMap = false, today, page = -1, above = '', below = '', clamp = true, pageW }) {
   const theme = THEMES[themeIdx]
   // A video has a frame at layouts 2 and 4 alone (plans/video.md, call 1) and
   // the calendar none at layout 3: `designOf` folds a hole onto a design that
@@ -931,6 +931,16 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // and under Pop, whose layouts 2, 3 and 4 take all three blocks, in Titan.
   vm.cardNameEms = navFace ? +Math.max(0, ...vm.brand.split(/\s+/).map(navFace)).toFixed(3) : undefined
   vm.navCtaEms = navFace ? +(navFace(vm.cta1) + navFace(vm.cta2)).toFixed(3) : undefined
+  // The header's name, fitted to the share of the header a title may take
+  // (plans/header-fit.md): `titleK` is the fraction of the layout's own size
+  // (1 for a name that fits, which is every seed), held at `titleFloor` of it at
+  // the least. Retro has no `navFace`, and gets none here, since its other
+  // branches test whether `navNameEms` is set; this reads Fraunces on its own.
+  if (cat === 'header') {
+    const face = navFace ?? frauncesEms
+    const words = vm.brand.split(/\s+/).filter(Boolean).map((w) => face(w))
+    ;[vm.titleK, vm.titleFloor] = titleFitK(T.name, d, Z.dev, words, face(' '), pageW)
+  }
   // `navNameFit` (the nav brand's one-line / two-line / floor fit, JP-091, JP-101,
   // JP-121) and `navFits` (the tablet header's links-or-burger sum, JP-039) are
   // gone: the bar of layouts 1–4 is the burger and the pill alone and carries no
@@ -6073,6 +6083,8 @@ function PublishedPage({ themeIdx, sections: all, artistName, win, frameW }) {
       artistName, identity, tiers, email, Z, mob: key === 'mobile', live: true, embeds, navSections,
       column: inColumns.get(i), realMap: true, today, page: pageDesignOf(sections, T.name),
       above: sections[i - 1]?.cat, below: sections[i + 1]?.cat,
+      // a phone narrower than the 390 frame (plans/header-fit.md)
+      pageW: key !== 'desktop' && w < canvasW ? w : undefined,
     })} />
   )))
   return k === 1 ? page : <div style={{ zoom: k }}>{page}</div>
@@ -7589,6 +7601,23 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
   // `focusF` is the focused field's section and printed copy, `focusBox` the
   // box round that copy, in its section's own coordinates.
   const canvasRef = useRef(null)
+  // The desktop canvas is the 1180 frame only in a window wide enough for it: the card is
+  // `width: 100%` of what the sidebar leaves, so a 1440 window draws the page 1088 wide, and
+  // layout 1, whose root is an aspect ratio, is 566 tall there, not 614. The header's title
+  // fit reads that width (`deskW`, plans/header-fit.md); every other caller is the frame.
+  const [deskW, setDeskW] = useState(null)
+  useEffect(() => {
+    const el = canvasRef.current
+    if (!el) return undefined
+    const read = () => {
+      const cs = getComputedStyle(el)
+      setDeskW(Math.round(el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight)))
+    }
+    const ro = new ResizeObserver(read)
+    ro.observe(el)
+    read()
+    return () => ro.disconnect()
+  }, [st.stage])
   const [focusF, setFocusF] = useState(null)
   const [focusBox, setFocusBox] = useState(null)
   // The node a canvas click opened the inline editor on: with a label that repeats (each
@@ -8041,7 +8070,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
     const down = canMove(arr, sec.id, 1)
     const isHeader = sec.cat === 'header'
     return {
-      ...sectionVm({ themeIdx: st.theme, cat: sec.cat, arch: sec.arch, c: sec.c, artistName, identity, tiers, email, Z, mob: Z === SIZES.mobile || isMobile || device === 'mobile', navSections, column: inColumns.get(i), realMap: true, page: pageDesignOf(arr, T.name), above: arr[i - 1]?.cat, below: arr[i + 1]?.cat }),
+      ...sectionVm({ pageW: device === 'desktop' && !isMobile ? deskW ?? undefined : undefined, themeIdx: st.theme, cat: sec.cat, arch: sec.arch, c: sec.c, artistName, identity, tiers, email, Z, mob: Z === SIZES.mobile || isMobile || device === 'mobile', navSections, column: inColumns.get(i), realMap: true, page: pageDesignOf(arr, T.name), above: arr[i - 1]?.cat, below: arr[i + 1]?.cat }),
       layoutLabel: isHeader
         ? headerLayoutLabel(T.name, sec.arch)
         : layoutLabel(sec.cat, T.name, layoutChoices(sec.cat, T.name).includes(sec.arch) ? sec.arch : pageLayout(sec.cat, sec.arch, T.name)),

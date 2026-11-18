@@ -107,6 +107,14 @@ const FLOOR = { title: 0.75, 'who.title': 0.75 }
 // The video's layout-2 row titles wrap to two lines and clamp (notes/video.md,
 // *YouTube links*): the seed's one line is not the frame's limit there.
 const EXTRA_LINES = { title: 1, 'who.title': 1, 'videos.title': 1 }
+// The header's own title is FITTED to a share of the header, whatever its length
+// (plans/header-fit.md, user call 2026-11-18): it sets smaller down to half its
+// layout's size, and takes the lines that takes, so it has no line census and
+// its floor is 0.5. It still fails `box`, `overlap` and `page`, which is what a
+// title that outgrows its room, or a fixed root that clips it, looks like.
+const FITTED = new Set(['header.title'])
+const HEAD_MAX = 80 // the highest cap the header's Title box takes (plans/header-fit.md)
+const fitted = (p) => FITTED.has(`${p.cat}.${p.key}`)
 // --extra-lines=songs.title gives a key one line past the frame's, to read the
 // alternative a user call would allow (JP-104's two-line title at repertoire
 // layout 3's 768 and 390, session 5), as --prose reads session 4's.
@@ -133,7 +141,7 @@ for (const k of (opt('no-floor', '') || '').split(',').filter(Boolean)) FLOOR[k]
 // one word to a line at 1440 (session 12): it takes the name's floor there.
 // --no-floor=heading still lets it shrink without bound.
 const FLOOR_AT = { 'bio.heading': { Lime: [0], Editorial: [0], Pop: [0, 3] } }
-const shrinkFloor = (p, themeName, a) => FLOOR[p.key] ?? (FLOOR_AT[`${p.cat}.${p.key}`]?.[themeName]?.includes(a) ? 0.75 : 1)
+const shrinkFloor = (p, themeName, a) => fitted(p) ? 0.5 : FLOOR[p.key] ?? (FLOOR_AT[`${p.cat}.${p.key}`]?.[themeName]?.includes(a) ? 0.75 : 1)
 // A repeater's list count whose chip row is the union over every row (session 5).
 const UNION_COUNT = new Set(['songs.tags#'])
 
@@ -367,7 +375,19 @@ function measure(needles, drops = []) {
     .filter((el) => el.getClientRects().length && getComputedStyle(el).visibility !== 'hidden')
   const textRects = (n) => {
     const rg = document.createRange(); rg.selectNodeContents(n)
-    return [...rg.getClientRects()].filter((r) => r.width > 0.5 && r.height > 0.5)
+    const rs = [...rg.getClientRects()].filter((r) => r.width > 0.5 && r.height > 0.5)
+    // A fitted key is measured on its LINE boxes (?linebox=1): the name sets at
+    // line-height .75-.89, so the font's own em box, which a text range returns,
+    // runs a quarter-size past the line above and below it where no glyph does
+    // (plans/header-fit.md). The shrink is what keeps those lines apart.
+    if (!/[?&]linebox=1/.test(location.search)) return rs
+    const el = n.nodeType === 3 ? n.parentElement : n
+    if (!el.closest('h1')) return rs // only the name's own lines: the cards print it too, by their own rules
+    const lh = parseFloat(getComputedStyle(el).lineHeight)
+    return rs.map((r) => {
+      const d = Number.isFinite(lh) && r.height > lh ? (r.height - lh) / 2 : 0
+      return { left: r.left, right: r.right, width: r.width, top: r.top + d, bottom: r.bottom - d, height: r.height - 2 * d }
+    })
   }
   const inkOf = (el) => {
     const rects = []
@@ -472,15 +492,23 @@ function measure(needles, drops = []) {
     for (const r of turned.length ? inkOf(el) : ink) if (!tops.some((t) => Math.abs(t - r.top) < r.height / 2)) tops.push(r.top)
     for (const [a, t, r] of turned) { a.style.transform = t; a.style.rotate = r }
     const boxes = []
+    const pastWhy = []
     for (let a = el; a && a !== root.parentElement; a = a.parentElement) {
       const b = a.getBoundingClientRect(), cs = getComputedStyle(a)
       const clips = /hidden|clip/.test(cs.overflowX + cs.overflowY)
-      const past = ink.some((r) => r.left < b.left - 0.5 || r.right > b.right + 0.5 || r.top < b.top - 0.5 || r.bottom > b.bottom + 0.5)
+      // A fitted title is held to 1.5px (a faced title's strut is a hair off its line
+      // box), and to 0.2em where the layout lifts it (Pop's -0.14em, glyph-floor).
+      const pt = /[?&]linebox=1/.test(location.search) ? Math.max(1.5, 0.2 * parseFloat(getComputedStyle(el).fontSize)) : 0.5
+      const past = ink.some((r) => r.left < b.left - pt || r.right > b.right + pt || r.top < b.top - pt || r.bottom > b.bottom + pt)
       const cut = clips && (a.scrollWidth > a.clientWidth + 1 || a.scrollHeight > a.clientHeight + 1)
       // Tagged by kind: a seat whose tracked ink overshoots its own box at the
       // seed ('past') must still fail when it starts clipping its text ('cut'),
       // the set line's nowrap span at repertoire layout 3 (session 5).
-      if (past) boxes.push(`${pathOf(a)}:past`)
+      if (past) {
+        boxes.push(`${pathOf(a)}:past`)
+        const k = ink.find((r) => r.left < b.left - pt || r.right > b.right + pt || r.top < b.top - pt || r.bottom > b.bottom + pt)
+        pastWhy.push(`${pathOf(a)} ink ${[k.left, k.top, k.right, k.bottom].map((x) => +x.toFixed(1))} box ${[b.left, b.top, b.right, b.bottom].map((x) => +x.toFixed(1))}`)
+      }
       if (cut) boxes.push(`${pathOf(a)}:cut`)
     }
     // Another copy of the value on a seal's ring is the ring test's, not this one's.
@@ -492,10 +520,13 @@ function measure(needles, drops = []) {
     const overlaps = others.filter((o) => !el.contains(o.el) && !o.el.contains(el)
       && !drops.includes(o.el.textContent.trim())
       && !(o.el.closest('svg') && seats.includes(o.el))
+      // A fitted name's line box brushing a seal's disc by a pixel or two is read by eye, not failed
+      // (the line box is a quarter-size taller than the glyphs it holds): plans/header-fit.md.
+      && !(/[?&]linebox=1/.test(location.search) && o.el.closest('svg'))
       && !(o.rs.length === 1 && encloses(o.rs[0]))
       && o.rs.some((r) => ink.some((k) => hit(r, k) && (!o.loose || paints(o.el, r, k))))).map((o) => pathOf(o.el))
     const w = Math.round(el.getBoundingClientRect().width)
-    return { path: pathOf(el), lines: tops.length, fs: parseFloat(getComputedStyle(el).fontSize), w, boxes, overlaps,
+    return { pastWhy, inH1: !!el.closest('h1'), path: pathOf(el), lines: tops.length, fs: parseFloat(getComputedStyle(el).fontSize), w, boxes, overlaps,
       svg: !!el.closest('svg'), ring: ringOf(el) }
   })
   return { seats: res, page: root.scrollWidth > Math.ceil(R.width) + 1 }
@@ -550,6 +581,7 @@ const surfacesOf = (cat, a) => widths.flatMap((w) => (w === 'desktop' && a === 2
 
 // One surface's verdict on length n: null for a pass, else the failing test.
 function verdict(m, ref, allowed, p, floor = FLOOR[p.key] ?? 1) {
+  const fit = fitted(p)
   if (m.crash) return 'crash'
   if (!m.seats.length) return 'unseen'
   if (m.page && !ref.page) return 'page'
@@ -561,6 +593,9 @@ function verdict(m, ref, allowed, p, floor = FLOOR[p.key] ?? 1) {
     // layout 2's head link, "● Availability", ahead of the h2), and by index
     // the h2 met the link's box (session 7).
     const r = ref.seats.find((x) => x.path === s.path) ?? ref.seats[i] ?? ref.seats[0]
+    // The fitted name is judged on its own seat, the h1: the cards that print it too (a polaroid's
+    // caption, a portrait card) wrap by their own rules and their limits are the caps' (plans/header-fit.md).
+    if (fit && !s.svg && !s.inH1) continue
     // A seal's ring: no copy runs off its path, the copies never meet, and no
     // copy meets a mark it did not meet at the reference. Its seats take no
     // other test (their boxes are an arc's bounding box), and only the seal's
@@ -582,14 +617,16 @@ function verdict(m, ref, allowed, p, floor = FLOOR[p.key] ?? 1) {
     // A seat may keep the reference's own line count where that is more than
     // the census allows (a seed that already wraps is reported, not failed).
     const lim = allowed == null ? null : Math.max(allowed + (EXTRA_LINES[p.key] ?? 0), r.lines)
-    if (!p.block && lim != null && s.lines > lim) return `lines ${s.lines}>${lim}`
+    if (!fit && !p.block && lim != null && s.lines > lim) return `lines ${s.lines}>${lim}`
     // A seat's own box is 'self' on both sides, so a value whose seat is a
     // word span inside the reference's seat (a one-word name in a two-word
     // h1) is not failed for the path having moved.
     const selfOf = (b, ...own) => { const i = b.lastIndexOf(':'); const p = b.slice(0, i); return `${own.includes(p) ? 'self' : p}${b.slice(i)}` }
     const refBoxes = r.boxes.map((b) => selfOf(b, r.path))
-    if (s.boxes.some((b) => !refBoxes.includes(selfOf(b, s.path, r.path)))) return 'box'
-    if (s.overlaps.some((o) => !r.overlaps.includes(o))) return 'overlap'
+    const badBox = s.boxes.find((b) => !refBoxes.includes(selfOf(b, s.path, r.path)))
+    if (badBox) return flag('why') ? `box ${badBox} ${s.pastWhy?.[0] ?? ''}` : 'box'
+    const badOv = s.overlaps.find((o) => !r.overlaps.includes(o))
+    if (badOv) return flag('why') ? `overlap ${badOv}` : 'overlap'
     if (s.fs < r.fs * floor - 0.01) return `shrink ${s.fs}<${r.fs}`
   }
   return null
@@ -637,12 +674,13 @@ async function runProbe(pg, p, t) {
       const qBase = `cat=${p.cat}&arch=${a}&theme=${t}&w=${w}${col ? `&column=${col}` : ''}`
       const art = p.f?.type === 'tracks' ? await artOf(pg, themeName) : null
       const drops = DROPS[`${p.cat}.${p.key}`]?.[themeName] ?? []
-      const q = (v) => (art ? dressArt(qBase + queryOf(p, themeName, a, v), art) : qBase + queryOf(p, themeName, a, v))
+      const lbx = fitted(p) ? '&linebox=1' : ''
+      const q = (v) => (art ? dressArt(qBase + queryOf(p, themeName, a, v), art) : qBase + lbx + queryOf(p, themeName, a, v))
       const at = (si, n) => { const v = valueAt(p, seed, si, n, themeName, a); return render(pg, q(v), needlesOf(p, v), drops) }
       // The reference every test is against: the seed's own render (the
       // frame's copy, so its look is the frame's), or a short value's where
       // the seed is empty or does not print.
-      const sq = art ? dressArt(qBase + queryOf(p, themeName, a, seed), art) : qBase + queryOf(p, themeName, a, seed)
+      const sq = art ? dressArt(qBase + queryOf(p, themeName, a, seed), art) : qBase + lbx + queryOf(p, themeName, a, seed)
       const sm = seed.trim() ? await render(pg, sq, needlesOf(p, seed), drops) : null
       const ref = sm?.seats.length ? sm : await at(0, p.mode === 'count' ? 1 : 7)
       // A seal's probe needs a ring at the reference; any other, a seat.
@@ -677,6 +715,21 @@ async function runProbe(pg, p, t) {
         // A cap at the seed's own length is the frame's floor (its own string
         // fits where prose of that length may not): reported, not failed.
         perSurface[label] = { n, why: (await ok(n)) ? 'ok' : n <= floorOf(p, themeName, a) ? 'floor' : 'FAIL' }
+        continue
+      }
+      // A fitted key (the header's title) shrinks with length, so a pass is not
+      // monotone in n and a bisect lands on noise: scan up to HEAD_MAX in steps
+      // and take the first failing length less one as the cap (`--sweep`).
+      if (flag('sweep') && fitted(p)) {
+        const fl0 = floorOf(p, themeName, a)
+        let bad = null
+        for (let n = Math.max(fl0, 4); n <= HEAD_MAX; n += 4) if (!(await ok(n))) { bad = n; break }
+        let n = bad == null ? HEAD_MAX : bad - 1
+        // step back to the largest length whose own render passes
+        while (bad != null && n > fl0 && !(await ok(n))) n--
+        let why = bad == null ? 'open' : null
+        for (let si = 0; bad != null && !why && si < samplesOf(p).length; si++) why = verdict(await at(si, bad), ref, allowed, p, shrinkFloor(p, themeName, a))
+        perSurface[label] = { n, why: why ?? 'samples', allowed, census: fromCensus, seedLines, grow: null }
         continue
       }
       // Bisect: the largest n in [1, hi] that passes. The upper bound starts

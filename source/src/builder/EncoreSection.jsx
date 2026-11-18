@@ -1319,6 +1319,15 @@ function Kicker({ s, color }) {
 // `style` is spread last onto the h1 — additive, `BookPill`'s precedent — for
 // a stand-in face's glyph floor (HeaderV0's Pop arm); every other caller
 // passes none.
+// A long name's size (plans/header-fit.md): the layout's own expression, held to
+// the fraction of its token `sectionVm` fitted the wrapped block to (`s.titleK`,
+// 1 for every name that fits, so a seed is untouched), and never below
+// `s.titleFloor` of it. The `min` keeps each layout's own width fit in force.
+const fitSz = (s, expr, token) => (s.titleK < 1
+  ? `max(calc(${token} * ${s.titleFloor}), min(${expr}, calc(${token} * ${s.titleK})))`
+  // A layout whose own fit squeezes the whole name onto one line (Editorial's and
+  // Pop's layout 1) would run below the floor; held at it, the name wraps instead.
+  : s.titleFloor && expr !== token ? `max(calc(${token} * ${s.titleFloor}), ${expr})` : expr)
 function Title({ s, size, color, twoTone = false, align = 'left', toneA, toneB, lh, inline = false, style }) {
   const t = s.heroTitle || ''
   const i = t.indexOf(' ')
@@ -1333,6 +1342,8 @@ function Title({ s, size, color, twoTone = false, align = 'left', toneA, toneB, 
     // so does Editorial's, Gloock standing in for the caps-only Fisterra
     // Fora, and Pop's, Titan One standing in for Chunko Bold Demo.
     textTransform: s.grunge || s.editorial || s.pop ? 'uppercase' : undefined,
+    // A word wider than the column even at the floor breaks rather than leave it.
+    overflowWrap: s.titleK < 1 ? 'break-word' : undefined,
     ...style,
   }
   return (
@@ -2184,7 +2195,7 @@ function HeaderV0({ s, menu }) {
                 px at the three widths, the same in ems), so the h1 is lifted
                 by that — a stand-in's glyph floor, measured here; the
                 Label/SM and Display/List strings sit 0–2px low and stay. */}
-            <Title s={s} size={ed || pop ? `min(${tk.dispXl}, calc(100cqi / ${s.mob ? s.cardNameEms : s.navNameEms}))` : tk.dispXl}
+            <Title s={s} size={fitSz(s, ed || pop ? `min(${tk.dispXl}, calc(100cqi / ${s.mob ? s.cardNameEms : s.navNameEms}))` : tk.dispXl, tk.dispXl)}
                    twoTone={!lime || grunge} color={ed || pop ? ink : lime && !grunge ? s.ac : undefined}
                    toneA={grunge ? s.tx : s.paper} toneB={s.ac} inline={!s.mob || grunge || ed || pop}
                    lh={0.75} align={centred ? 'center' : 'left'}
@@ -2558,7 +2569,7 @@ function HeaderV1({ s, menu }) {
             × `faceK`, faced as Grunge's are, and Titan sets its glyphs 0.14em
             lower in the 0.89 line box than Chunko does (HeaderV0's floor), so
             the h1 is lifted by that. */}
-        <Title s={s} size={s.cardNameEms ? `min(${s.dispLg}, calc(100cqi / ${s.cardNameEms}))` : s.dispLg}
+        <Title s={s} size={fitSz(s, s.cardNameEms ? `min(${s.dispLg}, calc(100cqi / ${s.cardNameEms}))` : s.dispLg, s.dispLg)}
                color={s.tx} lh={0.89} inline twoTone={grunge} toneA={s.tx} toneB={s.ac}
                style={pop ? { position: 'relative', top: '-0.14em' } : undefined} />
         {/* BookPill's Lime defaults exactly: 246 × 54 at 1440 is its 0.82, 212 at
@@ -2817,7 +2828,7 @@ function HeaderV1({ s, menu }) {
           to within half a pixel; 390 sets it a register smaller than that, at
           `dispLg`. Measured off both renders' cap bands, not off the emitted
           `size/display-lg`, whose 96 is the component's default. */}
-      <Title s={s} size={tab ? s.h1 : s.dispLg} lh={0.89} inline
+      <Title s={s} size={fitSz(s, tab ? s.h1 : s.dispLg, tab ? s.h1 : s.dispLg)} lh={0.89} inline
              twoTone toneA={mustard} toneB={s.ac} />
       {/* Both narrow masters draw this pill at the *same* full-scale box the
           768 one does — `full` is what buys that at 390, where BookPill would
@@ -3146,7 +3157,7 @@ function HeaderV2({ s, menu }) {
     // (HeaderV1's Pop arm).
     const identity = (
       <div style={col(u(12), { alignItems: 'flex-start', width: '100%', containerType: 'inline-size' })}>
-        <Title s={s} size={s.cardNameEms ? `min(${s.dispLg}, calc(100cqi / ${s.cardNameEms}))` : s.dispLg}
+        <Title s={s} size={fitSz(s, s.cardNameEms ? `min(${s.dispLg}, calc(100cqi / ${s.cardNameEms}))` : s.dispLg, s.dispLg)}
                color={pop ? s.ac : s.tx} lh={0.89} inline twoTone={grunge} toneA={s.tx} toneB={s.ac}
                style={pop ? { position: 'relative', top: '-0.14em' } : undefined} />
       </div>
@@ -3397,7 +3408,7 @@ function HeaderV2({ s, menu }) {
       ...(s.mob ? { minHeight: '568.13px' } : null),
     })}>
       <div style={col(u(12), { alignItems: 'flex-start', width: '100%' })}>
-        <Title s={s} size={T.disp} lh={0.89} color={cream} inline />
+        <Title s={s} size={fitSz(s, T.disp, T.disp)} lh={0.89} color={cream} inline />
       </div>
       <TagChips s={s} radius={u(8)} />
       {/* Two rows of the frame's 11.803 square — `cell` is the repeating tile,
@@ -3726,9 +3737,9 @@ function HeaderV3({ s, menu }) {
             Lime); a name whose line needs less wraps there instead, inside
             the box, each word still fitted to the room. A hidden seal
             (`showBadge`) leaves the column whole, and the word fit alone. */}
-        <Title s={s} size={!s.cardNameEms ? s.dispXl : sealRoom
+        <Title s={s} size={fitSz(s, !s.cardNameEms ? s.dispXl : sealRoom
                  ? `min(${s.dispXl}, calc((100cqi - 162.54px) / ${s.cardNameEms}), max(calc((100cqi - 162.54px) / ${s.navNameEms}), calc(${s.dispXl} * 0.6)))`
-                 : `min(${s.dispXl}, calc(100cqi / ${s.cardNameEms}))`}
+                 : `min(${s.dispXl}, calc(100cqi / ${s.cardNameEms}))`, s.dispXl)}
                lh={0.75} color={pop ? s.text3 : s.tx}
                style={sealRoom || pop ? {
                  ...(sealRoom ? { maxWidth: 'calc(100cqi - 146.54px)' } : null),
@@ -3951,7 +3962,11 @@ function HeaderV3({ s, menu }) {
           and both narrow masters set it `w-[min-content] min-w-full`, which is
           one line at their own sizes. Hence `inline` at narrow only, the
           inverse of HeaderV0's. */}
-      <Title s={s} size={T.disp} lh={0.75} color={cream} inline={s.narrow} />
+      <Title s={s} size={fitSz(s, T.disp, T.disp)} lh={0.75} color={cream} inline={s.narrow}
+             // At 768 the seal stands level with the name (below), 146.54 in from
+             // the column's edge; a name wraps inside the room it leaves, as the
+             // Lime tree's does, not under it.
+             style={isTablet(s) && s.showBadge === 'show' ? { maxWidth: 'calc(100% - 146.54px)' } : undefined} />
     </div>
   )
 
@@ -4079,7 +4094,7 @@ function HeaderV4({ s }) {
           <div style={{ width: '36px', height: '36px', borderRadius: '999px', overflow: 'hidden', flex: 'none' }}>
             <Photo s={s} avatar initialsSize={14} />
           </div>
-          <Title s={s} size={s.h2} color={s.acFg} />
+          <Title s={s} size={fitSz(s, s.h2, s.h2)} color={s.acFg} />
         </div>
         <p style={{ margin: 0, fontSize: '13px', lineHeight: 1.55, opacity: 0.8, whiteSpace: 'pre-line' }}>{s.subtitle}</p>
         <TagChips s={s} />
@@ -4132,7 +4147,7 @@ function HeaderV5({ s }) {
           <div style={col('12px', { alignItems: 'flex-start' })}>
             <InsetCard s={s} thumb={48} />
             <Kicker s={s} />
-            <Title s={s} size={s.mob ? s.h2 : s.h1} color="#FFFFFF" />
+            <Title s={s} size={fitSz(s, s.mob ? s.h2 : s.h1, s.mob ? s.h2 : s.h1)} color="#FFFFFF" />
             <LocationLine s={s} color="rgba(255,255,255,.75)" />
           </div>
           <div style={{ maxWidth: '46%', minWidth: '160px', marginLeft: 'auto' }}>

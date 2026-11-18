@@ -503,3 +503,15 @@ One mechanic is not a plain rename. The header's shared `kicker` was *Kicker* in
 Form panels where the box is hosted (`hostedL`); QA 2026-11-17 made it *Small heading* everywhere and `hostedL` is gone. Gallery and
 Map own a `kicker` and read *Small heading* outright. The header's `showTags` select is now labelled *Tags*, like the
 list input beside it, so its options read *Show tags* / *Hide tags* (`SHOW_HIDE_TAGS`; stored values stay `show` / `hide`).
+
+## The header title's fit (plans/header-fit.md, 2026-11-18)
+
+A long name shrinks the header's title instead of filling the header. `sectionVm` sets `vm.titleK`
+(fraction of the layout's own size, 1 for every seed) and `vm.titleFloor` (0.5) on a header from
+`titleFitK` in `data.js`, which reads `TITLE_SITES[template][design]` (base, line height, wrap model,
+column width, header height, room). `EncoreSection`'s `fitSz()` is the only reader: it leaves a layout's own
+size expression alone while `titleK` is 1 and holds the 50 % floor under it otherwise. **Retro is not in
+`navFace`** (its fit branches test `navNameEms` / `cardNameEms`); its words are measured by
+`frauncesEms` (`scripts/ems-table.mjs Fraunces`). Editorial's and Pop's layout 1 keep their whole-line fit
+down to 50 % and wrap past it. A site added or moved needs its row in `TITLE_SITES` re-read off a
+long-name render, and its cap re-measured with `limits.mjs header --keys=title --sweep`.

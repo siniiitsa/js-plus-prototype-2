@@ -21,6 +21,7 @@ plans/
   photo-edit.md   ← clicking a photo on the canvas opens the crop editor with Upload another (every template and layout)
   photo-edit-qa-fixes.md ← an untouched Apply must not re-crop a seed (JP-160), and the photo half of JP-154
   header-nav.md   ← the header bar is a hamburger and Book Now at layouts 1–4, the menu opens in flow, location / act type / availability / subtitle / place card gone, a three-state badge (2026-11-11)
+  header-fit.md   ← a long artist name shrinks the header title gradually (50 % floor, then a character cap) instead of filling the header; every template and layout (2026-11-18)
   video.md   ← restoring the video section where Figma draws it: layouts 2 and 4 of all five templates (sessions 0 to 10: five user calls, the foundation + Retro, one template and layout each, the sweep)
   video-youtube-4.md   ← layout 4 of the video section made playable on all five templates (calls 7–11; one session and its proof, done 2026-10-28)
   video-qa-fixes.md   ← the video section's QA batch: a title that follows its link, a player that cannot play is not drawn, L4's head over a thumbnail, Retro's poster (JP-161 … JP-164), and the redeploy JP-154's retest waits on

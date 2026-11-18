@@ -259,12 +259,14 @@ const s = sectionVm({
   ...(q.get('below') ? { below: q.get('below') } : null),
   // &noclamp=1 renders past the character caps (scripts/limits.mjs measures there).
   ...(q.get('noclamp') === '1' ? { clamp: false } : null),
+  // &fw=1088 draws the desktop page that wide, as the editor's canvas is in a 1440 window (the header's title fit reads it).
+  ...(q.get('fw') ? { pageW: Number(q.get('fw')) } : null),
   // The live events map (WebGL, network tiles) is off in the harness unless asked for, so digests stay deterministic.
   ...(q.get('map') === '1' ? { realMap: true } : null),
 })
 
 createRoot(document.getElementById('root')).render(
-  <div style={{ width: column ? s.contentW : Z[device].canvasW, margin: '0 auto' }}>
+  <div style={{ width: column ? s.contentW : q.get('fw') ? `${q.get('fw')}px` : Z[device].canvasW, margin: '0 auto' }}>
     <EncoreSection s={s} />
   </div>,
 )
