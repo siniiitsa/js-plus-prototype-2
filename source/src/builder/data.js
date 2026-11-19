@@ -3034,7 +3034,7 @@ export const FIELDS = {
           + '“Back to beginning” again.' },
     { k: 'sourceLabel', l: 'Social links heading', d: GALLERY_SOURCES[0].l, in: [0],
       chars: { Retro: [42], Lime: [49], Grunge: [58], Editorial: [37], Pop: [50], Lattice: [25] },
-      hint: 'The first row, above YouTube, Instagram and TikTok, on desktop only (every width in Lattice). Left empty, it '
+      hint: 'The first row, above YouTube, Instagram and TikTok, on desktop only. Left empty, it '
           + 'shows “Gallery” again.' },
     { k: 'youtube',   l: 'YouTube link', type: 'url', d: '', in: [0],
       hint: 'A video, short or playlist link plays inside the section when the YouTube row is clicked on the '
