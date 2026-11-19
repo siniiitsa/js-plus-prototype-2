@@ -357,3 +357,26 @@ At 390 the coverage rings are 138.7% of the viewport's width (477px) in a viewpo
 **The viewport clips, with `overflow: 'hidden'`**, as every other map viewport in the file does (layouts 3 and 4, the Lime block) and as layout 3's note says the master does (`plans/retro/layout-3.md`: "Clip the viewport, not the container it shares with the foot bar"; Editorial's layout-2 plan: "the viewport clips … as the masters do"). The Figma masters were not re-fetched. Pixels: 0 at 1440, a thin arc across the foot bar at 768, the ring at 390. `pointer-events: none` on the decorative spans would have left the arc drawn over the text. The zoom buttons are untouched: Retro's layout 2 draws none (above). The two-build digest records rects and colours, not `overflow`, so it reads zero here; the pixel diff is the record.
 
 **The probe now catches this class** (`scripts/inline-probe.mjs`, header). `--width 390` clicks the Mobile tab on a 1440 window, where inline editing is on (only a window of 820 or under is the phone). Two new failures: UNREACHED, a node that prints an active slot's copy, whole or inside a longer line, and a click on the slot's words opens nothing (JP-157's line, JP-158's bare city); COVERED, the same with an `aria-hidden` element on the words (this ticket). Proved on a worktree at HEAD with JP-157's and JP-158's fixes reverted: Retro L1 testimonials, Retro L3 map and Retro L2 map at 390 fail there and pass on the fixed tree. Over all 22 pages at 1440 and 768 the only nodes they name are on every template, and are by design, in the probe's `ACCEPTED` list: the layout-3 city filter chips (`Manchester · 4`, derived, live-only) and layout 2's `● Availability` (a literal that shares the heading's seeded words). `Manchester, UK` in layout 2's travel card is the header's `location` (above), exempt as the header's copy.
+
+## Lattice · layout 1 (plans/lattice/layout-1.md, section 6, 2026-11-19)
+
+Frames `1:796` · `1:9429` · `1:10401`. A block of its own, `LatticeMap` (`EncoreSection.jsx`), standing in `EventsMap`'s `if (s.limeTree)` **after the seam**: `perPage`, `pages`, `pg`, `shown`,
+`lit`, `onPick` and the pager's window stay `EventsMap`'s and go over in `g` (`win` is `pageWindow(pages, pg, true)`: the compact `1 2 3` at every width, as the frames draw it), with the page and
+step closures only while `s.live`. Not Lime's *Compact tile*: that is a raster map beside a list, and this is a dotted-ellipse card over a ruled foot beside a boxed list.
+
+- **The picture is art, not the real map.** The frame draws a dotted bowl, so `RealMap` is not mounted for Lattice (no tiles, no Photon request from the canvas, no `s.mapGeo`). The bowl is the
+  frame's raster as a **mask** (`LATTICE_ART.map.{desktop,tablet,mobile}`, lossless webp of the ink alone, ~16 KB each, 657 x 470 / 714 x 470 / 340 x 470 css): an `aria-hidden` span inside the card
+  paints `s.tx` through it, so the card inks the art and a theme change recolours it. The mask is a span rather than the root's background because it is inside the card; the **warm glow is the card
+  art box's own `radial-gradient`** (`s.onScheme[7]`'s orange at 16% to 0 at 75%), never a `url(`. `limits.mjs` counts no picture in the section.
+- **The marker and the corner label are drawn on it**: a 10 teal square (`s.chips[0].bg`) with the place (`vm.mapHome`, the header's town) under it, 275.56 down at 1440, and `R = N mi`
+  (`vm.mapMiles`) at the top right in `s.text3`. The foot is `vm.mapBase` over `vm.mapTerms`; each drops when emptied and the rule over them goes when both are.
+- **The status pill is the tickets link (JP-045).** A gig with a `url` draws the frame's outlined `TICKETS` pill (a 5 square glyph span and the word span); a gig with none draws no pill. The frame's
+  orange `SOLD OUT` has no field and is not drawn. The pill is inside the row, which is the `<a>` (`extLink`), so a click on it is the row's.
+- **The lit row** (live only, the seam's `lit(i)`): ink under paper, its fill bled 12 either side. The frames draw no lit row; this is the pairing's look.
+- **The pager shows only past one page** (`pageWindow` answers no labels for one), so the seeded five gigs draw none; the frames' `01 02 03` pager over five rows has no seat held. At the foot of the panel at
+  1440 (`marginTop: auto`), in flow under the rows narrow.
+- **No eyebrow** (`[ 005 ] ——— SHOWS / COVERAGE`, no field, call 1). **`vm.pad`** is the frames' 131.45 / 77 / 58 top and foot with the content insets, in `EncoreBuilder.jsx` after Pop's inset block.
+  The heading fits its widest word through `vm.titleWordEms` (now also `map`).
+- **Caps** (`limits.mjs map --themes=5 --designs=0`, `--check` 0 fail, `--seeds` 0 over): `heading` 12, `base` 19, `terms` 39, `listLabel` 31, `gigs.venue` 26, `city` 20, `time` 15, `month` 8, `day` 3
+  (each measured alone; the city · time line shares one mono line that wraps). Layouts 2-4 stay Pop's rows.
+- `INLINE_OFF`: none needed. `inline-probe` (1440 and 768) PASS, 29 slots hit, 0 UNLEDGERED; `photo-probe` PASS (no photo slot); `focus-probe --prime` PASS (41 controls).

@@ -24,6 +24,9 @@
 
 import hero from './photos/hero.jpg'
 import latticeDisc from './photos/lattice-disc.webp'
+import latticeMapDesktop from './photos/lattice-map-desktop.webp'
+import latticeMapTablet from './photos/lattice-map-tablet.webp'
+import latticeMapMobile from './photos/lattice-map-mobile.webp'
 import retroVideoPoster from './photos/retro-video-poster.jpg'
 import headerAvatar from './photos/header-avatar.jpg'
 import stage from './photos/stage.jpg'
@@ -270,7 +273,12 @@ export const LATTICE_PHOTOS = {
 // torus): a 256 x 162 lossless WebP of the frame's 400 x 400 raster cropped to its
 // ink, light on transparent, used as a mask so a section inks it (plans/lattice/
 // layout-1.md, *Settled in section 1*). 14.5 KB. At 2x: it draws 128 x 81 css px.
-export const LATTICE_ART = { disc: latticeDisc, discW: 128, discH: 81 }
+// …and the events map's dotted bowl (section 6): the frames' own raster per width (657 x 470, 714 x 470 and
+// 340 x 470 css px at 2x), ink on transparent, lossless WebP of 16 KB each, used as a mask so the card inks it.
+export const LATTICE_ART = {
+  disc: latticeDisc, discW: 128, discH: 81,
+  map: { desktop: latticeMapDesktop, tablet: latticeMapTablet, mobile: latticeMapMobile },
+}
 export const LATTICE_TRACK_ART = [latticeAlt, latticePortrait, latticeAlt, latticePortrait, latticeHero]
 
 // The seeded artwork for the media player's five track rows, in track order.

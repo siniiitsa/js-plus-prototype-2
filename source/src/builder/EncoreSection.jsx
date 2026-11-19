@@ -21107,6 +21107,165 @@ function GeoMark({ color, ring = color, u }) {
   )
 }
 
+// Lattice's layout-1 events map (frames 1:796 · 1:9429 · 1:10401): a block of its own, after `EventsMap`'s seam
+// (`perPage`, `pg`, `shown`, `lit`, `onPick` and the pager's window stay there and come over in `g`). Every
+// number is the frame's (desktop x 0.82 through `u`, 768 and 390 verbatim; raw sizes, not the ramp). A heading
+// over a radius line, then two 1px cards side by side at 24 (stacked 24 apart narrow): the coverage card, a dotted
+// bowl 470 tall over a ruled foot, and the gig panel, a count, ruled table rows (the date left, the venue and its
+// city line, a *Tickets* pill right) and a square pager. The frames draw no pin and no lit row, and the picture is
+// art, not a map: it is the frame's raster used as a mask (so the card inks it, and `limits.mjs` does not count a
+// `url(`), with the centre marker, the place and the `R = N mi` corner label drawn on it. The real map is not drawn.
+function LatticeMap({ s, g }) {
+  const { shown, lit, onPick, win, onPage, onStep } = g
+  const tab = isTablet(s)
+  const k = s.narrow ? 1 : 0.82
+  const u = (v) => `${Math.round(v * k * 100) / 100}px`
+  const ink = s.tx
+  const dim = s.text3 // sem/text/3, the teal ink on the light ground
+  const S7 = s.onScheme[7]
+  const mono = (size, extra) => ({
+    fontFamily: s.mono, fontSize: size, lineHeight: 1.2, letterSpacing: '0.04em', textTransform: 'uppercase', ...extra,
+  })
+  const display = (size, lh, extra) => ({
+    fontFamily: s.display, fontWeight: 500, fontSize: size, lineHeight: lh, letterSpacing: '0.004em', textTransform: 'uppercase', ...extra,
+  })
+  const hz = s.mob ? 38 : tab ? 59 : 95.04 * k
+
+  // The town as the heading, fitted to its widest word (`vm.titleWordEms`, the bio's rule); the radius line sits at
+  // the row's foot at the right, and under the heading at 390.
+  const heading = String(s.title || '').trim() ? (
+    <div style={{ containerType: 'inline-size', width: '100%', minWidth: 0, flex: s.mob ? undefined : '1 1 0' }}>
+      <h2 style={{
+        margin: 0, ...display(s.titleWordEms ? `min(${hz}px, calc(100cqi / ${s.titleWordEms}))` : `${hz}px`, 0.9), color: ink,
+      }}>{s.title}</h2>
+    </div>
+  ) : null
+  const radius = <span style={mono(u(12), { flex: 'none', whiteSpace: 'nowrap', color: ink })}>{s.mapRadius}</span>
+
+  // The coverage card. The art is the frame's raster for this width, inked; the glow is the art box's own gradient.
+  const dev = s.mob ? 'mobile' : tab ? 'tablet' : 'desktop'
+  const place = s.mapHome
+  const foot = !!(s.mapBase || s.mapTerms)
+  const card = (
+    <div style={col(0, { boxSizing: 'border-box', minWidth: 0, border: `1px solid ${ink}`, borderRadius: u(20), overflow: 'hidden' })}>
+      <div style={{
+        position: 'relative', flex: 'none', height: u(470),
+        backgroundImage: `radial-gradient(ellipse 50% 50% at 50% 50%, ${S7.bg}29 0%, ${S7.bg}00 75%)`,
+      }}>
+        <span aria-hidden style={{
+          position: 'absolute', inset: 0, background: ink, pointerEvents: 'none',
+          WebkitMaskImage: `url(${s.latticeDisc.map[dev]})`, maskImage: `url(${s.latticeDisc.map[dev]})`,
+          WebkitMaskSize: 'cover', maskSize: 'cover', WebkitMaskPosition: 'center', maskPosition: 'center',
+          WebkitMaskRepeat: 'no-repeat', maskRepeat: 'no-repeat',
+        }} />
+        {/* The marker: a teal 10 square with the place under it, centred, 275.56 down. */}
+        <div style={col(u(8), { position: 'absolute', left: '50%', top: u(275.56), transform: 'translateX(-50%)', alignItems: 'center' })}>
+          <span aria-hidden style={{ width: u(10), height: u(10), background: s.chips[0].bg }} />
+          {!!place && <span style={mono(u(12), { whiteSpace: 'nowrap', color: ink })}>{place}</span>}
+        </div>
+        <span style={mono(u(11), { position: 'absolute', right: u(20), top: u(20), whiteSpace: 'nowrap', color: dim })}>{`R = ${s.mapMiles} mi`}</span>
+      </div>
+      {foot && (
+        <div style={col(u(6), { borderTop: `1px solid ${ink}`, padding: u(20) })}>
+          {!!s.mapBase && (
+            <span style={row(u(12), { minHeight: u(s.mob ? 22 : 24) })}>
+              <span aria-hidden style={{ flex: 'none', width: u(8), height: u(8), background: s.chips[0].bg }} />
+              <span style={display(u(s.mob ? 20 : 22), s.mob ? '22px' : u(24), { color: ink, minWidth: 0, overflowWrap: 'anywhere' })}>{s.mapBase}</span>
+            </span>
+          )}
+          {!!s.mapTerms && <span style={mono(u(11), { color: dim, overflowWrap: 'anywhere' })}>{s.mapTerms}</span>}
+        </div>
+      )}
+    </div>
+  )
+
+  // A gig row: the date (a mono month over a display day) in a 64 column, the venue over a mono city line, and a pill
+  // at the right. The pill is the row's tickets link, so it stands only where there is one (JP-045): the canvas draws
+  // none of the frame's *Tickets*, and the frame's orange *Sold out* has no field. The lit row (live) is the open
+  // row's look: ink under paper, its fill bled 12 either side so the type does not stand on its edge.
+  const rows = shown.map((gig, i) => {
+    const link = extLink(s, gig.url)
+    const Tag = link ? 'a' : 'div'
+    const on = lit(i)
+    const fg = on ? s.bg : ink
+    const sub = on ? s.bg : dim
+    return (
+      <Tag key={i} {...link} onClick={onPick(i)} style={{
+        ...row(u(s.mob ? 10 : 20)), boxSizing: 'border-box', padding: `${u(14)} 0`, borderBottom: `1px solid ${ink}`,
+        textDecoration: 'none', color: fg, cursor: s.live ? 'pointer' : undefined,
+        background: on ? ink : undefined, boxShadow: on ? `${u(12)} 0 0 0 ${ink}, -${u(12)} 0 0 0 ${ink}` : undefined,
+      }}>
+        <span style={col(u(2), { flex: 'none', width: u(64) })}>
+          <span style={mono(u(11), { color: sub })}>{gig.month}</span>
+          <span style={display(u(s.mob ? 25 : tab ? 27 : 30), 0.9, { color: fg })}>{gig.day}</span>
+        </span>
+        <span style={col(u(6), { flex: '1 1 0', minWidth: 0 })}>
+          <span style={{
+            fontFamily: s.body, fontSize: u(18), lineHeight: 1.1, color: fg, overflowWrap: 'break-word',
+          }}>{gig.venue}</span>
+          <span style={mono(u(11), { color: sub, overflowWrap: 'anywhere' })}>{gig.city} · {gig.time}</span>
+        </span>
+        {!!gig.url && (
+          <span style={row(u(8), {
+            ...mono(u(11)), flex: 'none', boxSizing: 'border-box', height: u(26), padding: `0 ${u(10)}`,
+            border: '1px solid currentColor', borderRadius: s.radiusSm, color: fg, whiteSpace: 'nowrap',
+          })}>
+            <span aria-hidden style={{ width: u(5), height: u(5), background: 'currentColor' }} />
+            <span>Tickets</span>
+          </span>
+        )}
+      </Tag>
+    )
+  })
+
+  // Square 3px boxes, the arrows 44 and the pages 46, six apart, the current page filled ink (the repertoire's).
+  const sq = (key, child, { on, end, onClick }) => (
+    <span key={key} onClick={onClick} style={{
+      boxSizing: 'border-box', flex: 'none', height: u(end ? 44 : 46), ...(end ? { width: u(44) } : { minWidth: u(46) }),
+      border: `1px solid ${ink}`, borderRadius: s.radiusSm, background: on ? ink : undefined, color: on ? s.bg : ink,
+      display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: onClick ? 'pointer' : undefined,
+      ...(end ? { fontFamily: 'Arial, Helvetica, sans-serif', fontSize: u(13.333), lineHeight: 'normal' } : mono(u(11))),
+    }}>{child}</span>
+  )
+  const pager = win.labels.length > 0 ? (
+    <div style={row(u(6), { flexWrap: 'wrap', rowGap: u(6), marginTop: s.narrow ? u(16) : 'auto', paddingTop: s.narrow ? 0 : u(16) })}>
+      {sq('prev', '←', { end: true, onClick: onStep && (() => onStep(-1)) })}
+      {win.labels.map((p, i) => sq(`p${i}`, /^\d+$/.test(p) ? p.padStart(2, '0') : p, {
+        on: i === win.at, onClick: onPage && p !== '…' ? () => onPage(p) : undefined,
+      }))}
+      {sq('next', '→', { end: true, onClick: onStep && (() => onStep(1)) })}
+    </div>
+  ) : null
+
+  const panel = (
+    <div style={col(u(16), { boxSizing: 'border-box', minWidth: 0, padding: u(24), border: `1px solid ${ink}`, borderRadius: u(20) })}>
+      {!!s.mapListLabel && (
+        <span style={row(u(12), { justifyContent: 'space-between' })}>
+          <span style={mono(u(12), { color: ink, minWidth: 0, overflowWrap: 'anywhere' })}>{s.mapListLabel}</span>
+          <span style={mono(u(12), { color: dim, flex: 'none' })}>{String(s.gigs.length).padStart(2, '0')}</span>
+        </span>
+      )}
+      {rows.length > 0
+        ? <div style={{ borderTop: `1px solid ${ink}` }}>{rows}</div>
+        : <span style={mono(u(12), { opacity: 0.6 })}>No upcoming gigs.</span>}
+      {pager}
+    </div>
+  )
+
+  return (
+    <div style={col(u(32))}>
+      <div style={s.mob ? col(u(24), { alignItems: 'flex-start' }) : row(u(24), { alignItems: 'flex-end', justifyContent: 'space-between' })}>
+        {heading}
+        {radius}
+      </div>
+      <div style={{ display: 'grid', gap: u(24), alignItems: 'stretch', gridTemplateColumns: s.narrow ? 'minmax(0, 1fr)' : 'minmax(0, 1fr) minmax(0, 1fr)' }}>
+        {card}
+        {panel}
+      </div>
+    </div>
+  )
+}
+
 function EventsMap({ s }) {
   // The page of gigs, and the gig the visitor has picked out on the map. Both
   // are inert on the editor canvas, where the section is a picture of a website
@@ -21148,6 +21307,17 @@ function EventsMap({ s }) {
       const j = pg * perPage + i
       setSel((v) => (v === j ? -1 : j))
     } : undefined)
+
+    // Lattice's layout-1 map is a block of its own (LatticeMap), after the seam: the page, the
+    // pairing and the pager's window above are shared whole, and the block is the picture. Its
+    // window is the compact one at every width (the frames' own `1 2 3`).
+    if (s.limeTree && s.lattice) {
+      return <LatticeMap s={s} g={{
+        shown, lit, onPick, win: pageWindow(pages, pg, true),
+        onPage: s.live ? (label) => setPage(Number(label) - 1) : undefined,
+        onStep: s.live ? (dir) => setPage(Math.max(0, Math.min(pages - 1, pg + dir))) : undefined,
+      }} />
+    }
 
     // Lime (964:58593 1440 × 1151, 986:39882 768 × 1326, 986:39894 390 ×
     // 1167) — the fifth Lime block, placed after the seam as the gallery's and

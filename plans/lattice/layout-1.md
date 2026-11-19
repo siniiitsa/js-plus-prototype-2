@@ -405,6 +405,18 @@ After section 11 and session 12, in one session (the lists in `../lime/layout-1.
   `Repertoire` **after the seam** (`active`, `filtered`, `pg`, `shown`, `columns`, `labels`, `at` stay `Repertoire`'s and go over in `g`). The twin prediction
   (*Lime's Two-column dense*) was half right again, as the gallery's was: the seam is Lime's, the picture is not.
 
+- **map (section 6, 2026-11-19): *new own-tree block* `LatticeMap`, not Lime's *Compact tile* (nor Grunge's / Editorial's / Pop's widenings of it).** Diffed against the
+  `if (s.limeTree)` block in `EventsMap` and `notes/map.md`, frames `1:796` · `1:9429` · `1:10401`. The *inventory* is Lime's (a heading with a radius line, a coverage
+  card ending in a *Based in* foot, a gig panel with a count and rows, a pager), and **no leaf is**. Lime's tile is a 55-radius `mist` card round a raster map multiplied with
+  the accent, its foot a globe glyph, the base and the terms on the card's own ground; here the card is a 1px-ruled 20-radius box whose picture is a **dotted bowl** (a raster
+  of black dots, 470 tall at every width) with a centre square and a place label drawn on it and an `R = 120 mi` corner label, over a ruled foot (a teal 8px square, the base
+  at 22 / 20, the terms in mono). Lime's rows are 999-radius pills with the date in a coloured disc at the *right*; here they are flush table rows on a 1px rule with the date
+  (a mono month over a 30 / 27 / 25 display day) at the *left*, the venue and a mono city line, and a **status pill** at the right (*Sold out* filled orange, *Tickets* outlined)
+  that Lime has no counterpart for. The panel head is the label at the left and the count in teal at the right, over a ruled list, not an inline `label · N`. The pager is
+  square 3px boxes (44 arrows, 46 pages), not `Pager`'s Lime arm. The columns are 1fr : 1fr at 24 and the cards stack 24 apart narrow (Lime's 36 / 32 / 10). The frames draw
+  **no pin and no lit row**, and the picture is art rather than a map. So it is a block of its own, standing in `EventsMap` **after the seam** (`perPage`, `pages`, `pg`,
+  `shown`, `lit`, `onPick`, `win` stay `EventsMap`'s and go over in `g`). The twin prediction (*Lime's Compact tile*) was half right a third time: the seam is Lime's, the picture is not.
+
 ### Settled in session 0 — the foundation (2026-11-19)
 
 **Calls (user, via AskUserQuestion):** call 1, every standing removal holds (see *The decisions*, call 1); call 2, the display
@@ -780,6 +792,47 @@ the chips respond. `digest.mjs` 0,1,2,3,4 against a HEAD worktree (:5185, which 
 (x 0.82 desktop, verbatim narrow). A section's own glow or dot field is the root's background, never a node. The frame's per-page counts can differ from the narrow `perPage` the seam computes: read each master's
 row count first, as this section's twelve a page was, and gate any change on `s.lattice`. `pageWindow` takes a fourth `keepN` if the pager's numeral count differs. The map's `[ 005 ]` eyebrow and `12 MILE RADIUS` line need
 the call-1 ruling the plan's table lists (the radius line is the one open ruling). Do not leave a text node that mixes a glyph and a label.
+
+### Settled in section 6 — the events map (2026-11-19)
+
+**Verdict** (under *Seen at planning time*, written before the code): a new own-tree block, not Lime's *Compact tile*. `LatticeMap` stands in `EventsMap`'s `if (s.limeTree)` **after the seam**; the
+page, `shown`, `lit`, `onPick` and the pager's window stay `EventsMap`'s and go over in one object `g`. Notes: `notes/map.md`, *Lattice · layout 1*.
+
+**The block.** Every number the frame's (desktop x 0.82 through `u`, 768 and 390 verbatim; raw sizes: 95.04 / 59 / 38 heading at line 0.9, 12 mono radius line, 11 mono labels, 30 / 27 / 25 display day,
+18 body venue). Head: the heading (fitted to its widest word, `vm.titleWordEms` now also `map`) with the `120 MILE RADIUS` mono line at its foot on the right at 1440 and 768, under it at 390. Two 1px, 20-radius
+cards 24 apart (stacked 24 apart narrow): the coverage card, a 470 art box over a ruled foot (a teal 8 square, `BASED IN MANCHESTER` display 22 / 20, the terms line in `s.text3`), and the panel, a
+`UPCOMING GIGS` label and its count over ruled rows (date column 64: month mono, day display; venue over a mono `CITY · TIME` line; a `TICKETS` pill 26 tall), then a pager (arrows 44, pages 46, 6 apart).
+`vm.pad`: 131.45 / 77 / 58 top and foot with the content insets (40.15 / 26.11 / 24), in `EncoreBuilder.jsx` after Pop's inset block. Heights are the boxes' (no import artefact in the head boxes: heading
+box 70.13 / 53.09 / 34.2 = the frame's line at 0.9).
+
+**The art** is the frame's raster used as a **mask** painted in `s.tx` (three lossless webps of the ink alone, 16 KB each, in `photos.js` `LATTICE_ART.map`), on an `aria-hidden` span inside the card;
+the **glow is the art box's own `radial-gradient`**. A mask rather than a background image because the card inks it and it follows the theme; neither is a `url(` on a child that `limits.mjs` would count as a picture
+(the mask is a CSS mask, the glow a gradient).
+
+**Calls for the user to confirm.**
+1. **The `[ 005 ] ——— SHOWS / COVERAGE` eyebrow is not drawn** (call 1 holds). The section is shorter for it, and for the pager's seat (call 5): 937 at 1440 (frame 983, less the eyebrow's 46), 1243 at 768 (frame 1351) and 1220 at 390 (frame 1454, whose long venues also wrap beside the pill).
+2. **The picture is the dotted art, not the real map.** The frames draw no tiles; `RealMap` is not mounted for Lattice, so the Photon town lookup stays the panel's alone and `s.mapGeo` is unused here.
+3. **`SOLD OUT` is not drawn** (no field; JP-045 forbids an affordance with no state behind it). The `TICKETS` pill shows only on a gig with a tickets link.
+4. **The radius line reads `120 MILE RADIUS`** (`vm.mapRadius`, from the picker's miles); the frames' `12 MILE RADIUS` is a typo against their own `R = 120 MI`. The place under the marker is the header's town (`MANCHESTER, UK`; the frames say `MANCHESTER`).
+5. **No pager over one page.** The frames draw `01 02 03` under five rows; the seeded five gigs are one page, so none is drawn and no seat is held. It stands as the frame's from six gigs.
+6. **A lit row is drawn when live** (the pairing's look: ink under paper, bled 12 either side); the frames have none.
+7. **The panel's rows are the frame's five at 68.5 pitch narrow**; at 390 the city · time line wraps under a long venue beside a tickets pill (the frame's own wrap).
+
+**Fields and caps.** `FIELDS.map` layout 1 reads `place`, `miles`, `gigs`, `listLabel`, `heading`, `base`, `terms`; `kicker` and layout 2's travel fields stay layout 2's. Measured with
+`limits.mjs map --themes=5 --designs=0`: `heading` 12, `base` 19, `terms` 39, `listLabel` 31, `gigs.venue` 26, `city` 20, `time` 15, `month` 8, `day` 3 (Pop's provisional rows failed at 768 / 390 for four of them).
+`--check`: 0 fail; `--seeds`: 0 over. No `INLINE_OFF` row was needed.
+
+**Proof.** Geometry by `getBoundingClientRect` against the frame (content-relative): 1440 heading 40.15 x 107.79 (70.13 tall), radius line right-aligned at 1139.85, cards 540.01 wide at 40.15 and 599.84, top 204.16, 456.62
+tall (frame 470 + 87 x .82), rows 58.55 at 58.55 pitch, the panel's rows at 20.68 in. 768: heading 53.09, cards 715.78 wide, 556.2 and 423.86 tall, rows 68.49. 390: heading 34.2, radius line under it at 58.2, cards 342 wide,
+554.2 and 421.36 tall, rows 67.99; no sideways scroll in the section. Probes at `--theme Lattice --layout 1 --cat map`: `inline-probe` (1440 and 768) PASS, 29 slots hit, 0 UNLEDGERED; `photo-probe` PASS filled, `--blank`
+and `--drop`; `focus-probe --prime` PASS (41 controls). Live (`&live=1`): with twelve gigs the pager reads `01 02 03`, page 03 shows the twelfth, the arrows step and clamp, a click on a row lights it and a second clears it,
+at 1440 and 390; `page-check.mjs Lattice 0`: no errors, the menu's link scrolls to `#map`, the map's controls respond. `digest.mjs` 0,1,2,3,4 against a HEAD worktree (:5185, which answered no `LatticeMap`, the positive
+control) and the working tree (:5173), ports normalised: **0 differing files of 720**.
+
+**For the pricing (section 7).** `Pricing` has hooks (chip filter, the featured pick) too, so its block goes after its seam with the resolved values handed over in one object; raw sizes through `u(v)`; a glow or
+dot field is the root's background (or a mask on a span inside a card, as this section's art), never a child `url()`. Read each master's tier count and chip count first (the frame's pager or tier count can differ
+from the seam's), gate any change to shared counts on `s.lattice`, measure `FIELDS.pricing` caps with `limits.mjs pricing --themes=5 --designs=0` (Pop's rows are provisional), add `INLINE_OFF` rows for fields not
+printed, and keep a glyph in its own span. The pricing's `[ 006 ]` eyebrow needs the same call-1 ruling; frames' status words (`Most popular`) are drawn only where a field exists (JP-045, JP-071).
 
 ### Inherited and used
 
