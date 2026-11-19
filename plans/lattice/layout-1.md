@@ -80,7 +80,7 @@ frame's aspect assume the old numbers, so section 1 re-measures them (open quest
 | # | Cat | Desktop node | Size | Tablet node | Size | Mobile node | Size | Composition (from the pictures) · predicted twin | Status |
 |---|---|---|---|---|---|---|---|---|---|
 | 0 | *foundation* | `1:306` | — | `1:8953` | — | `1:9934` | — | `THEMES[5]`, ramp, faces, photos, `s.lattice`, dot field | done `812453b` |
-| 1 | `header` | `1:308` | 1440 × 750 | `1:8955` | 768 × 750 | `1:9936` | 390 × 750 | Full-bleed photo, dot field, wordmark + inline nav + Book Now, a dotted-ellipse disc top-right, avatar card, kicker line, 120-ish-px title, six square chips · **Retro `HeaderV0`** (Lime's block as the twin of the card and chips) | done `TBD` |
+| 1 | `header` | `1:308` | 1440 × 750 | `1:8955` | 768 × 750 | `1:9936` | 390 × 750 | Full-bleed photo, dot field, wordmark + inline nav + Book Now, a dotted-ellipse disc top-right, avatar card, kicker line, 120-ish-px title, six square chips · **Retro `HeaderV0`** (Lime's block as the twin of the card and chips) | done `33e2f3c` |
 | 2 | `bio` | `1:386` | 1440 × 769 | `1:9019` | 768 × 939 | `1:9991` | 390 × 1050 | Grey `#D9D9D9`; three columns: `KM / BIO`, a stacked statement, a tall portrait, a vertical town, ABOUT copy; `[ 001 ] STRUCTURE · BIO_01` · **Lime's *Flanked portrait*** (`KM / BIO` and the reference line are removed copy, call 1) | open |
 | 3 | `media` | `1:419` | 1440 × 1057 | `1:9052` | 768 × 1404 | `1:10024` | 390 × 1422 | Dark; five-row numbered track list with art and play squares + a *Now playing* card with transport and a bar-code progress · **probably Retro's `v0` body re-laid** (Pop's plan describes it as five track rows with cover and play disc, a now-playing card with transport and progress, and a Soundcloud pill — this frame's inventory, untilted); **check against `Media`'s `v0` body before deciding** (open question 1) | open |
 | 4 | `gallery` | `1:588` | 1440 × 923 | `1:9221` | 768 × 1438 | `1:10193` | 390 × 1020 | Light; heading + four source rows (Gallery open, YouTube, Instagram, TikTok) left; viewer with caption pill, arrows, seven thumbnails, progress and `02 — 15` right · **Lime's gallery** | open |
@@ -485,6 +485,8 @@ error, the title in `Archivo Lattice`.
    (`if (T.name === 'Lattice' && cat === 'header' && Z.dev !== 'desktop') vm.heroH = 750`), because `heroH` is the `maxHeight` the
    aspect ratio meets. `WIDE.heroH`, `SPOT_ASPECT` and `preview.jsx` are **untouched**: the picker, the stage and the setup cards
    all draw the desktop hero, whose aspect Lattice shares with the other five, so open question 3 closes without moving them.
+   The clamp is exercised: with the hero forced to 430 and 520 px wide at the mobile frame it stays 750 tall (the aspect alone
+   would give 826 and 1000) and the name and chips do not move.
 
 **The block.** `HeaderV0` returns `LatticeHero` under `s.lattice`; no other template's code path moves (digest, below). It is
 a new composition that reuses `Title`, `Photo` and `fitSz` and draws its own disc, so it needs no `SealBadge` arm. What it draws, every number the frame's (desktop
@@ -496,7 +498,7 @@ a new composition that reuses `Title`, `Photo` and `fitSz` and draws its own dis
 - **The bar** is the hamburger on the left and a bracket-cornered Book Now on the right (`BracketButton`: mono caps label and
   arrow between four 9 × 9 corner marks, 130 × 44; `LatticeBurger`: three 2px bars 20 wide in a 46 box whose ink starts 13 in).
   The frame's tablet and mobile masters put the hamburger on the *right* and keep a wordmark with a rule; the standing
-  header-nav removals win (hamburger left, no wordmark). **The desktop bar stands 5.7 canvas px lower than the frame's**
+  header-nav removals win (hamburger left, no wordmark). **The desktop bar stands 5.7 canvas px lower than the frame's (a call for the user to confirm)**
   (`27` frame px of top padding where tablet and mobile keep the frame's `20`): the builder's section toolbar (`right 8`,
   `top 8`, 99 × 31) covers the label's centre at the frame's height, and a click on Book Now opened nothing (inline-probe
   MISSING). Tablet clears it. `menuColours` seats the open panel on `s.bg` / `s.tx`, its links in `labelLg`, its own Book Now
@@ -514,10 +516,14 @@ a new composition that reuses `Title`, `Photo` and `fitSz` and draws its own dis
   hold the two-line budget and shrink past it, never overflow, and the floor holds at half (hyphenated one-word names break at
   the hyphen, as they do in every template).
 
-**Fields.** `FIELDS.header`: `badgeMode` `Lattice: [0, 3]`, `badgeText` `Lattice: [3]` (13), `heroCta` / `faceTitle` / `faceBody` /
-`cardLine` `Lattice: [1]` / `[2]` for the placeholder cards, `align` `Lattice: [0]` (centre is implemented), `title` cap 80.
-`INLINE_OFF`: `Lattice.{0..3}.header.kicker` and `.location`. Caps for the card-2 and card-3 fields are Pop's, **not measured for
-Lattice** (owed to the layout 2 and 3 passes).
+**Fields.** `FIELDS.header`: `badgeMode` `Lattice: [0, 3]`, `badgeText` `Lattice: [3]` (13), `tags` / `showTags` `Lattice: [0, 2, 3]` (count `[6, null, 6, 6]`:
+`limits.mjs header --themes=5 --designs=0 --check` first failed the shared 8 at 768 and 390, where the row must hold one and two lines),
+`heroCta` / `faceTitle` / `faceBody` / `cardLine` `Lattice: [1]` / `[2]` for the placeholder cards, `align` `Lattice: [0]`, `title` cap 80.
+Measured at layout 1 with `limits.mjs --check`: `title` 80, `cta1` 16 and the chip text 22 hold at all three widths.
+`align: centre` renders at all three widths (the card stands over the name at 390; at 768 it stays left and the name column
+centres its text), and `badgeMode: hidden` removes the disc.
+`INLINE_OFF`: `Lattice.{0..3}.header.kicker` and `.location`. Caps for the card-2 and card-3 fields (`heroCta`, `faceTitle`, `faceBody`, `cardLine`, `badgeText` at 4) are Pop's / Lime's, **not
+measured for Lattice** (owed to the layout 2, 3 and 4 passes).
 
 **The four cards.** Layouts 2–4 render `HeaderV1`–`V3` in Lattice tokens and are legible at all three widths: no Lattice frame
 exists for them (open question 2 stays open). One fix: `HeaderV3`'s floor fade ended in `s.ac`, which is the pale ink under
@@ -532,7 +538,8 @@ live.
 **Exit proof.** `digest.mjs` 0,1,2,3,4 on the HEAD worktree against the working tree (taken twice, after the last source
 edit too), ports normalised: **0 differing files of 720**; the positive control is that the old tree answers no
 `latticeDotField`. `inline-probe` (`--theme Lattice --layout 1 --width 1440,768 --cat header --check`) PASS, 8 slots hit at each width,
-2 off (the ledgered kicker and location); `photo-probe` PASS, filled and `--blank`; `focus-probe --prime` PASS (12 controls);
+2 off (the ledgered kicker and location); `photo-probe` PASS, filled and `--blank`; the disc's mean brightness per row agrees with the frame's to 2–3 counts of 255
+(its lit bottom edge reads 8 px short only because the Figma screenshot is 1024 px wide, upscaled); `focus-probe --prime` PASS (12 controls);
 `limits.mjs header --seeds` 0 over caps; `page-check.mjs Lattice 0`: Book Now scrolls to the form, every menu link scrolls and
 closes, the 390 burger opens (1 → 11 links), no errors, no overflow. In the builder: six templates, Lattice's stage and tile are
 the live hero, the modal shows four named cards, card 1 opens the editor on the Lattice page.
