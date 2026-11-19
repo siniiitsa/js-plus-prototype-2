@@ -84,7 +84,7 @@ frame's aspect assume the old numbers, so section 1 re-measures them (open quest
 | 2 | `bio` | `1:386` | 1440 × 769 | `1:9019` | 768 × 939 | `1:9991` | 390 × 1050 | Grey `#D9D9D9`; three columns: `KM / BIO`, a stacked statement, a tall portrait, a vertical town, ABOUT copy; `[ 001 ] STRUCTURE · BIO_01` · **new own block `LatticeBio`** (not Lime's *Flanked portrait*: a plain portrait with a rail, a 12-column grid; `KM / BIO` and the reference line are removed copy, call 1) | done `7bee3bd` |
 | 3 | `media` | `1:419` | 1440 × 1057 | `1:9052` | 768 × 1404 | `1:10024` | 390 × 1422 | Dark; five-row numbered track list with art and play squares + a *Now playing* card with transport and a bar-code progress · **probably Retro's `v0` body re-laid** (Pop's plan describes it as five track rows with cover and play disc, a now-playing card with transport and progress, and a Soundcloud pill — this frame's inventory, untilted); **check against `Media`'s `v0` body before deciding** (open question 1) | done `e85f73c`, fixed `a413506` |
 | 4 | `gallery` | `1:588` | 1440 × 923 | `1:9221` | 768 × 1438 | `1:10193` | 390 × 1020 | Light; heading + four source rows (Gallery open, YouTube, Instagram, TikTok) left; viewer with caption pill, arrows, seven thumbnails, progress and `02 — 15` right · **new own block `LatticeGallery`** (Lime's inventory, no Lime leaf) | done `2b7c022` |
-| 5 | `repertoire` | `1:673` | 1440 × 1067 | `1:9306` | 768 × 1067 | `1:10278` | 390 × 1555 | Dark with a warm glow; `240 SONGS`, search box, four chips, two-column dense list, pager · **Lime's *Two-column dense*** | open |
+| 5 | `repertoire` | `1:673` | 1440 × 1067 | `1:9306` | 768 × 1067 | `1:10278` | 390 × 1555 | Dark with a warm glow; `240 SONGS`, search box, four chips, two-column dense list, pager · **Lime's *Two-column dense*** (verdict: new own block `LatticeRepertoire`, same inventory, no shared leaf) | done `fd0372b` |
 | 6 | `map` | `1:796` | 1440 × 983 | `1:9429` | 768 × 1351 | `1:10401` | 390 × 1454 | Grey; `MANCHESTER`, a dotted-ellipse card with a *Based in* foot, an upcoming-gigs panel with status pills and a pager · **Lime's *Compact tile*** (the raster map is the dotted art) | open |
 | 7 | `pricing` | `1:915` | 1440 × 1032 | `1:9547` | 768 × 1572 | `1:10518` | 390 × 2107 | Dark; heading, a boxed Solo / Trio / Band chip row, three coloured cards (dark, orange, teal) with Book Now bars, small print · **Lime's pricing** | open |
 | 8 | `calendar` | `1:1039` | 1440 × 781 | `1:9670` | 768 × 564 | `1:10640` | 390 × 894 | Light; one bordered card: month grid left, `[ 007 ] AVAILABILITY` and a torus art right, an enquiry foot with Continue · **Lime's *Scheduler*** | open |
@@ -739,6 +739,47 @@ in its seat. `digest.mjs` 0,1,2,3,4 against a HEAD worktree (:5185, which answer
 
 **For the repertoire (section 5).** `Repertoire` has hooks (search, chips, pager) too, so its block goes after its seam, and what the seam resolved is handed over in one object (`g`, `m`), not a dozen props. Raw sizes through a `u(v)` helper (x 0.82 desktop, verbatim narrow). A section glow is the root's own `radial-gradient`
 (the root style gates on `s.me`; the repertoire's would be `s.re`), never a node. Do not leave a text node that mixes a glyph and a label (`← label`): the inline probe cannot match it, so the glyph is its own span. In zsh, `for f in "--blank --check"` does not split: call each probe literally and check the output differs.
+
+### Settled in section 5 — the repertoire (2026-11-19)
+
+**Verdict** (under *Seen at planning time*, written before the code): a new own-tree block, not Lime's *Two-column dense* and not its widenings. `LatticeRepertoire` stands in `Repertoire`'s
+`if (s.limeTree)` **after the seam**; `active`, `filtered`, `shown`, `columns`, `labels` and `at` stay `Repertoire`'s and go over in `g` with the search, chip and pager closures. Notes:
+`notes/repertoire.md`, *Lattice · layout 1*.
+
+**The block.** Every number the frame's (desktop x 0.82 through `u`, 768 and 390 verbatim; raw sizes 95.04 / 59 / 38 heading at line 0.9, 12 mono hint, 11 mono chips, numbers and artists, 20
+Archivo 400 titles, not the ramp). Head: the heading (`Archivo Lattice`, fitted to its widest word by `vm.titleWordEms`, now `bio` / `media` / `gallery` / `repertoire`) with a 420 x 52 search box
+(3px, 1px ink, bottom-aligned at the right at 1440; 24 under the heading at 768; full width at 390). Chips 44 tall, square, 6 apart, the active one filled ink. Songs: 1px-ruled 3px boxes, min 66,
+16 apart (28 at 390), the number in a 40 box (22), the title in the body face, the artist an orange mono label. Pager: arrows 44 (38 at 390) and pages 46, 6 apart, zero-padded numerals, left at every
+width. `vm.pad`: 113.6 / 116.77 / 58 top and foot, the bio's content insets. The glow is the root's own `radial-gradient(ellipse 60% 55% at 15% 20%, text3 14%, 0 at 70%)`, which all three frames'
+`gradientTransform`s reduce to (no `url(`).
+
+**Calls for the user to confirm.**
+1. **The `[ 004 ] ——— REPERTOIRE` eyebrow is not drawn** (call 1 holds: no field, no seeded label). The section is 42.4 shorter for it, and 78 shorter again while no pager is drawn.
+2. **Twelve songs a page at every width, for Lattice alone.** The frames draw twelve at 768 (two columns of six) and at 390 (one of twelve), where every other template's narrow page is six
+   (`perPage`, `columns`: a Lattice arm each). With the seeded twelve the section is one page, so **no pager is drawn** at any width (the frames show 240 songs and 20 pages); no seat is held for it.
+   Past twelve it stands where the frame's does (proved with 240 songs).
+3. **The pager keeps four numerals** (`01 02 03 … 20`) through an optional fourth argument of `pageWindow`; the other templates keep their three and five.
+4. **768's *September* is not set at 18.** The frame squeezes that one title to 18 beside *Earth, Wind & Fire*; here every title is 20 and the artist wraps under itself instead of the title breaking
+   inside a word. At 390 the frame's rows 3, 4, 6, 7, 10 and 12 put the number at 20 (desktop's value, leaked) where the rest put it at 12; the block takes 12 at every row, the title at 54 either way.
+5. **The seeded twelfth song is *Valerie / Amy Winehouse*** (the data) where the frame draws *Crazy in Love / Beyoncé* twice.
+
+**Fields and caps.** `FIELDS.repertoire` layout 1 reads `heading` and `songs` (`title`, `artist`; `length` is layout 3's, ledgered as `Lattice.0.repertoire.songs.length`); `sets` is layout 3's. Measured with
+`limits.mjs repertoire --themes=5 --designs=0`: `heading` 12 (12 / 17 / 12), `songs.title` 17 (Pop's: the seeded *Don't Stop Me Now* is the floor at 768, where the probe reads 13), `songs.artist` 22 (44 / 22 / 22),
+`songs.tags` count 3 (390's four chips end at 320 of 342). `--check`: 0 fail; `--seeds`: 0 over. Layouts 2-4 stay Pop's rows.
+
+**Proof.** Geometry by `getBoundingClientRect` against the frame (root-relative): 1440 heading 113.6 x 70.13 (frame 85.5 x .82), search 344.4 x 42.63 right-aligned to the content edge, chips at 96.36 below the heading
+(frame 32 x .82 under the head), rows 54.12 at 67.24 pitch, columns 540 at 559.7 apart (frame 659 at 683 x .82), number 17.4 in, title 62.3 past the border, artist 17.4 from the right; with 240 songs the pager row at 688.8, arrows
+36.08, pages 37.72 at a 42.63 pitch. 768: head 53.09, search 420 x 52 under it, chips at 277.86, rows 66 at 82 pitch in two columns 345.89 wide at 26.11 and 396, section 946.6 (frame 1067 less the eyebrow and the pager's seat).
+390: search 342 x 52 at 116.2, chips 200.2, rows 66 at 94 pitch from 276.2, title at 79, section 1434.2; with 240 songs the pager at 1408.2 spans 24 to 366 (38 + 6 + four 46s + gaps + 38). Probes at
+`--theme Lattice --layout 1 --cat repertoire`: `inline-probe` (1440 and 768) PASS, 25 slots hit, 0 UNLEDGERED; `photo-probe` PASS filled, `--blank` and `--drop` (the section holds no photo slot); `focus-probe --prime` PASS (43 controls).
+Live (`&live=1`, trusted clicks, 240 songs): page 02 and the next arrow step the list (S13, then S25) and fill the numeral; the Pubs chip filters (120 Songs, the pager `01 02 03 … 10`, back on page one); the
+search narrows (`s4` gives six) and an empty result prints `No songs match that.`, all at 1440 and the chip and page clicks at 390. `page-check.mjs Lattice 0`: no errors, the menu's Repertoire link scrolls to `#repertoire`,
+the chips respond. `digest.mjs` 0,1,2,3,4 against a HEAD worktree (:5185, which answered no `LatticeRepertoire`, the positive control) and the working tree (:5173), ports normalised: **0 differing files of 720**.
+
+**For the map (section 6).** `EventsMap` has hooks (pager, pin / row pairing, zoom) too, so its block goes after its seam, with what the seam resolved handed over in one object. Raw sizes through a `u(v)` helper
+(x 0.82 desktop, verbatim narrow). A section's own glow or dot field is the root's background, never a node. The frame's per-page counts can differ from the narrow `perPage` the seam computes: read each master's
+row count first, as this section's twelve a page was, and gate any change on `s.lattice`. `pageWindow` takes a fourth `keepN` if the pager's numeral count differs. The map's `[ 005 ]` eyebrow and `12 MILE RADIUS` line need
+the call-1 ruling the plan's table lists (the radius line is the one open ruling). Do not leave a text node that mixes a glyph and a label.
 
 ### Inherited and used
 
