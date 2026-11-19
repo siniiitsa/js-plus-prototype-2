@@ -1960,10 +1960,12 @@ function NavBar({ s, colour, pill, glass: glassOn, menu }) {
 // (0.82 on the desktop canvas). Under `s.live` it links to the section that takes
 // a booking, as BookPill does; elsewhere it is a picture. Opt-in: nothing but
 // Lattice's header and open menu pass through it.
-function BracketButton({ s, label, to, ink, k = 1, style }) {
+function BracketButton({ s, label, to, ext, ink, k = 1, style }) {
   const c = ink ?? s.tx
   const px = (v) => `${Math.round(v * k * 100) / 100}px`
-  const link = s.live && to ? { href: `#${to}` } : null
+  // `to` is a page anchor (Book Now); `ext` an outward address (the media player's
+  // Soundcloud), which `extLink` keeps a picture on the canvas and while it is empty.
+  const link = ext !== undefined ? extLink(s, ext) : s.live && to ? { href: `#${to}` } : null
   const Tag = link ? 'a' : 'span'
   const mark = (pos) => ({
     position: 'absolute', width: px(9), height: px(9), pointerEvents: 'none',
@@ -6451,6 +6453,177 @@ const WAVE = [
 // not a count, because the meter's bar count is derived from the width.
 const WAVE_PLAYED = 17 / WAVE.length
 
+// Lattice's layout-1 media player (1:419 · 1:9052 · 1:10024: 1440 / 768 / 390; desktop
+// numbers x 0.82 through `u`, the narrow two verbatim). A block of its own: the rows are
+// flush hairlines like Lime's but the cover sits left of a *square* play button and the card
+// is a 20-radius `#1B1B1B` box with a teal halo and a square-cornered sleeve, three square
+// transport buttons and a 48-bar meter (plans/lattice/layout-1.md, section 3). `Media` owns
+// the one <audio> and every hook and hands the seam over in `m`, so the published player is
+// the same one in a new picture. The frame's `[ 002 ] TOP TRACKS` eyebrow and its `5 / 5
+// FEATURED` counter are not drawn (user call, section 0: the standing removals hold). The
+// card's `Now playing` is the frame's literal and its `0N / 0M` a derived position, neither a
+// field. The frame marks row 02 and names a track that is not in its list; the card names the
+// cued track here (`at`) and the row that is it takes the frame's marked ground, the layout-4
+// tile's seat. The meter is one ink in the frame, so the played / idle split is drawn live only.
+function LatticeMedia({ s, m }) {
+  const { at, count, playing, now, sleeve, sleeveSlot, audio, goTo, toggle, onPick } = m
+  const tab = isTablet(s)
+  const k = s.narrow ? 1 : 0.82
+  const u = (v) => `${Math.round(v * k * 100) / 100}px`
+  const ink = s.tx
+  const lab = (size, extra) => ({
+    fontFamily: s.mono, fontSize: size, lineHeight: 1.2, letterSpacing: '0.04em',
+    textTransform: 'uppercase', color: s.text3, ...extra,
+  })
+  const disp = (size, extra) => ({
+    fontFamily: s.display, fontWeight: 500, fontSize: size, lineHeight: 1, letterSpacing: '0.004em',
+    textTransform: 'uppercase', color: ink, ...extra,
+  })
+  const rgba = (hex, a) => {
+    const n = parseInt(hex.slice(1), 16)
+    return `rgba(${n >> 16}, ${(n >> 8) & 255}, ${n & 255}, ${a})`
+  }
+  const pad2 = (n) => String(n).padStart(2, '0')
+
+  // The heading: two lines at every width, the frame's break after "worth" held by an em
+  // measure between "Five worth" (7.15em) and "Five worth your", and the 390 frame's
+  // narrower box (6.65em, "your ear.") that stacks the seed on three lines. A word that is
+  // wider than the content is fitted to it (`vm.titleWordEms`, the bio's rule).
+  const hz = s.mob ? 38 : tab ? 48 : 74.88 * k
+  const heading = s.title ? (
+    <div style={{ containerType: 'inline-size', width: '100%' }}>
+      <h2 style={{
+        margin: 0, maxWidth: s.mob ? '6.9em' : '8em',
+        ...disp(s.titleWordEms ? `min(${hz}px, calc(100cqi / ${s.titleWordEms}))` : `${hz}px`),
+      }}>{s.title}</h2>
+    </div>
+  ) : null
+
+  // Transport glyphs, the frame's own paths (10 x 12 and 12 x 10 boxes).
+  const glyph = (w, h, children, vb) => (
+    <svg aria-hidden width={u(w)} height={u(h)} viewBox={vb} style={{ display: 'block', overflow: 'visible' }}>{children}</svg>
+  )
+  const play = (c) => glyph(10, 12, <path d="M1 1L9 6L1 11V1Z" fill={c} />, '0 0 10 12')
+  const pause = (c) => glyph(10, 12, <path d="M1 1H4V11H1V1ZM6 1H9V11H6V1Z" fill={c} />, '0 0 10 12')
+  const skip = (back, c) => glyph(12, 10, back
+    ? <path d="M1 0V10M11 0L3 5L11 10V0Z" fill={c} stroke={c} />
+    : <path d="M11 0V10M1 0L9 5L1 10V0Z" fill={c} stroke={c} />, '0 0 12 10')
+  const sq = (extra) => ({
+    width: u(44), height: u(44), boxSizing: 'border-box', flex: 'none', borderRadius: s.radiusSm,
+    display: 'inline-flex', alignItems: 'center', justifyContent: 'center', ...extra,
+  })
+
+  const padX = s.mob ? '12px' : u(16)
+  const gap = s.mob ? '10px' : u(20)
+  const list = (
+    <div style={{ borderTop: `1px solid ${ink}`, boxSizing: 'border-box' }}>
+      {s.tracks.length === 0 && (
+        <div style={{ borderBottom: `1px solid ${ink}`, padding: `${u(36)} ${padX}`, ...lab(u(12)) }}>{s.mediaEmpty}</div>
+      )}
+      {s.tracks.map((t, i) => {
+        const marked = i === at
+        const playingRow = marked && playing
+        return (
+          <div key={i} onClick={onPick(i)} style={{
+            ...row(gap), minHeight: u(93), boxSizing: 'border-box', padding: `${s.mob ? '10px' : u(10)} ${padX}`,
+            borderBottom: `1px solid ${ink}`, borderRadius: marked ? s.radiusSm : 0,
+            background: marked ? s.box1 : undefined, cursor: s.live ? 'pointer' : undefined,
+          }}>
+            <span style={lab(u(12), { flex: 'none', width: s.mob ? '22px' : u(48) })}>{t.n}</span>
+            <span style={col(u(8), { flex: 1, minWidth: 0 })}>
+              <span style={disp(s.mob ? '18px' : u(24), s.mob
+                ? { overflowWrap: 'anywhere' }
+                : { whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' })}>{t.name}</span>
+              <span style={lab(u(11), s.mob
+                ? { overflowWrap: 'anywhere' }
+                : { whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' })}>{t.sub}</span>
+            </span>
+            <span style={{
+              flex: 'none', width: s.mob ? '44px' : u(56), height: s.mob ? '44px' : u(56),
+              borderRadius: s.radiusSm, overflow: 'hidden', position: 'relative', background: s.box2,
+            }}><Photo s={s} slot={`tracks:${t.row}`} initialsSize={14} src={t.img} ink={ink} /></span>
+            <span style={sq(marked
+              ? { background: ink, border: `1px solid ${ink}` }
+              : { border: `1px solid ${ink}` })}>{playingRow ? pause(marked ? s.bg : ink) : play(marked ? s.bg : ink)}</span>
+          </div>
+        )
+      })}
+    </div>
+  )
+
+  // Soundcloud: the frame's bracket pill, which stays a picture until it has an address.
+  const pill = <BracketButton s={s} label="Soundcloud" ext={s.soundcloud} k={k} />
+
+  const nBars = 48
+  const lit = s.live ? Math.round((now.pct / 100) * nBars) : nBars
+  const cardPad = s.mob ? `20px 16px` : tab ? `24px 21px` : u(28)
+  const card = (
+    <div style={{
+      ...col(u(20), { alignItems: 'stretch' }),
+      position: 'relative', boxSizing: 'border-box', height: s.narrow ? '466px' : u(466), width: '100%',
+      maxWidth: tab ? '431px' : undefined, margin: tab ? '0 auto' : undefined,
+      padding: cardPad, background: s.box1, color: ink, border: `1px solid ${ink}`, borderRadius: u(20),
+      boxShadow: `0 0 ${u(40)} ${rgba(s.glow, 0.14)}`,
+    }}>
+      <div style={row('0', { justifyContent: 'space-between' })}>
+        <span style={lab(u(11))}>Now playing</span>
+        <span style={lab(u(11))}>{pad2(count ? at + 1 : 0)} / {pad2(count)}</span>
+      </div>
+      <div style={{
+        flex: '1 1 0', minHeight: 0, aspectRatio: '1', alignSelf: 'center', position: 'relative',
+        borderRadius: u(20), overflow: 'hidden', background: s.box2,
+        boxShadow: `0 0 ${u(60)} ${rgba(s.text3, 0.16)}`,
+      }}>
+        <Photo s={s} slot={sleeveSlot} initialsSize={44} src={sleeve} ink={ink} />
+      </div>
+      <div style={col(u(8), { alignItems: 'center', minWidth: 0 })}>
+        <span style={disp(s.mob ? '25px' : tab ? '27px' : u(30), {
+          maxWidth: '100%', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+        })}>{now.track}</span>
+        <span style={lab(u(11), { maxWidth: '100%', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' })}>{now.by}</span>
+      </div>
+      <div style={row(u(8), { justifyContent: 'center' })}>
+        <span onClick={s.live ? () => goTo(at - 1) : undefined} style={sq({ border: `1px solid ${ink}`, cursor: s.live ? 'pointer' : undefined })}>{skip(true, ink)}</span>
+        <span onClick={s.live ? toggle : undefined} style={sq({ background: ink, border: `1px solid ${ink}`, cursor: s.live ? 'pointer' : undefined })}>
+          {playing ? pause(s.bg) : play(s.bg)}
+        </span>
+        <span onClick={s.live ? () => goTo(at + 1) : undefined} style={sq({ border: `1px solid ${ink}`, cursor: s.live ? 'pointer' : undefined })}>{skip(false, ink)}</span>
+      </div>
+      <div style={row(u(16))}>
+        <span style={lab(u(11), { flex: 'none' })}>{now.at}</span>
+        <span aria-hidden style={row(u(3), { flex: 1, minWidth: 0, height: u(12) })}>
+          {Array.from({ length: nBars }, (_, i) => (
+            <span key={i} style={{ flex: 1, height: u(4 + (i % 9)), background: ink, opacity: i < lit ? 1 : 0.3 }} />
+          ))}
+        </span>
+        <span style={lab(u(11), { flex: 'none' })}>{now.of}</span>
+      </div>
+      {audio}
+    </div>
+  )
+
+  return (
+    <div style={col(s.mob ? '50px' : u(56), { position: 'relative' })}>
+      {heading}
+      {s.narrow ? (
+        <div style={col(u(40))}>
+          {list}
+          <span style={{ alignSelf: 'flex-start' }}>{pill}</span>
+          {card}
+        </div>
+      ) : (
+        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 886.72fr) minmax(0, 431.375fr)', columnGap: u(24), alignItems: 'start' }}>
+          <div style={col(u(40))}>
+            {list}
+            <span style={{ alignSelf: 'flex-start' }}>{pill}</span>
+          </div>
+          {card}
+        </div>
+      )}
+    </div>
+  )
+}
+
 function Media({ s }) {
   // Hooks before the layout branch — the older three-card design plays too.
   // `playing` mirrors the element's own play/pause events rather than being
@@ -6551,6 +6724,12 @@ function Media({ s }) {
   const sleeve = track?.img ?? undefined
   // Which track row the sleeve shows, for the canvas editor's mark (notes/photography.md).
   const sleeveSlot = track ? `tracks:${track.row}` : undefined
+
+  // Lattice layout 1 (1:419 · 1:9052 · 1:10024) is a block of its own, handed the seam this
+  // function resolved above; it stands here and not at the head so the hooks keep their order.
+  if (s.v0 && s.lattice) {
+    return <LatticeMedia s={s} m={{ at, count, playing, now, sleeve, sleeveSlot, audio, goTo, toggle, onPick }} />
+  }
 
   // Lime layout 1 (964:58590 · 986:39879 at 768 · 986:39891 at 390) is Retro's
   // component below in Lime's mode, and like the bio it is not the same tree
@@ -30696,6 +30875,11 @@ export default function EncoreSection({ s }) {
       ...(s.bi && s.v0 && s.lattice && s.bioDots && {
         backgroundImage: `url("${s.bioDots.uri}")`, backgroundRepeat: 'no-repeat',
         backgroundPosition: 'left bottom', backgroundSize: `100% ${s.bioDots.h}px`,
+      }),
+      // Lattice's layout-1 media stands on a teal glow (the frames' one radial gradient, the same
+      // 42% x 38.5% ellipse at 85% / 60% of the section at all three widths), the root's own.
+      ...(s.me && s.v0 && s.lattice && {
+        backgroundImage: `radial-gradient(ellipse 42% 38.5% at 85% 60%, ${s.glow}24, ${s.glow}00)`,
       }),
       boxShadow: grungeRule ? `inset 0 0 0 1px ${s.inactiveLine}` : editorialRule ? `inset 0 0 0 1px ${s.stroke2}`
         : popMediaRule ? `inset 0 4.1px 0 ${s.onScheme[1].stroke2}, inset 0 -4.1px 0 ${s.onScheme[1].stroke2}`

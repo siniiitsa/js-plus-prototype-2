@@ -3944,7 +3944,10 @@ export const IDENTITY_CHARS = {
   },
   media: {
     title: { Retro: [91, 11, 20, 30], Lime: [76, 11, 19, 29], Grunge: [40, 11, 21, 31],
-      Editorial: [43, 11, 11, 31], Pop: [11, 11, 13, 31] },
+      Editorial: [43, 11, 11, 31], Pop: [11, 11, 13, 31],
+      // Layout 1 measured 2026-11-19 (limits.mjs media --themes=5 --designs=0): the card's
+      // artist line, one ellipsised line, holds 49 / 51 / 40; the others are Pop's until their passes.
+      Lattice: [40, 11, 13, 31] },
   },
   pricing: {
     seal: { Grunge: [14] },
