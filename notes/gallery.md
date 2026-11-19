@@ -219,6 +219,27 @@ another `notes/` file.
   still targets `<html>` / `<body>`, which is not what scrolls there, so the page scrolls behind
   the scrim with the wheel.
 
+## Lattice · layout 1 (plans/lattice/layout-1.md, section 4, 2026-11-19)
+
+`LatticeGallery` is an own-tree block, dispatched in `Gallery`'s `if (s.v0)` **after the seam** (`pick`, `src`, `go`, `srcRows`, `srcAct`, `video`
+and `player` are Lime's, handed over in `g`), so Lime's block no longer reaches Lattice at design 0 and the published gallery is the one seam in a new
+picture. Differences that bind:
+
+- **Seven tiles at every width, no sliding window, no `srcScroll`.** The 390 master draws all seven (40.3 each), so Lattice is Editorial's case, not the
+  four-tile windows above; the source rows stack at all three widths (116.7 tall at 1440, 64 at 768 and 390), so the file's one scroll container does not
+  exist here. An empty social row is still not rendered when `s.live`.
+- **The first paint opens on slot 2, not `galActive()`'s slot 3** (`s.images.length > 2 ? 2 : 0`): the frames' viewer is the portrait, the strip's third
+  photograph, where Lime's seed is the fourth. No tile is marked on the canvas or the published first paint (the frame draws none); a visitor's own pick
+  rings its tile in 3px of Scheme 7's orange inside, a live state the frame cannot show.
+- **Derived copy, not fields.** The caption pill reads `IMG_0N` (the frame's `IMG_02 · Club night`, whose second half no field holds) and the counter
+  `0N — 07` (the frame's `02 — 15`); the progress line's played segment is `(N) / 7` of the track. Both follow the viewer's slot.
+- **The eyebrow** `[ 003 ] ——— KICKER` is drawn only when the artist types a `kicker` (seeded empty); the `[ 003 ]` is the markup's literal and goes with
+  it. At desktop its seat (14.4 + 32 frame px) is kept empty so the columns stand where the frame's do; narrow it collapses.
+- **The credit is one line** (`railLabel`; the name stays removed) and the head row keeps the frame's 30.4 height, so the figure stands 50.4 down at every width.
+- **A playing video** takes the figure's seat and hides the caption and arrows; the row switches as in the other blocks.
+- **Caps** (`limits.mjs gallery --themes=5 --designs=0`): `kicker` 41, `sourceLabel` 25 (it prints at every width here, so the narrow reading binds: 62 / 69 / 25),
+  `railLabel` 45, `heading` 16 (line packing: a 14-character *Kestrel Nights* fills the first line, so the seed's 16 is the floor, as Editorial's and Pop's), `backLabel` 34 as everywhere.
+
 ## Inline editing (plans/inline-edit-all.md, Lime layout 1, 2026-10-21)
 
 Canvas inline editing reaches every gallery text field the layout reads. Layout 1 prints *Gallery* twice at desktop —

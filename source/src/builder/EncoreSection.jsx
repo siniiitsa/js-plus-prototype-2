@@ -15687,6 +15687,181 @@ function Repertoire({ s }) {
 // the first click.
 const galActive = (s) => (s.images.length > 3 ? 3 : 0)
 
+// Lattice's layout-1 gallery (1:588 · 1:9221 · 1:10193: 1440 / 768 / 390; desktop numbers x 0.82
+// through `u`, the narrow two verbatim). A block of its own (plans/lattice/layout-1.md, section 4):
+// four full-width 1px-ruled rows with a square icon seat stack at every width, the viewer is a
+// 20-radius figure with a caption pill and two square arrow buttons inside it, all seven ruled tiles
+// stand at every width, and a 1px progress line with a counter closes the column. `Gallery` owns
+// the hooks and the seam (`pick`, `src`, `go`, `srcRows`, `srcAct`, the embed) and hands them over
+// in `g`, so the published gallery is the one seam in a new picture. The frame's `[ 003 ] MEDIA`
+// eyebrow is drawn only when the artist types a `kicker` (seeded empty: the standing removals
+// hold) and its `Kai Mercer` credit line is gone (QA 2026-11-12); the caption's `IMG_0N` and the
+// counter's `0N — 07` are derived from the viewer's slot, not fields.
+const LATTICE_SRC_ICONS = [
+  <><path d="M2 3H16V15H2V3Z" /><path d="M2 13L6 9L9 12L12 9L16 13" /></>,
+  <><path d="M1.5 4H16.5V14H1.5V4Z" /><path d="M7.5 6.5V11.5L11.5 9L7.5 6.5Z" fill="currentColor" /></>,
+  <><path d="M2.5 2.5H15.5V15.5H2.5V2.5Z" /><circle cx="9" cy="9" r="3" /></>,
+  <path d="M7 8.5C6.40666 8.5 5.82664 8.67595 5.33329 9.00559C4.83994 9.33524 4.45542 9.80377 4.22836 10.3519C4.0013 10.9001 3.94189 11.5033 4.05764 12.0853C4.1734 12.6672 4.45912 13.2018 4.87868 13.6213C5.29824 14.0409 5.83279 14.3266 6.41473 14.4424C6.99667 14.5581 7.59987 14.4987 8.14805 14.2716C8.69623 14.0446 9.16476 13.6601 9.49441 13.1667C9.82405 12.6734 10 12.0933 10 11.5V2C10 4 11.5 5.5 13.5 5.5" />,
+]
+
+function LatticeGallery({ s, g }) {
+  const { at, marked, strip, go, srcRows, srcAct, video, player } = g
+  const desk = !s.narrow
+  const k = desk ? 0.82 : 1
+  const u = (v) => `${Math.round(v * k * 100) / 100}px`
+  const ink = s.tx
+  const lab = (size, extra) => ({
+    fontFamily: s.mono, fontSize: size, lineHeight: 1.2, letterSpacing: '0.04em',
+    textTransform: 'uppercase', color: ink, ...extra,
+  })
+  const pad2 = (n) => String(n).padStart(2, '0')
+  const wrap = { whiteSpace: 'normal', overflowWrap: 'anywhere', minWidth: 0 }
+  const hz = s.mob ? 38 : isTablet(s) ? 48 : 74.88 * k
+
+  // The heading breaks after its second word, the frame's typed break (`See us` / `in action`),
+  // which no measure can hold; the rest of the words wrap inside their line. A word wider than the
+  // column is fitted to it (`vm.titleWordEms`, the bio's rule).
+  const words = String(s.title || '').split(/\s+/).filter(Boolean)
+  const heading = words.length ? (
+    <div style={{ containerType: 'inline-size', width: '100%' }}>
+      <h2 style={{
+        margin: 0, fontFamily: s.display, fontWeight: 500, lineHeight: 1, letterSpacing: '0.004em', textTransform: 'uppercase',
+        color: ink, fontSize: s.titleWordEms ? `min(${hz}px, calc(100cqi / ${s.titleWordEms}))` : `${hz}px`,
+      }}>
+        <span style={{ display: 'block' }}>{words.slice(0, 2).join(' ')}</span>
+        {words.length > 2 && <span style={{ display: 'block' }}>{words.slice(2).join(' ')}</span>}
+      </h2>
+    </div>
+  ) : null
+
+  const eyebrow = s.galKicker ? (
+    <div style={row(u(16), { flexWrap: 'wrap', rowGap: '4px' })}>
+      <span style={lab(u(12), { flex: 'none' })}>[ 003 ]</span>
+      <span aria-hidden style={{ flex: 'none', width: u(40), height: '1px', background: ink }} />
+      <span style={lab(u(12), { color: s.text3, ...wrap })}>{s.galKicker}</span>
+    </div>
+  ) : null
+
+  const srcEls = srcRows.map(({ g: r, i }) => {
+    const link = srcAct(r, i)
+    const Tag = link?.href ? 'a' : 'div'
+    const c = r.on ? s.bg : ink
+    return (
+      <Tag key={i} {...link} style={{
+        ...row(s.mob ? '20px' : u(14), { boxSizing: 'border-box' }),
+        height: desk ? u(116.72) : '64px', flex: 'none', padding: s.mob ? '0 9px' : `0 ${u(16)} 0 ${u(24)}`,
+        border: `1px solid ${ink}`, borderRadius: s.radiusSm, background: r.on ? ink : undefined, color: c,
+        textDecoration: 'none', cursor: link ? 'pointer' : undefined,
+      }}>
+        <span style={{
+          width: u(46), height: u(46), boxSizing: 'border-box', flex: 'none', border: `1px solid ${c}`, opacity: 0.9,
+          borderRadius: s.radiusSm, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <svg aria-hidden width={u(18)} height={u(18)} viewBox="0 0 18 18" fill="none" stroke="currentColor" style={{ display: 'block' }}>
+            {LATTICE_SRC_ICONS[i] || LATTICE_SRC_ICONS[0]}
+          </svg>
+        </span>
+        <span data-inline={r.on ? 'sourceLabel' : undefined} style={lab(u(12), { flex: 1, color: c, ...wrap })}>{r.label}</span>
+        <span style={{ flex: 'none', width: u(24), fontFamily: s.mono, fontSize: u(18), letterSpacing: '0.04em', lineHeight: 1.2, color: c }}>
+          {r.on ? '×' : '+'}
+        </span>
+      </Tag>
+    )
+  })
+  const rows = <div style={col(u(12.01))}>{srcEls}</div>
+
+  const top = (
+    <div style={row(u(12), { justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', minHeight: u(30.375) })}>
+      <span onClick={s.live ? () => go(0) : undefined} style={lab(u(11), { color: s.text3, cursor: s.live ? 'pointer' : undefined, ...wrap })}>
+        <span aria-hidden>←</span>{' '}<span>{s.galBackLabel}</span>
+      </span>
+      {s.galRailLabel && (
+        <span data-inline="railLabel" style={lab(u(11), { color: s.text3, textAlign: 'right', flex: '0 1 auto', ...wrap })}>{s.galRailLabel}</span>
+      )}
+    </div>
+  )
+
+  const sq = (back) => ({
+    width: u(44), height: u(44), boxSizing: 'border-box', flex: 'none', border: `1px solid ${ink}`, borderRadius: s.radiusSm,
+    background: s.bg, color: ink, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+    fontFamily: 'Arial, Helvetica, sans-serif', fontSize: u(13.333), lineHeight: 'normal', cursor: s.live ? 'pointer' : undefined,
+  })
+  const figure = (
+    <div style={{
+      position: 'relative', overflow: 'clip', width: '100%', aspectRatio: '659.047 / 540.75', borderRadius: u(20),
+      background: s.box1, boxShadow: `0 0 ${u(80)} rgba(17,17,17,0.12)`,
+    }}>
+      {video ? player : (
+        <>
+          <div style={{ position: 'absolute', inset: 0 }}>
+            <Photo s={s} slot={`images:${at}`} initialsSize={52} src={s.images[at]} ink={ink} style={{ objectPosition: s.imagesPos[at] }} />
+          </div>
+          <span style={{
+            position: 'absolute', left: u(16), bottom: u(16), boxSizing: 'border-box', height: u(30), padding: `0 ${u(10)}`,
+            display: 'inline-flex', alignItems: 'center', background: s.bg, borderRadius: s.radiusSm,
+            ...lab(u(11), { whiteSpace: 'nowrap' }),
+          }}>IMG_{pad2(at + 1)}</span>
+          <div style={row(u(6), { position: 'absolute', right: u(16), bottom: u(16) })}>
+            <span onClick={s.live ? () => go(at - 1) : undefined} style={sq()}>←</span>
+            <span onClick={s.live ? () => go(at + 1) : undefined} style={sq()}>→</span>
+          </div>
+        </>
+      )}
+    </div>
+  )
+
+  // Seven tiles at every width, square, each in a 1px ruled box with the photograph inside it. The
+  // frame marks none; a visitor's own pick is marked in the published tab (an inset orange ring).
+  const thumbs = (
+    <div style={row(u(10), { alignItems: 'stretch' })}>
+      {strip.map((i) => (
+        <span key={i} onClick={s.live ? () => go(i) : undefined} style={{
+          flex: '1 1 0', minWidth: 0, aspectRatio: '1', boxSizing: 'border-box', position: 'relative', overflow: 'hidden',
+          border: `1px solid ${ink}`, borderRadius: s.radiusSm, background: s.box1, cursor: s.live ? 'pointer' : undefined,
+        }}>
+          <div style={{ position: 'absolute', inset: 0 }}>
+            <Photo s={s} slot={`images:${i}`} initialsSize={12} src={s.images[i]} ink={ink} />
+          </div>
+          {i === marked && <span aria-hidden style={{
+            position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
+            boxShadow: `inset 0 0 0 ${u(3)} ${s.onScheme?.[7]?.bg ?? s.text3}`,
+          }} />}
+        </span>
+      ))}
+    </div>
+  )
+
+  const progress = (
+    <div style={row(u(24))}>
+      <span aria-hidden style={{ flex: 1, minWidth: 0, height: '1px', background: ink, position: 'relative' }}>
+        <span style={{ position: 'absolute', left: 0, top: '-1px', height: '3px', width: `${((at + 1) / strip.length) * 100}%`, background: ink }} />
+      </span>
+      <span style={lab(u(12), { flex: 'none', whiteSpace: 'nowrap' })}>{pad2(at + 1)} — {pad2(strip.length)}</span>
+    </div>
+  )
+
+  const left = col(u(32), { minWidth: 0 })
+  const leftEls = (
+    <div style={left}>
+      {(eyebrow || desk) && <div style={{ minHeight: u(14.375) }}>{eyebrow}</div>}
+      {heading}
+      {rows}
+    </div>
+  )
+  const right = (
+    <div style={col(u(20), { minWidth: 0 })}>
+      {top}{figure}{thumbs}{progress}
+    </div>
+  )
+  return desk ? (
+    <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', columnGap: u(24), alignItems: 'start' }}>
+      {leftEls}{right}
+    </div>
+  ) : (
+    <div style={col(u(32))}>{leftEls}{right}</div>
+  )
+}
+
 function Gallery({ s }) {
   // Hooks before the layout branch, the way Media takes them: `s.v0` is a prop
   // and not a hook's business, so the branch below cannot be the thing that
@@ -15838,6 +16013,14 @@ function Gallery({ s }) {
     )
     // No photograph is the viewer's while the player is, so none is marked.
     const lit = video ? -1 : active
+
+    // Lattice's layout-1 gallery is a block of its own (LatticeGallery), after the seam. It opens on
+    // the frame's viewer, which is the third tile's photograph, not Lime's fourth.
+    if (s.lattice) {
+      const picked = s.live && pick >= 0
+      const at = picked ? pick : s.images.length > 2 ? 2 : 0
+      return <LatticeGallery s={s} g={{ at, marked: picked && !video ? pick : -1, strip, go, srcRows, srcAct, video, player }} />
+    }
 
     // Lime layout 1 (964:58591 · 986:39880 at 768 · 989:22110 at 390) is the
     // component below in Lime's mode, and like the bio and the media player it
