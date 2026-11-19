@@ -56,7 +56,7 @@ import {
   PRICING_REVIEWS, PRICING_RATING, PRICING_CTA, PRICING_NOTE, PRICING_OFFER,
   FORM_PROMISES, FORM_STEPS, STEP_KEYS, FORM_FIELDS, FORM_FIELDS_CARD, FORM_FIELDS_4, FORM_FIELD_KEYS, FORM_EMAIL_LABEL, FORM_KINDS, enquiryErrors, FORM_TYPES, FORM_MESSAGE, FORM_MSG_LABEL,
   FOOTER_LINKS, FOOTER_TARGETS, FOOTER_CREDIT, FOOTER_STATEMENT,
-  CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN, CAL_SLOTS, SLOT_KEYS, slotDate, parseDayFirst, pageTiers, CAL_SLOT_CTA, CAL_SEND_4, FORM_EMAIL, pageEmail, MONTHS, DAY_FULL,
+  CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN, CAL_SLOTS, SLOT_KEYS, slotDate, parseDayFirst, pageTiers, CAL_SLOT_CTA, CAL_SEND_4, CAL_CTA_LATTICE, FORM_EMAIL, pageEmail, MONTHS, DAY_FULL,
   TESTI_HEADING_2, CARD_LINE_3, TESTI_STARS, TESTI_RATING,
   PRICING_INTRO_3, FORM_SUB_4, CAL_HEADING_1, formBtnSeed, CAL_TYPES, PRICING_ROW_CTA, PRICING_ROW_CTA_3, MAP_SPAN, MAP_STATS_4, STAT_KEYS,FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
   parseDate, isoDate, calStart, headerIdentity, monthSpan, monthLabel, enquiryLine, weekdayOf,
@@ -605,6 +605,13 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // 58 at 390, the same content insets. The frames' eyebrow row is not drawn (call 1), so the head starts
   // where it did and the section is 42 shorter (35 on desktop).
   if (d === 0 && cat === 'pricing' && T.name === 'Lattice') {
+    const v = Z.dev === 'desktop' ? '78.72px' : Z.dev === 'tablet' ? '77px' : '58px'
+    vm.pad = `${v} calc(${vm.surplus} + ${Z.dev === 'desktop' ? '40.15px' : Z.dev === 'tablet' ? '26.11px' : '24px'}) ${v}`
+  }
+  // …and the calendar's (1:1039 · 1:9670 · 1:10640): 96 top and foot at 1440 (x 0.82, 78.72), 77 at 768 and
+  // 58 at 390, the same content insets. The frames' card is 588.69 / 409.75 / 777.84 tall (the foot included)
+  // and the section 781 / 564 / 894, so the padding is the frame's.
+  if (d === 0 && cat === 'calendar' && T.name === 'Lattice') {
     const v = Z.dev === 'desktop' ? '78.72px' : Z.dev === 'tablet' ? '77px' : '58px'
     vm.pad = `${v} calc(${vm.surplus} + ${Z.dev === 'desktop' ? '40.15px' : Z.dev === 'tablet' ? '26.11px' : '24px'}) ${v}`
   }
@@ -1452,8 +1459,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   if (cat === 'map' && d < 2 && c.heading === undefined) vm.title = cased(mapHeadingSeed(c, theme.name, d))
   // Lime's, Grunge's, Editorial's and Pop's layout-1 calendar head reads
   // "Book Now" (JP-089; Pop's frame 964:58631 too); Retro's layout 1 prints no
-  // head. EditPanel mirrors it.
-  if (d === 0 && cat === 'calendar' && c.heading === undefined && vm.limeTree) vm.title = cased(CAL_HEADING_1)
+  // head. EditPanel mirrors it. Lattice's layout 1 (widened to `limeTree`) keeps TITLES.calendar,
+  // "Availability": its frames set that word as the `[ 007 ]` eyebrow's own, and `heading` is its seat.
+  if (d === 0 && cat === 'calendar' && c.heading === undefined && vm.limeTree && !vm.lattice) vm.title = cased(CAL_HEADING_1)
   // The form's layout-3 head is the frame's "Book Kai for / your event" off
   // the artist's own name (JP-070), copyrightOf()'s rule; EditPanel mirrors it.
   if (d === 2 && cat === 'form' && c.heading === undefined) vm.title = cased(formHeading3(artistName))
@@ -1714,7 +1722,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // Retro's layout-1 pill (the `s.limeTree` foot, Pop's too, has
     // none, JP-088: its line links). The same field is layout 4's Send Enquiry (JP-082),
     // seeded CAL_SEND_4 there: `vm.calWizard.send`, below.
-    vm.calCta = cased(cv('cta', 'Check a date'))
+    // Lattice's layout-1 foot draws a Continue bar (its own seed, mirrored by fieldSeed); the Lime family's draws none.
+    vm.calCta = cased(cv('cta', d === 0 && vm.lattice ? CAL_CTA_LATTICE : 'Check a date'))
     // Layout 2's pill, which its frame labels differently from the other two
     // calendar pills (its "Star Enquiry" read as the intended "Start").
     vm.calSlotCta = cased(cv('slotCta', CAL_SLOT_CTA))

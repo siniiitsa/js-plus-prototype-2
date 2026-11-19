@@ -18474,6 +18474,157 @@ function Gallery({ s }) {
 // v0 — Booking Calendar layout 1 · Scheduler (§10.2 reference design): a
 // bordered panel split between the month grid and a stack of polaroids, with
 // the resulting enquiry line along the foot.
+// Lattice's layout-1 calendar (Batch 2 file, 1:1039 · 1:9670 · 1:10640: 1440 x 781 / 768 x 564 / 390 x 894;
+// desktop x 0.82, the narrow masters verbatim, raw sizes not the ramp). One 1px, 20-radius card on the
+// section's own ground (Scheme 2): a month grid in the left half, in the right an `[ 007 ] --- AVAILABILITY`
+// eyebrow over a dotted torus (a raster used as a CSS mask inked in `s.tx`, the map's recipe, on an
+// aria-hidden span; the teal glow is the art box's own gradient) and the town with a short rule, and under
+// both a foot with the enquiry line and a Continue bar. The halves stand side by side at 1440 and 768 and
+// stack at 390. The art box and the right half are pinned to the five-row month's height (the frames'
+// June 2025), so paging into a six-row month grows the grid alone and the torus never rescales.
+// `Calendar` owns the hooks, so the block stands after its seam and takes what the seam resolved in `g`.
+function LatticeCalendar({ s, g }) {
+  const { month, cur, line, step, pick } = g
+  const tab = isTablet(s)
+  const k = s.narrow ? 1 : 0.82
+  const u = (v) => `${Math.round(v * k * 100) / 100}px`
+  const ink = s.tx
+  const dim = s.text3 // sem/text/3, the teal ink on the light ground
+  const mono = (size, extra) => ({
+    fontFamily: s.mono, fontSize: size, lineHeight: 1.2, letterSpacing: '0.04em', textTransform: 'uppercase', ...extra,
+  })
+  const dev = s.mob ? 'mobile' : tab ? 'tablet' : 'desktop'
+  // The frames' own numbers per width: the halves' padding, the day cell's height, the art's height, the
+  // town row's inset and the five-row half's height (which the right half is pinned to).
+  const padX = s.mob ? 16 : tab ? 21 : 28
+  const padY = s.mob ? 20 : tab ? 24 : 28
+  const cellH = s.mob ? 30.969 : tab ? 31.75 : 65.938
+  const artH = s.mob ? 252 : tab ? 198.75 : 377.688
+  const townX = s.mob ? 49.89 : tab ? 55.65 : 95.55
+  const halfH = s.mob ? 380 : tab ? 326.75 : 505.688
+
+  const arrow = (back, dir) => {
+    const onClick = step(dir)
+    return (
+      <span onClick={onClick} style={{
+        boxSizing: 'border-box', flex: 'none', width: u(44), height: u(44), border: `1px solid ${ink}`, borderRadius: s.radiusChip,
+        display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: ink,
+        cursor: onClick ? 'pointer' : undefined, opacity: s.live && !onClick ? 0.38 : undefined,
+      }}>
+        <span aria-hidden style={{ fontFamily: 'Arial, sans-serif', fontSize: u(13.333), lineHeight: 'normal' }}>{back ? '←' : '→'}</span>
+      </span>
+    )
+  }
+
+  // The month fits the room between the arrows by its own width (`month.ems`, the display face's ems, plus the
+  // 0.004em tracking per glyph), and keeps the frame's size wherever it fits: June at every width.
+  const monthSize = s.mob ? 26 : tab ? 32 : 40 * k
+  const emsOf = month.ems !== undefined ? month.ems + 0.004 * [...month.label].length : 0
+  const head = (
+    <div style={row(u(12), { height: u(44), justifyContent: 'space-between' })}>
+      {arrow(true, -1)}
+      <div style={{ flex: '1 1 0', minWidth: 0, containerType: 'inline-size', display: 'flex', justifyContent: 'center' }}>
+        <span style={{
+          fontFamily: s.display, fontWeight: 500, letterSpacing: '0.004em', textTransform: 'uppercase', color: ink, whiteSpace: 'nowrap', lineHeight: 1,
+          fontSize: emsOf ? `min(${monthSize}px, calc(100cqi / ${emsOf.toFixed(3)}))` : `${monthSize}px`,
+        }}>{month.label}</span>
+      </div>
+      {arrow(false, 1)}
+    </div>
+  )
+
+  const names = (
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', columnGap: u(6), height: u(30), boxSizing: 'border-box', paddingTop: u(6) }}>
+      {s.calDays.map((d) => (
+        <span key={d} style={mono(u(11), { color: dim, textAlign: 'center' })}>{d}</span>
+      ))}
+    </div>
+  )
+
+  const day = (c, i) => {
+    if (c.iso === undefined) return <span key={i} />
+    const on = c.iso === cur
+    const onClick = pick(c)
+    return (
+      <span key={i} onClick={onClick} style={{
+        ...mono(u(12)), boxSizing: 'border-box', height: u(cellH), border: `1px solid ${ink}`, borderRadius: s.radiusChip,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        background: on ? ink : undefined, color: on ? s.bg : ink, opacity: c.booked || c.dead ? 0.38 : undefined,
+        cursor: onClick ? 'pointer' : undefined,
+      }}>{String(c.d).padStart(2, '0')}</span>
+    )
+  }
+
+  const left = (
+    <div style={col(u(16), { boxSizing: 'border-box', minWidth: 0, padding: `${u(padY)} ${u(padX)}`, borderRight: `1px solid ${s.mob ? 'transparent' : ink}` })}>
+      {head}
+      <div style={col(u(6))}>
+        {names}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', gap: u(6) }}>{month.cells.map(day)}</div>
+      </div>
+    </div>
+  )
+
+  // The right half: the eyebrow (the section's `heading`, drawn only while it holds a word; its seat is kept),
+  // the art at a fixed height 64 from the top, and the town row at the foot.
+  const eyebrow = (
+    <div style={row(u(16), { justifyContent: 'center', height: u(14.375), minWidth: 0 })}>
+      {!!s.title && (
+        <>
+          <span style={mono(u(12), { color: ink, whiteSpace: 'nowrap' })}>[ 007 ]</span>
+          <span aria-hidden style={{ flex: 'none', width: u(40), height: 1, background: ink }} />
+          <span style={mono(u(12), { color: dim, minWidth: 0, overflowWrap: 'anywhere' })}>{s.title}</span>
+        </>
+      )}
+    </div>
+  )
+  const right = (
+    <div style={col(0, { boxSizing: 'border-box', minWidth: 0, minHeight: u(halfH), padding: `${u(padY)} 0` })}>
+      {eyebrow}
+      <div style={{
+        position: 'relative', flex: 'none', height: u(artH), marginTop: u(64 - padY - 14.375),
+        backgroundImage: `radial-gradient(ellipse 50% 50% at 50% 50%, ${s.onScheme[4].bg}2E 0%, ${s.onScheme[4].bg}00 70%)`,
+      }}>
+        <span aria-hidden style={{
+          position: 'absolute', inset: 0, background: ink, pointerEvents: 'none',
+          WebkitMaskImage: `url(${s.latticeDisc.calendar[dev]})`, maskImage: `url(${s.latticeDisc.calendar[dev]})`,
+          WebkitMaskSize: 'cover', maskSize: 'cover', WebkitMaskPosition: 'center', maskPosition: 'center',
+          WebkitMaskRepeat: 'no-repeat', maskRepeat: 'no-repeat',
+        }} />
+      </div>
+      <div style={row(u(16), { marginTop: 'auto', padding: `0 ${u(townX)}`, minWidth: 0 })}>
+        {!!s.location && <span style={mono(u(11), { color: dim, minWidth: 0, overflowWrap: 'anywhere' })}>{s.location}</span>}
+        <span aria-hidden style={{ flex: 'none', width: u(80), height: 1, background: ink, marginLeft: 'auto' }} />
+      </div>
+    </div>
+  )
+
+  // The foot: the enquiry line (the picked day's, else the prompt) and the Continue bar, which leads on to the
+  // form (`calBookTo`) when live and is a picture on the canvas. An emptied `cta` drops the bar.
+  const href = navHref(s, s.calBookTo)
+  const Bar = href ? 'a' : 'span'
+  return (
+    <div style={{ boxSizing: 'border-box', border: `1px solid ${ink}`, borderRadius: u(20), overflow: 'clip', color: ink, ...WRAP_LONG }}>
+      <div style={{ display: 'grid', gridTemplateColumns: s.mob ? 'minmax(0, 1fr)' : 'repeat(2, minmax(0, 1fr))' }}>
+        {left}
+        {right}
+      </div>
+      <div style={row(u(16), { boxSizing: 'border-box', justifyContent: 'space-between', borderTop: `1px solid ${ink}`, padding: `${u(18)} ${u(padX)}` })}>
+        <span style={mono(u(12), { color: ink, flex: '1 1 0', minWidth: 0 })}>{line}</span>
+        {!!s.calCta && (
+          <Bar {...(href ? { href } : null)} style={{
+            ...row(u(12), { justifyContent: 'center' }), ...mono(u(12)), boxSizing: 'border-box', flex: 'none', height: u(44), padding: `0 ${u(22)}`,
+            background: ink, color: s.bg, textDecoration: 'none', cursor: href ? 'pointer' : undefined,
+          }}>
+            <span>{s.calCta}</span>
+            <span aria-hidden>→</span>
+          </Bar>
+        )}
+      </div>
+    </div>
+  )
+}
+
 function Calendar({ s }) {
   // The month on show, as an offset into `s.calMonths`, and the day the visitor
   // has picked. Both inert on the editor canvas, where the section is a picture
@@ -18559,6 +18710,14 @@ function Calendar({ s }) {
         ? () => setMi((v) => clampMo(v + dir))
         : undefined
     )
+
+    // Lattice's layout-1 calendar is a block of its own (LatticeCalendar), after the seam: the month, the pick
+    // and the arrows are `Calendar`'s and go over in `g`, so the published controls are the one seam in a new
+    // picture. The day's handler is the Lime block's (a blocked day has none; the lit day unlights on a second click).
+    if (s.limeTree && s.lattice) {
+      const pick = (c) => (s.live && !blocked(c) ? () => setSel((v) => (v === c.iso ? '' : c.iso)) : undefined)
+      return <LatticeCalendar s={s} g={{ month, cur, line, step, pick }} />
+    }
 
     // Lime — the scheduler frames 964:58595 / 986:39884 / 986:39896, as a block
     // after the seam (the gallery's, repertoire's, map's and pricing's

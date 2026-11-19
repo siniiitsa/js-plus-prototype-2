@@ -430,6 +430,19 @@ After section 11 and session 12, in one session (the lists in `../lime/layout-1.
   `shown`, `pressChip` stay `Pricing`'s and go over in `g`). The twin prediction (*Lime's pricing*) was half right a fourth time: the seam is Lime's, the picture is not. The frames' lit
   *Solo* chip and `[ 006 ] PRICING` eyebrow are the two things the standing rules answer (calls below).
 
+- **calendar (section 8, 2026-11-19): *new own-tree block* `LatticeCalendar`, not Lime's *Scheduler* (nor Grunge's / Editorial's / Pop's widenings of it).** Diffed against the
+  `if (s.limeTree)` block in `Calendar` and `notes/calendar.md`, frames `1:1039` · `1:9670` · `1:10640`. The *inventory* is Lime's (a month head with two arrows, seven weekday names, a
+  day grid, a picture half, a foot with the enquiry line), and **no leaf is**. Lime's panel is a `box/1` 55-radius card with a hairline between the halves, its arrows 55 x 54 round discs,
+  its days `box/2` 26-radius cells, its right half a 35-radius *photograph* in a 20-padded half, and its foot the line alone (JP-088: the line is the link, no pill). Here the card is a
+  1px-ruled 20-radius box on the section's own ground; the arrows are 44 square 3px boxes round an Arial glyph; the days are 3px-radius 1px-ruled boxes (82 x 66 at 1440, 39.7 x 31.7 at 768,
+  38.7 x 31 at 390) with a *mono* two-digit numeral, the picked one filled ink; the right half is an `[ 007 ] ——— AVAILABILITY` eyebrow over a **dotted torus** (a raster, art, not a photograph)
+  on a teal-at-18% radial glow, with the town and a short rule at its foot; and the foot is the enquiry line **with a Continue bar** (the frame draws a button where JP-088 removed Lime's
+  pill, so the pill's reason, *no frame draws it*, no longer holds; the bar leads on to the form like Retro's pill). The **halves** are 1fr : 1fr side by side at 1440 and 768, and stacked at
+  390 (Lime's 768 stacks them). The frames draw **five rows** (June 2025 opens on a Sunday and has 30 days, so a 5-row grid with two cells in the last), no booked or past day and no
+  month count the seam disagrees with: `vm.calMonths` is the same months, so no shared count changes. So it is a block of its own, standing in `Calendar` **after the seam** (`at`, `month`,
+  `cur`, `line`, `step`, `blocked` and `setSel` stay `Calendar`'s and go over in `g`): `Calendar` owns eight `useState` hooks, so an early return above them would change the hook count on a theme switch.
+  The twin prediction (*Lime's Scheduler*) was half right a fifth time: the seam is Lime's, the picture is not.
+
 ### Settled in session 0 — the foundation (2026-11-19)
 
 **Calls (user, via AskUserQuestion):** call 1, every standing removal holds (see *The decisions*, call 1); call 2, the display
@@ -893,6 +906,61 @@ twin prediction is Lime's *Scheduler*, which will be half right (the seam). The 
 month may not be the seam's), whether the frame draws a booked or past day, and the counts of slots; gate any change to shared counts on `s.lattice`. `vm.calWizard`, `vm.calMailto` and `vm.calCheck` are closures (layout 4); layout 1
 reads `vm.calMailto`'s absence, so check `notes/calendar.md` before touching the foot. Glyphs (`←`, `→`, `[ ]`) go in their own spans so the inline probe can match the copy. A decorative `url()` or glow is the root's own background or a mask on an
 `aria-hidden` span, never a child node (`limits.mjs` counts a `url(` element as a picture). No clickable copy's centre may stand inside the builder's section toolbar (right 8, top 8, 99 x 31) at 1440.
+
+### Settled in section 8 — the calendar (2026-11-19)
+
+**Verdict** (under *Seen at planning time*, written before the code): a new own-tree block, not Lime's *Scheduler* and not its widenings. `LatticeCalendar` stands in `Calendar`'s `if (s.v0)` **after the seam**,
+dispatched on `s.limeTree && s.lattice` ahead of the Lime block; `month`, `cur`, `line`, `step` and a `pick(c)` handler stay `Calendar`'s and go over in `g`. Notes: `notes/calendar.md`, *Lattice · layout 1*.
+**Scheme seat:** Scheme 2 (`#F2F2F2`, in `SCHEMES_OF.Lattice` already) and no other: the picked day is the frame's ink fill (not Scheme 2's orange `activeBg`), and the art's glow reads Scheme 4's teal through
+`s.onScheme[4]`.
+
+**The block.** Every number the frame's (desktop x 0.82 through `u`, 768 and 390 verbatim; raw sizes 40 / 32 / 26 month, 12 / 11 mono, not the ramp). One 1px, 20-radius card: a 1fr : 1fr grid (stacked at 390, no divider)
+over a foot. Left: a 44-square head row (3px arrow boxes round Arial `←` / `→`, the month in `Archivo Lattice`, fitted between them by `month.ems`), a 30-tall weekday row, and the grid (gap 6, cells 65.94 / 31.75 / 30.97
+tall, a two-digit mono numeral, the lit day filled ink). Right: the `[ 007 ] --- AVAILABILITY` eyebrow, the torus art at a fixed 377.69 / 198.75 / 252, the town and a short rule. Foot: the enquiry line and a Continue bar.
+`vm.pad` 78.72 / 77 / 58 top and foot with the content insets (40.15 / 26.11 / 24), in `EncoreBuilder.jsx` after the pricing arm. **The art is a mask** (three lossless webps of the frames' ink, 39 / 25 / 31 KB, `photos.js`
+`LATTICE_ART.calendar`) painted in `s.tx` on an `aria-hidden` span; **the glow is the art box's own `radial-gradient`** (`50% x 50%`, teal 18% to 0 at 70%): neither is a `url()` background on a node. **Read:** the frames
+draw five rows (June 2025), no booked or past day, and nothing the seam's counts disagree with, so no shared count changed. The head boxes carry no import artefact (the frames' heights are the render's: the section is
+640.7 / 563.8 / 893.8 drawn against 640.4 / 564 / 894); the eyebrow is drawn, so unlike sections 3-7 the section is not shorter for a removal.
+
+**Calls for the user to confirm.**
+1. **The `[ 007 ] --- AVAILABILITY` eyebrow is drawn, because `heading` is that word's seat** (seeded *Availability*, uncased, dropped when emptied; call 1's rule). `sectionVm`'s "Book Now" seed for the family's layout 1 is gated
+   `&& !vm.lattice` so the canvas and the panel agree (`fieldSeed` already read `limeTreeTheme`, which excludes Lattice). **The `[ 007 ]` is a literal** and does not follow the section's place on the page; the rule and the
+   numeral go with an emptied heading, the seat is kept.
+2. **Continue is `cta`, and it reverses JP-088 for Lattice.** The frame draws a button where JP-088 removed the family's pill (its reason, *no frame draws it*, no longer holds); `cta` is seeded `Continue` for Lattice's layout 1
+   (`CAL_CTA_LATTICE`, `vm.calCta` and `fieldSeed`; layout 4's wizard keeps `CAL_SEND_4`). Live it is an `<a href="#form">` (`calBookTo`) **whether or not a day is cued** (Retro's pill rule), a picture on the canvas, and an
+   emptied label drops it. The foot's line is plain text, never the link. A Continue dimmed until a day is picked would be the other reading.
+3. **A booked or past day is the family's**: .38, no strike, no handler (the frames draw none).
+4. **The 390 master's right border on the grid half is not drawn** (the desktop divider leaking); the stacked halves carry no rule between them.
+5. **The art box is pinned to the five-row height**, so a six-row month leaves 72 of empty ground under the torus and a four-row one leaves the grid half at the right half's height (the 2026-11-16 tester report's rule).
+6. **`cta` is capped at 12**, measured 29 (box): the bar stays under a third of the 390 foot and the enquiry line keeps its room. The user's to overrule.
+7. **`image` no longer reaches Lattice's layout 1** (`in: { Lattice: [3], '*': [0, 3] }`): the polaroid seat holds art, not a photograph, so the panel offers no Photo; `heading` now reads Lattice's layout 1 and `cta` is
+   explicitly Lattice `[0, 3]`.
+8. **The numerals are zero-padded in the block** (`01`), as the frame sets them; display only, the seam's `d` is the number.
+
+**Fields and caps.** `FIELDS.calendar` layout 1 reads `heading`, `open`, `booked`, `time`, `prompt` and `cta` (`reach.mjs 5` agrees; `image` is layout 4's alone) and the header's town through `IDENTITY_READS.location.calendar`
+(now `Lattice: [0, 3]`). Measured with `limits.mjs calendar --themes=5 --designs=0`: `heading` **25** (65 / 27 / 25), `time` **16** (104 / 30 / 16), `prompt` **33** (137 / 63 / 33), `IDENTITY_CHARS.calendar.location`
+**19** (50 / 19 / 19), `cta` 29 held to **12**. Each has an explicit `Lattice` row (layouts 2-4 copied from Pop's); `slotCta`, `availLabel`, `types`, `dateLabel` and `slots` `kind` / `price` are layouts 2 and 4's and stay
+Pop's / `'*'` (unmeasured, owed to those passes). `--check`: 0 fail; `--seeds`: 0 over. **`INLINE_OFF`**: `Lattice.0.calendar.prompt` only (it shows while no day is cued, and the canvas opens with one cued).
+
+**Proof.** Geometry by `getBoundingClientRect` against the frame (root-relative, frame px x .82 at 1440): card 40.14 / 78.72 (frame 40.15 / 78.72), arrows 36.08 square at 64.09 / 102.67 (63.93 / 102.5), month 198.05 x 32.8
+(197.88 x 32.8), cell 01 67.5 x 54.06 at 64.09 / 181.36 (63.93 / 181.22 x 67.58 x 54.07), cell 12 at 353.72 / 240.33 (353.99 / 240.21), eyebrow 770.41 (771.08), art 590 / 132.17 x 548.86 x 309.69, town 668.34 / 460.61,
+Continue 106.55 x 36.08; every element within 0.8 px at 1440 (the canvas is 1180 where the frame x .82 is 1180.8), within 0.1 at 768 (card 26.11 / 77 x 715.78 x 409.75, art 384 / 142 x 356.89 x 198.75, Continue 589.92 / 423.75 x 129.97 x 44)
+and within 0.15 at 390 (the month 0.14 wide; art 25 / 437.84 x 340 x 252, Continue 219.03 / 772.84, the line wraps to the frame's three). Probes at `--theme Lattice --layout 1 --cat calendar`: `inline-probe` (1440 and 768)
+PASS, 3 slots hit, 0 UNLEDGERED; `photo-probe` PASS filled, `--blank` and `--drop` (the section holds no photo slot); `focus-probe --prime` PASS (6 controls). Live (`&live=1`, trusted clicks, `&today=2025-06-01`, 1440 and 390): next
+and previous arrows page (June to July and back), the first arrow is dim and handlerless at the start and the last at the end (May 2027), a day picks (the foot reads *Enquiry for Sunday, July 20 at 9:00pm*) and a second click
+unlights it, Continue is `<a href="#form">`; `page-check.mjs Lattice 0`: no errors, the menu's Availability link scrolls to `#calendar`, the calendar controls respond and Continue scrolls to `#form`, `overflow390` 0. Stress:
+SEPTEMBER 2025 at 390 fits between its arrows (shrunk a little), a six-row month (August 2025) leaves the torus alone, booked days dim, a 33-character heading clamps in its row. `digest.mjs` 0,1,2,3,4 against a HEAD worktree (:5185, which answered no `LatticeCalendar`, the positive control) and the working tree (:5173), ports and `?t=` normalised: **0 differing files of 720**. `npm run build` passes; the three art webps add 94 KB raw to `src/builder/photos/` (the standalone build was not rebuilt: the root `index.html` is the end-of-pass sweep's).
+
+**For the form (section 9).** `EnquiryForm` has hooks (the typed boxes, the chip pick, the errors, the sent state) too, so its block goes after its seam with what the seam resolved handed over in one object `g`; raw
+sizes through `u(v)` (x 0.82 desktop, verbatim narrow). The frames (`1:1147` · `1:9778` · `1:10748`, 1440 x 689 / 768 x 990 / 390 x 1230) draw, on a dark ground (Scheme 8), one bordered card: a context panel (avatar, a title and
+three promises) and the form (name, email, date, guests, event-type chips, message, Book Now); the twin prediction is Lime's *Split context + form*, which will be half right (the seam). `FIELDS.form` is the section's
+(`formBtnSeed` seeds `Book Now` for Lattice already: `limeTreeTheme` excludes it, so `FORM_BTN_1` "Enquire" is not Lattice's; the frame says Book Now); `chars` / `in` objects that name Pop fall back to it, so give Lattice its own
+explicit rows and measure with `limits.mjs form --themes=5 --designs=0`. **The form is `<a href="mailto:">`, never a `<form>`** (there is no `<form>` element in the section and there must never be one: it would post to
+`<base href>`); `vm.formMailto` and `vm.formCheck` are closures over the visitor's keystrokes, and the chip starts at 0 (do not "fix" it to -1): read `notes/form.md` first. Each frame's eyebrow (`[ 008 ] --- ...`) is drawn
+only where a seeded, uncased, drop-when-emptied field exists (call 1, JP-071: `FIELDS.form` has `typeLabel` and `messageLabel` among its labels; read which, if any, is that word's seat, and say so). The avatar is a photograph
+(`SEEDS.Lattice` seats the form on `lattice-alt`); a decorative `url()` or glow is the root's own background or a mask / gradient on an `aria-hidden` span, never a child node. Glyphs go in their own spans so the inline probe can
+match the copy; no clickable copy's centre may stand inside the builder's section toolbar (right 8, top 8, 99 x 31) at 1440. The seams are straight edges (the page `above` / `below` read nothing for Lattice), and the
+calendar above it is on Scheme 2 (`#F2F2F2`) while the form stands on Scheme 8 (`#111`).
 
 ### Inherited and used
 
