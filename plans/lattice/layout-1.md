@@ -82,7 +82,7 @@ frame's aspect assume the old numbers, so section 1 re-measures them (open quest
 | 0 | *foundation* | `1:306` | — | `1:8953` | — | `1:9934` | — | `THEMES[5]`, ramp, faces, photos, `s.lattice`, dot field | done `812453b` |
 | 1 | `header` | `1:308` | 1440 × 750 | `1:8955` | 768 × 750 | `1:9936` | 390 × 750 | Full-bleed photo, dot field, wordmark + inline nav + Book Now, a dotted-ellipse disc top-right, avatar card, kicker line, 120-ish-px title, six square chips · **Retro `HeaderV0`** (Lime's block as the twin of the card and chips) | done `33e2f3c` |
 | 2 | `bio` | `1:386` | 1440 × 769 | `1:9019` | 768 × 939 | `1:9991` | 390 × 1050 | Grey `#D9D9D9`; three columns: `KM / BIO`, a stacked statement, a tall portrait, a vertical town, ABOUT copy; `[ 001 ] STRUCTURE · BIO_01` · **new own block `LatticeBio`** (not Lime's *Flanked portrait*: a plain portrait with a rail, a 12-column grid; `KM / BIO` and the reference line are removed copy, call 1) | done `7bee3bd` |
-| 3 | `media` | `1:419` | 1440 × 1057 | `1:9052` | 768 × 1404 | `1:10024` | 390 × 1422 | Dark; five-row numbered track list with art and play squares + a *Now playing* card with transport and a bar-code progress · **probably Retro's `v0` body re-laid** (Pop's plan describes it as five track rows with cover and play disc, a now-playing card with transport and progress, and a Soundcloud pill — this frame's inventory, untilted); **check against `Media`'s `v0` body before deciding** (open question 1) | open |
+| 3 | `media` | `1:419` | 1440 × 1057 | `1:9052` | 768 × 1404 | `1:10024` | 390 × 1422 | Dark; five-row numbered track list with art and play squares + a *Now playing* card with transport and a bar-code progress · **probably Retro's `v0` body re-laid** (Pop's plan describes it as five track rows with cover and play disc, a now-playing card with transport and progress, and a Soundcloud pill — this frame's inventory, untilted); **check against `Media`'s `v0` body before deciding** (open question 1) | done `e85f73c`, fixed `a413506` |
 | 4 | `gallery` | `1:588` | 1440 × 923 | `1:9221` | 768 × 1438 | `1:10193` | 390 × 1020 | Light; heading + four source rows (Gallery open, YouTube, Instagram, TikTok) left; viewer with caption pill, arrows, seven thumbnails, progress and `02 — 15` right · **Lime's gallery** | open |
 | 5 | `repertoire` | `1:673` | 1440 × 1067 | `1:9306` | 768 × 1067 | `1:10278` | 390 × 1555 | Dark with a warm glow; `240 SONGS`, search box, four chips, two-column dense list, pager · **Lime's *Two-column dense*** | open |
 | 6 | `map` | `1:796` | 1440 × 983 | `1:9429` | 768 × 1351 | `1:10401` | 390 × 1454 | Grey; `MANCHESTER`, a dotted-ellipse card with a *Based in* foot, an upcoming-gigs panel with status pills and a pager · **Lime's *Compact tile*** (the raster map is the dotted art) | open |
@@ -365,6 +365,20 @@ After section 11 and session 12, in one session (the lists in `../lime/layout-1.
   10-12), where Lime's are `1fr 580 1fr`. Built as `LatticeBio` ahead of Lime's block (open question 1's route; section 2, `7bee3bd`). The record was written
   after the block, not before it, because open question 1 had already settled the route for a composition that differs.
 
+- **media (section 3, 2026-11-19): *new own-tree block* `LatticeMedia`, not Retro's `v0` body and not Lime's block.** Diffed against both
+  (frames `1:419` · `1:9052` · `1:10024`). The inventory is the shared one (five numbered rows with cover and play control, a
+  now-playing card with sleeve, name, transport and a progress line with two clocks, a Soundcloud pill), and every leaf differs.
+  **Retro's body** leans its rows ±1° with thrown blocks, grain, a checkerboard strip and a `TornEdge`, and puts the sleeve in a
+  rounded disc on a wine-shadowed panel. **Lime's block** (which Grunge and Editorial widen) has flush rows on hairlines like this
+  frame, but its play control is a ring-circle left of a 60 rounded cover (here the cover sits left of a *square* 44 button, both
+  3px-radius), its card is the sleeve laid as a *background* faded to black under an inset glow in an 80-radius pill, its progress is a
+  line, and its pill is Book Now. The Lattice card is a 20-radius `#1B1B1B` box with a 1px ring, a teal halo and a *square-cornered* sleeve
+  object under mono labels, three square transport buttons, and a 48-bar bar-code meter (heights `4 + i % 9`, gap 3). The grid is
+  886.72 : 431.375 at 24 (desktop) where Lime's is 710 : 558 at 60; the Soundcloud pill is `BracketButton`'s shape. So it is a block of
+  its own. **It sits after `Media`'s hooks and seam, not above them** (an early return above `useRef` / `useState` would change the
+  hook count on a theme switch; the bio's route worked only because `Bio` has none): `Media` resolves `at`, `track`, `now`, `sleeve`,
+  `goTo`, `toggle`, `onPick` and `audio`, then hands them to `LatticeMedia`, so the published player is the one seam in a new picture.
+
 ### Settled in session 0 — the foundation (2026-11-19)
 
 **Calls (user, via AskUserQuestion):** call 1, every standing removal holds (see *The decisions*, call 1); call 2, the display
@@ -614,6 +628,57 @@ PASS (5 controls; the town's box covers the vertical text), `page-check.mjs Latt
 Lattice's bio digest differs).
 
 **Calls for the user to confirm:** the one-word-a-line head at every width; the 768 / 390 heights (892 / 1003) with the two rows removed.
+
+### Settled in section 3 — the media player (2026-11-19)
+
+**Verdict** (under *Seen at planning time*, written before the code): a new own-tree block, not Retro's `v0` body and not Lime's. It stands in `Media`
+**after** the hooks and the hoisted seam (`sleeveSlot`), not at the head as the bio's did (`Media` owns `useRef` / `useState`; an early return above
+them changes the hook count on a theme switch, and `Bio` has none). `Media` hands `LatticeMedia` `{ at, count, playing, now, sleeve, sleeveSlot,
+audio, goTo, toggle, onPick }`, so the published player is the one seam in a new picture. Notes: `notes/media.md`, *Lattice · layout 1*.
+
+**The block.** Every number the frame's (desktop x 0.82 through `u`, 768 and 390 verbatim; raw sizes 24 / 24 / 18 row titles, 30 / 27 / 25 card title,
+12 / 11 mono, not the ramp). Rows are 93 tall with a 1px `s.tx` hairline, number · title and sub · 56 cover (44 at 390) · 44 square button (3px);
+the grid is 886.72 : 431.375 at 24; the card is 466 tall at every width, `s.box1` with a 1px ring and a teal halo (`s.glow` .14), the sleeve a
+20-radius flex remainder with an orange halo (`s.text3` .16), three square transport buttons, and a 48-bar meter (gap 3, heights `4 + i % 9`). The
+heading is `Archivo Lattice` at 74.88 x .82 / 48 / 38, two lines (an em measure between "Five worth" and "Five worth your": 8em; 6.9em at 390 so the seed
+stacks on the frame's three lines), fitted to its widest word by `vm.titleWordEms` (the bio's rule, now `cat === 'bio' || 'media'`). The Soundcloud
+pill is `BracketButton` with a new `ext` arm (`extLink`: a picture on the canvas and while the address is empty). The glow is the root's own
+`radial-gradient(ellipse 42% 38.5% at 85% 60%, glow 14%, 0)`, which all three frames' `gradientTransform`s reduce to (no `url(`). `vm.pad`: top and foot
+106.13 / 77 / 58 with the bio's content insets, and a 98 top at 390 (below).
+
+**Calls for the user to confirm.**
+1. **The marked row is the card's track, not the frame's.** The frame marks row 02, prints `02 / 05` and names *Night Rain*, which is not in its list.
+   The card names the cued track (`at`), so the marked ground and filled square sit on row `at` (layout 4's tile seat): the canvas draws row 1 and
+   `01 / 05`. Pause shows on the marked row and the centre square only while `playing`.
+2. **Two literals and a derived position.** `Now playing` is the frame's label with no field (JP-071's unreported-sibling rule); `0N / 0M` is derived from
+   `at` and the list length, `00 / 00` empty. Neither is the removed `5 / 5 Featured`; say if it should go.
+3. **The meter's playhead is live-only.** The frame draws all 48 bars in one ink; live, the played share is lit and the rest dim to .3 (so the idle
+   published player starts dim), and the canvas keeps the frame's all-lit picture.
+4. **Heights.** The eyebrow row is removed, so the section is 832 / 1362 / 1376 drawn against the frame's 1057 / 1404 / 1422 (42 / 42 / 46 shorter). The 390
+   master's head box starts 40 down (import artefact; its eyebrow is at y 98), so the head takes the eyebrow's seat there, top 98, with the frame's 50
+   to the list.
+5. **The card title wraps** where the frame's *Night Rain* never did: the seeded `Manchester at 3am` is 315 in a 308 box at 390 (310 in 305.5 at 1440),
+   so a second line costs the sleeve 25-30 and the card stays 466.
+
+**Fields and caps.** `FIELDS.media` layout 1 reads `tracks` (`title`, `sub`), `heading` and `soundcloud`; `cta` stays hidden (`'*': []`). `heading` (20) and
+`tracks.title` (17) / `sub` (33) resolve through `'*'` and hold at their seeds (`limits.mjs media --themes=5 --designs=0 --check`, 0 fail, `--seeds` 0
+over); the seeded rows wrap at 390 in the frame, so the probe's one-line test is not the bound there. `IDENTITY_CHARS.media.title.Lattice` = `[40, 11,
+13, 31]` (layout 1 measured: the artist line's box, 49 / 51 / 40; the rest Pop's). No `INLINE_OFF` rows: `inline-probe` reports 0 UNLEDGERED.
+
+**Proof.** Geometry by `getBoundingClientRect` against the frame (desktop x .82, root-relative): heading 40.15 / 106.13, line one 439.0 wide (frame 439.06),
+rows 76.26 at 275.84 (frame 93 x .82), covers 45.91, card 786.39 / 274.84 x 353.46 x 382.12 (786.9 / 353.7 x 382.1), sleeve 168.9 (169.3); 768: rows 93 at 230,
+card 168.5 / 819 x 431 x 466, sleeve 217.41 (217.44); 390: rows 93, card 24 x 466, sleeve 227.41 (227.44), head three lines (97.1 / 164.3 / 239 wide). Probes at
+`--theme Lattice --layout 1 --cat media`: `inline-probe` (1440 and 768) PASS, 11 slots hit, 0 UNLEDGERED; `photo-probe` PASS (filled, `--blank`, `--drop`);
+`focus-probe --prime` PASS (17 controls). Live (`&live=1`, chrome-devtools trusted click): a row pick loads its track, the card, counter, marked row and
+Pause follow, Next / Previous wrap, the clocks run (`00:04 / 07:05`) and the played bars light; the Soundcloud pill links `https://` + the address with
+`target=_blank rel=noopener noreferrer`; `page-check.mjs Lattice 0` plays the media in the published tab (`paused: false`, `t` advancing, no errors).
+Empty states: `&noimage=1` draws the `KM` initials on the `#1B1B1B` sleeve well, and an emptied list prints `No tracks yet.` in the list and on the card
+with `00 / 00`. `digest.mjs` 0,1,2,3,4 on a HEAD worktree (:5185, the positive control: it answers no `LatticeMedia`) against the working tree (:5173), ports
+normalised: **0 differing files of 720**. The second commit's edits are inside Lattice gates (`LatticeMedia`, the Lattice pad arm).
+
+**For the gallery (section 4).** `Gallery` has hooks too, so its block goes after its seam, not at the head. `BracketButton` takes `ext` (outward address) as
+well as `to` (anchor). A section glow is a percentage `radial-gradient` on the root (`s.me && s.v0 && s.lattice` in the root style). The masters' head boxes
+carry import artefacts (a 40 offset at 390 here): read positions off the render and say which reading the height follows.
 
 ### Inherited and used
 
