@@ -1025,7 +1025,7 @@ const clock = (sec) => {
 // The ground and ink the menu opens on (below). Shared by `HeaderRoot`'s in-flow
 // panel and the fixed one Retro's layouts 5 and 6 still open.
 function menuColours(s) {
-  return s.editorial ? [s.box3, s.paper] : s.pop && s.v2 ? [s.bg, s.text3]
+  return s.lattice ? [s.bg, s.tx] : s.editorial ? [s.box3, s.paper] : s.pop && s.v2 ? [s.bg, s.text3]
     : s.pop && s.v3 ? [s.mapBg, s.text3] : [s.mapBg, s.mapFg]
 }
 
@@ -1100,12 +1100,12 @@ function MenuPanel({ s, menu }) {
         <span onClick={menu.toggle} style={{ display: 'flex', cursor: 'pointer' }}>
           <X size={26} style={{ flex: 'none' }} />
         </span>
-        <BookPill s={s} to={s.bookTo} />
+        {s.lattice ? <BracketButton s={s} to={s.bookTo} ink={ink} /> : <BookPill s={s} to={s.bookTo} />}
       </div>
       <nav onClick={menu.toggle} style={col('18px', { alignItems: 'flex-start' })}>
         {s.navLinks.map((l) => (
           <a key={l.label} href={navHref(s, l.to)}
-             style={labelStyle(s, s.dispSm, { color: ink, cursor: 'pointer' })}>{l.label}</a>
+             style={labelStyle(s, s.lattice ? s.labelLg : s.dispSm, { color: ink, cursor: 'pointer' })}>{l.label}</a>
         ))}
       </nav>
     </div>
@@ -1341,7 +1341,7 @@ function Title({ s, size, color, twoTone = false, align = 'left', toneA, toneB, 
     // in for it, is not, so every header's title takes the transform — and
     // so does Editorial's, Gloock standing in for the caps-only Fisterra
     // Fora, and Pop's, Titan One standing in for Chunko Bold Demo.
-    textTransform: s.grunge || s.editorial || s.pop ? 'uppercase' : undefined,
+    textTransform: s.grunge || s.editorial || s.pop || s.lattice ? 'uppercase' : undefined,
     // A word wider than the column even at the floor breaks rather than leave it.
     overflowWrap: s.titleK < 1 ? 'break-word' : undefined,
     ...style,
@@ -1834,6 +1834,10 @@ const SCRIM = {
   // Pop's hero (964:58624) — Lime's full-height fade again (the same gradient
   // transform), in black at the paint's 0.74.
   pop: 'linear-gradient(0deg, rgba(0,0,0,.74) 0%, rgba(0,0,0,0) 100%)',
+  // Lattice's hero (1:310) — one full-height fade over the photograph: #111 at
+  // .55 at the top, .15 at 40%, .9 at the foot (its `gradientTransform` runs the
+  // height). The photograph under it is drawn at .55 on #111.
+  lattice: 'linear-gradient(180deg, rgba(17,17,17,.55) 0%, rgba(17,17,17,.15) 40%, rgba(17,17,17,.9) 100%)',
   // Lime's media player card (964:58590 "Left") — the sleeve's own fade to
   // black, exactly the frame's paint: 0 → 91% black from 1.57% to 79.38%. Its
   // 181.8° is Figma's gradient transform read through the card's aspect (the
@@ -1950,6 +1954,156 @@ function NavBar({ s, colour, pill, glass: glassOn, menu }) {
  * to Grunge's and to Editorial's.
  * ------------------------------------------------------------------ */
 
+// Lattice's bracket-cornered button (1:344): a mono caps label and an arrow
+// between four 9 x 9 corner marks, 1px, on a 130 x 44 box with no ground (the frame
+// draws it at 768 as well, and at 1440 only as the hero's Book Now). `k` scales it
+// (0.82 on the desktop canvas). Under `s.live` it links to the section that takes
+// a booking, as BookPill does; elsewhere it is a picture. Opt-in: nothing but
+// Lattice's header and open menu pass through it.
+function BracketButton({ s, label, to, ink, k = 1, style }) {
+  const c = ink ?? s.tx
+  const px = (v) => `${Math.round(v * k * 100) / 100}px`
+  const link = s.live && to ? { href: `#${to}` } : null
+  const Tag = link ? 'a' : 'span'
+  const mark = (pos) => ({
+    position: 'absolute', width: px(9), height: px(9), pointerEvents: 'none',
+    ...(pos[0] === 't' ? { top: 0, borderTop: `1px solid ${c}` } : { bottom: 0, borderBottom: `1px solid ${c}` }),
+    ...(pos[1] === 'l' ? { left: 0, borderLeft: `1px solid ${c}` } : { right: 0, borderRight: `1px solid ${c}` }),
+  })
+  return (
+    <Tag {...link} style={{
+      ...row(px(12)), position: 'relative', flex: 'none', height: px(44), padding: `0 ${px(22)}`,
+      color: c, cursor: 'pointer', ...labelStyle(s, s.labelMd, { lineHeight: 1.2, letterSpacing: '0.04em' }), ...style,
+    }}>
+      {['tl', 'tr', 'bl', 'br'].map((p) => <span key={p} aria-hidden style={mark(p)} />)}
+      <span>{label ?? s.cta1}</span>
+      <span aria-hidden>→</span>
+    </Tag>
+  )
+}
+
+// Lattice's three-bar hamburger (1:8984): 20 wide, 2px bars 4 apart, in a 46 x 46
+// button whose ink starts 13px in — the bars stand on the gutter, so the box takes
+// that back as a negative margin.
+function LatticeBurger({ s, color, menu, k }) {
+  const px = (v) => `${Math.round(v * k * 100) / 100}px`
+  return (
+    <span onClick={menu?.toggle} style={{
+      ...col(px(4), { alignItems: 'stretch', justifyContent: 'center' }), flex: 'none', cursor: 'pointer',
+      width: px(46), height: px(46), padding: `0 ${px(13)}`, marginLeft: `-${px(13)}`, boxSizing: 'border-box',
+    }}>
+      {[0, 1, 2].map((i) => <span key={i} style={{ height: px(2), background: color }} />)}
+    </span>
+  )
+}
+
+// Lattice's hero (Batch 2 file, 1:308 · 1:8955 · 1:9936: 1440 / 768 / 390, all 750
+// tall; desktop numbers x 0.82). A new composition under HeaderV0's skeleton, so a
+// block of its own and no other template reads it: a #111 ground with a warm glow
+// bottom-right, the photograph at .55, a vertical scrim, the dot field, a bar of
+// hamburger and bracketed Book Now, the dotted disc, then the identity block on the
+// floor — a 194 card (radius 20, 1px ring) beside the name at 128 (105 on the
+// canvas) in the expanded Archivo, and a row of six square mono chips. The frame's
+// wordmark and rule, the inline links and the `MANCHESTER, UK · DJ · LIVE ACT` line
+// are not drawn (the header-nav ticket's standing removals, user call 2026-11-19).
+// The column is bottom-aligned to the card with the frame's 6.03 under the name,
+// The desktop bar stands 7 frame px (5.7 canvas) lower than the frame's: the builder's section
+// toolbar (right 8, top 8, 99 x 31) covers the label's centre at the frame's height, so a click
+// on Book Now opened nothing (inline-probe MISSING); tablet's already clears it.
+// so the name stands where the frame's does with the kicker row gone. Its tracking is the
+// frame's -0.01em plus the 0.0141em the Archivo alias lacks in width (measured: the frame's
+// ink runs 895 at 1440 where the alias gives 879), so the ink lands on the frame's.
+function LatticeHero({ s, menu }) {
+  const tab = isTablet(s)
+  const k = s.narrow ? 1 : 0.82
+  const px = (v) => `${Math.round(v * k * 100) / 100}px`
+  const centred = s.align === 'centre'
+  const orange = s.onScheme[1].activeBg
+  const padX = `calc(${s.surplus} + ${s.mob ? '24px' : tab ? '26.11px' : '40.15px'})`
+  const card = 194 * k
+  const ink = s.tx
+  // The six chips by seat: outline, orange, teal, dark, orange, outline (the frame's own pairs).
+  const SEAT = [
+    { line: true }, { bg: s.chips[1].bg, fg: s.bg }, { bg: s.chips[0].bg, fg: s.bg },
+    { bg: s.chips[3].bg, fg: s.tx }, { bg: s.chips[4].bg, fg: s.bg }, { line: true },
+  ]
+  return (
+    <div style={{
+      position: 'relative', width: '100%', aspectRatio: s.mob ? '390 / 750' : s.narrow ? '768 / 750' : '16 / 8.33',
+      maxHeight: s.heroH, overflow: 'hidden', color: ink,
+      display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+      padding: `${px(s.narrow ? 20 : 27)} ${padX} ${px(56)}`,
+      background: `radial-gradient(ellipse 60% 55% at 80% 85%, ${orange}24 0%, ${orange}00 70%), ${s.bg}`,
+    }}>
+      <div aria-hidden style={{ position: 'absolute', inset: 0, opacity: 0.55 }}>
+        <Photo s={s} backdrop style={{ objectPosition: (s.narrow && s.imagePos) || undefined }} />
+      </div>
+      <div aria-hidden style={{ position: 'absolute', inset: 0, background: SCRIM.lattice, pointerEvents: 'none' }} />
+      <div aria-hidden style={{
+        position: 'absolute', inset: 0, pointerEvents: 'none',
+        backgroundImage: `url("${s.dotField}")`, backgroundSize: '100% 100%',
+      }} />
+
+      <div style={{
+        position: 'relative', ...row('0px', { justifyContent: 'space-between', minHeight: px(46) }),
+        visibility: menu?.open ? 'hidden' : undefined,
+      }}>
+        <LatticeBurger s={s} color={ink} menu={menu} k={k} />
+        <BracketButton s={s} to={s.bookTo} k={k} />
+      </div>
+
+      {s.showBadge === 'show' && s.latticeDisc && (
+        <span aria-hidden style={{
+          position: 'absolute', pointerEvents: 'none',
+          top: px(114.5), right: `calc(${s.surplus} + ${px(s.mob ? 18 : tab ? 24.12 : 46)})`,
+          width: px(s.latticeDisc.discW), height: px(s.latticeDisc.discH), background: ink,
+          WebkitMaskImage: `url("${s.latticeDisc.disc}")`, maskImage: `url("${s.latticeDisc.disc}")`,
+          WebkitMaskSize: '100% 100%', maskSize: '100% 100%',
+        }} />
+      )}
+
+      <div style={{ position: 'relative', ...col(px(28)) }}>
+        <div style={s.mob
+          ? col(px(32), { alignItems: centred ? 'center' : 'flex-start' })
+          : row(px(32), { alignItems: 'flex-end', justifyContent: centred ? 'center' : 'flex-start' })}>
+          <div style={{
+            position: 'relative', flex: 'none', width: card, height: card, boxSizing: 'border-box',
+            borderRadius: px(20), border: `1px solid ${ink}`, overflow: 'hidden', background: s.box1,
+          }}>
+            <Photo s={s} avatar initialsSize={Math.round(card / 3)} />
+          </div>
+          <div style={{
+            minWidth: 0, flex: s.mob ? undefined : '1 1 0', width: s.mob ? '100%' : undefined,
+            maxWidth: s.narrow ? undefined : px(915.72), paddingBottom: px(6.03),
+          }}>
+            <Title s={s} size={fitSz(s, s.dispXl, s.dispXl)} color={ink} inline lh={0.86}
+                   align={centred ? 'center' : 'left'} style={{ letterSpacing: '0.004em' }} />
+          </div>
+        </div>
+        {s.showTags === 'show' && (
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: px(8), justifyContent: centred ? 'center' : 'flex-start' }}>
+            {s.tagChips.map((c, i) => {
+              const seat = SEAT[i % SEAT.length]
+              const fg = seat.line ? ink : seat.fg
+              return (
+                <span key={i} style={{
+                  ...row(px(8)), height: px(26), padding: `0 ${px(11)}`, boxSizing: 'border-box',
+                  borderRadius: s.radiusChip, whiteSpace: 'nowrap', background: seat.bg, color: fg,
+                  boxShadow: seat.line ? `inset 0 0 0 1px ${ink}` : undefined,
+                  fontFamily: s.ui, fontSize: s.chip, lineHeight: 1.18, letterSpacing: '0.04em', textTransform: 'uppercase',
+                }}>
+                  <span aria-hidden style={{ width: px(5), height: px(5), background: fg, flex: 'none' }} />
+                  {c.label}
+                </span>
+              )
+            })}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
 // v0 — Header layout 1 · Hero (§10.2 reference design)
 //
 // Full-bleed photograph under a bottom-weighted scrim: the nav rides the top
@@ -1957,6 +2111,7 @@ function NavBar({ s, colour, pill, glass: glassOn, menu }) {
 // in the upper right. This is the one section that breaks the root padding —
 // see the `bleed` flag on the root.
 function HeaderV0({ s, menu }) {
+  if (s.lattice) return <LatticeHero s={s} menu={menu} />
   const centred = s.align === 'centre'
   // Both reference frames are transcribed verbatim (§5.5). 768: 30px gutters,
   // a 144px portrait card, identity stacked 40/24/36/30. 390: 10px gutters, a
@@ -3808,10 +3963,11 @@ function HeaderV3({ s, menu }) {
         {/* Scheme 3's `sem/bg` — `s.ac` — off the floor to a transparent stop
             in Scheme 1's `sem/bg` at the top, the frame's own two stops.
             Editorial's Scheme 3 `sem/bg` is the seat's own ink, and Pop's
-            the seat's own pink. */}
+            the seat's own pink; Lattice's placeholder card fades to its own #111,
+            since its `s.ac` is the pale ink. */}
         <div aria-hidden style={{
           position: 'absolute', inset: 0,
-          background: `linear-gradient(0deg, ${ed || pop ? s.bg : s.ac} 0%, #15180F00 100%)`,
+          background: `linear-gradient(0deg, ${ed || pop || s.lattice ? s.bg : s.ac} 0%, #15180F00 100%)`,
         }} />
 
         {/* NavBar's Lime capsule is this frame's `Frame 49` — the same Figma

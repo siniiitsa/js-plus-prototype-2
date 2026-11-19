@@ -80,7 +80,7 @@ frame's aspect assume the old numbers, so section 1 re-measures them (open quest
 | # | Cat | Desktop node | Size | Tablet node | Size | Mobile node | Size | Composition (from the pictures) · predicted twin | Status |
 |---|---|---|---|---|---|---|---|---|---|
 | 0 | *foundation* | `1:306` | — | `1:8953` | — | `1:9934` | — | `THEMES[5]`, ramp, faces, photos, `s.lattice`, dot field | done `812453b` |
-| 1 | `header` | `1:308` | 1440 × 750 | `1:8955` | 768 × 750 | `1:9936` | 390 × 750 | Full-bleed photo, dot field, wordmark + inline nav + Book Now, a dotted-ellipse disc top-right, avatar card, kicker line, 120-ish-px title, six square chips · **Retro `HeaderV0`** (Lime's block as the twin of the card and chips) | open |
+| 1 | `header` | `1:308` | 1440 × 750 | `1:8955` | 768 × 750 | `1:9936` | 390 × 750 | Full-bleed photo, dot field, wordmark + inline nav + Book Now, a dotted-ellipse disc top-right, avatar card, kicker line, 120-ish-px title, six square chips · **Retro `HeaderV0`** (Lime's block as the twin of the card and chips) | done `TBD` |
 | 2 | `bio` | `1:386` | 1440 × 769 | `1:9019` | 768 × 939 | `1:9991` | 390 × 1050 | Grey `#D9D9D9`; three columns: `KM / BIO`, a stacked statement, a tall portrait, a vertical town, ABOUT copy; `[ 001 ] STRUCTURE · BIO_01` · **Lime's *Flanked portrait*** (`KM / BIO` and the reference line are removed copy, call 1) | open |
 | 3 | `media` | `1:419` | 1440 × 1057 | `1:9052` | 768 × 1404 | `1:10024` | 390 × 1422 | Dark; five-row numbered track list with art and play squares + a *Now playing* card with transport and a bar-code progress · **probably Retro's `v0` body re-laid** (Pop's plan describes it as five track rows with cover and play disc, a now-playing card with transport and progress, and a Soundcloud pill — this frame's inventory, untilted); **check against `Media`'s `v0` body before deciding** (open question 1) | open |
 | 4 | `gallery` | `1:588` | 1440 × 923 | `1:9221` | 768 × 1438 | `1:10193` | 390 × 1020 | Light; heading + four source rows (Gallery open, YouTube, Instagram, TikTok) left; viewer with caption pill, arrows, seven thumbnails, progress and `02 — 15` right · **Lime's gallery** | open |
@@ -460,6 +460,83 @@ This is "it runs", not "it passes the layout": the page's sections are still Ret
 `?t=` stamps normalised: **0 differing files**. Lattice renders at all three widths for all twelve categories with no console
 error, the title in `Archivo Lattice`.
 
+### Settled in section 1 — the header (2026-11-19)
+
+**Verdicts on the three things the session was asked to decide.**
+
+1. **The dot field is vector, and it is not a lattice.** The brief called it a regular lattice sheared ~1°. Measured off the
+   frames' 2x rasters (connected components, alpha-weighted centroids), the rows *bow*: the pitch runs 106 to 114 along one row
+   and the step 0.7 to 2.4 down it, so no `<pattern>` and no matrix reproduces it. Each width is therefore its own centroid set
+   (560 dots at 1440 × 750, 436 at 390, and 831 at 768 of which 483 show: the 768 frame is a CROP at 0.6703 of a wider canvas, so
+   the tablet set has the crop baked in, which was proved against the raster). `LATTICE_DOTS` in `data.js` (17 KB) holds them as
+   four buckets by dot area (`r`, `o`, and one path of zero-length subpaths in quarter-pixel ints, `viewBox w×4 by 3000`);
+   `latticeDotField(dev)` builds the data-URI SVG once per width, and `sectionVm` hands it over as `vm.dotField`. Checked against
+   the rasters at 2x: ink mass 1.00 / 0.98 / 1.00, 8-px block correlation .977 / .961 / .973. It is drawn as a
+   `pointer-events: none` layer over the photograph with `background-size: 100% 100%`, so it follows the hero at any canvas width.
+   The footer and testimonials' fields (open question 5) are not settled here; they are other sections' own sets.
+2. **The dotted disc is a raster.** Ring segmentation by connected components and by ray peaks, and a conic fit, all failed on
+   merged rings and gaps, so no vector was fitted. The 400 × 400 PNG is cropped to its ink (256 × 162) and held as a lossless WebP (14.5 KB,
+   `photos/lattice-disc.webp`, `LATTICE_ART` in `photos.js`) used as a **mask**, so the section inks it with `s.tx` and the
+   same file serves every ground. Drawn 128 × 81 at 1440 × 0.82 and as-is narrow, at `top: 114.5`, `right: 46 / 24.12 / 18`
+   (frame numbers). It never spins: the artwork is a still disc, so `badgeOptsFor` offers Lattice's layout 1 *Visible / Hidden*
+   as it does Lime and Editorial. `Hidden` removes it.
+3. **Hero 750 at every width, narrow only.** Desktop is unchanged (the canvas is the 1440 frame × 0.82 = 1180 × 614; the 750 frame
+   gives 615). At 768 and 390 the header is `768 / 750` and `390 / 750`, set by one line in `sectionVm`
+   (`if (T.name === 'Lattice' && cat === 'header' && Z.dev !== 'desktop') vm.heroH = 750`), because `heroH` is the `maxHeight` the
+   aspect ratio meets. `WIDE.heroH`, `SPOT_ASPECT` and `preview.jsx` are **untouched**: the picker, the stage and the setup cards
+   all draw the desktop hero, whose aspect Lattice shares with the other five, so open question 3 closes without moving them.
+
+**The block.** `HeaderV0` returns `LatticeHero` under `s.lattice`; no other template's code path moves (digest, below). It is
+a new composition that reuses `Title`, `Photo` and `fitSz` and draws its own disc, so it needs no `SealBadge` arm. What it draws, every number the frame's (desktop
+× 0.82 through `k`):
+
+- A `#111` ground with a warm radial glow at the lower right (`onScheme[1].activeBg` at 14%), the photograph at .55 in a wrapper,
+  `SCRIM.lattice` (`#111` .55 → .15 at 40% → .9) and the dot field. Block means against the frame agree to 1–3 counts of 255 in
+  the middle rows at all three widths.
+- **The bar** is the hamburger on the left and a bracket-cornered Book Now on the right (`BracketButton`: mono caps label and
+  arrow between four 9 × 9 corner marks, 130 × 44; `LatticeBurger`: three 2px bars 20 wide in a 46 box whose ink starts 13 in).
+  The frame's tablet and mobile masters put the hamburger on the *right* and keep a wordmark with a rule; the standing
+  header-nav removals win (hamburger left, no wordmark). **The desktop bar stands 5.7 canvas px lower than the frame's**
+  (`27` frame px of top padding where tablet and mobile keep the frame's `20`): the builder's section toolbar (`right 8`,
+  `top 8`, 99 × 31) covers the label's centre at the frame's height, and a click on Book Now opened nothing (inline-probe
+  MISSING). Tablet clears it. `menuColours` seats the open panel on `s.bg` / `s.tx`, its links in `labelLg`, its own Book Now
+  the same bracket; verified at 390.
+- **The card** is 194 (radius 20, a 1px `s.tx` inside ring), the name beside it at 128 (105 on the canvas), `lh 0.86`, bottom
+  aligned to the card with the frame's 6.03 under it (the kicker row is gone, so the column is the name alone). At 390 the card
+  stands over the name. Under the name, six **square chips** (3px, 26 high, a `■` marker): outline, orange, teal, dark, orange,
+  outline, off `vm.tagChips` on the `vm.chips` seats; the outline is an inset `boxShadow`, not a border.
+- **The title** is `Archivo Lattice`, uppercase (`Title`'s `textTransform` list now includes `s.lattice`). The alias is 1.8% narrower than the frame's
+  face in ink (895 against 879 at 1440), so the tracking is the frame's −0.01em plus 0.0141em, **+0.004em**, which lands the
+  ink on the frame's (left and baseline exact). `latticeEms` was measured at no tracking, so the fit adds the same
+  0.004em per glyph (`sectionVm`'s title face), or "RAVENSCROFT" broke mid-word at the exact-fit size.
+  `TITLE_SITES.Lattice[0]`: base 105 / 79 / 51, `lh` .86, one wrapping run, W 751 / 489.8 / 342, R 614 / 750 / 750, no `bs`, no
+  `room` (the name never drops under the card). Measured: the seed is one line at 1440 and two at 768 and 390; four stress names
+  hold the two-line budget and shrink past it, never overflow, and the floor holds at half (hyphenated one-word names break at
+  the hyphen, as they do in every template).
+
+**Fields.** `FIELDS.header`: `badgeMode` `Lattice: [0, 3]`, `badgeText` `Lattice: [3]` (13), `heroCta` / `faceTitle` / `faceBody` /
+`cardLine` `Lattice: [1]` / `[2]` for the placeholder cards, `align` `Lattice: [0]` (centre is implemented), `title` cap 80.
+`INLINE_OFF`: `Lattice.{0..3}.header.kicker` and `.location`. Caps for the card-2 and card-3 fields are Pop's, **not measured for
+Lattice** (owed to the layout 2 and 3 passes).
+
+**The four cards.** Layouts 2–4 render `HeaderV1`–`V3` in Lattice tokens and are legible at all three widths: no Lattice frame
+exists for them (open question 2 stays open). One fix: `HeaderV3`'s floor fade ended in `s.ac`, which is the pale ink under
+Scheme 8, so the white name stood on a pale band; it ends in `s.bg` as Editorial's and Pop's do. Still owed to the later layout
+passes: card 4's avatar ring is Lime's green, and the face card and chips are Lime's.
+`pickHeader` needed nothing (the page fold, `pageLayout` and `pageOrder` are theme-agnostic); the modal's four named cards render
+live.
+
+**Tooling.** `scripts/page-check.mjs`'s burger detector took a 26 px span; it now takes 25–50 and three children, for Lattice's
+46 px hit area (re-run on Retro: burger 1 → 11 links, no errors).
+
+**Exit proof.** `digest.mjs` 0,1,2,3,4 on the HEAD worktree against the working tree (taken twice, after the last source
+edit too), ports normalised: **0 differing files of 720**; the positive control is that the old tree answers no
+`latticeDotField`. `inline-probe` (`--theme Lattice --layout 1 --width 1440,768 --cat header --check`) PASS, 8 slots hit at each width,
+2 off (the ledgered kicker and location); `photo-probe` PASS, filled and `--blank`; `focus-probe --prime` PASS (12 controls);
+`limits.mjs header --seeds` 0 over caps; `page-check.mjs Lattice 0`: Book Now scrolls to the form, every menu link scrolls and
+closes, the 390 burger opens (1 → 11 links), no errors, no overflow. In the builder: six templates, Lattice's stage and tile are
+the live hero, the modal shows four named cards, card 1 opens the editor on the Lattice page.
+
 ### Inherited and used
 
 - `sectionVm`'s scheme seat (`SCHEMES_OF`, `flatScheme`, `s.onScheme[n]`) from Editorial and Pop; `THEME_RAMP` from Lime and Pop.
@@ -476,7 +553,7 @@ error, the title in `Archivo Lattice`.
    record that the page's layout-1 composition for Lattice is its own.
 2. **Layouts 2–4 of Lattice** are placeholders. Is there a Batch 2 frame for them, and are they the same template?
    (This plan does not need the answer; the setup modal's cards 2–4 do render.)
-3. **Hero height 750 at every width.** `WIDE.heroH` (614 at desktop × 0.82, then 1024 and 844), `SPOT_ASPECT`, the
+3. ~~**Hero height 750 at every width.**~~ *Settled in section 1: narrow-only 750 behind `lattice`; desktop and the picker aspect unchanged.* **(was)** `WIDE.heroH` (614 at desktop × 0.82, then 1024 and 844), `SPOT_ASPECT`, the
    picker frame and the setup cards all assume the old tablet and mobile heights. Decide in section 1: a Lattice
    override of those numbers, or the frame wins and the card aspect follows.
 4. **Does the frame bind a second palette for the teal** (`#5B8E9B`-ish, the pricing card, the chips, the map

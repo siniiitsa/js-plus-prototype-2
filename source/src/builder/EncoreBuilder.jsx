@@ -64,10 +64,10 @@ import {
   catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldSeed, HEADING_3, HEADING_4, fieldReach, fieldShown, identityFieldsFor, identityHint, INLINE_OFF, PHOTO_OFF, INLINE_HEAD, INLINE_MARKED, INLINE_PART, INLINE_LINES, inlineRule, fieldCap, colCaps, identityCap, sealCap, capExcess, numeralLen, clampCapped, clampContent, legacyContent, clampIdentity, copyrightOf, formHeading3, extUrl, youtubeEmbed, youtubeThumb, youtubeParts, youtubeWatch, youtubeChannel, urlProblem, emailProblem, emailAddr, songTags, repChips,
   tierFeats, priceParts, priceCuts, blankRow, SONG_KEYS, repSetsOf, repSetLine, TRACK_KEYS, uploadedAudio, GIG_KEYS, gigDayOk, gigWeekday, gigStatus, gigStamp, MIN_YEAR, gigPart, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
   layoutChoices, designCount, designOf, pageLayout, pageOrder, pageRows, videoDesign, videoStartArch,
-  VIDEOS, VIDEO_SEED, VIDEO_KEYS, videoPlayable, videoSeedDesc, VIDEO_ALL, COLUMN_SPLIT, bebasEms, antonEms, gloockEms, titanEms, latticeEms, frauncesEms, titleFitK,
+  VIDEOS, VIDEO_SEED, VIDEO_KEYS, videoPlayable, videoSeedDesc, VIDEO_ALL, COLUMN_SPLIT, bebasEms, antonEms, gloockEms, titanEms, latticeEms, frauncesEms, titleFitK, latticeDotField,
   headerLayout, headerLayoutLabel, layoutLabel, setupHeaderCount,
 } from './data.js'
-import { defaultImage, defaultImages, defaultTrackArt, seedFocus, RETRO_TEXTURE } from './photos.js'
+import { defaultImage, defaultImages, defaultTrackArt, seedFocus, RETRO_TEXTURE, LATTICE_ART } from './photos.js'
 
 /* ------------------------------------------------------------------ *
  * §5.5 Axis B — canvas device preview sizing
@@ -869,6 +869,15 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   vm.grainSrc = T.name === 'Retro' || T.name === 'Grunge' || T.name === 'Editorial' ? RETRO_TEXTURE.grain : undefined
   vm.mapSrc = vm.designed ? RETRO_TEXTURE.map : undefined
   vm.mapRadialSrc = vm.designed ? RETRO_TEXTURE.mapRadial : undefined
+  // Lattice's dot field and dotted disc (plans/lattice/layout-1.md, section 1): the
+  // field is the width's own dot set as an SVG data URI, the disc a WebP mask the
+  // section inks. Its hero is 750 tall at the two narrow widths as well, where the
+  // other five draw 1024 and 844; the desktop number (614 = 750 x .82) already agrees.
+  if (T.name === 'Lattice') {
+    vm.dotField = latticeDotField(Z.dev)
+    vm.latticeDisc = LATTICE_ART
+    if (cat === 'header' && Z.dev !== 'desktop') vm.heroH = 750
+  }
 
   // §4.8 — `navSections` is `{ cat, label }`, the label being the visitor's
   // word for the section (`navLabel()`, §4.3a) and never the sidebar's, and a
@@ -961,7 +970,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // the least. Retro has no `navFace`, and gets none here, since its other
   // branches test whether `navNameEms` is set; this reads Fraunces on its own.
   if (cat === 'header') {
-    const face = navFace ?? frauncesEms
+    // Lattice's title is set 0.004em open (LatticeHero), which its table (measured at no tracking) lacks.
+    const face = T.name === 'Lattice' ? (x) => latticeEms(x) + 0.004 * [...x].length : (navFace ?? frauncesEms)
     const words = vm.brand.split(/\s+/).filter(Boolean).map((w) => face(w))
     ;[vm.titleK, vm.titleFloor] = titleFitK(T.name, d, Z.dev, words, face(' '), pageW)
   }
