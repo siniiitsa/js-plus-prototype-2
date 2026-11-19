@@ -4326,7 +4326,119 @@ function HeaderV5({ s }) {
 // A tilted photo card held between two columns of small orange labels: the
 // section index and headline on the left, the prose and credit on the right.
 // Both flanks collapse under the card on tablet and mobile.
+// Lattice layout 1 (1:386 · 1:9019 at 768 · 1:9991 at 390), the bio. It is not Lime's
+// Flanked portrait re-inked: where Lime's middle is one arch-topped photograph with
+// an inner glow and a seal, this is a plain 20-radius portrait with a rail beside it
+// (a teal square, the town set vertical, a hairline), and the dotted disc is a white
+// mark in `mix-blend-mode: difference` over the portrait's lower-left corner, drawn at
+// desktop alone (the 768 and 390 masters clip it to nothing). The frame's `KM / BIO`
+// mark and its `[ 001 ] Structure · Bio_01` line are removed copy (user call,
+// 2026-11-19), so the heading stands alone in its flank, centred in the column at
+// desktop. Desktop is the frame's 12-column grid (89.83 columns, 24 gaps): the flank takes
+// columns 1-4, the portrait and its rail 5-8 and the About copy 10-12. Every size is the frame's (desktop x 0.82 through `u`; 768 and 390 verbatim);
+// the ramp's own keys carry the type, the heading a raw 77.76 / 48 / 38 (no token),
+// stacked a word a line by its `min-content` width; the labels and body are the frame's raw 12 / 11 / 16
+// (x 0.82), where the ramp rounds them to 10 / 9 / 13 and would wrap the paragraph a line early. The dot field is the frame's, hung off
+// the section's foot as the root's own background (a node of its own would be a picture the
+// character-cap probe counts every long paragraph as meeting).
+function LatticeBio({ s }) {
+  const tab = isTablet(s)
+  const k = s.narrow ? 1 : 0.82
+  const u = (v) => `${Math.round(v * k * 100) / 100}px`
+  const ink = s.tx
+  const lab = (size, extra) => ({
+    fontFamily: s.mono, fontSize: size, lineHeight: 1.2, letterSpacing: '0.04em',
+    textTransform: 'uppercase', color: ink, ...extra,
+  })
+  const hz = s.mob ? 38 : tab ? 48 : 77.76 * k
+  const heading = (
+    <div style={col('0', {
+      justifyContent: s.narrow ? 'flex-start' : 'center', alignItems: 'flex-start', minWidth: 0,
+      containerType: 'inline-size', flex: s.narrow ? undefined : 1,
+      // The frame spaces `KM / BIO`, the head and the reference line apart (the head's top is
+      // 221.05 in a 657 column); both rows are removed, so their heights stand as padding and
+      // the seeded head keeps its seat (centring alone would sit it 7.5 px high).
+      ...(!s.narrow && { padding: `${u(32.77)} 0 ${u(14.38)}` }),
+    })}>
+      <h2 style={{
+        margin: 0, width: 'min-content', fontFamily: s.display, fontWeight: 500, lineHeight: 1,
+        fontSize: s.titleWordEms ? `min(${hz}px, calc(100cqi / ${s.titleWordEms}))` : `${hz}px`,
+        letterSpacing: '0.004em', textTransform: 'uppercase', color: ink,
+      }}>{s.title}</h2>
+    </div>
+  )
+  const rail = (
+    <div style={col('0', {
+      flex: 'none', width: u(24), boxSizing: 'border-box', padding: `${u(8)} 0`,
+      alignItems: 'center', justifyContent: 'space-between',
+    })}>
+      <span aria-hidden style={{ width: u(8), height: u(8), background: s.chips[0].bg, flex: 'none' }} />
+      {s.location && (
+        <span style={lab(u(11), { writingMode: 'vertical-rl', transform: 'rotate(180deg)', whiteSpace: 'nowrap' })}>{s.location}</span>
+      )}
+      <span aria-hidden style={{ width: '1px', height: u(180), background: ink, flex: 'none' }} />
+    </div>
+  )
+  const media = (
+    <div style={row(u(16), { alignItems: 'stretch', height: s.narrow ? '600px' : u(657), width: '100%', minWidth: 0, position: 'relative' })}>
+      <div style={{ flex: 1, minWidth: 0, position: 'relative', borderRadius: u(20), overflow: 'hidden', background: s.box2 }}>
+        <div style={{ position: 'absolute', inset: 0 }}>
+          <Photo s={s} initialsSize={54} />
+        </div>
+      </div>
+      {rail}
+      {!s.narrow && s.showBadge === 'show' && s.latticeDisc && (
+        <span aria-hidden style={{
+          position: 'absolute', left: u(-56.2), top: u(565.3), pointerEvents: 'none',
+          width: u(s.latticeDisc.discW), height: u(s.latticeDisc.discH), background: '#FFFFFF', mixBlendMode: 'difference',
+          WebkitMaskImage: `url("${s.latticeDisc.disc}")`, maskImage: `url("${s.latticeDisc.disc}")`,
+          WebkitMaskSize: '100% 100%', maskSize: '100% 100%',
+        }} />
+      )}
+    </div>
+  )
+  const about = (
+    <div style={col('0', { justifyContent: 'space-between', minWidth: 0, alignSelf: 'stretch', ...(s.mob ? { gap: '9.96px' } : { flex: 1 }) })}>
+      <div style={col(s.mob ? '6px' : u(16))}>
+        <span style={lab(u(12))}>About</span>
+        <p style={{
+          margin: 0, fontFamily: s.body, fontSize: u(16), lineHeight: 1.2, color: ink, whiteSpace: 'pre-line',
+        }}>{s.bioP1}</p>
+      </div>
+      <div style={{ borderTop: `1px solid ${ink}`, boxSizing: 'border-box', minHeight: u(33), padding: `${u(14)} 0 ${u(3.6)}` }}>
+        <span style={lab(u(12), { display: 'block', overflowWrap: 'anywhere' })}>{s.roleLine}</span>
+      </div>
+    </div>
+  )
+  return (
+    <>
+      <div style={{ position: 'relative' }}>
+        {s.mob ? (
+          <div style={col('28px')}>{heading}{media}{about}</div>
+        ) : tab ? (
+          <div style={col('36px')}>
+            {heading}
+            <div style={row('24px', { alignItems: 'stretch' })}>
+              <div style={{ flex: '1 1 0', minWidth: 0, display: 'flex' }}>{media}</div>
+              <div style={{ flex: '1 1 0', minWidth: 0, display: 'flex', flexDirection: 'column' }}>{about}</div>
+            </div>
+          </div>
+        ) : (
+          <div style={{
+            display: 'grid', gridTemplateColumns: 'repeat(12, minmax(0, 1fr))', columnGap: u(24), alignItems: 'stretch',
+          }}>
+            <div style={{ gridColumn: '1 / span 4', display: 'flex', flexDirection: 'column' }}>{heading}</div>
+            <div style={{ gridColumn: '5 / span 4' }}>{media}</div>
+            <div style={{ gridColumn: '10 / span 3', display: 'flex', flexDirection: 'column' }}>{about}</div>
+          </div>
+        )}
+      </div>
+    </>
+  )
+}
+
 function Bio({ s }) {
+  if (s.v0 && s.lattice) return <LatticeBio s={s} />
   // Lime layout 1 (964:58589 · 986:39877 at 768 · 986:39890 at 390) is the same
   // Figma component as Retro's below, in Lime's mode — but it is not the same
   // tree re-tokened. The middle column is a different composition (one arch-
@@ -30579,6 +30691,12 @@ export default function EncoreSection({ s }) {
       color: darkMap ? s.mapFg : limeLight ? s.bg : s.tx,
       fontFamily: s.body, padding: bleed ? 0 : s.pad,
       position: 'relative', overflowX: popClip || popFootClip ? 'clip' : undefined, overflowY: popFootClip ? 'clip' : undefined,
+      // Lattice's layout-1 bio hangs its dot field off the root's foot as the root's own
+      // background, under everything and in no node of its own (LatticeBio).
+      ...(s.bi && s.v0 && s.lattice && s.bioDots && {
+        backgroundImage: `url("${s.bioDots.uri}")`, backgroundRepeat: 'no-repeat',
+        backgroundPosition: 'left bottom', backgroundSize: `100% ${s.bioDots.h}px`,
+      }),
       boxShadow: grungeRule ? `inset 0 0 0 1px ${s.inactiveLine}` : editorialRule ? `inset 0 0 0 1px ${s.stroke2}`
         : popMediaRule ? `inset 0 4.1px 0 ${s.onScheme[1].stroke2}, inset 0 -4.1px 0 ${s.onScheme[1].stroke2}`
         : popVideoRule ? `inset 0 -${s.narrow ? 10 : 8.2}px 0 ${s.stroke2}` : undefined,

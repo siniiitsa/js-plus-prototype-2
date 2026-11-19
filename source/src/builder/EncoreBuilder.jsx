@@ -64,7 +64,7 @@ import {
   catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldSeed, HEADING_3, HEADING_4, fieldReach, fieldShown, identityFieldsFor, identityHint, INLINE_OFF, PHOTO_OFF, INLINE_HEAD, INLINE_MARKED, INLINE_PART, INLINE_LINES, inlineRule, fieldCap, colCaps, identityCap, sealCap, capExcess, numeralLen, clampCapped, clampContent, legacyContent, clampIdentity, copyrightOf, formHeading3, extUrl, youtubeEmbed, youtubeThumb, youtubeParts, youtubeWatch, youtubeChannel, urlProblem, emailProblem, emailAddr, songTags, repChips,
   tierFeats, priceParts, priceCuts, blankRow, SONG_KEYS, repSetsOf, repSetLine, TRACK_KEYS, uploadedAudio, GIG_KEYS, gigDayOk, gigWeekday, gigStatus, gigStamp, MIN_YEAR, gigPart, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
   layoutChoices, designCount, designOf, pageLayout, pageOrder, pageRows, videoDesign, videoStartArch,
-  VIDEOS, VIDEO_SEED, VIDEO_KEYS, videoPlayable, videoSeedDesc, VIDEO_ALL, COLUMN_SPLIT, bebasEms, antonEms, gloockEms, titanEms, latticeEms, frauncesEms, titleFitK, latticeDotField,
+  VIDEOS, VIDEO_SEED, VIDEO_KEYS, videoPlayable, videoSeedDesc, VIDEO_ALL, COLUMN_SPLIT, bebasEms, antonEms, gloockEms, titanEms, latticeEms, frauncesEms, titleFitK, latticeDotField, latticeBioDots,
   headerLayout, headerLayoutLabel, layoutLabel, setupHeaderCount,
 } from './data.js'
 import { defaultImage, defaultImages, defaultTrackArt, seedFocus, RETRO_TEXTURE, LATTICE_ART } from './photos.js'
@@ -563,6 +563,14 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     const z = (v) => (v == null ? vm.padY : `${Z.dev === 'desktop' ? Math.round(v * 0.82 * 10) / 10 : v}px`)
     if (inset) vm.pad = `${z(inset[0])} ${vm.padX} ${z(inset[1])}`
   }
+  // Lattice's layout-1 bio stands on its frames' own insets (1:386 · 1:9019 · 1:9991):
+  // 56 top and foot at every width (x 0.82 on desktop, 45.92), and the content 48.96 x
+  // 0.82 = 40.15 in at 1440, 26.11 at 768 and 24 at 390, where `padX` is 45.92 / 30 / 10.
+  // The surplus is the published tab's, as the hero's.
+  if (d === 0 && cat === 'bio' && T.name === 'Lattice') {
+    const v = Z.dev === 'desktop' ? '45.92px' : '56px'
+    vm.pad = `${v} calc(${vm.surplus} + ${Z.dev === 'desktop' ? '40.15px' : Z.dev === 'tablet' ? '26.11px' : '24px'}) ${v}`
+  }
   // Layout 2's sections stand on their own frames' insets (JP-094, user call,
   // 2026-10-02, reversing Retro's "fit the card, not the frame height" for the
   // templates whose pages are Lime's tree, Pop's included). The page frames stack their
@@ -876,6 +884,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   if (T.name === 'Lattice') {
     vm.dotField = latticeDotField(Z.dev)
     vm.latticeDisc = LATTICE_ART
+    if (cat === 'bio') {
+      const bd = latticeBioDots(Z.dev)
+      vm.bioDots = { uri: bd.uri, h: +(bd.h * (Z.dev === 'desktop' ? 0.82 : 1)).toFixed(2) }
+    }
     if (cat === 'header' && Z.dev !== 'desktop') vm.heroH = 750
   }
 
@@ -1424,6 +1436,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   vm.titleWordEms = T.name === 'Lime' || T.name === 'Editorial' || T.name === 'Pop'
     ? +Math.max(0, ...vm.title.split(/\s+/).map(navFace)).toFixed(3)
     : undefined
+  // Lattice's layout-1 bio fits its head to the flank the same way; its alias sets the face 0.004em open.
+  if (T.name === 'Lattice' && cat === 'bio' && d === 0) {
+    vm.titleWordEms = +Math.max(0, ...vm.title.split(/\s+/).map((w) => latticeEms(w) + 0.004 * [...w].length)).toFixed(3)
+  }
   vm.testiStars = cv('stars', TESTI_STARS)
   // Layout 3's stat card prints it with a literal "/5" beside it, and an
   // emptied one gives the seat back to the review count (JP-065). Uncased, as
