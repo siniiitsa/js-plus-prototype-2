@@ -13144,9 +13144,9 @@ function Pricing({ s }) {
 // hardcode. Lives here rather than in data.js because the page count depends on
 // the search and chip state, which only this file holds. Returns the labels and
 // the index of the active one *within them*, which is what Pager highlights.
-function pageWindow(n, active, narrow) {
+function pageWindow(n, active, narrow, keepN) {
   if (n <= 1) return { labels: [], at: 0 }
-  const keep = narrow ? 3 : 5          // numbered buttons at most
+  const keep = keepN ?? (narrow ? 3 : 5)   // numbered buttons at most (`keepN`: Lattice's frames draw four, 1 2 3 … 20)
   const page = active + 1              // the row is 1-based
   // The first, the last and the current page are never dropped; the rest fills
   // outwards from the current one until the row is as long as it may be.
@@ -13311,6 +13311,155 @@ function Pager({ s, colour, fill, frame = {} }) {
   )
 }
 
+// Lattice's layout-1 repertoire (1:673 · 1:9306 · 1:10278: 1440 / 768 / 390; desktop numbers x 0.82
+// through `u`, the narrow two verbatim). A block of its own (plans/lattice/layout-1.md, section 5):
+// the inventory is Lime's (a heading beside a search field, a chip row, numbered songs in two
+// columns, a pager) and no leaf is. Each song is a 1px-ruled 3px-radius box 66 tall, 16 apart (28
+// at 390); the search is a bare 52-tall 3px box with a mono hint; the chips are square outlined
+// boxes, the active one filled ink; the pager is square 44 / 46 boxes with Arial arrows and
+// zero-padded numerals. A page is twelve songs at every width (two columns of six at 768, one of
+// twelve at 390), which `Repertoire` computes (`perPage`, `columns`) and hands over in `g` along
+// with the search, chip and pager handlers, so the published repertoire is the one seam in a new
+// picture. The frame's `[ 004 ] REPERTOIRE` eyebrow is not drawn: no field holds it, and the
+// standing removals hold (call 1). Sizes are the frame's raw ones, not the ramp's (which rounds
+// 12 / 11 / 20 x 0.82 to 10 / 9 / 13). The warm glow is the root's own background, not a node.
+function LatticeRepertoire({ s, g }) {
+  const { title, q, onQuery, active, onChip, columns, shown, labels, at, onPage, onStep, noSongs } = g
+  const tab = isTablet(s)
+  const k = s.narrow ? 1 : 0.82
+  const u = (v) => `${Math.round(v * k * 100) / 100}px`
+  const ink = s.tx
+  const mono = (size, extra) => ({
+    fontFamily: s.mono, fontSize: size, lineHeight: 1.2, letterSpacing: '0.04em', textTransform: 'uppercase', ...extra,
+  })
+  const hz = s.mob ? 38 : tab ? 59 : 95.04 * k
+
+  // The count, in the display face at 95.04 / 59 / 38, line 0.9. A word wider than the column is
+  // fitted to it (`vm.titleWordEms`, the bio's rule); words otherwise wrap between themselves.
+  const heading = String(title || '').trim() ? (
+    <div style={{ containerType: 'inline-size', width: '100%', minWidth: 0, flex: s.narrow ? undefined : '1 1 0' }}>
+      <h2 style={{
+        margin: 0, fontFamily: s.display, fontWeight: 500, lineHeight: 0.9, letterSpacing: '0.004em', textTransform: 'uppercase',
+        color: ink, fontSize: s.titleWordEms ? `min(${hz}px, calc(100cqi / ${s.titleWordEms}))` : `${hz}px`,
+      }}>{title}</h2>
+    </div>
+  ) : null
+
+  // The hint is typed in capitals, so the box's placeholder (index.css, ink at .45, which is
+  // the frame's #757575 on #111) and the canvas's span read the same without a transform on what
+  // the visitor types.
+  const hint = 'SEARCH SONGS OR ARTISTS…'
+  const hintType = mono(u(12), { textTransform: 'none' })
+  const search = (
+    <div style={row(0, {
+      boxSizing: 'border-box', height: u(52), flex: 'none', width: s.mob ? '100%' : u(420), padding: `0 ${u(16)}`,
+      border: `1px solid ${ink}`, borderRadius: s.radiusSm, overflow: 'hidden', color: ink,
+      ...(!heading && !s.narrow ? { marginLeft: 'auto' } : null),
+    })}>
+      {s.live ? (
+        <input
+          value={q} placeholder={hint} aria-label="Search songs or artists"
+          onChange={(e) => onQuery(e.target.value)}
+          style={{ ...hintType, color: ink, flex: 1, minWidth: 0, border: 'none', outline: 'none', background: 'transparent', padding: 0 }}
+        />
+      ) : (
+        <span style={{ ...hintType, opacity: 0.45, minWidth: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{hint}</span>
+      )}
+    </div>
+  )
+
+  const chips = (
+    <div style={row(u(6), { flexWrap: 'wrap', rowGap: u(6) })}>
+      {s.repChips.map((f, i) => {
+        const on = i === active
+        return (
+          <span
+            key={i}
+            onClick={s.live ? () => onChip(i) : undefined}
+            style={{
+              ...mono(u(11)), boxSizing: 'border-box', height: u(44), padding: `0 ${u(14)}`, display: 'inline-flex', alignItems: 'center',
+              border: `1px solid ${ink}`, borderRadius: s.radiusSm, background: on ? ink : undefined, color: on ? s.bg : ink,
+              whiteSpace: 'nowrap', cursor: s.live ? 'pointer' : undefined,
+            }}
+          >{f.label}</span>
+        )
+      })}
+    </div>
+  )
+
+  // The frame's number sits in a 40 box (22 at 390) and the title starts 16 (20) past it; the
+  // artist stands 16 (10) after the title and the row is padded 20 (12) across. A title that
+  // cannot stand on one line wraps between its words (768's *I Wanna Dance*): the row is 66 or the
+  // title's, ten above and below, whichever is taller. The title never breaks inside a word: the
+  // frame sets 768's *September* at 18 to keep it whole beside *Earth, Wind & Fire*, which a fixed
+  // 20 cannot, so here the artist gives way and wraps under itself instead.
+  const song = (t) => (
+    <div key={t.n} style={row(0, {
+      boxSizing: 'border-box', minHeight: u(66), padding: `${u(10)} ${u(s.mob ? 12 : 20)}`,
+      border: `1px solid ${ink}`, borderRadius: s.radiusSm,
+    })}>
+      <span style={mono(u(11), { flex: 'none', width: u(s.mob ? 22 : 40), marginRight: u(s.mob ? 20 : 16), color: s.text3, whiteSpace: 'nowrap' })}>
+        {String(t.n).padStart(3, '0')}
+      </span>
+      <span style={{
+        flex: '1 1 0', minWidth: 'min-content', fontFamily: s.body, fontWeight: 400, fontSize: u(20), lineHeight: 1.1, color: ink,
+        overflowWrap: 'break-word',
+      }}>{t.title}</span>
+      <span style={mono(u(11), {
+        flex: '0 1 auto', minWidth: 0, maxWidth: '55%', marginLeft: u(s.mob ? 10 : 16), color: s.text3,
+        textAlign: 'right', overflowWrap: 'anywhere',
+      })}>{t.artist}</span>
+    </div>
+  )
+
+  const list = shown.length === 0 ? (
+    <span style={mono(u(12), { opacity: 0.6 })}>{noSongs ? 'No songs yet.' : 'No songs match that.'}</span>
+  ) : (
+    <div style={{
+      display: 'grid', alignItems: 'start', columnGap: u(24),
+      gridTemplateColumns: columns.length > 1 ? 'minmax(0, 1fr) minmax(0, 1fr)' : 'minmax(0, 1fr)',
+    }}>
+      {columns.map((cs, ci) => <div key={ci} style={col(u(s.mob ? 28 : 16), { minWidth: 0 })}>{cs.map(song)}</div>)}
+    </div>
+  )
+
+  // Square 3px boxes: the arrows 44 (38 at 390) and the pages 46, six apart, the current page
+  // filled ink. The arrows are Arial 13.33 in a span of their own, the numerals zero-padded.
+  const sq = (key, child, { on, end, onClick }) => (
+    <span key={key} onClick={onClick} style={{
+      boxSizing: 'border-box', flex: 'none', height: u(end ? 44 : 46), ...(end ? { width: u(s.mob ? 38 : 44) } : { minWidth: u(46) }),
+      border: `1px solid ${ink}`, borderRadius: s.radiusSm, background: on ? ink : undefined, color: on ? s.bg : ink,
+      display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: onClick ? 'pointer' : undefined,
+      ...(end ? { fontFamily: 'Arial, Helvetica, sans-serif', fontSize: u(13.333), lineHeight: 'normal' } : mono(u(11))),
+    }}>{child}</span>
+  )
+  const pager = labels.length > 0 ? (
+    <div style={row(u(6), { flexWrap: 'wrap', rowGap: u(6) })}>
+      {sq('prev', '←', { end: true, onClick: onStep && (() => onStep(-1)) })}
+      {labels.map((p, i) => sq(`p${i}`, /^\d+$/.test(p) ? p.padStart(2, '0') : p, {
+        on: i === at, onClick: onPage && p !== '…' ? () => onPage(p) : undefined,
+      }))}
+      {sq('next', '→', { end: true, onClick: onStep && (() => onStep(1)) })}
+    </div>
+  ) : null
+
+  return (
+    <div style={col(u(32))}>
+      {/* Desktop stands the field on the heading's foot at the row's right; 768 and 390 stack it
+          24 under the heading, 420 wide at 768 and the measure at 390. */}
+      <div style={s.narrow
+        ? col(u(24), { alignItems: 'flex-start' })
+        : row(u(24), { alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'nowrap' })}>
+        {heading}
+        {search}
+      </div>
+      {chips}
+      {list}
+      {pager}
+    </div>
+  )
+}
+
 // v0 — Repertoire layout 1 · Two-column dense (§10.2 reference design)
 //
 // The reference frames stand the section on cream under a torn beige edge: a
@@ -13365,7 +13514,9 @@ function Repertoire({ s }) {
     const blush = s.retro ? '#EDC6B3' : s.soft2
     // Twelve to a page on desktop, six on both narrow frames — the counts the
     // reference frames show.
-    const perPage = s.narrow ? 6 : 12
+    // Lattice's frames draw twelve a page at every width (two columns of six at 768, one of twelve
+    // at 390), so it is the one template whose narrow page is not six.
+    const perPage = s.narrow && !s.lattice ? 6 : 12
     // The chip index, clamped: the row is derived from the artist's tags, so a
     // tag they delete can leave `chip` past the end of it.
     const active = s.live ? Math.min(chip, s.repChips.length - 1) : 0
@@ -13390,9 +13541,9 @@ function Repertoire({ s }) {
     // page offset — not its place on the screen. Both narrow frames run the
     // whole six-song page down one column.
     const half = Math.ceil(shown.length / 2)
-    const columns = (s.narrow ? [shown] : [shown.slice(0, half), shown.slice(half)])
+    const columns = (s.narrow && !(s.lattice && !s.mob) ? [shown] : [shown.slice(0, half), shown.slice(half)])
       .map((cs, ci) => cs.map((t, i) => ({ ...t, n: pg * perPage + ci * half + i + 1 })))
-    const { labels, at } = pageWindow(pages, pg, s.mob)
+    const { labels, at } = pageWindow(pages, pg, s.mob, s.lattice ? 4 : undefined)
 
     // Lime — the same component in Lime's mode (964:58592 at 1440, 986:39881 at
     // 768, 986:39893 at 390), placed after the seam as the gallery's block is:
@@ -13448,6 +13599,18 @@ function Repertoire({ s }) {
     // rule crosses the root's top, and two stickers stand on it: a pink
     // lightning off the heading's end and a teal heart by the pager.
     if (s.limeTree) {
+      // Lattice's layout-1 repertoire is a block of its own (LatticeRepertoire), after the seam: the
+      // search, chip and pager state above is shared whole, and the block is the picture.
+      if (s.lattice) {
+        return <LatticeRepertoire s={s} g={{
+          title, q, active, columns, shown, labels, at,
+          noSongs: s.songs.length === 0,
+          onQuery: (v) => { setQ(v); setPage(0) },
+          onChip: (i) => { setChip(i); setPage(0) },
+          onPage: s.live ? (label) => setPage(Number(label) - 1) : undefined,
+          onStep: s.live ? (dir) => setPage(Math.max(0, Math.min(pages - 1, pg + dir))) : undefined,
+        }} />
+      }
       const grunge = s.grunge
       const ed = s.editorial
       const pop = s.pop
@@ -31065,6 +31228,11 @@ export default function EncoreSection({ s }) {
       // 42% x 38.5% ellipse at 85% / 60% of the section at all three widths), the root's own.
       ...(s.me && s.v0 && s.lattice && {
         backgroundImage: `radial-gradient(ellipse 42% 38.5% at 85% 60%, ${s.glow}24, ${s.glow}00)`,
+      }),
+      // …and the repertoire's warm glow: the frames' one radial gradient, 60% x 55% of the section at
+      // 15% / 20%, orange at 14% to nothing at 70%, the same at all three widths (the root's own).
+      ...(s.re && s.v0 && s.lattice && {
+        backgroundImage: `radial-gradient(ellipse 60% 55% at 15% 20%, ${s.text3}24, ${s.text3}00 70%)`,
       }),
       boxShadow: grungeRule ? `inset 0 0 0 1px ${s.inactiveLine}` : editorialRule ? `inset 0 0 0 1px ${s.stroke2}`
         : popMediaRule ? `inset 0 4.1px 0 ${s.onScheme[1].stroke2}, inset 0 -4.1px 0 ${s.onScheme[1].stroke2}`

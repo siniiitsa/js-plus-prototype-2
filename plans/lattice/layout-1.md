@@ -393,6 +393,18 @@ After section 11 and session 12, in one session (the lists in `../lime/layout-1.
   an early return above those hooks would change the hook count on a theme switch. The twin prediction (*Lime's gallery*) was half right: the
   seam is Lime's, the picture is not.
 
+- **repertoire (section 5, 2026-11-19): *new own-tree block* `LatticeRepertoire`, not Lime's *Two-column dense* block (nor Pop's / Grunge's / Editorial's
+  widenings of it).** Diffed against the `if (s.limeTree)` block in `Repertoire` and `notes/repertoire.md`, frames `1:673` · `1:9306` · `1:10278`. The
+  *inventory* is Lime's (a heading beside a search field, a chip row, two columns of numbered songs, a pager), and **no leaf is**: Lime's rows are flush on a
+  bottom hairline, here each song is a full 1px-ruled 3px-radius box, 66 tall, 16 apart (28 at 390); Lime's search is an 80-radius pill round a glyph tile,
+  here a bare 52-tall 3px box with a mono hint; Lime's chips are filled pills, here square outlined 44-tall boxes with the active one filled ink; Lime's pager is
+  55 x 54 round arrows and 87-wide pills (`Pager`'s Lime branch), here 44 / 46 square 3px boxes with Arial arrows and zero-padded numerals; the artist is
+  an orange mono label right-aligned in the row, not the `· Artist` suffix. And the **paging differs**: the frames draw twelve songs a page at all three widths
+  (two columns of six at 768, one column of twelve at 390), where `perPage` is 6 on both narrow frames for every other template. The glow is a
+  percentage radial gradient (60% x 55% at 15% / 20%, `#ED6D40` at 14% to 0 at 70%) at all three widths, the root's own. So it is a block of its own, standing in
+  `Repertoire` **after the seam** (`active`, `filtered`, `pg`, `shown`, `columns`, `labels`, `at` stay `Repertoire`'s and go over in `g`). The twin prediction
+  (*Lime's Two-column dense*) was half right again, as the gallery's was: the seam is Lime's, the picture is not.
+
 ### Settled in session 0 — the foundation (2026-11-19)
 
 **Calls (user, via AskUserQuestion):** call 1, every standing removal holds (see *The decisions*, call 1); call 2, the display

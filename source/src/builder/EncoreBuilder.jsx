@@ -587,6 +587,13 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     const v = Z.dev === 'desktop' ? '78.72px' : Z.dev === 'tablet' ? '77px' : '58px'
     vm.pad = `${v} calc(${vm.surplus} + ${Z.dev === 'desktop' ? '40.15px' : Z.dev === 'tablet' ? '26.11px' : '24px'}) ${v}`
   }
+  // …and the repertoire's (1:673 · 1:9306 · 1:10278): 138.54 top and foot at 1440 (x 0.82, 113.6), 116.77 at
+  // 768 and 58 at 390, the same content insets. The frames' eyebrow row is not drawn (call 1), so the head
+  // starts where it did and the section is 42 shorter.
+  if (d === 0 && cat === 'repertoire' && T.name === 'Lattice') {
+    const v = Z.dev === 'desktop' ? '113.6px' : Z.dev === 'tablet' ? '116.77px' : '58px'
+    vm.pad = `${v} calc(${vm.surplus} + ${Z.dev === 'desktop' ? '40.15px' : Z.dev === 'tablet' ? '26.11px' : '24px'}) ${v}`
+  }
   // Layout 2's sections stand on their own frames' insets (JP-094, user call,
   // 2026-10-02, reversing Retro's "fit the card, not the frame height" for the
   // templates whose pages are Lime's tree, Pop's included). The page frames stack their
@@ -1453,7 +1460,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     ? +Math.max(0, ...vm.title.split(/\s+/).map(navFace)).toFixed(3)
     : undefined
   // Lattice's layout-1 bio fits its head to the flank the same way; its alias sets the face 0.004em open.
-  if (T.name === 'Lattice' && (cat === 'bio' || cat === 'media' || cat === 'gallery') && d === 0) {
+  if (T.name === 'Lattice' && (cat === 'bio' || cat === 'media' || cat === 'gallery' || cat === 'repertoire') && d === 0) {
     vm.titleWordEms = +Math.max(0, ...vm.title.split(/\s+/).map((w) => latticeEms(w) + 0.004 * [...w].length)).toFixed(3)
   }
   vm.testiStars = cv('stars', TESTI_STARS)

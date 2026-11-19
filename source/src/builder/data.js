@@ -2972,7 +2972,10 @@ export const FIELDS = {
     // stays empty at every layout.
     { k: 'heading', l: 'Heading',
       chars: { Retro: [14, 31, 20, 17], Lime: [11, 32, 19, 15], Grunge: [13, 38, 25, 20], Editorial: [8, 21, 12, 10],
-        Pop: [11, 25, 17, 10] } },
+        Pop: [11, 25, 17, 10],
+        // Lattice layout 1 measured 2026-11-19 (limits.mjs repertoire --themes=5 --designs=0): 12 at 1440 and 390,
+        // 17 at 768. The other three layouts are Pop's until their passes.
+        Lattice: [12, 25, 17, 10] } },
     // `in` is per field, and every layout reads the songs, so the hint says
     // which column each layout leaves out (JP-107): the reviews' date shape.
     // Session 5 of the character-limits pass: a tag is a chip, and at layout 3
@@ -2984,10 +2987,12 @@ export const FIELDS = {
       cols: {
         title: { Retro: [17, 25, 25, 25], Lime: [44, 24, 17, 22], Grunge: [33, 26, 23, 26], Editorial: 17, Pop: 17 },
         artist: { Retro: [32, 25, null, 41], Lime: [73, 25, null, 37], Grunge: [74, 25, null, 42],
-          Editorial: [35, 25, null, 18], Pop: [18, 25, null, 19] },
+          Editorial: [35, 25, null, 18], Pop: [18, 25, null, 19],
+          // Lattice layout 1: 22 at 768 and 390 (one line beside a 17-character title); 1440 holds 44.
+          Lattice: [22, 25, null, 19] },
         length: { Retro: [null, null, 23], Lime: [null, null, 17], Grunge: [null, null, 22], Editorial: [null, null, 17],
           Pop: [null, null, 14] },
-        tags: { list: ',', chars: 18, count: { Editorial: [3, 4, 3, 3], '*': [4, 4, 3, 3] } },
+        tags: { list: ',', chars: 18, count: { Editorial: [3, 4, 3, 3], Lattice: [3, 4, 3, 3], '*': [4, 4, 3, 3] } },
       },
       hint: 'Tags become the filter chips above the list. Layout 4 draws no chips: it indexes the whole list A–Z instead. '
           + 'Layout 3 groups the songs into one set per tag and shows each song’s length in place of its artist; '
@@ -3642,6 +3647,7 @@ export const INLINE_OFF = {
   'Editorial.0.repertoire.songs.length': 'not drawn: only layout 3 prints a song’s length',
   'Editorial.0.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
   'Pop.0.repertoire.songs.length': 'not drawn: only layout 3 prints a song’s length',
+  'Lattice.0.repertoire.songs.length': 'not drawn: only layout 3 prints a song’s length',
   'Pop.0.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
   'Retro.1.header.kicker': 'not drawn: the layout-2 header prints no kicker (a shared identity key; the bio’s role line and the form print it)',
   'Retro.1.header.tags': 'not drawn: the layout-2 header prints no tag chips (a shared identity key; the bio prints them)',
