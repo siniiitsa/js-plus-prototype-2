@@ -2,7 +2,7 @@
 // Every literal here is normative: do not round, substitute or "improve".
 
 /* ------------------------------------------------------------------ *
- * §4.1 THEMES — 5 templates
+ * §4.1 THEMES — 6 templates
  * ------------------------------------------------------------------ */
 
 // Grunge's distress (plans/grunge/display-face.md, candidate A): a 240 × 240
@@ -485,6 +485,182 @@ export const THEMES = [
       },
     },
   },
+  // Lattice — the sixth template, from the Batch 2 file (JustPay — Batch 2,
+  // ORILFywSzuadscu6RzskCW; plans/lattice/layout-1.md). That file reuses the
+  // SAAS variable library, so its schemes are the library's: Scheme 1 is the
+  // theme's own (the bio and the map stand on it), and the dark `#111` sections
+  // (header, media, repertoire, pricing, form, footer) stand on Scheme 8, the
+  // gallery and the calendar on 2 and the testimonials on 5 (SCHEMES_OF). Every
+  // colour below was resolved through the alias chain off the library's
+  // "2 · Scheme" collection, not off the frames' flat `get_variable_defs`.
+  //
+  // The faces: the frames' display family is "Lattice Display Medium", a
+  // custom face the file names but does not carry. It is stood in by Archivo at
+  // wdth 113, wght 500 (user call, 2026-11-19: measured on eight strings at
+  // 0.993 of the frames' ink widths at wdth 112.5, 1.018 at 115), through the
+  // `Archivo Lattice` alias that index.css pins to that instance, so a section
+  // names no axis. `faceK` stays 1. The labels, the chips and every UI string are
+  // Azeret Mono (font/label, font/ui), the body Archivo Regular (font/body).
+  // The frames type every display and mono string in capitals through
+  // `textCase`, so casing is 'title' and a block uppercases per site.
+  {
+    name: 'Lattice',
+    sub: 'Archivo wide · mono grid',
+    display: "'Archivo Lattice', 'Archivo', sans-serif",
+    label: "'Azeret Mono', monospace",
+    ui: "'Azeret Mono', monospace",
+    mono: "'Azeret Mono', monospace",
+    body: "'Archivo', sans-serif",
+    casing: 'title',
+    // Display tracking is -0.01em and the mono labels' +0.04em, stated per site
+    // (the text styles carry them; the theme key is the shared default).
+    dls: '0px',
+    // radius/card 20 and radius/chip 3, border/hairline 1 (Primitives mode
+    // 187:0, read through the file). The frames' buttons are bracket-cornered
+    // and square, and their chips 3, so btnR and radiusSm take the chip's 3
+    // until a section reads its own control (radius/control and radius/pill are
+    // not in this file's collection).
+    radius: '20px',
+    radiusSm: '3px',
+    btnR: '3px',
+    bw: '1px',
+    radiusChip: '3px',
+    // Scheme 1's bg / text1 / text2 — the grey the bio and the map stand on.
+    palette: ['#DADADA', '#111111', '#111111'],
+    // Scheme 1's tag1…tag7 backgrounds. tag/4/bg is the one token the file's
+    // collection does not hold; every scheme's tag4 is inferred from its
+    // tag/4/text (a light ink means a dark chip), except Scheme 8's, which is
+    // the header's own Archive chip, #262626.
+    tags: ['#5C939F', '#ED6D40', '#5C939F', '#262626', '#ED6D40', '#111111', '#111111'],
+    // The semantic colours the palette cannot derive, Scheme 1's. The file's
+    // collection holds box 1–3, active, stroke 1–2, text 3 and the tags; it
+    // holds no glow, hl or inactive pair, which are inferred (glow the active
+    // ground, hl the ink, the inactive pair the box and the ink) and are re-read
+    // by the section that draws them.
+    sem: {
+      box1: '#E7E7E7',                      // sem/box/1
+      box2: '#CFCFCF',                      // sem/box/2
+      box3: '#C4C4C4',                      // sem/box/3
+      glow: '#ED6D40',                      // inferred: sem/active/bg
+      activeBg: '#ED6D40',                  // sem/active/bg
+      activeFg: '#111111',                  // sem/active/text
+      inactiveBg: '#E7E7E7',                // inferred: sem/box/1
+      inactiveFg: '#111111',                // inferred: sem/text/1
+      inactiveLine: '#E7E7E7',              // inferred: sem/box/1
+      stroke1: '#111111',                   // sem/stroke/1
+      stroke2: '#262626',                   // sem/stroke/2
+      hl: '#111111',                        // inferred: sem/text/1
+      text3: '#36626B',                     // sem/text/3 — the teal ink on the light grounds
+      // sem/tag/1, /4 and /5 text are the three the file holds; the rest fall
+      // to contrast().
+      tagFg: ['#111111', undefined, undefined, '#F2F2F2', '#111111', undefined, undefined],
+    },
+    // Schemes 2–9 of the same collection, in Scheme 1's shape. A section is
+    // seated on one through SCHEMES_OF.Lattice and a nested node reads
+    // `s.onScheme[n]`; 3, 4, 6, 7 and 9 seat nothing at layout 1 but the pricing
+    // cards (3 dark, 5 orange, 4 teal) and the chips read them. Each row is the
+    // table of the 2026-11-19 read, so a later session need not re-read it.
+    schemes: {
+      // Scheme 2, #F2F2F2 — the gallery and the calendar.
+      2: {
+        palette: ['#F2F2F2', '#111111', '#111111'],
+        tags: ['#ED6D40', '#5C939F', '#262626', '#ED6D40', '#111111', '#111111', '#5C939F'],
+        sem: {
+          box1: '#FAFAFA', box2: '#EBEBEB', box3: '#E0E0E0', glow: '#ED6D40',
+          activeBg: '#ED6D40', activeFg: '#111111',
+          inactiveBg: '#FAFAFA', inactiveFg: '#111111', inactiveLine: '#FAFAFA',
+          stroke1: '#111111', stroke2: '#262626', hl: '#111111', text3: '#36626B',
+          tagFg: ['#111111', undefined, undefined, '#111111', '#ECECEC', undefined, undefined],
+        },
+      },
+      // Scheme 3, #262626 — the pricing's dark card.
+      3: {
+        palette: ['#262626', '#F2F2F2', '#F2F2F2'],
+        tags: ['#5C939F', '#F2F2F2', '#ED6D40', '#111111', '#111111', '#5C939F', '#ED6D40'],
+        sem: {
+          box1: '#303030', box2: '#1E1E1E', box3: '#161616', glow: '#5C939F',
+          activeBg: '#5C939F', activeFg: '#111111',
+          inactiveBg: '#303030', inactiveFg: '#F2F2F2', inactiveLine: '#303030',
+          stroke1: '#111111', stroke2: '#5C939F', hl: '#F2F2F2', text3: '#F2F2F2',
+          tagFg: ['#111111', undefined, undefined, '#ECECEC', '#ECECEC', undefined, undefined],
+        },
+      },
+      // Scheme 4, #5C939F teal — the pricing's teal card.
+      4: {
+        palette: ['#5C939F', '#111111', '#111111'],
+        tags: ['#262626', '#ED6D40', '#111111', '#262626', '#5C939F', '#ED6D40', '#F2F2F2'],
+        sem: {
+          box1: '#6BA1AD', box2: '#528792', box3: '#4A7C86', glow: '#ED6D40',
+          activeBg: '#ED6D40', activeFg: '#111111',
+          inactiveBg: '#6BA1AD', inactiveFg: '#111111', inactiveLine: '#6BA1AD',
+          stroke1: '#111111', stroke2: '#262626', hl: '#111111', text3: '#111111',
+          tagFg: ['#F2F2F2', undefined, undefined, '#F2F2F2', '#111111', undefined, undefined],
+        },
+      },
+      // Scheme 5, #ED6D40 orange — the testimonials, and the pricing's orange card.
+      5: {
+        palette: ['#ED6D40', '#111111', '#111111'],
+        tags: ['#ED6D40', '#111111', '#111111', '#5C939F', '#F2F2F2', '#5C939F', '#262626'],
+        sem: {
+          box1: '#F07F57', box2: '#E25F31', box3: '#C4542C', glow: '#5C939F',
+          activeBg: '#5C939F', activeFg: '#111111',
+          inactiveBg: '#F07F57', inactiveFg: '#111111', inactiveLine: '#F07F57',
+          stroke1: '#111111', stroke2: '#5C939F', hl: '#111111', text3: '#111111',
+          tagFg: ['#111111', undefined, undefined, '#111111', '#111111', undefined, undefined],
+        },
+      },
+      // Scheme 6, teal. Seats nothing at layout 1.
+      6: {
+        palette: ['#5C939F', '#111111', '#111111'],
+        tags: ['#111111', '#111111', '#F2F2F2', '#ED6D40', '#5C939F', '#262626', '#ED6D40'],
+        sem: {
+          box1: '#6BA1AD', box2: '#528792', box3: '#3F6F79', glow: '#ED6D40',
+          activeBg: '#ED6D40', activeFg: '#000000',
+          inactiveBg: '#6BA1AD', inactiveFg: '#111111', inactiveLine: '#6BA1AD',
+          stroke1: '#111111', stroke2: '#ED6D40', hl: '#111111', text3: '#111111',
+          tagFg: ['#F2F2F2', undefined, undefined, '#111111', '#111111', undefined, undefined],
+        },
+      },
+      // Scheme 7, orange. Seats nothing at layout 1.
+      7: {
+        palette: ['#ED6D40', '#111111', '#111111'],
+        tags: ['#111111', '#5C939F', '#ED6D40', '#5C939F', '#262626', '#F2F2F2', '#111111'],
+        sem: {
+          box1: '#E7E7E7', box2: '#E25F31', box3: '#D8562A', glow: '#5C939F',
+          activeBg: '#5C939F', activeFg: '#111111',
+          inactiveBg: '#E7E7E7', inactiveFg: '#111111', inactiveLine: '#E7E7E7',
+          stroke1: '#111111', stroke2: '#F2F2F2', hl: '#111111', text3: '#111111',
+          tagFg: ['#F2F2F2', undefined, undefined, '#111111', '#F2F2F2', undefined, undefined],
+        },
+      },
+      // Scheme 8, #111111 — the page's dark ground: the header, the media, the
+      // repertoire, the pricing, the form and the footer. The header's resolved
+      // mode (579:2).
+      8: {
+        palette: ['#111111', '#F2F2F2', '#F2F2F2'],
+        tags: ['#5C939F', '#ED6D40', '#5C939F', '#262626', '#ED6D40', '#F2F2F2', '#F2F2F2'],
+        sem: {
+          box1: '#1B1B1B', box2: '#0B0B0B', box3: '#000000', glow: '#5C939F',
+          activeBg: '#5C939F', activeFg: '#111111',
+          inactiveBg: '#1B1B1B', inactiveFg: '#F2F2F2', inactiveLine: '#1B1B1B',
+          stroke1: '#F2F2F2', stroke2: '#5C939F', hl: '#F2F2F2', text3: '#ED6D40',
+          tagFg: ['#111111', undefined, undefined, '#F2F2F2', '#111111', undefined, undefined],
+        },
+      },
+      // Scheme 9, grey like 1. Seats nothing.
+      9: {
+        palette: ['#DADADA', '#111111', '#111111'],
+        tags: ['#ED6D40', '#5C939F', '#262626', '#ED6D40', '#111111', '#111111', '#5C939F'],
+        sem: {
+          box1: '#E7E7E7', box2: '#CFCFCF', box3: '#C4C4C4', glow: '#ED6D40',
+          activeBg: '#ED6D40', activeFg: '#111111',
+          inactiveBg: '#E7E7E7', inactiveFg: '#111111', inactiveLine: '#E7E7E7',
+          stroke1: '#111111', stroke2: '#262626', hl: '#111111', text3: '#36626B',
+          tagFg: ['#111111', undefined, undefined, '#111111', '#ECECEC', undefined, undefined],
+        },
+      },
+    },
+  },
 ]
 
 // Which Figma colour scheme a section stands on, where its frames stand it on
@@ -556,6 +732,23 @@ export const SCHEMES_OF = {
     // 977:14603) on 4 (blue). The footer's instances state no scheme, so it
     // keeps row 0's 3.
     3: { header: 3, bio: 3, media: 2, gallery: 3, repertoire: 3, testimonials: 4 },
+  },
+  // Lattice's layout-1 page (1:306 · 1:8953 · 1:9934), read off each section's
+  // `explicitVariableModes` in the file, the same at all three widths: the
+  // bio and the map state Scheme 1 (the theme's own, so no entry); the gallery
+  // and the calendar Scheme 2 (#F2F2F2); the testimonials Scheme 5 (orange);
+  // and the six dark sections state none, so they resolve the page's Scheme 8
+  // (579:2, #111111), as the header's `resolvedVariableModes` shows. `video`
+  // has no frame; it is seated on 8 beside the media it follows. Layouts 2–4 of
+  // Lattice have no frames yet and are placeholders (plans/lattice/layout-1.md,
+  // *Open questions* 2), so they take row 0's seats: the dark and light bands
+  // then fall where the page's do, and a header card's whole-page write reads
+  // as one page.
+  Lattice: {
+    0: { header: 8, media: 8, video: 8, repertoire: 8, pricing: 8, form: 8, footer: 8, gallery: 2, calendar: 2, testimonials: 5 },
+    1: { header: 8, media: 8, video: 8, repertoire: 8, pricing: 8, form: 8, footer: 8, gallery: 2, calendar: 2, testimonials: 5 },
+    2: { header: 8, media: 8, video: 8, repertoire: 8, pricing: 8, form: 8, footer: 8, gallery: 2, calendar: 2, testimonials: 5 },
+    3: { header: 8, media: 8, video: 8, repertoire: 8, pricing: 8, form: 8, footer: 8, gallery: 2, calendar: 2, testimonials: 5 },
   },
 }
 
@@ -837,6 +1030,73 @@ export const frauncesEms = (text) => {
   return chs.reduce((w, ch, i) => w + (FRAUNCES_EM[ch] ?? 0.7) + (i ? FRAUNCES_KERN[chs[i - 1] + ch] ?? 0 : 0), 0)
 }
 
+// Lattice's display face: the `Archivo Lattice` alias (Archivo at wdth 113, wght
+// 500, index.css), which stands in for the frames' "Lattice Display Medium".
+// Generated by `scripts/ems-table.mjs "Archivo Lattice"` the way Fraunces' was:
+// spans at 1000px in the loaded face, untracked, then every pair's width less its
+// two advances. The frames type every display string in capitals, so the sum is
+// taken over the upper-cased text (the lowercase advances stay for a caller that
+// wants them). The face's own tracking (-0.01em) is the caller's.
+const LATTICE_EM = {
+  0: 0.664, 1: 0.603, 2: 0.659, 3: 0.665, 4: 0.644, 5: 0.664, 6: 0.666, 7: 0.622, 8: 0.671,
+  9: 0.666, ' ': 0.269, '!': 0.291, '"': 0.398, '#': 0.66, '&': 0.804, '\'': 0.213, '(': 0.347,
+  ')': 0.347, '+': 0.673, ',': 0.292, '-': 0.376, '.': 0.292, '/': 0.301, ':': 0.305, '?': 0.632,
+  A: 0.8, B: 0.798, C: 0.841, D: 0.837, E: 0.775, F: 0.701, G: 0.909, H: 0.849, I: 0.305, J: 0.63,
+  K: 0.787, L: 0.628, M: 0.976, N: 0.849, O: 0.908, P: 0.762, Q: 0.908, R: 0.82, S: 0.763,
+  T: 0.709, U: 0.835, V: 0.756, W: 1.06, X: 0.8, Y: 0.757, Z: 0.733, a: 0.64, b: 0.649, c: 0.623,
+  d: 0.649, e: 0.645, f: 0.352, g: 0.646, h: 0.638, i: 0.252, j: 0.25, k: 0.599, l: 0.252,
+  m: 0.988, n: 0.638, o: 0.66, p: 0.649, q: 0.649, r: 0.384, s: 0.588, t: 0.368, u: 0.638,
+  v: 0.575, w: 0.836, x: 0.597, y: 0.575, z: 0.563, '·': 0.377, '–': 0.565, '—': 1.13, '‘': 0.266,
+  '’': 0.266, '“': 0.454, '”': 0.454, 'é': 0.645, 'è': 0.645, 'ê': 0.645, 'ë': 0.645, 'á': 0.64,
+  'à': 0.64, 'â': 0.64, 'ä': 0.64, 'í': 0.252, 'ì': 0.252, 'î': 0.252, 'ï': 0.252, 'ó': 0.66,
+  'ò': 0.66, 'ô': 0.66, 'ö': 0.66, 'ú': 0.638, 'ù': 0.638, 'û': 0.638, 'ü': 0.638, 'ñ': 0.638,
+  'ç': 0.623, 'ß': 0.688, 'ø': 0.66, 'å': 0.64,
+}
+
+const LATTICE_KERN = {
+  ' Y': -0.061, '\'.': -0.055, '\',': -0.055, '\'A': -0.112, '\'J': -0.099, '’A': -0.112,
+  '’c': -0.066, '’d': -0.066, '’e': -0.066, '’g': -0.077, '’o': -0.066, '’q': -0.066, '’s': -0.066,
+  '’z': -0.045, '-0': 0.039, '-1': 0.039, '-2': 0.039, '-3': 0.039, '-4': 0.039, '-5': 0.039,
+  '-6': 0.039, '-V': -0.065, '-W': -0.065, '-X': -0.059, '-Y': -0.157, '-x': -0.035, '0-': 0.039,
+  '1-': 0.039, '3-': 0.039, '4-': 0.039, '5-': 0.039, '7.': -0.13, '7,': -0.13, '7-': -0.04,
+  '9-': 0.04, 'A\'': -0.112, 'A?': -0.035, 'AT': -0.11, 'AV': -0.044, 'AW': -0.045, 'AY': -0.093,
+  'Ay': -0.032, 'D.': -0.032, 'D,': -0.032, 'DX': -0.043, 'F ': -0.032, 'F.': -0.06, 'F,': -0.06,
+  'FA': -0.062, 'FJ': -0.081, 'FX': -0.032, 'FZ': -0.039, 'Fa': -0.035, 'Fc': -0.035, 'Fd': -0.035,
+  'Fe': -0.035, 'Fo': -0.035, 'Fq': -0.035, 'K ': -0.043, 'K-': -0.069, 'KA': -0.055, 'KC': -0.063,
+  'KG': -0.063, 'KJ': -0.039, 'KO': -0.063, 'KQ': -0.063, 'KT': -0.035, 'KV': -0.053, 'KW': -0.053,
+  'KY': -0.053, 'Ka': -0.041, 'Kc': -0.041, 'Kd': -0.041, 'Ke': -0.041, 'Ko': -0.041, 'Kq': -0.041,
+  'Ku': -0.041, 'Kv': -0.051, 'Kw': -0.051, 'Ky': -0.051, 'L\'': -0.131, 'L’': -0.131,
+  'L-': -0.063, 'L?': -0.06, 'LC': -0.04, 'LG': -0.04, 'LO': -0.04, 'LQ': -0.04, 'LT': -0.124,
+  'LU': -0.037, 'LV': -0.101, 'LW': -0.101, 'LX': -0.184, 'LY': -0.15, 'Lv': -0.04, 'Lw': -0.04,
+  'Ly': -0.04, 'O.': -0.032, 'O,': -0.032, 'OX': -0.043, 'P ': -0.046, 'P.': -0.09, 'P,': -0.09,
+  'PA': -0.06, 'PJ': -0.075, 'PX': -0.044, 'PZ': -0.03, 'Q.': -0.032, 'Q,': -0.032, 'QX': -0.043,
+  'RJ': -0.035, 'SY': -0.037, 'T.': -0.05, 'T,': -0.05, 'TA': -0.11, 'TJ': -0.123, 'Ta': -0.09,
+  'Tc': -0.09, 'Td': -0.09, 'Te': -0.09, 'Tm': -0.07, 'Tn': -0.07, 'To': -0.09, 'Tp': -0.07,
+  'Tq': -0.09, 'Tr': -0.069, 'Ts': -0.09, 'Tt': -0.04, 'Tu': -0.07, 'Tv': -0.032, 'Tw': -0.032,
+  'Tx': -0.032, 'Ty': -0.032, 'Tz': -0.032, 'V.': -0.172, 'V,': -0.172, 'V-': -0.065, 'VA': -0.044,
+  'VJ': -0.096, 'Va': -0.052, 'Vc': -0.052, 'Vd': -0.052, 'Ve': -0.052, 'Vo': -0.052, 'Vq': -0.052,
+  'Vs': -0.042, 'Vu': -0.042, 'Vx': -0.03, 'Vz': -0.035, 'W.': -0.172, 'W,': -0.172, 'W-': -0.065,
+  'WA': -0.045, 'WJ': -0.096, 'Wa': -0.052, 'Wc': -0.052, 'Wd': -0.052, 'We': -0.052, 'Wo': -0.052,
+  'Wq': -0.052, 'Ws': -0.042, 'Wu': -0.042, 'Wx': -0.03, 'Wz': -0.035, 'X-': -0.059, 'XC': -0.043,
+  'XG': -0.043, 'XO': -0.043, 'XQ': -0.043, 'XY': -0.03, 'Xc': -0.037, 'Xd': -0.037, 'Xe': -0.037,
+  'Xo': -0.037, 'Xq': -0.037, 'Xs': -0.032, 'Xt': -0.062, 'Xu': -0.03, 'Xv': -0.05, 'Xw': -0.05,
+  'Xx': -0.05, 'Xy': -0.05, 'Y ': -0.061, 'Y.': -0.217, 'Y,': -0.217, 'Y-': -0.157, 'YA': -0.093,
+  'YJ': -0.159, 'YS': -0.037, 'YX': -0.03, 'Ya': -0.117, 'Yc': -0.117, 'Yd': -0.117, 'Ye': -0.117,
+  'Yf': -0.063, 'Yg': -0.104, 'Ym': -0.083, 'Yn': -0.083, 'Yo': -0.117, 'Yp': -0.083, 'Yq': -0.117,
+  'Yr': -0.083, 'Ys': -0.105, 'Yt': -0.053, 'Yu': -0.082, 'Yv': -0.052, 'Yw': -0.052, 'Yx': -0.062,
+  'Yz': -0.07, 'Z-': -0.088, 'bx': -0.03, 'f.': -0.068, 'f,': -0.068, 'ff': -0.035, 'k ': -0.035,
+  'k-': -0.065, 'kc': -0.037, 'kd': -0.037, 'ke': -0.037, 'ko': -0.037, 'kq': -0.037, 'kx': -0.038,
+  'ox': -0.03, 'px': -0.03, 'r.': -0.103, 'r,': -0.103, 'v.': -0.13, 'v,': -0.13, 'w.': -0.13,
+  'w,': -0.13, 'x-': -0.035, 'xc': -0.03, 'xd': -0.03, 'xe': -0.03, 'xo': -0.03, 'xq': -0.03,
+  'y.': -0.13, 'y,': -0.13,
+}
+
+// A string's width in ems of the Lattice display face at its own size, in capitals.
+export const latticeEms = (text) => {
+  const chs = [...String(text).toUpperCase()]
+  return chs.reduce((w, ch, i) => w + (LATTICE_EM[ch] ?? 0.8) + (i ? LATTICE_KERN[chs[i - 1] + ch] ?? 0 : 0), 0)
+}
+
 /* ------------------------------------------------------------------ *
  * The header title's fit (plans/header-fit.md, user call 2026-11-18):
  * a long name is set smaller, gradually, until the title block fits the
@@ -1028,9 +1288,10 @@ export const NVAR = {
 // is what EncoreSection's root dispatches for any theme.
 export const headerFamily = (themeName) =>
   themeName === 'Lime' ? 'lime' : themeName === 'Grunge' ? 'grunge'
-    : themeName === 'Editorial' ? 'editorial' : themeName === 'Pop' ? 'pop' : 'photographic'
+    : themeName === 'Editorial' ? 'editorial' : themeName === 'Pop' ? 'pop'
+      : themeName === 'Lattice' ? 'lattice' : 'photographic'
 
-const HEADER_COUNT = { photographic: 6, lime: 4, grunge: 4, editorial: 4, pop: 4 }
+const HEADER_COUNT = { photographic: 6, lime: 4, grunge: 4, editorial: 4, pop: 4, lattice: 4 }
 
 export const headerVariants = (themeName) => HEADER_COUNT[headerFamily(themeName)]
 
@@ -1128,6 +1389,7 @@ const HEADER_NAMES = {
   grunge: PHOTOGRAPHIC_NAMES.slice(0, HEADER_COUNT.grunge),
   editorial: PHOTOGRAPHIC_NAMES.slice(0, HEADER_COUNT.editorial),
   pop: PHOTOGRAPHIC_NAMES.slice(0, HEADER_COUNT.pop),
+  lattice: PHOTOGRAPHIC_NAMES.slice(0, HEADER_COUNT.lattice),
 }
 
 export const headerLayout = (themeName, i) =>
@@ -3585,7 +3847,9 @@ const specAt = (spec, themeName, design) => {
   if (spec == null) return undefined
   if (typeof spec === 'number') return spec
   if (Array.isArray(spec)) return spec[design] ?? undefined
-  return specAt(spec[themeName] ?? spec['*'], themeName, design)
+  // Lattice reads Pop's row where a spec names neither it nor '*', until its own
+  // caps are measured (plans/lattice/layout-1.md, Session 12: `limits.mjs --themes=5`).
+  return specAt(spec[themeName] ?? spec['*'] ?? (themeName === 'Lattice' ? spec.Pop : undefined), themeName, design)
 }
 const isColObj = (spec) => spec != null && typeof spec === 'object' && !Array.isArray(spec) && 'chars' in spec
 // The resolved cap of a field or column: { chars, count, list } or null.

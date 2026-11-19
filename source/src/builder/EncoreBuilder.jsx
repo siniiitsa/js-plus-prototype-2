@@ -64,7 +64,7 @@ import {
   catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldSeed, HEADING_3, HEADING_4, fieldReach, fieldShown, identityFieldsFor, identityHint, INLINE_OFF, PHOTO_OFF, INLINE_HEAD, INLINE_MARKED, INLINE_PART, INLINE_LINES, inlineRule, fieldCap, colCaps, identityCap, sealCap, capExcess, numeralLen, clampCapped, clampContent, legacyContent, clampIdentity, copyrightOf, formHeading3, extUrl, youtubeEmbed, youtubeThumb, youtubeParts, youtubeWatch, youtubeChannel, urlProblem, emailProblem, emailAddr, songTags, repChips,
   tierFeats, priceParts, priceCuts, blankRow, SONG_KEYS, repSetsOf, repSetLine, TRACK_KEYS, uploadedAudio, GIG_KEYS, gigDayOk, gigWeekday, gigStatus, gigStamp, MIN_YEAR, gigPart, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
   layoutChoices, designCount, designOf, pageLayout, pageOrder, pageRows, videoDesign, videoStartArch,
-  VIDEOS, VIDEO_SEED, VIDEO_KEYS, videoPlayable, videoSeedDesc, VIDEO_ALL, COLUMN_SPLIT, bebasEms, antonEms, gloockEms, titanEms, frauncesEms, titleFitK,
+  VIDEOS, VIDEO_SEED, VIDEO_KEYS, videoPlayable, videoSeedDesc, VIDEO_ALL, COLUMN_SPLIT, bebasEms, antonEms, gloockEms, titanEms, latticeEms, frauncesEms, titleFitK,
   headerLayout, headerLayoutLabel, layoutLabel, setupHeaderCount,
 } from './data.js'
 import { defaultImage, defaultImages, defaultTrackArt, seedFocus, RETRO_TEXTURE } from './photos.js'
@@ -151,6 +151,24 @@ const THEME_RAMP = {
     mobile:  { dispXl: '46px',  dispLg: '36px',  dispMd: '28px', dispSm: '24px', title: '20px', list: '15px', labelLg: '14px', labelMd: '13px', labelSm: '12px', labelXs: '12px', bodyLg: '15px', bodyMd: '13px', bodySm: '12px', chip: '11px', eyebrow: '11px' },
     tablet:  { dispXl: '75px',  dispLg: '51px',  dispMd: '36px', dispSm: '29px', title: '22px', list: '16px', labelLg: '16px', labelMd: '14px', labelSm: '13px', labelXs: '14px', bodyLg: '15px', bodyMd: '13px', bodySm: '12px', chip: '11px', eyebrow: '12px' },
     desktop: { dispXl: '103px', dispLg: '67px',  dispMd: '37px', dispSm: '30px', title: '23px', list: '16px', labelLg: '20px', labelMd: '16px', labelSm: '13px', labelXs: '16px', bodyLg: '13px', bodyMd: '11px', bodySm: '10px', chip: '10px', eyebrow: '12px' },
+  },
+  // Lattice's mode, read off the three masters' text nodes (the file binds one
+  // flat size set at every width, so there is no per-Device token to resolve;
+  // plans/lattice/layout-1.md, *Conventions*): the display strings, the mono
+  // labels (a fixed 12 / 11 at every width) and the body copy (16 / 15, 18 / 20
+  // in the lists), desktop × 0.82 rounded, 768 and 390 verbatim. The display
+  // keys are the heads' sizes by section, since the frames state no token for
+  // them: dispXl the header's name (128 / 79 / 51), dispLg the repertoire's and
+  // the map's heads (95 / 59 / 38), dispMd pricing's head and prices (60 / 48 /
+  // 40), dispSm the calendar's, the form's and the footer's (40 / 32 / 26),
+  // title the plans' and tracks' names (30 / 27 / 25), list the track rows (24 /
+  // 24 / 18) and labelLg the map card's head (22 / 22 / 20). The bio's,
+  // media's, gallery's and testimonials' heads (77.76 / 74.88 / 43.2 and their
+  // narrow 48 / 38 / 35 / 29) sit between keys; their sessions write them.
+  Lattice: {
+    mobile:  { dispXl: '51px',  dispLg: '38px', dispMd: '40px', dispSm: '26px', title: '25px', list: '18px', labelLg: '20px', labelMd: '12px', labelSm: '11px', labelXs: '11px', bodyLg: '18px', bodyMd: '16px', bodySm: '15px', chip: '11px', eyebrow: '12px' },
+    tablet:  { dispXl: '79px',  dispLg: '59px', dispMd: '48px', dispSm: '32px', title: '27px', list: '24px', labelLg: '22px', labelMd: '12px', labelSm: '11px', labelXs: '11px', bodyLg: '18px', bodyMd: '16px', bodySm: '15px', chip: '11px', eyebrow: '12px' },
+    desktop: { dispXl: '105px', dispLg: '78px', dispMd: '49px', dispSm: '33px', title: '25px', list: '20px', labelLg: '18px', labelMd: '10px', labelSm: '9px',  labelXs: '9px',  bodyLg: '15px', bodyMd: '13px', bodySm: '12px', chip: '9px',  eyebrow: '10px' },
   },
 }
 
@@ -456,7 +474,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // template is designed since Pop's layout-1 pass, so it is true for all
     // five; TagChips' undesigned chip went with the flat family. A site only
     // some of them share stays a named pair, widened per site from the frame.
-    designed: T.name === 'Retro' || T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial' || T.name === 'Pop',
+    designed: T.name === 'Retro' || T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial' || T.name === 'Pop' || T.name === 'Lattice',
     // Grunge's four layout pages are the same components in a third mode,
     // Static Youth, so its decoration — at layout 1 torn black seams round its
     // textured bands, grain and the red seal, at layouts 2, 3 and 4 rings where
@@ -477,6 +495,11 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // folded into `limeTree` once the family closed (plans/pop/layout-4.md,
     // decision 2).
     pop: T.name === 'Pop',
+    // Lattice's layout-1 page is the same component trees again in a sixth mode
+    // (plans/lattice/layout-1.md): a Lime block widened to `limeTree` stands for
+    // it, and what only Lattice draws — the dot field, bracket corners, the
+    // dotted art, the square chips — goes behind this flag, widened per site.
+    lattice: T.name === 'Lattice',
     // The templates whose pages are Lime's component trees — all four designed
     // templates — so a Lime block a twin's frame shares is gated on this rather
     // than on a name at every site. Widened per site, from the frame, as each
@@ -485,7 +508,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // site the others do not share keeps `(s.lime || s.grunge)`, and one is
     // left (layout 2's gallery caption). Pop's layout-1 media steps out of it
     // (`&& !s.pop`), being Retro's body dressed.
-    limeTree: T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial' || T.name === 'Pop',
+    limeTree: T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial' || T.name === 'Pop' || T.name === 'Lattice',
     // Lime layout 3's footer (964:68684 · 984:10769 · 984:10800) stands on
     // Scheme 2's `sem/bg`, the olive `box1`, where layout 1's is the page
     // ground; its seal's disc and the Book pill's label and disc follow, each
@@ -898,7 +921,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // apart, which the em reading is at the cap — so it keeps 23/16 and passes
   // NavBar no `links` (plans/pop/layout-4.md, section 1).
   const navFace = T.name === 'Lime' ? bebasEms : T.name === 'Grunge' ? (x) => antonEms(x, 0) * 0.75
-    : T.name === 'Editorial' ? (x) => gloockEms(x) * 0.967 : T.name === 'Pop' ? (x) => titanEms(x) * 0.98 : null
+    : T.name === 'Editorial' ? (x) => gloockEms(x) * 0.967 : T.name === 'Pop' ? (x) => titanEms(x) * 0.98
+    : T.name === 'Lattice' ? latticeEms : null
   const navGapEm = T.name === 'Editorial' ? (d >= 1 ? 0 : 23 / 16) : T.name === 'Pop' ? (d === 1 || d === 2 ? 0 : 23 / 16)
     : T.name === 'Grunge' && d >= 1 ? 0 : 23 / 24
   vm.navEms = navFace
@@ -5692,7 +5716,7 @@ function AddComposer({ add, present, removed, pageD, themeIdx, artistName, ident
  * §6 Stage 1 — Template picker
  *
  * The app's first screen. One spotlight preview of the highlighted template,
- * its name above it and a filmstrip of all five below. Clicking the spotlight
+ * its name above it and a filmstrip of every template below. Clicking the spotlight
  * builds the page and opens the editor on it — there is no longer a stage
  * between the two.
  * ------------------------------------------------------------------ */

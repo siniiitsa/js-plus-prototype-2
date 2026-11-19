@@ -80,6 +80,10 @@ import popAvatar from './photos/pop-avatar.jpg'
 import popGallery1 from './photos/pop-gallery-1.jpg'
 import popGallery2 from './photos/pop-gallery-2.jpg'
 import popGallery4 from './photos/pop-gallery-4.jpg'
+import latticeHero from './photos/lattice-hero.jpg'
+import latticePortrait from './photos/lattice-portrait.jpg'
+import latticeBio from './photos/lattice-bio.jpg'
+import latticeAlt from './photos/lattice-alt.jpg'
 
 const REVIEWERS = [review1, review2, review3]
 
@@ -238,6 +242,31 @@ export const POP_PHOTOS = {
   pricing: REVIEWERS,
 }
 
+// Lattice's layout-1 frames (1:306 · 1:8953 · 1:9934, JustPay — Batch 2) are a
+// sixth shoot, and a small one: the whole page is four photographs, a teal and
+// orange portrait session with a projected kanji. In the frames' own names
+// (plans/lattice/layout-1.md, *Settled in session 0*): the hero (hash a55a2e2d,
+// FILL, 1536 × 1024, also a track cover and a thumbnail), the portrait
+// (40a976f3, the header's avatar card, the gallery's spotlight and two track
+// covers), the bio's (04a8339f) and a fourth (0cb3f486, the form's avatar and the
+// first track's cover, three thumbnails), every one a `FILL`, so a centred
+// cover. The frames' own 1536-wide JPEGs, unmodified (a re-encode at 74 came out larger). The
+// frames' other rasters (the dot fields, the dotted disc, the map card and the
+// calendar's torus) are art, not photography, and are the sections' own.
+//
+// The gallery strip is the frame's seven in the frame's order; the track covers
+// are the frame's five (RETRO_TRACK_ART's shape, Lattice's own pictures).
+export const LATTICE_PHOTOS = {
+  header: latticeHero,
+  bio: latticeBio,
+  // No frame draws the video; the hero stands in, as Retro's poster does.
+  video: latticeHero,
+  form: latticeAlt,
+  gallery: [latticeAlt, latticeBio, latticePortrait, latticeHero, latticePortrait, latticeAlt, latticeAlt],
+  pricing: REVIEWERS,
+}
+export const LATTICE_TRACK_ART = [latticeAlt, latticePortrait, latticeAlt, latticePortrait, latticeHero]
+
 // The seeded artwork for the media player's five track rows, in track order.
 //
 // These are the frames' own fills (964:58578 and Lime's 964:58590 share the five
@@ -332,6 +361,10 @@ const SEEDS = {
   Grunge: { photos: GRUNGE_PHOTOS, avatar: GRUNGE_HEADER_AVATAR, photo: grungeFormPhoto },
   Editorial: { photos: EDITORIAL_PHOTOS, avatar: EDITORIAL_HEADER_AVATAR, photo: editorialHero },
   Pop: { photos: POP_PHOTOS, avatar: POP_HEADER_AVATAR, avatars: { 3: POP_STACKED_AVATAR }, photo: popHero },
+  // The header's avatar card is the portrait (40a976f3, a FILL), the form's
+  // layout-2 stage the hero. `rowArt` is the track covers, which are Lattice's
+  // own pictures (defaultTrackArt).
+  Lattice: { photos: LATTICE_PHOTOS, avatar: latticePortrait, photo: latticeHero, rowArt: { media: LATTICE_TRACK_ART } },
 }
 
 // Where each seeded photograph keeps its performer, as the `object-position`
@@ -406,4 +439,4 @@ export const defaultImages = (cat, themeName) => {
 // section. The media player's tracks and the video section's list have some,
 // under every seeded theme.
 export const defaultTrackArt = (cat, themeName) =>
-  (SEEDS[themeName] ? ROW_ART[cat] : undefined)
+  (SEEDS[themeName] ? (SEEDS[themeName].rowArt?.[cat] ?? ROW_ART[cat]) : undefined)
