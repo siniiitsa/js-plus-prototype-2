@@ -357,5 +357,5 @@ draws *Wedding* lit, so rule and frame agree). The block owns no hook.
 
 **Fields and caps** (`limits.mjs form --themes=5 --designs=0`, then `--check`: 0 fail; `--seeds`: 0 over). Each has an explicit `Lattice` row, layouts 2-4 copied from Pop's (unmeasured): `heading` **37** (37 / 56 /
 44), `fields.label` **40** (50 / 42 / 40), `fields.placeholder` **36** (47 / 39 / 36), `typeLabel` **40**, `messageLabel` **40**, `message` **39** (110 / 92 / 39), `button` **35**, `promises` chars **33** (the 390 row wraps past it) and
-count 9 (16 measured, open), `types` count 8 (the chip row: 10 / 9 / 8), `IDENTITY_CHARS.form.title` **59** and `kicker` **33**. `fields` and `types` item chars keep the shared 15. `FIELDS.form` `in` rows are all arrays, so no row
+count 9 (16 measured, open), `types` count 8 (the chip row: 10 / 9 / 8), `IDENTITY_CHARS.form.title` **59** and `kicker` **33**. `fields` has no item-chars row, and `types` measured 38 a chip but is held to the shared 15. Still Pop's, unmeasured: `sub` and `steps` (layout 4), `para`, and layouts 2-4 of every other row. `FIELDS.form` `in` rows are all arrays, so no row
 names a template; `image` reaches layouts 1 and 2 as before (`photo` is layout 2's), so `PHOTO_OFF` needs no row. No `INLINE_OFF` row: `inline-probe` reports 0 UNLEDGERED.
