@@ -25516,7 +25516,7 @@ function LatticeTestimonials({ s, g }) {
   const card = (
     <div style={{
       boxSizing: 'border-box', minWidth: 0, border: `1px solid ${ink}`, borderRadius: u(20), background: s.bg,
-      boxShadow: `0 0 ${u(45)} rgba(255,255,255,0.22)`, padding: `${u(padY)} ${u(padX)}`,
+      boxShadow: `0 0 ${u(90)} rgba(255,255,255,0.22)`, padding: `${u(padY)} ${u(padX)}`,
       ...col(u(24)),
       ...(desk ? { width: `min(${u(720)}, 100%)`, justifySelf: 'center' } : { width: '100%' }),
     }}>{body}</div>

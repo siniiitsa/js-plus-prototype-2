@@ -460,7 +460,7 @@ After section 11 and session 12, in one session (the lists in `../lime/layout-1.
 - **testimonials (section 10, 2026-11-19): *new own-tree block* `LatticeTestimonials`, not Lime's *Stacked tag card* (nor Grunge's / Editorial's / Pop's widenings of it).** Diffed against the
   `if (s.limeTree)` block in `Testimonials` and `notes/testimonials.md`, frames `1:1222` · `1:9851` · `1:10821`. The *inventory* is Lime's (one card on show with `cur`, two arrows that wrap at both ends and
   are not drawn at one review, the quote, two pills for `who` and `role`, a date line), and **no leaf is**. Lime's tree is a card standing on **two leant or offset backs** (a lime and a `box/2` slab, −46 and
-  −27 off the top, drawn first) with a hard 0 / 4 / 4 shadow; here there are no backs and the card is a lone 1px-ruled 20-radius box on the ground with a **white 22% halo** (`0 0 45`). Lime's card is a flat
+  −27 off the top, drawn first) with a hard 0 / 4 / 4 shadow; here there are no backs and the card is a lone 1px-ruled 20-radius box on the ground with a **white 22% halo** (`0 0 90`). Lime's card is a flat
   `s.tx` slab with `s.bg` ink at radius 55, padding 50; here it is the *section's own ground* ruled in full ink, padding 36 / 27 / 18. Lime's date line is a Body/Eyebrow in Inter Bold; here a
   `[ 009 ] ——— REVIEWED 6 DAYS AGO` row of three mono parts. Lime's quote is Bebas on the ramp's `dispMd`; here `Archivo Lattice` at a raw 43.2 / 35 / 29 on a 1.0 line, uppercase, −0.01em. Lime draws **no byline**
   (the pills are the attribution); here a **ruled caption** (1px across the card) carries the name and the role as two mono lines *and* the two chips, which then repeat them. Lime's pills are 12-radius filled
@@ -1054,13 +1054,13 @@ the form is a straight edge into this orange; `titleWordEms`'s Lattice list is `
 *Lattice — layout 1*. **Scheme seat:** Scheme 5 (`#ED6D40`, ink `#111`, active teal), in `SCHEMES_OF.Lattice` at every design already, and **no nested scheme**: the teal chip is `s.activeBg`, every ruling `s.tx`.
 **The `[ 009 ] --- REVIEWED 6 DAYS AGO` ruling:** `quotes.when` is the seat of the words (its seed is that text byte for byte); `[ 009 ]` and the 40-wide rule are the markup's around it and go with an emptied `when`.
 
-**The block.** Every number the frame's (desktop x 0.82 through `u`, 768 and 390 verbatim; raw sizes 43.2 / 35 / 29 quote, 12 / 11 mono, not the ramp). One 1px, 20-radius card on `s.bg` (opaque), a `0 0 45`
-white 22% halo (`boxShadow`), padding 36 / 27 x 31 / 18 x 25, 24 between rows: the eyebrow row (`[ 009 ]`, a 40 rule, `when`; 16 apart), the quote (`Archivo Lattice` 500, line 1, +0.004em, uppercase, fitted to its widest word
+**The block.** Every number the frame's (desktop x 0.82 through `u`, 768 and 390 verbatim; raw sizes 43.2 / 35 / 29 quote, 12 / 11 mono, not the ramp). One 1px, 20-radius card on `s.bg` (opaque), a `0 0 90`
+white 22% halo (`boxShadow`; the Figure's effect read off the node: radius 90, spread 0, and the 390 raster's falloff above the card matches CSS blur 90, not the export's 45), padding 36 / 27 x 31 / 18 x 25, 24 between rows: the eyebrow row (`[ 009 ]`, a 40 rule, `when`; 16 apart), the quote (`Archivo Lattice` 500, line 1, +0.004em, uppercase, fitted to its widest word
 by `vm.quotes[].wordEms`, now Lattice's too), and a ruled caption (the byline's two mono 12 labels, then the two chips: 26 tall, a 5px square marker, `who` filled teal and `role` ruled). Arrows: 44 square 3px boxes
 round an Arial 13.333 glyph, in a grid of 44 | card | 44 at 1440 (the card a fixed 720, centred) and 768 (the card fills, 24 off each); a centred row of two, 12 apart and 20 under the card, at 390. At one review the arrows
 are not drawn and their tracks are held, so the card keeps its width. **The dot field is the root's own `background-image`, not a node** (`vm.testiDots` from `latticeTestiDots(dev)` in `data.js`: the bio's recipe on the
 frames' 730-tall rasters, 558 / 842 / 465 dots in four buckets, the container's .7 folded into `o`, `r` x1.036 calibrated: ink mass .995 / 1.018 / .996 and 16-px block correlation .992 / .990 / .992 against the
-rasters at 2x, measured on the SVG alone); `repeat-y` from the middle, so a taller section keeps dots. `vm.pad`: 78.72 / 77 / 58 top and foot (chosen, the siblings') with the content insets, and the block's `minHeight`
+rasters at 2x, measured on the SVG alone); `repeat-y` from the middle, so a taller section keeps dots (a root wider than the frame scales the tile up to cover, seen once at a forced 1500; the builder never draws one). `vm.pad`: 78.72 / 77 / 58 top and foot (chosen, the siblings') with the content insets, and the block's `minHeight`
 holds the frame's 730 band and centres the card in it: the section is 598.6 / 730 / 730 at the seed and does not move while the reviews page. No glow on the root (the halo is the card's).
 **`titleWordEms`'s Lattice list does not gain `testimonials`:** layout 1 prints no heading (the quote is fitted per review through `wordEms`).
 
@@ -1070,9 +1070,10 @@ holds the frame's 730 band and centres the card in it: the section is 598.6 / 73
 3. **The chips repeat the byline,** as the frame draws them; an emptied name or role drops its label and its chip, and both drop the caption and its rule.
 4. **The padding is chosen** (the frames state only a card centred in 730), and the card keeps its width at one review (the arrows' tracks held).
 5. **A long review grows the section past 730** (190 characters: 796 / 824 / 1133 tall), centred in its pads; the 730 is a floor, not a clamp.
-6. **`who` and `role` are capped at 35 and wrap** (the caption's chips drop under the byline, a chip wraps inside itself): the frame's one-line caption holds for the seeded row 0 alone.
+6. **`quotes.when` is capped at 21 at every width** (the 390 one-line limit, equal to the longest seed): *Reviewed 11 months ago* prints with `…` at 1440, where 62 fit.
+7. **`who` and `role` are capped at 35 and wrap** (the caption's chips drop under the byline, a chip wraps inside itself): the frame's one-line caption holds for the seeded row 0 alone.
 
-**Fields and caps.** `FIELDS.testimonials` layout 1 reads `quotes` (`quote`, `who`, `role`, `when`) alone; `heading`, `sub`, `stars`, `rating` and `cta` are layouts 2-4's (`reach.mjs 5` agrees: `rating` layout 3, `stars`
+**Fields and caps.** `FIELDS.testimonials` layout 1 reads `quotes` (`quote`, `who`, `role`, `when`) alone; `heading`, `sub`, `stars`, `rating` and `cta` are layouts 2-4's (`reach.mjs 5`, run whole to its 5808-render summary with no source edit in flight, agrees: `rating` layout 3, `stars`
 layouts 2 and 3, no `who.*` row reaches the testimonials). Explicit `Lattice` rows (shared rows fell back to Pop's): `quotes.who` **35**, `quotes.role` **35**, `quotes.when` **21**, `quotes.quote` held to **190**,
 `heading` and `rating` Pop's for layouts 2-4 (unmeasured). `limits.mjs testimonials --themes=5 --designs=0`: who 77 / 63 / 35, role 77 / 63 / 35, when 62 / 47 / 21, quote open at 400; `--check`: 0 fail; `--seeds`: 0 over.
 **No `INLINE_OFF` and no `PHOTO_OFF` row:** the block prints every field the layout reads, and holds no photograph.
@@ -1080,13 +1081,13 @@ layouts 2 and 3, no `who.*` row reaches the testimonials). Explicit `Lattice` ro
 **Proof.** Geometry by `getBoundingClientRect` against the frame (root-relative, desktop x .82 on the 1180 canvas, the frame's 1180.8 centring giving the 0.4 x offset): 768 and 390 within **0.02** on every box (card 94.11 / 227.8
 x 579.78 x 274.39 against 94.12 / 227.8 x 579.77 x 274.39; chips 103.31 and 126.09 wide, exactly the frame's 103.297 / 126.094; 390 card 24 / 181.11 x 342 x 303.78, arrows 145 / 201 at 504.89, quote four lines 116 tall);
 1440 within **0.92** (the worst the chips' and the rule's y: the 1px borders do not scale), root 598.59, card 590.39 x 253.88 (253.38), quote 529.36 x 106.27 (the frame's three lines, 35.42 on 43.2 x .82), arrows 36.08 at
-40.14 / 1103.78. Lines 3 / 3 / 4. Probes at `--theme Lattice --layout 1 --cat testimonials`: `inline-probe` (1440 and 768) PASS, 4 slots hit (`quote`, `who`, `role`, `when`), 0 dead click, 0 UNLEDGERED, 0 off;
+40.14 / 1103.78. Lines 3 / 3 / 4 (the +0.004em tracking is proved by line counts alone: the seed's straight `"` stops a line-one width comparison). `&noimage=1` rendered at all three widths: no change (the section holds no photo). Probes at `--theme Lattice --layout 1 --cat testimonials`: `inline-probe` (1440 and 768) PASS, 4 slots hit (`quote`, `who`, `role`, `when`), 0 dead click, 0 UNLEDGERED, 0 off;
 `photo-probe` PASS filled, `--blank` and `--drop` (the section holds no photo slot); `focus-probe --prime --check` PASS (20 controls). Live (`&live=1`, trusted mouse clicks, 1440 and 390): five clicks page 01 to 05 and wrap, a previous
 wraps back, the arrows' cursor is a pointer live and `auto` on the canvas, and with one review no arrow is drawn; all five seeded rows paged at all three widths with no box past the card and no sideways scroll.
 `page-check.mjs Lattice 0`: no errors, both arrows respond in the published tab, `overflow390` 0, the section 730 tall at 390. States (`&cj=`, 1440 / 768 / 390, `scratchpad` `states.mjs`): 1, 3 and 5 reviews, an emptied name,
 role, date, name-and-role and quote, a 190-character quote with 35-character name and role, a 45-letter word (fitted to 22.5 / 22.3 / 12.9px) and an empty list (*No reviews yet.* in the card, no arrows): no box leaves
 the card and nothing scrolls sideways. `digest.mjs` 0,1,2,3,4 against a HEAD worktree (:5185, which answered no `LatticeTestimonials`, the positive control) and the working tree (:5173), ports and `?t=` normalised:
-**0 differing files of 720**; at theme 5 only the three layout-1 testimonials renders differ (layouts 2-4 are byte-identical). `npm run build` passes (the standalone build was not rebuilt: the root `index.html` is the end-of-pass sweep's).
+**0 differing files of 720**; a theme-5 testimonials-only digest (12 renders) differs in the three layout-1 renders alone (layouts 2-4 byte-identical; the full 720 are themes 0-4). `npm run build` passes (the standalone build was not rebuilt: the root `index.html` is the end-of-pass sweep's).
 
 **For the footer (section 11).** `Footer` has **no hooks** (its links and Book pill are plain props), so, unlike every section since the bio, its block can stand at the head of the function (`if (s.limeTree && s.lattice)`),
 ahead of Lime's block; the *seam* is `extLink` / `navHref` per link row and the pill on `bookTo`, dropped with its label, which the block restates as Lime's does. The frames (`1:1251` · `1:9880` · `1:10850`, 1440 x 480 /

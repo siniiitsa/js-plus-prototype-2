@@ -219,7 +219,7 @@ renders when the number is not one the picker offers. Stored state is not rewrit
 `cur` is the one hook and stays `Testimonials`'s: `n`, `at`, `q`, `go`, `paging` and `step` are the seam's, and the block takes `q`, `paging` and `step` in `g`, so the published arrows are the one seam in a new
 picture (they wrap at both ends and are not drawn at one review, as before). Every number is the frame's (desktop x .82 through `u`, 768 and 390 verbatim; raw sizes 43.2 / 35 / 29 quote, 12 and 11 mono, not the ramp).
 
-- **The card** is one 1px, 20-radius box on the section's own ground (`s.bg`, opaque: no dot shows inside it), ruled in full ink, with a white 22% halo (`0 0 45`, a `boxShadow`, no spread). Padding 36 across and
+- **The card** is one 1px, 20-radius box on the section's own ground (`s.bg`, opaque: no dot shows inside it), ruled in full ink, with a white 22% halo (`0 0 90`, a `boxShadow`, no spread: the Figure's DROP_SHADOW reads radius 90, spread 0, read off the node; Figma's radius is CSS's blur, and the column of the 390 raster above the card matches `0 0 90`, not 45, which the design-context export's `drop-shadow(0 0 45)` suggested). Padding 36 across and
   down at 1440, 27 / 31 at 768, 18 / 25 at 390; 24 between rows. At 1440 it is a fixed 720 centred; at 768 it fills the track between the arrows (24 off each); at 390 the column, with the arrows in a row under it.
 - **The eyebrow row** is `[ 009 ]`, a 40-wide rule and `quotes.when`, 16 apart. **`when` is the seat of the words** (the seed is *Reviewed 6 days ago*, byte for byte; per review, uncased, dropped when emptied), so
   `[ 009 ]` and the rule are the markup's around it and go with an emptied `when`, the calendar's `[ 007 ]` precedent. `[ 009 ]` is a literal and does not follow the section's place on the page. No new field.
@@ -231,7 +231,7 @@ picture (they wrap at both ends and are not drawn at one review, as before). Eve
 - **The arrows** are 44 square 3px boxes round an Arial 13.333 `←` / `→`, centred on the card, at the content's edges at 1440 and 768 and a centred row of two (12 apart, 20 under the card) at 390. At one
   review they are not drawn but the two 44 tracks are held, so the card does not change width.
 - **The dot field** is the root's own `background-image` (`vm.testiDots`, `latticeTestiDots` in `data.js`): the frames' 730-tall dot raster at 70%, as an SVG data URI from the bio's recipe (558 / 842 / 465
-  dots), `repeat-y` from the middle, so a section taller than 730 keeps dots instead of ending them. It is not a node, so `limits.mjs` counts no picture. Wider than the frame it covers (`slice`).
+  dots), `repeat-y` from the middle, so a section taller than 730 keeps dots instead of ending them. It is not a node, so `limits.mjs` counts no picture. Wider than the frame it covers (`slice`: the tile scales up to the width; seen once at a forced 1500 root, no gap; the builder never draws a wider root, since the canvas is 1180 and the published page zooms and puts the surplus in the gutters).
 - **Height.** The frames state only a card centred in a 730 band, so `vm.pad` is chosen (78.72 / 77 / 58 top and foot, the siblings') and the block's `minHeight` holds the band: the section is 598.6 / 730 /
   730 at the seed and stays there while the reviews page (a long one grows it past 730). Empty list: *No reviews yet.* inside the card.
 
@@ -240,7 +240,9 @@ picture (they wrap at both ends and are not drawn at one review, as before). Eve
 2. **The seeded quotes print straight `"`**, where the frame sets `“ ”`: the shared seed is straight on every template, and the stored copy is the artist's.
 3. **The chips repeat the byline** (the frame's own reading); emptying a name or role drops its label and its chip, and the caption with both.
 4. **The padding is chosen**, not read (above), and the card keeps its width at one review.
+5. **`quotes.when` is capped at 21 at every width**, the 390 one-line limit and the longest seed (*Reviewed 3 weeks ago*): *Reviewed 11 months ago* (22) prints with `…` at 1440, where 62 fit, though the row wraps safely.
+6. **`who` and `role` are capped at 35** (the 390 limit) and wrap; the frame's one-line caption holds for the seeded first row alone.
 
 **Fields and caps** (`limits.mjs testimonials --themes=5 --designs=0`, then `--check`: 0 fail; `--seeds`: 0 over). Layout 1 reads `quotes` alone (`heading`, `sub`, `stars`, `rating` and `cta` are layouts 2-4's).
 Explicit `Lattice` rows: `quotes.who` **35** and `quotes.role` **35** (77 / 63 / 35 each; both print twice and wrap), `quotes.when` **21** (62 / 47 / 21, the seed's own at 390), `quotes.quote` held to the shared
-**190** (measured open at 400: the card grows); `heading` and `rating` carry Pop's numbers for layouts 2-4 (unmeasured). No `INLINE_OFF` row: the block prints every field the layout reads.
+**190** (measured open at 400: the card grows); `heading` and `rating` carry Pop's numbers for layouts 2-4 (unmeasured). No `INLINE_OFF` row: the block prints every field the layout reads. The quote's +0.004em tracking is proved by line counts only (3 / 3 / 4 against the frames'); the seed's leading straight `"` stops a line-one width comparison.
