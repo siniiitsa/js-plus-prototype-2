@@ -81,7 +81,7 @@ frame's aspect assume the old numbers, so section 1 re-measures them (open quest
 |---|---|---|---|---|---|---|---|---|---|
 | 0 | *foundation* | `1:306` | — | `1:8953` | — | `1:9934` | — | `THEMES[5]`, ramp, faces, photos, `s.lattice`, dot field | done `812453b` |
 | 1 | `header` | `1:308` | 1440 × 750 | `1:8955` | 768 × 750 | `1:9936` | 390 × 750 | Full-bleed photo, dot field, wordmark + inline nav + Book Now, a dotted-ellipse disc top-right, avatar card, kicker line, 120-ish-px title, six square chips · **Retro `HeaderV0`** (Lime's block as the twin of the card and chips) | done `33e2f3c` |
-| 2 | `bio` | `1:386` | 1440 × 769 | `1:9019` | 768 × 939 | `1:9991` | 390 × 1050 | Grey `#D9D9D9`; three columns: `KM / BIO`, a stacked statement, a tall portrait, a vertical town, ABOUT copy; `[ 001 ] STRUCTURE · BIO_01` · **Lime's *Flanked portrait*** (`KM / BIO` and the reference line are removed copy, call 1) | open |
+| 2 | `bio` | `1:386` | 1440 × 769 | `1:9019` | 768 × 939 | `1:9991` | 390 × 1050 | Grey `#D9D9D9`; three columns: `KM / BIO`, a stacked statement, a tall portrait, a vertical town, ABOUT copy; `[ 001 ] STRUCTURE · BIO_01` · **new own block `LatticeBio`** (not Lime's *Flanked portrait*: a plain portrait with a rail, a 12-column grid; `KM / BIO` and the reference line are removed copy, call 1) | done `7bee3bd` |
 | 3 | `media` | `1:419` | 1440 × 1057 | `1:9052` | 768 × 1404 | `1:10024` | 390 × 1422 | Dark; five-row numbered track list with art and play squares + a *Now playing* card with transport and a bar-code progress · **probably Retro's `v0` body re-laid** (Pop's plan describes it as five track rows with cover and play disc, a now-playing card with transport and progress, and a Soundcloud pill — this frame's inventory, untilted); **check against `Media`'s `v0` body before deciding** (open question 1) | open |
 | 4 | `gallery` | `1:588` | 1440 × 923 | `1:9221` | 768 × 1438 | `1:10193` | 390 × 1020 | Light; heading + four source rows (Gallery open, YouTube, Instagram, TikTok) left; viewer with caption pill, arrows, seven thumbnails, progress and `02 — 15` right · **Lime's gallery** | open |
 | 5 | `repertoire` | `1:673` | 1440 × 1067 | `1:9306` | 768 × 1067 | `1:10278` | 390 × 1555 | Dark with a warm glow; `240 SONGS`, search box, four chips, two-column dense list, pager · **Lime's *Two-column dense*** | open |
@@ -357,6 +357,14 @@ After section 11 and session 12, in one session (the lists in `../lime/layout-1.
 
 *(Twin verdicts are each section session's first step; none was taken in session 0.)*
 
+- **bio (section 2, 2026-11-19): *new own-tree block*, not Lime's Flanked portrait.** The frame (`1:386` · `1:9019` · `1:9991`) is a plain
+  20-radius portrait with a **rail** beside it (a teal 8 px square, the town set vertical, a 1px hairline, spaced apart) where Lime's
+  middle is an arch-topped photograph with an inner glow and a seal; the nearest thing in the code is Retro's `v0` location rail, which
+  hangs off a tilted polaroid. There is no arch, glow, seal or tilt, and the dotted disc is a white mark in `mix-blend-mode: difference`.
+  Three columns at 1440 sit on a **12-column grid** (89.83 columns, 24 gaps: the flank on 1-4, the portrait and rail on 5-8, About on
+  10-12), where Lime's are `1fr 580 1fr`. Built as `LatticeBio` ahead of Lime's block (open question 1's route; section 2, `7bee3bd`). The record was written
+  after the block, not before it, because open question 1 had already settled the route for a composition that differs.
+
 ### Settled in session 0 — the foundation (2026-11-19)
 
 **Calls (user, via AskUserQuestion):** call 1, every standing removal holds (see *The decisions*, call 1); call 2, the display
@@ -543,6 +551,69 @@ edit too), ports normalised: **0 differing files of 720**; the positive control 
 `limits.mjs header --seeds` 0 over caps; `page-check.mjs Lattice 0`: Book Now scrolls to the form, every menu link scrolls and
 closes, the 390 burger opens (1 → 11 links), no errors, no overflow. In the builder: six templates, Lattice's stage and tile are
 the live hero, the modal shows four named cards, card 1 opens the editor on the Lattice page.
+
+### Settled in section 2 — the bio (2026-11-19)
+
+**The block.** `LatticeBio` (`EncoreSection.jsx`, dispatched at the head of `Bio` on `s.v0 && s.lattice`, so Lime's block no longer reaches
+Lattice at design 0). Every number is the frame's (desktop x 0.82 through `u`; 768 and 390 verbatim), read per master off
+`get_design_context` and proved by `getBoundingClientRect` against it (below). What the frame draws:
+
+- **Grid.** Desktop: 12 columns, gap 24, content 48.96 in (40.15 on the canvas). Flank on 1-4, the portrait and rail on 5-8 (portrait
+  391.34 + 16 + a 24 rail), the About column on 10-12 (317.5, so column 9 is air). 768: the heading, then two equal 345.89 columns 24
+  apart (the portrait with its rail, About), both 600 tall, 26.11 in. 390: one 342 column, 24 in, heading, portrait row (600), About, 28
+  between blocks. The portrait is 20-radius (`u(20)`), a centred `FILL` of `lattice-bio`.
+- **The rail** is a 24-wide column, padding 8, `space-between`: a teal square (`s.chips[0].bg`, `#5C939F`), the town in Azeret Mono 11
+  tracked 0.04em reading bottom to top, and a 1px x 180 hairline in `s.tx`. Its text sits 106 long between the other two, which is the
+  frame's 189.5 top and 469 for the line at 657 tall. An emptied town drops the text; the square and line keep their seats.
+- **About column**: `About` (12 mono caps) and the paragraph (16 Archivo, line 1.2, `pre-line`) 16 apart at 1440 and 768 and 6 apart at
+  390, where the frame leaves 9.96 empty under the paragraph (kept as a gap), and a foot of a 1px rule, 14 down, the `roleLine` (`DJ · LIVE
+  ACT · MANCHESTER, UK`) in 12 mono caps, 33 tall, pinned to the column's foot at 1440 and 768.
+- **Sizes are raw, not the ramp.** The ramp rounds the frame's 12 / 11 / 16 x 0.82 to 10 / 9 / 13 at 1440, and the paragraph then wraps
+  3 lines where the frame wraps 4. The block sets `u(12)` / `u(11)` / `u(16)`. The heading is a raw 77.76 / 48 / 38 (no token: the ramp's
+  `dispLg` is 95.04 at 1440, 59 at 768), `Archivo Lattice`, 500, line 1, tracking +0.004em as the header's, uppercase; its ink is
+  307 at 1440 against the frame's 307.
+- **The heading stacks a word a line at every width** (`width: min-content`). The frame's seed has hard breaks at 768 and 390 and wraps
+  to one word a line at 1440 in a 431 flank. This is a call for the user to confirm: any typed head now does the same, so "A B C D E F G H
+  I J K" (21 characters) stacks eleven high and grows the row. Fitted to its flank (`vm.titleWordEms`, set for Lattice's bio only, with
+  the +0.004em): a 21-letter word sets at 38% at 1440 and 49% at 390. `containerType: inline-size` on the flank, `100cqi` as Lime's.
+- **Removed copy and what it left.** `KM / BIO` and `[ 001 ] --- STRUCTURE · BIO_01` are not drawn (user call, section 0). At 1440 the
+  head keeps the frame's seat (top 221.05, 227.16 on the canvas, proved) by padding the flank with the two rows' heights (32.77 above, 14.38
+  below) round a centred head. 768 and 390 stack the heading, a 36 / 28 gap, then the body: **892 and 1003 tall against the frames' 939
+  and 1050**, the removed rows' height (47) shorter.
+- **The dotted disc** (desktop alone). The bio's raster is the header's artwork (same 250 x 156 ink at 2x), so it is `LATTICE_ART.disc`
+  again, drawn white as a mask at 128 x 81 in `mix-blend-mode: difference`: dark rings on the grey, inverted over the photograph. Its seat is
+  left -56.2 and top 565.3 of the portrait row (frame px). The 768 and 390 masters clip it to a 113-pixel sliver, which is not drawn. So the
+  bio's `badgeMode: hidden` removes it at 1440 and does nothing narrow (`reach.mjs`: layout 1, 2 of 6 renders), and `badgeOptsFor` offers
+  Visible / Hidden for Lattice's bio (still art, no ring to turn).
+- **The dot field** is the frame's, hung off the section's foot (423 / 516.5 / 577.5 tall, at 90%): `latticeBioDots(dev)` in `data.js`,
+  the header's recipe (connected components on the 2x rasters, alpha-weighted centroids, four buckets by mass, `r` and `o` fitted to a
+  bucket's mean mass and peak alpha, the container's .9 folded in): **326 dots at 1440, 714 at 768, 571 at 390**, 4 + 2 edge-clipped
+  fragments dropped. `preserveAspectRatio` is `slice` so a root off the frame's width keeps round dots (checked at 1500). **It is the
+  root's own `background-image`, not a node**: `limits.mjs` counts any element with `url(` in its `background-image` as a picture, and a
+  node of its own capped `para1` at 237 at 768 (the paragraph entering the field's box), where text over the dots is the frame's own look at
+  390. The root's `background` carries it (`EncoreSection`'s root, gated `s.bi && s.v0 && s.lattice`); the next section with a dot field
+  should do the same, or the probe reads every long value as an overlap.
+- **Insets and ground.** `vm.pad` (sectionVm, Lattice layout-1 bio): 56 top and foot at every width (45.92 on desktop), the content
+  `calc(surplus + 40.15 / 26.11 / 24)`; Scheme 1 (`#DADADA`, ink `#111`), so it has no `SCHEMES_OF` row.
+
+**Fields and caps.** `FIELDS.bio` layout 1 reads `heading`, `para1` and `badgeMode` (and the header's kicker and location through
+`IDENTITY_READS`, unchanged: `reach.mjs 5` agrees). `heading` `Lattice: [21, null, 17, 19]` (21 measured at layout 1, the others Pop's),
+`para1` open at 400 so its 390 stands, `IDENTITY_CHARS.bio.location` `Lattice: [19, 34, 15]` (19 measured, desktop 21 / 768 19 / 390 25;
+the vertical rail is the tightest), `kicker` 20 off `'*'`, `limits.mjs` `FLOOR_AT` names Lattice for the bio heading. `limits.mjs bio
+--themes=5 --designs=0 --check`: 0 fail, `--seeds` 0 over. No `INLINE_OFF` rows: the layout reads nothing the canvas does not draw.
+
+**Proof.** Geometry by `getBoundingClientRect` against frame x 0.82 (desktop) or verbatim, root-relative: portrait 413.27 / 45.91 / 320.67 x
+538.73 (frame 413.5 / 45.9 / 320.9 x 538.7), square 753.6 / 52.45, line 756.4 / 430.5 x 147.6, town centre 756.9 / 244.8 (757.4 / 244.8),
+About 879.7 / 45.9, paragraph 70.83 tall 63 (four lines), rule 557.4, disc 367.2 / 509.5 x 105 (367.4 / 509.5); 768: portrait 26.11 / 236
+(283.17 less 47.17), square 356 / 244, line 648, About 396 / 236, rule 803; 390: portrait 24 / 198, About 826, rule 913.9. Block-mean
+pixel difference against the frame over the body: 1.2 / 1.8 of 255 at 768 / 390. `inline-probe` PASS (2 slots hit at 1440 and 768, 3
+unhit: the role line, the town and `About`, which have no bio field), `photo-probe` PASS (filled, `--blank`, `--drop`), `focus-probe --prime`
+PASS (5 controls; the town's box covers the vertical text), `page-check.mjs Lattice 0` no errors, the bio's seam under the header straight.
+`&live=1` renders the same at all three widths; `&noimage=1` draws the `KM` initials on the well under the blended disc. `digest.mjs`
+0,1,2,3,4: **0 differing files of 720**, taken against a HEAD worktree on :5185 (the positive control: :5185 answers no `latticeBioDots`;
+Lattice's bio digest differs).
+
+**Calls for the user to confirm:** the one-word-a-line head at every width; the 768 / 390 heights (892 / 1003) with the two rows removed.
 
 ### Inherited and used
 
