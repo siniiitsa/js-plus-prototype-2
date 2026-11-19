@@ -79,7 +79,7 @@ frame's aspect assume the old numbers, so section 1 re-measures them (open quest
 
 | # | Cat | Desktop node | Size | Tablet node | Size | Mobile node | Size | Composition (from the pictures) · predicted twin | Status |
 |---|---|---|---|---|---|---|---|---|---|
-| 0 | *foundation* | `1:306` | — | `1:8953` | — | `1:9934` | — | `THEMES[5]`, ramp, faces, photos, `s.lattice`, dot field | open |
+| 0 | *foundation* | `1:306` | — | `1:8953` | — | `1:9934` | — | `THEMES[5]`, ramp, faces, photos, `s.lattice`, dot field | done `812453b` |
 | 1 | `header` | `1:308` | 1440 × 750 | `1:8955` | 768 × 750 | `1:9936` | 390 × 750 | Full-bleed photo, dot field, wordmark + inline nav + Book Now, a dotted-ellipse disc top-right, avatar card, kicker line, 120-ish-px title, six square chips · **Retro `HeaderV0`** (Lime's block as the twin of the card and chips) | open |
 | 2 | `bio` | `1:386` | 1440 × 769 | `1:9019` | 768 × 939 | `1:9991` | 390 × 1050 | Grey `#D9D9D9`; three columns: `KM / BIO`, a stacked statement, a tall portrait, a vertical town, ABOUT copy; `[ 001 ] STRUCTURE · BIO_01` · **Lime's *Flanked portrait*** (`KM / BIO` and the reference line are removed copy, call 1) | open |
 | 3 | `media` | `1:419` | 1440 × 1057 | `1:9052` | 768 × 1404 | `1:10024` | 390 × 1422 | Dark; five-row numbered track list with art and play squares + a *Now playing* card with transport and a bar-code progress · **probably Retro's `v0` body re-laid** (Pop's plan describes it as five track rows with cover and play disc, a now-playing card with transport and progress, and a Soundcloud pill — this frame's inventory, untilted); **check against `Media`'s `v0` body before deciding** (open question 1) | open |
@@ -134,6 +134,14 @@ the narrow header was read too):
   literals*); each one reopens a recorded user call and, for the header, the `HeaderRoot` / `MenuPanel` machinery
   gains a Lattice arm (`vm.navFits` was deleted, so the overflow rule the inline row needs would come back).
 
+**settled (user call, 2026-11-19, session 0, option A): every standing removal holds for Lattice.** The frame's
+wordmark + rule, inline links, `■ MANCHESTER, UK · DJ · LIVE ACT` kicker line, bio `KM / BIO` and reference line,
+and the removed eyebrows are **not drawn**; a `[ 00N ] ——— LABEL` eyebrow is drawn only where a seeded, uncased,
+drop-when-emptied `FIELDS` field already exists for it. Evidence read first: at 768 the bar is wordmark + rule,
+a bracket `BOOK NOW →` and a hamburger; at 390 wordmark + rule and a hamburger (no Book Now); the dotted disc top-right, a
+rounded avatar card with a white hairline, the kicker line, a two-line title and six square chips are common to both.
+Lattice's header is therefore the hamburger-and-Book-Now bar at every width, like every other template.
+
 **Session 0 screenshots the two narrow headers (`1:8955`, `1:9936`) first and puts the question with that
 evidence**: at 768 the bar is wordmark + Book Now + hamburger, at 390 wordmark + hamburger, and the disc, the
 avatar card, the kicker line, the title (two lines) and the chip row are common to both. The wordmark is in all
@@ -147,6 +155,12 @@ The hero and the section titles are Archivo **at its expanded width** (read `fon
 `Archivo:wght@400;500;600;700;800`; adding the `wdth` axis means **one combined entry**, never a second
 (Gloock's rule), and the other templates that name Archivo must digest to zero rows after it. Azeret Mono is new.
 Both go in `index.html` **and** `preview.html` (the `load-figma-fonts` note).
+
+**settled (user call, 2026-11-19, session 0): the display face is Archivo at `wdth` 113, `wght` 500.** The frames' display
+family is not Archivo but **"Lattice Display Medium"** (custom, not on Google Fonts; `Azeret Mono` and `Archivo` Regular are
+real). Measured in the headless shell against the frame's `absoluteRenderBounds` on 8 strings (KAI MERCER 898.8 @128,
+MANCHESTER 768.8 @95.04, 240 SONGS 605.3, THE HOUSE PARTY 323.9 @30, …): Archivo 500 renders at 0.993 of the frame at wdth
+112.5 and 1.018 at 115, sd 0.007 across strings, so `faceK` = 1. One combined `Archivo:wdth,wght@…` entry, never two.
 
 ### 3. Casing
 
@@ -339,9 +353,118 @@ After section 11 and session 12, in one session (the lists in `../lime/layout-1.
 
 ## Conventions
 
-*(Empty at planning. Each session writes its own `### Settled in section N` here and a running
-`### Inherited and used` list, as Pop's plan does. Open with `### Seen at planning time, per section` for the
-twin verdicts.)*
+### Seen at planning time, per section
+
+*(Twin verdicts are each section session's first step; none was taken in session 0.)*
+
+### Settled in session 0 — the foundation (2026-11-19)
+
+**Calls (user, via AskUserQuestion):** call 1, every standing removal holds (see *The decisions*, call 1); call 2, the display
+face is Archivo at `wdth` 113, `wght` 500. Call 3 (casing) was left open by the frames and stays the per-site default.
+
+**Schemes.** The file reuses the SAAS variable library (`2 · Scheme`, Scheme 1–9). `get_variable_defs` on a node gives only a
+flat set, so each scheme was resolved through `use_figma` alias chains. `THEMES[5]` is appended (never reorder) and carries
+Scheme 1 as its own palette (`#DADADA` / `#111111`) and Schemes 2–9 as `schemes`, Figma's numbering kept. Everything is read
+from the collection except `sem.glow`, `sem.hl` and the `inactive*` keys (inferred from box1 and the ink) and `tag/4/bg` (S8's
+`#262626` is read off the header's Archive chip, the rest inferred from `tag/4/text`).
+
+| Scheme | Ground | Used for |
+|---|---|---|
+| 1 (theme) | `#DADADA` | bio, map, the page's `pageBg` |
+| 2 | `#F2F2F2` | gallery, calendar |
+| 3 | `#262626` | (no section seat yet) |
+| 4 / 6 | `#5C939F` | nested teal nodes |
+| 5 | `#ED6D40` | testimonials |
+| 7 | `#ED6D40` | nested orange nodes |
+| 8 | `#111111` | header, media, video, repertoire, pricing, form, footer (text `#F2F2F2`, activeBg teal) |
+| 9 | `#DADADA` | nested |
+
+`SCHEMES_OF.Lattice` rows 0–3 are identical (layouts 2–4 are placeholders and copy row 0's seats); bio and map take the theme's
+own Scheme 1, so they have no entry; video has no frame and is seated on 8. A later section that finds a seat wrong edits the
+one row.
+
+**Faces.** `display` is `'Archivo Lattice', 'Archivo', sans-serif`; `label` / `ui` / `mono` are Azeret Mono; `body` is Archivo.
+The frames' display family is the custom "Lattice Display Medium", not on Google Fonts. `Archivo Lattice` is an `@font-face`
+alias in `index.css` (three unicode-range blocks, gstatic v25 woff2) pinning the variable Archivo file to `font-weight: 500`
+and `font-stretch: 113%`, so no section names an axis and the existing `Archivo` link stays byte-identical (the other
+templates digest to zero rows). Verified in the harness: `KAI MERCER` at 128px with -0.01em tracking is 898.3px against the
+frame's 898.8. If the file's version moves, the alias falls back to Archivo Regular; the popup clones head `<style>`, so the
+published tab carries the alias with no change of its own (`public/published.html` has no font link). Azeret Mono 400 is
+in `index.html` and `preview.html`; `preview.html` also gets Archivo 400, since no other theme names it there.
+`latticeEms` / `LATTICE_EM` / `LATTICE_KERN` (`scripts/ems-table.mjs "Archivo Lattice" --check`, within 0.5% over six names)
+are `navFace` for Lattice, upper-cased, tracking left to the caller. `casing: 'title'`, `dls: 0px`.
+
+**Metrics.** `radius 20px`, `radiusSm / btnR / radiusChip 3px`, `bw 1px`.
+
+**Ramp.** `THEME_RAMP.Lattice`, read off raw text nodes (the page binds a flat set) at the frame's own width:
+
+| key | 1440 (frame × .82) | 768 | 390 |
+|---|---|---|---|
+| dispXl | 105 | 79 | 51 |
+| dispLg | 78 | 59 | 38 |
+| dispMd | 49 | 48 | 40 |
+| dispSm | 33 | 32 | 26 |
+| title | 25 | 27 | 25 |
+| list | 20 | 24 | 18 |
+| labelLg | 18 | 22 | 20 |
+| labelMd / Sm / Xs | 10 / 9 / 9 | 12 / 11 / 11 | 12 / 11 / 11 |
+| bodyLg / Md / Sm | 15 / 13 / 12 | 18 / 16 / 15 | 18 / 16 / 15 |
+| chip / eyebrow | 9 / 10 | 11 / 12 | 11 / 12 |
+
+**Flags and the name-gate inventory.** `lattice: T.name === 'Lattice'` sits after `pop`; `designed` and `limeTree` are widened to
+it. `headerFamily` gives `'lattice'`, with `HEADER_COUNT.lattice = 4` and `HEADER_NAMES.lattice` sliced from
+`PHOTOGRAPHIC_NAMES` (the setup modal offers Full photo, Side by side, Framed photo, Stacked). `navFace` gains Lattice. **Left
+unwidened on purpose** (each is a section's own decision, so its session reads it): the layout-2+ arms (~560, 597, 619, 660,
+684, 700, 736 at the time), `navGapEm` and `titleWordEms`, the quote and footer `wordEms`, `gigDark`, `grainSrc`, Pop's inset
+block. **`limeTreeTheme` is not widened**: its three seeds (`TIERS_1`, `FORM_BTN_1`, `CAL_HEADING_1`) are per-section calls, and
+Lattice's pricing chips read Solo / Trio / Band, which is `TIERS`, not `TIERS_1`; sections 7, 8 and 9 decide.
+
+**Caps.** `specAt` returned `undefined` for a template-keyed spec naming neither the template nor `'*'`: 104 caps Pop has and
+Lattice did not (every `FIELDS` heading, tier, song and gallery key, plus `IDENTITY_CHARS` title, location and seal). One line
+in `specAt` now reads Pop's row for Lattice in that case, **provisional until session 12 measures them** with
+`limits.mjs <cat> --themes=5`. `limits.mjs --seeds` at theme 5: 0 seeds over cap, all twelve categories.
+
+**Photography.** The frames hold **four photographs**, not the ~20 the plan budgeted, because every thumbnail, track cover and
+avatar is one of them re-cropped: hero `a55a2e2d`, portrait `40a976f3`, the bio's `04a8339f` and a fourth `0cb3f486`, each a 1536-wide JPEG used as the frame's own file, unmodified (a re-encode at 74 came out larger). `lattice-hero.jpg`,
+`-portrait`, `-bio`, `-alt`: **573 KB raw**; `src/builder/photos/` 6.5 → 7.1 MB; the standalone build 11.93 → **12.70 MB**
+(+0.77 MB; CLAUDE.md's "~9.8 MB" is stale, the committed root file is 11.93 MB). `SEEDS.Lattice` seats the header on the hero, the
+avatar on the portrait, the bio, the form on `lattice-alt`, the gallery's strip of seven in the frame's order, and the five
+track covers (`rowArt`, so `defaultTrackArt` reads a template's own before `ROW_ART`). Video has no frame and stands on the
+hero. No `FOCUS` entry was needed: every slot is a centred `FILL`.
+
+**Art, deferred.** Three rasters were measured and **not** imported: the hero's dot field (2880 × 1500 RGBA at 2×, ~560 dots on a
+regular lattice sheared ~1°), the dotted disc (400 × 400 PNG) and the per-section art (map card, calendar torus). They are
+the header's and each section's own, per width. **The header session decides SVG against raster** for the dot field: ~560
+dots on a sheared lattice is a pattern, so vector is the default if it holds at all three widths; raster only if it does not.
+
+**Ground, gutter, published page.** `vm.pageBg`, the page gutter and the published `documentElement` all read
+`theme.palette[0]`, Scheme 1's `#DADADA`, while the frame's page body is `#111111`. No section shows the gutter at full width
+(each paints its own band), so it is not a problem yet; **the end-of-pass sweep checks the gutter at 1440+ and 1180–1440
+(the zoomed published tab)**, where a `#DADADA` edge beside a dark section would be seen.
+
+**Hero 750 at every width** (open question 3): the frames' header is 750 tall at 1440, 768 and 390, where `WIDE.heroH` is
+614 / 1024 / 844. Not touched in session 0; the picker aspect and setup cards still use the old numbers, and the
+header session settles it.
+
+**Picker.** The filmstrip is a flex row of 168px tiles, so six and gaps (~1058px) fit its 1100px column, with no change. The comment said "all five" and now says every template.
+The setup modal offers the four named Lattice cards.
+
+**Tooling.** All of it already took a sixth theme; only defaults and header comments named five: `limits.mjs` default
+themes `0,1,2,3,4,5`, `photo-aspect.mjs` default list, `reach.mjs`'s note, and the three probes' flag docs. Each was run once at
+theme 5 on a placeholder page: `inline-probe` PASS (footer, 1440), `photo-probe` PASS (bio), `focus-probe` PASS (footer, 20
+controls), `reach.mjs 5` runs, `limits.mjs --seeds` runs, `page-check.mjs Lattice 0` (picker → published tab, no errors),
+`build-digest.mjs` loops over the thumbnails it finds (no hard-coded five), `digest.mjs` and `shots.mjs` take indices.
+This is "it runs", not "it passes the layout": the page's sections are still Retro arms.
+
+**Exit proof.** `digest.mjs` 0,1,2,3,4 on the HEAD worktree (:5184) against the working tree (:5173), 720 renders each, ports and
+`?t=` stamps normalised: **0 differing files**. Lattice renders at all three widths for all twelve categories with no console
+error, the title in `Archivo Lattice`.
+
+### Inherited and used
+
+- `sectionVm`'s scheme seat (`SCHEMES_OF`, `flatScheme`, `s.onScheme[n]`) from Editorial and Pop; `THEME_RAMP` from Lime and Pop.
+- `ems-table.mjs` (Fraunces' recipe) for `LATTICE_EM`.
+- `defaultTrackArt` for the track covers (given a `rowArt` override here).
 
 ## Open questions
 
