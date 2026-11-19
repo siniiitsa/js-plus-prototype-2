@@ -64,7 +64,7 @@ import {
   catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldSeed, HEADING_3, HEADING_4, fieldReach, fieldShown, identityFieldsFor, identityHint, INLINE_OFF, PHOTO_OFF, INLINE_HEAD, INLINE_MARKED, INLINE_PART, INLINE_LINES, inlineRule, fieldCap, colCaps, identityCap, sealCap, capExcess, numeralLen, clampCapped, clampContent, legacyContent, clampIdentity, copyrightOf, formHeading3, extUrl, youtubeEmbed, youtubeThumb, youtubeParts, youtubeWatch, youtubeChannel, urlProblem, emailProblem, emailAddr, songTags, repChips,
   tierFeats, priceParts, priceCuts, blankRow, SONG_KEYS, repSetsOf, repSetLine, TRACK_KEYS, uploadedAudio, GIG_KEYS, gigDayOk, gigWeekday, gigStatus, gigStamp, MIN_YEAR, gigPart, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
   layoutChoices, designCount, designOf, pageLayout, pageOrder, pageRows, videoDesign, videoStartArch,
-  VIDEOS, VIDEO_SEED, VIDEO_KEYS, videoPlayable, videoSeedDesc, VIDEO_ALL, COLUMN_SPLIT, bebasEms, antonEms, gloockEms, titanEms, latticeEms, frauncesEms, titleFitK, latticeDotField, latticeBioDots,
+  VIDEOS, VIDEO_SEED, VIDEO_KEYS, videoPlayable, videoSeedDesc, VIDEO_ALL, COLUMN_SPLIT, bebasEms, antonEms, gloockEms, titanEms, latticeEms, frauncesEms, titleFitK, latticeDotField, latticeBioDots, latticeTestiDots,
   headerLayout, headerLayoutLabel, layoutLabel, setupHeaderCount,
 } from './data.js'
 import { defaultImage, defaultImages, defaultTrackArt, seedFocus, RETRO_TEXTURE, LATTICE_ART } from './photos.js'
@@ -622,6 +622,15 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     const v = Z.dev === 'desktop' ? '78.72px' : Z.dev === 'tablet' ? '77px' : '58px'
     vm.pad = `${v} calc(${vm.surplus} + ${Z.dev === 'desktop' ? '40.15px' : Z.dev === 'tablet' ? '26.11px' : '24px'}) ${v}`
   }
+  // …and the testimonials' (1:1222 · 1:9851 · 1:10821): the frames state only a card centred in a 730 band
+  // (the band's own top and foot are 210.5 / 227.8 / 181.11 round a card that is 309 / 274.4 / 367.8 tall),
+  // so the padding is chosen, not read: the siblings' 96 / 77 / 58 (78.72 at 1440), with the block's
+  // `minHeight` holding the 730 band and centring the card in it. A longer review grows the section past
+  // 730 and keeps that breathing room. LatticeTestimonials reads the same numbers.
+  if (d === 0 && cat === 'testimonials' && T.name === 'Lattice') {
+    const v = Z.dev === 'desktop' ? '78.72px' : Z.dev === 'tablet' ? '77px' : '58px'
+    vm.pad = `${v} calc(${vm.surplus} + ${Z.dev === 'desktop' ? '40.15px' : Z.dev === 'tablet' ? '26.11px' : '24px'}) ${v}`
+  }
   // Layout 2's sections stand on their own frames' insets (JP-094, user call,
   // 2026-10-02, reversing Retro's "fit the card, not the frame height" for the
   // templates whose pages are Lime's tree, Pop's included). The page frames stack their
@@ -938,6 +947,12 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     if (cat === 'bio') {
       const bd = latticeBioDots(Z.dev)
       vm.bioDots = { uri: bd.uri, h: +(bd.h * (Z.dev === 'desktop' ? 0.82 : 1)).toFixed(2) }
+    }
+    if (cat === 'testimonials') {
+      // The testimonials' own dot set: a 730-tall canvas the root paints (EncoreSection's root), tiled
+      // down a taller section from its middle.
+      const td = latticeTestiDots(Z.dev, vm.tx)
+      vm.testiDots = { uri: td.uri, h: +(td.h * (Z.dev === 'desktop' ? 0.82 : 1)).toFixed(2) }
     }
     if (cat === 'header' && Z.dev !== 'desktop') vm.heroH = 750
   }
@@ -2132,6 +2147,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
       // those two.
       wordEms: T.name === 'Editorial' || T.name === 'Pop'
         ? +Math.max(0, ...quote.split(/\s+/).map(navFace)).toFixed(3)
+        // Lattice's layout-1 quote is fitted to its widest word too (a long one would outrun the
+        // 304 box at 390); its alias sets the face 0.004em open (the header's tracking).
+        : T.name === 'Lattice'
+        ? +Math.max(0, ...quote.split(/\s+/).map((w) => latticeEms(w) + 0.004 * [...w].length)).toFixed(3)
         : undefined,
       who,
       role,

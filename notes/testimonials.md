@@ -212,3 +212,35 @@ Retro's layout-1 card prints `vm.quotes[].byline` as **one node**, `HANNAH L. ·
 layouts 5–8 that rendered exactly like 1–4. A draft that stored `arch` 4–7 still renders (the
 design is `arch % 4`), and `LayoutPicker` and the sidebar's `layoutLabel` show it as the row it
 renders when the number is not one the picker offers. Stored state is not rewritten.
+
+## Lattice — layout 1 (plans/lattice/layout-1.md, section 10, 2026-11-19)
+
+`LatticeTestimonials` (`EncoreSection.jsx`, dispatched in `Testimonials` on `s.v0 && s.limeTree && s.lattice` **after** the seam, ahead of Lime's block). Frames `1:1222` · `1:9851` · `1:10821` (all 730 tall).
+`cur` is the one hook and stays `Testimonials`'s: `n`, `at`, `q`, `go`, `paging` and `step` are the seam's, and the block takes `q`, `paging` and `step` in `g`, so the published arrows are the one seam in a new
+picture (they wrap at both ends and are not drawn at one review, as before). Every number is the frame's (desktop x .82 through `u`, 768 and 390 verbatim; raw sizes 43.2 / 35 / 29 quote, 12 and 11 mono, not the ramp).
+
+- **The card** is one 1px, 20-radius box on the section's own ground (`s.bg`, opaque: no dot shows inside it), ruled in full ink, with a white 22% halo (`0 0 45`, a `boxShadow`, no spread). Padding 36 across and
+  down at 1440, 27 / 31 at 768, 18 / 25 at 390; 24 between rows. At 1440 it is a fixed 720 centred; at 768 it fills the track between the arrows (24 off each); at 390 the column, with the arrows in a row under it.
+- **The eyebrow row** is `[ 009 ]`, a 40-wide rule and `quotes.when`, 16 apart. **`when` is the seat of the words** (the seed is *Reviewed 6 days ago*, byte for byte; per review, uncased, dropped when emptied), so
+  `[ 009 ]` and the rule are the markup's around it and go with an emptied `when`, the calendar's `[ 007 ]` precedent. `[ 009 ]` is a literal and does not follow the section's place on the page. No new field.
+- **The quote** is `Archivo Lattice` 500 at line 1, uppercase, +0.004em (the alias-corrected tracking every Lattice head uses, not the frame's raw -0.01em), fitted to its widest word through `100cqi` and
+  `vm.quotes[].wordEms` (now also Lattice's, with the per-glyph 0.004em). Three lines at 1440 and 768 and four at 390, as the frames.
+- **The caption** is a 1px rule across the card, then the byline (`who` and `role` as two mono 12 labels, 16 apart) and, right of it, the two chips (`who` filled teal, `role` ruled; 26 tall, radius 3, a 5px
+  square marker, mono 11). **The chips repeat the byline by design** (the frame draws both, as the pills always repeated it). It wraps: past the card's width the chips drop under the byline and a chip wraps
+  inside itself, so the seeded rows 2 to 5 (*Venue manager, Albert Hall*) never leave the card; at 390 it is a column from the first row.
+- **The arrows** are 44 square 3px boxes round an Arial 13.333 `←` / `→`, centred on the card, at the content's edges at 1440 and 768 and a centred row of two (12 apart, 20 under the card) at 390. At one
+  review they are not drawn but the two 44 tracks are held, so the card does not change width.
+- **The dot field** is the root's own `background-image` (`vm.testiDots`, `latticeTestiDots` in `data.js`): the frames' 730-tall dot raster at 70%, as an SVG data URI from the bio's recipe (558 / 842 / 465
+  dots), `repeat-y` from the middle, so a section taller than 730 keeps dots instead of ending them. It is not a node, so `limits.mjs` counts no picture. Wider than the frame it covers (`slice`).
+- **Height.** The frames state only a card centred in a 730 band, so `vm.pad` is chosen (78.72 / 77 / 58 top and foot, the siblings') and the block's `minHeight` holds the band: the section is 598.6 / 730 /
+  730 at the seed and stays there while the reviews page (a long one grows it past 730). Empty list: *No reviews yet.* inside the card.
+
+**Calls for the user to confirm.**
+1. **The `[ 009 ]` is a literal** drawn only with a `when` (above); it does not count sections.
+2. **The seeded quotes print straight `"`**, where the frame sets `“ ”`: the shared seed is straight on every template, and the stored copy is the artist's.
+3. **The chips repeat the byline** (the frame's own reading); emptying a name or role drops its label and its chip, and the caption with both.
+4. **The padding is chosen**, not read (above), and the card keeps its width at one review.
+
+**Fields and caps** (`limits.mjs testimonials --themes=5 --designs=0`, then `--check`: 0 fail; `--seeds`: 0 over). Layout 1 reads `quotes` alone (`heading`, `sub`, `stars`, `rating` and `cta` are layouts 2-4's).
+Explicit `Lattice` rows: `quotes.who` **35** and `quotes.role` **35** (77 / 63 / 35 each; both print twice and wrap), `quotes.when` **21** (62 / 47 / 21, the seed's own at 390), `quotes.quote` held to the shared
+**190** (measured open at 400: the card grows); `heading` and `rating` carry Pop's numbers for layouts 2-4 (unmeasured). No `INLINE_OFF` row: the block prints every field the layout reads.

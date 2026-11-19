@@ -25429,6 +25429,125 @@ function EventsMap({ s }) {
   return null
 }
 
+// Lattice's layout-1 testimonials (1:1222 · 1:9851 · 1:10821; plans/lattice/layout-1.md, *Settled in section
+// 10*): a block of its own, after `Testimonials`' seam (`n`, `q`, `paging` and `step` stay its and go over in
+// `g`; `cur` is its hook). Every number is the frame's, desktop x 0.82 through `u`, 768 and 390 verbatim, raw
+// sizes (43.2 / 35 / 29 quote, 12 and 11 mono), not the ramp. One card on the section's own ground, ruled in
+// full ink at radius 20 with a white 22% halo (`boxShadow`), over the root's dot field: an eyebrow row, the
+// quote, a ruled caption (the name and role as two mono labels, then the two chips). The arrows are 44 square
+// 3px boxes flanking the card at 1440 and 768 and a centred row under it at 390. The card is centred in a
+// 730 band (`minHeight`, with `vm.pad`'s 96 / 77 / 58 the section's own breathing room).
+function LatticeTestimonials({ s, g }) {
+  const { q, paging, step } = g
+  const tab = isTablet(s)
+  const desk = !s.narrow
+  const k = desk ? 0.82 : 1
+  const u = (v) => `${Math.round(v * k * 100) / 100}px`
+  const ink = s.tx
+  const mono = (size, extra) => ({
+    fontFamily: s.mono, fontSize: size, lineHeight: 1.2, letterSpacing: '0.04em', textTransform: 'uppercase', ...extra,
+  })
+  // The frames' card padding: 36 / 27 / 18 across, 36 / 31 / 25 down.
+  const padX = s.mob ? 18 : tab ? 27 : 36
+  const padY = s.mob ? 25 : tab ? 31 : 36
+  // `vm.pad`'s top and foot for this section, so the 730 band is the frame's whole.
+  const padV = s.mob ? 58 : tab ? 77 : 78.72
+
+  const arrow = (glyph, onClick) => (
+    <span onClick={onClick} style={{
+      boxSizing: 'border-box', width: u(44), height: u(44), flex: 'none', border: `1px solid ${ink}`,
+      borderRadius: s.radiusChip, color: ink, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+      fontFamily: 'Arial, sans-serif', fontSize: u(13.333), lineHeight: 'normal', cursor: onClick ? 'pointer' : undefined,
+    }}>{glyph}</span>
+  )
+
+  // A chip: the 5px square marker, then the label; the first is filled teal, the second ruled. Both are the
+  // artist's copy and each is rendered or not.
+  const chip = (label, i) => (
+    <span key={i} style={{
+      boxSizing: 'border-box', minHeight: u(26), maxWidth: '100%', minWidth: 0, display: 'inline-flex', alignItems: 'center',
+      gap: u(8), padding: `0 ${u(10)}`, borderRadius: s.radiusChip,
+      border: `1px solid ${i === 0 ? 'transparent' : ink}`, background: i === 0 ? s.activeBg : undefined, color: ink,
+    }}>
+      <span aria-hidden style={{ width: u(5), height: u(5), flex: 'none', background: ink }} />
+      <span style={mono(u(11), { minWidth: 0, overflowWrap: 'anywhere' })}>{label}</span>
+    </span>
+  )
+
+  const body = q ? (
+    <>
+      {!!q.when && (
+        <div style={row(u(16), { minWidth: 0 })}>
+          <span style={mono(u(12), { flex: 'none', whiteSpace: 'nowrap', color: ink })}>[ 009 ]</span>
+          <span aria-hidden style={{ width: u(40), height: 1, flex: 'none', background: ink }} />
+          <span style={mono(u(12), { minWidth: 0, color: ink, overflowWrap: 'anywhere' })}>{q.when}</span>
+        </div>
+      )}
+      {!!q.quote && (
+        <div style={{ containerType: 'inline-size', minWidth: 0 }}>
+          <p style={{
+            margin: 0, fontFamily: s.display, fontWeight: 500, lineHeight: 1, letterSpacing: '0.004em',
+            textTransform: 'uppercase', color: ink, overflowWrap: 'break-word',
+            fontSize: q.wordEms ? `min(${u(s.mob ? 29 : tab ? 35 : 43.2)}, calc(100cqi / ${q.wordEms}))` : u(s.mob ? 29 : tab ? 35 : 43.2),
+          }}>{q.quote}</p>
+        </div>
+      )}
+      {!!q.byline && (
+        <div style={{
+          display: 'flex', flexDirection: s.mob ? 'column' : 'row', alignItems: s.mob ? 'flex-start' : 'center',
+          justifyContent: 'space-between', flexWrap: 'wrap', columnGap: u(16), rowGap: u(16), minWidth: 0,
+          boxSizing: 'border-box', borderTop: `1px solid ${ink}`, paddingTop: u(16),
+        }}>
+          <div style={row(u(16), { flexWrap: 'wrap', minWidth: 0, columnGap: u(16), rowGap: u(4) })}>
+            {!!q.who && <span style={mono(u(12), { color: ink, overflowWrap: 'anywhere' })}>{q.who}</span>}
+            {!!q.role && <span style={mono(u(12), { color: ink, overflowWrap: 'anywhere' })}>{q.role}</span>}
+          </div>
+          <div style={row(u(6), { flexWrap: 'wrap', minWidth: 0, justifyContent: s.mob ? 'flex-start' : 'flex-end' })}>
+            {!!q.who && chip(q.who, 0)}
+            {!!q.role && chip(q.role, 1)}
+          </div>
+        </div>
+      )}
+    </>
+  ) : (
+    <span style={{ fontFamily: s.body, fontSize: u(16), lineHeight: 1.5, color: ink }}>No reviews yet.</span>
+  )
+
+  const card = (
+    <div style={{
+      boxSizing: 'border-box', minWidth: 0, border: `1px solid ${ink}`, borderRadius: u(20), background: s.bg,
+      boxShadow: `0 0 ${u(45)} rgba(255,255,255,0.22)`, padding: `${u(padY)} ${u(padX)}`,
+      ...col(u(24)),
+      ...(desk ? { width: `min(${u(720)}, 100%)`, justifySelf: 'center' } : { width: '100%' }),
+    }}>{body}</div>
+  )
+
+  const prev = paging ? arrow('←', step(-1)) : null
+  const next = paging ? arrow('→', step(1)) : null
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', minHeight: `calc(${u(730)} - ${2 * padV}px)` }}>
+      {s.mob ? (
+        <div style={col(u(20), { width: '100%', alignItems: 'center', minWidth: 0 })}>
+          {card}
+          {paging && <div style={row(u(12))}>{prev}{next}</div>}
+        </div>
+      ) : (
+        // Three tracks at every wide width, so the card keeps its seat at one review: the arrows are not
+        // drawn but their 44 are held.
+        <div style={{
+          display: 'grid', width: '100%', alignItems: 'center', columnGap: u(24), minWidth: 0,
+          gridTemplateColumns: `${u(44)} minmax(0, 1fr) ${u(44)}`,
+        }}>
+          <span style={{ display: 'flex' }}>{prev}</span>
+          {card}
+          <span style={{ display: 'flex' }}>{next}</span>
+        </div>
+      )}
+    </div>
+  )
+}
+
 // v0 — Testimonials layout 1 · Stacked tag card (§10.2 reference design): one
 // cream quote card standing on two rotated, ink-outlined coloured cards, with
 // the pager arrows thrown out to the page's own gutters.
@@ -25490,6 +25609,10 @@ function Testimonials({ s }) {
       }}>{icon}</span>
     )
     const step = (d) => (s.live && paging ? () => go(at + d) : undefined)
+
+    // Lattice's layout-1 testimonials are a block of their own (LatticeTestimonials), after the seam:
+    // `q`, `paging` and `step` (the arrows, which wrap at both ends and are not drawn at one review) go over.
+    if (s.limeTree && s.lattice) return <LatticeTestimonials s={s} g={{ q, paging, step }} />
 
     // Lime (964:58597 · 986:39886 · 986:39898) — the ninth Lime block, after the
     // seam as the gallery's and the repertoire's are: `n`, `at`, `q`, `go`,
@@ -31908,6 +32031,12 @@ export default function EncoreSection({ s }) {
       // teal at 14% to nothing at 70%, the same at all three widths (the root's own).
       ...(s.pr && s.v0 && s.lattice && {
         backgroundImage: `radial-gradient(ellipse 60% 55% at 50% 75%, ${s.glow}24, ${s.glow}00 70%)`,
+      }),
+      // Lattice's layout-1 testimonials lay their dot canvas over the whole section: 730 tall, tiled down a
+      // taller section from its middle, the root's own background (LatticeTestimonials draws the card over it).
+      ...(s.te && s.v0 && s.lattice && s.testiDots && {
+        backgroundImage: `url("${s.testiDots.uri}")`, backgroundRepeat: 'repeat-y',
+        backgroundPosition: 'left center', backgroundSize: `100% ${s.testiDots.h}px`,
       }),
       // …and the form's warm glow: the frames' one radial gradient, 60% x 55% of the section at 20% / 50%,
       // orange at 14% to nothing at 70%, the same at all three widths (the root's own).
