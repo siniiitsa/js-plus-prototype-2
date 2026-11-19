@@ -286,6 +286,36 @@ another `notes/` file.
   A side effect: `£Contact me…` clamped on the page (`£Contac…`) opened nothing on the old cut, since the
   clamp stem was `£`-led; with the `£` in its own node the numeral opens.
 
+## Lattice · layout 1 (plans/lattice/layout-1.md, section 7, 2026-11-19)
+
+Frames `1:915` · `1:9547` · `1:10518`. **A block of its own, `LatticePricing`**, not Lime's: it stands in `Pricing`'s `if (s.limeTree)` **after the seam**, so `chip`,
+`active`, `shown` and `pressChip` (the published filter, the Book pills' `tierBookTo`, the `s.live` gate) are the shared ones and come over in `g = { shown, active, pressChip }`.
+
+- **Seats are by the package's place in the WHOLE list** (`t.n`), not by the rendered index (Pop's and Lime's rule): package *n* is on Scheme `[3, 5, 4][n % 3]` (dark `#262626`, orange
+  `#ED6D40`, teal `#5C939F`) and prints `[ 0(n+1) ]`, so a filter never recolours a package or renumbers it. The card reads its seat's own pair (`S.bg` ground, `S.tx` ink); the bar is
+  the reverse (`S.tx` ground, `S.bg` label), which is what all three frames draw (the dark card's `#F2F2F2` bar under `#262626`, the other two's `#111` bar under the card's colour). The
+  dark card's feature rules are `S.tx` at 28%, the other two's solid. The halo is `boxShadow: 0 0 36 S.bg @ 30%`. The section stands on Scheme 8 (`SCHEMES_OF.Lattice` already seats
+  pricing there: no row added) and `s.onScheme[n]` supplies the card schemes.
+- **Grid**: three columns at 1440 (a fourth wraps), **two at 768 with the last card of an odd count spanning both**, one at 390, 24 apart everywhere; every card `min-height` 520 (x 0.82
+  at desktop, where the content is taller), the bar pinned to its foot by `margin-top: auto` over the frame's 22 flow gap. Padding 28 / `24px 21px` / `20px 16px`.
+- **The chip row** is a boxed segmented control (1px `s.tx` ring, 3px, 4 in, 40-tall tabs, the lit one `s.activeBg` under `s.activeFg`), at the right of the head at 1440 and under the heading narrow.
+  Not drawn at one tag or fewer, wraps inside 342 at 390. **At rest none is lit** (JP-089 stands; the frame lights *Solo*).
+- **The price is one run in the display face**, as the frame sets `£450`: the lead, the numeral and a range's tail are inline spans of one size, and a tail wraps at its spaces
+  (`£475 — £1,450` reads `£475 —…` at its cap). `limits.mjs` read the earlier small-tail build (a body-face tail on the baseline) as two lines at every width.
+- **The unit prints as stored**, `/EVENT` (mono, right of `[ 0N ]`), where the frame prints `/ EVENT`. Printing `/ ` + `vm.tierKind` would take layout 4's `Lattice.0.pricing.unit` ledger row;
+  the stored text keeps the slot editable. A call for the user to confirm.
+- **Removed / not drawn**: the `[ 006 ] — PRICING` eyebrow (call 1; no field), the frames' lit chip. The frames draw no `Most popular` or `Sold out`: nothing to gate.
+- **Glow** is the root's own `radial-gradient(ellipse 60% 55% at 50% 75%, glow 14%, 0 at 70%)` (`s.pr && s.v0 && s.lattice`), which all three frames' `gradientTransform`s reduce to. No `url()`.
+- **Caps** (`FIELDS.pricing`, measured with `limits.mjs pricing --themes=5 --designs=0`): `heading` 42 (floor: measured 32, the seed's four lines at 390 are the frame's), `tiers.name` 16 (floor, measured
+  15), `tiers.price` 9, `tiers.price.num` **7** (measured 9 / 10 / 12; held to Pop's provisional 7 because the scalar is one number per template, the tightest layout's, and layouts 2-4 are unmeasured),
+  `tiers.tags` item 26 and count 3, `tiers.feats` item 24 / count 15, `unit` 29, `rowCta` 34, `sub` 85. Layouts 2-4 stay Pop's rows, copied into explicit `Lattice` rows so no spec reaches Lattice through `specAt`'s fallback.
+- `titleWordEms` fits the heading to its measure (`cat === 'pricing'` joins the Lattice list); `vm.pad` 78.72 / 77 / 58 top and foot with the bio's content insets.
+
+## Inline editing (Lattice layout 1, 2026-11-19)
+
+Every field the layout reads is printed, so `INLINE_OFF` has no Lattice pricing row. `inline-probe --theme Lattice --layout 1 --cat pricing --width 1440,768 --check`: PASS, 30 slots hit, 0 UNLEDGERED
+(the 6 `off` are the derived `tiers[].tags`, as every template). The price is lead, numeral and tail spans, the `*.0.` slots Lime's block already settled; the unit is a slot on its stored `/event`.
+
 ## Inline editing (plans/inline-edit-all.md, Retro layout 2, 2026-10-21)
 
 Layout 2 draws the first plan only: the other tiers' price, blurb and features are *paged* (the chip row is live-only), the

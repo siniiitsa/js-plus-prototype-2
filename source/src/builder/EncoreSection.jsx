@@ -10551,6 +10551,129 @@ function Video({ s }) {
 //
 // Three cards is only what the seed carries: the packages are the artist's list
 // now, and the chip row above them filters it on the published page.
+// Lattice's layout-1 pricing (frames 1:915 · 1:9547 · 1:10518): a block of its own, after `Pricing`'s seam
+// (`active`, `shown` and the chip press stay there and come over in `g`). Every number is the frame's (desktop x
+// 0.82 through `u`, 768 and 390 verbatim; raw sizes, not the ramp). A heading over a boxed, segmented chip row
+// (at its right at 1440, under it narrow), then the packages as three coloured 20-radius cards, each on a scheme
+// of its own by the package's place in the whole list (3 dark, 5 orange, 4 teal: the page ground's `#111` stands
+// in `tx` on the two bright ones) with a soft halo in its own colour: a mono `[ 0N ]` and the unit over the name
+// and the price (both the one display face), the blurb, `+` features on 1px rules, and a full-width rectangular
+// Book Now bar in the card's pair. 1440 stands three columns; 768 two, the last card of an odd count spanning
+// both; 390 one. Every card is at least 520 tall, and the bar is pinned to its foot. The halo is a `boxShadow`
+// (no `url()`), and the section's own glow is the root's background.
+function LatticePricing({ s, g }) {
+  const { shown, active, pressChip } = g
+  const tab = isTablet(s)
+  const k = s.narrow ? 1 : 0.82
+  const u = (v) => `${Math.round(v * k * 100) / 100}px`
+  const mono = (size, extra) => ({
+    fontFamily: s.mono, fontSize: size, lineHeight: 1.2, letterSpacing: '0.04em', textTransform: 'uppercase', ...extra,
+  })
+  const display = (size, lh, extra) => ({
+    fontFamily: s.display, fontWeight: 500, fontSize: size, lineHeight: lh, letterSpacing: '0.004em', textTransform: 'uppercase', ...extra,
+  })
+  const hz = s.mob ? 40 : tab ? 48 : 60 * k
+  const seatOf = (n) => s.onScheme[[3, 5, 4][n % 3]]
+
+  // The heading fits its widest word (`vm.titleWordEms`, the bio's rule) in the frame's own measure:
+  // 732.22 at 1440, 585.77 at 768, the column at 390.
+  const heading = String(s.title || '').trim() ? (
+    <div style={{ containerType: 'inline-size', width: '100%', minWidth: 0, flex: s.narrow ? undefined : '1 1 0', maxWidth: s.mob ? undefined : tab ? '585.77px' : u(732.22) }}>
+      <h2 style={{
+        margin: 0, ...display(s.titleWordEms ? `min(${hz}px, calc(100cqi / ${s.titleWordEms}))` : `${hz}px`, 1), color: s.tx,
+      }}>{s.title}</h2>
+    </div>
+  ) : null
+
+  // The chip row: a 1px ring, 4 in, 40-tall tabs 4 apart; the lit one is filled teal under ink. It stands only over
+  // two or more tags (nothing to filter otherwise), and at rest none is lit (JP-089: the frame lights *Solo*).
+  const chips = s.tierChips.length > 1 ? (
+    <div style={{
+      ...row(u(4), { flexWrap: 'wrap' }), boxSizing: 'border-box', flex: 'none', maxWidth: '100%', padding: s.narrow ? '4px' : '3.1px',
+      border: `1px solid ${s.tx}`, borderRadius: s.radiusChip,
+    }}>
+      {s.tierChips.map((f, i) => (
+        <span key={i} onClick={s.live ? () => pressChip(i, active) : undefined} style={{
+          ...mono(u(11)), display: 'inline-flex', alignItems: 'center', justifyContent: 'center', boxSizing: 'border-box',
+          height: u(40), padding: `0 ${u(16.03)}`, borderRadius: s.radiusChip, whiteSpace: 'nowrap',
+          background: i === active ? s.activeBg : undefined, color: i === active ? s.activeFg : s.tx,
+          cursor: s.live ? 'pointer' : undefined,
+        }}>{f.label}</span>
+      ))}
+    </div>
+  ) : null
+
+  const cards = shown.map((t, i) => {
+    const S = seatOf(t.n)
+    const rule = t.n % 3 === 0 ? `${S.tx}47` : S.tx
+    const link = s.live && s.tierBookTo ? { href: `#${s.tierBookTo}` } : null
+    const Bar = link ? 'a' : 'span'
+    return (
+      // Keyed on the package's place in the WHOLE list, layout 1's rule.
+      <div key={t.n} style={{
+        ...col(u(22)), boxSizing: 'border-box', minWidth: 0, minHeight: u(520),
+        gridColumn: tab && i === shown.length - 1 && shown.length % 2 === 1 ? '1 / -1' : undefined,
+        padding: s.mob ? '20px 16px' : tab ? '24px 21px' : u(28), background: S.bg, color: S.tx,
+        borderRadius: u(20), boxShadow: `0 0 ${u(36)} 0 ${S.bg}4D`,
+      }}>
+        <span style={row(u(12), { justifyContent: 'space-between', alignItems: 'baseline' })}>
+          <span style={mono(u(12), { color: S.tx, whiteSpace: 'nowrap' })}>{`[ ${String(t.n + 1).padStart(2, '0')} ]`}</span>
+          {!!s.tierUnit && <span style={mono(u(12), { color: S.tx, minWidth: 0, textAlign: 'right' })}>{s.tierUnit}</span>}
+        </span>
+        <span style={display(u(s.mob ? 25 : tab ? 27 : 30), 1, { color: S.tx })}>{t.name}</span>
+        {/* The price is one run in the display face, as the frame sets `£450`: the lead, the numeral and a range's second
+            half are inline spans of the one size, so a long tail wraps at its spaces instead of standing a size smaller. */}
+        <span style={display(u(s.mob ? 40 : tab ? 48 : 60), 0.9, { color: S.tx })}>
+          {!!t.lead && <span>{t.lead}</span>}
+          <span style={t.prose ? { overflowWrap: 'anywhere' } : { whiteSpace: 'nowrap' }}>{t.amount}</span>
+          {!!t.tail && <span style={{ marginLeft: '0.25em' }}>{t.tail}</span>}
+        </span>
+        {!!t.blurb && <p style={{ margin: 0, fontFamily: s.body, fontSize: u(16), lineHeight: 1.2, color: S.tx }}>{t.blurb}</p>}
+        {t.feats.length > 0 && (
+          <div style={col(0)}>
+            {t.feats.map((f, j) => (
+              <span key={j} style={{
+                ...row(0, { alignItems: 'flex-start' }), boxSizing: 'border-box', padding: `${s.narrow ? '9px' : '7.29px'} 0`, borderTop: `1px solid ${rule}`,
+              }}>
+                <span aria-hidden style={mono(u(11), { flex: 'none', width: u(19.59), marginTop: u(3), color: S.tx })}>+</span>
+                <span style={{ fontFamily: s.body, fontSize: u(15), lineHeight: 1.1, color: S.tx, minWidth: 0 }}>{f}</span>
+              </span>
+            ))}
+          </div>
+        )}
+        {!!s.tierRowCta && (
+          <Bar {...link} style={{
+            ...row(u(12), { justifyContent: 'center' }), ...mono(u(12)), boxSizing: 'border-box', marginTop: 'auto', height: u(44), flex: 'none',
+            background: S.tx, color: S.bg, textDecoration: 'none', cursor: link ? 'pointer' : undefined,
+          }}>
+            <span>{s.tierRowCta}</span>
+            <span aria-hidden>→</span>
+          </Bar>
+        )}
+      </div>
+    )
+  })
+
+  return (
+    <div style={col(u(40), WRAP_LONG)}>
+      {(heading || chips) && (
+        <div style={s.narrow ? col('24px', { alignItems: 'flex-start' }) : row(u(24), { alignItems: 'flex-end', justifyContent: 'space-between' })}>
+          {heading}
+          {chips}
+        </div>
+      )}
+      {cards.length > 0 && (
+        <div style={{
+          display: 'grid', alignItems: 'stretch', gap: s.narrow ? '24px' : u(24),
+          gridTemplateColumns: s.mob ? 'minmax(0, 1fr)' : `repeat(${tab ? 2 : 3}, minmax(0, 1fr))`,
+        }}>{cards}</div>
+      )}
+      {s.tiers.length === 0 && <span style={mono(u(12), { opacity: 0.6 })}>No packages yet.</span>}
+      {!!s.pricingSub && <span style={mono(u(11), { color: s.text3, overflowWrap: 'anywhere' })}>{s.pricingSub}</span>}
+    </div>
+  )
+}
+
 function Pricing({ s }) {
   // The selected filter chip, gated on `s.live` below like Repertoire's: it is
   // a real control in the published tab and inert on the editor canvas, which
@@ -10651,6 +10774,10 @@ function Pricing({ s }) {
     // raw sizes of the display face. The 10px blue rule across the top and
     // the violet rings behind the third card stand in a layer the root's size
     // that clips, or the rings would scroll the 390 page sideways.
+    // Lattice's layout-1 pricing is a block of its own (LatticePricing), after the seam: the chip filter and
+    // the pick above are shared whole, and the block is the picture.
+    if (s.limeTree && s.lattice) return <LatticePricing s={s} g={{ shown, active, pressChip }} />
+
     if (s.limeTree) {
       const grunge = s.grunge
       const ed = s.editorial
@@ -31403,6 +31530,11 @@ export default function EncoreSection({ s }) {
       // 15% / 20%, orange at 14% to nothing at 70%, the same at all three widths (the root's own).
       ...(s.re && s.v0 && s.lattice && {
         backgroundImage: `radial-gradient(ellipse 60% 55% at 15% 20%, ${s.text3}24, ${s.text3}00 70%)`,
+      }),
+      // …and the pricing's teal glow: the frames' one radial gradient, 60% x 55% of the section at 50% / 75%,
+      // teal at 14% to nothing at 70%, the same at all three widths (the root's own).
+      ...(s.pr && s.v0 && s.lattice && {
+        backgroundImage: `radial-gradient(ellipse 60% 55% at 50% 75%, ${s.glow}24, ${s.glow}00 70%)`,
       }),
       boxShadow: grungeRule ? `inset 0 0 0 1px ${s.inactiveLine}` : editorialRule ? `inset 0 0 0 1px ${s.stroke2}`
         : popMediaRule ? `inset 0 4.1px 0 ${s.onScheme[1].stroke2}, inset 0 -4.1px 0 ${s.onScheme[1].stroke2}`

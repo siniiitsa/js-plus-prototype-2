@@ -417,6 +417,19 @@ After section 11 and session 12, in one session (the lists in `../lime/layout-1.
   **no pin and no lit row**, and the picture is art rather than a map. So it is a block of its own, standing in `EventsMap` **after the seam** (`perPage`, `pages`, `pg`,
   `shown`, `lit`, `onPick`, `win` stay `EventsMap`'s and go over in `g`). The twin prediction (*Lime's Compact tile*) was half right a third time: the seam is Lime's, the picture is not.
 
+- **pricing (section 7, 2026-11-19): *new own-tree block* `LatticePricing`, not Lime's pricing block (nor Grunge's / Editorial's / Pop's widenings of it).** Diffed against the
+  `if (s.limeTree)` block in `Pricing` and `notes/pricing.md`, frames `1:915` · `1:9547` · `1:10518`. The *inventory* is Lime's (a heading, a chip row over the packages' tags, a three-up
+  deck of cards each with a name, a price, a blurb, features and a Book pill, a small-print line), and **no leaf is**. Lime's chips are filled 56-radius pills, here a 1px-ruled 3px
+  *segmented box* (50 tall, 4 in, 40-tall tabs) whose lit tab is filled teal; Lime's card is one flat `box/2` in a 3px ring at radius 55 (Grunge 13, Editorial 0, Pop 50 leant), here three
+  *coloured* 20-radius cards (Scheme 3 dark, 5 orange, 4 teal, by rendered seat) each with a soft halo in its own colour, no ring; Lime's card opens on an `[ico]` pill beside the
+  name and a Bebas numeral, here a mono `[ 01 ]` and the unit (`/ event`) on one row, over the name (30) and the price (60), both in the one display face; Lime's features take a ✓ on
+  no rule, here a `+` on a 1px rule across the card (28% on the dark card, solid ink on the other two); Lime's pill is `BookPill`'s rounded disc-and-label, here a full-width 44-tall
+  rectangular *bar* in the card's own pair (ink ground, card-coloured label, `→`). And the **grid differs**: three columns at 1440, but at 768 **two columns with the third card spanning
+  both** (Lime keeps three at 768), one column at 390 stacked 24 apart (Lime's 20 and 22), with a **520 minimum height** on every card at every width. The glow is a percentage radial
+  gradient (60% x 55% at 50% / 75%, teal at 14% to 0 at 70%) at all three widths, the root's own. So it is a block of its own, standing in `Pricing` **after the seam** (`active`,
+  `shown`, `pressChip` stay `Pricing`'s and go over in `g`). The twin prediction (*Lime's pricing*) was half right a fourth time: the seam is Lime's, the picture is not. The frames' lit
+  *Solo* chip and `[ 006 ] PRICING` eyebrow are the two things the standing rules answer (calls below).
+
 ### Settled in session 0 — the foundation (2026-11-19)
 
 **Calls (user, via AskUserQuestion):** call 1, every standing removal holds (see *The decisions*, call 1); call 2, the display
@@ -833,6 +846,53 @@ control) and the working tree (:5173), ports normalised: **0 differing files of 
 dot field is the root's background (or a mask on a span inside a card, as this section's art), never a child `url()`. Read each master's tier count and chip count first (the frame's pager or tier count can differ
 from the seam's), gate any change to shared counts on `s.lattice`, measure `FIELDS.pricing` caps with `limits.mjs pricing --themes=5 --designs=0` (Pop's rows are provisional), add `INLINE_OFF` rows for fields not
 printed, and keep a glyph in its own span. The pricing's `[ 006 ]` eyebrow needs the same call-1 ruling; frames' status words (`Most popular`) are drawn only where a field exists (JP-045, JP-071).
+
+### Settled in section 7 — the pricing (2026-11-19)
+
+**Verdict** (under *Seen at planning time*, written before the code): a new own-tree block, not Lime's pricing block and not its widenings. `LatticePricing` stands in `Pricing`'s `if (s.limeTree)` **after the
+seam**; `shown`, `active` and `pressChip` stay `Pricing`'s and go over in `g`. Notes: `notes/pricing.md`, *Lattice · layout 1*. **Scheme seat:** no `SCHEMES_OF.Lattice` row was added: the section already stands
+on Scheme 8 (`#111`, ink `#F2F2F2`, active teal) and the three cards read `s.onScheme[3]` (dark), `[5]` (orange) and `[4]` (teal), which `THEMES[5]` already carried and its comment already assigned to the pricing cards.
+
+**The block.** Every number the frame's (desktop x 0.82 through `u`, 768 and 390 verbatim; raw sizes 60 / 48 / 40 price and heading at line 0.9 and 1, 30 / 27 / 25 name, 12 mono, 15 / 16 Archivo; not the ramp).
+Head: the heading (`Archivo Lattice`, fitted to its measure by `vm.titleWordEms`, now also `pricing`: 732.22 at 1440, 585.77 at 768, the column at 390) and the chip row (a 1px ring, 4 in, 40-tall tabs 4 apart, 50 tall)
+at its right edge at 1440 and 24 under it narrow. Then the cards, 40 under the head: 24 apart, three columns at 1440, two at 768 (the last card of an odd count spanning both: the frame's third card at 715.77), one at 390; each a
+20-radius card at least 520 tall on its scheme, with a `0 0 36 @ 30%` halo in its own colour; inside it, 22 apart: a mono `[ 0N ]` and the unit on one row, the name, the price, the blurb, the features (a `+` and Archivo 15 on 1px
+rules, 35.5 a row), and the full-width 44-tall Book Now bar pinned to the foot. Then the small print in `s.text3` (orange), 40 under the cards. `vm.pad`: 78.72 / 77 / 58 top and foot with the content insets (40.15 / 26.11 / 24),
+in `EncoreBuilder.jsx` after Pop's inset block. The glow is the root's own `radial-gradient(ellipse 60% 55% at 50% 75%, glow 14%, 0 at 70%)`, which all three frames' `gradientTransform`s reduce to: **no `url()` anywhere
+in the block** (the halo is a `boxShadow`, the glow a gradient on the root). The head boxes carry no import artefact here: heights are the render's, the frame's boxes agree (heading 180 / 144 / 160 = 3 / 3 / 4 lines).
+
+**Calls for the user to confirm.**
+1. **No chip is lit at rest.** The frames light *Solo* over all three cards; JP-089 stands (a lit chip that filters nothing misleads on the published page). A press lights a tab teal and filters; a press on the lit tab clears it.
+2. **The `[ 006 ] ——— PRICING` eyebrow is not drawn** (call 1 holds: no field). The section is 812.2 / 1529.2 / 2064.4 tall drawn against the frames' 846.2 (1032 x 0.82) / 1571.6 / 2106.8: the eyebrow's 42.4 shorter, 34.8 on desktop.
+3. **The unit prints as stored, `/EVENT`,** where the frame prints `/ EVENT`. Printing `/ ` and `vm.tierKind` is layout 4's route and would need a `Lattice.0.pricing.unit` ledger row; the stored text keeps the slot a hit.
+4. **Seats follow the package, not the rendered position.** Package *n* is dark / orange / teal by `n % 3` and numbered `[ 0(n+1) ]`; the filter hides cards without recolouring or renumbering the rest (Retro's whole-list rule; Lime's and Pop's
+   seats move with the rendered index). A fourth package starts the colours again.
+5. **The price is one run in the display face.** The frame has only `£450`-shaped prices; a range's second half sets at the numeral's size and wraps at its spaces (cap 9: `£475 — £1,450` reads `£475 —…`), where layouts 1-3
+   elsewhere set a small tail. A digit-less long price wraps in its seat (`overflowWrap: anywhere`).
+6. **`[ 0N ]` is derived, not a label** (the package's place, as the media's row numbers); it has no field. It is not `[ 006 ]`.
+7. **The cards are 520 tall at least at every width,** so a package with two features stands over empty ground (the frame's dark card does the same, its list 4 rows under a 5-row neighbour).
+8. **`tiers.price.num` is 7** (measured 9 / 10 / 12 at layout 1, held to Pop's provisional 7: one scalar per template, the tightest layout's, and layouts 2-4 are unmeasured).
+9. **The Book bar is a plain rectangle,** as drawn (no four corner marks): it is not `BracketButton`. It links `#<form | calendar>` live and is a picture on the canvas; an emptied `rowCta` drops it.
+
+**Fields and caps.** `FIELDS.pricing` layout 1 reads `heading`, `tiers`, `unit`, `rowCta` and `sub`. **No `in` row needed naming Lattice** (every pricing `in` is an array, not a template-keyed object); the `chars` / `count` / `num`
+objects were the ones that named Pop and fell back to it, so each now carries an explicit `Lattice` row (layout 1 measured, layouts 2-4 Pop's, provisional). `limits.mjs pricing --themes=5 --designs=0`: `heading` 32
+measured, **42** held (the seed's own four lines at 390), `tiers.name` 15 measured, **16** held, `tiers.price` 9, `tiers.price.num` 7, `tiers.tags` item 26 (measured 42) and count 3, `tiers.feats` item 24 (measured 41) and count 15,
+`tiers.blurb` 160 (open to 400), `unit` 29, `rowCta` 34, `sub` 85. `--check`: 0 fail (`heading` and `name` read as `floor` at one width each); `--seeds`: 0 over. **`INLINE_OFF`: no Lattice pricing row,** because the block prints every field the layout reads.
+
+**Proof.** Geometry by `getBoundingClientRect` against the frame (content-relative, in frame px; the eyebrow's 42.38 taken off every y): 1440 heading 732.2 x 180 (frame 732.22 x 180), chip box 1135.9 / 130 x 205.2 x 50 (frame 1136.95 / 130.01 x 205.125 x 50), cards 431 x 524.2 at 0 / 455 / 910.1 and 220 (frame 431.34 x 524.27 at 0 / 455.36 / 910.72 and 220.01); inside card 1: row 28, name 64.4, price 116.4, blurb 192.4, list 233.58, bar 452.22 (frame 28, 64.38, 116.38, 192.38, 233.56, 452.25; the 1px rule is not scaled, so the five rules of the tallest card first ran 1 over and the row padding takes it back), small print 784.2 (784.28); section 811.3 canvas px; 768 heading 585.8 x 144, chips 168, cards 345.9 x 520 at 0 / 369.9 and 258, the third 715.8 wide at 802, row 24 / 60.4 / 109.4 / 174.59 / 234.98 / bar 452 (frame 24 / 60.38 / 109.38 / 174.56 / 235.56 /
+452.61); 390 heading 342 x 160, chips 184, cards 342 x 520 at 274 / 818 / 1362, small print 1922 x 26.4 (frame 1922 x 26.4), no sideways overflow. Probes at `--theme Lattice --layout 1 --cat pricing`: `inline-probe` (1440 and 768) PASS,
+30 slots hit, 0 UNLEDGERED; `photo-probe` PASS filled, `--blank` and `--drop` (the section holds no photo slot); `focus-probe --prime` PASS (36 controls). Live (`&live=1`): Solo lights teal and shows two cards, a second press clears to three, Band
+shows two (1440); Trio shows two and clears (390); both bars link `#form`; with one package the card spans the 768 grid and no chip row is drawn; with four, a `£TBC`, a 40-letter name, a digit-less long price and a range all clamp inside
+their cards. `page-check.mjs Lattice 0`: no errors, the chips respond (`Solo / Trio / Band: true`), `overflow390` 0. `digest.mjs` 0,1,2,3,4 against a HEAD worktree (:5185, which answered no `LatticePricing`, the positive control) and the
+working tree (:5173), ports and `?t=` normalised: **0 differing files of 720**. `npm run build` passes.
+
+**For the calendar (section 8).** `Calendar` has hooks (month, day pick, the layout-4 wizard) too, so its block goes after its seam, with what the seam resolved handed over in one object; raw sizes through `u(v)` (x 0.82
+desktop, verbatim narrow). The frames (`1:1039` · `1:9670` · `1:10640`, 1440 x 781 / 768 x 564 / 390 x 894) draw one bordered card, a month grid at the left, the `[ 007 ] ——— AVAILABILITY` eyebrow (call 1: drawn only where a field
+exists; `FIELDS.calendar` carries `heading`, `prompt`, `dateLabel`, `availLabel` and `slotCta` but no field for an `AVAILABILITY` eyebrow: read the frames first, and draw it only if one of those is that word's seat) and a torus art at the right (an art raster, used as a **mask** inked in `s.tx` on an `aria-hidden` span, as the map's and the bio's), and an enquiry foot with Continue: the
+twin prediction is Lime's *Scheduler*, which will be half right (the seam). The calendar stands on **Scheme 2** (`#F2F2F2`, in `SCHEMES_OF.Lattice` already). Read each master's day-grid row count, weekday header and legend first (the frame's
+month may not be the seam's), whether the frame draws a booked or past day, and the counts of slots; gate any change to shared counts on `s.lattice`. `vm.calWizard`, `vm.calMailto` and `vm.calCheck` are closures (layout 4); layout 1
+reads `vm.calMailto`'s absence, so check `notes/calendar.md` before touching the foot. Glyphs (`←`, `→`, `[ ]`) go in their own spans so the inline probe can match the copy. A decorative `url()` or glow is the root's own background or a mask on an
+`aria-hidden` span, never a child node (`limits.mjs` counts a `url(` element as a picture). No clickable copy's centre may stand inside the builder's section toolbar (right 8, top 8, 99 x 31) at 1440.
 
 ### Inherited and used
 

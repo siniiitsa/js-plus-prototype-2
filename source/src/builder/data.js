@@ -2859,7 +2859,10 @@ export const FIELDS = {
   pricing: [
     { k: 'heading', l: 'Heading', d: "Choose the set that's right for your night", in: [0, 1, 2],
       chars: { Retro: [42, 42, 44], Lime: [50, 42, 37], Grunge: [55, 44, 41], Editorial: [42, 42, 25],
-        Pop: [48, 42, 28] },
+        Pop: [48, 42, 28],
+        // Lattice layout 1 measured: 32 (the seed's four lines at 390 are the frame's, and prose of 33 takes a fifth),
+        // so the seed's own 42 is the floor, as the gallery's and the bio's heads. Layouts 2-4: Pop's, provisional.
+        Lattice: [42, 42, 28] },
       hint: 'Layouts 1, 2 and 3 only. Layout 4 is a stack of service rows and heads them with '
           + 'the package names alone, so it draws no title.' },
     { k: 'tiers',   l: 'Packages', type: 'tiers', max: 6,
@@ -2868,7 +2871,9 @@ export const FIELDS = {
       // layout) and its features one a line, their count bound at layout 4 alone.
       cols: {
         name: { Retro: [19, 18, 53, 16], Lime: [30, 28, 42, 23], Grunge: [40, 34, 51, 25], Editorial: [22, 18, 27, 16],
-          Pop: [16, 16, 30, 18] },
+          Pop: [16, 16, 30, 18],
+          // Layout 1 measured 15 (desktop 17, tablet 15, mobile 17); the seed's 16 (The Festival Set) is the floor.
+          Lattice: [16, 16, 30, 18] },
         // `num` is the first number run, the big numeral: a price of digits alone
         // sets whole in it, so it is measured apart from the total (`chars`, the
         // price with its small tail). User call, 2026-11-06. The numeral's cap is
@@ -2877,12 +2882,19 @@ export const FIELDS = {
         // or 4 cannot be one the deck then cuts (JP-168, user call, 2026-11-11);
         // what is stored over it renders cut to a `…`, clampNumeral().
         price: { chars: { Retro: [8, 33, 31, 25], Lime: [12, 35, 25, 29], Grunge: [14, 35, 30, 34], Editorial: [11, 33, 27, 20],
-          Pop: [10, 34, 25, 23] }, num: { Retro: 5, Lime: 10, Grunge: 11, Editorial: 8, Pop: 7 } },
-        tags: { list: ',', chars: { Retro: [12, null, 12, 12], '*': [26, null, 26, 26] },
-          count: { Retro: [4, null, 5, 6], Pop: [3, null, 4, 5], '*': [4, null, 4, 5] } },
+          Pop: [10, 34, 25, 23],
+          // Layout 1 measured 9 (one run in the display face, a range's tail wrapping at its spaces); the rest Pop's.
+          Lattice: [9, 34, 25, 23] },
+          // Lattice's numeral is layout 1's 9 (measured: desktop 9, tablet 10, mobile 12) held to Pop's 7, the tightest of
+          // the placeholder layouts' provisional rows, so a price typed at layout 2, 3 or 4 is not one the deck then cuts.
+          num: { Retro: 5, Lime: 10, Grunge: 11, Editorial: 8, Pop: 7, Lattice: 7 } },
+        // Lattice layout 1 measured: an item 42 at 390 (so the shared 26 holds), and three tags a package (a fourth chip
+        // wraps the 390 row's second line).
+        tags: { list: ',', chars: { Retro: [12, null, 12, 12], Lattice: [26, null, 26, 26], '*': [26, null, 26, 26] },
+          count: { Retro: [4, null, 5, 6], Pop: [3, null, 4, 5], Lattice: [3, null, 4, 5], '*': [4, null, 4, 5] } },
         blurb: 160,
         feats: { list: '\n', chars: { Retro: [24, 24, 24, 59], Grunge: [25, 24, 24, 62], Editorial: [25, 24, 24, 60],
-          Pop: [26, 24, 24, 62], '*': [24, 24, 24, 62] }, count: [15, 15, 15, 5] },
+          Pop: [26, 24, 24, 62], Lattice: [24, 24, 24, 62], '*': [24, 24, 24, 62] }, count: [15, 15, 15, 5] },
       },
       hint: 'Tags become the filter chips above the packages in layouts 1 and 3. '
           + 'Layout 3 starts the packages tagged Duo where the other layouts '
@@ -2898,7 +2910,9 @@ export const FIELDS = {
           + 'package on show.' },
     { k: 'unit',    l: 'Price unit', d: PRICE_UNIT,
       chars: { Retro: [7, 37, 32, 69], Lime: [13, 40, 28, 88], Grunge: [15, 41, 33, 98], Editorial: [12, 37, 29, 53],
-        Pop: [11, 39, 27, 51] },
+        Pop: [11, 39, 27, 51],
+        // Layout 1 measured 29 (desktop 37; tablet and mobile 29): the unit stands in the card's top row, right-aligned.
+        Lattice: [29, 39, 27, 51] },
       hint: 'Printed after the price in layouts 1, 2 and 3. Layout 4 stands it above the price '
           + 'instead, as the kind of booking being priced, and drops a leading slash.' },
     { k: 'intro',   l: 'Intro line', type: 'area', d: PRICING_INTRO_3, in: [2],
@@ -2951,11 +2965,13 @@ export const FIELDS = {
     // layout 1's word; sectionVm and EditPanel resolve layouts 3 and 4's.
     { k: 'rowCta',  l: 'Package button', d: 'Book Now', in: [0, 2, 3],
       chars: { Retro: [12, null, 12, 26], Lime: [14, null, 12, 26], Grunge: [16, null, 12, 26],
-        Editorial: [9, null, 12, 26], Pop: [10, null, 12, 26] },
+        Editorial: [9, null, 12, 26], Pop: [10, null, 12, 26],
+        // Layout 1 measured 34 (the full-width bar: desktop 42, tablet 34, mobile 35); the rest Pop's.
+        Lattice: [34, null, 12, 26] },
       hint: 'The pill on every package. Layout 3 starts from “Book” and layout 4 from '
           + '“Start Enquiry”. Layout 2 has its own plan button. Empty it to drop the pill.' },
     { k: 'sub',     l: 'Small print', def: 'pricingSub',
-      chars: { Retro: [133, 67, 67, 67], Grunge: [53, 67, 63, 67], Pop: [80, 67, 63, 67], '*': [67, 67, 63, 67] } },
+      chars: { Retro: [133, 67, 67, 67], Grunge: [53, 67, 63, 67], Pop: [80, 67, 63, 67], Lattice: [85, 67, 63, 67], '*': [67, 67, 63, 67] } },
   ],
   // The other list-shaped content type with a structured editor rather than a
   // textarea (see `media` above): `songs` is an array of
