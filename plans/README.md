@@ -65,6 +65,8 @@ plans/
     display-face.md
     layout-3-qa-fixes.md
     layout-4-qa-fixes.md
+  lattice/
+    layout-1.md   ← a sixth template, from the JustPay — Batch 2 Figma file (planned 2026-11-19)
   pop/
     layout-1.md
     layout-2.md
@@ -221,6 +223,16 @@ widening of every Lime layout-4 block, and its trap 1), groups A, B, C and **D4*
 QA batches (Lime's JP-052 … JP-054 and JP-038, Grunge's JP-076 … JP-084, Editorial's JP-108 …
 JP-110), Retro layout 4's *Conventions* and 2026-09-15 Addendum, and Lime layout 4's *Per-session
 procedure*.
+
+## Lattice
+
+| Pass | Plan | Branch | Fitted |
+|---|---|---|---|
+| Layout 1 | [`lattice/layout-1.md`](./lattice/layout-1.md) | `lattice-layout-1`, forked from `main` (planned 2026-11-19; nothing built) | A sixth template from the *JustPay — Batch 2* Figma file (`ORILFywSzuadscu6RzskCW`, an HTML-to-Figma import: no component sets, no variable modes). The same eleven layout-1 sections as Retro's page, predicted to be Lime's tree again, in a dark / light / orange page of straight seams, a dot field, bracket-cornered buttons and dotted 3D art. Session 0 opens on the header call (the frame draws a wordmark and inline links the header-nav ticket removed), then the foundation (`THEMES[5]`, Archivo expanded + Azeret Mono, a new photo set); sections 1–11 one per session, all three widths; session 12 the proofs (char caps, reach, inline and photo probes); the sweep. |
+
+**Reading order in a Lattice session:** `CLAUDE.md`, then the plan, then [`CONVENTIONS.md`](./CONVENTIONS.md) groups A, B, C
+and D1, the section's *Settled* bullets in Lime, Grunge, Editorial **and** Pop layout 1, the section's `notes/` file, and
+Lime layout 1's *Per-session procedure*. The header session also reads `header-nav.md` and `header-fit.md`.
 
 ## Every template
 
