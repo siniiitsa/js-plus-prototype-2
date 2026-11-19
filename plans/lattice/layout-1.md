@@ -83,7 +83,7 @@ frame's aspect assume the old numbers, so section 1 re-measures them (open quest
 | 1 | `header` | `1:308` | 1440 × 750 | `1:8955` | 768 × 750 | `1:9936` | 390 × 750 | Full-bleed photo, dot field, wordmark + inline nav + Book Now, a dotted-ellipse disc top-right, avatar card, kicker line, 120-ish-px title, six square chips · **Retro `HeaderV0`** (Lime's block as the twin of the card and chips) | done `33e2f3c` |
 | 2 | `bio` | `1:386` | 1440 × 769 | `1:9019` | 768 × 939 | `1:9991` | 390 × 1050 | Grey `#D9D9D9`; three columns: `KM / BIO`, a stacked statement, a tall portrait, a vertical town, ABOUT copy; `[ 001 ] STRUCTURE · BIO_01` · **new own block `LatticeBio`** (not Lime's *Flanked portrait*: a plain portrait with a rail, a 12-column grid; `KM / BIO` and the reference line are removed copy, call 1) | done `7bee3bd` |
 | 3 | `media` | `1:419` | 1440 × 1057 | `1:9052` | 768 × 1404 | `1:10024` | 390 × 1422 | Dark; five-row numbered track list with art and play squares + a *Now playing* card with transport and a bar-code progress · **probably Retro's `v0` body re-laid** (Pop's plan describes it as five track rows with cover and play disc, a now-playing card with transport and progress, and a Soundcloud pill — this frame's inventory, untilted); **check against `Media`'s `v0` body before deciding** (open question 1) | done `e85f73c`, fixed `a413506` |
-| 4 | `gallery` | `1:588` | 1440 × 923 | `1:9221` | 768 × 1438 | `1:10193` | 390 × 1020 | Light; heading + four source rows (Gallery open, YouTube, Instagram, TikTok) left; viewer with caption pill, arrows, seven thumbnails, progress and `02 — 15` right · **Lime's gallery** | open |
+| 4 | `gallery` | `1:588` | 1440 × 923 | `1:9221` | 768 × 1438 | `1:10193` | 390 × 1020 | Light; heading + four source rows (Gallery open, YouTube, Instagram, TikTok) left; viewer with caption pill, arrows, seven thumbnails, progress and `02 — 15` right · **new own block `LatticeGallery`** (Lime's inventory, no Lime leaf) | done `2b7c022` |
 | 5 | `repertoire` | `1:673` | 1440 × 1067 | `1:9306` | 768 × 1067 | `1:10278` | 390 × 1555 | Dark with a warm glow; `240 SONGS`, search box, four chips, two-column dense list, pager · **Lime's *Two-column dense*** | open |
 | 6 | `map` | `1:796` | 1440 × 983 | `1:9429` | 768 × 1351 | `1:10401` | 390 × 1454 | Grey; `MANCHESTER`, a dotted-ellipse card with a *Based in* foot, an upcoming-gigs panel with status pills and a pager · **Lime's *Compact tile*** (the raster map is the dotted art) | open |
 | 7 | `pricing` | `1:915` | 1440 × 1032 | `1:9547` | 768 × 1572 | `1:10518` | 390 × 2107 | Dark; heading, a boxed Solo / Trio / Band chip row, three coloured cards (dark, orange, teal) with Book Now bars, small print · **Lime's pricing** | open |
@@ -378,6 +378,20 @@ After section 11 and session 12, in one session (the lists in `../lime/layout-1.
   its own. **It sits after `Media`'s hooks and seam, not above them** (an early return above `useRef` / `useState` would change the
   hook count on a theme switch; the bio's route worked only because `Bio` has none): `Media` resolves `at`, `track`, `now`, `sleeve`,
   `goTo`, `toggle`, `onPick` and `audio`, then hands them to `LatticeMedia`, so the published player is the one seam in a new picture.
+
+- **gallery (section 4, 2026-11-19): *new own-tree block* `LatticeGallery`, not Lime's block (and so not Pop's widening of it).** Diffed against
+  Lime's `if (s.limeTree)` block (and Pop's, which widens it) and `notes/gallery.md`, frames `1:588` · `1:9221` · `1:10193`. The *inventory*
+  is Lime's (heading, four source rows, a back link and a credit, a viewer, a seven-tile strip, a counter), and **no leaf is**. Lime's rows are
+  capsules with a disc and a hard offset shadow, at 768 four disc-only tiles and at 390 a scrolling single line; here they are four full-width
+  1px-ruled 3px-radius boxes with a *square* icon seat, a mono label and a `+` / `×`, **stacked at every width** (116.7 tall at 1440, 64 at 768 and
+  390), the open one filled ink. Lime's viewer is a bare 80-radius photograph with two round discs riding its middle; here it is a 20-radius
+  figure (aspect 659.047 : 540.75 at every width) with a **caption pill** bottom-left and **two square arrow buttons bottom-right**, both inside
+  it. Lime's strip is four tiles at 390 with an inset glow marking the viewer's tile; here all **seven** 3px-radius ruled tiles stand at every
+  width (40.3 at 390, so no sliding window and no `srcScroll`), with no marked tile. And the frame ends the column with a **1px progress
+  line, a 3px played segment and a `02 — 15` counter** that Lime does not draw. The halves are 1fr : 1fr at 24 (Lime's 608 : 585 at 135). So it is
+  a block of its own, standing in `Gallery` **after the seam** (`pick`, `src`, `go`, `srcRows`, `srcAct`, `video`, `player` stay `Gallery`'s):
+  an early return above those hooks would change the hook count on a theme switch. The twin prediction (*Lime's gallery*) was half right: the
+  seam is Lime's, the picture is not.
 
 ### Settled in session 0 — the foundation (2026-11-19)
 
@@ -679,6 +693,40 @@ normalised: **0 differing files of 720**. The second commit's edits are inside L
 **For the gallery (section 4).** `Gallery` has hooks too, so its block goes after its seam, not at the head. `BracketButton` takes `ext` (outward address) as
 well as `to` (anchor). A section glow is a percentage `radial-gradient` on the root (`s.me && s.v0 && s.lattice` in the root style). The masters' head boxes
 carry import artefacts (a 40 offset at 390 here): read positions off the render and say which reading the height follows.
+
+### Settled in section 4 — the gallery (2026-11-19)
+
+**Verdict** (under *Seen at planning time*, written before the code): a new own-tree block, not Lime's and not Pop's widening of it. `LatticeGallery` stands in `Gallery`'s
+`if (s.v0)` **after the seam**; `pick`, `src`, `go`, `srcRows`, `srcAct`, `video` and `player` stay `Gallery`'s and go over in `g`. Notes: `notes/gallery.md`, *Lattice · layout 1*.
+
+**The block.** Every number the frame's (desktop x 0.82 through `u`, 768 and 390 verbatim; raw sizes 74.88 / 48 / 38 heading, 12 / 11 mono, not the ramp). Two columns 1fr : 1fr at 24
+(one column at 768 and 390, 32 apart). Left: the heading (`Archivo Lattice`, two typed-break blocks, *See us* / *in action*, fitted to its widest word by `vm.titleWordEms`, now
+`bio` / `media` / `gallery`), then four rows, each a 1px-ruled 3px-radius box (116.72 tall at 1440, 64 narrow, 12 apart): a 46 square seat (1px, opacity .9, 18 transcribed stroke icons), a mono 12 label,
+and a `+` / `×` in a 24 box; the open row is filled ink. Right: the back link and credit (head row 30.375 tall), the figure (20 radius, aspect 659.047 : 540.75 at every width, a 0 / 0 / 80 shadow at .12), a caption pill (16 in, 30 tall,
+3px) bottom-left, two 44 square arrow buttons bottom-right (Arial 13.33 arrows, 6 apart), seven square 1px tiles (gap 10, photograph inside the rule), and a 1px track with a 3px played segment beside a mono 12 counter (24 apart). `vm.pad`:
+78.72 / 77 / 58 top and foot, the bio's content insets. No glow, no dots, no seam: Scheme 2's `#F2F2F2`.
+
+**Calls for the user to confirm** (the frame and a standing rule, or the frame and the data, disagree):
+1. **The viewer opens on slot 2, not the shared `galActive()` slot 3.** The frame's viewer is the third tile's photograph (the portrait) and prints `02`; Lime's seed is the fourth. Slot 2 keeps the frame's picture; nothing outside the block reads it (grepped `EncoreBuilder.jsx`, `data.js`, `scripts/`).
+2. **The caption is `IMG_0N`.** The frame's `IMG_02 · Club night`: "Club night" has no field and would be wrong on six of seven photographs, so it is dropped; `IMG_0N` is derived from the viewer's slot.
+3. **The counter and the progress line follow the data.** The canvas draws `03 — 07` with a 3/7 segment where the frame draws `02 — 15` and 2/15 (a count the page does not have).
+4. **The pick ring is live-only.** The frame marks no tile, so the canvas and the first paint mark none; a visitor's own pick rings its tile in 3px of Scheme 7's orange, inside.
+5. **`[ 003 ] ——— KICKER` is a literal around a typed kicker.** Seeded empty, so not drawn (call 1 holds); typed, the `[ 003 ]` and rule come with it. At desktop its seat is kept empty so the columns stand where the frame's do.
+6. **Heights.** Desktop keeps the frame's 923 x 0.82 = 756.84 (the eyebrow's seat held). 768 and 390 follow the *render* with the eyebrow row removed: 1391.8 and 973.7 against the masters' 1438 and 1020 (46.4 shorter each). No master's head box was offset here (unlike the media's 390).
+7. **`sourceLabel` prints at every width** (the rows are full-width at 768 and 390, where Lime's are icon tiles), so its cap is the narrow reading, 25. The panel's hint still says "on desktop only" (it is template-wide copy); `notes/gallery.md` says otherwise for Lattice.
+
+**Fields and caps.** `FIELDS.gallery` layout 1 reads `heading`, `kicker`, `railLabel`, `backLabel`, `sourceLabel`, `images` and the three addresses. `limits.mjs gallery --themes=5 --designs=0`: `kicker` 41, `sourceLabel` 25 (62 / 69 / 25), `railLabel` 45,
+`backLabel` 34 (the sized one), `heading` **16** (measured 14: *Kestrel Nights* fills a line, so the seed's 16 is the floor, as Editorial's and Pop's; `--check` reads it as `floor` at 1440 and 390). `--check`: 0 fail; `--seeds`: 0 over. No `INLINE_OFF` rows.
+
+**Proof.** Geometry by `getBoundingClientRect` against the frame (desktop x .82, root-relative, all within 0.4 px, the canvas's 40.15 inset): root 756.84 (frame 756.86), heading 116.7, rows 265.77 + 105.55 x n at 95.7, figure 599.84 / 120.02 x 540.02 x 443.08,
+tiles 579.5 at 70.12, progress 666.02, track 466.4, buttons 36.08 right-aligned 13.1 in; 768: rows 205 + 76, figure 579.4 x 715.78 x 587.3, tiles 1186.7 at 93.68, progress 1300.38, track 626.02, glyph box 674.78; 390: rows 166 + 76, figure 540.4, tiles 841 at 40.28, progress 901.3. Probes at
+`--theme Lattice --layout 1 --cat gallery`: `inline-probe` (1440 and 768) PASS, 4 slots hit (the back link's arrow had to be its own span for its copy to be exact); `photo-probe` PASS filled, `--blank` (7 appended) and `--drop`; `focus-probe --prime` PASS (8 controls).
+Live (`&live=1`): trusted clicks on Next / Previous (wraps 01 to 07), Back to beginning, a thumbnail (06, then 01, and the same tile again is idempotent) at 1440 and 390, the YouTube row (the embed replaces the photograph, the row takes the open look, caption and arrows step aside), the Instagram and TikTok rows
+links with `target=_blank rel=noopener noreferrer`, empty social rows not drawn live; `page-check.mjs Lattice 0` no errors, `overflow390` 0 (its `false`s are idempotent clicks: Back when already at 01, a tile that is already the viewer's). `&n=0` draws ink initials on the pale well, a typed kicker draws
+in its seat. `digest.mjs` 0,1,2,3,4 against a HEAD worktree (:5185, which answered no `LatticeGallery`), `?t=` and ports normalised: **0 differing files of 720**; at theme 5 only the three layout-1 gallery renders differ (layouts 2-4 are byte-identical).
+
+**For the repertoire (section 5).** `Repertoire` has hooks (search, chips, pager) too, so its block goes after its seam, and what the seam resolved is handed over in one object (`g`, `m`), not a dozen props. Raw sizes through a `u(v)` helper (x 0.82 desktop, verbatim narrow). A section glow is the root's own `radial-gradient`
+(the root style gates on `s.me`; the repertoire's would be `s.re`), never a node. Do not leave a text node that mixes a glyph and a label (`← label`): the inline probe cannot match it, so the glyph is its own span. In zsh, `for f in "--blank --check"` does not split: call each probe literally and check the output differs.
 
 ### Inherited and used
 
