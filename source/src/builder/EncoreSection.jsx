@@ -6577,8 +6577,10 @@ function LatticeMedia({ s, m }) {
         <Photo s={s} slot={sleeveSlot} initialsSize={44} src={sleeve} ink={ink} />
       </div>
       <div style={col(u(8), { alignItems: 'center', minWidth: 0 })}>
+        {/* Wraps rather than clips: the seeded `Manchester at 3am` is 315 in a 308 box at 390 and 310 in 305.5
+            at 1440; the sleeve is the flex remainder, so a second line costs it 25-30 and the card stays 466. */}
         <span style={disp(s.mob ? '25px' : tab ? '27px' : u(30), {
-          maxWidth: '100%', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+          maxWidth: '100%', textAlign: 'center', overflowWrap: 'anywhere',
         })}>{now.track}</span>
         <span style={lab(u(11), { maxWidth: '100%', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' })}>{now.by}</span>
       </div>

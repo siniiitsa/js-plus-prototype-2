@@ -572,10 +572,13 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     vm.pad = `${v} calc(${vm.surplus} + ${Z.dev === 'desktop' ? '40.15px' : Z.dev === 'tablet' ? '26.11px' : '24px'}) ${v}`
   }
   // …and the media's (1:419 · 1:9052 · 1:10024): 129.43 top and foot at 1440 (x 0.82, 106.13), 77 at 768
-  // and 58 at 390, the same content insets.
+  // and 58 at 390, the same content insets. The 390 master's head box starts 40 down (an import
+  // artefact: the eyebrow row sits at y 98, not 58), so with the eyebrow removed the head takes
+  // the eyebrow's seat and the top is 98.
   if (d === 0 && cat === 'media' && T.name === 'Lattice') {
     const v = Z.dev === 'desktop' ? '106.13px' : Z.dev === 'tablet' ? '77px' : '58px'
-    vm.pad = `${v} calc(${vm.surplus} + ${Z.dev === 'desktop' ? '40.15px' : Z.dev === 'tablet' ? '26.11px' : '24px'}) ${v}`
+    const top = Z.dev === 'mobile' ? '98px' : v
+    vm.pad = `${top} calc(${vm.surplus} + ${Z.dev === 'desktop' ? '40.15px' : Z.dev === 'tablet' ? '26.11px' : '24px'}) ${v}`
   }
   // Layout 2's sections stand on their own frames' insets (JP-094, user call,
   // 2026-10-02, reversing Retro's "fit the card, not the frame height" for the

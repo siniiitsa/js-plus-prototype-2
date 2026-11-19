@@ -238,8 +238,9 @@ sleeveSlot, audio, goTo, toggle, onPick }`, so the player is the one seam in a n
   each, number · title+sub · 56 cover (44 at 390) · 44 square button, 3px radius. Grid 886.72 : 431.375 at 24 (desktop); the card is 466 tall at
   every width, its sleeve the flex remainder (206.4 / 217.4 / 227.4), centred at 431 at 768 and full width at 390 below the Soundcloud pill.
 - **Removed copy holds** (user call, section 0): the `[ 002 ] TOP TRACKS` eyebrow and `5 / 5 FEATURED` are not drawn. The head is the heading alone, so
-  the section is 42 / 42 / 56 shorter than the frame's 1057 / 1404 / 1422 at the three widths. The 390 head-to-list gap is the frame's 50 (the heading
-  overflows its box by 6 there), the others 56.
+  the section is 42 / 42 / 46 shorter than the frame's 1057 / 1404 / 1422 (832 / 1362 / 1376 drawn). The 390 master's head box starts 40 down (an import artefact:
+  its eyebrow sits at y 98, not 58), so the head takes the eyebrow's seat (top 98) and keeps the frame's 50 to the list (the heading overflows its box by 6
+  there); the other two widths are the box reading, top 106.13 / 77 and gap 56.
 - **Two literals the frame draws that are not removals:** the card's `Now playing` label (a frame label with no field, JP-071's "unreported sibling stays
   a literal") and the `0N / 0M` position, which is derived (`at + 1` of the list length, `00 / 00` when empty), not the removed `5 / 5 Featured` counter.
 - **The marked row is the card's track, not the frame's.** The frame marks row 02, prints `02 / 05` and names *Night Rain*, which is not in its list.
@@ -251,6 +252,8 @@ sleeveSlot, audio, goTo, toggle, onPick }`, so the player is the one seam in a n
   reads nothing under Lattice (`'*': []`).
 - **Ground and glow.** Scheme 8 (`#111`); the root's own `radial-gradient(ellipse 42% 38.5% at 85% 60%, glow 14%, 0)`, the frames' one gradient at every
   width (no `url(`, so `limits.mjs` does not count it). `vm.pad` 106.13 / 77 / 58 top and foot, the bio's content insets.
+- **The card title wraps, it does not clip.** The seeded `Manchester at 3am` is 315 in a 308 box at 390 and 310 in 305.5 at 1440, so the title breaks
+  (`overflowWrap: anywhere`, centred); the sleeve is the flex remainder, so a second line costs it 25-30 and the card stays 466. The artist line ellipsises.
 - **Caps** (`limits.mjs media --themes=5 --designs=0 --check`): `heading` 20 and `tracks.title` 17 / `sub` 33 hold at their seeds (the seeded rows wrap at 390 in
   the frame, so the probe's one-line test is not the bound there); `IDENTITY_CHARS.media.title.Lattice[0]` = 40, the artist line's box at 390.
 
