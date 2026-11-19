@@ -443,6 +443,20 @@ After section 11 and session 12, in one session (the lists in `../lime/layout-1.
   `cur`, `line`, `step`, `blocked` and `setSel` stay `Calendar`'s and go over in `g`): `Calendar` owns eight `useState` hooks, so an early return above them would change the hook count on a theme switch.
   The twin prediction (*Lime's Scheduler*) was half right a fifth time: the seam is Lime's, the picture is not.
 
+- **form (section 9, 2026-11-19): *new own-tree block* `LatticeForm`, not Lime's *Split context + form* (nor Grunge's / Editorial's / Pop's widenings of it).** Diffed against the
+  `if (s.v0 && s.limeTree)` block in `EnquiryForm` and `notes/form.md`, frames `1:1147` · `1:9778` · `1:10748`. The *inventory* is Lime's (a context half with the artist's portrait, name and
+  role, a display head and the promises; a form half with paired boxes, an event-type chip row, a message box and a submit), and **no leaf is**. Lime's shell is a 55-radius `mist` card with the
+  halves welded (the context half 420 wide with a rounded cap, the form half on the lime), here a 1px-ruled 20-radius card whose context panel is a square `box/1` (#1B1B1B) and whose form half
+  is *unfilled*, the section's own ground and glow showing through; Lime's portrait is a 48 circle, here a 44 square at radius 3; its name is Bebas, here two mono lines (12 / 11, the second
+  orange); its promises are `✓` rows on no rule, here a **ruled list** (1px across the column) with an orange `01 / 02 / 03` numeral; its boxes are 60-tall 999-radius pills with a Bebas label
+  over each, here 48-tall 3px boxes in a 1px ring of full ink under an *orange mono* label; its chips are 28 tall inside a hairline, here 44-tall 3px boxes with the lit one filled ink; its
+  message box is a 134-tall 20-radius pill, here 81 tall at 3px; its submit is a rounded pill with a disc, here a **plain full-width square bar** (50 / 48 tall) with a mono label and `→`. The
+  stacking differs too: the halves stack at 768 and 390 with the context panel full-bleed on top (Lime's stack at 768 too, with a rounded cap); the field pairs stay two to a row at 768 and
+  stack at 390 with a 28 gap (Lime's 12). The glow is a percentage radial gradient on the root (60% x 55% at 20% / 50%, `#ED6D40` at 14% to 0 at 70%, all three masters' `gradientTransform`s
+  reduce to it), not a node. So it is a block of its own, standing in `EnquiryForm` **after the seam** (`vals`, `msg`, `ti`, `errs`, `sent`, `Pill`, `pillLink`, `onSubmit`, `cp`, `pid` and the
+  setters stay `EnquiryForm`'s and go over in `g`): `EnquiryForm` owns six `useState` hooks, a `useRef` and a `useId`, so an early return above them would change the hook count on a theme
+  switch. The twin prediction (*Lime's Split context + form*) was half right a sixth time: the seam is Lime's, the picture is not.
+
 ### Settled in session 0 — the foundation (2026-11-19)
 
 **Calls (user, via AskUserQuestion):** call 1, every standing removal holds (see *The decisions*, call 1); call 2, the display
@@ -961,6 +975,60 @@ only where a seeded, uncased, drop-when-emptied field exists (call 1, JP-071: `F
 (`SEEDS.Lattice` seats the form on `lattice-alt`); a decorative `url()` or glow is the root's own background or a mask / gradient on an `aria-hidden` span, never a child node. Glyphs go in their own spans so the inline probe can
 match the copy; no clickable copy's centre may stand inside the builder's section toolbar (right 8, top 8, 99 x 31) at 1440. The seams are straight edges (the page `above` / `below` read nothing for Lattice), and the
 calendar above it is on Scheme 2 (`#F2F2F2`) while the form stands on Scheme 8 (`#111`).
+
+### Settled in section 9 — the enquiry form (2026-11-19)
+
+**Verdict** (under *Seen at planning time*, written before the code): a new own-tree block, not Lime's *Split context + form* and not its widenings. `LatticeForm` stands in `EnquiryForm` **after the seam**, dispatched
+on `s.v0 && s.limeTree && s.lattice` ahead of Lime's block; `at`, `setAt`, `msg`, `setMessage`, `ti`, `setType`, `showTypes`, `errs`, `msgBad`, `sent`, `setSent`, `Pill`, `pillLink`, `onSubmit`, `cp` and `pid` stay `EnquiryForm`'s and
+go over in `g`. Notes: `notes/form.md`, *Lattice — layout 1*. **Scheme seat:** Scheme 8 (`#111`, in `SCHEMES_OF.Lattice` already) and **no other**: the frame's lit chip and bar bind the page's `sem/bg` over `#111` text, which is
+`s.tx` over `s.bg`, so `s.onScheme` is not read. `formBtnSeed` seeds *Book Now* for Lattice (`limeTreeTheme` excludes it) and the frame agrees. **No eyebrow:** none of the three masters draws a `[ 00N ]` line, so
+there was nothing for `typeLabel` / `messageLabel` (which seat only *EVENT TYPE* and *MESSAGE*) to be the seat of; the section is not shorter for a removal.
+
+**The block.** Every number the frame's (desktop x 0.82 through `u`, 768 and 390 verbatim; raw sizes 40 / 32 / 26 head, 12 / 11 mono, 16 Archivo, not the ramp). One 1px, 20-radius card: at 1440 a fixed 485 context panel (`s.box1`) beside
+an *unfilled* form half (the root's glow shows through), stacked at 768 and 390. Context: 32 / (27 24) / (22 16) padding, 28 between blocks; a 44 square avatar (radius 3) beside the name (mono 12) over the role line (mono 11, orange);
+the head (`Archivo Lattice`, line 1, the frame's 419 measure at 1440, fitted by `vm.titleWordEms`, which now also reads `form`); a ruled list of numbered promises (orange `01 / 02 / 03`, rows 14 / 14 with a 1px rule). Form: 48-tall 3px
+boxes in a 1px full-ink ring under orange mono labels, paired two to a row (18 apart; stacked 28 apart at 390), a chip row (a 26-tall legend over 44-tall square chips, 6 apart, the lit one filled ink), an 81-tall message box and a
+48-tall full-width square bar. `vm.pad`: 78.72 / 77 / 58 top and foot with the content insets, in `EncoreBuilder.jsx` after the calendar arm. **The glow is the root's own** `radial-gradient(ellipse 60% 55% at 20% 50%, text3 14%, 0 at
+70%)`, which all three frames' `gradientTransform`s reduce to: **no `url()` anywhere in the block** (limits.mjs counts none). The head boxes carry **one import artefact**: the 1440 master's submit is 50 tall by its content but the card
+clips it at 48 (the card is 496.55 = 2 + 494.55), so the height follows the *render* (48 at every width); the fieldset box is 8 short of its content at 768 and 390 (below).
+
+**Calls for the user to confirm.**
+1. **The placeholders print as seeded** (`dd / mm / yyyy`, `approx.`) where the frames type `DD / MM / YYYY` and `Approx.`: a case difference. A Lattice seed would fork `FORM_FIELDS` and `EditPanel`'s `formFieldsVal`; not done.
+2. **The role line prints the header's kicker** (`DJ · Live Act`) where the frames type `DJ · LIVE BAND`: the artist's copy (`IDENTITY_READS.kicker.form` read `[0, 1]` already).
+3. **The list's rules and the avatar row stop at 382.688 (x .82) at 1440,** as the render draws them, and the head sets in 419, although the panel's content box is 421 (the masters' own boxes, from a narrower layout);
+   stacked they take the column.
+4. **The message label stands 10 and 20 under the chips at 768 and 390** (the frames' fieldset box is 8 short of its content there; 16 at 1440). The 768 row looks tight; it is the render.
+5. **The chip starts at 0** (notes/form.md): the frame draws *Wedding* lit, so rule and frame agree and nothing is overridden. The lit chip is a picture on the canvas; live, a press moves it.
+6. **A refused box is 2px of the label's orange** (the ring plus a 1px inset; no palette has a red, and the idle ring is already full ink), and the prompt line prints in the same orange.
+7. **`button` is capped at 35** (measured), where the shared 15 is Retro's and Lime's pill: the bar has nothing beside it to crowd.
+8. **The card is 1099.7 wide on the 1180 canvas** where the frame's x .82 is 1102.1 (the 1440 master's card stands 48.96 / 46.96 off its sides; the canvas's content insets are 40.15 each), so the 1440 form half is 2.4 narrower.
+9. **The sent state swaps the form half only**; the card then shrinks to the context panel's height (341 at 1440).
+
+**Fields and caps.** `FIELDS.form` layout 1 reads `heading`, `promises`, `fields` (`label`, `placeholder`), `types`, `typeLabel`, `message`, `messageLabel`, `button`, `email`, `image` and the header's kicker through
+`IDENTITY_READS.kicker.form` (`reach.mjs 5` agrees: `button` / `messageLabel` layouts 1 and 4, `promises` 1 and 2, `typeLabel` 1, `who.kicker` 1 and 2); every `FIELDS.form` `in` row is an array, so no row names a template. Measured with
+`limits.mjs form --themes=5 --designs=0`: `heading` **37** (37 / 56 / 44), `fields.label` **40** (50 / 42 / 40), `fields.placeholder` **36** (47 / 39 / 36), `typeLabel` **40** and `messageLabel` **40** (104 / 87 / 40), `message` **39** (110 / 92 / 39),
+`button` **35** (93 / 78 / 35), `promises` chars **33** (42 / 76 / 33) with count 9 held (16 measured, open), `types` count **8** (10 / 9 / 8), `IDENTITY_CHARS.form.title` **59** (84 / 142 / 59) and `kicker` **33** (48 / 80 / 33). Each has an
+explicit `Lattice` row (layouts 2-4 Pop's, unmeasured); `fields` and `types` item chars keep the shared 15. `--check`: 0 fail; `--seeds`: 0 over. **No `INLINE_OFF` and no `PHOTO_OFF` row:** the block prints every field the layout reads,
+and the form's `photo` is layout 2's.
+
+**Proof.** Geometry by `getBoundingClientRect` against the frame (shell-inner-relative, frame px x .82 at 1440): 1440 avatar 26.2 x 36.1 (frame 26.2 x 36.1), name 72.1 / 31.3, head 85.3 x 98.4 (three lines; frame 85.3 x 98.4), list 206.6 x 313.8
+(frame 206.6 x 313.8), first box 423.9 / 43.6 x 39.4, event-date box 113.4 (113.5), chips 193.8, message 260.3 x 66.4 (260.4), bar 339.8 x 39.4 (339.9), card 405.4 tall (frame 405.5), panel 397.7 wide (frame 397.7); 768 context 349.2 and card 833.7
+tall (frame 349.17 / 833.72), avatar 24 / 27, head 99 x 64, list 191 x 131.2, boxes 24 and 365.9 x 323.9, chips 584.5 at 83.1 / 68.0 wide, message 659.7 x 81, bar 758.7; 390 context 353.2, card 1112.1 (frame 1112.11), head 94 x 78, boxes 22 + 97.19 apart, chips
+797.9 and the wrap 847.9, message 933.1, bar 1042.1. Every figure is within 0.15 px but the chip widths (+0.35 at 1440, the 1px border not scaling) and the list's rows (+0.18 each, the same). Probes at `--theme Lattice --layout 1 --cat form`:
+`inline-probe` (1440 and 768) PASS, 21 slots hit, 0 UNLEDGERED (6 unhit: printed copy with no slot); `photo-probe` PASS filled, `--blank` and `--drop`; `focus-probe --prime` PASS (27 controls). Live (`&live=1&today=2025-06-01`,
+real keystrokes and clicks, 1440 and 390): idle the bar is `<a role="button">` with no href; a click refuses, marks Name and Email in orange, focuses Name and prints *This box is required.*; typing clears each box's mark; a valid form composes
+`mailto:` with the picked chip in the subject (`Pub enquiry`) and the typed answers in the body; the click sets the sent state (*Check your mail app*, the address in plain text), and *Write another* keeps what was typed. `page-check.mjs Lattice 0`:
+no errors, 5 boxes, the refusal rings and the mailto, `overflow390` 0, the calendar-to-form and form-to-testimonials seams straight. `digest.mjs` 0,1,2,3,4 against a HEAD worktree (:5185, which answered no `LatticeForm`, the positive control) and the
+working tree (:5173), ports and `?t=` normalised: **0 differing files of 720**; at theme 5 only the three layout-1 form renders differ. `npm run build` passes (the standalone build was not rebuilt: the root `index.html` is the end-of-pass sweep's).
+
+**For the testimonials (section 10).** `Testimonials` has hooks (`cur`, the carousel's page) too, so its block goes after its seam, with what the seam resolved handed over in one object `g`; raw sizes through `u(v)` (x 0.82 desktop, verbatim narrow). The frames
+(`1:1222` · `1:9851` · `1:10821`, all 730 tall at 1440 / 768 / 390) draw, on **Scheme 5's orange** (`#ED6D40`, in `SCHEMES_OF.Lattice` already, check the seat), a dot field, one bordered quote card with two square arrow buttons, a byline and two tag chips; the twin
+prediction is Lime's *Stacked tag card*, which will be half right (the seam). The frame's `[ 009 ] --- REVIEWED 6 DAYS AGO` line needs the call-1 ruling the plan's table lists: `FIELDS.testimonials` has no `kicker` (removed 2026-11-12, `notes/testimonials.md`) and
+the card's `when` date is the quote's own field, so read the frames first and draw the line only where a seeded, uncased, drop-when-emptied field is that text's seat (JP-045, JP-071). **The arrows are `cur`'s** and are not drawn at one review (the pager's rule); they
+wrap at both ends; check `notes/testimonials.md` before touching them. The dot field is the testimonials' own set (open question 5): the bio's recipe (`latticeBioDots(dev)` in `data.js`: connected components on the frames' 2x rasters, four buckets by mass, held as
+the **root's own `background-image`**, never a node) is the model, and `limits.mjs` counts any element with a `url()` background as a picture. A card halo is a `boxShadow` and a glow a percentage radial gradient on the root, as the media's, pricing's and this form's. Measure
+`limits.mjs testimonials --themes=5 --designs=0` (the shared rows fall back to Pop's where an object names neither Lattice nor `'*'`: give Lattice explicit ones), add `INLINE_OFF` rows for fields the block does not print, and keep a glyph in its own span. The 1440 seam below
+the form is a straight edge into this orange; `titleWordEms`'s Lattice list is `bio` / `media` / `gallery` / `repertoire` / `map` / `pricing` / `form`, where a fitted head joins. A frame choice that conflicts with the builder's rules is decided once and recorded as a call to confirm.
 
 ### Inherited and used
 

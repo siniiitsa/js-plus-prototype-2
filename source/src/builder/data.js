@@ -3359,8 +3359,10 @@ export const FIELDS = {
     // frame's lines, as the testimonials' is; at layout 3 the cap is a typed
     // head's, which replaces the composed one (plans/char-limits.md).
     { k: 'heading',  l: 'Heading', type: 'area', d: "Let's make\nyour night unforgettable.",
+      // Lattice's layout 1 measured 2026-11-19 (limits.mjs form --themes=5 --designs=0): 37 at 1440, 56 at
+      // 768, 44 at 390, three lines in a 419 measure; the others are Pop's until their passes.
       chars: { Retro: [45, 36, 32, 20], Lime: [37, 37, 32, 19], Grunge: [36, 40, 41, 25],
-        Editorial: [36, 42, 30, 12], Pop: [36, 40, 30, 17] },
+        Editorial: [36, 42, 30, 12], Pop: [36, 40, 30, 17], Lattice: [37, 40, 30, 17] },
       hint: 'Layout 3 starts from your name (“Book … for your event”) and follows it until you '
           + 'type your own; layout 4 starts from “Contact Us”. A line break you type is kept in '
           + 'layout 2.' },
@@ -3375,8 +3377,10 @@ export const FIELDS = {
     // One a line down a column that hugs them, so the count is a block's
     // (session 10): open but where the column climbs into the head.
     { k: 'promises', l: 'Reasons to book', type: 'area', d: FORM_PROMISES.join('\n'), in: [0, 1], list: '\n',
-      chars: { Retro: [45, 32], Pop: [42, 31], Editorial: [34, 29], '*': [34, 34] },
-      count: { Editorial: [6, 9], '*': [9, 9] },
+      // Lattice's layout 1 measured 33 a line (the 390 row wraps past it) and holds the shared 9 a column
+      // (16 measured, open); layout 2 is the '*' row's.
+      chars: { Retro: [45, 32], Pop: [42, 31], Editorial: [34, 29], Lattice: [33, 34], '*': [34, 34] },
+      count: { Editorial: [6, 9], Lattice: [9, 9], '*': [9, 9] },
       rows: { placeholder: 'Promise', add: 'Add promise' },
       hint: 'The ticked list beside the form.' },
     // Layout 4's *What happens next* column (JP-079 · JP-081, user call,
@@ -3395,9 +3399,9 @@ export const FIELDS = {
     { k: 'fields',   l: 'Form fields', type: 'formFields', max: 8,
       cols: {
         label: { Retro: [49, 46, 57, 22], Lime: [47, 52, 69, 27], Grunge: [52, 62, 76, 30],
-          Editorial: [24, 33, 41, 14], Pop: [32, 33, 40, 19] },
+          Editorial: [24, 33, 41, 14], Pop: [32, 33, 40, 19], Lattice: [40, 33, 40, 19] },
         placeholder: { Retro: [37, null, null, 23], Lime: [41, null, null, 24], Grunge: [41, null, null, 24],
-          Editorial: [41, null, null, 25], Pop: [35, null, null, 24] },
+          Editorial: [41, null, null, 25], Pop: [35, null, null, 24], Lattice: [36, null, null, 24] },
       },
       hint: 'One box each — two to a row in layouts 1 and 4 (layout 1 stacks them on a phone), '
           + 'one to a row in layouts 2 and 3, '
@@ -3407,29 +3411,31 @@ export const FIELDS = {
           + 'boxes and layout 4 on its own five until you edit them; after that your list shows '
           + 'in every layout.' },
     { k: 'types',    l: 'Event types', type: 'area', d: FORM_TYPES.join(', '), in: [0], list: ',',
-      chars: [15], count: { Lime: [5], Grunge: [5], '*': [8] },
+      chars: [15], count: { Lime: [5], Grunge: [5], Lattice: [8], '*': [8] },
       rows: { placeholder: 'Event type', add: 'Add event type' },
       hint: 'The form opens on the first; empty hides the row. Layout 1 only. One per row; a comma starts a new row.' },
     // The chip row's label (JP-090), messageLabel's rule: the row it heads
     // stands whatever it says, so an emptied label reads the seed again.
     { k: 'typeLabel', l: 'Event type label', d: FORM_TYPE_LABEL, in: [0],
-      chars: { Retro: [51], Lime: [52], Grunge: [58], Editorial: [37], Pop: [33] },
+      chars: { Retro: [51], Lime: [52], Grunge: [58], Editorial: [37], Pop: [33], Lattice: [40] },
       hint: 'The label over the event types. Layout 1 only. Left empty, it shows Event type.' },
     { k: 'message',  l: 'Message box hint text', d: FORM_MESSAGE, in: [0, 3],
       chars: { Retro: [39, null, null, 53], Lime: [42, null, null, 54], Grunge: [42, null, null, 54],
-        Editorial: [44, null, null, 58], Pop: [35, null, null, 54] },
+        Editorial: [44, null, null, 58], Pop: [35, null, null, 54], Lattice: [39, null, null, 54] },
       hint: 'Layouts 1 and 4.' },
     // The message box's label (JP-082): the one box label that was a literal.
     { k: 'messageLabel', l: 'Message label', d: FORM_MSG_LABEL, in: [0, 3],
       chars: { Retro: [51, null, null, 45], Lime: [52, null, null, 59], Grunge: [58, null, null, 64],
-        Editorial: [37, null, null, 35], Pop: [33, null, null, 41] },
+        Editorial: [37, null, null, 35], Pop: [33, null, null, 41], Lattice: [40, null, null, 41] },
       hint: 'Layouts 1 and 4. Also heads the message in the email you receive. Left empty, it shows Message.' },
     // Dead until the submit was made real — this is now what the form is for.
     { k: 'email',    l: 'Email address', type: 'email', d: FORM_EMAIL,
       hint: 'Enquiries are mailed here: the button opens the visitor’s mail app with the form filled in, and so does the Booking Calendar’s layout-4 Send Enquiry, until the calendar has an address of its own. Empty leaves the button a picture. An address that isn’t valid also leaves the button a picture.' },
     { k: 'button',   l: 'Button', d: 'Book Now', in: [0, 3],
+      // Lattice's layout 1 is a full-width bar with nothing beside it to crowd, so its measured 35 stands
+      // (the shared 15 is Retro's and Lime's pill).
       chars: { Retro: [16, null, null, 36], Editorial: [15, null, null, 27], Pop: [15, null, null, 32],
-        '*': [15, null, null, 36] },
+        Lattice: [35, null, null, 36], '*': [15, null, null, 36] },
       hint: 'Layouts 1 and 4. Layout 4 starts from “Check Availability”, and layout 1 from “Enquire” in Lime, Grunge, Editorial and Pop.' },
     // Layouts 2 and 3's card — the same component in both frames. Every one is
     // emptiable and drops what it fills, except the button: it is the submit,
@@ -3966,9 +3972,11 @@ export const IDENTITY_CHARS = {
     seal: { Retro: 19, Lime: 13, Grunge: 14, Editorial: 16, Pop: 12 },
   },
   form: {
+    // Lattice's layout 1 measured 2026-11-19 (limits.mjs form --themes=5 --designs=0, `who.*`): the name in
+    // the context panel's avatar row holds 59, the role line 33; layouts 2 and 3 are Pop's.
     title: { Retro: [76, 50, 13], Lime: [61, 40, 13], Grunge: [50, 85, 23], Editorial: [27, 42, 10],
-      Pop: [55, 54, 11] },
-    kicker: { Retro: [43, 38], Pop: [39, 40], '*': [30, 40] },
+      Pop: [55, 54, 11], Lattice: [59, 54, 11] },
+    kicker: { Retro: [43, 38], Pop: [39, 40], Lattice: [33, 40], '*': [30, 40] },
     seal: { Pop: [12] },
   },
   // Layout 2's caption line ellipsizes at 390 past 26–27 (session 6's re-run;

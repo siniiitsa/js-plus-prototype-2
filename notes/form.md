@@ -314,3 +314,48 @@ Now **no href exists until every box the layout shows passes `formCheck`**, whic
 - **Probe.** `scripts/page-check.mjs` types valid data per kind; reading the href before the form is valid now
   gives nothing. All 20 template × layout pages were driven at Desktop, Tablet and Mobile with the QA cases
   (invalid blocks and focuses, valid hands off trimmed, guests / dates / spaces-only edge cases).
+
+## Lattice — layout 1 (plans/lattice/layout-1.md, section 9, 2026-11-19)
+
+`LatticeForm` (`EncoreSection.jsx`, dispatched in `EnquiryForm` on `s.v0 && s.limeTree && s.lattice` **after** the seam, ahead of Lime's block). Frames `1:1147` · `1:9778` ·
+`1:10748` (1440 x 689 / 768 x 990 / 390 x 1230). A block of its own, not Lime's *Split context + form* nor its widenings: the inventory is Lime's, no leaf is (the verdict is in the plan's
+*Seen at planning time*). Everything the seam resolves goes over in one object `g` — `at`, `setAt`, `msg`, `setMessage`, `ti`, `setType`, `showTypes`, `errs`, `msgBad`, `sent`, `setSent`, `Pill`,
+`pillLink`, `onSubmit`, `cp`, `pid` — so the boxes, the chip, the mailto, the refusal and the sent state are the one seam in a new picture. **No `<form>`, and the chip still starts at 0** (the frame
+draws *Wedding* lit, so rule and frame agree). The block owns no hook.
+
+- **The card** is one 1px, 20-radius box on the section's own Scheme 8 ground (`#111`, ink `#F2F2F2`; no other scheme: the lit chip and the bar bind the page's `sem/bg` over `#111` text, which is
+  `s.tx` over `s.bg`). Desktop: the context panel is a fixed 485 (x .82) of `s.box1` (`#1B1B1B`), the form half is *unfilled*, so the root's glow shows through. 768 and 390: the panel stacks on top at the
+  card's full width. `vm.pad` (`EncoreBuilder.jsx`, after the calendar's arm): 78.72 / 77 / 58 top and foot with the content insets (40.15 / 26.11 / 24), the frames' own (card 496.55 / 835.72 /
+  1114.11 tall in sections 689 / 990 / 1230).
+- **The glow is the root's own `radial-gradient`** (`s.fo && s.v0 && s.lattice` in the root style): `ellipse 60% x 55% at 20% / 50%`, `s.text3` (the orange) 14% to 0 at 70%, which all three masters'
+  `gradientTransform`s reduce to. No `url()` and no node, so `limits.mjs` counts no picture.
+- **The context panel** pads 32 (27 / 24 at 768, 22 / 16 at 390), 28 between blocks. The avatar row: a 44 square at radius 3 (the form's `image`, `SEEDS.Lattice` seats `lattice-alt`), the name
+  (`s.brand`, mono 12) over the role line (`s.kicker`, mono 11, orange), 4 apart; each drops when empty. The head is `Archivo Lattice` 40 / 32 / 26 at line 1, uppercase, in the frame's 419 measure at
+  1440 and the column narrow, fitted to its widest word by `vm.titleWordEms` (`form` joins the Lattice list in `sectionVm`). The promises are a **ruled list** (a 1px top rule, each row 14 / 14 with a 1px
+  rule under it): an orange `01 / 02 / 03` numeral (a count derived from the row's place, not a field) and the promise in mono 12. The list is the render's 382.688 (x .82) at 1440, where the avatar row and
+  the list stop short of the panel's padding (the masters' own boxes), and the column narrow.
+- **The boxes** are 48-tall 3px boxes in a 1px ring of full ink over an orange mono label (11, 8 above); text Archivo 16. Pairs are two to a row (`vm.formRows`) with an 18 column gap at 1440 and 768,
+  and stacked at 390 with 28 between everything; the rows are 16 / 18 / 28 apart. The canvas draws the placeholder as a span at the ink's 45%, which is what `::placeholder` draws live (index.css) and the
+  frame's `#757575` on `#111`, so no `--ph` and no literal. **A refused box** changes colour as well as weight (the idle ring is already full ink): its ring and a 1px inset of the label's orange, 2px in
+  all, so the 48 holds. The prompt line (`role="alert"`, `id={pid}`) prints in the same orange.
+- **The chip row**: the legend is a 26-tall box over a 13.2 line (so the chips stand 34 under its top, not 21), the chips 44-tall 3px boxes in a 1px ring with 14 padding, 6 apart, wrapping at 390 with
+  the lit one filled ink. **The frames' fieldset box is 8 short of its content at 768 and 390**, so the message label stands 10 and 20 under the chips there (16 at 1440, where the box is whole); the block
+  follows the render with a `-8` bottom margin narrow. The message box is 81 tall at every width (padding 14 / 16).
+- **The submit** is a plain full-width square bar (ink ground, `s.bg` label, mono 12 `BOOK NOW` and `→` in its own span), **48 tall at every width**: the 1440 master's 50 is its content running 2 past the
+  card's clipped foot (the card is 496.55 = 2 + 494.55). It is the seam's `Pill`, so it is the `<a href="mailto:">`, the `role="button"` refusal or the inert span; *Write another* is the same bar.
+- **No eyebrow.** None of the three masters draws a `[ 00N ]` line anywhere (the context panel opens on the avatar). `typeLabel` and `messageLabel` seat only *EVENT TYPE* and *MESSAGE*, and the section is
+  not shorter for it. `formBtnSeed` seeds *Book Now* at Lattice (`limeTreeTheme` excludes it) and the frame agrees.
+
+**Calls for the user to confirm.**
+1. **The placeholders print as seeded**, `dd / mm / yyyy` and `approx.`, where the frame types `DD / MM / YYYY` and `Approx.`: a difference of case. A Lattice-only seed would need `FORM_FIELDS` forked and
+   `EditPanel`'s `formFieldsVal` mirrored; not done.
+2. **The role line prints the header's kicker** (`DJ · Live Act`), where the frame types `DJ · LIVE BAND`: the artist's copy, `IDENTITY_READS.kicker.form` read `[0, 1]` already.
+3. **The list's rules stop short** (382.688 at 1440) as the render draws them, and the head sets in 419, although the panel's content box is 421; stacked they take the column.
+4. **The 10 and 20 under the chips** at 768 and 390 follow the render, not the frames' 16 gap; the row looks tight at 768.
+5. **A refused box is 2px of orange**, a call: no palette has a red.
+6. **`button` is capped at 35** (measured), where the shared 15 is Retro's and Lime's pill; the bar has nothing to crowd.
+
+**Fields and caps** (`limits.mjs form --themes=5 --designs=0`, then `--check`: 0 fail; `--seeds`: 0 over). Each has an explicit `Lattice` row, layouts 2-4 copied from Pop's (unmeasured): `heading` **37** (37 / 56 /
+44), `fields.label` **40** (50 / 42 / 40), `fields.placeholder` **36** (47 / 39 / 36), `typeLabel` **40**, `messageLabel` **40**, `message` **39** (110 / 92 / 39), `button` **35**, `promises` chars **33** (the 390 row wraps past it) and
+count 9 (16 measured, open), `types` count 8 (the chip row: 10 / 9 / 8), `IDENTITY_CHARS.form.title` **59** and `kicker` **33**. `fields` and `types` item chars keep the shared 15. `FIELDS.form` `in` rows are all arrays, so no row
+names a template; `image` reaches layouts 1 and 2 as before (`photo` is layout 2's), so `PHOTO_OFF` needs no row. No `INLINE_OFF` row: `inline-probe` reports 0 UNLEDGERED.

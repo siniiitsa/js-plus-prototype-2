@@ -27899,6 +27899,213 @@ function Testimonials({ s }) {
   )
 }
 
+// Lattice's layout-1 enquiry form (Batch 2 file, 1:1147 · 1:9778 · 1:10748: 1440 x 689 / 768 x 990 /
+// 390 x 1230; desktop numbers x 0.82 through `u`, the narrow two verbatim). A block of its own
+// (plans/lattice/layout-1.md, section 9): the inventory is Lime's (a context half with the artist's
+// portrait, name and role, a display head and the promises; a form half with paired boxes, an
+// event-type chip row, a message box and a submit) and no leaf is. One 1px-ruled 20-radius card: a
+// square `box/1` context panel (a 44 square avatar, two mono lines, the head, a ruled list of
+// numbered promises) beside, or over at 768 and 390, a form half that is the section's own ground
+// (the glow is the root's background): 48-tall 3px boxes under orange mono labels, 44-tall square
+// chips with the lit one filled ink, an 81-tall message box and a plain full-width square bar. No
+// `[ 00N ]` eyebrow is drawn: none of the three masters has one. `EnquiryForm` owns the live seam
+// (the typed boxes, the chip, the errors, the sent state, the mailto `Pill`), so it is handed over
+// in `g` and nothing here is a hook; there is no <form>, ever (notes/form.md). Sizes are the
+// frames' raw ones, not the ramp's.
+function LatticeForm({ s, g }) {
+  const { at, setAt, msg, setMessage, ti, setType, showTypes, errs, msgBad, sent, setSent, Pill, pillLink, onSubmit, cp, pid } = g
+  const tab = isTablet(s)
+  const desk = !s.narrow
+  const k = s.narrow ? 1 : 0.82
+  const u = (v) => `${Math.round(v * k * 100) / 100}px`
+  const ink = s.tx
+  const orange = s.text3 // sem/text/3: every label, the numerals and the role line
+  const mono = (size, extra) => ({
+    fontFamily: s.mono, fontSize: size, lineHeight: 1.2, letterSpacing: '0.04em', textTransform: 'uppercase', ...extra,
+  })
+  // The frames' own numbers per width: the halves' padding, and the gap between rows (the columns of a
+  // pair stand 18 apart, and 28 where the pair is stacked).
+  const padX = s.mob ? 16 : tab ? 24 : 32
+  const padY = s.mob ? 22 : tab ? 27 : 32
+  const rowGap = s.mob ? 28 : tab ? 18 : 16
+  const pairGap = s.mob ? 28 : 18
+
+  const label = (t, extra) => <span style={mono(u(11), { display: 'block', color: orange, ...extra })}>{t}</span>
+  // One box, drawn once for both modes: a 1px ring of full ink at 3px, Archivo 16. The idle ring is
+  // already full ink, so a refused box changes colour as well as weight: the ring and a 1px inset
+  // of the label's orange, 2px in all, which keeps the frame's 48.
+  const box = (bad, extra) => ({
+    boxSizing: 'border-box', width: '100%', margin: 0, height: u(48), padding: `0 ${u(16)}`, outline: 'none',
+    border: `1px solid ${bad ? orange : ink}`, borderRadius: s.radiusChip, background: 'transparent', color: ink,
+    boxShadow: bad ? `inset 0 0 0 1px ${orange}` : undefined,
+    fontFamily: s.body, fontSize: u(16), lineHeight: 'normal', letterSpacing: 0, ...extra,
+  })
+  // The canvas's placeholder is a span at the ink's 45%, which is what `::placeholder` draws on the
+  // published page (index.css) and the frame's #757575 on #111.
+  const hint = (t) => (
+    <span style={{ opacity: 0.45, minWidth: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t}</span>
+  )
+
+  const field = (f, i) => {
+    const bad = !!(errs && errs.f[i])
+    return (
+      <div key={i} style={col(u(8), { minWidth: 0 })}>
+        {label(f.label)}
+        {s.live ? (
+          <input
+            {...cp(i)}
+            value={at(i)} placeholder={f.placeholder} aria-label={f.label}
+            onChange={(e) => setAt(i, e.target.value)}
+            type={f.kind === 'email' ? 'email' : 'text'}
+            inputMode={f.kind === 'number' || f.kind === 'date' ? 'numeric' : undefined}
+            aria-invalid={bad || undefined}
+            style={box(bad)}
+          />
+        ) : (
+          <span style={box(bad, { display: 'flex', alignItems: 'center' })}>{hint(f.placeholder)}</span>
+        )}
+      </div>
+    )
+  }
+  const fieldRow = (fs, r) => (
+    <div key={r} style={{
+      display: 'grid', gap: u(pairGap), gridTemplateColumns: s.mob ? 'minmax(0, 1fr)' : 'repeat(2, minmax(0, 1fr))',
+    }}>{fs.map((f, j) => field(f, r * 2 + j))}</div>
+  )
+
+  // The submit and *Write another*: a plain full-width bar, ink under the ground's label, 48 tall at every
+  // width (the desktop master's 50 is its content running 2 past the card's clipped foot). The arrow is its own span.
+  const bar = (extra) => ({
+    ...mono(u(12)), boxSizing: 'border-box', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: u(8),
+    width: '100%', height: u(48), background: ink, color: s.bg, textDecoration: 'none', ...extra,
+  })
+
+  // The context panel. At 1440 it is the frame's fixed 485; the list is the render's 382.688 and the head
+  // sets in a 419 measure (the masters' own boxes), stacked it takes the column.
+  const nameLine = String(s.brand || '').trim()
+  const roleLine = String(s.kicker || '').trim()
+  const context = (
+    <div style={col(u(28), {
+      boxSizing: 'border-box', background: s.box1, padding: `${u(padY)} ${u(padX)}`, minWidth: 0,
+      ...(desk ? { width: u(485), flex: 'none' } : null),
+    })}>
+      <div style={row(u(12), { minWidth: 0 })}>
+        <span style={{ width: u(44), height: u(44), flex: 'none', borderRadius: s.radiusChip, overflow: 'hidden', background: s.box1 }}>
+          <Photo s={s} ink={ink} initialsSize={Math.round(15 * k)} />
+        </span>
+        {(nameLine || roleLine) && (
+          <span style={col(u(4), { minWidth: 0 })}>
+            {nameLine && <span style={mono(u(12), { color: ink, overflowWrap: 'anywhere' })}>{nameLine}</span>}
+            {roleLine && <span style={mono(u(11), { color: orange, overflowWrap: 'anywhere' })}>{roleLine}</span>}
+          </span>
+        )}
+      </div>
+      {!!String(s.title || '').trim() && (
+        <div style={{ containerType: 'inline-size', width: desk ? u(419) : '100%', maxWidth: '100%', minWidth: 0 }}>
+          <h2 style={{
+            margin: 0, fontFamily: s.display, fontWeight: 500, lineHeight: 1, letterSpacing: '0.004em', textTransform: 'uppercase',
+            color: ink, fontSize: s.titleWordEms ? `min(${u(s.mob ? 26 : tab ? 32 : 40)}, calc(100cqi / ${s.titleWordEms}))` : u(s.mob ? 26 : tab ? 32 : 40),
+          }}>{s.title}</h2>
+        </div>
+      )}
+      {s.formPromises.length > 0 && (
+        <div style={{
+          boxSizing: 'border-box', borderTop: `1px solid ${ink}`, minWidth: 0, maxWidth: '100%',
+          ...(desk ? { width: u(382.688) } : null),
+        }}>
+          {s.formPromises.map((p, i) => (
+            <div key={i} style={row(u(16), {
+              alignItems: 'flex-start', boxSizing: 'border-box', padding: `${u(14)} 0`, borderBottom: `1px solid ${ink}`, minWidth: 0,
+            })}>
+              <span style={mono(u(11), { color: orange, flex: 'none', minWidth: u(15.188) })}>{String(i + 1).padStart(2, '0')}</span>
+              <span style={mono(u(12), { color: ink, minWidth: 0, overflowWrap: 'anywhere' })}>{p}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+
+  const form = (
+    <div style={col(u(rowGap), {
+      boxSizing: 'border-box', padding: `${u(padY)} ${u(padX)}`, minWidth: 0, ...(desk ? { flex: '1 1 0' } : null),
+    })}>
+      {sent ? (
+        // The form half alone; the shell and the context panel do not move. `sent` is only ever set
+        // under s.live, so the canvas never draws it.
+        <div style={col(u(16))}>
+          <h3 style={{
+            margin: 0, fontFamily: s.display, fontWeight: 500, lineHeight: 1, letterSpacing: '0.004em', textTransform: 'uppercase',
+            color: ink, fontSize: u(s.mob ? 26 : 32), overflowWrap: 'break-word',
+          }}>{s.formSentTitle}</h3>
+          <p style={{ margin: 0, fontFamily: s.body, fontSize: u(16), lineHeight: 1.5, color: ink }}>{s.formSentBody}</p>
+          {/* Plain text, Retro's reason: the fallback for a browser that opened nothing. */}
+          <span style={{ fontFamily: s.body, fontSize: u(16), lineHeight: 1.5, fontWeight: 700, color: ink, overflowWrap: 'break-word' }}>{s.formEmail}</span>
+          <span onClick={() => setSent(false)} style={bar({ cursor: 'pointer' })}>
+            <span>{s.formAgain}</span>
+            <span aria-hidden>→</span>
+          </span>
+        </div>
+      ) : (
+        <>
+          {s.formRows.map(fieldRow)}
+          {showTypes && (
+            // The frames' fieldset box stands 8 short of its content at 768 and 390, so the next row
+            // comes 10 and 20 under the chips there (16 at 1440, where it is whole).
+            <div style={col(u(8), { marginBottom: desk ? undefined : '-8px' })}>
+              {label(s.formTypeLabel, { height: u(26) })}
+              <div style={row(u(6), { flexWrap: 'wrap', rowGap: u(6) })}>
+                {s.formTypes.map((t, i) => {
+                  const on = i === ti
+                  return (
+                    <span key={i} onClick={s.live ? () => setType(i) : undefined} style={{
+                      ...mono(u(11)), boxSizing: 'border-box', height: u(44), padding: `0 ${u(14)}`, display: 'inline-flex', alignItems: 'center',
+                      border: `1px solid ${ink}`, borderRadius: s.radiusChip, background: on ? ink : undefined, color: on ? s.bg : ink,
+                      whiteSpace: 'nowrap', cursor: s.live ? 'pointer' : undefined,
+                    }}>{t}</span>
+                  )
+                })}
+              </div>
+            </div>
+          )}
+          <div style={col(u(8))}>
+            {label(s.formMsgLabel)}
+            {s.live ? (
+              <textarea
+                {...cp('msg')}
+                value={msg} placeholder={s.formMessage} aria-label={s.formMsgLabel}
+                onChange={(e) => setMessage(e.target.value)}
+                style={box(msgBad, { display: 'block', height: u(81), padding: `${u(14)} ${u(16)}`, resize: 'none' })}
+              />
+            ) : (
+              <span style={box(false, { display: 'block', height: u(81), padding: `${u(14)} ${u(16)}` })}>{hint(s.formMessage)}</span>
+            )}
+          </div>
+          <Pill {...pillLink} onClick={onSubmit} style={bar({ cursor: onSubmit ? 'pointer' : undefined })}>
+            <span>{s.formBtn}</span>
+            <span aria-hidden>→</span>
+          </Pill>
+          {errs && (
+            <span id={pid} role="alert" style={mono(u(11), { color: orange, textAlign: 'center' })}>
+              {errs?.m?.find(Boolean) || errs?.msg?.m || s.formPrompt}
+            </span>
+          )}
+        </>
+      )}
+    </div>
+  )
+
+  return (
+    <div style={{
+      boxSizing: 'border-box', border: `1px solid ${ink}`, borderRadius: u(20), overflow: 'clip', color: ink,
+      display: 'flex', flexDirection: desk ? 'row' : 'column', alignItems: 'stretch',
+    }}>
+      {context}
+      {form}
+    </div>
+  )
+}
+
 function EnquiryForm({ s }) {
   // What the visitor has typed, gated on `s.live` throughout: on the canvas
   // every box is the span it has always been (§12.7), because a live field
@@ -28008,6 +28215,13 @@ function EnquiryForm({ s }) {
     'aria-describedby': errs ? pid : undefined,
   })
   const msgBad = !!(errs && errs.msg?.bad)
+
+  // Lattice's layout-1 form is a block of its own (LatticeForm), after the seam: every piece of the live
+  // seam above goes over in `g`, so the published boxes, chip, mailto, refusal and sent state are the one
+  // seam in a new picture.
+  if (s.v0 && s.limeTree && s.lattice) {
+    return <LatticeForm s={s} g={{ at, setAt, msg, setMessage, ti, setType, showTypes, errs, msgBad, sent, setSent, Pill, pillLink, onSubmit, cp, pid }} />
+  }
 
   // Lime — the split frames 964:58596 / 986:39885 / 986:39897, as a block
   // ahead of Retro's v0 branch (the bio's and the media player's placement):
@@ -31694,6 +31908,11 @@ export default function EncoreSection({ s }) {
       // teal at 14% to nothing at 70%, the same at all three widths (the root's own).
       ...(s.pr && s.v0 && s.lattice && {
         backgroundImage: `radial-gradient(ellipse 60% 55% at 50% 75%, ${s.glow}24, ${s.glow}00 70%)`,
+      }),
+      // …and the form's warm glow: the frames' one radial gradient, 60% x 55% of the section at 20% / 50%,
+      // orange at 14% to nothing at 70%, the same at all three widths (the root's own).
+      ...(s.fo && s.v0 && s.lattice && {
+        backgroundImage: `radial-gradient(ellipse 60% 55% at 20% 50%, ${s.text3}24, ${s.text3}00 70%)`,
       }),
       boxShadow: grungeRule ? `inset 0 0 0 1px ${s.inactiveLine}` : editorialRule ? `inset 0 0 0 1px ${s.stroke2}`
         : popMediaRule ? `inset 0 4.1px 0 ${s.onScheme[1].stroke2}, inset 0 -4.1px 0 ${s.onScheme[1].stroke2}`
