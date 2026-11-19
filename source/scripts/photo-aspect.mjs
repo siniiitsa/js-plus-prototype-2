@@ -5,7 +5,7 @@
 //
 //   node scripts/photo-aspect.mjs --theme Pop,Retro --layout 1,2,3,4 --width 1440,768,390 --check
 //
-//   --theme   Retro | Lime | Grunge | Editorial | Pop   (default: all five)
+//   --theme   Retro | Lime | Grunge | Editorial | Pop | Lattice   (default: all six)
 //   --layout  1..4 (Retro also 5 and 6)                  (default 1,2,3,4)
 //   --width   1440 (Desktop tab) | 768 (Tablet tab) | 390 (Mobile tab); the window stays 1440  (default 1440,768,390)
 //   --cat     only these sections
@@ -17,7 +17,7 @@ import { headlessShell } from './headless-shell.mjs'
 const args = process.argv.slice(2)
 const opt = (name, dflt) => { const i = args.indexOf(`--${name}`); return i >= 0 && args[i + 1] && !args[i + 1].startsWith('--') ? args[i + 1] : dflt }
 const list = (v) => String(v).split(',').map((x) => x.trim()).filter(Boolean)
-const themes = list(opt('theme', 'Retro,Lime,Grunge,Editorial,Pop'))
+const themes = list(opt('theme', 'Retro,Lime,Grunge,Editorial,Pop,Lattice'))
 const layouts = list(opt('layout', '1,2,3,4')).map(Number)
 const widths = list(opt('width', '1440,768,390')).map(Number)
 const onlyCats = opt('cat') ? list(opt('cat')) : null
