@@ -3536,11 +3536,14 @@ export const FIELDS = {
           Pop: [18, 18, 28, 40],
           // Lattice layout 1 measured 2026-11-19 (limits.mjs map --themes=5 --designs=0): venue,
           // city and time each alone; the city · time line shares one mono line that wraps.
-          Lattice: [26, 18, 28, 40] },
-        city: { Retro: [22, 14, 20, 13], Editorial: [29, 13, 23, 13], Pop: [13, 13, 20, 13], '*': [20, 13, 20, 13] },
-        time: { Retro: [13, 5, 13, 10], Pop: [8, 5, 13, 13], Lattice: [15, 5, 13, 13], '*': [13, 5, 13, 13] },
-        month: { Retro: [7, 4, 11, 9], Lime: [5, 3, 12, 9], Pop: [9, 5, 12, 9], Lattice: [8, 5, 12, 9], '*': [5, 5, 12, 9] },
-        day: { Retro: [5, 5, 5, 5], Lattice: [3, 3, 5, 5], '*': [6, 3, 5, 5] },
+          Lattice: [26, 18, 28, 40],
+          // Paperback layout 1 measured 2026-11-21 (limits.mjs map --themes=6 --designs=0): the other
+          // designs keep the row they read before (Pop's venue, `'*'` for the rest).
+          Paperback: [25, 18, 28, 40] },
+        city: { Retro: [22, 14, 20, 13], Editorial: [29, 13, 23, 13], Pop: [13, 13, 20, 13], Paperback: [28, 13, 20, 13], '*': [20, 13, 20, 13] },
+        time: { Retro: [13, 5, 13, 10], Pop: [8, 5, 13, 13], Lattice: [15, 5, 13, 13], Paperback: [23, 5, 13, 13], '*': [13, 5, 13, 13] },
+        month: { Retro: [7, 4, 11, 9], Lime: [5, 3, 12, 9], Pop: [9, 5, 12, 9], Lattice: [8, 5, 12, 9], Paperback: [8, 5, 12, 9], '*': [5, 5, 12, 9] },
+        day: { Retro: [5, 5, 5, 5], Lattice: [3, 3, 5, 5], Paperback: [4, 3, 5, 5], '*': [6, 3, 5, 5] },
       },
       // The page size is vm.gigPage (five) except in layout 4, whose whole
       // list is a one-gig ticker. The cities are read
@@ -3565,21 +3568,21 @@ export const FIELDS = {
     // JP-090: layout 1's label over the gig list; the "· 5" count is the page's.
     // (Layout 2's "Other upcoming · 4", JP-095 (b), was removed 2026-11-12.)
     { k: 'listLabel', l: 'List heading', d: MAP_LIST_LABEL, in: [0],
-      chars: { Retro: [37], Lime: [40], Grunge: [41], Editorial: [46], Pop: [31], Lattice: [31] },
+      chars: { Retro: [37], Lime: [40], Grunge: [41], Editorial: [46], Pop: [31], Lattice: [31], Paperback: [30] },
       hint: 'The label over the list of gigs, before its count. Left empty, neither is drawn.' },
     { k: 'heading', l: 'Heading', d: 'Manchester',
       // Layouts 1 and 2 start from the picked town (mapHeadingSeed).
       chars: { Retro: [20, 20, 39, 25], Lime: [19, 17, 34, 24], Grunge: [16, 20, 37, 25], Editorial: [11, 19, 22, 22],
-        Pop: [17, 21, 25, 23], Lattice: [12, 21, 25, 23] } },
+        Pop: [17, 21, 25, 23], Lattice: [12, 21, 25, 23], Paperback: [11, 21, 25, 23] } },
     // Layout 2's travel card prints the header's Location instead, under its
     // own "Based in" label (JP-096, user call, 2026-10-01): the frame's value is
     // the town alone, and this field's copy says "Based in" itself.
     { k: 'base',    l: 'Based in',       d: MAP_BASE, in: [0, 2],
-      chars: { Retro: [29, null, 33], Lime: [35, null, 27], Grunge: [39, null, 33], Lattice: [19, null, 33], '*': [24, null, 33] },
+      chars: { Retro: [29, null, 33], Lime: [35, null, 27], Grunge: [39, null, 33], Lattice: [19, null, 33], Paperback: [25, null, 33], '*': [24, null, 33] },
       hint: 'Layout 1 prints it beside the map and layout 3 under it. Layout 2’s travel card '
           + 'shows the Location you typed on the header instead.' },
     { k: 'terms',   l: 'Travel charges',   d: MAP_TERMS, in: [0, 1],
-      chars: { Retro: [59, 50], Lime: [58, 41], Pop: [45, 51], Lattice: [39, 51], '*': [58, 51] } },
+      chars: { Retro: [59, 50], Lime: [58, 41], Pop: [45, 51], Lattice: [39, 51], Paperback: [44, 51], '*': [58, 51] } },
     { k: 'travelTime', l: 'Travel time (layout 2)', d: MAP_TRAVEL_TIME, in: [1],
       chars: { Retro: [null, 11], '*': [null, 13] } },
     { k: 'fee',        l: 'Booking fee (layout 2)', d: MAP_FEE, in: [1],

@@ -22453,6 +22453,184 @@ function LatticeMap({ s, g }) {
   )
 }
 
+// Paperback · Events map layout 1 (1:2822 · 1:11471 · 1:12654, 983 tall at every width): an indigo band (Scheme 3, the section's own
+// ground) under a confetti field, the town at 120.96 / 75 / 48 with three sparkles hung off its end, a yellow radius pill (right of the
+// head at 1440 and 768, under it at 390), a lilac card turned -2 degrees and a panel of five white pill rows with a pager. At 1440 the card is
+// a rings art over a white foot (the base and the terms) beside the panel; at 768 and 390 it is the foot alone, strip-shaped, over the
+// panel, with the `home turf` arrow's last 16px showing over its top edge, as the frames draw it. The bio's stage (`containerType:
+// inline-size`, frame px verbatim in cqw, the vertical insets in a child, `vm.pad = '0px <surplus>'`); the page, the pairing and the pager's
+// window are `EventsMap`'s seam, handed over in `g`. Not drawn (call 1): the scripts `Shows / coverage` and `home turf` (no field carries
+// either; the first's seat stays as padding), the pink `Sold out` chip (no field), and `Tickets` on a row with no address (JP-045).
+// `05 of 12` is derived. The real map is not mounted: the frame draws art. The head's fit reads Bricolage's table x `fit`, the face's
+// optical size (the table is read at 1000px, where it is tightest; the head sets 7.5% / 3.3% wider at 48 / 75px, measured on *Wolverhampton*).
+const PAPER_MAP = {
+  desktop: {
+    fw: 1440, top: 130.36, foot: 129.97, side: 48.96, seat: 56.5, h2: 120.96, free: 1100, gap: 28, colGap: 28.03, card: [657, 539], spark: [[11.98, -0.5], [57.98, -24.5], [68.98, 28.5]],
+    arrow: [323, 152.5], footH: 92, baseT: 26, baseLh: 31, dayT: 30, titleT: 22, tileGap: 16, art: true, fit: 1,
+  },
+  tablet: {
+    fw: 768, top: 97.48, foot: 97.5, side: 26.11, seat: 53.65, h2: 75, free: 470, gap: 28, colGap: 28, card: [716, 92], spark: [[12.1, 2.35], [58.1, -21.65], [69.1, 31.35]],
+    arrow: [356, -74], footH: 92, baseT: 26, baseLh: 31, dayT: 27, titleT: 22, tileGap: 16, art: false, fit: 1.033,
+  },
+  mobile: {
+    fw: 390, top: 82.34, foot: 82.36, side: 24, seat: 51.75, h2: 48, free: 262, gap: 28, colGap: 28, card: [342, 89], spark: [[11.97, 4.25], [57.97, -19.75], [68.97, 33.25]],
+    arrow: [169, -76], footH: 89, baseT: 24, baseLh: 28, dayT: 25, titleT: 20, tileGap: 10, art: false, fit: 1.0745,
+  },
+}
+function PaperbackMap({ s, g }) {
+  const { shown, at0, lit, onPick, win, onPage, onStep } = g
+  const dev = s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop'
+  const P = PAPER_MAP[dev]
+  const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
+  const O = s.onScheme
+  const ink = O[8].bg
+  const yellow = O[1].box2
+  const label = (size, extra) => ({ fontFamily: s.label, fontWeight: 700, fontSize: size, letterSpacing: '-0.01em', ...extra })
+  const display = (size, lh, extra) => ({ fontFamily: s.display, fontWeight: 800, fontSize: size, lineHeight: lh, letterSpacing: '-0.035em', ...extra })
+  // The date tiles' colours by the gig's place in the whole list, as the frame's five: lilac, yellow, pink, cyan, magenta.
+  const TILES = [O[6].bg, yellow, O[5].bg, O[2].box3, O[7].bg]
+
+  // The town, fitted to its widest word, with the three sparkles hung off the end of whatever the words hug.
+  const sparkle = (i, size, fill) => (
+    <PaperbackSparkle size={16} fill={fill} aria-hidden style={{
+      position: 'absolute', pointerEvents: 'none', left: `calc(100% + ${u(P.spark[i][0])})`, top: u(P.spark[i][1]), width: u(size), height: u(size),
+    }} />
+  )
+  const h2 = String(s.title || '').trim() ? (
+    <div style={{ position: 'relative', width: 'fit-content', maxWidth: u(P.free) }}>
+      <h2 style={{
+        margin: 0, color: s.tx, ...display(s.titleWordEms ? `min(${u(P.h2)}, calc(${u(P.free)} / ${(s.titleWordEms * P.fit).toFixed(3)}))` : u(P.h2), 0.82),
+      }}>{s.title}</h2>
+      {sparkle(0, 48, yellow)}
+      {sparkle(1, 29, O[5].bg)}
+      {sparkle(2, 18, PAPER_WHITE)}
+    </div>
+  ) : null
+  const head = <div style={{ paddingTop: u(P.seat), minWidth: 0 }}>{h2}</div>
+  const pill = (
+    <span style={{
+      ...label(u(16)), flex: 'none', alignSelf: s.mob ? 'flex-start' : 'flex-end', boxSizing: 'border-box', height: u(44), padding: `0 ${u(16)}`, display: 'inline-flex',
+      alignItems: 'center', borderRadius: s.radiusChip, background: yellow, color: ink, whiteSpace: 'nowrap',
+    }}>{s.mapRadius}</span>
+  )
+
+  // The lilac card: the rings art over the white foot at 1440, the foot alone narrow (its arrow peeks over the top edge).
+  const foot = !!(s.mapBase || s.mapTerms)
+  const card = (
+    <div style={{
+      position: 'relative', overflow: 'hidden', boxSizing: 'border-box', transform: 'rotate(-2deg)', borderRadius: u(24), background: O[6].bg,
+      ...(P.art ? { height: u(P.card[1]), display: 'flex', flexDirection: 'column' } : {}),
+    }}>
+      {P.art && (
+        <div style={{ position: 'relative', flex: '1 1 0', minHeight: 0, overflow: 'hidden' }}>
+          <PaperbackArt name="rings" aria-hidden style={{ position: 'absolute', left: 0, top: 0, width: u(657), height: u(447) }} />
+        </div>
+      )}
+      {foot && (
+        <div style={{
+          position: 'relative', flex: 'none', boxSizing: 'border-box', minHeight: u(P.footH), padding: `${u(20)} ${u(24)}`, background: PAPER_WHITE, overflow: 'hidden',
+        }}>
+          {!!s.mapBase && <div style={display(u(P.baseT), u(P.baseLh), { color: s.ac, overflowWrap: 'anywhere' })}>{s.mapBase}</div>}
+          {!!s.mapTerms && <div style={label(u(14), { lineHeight: u(16.8), marginTop: s.mapBase ? u(4) : 0, color: s.bg, overflowWrap: 'anywhere' })}>{s.mapTerms}</div>}
+        </div>
+      )}
+      <PaperbackArt name="arrowBlack" aria-hidden style={{ position: 'absolute', left: u(P.arrow[0]), top: u(P.arrow[1]), width: u(90), height: u(90), pointerEvents: 'none' }} />
+    </div>
+  )
+
+  // A gig row: a coloured date tile, the venue over `City · time`, and the tickets chip where the row has an address (JP-045). The lit row
+  // (live, the pairing) is the white row ringed in the page's yellow.
+  const rows = shown.map((gig, i) => {
+    const link = extLink(s, gig.url)
+    const Tag = link ? 'a' : 'div'
+    const on = lit(i)
+    return (
+      <Tag key={i} {...link} onClick={onPick(i)} style={{
+        ...row(u(P.tileGap)), boxSizing: 'border-box', padding: `${u(12)} ${u(16)}`, background: PAPER_WHITE, borderRadius: u(24), textDecoration: 'none', color: ink,
+        cursor: s.live ? 'pointer' : undefined, boxShadow: on ? `inset 0 0 0 ${u(3)} ${yellow}` : undefined,
+      }}>
+        <span style={{
+          flex: 'none', boxSizing: 'border-box', width: u(64), minHeight: u(P.dayT * 0.9 + 30), padding: `${u(6)} 0 ${u(8.4)}`, borderRadius: u(14), background: TILES[(at0 + i) % TILES.length], textAlign: 'center',
+        }}>
+          <span style={label(u(13), { display: 'block', lineHeight: u(15.6), color: ink })}>{gig.month}</span>
+          <span style={display(u(P.dayT), 0.9, { display: 'block', marginTop: u(0), color: ink })}>{gig.day}</span>
+        </span>
+        <span style={col(u(4), { flex: '1 1 0', minWidth: 0 })}>
+          <span style={display(u(P.titleT), u(P.titleT), { color: ink, overflowWrap: 'break-word' })}>{gig.venue}</span>
+          {!!gig.line && <span style={label(u(14), { lineHeight: u(16.8), color: s.bg, overflowWrap: 'anywhere' })}>{gig.line}</span>}
+        </span>
+        {!!gig.url && (
+          <span style={{
+            ...label(u(13)), flex: 'none', boxSizing: 'border-box', height: u(26), padding: `0 ${u(10)}`, display: 'inline-flex', alignItems: 'center',
+            borderRadius: s.radiusChip, background: ink, color: PAPER_WHITE, whiteSpace: 'nowrap',
+          }}>Tickets</span>
+        )}
+      </Tag>
+    )
+  })
+
+  // The pager: a white round arrow, the page rings (the current one yellow) and a yellow round arrow; it draws only past one page.
+  const disc = (key, child, { bg, onClick }) => (
+    <span key={key} onClick={onClick} style={{
+      flex: 'none', width: u(44), height: u(44), borderRadius: '50%', background: bg, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+      cursor: onClick ? 'pointer' : undefined,
+    }}>{child}</span>
+  )
+  const pager = win.labels.length > 0 ? (
+    <div style={row(0, { justifyContent: 'space-between' })}>
+      {disc('prev', paperArrow(u, true, ink), { bg: PAPER_WHITE, onClick: onStep && (() => onStep(-1)) })}
+      <div style={row(u(6))}>
+        {win.labels.map((p, i) => (
+          <span key={i} onClick={onPage && p !== '…' ? () => onPage(p) : undefined} style={{
+            ...label(u(15)), boxSizing: 'border-box', flex: 'none', width: u(40), height: u(40), display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+            borderRadius: '50%', border: `${u(2)} solid ${i === win.at ? yellow : 'rgba(255, 255, 255, 0.5)'}`, background: i === win.at ? yellow : 'transparent',
+            color: i === win.at ? ink : s.tx, cursor: onPage && p !== '…' ? 'pointer' : undefined,
+          }}>{p}</span>
+        ))}
+      </div>
+      {disc('next', paperArrow(u, false, ink), { bg: yellow, onClick: onStep && (() => onStep(1)) })}
+    </div>
+  ) : null
+
+  const two = (n) => String(n).padStart(2, '0')
+  const panel = (
+    <div style={col(u(14), { minWidth: 0 })}>
+      {(!!s.mapListLabel || shown.length > 0) && (
+        <div style={row(u(12), { justifyContent: 'space-between', ...label(u(18), { lineHeight: u(21.6), color: s.tx }) })}>
+          <span style={{ minWidth: 0, overflowWrap: 'anywhere' }}>{s.mapListLabel}</span>
+          {shown.length > 0 && <span style={{ flex: 'none', whiteSpace: 'nowrap' }}>{`${two(shown.length)} of ${two(s.gigs.length)}`}</span>}
+        </div>
+      )}
+      {rows.length > 0 ? (
+        <div style={col(u(10))}>{rows}</div>
+      ) : (
+        <div style={{ ...label(u(16), { color: s.bg }), background: PAPER_WHITE, borderRadius: u(24), padding: `${u(24)} ${u(16)}` }}>No upcoming gigs.</div>
+      )}
+      {pager}
+    </div>
+  )
+
+  return (
+    <div style={{ position: 'relative', containerType: 'inline-size', overflow: 'hidden' }}>
+      <PaperbackArt name={dev === 'desktop' ? 'confettiMap' : dev === 'tablet' ? 'confettiMapTablet' : 'confettiMapMobile'} aria-hidden style={{
+        position: 'absolute', left: 0, top: 0, width: u(P.fw), height: u(983), pointerEvents: 'none',
+      }} />
+      <div style={{ position: 'relative', paddingTop: u(P.top), paddingBottom: u(P.foot) }}>
+        <div style={col(u(P.gap), { margin: `0 ${u(P.side)}` })}>
+          <div style={s.mob ? col(u(14)) : row(u(24), { alignItems: 'flex-end', justifyContent: 'space-between' })}>
+            {head}
+            {pill}
+          </div>
+          <div style={s.narrow ? col(u(P.gap)) : { display: 'grid', alignItems: 'start', columnGap: u(P.colGap), gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)' }}>
+            {card}
+            {panel}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function EventsMap({ s }) {
   // The page of gigs, and the gig the visitor has picked out on the map. Both
   // are inert on the editor canvas, where the section is a picture of a website
@@ -22498,6 +22676,15 @@ function EventsMap({ s }) {
     // Lattice's layout-1 map is a block of its own (LatticeMap), after the seam: the page, the
     // pairing and the pager's window above are shared whole, and the block is the picture. Its
     // window is the compact one at every width (the frames' own `1 2 3`).
+    // Paperback's (1:2822 · 1:11471 · 1:12654) is a block of its own as well, handed the same seam, and the gig's place in the whole list
+    // (`at0`) so a date tile keeps its colour as the pager turns.
+    if (s.limeTree && s.paperback) {
+      return <PaperbackMap s={s} g={{
+        shown, at0: pg * perPage, lit, onPick, win: pageWindow(pages, pg, true),
+        onPage: s.live ? (label) => setPage(Number(label) - 1) : undefined,
+        onStep: s.live ? (dir) => setPage(Math.max(0, Math.min(pages - 1, pg + dir))) : undefined,
+      }} />
+    }
     if (s.limeTree && s.lattice) {
       return <LatticeMap s={s} g={{
         shown, lit, onPick, win: pageWindow(pages, pg, true),

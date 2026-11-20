@@ -466,6 +466,18 @@ at 768 and 390 only; no field carries it, call 1, as the media's disc). **Fields
 **Where the frame's type shrinks to keep a word whole** (768's *Superstition* at 17, *September* at 16, *Uptown Funk* wrapped) the title box is a container and its text is `min(1em, 100cqi / ems)`, `ems` the widest word in
 Bricolage's table (`vm.songs[].ems`, the head's rule per row), so the frame's own behaviour holds at the seed and a longer title shrinks rather than outrun its chip. The chip never wraps (it ellipsises at 55% of the row).
 
+**6 · map — own tree, `PaperbackMap`** (session 6, 2026-11-21; frames `1:2822` · `1:11471` · `1:12654`, all 983 tall). The plan predicted *Lime's Compact tile* (the raster map as the rings art); the inventory is the same (a count-less head with a
+radius pill, a coverage card with a foot, a gig panel of five rows, a pager) and the picture is not. Lime's tile is a raster map in a ringed card beside flush hairline rows; Lattice's is a dotted bowl over a ruled foot beside boxed rows. This frame is an
+**indigo band (Scheme 3, the section's own ground: no card, so no card margin) with a 20-piece confetti set per width, a 120.96 / 75 / 48 Bricolage head with three sparkles hung off its end, a yellow `120 mile radius` pill (right at 1440 and 768,
+under the head at 390), and a 657 x 539 lilac card (radius 24) turned -2 degrees**: at 1440 the card is a 657 x 447 rings art (`ART.rings`, the pink dot at its centre) over a 92-tall white foot (`Based in Manchester` in orange Bricolage 26, the terms
+in indigo Figtree 14) with the `home turf` arrow (90) beside the dot; at 768 and 390 the **card is the white foot alone** (716 x 92 / 342 x 89, the rings and the arrow clipped away, only the arrow's last 16px peeking over the top edge, which is
+drawn the same way so the frame's own artefact stands). The panel is a `Upcoming gigs` / `05 of 12` row, **five 24-radius white pill rows** (a 64-wide date tile in one of five colours, the venue in Bricolage 22 / 22 / 20 over `City · time`, a
+black `Tickets` or pink `Sold out` chip, 81 / 78.3 / 76.5 tall, 10 apart) and a pager (a white round arrow, three 40 page rings the current one yellow, a yellow round arrow). No shared ancestor, so **own tree**, dispatched in `EventsMap`'s `if (s.v0)` after
+the seam ahead of Lattice's, handed the same `g` (`shown`, `lit`, `onPick`, `win`, `onPage`, `onStep`). **Draws what the standing rules leave:** no script `Shows / coverage` (removed 2026-11-12; its 43-tall seat stays as padding, the bio's convention),
+no script `home turf` (no field carries it, call 1; the arrow that points from it **is** drawn), no `Sold out` chip (no field, as Lattice's), and `Tickets` only on a row with an address (JP-045), so the **seeded rows, which carry none, draw no chip**. The
+`05 of 12` is derived (`shown` of `gigs`, two digits each), never typed. The real map is not mounted (the frame draws art; Lattice's call): no tiles, no Photon request from the canvas. **Fields it reads:** `heading` (the town, a `titleWordEms` fit),
+`listLabel`, `base`, `terms`, `gigs` (venue, city, time, month, day, link) and the derived `vm.mapRadius`. `radius`, `rings`, `kicker`, `stats`, `place` and `miles` still feed the derived copy only.
+
 ### Settled in session 0 — the foundation
 
 Commit `2ceb233`, branch `paperback-layout-1`, 2026-11-20. The three opening calls are written under decisions 1–3 above.
@@ -640,6 +652,14 @@ renders at theme 6 (45 renders, 0 bad). Digest of every category at three widths
 - **Proof.** `inline-probe` repertoire at layouts 1–4, 1440 and 768: PASS (layout 1: 25 slots hit); `INLINE_OFF` `Paperback.0.repertoire.songs.length`, `.1` / `.3` `songs.length` and `.2` `songs.artist` (Pop's reasons). `photo-probe` and `focus-probe --prime` layouts 1–4 PASS. Live, 37 songs: paging, chips, search and the no-match row all work;
   the pager (1440 y 856.3, 390 foot 122.2) reads the frame's. Empty list draws *No songs yet.*; a long stored title shrinks and an over-long artist ellipsises. Digest of themes 0–5 at three widths, before vs after: **864 of 864 identical** (themes 0–5, three widths, after stripping the second server's port and Vite's `?t=`). Root `index.html` not refreshed.
 
+**6 · map** — `SHA6`, 2026-11-21. Verdict under *Seen at planning time*; the full record is `notes/map.md`, *Paperback · layout 1*. What was built and how it was proved:
+
+- **`PaperbackMap`** (`EncoreSection.jsx`, before `EventsMap`), `PAPER_MAP` its frame numbers, dispatched in `EventsMap`'s `if (s.limeTree)` after the seam and ahead of Lattice's, handed `g` (`shown`, `at0`, `lit`, `onPick`, the compact pager window and, live, the page and step closures). Frame geometry agrees at all three widths (head, pill, list label, rows, the -2 degree card's bounding box, the pager at x 996.5 / y 810.5 with twelve gigs, section 982.99 at 1440).
+  `vm.pad` and `vm.titleWordEms` extended to `map`; the head's fit takes a per-width `fit` (1 / 1.033 / 1.0745) over the ems table, because the table is read at 1000 px; `vm.gigs[].line` is the composed `city · time`.
+- **Fields and caps.** Reads `heading`, `listLabel`, `base`, `terms`, `gigs` (venue, city, time, month, day) and the derived `mapRadius`. `limits.mjs map --themes=6 --designs=0` then `--check` and `--seeds`: 0 failing, 0 over. Heading 11, base 25, terms 44, list label 30, venue 25, city 28, time 23, month 8, day 4; `FIELDS.map` gains a `Paperback` row for each.
+- **Proof.** `inline-probe` map at layouts 1–4, 1440 and 768: PASS (layout 1: 29 slots hit), **no `INLINE_OFF` row needed**; `photo-probe` and `focus-probe --prime` layouts 1–4 PASS, no `PHOTO_OFF`. Live (twelve gigs, odd rows with addresses): rows light, the pager walks 1 to 3 and clamps, counts read `05 of 12` / `02 of 12`, tile colours continue across pages, chips only on rows with an address. Empty list draws *No upcoming gigs.*; a long stored venue wraps in the row and a title-only row keeps its tile.
+  Digest of themes 0–5 at three widths, before vs after: DIGESTRESULT. Root `index.html` not refreshed.
+
 ### Conventions section 2 (the bio) inherits
 
 - **`PaperbackPill({ s, label, to, ext, u, bg, fg, style })`** is the template's one button: pass `bg` / `fg` for the black Full-bio /
@@ -705,6 +725,17 @@ renders at theme 6 (45 renders, 0 bad). Digest of every category at three widths
 - **Inline-probe's `--check` for layouts 2–4 needs `INLINE_OFF` rows** only for slots the placeholder cards do not draw (`songs.length`, `songs.artist` for the repertoire): run `--layout 1,2,3,4 --cat map` once and copy Pop's reasons for what it names.
 - The repertoire's frame is **1:2689** · **1:11313** · **1:12499**; the map's is **1:2822** · **1:11471** · **1:12654**. `limits.mjs` caps: pass `--extra-lines=<keys>` to the measure and the `--check` alike.
 
+### Conventions section 7 (the pricing) inherits
+
+- **`PaperbackMap` is the fifth own-tree stage and the shape for a section with a head plus two columns on a band**: `PAPER_<CAT>` per width, `u()` in cqw, vertical insets in a child, `vm.pad = '0px <surplus>'` (`bio`, `media`, `gallery`, `repertoire` and `map` now share the line; add the pricing's) and `vm.titleWordEms` extended in the next line. Pricing's frame is **white**, so it is the section's own ground (Scheme 1) and no card margin is needed; read the frame (`1:2968` · `1:11610` · `1:12793`) for which seat.
+- **Fit a head with the table times a per-width `fit`**: `bricolageEms` is read at 1000 px, so a 48 to 75 px head sets 3 to 8% wider (`fit` 1.0745 at 48, 1.033 at 75, measured on the widest word). The repertoire's 1.13 is the same effect at 17 to 22 px. Measure the widest word at the frame's size with a hidden span before trusting the table.
+- **A rotated card's section height is the card's**: the -2 degree card's box set the map's 982.99; seed `foot` against the frame's row height so the section is not 0.4 too tall.
+- **A pill that appears only when the field has a value** (`Tickets` for a gig with an address, JP-045) means the seeded section has no seat for it; compose `vm` strings in `sectionVm` (`vm.gigs[].line`) so an emptied half drops with its separator.
+- **`paperArrow(u, back, ink)`** drew the map's pager discs too; the testimonials are its next reader. The chip / tile palette by place is `[lilac, yellow, pink, cyan, magenta]` (`O[6].bg`, `O[1].box2`, `O[5].bg`, `O[2].box3`, `O[7].bg`); pricing's three cards are `s.onScheme[...]` seats named in the *Lattice* row of this file's tokens, read the design context.
+- **Layouts 2–4 need no `INLINE_OFF` rows when the placeholder cards print every slot**: the map needed none. Run `inline-probe --layout 1,2,3,4 --cat pricing` once and see.
+- **Digest recipe, again:** worktree on HEAD, `vite <worktree>/source --port 5190 --strictPort` (root positionally), verify with `curl :5190/src/builder/EncoreSection.jsx | grep -c PaperbackMap` on the *old* tree giving 0, then strip `?t=NN` and the port before `cmp`. No `pgrep -f` wait loop.
+- The map's frame is **1:2822** · **1:11471** · **1:12654**; the pricing's is **1:2968** · **1:11610** · **1:12793**.
+
 ### Open calls — everything the pass hands the user, in one place
 
 *(collected at the sweep; calls 1–3 are written back at session 0)*
@@ -757,6 +788,17 @@ renders at theme 6 (45 renders, 0 bad). Digest of every category at three widths
 - **The pager and its seat appear only past twelve songs**, so the seeded section is about 100 shorter than the frame (which draws a pager over 240 songs); at 390 the pager takes a 58 foot when it shows.
 - **An artist over 22 characters is cut by the cap and, on the canvas, an over-long stored one ellipsises in its chip** (the chip is at most 55% of the row). Title cap 17 (the seed's own length).
 - **Layouts 2–4 are still Pop's caps**, as every section so far.
+
+**From section 6 (map), for the user:**
+
+- **The seeded rows draw no `Tickets` chip.** The frame draws a black `Tickets` or a pink `Sold out` pill on every row; the chip is the tickets link (JP-045), the seeded gigs have no address, and `Sold out` has no field, so a row draws a chip only when it has an address. Say if you want the frame's chip on every row (a seeded address, or a dead pill).
+- **`home turf` and its arrow's label are not drawn** (no field, call 1); the black arrow is. The script `Shows / coverage` stays removed.
+- **`05 of 12` is derived** (`shown` of `gigs`, two digits), so the seeded five read `05 of 05`. The frame's `12` was the designer's number.
+- **The lit row is a yellow inset ring** (live only); the frames draw no lit row, so the look is mine.
+- **The date tiles take their colour from the row's place in the whole list**, not its page, so a page turn does not recolour a gig.
+- **The pager appears only past five gigs**, so the seeded section is 925 / 917 tall at 768 / 390 against the frames' 983 (the absent pager); at 1440 the card sets the height (982.99).
+- **The rings art is drawn at 1440 only**, as the frames do; the 768 and 390 frames draw the foot alone. The real map is not mounted (Lattice's call), so the town and radius fields move the head and pill, not a picture.
+- **Heading cap 11** (the seed's own length; mobile is the tightest). Layouts 2–4 are still Pop's caps.
 
 ## Open questions
 
