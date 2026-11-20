@@ -94,7 +94,7 @@ Lattice settled that as *a narrow-only 750 behind `lattice`* — section 1 reads
 |---|---|---|---|---|---|---|---|---|---|
 | 0 | *foundation* | `1:2316` | — | `1:10903` | — | `1:12137` | — | `THEMES[6]`, ramp, faces, photos, the flag, the doodle art | done 2ceb233 |
 | 1 | `header` | `1:2318` | 1440 × 750 | `1:10905` | 768 × 750 | `1:12139` | 390 × 750 | Yellow ground with a wavy pale-yellow squiggle field, rounded bottom corners; wordmark `Kai Mercer` + `DJ LIVE`, inline pill nav (desktop only), pink Book now + arrow; a **tilted photo card** with tape, a pink `KM` disc, a vinyl-disc sticker, sparkles; a tilted **avatar card**, kicker pills, a ~110 px title with a **pink hand-drawn underline**, six pill chips, a script `Booking 2026` note · **Pop's `HeaderV0`** (tilted card, sticker disc, sparkles) or **Lime's `HeaderV0` block** as the twin of the card and chips — read both before choosing | done `bc8b2bf` |
-| 2 | `bio` | `1:2397` | 1440 × 832 | `1:11004` | 768 × 1213 | `1:12191` | 390 × 1211 | White; a huge two-line statement `Reads the room.` left, a tall tilted portrait with tape over a blush blob, a vinyl doodle and sparkles, **About** + copy + black `Full bio →` pill right, script `KM bio`, `that's me! ↷`, and `DJ · Live act Manchester`, a `001 · Structure · Bio_01` chip pair · **new own block** (a statement + portrait + side copy; nothing in the page is Lime's *Flanked portrait*) — check Pop's bio first | open |
+| 2 | `bio` | `1:2397` | 1440 × 832 | `1:11004` | 768 × 1213 | `1:12191` | 390 × 1211 | White; a huge two-line statement `Reads the room.` left, a tall tilted portrait with tape over a blush blob, a vinyl doodle and sparkles, **About** + copy + black `Full bio →` pill right, script `KM bio`, `that's me! ↷`, and `DJ · Live act Manchester`, a `001 · Structure · Bio_01` chip pair · **new own block** (a statement + portrait + side copy; nothing in the page is Lime's *Flanked portrait*) — check Pop's bio first | done 0bca0d9 |
 | 3 | `media` | `1:2450` | 1440 × 1057 | `1:11054` | 768 × 1398 | `1:12240` | 390 × 1361 | A **cyan card** (24 radius, on the white page): script `Top tracks`, a 2-line title, confetti; five numbered white rows (art, title, a coloured `Single` / album chip and a black duration chip, a black play disc; row 2 is yellow with a pink play disc), a black `Soundcloud →` pill; right: a **tilted indigo now-playing card** with art, title, artist, three transport discs, progress and times, a pink music-note disc, script `5 / 5 featured` · **probably Retro's `v0` body re-laid** (the same inventory Lattice's media was) — Lattice's section 3 settled that; read it | open |
 | 4 | `gallery` | `1:2617` | 1440 × 909 | `1:11239` | 768 × 1429 | `1:12425` | 390 × 1005 | Pale yellow band; script `Media`, title `See us in action`, four **accordion rows** (Gallery open and yellow with a ×, YouTube / Instagram / TikTok with a +); right: a `← Back to beginning` pill, a tilted white-keyline viewer with arrows, a pink tape strip and script `Kai Mercer gallery`, seven thumbnails (the picked one ringed pink) · **Lime's *Photo viewer* inventory** (source rows + viewer + strip) | open |
 | 5 | `repertoire` | `1:2689` | 1440 × 1067 | `1:11313` | 768 × 1067 | `1:12499` | 390 × 1656 | A **yellow card with an orange blob** on the white page; script `Repertoire`, `240 songs` + a heart-in-vinyl disc, a pill search, four chips (`All` black), a **two-column dense** list of 6 + 6 white pill rows (number, title, a coloured artist chip), a pager of round buttons · **Lime's *Two-column dense*** inventory | open |
@@ -416,6 +416,16 @@ frame draws none), no wordmark / `DJ LIVE`, no inline pills, no kicker / locatio
 of session 0). **Fields it reads:** `title`, `tags` / `showTags`, `badgeMode` (→ `showBadge` / `badgeSpin`), `badgeText`, `image`,
 `avatar`, `cta1` / `bookTo`. `align` is hidden (`Paperback: []`): the collage has no centred variant.
 
+**2 · bio — own tree, `PaperbackBio`** (session 2, 2026-11-20; frames `1:2397` · `1:11004` · `1:12191`, 832 / 1213 / 1211 tall). Pop's
+layout-1 bio is a centred stage with a turning sun; Lime's is an arch-topped photograph between two flanks. Neither draws what this
+frame does: a 411 x 600 portrait on a keyline card turned -4 degrees with a yellow tape strip, over a blush blob, a vinyl doodle with
+burst lines and three sparkles, a Bricolage head at 100.8 / 62 / 40, `About` + the paragraph + a black split `Full bio` pill, and a
+script role line. No shared ancestor, so dressing either would move five other templates. Stands in `Bio` ahead of Lime's block on
+`s.v0 && s.paperback`, after Lattice's line. **Draws what the standing rules leave:** no script `KM bio`, no `that's me!` with its arrow
+(no field carries either), no `001` / `Structure · Bio_01` chips (the initials eyebrow and `refLabel`, removed 2026-11-11); their
+seats stay as padding. **Fields it reads:** `heading`, `para1`, `cta` (the pill), `badgeMode` (the vinyl), and the header's `kicker` /
+`location` as the derived role line. `para2`, `tag`, `credit`, `since*`, `cta2` and the labels are not read at layout 1.
+
 ### Settled in session 0 — the foundation
 
 Commit `2ceb233`, branch `paperback-layout-1`, 2026-11-20. The three opening calls are written under decisions 1–3 above.
@@ -530,6 +540,35 @@ renders at theme 6 (45 renders, 0 bad). Digest of every category at three widths
   widths: **864 of 864 identical**, positive control (theme 6 header, desktop) differs at layout 1 and its folded alias 5 only. `npm run build` passes.
   Root `index.html` not refreshed.
 
+**2 · bio** — `0bca0d9`, 2026-11-20. Verdict under *Seen at planning time*. What was built and how it was proved:
+
+- **`PaperbackBio`** (`EncoreSection.jsx`, ahead of `Bio`), `PAPER_BIO` its frame numbers. One stage (`containerType: inline-size`, the whole
+  section, overflow hidden) with `u(v)` in cqw, as the hero; **the stage's own padding is in a child**, since a container's own lengths do not
+  resolve against it. Desktop is the frame's 96 / 640 / 96 (832 tall) with three columns seated at x 48.96 / 504.27 / 1073.43; 768 and 390 stack
+  head, portrait and About with the frames' gaps (36 / 35.625 and 28 / 28), top 77 / 58 and foot 50.4 / 58 (1213.1 and 1211.6 tall against 1213 and
+  1211.3). `EncoreBuilder.jsx` sets `vm.pad = '0px <surplus>'` for the Paperback layout-1 bio, so the root pads only the published tab's surplus.
+- **Head.** Bricolage ExtraBold 800, -0.035em, lh .82, `vm.titleWordEms` (the widest word in `bricolageEms` less the tracking, set for the
+  Paperback bio alone) fits it to the 431.34 column (the width at 768 / 390), `min(u(size), column / ems)`. It wraps `Reads the / room.` at
+  desktop and sits on one line at 768 and 390, as the frames. The `KM bio` script's and the chip row's seats are kept as 42 / 39 padding above
+  and 40 below the head at the narrow widths, so the blob and the portrait keep the frame's relation.
+- **Portrait.** A 411 x 600 (322 x 600 at 390) card at (10, 10) in its column, 6 keyline, radius 24, turned -4, the tape (118 x 30, `s.onScheme[1].box2`
+  at .9, turned 3, centred on the card's top edge), the vinyl (130, turned -16, centre (15, 585)) and the sparkles 44 / 26 / 16 at the frame's seats
+  (pink `s.ac`, tape yellow, lilac `s.chips[0].bg`). The blob is `ART.blobBlush` shifted: its vector sits at (139.5, 0) in the desktop 560 box and at
+  (68.9, 67.4) in the narrow ones, so the narrow svg boxes are at (175.07, 107.38) and (54.13, 107.38).
+- **Badge.** The vinyl is the bio's badge: Rotating turns its disc (`vinylDisc`, a `seal-spin` `<g>`; the burst lines stay), Static does not, Hidden drops the
+  vinyl and leaves the sparkles (decoration, not a badge). Measured in the harness: 1 / 0 / 0 `seal-spin`, 1 / 1 / 0 vinyl.
+- **Copy.** `About` is a literal (Lattice's precedent; `aboutLabel` is layout 3's bracketed label). The pill is `PaperbackPill` with `bg = s.tx`, `fg = PAPER_WHITE`,
+  its label `vm.bioCta`: `FIELDS.bio.cta` is now read at layouts 1 and 2 for Paperback (`in: { Paperback: [0, 1], '*': [1] }`), seeded `BIO_CTA_PAPERBACK`
+  `Full bio` in `sectionVm` and in `fieldSeed` (the calendar's `Continue` shape), cap 16, uncased, dropped when emptied. The role line is `vm.roleLine`
+  at desktop (one line, 30 px Caveat in a 318 box) and `kicker` / `location` on two lines at 768 and 390 (27 / 25 px, the frames' break).
+- **Caps** (`limits.mjs bio --themes=6 --designs=0`, then `--check`: 0 failing; `--seeds`: 0 over): `heading` 15 at layout 1 (390 binds, the seed's own; 17 at 1440, 25 at 768),
+  `who.kicker` 13 (measured 12 at 1440; the cap is the seed, reported `floor`), `who.location` 17, `cta` 16, `para1` 390 (open at 400). `FLOOR_AT['bio.heading']` gains
+  `Paperback: [0]` (the 75% floor the other fitted heads take; it moved nothing here). Layouts 2–4 still read Pop's rows.
+- **Proof.** `inline-probe` bio at layouts 1–4, 1440 and 768: PASS (layout 1: 3 slots hit, 0 WRONG / MISSING / UNREACHED / UNLEDGERED, nothing to ledger). `photo-probe`
+  layouts 1–4, 1440 and 768: PASS; layout 1 also `--blank` and `--drop` (the vinyl and the big sparkle cover 3 of 130 points of the photo, as an icon over a photo does everywhere).
+  `focus-probe --prime --check` layouts 1–4: PASS. Geometry at three widths read against the frames: head, paragraph, pill, About and the section heights agree to a pixel.
+  Digest of themes 0–5 at three widths, before vs after: **1005 of 1008 identical across themes 0–6 at three widths** (after stripping the second server's port and Vite's `?t=`); the three that differ are theme 6, bio, layout 1, the intended change, so themes 0–5 are 864 of 864. Root `index.html` not refreshed.
+
 ### Conventions section 2 (the bio) inherits
 
 - **`PaperbackPill({ s, label, to, ext, u, bg, fg, style })`** is the template's one button: pass `bg` / `fg` for the black Full-bio /
@@ -543,6 +582,22 @@ renders at theme 6 (45 renders, 0 bad). Digest of every category at three widths
   (and the second server's port on the old side); port 5174 may already be taken — pick any free one, and confirm the old tree with
   `curl :PORT/src/builder/data.js | grep` for a symbol only the new tree has. Run `limits.mjs ... --check` as well as the measure:
   the measure's N is not the cap's proof.
+
+### Conventions section 3 (the media) inherits
+
+- **A section's own stage.** The bio's shape is the template for a section that is a picture of tilted cards: `PAPER_<CAT>` frame numbers per width, `u()` in cqw of a
+  `containerType: inline-size` stage, vertical insets in a child (a container's own lengths do not resolve against it), `vm.pad = '0px <surplus>'` in `EncoreBuilder.jsx`
+  beside the bio's, columns as absolute boxes seated at the frame's x at desktop and flow blocks with the frame's gaps at 768 and 390.
+- **Read the frame's `top` / `left` off `get_design_context`, not `get_metadata`**: for a rotated group the metadata's y was 36 px off the code's (the vinyl: 540.4 vs 504.6) and only
+  the design context's matched the screenshot. A rotated child's box is the unrotated card at the wrapper's centre; turn it about its own centre.
+- **A decoration's colour under a Scheme-2 seat**: tape yellow is `s.onScheme[1].box2` (the seat's own `box2` is blush), the indigo script is `s.text3`, lilac is `s.chips[0].bg`,
+  pink `s.ac`, ink `s.tx`. The vm's `s.script` is Caveat; the role note's pattern (`rotate(-4deg)`, a min-height box so the turn is about the frame's centre) is reusable.
+- **`PaperbackPill` takes `bg` / `fg`** (the black Soundcloud pill is `bg = s.tx`, `fg = PAPER_WHITE`); its `to` links only under `s.live`.
+- **A field the frame draws that the layout did not read** is widened per template with `in: { Paperback: [...], '*': [...] }` and a seed in both `sectionVm` and `fieldSeed`; caps with
+  `chars: { Paperback: [...], '*': [...] }`. Add a `Paperback` row to `IDENTITY_CHARS` as an array of every design's cap, not one number, since a template row replaces `'*'`.
+- **limits.mjs**: a cap at the seed's own length is reported `floor` and passes; the probe returns only a boolean from `ok`, so a surprising number is debugged by hand with
+  `preview.html?...&noclamp=1&cj=<json>`. Run `--check` and `--seeds` after the measure.
+- Media's frame is **1:2450** · **1:11054** · **1:12240**; the seed photos are `PAPERBACK_TRACK_ART` (shots 1–5) and `PAPERBACK_VIEWER`.
 
 ### Open calls — everything the pass hands the user, in one place
 
@@ -561,6 +616,16 @@ renders at theme 6 (45 renders, 0 bad). Digest of every category at three widths
   overlap the photo.
 - **The Book now label is `Book Now`** (cased as `cta1`'s seed), 3 px wider than the frame's `Book now`; the 390 frame draws no Book now,
   and the 768 frame's hamburger stands on the right — both follow the standing header rules (hamburger left, Book Now right, every width).
+
+**From section 2 (bio), for the user:**
+
+- **The `Full bio` pill links to the booking section when live** (`to = s.bookTo`, the layout-2 pill's rule): there is no full-bio page to open, and a link-less pill is a dead control on a published
+  page. The label is the `Button` field (now offered at layout 1), seeded `Full bio` from the frame. Alternatives: seed it `Book Now`, or draw no link.
+- **`About` is a literal** (Lattice's precedent); the existing `aboutLabel` is layout 3's bracketed label. Say if you want it a field at layout 1 too.
+- **Not drawn:** the script `KM bio`, `that's me!` and its arrow (no field), and the `001` / `Structure · Bio_01` chips (removed 2026-11-11). The role line is drawn, from the header's `kicker` and
+  `location`, so it prints `DJ · Live Act · Manchester, UK` at 1440 (the frame has no dot and no `, UK`) and two lines (`DJ · Live Act` / `Manchester, UK`) at 768 and 390.
+- **The heading cap is 15** at layout 1 (the seed's own length): the frame draws it on one line at 768 and 390, and a sixteenth character breaks that. Layouts 2–4 are still Pop's caps.
+- **The vinyl is the badge.** `Hidden` removes it and keeps the three sparkles.
 
 ## Open questions
 
