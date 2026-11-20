@@ -7089,7 +7089,8 @@ function PaperbackMedia({ s, m }) {
 
   const pill = <PaperbackPill s={s} label="Soundcloud" ext={s.soundcloud} u={u} bg={ink} fg={PAPER_WHITE} />
 
-  const pct = s.live ? now.pct : 56.15
+  // The canvas keeps the frame's 137 of 244 (a mid-song picture), and an empty list stands at 0 on both surfaces.
+  const pct = s.live ? now.pct : s.tracks.length ? 56.15 : 0
   const card = (
     <div style={{
       ...col(u(20), { alignItems: 'stretch' }),
