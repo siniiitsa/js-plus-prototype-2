@@ -547,9 +547,10 @@ reversing 2026-10-20's "an already-selected section": the `text` cursor shows on
   row 0): the gallery and the calendar stand on 2 (`#F2F2F2`), the testimonials on 5 (`#ED6D40`), the
   header, media, video, repertoire, pricing, form and footer on 8 (`#111`), and the bio and the map on the
   theme's own Scheme 1, and nested nodes read `s.onScheme[n]` (the hero's orange `[1]`, pricing's three cards `[3]` / `[5]` / `[4]`, the gallery's pick ring and the map's pills `[7]`, the calendar's glow `[4]`). **The page's gutter is not a section's ground**:
-  `vm.pageBg`, the published `documentElement` and the picker's dots read Scheme 1's `#DADADA` while
-  most sections stand on `#111` (the end-of-pass sweep measured it: `plans/lattice/layout-1.md`,
-  *Open calls*). Display is **`Archivo Lattice`**, an `@font-face` alias in `index.css` pinning the one
+  The page's own ground is **`#111`** (user call, 2026-11-20: `THEMES[5].pageGround`, read through
+  `pageGroundOf()` for the published `documentElement`, the preview's scroller, the arranged rows and
+  `vm.pageBg`), where Scheme 1's `#DADADA` is the bio's and the map's: a theme with no `pageGround` reads
+  `palette[0]`. Display is **`Archivo Lattice`**, an `@font-face` alias in `index.css` pinning the one
   Archivo file to `font-weight: 500` and `font-stretch: 113%` (the frames' own face is custom), so no
   section names an axis and the `Archivo` link stays byte-identical; labels and mono are Azeret Mono
   (`index.html` and `preview.html`). Its **dot field is a per-width vector set, not a pattern**

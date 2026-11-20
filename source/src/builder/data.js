@@ -506,6 +506,10 @@ export const THEMES = [
   {
     name: 'Lattice',
     sub: 'Archivo wide · mono grid',
+    // The page's own ground (the gutter, the published document, the preview's scroller): the
+    // frame's body is #111 although Scheme 1, which the bio and the map stand on, is #DADADA
+    // (user call, 2026-11-20, the end-of-pass sweep). A theme without the key reads palette[0].
+    pageGround: '#111111',
     display: "'Archivo Lattice', 'Archivo', sans-serif",
     label: "'Azeret Mono', monospace",
     ui: "'Azeret Mono', monospace",

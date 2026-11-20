@@ -541,9 +541,13 @@ read Solo / Trio / Band.
 `#111` footer. `THEMES[5]` carries Scheme 1 (`#DADADA` / `#111`) as its palette and Schemes 2–9 as `schemes`
 (Figma's numbering; the header, media, video, repertoire, pricing, form and footer stand on 8, the gallery and the
 calendar on 2, the testimonials on 5, the bio and the map on the theme's own 1); `SCHEMES_OF.Lattice` rows 0–3 are
-identical because layouts 2–4 are placeholders. **`vm.pageBg`, the page gutter, the published `documentElement`
-and the picker's dots read Scheme 1's `#DADADA`, while most sections stand on `#111`** and the foot of the page
-is the footer's `#111`: no section lets the gutter show beside it at the widths measured in the sweep (plan, *Learned on session 12 and the sweep*, item 8).
+identical because layouts 2–4 are placeholders. **The page's own ground is `#111`, not Scheme 1's `#DADADA`**
+(user call, 2026-11-20, after the sweep measured the gutter): `THEMES[5].pageGround` is read by `pageGroundOf()`
+in `EncoreBuilder.jsx` for the published `documentElement`, the preview overlay's scroller and the arranged rows' ground, and by
+`vm.pageBg`, so an overscroll above the hero and below the footer is `#111`. A theme with no `pageGround` reads
+`palette[0]`, as every other template does. The bio and the map still stand on the theme's own Scheme 1 (`#DADADA`),
+and the picker's dots, which show the palette, are unchanged. No section showed the gutter beside it at 1300, 1600 or 1920 (plan,
+*Learned on session 12 and the sweep*, item 8).
 
 **Faces.** Display is `Archivo Lattice`, an `@font-face` alias in `index.css` that pins the variable Archivo file
 (gstatic v25, three unicode-range blocks) to `font-weight: 500` and `font-stretch: 113%`, because the frames' own

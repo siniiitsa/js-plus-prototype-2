@@ -405,7 +405,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // The page's own ground, whatever scheme the section is seated on: a
     // section whose frames stand a card on another scheme is seated on the
     // card's, and the root paints this round it.
-    pageBg: theme.palette[0],
+    pageBg: theme.pageGround ?? theme.palette[0],
     // Every scheme of a theme that carries `schemes`, flat and keyed by number
     // (1 is the theme's own), for a node nested on another scheme than its
     // section: `s.onScheme[4].bg`. Undefined under every other theme.
@@ -6211,7 +6211,7 @@ function PublishedPage({ themeIdx, sections: all, artistName, win, frameW }) {
   const rows = pageRows(sections, T.name, key === 'desktop')
   const inColumns = columnSides(rows)
 
-  const page = arrangeRows(rows, { gutter: Z.padX, bg: T.palette[0] }, sections.map((sec, i) => (
+  const page = arrangeRows(rows, { gutter: Z.padX, bg: pageGroundOf(T) }, sections.map((sec, i) => (
     <EncoreSection key={sec.id} s={sectionVm({
       themeIdx, cat: sec.cat, arch: sec.arch, c: sec.c,
       artistName, identity, tiers, email, Z, mob: key === 'mobile', live: true, embeds, navSections,
@@ -6314,7 +6314,7 @@ function PreviewOverlay({
   }, [frameW, area.h, device, focusCat])
 
   const bar = isMobile ? '52px' : '56px'
-  const ground = framed ? '#D6D2C6' : T.palette[0]
+  const ground = framed ? '#D6D2C6' : pageGroundOf(T)
   const page = frameW > 0 && (
     <PublishedPage themeIdx={themeIdx} sections={sections} artistName={artistName} win={window} frameW={frameW} />
   )
@@ -6390,7 +6390,7 @@ function PreviewOverlay({
             <div style={{
               width: `${outerW}px`, height: `${outerH}px`, boxSizing: 'border-box',
               border: '10px solid #1B1A17', borderRadius: device === 'mobile' ? '48px' : '28px',
-              overflow: 'hidden', background: T.palette[0], boxShadow: '0 18px 40px rgba(20,18,12,.28)',
+              overflow: 'hidden', background: pageGroundOf(T), boxShadow: '0 18px 40px rgba(20,18,12,.28)',
               transform: `scale(${scale})`, transformOrigin: '0 0',
             }}>
               <div ref={scrollRef} style={{ height: '100%', overflowY: 'auto', scrollbarWidth: 'none' }}>{page}</div>
@@ -6398,7 +6398,7 @@ function PreviewOverlay({
           </div>
         ) : (
           <div ref={scrollRef} style={{
-            position: 'absolute', inset: 0, overflowY: 'auto', scrollbarGutter: 'stable', background: T.palette[0],
+            position: 'absolute', inset: 0, overflowY: 'auto', scrollbarGutter: 'stable', background: pageGroundOf(T),
           }}>{page}</div>
         )}
       </div>
@@ -6483,6 +6483,9 @@ function scrollToFragment(e, win) {
   if (win.requestAnimationFrame) win.requestAnimationFrame(go)
   else go()
 }
+
+// The page's own ground: a theme may state one (Lattice: #111, where its Scheme 1 is #DADADA).
+const pageGroundOf = (T) => T.pageGround ?? T.palette[0]
 
 function dressPublishedWindow(win, artistName, pageBg) {
   const doc = win.document
@@ -7978,7 +7981,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
     }
 
     if (open) {
-      win.document.documentElement.style.background = THEMES[st.theme].palette[0]
+      win.document.documentElement.style.background = pageGroundOf(THEMES[st.theme])
       win.document.title = artistName
       render()
       return
@@ -8010,7 +8013,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
         return
       }
       if (!win.document.body) { setTimeout(dress, 15); return }
-      pubRoot.current = createRoot(dressPublishedWindow(win, artistName, THEMES[st.theme].palette[0]))
+      pubRoot.current = createRoot(dressPublishedWindow(win, artistName, pageGroundOf(THEMES[st.theme])))
       win.addEventListener('pagehide', closePublished)
       render()
     }
@@ -8676,7 +8679,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
               // layout-2 card) sticks to this scroller, as it does published (JP-072).
               borderRadius: '10px', overflow: 'clip', transition: 'max-width .35s ease',
             }}>
-              {arrangeRows(rows, { gutter: Z.padX, bg: T.palette[0] }, sections.map((sec, i) => {
+              {arrangeRows(rows, { gutter: Z.padX, bg: pageGroundOf(T) }, sections.map((sec, i) => {
                 const vm = vms[i]
                 return (
                   <div
