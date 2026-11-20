@@ -1982,6 +1982,8 @@ export const TAG_LABELS = 'Default, Sold Out, New Release, Archive, Live, All Ac
 export const HERO_CTA = 'Enquire about a date'
 export const BIO_CREDIT = 'five years of rooms read & floors moved'
 export const BIO_CTA = 'Book Now'
+// Paperback's layout-1 bio draws the frame's black split pill `Full bio` (1:2441), seeded as that.
+export const BIO_CTA_PAPERBACK = 'Full bio'
 // JP-059 — the rest of layout 2's copy, which Lime's fit had kept as literals:
 // the pill over the name, the two cards' copy under the header's photograph,
 // and the bio card's pill. Byte for byte what every template's twelve header
@@ -3031,7 +3033,10 @@ export const FIELDS = {
       chars: { Retro: [20, null, 19, 23], Lime: [19, null, 18, 21], Grunge: [21, null, 20, 18],
         Editorial: [15, null, 15, 17], Pop: [17, null, 17, 19],
         // Lattice layout 1 measured 2026-11-19 (scripts/limits.mjs bio --themes=5 --designs=0); 3 and 4 are Pop's until their passes.
-        Lattice: [21, null, 17, 19] } },
+        Lattice: [21, null, 17, 19],
+        // Paperback layout 1 measured 2026-11-20 (limits.mjs bio --themes=6 --designs=0): the head is one line at 768 and 390
+        // in the frame, so 390 binds at the seed's own 15 (the probe's floor); 3 and 4 are Pop's until their passes.
+        Paperback: [15, null, 17, 19] } },
     // Layout 2's pill over the paragraph (JP-059), seeded with the frame's
     // copy and cased as a label; emptied, it is not drawn.
     { k: 'tag',       l: 'Highlight tag', d: BIO_TAG, in: [1], chars: [null, 18],
@@ -3043,8 +3048,11 @@ export const FIELDS = {
     // Each drops when emptied, and the row with both.
     { k: 'credit',    l: 'Footer line', d: BIO_CREDIT, in: [1], chars: [null, 43],
       hint: 'The line at the foot of the card. Its first three words take the accent colour.' },
-    { k: 'cta',       l: 'Button', d: BIO_CTA, in: [1], chars: [null, 16],
-      hint: 'The button beside the footer line. Left empty, it is not drawn.' },
+    // Paperback's layout 1 draws it too: the black `Full bio` pill under the About copy (seeded by
+    // sectionVm and `fieldSeed`, as the calendar's Lattice `Continue`).
+    { k: 'cta',       l: 'Button', d: BIO_CTA, in: { Paperback: [0, 1], '*': [1] }, chars: { Paperback: [16, 16], '*': [null, 16] },
+      hint: { '*': 'The button beside the footer line. Left empty, it is not drawn.',
+        Paperback: 'The black pill under the About copy (layout 1) and the button beside the footer line (layout 2). Left empty, it is not drawn.' } },
     // Layout 3's ID card draws a row of stats, and the frame's first one is
     // "Performing since: June 2021". Seeded with the frame's copy (QA,
     // 2026-09-15 — layout 2's price row and bookings line were the precedent),
@@ -3994,6 +4002,7 @@ export function fieldSeed({ cat, f, themeName, design, c = {}, artistName, email
     : f.k === 'base' && cat === 'map' ? mapBaseSeed(c, themeName, design)
     : f.k === 'terms' && cat === 'map' ? mapTermsSeed(c)
     : f.k === 'cta' && cat === 'calendar' && design === 3 ? CAL_SEND_4
+    : f.k === 'cta' && cat === 'bio' && design === 0 && themeName === 'Paperback' ? BIO_CTA_PAPERBACK
     : f.k === 'cta' && cat === 'calendar' && design === 0 && themeName === 'Lattice' ? CAL_CTA_LATTICE
     : f.k === 'rowCta' && cat === 'pricing' && design === 2 ? PRICING_ROW_CTA_3
     : f.k === 'rowCta' && cat === 'pricing' && design === 3 ? PRICING_ROW_CTA
@@ -4323,9 +4332,9 @@ export const IDENTITY_CHARS = {
   bio: {
     title: { Retro: [null, 55, 19, 48], Lime: [null, 49, 20, 49], Grunge: [null, 65, 18, 60],
       Editorial: [null, 37, 14, 31], Pop: [null, 37, 17, 39] },
-    kicker: { Retro: [19, 20, 13, 47], Lime: [20, 23, 21, 47], Pop: [26, 22, 13, 47], '*': [20, 20, 13, 47] },
+    kicker: { Retro: [19, 20, 13, 47], Lime: [20, 23, 21, 47], Pop: [26, 22, 13, 47], Paperback: [13, 20, 13, 47], '*': [20, 20, 13, 47] },
     location: { Retro: [18, 23, 15], Lime: [24, 26, 25], Grunge: [24, 23, 15], Editorial: [24, 33, 15],
-      Pop: [27, 34, 15], Lattice: [19, 34, 15] },
+      Pop: [27, 34, 15], Lattice: [19, 34, 15], Paperback: [17, 34, 15] },
     tags: { chars: { Retro: [null, 22, null, 22], '*': [null, 22, 22, 22] },
       count: { Retro: [null, 7, null, 7], '*': [null, 6, 8, 8] } },
     seal: { Retro: [19, null, 19], Lime: [13, null, 22], Grunge: [14, null, 14], Editorial: [16],

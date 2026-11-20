@@ -80,3 +80,10 @@ QA ticket, all five templates. User calls in the session that built it.
 - **The disc is desktop alone** (the narrow masters clip it away), a white mask in `mix-blend-mode: difference`. So `badgeMode: hidden` changes nothing at 768 and 390; `badgeOptsFor` offers Visible / Hidden.
 - **The dot field is the root's own `background-image`** (`vm.bioDots`), never a node: `scripts/limits.mjs` counts a `url()` background as a picture and read a long paragraph entering its box as an overlap (`para1` came back 237 at 768 until it moved).
 - Caps: `IDENTITY_CHARS.bio.location` `Lattice: [19, 34, 15]` (the vertical rail is the tightest), `kicker` 20 off `'*'`, `para1` 390 holds (open at 400).
+
+## Paperback layout 1 (2026-11-20, plans/paperback/layout-1.md *Settled in sections 1–11*)
+
+- **An own-tree block, `PaperbackBio`**, ahead of Lime's block on `s.v0 && s.paperback`: a 411 x 600 keyline portrait turned -4 with tape, a blush blob, a vinyl doodle and three sparkles, a Bricolage head, `About` + `para1` + the black `Full bio` split pill (`bioCta`, `PaperbackPill`), and the script role line. A stage in cqw, the frame's px at all three widths; `vm.pad` is `0 <surplus>`.
+- **`FIELDS.bio.cta` is read at layouts 1 and 2 for Paperback** (`in: { Paperback: [0, 1], '*': [1] }`), seeded `Full bio` (`BIO_CTA_PAPERBACK`, in `sectionVm` and `fieldSeed`); it links to the booking section when live. `About` is a literal. The `KM bio` and `that's me!` scripts and the `001` / `Structure · Bio_01` chips are not drawn.
+- **The vinyl is the badge** (`badgeMode`): Rotating turns its disc, Static does not, Hidden drops it and keeps the sparkles.
+- Caps: `heading` `Paperback: [15, null, 17, 19]` (15 is the seed, the 390 head on one line), `IDENTITY_CHARS.bio.kicker` 13 and `location` 17 at layout 1 (the role line is one line at 1440); `FLOOR_AT['bio.heading']` names Paperback.

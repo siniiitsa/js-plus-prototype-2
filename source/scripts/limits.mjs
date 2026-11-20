@@ -140,7 +140,7 @@ for (const k of (opt('no-floor', '') || '').split(',').filter(Boolean)) FLOOR[k]
 // The bio heading is fitted to its widest word at the four designs that stack it
 // one word to a line at 1440 (session 12): it takes the name's floor there.
 // --no-floor=heading still lets it shrink without bound.
-const FLOOR_AT = { 'bio.heading': { Lime: [0], Editorial: [0], Pop: [0, 3], Lattice: [0] } }
+const FLOOR_AT = { 'bio.heading': { Lime: [0], Editorial: [0], Pop: [0, 3], Lattice: [0], Paperback: [0] } }
 const shrinkFloor = (p, themeName, a) => fitted(p) ? 0.5 : FLOOR[p.key] ?? (FLOOR_AT[`${p.cat}.${p.key}`]?.[themeName]?.includes(a) ? 0.75 : 1)
 // A repeater's list count whose chip row is the union over every row (session 5).
 const UNION_COUNT = new Set(['songs.tags#'])

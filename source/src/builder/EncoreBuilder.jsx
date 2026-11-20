@@ -56,7 +56,7 @@ import {
   PRICING_REVIEWS, PRICING_RATING, PRICING_CTA, PRICING_NOTE, PRICING_OFFER,
   FORM_PROMISES, FORM_STEPS, STEP_KEYS, FORM_FIELDS, FORM_FIELDS_CARD, FORM_FIELDS_4, FORM_FIELD_KEYS, FORM_EMAIL_LABEL, FORM_KINDS, enquiryErrors, FORM_TYPES, FORM_MESSAGE, FORM_MSG_LABEL,
   FOOTER_LINKS, FOOTER_TARGETS, FOOTER_CREDIT, FOOTER_STATEMENT,
-  CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN, CAL_SLOTS, SLOT_KEYS, slotDate, parseDayFirst, pageTiers, CAL_SLOT_CTA, CAL_SEND_4, CAL_CTA_LATTICE, FORM_EMAIL, pageEmail, MONTHS, DAY_FULL,
+  CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN, CAL_SLOTS, SLOT_KEYS, slotDate, parseDayFirst, pageTiers, CAL_SLOT_CTA, CAL_SEND_4, CAL_CTA_LATTICE, BIO_CTA_PAPERBACK, FORM_EMAIL, pageEmail, MONTHS, DAY_FULL,
   TESTI_HEADING_2, CARD_LINE_3, TESTI_STARS, TESTI_RATING,
   PRICING_INTRO_3, FORM_SUB_4, CAL_HEADING_1, formBtnSeed, CAL_TYPES, PRICING_ROW_CTA, PRICING_ROW_CTA_3, MAP_SPAN, MAP_STATS_4, STAT_KEYS,FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
   parseDate, isoDate, calStart, headerIdentity, monthSpan, monthLabel, enquiryLine, weekdayOf,
@@ -597,6 +597,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     const v = Z.dev === 'desktop' ? '45.92px' : '56px'
     vm.pad = `${v} calc(${vm.surplus} + ${Z.dev === 'desktop' ? '40.15px' : Z.dev === 'tablet' ? '26.11px' : '24px'}) ${v}`
   }
+  // Paperback's layout-1 bio (1:2397 · 1:11004 · 1:12191) is a stage of its own (PaperbackBio): it carries the
+  // frames' vertical insets in cqw and the horizontal ones as its columns' own seats, so the root pads only the
+  // published tab's surplus.
+  if (d === 0 && cat === 'bio' && T.name === 'Paperback') vm.pad = `0px ${vm.surplus}`
   // …and the media's (1:419 · 1:9052 · 1:10024): 129.43 top and foot at 1440 (x 0.82, 106.13), 77 at 768
   // and 58 at 390, the same content insets. The 390 master's head box starts 40 down (an import
   // artefact: the eyebrow row sits at y 98, not 58), so with the eyebrow removed the head takes
@@ -1162,7 +1166,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // nothing. A line of three words or fewer is all lead. The pill is uncased.
   const credit = String(cv('credit', BIO_CREDIT) ?? '').trim().split(/\s+/).filter(Boolean)
   vm.bioCredit = { lead: credit.slice(0, 3).join(' '), rest: credit.slice(3).join(' ') }
-  vm.bioCta = cv('cta', BIO_CTA)
+  vm.bioCta = cv('cta', d === 0 && T.name === 'Paperback' ? BIO_CTA_PAPERBACK : BIO_CTA)
   // JP-059 — layout 2's pill over the paragraph; `labelStyle` cases it.
   vm.bioTag = cv('tag', BIO_TAG)
   vm.bioP2 = cv('para2', DEFS.bioP2)
@@ -1545,6 +1549,11 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // Lattice's layout-1 bio fits its head to the flank the same way; its alias sets the face 0.004em open.
   if (T.name === 'Lattice' && (cat === 'bio' || cat === 'media' || cat === 'gallery' || cat === 'repertoire' || cat === 'map' || cat === 'pricing' || cat === 'form') && d === 0) {
     vm.titleWordEms = +Math.max(0, ...vm.title.split(/\s+/).map((w) => latticeEms(w) + 0.004 * [...w].length)).toFixed(3)
+  }
+  // Paperback's layout-1 bio head wraps in the frame's 431.34 column (and one line at 768 and 390) and is
+  // fitted to its widest word, in Bricolage's ems less the frames' -0.035em tracking (the header's face).
+  if (T.name === 'Paperback' && cat === 'bio' && d === 0) {
+    vm.titleWordEms = +Math.max(0, ...vm.title.split(/\s+/).map((w) => bricolageEms(w) - 0.035 * [...w].length)).toFixed(3)
   }
   vm.testiStars = cv('stars', TESTI_STARS)
   // Layout 3's stat card prints it with a literal "/5" beside it, and an

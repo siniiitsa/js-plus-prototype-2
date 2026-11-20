@@ -4670,8 +4670,121 @@ function LatticeBio({ s }) {
   )
 }
 
+// Paperback's bio (Batch 2 file, 1:2397 · 1:11004 · 1:12191: 1440 x 832, 768 x 1213, 390 x 1211; no component
+// sets, so the verdict came from the pictures and the code: an own tree). Neither Pop's nor Lime's bio draws a
+// tilted keyline portrait with tape on a blush blob, a doodle disc and three sparkles, a Bricolage head and a
+// split pill. Desktop is three columns of one 640 row (head 48.96, portrait 504.27, About 1073.43); 768 and 390
+// stack head, portrait and About, with the portrait's column 431 / 342 wide.
+//
+// Drawn: the blob, the portrait on a 411 x 600 card (6 keyline, 24 radius) turned -4 degrees with a yellow tape
+// strip at its top edge turned 3, the vinyl doodle (turned -16, its disc turning under `badgeSpin`, gone with
+// Hidden) and the three sparkles; the head; `About`; the paragraph; the black `Full bio` split pill (`bioCta`);
+// and the script role line (`vm.roleLine`, two lines at 768 and 390 as the frames break it). Not drawn, by the
+// standing rules (call 1 of session 0): the script `KM bio` and `that's me!` with its arrow (no field carries
+// them), the `001` and `Structure · Bio_01` chips (the initials eyebrow and `refLabel`, removed 2026-11-11).
+// Their seats stay as padding, so the head, the blob and the portrait keep the frame's relations.
+//
+// Every length is the frame's px through `u`, in cqw of a stage as wide as the page (the hero's mechanism), so
+// the picture keeps its proportions on a canvas narrower than the frame; the stage's own padding is in its
+// child, since a container's own lengths do not resolve against it.
+const PAPER_BIO = {
+  desktop: { fw: 1440, top: 96, foot: 96, h2: 100.8, card: [411, 600], blob: [460.8, 40], spark: [381.34, 423.34, 433.34], note: 30 },
+  tablet: { fw: 768, top: 77, foot: 50.4, h2: 62, card: [411, 600], blob: [175.07, 107.38], spark: [381, 423, 433], note: 27,
+    headTop: 42, headFoot: 40, gapA: 36, gapB: 35.625, headL: 26.11, headW: 715.77, aboutL: 26, aboutW: 713, colW: 431, noteW: 346 },
+  mobile: { fw: 390, top: 58, foot: 58, h2: 40, card: [322, 600], blob: [54.13, 107.38], spark: [292, 334, 344], note: 25,
+    headTop: 39, headFoot: 40, gapA: 28, gapB: 28, headL: 24, headW: 342, aboutL: 24, aboutW: 342, colW: 342, noteW: 342 },
+}
+function PaperbackBio({ s }) {
+  const P = PAPER_BIO[s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop']
+  const nar = s.narrow
+  const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
+  const ink = s.tx
+  const hasBadge = s.showBadge === 'show'
+  const [cw, ch] = P.card
+  const tapeBg = s.onScheme[1].box2
+  const place = (x, y, w, h) => ({ position: 'absolute', left: u(x), top: u(y), width: u(w), height: u(h) })
+  const headW = nar ? P.headW : 431.34
+  const h2 = (
+    <h2 style={{
+      margin: 0, fontFamily: s.display, fontWeight: 800, color: ink, lineHeight: 0.82, letterSpacing: '-0.035em',
+      fontSize: s.titleWordEms ? `min(${u(P.h2)}, calc(${u(headW)} / ${s.titleWordEms}))` : u(P.h2),
+    }}>{s.title}</h2>
+  )
+  const portrait = (
+    <div style={{ position: 'relative', width: nar ? u(P.colW) : '100%', height: u(640), flex: 'none' }}>
+      <div style={{ ...place(10, 10, cw, ch), transform: 'rotate(-4deg)' }}>
+        <div style={{
+          position: 'absolute', inset: 0, boxSizing: 'border-box', border: `${u(6)} solid ${PAPER_WHITE}`, borderRadius: u(24),
+          overflow: 'hidden', background: s.chips[0].bg,
+        }}>
+          <div style={{ position: 'absolute', inset: 0 }}><Photo s={s} initialsSize={64} /></div>
+        </div>
+        <span aria-hidden style={{
+          ...place(cw / 2 - 59, -15, 118, 30), background: tapeBg, opacity: 0.9, transform: 'rotate(3deg)',
+          clipPath: 'polygon(3% 0, 97% 8%, 100% 92%, 2% 100%)',
+        }} />
+      </div>
+      {hasBadge && (
+        <svg aria-hidden viewBox="0 0 130 130" fill="none" style={{ ...place(-50, 520, 130, 130), display: 'block', overflow: 'visible', transform: 'rotate(-16deg)' }}>
+          <g className={s.badgeSpin ? 'seal-spin' : undefined} style={{ transformOrigin: '65px 65px' }}>
+            <PaperbackArt name="vinylDisc" width="130" height="130" />
+          </g>
+          <PaperbackArt name="vinylBurst" width="130" height="130" />
+        </svg>
+      )}
+      <PaperbackSparkle size={44} fill={s.ac} ink={ink} style={place(P.spark[0], 576, 44, 44)} />
+      <PaperbackSparkle size={26} fill={tapeBg} ink={ink} style={place(P.spark[1], 554, 26, 26)} />
+      <PaperbackSparkle size={16} fill={s.chips[0].bg} ink={ink} style={place(P.spark[2], 602, 16, 16)} />
+    </div>
+  )
+  const role = (s.kicker || s.location) && (
+    <p style={{
+      margin: 0, fontFamily: s.script, fontWeight: 700, fontSize: u(P.note), lineHeight: 0.95, letterSpacing: '-0.01em',
+      color: s.text3, transform: 'rotate(-4deg)', minHeight: nar ? undefined : u(57), width: nar ? u(P.noteW) : undefined,
+    }}>{nar ? <>{s.kicker}{s.kicker && s.location && <br />}{s.location}</> : s.roleLine}</p>
+  )
+  const about = (
+    <div style={col(u(16), { alignItems: 'flex-start' })}>
+      <span style={{ fontFamily: s.label, fontWeight: 700, fontSize: u(18), lineHeight: 1.2, letterSpacing: '-0.01em', color: ink }}>About</span>
+      <p style={{
+        margin: 0, fontFamily: s.body, fontWeight: 600, fontSize: u(18), lineHeight: 1.4, letterSpacing: '-0.01em', color: ink, whiteSpace: 'pre-line',
+      }}>{s.bioP1}</p>
+      {s.bioCta && <PaperbackPill s={s} label={s.bioCta} to={s.bookTo} u={u} bg={ink} fg={PAPER_WHITE} />}
+    </div>
+  )
+  return (
+    <div style={{ position: 'relative', containerType: 'inline-size', overflow: 'hidden' }}>
+      <PaperbackArt name="blobBlush" aria-hidden style={{ position: 'absolute', left: u(P.blob[0]), top: u(P.blob[1]), width: u(560), height: u(560) }} />
+      <div style={{ position: 'relative', paddingTop: u(P.top), paddingBottom: u(P.foot) }}>
+        {nar ? (
+          <>
+            <div style={{ boxSizing: 'border-box', marginLeft: u(P.headL), width: u(P.headW), padding: `${u(P.headTop)} 0 ${u(P.headFoot)}` }}>{h2}</div>
+            <div style={{ marginTop: u(P.gapA), marginLeft: s.mob ? u(24) : 'auto', marginRight: s.mob ? undefined : 'auto', width: u(P.colW) }}>{portrait}</div>
+            <div style={{ marginTop: u(P.gapB), marginLeft: u(P.aboutL), width: u(P.aboutW), ...col(u(24)) }}>
+              {about}
+              {role && <div style={{ paddingBottom: u(14), width: u(P.aboutW) }}>{role}</div>}
+            </div>
+          </>
+        ) : (
+          <div style={{ position: 'relative', height: u(640) }}>
+            <div style={{
+              ...place(48.96, 0, 431.34, 640), boxSizing: 'border-box', paddingTop: u(18), ...col('0', { justifyContent: 'center' }),
+            }}>{h2}</div>
+            <div style={place(504.27, 0, 431.34, 640)}>{portrait}</div>
+            <div style={place(1073.43, 0, 317.52, 640)}>
+              {about}
+              {role && <div style={{ position: 'absolute', left: 0, top: u(569), width: u(318) }}>{role}</div>}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
 function Bio({ s }) {
   if (s.v0 && s.lattice) return <LatticeBio s={s} />
+  if (s.v0 && s.paperback) return <PaperbackBio s={s} />
   // Lime layout 1 (964:58589 · 986:39877 at 768 · 986:39890 at 390) is the same
   // Figma component as Retro's below, in Lime's mode — but it is not the same
   // tree re-tokened. The middle column is a different composition (one arch-
