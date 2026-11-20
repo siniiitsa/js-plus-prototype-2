@@ -440,6 +440,20 @@ nothing at 1440; no field carries it, call 1), so the disc is the same pink ring
 **Named departures:** the marked row is the card's track (`at`), not the frame's row 02 (Lattice's rule), and the card names the cued track, not the frame's *Night Rain*;
 a marked row's yellow chip goes white (yellow on yellow is no chip); the chip colours follow the row's index (yellow, cyan, magenta, ink, orange), not the release.
 
+**4 · gallery — own tree, `PaperbackGallery`** (session 4, 2026-11-20; frames `1:2617` · `1:11239` · `1:12425`, 908.8 / 1428.5 / 1004.9 tall). The plan predicted *Lime's Photo viewer inventory*;
+the inventory is the same (source rows, a back link, a viewer with two arrows, a seven-tile strip) and the picture is not. Lime's rows are filled capsules beside a bare photograph at radius 80;
+Lattice's are ruled boxes with a mono face. This frame is **four 24-radius rows (the open one yellow with a `×` disc, the others white with a `+` disc), a white pill back link, a 6px white-keyline
+viewer turned 2 degrees with a pink tape strip (130 x 30, turned 40), three sparkles on its left edge and two white arrow discs at its foot, and seven 16-radius tiles each turned a few degrees
+(the picked one ringed in 4px pink)**, on a pale-yellow band (Scheme 1, the root's own ground: no card, so no card margin). The rows and the strip draw at all three widths (no icon-only
+tiles, no sliding window: the 390 frame draws all seven at 40). No shared ancestor, so **own tree**, dispatched in `Gallery`'s `if (s.v0)` after the seam like Lattice's, handed the same
+`{ at, marked, strip, go, srcRows, srcAct, video, player }`. **Draws what the standing rules leave:** the script `Media` is `kicker` (seeded empty, so drawn only when typed, in the frame's seat
+with its -6 degree turn); the credit script is `railLabel` alone (`Gallery`, the name that stood over it is gone: 2026-11-12), so `Kai Mercer gallery` prints as the artist's one line.
+**Fields it reads:** `images`, `kicker`, `heading`, `railLabel`, `backLabel`, `sourceLabel` (printed at **every** width here), `youtube` / `instagram` / `tiktok`.
+**The photograph.** The frame's viewer picture is **none of the seven** (it is the `PAPERBACK_VIEWER` file: a wide shot of the singer crouching, not one of the strip's crops), and the viewer can
+only ever show a slot (`Back to beginning` and the arrows walk slots). The canvas draws slot 2 (the tile the frame rings) in the viewer, so **the seed's slot 2 is the viewer's photograph**:
+`PAPERBACK_PHOTOS.gallery[1]` is `paperbackViewer`, in place of `paperbackShot2` (which the media's second cover still uses). The 85px thumbnail differs from the frame's by that one picture; the 660px
+viewer is the frame's. Recorded under *Open calls*.
+
 ### Settled in session 0 — the foundation
 
 Commit `2ceb233`, branch `paperback-layout-1`, 2026-11-20. The three opening calls are written under decisions 1–3 above.

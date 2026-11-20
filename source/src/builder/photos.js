@@ -310,15 +310,16 @@ export const LATTICE_TRACK_ART = [latticeAlt, latticePortrait, latticeAlt, latti
 // centred cover. Re-encoded: the frames' JPEGs at about 200 KB each came to 1152 px at quality
 // 50 (the avatar 512 px at 60), 960 KB in all, because most draw at 56-660 px.
 //
-// The gallery strip is the frame's seven in the frame's order; `PAPERBACK_VIEWER` is the viewer's
-// own picture, which the gallery's section reads when it settles what the viewer opens on.
+// The gallery strip is the frame's seven in the frame's order, except its second slot: the viewer can only show a
+// slot, the frame rings the second tile, and the viewer's own picture (none of the seven) is therefore that slot's
+// seed (plans/paperback/layout-1.md, section 4). `paperbackShot2` stays the media's second cover.
 export const PAPERBACK_PHOTOS = {
   header: paperbackHero,
   bio: paperbackBio,
   // No frame draws the video; the hero stands in, as Retro's poster does.
   video: paperbackHero,
   form: paperbackShot3,
-  gallery: [paperbackShot1, paperbackShot2, paperbackShot3, paperbackShot4, paperbackShot5, paperbackShot6, paperbackShot7],
+  gallery: [paperbackShot1, paperbackViewer, paperbackShot3, paperbackShot4, paperbackShot5, paperbackShot6, paperbackShot7],
   pricing: REVIEWERS,
 }
 export const PAPERBACK_TRACK_ART = [paperbackShot1, paperbackShot2, paperbackShot3, paperbackShot4, paperbackShot5]

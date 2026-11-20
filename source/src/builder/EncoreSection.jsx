@@ -16693,6 +16693,179 @@ function LatticeGallery({ s, g }) {
   )
 }
 
+// Paperback · layout 1 (plans/paperback/layout-1.md, section 4; frames 1:2617 · 1:11239 · 1:12425, 908.8 / 1428.5 / 1004.9 tall).
+// A pale-yellow band (the root paints it: Scheme 1's `bg`), four 24-radius source rows (the open one yellow with a `×` disc, the others
+// white with a `+`), a white back pill, a keyline viewer turned 2 degrees with a pink tape strip, three sparkles and two arrow discs, and a
+// strip of seven tiles turned a few degrees each (the picked one ringed in pink). The bio's stage pattern: frame px verbatim at all three
+// widths in cqw, vertical insets in a child. The head, rows and strip are one column at 768 and 390 (a 36 / 28 gap between them) and two at
+// 1440 (a 31.95 gutter). The card / tape / sparkle coordinates are the frame's, in the 655 x 529 card's own box.
+const PAPER_TILE = '#EFEFEF'
+// The frames' round-disc arrow (14 x 14, a 2px ink stroke); the testimonials' discs are the next reader.
+const paperArrow = (u, back, ink) => (
+  <svg aria-hidden width={u(14)} height={u(14)} viewBox="0 0 14 14" fill="none" style={{ display: 'block', overflow: 'visible' }}>
+    <path d={back ? 'M13 7H2M6.5 11.5L2 7L6.5 2.5' : 'M1 7H12M7.5 11.5L12 7L7.5 2.5'} stroke={ink} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+)
+const PAPER_GALLERY = {
+  desktop: {
+    fw: 1440, top: 96, foot: 96, side: 48.96, colW: 655.047, gutter: 31.95, kSeat: 44, kSize: 32, h2: 95.04, rowH: 125.625, rowT: 30, headRow: 67.19,
+    credW: 104, credH: 53, credT: 28, view: [655, 529], tape: [620, 37], spark: [[-46, 254.75], [-4, 232.75], [6, 280.75]], tile: 85,
+  },
+  tablet: {
+    fw: 768, top: 77, foot: 77, side: 26.11, colW: 715.766, gutter: 36, kSeat: 42, kSize: 29, h2: 59, rowH: 72, rowT: 27, headRow: 61.5,
+    credW: 93, credH: 48, credT: 25, view: [716, 577], tape: [681, 37], spark: [[-46, 275.88], [-4, 253.88], [6, 301.88]], tile: 94,
+  },
+  mobile: {
+    fw: 390, top: 58, foot: 58, side: 24, colW: 342, gutter: 28, kSeat: 39, kSize: 26, h2: 38, rowH: 72, rowT: 25, headRow: 57.69,
+    credW: 85, credH: 44, credT: 23, view: [342, 277], tape: [307, 37], spark: [[-46, 143.88], [-4, 121.87], [6, 169.88]], tile: 40,
+  },
+}
+const PAPER_TILE_TURN = [-3, 2, -2, 3, -1, 2, -3]
+function PaperbackGallery({ s, g }) {
+  const { at, marked, strip, go, srcRows, srcAct, video, player } = g
+  const P = PAPER_GALLERY[s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop']
+  const desk = !s.narrow
+  const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
+  const ink = s.tx
+  const yellow = s.onScheme[1].box2
+  const bricolage = (size, lh) => ({ fontFamily: s.display, fontWeight: 800, fontSize: size, lineHeight: lh, letterSpacing: '-0.035em' })
+  const script = (size) => ({ fontFamily: s.script, fontWeight: 700, fontSize: u(size), lineHeight: 0.95, letterSpacing: '-0.01em', color: s.text3 })
+  const wrap = { whiteSpace: 'normal', overflowWrap: 'anywhere', minWidth: 0 }
+
+  // The head wraps in the column and is fitted to its widest word (`vm.titleWordEms`, the bio's rule).
+  const h2 = s.title ? (
+    <h2 style={{
+      margin: 0, color: ink, maxWidth: '100%', overflowWrap: 'anywhere',
+      ...bricolage(s.titleWordEms ? `min(${u(P.h2)}, calc(${u(P.colW)} / ${s.titleWordEms}))` : u(P.h2), 0.82),
+    }}>{s.title}</h2>
+  ) : null
+
+  // The script `Media`: `kicker`, seeded empty so drawn only when typed, in the seat the frame gives it (a 655 x 30 box turned -6
+  // about its centre, so its left end sits 34 down). The seat stays as padding when it is not drawn, as the bio's does.
+  const kicker = s.galKicker ? (
+    <div style={{ position: 'absolute', left: 0, top: 0, width: u(P.colW), minHeight: u(P.kSize * 0.95), transform: 'rotate(-6deg)' }}>
+      <span style={{ ...script(P.kSize), ...wrap }}>{s.galKicker}</span>
+    </div>
+  ) : null
+
+  const rows = (
+    <div style={col(u(12))}>
+      {srcRows.map(({ g: r, i }) => {
+        const link = srcAct(r, i)
+        const Tag = link?.href ? 'a' : 'div'
+        return (
+          <Tag key={i} {...link} style={{
+            ...row(u(16)), boxSizing: 'border-box', height: u(P.rowH), flex: 'none', padding: `0 ${u(24)}`, borderRadius: u(24),
+            background: r.on ? yellow : PAPER_WHITE, color: ink, textDecoration: 'none', cursor: link ? 'pointer' : undefined,
+          }}>
+            <span data-inline={r.on ? 'sourceLabel' : undefined} style={{ ...bricolage(u(P.rowT), 1), flex: 1, color: ink, ...wrap }}>{r.label}</span>
+            <span style={{
+              flex: 'none', width: u(40), height: u(40), borderRadius: '50%', background: ink, color: PAPER_WHITE,
+              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              fontFamily: s.label, fontWeight: 700, fontSize: u(20), lineHeight: 1, letterSpacing: '-0.01em',
+            }}>{r.on ? '×' : '+'}</span>
+          </Tag>
+        )
+      })}
+    </div>
+  )
+
+  const left = (
+    <div style={col(u(28), { minWidth: 0 })}>
+      <div style={{ position: 'relative', height: u(P.kSeat) }}>{kicker}</div>
+      {h2}
+      {rows}
+    </div>
+  )
+
+  // Head row: the back pill (stretched to the row) and the credit script, turned 4 degrees about its own centre.
+  const top = (
+    <div style={row(u(12), { height: u(P.headRow), justifyContent: 'space-between', alignItems: 'stretch' })}>
+      <span onClick={s.live ? () => go(0) : undefined} style={{
+        ...row(u(4)), boxSizing: 'border-box', flex: '0 1 auto', minWidth: 0, padding: `0 ${u(16)}`, borderRadius: s.radiusChip, background: PAPER_WHITE,
+        color: ink, fontFamily: s.label, fontWeight: 700, fontSize: u(14), lineHeight: 1.2, letterSpacing: '-0.01em', cursor: s.live ? 'pointer' : undefined,
+      }}>
+        <span aria-hidden style={{ flex: 'none' }}>←</span><span style={wrap}>{s.galBackLabel}</span>
+      </span>
+      {s.galRailLabel && (
+        <div style={{ position: 'relative', flex: 'none', width: u(P.credW) }}>
+          <div style={{ position: 'absolute', left: 0, top: 0, width: u(P.credW), minHeight: u(P.credH), transform: 'rotate(4deg)' }}>
+            <span data-inline="railLabel" style={{ ...script(P.credT), display: 'block', ...wrap }}>{s.galRailLabel}</span>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+
+  const [vw, vh] = P.view
+  const disc = (back) => (
+    <span onClick={s.live ? () => go(at + (back ? -1 : 1)) : undefined} style={{
+      width: u(44), height: u(44), flex: 'none', borderRadius: '50%', background: PAPER_WHITE, display: 'inline-flex', alignItems: 'center',
+      justifyContent: 'center', cursor: s.live ? 'pointer' : undefined,
+    }}>{paperArrow(u, back, ink)}</span>
+  )
+  const viewer = (
+    <div style={{ position: 'relative', height: u(vh) }}>
+      <div style={{ position: 'absolute', left: 0, top: 0, width: u(vw), height: u(vh), transform: 'rotate(2deg)' }}>
+        <div style={{
+          position: 'absolute', inset: 0, boxSizing: 'border-box', border: `${u(6)} solid ${PAPER_WHITE}`, borderRadius: u(24), overflow: 'hidden', background: PAPER_TILE,
+        }}>
+          {video ? player : (
+            <>
+              <div style={{ position: 'absolute', inset: 0 }}>
+                <Photo s={s} slot={`images:${at}`} initialsSize={52} src={s.images[at]} ink={ink} style={{ objectPosition: s.imagesPos[at] }} />
+              </div>
+              <div style={row(u(8), { position: 'absolute', right: u(16), bottom: u(16) })}>{disc(true)}{disc(false)}</div>
+            </>
+          )}
+        </div>
+        <span aria-hidden style={{
+          position: 'absolute', left: u(P.tape[0] - 65), top: u(P.tape[1] - 15), width: u(130), height: u(30), background: s.ac, opacity: 0.9,
+          transform: 'rotate(40deg)', clipPath: 'polygon(3% 0, 97% 8%, 100% 92%, 2% 100%)', pointerEvents: 'none',
+        }} />
+        {[[44, yellow], [26, s.chips[0].bg], [16, s.ac]].map(([size, fill], k) => (
+          <PaperbackSparkle key={size} size={size} fill={fill} ink={ink} style={{
+            position: 'absolute', left: u(P.spark[k][0]), top: u(P.spark[k][1]), width: u(size), height: u(size), pointerEvents: 'none',
+          }} />
+        ))}
+      </div>
+    </div>
+  )
+
+  // Seven tiles at every width, each in a cell of the strip's pitch and turned a few degrees; the picked one is ringed in 4px pink.
+  const thumbs = (
+    <div style={row(0, { justifyContent: 'space-between', height: u(P.tile) })}>
+      {strip.map((i) => (
+        <span key={i} onClick={s.live ? () => go(i) : undefined} style={{ position: 'relative', flex: 'none', width: u(P.tile), height: u(P.tile), cursor: s.live ? 'pointer' : undefined }}>
+          <span style={{
+            position: 'absolute', inset: 0, boxSizing: 'border-box', overflow: 'hidden', borderRadius: u(16), background: PAPER_TILE,
+            border: i === marked ? `${u(4)} solid ${s.ac}` : undefined, transform: `rotate(${PAPER_TILE_TURN[i]}deg)`,
+          }}>
+            <span style={{ position: 'absolute', inset: 0 }}>
+              <Photo s={s} slot={`images:${i}`} initialsSize={12} src={s.images[i]} ink={ink} />
+            </span>
+          </span>
+        </span>
+      ))}
+    </div>
+  )
+
+  const right = <div style={col(u(18), { minWidth: 0 })}>{top}{viewer}{thumbs}</div>
+  return (
+    <div style={{ position: 'relative', containerType: 'inline-size', overflow: 'hidden' }}>
+      <div style={{ paddingTop: u(P.top), paddingBottom: u(P.foot) }}>
+        {desk ? (
+          <div style={{ display: 'grid', gridTemplateColumns: `${u(P.colW)} ${u(P.colW)}`, columnGap: u(P.gutter), margin: `0 ${u(P.side)}`, alignItems: 'start' }}>
+            {left}{right}
+          </div>
+        ) : (
+          <div style={col(u(P.gutter), { margin: `0 ${u(P.side)}` })}>{left}{right}</div>
+        )}
+      </div>
+    </div>
+  )
+}
+
 function Gallery({ s }) {
   // Hooks before the layout branch, the way Media takes them: `s.v0` is a prop
   // and not a hook's business, so the branch below cannot be the thing that
@@ -16844,6 +17017,14 @@ function Gallery({ s }) {
     )
     // No photograph is the viewer's while the player is, so none is marked.
     const lit = video ? -1 : active
+
+    // Paperback's layout-1 gallery is a block of its own (PaperbackGallery), after the seam. The canvas draws the frame's picked tile,
+    // the second, and the viewer shows that slot's photograph (the seed's second slot is the frame's viewer picture).
+    if (s.paperback) {
+      const picked = s.live && pick >= 0
+      const at = picked ? pick : s.images.length > 1 ? 1 : 0
+      return <PaperbackGallery s={s} g={{ at, marked: video ? -1 : at, strip, go, srcRows, srcAct, video, player }} />
+    }
 
     // Lattice's layout-1 gallery is a block of its own (LatticeGallery), after the seam. It opens on
     // the frame's viewer, which is the third tile's photograph, not Lime's fourth.

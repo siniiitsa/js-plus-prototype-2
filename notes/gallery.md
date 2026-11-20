@@ -240,6 +240,33 @@ picture. Differences that bind:
 - **Caps** (`limits.mjs gallery --themes=5 --designs=0`): `kicker` 41, `sourceLabel` 25 (it prints at every width here, so the narrow reading binds: 62 / 69 / 25),
   `railLabel` 45, `heading` 16 (line packing: a 14-character *Kestrel Nights* fills the first line, so the seed's 16 is the floor, as Editorial's and Pop's), `backLabel` 34 as everywhere.
 
+## Paperback · layout 1 (plans/paperback/layout-1.md, section 4, 2026-11-20)
+
+`PaperbackGallery` is an own-tree block, dispatched in `Gallery`'s `if (s.v0)` **after the seam** (before Lattice's line), handed `{ at, marked, strip, go, srcRows, srcAct, video, player }` as Lattice's
+is, so the published gallery is the same seam in a new picture (`pick` starts at -1, an unfilled social row is not rendered when `s.live`, a YouTube row with an `embed` is the viewer's other stop, every
+arrow, tile and the back link leave the video). Frame `1:2617` · `1:11239` · `1:12425` (908.8 / 1428.5 / 1004.9 tall). `PAPER_GALLERY` holds the frame's px per width, **verbatim at all three** (cqw of a
+`containerType: inline-size` stage, vertical insets in a child, `vm.pad = '0px <surplus>'`: the bio's and media's pattern). Differences that bind:
+
+- **A pale-yellow band, not a card.** Scheme 1's `bg` is the root's own ground, so there is no card margin: the content is two 655.05 columns at 1440 (a 31.95 gutter, 48.96 in) and one 715.77 / 342 column
+  at 768 / 390 (the left column then the right, a 36 / 28 gap). Top and foot are 96 / 77 / 58.
+- **Source rows and strip draw at every width.** Four 24-radius rows (125.6 / 72 / 72 tall, a 12 gap), the open one yellow (`s.onScheme[1].box2`) with a `×` disc, the others white with a `+`; the label is
+  Bricolage 800 at 30 / 27 / 25, **`sourceLabel` prints at every width** (Lime's narrow rows are icon-only tiles). Seven tiles (85 / 94 / 40, turned -3 2 -2 3 -1 2 -3 degrees, radius 16) at every width: no sliding
+  window, no `srcScroll`, so the file's one scroll container does not exist here.
+- **The canvas draws the frame's picked tile, the second.** A 4px pink ring (`s.ac`) on tile 2, and the viewer shows **slot 2's photograph** (`at = s.images.length > 1 ? 1 : 0` off the seam's `pick`). A visitor's own
+  pick moves both. **The frame's viewer picture is none of the seven** (`PAPERBACK_VIEWER`), and the viewer can only show a slot, so the seed's slot 2 *is* that picture (`PAPERBACK_PHOTOS.gallery[1]`); the 85px
+  thumbnail differs from the frame's by that one photograph. The playing video takes the viewer's seat, hides the arrows and marks no tile.
+- **Copy.** The head (`heading`, Bricolage 800, lh .82, -0.035em at 95.04 / 59 / 38) wraps in the column and is fitted to its widest word (`vm.titleWordEms`, extended to the gallery for Paperback). The script `Media`
+  is `kicker`, seeded empty, so **drawn only when typed**, in its frame seat (a 655-wide box turned -6 degrees about its centre, so its left end sits 34 down; the 44 / 42 / 39 seat stays as padding). The credit script
+  is `railLabel` alone (`Gallery`; the artist's name that stood over it is gone, 2026-11-12), Caveat 28 / 25 / 23 in a 104 / 93 / 85 box turned 4 degrees: it wraps there, which is the frame's own (it prints three lines at 1440, two
+  at 768 and 390). `backLabel` is the white pill (the arrow is the markup's; it wraps rather than clip). Both `Gallery` labels carry the inert `data-inline` marks (`sourceLabel`, `railLabel`; text cannot tell them apart); the kicker has none.
+- **Decoration.** The pink tape (130 x 30, turned 40 degrees, `s.ac` at .9, the hero's torn polygon clip) centred at (620 / 681 / 307, 37) in the card's box; three sparkles at the card's left edge (44 yellow, 26 lilac
+  `s.chips[0].bg`, 16 pink `s.ac`, ink outlines), in front of the rows' right edge at 1440 and clipped by the page at 768 and 390 as the frame's are. Round white arrow discs (44, a 2px ink arrow) are `paperArrow()`.
+- **Caps** (`limits.mjs gallery --themes=6 --designs=0`, then `--check --extra-lines=railLabel,backLabel,sourceLabel`: 0 failing; `--seeds`: 0 over): `heading` 16 (the seed's own length: a 16-character head that
+  does not pack its first line at 1440 is the floor, as Editorial's and Pop's), `kicker` 25 (the probe reads `box` from 26 at 1440 and 32 at 768; the frame's own is 5), `railLabel` 18 (**two lines**: the box is 104
+  wide), `sourceLabel` 36 (**two lines** in a 72-tall row at 390: the probe's one-line reading was 20), `backLabel` stays 34 (two lines in the pill). Layouts 2–4 read Pop's rows.
+- **Ledger.** None: `inline-probe` gallery at layouts 1–4, 1440 and 768: PASS (layout 1: 4 slots hit, 0 WRONG / MISSING / UNREACHED / UNLEDGERED). `photo-probe` layouts 1–4 PASS, layout 1 also `--blank` (7 appended) and `--drop`;
+  `focus-probe --prime` layouts 1–4 PASS.
+
 ## Inline editing (plans/inline-edit-all.md, Lime layout 1, 2026-10-21)
 
 Canvas inline editing reaches every gallery text field the layout reads. Layout 1 prints *Gallery* twice at desktop —
