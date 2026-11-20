@@ -426,6 +426,20 @@ script role line. No shared ancestor, so dressing either would move five other t
 seats stay as padding. **Fields it reads:** `heading`, `para1`, `cta` (the pill), `badgeMode` (the vinyl), and the header's `kicker` /
 `location` as the derived role line. `para2`, `tag`, `credit`, `since*`, `cta2` and the labels are not read at layout 1.
 
+**3 · media — own tree, `PaperbackMedia`** (session 3, 2026-11-20; frames `1:2450` · `1:11054` · `1:12240`, 1057 / 1398 / 1361 tall). The plan predicted
+*Retro's `v0` body re-laid*; the frame does not draw it. It is a **cyan card** (radius 40, `scheme/2/box3`) on the white page, 48.96 / 26.11 / 12 in from the edges,
+holding a confetti field (a 24-dash vector set per width, the desktop one already `ART.confettiMedia`; the other two added to `paperbackArt.jsx` this session), a
+Bricolage ExtraBold 800 head at 95.04 / 59 / 38 (lh .82, -0.035em), three sparkles, five **white pill rows** (24 radius, 84 tall on a 94 pitch: a number, a 14-radius cover,
+the title at 26 / 26 / 18, a release chip and a duration chip, a 44 play disc; the marked row yellow with a pink disc), a split black `Soundcloud` pill, and a **394 x 460 indigo
+card turned 3 degrees** (a 5px white keyline sleeve, the title at 40 / 32 / 26, three round transport discs, a yellow progress bar, two clocks) with a pink **music-note disc**
+turned 10 degrees on its corner. Retro's v0 is a stack; Lime's and Lattice's are flush hairline rows beside a card on a ground; none draws a card on the page, chips in the rows
+or a tilted player, so dressing any of them would move other templates: **own tree**, dispatched in `Media` after the hooks and seam like Lattice's. **Draws what the standing
+rules leave:** no `Top tracks` script, no `5 / 5 featured` script (removed 2026-11-12), and **no ring text on the disc** (the frame draws `NEW MIX · EVERY MONTH` at 768 and 390 and
+nothing at 1440; no field carries it, call 1), so the disc is the same pink ring, white disc and note at every width. The kicker's seat (the 56 above the head) stays as padding
+(the bio's convention), so every number stays the frame's. **Fields it reads:** `heading`, `tracks` (title, sub), `soundcloud`. `cta`, `chipLabel` are not read at layout 1.
+**Named departures:** the marked row is the card's track (`at`), not the frame's row 02 (Lattice's rule), and the card names the cued track, not the frame's *Night Rain*;
+a marked row's yellow chip goes white (yellow on yellow is no chip); the chip colours follow the row's index (yellow, cyan, magenta, ink, orange), not the release.
+
 ### Settled in session 0 — the foundation
 
 Commit `2ceb233`, branch `paperback-layout-1`, 2026-11-20. The three opening calls are written under decisions 1–3 above.

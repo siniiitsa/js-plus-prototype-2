@@ -6970,6 +6970,199 @@ function LatticeMedia({ s, m }) {
   )
 }
 
+// Paperback's layout-1 media player (1:2450 · 1:11054 · 1:12240: 1440 / 768 / 390; 1057 / 1398 / 1361 tall).
+// A tree of its own, dispatched from `Media` after its hooks and seam (LatticeMedia's shape), so the published
+// player is the one seam in a new picture (notes/media.md: the `<audio>` is `Media`'s and is assigned
+// imperatively). The frame is a cyan card (radius 40) on the white page holding a confetti field, the head, five
+// white pill rows (number, cover, title, a release chip and a duration chip, a play disc), a split black
+// Soundcloud pill and a 394 x 460 indigo player turned 3 degrees with a music-note disc on its corner.
+//
+// Every length is the frame's px through `u`, in cqw of a stage as wide as the page (the hero's and the bio's
+// mechanism); the stage's vertical insets are in a child. Not drawn (the standing removals, call 1 of session 0):
+// the `Top tracks` and `5 / 5 featured` scripts, and the ring text the 768 and 390 frames print round the disc
+// (`NEW MIX · EVERY MONTH`: no field carries it). The kicker's seat stays as padding, so every number is the frame's. The
+// rows are 84 at a 2.9 inset, so the 390 frame's wrapped chips (78.2 of content) sit in the row as the frame's do; the mobile
+// card does not clip (its frame has no overflow clip), so the disc runs to the page's edge.
+// Named departures: the marked row is the player's track (`at`), not the frame's row 02, and the player names the
+// cued track, not the frame's *Night Rain* (Lattice's rule); a marked row's yellow chip goes white; the chips'
+// colours follow the row's place, not the release.
+const PAPER_MEDIA = {
+  desktop: {
+    fw: 1440, top: 66.37, foot: 66.37, side: 48.96, padX: 48, seat: 56, headH: 212.27, h2: 95.04, conf: 'confettiMedia', cw: 1342.08, ch: 924.27,
+    spark: [[422.875, 158.27], [464.875, 136.27], [474.875, 184.27]], free: 423, colW: [820.047, 394.016, 32.015], headW: 1246.08,
+    numL: 16, numW: 40, gap: 16, art: 56, rowR: 16, rowT: 26, card: { w: 394, padT: 28, padX: 28, padB: 28, sleeve: 217, t: 40, tH: 55, badge: 358 },
+  },
+  tablet: {
+    fw: 768, top: 24, foot: 24, side: 26.11, padX: 36, seat: 54, headH: 150.3, h2: 59, conf: 'confettiMediaTablet', cw: 715.766, ch: 1350.3,
+    spark: [[282.69, 96.3], [324.69, 74.3], [334.69, 122.3]], free: 282, headW: 643.77,
+    numL: 16, numW: 40, gap: 16, art: 56, rowR: 16, rowT: 26, card: { w: 394, padT: 24, padX: 21, padB: 23, sleeve: 233, t: 32, tH: 48, badge: 358 },
+  },
+  mobile: {
+    fw: 390, top: 24, foot: 24, side: 12, padX: 16, seat: 51, headH: 113, h2: 38, conf: 'confettiMediaMobile', cw: 366, ch: 1313,
+    spark: [[192.25, 59], [234.25, 37], [244.25, 85]], free: 192, headW: 334,
+    numL: 12, numW: 22, gap: 10, art: 44, rowR: 12, rowT: 18, card: { w: 334, padT: 20, padX: 16, padB: 20, sleeve: 246, t: 26, tH: 42, badge: 298 },
+  },
+}
+function PaperbackMedia({ s, m }) {
+  const { at, playing, now, sleeve, sleeveSlot, audio, goTo, toggle, onPick } = m
+  const P = PAPER_MEDIA[s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop']
+  const C = P.card
+  const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
+  const ink = s.tx
+  const cyan = s.onScheme[2].box3
+  const yellow = s.onScheme[1].box2
+  // The chips' colours by the row's place, as the frame's five rows draw them: yellow, cyan, magenta, ink, orange.
+  const CHIPS = [[yellow, ink], [cyan, ink], [s.onScheme[7].bg, ink], [s.onScheme[8].bg, PAPER_WHITE], [s.onScheme[4].bg, ink]]
+  const lines = (size, lh) => ({ fontFamily: s.display, fontWeight: 800, fontSize: size, lineHeight: lh, letterSpacing: '-0.035em' })
+  const label = (size, extra) => ({ fontFamily: s.label, fontWeight: 700, fontSize: size, letterSpacing: '-0.01em', ...extra })
+
+  // The head wraps and fits to the room left of the sparkles (`free`: their left edge), which the frame sets beside the second line.
+  const h2 = s.title ? (
+    <h2 style={{
+      margin: 0, maxWidth: u(P.free), color: ink, ...lines(s.titleWordEms ? `min(${u(P.h2)}, calc(${u(P.free)} / ${s.titleWordEms}))` : u(P.h2), 0.82),
+    }}>{s.title}</h2>
+  ) : null
+  const head = (
+    <div style={{ position: 'relative', boxSizing: 'border-box', minHeight: u(P.headH), paddingTop: u(P.seat) }}>
+      {h2}
+      <PaperbackSparkle size={44} fill={yellow} ink={ink} style={{ position: 'absolute', left: u(P.spark[0][0]), top: u(P.spark[0][1]), width: u(44), height: u(44) }} />
+      <PaperbackSparkle size={26} fill={s.ac} ink={ink} style={{ position: 'absolute', left: u(P.spark[1][0]), top: u(P.spark[1][1]), width: u(26), height: u(26) }} />
+      <PaperbackSparkle size={16} fill={PAPER_WHITE} ink={ink} style={{ position: 'absolute', left: u(P.spark[2][0]), top: u(P.spark[2][1]), width: u(16), height: u(16) }} />
+    </div>
+  )
+
+  // The frame's glyphs: a play triangle (12 x 14), a pause (two bars) and the two transport arrows.
+  const glyph = (w, h, vb, children) => (
+    <svg aria-hidden width={u(w)} height={u(h)} viewBox={vb} fill="none" style={{ display: 'block', overflow: 'visible' }}>{children}</svg>
+  )
+  const play = (c) => glyph(12, 14, '0 0 12 14', <path d="M1 1L11 7L1 13V1Z" fill={c} />)
+  const pause = (c) => glyph(12, 14, '0 0 12 14', <path d="M1 1H4.5V13H1ZM7.5 1H11V13H7.5Z" fill={c} />)
+  const arrow = (back) => glyph(14, 14, '0 0 14 14', (
+    <path d={back ? 'M13 7H2M6.5 11.5L2 7L6.5 2.5' : 'M1 7H12M7.5 11.5L12 7L7.5 2.5'} stroke={ink} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+  ))
+  const disc = (size, bg, extra) => ({
+    width: u(size), height: u(size), borderRadius: '50%', background: bg, flex: 'none', boxSizing: 'border-box',
+    display: 'inline-flex', alignItems: 'center', justifyContent: 'center', ...extra,
+  })
+
+  const list = (
+    <div style={col(u(10))}>
+      {s.tracks.length === 0 && (
+        <div style={{ ...label(u(16), { color: s.text3 }), background: PAPER_WHITE, borderRadius: u(24), padding: `${u(30)} ${u(P.numL)}` }}>{s.mediaEmpty}</div>
+      )}
+      {s.tracks.map((t, i) => {
+        const marked = i === at
+        const dur = t.dur && t.dur !== t.rel ? t.dur : ''
+        const [chipBg0, chipFg] = CHIPS[i % CHIPS.length]
+        const chipBg = marked && i % CHIPS.length === 0 ? PAPER_WHITE : chipBg0
+        const chip = (text, bg, fg) => (
+          <span style={{
+            ...label(u(13), { lineHeight: 1.2, color: fg }), background: bg, borderRadius: s.radiusChip, boxSizing: 'border-box',
+            height: u(26), padding: `0 ${u(10)}`, display: 'inline-flex', alignItems: 'center', whiteSpace: 'nowrap', maxWidth: '100%',
+            overflow: 'hidden', textOverflow: 'ellipsis',
+          }}>{text}</span>
+        )
+        return (
+          <div key={i} onClick={onPick(i)} style={{
+            ...row(u(P.gap)), boxSizing: 'border-box', minHeight: u(84), padding: `${u(2.9)} ${u(P.numL)}`,
+            background: marked ? yellow : PAPER_WHITE, borderRadius: u(24), cursor: s.live ? 'pointer' : undefined,
+          }}>
+            <span style={label(u(16), { flex: 'none', width: u(P.numW), color: s.text3, lineHeight: 1.2 })}>{t.n}</span>
+            <span style={{ flex: 'none', width: u(P.art), height: u(P.art), borderRadius: u(14), overflow: 'hidden', position: 'relative', background: s.chips[0].bg }}>
+              <Photo s={s} slot={`tracks:${t.row}`} initialsSize={14} src={t.img} ink={ink} />
+            </span>
+            <span style={col(u(6), { flex: 1, minWidth: 0, alignItems: 'flex-start' })}>
+              <span style={{ ...lines(u(P.rowT), 0.9), color: ink, maxWidth: '100%', overflowWrap: 'anywhere' }}>{t.name}</span>
+              {(t.rel || dur) && (
+                <span style={row(`${u(4)} ${u(6)}`, { flexWrap: 'wrap', maxWidth: '100%' })}>
+                  {t.rel && chip(t.rel, chipBg, chipFg)}
+                  {dur && chip(dur, ink, PAPER_WHITE)}
+                </span>
+              )}
+            </span>
+            <span style={disc(44, marked ? s.ac : ink)}>{playing && marked ? pause(PAPER_WHITE) : play(PAPER_WHITE)}</span>
+          </div>
+        )
+      })}
+    </div>
+  )
+
+  const pill = <PaperbackPill s={s} label="Soundcloud" ext={s.soundcloud} u={u} bg={ink} fg={PAPER_WHITE} />
+
+  const pct = s.live ? now.pct : 56.15
+  const card = (
+    <div style={{
+      ...col(u(20), { alignItems: 'stretch' }),
+      position: 'relative', boxSizing: 'border-box', width: u(C.w), height: u(460), flex: 'none', transform: 'rotate(3deg)',
+      alignSelf: s.mob ? 'stretch' : s.narrow ? 'center' : undefined, padding: `${u(C.padT)} ${u(C.padX)} ${u(C.padB)}`,
+      background: s.text3, borderRadius: u(24), color: PAPER_WHITE,
+    }}>
+      <div style={{
+        flex: '1 1 0', minHeight: 0, aspectRatio: '1', alignSelf: 'center', position: 'relative', boxSizing: 'border-box',
+        border: `${u(5)} solid ${PAPER_WHITE}`, borderRadius: u(20), overflow: 'hidden', background: s.chips[0].bg,
+      }}>
+        <Photo s={s} slot={sleeveSlot} initialsSize={44} src={sleeve} ink={ink} />
+      </div>
+      {/* Wraps rather than clips: the sleeve is the flex remainder, so a second line costs it its height and the card stays 460. */}
+      <div style={col(0, { alignItems: 'center', minHeight: u(C.tH), minWidth: 0 })}>
+        <span style={{ ...lines(u(C.t), 0.9), maxWidth: '100%', textAlign: 'center', overflowWrap: 'anywhere' }}>{now.track}</span>
+        <span style={label(u(15), { lineHeight: u(18), maxWidth: '100%', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' })}>{now.by}</span>
+      </div>
+      <div style={row(u(10), { justifyContent: 'center', height: u(56) })}>
+        <span onClick={s.live ? () => goTo(at - 1) : undefined} style={disc(40, PAPER_WHITE, { cursor: s.live ? 'pointer' : undefined })}>{arrow(true)}</span>
+        <span onClick={s.live ? toggle : undefined} style={disc(56, s.ac, { cursor: s.live ? 'pointer' : undefined })}>{playing ? pause(PAPER_WHITE) : play(PAPER_WHITE)}</span>
+        <span onClick={s.live ? () => goTo(at + 1) : undefined} style={disc(40, PAPER_WHITE, { cursor: s.live ? 'pointer' : undefined })}>{arrow(false)}</span>
+      </div>
+      <div style={row(u(12), { height: u(16) })}>
+        <span style={label(u(13), { flex: 'none', width: u(35), lineHeight: 1.2 })}>{now.at}</span>
+        <span aria-hidden style={{ flex: 1, minWidth: 0, height: u(8), borderRadius: u(99), background: 'rgba(255,255,255,0.25)', position: 'relative', overflow: 'hidden' }}>
+          <span style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: `${pct}%`, background: yellow, borderRadius: u(99) }} />
+        </span>
+        <span style={label(u(13), { flex: 'none', width: u(35), lineHeight: 1.2 })}>{now.of}</span>
+      </div>
+      <svg aria-hidden viewBox="0 0 128 128" fill="none" style={{
+        position: 'absolute', left: u(C.badge - 64), top: u(-52), width: u(128), height: u(128), display: 'block', overflow: 'visible', transform: 'rotate(10deg)',
+      }}>
+        <circle cx="64" cy="64" r="62.08" fill={s.ac} stroke={ink} strokeWidth="1.92" />
+        <circle cx="64" cy="64" r="32" fill={PAPER_WHITE} stroke={ink} strokeWidth="1.92" />
+        <PaperbackArt name="note" x="49.44" y="48.48" width="27.2" height="30.72" />
+      </svg>
+      {audio}
+    </div>
+  )
+
+  return (
+    <div style={{ position: 'relative', containerType: 'inline-size', overflow: 'hidden' }}>
+      <div style={{ paddingTop: u(P.top), paddingBottom: u(P.foot) }}>
+        <div style={{
+          position: 'relative', overflow: s.mob ? 'visible' : 'hidden', boxSizing: 'border-box', margin: `0 ${u(P.side)}`, borderRadius: u(40), background: cyan,
+          padding: `${u(64)} ${u(P.padX)}`,
+        }}>
+          <PaperbackArt name={P.conf} aria-hidden style={{ position: 'absolute', left: 0, top: 0, width: u(P.cw), height: u(P.ch) }} />
+          <div style={col(u(48), { position: 'relative' })}>
+            {head}
+            {s.narrow ? (
+              <div style={col(u(28))}>
+                {list}
+                <span style={{ alignSelf: 'flex-start' }}>{pill}</span>
+                {card}
+              </div>
+            ) : (
+              <div style={{ display: 'grid', gridTemplateColumns: `${u(P.colW[0])} ${u(P.colW[1])}`, columnGap: u(P.colW[2]), alignItems: 'start' }}>
+                <div style={col(u(28))}>
+                  {list}
+                  <span style={{ alignSelf: 'flex-start' }}>{pill}</span>
+                </div>
+                {card}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function Media({ s }) {
   // Hooks before the layout branch — the older three-card design plays too.
   // `playing` mirrors the element's own play/pause events rather than being
@@ -7075,6 +7268,9 @@ function Media({ s }) {
   // function resolved above; it stands here and not at the head so the hooks keep their order.
   if (s.v0 && s.lattice) {
     return <LatticeMedia s={s} m={{ at, count, playing, now, sleeve, sleeveSlot, audio, goTo, toggle, onPick }} />
+  }
+  if (s.v0 && s.paperback) {
+    return <PaperbackMedia s={s} m={{ at, count, playing, now, sleeve, sleeveSlot, audio, goTo, toggle, onPick }} />
   }
 
   // Lime layout 1 (964:58590 · 986:39879 at 768 · 986:39891 at 390) is Retro's

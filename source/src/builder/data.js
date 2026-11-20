@@ -4185,6 +4185,12 @@ export const INLINE_OFF = {
   'Paperback.1.header.location': 'not drawn: layouts 1–4 print no location any more (a shared identity key; the bio, the calendar and the map print it)',
   'Paperback.2.header.location': 'not drawn: layouts 1–4 print no location any more (a shared identity key; the bio, the calendar and the map print it)',
   'Paperback.3.header.location': 'not drawn: layouts 1–4 print no location any more (a shared identity key; the bio, the calendar and the map print it)',
+  // The media's layout-1 rows print the release and the running time as two chips (`rel`, `dur`), and the whole line as one chip only once the list is stored.
+  'Paperback.0.media.tracks.sub': 'derived value: the seeded page prints the release and the running time as two chips, and the whole line only once the list is stored',
+  // Layouts 2–4 are Pop's placeholder cards until their passes: the same rows as Pop's.
+  'Paperback.1.media.tracks.sub': 'derived value: the seeded page prints the release and the running time as two nodes, and the whole line only once the list is stored',
+  'Paperback.2.media.tracks.sub': 'derived value: the seeded page prints the release and the running time as two nodes, and the whole line only once the list is stored',
+  'Paperback.3.media.tracks.sub': 'derived value: the page prints the release alone (the list tile’s Single); the running times are the player’s clock',
   'Lattice.0.header.kicker': 'not drawn: the layout-1 header prints no act type any more (a shared identity key; the bio’s role line and the form print it)',
   'Lattice.1.header.kicker': 'not drawn: the layout-2 header prints no kicker (a shared identity key; the bio’s role line and the form print it)',
   'Lattice.2.header.kicker': 'not drawn: the layout-3 card prints the card line in the kicker’s seat (a shared identity key; the bio’s role line and the form print it)',
@@ -4374,7 +4380,10 @@ export const IDENTITY_CHARS = {
       Editorial: [43, 11, 11, 31], Pop: [11, 11, 13, 31],
       // Layout 1 measured 2026-11-19 (limits.mjs media --themes=5 --designs=0): the card's
       // artist line, one ellipsised line, holds 49 / 51 / 40; the others are Pop's until their passes.
-      Lattice: [40, 11, 13, 31] },
+      Lattice: [40, 11, 13, 31],
+      // Paperback's layout 1 measured 2026-11-20 (limits.mjs media --themes=6 --designs=0): the player's artist line,
+      // one ellipsised line, holds 48 / 50 / 41; the others are Pop's until their passes.
+      Paperback: [41, 11, 13, 31] },
   },
   pricing: {
     seal: { Grunge: [14] },
