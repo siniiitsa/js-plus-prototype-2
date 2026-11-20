@@ -67,6 +67,8 @@ plans/
     layout-4-qa-fixes.md
   lattice/
     layout-1.md   ← a sixth template, from the JustPay — Batch 2 Figma file (planned 2026-11-19)
+  paperback/
+    layout-1.md   ← a seventh template, "Paperback Playful", from the same Batch 2 file (planned 2026-11-20)
   pop/
     layout-1.md
     layout-2.md
@@ -233,6 +235,17 @@ procedure*.
 **Reading order in a Lattice session:** `CLAUDE.md`, then the plan, then [`CONVENTIONS.md`](./CONVENTIONS.md) groups A, B, C
 and D1, the section's *Settled* bullets in Lime, Grunge, Editorial **and** Pop layout 1, the section's `notes/` file, and
 Lime layout 1's *Per-session procedure*. The header session also reads `header-nav.md` and `header-fit.md`.
+
+## Paperback
+
+| Pass | Plan | Branch | Fitted |
+|---|---|---|---|
+| Layout 1 | [`paperback/layout-1.md`](./paperback/layout-1.md) | `paperback-layout-1`, to fork from `main` (planned 2026-11-20; nothing in `source/` touched) | A seventh template from the *JustPay — Batch 2* file (`ORILFywSzuadscu6RzskCW`, frames *Paperback Playful — Claude Design*, desktop `1:2316`, tablet `1:10903`, mobile `1:12137`). The same eleven layout-1 sections in a sunny-yellow / cyan / indigo / hot-pink page of tilted keyline cards, tape, sparkles, doodle discs and a handwritten script face; Bricolage Grotesque over Figtree (both free). Same HTML-to-Figma import as Lattice, but with real `sem/*` / `scheme/*` variables. Session 0 the foundation (opens on the standing-removals call, the footer newsletter and the name), sections 1–11 one per session, session 12 the proofs, the sweep. Layouts 2–4 and setup cards 2–4 are placeholders. |
+
+**Reading order in a Paperback session:** `CLAUDE.md`, then the plan, then Lattice layout 1's *Session 0*, *Per-session
+procedure* and *Learned on session 12 and the sweep*, [`CONVENTIONS.md`](./CONVENTIONS.md) groups A, B, C and D1, the
+section's *Settled* bullets in Pop and Lattice layout 1, the section's `notes/` file, and Lime layout 1's
+*Per-session procedure*. The header session also reads `header-nav.md` and `header-fit.md`.
 
 ## Every template
 
