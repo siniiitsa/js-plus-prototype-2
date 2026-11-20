@@ -405,6 +405,17 @@ After section 11 and session 12, in one session (Lattice's list is the model):
 *(Filled as each section's session reads its frames. Each entry: the verdict — dress the shared branch · widen the
 block · own tree — the geometry that decided it, the copy that stays removed, and the fields it reads.)*
 
+**1 · header — own tree, `PaperbackHero`** (session 1, 2026-11-20; frames `1:2318` · `1:10905` · `1:12139`, all 750 tall).
+Neither Pop's nor Lime's `HeaderV0` matches: the frame is a squiggle field on a yellow band with a rounded foot, a 6°
+tilted photo card (450 × 560 at 1440) carrying tape and three sparkles, a pink `KM` disc, a vinyl sticker, a −4° avatar
+card, a Bricolage ExtraBold name at lh .8 with a hand-drawn underline, and six chips. Pop's layout-1 hero is a centred
+stage on a flat ground; Lime's is a framed photograph with the name over it — no shared ancestor, so dressing either
+would move five other templates. Stands after the hooks in `HeaderV0` (`if (s.paperback) return <PaperbackHero …/>`), like
+Lattice's. **Draws what the standing rules leave:** hamburger left (the 768 frame's is on the right), Book Now right (the 390
+frame draws none), no wordmark / `DJ LIVE`, no inline pills, no kicker / location pills, no `Booking 2026` script note (call 1
+of session 0). **Fields it reads:** `title`, `tags` / `showTags`, `badgeMode` (→ `showBadge` / `badgeSpin`), `badgeText`, `image`,
+`avatar`, `cta1` / `bookTo`. `align` is hidden (`Paperback: []`): the collage has no centred variant.
+
 ### Settled in session 0 — the foundation
 
 Commit `2ceb233`, branch `paperback-layout-1`, 2026-11-20. The three opening calls are written under decisions 1–3 above.

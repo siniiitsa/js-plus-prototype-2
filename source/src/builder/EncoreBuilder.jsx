@@ -64,7 +64,7 @@ import {
   catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldSeed, HEADING_3, HEADING_4, fieldReach, fieldShown, identityFieldsFor, identityHint, INLINE_OFF, PHOTO_OFF, INLINE_HEAD, INLINE_MARKED, INLINE_PART, INLINE_LINES, inlineRule, fieldCap, colCaps, identityCap, sealCap, capExcess, numeralLen, clampCapped, clampContent, legacyContent, clampIdentity, copyrightOf, formHeading3, extUrl, youtubeEmbed, youtubeThumb, youtubeParts, youtubeWatch, youtubeChannel, urlProblem, emailProblem, emailAddr, songTags, repChips,
   tierFeats, priceParts, priceCuts, blankRow, SONG_KEYS, repSetsOf, repSetLine, TRACK_KEYS, uploadedAudio, GIG_KEYS, gigDayOk, gigWeekday, gigStatus, gigStamp, MIN_YEAR, gigPart, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
   layoutChoices, designCount, designOf, pageLayout, pageOrder, pageRows, videoDesign, videoStartArch,
-  VIDEOS, VIDEO_SEED, VIDEO_KEYS, videoPlayable, videoSeedDesc, VIDEO_ALL, COLUMN_SPLIT, bebasEms, antonEms, gloockEms, titanEms, latticeEms, frauncesEms, titleFitK, latticeDotField, latticeBioDots, latticeTestiDots,
+  VIDEOS, VIDEO_SEED, VIDEO_KEYS, videoPlayable, videoSeedDesc, VIDEO_ALL, COLUMN_SPLIT, bebasEms, antonEms, gloockEms, titanEms, latticeEms, frauncesEms, titleFitK, bricolageEms, latticeDotField, latticeBioDots, latticeTestiDots,
   headerLayout, headerLayoutLabel, layoutLabel, setupHeaderCount,
 } from './data.js'
 import { defaultImage, defaultImages, defaultTrackArt, seedFocus, RETRO_TEXTURE, LATTICE_ART } from './photos.js'
@@ -989,6 +989,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     }
     if (cat === 'header' && Z.dev !== 'desktop') vm.heroH = 750
   }
+  // Paperback's layout-1 hero is 750 tall at the two narrow widths too, where the other templates
+  // draw 1024 and 844; the desktop number (614 = 750 x .82, 1px under the frame's) already agrees,
+  // so `WIDE.heroH`, the picker's aspect and the setup cards stay as they are (Lattice's verdict).
+  if (T.name === 'Paperback' && cat === 'header' && d === 0 && Z.dev !== 'desktop') vm.heroH = 750
 
   // §4.8 — `navSections` is `{ cat, label }`, the label being the visitor's
   // word for the section (`navLabel()`, §4.3a) and never the sidebar's, and a
@@ -1082,7 +1086,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // branches test whether `navNameEms` is set; this reads Fraunces on its own.
   if (cat === 'header') {
     // Lattice's title is set 0.004em open (LatticeHero), which its table (measured at no tracking) lacks.
-    const face = T.name === 'Lattice' ? (x) => latticeEms(x) + 0.004 * [...x].length : (navFace ?? frauncesEms)
+    // Paperback's is set -0.035em (the frames' tracking, which its table, measured at none, lacks).
+    const face = T.name === 'Lattice' ? (x) => latticeEms(x) + 0.004 * [...x].length
+      : T.name === 'Paperback' ? (x) => bricolageEms(x) - 0.035 * [...x].length : (navFace ?? frauncesEms)
     const words = vm.brand.split(/\s+/).filter(Boolean).map((w) => face(w))
     ;[vm.titleK, vm.titleFloor] = titleFitK(T.name, d, Z.dev, words, face(' '), pageW)
   }

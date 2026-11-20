@@ -16,6 +16,8 @@ import { headlessShell } from './headless-shell.mjs'
 
 const face = process.argv[2] || 'Fraunces'
 const check = process.argv.includes('--check')
+// WEIGHT=800 for a face whose frames set a heavier cut than 400 (Bricolage Grotesque ExtraBold).
+const weight = process.env.WEIGHT || '400'
 const base = process.env.BASE || 'http://localhost:5173'
 const SINGLES = [...' !"#&\'()+,-./0123456789:?ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz·–—‘’“”éèêëáàâäíìîïóòôöúùûüñçßøå']
 // The pairs worth asking about: letters, digits and the punctuation a name carries.
@@ -25,11 +27,11 @@ const browser = await puppeteer.launch({ executablePath: headlessShell(), headle
 const page = await browser.newPage()
 await page.goto(`${base}/preview.html?cat=header&arch=0&theme=0&w=desktop`, { waitUntil: 'load' })
 await page.evaluate(() => document.fonts.ready)
-const out = await page.evaluate(async (face, SINGLES, PAIR, check) => {
+const out = await page.evaluate(async (face, SINGLES, PAIR, check, weight) => {
   // The face must be in use for the browser to fetch it: the header's own h1 is.
-  await document.fonts.load(`1000px '${face}'`)
+  await document.fonts.load(`${weight} 1000px '${face}'`)
   const host = document.createElement('div')
-  host.style.cssText = `position:fixed;left:0;top:0;visibility:hidden;font:400 1000px '${face}', serif;white-space:pre;letter-spacing:0;font-kerning:normal`
+  host.style.cssText = `position:fixed;left:0;top:0;visibility:hidden;font:${weight} 1000px '${face}', serif;white-space:pre;letter-spacing:0;font-kerning:normal`
   document.body.appendChild(host)
   const w = (t) => { host.textContent = t; return host.getBoundingClientRect().width / 1000 }
   const adv = {}
@@ -47,7 +49,7 @@ const out = await page.evaluate(async (face, SINGLES, PAIR, check) => {
       sums[t] = { dom: +w(t).toFixed(3) }
   }
   return { adv, kern, sums }
-}, face, SINGLES, PAIR, check)
+}, face, SINGLES, PAIR, check, weight)
 await browser.close()
 
 const esc = (k) => k.replace(/'/g, "\\'")

@@ -30,6 +30,7 @@
 
 import { useId, useRef, useState } from 'react'
 import RealMap from './RealMap.jsx'
+import { PaperbackArt, PaperbackSparkle, PaperbackWaves } from './paperbackArt.jsx'
 import {
   Play, Pause, SkipBack, SkipForward, Check, ChevronLeft, ChevronRight,
   ArrowLeft, ArrowRight, ArrowUp, ArrowDown, Star, Plus, X, Search, User,
@@ -1025,7 +1026,7 @@ const clock = (sec) => {
 // The ground and ink the menu opens on (below). Shared by `HeaderRoot`'s in-flow
 // panel and the fixed one Retro's layouts 5 and 6 still open.
 function menuColours(s) {
-  return s.lattice ? [s.bg, s.tx] : s.editorial ? [s.box3, s.paper] : s.pop && s.v2 ? [s.bg, s.text3]
+  return s.lattice || s.paperback ? [s.bg, s.tx] : s.editorial ? [s.box3, s.paper] : s.pop && s.v2 ? [s.bg, s.text3]
     : s.pop && s.v3 ? [s.mapBg, s.text3] : [s.mapBg, s.mapFg]
 }
 
@@ -1100,14 +1101,28 @@ function MenuPanel({ s, menu }) {
         <span onClick={menu.toggle} style={{ display: 'flex', cursor: 'pointer' }}>
           <X size={26} style={{ flex: 'none' }} />
         </span>
-        {s.lattice ? <BracketButton s={s} to={s.bookTo} ink={ink} /> : <BookPill s={s} to={s.bookTo} />}
+        {s.paperback ? <PaperbackPill s={s} to={s.bookTo} u={(v) => `${v * (s.narrow ? 1 : 0.82)}px`} />
+          : s.lattice ? <BracketButton s={s} to={s.bookTo} ink={ink} /> : <BookPill s={s} to={s.bookTo} />}
       </div>
-      <nav onClick={menu.toggle} style={col('18px', { alignItems: 'flex-start' })}>
-        {s.navLinks.map((l) => (
-          <a key={l.label} href={navHref(s, l.to)}
-             style={labelStyle(s, s.lattice ? s.labelLg : s.dispSm, { color: ink, cursor: 'pointer' })}>{l.label}</a>
-        ))}
-      </nav>
+      {s.paperback ? (
+        // The frames' nav pills (1:2380): white, 44 tall, Figtree Bold 16, 6 apart, wrapping.
+        <nav onClick={menu.toggle} style={row('6px', { flexWrap: 'wrap', alignItems: 'flex-start' })}>
+          {s.navLinks.map((l) => (
+            <a key={l.label} href={navHref(s, l.to)} style={{
+              ...row('0px', { justifyContent: 'center' }), height: '44px', padding: '0 16px', boxSizing: 'border-box',
+              borderRadius: s.radiusChip, background: PAPER_WHITE, color: ink, cursor: 'pointer', textDecoration: 'none',
+              fontFamily: s.label, fontWeight: 700, fontSize: '16px', letterSpacing: '-0.01em', whiteSpace: 'nowrap',
+            }}>{l.label}</a>
+          ))}
+        </nav>
+      ) : (
+        <nav onClick={menu.toggle} style={col('18px', { alignItems: 'flex-start' })}>
+          {s.navLinks.map((l) => (
+            <a key={l.label} href={navHref(s, l.to)}
+               style={labelStyle(s, s.lattice ? s.labelLg : s.dispSm, { color: ink, cursor: 'pointer' })}>{l.label}</a>
+          ))}
+        </nav>
+      )}
     </div>
   )
 }
@@ -2106,6 +2121,221 @@ function LatticeHero({ s, menu }) {
   )
 }
 
+// Paperback's split pill (Batch 2 file, 1:2391): a label box and, three apart, a separate arrow
+// square, both `sem/active/bg` at radius/control 8 and 48 tall, the label in Figtree Bold 16 at
+// -0.01em. `u` turns a frame px into a CSS length, so the hero (a container: cqw) and the open
+// menu's panel (a plain px) draw the one pill. A link only under `s.live` (`BookPill`'s rule); `ext`
+// is an outward address, as `BracketButton`'s. The black Soundcloud / Full bio pills the later
+// sections draw are this shape in another ground (`bg`, `fg`).
+function PaperbackPill({ s, label, to, ext, u, bg, fg, style }) {
+  const link = ext !== undefined ? extLink(s, ext) : s.live && to ? { href: `#${to}` } : null
+  const Tag = link ? 'a' : 'span'
+  const ground = bg ?? s.ac
+  const ink = fg ?? PAPER_WHITE
+  const cell = { display: 'flex', alignItems: 'center', justifyContent: 'center', background: ground, color: ink, borderRadius: u(8), height: u(48), boxSizing: 'border-box' }
+  return (
+    <Tag {...link} style={{ ...row(u(3)), flex: 'none', cursor: 'pointer', textDecoration: 'none', ...style }}>
+      <span style={{
+        ...cell, padding: `0 ${u(18)}`, whiteSpace: 'nowrap',
+        fontFamily: s.label, fontWeight: 700, fontSize: u(16), letterSpacing: '-0.01em', lineHeight: 1.2,
+      }}>{label ?? s.cta1}</span>
+      <span aria-hidden style={{ ...cell, width: u(48), flex: 'none' }}>
+        <svg viewBox="0 0 14 14" fill="none" style={{ display: 'block', width: u(14), height: u(14) }}>
+          <path d="M1 7H12M7.5 11.5L12 7L7.5 2.5" stroke={ink} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </span>
+    </Tag>
+  )
+}
+
+// Paperback's hamburger (1:11001): three 2px bars 20 wide and 6 apart in a 46 x 46 button; the
+// button stands left of the gutter by the 13px of padding the bars have, so the ink starts on it
+// (LatticeBurger's seat: the standing header-nav rule puts the hamburger left, where the frames'
+// 768 and 390 masters draw the wordmark).
+function PaperbackBurger({ color, menu, u }) {
+  return (
+    <span onClick={menu?.toggle} style={{
+      ...col(u(4), { alignItems: 'stretch', justifyContent: 'center' }), flex: 'none', cursor: 'pointer',
+      width: u(46), height: u(46), padding: `0 ${u(13)}`, marginLeft: `-${u(13)}`, boxSizing: 'border-box',
+    }}>
+      {[0, 1, 2].map((i) => <span key={i} style={{ height: u(2), background: color }} />)}
+    </span>
+  )
+}
+
+// The hero's vinyl sticker (1:2366 · 1:10955): a 150 box turned -8 degrees holding a white disc
+// (147.75, 2.25 ring), a ring (77.25) and the 39px vinyl; at 768 the artist's name runs twice round
+// the band between them (12.75 Figtree Bold, capitals, the frame's NOW BOOKING / WEDDINGS / CLUBS
+// is the name by the seal rule), and the ring turns under `badgeSpin`. The 1440 frame leaves
+// the band empty and the 390 one draws no sticker; the ring is drawn at 1440 as well (a call, so the
+// Corner badge text field and its three states act at both widths the sticker stands at).
+function PaperbackVinyl({ s, ring }) {
+  const id = useId().replace(/:/g, '')
+  const R = 56.6
+  const name = (s.badgeText || '').toUpperCase()
+  // One svg, the disc, the ring and the vinyl inside it: the builder's seal rule opens the badge-text
+  // box off the outermost svg, so a click on the vinyl in the middle is the seal's as well.
+  return (
+    <svg aria-hidden viewBox="0 0 150 150" fill="none" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', display: 'block', overflow: 'visible', transform: 'rotate(-8deg)' }}>
+      <circle cx="75" cy="75" r="72.75" fill={PAPER_WHITE} stroke={s.tx} strokeWidth="2.25" />
+      <circle cx="75" cy="75" r="37.5" fill={PAPER_WHITE} stroke={s.tx} strokeWidth="2.25" />
+      {ring && name && (
+        <g className={s.badgeSpin ? 'seal-spin' : undefined} style={{ transformOrigin: '75px 75px' }}>
+          <defs><path id={id} d={`M${75 - R} 75a${R} ${R} 0 1 1 ${2 * R} 0a${R} ${R} 0 1 1 ${-2 * R} 0`} /></defs>
+          <text fill={s.tx} fontFamily={s.label} fontWeight="700" fontSize="12.75" textLength={2 * Math.PI * R - 1} lengthAdjust="spacing">
+            <textPath href={`#${id}`}>{`${name} • ${name} •`}</textPath>
+          </text>
+        </g>
+      )}
+      <PaperbackArt name="vinylMini" x="55.5" y="55.5" width="39" height="39" />
+    </svg>
+  )
+}
+
+// Paperback's hero (Batch 2 file, 1:2318 · 1:10905 · 1:12139: 1440 / 768 / 390, all 750 tall; the
+// frames carry no component sets, so the verdict came from the pictures: an own tree, the seam
+// HeaderRoot's). A pale-yellow squiggle field on yellow with a rounded foot (40); a photograph on a
+// tilted keyline card (6 degrees) with tape, three sparkles, a pink initials disc and, up to 768, a
+// vinyl sticker; a tilted avatar card; the name at 138 / 86 / 55 in Bricolage ExtraBold, -0.035em, lh
+// .8, with a hand-drawn pink underline under its last word; and the tag chips. The bar is the
+// hamburger and Book Now (the header-nav rules: the frames' wordmark, inline pills and, at 768,
+// the right-hand hamburger are not drawn; the kicker and location pills and the script note
+// `Booking 2026` are not either, call 1 of session 0).
+//
+// Every length is the FRAME's px through `u`, in cqw of the stage (a container as wide as the page
+// content, `s.surplus` in from the hero's edges), so the picture holds its proportions when the
+// editor's canvas is narrower than the frame (the desktop canvas is the window less the sidebar, up
+// to 1180); at the frame's own width it is the frame x 0.82 at desktop and verbatim at 768 and 390.
+// The photo card is a 450 x 560 box turned about its centre, `P.box`, whose children (tape,
+// sparkles) are positioned in the box's own coordinates, as the frame nests them; centres are read off
+// the frame's CSS (container + (265, 280)) and checked on the screenshots.
+const PAPER_WHITE = '#FFFFFF'
+const PAPER_HERO = {
+  desktop: {
+    fw: 1440, gut: 48.96, barTop: 18, foot: 72, indent: 184, titleW: 640, stroke: 6.34, under: 0.844, kmSize: 46,
+    box: [1137, 376], card: { L: 0, w: 450, h: 560 }, tape: [225, 0], km: [935, 169], vinyl: [897, 421], ring: true, avatar: [129, 550],
+  },
+  tablet: {
+    fw: 768, gut: 26.11, barTop: 18, foot: 58, indent: 184, titleW: 531.7, stroke: 5.04, under: 0.857, kmSize: 37,
+    box: [465, 376], card: { L: 121.54, w: 328.459, h: 408.749 }, tape: [288.8, 2.06], km: [362.4, 168], vinyl: [319.05, 349.7], ring: true, avatar: [106.1, 564],
+  },
+  mobile: {
+    fw: 390, gut: 24, barTop: 18, foot: 43, indent: 0, titleW: 342, stroke: 4.13, under: 0.898,
+    box: [87, 376], card: { L: 203.65, w: 296.043, h: 368.409 }, tapeOut: [235.24, 108.84], avatar: [104, 443],
+  },
+}
+function PaperbackHero({ s, menu }) {
+  const P = PAPER_HERO[s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop']
+  const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
+  const ink = s.tx
+  const badge = s.showBadge === 'show' && !s.mob
+  const [bx, by] = P.box
+  const CHIP_BG = [s.chips[0].bg, s.chips[1].bg, s.chips[2].bg, s.onScheme[2].box3, s.chips[4].bg, s.chips[5].bg]
+  const CHIP_FG = [ink, PAPER_WHITE, ink, ink, ink, PAPER_WHITE]
+  const at = (cx, cy, w, h) => ({ position: 'absolute', left: u(cx - w / 2), top: u(cy - h / 2), width: u(w), height: u(h) })
+  const words = (s.heroTitle || '').split(' ')
+  const last = words.pop()
+  const dev = s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop'
+  const tapeRect = { width: u(118), height: u(30), background: s.onScheme[2].box3 }
+  return (
+    <div style={{
+      position: 'relative', width: '100%', aspectRatio: `${P.fw} / 750`, maxHeight: s.heroH, overflow: 'hidden', color: ink,
+      borderRadius: `0 0 ${s.narrow ? 40 : 32.8}px ${s.narrow ? 40 : 32.8}px`, background: s.box2,
+    }}>
+      <div aria-hidden style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+        <PaperbackWaves dev={dev} base={s.box2} ink={s.bg} />
+      </div>
+      <div style={{ position: 'absolute', top: 0, bottom: 0, left: s.surplus, right: s.surplus, containerType: 'inline-size' }}>
+        {/* the photograph's card: a 450 x 560 box turned 6 degrees about its centre */}
+        <div style={{ ...at(bx, by, 450, 560), transform: 'rotate(6deg)' }}>
+          <div style={{
+            position: 'absolute', left: u(P.card.L), top: 0, width: u(P.card.w), height: u(P.card.h), boxSizing: 'border-box',
+            border: `${u(6)} solid ${PAPER_WHITE}`, borderRadius: u(24), overflow: 'hidden', background: s.ac,
+          }}>
+            <Photo s={s} initialsSize={64} />
+          </div>
+          {P.tape && (
+            <span aria-hidden style={{
+              ...tapeRect, position: 'absolute', left: u(P.tape[0] - 59), top: u(P.tape[1] - 15), opacity: 0.9,
+              transform: 'rotate(-4deg)', clipPath: 'polygon(3% 0, 97% 8%, 100% 92%, 2% 100%)',
+            }} />
+          )}
+          <PaperbackSparkle size={44} fill={s.box2} ink={ink} style={{ position: 'absolute', left: u(410), top: u(-22), width: u(44), height: u(44) }} />
+          <PaperbackSparkle size={26} fill={s.ac} ink={ink} style={{ position: 'absolute', left: u(452), top: u(-44), width: u(26), height: u(26) }} />
+          <PaperbackSparkle size={16} fill={PAPER_WHITE} ink={ink} style={{ position: 'absolute', left: u(462), top: u(4), width: u(16), height: u(16) }} />
+        </div>
+        {P.tapeOut && (
+          <span aria-hidden style={{ ...tapeRect, position: 'absolute', left: u(P.tapeOut[0] - 59), top: u(P.tapeOut[1] - 15), transform: 'rotate(2deg)' }} />
+        )}
+
+        {badge && P.km && (
+          <span aria-hidden style={{
+            ...at(P.km[0], P.km[1], 126, 126), boxSizing: 'border-box', borderRadius: '50%', border: `${u(3)} solid ${PAPER_WHITE}`, background: s.ac,
+            ...row('0px', { justifyContent: 'center' }), color: PAPER_WHITE, transform: 'rotate(-12deg)',
+            fontFamily: s.display, fontWeight: 800, fontSize: u(P.kmSize), letterSpacing: '-0.035em', lineHeight: 1,
+          }}>{s.initials}</span>
+        )}
+
+        {/* the name and the chips, anchored at the foot so a longer name grows upward */}
+        <div style={{
+          position: 'absolute', left: u(P.gut), right: u(P.gut), bottom: u(P.foot), ...col(u(22)),
+        }}>
+          <div style={{ paddingLeft: u(P.indent) }}>
+            <h1 style={{
+              margin: 0, maxWidth: u(P.titleW), fontFamily: s.display, fontWeight: 800, color: ink,
+              fontSize: fitSz(s, u(s.mob ? 55 : s.narrow ? 86 : 138.24), s.dispXl), lineHeight: 0.8, letterSpacing: '-0.035em',
+              overflowWrap: s.titleK < 1 ? 'break-word' : undefined,
+            }}>
+              {words.length > 0 && `${words.join(' ')} `}
+              <span style={{ position: 'relative', display: 'inline-block' }}>
+                {last}
+                <svg viewBox="0 0 352.047 24" preserveAspectRatio="none" fill="none" aria-hidden style={{
+                  position: 'absolute', right: 0, width: `${P.under * 100}%`, top: `calc(100% - ${u(12)})`, height: u(24), display: 'block', overflow: 'visible', pointerEvents: 'none',
+                }}>
+                  <path d="M2.51462 16C105.614 4 211.228 22 349.532 8" stroke={s.ac} strokeWidth={P.stroke} strokeLinecap="round" />
+                </svg>
+              </span>
+            </h1>
+          </div>
+          {s.showTags === 'show' && (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: u(6) }}>
+              {s.tagChips.map((c, i) => (
+                <span key={i} style={{
+                  ...row('0px', { justifyContent: 'center' }), height: u(26), padding: `0 ${u(10)}`, boxSizing: 'border-box', borderRadius: s.radiusChip,
+                  whiteSpace: 'nowrap', background: CHIP_BG[i % 6], color: CHIP_FG[i % 6],
+                  fontFamily: s.label, fontWeight: 700, fontSize: u(13), letterSpacing: '-0.01em', lineHeight: 1.2,
+                }}>{c.label}</span>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* the avatar's card, turned -4 degrees */}
+        <div style={{
+          ...at(P.avatar[0], P.avatar[1], 160, 160), boxSizing: 'border-box', border: `${u(5)} solid ${PAPER_WHITE}`,
+          borderRadius: u(24), overflow: 'hidden', transform: 'rotate(-4deg)', background: s.box1,
+        }}>
+          <Photo s={s} avatar initialsSize={40} />
+        </div>
+
+        {badge && P.vinyl && (
+          <div style={at(P.vinyl[0], P.vinyl[1], 150, 150)}>
+            <PaperbackVinyl s={s} ring={P.ring} />
+          </div>
+        )}
+
+        <div style={{
+          position: 'absolute', left: u(P.gut), right: u(P.gut), top: u(P.barTop), minHeight: u(48),
+          ...row('0px', { justifyContent: 'space-between' }), visibility: menu?.open ? 'hidden' : undefined,
+        }}>
+          <PaperbackBurger color={ink} menu={menu} u={u} />
+          <PaperbackPill s={s} to={s.bookTo} u={u} />
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // v0 — Header layout 1 · Hero (§10.2 reference design)
 //
 // Full-bleed photograph under a bottom-weighted scrim: the nav rides the top
@@ -2114,6 +2344,7 @@ function LatticeHero({ s, menu }) {
 // see the `bleed` flag on the root.
 function HeaderV0({ s, menu }) {
   if (s.lattice) return <LatticeHero s={s} menu={menu} />
+  if (s.paperback) return <PaperbackHero s={s} menu={menu} />
   const centred = s.align === 'centre'
   // Both reference frames are transcribed verbatim (§5.5). 768: 30px gutters,
   // a 144px portrait card, identity stacked 40/24/36/30. 390: 10px gutters, a
@@ -32135,6 +32366,9 @@ export default function EncoreSection({ s }) {
   // 1440 alone — narrow, the frame round it is the card's own violet.
   const cardOnPage = (s.me || s.ca) && s.v1 && (s.editorial || s.pop)
     || (s.ca || s.hd && !s.narrow) && s.v2 && s.pop
+    // Paperback's layout-1 hero is a yellow band with a rounded foot on the page's white: the root
+    // paints the page's ground, so the two corners the radius cuts show it and not the band's own.
+    || s.hd && s.v0 && s.paperback
   // Pop's layout-2 media `Section` (964:64563) strokes its top and foot 5px
   // inside in `scheme/1/stroke/2`, lime, at 1440 alone — visible, where the
   // twins' same stroke is a hidden paint; the narrow wrappers carry none.
