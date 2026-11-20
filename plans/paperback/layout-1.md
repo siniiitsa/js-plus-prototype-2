@@ -95,7 +95,7 @@ Lattice settled that as *a narrow-only 750 behind `lattice`* — section 1 reads
 | 0 | *foundation* | `1:2316` | — | `1:10903` | — | `1:12137` | — | `THEMES[6]`, ramp, faces, photos, the flag, the doodle art | done 2ceb233 |
 | 1 | `header` | `1:2318` | 1440 × 750 | `1:10905` | 768 × 750 | `1:12139` | 390 × 750 | Yellow ground with a wavy pale-yellow squiggle field, rounded bottom corners; wordmark `Kai Mercer` + `DJ LIVE`, inline pill nav (desktop only), pink Book now + arrow; a **tilted photo card** with tape, a pink `KM` disc, a vinyl-disc sticker, sparkles; a tilted **avatar card**, kicker pills, a ~110 px title with a **pink hand-drawn underline**, six pill chips, a script `Booking 2026` note · **Pop's `HeaderV0`** (tilted card, sticker disc, sparkles) or **Lime's `HeaderV0` block** as the twin of the card and chips — read both before choosing | done `bc8b2bf` |
 | 2 | `bio` | `1:2397` | 1440 × 832 | `1:11004` | 768 × 1213 | `1:12191` | 390 × 1211 | White; a huge two-line statement `Reads the room.` left, a tall tilted portrait with tape over a blush blob, a vinyl doodle and sparkles, **About** + copy + black `Full bio →` pill right, script `KM bio`, `that's me! ↷`, and `DJ · Live act Manchester`, a `001 · Structure · Bio_01` chip pair · **new own block** (a statement + portrait + side copy; nothing in the page is Lime's *Flanked portrait*) — check Pop's bio first | done 0bca0d9 |
-| 3 | `media` | `1:2450` | 1440 × 1057 | `1:11054` | 768 × 1398 | `1:12240` | 390 × 1361 | A **cyan card** (24 radius, on the white page): script `Top tracks`, a 2-line title, confetti; five numbered white rows (art, title, a coloured `Single` / album chip and a black duration chip, a black play disc; row 2 is yellow with a pink play disc), a black `Soundcloud →` pill; right: a **tilted indigo now-playing card** with art, title, artist, three transport discs, progress and times, a pink music-note disc, script `5 / 5 featured` · **probably Retro's `v0` body re-laid** (the same inventory Lattice's media was) — Lattice's section 3 settled that; read it | open |
+| 3 | `media` | `1:2450` | 1440 × 1057 | `1:11054` | 768 × 1398 | `1:12240` | 390 × 1361 | A **cyan card** (24 radius, on the white page): script `Top tracks`, a 2-line title, confetti; five numbered white rows (art, title, a coloured `Single` / album chip and a black duration chip, a black play disc; row 2 is yellow with a pink play disc), a black `Soundcloud →` pill; right: a **tilted indigo now-playing card** with art, title, artist, three transport discs, progress and times, a pink music-note disc, script `5 / 5 featured` · **probably Retro's `v0` body re-laid** (the same inventory Lattice's media was) — Lattice's section 3 settled that; read it | done `5dd11d9` |
 | 4 | `gallery` | `1:2617` | 1440 × 909 | `1:11239` | 768 × 1429 | `1:12425` | 390 × 1005 | Pale yellow band; script `Media`, title `See us in action`, four **accordion rows** (Gallery open and yellow with a ×, YouTube / Instagram / TikTok with a +); right: a `← Back to beginning` pill, a tilted white-keyline viewer with arrows, a pink tape strip and script `Kai Mercer gallery`, seven thumbnails (the picked one ringed pink) · **Lime's *Photo viewer* inventory** (source rows + viewer + strip) | open |
 | 5 | `repertoire` | `1:2689` | 1440 × 1067 | `1:11313` | 768 × 1067 | `1:12499` | 390 × 1656 | A **yellow card with an orange blob** on the white page; script `Repertoire`, `240 songs` + a heart-in-vinyl disc, a pill search, four chips (`All` black), a **two-column dense** list of 6 + 6 white pill rows (number, title, a coloured artist chip), a pager of round buttons · **Lime's *Two-column dense*** inventory | open |
 | 6 | `map` | `1:2822` | 1440 × 983 | `1:11471` | 768 × 983 | `1:12654` | 390 × 983 | **Indigo** band with squiggle and confetti; script `Shows / coverage`, `Manchester` at ~110 px, a yellow `120 mile radius` pill; a **tilted lilac card** with concentric dashed rings, a pink dot, script `home turf` + an arrow, a white foot `Based in Manchester` / `120 mi standard · further on request`; right: `Upcoming gigs` · `05 of 12`, five white rows (a coloured date tile, title, `Town · time`, a pink `Sold out` or black `Tickets` pill), a pager · **Lime's *Compact tile*** (the raster map is the rings art) | open |
@@ -583,6 +583,17 @@ renders at theme 6 (45 renders, 0 bad). Digest of every category at three widths
   `focus-probe --prime --check` layouts 1–4: PASS. Geometry at three widths read against the frames: head, paragraph, pill, About and the section heights agree to a pixel.
   Digest of themes 0–5 at three widths, before vs after: **1005 of 1008 identical across themes 0–6 at three widths** (after stripping the second server's port and Vite's `?t=`); the three that differ are theme 6, bio, layout 1, the intended change, so themes 0–5 are 864 of 864. Root `index.html` not refreshed.
 
+**3 · media** — `5dd11d9`, 2026-11-20. Verdict under *Seen at planning time*; the full record is `notes/media.md`, *Paperback · layout 1*. What was built and how it was proved:
+
+- **`PaperbackMedia`** (`EncoreSection.jsx`, ahead of `Media`), `PAPER_MEDIA` its frame numbers, dispatched `if (s.v0 && s.paperback)` after Lattice's line, handed the same seam as Lattice's. The bio's stage pattern: frame px verbatim at all three widths in cqw,
+  vertical insets in a child, `vm.pad = '0px <surplus>'` (now `bio` and `media`). Section heights 1057 / 1398.7 / 1361.3 against the frames' 1057 / 1398 / 1361; the card, head, rows, pill column and the player's turned bounding box agree to a tenth at all three widths.
+- **Art.** `confettiMediaTablet` and `confettiMediaMobile` added to `paperbackArt.jsx` (the frames' three 24-piece sets differ per width); the disc is drawn from circles and `ART.note`.
+- **Head fit.** `vm.titleWordEms` is set for the Paperback media as for its bio; the head wraps and fits to the room left of the sparkles (`free` 423 / 282 / 192) — `limits.mjs` found it overlapping them at 11 characters when it wrapped at 5.4em.
+- **Fields and caps.** Reads `heading`, `tracks`, `soundcloud`. `heading` 20, `tracks.title` 17, `sub` 33 (all at their seeds: `--check` 0 failing, `--seeds` 0 over); `IDENTITY_CHARS.media.title.Paperback[0]` 41. `INLINE_OFF` `Paperback.0.media.tracks.sub` and, for the placeholder cards, `.1`–`.3` (Pop's reasons).
+- **Proof.** `inline-probe` media layouts 1–4, 1440 and 768: PASS (layout 1: 6 slots hit, 0 WRONG / MISSING / UNREACHED / UNLEDGERED). `photo-probe` layouts 1–4 PASS, layout 1 also `--blank` and `--drop`. `focus-probe --prime` layouts 1–4 PASS. Live (`&live=1`, a trusted click on row 3): the `<audio>` loads
+  SoundHelix 3, the row marks, the player names it, the clock runs, Pause / Next / Previous step 3 -> 4 -> 3 and wrap. Digest of themes 0–6 at three widths, before vs after (HEAD in a worktree on :5190, `?t=` and the port stripped): **1005 of 1008 identical**; the three that differ are theme 6, media, layout 1, the intended change, so themes 0–5 are 864 of 864.
+  `npm run build` passes. Root `index.html` not refreshed.
+
 ### Conventions section 2 (the bio) inherits
 
 - **`PaperbackPill({ s, label, to, ext, u, bg, fg, style })`** is the template's one button: pass `bg` / `fg` for the black Full-bio /
@@ -613,6 +624,19 @@ renders at theme 6 (45 renders, 0 bad). Digest of every category at three widths
   `preview.html?...&noclamp=1&cj=<json>`. Run `--check` and `--seeds` after the measure.
 - Media's frame is **1:2450** · **1:11054** · **1:12240**; the seed photos are `PAPERBACK_TRACK_ART` (shots 1–5) and `PAPERBACK_VIEWER`.
 
+### Conventions section 4 (the gallery) inherits
+
+- **`PaperbackMedia` is the second own-tree stage after the bio's** and the shape for a section that is a coloured card on the white page: `PAPER_<CAT>` per width, `u()` in cqw, a `margin: 0 u(side)` card with `overflow: hidden` (visible where the frame's does not
+  clip: the media's mobile card), vertical insets in a child, `vm.pad = '0px <surplus>'` in `EncoreBuilder.jsx` (`bio` and `media` share the line; add the gallery to it). The **gallery stands on Scheme 1** (pale yellow `#FAED8F` band, not a card): a band is the section's own
+  ground, so the root paints it and no card margin is needed; read the frame (`1:2617` · `1:11239` · `1:12425`) for which.
+- **Colours inside a Scheme-2 card.** The cyan is `s.onScheme[2].box3`; the yellow `s.onScheme[1].box2`; magenta `s.onScheme[7].bg`, ink `s.onScheme[8].bg`, orange `s.onScheme[4].bg`; indigo `s.text3`; white `PAPER_WHITE`. Chips are 26 tall, 13 Figtree Bold, a 10 inset, radius `s.radiusChip`.
+- **Round white discs and glyphs** (the transport arrows, the play triangle, the pause bars) are drawn in `PaperbackMedia`; lift them to a shared helper if the gallery's viewer arrows and the testimonials' disc arrows want them rather than copying a third time.
+- **Wrap and fit a head to the room beside its decoration.** Where the frame sets sparkles beside a head's last line, give the head `maxWidth: u(free)` and fit the widest word to the same `free` (`vm.titleWordEms`, extended to the section's `cat` in `EncoreBuilder.jsx`): the probe's `overlap` test measures sparkles as boxes.
+- **A row that wraps in a narrow frame keeps the frame's fixed height** by an inset, not a minimum plus padding (the media's rows are 84 at a 2.9 inset): read the frame's content height against its row height before choosing.
+- **A marked / cued item is the player's, not the frame's** (Lattice's rule, kept): the gallery's picked tile is `pick`, so the canvas draws the first as picked; check `notes/gallery.md`.
+- **Probes need the `INLINE_OFF` rows for layouts 2–4 too** (`Paperback.1`–`.3.<cat>.<key>`), copied from Pop's reasons: the placeholder cards fail `--check` as UNLEDGERED without them. Run `inline-probe --layout 1,2,3,4` once per section.
+- The gallery's frame is **1:2617** · **1:11239** · **1:12425**; its photos are `PAPERBACK_PHOTOS` (shots 1–7) and `PAPERBACK_VIEWER`.
+
 ### Open calls — everything the pass hands the user, in one place
 
 *(collected at the sweep; calls 1–3 are written back at session 0)*
@@ -640,6 +664,14 @@ renders at theme 6 (45 renders, 0 bad). Digest of every category at three widths
   `location`, so it prints `DJ · Live Act · Manchester, UK` at 1440 (the frame has no dot and no `, UK`) and two lines (`DJ · Live Act` / `Manchester, UK`) at 768 and 390.
 - **The heading cap is 15** at layout 1 (the seed's own length): the frame draws it on one line at 768 and 390, and a sixteenth character breaks that. Layouts 2–4 are still Pop's caps.
 - **The vinyl is the badge.** `Hidden` removes it and keeps the three sparkles.
+
+**From section 3 (media), for the user:**
+
+- **The ring text on the disc is not drawn.** The 768 and 390 frames print `NEW MIX · EVERY MONTH` round the pink ring (the 1440 frame prints nothing); no field carries it, so under call 1 the disc is the plain pink ring, white disc and note at every width.
+  Say if you want a seeded, uncased, drop-when-emptied field for it (the hero's ring takes the artist's name; this one has no such value).
+- **The canvas draws row 1 as the marked one and the player names `Late Lights`,** where the frame marks row 02 and names *Night Rain* (a track that is not in its list). That is Lattice's rule (the player names the cued track). A marked row's yellow chip goes white.
+- **The chip colours follow the row's place** (yellow, cyan, magenta, ink, orange, repeating), not the release text, since the frame colours the two `Hidden Sessions Vol. 2` rows differently.
+- **The kicker's 56 px seat above the head stays as padding**, as the bio's does, so the section is the frame's height; dropping it would move every confetti piece against the list.
 
 ## Open questions
 
