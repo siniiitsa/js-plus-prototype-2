@@ -92,7 +92,7 @@ Lattice settled that as *a narrow-only 750 behind `lattice`* — section 1 reads
 
 | # | Cat | Desktop node | Size | Tablet node | Size | Mobile node | Size | Composition (from the pictures) · predicted twin | Status |
 |---|---|---|---|---|---|---|---|---|---|
-| 0 | *foundation* | `1:2316` | — | `1:10903` | — | `1:12137` | — | `THEMES[6]`, ramp, faces, photos, the flag, the doodle art | open |
+| 0 | *foundation* | `1:2316` | — | `1:10903` | — | `1:12137` | — | `THEMES[6]`, ramp, faces, photos, the flag, the doodle art | done 2ceb233 |
 | 1 | `header` | `1:2318` | 1440 × 750 | `1:10905` | 768 × 750 | `1:12139` | 390 × 750 | Yellow ground with a wavy pale-yellow squiggle field, rounded bottom corners; wordmark `Kai Mercer` + `DJ LIVE`, inline pill nav (desktop only), pink Book now + arrow; a **tilted photo card** with tape, a pink `KM` disc, a vinyl-disc sticker, sparkles; a tilted **avatar card**, kicker pills, a ~110 px title with a **pink hand-drawn underline**, six pill chips, a script `Booking 2026` note · **Pop's `HeaderV0`** (tilted card, sticker disc, sparkles) or **Lime's `HeaderV0` block** as the twin of the card and chips — read both before choosing | open |
 | 2 | `bio` | `1:2397` | 1440 × 832 | `1:11004` | 768 × 1213 | `1:12191` | 390 × 1211 | White; a huge two-line statement `Reads the room.` left, a tall tilted portrait with tape over a blush blob, a vinyl doodle and sparkles, **About** + copy + black `Full bio →` pill right, script `KM bio`, `that's me! ↷`, and `DJ · Live act Manchester`, a `001 · Structure · Bio_01` chip pair · **new own block** (a statement + portrait + side copy; nothing in the page is Lime's *Flanked portrait*) — check Pop's bio first | open |
 | 3 | `media` | `1:2450` | 1440 × 1057 | `1:11054` | 768 × 1398 | `1:12240` | 390 × 1361 | A **cyan card** (24 radius, on the white page): script `Top tracks`, a 2-line title, confetti; five numbered white rows (art, title, a coloured `Single` / album chip and a black duration chip, a black play disc; row 2 is yellow with a pink play disc), a black `Soundcloud →` pill; right: a **tilted indigo now-playing card** with art, title, artist, three transport discs, progress and times, a pink music-note disc, script `5 / 5 featured` · **probably Retro's `v0` body re-laid** (the same inventory Lattice's media was) — Lattice's section 3 settled that; read it | open |
@@ -158,6 +158,8 @@ and written back here as *settled: …*.
 
 ### 1. Do the standing copy removals hold for Paperback, or does the frame win?  *(session 0 opens on this)*
 
+**Settled: A, every standing removal holds (user call, 2026-11-20).** A script eyebrow or note is drawn only where a seeded, uncased, drop-when-emptied `FIELDS` field already exists for it.
+
 Lattice's call 1 again, with this frame's list (read from the 1440 pictures; the narrow heroes were read too):
 
 | Section | The frame draws | Standing rule it meets |
@@ -182,6 +184,8 @@ Lattice's call 1 again, with this frame's list (read from the 1440 pictures; the
 
 ### 2. The footer's `Join the guest list` newsletter  *(session 0 opens on this too)*
 
+**Settled: A, not drawn (user call, 2026-11-20).** The freed seat is the photo's.
+
 No template has a footer sign-up, and the builder has no backend: the form's submit is a `mailto:` (`notes/form.md`).
 - **A (recommended): not drawn.** The footer prints what `notes/footer.md` already has (name, link pills, photo,
   Book pill, copyright, *A JustPay product*); the freed seat is the photo's.
@@ -192,6 +196,8 @@ No template has a footer sign-up, and the builder has no backend: the form's sub
   address in the body. Real scope (≈ the calendar wizard's mailto, JP-053), so a session of its own.
 
 ### 3. The template's name
+
+**Settled: `Paperback` (user call, 2026-11-20).**
 
 The frames are *Paperback Playful*. **Recommended: `Paperback`** — one word like the other six, `THEMES[6].name`,
 `plans/paperback/`, the picker's card title, `sub` the long form (*Bricolage Grotesque · playful & bright*). The user
@@ -401,7 +407,86 @@ block · own tree — the geometry that decided it, the copy that stays removed,
 
 ### Settled in session 0 — the foundation
 
-*(open)*
+Commit `2ceb233`, branch `paperback-layout-1`, 2026-11-20. The three opening calls are written under decisions 1–3 above.
+
+**Scheme table and seats.** The frames reuse the SAAS variable library: collections *2 · Scheme*, *1 · Primitives*
+(Paperback is mode `187:3`) and *0 · Device*. A node's mode is what `get_variable_defs` resolves, so each colour was
+followed through its alias chain with Primitives set to Paperback (the default mode is Lattice's). The pages bind
+Scheme 2; the plan's "indigo scheme" is Scheme 3, and its "Scheme-2-ish" is the white page.
+
+| Scheme | Ground | Accent | Ink | Seats |
+|---|---|---|---|---|
+| 1 (the theme's own) | `#FAED8F` pale yellow | `#F8158F` | `#0B0B0B` | header, gallery, testimonials |
+| 2 | `#FFFFFF` | `#F8158F` | `#0B0B0B` | bio, media, video, repertoire, pricing, calendar, form |
+| 3 | `#3B308F` indigo | `#F9A12B` | white | map, footer |
+| 4–9 | `#F9A12B` / `#F8158F` / `#9982DE` / `#FD48F2` / `#0B0B0B` / `#FAED8F` | | | nested nodes only, read `s.onScheme[n]` |
+
+`SCHEMES_OF.Paperback` rows 0–3 are identical (the other layouts copy row 0). A tint no scheme key holds stays a named
+literal: `#1CE8ED` / `#A4F6F8` cyan, `#FFDBFD` blush, `#FFD24A` yellow. Scheme 1's `sem` carries `text3` `#3B308F`, which
+`s.tx` is not. `pageGround` is `#FFFFFF`: the page behind the sections is white, so the gutter, the published
+`documentElement` and `vm.pageBg` read white through `pageGroundOf()` (verified in the picker's spotlight and the editor).
+
+**Faces.** Display Bricolage Grotesque ExtraBold (800) at −3.5 % tracking; label, UI and body Figtree Bold / SemiBold at
+−1 %; script **Caveat Bold**, free, so no stand-in call. `faceK` is 1: `font-optical-sizing: auto` measured within about
+0.8 % of the frame (Figma's codegen says `opsz` 14; the browser's auto matches the render). One combined `family=` entry
+per face in `index.html` and `preview.html`; `published.html` loads none. `vm.script` is `T.script ?? T.body`.
+
+**Ramp** (`THEME_RAMP.Paperback`; desktop is the frame × 0.82, as the canvas draws it):
+
+| Key | mobile | tablet | desktop |
+|---|---|---|---|
+| dispXl / dispLg / dispMd / dispSm | 55 / 38 / 38 / 34 | 86 / 59 / 48 / 42 | 113 / 78 / 64 / 43 |
+| title / list | 26 / 18 | 32 / 26 | 33 / 21 |
+| labelLg / Md / Sm / Xs | 24 / 20 / 16 / 13 | 26 / 22 / 16 / 13 | 21 / 18 / 13 / 11 |
+| bodyLg / Md / Sm / chip / eyebrow | 18 / 16 / 13 / 13 / 15 | 18 / 16 / 13 / 13 / 15 | 15 / 13 / 11 / 11 / 12 |
+| scriptLg / Md / Sm | 26 / 26 / 23 | 31 / 29 / 25 | 28 / 26 / 23 |
+
+**Flag and gate inventory.** `sectionVm` carries `paperback: T.name === 'Paperback'`, with `designed` and `limeTree`
+widened to it, so layouts 1–4 render Lime's tree in Paperback's tokens until each section's own tree is written
+(`Paperback*`, per section, as Lattice's). Every other `Lattice` / `lattice` hit was classified:
+
+- **Done:** `THEMES[6]`, `SCHEMES_OF`, `headerFamily` / `HEADER_COUNT` / `HEADER_NAMES` (four named cards), `specAt`'s
+  Pop fallback (now `Lattice` or `Paperback`), eight header `in` rows (a template an `in` object does not name reads the
+  field, so each got `Paperback:` equal to Lattice's), the ramp, the flag, `designed`, `limeTree`, `script`.
+- **Left on `s.lattice` on purpose (110+ sites in `EncoreSection.jsx`, `EncoreBuilder.jsx` lines 596–663, 977–987, 1085,
+  1540, 1781, 2185, 2362):** the `Lattice*` trees and their view-model keys (dot fields, the disc mask, `latticeEms`
+  fits). They are Lattice's artwork; Paperback gets its own trees per section.
+- **No row needed:** `limeTreeTheme` (per-section seeds), `titleWordEms`, `footerWordEms` and `navFace` (no Bricolage
+  advance table; a fit that needs one is that section's call), `navGapEm`, `gigDark`, `grainSrc`, Pop's inset block.
+  One consequence found and fixed: the testimonials' `wordEms` read `navFace` under `limeTree` alone and threw for
+  Paperback (`navFace` is null); it is now guarded on `navFace`. Line 1519 (the calendar's layout-1 heading seed) reads
+  Lime's under `limeTree && !lattice`, so Paperback shows Lime's seed until section 9 sets its own.
+- **Later sections write them:** `TITLE_SITES` (uses `?.`; no row falls to the base), `badgeOptsFor` (section 1),
+  `INLINE_OFF` / `PHOTO_OFF` (none yet; they have no fallback, so the first `inline-probe` / `photo-probe` run per page
+  reports `UNLEDGERED` and the page's session ledgers it), `IDENTITY_CHARS` and every `chars` / `count` / `num` spec
+  (Pop's row through `specAt` until measured), `CAL_CTA_LATTICE`.
+
+**Photography.** Eleven new JPEGs in `source/src/builder/photos/paperback-*.jpg` (a seventh shoot, none shared with Retro,
+Pop or Lattice), 959,840 bytes raw, about 1.28 MB as base64 in the inlined build, re-encoded at 1152 px q50 (avatar 512 px
+q60), against Lattice's +1.10 MB. The real growth of root `index.html` (13,030,112 bytes) is measured at the sweep's
+refresh, since this session does not refresh it. `photos.js` is the only importer: `PAPERBACK_PHOTOS` (header and video the
+hero, bio the portrait, form shot 3, gallery shots 1–7, pricing `REVIEWERS`), `PAPERBACK_TRACK_ART` (shots 1–5),
+`PAPERBACK_VIEWER` (the gallery viewer's own picture), `SEEDS.Paperback` (avatar the avatar card, photo the hero). The
+footer's photograph is **shot 4**, read by section 11. Every slot is a centred cover, so `FOCUS` needs no entries yet.
+
+**Doodle art.** `source/src/builder/paperbackArt.jsx`, pure SVG and no effect: `PaperbackArt` (blobs, vinyl, arrows, circle,
+speaker, headphones, chat, note, heart, star, trophy, underline, confetti ×3, rings, wave, play), `PaperbackSparkle` (one
+16-unit path at every size) and `PaperbackWaves`. The hero's squiggle field is one 5,935-curve path at all three widths
+(only the viewBox differs: the tablet frame centres it, the mobile frame is the same path 189 units left, desktop scales it
+1.28), rounded to a tenth and written relative: 271 KB in the frames, 138 KB here. Arrows left and right are lucide's.
+
+**Hero height.** The frames draw the header **750 tall at every width** (the plan's predicted 614 at desktop is not what
+the frames show). Section 1 settles whether `heroH` is 750 at desktop behind the `paperback` flag.
+
+**Tooling.** `digest.mjs` / `build-digest.mjs` / `shots.mjs` take theme indices (default `0,2,3,4`, unchanged);
+`photo-aspect.mjs` and `limits.mjs` had hard-coded lists, now ending in Paperback / `6`; the headers of `focus-probe`,
+`inline-probe` and `photo-probe` name the template. `preview.jsx`'s `Z` copy needs nothing (ramps are laid over it).
+
+**Proof.** The builder opens with seven templates (the filmstrip scrolls), picking Paperback reaches the editor with the
+setup modal showing the four named header cards, and no page error or console error fired. Every category at three widths
+renders at theme 6 (45 renders, 0 bad). Digest of every category at three widths at themes 0–5, before vs after:
+**864 of 864 identical** (after normalising the second server's port and Vite's `?t=` cache-buster on image URLs).
+`npm run build` passes. Root `index.html` was **not** refreshed.
 
 ### Settled in sections 1–11
 
