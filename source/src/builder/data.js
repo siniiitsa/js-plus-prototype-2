@@ -2,7 +2,7 @@
 // Every literal here is normative: do not round, substitute or "improve".
 
 /* ------------------------------------------------------------------ *
- * §4.1 THEMES — 6 templates
+ * §4.1 THEMES — 7 templates
  * ------------------------------------------------------------------ */
 
 // Grunge's distress (plans/grunge/display-face.md, candidate A): a 240 × 240
@@ -665,6 +665,173 @@ export const THEMES = [
       },
     },
   },
+  // Paperback — the seventh template, from the same Batch 2 file as Lattice
+  // (JustPay — Batch 2, ORILFywSzuadscu6RzskCW; frames "Paperback Playful —
+  // Claude Design"; plans/paperback/layout-1.md). The file's variable library
+  // is the SAAS one again, so every colour below was resolved through the alias
+  // chain off "2 · Scheme" with "1 · Primitives" at its Paperback mode (187:3),
+  // never off the frames' flat `get_variable_defs`, which is node-dependent.
+  // Scheme 1, pale yellow, is the theme's own (the header, the gallery and the
+  // testimonials stand on it); the page itself is Scheme 2, white, which the
+  // bio, media, repertoire, pricing, calendar and form stand on with their
+  // cards (SCHEMES_OF.Paperback), and the map and the footer stand on 3,
+  // indigo. `palette` is [bg, ac, tx] with ac the scheme's `sem/active/bg` (the
+  // pink of Book now) and tx its `sem/text/2`.
+  //
+  // The faces: Bricolage Grotesque ExtraBold (font/display, tracking -3.5%) and
+  // Figtree (font/label, font/body, Bold and SemiBold, tracking -1%), both free
+  // Google Fonts, and a third no variable names, the script of the notes: Caveat
+  // Bold, read off the text nodes (`script`, `s.script`). The frames type every
+  // string in mixed case, so casing is 'title' and nothing uppercases.
+  {
+    name: 'Paperback',
+    sub: 'Bricolage Grotesque · playful & bright',
+    // The page's own ground (the gutter, the published document, the preview's scroller): white,
+    // Scheme 2's, although the theme's own Scheme 1 is the pale yellow of the header band.
+    pageGround: '#FFFFFF',
+    display: "'Bricolage Grotesque', sans-serif",
+    label: "'Figtree', sans-serif",
+    ui: "'Figtree', sans-serif",
+    body: "'Figtree', sans-serif",
+    script: "'Caveat', cursive",
+    casing: 'title',
+    // Display strings track -0.035em and Figtree's -0.01em; stated per site (the text styles
+    // carry them), so the shared default is 0.
+    dls: '0px',
+    // radius/card 24, radius/control 8, radius/chip 999, border/thin 2 (the Paperback mode).
+    radius: '24px',
+    radiusSm: '8px',
+    btnR: '999px',
+    bw: '2px',
+    radiusChip: '999px',
+    // Scheme 1's bg / sem/active/bg / sem/text/2.
+    palette: ['#FAED8F', '#F8158F', '#0B0B0B'],
+    // Scheme 1's tag1…tag7 backgrounds. tag/4/bg is the one token the file's collection does not
+    // hold (the page binds tag/4/text alone); each scheme's tag4 is inferred from its tag/4/text
+    // (a light ink means a dark chip, a dark ink a light one) and is re-read by the section that
+    // draws it. Hot-pink #F8158F and magenta #FD48F2 are the `Live` / `Slow Burn` chips.
+    tags: ['#9982DE', '#F8158F', '#F9A12B', '#0B0B0B', '#FD48F2', '#0B0B0B', '#0B0B0B'],
+    // The semantic colours the palette cannot derive, Scheme 1's. The file holds box 1–3, active,
+    // stroke 1, text 3 and the tags; it holds no glow, hl, stroke2 or inactive pair (inferred: glow
+    // the active ground, hl the ink, stroke2 stroke1, the inactive pair the box and the ink), and
+    // no `active/text` (white on pink, read off the Book now, Continue and Subscribe pills).
+    sem: {
+      box1: '#FFF6C2',                      // sem/box/1
+      box2: '#FFD24A',                      // sem/box/2
+      box3: '#F9C53A',                      // sem/box/3
+      glow: '#F8158F',                      // inferred: sem/active/bg
+      activeBg: '#F8158F',                  // sem/active/bg
+      activeFg: '#FFFFFF',                  // read off the pills' text
+      inactiveBg: '#FFF6C2',                // inferred: sem/box/1
+      inactiveFg: '#0B0B0B',                // inferred: sem/text/1
+      inactiveLine: '#FFF6C2',              // inferred: sem/box/1
+      stroke1: '#0B0B0B',                   // sem/stroke/1
+      stroke2: '#0B0B0B',                   // inferred: sem/stroke/1
+      hl: '#0B0B0B',                        // inferred: sem/text/1
+      text3: '#3B308F',                     // sem/text/3 — the indigo of the script notes
+      tagFg: [undefined, undefined, undefined, '#FFFFFF', undefined, undefined, undefined],
+    },
+    // Schemes 2–9 of the same collection, in Scheme 1's shape. A section is seated on one through
+    // SCHEMES_OF.Paperback and a nested node reads `s.onScheme[n]`. The table of the 2026-11-20 read.
+    schemes: {
+      // Scheme 2, #FFFFFF — the page: the bio, media, repertoire, pricing, calendar and form stand on it, with their cards.
+      2: {
+        palette: ['#FFFFFF', '#F8158F', '#0B0B0B'],
+        tags: ['#F8158F', '#F9A12B', '#3B308F', '#FFFFFF', '#0B0B0B', '#0B0B0B', '#9982DE'],
+        sem: {
+          box1: '#FFFFFF', box2: '#FFDBFD', box3: '#A4F6F8', glow: '#F8158F',
+          activeBg: '#F8158F', activeFg: '#FFFFFF',
+          inactiveBg: '#FFFFFF', inactiveFg: '#0B0B0B', inactiveLine: '#FFFFFF',
+          stroke1: '#0B0B0B', stroke2: '#0B0B0B', hl: '#0B0B0B', text3: '#3B308F',
+          tagFg: [undefined, undefined, undefined, '#0B0B0B', undefined, undefined, undefined],
+        },
+      },
+      // Scheme 3, #3B308F — the map and the footer (indigo).
+      3: {
+        palette: ['#3B308F', '#F9A12B', '#FFFFFF'],
+        tags: ['#F9A12B', '#FFFFFF', '#FD48F2', '#2F2675', '#0B0B0B', '#9982DE', '#F8158F'],
+        sem: {
+          box1: '#4A3FA3', box2: '#2F2675', box3: '#231C5C', glow: '#F9A12B',
+          activeBg: '#F9A12B', activeFg: '#0B0B0B',
+          inactiveBg: '#4A3FA3', inactiveFg: '#F9A12B', inactiveLine: '#4A3FA3',
+          stroke1: '#0B0B0B', stroke2: '#0B0B0B', hl: '#F9A12B', text3: '#FFFFFF',
+          tagFg: [undefined, undefined, undefined, '#FFF2B3', undefined, undefined, undefined],
+        },
+      },
+      // Scheme 4, #F9A12B — orange. Seats nothing at layout 1.
+      4: {
+        palette: ['#F9A12B', '#F8158F', '#0B0B0B'],
+        tags: ['#3B308F', '#FD48F2', '#0B0B0B', '#0B0B0B', '#9982DE', '#F8158F', '#FFFFFF'],
+        sem: {
+          box1: '#FBB54E', box2: '#E8901C', box3: '#D07E12', glow: '#F8158F',
+          activeBg: '#F8158F', activeFg: '#FFFFFF',
+          inactiveBg: '#FBB54E', inactiveFg: '#0B0B0B', inactiveLine: '#FBB54E',
+          stroke1: '#0B0B0B', stroke2: '#0B0B0B', hl: '#0B0B0B', text3: '#0B0B0B',
+          tagFg: [undefined, undefined, undefined, '#FFF2B3', undefined, undefined, undefined],
+        },
+      },
+      // Scheme 5, #F8158F — hot pink. Seats nothing at layout 1.
+      5: {
+        palette: ['#F8158F', '#F9A12B', '#0B0B0B'],
+        tags: ['#FD48F2', '#0B0B0B', '#0B0B0B', '#FFFFFF', '#FFFFFF', '#F9A12B', '#3B308F'],
+        sem: {
+          box1: '#FB4FAE', box2: '#D90F7A', box3: '#A30A5A', glow: '#F9A12B',
+          activeBg: '#F9A12B', activeFg: '#0B0B0B',
+          inactiveBg: '#FB4FAE', inactiveFg: '#0B0B0B', inactiveLine: '#FB4FAE',
+          stroke1: '#0B0B0B', stroke2: '#0B0B0B', hl: '#0B0B0B', text3: '#0B0B0B',
+          tagFg: [undefined, undefined, undefined, '#0B0B0B', undefined, undefined, undefined],
+        },
+      },
+      // Scheme 6, #9982DE — lilac. Seats nothing at layout 1 (the map card is a nested lilac).
+      6: {
+        palette: ['#9982DE', '#FD48F2', '#0B0B0B'],
+        tags: ['#0B0B0B', '#0B0B0B', '#FFFFFF', '#FFFFFF', '#F9A12B', '#3B308F', '#FD48F2'],
+        sem: {
+          box1: '#AA96E6', box2: '#8A70D6', box3: '#6E55C2', glow: '#FD48F2',
+          activeBg: '#FD48F2', activeFg: '#0B0B0B',
+          inactiveBg: '#AA96E6', inactiveFg: '#0B0B0B', inactiveLine: '#AA96E6',
+          stroke1: '#0B0B0B', stroke2: '#0B0B0B', hl: '#0B0B0B', text3: '#0B0B0B',
+          tagFg: [undefined, undefined, undefined, '#0B0B0B', undefined, undefined, undefined],
+        },
+      },
+      // Scheme 7, #FD48F2 — magenta. Seats nothing at layout 1.
+      7: {
+        palette: ['#FD48F2', '#9982DE', '#0B0B0B'],
+        tags: ['#0B0B0B', '#9982DE', '#F8158F', '#FFFFFF', '#3B308F', '#FFFFFF', '#0B0B0B'],
+        sem: {
+          box1: '#FEB6FA', box2: '#F02FE0', box3: '#D81FC8', glow: '#9982DE',
+          activeBg: '#9982DE', activeFg: '#0B0B0B',
+          inactiveBg: '#FEB6FA', inactiveFg: '#0B0B0B', inactiveLine: '#FEB6FA',
+          stroke1: '#0B0B0B', stroke2: '#0B0B0B', hl: '#0B0B0B', text3: '#0B0B0B',
+          tagFg: [undefined, undefined, undefined, '#0B0B0B', undefined, undefined, undefined],
+        },
+      },
+      // Scheme 8, #0B0B0B — black. Seats nothing at layout 1.
+      8: {
+        palette: ['#0B0B0B', '#F9A12B', '#FFFFFF'],
+        tags: ['#9982DE', '#F8158F', '#F9A12B', '#1C1C1C', '#FD48F2', '#FFFFFF', '#FFFFFF'],
+        sem: {
+          box1: '#1C1C1C', box2: '#050505', box3: '#000000', glow: '#F9A12B',
+          activeBg: '#F9A12B', activeFg: '#0B0B0B',
+          inactiveBg: '#1C1C1C', inactiveFg: '#F9A12B', inactiveLine: '#1C1C1C',
+          stroke1: '#FFFFFF', stroke2: '#FFFFFF', hl: '#F9A12B', text3: '#F8158F',
+          tagFg: [undefined, undefined, undefined, '#FFFFFF', undefined, undefined, undefined],
+        },
+      },
+      // Scheme 9, #FAED8F — pale yellow like 1. Seats nothing.
+      9: {
+        palette: ['#FAED8F', '#F8158F', '#0B0B0B'],
+        tags: ['#F8158F', '#F9A12B', '#3B308F', '#FFFFFF', '#0B0B0B', '#0B0B0B', '#9982DE'],
+        sem: {
+          box1: '#FFF6C2', box2: '#FFD24A', box3: '#F9C53A', glow: '#F8158F',
+          activeBg: '#F8158F', activeFg: '#FFFFFF',
+          inactiveBg: '#FFF6C2', inactiveFg: '#0B0B0B', inactiveLine: '#FFF6C2',
+          stroke1: '#0B0B0B', stroke2: '#0B0B0B', hl: '#0B0B0B', text3: '#3B308F',
+          tagFg: [undefined, undefined, undefined, '#0B0B0B', undefined, undefined, undefined],
+        },
+      },
+    },
+  },
 ]
 
 // Which Figma colour scheme a section stands on, where its frames stand it on
@@ -753,6 +920,21 @@ export const SCHEMES_OF = {
     1: { header: 8, media: 8, video: 8, repertoire: 8, pricing: 8, form: 8, footer: 8, gallery: 2, calendar: 2, testimonials: 5 },
     2: { header: 8, media: 8, video: 8, repertoire: 8, pricing: 8, form: 8, footer: 8, gallery: 2, calendar: 2, testimonials: 5 },
     3: { header: 8, media: 8, video: 8, repertoire: 8, pricing: 8, form: 8, footer: 8, gallery: 2, calendar: 2, testimonials: 5 },
+  },
+  // Paperback's layout-1 page (1:2316 · 1:10903 · 1:12137), read off each section's
+  // `explicitVariableModes` through the file's "2 · Scheme" collection, the same at all three
+  // widths: the header, the gallery and the testimonials state Scheme 1 (the theme's own, so no
+  // entry: pale yellow), the map and the footer Scheme 3 (indigo), and the six others state
+  // none, so they resolve the page's own Scheme 2 (white; the page frame's mode 187:7), each
+  // with its card standing on it (media cyan, repertoire yellow, calendar blush, form indigo +
+  // orange: the cards' colours are the scheme's box seats, or a nested node's). `video` has no
+  // frame; it is seated beside the media it follows. Layouts 2–4 of Paperback have no frames and
+  // are placeholders, so they take row 0's seats.
+  Paperback: {
+    0: { bio: 2, media: 2, video: 2, repertoire: 2, pricing: 2, calendar: 2, form: 2, map: 3, footer: 3 },
+    1: { bio: 2, media: 2, video: 2, repertoire: 2, pricing: 2, calendar: 2, form: 2, map: 3, footer: 3 },
+    2: { bio: 2, media: 2, video: 2, repertoire: 2, pricing: 2, calendar: 2, form: 2, map: 3, footer: 3 },
+    3: { bio: 2, media: 2, video: 2, repertoire: 2, pricing: 2, calendar: 2, form: 2, map: 3, footer: 3 },
   },
 }
 
@@ -1437,9 +1619,9 @@ export const NVAR = {
 export const headerFamily = (themeName) =>
   themeName === 'Lime' ? 'lime' : themeName === 'Grunge' ? 'grunge'
     : themeName === 'Editorial' ? 'editorial' : themeName === 'Pop' ? 'pop'
-      : themeName === 'Lattice' ? 'lattice' : 'photographic'
+      : themeName === 'Lattice' ? 'lattice' : themeName === 'Paperback' ? 'paperback' : 'photographic'
 
-const HEADER_COUNT = { photographic: 6, lime: 4, grunge: 4, editorial: 4, pop: 4, lattice: 4 }
+const HEADER_COUNT = { photographic: 6, lime: 4, grunge: 4, editorial: 4, pop: 4, lattice: 4, paperback: 4 }
 
 export const headerVariants = (themeName) => HEADER_COUNT[headerFamily(themeName)]
 
@@ -1538,6 +1720,7 @@ const HEADER_NAMES = {
   editorial: PHOTOGRAPHIC_NAMES.slice(0, HEADER_COUNT.editorial),
   pop: PHOTOGRAPHIC_NAMES.slice(0, HEADER_COUNT.pop),
   lattice: PHOTOGRAPHIC_NAMES.slice(0, HEADER_COUNT.lattice),
+  paperback: PHOTOGRAPHIC_NAMES.slice(0, HEADER_COUNT.paperback),
 }
 
 export const headerLayout = (themeName, i) =>
@@ -2667,7 +2850,7 @@ export const FIELDS = {
     // Layout 2's pill under the subtitle (JP-037). Its frame words it apart
     // from the nav's Book Now, so it is a field of its own. Emptied, no pill.
     { k: 'heroCta',   l: 'Button under subtitle',      d: HERO_CTA,
-      in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1], Lattice: [1] },
+      in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1], Lattice: [1], Paperback: [1] },
       chars: { Retro: [null, 34], Lime: [null, 35], Grunge: [null, 40], Editorial: [null, 21], Pop: [null, 25], Lattice: [null, 25] },
       hint: 'The button under your name. Left empty, it is not drawn.' },
     // The rest of layout 2's copy (JP-059, reversing Lime's fit, which kept
@@ -2677,11 +2860,11 @@ export const FIELDS = {
     // card's "Performing since 2021" is the artist's copy — the bio's own
     // Performing since is another field, which the hint says.
     { k: 'faceTitle', l: 'Portrait caption title',  d: FACE_TITLE,
-      in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1], Lattice: [1] },
+      in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1], Lattice: [1], Paperback: [1] },
       chars: { Retro: [null, 22], Lime: [null, 24], Grunge: [null, 29], Editorial: [null, 19], Pop: [null, 20], Lattice: [null, 20] },
       hint: 'The card beside your portrait, under the photograph. Left empty, it is not drawn.' },
     { k: 'faceBody',  l: 'Portrait caption text',   type: 'area', d: FACE_BODY,
-      in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1], Lattice: [1] }, chars: [null, 180],
+      in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1], Lattice: [1], Paperback: [1] }, chars: [null, 180],
       hint: 'The line under the portrait caption title. The bio’s Performing since is a separate field, '
           + 'so change both if you name a year here. Left empty, it is not drawn.' },
     // Named `cta2` on the bio's own content too, which FIELDS.bio.cta2 edits
@@ -2697,13 +2880,13 @@ export const FIELDS = {
     // Its cap is per chip (`chars`) and chips (`count`), the bio's besides
     // (IDENTITY_CHARS), each chip a sized seat held to twice the longest seed.
     { k: 'tags',      l: 'Tags',             type: 'area', d: TAG_LABELS, shared: true, list: ',',
-      in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3], Editorial: [0, 2, 3], Pop: [0, 2, 3], Lattice: [0, 2, 3] },
+      in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3], Editorial: [0, 2, 3], Pop: [0, 2, 3], Lattice: [0, 2, 3], Paperback: [0, 2, 3] },
       chars: { Retro: [22, null, 22, 22, 15, 22], '*': [22, null, 22, 22] },
       count: { Retro: [8, null, 7, 7, 6, 6], Pop: [6, null, 6, 6], Lattice: [6, null, 6, 6], '*': [8, null, 6, 6] },
       rows: { placeholder: 'Tag', add: 'Add tag' },
       hint: 'Your genre chips. One per row; a comma starts a new row.' },
     { k: 'showTags',  l: 'Tags',        type: 'select', d: 'show', opts: SHOW_HIDE_TAGS, shared: true,
-      in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3], Editorial: [0, 2, 3], Pop: [0, 2, 3], Lattice: [0, 2, 3] },
+      in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3], Editorial: [0, 2, 3], Pop: [0, 2, 3], Lattice: [0, 2, 3], Paperback: [0, 2, 3] },
       hint: 'Show or hide the tag chips wherever they are printed.' },
     // Three states (header-nav ticket, 2026-11-11): the seal is visible and
     // turning (today's), visible and still, or hidden. `badgeMode` replaces the
@@ -2712,19 +2895,19 @@ export const FIELDS = {
     // Editorial's layout-1 artwork (a reticle, a star) has no ring to turn, so
     // EditPanel offers those two Show / Hide alone (`badgeOptsFor`).
     { k: 'badgeMode', l: 'Corner badge',     type: 'select', d: 'rotating', opts: BADGE_MODES,
-      in: { Retro: [0, 1, 3, 4, 5], Lime: [0, 3], Grunge: [0, 3], Editorial: [0, 3], Pop: [0, 3], Lattice: [0, 3] } },
+      in: { Retro: [0, 1, 3, 4, 5], Lime: [0, 3], Grunge: [0, 3], Editorial: [0, 3], Pop: [0, 3], Lattice: [0, 3], Paperback: [0, 3] } },
     // The seal's ring sets it twice round a circle, so its cap is the ring's
     // fit (scripts/limits.mjs's ring test). Left empty, the ring prints the
     // artist's name, clamped to the same fit (sealCap).
     { k: 'badgeText', l: 'Corner badge text',                    // defaults to the artist's name — special-cased
-      in: { Retro: [0, 1, 3, 4, 5], Lime: [3], Grunge: [0, 3], Editorial: [3], Pop: [0, 3], Lattice: [3] },
+      in: { Retro: [0, 1, 3, 4, 5], Lime: [3], Grunge: [0, 3], Editorial: [3], Pop: [0, 3], Lattice: [3], Paperback: [3] },
       chars: { Retro: 19, Lime: [null, null, null, 13], Grunge: [14, null, null, 14], Editorial: [null, null, null, 10],
         Pop: [12, null, null, 10], Lattice: [null, null, null, 13] } },
     { k: 'navMode',   l: 'Menu style', type: 'select', d: 'sections', opts: [
       { v: 'sections', l: 'Follow my sections' },
       { v: 'minimal',  l: 'Minimal (Music · Gigs · About)' },
     ] },
-    { k: 'align',     l: 'Page alignment',        type: 'select', d: 'left', in: { Retro: [0], Lime: [0], Grunge: [0], Editorial: [0], Pop: [0], Lattice: [0] }, opts: [
+    { k: 'align',     l: 'Page alignment',        type: 'select', d: 'left', in: { Retro: [0], Lime: [0], Grunge: [0], Editorial: [0], Pop: [0], Lattice: [0], Paperback: [0] }, opts: [
       { v: 'left',   l: 'Left' },
       { v: 'centre', l: 'Centre' },
     ] },
@@ -4077,9 +4260,10 @@ const specAt = (spec, themeName, design) => {
   if (spec == null) return undefined
   if (typeof spec === 'number') return spec
   if (Array.isArray(spec)) return spec[design] ?? undefined
-  // Lattice reads Pop's row where a spec names neither it nor '*', until its own
-  // caps are measured (plans/lattice/layout-1.md, Session 12: `limits.mjs --themes=5`).
-  return specAt(spec[themeName] ?? spec['*'] ?? (themeName === 'Lattice' ? spec.Pop : undefined), themeName, design)
+  // Lattice and Paperback read Pop's row where a spec names neither them nor '*', until their own
+  // caps are measured (plans/lattice/layout-1.md, Session 12: `limits.mjs --themes=5`;
+  // plans/paperback/layout-1.md, Session 12: `--themes=6`).
+  return specAt(spec[themeName] ?? spec['*'] ?? (themeName === 'Lattice' || themeName === 'Paperback' ? spec.Pop : undefined), themeName, design)
 }
 const isColObj = (spec) => spec != null && typeof spec === 'object' && !Array.isArray(spec) && 'chars' in spec
 // The resolved cap of a field or column: { chars, count, list } or null.

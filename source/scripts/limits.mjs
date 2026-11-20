@@ -52,7 +52,7 @@ const opt = (k, d) => { const a = argv.find((x) => x.startsWith(`--${k}=`)); ret
 const flag = (k) => argv.includes(`--${k}`)
 const cats = (argv.find((a) => !a.startsWith('--')) || '').split(',').filter(Boolean)
 if (!cats.length) { console.error('usage: node scripts/limits.mjs <cat[,cat]> [--themes=] [--keys=] [--check|--seeds]'); process.exit(1) }
-const themes = opt('themes', '0,1,2,3,4,5').split(',').map(Number)
+const themes = opt('themes', '0,1,2,3,4,5,6').split(',').map(Number)
 const keysOnly = opt('keys', '') ? opt('keys', '').split(',') : null
 const designsOnly = opt('designs', '') ? opt('designs', '').split(',').map(Number) : null // 0-based
 const widths = opt('widths', 'desktop,tablet,mobile').split(',')

@@ -170,6 +170,23 @@ const THEME_RAMP = {
     tablet:  { dispXl: '79px',  dispLg: '59px', dispMd: '48px', dispSm: '32px', title: '27px', list: '24px', labelLg: '22px', labelMd: '12px', labelSm: '11px', labelXs: '11px', bodyLg: '18px', bodyMd: '16px', bodySm: '15px', chip: '11px', eyebrow: '12px' },
     desktop: { dispXl: '105px', dispLg: '78px', dispMd: '49px', dispSm: '33px', title: '25px', list: '20px', labelLg: '18px', labelMd: '10px', labelSm: '9px',  labelXs: '9px',  bodyLg: '15px', bodyMd: '13px', bodySm: '12px', chip: '9px',  eyebrow: '10px' },
   },
+  // Paperback's mode, read off the three masters' text nodes (the page binds a node-dependent size
+  // set, display-md 72 / 96 by node, and the display strings are fluid values of the frame's own, so
+  // each key is a section's head, as Lattice's are; plans/paperback/layout-1.md, *Conventions*,
+  // *Settled in session 0*): dispXl the header's name (138.24 / 86 / 55), dispLg the media's and the
+  // gallery's heads (95.04 / 59 / 38), dispMd the pricing's head (77.76 / 48 / 38) and its prices
+  // (72 / 48 / 38), dispSm the calendar's and the form's (52 / 42 / 34), title the now-playing name
+  // (40 / 32 / 26), list a track's name (26 / 26 / 18), labelLg the map card's foot (26 / 26 / 24) and
+  // labelMd a song's or a gig's name (22 / 22 / 20); the Figtree labels are 16 / 13 at every width.
+  // The bio's, repertoire's, map's and testimonials' heads (100.8, 106.56, 120.96, 48 at 1440) sit
+  // between keys; their sessions write them. Desktop is the frame × 0.82, 768 and 390 verbatim.
+  // The three `script*` keys are the Caveat notes: scriptLg the header's `Booking 2026` (34 / 31 / —),
+  // scriptMd the section eyebrows (32 / 29 / 26), scriptSm the notes and captions (28 / 25 / 23).
+  Paperback: {
+    mobile:  { dispXl: '55px',  dispLg: '38px', dispMd: '38px', dispSm: '34px', title: '26px', list: '18px', labelLg: '24px', labelMd: '20px', labelSm: '16px', labelXs: '13px', bodyLg: '18px', bodyMd: '16px', bodySm: '13px', chip: '13px', eyebrow: '15px', scriptLg: '26px', scriptMd: '26px', scriptSm: '23px' },
+    tablet:  { dispXl: '86px',  dispLg: '59px', dispMd: '48px', dispSm: '42px', title: '32px', list: '26px', labelLg: '26px', labelMd: '22px', labelSm: '16px', labelXs: '13px', bodyLg: '18px', bodyMd: '16px', bodySm: '13px', chip: '13px', eyebrow: '15px', scriptLg: '31px', scriptMd: '29px', scriptSm: '25px' },
+    desktop: { dispXl: '113px', dispLg: '78px', dispMd: '64px', dispSm: '43px', title: '33px', list: '21px', labelLg: '21px', labelMd: '18px', labelSm: '13px', labelXs: '11px', bodyLg: '15px', bodyMd: '13px', bodySm: '11px', chip: '11px', eyebrow: '12px', scriptLg: '28px', scriptMd: '26px', scriptSm: '23px' },
+  },
 }
 
 // The two keys that only matter once a window is wider than the canvas its
@@ -385,6 +402,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     ui: T.ui ?? T.body,
     // Space Mono, the frames' typewriter face; Retro and Pop name it.
     mono: T.mono ?? T.body,
+    // The handwritten face of the notes (Paperback's Caveat); a theme with none falls back to
+    // its body face, so read it behind `s.paperback`.
+    script: T.script ?? T.body,
     radius: T.radius, radiusSm: T.radiusSm, btnR: T.btnR, bw: T.bw,
     // `radius/chip`. Retro's token is 8, which its branches write as a literal.
     radiusChip: T.radiusChip ?? '8px',
@@ -474,7 +494,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // template is designed since Pop's layout-1 pass, so it is true for all
     // five; TagChips' undesigned chip went with the flat family. A site only
     // some of them share stays a named pair, widened per site from the frame.
-    designed: T.name === 'Retro' || T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial' || T.name === 'Pop' || T.name === 'Lattice',
+    designed: T.name === 'Retro' || T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial' || T.name === 'Pop' || T.name === 'Lattice' || T.name === 'Paperback',
     // Grunge's four layout pages are the same components in a third mode,
     // Static Youth, so its decoration — at layout 1 torn black seams round its
     // textured bands, grain and the red seal, at layouts 2, 3 and 4 rings where
@@ -500,6 +520,12 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // own `v0` / `limeTree`, per site) after the shared section's hooks and seam. What only Lattice draws — the dot field,
     // bracket corners, the dotted art, the square chips — goes behind this flag.
     lattice: T.name === 'Lattice',
+    // Paperback's layout-1 page is the same component trees in a seventh mode
+    // (plans/paperback/layout-1.md): a Lime block widened to `limeTree` stands for it until a
+    // section gets a tree of its own, and what only Paperback draws — the tilted keyline cards,
+    // the tape, the sparkles and squiggles, the script notes, the doodle discs — goes behind this
+    // flag, widened per site. Lattice's rule: every section has its own `Paperback*` tree.
+    paperback: T.name === 'Paperback',
     // The templates whose pages are Lime's component trees — the four that widen
     // its blocks, and Lattice, whose own trees stand on the same gate — so a Lime block a twin's frame shares is gated on this rather
     // than on a name at every site. Widened per site, from the frame, as each
@@ -508,7 +534,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // site the others do not share keeps `(s.lime || s.grunge)`, and one is
     // left (layout 2's gallery caption). Pop's layout-1 media steps out of it
     // (`&& !s.pop`), being Retro's body dressed.
-    limeTree: T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial' || T.name === 'Pop' || T.name === 'Lattice',
+    limeTree: T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial' || T.name === 'Pop' || T.name === 'Lattice' || T.name === 'Paperback',
     // Lime layout 3's footer (964:68684 · 984:10769 · 984:10800) stands on
     // Scheme 2's `sem/bg`, the olive `box1`, where layout 1's is the page
     // ground; its seal's disc and the Book pill's label and disc follow, each
@@ -2072,7 +2098,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
         // call, 2026-10-06). The `s.limeTree` stat cell fits the numeral to it,
         // so a city wraps between words and never inside one — Pop's in
         // Titan's ems (`navFace`'s). Undefined under Retro.
-        wordEms: vm.limeTree ? +Math.max(0, ...value.split(/\s+/).map(navFace)).toFixed(3) : undefined,
+        wordEms: vm.limeTree && navFace ? +Math.max(0, ...value.split(/\s+/).map(navFace)).toFixed(3) : undefined,
       }
     })
   // Gigs to a page in the compact tile. It is PINS.length rather than a literal
