@@ -1,4 +1,4 @@
-# The designed templates: Retro, Lime, Grunge, Editorial and Pop — working notes
+# The designed templates: Retro, Lime, Grunge, Editorial, Pop and Lattice — working notes
 
 Moved word for word out of `CLAUDE.md`'s *Intentional limits — not bugs* on 2026-09-30, so it
 loads only when a session works on it. "Above" and "below" may point into `CLAUDE.md` or
@@ -515,3 +515,69 @@ size expression alone while `titleK` is 1 and holds the 50 % floor under it othe
 `frauncesEms` (`scripts/ems-table.mjs Fraunces`). Editorial's and Pop's layout 1 keep their whole-line fit
 down to 50 % and wrap past it. A site added or moved needs its row in `TITLE_SITES` re-read off a
 long-name render, and its cap re-measured with `limits.mjs header --keys=title --sweep`.
+
+## Lattice (plans/lattice/layout-1.md, 2026-11-19 to 11-20)
+
+The sixth template, from *JustPay — Batch 2* (`ORILFywSzuadscu6RzskCW`), an HTML-to-Figma import with no component
+sets, no `Theme=` variants and no variable modes: every layer is named `Section` / `Container` / `Text`, so a
+section's twin was settled by composition and geometry, not by a paired walk. **Only layout 1 is designed.** Layouts
+2–4 render Retro's / Lime's arms in Lattice's tokens and publish, and the four header cards do too; no Lattice frame
+exists for any of them (plan open question 2), so every cap, `in` row and probe pass for them is Pop's or the
+`'*'`'s, listed in the plan's *Open calls* under *Still Pop's*.
+
+**Not a widened Lime tree.** Where Editorial and Pop widened Lime's blocks (`s.limeTree`, now four templates),
+Lattice is **eleven own-tree blocks**: `LatticeHero` (`HeaderV0`'s head), `LatticeBio`, `LatticeMedia`,
+`LatticeGallery`, `LatticeRepertoire`, `LatticeMap`, `LatticePricing`, `LatticeCalendar`, `LatticeForm`,
+`LatticeTestimonials` and `LatticeFooter`. Each stands on `s.limeTree && s.lattice` — the flag set is
+`lattice: T.name === 'Lattice'` in `sectionVm`, with `designed` and `limeTree` widened to it — **after the section's
+hooks and seam** (an early return above a `useState` changes the hook count on a theme switch), except the bio and
+the footer, which own no hook and stand at the head. The seam (the section's state, `extLink` / `navHref`, the
+published controls) stays the shared component's; only the picture is Lattice's. `limeTreeTheme` is **not**
+widened: its three seeds (`TIERS_1`, `FORM_BTN_1`, `CAL_HEADING_1`) are per-section calls, and Lattice's chips
+read Solo / Trio / Band.
+
+**The page.** Straight edges only, no arcs, tears or grain: photo · `#DADADA` bio · `#111` media · `#F2F2F2` gallery
+· `#111` repertoire · `#DADADA` map · `#111` pricing · `#F2F2F2` calendar · `#111` form · `#ED6D40` testimonials ·
+`#111` footer. `THEMES[5]` carries Scheme 1 (`#DADADA` / `#111`) as its palette and Schemes 2–9 as `schemes`
+(Figma's numbering; the header, media, video, repertoire, pricing, form and footer stand on 8, the gallery and the
+calendar on 2, the testimonials on 5, the bio and the map on the theme's own 1); `SCHEMES_OF.Lattice` rows 0–3 are
+identical because layouts 2–4 are placeholders. **`vm.pageBg`, the page gutter, the published `documentElement`
+and the picker's dots read Scheme 1's `#DADADA`, while most sections stand on `#111`** and the foot of the page
+is the footer's `#111`: no section lets the gutter show beside it at the widths measured in the sweep (below).
+
+**Faces.** Display is `Archivo Lattice`, an `@font-face` alias in `index.css` that pins the variable Archivo file
+(gstatic v25, three unicode-range blocks) to `font-weight: 500` and `font-stretch: 113%`, because the frames' own
+face ("Lattice Display Medium") is custom and no section should name an axis. The existing `Archivo` link is
+unchanged (the other templates digest to zero rows). Labels, UI and mono are **Azeret Mono** (new, in `index.html` and
+`preview.html`). `latticeEms` / `LATTICE_EM` / `LATTICE_KERN` (`scripts/ems-table.mjs "Archivo Lattice" --check`)
+are the face's `navFace`, upper-cased, with **+0.004em per glyph** added by every fit and left to the caller
+(`vm.titleWordEms`, `vm.footerWordEms`, the quote's). Casing is `'title'` with per-site uppercase; `dls` is 0.
+
+**Decoration, all behind `s.lattice`:**
+- **The dot field is vector and is not a lattice.** The frames' rows bow, so no `<pattern>` reproduces them: each
+  width is its own centroid set (`LATTICE_DOTS`, 560 / 831-of-which-483-show / 436 at 1440 / 768 / 390), built into one
+  data-URI SVG per width by `latticeDotField(dev)` and handed over as `vm.dotField`; the bio's and the testimonials'
+  fields are their own sets (`latticeBioDots`, `latticeTestiDots`). A `pointer-events: none` layer with
+  `background-size: 100% 100%`. The footer draws none (its frames hold only a glow).
+- **The dotted disc is a raster**, a 256 × 162 lossless WebP (`LATTICE_ART.disc`, `photos.js`) used as a *mask* so
+  the section inks it with `s.tx`; it never spins, so the badge offers Visible / Hidden alone (`badgeOptsFor`). The
+  header, bio and footer draw it; the map card and the calendar's torus are per-width WebPs (`lattice-map-*`,
+  `lattice-calendar-*`) — art, not photography, and never an upload slot.
+- **`BracketButton`** (four 9 × 9 corner marks round a mono caps label and an arrow, 130 × 44) is Book Now, the
+  Soundcloud pill and the footer's pill; `LatticeBurger` is the header's hamburger (a 46 hit area, three 2px bars).
+  The pricing Book bar and the form's and calendar's bars are plain rectangles, as drawn.
+- **Square chips** (3px, `radiusChip`) and 1px hairline boxes (`bw` 1, radius 20 on cards); mono 11–12 labels.
+  **Glows** are each root's own percentage `radial-gradient` (60% × 55%, 14% to 0 at 70%): orange behind the
+  repertoire and form, teal behind pricing, the calendar's torus and the footer, a white 22% `0 0 90` halo round the
+  testimonials' card.
+- **The standing removals hold** (session 0, call 1, user, option A): no wordmark, inline links, kicker line,
+  bio initials or reference line, and no `[ 00N ] ——— LABEL` eyebrow except where a seeded, uncased,
+  drop-when-emptied `FIELDS` field already is its seat (the calendar's `heading`, the gallery's `kicker`, the
+  testimonials' `quotes.when`).
+- **Photography** is four photographs (`lattice-hero`, `-portrait`, `-bio`, `-alt`; 573 KB raw, each a 1536-wide JPEG
+  used as the frame's own file), re-cropped for every thumbnail, track cover and avatar. `SEEDS.Lattice` seats them;
+  the five track covers go through `rowArt`, which `defaultTrackArt` reads before `ROW_ART`. Video has no frame and
+  stands on the hero.
+
+**The hero is 750 tall at 768 and 390** (`vm.heroH = 750` for a Lattice header off desktop); desktop and the picker's
+aspect are the other templates'. **A header card's `badgeText` seat** is `Lattice: [3]`.

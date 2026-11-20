@@ -1,6 +1,6 @@
 // The seeded mock photography of the designed templates, exported from their
-// Figma frames — Retro's §10.2 page, Lime's four layout pages and Grunge's and
-// Editorial's layout-1 pages. Grunge's layout-2, layout-3 and layout-4 frames drew nothing
+// Figma frames — Retro's §10.2 page, Lime's four layout pages, Grunge's and
+// Editorial's layout-1 pages, and Pop's and Lattice's. Grunge's layout-2, layout-3 and layout-4 frames drew nothing
 // new: every photograph they carry is already seeded here, the layout-3 bio's
 // crop taken as an objectPosition on grungeStage rather than as a second
 // export, and the layout-4 bio's a centred cover of the same file. Nor did
@@ -19,8 +19,8 @@
 // helpers; no React" and is import-free, and ~2 MB of base64 has no business in the
 // file people open to read the palettes.
 //
-// All five templates have Figma frames of their own, so all five seed
-// photography: Retro's, Lime's, Grunge's, Editorial's and Pop's shoots.
+// All six templates have Figma frames of their own, so all six seed
+// photography: Retro's, Lime's, Grunge's, Editorial's, Pop's and Lattice's shoots.
 
 import hero from './photos/hero.jpg'
 import latticeDisc from './photos/lattice-disc.webp'

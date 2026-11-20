@@ -1812,8 +1812,10 @@ export const TIERS_3 = TIERS.map((t, i) => ({ ...t, tags: ['Duo', 'Duo, Trio, Ba
 export const TIERS_1 = TIERS.map((t, i) => ({ ...t, tags: ['Private Event', 'Club Night', 'Festival'][i] }))
 // The templates whose pages are Lime's component trees — sectionVm's
 // `limeTree` flag, for the seeds that follow the frame rather than the layout.
-// All four designed templates since Pop's layout-4 sweep folded its pair in
-// (plans/pop/layout-4.md, decision 2).
+// The four templates that widen Lime's blocks, since Pop's layout-4 sweep folded its
+// pair in (plans/pop/layout-4.md, decision 2). Lattice is deliberately NOT here
+// though `limeTree` names it: its three seeds are per-section calls
+// (plans/lattice/layout-1.md, session 0), and its chips read Solo / Trio / Band.
 export const limeTreeTheme = (themeName) =>
   themeName === 'Lime' || themeName === 'Grunge' || themeName === 'Editorial' || themeName === 'Pop'
 // The packages an absent `tiers` key stands for, by template and design (`d`,
@@ -2583,12 +2585,14 @@ export const FIELDS = {
   // `aspect` on an image field is only the FALLBACK frame of the photo editor: it opens on the shape of the
   // field's largest photo on the canvas as drawn now (photoAspectOf, EncoreBuilder.jsx), and falls back to this
   // when the layout or device draws none.
-  // The header's `in` is always an object naming all five templates: they have
-  // different header families (six designs against four, four, four and four —
+  // The header's `in` is always an object naming all six templates: they have
+  // different header families (six designs against four, four, four, four and four —
   // Grunge's, Editorial's and Pop's rows are each measured over four fitted
   // cards, none a placeholder since each template's layout-4 pass). Pop's was
   // measured in its layout-1 sweep and re-measured in each later header
-  // session, the last over its fitted card 4 (2026-10-07), unchanged.
+  // session, the last over its fitted card 4 (2026-10-07), unchanged. Lattice's is
+  // measured over its fitted Hero alone (cards 2-4 are placeholders: `reach.mjs 5`
+  // agreed with it at the 2026-11-20 sweep, so those seats are Lime's twins' rows).
   header: [
     { k: 'image',     l: 'Background photo', type: 'image', aspect: [16, 9],
       hint: 'Fills the header behind the type.' },

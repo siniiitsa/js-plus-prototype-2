@@ -495,13 +495,13 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // folded into `limeTree` once the family closed (plans/pop/layout-4.md,
     // decision 2).
     pop: T.name === 'Pop',
-    // Lattice's layout-1 page is the same component trees again in a sixth mode
-    // (plans/lattice/layout-1.md): a Lime block widened to `limeTree` stands for
-    // it, and what only Lattice draws — the dot field, bracket corners, the
-    // dotted art, the square chips — goes behind this flag, widened per site.
+    // Lattice's layout-1 page (plans/lattice/layout-1.md) widens no Lime block: each of its
+    // eleven sections is a `Lattice*` tree of its own, standing on `limeTree && lattice`
+    // (after the shared section's hooks and seam). What only Lattice draws — the dot field,
+    // bracket corners, the dotted art, the square chips — goes behind this flag.
     lattice: T.name === 'Lattice',
-    // The templates whose pages are Lime's component trees — all four designed
-    // templates — so a Lime block a twin's frame shares is gated on this rather
+    // The templates whose pages are Lime's component trees — the four that widen
+    // its blocks, and Lattice, whose own trees stand on the same gate — so a Lime block a twin's frame shares is gated on this rather
     // than on a name at every site. Widened per site, from the frame, as each
     // block was fitted (plans/editorial/layout-1.md, decision 2; Pop's pair
     // folded in its layout-4 sweep) — every Lime block at all four layouts; a
