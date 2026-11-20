@@ -93,7 +93,7 @@ Lattice settled that as *a narrow-only 750 behind `lattice`* — section 1 reads
 | # | Cat | Desktop node | Size | Tablet node | Size | Mobile node | Size | Composition (from the pictures) · predicted twin | Status |
 |---|---|---|---|---|---|---|---|---|---|
 | 0 | *foundation* | `1:2316` | — | `1:10903` | — | `1:12137` | — | `THEMES[6]`, ramp, faces, photos, the flag, the doodle art | done 2ceb233 |
-| 1 | `header` | `1:2318` | 1440 × 750 | `1:10905` | 768 × 750 | `1:12139` | 390 × 750 | Yellow ground with a wavy pale-yellow squiggle field, rounded bottom corners; wordmark `Kai Mercer` + `DJ LIVE`, inline pill nav (desktop only), pink Book now + arrow; a **tilted photo card** with tape, a pink `KM` disc, a vinyl-disc sticker, sparkles; a tilted **avatar card**, kicker pills, a ~110 px title with a **pink hand-drawn underline**, six pill chips, a script `Booking 2026` note · **Pop's `HeaderV0`** (tilted card, sticker disc, sparkles) or **Lime's `HeaderV0` block** as the twin of the card and chips — read both before choosing | open |
+| 1 | `header` | `1:2318` | 1440 × 750 | `1:10905` | 768 × 750 | `1:12139` | 390 × 750 | Yellow ground with a wavy pale-yellow squiggle field, rounded bottom corners; wordmark `Kai Mercer` + `DJ LIVE`, inline pill nav (desktop only), pink Book now + arrow; a **tilted photo card** with tape, a pink `KM` disc, a vinyl-disc sticker, sparkles; a tilted **avatar card**, kicker pills, a ~110 px title with a **pink hand-drawn underline**, six pill chips, a script `Booking 2026` note · **Pop's `HeaderV0`** (tilted card, sticker disc, sparkles) or **Lime's `HeaderV0` block** as the twin of the card and chips — read both before choosing | done `bc8b2bf` |
 | 2 | `bio` | `1:2397` | 1440 × 832 | `1:11004` | 768 × 1213 | `1:12191` | 390 × 1211 | White; a huge two-line statement `Reads the room.` left, a tall tilted portrait with tape over a blush blob, a vinyl doodle and sparkles, **About** + copy + black `Full bio →` pill right, script `KM bio`, `that's me! ↷`, and `DJ · Live act Manchester`, a `001 · Structure · Bio_01` chip pair · **new own block** (a statement + portrait + side copy; nothing in the page is Lime's *Flanked portrait*) — check Pop's bio first | open |
 | 3 | `media` | `1:2450` | 1440 × 1057 | `1:11054` | 768 × 1398 | `1:12240` | 390 × 1361 | A **cyan card** (24 radius, on the white page): script `Top tracks`, a 2-line title, confetti; five numbered white rows (art, title, a coloured `Single` / album chip and a black duration chip, a black play disc; row 2 is yellow with a pink play disc), a black `Soundcloud →` pill; right: a **tilted indigo now-playing card** with art, title, artist, three transport discs, progress and times, a pink music-note disc, script `5 / 5 featured` · **probably Retro's `v0` body re-laid** (the same inventory Lattice's media was) — Lattice's section 3 settled that; read it | open |
 | 4 | `gallery` | `1:2617` | 1440 × 909 | `1:11239` | 768 × 1429 | `1:12425` | 390 × 1005 | Pale yellow band; script `Media`, title `See us in action`, four **accordion rows** (Gallery open and yellow with a ×, YouTube / Instagram / TikTok with a +); right: a `← Back to beginning` pill, a tilted white-keyline viewer with arrows, a pink tape strip and script `Kai Mercer gallery`, seven thumbnails (the picked one ringed pink) · **Lime's *Photo viewer* inventory** (source rows + viewer + strip) | open |
@@ -501,11 +501,66 @@ renders at theme 6 (45 renders, 0 bad). Digest of every category at three widths
 
 ### Settled in sections 1–11
 
-*(open — one block per section, as Lattice's)*
+**1 · header** — `bc8b2bf`, 2026-11-20. Verdict under *Seen at planning time*. What was built and how it was proved:
+
+- **`PaperbackHero` + `PaperbackPill` / `PaperbackBurger` / `PaperbackVinyl`** (`EncoreSection.jsx`, just above `HeaderV0`), dispatched
+  `if (s.paperback)` after Lattice's line. A stage `div` (`containerType: inline-size`, `s.surplus` in from the hero's edges) holds
+  every layer; `u(v)` turns a frame px into `cqw` of it, so the collage keeps its proportions on a canvas narrower than the frame.
+  The frame's numbers sit in `PAPER_HERO` (desktop 1440, tablet 768, mobile 390 — **frame px, not x 0.82: the stage's width does the
+  scaling**, so the desktop number is the frame's own). The photo card is a 450 x 560 box turned 6 degrees about its centre, its
+  tape and sparkles positioned in the box's own coordinates; centre = container.xy + (265, 280). Name and chips are one bottom-anchored
+  flow column (`foot` 72 / 58 / 43), so a longer name grows upward and the chips wrap. Hero 750 tall at 768 and 390
+  (`vm.heroH = 750`, gated `design 0`); the desktop `heroH` (614) is the frame's 750 x .82 less a pixel and stays.
+- **Title.** Bricolage ExtraBold 800, -0.035em, lh .8, `TITLE_SITES.Paperback[0]` (W 524.8 / 531.7 / 342, 113 / 86 / 55), fitted by
+  `bricolageEms` (a per-face advance table made with `WEIGHT=800 node scripts/ems-table.mjs`, <=1% over the DOM; the face in
+  `EncoreBuilder.jsx` subtracts the tracking, 0.035 em a glyph). The underline is `ART.underline` stretched to 84 / 86 / 90% of the
+  last word, right-aligned (the frame's is 56% of the seed's whole name).
+- **Bar.** Hamburger left, split Book Now right (`PaperbackPill`: a label box and, 3 apart, a 48 square, both `s.ac`, radius 8, Figtree Bold
+  16), at every width; the open menu's `MenuPanel` takes a Paperback arm (white nav pills, `menuColours` -> `[s.bg, s.tx]`).
+  Root `cardOnPage` gains `s.hd && s.v0 && s.paperback` so the rounded foot shows the page's white, not the band's own colour.
+- **Badge.** Three states as the standing rule: Rotating spins the vinyl's ring (`seal-spin` on a `<g>` about the disc's centre),
+  Static does not, Hidden drops the KM disc and the vinyl both. The ring text is `badgeText` (the artist's name by default) and **is
+  drawn at 1440 as well as 768** — see Open calls. The vinyl is one svg (disc, ring, nested `PaperbackArt vinylMini`), so the builder's
+  seal rule (`start.closest('svg')`) opens the box from a click anywhere on it.
+- **Fields.** `align` hidden (`Paperback: []`); `badgeText` read at layouts 1 and 4 (`Paperback: [0, 3]`); header `title` cap
+  `Paperback: [14, 80, 80, 80]`; `INLINE_OFF` rows `Paperback.0–3.header.kicker`, `.location` and `Paperback.1.header.tags`.
+- **Proof.** `inline-probe` header at layouts 1–4, 1440 and 768: PASS (layout 1: 9 slots hit, 0 WRONG / MISSING / COVERED). `photo-probe`
+  layouts 1–4 PASS, layout 1 also `--blank` and `--drop`. `focus-probe --prime` layouts 1–4 PASS. `limits.mjs header --themes=6 --check`: the
+  title cap above, and **layout 2's `faceTitle` fails at 20 at 768 — a placeholder card on Pop's row, left for the layout-2 pass**. Digest of themes 0–5, three
+  widths: **864 of 864 identical**, positive control (theme 6 header, desktop) differs at layout 1 and its folded alias 5 only. `npm run build` passes.
+  Root `index.html` not refreshed.
+
+### Conventions section 2 (the bio) inherits
+
+- **`PaperbackPill({ s, label, to, ext, u, bg, fg, style })`** is the template's one button: pass `bg` / `fg` for the black Full-bio /
+  Soundcloud pills the later sections draw, `ext` for an outward address (`extLink`), `u` for the length unit (`cqw` in a stage, px
+  elsewhere). **`PAPER_WHITE`** (`#FFFFFF`) is the frames' white card / sticker ground: a named literal, no scheme key.
+- A section picture with tilted cards: use the header's pattern — a `containerType: inline-size` stage, `u()` in cqw, frame px verbatim at
+  all three widths, absolute boxes at the frame's centres, children in the rotated box's own coordinates.
+- **Art** comes from `paperbackArt.jsx` (`PaperbackArt` takes `x` / `y` through `...rest`, so it nests inside another svg), the chip
+  palette is `[chips[0].bg, chips[1].bg, chips[2].bg, onScheme[2].box3, chips[4].bg, chips[5].bg]` with ink / white / ink / ink / ink / white.
+- Probes: `--keys` needs quotes in zsh (`'--keys=title,tags[]'`); a digest comparison must strip Vite's `?t=NN` on BOTH sides
+  (and the second server's port on the old side); port 5174 may already be taken — pick any free one, and confirm the old tree with
+  `curl :PORT/src/builder/data.js | grep` for a symbol only the new tree has. Run `limits.mjs ... --check` as well as the measure:
+  the measure's N is not the cap's proof.
 
 ### Open calls — everything the pass hands the user, in one place
 
 *(collected at the sweep; calls 1–3 are written back at session 0)*
+
+**From section 1 (header), for the user:**
+
+- **The ring text on the vinyl is drawn at 1440 too.** The frame draws it at 768 alone (a plain disc at 1440, no sticker at 390).
+  I drew it at both widths so the *Corner badge text* field and the three badge states act wherever the sticker stands, and the inline
+  probe had no slot to miss. The alternative is 768 only plus an `INLINE_OFF` row for `badgeText`; say if you want the frame's empty
+  disc back at desktop.
+- **The badge controls do nothing at 390** (the frame draws no sticker or ring there; the KM disc and vinyl go with Hidden at the
+  two wider widths). **`Page alignment` is hidden** for Paperback (the collage has no centred variant).
+- **The title's cap is 14 at layout 1** (measured: 60 at 1440, 21 at 390, 14 at 768, where a second line climbs into the sticker and the
+  photograph). Seed 10, so "Kai Mercer" fits; longer names are refused in the panel. Raise it if you would rather let the name
+  overlap the photo.
+- **The Book now label is `Book Now`** (cased as `cta1`'s seed), 3 px wider than the frame's `Book now`; the 390 frame draws no Book now,
+  and the 768 frame's hamburger stands on the right — both follow the standing header rules (hamburger left, Book Now right, every width).
 
 ## Open questions
 
