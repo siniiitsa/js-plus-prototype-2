@@ -523,12 +523,12 @@ sets, no `Theme=` variants and no variable modes: every layer is named `Section`
 section's twin was settled by composition and geometry, not by a paired walk. **Only layout 1 is designed.** Layouts
 2–4 render Retro's / Lime's arms in Lattice's tokens and publish, and the four header cards do too; no Lattice frame
 exists for any of them (plan open question 2), so every cap, `in` row and probe pass for them is Pop's or the
-`'*'`'s, listed in the plan's *Open calls* under *Still Pop's*.
+`'*'`'s, listed in the plan's *Learned on session 12 and the sweep* (the 16 specs that read Pop's row, the 39 array rows, the 101 failing caps) and gathered in *Open calls*.
 
 **Not a widened Lime tree.** Where Editorial and Pop widened Lime's blocks (`s.limeTree`, now four templates),
 Lattice is **eleven own-tree blocks**: `LatticeHero` (`HeaderV0`'s head), `LatticeBio`, `LatticeMedia`,
 `LatticeGallery`, `LatticeRepertoire`, `LatticeMap`, `LatticePricing`, `LatticeCalendar`, `LatticeForm`,
-`LatticeTestimonials` and `LatticeFooter`. Each stands on `s.limeTree && s.lattice` — the flag set is
+`LatticeTestimonials` and `LatticeFooter`. Each stands on `s.lattice`, with the `s.v0` / `s.limeTree` its shared branch already tests (the hero `s.lattice`, bio and media `s.v0 && s.lattice`, the form `s.v0 && s.limeTree && s.lattice`, the rest `s.limeTree && s.lattice`) — the flag set is
 `lattice: T.name === 'Lattice'` in `sectionVm`, with `designed` and `limeTree` widened to it — **after the section's
 hooks and seam** (an early return above a `useState` changes the hook count on a theme switch), except the bio and
 the footer, which own no hook and stand at the head. The seam (the section's state, `extLink` / `navHref`, the
@@ -543,7 +543,7 @@ read Solo / Trio / Band.
 calendar on 2, the testimonials on 5, the bio and the map on the theme's own 1); `SCHEMES_OF.Lattice` rows 0–3 are
 identical because layouts 2–4 are placeholders. **`vm.pageBg`, the page gutter, the published `documentElement`
 and the picker's dots read Scheme 1's `#DADADA`, while most sections stand on `#111`** and the foot of the page
-is the footer's `#111`: no section lets the gutter show beside it at the widths measured in the sweep (below).
+is the footer's `#111`: no section lets the gutter show beside it at the widths measured in the sweep (plan, *Learned on session 12 and the sweep*, item 8).
 
 **Faces.** Display is `Archivo Lattice`, an `@font-face` alias in `index.css` that pins the variable Archivo file
 (gstatic v25, three unicode-range blocks) to `font-weight: 500` and `font-stretch: 113%`, because the frames' own
@@ -568,7 +568,7 @@ are the face's `navFace`, upper-cased, with **+0.004em per glyph** added by ever
   The pricing Book bar and the form's and calendar's bars are plain rectangles, as drawn.
 - **Square chips** (3px, `radiusChip`) and 1px hairline boxes (`bw` 1, radius 20 on cards); mono 11–12 labels.
   **Glows** are each root's own percentage `radial-gradient` (60% × 55%, 14% to 0 at 70%): orange behind the
-  repertoire and form, teal behind pricing, the calendar's torus and the footer, a white 22% `0 0 90` halo round the
+  repertoire and form, teal behind pricing and the footer (the media's is 42% × 38.5% at 85% / 60%, the calendar's torus sits on a teal-at-18% glow of its own), a white 22% `0 0 90` halo round the
   testimonials' card.
 - **The standing removals hold** (session 0, call 1, user, option A): no wordmark, inline links, kicker line,
   bio initials or reference line, and no `[ 00N ] ——— LABEL` eyebrow except where a seeded, uncased,

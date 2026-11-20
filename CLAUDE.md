@@ -538,8 +538,8 @@ reversing 2026-10-20's "an already-selected section": the `text` cursor shows on
   widened to it (so `limeTree` now names five templates), but **every section has its own tree**: a
   `Lattice*` function (`LatticeHero`, `LatticeBio`, `LatticeMedia`, `LatticeGallery`,
   `LatticeRepertoire`, `LatticeMap`, `LatticePricing`, `LatticeCalendar`, `LatticeForm`,
-  `LatticeTestimonials`, `LatticeFooter`) standing on `s.limeTree && s.lattice` *after* the section's
-  hooks and seam, so a section's published controls are the shared seam's and only its picture is
+  `LatticeTestimonials`, `LatticeFooter`) standing on `s.lattice` (and the branch's own `s.v0` / `s.limeTree`,
+  per site) *after* the section's hooks and seam (the hookless bio, hero and footer stand at the head), so a section's published controls are the shared seam's and only its picture is
   Lattice's. Its frames are an HTML-to-Figma import with no variable modes, so each section's twin was
   settled by composition and geometry; `limeTreeTheme` is **not** widened (its three seeds are
   per-section calls). It **carries `schemes`** (`THEMES[5]`: Scheme 1 `#DADADA` / `#111` as its palette,
@@ -554,9 +554,10 @@ reversing 2026-10-20's "an already-selected section": the `text` cursor shows on
   section names an axis and the `Archivo` link stays byte-identical; labels and mono are Azeret Mono
   (`index.html` and `preview.html`). Its **dot field is a per-width vector set, not a pattern**
   (`LATTICE_DOTS`, `latticeDotField(dev)`), its dotted disc a lossless-WebP *mask* (`LATTICE_ART`), and
-  its photography four 1536-wide JPEGs. A header `in` row, a `chars` spec or a ledger that names Pop
-  and not Lattice is **read as Pop's** by `specAt` (`data.js`: `spec[Lattice] ?? spec['*'] ?? spec.Pop`),
-  so a number a layout-2–4 pass has not re-measured is Pop's, not an absence.
+  its photography four 1536-wide JPEGs. A **`chars` / `count` / `num` spec** that names templates but neither Lattice
+  nor `'*'` is **read as Pop's** by `specAt` (`data.js`: `spec[Lattice] ?? spec['*'] ?? spec.Pop`), so a cap a
+  layout-2–4 pass has not re-measured is Pop's, not an absence. **`in` rows and the `INLINE_OFF` / `PHOTO_OFF`
+  ledgers have no such fallback**: an `in` object that names neither Lattice nor `'*'` *reads* the field.
 - **`FIELDS` exposes every key any layout reads. A layout that does not consume a key simply
   ignores it, and the panel hides it**: a field's `in` lists the designs that read it (0-based,
   `arch % designCount` and never the raw `arch`; an array, or an object keyed by template with

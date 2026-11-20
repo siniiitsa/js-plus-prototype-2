@@ -496,8 +496,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // decision 2).
     pop: T.name === 'Pop',
     // Lattice's layout-1 page (plans/lattice/layout-1.md) widens no Lime block: each of its
-    // eleven sections is a `Lattice*` tree of its own, standing on `limeTree && lattice`
-    // (after the shared section's hooks and seam). What only Lattice draws — the dot field,
+    // eleven sections is a `Lattice*` tree of its own, standing on `lattice` (and the branch's
+    // own `v0` / `limeTree`, per site) after the shared section's hooks and seam. What only Lattice draws — the dot field,
     // bracket corners, the dotted art, the square chips — goes behind this flag.
     lattice: T.name === 'Lattice',
     // The templates whose pages are Lime's component trees — the four that widen

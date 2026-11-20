@@ -304,8 +304,8 @@ cannot be dressed in a shared branch by a paired walk, so the rows of A, B and C
 | *Where the seam lives inside the branch, the block goes after the seam; where the section owns no hook, it stands at the head* | lime/layout-1, *Settled in section 4* (C) | after the seam: media, gallery, repertoire, map, pricing, calendar, form, testimonials; at the head: bio, footer (`Bio` and `Footer` have no hook) |
 | *A scheme is seated by `SCHEMES_OF` and a nested node reads `s.onScheme[n]`* | editorial/layout-1, decision 3; pop/layout-1, decision 4 | session 0 (Schemes 1–9 off an alias walk of the SAAS collection), the hero, pricing, gallery, calendar, map |
 | *`THEME_RAMP` is layered over the others and every other template's ramp stays byte-identical* | lime/layout-1, pop/layout-1 | session 0 |
-| *`scripts/ems-table.mjs` makes the face's width table* (`LATTICE_EM`, `latticeEms`, then +0.004em a glyph at every fit) | editorial/display-face.md, pop/layout-1 | the hero's title, the bio's head, the quote, the footer's statement |
-| *`defaultTrackArt` reads a template's own `rowArt` before `ROW_ART`* | notes/photography.md | media |
+| *`scripts/ems-table.mjs` makes the face's width table* (`LATTICE_EM`, `latticeEms`, then +0.004em a glyph at every fit) | lattice/layout-1, *Settled in session 0* (Fraunces' recipe) | the hero's title, the bio's head, the quote, the footer's statement |
+| *`defaultTrackArt` reads a template's own `rowArt` before `ROW_ART`* | lattice/layout-1, *Settled in session 0* (Photography) | media |
 | *A frame label the tester can retype is a seeded, uncased, drop-when-emptied field; an eyebrow with no such field is not drawn* | CLAUDE.md, JP-071; lattice/layout-1, decision 1 | every section (the `[ 00N ]` eyebrows) |
 | *The two-build digest, positive control first* (the old tree answers none of the new symbols) | memory: `digest-two-servers` | every section; the sweep (themes 0–4 zero rows) |
 

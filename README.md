@@ -707,9 +707,9 @@ These are intentional limits, not oversights — see §12 for the full list. The
   (*JustPay — Batch 2*) with no component sets or variable modes, so its eleven sections were each read by
   composition and geometry, and **none widens a Lime block** — each is a `Lattice*` tree of its own
   (hero, bio, media, gallery, repertoire, map, pricing, calendar, form, testimonials, footer) standing on
-  `s.limeTree && s.lattice` after the shared section's hooks and seam, so every published control is the
+  `s.lattice` (with the branch's own `s.v0` / `s.limeTree`) after the shared section's hooks and seam, so every published control is the
   shared one and only the picture is Lattice's. Its page alternates near-black `#111`, light `#F2F2F2` and
-  grey `#D9D9D9` grounds with an orange `#ED6D40` testimonials band, every edge straight, on 1px hairline boxes
+  grey `#DADADA` grounds with an orange `#ED6D40` testimonials band, every edge straight, on 1px hairline boxes
   and square 3px chips, with bracket-cornered Book Now buttons, a per-width vector dot field, dotted
   raster art in place of a seal or a map, and Archivo at its expanded width (`Archivo Lattice`, an
   `@font-face` alias) over Azeret Mono. Its header is the hamburger-and-Book-Now bar of every template, the
