@@ -90,7 +90,7 @@ frame's aspect assume the old numbers, so section 1 re-measures them (open quest
 | 8 | `calendar` | `1:1039` | 1440 × 781 | `1:9670` | 768 × 564 | `1:10640` | 390 × 894 | Light; one bordered card: month grid left, `[ 007 ] AVAILABILITY` and a torus art right, an enquiry foot with Continue · **Lime's *Scheduler*** | done 8574802 |
 | 9 | `form` | `1:1147` | 1440 × 689 | `1:9778` | 768 × 990 | `1:10748` | 390 × 1230 | Dark; one bordered card: context panel (avatar, title, three promises) + the form (name, email, date, guests, event-type chips, message, Book Now) · **Lime's *Split context + form*** | done 0b27a05 |
 | 10 | `testimonials` | `1:1222` | 1440 × 730 | `1:9851` | 768 × 730 | `1:10821` | 390 × 730 | Orange `#ED6D40` with a dot field; one bordered quote card, two arrow squares, a byline and two tag chips · **Lime's *Stacked tag card*** (verdict: new own block `LatticeTestimonials`) | done 6a6c6a6 |
-| 11 | `footer` | `1:1251` | 1440 × 480 | `1:9880` | 768 × 612 | `1:10850` | 390 × 586 | Dark; wordmark, the dotted disc, a closing headline, two link columns, Book Now, a rule, copyright and *A JustPay Product* · **Lime's footer** | open |
+| 11 | `footer` | `1:1251` | 1440 × 480 | `1:9880` | 768 × 612 | `1:10850` | 390 × 586 | Dark; wordmark, the dotted disc, a closing headline, two link columns, Book Now, a rule, copyright and *A JustPay Product* · **Lime's footer** (verdict: new own-tree block `LatticeFooter`) | done 33b176d, fixed ca4a3cb |
 | — | `video` | *none* | — | — | — | — | — | not on this page: it takes session 0's tokens and nothing else (the frames draw it at layouts 2 and 4 only) | — |
 
 The **ground sequence** read from the pictures: photo · `#D9D9D9` · `#111` · `#F2F2F2` · `#111` · `#D9D9D9` · `#111` ·
