@@ -631,6 +631,13 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     const v = Z.dev === 'desktop' ? '78.72px' : Z.dev === 'tablet' ? '77px' : '58px'
     vm.pad = `${v} calc(${vm.surplus} + ${Z.dev === 'desktop' ? '40.15px' : Z.dev === 'tablet' ? '26.11px' : '24px'}) ${v}`
   }
+  // …and the footer's (1:1251 · 1:9880 · 1:10850): 96 top and 80 foot at 1440 (x 0.82, 78.72 and 65.6), 56 and 40
+  // at 768 and 390, the same content insets. The 1440 master is a 480 floor round a 302.19 box, so the block's
+  // `minHeight` holds it and centres the content (96.91 / 80.9); the narrow ones are their natural height.
+  if (d === 0 && cat === 'footer' && T.name === 'Lattice') {
+    const desk = Z.dev === 'desktop'
+    vm.pad = `${desk ? '78.72px' : '56px'} calc(${vm.surplus} + ${desk ? '40.15px' : Z.dev === 'tablet' ? '26.11px' : '24px'}) ${desk ? '65.6px' : '40px'}`
+  }
   // Layout 2's sections stand on their own frames' insets (JP-094, user call,
   // 2026-10-02, reversing Retro's "fit the card, not the frame height" for the
   // templates whose pages are Lime's tree, Pop's included). The page frames stack their
@@ -2324,6 +2331,11 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   vm.footerWordEms = T.name === 'Editorial' || T.name === 'Pop'
     ? +Math.max(0, ...vm.footerStatement.split(/\s+/).map(navFace)).toFixed(3)
     : undefined
+  // Lattice's layout-1 footer fits its statement to its 11em measure the same way, in the alias's table with its
+  // 0.004em tracking per glyph (the header's and the bio's rule).
+  if (T.name === 'Lattice') {
+    vm.footerWordEms = +Math.max(0, ...vm.footerStatement.split(/\s+/).map((w) => latticeEms(w) + 0.004 * [...w].length)).toFixed(3)
+  }
   // The sitemap is the artist's now, so a row carries where it goes as well as
   // what it says — and it goes to one of two kinds of place, which is BookPill's
   // own `ext ? … : to` seam moved down to the row. 'link' takes the row's own
@@ -5439,7 +5451,7 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                   const cap = fieldCapOf(sec, f, sections, themeName, design)
                   const caps = colCaps(f, themeName, design)
                   // An identity key says where else the page prints it, off the same table that lists it.
-                  const hint = f.shared ? identityHint(f, sec, sections, themeName) : f.hint
+                  const hint = f.shared ? identityHint(f, sec, sections, themeName) : f.hint && typeof f.hint === 'object' ? (f.hint[themeName] ?? f.hint['*']) : f.hint
                   const noMail = f.k === 'email' && sec.cat === 'calendar'
                     && !emailAddr(val) && !(String(val).trim() && emailProblem(val))
                   return (

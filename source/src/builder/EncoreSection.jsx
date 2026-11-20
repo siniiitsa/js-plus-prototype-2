@@ -31301,6 +31301,146 @@ function EnquiryForm({ s }) {
   )
 }
 
+// Lattice's layout-1 footer (1:1251 · 1:9880 · 1:10850, 480 / 612.19 / 586.19 tall; plans/lattice/layout-1.md,
+// *Settled in section 11*): a block of its own, ahead of Lime's, because `Footer` owns no hook. Every number is
+// the frame's (desktop x 0.82 through `u`, 768 and 390 verbatim, raw sizes 40 / 32 / 26 statement and 12 / 11
+// mono, not the ramp). Desktop is a 12-column grid at 24 (the left block on columns 1-7, the links on 9-12);
+// 768 and 390 stack the two blocks, 36 / 28 apart. The left block carries a 1px right border at every width
+// (the frame's, which the narrow masters keep at the stacked block's right edge): the wordmark row (a nine-dot
+// mark, the name in mono, a 96 rule) over the closing statement, with the header's dotted disc hung 70 off its
+// right and 10.5 off its top at 1440 and 768 (the 390 master draws none). The links are a 2 x 4 grid READ ROW BY
+// ROW (`s.footerLinks`, the frame's DOM order, not the halved `footerCols`), 40-tall rows 4 apart, over the
+// bracketed Book Now 24 below; a rule and the orange small print close it, 28 under. The glow is the root's.
+function LatticeFooter({ s }) {
+  const desk = !s.narrow
+  const k = desk ? 0.82 : 1
+  const u = (v) => `${Math.round(v * k * 100) / 100}px`
+  const ink = s.tx
+  const mono = (size, extra) => ({
+    fontFamily: s.mono, fontSize: size, lineHeight: 1.2, letterSpacing: '0.04em', textTransform: 'uppercase', ...extra,
+  })
+  // `vm.pad`'s top and foot (EncoreBuilder.jsx): 96 / 80 at 1440, 56 / 40 narrow. The 480 floor at 1440 centres
+  // the content in the rest (the frame's 96.91 / 80.9 are 96 / 80 round a 302.19 box and 1.81 spare).
+  const padT = desk ? 78.72 : 56
+  const padB = desk ? 65.6 : 40
+  const size = s.mob ? 26 : s.narrow ? 32 : 40
+  const showDisc = s.showBadge === 'show' && s.latticeDisc && !s.mob
+  // The disc's ink stands 70 off the block's right: the group's measure stops 20 short of its left edge.
+  const discRoom = showDisc ? (70 + s.latticeDisc.discW * 2 + 20) * k : 0
+
+  const mark = (
+    <span aria-hidden style={{ position: 'relative', flex: 'none', width: u(18), height: u(18) }}>
+      {[0, 1, 2].flatMap((r) => [0, 1, 2].map((c) => (
+        <span key={`${r}${c}`} style={{ position: 'absolute', left: u(c * 7), top: u(r * 7), width: u(4), height: u(4), background: ink }} />
+      )))}
+    </span>
+  )
+  const wordmark = (
+    <div style={row(u(12), { minHeight: u(18), minWidth: 0 })}>
+      <span style={row(u(12), {
+        minWidth: 'min-content', flex: '0 1 auto',
+        ...(discRoom ? { maxWidth: `calc(100% - ${Math.round(discRoom * 100) / 100}px)` } : null),
+      })}>
+        {mark}
+        <span style={mono(u(12), { color: ink, whiteSpace: 'normal', overflowWrap: 'break-word' })}>{s.brand}</span>
+      </span>
+      <span aria-hidden style={{ height: 1, flex: '1 1 0', maxWidth: u(96), minWidth: s.narrow ? '30px' : '0px', background: ink }} />
+    </div>
+  )
+
+  // The statement's measure is 11em of its own size: it folds the seed's one typed break into the frame's three
+  // lines (UNFORGETTABLE. is 10.4em, the whole second line 16), and the fit to its widest word reads the same
+  // box, so a long word shrinks instead of running on towards the disc.
+  const statement = !!s.footerStatement && (
+    <div style={{ containerType: 'inline-size', width: '100%', maxWidth: u(11 * size), minWidth: 0 }}>
+      <h2 style={{
+        margin: 0, fontFamily: s.display, fontWeight: 500, lineHeight: 1, letterSpacing: '0.004em', textTransform: 'uppercase',
+        color: ink, whiteSpace: 'pre-wrap', overflowWrap: 'break-word',
+        fontSize: s.footerWordEms ? `min(${u(size)}, calc(100cqi / ${s.footerWordEms}))` : u(size),
+      }}>{s.footerStatement}</h2>
+    </div>
+  )
+
+  const disc = showDisc && (
+    <span aria-hidden style={{
+      position: 'absolute', pointerEvents: 'none', top: u(10.5), right: u(70),
+      width: u(s.latticeDisc.discW), height: u(s.latticeDisc.discH), background: ink,
+      WebkitMaskImage: `url("${s.latticeDisc.disc}")`, maskImage: `url("${s.latticeDisc.disc}")`,
+      WebkitMaskSize: '100% 100%', maskSize: '100% 100%',
+    }} />
+  )
+
+  const left = (
+    <div style={{
+      position: 'relative', boxSizing: 'border-box', minWidth: 0, borderRight: `1px solid ${ink}`,
+      ...col(u(64), { justifyContent: 'space-between' }),
+      ...(desk ? { gridColumn: '1 / 8' } : null),
+      containerType: 'inline-size',
+    }}>
+      {wordmark}
+      {statement}
+      {disc}
+    </div>
+  )
+
+  // The seam, restated from Lime's: an address the artist typed leaves the page in a new tab, a section id
+  // scrolls, and on the canvas both resolve to an <a> with no href at all (`navHref`). Keyed positionally.
+  const links = s.footerLinks.length > 0 && (
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', columnGap: u(24), rowGap: u(4) }}>
+      {s.footerLinks.map((l, i) => {
+        const ext = extLink(s, l.url)
+        return (
+          <a key={i} {...(ext || { href: navHref(s, l.to) })} style={mono(u(12), {
+            display: 'flex', alignItems: 'center', minHeight: u(40), minWidth: 0, color: ink, cursor: 'pointer',
+            textDecoration: 'none', lineHeight: u(14), overflowWrap: 'anywhere',
+          })}>{l.label}</a>
+        )
+      })}
+    </div>
+  )
+  // `bookTo` with no self-exclusion filter (`footer` is not in CTA_TARGETS.book); an emptied label drops it.
+  const pill = !!s.footerCta && (
+    <div style={{ display: 'flex' }}>
+      <BracketButton s={s} to={s.bookTo} label={s.footerCta} k={k} style={{ fontSize: u(12) }} />
+    </div>
+  )
+  const right = (links || pill) ? (
+    <div style={col(u(24), { minWidth: 0, ...(desk ? { gridColumn: '9 / 13' } : null) })}>
+      {links}
+      {pill}
+    </div>
+  ) : null
+
+  const small = (
+    <div style={{
+      boxSizing: 'border-box', borderTop: `1px solid ${ink}`, paddingTop: u(20),
+      ...row(u(16), { alignItems: 'flex-start', justifyContent: 'space-between' }),
+      ...mono(u(11), { color: s.text3 }),
+    }}>
+      {!!s.copyright && <span style={{ flex: '1 1 0', minWidth: 0, overflowWrap: 'anywhere' }}>{s.copyright}</span>}
+      <span style={{ flex: 'none', marginLeft: 'auto', textAlign: 'right' }}>{s.footerCredit}</span>
+    </div>
+  )
+
+  return (
+    <div style={{
+      display: 'flex', flexDirection: 'column', justifyContent: 'center',
+      ...(desk ? { minHeight: `calc(${u(480)} - ${padT + padB}px)` } : null),
+    }}>
+      <div style={col(u(28))}>
+        {desk ? (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, minmax(0, 1fr))', columnGap: u(24), alignItems: 'stretch' }}>
+            {left}{right}
+          </div>
+        ) : (
+          <div style={col(u(s.mob ? 28 : 36))}>{left}{right}</div>
+        )}
+        {small}
+      </div>
+    </div>
+  )
+}
+
 // §10.2 reference design: the wordmark over the statement to the left of a
 // full-height rule, the two link columns and the Book Now pill to its right,
 // the seal hung off the left column's outer edge, and the small print under a
@@ -31317,6 +31457,9 @@ function EnquiryForm({ s }) {
 // *below* the statement and around the link block — the breathing room that
 // holds each hairline off its content — is kept.
 function Footer({ s }) {
+  // Lattice's layout-1 footer is a block of its own (LatticeFooter). `Footer` owns no hook, so the block can
+  // stand at the head of the function, ahead of Lime's; the seam is restated in it.
+  if (s.limeTree && s.lattice) return <LatticeFooter s={s} />
   const scale = s.narrow ? 1 : 0.82
   const u = (v) => `${Math.round(v * scale)}px`
 
@@ -32037,6 +32180,11 @@ export default function EncoreSection({ s }) {
       ...(s.te && s.v0 && s.lattice && s.testiDots && {
         backgroundImage: `url("${s.testiDots.uri}")`, backgroundRepeat: 'repeat-y',
         backgroundPosition: 'left center', backgroundSize: `100% ${s.testiDots.h}px`,
+      }),
+      // …and the footer's teal glow: the frames' one radial gradient, 60% x 55% of the section at 85% / 40%,
+      // teal at 14% to nothing at 70%, the same at all three widths (the root's own; the footer draws no dot field).
+      ...(s.ft && s.lattice && {
+        backgroundImage: `radial-gradient(ellipse 60% 55% at 85% 40%, ${s.glow}24, ${s.glow}00 70%)`,
       }),
       // …and the form's warm glow: the frames' one radial gradient, 60% x 55% of the section at 20% / 50%,
       // orange at 14% to nothing at 70%, the same at all three widths (the root's own).

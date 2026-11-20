@@ -3513,22 +3513,30 @@ export const FIELDS = {
   ],
   footer: [
     // Session 11 of the character-limits pass (plans/char-limits.md): a display
-    // head held to its frame's lines, the seed's 36 its floor on four templates.
+    // head held to its frame's lines, the seed's 36 its floor on four templates. Lattice's measured
+    // 2026-11-20 (limits.mjs footer --themes=5): 37 at all three widths, three lines in its 11em measure.
     { k: 'statement', l: 'Statement', type: 'area', d: FOOTER_STATEMENT,
-      chars: { Grunge: [45], '*': [36] } },
+      chars: { Grunge: [45], Lattice: [37], '*': [36] } },
     // The eighth structured editor and the seventh repeater — and the section's
     // whole sitemap, which was a constant no field could reach. Follows the
     // `songs` rule: an absent key means the seeded FOOTER_LINKS, an emptied
     // array means no links at all, and there is no null sentinel.
     { k: 'links',    l: 'Footer links', type: 'links', max: 10,
       // Read in every row at once: the two columns stand side by side (session 11).
-      cols: { label: { Retro: [19], Lime: [28], Grunge: [28], Editorial: [20], Pop: [14] } },
-      hint: 'The list is halved into two columns, in order. A link scrolls to a section on the page, or opens a web address in a new tab.' },
+      // Lattice's measured: 19 at 390 (a one-line label in its 159-wide cell; 24 at 1440, 41 at 768).
+      cols: { label: { Retro: [19], Lime: [28], Grunge: [28], Editorial: [20], Pop: [14], Lattice: [19] } },
+      hint: {
+        '*': 'The list is halved into two columns, in order. A link scrolls to a section on the page, or opens a web address in a new tab.',
+        // Lattice's frames set the links as a grid read across (plans/lattice/layout-1.md, section 11).
+        Lattice: 'The links stand two to a row, read across and then down. A link scrolls to a section on the page, or opens a web address in a new tab.',
+      } },
     // Dead until the pill was given a target — the calendar's `cta`, which was
     // a field that edited nothing until it labelled that section's foot pill.
     // Its cap is a joint split with the link labels, which share its column
     // (session 11).
-    { k: 'cta',      l: 'Button', d: 'Book Now', chars: { Editorial: [12], Pop: [11], '*': [16] },
+    // Lattice's bracket box stands alone under the links, so its cap is the page's (measured: 36 at 390,
+    // 49 at 1440, 82 at 768).
+    { k: 'cta',      l: 'Button', d: 'Book Now', chars: { Editorial: [12], Pop: [11], Lattice: [36], '*': [16] },
       hint: 'Books at the enquiry form, the calendar or the pricing section — whichever the page carries. Empty drops the button.' },
     // The same key the header's seal takes: `vm.showBadge` already reads this
     // section's own content, so the footer's seal was hidable by nothing only
@@ -3536,7 +3544,8 @@ export const FIELDS = {
     { k: 'showBadge', l: 'Seal', type: 'select', opts: SHOW_HIDE, d: 'show' },
     // Defaults to copyrightOf(name), special-cased.
     { k: 'copyright', l: 'Small print',
-      chars: { Retro: [31], Lime: [28], Grunge: [32], Editorial: [24], Pop: [35] } },
+      // Lattice's measured: 25 at 390, a one-line copyright beside the credit (75 at 768, 157 at 1440).
+      chars: { Retro: [31], Lime: [28], Grunge: [32], Editorial: [24], Pop: [35], Lattice: [25] } },
   ],
 }
 
@@ -4021,7 +4030,9 @@ export const IDENTITY_CHARS = {
     seal: { Retro: [19] },
   },
   footer: {
-    title: { Retro: [24], Lime: [46], Grunge: [54], Editorial: [39], Pop: [10] },
+    // Lattice's measured (limits.mjs footer --themes=5, `who.title`): the wordmark and the copyright both take
+    // the name, two lines at the least width: 39 (87 at 1440, 76 at 768). Its ring is not drawn (no `seal` row).
+    title: { Retro: [24], Lime: [46], Grunge: [54], Editorial: [39], Pop: [10], Lattice: [39] },
     seal: { Retro: 19, Lime: 13, Grunge: 14, Editorial: 16, Pop: 12 },
   },
   form: {

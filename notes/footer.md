@@ -116,3 +116,31 @@ another `notes/` file.
     counter knows nothing of that clamp.
   - **The page's seat moves no text**: every text rect and ring `textPath` reads the same at
     `&page=` 0–3, so the harness's page-less render measures every page.
+
+## Lattice — layout 1 (2026-11-20; `plans/lattice/layout-1.md`, *Settled in section 11*)
+
+- **The block is `LatticeFooter`, standing at the head of `Footer` on `s.limeTree && s.lattice`, ahead of Lime's block.** `Footer` owns no hook (the grep over the whole function for
+  `useState | useRef | useId | useEffect | useMemo | useCallback | useReducer` finds none), so, unlike every section since the bio, no early return can change a hook count; **if `Footer` ever gains a
+  hook, this dispatch must move below it.** The seam is restated in the block: `extLink` / `navHref` per link row, `BracketButton` on `bookTo` (no self-exclusion filter, as the pill's note says), the pill dropped
+  with its label. Frames `1:1251` · `1:9880` · `1:10850` (1440 x 480, 768 x 612.19, 390 x 586.19); desktop x 0.82 through `u`, 768 and 390 verbatim, raw sizes (40 / 32 / 26 statement, 12 / 11 mono), not the ramp.
+- **The links are read ROW BY ROW, from `vm.footerLinks`, not halved from `vm.footerCols`.** The frame's DOM order is `About, Top Tracks / Media, Repertoire / Shows, Pricing / Enquiries, Reviews`, which is
+  `FOOTER_LINKS`' own order, laid in a 2-column grid. The halved columns every other template draws would put *About, Top Tracks, Media, Repertoire* down the left, where the frame draws *About, Media, Shows,
+  Enquiries*. An odd count leaves the last row one link (the first column long, as the notes' rule wants); an empty list drops the grid and the pill stands alone. The panel's hint says so for Lattice
+  (`FIELDS.footer.links.hint` is `{ '*': …, Lattice: … }`, `EditPanel` reads the template's).
+- **The 12-column grid** (89.84, gap 24) puts the left block on columns 1-7 and the links on 9-12 at 1440. 768 and 390 stack them, **36 and 28 apart**, the frames' own numbers. The left block carries a
+  **1px right border at every width**: at 768 and 390 it stands at the stacked block's right edge, which looks like an import leftover and is drawn as the frame renders (a call to confirm).
+- **The statement** is `Archivo Lattice` 500, line 1, +0.004em, uppercase, in a wrapper of **11em of its own size** (a container, `inline-size`): the seed's one typed break plus that measure fold the frame's three hand-broken
+  lines at all three widths (UNFORGETTABLE. is 10.4em; *YOUR NIGHT UNFORGETTABLE.* 16em). The fit to the widest word (`vm.footerWordEms`, Lattice's own line in `sectionVm`, the alias's table plus 0.004em a glyph) reads that same box,
+  so a long word shrinks instead of running on towards the disc. The 11em is chosen, not read (a call to confirm).
+- **The disc is the header's raster** (the 400 x 400 ink box of the frame's footer is the file `LATTICE_ART.disc` was cut from: crop (74, 95), 256 x 162, ink 250 x 156), a mask inked `s.tx`, 128 x 81, **70 off the block's
+  right and 10.5 off its top**, at 1440 and 768; the 390 master draws none, so the footer's `showBadge` (Show / Hide, the footer's own field) changes nothing at 390 (the bio's 390 is the same). It is no ring and does not
+  spin. The wordmark group's measure stops 20 short of the disc's left edge while it is drawn (`discRoom`, JP-122's rule in the other direction): the measured name cap (39) never reaches it, but a typed one past the cap
+  stored in the content would.
+- **The small print** is `s.text3` (orange) mono 11 on a 1px full-ink rule inside the content insets, 20 under it; the copyright takes the room the credit leaves and wraps, the credit never does (`A JustPay Product` is `FOOTER_CREDIT`,
+  a literal). An emptied copyright leaves the credit at the right.
+- **Ground and glow.** Scheme 8 (`#111`, `SCHEMES_OF.Lattice` row 0; `footerBand` is undefined for Lattice, so `page === 2` reads the same ground). The glow is the root's own `radial-gradient(ellipse 60% 55% at 85% 40%, glow 14%, 0
+  at 70%)`, which all three masters' `gradientTransform`s reduce to. **No dot field** (the frames draw none), so the root holds no `url()`. `vm.pad` is 96 / 80 at 1440 (x 0.82: 78.72 / 65.6) with the block's `minHeight` flooring the section at
+  480 x 0.82 and centring the content in it (the frame's 96.91 / 80.9); 56 / 40 narrow, where the section is its natural height.
+- **Caps** (`limits.mjs footer --themes=5`, then `--check`: 0 fail; `--seeds`: 0 over): statement **37**, link label **19**, button **36**, copyright **25**, the name (`IDENTITY_CHARS.footer.title`) **39**. The ring is not drawn,
+  so `who.seal` reads *unseen* and `IDENTITY_CHARS.footer.seal` keeps Pop's number, unread.
+- **The seed's `Shows/Coverage`** (`navLabel('map')`, shared with the header's nav) prints where the frame draws *Shows*; the label is the artist's copy, so it is not forked.
