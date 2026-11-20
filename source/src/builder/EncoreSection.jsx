@@ -11215,6 +11215,170 @@ function LatticePricing({ s, g }) {
   )
 }
 
+// Paperback · layout 1 (plans/paperback/layout-1.md, section 7; frames 1:2968 · 1:11610 · 1:12793, 1067.4 / 1478.6 / 2037.2 tall). White page
+// (Scheme 2, the section's own ground), a Bricolage head with three sparkles hung 16 off the end of its measure, a pale-yellow pill toggle (right of
+// the head and bottom-aligned at 1440 and 768, under it at 390), and the packages as 500-tall 24-radius cards turned -3 / +2 / -2 degrees about their
+// own centres (lilac, pink, cyan by the package's place in the WHOLE list, so a filter never recolours one): the name over the unit, the price in the
+// display face, the blurb, ticked rows and the shared split Book pill at the card's foot. A yellow star-in-disc badge turned 12 degrees stands on the
+// top-right corner of package 1 (the frames' featured card). Three columns at 1440, two at 768 with an odd last card spanning both, one at 390.
+// The bio's stage pattern: frame px verbatim in cqw, vertical insets in a child, `vm.pad = '0px <surplus>'`. Not drawn (call 1): the script `Pricing`
+// (its 58 / 56 / 53 seat stays as padding) and the ring text on the badge (no field). The published chip filter, the Book pill's target and the
+// `s.live` gate are `Pricing`'s, handed over in `g`.
+const PAPER_CYAN = '#1CE8ED'
+const PAPER_PRICING = {
+  desktop: {
+    fw: 1440, top: 96, foot: 96, side: 48.96, gap: 40, hw: 665.05, h2: 77.76, seat: 58, headH: 256.67, fit: 1, cols: 3, colGap: 28, pad: '28px 28px 27px', fs: 18, price: 72, priceLh: 57.6,
+    badge: [128, 23.9, 6], tail: 22, sub: 26, subLh: 24.7, subH: 39, tab: 42,
+  },
+  tablet: {
+    fw: 768, top: 77, foot: 77, side: 26.11, gap: 40, hw: 429.39, h2: 48, seat: 56, fit: 1, cols: 2, colGap: 28, pad: '24px 21px 24px', fs: 18, price: 48, priceLh: 38.4,
+    badge: [128, 50.1, 8], tail: 18, sub: 26, subLh: 24.7, subH: 39, tab: 42,
+  },
+  mobile: {
+    fw: 390, top: 58, foot: 58, side: 24, gap: 40, hw: 342, h2: 38, seat: 53, fit: 1, cols: 1, colGap: 28, pad: '20px 16px 20px', fs: 18, price: 38, priceLh: 30.4,
+    badge: [104, 54, 8.1], tail: 16, sub: 24, subLh: 22.8, subH: 60, tab: 42,
+  },
+}
+const PAPER_PRICE_TURN = [-3, 2, -2]
+function PaperbackPricing({ s, g }) {
+  const { shown, active, pressChip } = g
+  const dev = s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop'
+  const P = PAPER_PRICING[dev]
+  const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
+  const O = s.onScheme
+  const ink = O[8].bg
+  const yellow = O[1].box2
+  const label = (size, extra) => ({ fontFamily: s.label, fontWeight: 700, fontSize: size, letterSpacing: '-0.01em', ...extra })
+  const display = (size, lh, extra) => ({ fontFamily: s.display, fontWeight: 800, fontSize: size, lineHeight: lh, letterSpacing: '-0.035em', ...extra })
+  const body = (size, extra) => ({ fontFamily: s.body, fontWeight: 600, fontSize: size, letterSpacing: '-0.01em', ...extra })
+  // The three seats: the card's ground, the ink on it, and the tick's disc (the tick itself takes the card's ground).
+  const SEATS = [
+    { bg: O[6].bg, fg: ink, disc: ink },
+    { bg: O[5].bg, fg: PAPER_WHITE, disc: PAPER_WHITE },
+    { bg: PAPER_CYAN, fg: ink, disc: ink },
+  ]
+
+  // The head, fitted to its widest word in the frame's measure, with its three sparkles 16 off the measure's right edge.
+  const sparkle = (dx, top, size, fill) => (
+    <PaperbackSparkle size={16} fill={fill} aria-hidden style={{ position: 'absolute', pointerEvents: 'none', left: u(P.hw + dx), top: u(top), width: u(size), height: u(size) }} />
+  )
+  const h2 = String(s.title || '').trim() ? (
+    <h2 style={{
+      margin: 0, width: u(P.hw), maxWidth: '100%', color: s.tx,
+      ...display(s.titleWordEms ? `min(${u(P.h2)}, calc(${u(P.hw)} / ${(s.titleWordEms * P.fit).toFixed(3)}))` : u(P.h2), 0.85),
+    }}>{s.title}</h2>
+  ) : null
+  const head = (
+    <div style={{ position: 'relative', flex: 'none', width: u(P.hw), maxWidth: '100%', paddingTop: u(P.seat), minHeight: u(P.headH ?? P.seat) }}>
+      {h2}
+      {sparkle(16, 96, 44, O[5].bg)}
+      {sparkle(58, 74, 26, yellow)}
+      {sparkle(68, 122, 16, O[6].bg)}
+    </div>
+  )
+
+  // The toggle: a pale-yellow pill 5 in, 4 between tabs, the lit one ink. It stands over two or more tags only, and at rest none is lit (JP-089).
+  const tabs = s.tierChips.length > 1 ? (
+    <div style={{
+      ...row(u(4), { flexWrap: 'wrap' }), boxSizing: 'border-box', flex: 'none', maxWidth: '100%', padding: u(5), background: O[9].bg, borderRadius: s.radiusChip,
+      marginLeft: s.mob ? undefined : 'auto',
+    }}>
+      {s.tierChips.map((f, i) => (
+        <span key={i} onClick={s.live ? () => pressChip(i, active) : undefined} style={{
+          ...label(u(15)), display: 'inline-flex', alignItems: 'center', justifyContent: 'center', boxSizing: 'border-box', height: u(P.tab), padding: `0 ${u(18)}`,
+          borderRadius: s.radiusChip, whiteSpace: 'nowrap', background: i === active ? ink : undefined, color: i === active ? PAPER_WHITE : ink, cursor: s.live ? 'pointer' : undefined,
+        }}>{f.label}</span>
+      ))}
+    </div>
+  ) : null
+
+  const cards = shown.map((t, i) => {
+    const S = SEATS[t.n % 3]
+    const turn = PAPER_PRICE_TURN[t.n % 3]
+    const span = P.cols === 2 && i === shown.length - 1 && shown.length % 2 === 1
+    const [bs, bx, by] = P.badge
+    return (
+      // Keyed on the package's place in the WHOLE list, layout 1's rule.
+      <div key={t.n} style={{ position: 'relative', minWidth: 0, display: 'flex', gridColumn: span ? '1 / -1' : undefined }}>
+        <div style={{
+          ...col(u(16), { flex: '1 1 auto' }), boxSizing: 'border-box', minWidth: 0, minHeight: u(500), padding: `${P.pad.split(' ').map((v) => u(parseFloat(v))).join(' ')}`,
+          background: S.bg, color: S.fg, borderRadius: u(24), transform: `rotate(${turn}deg)`,
+        }}>
+          <div style={row(u(12), { justifyContent: 'space-between' })}>
+            <span style={label(u(P.fs), { lineHeight: u(21.6), color: S.fg, minWidth: 0 })}>{t.name}</span>
+            {!!s.tierUnit && <span style={label(u(13), { color: S.fg, opacity: 0.8, minWidth: 0, textAlign: 'right' })}>{s.tierUnit}</span>}
+          </div>
+          {/* The price is one run in the display face, as the frame sets `£450`: the lead, the numeral and a range's second half are spans of the one size,
+              so a long tail wraps at its spaces. A digit-less price (prose) sets a size smaller and wraps anywhere in its seat. */}
+          <div style={{
+            minHeight: u(P.priceLh), minWidth: 0, ...display(t.prose ? u(P.price * 0.6) : u(P.price), t.prose ? 1.05 : 0.8, { color: S.fg }),
+            ...(t.prose ? { overflowWrap: 'anywhere' } : {}),
+          }}>
+            {!!t.lead && <span style={{ display: 'inline-block' }}>{t.lead}</span>}
+            <span style={t.prose ? undefined : { display: 'inline-block', whiteSpace: 'nowrap' }}>{t.amount}</span>
+            {!!t.tail && <span style={{ marginLeft: '0.25em' }}>{t.tail}</span>}
+          </div>
+          {!!t.blurb && <p style={body(u(16), { margin: 0, lineHeight: u(20.8), color: S.fg })}>{t.blurb}</p>}
+          {t.feats.length > 0 && (
+            <div style={col(0)}>
+              {t.feats.map((f, j) => (
+                <div key={j} style={row(u(10), { alignItems: 'flex-start', padding: `${u(6)} 0` })}>
+                  <span aria-hidden style={{
+                    flex: 'none', width: u(19), height: u(19), borderRadius: '50%', background: S.disc, color: S.bg, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                    fontFamily: '"Times New Roman", Times, serif', fontWeight: 800, fontSize: u(11),
+                  }}>✓</span>
+                  <span style={body(u(16), { lineHeight: u(19), color: S.fg, minWidth: 0 })}>{f}</span>
+                </div>
+              ))}
+            </div>
+          )}
+          {!!s.tierRowCta && (
+            <div style={{ marginTop: 'auto', paddingTop: u(8) }}>
+              <PaperbackPill s={s} label={s.tierRowCta} to={s.tierBookTo} u={u} bg={ink} fg={PAPER_WHITE} />
+            </div>
+          )}
+        </div>
+        {t.n === 1 && (
+          <svg viewBox="0 0 128 128" aria-hidden style={{
+            position: 'absolute', zIndex: 2, pointerEvents: 'none', overflow: 'visible', width: u(bs), height: u(bs),
+            left: `calc(100% - ${u(bx + bs / 2)})`, top: u(by - bs / 2), transform: 'rotate(12deg)',
+          }}>
+            <circle cx="64" cy="64" r="62.08" fill={yellow} stroke={ink} strokeWidth="1.92" />
+            <circle cx="64" cy="64" r="32" fill={PAPER_WHITE} stroke={ink} strokeWidth="1.92" />
+            <PaperbackArt name="star" x={47.2} y={46.56} width={33.6} height={32} />
+          </svg>
+        )}
+      </div>
+    )
+  })
+
+  return (
+    <div style={{ position: 'relative', containerType: 'inline-size', overflow: 'hidden' }}>
+      <div style={{ paddingTop: u(P.top), paddingBottom: u(P.foot) }}>
+        <div style={col(u(P.gap), { margin: `0 ${u(P.side)}`, ...WRAP_LONG })}>
+          <div style={s.mob ? col(u(24), { alignItems: 'flex-start' }) : row(u(24), { flexWrap: 'wrap', alignItems: 'flex-end', justifyContent: 'space-between' })}>
+            {head}
+            {tabs}
+          </div>
+          {cards.length > 0 && (
+            <div style={{ display: 'grid', alignItems: 'stretch', gap: u(P.colGap), gridTemplateColumns: `repeat(${P.cols}, minmax(0, 1fr))` }}>{cards}</div>
+          )}
+          {s.tiers.length === 0 && (
+            <div style={{ ...label(u(18), { color: ink }), boxSizing: 'border-box', background: O[9].bg, borderRadius: u(24), padding: `${u(24)} ${u(28)}` }}>No packages yet.</div>
+          )}
+          {!!s.pricingSub && (
+            <div style={{ minHeight: u(P.subH) }}>
+              <div style={{
+                transform: 'rotate(-1deg)', fontFamily: s.script, fontWeight: 700, fontSize: u(P.sub), lineHeight: u(P.subLh), letterSpacing: '-0.01em', color: s.text3, overflowWrap: 'anywhere',
+              }}>{s.pricingSub}</div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function Pricing({ s }) {
   // The selected filter chip, gated on `s.live` below like Repertoire's: it is
   // a real control in the published tab and inert on the editor canvas, which
@@ -11318,6 +11482,8 @@ function Pricing({ s }) {
     // Lattice's layout-1 pricing is a block of its own (LatticePricing), after the seam: the chip filter and
     // the pick above are shared whole, and the block is the picture.
     if (s.limeTree && s.lattice) return <LatticePricing s={s} g={{ shown, active, pressChip }} />
+    // Paperback's (1:2968 · 1:11610 · 1:12793) is a block of its own as well, handed the same seam.
+    if (s.limeTree && s.paperback) return <PaperbackPricing s={s} g={{ shown, active, pressChip }} />
 
     if (s.limeTree) {
       const grunge = s.grunge
