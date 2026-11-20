@@ -14128,6 +14128,183 @@ function LatticeRepertoire({ s, g }) {
   )
 }
 
+// Paperback · Repertoire layout 1 (1:2689 · 1:11313 · 1:12499, 1067 / 1067 / 1655.9 tall): a yellow card (radius 40, Scheme 1's `box2`) on the white
+// page, an orange blob clipped by its top-right corner, the count at 106.56 / 66 / 43 with a -10 degree white disc hung off its end (above it at 390), a
+// white pill search, white chip pills, twelve white pill rows (a number, the title, a coloured artist chip) in two columns (one of twelve at 390) and a
+// pager of round and pill buttons. The bio's stage (`containerType: inline-size`, frame px verbatim in cqw, the vertical insets in a child); the
+// search, chips and pager are `Repertoire`'s seam handed over in `g`, as Lattice's. Not drawn (call 1): the script `Repertoire` (its seat stays
+// as padding) and the ring text the 768 and 390 discs carry (no field). The 390 card keeps the frame's 122 under the pager (64 and 58 more) when
+// a pager is drawn; with one page there is none, as at every template. The title box is a container and its text `min(1em, 100cqi / ems)`
+// (`vm.songs[].ems`), the frame's own shrink of a word that would outrun its chip (768's *Superstition* at 17).
+const PAPER_REP = {
+  desktop: {
+    fw: 1440, top: 102.62, foot: 102.62, side: 48.96, padX: 48, seat: 54.39, h2: 106.56, free: 664, search: 420, blob: [1002.08, -140],
+    disc: 132, discAt: [3.92, -24], rowGap: 12, numL: 20, numW: 40, gap: 12, rowT: 22, chipR: 20, pagerFoot: 0,
+  },
+  tablet: {
+    fw: 768, top: 80.68, foot: 80.68, side: 26.11, padX: 36, seat: 51.53, h2: 66, free: 500, search: 420, blob: [375.77, -140],
+    disc: 132, discAt: [4.58, -66], rowGap: 12, numL: 20, numW: 40, gap: 12, rowT: 22, chipR: 20, pagerFoot: 0,
+  },
+  mobile: {
+    fw: 390, top: 24, foot: 24.06, side: 24, padX: 24, seat: 48.69, h2: 43, free: 294, search: 0, blob: [2, -140],
+    disc: 104, discAt: [-86, -113], rowGap: 28, numL: 12, numW: 22, gap: 10, rowT: 20, chipR: 12, pagerFoot: 58.2,
+  },
+}
+function PaperbackRepertoire({ s, g }) {
+  const { title, q, onQuery, active, onChip, columns, shown, labels, at, onPage, onStep, noSongs } = g
+  const P = PAPER_REP[s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop']
+  const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
+  const ink = s.tx
+  const yellow = s.onScheme[1].box2
+  const label = (size, extra) => ({ fontFamily: s.label, fontWeight: 700, fontSize: size, letterSpacing: '-0.01em', ...extra })
+  // The artist chips' colours by the row's place on its page, as the frame's twelve draw them (it breaks its own six-cycle at row 7).
+  const O = s.onScheme
+  const CHIPS = [
+    [O[6].bg, ink], [s.ac, PAPER_WHITE], [yellow, ink], [O[2].box3, ink], [O[7].bg, ink], [O[8].bg, PAPER_WHITE],
+    [O[4].bg, ink], [O[6].bg, ink], [s.ac, PAPER_WHITE], [yellow, ink], [O[2].box3, ink], [O[7].bg, ink],
+  ]
+
+  // The count; the disc hangs off the wrapper that hugs it, at the offset each master draws from the string's end.
+  const h2 = String(title || '').trim() ? (
+    <h2 style={{
+      margin: 0, color: ink, fontFamily: s.display, fontWeight: 800, letterSpacing: '-0.035em', lineHeight: 0.82,
+      fontSize: s.titleWordEms ? `min(${u(P.h2)}, calc(${u(P.free)} / ${s.titleWordEms}))` : u(P.h2),
+    }}>{title}</h2>
+  ) : null
+  const disc = (
+    <svg aria-hidden viewBox="0 0 132 132" fill="none" style={{
+      position: 'absolute', display: 'block', overflow: 'visible', pointerEvents: 'none', transform: 'rotate(-10deg)',
+      left: `calc(100% + ${u(P.discAt[0])})`, top: u(P.discAt[1]), width: u(P.disc), height: u(P.disc),
+    }}>
+      <circle cx="66" cy="66" r="64.02" fill={PAPER_WHITE} stroke={ink} strokeWidth="1.98" />
+      <circle cx="66" cy="66" r="33" fill={PAPER_WHITE} stroke={ink} strokeWidth="1.98" />
+      <PaperbackArt name="heart" x="51.35" y="53.95" />
+    </svg>
+  )
+  const head = (
+    <div style={{ position: 'relative', paddingTop: u(P.seat), flex: s.narrow ? undefined : '1 1 0', minWidth: 0 }}>
+      <div style={{ position: 'relative', width: 'fit-content', maxWidth: u(P.free) }}>
+        {h2}
+        {h2 && disc}
+      </div>
+    </div>
+  )
+
+  // The hint is the placeholder (ink at .45, index.css); the canvas's span draws the same.
+  const hint = 'Search songs or artists…'
+  const hintType = { fontFamily: s.body, fontWeight: 600, fontSize: u(16), letterSpacing: '-0.01em' }
+  const search = (
+    <div style={row(0, {
+      boxSizing: 'border-box', height: u(56), flex: 'none', width: P.search ? u(P.search) : '100%', maxWidth: '100%', padding: `0 ${u(24)}`,
+      boxShadow: `inset 0 0 0 ${u(2)} ${ink}`, borderRadius: s.radiusChip, background: PAPER_WHITE, overflow: 'hidden', color: ink,
+    })}>
+      {s.live ? (
+        <input
+          value={q} placeholder={hint} aria-label="Search songs or artists"
+          onChange={(e) => onQuery(e.target.value)}
+          style={{ ...hintType, color: ink, flex: 1, minWidth: 0, border: 'none', outline: 'none', background: 'transparent', padding: 0 }}
+        />
+      ) : (
+        <span style={{ ...hintType, opacity: 0.45, minWidth: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{hint}</span>
+      )}
+    </div>
+  )
+
+  const chips = (
+    <div style={row(u(6), { flexWrap: 'wrap', rowGap: u(14) })}>
+      {s.repChips.map((f, i) => {
+        const on = i === active
+        return (
+          <span
+            key={i}
+            onClick={s.live ? () => onChip(i) : undefined}
+            style={{
+              ...label(u(15)), boxSizing: 'border-box', height: u(44), padding: `0 ${u(16)}`, display: 'inline-flex', alignItems: 'center',
+              borderRadius: s.radiusChip, background: on ? ink : PAPER_WHITE, color: on ? PAPER_WHITE : ink,
+              whiteSpace: 'nowrap', cursor: s.live ? 'pointer' : undefined,
+            }}
+          >{f.label}</span>
+        )
+      })}
+    </div>
+  )
+
+  const song = (t) => {
+    const [bg, fg] = CHIPS[(t.n - 1) % CHIPS.length]
+    return (
+      <div key={t.n} style={{
+        ...row(u(P.gap)), boxSizing: 'border-box', minHeight: u(60), padding: `${u(8)} ${u(P.chipR)} ${u(8)} ${u(P.numL)}`,
+        background: PAPER_WHITE, borderRadius: s.radiusChip,
+      }}>
+        <span style={label(u(14), { flex: 'none', width: u(P.numW), lineHeight: 1.2, color: s.text3, whiteSpace: 'nowrap' })}>{String(t.n).padStart(2, '0')}</span>
+        {/* A container, so the text can fit the room the chip leaves it: the size is set here (cqw of the stage) and the text takes `min(1em, …)`. */}
+        <span style={{ flex: '1 1 0', minWidth: 0, containerType: 'inline-size', fontSize: u(P.rowT), lineHeight: 1 }}>
+          <span style={{
+            display: 'block', color: ink, fontFamily: s.display, fontWeight: 800, letterSpacing: '-0.035em', lineHeight: 1, overflowWrap: 'anywhere',
+            fontSize: t.ems ? `min(1em, calc(100cqi / ${t.ems}))` : '1em',
+          }}>{t.title}</span>
+        </span>
+        {t.artist && (
+          <span style={{
+            ...label(u(13), { lineHeight: u(26), color: fg }), flex: '0 1 auto', minWidth: 0, maxWidth: '55%', boxSizing: 'border-box', height: u(26),
+            padding: `0 ${u(10)}`, background: bg, borderRadius: s.radiusChip, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+          }}>{t.artist}</span>
+        )}
+      </div>
+    )
+  }
+  const flat = columns.flat()
+  const list = shown.length === 0 ? (
+    <div style={{ ...label(u(16), { color: s.text3 }), background: PAPER_WHITE, borderRadius: s.radiusChip, padding: `${u(20)} ${u(P.numL)}` }}>
+      {noSongs ? 'No songs yet.' : 'No songs match that.'}
+    </div>
+  ) : (
+    <div style={{
+      display: 'grid', alignItems: 'start', columnGap: u(20), rowGap: u(P.rowGap), gridAutoFlow: 'column',
+      gridTemplateColumns: columns.length > 1 ? 'minmax(0, 1fr) minmax(0, 1fr)' : 'minmax(0, 1fr)',
+      gridTemplateRows: `repeat(${columns[0].length}, auto)`,
+    }}>{flat.map(song)}</div>
+  )
+
+  const btn = (key, child, { on, round, onClick }) => (
+    <span key={key} onClick={onClick} style={{
+      ...label(u(15)), boxSizing: 'border-box', flex: 'none', height: u(44), display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+      ...(round || s.mob ? { width: u(44) } : { padding: `0 ${u(16)}` }), borderRadius: round ? '50%' : s.radiusChip,
+      background: on ? ink : PAPER_WHITE, color: on ? PAPER_WHITE : ink, cursor: onClick ? 'pointer' : undefined, whiteSpace: 'nowrap',
+    }}>{child}</span>
+  )
+  const pager = labels.length > 0 ? (
+    <div style={row(u(6), { justifyContent: s.mob ? 'space-between' : 'flex-start' })}>
+      {btn('prev', paperArrow(u, true, ink), { round: true, onClick: onStep && (() => onStep(-1)) })}
+      {labels.map((p, i) => btn(`p${i}`, p, { on: i === at, onClick: onPage && p !== '…' ? () => onPage(p) : undefined }))}
+      {btn('next', paperArrow(u, false, ink), { round: true, onClick: onStep && (() => onStep(1)) })}
+    </div>
+  ) : null
+
+  return (
+    <div style={{ position: 'relative', containerType: 'inline-size', overflow: 'hidden' }}>
+      <div style={{ paddingTop: u(P.top), paddingBottom: u(P.foot) }}>
+        <div style={{
+          position: 'relative', overflow: 'hidden', boxSizing: 'border-box', margin: `0 ${u(P.side)}`, borderRadius: u(40), background: yellow,
+          padding: `${u(64)} ${u(P.padX)} ${u(64 + (pager ? P.pagerFoot : 0))}`,
+        }}>
+          <PaperbackArt name="blobOrange" aria-hidden style={{ position: 'absolute', left: u(P.blob[0]), top: u(P.blob[1]), width: u(460), height: u(460), pointerEvents: 'none' }} />
+          <div style={col(u(28), { position: 'relative' })}>
+            {s.narrow ? (
+              <div style={col(u(24))}>{head}{search}</div>
+            ) : (
+              <div style={row(u(24), { alignItems: 'flex-end', justifyContent: 'space-between' })}>{head}{search}</div>
+            )}
+            {chips}
+            {list}
+            {pager}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // v0 — Repertoire layout 1 · Two-column dense (§10.2 reference design)
 //
 // The reference frames stand the section on cream under a torn beige edge: a
@@ -14184,7 +14361,7 @@ function Repertoire({ s }) {
     // reference frames show.
     // Lattice's frames draw twelve a page at every width (two columns of six at 768, one of twelve
     // at 390), so it is the one template whose narrow page is not six.
-    const perPage = s.narrow && !s.lattice ? 6 : 12
+    const perPage = s.narrow && !s.lattice && !s.paperback ? 6 : 12
     // The chip index, clamped: the row is derived from the artist's tags, so a
     // tag they delete can leave `chip` past the end of it.
     const active = s.live ? Math.min(chip, s.repChips.length - 1) : 0
@@ -14209,9 +14386,9 @@ function Repertoire({ s }) {
     // page offset — not its place on the screen. Both narrow frames run the
     // whole six-song page down one column.
     const half = Math.ceil(shown.length / 2)
-    const columns = (s.narrow && !(s.lattice && !s.mob) ? [shown] : [shown.slice(0, half), shown.slice(half)])
+    const columns = (s.narrow && !((s.lattice || s.paperback) && !s.mob) ? [shown] : [shown.slice(0, half), shown.slice(half)])
       .map((cs, ci) => cs.map((t, i) => ({ ...t, n: pg * perPage + ci * half + i + 1 })))
-    const { labels, at } = pageWindow(pages, pg, s.mob, s.lattice ? 4 : undefined)
+    const { labels, at } = pageWindow(pages, pg, s.mob, s.lattice || (s.paperback && !s.mob) ? 4 : undefined)
 
     // Lime — the same component in Lime's mode (964:58592 at 1440, 986:39881 at
     // 768, 986:39893 at 390), placed after the seam as the gallery's block is:
@@ -14269,15 +14446,17 @@ function Repertoire({ s }) {
     if (s.limeTree) {
       // Lattice's layout-1 repertoire is a block of its own (LatticeRepertoire), after the seam: the
       // search, chip and pager state above is shared whole, and the block is the picture.
-      if (s.lattice) {
-        return <LatticeRepertoire s={s} g={{
+      // Paperback's (1:2689 · 1:11313 · 1:12499) is a block of its own as well, handed the same seam.
+      if (s.lattice || s.paperback) {
+        const g = {
           title, q, active, columns, shown, labels, at,
           noSongs: s.songs.length === 0,
           onQuery: (v) => { setQ(v); setPage(0) },
           onChip: (i) => { setChip(i); setPage(0) },
           onPage: s.live ? (label) => setPage(Number(label) - 1) : undefined,
           onStep: s.live ? (dir) => setPage(Math.max(0, Math.min(pages - 1, pg + dir))) : undefined,
-        }} />
+        }
+        return s.paperback ? <PaperbackRepertoire s={s} g={g} /> : <LatticeRepertoire s={s} g={g} />
       }
       const grunge = s.grunge
       const ed = s.editorial

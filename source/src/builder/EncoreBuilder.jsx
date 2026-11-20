@@ -600,7 +600,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // Paperback's layout-1 bio (1:2397 · 1:11004 · 1:12191) is a stage of its own (PaperbackBio): it carries the
   // frames' vertical insets in cqw and the horizontal ones as its columns' own seats, so the root pads only the
   // published tab's surplus.
-  if (d === 0 && (cat === 'bio' || cat === 'media' || cat === 'gallery') && T.name === 'Paperback') vm.pad = `0px ${vm.surplus}`
+  if (d === 0 && (cat === 'bio' || cat === 'media' || cat === 'gallery' || cat === 'repertoire') && T.name === 'Paperback') vm.pad = `0px ${vm.surplus}`
   // …and the media's (1:419 · 1:9052 · 1:10024): 129.43 top and foot at 1440 (x 0.82, 106.13), 77 at 768
   // and 58 at 390, the same content insets. The 390 master's head box starts 40 down (an import
   // artefact: the eyebrow row sits at y 98, not 58), so with the eyebrow removed the head takes
@@ -1503,11 +1503,11 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // cannot go on claiming 240 songs over a list of twelve. EditPanel resolves
   // the same fallback, or the panel and the canvas would disagree.
   if (cat === 'repertoire' && c.heading === undefined) {
-    vm.title = cased(`${vm.songs.length} Songs`)
+    vm.title = cased(`${vm.songs.length} ${T.name === 'Paperback' ? 'songs' : 'Songs'}`)
     // The live page counts the list the chip and the search leave, so the cased
     // heading for every possible match count is sent as data, indexed by the
     // count. Layouts 3 and 4 overwrite the title below and never read it.
-    vm.repCountTitles = Array.from({ length: vm.songs.length + 1 }, (_, n) => cased(`${n} Songs`))
+    vm.repCountTitles = Array.from({ length: vm.songs.length + 1 }, (_, n) => cased(`${n} ${T.name === 'Paperback' ? 'songs' : 'Songs'}`))
   }
   // Testimonials layout 2 heads the section with its frame's own two-line
   // display head; the other layouts keep the shared default. EditPanel mirrors
@@ -1552,8 +1552,17 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   }
   // Paperback's layout-1 bio head wraps in the frame's 431.34 column (and one line at 768 and 390) and is
   // fitted to its widest word, in Bricolage's ems less the frames' -0.035em tracking (the header's face).
-  if (T.name === 'Paperback' && (cat === 'bio' || cat === 'media' || cat === 'gallery') && d === 0) {
+  if (T.name === 'Paperback' && (cat === 'bio' || cat === 'media' || cat === 'gallery' || cat === 'repertoire') && d === 0) {
     vm.titleWordEms = +Math.max(0, ...vm.title.split(/\s+/).map((w) => bricolageEms(w) - 0.035 * [...w].length)).toFixed(3)
+  }
+  // …and its repertoire rows set a song's title in a box beside the artist's chip, shrinking the type to keep the
+  // widest word whole (the 768 frame's *Superstition* at 17, *September* at 16), so each song carries its own ems. The table is
+  // read at 1000px, where the face's optical size is at its tightest; a row's 17-22px type sets 11-12% wider (measured over
+  // twelve words: 1.109 to 1.121), so the row's ems are the table's x 1.13, or a word fitted to its box would break inside.
+  if (T.name === 'Paperback' && cat === 'repertoire' && d === 0) {
+    vm.songs = vm.songs.map((t) => ({
+      ...t, ems: +(1.13 * Math.max(0, ...t.title.split(/\s+/).map((w) => bricolageEms(w) - 0.035 * [...w].length))).toFixed(3),
+    }))
   }
   vm.testiStars = cv('stars', TESTI_STARS)
   // Layout 3's stat card prints it with a literal "/5" beside it, and an

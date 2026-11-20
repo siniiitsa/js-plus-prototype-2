@@ -3347,7 +3347,10 @@ export const FIELDS = {
         Pop: [11, 25, 17, 10],
         // Lattice layout 1 measured 2026-11-19 (limits.mjs repertoire --themes=5 --designs=0): 12 at 1440 and 390,
         // 17 at 768. The other three layouts are Pop's until their passes.
-        Lattice: [12, 25, 17, 10] } },
+        Lattice: [12, 25, 17, 10],
+        // Paperback layout 1 measured 2026-11-20 (limits.mjs repertoire --themes=6 --designs=0): 13 at 1440 and 768, 14 at 390,
+        // the count and the disc beside it. Layouts 2-4 are Pop's until their passes.
+        Paperback: [13, 25, 17, 10] } },
     // `in` is per field, and every layout reads the songs, so the hint says
     // which column each layout leaves out (JP-107): the reviews' date shape.
     // Session 5 of the character-limits pass: a tag is a chip, and at layout 3
@@ -3361,7 +3364,9 @@ export const FIELDS = {
         artist: { Retro: [32, 25, null, 41], Lime: [73, 25, null, 37], Grunge: [74, 25, null, 42],
           Editorial: [35, 25, null, 18], Pop: [18, 25, null, 19],
           // Lattice layout 1: 22 at 768 and 390 (one line beside a 17-character title); 1440 holds 44.
-          Lattice: [22, 25, null, 19] },
+          Lattice: [22, 25, null, 19],
+          // Paperback layout 1: 22 at 768 and 390 (the chip ellipsises past it, the frame's longest artist is 18); 1440 holds 48.
+          Paperback: [22, 25, null, 19] },
         length: { Retro: [null, null, 23], Lime: [null, null, 17], Grunge: [null, null, 22], Editorial: [null, null, 17],
           Pop: [null, null, 14] },
         tags: { list: ',', chars: 18, count: { Editorial: [3, 4, 3, 3], Lattice: [3, 4, 3, 3], '*': [4, 4, 3, 3] } },
@@ -3994,7 +3999,7 @@ export function fieldSeed({ cat, f, themeName, design, c = {}, artistName, email
     : f.k === 'heading' && design === 2 && HEADING_3[cat] ? HEADING_3[cat]
     : f.k === 'heading' && design === 3 && HEADING_4[cat] ? HEADING_4[cat]
     : f.k === 'heading' && cat === 'calendar' && design === 0 && limeTreeTheme(themeName) ? CAL_HEADING_1
-    : f.k === 'heading' && cat === 'repertoire' ? `${songs.filter((t) => !blankRow(t, SONG_KEYS)).length} Songs`
+    : f.k === 'heading' && cat === 'repertoire' ? `${songs.filter((t) => !blankRow(t, SONG_KEYS)).length} ${themeName === 'Paperback' ? 'songs' : 'Songs'}`
     : f.k === 'heading' && cat === 'testimonials' && design === 1 ? TESTI_HEADING_2
     : f.k === 'navMode' && cat === 'header' ? navModeDefault(themeName, design)
     : f.k === 'button' && cat === 'form' ? formBtnSeed(themeName, design)
@@ -4055,6 +4060,10 @@ export const INLINE_OFF = {
   'Editorial.0.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
   'Pop.0.repertoire.songs.length': 'not drawn: only layout 3 prints a song’s length',
   'Lattice.0.repertoire.songs.length': 'not drawn: only layout 3 prints a song’s length',
+  'Paperback.0.repertoire.songs.length': 'not drawn: only layout 3 prints a song’s length',
+  'Paperback.1.repertoire.songs.length': 'not drawn: only layout 3 prints a song’s length',
+  'Paperback.2.repertoire.songs.artist': 'not drawn: layout 3 prints a song’s length in the seat the artist holds elsewhere',
+  'Paperback.3.repertoire.songs.length': 'not drawn: only layout 3 prints a song’s length',
   'Pop.0.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
   'Lattice.0.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
   'Retro.1.header.kicker': 'not drawn: the layout-2 header prints no kicker (a shared identity key; the bio’s role line and the form print it)',
