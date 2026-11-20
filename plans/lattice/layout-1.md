@@ -488,7 +488,7 @@ After section 11 and session 12, in one session (the lists in `../lime/layout-1.
   the whole function, 31319-31917, for `useState | useRef | useId | useEffect | useMemo | useCallback | useReducer`: none), so the block stands at the head of the function on `s.limeTree && s.lattice`, ahead of Lime's, and the seam (`extLink` / `navHref`
   per row, the pill on `bookTo`, dropped with its label) is restated in it. The twin prediction (*Lime's footer*) was half right an eighth time: the seam is Lime's, the picture is not. **Seams:** the testimonials above stand on `#ED6D40` and
   the footer on `#111` (Scheme 8), so the seam is a straight orange-into-black edge, drawn by neither section. **Scheme seat:** Scheme 8 at row 0 (and 1-3, copied); at `page === 2` `footerBand` reads the same row, so nothing moves. **No nested scheme:**
-  every leaf is `s.tx` (`#F2F2F2`), `s.text3` (orange) or `s.activeBg` (the glow's teal).
+  every leaf is `s.tx` (`#F2F2F2`), `s.text3` (orange) or `s.glow` (the glow's teal).
 
 ### Settled in session 0 — the foundation (2026-11-19)
 
@@ -1155,8 +1155,8 @@ frame's 479.77 + 37 + 26.11 and 56 + 10.5, the small print 559, the credit's rig
 the `SHOWS/COVERAGE` seed (call 3). Probes at `--theme Lattice --layout 1 --cat footer`: `inline-probe` (1440 and 768) PASS, 11 slots hit (eight link labels, the statement, the button, the copyright), 0 dead click, 0 UNLEDGERED, 0 off, 3 unhit; `photo-probe` PASS filled, `--blank` and `--drop` (the section holds no photo slot);
 `focus-probe --prime --check` PASS (20 controls). Live (`&live=1`, trusted clicks, 1440 and 390): an external row (`example.com/docs`) opens `https://example.com/docs` in a new tab (`target=_blank`, `noopener noreferrer`), a section row carries `#bio`, a refused address (`ftp://nope`) and a `none` row carry no `href`, the pill `#form`; on the canvas (`live=0`)
 no link carries an `href` and the pill is a `<span>`. `page-check.mjs Lattice 0` (the published tab): no errors, all eight footer links scroll to their section and the pill to `#form`, `overflow390` 0, the footer 586 tall at 390. States (`&cj=`, `&name=`, `&noimage=1`, scratchpad `states.mjs`, 1440 / 768 / 390): 0, 1, 3, 5, 7 and 10 links (the 1440 section holds 393.6 to seven
-and grows to 428.3 at ten), no links and no button, no statement, button and copyright (the credit stays at the right), a 37-character statement, a 28-letter word (fitted, never past its box), 19-character labels in all eight rows, a 36-character button, a 25-character copyright, a 39-character name (two lines at 390, the rule at its 30 floor) and an 80-character one (clamped to 39), the seal hidden, `&noimage=1` (no photo
-in the section): no box leaves the root and nothing scrolls sideways at any width, 0 console errors. `digest.mjs` 0,1,2,3,4 against a HEAD worktree (:5185, which answered no `LatticeFooter`, the positive control) and the working tree (:5173), ports normalised: **0 differing files of 720** (the `page=2` footers included); at theme 5 the six footer
+and grows to 428.3 at ten), no links and no button, no statement, button and copyright (the credit stays at the right), a 35-character statement, a 28-letter word (fitted, never past its box), 19-character labels in all eight rows, a 36-character button, a 26-character copyright (clamped at its 25) and a 36-character name (two lines at 390, the rule at its 30 floor) and an 80-character one (clamped to 39); the exact-cap proof is `--check`, which re-renders every cap at its cap, the seal hidden, `&noimage=1` (no photo
+in the section); with the clamp off (`&noclamp=1`) an 80-character name at 768 stops its box at 522.89, exactly 20 short of the disc's 542.89 (`discRoom`; its first draft doubled the disc's width, caught in review): no box leaves the root and nothing scrolls sideways at any width, 0 console errors. `digest.mjs` 0,1,2,3,4 against a HEAD worktree (:5185, which answered no `LatticeFooter`, the positive control) and the working tree (:5173), ports normalised: **0 differing files of 720** (the `page=2` footers included); at theme 5 the six footer
 renders differ (the footer has one design) and the `page=2` render equals page 0 at all three widths. `npm run build` passes (the standalone build was not rebuilt: the root `index.html` is the end-of-pass sweep's).
 
 **For the sweep (session 12 and after).** The footer is the last section of the pass. `limits.mjs` and `reach.mjs` for the footer are done here, and `INLINE_OFF` / `PHOTO_OFF` have no footer row; the other eleven sections' ledgers were settled in their own sessions, so session 12 is a **whole-page proof**, not a first run. The sweep's list under *The end-of-pass sweep* holds
@@ -1185,6 +1185,6 @@ orange (a straight edge, drawn by neither) and the page gutter at 1440+ (the bot
 4. **Does the frame bind a second palette for the teal** (`#5B8E9B`-ish, the pricing card, the chips, the map
    labels, the `■` markers)? Read it; if no variable holds it, it is a named literal and `sem` carries it.
 5. **The footer's and testimonials' dot field** differ in density from the hero's. One tile at one opacity per
-   ground, or one per section? Measure before choosing.
+   ground, or one per section? Measure before choosing. *Settled per section: the bio's and the testimonials' are each their own set; the footer draws none (section 11).*
 6. **`video`** has no Lattice frame. It renders in Lattice's tokens when a user adds it, as on every template with
    cards 1 and 3.

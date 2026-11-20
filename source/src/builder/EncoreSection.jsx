@@ -31326,7 +31326,7 @@ function LatticeFooter({ s }) {
   const size = s.mob ? 26 : s.narrow ? 32 : 40
   const showDisc = s.showBadge === 'show' && s.latticeDisc && !s.mob
   // The disc's ink stands 70 off the block's right: the group's measure stops 20 short of its left edge.
-  const discRoom = showDisc ? (70 + s.latticeDisc.discW * 2 + 20) * k : 0
+  const discRoom = showDisc ? (70 + s.latticeDisc.discW + 20) * k : 0
 
   const mark = (
     <span aria-hidden style={{ position: 'relative', flex: 'none', width: u(18), height: u(18) }}>
