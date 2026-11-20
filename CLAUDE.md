@@ -7,7 +7,7 @@ repeat it. What follows is only what a fresh session tends to get wrong.
 
 All source lives in **`source/`**. Two files at the repo root are *not* source:
 
-- **`index.html`** (~9.8 MB — most of it the inlined photography of all five templates) is the generated
+- **`index.html`** (~13.0 MB — most of it the inlined photography of all six templates; 13,030,112 bytes after the Lattice pass, +1.10 MB on the 11.93 MB it had) is the generated
   single-file build, committed so the demo is
   double-clickable. Never hand-edit it.
 - **`mock-template.html`** (~12 MB, untracked) is a reference artefact.
@@ -240,7 +240,7 @@ reversing 2026-10-20's "an already-selected section": the `text` cursor shows on
   exceptions are the ones the probe skips or the audit shows as noise: a node under another element (the media fan's back
   cards), vertical type (Retro layout 2's `Manchester, UK` rail, the gallery's `Gallery` wordmark) and markup that is not the
   field's copy (`·`, a song's row number). Pass 20 found the kicker dead on one of two nodes and fixed it with an
-  `INLINE_LINES` row, not a ledger row. `--width 768` clicks the Tablet tab and keeps the window at 1440, because a window
+  `INLINE_LINES` row, not a ledger row. **Lattice layout 1 passed whole at the end of its pass** (2026-11-20, 1440 and 768: 148 slots hit, 0 WRONG, 0 UNREACHED, 0 dead click, 39 slots ledgered off at each width). `--width 768` clicks the Tablet tab and keeps the window at 1440, because a window
   at 820 or under is the phone chrome. Until a page's pass in `plans/inline-edit-all.md` it is on and unproved.
   `InlineEditor` opens a `<textarea>` over the text's own line rectangles (`inlineBox`)
   with transparent type and a caret, so the page keeps drawing the copy; a tilted card's box is given the
@@ -282,7 +282,7 @@ reversing 2026-10-20's "an already-selected section": the `text` cursor shows on
   the end *appends*, so the photo lands on the first free tile. Hover draws a thin box and a pointer, turned with a tilted card (`photoBox`); focusing a photo field in
   the panel boxes the picture, and a media track's art button boxes its row's. Remove, reorder and Add stay in the panel. A page is *known* to work only because
   **`scripts/photo-probe.mjs --theme T --layout N --width 1440,768 --check`** passed it (`--blank` walks the empty slots; its header lists the
-  verdicts). Retro layout 1 has passed, by hand too (the Step 2 pilot, with Pop layout 1's hit-test spike), and layouts 2, 3 and 4 on all five templates and Retro's 5 and 6 (Step 3, 2026-10-23), then re-run whole at Step 4 (all 22 pages, both widths, filled and `--blank`: PASS, with `--drop` too).
+  verdicts). Retro layout 1 has passed, by hand too (the Step 2 pilot, with Pop layout 1's hit-test spike), and layouts 2, 3 and 4 on all five templates and Retro's 5 and 6 (Step 3, 2026-10-23), then re-run whole at Step 4 (all 22 pages, both widths, filled and `--blank`: PASS, with `--drop` too). Lattice layout 1 (the sixth template; layouts 2–4 have no frames) passed whole at the end of its pass, 2026-11-20: 16 slots at both widths, filled, `--blank` (7 appended) and `--drop`.
   **A file dropped on a section's photo replaces it** (Step 4, 2026-10-23; the handlers are the wrapper's, `EncoreSection` is not touched): a drag that carries files is
   cancelled anywhere over a section, a photo under it or not, with `dropEffect` `copy` over a photo `photoFieldAt` would open and `none` elsewhere (or the browser opens the file in the
   tab and the page is gone); the drop frames the file in the crop editor, filled slot or empty, and Apply writes through the same `photoPut`. Where a click opens, a drop lands: copy and controls
@@ -531,6 +531,34 @@ reversing 2026-10-20's "an already-selected section": the `text` cursor shows on
   it (layout 2's place card's body and the form's promises and credit; layout 3's white name,
   Listen and location in the header; layout 4's white name in the header, the bio card's meta
   row and prose, and the media's black sleeve well and bar fill under Scheme 2).
+- **Lattice is the sixth template, and the first whose layout-1 page widens no Lime block**
+  (`plans/lattice/layout-1.md`, `notes/templates.md` *Lattice*; 2026-11-19 to 11-20; **only layout 1 is
+  designed** — layouts 2–4 and the four header cards are placeholders in Retro's and Lime's arms
+  in its tokens). `sectionVm` carries `lattice: T.name === 'Lattice'`, with `designed` and `limeTree`
+  widened to it (so `limeTree` now names five templates), but **every section has its own tree**: a
+  `Lattice*` function (`LatticeHero`, `LatticeBio`, `LatticeMedia`, `LatticeGallery`,
+  `LatticeRepertoire`, `LatticeMap`, `LatticePricing`, `LatticeCalendar`, `LatticeForm`,
+  `LatticeTestimonials`, `LatticeFooter`) standing on `s.lattice` (and the branch's own `s.v0` / `s.limeTree`,
+  per site) *after* the section's hooks and seam (the hookless bio, hero and footer stand at the head), so a section's published controls are the shared seam's and only its picture is
+  Lattice's. Its frames are an HTML-to-Figma import with no variable modes, so each section's twin was
+  settled by composition and geometry; `limeTreeTheme` is **not** widened (its three seeds are
+  per-section calls). It **carries `schemes`** (`THEMES[5]`: Scheme 1 `#DADADA` / `#111` as its palette,
+  Schemes 2–9 beside it), and `SCHEMES_OF.Lattice` rows 0–3 are identical (the placeholder layouts copy
+  row 0): the gallery and the calendar stand on 2 (`#F2F2F2`), the testimonials on 5 (`#ED6D40`), the
+  header, media, video, repertoire, pricing, form and footer on 8 (`#111`), and the bio and the map on the
+  theme's own Scheme 1, and nested nodes read `s.onScheme[n]` (the hero's orange `[1]`, pricing's three cards `[3]` / `[5]` / `[4]`, the gallery's pick ring and the map's pills `[7]`, the calendar's glow `[4]`). **The page's gutter is not a section's ground**:
+  The page's own ground is **`#111`** (user call, 2026-11-20: `THEMES[5].pageGround`, read through
+  `pageGroundOf()` for the published `documentElement`, the preview's scroller, the arranged rows and
+  `vm.pageBg`), where Scheme 1's `#DADADA` is the bio's and the map's: a theme with no `pageGround` reads
+  `palette[0]`. Display is **`Archivo Lattice`**, an `@font-face` alias in `index.css` pinning the one
+  Archivo file to `font-weight: 500` and `font-stretch: 113%` (the frames' own face is custom), so no
+  section names an axis and the `Archivo` link stays byte-identical; labels and mono are Azeret Mono
+  (`index.html` and `preview.html`). Its **dot field is a per-width vector set, not a pattern**
+  (`LATTICE_DOTS`, `latticeDotField(dev)`), its dotted disc a lossless-WebP *mask* (`LATTICE_ART`), and
+  its photography four 1536-wide JPEGs. A **`chars` / `count` / `num` spec** that names templates but neither Lattice
+  nor `'*'` is **read as Pop's** by `specAt` (`data.js`: `spec[Lattice] ?? spec['*'] ?? spec.Pop`), so a cap a
+  layout-2–4 pass has not re-measured is Pop's, not an absence. **`in` rows and the `INLINE_OFF` / `PHOTO_OFF`
+  ledgers have no such fallback**: an `in` object that names neither Lattice nor `'*'` *reads* the field.
 - **`FIELDS` exposes every key any layout reads. A layout that does not consume a key simply
   ignores it, and the panel hides it**: a field's `in` lists the designs that read it (0-based,
   `arch % designCount` and never the raw `arch`; an array, or an object keyed by template with
@@ -545,10 +573,14 @@ reversing 2026-10-20's "an already-selected section": the `text` cursor shows on
   `IDENTITY_READS` in `data.js` (measured by `scripts/reach.mjs`'s `who.*` probes, so re-measure
   when a reader changes) says that section's design prints it. A hosted box reads and writes the
   header section, so there is one copy; the hint ends *Also printed in: …* off the same table
-  (`identityHint`); a key no section on the page draws has no box. `fieldShown` is unchanged, since
+  (`identityHint`); a key no section on the page draws has no box. **A field's `hint` is a string, or
+  `{ '*': '…', <Template>: '…' }`** where one template's copy differs (`EditPanel` reads
+  `hint[themeName] ?? hint['*']`; Lattice's footer *Links* is the one use so far: the frame reads the
+  list two to a row, not in two columns). `fieldShown` is unchanged, since
   the inline editor's universe and `INLINE_OFF` read it. `in` is **measured, not read off the prose**: type into the field and
   see whether the section's HTML moves, canvas and `live`, at all three widths. The header's
-  `in` names all five templates (Grunge's row measured over its four fitted
+  `in` names all six templates (Lattice's is measured over its fitted Hero alone: its cards 2–4 are
+  placeholders, so those seats are Lime's twins' rows until a layout pass fits them; Grunge's row measured over its four fitted
   cards, 2026-09-24 — the first measurement with no placeholder card; Editorial's over its four
   fitted cards, 2026-09-30, card 2 having lost the placeholder's `showBadge` and `badgeText`
   since its frame draws no seal, and cards 3 and 4 re-measured unchanged; Pop's over its fitted
@@ -556,7 +588,7 @@ reversing 2026-10-20's "an already-selected section": the `text` cursor shows on
   took `showBadge` and `badgeText` off design 1 as Editorial's had, and over fitted card 3,
   2026-10-06, which took design 2 off the kicker and gave `cardLine` a Pop row, the twins' rows
   exactly, and over fitted card 4, 2026-10-07, unchanged — the last placeholder card of any
-  template gone, so every header row is now measured over fitted cards). One header row keeps a
+  template gone, so every non-Lattice header row is measured over fitted cards). One header row keeps a
   `'*'`: `cardLine` (JP-061), whose `'*': []` hides it under
   Retro, as `FIELDS.media.cta`'s row does, because only the `HeaderV2`
   block Lime, Grunge, Editorial and Pop share reads it. A field no design reads is deleted, not kept at `in: []`: `bio.statement` and
@@ -580,7 +612,10 @@ reversing 2026-10-20's "an already-selected section": the `text` cursor shows on
   clamp never touches one, and **every seed must fit its cap**: a cap is measured with
   `node scripts/limits.mjs <cat>` and re-checked with `--check` (every cap, four samples) and
   `--seeds` (no browser). A field, column or seat added later needs its cap probed, and a section
-  that gains a seal a `who.seal` row. Per-section caps and their judgement calls live in each
+  that gains a seal a `who.seal` row. **Lattice's caps are measured at layout 1 only**: a spec that
+  names templates and neither Lattice nor `'*'` falls to Pop's row (`specAt`), and an array row of
+  Lattice's carries Pop's numbers at layouts 2–4 until those layouts have frames; the
+  sweep's audit of which caps are still Pop's is in the plan (*Open calls*). Per-section caps and their judgement calls live in each
   `notes/` file.
 - The `startTheme` prop in `App.jsx` skips the template picker (and the onboarding with it) when
   it names a real theme (`"Picker"` deliberately matches nothing, giving the full flow).
@@ -688,7 +723,7 @@ reversing 2026-10-20's "an already-selected section": the `text` cursor shows on
   **The categories are the sections on Retro layout 1's Figma page** (`964:58575`), **plus `video`**:
   `tags` and `audio` were removed from the project, every layout, because that page draws none of
   them. `video` was removed with them and came back (`plans/video.md`, user calls 2026-10-27)
-  because the frames draw it at **layouts 2 and 4 of all five templates**. It is the one
+  because the frames draw it at **layouts 2 and 4 of the first five templates** (Lattice's frames draw no video at all, so it stands on the hero's photograph in Lattice's tokens when added). It is the one
   **layout-bound** category: `NVAR.video = 4` with designs 0 and 2 empty (`videoDesign()` folds them onto
   1 and 3), the sidebar's `LayoutPicker` offers only layouts 2 and 4 (`layoutChoices`), and the setup
   modal's cards 2 and 4 insert it after the media player and cards 1 and 3 drop it (`pickHeader`,
@@ -724,7 +759,7 @@ file is loaded into every session and holds only what is cross-cutting.
 | [`notes/footer.md`](./notes/footer.md) | The footer: `LinksField`, the two derived columns, the Book pill |
 | [`notes/list-editors.md`](./notes/list-editors.md) | The ten repeaters, `BookedField`, `SetsField`, `blankRow`, the seed resolvers |
 | [`notes/photography.md`](./notes/photography.md) | Seeded photography: `SEEDS`, `null` vs absent, the two-slot categories, `FOCUS` (a seed's own crop) |
-| [`notes/templates.md`](./notes/templates.md) | Retro, Lime, Grunge, Editorial and Pop: the `s.lime` / `s.limeTree` / `s.pop` blocks, faces, decoration, header families |
+| [`notes/templates.md`](./notes/templates.md) | Retro, Lime, Grunge, Editorial, Pop and Lattice: the `s.lime` / `s.limeTree` / `s.pop` / `s.lattice` blocks, faces, decoration, header families |
 
 ## Load-bearing rules from the notes
 

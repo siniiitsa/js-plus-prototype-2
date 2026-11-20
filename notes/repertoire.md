@@ -112,3 +112,26 @@ Layout 4 draws every song sorted by title, so `INLINE_HEAD` has no work and both
   count 0..songs, and `Repertoire` indexes it by `filtered.length` (chip and search, across all pages) when `s.live`.
   The canvas and the panel keep the total. A typed heading, and layouts 3 and 4 (which overwrite the title), never
   read it. Data, not a closure, so `EncoreSection` still does no casing.
+
+## Lattice · layout 1 (plans/lattice/layout-1.md, section 5, 2026-11-19)
+
+Frames `1:673` · `1:9306` · `1:10278`. A block of its own, `LatticeRepertoire` (`EncoreSection.jsx`), standing in `Repertoire`'s `if (s.limeTree)` **after the seam**: `active`,
+`filtered`, `shown`, `columns`, `labels` and `at` stay `Repertoire`'s and go over in `g`, with the search / chip / pager closures, so the published search, chips and pager are
+the shared seam in a new picture. The section's root carries the warm glow as its own `radial-gradient` (60% x 55% at 15% / 20%, `s.text3` at 14% to 0 at 70%, `s.re && s.v0 && s.lattice`).
+
+- **A page is twelve songs at every width** (`perPage` is 12 under Lattice, 6 on every other template's narrow frames): two columns of six at 768, one of twelve at 390, so `columns` splits
+  down two columns at tablet for Lattice alone (`s.narrow && !(s.lattice && !s.mob)`). `pageWindow` takes an optional fourth argument (the numbered-button count), and Lattice passes 4:
+  the frames draw `01 02 03 … 20`, not `01 02 03 04 … 20`. The numerals are zero-padded in the markup (`01`), the arrows their own spans (Arial 13.33).
+- **The rows**: a 1px `s.tx` 3px-radius box, min 66 tall, padded 10 / 20 (12 at 390), 16 apart (28 at 390), the number in a 40 box (22 at 390), the title Archivo 400 at 20 (the body face, not
+  the display alias), the artist an orange mono 11 label. **The title never breaks inside a word** (`minWidth: min-content`): the frame sets 768's *September* at 18 to keep it beside *Earth, Wind
+  & Fire*, which a fixed 20 cannot, so the artist wraps under itself there (two lines in a 66 row). *I Wanna Dance* wraps between its words at 768, as the frame does.
+- **No eyebrow.** `[ 004 ] ——— REPERTOIRE` is not drawn: no field holds it and the standing removals hold (plan call 1). `vm.pad` is the frame's 113.6 / 116.77 / 58 top and foot, so the head
+  starts where the eyebrow did and the section is 42.4 shorter.
+- **No pager seat is held.** With one page (the seeded twelve) no pager is drawn, as at every other template, so the section is 78 shorter again (the pager's 46 and the 32 above it):
+  776.2 / 946.6 / 1434.2 against the frames' 874.9 / 1067 / 1554.6. Past twelve songs the pager stands exactly where the frame's does (checked with 240 songs: arrows 36.08 and pages 37.72
+  at 1440, 44 / 46 with the 6 gaps at 768 and 390, the 390 row spans the measure to 328 + 38).
+- **The hint is typed in capitals** (`SEARCH SONGS OR ARTISTS…`), so the live box's placeholder (index.css: ink at .45, which is the frame's `#757575` on `#111`) and the canvas span read the same with no
+  `--ph`, and what the visitor types keeps its case.
+- **Caps** (`limits.mjs repertoire --themes=5 --designs=0 --check`, 0 fail; `--seeds` 0 over): heading 12 (1440 12, 768 17, 390 12), song title 17 (Pop's, the seeded *Don't Stop Me Now*'s floor at 768; measured 48 / 13 / 18),
+  artist 22 (measured 44 / 22 / 22), tags per song 3 (390's four chips end at 320 of 342, so a fifth wraps). Layouts 2-4 stay Pop's rows.
+- `INLINE_OFF`: `Lattice.0.repertoire.songs.length`. `inline-probe` (1440 and 768) PASS, 25 slots hit, 0 UNLEDGERED; `photo-probe` PASS (it has no photo slots); `focus-probe --prime` PASS (43 controls).

@@ -2,7 +2,7 @@
 // Every literal here is normative: do not round, substitute or "improve".
 
 /* ------------------------------------------------------------------ *
- * §4.1 THEMES — 5 templates
+ * §4.1 THEMES — 6 templates
  * ------------------------------------------------------------------ */
 
 // Grunge's distress (plans/grunge/display-face.md, candidate A): a 240 × 240
@@ -485,6 +485,186 @@ export const THEMES = [
       },
     },
   },
+  // Lattice — the sixth template, from the Batch 2 file (JustPay — Batch 2,
+  // ORILFywSzuadscu6RzskCW; plans/lattice/layout-1.md). That file reuses the
+  // SAAS variable library, so its schemes are the library's: Scheme 1 is the
+  // theme's own (the bio and the map stand on it), and the dark `#111` sections
+  // (header, media, repertoire, pricing, form, footer) stand on Scheme 8, the
+  // gallery and the calendar on 2 and the testimonials on 5 (SCHEMES_OF). Every
+  // colour below was resolved through the alias chain off the library's
+  // "2 · Scheme" collection, not off the frames' flat `get_variable_defs`.
+  //
+  // The faces: the frames' display family is "Lattice Display Medium", a
+  // custom face the file names but does not carry. It is stood in by Archivo at
+  // wdth 113, wght 500 (user call, 2026-11-19: measured on eight strings at
+  // 0.993 of the frames' ink widths at wdth 112.5, 1.018 at 115), through the
+  // `Archivo Lattice` alias that index.css pins to that instance, so a section
+  // names no axis. `faceK` stays 1. The labels, the chips and every UI string are
+  // Azeret Mono (font/label, font/ui), the body Archivo Regular (font/body).
+  // The frames type every display and mono string in capitals through
+  // `textCase`, so casing is 'title' and a block uppercases per site.
+  {
+    name: 'Lattice',
+    sub: 'Archivo wide · mono grid',
+    // The page's own ground (the gutter, the published document, the preview's scroller): the
+    // frame's body is #111 although Scheme 1, which the bio and the map stand on, is #DADADA
+    // (user call, 2026-11-20, the end-of-pass sweep). A theme without the key reads palette[0].
+    pageGround: '#111111',
+    display: "'Archivo Lattice', 'Archivo', sans-serif",
+    label: "'Azeret Mono', monospace",
+    ui: "'Azeret Mono', monospace",
+    mono: "'Azeret Mono', monospace",
+    body: "'Archivo', sans-serif",
+    casing: 'title',
+    // Display tracking is -0.01em and the mono labels' +0.04em, stated per site
+    // (the text styles carry them; the theme key is the shared default).
+    dls: '0px',
+    // radius/card 20 and radius/chip 3, border/hairline 1 (Primitives mode
+    // 187:0, read through the file). The frames' buttons are bracket-cornered
+    // and square, and their chips 3, so btnR and radiusSm take the chip's 3
+    // until a section reads its own control (radius/control and radius/pill are
+    // not in this file's collection).
+    radius: '20px',
+    radiusSm: '3px',
+    btnR: '3px',
+    bw: '1px',
+    radiusChip: '3px',
+    // Scheme 1's bg / text1 / text2 — the grey the bio and the map stand on.
+    palette: ['#DADADA', '#111111', '#111111'],
+    // Scheme 1's tag1…tag7 backgrounds. tag/4/bg is the one token the file's
+    // collection does not hold; every scheme's tag4 is inferred from its
+    // tag/4/text (a light ink means a dark chip), except Scheme 8's, which is
+    // the header's own Archive chip, #262626.
+    tags: ['#5C939F', '#ED6D40', '#5C939F', '#262626', '#ED6D40', '#111111', '#111111'],
+    // The semantic colours the palette cannot derive, Scheme 1's. The file's
+    // collection holds box 1–3, active, stroke 1–2, text 3 and the tags; it
+    // holds no glow, hl or inactive pair, which are inferred (glow the active
+    // ground, hl the ink, the inactive pair the box and the ink) and are re-read
+    // by the section that draws them.
+    sem: {
+      box1: '#E7E7E7',                      // sem/box/1
+      box2: '#CFCFCF',                      // sem/box/2
+      box3: '#C4C4C4',                      // sem/box/3
+      glow: '#ED6D40',                      // inferred: sem/active/bg
+      activeBg: '#ED6D40',                  // sem/active/bg
+      activeFg: '#111111',                  // sem/active/text
+      inactiveBg: '#E7E7E7',                // inferred: sem/box/1
+      inactiveFg: '#111111',                // inferred: sem/text/1
+      inactiveLine: '#E7E7E7',              // inferred: sem/box/1
+      stroke1: '#111111',                   // sem/stroke/1
+      stroke2: '#262626',                   // sem/stroke/2
+      hl: '#111111',                        // inferred: sem/text/1
+      text3: '#36626B',                     // sem/text/3 — the teal ink on the light grounds
+      // sem/tag/1, /4 and /5 text are the three the file holds; the rest fall
+      // to contrast().
+      tagFg: ['#111111', undefined, undefined, '#F2F2F2', '#111111', undefined, undefined],
+    },
+    // Schemes 2–9 of the same collection, in Scheme 1's shape. A section is
+    // seated on one through SCHEMES_OF.Lattice and a nested node reads
+    // `s.onScheme[n]`; 3, 4, 6, 7 and 9 seat nothing at layout 1 but the pricing
+    // cards (3 dark, 5 orange, 4 teal) and the chips read them. Each row is the
+    // table of the 2026-11-19 read, so a later session need not re-read it.
+    schemes: {
+      // Scheme 2, #F2F2F2 — the gallery and the calendar.
+      2: {
+        palette: ['#F2F2F2', '#111111', '#111111'],
+        tags: ['#ED6D40', '#5C939F', '#262626', '#ED6D40', '#111111', '#111111', '#5C939F'],
+        sem: {
+          box1: '#FAFAFA', box2: '#EBEBEB', box3: '#E0E0E0', glow: '#ED6D40',
+          activeBg: '#ED6D40', activeFg: '#111111',
+          inactiveBg: '#FAFAFA', inactiveFg: '#111111', inactiveLine: '#FAFAFA',
+          stroke1: '#111111', stroke2: '#262626', hl: '#111111', text3: '#36626B',
+          tagFg: ['#111111', undefined, undefined, '#111111', '#ECECEC', undefined, undefined],
+        },
+      },
+      // Scheme 3, #262626 — the pricing's dark card.
+      3: {
+        palette: ['#262626', '#F2F2F2', '#F2F2F2'],
+        tags: ['#5C939F', '#F2F2F2', '#ED6D40', '#111111', '#111111', '#5C939F', '#ED6D40'],
+        sem: {
+          box1: '#303030', box2: '#1E1E1E', box3: '#161616', glow: '#5C939F',
+          activeBg: '#5C939F', activeFg: '#111111',
+          inactiveBg: '#303030', inactiveFg: '#F2F2F2', inactiveLine: '#303030',
+          stroke1: '#111111', stroke2: '#5C939F', hl: '#F2F2F2', text3: '#F2F2F2',
+          tagFg: ['#111111', undefined, undefined, '#ECECEC', '#ECECEC', undefined, undefined],
+        },
+      },
+      // Scheme 4, #5C939F teal — the pricing's teal card.
+      4: {
+        palette: ['#5C939F', '#111111', '#111111'],
+        tags: ['#262626', '#ED6D40', '#111111', '#262626', '#5C939F', '#ED6D40', '#F2F2F2'],
+        sem: {
+          box1: '#6BA1AD', box2: '#528792', box3: '#4A7C86', glow: '#ED6D40',
+          activeBg: '#ED6D40', activeFg: '#111111',
+          inactiveBg: '#6BA1AD', inactiveFg: '#111111', inactiveLine: '#6BA1AD',
+          stroke1: '#111111', stroke2: '#262626', hl: '#111111', text3: '#111111',
+          tagFg: ['#F2F2F2', undefined, undefined, '#F2F2F2', '#111111', undefined, undefined],
+        },
+      },
+      // Scheme 5, #ED6D40 orange — the testimonials, and the pricing's orange card.
+      5: {
+        palette: ['#ED6D40', '#111111', '#111111'],
+        tags: ['#ED6D40', '#111111', '#111111', '#5C939F', '#F2F2F2', '#5C939F', '#262626'],
+        sem: {
+          box1: '#F07F57', box2: '#E25F31', box3: '#C4542C', glow: '#5C939F',
+          activeBg: '#5C939F', activeFg: '#111111',
+          inactiveBg: '#F07F57', inactiveFg: '#111111', inactiveLine: '#F07F57',
+          stroke1: '#111111', stroke2: '#5C939F', hl: '#111111', text3: '#111111',
+          tagFg: ['#111111', undefined, undefined, '#111111', '#111111', undefined, undefined],
+        },
+      },
+      // Scheme 6, teal. Seats nothing at layout 1.
+      6: {
+        palette: ['#5C939F', '#111111', '#111111'],
+        tags: ['#111111', '#111111', '#F2F2F2', '#ED6D40', '#5C939F', '#262626', '#ED6D40'],
+        sem: {
+          box1: '#6BA1AD', box2: '#528792', box3: '#3F6F79', glow: '#ED6D40',
+          activeBg: '#ED6D40', activeFg: '#000000',
+          inactiveBg: '#6BA1AD', inactiveFg: '#111111', inactiveLine: '#6BA1AD',
+          stroke1: '#111111', stroke2: '#ED6D40', hl: '#111111', text3: '#111111',
+          tagFg: ['#F2F2F2', undefined, undefined, '#111111', '#111111', undefined, undefined],
+        },
+      },
+      // Scheme 7, orange. Seats nothing at layout 1.
+      7: {
+        palette: ['#ED6D40', '#111111', '#111111'],
+        tags: ['#111111', '#5C939F', '#ED6D40', '#5C939F', '#262626', '#F2F2F2', '#111111'],
+        sem: {
+          box1: '#E7E7E7', box2: '#E25F31', box3: '#D8562A', glow: '#5C939F',
+          activeBg: '#5C939F', activeFg: '#111111',
+          inactiveBg: '#E7E7E7', inactiveFg: '#111111', inactiveLine: '#E7E7E7',
+          stroke1: '#111111', stroke2: '#F2F2F2', hl: '#111111', text3: '#111111',
+          tagFg: ['#F2F2F2', undefined, undefined, '#111111', '#F2F2F2', undefined, undefined],
+        },
+      },
+      // Scheme 8, #111111 — the page's dark ground: the header, the media, the
+      // repertoire, the pricing, the form and the footer. The header's resolved
+      // mode (579:2).
+      8: {
+        palette: ['#111111', '#F2F2F2', '#F2F2F2'],
+        tags: ['#5C939F', '#ED6D40', '#5C939F', '#262626', '#ED6D40', '#F2F2F2', '#F2F2F2'],
+        sem: {
+          box1: '#1B1B1B', box2: '#0B0B0B', box3: '#000000', glow: '#5C939F',
+          activeBg: '#5C939F', activeFg: '#111111',
+          inactiveBg: '#1B1B1B', inactiveFg: '#F2F2F2', inactiveLine: '#1B1B1B',
+          stroke1: '#F2F2F2', stroke2: '#5C939F', hl: '#F2F2F2', text3: '#ED6D40',
+          tagFg: ['#111111', undefined, undefined, '#F2F2F2', '#111111', undefined, undefined],
+        },
+      },
+      // Scheme 9, grey like 1. Seats nothing.
+      9: {
+        palette: ['#DADADA', '#111111', '#111111'],
+        tags: ['#ED6D40', '#5C939F', '#262626', '#ED6D40', '#111111', '#111111', '#5C939F'],
+        sem: {
+          box1: '#E7E7E7', box2: '#CFCFCF', box3: '#C4C4C4', glow: '#ED6D40',
+          activeBg: '#ED6D40', activeFg: '#111111',
+          inactiveBg: '#E7E7E7', inactiveFg: '#111111', inactiveLine: '#E7E7E7',
+          stroke1: '#111111', stroke2: '#262626', hl: '#111111', text3: '#36626B',
+          tagFg: ['#111111', undefined, undefined, '#111111', '#ECECEC', undefined, undefined],
+        },
+      },
+    },
+  },
 ]
 
 // Which Figma colour scheme a section stands on, where its frames stand it on
@@ -556,6 +736,23 @@ export const SCHEMES_OF = {
     // 977:14603) on 4 (blue). The footer's instances state no scheme, so it
     // keeps row 0's 3.
     3: { header: 3, bio: 3, media: 2, gallery: 3, repertoire: 3, testimonials: 4 },
+  },
+  // Lattice's layout-1 page (1:306 · 1:8953 · 1:9934), read off each section's
+  // `explicitVariableModes` in the file, the same at all three widths: the
+  // bio and the map state Scheme 1 (the theme's own, so no entry); the gallery
+  // and the calendar Scheme 2 (#F2F2F2); the testimonials Scheme 5 (orange);
+  // and the six dark sections state none, so they resolve the page's Scheme 8
+  // (579:2, #111111), as the header's `resolvedVariableModes` shows. `video`
+  // has no frame; it is seated on 8 beside the media it follows. Layouts 2–4 of
+  // Lattice have no frames yet and are placeholders (plans/lattice/layout-1.md,
+  // *Open questions* 2), so they take row 0's seats: the dark and light bands
+  // then fall where the page's do, and a header card's whole-page write reads
+  // as one page.
+  Lattice: {
+    0: { header: 8, media: 8, video: 8, repertoire: 8, pricing: 8, form: 8, footer: 8, gallery: 2, calendar: 2, testimonials: 5 },
+    1: { header: 8, media: 8, video: 8, repertoire: 8, pricing: 8, form: 8, footer: 8, gallery: 2, calendar: 2, testimonials: 5 },
+    2: { header: 8, media: 8, video: 8, repertoire: 8, pricing: 8, form: 8, footer: 8, gallery: 2, calendar: 2, testimonials: 5 },
+    3: { header: 8, media: 8, video: 8, repertoire: 8, pricing: 8, form: 8, footer: 8, gallery: 2, calendar: 2, testimonials: 5 },
   },
 }
 
@@ -837,6 +1034,206 @@ export const frauncesEms = (text) => {
   return chs.reduce((w, ch, i) => w + (FRAUNCES_EM[ch] ?? 0.7) + (i ? FRAUNCES_KERN[chs[i - 1] + ch] ?? 0 : 0), 0)
 }
 
+// Lattice's display face: the `Archivo Lattice` alias (Archivo at wdth 113, wght
+// 500, index.css), which stands in for the frames' "Lattice Display Medium".
+// Generated by `scripts/ems-table.mjs "Archivo Lattice"` the way Fraunces' was:
+// spans at 1000px in the loaded face, untracked, then every pair's width less its
+// two advances. The frames type every display string in capitals, so the sum is
+// taken over the upper-cased text (the lowercase advances stay for a caller that
+// wants them). The face's own tracking (-0.01em) is the caller's.
+const LATTICE_EM = {
+  0: 0.664, 1: 0.603, 2: 0.659, 3: 0.665, 4: 0.644, 5: 0.664, 6: 0.666, 7: 0.622, 8: 0.671,
+  9: 0.666, ' ': 0.269, '!': 0.291, '"': 0.398, '#': 0.66, '&': 0.804, '\'': 0.213, '(': 0.347,
+  ')': 0.347, '+': 0.673, ',': 0.292, '-': 0.376, '.': 0.292, '/': 0.301, ':': 0.305, '?': 0.632,
+  A: 0.8, B: 0.798, C: 0.841, D: 0.837, E: 0.775, F: 0.701, G: 0.909, H: 0.849, I: 0.305, J: 0.63,
+  K: 0.787, L: 0.628, M: 0.976, N: 0.849, O: 0.908, P: 0.762, Q: 0.908, R: 0.82, S: 0.763,
+  T: 0.709, U: 0.835, V: 0.756, W: 1.06, X: 0.8, Y: 0.757, Z: 0.733, a: 0.64, b: 0.649, c: 0.623,
+  d: 0.649, e: 0.645, f: 0.352, g: 0.646, h: 0.638, i: 0.252, j: 0.25, k: 0.599, l: 0.252,
+  m: 0.988, n: 0.638, o: 0.66, p: 0.649, q: 0.649, r: 0.384, s: 0.588, t: 0.368, u: 0.638,
+  v: 0.575, w: 0.836, x: 0.597, y: 0.575, z: 0.563, '·': 0.377, '–': 0.565, '—': 1.13, '‘': 0.266,
+  '’': 0.266, '“': 0.454, '”': 0.454, 'é': 0.645, 'è': 0.645, 'ê': 0.645, 'ë': 0.645, 'á': 0.64,
+  'à': 0.64, 'â': 0.64, 'ä': 0.64, 'í': 0.252, 'ì': 0.252, 'î': 0.252, 'ï': 0.252, 'ó': 0.66,
+  'ò': 0.66, 'ô': 0.66, 'ö': 0.66, 'ú': 0.638, 'ù': 0.638, 'û': 0.638, 'ü': 0.638, 'ñ': 0.638,
+  'ç': 0.623, 'ß': 0.688, 'ø': 0.66, 'å': 0.64,
+}
+
+const LATTICE_KERN = {
+  ' Y': -0.061, '\'.': -0.055, '\',': -0.055, '\'A': -0.112, '\'J': -0.099, '’A': -0.112,
+  '’c': -0.066, '’d': -0.066, '’e': -0.066, '’g': -0.077, '’o': -0.066, '’q': -0.066, '’s': -0.066,
+  '’z': -0.045, '-0': 0.039, '-1': 0.039, '-2': 0.039, '-3': 0.039, '-4': 0.039, '-5': 0.039,
+  '-6': 0.039, '-V': -0.065, '-W': -0.065, '-X': -0.059, '-Y': -0.157, '-x': -0.035, '0-': 0.039,
+  '1-': 0.039, '3-': 0.039, '4-': 0.039, '5-': 0.039, '7.': -0.13, '7,': -0.13, '7-': -0.04,
+  '9-': 0.04, 'A\'': -0.112, 'A?': -0.035, 'AT': -0.11, 'AV': -0.044, 'AW': -0.045, 'AY': -0.093,
+  'Ay': -0.032, 'D.': -0.032, 'D,': -0.032, 'DX': -0.043, 'F ': -0.032, 'F.': -0.06, 'F,': -0.06,
+  'FA': -0.062, 'FJ': -0.081, 'FX': -0.032, 'FZ': -0.039, 'Fa': -0.035, 'Fc': -0.035, 'Fd': -0.035,
+  'Fe': -0.035, 'Fo': -0.035, 'Fq': -0.035, 'K ': -0.043, 'K-': -0.069, 'KA': -0.055, 'KC': -0.063,
+  'KG': -0.063, 'KJ': -0.039, 'KO': -0.063, 'KQ': -0.063, 'KT': -0.035, 'KV': -0.053, 'KW': -0.053,
+  'KY': -0.053, 'Ka': -0.041, 'Kc': -0.041, 'Kd': -0.041, 'Ke': -0.041, 'Ko': -0.041, 'Kq': -0.041,
+  'Ku': -0.041, 'Kv': -0.051, 'Kw': -0.051, 'Ky': -0.051, 'L\'': -0.131, 'L’': -0.131,
+  'L-': -0.063, 'L?': -0.06, 'LC': -0.04, 'LG': -0.04, 'LO': -0.04, 'LQ': -0.04, 'LT': -0.124,
+  'LU': -0.037, 'LV': -0.101, 'LW': -0.101, 'LX': -0.184, 'LY': -0.15, 'Lv': -0.04, 'Lw': -0.04,
+  'Ly': -0.04, 'O.': -0.032, 'O,': -0.032, 'OX': -0.043, 'P ': -0.046, 'P.': -0.09, 'P,': -0.09,
+  'PA': -0.06, 'PJ': -0.075, 'PX': -0.044, 'PZ': -0.03, 'Q.': -0.032, 'Q,': -0.032, 'QX': -0.043,
+  'RJ': -0.035, 'SY': -0.037, 'T.': -0.05, 'T,': -0.05, 'TA': -0.11, 'TJ': -0.123, 'Ta': -0.09,
+  'Tc': -0.09, 'Td': -0.09, 'Te': -0.09, 'Tm': -0.07, 'Tn': -0.07, 'To': -0.09, 'Tp': -0.07,
+  'Tq': -0.09, 'Tr': -0.069, 'Ts': -0.09, 'Tt': -0.04, 'Tu': -0.07, 'Tv': -0.032, 'Tw': -0.032,
+  'Tx': -0.032, 'Ty': -0.032, 'Tz': -0.032, 'V.': -0.172, 'V,': -0.172, 'V-': -0.065, 'VA': -0.044,
+  'VJ': -0.096, 'Va': -0.052, 'Vc': -0.052, 'Vd': -0.052, 'Ve': -0.052, 'Vo': -0.052, 'Vq': -0.052,
+  'Vs': -0.042, 'Vu': -0.042, 'Vx': -0.03, 'Vz': -0.035, 'W.': -0.172, 'W,': -0.172, 'W-': -0.065,
+  'WA': -0.045, 'WJ': -0.096, 'Wa': -0.052, 'Wc': -0.052, 'Wd': -0.052, 'We': -0.052, 'Wo': -0.052,
+  'Wq': -0.052, 'Ws': -0.042, 'Wu': -0.042, 'Wx': -0.03, 'Wz': -0.035, 'X-': -0.059, 'XC': -0.043,
+  'XG': -0.043, 'XO': -0.043, 'XQ': -0.043, 'XY': -0.03, 'Xc': -0.037, 'Xd': -0.037, 'Xe': -0.037,
+  'Xo': -0.037, 'Xq': -0.037, 'Xs': -0.032, 'Xt': -0.062, 'Xu': -0.03, 'Xv': -0.05, 'Xw': -0.05,
+  'Xx': -0.05, 'Xy': -0.05, 'Y ': -0.061, 'Y.': -0.217, 'Y,': -0.217, 'Y-': -0.157, 'YA': -0.093,
+  'YJ': -0.159, 'YS': -0.037, 'YX': -0.03, 'Ya': -0.117, 'Yc': -0.117, 'Yd': -0.117, 'Ye': -0.117,
+  'Yf': -0.063, 'Yg': -0.104, 'Ym': -0.083, 'Yn': -0.083, 'Yo': -0.117, 'Yp': -0.083, 'Yq': -0.117,
+  'Yr': -0.083, 'Ys': -0.105, 'Yt': -0.053, 'Yu': -0.082, 'Yv': -0.052, 'Yw': -0.052, 'Yx': -0.062,
+  'Yz': -0.07, 'Z-': -0.088, 'bx': -0.03, 'f.': -0.068, 'f,': -0.068, 'ff': -0.035, 'k ': -0.035,
+  'k-': -0.065, 'kc': -0.037, 'kd': -0.037, 'ke': -0.037, 'ko': -0.037, 'kq': -0.037, 'kx': -0.038,
+  'ox': -0.03, 'px': -0.03, 'r.': -0.103, 'r,': -0.103, 'v.': -0.13, 'v,': -0.13, 'w.': -0.13,
+  'w,': -0.13, 'x-': -0.035, 'xc': -0.03, 'xd': -0.03, 'xe': -0.03, 'xo': -0.03, 'xq': -0.03,
+  'y.': -0.13, 'y,': -0.13,
+}
+
+// A string's width in ems of the Lattice display face at its own size, in capitals.
+export const latticeEms = (text) => {
+  const chs = [...String(text).toUpperCase()]
+  return chs.reduce((w, ch, i) => w + (LATTICE_EM[ch] ?? 0.8) + (i ? LATTICE_KERN[chs[i - 1] + ch] ?? 0 : 0), 0)
+}
+
+/* ------------------------------------------------------------------ *
+ * Lattice's dot field (plans/lattice/layout-1.md, *Settled in section 1*).
+ * The frames lay a dot canvas of the hero's own size over the photograph: 560
+ * dots at 1440 x 750, 831 at 768 x 750 (a CROP at 0.6703, so 483 show) and 436 at
+ * 390 x 750. It is NOT a regular lattice under a shear: the rows bow (the pitch
+ * runs 106 to 114 along one row, the step 0.7 to 2.4), so each width is its own
+ * set of centroids, read off the frame's 2x raster (connected components,
+ * alpha-weighted) with the tablet's crop baked in. `p` is a path of
+ * zero-length subpaths in quarter-pixel units (viewBox w x 4 by 3000), `r` the
+ * stroke radius in css px and `o` the opacity; four buckets by dot area. Checked
+ * against the rasters at 2x: ink mass 1.00 / 0.98 / 1.00, 8-px block correlation
+ * .977 / .961 / .973.
+ * ------------------------------------------------------------------ */
+const LATTICE_DOTS = {
+  desktop: { w: 1440, b: [
+    { r: 0.9, o: 0.64, p: 'M1200 1h0M2371 1141h0M2171 1145h0M1971 1149h0M2775 1282h0M2974 1281h0M2576 1283h0M2377 1286h0M2179 1289h0M1980 1293h0M1781 1298h0M1582 1305h0M2580 1428h0M2779 1427h0M2977 1426h0M3176 1427h0M2383 1430h0M2185 1433h0M1987 1438h0M1789 1443h0M1590 1450h0M1391 1457h0M2781 1572h0M2979 1572h0M2584 1573h0M3177 1573h0M2387 1575h0M3376 1576h0M2189 1578h0M1992 1583h0M1795 1588h0M1597 1595h0M1399 1603h0M1200 1612h0M2783 1717h0M2981 1718h0M2586 1718h0M3178 1720h0M2390 1720h0M2193 1723h0M3377 1723h0M1996 1728h0M1799 1734h0M1602 1741h0M1404 1749h0M1206 1759h0M1007 1770h0M1 1846h0M2588 1864h0M2785 1863h0M2391 1866h0M2982 1864h0M3179 1866h0M2195 1869h0M3377 1870h0M1999 1874h0M3576 1875h0M1802 1880h0M1605 1887h0M1408 1896h0M1210 1906h0M1012 1918h0M2785 2010h0M2392 2012h0M2589 2010h0M2982 2011h0M3179 2014h0M2196 2015h0M3377 2018h0M2000 2020h0M3576 2024h0M1803 2026h0M1607 2034h0M1410 2043h0M1212 2053h0M1014 2066h0M2588 2157h0M2785 2157h0M2392 2159h0M2982 2159h0M2196 2162h0M3179 2162h0M1999 2167h0M3377 2167h0M1803 2173h0M1606 2181h0M1409 2190h0M1212 2201h0M1014 2214h0M2587 2305h0M2784 2305h0M2390 2306h0M2981 2307h0M2194 2309h0M3179 2311h0M1998 2314h0M3377 2316h0M1801 2321h0M1604 2329h0M1407 2339h0M1210 2350h0M1012 2363h0M2585 2453h0M2782 2454h0M2388 2455h0M2191 2458h0M2980 2456h0M3178 2460h0M1994 2463h0M3376 2466h0M1797 2469h0M1600 2478h0M1403 2488h0M1205 2500h0M2582 2603h0M2780 2604h0M2384 2604h0M2187 2607h0M2978 2606h0M1990 2612h0M3176 2611h0M1792 2619h0M1595 2627h0M1397 2638h0M1199 2650h0M2578 2754h0M2380 2755h0M2776 2755h0M2181 2758h0M2975 2758h0M1983 2762h0M0 2766h0M1785 2769h0M1587 2778h0M2573 2906h0M2374 2907h0M2175 2909h0M1976 2914h0M1777 2921h0M1578 2929h0' },
+    { r: 0.93, o: 0.66, p: 'M2549 705h0M2345 708h0M2141 711h0M1937 715h0M2962 846h0M3166 845h0M2759 848h0M2557 850h0M2355 853h0M2152 856h0M1950 860h0M1747 864h0M1544 870h0M1341 875h0M2967 991h0M3169 991h0M3372 991h0M3575 992h0M2765 992h0M2564 994h0M2363 997h0M2162 1000h0M1961 1004h0M1760 1009h0M1559 1015h0M1357 1021h0M1154 1028h0M951 1035h0M3172 1136h0M2771 1137h0M2971 1136h0M3373 1137h0M2571 1139h0M3575 1139h0M3778 1141h0M1771 1154h0M1571 1159h0M1370 1166h0M1169 1174h0M967 1182h0M764 1191h0M3174 1282h0M3374 1283h0M3575 1285h0M3777 1289h0M3980 1293h0M1382 1312h0M1182 1320h0M981 1329h0M779 1339h0M576 1350h0M3375 1429h0M3575 1432h0M3776 1436h0M3978 1442h0M1192 1466h0M992 1476h0M791 1486h0M589 1498h0M3575 1579h0M3776 1584h0M3977 1591h0M4179 1598h0M1001 1623h0M801 1634h0M599 1647h0M397 1661h0M3576 1727h0M3775 1733h0M3976 1740h0M4178 1748h0M808 1782h0M607 1796h0M406 1811h0M3775 1882h0M3975 1890h0M4177 1899h0M813 1931h0M613 1945h0M412 1961h0M3775 2031h0M3975 2040h0M4176 2050h0M815 2079h0M615 2095h0M415 2112h0M3576 2173h0M3775 2181h0M3975 2191h0M4176 2202h0M815 2229h0M616 2245h0M415 2263h0M214 2283h0M3576 2323h0M3775 2332h0M3976 2342h0M4177 2355h0M813 2379h0M614 2395h0M413 2414h0M3575 2474h0M3775 2483h0M3976 2495h0M4178 2508h0M1007 2513h0M809 2529h0M609 2547h0M409 2566h0M208 2588h0M3376 2617h0M3575 2626h0M3776 2636h0M3977 2648h0M4180 2663h0M1001 2664h0M802 2680h0M602 2699h0M402 2719h0M3175 2763h0M3375 2770h0M3575 2779h0M1389 2788h0M3777 2790h0M1190 2801h0M3979 2803h0M992 2816h0M792 2833h0M592 2851h0M392 2872h0M2772 2907h0M2972 2911h0M3173 2916h0M3374 2923h0M3575 2933h0M1379 2940h0M3777 2945h0M1180 2953h0M980 2968h0M780 2985h0' },
+    { r: 0.96, o: 0.69, p: 'M2938 263h0M2727 267h0M2517 270h0M2307 273h0M2097 277h0M1887 280h0M1677 284h0M1467 288h0M3363 405h0M3154 407h0M2945 410h0M2737 412h0M2528 415h0M2321 419h0M2113 422h0M1905 426h0M1697 430h0M1489 434h0M1281 438h0M1072 443h0M863 448h0M3783 550h0M3366 552h0M3574 551h0M3158 553h0M2951 555h0M2745 558h0M2539 561h0M2333 563h0M2127 567h0M1922 571h0M1716 575h0M1510 579h0M1303 584h0M1096 590h0M889 595h0M680 601h0M471 608h0M3574 698h0M3782 698h0M3162 699h0M3368 698h0M3990 698h0M2957 701h0M2753 703h0M1733 720h0M1528 725h0M1323 730h0M1118 736h0M912 742h0M705 749h0M497 756h0M288 764h0M3370 845h0M3575 845h0M3780 846h0M3987 847h0M4195 849h0M4404 852h0M1137 882h0M933 889h0M727 897h0M521 905h0M314 914h0M105 923h0M3779 993h0M3984 996h0M4191 999h0M4398 1003h0M747 1044h0M542 1053h0M336 1063h0M129 1074h0M3982 1144h0M4187 1149h0M4393 1154h0M4601 1160h0M560 1201h0M355 1213h0M149 1225h0M4184 1298h0M4389 1305h0M4595 1312h0M372 1362h0M167 1375h0M4181 1448h0M4385 1456h0M4591 1464h0M4798 1475h0M386 1512h0M182 1526h0M4383 1607h0M4587 1617h0M4794 1628h0M194 1677h0M4381 1758h0M4585 1770h0M4791 1782h0M4998 1797h0M203 1828h0M4379 1910h0M4583 1923h0M4788 1937h0M4995 1953h0M210 1979h0M6 1998h0M4379 2062h0M4582 2076h0M4787 2092h0M4994 2109h0M213 2131h0M10 2151h0M4379 2215h0M4582 2230h0M4787 2247h0M4994 2266h0M12 2304h0M4380 2369h0M4583 2385h0M4788 2403h0M4995 2424h0M212 2435h0M10 2458h0M4381 2523h0M4585 2541h0M4791 2560h0M4997 2582h0M6 2611h0M4383 2679h0M4588 2697h0M4794 2718h0M200 2741h0M4182 2818h0M4386 2835h0M4591 2855h0M4798 2877h0M190 2895h0M3981 2959h0M4185 2975h0M4390 2993h0' },
+    { r: 1.01, o: 0.75, p: 'M984 2h0M768 5h0M551 8h0M333 11h0M115 14h0M5568 75h0M5340 79h0M5113 82h0M4889 86h0M4666 89h0M4445 93h0M4225 96h0M4007 99h0M3789 103h0M3573 106h0M3358 110h0M3143 113h0M2930 117h0M2717 120h0M2504 124h0M2291 127h0M2079 131h0M1867 135h0M1655 138h0M1442 142h0M1229 146h0M1016 149h0M802 153h0M588 157h0M373 161h0M156 165h0M5545 237h0M5319 238h0M5096 240h0M4874 241h0M4653 243h0M4435 245h0M4218 248h0M4002 250h0M3787 252h0M3573 255h0M3361 258h0M3149 261h0M1256 292h0M1045 296h0M834 301h0M621 305h0M408 310h0M194 315h0M4426 398h0M4642 397h0M4860 397h0M5079 397h0M5301 397h0M5524 397h0M5750 398h0M3997 400h0M4211 399h0M3785 401h0M3574 403h0M652 453h0M441 459h0M229 465h0M15 471h0M3993 549h0M4205 549h0M4418 549h0M4632 550h0M4847 551h0M5065 553h0M5284 555h0M5505 557h0M5729 560h0M260 615h0M48 622h0M4199 699h0M4410 701h0M4622 703h0M4836 706h0M5051 709h0M5269 713h0M5488 717h0M5710 722h0M78 773h0M4614 855h0M4826 860h0M5040 865h0M5255 870h0M5473 877h0M5693 884h0M4607 1008h0M4817 1013h0M5029 1020h0M5243 1027h0M5459 1036h0M5678 1045h0M4810 1167h0M5021 1175h0M5233 1185h0M5448 1195h0M5665 1206h0M4803 1321h0M5013 1331h0M5224 1341h0M5438 1353h0M5653 1367h0M5007 1486h0M5217 1498h0M5429 1513h0M5644 1528h0M5001 1641h0M5211 1655h0M5423 1671h0M5636 1689h0M5207 1813h0M5417 1831h0M5630 1850h0M5204 1971h0M5414 1990h0M5626 2011h0M5202 2129h0M5412 2150h0M5624 2173h0M5202 2287h0M5412 2310h0M5623 2335h0M5203 2446h0M5413 2471h0M5624 2497h0M5206 2606h0M5416 2632h0M5627 2661h0M5001 2741h0M5210 2767h0M5420 2794h0M5632 2825h0M5006 2901h0M5215 2928h0M5426 2957h0M5638 2989h0' },
+  ] },
+  tablet: { w: 768, b: [
+    { r: 1.29, o: 0.64, p: 'M1151 1327h0M1309 1326h0M993 1329h0M835 1331h0M677 1335h0M519 1339h0M1155 1442h0M1312 1441h0M1470 1441h0M1628 1441h0M997 1444h0M840 1446h0M682 1450h0M525 1454h0M367 1459h0M209 1465h0M1315 1556h0M1472 1557h0M1001 1559h0M1157 1557h0M1630 1558h0M1788 1560h0M844 1561h0M687 1565h0M530 1570h0M372 1575h0M215 1581h0M57 1589h0M1159 1673h0M1316 1672h0M1473 1673h0M1003 1674h0M1630 1674h0M846 1677h0M1788 1677h0M690 1681h0M533 1685h0M376 1691h0M219 1698h0M62 1705h0M1161 1789h0M1317 1788h0M1474 1789h0M1004 1790h0M1631 1791h0M848 1793h0M1789 1794h0M692 1796h0M536 1801h0M379 1807h0M222 1814h0M65 1822h0M1161 1905h0M1318 1905h0M1005 1907h0M1474 1906h0M1631 1908h0M849 1909h0M1789 1911h0M693 1913h0M537 1918h0M380 1924h0M223 1931h0M66 1940h0M1161 2022h0M1317 2022h0M1005 2023h0M1474 2023h0M849 2026h0M1631 2026h0M693 2030h0M1789 2030h0M536 2035h0M380 2041h0M223 2048h0M66 2057h0M1004 2141h0M1160 2140h0M1317 2140h0M1473 2141h0M847 2143h0M1631 2144h0M691 2147h0M1788 2148h0M535 2152h0M378 2159h0M221 2166h0M64 2176h0M1002 2259h0M1158 2258h0M1315 2258h0M1472 2260h0M845 2261h0M1630 2263h0M688 2265h0M1788 2268h0M532 2270h0M375 2277h0M218 2285h0M61 2295h0M1156 2377h0M842 2380h0M999 2378h0M1313 2378h0M1471 2380h0M685 2384h0M1629 2383h0M528 2389h0M371 2396h0M213 2404h0M995 2498h0M1153 2497h0M1311 2498h0M837 2500h0M680 2504h0M522 2509h0M365 2516h0M990 2618h0M1307 2619h0M832 2620h0M674 2624h0' },
+    { r: 1.32, o: 0.66, p: 'M967 869h0M1297 980h0M1459 979h0M1136 982h0M814 987h0M975 984h0M653 990h0M492 994h0M330 998h0M1623 1094h0M1784 1094h0M1142 1097h0M1302 1095h0M1462 1094h0M982 1099h0M822 1102h0M662 1105h0M502 1109h0M342 1113h0M181 1118h0M20 1124h0M1306 1210h0M1465 1210h0M1625 1210h0M1785 1210h0M1147 1212h0M1946 1212h0M829 1216h0M988 1214h0M670 1220h0M511 1224h0M352 1228h0M192 1234h0M32 1240h0M1468 1325h0M1627 1326h0M1786 1327h0M1946 1329h0M2107 1331h0M360 1344h0M201 1349h0M42 1356h0M1787 1443h0M1946 1445h0M2106 1449h0M50 1472h0M1946 1563h0M2106 1567h0M2266 1571h0M1947 1680h0M2105 1684h0M2265 1690h0M2426 1697h0M1947 1798h0M2105 1803h0M2265 1809h0M1947 1916h0M2105 1922h0M2264 1929h0M2424 1937h0M1947 2035h0M2105 2041h0M2264 2049h0M2425 2058h0M1947 2154h0M2105 2161h0M2265 2170h0M1946 2274h0M2106 2282h0M2265 2291h0M2426 2301h0M1787 2388h0M1946 2395h0M2106 2403h0M2266 2413h0M56 2414h0M1469 2500h0M1628 2504h0M1787 2510h0M1946 2517h0M207 2524h0M2106 2526h0M49 2534h0M1149 2618h0M1466 2621h0M1626 2626h0M515 2630h0M1786 2632h0M357 2636h0M1946 2639h0M199 2645h0M2107 2649h0M41 2655h0M984 2740h0M1144 2740h0M1304 2741h0M825 2742h0M1463 2744h0M666 2746h0M1624 2749h0M507 2751h0M1785 2755h0M348 2758h0M1946 2763h0M189 2767h0M30 2777h0M978 2863h0M1138 2863h0M818 2865h0M1299 2865h0M658 2869h0M1460 2868h0M498 2874h0M1622 2873h0M338 2881h0M178 2890h0M18 2900h0M809 2989h0M970 2987h0M648 2992h0M487 2998h0' },
+    { r: 1.35, o: 0.69, p: 'M1271 518h0M1104 521h0M937 523h0M770 526h0M603 529h0M436 532h0M1777 628h0M1445 632h0M1611 630h0M1279 634h0M1113 636h0M948 639h0M783 642h0M617 645h0M452 648h0M287 651h0M121 655h0M1780 745h0M1945 744h0M1450 748h0M1614 746h0M1285 750h0M958 754h0M1122 752h0M794 757h0M631 760h0M467 763h0M303 767h0M139 771h0M1781 861h0M1945 861h0M2110 861h0M2276 861h0M1454 863h0M1618 862h0M1129 867h0M1292 865h0M805 872h0M643 875h0M480 879h0M318 882h0M155 887h0M1783 978h0M1946 978h0M1620 978h0M2109 979h0M2274 980h0M2439 982h0M169 1002h0M7 1007h0M1946 1095h0M2108 1096h0M2272 1098h0M2436 1101h0M2601 1104h0M2108 1214h0M2270 1216h0M2433 1220h0M2597 1224h0M2762 1229h0M2268 1335h0M2430 1339h0M2594 1344h0M2758 1350h0M2267 1453h0M2428 1458h0M2591 1464h0M2754 1471h0M2919 1479h0M2427 1577h0M2589 1584h0M2752 1592h0M2916 1601h0M2587 1705h0M2750 1714h0M2913 1724h0M2425 1817h0M2586 1826h0M2748 1836h0M2911 1847h0M2586 1947h0M2747 1958h0M2911 1970h0M2586 2069h0M2748 2080h0M2911 2094h0M2425 2179h0M2586 2191h0M2748 2204h0M2911 2218h0M2587 2314h0M2750 2328h0M2913 2343h0M2427 2424h0M2589 2438h0M2752 2452h0M2916 2469h0M2267 2536h0M2429 2548h0M2591 2562h0M2755 2578h0M2919 2595h0M2269 2660h0M2431 2673h0M2594 2688h0M2758 2704h0M2108 2773h0M2270 2785h0M2434 2799h0M2598 2814h0M1783 2880h0M1946 2889h0M2109 2899h0M2272 2911h0M2437 2925h0M1132 2987h0M1294 2989h0M1456 2993h0M1619 2998h0M326 3005h0M1782 3006h0' },
+    { r: 1.44, o: 0.76, p: 'M3034 -2h0M2849 5h0M2666 11h0M2484 17h0M2302 22h0M2122 27h0M1943 32h0M1764 37h0M1587 42h0M1409 46h0M1233 49h0M1056 53h0M880 57h0M705 60h0M354 65h0M529 63h0M178 68h0M2 70h0M3018 124h0M2836 129h0M2656 134h0M2476 139h0M2298 144h0M2120 148h0M1943 152h0M1768 156h0M1592 160h0M1418 164h0M1243 168h0M1070 171h0M896 174h0M723 177h0M550 180h0M377 183h0M30 188h0M204 185h0M3004 249h0M2825 253h0M2646 257h0M2469 261h0M2293 265h0M2118 268h0M1944 272h0M1771 275h0M1598 278h0M1425 282h0M1254 285h0M1082 288h0M911 291h0M740 294h0M569 297h0M398 300h0M227 302h0M56 305h0M2991 374h0M2814 377h0M2638 379h0M2463 382h0M2116 388h0M2289 385h0M1944 390h0M1773 393h0M1602 396h0M1432 399h0M1263 402h0M1093 404h0M924 407h0M756 410h0M587 413h0M418 416h0M249 419h0M80 422h0M2979 498h0M2630 501h0M2804 499h0M2457 503h0M2114 507h0M2285 505h0M1945 509h0M1775 511h0M1439 516h0M1607 513h0M269 535h0M101 538h0M2452 623h0M2623 622h0M2795 622h0M2968 621h0M2113 625h0M2282 624h0M1945 627h0M2112 743h0M2279 743h0M2447 743h0M2616 743h0M2786 744h0M2958 744h0M2443 862h0M2610 863h0M2779 865h0M2949 867h0M2605 984h0M2773 986h0M2941 990h0M2767 1108h0M2935 1112h0M2928 1234h0M2923 1357h0M3078 1735h0M3076 1860h0M3075 1984h0M3075 2109h0M3076 2235h0M3078 2360h0M2923 2722h0M2763 2832h0M2929 2851h0M2602 2942h0M2768 2960h0M2935 2980h0' },
+  ] },
+  mobile: { w: 390, b: [
+    { r: 0.89, o: 0.63, p: 'M1 640h0M518 1388h0M621 1387h0M414 1390h0M311 1392h0M1 1401h0M624 1462h0M727 1461h0M830 1461h0M521 1463h0M418 1465h0M315 1467h0M211 1470h0M108 1473h0M625 1537h0M728 1537h0M831 1537h0M934 1538h0M523 1539h0M420 1540h0M317 1543h0M215 1545h0M112 1549h0M9 1553h0M627 1613h0M729 1613h0M832 1613h0M935 1614h0M422 1616h0M524 1614h0M320 1618h0M217 1621h0M115 1625h0M12 1629h0M1558 1634h0M525 1690h0M628 1689h0M730 1689h0M833 1689h0M423 1692h0M935 1690h0M321 1694h0M1038 1692h0M219 1697h0M116 1701h0M14 1705h0M1558 1713h0M628 1765h0M730 1765h0M833 1766h0M424 1768h0M526 1766h0M935 1767h0M1039 1769h0M322 1770h0M219 1773h0M117 1777h0M15 1782h0M1558 1793h0M628 1842h0M730 1842h0M526 1842h0M833 1843h0M423 1844h0M935 1844h0M321 1847h0M1038 1847h0M219 1850h0M117 1854h0M14 1859h0M1558 1873h0M525 1919h0M627 1919h0M730 1919h0M832 1920h0M423 1921h0M935 1922h0M320 1923h0M218 1927h0M116 1931h0M13 1936h0M1558 1953h0M523 1997h0M626 1996h0M729 1996h0M831 1998h0M421 1998h0M935 2000h0M319 2001h0M216 2004h0M1038 2003h0M114 2008h0M11 2013h0M624 2074h0M419 2076h0M521 2074h0M727 2074h0M830 2076h0M316 2078h0M213 2082h0M111 2086h0M8 2091h0M519 2153h0M622 2152h0M416 2154h0M313 2157h0M210 2160h0M4 2170h0M0 2249h0' },
+    { r: 0.92, o: 0.65, p: 'M716 1160h0M822 1159h0M611 1161h0M505 1162h0M400 1164h0M295 1166h0M189 1169h0M84 1171h0M720 1235h0M824 1234h0M930 1234h0M510 1238h0M615 1236h0M406 1239h0M301 1241h0M196 1244h0M92 1247h0M827 1310h0M931 1310h0M618 1311h0M722 1310h0M1036 1310h0M1141 1311h0M514 1313h0M410 1314h0M306 1317h0M202 1319h0M98 1322h0M725 1386h0M828 1386h0M932 1386h0M1037 1387h0M1141 1388h0M207 1395h0M104 1398h0M933 1462h0M1037 1463h0M1142 1464h0M1246 1466h0M5 1477h0M1038 1539h0M1142 1541h0M1246 1544h0M1351 1547h0M1038 1616h0M1142 1618h0M1246 1621h0M1350 1625h0M1142 1695h0M1246 1698h0M1350 1703h0M1142 1772h0M1246 1776h0M1350 1781h0M1142 1850h0M1246 1854h0M1350 1859h0M1038 1925h0M1142 1928h0M1246 1933h0M1350 1939h0M1142 2007h0M1246 2012h0M1350 2018h0M934 2078h0M1038 2082h0M1142 2086h0M1246 2092h0M1351 2098h0M725 2153h0M829 2155h0M933 2157h0M1037 2161h0M107 2164h0M1141 2166h0M1246 2172h0M516 2232h0M619 2232h0M412 2233h0M723 2232h0M309 2235h0M827 2234h0M932 2237h0M205 2239h0M1036 2241h0M102 2243h0M1141 2246h0M512 2312h0M616 2311h0M408 2313h0M721 2312h0M304 2315h0M825 2314h0M930 2318h0M200 2318h0M1035 2322h0M96 2323h0M508 2392h0M612 2392h0M403 2393h0M718 2393h0M298 2395h0M823 2395h0M193 2399h0M89 2403h0M502 2473h0M397 2474h0M186 2480h0' },
+    { r: 0.95, o: 0.69, p: 'M589 859h0M480 861h0M371 863h0M812 932h0M921 930h0M704 933h0M595 935h0M487 937h0M379 938h0M271 940h0M163 943h0M55 945h0M1032 1006h0M1140 1005h0M816 1008h0M923 1007h0M708 1009h0M494 1012h0M601 1010h0M387 1014h0M280 1016h0M173 1018h0M66 1021h0M1033 1082h0M1140 1082h0M1248 1081h0M1357 1082h0M819 1083h0M926 1083h0M606 1086h0M713 1084h0M500 1087h0M394 1089h0M288 1091h0M182 1093h0M75 1096h0M1034 1158h0M928 1158h0M1141 1158h0M1248 1159h0M1355 1159h0M1035 1234h0M1141 1235h0M1247 1235h0M1354 1237h0M1462 1238h0M1247 1312h0M1353 1314h0M1460 1316h0M1247 1389h0M1352 1392h0M1458 1394h0M1351 1469h0M1457 1473h0M1456 1551h0M1455 1629h0M1455 1708h0M1455 1786h0M1455 1865h0M1455 1945h0M1456 2025h0M1456 2106h0M1352 2179h0M1457 2187h0M1247 2252h0M1353 2260h0M1459 2268h0M1141 2327h0M1247 2334h0M1353 2342h0M1460 2351h0M929 2399h0M1035 2403h0M1141 2409h0M1247 2416h0M1355 2424h0M1462 2434h0M608 2473h0M714 2475h0M291 2476h0M820 2477h0M927 2481h0M81 2484h0M1033 2486h0M1141 2492h0M1248 2499h0M1356 2508h0M497 2555h0M603 2556h0M390 2556h0M710 2557h0M284 2558h0M817 2560h0M178 2562h0M924 2564h0M72 2566h0M1032 2569h0M1140 2576h0M1249 2583h0M383 2639h0M490 2639h0M598 2639h0M276 2641h0M705 2641h0M814 2644h0M169 2644h0M922 2648h0M62 2649h0M1031 2654h0' },
+    { r: 1.02, o: 0.77, p: 'M1501 366h0M1379 371h0M1257 376h0M1136 380h0M1015 384h0M895 388h0M775 392h0M656 395h0M537 398h0M418 400h0M299 403h0M181 405h0M63 407h0M1496 448h0M1376 452h0M1256 456h0M1137 460h0M1018 463h0M899 467h0M782 470h0M664 473h0M547 476h0M430 478h0M314 481h0M197 483h0M81 484h0M1491 528h0M1373 532h0M1255 536h0M1137 539h0M1020 542h0M904 545h0M788 548h0M672 551h0M557 553h0M442 555h0M327 558h0M212 560h0M97 561h0M1487 609h0M1370 612h0M1253 615h0M1138 617h0M1023 620h0M908 623h0M794 625h0M680 628h0M566 630h0M453 632h0M339 634h0M226 636h0M113 638h0M1482 688h0M1367 691h0M1252 693h0M1138 696h0M1025 698h0M912 700h0M799 703h0M687 705h0M575 707h0M463 709h0M351 711h0M239 713h0M127 715h0M15 717h0M1478 768h0M1365 769h0M1251 771h0M1139 773h0M1027 775h0M915 777h0M804 779h0M693 781h0M582 783h0M471 785h0M361 787h0M251 789h0M140 791h0M30 793h0M1362 848h0M1475 847h0M1251 849h0M1139 851h0M918 854h0M1029 852h0M808 855h0M699 857h0M261 865h0M152 867h0M43 869h0M1360 926h0M1471 925h0M1140 928h0M1250 927h0M1030 929h0M1359 1004h0M1469 1004h0M1249 1004h0M1466 1082h0M1464 1160h0M1464 2518h0M1357 2593h0M1467 2603h0M1140 2661h0M1249 2669h0M1359 2678h0M1470 2689h0' },
+  ] },
+}
+const dotUris = {}
+export function latticeDotField(dev, ink = '#F2F2F2') {
+  const v = LATTICE_DOTS[dev] || LATTICE_DOTS.desktop
+  const key = dev + ink
+  return dotUris[key] || (dotUris[key] = 'data:image/svg+xml,' + encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${v.w * 4} 3000" preserveAspectRatio="xMidYMid slice">` +
+    v.b.map((q) => `<path d="${q.p}" fill="none" stroke="${ink}" stroke-opacity="${q.o}" stroke-width="${+(q.r * 8).toFixed(2)}" stroke-linecap="round"/>`).join('') +
+    '</svg>'))
+}
+
+/* ------------------------------------------------------------------ *
+ * The bio's dot field (plans/lattice/layout-1.md, *Settled in section 2*): a
+ * dark dot canvas the frame lays under the section, as wide as the section and
+ * as tall as it states (423 / 516.5 / 577.5 css px), hung off the section's foot
+ * at 90% opacity. Like the hero's it is each width's own centroid set, read off
+ * the frame's 2x raster (connected components, alpha-weighted; 326 dots at 1440,
+ * 714 at 768, 571 at 390, a handful of edge-clipped fragments dropped), in four
+ * buckets by dot mass; `r` and `o` are fitted to a bucket's mean mass and peak
+ * alpha, with the container's .9 folded into `o`. Paths are zero-length
+ * subpaths in quarter-pixel units (viewBox w x 4 by h x 4).
+ * ------------------------------------------------------------------ */
+const LATTICE_BIO_DOTS = {
+  desktop: { w: 1440, h: 423, b: [
+    { r: 0.87, o: 0.36, p: 'M3976 1689h0M2191 925h0M2195 1070h0M2001 1220h0M1806 1519h0M2394 1505h0M2197 1215h0M2198 1362h0M1805 1226h0M2198 1508h0M2391 1067h0M2394 1358h0M2002 1513h0M2590 1211h0M2787 1357h0M2002 1366h0M2590 1504h0M2589 1651h0M2393 1212h0M1608 1233h0M2392 1653h0M2000 1660h0M2384 777h0M1797 935h0M2590 1357h0M1413 1536h0M1806 1372h0M2196 1656h0M2588 1065h0M1998 1074h0M2785 1652h0M1804 1666h0M1802 1080h0M2786 1210h0M1610 1380h0M1610 1527h0M2786 1504h0M2983 1211h0M1216 1547h0M1605 1087h0M2388 922h0M2785 1064h0M2983 1506h0M1791 790h0M2585 920h0M1994 929h0M2983 1358h0M1413 1389h0M1607 1674h0M2782 919h0M1412 1242h0M2982 1654h0M1989 785h0M3180 1509h0M2982 1065h0M1411 1684h0M2186 780h0M1600 942h0M1408 1096h0M3180 1361h0M3180 1213h0M2582 775h0M3378 1365h0M1216 1399h0M3378 1217h0M1593 797h0M2980 919h0M3179 1067h0M3180 1658h0M2780 774h0M1214 1252h0M2378 633h0M1402 950h0M2577 630h0M1783 645h0M1210 1105h0M2180 636h0M1982 640h0M3178 920h0M3378 1514h0M2978 773h0' },
+    { r: 0.89, o: 0.37, p: 'M3577 1371h0M3378 1663h0M1773 501h0M1394 804h0M1019 1411h0M1019 1560h0M3377 923h0M3378 1070h0M1016 1264h0M820 1425h0M2776 629h0M1584 652h0M1204 959h0M2172 492h0M3176 774h0M1385 659h0M1012 1116h0M2372 488h0M2771 484h0M1973 496h0M2975 628h0M1196 813h0M1005 969h0M3577 1222h0M3577 1520h0M820 1574h0M3576 1670h0M2571 486h0M2971 483h0M1185 667h0M1573 507h0M1373 514h0M2163 348h0M3376 776h0M3576 1074h0M818 1276h0M3174 628h0M813 1128h0M805 981h0M996 822h0M3576 926h0M1962 352h0M3776 1528h0M3776 1378h0M2564 341h0M2364 344h0M3776 1229h0M618 1291h0M3776 1679h0M3576 779h0M3575 485h0M3374 630h0M622 1590h0M3776 1080h0M2556 197h0M2765 339h0M1762 357h0M3172 483h0M1172 521h0M984 676h0M621 1440h0M1359 368h0M1560 362h0M613 1142h0M3976 1237h0M3776 931h0M795 833h0M2967 338h0M3373 484h0M3976 1538h0M3976 1387h0M783 686h0M3977 1087h0M418 1307h0M421 1457h0M2759 195h0M3575 632h0M3777 783h0M2354 200h0M1950 207h0M2152 203h0M1157 376h0' },
+    { r: 0.91, o: 0.38, p: 'M605 994h0M1748 212h0M3169 337h0M970 530h0M422 1608h0M1343 223h0M412 1157h0M594 845h0M1546 217h0M3978 938h0M1937 63h0M2962 193h0M581 697h0M3371 337h0M768 539h0M954 383h0M3777 635h0M3979 788h0M1733 68h0M4178 1246h0M4177 1398h0M2140 59h0M403 1008h0M4177 1550h0M221 1627h0M2344 56h0M3165 192h0M4179 1096h0M2548 52h0M220 1476h0M1140 230h0M216 1324h0M565 549h0M1529 73h0M4180 945h0M3369 191h0M392 858h0M200 1023h0M3778 488h0M936 237h0M3574 338h0M751 392h0M4182 795h0M2752 50h0M3980 640h0M210 1174h0M4380 1258h0M2956 48h0M1325 78h0M3982 491h0M4380 1410h0M3161 46h0M378 709h0M4380 1563h0M188 873h0M731 245h0M19 1648h0M3778 340h0M546 401h0M4382 1106h0M18 1496h0M1120 84h0M4184 645h0M3574 191h0M14 1344h0M3366 45h0M4383 954h0M361 560h0M7 1192h0M173 723h0M3779 192h0M914 91h0M525 253h0M4584 1424h0M3984 342h0M4584 1579h0M4386 802h0M4584 1270h0M341 411h0M4187 495h0M4586 1117h0' },
+    { r: 0.96, o: 0.41, p: 'M155 572h0M4389 651h0M3573 44h0M3986 193h0M708 98h0M4190 345h0M501 105h0M4588 964h0M4592 811h0M4789 1596h0M4789 1440h0M318 262h0M3780 44h0M4790 1285h0M134 422h0M4393 500h0M4194 195h0M4792 1130h0M4795 976h0M4596 659h0M4799 821h0M3988 44h0M4397 349h0M292 113h0M110 272h0M4601 506h0M4997 1301h0M4995 1615h0M4995 1458h0M4804 667h0M4403 198h0M4198 45h0M4999 1144h0M5003 988h0M83 122h0M4606 354h0M4810 513h0M5008 833h0M4409 46h0M5204 1636h0M5204 1477h0M4613 201h0M5205 1318h0M5014 677h0M4817 359h0M5208 1160h0M5213 1003h0M5021 521h0M4825 205h0M4621 48h0M5218 845h0M5414 1498h0M5419 1178h0M5414 1659h0M5416 1338h0M5225 688h0M5030 366h0M4835 51h0M5424 1019h0M5234 530h0M5431 859h0M5039 210h0M5626 1522h0M5626 1684h0M5244 373h0M5439 700h0M5628 1360h0M5632 1198h0M5448 541h0M5050 54h0M5638 1036h0M5255 215h0M5646 875h0M5655 713h0M5460 381h0M5268 58h0M5666 552h0M5473 222h0M5678 390h0M5488 62h0M5693 229h0M5710 67h0' },
+  ] },
+  tablet: { w: 768, h: 516.5, b: [
+    { r: 0.88, o: 0.36, p: 'M462 2h0M1066 1155h0M961 1158h0M342 2h0M963 1392h0M1591 1385h0M1277 1385h0M1067 1233h0M1067 1467h0M1381 1228h0M1277 1306h0M1068 1311h0M1171 1465h0M1172 1308h0M1172 1386h0M1171 1153h0M1276 1228h0M1172 1230h0M1068 1389h0M1275 1151h0M963 1236h0M1381 1306h0M1486 1305h0M1381 1463h0M1065 1546h0M963 1314h0M1276 1463h0M1169 1075h0M1380 1150h0M859 1318h0M1381 1384h0M1486 1384h0M649 1407h0M962 1471h0M1170 1544h0M858 1240h0M858 1396h0M1274 1542h0M1486 1227h0M1486 1463h0M1483 1622h0M857 1475h0M1696 1229h0M1485 1149h0M1591 1228h0M1379 1072h0M1591 1306h0M960 1550h0M1274 1074h0M754 1401h0M1379 1542h0M1064 1078h0M856 1162h0M1167 1624h0M959 1081h0M753 1244h0M1484 1542h0M645 1566h0M1272 1622h0M957 1629h0M1271 996h0M751 1166h0M754 1323h0M752 1480h0M1166 998h0M1062 1626h0M1591 1464h0M855 1554h0M1061 1000h0M955 1003h0M1590 1150h0M1696 1308h0M1696 1387h0M1378 1622h0M1484 1072h0M853 1084h0M1164 1704h0M852 1634h0M1377 995h0M1695 1073h0M649 1328h0M1590 1544h0M750 1559h0M1802 1231h0M850 1007h0M1163 921h0M1589 1072h0M1482 994h0M648 1250h0M1696 1466h0M1270 1702h0M1059 1706h0M647 1486h0M747 1639h0M1696 1151h0M1375 1702h0M953 1710h0M1057 923h0M748 1088h0M1268 919h0M1801 1469h0M1481 1703h0M1589 1624h0M645 1171h0M1802 1389h0M1695 1546h0M848 1714h0M951 926h0M1588 994h0M1802 1310h0M1055 1787h0M1374 918h0M540 1573h0M1371 841h0M1801 1074h0M1373 1783h0M1908 1313h0M543 1335h0M845 929h0M542 1493h0M1587 1705h0M1587 917h0M744 1011h0M543 1414h0M1480 917h0M642 1093h0M946 849h0M1801 1152h0M542 1256h0M1801 1549h0M742 1720h0M843 1795h0M1694 1626h0M641 1646h0M1160 1785h0M1266 1783h0M949 1790h0M1265 842h0M1052 846h0M1907 1473h0M1694 995h0M1479 1784h0M540 1177h0M1908 1393h0M637 1726h0M1158 844h0M738 933h0M638 1015h0M1908 1234h0M438 1421h0M436 1501h0M1693 1707h0M1801 1630h0M438 1342h0M536 1653h0M737 1800h0M839 852h0M536 1099h0M1693 917h0M1262 1865h0M943 1872h0M1907 1155h0M2014 1317h0M531 1734h0M1692 1789h0M1156 1866h0M531 1021h0M1049 1868h0M1585 1786h0M1369 1865h0M2014 1397h0M434 1581h0M1478 840h0M1800 996h0M436 1263h0M1907 1553h0M430 1105h0M433 1184h0' },
+    { r: 0.9, o: 0.38, p: 'M1154 767h0M631 1807h0M1907 1076h0M1907 1634h0M1585 840h0M632 938h0M1800 1711h0M430 1662h0M837 1876h0M1261 765h0M1047 770h0M1475 763h0M1368 764h0M732 856h0M1907 997h0M2014 1478h0M1476 1866h0M832 775h0M2014 1237h0M625 860h0M425 1743h0M1907 1716h0M525 942h0M331 1350h0M1800 918h0M332 1430h0M525 1815h0M940 772h0M330 1270h0M1365 1947h0M1692 839h0M2014 1158h0M330 1510h0M327 1191h0M2014 1559h0M730 1882h0M1258 1947h0M2014 1079h0M1799 1793h0M1583 1868h0M1151 1948h0M624 1889h0M328 1590h0M1044 1951h0M936 1954h0M424 1026h0M830 1958h0M1582 762h0M1907 919h0M2121 1402h0M2014 1640h0M1799 840h0M317 1033h0M1691 1871h0M2121 1322h0M324 1671h0M725 778h0M1363 687h0M223 1279h0M2121 1565h0M932 695h0M2121 1483h0M225 1439h0M616 1971h0M1148 690h0M1040 693h0M2121 1162h0M225 1359h0M1473 1949h0M323 1112h0M2121 1242h0M1256 688h0M418 1824h0M418 948h0M517 1897h0M1581 1951h0M617 782h0M1690 762h0M2014 1000h0M220 1199h0M723 1964h0M929 2037h0M518 864h0M224 1520h0M221 1601h0M1471 686h0M824 698h0M2014 1722h0M1907 1798h0M319 1752h0M1252 2030h0M1144 2031h0M1907 841h0M1798 1876h0M1037 2034h0M2121 1082h0M1033 616h0M716 701h0M509 786h0M2014 921h0M215 1119h0M2122 1647h0M2015 1805h0M411 1906h0M509 1979h0M1469 2032h0M410 869h0M217 1682h0M1689 1955h0M2122 1002h0M1361 2031h0M821 2041h0M1580 685h0M2228 1328h0M117 1531h0M312 1834h0M714 2047h0M1798 762h0M117 1369h0M2228 1490h0M310 954h0M2228 1247h0M2228 1409h0M205 1845h0M1359 610h0M1141 613h0M1250 612h0M2229 1572h0M1688 684h0M2229 1166h0M212 1763h0M924 618h0M118 1450h0M1906 1882h0M115 1288h0M2122 1729h0M608 704h0M1797 1960h0M1578 2035h0M209 1040h0M2015 842h0M301 875h0M2123 923h0M815 621h0M606 2054h0M1906 762h0M400 791h0M1468 608h0M2229 1086h0M114 1612h0M2123 1813h0M304 1916h0M597 627h0M110 1694h0M2015 1888h0M1797 684h0M499 708h0M107 1128h0M112 1208h0M2230 1655h0M3 1706h0M402 1988h0M1687 2039h0M1576 607h0M105 1776h0M915 541h0M499 2062h0M706 624h0M2230 1006h0M1906 1966h0M201 960h0M2337 1172h0M2336 1253h0M2336 1334h0M2336 1416h0M294 1999h0M2015 763h0M10 1461h0M197 1928h0' },
+    { r: 0.93, o: 0.4, p: 'M2337 1580h0M2231 1738h0M1025 538h0M1244 534h0M1134 536h0M2336 1498h0M1463 531h0M1353 533h0M1686 606h0M9 1543h0M7 1624h0M2124 844h0M10 1380h0M1906 684h0M192 881h0M7 1299h0M1796 2044h0M100 1047h0M98 1858h0M805 543h0M390 712h0M291 796h0M2231 926h0M2338 1091h0M2338 1664h0M2124 1896h0M2015 1973h0M223 3h0M4 1218h0M2339 1010h0M2445 1259h0M2233 846h0M1906 2050h0M92 967h0M2232 1821h0M1795 606h0M2125 1981h0M187 2011h0M488 630h0M83 887h0M2125 764h0M89 1940h0M1573 530h0M696 546h0M2340 1747h0M2016 684h0M2445 1342h0M2445 1424h0M2445 1507h0M1237 457h0M280 717h0M2446 1178h0M182 801h0M585 549h0M1126 459h0M905 464h0M1683 529h0M378 634h0M2341 929h0M2446 1590h0M1906 606h0M475 552h0M2233 1906h0M1347 455h0M2016 2058h0M1016 461h0M2447 1096h0M2341 1831h0M79 2024h0M1458 454h0M794 466h0M2235 1991h0M2447 1674h0M1794 528h0M2235 766h0M2126 685h0M1569 452h0M683 468h0M2451 933h0M2449 1015h0M2449 1758h0M1905 527h0M2016 605h0M72 807h0M2343 849h0M2554 1267h0M2554 1350h0M267 638h0M170 722h0M2554 1433h0M2554 1516h0M2344 1916h0M1229 380h0M364 556h0M572 471h0M2556 1184h0M2556 1600h0M1680 451h0M2557 1685h0M2557 1102h0M1117 382h0M1005 384h0M1792 449h0M59 727h0M1341 378h0M894 386h0M2345 768h0M2451 1843h0M2127 606h0M2237 686h0M156 642h0M1453 376h0M461 474h0M2346 2002h0M782 388h0M2016 526h0M2664 1359h0M2664 1443h0M253 559h0M2454 852h0M2559 1020h0M2559 1770h0M2454 1928h0M1565 374h0M670 391h0M2665 1527h0M2665 1276h0M349 477h0M558 393h0M1904 448h0M2239 606h0M2666 1612h0M2562 938h0M141 563h0M2348 688h0M2562 1855h0M2666 1192h0M2457 2014h0M1333 300h0M44 647h0M2457 771h0M1678 372h0M1107 304h0M994 306h0M2668 1697h0M2129 526h0M2668 1109h0M1220 302h0M2565 856h0M881 308h0M2017 447h0M2671 1026h0M2565 1941h0M1790 371h0M2351 607h0M445 396h0M2670 1783h0M236 480h0M768 310h0M2775 1454h0M2241 526h0M1447 298h0M2775 1370h0M655 313h0M1560 296h0M103 3h0M2776 1540h0M2779 1711h0M2460 689h0M2776 1285h0M332 398h0M2777 1625h0M542 315h0M1904 369h0M28 567h0M2674 943h0M2778 1201h0M124 483h0' },
+    { r: 1.0, o: 0.44, p: 'M2674 1869h0M2569 2028h0M2130 446h0M1674 294h0M2569 774h0M1211 224h0M2780 1117h0M219 401h0M2677 1956h0M2782 1797h0M1096 226h0M2574 691h0M982 228h0M2244 445h0M1788 292h0M428 317h0M868 230h0M2018 368h0M2355 526h0M2678 860h0M1325 222h0M2783 1033h0M2464 608h0M753 232h0M1440 220h0M10 487h0M1555 217h0M2889 1639h0M2787 949h0M2887 1467h0M314 319h0M639 234h0M2888 1381h0M2682 2043h0M2888 1553h0M2786 1884h0M1903 290h0M105 403h0M2682 777h0M2888 1296h0M2132 366h0M524 236h0M2890 1210h0M199 321h0M2893 1125h0M1670 215h0M2892 1726h0M968 150h0M2359 445h0M2469 526h0M2895 1813h0M2790 1972h0M2578 609h0M2791 865h0M409 238h0M2018 288h0M1084 148h0M1786 212h0M2247 365h0M853 152h0M2688 694h0M1433 141h0M1200 146h0M2896 1040h0M3001 1567h0M1316 144h0M737 154h0M2797 781h0M2899 1901h0M2795 2060h0M294 240h0M3002 1654h0M84 324h0M3000 1480h0M3001 1394h0M621 156h0M2901 955h0M1549 138h0M2134 286h0M1902 210h0M2584 526h0M3002 1307h0M3004 1221h0M2363 363h0M2903 1989h0M505 158h0M2474 444h0M2694 611h0M3005 1742h0M178 242h0M3007 1135h0M2803 697h0M1666 136h0M2906 870h0M1072 70h0M389 159h0M3008 1830h0M2019 208h0M2251 284h0M1189 67h0M954 72h0M1784 133h0M3011 1048h0M62 244h0M1307 65h0M2136 205h0M719 76h0M837 74h0M272 161h0M3012 1919h0M2912 785h0M2590 444h0M2700 527h0M2480 362h0M3016 962h0M1425 62h0M602 77h0M1902 130h0M2810 613h0M3018 2008h0M1543 59h0M484 79h0M2368 282h0M155 162h0M3022 876h0M366 80h0M2020 127h0M1662 56h0M2254 202h0M2919 700h0M2597 361h0M2708 444h0M248 81h0M1781 53h0M38 163h0M3028 790h0M2486 280h0M2817 528h0M2927 615h0M2139 124h0M2373 200h0M1901 50h0M130 82h0M2826 444h0M12 83h0M2259 120h0M3036 704h0M2605 278h0M2716 360h0M2021 46h0M2936 529h0M2493 197h0M3045 617h0M2142 42h0M2379 117h0M2725 276h0M2835 359h0M2945 444h0M2613 194h0M2263 38h0M3055 531h0M2500 114h0M2956 358h0M2385 34h0M2735 191h0M2846 273h0M3066 444h0M2622 110h0M2508 30h0M2857 188h0M2968 271h0M2746 106h0M2632 25h0M2870 102h0M2981 185h0M2757 20h0M2995 98h0M2883 15h0M3010 10h0' },
+  ] },
+  mobile: { w: 390, h: 577.5, b: [
+    { r: 0.87, o: 0.36, p: 'M1558 1969h0M1558 898h0M585 1420h0M664 1419h0M742 1419h0M427 1482h0M505 1245h0M506 1421h0M427 1305h0M585 1361h0M663 1243h0M506 1362h0M428 1364h0M426 1247h0M742 1301h0M506 1303h0M506 1480h0M428 1423h0M584 1479h0M584 1244h0M664 1301h0M349 1366h0M663 1478h0M349 1308h0M271 1369h0M504 1187h0M585 1302h0M664 1360h0M349 1425h0M581 1128h0M900 1421h0M583 1538h0M504 1539h0M191 1314h0M743 1360h0M270 1428h0M348 1484h0M426 1541h0M348 1249h0M268 1547h0M742 1478h0M270 1310h0M821 1479h0M189 1551h0M661 1598h0M583 1186h0M425 1189h0M346 1191h0M742 1243h0M347 1544h0M424 1601h0M266 1607h0M270 1488h0M820 1539h0M192 1373h0M503 1599h0M662 1185h0M821 1360h0M662 1538h0M582 1598h0M502 1129h0M269 1252h0M821 1302h0M821 1420h0M191 1491h0M741 1184h0M980 1423h0M741 1538h0M192 1432h0M345 1604h0M266 1194h0M821 1243h0M422 1131h0M900 1362h0M900 1302h0M740 1598h0M660 1127h0M343 1133h0M189 1255h0M113 1377h0M186 1611h0M900 1185h0M499 1071h0M421 1661h0M820 1184h0M187 1197h0M900 1244h0M579 1070h0M112 1436h0M900 1481h0M500 1660h0M740 1126h0M112 1496h0M580 1658h0M264 1135h0M112 1318h0M900 1541h0M820 1599h0M659 1658h0M342 1664h0M110 1556h0M739 1659h0M496 1013h0M819 1126h0M658 1069h0M420 1073h0M110 1259h0M262 1667h0M980 1304h0M980 1363h0M979 1604h0M340 1075h0M980 1483h0M737 1720h0M899 1126h0M657 1719h0M980 1245h0M899 1601h0M183 1671h0M577 1719h0M418 1722h0M184 1138h0M33 1382h0M33 1441h0M979 1543h0M31 1561h0M738 1068h0M260 1077h0M32 1501h0M108 1200h0M498 1720h0M32 1323h0M107 1616h0M818 1660h0M338 1725h0M979 1186h0M31 1264h0M416 1015h0M818 1068h0M1059 1306h0M259 1728h0M656 1011h0' },
+    { r: 0.9, o: 0.37, p: 'M1059 1366h0M1059 1426h0M576 1012h0M104 1142h0M1059 1486h0M898 1662h0M104 1676h0M336 1017h0M180 1080h0M979 1665h0M735 1781h0M179 1732h0M979 1127h0M573 954h0M817 1721h0M28 1205h0M1059 1247h0M28 1622h0M1139 1429h0M412 957h0M256 1019h0M736 1010h0M414 1783h0M574 1781h0M494 1782h0M898 1068h0M1059 1187h0M254 1789h0M1059 1546h0M655 1781h0M334 1786h0M175 1022h0M95 1025h0M100 1083h0M1139 1309h0M1059 1607h0M24 1682h0M817 1010h0M24 1146h0M1139 1369h0M492 955h0M251 961h0M897 1724h0M99 1737h0M653 953h0M1139 1489h0M816 1783h0M1059 1128h0M331 959h0M897 1010h0M978 1068h0M1139 1249h0M20 1087h0M249 1851h0M329 1848h0M174 1794h0M410 1845h0M978 1727h0M571 1843h0M490 1844h0M815 951h0M1059 1069h0M20 1743h0M1140 1550h0M1059 1669h0M94 1799h0M734 952h0M652 1843h0M1140 1189h0M1220 1433h0M1220 1372h0M1140 1612h0M170 964h0M896 1786h0M407 899h0M896 951h0M1059 1731h0M1220 1555h0M650 895h0M569 896h0M1220 1312h0M326 901h0M245 903h0M89 966h0M978 1010h0M732 1844h0M488 897h0M1220 1494h0M168 1855h0M567 1905h0M1140 1130h0M14 1028h0M977 1789h0M14 1805h0M814 1846h0M732 894h0M1220 1252h0M1140 1673h0M324 1910h0M1220 1192h0M404 1908h0M88 1861h0M1059 1010h0M486 1906h0M647 837h0M1301 1255h0M813 893h0M977 951h0M895 1848h0M402 841h0M1140 1071h0M1220 1617h0M648 1905h0M163 905h0M1300 1376h0M1301 1499h0M1301 1560h0M1300 1316h0M1140 1736h0M565 838h0M1221 1679h0M243 1913h0M483 840h0M8 970h0M1300 1438h0M1059 1793h0M7 1867h0M320 843h0M1221 1132h0M730 1907h0M894 893h0M162 1918h0M82 908h0M976 1852h0M644 1969h0M156 847h0M238 845h0M81 1923h0M811 835h0M1301 1195h0M1058 952h0M811 1908h0M1140 1011h0' },
+    { r: 0.93, o: 0.39, p: 'M480 1969h0M729 836h0M1221 1072h0M317 1973h0M1382 1443h0M562 1968h0M1302 1622h0M399 1971h0M976 893h0M893 1911h0M236 1976h0M1302 1135h0M1382 1381h0M1140 1798h0M1058 1856h0M396 783h0M1222 1741h0M1382 1320h0M643 779h0M1302 1685h0M1382 1505h0M231 787h0M1303 1075h0M560 780h0M478 782h0M809 1972h0M893 834h0M1140 952h0M726 1970h0M313 785h0M154 1981h0M1383 1198h0M1382 1567h0M1222 1013h0M1382 1259h0M74 850h0M1383 1629h0M725 778h0M1058 893h0M976 1915h0M975 834h0M1222 1804h0M73 1986h0M1140 1862h0M475 2033h0M557 2033h0M148 789h0M1303 1748h0M1463 1449h0M310 2037h0M1463 1387h0M1464 1511h0M1223 953h0M392 2034h0M808 777h0M1384 1138h0M1058 1920h0M1141 893h0M892 1975h0M228 2040h0M1464 1325h0M1384 1692h0M640 2033h0M146 2044h0M1304 1014h0M1464 1264h0M723 2034h0M65 791h0M305 727h0M891 776h0M1141 1926h0M389 725h0M1465 1202h0M806 2037h0M1464 1574h0M472 724h0M1385 1077h0M1223 1868h0M555 722h0M1058 834h0M1304 1811h0M974 1980h0M638 721h0M1465 1637h0M64 2050h0M222 729h0M1386 1755h0M974 775h0M1058 1984h0M722 719h0M1224 893h0M1305 954h0M1466 1141h0M1547 1269h0M1547 1582h0M1387 1819h0M1141 834h0M139 730h0M890 2040h0M1467 1700h0M1387 1016h0M1546 1456h0M1546 1393h0M805 718h0M1546 1331h0M1546 1519h0M1306 1875h0M1224 1932h0M55 732h0M889 717h0M1058 774h0M381 667h0M973 2044h0M1141 1990h0M465 665h0M1468 1080h0M1468 1764h0M633 662h0M549 664h0M1548 1207h0M1307 894h0M297 668h0M1225 834h0M1389 956h0M1548 1645h0M1389 1884h0M213 670h0M973 716h0M1550 1145h0M1308 1940h0M1057 2050h0M718 661h0M1557 1903h0M1142 774h0M1550 1709h0M1470 1019h0M1470 1828h0M1225 1998h0M802 660h0M129 672h0M1057 715h0M1557 960h0M1552 1773h0' },
+    { r: 0.99, o: 0.43, p: 'M1391 895h0M1142 2056h0M1309 834h0M1552 1084h0M44 674h0M1473 1893h0M1309 2006h0M886 658h0M1391 1949h0M1226 774h0M458 607h0M1472 958h0M373 608h0M543 605h0M288 610h0M628 604h0M713 602h0M1554 1838h0M1226 2063h0M203 612h0M972 657h0M1142 714h0M118 613h0M1393 834h0M1554 1022h0M1475 897h0M798 601h0M1310 774h0M1057 656h0M1311 2072h0M1476 1958h0M32 615h0M884 599h0M1227 714h0M1394 2015h0M1142 655h0M536 547h0M1478 835h0M1479 2025h0M450 548h0M622 545h0M364 550h0M1313 713h0M970 598h0M278 552h0M1396 774h0M708 543h0M191 553h0M1397 2081h0M105 554h0M794 542h0M1056 596h0M1228 654h0M19 556h0M881 540h0M1399 713h0M440 490h0M1482 774h0M1482 2092h0M354 491h0M1143 595h0M266 492h0M968 538h0M528 488h0M1315 652h0M703 484h0M615 486h0M179 494h0M92 495h0M790 482h0M1230 593h0M5 497h0M1056 536h0M1486 712h0M1402 652h0M966 478h0M878 480h0M343 432h0M1144 534h0M1318 592h0M519 429h0M431 430h0M254 434h0M1490 650h0M166 435h0M608 427h0M1232 532h0M697 425h0M78 436h0M1055 476h0M1406 590h0M786 423h0M875 420h0M1321 530h0M1144 474h0M420 371h0M965 418h0M331 373h0M1495 589h0M241 374h0M1234 471h0M510 369h0M152 375h0M600 367h0M62 377h0M1055 416h0M1410 528h0M690 365h0M781 363h0M1324 469h0M1145 413h0M872 360h0M1500 526h0M409 311h0M962 358h0M318 313h0M227 314h0M500 309h0M1236 410h0M1414 466h0M136 316h0M592 307h0M684 305h0M45 317h0M1054 355h0M775 302h0M868 300h0M1146 352h0M1327 407h0M1506 464h0M960 297h0M1238 348h0M1419 404h0M1053 293h0M1331 345h0M1512 401h0M1147 290h0M1240 286h0M1424 341h0M1335 282h0M1518 338h0M1430 278h0M1525 274h0' },
+  ] },
+}
+const bioDotUris = {}
+export function latticeBioDots(dev, ink = '#111111') {
+  const v = LATTICE_BIO_DOTS[dev] || LATTICE_BIO_DOTS.desktop
+  const key = dev + ink
+  return bioDotUris[key] || (bioDotUris[key] = {
+    h: v.h,
+    uri: 'data:image/svg+xml,' + encodeURIComponent(
+      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${v.w * 4} ${v.h * 4}" preserveAspectRatio="xMidYMid slice">` +
+      v.b.map((q) => `<path d="${q.p}" fill="none" stroke="${ink}" stroke-opacity="${q.o}" stroke-width="${+(q.r * 8).toFixed(2)}" stroke-linecap="round"/>`).join('') +
+      '</svg>'),
+  })
+}
+
+/* ------------------------------------------------------------------ *
+ * The testimonials' dot field (plans/lattice/layout-1.md, *Settled in section
+ * 10*): a dark dot canvas the frames lay over the whole section, as wide as the
+ * section and 730 tall at every width, at 70% opacity. The bio's recipe again
+ * (connected components on the 2x rasters, alpha-weighted centroids, four
+ * equal-count buckets by dot mass, `r` fitted so a dot keeps its raster's ink
+ * and `o` its mean peak alpha, with the container's .7 folded into `o`): 558
+ * dots at 1440, 842 at 768 and 465 at 390, four, three and two edge-clipped
+ * fragments dropped. `r` carries a x1.036 calibration, since the antialiased SVG
+ * dot comes out 7% light of its raster otherwise: checked against the rasters at 2x,
+ * ink mass .995 / 1.018 / .996 and 16-px block correlation .992 / .990 / .992.
+ * Paths are zero-length subpaths in quarter-pixel units (viewBox w x 4 by 2920).
+ * ------------------------------------------------------------------ */
+const LATTICE_TESTI_DOTS = {
+  desktop: { w: 1440, h: 730, b: [
+    { r: 0.90, o: 0.27, p: 'M1825 2126h0M1825 1981h0M1632 1987h0M1632 2133h0M1631 1843h0M1440 1995h0M2018 1976h0M2210 2118h0M1629 2279h0M1438 1851h0M2211 1972h0M2015 2268h0M2016 1831h0M1823 1836h0M2017 2121h0M1440 2141h0M1822 2272h0M1437 2287h0M2209 1827h0M2013 1687h0M1820 1692h0M1626 1699h0M1433 1706h0M2402 1825h0M2208 2264h0M2206 1683h0M1245 1860h0M1247 2005h0M1247 2150h0M1817 2419h0M1624 2425h0M1432 2433h0M1814 1548h0M2403 2116h0M1244 2296h0M2010 2415h0M1620 1555h0M2404 1970h0M1054 2016h0M2007 1543h0M2204 2412h0M1617 2573h0M2201 1539h0M1426 1562h0M2400 1680h0M1240 1715h0M1051 1870h0M1054 2161h0M2401 2263h0M1051 2308h0M1239 2443h0M2597 2116h0M2004 2562h0M2597 1970h0M2397 2411h0M1810 2567h0M1424 2581h0M2596 1824h0M1232 1571h0M2198 2560h0M2000 1399h0M1046 2454h0M1231 2591h0M2194 1395h0M1806 1405h0M1611 1411h0M2395 1536h0M1038 1581h0M2594 1678h0M1046 1726h0M858 1882h0M861 2028h0M861 2174h0M858 2321h0M2791 1970h0M2595 2263h0M1038 2602h0M1801 2715h0M1220 2739h0M1995 2711h0M1417 1419h0M1608 2721h0M1414 2729h0M2591 2411h0M1222 1427h0M2392 2559h0M1795 1262h0M852 1737h0M2791 2117h0M667 2188h0M853 2468h0M2788 1678h0M2790 1824h0M2190 2709h0M2590 1534h0M664 2335h0M1600 1268h0M2389 1391h0M2789 2265h0M667 2042h0M1990 1256h0M663 1896h0M2786 2414h0M1027 1437h0M1596 2871h0M2586 2561h0M1027 2751h0M1405 1276h0M2584 1389h0M843 1592h0M2384 2709h0M1790 2865h0M1210 1284h0M2784 1533h0M844 2616h0M1207 2888h0M2186 1251h0M2986 2120h0M1985 2861h0M1401 2879h0M659 2483h0M832 1448h0M2985 1826h0M2986 1973h0M2984 2269h0M657 1750h0M1783 1119h0M1587 1125h0M472 2057h0M473 2204h0M2580 2711h0M833 2764h0M2180 2860h0M1979 1113h0M1391 1132h0M2381 1248h0M648 1605h0M468 1910h0M470 2352h0' },
+    { r: 0.92, o: 0.28, p: 'M651 2631h0M1014 1293h0M2981 2418h0M1013 2900h0M2983 1679h0M2780 1388h0M2782 2564h0M2376 2860h0M2175 1108h0M2577 1245h0M2980 1533h0M462 1764h0M3181 2125h0M465 2500h0M640 2780h0M1194 1141h0M2371 1104h0M3180 2274h0M457 2648h0M2776 2714h0M819 2914h0M636 1459h0M2572 2862h0M3181 1976h0M818 1303h0M3179 1681h0M3181 1829h0M2977 2569h0M998 1149h0M452 1618h0M278 2222h0M1768 976h0M2773 1243h0M1571 982h0M276 2370h0M277 2074h0M3177 2424h0M2976 1387h0M3176 1534h0M273 1927h0M271 2518h0M1965 970h0M1374 989h0M2568 1101h0M445 2797h0M2162 965h0M1176 997h0M621 1314h0M3377 2131h0M2972 2720h0M2360 961h0M439 1472h0M265 1780h0M800 1159h0M3378 1982h0M262 2668h0M2970 1242h0M2765 1098h0M3377 1833h0M3174 2575h0M2769 2866h0M3376 2281h0M3376 1685h0M3173 1388h0M255 1633h0M81 2093h0M3374 2432h0M978 1006h0M80 2390h0M1949 827h0M2558 957h0M602 1170h0M82 2241h0M3170 2728h0M251 2817h0M2966 2873h0M1751 833h0M76 1944h0M1354 847h0M423 1327h0M1552 840h0M780 1015h0M241 1486h0M75 2539h0M68 1797h0M2963 1097h0M3374 1537h0M67 2689h0M2148 822h0M3168 1242h0M1155 854h0M3372 2584h0M3575 2139h0M3575 1989h0M2756 954h0M2347 817h0M3574 1839h0M3574 2290h0M404 1181h0M3370 1390h0M57 1649h0M225 1340h0M56 2839h0M956 862h0M3573 1690h0M3165 2881h0M581 1025h0M3572 2442h0M1931 684h0M1731 690h0M757 871h0M3572 1541h0M3368 2738h0M1532 697h0M2955 952h0M2546 813h0M1332 704h0M3162 1096h0M3367 1243h0M43 1501h0M2131 679h0M1132 711h0M3570 2595h0M382 1036h0M2746 810h0M931 719h0M3773 1997h0M2332 674h0M204 1194h0M3773 1846h0M3773 2148h0M25 1354h0M3569 1393h0M3364 2892h0M557 880h0M3773 2301h0M3772 2454h0M3568 2749h0M3155 950h0' },
+    { r: 0.96, o: 0.30, p: 'M3362 1096h0M3772 1696h0M2532 669h0M3771 1546h0M731 727h0M2946 806h0M181 1047h0M1508 554h0M3566 1245h0M1911 541h0M1709 547h0M356 891h0M3770 2608h0M3564 2905h0M1307 561h0M1105 568h0M3973 2160h0M2112 536h0M3769 1397h0M2734 665h0M3973 2007h0M3973 1855h0M3973 2313h0M529 736h0M3148 804h0M3768 2763h0M3563 1097h0M3972 1704h0M2314 530h0M903 575h0M3356 949h0M3972 2468h0M154 901h0M2936 661h0M701 583h0M3972 1553h0M2517 525h0M3767 1248h0M327 745h0M1685 404h0M1279 417h0M498 591h0M3971 2623h0M1482 411h0M1888 398h0M1076 424h0M2720 520h0M3350 802h0M3970 1402h0M2092 392h0M3764 1099h0M3558 949h0M4174 1866h0M4174 2019h0M4174 2173h0M3970 2779h0M3139 658h0M4174 2328h0M2295 386h0M124 755h0M4174 1713h0M872 432h0M3969 1252h0M4174 2483h0M2924 516h0M295 600h0M3553 801h0M2500 381h0M668 439h0M3761 950h0M4173 1560h0M3342 655h0M4173 2640h0M1658 261h0M1863 254h0M464 447h0M1453 267h0M1043 281h0M3968 1101h0M4173 1408h0M1248 274h0M2705 375h0M4376 2188h0M91 609h0M3128 512h0M4376 1878h0M4376 2032h0M2068 248h0M4173 2798h0M4376 2344h0M838 288h0M2274 242h0M4377 1723h0M4173 1256h0M4377 2501h0M2910 370h0M3758 800h0M259 455h0M4377 1570h0M3547 653h0M3966 951h0M2481 236h0M632 295h0M3334 508h0M4377 2659h0M4172 1105h0M4377 1416h0M1421 124h0M1214 130h0M4377 2818h0M2688 230h0M3117 365h0M53 463h0M1836 111h0M1628 117h0M426 302h0M4580 2048h0M4580 2205h0M4581 1892h0M1007 137h0M3754 651h0M3964 800h0M4581 2363h0M2043 104h0M4378 1263h0M4581 1736h0M2251 97h0M800 144h0M220 309h0M3541 505h0M4172 953h0M4581 2521h0M2896 224h0M593 150h0M4582 1580h0M3325 360h0M4582 2681h0M2460 91h0M4378 1109h0' },
+    { r: 1.03, o: 0.34, p: 'M385 157h0M4583 1425h0M12 317h0M3749 502h0M3105 218h0M3961 650h0M4583 2841h0M2669 84h0M4171 801h0M4786 1907h0M4786 2065h0M4786 2224h0M3534 356h0M4787 2383h0M176 164h0M4379 956h0M4584 1270h0M4788 2543h0M4788 1749h0M2880 78h0M3314 213h0M549 6h0M4789 1592h0M4586 1115h0M4789 2704h0M3958 499h0M4170 649h0M340 12h0M3744 352h0M4791 1435h0M4791 2867h0M4380 802h0M3091 71h0M3526 207h0M4994 2084h0M4994 2245h0M130 18h0M4994 1924h0M4588 960h0M4994 2406h0M4793 1278h0M4996 2568h0M3303 64h0M4169 497h0M4996 1765h0M4381 649h0M4998 2731h0M3955 348h0M4796 1121h0M4998 1606h0M3738 202h0M4591 804h0M5000 1446h0M5000 2895h0M3517 57h0M4799 964h0M5203 2105h0M5204 2431h0M5203 2268h0M4168 344h0M5004 1288h0M4382 495h0M5204 1943h0M3952 196h0M4593 649h0M5205 2595h0M5206 1782h0M5208 2760h0M3732 51h0M5008 1129h0M4803 807h0M5209 1620h0M5212 1459h0M4167 191h0M4383 340h0M4596 493h0M5013 970h0M5415 2293h0M5216 1298h0M3948 44h0M5415 2129h0M5416 2458h0M4808 650h0M5416 1964h0M5418 1801h0M5417 2624h0M5420 2791h0M5422 1637h0M5018 811h0M5222 1137h0M4600 337h0M4384 186h0M5426 1474h0M4166 37h0M4813 492h0M5228 976h0M5432 1310h0M5628 2321h0M5024 651h0M5630 1988h0M5629 2154h0M5631 2656h0M5629 2488h0M5633 1821h0M5634 2825h0M5235 815h0M5438 1147h0M4386 30h0M4603 181h0M4818 334h0M5637 1656h0M5031 492h0M5643 1490h0M5446 984h0M5243 653h0M5649 1324h0M4607 23h0M4824 176h0M5039 331h0M5454 820h0M5657 1158h0M5252 491h0M5666 992h0M5464 656h0M4831 16h0M5048 171h0M5262 329h0M5676 826h0M5475 492h0M5057 9h0M5688 659h0M5273 166h0M5488 327h0M5701 492h0M5501 161h0M5716 325h0M5732 157h0' },
+  ] },
+  tablet: { w: 768, h: 730, b: [
+    { r: 0.90, o: 0.28, p: 'M871 1741h0M1075 1658h0M870 1664h0M1076 1735h0M973 1738h0M973 1815h0M870 1819h0M1179 1733h0M768 1746h0M767 1668h0M1075 1891h0M869 1897h0M972 1661h0M1179 1811h0M1076 1813h0M972 1893h0M768 1823h0M766 1901h0M1178 1656h0M1073 1581h0M969 1972h0M866 1975h0M970 1584h0M867 1587h0M764 1591h0M664 1673h0M665 1750h0M665 1828h0M664 1906h0M1177 1889h0M1177 1579h0M1282 1810h0M661 1984h0M562 1834h0M764 1979h0M967 1507h0M864 1511h0M1281 1655h0M1282 1732h0M1072 1969h0M1071 1504h0M661 1596h0M1281 1888h0M1175 1968h0M862 2054h0M1174 1502h0M561 1679h0M562 1756h0M561 1912h0M760 2058h0M761 1515h0M1385 1732h0M1069 2048h0M966 2050h0M1280 1577h0M1385 1654h0M1385 1810h0M657 1519h0M1278 1967h0M963 1431h0M1067 1428h0M558 1602h0M459 1763h0M459 1841h0M1384 1888h0M656 2063h0M859 1434h0M1383 1576h0M458 1919h0M558 1990h0M1172 2047h0M857 2133h0M756 1438h0M1277 1500h0M554 1525h0M457 1685h0M961 2130h0M454 1608h0M1489 1732h0M1382 1967h0M1170 1425h0M1488 1811h0M1276 2046h0M754 2137h0M957 1354h0M652 1443h0M553 2069h0M1064 2127h0M1381 1499h0M1487 1576h0M1488 1654h0M651 2142h0M1062 1351h0M853 1358h0M1488 1889h0M455 1997h0M1274 1423h0M354 1927h0M1168 2126h0M356 1770h0M356 1848h0M1379 2047h0M450 1531h0M1166 1349h0M1486 1969h0M450 2076h0M851 2212h0M749 1362h0M548 1448h0M352 2006h0M548 2148h0M747 2217h0M1592 1655h0M354 1692h0M1272 2126h0M955 2209h0M645 1366h0M1485 1499h0M350 1615h0M1592 1733h0M347 2085h0M1270 1347h0M1378 1422h0M444 1453h0M1059 2207h0M1592 1812h0M846 1281h0M252 1778h0M1592 1891h0M1055 1275h0M541 1371h0M250 1700h0M252 1857h0M251 1936h0M1484 2049h0M1376 2127h0M444 2156h0M1163 2206h0M644 2222h0M540 2228h0M742 1285h0M1591 1577h0M951 1278h0M1590 1971h0M346 1537h0M1482 1421h0M1374 1345h0M1589 1499h0M248 2014h0M1160 1272h0M1267 2207h0M341 2164h0M637 1290h0M1697 1735h0M948 2290h0M843 2293h0M246 1622h0M1588 2051h0M1052 2288h0M739 2297h0M1697 1815h0M244 2094h0M1480 2129h0M437 2235h0M636 2302h0M1265 1270h0M436 1376h0M241 1544h0M1695 1578h0M1696 1657h0M1696 1894h0M339 1460h0M1156 2287h0M532 1294h0M1372 2208h0M148 1866h0M943 1202h0M838 1205h0M532 2308h0M148 1788h0M1695 1974h0M1153 1196h0M1587 1421h0M147 1945h0M1048 1199h0M1479 1344h0M144 2024h0M1370 1268h0M1694 1500h0M333 2244h0M733 1209h0M145 1709h0M238 2173h0M1261 2288h0M428 2315h0M234 1467h0M1477 2210h0M730 2378h0M627 1213h0M142 1630h0M1693 2055h0M1585 2132h0M834 2374h0M1259 1194h0M427 1300h0M1801 1818h0M140 2104h0M1044 2369h0M331 1382h0M1801 1738h0' },
+    { r: 0.93, o: 0.29, p: 'M1801 1659h0M939 2371h0M626 2383h0M1584 1344h0M1801 1898h0M1366 2289h0M230 2253h0M1475 1267h0M324 2324h0M1692 1422h0M1149 2369h0M43 1797h0M44 1877h0M522 2389h0M1800 1979h0M828 1129h0M522 1218h0M136 1552h0M1800 1580h0M934 1126h0M1364 1192h0M321 1305h0M226 1389h0M134 2184h0M1582 2214h0M1040 1122h0M1799 1501h0M43 1956h0M40 2036h0M417 2396h0M129 1474h0M1691 2136h0M1472 2292h0M1255 2370h0M1145 1120h0M1580 1266h0M722 1133h0M41 1718h0M1798 2060h0M36 2115h0M616 1137h0M36 1640h0M1907 1822h0M824 2455h0M719 2459h0M416 1223h0M1690 1344h0M126 2264h0M220 2334h0M1907 1742h0M929 2453h0M1252 1117h0M1798 1423h0M1035 2452h0M614 2464h0M1470 1190h0M215 1311h0M1906 1662h0M1906 1903h0M1360 2371h0M313 2405h0M1141 2451h0M30 2195h0M1688 2218h0M1906 1583h0M510 1141h0M310 1228h0M30 1561h0M510 2470h0M1905 1984h0M1578 2296h0M405 2477h0M1576 1189h0M120 1396h0M116 2344h0M923 1049h0M23 1482h0M1796 2141h0M22 2276h0M1467 2374h0M209 2414h0M1247 2452h0M1796 1344h0M1030 1046h0M817 1053h0M1358 1115h0M1686 1266h0M1905 1503h0M710 1057h0M404 1146h0M604 1060h0M1904 2065h0M1137 1043h0M204 1234h0M109 1318h0M812 2538h0M1464 1113h0M2012 1746h0M1684 2301h0M1354 2454h0M301 2486h0M918 2536h0M2012 1827h0M2012 1586h0M707 2541h0M1243 1041h0M13 1404h0M1904 1424h0M2012 1666h0M2012 1908h0M1794 2224h0M105 2425h0M1025 2534h0M602 2546h0M497 1065h0M12 2356h0M1573 2379h0M297 1151h0M496 2552h0M1683 1188h0M2012 1990h0M1793 1266h0M1903 2148h0M196 2496h0M1131 2534h0M390 1069h0M1571 1112h0M2011 1506h0M391 2559h0M912 973h0M1351 1038h0M1460 2458h0M804 977h0M1238 2536h0M1902 1345h0M697 980h0M190 1156h0M97 1240h0M1019 970h0M2011 2072h0M287 2568h0M1458 1036h0M1680 2384h0M92 2506h0M693 2624h0M589 984h0M2010 1426h0M1791 2307h0M1127 967h0M2119 1833h0M1901 2230h0M2119 1752h0M800 2621h0M1346 2538h0M587 2629h0M1679 1110h0M1234 964h0M1900 1266h0M2119 1915h0M2010 2155h0M906 2619h0M481 2635h0M282 1074h0M2118 1590h0M2119 1671h0M1568 2462h0M182 2577h0M1790 1188h0M482 988h0M2118 1997h0M1566 1034h0M376 2642h0M1121 2619h0M82 1162h0M1013 2618h0M1342 961h0M374 992h0M174 1079h0M2009 1347h0M2118 1509h0M1899 2314h0M1788 2391h0M1454 2542h0M1676 2468h0M77 2588h0M2118 2080h0M2008 2238h0M899 897h0M790 900h0M1007 894h0M682 904h0M1451 959h0M1787 1109h0M1229 2620h0M271 2650h0M1898 1188h0M2118 1429h0M2226 1758h0M266 997h0M1116 890h0M574 908h0M2008 1267h0M2226 1676h0M2226 1923h0M2226 1840h0M1337 2623h0M166 2659h0M2117 2164h0M1674 1032h0M1562 2547h0' },
+    { r: 0.98, o: 0.32, p: 'M1224 887h0M66 1084h0M465 912h0M2007 2323h0M1896 2399h0M2226 1595h0M1784 2476h0M2226 2006h0M1559 956h0M2226 1514h0M2117 1349h0M1446 2628h0M61 2670h0M1333 884h0M157 1001h0M356 916h0M2116 2248h0M1671 2554h0M2226 2089h0M2006 1188h0M1783 1031h0M1895 1109h0M884 820h0M666 828h0M2116 1269h0M2226 1432h0M775 824h0M1443 882h0M1555 2633h0M994 817h0M556 831h0M248 920h0M2334 1848h0M2334 1683h0M2005 2408h0M1893 2484h0M1668 954h0M48 1006h0M2334 1765h0M2226 2173h0M1103 814h0M1780 2561h0M447 835h0M2334 1932h0M2116 2332h0M2334 1600h0M1213 810h0M2334 2015h0M1892 1030h0M2225 1352h0M2004 1108h0M1552 879h0M138 924h0M2115 1188h0M337 838h0M1323 807h0M2334 1518h0M2225 2258h0M1665 2640h0M1778 952h0M2334 2100h0M2225 1270h0M2003 2494h0M868 744h0M758 747h0M2114 2418h0M1890 2570h0M1662 876h0M28 928h0M2334 1436h0M1434 804h0M227 842h0M2225 2344h0M979 740h0M648 751h0M2443 1774h0M2335 2184h0M2443 1857h0M1775 2648h0M2443 1690h0M537 754h0M2114 1108h0M2002 1029h0M1090 737h0M2443 1941h0M1888 950h0M427 758h0M117 846h0M2335 1355h0M1201 733h0M1544 801h0M2443 1607h0M2443 2026h0M2225 1190h0M2335 2270h0M316 762h0M2444 1524h0M2113 2505h0M2001 2580h0M1773 874h0M2444 2111h0M2225 2430h0M1312 730h0M2335 1273h0M1886 2657h0M7 850h0M2444 2197h0M205 765h0M2112 1028h0M2444 1441h0M1656 798h0M2335 2356h0M1999 949h0M739 671h0M851 667h0M2224 1109h0M2553 1783h0M2553 1867h0M1424 726h0M628 674h0M1885 871h0M963 663h0M1075 660h0M2553 1952h0M516 678h0M2553 1698h0M2112 2592h0M94 769h0M2553 2038h0M405 681h0M2445 1358h0M2445 2283h0M1998 2668h0M2553 1614h0M2224 2517h0M2336 1191h0M1536 723h0M1768 795h0M1187 656h0M2554 2124h0M2336 2443h0M293 684h0M2554 1530h0M2111 948h0M2224 1028h0M2446 2370h0M2446 1276h0M1300 652h0M181 688h0M2555 1447h0M1997 869h0M2555 2210h0M1648 719h0M2224 2605h0M2336 1109h0M1413 648h0M2336 2531h0M1880 792h0M2110 2681h0M2663 1793h0M832 590h0M719 594h0M606 597h0M2447 1193h0M2663 1878h0M945 586h0M494 601h0M2664 1964h0M2556 2297h0M69 691h0M2556 1363h0M2664 1708h0M1059 582h0M381 604h0M2664 2051h0M2664 1622h0M2447 2458h0M1526 644h0M2109 867h0M1762 716h0M2224 946h0M2666 1538h0M1172 578h0M2336 1027h0M2665 2138h0M268 607h0M2558 1279h0M2558 2385h0M1994 789h0M2448 1110h0M2336 2620h0M2667 2225h0M2223 2694h0M155 610h0M1286 574h0M2667 1453h0M1876 712h0M1640 640h0M2448 2546h0M1401 570h0M2560 1196h0M2560 2474h0M812 513h0M697 516h0M42 613h0M2223 865h0M2669 1368h0M2775 1891h0M2668 2313h0M2775 1804h0' },
+    { r: 1.07, o: 0.36, p: 'M2775 1978h0M583 520h0M2337 945h0M2776 1718h0M469 524h0M2776 2065h0M926 509h0M2108 786h0M2776 1632h0M1755 636h0M2450 1028h0M355 527h0M1041 505h0M2450 2636h0M2337 2710h0M241 530h0M1516 566h0M2670 2402h0M2778 1546h0M2778 2153h0M1990 708h0M2671 1283h0M1156 500h0M2562 2563h0M2562 1112h0M2779 2242h0M127 533h0M2780 1460h0M1272 496h0M1870 632h0M1632 561h0M2222 783h0M12 536h0M2673 2491h0M2338 863h0M2451 944h0M2673 1199h0M2781 2330h0M2452 2726h0M2106 705h0M2782 1374h0M2888 1992h0M2888 1817h0M2564 1028h0M790 435h0M674 439h0M2889 1729h0M2888 1904h0M1388 491h0M2564 2653h0M558 443h0M1748 556h0M2889 2081h0M442 446h0M327 449h0M906 431h0M2890 1642h0M2784 2420h0M2676 2582h0M1986 628h0M2891 2170h0M1022 427h0M1505 486h0M212 452h0M2676 1114h0M2785 1288h0M2892 1554h0M2893 2259h0M2338 780h0M1139 422h0M2453 861h0M96 455h0M2567 944h0M2894 1467h0M1622 481h0M1865 551h0M2222 701h0M2787 2510h0M1256 417h0M2567 2745h0M2788 1202h0M2895 2349h0M2679 2673h0M2103 623h0M2680 1029h0M2897 1380h0M3002 1830h0M1374 412h0M3002 2008h0M3002 1919h0M531 365h0M3003 1741h0M3003 2098h0M2791 2602h0M2899 2440h0M648 361h0M414 369h0M766 357h0M1740 476h0M1982 546h0M3004 1653h0M2792 1116h0M883 353h0M2455 778h0M297 372h0M3005 2188h0M1493 407h0M2339 697h0M2570 860h0M2900 1293h0M1002 348h0M3007 1564h0M180 375h0M2683 2765h0M3007 2279h0M2221 619h0M63 377h0M2902 2531h0M2683 944h0M3009 1476h0M1120 343h0M2795 2694h0M1859 470h0M2904 1206h0M3010 2370h0M1612 401h0M2796 1030h0M2101 541h0M1239 338h0M3013 1387h0M2907 2623h0M2457 694h0M2573 775h0M3014 2461h0M1978 465h0M2909 1119h0M2340 614h0M2687 858h0M1359 333h0M1731 395h0M2800 2786h0M3017 1299h0M2220 536h0M1480 327h0M3018 2554h0M2801 943h0M2912 2716h0M1852 389h0M2914 1031h0M3022 1210h0M2098 459h0M2577 690h0M1600 321h0M2692 772h0M2460 609h0M3024 2647h0M2806 857h0M2917 2810h0M2341 530h0M1973 383h0M3027 1122h0M1722 314h0M2220 453h0M2920 944h0M3029 2740h0M1845 307h0M2580 605h0M2697 686h0M2812 770h0M2095 376h0M2462 525h0M3034 1033h0M3036 2835h0M2927 856h0M2342 446h0M1968 300h0M3041 944h0M2219 369h0M2703 600h0M2585 519h0M2819 682h0M2934 767h0M2465 440h0M2092 292h0M3048 855h0M2343 361h0M2708 513h0M2826 595h0M2942 679h0M2589 433h0M2218 284h0M3057 765h0M2468 354h0M2344 276h0M2834 507h0M2715 425h0M2950 590h0M2594 346h0M2471 267h0M2960 500h0M2842 418h0M2722 337h0M2600 258h0M2970 410h0M2851 329h0M2730 249h0M2981 319h0M2861 239h0M2993 228h0' },
+  ] },
+  mobile: { w: 390, h: 730, b: [
+    { r: 0.90, o: 0.27, p: 'M147 1801h0M343 1722h0M245 1724h0M245 1798h0M342 1648h0M244 1651h0M148 1727h0M440 1794h0M50 1805h0M244 1872h0M48 1879h0M50 1731h0M343 1795h0M341 1869h0M147 1654h0M146 1875h0M49 1658h0M242 1578h0M441 1720h0M145 1581h0M440 1646h0M46 1953h0M340 1575h0M47 1585h0M241 1946h0M144 1949h0M439 1868h0M141 1508h0M539 1719h0M339 1944h0M43 1512h0M338 1502h0M438 1573h0M538 1645h0M538 1793h0M437 1942h0M238 2021h0M239 1505h0M636 1793h0M537 1867h0M336 2019h0M436 1500h0M536 1571h0M140 2024h0M42 2028h0M636 1644h0M535 1942h0M637 1718h0M235 1432h0M334 1429h0M434 2018h0M135 2099h0M137 1435h0M38 1439h0M534 1498h0M635 1867h0M432 1427h0M635 1571h0M735 1793h0M37 2103h0M735 1719h0M532 2017h0M332 2094h0M531 1425h0M633 1497h0M735 1644h0M734 1868h0M634 1942h0M430 2093h0M233 2096h0M131 1363h0M230 1359h0M329 1357h0M733 1571h0M32 1366h0M428 1354h0M631 2018h0M630 1424h0M529 2093h0M30 2179h0M732 1497h0M834 1795h0M732 1944h0M326 2170h0M227 2172h0M129 2175h0M833 1645h0M834 1720h0M833 1870h0M628 2094h0M224 1287h0M25 1294h0M527 1352h0M425 2170h0M323 1284h0M832 1571h0M730 2020h0M124 1290h0M729 1423h0M831 1946h0M626 1351h0M423 1282h0M524 2170h0M122 2252h0M221 2249h0M831 1497h0M320 2247h0M727 2096h0M23 2255h0M522 1280h0M933 1722h0M932 1647h0M933 1797h0M932 1873h0M829 2022h0M624 2171h0' },
+    { r: 0.93, o: 0.29, p: 'M932 1572h0M419 2246h0M726 1350h0M828 1423h0M216 1215h0M116 1218h0M622 1278h0M316 1212h0M931 1949h0M519 2247h0M930 1498h0M16 1221h0M416 1209h0M213 2326h0M113 2328h0M827 2099h0M1032 1800h0M929 2026h0M724 2173h0M312 2324h0M14 2332h0M1032 1876h0M826 1349h0M516 1207h0M722 1277h0M1032 1649h0M1032 1724h0M619 2248h0M412 2324h0M208 1142h0M1031 1574h0M107 1145h0M928 1424h0M824 2176h0M1031 1953h0M1030 1499h0M512 2325h0M308 1139h0M6 1149h0M719 2251h0M409 1137h0M617 1205h0M926 1349h0M822 1276h0M1029 2030h0M927 2103h0M1132 1728h0M203 2404h0M103 2406h0M1132 1804h0M1132 1652h0M717 1203h0M1132 1881h0M510 1134h0M1029 1424h0M613 2326h0M304 2402h0M924 2181h0M820 2254h0M1132 1576h0M1131 1958h0M404 2402h0M611 1132h0M1028 2108h0M198 1070h0M96 1073h0M1131 1501h0M299 1067h0M923 1275h0M818 1202h0M1027 1350h0M714 2329h0M505 2403h0M1130 2035h0M400 1064h0M92 2484h0M921 2259h0M712 1130h0M1129 1426h0M1233 1732h0M1025 2186h0M1232 1580h0M193 2482h0M1233 1656h0M1232 1886h0M606 2405h0M294 2481h0M502 1061h0M1233 1809h0M1129 2114h0M815 2333h0M920 1202h0M1024 1275h0M1232 1964h0M604 1059h0M395 2481h0M814 1129h0M1232 1504h0M84 1001h0M1128 1351h0M187 997h0M708 2408h0M1231 2042h0M289 994h0M917 2338h0M497 2483h0M1023 2265h0M391 991h0M1231 1428h0M1334 1737h0M1334 1815h0M1127 2192h0M80 2564h0M706 1057h0M493 989h0M1021 1201h0' },
+    { r: 0.96, o: 0.30, p: 'M1334 1660h0M181 2562h0M599 2485h0M1126 1276h0M1334 1584h0M1230 2121h0M810 2413h0M283 2561h0M916 1128h0M1334 1893h0M596 986h0M385 2561h0M1230 1352h0M1334 1971h0M808 1055h0M1333 1507h0M1020 2345h0M702 2489h0M1125 2272h0M71 928h0M1229 2200h0M1124 1201h0M1333 2050h0M913 2418h0M277 922h0M174 925h0M1333 1431h0M488 2563h0M1018 1127h0M699 984h0M1436 1743h0M380 919h0M1228 1277h0M1436 1821h0M1332 2129h0M911 1053h0M1436 1900h0M1436 1666h0M804 2493h0M591 2566h0M484 916h0M1436 1979h0M1436 1588h0M1122 2352h0M1016 2425h0M1228 2280h0M802 981h0M1332 1354h0M694 2570h0M587 913h0M1436 1511h0M1436 2058h0M1332 2209h0M1014 1052h0M1121 1126h0M908 2500h0M1227 1201h0M56 855h0M1436 1434h0M264 849h0M160 852h0M906 979h0M1331 1278h0M1539 1829h0M1226 2361h0M1539 1672h0M691 910h0M798 2575h0M369 846h0M1538 1750h0M1435 2138h0M1120 2433h0M1539 1908h0M1331 2289h0M1012 2507h0M473 842h0M1539 1594h0M1435 1357h0M1539 1988h0M795 908h0M1118 1051h0M1330 1202h0M1225 1126h0M1010 977h0M1539 1516h0M1539 2068h0M1435 2219h0M902 2581h0M578 840h0M1435 1280h0M1330 2371h0M1224 2442h0M1116 2515h0M145 779h0M40 783h0M900 905h0M1539 1438h0M1539 2148h0M1435 2300h0M250 776h0M683 836h0M1329 1126h0M356 773h0M1007 2589h0M1223 1050h0M1539 1360h0M1435 1203h0M461 769h0M1115 976h0M1539 2230h0M788 833h0M1005 903h0M1329 2453h0M1435 2382h0M1222 2525h0M567 766h0' },
+    { r: 1.03, o: 0.34, p: 'M1540 1282h0M1113 2598h0M1328 1049h0M894 830h0M1220 974h0M1540 2312h0M23 710h0M129 706h0M1434 1126h0M235 703h0M1111 900h0M673 762h0M342 699h0M1327 2536h0M1540 1204h0M1434 2465h0M1219 2608h0M780 759h0M1540 2394h0M448 696h0M1000 828h0M1326 973h0M555 692h0M1434 1049h0M1218 898h0M887 756h0M1540 1127h0M1434 2548h0M1107 825h0M1540 2478h0M1326 2620h0M663 688h0M218 630h0M111 633h0M326 626h0M994 752h0M1434 972h0M771 685h0M1325 896h0M434 622h0M1541 1049h0M1433 2633h0M1215 822h0M1541 2562h0M879 681h0M543 618h0M1103 749h0M1541 971h0M92 560h0M652 614h0M1433 894h0M200 556h0M1323 819h0M988 677h0M310 552h0M1542 2648h0M761 610h0M1212 746h0M419 548h0M1098 673h0M529 544h0M1542 892h0M871 605h0M1432 817h0M1321 742h0M639 539h0M70 486h0M981 601h0M181 482h0M1208 669h0M292 478h0M750 534h0M403 473h0M1542 814h0M1432 739h0M1092 596h0M862 530h0M514 469h0M1319 665h0M626 464h0M48 412h0M974 525h0M1204 592h0M160 408h0M1543 735h0M272 403h0M739 459h0M1431 660h0M385 399h0M1086 519h0M852 454h0M1317 587h0M498 394h0M612 388h0M1200 514h0M966 448h0M1544 656h0M726 383h0M1430 582h0M1080 442h0M1314 508h0M841 377h0M1545 576h0M1196 436h0M957 371h0M1430 502h0M1073 364h0M1312 430h0M1546 496h0M1191 357h0M1429 423h0M1309 350h0M1547 416h0M1428 343h0M1548 335h0' },
+  ] },
+}
+const testiDotUris = {}
+export function latticeTestiDots(dev, ink = '#111111') {
+  const v = LATTICE_TESTI_DOTS[dev] || LATTICE_TESTI_DOTS.desktop
+  const key = dev + ink
+  return testiDotUris[key] || (testiDotUris[key] = {
+    h: v.h,
+    uri: 'data:image/svg+xml,' + encodeURIComponent(
+      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${v.w * 4} ${v.h * 4}" preserveAspectRatio="xMidYMid slice">` +
+      v.b.map((q) => `<path d="${q.p}" fill="none" stroke="${ink}" stroke-opacity="${q.o}" stroke-width="${+(q.r * 8).toFixed(2)}" stroke-linecap="round"/>`).join('') +
+      '</svg>'),
+  })
+}
+
 /* ------------------------------------------------------------------ *
  * The header title's fit (plans/header-fit.md, user call 2026-11-18):
  * a long name is set smaller, gradually, until the title block fits the
@@ -895,6 +1292,17 @@ export const TITLE_SITES = {
   ],
   Pop: [
     TS([103, 75, 75], 0.75, [1, 1, 1], [880.3, 540, 370], [614, 1024, 844], [428, 792, 503]),
+    TS([67, 51, 36], 0.89, [1, 1, 1], [521, 324, 370], [800, 811, 682]),
+    TS([67, 51, 36], 0.89, [1, 1, 1], [894.7, 440, 350], [738, 1024, 606]),
+    TS([103, 75, 46], 0.75, [0, 1, 1], [806.1, 561.5, 350], [738, 1024, 844]),
+  ],
+  // Lattice's layout-1 header (HeaderV0): one wrapping run at 105 / 79 / 51 at lh 0.86 in the
+  // frame's own column (915.72 x 0.82 at 1440, then the whole row beside the card at 768 and the
+  // whole row under it at 390), in a hero that is 750 at the two narrow widths. The seed is one
+  // line at 1440 and two at 768 and 390; the name never drops under the card, so there is no
+  // `bs` and no `room`. Layouts 2-4 are placeholders and copy Pop's rows.
+  Lattice: [
+    TS([105, 79, 51], 0.86, [1, 1, 1], [751, 489.8, 342], [614, 750, 750]),
     TS([67, 51, 36], 0.89, [1, 1, 1], [521, 324, 370], [800, 811, 682]),
     TS([67, 51, 36], 0.89, [1, 1, 1], [894.7, 440, 350], [738, 1024, 606]),
     TS([103, 75, 46], 0.75, [0, 1, 1], [806.1, 561.5, 350], [738, 1024, 844]),
@@ -1028,9 +1436,10 @@ export const NVAR = {
 // is what EncoreSection's root dispatches for any theme.
 export const headerFamily = (themeName) =>
   themeName === 'Lime' ? 'lime' : themeName === 'Grunge' ? 'grunge'
-    : themeName === 'Editorial' ? 'editorial' : themeName === 'Pop' ? 'pop' : 'photographic'
+    : themeName === 'Editorial' ? 'editorial' : themeName === 'Pop' ? 'pop'
+      : themeName === 'Lattice' ? 'lattice' : 'photographic'
 
-const HEADER_COUNT = { photographic: 6, lime: 4, grunge: 4, editorial: 4, pop: 4 }
+const HEADER_COUNT = { photographic: 6, lime: 4, grunge: 4, editorial: 4, pop: 4, lattice: 4 }
 
 export const headerVariants = (themeName) => HEADER_COUNT[headerFamily(themeName)]
 
@@ -1128,6 +1537,7 @@ const HEADER_NAMES = {
   grunge: PHOTOGRAPHIC_NAMES.slice(0, HEADER_COUNT.grunge),
   editorial: PHOTOGRAPHIC_NAMES.slice(0, HEADER_COUNT.editorial),
   pop: PHOTOGRAPHIC_NAMES.slice(0, HEADER_COUNT.pop),
+  lattice: PHOTOGRAPHIC_NAMES.slice(0, HEADER_COUNT.lattice),
 }
 
 export const headerLayout = (themeName, i) =>
@@ -1406,8 +1816,10 @@ export const TIERS_3 = TIERS.map((t, i) => ({ ...t, tags: ['Duo', 'Duo, Trio, Ba
 export const TIERS_1 = TIERS.map((t, i) => ({ ...t, tags: ['Private Event', 'Club Night', 'Festival'][i] }))
 // The templates whose pages are Lime's component trees — sectionVm's
 // `limeTree` flag, for the seeds that follow the frame rather than the layout.
-// All four designed templates since Pop's layout-4 sweep folded its pair in
-// (plans/pop/layout-4.md, decision 2).
+// The four templates that widen Lime's blocks, since Pop's layout-4 sweep folded its
+// pair in (plans/pop/layout-4.md, decision 2). Lattice is deliberately NOT here
+// though `limeTree` names it: its three seeds are per-section calls
+// (plans/lattice/layout-1.md, session 0), and its chips read Solo / Trio / Band.
 export const limeTreeTheme = (themeName) =>
   themeName === 'Lime' || themeName === 'Grunge' || themeName === 'Editorial' || themeName === 'Pop'
 // The packages an absent `tiers` key stands for, by template and design (`d`,
@@ -2021,6 +2433,8 @@ export const CAL_SLOT_CTA = 'Start Enquiry'
 // (JP-082, user call, 2026-09-29; FORM_BTN_4's shape), and an emptied label
 // falls back to it there, since it is the wizard's only way to send.
 export const CAL_SEND_4 = 'Send Enquiry'
+// Lattice's layout-1 foot draws a Continue bar where Lime's draws none (its frames 1:1039 · 1:9670 · 1:10640).
+export const CAL_CTA_LATTICE = 'Continue'
 
 export const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December']
@@ -2149,9 +2563,11 @@ export const BADGE_MODES = [
   { v: 'hidden',   l: 'Hidden' },
 ]
 // The badge states a design's artwork supports: Lime's and Editorial's layout-1
-// badge is a static reticle / star, so a rotating one is not on offer there.
+// badge is a static reticle / star, and Lattice's a still raster disc of dotted rings, so a
+// rotating one is not on offer there.
 export const badgeOptsFor = (themeName, design, cat = 'header') =>
-  cat === 'header' && design === 0 && (themeName === 'Lime' || themeName === 'Editorial')
+  design === 0 && (cat === 'header' && (themeName === 'Lime' || themeName === 'Editorial' || themeName === 'Lattice')
+    || cat === 'bio' && themeName === 'Lattice')
     ? [{ v: 'rotating', l: 'Visible' }, { v: 'hidden', l: 'Hidden' }]
     : BADGE_MODES
 
@@ -2173,12 +2589,14 @@ export const FIELDS = {
   // `aspect` on an image field is only the FALLBACK frame of the photo editor: it opens on the shape of the
   // field's largest photo on the canvas as drawn now (photoAspectOf, EncoreBuilder.jsx), and falls back to this
   // when the layout or device draws none.
-  // The header's `in` is always an object naming all five templates: they have
-  // different header families (six designs against four, four, four and four —
+  // The header's `in` is always an object naming all six templates: they have
+  // different header families (six designs against four, four, four, four and four —
   // Grunge's, Editorial's and Pop's rows are each measured over four fitted
   // cards, none a placeholder since each template's layout-4 pass). Pop's was
   // measured in its layout-1 sweep and re-measured in each later header
-  // session, the last over its fitted card 4 (2026-10-07), unchanged.
+  // session, the last over its fitted card 4 (2026-10-07), unchanged. Lattice's is
+  // measured over its fitted Hero alone (cards 2-4 are placeholders: `reach.mjs 5`
+  // agreed with it at the 2026-11-20 sweep, so those seats are Lime's twins' rows).
   header: [
     { k: 'image',     l: 'Background photo', type: 'image', aspect: [16, 9],
       hint: 'Fills the header behind the type.' },
@@ -2217,8 +2635,8 @@ export const FIELDS = {
     // only the `HeaderV2` block those four share reads it. Emptied, the card
     // is the name alone.
     { k: 'cardLine',  l: 'Line under your name', d: CARD_LINE_3,
-      in: { Lime: [2], Grunge: [2], Editorial: [2], Pop: [2], '*': [] },
-      chars: { Lime: [null, null, 22], Grunge: [null, null, 23], Editorial: [null, null, 23], Pop: [null, null, 29] },
+      in: { Lime: [2], Grunge: [2], Editorial: [2], Pop: [2], Lattice: [2], '*': [] },
+      chars: { Lime: [null, null, 22], Grunge: [null, null, 23], Editorial: [null, null, 23], Pop: [null, null, 29], Lattice: [null, null, 23] },
       hint: 'The line under your name on the portrait card. The bio’s Performing since is a separate '
           + 'field, so change both if you name a year here. Left empty, it is not drawn.' },
     // The artist's name, page-wide and required (NameInput) — special-cased.
@@ -2233,7 +2651,7 @@ export const FIELDS = {
       // with `limits.mjs header --keys=title --sweep`: 80 where only the title prints it.
       // Retro's layout 3 holds 14 (the polaroid's nowrap caption clips), layout 5 56 and
       // layout 6 39 (the 390 card).
-      chars: { Retro: [80, 80, 14, 80, 56, 39], Lime: 80, Grunge: 80, Editorial: 80, Pop: 80 } },
+      chars: { Retro: [80, 80, 14, 80, 56, 39], Lime: 80, Grunge: 80, Editorial: 80, Pop: 80, Lattice: 80 } },
     // Header-nav ticket (2026-11-11): layout 2 no longer prints the description
     // under the name, so only Retro's layout 5 reads it.
     { k: 'subtitle',  l: 'Subtitle',         type: 'area', def: 'heroSub',
@@ -2249,8 +2667,8 @@ export const FIELDS = {
     // Layout 2's pill under the subtitle (JP-037). Its frame words it apart
     // from the nav's Book Now, so it is a field of its own. Emptied, no pill.
     { k: 'heroCta',   l: 'Button under subtitle',      d: HERO_CTA,
-      in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1] },
-      chars: { Retro: [null, 34], Lime: [null, 35], Grunge: [null, 40], Editorial: [null, 21], Pop: [null, 25] },
+      in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1], Lattice: [1] },
+      chars: { Retro: [null, 34], Lime: [null, 35], Grunge: [null, 40], Editorial: [null, 21], Pop: [null, 25], Lattice: [null, 25] },
       hint: 'The button under your name. Left empty, it is not drawn.' },
     // The rest of layout 2's copy (JP-059, reversing Lime's fit, which kept
     // them literals): the pill over the name and the two cards under the
@@ -2259,11 +2677,11 @@ export const FIELDS = {
     // card's "Performing since 2021" is the artist's copy — the bio's own
     // Performing since is another field, which the hint says.
     { k: 'faceTitle', l: 'Portrait caption title',  d: FACE_TITLE,
-      in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1] },
-      chars: { Retro: [null, 22], Lime: [null, 24], Grunge: [null, 29], Editorial: [null, 19], Pop: [null, 20] },
+      in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1], Lattice: [1] },
+      chars: { Retro: [null, 22], Lime: [null, 24], Grunge: [null, 29], Editorial: [null, 19], Pop: [null, 20], Lattice: [null, 20] },
       hint: 'The card beside your portrait, under the photograph. Left empty, it is not drawn.' },
     { k: 'faceBody',  l: 'Portrait caption text',   type: 'area', d: FACE_BODY,
-      in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1] }, chars: [null, 180],
+      in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1], Lattice: [1] }, chars: [null, 180],
       hint: 'The line under the portrait caption title. The bio’s Performing since is a separate field, '
           + 'so change both if you name a year here. Left empty, it is not drawn.' },
     // Named `cta2` on the bio's own content too, which FIELDS.bio.cta2 edits
@@ -2279,13 +2697,13 @@ export const FIELDS = {
     // Its cap is per chip (`chars`) and chips (`count`), the bio's besides
     // (IDENTITY_CHARS), each chip a sized seat held to twice the longest seed.
     { k: 'tags',      l: 'Tags',             type: 'area', d: TAG_LABELS, shared: true, list: ',',
-      in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3], Editorial: [0, 2, 3], Pop: [0, 2, 3] },
+      in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3], Editorial: [0, 2, 3], Pop: [0, 2, 3], Lattice: [0, 2, 3] },
       chars: { Retro: [22, null, 22, 22, 15, 22], '*': [22, null, 22, 22] },
-      count: { Retro: [8, null, 7, 7, 6, 6], Pop: [6, null, 6, 6], '*': [8, null, 6, 6] },
+      count: { Retro: [8, null, 7, 7, 6, 6], Pop: [6, null, 6, 6], Lattice: [6, null, 6, 6], '*': [8, null, 6, 6] },
       rows: { placeholder: 'Tag', add: 'Add tag' },
       hint: 'Your genre chips. One per row; a comma starts a new row.' },
     { k: 'showTags',  l: 'Tags',        type: 'select', d: 'show', opts: SHOW_HIDE_TAGS, shared: true,
-      in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3], Editorial: [0, 2, 3], Pop: [0, 2, 3] },
+      in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3], Editorial: [0, 2, 3], Pop: [0, 2, 3], Lattice: [0, 2, 3] },
       hint: 'Show or hide the tag chips wherever they are printed.' },
     // Three states (header-nav ticket, 2026-11-11): the seal is visible and
     // turning (today's), visible and still, or hidden. `badgeMode` replaces the
@@ -2294,19 +2712,19 @@ export const FIELDS = {
     // Editorial's layout-1 artwork (a reticle, a star) has no ring to turn, so
     // EditPanel offers those two Show / Hide alone (`badgeOptsFor`).
     { k: 'badgeMode', l: 'Corner badge',     type: 'select', d: 'rotating', opts: BADGE_MODES,
-      in: { Retro: [0, 1, 3, 4, 5], Lime: [0, 3], Grunge: [0, 3], Editorial: [0, 3], Pop: [0, 3] } },
+      in: { Retro: [0, 1, 3, 4, 5], Lime: [0, 3], Grunge: [0, 3], Editorial: [0, 3], Pop: [0, 3], Lattice: [0, 3] } },
     // The seal's ring sets it twice round a circle, so its cap is the ring's
     // fit (scripts/limits.mjs's ring test). Left empty, the ring prints the
     // artist's name, clamped to the same fit (sealCap).
     { k: 'badgeText', l: 'Corner badge text',                    // defaults to the artist's name — special-cased
-      in: { Retro: [0, 1, 3, 4, 5], Lime: [3], Grunge: [0, 3], Editorial: [3], Pop: [0, 3] },
+      in: { Retro: [0, 1, 3, 4, 5], Lime: [3], Grunge: [0, 3], Editorial: [3], Pop: [0, 3], Lattice: [3] },
       chars: { Retro: 19, Lime: [null, null, null, 13], Grunge: [14, null, null, 14], Editorial: [null, null, null, 10],
-        Pop: [12, null, null, 10] } },
+        Pop: [12, null, null, 10], Lattice: [null, null, null, 13] } },
     { k: 'navMode',   l: 'Menu style', type: 'select', d: 'sections', opts: [
       { v: 'sections', l: 'Follow my sections' },
       { v: 'minimal',  l: 'Minimal (Music · Gigs · About)' },
     ] },
-    { k: 'align',     l: 'Page alignment',        type: 'select', d: 'left', in: { Retro: [0], Lime: [0], Grunge: [0], Editorial: [0], Pop: [0] }, opts: [
+    { k: 'align',     l: 'Page alignment',        type: 'select', d: 'left', in: { Retro: [0], Lime: [0], Grunge: [0], Editorial: [0], Pop: [0], Lattice: [0] }, opts: [
       { v: 'left',   l: 'Left' },
       { v: 'centre', l: 'Centre' },
     ] },
@@ -2319,7 +2737,9 @@ export const FIELDS = {
     // the seed's size, the name's floor; 768 and 390 bind there (notes/bio.md).
     { k: 'heading',   l: 'Heading', d: 'Reads the room.', in: [0, 2, 3],
       chars: { Retro: [20, null, 19, 23], Lime: [19, null, 18, 21], Grunge: [21, null, 20, 18],
-        Editorial: [15, null, 15, 17], Pop: [17, null, 17, 19] } },
+        Editorial: [15, null, 15, 17], Pop: [17, null, 17, 19],
+        // Lattice layout 1 measured 2026-11-19 (scripts/limits.mjs bio --themes=5 --designs=0); 3 and 4 are Pop's until their passes.
+        Lattice: [21, null, 17, 19] } },
     // Layout 2's pill over the paragraph (JP-059), seeded with the frame's
     // copy and cased as a label; emptied, it is not drawn.
     { k: 'tag',       l: 'Highlight tag', d: BIO_TAG, in: [1], chars: [null, 18],
@@ -2495,7 +2915,10 @@ export const FIELDS = {
   pricing: [
     { k: 'heading', l: 'Heading', d: "Choose the set that's right for your night", in: [0, 1, 2],
       chars: { Retro: [42, 42, 44], Lime: [50, 42, 37], Grunge: [55, 44, 41], Editorial: [42, 42, 25],
-        Pop: [48, 42, 28] },
+        Pop: [48, 42, 28],
+        // Lattice layout 1 measured: 32 (the seed's four lines at 390 are the frame's, and prose of 33 takes a fifth),
+        // so the seed's own 42 is the floor, as the gallery's and the bio's heads. Layouts 2-4: Pop's, provisional.
+        Lattice: [42, 42, 28] },
       hint: 'Layouts 1, 2 and 3 only. Layout 4 is a stack of service rows and heads them with '
           + 'the package names alone, so it draws no title.' },
     { k: 'tiers',   l: 'Packages', type: 'tiers', max: 6,
@@ -2504,7 +2927,9 @@ export const FIELDS = {
       // layout) and its features one a line, their count bound at layout 4 alone.
       cols: {
         name: { Retro: [19, 18, 53, 16], Lime: [30, 28, 42, 23], Grunge: [40, 34, 51, 25], Editorial: [22, 18, 27, 16],
-          Pop: [16, 16, 30, 18] },
+          Pop: [16, 16, 30, 18],
+          // Layout 1 measured 15 (desktop 17, tablet 15, mobile 17); the seed's 16 (The Festival Set) is the floor.
+          Lattice: [16, 16, 30, 18] },
         // `num` is the first number run, the big numeral: a price of digits alone
         // sets whole in it, so it is measured apart from the total (`chars`, the
         // price with its small tail). User call, 2026-11-06. The numeral's cap is
@@ -2513,12 +2938,19 @@ export const FIELDS = {
         // or 4 cannot be one the deck then cuts (JP-168, user call, 2026-11-11);
         // what is stored over it renders cut to a `…`, clampNumeral().
         price: { chars: { Retro: [8, 33, 31, 25], Lime: [12, 35, 25, 29], Grunge: [14, 35, 30, 34], Editorial: [11, 33, 27, 20],
-          Pop: [10, 34, 25, 23] }, num: { Retro: 5, Lime: 10, Grunge: 11, Editorial: 8, Pop: 7 } },
-        tags: { list: ',', chars: { Retro: [12, null, 12, 12], '*': [26, null, 26, 26] },
-          count: { Retro: [4, null, 5, 6], Pop: [3, null, 4, 5], '*': [4, null, 4, 5] } },
+          Pop: [10, 34, 25, 23],
+          // Layout 1 measured 9 (one run in the display face, a range's tail wrapping at its spaces); the rest Pop's.
+          Lattice: [9, 34, 25, 23] },
+          // Lattice's numeral is layout 1's 9 (measured: desktop 9, tablet 10, mobile 12) held to Pop's 7, the tightest of
+          // the placeholder layouts' provisional rows, so a price typed at layout 2, 3 or 4 is not one the deck then cuts.
+          num: { Retro: 5, Lime: 10, Grunge: 11, Editorial: 8, Pop: 7, Lattice: 7 } },
+        // Lattice layout 1 measured: an item 42 at 390 (so the shared 26 holds), and three tags a package (a fourth chip
+        // wraps the 390 row's second line).
+        tags: { list: ',', chars: { Retro: [12, null, 12, 12], Lattice: [26, null, 26, 26], '*': [26, null, 26, 26] },
+          count: { Retro: [4, null, 5, 6], Pop: [3, null, 4, 5], Lattice: [3, null, 4, 5], '*': [4, null, 4, 5] } },
         blurb: 160,
         feats: { list: '\n', chars: { Retro: [24, 24, 24, 59], Grunge: [25, 24, 24, 62], Editorial: [25, 24, 24, 60],
-          Pop: [26, 24, 24, 62], '*': [24, 24, 24, 62] }, count: [15, 15, 15, 5] },
+          Pop: [26, 24, 24, 62], Lattice: [24, 24, 24, 62], '*': [24, 24, 24, 62] }, count: [15, 15, 15, 5] },
       },
       hint: 'Tags become the filter chips above the packages in layouts 1 and 3. '
           + 'Layout 3 starts the packages tagged Duo where the other layouts '
@@ -2534,7 +2966,9 @@ export const FIELDS = {
           + 'package on show.' },
     { k: 'unit',    l: 'Price unit', d: PRICE_UNIT,
       chars: { Retro: [7, 37, 32, 69], Lime: [13, 40, 28, 88], Grunge: [15, 41, 33, 98], Editorial: [12, 37, 29, 53],
-        Pop: [11, 39, 27, 51] },
+        Pop: [11, 39, 27, 51],
+        // Layout 1 measured 29 (desktop 37; tablet and mobile 29): the unit stands in the card's top row, right-aligned.
+        Lattice: [29, 39, 27, 51] },
       hint: 'Printed after the price in layouts 1, 2 and 3. Layout 4 stands it above the price '
           + 'instead, as the kind of booking being priced, and drops a leading slash.' },
     { k: 'intro',   l: 'Intro line', type: 'area', d: PRICING_INTRO_3, in: [2],
@@ -2587,11 +3021,13 @@ export const FIELDS = {
     // layout 1's word; sectionVm and EditPanel resolve layouts 3 and 4's.
     { k: 'rowCta',  l: 'Package button', d: 'Book Now', in: [0, 2, 3],
       chars: { Retro: [12, null, 12, 26], Lime: [14, null, 12, 26], Grunge: [16, null, 12, 26],
-        Editorial: [9, null, 12, 26], Pop: [10, null, 12, 26] },
+        Editorial: [9, null, 12, 26], Pop: [10, null, 12, 26],
+        // Layout 1 measured 34 (the full-width bar: desktop 42, tablet 34, mobile 35); the rest Pop's.
+        Lattice: [34, null, 12, 26] },
       hint: 'The pill on every package. Layout 3 starts from “Book” and layout 4 from '
           + '“Start Enquiry”. Layout 2 has its own plan button. Empty it to drop the pill.' },
     { k: 'sub',     l: 'Small print', def: 'pricingSub',
-      chars: { Retro: [133, 67, 67, 67], Grunge: [53, 67, 63, 67], Pop: [80, 67, 63, 67], '*': [67, 67, 63, 67] } },
+      chars: { Retro: [133, 67, 67, 67], Grunge: [53, 67, 63, 67], Pop: [80, 67, 63, 67], Lattice: [85, 67, 63, 67], '*': [67, 67, 63, 67] } },
   ],
   // The other list-shaped content type with a structured editor rather than a
   // textarea (see `media` above): `songs` is an array of
@@ -2608,7 +3044,10 @@ export const FIELDS = {
     // stays empty at every layout.
     { k: 'heading', l: 'Heading',
       chars: { Retro: [14, 31, 20, 17], Lime: [11, 32, 19, 15], Grunge: [13, 38, 25, 20], Editorial: [8, 21, 12, 10],
-        Pop: [11, 25, 17, 10] } },
+        Pop: [11, 25, 17, 10],
+        // Lattice layout 1 measured 2026-11-19 (limits.mjs repertoire --themes=5 --designs=0): 12 at 1440 and 390,
+        // 17 at 768. The other three layouts are Pop's until their passes.
+        Lattice: [12, 25, 17, 10] } },
     // `in` is per field, and every layout reads the songs, so the hint says
     // which column each layout leaves out (JP-107): the reviews' date shape.
     // Session 5 of the character-limits pass: a tag is a chip, and at layout 3
@@ -2620,10 +3059,12 @@ export const FIELDS = {
       cols: {
         title: { Retro: [17, 25, 25, 25], Lime: [44, 24, 17, 22], Grunge: [33, 26, 23, 26], Editorial: 17, Pop: 17 },
         artist: { Retro: [32, 25, null, 41], Lime: [73, 25, null, 37], Grunge: [74, 25, null, 42],
-          Editorial: [35, 25, null, 18], Pop: [18, 25, null, 19] },
+          Editorial: [35, 25, null, 18], Pop: [18, 25, null, 19],
+          // Lattice layout 1: 22 at 768 and 390 (one line beside a 17-character title); 1440 holds 44.
+          Lattice: [22, 25, null, 19] },
         length: { Retro: [null, null, 23], Lime: [null, null, 17], Grunge: [null, null, 22], Editorial: [null, null, 17],
           Pop: [null, null, 14] },
-        tags: { list: ',', chars: 18, count: { Editorial: [3, 4, 3, 3], '*': [4, 4, 3, 3] } },
+        tags: { list: ',', chars: 18, count: { Editorial: [3, 4, 3, 3], Lattice: [3, 4, 3, 3], '*': [4, 4, 3, 3] } },
       },
       hint: 'Tags become the filter chips above the list. Layout 4 draws no chips: it indexes the whole list A–Z instead. '
           + 'Layout 3 groups the songs into one set per tag and shows each song’s length in place of its artist; '
@@ -2651,15 +3092,15 @@ export const FIELDS = {
       hint: 'One per tile. Layout 1 shows the highlighted one in its viewer; layouts 2 and 4 show it as the large photo beside the others.' },
     // JP-120 (gallery): the eyebrow over the heading, the frames' word, uncased.
     { k: 'kicker',  l: 'Small heading', d: GALLERY_KICKER, in: [0, 3],
-      chars: { Retro: [44, null, null, 49], Pop: [44, null, null, 39], '*': [55, null, null, 51] },
+      chars: { Retro: [44, null, null, 49], Pop: [44, null, null, 39], Lattice: [41, null, null, 51], '*': [55, null, null, 51] },
       hint: 'A small line over the heading. Empty by default; type one to show it.' },
     { k: 'heading', l: 'Heading', d: 'See us in action',
       chars: { Retro: [20, 27, 18, 24], Lime: [19, 26, 18, 23], Grunge: [29, 26, 23, 24], Editorial: [16, 26, 11, 20],
-        Pop: [16, 27, 15, 20] } },
+        Pop: [16, 27, 15, 20], Lattice: [16, 27, 15, 20] } },
     // JP-098: the 768 head row's word, the frame's, uncased. `in` cannot name a
     // width, so the hint does. JP-120 (gallery): layout 1's credit line too.
     { k: 'railLabel', l: 'Gallery caption', d: GALLERY_RAIL_LABEL, in: [0, 1],
-      chars: { Retro: [49, 70], Lime: [55, 64], Editorial: [32, 70], Pop: [49, 70], '*': [55, 70] },
+      chars: { Retro: [49, 70], Lime: [55, 64], Editorial: [32, 70], Pop: [49, 70], Lattice: [45, 70], '*': [55, 70] },
       hint: 'The line under your name over the large photo in layout 1, and the label over the small '
           + 'photos in layout 2, on a tablet only. Left empty, neither is drawn.' },
     // JP-120 (gallery): two words that head a control or a row standing
@@ -2669,7 +3110,7 @@ export const FIELDS = {
       hint: 'The link over the large photo that goes back to the first one. Left empty, it shows '
           + '“Back to beginning” again.' },
     { k: 'sourceLabel', l: 'Social links heading', d: GALLERY_SOURCES[0].l, in: [0],
-      chars: { Retro: [42], Lime: [49], Grunge: [58], Editorial: [37], Pop: [50] },
+      chars: { Retro: [42], Lime: [49], Grunge: [58], Editorial: [37], Pop: [50], Lattice: [25] },
       hint: 'The first row, above YouTube, Instagram and TikTok, on desktop only. Left empty, it '
           + 'shows “Gallery” again.' },
     { k: 'youtube',   l: 'YouTube link', type: 'url', d: '', in: [0],
@@ -2691,11 +3132,14 @@ export const FIELDS = {
   // (JP-052), and `email` the address layout 4's Send Enquiry mails (JP-076).
   // `in` records each key's reach.
   calendar: [
-    { k: 'image',   l: 'Photo', type: 'image', aspect: [1, 1], in: [0, 3],
+    // Lattice's layout 1 draws a dotted torus (art, not a photograph) in that seat, so only layout 4's disc reads it.
+    { k: 'image',   l: 'Photo', type: 'image', aspect: [1, 1], in: { Lattice: [3], '*': [0, 3] },
       hint: 'Fills the polaroid stack beside the month in layout 1, and the small disc on '
-          + "layout 4's summary card. Layouts 2 and 3 draw no photograph." },
-    { k: 'heading', l: 'Heading', d: 'Availability', in: { Lime: [0, 1, 2, 3], Grunge: [0, 1, 2, 3], Editorial: [0, 1, 2, 3], Pop: [0, 1, 2, 3], '*': [1, 2, 3] },
-      chars: { Retro: [null, 25, 36, 18], Lime: [25, 22, 32, 18], Grunge: [28, 24, 35, 23], Editorial: [14, 14, 21, 11], Pop: [13, 20, 24, 15] } },
+          + "layout 4's summary card. Layouts 2 and 3 draw no photograph. Lattice's layout 1 draws none either." },
+    { k: 'heading', l: 'Heading', d: 'Availability', in: { Lime: [0, 1, 2, 3], Grunge: [0, 1, 2, 3], Editorial: [0, 1, 2, 3], Pop: [0, 1, 2, 3], Lattice: [0, 1, 2, 3], '*': [1, 2, 3] },
+      // Lattice's layout 1 measured (limits.mjs calendar --themes=5 --designs=0); the others are Pop's, provisional.
+      chars: { Retro: [null, 25, 36, 18], Lime: [25, 22, 32, 18], Grunge: [28, 24, 35, 23], Editorial: [14, 14, 21, 11], Pop: [13, 20, 24, 15],
+        Lattice: [25, 20, 24, 15] } },
     { k: 'open',    l: 'Calendar start date', type: 'date', d: CAL_OPEN,
       hint: 'The month the calendar opens on, and the date it opens picked. '
           + `Layouts 1 and 3 page through ${CAL_SPAN} months from there, layout 2's seeded `
@@ -2708,13 +3152,15 @@ export const FIELDS = {
           + 'The months here are the published ones, so they start at today when the opening '
           + 'date has passed.' },
     { k: 'time',    l: 'Event start time', d: CAL_TIME, in: [0, 3],
-      chars: { Retro: [33, null, null, 34], Lime: [13, null, null, 32], Grunge: [13, null, null, 37], Editorial: [13, null, null, 33], Pop: [28, null, null, 33] },
+      chars: { Retro: [33, null, null, 34], Lime: [13, null, null, 32], Grunge: [13, null, null, 37], Editorial: [13, null, null, 33], Pop: [28, null, null, 33],
+        Lattice: [16, null, null, 33] },
       hint: "Printed in layout 1's enquiry line, and on its own in layout 4's "
           + 'date card. Leave it empty and the line stops at the date.' },
     // JP-095 (a): the line every layout prints while no day is cued. Cased in
     // sectionVm, as the slot line beside it is; emptied, the seed again.
     { k: 'prompt',  l: 'Calendar instruction text', d: CAL_PROMPT,
-      chars: { Retro: [33, 24, 39, 50], Lime: [44, 23, 33, 47], Grunge: [44, 24, 36, 50], Editorial: [44, 29, 24, 50], Pop: [31, 32, 24, 50] },
+      chars: { Retro: [33, 24, 39, 50], Lime: [44, 23, 33, 47], Grunge: [44, 24, 36, 50], Editorial: [44, 29, 24, 50], Pop: [31, 32, 24, 50],
+        Lattice: [33, 32, 24, 50] },
       hint: 'The line where the picked date goes while none is picked: on the published page, '
           + 'until a visitor picks one, when the opening date is booked or has passed. Left empty, '
           + 'it shows “Pick a date to enquire” again.' },
@@ -2724,11 +3170,14 @@ export const FIELDS = {
     // (JP-088; Pop's since its layout-1 pass, user call, 2026-10-02): its
     // enquiry line is the link.
     { k: 'cta',     l: 'Button', d: 'Check a date',
-      in: { Lime: [3], Grunge: [3], Editorial: [3], Pop: [3], '*': [0, 3] },
-      chars: { Retro: [24, null, null, 24], '*': [null, null, null, 24] },
+      in: { Lime: [3], Grunge: [3], Editorial: [3], Pop: [3], Lattice: [0, 3], '*': [0, 3] },
+      // Lattice's layout-1 Continue bar: measured 29 (box), held to 12 so the bar stays within a third of the 390 foot
+      // and the enquiry line keeps its room (the frame's seat is 130 wide beside a 162 line); a judgement call.
+      chars: { Retro: [24, null, null, 24], Lattice: [12, null, null, 24], '*': [null, null, null, 24] },
       hint: 'Layout 4’s Send Enquiry, on the last step of the enquiry wizard and at the foot '
           + 'of the summary; it starts from “Send Enquiry” there, and shows it again if you '
-          + 'empty this. Under Retro it is also layout 1’s button. The other templates’ '
+          + 'empty this. Under Retro it is also layout 1’s button, and under Lattice layout 1’s '
+          + '“Continue” bar (emptied, the bar is not drawn). The other templates’ '
           + 'layout 1 has no button: its “Enquiry for …” line is the link.' },
     { k: 'slots',   l: 'Available dates', type: 'slots', max: 8, in: [1],
       cols: { kind: { Retro: [null, 33], Lime: [null, 36], Grunge: [null, 40], Editorial: [null, 33], Pop: [null, 36] },
@@ -2779,11 +3228,14 @@ export const FIELDS = {
       // split jointly where they share a line (plans/char-limits.md).
       cols: {
         venue: { Retro: [34, 21, 41, 36], Lime: [32, 18, 37, 40], Grunge: [36, 20, 41, 40], Editorial: [19, 18, 25, 40],
-          Pop: [18, 18, 28, 40] },
+          Pop: [18, 18, 28, 40],
+          // Lattice layout 1 measured 2026-11-19 (limits.mjs map --themes=5 --designs=0): venue,
+          // city and time each alone; the city · time line shares one mono line that wraps.
+          Lattice: [26, 18, 28, 40] },
         city: { Retro: [22, 14, 20, 13], Editorial: [29, 13, 23, 13], Pop: [13, 13, 20, 13], '*': [20, 13, 20, 13] },
-        time: { Retro: [13, 5, 13, 10], Pop: [8, 5, 13, 13], '*': [13, 5, 13, 13] },
-        month: { Retro: [7, 4, 11, 9], Lime: [5, 3, 12, 9], Pop: [9, 5, 12, 9], '*': [5, 5, 12, 9] },
-        day: { Retro: [5, 5, 5, 5], '*': [6, 3, 5, 5] },
+        time: { Retro: [13, 5, 13, 10], Pop: [8, 5, 13, 13], Lattice: [15, 5, 13, 13], '*': [13, 5, 13, 13] },
+        month: { Retro: [7, 4, 11, 9], Lime: [5, 3, 12, 9], Pop: [9, 5, 12, 9], Lattice: [8, 5, 12, 9], '*': [5, 5, 12, 9] },
+        day: { Retro: [5, 5, 5, 5], Lattice: [3, 3, 5, 5], '*': [6, 3, 5, 5] },
       },
       // The page size is vm.gigPage (five) except in layout 4, whose whole
       // list is a one-gig ticker. The cities are read
@@ -2808,21 +3260,21 @@ export const FIELDS = {
     // JP-090: layout 1's label over the gig list; the "· 5" count is the page's.
     // (Layout 2's "Other upcoming · 4", JP-095 (b), was removed 2026-11-12.)
     { k: 'listLabel', l: 'List heading', d: MAP_LIST_LABEL, in: [0],
-      chars: { Retro: [37], Lime: [40], Grunge: [41], Editorial: [46], Pop: [31] },
+      chars: { Retro: [37], Lime: [40], Grunge: [41], Editorial: [46], Pop: [31], Lattice: [31] },
       hint: 'The label over the list of gigs, before its count. Left empty, neither is drawn.' },
     { k: 'heading', l: 'Heading', d: 'Manchester',
       // Layouts 1 and 2 start from the picked town (mapHeadingSeed).
       chars: { Retro: [20, 20, 39, 25], Lime: [19, 17, 34, 24], Grunge: [16, 20, 37, 25], Editorial: [11, 19, 22, 22],
-        Pop: [17, 21, 25, 23] } },
+        Pop: [17, 21, 25, 23], Lattice: [12, 21, 25, 23] } },
     // Layout 2's travel card prints the header's Location instead, under its
     // own "Based in" label (JP-096, user call, 2026-10-01): the frame's value is
     // the town alone, and this field's copy says "Based in" itself.
     { k: 'base',    l: 'Based in',       d: MAP_BASE, in: [0, 2],
-      chars: { Retro: [29, null, 33], Lime: [35, null, 27], Grunge: [39, null, 33], '*': [24, null, 33] },
+      chars: { Retro: [29, null, 33], Lime: [35, null, 27], Grunge: [39, null, 33], Lattice: [19, null, 33], '*': [24, null, 33] },
       hint: 'Layout 1 prints it beside the map and layout 3 under it. Layout 2’s travel card '
           + 'shows the Location you typed on the header instead.' },
     { k: 'terms',   l: 'Travel charges',   d: MAP_TERMS, in: [0, 1],
-      chars: { Retro: [59, 50], Lime: [58, 41], Pop: [45, 51], '*': [58, 51] } },
+      chars: { Retro: [59, 50], Lime: [58, 41], Pop: [45, 51], Lattice: [39, 51], '*': [58, 51] } },
     { k: 'travelTime', l: 'Travel time (layout 2)', d: MAP_TRAVEL_TIME, in: [1],
       chars: { Retro: [null, 11], '*': [null, 13] } },
     { k: 'fee',        l: 'Booking fee (layout 2)', d: MAP_FEE, in: [1],
@@ -2896,7 +3348,9 @@ export const FIELDS = {
     // frame's lines (not a block), though a textarea for layout 2's typed break.
     { k: 'heading', l: 'Heading', type: 'area', d: 'Word of Mouth', in: [1, 2, 3],
       chars: { Retro: [null, 38, 26, 24], Lime: [null, 43, 26, 23], Grunge: [null, 38, 30, 30],
-        Editorial: [null, 38, 17, 22], Pop: [null, 45, 22, 22] },
+        Editorial: [null, 38, 17, 22], Pop: [null, 45, 22, 22],
+        // Lattice's layout 1 draws no heading; layouts 2-4 are placeholders on Pop's numbers.
+        Lattice: [null, 45, 22, 22] },
       hint: 'Layouts 2, 3 and 4 each start from their own heading. A line break you type is '
           + 'kept in layout 2.' },
     // Layout 2 was the first design to head this section, so both of the plain
@@ -2918,12 +3372,17 @@ export const FIELDS = {
       // the quote is a block, and who · role · when were split jointly
       // (plans/char-limits.md).
       cols: {
+        // Lattice layout 1 measured 2026-11-19 (limits.mjs testimonials --themes=5 --designs=0): `who` and
+        // `role` 35 (77 / 63 / 35; each prints twice, in the caption and on its chip, and wraps), `when` 21
+        // (62 / 47 / 21, the seed's own at 390). `quote` stays the shared 190 (measured open at 400: the card
+        // grows). Layouts 2-4 are Pop's, unmeasured.
         who: { Retro: [28, 48, 25, 27], Lime: [39, 45, 20, 27], Grunge: [28, 50, 25, 27],
-          Editorial: [17, 27, 13, 27], Pop: [18, 32, 15, 27] },
+          Editorial: [17, 27, 13, 27], Pop: [18, 32, 15, 27], Lattice: [35, 32, 15, 27] },
         quote: { Lime: [66, 190, 190, 190], Grunge: [68, 190, 190, 190], Editorial: [66, 190, 190, 190],
-          '*': [190, 190, 190, 190] },
-        role: { Retro: [28, 48, 26, 29], Lime: [45, 48, 26, 27], Grunge: [28, 48, 26, 29], '*': [26, 48, 26, 29] },
-        when: { Retro: [30], Pop: [30], '*': [46] },
+          Lattice: [190, 190, 190, 190], '*': [190, 190, 190, 190] },
+        role: { Retro: [28, 48, 26, 29], Lime: [45, 48, 26, 27], Grunge: [28, 48, 26, 29], Lattice: [35, 48, 26, 29],
+          '*': [26, 48, 26, 29] },
+        when: { Retro: [30], Pop: [30], Lattice: [21], '*': [46] },
       },
       hint: 'Each row is one review. Layouts 1, 2 and 4 page through them; layout 3 '
           + 'gives each one a card on its wall, and a row with no name or role '
@@ -2933,7 +3392,7 @@ export const FIELDS = {
           + 'and 4 have no seat for the date.' },
     { k: 'rating',  l: 'Rating', d: TESTI_RATING, in: [2],
       chars: { Retro: [null, null, 8], Lime: [null, null, 7], Grunge: [null, null, 9], Editorial: [null, null, 5],
-        Pop: [null, null, 7] },
+        Pop: [null, null, 7], Lattice: [null, null, 7] },
       hint: 'The big number on the stat card, printed out of 5. Empty it to show how many reviews there are instead.' },
     { k: 'stars',   l: 'Star rating', d: TESTI_STARS, in: [1, 2],
       chars: { Retro: [null, 44, 35], Lime: [null, 44, 32], '*': [null, 44, 36] },
@@ -2961,8 +3420,10 @@ export const FIELDS = {
     // frame's lines, as the testimonials' is; at layout 3 the cap is a typed
     // head's, which replaces the composed one (plans/char-limits.md).
     { k: 'heading',  l: 'Heading', type: 'area', d: "Let's make\nyour night unforgettable.",
+      // Lattice's layout 1 measured 2026-11-19 (limits.mjs form --themes=5 --designs=0): 37 at 1440, 56 at
+      // 768, 44 at 390, three lines in a 419 measure; the others are Pop's until their passes.
       chars: { Retro: [45, 36, 32, 20], Lime: [37, 37, 32, 19], Grunge: [36, 40, 41, 25],
-        Editorial: [36, 42, 30, 12], Pop: [36, 40, 30, 17] },
+        Editorial: [36, 42, 30, 12], Pop: [36, 40, 30, 17], Lattice: [37, 40, 30, 17] },
       hint: 'Layout 3 starts from your name (“Book … for your event”) and follows it until you '
           + 'type your own; layout 4 starts from “Contact Us”. A line break you type is kept in '
           + 'layout 2.' },
@@ -2977,8 +3438,10 @@ export const FIELDS = {
     // One a line down a column that hugs them, so the count is a block's
     // (session 10): open but where the column climbs into the head.
     { k: 'promises', l: 'Reasons to book', type: 'area', d: FORM_PROMISES.join('\n'), in: [0, 1], list: '\n',
-      chars: { Retro: [45, 32], Pop: [42, 31], Editorial: [34, 29], '*': [34, 34] },
-      count: { Editorial: [6, 9], '*': [9, 9] },
+      // Lattice's layout 1 measured 33 a line (the 390 row wraps past it) and holds the shared 9 a column
+      // (16 measured, open); layout 2 is the '*' row's.
+      chars: { Retro: [45, 32], Pop: [42, 31], Editorial: [34, 29], Lattice: [33, 34], '*': [34, 34] },
+      count: { Editorial: [6, 9], Lattice: [9, 9], '*': [9, 9] },
       rows: { placeholder: 'Promise', add: 'Add promise' },
       hint: 'The ticked list beside the form.' },
     // Layout 4's *What happens next* column (JP-079 · JP-081, user call,
@@ -2997,9 +3460,9 @@ export const FIELDS = {
     { k: 'fields',   l: 'Form fields', type: 'formFields', max: 8,
       cols: {
         label: { Retro: [49, 46, 57, 22], Lime: [47, 52, 69, 27], Grunge: [52, 62, 76, 30],
-          Editorial: [24, 33, 41, 14], Pop: [32, 33, 40, 19] },
+          Editorial: [24, 33, 41, 14], Pop: [32, 33, 40, 19], Lattice: [40, 33, 40, 19] },
         placeholder: { Retro: [37, null, null, 23], Lime: [41, null, null, 24], Grunge: [41, null, null, 24],
-          Editorial: [41, null, null, 25], Pop: [35, null, null, 24] },
+          Editorial: [41, null, null, 25], Pop: [35, null, null, 24], Lattice: [36, null, null, 24] },
       },
       hint: 'One box each — two to a row in layouts 1 and 4 (layout 1 stacks them on a phone), '
           + 'one to a row in layouts 2 and 3, '
@@ -3009,29 +3472,31 @@ export const FIELDS = {
           + 'boxes and layout 4 on its own five until you edit them; after that your list shows '
           + 'in every layout.' },
     { k: 'types',    l: 'Event types', type: 'area', d: FORM_TYPES.join(', '), in: [0], list: ',',
-      chars: [15], count: { Lime: [5], Grunge: [5], '*': [8] },
+      chars: [15], count: { Lime: [5], Grunge: [5], Lattice: [8], '*': [8] },
       rows: { placeholder: 'Event type', add: 'Add event type' },
       hint: 'The form opens on the first; empty hides the row. Layout 1 only. One per row; a comma starts a new row.' },
     // The chip row's label (JP-090), messageLabel's rule: the row it heads
     // stands whatever it says, so an emptied label reads the seed again.
     { k: 'typeLabel', l: 'Event type label', d: FORM_TYPE_LABEL, in: [0],
-      chars: { Retro: [51], Lime: [52], Grunge: [58], Editorial: [37], Pop: [33] },
+      chars: { Retro: [51], Lime: [52], Grunge: [58], Editorial: [37], Pop: [33], Lattice: [40] },
       hint: 'The label over the event types. Layout 1 only. Left empty, it shows Event type.' },
     { k: 'message',  l: 'Message box hint text', d: FORM_MESSAGE, in: [0, 3],
       chars: { Retro: [39, null, null, 53], Lime: [42, null, null, 54], Grunge: [42, null, null, 54],
-        Editorial: [44, null, null, 58], Pop: [35, null, null, 54] },
+        Editorial: [44, null, null, 58], Pop: [35, null, null, 54], Lattice: [39, null, null, 54] },
       hint: 'Layouts 1 and 4.' },
     // The message box's label (JP-082): the one box label that was a literal.
     { k: 'messageLabel', l: 'Message label', d: FORM_MSG_LABEL, in: [0, 3],
       chars: { Retro: [51, null, null, 45], Lime: [52, null, null, 59], Grunge: [58, null, null, 64],
-        Editorial: [37, null, null, 35], Pop: [33, null, null, 41] },
+        Editorial: [37, null, null, 35], Pop: [33, null, null, 41], Lattice: [40, null, null, 41] },
       hint: 'Layouts 1 and 4. Also heads the message in the email you receive. Left empty, it shows Message.' },
     // Dead until the submit was made real — this is now what the form is for.
     { k: 'email',    l: 'Email address', type: 'email', d: FORM_EMAIL,
       hint: 'Enquiries are mailed here: the button opens the visitor’s mail app with the form filled in, and so does the Booking Calendar’s layout-4 Send Enquiry, until the calendar has an address of its own. Empty leaves the button a picture. An address that isn’t valid also leaves the button a picture.' },
     { k: 'button',   l: 'Button', d: 'Book Now', in: [0, 3],
+      // Lattice's layout 1 is a full-width bar with nothing beside it to crowd, so its measured 35 stands
+      // (the shared 15 is Retro's and Lime's pill).
       chars: { Retro: [16, null, null, 36], Editorial: [15, null, null, 27], Pop: [15, null, null, 32],
-        '*': [15, null, null, 36] },
+        Lattice: [35, null, null, 36], '*': [15, null, null, 36] },
       hint: 'Layouts 1 and 4. Layout 4 starts from “Check Availability”, and layout 1 from “Enquire” in Lime, Grunge, Editorial and Pop.' },
     // Layouts 2 and 3's card — the same component in both frames. Every one is
     // emptiable and drops what it fills, except the button: it is the submit,
@@ -3056,22 +3521,30 @@ export const FIELDS = {
   ],
   footer: [
     // Session 11 of the character-limits pass (plans/char-limits.md): a display
-    // head held to its frame's lines, the seed's 36 its floor on four templates.
+    // head held to its frame's lines, the seed's 36 its floor on four templates. Lattice's measured
+    // 2026-11-20 (limits.mjs footer --themes=5): 37 at all three widths, three lines in its 11em measure.
     { k: 'statement', l: 'Statement', type: 'area', d: FOOTER_STATEMENT,
-      chars: { Grunge: [45], '*': [36] } },
+      chars: { Grunge: [45], Lattice: [37], '*': [36] } },
     // The eighth structured editor and the seventh repeater — and the section's
     // whole sitemap, which was a constant no field could reach. Follows the
     // `songs` rule: an absent key means the seeded FOOTER_LINKS, an emptied
     // array means no links at all, and there is no null sentinel.
     { k: 'links',    l: 'Footer links', type: 'links', max: 10,
       // Read in every row at once: the two columns stand side by side (session 11).
-      cols: { label: { Retro: [19], Lime: [28], Grunge: [28], Editorial: [20], Pop: [14] } },
-      hint: 'The list is halved into two columns, in order. A link scrolls to a section on the page, or opens a web address in a new tab.' },
+      // Lattice's measured: 19 at 390 (a one-line label in its 159-wide cell; 24 at 1440, 41 at 768).
+      cols: { label: { Retro: [19], Lime: [28], Grunge: [28], Editorial: [20], Pop: [14], Lattice: [19] } },
+      hint: {
+        '*': 'The list is halved into two columns, in order. A link scrolls to a section on the page, or opens a web address in a new tab.',
+        // Lattice's frames set the links as a grid read across (plans/lattice/layout-1.md, section 11).
+        Lattice: 'The links stand two to a row, read across and then down. A link scrolls to a section on the page, or opens a web address in a new tab.',
+      } },
     // Dead until the pill was given a target — the calendar's `cta`, which was
     // a field that edited nothing until it labelled that section's foot pill.
     // Its cap is a joint split with the link labels, which share its column
     // (session 11).
-    { k: 'cta',      l: 'Button', d: 'Book Now', chars: { Editorial: [12], Pop: [11], '*': [16] },
+    // Lattice's bracket box stands alone under the links, so its cap is the page's (measured: 36 at 390,
+    // 49 at 1440, 82 at 768).
+    { k: 'cta',      l: 'Button', d: 'Book Now', chars: { Editorial: [12], Pop: [11], Lattice: [36], '*': [16] },
       hint: 'Books at the enquiry form, the calendar or the pricing section — whichever the page carries. Empty drops the button.' },
     // The same key the header's seal takes: `vm.showBadge` already reads this
     // section's own content, so the footer's seal was hidable by nothing only
@@ -3079,7 +3552,8 @@ export const FIELDS = {
     { k: 'showBadge', l: 'Seal', type: 'select', opts: SHOW_HIDE, d: 'show' },
     // Defaults to copyrightOf(name), special-cased.
     { k: 'copyright', l: 'Small print',
-      chars: { Retro: [31], Lime: [28], Grunge: [32], Editorial: [24], Pop: [35] } },
+      // Lattice's measured: 25 at 390, a one-line copyright beside the credit (75 at 768, 157 at 1440).
+      chars: { Retro: [31], Lime: [28], Grunge: [32], Editorial: [24], Pop: [35], Lattice: [25] } },
   ],
 }
 
@@ -3228,6 +3702,7 @@ export function fieldSeed({ cat, f, themeName, design, c = {}, artistName, email
     : f.k === 'base' && cat === 'map' ? mapBaseSeed(c, themeName, design)
     : f.k === 'terms' && cat === 'map' ? mapTermsSeed(c)
     : f.k === 'cta' && cat === 'calendar' && design === 3 ? CAL_SEND_4
+    : f.k === 'cta' && cat === 'calendar' && design === 0 && themeName === 'Lattice' ? CAL_CTA_LATTICE
     : f.k === 'rowCta' && cat === 'pricing' && design === 2 ? PRICING_ROW_CTA_3
     : f.k === 'rowCta' && cat === 'pricing' && design === 3 ? PRICING_ROW_CTA
     : fieldDefault(f)
@@ -3278,7 +3753,9 @@ export const INLINE_OFF = {
   'Editorial.0.repertoire.songs.length': 'not drawn: only layout 3 prints a song’s length',
   'Editorial.0.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
   'Pop.0.repertoire.songs.length': 'not drawn: only layout 3 prints a song’s length',
+  'Lattice.0.repertoire.songs.length': 'not drawn: only layout 3 prints a song’s length',
   'Pop.0.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
+  'Lattice.0.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
   'Retro.1.header.kicker': 'not drawn: the layout-2 header prints no kicker (a shared identity key; the bio’s role line and the form print it)',
   'Retro.1.header.tags': 'not drawn: the layout-2 header prints no tag chips (a shared identity key; the bio prints them)',
   'Retro.1.repertoire.songs.length': 'not drawn: only layout 3 prints a song’s length',
@@ -3398,6 +3875,14 @@ export const INLINE_OFF = {
   // Retro's layout 5 (the Overlay card) is a header-only design: the body under it is layout 1's page.
   'Retro.4.header.kicker': 'not drawn: the layout-5 Overlay card prints no kicker (a shared identity key; the bio’s role line and the form print it)',
   'Retro.4.header.location': 'not drawn: the layout-5 Overlay card prints no location (a shared identity key; the bio and the calendar print it)',
+  'Lattice.0.header.kicker': 'not drawn: the layout-1 header prints no act type any more (a shared identity key; the bio’s role line and the form print it)',
+  'Lattice.1.header.kicker': 'not drawn: the layout-2 header prints no kicker (a shared identity key; the bio’s role line and the form print it)',
+  'Lattice.2.header.kicker': 'not drawn: the layout-3 card prints the card line in the kicker’s seat (a shared identity key; the bio’s role line and the form print it)',
+  'Lattice.3.header.kicker': 'not drawn: the layout-4 header prints no act type any more (a shared identity key; the bio’s role line and the form print it)',
+  'Lattice.0.header.location': 'not drawn: layouts 1–4 print no location any more (a shared identity key; the bio, the calendar and the map print it)',
+  'Lattice.1.header.location': 'not drawn: layouts 1–4 print no location any more (a shared identity key; the bio, the calendar and the map print it)',
+  'Lattice.2.header.location': 'not drawn: layouts 1–4 print no location any more (a shared identity key; the bio, the calendar and the map print it)',
+  'Lattice.3.header.location': 'not drawn: layouts 1–4 print no location any more (a shared identity key; the bio, the calendar and the map print it)',
   '*.*.pricing.tiers.tags': 'derived value: the filter chips are the distinct tags of every package',
   '*.3.video.videos.desc': 'not drawn: layout 4 prints the playing video’s title alone',
   '*.*.repertoire.songs.tags': 'derived value: the filter chips are the distinct tags of every song',
@@ -3539,7 +4024,7 @@ export const IDENTITY_CHARS = {
       Editorial: [null, 37, 14, 31], Pop: [null, 37, 17, 39] },
     kicker: { Retro: [19, 20, 13, 47], Lime: [20, 23, 21, 47], Pop: [26, 22, 13, 47], '*': [20, 20, 13, 47] },
     location: { Retro: [18, 23, 15], Lime: [24, 26, 25], Grunge: [24, 23, 15], Editorial: [24, 33, 15],
-      Pop: [27, 34, 15] },
+      Pop: [27, 34, 15], Lattice: [19, 34, 15] },
     tags: { chars: { Retro: [null, 22, null, 22], '*': [null, 22, 22, 22] },
       count: { Retro: [null, 7, null, 7], '*': [null, 6, 8, 8] } },
     seal: { Retro: [19, null, 19], Lime: [13, null, 22], Grunge: [14, null, 14], Editorial: [16],
@@ -3549,17 +4034,21 @@ export const IDENTITY_CHARS = {
   // prints the playing video's title since (`videos.title`), and layout 2 none.
   calendar: {
     location: { Retro: [19, null, null, 67], Lime: [null, null, null, 64], Grunge: [null, null, null, 55],
-      '*': [null, null, null, 67] },
+      Lattice: [19, null, null, 67], '*': [null, null, null, 67] },
     seal: { Retro: [19] },
   },
   footer: {
-    title: { Retro: [24], Lime: [46], Grunge: [54], Editorial: [39], Pop: [10] },
+    // Lattice's measured (limits.mjs footer --themes=5, `who.title`): the wordmark and the copyright both take
+    // the name, two lines at the least width: 39 (87 at 1440, 76 at 768). Its ring is not drawn (no `seal` row).
+    title: { Retro: [24], Lime: [46], Grunge: [54], Editorial: [39], Pop: [10], Lattice: [39] },
     seal: { Retro: 19, Lime: 13, Grunge: 14, Editorial: 16, Pop: 12 },
   },
   form: {
+    // Lattice's layout 1 measured 2026-11-19 (limits.mjs form --themes=5 --designs=0, `who.*`): the name in
+    // the context panel's avatar row holds 59, the role line 33; layouts 2 and 3 are Pop's.
     title: { Retro: [76, 50, 13], Lime: [61, 40, 13], Grunge: [50, 85, 23], Editorial: [27, 42, 10],
-      Pop: [55, 54, 11] },
-    kicker: { Retro: [43, 38], Pop: [39, 40], '*': [30, 40] },
+      Pop: [55, 54, 11], Lattice: [59, 54, 11] },
+    kicker: { Retro: [43, 38], Pop: [39, 40], Lattice: [33, 40], '*': [30, 40] },
     seal: { Pop: [12] },
   },
   // Layout 2's caption line ellipsizes at 390 past 26–27 (session 6's re-run;
@@ -3572,7 +4061,10 @@ export const IDENTITY_CHARS = {
   },
   media: {
     title: { Retro: [91, 11, 20, 30], Lime: [76, 11, 19, 29], Grunge: [40, 11, 21, 31],
-      Editorial: [43, 11, 11, 31], Pop: [11, 11, 13, 31] },
+      Editorial: [43, 11, 11, 31], Pop: [11, 11, 13, 31],
+      // Layout 1 measured 2026-11-19 (limits.mjs media --themes=5 --designs=0): the card's
+      // artist line, one ellipsised line, holds 49 / 51 / 40; the others are Pop's until their passes.
+      Lattice: [40, 11, 13, 31] },
   },
   pricing: {
     seal: { Grunge: [14] },
@@ -3585,7 +4077,9 @@ const specAt = (spec, themeName, design) => {
   if (spec == null) return undefined
   if (typeof spec === 'number') return spec
   if (Array.isArray(spec)) return spec[design] ?? undefined
-  return specAt(spec[themeName] ?? spec['*'], themeName, design)
+  // Lattice reads Pop's row where a spec names neither it nor '*', until its own
+  // caps are measured (plans/lattice/layout-1.md, Session 12: `limits.mjs --themes=5`).
+  return specAt(spec[themeName] ?? spec['*'] ?? (themeName === 'Lattice' ? spec.Pop : undefined), themeName, design)
 }
 const isColObj = (spec) => spec != null && typeof spec === 'object' && !Array.isArray(spec) && 'chars' in spec
 // The resolved cap of a field or column: { chars, count, list } or null.
@@ -3652,7 +4146,7 @@ export function identityCap(key, sections, themeName) {
 // change a reader, re-measure, change this.
 export const IDENTITY_READS = {
   kicker: { bio: [0, 1, 2, 3], form: [0, 1] },
-  location: { bio: [0, 1, 2], calendar: { Retro: [0, 3], '*': [3] } },
+  location: { bio: [0, 1, 2], calendar: { Retro: [0, 3], Lattice: [0, 3], '*': [3] } },
   tags: { bio: { Retro: [1, 3], '*': [1, 2, 3] } },
   showTags: { bio: { Retro: [1, 3], '*': [1, 2, 3] } },
 }

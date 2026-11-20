@@ -56,7 +56,7 @@ import {
   PRICING_REVIEWS, PRICING_RATING, PRICING_CTA, PRICING_NOTE, PRICING_OFFER,
   FORM_PROMISES, FORM_STEPS, STEP_KEYS, FORM_FIELDS, FORM_FIELDS_CARD, FORM_FIELDS_4, FORM_FIELD_KEYS, FORM_EMAIL_LABEL, FORM_KINDS, enquiryErrors, FORM_TYPES, FORM_MESSAGE, FORM_MSG_LABEL,
   FOOTER_LINKS, FOOTER_TARGETS, FOOTER_CREDIT, FOOTER_STATEMENT,
-  CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN, CAL_SLOTS, SLOT_KEYS, slotDate, parseDayFirst, pageTiers, CAL_SLOT_CTA, CAL_SEND_4, FORM_EMAIL, pageEmail, MONTHS, DAY_FULL,
+  CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN, CAL_SLOTS, SLOT_KEYS, slotDate, parseDayFirst, pageTiers, CAL_SLOT_CTA, CAL_SEND_4, CAL_CTA_LATTICE, FORM_EMAIL, pageEmail, MONTHS, DAY_FULL,
   TESTI_HEADING_2, CARD_LINE_3, TESTI_STARS, TESTI_RATING,
   PRICING_INTRO_3, FORM_SUB_4, CAL_HEADING_1, formBtnSeed, CAL_TYPES, PRICING_ROW_CTA, PRICING_ROW_CTA_3, MAP_SPAN, MAP_STATS_4, STAT_KEYS,FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
   parseDate, isoDate, calStart, headerIdentity, monthSpan, monthLabel, enquiryLine, weekdayOf,
@@ -64,10 +64,10 @@ import {
   catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldSeed, HEADING_3, HEADING_4, fieldReach, fieldShown, identityFieldsFor, identityHint, INLINE_OFF, PHOTO_OFF, INLINE_HEAD, INLINE_MARKED, INLINE_PART, INLINE_LINES, inlineRule, fieldCap, colCaps, identityCap, sealCap, capExcess, numeralLen, clampCapped, clampContent, legacyContent, clampIdentity, copyrightOf, formHeading3, extUrl, youtubeEmbed, youtubeThumb, youtubeParts, youtubeWatch, youtubeChannel, urlProblem, emailProblem, emailAddr, songTags, repChips,
   tierFeats, priceParts, priceCuts, blankRow, SONG_KEYS, repSetsOf, repSetLine, TRACK_KEYS, uploadedAudio, GIG_KEYS, gigDayOk, gigWeekday, gigStatus, gigStamp, MIN_YEAR, gigPart, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
   layoutChoices, designCount, designOf, pageLayout, pageOrder, pageRows, videoDesign, videoStartArch,
-  VIDEOS, VIDEO_SEED, VIDEO_KEYS, videoPlayable, videoSeedDesc, VIDEO_ALL, COLUMN_SPLIT, bebasEms, antonEms, gloockEms, titanEms, frauncesEms, titleFitK,
+  VIDEOS, VIDEO_SEED, VIDEO_KEYS, videoPlayable, videoSeedDesc, VIDEO_ALL, COLUMN_SPLIT, bebasEms, antonEms, gloockEms, titanEms, latticeEms, frauncesEms, titleFitK, latticeDotField, latticeBioDots, latticeTestiDots,
   headerLayout, headerLayoutLabel, layoutLabel, setupHeaderCount,
 } from './data.js'
-import { defaultImage, defaultImages, defaultTrackArt, seedFocus, RETRO_TEXTURE } from './photos.js'
+import { defaultImage, defaultImages, defaultTrackArt, seedFocus, RETRO_TEXTURE, LATTICE_ART } from './photos.js'
 
 /* ------------------------------------------------------------------ *
  * §5.5 Axis B — canvas device preview sizing
@@ -151,6 +151,24 @@ const THEME_RAMP = {
     mobile:  { dispXl: '46px',  dispLg: '36px',  dispMd: '28px', dispSm: '24px', title: '20px', list: '15px', labelLg: '14px', labelMd: '13px', labelSm: '12px', labelXs: '12px', bodyLg: '15px', bodyMd: '13px', bodySm: '12px', chip: '11px', eyebrow: '11px' },
     tablet:  { dispXl: '75px',  dispLg: '51px',  dispMd: '36px', dispSm: '29px', title: '22px', list: '16px', labelLg: '16px', labelMd: '14px', labelSm: '13px', labelXs: '14px', bodyLg: '15px', bodyMd: '13px', bodySm: '12px', chip: '11px', eyebrow: '12px' },
     desktop: { dispXl: '103px', dispLg: '67px',  dispMd: '37px', dispSm: '30px', title: '23px', list: '16px', labelLg: '20px', labelMd: '16px', labelSm: '13px', labelXs: '16px', bodyLg: '13px', bodyMd: '11px', bodySm: '10px', chip: '10px', eyebrow: '12px' },
+  },
+  // Lattice's mode, read off the three masters' text nodes (the file binds one
+  // flat size set at every width, so there is no per-Device token to resolve;
+  // plans/lattice/layout-1.md, *Conventions*): the display strings, the mono
+  // labels (a fixed 12 / 11 at every width) and the body copy (16 / 15, 18 / 20
+  // in the lists), desktop × 0.82 rounded, 768 and 390 verbatim. The display
+  // keys are the heads' sizes by section, since the frames state no token for
+  // them: dispXl the header's name (128 / 79 / 51), dispLg the repertoire's and
+  // the map's heads (95 / 59 / 38), dispMd pricing's head and prices (60 / 48 /
+  // 40), dispSm the calendar's, the form's and the footer's (40 / 32 / 26),
+  // title the plans' and tracks' names (30 / 27 / 25), list the track rows (24 /
+  // 24 / 18) and labelLg the map card's head (22 / 22 / 20). The bio's,
+  // media's, gallery's and testimonials' heads (77.76 / 74.88 / 43.2 and their
+  // narrow 48 / 38 / 35 / 29) sit between keys; their sessions write them.
+  Lattice: {
+    mobile:  { dispXl: '51px',  dispLg: '38px', dispMd: '40px', dispSm: '26px', title: '25px', list: '18px', labelLg: '20px', labelMd: '12px', labelSm: '11px', labelXs: '11px', bodyLg: '18px', bodyMd: '16px', bodySm: '15px', chip: '11px', eyebrow: '12px' },
+    tablet:  { dispXl: '79px',  dispLg: '59px', dispMd: '48px', dispSm: '32px', title: '27px', list: '24px', labelLg: '22px', labelMd: '12px', labelSm: '11px', labelXs: '11px', bodyLg: '18px', bodyMd: '16px', bodySm: '15px', chip: '11px', eyebrow: '12px' },
+    desktop: { dispXl: '105px', dispLg: '78px', dispMd: '49px', dispSm: '33px', title: '25px', list: '20px', labelLg: '18px', labelMd: '10px', labelSm: '9px',  labelXs: '9px',  bodyLg: '15px', bodyMd: '13px', bodySm: '12px', chip: '9px',  eyebrow: '10px' },
   },
 }
 
@@ -387,7 +405,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // The page's own ground, whatever scheme the section is seated on: a
     // section whose frames stand a card on another scheme is seated on the
     // card's, and the root paints this round it.
-    pageBg: theme.palette[0],
+    pageBg: theme.pageGround ?? theme.palette[0],
     // Every scheme of a theme that carries `schemes`, flat and keyed by number
     // (1 is the theme's own), for a node nested on another scheme than its
     // section: `s.onScheme[4].bg`. Undefined under every other theme.
@@ -456,7 +474,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // template is designed since Pop's layout-1 pass, so it is true for all
     // five; TagChips' undesigned chip went with the flat family. A site only
     // some of them share stays a named pair, widened per site from the frame.
-    designed: T.name === 'Retro' || T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial' || T.name === 'Pop',
+    designed: T.name === 'Retro' || T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial' || T.name === 'Pop' || T.name === 'Lattice',
     // Grunge's four layout pages are the same components in a third mode,
     // Static Youth, so its decoration — at layout 1 torn black seams round its
     // textured bands, grain and the red seal, at layouts 2, 3 and 4 rings where
@@ -477,15 +495,20 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // folded into `limeTree` once the family closed (plans/pop/layout-4.md,
     // decision 2).
     pop: T.name === 'Pop',
-    // The templates whose pages are Lime's component trees — all four designed
-    // templates — so a Lime block a twin's frame shares is gated on this rather
+    // Lattice's layout-1 page (plans/lattice/layout-1.md) widens no Lime block: each of its
+    // eleven sections is a `Lattice*` tree of its own, standing on `lattice` (and the branch's
+    // own `v0` / `limeTree`, per site) after the shared section's hooks and seam. What only Lattice draws — the dot field,
+    // bracket corners, the dotted art, the square chips — goes behind this flag.
+    lattice: T.name === 'Lattice',
+    // The templates whose pages are Lime's component trees — the four that widen
+    // its blocks, and Lattice, whose own trees stand on the same gate — so a Lime block a twin's frame shares is gated on this rather
     // than on a name at every site. Widened per site, from the frame, as each
     // block was fitted (plans/editorial/layout-1.md, decision 2; Pop's pair
     // folded in its layout-4 sweep) — every Lime block at all four layouts; a
     // site the others do not share keeps `(s.lime || s.grunge)`, and one is
     // left (layout 2's gallery caption). Pop's layout-1 media steps out of it
     // (`&& !s.pop`), being Retro's body dressed.
-    limeTree: T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial' || T.name === 'Pop',
+    limeTree: T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial' || T.name === 'Pop' || T.name === 'Lattice',
     // Lime layout 3's footer (964:68684 · 984:10769 · 984:10800) stands on
     // Scheme 2's `sem/bg`, the olive `box1`, where layout 1's is the page
     // ground; its seal's disc and the Book pill's label and disc follow, each
@@ -539,6 +562,81 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     }[cat]?.[DEV_SEAT[Z.dev]]
     const z = (v) => (v == null ? vm.padY : `${Z.dev === 'desktop' ? Math.round(v * 0.82 * 10) / 10 : v}px`)
     if (inset) vm.pad = `${z(inset[0])} ${vm.padX} ${z(inset[1])}`
+  }
+  // Lattice's layout-1 bio stands on its frames' own insets (1:386 · 1:9019 · 1:9991):
+  // 56 top and foot at every width (x 0.82 on desktop, 45.92), and the content 48.96 x
+  // 0.82 = 40.15 in at 1440, 26.11 at 768 and 24 at 390, where `padX` is 45.92 / 30 / 10.
+  // The surplus is the published tab's, as the hero's.
+  if (d === 0 && cat === 'bio' && T.name === 'Lattice') {
+    const v = Z.dev === 'desktop' ? '45.92px' : '56px'
+    vm.pad = `${v} calc(${vm.surplus} + ${Z.dev === 'desktop' ? '40.15px' : Z.dev === 'tablet' ? '26.11px' : '24px'}) ${v}`
+  }
+  // …and the media's (1:419 · 1:9052 · 1:10024): 129.43 top and foot at 1440 (x 0.82, 106.13), 77 at 768
+  // and 58 at 390, the same content insets. The 390 master's head box starts 40 down (an import
+  // artefact: the eyebrow row sits at y 98, not 58), so with the eyebrow removed the head takes
+  // the eyebrow's seat and the top is 98.
+  if (d === 0 && cat === 'media' && T.name === 'Lattice') {
+    const v = Z.dev === 'desktop' ? '106.13px' : Z.dev === 'tablet' ? '77px' : '58px'
+    const top = Z.dev === 'mobile' ? '98px' : v
+    vm.pad = `${top} calc(${vm.surplus} + ${Z.dev === 'desktop' ? '40.15px' : Z.dev === 'tablet' ? '26.11px' : '24px'}) ${v}`
+  }
+  // …and the gallery's (1:588 · 1:9221 · 1:10193): 96 top and foot at 1440 (x 0.82, 78.72), 77 at 768 and
+  // 58 at 390, the same content insets. The frames' eyebrow row is not drawn, but the block keeps its
+  // seat at desktop (the columns are 731.09 tall in the frame), so the padding is the frame's.
+  if (d === 0 && cat === 'gallery' && T.name === 'Lattice') {
+    const v = Z.dev === 'desktop' ? '78.72px' : Z.dev === 'tablet' ? '77px' : '58px'
+    vm.pad = `${v} calc(${vm.surplus} + ${Z.dev === 'desktop' ? '40.15px' : Z.dev === 'tablet' ? '26.11px' : '24px'}) ${v}`
+  }
+  // …and the repertoire's (1:673 · 1:9306 · 1:10278): 138.54 top and foot at 1440 (x 0.82, 113.6), 116.77 at
+  // 768 and 58 at 390, the same content insets. The frames' eyebrow row is not drawn (call 1), so the head
+  // starts where it did and the section is 42 shorter.
+  if (d === 0 && cat === 'repertoire' && T.name === 'Lattice') {
+    const v = Z.dev === 'desktop' ? '113.6px' : Z.dev === 'tablet' ? '116.77px' : '58px'
+    vm.pad = `${v} calc(${vm.surplus} + ${Z.dev === 'desktop' ? '40.15px' : Z.dev === 'tablet' ? '26.11px' : '24px'}) ${v}`
+  }
+  // …and the map's (1:796 · 1:9429 · 1:10401): 131.45 top and foot at 1440 (x 0.82, 107.79), 77 at 768 and
+  // 58 at 390, the same content insets. The frames' eyebrow row is not drawn (call 1), so the head starts
+  // where it did and the section is 46 shorter (38 on desktop).
+  if (d === 0 && cat === 'map' && T.name === 'Lattice') {
+    const v = Z.dev === 'desktop' ? '107.79px' : Z.dev === 'tablet' ? '77px' : '58px'
+    vm.pad = `${v} calc(${vm.surplus} + ${Z.dev === 'desktop' ? '40.15px' : Z.dev === 'tablet' ? '26.11px' : '24px'}) ${v}`
+  }
+  // …and the pricing's (1:915 · 1:9547 · 1:10518): 96 top and foot at 1440 (x 0.82, 78.72), 77 at 768 and
+  // 58 at 390, the same content insets. The frames' eyebrow row is not drawn (call 1), so the head starts
+  // where it did and the section is 42 shorter (35 on desktop).
+  if (d === 0 && cat === 'pricing' && T.name === 'Lattice') {
+    const v = Z.dev === 'desktop' ? '78.72px' : Z.dev === 'tablet' ? '77px' : '58px'
+    vm.pad = `${v} calc(${vm.surplus} + ${Z.dev === 'desktop' ? '40.15px' : Z.dev === 'tablet' ? '26.11px' : '24px'}) ${v}`
+  }
+  // …and the calendar's (1:1039 · 1:9670 · 1:10640): 96 top and foot at 1440 (x 0.82, 78.72), 77 at 768 and
+  // 58 at 390, the same content insets. The frames' card is 588.69 / 409.75 / 777.84 tall (the foot included)
+  // and the section 781 / 564 / 894, so the padding is the frame's.
+  if (d === 0 && cat === 'calendar' && T.name === 'Lattice') {
+    const v = Z.dev === 'desktop' ? '78.72px' : Z.dev === 'tablet' ? '77px' : '58px'
+    vm.pad = `${v} calc(${vm.surplus} + ${Z.dev === 'desktop' ? '40.15px' : Z.dev === 'tablet' ? '26.11px' : '24px'}) ${v}`
+  }
+  // …and the form's (1:1147 · 1:9778 · 1:10748): 96 top and foot at 1440 (x 0.82, 78.72), 77 at 768 and
+  // 58 at 390, the same content insets. The card is 496.55 / 835.72 / 1114.11 tall in the frames and the
+  // section 689 / 990 / 1230, so the padding is the frame's.
+  if (d === 0 && cat === 'form' && T.name === 'Lattice') {
+    const v = Z.dev === 'desktop' ? '78.72px' : Z.dev === 'tablet' ? '77px' : '58px'
+    vm.pad = `${v} calc(${vm.surplus} + ${Z.dev === 'desktop' ? '40.15px' : Z.dev === 'tablet' ? '26.11px' : '24px'}) ${v}`
+  }
+  // …and the testimonials' (1:1222 · 1:9851 · 1:10821): the frames state only a card centred in a 730 band
+  // (the band's own top and foot are 210.5 / 227.8 / 181.11 round a card that is 309 / 274.4 / 367.8 tall),
+  // so the padding is chosen, not read: the siblings' 96 / 77 / 58 (78.72 at 1440), with the block's
+  // `minHeight` holding the 730 band and centring the card in it. A longer review grows the section past
+  // 730 and keeps that breathing room. LatticeTestimonials reads the same numbers.
+  if (d === 0 && cat === 'testimonials' && T.name === 'Lattice') {
+    const v = Z.dev === 'desktop' ? '78.72px' : Z.dev === 'tablet' ? '77px' : '58px'
+    vm.pad = `${v} calc(${vm.surplus} + ${Z.dev === 'desktop' ? '40.15px' : Z.dev === 'tablet' ? '26.11px' : '24px'}) ${v}`
+  }
+  // …and the footer's (1:1251 · 1:9880 · 1:10850): 96 top and 80 foot at 1440 (x 0.82, 78.72 and 65.6), 56 and 40
+  // at 768 and 390, the same content insets. The 1440 master is a 480 floor round a 302.19 box, so the block's
+  // `minHeight` holds it and centres the content (96.91 / 80.9); the narrow ones are their natural height.
+  if (d === 0 && cat === 'footer' && T.name === 'Lattice') {
+    const desk = Z.dev === 'desktop'
+    vm.pad = `${desk ? '78.72px' : '56px'} calc(${vm.surplus} + ${desk ? '40.15px' : Z.dev === 'tablet' ? '26.11px' : '24px'}) ${desk ? '65.6px' : '40px'}`
   }
   // Layout 2's sections stand on their own frames' insets (JP-094, user call,
   // 2026-10-02, reversing Retro's "fit the card, not the frame height" for the
@@ -846,6 +944,25 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   vm.grainSrc = T.name === 'Retro' || T.name === 'Grunge' || T.name === 'Editorial' ? RETRO_TEXTURE.grain : undefined
   vm.mapSrc = vm.designed ? RETRO_TEXTURE.map : undefined
   vm.mapRadialSrc = vm.designed ? RETRO_TEXTURE.mapRadial : undefined
+  // Lattice's dot field and dotted disc (plans/lattice/layout-1.md, section 1): the
+  // field is the width's own dot set as an SVG data URI, the disc a WebP mask the
+  // section inks. Its hero is 750 tall at the two narrow widths as well, where the
+  // other five draw 1024 and 844; the desktop number (614 = 750 x .82) already agrees.
+  if (T.name === 'Lattice') {
+    vm.dotField = latticeDotField(Z.dev)
+    vm.latticeDisc = LATTICE_ART
+    if (cat === 'bio') {
+      const bd = latticeBioDots(Z.dev)
+      vm.bioDots = { uri: bd.uri, h: +(bd.h * (Z.dev === 'desktop' ? 0.82 : 1)).toFixed(2) }
+    }
+    if (cat === 'testimonials') {
+      // The testimonials' own dot set: a 730-tall canvas the root paints (EncoreSection's root), tiled
+      // down a taller section from its middle.
+      const td = latticeTestiDots(Z.dev, vm.tx)
+      vm.testiDots = { uri: td.uri, h: +(td.h * (Z.dev === 'desktop' ? 0.82 : 1)).toFixed(2) }
+    }
+    if (cat === 'header' && Z.dev !== 'desktop') vm.heroH = 750
+  }
 
   // §4.8 — `navSections` is `{ cat, label }`, the label being the visitor's
   // word for the section (`navLabel()`, §4.3a) and never the sidebar's, and a
@@ -898,7 +1015,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // apart, which the em reading is at the cap — so it keeps 23/16 and passes
   // NavBar no `links` (plans/pop/layout-4.md, section 1).
   const navFace = T.name === 'Lime' ? bebasEms : T.name === 'Grunge' ? (x) => antonEms(x, 0) * 0.75
-    : T.name === 'Editorial' ? (x) => gloockEms(x) * 0.967 : T.name === 'Pop' ? (x) => titanEms(x) * 0.98 : null
+    : T.name === 'Editorial' ? (x) => gloockEms(x) * 0.967 : T.name === 'Pop' ? (x) => titanEms(x) * 0.98
+    : T.name === 'Lattice' ? latticeEms : null
   const navGapEm = T.name === 'Editorial' ? (d >= 1 ? 0 : 23 / 16) : T.name === 'Pop' ? (d === 1 || d === 2 ? 0 : 23 / 16)
     : T.name === 'Grunge' && d >= 1 ? 0 : 23 / 24
   vm.navEms = navFace
@@ -937,7 +1055,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // the least. Retro has no `navFace`, and gets none here, since its other
   // branches test whether `navNameEms` is set; this reads Fraunces on its own.
   if (cat === 'header') {
-    const face = navFace ?? frauncesEms
+    // Lattice's title is set 0.004em open (LatticeHero), which its table (measured at no tracking) lacks.
+    const face = T.name === 'Lattice' ? (x) => latticeEms(x) + 0.004 * [...x].length : (navFace ?? frauncesEms)
     const words = vm.brand.split(/\s+/).filter(Boolean).map((w) => face(w))
     ;[vm.titleK, vm.titleFloor] = titleFitK(T.name, d, Z.dev, words, face(' '), pageW)
   }
@@ -1369,8 +1488,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   if (cat === 'map' && d < 2 && c.heading === undefined) vm.title = cased(mapHeadingSeed(c, theme.name, d))
   // Lime's, Grunge's, Editorial's and Pop's layout-1 calendar head reads
   // "Book Now" (JP-089; Pop's frame 964:58631 too); Retro's layout 1 prints no
-  // head. EditPanel mirrors it.
-  if (d === 0 && cat === 'calendar' && c.heading === undefined && vm.limeTree) vm.title = cased(CAL_HEADING_1)
+  // head. EditPanel mirrors it. Lattice's layout 1 (widened to `limeTree`) keeps TITLES.calendar,
+  // "Availability": its frames set that word as the `[ 007 ]` eyebrow's own, and `heading` is its seat.
+  if (d === 0 && cat === 'calendar' && c.heading === undefined && vm.limeTree && !vm.lattice) vm.title = cased(CAL_HEADING_1)
   // The form's layout-3 head is the frame's "Book Kai for / your event" off
   // the artist's own name (JP-070), copyrightOf()'s rule; EditPanel mirrors it.
   if (d === 2 && cat === 'form' && c.heading === undefined) vm.title = cased(formHeading3(artistName))
@@ -1390,6 +1510,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   vm.titleWordEms = T.name === 'Lime' || T.name === 'Editorial' || T.name === 'Pop'
     ? +Math.max(0, ...vm.title.split(/\s+/).map(navFace)).toFixed(3)
     : undefined
+  // Lattice's layout-1 bio fits its head to the flank the same way; its alias sets the face 0.004em open.
+  if (T.name === 'Lattice' && (cat === 'bio' || cat === 'media' || cat === 'gallery' || cat === 'repertoire' || cat === 'map' || cat === 'pricing' || cat === 'form') && d === 0) {
+    vm.titleWordEms = +Math.max(0, ...vm.title.split(/\s+/).map((w) => latticeEms(w) + 0.004 * [...w].length)).toFixed(3)
+  }
   vm.testiStars = cv('stars', TESTI_STARS)
   // Layout 3's stat card prints it with a literal "/5" beside it, and an
   // emptied one gives the seat back to the review count (JP-065). Uncased, as
@@ -1627,7 +1751,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // Retro's layout-1 pill (the `s.limeTree` foot, Pop's too, has
     // none, JP-088: its line links). The same field is layout 4's Send Enquiry (JP-082),
     // seeded CAL_SEND_4 there: `vm.calWizard.send`, below.
-    vm.calCta = cased(cv('cta', 'Check a date'))
+    // Lattice's layout-1 foot draws a Continue bar (its own seed, mirrored by fieldSeed); the Lime family's draws none.
+    vm.calCta = cased(cv('cta', d === 0 && vm.lattice ? CAL_CTA_LATTICE : 'Check a date'))
     // Layout 2's pill, which its frame labels differently from the other two
     // calendar pills (its "Star Enquiry" read as the intended "Start").
     vm.calSlotCta = cased(cv('slotCta', CAL_SLOT_CTA))
@@ -2029,6 +2154,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
       // those two.
       wordEms: T.name === 'Editorial' || T.name === 'Pop'
         ? +Math.max(0, ...quote.split(/\s+/).map(navFace)).toFixed(3)
+        // Lattice's layout-1 quote is fitted to its widest word too (a long one would outrun the
+        // 304 box at 390); its alias sets the face 0.004em open (the header's tracking).
+        : T.name === 'Lattice'
+        ? +Math.max(0, ...quote.split(/\s+/).map((w) => latticeEms(w) + 0.004 * [...w].length)).toFixed(3)
         : undefined,
       who,
       role,
@@ -2202,6 +2331,11 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   vm.footerWordEms = T.name === 'Editorial' || T.name === 'Pop'
     ? +Math.max(0, ...vm.footerStatement.split(/\s+/).map(navFace)).toFixed(3)
     : undefined
+  // Lattice's layout-1 footer fits its statement to its 11em measure the same way, in the alias's table with its
+  // 0.004em tracking per glyph (the header's and the bio's rule).
+  if (T.name === 'Lattice') {
+    vm.footerWordEms = +Math.max(0, ...vm.footerStatement.split(/\s+/).map((w) => latticeEms(w) + 0.004 * [...w].length)).toFixed(3)
+  }
   // The sitemap is the artist's now, so a row carries where it goes as well as
   // what it says — and it goes to one of two kinds of place, which is BookPill's
   // own `ext ? … : to` seam moved down to the row. 'link' takes the row's own
@@ -5317,7 +5451,7 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                   const cap = fieldCapOf(sec, f, sections, themeName, design)
                   const caps = colCaps(f, themeName, design)
                   // An identity key says where else the page prints it, off the same table that lists it.
-                  const hint = f.shared ? identityHint(f, sec, sections, themeName) : f.hint
+                  const hint = f.shared ? identityHint(f, sec, sections, themeName) : f.hint && typeof f.hint === 'object' ? (f.hint[themeName] ?? f.hint['*']) : f.hint
                   const noMail = f.k === 'email' && sec.cat === 'calendar'
                     && !emailAddr(val) && !(String(val).trim() && emailProblem(val))
                   return (
@@ -5692,7 +5826,7 @@ function AddComposer({ add, present, removed, pageD, themeIdx, artistName, ident
  * §6 Stage 1 — Template picker
  *
  * The app's first screen. One spotlight preview of the highlighted template,
- * its name above it and a filmstrip of all five below. Clicking the spotlight
+ * its name above it and a filmstrip of every template below. Clicking the spotlight
  * builds the page and opens the editor on it — there is no longer a stage
  * between the two.
  * ------------------------------------------------------------------ */
@@ -6077,7 +6211,7 @@ function PublishedPage({ themeIdx, sections: all, artistName, win, frameW }) {
   const rows = pageRows(sections, T.name, key === 'desktop')
   const inColumns = columnSides(rows)
 
-  const page = arrangeRows(rows, { gutter: Z.padX, bg: T.palette[0] }, sections.map((sec, i) => (
+  const page = arrangeRows(rows, { gutter: Z.padX, bg: pageGroundOf(T) }, sections.map((sec, i) => (
     <EncoreSection key={sec.id} s={sectionVm({
       themeIdx, cat: sec.cat, arch: sec.arch, c: sec.c,
       artistName, identity, tiers, email, Z, mob: key === 'mobile', live: true, embeds, navSections,
@@ -6180,7 +6314,7 @@ function PreviewOverlay({
   }, [frameW, area.h, device, focusCat])
 
   const bar = isMobile ? '52px' : '56px'
-  const ground = framed ? '#D6D2C6' : T.palette[0]
+  const ground = framed ? '#D6D2C6' : pageGroundOf(T)
   const page = frameW > 0 && (
     <PublishedPage themeIdx={themeIdx} sections={sections} artistName={artistName} win={window} frameW={frameW} />
   )
@@ -6256,7 +6390,7 @@ function PreviewOverlay({
             <div style={{
               width: `${outerW}px`, height: `${outerH}px`, boxSizing: 'border-box',
               border: '10px solid #1B1A17', borderRadius: device === 'mobile' ? '48px' : '28px',
-              overflow: 'hidden', background: T.palette[0], boxShadow: '0 18px 40px rgba(20,18,12,.28)',
+              overflow: 'hidden', background: pageGroundOf(T), boxShadow: '0 18px 40px rgba(20,18,12,.28)',
               transform: `scale(${scale})`, transformOrigin: '0 0',
             }}>
               <div ref={scrollRef} style={{ height: '100%', overflowY: 'auto', scrollbarWidth: 'none' }}>{page}</div>
@@ -6264,7 +6398,7 @@ function PreviewOverlay({
           </div>
         ) : (
           <div ref={scrollRef} style={{
-            position: 'absolute', inset: 0, overflowY: 'auto', scrollbarGutter: 'stable', background: T.palette[0],
+            position: 'absolute', inset: 0, overflowY: 'auto', scrollbarGutter: 'stable', background: pageGroundOf(T),
           }}>{page}</div>
         )}
       </div>
@@ -6349,6 +6483,9 @@ function scrollToFragment(e, win) {
   if (win.requestAnimationFrame) win.requestAnimationFrame(go)
   else go()
 }
+
+// The page's own ground: a theme may state one (Lattice: #111, where its Scheme 1 is #DADADA).
+const pageGroundOf = (T) => T.pageGround ?? T.palette[0]
 
 function dressPublishedWindow(win, artistName, pageBg) {
   const doc = win.document
@@ -7844,7 +7981,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
     }
 
     if (open) {
-      win.document.documentElement.style.background = THEMES[st.theme].palette[0]
+      win.document.documentElement.style.background = pageGroundOf(THEMES[st.theme])
       win.document.title = artistName
       render()
       return
@@ -7876,7 +8013,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
         return
       }
       if (!win.document.body) { setTimeout(dress, 15); return }
-      pubRoot.current = createRoot(dressPublishedWindow(win, artistName, THEMES[st.theme].palette[0]))
+      pubRoot.current = createRoot(dressPublishedWindow(win, artistName, pageGroundOf(THEMES[st.theme])))
       win.addEventListener('pagehide', closePublished)
       render()
     }
@@ -8542,7 +8679,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
               // layout-2 card) sticks to this scroller, as it does published (JP-072).
               borderRadius: '10px', overflow: 'clip', transition: 'max-width .35s ease',
             }}>
-              {arrangeRows(rows, { gutter: Z.padX, bg: T.palette[0] }, sections.map((sec, i) => {
+              {arrangeRows(rows, { gutter: Z.padX, bg: pageGroundOf(T) }, sections.map((sec, i) => {
                 const vm = vms[i]
                 return (
                   <div

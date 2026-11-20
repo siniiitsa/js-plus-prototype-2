@@ -172,7 +172,7 @@ Four things about it are load-bearing:
   over a page that has just been built and not yet touched.
 - **Names, not numbers.** `headerLayout()` in `data.js` promotes the names the compositions
   already carried in `EncoreSection`'s §10.2 comments — Hero, Feature spread, Inset Hero, Stacked,
-  Overlay card, Stage wide (Lime's, Grunge's, Editorial's and Pop's family is the first four)
+  Overlay card, Stage wide (Lime's, Grunge's, Editorial's, Pop's and Lattice's family is the first four)
   — into every label,
   including the ordinary `LayoutPicker` dropdown. Every other category stays numbered: its
   layouts are variations of one idea, and the number is honest about the folding.
@@ -181,7 +181,7 @@ The `startTheme` prop skips the template picker, and skips the onboarding with i
 
 ## Seeded photography
 
-All five templates open with their Figma mock photography already in place.
+All six templates open with their Figma mock photography already in place.
 The assets live in `src/builder/photos/` and are wired up by `src/builder/photos.js`, which is
 the only module that imports them.
 
@@ -190,13 +190,13 @@ the only module that imports them.
   and render the initials placeholder). Lime's row
   is a different shoot for the artist's own pictures (the hero, its portrait card, the bio and
   its layout-3 landscape shot, the calendar, the form avatar, the form's layout-2 stage photograph and the gallery spotlight) and
-  Retro's files for the rest; Grunge's row is a third shoot, black-and-white in the assets themselves (nothing desaturates an upload); Editorial's is a fourth, in colour (`editorial-*.jpg`), whose gallery strip is the five pictures of its shoot and two crops of its hero, since its frame's strip repeats one thumbnail and borrows Retro's; and Pop's is a fifth, in colour (`pop-*.jpg`), whose strip seeds seven different pictures of its shoot where its frame borrows four of Retro's. The photography is Retro's art direction, not the user's content, so switching template
+  Retro's files for the rest; Grunge's row is a third shoot, black-and-white in the assets themselves (nothing desaturates an upload); Editorial's is a fourth, in colour (`editorial-*.jpg`), whose gallery strip is the five pictures of its shoot and two crops of its hero, since its frame's strip repeats one thumbnail and borrows Retro's; and Pop's is a fifth, in colour (`pop-*.jpg`), whose strip seeds seven different pictures of its shoot where its frame borrows four of Retro's; Lattice's is a sixth, in colour (`lattice-*.jpg`), and only four photographs — the hero, the portrait, the bio's and a fourth — each a 1536-wide JPEG used as the frame's own file, since every thumbnail, track cover and avatar of its frames is one of them re-cropped (its dotted disc, map card and calendar torus are art, lossless WebPs used as masks and backgrounds, not photography). The photography is Retro's art direction, not the user's content, so switching template
   drops it — with one exception: the media player's track art is materialised into `c.tracks` the
   moment the artist edits the list (it has to be, or renaming track one would delete five
   photographs), so from then on it is theirs and survives a template switch.
 - **Imports, never fetches.** §8.6 forbids a network request in the render path.
-  `vite-plugin-singlefile` forces `assetsInlineLimit = () => true`, so all fifty-six files are
-  base64-inlined and the committed `index.html` still opens from `file://`. It is ~9.8 MB.
+  `vite-plugin-singlefile` forces `assetsInlineLimit = () => true`, so all sixty-nine files are
+  base64-inlined and the committed `index.html` still opens from `file://`. It is ~13.0 MB (13,030,112 bytes after the Lattice pass, which grew it by 1.10 MB from 11.93: eleven `lattice-*` files, 731 KB raw and about 0.97 MB inlined, and the rest code and the dot-field data).
   (The plain `npm run build` path has no such override and would emit them to `dist/assets/`
   instead; only the standalone build feeds the committed demo.)
 - **`null` is the explicit-clear sentinel.** A fresh section carries no `image` key at all, and
@@ -623,11 +623,11 @@ These are intentional limits, not oversights — see §12 for the full list. The
   is still on the page, else at the old index — *Start fresh* or not; only a category with no
   entry lands immediately before the footer, as §9.1 says. It lives only as long as the
   session, like everything else.
-- **Retro, Lime, Grunge, Editorial and Pop are designed at all four layouts.** Retro ships six
+- **Retro, Lime, Grunge, Editorial and Pop are designed at all four layouts, and Lattice at layout 1.** Retro ships six
   photographic header layouts and every other template the first four, every family closed, so
   no card of any template draws Retro's checker floor under another's tokens; there is no flat
   template, and no flat header family, any more.
-  The §10.2 *layouts* are shared by all five templates; Retro's decorative treatment — paper
+  The §10.2 *layouts* are shared by all six templates; Retro's decorative treatment — paper
   grain, torn edges, checkerboard, hard offset shadows, rotated cards — is gated on `s.retro`,
   the same split as `headerFamily()`. **Lime is designed at all four of its layouts**: each of its
   Figma pages is Retro's page of the same number in another variable mode, so its own treatment —
@@ -703,7 +703,19 @@ These are intentional limits, not oversights — see §12 for the full list. The
   Hero a violet card in a lime ring, a violet capsule ringed pink and a lime portrait card ringed
   pink; Stacked a white capsule over a pink floor, a lime-ringed stadium avatar and Lime's disc
   seal in blue), so every card in the setup modal lays out a whole Pop page and the Pop family is
-  closed.
+  closed. **Lattice is designed at layout 1 only**: the sixth template, from an HTML-to-Figma import
+  (*JustPay — Batch 2*) with no component sets or variable modes, so its eleven sections were each read by
+  composition and geometry, and **none widens a Lime block** — each is a `Lattice*` tree of its own
+  (hero, bio, media, gallery, repertoire, map, pricing, calendar, form, testimonials, footer) standing on
+  `s.lattice` (with the branch's own `s.v0` / `s.limeTree`) after the shared section's hooks and seam, so every published control is the
+  shared one and only the picture is Lattice's. Its page alternates near-black `#111`, light `#F2F2F2` and
+  grey `#DADADA` grounds with an orange `#ED6D40` testimonials band, every edge straight, on 1px hairline boxes
+  and square 3px chips, with bracket-cornered Book Now buttons, a per-width vector dot field, dotted
+  raster art in place of a seal or a map, and Archivo at its expanded width (`Archivo Lattice`, an
+  `@font-face` alias) over Azeret Mono. Its header is the hamburger-and-Book-Now bar of every template, the
+  frame's wordmark, inline links and kicker line left undrawn on purpose (user call, 2026-11-19). It carries
+  `schemes` like Editorial and Pop. Layouts 2–4 and the four setup cards 2–4 render and publish in Lattice's
+  tokens but are Retro's and Lime's arms until a layout pass fits them. See `notes/templates.md`.
   One piece of Retro's treatment is placed
   rather than copied: the checker ribbon on header layout 1's floor is not in the Figma hero
   frame at all. It is lifted from the stacked header, which shares the same full-bleed
@@ -746,8 +758,8 @@ These are intentional limits, not oversights — see §12 for the full list. The
   A hidden field keeps its copy, so switching to a layout that reads it brings it back with
   whatever was typed. The header's four identity fields (Kicker, Location, Tags, Tag chips) are
   `shared`: other sections print them, so they are listed at every header layout, marked "Not
-  shown in this layout" where the header itself does not draw them. The header's `in` names all five templates' layouts,
-  each measured over fitted cards alone since Pop's Stacked was fitted.
+  shown in this layout" where the header itself does not draw them. The header's `in` names all six templates' layouts,
+  each measured over fitted cards alone since Pop's Stacked was fitted (Lattice's cards 2–4 are placeholders, so its row there is the twins').
 - **Accessibility is scoped to the chrome.** Radix supplies focus management, keyboard
   navigation and ARIA there. The rendered preview is deliberately not accessible: it is a
   picture of a website, not a website. The seal badge honours `prefers-reduced-motion`.

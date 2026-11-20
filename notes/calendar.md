@@ -345,3 +345,41 @@ As on Retro, Lime and Grunge: the wizard is live-only, the canvas draws its firs
 ## Inline editing (plans/inline-edit-all.md, Pop layout 4, 2026-10-22)
 
 As on the other four templates: the wizard is live-only, the canvas draws its first step, and `prompt` is ledgered (`Pop.3.calendar.prompt`: the page prints the cued day, no *Pick a date*). Everything else hits.
+
+## Lattice · layout 1 (plans/lattice/layout-1.md, section 8, 2026-11-19)
+
+Frames `1:1039` · `1:9670` · `1:10640` (1440 x 781 / 768 x 564 / 390 x 894). **A block of its own, `LatticeCalendar`**, not Lime's *Scheduler* (nor Grunge's / Editorial's / Pop's widenings of it): it stands in `Calendar`'s
+`if (s.v0)` **after the seam**, dispatched on `s.limeTree && s.lattice` ahead of the Lime block. `Calendar` owns eight `useState` hooks, so an early return above them would change the hook count on a theme switch;
+`month`, `cur`, `line`, `step` (the arrows, which stop at both ends and dim there live) and a `pick(c)` handler (a blocked day has none; the lit day unlights on a second click) come over in `g`, so the published arrows, day
+picking and the foot are the one seam in a new picture. All date maths stays in `data.js` / `sectionVm`; the block composes nothing but the zero-padded numeral (`01`).
+
+- **The picture** is one 1px, 20-radius card on Scheme 2 (`#F2F2F2`, ink `#111`, `s.text3` the teal ink; no other scheme): a grid of two halves (1fr : 1fr side by side at 1440 and 768, stacked at 390 with **no divider**:
+  the 390 master's right border on the grid half is the desktop divider leaking, a transparent border keeps its 1px so the cells are the frame's 38.71) over a foot. Every number is the frame's (desktop x 0.82 through `u`, 768
+  and 390 verbatim; raw sizes 40 / 32 / 26 month at lh 1, 12 mono numerals and foot, 11 mono weekday names and town, Arial 13.333 arrows, not the ramp). Left: padding 28 / 21 / 16 (top 28 / 24 / 20), a 44-square head row (two
+  3px boxes round an Arial `←` / `→`, the month between them in `Archivo Lattice`), 16 down a 30-tall weekday row (text 6 down), 6 down the grid (seven columns, gap 6, cells 65.94 / 31.75 / 30.97 tall, 1px ring, 3px
+  radius, a two-digit mono numeral; the lit day is filled ink under paper). Right: the `[ 007 ] --- AVAILABILITY` eyebrow centred 28 / 24 / 20 down (16 apart, the rule 40 x 1), the art 64 down at a fixed 377.69 / 198.75 / 252
+  tall, and the town (`s.location`, the header's) with an 80 x 1 rule at the half's foot, inset 95.55 / 55.65 / 49.89. The foot is a 1px rule, 18 / 18 padding, the enquiry line (mono, wraps to three lines at 390) and a
+  `Continue →` bar (44 tall, 22 in, ink ground under a paper label, 129.97 wide).
+- **The art is a mask**: the frames' own raster per width (`lattice-calendar-{desktop,tablet,mobile}.webp`, 1340 x 755 / 714 x 398 / 680 x 504 at 2x, ink on transparent, lossless, 39 / 25 / 31 KB; `photos.js`
+  `LATTICE_ART.calendar`), painted in `s.tx` through a CSS mask on an `aria-hidden` span inside the art box. The **glow is the art box's own `radial-gradient(ellipse 50% 50% at 50% 50%, <Scheme 4 teal> 18% -> 0 at 70%)`**
+  (the frames' `gradientTransform` reduces to that at all three widths). Neither is a `url()` background on a node `limits.mjs` would count as a picture. **The art box and the right half are pinned to the five-row month's
+  height** (the frames' June 2025), so paging into a six-row month grows the grid alone and the torus never rescales (the 2026-11-16 tester report's rule): a six-row month leaves 72 of empty ground under the torus, a
+  four-row one leaves the grid half at the right half's height.
+- **The month fits the room between its arrows** by its own width (`month.ems` plus the 0.004em tracking per glyph, Pop's recipe) and keeps the frame's size wherever it fits: June at every width, SEPTEMBER 2025 a
+  little smaller at 390.
+- **`heading` is the eyebrow's word** (the section's seeded, uncased, drop-when-emptied field; call 1's rule): `FIELDS.calendar.heading` reaches Lattice's layout 1, and the `CAL_HEADING_1` ("Book Now") seed that
+  `vm.limeTree` gives the family's layout 1 is **not** Lattice's (`sectionVm` `&& !vm.lattice`; `fieldSeed` already read `limeTreeTheme`, which excludes Lattice), so the seed is TITLES.calendar, "Availability". The
+  `[ 007 ]` and the rule are the markup's, drawn with a word and dropped with it; the seat is kept (the art keeps its 64). The numeral is a literal: it does not follow the section's place on the page (a call to confirm).
+- **`cta` is the Continue bar's label** (the frame draws a button where JP-088 removed the family's pill, so *no frame draws it* no longer holds): seeded `CAL_CTA_LATTICE` "Continue" for Lattice's layout 1 in `vm.calCta` and
+  `fieldSeed`, so layout 4's wizard still seeds `CAL_SEND_4` and a label typed at layout 1 still follows it there. **Live it is an `<a href="#form">`** (`navHref(s, s.calBookTo)`: the form, or the pricing, or nothing) **whether or
+  not a day is cued**, Retro's pill rule, and a picture on the canvas; an emptied `cta` drops the bar; the foot's line is plain text, never the link. A call to confirm: a Continue that is dimmed until a day is picked
+  would be the other reading.
+- **A booked or past day** is the family's: opacity .38, no strike, no handler (the frames draw none, so the look is the Lime block's, not Lattice's own).
+- **`image` does not reach Lattice's layout 1** (`in: { Lattice: [3], '*': [0, 3] }`): the polaroid's seat holds art, not a photograph, so the panel offers no Photo and the section holds no photo slot (`photo-probe`:
+  0 slots, PASS filled, `--blank`, `--drop`).
+- **Caps** (`limits.mjs calendar --themes=5 --designs=0`): `heading` **25** (65 / 27 / 25: the 390 eyebrow row), `time` **16** (104 / 30 / 16: the foot's line is three lines at 390), `prompt` **33** (137 / 63 / 33),
+  `IDENTITY_CHARS.calendar.location` **19** (50 / 19 / 19), `cta` measured 29 (box) and **held to 12** so the bar stays under a third of the 390 foot and the line keeps its room: a judgement call, the user's to
+  overrule. Layouts 2-4 of those rows are Pop's, copied into explicit `Lattice` rows. `slotCta`, `availLabel` (`'*'` rows) and `slots` `kind` / `price`, `types`, `dateLabel` are layout 2's and 4's and unmeasured for Lattice.
+  `--check`: 0 fail; `--seeds`: 0 over. `IDENTITY_READS.location.calendar` names Lattice's layout 1 (`reach.mjs 5` agrees: `who.location` reaches calendar layouts 1, 3 and 4).
+- **Inline editing**: `heading`, `time` (a part of the line) and `cta` are hit at 1440 and 768; `prompt` is ledgered as `Lattice.0.calendar.prompt`, as every template's. `inline-probe --theme Lattice --layout 1 --cat
+  calendar --width 1440,768 --check`: PASS, 3 slots hit, 0 UNLEDGERED.

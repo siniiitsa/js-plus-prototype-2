@@ -1,6 +1,6 @@
 // The seeded mock photography of the designed templates, exported from their
-// Figma frames — Retro's §10.2 page, Lime's four layout pages and Grunge's and
-// Editorial's layout-1 pages. Grunge's layout-2, layout-3 and layout-4 frames drew nothing
+// Figma frames — Retro's §10.2 page, Lime's four layout pages, Grunge's and
+// Editorial's layout-1 pages, and Pop's and Lattice's. Grunge's layout-2, layout-3 and layout-4 frames drew nothing
 // new: every photograph they carry is already seeded here, the layout-3 bio's
 // crop taken as an objectPosition on grungeStage rather than as a second
 // export, and the layout-4 bio's a centred cover of the same file. Nor did
@@ -19,10 +19,17 @@
 // helpers; no React" and is import-free, and ~2 MB of base64 has no business in the
 // file people open to read the palettes.
 //
-// All five templates have Figma frames of their own, so all five seed
-// photography: Retro's, Lime's, Grunge's, Editorial's and Pop's shoots.
+// All six templates have Figma frames of their own, so all six seed
+// photography: Retro's, Lime's, Grunge's, Editorial's, Pop's and Lattice's shoots.
 
 import hero from './photos/hero.jpg'
+import latticeDisc from './photos/lattice-disc.webp'
+import latticeMapDesktop from './photos/lattice-map-desktop.webp'
+import latticeMapTablet from './photos/lattice-map-tablet.webp'
+import latticeMapMobile from './photos/lattice-map-mobile.webp'
+import latticeCalDesktop from './photos/lattice-calendar-desktop.webp'
+import latticeCalTablet from './photos/lattice-calendar-tablet.webp'
+import latticeCalMobile from './photos/lattice-calendar-mobile.webp'
 import retroVideoPoster from './photos/retro-video-poster.jpg'
 import headerAvatar from './photos/header-avatar.jpg'
 import stage from './photos/stage.jpg'
@@ -80,6 +87,10 @@ import popAvatar from './photos/pop-avatar.jpg'
 import popGallery1 from './photos/pop-gallery-1.jpg'
 import popGallery2 from './photos/pop-gallery-2.jpg'
 import popGallery4 from './photos/pop-gallery-4.jpg'
+import latticeHero from './photos/lattice-hero.jpg'
+import latticePortrait from './photos/lattice-portrait.jpg'
+import latticeBio from './photos/lattice-bio.jpg'
+import latticeAlt from './photos/lattice-alt.jpg'
 
 const REVIEWERS = [review1, review2, review3]
 
@@ -238,6 +249,44 @@ export const POP_PHOTOS = {
   pricing: REVIEWERS,
 }
 
+// Lattice's layout-1 frames (1:306 · 1:8953 · 1:9934, JustPay — Batch 2) are a
+// sixth shoot, and a small one: the whole page is four photographs, a teal and
+// orange portrait session with a projected kanji. In the frames' own names
+// (plans/lattice/layout-1.md, *Settled in session 0*): the hero (hash a55a2e2d,
+// FILL, 1536 × 1024, also a track cover and a thumbnail), the portrait
+// (40a976f3, the header's avatar card, the gallery's spotlight and two track
+// covers), the bio's (04a8339f) and a fourth (0cb3f486, the form's avatar and the
+// first track's cover, three thumbnails), every one a `FILL`, so a centred
+// cover. The frames' own 1536-wide JPEGs, unmodified (a re-encode at 74 came out larger). The
+// frames' other rasters (the dot fields, the dotted disc, the map card and the
+// calendar's torus) are art, not photography, and are the sections' own.
+//
+// The gallery strip is the frame's seven in the frame's order; the track covers
+// are the frame's five (RETRO_TRACK_ART's shape, Lattice's own pictures).
+export const LATTICE_PHOTOS = {
+  header: latticeHero,
+  bio: latticeBio,
+  // No frame draws the video; the hero stands in, as Retro's poster does.
+  video: latticeHero,
+  form: latticeAlt,
+  gallery: [latticeAlt, latticeBio, latticePortrait, latticeHero, latticePortrait, latticeAlt, latticeAlt],
+  pricing: REVIEWERS,
+}
+// The dotted disc (header, and later the footer, the map card and the calendar's
+// torus): a 256 x 162 lossless WebP of the frame's 400 x 400 raster cropped to its
+// ink, light on transparent, used as a mask so a section inks it (plans/lattice/
+// layout-1.md, *Settled in section 1*). 14.5 KB. At 2x: it draws 128 x 81 css px.
+// …and the events map's dotted bowl (section 6): the frames' own raster per width (657 x 470, 714 x 470 and
+// 340 x 470 css px at 2x), ink on transparent, lossless WebP of 16 KB each, used as a mask so the card inks it.
+// …and the calendar's dotted torus (section 8): the frames' own raster per width (670 x 378, 357 x 199 and
+// 340 x 252 css px at 2x), ink on transparent, lossless WebP (39 / 25 / 31 KB), used as a mask so the card inks it.
+export const LATTICE_ART = {
+  disc: latticeDisc, discW: 128, discH: 81,
+  map: { desktop: latticeMapDesktop, tablet: latticeMapTablet, mobile: latticeMapMobile },
+  calendar: { desktop: latticeCalDesktop, tablet: latticeCalTablet, mobile: latticeCalMobile },
+}
+export const LATTICE_TRACK_ART = [latticeAlt, latticePortrait, latticeAlt, latticePortrait, latticeHero]
+
 // The seeded artwork for the media player's five track rows, in track order.
 //
 // These are the frames' own fills (964:58578 and Lime's 964:58590 share the five
@@ -332,6 +381,10 @@ const SEEDS = {
   Grunge: { photos: GRUNGE_PHOTOS, avatar: GRUNGE_HEADER_AVATAR, photo: grungeFormPhoto },
   Editorial: { photos: EDITORIAL_PHOTOS, avatar: EDITORIAL_HEADER_AVATAR, photo: editorialHero },
   Pop: { photos: POP_PHOTOS, avatar: POP_HEADER_AVATAR, avatars: { 3: POP_STACKED_AVATAR }, photo: popHero },
+  // The header's avatar card is the portrait (40a976f3, a FILL), the form's
+  // layout-2 stage the hero. `rowArt` is the track covers, which are Lattice's
+  // own pictures (defaultTrackArt).
+  Lattice: { photos: LATTICE_PHOTOS, avatar: latticePortrait, photo: latticeHero, rowArt: { media: LATTICE_TRACK_ART } },
 }
 
 // Where each seeded photograph keeps its performer, as the `object-position`
@@ -406,4 +459,4 @@ export const defaultImages = (cat, themeName) => {
 // section. The media player's tracks and the video section's list have some,
 // under every seeded theme.
 export const defaultTrackArt = (cat, themeName) =>
-  (SEEDS[themeName] ? ROW_ART[cat] : undefined)
+  (SEEDS[themeName] ? (SEEDS[themeName].rowArt?.[cat] ?? ROW_ART[cat]) : undefined)

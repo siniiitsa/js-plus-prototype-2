@@ -1025,7 +1025,7 @@ const clock = (sec) => {
 // The ground and ink the menu opens on (below). Shared by `HeaderRoot`'s in-flow
 // panel and the fixed one Retro's layouts 5 and 6 still open.
 function menuColours(s) {
-  return s.editorial ? [s.box3, s.paper] : s.pop && s.v2 ? [s.bg, s.text3]
+  return s.lattice ? [s.bg, s.tx] : s.editorial ? [s.box3, s.paper] : s.pop && s.v2 ? [s.bg, s.text3]
     : s.pop && s.v3 ? [s.mapBg, s.text3] : [s.mapBg, s.mapFg]
 }
 
@@ -1100,12 +1100,12 @@ function MenuPanel({ s, menu }) {
         <span onClick={menu.toggle} style={{ display: 'flex', cursor: 'pointer' }}>
           <X size={26} style={{ flex: 'none' }} />
         </span>
-        <BookPill s={s} to={s.bookTo} />
+        {s.lattice ? <BracketButton s={s} to={s.bookTo} ink={ink} /> : <BookPill s={s} to={s.bookTo} />}
       </div>
       <nav onClick={menu.toggle} style={col('18px', { alignItems: 'flex-start' })}>
         {s.navLinks.map((l) => (
           <a key={l.label} href={navHref(s, l.to)}
-             style={labelStyle(s, s.dispSm, { color: ink, cursor: 'pointer' })}>{l.label}</a>
+             style={labelStyle(s, s.lattice ? s.labelLg : s.dispSm, { color: ink, cursor: 'pointer' })}>{l.label}</a>
         ))}
       </nav>
     </div>
@@ -1341,7 +1341,7 @@ function Title({ s, size, color, twoTone = false, align = 'left', toneA, toneB, 
     // in for it, is not, so every header's title takes the transform — and
     // so does Editorial's, Gloock standing in for the caps-only Fisterra
     // Fora, and Pop's, Titan One standing in for Chunko Bold Demo.
-    textTransform: s.grunge || s.editorial || s.pop ? 'uppercase' : undefined,
+    textTransform: s.grunge || s.editorial || s.pop || s.lattice ? 'uppercase' : undefined,
     // A word wider than the column even at the floor breaks rather than leave it.
     overflowWrap: s.titleK < 1 ? 'break-word' : undefined,
     ...style,
@@ -1834,6 +1834,10 @@ const SCRIM = {
   // Pop's hero (964:58624) — Lime's full-height fade again (the same gradient
   // transform), in black at the paint's 0.74.
   pop: 'linear-gradient(0deg, rgba(0,0,0,.74) 0%, rgba(0,0,0,0) 100%)',
+  // Lattice's hero (1:310) — one full-height fade over the photograph: #111 at
+  // .55 at the top, .15 at 40%, .9 at the foot (its `gradientTransform` runs the
+  // height). The photograph under it is drawn at .55 on #111.
+  lattice: 'linear-gradient(180deg, rgba(17,17,17,.55) 0%, rgba(17,17,17,.15) 40%, rgba(17,17,17,.9) 100%)',
   // Lime's media player card (964:58590 "Left") — the sleeve's own fade to
   // black, exactly the frame's paint: 0 → 91% black from 1.57% to 79.38%. Its
   // 181.8° is Figma's gradient transform read through the card's aspect (the
@@ -1950,6 +1954,158 @@ function NavBar({ s, colour, pill, glass: glassOn, menu }) {
  * to Grunge's and to Editorial's.
  * ------------------------------------------------------------------ */
 
+// Lattice's bracket-cornered button (1:344): a mono caps label and an arrow
+// between four 9 x 9 corner marks, 1px, on a 130 x 44 box with no ground (the frame
+// draws it at 768 as well, and at 1440 only as the hero's Book Now). `k` scales it
+// (0.82 on the desktop canvas). Under `s.live` it links to the section that takes
+// a booking, as BookPill does; elsewhere it is a picture. Opt-in: nothing but
+// Lattice's header and open menu pass through it.
+function BracketButton({ s, label, to, ext, ink, k = 1, style }) {
+  const c = ink ?? s.tx
+  const px = (v) => `${Math.round(v * k * 100) / 100}px`
+  // `to` is a page anchor (Book Now); `ext` an outward address (the media player's
+  // Soundcloud), which `extLink` keeps a picture on the canvas and while it is empty.
+  const link = ext !== undefined ? extLink(s, ext) : s.live && to ? { href: `#${to}` } : null
+  const Tag = link ? 'a' : 'span'
+  const mark = (pos) => ({
+    position: 'absolute', width: px(9), height: px(9), pointerEvents: 'none',
+    ...(pos[0] === 't' ? { top: 0, borderTop: `1px solid ${c}` } : { bottom: 0, borderBottom: `1px solid ${c}` }),
+    ...(pos[1] === 'l' ? { left: 0, borderLeft: `1px solid ${c}` } : { right: 0, borderRight: `1px solid ${c}` }),
+  })
+  return (
+    <Tag {...link} style={{
+      ...row(px(12)), position: 'relative', flex: 'none', height: px(44), padding: `0 ${px(22)}`,
+      color: c, cursor: 'pointer', ...labelStyle(s, s.labelMd, { lineHeight: 1.2, letterSpacing: '0.04em' }), ...style,
+    }}>
+      {['tl', 'tr', 'bl', 'br'].map((p) => <span key={p} aria-hidden style={mark(p)} />)}
+      <span>{label ?? s.cta1}</span>
+      <span aria-hidden>→</span>
+    </Tag>
+  )
+}
+
+// Lattice's three-bar hamburger (1:8984): 20 wide, 2px bars 4 apart, in a 46 x 46
+// button whose ink starts 13px in — the bars stand on the gutter, so the box takes
+// that back as a negative margin.
+function LatticeBurger({ s, color, menu, k }) {
+  const px = (v) => `${Math.round(v * k * 100) / 100}px`
+  return (
+    <span onClick={menu?.toggle} style={{
+      ...col(px(4), { alignItems: 'stretch', justifyContent: 'center' }), flex: 'none', cursor: 'pointer',
+      width: px(46), height: px(46), padding: `0 ${px(13)}`, marginLeft: `-${px(13)}`, boxSizing: 'border-box',
+    }}>
+      {[0, 1, 2].map((i) => <span key={i} style={{ height: px(2), background: color }} />)}
+    </span>
+  )
+}
+
+// Lattice's hero (Batch 2 file, 1:308 · 1:8955 · 1:9936: 1440 / 768 / 390, all 750
+// tall; desktop numbers x 0.82). A new composition under HeaderV0's skeleton, so a
+// block of its own and no other template reads it: a #111 ground with a warm glow
+// bottom-right, the photograph at .55, a vertical scrim, the dot field, a bar of
+// hamburger and bracketed Book Now, the dotted disc, then the identity block on the
+// floor — a 194 card (radius 20, 1px ring) beside the name at 128 (105 on the
+// canvas) in the expanded Archivo, and a row of six square mono chips. The frame's
+// wordmark and rule, the inline links and the `MANCHESTER, UK · DJ · LIVE ACT` line
+// are not drawn (the header-nav ticket's standing removals, user call 2026-11-19).
+// The column is bottom-aligned to the card with the frame's 6.03 under the name,
+// The desktop bar stands 7 frame px (5.7 canvas) lower than the frame's: the builder's section
+// toolbar (right 8, top 8, 99 x 31) covers the label's centre at the frame's height, so a click
+// on Book Now opened nothing (inline-probe MISSING); tablet's already clears it.
+// so the name stands where the frame's does with the kicker row gone. Its tracking is the
+// frame's -0.01em plus the 0.0141em the Archivo alias lacks in width (measured: the frame's
+// ink runs 895 at 1440 where the alias gives 879), so the ink lands on the frame's.
+function LatticeHero({ s, menu }) {
+  const tab = isTablet(s)
+  const k = s.narrow ? 1 : 0.82
+  const px = (v) => `${Math.round(v * k * 100) / 100}px`
+  const centred = s.align === 'centre'
+  const orange = s.onScheme[1].activeBg
+  const padX = `calc(${s.surplus} + ${s.mob ? '24px' : tab ? '26.11px' : '40.15px'})`
+  const card = 194 * k
+  const ink = s.tx
+  // The six chips by seat: outline, orange, teal, dark, orange, outline (the frame's own pairs).
+  const SEAT = [
+    { line: true }, { bg: s.chips[1].bg, fg: s.bg }, { bg: s.chips[0].bg, fg: s.bg },
+    { bg: s.chips[3].bg, fg: s.tx }, { bg: s.chips[4].bg, fg: s.bg }, { line: true },
+  ]
+  return (
+    <div style={{
+      position: 'relative', width: '100%', aspectRatio: s.mob ? '390 / 750' : s.narrow ? '768 / 750' : '16 / 8.33',
+      maxHeight: s.heroH, overflow: 'hidden', color: ink,
+      display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+      padding: `${px(s.narrow ? 20 : 27)} ${padX} ${px(56)}`,
+      background: `radial-gradient(ellipse 60% 55% at 80% 85%, ${orange}24 0%, ${orange}00 70%), ${s.bg}`,
+    }}>
+      <div aria-hidden style={{ position: 'absolute', inset: 0, opacity: 0.55 }}>
+        <Photo s={s} backdrop style={{ objectPosition: (s.narrow && s.imagePos) || undefined }} />
+      </div>
+      <div aria-hidden style={{ position: 'absolute', inset: 0, background: SCRIM.lattice, pointerEvents: 'none' }} />
+      <div aria-hidden style={{
+        position: 'absolute', inset: 0, pointerEvents: 'none',
+        backgroundImage: `url("${s.dotField}")`, backgroundSize: '100% 100%',
+      }} />
+
+      <div style={{
+        position: 'relative', ...row('0px', { justifyContent: 'space-between', minHeight: px(46) }),
+        visibility: menu?.open ? 'hidden' : undefined,
+      }}>
+        <LatticeBurger s={s} color={ink} menu={menu} k={k} />
+        <BracketButton s={s} to={s.bookTo} k={k} />
+      </div>
+
+      {s.showBadge === 'show' && s.latticeDisc && (
+        <span aria-hidden style={{
+          position: 'absolute', pointerEvents: 'none',
+          top: px(114.5), right: `calc(${s.surplus} + ${px(s.mob ? 18 : tab ? 24.12 : 46)})`,
+          width: px(s.latticeDisc.discW), height: px(s.latticeDisc.discH), background: ink,
+          WebkitMaskImage: `url("${s.latticeDisc.disc}")`, maskImage: `url("${s.latticeDisc.disc}")`,
+          WebkitMaskSize: '100% 100%', maskSize: '100% 100%',
+        }} />
+      )}
+
+      <div style={{ position: 'relative', ...col(px(28)) }}>
+        <div style={s.mob
+          ? col(px(32), { alignItems: centred ? 'center' : 'flex-start' })
+          : row(px(32), { alignItems: 'flex-end', justifyContent: centred ? 'center' : 'flex-start' })}>
+          <div style={{
+            position: 'relative', flex: 'none', width: card, height: card, boxSizing: 'border-box',
+            borderRadius: px(20), border: `1px solid ${ink}`, overflow: 'hidden', background: s.box1,
+          }}>
+            <Photo s={s} avatar initialsSize={Math.round(card / 3)} />
+          </div>
+          <div style={{
+            minWidth: 0, flex: s.mob ? undefined : '1 1 0', width: s.mob ? '100%' : undefined,
+            maxWidth: s.narrow ? undefined : px(915.72), paddingBottom: px(6.03),
+          }}>
+            <Title s={s} size={fitSz(s, s.dispXl, s.dispXl)} color={ink} inline lh={0.86}
+                   align={centred ? 'center' : 'left'} style={{ letterSpacing: '0.004em' }} />
+          </div>
+        </div>
+        {s.showTags === 'show' && (
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: px(8), justifyContent: centred ? 'center' : 'flex-start' }}>
+            {s.tagChips.map((c, i) => {
+              const seat = SEAT[i % SEAT.length]
+              const fg = seat.line ? ink : seat.fg
+              return (
+                <span key={i} style={{
+                  ...row(px(8)), height: px(26), padding: `0 ${px(11)}`, boxSizing: 'border-box',
+                  borderRadius: s.radiusChip, whiteSpace: 'nowrap', background: seat.bg, color: fg,
+                  boxShadow: seat.line ? `inset 0 0 0 1px ${ink}` : undefined,
+                  fontFamily: s.ui, fontSize: s.chip, lineHeight: 1.18, letterSpacing: '0.04em', textTransform: 'uppercase',
+                }}>
+                  <span aria-hidden style={{ width: px(5), height: px(5), background: fg, flex: 'none' }} />
+                  {c.label}
+                </span>
+              )
+            })}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
 // v0 — Header layout 1 · Hero (§10.2 reference design)
 //
 // Full-bleed photograph under a bottom-weighted scrim: the nav rides the top
@@ -1957,6 +2113,7 @@ function NavBar({ s, colour, pill, glass: glassOn, menu }) {
 // in the upper right. This is the one section that breaks the root padding —
 // see the `bleed` flag on the root.
 function HeaderV0({ s, menu }) {
+  if (s.lattice) return <LatticeHero s={s} menu={menu} />
   const centred = s.align === 'centre'
   // Both reference frames are transcribed verbatim (§5.5). 768: 30px gutters,
   // a 144px portrait card, identity stacked 40/24/36/30. 390: 10px gutters, a
@@ -3808,10 +3965,11 @@ function HeaderV3({ s, menu }) {
         {/* Scheme 3's `sem/bg` — `s.ac` — off the floor to a transparent stop
             in Scheme 1's `sem/bg` at the top, the frame's own two stops.
             Editorial's Scheme 3 `sem/bg` is the seat's own ink, and Pop's
-            the seat's own pink. */}
+            the seat's own pink; Lattice's placeholder card fades to its own #111,
+            since its `s.ac` is the pale ink. */}
         <div aria-hidden style={{
           position: 'absolute', inset: 0,
-          background: `linear-gradient(0deg, ${ed || pop ? s.bg : s.ac} 0%, #15180F00 100%)`,
+          background: `linear-gradient(0deg, ${ed || pop || s.lattice ? s.bg : s.ac} 0%, #15180F00 100%)`,
         }} />
 
         {/* NavBar's Lime capsule is this frame's `Frame 49` — the same Figma
@@ -4170,7 +4328,119 @@ function HeaderV5({ s }) {
 // A tilted photo card held between two columns of small orange labels: the
 // section index and headline on the left, the prose and credit on the right.
 // Both flanks collapse under the card on tablet and mobile.
+// Lattice layout 1 (1:386 · 1:9019 at 768 · 1:9991 at 390), the bio. It is not Lime's
+// Flanked portrait re-inked: where Lime's middle is one arch-topped photograph with
+// an inner glow and a seal, this is a plain 20-radius portrait with a rail beside it
+// (a teal square, the town set vertical, a hairline), and the dotted disc is a white
+// mark in `mix-blend-mode: difference` over the portrait's lower-left corner, drawn at
+// desktop alone (the 768 and 390 masters clip it to nothing). The frame's `KM / BIO`
+// mark and its `[ 001 ] Structure · Bio_01` line are removed copy (user call,
+// 2026-11-19), so the heading stands alone in its flank, centred in the column at
+// desktop. Desktop is the frame's 12-column grid (89.83 columns, 24 gaps): the flank takes
+// columns 1-4, the portrait and its rail 5-8 and the About copy 10-12. Every size is the frame's (desktop x 0.82 through `u`; 768 and 390 verbatim);
+// the ramp's own keys carry the type, the heading a raw 77.76 / 48 / 38 (no token),
+// stacked a word a line by its `min-content` width; the labels and body are the frame's raw 12 / 11 / 16
+// (x 0.82), where the ramp rounds them to 10 / 9 / 13 and would wrap the paragraph a line early. The dot field is the frame's, hung off
+// the section's foot as the root's own background (a node of its own would be a picture the
+// character-cap probe counts every long paragraph as meeting).
+function LatticeBio({ s }) {
+  const tab = isTablet(s)
+  const k = s.narrow ? 1 : 0.82
+  const u = (v) => `${Math.round(v * k * 100) / 100}px`
+  const ink = s.tx
+  const lab = (size, extra) => ({
+    fontFamily: s.mono, fontSize: size, lineHeight: 1.2, letterSpacing: '0.04em',
+    textTransform: 'uppercase', color: ink, ...extra,
+  })
+  const hz = s.mob ? 38 : tab ? 48 : 77.76 * k
+  const heading = (
+    <div style={col('0', {
+      justifyContent: s.narrow ? 'flex-start' : 'center', alignItems: 'flex-start', minWidth: 0,
+      containerType: 'inline-size', flex: s.narrow ? undefined : 1,
+      // The frame spaces `KM / BIO`, the head and the reference line apart (the head's top is
+      // 221.05 in a 657 column); both rows are removed, so their heights stand as padding and
+      // the seeded head keeps its seat (centring alone would sit it 7.5 px high).
+      ...(!s.narrow && { padding: `${u(32.77)} 0 ${u(14.38)}` }),
+    })}>
+      <h2 style={{
+        margin: 0, width: 'min-content', fontFamily: s.display, fontWeight: 500, lineHeight: 1,
+        fontSize: s.titleWordEms ? `min(${hz}px, calc(100cqi / ${s.titleWordEms}))` : `${hz}px`,
+        letterSpacing: '0.004em', textTransform: 'uppercase', color: ink,
+      }}>{s.title}</h2>
+    </div>
+  )
+  const rail = (
+    <div style={col('0', {
+      flex: 'none', width: u(24), boxSizing: 'border-box', padding: `${u(8)} 0`,
+      alignItems: 'center', justifyContent: 'space-between',
+    })}>
+      <span aria-hidden style={{ width: u(8), height: u(8), background: s.chips[0].bg, flex: 'none' }} />
+      {s.location && (
+        <span style={lab(u(11), { writingMode: 'vertical-rl', transform: 'rotate(180deg)', whiteSpace: 'nowrap' })}>{s.location}</span>
+      )}
+      <span aria-hidden style={{ width: '1px', height: u(180), background: ink, flex: 'none' }} />
+    </div>
+  )
+  const media = (
+    <div style={row(u(16), { alignItems: 'stretch', height: s.narrow ? '600px' : u(657), width: '100%', minWidth: 0, position: 'relative' })}>
+      <div style={{ flex: 1, minWidth: 0, position: 'relative', borderRadius: u(20), overflow: 'hidden', background: s.box2 }}>
+        <div style={{ position: 'absolute', inset: 0 }}>
+          <Photo s={s} initialsSize={54} />
+        </div>
+      </div>
+      {rail}
+      {!s.narrow && s.showBadge === 'show' && s.latticeDisc && (
+        <span aria-hidden style={{
+          position: 'absolute', left: u(-56.2), top: u(565.3), pointerEvents: 'none',
+          width: u(s.latticeDisc.discW), height: u(s.latticeDisc.discH), background: '#FFFFFF', mixBlendMode: 'difference',
+          WebkitMaskImage: `url("${s.latticeDisc.disc}")`, maskImage: `url("${s.latticeDisc.disc}")`,
+          WebkitMaskSize: '100% 100%', maskSize: '100% 100%',
+        }} />
+      )}
+    </div>
+  )
+  const about = (
+    <div style={col('0', { justifyContent: 'space-between', minWidth: 0, alignSelf: 'stretch', ...(s.mob ? { gap: '9.96px' } : { flex: 1 }) })}>
+      <div style={col(s.mob ? '6px' : u(16))}>
+        <span style={lab(u(12))}>About</span>
+        <p style={{
+          margin: 0, fontFamily: s.body, fontSize: u(16), lineHeight: 1.2, color: ink, whiteSpace: 'pre-line',
+        }}>{s.bioP1}</p>
+      </div>
+      <div style={{ borderTop: `1px solid ${ink}`, boxSizing: 'border-box', minHeight: u(33), padding: `${u(14)} 0 ${u(3.6)}` }}>
+        <span style={lab(u(12), { display: 'block', overflowWrap: 'anywhere' })}>{s.roleLine}</span>
+      </div>
+    </div>
+  )
+  return (
+    <>
+      <div style={{ position: 'relative' }}>
+        {s.mob ? (
+          <div style={col('28px')}>{heading}{media}{about}</div>
+        ) : tab ? (
+          <div style={col('36px')}>
+            {heading}
+            <div style={row('24px', { alignItems: 'stretch' })}>
+              <div style={{ flex: '1 1 0', minWidth: 0, display: 'flex' }}>{media}</div>
+              <div style={{ flex: '1 1 0', minWidth: 0, display: 'flex', flexDirection: 'column' }}>{about}</div>
+            </div>
+          </div>
+        ) : (
+          <div style={{
+            display: 'grid', gridTemplateColumns: 'repeat(12, minmax(0, 1fr))', columnGap: u(24), alignItems: 'stretch',
+          }}>
+            <div style={{ gridColumn: '1 / span 4', display: 'flex', flexDirection: 'column' }}>{heading}</div>
+            <div style={{ gridColumn: '5 / span 4' }}>{media}</div>
+            <div style={{ gridColumn: '10 / span 3', display: 'flex', flexDirection: 'column' }}>{about}</div>
+          </div>
+        )}
+      </div>
+    </>
+  )
+}
+
 function Bio({ s }) {
+  if (s.v0 && s.lattice) return <LatticeBio s={s} />
   // Lime layout 1 (964:58589 · 986:39877 at 768 · 986:39890 at 390) is the same
   // Figma component as Retro's below, in Lime's mode — but it is not the same
   // tree re-tokened. The middle column is a different composition (one arch-
@@ -6183,6 +6453,179 @@ const WAVE = [
 // not a count, because the meter's bar count is derived from the width.
 const WAVE_PLAYED = 17 / WAVE.length
 
+// Lattice's layout-1 media player (1:419 · 1:9052 · 1:10024: 1440 / 768 / 390; desktop
+// numbers x 0.82 through `u`, the narrow two verbatim). A block of its own: the rows are
+// flush hairlines like Lime's but the cover sits left of a *square* play button and the card
+// is a 20-radius `#1B1B1B` box with a teal halo and a square-cornered sleeve, three square
+// transport buttons and a 48-bar meter (plans/lattice/layout-1.md, section 3). `Media` owns
+// the one <audio> and every hook and hands the seam over in `m`, so the published player is
+// the same one in a new picture. The frame's `[ 002 ] TOP TRACKS` eyebrow and its `5 / 5
+// FEATURED` counter are not drawn (user call, section 0: the standing removals hold). The
+// card's `Now playing` is the frame's literal and its `0N / 0M` a derived position, neither a
+// field. The frame marks row 02 and names a track that is not in its list; the card names the
+// cued track here (`at`) and the row that is it takes the frame's marked ground, the layout-4
+// tile's seat. The meter is one ink in the frame, so the played / idle split is drawn live only.
+function LatticeMedia({ s, m }) {
+  const { at, count, playing, now, sleeve, sleeveSlot, audio, goTo, toggle, onPick } = m
+  const tab = isTablet(s)
+  const k = s.narrow ? 1 : 0.82
+  const u = (v) => `${Math.round(v * k * 100) / 100}px`
+  const ink = s.tx
+  const lab = (size, extra) => ({
+    fontFamily: s.mono, fontSize: size, lineHeight: 1.2, letterSpacing: '0.04em',
+    textTransform: 'uppercase', color: s.text3, ...extra,
+  })
+  const disp = (size, extra) => ({
+    fontFamily: s.display, fontWeight: 500, fontSize: size, lineHeight: 1, letterSpacing: '0.004em',
+    textTransform: 'uppercase', color: ink, ...extra,
+  })
+  const rgba = (hex, a) => {
+    const n = parseInt(hex.slice(1), 16)
+    return `rgba(${n >> 16}, ${(n >> 8) & 255}, ${n & 255}, ${a})`
+  }
+  const pad2 = (n) => String(n).padStart(2, '0')
+
+  // The heading: two lines at every width, the frame's break after "worth" held by an em
+  // measure between "Five worth" (7.15em) and "Five worth your", and the 390 frame's
+  // narrower box (6.65em, "your ear.") that stacks the seed on three lines. A word that is
+  // wider than the content is fitted to it (`vm.titleWordEms`, the bio's rule).
+  const hz = s.mob ? 38 : tab ? 48 : 74.88 * k
+  const heading = s.title ? (
+    <div style={{ containerType: 'inline-size', width: '100%' }}>
+      <h2 style={{
+        margin: 0, maxWidth: s.mob ? '6.9em' : '8em',
+        ...disp(s.titleWordEms ? `min(${hz}px, calc(100cqi / ${s.titleWordEms}))` : `${hz}px`),
+      }}>{s.title}</h2>
+    </div>
+  ) : null
+
+  // Transport glyphs, the frame's own paths (10 x 12 and 12 x 10 boxes).
+  const glyph = (w, h, children, vb) => (
+    <svg aria-hidden width={u(w)} height={u(h)} viewBox={vb} style={{ display: 'block', overflow: 'visible' }}>{children}</svg>
+  )
+  const play = (c) => glyph(10, 12, <path d="M1 1L9 6L1 11V1Z" fill={c} />, '0 0 10 12')
+  const pause = (c) => glyph(10, 12, <path d="M1 1H4V11H1V1ZM6 1H9V11H6V1Z" fill={c} />, '0 0 10 12')
+  const skip = (back, c) => glyph(12, 10, back
+    ? <path d="M1 0V10M11 0L3 5L11 10V0Z" fill={c} stroke={c} />
+    : <path d="M11 0V10M1 0L9 5L1 10V0Z" fill={c} stroke={c} />, '0 0 12 10')
+  const sq = (extra) => ({
+    width: u(44), height: u(44), boxSizing: 'border-box', flex: 'none', borderRadius: s.radiusSm,
+    display: 'inline-flex', alignItems: 'center', justifyContent: 'center', ...extra,
+  })
+
+  const padX = s.mob ? '12px' : u(16)
+  const gap = s.mob ? '10px' : u(20)
+  const list = (
+    <div style={{ borderTop: `1px solid ${ink}`, boxSizing: 'border-box' }}>
+      {s.tracks.length === 0 && (
+        <div style={{ borderBottom: `1px solid ${ink}`, padding: `${u(36)} ${padX}`, ...lab(u(12)) }}>{s.mediaEmpty}</div>
+      )}
+      {s.tracks.map((t, i) => {
+        const marked = i === at
+        const playingRow = marked && playing
+        return (
+          <div key={i} onClick={onPick(i)} style={{
+            ...row(gap), minHeight: u(93), boxSizing: 'border-box', padding: `${s.mob ? '10px' : u(10)} ${padX}`,
+            borderBottom: `1px solid ${ink}`, borderRadius: marked ? s.radiusSm : 0,
+            background: marked ? s.box1 : undefined, cursor: s.live ? 'pointer' : undefined,
+          }}>
+            <span style={lab(u(12), { flex: 'none', width: s.mob ? '22px' : u(48) })}>{t.n}</span>
+            <span style={col(u(8), { flex: 1, minWidth: 0 })}>
+              <span style={disp(s.mob ? '18px' : u(24), s.mob
+                ? { overflowWrap: 'anywhere' }
+                : { whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' })}>{t.name}</span>
+              <span style={lab(u(11), s.mob
+                ? { overflowWrap: 'anywhere' }
+                : { whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' })}>{t.sub}</span>
+            </span>
+            <span style={{
+              flex: 'none', width: s.mob ? '44px' : u(56), height: s.mob ? '44px' : u(56),
+              borderRadius: s.radiusSm, overflow: 'hidden', position: 'relative', background: s.box2,
+            }}><Photo s={s} slot={`tracks:${t.row}`} initialsSize={14} src={t.img} ink={ink} /></span>
+            <span style={sq(marked
+              ? { background: ink, border: `1px solid ${ink}` }
+              : { border: `1px solid ${ink}` })}>{playingRow ? pause(marked ? s.bg : ink) : play(marked ? s.bg : ink)}</span>
+          </div>
+        )
+      })}
+    </div>
+  )
+
+  // Soundcloud: the frame's bracket pill, which stays a picture until it has an address.
+  const pill = <BracketButton s={s} label="Soundcloud" ext={s.soundcloud} k={k} />
+
+  const nBars = 48
+  const lit = s.live ? Math.round((now.pct / 100) * nBars) : nBars
+  const cardPad = s.mob ? `20px 16px` : tab ? `24px 21px` : u(28)
+  const card = (
+    <div style={{
+      ...col(u(20), { alignItems: 'stretch' }),
+      position: 'relative', boxSizing: 'border-box', height: s.narrow ? '466px' : u(466), width: '100%',
+      maxWidth: tab ? '431px' : undefined, margin: tab ? '0 auto' : undefined,
+      padding: cardPad, background: s.box1, color: ink, border: `1px solid ${ink}`, borderRadius: u(20),
+      boxShadow: `0 0 ${u(40)} ${rgba(s.glow, 0.14)}`,
+    }}>
+      <div style={row('0', { justifyContent: 'space-between' })}>
+        <span style={lab(u(11))}>Now playing</span>
+        <span style={lab(u(11))}>{pad2(count ? at + 1 : 0)} / {pad2(count)}</span>
+      </div>
+      <div style={{
+        flex: '1 1 0', minHeight: 0, aspectRatio: '1', alignSelf: 'center', position: 'relative',
+        borderRadius: u(20), overflow: 'hidden', background: s.box2,
+        boxShadow: `0 0 ${u(60)} ${rgba(s.text3, 0.16)}`,
+      }}>
+        <Photo s={s} slot={sleeveSlot} initialsSize={44} src={sleeve} ink={ink} />
+      </div>
+      <div style={col(u(8), { alignItems: 'center', minWidth: 0 })}>
+        {/* Wraps rather than clips: the seeded `Manchester at 3am` is 315 in a 308 box at 390 and 310 in 305.5
+            at 1440; the sleeve is the flex remainder, so a second line costs it 25-30 and the card stays 466. */}
+        <span style={disp(s.mob ? '25px' : tab ? '27px' : u(30), {
+          maxWidth: '100%', textAlign: 'center', overflowWrap: 'anywhere',
+        })}>{now.track}</span>
+        <span style={lab(u(11), { maxWidth: '100%', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' })}>{now.by}</span>
+      </div>
+      <div style={row(u(8), { justifyContent: 'center' })}>
+        <span onClick={s.live ? () => goTo(at - 1) : undefined} style={sq({ border: `1px solid ${ink}`, cursor: s.live ? 'pointer' : undefined })}>{skip(true, ink)}</span>
+        <span onClick={s.live ? toggle : undefined} style={sq({ background: ink, border: `1px solid ${ink}`, cursor: s.live ? 'pointer' : undefined })}>
+          {playing ? pause(s.bg) : play(s.bg)}
+        </span>
+        <span onClick={s.live ? () => goTo(at + 1) : undefined} style={sq({ border: `1px solid ${ink}`, cursor: s.live ? 'pointer' : undefined })}>{skip(false, ink)}</span>
+      </div>
+      <div style={row(u(16))}>
+        <span style={lab(u(11), { flex: 'none' })}>{now.at}</span>
+        <span aria-hidden style={row(u(3), { flex: 1, minWidth: 0, height: u(12) })}>
+          {Array.from({ length: nBars }, (_, i) => (
+            <span key={i} style={{ flex: 1, height: u(4 + (i % 9)), background: ink, opacity: i < lit ? 1 : 0.3 }} />
+          ))}
+        </span>
+        <span style={lab(u(11), { flex: 'none' })}>{now.of}</span>
+      </div>
+      {audio}
+    </div>
+  )
+
+  return (
+    <div style={col(s.mob ? '50px' : u(56), { position: 'relative' })}>
+      {heading}
+      {s.narrow ? (
+        <div style={col(u(40))}>
+          {list}
+          <span style={{ alignSelf: 'flex-start' }}>{pill}</span>
+          {card}
+        </div>
+      ) : (
+        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 886.72fr) minmax(0, 431.375fr)', columnGap: u(24), alignItems: 'start' }}>
+          <div style={col(u(40))}>
+            {list}
+            <span style={{ alignSelf: 'flex-start' }}>{pill}</span>
+          </div>
+          {card}
+        </div>
+      )}
+    </div>
+  )
+}
+
 function Media({ s }) {
   // Hooks before the layout branch — the older three-card design plays too.
   // `playing` mirrors the element's own play/pause events rather than being
@@ -6283,6 +6726,12 @@ function Media({ s }) {
   const sleeve = track?.img ?? undefined
   // Which track row the sleeve shows, for the canvas editor's mark (notes/photography.md).
   const sleeveSlot = track ? `tracks:${track.row}` : undefined
+
+  // Lattice layout 1 (1:419 · 1:9052 · 1:10024) is a block of its own, handed the seam this
+  // function resolved above; it stands here and not at the head so the hooks keep their order.
+  if (s.v0 && s.lattice) {
+    return <LatticeMedia s={s} m={{ at, count, playing, now, sleeve, sleeveSlot, audio, goTo, toggle, onPick }} />
+  }
 
   // Lime layout 1 (964:58590 · 986:39879 at 768 · 986:39891 at 390) is Retro's
   // component below in Lime's mode, and like the bio it is not the same tree
@@ -10102,6 +10551,129 @@ function Video({ s }) {
 //
 // Three cards is only what the seed carries: the packages are the artist's list
 // now, and the chip row above them filters it on the published page.
+// Lattice's layout-1 pricing (frames 1:915 · 1:9547 · 1:10518): a block of its own, after `Pricing`'s seam
+// (`active`, `shown` and the chip press stay there and come over in `g`). Every number is the frame's (desktop x
+// 0.82 through `u`, 768 and 390 verbatim; raw sizes, not the ramp). A heading over a boxed, segmented chip row
+// (at its right at 1440, under it narrow), then the packages as three coloured 20-radius cards, each on a scheme
+// of its own by the package's place in the whole list (3 dark, 5 orange, 4 teal: the page ground's `#111` stands
+// in `tx` on the two bright ones) with a soft halo in its own colour: a mono `[ 0N ]` and the unit over the name
+// and the price (both the one display face), the blurb, `+` features on 1px rules, and a full-width rectangular
+// Book Now bar in the card's pair. 1440 stands three columns; 768 two, the last card of an odd count spanning
+// both; 390 one. Every card is at least 520 tall, and the bar is pinned to its foot. The halo is a `boxShadow`
+// (no `url()`), and the section's own glow is the root's background.
+function LatticePricing({ s, g }) {
+  const { shown, active, pressChip } = g
+  const tab = isTablet(s)
+  const k = s.narrow ? 1 : 0.82
+  const u = (v) => `${Math.round(v * k * 100) / 100}px`
+  const mono = (size, extra) => ({
+    fontFamily: s.mono, fontSize: size, lineHeight: 1.2, letterSpacing: '0.04em', textTransform: 'uppercase', ...extra,
+  })
+  const display = (size, lh, extra) => ({
+    fontFamily: s.display, fontWeight: 500, fontSize: size, lineHeight: lh, letterSpacing: '0.004em', textTransform: 'uppercase', ...extra,
+  })
+  const hz = s.mob ? 40 : tab ? 48 : 60 * k
+  const seatOf = (n) => s.onScheme[[3, 5, 4][n % 3]]
+
+  // The heading fits its widest word (`vm.titleWordEms`, the bio's rule) in the frame's own measure:
+  // 732.22 at 1440, 585.77 at 768, the column at 390.
+  const heading = String(s.title || '').trim() ? (
+    <div style={{ containerType: 'inline-size', width: '100%', minWidth: 0, flex: s.narrow ? undefined : '1 1 0', maxWidth: s.mob ? undefined : tab ? '585.77px' : u(732.22) }}>
+      <h2 style={{
+        margin: 0, ...display(s.titleWordEms ? `min(${hz}px, calc(100cqi / ${s.titleWordEms}))` : `${hz}px`, 1), color: s.tx,
+      }}>{s.title}</h2>
+    </div>
+  ) : null
+
+  // The chip row: a 1px ring, 4 in, 40-tall tabs 4 apart; the lit one is filled teal under ink. It stands only over
+  // two or more tags (nothing to filter otherwise), and at rest none is lit (JP-089: the frame lights *Solo*).
+  const chips = s.tierChips.length > 1 ? (
+    <div style={{
+      ...row(u(4), { flexWrap: 'wrap' }), boxSizing: 'border-box', flex: 'none', maxWidth: '100%', padding: s.narrow ? '4px' : '3.1px',
+      border: `1px solid ${s.tx}`, borderRadius: s.radiusChip,
+    }}>
+      {s.tierChips.map((f, i) => (
+        <span key={i} onClick={s.live ? () => pressChip(i, active) : undefined} style={{
+          ...mono(u(11)), display: 'inline-flex', alignItems: 'center', justifyContent: 'center', boxSizing: 'border-box',
+          height: u(40), padding: `0 ${u(16.03)}`, borderRadius: s.radiusChip, whiteSpace: 'nowrap',
+          background: i === active ? s.activeBg : undefined, color: i === active ? s.activeFg : s.tx,
+          cursor: s.live ? 'pointer' : undefined,
+        }}>{f.label}</span>
+      ))}
+    </div>
+  ) : null
+
+  const cards = shown.map((t, i) => {
+    const S = seatOf(t.n)
+    const rule = t.n % 3 === 0 ? `${S.tx}47` : S.tx
+    const link = s.live && s.tierBookTo ? { href: `#${s.tierBookTo}` } : null
+    const Bar = link ? 'a' : 'span'
+    return (
+      // Keyed on the package's place in the WHOLE list, layout 1's rule.
+      <div key={t.n} style={{
+        ...col(u(22)), boxSizing: 'border-box', minWidth: 0, minHeight: u(520),
+        gridColumn: tab && i === shown.length - 1 && shown.length % 2 === 1 ? '1 / -1' : undefined,
+        padding: s.mob ? '20px 16px' : tab ? '24px 21px' : u(28), background: S.bg, color: S.tx,
+        borderRadius: u(20), boxShadow: `0 0 ${u(36)} 0 ${S.bg}4D`,
+      }}>
+        <span style={row(u(12), { justifyContent: 'space-between', alignItems: 'baseline' })}>
+          <span style={mono(u(12), { color: S.tx, whiteSpace: 'nowrap' })}>{`[ ${String(t.n + 1).padStart(2, '0')} ]`}</span>
+          {!!s.tierUnit && <span style={mono(u(12), { color: S.tx, minWidth: 0, textAlign: 'right' })}>{s.tierUnit}</span>}
+        </span>
+        <span style={display(u(s.mob ? 25 : tab ? 27 : 30), 1, { color: S.tx })}>{t.name}</span>
+        {/* The price is one run in the display face, as the frame sets `£450`: the lead, the numeral and a range's second
+            half are inline spans of the one size, so a long tail wraps at its spaces instead of standing a size smaller. */}
+        <span style={display(u(s.mob ? 40 : tab ? 48 : 60), 0.9, { color: S.tx })}>
+          {!!t.lead && <span>{t.lead}</span>}
+          <span style={t.prose ? { overflowWrap: 'anywhere' } : { whiteSpace: 'nowrap' }}>{t.amount}</span>
+          {!!t.tail && <span style={{ marginLeft: '0.25em' }}>{t.tail}</span>}
+        </span>
+        {!!t.blurb && <p style={{ margin: 0, fontFamily: s.body, fontSize: u(16), lineHeight: 1.2, color: S.tx }}>{t.blurb}</p>}
+        {t.feats.length > 0 && (
+          <div style={col(0)}>
+            {t.feats.map((f, j) => (
+              <span key={j} style={{
+                ...row(0, { alignItems: 'flex-start' }), boxSizing: 'border-box', padding: `${s.narrow ? '9px' : '7.29px'} 0`, borderTop: `1px solid ${rule}`,
+              }}>
+                <span aria-hidden style={mono(u(11), { flex: 'none', width: u(19.59), marginTop: u(3), color: S.tx })}>+</span>
+                <span style={{ fontFamily: s.body, fontSize: u(15), lineHeight: 1.1, color: S.tx, minWidth: 0 }}>{f}</span>
+              </span>
+            ))}
+          </div>
+        )}
+        {!!s.tierRowCta && (
+          <Bar {...link} style={{
+            ...row(u(12), { justifyContent: 'center' }), ...mono(u(12)), boxSizing: 'border-box', marginTop: 'auto', height: u(44), flex: 'none',
+            background: S.tx, color: S.bg, textDecoration: 'none', cursor: link ? 'pointer' : undefined,
+          }}>
+            <span>{s.tierRowCta}</span>
+            <span aria-hidden>→</span>
+          </Bar>
+        )}
+      </div>
+    )
+  })
+
+  return (
+    <div style={col(u(40), WRAP_LONG)}>
+      {(heading || chips) && (
+        <div style={s.narrow ? col('24px', { alignItems: 'flex-start' }) : row(u(24), { alignItems: 'flex-end', justifyContent: 'space-between' })}>
+          {heading}
+          {chips}
+        </div>
+      )}
+      {cards.length > 0 && (
+        <div style={{
+          display: 'grid', alignItems: 'stretch', gap: s.narrow ? '24px' : u(24),
+          gridTemplateColumns: s.mob ? 'minmax(0, 1fr)' : `repeat(${tab ? 2 : 3}, minmax(0, 1fr))`,
+        }}>{cards}</div>
+      )}
+      {s.tiers.length === 0 && <span style={mono(u(12), { opacity: 0.6 })}>No packages yet.</span>}
+      {!!s.pricingSub && <span style={mono(u(11), { color: s.text3, overflowWrap: 'anywhere' })}>{s.pricingSub}</span>}
+    </div>
+  )
+}
+
 function Pricing({ s }) {
   // The selected filter chip, gated on `s.live` below like Repertoire's: it is
   // a real control in the published tab and inert on the editor canvas, which
@@ -10202,6 +10774,10 @@ function Pricing({ s }) {
     // raw sizes of the display face. The 10px blue rule across the top and
     // the violet rings behind the third card stand in a layer the root's size
     // that clips, or the rings would scroll the 390 page sideways.
+    // Lattice's layout-1 pricing is a block of its own (LatticePricing), after the seam: the chip filter and
+    // the pick above are shared whole, and the block is the picture.
+    if (s.limeTree && s.lattice) return <LatticePricing s={s} g={{ shown, active, pressChip }} />
+
     if (s.limeTree) {
       const grunge = s.grunge
       const ed = s.editorial
@@ -12695,9 +13271,9 @@ function Pricing({ s }) {
 // hardcode. Lives here rather than in data.js because the page count depends on
 // the search and chip state, which only this file holds. Returns the labels and
 // the index of the active one *within them*, which is what Pager highlights.
-function pageWindow(n, active, narrow) {
+function pageWindow(n, active, narrow, keepN) {
   if (n <= 1) return { labels: [], at: 0 }
-  const keep = narrow ? 3 : 5          // numbered buttons at most
+  const keep = keepN ?? (narrow ? 3 : 5)   // numbered buttons at most (`keepN`: Lattice's frames draw four, 1 2 3 … 20)
   const page = active + 1              // the row is 1-based
   // The first, the last and the current page are never dropped; the rest fills
   // outwards from the current one until the row is as long as it may be.
@@ -12862,6 +13438,155 @@ function Pager({ s, colour, fill, frame = {} }) {
   )
 }
 
+// Lattice's layout-1 repertoire (1:673 · 1:9306 · 1:10278: 1440 / 768 / 390; desktop numbers x 0.82
+// through `u`, the narrow two verbatim). A block of its own (plans/lattice/layout-1.md, section 5):
+// the inventory is Lime's (a heading beside a search field, a chip row, numbered songs in two
+// columns, a pager) and no leaf is. Each song is a 1px-ruled 3px-radius box 66 tall, 16 apart (28
+// at 390); the search is a bare 52-tall 3px box with a mono hint; the chips are square outlined
+// boxes, the active one filled ink; the pager is square 44 / 46 boxes with Arial arrows and
+// zero-padded numerals. A page is twelve songs at every width (two columns of six at 768, one of
+// twelve at 390), which `Repertoire` computes (`perPage`, `columns`) and hands over in `g` along
+// with the search, chip and pager handlers, so the published repertoire is the one seam in a new
+// picture. The frame's `[ 004 ] REPERTOIRE` eyebrow is not drawn: no field holds it, and the
+// standing removals hold (call 1). Sizes are the frame's raw ones, not the ramp's (which rounds
+// 12 / 11 / 20 x 0.82 to 10 / 9 / 13). The warm glow is the root's own background, not a node.
+function LatticeRepertoire({ s, g }) {
+  const { title, q, onQuery, active, onChip, columns, shown, labels, at, onPage, onStep, noSongs } = g
+  const tab = isTablet(s)
+  const k = s.narrow ? 1 : 0.82
+  const u = (v) => `${Math.round(v * k * 100) / 100}px`
+  const ink = s.tx
+  const mono = (size, extra) => ({
+    fontFamily: s.mono, fontSize: size, lineHeight: 1.2, letterSpacing: '0.04em', textTransform: 'uppercase', ...extra,
+  })
+  const hz = s.mob ? 38 : tab ? 59 : 95.04 * k
+
+  // The count, in the display face at 95.04 / 59 / 38, line 0.9. A word wider than the column is
+  // fitted to it (`vm.titleWordEms`, the bio's rule); words otherwise wrap between themselves.
+  const heading = String(title || '').trim() ? (
+    <div style={{ containerType: 'inline-size', width: '100%', minWidth: 0, flex: s.narrow ? undefined : '1 1 0' }}>
+      <h2 style={{
+        margin: 0, fontFamily: s.display, fontWeight: 500, lineHeight: 0.9, letterSpacing: '0.004em', textTransform: 'uppercase',
+        color: ink, fontSize: s.titleWordEms ? `min(${hz}px, calc(100cqi / ${s.titleWordEms}))` : `${hz}px`,
+      }}>{title}</h2>
+    </div>
+  ) : null
+
+  // The hint is typed in capitals, so the box's placeholder (index.css, ink at .45, which is
+  // the frame's #757575 on #111) and the canvas's span read the same without a transform on what
+  // the visitor types.
+  const hint = 'SEARCH SONGS OR ARTISTS…'
+  const hintType = mono(u(12), { textTransform: 'none' })
+  const search = (
+    <div style={row(0, {
+      boxSizing: 'border-box', height: u(52), flex: 'none', width: s.mob ? '100%' : u(420), padding: `0 ${u(16)}`,
+      border: `1px solid ${ink}`, borderRadius: s.radiusSm, overflow: 'hidden', color: ink,
+      ...(!heading && !s.narrow ? { marginLeft: 'auto' } : null),
+    })}>
+      {s.live ? (
+        <input
+          value={q} placeholder={hint} aria-label="Search songs or artists"
+          onChange={(e) => onQuery(e.target.value)}
+          style={{ ...hintType, color: ink, flex: 1, minWidth: 0, border: 'none', outline: 'none', background: 'transparent', padding: 0 }}
+        />
+      ) : (
+        <span style={{ ...hintType, opacity: 0.45, minWidth: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{hint}</span>
+      )}
+    </div>
+  )
+
+  const chips = (
+    <div style={row(u(6), { flexWrap: 'wrap', rowGap: u(6) })}>
+      {s.repChips.map((f, i) => {
+        const on = i === active
+        return (
+          <span
+            key={i}
+            onClick={s.live ? () => onChip(i) : undefined}
+            style={{
+              ...mono(u(11)), boxSizing: 'border-box', height: u(44), padding: `0 ${u(14)}`, display: 'inline-flex', alignItems: 'center',
+              border: `1px solid ${ink}`, borderRadius: s.radiusSm, background: on ? ink : undefined, color: on ? s.bg : ink,
+              whiteSpace: 'nowrap', cursor: s.live ? 'pointer' : undefined,
+            }}
+          >{f.label}</span>
+        )
+      })}
+    </div>
+  )
+
+  // The frame's number sits in a 40 box (22 at 390) and the title starts 16 (20) past it; the
+  // artist stands 16 (10) after the title and the row is padded 20 (12) across. A title that
+  // cannot stand on one line wraps between its words (768's *I Wanna Dance*): the row is 66 or the
+  // title's, ten above and below, whichever is taller. The title never breaks inside a word: the
+  // frame sets 768's *September* at 18 to keep it whole beside *Earth, Wind & Fire*, which a fixed
+  // 20 cannot, so here the artist gives way and wraps under itself instead.
+  const song = (t) => (
+    <div key={t.n} style={row(0, {
+      boxSizing: 'border-box', minHeight: u(66), padding: `${u(10)} ${u(s.mob ? 12 : 20)}`,
+      border: `1px solid ${ink}`, borderRadius: s.radiusSm,
+    })}>
+      <span style={mono(u(11), { flex: 'none', width: u(s.mob ? 22 : 40), marginRight: u(s.mob ? 20 : 16), color: s.text3, whiteSpace: 'nowrap' })}>
+        {String(t.n).padStart(3, '0')}
+      </span>
+      <span style={{
+        flex: '1 1 0', minWidth: 'min-content', fontFamily: s.body, fontWeight: 400, fontSize: u(20), lineHeight: 1.1, color: ink,
+        overflowWrap: 'break-word',
+      }}>{t.title}</span>
+      <span style={mono(u(11), {
+        flex: '0 1 auto', minWidth: 0, maxWidth: '55%', marginLeft: u(s.mob ? 10 : 16), color: s.text3,
+        textAlign: 'right', overflowWrap: 'anywhere',
+      })}>{t.artist}</span>
+    </div>
+  )
+
+  const list = shown.length === 0 ? (
+    <span style={mono(u(12), { opacity: 0.6 })}>{noSongs ? 'No songs yet.' : 'No songs match that.'}</span>
+  ) : (
+    <div style={{
+      display: 'grid', alignItems: 'start', columnGap: u(24),
+      gridTemplateColumns: columns.length > 1 ? 'minmax(0, 1fr) minmax(0, 1fr)' : 'minmax(0, 1fr)',
+    }}>
+      {columns.map((cs, ci) => <div key={ci} style={col(u(s.mob ? 28 : 16), { minWidth: 0 })}>{cs.map(song)}</div>)}
+    </div>
+  )
+
+  // Square 3px boxes: the arrows 44 (38 at 390) and the pages 46, six apart, the current page
+  // filled ink. The arrows are Arial 13.33 in a span of their own, the numerals zero-padded.
+  const sq = (key, child, { on, end, onClick }) => (
+    <span key={key} onClick={onClick} style={{
+      boxSizing: 'border-box', flex: 'none', height: u(end ? 44 : 46), ...(end ? { width: u(s.mob ? 38 : 44) } : { minWidth: u(46) }),
+      border: `1px solid ${ink}`, borderRadius: s.radiusSm, background: on ? ink : undefined, color: on ? s.bg : ink,
+      display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: onClick ? 'pointer' : undefined,
+      ...(end ? { fontFamily: 'Arial, Helvetica, sans-serif', fontSize: u(13.333), lineHeight: 'normal' } : mono(u(11))),
+    }}>{child}</span>
+  )
+  const pager = labels.length > 0 ? (
+    <div style={row(u(6), { flexWrap: 'wrap', rowGap: u(6) })}>
+      {sq('prev', '←', { end: true, onClick: onStep && (() => onStep(-1)) })}
+      {labels.map((p, i) => sq(`p${i}`, /^\d+$/.test(p) ? p.padStart(2, '0') : p, {
+        on: i === at, onClick: onPage && p !== '…' ? () => onPage(p) : undefined,
+      }))}
+      {sq('next', '→', { end: true, onClick: onStep && (() => onStep(1)) })}
+    </div>
+  ) : null
+
+  return (
+    <div style={col(u(32))}>
+      {/* Desktop stands the field on the heading's foot at the row's right; 768 and 390 stack it
+          24 under the heading, 420 wide at 768 and the measure at 390. */}
+      <div style={s.narrow
+        ? col(u(24), { alignItems: 'flex-start' })
+        : row(u(24), { alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'nowrap' })}>
+        {heading}
+        {search}
+      </div>
+      {chips}
+      {list}
+      {pager}
+    </div>
+  )
+}
+
 // v0 — Repertoire layout 1 · Two-column dense (§10.2 reference design)
 //
 // The reference frames stand the section on cream under a torn beige edge: a
@@ -12916,7 +13641,9 @@ function Repertoire({ s }) {
     const blush = s.retro ? '#EDC6B3' : s.soft2
     // Twelve to a page on desktop, six on both narrow frames — the counts the
     // reference frames show.
-    const perPage = s.narrow ? 6 : 12
+    // Lattice's frames draw twelve a page at every width (two columns of six at 768, one of twelve
+    // at 390), so it is the one template whose narrow page is not six.
+    const perPage = s.narrow && !s.lattice ? 6 : 12
     // The chip index, clamped: the row is derived from the artist's tags, so a
     // tag they delete can leave `chip` past the end of it.
     const active = s.live ? Math.min(chip, s.repChips.length - 1) : 0
@@ -12941,9 +13668,9 @@ function Repertoire({ s }) {
     // page offset — not its place on the screen. Both narrow frames run the
     // whole six-song page down one column.
     const half = Math.ceil(shown.length / 2)
-    const columns = (s.narrow ? [shown] : [shown.slice(0, half), shown.slice(half)])
+    const columns = (s.narrow && !(s.lattice && !s.mob) ? [shown] : [shown.slice(0, half), shown.slice(half)])
       .map((cs, ci) => cs.map((t, i) => ({ ...t, n: pg * perPage + ci * half + i + 1 })))
-    const { labels, at } = pageWindow(pages, pg, s.mob)
+    const { labels, at } = pageWindow(pages, pg, s.mob, s.lattice ? 4 : undefined)
 
     // Lime — the same component in Lime's mode (964:58592 at 1440, 986:39881 at
     // 768, 986:39893 at 390), placed after the seam as the gallery's block is:
@@ -12999,6 +13726,18 @@ function Repertoire({ s }) {
     // rule crosses the root's top, and two stickers stand on it: a pink
     // lightning off the heading's end and a teal heart by the pager.
     if (s.limeTree) {
+      // Lattice's layout-1 repertoire is a block of its own (LatticeRepertoire), after the seam: the
+      // search, chip and pager state above is shared whole, and the block is the picture.
+      if (s.lattice) {
+        return <LatticeRepertoire s={s} g={{
+          title, q, active, columns, shown, labels, at,
+          noSongs: s.songs.length === 0,
+          onQuery: (v) => { setQ(v); setPage(0) },
+          onChip: (i) => { setChip(i); setPage(0) },
+          onPage: s.live ? (label) => setPage(Number(label) - 1) : undefined,
+          onStep: s.live ? (dir) => setPage(Math.max(0, Math.min(pages - 1, pg + dir))) : undefined,
+        }} />
+      }
       const grunge = s.grunge
       const ed = s.editorial
       const pop = s.pop
@@ -15238,6 +15977,181 @@ function Repertoire({ s }) {
 // the first click.
 const galActive = (s) => (s.images.length > 3 ? 3 : 0)
 
+// Lattice's layout-1 gallery (1:588 · 1:9221 · 1:10193: 1440 / 768 / 390; desktop numbers x 0.82
+// through `u`, the narrow two verbatim). A block of its own (plans/lattice/layout-1.md, section 4):
+// four full-width 1px-ruled rows with a square icon seat stack at every width, the viewer is a
+// 20-radius figure with a caption pill and two square arrow buttons inside it, all seven ruled tiles
+// stand at every width, and a 1px progress line with a counter closes the column. `Gallery` owns
+// the hooks and the seam (`pick`, `src`, `go`, `srcRows`, `srcAct`, the embed) and hands them over
+// in `g`, so the published gallery is the one seam in a new picture. The frame's `[ 003 ] MEDIA`
+// eyebrow is drawn only when the artist types a `kicker` (seeded empty: the standing removals
+// hold) and its `Kai Mercer` credit line is gone (QA 2026-11-12); the caption's `IMG_0N` and the
+// counter's `0N — 07` are derived from the viewer's slot, not fields.
+const LATTICE_SRC_ICONS = [
+  <><path d="M2 3H16V15H2V3Z" /><path d="M2 13L6 9L9 12L12 9L16 13" /></>,
+  <><path d="M1.5 4H16.5V14H1.5V4Z" /><path d="M7.5 6.5V11.5L11.5 9L7.5 6.5Z" fill="currentColor" /></>,
+  <><path d="M2.5 2.5H15.5V15.5H2.5V2.5Z" /><circle cx="9" cy="9" r="3" /></>,
+  <path d="M7 8.5C6.40666 8.5 5.82664 8.67595 5.33329 9.00559C4.83994 9.33524 4.45542 9.80377 4.22836 10.3519C4.0013 10.9001 3.94189 11.5033 4.05764 12.0853C4.1734 12.6672 4.45912 13.2018 4.87868 13.6213C5.29824 14.0409 5.83279 14.3266 6.41473 14.4424C6.99667 14.5581 7.59987 14.4987 8.14805 14.2716C8.69623 14.0446 9.16476 13.6601 9.49441 13.1667C9.82405 12.6734 10 12.0933 10 11.5V2C10 4 11.5 5.5 13.5 5.5" />,
+]
+
+function LatticeGallery({ s, g }) {
+  const { at, marked, strip, go, srcRows, srcAct, video, player } = g
+  const desk = !s.narrow
+  const k = desk ? 0.82 : 1
+  const u = (v) => `${Math.round(v * k * 100) / 100}px`
+  const ink = s.tx
+  const lab = (size, extra) => ({
+    fontFamily: s.mono, fontSize: size, lineHeight: 1.2, letterSpacing: '0.04em',
+    textTransform: 'uppercase', color: ink, ...extra,
+  })
+  const pad2 = (n) => String(n).padStart(2, '0')
+  const wrap = { whiteSpace: 'normal', overflowWrap: 'anywhere', minWidth: 0 }
+  const hz = s.mob ? 38 : isTablet(s) ? 48 : 74.88 * k
+
+  // The heading breaks after its second word, the frame's typed break (`See us` / `in action`),
+  // which no measure can hold; the rest of the words wrap inside their line. A word wider than the
+  // column is fitted to it (`vm.titleWordEms`, the bio's rule).
+  const words = String(s.title || '').split(/\s+/).filter(Boolean)
+  const heading = words.length ? (
+    <div style={{ containerType: 'inline-size', width: '100%' }}>
+      <h2 style={{
+        margin: 0, fontFamily: s.display, fontWeight: 500, lineHeight: 1, letterSpacing: '0.004em', textTransform: 'uppercase',
+        color: ink, fontSize: s.titleWordEms ? `min(${hz}px, calc(100cqi / ${s.titleWordEms}))` : `${hz}px`,
+      }}>
+        <span style={{ display: 'block' }}>{words.slice(0, 2).join(' ')}</span>
+        {words.length > 2 && <span style={{ display: 'block' }}>{words.slice(2).join(' ')}</span>}
+      </h2>
+    </div>
+  ) : null
+
+  const eyebrow = s.galKicker ? (
+    <div style={row(u(16), { flexWrap: 'wrap', rowGap: '4px' })}>
+      <span style={lab(u(12), { flex: 'none' })}>[ 003 ]</span>
+      <span aria-hidden style={{ flex: 'none', width: u(40), height: '1px', background: ink }} />
+      <span style={lab(u(12), { color: s.text3, ...wrap })}>{s.galKicker}</span>
+    </div>
+  ) : null
+
+  const srcEls = srcRows.map(({ g: r, i }) => {
+    const link = srcAct(r, i)
+    const Tag = link?.href ? 'a' : 'div'
+    const c = r.on ? s.bg : ink
+    return (
+      <Tag key={i} {...link} style={{
+        ...row(s.mob ? '20px' : u(14), { boxSizing: 'border-box' }),
+        height: desk ? u(116.72) : '64px', flex: 'none', padding: s.mob ? '0 9px' : `0 ${u(16)} 0 ${u(24)}`,
+        border: `1px solid ${ink}`, borderRadius: s.radiusSm, background: r.on ? ink : undefined, color: c,
+        textDecoration: 'none', cursor: link ? 'pointer' : undefined,
+      }}>
+        <span style={{
+          width: u(46), height: u(46), boxSizing: 'border-box', flex: 'none', border: `1px solid ${c}`, opacity: 0.9,
+          borderRadius: s.radiusSm, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <svg aria-hidden width={u(18)} height={u(18)} viewBox="0 0 18 18" fill="none" stroke="currentColor" style={{ display: 'block' }}>
+            {LATTICE_SRC_ICONS[i] || LATTICE_SRC_ICONS[0]}
+          </svg>
+        </span>
+        <span data-inline={r.on ? 'sourceLabel' : undefined} style={lab(u(12), { flex: 1, color: c, ...wrap })}>{r.label}</span>
+        <span style={{ flex: 'none', width: u(24), fontFamily: s.mono, fontSize: u(18), letterSpacing: '0.04em', lineHeight: 1.2, color: c }}>
+          {r.on ? '×' : '+'}
+        </span>
+      </Tag>
+    )
+  })
+  const rows = <div style={col(u(12.01))}>{srcEls}</div>
+
+  const top = (
+    <div style={row(u(12), { justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', minHeight: u(30.375) })}>
+      <span onClick={s.live ? () => go(0) : undefined} style={lab(u(11), { color: s.text3, cursor: s.live ? 'pointer' : undefined, ...wrap })}>
+        <span aria-hidden>←</span>{' '}<span>{s.galBackLabel}</span>
+      </span>
+      {s.galRailLabel && (
+        <span data-inline="railLabel" style={lab(u(11), { color: s.text3, textAlign: 'right', flex: '0 1 auto', ...wrap })}>{s.galRailLabel}</span>
+      )}
+    </div>
+  )
+
+  const sq = (back) => ({
+    width: u(44), height: u(44), boxSizing: 'border-box', flex: 'none', border: `1px solid ${ink}`, borderRadius: s.radiusSm,
+    background: s.bg, color: ink, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+    fontFamily: 'Arial, Helvetica, sans-serif', fontSize: u(13.333), lineHeight: 'normal', cursor: s.live ? 'pointer' : undefined,
+  })
+  const figure = (
+    <div style={{
+      position: 'relative', overflow: 'clip', width: '100%', aspectRatio: '659.047 / 540.75', borderRadius: u(20),
+      background: s.box1, boxShadow: `0 0 ${u(80)} rgba(17,17,17,0.12)`,
+    }}>
+      {video ? player : (
+        <>
+          <div style={{ position: 'absolute', inset: 0 }}>
+            <Photo s={s} slot={`images:${at}`} initialsSize={52} src={s.images[at]} ink={ink} style={{ objectPosition: s.imagesPos[at] }} />
+          </div>
+          <span style={{
+            position: 'absolute', left: u(16), bottom: u(16), boxSizing: 'border-box', height: u(30), padding: `0 ${u(10)}`,
+            display: 'inline-flex', alignItems: 'center', background: s.bg, borderRadius: s.radiusSm,
+            ...lab(u(11), { whiteSpace: 'nowrap' }),
+          }}>IMG_{pad2(at + 1)}</span>
+          <div style={row(u(6), { position: 'absolute', right: u(16), bottom: u(16) })}>
+            <span onClick={s.live ? () => go(at - 1) : undefined} style={sq()}>←</span>
+            <span onClick={s.live ? () => go(at + 1) : undefined} style={sq()}>→</span>
+          </div>
+        </>
+      )}
+    </div>
+  )
+
+  // Seven tiles at every width, square, each in a 1px ruled box with the photograph inside it. The
+  // frame marks none; a visitor's own pick is marked in the published tab (an inset orange ring).
+  const thumbs = (
+    <div style={row(u(10), { alignItems: 'stretch' })}>
+      {strip.map((i) => (
+        <span key={i} onClick={s.live ? () => go(i) : undefined} style={{
+          flex: '1 1 0', minWidth: 0, aspectRatio: '1', boxSizing: 'border-box', position: 'relative', overflow: 'hidden',
+          border: `1px solid ${ink}`, borderRadius: s.radiusSm, background: s.box1, cursor: s.live ? 'pointer' : undefined,
+        }}>
+          <div style={{ position: 'absolute', inset: 0 }}>
+            <Photo s={s} slot={`images:${i}`} initialsSize={12} src={s.images[i]} ink={ink} />
+          </div>
+          {i === marked && <span aria-hidden style={{
+            position: 'absolute', inset: 0, borderRadius: 'inherit', pointerEvents: 'none',
+            boxShadow: `inset 0 0 0 ${u(3)} ${s.onScheme?.[7]?.bg ?? s.text3}`,
+          }} />}
+        </span>
+      ))}
+    </div>
+  )
+
+  const progress = (
+    <div style={row(u(24))}>
+      <span aria-hidden style={{ flex: 1, minWidth: 0, height: '1px', background: ink, position: 'relative' }}>
+        <span style={{ position: 'absolute', left: 0, top: '-1px', height: '3px', width: `${((at + 1) / strip.length) * 100}%`, background: ink }} />
+      </span>
+      <span style={lab(u(12), { flex: 'none', whiteSpace: 'nowrap' })}>{pad2(at + 1)} — {pad2(strip.length)}</span>
+    </div>
+  )
+
+  const left = col(u(32), { minWidth: 0 })
+  const leftEls = (
+    <div style={left}>
+      {(eyebrow || desk) && <div style={{ minHeight: u(14.375) }}>{eyebrow}</div>}
+      {heading}
+      {rows}
+    </div>
+  )
+  const right = (
+    <div style={col(u(20), { minWidth: 0 })}>
+      {top}{figure}{thumbs}{progress}
+    </div>
+  )
+  return desk ? (
+    <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', columnGap: u(24), alignItems: 'start' }}>
+      {leftEls}{right}
+    </div>
+  ) : (
+    <div style={col(u(32))}>{leftEls}{right}</div>
+  )
+}
+
 function Gallery({ s }) {
   // Hooks before the layout branch, the way Media takes them: `s.v0` is a prop
   // and not a hook's business, so the branch below cannot be the thing that
@@ -15389,6 +16303,14 @@ function Gallery({ s }) {
     )
     // No photograph is the viewer's while the player is, so none is marked.
     const lit = video ? -1 : active
+
+    // Lattice's layout-1 gallery is a block of its own (LatticeGallery), after the seam. It opens on
+    // the frame's viewer, which is the third tile's photograph, not Lime's fourth.
+    if (s.lattice) {
+      const picked = s.live && pick >= 0
+      const at = picked ? pick : s.images.length > 2 ? 2 : 0
+      return <LatticeGallery s={s} g={{ at, marked: picked && !video ? pick : -1, strip, go, srcRows, srcAct, video, player }} />
+    }
 
     // Lime layout 1 (964:58591 · 986:39880 at 768 · 989:22110 at 390) is the
     // component below in Lime's mode, and like the bio and the media player it
@@ -17552,6 +18474,157 @@ function Gallery({ s }) {
 // v0 — Booking Calendar layout 1 · Scheduler (§10.2 reference design): a
 // bordered panel split between the month grid and a stack of polaroids, with
 // the resulting enquiry line along the foot.
+// Lattice's layout-1 calendar (Batch 2 file, 1:1039 · 1:9670 · 1:10640: 1440 x 781 / 768 x 564 / 390 x 894;
+// desktop x 0.82, the narrow masters verbatim, raw sizes not the ramp). One 1px, 20-radius card on the
+// section's own ground (Scheme 2): a month grid in the left half, in the right an `[ 007 ] --- AVAILABILITY`
+// eyebrow over a dotted torus (a raster used as a CSS mask inked in `s.tx`, the map's recipe, on an
+// aria-hidden span; the teal glow is the art box's own gradient) and the town with a short rule, and under
+// both a foot with the enquiry line and a Continue bar. The halves stand side by side at 1440 and 768 and
+// stack at 390. The art box and the right half are pinned to the five-row month's height (the frames'
+// June 2025), so paging into a six-row month grows the grid alone and the torus never rescales.
+// `Calendar` owns the hooks, so the block stands after its seam and takes what the seam resolved in `g`.
+function LatticeCalendar({ s, g }) {
+  const { month, cur, line, step, pick } = g
+  const tab = isTablet(s)
+  const k = s.narrow ? 1 : 0.82
+  const u = (v) => `${Math.round(v * k * 100) / 100}px`
+  const ink = s.tx
+  const dim = s.text3 // sem/text/3, the teal ink on the light ground
+  const mono = (size, extra) => ({
+    fontFamily: s.mono, fontSize: size, lineHeight: 1.2, letterSpacing: '0.04em', textTransform: 'uppercase', ...extra,
+  })
+  const dev = s.mob ? 'mobile' : tab ? 'tablet' : 'desktop'
+  // The frames' own numbers per width: the halves' padding, the day cell's height, the art's height, the
+  // town row's inset and the five-row half's height (which the right half is pinned to).
+  const padX = s.mob ? 16 : tab ? 21 : 28
+  const padY = s.mob ? 20 : tab ? 24 : 28
+  const cellH = s.mob ? 30.969 : tab ? 31.75 : 65.938
+  const artH = s.mob ? 252 : tab ? 198.75 : 377.688
+  const townX = s.mob ? 49.89 : tab ? 55.65 : 95.55
+  const halfH = s.mob ? 380 : tab ? 326.75 : 505.688
+
+  const arrow = (back, dir) => {
+    const onClick = step(dir)
+    return (
+      <span onClick={onClick} style={{
+        boxSizing: 'border-box', flex: 'none', width: u(44), height: u(44), border: `1px solid ${ink}`, borderRadius: s.radiusChip,
+        display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: ink,
+        cursor: onClick ? 'pointer' : undefined, opacity: s.live && !onClick ? 0.38 : undefined,
+      }}>
+        <span aria-hidden style={{ fontFamily: 'Arial, sans-serif', fontSize: u(13.333), lineHeight: 'normal' }}>{back ? '←' : '→'}</span>
+      </span>
+    )
+  }
+
+  // The month fits the room between the arrows by its own width (`month.ems`, the display face's ems, plus the
+  // 0.004em tracking per glyph), and keeps the frame's size wherever it fits: June at every width.
+  const monthSize = s.mob ? 26 : tab ? 32 : 40 * k
+  const emsOf = month.ems !== undefined ? month.ems + 0.004 * [...month.label].length : 0
+  const head = (
+    <div style={row(u(12), { height: u(44), justifyContent: 'space-between' })}>
+      {arrow(true, -1)}
+      <div style={{ flex: '1 1 0', minWidth: 0, containerType: 'inline-size', display: 'flex', justifyContent: 'center' }}>
+        <span style={{
+          fontFamily: s.display, fontWeight: 500, letterSpacing: '0.004em', textTransform: 'uppercase', color: ink, whiteSpace: 'nowrap', lineHeight: 1,
+          fontSize: emsOf ? `min(${monthSize}px, calc(100cqi / ${emsOf.toFixed(3)}))` : `${monthSize}px`,
+        }}>{month.label}</span>
+      </div>
+      {arrow(false, 1)}
+    </div>
+  )
+
+  const names = (
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', columnGap: u(6), height: u(30), boxSizing: 'border-box', paddingTop: u(6) }}>
+      {s.calDays.map((d) => (
+        <span key={d} style={mono(u(11), { color: dim, textAlign: 'center' })}>{d}</span>
+      ))}
+    </div>
+  )
+
+  const day = (c, i) => {
+    if (c.iso === undefined) return <span key={i} />
+    const on = c.iso === cur
+    const onClick = pick(c)
+    return (
+      <span key={i} onClick={onClick} style={{
+        ...mono(u(12)), boxSizing: 'border-box', height: u(cellH), border: `1px solid ${ink}`, borderRadius: s.radiusChip,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        background: on ? ink : undefined, color: on ? s.bg : ink, opacity: c.booked || c.dead ? 0.38 : undefined,
+        cursor: onClick ? 'pointer' : undefined,
+      }}>{String(c.d).padStart(2, '0')}</span>
+    )
+  }
+
+  const left = (
+    <div style={col(u(16), { boxSizing: 'border-box', minWidth: 0, padding: `${u(padY)} ${u(padX)}`, borderRight: `1px solid ${s.mob ? 'transparent' : ink}` })}>
+      {head}
+      <div style={col(u(6))}>
+        {names}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', gap: u(6) }}>{month.cells.map(day)}</div>
+      </div>
+    </div>
+  )
+
+  // The right half: the eyebrow (the section's `heading`, drawn only while it holds a word; its seat is kept),
+  // the art at a fixed height 64 from the top, and the town row at the foot.
+  const eyebrow = (
+    <div style={row(u(16), { justifyContent: 'center', height: u(14.375), minWidth: 0 })}>
+      {!!s.title && (
+        <>
+          <span style={mono(u(12), { color: ink, whiteSpace: 'nowrap' })}>[ 007 ]</span>
+          <span aria-hidden style={{ flex: 'none', width: u(40), height: 1, background: ink }} />
+          <span style={mono(u(12), { color: dim, minWidth: 0, overflowWrap: 'anywhere' })}>{s.title}</span>
+        </>
+      )}
+    </div>
+  )
+  const right = (
+    <div style={col(0, { boxSizing: 'border-box', minWidth: 0, minHeight: u(halfH), padding: `${u(padY)} 0` })}>
+      {eyebrow}
+      <div style={{
+        position: 'relative', flex: 'none', height: u(artH), marginTop: u(64 - padY - 14.375),
+        backgroundImage: `radial-gradient(ellipse 50% 50% at 50% 50%, ${s.onScheme[4].bg}2E 0%, ${s.onScheme[4].bg}00 70%)`,
+      }}>
+        <span aria-hidden style={{
+          position: 'absolute', inset: 0, background: ink, pointerEvents: 'none',
+          WebkitMaskImage: `url(${s.latticeDisc.calendar[dev]})`, maskImage: `url(${s.latticeDisc.calendar[dev]})`,
+          WebkitMaskSize: 'cover', maskSize: 'cover', WebkitMaskPosition: 'center', maskPosition: 'center',
+          WebkitMaskRepeat: 'no-repeat', maskRepeat: 'no-repeat',
+        }} />
+      </div>
+      <div style={row(u(16), { marginTop: 'auto', padding: `0 ${u(townX)}`, minWidth: 0 })}>
+        {!!s.location && <span style={mono(u(11), { color: dim, minWidth: 0, overflowWrap: 'anywhere' })}>{s.location}</span>}
+        <span aria-hidden style={{ flex: 'none', width: u(80), height: 1, background: ink, marginLeft: 'auto' }} />
+      </div>
+    </div>
+  )
+
+  // The foot: the enquiry line (the picked day's, else the prompt) and the Continue bar, which leads on to the
+  // form (`calBookTo`) when live and is a picture on the canvas. An emptied `cta` drops the bar.
+  const href = navHref(s, s.calBookTo)
+  const Bar = href ? 'a' : 'span'
+  return (
+    <div style={{ boxSizing: 'border-box', border: `1px solid ${ink}`, borderRadius: u(20), overflow: 'clip', color: ink, ...WRAP_LONG }}>
+      <div style={{ display: 'grid', gridTemplateColumns: s.mob ? 'minmax(0, 1fr)' : 'repeat(2, minmax(0, 1fr))' }}>
+        {left}
+        {right}
+      </div>
+      <div style={row(u(16), { boxSizing: 'border-box', justifyContent: 'space-between', borderTop: `1px solid ${ink}`, padding: `${u(18)} ${u(padX)}` })}>
+        <span style={mono(u(12), { color: ink, flex: '1 1 0', minWidth: 0 })}>{line}</span>
+        {!!s.calCta && (
+          <Bar {...(href ? { href } : null)} style={{
+            ...row(u(12), { justifyContent: 'center' }), ...mono(u(12)), boxSizing: 'border-box', flex: 'none', height: u(44), padding: `0 ${u(22)}`,
+            background: ink, color: s.bg, textDecoration: 'none', cursor: href ? 'pointer' : undefined,
+          }}>
+            <span>{s.calCta}</span>
+            <span aria-hidden>→</span>
+          </Bar>
+        )}
+      </div>
+    </div>
+  )
+}
+
 function Calendar({ s }) {
   // The month on show, as an offset into `s.calMonths`, and the day the visitor
   // has picked. Both inert on the editor canvas, where the section is a picture
@@ -17637,6 +18710,14 @@ function Calendar({ s }) {
         ? () => setMi((v) => clampMo(v + dir))
         : undefined
     )
+
+    // Lattice's layout-1 calendar is a block of its own (LatticeCalendar), after the seam: the month, the pick
+    // and the arrows are `Calendar`'s and go over in `g`, so the published controls are the one seam in a new
+    // picture. The day's handler is the Lime block's (a blocked day has none; the lit day unlights on a second click).
+    if (s.limeTree && s.lattice) {
+      const pick = (c) => (s.live && !blocked(c) ? () => setSel((v) => (v === c.iso ? '' : c.iso)) : undefined)
+      return <LatticeCalendar s={s} g={{ month, cur, line, step, pick }} />
+    }
 
     // Lime — the scheduler frames 964:58595 / 986:39884 / 986:39896, as a block
     // after the seam (the gallery's, repertoire's, map's and pricing's
@@ -20312,6 +21393,165 @@ function GeoMark({ color, ring = color, u }) {
   )
 }
 
+// Lattice's layout-1 events map (frames 1:796 · 1:9429 · 1:10401): a block of its own, after `EventsMap`'s seam
+// (`perPage`, `pg`, `shown`, `lit`, `onPick` and the pager's window stay there and come over in `g`). Every
+// number is the frame's (desktop x 0.82 through `u`, 768 and 390 verbatim; raw sizes, not the ramp). A heading
+// over a radius line, then two 1px cards side by side at 24 (stacked 24 apart narrow): the coverage card, a dotted
+// bowl 470 tall over a ruled foot, and the gig panel, a count, ruled table rows (the date left, the venue and its
+// city line, a *Tickets* pill right) and a square pager. The frames draw no pin and no lit row, and the picture is
+// art, not a map: it is the frame's raster used as a mask (so the card inks it, and `limits.mjs` does not count a
+// `url(`), with the centre marker, the place and the `R = N mi` corner label drawn on it. The real map is not drawn.
+function LatticeMap({ s, g }) {
+  const { shown, lit, onPick, win, onPage, onStep } = g
+  const tab = isTablet(s)
+  const k = s.narrow ? 1 : 0.82
+  const u = (v) => `${Math.round(v * k * 100) / 100}px`
+  const ink = s.tx
+  const dim = s.text3 // sem/text/3, the teal ink on the light ground
+  const S7 = s.onScheme[7]
+  const mono = (size, extra) => ({
+    fontFamily: s.mono, fontSize: size, lineHeight: 1.2, letterSpacing: '0.04em', textTransform: 'uppercase', ...extra,
+  })
+  const display = (size, lh, extra) => ({
+    fontFamily: s.display, fontWeight: 500, fontSize: size, lineHeight: lh, letterSpacing: '0.004em', textTransform: 'uppercase', ...extra,
+  })
+  const hz = s.mob ? 38 : tab ? 59 : 95.04 * k
+
+  // The town as the heading, fitted to its widest word (`vm.titleWordEms`, the bio's rule); the radius line sits at
+  // the row's foot at the right, and under the heading at 390.
+  const heading = String(s.title || '').trim() ? (
+    <div style={{ containerType: 'inline-size', width: '100%', minWidth: 0, flex: s.mob ? undefined : '1 1 0' }}>
+      <h2 style={{
+        margin: 0, ...display(s.titleWordEms ? `min(${hz}px, calc(100cqi / ${s.titleWordEms}))` : `${hz}px`, 0.9), color: ink,
+      }}>{s.title}</h2>
+    </div>
+  ) : null
+  const radius = <span style={mono(u(12), { flex: 'none', whiteSpace: 'nowrap', color: ink })}>{s.mapRadius}</span>
+
+  // The coverage card. The art is the frame's raster for this width, inked; the glow is the art box's own gradient.
+  const dev = s.mob ? 'mobile' : tab ? 'tablet' : 'desktop'
+  const place = s.mapHome
+  const foot = !!(s.mapBase || s.mapTerms)
+  const card = (
+    <div style={col(0, { boxSizing: 'border-box', minWidth: 0, border: `1px solid ${ink}`, borderRadius: u(20), overflow: 'hidden' })}>
+      <div style={{
+        position: 'relative', flex: 'none', height: u(470),
+        backgroundImage: `radial-gradient(ellipse 50% 50% at 50% 50%, ${S7.bg}29 0%, ${S7.bg}00 75%)`,
+      }}>
+        <span aria-hidden style={{
+          position: 'absolute', inset: 0, background: ink, pointerEvents: 'none',
+          WebkitMaskImage: `url(${s.latticeDisc.map[dev]})`, maskImage: `url(${s.latticeDisc.map[dev]})`,
+          WebkitMaskSize: 'cover', maskSize: 'cover', WebkitMaskPosition: 'center', maskPosition: 'center',
+          WebkitMaskRepeat: 'no-repeat', maskRepeat: 'no-repeat',
+        }} />
+        {/* The marker: a teal 10 square with the place under it, centred, 275.56 down. */}
+        <div style={col(u(8), { position: 'absolute', left: '50%', top: u(275.56), transform: 'translateX(-50%)', alignItems: 'center' })}>
+          <span aria-hidden style={{ width: u(10), height: u(10), background: s.chips[0].bg }} />
+          {!!place && <span style={mono(u(12), { whiteSpace: 'nowrap', color: ink })}>{place}</span>}
+        </div>
+        <span style={mono(u(11), { position: 'absolute', right: u(20), top: u(20), whiteSpace: 'nowrap', color: dim })}>{`R = ${s.mapMiles} mi`}</span>
+      </div>
+      {foot && (
+        <div style={col(u(6), { borderTop: `1px solid ${ink}`, padding: u(20) })}>
+          {!!s.mapBase && (
+            <span style={row(u(12), { minHeight: u(s.mob ? 22 : 24) })}>
+              <span aria-hidden style={{ flex: 'none', width: u(8), height: u(8), background: s.chips[0].bg }} />
+              <span style={display(u(s.mob ? 20 : 22), s.mob ? '22px' : u(24), { color: ink, minWidth: 0, overflowWrap: 'anywhere' })}>{s.mapBase}</span>
+            </span>
+          )}
+          {!!s.mapTerms && <span style={mono(u(11), { color: dim, overflowWrap: 'anywhere' })}>{s.mapTerms}</span>}
+        </div>
+      )}
+    </div>
+  )
+
+  // A gig row: the date (a mono month over a display day) in a 64 column, the venue over a mono city line, and a pill
+  // at the right. The pill is the row's tickets link, so it stands only where there is one (JP-045): the canvas draws
+  // none of the frame's *Tickets*, and the frame's orange *Sold out* has no field. The lit row (live) is the open
+  // row's look: ink under paper, its fill bled 12 either side so the type does not stand on its edge.
+  const rows = shown.map((gig, i) => {
+    const link = extLink(s, gig.url)
+    const Tag = link ? 'a' : 'div'
+    const on = lit(i)
+    const fg = on ? s.bg : ink
+    const sub = on ? s.bg : dim
+    return (
+      <Tag key={i} {...link} onClick={onPick(i)} style={{
+        ...row(u(s.mob ? 10 : 20)), boxSizing: 'border-box', padding: `${u(14)} 0`, borderBottom: `1px solid ${ink}`,
+        textDecoration: 'none', color: fg, cursor: s.live ? 'pointer' : undefined,
+        background: on ? ink : undefined, boxShadow: on ? `${u(12)} 0 0 0 ${ink}, -${u(12)} 0 0 0 ${ink}` : undefined,
+      }}>
+        <span style={col(u(2), { flex: 'none', width: u(64) })}>
+          <span style={mono(u(11), { color: sub })}>{gig.month}</span>
+          <span style={display(u(s.mob ? 25 : tab ? 27 : 30), 0.9, { color: fg })}>{gig.day}</span>
+        </span>
+        <span style={col(u(6), { flex: '1 1 0', minWidth: 0 })}>
+          <span style={{
+            fontFamily: s.body, fontSize: u(18), lineHeight: 1.1, color: fg, overflowWrap: 'break-word',
+          }}>{gig.venue}</span>
+          <span style={mono(u(11), { color: sub, overflowWrap: 'anywhere' })}>{gig.city} · {gig.time}</span>
+        </span>
+        {!!gig.url && (
+          <span style={row(u(8), {
+            ...mono(u(11)), flex: 'none', boxSizing: 'border-box', height: u(26), padding: `0 ${u(10)}`,
+            border: '1px solid currentColor', borderRadius: s.radiusSm, color: fg, whiteSpace: 'nowrap',
+          })}>
+            <span aria-hidden style={{ width: u(5), height: u(5), background: 'currentColor' }} />
+            <span>Tickets</span>
+          </span>
+        )}
+      </Tag>
+    )
+  })
+
+  // Square 3px boxes, the arrows 44 and the pages 46, six apart, the current page filled ink (the repertoire's).
+  const sq = (key, child, { on, end, onClick }) => (
+    <span key={key} onClick={onClick} style={{
+      boxSizing: 'border-box', flex: 'none', height: u(end ? 44 : 46), ...(end ? { width: u(44) } : { minWidth: u(46) }),
+      border: `1px solid ${ink}`, borderRadius: s.radiusSm, background: on ? ink : undefined, color: on ? s.bg : ink,
+      display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: onClick ? 'pointer' : undefined,
+      ...(end ? { fontFamily: 'Arial, Helvetica, sans-serif', fontSize: u(13.333), lineHeight: 'normal' } : mono(u(11))),
+    }}>{child}</span>
+  )
+  const pager = win.labels.length > 0 ? (
+    <div style={row(u(6), { flexWrap: 'wrap', rowGap: u(6), marginTop: s.narrow ? u(16) : 'auto', paddingTop: s.narrow ? 0 : u(16) })}>
+      {sq('prev', '←', { end: true, onClick: onStep && (() => onStep(-1)) })}
+      {win.labels.map((p, i) => sq(`p${i}`, /^\d+$/.test(p) ? p.padStart(2, '0') : p, {
+        on: i === win.at, onClick: onPage && p !== '…' ? () => onPage(p) : undefined,
+      }))}
+      {sq('next', '→', { end: true, onClick: onStep && (() => onStep(1)) })}
+    </div>
+  ) : null
+
+  const panel = (
+    <div style={col(u(16), { boxSizing: 'border-box', minWidth: 0, padding: u(24), border: `1px solid ${ink}`, borderRadius: u(20) })}>
+      {!!s.mapListLabel && (
+        <span style={row(u(12), { justifyContent: 'space-between' })}>
+          <span style={mono(u(12), { color: ink, minWidth: 0, overflowWrap: 'anywhere' })}>{s.mapListLabel}</span>
+          <span style={mono(u(12), { color: dim, flex: 'none' })}>{String(s.gigs.length).padStart(2, '0')}</span>
+        </span>
+      )}
+      {rows.length > 0
+        ? <div style={{ borderTop: `1px solid ${ink}` }}>{rows}</div>
+        : <span style={mono(u(12), { opacity: 0.6 })}>No upcoming gigs.</span>}
+      {pager}
+    </div>
+  )
+
+  return (
+    <div style={col(u(32))}>
+      <div style={s.mob ? col(u(24), { alignItems: 'flex-start' }) : row(u(24), { alignItems: 'flex-end', justifyContent: 'space-between' })}>
+        {heading}
+        {radius}
+      </div>
+      <div style={{ display: 'grid', gap: u(24), alignItems: 'stretch', gridTemplateColumns: s.narrow ? 'minmax(0, 1fr)' : 'minmax(0, 1fr) minmax(0, 1fr)' }}>
+        {card}
+        {panel}
+      </div>
+    </div>
+  )
+}
+
 function EventsMap({ s }) {
   // The page of gigs, and the gig the visitor has picked out on the map. Both
   // are inert on the editor canvas, where the section is a picture of a website
@@ -20353,6 +21593,17 @@ function EventsMap({ s }) {
       const j = pg * perPage + i
       setSel((v) => (v === j ? -1 : j))
     } : undefined)
+
+    // Lattice's layout-1 map is a block of its own (LatticeMap), after the seam: the page, the
+    // pairing and the pager's window above are shared whole, and the block is the picture. Its
+    // window is the compact one at every width (the frames' own `1 2 3`).
+    if (s.limeTree && s.lattice) {
+      return <LatticeMap s={s} g={{
+        shown, lit, onPick, win: pageWindow(pages, pg, true),
+        onPage: s.live ? (label) => setPage(Number(label) - 1) : undefined,
+        onStep: s.live ? (dir) => setPage(Math.max(0, Math.min(pages - 1, pg + dir))) : undefined,
+      }} />
+    }
 
     // Lime (964:58593 1440 × 1151, 986:39882 768 × 1326, 986:39894 390 ×
     // 1167) — the fifth Lime block, placed after the seam as the gallery's and
@@ -24178,6 +25429,125 @@ function EventsMap({ s }) {
   return null
 }
 
+// Lattice's layout-1 testimonials (1:1222 · 1:9851 · 1:10821; plans/lattice/layout-1.md, *Settled in section
+// 10*): a block of its own, after `Testimonials`' seam (`n`, `q`, `paging` and `step` stay its and go over in
+// `g`; `cur` is its hook). Every number is the frame's, desktop x 0.82 through `u`, 768 and 390 verbatim, raw
+// sizes (43.2 / 35 / 29 quote, 12 and 11 mono), not the ramp. One card on the section's own ground, ruled in
+// full ink at radius 20 with a white 22% halo (`boxShadow`), over the root's dot field: an eyebrow row, the
+// quote, a ruled caption (the name and role as two mono labels, then the two chips). The arrows are 44 square
+// 3px boxes flanking the card at 1440 and 768 and a centred row under it at 390. The card is centred in a
+// 730 band (`minHeight`, with `vm.pad`'s 96 / 77 / 58 the section's own breathing room).
+function LatticeTestimonials({ s, g }) {
+  const { q, paging, step } = g
+  const tab = isTablet(s)
+  const desk = !s.narrow
+  const k = desk ? 0.82 : 1
+  const u = (v) => `${Math.round(v * k * 100) / 100}px`
+  const ink = s.tx
+  const mono = (size, extra) => ({
+    fontFamily: s.mono, fontSize: size, lineHeight: 1.2, letterSpacing: '0.04em', textTransform: 'uppercase', ...extra,
+  })
+  // The frames' card padding: 36 / 27 / 18 across, 36 / 31 / 25 down.
+  const padX = s.mob ? 18 : tab ? 27 : 36
+  const padY = s.mob ? 25 : tab ? 31 : 36
+  // `vm.pad`'s top and foot for this section, so the 730 band is the frame's whole.
+  const padV = s.mob ? 58 : tab ? 77 : 78.72
+
+  const arrow = (glyph, onClick) => (
+    <span onClick={onClick} style={{
+      boxSizing: 'border-box', width: u(44), height: u(44), flex: 'none', border: `1px solid ${ink}`,
+      borderRadius: s.radiusChip, color: ink, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+      fontFamily: 'Arial, sans-serif', fontSize: u(13.333), lineHeight: 'normal', cursor: onClick ? 'pointer' : undefined,
+    }}>{glyph}</span>
+  )
+
+  // A chip: the 5px square marker, then the label; the first is filled teal, the second ruled. Both are the
+  // artist's copy and each is rendered or not.
+  const chip = (label, i) => (
+    <span key={i} style={{
+      boxSizing: 'border-box', minHeight: u(26), maxWidth: '100%', minWidth: 0, display: 'inline-flex', alignItems: 'center',
+      gap: u(8), padding: `0 ${u(10)}`, borderRadius: s.radiusChip,
+      border: `1px solid ${i === 0 ? 'transparent' : ink}`, background: i === 0 ? s.activeBg : undefined, color: ink,
+    }}>
+      <span aria-hidden style={{ width: u(5), height: u(5), flex: 'none', background: ink }} />
+      <span style={mono(u(11), { minWidth: 0, overflowWrap: 'anywhere' })}>{label}</span>
+    </span>
+  )
+
+  const body = q ? (
+    <>
+      {!!q.when && (
+        <div style={row(u(16), { minWidth: 0 })}>
+          <span style={mono(u(12), { flex: 'none', whiteSpace: 'nowrap', color: ink })}>[ 009 ]</span>
+          <span aria-hidden style={{ width: u(40), height: 1, flex: 'none', background: ink }} />
+          <span style={mono(u(12), { minWidth: 0, color: ink, overflowWrap: 'anywhere' })}>{q.when}</span>
+        </div>
+      )}
+      {!!q.quote && (
+        <div style={{ containerType: 'inline-size', minWidth: 0 }}>
+          <p style={{
+            margin: 0, fontFamily: s.display, fontWeight: 500, lineHeight: 1, letterSpacing: '0.004em',
+            textTransform: 'uppercase', color: ink, overflowWrap: 'break-word',
+            fontSize: q.wordEms ? `min(${u(s.mob ? 29 : tab ? 35 : 43.2)}, calc(100cqi / ${q.wordEms}))` : u(s.mob ? 29 : tab ? 35 : 43.2),
+          }}>{q.quote}</p>
+        </div>
+      )}
+      {!!q.byline && (
+        <div style={{
+          display: 'flex', flexDirection: s.mob ? 'column' : 'row', alignItems: s.mob ? 'flex-start' : 'center',
+          justifyContent: 'space-between', flexWrap: 'wrap', columnGap: u(16), rowGap: u(16), minWidth: 0,
+          boxSizing: 'border-box', borderTop: `1px solid ${ink}`, paddingTop: u(16),
+        }}>
+          <div style={row(u(16), { flexWrap: 'wrap', minWidth: 0, columnGap: u(16), rowGap: u(4) })}>
+            {!!q.who && <span style={mono(u(12), { color: ink, overflowWrap: 'anywhere' })}>{q.who}</span>}
+            {!!q.role && <span style={mono(u(12), { color: ink, overflowWrap: 'anywhere' })}>{q.role}</span>}
+          </div>
+          <div style={row(u(6), { flexWrap: 'wrap', minWidth: 0, justifyContent: s.mob ? 'flex-start' : 'flex-end' })}>
+            {!!q.who && chip(q.who, 0)}
+            {!!q.role && chip(q.role, 1)}
+          </div>
+        </div>
+      )}
+    </>
+  ) : (
+    <span style={{ fontFamily: s.body, fontSize: u(16), lineHeight: 1.5, color: ink }}>No reviews yet.</span>
+  )
+
+  const card = (
+    <div style={{
+      boxSizing: 'border-box', minWidth: 0, border: `1px solid ${ink}`, borderRadius: u(20), background: s.bg,
+      boxShadow: `0 0 ${u(90)} rgba(255,255,255,0.22)`, padding: `${u(padY)} ${u(padX)}`,
+      ...col(u(24)),
+      ...(desk ? { width: `min(${u(720)}, 100%)`, justifySelf: 'center' } : { width: '100%' }),
+    }}>{body}</div>
+  )
+
+  const prev = paging ? arrow('←', step(-1)) : null
+  const next = paging ? arrow('→', step(1)) : null
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', minHeight: `calc(${u(730)} - ${2 * padV}px)` }}>
+      {s.mob ? (
+        <div style={col(u(20), { width: '100%', alignItems: 'center', minWidth: 0 })}>
+          {card}
+          {paging && <div style={row(u(12))}>{prev}{next}</div>}
+        </div>
+      ) : (
+        // Three tracks at every wide width, so the card keeps its seat at one review: the arrows are not
+        // drawn but their 44 are held.
+        <div style={{
+          display: 'grid', width: '100%', alignItems: 'center', columnGap: u(24), minWidth: 0,
+          gridTemplateColumns: `${u(44)} minmax(0, 1fr) ${u(44)}`,
+        }}>
+          <span style={{ display: 'flex' }}>{prev}</span>
+          {card}
+          <span style={{ display: 'flex' }}>{next}</span>
+        </div>
+      )}
+    </div>
+  )
+}
+
 // v0 — Testimonials layout 1 · Stacked tag card (§10.2 reference design): one
 // cream quote card standing on two rotated, ink-outlined coloured cards, with
 // the pager arrows thrown out to the page's own gutters.
@@ -24239,6 +25609,10 @@ function Testimonials({ s }) {
       }}>{icon}</span>
     )
     const step = (d) => (s.live && paging ? () => go(at + d) : undefined)
+
+    // Lattice's layout-1 testimonials are a block of their own (LatticeTestimonials), after the seam:
+    // `q`, `paging` and `step` (the arrows, which wrap at both ends and are not drawn at one review) go over.
+    if (s.limeTree && s.lattice) return <LatticeTestimonials s={s} g={{ q, paging, step }} />
 
     // Lime (964:58597 · 986:39886 · 986:39898) — the ninth Lime block, after the
     // seam as the gallery's and the repertoire's are: `n`, `at`, `q`, `go`,
@@ -26648,6 +28022,213 @@ function Testimonials({ s }) {
   )
 }
 
+// Lattice's layout-1 enquiry form (Batch 2 file, 1:1147 · 1:9778 · 1:10748: 1440 x 689 / 768 x 990 /
+// 390 x 1230; desktop numbers x 0.82 through `u`, the narrow two verbatim). A block of its own
+// (plans/lattice/layout-1.md, section 9): the inventory is Lime's (a context half with the artist's
+// portrait, name and role, a display head and the promises; a form half with paired boxes, an
+// event-type chip row, a message box and a submit) and no leaf is. One 1px-ruled 20-radius card: a
+// square `box/1` context panel (a 44 square avatar, two mono lines, the head, a ruled list of
+// numbered promises) beside, or over at 768 and 390, a form half that is the section's own ground
+// (the glow is the root's background): 48-tall 3px boxes under orange mono labels, 44-tall square
+// chips with the lit one filled ink, an 81-tall message box and a plain full-width square bar. No
+// `[ 00N ]` eyebrow is drawn: none of the three masters has one. `EnquiryForm` owns the live seam
+// (the typed boxes, the chip, the errors, the sent state, the mailto `Pill`), so it is handed over
+// in `g` and nothing here is a hook; there is no <form>, ever (notes/form.md). Sizes are the
+// frames' raw ones, not the ramp's.
+function LatticeForm({ s, g }) {
+  const { at, setAt, msg, setMessage, ti, setType, showTypes, errs, msgBad, sent, setSent, Pill, pillLink, onSubmit, cp, pid } = g
+  const tab = isTablet(s)
+  const desk = !s.narrow
+  const k = s.narrow ? 1 : 0.82
+  const u = (v) => `${Math.round(v * k * 100) / 100}px`
+  const ink = s.tx
+  const orange = s.text3 // sem/text/3: every label, the numerals and the role line
+  const mono = (size, extra) => ({
+    fontFamily: s.mono, fontSize: size, lineHeight: 1.2, letterSpacing: '0.04em', textTransform: 'uppercase', ...extra,
+  })
+  // The frames' own numbers per width: the halves' padding, and the gap between rows (the columns of a
+  // pair stand 18 apart, and 28 where the pair is stacked).
+  const padX = s.mob ? 16 : tab ? 24 : 32
+  const padY = s.mob ? 22 : tab ? 27 : 32
+  const rowGap = s.mob ? 28 : tab ? 18 : 16
+  const pairGap = s.mob ? 28 : 18
+
+  const label = (t, extra) => <span style={mono(u(11), { display: 'block', color: orange, ...extra })}>{t}</span>
+  // One box, drawn once for both modes: a 1px ring of full ink at 3px, Archivo 16. The idle ring is
+  // already full ink, so a refused box changes colour as well as weight: the ring and a 1px inset
+  // of the label's orange, 2px in all, which keeps the frame's 48.
+  const box = (bad, extra) => ({
+    boxSizing: 'border-box', width: '100%', margin: 0, height: u(48), padding: `0 ${u(16)}`, outline: 'none',
+    border: `1px solid ${bad ? orange : ink}`, borderRadius: s.radiusChip, background: 'transparent', color: ink,
+    boxShadow: bad ? `inset 0 0 0 1px ${orange}` : undefined,
+    fontFamily: s.body, fontSize: u(16), lineHeight: 'normal', letterSpacing: 0, ...extra,
+  })
+  // The canvas's placeholder is a span at the ink's 45%, which is what `::placeholder` draws on the
+  // published page (index.css) and the frame's #757575 on #111.
+  const hint = (t) => (
+    <span style={{ opacity: 0.45, minWidth: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t}</span>
+  )
+
+  const field = (f, i) => {
+    const bad = !!(errs && errs.f[i])
+    return (
+      <div key={i} style={col(u(8), { minWidth: 0 })}>
+        {label(f.label)}
+        {s.live ? (
+          <input
+            {...cp(i)}
+            value={at(i)} placeholder={f.placeholder} aria-label={f.label}
+            onChange={(e) => setAt(i, e.target.value)}
+            type={f.kind === 'email' ? 'email' : 'text'}
+            inputMode={f.kind === 'number' || f.kind === 'date' ? 'numeric' : undefined}
+            aria-invalid={bad || undefined}
+            style={box(bad)}
+          />
+        ) : (
+          <span style={box(bad, { display: 'flex', alignItems: 'center' })}>{hint(f.placeholder)}</span>
+        )}
+      </div>
+    )
+  }
+  const fieldRow = (fs, r) => (
+    <div key={r} style={{
+      display: 'grid', gap: u(pairGap), gridTemplateColumns: s.mob ? 'minmax(0, 1fr)' : 'repeat(2, minmax(0, 1fr))',
+    }}>{fs.map((f, j) => field(f, r * 2 + j))}</div>
+  )
+
+  // The submit and *Write another*: a plain full-width bar, ink under the ground's label, 48 tall at every
+  // width (the desktop master's 50 is its content running 2 past the card's clipped foot). The arrow is its own span.
+  const bar = (extra) => ({
+    ...mono(u(12)), boxSizing: 'border-box', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: u(8),
+    width: '100%', height: u(48), background: ink, color: s.bg, textDecoration: 'none', ...extra,
+  })
+
+  // The context panel. At 1440 it is the frame's fixed 485; the list is the render's 382.688 and the head
+  // sets in a 419 measure (the masters' own boxes), stacked it takes the column.
+  const nameLine = String(s.brand || '').trim()
+  const roleLine = String(s.kicker || '').trim()
+  const context = (
+    <div style={col(u(28), {
+      boxSizing: 'border-box', background: s.box1, padding: `${u(padY)} ${u(padX)}`, minWidth: 0,
+      ...(desk ? { width: u(485), flex: 'none' } : null),
+    })}>
+      <div style={row(u(12), { minWidth: 0 })}>
+        <span style={{ width: u(44), height: u(44), flex: 'none', borderRadius: s.radiusChip, overflow: 'hidden', background: s.box1 }}>
+          <Photo s={s} ink={ink} initialsSize={Math.round(15 * k)} />
+        </span>
+        {(nameLine || roleLine) && (
+          <span style={col(u(4), { minWidth: 0 })}>
+            {nameLine && <span style={mono(u(12), { color: ink, overflowWrap: 'anywhere' })}>{nameLine}</span>}
+            {roleLine && <span style={mono(u(11), { color: orange, overflowWrap: 'anywhere' })}>{roleLine}</span>}
+          </span>
+        )}
+      </div>
+      {!!String(s.title || '').trim() && (
+        <div style={{ containerType: 'inline-size', width: desk ? u(419) : '100%', maxWidth: '100%', minWidth: 0 }}>
+          <h2 style={{
+            margin: 0, fontFamily: s.display, fontWeight: 500, lineHeight: 1, letterSpacing: '0.004em', textTransform: 'uppercase',
+            color: ink, fontSize: s.titleWordEms ? `min(${u(s.mob ? 26 : tab ? 32 : 40)}, calc(100cqi / ${s.titleWordEms}))` : u(s.mob ? 26 : tab ? 32 : 40),
+          }}>{s.title}</h2>
+        </div>
+      )}
+      {s.formPromises.length > 0 && (
+        <div style={{
+          boxSizing: 'border-box', borderTop: `1px solid ${ink}`, minWidth: 0, maxWidth: '100%',
+          ...(desk ? { width: u(382.688) } : null),
+        }}>
+          {s.formPromises.map((p, i) => (
+            <div key={i} style={row(u(16), {
+              alignItems: 'flex-start', boxSizing: 'border-box', padding: `${u(14)} 0`, borderBottom: `1px solid ${ink}`, minWidth: 0,
+            })}>
+              <span style={mono(u(11), { color: orange, flex: 'none', minWidth: u(15.188) })}>{String(i + 1).padStart(2, '0')}</span>
+              <span style={mono(u(12), { color: ink, minWidth: 0, overflowWrap: 'anywhere' })}>{p}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+
+  const form = (
+    <div style={col(u(rowGap), {
+      boxSizing: 'border-box', padding: `${u(padY)} ${u(padX)}`, minWidth: 0, ...(desk ? { flex: '1 1 0' } : null),
+    })}>
+      {sent ? (
+        // The form half alone; the shell and the context panel do not move. `sent` is only ever set
+        // under s.live, so the canvas never draws it.
+        <div style={col(u(16))}>
+          <h3 style={{
+            margin: 0, fontFamily: s.display, fontWeight: 500, lineHeight: 1, letterSpacing: '0.004em', textTransform: 'uppercase',
+            color: ink, fontSize: u(s.mob ? 26 : 32), overflowWrap: 'break-word',
+          }}>{s.formSentTitle}</h3>
+          <p style={{ margin: 0, fontFamily: s.body, fontSize: u(16), lineHeight: 1.5, color: ink }}>{s.formSentBody}</p>
+          {/* Plain text, Retro's reason: the fallback for a browser that opened nothing. */}
+          <span style={{ fontFamily: s.body, fontSize: u(16), lineHeight: 1.5, fontWeight: 700, color: ink, overflowWrap: 'break-word' }}>{s.formEmail}</span>
+          <span onClick={() => setSent(false)} style={bar({ cursor: 'pointer' })}>
+            <span>{s.formAgain}</span>
+            <span aria-hidden>→</span>
+          </span>
+        </div>
+      ) : (
+        <>
+          {s.formRows.map(fieldRow)}
+          {showTypes && (
+            // The frames' fieldset box stands 8 short of its content at 768 and 390, so the next row
+            // comes 10 and 20 under the chips there (16 at 1440, where it is whole).
+            <div style={col(u(8), { marginBottom: desk ? undefined : '-8px' })}>
+              {label(s.formTypeLabel, { height: u(26) })}
+              <div style={row(u(6), { flexWrap: 'wrap', rowGap: u(6) })}>
+                {s.formTypes.map((t, i) => {
+                  const on = i === ti
+                  return (
+                    <span key={i} onClick={s.live ? () => setType(i) : undefined} style={{
+                      ...mono(u(11)), boxSizing: 'border-box', height: u(44), padding: `0 ${u(14)}`, display: 'inline-flex', alignItems: 'center',
+                      border: `1px solid ${ink}`, borderRadius: s.radiusChip, background: on ? ink : undefined, color: on ? s.bg : ink,
+                      whiteSpace: 'nowrap', cursor: s.live ? 'pointer' : undefined,
+                    }}>{t}</span>
+                  )
+                })}
+              </div>
+            </div>
+          )}
+          <div style={col(u(8))}>
+            {label(s.formMsgLabel)}
+            {s.live ? (
+              <textarea
+                {...cp('msg')}
+                value={msg} placeholder={s.formMessage} aria-label={s.formMsgLabel}
+                onChange={(e) => setMessage(e.target.value)}
+                style={box(msgBad, { display: 'block', height: u(81), padding: `${u(14)} ${u(16)}`, resize: 'none' })}
+              />
+            ) : (
+              <span style={box(false, { display: 'block', height: u(81), padding: `${u(14)} ${u(16)}` })}>{hint(s.formMessage)}</span>
+            )}
+          </div>
+          <Pill {...pillLink} onClick={onSubmit} style={bar({ cursor: onSubmit ? 'pointer' : undefined })}>
+            <span>{s.formBtn}</span>
+            <span aria-hidden>→</span>
+          </Pill>
+          {errs && (
+            <span id={pid} role="alert" style={mono(u(11), { color: orange, textAlign: 'center' })}>
+              {errs?.m?.find(Boolean) || errs?.msg?.m || s.formPrompt}
+            </span>
+          )}
+        </>
+      )}
+    </div>
+  )
+
+  return (
+    <div style={{
+      boxSizing: 'border-box', border: `1px solid ${ink}`, borderRadius: u(20), overflow: 'clip', color: ink,
+      display: 'flex', flexDirection: desk ? 'row' : 'column', alignItems: 'stretch',
+    }}>
+      {context}
+      {form}
+    </div>
+  )
+}
+
 function EnquiryForm({ s }) {
   // What the visitor has typed, gated on `s.live` throughout: on the canvas
   // every box is the span it has always been (§12.7), because a live field
@@ -26757,6 +28338,13 @@ function EnquiryForm({ s }) {
     'aria-describedby': errs ? pid : undefined,
   })
   const msgBad = !!(errs && errs.msg?.bad)
+
+  // Lattice's layout-1 form is a block of its own (LatticeForm), after the seam: every piece of the live
+  // seam above goes over in `g`, so the published boxes, chip, mailto, refusal and sent state are the one
+  // seam in a new picture.
+  if (s.v0 && s.limeTree && s.lattice) {
+    return <LatticeForm s={s} g={{ at, setAt, msg, setMessage, ti, setType, showTypes, errs, msgBad, sent, setSent, Pill, pillLink, onSubmit, cp, pid }} />
+  }
 
   // Lime — the split frames 964:58596 / 986:39885 / 986:39897, as a block
   // ahead of Retro's v0 branch (the bio's and the media player's placement):
@@ -29713,6 +31301,146 @@ function EnquiryForm({ s }) {
   )
 }
 
+// Lattice's layout-1 footer (1:1251 · 1:9880 · 1:10850, 480 / 612.19 / 586.19 tall; plans/lattice/layout-1.md,
+// *Settled in section 11*): a block of its own, ahead of Lime's, because `Footer` owns no hook. Every number is
+// the frame's (desktop x 0.82 through `u`, 768 and 390 verbatim, raw sizes 40 / 32 / 26 statement and 12 / 11
+// mono, not the ramp). Desktop is a 12-column grid at 24 (the left block on columns 1-7, the links on 9-12);
+// 768 and 390 stack the two blocks, 36 / 28 apart. The left block carries a 1px right border at every width
+// (the frame's, which the narrow masters keep at the stacked block's right edge): the wordmark row (a nine-dot
+// mark, the name in mono, a 96 rule) over the closing statement, with the header's dotted disc hung 70 off its
+// right and 10.5 off its top at 1440 and 768 (the 390 master draws none). The links are a 2 x 4 grid READ ROW BY
+// ROW (`s.footerLinks`, the frame's DOM order, not the halved `footerCols`), 40-tall rows 4 apart, over the
+// bracketed Book Now 24 below; a rule and the orange small print close it, 28 under. The glow is the root's.
+function LatticeFooter({ s }) {
+  const desk = !s.narrow
+  const k = desk ? 0.82 : 1
+  const u = (v) => `${Math.round(v * k * 100) / 100}px`
+  const ink = s.tx
+  const mono = (size, extra) => ({
+    fontFamily: s.mono, fontSize: size, lineHeight: 1.2, letterSpacing: '0.04em', textTransform: 'uppercase', ...extra,
+  })
+  // `vm.pad`'s top and foot (EncoreBuilder.jsx): 96 / 80 at 1440, 56 / 40 narrow. The 480 floor at 1440 centres
+  // the content in the rest (the frame's 96.91 / 80.9 are 96 / 80 round a 302.19 box and 1.81 spare).
+  const padT = desk ? 78.72 : 56
+  const padB = desk ? 65.6 : 40
+  const size = s.mob ? 26 : s.narrow ? 32 : 40
+  const showDisc = s.showBadge === 'show' && s.latticeDisc && !s.mob
+  // The disc's ink stands 70 off the block's right: the group's measure stops 20 short of its left edge.
+  const discRoom = showDisc ? (70 + s.latticeDisc.discW + 20) * k : 0
+
+  const mark = (
+    <span aria-hidden style={{ position: 'relative', flex: 'none', width: u(18), height: u(18) }}>
+      {[0, 1, 2].flatMap((r) => [0, 1, 2].map((c) => (
+        <span key={`${r}${c}`} style={{ position: 'absolute', left: u(c * 7), top: u(r * 7), width: u(4), height: u(4), background: ink }} />
+      )))}
+    </span>
+  )
+  const wordmark = (
+    <div style={row(u(12), { minHeight: u(18), minWidth: 0 })}>
+      <span style={row(u(12), {
+        minWidth: 'min-content', flex: '0 1 auto',
+        ...(discRoom ? { maxWidth: `calc(100% - ${Math.round(discRoom * 100) / 100}px)` } : null),
+      })}>
+        {mark}
+        <span style={mono(u(12), { color: ink, whiteSpace: 'normal', overflowWrap: 'break-word' })}>{s.brand}</span>
+      </span>
+      <span aria-hidden style={{ height: 1, flex: '1 1 0', maxWidth: u(96), minWidth: s.narrow ? '30px' : '0px', background: ink }} />
+    </div>
+  )
+
+  // The statement's measure is 11em of its own size: it folds the seed's one typed break into the frame's three
+  // lines (UNFORGETTABLE. is 10.4em, the whole second line 16), and the fit to its widest word reads the same
+  // box, so a long word shrinks instead of running on towards the disc.
+  const statement = !!s.footerStatement && (
+    <div style={{ containerType: 'inline-size', width: '100%', maxWidth: u(11 * size), minWidth: 0 }}>
+      <h2 style={{
+        margin: 0, fontFamily: s.display, fontWeight: 500, lineHeight: 1, letterSpacing: '0.004em', textTransform: 'uppercase',
+        color: ink, whiteSpace: 'pre-wrap', overflowWrap: 'break-word',
+        fontSize: s.footerWordEms ? `min(${u(size)}, calc(100cqi / ${s.footerWordEms}))` : u(size),
+      }}>{s.footerStatement}</h2>
+    </div>
+  )
+
+  const disc = showDisc && (
+    <span aria-hidden style={{
+      position: 'absolute', pointerEvents: 'none', top: u(10.5), right: u(70),
+      width: u(s.latticeDisc.discW), height: u(s.latticeDisc.discH), background: ink,
+      WebkitMaskImage: `url("${s.latticeDisc.disc}")`, maskImage: `url("${s.latticeDisc.disc}")`,
+      WebkitMaskSize: '100% 100%', maskSize: '100% 100%',
+    }} />
+  )
+
+  const left = (
+    <div style={{
+      position: 'relative', boxSizing: 'border-box', minWidth: 0, borderRight: `1px solid ${ink}`,
+      ...col(u(64), { justifyContent: 'space-between' }),
+      ...(desk ? { gridColumn: '1 / 8' } : null),
+      containerType: 'inline-size',
+    }}>
+      {wordmark}
+      {statement}
+      {disc}
+    </div>
+  )
+
+  // The seam, restated from Lime's: an address the artist typed leaves the page in a new tab, a section id
+  // scrolls, and on the canvas both resolve to an <a> with no href at all (`navHref`). Keyed positionally.
+  const links = s.footerLinks.length > 0 && (
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', columnGap: u(24), rowGap: u(4) }}>
+      {s.footerLinks.map((l, i) => {
+        const ext = extLink(s, l.url)
+        return (
+          <a key={i} {...(ext || { href: navHref(s, l.to) })} style={mono(u(12), {
+            display: 'flex', alignItems: 'center', minHeight: u(40), minWidth: 0, color: ink, cursor: 'pointer',
+            textDecoration: 'none', lineHeight: u(14), overflowWrap: 'anywhere',
+          })}>{l.label}</a>
+        )
+      })}
+    </div>
+  )
+  // `bookTo` with no self-exclusion filter (`footer` is not in CTA_TARGETS.book); an emptied label drops it.
+  const pill = !!s.footerCta && (
+    <div style={{ display: 'flex' }}>
+      <BracketButton s={s} to={s.bookTo} label={s.footerCta} k={k} style={{ fontSize: u(12) }} />
+    </div>
+  )
+  const right = (links || pill) ? (
+    <div style={col(u(24), { minWidth: 0, ...(desk ? { gridColumn: '9 / 13' } : null) })}>
+      {links}
+      {pill}
+    </div>
+  ) : null
+
+  const small = (
+    <div style={{
+      boxSizing: 'border-box', borderTop: `1px solid ${ink}`, paddingTop: u(20),
+      ...row(u(16), { alignItems: 'flex-start', justifyContent: 'space-between' }),
+      ...mono(u(11), { color: s.text3 }),
+    }}>
+      {!!s.copyright && <span style={{ flex: '1 1 0', minWidth: 0, overflowWrap: 'anywhere' }}>{s.copyright}</span>}
+      <span style={{ flex: 'none', marginLeft: 'auto', textAlign: 'right' }}>{s.footerCredit}</span>
+    </div>
+  )
+
+  return (
+    <div style={{
+      display: 'flex', flexDirection: 'column', justifyContent: 'center',
+      ...(desk ? { minHeight: `calc(${u(480)} - ${padT + padB}px)` } : null),
+    }}>
+      <div style={col(u(28))}>
+        {desk ? (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, minmax(0, 1fr))', columnGap: u(24), alignItems: 'stretch' }}>
+            {left}{right}
+          </div>
+        ) : (
+          <div style={col(u(s.mob ? 28 : 36))}>{left}{right}</div>
+        )}
+        {small}
+      </div>
+    </div>
+  )
+}
+
 // §10.2 reference design: the wordmark over the statement to the left of a
 // full-height rule, the two link columns and the Book Now pill to its right,
 // the seal hung off the left column's outer edge, and the small print under a
@@ -29729,6 +31457,9 @@ function EnquiryForm({ s }) {
 // *below* the statement and around the link block — the breathing room that
 // holds each hairline off its content — is kept.
 function Footer({ s }) {
+  // Lattice's layout-1 footer is a block of its own (LatticeFooter). `Footer` owns no hook, so the block can
+  // stand at the head of the function, ahead of Lime's; the seam is restated in it.
+  if (s.limeTree && s.lattice) return <LatticeFooter s={s} />
   const scale = s.narrow ? 1 : 0.82
   const u = (v) => `${Math.round(v * scale)}px`
 
@@ -30423,6 +32154,43 @@ export default function EncoreSection({ s }) {
       color: darkMap ? s.mapFg : limeLight ? s.bg : s.tx,
       fontFamily: s.body, padding: bleed ? 0 : s.pad,
       position: 'relative', overflowX: popClip || popFootClip ? 'clip' : undefined, overflowY: popFootClip ? 'clip' : undefined,
+      // Lattice's layout-1 bio hangs its dot field off the root's foot as the root's own
+      // background, under everything and in no node of its own (LatticeBio).
+      ...(s.bi && s.v0 && s.lattice && s.bioDots && {
+        backgroundImage: `url("${s.bioDots.uri}")`, backgroundRepeat: 'no-repeat',
+        backgroundPosition: 'left bottom', backgroundSize: `100% ${s.bioDots.h}px`,
+      }),
+      // Lattice's layout-1 media stands on a teal glow (the frames' one radial gradient, the same
+      // 42% x 38.5% ellipse at 85% / 60% of the section at all three widths), the root's own.
+      ...(s.me && s.v0 && s.lattice && {
+        backgroundImage: `radial-gradient(ellipse 42% 38.5% at 85% 60%, ${s.glow}24, ${s.glow}00)`,
+      }),
+      // …and the repertoire's warm glow: the frames' one radial gradient, 60% x 55% of the section at
+      // 15% / 20%, orange at 14% to nothing at 70%, the same at all three widths (the root's own).
+      ...(s.re && s.v0 && s.lattice && {
+        backgroundImage: `radial-gradient(ellipse 60% 55% at 15% 20%, ${s.text3}24, ${s.text3}00 70%)`,
+      }),
+      // …and the pricing's teal glow: the frames' one radial gradient, 60% x 55% of the section at 50% / 75%,
+      // teal at 14% to nothing at 70%, the same at all three widths (the root's own).
+      ...(s.pr && s.v0 && s.lattice && {
+        backgroundImage: `radial-gradient(ellipse 60% 55% at 50% 75%, ${s.glow}24, ${s.glow}00 70%)`,
+      }),
+      // Lattice's layout-1 testimonials lay their dot canvas over the whole section: 730 tall, tiled down a
+      // taller section from its middle, the root's own background (LatticeTestimonials draws the card over it).
+      ...(s.te && s.v0 && s.lattice && s.testiDots && {
+        backgroundImage: `url("${s.testiDots.uri}")`, backgroundRepeat: 'repeat-y',
+        backgroundPosition: 'left center', backgroundSize: `100% ${s.testiDots.h}px`,
+      }),
+      // …and the footer's teal glow: the frames' one radial gradient, 60% x 55% of the section at 85% / 40%,
+      // teal at 14% to nothing at 70%, the same at all three widths (the root's own; the footer draws no dot field).
+      ...(s.ft && s.lattice && {
+        backgroundImage: `radial-gradient(ellipse 60% 55% at 85% 40%, ${s.glow}24, ${s.glow}00 70%)`,
+      }),
+      // …and the form's warm glow: the frames' one radial gradient, 60% x 55% of the section at 20% / 50%,
+      // orange at 14% to nothing at 70%, the same at all three widths (the root's own).
+      ...(s.fo && s.v0 && s.lattice && {
+        backgroundImage: `radial-gradient(ellipse 60% 55% at 20% 50%, ${s.text3}24, ${s.text3}00 70%)`,
+      }),
       boxShadow: grungeRule ? `inset 0 0 0 1px ${s.inactiveLine}` : editorialRule ? `inset 0 0 0 1px ${s.stroke2}`
         : popMediaRule ? `inset 0 4.1px 0 ${s.onScheme[1].stroke2}, inset 0 -4.1px 0 ${s.onScheme[1].stroke2}`
         : popVideoRule ? `inset 0 -${s.narrow ? 10 : 8.2}px 0 ${s.stroke2}` : undefined,

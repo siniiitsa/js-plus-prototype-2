@@ -65,6 +65,8 @@ plans/
     display-face.md
     layout-3-qa-fixes.md
     layout-4-qa-fixes.md
+  lattice/
+    layout-1.md   ← a sixth template, from the JustPay — Batch 2 Figma file (planned 2026-11-19)
   pop/
     layout-1.md
     layout-2.md
@@ -221,6 +223,16 @@ widening of every Lime layout-4 block, and its trap 1), groups A, B, C and **D4*
 QA batches (Lime's JP-052 … JP-054 and JP-038, Grunge's JP-076 … JP-084, Editorial's JP-108 …
 JP-110), Retro layout 4's *Conventions* and 2026-09-15 Addendum, and Lime layout 4's *Per-session
 procedure*.
+
+## Lattice
+
+| Pass | Plan | Branch | Fitted |
+|---|---|---|---|
+| Layout 1 | [`lattice/layout-1.md`](./lattice/layout-1.md) | `lattice-layout-1`, forked from `main` (`a17ad58`; closed, swept, with the root `index.html` refreshed; push, PR and merge still open) | A sixth template from the *JustPay — Batch 2* Figma file (`ORILFywSzuadscu6RzskCW`, an HTML-to-Figma import: no component sets, no variable modes). The same eleven layout-1 sections as Retro's page, each built as **a `Lattice*` tree of its own** (no Lime block widened; the seam stays the shared section's), in a dark / light / orange page of straight seams, a per-width vector dot field, bracket-cornered buttons and dotted raster art; `THEMES[5]` with Schemes 1–9, `Archivo Lattice` over Azeret Mono, four photographs. Layouts 2–4 and the setup cards 2–4 are placeholders. Session 0 the foundation, sections 1–11 one per session, session 12 the whole-page proofs (all pass), the sweep (docs, comments, `CONVENTIONS.md` group F, the published check, the two-build digest: themes 0–4 byte-identical). **The plan's *Open calls* collects everything the user is asked to confirm.** |
+
+**Reading order in a Lattice session:** `CLAUDE.md`, then the plan, then [`CONVENTIONS.md`](./CONVENTIONS.md) groups A, B, C
+and D1, the section's *Settled* bullets in Lime, Grunge, Editorial **and** Pop layout 1, the section's `notes/` file, and
+Lime layout 1's *Per-session procedure*. The header session also reads `header-nav.md` and `header-fit.md`.
 
 ## Every template
 

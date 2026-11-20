@@ -41,7 +41,7 @@ another `notes/` file.
   whose Next must not leave the page.
   **Layout 1's pill is per template, because the frames disagree** (JP-034, user call,
   2026-09-18): Retro's frame draws a Soundcloud pill, and so does Editorial's (`964:58614`), so under those
-  two and Pop it is the `soundcloud` link and an empty address leaves it a picture; Lime's draws Book Now — and Grunge's,
+  two, Pop and Lattice (a bracketed pill, `BracketButton`'s `ext` arm) it is the `soundcloud` link and an empty address leaves it a picture; Lime's draws Book Now — and Grunge's,
   which shares Lime's block — so under those two the seat is `FIELDS.media.cta` — `vm.mediaCta`, uncased, on `vm.bookTo` with no
   self-exclusion since `media` is not in `CTA_TARGETS.book`, and an emptied label drops it, the
   footer pill's rule — and the Soundcloud pill stands beside it **only when filled**, in a
@@ -226,3 +226,34 @@ Ledgered as on the other templates (`Pop.3.media.tracks.sub`): the list tile pri
 ## Layout 4's foot arc is neighbour-aware (video section, session 3, 2026-10-27)
 
 Under Lime the media sheet ends square (user call, 2026-09-18) unless a video stands directly under it: then it draws the frame's own foot arc, `ArcEdge` `side="bottom"` in the page `s.bg`, gated on `s.videoBelow` (`sectionVm({ below })`, the next section's category). Grunge, Editorial and Pop are excluded at the site. See `notes/video.md`, *Lime · layout 4*, the seam bullet.
+
+## Lattice · layout 1 (plans/lattice/layout-1.md, section 3, 2026-11-19)
+
+`LatticeMedia` (`EncoreSection.jsx`) is a block of its own, dispatched from `Media` **after** its hooks and seam (`sleeveSlot`), not at the head:
+an early return above `useRef` / `useState` would change the hook count on a theme switch. `Media` hands it `{ at, count, playing, now, sleeve,
+sleeveSlot, audio, goTo, toggle, onPick }`, so the player is the one seam in a new picture (the `<audio>` rules above all hold).
+
+- **Frame** `1:419` · `1:9052` · `1:10024`. Desktop x 0.82 through `u`, the narrow two verbatim; raw type sizes (24 / 24 / 18 row titles, 30 / 27 / 25
+  card title, 12 / 11 mono), not the ramp. Rows are 93 tall (`minHeight`, so a wrapped 390 row grows rather than clips), a 1px hairline in `s.tx`
+  each, number · title+sub · 56 cover (44 at 390) · 44 square button, 3px radius. Grid 886.72 : 431.375 at 24 (desktop); the card is 466 tall at
+  every width, its sleeve the flex remainder (206.4 / 217.4 / 227.4), centred at 431 at 768 and full width at 390 below the Soundcloud pill.
+- **Removed copy holds** (user call, section 0): the `[ 002 ] TOP TRACKS` eyebrow and `5 / 5 FEATURED` are not drawn. The head is the heading alone, so
+  the section is 42 / 42 / 46 shorter than the frame's 1057 / 1404 / 1422 (832 / 1362 / 1376 drawn). The 390 master's head box starts 40 down (an import artefact:
+  its eyebrow sits at y 98, not 58), so the head takes the eyebrow's seat (top 98) and keeps the frame's 50 to the list (the heading overflows its box by 6
+  there); the other two widths are the box reading, top 106.13 / 77 and gap 56.
+- **Two literals the frame draws that are not removals:** the card's `Now playing` label (a frame label with no field, JP-071's "unreported sibling stays
+  a literal") and the `0N / 0M` position, which is derived (`at + 1` of the list length, `00 / 00` when empty), not the removed `5 / 5 Featured` counter.
+- **The marked row is the card's track, not the frame's.** The frame marks row 02, prints `02 / 05` and names *Night Rain*, which is not in its list.
+  The card names the cued track (`at`, the sleeve's rule), so the marked ground (`s.box1`, radius 3) and filled square sit on row `at` — layout 4's tile
+  seat — and the canvas draws row 1 and `01 / 05`. Pause shows on the marked row only while `playing`.
+- **The meter** is 48 flex bars, gap 3, heights `4 + i % 9`, one ink in the frame. Live it lights the played share (`now.pct`) and dims the rest to .3; the
+  canvas keeps the frame's all-lit picture (as layout 3's `WAVE_PLAYED` keeps its mid-song clock).
+- **Soundcloud** is `BracketButton ext={s.soundcloud}`: a picture on the canvas and while the address is empty, an outbound link in the published tab. `cta`
+  reads nothing under Lattice (`'*': []`).
+- **Ground and glow.** Scheme 8 (`#111`); the root's own `radial-gradient(ellipse 42% 38.5% at 85% 60%, glow 14%, 0)`, the frames' one gradient at every
+  width (no `url(`, so `limits.mjs` does not count it). `vm.pad` 106.13 / 77 / 58 top and foot, the bio's content insets.
+- **The card title wraps, it does not clip.** The seeded `Manchester at 3am` is 315 in a 308 box at 390 and 310 in 305.5 at 1440, so the title breaks
+  (`overflowWrap: anywhere`, centred); the sleeve is the flex remainder, so a second line costs it 25-30 and the card stays 466. The artist line ellipsises.
+- **Caps** (`limits.mjs media --themes=5 --designs=0 --check`): `heading` 20 and `tracks.title` 17 / `sub` 33 hold at their seeds (the seeded rows wrap at 390 in
+  the frame, so the probe's one-line test is not the bound there); `IDENTITY_CHARS.media.title.Lattice[0]` = 40, the artist line's box at 390.
+

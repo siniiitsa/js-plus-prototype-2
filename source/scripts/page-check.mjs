@@ -136,9 +136,9 @@ for (const card of cardList) {
     await wait(1200)
     await popup.evaluate(() => scrollTo({ top: 0, behavior: 'instant' })); await wait(300)
     const pt = await popup.$$eval('#header span', (els) => {
-      // 26px, or its zoomed width: the published 1440 page runs under a CSS zoom.
+      // 26px (Lattice 46), or its zoomed width: the published 1440 page runs under a CSS zoom.
       const el = els.find((el) => getComputedStyle(el).cursor === 'pointer' && el.children.length === 3
-        && el.getBoundingClientRect().width >= 25 && el.getBoundingClientRect().width <= 36)
+        && el.getBoundingClientRect().width >= 25 && el.getBoundingClientRect().width <= 50)
       if (!el) return null
       const b = el.getBoundingClientRect()
       return { x: b.x + b.width / 2, y: b.y + b.height / 2 }
@@ -289,10 +289,10 @@ for (const card of cardList) {
   r.overflow390 = await m.popup.evaluate(() => document.documentElement.scrollWidth - innerWidth)
   r.burger = await (async () => {
     const before = await m.popup.$$eval('#header a[href^="#"]', (as) => as.length)
-    // NavMenu's burger is a 26px span of three bars, not a button.
+    // NavMenu's burger is a 26px span of three bars, not a button (Lattice's is the frame's 46px box of three).
     await m.popup.evaluate(() => scrollTo(0, 0))
     const pt = await m.popup.$$eval('#header span', (els) => {
-      const el = els.find((el) => getComputedStyle(el).cursor === 'pointer' && Math.round(el.getBoundingClientRect().width) === 26)
+      const el = els.find((el) => getComputedStyle(el).cursor === 'pointer' && el.children.length === 3 && el.getBoundingClientRect().width >= 25 && el.getBoundingClientRect().width <= 50)
       if (!el) return null
       const b = el.getBoundingClientRect()
       return { x: b.x + b.width / 2, y: b.y + b.height / 2 }

@@ -58,6 +58,12 @@ recorded* or *—* where those passes never met them. Its sweep folded Pop's per
 Pop columns' "the pair" is history: C's gate row says where it went. Its stickers beside the
 artist's longer copy, which went behind it on three sections across two passes, stay in its plan
 with the rest of Pop's decorative language.
+Lattice's layout-1 pass leaned on it a tenth time and is the first that widened **none** of Lime's blocks: its
+frames are an HTML-to-Figma import with no component sets and no variable modes, so a section's twin was
+settled by composition and geometry and every one of the eleven sections is a `Lattice*` tree of its own.
+It therefore has no column on A, B, C or D1; its running list (*Inherited and used* in
+[`lattice/layout-1.md`](./lattice/layout-1.md)) is folded in as group **F**, below. Its dot field, bracket
+corners, dotted art and square chips stay in its plan and in `notes/templates.md`, by this file's own rule.
 The video section's passes (`plans/video.md`, sessions 1 to 9: one restored section fitted at layouts 2 and 4 of
 all five templates) are not a layout pass and leaned on groups A, B and C as they stood; the nine rows they added,
 each met three times or more, are group E.
@@ -284,11 +290,30 @@ repeated.
 | *A family flag replaces a named pair only when every member is fitted at that layout* — `v1` took `s.limeTree` in session 8 and `v3` in session 9, and not before: earlier it would have turned Lime's dress on for a template not yet fitted | notes/video.md, *Grunge · layout 2* and *Pop · layout 2* | sessions 2, 4, 6, 8 and 9 |
 | *Retro's dropped metrics stay dropped* — view and follower counts, the like pair, the verified tick and the emoji are not drawn, and lucide's icons stand in | notes/video.md, *Grunge · layout 2* (override (c)); plans/retro/layout-2.md | sessions 1 to 9, every one |
 
+## F. A page with no variants — own-tree blocks (Lattice, layout 1)
+
+Source: [`lattice/layout-1.md`](./lattice/layout-1.md), *Conventions* (*Seen at planning time*, *Settled in
+sections 0–11*, *Inherited and used*). A template whose frames carry no variable modes and no component sets
+cannot be dressed in a shared branch by a paired walk, so the rows of A, B and C that name a *twin node* or a
+*variant* do not apply; these are the ones that replaced them, each met by Lattice's sections.
+
+| Convention | Where | Leaned on in Lattice |
+|---|---|---|
+| *A twin is a prediction from the pictures; the verdict (dress the shared branch, widen Lime's block, or an own-tree block) is written under* Seen at planning time *before the code* | lattice/layout-1, *Seen at planning time* | every section but the hero: bio, media, gallery, repertoire, map, pricing, calendar, form, testimonials, footer all came back *own-tree block, the seam Lime's and the picture not* |
+| *Read raw values off the text and fill nodes where the file binds a flat set* (the page binds `sem/bg` and little else) | pop/layout-1, *Conventions* (A's raw-values row) | every section |
+| *Where the seam lives inside the branch, the block goes after the seam; where the section owns no hook, it stands at the head* | lime/layout-1, *Settled in section 4* (C) | after the seam: media, gallery, repertoire, map, pricing, calendar, form, testimonials; at the head: bio, footer (`Bio` and `Footer` have no hook) |
+| *A scheme is seated by `SCHEMES_OF` and a nested node reads `s.onScheme[n]`* | editorial/layout-1, decision 3; pop/layout-1, decision 4 | session 0 (Schemes 1–9 off an alias walk of the SAAS collection), the hero, pricing, gallery, calendar, map |
+| *`THEME_RAMP` is layered over the others and every other template's ramp stays byte-identical* | lime/layout-1, pop/layout-1 | session 0 |
+| *`scripts/ems-table.mjs` makes the face's width table* (`LATTICE_EM`, `latticeEms`, then +0.004em a glyph at every fit) | lattice/layout-1, *Settled in session 0* (Fraunces' recipe) | the hero's title, the bio's head, the quote, the footer's statement |
+| *`defaultTrackArt` reads a template's own `rowArt` before `ROW_ART`* | lattice/layout-1, *Settled in session 0* (Photography) | media |
+| *A frame label the tester can retype is a seeded, uncased, drop-when-emptied field; an eyebrow with no such field is not drawn* | CLAUDE.md, JP-071; lattice/layout-1, decision 1 | every section (the `[ 00N ]` eyebrows) |
+| *The two-build digest, positive control first* (the old tree answers none of the new symbols) | memory: `digest-two-servers` | every section; the sweep (themes 0–4 zero rows) |
+
 ## What is deliberately not here
 
 - **A template's decorative language** — Retro's grain, torn edges, checkerboard and offset
   shadows; Lime's arcs and glows; Grunge's tears, lighten grain and seals; Editorial's dashed
-  rule and tape; Pop's stickers, scribbles, dot grids and 10px rules. Each plan's
+  rule and tape; Pop's stickers, scribbles, dot grids and 10px rules; Lattice's dot field, bracket corners, dotted art and square chips. Each plan's
   *decorative language* section owns its own.
 - **The `sectionVm` and live-seam rules.** They are CLAUDE.md's, and every plan reads that first.
 - **The per-session procedure and the sweep list.** Lime layout 1's are the canonical ones; a new
