@@ -2725,7 +2725,7 @@ export const CAL_SLOT_CTA = 'Start Enquiry'
 // (JP-082, user call, 2026-09-29; FORM_BTN_4's shape), and an emptied label
 // falls back to it there, since it is the wizard's only way to send.
 export const CAL_SEND_4 = 'Send Enquiry'
-// Lattice's layout-1 foot draws a Continue bar where Lime's draws none (its frames 1:1039 · 1:9670 · 1:10640).
+// Lattice's and Paperback's layout-1 foot draw a Continue button where Lime's draws none (frames 1:1039 · 1:9670 · 1:10640; 1:3131 · 1:11793 · 1:12975).
 export const CAL_CTA_LATTICE = 'Continue'
 
 export const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June',
@@ -3453,11 +3453,11 @@ export const FIELDS = {
   // `in` records each key's reach.
   calendar: [
     // Lattice's layout 1 draws a dotted torus (art, not a photograph) in that seat, so only layout 4's disc reads it.
-    { k: 'image',   l: 'Photo', type: 'image', aspect: [1, 1], in: { Lattice: [3], '*': [0, 3] },
+    { k: 'image',   l: 'Photo', type: 'image', aspect: [1, 1], in: { Lattice: [3], Paperback: [3], '*': [0, 3] },
       hint: 'Fills the polaroid stack beside the month in layout 1, and the small disc on '
-          + "layout 4's summary card. Layouts 2 and 3 draw no photograph. Lattice's layout 1 draws none either." },
-    { k: 'heading', l: 'Heading', d: 'Availability', in: { Lime: [0, 1, 2, 3], Grunge: [0, 1, 2, 3], Editorial: [0, 1, 2, 3], Pop: [0, 1, 2, 3], Lattice: [0, 1, 2, 3], '*': [1, 2, 3] },
-      // Lattice's layout 1 measured (limits.mjs calendar --themes=5 --designs=0); the others are Pop's, provisional.
+          + "layout 4's summary card. Layouts 2 and 3 draw no photograph. Lattice's and Paperback's layout 1 draw none either." },
+    { k: 'heading', l: 'Heading', d: 'Availability', in: { Lime: [0, 1, 2, 3], Grunge: [0, 1, 2, 3], Editorial: [0, 1, 2, 3], Pop: [0, 1, 2, 3], Lattice: [0, 1, 2, 3], Paperback: [1, 2, 3], '*': [1, 2, 3] },
+      // Paperback's layout 1 draws the month as its head, so it reads no heading. Lattice's layout 1 measured (limits.mjs calendar --themes=5 --designs=0); the others are Pop's, provisional.
       chars: { Retro: [null, 25, 36, 18], Lime: [25, 22, 32, 18], Grunge: [28, 24, 35, 23], Editorial: [14, 14, 21, 11], Pop: [13, 20, 24, 15],
         Lattice: [25, 20, 24, 15] } },
     { k: 'open',    l: 'Calendar start date', type: 'date', d: CAL_OPEN,
@@ -3473,14 +3473,16 @@ export const FIELDS = {
           + 'date has passed.' },
     { k: 'time',    l: 'Event start time', d: CAL_TIME, in: [0, 3],
       chars: { Retro: [33, null, null, 34], Lime: [13, null, null, 32], Grunge: [13, null, null, 37], Editorial: [13, null, null, 33], Pop: [28, null, null, 33],
-        Lattice: [16, null, null, 33] },
+        Lattice: [16, null, null, 33],
+        // Paperback's layout 1 measured (limits.mjs calendar --themes=6 --designs=0 --upright): 24 binds at 768, where the line is one line.
+        Paperback: [24, null, null, 33] },
       hint: "Printed in layout 1's enquiry line, and on its own in layout 4's "
           + 'date card. Leave it empty and the line stops at the date.' },
     // JP-095 (a): the line every layout prints while no day is cued. Cased in
     // sectionVm, as the slot line beside it is; emptied, the seed again.
     { k: 'prompt',  l: 'Calendar instruction text', d: CAL_PROMPT,
       chars: { Retro: [33, 24, 39, 50], Lime: [44, 23, 33, 47], Grunge: [44, 24, 36, 50], Editorial: [44, 29, 24, 50], Pop: [31, 32, 24, 50],
-        Lattice: [33, 32, 24, 50] },
+        Lattice: [33, 32, 24, 50], Paperback: [36, 32, 24, 50] },
       hint: 'The line where the picked date goes while none is picked: on the published page, '
           + 'until a visitor picks one, when the opening date is booked or has passed. Left empty, '
           + 'it shows “Pick a date to enquire” again.' },
@@ -3490,14 +3492,15 @@ export const FIELDS = {
     // (JP-088; Pop's since its layout-1 pass, user call, 2026-10-02): its
     // enquiry line is the link.
     { k: 'cta',     l: 'Button', d: 'Check a date',
-      in: { Lime: [3], Grunge: [3], Editorial: [3], Pop: [3], Lattice: [0, 3], '*': [0, 3] },
+      in: { Lime: [3], Grunge: [3], Editorial: [3], Pop: [3], Lattice: [0, 3], Paperback: [0, 3], '*': [0, 3] },
+      // Paperback's Continue pill measured 34 (the 390 foot's width) and is held to 12 as Lattice's is, so the 768 foot's line keeps its room: a judgement call, the user's to overrule.
       // Lattice's layout-1 Continue bar: measured 29 (box), held to 12 so the bar stays within a third of the 390 foot
       // and the enquiry line keeps its room (the frame's seat is 130 wide beside a 162 line); a judgement call.
-      chars: { Retro: [24, null, null, 24], Lattice: [12, null, null, 24], '*': [null, null, null, 24] },
+      chars: { Retro: [24, null, null, 24], Lattice: [12, null, null, 24], Paperback: [12, null, null, 24], '*': [null, null, null, 24] },
       hint: 'Layout 4’s Send Enquiry, on the last step of the enquiry wizard and at the foot '
           + 'of the summary; it starts from “Send Enquiry” there, and shows it again if you '
-          + 'empty this. Under Retro it is also layout 1’s button, and under Lattice layout 1’s '
-          + '“Continue” bar (emptied, the bar is not drawn). The other templates’ '
+          + 'empty this. Under Retro it is also layout 1’s button, and under Lattice and Paperback layout 1’s '
+          + '“Continue” button (emptied, the bar is not drawn). The other templates’ '
           + 'layout 1 has no button: its “Enquiry for …” line is the link.' },
     { k: 'slots',   l: 'Available dates', type: 'slots', max: 8, in: [1],
       cols: { kind: { Retro: [null, 33], Lime: [null, 36], Grunge: [null, 40], Editorial: [null, 33], Pop: [null, 36] },
@@ -4026,7 +4029,7 @@ export function fieldSeed({ cat, f, themeName, design, c = {}, artistName, email
     : f.k === 'terms' && cat === 'map' ? mapTermsSeed(c)
     : f.k === 'cta' && cat === 'calendar' && design === 3 ? CAL_SEND_4
     : f.k === 'cta' && cat === 'bio' && design === 0 && themeName === 'Paperback' ? BIO_CTA_PAPERBACK
-    : f.k === 'cta' && cat === 'calendar' && design === 0 && themeName === 'Lattice' ? CAL_CTA_LATTICE
+    : f.k === 'cta' && cat === 'calendar' && design === 0 && (themeName === 'Lattice' || themeName === 'Paperback') ? CAL_CTA_LATTICE
     : f.k === 'rowCta' && cat === 'pricing' && design === 0 && themeName === 'Paperback' ? PRICING_ROW_CTA_PAPERBACK
     : f.k === 'rowCta' && cat === 'pricing' && design === 2 ? PRICING_ROW_CTA_3
     : f.k === 'rowCta' && cat === 'pricing' && design === 3 ? PRICING_ROW_CTA
@@ -4085,6 +4088,7 @@ export const INLINE_OFF = {
   'Paperback.3.repertoire.songs.length': 'not drawn: only layout 3 prints a song’s length',
   'Pop.0.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
   'Lattice.0.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
+  'Paperback.0.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
   'Retro.1.header.kicker': 'not drawn: the layout-2 header prints no kicker (a shared identity key; the bio’s role line and the form print it)',
   'Retro.1.header.tags': 'not drawn: the layout-2 header prints no tag chips (a shared identity key; the bio prints them)',
   'Retro.1.repertoire.songs.length': 'not drawn: only layout 3 prints a song’s length',
@@ -4118,6 +4122,7 @@ export const INLINE_OFF = {
   'Paperback.1.header.tags': 'not drawn: the layout-2 header prints no tag chips (a shared identity key; the bio prints them)',
   'Pop.1.repertoire.songs.length': 'not drawn: only layout 3 prints a song’s length',
   'Pop.1.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
+  'Paperback.1.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
   'Pop.1.form.fields.placeholder': 'not drawn: the card’s boxes print the label, and a placeholder only once the label is emptied',
   'Pop.1.testimonials.quotes.when': 'not drawn: layout 2’s card has no seat for it',
   'Pop.1.media.tracks.sub': 'derived value: the seeded page prints the release and the running time as two nodes, and the whole line only once the list is stored',
@@ -4167,6 +4172,7 @@ export const INLINE_OFF = {
   'Editorial.3.pricing.unit': 'derived value: layout 4 drops the leading slash, so the page prints event, not the field’s /event',
   'Pop.3.repertoire.songs.length': 'not drawn: only layout 3 prints a song’s length',
   'Pop.3.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
+  'Paperback.3.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
   'Pop.3.testimonials.quotes.when': 'not drawn: layout 4’s wall has no seat for it',
   'Pop.3.media.tracks.sub': 'derived value: the page prints the release alone (the list tile’s Single); the running times are the player’s clock',
   'Pop.3.pricing.unit': 'derived value: layout 4 drops the leading slash, so the page prints event, not the field’s /event',

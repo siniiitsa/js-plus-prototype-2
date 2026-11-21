@@ -19692,6 +19692,161 @@ function LatticeCalendar({ s, g }) {
   )
 }
 
+// Paperback · layout 1 (plans/paperback/layout-1.md, section 8; frames 1:3131 · 1:11793 · 1:12975, 835 / 676 / 910 tall). A 40-radius blush card
+// (`s.box2` under the Scheme-2 seat) on the white page, two halves 40 apart (stacked at 390): left, two 44 black discs round the month (Bricolage
+// ExtraBold, centred between them), the weekday row and a seven-column grid of 48-tall white 14-radius cells (the picked one pink under white type,
+// ringed by the indigo hand-drawn circle); right, a magenta blob, a yellow tile turned -4 degrees holding the speaker, a white disc turned -10
+// degrees holding the headphones and a confetti set; and a white foot with the enquiry line and the split Continue pill (under the line at 390).
+// The bio's stage pattern: frame px verbatim in cqw, vertical insets in the stage's child, `vm.pad = '0px <surplus>'`. **The right half is pinned to the
+// five-row month's height** (the frames' June), so a six-row month grows the grid alone. Not drawn (call 1): the scripts `pick your night!` and `Your night,
+// your playlist` (no field). The month, the pick, the arrows and the Continue link are `Calendar`'s, handed over in `g`.
+const PAPER_CAL = {
+  desktop: {
+    fw: 1440, top: 141.1, side: 48.96, padX: 48, padY: 48, headH: 46.797, headFs: 52, halfH: 360.797, tile: [256, 256], blob: [91.52, -29.61], disc: [156.51, 265.39],
+    circle: [-0.77, -2.8], lineFs: 17, lineLh: 20.4, conf: 'confettiCalendar', ring: 'circle', fit: 1.09,
+  },
+  tablet: {
+    fw: 768, top: 70, side: 26.11, padX: 36, padY: 41, headH: 44, headFs: 42, halfH: 358, tile: [242, 248], blob: [-59.06, -31], disc: [49.81, 284.27],
+    circle: [-0.82, 0], lineFs: 17, lineLh: 20.4, conf: 'confettiCalendarTablet', ring: 'circleTablet', fit: 1.105,
+  },
+  mobile: {
+    fw: 390, top: 24, side: 24, padX: 24, padY: 34, headH: 44, headFs: 34, halfH: 240, tile: [232, 240], blob: [-63, -90], disc: [2, 205],
+    circle: [-0.82, 0], lineFs: 15, lineLh: 18, conf: 'confettiCalendarMobile', ring: 'circleMobile', fit: 1.105,
+  },
+}
+function PaperbackCalendar({ s, g }) {
+  const { month, cur, line, step, pick } = g
+  const dev = s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop'
+  const P = PAPER_CAL[dev]
+  const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
+  const ink = s.onScheme[8].bg
+  const yellow = s.onScheme[1].box2
+  const label = (size, extra) => ({ fontFamily: s.label, fontWeight: 700, fontSize: size, letterSpacing: '-0.01em', ...extra })
+  const [bw, bh] = P.tile
+
+  const arrow = (back, dir) => {
+    const onClick = step(dir)
+    return (
+      <span aria-hidden onClick={onClick} style={{
+        flex: 'none', width: u(44), height: u(44), borderRadius: '50%', background: ink, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+        cursor: onClick ? 'pointer' : undefined, opacity: s.live && !onClick ? 0.38 : undefined,
+      }}>{paperArrow(u, back, PAPER_WHITE)}</span>
+    )
+  }
+
+  // The month, centred between the discs and fitted to the room they leave by its own width (`month.ems`, Bricolage's table, times the
+  // per-width fit the table's 1000px reading needs), at the frame's size wherever it fits. The box is a container, so its own size is set on it
+  // (cqw resolves against the stage there) and the span takes `min(1em, room / ems)`.
+  const ems = month.ems !== undefined ? month.ems * P.fit : 0
+  const head = (
+    <div style={row(u(12), { height: u(P.headH), justifyContent: 'space-between' })}>
+      {arrow(true, -1)}
+      <div style={{ flex: '1 1 0', minWidth: 0, containerType: 'inline-size', display: 'flex', justifyContent: 'center', fontSize: u(P.headFs) }}>
+        <span style={{
+          fontFamily: s.display, fontWeight: 800, letterSpacing: '-0.035em', lineHeight: 0.9, color: s.tx, whiteSpace: 'nowrap',
+          fontSize: ems ? `min(1em, calc(100cqi / ${ems.toFixed(3)}))` : '1em',
+        }}>{month.label}</span>
+      </div>
+      {arrow(false, 1)}
+    </div>
+  )
+
+  const names = (
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', columnGap: u(6), height: u(30), boxSizing: 'border-box', paddingTop: u(6) }}>
+      {s.calDays.map((d) => (
+        <span key={d} style={label(u(13), { lineHeight: 1.2, textAlign: 'center', color: s.text3 })}>{d}</span>
+      ))}
+    </div>
+  )
+
+  // A day: a white 14-radius cell; the lit one is pink under white type with the circle round it (centred on the cell, the frame's own offset).
+  // A booked or past day is the family's: dimmed to .38, no strike, no handler.
+  const day = (c, i) => {
+    if (c.iso === undefined) return <span key={i} />
+    const on = c.iso === cur
+    const onClick = pick(c)
+    return (
+      <span key={i} onClick={onClick} style={{
+        ...label(u(16), { lineHeight: 1.2 }), position: on ? 'relative' : undefined, zIndex: on ? 1 : undefined, boxSizing: 'border-box', height: u(48), borderRadius: u(14),
+        display: 'flex', alignItems: 'center', justifyContent: 'center', background: on ? s.ac : PAPER_WHITE, color: on ? PAPER_WHITE : ink,
+        opacity: c.booked || c.dead ? 0.38 : undefined, cursor: onClick ? 'pointer' : undefined,
+      }}>
+        {c.d}
+        {on && (
+          <PaperbackArt name={P.ring} width={u(116)} height={u(72)} style={{
+            position: 'absolute', pointerEvents: 'none', left: `calc(50% + ${u(P.circle[0] - 58)})`, top: `calc(50% + ${u(P.circle[1] - 36)})`,
+          }} />
+        )}
+      </span>
+    )
+  }
+
+  const left = (
+    <div style={col(u(14), { minWidth: 0 })}>
+      {head}
+      <div style={col(u(6))}>
+        {names}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', gap: u(6) }}>{month.cells.map(day)}</div>
+      </div>
+    </div>
+  )
+
+  // The right half, pinned to the five-row height: the blob, the tile (centred in the half, turned -4) with the speaker, the confetti over them and
+  // the headphones disc (centre read off the frame, turned -10).
+  const [dx, dy] = P.disc
+  const right = (
+    <div style={{ position: 'relative', minWidth: 0, height: u(P.halfH), alignSelf: s.mob ? undefined : 'start', flex: 'none' }}>
+      <PaperbackArt name="blobMagenta" width={u(420)} height={u(420)} aria-hidden style={{ position: 'absolute', pointerEvents: 'none', left: u(P.blob[0]), top: u(P.blob[1]) }} />
+      <div aria-hidden style={{
+        position: 'absolute', left: `calc(50% - ${u(bw / 2)})`, top: `calc(50% - ${u(bh / 2)})`, width: u(bw), height: u(bh), boxSizing: 'border-box',
+        background: yellow, borderRadius: u(24), transform: 'rotate(-4deg)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+      }}>
+        <PaperbackArt name="speaker" width={u(200)} height={u(200)} />
+      </div>
+      <PaperbackArt name={P.conf} aria-hidden style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }} />
+      <div aria-hidden style={{
+        position: 'absolute', left: u(dx - 51), top: u(dy - 51), width: u(102), height: u(102), boxSizing: 'border-box', borderRadius: '50%', background: PAPER_WHITE,
+        border: `${u(3)} solid ${ink}`, transform: 'rotate(-10deg)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+      }}>
+        <PaperbackArt name="headphones" width={u(55.672)} height={u(55.672)} />
+      </div>
+    </div>
+  )
+
+  // The foot: the enquiry line (the picked day's, else the prompt) and the Continue pill, which leads on to the form (`calBookTo`) when live and is a
+  // picture on the canvas, as Lattice's bar. An emptied `cta` drops the pill. At 390 the foot is a 24-radius card with the pill under the line.
+  const pill = s.calCta ? <PaperbackPill s={s} label={s.calCta} to={s.calBookTo} u={u} /> : null
+  const lineEl = <span style={label(u(P.lineFs), { lineHeight: u(P.lineLh), color: ink, minWidth: 0, flex: s.mob ? undefined : '1 1 0' })}>{line}</span>
+  const foot = s.mob ? (
+    <div style={col(u(12), { alignItems: 'flex-start', boxSizing: 'border-box', background: PAPER_WHITE, borderRadius: u(24), padding: u(16), minHeight: pill ? u(128) : undefined })}>
+      {lineEl}
+      {pill}
+    </div>
+  ) : (
+    <div style={row(u(16), { justifyContent: 'space-between', boxSizing: 'border-box', minHeight: u(68), background: PAPER_WHITE, borderRadius: s.radiusChip, padding: `${u(10)} ${u(10)} ${u(10)} ${u(24)}` })}>
+      {lineEl}
+      {pill}
+    </div>
+  )
+
+  return (
+    <div style={{ position: 'relative', containerType: 'inline-size', overflow: 'hidden' }}>
+      <div style={{ paddingTop: u(P.top), paddingBottom: u(P.top) }}>
+        <div style={{
+          boxSizing: 'border-box', margin: `0 ${u(P.side)}`, padding: `${u(P.padY)} ${u(P.padX)}`, background: s.box2, borderRadius: u(40),
+          overflow: s.mob ? 'visible' : 'hidden', ...WRAP_LONG,
+        }}>
+          <div style={s.mob ? col(u(40)) : { display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', columnGap: u(40) }}>
+            {left}
+            {right}
+          </div>
+          <div style={{ marginTop: u(28) }}>{foot}</div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function Calendar({ s }) {
   // The month on show, as an offset into `s.calMonths`, and the day the visitor
   // has picked. Both inert on the editor canvas, where the section is a picture
@@ -19781,9 +19936,10 @@ function Calendar({ s }) {
     // Lattice's layout-1 calendar is a block of its own (LatticeCalendar), after the seam: the month, the pick
     // and the arrows are `Calendar`'s and go over in `g`, so the published controls are the one seam in a new
     // picture. The day's handler is the Lime block's (a blocked day has none; the lit day unlights on a second click).
-    if (s.limeTree && s.lattice) {
+    // Paperback's (PaperbackCalendar) is the same hand-over in a third picture.
+    if (s.limeTree && (s.lattice || s.paperback)) {
       const pick = (c) => (s.live && !blocked(c) ? () => setSel((v) => (v === c.iso ? '' : c.iso)) : undefined)
-      return <LatticeCalendar s={s} g={{ month, cur, line, step, pick }} />
+      return s.paperback ? <PaperbackCalendar s={s} g={{ month, cur, line, step, pick }} /> : <LatticeCalendar s={s} g={{ month, cur, line, step, pick }} />
     }
 
     // Lime — the scheduler frames 964:58595 / 986:39884 / 986:39896, as a block

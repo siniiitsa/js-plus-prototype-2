@@ -600,7 +600,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // Paperback's layout-1 bio (1:2397 · 1:11004 · 1:12191) is a stage of its own (PaperbackBio): it carries the
   // frames' vertical insets in cqw and the horizontal ones as its columns' own seats, so the root pads only the
   // published tab's surplus.
-  if (d === 0 && (cat === 'bio' || cat === 'media' || cat === 'gallery' || cat === 'repertoire' || cat === 'map' || cat === 'pricing') && T.name === 'Paperback') vm.pad = `0px ${vm.surplus}`
+  if (d === 0 && (cat === 'bio' || cat === 'media' || cat === 'gallery' || cat === 'repertoire' || cat === 'map' || cat === 'pricing' || cat === 'calendar') && T.name === 'Paperback') vm.pad = `0px ${vm.surplus}`
   // …and the media's (1:419 · 1:9052 · 1:10024): 129.43 top and foot at 1440 (x 0.82, 106.13), 77 at 768
   // and 58 at 390, the same content insets. The 390 master's head box starts 40 down (an import
   // artefact: the eyebrow row sits at y 98, not 58), so with the eyebrow removed the head takes
@@ -1781,7 +1781,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
       // layout-1 month is fitted to the room between its two discs, since
       // Titan sets SEPTEMBER 2025 265 wide in the 390 row's 216.
       const label = cased(monthLabel(y, mo))
-      return { label, ems: navFace ? +navFace(label).toFixed(3) : undefined, name: MONTHS[mo].toUpperCase(), year: String(y), cells }
+      // Paperback's layout-1 month is fitted to the room between its two discs the same way, in Bricolage's ems less the frames' -0.035em tracking.
+      const ems = navFace ? +navFace(label).toFixed(3)
+        : T.name === 'Paperback' && d === 0 ? +(bricolageEms(label) - 0.035 * [...label].length).toFixed(3) : undefined
+      return { label, ems, name: MONTHS[mo].toUpperCase(), year: String(y), cells }
     })
     vm.calDays = CAL_DAYS
     // The day the calendar is cued to, which is what the foot prints and the
@@ -1802,7 +1805,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // none, JP-088: its line links). The same field is layout 4's Send Enquiry (JP-082),
     // seeded CAL_SEND_4 there: `vm.calWizard.send`, below.
     // Lattice's layout-1 foot draws a Continue bar (its own seed, mirrored by fieldSeed); the Lime family's draws none.
-    vm.calCta = cased(cv('cta', d === 0 && vm.lattice ? CAL_CTA_LATTICE : 'Check a date'))
+    vm.calCta = cased(cv('cta', d === 0 && (vm.lattice || vm.paperback) ? CAL_CTA_LATTICE : 'Check a date'))
     // Layout 2's pill, which its frame labels differently from the other two
     // calendar pills (its "Star Enquiry" read as the intended "Start").
     vm.calSlotCta = cased(cv('slotCta', CAL_SLOT_CTA))
