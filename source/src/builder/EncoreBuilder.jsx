@@ -600,7 +600,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // Paperback's layout-1 bio (1:2397 · 1:11004 · 1:12191) is a stage of its own (PaperbackBio): it carries the
   // frames' vertical insets in cqw and the horizontal ones as its columns' own seats, so the root pads only the
   // published tab's surplus.
-  if (d === 0 && (cat === 'bio' || cat === 'media' || cat === 'gallery' || cat === 'repertoire' || cat === 'map' || cat === 'pricing' || cat === 'calendar') && T.name === 'Paperback') vm.pad = `0px ${vm.surplus}`
+  if (d === 0 && (cat === 'bio' || cat === 'media' || cat === 'gallery' || cat === 'repertoire' || cat === 'map' || cat === 'pricing' || cat === 'calendar' || cat === 'form') && T.name === 'Paperback') vm.pad = `0px ${vm.surplus}`
   // …and the media's (1:419 · 1:9052 · 1:10024): 129.43 top and foot at 1440 (x 0.82, 106.13), 77 at 768
   // and 58 at 390, the same content insets. The 390 master's head box starts 40 down (an import
   // artefact: the eyebrow row sits at y 98, not 58), so with the eyebrow removed the head takes
@@ -1552,7 +1552,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   }
   // Paperback's layout-1 bio head wraps in the frame's 431.34 column (and one line at 768 and 390) and is
   // fitted to its widest word, in Bricolage's ems less the frames' -0.035em tracking (the header's face).
-  if (T.name === 'Paperback' && (cat === 'bio' || cat === 'media' || cat === 'gallery' || cat === 'repertoire' || cat === 'map' || cat === 'pricing') && d === 0) {
+  if (T.name === 'Paperback' && (cat === 'bio' || cat === 'media' || cat === 'gallery' || cat === 'repertoire' || cat === 'map' || cat === 'pricing' || cat === 'form') && d === 0) {
     vm.titleWordEms = +Math.max(0, ...vm.title.split(/\s+/).map((w) => bricolageEms(w) - 0.035 * [...w].length)).toFixed(3)
   }
   // …and its repertoire rows set a song's title in a box beside the artist's chip, shrinking the type to keep the

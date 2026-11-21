@@ -359,3 +359,24 @@ draws *Wedding* lit, so rule and frame agree). The block owns no hook.
 44), `fields.label` **40** (50 / 42 / 40), `fields.placeholder` **36** (47 / 39 / 36), `typeLabel` **40**, `messageLabel` **40**, `message` **39** (110 / 92 / 39), `button` **35**, `promises` chars **33** (the 390 row wraps past it) and
 count 9 (16 measured, open), `types` count 8 (the chip row: 10 / 9 / 8), `IDENTITY_CHARS.form.title` **59** and `kicker` **33**. `fields` has no item-chars row, and `types` measured 38 a chip but is held to the shared 15. Still Pop's, unmeasured: `sub` and `steps` (layout 4), `para`, and layouts 2-4 of every other row. `FIELDS.form` `in` rows are all arrays, so no row
 names a template; `image` reaches layouts 1 and 2 as before (`photo` is layout 2's), so `PHOTO_OFF` needs no row. No `INLINE_OFF` row: `inline-probe` reports 0 UNLEDGERED.
+
+## Paperback — layout 1 (plans/paperback/layout-1.md, section 9, 2026-11-21)
+
+`PaperbackForm` (`EncoreSection.jsx`, dispatched in `EnquiryForm` on `s.v0 && s.limeTree && s.paperback`, after the seam and ahead of Lattice's block). Frames `1:3269` · `1:11931` · `1:13112`
+(687 / 898 / 1193 tall). Layouts 2–4 are still the placeholders. Everything the live seam owns (boxes, date mask, chip at 0, refusal, `role="alert"` line, mailto submit, sent state) goes over in `g`;
+the block is only a new picture, and `PaperbackPill` took `as` / `tagProps` so the submit is the shared pill as the seam's `Pill`.
+
+- **Stage**: `PAPER_FORM` holds the frame numbers per width, `u(v)` in `cqw`, `vm.pad = '0px <surplus>'` (`form` joins the Paperback pad condition in `EncoreBuilder.jsx`). At 1440 the card is two halves,
+  an indigo panel (Scheme 3, 447.34 wide) and an orange form (Scheme 4, 894.72); narrow it stacks. The card clips (`overflow: hidden`) its blob art (`blobIndigo`).
+- **The panel**: a 58 avatar with a 3px white ring (the form's `image`), the name over the role line, a Bricolage 800 head 52 / 42 / 34 and the promises (a 24 yellow disc with a ✓, Figtree 600 16).
+  The head is fitted to its widest word by `vm.titleWordEms` (`form` joins the Paperback list) times `fit`, set on the **container's** font-size and read as `min(1em, calc(100cqi / ems))` on the h2, because a
+  `cqw` inside a nested container resolves against that container. **`fit` is 1.12 at every width**: the table is read at 1000px, where the face sets narrowest; a word shrunk to 20–52px sets 7–12% wider
+  (measured on five words: 1.068 at 52, 1.083 at 42, 1.096 at 34, 1.117 at 20). A per-width 1.07 / 1.078 / 1.09 broke a 34-letter word mid-word at 390.
+- **The form half**: 52-tall boxes (2px ink border, radius 8, white), pairs 16 apart at 1440 and 768, one column at 390 (28 apart). A refused box takes the pink `s.ac` border and a 2px inset pink.
+  The chip row is 44 tall, lit ink under white; the message box is 89 tall at radius 24; Book Now is the ink pill. **A placeholder draws at `--ph: 0.565`** (the frame's ink at that tint on white); the canvas spans use the same opacity.
+- **The chat bubble** is a yellow disc with a 3px ink ring, tilted `rotate(8deg)` (clockwise, checked on a 4× export), seated off the panel/form seam by `bubble: [disc, art, right, top]`.
+- **The sent state** holds the card's height (`sentH`, 443.39 / 443.39 / 746.97) so the page below does not jump; *Write another* keeps the typed values and the chip.
+- **Caps** (measured 2026-11-21, `limits.mjs form --themes=6 --designs=0 --upright`, `--check` and `--seeds` clean): heading 41 (the 1440 measure's fourth line), fields.label 45, placeholder 34, types 6 chips of 15,
+  promises 5 rows of 29 (the seed is the floor; one line at 390 holds 20), message 37, `typeLabel` / `messageLabel` 45, button 34; identity: title 60, kicker 37.
+- **Ledgers**: `Paperback.1.form.fields.placeholder` and `.2.` in `INLINE_OFF` (layouts 2 and 3 are Pop's placeholder cards: the label sits in the box). Layout 1 passes whole (inline-probe 21 slots, photo-probe 1 slot
+  plus `--blank` and `--drop`, focus-probe 27 controls); the photo is the avatar. Digest themes 0–6 at three widths: only theme 6 form layout 1 moved.

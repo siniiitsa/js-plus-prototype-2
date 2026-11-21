@@ -2127,9 +2127,11 @@ function LatticeHero({ s, menu }) {
 // menu's panel (a plain px) draw the one pill. A link only under `s.live` (`BookPill`'s rule); `ext`
 // is an outward address, as `BracketButton`'s. The black Soundcloud / Full bio pills the later
 // sections draw are this shape in another ground (`bg`, `fg`).
-function PaperbackPill({ s, label, to, ext, u, bg, fg, style }) {
-  const link = ext !== undefined ? extLink(s, ext) : s.live && to ? { href: `#${to}` } : null
-  const Tag = link ? 'a' : 'span'
+function PaperbackPill({ s, label, to, ext, u, bg, fg, style, as, tagProps }) {
+  // `as` + `tagProps` hand the pill to a seam that owns the element (the form's mailto submit is the seam's `Pill`: an `<a href>`, a
+  // `role="button"` refusal or an inert span), so only the picture is this one's.
+  const link = tagProps ?? (ext !== undefined ? extLink(s, ext) : s.live && to ? { href: `#${to}` } : null)
+  const Tag = as ?? (link ? 'a' : 'span')
   const ground = bg ?? s.ac
   const ink = fg ?? PAPER_WHITE
   const cell = { display: 'flex', alignItems: 'center', justifyContent: 'center', background: ground, color: ink, borderRadius: u(8), height: u(48), boxSizing: 'border-box' }
@@ -29639,6 +29641,218 @@ function LatticeForm({ s, g }) {
   )
 }
 
+// Paperback · layout 1 (plans/paperback/layout-1.md, section 9; frames 1:3269 · 1:11931 · 1:13112, 687 / 897.6 / 1192.7 tall). One 40-radius card on the white
+// page made of an indigo panel (Scheme 3: the avatar, the name over the role, the head, three ticked promises, a clipped indigo blob) and an orange form
+// (Scheme 4: two pairs of white 8-radius boxes in a 2px ink ring, a 999-radius chip row with the lit one ink, a 24-radius message box and the split ink
+// Book pill), with a yellow chat-bubble disc turned 8 degrees on the form's top-right corner (nothing clips it). The halves stand side by side at 1440 (the
+// panel a fixed 447.34) and stacked at 768 and 390. The bio's stage pattern: frame px verbatim in cqw, vertical insets in the stage's child, `vm.pad =
+// '0px <surplus>'`. Not drawn: nothing the standing rules remove (the frames print no eyebrow, script or ring text). `EnquiryForm` owns the live seam (the
+// typed boxes, the chip, the errors, the sent state, the mailto `Pill`), so it is handed over in `g` and nothing here is a hook; there is no <form>, ever
+// (notes/form.md).
+// `fit`: the head's table is read at 1000px, where the face sets narrowest; a word shrunk to 20-52px sets 7-12% wider (measured over five words: 1.068 at 52,
+// 1.083 at 42, 1.096 at 34, 1.117 at 20), so the fit is the widest of them: the seed's word never shrinks, and a longer one stays whole.
+const PAPER_FORM = {
+  desktop: {
+    fw: 1440, top: 81.8, side: 48.96, panelW: 447.34, panelX: 40, panelY: 40, formX: 40, formY: 40, rowGap: 16, headFs: 52, blob: [227.34, 303.39],
+    bubble: [110, 64.47, 21, 15], fit: 1.12, sentH: 443.39,
+  },
+  tablet: {
+    fw: 768, top: 24, side: 26.11, panelX: 30, panelY: 34, formX: 30, formY: 34, rowGap: 16, headFs: 42, blob: [495.77, 118.22],
+    bubble: [90, 52.08, 59, -1], fit: 1.12, sentH: 443.39,
+  },
+  mobile: {
+    fw: 390, top: 24, side: 24, panelX: 20, panelY: 28, formX: 20, formY: 28, rowGap: 28, headFs: 34, blob: [122, 121.69],
+    bubble: [70, 39.67, 27, -5], fit: 1.12, sentH: 746.97,
+  },
+}
+// The frame's placeholder is #757575 on white, which is the ink (#0B0B0B) at this strength: `index.css`'s `--ph` and the canvas span draw the same.
+const PAPER_FORM_PH = 0.565
+function PaperbackForm({ s, g }) {
+  const { at, setAt, msg, setMessage, ti, setType, showTypes, errs, msgBad, sent, setSent, Pill, pillLink, onSubmit, cp, pid } = g
+  const dev = s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop'
+  const P = PAPER_FORM[dev]
+  const desk = !s.narrow
+  const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
+  const ink = s.tx
+  const orange = s.onScheme[4].bg
+  const indigo = s.onScheme[3].bg
+  const yellow = s.onScheme[1].box2
+  const face = (size, weight, extra) => ({ fontFamily: s.label, fontWeight: weight, fontSize: size, letterSpacing: '-0.01em', ...extra })
+
+  const label = (t, extra) => <span style={face(u(14), 700, { display: 'block', lineHeight: 1.2, color: ink, ...extra })}>{t}</span>
+  // One box, drawn once for both modes: white, a 2px ring of ink at radius 8, Figtree SemiBold 16. A refused box changes colour and weight at once
+  // (no palette has a red): the ring and a 2px inset of the page's pink, 4px in all, which the 52 holds.
+  const box = (bad, extra) => ({
+    boxSizing: 'border-box', width: '100%', margin: 0, height: u(52), padding: `0 ${u(18)}`, outline: 'none',
+    border: `${u(2)} solid ${bad ? s.ac : ink}`, borderRadius: u(8), background: s.bg, color: ink,
+    boxShadow: bad ? `inset 0 0 0 ${u(2)} ${s.ac}` : undefined,
+    ...face(u(16), 600, { lineHeight: 'normal' }), ...extra,
+  })
+  const hint = (t) => (
+    <span style={{ opacity: PAPER_FORM_PH, minWidth: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t}</span>
+  )
+
+  const field = (f, i) => {
+    const bad = !!(errs && errs.f[i])
+    return (
+      <div key={i} style={col(u(6), { minWidth: 0 })}>
+        {label(f.label)}
+        {s.live ? (
+          <input
+            {...cp(i)}
+            value={at(i)} placeholder={f.placeholder} aria-label={f.label}
+            onChange={(e) => setAt(i, e.target.value)}
+            type={f.kind === 'email' ? 'email' : 'text'}
+            inputMode={f.kind === 'number' || f.kind === 'date' ? 'numeric' : undefined}
+            aria-invalid={bad || undefined}
+            style={{ ...box(bad), '--ph': PAPER_FORM_PH }}
+          />
+        ) : (
+          <span style={box(bad, { display: 'flex', alignItems: 'center' })}>{hint(f.placeholder)}</span>
+        )}
+      </div>
+    )
+  }
+  const fieldRow = (fs, r) => (
+    <div key={r} style={{
+      display: 'grid', gap: u(s.mob ? 28 : 16), gridTemplateColumns: s.mob ? 'minmax(0, 1fr)' : 'repeat(2, minmax(0, 1fr))',
+    }}>{fs.map((f, j) => field(f, r * 2 + j))}</div>
+  )
+
+  const submit = (extra) => (
+    <PaperbackPill s={s} u={u} bg={ink} fg={PAPER_WHITE} label={s.formBtn} as={Pill} tagProps={{ ...pillLink, onClick: onSubmit }} style={{ cursor: onSubmit ? 'pointer' : undefined, ...extra }} />
+  )
+
+  // The panel's head: Bricolage ExtraBold in the content box, wrapping between words and shrinking only when its widest word would outrun the box
+  // (`vm.titleWordEms`, the table less the tracking, times the per-width `fit` the table's 1000px reading needs).
+  const head = (size, extra) => ({
+    margin: 0, fontFamily: s.display, fontWeight: 800, lineHeight: 0.86, letterSpacing: '-0.035em', color: PAPER_WHITE, overflowWrap: 'break-word', ...extra, fontSize: size,
+  })
+  const nameLine = String(s.brand || '').trim()
+  const roleLine = String(s.kicker || '').trim()
+  const panel = (
+    <div style={{
+      position: 'relative', boxSizing: 'border-box', background: indigo, overflow: 'hidden', minWidth: 0,
+      borderRadius: desk ? `${u(40)} 0 0 ${u(40)}` : `${u(40)} ${u(40)} 0 0`, ...(desk ? { width: u(P.panelW), flex: 'none' } : null),
+    }}>
+      <PaperbackArt name="blobIndigo" width={u(360)} height={u(360)} aria-hidden style={{ position: 'absolute', pointerEvents: 'none', left: u(P.blob[0]), top: u(P.blob[1]) }} />
+      <div style={col(u(24), { position: 'relative', boxSizing: 'border-box', padding: `${u(P.panelY)} ${u(P.panelX)}`, minWidth: 0 })}>
+        <div style={row(u(12), { minWidth: 0 })}>
+          <span style={{ width: u(58), height: u(58), flex: 'none', boxSizing: 'border-box', border: `${u(3)} solid ${PAPER_WHITE}`, borderRadius: '50%', overflow: 'hidden', display: 'block' }}>
+            <Photo s={s} ink={ink} initialsSize={Math.round(20 * (P.fw === 1440 ? 0.82 : 1))} />
+          </span>
+          {(nameLine || roleLine) && (
+            <span style={col(u(1), { minWidth: 0, height: u(38), color: PAPER_WHITE })}>
+              {nameLine && <span style={face(u(16), 700, { lineHeight: u(19.2), overflowWrap: 'anywhere' })}>{nameLine}</span>}
+              {roleLine && <span style={face(u(13), 700, { lineHeight: u(15.6), opacity: 0.8, overflowWrap: 'anywhere' })}>{roleLine}</span>}
+            </span>
+          )}
+        </div>
+        {!!String(s.title || '').trim() && (
+          <div style={{ containerType: 'inline-size', minWidth: 0, fontSize: u(P.headFs) }}>
+            <h2 style={head(s.titleWordEms ? `min(1em, calc(100cqi / ${(s.titleWordEms * P.fit).toFixed(3)}))` : '1em')}>{s.title}</h2>
+          </div>
+        )}
+        {s.formPromises.length > 0 && (
+          <div style={col(u(10), { minWidth: 0 })}>
+            {s.formPromises.map((p, i) => (
+              <div key={i} style={row(u(10), { alignItems: 'flex-start', minWidth: 0 })}>
+                <span aria-hidden style={{
+                  flex: 'none', width: u(24), height: u(24), borderRadius: '50%', background: yellow, color: ink, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontFamily: "'Times New Roman', Times, serif", fontSize: u(12), lineHeight: 1,
+                }}>✓</span>
+                <span style={face(u(16), 600, { color: PAPER_WHITE, lineHeight: u(24), minWidth: 0, overflowWrap: 'anywhere' })}>{p}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+
+  const [disc, icon, bx, by] = P.bubble
+  const bubble = (
+    <div aria-hidden style={{
+      position: 'absolute', right: `calc(${u(bx)} - ${u(disc / 2)})`, top: `calc(${u(by)} - ${u(disc / 2)})`, width: u(disc), height: u(disc), boxSizing: 'border-box',
+      background: yellow, border: `${u(3)} solid ${ink}`, borderRadius: '50%', transform: 'rotate(8deg)', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none',
+    }}>
+      <PaperbackArt name="chat" width={u(icon)} height={u(icon)} />
+    </div>
+  )
+
+  const form = (
+    <div style={col(u(P.rowGap), {
+      position: 'relative', boxSizing: 'border-box', background: orange, padding: `${u(P.formY)} ${u(P.formX)}`, minWidth: 0,
+      borderRadius: desk ? `0 ${u(40)} ${u(40)} 0` : `0 0 ${u(40)} ${u(40)}`, ...(desk ? { flex: '1 1 0' } : null),
+    })}>
+      {sent ? (
+        // The form half alone; the card and the panel do not move. `sent` is only ever set under s.live, so the canvas never draws it.
+        <div style={col(u(16), { minHeight: u(P.sentH), alignItems: 'flex-start' })}>
+          <h3 style={head(u(P.headFs * 0.8), { color: ink })}>{s.formSentTitle}</h3>
+          <p style={{ ...face(u(16), 600, { lineHeight: 1.5, color: ink }), margin: 0 }}>{s.formSentBody}</p>
+          {/* Plain text, Retro's reason: the fallback for a browser that opened nothing. */}
+          <span style={face(u(16), 700, { lineHeight: 1.5, color: ink, overflowWrap: 'break-word' })}>{s.formEmail}</span>
+          <PaperbackPill s={s} u={u} bg={ink} fg={PAPER_WHITE} label={s.formAgain} as="span" tagProps={{ onClick: () => setSent(false) }} />
+        </div>
+      ) : (
+        <>
+          {s.formRows.map(fieldRow)}
+          {showTypes && (
+            <div style={col(u(8))}>
+              {label(s.formTypeLabel, { height: u(18) })}
+              <div style={row(u(6), { flexWrap: 'wrap', rowGap: u(6) })}>
+                {s.formTypes.map((t, i) => {
+                  const on = i === ti
+                  return (
+                    <span key={i} onClick={s.live ? () => setType(i) : undefined} style={{
+                      ...face(u(15), 700, { lineHeight: 'normal' }), boxSizing: 'border-box', height: u(44), padding: `0 ${u(16)}`, display: 'inline-flex', alignItems: 'center',
+                      border: `${u(2)} solid ${ink}`, borderRadius: s.radiusChip, background: on ? ink : s.bg, color: on ? PAPER_WHITE : ink,
+                      whiteSpace: 'nowrap', cursor: s.live ? 'pointer' : undefined,
+                    }}>{t}</span>
+                  )
+                })}
+              </div>
+            </div>
+          )}
+          <div style={col(u(6))}>
+            {label(s.formMsgLabel)}
+            {s.live ? (
+              <textarea
+                {...cp('msg')}
+                value={msg} placeholder={s.formMessage} aria-label={s.formMsgLabel}
+                onChange={(e) => setMessage(e.target.value)}
+                style={{ ...box(msgBad, { display: 'block', height: u(89), borderRadius: u(24), padding: `${u(14)} ${u(18)}`, resize: 'none' }), '--ph': PAPER_FORM_PH }}
+              />
+            ) : (
+              <span style={box(false, { display: 'block', height: u(89), borderRadius: u(24), padding: `${u(14)} ${u(18)}` })}>{hint(s.formMessage)}</span>
+            )}
+          </div>
+          <div style={col(u(P.rowGap), { alignItems: 'flex-start' })}>
+            {submit()}
+            {errs && (
+              <span id={pid} role="alert" style={face(u(14), 700, { lineHeight: 1.3, color: ink })}>
+                {errs?.m?.find(Boolean) || errs?.msg?.m || s.formPrompt}
+              </span>
+            )}
+          </div>
+        </>
+      )}
+      {bubble}
+    </div>
+  )
+
+  return (
+    <div style={{ position: 'relative', containerType: 'inline-size', overflow: 'hidden' }}>
+      <div style={{ paddingTop: u(P.top), paddingBottom: u(P.top) }}>
+        <div style={{ margin: `0 ${u(P.side)}`, display: 'flex', flexDirection: desk ? 'row' : 'column', alignItems: 'stretch', ...WRAP_LONG }}>
+          {panel}
+          {form}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function EnquiryForm({ s }) {
   // What the visitor has typed, gated on `s.live` throughout: on the canvas
   // every box is the span it has always been (§12.7), because a live field
@@ -29752,6 +29966,9 @@ function EnquiryForm({ s }) {
   // Lattice's layout-1 form is a block of its own (LatticeForm), after the seam: every piece of the live
   // seam above goes over in `g`, so the published boxes, chip, mailto, refusal and sent state are the one
   // seam in a new picture.
+  if (s.v0 && s.limeTree && s.paperback) {
+    return <PaperbackForm s={s} g={{ at, setAt, msg, setMessage, ti, setType, showTypes, errs, msgBad, sent, setSent, Pill, pillLink, onSubmit, cp, pid }} />
+  }
   if (s.v0 && s.limeTree && s.lattice) {
     return <LatticeForm s={s} g={{ at, setAt, msg, setMessage, ti, setType, showTypes, errs, msgBad, sent, setSent, Pill, pillLink, onSubmit, cp, pid }} />
   }
