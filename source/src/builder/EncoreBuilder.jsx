@@ -600,7 +600,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // Paperback's layout-1 bio (1:2397 · 1:11004 · 1:12191) is a stage of its own (PaperbackBio): it carries the
   // frames' vertical insets in cqw and the horizontal ones as its columns' own seats, so the root pads only the
   // published tab's surplus.
-  if (d === 0 && (cat === 'bio' || cat === 'media' || cat === 'gallery' || cat === 'repertoire' || cat === 'map' || cat === 'pricing' || cat === 'calendar' || cat === 'form') && T.name === 'Paperback') vm.pad = `0px ${vm.surplus}`
+  if (d === 0 && (cat === 'bio' || cat === 'media' || cat === 'gallery' || cat === 'repertoire' || cat === 'map' || cat === 'pricing' || cat === 'calendar' || cat === 'form' || cat === 'testimonials') && T.name === 'Paperback') vm.pad = `0px ${vm.surplus}`
   // …and the media's (1:419 · 1:9052 · 1:10024): 129.43 top and foot at 1440 (x 0.82, 106.13), 77 at 768
   // and 58 at 390, the same content insets. The 390 master's head box starts 40 down (an import
   // artefact: the eyebrow row sits at y 98, not 58), so with the eyebrow removed the head takes
@@ -2213,6 +2213,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
         // 304 box at 390); its alias sets the face 0.004em open (the header's tracking).
         : T.name === 'Lattice'
         ? +Math.max(0, ...quote.split(/\s+/).map((w) => latticeEms(w) + 0.004 * [...w].length)).toFixed(3)
+        // Paperback's layout-1 quote is fitted to its widest word as the form's head is: Bricolage's table less the
+        // frames' -0.035em tracking, times 1.12 (the table is read at 1000px; 32-48px type sets 7-12% wider).
+        : T.name === 'Paperback' && d === 0
+        ? +(1.12 * Math.max(0, ...quote.split(/\s+/).map((w) => bricolageEms(w) - 0.035 * [...w].length))).toFixed(3)
         : undefined,
       who,
       role,

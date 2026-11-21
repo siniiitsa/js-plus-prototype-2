@@ -26960,6 +26960,157 @@ function LatticeTestimonials({ s, g }) {
   )
 }
 
+// Paperback's layout-1 testimonials (Batch 2 file, 1:3354 · 1:12016 · 1:13198, 730 tall at all three widths; plans/paperback/layout-1.md,
+// section 10). A pale-yellow band (Scheme 1, the section's own ground) with a yellow wave floor (the frames' one 310-tall vector, its curves
+// stretched to the width), two outline trophies, and a white card turned -2 degrees holding the review: a Caveat script (`quotes.when`, turned
+// -3 degrees), the quote in Bricolage ExtraBold, a pink `who` chip and a cyan `role` chip. A star disc turned 8 degrees hangs off the card's
+// top-right corner and three sparkles stand at its lower-left; two black arrow discs flank it at 1440 and 768 and sit under it, centred, at 390.
+// The bio's stage pattern: frame px verbatim in cqw of a `containerType: inline-size` stage. `q`, `paging` and `step` are the seam's, so the
+// arrows page the published tab (wrapping at both ends, not drawn at one review) and the ring text on the disc, which no field carries, is not
+// drawn (call 1, the media's disc). Trophy centres are the design context's `left` / `top` plus half the wrapper; the card's content is a flow
+// column (padding, then 20 between the script, the quote and the chips) so a longer review grows the card, and the stage holds the 730 band.
+const PAPER_TESTI = {
+  desktop: {
+    fw: 1440, h: 730, gut: 48.96, cardW: 720, cardH: 273, padX: 40, padT: 40, padB: 40, scriptFs: 28, scriptH: 41, scriptBox: 27, quoteFs: 48, disc: [124, 16, 8],
+    spark: [[-54, 245], [-12, 223], [-2, 271]], trophy: [[256.6, 145.0], [1164.6, 605.0]], fit: 1.12,
+  },
+  tablet: {
+    fw: 768, h: 730, gut: 26.11, cardH: 240, padX: 30, padT: 34, padB: 34, scriptFs: 25, scriptH: 38, scriptBox: 24, quoteFs: 38, disc: [124, 16, 8],
+    spark: [[-54, 212], [-12, 190], [-2, 238]], trophy: [[162.5, 145.0], [600.1, 605.0]], fit: 1.12,
+  },
+  mobile: {
+    fw: 390, h: 730, gut: 24, cardH: 244, padX: 20, padT: 28, padB: 28, scriptFs: 23, scriptH: 36, scriptBox: 22, quoteFs: 32, disc: [104, 38, -2],
+    spark: [[-54, 216], [-12, 194], [-2, 242]], trophy: [[109.6, 145.0], [282.6, 605.0]], fit: 1.12,
+  },
+}
+function PaperbackTestimonials({ s, g }) {
+  const { q, paging, step } = g
+  const dev = s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop'
+  const P = PAPER_TESTI[dev]
+  const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
+  const ink = s.tx
+  const cyan = s.onScheme[2].box3
+  const yellow = s.box2
+
+  // A sized box for a piece of art: the art fills it (the svg's own width and height are overridden by the style).
+  const art = (w, h, node, extra) => (
+    <div aria-hidden style={{ position: 'absolute', width: u(w), height: u(h), pointerEvents: 'none', ...extra }}>{node}</div>
+  )
+  const fill = { width: '100%', height: '100%' }
+  const trophy = (size, [cx, cy], turn) => art(size, size, <PaperbackArt name="trophy" style={fill} />, {
+    left: u(cx - size / 2), top: u(cy - size / 2), transform: `rotate(${turn}deg)`,
+  })
+
+  const chip = (label, bg, fg, key) => (
+    <span key={key} style={{
+      boxSizing: 'border-box', minHeight: u(26), maxWidth: '100%', minWidth: 0, display: 'inline-flex', alignItems: 'center',
+      padding: `${u(5)} ${u(10)}`, borderRadius: s.radiusChip, background: bg, color: fg,
+      fontFamily: s.label, fontWeight: 700, fontSize: u(13), lineHeight: 1.2, letterSpacing: '-0.01em', overflowWrap: 'anywhere',
+    }}>{label}</span>
+  )
+
+  const [D, dr, dt] = P.disc
+  const disc = (
+    <div style={{ position: 'absolute', width: u(D), height: u(D), right: u(dr - D / 2), top: u(dt - D / 2), transform: 'rotate(8deg)', zIndex: 2 }}>
+      <svg aria-hidden viewBox="0 0 124 124" fill="none" style={{ display: 'block', ...fill, overflow: 'visible' }}>
+        <circle cx="62" cy="62" r="60.14" fill={s.ac} stroke={ink} strokeWidth="1.86" />
+        <circle cx="62" cy="62" r="31" fill={PAPER_WHITE} stroke={ink} strokeWidth="1.86" />
+        <PaperbackArt name="star" x="45.725" y="45.1" width="32.55" height="31" />
+      </svg>
+    </div>
+  )
+
+  const sparkles = [[44, yellow], [26, s.ac], [16, PAPER_WHITE]].map(([size, fillC], i) => art(size, size,
+    // Seated off the card's foot (the frame's top less its height), so a longer review keeps them at the lower-left corner.
+    <PaperbackSparkle size={size} fill={fillC} ink={ink} style={fill} />, { key: i, left: u(P.spark[i][0]), bottom: u(P.cardH - P.spark[i][1] - size) }))
+
+  const body = q ? (
+    <>
+      {!!q.when && (
+        // The frame's 640-wide script box, turned about its own centre inside a seat as tall as the turn leaves it.
+        <div style={{ position: 'relative', height: u(P.scriptH), flex: 'none' }}>
+          <div style={{
+            position: 'absolute', left: 0, top: 0, width: '100%', height: u(P.scriptBox), transform: 'rotate(-3deg)',
+            fontFamily: s.script, fontWeight: 700, fontSize: u(P.scriptFs), lineHeight: 0.95, letterSpacing: '-0.01em', whiteSpace: 'nowrap', color: s.text3,
+          }}>{q.when}</div>
+        </div>
+      )}
+      {!!q.quote && (
+        <div style={{ containerType: 'inline-size', minWidth: 0, fontSize: u(P.quoteFs) }}>
+          <p style={{
+            margin: 0, fontFamily: s.display, fontWeight: 800, lineHeight: 0.9, letterSpacing: '-0.035em', color: ink, overflowWrap: 'break-word',
+            fontSize: q.wordEms ? `min(1em, calc(100cqi / ${q.wordEms}))` : '1em',
+          }}>{q.quote}</p>
+        </div>
+      )}
+      {(!!q.who || !!q.role) && (
+        <div style={row(u(8), { flexWrap: 'wrap', minWidth: 0, alignItems: 'flex-start' })}>
+          {!!q.who && chip(q.who, s.ac, PAPER_WHITE, 0)}
+          {!!q.role && chip(q.role, cyan, ink, 1)}
+        </div>
+      )}
+    </>
+  ) : (
+    <span style={{ fontFamily: s.label, fontWeight: 600, fontSize: u(16), lineHeight: 1.5, color: ink }}>No reviews yet.</span>
+  )
+
+  const card = (
+    <div style={{
+      position: 'relative', boxSizing: 'border-box', minWidth: 0, background: PAPER_WHITE, borderRadius: u(24),
+      padding: `${u(P.padT)} ${u(P.padX)} ${u(P.padB)}`, transform: 'rotate(-2deg)', ...col(u(20)),
+      ...(dev === 'desktop' ? { width: u(P.cardW), justifySelf: 'center' } : { width: '100%' }),
+    }}>
+      {body}
+      {disc}
+      {sparkles}
+    </div>
+  )
+
+  const arrowDisc = (back, onClick) => (
+    <span onClick={onClick} style={{
+      width: u(48), height: u(48), flex: 'none', borderRadius: '50%', background: ink, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+      cursor: onClick ? 'pointer' : undefined,
+    }}>
+      <svg aria-hidden viewBox="0 0 14 14" fill="none" style={{ display: 'block', width: u(14), height: u(14), overflow: 'visible' }}>
+        <path d={back ? 'M13 7H2M6.5 11.5L2 7L6.5 2.5' : 'M1 7H12M7.5 11.5L12 7L7.5 2.5'} stroke={PAPER_WHITE} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    </span>
+  )
+  const prev = paging ? arrowDisc(true, step(-1)) : null
+  const next = paging ? arrowDisc(false, step(1)) : null
+
+  return (
+    // The wave floor is the stage's own background (the frame's 310-tall vector, 1440 wide, pinned to the foot and scaled to the width with its
+    // ratio kept, which is the frame's stretch at every width: the 768 and 390 curves are the 1440 one's x scaled). A background, not a node, so
+    // a quote that grows into it is a card over a floor, not a collision (`limits.mjs`).
+    <div style={{
+      position: 'relative', containerType: 'inline-size', overflow: 'hidden', backgroundRepeat: 'no-repeat', backgroundPosition: 'left bottom', backgroundSize: '100% auto',
+      backgroundImage: `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 310'><path d='M0 310V100C180 100 180 0 360 0C540 0 540 180 720 180C900 180 900 20 1080 20C1260 20 1260 120 1440 120V310H0Z' fill='${yellow}'/></svg>`)}")`,
+    }}>
+      {trophy(110, P.trophy[0], -12)}
+      {art(90, 90, <PaperbackArt name="trophy" style={fill} />, { left: u(P.trophy[1][0] - 45), top: `calc(100% - ${u(P.h - P.trophy[1][1] + 45)})`, transform: 'rotate(10deg)' })}
+      <div style={{ position: 'relative', minHeight: u(P.h), display: 'flex', alignItems: 'center' }}>
+        {dev === 'mobile' ? (
+          <div style={col(u(20), { width: '100%', alignItems: 'center', minWidth: 0 })}>
+            <div style={{ width: `calc(100% - ${u(2 * P.gut)})`, minWidth: 0 }}>{card}</div>
+            {paging && <div style={row(u(12))}>{prev}{next}</div>}
+          </div>
+        ) : (
+          // Three tracks at every wide width, so the card keeps its seat at one review: the arrows are not drawn but their 48 are held.
+          <div style={{
+            display: 'grid', width: '100%', alignItems: 'center', columnGap: u(24), minWidth: 0, boxSizing: 'border-box',
+            padding: `0 ${u(P.gut)}`, gridTemplateColumns: `${u(48)} minmax(0, 1fr) ${u(48)}`,
+          }}>
+            <span style={{ display: 'flex' }}>{prev}</span>
+            {card}
+            <span style={{ display: 'flex' }}>{next}</span>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
 // v0 — Testimonials layout 1 · Stacked tag card (§10.2 reference design): one
 // cream quote card standing on two rotated, ink-outlined coloured cards, with
 // the pager arrows thrown out to the page's own gutters.
@@ -27025,6 +27176,8 @@ function Testimonials({ s }) {
     // Lattice's layout-1 testimonials are a block of their own (LatticeTestimonials), after the seam:
     // `q`, `paging` and `step` (the arrows, which wrap at both ends and are not drawn at one review) go over.
     if (s.limeTree && s.lattice) return <LatticeTestimonials s={s} g={{ q, paging, step }} />
+    // Paperback's layout-1 testimonials are a block of their own too (PaperbackTestimonials), after the seam, the same hand-over.
+    if (s.limeTree && s.paperback) return <PaperbackTestimonials s={s} g={{ q, paging, step }} />
 
     // Lime (964:58597 · 986:39886 · 986:39898) — the ninth Lime block, after the
     // seam as the gallery's and the repertoire's are: `n`, `at`, `q`, `go`,

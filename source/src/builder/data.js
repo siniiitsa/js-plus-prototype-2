@@ -3702,13 +3702,17 @@ export const FIELDS = {
         // `role` 35 (77 / 63 / 35; each prints twice, in the caption and on its chip, and wraps), `when` 21
         // (62 / 47 / 21, the seed's own at 390). `quote` stays the shared 190 (measured open at 400: the card
         // grows). Layouts 2-4 are Pop's, unmeasured.
+        // Paperback layout 1 measured 2026-11-21 (limits.mjs testimonials --themes=6 --designs=0 --upright): `who` and `role` 45
+        // (105 / 66-83 / 45: each prints once, on its chip, and wraps), `when` 31 (64 / 55 / 31: the script meets the star disc at 390),
+        // `quote` 170 (measured 293 / 260 / 195 on three samples, 170 on the fourth, all-lower-case one `--check` adds: at 390 a 180-character review is nine lines and the card runs down over the foot trophy). Layouts 2-4 are Pop's, unmeasured.
         who: { Retro: [28, 48, 25, 27], Lime: [39, 45, 20, 27], Grunge: [28, 50, 25, 27],
-          Editorial: [17, 27, 13, 27], Pop: [18, 32, 15, 27], Lattice: [35, 32, 15, 27] },
+          Editorial: [17, 27, 13, 27], Pop: [18, 32, 15, 27], Lattice: [35, 32, 15, 27],
+          Paperback: [45, 32, 15, 27] },
         quote: { Lime: [66, 190, 190, 190], Grunge: [68, 190, 190, 190], Editorial: [66, 190, 190, 190],
-          Lattice: [190, 190, 190, 190], '*': [190, 190, 190, 190] },
+          Lattice: [190, 190, 190, 190], Paperback: [170, 190, 190, 190], '*': [190, 190, 190, 190] },
         role: { Retro: [28, 48, 26, 29], Lime: [45, 48, 26, 27], Grunge: [28, 48, 26, 29], Lattice: [35, 48, 26, 29],
-          '*': [26, 48, 26, 29] },
-        when: { Retro: [30], Pop: [30], Lattice: [21], '*': [46] },
+          Paperback: [45, 48, 26, 29], '*': [26, 48, 26, 29] },
+        when: { Retro: [30], Pop: [30], Lattice: [21], Paperback: [31], '*': [46] },
       },
       hint: 'Each row is one review. Layouts 1, 2 and 4 page through them; layout 3 '
           + 'gives each one a card on its wall, and a row with no name or role '
@@ -4131,6 +4135,9 @@ export const INLINE_OFF = {
   'Paperback.1.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
   'Pop.1.form.fields.placeholder': 'not drawn: the card’s boxes print the label, and a placeholder only once the label is emptied',
   'Pop.1.testimonials.quotes.when': 'not drawn: layout 2’s card has no seat for it',
+  'Paperback.1.testimonials.quotes.when': 'not drawn: layout 2’s card has no seat for it',
+  'Paperback.2.testimonials.quotes.when': 'not drawn: layout 3’s wall has no seat for it',
+  'Paperback.3.testimonials.quotes.when': 'not drawn: layout 4’s wall has no seat for it',
   'Pop.1.media.tracks.sub': 'derived value: the seeded page prints the release and the running time as two nodes, and the whole line only once the list is stored',
   'Retro.2.repertoire.songs.artist': 'not drawn: layout 3 prints a song’s length in the seat the artist holds elsewhere',
   'Retro.2.form.fields.placeholder': 'not drawn: the card’s boxes print the label, and a placeholder only once the label is emptied',
