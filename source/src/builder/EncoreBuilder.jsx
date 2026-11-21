@@ -600,7 +600,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // Paperback's layout-1 bio (1:2397 · 1:11004 · 1:12191) is a stage of its own (PaperbackBio): it carries the
   // frames' vertical insets in cqw and the horizontal ones as its columns' own seats, so the root pads only the
   // published tab's surplus.
-  if (d === 0 && (cat === 'bio' || cat === 'media' || cat === 'gallery' || cat === 'repertoire' || cat === 'map' || cat === 'pricing' || cat === 'calendar' || cat === 'form' || cat === 'testimonials') && T.name === 'Paperback') vm.pad = `0px ${vm.surplus}`
+  if (d === 0 && (cat === 'bio' || cat === 'media' || cat === 'gallery' || cat === 'repertoire' || cat === 'map' || cat === 'pricing' || cat === 'calendar' || cat === 'form' || cat === 'testimonials' || cat === 'footer') && T.name === 'Paperback') vm.pad = `0px ${vm.surplus}`
   // …and the media's (1:419 · 1:9052 · 1:10024): 129.43 top and foot at 1440 (x 0.82, 106.13), 77 at 768
   // and 58 at 390, the same content insets. The 390 master's head box starts 40 down (an import
   // artefact: the eyebrow row sits at y 98, not 58), so with the eyebrow removed the head takes
@@ -2394,6 +2394,11 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // 0.004em tracking per glyph (the header's and the bio's rule).
   if (T.name === 'Lattice') {
     vm.footerWordEms = +Math.max(0, ...vm.footerStatement.split(/\s+/).map((w) => latticeEms(w) + 0.004 * [...w].length)).toFixed(3)
+  }
+  // Paperback's layout-1 footer sets the artist's name (not a statement, which it does not draw) in Bricolage, fitted to its
+  // widest word: the table less the frames' -0.035em tracking, times the 1.12 a head at 29-44px sets wider than the table's 1000px read.
+  if (T.name === 'Paperback') {
+    vm.footerWordEms = +(1.12 * Math.max(0, ...String(vm.brand || '').split(/\s+/).filter(Boolean).map((w) => bricolageEms(w) - 0.035 * [...w].length))).toFixed(3)
   }
   // The sitemap is the artist's now, so a row carries where it goes as well as
   // what it says — and it goes to one of two kinds of place, which is BookPill's

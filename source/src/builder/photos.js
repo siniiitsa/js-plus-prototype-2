@@ -319,6 +319,8 @@ export const PAPERBACK_PHOTOS = {
   // No frame draws the video; the hero stands in, as Retro's poster does.
   video: paperbackHero,
   form: paperbackShot3,
+  // The footer's keyline card is the fourth cover (ef42b0), as the frames re-crop it.
+  footer: paperbackShot4,
   gallery: [paperbackShot1, paperbackViewer, paperbackShot3, paperbackShot4, paperbackShot5, paperbackShot6, paperbackShot7],
   pricing: REVIEWERS,
 }

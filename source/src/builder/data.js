@@ -3857,8 +3857,13 @@ export const FIELDS = {
     // Session 11 of the character-limits pass (plans/char-limits.md): a display
     // head held to its frame's lines, the seed's 36 its floor on four templates. Lattice's measured
     // 2026-11-20 (limits.mjs footer --themes=5): 37 at all three widths, three lines in its 11em measure.
-    { k: 'statement', l: 'Statement', type: 'area', d: FOOTER_STATEMENT,
+    // Paperback's footer draws no statement (its frames set the name, the pills and a photograph), so the panel does not offer it.
+    { k: 'statement', l: 'Statement', type: 'area', d: FOOTER_STATEMENT, in: { Paperback: [], '*': [0] },
       chars: { Grunge: [45], Lattice: [37], '*': [36] } },
+    // Paperback's footer photograph, the tilted keyline card between the name and the right-hand edge. Seeded (PAPERBACK_PHOTOS.footer);
+    // no other template's footer draws a photograph, so no other template offers the box.
+    { k: 'image', l: 'Photo', type: 'image', aspect: [5, 4], in: { Paperback: [0], '*': [] },
+      hint: 'The tilted photo card in the footer. Paperback only.' },
     // The eighth structured editor and the seventh repeater — and the section's
     // whole sitemap, which was a constant no field could reach. Follows the
     // `songs` rule: an absent key means the seeded FOOTER_LINKS, an emptied
@@ -3866,11 +3871,13 @@ export const FIELDS = {
     { k: 'links',    l: 'Footer links', type: 'links', max: 10,
       // Read in every row at once: the two columns stand side by side (session 11).
       // Lattice's measured: 19 at 390 (a one-line label in its 159-wide cell; 24 at 1440, 41 at 768).
-      cols: { label: { Retro: [19], Lime: [28], Grunge: [28], Editorial: [20], Pop: [14], Lattice: [19] } },
+      cols: { label: { Retro: [19], Lime: [28], Grunge: [28], Editorial: [20], Pop: [14], Lattice: [19], Paperback: [47] } },
       hint: {
         '*': 'The list is halved into two columns, in order. A link scrolls to a section on the page, or opens a web address in a new tab.',
         // Lattice's frames set the links as a grid read across (plans/lattice/layout-1.md, section 11).
         Lattice: 'The links stand two to a row, read across and then down. A link scrolls to a section on the page, or opens a web address in a new tab.',
+        // Paperback's frames set them as a row of pills that wraps (plans/paperback/layout-1.md, section 11).
+        Paperback: 'The links are pills in a row that wraps, in order. A link scrolls to a section on the page, or opens a web address in a new tab.',
       } },
     // Dead until the pill was given a target — the calendar's `cta`, which was
     // a field that edited nothing until it labelled that section's foot pill.
@@ -3878,7 +3885,7 @@ export const FIELDS = {
     // (session 11).
     // Lattice's bracket box stands alone under the links, so its cap is the page's (measured: 36 at 390,
     // 49 at 1440, 82 at 768).
-    { k: 'cta',      l: 'Button', d: 'Book Now', chars: { Editorial: [12], Pop: [11], Lattice: [36], '*': [16] },
+    { k: 'cta',      l: 'Button', d: 'Book Now', chars: { Editorial: [12], Pop: [11], Lattice: [36], Paperback: [36], '*': [16] },
       hint: 'Books at the enquiry form, the calendar or the pricing section — whichever the page carries. Empty drops the button.' },
     // The same key the header's seal takes: `vm.showBadge` already reads this
     // section's own content, so the footer's seal was hidable by nothing only
@@ -3887,7 +3894,7 @@ export const FIELDS = {
     // Defaults to copyrightOf(name), special-cased.
     { k: 'copyright', l: 'Small print',
       // Lattice's measured: 25 at 390, a one-line copyright beside the credit (75 at 768, 157 at 1440).
-      chars: { Retro: [31], Lime: [28], Grunge: [32], Editorial: [24], Pop: [35], Lattice: [25] } },
+      chars: { Retro: [31], Lime: [28], Grunge: [32], Editorial: [24], Pop: [35], Lattice: [25], Paperback: [34] } },
   ],
 }
 
@@ -4404,7 +4411,7 @@ export const IDENTITY_CHARS = {
   footer: {
     // Lattice's measured (limits.mjs footer --themes=5, `who.title`): the wordmark and the copyright both take
     // the name, two lines at the least width: 39 (87 at 1440, 76 at 768). Its ring is not drawn (no `seal` row).
-    title: { Retro: [24], Lime: [46], Grunge: [54], Editorial: [39], Pop: [10], Lattice: [39] },
+    title: { Retro: [24], Lime: [46], Grunge: [54], Editorial: [39], Pop: [10], Lattice: [39], Paperback: [37] },
     seal: { Retro: 19, Lime: 13, Grunge: 14, Editorial: 16, Pop: 12 },
   },
   form: {

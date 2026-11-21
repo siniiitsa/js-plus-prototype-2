@@ -33224,6 +33224,118 @@ function LatticeFooter({ s }) {
   )
 }
 
+// Paperback's layout-1 footer (Batch 2 file, 1:3395 · 1:12081 · 1:13263: 486.59 / 798.47 / 876.27 tall; plans/paperback/layout-1.md, section 11). An indigo band
+// (Scheme 3, the section's own ground) holding the artist's name in Bricolage ExtraBold (44 / 35 / 29, lh .9, -0.035em), the sitemap as a row of white-12% pills
+// that wraps (44 tall, radius 999, Figtree Bold 14, 6 apart both ways), the Book pill (a pink split pill, `PaperbackPill`) under them, a photograph on a 351 x 280
+// keyline card turned -8 degrees (262 wide at 390) in a 300-tall box with an initials disc 10 in from its right edge, three sparkles, and a full-bleed rule at white 30%
+// over the copyright and the credit. The frame's newsletter (`Join the guest list`, an email box, `Subscribe`) is not drawn (call 2: A): its column is the photo's at 1440
+// (centred in the two columns the frame gives the photo and the form), and at 768 and 390 the photo is the last block. Every length is the FRAME's px through `u`, in cqw of
+// a stage (a container as wide as the page content, `s.surplus` in from the root's edges), so the picture holds its proportions on a canvas narrower than the frame.
+// The left block is a flow (name, pills, pill, 24 apart) in a 300-tall seat at 1440, so ten long labels grow the band rather than overflow it.
+// The seam is Lime's restated: `extLink` / `navHref` per link row (read row by row, so the wrap is the frame's), the pill on `bookTo` and dropped with its label.
+// Scheme 3's `tx` is white and `ac` orange here, so the frame's pink, yellow and ink are read off their own schemes (`onScheme`), as PaperbackMap does.
+const PAPER_FOOTER = {
+  desktop: { fw: 1440, gut: 48.96, top: 72, name: 44, photoW: 431.34, cardW: 351, kmFs: 35 },
+  tablet: { fw: 768, gut: 26.11, top: 58, name: 35, photoW: 431, cardW: 351, kmFs: 32 },
+  mobile: { fw: 390, gut: 24, top: 43, name: 29, photoW: 342, cardW: 262, kmFs: 29 },
+}
+const PAPER_FOOT_PILL = 'rgba(255, 255, 255, 0.12)'
+const PAPER_FOOT_RULE = 'rgba(255, 255, 255, 0.3)'
+function PaperbackFooter({ s }) {
+  const dev = s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop'
+  const P = PAPER_FOOTER[dev]
+  const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
+  const O = s.onScheme
+  const pink = O[5].bg
+  const yellow = O[1].box2
+  const ink = O[8].bg
+  const desk = dev === 'desktop'
+  const label = (size, extra) => ({ fontFamily: s.label, fontWeight: 700, fontSize: size, letterSpacing: '-0.01em', ...extra })
+
+  // The name, fitted to its widest word: the container's font-size is the frame's, the text `min(1em, 100cqi / ems)`
+  // (a nested container resets cqw, so the size is set on the container).
+  const name = !!String(s.brand || '').trim() && (
+    <div style={{ containerType: 'inline-size', minWidth: 0, fontSize: u(P.name) }}>
+      <div style={{
+        fontFamily: s.display, fontWeight: 800, lineHeight: 0.9, letterSpacing: '-0.035em', color: s.tx, overflowWrap: 'break-word',
+        fontSize: s.footerWordEms ? `min(1em, calc(100cqi / ${s.footerWordEms}))` : '1em',
+      }}>{s.brand}</div>
+    </div>
+  )
+  // An address the artist typed leaves the page in a new tab, a section id scrolls, and on the canvas both resolve to an <a> with no href at all (`navHref`).
+  const links = s.footerLinks.length > 0 && (
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: u(6), minWidth: 0 }}>
+      {s.footerLinks.map((l, i) => {
+        const ext = extLink(s, l.url)
+        return (
+          <a key={i} {...(ext || { href: navHref(s, l.to) })} style={label(u(14), {
+            display: 'inline-flex', alignItems: 'center', boxSizing: 'border-box', minHeight: u(44), maxWidth: '100%', minWidth: 0, padding: `${u(8)} ${u(16)}`,
+            borderRadius: s.radiusChip, background: PAPER_FOOT_PILL, color: s.tx, cursor: 'pointer', textDecoration: 'none', lineHeight: 1.2, overflowWrap: 'anywhere',
+          })}>{l.label}</a>
+        )
+      })}
+    </div>
+  )
+  // `bookTo` with no self-exclusion filter (`footer` is not in CTA_TARGETS.book); an emptied label drops it.
+  const pill = !!s.footerCta && <PaperbackPill s={s} label={s.footerCta} to={s.bookTo} u={u} bg={pink} fg={PAPER_WHITE} style={{ alignSelf: 'flex-start' }} />
+  const left = (name || links || pill) ? (
+    <div style={{ ...col(u(24), { minWidth: 0 }), ...(desk ? { alignSelf: 'center' } : null) }}>
+      {name}{links}{pill}
+    </div>
+  ) : null
+
+  const at = (size, x, y, node) => (
+    <div aria-hidden style={{ position: 'absolute', left: u(x), top: u(y), width: u(size), height: u(size), pointerEvents: 'none' }}>{node}</div>
+  )
+  const full = { width: '100%', height: '100%' }
+  const photo = (
+    <div style={{
+      position: 'relative', flex: 'none', width: u(P.photoW), height: u(300), ...(desk ? { justifySelf: 'center' } : { alignSelf: 'center' }),
+    }}>
+      <div style={{
+        position: 'absolute', left: u((P.photoW - P.cardW) / 2), top: u(10), width: u(P.cardW), height: u(280), boxSizing: 'border-box',
+        border: `${u(4)} solid ${PAPER_WHITE}`, borderRadius: u(24), overflow: 'hidden', background: pink, transform: 'rotate(-8deg)',
+      }}>
+        <Photo s={s} initialsSize={64} />
+      </div>
+      {s.showBadge === 'show' && (
+        <span aria-hidden style={{
+          position: 'absolute', right: u(10), top: 0, width: u(98), height: u(98), boxSizing: 'border-box', borderRadius: '50%',
+          border: `${u(3)} solid ${PAPER_WHITE}`, background: s.bg, color: s.tx, ...row('0px', { justifyContent: 'center' }),
+          fontFamily: s.display, fontWeight: 800, fontSize: u(P.kmFs), letterSpacing: '-0.035em', lineHeight: 1, whiteSpace: 'nowrap',
+        }}>{s.initials}</span>
+      )}
+      {at(44, 6, 242, <PaperbackSparkle size={44} fill={yellow} ink={ink} style={full} />)}
+      {at(26, 48, 220, <PaperbackSparkle size={26} fill={pink} ink={ink} style={full} />)}
+      {at(16, 58, 268, <PaperbackSparkle size={16} fill={PAPER_WHITE} ink={ink} style={full} />)}
+    </div>
+  )
+
+  return (
+    <div style={{ position: 'relative', containerType: 'inline-size' }}>
+      <div style={{ padding: `${u(P.top)} ${u(P.gut)} 0` }}>
+        {desk ? (
+          // The frame's three 431.36 columns, 24 apart: the name and pills, the photo, and the column the newsletter held, which the photo takes (centred in the two).
+          <div style={{ display: 'grid', gridTemplateColumns: `${u(431.36)} minmax(0, 1fr)`, columnGap: u(24), alignItems: 'center', minHeight: u(300) }}>
+            {left}{photo}
+          </div>
+        ) : (
+          <div style={col(u(24), { minWidth: 0 })}>{left}{photo}</div>
+        )}
+      </div>
+      {/* the rule bleeds to the page's edges, over the root's surplus */}
+      <div style={{
+        boxSizing: 'border-box', margin: `${u(48)} calc(-1 * ${s.surplus}) 0`, padding: `${u(18)} calc(${s.surplus} + ${u(P.gut)}) ${u(32)}`,
+        borderTop: `1px solid ${PAPER_FOOT_RULE}`, ...row(u(16), { alignItems: 'flex-start', justifyContent: 'space-between' }),
+        ...label(u(13), { lineHeight: u(15.6), color: s.tx }),
+      }}>
+        {!!s.copyright && <span style={{ flex: '1 1 0', minWidth: 0, overflowWrap: 'anywhere' }}>{s.copyright}</span>}
+        <span style={{ flex: 'none', marginLeft: 'auto', textAlign: 'right', whiteSpace: 'nowrap' }}>{s.footerCredit}</span>
+      </div>
+    </div>
+  )
+}
+
 // §10.2 reference design: the wordmark over the statement to the left of a
 // full-height rule, the two link columns and the Book Now pill to its right,
 // the seal hung off the left column's outer edge, and the small print under a
@@ -33242,6 +33354,7 @@ function LatticeFooter({ s }) {
 function Footer({ s }) {
   // Lattice's layout-1 footer is a block of its own (LatticeFooter). `Footer` owns no hook, so the block can
   // stand at the head of the function, ahead of Lime's; the seam is restated in it.
+  if (s.limeTree && s.paperback) return <PaperbackFooter s={s} />
   if (s.limeTree && s.lattice) return <LatticeFooter s={s} />
   const scale = s.narrow ? 1 : 0.82
   const u = (v) => `${Math.round(v * scale)}px`
