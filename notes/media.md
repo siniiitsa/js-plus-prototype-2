@@ -290,3 +290,8 @@ imperatively, `cur` starts at -1, the card names the cued track).
   (the probe reads 13 / 25 at 390, where the seeded rows already wrap or ellipsise), `IDENTITY_CHARS.media.title.Paperback[0]` = 41 (the artist line, one ellipsised line; layouts 2–4 are Pop's 11 / 13 / 31).
 - **Ledger.** `Paperback.0.media.tracks.sub` (and `.1`–`.3`, Pop's placeholder rows): the seeded page prints the release and the running time as two chips, never the whole line. `inline-probe` media at layouts 1–4, 1440 and 768: PASS (layout 1: 6 slots hit,
   the heading and the five titles). `photo-probe` PASS (layout 1: 5 slots at both widths, `--blank` and `--drop` too); `focus-probe --prime` layouts 1–4 PASS.
+
+## Paperback layouts 2–4: the caps (session 12, 2026-11-21, plans/paperback/layout-1.md)
+
+- Layouts 2–4 are still Lime's / Pop's tree in Paperback's tokens. Every cap now has a `Paperback` row (none reads Pop's through `specAt`), measured by `limits.mjs media --themes=6 --designs=1,2,3 --upright`, then `--check` (0 failing) and `--seeds` (0 over). **The rule is lower-only and never under the seed:** a number the placeholder card cannot bear came down to what it bears, and one that bore more was left, so no cap rose. Lowered (layouts 2, 3, 4, an index per layout; `–` not read): `chipLabel` [10,–,–] → [9,–,–]; `title` [11,13,31] → [10,12,30].
+- **Rough edges (the seed is wider than the card holds a prose line of its length):** `heading` L3 and L4 (20, 19), `tracks.title` L2-4 (17 against 11 / 12 / 10), `tracks.sub` L2-4 (33 against 14 / 20 / 12). The cap holds at the seed, `--check` reads it as `(floor)`, and the card draws the seed as it does at the other templates. A layout-2–4 pass with frames replaces all of these.

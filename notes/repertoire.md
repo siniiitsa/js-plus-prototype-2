@@ -157,3 +157,8 @@ artist 22 (the chip ellipsises past it; 1440 holds 48), tags per song 4 at 18 ch
 
 **Proof.** `INLINE_OFF`: `Paperback.0.repertoire.songs.length`, and for the placeholder cards `.1` / `.3` `songs.length` and `.2` `songs.artist` (Pop's reasons). `inline-probe` repertoire at layouts 1–4, 1440 and 768: PASS (layout 1: 25 slots hit, 0 WRONG / MISSING / UNREACHED / UNLEDGERED).
 `photo-probe` PASS (no photo slots), `focus-probe --prime --check` layouts 1–4 PASS (43 controls at layout 1). Live (`&live=1`, 37 songs): page 2 starts at 13, page 4 holds the 37th, a chip filters (nine *Pubs*, the pager gone), the search narrows to the matching songs and an unmatched one draws *No songs match that.*
+
+## Paperback layouts 2–4: the caps (session 12, 2026-11-21, plans/paperback/layout-1.md)
+
+- Layouts 2–4 are still Lime's / Pop's tree in Paperback's tokens. Every cap now has a `Paperback` row (none reads Pop's through `specAt`), measured by `limits.mjs repertoire --themes=6 --designs=1,2,3 --upright`, then `--check` (0 failing) and `--seeds` (0 over). **The rule is lower-only and never under the seed:** a number the placeholder card cannot bear came down to what it bears, and one that bore more was left, so no cap rose. Lowered (layouts 2, 3, 4, an index per layout; `–` not read): `songs.length` [–,14,–] → [–,10,–]; `heading` [25,17,10] → [22,17,10].
+- **Rough edges (the seed is wider than the card holds a prose line of its length):** `songs.title` L3 and L4 (17 against 9 / 11). The cap holds at the seed, `--check` reads it as `(floor)`, and the card draws the seed as it does at the other templates. A layout-2–4 pass with frames replaces all of these.

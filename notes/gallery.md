@@ -282,3 +282,8 @@ The two marks are scoped to layout 1 (`*.0.gallery.…` in `INLINE_MARKED`; Retr
 ## Layout 4's head arc is neighbour-aware (video section, session 3, 2026-10-27)
 
 Under Lime the head arc is the media's olive `s.box1` (user call, 2026-09-18), unless a video stands directly above the gallery: then it is the page `s.bg`, the frame's dome meeting the video band's ground, gated on `s.videoAbove` (`sectionVm({ above })`, the previous section's category). See `notes/video.md`, *Lime · layout 4*, the seam bullet.
+
+## Paperback layouts 2–4: the caps (session 12, 2026-11-21, plans/paperback/layout-1.md)
+
+- Layouts 2–4 are still Lime's / Pop's tree in Paperback's tokens. Every cap now has a `Paperback` row (none reads Pop's through `specAt`), measured by `limits.mjs gallery --themes=6 --designs=1,2,3 --upright`, then `--check` (0 failing) and `--seeds` (0 over). **The rule is lower-only and never under the seed:** a number the placeholder card cannot bear came down to what it bears, and one that bore more was left, so no cap rose. Lowered (layouts 2, 3, 4, an index per layout; `–` not read): `railLabel` [70,–,–] → [64,–,–]; `heading` [27,15,20] → [23,15,20]; `title` [26,–,–] → [23,–,–].
+- **Rough edges (the seed is wider than the card holds a prose line of its length):** none. The cap holds at the seed, `--check` reads it as `(floor)`, and the card draws the seed as it does at the other templates. A layout-2–4 pass with frames replaces all of these.
