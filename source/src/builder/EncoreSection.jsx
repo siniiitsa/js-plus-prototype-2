@@ -27080,13 +27080,15 @@ function PaperbackTestimonials({ s, g }) {
   const next = paging ? arrowDisc(false, step(1)) : null
 
   return (
-    // The wave floor is the stage's own background (the frame's 310-tall vector, 1440 wide, pinned to the foot and scaled to the width with its
-    // ratio kept, which is the frame's stretch at every width: the 768 and 390 curves are the 1440 one's x scaled). A background, not a node, so
-    // a quote that grows into it is a card over a floor, not a collision (`limits.mjs`).
+    // The wave floor is the *outer* box's background, full-bleed like the hero's waves (it reaches over the root's `s.surplus` padding and the stage
+    // inside is that far in from each edge, so a published window wider than the frame keeps the floor to the page's edges). The frame's 310-tall vector, drawn `fw` x 310 with its aspect
+    // free (`preserveAspectRatio='none'`): the 768 and 390 curves are the 1440 one's x scaled, so at `100% auto` the floor is 310 tall at the frame's
+    // own width at every width. A background, not a node, so a quote that grows into it is a card over a floor, not a collision (`limits.mjs`).
     <div style={{
-      position: 'relative', containerType: 'inline-size', overflow: 'hidden', backgroundRepeat: 'no-repeat', backgroundPosition: 'left bottom', backgroundSize: '100% auto',
-      backgroundImage: `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 310'><path d='M0 310V100C180 100 180 0 360 0C540 0 540 180 720 180C900 180 900 20 1080 20C1260 20 1260 120 1440 120V310H0Z' fill='${yellow}'/></svg>`)}")`,
+      position: 'relative', overflow: 'hidden', boxSizing: 'border-box', margin: `0 calc(-1 * ${s.surplus})`, padding: `0 ${s.surplus}`, backgroundRepeat: 'no-repeat', backgroundPosition: 'left bottom', backgroundSize: '100% auto',
+      backgroundImage: `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='${P.fw}' height='310' viewBox='0 0 1440 310' preserveAspectRatio='none'><path d='M0 310V100C180 100 180 0 360 0C540 0 540 180 720 180C900 180 900 20 1080 20C1260 20 1260 120 1440 120V310H0Z' fill='${yellow}'/></svg>`)}")`,
     }}>
+    <div style={{ position: 'relative', containerType: 'inline-size', overflow: 'hidden' }}>
       {trophy(110, P.trophy[0], -12)}
       {art(90, 90, <PaperbackArt name="trophy" style={fill} />, { left: u(P.trophy[1][0] - 45), top: `calc(100% - ${u(P.h - P.trophy[1][1] + 45)})`, transform: 'rotate(10deg)' })}
       <div style={{ position: 'relative', minHeight: u(P.h), display: 'flex', alignItems: 'center' }}>
@@ -27107,6 +27109,7 @@ function PaperbackTestimonials({ s, g }) {
           </div>
         )}
       </div>
+    </div>
     </div>
   )
 }
