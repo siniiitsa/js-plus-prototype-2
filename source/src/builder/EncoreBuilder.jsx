@@ -2396,9 +2396,11 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     vm.footerWordEms = +Math.max(0, ...vm.footerStatement.split(/\s+/).map((w) => latticeEms(w) + 0.004 * [...w].length)).toFixed(3)
   }
   // Paperback's layout-1 footer sets the artist's name (not a statement, which it does not draw) in Bricolage, fitted to its
-  // widest word: the table less the frames' -0.035em tracking, times the 1.12 a head at 29-44px sets wider than the table's 1000px read.
+  // widest word: the table less the frames' -0.035em tracking, times a `fit` of 1.18. The table is read at 1000px and a name at 9-44px sets
+  // wider; measured over single words at the 37-character cap at three widths (the name's natural width against its column at the fitted
+  // size): ordinary words need 1.12 or less, a run of `W` 1.02 beyond that, `m` 1.01 and `M` 1.05, so 1.18 keeps every one on a single line.
   if (T.name === 'Paperback') {
-    vm.footerWordEms = +(1.12 * Math.max(0, ...String(vm.brand || '').split(/\s+/).filter(Boolean).map((w) => bricolageEms(w) - 0.035 * [...w].length))).toFixed(3)
+    vm.footerWordEms = +(1.18 * Math.max(0, ...String(vm.brand || '').split(/\s+/).filter(Boolean).map((w) => bricolageEms(w) - 0.035 * [...w].length))).toFixed(3)
   }
   // The sitemap is the artist's now, so a row carries where it goes as well as
   // what it says — and it goes to one of two kinds of place, which is BookPill's
