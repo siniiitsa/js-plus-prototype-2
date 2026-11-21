@@ -2927,8 +2927,8 @@ export const FIELDS = {
     // only the `HeaderV2` block those four share reads it. Emptied, the card
     // is the name alone.
     { k: 'cardLine',  l: 'Line under your name', d: CARD_LINE_3,
-      in: { Lime: [2], Grunge: [2], Editorial: [2], Pop: [2], Lattice: [2], '*': [] },
-      chars: { Lime: [null, null, 22], Grunge: [null, null, 23], Editorial: [null, null, 23], Pop: [null, null, 29], Lattice: [null, null, 23], Paperback: [null, null, 29] },
+      in: { Lime: [2], Grunge: [2], Editorial: [2], Pop: [2], Lattice: [2], Paperback: [2], '*': [] },
+      chars: { Lime: [null, null, 22], Grunge: [null, null, 23], Editorial: [null, null, 23], Pop: [null, null, 29], Lattice: [null, null, 23], Paperback: [null, null, 22] },
       hint: 'The line under your name on the portrait card. The bio’s Performing since is a separate '
           + 'field, so change both if you name a year here. Left empty, it is not drawn.' },
     // The artist's name, page-wide and required (NameInput) — special-cased.
