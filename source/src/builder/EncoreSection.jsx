@@ -19707,11 +19707,11 @@ const PAPER_CAL = {
   },
   tablet: {
     fw: 768, top: 70, side: 26.11, padX: 36, padY: 41, headH: 44, headFs: 42, halfH: 358, tile: [242, 248], blob: [-59.06, -31], disc: [49.81, 284.27],
-    circle: [-0.82, 0], lineFs: 17, lineLh: 20.4, conf: 'confettiCalendarTablet', ring: 'circleTablet', fit: 1.105,
+    circle: [-0.82, 0], lineFs: 17, lineLh: 20.4, conf: 'confettiCalendarTablet', ring: 'circleTablet', fit: 1.115,
   },
   mobile: {
     fw: 390, top: 24, side: 24, padX: 24, padY: 34, headH: 44, headFs: 34, halfH: 240, tile: [232, 240], blob: [-63, -90], disc: [2, 205],
-    circle: [-0.82, 0], lineFs: 15, lineLh: 18, conf: 'confettiCalendarMobile', ring: 'circleMobile', fit: 1.105,
+    circle: [-0.82, 0], lineFs: 15, lineLh: 18, conf: 'confettiCalendarMobile', ring: 'circleMobile', fit: 1.125,
   },
 }
 function PaperbackCalendar({ s, g }) {
