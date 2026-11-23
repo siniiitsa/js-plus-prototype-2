@@ -695,3 +695,25 @@ Probes pass at **layouts 1–4**: `inline-probe` (143–154 slots a page), `phot
 (`bio`, `media`, `gallery`, `repertoire`, `map`, `pricing`, `calendar`, `form`, `testimonials`, `video`; the footer's notes file
 holds *Paperback — layout 1* alone, its four caps being layout 1's, since it has one design); the header's layouts 2–4 caps
 have no notes file and are in the plan's *Conventions session 12*.
+
+## Headliner (plans/headliner/layout-1.md, 2026-11-23 on)
+
+The eighth template (`THEMES[7]`, flag `s.headliner`; frames from the *Batch 2* file, Anton display, Inter Tight body, Fraunces Headliner
+serif). **Only layout 1 is designed**, one section at a time; the plan's *Conventions → Settled in session 0* and *Settled in sections 1–11*
+hold the record, and this file keeps what a later session touching a Headliner section needs.
+
+**The header** (`HeadlinerHero`, `EncoreSection.jsx`; own tree, stands at `HeaderV0`'s head):
+- **Stage pattern**: `containerType: inline-size`, `u(v)` = frame px in `cqw`; the table `HEADLINER_HERO` carries each width's numbers
+  and the slanted-edge fractions (desktop 0.33→0.53 / 0.62→0.79, tablet 0.40→0.58 / 0.68→0.84, mobile 0.48→0.64 / 0.74→0.88). The
+  hero is 900 (`vm.heroH` at 768 and 390; desktop is the root's `aspectRatio` × 0.82 = 738 on the canvas).
+- **Photo under two solid wedges** (maroon left, orange right with `HeadlinerWaves`); mobile has neither the orange wedge nor the block
+  arrow, and its picture is the stage's cover shifted 77 px by `objectPosition`.
+- **The three-colour name is three stacked, clipped copies**: the real `<h1>` plus two `aria-hidden` divs in one grid cell, each
+  `clip-path: polygon()` to its colour zone. Do not give them `pointer-events: none` (the click must reach the title slot), and
+  `limits.mjs` skips a same-box `aria-hidden` copy of a seat when it counts overlaps. The column is bottom-anchored, so a wrapped name
+  grows upward.
+- **The ringed numeral** is one svg, the disc its viewBox, so the seal-box rule applies; its text is `badgeText`, **defaulting to the
+  artist's initials** (`initialsOf` in `data.js`), cap 3 (the third sets at 0.72).
+- **The bar is hamburger + `HeadlinerPill`** only; the menu's Book Now row reads the same pill.
+- Picker: `TemplatePreview` passes `fit` for Headliner (user call 2026-11-23), since its 738-tall hero outgrows the 1180 × 614 card.
+- Caps: title 33, tags 8 × 22, main button 16, numeral 3 (`limits.mjs header --themes=7 --designs=0`).

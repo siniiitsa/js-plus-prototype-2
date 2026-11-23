@@ -105,7 +105,7 @@ desktop picture before measuring (open question 4).
 | # | Cat | Desktop node | Size | Tablet node | Size | Mobile node | Size | Composition (from the pictures) · predicted twin | Status |
 |---|---|---|---|---|---|---|---|---|---|
 | 0 | *foundation* | `1:4478` | — | `1:15259` | — | `1:16314` | — | `THEMES[7]`, ramp, faces, photos, the flag, the wavy-line art | |
-| 1 | `header` | `1:4481` | 1440 × 900 | `1:15262` | 768 × 900 | `1:16317` | 390 × 900 | **Maroon** hero in two parts: an **80 px nav bar** (hairline foot; `KAI MER` red square logo + `KAI MERCER` wordmark; **five inline links** `About · Top Tracks · Media · Repertoire · Shows · Pricing` at 1440, a hamburger at 768 / 390; an orange square `Book now →`); under it a **820 px stage** split by a **slanted edge**: maroon left with a Fraunces tagline (`A DJ who reads the room, then turns it up.`, orange) and a small Inter line, the **portrait photo** clipped to a parallelogram in the middle, an **orange wavy-line panel** on the right with a **ringed `26`** and a **big black arrow →**; an avatar + `DJ · LIVE ACT / MANCHESTER, UK`; **six chips** (`Default` black, `Sold out` orange, `New release` amber, `Archive` teal, `Live` green, `All access` outline); and the **name `KAI MERCER` at ~ 300 px Anton, one line, painted in three colours across the slanted edge** (orange on maroon, cream over the photo, black over the orange panel) · **Retro's / Grunge's `HeaderV0` with its photo and badge seat, probably an own tree for the clipped title** — read both, then decide | |
+| 1 | `header` | `1:4481` | 1440 × 900 | `1:15262` | 768 × 900 | `1:16317` | 390 × 900 | **Maroon** hero in two parts: an **80 px nav bar** (hairline foot; `KAI MER` red square logo + `KAI MERCER` wordmark; **five inline links** `About · Top Tracks · Media · Repertoire · Shows · Pricing` at 1440, a hamburger at 768 / 390; an orange square `Book now →`); under it a **820 px stage** split by a **slanted edge**: maroon left with a Fraunces tagline (`A DJ who reads the room, then turns it up.`, orange) and a small Inter line, the **portrait photo** clipped to a parallelogram in the middle, an **orange wavy-line panel** on the right with a **ringed `26`** and a **big black arrow →**; an avatar + `DJ · LIVE ACT / MANCHESTER, UK`; **six chips** (`Default` black, `Sold out` orange, `New release` amber, `Archive` teal, `Live` green, `All access` outline); and the **name `KAI MERCER` at ~ 300 px Anton, one line, painted in three colours across the slanted edge** (orange on maroon, cream over the photo, black over the orange panel) · **Retro's / Grunge's `HeaderV0` with its photo and badge seat, probably an own tree for the clipped title** — read both, then decide | done 2e7fde9 |
 | 2 | `bio` | `1:4627` | 1440 × 832 | `1:15396` | 768 × 1293 | `1:16446` | 390 × 1209 | **Cream** (`#F8F2E7`); a **vertical Anton statement** `READS THE ROOM` in two rotated columns, the second **overlapping the portrait's left edge**; a tall **portrait on an orange ground** (square-cornered); right: a Fraunces lead (`DJ and selector based in Manchester…`) top, a hairline, `ABOUT` (maroon Anton) + an Inter paragraph foot; `— KM BIO` eyebrow and a `001` / `STRUCTURE · BIO_01` chip pair bottom-left · **own tree** (nothing in the builder rotates a statement under a photo — check Grunge's and Retro's bio first) | |
 | 3 | `media` | `1:4650` | 1440 × 1057 | `1:15421` | 768 × 1219 | `1:16471` | 390 × 1251 | **Maroon**; a **~ 230 px black Anton headline** `FIVE WORTH YOUR EAR` (black on maroon, spanning the row) with `TOP TRACKS` / `5 / 5 FEATURED` in amber at its foot-right; left: **five hairline rows** (number, 56 px square cover, title in Inter Tight, subtitle, a time, a **square outlined play button**; row 2 lit: cream title, an **orange** play square), an orange `SOUNDCLOUD →` button; right: a **black player card** (a 377 × 266 photo, `NIGHT RAIN` in cream Anton, `KAI MERCER` amber, three square transport buttons with the orange play, a progress rail and `02:28` / `04:22`) · **Retro's `v0` media body** (list + player), re-dressed — the inventory matches; confirm | |
 | 4 | `gallery` | `1:4766` | 1440 × 849 | `1:15538` | 768 × 1386 | `1:16587` | 390 × 943 | **Sand** (`#EEE3D1`); `— MEDIA` eyebrow, a two-line **black Anton** `SEE US IN ACTION`, four **hairline accordion rows** in Anton at ~ 64 px (`GALLERY` orange with an orange arrow →, `YOUTUBE` / `INSTAGRAM` / `TIKTOK` black with black arrows); right: a **`BACK TO BEGINNING →` outlined button**, a **teal eye glyph**, a 654 × 480 photo with a **black / orange square arrow pair** in its foot-right corner, and **seven thumbnails** in a row · **Lime's *Photo viewer* inventory** (source rows + viewer + strip), as every earlier template read it | |
@@ -635,6 +635,54 @@ trees: scratchpad `shots/before-{desktop,tablet,mobile}/` (not committed). **Roo
 `sectionVm`'s `titleFitK` call (`navFace` is undefined for Headliner, so the header reads `frauncesEms` — wrong for Anton; use
 `antonEms`, the table Grunge reads); the header `in` rows and caps re-measured (`reach.mjs 7`, `limits.mjs header --themes=7`);
 `INLINE_OFF` / `PHOTO_OFF` rows for the header's pass; `HeadlinerHero` and the slanted-clip, three-copies name (plan, *The header*).
+
+### Settled in sections 1–11
+
+**Section 1 — the header** (2026-11-23; frames desktop `1:4481`, tablet `1:15262`, mobile `1:16317`; code `2e7fde9`, notes: the commit after it).
+
+- **An own tree, `HeadlinerHero`** (`EncoreSection.jsx`, standing at `HeaderV0`'s head on `s.headliner`, hookless, so before the seam).
+  The stage pattern: a `containerType: inline-size` root, `u(v)` turning a frame px into `cqw`, **the frame's numbers verbatim at every
+  width**. A `HEADLINER_HERO` table holds each width's `fw`, gutter, ring, numeral size, arrow width, chip gap and the **slanted-edge
+  fractions of the stage's width**: desktop left edge 0.33 → 0.53, right 0.62 → 0.79; tablet 0.40 → 0.58, 0.68 → 0.84; mobile 0.48 → 0.64,
+  0.74 → 0.88. The bar is 80, the stage 820, the hairline 1 px; the hero is 900 everywhere (`vm.heroH` = 900 at 768 and 390 behind
+  `headliner`; **desktop's 738 canvas height is the hero's own `aspectRatio` × 0.82**, not `heroH`).
+- **The photograph is one full-stage `<Photo>` under two solid wedge panels** (the maroon left one, the orange right one carrying
+  `HeadlinerWaves`), as the frame stacks them; the photo probe reports `header.image` "partial" (28–33 of 143 points open), which it
+  counts as hit. **Mobile has no orange panel and no block arrow**, and its picture sits 77 px right of the stage's centred cover
+  (`objectPosition: calc(50% + u(77))`, not a second box). A right-surplus orange fill carries the published tab past 1440.
+- **The three-colour name is three stacked copies in one grid cell**, each `clip-path: polygon()` to its zone (points in the name's own
+  box: `calc(100% - u(764))` is the stage's top, `calc(100% + u(56))` its foot, x `calc(Ncqw - u(gutter))`). The first is the real
+  `<h1>` (orange, left zone); the other two are `aria-hidden` divs (cream centre, black right). **None sets `pointer-events: none`**, so
+  a click reaches the title slot (the inline probe's positive control). The column is bottom-anchored (avatar, chips, name), so a
+  name that wraps grows *upward* and lifts the chips. The name is Anton 267.84 / 156 / 58 px (`TITLE_SITES.Headliner`, `antonEms` at
+  -0.005em in `sectionVm`'s `titleFitK`: a long name sets down to the half-size floor).
+- **The ringed numeral is one svg whose viewBox is the disc** (124 / 124 / 84, stroke 14), so the builder's seal rule boxes it whole. Its
+  text is `header.badgeText`, **which defaults to the artist's initials, not the name** (`initialsOf` moved to `data.js`;
+  `fieldSeed` mirrors it; `vm.badgeText` takes it at layout 1). Cap **3**: two characters at the frame's size, a third at 0.72 so three
+  capital Ws (72 px at full size) clear the 56 px hole at 390. `badgeOptsFor` offers Visible / Hidden only (nothing in it turns).
+- **The bar is the hamburger and `HeadlinerPill`** (a square orange Anton button with an arrow, `s.onScheme[1].activeBg`); the open
+  menu's own Book Now row reads the same pill (`MenuPanel`'s `s.headliner` arm, `menuColours` takes `[s.bg, s.tx]`). The standing
+  removals hold: no wordmark, no inline links, no tagline, no kicker or location (the frame's five inline links and `KM` logo are not drawn).
+- **The six chips** take `tok.chips[3, 1, 2, 0, 4]` and an outline sixth, as the frame.
+- **The picker shows the whole hero**: Headliner's 738-tall desktop hero was cropped by the template card's 1180 × 614 frame
+  (`ScaledPreview` with `center`, not `fit`), so `TemplatePreview` passes `fit` for Headliner alone (**user call, 2026-11-23**, asked and
+  answered: "Fit, Headliner only"). The setup modal's cards read the whole hero already.
+- **Caps** (`limits.mjs header --themes=7 --designs=0 --sweep`, then `--check` and `--seeds`: 0 failing, 0 over): title **33**
+  (open to 80 at 1440 and 768, 33 at 390), tags 8 chips of 22, main button 16, numeral 3. **The title's first measurement was 10** because
+  the probe counted the two `aria-hidden` stacked copies as neighbouring text; `limits.mjs`'s overlap filter now skips a same-box
+  `aria-hidden` copy of the seat (a script change, committed with the code). Header `in` rows measured over `reach.mjs 7` and unchanged
+  (`badgeMode` and `badgeText` read layouts 1 and 4; `heroCta`, `faceTitle`, `faceBody` layout 2; `cardLine` layout 3; tags 1, 3, 4).
+- **Ledgers**: `INLINE_OFF` gains `Headliner.0.header.kicker` and `.location` (not drawn); `PHOTO_OFF` stays empty.
+- **`inline-probe.mjs` slides its aim off the builder's chrome**: the selected section's canvas toolbar (the pencil) sits over the middle
+  of a top-right pill's text at 1440, so the click's first point is moved along the line to the nearest one the section owns (a hand
+  clicks the part of the words the toolbar leaves). Any template whose Book pill nears the right gutter benefits.
+- **Proofs.** `inline-probe --theme Headliner --layout 1 --width 1440,768 --cat header --check`: PASS (9 slots hit each, 0 WRONG /
+  NOT-RESTORED / MISSING / UNREACHED, 2 off). `photo-probe` `--check`, `--blank` and `--drop` at 1440 and 768: PASS (2 slots).
+  `focus-probe --prime --check`: 12 controls, 0 failing, both widths. The two-server **digest**, themes 0–6 (HEAD `4057068` in a worktree
+  against the working tree): 0 of 1008 renders differ after the two normalisations. `npm run build`: passes. **Root `index.html` is not refreshed.**
+
+**Section 1 left for later**: the header's other three cards (layouts 2–4) are still the placeholders; the setup modal's cards 2–4 and
+the sidebar's layout picker show them as they are.
 
 ## Open questions
 
