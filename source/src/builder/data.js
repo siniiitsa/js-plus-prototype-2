@@ -2,7 +2,7 @@
 // Every literal here is normative: do not round, substitute or "improve".
 
 /* ------------------------------------------------------------------ *
- * §4.1 THEMES — 6 templates
+ * §4.1 THEMES — 7 templates
  * ------------------------------------------------------------------ */
 
 // Grunge's distress (plans/grunge/display-face.md, candidate A): a 240 × 240
@@ -665,6 +665,173 @@ export const THEMES = [
       },
     },
   },
+  // Paperback — the seventh template, from the same Batch 2 file as Lattice
+  // (JustPay — Batch 2, ORILFywSzuadscu6RzskCW; frames "Paperback Playful —
+  // Claude Design"; plans/paperback/layout-1.md). The file's variable library
+  // is the SAAS one again, so every colour below was resolved through the alias
+  // chain off "2 · Scheme" with "1 · Primitives" at its Paperback mode (187:3),
+  // never off the frames' flat `get_variable_defs`, which is node-dependent.
+  // Scheme 1, pale yellow, is the theme's own (the header, the gallery and the
+  // testimonials stand on it); the page itself is Scheme 2, white, which the
+  // bio, media, repertoire, pricing, calendar and form stand on with their
+  // cards (SCHEMES_OF.Paperback), and the map and the footer stand on 3,
+  // indigo. `palette` is [bg, ac, tx] with ac the scheme's `sem/active/bg` (the
+  // pink of Book now) and tx its `sem/text/2`.
+  //
+  // The faces: Bricolage Grotesque ExtraBold (font/display, tracking -3.5%) and
+  // Figtree (font/label, font/body, Bold and SemiBold, tracking -1%), both free
+  // Google Fonts, and a third no variable names, the script of the notes: Caveat
+  // Bold, read off the text nodes (`script`, `s.script`). The frames type every
+  // string in mixed case, so casing is 'title' and nothing uppercases.
+  {
+    name: 'Paperback',
+    sub: 'Bricolage Grotesque · playful & bright',
+    // The page's own ground (the gutter, the published document, the preview's scroller): white,
+    // Scheme 2's, although the theme's own Scheme 1 is the pale yellow of the header band.
+    pageGround: '#FFFFFF',
+    display: "'Bricolage Grotesque', sans-serif",
+    label: "'Figtree', sans-serif",
+    ui: "'Figtree', sans-serif",
+    body: "'Figtree', sans-serif",
+    script: "'Caveat', cursive",
+    casing: 'title',
+    // Display strings track -0.035em and Figtree's -0.01em; stated per site (the text styles
+    // carry them), so the shared default is 0.
+    dls: '0px',
+    // radius/card 24, radius/control 8, radius/chip 999, border/thin 2 (the Paperback mode).
+    radius: '24px',
+    radiusSm: '8px',
+    btnR: '999px',
+    bw: '2px',
+    radiusChip: '999px',
+    // Scheme 1's bg / sem/active/bg / sem/text/2.
+    palette: ['#FAED8F', '#F8158F', '#0B0B0B'],
+    // Scheme 1's tag1…tag7 backgrounds. tag/4/bg is the one token the file's collection does not
+    // hold (the page binds tag/4/text alone); each scheme's tag4 is inferred from its tag/4/text
+    // (a light ink means a dark chip, a dark ink a light one) and is re-read by the section that
+    // draws it. Hot-pink #F8158F and magenta #FD48F2 are the `Live` / `Slow Burn` chips.
+    tags: ['#9982DE', '#F8158F', '#F9A12B', '#0B0B0B', '#FD48F2', '#0B0B0B', '#0B0B0B'],
+    // The semantic colours the palette cannot derive, Scheme 1's. The file holds box 1–3, active,
+    // stroke 1, text 3 and the tags; it holds no glow, hl, stroke2 or inactive pair (inferred: glow
+    // the active ground, hl the ink, stroke2 stroke1, the inactive pair the box and the ink), and
+    // no `active/text` (white on pink, read off the Book now, Continue and Subscribe pills).
+    sem: {
+      box1: '#FFF6C2',                      // sem/box/1
+      box2: '#FFD24A',                      // sem/box/2
+      box3: '#F9C53A',                      // sem/box/3
+      glow: '#F8158F',                      // inferred: sem/active/bg
+      activeBg: '#F8158F',                  // sem/active/bg
+      activeFg: '#FFFFFF',                  // read off the pills' text
+      inactiveBg: '#FFF6C2',                // inferred: sem/box/1
+      inactiveFg: '#0B0B0B',                // inferred: sem/text/1
+      inactiveLine: '#FFF6C2',              // inferred: sem/box/1
+      stroke1: '#0B0B0B',                   // sem/stroke/1
+      stroke2: '#0B0B0B',                   // inferred: sem/stroke/1
+      hl: '#0B0B0B',                        // inferred: sem/text/1
+      text3: '#3B308F',                     // sem/text/3 — the indigo of the script notes
+      tagFg: [undefined, undefined, undefined, '#FFFFFF', undefined, undefined, undefined],
+    },
+    // Schemes 2–9 of the same collection, in Scheme 1's shape. A section is seated on one through
+    // SCHEMES_OF.Paperback and a nested node reads `s.onScheme[n]`. The table of the 2026-11-20 read.
+    schemes: {
+      // Scheme 2, #FFFFFF — the page: the bio, media, repertoire, pricing, calendar and form stand on it, with their cards.
+      2: {
+        palette: ['#FFFFFF', '#F8158F', '#0B0B0B'],
+        tags: ['#F8158F', '#F9A12B', '#3B308F', '#FFFFFF', '#0B0B0B', '#0B0B0B', '#9982DE'],
+        sem: {
+          box1: '#FFFFFF', box2: '#FFDBFD', box3: '#A4F6F8', glow: '#F8158F',
+          activeBg: '#F8158F', activeFg: '#FFFFFF',
+          inactiveBg: '#FFFFFF', inactiveFg: '#0B0B0B', inactiveLine: '#FFFFFF',
+          stroke1: '#0B0B0B', stroke2: '#0B0B0B', hl: '#0B0B0B', text3: '#3B308F',
+          tagFg: [undefined, undefined, undefined, '#0B0B0B', undefined, undefined, undefined],
+        },
+      },
+      // Scheme 3, #3B308F — the map and the footer (indigo).
+      3: {
+        palette: ['#3B308F', '#F9A12B', '#FFFFFF'],
+        tags: ['#F9A12B', '#FFFFFF', '#FD48F2', '#2F2675', '#0B0B0B', '#9982DE', '#F8158F'],
+        sem: {
+          box1: '#4A3FA3', box2: '#2F2675', box3: '#231C5C', glow: '#F9A12B',
+          activeBg: '#F9A12B', activeFg: '#0B0B0B',
+          inactiveBg: '#4A3FA3', inactiveFg: '#F9A12B', inactiveLine: '#4A3FA3',
+          stroke1: '#0B0B0B', stroke2: '#0B0B0B', hl: '#F9A12B', text3: '#FFFFFF',
+          tagFg: [undefined, undefined, undefined, '#FFF2B3', undefined, undefined, undefined],
+        },
+      },
+      // Scheme 4, #F9A12B — orange. Seats nothing at layout 1.
+      4: {
+        palette: ['#F9A12B', '#F8158F', '#0B0B0B'],
+        tags: ['#3B308F', '#FD48F2', '#0B0B0B', '#0B0B0B', '#9982DE', '#F8158F', '#FFFFFF'],
+        sem: {
+          box1: '#FBB54E', box2: '#E8901C', box3: '#D07E12', glow: '#F8158F',
+          activeBg: '#F8158F', activeFg: '#FFFFFF',
+          inactiveBg: '#FBB54E', inactiveFg: '#0B0B0B', inactiveLine: '#FBB54E',
+          stroke1: '#0B0B0B', stroke2: '#0B0B0B', hl: '#0B0B0B', text3: '#0B0B0B',
+          tagFg: [undefined, undefined, undefined, '#FFF2B3', undefined, undefined, undefined],
+        },
+      },
+      // Scheme 5, #F8158F — hot pink. Seats nothing at layout 1.
+      5: {
+        palette: ['#F8158F', '#F9A12B', '#0B0B0B'],
+        tags: ['#FD48F2', '#0B0B0B', '#0B0B0B', '#FFFFFF', '#FFFFFF', '#F9A12B', '#3B308F'],
+        sem: {
+          box1: '#FB4FAE', box2: '#D90F7A', box3: '#A30A5A', glow: '#F9A12B',
+          activeBg: '#F9A12B', activeFg: '#0B0B0B',
+          inactiveBg: '#FB4FAE', inactiveFg: '#0B0B0B', inactiveLine: '#FB4FAE',
+          stroke1: '#0B0B0B', stroke2: '#0B0B0B', hl: '#0B0B0B', text3: '#0B0B0B',
+          tagFg: [undefined, undefined, undefined, '#0B0B0B', undefined, undefined, undefined],
+        },
+      },
+      // Scheme 6, #9982DE — lilac. Seats nothing at layout 1 (the map card is a nested lilac).
+      6: {
+        palette: ['#9982DE', '#FD48F2', '#0B0B0B'],
+        tags: ['#0B0B0B', '#0B0B0B', '#FFFFFF', '#FFFFFF', '#F9A12B', '#3B308F', '#FD48F2'],
+        sem: {
+          box1: '#AA96E6', box2: '#8A70D6', box3: '#6E55C2', glow: '#FD48F2',
+          activeBg: '#FD48F2', activeFg: '#0B0B0B',
+          inactiveBg: '#AA96E6', inactiveFg: '#0B0B0B', inactiveLine: '#AA96E6',
+          stroke1: '#0B0B0B', stroke2: '#0B0B0B', hl: '#0B0B0B', text3: '#0B0B0B',
+          tagFg: [undefined, undefined, undefined, '#0B0B0B', undefined, undefined, undefined],
+        },
+      },
+      // Scheme 7, #FD48F2 — magenta. Seats nothing at layout 1.
+      7: {
+        palette: ['#FD48F2', '#9982DE', '#0B0B0B'],
+        tags: ['#0B0B0B', '#9982DE', '#F8158F', '#FFFFFF', '#3B308F', '#FFFFFF', '#0B0B0B'],
+        sem: {
+          box1: '#FEB6FA', box2: '#F02FE0', box3: '#D81FC8', glow: '#9982DE',
+          activeBg: '#9982DE', activeFg: '#0B0B0B',
+          inactiveBg: '#FEB6FA', inactiveFg: '#0B0B0B', inactiveLine: '#FEB6FA',
+          stroke1: '#0B0B0B', stroke2: '#0B0B0B', hl: '#0B0B0B', text3: '#0B0B0B',
+          tagFg: [undefined, undefined, undefined, '#0B0B0B', undefined, undefined, undefined],
+        },
+      },
+      // Scheme 8, #0B0B0B — black. Seats nothing at layout 1.
+      8: {
+        palette: ['#0B0B0B', '#F9A12B', '#FFFFFF'],
+        tags: ['#9982DE', '#F8158F', '#F9A12B', '#1C1C1C', '#FD48F2', '#FFFFFF', '#FFFFFF'],
+        sem: {
+          box1: '#1C1C1C', box2: '#050505', box3: '#000000', glow: '#F9A12B',
+          activeBg: '#F9A12B', activeFg: '#0B0B0B',
+          inactiveBg: '#1C1C1C', inactiveFg: '#F9A12B', inactiveLine: '#1C1C1C',
+          stroke1: '#FFFFFF', stroke2: '#FFFFFF', hl: '#F9A12B', text3: '#F8158F',
+          tagFg: [undefined, undefined, undefined, '#FFFFFF', undefined, undefined, undefined],
+        },
+      },
+      // Scheme 9, #FAED8F — pale yellow like 1. Seats nothing.
+      9: {
+        palette: ['#FAED8F', '#F8158F', '#0B0B0B'],
+        tags: ['#F8158F', '#F9A12B', '#3B308F', '#FFFFFF', '#0B0B0B', '#0B0B0B', '#9982DE'],
+        sem: {
+          box1: '#FFF6C2', box2: '#FFD24A', box3: '#F9C53A', glow: '#F8158F',
+          activeBg: '#F8158F', activeFg: '#FFFFFF',
+          inactiveBg: '#FFF6C2', inactiveFg: '#0B0B0B', inactiveLine: '#FFF6C2',
+          stroke1: '#0B0B0B', stroke2: '#0B0B0B', hl: '#0B0B0B', text3: '#3B308F',
+          tagFg: [undefined, undefined, undefined, '#0B0B0B', undefined, undefined, undefined],
+        },
+      },
+    },
+  },
 ]
 
 // Which Figma colour scheme a section stands on, where its frames stand it on
@@ -753,6 +920,21 @@ export const SCHEMES_OF = {
     1: { header: 8, media: 8, video: 8, repertoire: 8, pricing: 8, form: 8, footer: 8, gallery: 2, calendar: 2, testimonials: 5 },
     2: { header: 8, media: 8, video: 8, repertoire: 8, pricing: 8, form: 8, footer: 8, gallery: 2, calendar: 2, testimonials: 5 },
     3: { header: 8, media: 8, video: 8, repertoire: 8, pricing: 8, form: 8, footer: 8, gallery: 2, calendar: 2, testimonials: 5 },
+  },
+  // Paperback's layout-1 page (1:2316 · 1:10903 · 1:12137), read off each section's
+  // `explicitVariableModes` through the file's "2 · Scheme" collection, the same at all three
+  // widths: the header, the gallery and the testimonials state Scheme 1 (the theme's own, so no
+  // entry: pale yellow), the map and the footer Scheme 3 (indigo), and the six others state
+  // none, so they resolve the page's own Scheme 2 (white; the page frame's mode 187:7), each
+  // with its card standing on it (media cyan, repertoire yellow, calendar blush, form indigo +
+  // orange: the cards' colours are the scheme's box seats, or a nested node's). `video` has no
+  // frame; it is seated beside the media it follows. Layouts 2–4 of Paperback have no frames and
+  // are placeholders, so they take row 0's seats.
+  Paperback: {
+    0: { bio: 2, media: 2, video: 2, repertoire: 2, pricing: 2, calendar: 2, form: 2, map: 3, footer: 3 },
+    1: { bio: 2, media: 2, video: 2, repertoire: 2, pricing: 2, calendar: 2, form: 2, map: 3, footer: 3 },
+    2: { bio: 2, media: 2, video: 2, repertoire: 2, pricing: 2, calendar: 2, form: 2, map: 3, footer: 3 },
+    3: { bio: 2, media: 2, video: 2, repertoire: 2, pricing: 2, calendar: 2, form: 2, map: 3, footer: 3 },
   },
 }
 
@@ -1101,6 +1283,98 @@ export const latticeEms = (text) => {
   return chs.reduce((w, ch, i) => w + (LATTICE_EM[ch] ?? 0.8) + (i ? LATTICE_KERN[chs[i - 1] + ch] ?? 0 : 0), 0)
 }
 
+// Paperback's display face: Bricolage Grotesque ExtraBold (800), the frames' `font/display`.
+// Generated by `WEIGHT=800 node scripts/ems-table.mjs "Bricolage Grotesque" --check` the way
+// Fraunces' and Lattice's were (spans at 1000px in the loaded face, untracked, optical size at its
+// 96 ceiling; the sums land within 1% of the DOM at 113px, `Kai Mercer` 0.42% over). The frames
+// type the header's name at -0.035em, which is the caller's (`titleFitK`'s face), and set display
+// strings in mixed case, so the sum is over the text as typed.
+const BRICOLAGE_EM = {
+  0: 0.594, 1: 0.31, 2: 0.551, 3: 0.565, 4: 0.607, 5: 0.565, 6: 0.592, 7: 0.498, 8: 0.608,
+  9: 0.603, ' ': 0.203, '!': 0.268, '"': 0.34, '#': 0.613, '&': 0.697, '\'': 0.174, '(': 0.303,
+  ')': 0.303, '+': 0.486, ',': 0.193, '-': 0.313, '.': 0.246, '/': 0.349, ':': 0.25, '?': 0.396,
+  A: 0.659, B: 0.608, C: 0.631, D: 0.621, E: 0.54, F: 0.51, G: 0.649, H: 0.637, I: 0.243, J: 0.323,
+  K: 0.623, L: 0.46, M: 0.822, N: 0.694, O: 0.661, P: 0.586, Q: 0.659, R: 0.615, S: 0.585,
+  T: 0.516, U: 0.627, V: 0.632, W: 0.915, X: 0.623, Y: 0.595, Z: 0.55, a: 0.543, b: 0.576,
+  c: 0.539, d: 0.576, e: 0.537, f: 0.376, g: 0.549, h: 0.562, i: 0.234, j: 0.244, k: 0.541,
+  l: 0.234, m: 0.86, n: 0.562, o: 0.567, p: 0.574, q: 0.574, r: 0.4, s: 0.517, t: 0.368, u: 0.557,
+  v: 0.53, w: 0.799, x: 0.543, y: 0.539, z: 0.483, '·': 0.246, '–': 0.5, '—': 0.775, '‘': 0.193,
+  '’': 0.193, '“': 0.382, '”': 0.382, 'é': 0.537, 'è': 0.537, 'ê': 0.537, 'ë': 0.537, 'á': 0.543,
+  'à': 0.543, 'â': 0.543, 'ä': 0.543, 'í': 0.234, 'ì': 0.252, 'î': 0.234, 'ï': 0.234, 'ó': 0.567,
+  'ò': 0.567, 'ô': 0.567, 'ö': 0.567, 'ú': 0.557, 'ù': 0.557, 'û': 0.557, 'ü': 0.557, 'ñ': 0.562,
+  'ç': 0.539, 'ß': 0.638, 'ø': 0.567, 'å': 0.543,
+}
+
+const BRICOLAGE_KERN = {
+  '41': -0.046, '47': -0.044, '74': -0.084, '\'.': -0.053, '\',': -0.074, '\'-': -0.082,
+  '\'&': -0.062, '\'4': -0.072, '\'A': -0.086, '\'J': -0.056, '\'a': -0.031, '\'c': -0.035,
+  '\'e': -0.035, '\'o': -0.034, '’.': -0.065, '’,': -0.095, '’-': -0.085, '’4': -0.092,
+  '’A': -0.096, '’J': -0.053, '’a': -0.054, '’c': -0.06, '’d': -0.049, '’e': -0.06, '’g': -0.049,
+  '’o': -0.056, '’q': -0.049, '’s': -0.039, '.\'': -0.054, '.’': -0.046, '.1': -0.04, '.7': -0.037,
+  '.T': -0.079, '.V': -0.081, '.W': -0.052, '.Y': -0.11, '.v': -0.055, '.w': -0.046, ',\'': -0.074,
+  ',’': -0.094, ',1': -0.041, ',7': -0.037, '-\'': -0.082, '-’': -0.084, '-1': -0.046,
+  '-7': -0.068, '-J': -0.047, '-T': -0.091, '-V': -0.055, '-W': -0.03, '-X': -0.062, '-Y': -0.082,
+  '-x': -0.062, '!G': -0.03, '?.': -0.061, '?,': -0.065, '?-': -0.037, '?A': -0.078, '?J': -0.064,
+  '&\'': -0.086, '&’': -0.093, '&1': -0.054, '&7': -0.055, '&T': -0.101, '&V': -0.07, '&W': -0.047,
+  '&Y': -0.104, '&v': -0.035, '&w': -0.03, '0A': -0.037, '0V': -0.032, '0X': -0.059, '0Y': -0.053,
+  '2Y': -0.031, '4\'': -0.045, '4’': -0.043, '4T': -0.048, '4V': -0.047, '4W': -0.046,
+  '4X': -0.042, '4Y': -0.052, '4f': -0.035, '4v': -0.044, '4w': -0.035, '4x': -0.041, '6V': -0.032,
+  '6X': -0.039, '6Y': -0.045, '7.': -0.105, '7,': -0.096, '7-': -0.069, '7&': -0.07, '7A': -0.092,
+  '7J': -0.06, '7a': -0.065, '7c': -0.07, '7d': -0.051, '7e': -0.07, '7g': -0.058, '7o': -0.068,
+  '7q': -0.051, '7s': -0.045, '8V': -0.03, '8X': -0.031, '8Y': -0.037, '9A': -0.036, '9V': -0.031,
+  '9X': -0.058, '9Y': -0.054, 'A\'': -0.086, 'A’': -0.07, 'A0': -0.035, 'A1': -0.05, 'A6': -0.035,
+  'A7': -0.044, 'AC': -0.039, 'AG': -0.038, 'AO': -0.038, 'AQ': -0.035, 'AT': -0.088, 'AU': -0.035,
+  'AV': -0.109, 'AW': -0.074, 'AY': -0.119, 'Ac': -0.031, 'Ae': -0.031, 'Af': -0.034, 'Ao': -0.03,
+  'At': -0.044, 'Av': -0.086, 'Aw': -0.066, 'BV': -0.03, 'BY': -0.039, 'CX': -0.038, 'CY': -0.038,
+  'D,': -0.03, 'DA': -0.038, 'DV': -0.035, 'DX': -0.068, 'DY': -0.056, 'F.': -0.074, 'F,': -0.096,
+  'F&': -0.041, 'FA': -0.064, 'FJ': -0.068, 'Fa': -0.038, 'Fg': -0.031, 'GV': -0.031, 'GY': -0.048,
+  'K0': -0.039, 'K6': -0.039, 'KC': -0.042, 'KG': -0.042, 'KO': -0.042, 'Kc': -0.035, 'Kd': -0.031,
+  'Ke': -0.035, 'Ko': -0.036, 'Kq': -0.031, 'Kw': -0.031, 'L\'': -0.086, 'L’': -0.095,
+  'L-': -0.049, 'L1': -0.044, 'L7': -0.039, 'LT': -0.108, 'LV': -0.097, 'LW': -0.056, 'LY': -0.119,
+  'Lv': -0.065, 'Lw': -0.047, 'O,': -0.03, 'OA': -0.039, 'OV': -0.035, 'OX': -0.064, 'OY': -0.052,
+  'P.': -0.093, 'P,': -0.095, 'P&': -0.054, 'PA': -0.069, 'PJ': -0.063, 'PX': -0.043, 'PY': -0.031,
+  'QA': -0.033, 'QV': -0.035, 'QY': -0.052, 'Qj': 0.031, 'RY': -0.042, 'SX': -0.03, 'SY': -0.042,
+  'T.': -0.079, 'T,': -0.082, 'T-': -0.091, 'T&': -0.071, 'T4': -0.092, 'TA': -0.088, 'TJ': -0.063,
+  'Ta': -0.07, 'Tc': -0.076, 'Td': -0.061, 'Te': -0.076, 'Tg': -0.07, 'To': -0.074, 'Tq': -0.061,
+  'Ts': -0.06, 'UA': -0.035, 'V.': -0.081, 'V,': -0.082, 'V-': -0.054, 'V&': -0.084, 'V0': -0.034,
+  'V4': -0.069, 'V6': -0.034, 'V8': -0.03, 'VA': -0.109, 'VC': -0.035, 'VG': -0.037, 'VJ': -0.059,
+  'VO': -0.036, 'VQ': -0.036, 'Va': -0.068, 'Vc': -0.062, 'Vd': -0.056, 'Ve': -0.062, 'Vg': -0.056,
+  'Vm': -0.03, 'Vn': -0.03, 'Vo': -0.061, 'Vp': -0.03, 'Vq': -0.056, 'Vr': -0.03, 'Vs': -0.048,
+  'W.': -0.052, 'W,': -0.051, 'W-': -0.03, 'W&': -0.059, 'W4': -0.04, 'WA': -0.074, 'WJ': -0.054,
+  'Wa': -0.046, 'Wc': -0.038, 'Wd': -0.031, 'We': -0.038, 'Wg': -0.036, 'Wo': -0.036, 'Wq': -0.031,
+  'Ws': -0.031, 'X-': -0.063, 'X0': -0.063, 'X4': -0.034, 'X6': -0.063, 'X8': -0.031, 'X9': -0.036,
+  'XC': -0.068, 'XG': -0.066, 'XO': -0.066, 'XS': -0.034, 'Xc': -0.055, 'Xd': -0.051, 'Xe': -0.055,
+  'Xo': -0.058, 'Xq': -0.051, 'Xs': -0.037, 'Xt': -0.038, 'Xu': -0.038, 'Xv': -0.04, 'Xw': -0.044,
+  'Y.': -0.109, 'Y,': -0.096, 'Y-': -0.082, 'Y&': -0.097, 'Y0': -0.053, 'Y4': -0.102, 'Y6': -0.053,
+  'Y8': -0.039, 'Y9': -0.034, 'YA': -0.119, 'YC': -0.054, 'YG': -0.058, 'YJ': -0.062, 'YO': -0.054,
+  'YQ': -0.054, 'YS': -0.032, 'Ya': -0.093, 'Yc': -0.091, 'Yd': -0.081, 'Ye': -0.091, 'Yg': -0.085,
+  'Ym': -0.047, 'Yn': -0.048, 'Yo': -0.088, 'Yp': -0.047, 'Yq': -0.081, 'Yr': -0.048, 'Ys': -0.077,
+  'Yu': -0.043, 'Yx': -0.031, 'Yy': -0.041, 'Yz': -0.039, 'Z-': -0.049, 'a1': -0.03, 'a7': -0.059,
+  'aT': -0.067, 'aV': -0.06, 'aW': -0.039, 'aY': -0.085, 'b7': -0.063, 'bT': -0.061, 'bV': -0.056,
+  'bW': -0.031, 'bX': -0.049, 'bY': -0.081, 'bx': -0.038, 'c7': -0.052, 'cT': -0.062, 'cV': -0.054,
+  'cW': -0.035, 'cX': -0.034, 'cY': -0.081, 'cx': -0.03, 'e7': -0.062, 'eT': -0.067, 'eV': -0.056,
+  'eW': -0.036, 'eX': -0.033, 'eY': -0.085, 'ex': -0.03, 'f.': -0.059, 'f,': -0.054, 'f&': -0.06,
+  'fA': -0.062, 'fJ': -0.063, 'gY': -0.041, 'h7': -0.048, 'hT': -0.057, 'hV': -0.055, 'hW': -0.035,
+  'hY': -0.08, 'kY': -0.035, 'm7': -0.047, 'mT': -0.057, 'mV': -0.054, 'mW': -0.035, 'mY': -0.08,
+  'n7': -0.048, 'nT': -0.057, 'nV': -0.055, 'nW': -0.035, 'nY': -0.08, 'o\'': -0.033, 'o1': -0.031,
+  'o7': -0.069, 'oA': -0.03, 'oT': -0.074, 'oV': -0.061, 'oW': -0.036, 'oX': -0.058, 'oY': -0.088,
+  'ov': -0.03, 'ox': -0.049, 'p7': -0.063, 'pT': -0.061, 'pV': -0.056, 'pW': -0.031, 'pX': -0.049,
+  'pY': -0.081, 'px': -0.038, 'qV': -0.03, 'qY': -0.047, 'r.': -0.094, 'r,': -0.096, 'r&': -0.066,
+  'r4': -0.038, 'rA': -0.071, 'rJ': -0.068, 'rX': -0.048, 'rY': -0.031, 's7': -0.051, 'sT': -0.062,
+  'sV': -0.058, 'sW': -0.04, 'sY': -0.085, 't-': -0.041, 'tY': -0.037, 'uV': -0.03, 'uY': -0.047,
+  'v.': -0.055, 'v,': -0.056, 'v&': -0.053, 'v4': -0.034, 'vA': -0.086, 'vJ': -0.061, 'vX': -0.04,
+  'va': -0.032, 'vc': -0.03, 've': -0.03, 'vo': -0.03, 'w.': -0.045, 'w,': -0.043, 'w&': -0.042,
+  'wA': -0.066, 'wJ': -0.045, 'wX': -0.043, 'x-': -0.059, 'x4': -0.039, 'xY': -0.031, 'xc': -0.051,
+  'xd': -0.038, 'xe': -0.048, 'xo': -0.049, 'xq': -0.038, 'xs': -0.03, 'yY': -0.045, 'zY': -0.037,
+}
+
+// A string's width in ems of Bricolage Grotesque ExtraBold at its own size, untracked; anything
+// unlisted takes 0.6, a capital's average.
+export const bricolageEms = (text) => {
+  const chs = [...String(text)]
+  return chs.reduce((w, ch, i) => w + (BRICOLAGE_EM[ch] ?? 0.6) + (i ? BRICOLAGE_KERN[chs[i - 1] + ch] ?? 0 : 0), 0)
+}
+
 /* ------------------------------------------------------------------ *
  * Lattice's dot field (plans/lattice/layout-1.md, *Settled in section 1*).
  * The frames lay a dot canvas of the hero's own size over the photograph: 560
@@ -1307,6 +1581,19 @@ export const TITLE_SITES = {
     TS([67, 51, 36], 0.89, [1, 1, 1], [894.7, 440, 350], [738, 1024, 606]),
     TS([103, 75, 46], 0.75, [0, 1, 1], [806.1, 561.5, 350], [738, 1024, 844]),
   ],
+  // Paperback's layout-1 header (HeaderV0): one wrapping run at 113 / 86 / 55 (the frame's 138.24 x
+  // 0.82 at 1440, 86 and 55 verbatim) at lh 0.8, set -0.035em in Bricolage ExtraBold. W is the room the
+  // name has, in the frame's px x 0.82 at 1440: 640 frame px (the frame's own column is 617.64, which
+  // its 623 px seed overruns by 5, so the exact column would wrap the seed) stops short of the photo
+  // card's foot corner at x 884; at 768 the row between the avatar's 184 and the right gutter; at 390
+  // the stage. The hero is 750 at the two narrow widths, so R is 750 there. The name grows upward (its
+  // column is anchored at the foot), so there is no `room` and no `bs`. Layouts 2-4 copy Pop's rows.
+  Paperback: [
+    TS([113, 86, 55], 0.8, [1, 1, 1], [524.8, 531.7, 342], [614, 750, 750]),
+    TS([67, 51, 36], 0.89, [1, 1, 1], [521, 324, 370], [800, 811, 682]),
+    TS([67, 51, 36], 0.89, [1, 1, 1], [894.7, 440, 350], [738, 1024, 606]),
+    TS([103, 75, 46], 0.75, [0, 1, 1], [806.1, 561.5, 350], [738, 1024, 844]),
+  ],
 }
 
 // The lines a name takes set at size `s` in a column `W` wide: greedy word wrap
@@ -1437,9 +1724,9 @@ export const NVAR = {
 export const headerFamily = (themeName) =>
   themeName === 'Lime' ? 'lime' : themeName === 'Grunge' ? 'grunge'
     : themeName === 'Editorial' ? 'editorial' : themeName === 'Pop' ? 'pop'
-      : themeName === 'Lattice' ? 'lattice' : 'photographic'
+      : themeName === 'Lattice' ? 'lattice' : themeName === 'Paperback' ? 'paperback' : 'photographic'
 
-const HEADER_COUNT = { photographic: 6, lime: 4, grunge: 4, editorial: 4, pop: 4, lattice: 4 }
+const HEADER_COUNT = { photographic: 6, lime: 4, grunge: 4, editorial: 4, pop: 4, lattice: 4, paperback: 4 }
 
 export const headerVariants = (themeName) => HEADER_COUNT[headerFamily(themeName)]
 
@@ -1538,6 +1825,7 @@ const HEADER_NAMES = {
   editorial: PHOTOGRAPHIC_NAMES.slice(0, HEADER_COUNT.editorial),
   pop: PHOTOGRAPHIC_NAMES.slice(0, HEADER_COUNT.pop),
   lattice: PHOTOGRAPHIC_NAMES.slice(0, HEADER_COUNT.lattice),
+  paperback: PHOTOGRAPHIC_NAMES.slice(0, HEADER_COUNT.paperback),
 }
 
 export const headerLayout = (themeName, i) =>
@@ -1694,6 +1982,8 @@ export const TAG_LABELS = 'Default, Sold Out, New Release, Archive, Live, All Ac
 export const HERO_CTA = 'Enquire about a date'
 export const BIO_CREDIT = 'five years of rooms read & floors moved'
 export const BIO_CTA = 'Book Now'
+// Paperback's layout-1 bio draws the frame's black split pill `Full bio` (1:2441), seeded as that.
+export const BIO_CTA_PAPERBACK = 'Full bio'
 // JP-059 — the rest of layout 2's copy, which Lime's fit had kept as literals:
 // the pill over the name, the two cards' copy under the header's photograph,
 // and the bio card's pill. Byte for byte what every template's twelve header
@@ -2396,6 +2686,8 @@ export const CAL_TYPES = ['Wedding', 'Birthday', 'Corporate', 'Festival']
 // own `cta`.
 export const PRICING_ROW_CTA = 'Start Enquiry'
 export const PRICING_ROW_CTA_3 = 'Book'
+// Paperback's layout-1 cards draw the frame's `Book this set` (1:3028), seeded as that.
+export const PRICING_ROW_CTA_PAPERBACK = 'Book this set'
 // Events map layout 4's panel note, beside "Travel & reach" (964:72830).
 export const MAP_SPAN = 'Live · last 12 months'
 // Events map layout 4's stat wall, the frame's four cards verbatim (JP-077,
@@ -2433,7 +2725,7 @@ export const CAL_SLOT_CTA = 'Start Enquiry'
 // (JP-082, user call, 2026-09-29; FORM_BTN_4's shape), and an emptied label
 // falls back to it there, since it is the wizard's only way to send.
 export const CAL_SEND_4 = 'Send Enquiry'
-// Lattice's layout-1 foot draws a Continue bar where Lime's draws none (its frames 1:1039 · 1:9670 · 1:10640).
+// Lattice's and Paperback's layout-1 foot draw a Continue button where Lime's draws none (frames 1:1039 · 1:9670 · 1:10640; 1:3131 · 1:11793 · 1:12975).
 export const CAL_CTA_LATTICE = 'Continue'
 
 export const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June',
@@ -2589,14 +2881,17 @@ export const FIELDS = {
   // `aspect` on an image field is only the FALLBACK frame of the photo editor: it opens on the shape of the
   // field's largest photo on the canvas as drawn now (photoAspectOf, EncoreBuilder.jsx), and falls back to this
   // when the layout or device draws none.
-  // The header's `in` is always an object naming all six templates: they have
-  // different header families (six designs against four, four, four, four and four —
+  // The header's `in` is always an object naming all seven templates: they have
+  // different header families (six designs against four, four, four, four, four and four —
   // Grunge's, Editorial's and Pop's rows are each measured over four fitted
   // cards, none a placeholder since each template's layout-4 pass). Pop's was
   // measured in its layout-1 sweep and re-measured in each later header
   // session, the last over its fitted card 4 (2026-10-07), unchanged. Lattice's is
   // measured over its fitted Hero alone (cards 2-4 are placeholders: `reach.mjs 5`
   // agreed with it at the 2026-11-20 sweep, so those seats are Lime's twins' rows).
+  // Paperback's is the same shape: its rows began as Lattice's (session 0), section 1 set
+  // `align`, `badgeText` and the title cap from the fitted Hero, and `reach.mjs 6`
+  // (session 12) agreed with them except `cardLine`, which gained `Paperback: [2]`.
   header: [
     { k: 'image',     l: 'Background photo', type: 'image', aspect: [16, 9],
       hint: 'Fills the header behind the type.' },
@@ -2635,8 +2930,8 @@ export const FIELDS = {
     // only the `HeaderV2` block those four share reads it. Emptied, the card
     // is the name alone.
     { k: 'cardLine',  l: 'Line under your name', d: CARD_LINE_3,
-      in: { Lime: [2], Grunge: [2], Editorial: [2], Pop: [2], Lattice: [2], '*': [] },
-      chars: { Lime: [null, null, 22], Grunge: [null, null, 23], Editorial: [null, null, 23], Pop: [null, null, 29], Lattice: [null, null, 23] },
+      in: { Lime: [2], Grunge: [2], Editorial: [2], Pop: [2], Lattice: [2], Paperback: [2], '*': [] },
+      chars: { Lime: [null, null, 22], Grunge: [null, null, 23], Editorial: [null, null, 23], Pop: [null, null, 29], Lattice: [null, null, 23], Paperback: [null, null, 22] },
       hint: 'The line under your name on the portrait card. The bio’s Performing since is a separate '
           + 'field, so change both if you name a year here. Left empty, it is not drawn.' },
     // The artist's name, page-wide and required (NameInput) — special-cased.
@@ -2651,7 +2946,11 @@ export const FIELDS = {
       // with `limits.mjs header --keys=title --sweep`: 80 where only the title prints it.
       // Retro's layout 3 holds 14 (the polaroid's nowrap caption clips), layout 5 56 and
       // layout 6 39 (the 390 card).
-      chars: { Retro: [80, 80, 14, 80, 56, 39], Lime: 80, Grunge: 80, Editorial: 80, Pop: 80, Lattice: 80 } },
+      //
+      // Paperback's layout 1 holds 14 (`limits.mjs header --themes=6 --designs=0 --keys=title --sweep`: 60 at
+      // 1440, 21 at 390, 14 at 768 where a second line climbs into the vinyl sticker and the photo card); its
+      // other three layouts are placeholders and keep Pop's 80, which --check holds.
+      chars: { Retro: [80, 80, 14, 80, 56, 39], Lime: 80, Grunge: 80, Editorial: 80, Pop: 80, Lattice: 80, Paperback: [14, 80, 80, 80] } },
     // Header-nav ticket (2026-11-11): layout 2 no longer prints the description
     // under the name, so only Retro's layout 5 reads it.
     { k: 'subtitle',  l: 'Subtitle',         type: 'area', def: 'heroSub',
@@ -2667,8 +2966,8 @@ export const FIELDS = {
     // Layout 2's pill under the subtitle (JP-037). Its frame words it apart
     // from the nav's Book Now, so it is a field of its own. Emptied, no pill.
     { k: 'heroCta',   l: 'Button under subtitle',      d: HERO_CTA,
-      in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1], Lattice: [1] },
-      chars: { Retro: [null, 34], Lime: [null, 35], Grunge: [null, 40], Editorial: [null, 21], Pop: [null, 25], Lattice: [null, 25] },
+      in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1], Lattice: [1], Paperback: [1] },
+      chars: { Retro: [null, 34], Lime: [null, 35], Grunge: [null, 40], Editorial: [null, 21], Pop: [null, 25], Lattice: [null, 25], Paperback: [null, 25] },
       hint: 'The button under your name. Left empty, it is not drawn.' },
     // The rest of layout 2's copy (JP-059, reversing Lime's fit, which kept
     // them literals): the pill over the name and the two cards under the
@@ -2677,11 +2976,11 @@ export const FIELDS = {
     // card's "Performing since 2021" is the artist's copy — the bio's own
     // Performing since is another field, which the hint says.
     { k: 'faceTitle', l: 'Portrait caption title',  d: FACE_TITLE,
-      in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1], Lattice: [1] },
-      chars: { Retro: [null, 22], Lime: [null, 24], Grunge: [null, 29], Editorial: [null, 19], Pop: [null, 20], Lattice: [null, 20] },
+      in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1], Lattice: [1], Paperback: [1] },
+      chars: { Retro: [null, 22], Lime: [null, 24], Grunge: [null, 29], Editorial: [null, 19], Pop: [null, 20], Lattice: [null, 20], Paperback: [null, 19] },
       hint: 'The card beside your portrait, under the photograph. Left empty, it is not drawn.' },
     { k: 'faceBody',  l: 'Portrait caption text',   type: 'area', d: FACE_BODY,
-      in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1], Lattice: [1] }, chars: [null, 180],
+      in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1], Lattice: [1], Paperback: [1] }, chars: [null, 180],
       hint: 'The line under the portrait caption title. The bio’s Performing since is a separate field, '
           + 'so change both if you name a year here. Left empty, it is not drawn.' },
     // Named `cta2` on the bio's own content too, which FIELDS.bio.cta2 edits
@@ -2697,13 +2996,13 @@ export const FIELDS = {
     // Its cap is per chip (`chars`) and chips (`count`), the bio's besides
     // (IDENTITY_CHARS), each chip a sized seat held to twice the longest seed.
     { k: 'tags',      l: 'Tags',             type: 'area', d: TAG_LABELS, shared: true, list: ',',
-      in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3], Editorial: [0, 2, 3], Pop: [0, 2, 3], Lattice: [0, 2, 3] },
+      in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3], Editorial: [0, 2, 3], Pop: [0, 2, 3], Lattice: [0, 2, 3], Paperback: [0, 2, 3] },
       chars: { Retro: [22, null, 22, 22, 15, 22], '*': [22, null, 22, 22] },
       count: { Retro: [8, null, 7, 7, 6, 6], Pop: [6, null, 6, 6], Lattice: [6, null, 6, 6], '*': [8, null, 6, 6] },
       rows: { placeholder: 'Tag', add: 'Add tag' },
       hint: 'Your genre chips. One per row; a comma starts a new row.' },
     { k: 'showTags',  l: 'Tags',        type: 'select', d: 'show', opts: SHOW_HIDE_TAGS, shared: true,
-      in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3], Editorial: [0, 2, 3], Pop: [0, 2, 3], Lattice: [0, 2, 3] },
+      in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3], Editorial: [0, 2, 3], Pop: [0, 2, 3], Lattice: [0, 2, 3], Paperback: [0, 2, 3] },
       hint: 'Show or hide the tag chips wherever they are printed.' },
     // Three states (header-nav ticket, 2026-11-11): the seal is visible and
     // turning (today's), visible and still, or hidden. `badgeMode` replaces the
@@ -2712,19 +3011,19 @@ export const FIELDS = {
     // Editorial's layout-1 artwork (a reticle, a star) has no ring to turn, so
     // EditPanel offers those two Show / Hide alone (`badgeOptsFor`).
     { k: 'badgeMode', l: 'Corner badge',     type: 'select', d: 'rotating', opts: BADGE_MODES,
-      in: { Retro: [0, 1, 3, 4, 5], Lime: [0, 3], Grunge: [0, 3], Editorial: [0, 3], Pop: [0, 3], Lattice: [0, 3] } },
+      in: { Retro: [0, 1, 3, 4, 5], Lime: [0, 3], Grunge: [0, 3], Editorial: [0, 3], Pop: [0, 3], Lattice: [0, 3], Paperback: [0, 3] } },
     // The seal's ring sets it twice round a circle, so its cap is the ring's
     // fit (scripts/limits.mjs's ring test). Left empty, the ring prints the
     // artist's name, clamped to the same fit (sealCap).
     { k: 'badgeText', l: 'Corner badge text',                    // defaults to the artist's name — special-cased
-      in: { Retro: [0, 1, 3, 4, 5], Lime: [3], Grunge: [0, 3], Editorial: [3], Pop: [0, 3], Lattice: [3] },
+      in: { Retro: [0, 1, 3, 4, 5], Lime: [3], Grunge: [0, 3], Editorial: [3], Pop: [0, 3], Lattice: [3], Paperback: [0, 3] },
       chars: { Retro: 19, Lime: [null, null, null, 13], Grunge: [14, null, null, 14], Editorial: [null, null, null, 10],
-        Pop: [12, null, null, 10], Lattice: [null, null, null, 13] } },
+        Pop: [12, null, null, 10], Lattice: [null, null, null, 13], Paperback: [12, null, null, 10] } },
     { k: 'navMode',   l: 'Menu style', type: 'select', d: 'sections', opts: [
       { v: 'sections', l: 'Follow my sections' },
       { v: 'minimal',  l: 'Minimal (Music · Gigs · About)' },
     ] },
-    { k: 'align',     l: 'Page alignment',        type: 'select', d: 'left', in: { Retro: [0], Lime: [0], Grunge: [0], Editorial: [0], Pop: [0], Lattice: [0] }, opts: [
+    { k: 'align',     l: 'Page alignment',        type: 'select', d: 'left', in: { Retro: [0], Lime: [0], Grunge: [0], Editorial: [0], Pop: [0], Lattice: [0], Paperback: [] }, opts: [
       { v: 'left',   l: 'Left' },
       { v: 'centre', l: 'Centre' },
     ] },
@@ -2739,7 +3038,10 @@ export const FIELDS = {
       chars: { Retro: [20, null, 19, 23], Lime: [19, null, 18, 21], Grunge: [21, null, 20, 18],
         Editorial: [15, null, 15, 17], Pop: [17, null, 17, 19],
         // Lattice layout 1 measured 2026-11-19 (scripts/limits.mjs bio --themes=5 --designs=0); 3 and 4 are Pop's until their passes.
-        Lattice: [21, null, 17, 19] } },
+        Lattice: [21, null, 17, 19],
+        // Paperback layout 1 measured 2026-11-20 (limits.mjs bio --themes=6 --designs=0): the head is one line at 768 and 390
+        // in the frame, so 390 binds at the seed's own 15 (the probe's floor); 3 and 4 are Pop's until their passes.
+        Paperback: [15, null, 17, 19] } },
     // Layout 2's pill over the paragraph (JP-059), seeded with the frame's
     // copy and cased as a label; emptied, it is not drawn.
     { k: 'tag',       l: 'Highlight tag', d: BIO_TAG, in: [1], chars: [null, 18],
@@ -2749,17 +3051,20 @@ export const FIELDS = {
     // Layout 2's foot row (JP-037): the frame's two-tone line, whose first
     // three words take the accent (`vm.bioCredit`), and the pill beside it.
     // Each drops when emptied, and the row with both.
-    { k: 'credit',    l: 'Footer line', d: BIO_CREDIT, in: [1], chars: [null, 43],
+    { k: 'credit',    l: 'Footer line', d: BIO_CREDIT, in: [1], chars: { Paperback: [null, 39], '*': [null, 43] },
       hint: 'The line at the foot of the card. Its first three words take the accent colour.' },
-    { k: 'cta',       l: 'Button', d: BIO_CTA, in: [1], chars: [null, 16],
-      hint: 'The button beside the footer line. Left empty, it is not drawn.' },
+    // Paperback's layout 1 draws it too: the black `Full bio` pill under the About copy (seeded by
+    // sectionVm and `fieldSeed`, as the calendar's Lattice `Continue`).
+    { k: 'cta',       l: 'Button', d: BIO_CTA, in: { Paperback: [0, 1], '*': [1] }, chars: { Paperback: [16, 16], '*': [null, 16] },
+      hint: { '*': 'The button beside the footer line. Left empty, it is not drawn.',
+        Paperback: 'The black pill under the About copy (layout 1) and the button beside the footer line (layout 2). Left empty, it is not drawn.' } },
     // Layout 3's ID card draws a row of stats, and the frame's first one is
     // "Performing since: June 2021". Seeded with the frame's copy (QA,
     // 2026-09-15 — layout 2's price row and bookings line were the precedent),
     // so the seeded card draws the frame's three columns; emptied, the column
     // is not drawn.
     { k: 'since',     l: 'Performing since', def: 'since', in: [2, 3],
-      chars: { Retro: [null, null, 9, 31], Lime: [null, null, 22, 31], '*': [null, null, 20, 31] },
+      chars: { Retro: [null, null, 9, 31], Lime: [null, null, 22, 31], Paperback: [null, null, 12, 31], '*': [null, null, 20, 31] },
       hint: 'The ID card’s first stat (layout 3) and the overlay card’s middle line (layout 4), where it reads “Performing since …”. Just the date, then. Left empty, neither is drawn.' },
     // JP-071 (user call, 2026-09-29, reversing the fit's "a frame label stays
     // a literal" for these): the ID card's labels, each seeded with the
@@ -2773,10 +3078,10 @@ export const FIELDS = {
     { k: 'roleLabel',  l: 'Current role heading', d: BIO_ROLE_LABEL, in: [2], chars: [null, null, 14],
       hint: 'The label over the Header’s Small heading on the ID card. Left empty, the kicker stands alone.' },
     { k: 'baseLabel',  l: 'Based in heading', d: BIO_BASE_LABEL, in: [2],
-      chars: { Retro: [null, null, 16], Lime: [null, null, 16], Pop: [null, null, 14], '*': [null, null, 19] },
+      chars: { Retro: [null, null, 16], Lime: [null, null, 16], Pop: [null, null, 14], Paperback: [null, null, 16], '*': [null, null, 19] },
       hint: 'The label over the Header’s Location on the ID card. Left empty, the location stands alone.' },
     { k: 'aboutLabel', l: 'About heading', d: BIO_ABOUT_LABEL, in: [2],
-      chars: { Editorial: [null, null, 59], Pop: [null, null, 48], '*': [null, null, 56] },
+      chars: { Editorial: [null, null, 59], Pop: [null, null, 48], Paperback: [null, null, 48], '*': [null, null, 56] },
       hint: 'The bracketed label over the paragraphs on the ID card. Left empty, it is not drawn.' },
     // The circular badge at layouts 1, 3 and 5 (layout 5 folds onto design 0): the
     // header's three states (2026-11-11). Editorial's layout 3 draws a sparkle, not
@@ -2818,7 +3123,7 @@ export const FIELDS = {
       chars: { Retro: [20, 20, 25, 20], Grunge: [30, 20, 20, 25], Pop: [20, 20, 20, 23], '*': [20, 20, 20, 20] } },
     // JP-095 (a): the chip on the fan's front card, the frame's word, uncased.
     { k: 'chipLabel', l: 'Track tag', d: MEDIA_CHIP_LABEL, in: [1],
-      chars: { Retro: [null, 10], Lime: [null, 9], '*': [null, 10] },
+      chars: { Retro: [null, 10], Lime: [null, 9], Paperback: [null, 9], '*': [null, 10] },
       hint: 'The chip on the front card of the fan, after a dot. Left empty, it is not drawn.' },
     // Retro's layout-1 frame (446:2265) draws the Soundcloud pill, and so does
     // Editorial's (964:58614), so there and on Pop an empty address leaves it a
@@ -2867,7 +3172,7 @@ export const FIELDS = {
       // The layout-4 seats were 54 / 50 / 55 / 29 / 35 until the title took its pill
       // (JP-163): the pill's padding binds the 390 box sooner.
       cols: { title: { Retro: [null, 50, null, 48], Lime: [null, 39, null, 44], Grunge: [null, 46, null, 49],
-        Editorial: [null, 21, null, 27], Pop: [null, 29, null, 31] }, desc: { '*': [null, 63, null, 63] } },
+        Editorial: [null, 21, null, 27], Pop: [null, 29, null, 31], Paperback: [null, 20, null, 30] }, desc: { Paperback: [null, 61, null, 63], '*': [null, 63, null, 63] } },
       hint: 'Paste a YouTube video, short or playlist link; the title fills itself in, and you can '
           + 'change it. Layout 2 lists them beside the player, which shows the playing video’s title '
           + 'and description (with no description, its YouTube channel’s name). Layout 4 plays them '
@@ -2890,7 +3195,7 @@ export const FIELDS = {
       // 17 at 390, but the 16-character seed is the frame's own string and fits in one line
       // there, so the cap is the seed's length, as Editorial's).
       chars: { Lime: [null, null, null, 19], Grunge: [null, null, null, 25], Editorial: [null, null, null, 16],
-        Pop: [null, null, null, 16], '*': [null, null, null, 20] },
+        Pop: [null, null, null, 16], Paperback: [null, null, null, 19], '*': [null, null, null, 20] },
       hint: 'The band’s large head, layout 4 only.' },
     // Call 3: View All, JP-071's shape (the frame's own bytes, uncased, dropped
     // when emptied). "Top music video" stays a literal. Measured 39 at 390: held
@@ -2918,7 +3223,9 @@ export const FIELDS = {
         Pop: [48, 42, 28],
         // Lattice layout 1 measured: 32 (the seed's four lines at 390 are the frame's, and prose of 33 takes a fifth),
         // so the seed's own 42 is the floor, as the gallery's and the bio's heads. Layouts 2-4: Pop's, provisional.
-        Lattice: [42, 42, 28] },
+        Lattice: [42, 42, 28],
+        // Paperback layout 1 measured 2026-11-21 (limits.mjs pricing --themes=6 --designs=0 --upright): 46 (the seed's 42 fits); layouts 2-4 Pop's.
+        Paperback: [46, 42, 28] },
       hint: 'Layouts 1, 2 and 3 only. Layout 4 is a stack of service rows and heads them with '
           + 'the package names alone, so it draws no title.' },
     { k: 'tiers',   l: 'Packages', type: 'tiers', max: 6,
@@ -2929,7 +3236,9 @@ export const FIELDS = {
         name: { Retro: [19, 18, 53, 16], Lime: [30, 28, 42, 23], Grunge: [40, 34, 51, 25], Editorial: [22, 18, 27, 16],
           Pop: [16, 16, 30, 18],
           // Layout 1 measured 15 (desktop 17, tablet 15, mobile 17); the seed's 16 (The Festival Set) is the floor.
-          Lattice: [16, 16, 30, 18] },
+          Lattice: [16, 16, 30, 18],
+          // Paperback layout 1 measured 29 (desktop 37, tablet 29, mobile 30); the rest Pop's.
+          Paperback: [29, 16, 26, 18] },
         // `num` is the first number run, the big numeral: a price of digits alone
         // sets whole in it, so it is measured apart from the total (`chars`, the
         // price with its small tail). User call, 2026-11-06. The numeral's cap is
@@ -2940,17 +3249,22 @@ export const FIELDS = {
         price: { chars: { Retro: [8, 33, 31, 25], Lime: [12, 35, 25, 29], Grunge: [14, 35, 30, 34], Editorial: [11, 33, 27, 20],
           Pop: [10, 34, 25, 23],
           // Layout 1 measured 9 (one run in the display face, a range's tail wrapping at its spaces); the rest Pop's.
-          Lattice: [9, 34, 25, 23] },
+          Lattice: [9, 34, 25, 23],
+          // Paperback layout 1 measured 10 (desktop 10, tablet 12, mobile 17: one run in the display face, a tail wrapping at its spaces).
+          Paperback: [10, 25, 21, 17] },
           // Lattice's numeral is layout 1's 9 (measured: desktop 9, tablet 10, mobile 12) held to Pop's 7, the tightest of
           // the placeholder layouts' provisional rows, so a price typed at layout 2, 3 or 4 is not one the deck then cuts.
-          num: { Retro: 5, Lime: 10, Grunge: 11, Editorial: 8, Pop: 7, Lattice: 7 } },
+          num: { Retro: 5, Lime: 10, Grunge: 11, Editorial: 8, Pop: 7, Lattice: 7,
+            // Paperback layout 1 measured 9 / 11 / 14 (the card's box); held to Pop's 7 as Lattice's is, layouts 2-4 being unmeasured.
+            Paperback: 7 } },
         // Lattice layout 1 measured: an item 42 at 390 (so the shared 26 holds), and three tags a package (a fourth chip
         // wraps the 390 row's second line).
         tags: { list: ',', chars: { Retro: [12, null, 12, 12], Lattice: [26, null, 26, 26], '*': [26, null, 26, 26] },
-          count: { Retro: [4, null, 5, 6], Pop: [3, null, 4, 5], Lattice: [3, null, 4, 5], '*': [4, null, 4, 5] } },
+          count: { Retro: [4, null, 5, 6], Pop: [3, null, 4, 5], Lattice: [3, null, 4, 5], Paperback: [3, null, 4, 5], '*': [4, null, 4, 5] } },
         blurb: 160,
         feats: { list: '\n', chars: { Retro: [24, 24, 24, 59], Grunge: [25, 24, 24, 62], Editorial: [25, 24, 24, 60],
-          Pop: [26, 24, 24, 62], Lattice: [24, 24, 24, 62], '*': [24, 24, 24, 62] }, count: [15, 15, 15, 5] },
+          // Paperback layout 1 measured 35 (desktop 45, tablet 35, mobile 36).
+          Pop: [26, 24, 24, 62], Lattice: [24, 24, 24, 62], Paperback: [35, 24, 24, 57], '*': [24, 24, 24, 62] }, count: [15, 15, 15, 5] },
       },
       hint: 'Tags become the filter chips above the packages in layouts 1 and 3. '
           + 'Layout 3 starts the packages tagged Duo where the other layouts '
@@ -2968,7 +3282,9 @@ export const FIELDS = {
       chars: { Retro: [7, 37, 32, 69], Lime: [13, 40, 28, 88], Grunge: [15, 41, 33, 98], Editorial: [12, 37, 29, 53],
         Pop: [11, 39, 27, 51],
         // Layout 1 measured 29 (desktop 37; tablet and mobile 29): the unit stands in the card's top row, right-aligned.
-        Lattice: [29, 39, 27, 51] },
+        Lattice: [29, 39, 27, 51],
+        // Paperback layout 1 measured 11 (desktop 11, tablet 17, mobile 17): the unit stands in the card's top row, right-aligned.
+        Paperback: [11, 31, 23, 39] },
       hint: 'Printed after the price in layouts 1, 2 and 3. Layout 4 stands it above the price '
           + 'instead, as the kind of booking being priced, and drops a leading slash.' },
     { k: 'intro',   l: 'Intro line', type: 'area', d: PRICING_INTRO_3, in: [2],
@@ -2990,24 +3306,24 @@ export const FIELDS = {
     { k: 'images',  l: 'Reviewer photos', type: 'images', max: 3, aspect: [1, 1], in: PRICING_CREDIT,
       hint: 'Small faces under the plan card’s quote.' },
     { k: 'reviews', l: 'Review count', d: PRICING_REVIEWS, in: PRICING_CREDIT,
-      chars: { Retro: [null, 54], '*': [null, 55] },
+      chars: { Retro: [null, 54], Paperback: [null, 53], '*': [null, 55] },
       hint: 'In the credit row under the quote, after the stars.' },
     { k: 'rating',  l: 'Rating', d: PRICING_RATING, in: PRICING_CREDIT,
-      chars: [null, 47],
+      chars: { Paperback: [null, 44], '*': [null, 47] },
       hint: 'The five stars beside it are drawn while this is filled.' },
     // Named for its card rather than numbered, so it still reads apart from
     // the package button below.
     { k: 'cta',     l: 'Plan button', d: PRICING_CTA, in: PRICING_CARD,
-      chars: { Retro: [null, 40], Lime: [null, 39], Grunge: [null, 40], Editorial: [null, 23], Pop: [null, 27] },
+      chars: { Retro: [null, 40], Lime: [null, 39], Grunge: [null, 40], Editorial: [null, 23], Pop: [null, 27], Paperback: [null, 23] },
       hint: 'The pill under the price on layout 2’s plan card. Empty it to drop the pill.' },
     { k: 'note',    l: 'Note beside plan button', d: PRICING_NOTE, in: PRICING_CARD,
-      chars: { Retro: [null, 54], '*': [null, 55] },
+      chars: { Retro: [null, 54], Paperback: [null, 54], '*': [null, 55] },
       hint: 'Layout 2 only. A phone stacks it under the pill.' },
     // JP-095 (a): the label over the plan card's features, in the frame's
     // capitals. Drawn while the package has features, as the list is. Layout
     // 3 prints it over every package's features too (JP-125, 2026-10-09).
     { k: 'featsLabel', l: 'Package features heading', d: PRICING_FEATS_LABEL, in: [1, 2],
-      chars: { Retro: [null, 48, 57], Lime: [null, 68, 51], Pop: [null, 35, 57], '*': [null, 68, 55] },
+      chars: { Retro: [null, 48, 57], Lime: [null, 68, 51], Pop: [null, 35, 57], Paperback: [null, 61, 51], '*': [null, 68, 55] },
       hint: 'The label over the features, on layout 2’s plan card and on each of layout 3’s '
           + 'packages. Left empty, it is not drawn.' },
     // JP-125 (user call, 2026-10-09): layout 3's FEATURED badge. Emptied, the
@@ -3023,11 +3339,13 @@ export const FIELDS = {
       chars: { Retro: [12, null, 12, 26], Lime: [14, null, 12, 26], Grunge: [16, null, 12, 26],
         Editorial: [9, null, 12, 26], Pop: [10, null, 12, 26],
         // Layout 1 measured 34 (the full-width bar: desktop 42, tablet 34, mobile 35); the rest Pop's.
-        Lattice: [34, null, 12, 26] },
+        Lattice: [34, null, 12, 26],
+        // Paperback layout 1 measured 34 (desktop 47, tablet 34, mobile 37): the split pill's label.
+        Paperback: [34, null, 12, 26] },
       hint: 'The pill on every package. Layout 3 starts from “Book” and layout 4 from '
           + '“Start Enquiry”. Layout 2 has its own plan button. Empty it to drop the pill.' },
     { k: 'sub',     l: 'Small print', def: 'pricingSub',
-      chars: { Retro: [133, 67, 67, 67], Grunge: [53, 67, 63, 67], Pop: [80, 67, 63, 67], Lattice: [85, 67, 63, 67], '*': [67, 67, 63, 67] } },
+      chars: { Retro: [133, 67, 67, 67], Grunge: [53, 67, 63, 67], Pop: [80, 67, 63, 67], Lattice: [85, 67, 63, 67], Paperback: [80, 53, 53, 53], '*': [67, 67, 63, 67] } },
   ],
   // The other list-shaped content type with a structured editor rather than a
   // textarea (see `media` above): `songs` is an array of
@@ -3047,7 +3365,10 @@ export const FIELDS = {
         Pop: [11, 25, 17, 10],
         // Lattice layout 1 measured 2026-11-19 (limits.mjs repertoire --themes=5 --designs=0): 12 at 1440 and 390,
         // 17 at 768. The other three layouts are Pop's until their passes.
-        Lattice: [12, 25, 17, 10] } },
+        Lattice: [12, 25, 17, 10],
+        // Paperback layout 1 measured 2026-11-20 (limits.mjs repertoire --themes=6 --designs=0): 13 at 1440 and 768, 14 at 390,
+        // the count and the disc beside it. Layouts 2-4 are Pop's until their passes.
+        Paperback: [13, 22, 17, 10] } },
     // `in` is per field, and every layout reads the songs, so the hint says
     // which column each layout leaves out (JP-107): the reviews' date shape.
     // Session 5 of the character-limits pass: a tag is a chip, and at layout 3
@@ -3057,13 +3378,15 @@ export const FIELDS = {
     // no tags and takes the tightest, so a list typed there is not cut elsewhere.
     { k: 'songs',   l: 'Songs', type: 'songs', max: 60,
       cols: {
-        title: { Retro: [17, 25, 25, 25], Lime: [44, 24, 17, 22], Grunge: [33, 26, 23, 26], Editorial: 17, Pop: 17 },
+        title: { Retro: [17, 25, 25, 25], Lime: [44, 24, 17, 22], Grunge: [33, 26, 23, 26], Editorial: 17, Pop: 17, Paperback: 17 },
         artist: { Retro: [32, 25, null, 41], Lime: [73, 25, null, 37], Grunge: [74, 25, null, 42],
           Editorial: [35, 25, null, 18], Pop: [18, 25, null, 19],
           // Lattice layout 1: 22 at 768 and 390 (one line beside a 17-character title); 1440 holds 44.
-          Lattice: [22, 25, null, 19] },
+          Lattice: [22, 25, null, 19],
+          // Paperback layout 1: 22 at 768 and 390 (the chip ellipsises past it, the frame's longest artist is 18); 1440 holds 48.
+          Paperback: [22, 25, null, 19] },
         length: { Retro: [null, null, 23], Lime: [null, null, 17], Grunge: [null, null, 22], Editorial: [null, null, 17],
-          Pop: [null, null, 14] },
+          Pop: [null, null, 14], Paperback: [null, null, 10] },
         tags: { list: ',', chars: 18, count: { Editorial: [3, 4, 3, 3], Lattice: [3, 4, 3, 3], '*': [4, 4, 3, 3] } },
       },
       hint: 'Tags become the filter chips above the list. Layout 4 draws no chips: it indexes the whole list A–Z instead. '
@@ -3074,7 +3397,7 @@ export const FIELDS = {
     // the mood the rest, never under its seed's 14 (session 5).
     { k: 'sets',    l: 'Set lists', type: 'sets', in: [2],
       cols: { mood: { Retro: [null, null, 17], Lime: [null, null, 14], Grunge: [null, null, 17], Editorial: [null, null, 17],
-        Pop: [null, null, 14] }, length: { Lime: [null, null, 7], '*': [null, null, 10] } },
+        Pop: [null, null, 14], Paperback: [null, null, 14] }, length: { Lime: [null, null, 7], '*': [null, null, 10] } },
       hint: 'One per tag on your songs. The mood and length show under the set’s name in layout 3; with both empty, it shows the song count.' },
   ],
   // The three social addresses follow the photos, and follow `media.soundcloud`
@@ -3092,15 +3415,15 @@ export const FIELDS = {
       hint: 'One per tile. Layout 1 shows the highlighted one in its viewer; layouts 2 and 4 show it as the large photo beside the others.' },
     // JP-120 (gallery): the eyebrow over the heading, the frames' word, uncased.
     { k: 'kicker',  l: 'Small heading', d: GALLERY_KICKER, in: [0, 3],
-      chars: { Retro: [44, null, null, 49], Pop: [44, null, null, 39], Lattice: [41, null, null, 51], '*': [55, null, null, 51] },
+      chars: { Retro: [44, null, null, 49], Pop: [44, null, null, 39], Lattice: [41, null, null, 51], Paperback: [25, null, null, 39], '*': [55, null, null, 51] },
       hint: 'A small line over the heading. Empty by default; type one to show it.' },
     { k: 'heading', l: 'Heading', d: 'See us in action',
       chars: { Retro: [20, 27, 18, 24], Lime: [19, 26, 18, 23], Grunge: [29, 26, 23, 24], Editorial: [16, 26, 11, 20],
-        Pop: [16, 27, 15, 20], Lattice: [16, 27, 15, 20] } },
+        Pop: [16, 27, 15, 20], Lattice: [16, 27, 15, 20], Paperback: [16, 23, 15, 20] } },
     // JP-098: the 768 head row's word, the frame's, uncased. `in` cannot name a
     // width, so the hint does. JP-120 (gallery): layout 1's credit line too.
     { k: 'railLabel', l: 'Gallery caption', d: GALLERY_RAIL_LABEL, in: [0, 1],
-      chars: { Retro: [49, 70], Lime: [55, 64], Editorial: [32, 70], Pop: [49, 70], Lattice: [45, 70], '*': [55, 70] },
+      chars: { Retro: [49, 70], Lime: [55, 64], Editorial: [32, 70], Pop: [49, 70], Lattice: [45, 70], Paperback: [18, 64], '*': [55, 70] },
       hint: 'The line under your name over the large photo in layout 1, and the label over the small '
           + 'photos in layout 2, on a tablet only. Left empty, neither is drawn.' },
     // JP-120 (gallery): two words that head a control or a row standing
@@ -3110,7 +3433,7 @@ export const FIELDS = {
       hint: 'The link over the large photo that goes back to the first one. Left empty, it shows '
           + '“Back to beginning” again.' },
     { k: 'sourceLabel', l: 'Social links heading', d: GALLERY_SOURCES[0].l, in: [0],
-      chars: { Retro: [42], Lime: [49], Grunge: [58], Editorial: [37], Pop: [50], Lattice: [25] },
+      chars: { Retro: [42], Lime: [49], Grunge: [58], Editorial: [37], Pop: [50], Lattice: [25], Paperback: [36] },
       hint: 'The first row, above YouTube, Instagram and TikTok, on desktop only. Left empty, it '
           + 'shows “Gallery” again.' },
     { k: 'youtube',   l: 'YouTube link', type: 'url', d: '', in: [0],
@@ -3133,13 +3456,13 @@ export const FIELDS = {
   // `in` records each key's reach.
   calendar: [
     // Lattice's layout 1 draws a dotted torus (art, not a photograph) in that seat, so only layout 4's disc reads it.
-    { k: 'image',   l: 'Photo', type: 'image', aspect: [1, 1], in: { Lattice: [3], '*': [0, 3] },
+    { k: 'image',   l: 'Photo', type: 'image', aspect: [1, 1], in: { Lattice: [3], Paperback: [3], '*': [0, 3] },
       hint: 'Fills the polaroid stack beside the month in layout 1, and the small disc on '
-          + "layout 4's summary card. Layouts 2 and 3 draw no photograph. Lattice's layout 1 draws none either." },
-    { k: 'heading', l: 'Heading', d: 'Availability', in: { Lime: [0, 1, 2, 3], Grunge: [0, 1, 2, 3], Editorial: [0, 1, 2, 3], Pop: [0, 1, 2, 3], Lattice: [0, 1, 2, 3], '*': [1, 2, 3] },
-      // Lattice's layout 1 measured (limits.mjs calendar --themes=5 --designs=0); the others are Pop's, provisional.
+          + "layout 4's summary card. Layouts 2 and 3 draw no photograph. Lattice's and Paperback's layout 1 draw none either." },
+    { k: 'heading', l: 'Heading', d: 'Availability', in: { Lime: [0, 1, 2, 3], Grunge: [0, 1, 2, 3], Editorial: [0, 1, 2, 3], Pop: [0, 1, 2, 3], Lattice: [0, 1, 2, 3], Paperback: [1, 2, 3], '*': [1, 2, 3] },
+      // Paperback's layout 1 draws the month as its head, so it reads no heading. Lattice's layout 1 measured (limits.mjs calendar --themes=5 --designs=0); the others are Pop's, provisional.
       chars: { Retro: [null, 25, 36, 18], Lime: [25, 22, 32, 18], Grunge: [28, 24, 35, 23], Editorial: [14, 14, 21, 11], Pop: [13, 20, 24, 15],
-        Lattice: [25, 20, 24, 15] } },
+        Lattice: [25, 20, 24, 15], Paperback: [13, 14, 24, 15] } },
     { k: 'open',    l: 'Calendar start date', type: 'date', d: CAL_OPEN,
       hint: 'The month the calendar opens on, and the date it opens picked. '
           + `Layouts 1 and 3 page through ${CAL_SPAN} months from there, layout 2's seeded `
@@ -3153,14 +3476,16 @@ export const FIELDS = {
           + 'date has passed.' },
     { k: 'time',    l: 'Event start time', d: CAL_TIME, in: [0, 3],
       chars: { Retro: [33, null, null, 34], Lime: [13, null, null, 32], Grunge: [13, null, null, 37], Editorial: [13, null, null, 33], Pop: [28, null, null, 33],
-        Lattice: [16, null, null, 33] },
+        Lattice: [16, null, null, 33],
+        // Paperback's layout 1 measured (limits.mjs calendar --themes=6 --designs=0 --upright): 24 binds at 768, where the line is one line.
+        Paperback: [24, null, null, 26] },
       hint: "Printed in layout 1's enquiry line, and on its own in layout 4's "
           + 'date card. Leave it empty and the line stops at the date.' },
     // JP-095 (a): the line every layout prints while no day is cued. Cased in
     // sectionVm, as the slot line beside it is; emptied, the seed again.
     { k: 'prompt',  l: 'Calendar instruction text', d: CAL_PROMPT,
       chars: { Retro: [33, 24, 39, 50], Lime: [44, 23, 33, 47], Grunge: [44, 24, 36, 50], Editorial: [44, 29, 24, 50], Pop: [31, 32, 24, 50],
-        Lattice: [33, 32, 24, 50] },
+        Lattice: [33, 32, 24, 50], Paperback: [36, 22, 24, 44] },
       hint: 'The line where the picked date goes while none is picked: on the published page, '
           + 'until a visitor picks one, when the opening date is booked or has passed. Left empty, '
           + 'it shows “Pick a date to enquire” again.' },
@@ -3170,18 +3495,19 @@ export const FIELDS = {
     // (JP-088; Pop's since its layout-1 pass, user call, 2026-10-02): its
     // enquiry line is the link.
     { k: 'cta',     l: 'Button', d: 'Check a date',
-      in: { Lime: [3], Grunge: [3], Editorial: [3], Pop: [3], Lattice: [0, 3], '*': [0, 3] },
+      in: { Lime: [3], Grunge: [3], Editorial: [3], Pop: [3], Lattice: [0, 3], Paperback: [0, 3], '*': [0, 3] },
+      // Paperback's Continue pill measured 34 (the 390 foot's width) and is held to 12 as Lattice's is, so the 768 foot's line keeps its room: a judgement call, the user's to overrule.
       // Lattice's layout-1 Continue bar: measured 29 (box), held to 12 so the bar stays within a third of the 390 foot
       // and the enquiry line keeps its room (the frame's seat is 130 wide beside a 162 line); a judgement call.
-      chars: { Retro: [24, null, null, 24], Lattice: [12, null, null, 24], '*': [null, null, null, 24] },
+      chars: { Retro: [24, null, null, 24], Lattice: [12, null, null, 24], Paperback: [12, null, null, 24], '*': [null, null, null, 24] },
       hint: 'Layout 4’s Send Enquiry, on the last step of the enquiry wizard and at the foot '
           + 'of the summary; it starts from “Send Enquiry” there, and shows it again if you '
-          + 'empty this. Under Retro it is also layout 1’s button, and under Lattice layout 1’s '
-          + '“Continue” bar (emptied, the bar is not drawn). The other templates’ '
+          + 'empty this. Under Retro it is also layout 1’s button, and under Lattice and Paperback layout 1’s '
+          + '“Continue” button (emptied, the bar is not drawn). The other templates’ '
           + 'layout 1 has no button: its “Enquiry for …” line is the link.' },
     { k: 'slots',   l: 'Available dates', type: 'slots', max: 8, in: [1],
-      cols: { kind: { Retro: [null, 33], Lime: [null, 36], Grunge: [null, 40], Editorial: [null, 33], Pop: [null, 36] },
-        price: { Retro: [null, 36], Lime: [null, 40], Grunge: [null, 43], Editorial: [null, 36], Pop: [null, 40] } },
+      cols: { kind: { Retro: [null, 33], Lime: [null, 36], Grunge: [null, 40], Editorial: [null, 33], Pop: [null, 36], Paperback: [null, 31] },
+        price: { Retro: [null, 36], Lime: [null, 40], Grunge: [null, 43], Editorial: [null, 36], Pop: [null, 40], Paperback: [null, 37] } },
       hint: 'The dates layout 2 lists, each with what you play and what it starts from. '
           + 'The seeded dates count from the calendar start date (on the published page, from today once that '
           + 'has passed) until you type one; clear it and the row counts again.' },
@@ -3194,9 +3520,9 @@ export const FIELDS = {
       hint: 'The label over what you play each night. Left empty, it is not drawn; with both '
           + 'labels empty, their row goes.' },
     { k: 'slotCta', l: 'Button (layout 2)', d: CAL_SLOT_CTA, in: [1],
-      chars: { Editorial: [null, 25], '*': [null, 26] } },
+      chars: { Editorial: [null, 25], Paperback: [null, 25], '*': [null, 26] } },
     { k: 'types',   l: 'Event types', type: 'area', d: CAL_TYPES.join(', '), in: [3], list: ',',
-      chars: [null, null, null, 13], count: [null, null, null, 4],
+      chars: { Paperback: [null, null, null, 11], '*': [null, null, null, 13] }, count: [null, null, null, 4],
       rows: { placeholder: 'Event type', add: 'Add event type' },
       hint: "The choices on the first step of layout 4's enquiry wizard. One per row; a comma starts a new row." },
     // JP-076 — no `d`: while the key is absent it follows the Enquiry Form's
@@ -3231,11 +3557,14 @@ export const FIELDS = {
           Pop: [18, 18, 28, 40],
           // Lattice layout 1 measured 2026-11-19 (limits.mjs map --themes=5 --designs=0): venue,
           // city and time each alone; the city · time line shares one mono line that wraps.
-          Lattice: [26, 18, 28, 40] },
-        city: { Retro: [22, 14, 20, 13], Editorial: [29, 13, 23, 13], Pop: [13, 13, 20, 13], '*': [20, 13, 20, 13] },
-        time: { Retro: [13, 5, 13, 10], Pop: [8, 5, 13, 13], Lattice: [15, 5, 13, 13], '*': [13, 5, 13, 13] },
-        month: { Retro: [7, 4, 11, 9], Lime: [5, 3, 12, 9], Pop: [9, 5, 12, 9], Lattice: [8, 5, 12, 9], '*': [5, 5, 12, 9] },
-        day: { Retro: [5, 5, 5, 5], Lattice: [3, 3, 5, 5], '*': [6, 3, 5, 5] },
+          Lattice: [26, 18, 28, 40],
+          // Paperback layout 1 measured 2026-11-21 (limits.mjs map --themes=6 --designs=0): the other
+          // designs keep the row they read before (Pop's venue, `'*'` for the rest).
+          Paperback: [25, 18, 26, 32] },
+        city: { Retro: [22, 14, 20, 13], Editorial: [29, 13, 23, 13], Pop: [13, 13, 20, 13], Paperback: [28, 13, 20, 13], '*': [20, 13, 20, 13] },
+        time: { Retro: [13, 5, 13, 10], Pop: [8, 5, 13, 13], Lattice: [15, 5, 13, 13], Paperback: [23, 5, 13, 13], '*': [13, 5, 13, 13] },
+        month: { Retro: [7, 4, 11, 9], Lime: [5, 3, 12, 9], Pop: [9, 5, 12, 9], Lattice: [8, 5, 12, 9], Paperback: [8, 5, 12, 9], '*': [5, 5, 12, 9] },
+        day: { Retro: [5, 5, 5, 5], Lattice: [3, 3, 5, 5], Paperback: [4, 3, 5, 5], '*': [6, 3, 5, 5] },
       },
       // The page size is vm.gigPage (five) except in layout 4, whose whole
       // list is a one-gig ticker. The cities are read
@@ -3255,62 +3584,62 @@ export const FIELDS = {
     // "Travel radius". Layouts 1 and 3 stopped drawing it 2026-11-12, so the
     // field is layout 2's alone and its seed is its `d`.
     { k: 'kicker',  l: 'Small heading', d: MAP_KICKER_2, in: [1],
-      chars: { Retro: [null, 30], Lime: [null, 26], Pop: [null, 30], '*': [null, 30] },
+      chars: { Retro: [null, 30], Lime: [null, 26], Pop: [null, 30], Paperback: [null, 28], '*': [null, 30] },
       hint: 'The small line over the travel card’s heading. Left empty, it is not drawn.' },
     // JP-090: layout 1's label over the gig list; the "· 5" count is the page's.
     // (Layout 2's "Other upcoming · 4", JP-095 (b), was removed 2026-11-12.)
     { k: 'listLabel', l: 'List heading', d: MAP_LIST_LABEL, in: [0],
-      chars: { Retro: [37], Lime: [40], Grunge: [41], Editorial: [46], Pop: [31], Lattice: [31] },
+      chars: { Retro: [37], Lime: [40], Grunge: [41], Editorial: [46], Pop: [31], Lattice: [31], Paperback: [30] },
       hint: 'The label over the list of gigs, before its count. Left empty, neither is drawn.' },
     { k: 'heading', l: 'Heading', d: 'Manchester',
       // Layouts 1 and 2 start from the picked town (mapHeadingSeed).
       chars: { Retro: [20, 20, 39, 25], Lime: [19, 17, 34, 24], Grunge: [16, 20, 37, 25], Editorial: [11, 19, 22, 22],
-        Pop: [17, 21, 25, 23], Lattice: [12, 21, 25, 23] } },
+        Pop: [17, 21, 25, 23], Lattice: [12, 21, 25, 23], Paperback: [11, 19, 23, 23] } },
     // Layout 2's travel card prints the header's Location instead, under its
     // own "Based in" label (JP-096, user call, 2026-10-01): the frame's value is
     // the town alone, and this field's copy says "Based in" itself.
     { k: 'base',    l: 'Based in',       d: MAP_BASE, in: [0, 2],
-      chars: { Retro: [29, null, 33], Lime: [35, null, 27], Grunge: [39, null, 33], Lattice: [19, null, 33], '*': [24, null, 33] },
+      chars: { Retro: [29, null, 33], Lime: [35, null, 27], Grunge: [39, null, 33], Lattice: [19, null, 33], Paperback: [25, null, 28], '*': [24, null, 33] },
       hint: 'Layout 1 prints it beside the map and layout 3 under it. Layout 2’s travel card '
           + 'shows the Location you typed on the header instead.' },
     { k: 'terms',   l: 'Travel charges',   d: MAP_TERMS, in: [0, 1],
-      chars: { Retro: [59, 50], Lime: [58, 41], Pop: [45, 51], Lattice: [39, 51], '*': [58, 51] } },
+      chars: { Retro: [59, 50], Lime: [58, 41], Pop: [45, 51], Lattice: [39, 51], Paperback: [44, 42], '*': [58, 51] } },
     { k: 'travelTime', l: 'Travel time (layout 2)', d: MAP_TRAVEL_TIME, in: [1],
-      chars: { Retro: [null, 11], '*': [null, 13] } },
+      chars: { Retro: [null, 11], Paperback: [null, 11], '*': [null, 13] } },
     { k: 'fee',        l: 'Booking fee (layout 2)', d: MAP_FEE, in: [1],
-      chars: { Retro: [null, 11], '*': [null, 13] } },
+      chars: { Retro: [null, 11], Paperback: [null, 11], '*': [null, 13] } },
     // JP-095 (b) · JP-096 (user call, 2026-10-01): layout 2's travel card, the
     // frame's own words, uncased. A label or caption left empty is not drawn; a
     // stat's label goes with its value, as the cell always did; the two pills
     // read their seed again, since a pill always stands.
     { k: 'homeLabel',   l: 'Home town heading',   d: MAP_HOME_LABEL, in: [1],
-      chars: { Lime: [null, 16], '*': [null, 18] },
+      chars: { Lime: [null, 16], Paperback: [null, 17], '*': [null, 18] },
       hint: 'The small line over your home town on the travel card. The town is the header’s Location. '
           + 'Left empty, it is not drawn.' },
     { k: 'homeCaption', l: 'Home town caption', d: MAP_HOME_CAPTION, in: [1],
-      chars: { Lime: [null, 16], '*': [null, 18] },
+      chars: { Lime: [null, 16], Paperback: [null, 17], '*': [null, 18] },
       hint: 'The small line under your home town. Left empty, it is not drawn.' },
     { k: 'venueLabel',  l: 'Venue heading',  d: MAP_VENUE_LABEL, in: [1],
       chars: [null, 20],
       hint: 'The small line over the featured gig’s city. Left empty, it is not drawn.' },
     { k: 'venueCaption', l: 'Venue caption', d: MAP_VENUE_CAPTION, in: [1],
-      chars: { Lime: [null, 16], '*': [null, 18] },
+      chars: { Lime: [null, 16], Paperback: [null, 17], '*': [null, 18] },
       hint: 'The small line under the featured gig’s city. Left empty, it is not drawn.' },
     { k: 'radiusLabel', l: 'Max travel heading', d: MAP_RADIUS_LABEL, in: [1],
-      chars: { Retro: [null, 14], Lime: [null, 15], '*': [null, 17] },
+      chars: { Retro: [null, 14], Lime: [null, 15], Paperback: [null, 16], '*': [null, 17] },
       hint: 'Over Coverage on the travel card. Left empty, the value stands alone.' },
     { k: 'travelTimeLabel', l: 'Travel time heading', d: MAP_TIME_LABEL, in: [1],
-      chars: { Retro: [null, 14], Lime: [null, 15], '*': [null, 17] },
+      chars: { Retro: [null, 14], Lime: [null, 15], Paperback: [null, 16], '*': [null, 17] },
       hint: 'Over Travel time on the travel card. Left empty, the value stands alone.' },
     { k: 'feeLabel',    l: 'Booking fee heading', d: MAP_FEE_LABEL, in: [1],
-      chars: { Retro: [null, 14], Lime: [null, 15], '*': [null, 17] },
+      chars: { Retro: [null, 14], Lime: [null, 15], Paperback: [null, 16], '*': [null, 17] },
       hint: 'Over Booking fee on the travel card. Left empty, the value stands alone.' },
     { k: 'venueCta',    l: 'Venue link button', d: MAP_VENUE_CTA, in: [1],
-      chars: { Retro: [null, 11], Lime: [null, 10], Grunge: [null, 10], Editorial: [null, 19], Pop: [null, 20] },
+      chars: { Retro: [null, 11], Lime: [null, 10], Grunge: [null, 10], Editorial: [null, 19], Pop: [null, 20], Paperback: [null, 10] },
       hint: 'Opens the featured gig’s tickets link on the published page. Left empty, it shows '
           + '“Venue Link” again.' },
     { k: 'routeCta',    l: 'Directions button', d: MAP_ROUTE_CTA, in: [1],
-      chars: { Retro: [null, 22], Lime: [null, 17], Grunge: [null, 19], Editorial: [null, 24], Pop: [null, 28] },
+      chars: { Retro: [null, 22], Lime: [null, 17], Grunge: [null, 19], Editorial: [null, 24], Pop: [null, 28], Paperback: [null, 14] },
       hint: 'Opens directions to the featured gig on the published page. Left empty, it shows '
           + '“Get Directions” again.' },
     // Layout 3's foot pill, the frame's "See all gigs", and the only layout that
@@ -3318,7 +3647,7 @@ export const FIELDS = {
     // filter; where the list is already one page it stays a picture (the
     // Soundcloud rule). An emptied label drops the pill.
     { k: 'cta',     l: 'Button (layout 3)', d: 'See all gigs', in: [2],
-      chars: [null, null, 24],
+      chars: { Paperback: [null, null, 20], '*': [null, null, 24] },
       hint: 'Lists every gig at once on the published page, when there is more than one page of them.' },
     // Layout 3's QA fields, which layout 2 reads as well since JP-040 (its fit
     // had dropped all four as claims) — all but `status`, which layout 2 does
@@ -3328,18 +3657,18 @@ export const FIELDS = {
       chars: [null, null, 20],
       hint: 'The tag above the featured gig.' },
     { k: 'updated', l: 'Map caption', d: MAP_UPDATED, in: [1, 2],
-      chars: { Lime: [null, 31, 31], '*': [null, 35, 34] } },
+      chars: { Lime: [null, 31, 31], Paperback: [null, 35, 32], '*': [null, 35, 34] } },
     { k: 'expand',  l: 'Map link text', d: MAP_EXPAND, in: [1, 2],
       chars: [null, 22, 22],
       hint: 'Opens directions to the gig the panel is showing, on the published page. Leave empty to hide it.' },
     { k: 'span',    l: 'Map side note', d: MAP_SPAN, in: [3],
-      chars: [null, null, null, 58],
+      chars: { Paperback: [null, null, null, 51], '*': [null, null, null, 58] },
       hint: 'Beside "Travel & reach" above the stat cards. Leave empty to hide it.' },
     // Layout 4's stat wall (JP-077 · JP-078 · JP-082, user call, 2026-09-29):
     // the ninth structured editor, { label, value, sub } per card, seeded with
     // the frame's four. Two to a row, so a third trails half-width.
     { k: 'stats',   l: 'Key numbers', type: 'stats', max: 4, in: [3],
-      cols: { label: [null, null, null, 19], value: [null, null, null, 14], sub: [null, null, null, 20] },
+      cols: { label: { Paperback: [null, null, null, 17], '*': [null, null, null, 19] }, value: [null, null, null, 14], sub: { Paperback: [null, null, null, 19], '*': [null, null, null, 20] } },
       hint: 'One card each, two to a row. A card prints only the parts you fill in; an empty row isn’t shown.' },
   ],
   testimonials: [
@@ -3350,7 +3679,7 @@ export const FIELDS = {
       chars: { Retro: [null, 38, 26, 24], Lime: [null, 43, 26, 23], Grunge: [null, 38, 30, 30],
         Editorial: [null, 38, 17, 22], Pop: [null, 45, 22, 22],
         // Lattice's layout 1 draws no heading; layouts 2-4 are placeholders on Pop's numbers.
-        Lattice: [null, 45, 22, 22] },
+        Lattice: [null, 45, 22, 22], Paperback: [null, 45, 19, 22] },
       hint: 'Layouts 2, 3 and 4 each start from their own heading. A line break you type is '
           + 'kept in layout 2.' },
     // Layout 2 was the first design to head this section, so both of the plain
@@ -3359,7 +3688,7 @@ export const FIELDS = {
     // `sub` a second seat: its stat card sets the sentence the frame fills with
     // a fabricated event count.
     { k: 'sub',     l: 'Intro line', def: 'testiSub', in: [1, 2],
-      chars: { Retro: [null, 114, 86], Lime: [null, 114, 87], '*': [null, 114, 67] },
+      chars: { Retro: [null, 114, 86], Lime: [null, 114, 87], Paperback: [null, 97, 67], '*': [null, 114, 67] },
       hint: 'The line under the heading in layout 2, and the sentence on the stat '
           + 'card in layout 3.' },
     // The seventh structured editor and the sixth repeater. Replaces a flattened
@@ -3376,13 +3705,17 @@ export const FIELDS = {
         // `role` 35 (77 / 63 / 35; each prints twice, in the caption and on its chip, and wraps), `when` 21
         // (62 / 47 / 21, the seed's own at 390). `quote` stays the shared 190 (measured open at 400: the card
         // grows). Layouts 2-4 are Pop's, unmeasured.
+        // Paperback layout 1 measured 2026-11-21 (limits.mjs testimonials --themes=6 --designs=0 --upright): `who` and `role` 45
+        // (105 / 66-83 / 45: each prints once, on its chip, and wraps), `when` 31 (64 / 55 / 31: the script meets the star disc at 390),
+        // `quote` 170 (measured 293 / 260 / 195 on three samples, 170 on the fourth, all-lower-case one `--check` adds: at 390 a 180-character review is nine lines and the card runs down over the foot trophy). Layouts 2-4 are Pop's, unmeasured.
         who: { Retro: [28, 48, 25, 27], Lime: [39, 45, 20, 27], Grunge: [28, 50, 25, 27],
-          Editorial: [17, 27, 13, 27], Pop: [18, 32, 15, 27], Lattice: [35, 32, 15, 27] },
+          Editorial: [17, 27, 13, 27], Pop: [18, 32, 15, 27], Lattice: [35, 32, 15, 27],
+          Paperback: [45, 31, 13, 23] },
         quote: { Lime: [66, 190, 190, 190], Grunge: [68, 190, 190, 190], Editorial: [66, 190, 190, 190],
-          Lattice: [190, 190, 190, 190], '*': [190, 190, 190, 190] },
+          Lattice: [190, 190, 190, 190], Paperback: [170, 190, 190, 190], '*': [190, 190, 190, 190] },
         role: { Retro: [28, 48, 26, 29], Lime: [45, 48, 26, 27], Grunge: [28, 48, 26, 29], Lattice: [35, 48, 26, 29],
-          '*': [26, 48, 26, 29] },
-        when: { Retro: [30], Pop: [30], Lattice: [21], '*': [46] },
+          Paperback: [45, 46, 26, 28], '*': [26, 48, 26, 29] },
+        when: { Retro: [30], Pop: [30], Lattice: [21], Paperback: [31], '*': [46] },
       },
       hint: 'Each row is one review. Layouts 1, 2 and 4 page through them; layout 3 '
           + 'gives each one a card on its wall, and a row with no name or role '
@@ -3392,10 +3725,10 @@ export const FIELDS = {
           + 'and 4 have no seat for the date.' },
     { k: 'rating',  l: 'Rating', d: TESTI_RATING, in: [2],
       chars: { Retro: [null, null, 8], Lime: [null, null, 7], Grunge: [null, null, 9], Editorial: [null, null, 5],
-        Pop: [null, null, 7], Lattice: [null, null, 7] },
+        Pop: [null, null, 7], Lattice: [null, null, 7], Paperback: [null, null, 4] },
       hint: 'The big number on the stat card, printed out of 5. Empty it to show how many reviews there are instead.' },
     { k: 'stars',   l: 'Star rating', d: TESTI_STARS, in: [1, 2],
-      chars: { Retro: [null, 44, 35], Lime: [null, 44, 32], '*': [null, 44, 36] },
+      chars: { Retro: [null, 44, 35], Lime: [null, 44, 32], Paperback: [null, 37, 33], '*': [null, 44, 36] },
       hint: 'Layout 2 prints them in the corner of the card, beside the reviewer; layout 3 beside '
           + 'the faces on its stat card. Empty it to drop them.' },
     { k: 'cta',     l: 'Button', d: 'Book Now', in: [1], chars: [null, 16],
@@ -3422,8 +3755,9 @@ export const FIELDS = {
     { k: 'heading',  l: 'Heading', type: 'area', d: "Let's make\nyour night unforgettable.",
       // Lattice's layout 1 measured 2026-11-19 (limits.mjs form --themes=5 --designs=0): 37 at 1440, 56 at
       // 768, 44 at 390, three lines in a 419 measure; the others are Pop's until their passes.
+      // Paperback's layout 1 measured 2026-11-21 (limits.mjs form --themes=6 --designs=0 --upright): 41 at 1440 (a fourth line past it), 58 at 768, 46 at 390.
       chars: { Retro: [45, 36, 32, 20], Lime: [37, 37, 32, 19], Grunge: [36, 40, 41, 25],
-        Editorial: [36, 42, 30, 12], Pop: [36, 40, 30, 17], Lattice: [37, 40, 30, 17] },
+        Editorial: [36, 42, 30, 12], Pop: [36, 40, 30, 17], Lattice: [37, 40, 30, 17], Paperback: [41, 36, 30, 17] },
       hint: 'Layout 3 starts from your name (“Book … for your event”) and follows it until you '
           + 'type your own; layout 4 starts from “Contact Us”. A line break you type is kept in '
           + 'layout 2.' },
@@ -3431,7 +3765,7 @@ export const FIELDS = {
     // name until JP-054 gave it the frame's own word. Emptiable: it drops.
     { k: 'sub',      l: 'Line under the heading', d: FORM_SUB_4, in: [3],
       chars: { Retro: [null, null, null, 33], Lime: [null, null, null, 40], Grunge: [null, null, null, 44],
-        Editorial: [null, null, null, 27], Pop: [null, null, null, 30] },
+        Editorial: [null, null, null, 27], Pop: [null, null, null, 30], Paperback: [null, null, null, 23] },
       hint: 'Layout 4 only. Leave it empty to hide it.' },
     { k: 'para',     l: 'Paragraph', type: 'area', def: 'formPara', in: [2], chars: [null, null, 210],
       hint: 'The line under the heading. Layout 3 only.' },
@@ -3440,15 +3774,17 @@ export const FIELDS = {
     { k: 'promises', l: 'Reasons to book', type: 'area', d: FORM_PROMISES.join('\n'), in: [0, 1], list: '\n',
       // Lattice's layout 1 measured 33 a line (the 390 row wraps past it) and holds the shared 9 a column
       // (16 measured, open); layout 2 is the '*' row's.
-      chars: { Retro: [45, 32], Pop: [42, 31], Editorial: [34, 29], Lattice: [33, 34], '*': [34, 34] },
-      count: { Editorial: [6, 9], Lattice: [9, 9], '*': [9, 9] },
+      // Paperback's layout 1 measured 5 rows (the sixth meets the blob's art at 1440) and 20 a line at 390, under the seed's own 29
+      // (the frame's longest, one line there), so the seed is the floor.
+      chars: { Retro: [45, 32], Pop: [42, 31], Editorial: [34, 29], Lattice: [33, 34], Paperback: [29, 29], '*': [34, 34] },
+      count: { Editorial: [6, 9], Lattice: [9, 9], Paperback: [5, 9], '*': [9, 9] },
       rows: { placeholder: 'Promise', add: 'Add promise' },
       hint: 'The ticked list beside the form.' },
     // Layout 4's *What happens next* column (JP-079 · JP-081, user call,
     // 2026-09-29): the tenth repeater, { title, sub } per step, seeded with the
     // frames' three. It numbered the promises until then, one line a row.
     { k: 'steps',    l: 'Steps', type: 'steps', max: 6, in: [3],
-      cols: { title: [null, null, null, 41], sub: [null, null, null, 44] },
+      cols: { title: { Paperback: [null, null, null, 34], '*': [null, null, null, 41] }, sub: { Paperback: [null, null, null, 41], '*': [null, null, null, 44] } },
       hint: 'Numbered down the column beside the form, a title over a second line. A step prints '
           + 'only the lines you fill in; an empty row isn’t shown, and with none the column goes.' },
     // The sixth structured editor and the fifth repeater. Follows the `songs`
@@ -3460,9 +3796,9 @@ export const FIELDS = {
     { k: 'fields',   l: 'Form fields', type: 'formFields', max: 8,
       cols: {
         label: { Retro: [49, 46, 57, 22], Lime: [47, 52, 69, 27], Grunge: [52, 62, 76, 30],
-          Editorial: [24, 33, 41, 14], Pop: [32, 33, 40, 19], Lattice: [40, 33, 40, 19] },
+          Editorial: [24, 33, 41, 14], Pop: [32, 33, 40, 19], Lattice: [40, 33, 40, 19], Paperback: [45, 27, 30, 15] },
         placeholder: { Retro: [37, null, null, 23], Lime: [41, null, null, 24], Grunge: [41, null, null, 24],
-          Editorial: [41, null, null, 25], Pop: [35, null, null, 24], Lattice: [36, null, null, 24] },
+          Editorial: [41, null, null, 25], Pop: [35, null, null, 24], Lattice: [36, null, null, 24], Paperback: [34, null, null, 20] },
       },
       hint: 'One box each — two to a row in layouts 1 and 4 (layout 1 stacks them on a phone), '
           + 'one to a row in layouts 2 and 3, '
@@ -3472,22 +3808,23 @@ export const FIELDS = {
           + 'boxes and layout 4 on its own five until you edit them; after that your list shows '
           + 'in every layout.' },
     { k: 'types',    l: 'Event types', type: 'area', d: FORM_TYPES.join(', '), in: [0], list: ',',
-      chars: [15], count: { Lime: [5], Grunge: [5], Lattice: [8], '*': [8] },
+      // Paperback's layout 1 measured 6 chips (the 390 frame's two rows; a seventh wraps to a third), the item held to the shared 15.
+      chars: [15], count: { Lime: [5], Grunge: [5], Lattice: [8], Paperback: [6], '*': [8] },
       rows: { placeholder: 'Event type', add: 'Add event type' },
       hint: 'The form opens on the first; empty hides the row. Layout 1 only. One per row; a comma starts a new row.' },
     // The chip row's label (JP-090), messageLabel's rule: the row it heads
     // stands whatever it says, so an emptied label reads the seed again.
     { k: 'typeLabel', l: 'Event type label', d: FORM_TYPE_LABEL, in: [0],
-      chars: { Retro: [51], Lime: [52], Grunge: [58], Editorial: [37], Pop: [33], Lattice: [40] },
+      chars: { Retro: [51], Lime: [52], Grunge: [58], Editorial: [37], Pop: [33], Lattice: [40], Paperback: [45] },
       hint: 'The label over the event types. Layout 1 only. Left empty, it shows Event type.' },
     { k: 'message',  l: 'Message box hint text', d: FORM_MESSAGE, in: [0, 3],
       chars: { Retro: [39, null, null, 53], Lime: [42, null, null, 54], Grunge: [42, null, null, 54],
-        Editorial: [44, null, null, 58], Pop: [35, null, null, 54], Lattice: [39, null, null, 54] },
+        Editorial: [44, null, null, 58], Pop: [35, null, null, 54], Lattice: [39, null, null, 54], Paperback: [37, null, null, 44] },
       hint: 'Layouts 1 and 4.' },
     // The message box's label (JP-082): the one box label that was a literal.
     { k: 'messageLabel', l: 'Message label', d: FORM_MSG_LABEL, in: [0, 3],
       chars: { Retro: [51, null, null, 45], Lime: [52, null, null, 59], Grunge: [58, null, null, 64],
-        Editorial: [37, null, null, 35], Pop: [33, null, null, 41], Lattice: [40, null, null, 41] },
+        Editorial: [37, null, null, 35], Pop: [33, null, null, 41], Lattice: [40, null, null, 41], Paperback: [45, null, null, 33] },
       hint: 'Layouts 1 and 4. Also heads the message in the email you receive. Left empty, it shows Message.' },
     // Dead until the submit was made real — this is now what the form is for.
     { k: 'email',    l: 'Email address', type: 'email', d: FORM_EMAIL,
@@ -3496,7 +3833,7 @@ export const FIELDS = {
       // Lattice's layout 1 is a full-width bar with nothing beside it to crowd, so its measured 35 stands
       // (the shared 15 is Retro's and Lime's pill).
       chars: { Retro: [16, null, null, 36], Editorial: [15, null, null, 27], Pop: [15, null, null, 32],
-        Lattice: [35, null, null, 36], '*': [15, null, null, 36] },
+        Lattice: [35, null, null, 36], Paperback: [34, null, null, 31], '*': [15, null, null, 36] },
       hint: 'Layouts 1 and 4. Layout 4 starts from “Check Availability”, and layout 1 from “Enquire” in Lime, Grunge, Editorial and Pop.' },
     // Layouts 2 and 3's card — the same component in both frames. Every one is
     // emptiable and drops what it fills, except the button: it is the submit,
@@ -3505,26 +3842,31 @@ export const FIELDS = {
     // as prose; it shares a wrapping row with its unit (plans/char-limits.md).
     { k: 'price',     l: 'Price (layouts 2 and 3)', d: FORM_PRICE, in: [1, 2],
       chars: { Retro: [null, 32, 39], Lime: [null, 28, 35], Grunge: [null, 32, 39], Editorial: [null, 19, 23],
-        Pop: [null, 22, 26] } },
+        Pop: [null, 22, 26], Paperback: [null, 20, 24] } },
     { k: 'priceUnit', l: 'Price note (layouts 2 and 3)', d: FORM_PRICE_UNIT, in: [1, 2],
-      chars: { Lime: [null, 43, 54], '*': [null, 47, 54] } },
+      chars: { Lime: [null, 43, 54], Paperback: [null, 45, 52], '*': [null, 47, 54] } },
     { k: 'bookings',  l: 'Bookings line (layouts 2 and 3)', d: FORM_BOOKINGS, in: [1, 2],
-      chars: { Retro: [null, 35, 41], Lime: [null, 32, 42], '*': [null, 36, 42] },
+      chars: { Retro: [null, 35, 41], Lime: [null, 32, 42], Paperback: [null, 34, 40], '*': [null, 36, 42] },
       hint: 'The five stars before it are drawn while this is filled.' },
     { k: 'cta',       l: 'Button (layouts 2 and 3)', d: FORM_CTA, in: [1, 2],
       chars: { Retro: [null, 36, 36], Lime: [null, 30, 36], Grunge: [null, 33, 36], Editorial: [null, 18, 22],
-        Pop: [null, 20, 26] } },
+        Pop: [null, 20, 26], Paperback: [null, 20, 26] } },
     { k: 'note',      l: 'Line under the button (layouts 2 and 3)', d: FORM_NOTE, in: [1, 2],
-      chars: { Lime: [null, 43, 54], '*': [null, 47, 54] } },
-    { k: 'available', l: 'Eyebrow (layout 3)', d: FORM_AVAILABLE, in: [2], chars: [null, null, 61],
+      chars: { Lime: [null, 43, 54], Paperback: [null, 45, 52], '*': [null, 47, 54] } },
+    { k: 'available', l: 'Eyebrow (layout 3)', d: FORM_AVAILABLE, in: [2], chars: { Paperback: [null, null, 54], '*': [null, null, 61] },
       hint: 'The small line above the heading. Leave it empty to hide it.' },
   ],
   footer: [
     // Session 11 of the character-limits pass (plans/char-limits.md): a display
     // head held to its frame's lines, the seed's 36 its floor on four templates. Lattice's measured
     // 2026-11-20 (limits.mjs footer --themes=5): 37 at all three widths, three lines in its 11em measure.
-    { k: 'statement', l: 'Statement', type: 'area', d: FOOTER_STATEMENT,
+    // Paperback's footer draws no statement (its frames set the name, the pills and a photograph), so the panel does not offer it.
+    { k: 'statement', l: 'Statement', type: 'area', d: FOOTER_STATEMENT, in: { Paperback: [], '*': [0] },
       chars: { Grunge: [45], Lattice: [37], '*': [36] } },
+    // Paperback's footer photograph, the tilted keyline card between the name and the right-hand edge. Seeded (PAPERBACK_PHOTOS.footer);
+    // no other template's footer draws a photograph, so no other template offers the box.
+    { k: 'image', l: 'Photo', type: 'image', aspect: [5, 4], in: { Paperback: [0], '*': [] },
+      hint: 'The tilted photo card in the footer. Paperback only.' },
     // The eighth structured editor and the seventh repeater — and the section's
     // whole sitemap, which was a constant no field could reach. Follows the
     // `songs` rule: an absent key means the seeded FOOTER_LINKS, an emptied
@@ -3532,11 +3874,13 @@ export const FIELDS = {
     { k: 'links',    l: 'Footer links', type: 'links', max: 10,
       // Read in every row at once: the two columns stand side by side (session 11).
       // Lattice's measured: 19 at 390 (a one-line label in its 159-wide cell; 24 at 1440, 41 at 768).
-      cols: { label: { Retro: [19], Lime: [28], Grunge: [28], Editorial: [20], Pop: [14], Lattice: [19] } },
+      cols: { label: { Retro: [19], Lime: [28], Grunge: [28], Editorial: [20], Pop: [14], Lattice: [19], Paperback: [47] } },
       hint: {
         '*': 'The list is halved into two columns, in order. A link scrolls to a section on the page, or opens a web address in a new tab.',
         // Lattice's frames set the links as a grid read across (plans/lattice/layout-1.md, section 11).
         Lattice: 'The links stand two to a row, read across and then down. A link scrolls to a section on the page, or opens a web address in a new tab.',
+        // Paperback's frames set them as a row of pills that wraps (plans/paperback/layout-1.md, section 11).
+        Paperback: 'The links are pills in a row that wraps, in order. A link scrolls to a section on the page, or opens a web address in a new tab.',
       } },
     // Dead until the pill was given a target — the calendar's `cta`, which was
     // a field that edited nothing until it labelled that section's foot pill.
@@ -3544,7 +3888,7 @@ export const FIELDS = {
     // (session 11).
     // Lattice's bracket box stands alone under the links, so its cap is the page's (measured: 36 at 390,
     // 49 at 1440, 82 at 768).
-    { k: 'cta',      l: 'Button', d: 'Book Now', chars: { Editorial: [12], Pop: [11], Lattice: [36], '*': [16] },
+    { k: 'cta',      l: 'Button', d: 'Book Now', chars: { Editorial: [12], Pop: [11], Lattice: [36], Paperback: [36], '*': [16] },
       hint: 'Books at the enquiry form, the calendar or the pricing section — whichever the page carries. Empty drops the button.' },
     // The same key the header's seal takes: `vm.showBadge` already reads this
     // section's own content, so the footer's seal was hidable by nothing only
@@ -3553,7 +3897,7 @@ export const FIELDS = {
     // Defaults to copyrightOf(name), special-cased.
     { k: 'copyright', l: 'Small print',
       // Lattice's measured: 25 at 390, a one-line copyright beside the credit (75 at 768, 157 at 1440).
-      chars: { Retro: [31], Lime: [28], Grunge: [32], Editorial: [24], Pop: [35], Lattice: [25] } },
+      chars: { Retro: [31], Lime: [28], Grunge: [32], Editorial: [24], Pop: [35], Lattice: [25], Paperback: [34] } },
   ],
 }
 
@@ -3694,7 +4038,7 @@ export function fieldSeed({ cat, f, themeName, design, c = {}, artistName, email
     : f.k === 'heading' && design === 2 && HEADING_3[cat] ? HEADING_3[cat]
     : f.k === 'heading' && design === 3 && HEADING_4[cat] ? HEADING_4[cat]
     : f.k === 'heading' && cat === 'calendar' && design === 0 && limeTreeTheme(themeName) ? CAL_HEADING_1
-    : f.k === 'heading' && cat === 'repertoire' ? `${songs.filter((t) => !blankRow(t, SONG_KEYS)).length} Songs`
+    : f.k === 'heading' && cat === 'repertoire' ? `${songs.filter((t) => !blankRow(t, SONG_KEYS)).length} ${themeName === 'Paperback' ? 'songs' : 'Songs'}`
     : f.k === 'heading' && cat === 'testimonials' && design === 1 ? TESTI_HEADING_2
     : f.k === 'navMode' && cat === 'header' ? navModeDefault(themeName, design)
     : f.k === 'button' && cat === 'form' ? formBtnSeed(themeName, design)
@@ -3702,7 +4046,9 @@ export function fieldSeed({ cat, f, themeName, design, c = {}, artistName, email
     : f.k === 'base' && cat === 'map' ? mapBaseSeed(c, themeName, design)
     : f.k === 'terms' && cat === 'map' ? mapTermsSeed(c)
     : f.k === 'cta' && cat === 'calendar' && design === 3 ? CAL_SEND_4
-    : f.k === 'cta' && cat === 'calendar' && design === 0 && themeName === 'Lattice' ? CAL_CTA_LATTICE
+    : f.k === 'cta' && cat === 'bio' && design === 0 && themeName === 'Paperback' ? BIO_CTA_PAPERBACK
+    : f.k === 'cta' && cat === 'calendar' && design === 0 && (themeName === 'Lattice' || themeName === 'Paperback') ? CAL_CTA_LATTICE
+    : f.k === 'rowCta' && cat === 'pricing' && design === 0 && themeName === 'Paperback' ? PRICING_ROW_CTA_PAPERBACK
     : f.k === 'rowCta' && cat === 'pricing' && design === 2 ? PRICING_ROW_CTA_3
     : f.k === 'rowCta' && cat === 'pricing' && design === 3 ? PRICING_ROW_CTA
     : fieldDefault(f)
@@ -3754,8 +4100,13 @@ export const INLINE_OFF = {
   'Editorial.0.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
   'Pop.0.repertoire.songs.length': 'not drawn: only layout 3 prints a song’s length',
   'Lattice.0.repertoire.songs.length': 'not drawn: only layout 3 prints a song’s length',
+  'Paperback.0.repertoire.songs.length': 'not drawn: only layout 3 prints a song’s length',
+  'Paperback.1.repertoire.songs.length': 'not drawn: only layout 3 prints a song’s length',
+  'Paperback.2.repertoire.songs.artist': 'not drawn: layout 3 prints a song’s length in the seat the artist holds elsewhere',
+  'Paperback.3.repertoire.songs.length': 'not drawn: only layout 3 prints a song’s length',
   'Pop.0.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
   'Lattice.0.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
+  'Paperback.0.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
   'Retro.1.header.kicker': 'not drawn: the layout-2 header prints no kicker (a shared identity key; the bio’s role line and the form print it)',
   'Retro.1.header.tags': 'not drawn: the layout-2 header prints no tag chips (a shared identity key; the bio prints them)',
   'Retro.1.repertoire.songs.length': 'not drawn: only layout 3 prints a song’s length',
@@ -3786,10 +4137,17 @@ export const INLINE_OFF = {
   'Editorial.1.media.tracks.sub': 'derived value: the seeded page prints the release and the running time as two nodes, and the whole line only once the list is stored',
   'Pop.1.header.kicker': 'not drawn: the layout-2 header prints no kicker (a shared identity key; the bio’s role line and the form print it)',
   'Pop.1.header.tags': 'not drawn: the layout-2 header prints no tag chips (a shared identity key; the bio prints them)',
+  'Paperback.1.form.fields.placeholder': 'not drawn: the card’s boxes print the label, and a placeholder only once the label is emptied',
+  'Paperback.2.form.fields.placeholder': 'not drawn: the card’s boxes print the label, and a placeholder only once the label is emptied',
+  'Paperback.1.header.tags': 'not drawn: the layout-2 header prints no tag chips (a shared identity key; the bio prints them)',
   'Pop.1.repertoire.songs.length': 'not drawn: only layout 3 prints a song’s length',
   'Pop.1.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
+  'Paperback.1.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
   'Pop.1.form.fields.placeholder': 'not drawn: the card’s boxes print the label, and a placeholder only once the label is emptied',
   'Pop.1.testimonials.quotes.when': 'not drawn: layout 2’s card has no seat for it',
+  'Paperback.1.testimonials.quotes.when': 'not drawn: layout 2’s card has no seat for it',
+  'Paperback.2.testimonials.quotes.when': 'not drawn: layout 3’s wall has no seat for it',
+  'Paperback.3.testimonials.quotes.when': 'not drawn: layout 4’s wall has no seat for it',
   'Pop.1.media.tracks.sub': 'derived value: the seeded page prints the release and the running time as two nodes, and the whole line only once the list is stored',
   'Retro.2.repertoire.songs.artist': 'not drawn: layout 3 prints a song’s length in the seat the artist holds elsewhere',
   'Retro.2.form.fields.placeholder': 'not drawn: the card’s boxes print the label, and a placeholder only once the label is emptied',
@@ -3837,9 +4195,11 @@ export const INLINE_OFF = {
   'Editorial.3.pricing.unit': 'derived value: layout 4 drops the leading slash, so the page prints event, not the field’s /event',
   'Pop.3.repertoire.songs.length': 'not drawn: only layout 3 prints a song’s length',
   'Pop.3.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
+  'Paperback.3.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
   'Pop.3.testimonials.quotes.when': 'not drawn: layout 4’s wall has no seat for it',
   'Pop.3.media.tracks.sub': 'derived value: the page prints the release alone (the list tile’s Single); the running times are the player’s clock',
   'Pop.3.pricing.unit': 'derived value: layout 4 drops the leading slash, so the page prints event, not the field’s /event',
+  'Paperback.3.pricing.unit': 'derived value: layout 4 drops the leading slash, so the page prints event, not the field’s /event',
   // Header-nav ticket (2026-11-11): layouts 1–4 of every template lost the location
   // and, at layouts 1 and 4, the act type above the name.
   'Retro.0.header.kicker': 'not drawn: the layout-1 header prints no act type any more (a shared identity key; the bio’s role line and the form print it)',
@@ -3875,6 +4235,20 @@ export const INLINE_OFF = {
   // Retro's layout 5 (the Overlay card) is a header-only design: the body under it is layout 1's page.
   'Retro.4.header.kicker': 'not drawn: the layout-5 Overlay card prints no kicker (a shared identity key; the bio’s role line and the form print it)',
   'Retro.4.header.location': 'not drawn: the layout-5 Overlay card prints no location (a shared identity key; the bio and the calendar print it)',
+  'Paperback.0.header.kicker': 'not drawn: the layout-1 header prints no act type any more (a shared identity key; the bio’s role line and the form print it)',
+  'Paperback.1.header.kicker': 'not drawn: the layout-2 header prints no kicker (a shared identity key; the bio’s role line and the form print it)',
+  'Paperback.2.header.kicker': 'not drawn: the layout-3 card prints the card line in the kicker’s seat (a shared identity key; the bio’s role line and the form print it)',
+  'Paperback.3.header.kicker': 'not drawn: the layout-4 header prints no act type any more (a shared identity key; the bio’s role line and the form print it)',
+  'Paperback.0.header.location': 'not drawn: layouts 1–4 print no location any more (a shared identity key; the bio, the calendar and the map print it)',
+  'Paperback.1.header.location': 'not drawn: layouts 1–4 print no location any more (a shared identity key; the bio, the calendar and the map print it)',
+  'Paperback.2.header.location': 'not drawn: layouts 1–4 print no location any more (a shared identity key; the bio, the calendar and the map print it)',
+  'Paperback.3.header.location': 'not drawn: layouts 1–4 print no location any more (a shared identity key; the bio, the calendar and the map print it)',
+  // The media's layout-1 rows print the release and the running time as two chips (`rel`, `dur`), and the whole line as one chip only once the list is stored.
+  'Paperback.0.media.tracks.sub': 'derived value: the seeded page prints the release and the running time as two chips, and the whole line only once the list is stored',
+  // Layouts 2–4 are Pop's placeholder cards until their passes: the same rows as Pop's.
+  'Paperback.1.media.tracks.sub': 'derived value: the seeded page prints the release and the running time as two nodes, and the whole line only once the list is stored',
+  'Paperback.2.media.tracks.sub': 'derived value: the seeded page prints the release and the running time as two nodes, and the whole line only once the list is stored',
+  'Paperback.3.media.tracks.sub': 'derived value: the page prints the release alone (the list tile’s Single); the running times are the player’s clock',
   'Lattice.0.header.kicker': 'not drawn: the layout-1 header prints no act type any more (a shared identity key; the bio’s role line and the form print it)',
   'Lattice.1.header.kicker': 'not drawn: the layout-2 header prints no kicker (a shared identity key; the bio’s role line and the form print it)',
   'Lattice.2.header.kicker': 'not drawn: the layout-3 card prints the card line in the kicker’s seat (a shared identity key; the bio’s role line and the form print it)',
@@ -4021,40 +4395,40 @@ export function inlineRule(table, themeName, design, group) {
 export const IDENTITY_CHARS = {
   bio: {
     title: { Retro: [null, 55, 19, 48], Lime: [null, 49, 20, 49], Grunge: [null, 65, 18, 60],
-      Editorial: [null, 37, 14, 31], Pop: [null, 37, 17, 39] },
-    kicker: { Retro: [19, 20, 13, 47], Lime: [20, 23, 21, 47], Pop: [26, 22, 13, 47], '*': [20, 20, 13, 47] },
+      Editorial: [null, 37, 14, 31], Pop: [null, 37, 17, 39], Paperback: [null, 30, 17, 38] },
+    kicker: { Retro: [19, 20, 13, 47], Lime: [20, 23, 21, 47], Pop: [26, 22, 13, 47], Paperback: [13, 20, 13, 47], '*': [20, 20, 13, 47] },
     location: { Retro: [18, 23, 15], Lime: [24, 26, 25], Grunge: [24, 23, 15], Editorial: [24, 33, 15],
-      Pop: [27, 34, 15], Lattice: [19, 34, 15] },
+      Pop: [27, 34, 15], Lattice: [19, 34, 15], Paperback: [17, 25, 14] },
     tags: { chars: { Retro: [null, 22, null, 22], '*': [null, 22, 22, 22] },
       count: { Retro: [null, 7, null, 7], '*': [null, 6, 8, 8] } },
     seal: { Retro: [19, null, 19], Lime: [13, null, 22], Grunge: [14, null, 14], Editorial: [16],
-      Pop: [null, null, 12] },
+      Pop: [null, null, 12], Paperback: [null, null, 12] },
   },
   // No video row: layout 4's top bar printed the artist's name until 2026-10-28 and
   // prints the playing video's title since (`videos.title`), and layout 2 none.
   calendar: {
     location: { Retro: [19, null, null, 67], Lime: [null, null, null, 64], Grunge: [null, null, null, 55],
-      Lattice: [19, null, null, 67], '*': [null, null, null, 67] },
+      Lattice: [19, null, null, 67], Paperback: [null, null, null, 29], '*': [null, null, null, 67] },
     seal: { Retro: [19] },
   },
   footer: {
     // Lattice's measured (limits.mjs footer --themes=5, `who.title`): the wordmark and the copyright both take
     // the name, two lines at the least width: 39 (87 at 1440, 76 at 768). Its ring is not drawn (no `seal` row).
-    title: { Retro: [24], Lime: [46], Grunge: [54], Editorial: [39], Pop: [10], Lattice: [39] },
-    seal: { Retro: 19, Lime: 13, Grunge: 14, Editorial: 16, Pop: 12 },
+    title: { Retro: [24], Lime: [46], Grunge: [54], Editorial: [39], Pop: [10], Lattice: [39], Paperback: [37] },
+    seal: { Retro: 19, Lime: 13, Grunge: 14, Editorial: 16, Pop: 12, Paperback: 12 },
   },
   form: {
     // Lattice's layout 1 measured 2026-11-19 (limits.mjs form --themes=5 --designs=0, `who.*`): the name in
     // the context panel's avatar row holds 59, the role line 33; layouts 2 and 3 are Pop's.
     title: { Retro: [76, 50, 13], Lime: [61, 40, 13], Grunge: [50, 85, 23], Editorial: [27, 42, 10],
-      Pop: [55, 54, 11], Lattice: [59, 54, 11] },
-    kicker: { Retro: [43, 38], Pop: [39, 40], Lattice: [33, 40], '*': [30, 40] },
-    seal: { Pop: [12] },
+      Pop: [55, 54, 11], Lattice: [59, 54, 11], Paperback: [60, 32, 11] },
+    kicker: { Retro: [43, 38], Pop: [39, 40], Lattice: [33, 40], Paperback: [37, 40], '*': [30, 40] },
+    seal: { Pop: [12], Paperback: [12] },
   },
   // Layout 2's caption line ellipsizes at 390 past 26–27 (session 6's re-run;
   // session 1 read 28–29 before the box test told a clip from an overshoot).
   gallery: {
-    title: { Retro: [80, 27], Pop: [80, 27], '*': [106, 26] },
+    title: { Retro: [80, 27], Pop: [80, 27], Paperback: [106, 23], '*': [106, 26] },
   },
   map: {
     location: { Retro: [null, 18], Lime: [null, 15], Pop: [null, 18], '*': [null, 17] },
@@ -4064,22 +4438,28 @@ export const IDENTITY_CHARS = {
       Editorial: [43, 11, 11, 31], Pop: [11, 11, 13, 31],
       // Layout 1 measured 2026-11-19 (limits.mjs media --themes=5 --designs=0): the card's
       // artist line, one ellipsised line, holds 49 / 51 / 40; the others are Pop's until their passes.
-      Lattice: [40, 11, 13, 31] },
+      Lattice: [40, 11, 13, 31],
+      // Paperback's layout 1 measured 2026-11-20 (limits.mjs media --themes=6 --designs=0): the player's artist line,
+      // one ellipsised line, holds 48 / 50 / 41; the others are Pop's until their passes.
+      Paperback: [41, 10, 12, 30] },
   },
   pricing: {
     seal: { Grunge: [14] },
   },
   testimonials: {
-    title: { Retro: [null, null, 65], Lime: [null, null, 60], '*': [null, null, 67] },
+    title: { Retro: [null, null, 65], Lime: [null, null, 60], Paperback: [null, null, 63], '*': [null, null, 67] },
   },
 }
 const specAt = (spec, themeName, design) => {
   if (spec == null) return undefined
   if (typeof spec === 'number') return spec
   if (Array.isArray(spec)) return spec[design] ?? undefined
-  // Lattice reads Pop's row where a spec names neither it nor '*', until its own
-  // caps are measured (plans/lattice/layout-1.md, Session 12: `limits.mjs --themes=5`).
-  return specAt(spec[themeName] ?? spec['*'] ?? (themeName === 'Lattice' ? spec.Pop : undefined), themeName, design)
+  // Lattice and Paperback read Pop's row where a spec names neither them nor '*', until their own
+  // caps are measured (plans/lattice/layout-1.md, Session 12: `limits.mjs --themes=5`;
+  // plans/paperback/layout-1.md, Session 12: `--themes=6`). Paperback no longer reaches this fallback:
+  // every spec has its own row (2026-11-21), and at layouts 2-4 its number is the placeholder tree's,
+  // measured lower-only and never under the seed (the plan's *Session 12 — the proofs*).
+  return specAt(spec[themeName] ?? spec['*'] ?? (themeName === 'Lattice' || themeName === 'Paperback' ? spec.Pop : undefined), themeName, design)
 }
 const isColObj = (spec) => spec != null && typeof spec === 'object' && !Array.isArray(spec) && 'chars' in spec
 // The resolved cap of a field or column: { chars, count, list } or null.

@@ -1,6 +1,6 @@
 // The seeded mock photography of the designed templates, exported from their
 // Figma frames — Retro's §10.2 page, Lime's four layout pages, Grunge's and
-// Editorial's layout-1 pages, and Pop's and Lattice's. Grunge's layout-2, layout-3 and layout-4 frames drew nothing
+// Editorial's layout-1 pages, and Pop's, Lattice's and Paperback's. Grunge's layout-2, layout-3 and layout-4 frames drew nothing
 // new: every photograph they carry is already seeded here, the layout-3 bio's
 // crop taken as an objectPosition on grungeStage rather than as a second
 // export, and the layout-4 bio's a centred cover of the same file. Nor did
@@ -19,8 +19,8 @@
 // helpers; no React" and is import-free, and ~2 MB of base64 has no business in the
 // file people open to read the palettes.
 //
-// All six templates have Figma frames of their own, so all six seed
-// photography: Retro's, Lime's, Grunge's, Editorial's, Pop's and Lattice's shoots.
+// All seven templates have Figma frames of their own, so all seven seed
+// photography: Retro's, Lime's, Grunge's, Editorial's, Pop's, Lattice's and Paperback's shoots.
 
 import hero from './photos/hero.jpg'
 import latticeDisc from './photos/lattice-disc.webp'
@@ -91,6 +91,17 @@ import latticeHero from './photos/lattice-hero.jpg'
 import latticePortrait from './photos/lattice-portrait.jpg'
 import latticeBio from './photos/lattice-bio.jpg'
 import latticeAlt from './photos/lattice-alt.jpg'
+import paperbackHero from './photos/paperback-hero.jpg'
+import paperbackAvatar from './photos/paperback-avatar.jpg'
+import paperbackBio from './photos/paperback-bio.jpg'
+import paperbackShot1 from './photos/paperback-shot-1.jpg'
+import paperbackShot2 from './photos/paperback-shot-2.jpg'
+import paperbackShot3 from './photos/paperback-shot-3.jpg'
+import paperbackShot4 from './photos/paperback-shot-4.jpg'
+import paperbackShot5 from './photos/paperback-shot-5.jpg'
+import paperbackShot6 from './photos/paperback-shot-6.jpg'
+import paperbackShot7 from './photos/paperback-shot-7.jpg'
+import paperbackViewer from './photos/paperback-viewer.jpg'
 
 const REVIEWERS = [review1, review2, review3]
 
@@ -287,6 +298,35 @@ export const LATTICE_ART = {
 }
 export const LATTICE_TRACK_ART = [latticeAlt, latticePortrait, latticeAlt, latticePortrait, latticeHero]
 
+// Paperback's layout-1 frames (1:2316 · 1:10903 · 1:12137, JustPay — Batch 2) are a seventh
+// shoot: a performer with silver-pink hair in a holographic jacket on a pink and teal stage,
+// eleven photographs in all (plans/paperback/layout-1.md, *Settled in session 0*), none of them
+// in Retro's, Pop's or Lattice's. In the frames' hash order of use: the hero card (10b684, FILL,
+// 1536 x 1024), the avatar card (43c4de, 1448 x 1086), the bio's portrait (ffa597), the five
+// track covers (fa9b7e, b0e98d, 1d452b, ef42b0, 8e64c0), which are also the gallery strip's
+// first five thumbnails, the strip's sixth and seventh (533958, 69e1ae) and the gallery
+// viewer's own (dbf7d7, which is none of the seven). The form's avatar is the third cover and
+// the footer's photograph the fourth, as the frames re-crop them. Every one a `FILL`, so a
+// centred cover. Re-encoded: the frames' JPEGs at about 200 KB each came to 1152 px at quality
+// 50 (the avatar 512 px at 60), 960 KB in all, because most draw at 56-660 px.
+//
+// The gallery strip is the frame's seven in the frame's order, except its second slot: the viewer can only show a
+// slot, the frame rings the second tile, and the viewer's own picture (none of the seven) is therefore that slot's
+// seed (plans/paperback/layout-1.md, section 4). `paperbackShot2` stays the media's second cover.
+export const PAPERBACK_PHOTOS = {
+  header: paperbackHero,
+  bio: paperbackBio,
+  // No frame draws the video; the hero stands in, as Retro's poster does.
+  video: paperbackHero,
+  form: paperbackShot3,
+  // The footer's keyline card is the fourth cover (ef42b0), as the frames re-crop it.
+  footer: paperbackShot4,
+  gallery: [paperbackShot1, paperbackViewer, paperbackShot3, paperbackShot4, paperbackShot5, paperbackShot6, paperbackShot7],
+  pricing: REVIEWERS,
+}
+export const PAPERBACK_TRACK_ART = [paperbackShot1, paperbackShot2, paperbackShot3, paperbackShot4, paperbackShot5]
+export const PAPERBACK_VIEWER = paperbackViewer
+
 // The seeded artwork for the media player's five track rows, in track order.
 //
 // These are the frames' own fills (964:58578 and Lime's 964:58590 share the five
@@ -385,6 +425,9 @@ const SEEDS = {
   // layout-2 stage the hero. `rowArt` is the track covers, which are Lattice's
   // own pictures (defaultTrackArt).
   Lattice: { photos: LATTICE_PHOTOS, avatar: latticePortrait, photo: latticeHero, rowArt: { media: LATTICE_TRACK_ART } },
+  // The header's avatar card is its own picture (43c4de), the form's layout-2 stage the hero; the
+  // footer's photograph (ef42b0) is the fourth cover, read by the footer's section.
+  Paperback: { photos: PAPERBACK_PHOTOS, avatar: paperbackAvatar, photo: paperbackHero, rowArt: { media: PAPERBACK_TRACK_ART } },
 }
 
 // Where each seeded photograph keeps its performer, as the `object-position`

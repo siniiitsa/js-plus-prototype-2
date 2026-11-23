@@ -30,6 +30,7 @@
 
 import { useId, useRef, useState } from 'react'
 import RealMap from './RealMap.jsx'
+import { PaperbackArt, PaperbackSparkle, PaperbackWaves } from './paperbackArt.jsx'
 import {
   Play, Pause, SkipBack, SkipForward, Check, ChevronLeft, ChevronRight,
   ArrowLeft, ArrowRight, ArrowUp, ArrowDown, Star, Plus, X, Search, User,
@@ -1025,7 +1026,7 @@ const clock = (sec) => {
 // The ground and ink the menu opens on (below). Shared by `HeaderRoot`'s in-flow
 // panel and the fixed one Retro's layouts 5 and 6 still open.
 function menuColours(s) {
-  return s.lattice ? [s.bg, s.tx] : s.editorial ? [s.box3, s.paper] : s.pop && s.v2 ? [s.bg, s.text3]
+  return s.lattice || s.paperback ? [s.bg, s.tx] : s.editorial ? [s.box3, s.paper] : s.pop && s.v2 ? [s.bg, s.text3]
     : s.pop && s.v3 ? [s.mapBg, s.text3] : [s.mapBg, s.mapFg]
 }
 
@@ -1100,14 +1101,28 @@ function MenuPanel({ s, menu }) {
         <span onClick={menu.toggle} style={{ display: 'flex', cursor: 'pointer' }}>
           <X size={26} style={{ flex: 'none' }} />
         </span>
-        {s.lattice ? <BracketButton s={s} to={s.bookTo} ink={ink} /> : <BookPill s={s} to={s.bookTo} />}
+        {s.paperback ? <PaperbackPill s={s} to={s.bookTo} u={(v) => `${v * (s.narrow ? 1 : 0.82)}px`} />
+          : s.lattice ? <BracketButton s={s} to={s.bookTo} ink={ink} /> : <BookPill s={s} to={s.bookTo} />}
       </div>
-      <nav onClick={menu.toggle} style={col('18px', { alignItems: 'flex-start' })}>
-        {s.navLinks.map((l) => (
-          <a key={l.label} href={navHref(s, l.to)}
-             style={labelStyle(s, s.lattice ? s.labelLg : s.dispSm, { color: ink, cursor: 'pointer' })}>{l.label}</a>
-        ))}
-      </nav>
+      {s.paperback ? (
+        // The frames' nav pills (1:2380): white, 44 tall, Figtree Bold 16, 6 apart, wrapping.
+        <nav onClick={menu.toggle} style={row('6px', { flexWrap: 'wrap', alignItems: 'flex-start' })}>
+          {s.navLinks.map((l) => (
+            <a key={l.label} href={navHref(s, l.to)} style={{
+              ...row('0px', { justifyContent: 'center' }), height: '44px', padding: '0 16px', boxSizing: 'border-box',
+              borderRadius: s.radiusChip, background: PAPER_WHITE, color: ink, cursor: 'pointer', textDecoration: 'none',
+              fontFamily: s.label, fontWeight: 700, fontSize: '16px', letterSpacing: '-0.01em', whiteSpace: 'nowrap',
+            }}>{l.label}</a>
+          ))}
+        </nav>
+      ) : (
+        <nav onClick={menu.toggle} style={col('18px', { alignItems: 'flex-start' })}>
+          {s.navLinks.map((l) => (
+            <a key={l.label} href={navHref(s, l.to)}
+               style={labelStyle(s, s.lattice ? s.labelLg : s.dispSm, { color: ink, cursor: 'pointer' })}>{l.label}</a>
+          ))}
+        </nav>
+      )}
     </div>
   )
 }
@@ -2106,6 +2121,223 @@ function LatticeHero({ s, menu }) {
   )
 }
 
+// Paperback's split pill (Batch 2 file, 1:2391): a label box and, three apart, a separate arrow
+// square, both `sem/active/bg` at radius/control 8 and 48 tall, the label in Figtree Bold 16 at
+// -0.01em. `u` turns a frame px into a CSS length, so the hero (a container: cqw) and the open
+// menu's panel (a plain px) draw the one pill. A link only under `s.live` (`BookPill`'s rule); `ext`
+// is an outward address, as `BracketButton`'s. The black Soundcloud / Full bio pills the later
+// sections draw are this shape in another ground (`bg`, `fg`).
+function PaperbackPill({ s, label, to, ext, u, bg, fg, style, as, tagProps }) {
+  // `as` + `tagProps` hand the pill to a seam that owns the element (the form's mailto submit is the seam's `Pill`: an `<a href>`, a
+  // `role="button"` refusal or an inert span), so only the picture is this one's.
+  const link = tagProps ?? (ext !== undefined ? extLink(s, ext) : s.live && to ? { href: `#${to}` } : null)
+  const Tag = as ?? (link ? 'a' : 'span')
+  const ground = bg ?? s.ac
+  const ink = fg ?? PAPER_WHITE
+  const cell = { display: 'flex', alignItems: 'center', justifyContent: 'center', background: ground, color: ink, borderRadius: u(8), height: u(48), boxSizing: 'border-box' }
+  return (
+    <Tag {...link} style={{ ...row(u(3)), flex: 'none', cursor: 'pointer', textDecoration: 'none', ...style }}>
+      <span style={{
+        ...cell, padding: `0 ${u(18)}`, whiteSpace: 'nowrap',
+        fontFamily: s.label, fontWeight: 700, fontSize: u(16), letterSpacing: '-0.01em', lineHeight: 1.2,
+      }}>{label ?? s.cta1}</span>
+      <span aria-hidden style={{ ...cell, width: u(48), flex: 'none' }}>
+        <svg viewBox="0 0 14 14" fill="none" style={{ display: 'block', width: u(14), height: u(14) }}>
+          <path d="M1 7H12M7.5 11.5L12 7L7.5 2.5" stroke={ink} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </span>
+    </Tag>
+  )
+}
+
+// Paperback's hamburger (1:11001): three 2px bars 20 wide and 6 apart in a 46 x 46 button; the
+// button stands left of the gutter by the 13px of padding the bars have, so the ink starts on it
+// (LatticeBurger's seat: the standing header-nav rule puts the hamburger left, where the frames'
+// 768 and 390 masters draw the wordmark).
+function PaperbackBurger({ color, menu, u }) {
+  return (
+    <span onClick={menu?.toggle} style={{
+      ...col(u(4), { alignItems: 'stretch', justifyContent: 'center' }), flex: 'none', cursor: 'pointer',
+      width: u(46), height: u(46), padding: `0 ${u(13)}`, marginLeft: `-${u(13)}`, boxSizing: 'border-box',
+    }}>
+      {[0, 1, 2].map((i) => <span key={i} style={{ height: u(2), background: color }} />)}
+    </span>
+  )
+}
+
+// The hero's vinyl sticker (1:2366 · 1:10955): a 150 box turned -8 degrees holding a white disc
+// (147.75, 2.25 ring), a ring (77.25) and the 39px vinyl; at 768 the artist's name runs twice round
+// the band between them (12.75 Figtree Bold, capitals, the frame's NOW BOOKING / WEDDINGS / CLUBS
+// is the name by the seal rule), and the ring turns under `badgeSpin`. The 1440 frame leaves
+// the band empty and the 390 one draws no sticker; the ring is drawn at 1440 as well (a call, so the
+// Corner badge text field and its three states act at both widths the sticker stands at).
+function PaperbackVinyl({ s, ring }) {
+  const id = useId().replace(/:/g, '')
+  const R = 56.6
+  const name = (s.badgeText || '').toUpperCase()
+  // One svg, the disc, the ring and the vinyl inside it: the builder's seal rule opens the badge-text
+  // box off the outermost svg, so a click on the vinyl in the middle is the seal's as well.
+  return (
+    <svg aria-hidden viewBox="0 0 150 150" fill="none" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', display: 'block', overflow: 'visible', transform: 'rotate(-8deg)' }}>
+      <circle cx="75" cy="75" r="72.75" fill={PAPER_WHITE} stroke={s.tx} strokeWidth="2.25" />
+      <circle cx="75" cy="75" r="37.5" fill={PAPER_WHITE} stroke={s.tx} strokeWidth="2.25" />
+      {ring && name && (
+        <g className={s.badgeSpin ? 'seal-spin' : undefined} style={{ transformOrigin: '75px 75px' }}>
+          <defs><path id={id} d={`M${75 - R} 75a${R} ${R} 0 1 1 ${2 * R} 0a${R} ${R} 0 1 1 ${-2 * R} 0`} /></defs>
+          <text fill={s.tx} fontFamily={s.label} fontWeight="700" fontSize="12.75" textLength={2 * Math.PI * R - 1} lengthAdjust="spacing">
+            <textPath href={`#${id}`}>{`${name} • ${name} •`}</textPath>
+          </text>
+        </g>
+      )}
+      <PaperbackArt name="vinylMini" x="55.5" y="55.5" width="39" height="39" />
+    </svg>
+  )
+}
+
+// Paperback's hero (Batch 2 file, 1:2318 · 1:10905 · 1:12139: 1440 / 768 / 390, all 750 tall; the
+// frames carry no component sets, so the verdict came from the pictures: an own tree, the seam
+// HeaderRoot's). A pale-yellow squiggle field on yellow with a rounded foot (40); a photograph on a
+// tilted keyline card (6 degrees) with tape, three sparkles, a pink initials disc and, up to 768, a
+// vinyl sticker; a tilted avatar card; the name at 138 / 86 / 55 in Bricolage ExtraBold, -0.035em, lh
+// .8, with a hand-drawn pink underline under its last word; and the tag chips. The bar is the
+// hamburger and Book Now (the header-nav rules: the frames' wordmark, inline pills and, at 768,
+// the right-hand hamburger are not drawn; the kicker and location pills and the script note
+// `Booking 2026` are not either, call 1 of session 0).
+//
+// Every length is the FRAME's px through `u`, in cqw of the stage (a container as wide as the page
+// content, `s.surplus` in from the hero's edges), so the picture holds its proportions when the
+// editor's canvas is narrower than the frame (the desktop canvas is the window less the sidebar, up
+// to 1180); at the frame's own width it is the frame x 0.82 at desktop and verbatim at 768 and 390.
+// The photo card is a 450 x 560 box turned about its centre, `P.box`, whose children (tape,
+// sparkles) are positioned in the box's own coordinates, as the frame nests them; centres are read off
+// the frame's CSS (container + (265, 280)) and checked on the screenshots.
+const PAPER_WHITE = '#FFFFFF'
+const PAPER_HERO = {
+  desktop: {
+    fw: 1440, gut: 48.96, barTop: 18, foot: 72, indent: 184, titleW: 640, stroke: 6.34, under: 0.844, kmSize: 46,
+    box: [1137, 376], card: { L: 0, w: 450, h: 560 }, tape: [225, 0], km: [935, 169], vinyl: [897, 421], ring: true, avatar: [129, 550],
+  },
+  tablet: {
+    fw: 768, gut: 26.11, barTop: 18, foot: 58, indent: 184, titleW: 531.7, stroke: 5.04, under: 0.857, kmSize: 37,
+    box: [465, 376], card: { L: 121.54, w: 328.459, h: 408.749 }, tape: [288.8, 2.06], km: [362.4, 168], vinyl: [319.05, 349.7], ring: true, avatar: [106.1, 564],
+  },
+  mobile: {
+    fw: 390, gut: 24, barTop: 18, foot: 43, indent: 0, titleW: 342, stroke: 4.13, under: 0.898,
+    box: [87, 376], card: { L: 203.65, w: 296.043, h: 368.409 }, tapeOut: [235.24, 108.84], avatar: [104, 443],
+  },
+}
+function PaperbackHero({ s, menu }) {
+  const P = PAPER_HERO[s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop']
+  const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
+  const ink = s.tx
+  const badge = s.showBadge === 'show' && !s.mob
+  const [bx, by] = P.box
+  const CHIP_BG = [s.chips[0].bg, s.chips[1].bg, s.chips[2].bg, s.onScheme[2].box3, s.chips[4].bg, s.chips[5].bg]
+  const CHIP_FG = [ink, PAPER_WHITE, ink, ink, ink, PAPER_WHITE]
+  const at = (cx, cy, w, h) => ({ position: 'absolute', left: u(cx - w / 2), top: u(cy - h / 2), width: u(w), height: u(h) })
+  const words = (s.heroTitle || '').split(' ')
+  const last = words.pop()
+  const dev = s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop'
+  const tapeRect = { width: u(118), height: u(30), background: s.onScheme[2].box3 }
+  return (
+    <div style={{
+      position: 'relative', width: '100%', aspectRatio: `${P.fw} / 750`, maxHeight: s.heroH, overflow: 'hidden', color: ink,
+      borderRadius: `0 0 ${s.narrow ? 40 : 32.8}px ${s.narrow ? 40 : 32.8}px`, background: s.box2,
+    }}>
+      <div aria-hidden style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+        <PaperbackWaves dev={dev} base={s.box2} ink={s.bg} />
+      </div>
+      <div style={{ position: 'absolute', top: 0, bottom: 0, left: s.surplus, right: s.surplus, containerType: 'inline-size' }}>
+        {/* the photograph's card: a 450 x 560 box turned 6 degrees about its centre */}
+        <div style={{ ...at(bx, by, 450, 560), transform: 'rotate(6deg)' }}>
+          <div style={{
+            position: 'absolute', left: u(P.card.L), top: 0, width: u(P.card.w), height: u(P.card.h), boxSizing: 'border-box',
+            border: `${u(6)} solid ${PAPER_WHITE}`, borderRadius: u(24), overflow: 'hidden', background: s.ac,
+          }}>
+            <Photo s={s} initialsSize={64} />
+          </div>
+          {P.tape && (
+            <span aria-hidden style={{
+              ...tapeRect, position: 'absolute', left: u(P.tape[0] - 59), top: u(P.tape[1] - 15), opacity: 0.9,
+              transform: 'rotate(-4deg)', clipPath: 'polygon(3% 0, 97% 8%, 100% 92%, 2% 100%)',
+            }} />
+          )}
+          <PaperbackSparkle size={44} fill={s.box2} ink={ink} style={{ position: 'absolute', left: u(410), top: u(-22), width: u(44), height: u(44) }} />
+          <PaperbackSparkle size={26} fill={s.ac} ink={ink} style={{ position: 'absolute', left: u(452), top: u(-44), width: u(26), height: u(26) }} />
+          <PaperbackSparkle size={16} fill={PAPER_WHITE} ink={ink} style={{ position: 'absolute', left: u(462), top: u(4), width: u(16), height: u(16) }} />
+        </div>
+        {P.tapeOut && (
+          <span aria-hidden style={{ ...tapeRect, position: 'absolute', left: u(P.tapeOut[0] - 59), top: u(P.tapeOut[1] - 15), transform: 'rotate(2deg)' }} />
+        )}
+
+        {badge && P.km && (
+          <span aria-hidden style={{
+            ...at(P.km[0], P.km[1], 126, 126), boxSizing: 'border-box', borderRadius: '50%', border: `${u(3)} solid ${PAPER_WHITE}`, background: s.ac,
+            ...row('0px', { justifyContent: 'center' }), color: PAPER_WHITE, transform: 'rotate(-12deg)',
+            fontFamily: s.display, fontWeight: 800, fontSize: u(P.kmSize), letterSpacing: '-0.035em', lineHeight: 1,
+          }}>{s.initials}</span>
+        )}
+
+        {/* the name and the chips, anchored at the foot so a longer name grows upward */}
+        <div style={{
+          position: 'absolute', left: u(P.gut), right: u(P.gut), bottom: u(P.foot), ...col(u(22)),
+        }}>
+          <div style={{ paddingLeft: u(P.indent) }}>
+            <h1 style={{
+              margin: 0, maxWidth: u(P.titleW), fontFamily: s.display, fontWeight: 800, color: ink,
+              fontSize: fitSz(s, u(s.mob ? 55 : s.narrow ? 86 : 138.24), s.dispXl), lineHeight: 0.8, letterSpacing: '-0.035em',
+              overflowWrap: s.titleK < 1 ? 'break-word' : undefined,
+            }}>
+              {words.length > 0 && `${words.join(' ')} `}
+              <span style={{ position: 'relative', display: 'inline-block' }}>
+                {last}
+                <svg viewBox="0 0 352.047 24" preserveAspectRatio="none" fill="none" aria-hidden style={{
+                  position: 'absolute', right: 0, width: `${P.under * 100}%`, top: `calc(100% - ${u(12)})`, height: u(24), display: 'block', overflow: 'visible', pointerEvents: 'none',
+                }}>
+                  <path d="M2.51462 16C105.614 4 211.228 22 349.532 8" stroke={s.ac} strokeWidth={P.stroke} strokeLinecap="round" />
+                </svg>
+              </span>
+            </h1>
+          </div>
+          {s.showTags === 'show' && (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: u(6) }}>
+              {s.tagChips.map((c, i) => (
+                <span key={i} style={{
+                  ...row('0px', { justifyContent: 'center' }), height: u(26), padding: `0 ${u(10)}`, boxSizing: 'border-box', borderRadius: s.radiusChip,
+                  whiteSpace: 'nowrap', background: CHIP_BG[i % 6], color: CHIP_FG[i % 6],
+                  fontFamily: s.label, fontWeight: 700, fontSize: u(13), letterSpacing: '-0.01em', lineHeight: 1.2,
+                }}>{c.label}</span>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* the avatar's card, turned -4 degrees */}
+        <div style={{
+          ...at(P.avatar[0], P.avatar[1], 160, 160), boxSizing: 'border-box', border: `${u(5)} solid ${PAPER_WHITE}`,
+          borderRadius: u(24), overflow: 'hidden', transform: 'rotate(-4deg)', background: s.box1,
+        }}>
+          <Photo s={s} avatar initialsSize={40} />
+        </div>
+
+        {badge && P.vinyl && (
+          <div style={at(P.vinyl[0], P.vinyl[1], 150, 150)}>
+            <PaperbackVinyl s={s} ring={P.ring} />
+          </div>
+        )}
+
+        <div style={{
+          position: 'absolute', left: u(P.gut), right: u(P.gut), top: u(P.barTop), minHeight: u(48),
+          ...row('0px', { justifyContent: 'space-between' }), visibility: menu?.open ? 'hidden' : undefined,
+        }}>
+          <PaperbackBurger color={ink} menu={menu} u={u} />
+          <PaperbackPill s={s} to={s.bookTo} u={u} />
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // v0 — Header layout 1 · Hero (§10.2 reference design)
 //
 // Full-bleed photograph under a bottom-weighted scrim: the nav rides the top
@@ -2114,6 +2346,7 @@ function LatticeHero({ s, menu }) {
 // see the `bleed` flag on the root.
 function HeaderV0({ s, menu }) {
   if (s.lattice) return <LatticeHero s={s} menu={menu} />
+  if (s.paperback) return <PaperbackHero s={s} menu={menu} />
   const centred = s.align === 'centre'
   // Both reference frames are transcribed verbatim (§5.5). 768: 30px gutters,
   // a 144px portrait card, identity stacked 40/24/36/30. 390: 10px gutters, a
@@ -4439,8 +4672,121 @@ function LatticeBio({ s }) {
   )
 }
 
+// Paperback's bio (Batch 2 file, 1:2397 · 1:11004 · 1:12191: 1440 x 832, 768 x 1213, 390 x 1211; no component
+// sets, so the verdict came from the pictures and the code: an own tree). Neither Pop's nor Lime's bio draws a
+// tilted keyline portrait with tape on a blush blob, a doodle disc and three sparkles, a Bricolage head and a
+// split pill. Desktop is three columns of one 640 row (head 48.96, portrait 504.27, About 1073.43); 768 and 390
+// stack head, portrait and About, with the portrait's column 431 / 342 wide.
+//
+// Drawn: the blob, the portrait on a 411 x 600 card (6 keyline, 24 radius) turned -4 degrees with a yellow tape
+// strip at its top edge turned 3, the vinyl doodle (turned -16, its disc turning under `badgeSpin`, gone with
+// Hidden) and the three sparkles; the head; `About`; the paragraph; the black `Full bio` split pill (`bioCta`);
+// and the script role line (`vm.roleLine`, two lines at 768 and 390 as the frames break it). Not drawn, by the
+// standing rules (call 1 of session 0): the script `KM bio` and `that's me!` with its arrow (no field carries
+// them), the `001` and `Structure · Bio_01` chips (the initials eyebrow and `refLabel`, removed 2026-11-11).
+// Their seats stay as padding, so the head, the blob and the portrait keep the frame's relations.
+//
+// Every length is the frame's px through `u`, in cqw of a stage as wide as the page (the hero's mechanism), so
+// the picture keeps its proportions on a canvas narrower than the frame; the stage's own padding is in its
+// child, since a container's own lengths do not resolve against it.
+const PAPER_BIO = {
+  desktop: { fw: 1440, top: 96, foot: 96, h2: 100.8, card: [411, 600], blob: [460.8, 40], spark: [381.34, 423.34, 433.34], note: 30 },
+  tablet: { fw: 768, top: 77, foot: 50.4, h2: 62, card: [411, 600], blob: [175.07, 107.38], spark: [381, 423, 433], note: 27,
+    headTop: 42, headFoot: 40, gapA: 36, gapB: 35.625, headL: 26.11, headW: 715.77, aboutL: 26, aboutW: 713, colW: 431, noteW: 346 },
+  mobile: { fw: 390, top: 58, foot: 58, h2: 40, card: [322, 600], blob: [54.13, 107.38], spark: [292, 334, 344], note: 25,
+    headTop: 39, headFoot: 40, gapA: 28, gapB: 28, headL: 24, headW: 342, aboutL: 24, aboutW: 342, colW: 342, noteW: 342 },
+}
+function PaperbackBio({ s }) {
+  const P = PAPER_BIO[s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop']
+  const nar = s.narrow
+  const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
+  const ink = s.tx
+  const hasBadge = s.showBadge === 'show'
+  const [cw, ch] = P.card
+  const tapeBg = s.onScheme[1].box2
+  const place = (x, y, w, h) => ({ position: 'absolute', left: u(x), top: u(y), width: u(w), height: u(h) })
+  const headW = nar ? P.headW : 431.34
+  const h2 = (
+    <h2 style={{
+      margin: 0, fontFamily: s.display, fontWeight: 800, color: ink, lineHeight: 0.82, letterSpacing: '-0.035em',
+      fontSize: s.titleWordEms ? `min(${u(P.h2)}, calc(${u(headW)} / ${s.titleWordEms}))` : u(P.h2),
+    }}>{s.title}</h2>
+  )
+  const portrait = (
+    <div style={{ position: 'relative', width: nar ? u(P.colW) : '100%', height: u(640), flex: 'none' }}>
+      <div style={{ ...place(10, 10, cw, ch), transform: 'rotate(-4deg)' }}>
+        <div style={{
+          position: 'absolute', inset: 0, boxSizing: 'border-box', border: `${u(6)} solid ${PAPER_WHITE}`, borderRadius: u(24),
+          overflow: 'hidden', background: s.chips[0].bg,
+        }}>
+          <div style={{ position: 'absolute', inset: 0 }}><Photo s={s} initialsSize={64} /></div>
+        </div>
+        <span aria-hidden style={{
+          ...place(cw / 2 - 59, -15, 118, 30), background: tapeBg, opacity: 0.9, transform: 'rotate(3deg)',
+          clipPath: 'polygon(3% 0, 97% 8%, 100% 92%, 2% 100%)',
+        }} />
+      </div>
+      {hasBadge && (
+        <svg aria-hidden viewBox="0 0 130 130" fill="none" style={{ ...place(-50, 520, 130, 130), display: 'block', overflow: 'visible', transform: 'rotate(-16deg)' }}>
+          <g className={s.badgeSpin ? 'seal-spin' : undefined} style={{ transformOrigin: '65px 65px' }}>
+            <PaperbackArt name="vinylDisc" width="130" height="130" />
+          </g>
+          <PaperbackArt name="vinylBurst" width="130" height="130" />
+        </svg>
+      )}
+      <PaperbackSparkle size={44} fill={s.ac} ink={ink} style={place(P.spark[0], 576, 44, 44)} />
+      <PaperbackSparkle size={26} fill={tapeBg} ink={ink} style={place(P.spark[1], 554, 26, 26)} />
+      <PaperbackSparkle size={16} fill={s.chips[0].bg} ink={ink} style={place(P.spark[2], 602, 16, 16)} />
+    </div>
+  )
+  const role = (s.kicker || s.location) && (
+    <p style={{
+      margin: 0, fontFamily: s.script, fontWeight: 700, fontSize: u(P.note), lineHeight: 0.95, letterSpacing: '-0.01em',
+      color: s.text3, transform: 'rotate(-4deg)', minHeight: nar ? undefined : u(57), width: nar ? u(P.noteW) : undefined,
+    }}>{nar ? <>{s.kicker}{s.kicker && s.location && <br />}{s.location}</> : s.roleLine}</p>
+  )
+  const about = (
+    <div style={col(u(16), { alignItems: 'flex-start' })}>
+      <span style={{ fontFamily: s.label, fontWeight: 700, fontSize: u(18), lineHeight: 1.2, letterSpacing: '-0.01em', color: ink }}>About</span>
+      <p style={{
+        margin: 0, fontFamily: s.body, fontWeight: 600, fontSize: u(18), lineHeight: 1.4, letterSpacing: '-0.01em', color: ink, whiteSpace: 'pre-line',
+      }}>{s.bioP1}</p>
+      {s.bioCta && <PaperbackPill s={s} label={s.bioCta} to={s.bookTo} u={u} bg={ink} fg={PAPER_WHITE} />}
+    </div>
+  )
+  return (
+    <div style={{ position: 'relative', containerType: 'inline-size', overflow: 'hidden' }}>
+      <PaperbackArt name="blobBlush" aria-hidden style={{ position: 'absolute', left: u(P.blob[0]), top: u(P.blob[1]), width: u(560), height: u(560) }} />
+      <div style={{ position: 'relative', paddingTop: u(P.top), paddingBottom: u(P.foot) }}>
+        {nar ? (
+          <>
+            <div style={{ boxSizing: 'border-box', marginLeft: u(P.headL), width: u(P.headW), padding: `${u(P.headTop)} 0 ${u(P.headFoot)}` }}>{h2}</div>
+            <div style={{ marginTop: u(P.gapA), marginLeft: s.mob ? u(24) : 'auto', marginRight: s.mob ? undefined : 'auto', width: u(P.colW) }}>{portrait}</div>
+            <div style={{ marginTop: u(P.gapB), marginLeft: u(P.aboutL), width: u(P.aboutW), ...col(u(24)) }}>
+              {about}
+              {role && <div style={{ paddingBottom: u(14), width: u(P.aboutW) }}>{role}</div>}
+            </div>
+          </>
+        ) : (
+          <div style={{ position: 'relative', height: u(640) }}>
+            <div style={{
+              ...place(48.96, 0, 431.34, 640), boxSizing: 'border-box', paddingTop: u(18), ...col('0', { justifyContent: 'center' }),
+            }}>{h2}</div>
+            <div style={place(504.27, 0, 431.34, 640)}>{portrait}</div>
+            <div style={place(1073.43, 0, 317.52, 640)}>
+              {about}
+              {role && <div style={{ position: 'absolute', left: 0, top: u(569), width: u(318) }}>{role}</div>}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
 function Bio({ s }) {
   if (s.v0 && s.lattice) return <LatticeBio s={s} />
+  if (s.v0 && s.paperback) return <PaperbackBio s={s} />
   // Lime layout 1 (964:58589 · 986:39877 at 768 · 986:39890 at 390) is the same
   // Figma component as Retro's below, in Lime's mode — but it is not the same
   // tree re-tokened. The middle column is a different composition (one arch-
@@ -6626,6 +6972,200 @@ function LatticeMedia({ s, m }) {
   )
 }
 
+// Paperback's layout-1 media player (1:2450 · 1:11054 · 1:12240: 1440 / 768 / 390; 1057 / 1398 / 1361 tall).
+// A tree of its own, dispatched from `Media` after its hooks and seam (LatticeMedia's shape), so the published
+// player is the one seam in a new picture (notes/media.md: the `<audio>` is `Media`'s and is assigned
+// imperatively). The frame is a cyan card (radius 40) on the white page holding a confetti field, the head, five
+// white pill rows (number, cover, title, a release chip and a duration chip, a play disc), a split black
+// Soundcloud pill and a 394 x 460 indigo player turned 3 degrees with a music-note disc on its corner.
+//
+// Every length is the frame's px through `u`, in cqw of a stage as wide as the page (the hero's and the bio's
+// mechanism); the stage's vertical insets are in a child. Not drawn (the standing removals, call 1 of session 0):
+// the `Top tracks` and `5 / 5 featured` scripts, and the ring text the 768 and 390 frames print round the disc
+// (`NEW MIX · EVERY MONTH`: no field carries it). The kicker's seat stays as padding, so every number is the frame's. The
+// rows are 84 at a 2.9 inset, so the 390 frame's wrapped chips (78.2 of content) sit in the row as the frame's do; the mobile
+// card does not clip (its frame has no overflow clip), so the disc runs to the page's edge.
+// Named departures: the marked row is the player's track (`at`), not the frame's row 02, and the player names the
+// cued track, not the frame's *Night Rain* (Lattice's rule); a marked row's yellow chip goes white; the chips'
+// colours follow the row's place, not the release.
+const PAPER_MEDIA = {
+  desktop: {
+    fw: 1440, top: 66.37, foot: 66.37, side: 48.96, padX: 48, seat: 56, headH: 212.27, h2: 95.04, conf: 'confettiMedia', cw: 1342.08, ch: 924.27,
+    spark: [[422.875, 158.27], [464.875, 136.27], [474.875, 184.27]], free: 423, colW: [820.047, 394.016, 32.015], headW: 1246.08,
+    numL: 16, numW: 40, gap: 16, art: 56, rowR: 16, rowT: 26, card: { w: 394, padT: 28, padX: 28, padB: 28, sleeve: 217, t: 40, tH: 55, badge: 358 },
+  },
+  tablet: {
+    fw: 768, top: 24, foot: 24, side: 26.11, padX: 36, seat: 54, headH: 150.3, h2: 59, conf: 'confettiMediaTablet', cw: 715.766, ch: 1350.3,
+    spark: [[282.69, 96.3], [324.69, 74.3], [334.69, 122.3]], free: 282, headW: 643.77,
+    numL: 16, numW: 40, gap: 16, art: 56, rowR: 16, rowT: 26, card: { w: 394, padT: 24, padX: 21, padB: 23, sleeve: 233, t: 32, tH: 48, badge: 358 },
+  },
+  mobile: {
+    fw: 390, top: 24, foot: 24, side: 12, padX: 16, seat: 51, headH: 113, h2: 38, conf: 'confettiMediaMobile', cw: 366, ch: 1313,
+    spark: [[192.25, 59], [234.25, 37], [244.25, 85]], free: 192, headW: 334,
+    numL: 12, numW: 22, gap: 10, art: 44, rowR: 12, rowT: 18, card: { w: 334, padT: 20, padX: 16, padB: 20, sleeve: 246, t: 26, tH: 42, badge: 298 },
+  },
+}
+function PaperbackMedia({ s, m }) {
+  const { at, playing, now, sleeve, sleeveSlot, audio, goTo, toggle, onPick } = m
+  const P = PAPER_MEDIA[s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop']
+  const C = P.card
+  const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
+  const ink = s.tx
+  const cyan = s.onScheme[2].box3
+  const yellow = s.onScheme[1].box2
+  // The chips' colours by the row's place, as the frame's five rows draw them: yellow, cyan, magenta, ink, orange.
+  const CHIPS = [[yellow, ink], [cyan, ink], [s.onScheme[7].bg, ink], [s.onScheme[8].bg, PAPER_WHITE], [s.onScheme[4].bg, ink]]
+  const lines = (size, lh) => ({ fontFamily: s.display, fontWeight: 800, fontSize: size, lineHeight: lh, letterSpacing: '-0.035em' })
+  const label = (size, extra) => ({ fontFamily: s.label, fontWeight: 700, fontSize: size, letterSpacing: '-0.01em', ...extra })
+
+  // The head wraps and fits to the room left of the sparkles (`free`: their left edge), which the frame sets beside the second line.
+  const h2 = s.title ? (
+    <h2 style={{
+      margin: 0, maxWidth: u(P.free), color: ink, ...lines(s.titleWordEms ? `min(${u(P.h2)}, calc(${u(P.free)} / ${s.titleWordEms}))` : u(P.h2), 0.82),
+    }}>{s.title}</h2>
+  ) : null
+  const head = (
+    <div style={{ position: 'relative', boxSizing: 'border-box', minHeight: u(P.headH), paddingTop: u(P.seat) }}>
+      {h2}
+      <PaperbackSparkle size={44} fill={yellow} ink={ink} style={{ position: 'absolute', left: u(P.spark[0][0]), top: u(P.spark[0][1]), width: u(44), height: u(44) }} />
+      <PaperbackSparkle size={26} fill={s.ac} ink={ink} style={{ position: 'absolute', left: u(P.spark[1][0]), top: u(P.spark[1][1]), width: u(26), height: u(26) }} />
+      <PaperbackSparkle size={16} fill={PAPER_WHITE} ink={ink} style={{ position: 'absolute', left: u(P.spark[2][0]), top: u(P.spark[2][1]), width: u(16), height: u(16) }} />
+    </div>
+  )
+
+  // The frame's glyphs: a play triangle (12 x 14), a pause (two bars) and the two transport arrows.
+  const glyph = (w, h, vb, children) => (
+    <svg aria-hidden width={u(w)} height={u(h)} viewBox={vb} fill="none" style={{ display: 'block', overflow: 'visible' }}>{children}</svg>
+  )
+  const play = (c) => glyph(12, 14, '0 0 12 14', <path d="M1 1L11 7L1 13V1Z" fill={c} />)
+  const pause = (c) => glyph(12, 14, '0 0 12 14', <path d="M1 1H4.5V13H1ZM7.5 1H11V13H7.5Z" fill={c} />)
+  const arrow = (back) => glyph(14, 14, '0 0 14 14', (
+    <path d={back ? 'M13 7H2M6.5 11.5L2 7L6.5 2.5' : 'M1 7H12M7.5 11.5L12 7L7.5 2.5'} stroke={ink} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+  ))
+  const disc = (size, bg, extra) => ({
+    width: u(size), height: u(size), borderRadius: '50%', background: bg, flex: 'none', boxSizing: 'border-box',
+    display: 'inline-flex', alignItems: 'center', justifyContent: 'center', ...extra,
+  })
+
+  const list = (
+    <div style={col(u(10))}>
+      {s.tracks.length === 0 && (
+        <div style={{ ...label(u(16), { color: s.text3 }), background: PAPER_WHITE, borderRadius: u(24), padding: `${u(30)} ${u(P.numL)}` }}>{s.mediaEmpty}</div>
+      )}
+      {s.tracks.map((t, i) => {
+        const marked = i === at
+        const dur = t.dur && t.dur !== t.rel ? t.dur : ''
+        const [chipBg0, chipFg] = CHIPS[i % CHIPS.length]
+        const chipBg = marked && i % CHIPS.length === 0 ? PAPER_WHITE : chipBg0
+        const chip = (text, bg, fg) => (
+          <span style={{
+            ...label(u(13), { lineHeight: 1.2, color: fg }), background: bg, borderRadius: s.radiusChip, boxSizing: 'border-box',
+            height: u(26), padding: `0 ${u(10)}`, display: 'inline-flex', alignItems: 'center', whiteSpace: 'nowrap', maxWidth: '100%',
+            overflow: 'hidden', textOverflow: 'ellipsis',
+          }}>{text}</span>
+        )
+        return (
+          <div key={i} onClick={onPick(i)} style={{
+            ...row(u(P.gap)), boxSizing: 'border-box', minHeight: u(84), padding: `${u(2.9)} ${u(P.numL)}`,
+            background: marked ? yellow : PAPER_WHITE, borderRadius: u(24), cursor: s.live ? 'pointer' : undefined,
+          }}>
+            <span style={label(u(16), { flex: 'none', width: u(P.numW), color: s.text3, lineHeight: 1.2 })}>{t.n}</span>
+            <span style={{ flex: 'none', width: u(P.art), height: u(P.art), borderRadius: u(14), overflow: 'hidden', position: 'relative', background: s.chips[0].bg }}>
+              <Photo s={s} slot={`tracks:${t.row}`} initialsSize={14} src={t.img} ink={ink} />
+            </span>
+            <span style={col(u(6), { flex: 1, minWidth: 0, alignItems: 'flex-start' })}>
+              <span style={{ ...lines(u(P.rowT), 0.9), color: ink, maxWidth: '100%', overflowWrap: 'anywhere' }}>{t.name}</span>
+              {(t.rel || dur) && (
+                <span style={row(`${u(4)} ${u(6)}`, { flexWrap: 'wrap', maxWidth: '100%' })}>
+                  {t.rel && chip(t.rel, chipBg, chipFg)}
+                  {dur && chip(dur, ink, PAPER_WHITE)}
+                </span>
+              )}
+            </span>
+            <span style={disc(44, marked ? s.ac : ink)}>{playing && marked ? pause(PAPER_WHITE) : play(PAPER_WHITE)}</span>
+          </div>
+        )
+      })}
+    </div>
+  )
+
+  const pill = <PaperbackPill s={s} label="Soundcloud" ext={s.soundcloud} u={u} bg={ink} fg={PAPER_WHITE} />
+
+  // The canvas keeps the frame's 137 of 244 (a mid-song picture), and an empty list stands at 0 on both surfaces.
+  const pct = s.live ? now.pct : s.tracks.length ? 56.15 : 0
+  const card = (
+    <div style={{
+      ...col(u(20), { alignItems: 'stretch' }),
+      position: 'relative', boxSizing: 'border-box', width: u(C.w), height: u(460), flex: 'none', transform: 'rotate(3deg)',
+      alignSelf: s.mob ? 'stretch' : s.narrow ? 'center' : undefined, padding: `${u(C.padT)} ${u(C.padX)} ${u(C.padB)}`,
+      background: s.text3, borderRadius: u(24), color: PAPER_WHITE,
+    }}>
+      <div style={{
+        flex: '1 1 0', minHeight: 0, aspectRatio: '1', alignSelf: 'center', position: 'relative', boxSizing: 'border-box',
+        border: `${u(5)} solid ${PAPER_WHITE}`, borderRadius: u(20), overflow: 'hidden', background: s.chips[0].bg,
+      }}>
+        <Photo s={s} slot={sleeveSlot} initialsSize={44} src={sleeve} ink={ink} />
+      </div>
+      {/* Wraps rather than clips: the sleeve is the flex remainder, so a second line costs it its height and the card stays 460. */}
+      <div style={col(0, { alignItems: 'center', minHeight: u(C.tH), minWidth: 0 })}>
+        <span style={{ ...lines(u(C.t), 0.9), maxWidth: '100%', textAlign: 'center', overflowWrap: 'anywhere' }}>{now.track}</span>
+        <span style={label(u(15), { lineHeight: u(18), maxWidth: '100%', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' })}>{now.by}</span>
+      </div>
+      <div style={row(u(10), { justifyContent: 'center', height: u(56) })}>
+        <span onClick={s.live ? () => goTo(at - 1) : undefined} style={disc(40, PAPER_WHITE, { cursor: s.live ? 'pointer' : undefined })}>{arrow(true)}</span>
+        <span onClick={s.live ? toggle : undefined} style={disc(56, s.ac, { cursor: s.live ? 'pointer' : undefined })}>{playing ? pause(PAPER_WHITE) : play(PAPER_WHITE)}</span>
+        <span onClick={s.live ? () => goTo(at + 1) : undefined} style={disc(40, PAPER_WHITE, { cursor: s.live ? 'pointer' : undefined })}>{arrow(false)}</span>
+      </div>
+      <div style={row(u(12), { height: u(16) })}>
+        <span style={label(u(13), { flex: 'none', width: u(35), lineHeight: 1.2 })}>{now.at}</span>
+        <span aria-hidden style={{ flex: 1, minWidth: 0, height: u(8), borderRadius: u(99), background: 'rgba(255,255,255,0.25)', position: 'relative', overflow: 'hidden' }}>
+          <span style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: `${pct}%`, background: yellow, borderRadius: u(99) }} />
+        </span>
+        <span style={label(u(13), { flex: 'none', width: u(35), lineHeight: 1.2 })}>{now.of}</span>
+      </div>
+      <svg aria-hidden viewBox="0 0 128 128" fill="none" style={{
+        position: 'absolute', left: u(C.badge - 64), top: u(-52), width: u(128), height: u(128), display: 'block', overflow: 'visible', transform: 'rotate(10deg)',
+      }}>
+        <circle cx="64" cy="64" r="62.08" fill={s.ac} stroke={ink} strokeWidth="1.92" />
+        <circle cx="64" cy="64" r="32" fill={PAPER_WHITE} stroke={ink} strokeWidth="1.92" />
+        <PaperbackArt name="note" x="49.44" y="48.48" width="27.2" height="30.72" />
+      </svg>
+      {audio}
+    </div>
+  )
+
+  return (
+    <div style={{ position: 'relative', containerType: 'inline-size', overflow: 'hidden' }}>
+      <div style={{ paddingTop: u(P.top), paddingBottom: u(P.foot) }}>
+        <div style={{
+          position: 'relative', overflow: s.mob ? 'visible' : 'hidden', boxSizing: 'border-box', margin: `0 ${u(P.side)}`, borderRadius: u(40), background: cyan,
+          padding: `${u(64)} ${u(P.padX)}`,
+        }}>
+          <PaperbackArt name={P.conf} aria-hidden style={{ position: 'absolute', left: 0, top: 0, width: u(P.cw), height: u(P.ch) }} />
+          <div style={col(u(48), { position: 'relative' })}>
+            {head}
+            {s.narrow ? (
+              <div style={col(u(28))}>
+                {list}
+                <span style={{ alignSelf: 'flex-start' }}>{pill}</span>
+                {card}
+              </div>
+            ) : (
+              <div style={{ display: 'grid', gridTemplateColumns: `${u(P.colW[0])} ${u(P.colW[1])}`, columnGap: u(P.colW[2]), alignItems: 'start' }}>
+                <div style={col(u(28))}>
+                  {list}
+                  <span style={{ alignSelf: 'flex-start' }}>{pill}</span>
+                </div>
+                {card}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function Media({ s }) {
   // Hooks before the layout branch — the older three-card design plays too.
   // `playing` mirrors the element's own play/pause events rather than being
@@ -6731,6 +7271,9 @@ function Media({ s }) {
   // function resolved above; it stands here and not at the head so the hooks keep their order.
   if (s.v0 && s.lattice) {
     return <LatticeMedia s={s} m={{ at, count, playing, now, sleeve, sleeveSlot, audio, goTo, toggle, onPick }} />
+  }
+  if (s.v0 && s.paperback) {
+    return <PaperbackMedia s={s} m={{ at, count, playing, now, sleeve, sleeveSlot, audio, goTo, toggle, onPick }} />
   }
 
   // Lime layout 1 (964:58590 · 986:39879 at 768 · 986:39891 at 390) is Retro's
@@ -10674,6 +11217,170 @@ function LatticePricing({ s, g }) {
   )
 }
 
+// Paperback · layout 1 (plans/paperback/layout-1.md, section 7; frames 1:2968 · 1:11610 · 1:12793, 1067.4 / 1478.6 / 2037.2 tall). White page
+// (Scheme 2, the section's own ground), a Bricolage head with three sparkles hung 16 off the end of its measure, a pale-yellow pill toggle (right of
+// the head and bottom-aligned at 1440 and 768, under it at 390), and the packages as 500-tall 24-radius cards turned -3 / +2 / -2 degrees about their
+// own centres (lilac, pink, cyan by the package's place in the WHOLE list, so a filter never recolours one): the name over the unit, the price in the
+// display face, the blurb, ticked rows and the shared split Book pill at the card's foot. A yellow star-in-disc badge turned 12 degrees stands on the
+// top-right corner of package 1 (the frames' featured card). Three columns at 1440, two at 768 with an odd last card spanning both, one at 390.
+// The bio's stage pattern: frame px verbatim in cqw, vertical insets in a child, `vm.pad = '0px <surplus>'`. Not drawn (call 1): the script `Pricing`
+// (its 58 / 56 / 53 seat stays as padding) and the ring text on the badge (no field). The published chip filter, the Book pill's target and the
+// `s.live` gate are `Pricing`'s, handed over in `g`.
+const PAPER_CYAN = '#1CE8ED'
+const PAPER_PRICING = {
+  desktop: {
+    fw: 1440, top: 96, foot: 96, side: 48.96, gap: 40, hw: 665.05, h2: 77.76, seat: 58, headH: 256.67, fit: 1, cols: 3, colGap: 28, pad: '28px 28px 27px', fs: 18, price: 72, priceLh: 57.6,
+    badge: [128, 23.9, 6], tail: 22, sub: 26, subLh: 24.7, subH: 39, tab: 42,
+  },
+  tablet: {
+    fw: 768, top: 77, foot: 77, side: 26.11, gap: 40, hw: 429.39, h2: 48, seat: 56, fit: 1, cols: 2, colGap: 28, pad: '24px 21px 24px', fs: 18, price: 48, priceLh: 38.4,
+    badge: [128, 50.1, 8], tail: 18, sub: 26, subLh: 24.7, subH: 39, tab: 42,
+  },
+  mobile: {
+    fw: 390, top: 58, foot: 58, side: 24, gap: 40, hw: 342, h2: 38, seat: 53, fit: 1, cols: 1, colGap: 28, pad: '20px 16px 20px', fs: 18, price: 38, priceLh: 30.4,
+    badge: [104, 54, 8.1], tail: 16, sub: 24, subLh: 22.8, subH: 60, tab: 42,
+  },
+}
+const PAPER_PRICE_TURN = [-3, 2, -2]
+function PaperbackPricing({ s, g }) {
+  const { shown, active, pressChip } = g
+  const dev = s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop'
+  const P = PAPER_PRICING[dev]
+  const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
+  const O = s.onScheme
+  const ink = O[8].bg
+  const yellow = O[1].box2
+  const label = (size, extra) => ({ fontFamily: s.label, fontWeight: 700, fontSize: size, letterSpacing: '-0.01em', ...extra })
+  const display = (size, lh, extra) => ({ fontFamily: s.display, fontWeight: 800, fontSize: size, lineHeight: lh, letterSpacing: '-0.035em', ...extra })
+  const body = (size, extra) => ({ fontFamily: s.body, fontWeight: 600, fontSize: size, letterSpacing: '-0.01em', ...extra })
+  // The three seats: the card's ground, the ink on it, and the tick's disc (the tick itself takes the card's ground).
+  const SEATS = [
+    { bg: O[6].bg, fg: ink, disc: ink },
+    { bg: O[5].bg, fg: PAPER_WHITE, disc: PAPER_WHITE },
+    { bg: PAPER_CYAN, fg: ink, disc: ink },
+  ]
+
+  // The head, fitted to its widest word in the frame's measure, with its three sparkles 16 off the measure's right edge.
+  const sparkle = (dx, top, size, fill) => (
+    <PaperbackSparkle size={16} fill={fill} aria-hidden style={{ position: 'absolute', pointerEvents: 'none', left: u(P.hw + dx), top: u(top), width: u(size), height: u(size) }} />
+  )
+  const h2 = String(s.title || '').trim() ? (
+    <h2 style={{
+      margin: 0, width: u(P.hw), maxWidth: '100%', color: s.tx,
+      ...display(s.titleWordEms ? `min(${u(P.h2)}, calc(${u(P.hw)} / ${(s.titleWordEms * P.fit).toFixed(3)}))` : u(P.h2), 0.85),
+    }}>{s.title}</h2>
+  ) : null
+  const head = (
+    <div style={{ position: 'relative', flex: 'none', width: u(P.hw), maxWidth: '100%', paddingTop: u(P.seat), minHeight: u(P.headH ?? P.seat) }}>
+      {h2}
+      {sparkle(16, 96, 44, O[5].bg)}
+      {sparkle(58, 74, 26, yellow)}
+      {sparkle(68, 122, 16, O[6].bg)}
+    </div>
+  )
+
+  // The toggle: a pale-yellow pill 5 in, 4 between tabs, the lit one ink. It stands over two or more tags only, and at rest none is lit (JP-089).
+  const tabs = s.tierChips.length > 1 ? (
+    <div style={{
+      ...row(u(4), { flexWrap: 'wrap' }), boxSizing: 'border-box', flex: 'none', maxWidth: '100%', padding: u(5), background: O[9].bg, borderRadius: s.radiusChip,
+      marginLeft: s.mob ? undefined : 'auto',
+    }}>
+      {s.tierChips.map((f, i) => (
+        <span key={i} onClick={s.live ? () => pressChip(i, active) : undefined} style={{
+          ...label(u(15)), display: 'inline-flex', alignItems: 'center', justifyContent: 'center', boxSizing: 'border-box', height: u(P.tab), padding: `0 ${u(18)}`,
+          borderRadius: s.radiusChip, whiteSpace: 'nowrap', background: i === active ? ink : undefined, color: i === active ? PAPER_WHITE : ink, cursor: s.live ? 'pointer' : undefined,
+        }}>{f.label}</span>
+      ))}
+    </div>
+  ) : null
+
+  const cards = shown.map((t, i) => {
+    const S = SEATS[t.n % 3]
+    const turn = PAPER_PRICE_TURN[t.n % 3]
+    const span = P.cols === 2 && i === shown.length - 1 && shown.length % 2 === 1
+    const [bs, bx, by] = P.badge
+    return (
+      // Keyed on the package's place in the WHOLE list, layout 1's rule.
+      <div key={t.n} style={{ position: 'relative', minWidth: 0, display: 'flex', gridColumn: span ? '1 / -1' : undefined }}>
+        <div style={{
+          ...col(u(16), { flex: '1 1 auto' }), boxSizing: 'border-box', minWidth: 0, minHeight: u(500), padding: `${P.pad.split(' ').map((v) => u(parseFloat(v))).join(' ')}`,
+          background: S.bg, color: S.fg, borderRadius: u(24), transform: `rotate(${turn}deg)`,
+        }}>
+          <div style={row(u(12), { justifyContent: 'space-between' })}>
+            <span style={label(u(P.fs), { lineHeight: u(21.6), color: S.fg, minWidth: 0 })}>{t.name}</span>
+            {!!s.tierUnit && <span style={label(u(13), { color: S.fg, opacity: 0.8, minWidth: 0, textAlign: 'right' })}>{s.tierUnit}</span>}
+          </div>
+          {/* The price is one run in the display face, as the frame sets `£450`: the lead, the numeral and a range's second half are spans of the one size,
+              so a long tail wraps at its spaces. A digit-less price (prose) sets a size smaller and wraps anywhere in its seat. */}
+          <div style={{
+            minHeight: u(P.priceLh), minWidth: 0, ...display(t.prose ? u(P.price * 0.6) : u(P.price), t.prose ? 1.05 : 0.8, { color: S.fg }),
+            ...(t.prose ? { overflowWrap: 'anywhere' } : {}),
+          }}>
+            {!!t.lead && <span style={{ display: 'inline-block' }}>{t.lead}</span>}
+            <span style={t.prose ? undefined : { display: 'inline-block', whiteSpace: 'nowrap' }}>{t.amount}</span>
+            {!!t.tail && <span style={{ marginLeft: '0.25em' }}>{t.tail}</span>}
+          </div>
+          {!!t.blurb && <p style={body(u(16), { margin: 0, lineHeight: u(20.8), color: S.fg })}>{t.blurb}</p>}
+          {t.feats.length > 0 && (
+            <div style={col(0)}>
+              {t.feats.map((f, j) => (
+                <div key={j} style={row(u(10), { alignItems: 'flex-start', padding: `${u(6)} 0` })}>
+                  <span aria-hidden style={{
+                    flex: 'none', width: u(19), height: u(19), borderRadius: '50%', background: S.disc, color: S.bg, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                    fontFamily: '"Times New Roman", Times, serif', fontWeight: 800, fontSize: u(11),
+                  }}>✓</span>
+                  <span style={body(u(16), { lineHeight: u(19), color: S.fg, minWidth: 0 })}>{f}</span>
+                </div>
+              ))}
+            </div>
+          )}
+          {!!s.tierRowCta && (
+            <div style={{ marginTop: 'auto', paddingTop: u(8) }}>
+              <PaperbackPill s={s} label={s.tierRowCta} to={s.tierBookTo} u={u} bg={ink} fg={PAPER_WHITE} />
+            </div>
+          )}
+        </div>
+        {t.n === 1 && (
+          <svg viewBox="0 0 128 128" aria-hidden style={{
+            position: 'absolute', zIndex: 2, pointerEvents: 'none', overflow: 'visible', width: u(bs), height: u(bs),
+            left: `calc(100% - ${u(bx + bs / 2)})`, top: u(by - bs / 2), transform: 'rotate(12deg)',
+          }}>
+            <circle cx="64" cy="64" r="62.08" fill={yellow} stroke={ink} strokeWidth="1.92" />
+            <circle cx="64" cy="64" r="32" fill={PAPER_WHITE} stroke={ink} strokeWidth="1.92" />
+            <PaperbackArt name="star" x={47.2} y={46.56} width={33.6} height={32} />
+          </svg>
+        )}
+      </div>
+    )
+  })
+
+  return (
+    <div style={{ position: 'relative', containerType: 'inline-size', overflow: 'hidden' }}>
+      <div style={{ paddingTop: u(P.top), paddingBottom: u(P.foot) }}>
+        <div style={col(u(P.gap), { margin: `0 ${u(P.side)}`, ...WRAP_LONG })}>
+          <div style={s.mob ? col(u(24), { alignItems: 'flex-start' }) : row(u(24), { flexWrap: 'wrap', alignItems: 'flex-end', justifyContent: 'space-between' })}>
+            {head}
+            {tabs}
+          </div>
+          {cards.length > 0 && (
+            <div style={{ display: 'grid', alignItems: 'stretch', gap: u(P.colGap), gridTemplateColumns: `repeat(${P.cols}, minmax(0, 1fr))` }}>{cards}</div>
+          )}
+          {s.tiers.length === 0 && (
+            <div style={{ ...label(u(18), { color: ink }), boxSizing: 'border-box', background: O[9].bg, borderRadius: u(24), padding: `${u(24)} ${u(28)}` }}>No packages yet.</div>
+          )}
+          {!!s.pricingSub && (
+            <div style={{ minHeight: u(P.subH) }}>
+              <div style={{
+                transform: 'rotate(-1deg)', fontFamily: s.script, fontWeight: 700, fontSize: u(P.sub), lineHeight: u(P.subLh), letterSpacing: '-0.01em', color: s.text3, overflowWrap: 'anywhere',
+              }}>{s.pricingSub}</div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function Pricing({ s }) {
   // The selected filter chip, gated on `s.live` below like Repertoire's: it is
   // a real control in the published tab and inert on the editor canvas, which
@@ -10777,6 +11484,8 @@ function Pricing({ s }) {
     // Lattice's layout-1 pricing is a block of its own (LatticePricing), after the seam: the chip filter and
     // the pick above are shared whole, and the block is the picture.
     if (s.limeTree && s.lattice) return <LatticePricing s={s} g={{ shown, active, pressChip }} />
+    // Paperback's (1:2968 · 1:11610 · 1:12793) is a block of its own as well, handed the same seam.
+    if (s.limeTree && s.paperback) return <PaperbackPricing s={s} g={{ shown, active, pressChip }} />
 
     if (s.limeTree) {
       const grunge = s.grunge
@@ -13587,6 +14296,183 @@ function LatticeRepertoire({ s, g }) {
   )
 }
 
+// Paperback · Repertoire layout 1 (1:2689 · 1:11313 · 1:12499, 1067 / 1067 / 1655.9 tall): a yellow card (radius 40, Scheme 1's `box2`) on the white
+// page, an orange blob clipped by its top-right corner, the count at 106.56 / 66 / 43 with a -10 degree white disc hung off its end (above it at 390), a
+// white pill search, white chip pills, twelve white pill rows (a number, the title, a coloured artist chip) in two columns (one of twelve at 390) and a
+// pager of round and pill buttons. The bio's stage (`containerType: inline-size`, frame px verbatim in cqw, the vertical insets in a child); the
+// search, chips and pager are `Repertoire`'s seam handed over in `g`, as Lattice's. Not drawn (call 1): the script `Repertoire` (its seat stays
+// as padding) and the ring text the 768 and 390 discs carry (no field). The 390 card keeps the frame's 122 under the pager (64 and 58 more) when
+// a pager is drawn; with one page there is none, as at every template. The title box is a container and its text `min(1em, 100cqi / ems)`
+// (`vm.songs[].ems`), the frame's own shrink of a word that would outrun its chip (768's *Superstition* at 17).
+const PAPER_REP = {
+  desktop: {
+    fw: 1440, top: 102.62, foot: 102.62, side: 48.96, padX: 48, seat: 54.39, h2: 106.56, free: 664, search: 420, blob: [1002.08, -140],
+    disc: 132, discAt: [3.92, -24], rowGap: 12, numL: 20, numW: 40, gap: 12, rowT: 22, chipR: 20, pagerFoot: 0,
+  },
+  tablet: {
+    fw: 768, top: 80.68, foot: 80.68, side: 26.11, padX: 36, seat: 51.53, h2: 66, free: 500, search: 420, blob: [375.77, -140],
+    disc: 132, discAt: [4.58, -66], rowGap: 12, numL: 20, numW: 40, gap: 12, rowT: 22, chipR: 20, pagerFoot: 0,
+  },
+  mobile: {
+    fw: 390, top: 24, foot: 24.06, side: 24, padX: 24, seat: 48.69, h2: 43, free: 294, search: 0, blob: [2, -140],
+    disc: 104, discAt: [-86, -113], rowGap: 28, numL: 12, numW: 22, gap: 10, rowT: 20, chipR: 12, pagerFoot: 58.2,
+  },
+}
+function PaperbackRepertoire({ s, g }) {
+  const { title, q, onQuery, active, onChip, columns, shown, labels, at, onPage, onStep, noSongs } = g
+  const P = PAPER_REP[s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop']
+  const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
+  const ink = s.tx
+  const yellow = s.onScheme[1].box2
+  const label = (size, extra) => ({ fontFamily: s.label, fontWeight: 700, fontSize: size, letterSpacing: '-0.01em', ...extra })
+  // The artist chips' colours by the row's place on its page, as the frame's twelve draw them (it breaks its own six-cycle at row 7).
+  const O = s.onScheme
+  const CHIPS = [
+    [O[6].bg, ink], [s.ac, PAPER_WHITE], [yellow, ink], [O[2].box3, ink], [O[7].bg, ink], [O[8].bg, PAPER_WHITE],
+    [O[4].bg, ink], [O[6].bg, ink], [s.ac, PAPER_WHITE], [yellow, ink], [O[2].box3, ink], [O[7].bg, ink],
+  ]
+
+  // The count; the disc hangs off the wrapper that hugs it, at the offset each master draws from the string's end.
+  const h2 = String(title || '').trim() ? (
+    <h2 style={{
+      margin: 0, color: ink, fontFamily: s.display, fontWeight: 800, letterSpacing: '-0.035em', lineHeight: 0.82,
+      fontSize: s.titleWordEms ? `min(${u(P.h2)}, calc(${u(P.free)} / ${s.titleWordEms}))` : u(P.h2),
+    }}>{title}</h2>
+  ) : null
+  const disc = (
+    <svg aria-hidden viewBox="0 0 132 132" fill="none" style={{
+      position: 'absolute', display: 'block', overflow: 'visible', pointerEvents: 'none', transform: 'rotate(-10deg)',
+      left: `calc(100% + ${u(P.discAt[0])})`, top: u(P.discAt[1]), width: u(P.disc), height: u(P.disc),
+    }}>
+      <circle cx="66" cy="66" r="64.02" fill={PAPER_WHITE} stroke={ink} strokeWidth="1.98" />
+      <circle cx="66" cy="66" r="33" fill={PAPER_WHITE} stroke={ink} strokeWidth="1.98" />
+      <PaperbackArt name="heart" x="51.35" y="53.95" />
+    </svg>
+  )
+  const head = (
+    <div style={{ position: 'relative', paddingTop: u(P.seat), flex: s.narrow ? undefined : '1 1 0', minWidth: 0 }}>
+      <div style={{ position: 'relative', width: 'fit-content', maxWidth: u(P.free) }}>
+        {h2}
+        {h2 && disc}
+      </div>
+    </div>
+  )
+
+  // The hint is the placeholder (ink at .45, index.css); the canvas's span draws the same.
+  const hint = 'Search songs or artists…'
+  const hintType = { fontFamily: s.body, fontWeight: 600, fontSize: u(16), letterSpacing: '-0.01em' }
+  const search = (
+    <div style={row(0, {
+      boxSizing: 'border-box', height: u(56), flex: 'none', width: P.search ? u(P.search) : '100%', maxWidth: '100%', padding: `0 ${u(24)}`,
+      boxShadow: `inset 0 0 0 ${u(2)} ${ink}`, borderRadius: s.radiusChip, background: PAPER_WHITE, overflow: 'hidden', color: ink,
+    })}>
+      {s.live ? (
+        <input
+          value={q} placeholder={hint} aria-label="Search songs or artists"
+          onChange={(e) => onQuery(e.target.value)}
+          style={{ ...hintType, color: ink, flex: 1, minWidth: 0, border: 'none', outline: 'none', background: 'transparent', padding: 0 }}
+        />
+      ) : (
+        <span style={{ ...hintType, opacity: 0.45, minWidth: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{hint}</span>
+      )}
+    </div>
+  )
+
+  const chips = (
+    <div style={row(u(6), { flexWrap: 'wrap', rowGap: u(14) })}>
+      {s.repChips.map((f, i) => {
+        const on = i === active
+        return (
+          <span
+            key={i}
+            onClick={s.live ? () => onChip(i) : undefined}
+            style={{
+              ...label(u(15)), boxSizing: 'border-box', height: u(44), padding: `0 ${u(16)}`, display: 'inline-flex', alignItems: 'center',
+              borderRadius: s.radiusChip, background: on ? ink : PAPER_WHITE, color: on ? PAPER_WHITE : ink,
+              whiteSpace: 'nowrap', cursor: s.live ? 'pointer' : undefined,
+            }}
+          >{f.label}</span>
+        )
+      })}
+    </div>
+  )
+
+  const song = (t) => {
+    const [bg, fg] = CHIPS[(t.n - 1) % CHIPS.length]
+    return (
+      <div key={t.n} style={{
+        ...row(u(P.gap)), boxSizing: 'border-box', minHeight: u(60), padding: `${u(8)} ${u(P.chipR)} ${u(8)} ${u(P.numL)}`,
+        background: PAPER_WHITE, borderRadius: s.radiusChip,
+      }}>
+        <span style={label(u(14), { flex: 'none', width: u(P.numW), lineHeight: 1.2, color: s.text3, whiteSpace: 'nowrap' })}>{String(t.n).padStart(2, '0')}</span>
+        {/* A container, so the text can fit the room the chip leaves it: the size is set here (cqw of the stage) and the text takes `min(1em, …)`. */}
+        <span style={{ flex: '1 1 0', minWidth: 0, containerType: 'inline-size', fontSize: u(P.rowT), lineHeight: 1 }}>
+          <span style={{
+            display: 'block', color: ink, fontFamily: s.display, fontWeight: 800, letterSpacing: '-0.035em', lineHeight: 1, overflowWrap: 'anywhere',
+            fontSize: t.ems ? `min(1em, calc(100cqi / ${t.ems}))` : '1em',
+          }}>{t.title}</span>
+        </span>
+        {t.artist && (
+          <span style={{
+            ...label(u(13), { lineHeight: u(26), color: fg }), flex: '0 1 auto', minWidth: 0, maxWidth: '55%', boxSizing: 'border-box', height: u(26),
+            padding: `0 ${u(10)}`, background: bg, borderRadius: s.radiusChip, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+          }}>{t.artist}</span>
+        )}
+      </div>
+    )
+  }
+  const flat = columns.flat()
+  const list = shown.length === 0 ? (
+    <div style={{ ...label(u(16), { color: s.text3 }), background: PAPER_WHITE, borderRadius: s.radiusChip, padding: `${u(20)} ${u(P.numL)}` }}>
+      {noSongs ? 'No songs yet.' : 'No songs match that.'}
+    </div>
+  ) : (
+    <div style={{
+      display: 'grid', alignItems: 'start', columnGap: u(20), rowGap: u(P.rowGap), gridAutoFlow: 'column',
+      gridTemplateColumns: columns.length > 1 ? 'minmax(0, 1fr) minmax(0, 1fr)' : 'minmax(0, 1fr)',
+      gridTemplateRows: `repeat(${columns[0].length}, auto)`,
+    }}>{flat.map(song)}</div>
+  )
+
+  const btn = (key, child, { on, round, onClick }) => (
+    <span key={key} onClick={onClick} style={{
+      ...label(u(15)), boxSizing: 'border-box', flex: 'none', height: u(44), display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+      ...(round || s.mob ? { width: u(44) } : { padding: `0 ${u(16)}` }), borderRadius: round ? '50%' : s.radiusChip,
+      background: on ? ink : PAPER_WHITE, color: on ? PAPER_WHITE : ink, cursor: onClick ? 'pointer' : undefined, whiteSpace: 'nowrap',
+    }}>{child}</span>
+  )
+  const pager = labels.length > 0 ? (
+    <div style={row(u(6), { justifyContent: s.mob ? 'space-between' : 'flex-start' })}>
+      {btn('prev', paperArrow(u, true, ink), { round: true, onClick: onStep && (() => onStep(-1)) })}
+      {labels.map((p, i) => btn(`p${i}`, p, { on: i === at, onClick: onPage && p !== '…' ? () => onPage(p) : undefined }))}
+      {btn('next', paperArrow(u, false, ink), { round: true, onClick: onStep && (() => onStep(1)) })}
+    </div>
+  ) : null
+
+  return (
+    <div style={{ position: 'relative', containerType: 'inline-size', overflow: 'hidden' }}>
+      <div style={{ paddingTop: u(P.top), paddingBottom: u(P.foot) }}>
+        <div style={{
+          position: 'relative', overflow: 'hidden', boxSizing: 'border-box', margin: `0 ${u(P.side)}`, borderRadius: u(40), background: yellow,
+          padding: `${u(64)} ${u(P.padX)} ${u(64 + (pager ? P.pagerFoot : 0))}`,
+        }}>
+          <PaperbackArt name="blobOrange" aria-hidden style={{ position: 'absolute', left: u(P.blob[0]), top: u(P.blob[1]), width: u(460), height: u(460), pointerEvents: 'none' }} />
+          <div style={col(u(28), { position: 'relative' })}>
+            {s.narrow ? (
+              <div style={col(u(24))}>{head}{search}</div>
+            ) : (
+              <div style={row(u(24), { alignItems: 'flex-end', justifyContent: 'space-between' })}>{head}{search}</div>
+            )}
+            {chips}
+            {list}
+            {pager}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // v0 — Repertoire layout 1 · Two-column dense (§10.2 reference design)
 //
 // The reference frames stand the section on cream under a torn beige edge: a
@@ -13643,7 +14529,7 @@ function Repertoire({ s }) {
     // reference frames show.
     // Lattice's frames draw twelve a page at every width (two columns of six at 768, one of twelve
     // at 390), so it is the one template whose narrow page is not six.
-    const perPage = s.narrow && !s.lattice ? 6 : 12
+    const perPage = s.narrow && !s.lattice && !s.paperback ? 6 : 12
     // The chip index, clamped: the row is derived from the artist's tags, so a
     // tag they delete can leave `chip` past the end of it.
     const active = s.live ? Math.min(chip, s.repChips.length - 1) : 0
@@ -13668,9 +14554,9 @@ function Repertoire({ s }) {
     // page offset — not its place on the screen. Both narrow frames run the
     // whole six-song page down one column.
     const half = Math.ceil(shown.length / 2)
-    const columns = (s.narrow && !(s.lattice && !s.mob) ? [shown] : [shown.slice(0, half), shown.slice(half)])
+    const columns = (s.narrow && !((s.lattice || s.paperback) && !s.mob) ? [shown] : [shown.slice(0, half), shown.slice(half)])
       .map((cs, ci) => cs.map((t, i) => ({ ...t, n: pg * perPage + ci * half + i + 1 })))
-    const { labels, at } = pageWindow(pages, pg, s.mob, s.lattice ? 4 : undefined)
+    const { labels, at } = pageWindow(pages, pg, s.mob, s.lattice || (s.paperback && !s.mob) ? 4 : undefined)
 
     // Lime — the same component in Lime's mode (964:58592 at 1440, 986:39881 at
     // 768, 986:39893 at 390), placed after the seam as the gallery's block is:
@@ -13728,15 +14614,17 @@ function Repertoire({ s }) {
     if (s.limeTree) {
       // Lattice's layout-1 repertoire is a block of its own (LatticeRepertoire), after the seam: the
       // search, chip and pager state above is shared whole, and the block is the picture.
-      if (s.lattice) {
-        return <LatticeRepertoire s={s} g={{
+      // Paperback's (1:2689 · 1:11313 · 1:12499) is a block of its own as well, handed the same seam.
+      if (s.lattice || s.paperback) {
+        const g = {
           title, q, active, columns, shown, labels, at,
           noSongs: s.songs.length === 0,
           onQuery: (v) => { setQ(v); setPage(0) },
           onChip: (i) => { setChip(i); setPage(0) },
           onPage: s.live ? (label) => setPage(Number(label) - 1) : undefined,
           onStep: s.live ? (dir) => setPage(Math.max(0, Math.min(pages - 1, pg + dir))) : undefined,
-        }} />
+        }
+        return s.paperback ? <PaperbackRepertoire s={s} g={g} /> : <LatticeRepertoire s={s} g={g} />
       }
       const grunge = s.grunge
       const ed = s.editorial
@@ -16152,6 +17040,179 @@ function LatticeGallery({ s, g }) {
   )
 }
 
+// Paperback · layout 1 (plans/paperback/layout-1.md, section 4; frames 1:2617 · 1:11239 · 1:12425, 908.8 / 1428.5 / 1004.9 tall).
+// A pale-yellow band (the root paints it: Scheme 1's `bg`), four 24-radius source rows (the open one yellow with a `×` disc, the others
+// white with a `+`), a white back pill, a keyline viewer turned 2 degrees with a pink tape strip, three sparkles and two arrow discs, and a
+// strip of seven tiles turned a few degrees each (the picked one ringed in pink). The bio's stage pattern: frame px verbatim at all three
+// widths in cqw, vertical insets in a child. The head, rows and strip are one column at 768 and 390 (a 36 / 28 gap between them) and two at
+// 1440 (a 31.95 gutter). The card / tape / sparkle coordinates are the frame's, in the 655 x 529 card's own box.
+const PAPER_TILE = '#EFEFEF'
+// The frames' round-disc arrow (14 x 14, a 2px ink stroke); the testimonials' discs are the next reader.
+const paperArrow = (u, back, ink) => (
+  <svg aria-hidden width={u(14)} height={u(14)} viewBox="0 0 14 14" fill="none" style={{ display: 'block', overflow: 'visible' }}>
+    <path d={back ? 'M13 7H2M6.5 11.5L2 7L6.5 2.5' : 'M1 7H12M7.5 11.5L12 7L7.5 2.5'} stroke={ink} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+)
+const PAPER_GALLERY = {
+  desktop: {
+    fw: 1440, top: 96, foot: 96, side: 48.96, colW: 655.047, gutter: 31.95, kSeat: 44, kSize: 32, h2: 95.04, rowH: 125.625, rowT: 30, headRow: 67.19,
+    credW: 104, credH: 53, credT: 28, view: [655, 529], tape: [620, 37], spark: [[-46, 254.75], [-4, 232.75], [6, 280.75]], tile: 85,
+  },
+  tablet: {
+    fw: 768, top: 77, foot: 77, side: 26.11, colW: 715.766, gutter: 36, kSeat: 42, kSize: 29, h2: 59, rowH: 72, rowT: 27, headRow: 61.5,
+    credW: 93, credH: 48, credT: 25, view: [716, 577], tape: [681, 37], spark: [[-46, 275.88], [-4, 253.88], [6, 301.88]], tile: 94,
+  },
+  mobile: {
+    fw: 390, top: 58, foot: 58, side: 24, colW: 342, gutter: 28, kSeat: 39, kSize: 26, h2: 38, rowH: 72, rowT: 25, headRow: 57.69,
+    credW: 85, credH: 44, credT: 23, view: [342, 277], tape: [307, 37], spark: [[-46, 143.88], [-4, 121.87], [6, 169.88]], tile: 40,
+  },
+}
+const PAPER_TILE_TURN = [-3, 2, -2, 3, -1, 2, -3]
+function PaperbackGallery({ s, g }) {
+  const { at, marked, strip, go, srcRows, srcAct, video, player } = g
+  const P = PAPER_GALLERY[s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop']
+  const desk = !s.narrow
+  const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
+  const ink = s.tx
+  const yellow = s.onScheme[1].box2
+  const bricolage = (size, lh) => ({ fontFamily: s.display, fontWeight: 800, fontSize: size, lineHeight: lh, letterSpacing: '-0.035em' })
+  const script = (size) => ({ fontFamily: s.script, fontWeight: 700, fontSize: u(size), lineHeight: 0.95, letterSpacing: '-0.01em', color: s.text3 })
+  const wrap = { whiteSpace: 'normal', overflowWrap: 'anywhere', minWidth: 0 }
+
+  // The head wraps in the column and is fitted to its widest word (`vm.titleWordEms`, the bio's rule).
+  const h2 = s.title ? (
+    <h2 style={{
+      margin: 0, color: ink, maxWidth: '100%', overflowWrap: 'anywhere',
+      ...bricolage(s.titleWordEms ? `min(${u(P.h2)}, calc(${u(P.colW)} / ${s.titleWordEms}))` : u(P.h2), 0.82),
+    }}>{s.title}</h2>
+  ) : null
+
+  // The script `Media`: `kicker`, seeded empty so drawn only when typed, in the seat the frame gives it (a 655 x 30 box turned -6
+  // about its centre, so its left end sits 34 down). The seat stays as padding when it is not drawn, as the bio's does.
+  const kicker = s.galKicker ? (
+    <div style={{ position: 'absolute', left: 0, top: 0, width: u(P.colW), minHeight: u(P.kSize * 0.95), transform: 'rotate(-6deg)' }}>
+      <span style={{ ...script(P.kSize), ...wrap }}>{s.galKicker}</span>
+    </div>
+  ) : null
+
+  const rows = (
+    <div style={col(u(12))}>
+      {srcRows.map(({ g: r, i }) => {
+        const link = srcAct(r, i)
+        const Tag = link?.href ? 'a' : 'div'
+        return (
+          <Tag key={i} {...link} style={{
+            ...row(u(16)), boxSizing: 'border-box', height: u(P.rowH), flex: 'none', padding: `0 ${u(24)}`, borderRadius: u(24),
+            background: r.on ? yellow : PAPER_WHITE, color: ink, textDecoration: 'none', cursor: link ? 'pointer' : undefined,
+          }}>
+            <span data-inline={r.on ? 'sourceLabel' : undefined} style={{ ...bricolage(u(P.rowT), 1), flex: 1, color: ink, ...wrap }}>{r.label}</span>
+            <span style={{
+              flex: 'none', width: u(40), height: u(40), borderRadius: '50%', background: ink, color: PAPER_WHITE,
+              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              fontFamily: s.label, fontWeight: 700, fontSize: u(20), lineHeight: 1, letterSpacing: '-0.01em',
+            }}>{r.on ? '×' : '+'}</span>
+          </Tag>
+        )
+      })}
+    </div>
+  )
+
+  const left = (
+    <div style={col(u(28), { minWidth: 0 })}>
+      <div style={{ position: 'relative', height: u(P.kSeat) }}>{kicker}</div>
+      {h2}
+      {rows}
+    </div>
+  )
+
+  // Head row: the back pill (stretched to the row) and the credit script, turned 4 degrees about its own centre.
+  const top = (
+    <div style={row(u(12), { height: u(P.headRow), justifyContent: 'space-between', alignItems: 'stretch' })}>
+      <span onClick={s.live ? () => go(0) : undefined} style={{
+        ...row(u(4)), boxSizing: 'border-box', flex: '0 1 auto', minWidth: 0, padding: `0 ${u(16)}`, borderRadius: s.radiusChip, background: PAPER_WHITE,
+        color: ink, fontFamily: s.label, fontWeight: 700, fontSize: u(14), lineHeight: 1.2, letterSpacing: '-0.01em', cursor: s.live ? 'pointer' : undefined,
+      }}>
+        <span aria-hidden style={{ flex: 'none' }}>←</span><span style={wrap}>{s.galBackLabel}</span>
+      </span>
+      {s.galRailLabel && (
+        <div style={{ position: 'relative', flex: 'none', width: u(P.credW) }}>
+          <div style={{ position: 'absolute', left: 0, top: 0, width: u(P.credW), minHeight: u(P.credH), transform: 'rotate(4deg)' }}>
+            <span data-inline="railLabel" style={{ ...script(P.credT), display: 'block', ...wrap }}>{s.galRailLabel}</span>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+
+  const [vw, vh] = P.view
+  const disc = (back) => (
+    <span onClick={s.live ? () => go(at + (back ? -1 : 1)) : undefined} style={{
+      width: u(44), height: u(44), flex: 'none', borderRadius: '50%', background: PAPER_WHITE, display: 'inline-flex', alignItems: 'center',
+      justifyContent: 'center', cursor: s.live ? 'pointer' : undefined,
+    }}>{paperArrow(u, back, ink)}</span>
+  )
+  const viewer = (
+    <div style={{ position: 'relative', height: u(vh) }}>
+      <div style={{ position: 'absolute', left: 0, top: 0, width: u(vw), height: u(vh), transform: 'rotate(2deg)' }}>
+        <div style={{
+          position: 'absolute', inset: 0, boxSizing: 'border-box', border: `${u(6)} solid ${PAPER_WHITE}`, borderRadius: u(24), overflow: 'hidden', background: PAPER_TILE,
+        }}>
+          {video ? player : (
+            <>
+              <div style={{ position: 'absolute', inset: 0 }}>
+                <Photo s={s} slot={`images:${at}`} initialsSize={52} src={s.images[at]} ink={ink} style={{ objectPosition: s.imagesPos[at] }} />
+              </div>
+              <div style={row(u(8), { position: 'absolute', right: u(16), bottom: u(16) })}>{disc(true)}{disc(false)}</div>
+            </>
+          )}
+        </div>
+        <span aria-hidden style={{
+          position: 'absolute', left: u(P.tape[0] - 65), top: u(P.tape[1] - 15), width: u(130), height: u(30), background: s.ac, opacity: 0.9,
+          transform: 'rotate(40deg)', clipPath: 'polygon(3% 0, 97% 8%, 100% 92%, 2% 100%)', pointerEvents: 'none',
+        }} />
+        {[[44, yellow], [26, s.chips[0].bg], [16, s.ac]].map(([size, fill], k) => (
+          <PaperbackSparkle key={size} size={size} fill={fill} ink={ink} style={{
+            position: 'absolute', left: u(P.spark[k][0]), top: u(P.spark[k][1]), width: u(size), height: u(size), pointerEvents: 'none',
+          }} />
+        ))}
+      </div>
+    </div>
+  )
+
+  // Seven tiles at every width, each in a cell of the strip's pitch and turned a few degrees; the picked one is ringed in 4px pink.
+  const thumbs = (
+    <div style={row(0, { justifyContent: 'space-between', height: u(P.tile) })}>
+      {strip.map((i) => (
+        <span key={i} onClick={s.live ? () => go(i) : undefined} style={{ position: 'relative', flex: 'none', width: u(P.tile), height: u(P.tile), cursor: s.live ? 'pointer' : undefined }}>
+          <span style={{
+            position: 'absolute', inset: 0, boxSizing: 'border-box', overflow: 'hidden', borderRadius: u(16), background: PAPER_TILE,
+            border: i === marked ? `${u(4)} solid ${s.ac}` : undefined, transform: `rotate(${PAPER_TILE_TURN[i]}deg)`,
+          }}>
+            <span style={{ position: 'absolute', inset: 0 }}>
+              <Photo s={s} slot={`images:${i}`} initialsSize={12} src={s.images[i]} ink={ink} />
+            </span>
+          </span>
+        </span>
+      ))}
+    </div>
+  )
+
+  const right = <div style={col(u(18), { minWidth: 0 })}>{top}{viewer}{thumbs}</div>
+  return (
+    <div style={{ position: 'relative', containerType: 'inline-size', overflow: 'hidden' }}>
+      <div style={{ paddingTop: u(P.top), paddingBottom: u(P.foot) }}>
+        {desk ? (
+          <div style={{ display: 'grid', gridTemplateColumns: `${u(P.colW)} ${u(P.colW)}`, columnGap: u(P.gutter), margin: `0 ${u(P.side)}`, alignItems: 'start' }}>
+            {left}{right}
+          </div>
+        ) : (
+          <div style={col(u(P.gutter), { margin: `0 ${u(P.side)}` })}>{left}{right}</div>
+        )}
+      </div>
+    </div>
+  )
+}
+
 function Gallery({ s }) {
   // Hooks before the layout branch, the way Media takes them: `s.v0` is a prop
   // and not a hook's business, so the branch below cannot be the thing that
@@ -16303,6 +17364,14 @@ function Gallery({ s }) {
     )
     // No photograph is the viewer's while the player is, so none is marked.
     const lit = video ? -1 : active
+
+    // Paperback's layout-1 gallery is a block of its own (PaperbackGallery), after the seam. The canvas draws the frame's picked tile,
+    // the second, and the viewer shows that slot's photograph (the seed's second slot is the frame's viewer picture).
+    if (s.paperback) {
+      const picked = s.live && pick >= 0
+      const at = picked ? pick : s.images.length > 1 ? 1 : 0
+      return <PaperbackGallery s={s} g={{ at, marked: video ? -1 : at, strip, go, srcRows, srcAct, video, player }} />
+    }
 
     // Lattice's layout-1 gallery is a block of its own (LatticeGallery), after the seam. It opens on
     // the frame's viewer, which is the third tile's photograph, not Lime's fourth.
@@ -18625,6 +19694,161 @@ function LatticeCalendar({ s, g }) {
   )
 }
 
+// Paperback · layout 1 (plans/paperback/layout-1.md, section 8; frames 1:3131 · 1:11793 · 1:12975, 835 / 676 / 910 tall). A 40-radius blush card
+// (`s.box2` under the Scheme-2 seat) on the white page, two halves 40 apart (stacked at 390): left, two 44 black discs round the month (Bricolage
+// ExtraBold, centred between them), the weekday row and a seven-column grid of 48-tall white 14-radius cells (the picked one pink under white type,
+// ringed by the indigo hand-drawn circle); right, a magenta blob, a yellow tile turned -4 degrees holding the speaker, a white disc turned -10
+// degrees holding the headphones and a confetti set; and a white foot with the enquiry line and the split Continue pill (under the line at 390).
+// The bio's stage pattern: frame px verbatim in cqw, vertical insets in the stage's child, `vm.pad = '0px <surplus>'`. **The right half is pinned to the
+// five-row month's height** (the frames' June), so a six-row month grows the grid alone. Not drawn (call 1): the scripts `pick your night!` and `Your night,
+// your playlist` (no field). The month, the pick, the arrows and the Continue link are `Calendar`'s, handed over in `g`.
+const PAPER_CAL = {
+  desktop: {
+    fw: 1440, top: 141.1, side: 48.96, padX: 48, padY: 48, headH: 46.797, headFs: 52, halfH: 360.797, tile: [256, 256], blob: [91.52, -29.61], disc: [156.51, 265.39],
+    circle: [-0.77, -2.8], lineFs: 17, lineLh: 20.4, conf: 'confettiCalendar', ring: 'circle', fit: 1.09,
+  },
+  tablet: {
+    fw: 768, top: 70, side: 26.11, padX: 36, padY: 41, headH: 44, headFs: 42, halfH: 358, tile: [242, 248], blob: [-59.06, -31], disc: [49.81, 284.27],
+    circle: [-0.82, 0], lineFs: 17, lineLh: 20.4, conf: 'confettiCalendarTablet', ring: 'circleTablet', fit: 1.115,
+  },
+  mobile: {
+    fw: 390, top: 24, side: 24, padX: 24, padY: 34, headH: 44, headFs: 34, halfH: 240, tile: [232, 240], blob: [-63, -90], disc: [2, 205],
+    circle: [-0.82, 0], lineFs: 15, lineLh: 18, conf: 'confettiCalendarMobile', ring: 'circleMobile', fit: 1.125,
+  },
+}
+function PaperbackCalendar({ s, g }) {
+  const { month, cur, line, step, pick } = g
+  const dev = s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop'
+  const P = PAPER_CAL[dev]
+  const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
+  const ink = s.onScheme[8].bg
+  const yellow = s.onScheme[1].box2
+  const label = (size, extra) => ({ fontFamily: s.label, fontWeight: 700, fontSize: size, letterSpacing: '-0.01em', ...extra })
+  const [bw, bh] = P.tile
+
+  const arrow = (back, dir) => {
+    const onClick = step(dir)
+    return (
+      <span aria-hidden onClick={onClick} style={{
+        flex: 'none', width: u(44), height: u(44), borderRadius: '50%', background: ink, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+        cursor: onClick ? 'pointer' : undefined, opacity: s.live && !onClick ? 0.38 : undefined,
+      }}>{paperArrow(u, back, PAPER_WHITE)}</span>
+    )
+  }
+
+  // The month, centred between the discs and fitted to the room they leave by its own width (`month.ems`, Bricolage's table, times the
+  // per-width fit the table's 1000px reading needs), at the frame's size wherever it fits. The box is a container, so its own size is set on it
+  // (cqw resolves against the stage there) and the span takes `min(1em, room / ems)`.
+  const ems = month.ems !== undefined ? month.ems * P.fit : 0
+  const head = (
+    <div style={row(u(12), { height: u(P.headH), justifyContent: 'space-between' })}>
+      {arrow(true, -1)}
+      <div style={{ flex: '1 1 0', minWidth: 0, containerType: 'inline-size', display: 'flex', justifyContent: 'center', fontSize: u(P.headFs) }}>
+        <span style={{
+          fontFamily: s.display, fontWeight: 800, letterSpacing: '-0.035em', lineHeight: 0.9, color: s.tx, whiteSpace: 'nowrap',
+          fontSize: ems ? `min(1em, calc(100cqi / ${ems.toFixed(3)}))` : '1em',
+        }}>{month.label}</span>
+      </div>
+      {arrow(false, 1)}
+    </div>
+  )
+
+  const names = (
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', columnGap: u(6), height: u(30), boxSizing: 'border-box', paddingTop: u(6) }}>
+      {s.calDays.map((d) => (
+        <span key={d} style={label(u(13), { lineHeight: 1.2, textAlign: 'center', color: s.text3 })}>{d}</span>
+      ))}
+    </div>
+  )
+
+  // A day: a white 14-radius cell; the lit one is pink under white type with the circle round it (centred on the cell, the frame's own offset).
+  // A booked or past day is the family's: dimmed to .38, no strike, no handler.
+  const day = (c, i) => {
+    if (c.iso === undefined) return <span key={i} />
+    const on = c.iso === cur
+    const onClick = pick(c)
+    return (
+      <span key={i} onClick={onClick} style={{
+        ...label(u(16), { lineHeight: 1.2 }), position: on ? 'relative' : undefined, zIndex: on ? 1 : undefined, boxSizing: 'border-box', height: u(48), borderRadius: u(14),
+        display: 'flex', alignItems: 'center', justifyContent: 'center', background: on ? s.ac : PAPER_WHITE, color: on ? PAPER_WHITE : ink,
+        opacity: c.booked || c.dead ? 0.38 : undefined, cursor: onClick ? 'pointer' : undefined,
+      }}>
+        {c.d}
+        {on && (
+          <PaperbackArt name={P.ring} width={u(116)} height={u(72)} style={{
+            position: 'absolute', pointerEvents: 'none', left: `calc(50% + ${u(P.circle[0] - 58)})`, top: `calc(50% + ${u(P.circle[1] - 36)})`,
+          }} />
+        )}
+      </span>
+    )
+  }
+
+  const left = (
+    <div style={col(u(14), { minWidth: 0 })}>
+      {head}
+      <div style={col(u(6))}>
+        {names}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', gap: u(6) }}>{month.cells.map(day)}</div>
+      </div>
+    </div>
+  )
+
+  // The right half, pinned to the five-row height: the blob, the tile (centred in the half, turned -4) with the speaker, the confetti over them and
+  // the headphones disc (centre read off the frame, turned -10).
+  const [dx, dy] = P.disc
+  const right = (
+    <div style={{ position: 'relative', minWidth: 0, height: u(P.halfH), alignSelf: s.mob ? undefined : 'start', flex: 'none' }}>
+      <PaperbackArt name="blobMagenta" width={u(420)} height={u(420)} aria-hidden style={{ position: 'absolute', pointerEvents: 'none', left: u(P.blob[0]), top: u(P.blob[1]) }} />
+      <div aria-hidden style={{
+        position: 'absolute', left: `calc(50% - ${u(bw / 2)})`, top: `calc(50% - ${u(bh / 2)})`, width: u(bw), height: u(bh), boxSizing: 'border-box',
+        background: yellow, borderRadius: u(24), transform: 'rotate(-4deg)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+      }}>
+        <PaperbackArt name="speaker" width={u(200)} height={u(200)} />
+      </div>
+      <PaperbackArt name={P.conf} aria-hidden style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }} />
+      <div aria-hidden style={{
+        position: 'absolute', left: u(dx - 51), top: u(dy - 51), width: u(102), height: u(102), boxSizing: 'border-box', borderRadius: '50%', background: PAPER_WHITE,
+        border: `${u(3)} solid ${ink}`, transform: 'rotate(-10deg)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+      }}>
+        <PaperbackArt name="headphones" width={u(55.672)} height={u(55.672)} />
+      </div>
+    </div>
+  )
+
+  // The foot: the enquiry line (the picked day's, else the prompt) and the Continue pill, which leads on to the form (`calBookTo`) when live and is a
+  // picture on the canvas, as Lattice's bar. An emptied `cta` drops the pill. At 390 the foot is a 24-radius card with the pill under the line.
+  const pill = s.calCta ? <PaperbackPill s={s} label={s.calCta} to={s.calBookTo} u={u} /> : null
+  const lineEl = <span style={label(u(P.lineFs), { lineHeight: u(P.lineLh), color: ink, minWidth: 0, flex: s.mob ? undefined : '1 1 0' })}>{line}</span>
+  const foot = s.mob ? (
+    <div style={col(u(12), { alignItems: 'flex-start', boxSizing: 'border-box', background: PAPER_WHITE, borderRadius: u(24), padding: u(16), minHeight: pill ? u(128) : undefined })}>
+      {lineEl}
+      {pill}
+    </div>
+  ) : (
+    <div style={row(u(16), { justifyContent: 'space-between', boxSizing: 'border-box', minHeight: u(68), background: PAPER_WHITE, borderRadius: s.radiusChip, padding: `${u(10)} ${u(10)} ${u(10)} ${u(24)}` })}>
+      {lineEl}
+      {pill}
+    </div>
+  )
+
+  return (
+    <div style={{ position: 'relative', containerType: 'inline-size', overflow: 'hidden' }}>
+      <div style={{ paddingTop: u(P.top), paddingBottom: u(P.top) }}>
+        <div style={{
+          boxSizing: 'border-box', margin: `0 ${u(P.side)}`, padding: `${u(P.padY)} ${u(P.padX)}`, background: s.box2, borderRadius: u(40),
+          overflow: s.mob ? 'visible' : 'hidden', ...WRAP_LONG,
+        }}>
+          <div style={s.mob ? col(u(40)) : { display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', columnGap: u(40) }}>
+            {left}
+            {right}
+          </div>
+          <div style={{ marginTop: u(28) }}>{foot}</div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function Calendar({ s }) {
   // The month on show, as an offset into `s.calMonths`, and the day the visitor
   // has picked. Both inert on the editor canvas, where the section is a picture
@@ -18714,9 +19938,10 @@ function Calendar({ s }) {
     // Lattice's layout-1 calendar is a block of its own (LatticeCalendar), after the seam: the month, the pick
     // and the arrows are `Calendar`'s and go over in `g`, so the published controls are the one seam in a new
     // picture. The day's handler is the Lime block's (a blocked day has none; the lit day unlights on a second click).
-    if (s.limeTree && s.lattice) {
+    // Paperback's (PaperbackCalendar) is the same hand-over in a third picture.
+    if (s.limeTree && (s.lattice || s.paperback)) {
       const pick = (c) => (s.live && !blocked(c) ? () => setSel((v) => (v === c.iso ? '' : c.iso)) : undefined)
-      return <LatticeCalendar s={s} g={{ month, cur, line, step, pick }} />
+      return s.paperback ? <PaperbackCalendar s={s} g={{ month, cur, line, step, pick }} /> : <LatticeCalendar s={s} g={{ month, cur, line, step, pick }} />
     }
 
     // Lime — the scheduler frames 964:58595 / 986:39884 / 986:39896, as a block
@@ -21552,6 +22777,184 @@ function LatticeMap({ s, g }) {
   )
 }
 
+// Paperback · Events map layout 1 (1:2822 · 1:11471 · 1:12654, 983 tall at every width): an indigo band (Scheme 3, the section's own
+// ground) under a confetti field, the town at 120.96 / 75 / 48 with three sparkles hung off its end, a yellow radius pill (right of the
+// head at 1440 and 768, under it at 390), a lilac card turned -2 degrees and a panel of five white pill rows with a pager. At 1440 the card is
+// a rings art over a white foot (the base and the terms) beside the panel; at 768 and 390 it is the foot alone, strip-shaped, over the
+// panel, with the `home turf` arrow's last 16px showing over its top edge, as the frames draw it. The bio's stage (`containerType:
+// inline-size`, frame px verbatim in cqw, the vertical insets in a child, `vm.pad = '0px <surplus>'`); the page, the pairing and the pager's
+// window are `EventsMap`'s seam, handed over in `g`. Not drawn (call 1): the scripts `Shows / coverage` and `home turf` (no field carries
+// either; the first's seat stays as padding), the pink `Sold out` chip (no field), and `Tickets` on a row with no address (JP-045).
+// `05 of 12` is derived. The real map is not mounted: the frame draws art. The head's fit reads Bricolage's table x `fit`, the face's
+// optical size (the table is read at 1000px, where it is tightest; the head sets 7.5% / 3.3% wider at 48 / 75px, measured on *Wolverhampton*).
+const PAPER_MAP = {
+  desktop: {
+    fw: 1440, top: 130.36, foot: 129.97, side: 48.96, seat: 56.5, h2: 120.96, free: 1100, gap: 28, colGap: 28.03, card: [657, 539], spark: [[11.98, -0.5], [57.98, -24.5], [68.98, 28.5]],
+    arrow: [323, 152.5], footH: 92, baseT: 26, baseLh: 31, dayT: 30, titleT: 22, tileGap: 16, art: true, fit: 1,
+  },
+  tablet: {
+    fw: 768, top: 97.48, foot: 97.5, side: 26.11, seat: 53.65, h2: 75, free: 470, gap: 28, colGap: 28, card: [716, 92], spark: [[12.1, 2.35], [58.1, -21.65], [69.1, 31.35]],
+    arrow: [356, -74], footH: 92, baseT: 26, baseLh: 31, dayT: 27, titleT: 22, tileGap: 16, art: false, fit: 1.033,
+  },
+  mobile: {
+    fw: 390, top: 82.34, foot: 82.36, side: 24, seat: 51.75, h2: 48, free: 262, gap: 28, colGap: 28, card: [342, 89], spark: [[11.97, 4.25], [57.97, -19.75], [68.97, 33.25]],
+    arrow: [169, -76], footH: 89, baseT: 24, baseLh: 28, dayT: 25, titleT: 20, tileGap: 10, art: false, fit: 1.0745,
+  },
+}
+function PaperbackMap({ s, g }) {
+  const { shown, at0, lit, onPick, win, onPage, onStep } = g
+  const dev = s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop'
+  const P = PAPER_MAP[dev]
+  const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
+  const O = s.onScheme
+  const ink = O[8].bg
+  const yellow = O[1].box2
+  const label = (size, extra) => ({ fontFamily: s.label, fontWeight: 700, fontSize: size, letterSpacing: '-0.01em', ...extra })
+  const display = (size, lh, extra) => ({ fontFamily: s.display, fontWeight: 800, fontSize: size, lineHeight: lh, letterSpacing: '-0.035em', ...extra })
+  // The date tiles' colours by the gig's place in the whole list, as the frame's five: lilac, yellow, pink, cyan, magenta.
+  const TILES = [O[6].bg, yellow, O[5].bg, O[2].box3, O[7].bg]
+
+  // The town, fitted to its widest word, with the three sparkles hung off the end of whatever the words hug.
+  const sparkle = (i, size, fill) => (
+    <PaperbackSparkle size={16} fill={fill} aria-hidden style={{
+      position: 'absolute', pointerEvents: 'none', left: `calc(100% + ${u(P.spark[i][0])})`, top: u(P.spark[i][1]), width: u(size), height: u(size),
+    }} />
+  )
+  const h2 = String(s.title || '').trim() ? (
+    <div style={{ position: 'relative', width: 'fit-content', maxWidth: u(P.free) }}>
+      <h2 style={{
+        margin: 0, color: s.tx, ...display(s.titleWordEms ? `min(${u(P.h2)}, calc(${u(P.free)} / ${(s.titleWordEms * P.fit).toFixed(3)}))` : u(P.h2), 0.82),
+      }}>{s.title}</h2>
+      {sparkle(0, 48, yellow)}
+      {sparkle(1, 29, O[5].bg)}
+      {sparkle(2, 18, PAPER_WHITE)}
+    </div>
+  ) : null
+  const head = <div style={{ paddingTop: u(P.seat), minWidth: 0 }}>{h2}</div>
+  const pill = (
+    <span style={{
+      ...label(u(16)), flex: 'none', alignSelf: s.mob ? 'flex-start' : 'flex-end', boxSizing: 'border-box', height: u(44), padding: `0 ${u(16)}`, display: 'inline-flex',
+      alignItems: 'center', borderRadius: s.radiusChip, background: yellow, color: ink, whiteSpace: 'nowrap',
+    }}>{s.mapRadius}</span>
+  )
+
+  // The lilac card: the rings art over the white foot at 1440, the foot alone narrow (its arrow peeks over the top edge).
+  const foot = !!(s.mapBase || s.mapTerms)
+  const card = (
+    <div style={{
+      position: 'relative', overflow: 'hidden', boxSizing: 'border-box', transform: 'rotate(-2deg)', borderRadius: u(24), background: O[6].bg,
+      ...(P.art ? { height: u(P.card[1]), display: 'flex', flexDirection: 'column' } : {}),
+    }}>
+      {P.art && (
+        <div style={{ position: 'relative', flex: '1 1 0', minHeight: 0, overflow: 'hidden' }}>
+          <PaperbackArt name="rings" aria-hidden style={{ position: 'absolute', left: 0, top: 0, width: u(657), height: u(447) }} />
+        </div>
+      )}
+      {foot && (
+        <div style={{
+          position: 'relative', flex: 'none', boxSizing: 'border-box', minHeight: u(P.footH), padding: `${u(20)} ${u(24)}`, background: PAPER_WHITE, overflow: 'hidden',
+        }}>
+          {!!s.mapBase && <div style={display(u(P.baseT), u(P.baseLh), { color: s.ac, overflowWrap: 'anywhere' })}>{s.mapBase}</div>}
+          {!!s.mapTerms && <div style={label(u(14), { lineHeight: u(16.8), marginTop: s.mapBase ? u(4) : 0, color: s.bg, overflowWrap: 'anywhere' })}>{s.mapTerms}</div>}
+        </div>
+      )}
+      <PaperbackArt name="arrowBlack" aria-hidden style={{ position: 'absolute', left: u(P.arrow[0]), top: u(P.arrow[1]), width: u(90), height: u(90), pointerEvents: 'none' }} />
+    </div>
+  )
+
+  // A gig row: a coloured date tile, the venue over `City · time`, and the tickets chip where the row has an address (JP-045). The lit row
+  // (live, the pairing) is the white row ringed in the page's yellow.
+  const rows = shown.map((gig, i) => {
+    const link = extLink(s, gig.url)
+    const Tag = link ? 'a' : 'div'
+    const on = lit(i)
+    return (
+      <Tag key={i} {...link} onClick={onPick(i)} style={{
+        ...row(u(P.tileGap)), boxSizing: 'border-box', padding: `${u(12)} ${u(16)}`, background: PAPER_WHITE, borderRadius: u(24), textDecoration: 'none', color: ink,
+        cursor: s.live ? 'pointer' : undefined, boxShadow: on ? `inset 0 0 0 ${u(3)} ${yellow}` : undefined,
+      }}>
+        <span style={{
+          flex: 'none', boxSizing: 'border-box', width: u(64), minHeight: u(P.dayT * 0.9 + 30), padding: `${u(6)} 0 ${u(8.4)}`, borderRadius: u(14), background: TILES[(at0 + i) % TILES.length], textAlign: 'center',
+        }}>
+          <span style={label(u(13), { display: 'block', lineHeight: u(15.6), color: ink })}>{gig.month}</span>
+          <span style={display(u(P.dayT), 0.9, { display: 'block', marginTop: u(0), color: ink })}>{gig.day}</span>
+        </span>
+        <span style={col(u(4), { flex: '1 1 0', minWidth: 0 })}>
+          <span style={display(u(P.titleT), u(P.titleT), { color: ink, overflowWrap: 'break-word' })}>{gig.venue}</span>
+          {!!gig.line && <span style={label(u(14), { lineHeight: u(16.8), color: s.bg, overflowWrap: 'anywhere' })}>{gig.line}</span>}
+        </span>
+        {!!gig.url && (
+          <span style={{
+            ...label(u(13)), flex: 'none', boxSizing: 'border-box', height: u(26), padding: `0 ${u(10)}`, display: 'inline-flex', alignItems: 'center',
+            borderRadius: s.radiusChip, background: ink, color: PAPER_WHITE, whiteSpace: 'nowrap',
+          }}>Tickets</span>
+        )}
+      </Tag>
+    )
+  })
+
+  // The pager: a white round arrow, the page rings (the current one yellow) and a yellow round arrow; it draws only past one page.
+  const disc = (key, child, { bg, onClick }) => (
+    <span key={key} onClick={onClick} style={{
+      flex: 'none', width: u(44), height: u(44), borderRadius: '50%', background: bg, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+      cursor: onClick ? 'pointer' : undefined,
+    }}>{child}</span>
+  )
+  const pager = win.labels.length > 0 ? (
+    <div style={row(0, { justifyContent: 'space-between' })}>
+      {disc('prev', paperArrow(u, true, ink), { bg: PAPER_WHITE, onClick: onStep && (() => onStep(-1)) })}
+      <div style={row(u(6))}>
+        {win.labels.map((p, i) => (
+          <span key={i} onClick={onPage && p !== '…' ? () => onPage(p) : undefined} style={{
+            ...label(u(15)), boxSizing: 'border-box', flex: 'none', width: u(40), height: u(40), display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+            borderRadius: '50%', border: `${u(2)} solid ${i === win.at ? yellow : 'rgba(255, 255, 255, 0.5)'}`, background: i === win.at ? yellow : 'transparent',
+            color: i === win.at ? ink : s.tx, cursor: onPage && p !== '…' ? 'pointer' : undefined,
+          }}>{p}</span>
+        ))}
+      </div>
+      {disc('next', paperArrow(u, false, ink), { bg: yellow, onClick: onStep && (() => onStep(1)) })}
+    </div>
+  ) : null
+
+  const two = (n) => String(n).padStart(2, '0')
+  const panel = (
+    <div style={col(u(14), { minWidth: 0 })}>
+      {(!!s.mapListLabel || shown.length > 0) && (
+        <div style={row(u(12), { justifyContent: 'space-between', ...label(u(18), { lineHeight: u(21.6), color: s.tx }) })}>
+          <span style={{ minWidth: 0, overflowWrap: 'anywhere' }}>{s.mapListLabel}</span>
+          {shown.length > 0 && <span style={{ flex: 'none', whiteSpace: 'nowrap' }}>{`${two(shown.length)} of ${two(s.gigs.length)}`}</span>}
+        </div>
+      )}
+      {rows.length > 0 ? (
+        <div style={col(u(10))}>{rows}</div>
+      ) : (
+        <div style={{ ...label(u(16), { color: s.bg }), background: PAPER_WHITE, borderRadius: u(24), padding: `${u(24)} ${u(16)}` }}>No upcoming gigs.</div>
+      )}
+      {pager}
+    </div>
+  )
+
+  return (
+    <div style={{ position: 'relative', containerType: 'inline-size', overflow: 'hidden' }}>
+      <PaperbackArt name={dev === 'desktop' ? 'confettiMap' : dev === 'tablet' ? 'confettiMapTablet' : 'confettiMapMobile'} aria-hidden style={{
+        position: 'absolute', left: 0, top: 0, width: u(P.fw), height: u(983), pointerEvents: 'none',
+      }} />
+      <div style={{ position: 'relative', paddingTop: u(P.top), paddingBottom: u(P.foot) }}>
+        <div style={col(u(P.gap), { margin: `0 ${u(P.side)}` })}>
+          <div style={s.mob ? col(u(14)) : row(u(24), { alignItems: 'flex-end', justifyContent: 'space-between' })}>
+            {head}
+            {pill}
+          </div>
+          <div style={s.narrow ? col(u(P.gap)) : { display: 'grid', alignItems: 'start', columnGap: u(P.colGap), gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)' }}>
+            {card}
+            {panel}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function EventsMap({ s }) {
   // The page of gigs, and the gig the visitor has picked out on the map. Both
   // are inert on the editor canvas, where the section is a picture of a website
@@ -21597,6 +23000,15 @@ function EventsMap({ s }) {
     // Lattice's layout-1 map is a block of its own (LatticeMap), after the seam: the page, the
     // pairing and the pager's window above are shared whole, and the block is the picture. Its
     // window is the compact one at every width (the frames' own `1 2 3`).
+    // Paperback's (1:2822 · 1:11471 · 1:12654) is a block of its own as well, handed the same seam, and the gig's place in the whole list
+    // (`at0`) so a date tile keeps its colour as the pager turns.
+    if (s.limeTree && s.paperback) {
+      return <PaperbackMap s={s} g={{
+        shown, at0: pg * perPage, lit, onPick, win: pageWindow(pages, pg, true),
+        onPage: s.live ? (label) => setPage(Number(label) - 1) : undefined,
+        onStep: s.live ? (dir) => setPage(Math.max(0, Math.min(pages - 1, pg + dir))) : undefined,
+      }} />
+    }
     if (s.limeTree && s.lattice) {
       return <LatticeMap s={s} g={{
         shown, lit, onPick, win: pageWindow(pages, pg, true),
@@ -25548,6 +26960,162 @@ function LatticeTestimonials({ s, g }) {
   )
 }
 
+// Paperback's layout-1 testimonials (Batch 2 file, 1:3354 · 1:12016 · 1:13198, 730 tall at all three widths; plans/paperback/layout-1.md,
+// section 10). A pale-yellow band (Scheme 1, the section's own ground) with a yellow wave floor (the frames' one 310-tall vector, its curves
+// stretched to the width), two outline trophies, and a white card turned -2 degrees holding the review: a Caveat script (`quotes.when`, turned
+// -3 degrees), the quote in Bricolage ExtraBold, a pink `who` chip and a cyan `role` chip. A star disc turned 8 degrees hangs off the card's
+// top-right corner and three sparkles stand at its lower-left; two black arrow discs flank it at 1440 and 768 and sit under it, centred, at 390.
+// The bio's stage pattern: frame px verbatim in cqw of a `containerType: inline-size` stage. `q`, `paging` and `step` are the seam's, so the
+// arrows page the published tab (wrapping at both ends, not drawn at one review) and the ring text on the disc, which no field carries, is not
+// drawn (call 1, the media's disc). Trophy centres are the design context's `left` / `top` plus half the wrapper; the card's content is a flow
+// column (padding, then 20 between the script, the quote and the chips) so a longer review grows the card, and the stage holds the 730 band.
+const PAPER_TESTI = {
+  desktop: {
+    fw: 1440, h: 730, gut: 48.96, cardW: 720, cardH: 273, padX: 40, padT: 40, padB: 40, scriptFs: 28, scriptH: 41, scriptBox: 27, quoteFs: 48, disc: [124, 16, 8],
+    spark: [[-54, 245], [-12, 223], [-2, 271]], trophy: [[256.6, 145.0], [1164.6, 605.0]], fit: 1.12,
+  },
+  tablet: {
+    fw: 768, h: 730, gut: 26.11, cardH: 240, padX: 30, padT: 34, padB: 34, scriptFs: 25, scriptH: 38, scriptBox: 24, quoteFs: 38, disc: [124, 16, 8],
+    spark: [[-54, 212], [-12, 190], [-2, 238]], trophy: [[162.5, 145.0], [600.1, 605.0]], fit: 1.12,
+  },
+  mobile: {
+    fw: 390, h: 730, gut: 24, cardH: 244, padX: 20, padT: 28, padB: 28, scriptFs: 23, scriptH: 36, scriptBox: 22, quoteFs: 32, disc: [104, 38, -2],
+    spark: [[-54, 216], [-12, 194], [-2, 242]], trophy: [[109.6, 145.0], [282.6, 605.0]], fit: 1.12,
+  },
+}
+function PaperbackTestimonials({ s, g }) {
+  const { q, paging, step } = g
+  const dev = s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop'
+  const P = PAPER_TESTI[dev]
+  const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
+  const ink = s.tx
+  const cyan = s.onScheme[2].box3
+  const yellow = s.box2
+
+  // A sized box for a piece of art: the art fills it (the svg's own width and height are overridden by the style).
+  // `key` rides in `extra` for the sparkles' map and goes on the element, not into the style (it was spread into
+  // `style` and React warned of an unkeyed list on every card: the 2026-11-23 sweep's published check).
+  const art = (w, h, node, { key, ...extra } = {}) => (
+    <div key={key} aria-hidden style={{ position: 'absolute', width: u(w), height: u(h), pointerEvents: 'none', ...extra }}>{node}</div>
+  )
+  const fill = { width: '100%', height: '100%' }
+  const trophy = (size, [cx, cy], turn) => art(size, size, <PaperbackArt name="trophy" style={fill} />, {
+    left: u(cx - size / 2), top: u(cy - size / 2), transform: `rotate(${turn}deg)`,
+  })
+
+  const chip = (label, bg, fg, key) => (
+    <span key={key} style={{
+      boxSizing: 'border-box', minHeight: u(26), maxWidth: '100%', minWidth: 0, display: 'inline-flex', alignItems: 'center',
+      padding: `${u(5)} ${u(10)}`, borderRadius: s.radiusChip, background: bg, color: fg,
+      fontFamily: s.label, fontWeight: 700, fontSize: u(13), lineHeight: 1.2, letterSpacing: '-0.01em', overflowWrap: 'anywhere',
+    }}>{label}</span>
+  )
+
+  const [D, dr, dt] = P.disc
+  const disc = (
+    <div style={{ position: 'absolute', width: u(D), height: u(D), right: u(dr - D / 2), top: u(dt - D / 2), transform: 'rotate(8deg)', zIndex: 2 }}>
+      <svg aria-hidden viewBox="0 0 124 124" fill="none" style={{ display: 'block', ...fill, overflow: 'visible' }}>
+        <circle cx="62" cy="62" r="60.14" fill={s.ac} stroke={ink} strokeWidth="1.86" />
+        <circle cx="62" cy="62" r="31" fill={PAPER_WHITE} stroke={ink} strokeWidth="1.86" />
+        <PaperbackArt name="star" x="45.725" y="45.1" width="32.55" height="31" />
+      </svg>
+    </div>
+  )
+
+  const sparkles = [[44, yellow], [26, s.ac], [16, PAPER_WHITE]].map(([size, fillC], i) => art(size, size,
+    // Seated off the card's foot (the frame's top less its height), so a longer review keeps them at the lower-left corner.
+    <PaperbackSparkle size={size} fill={fillC} ink={ink} style={fill} />, { key: i, left: u(P.spark[i][0]), bottom: u(P.cardH - P.spark[i][1] - size) }))
+
+  const body = q ? (
+    <>
+      {!!q.when && (
+        // The frame's 640-wide script box, turned about its own centre inside a seat as tall as the turn leaves it.
+        <div style={{ position: 'relative', height: u(P.scriptH), flex: 'none' }}>
+          <div style={{
+            position: 'absolute', left: 0, top: 0, width: '100%', height: u(P.scriptBox), transform: 'rotate(-3deg)',
+            fontFamily: s.script, fontWeight: 700, fontSize: u(P.scriptFs), lineHeight: 0.95, letterSpacing: '-0.01em', whiteSpace: 'nowrap', color: s.text3,
+          }}>{q.when}</div>
+        </div>
+      )}
+      {!!q.quote && (
+        <div style={{ containerType: 'inline-size', minWidth: 0, fontSize: u(P.quoteFs) }}>
+          <p style={{
+            margin: 0, fontFamily: s.display, fontWeight: 800, lineHeight: 0.9, letterSpacing: '-0.035em', color: ink, overflowWrap: 'break-word',
+            fontSize: q.wordEms ? `min(1em, calc(100cqi / ${q.wordEms}))` : '1em',
+          }}>{q.quote}</p>
+        </div>
+      )}
+      {(!!q.who || !!q.role) && (
+        <div style={row(u(8), { flexWrap: 'wrap', minWidth: 0, alignItems: 'flex-start' })}>
+          {!!q.who && chip(q.who, s.ac, PAPER_WHITE, 0)}
+          {!!q.role && chip(q.role, cyan, ink, 1)}
+        </div>
+      )}
+    </>
+  ) : (
+    <span style={{ fontFamily: s.label, fontWeight: 600, fontSize: u(16), lineHeight: 1.5, color: ink }}>No reviews yet.</span>
+  )
+
+  const card = (
+    <div style={{
+      position: 'relative', boxSizing: 'border-box', minWidth: 0, background: PAPER_WHITE, borderRadius: u(24),
+      padding: `${u(P.padT)} ${u(P.padX)} ${u(P.padB)}`, transform: 'rotate(-2deg)', ...col(u(20)),
+      ...(dev === 'desktop' ? { width: u(P.cardW), justifySelf: 'center' } : { width: '100%' }),
+    }}>
+      {body}
+      {disc}
+      {sparkles}
+    </div>
+  )
+
+  const arrowDisc = (back, onClick) => (
+    <span onClick={onClick} style={{
+      width: u(48), height: u(48), flex: 'none', borderRadius: '50%', background: ink, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+      cursor: onClick ? 'pointer' : undefined,
+    }}>
+      <svg aria-hidden viewBox="0 0 14 14" fill="none" style={{ display: 'block', width: u(14), height: u(14), overflow: 'visible' }}>
+        <path d={back ? 'M13 7H2M6.5 11.5L2 7L6.5 2.5' : 'M1 7H12M7.5 11.5L12 7L7.5 2.5'} stroke={PAPER_WHITE} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    </span>
+  )
+  const prev = paging ? arrowDisc(true, step(-1)) : null
+  const next = paging ? arrowDisc(false, step(1)) : null
+
+  return (
+    // The wave floor is the *outer* box's background, full-bleed like the hero's waves (it reaches over the root's `s.surplus` padding and the stage
+    // inside is that far in from each edge, so a published window wider than the frame keeps the floor to the page's edges). The frame's 310-tall vector, drawn `fw` x 310 with its aspect
+    // free (`preserveAspectRatio='none'`): the 768 and 390 curves are the 1440 one's x scaled, so at `100% auto` the floor is 310 tall at the frame's
+    // own width at every width. A background, not a node, so a quote that grows into it is a card over a floor, not a collision (`limits.mjs`).
+    <div style={{
+      position: 'relative', overflow: 'hidden', boxSizing: 'border-box', margin: `0 calc(-1 * ${s.surplus})`, padding: `0 ${s.surplus}`, backgroundRepeat: 'no-repeat', backgroundPosition: 'left bottom', backgroundSize: '100% auto',
+      backgroundImage: `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='${P.fw}' height='310' viewBox='0 0 1440 310' preserveAspectRatio='none'><path d='M0 310V100C180 100 180 0 360 0C540 0 540 180 720 180C900 180 900 20 1080 20C1260 20 1260 120 1440 120V310H0Z' fill='${yellow}'/></svg>`)}")`,
+    }}>
+    <div style={{ position: 'relative', containerType: 'inline-size', overflow: 'hidden' }}>
+      {trophy(110, P.trophy[0], -12)}
+      {art(90, 90, <PaperbackArt name="trophy" style={fill} />, { left: u(P.trophy[1][0] - 45), top: `calc(100% - ${u(P.h - P.trophy[1][1] + 45)})`, transform: 'rotate(10deg)' })}
+      <div style={{ position: 'relative', minHeight: u(P.h), display: 'flex', alignItems: 'center' }}>
+        {dev === 'mobile' ? (
+          <div style={col(u(20), { width: '100%', alignItems: 'center', minWidth: 0 })}>
+            <div style={{ width: `calc(100% - ${u(2 * P.gut)})`, minWidth: 0 }}>{card}</div>
+            {paging && <div style={row(u(12))}>{prev}{next}</div>}
+          </div>
+        ) : (
+          // Three tracks at every wide width, so the card keeps its seat at one review: the arrows are not drawn but their 48 are held.
+          <div style={{
+            display: 'grid', width: '100%', alignItems: 'center', columnGap: u(24), minWidth: 0, boxSizing: 'border-box',
+            padding: `0 ${u(P.gut)}`, gridTemplateColumns: `${u(48)} minmax(0, 1fr) ${u(48)}`,
+          }}>
+            <span style={{ display: 'flex' }}>{prev}</span>
+            {card}
+            <span style={{ display: 'flex' }}>{next}</span>
+          </div>
+        )}
+      </div>
+    </div>
+    </div>
+  )
+}
+
 // v0 — Testimonials layout 1 · Stacked tag card (§10.2 reference design): one
 // cream quote card standing on two rotated, ink-outlined coloured cards, with
 // the pager arrows thrown out to the page's own gutters.
@@ -25613,6 +27181,8 @@ function Testimonials({ s }) {
     // Lattice's layout-1 testimonials are a block of their own (LatticeTestimonials), after the seam:
     // `q`, `paging` and `step` (the arrows, which wrap at both ends and are not drawn at one review) go over.
     if (s.limeTree && s.lattice) return <LatticeTestimonials s={s} g={{ q, paging, step }} />
+    // Paperback's layout-1 testimonials are a block of their own too (PaperbackTestimonials), after the seam, the same hand-over.
+    if (s.limeTree && s.paperback) return <PaperbackTestimonials s={s} g={{ q, paging, step }} />
 
     // Lime (964:58597 · 986:39886 · 986:39898) — the ninth Lime block, after the
     // seam as the gallery's and the repertoire's are: `n`, `at`, `q`, `go`,
@@ -28229,6 +29799,218 @@ function LatticeForm({ s, g }) {
   )
 }
 
+// Paperback · layout 1 (plans/paperback/layout-1.md, section 9; frames 1:3269 · 1:11931 · 1:13112, 687 / 897.6 / 1192.7 tall). One 40-radius card on the white
+// page made of an indigo panel (Scheme 3: the avatar, the name over the role, the head, three ticked promises, a clipped indigo blob) and an orange form
+// (Scheme 4: two pairs of white 8-radius boxes in a 2px ink ring, a 999-radius chip row with the lit one ink, a 24-radius message box and the split ink
+// Book pill), with a yellow chat-bubble disc turned 8 degrees on the form's top-right corner (nothing clips it). The halves stand side by side at 1440 (the
+// panel a fixed 447.34) and stacked at 768 and 390. The bio's stage pattern: frame px verbatim in cqw, vertical insets in the stage's child, `vm.pad =
+// '0px <surplus>'`. Not drawn: nothing the standing rules remove (the frames print no eyebrow, script or ring text). `EnquiryForm` owns the live seam (the
+// typed boxes, the chip, the errors, the sent state, the mailto `Pill`), so it is handed over in `g` and nothing here is a hook; there is no <form>, ever
+// (notes/form.md).
+// `fit`: the head's table is read at 1000px, where the face sets narrowest; a word shrunk to 20-52px sets 7-12% wider (measured over five words: 1.068 at 52,
+// 1.083 at 42, 1.096 at 34, 1.117 at 20), so the fit is the widest of them: the seed's word never shrinks, and a longer one stays whole.
+const PAPER_FORM = {
+  desktop: {
+    fw: 1440, top: 81.8, side: 48.96, panelW: 447.34, panelX: 40, panelY: 40, formX: 40, formY: 40, rowGap: 16, headFs: 52, blob: [227.34, 303.39],
+    bubble: [110, 64.47, 21, 15], fit: 1.12, sentH: 443.39,
+  },
+  tablet: {
+    fw: 768, top: 24, side: 26.11, panelX: 30, panelY: 34, formX: 30, formY: 34, rowGap: 16, headFs: 42, blob: [495.77, 118.22],
+    bubble: [90, 52.08, 59, -1], fit: 1.12, sentH: 443.39,
+  },
+  mobile: {
+    fw: 390, top: 24, side: 24, panelX: 20, panelY: 28, formX: 20, formY: 28, rowGap: 28, headFs: 34, blob: [122, 121.69],
+    bubble: [70, 39.67, 27, -5], fit: 1.12, sentH: 746.97,
+  },
+}
+// The frame's placeholder is #757575 on white, which is the ink (#0B0B0B) at this strength: `index.css`'s `--ph` and the canvas span draw the same.
+const PAPER_FORM_PH = 0.565
+function PaperbackForm({ s, g }) {
+  const { at, setAt, msg, setMessage, ti, setType, showTypes, errs, msgBad, sent, setSent, Pill, pillLink, onSubmit, cp, pid } = g
+  const dev = s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop'
+  const P = PAPER_FORM[dev]
+  const desk = !s.narrow
+  const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
+  const ink = s.tx
+  const orange = s.onScheme[4].bg
+  const indigo = s.onScheme[3].bg
+  const yellow = s.onScheme[1].box2
+  const face = (size, weight, extra) => ({ fontFamily: s.label, fontWeight: weight, fontSize: size, letterSpacing: '-0.01em', ...extra })
+
+  const label = (t, extra) => <span style={face(u(14), 700, { display: 'block', lineHeight: 1.2, color: ink, ...extra })}>{t}</span>
+  // One box, drawn once for both modes: white, a 2px ring of ink at radius 8, Figtree SemiBold 16. A refused box changes colour and weight at once
+  // (no palette has a red): the ring and a 2px inset of the page's pink, 4px in all, which the 52 holds.
+  const box = (bad, extra) => ({
+    boxSizing: 'border-box', width: '100%', margin: 0, height: u(52), padding: `0 ${u(18)}`, outline: 'none',
+    border: `${u(2)} solid ${bad ? s.ac : ink}`, borderRadius: u(8), background: s.bg, color: ink,
+    boxShadow: bad ? `inset 0 0 0 ${u(2)} ${s.ac}` : undefined,
+    ...face(u(16), 600, { lineHeight: 'normal' }), ...extra,
+  })
+  const hint = (t) => (
+    <span style={{ opacity: PAPER_FORM_PH, minWidth: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t}</span>
+  )
+
+  const field = (f, i) => {
+    const bad = !!(errs && errs.f[i])
+    return (
+      <div key={i} style={col(u(6), { minWidth: 0 })}>
+        {label(f.label)}
+        {s.live ? (
+          <input
+            {...cp(i)}
+            value={at(i)} placeholder={f.placeholder} aria-label={f.label}
+            onChange={(e) => setAt(i, e.target.value)}
+            type={f.kind === 'email' ? 'email' : 'text'}
+            inputMode={f.kind === 'number' || f.kind === 'date' ? 'numeric' : undefined}
+            aria-invalid={bad || undefined}
+            style={{ ...box(bad), '--ph': PAPER_FORM_PH }}
+          />
+        ) : (
+          <span style={box(bad, { display: 'flex', alignItems: 'center' })}>{hint(f.placeholder)}</span>
+        )}
+      </div>
+    )
+  }
+  const fieldRow = (fs, r) => (
+    <div key={r} style={{
+      display: 'grid', gap: u(s.mob ? 28 : 16), gridTemplateColumns: s.mob ? 'minmax(0, 1fr)' : 'repeat(2, minmax(0, 1fr))',
+    }}>{fs.map((f, j) => field(f, r * 2 + j))}</div>
+  )
+
+  const submit = (extra) => (
+    <PaperbackPill s={s} u={u} bg={ink} fg={PAPER_WHITE} label={s.formBtn} as={Pill} tagProps={{ ...pillLink, onClick: onSubmit }} style={{ cursor: onSubmit ? 'pointer' : undefined, ...extra }} />
+  )
+
+  // The panel's head: Bricolage ExtraBold in the content box, wrapping between words and shrinking only when its widest word would outrun the box
+  // (`vm.titleWordEms`, the table less the tracking, times the per-width `fit` the table's 1000px reading needs).
+  const head = (size, extra) => ({
+    margin: 0, fontFamily: s.display, fontWeight: 800, lineHeight: 0.86, letterSpacing: '-0.035em', color: PAPER_WHITE, overflowWrap: 'break-word', ...extra, fontSize: size,
+  })
+  const nameLine = String(s.brand || '').trim()
+  const roleLine = String(s.kicker || '').trim()
+  const panel = (
+    <div style={{
+      position: 'relative', boxSizing: 'border-box', background: indigo, overflow: 'hidden', minWidth: 0,
+      borderRadius: desk ? `${u(40)} 0 0 ${u(40)}` : `${u(40)} ${u(40)} 0 0`, ...(desk ? { width: u(P.panelW), flex: 'none' } : null),
+    }}>
+      <PaperbackArt name="blobIndigo" width={u(360)} height={u(360)} aria-hidden style={{ position: 'absolute', pointerEvents: 'none', left: u(P.blob[0]), top: u(P.blob[1]) }} />
+      <div style={col(u(24), { position: 'relative', boxSizing: 'border-box', padding: `${u(P.panelY)} ${u(P.panelX)}`, minWidth: 0 })}>
+        <div style={row(u(12), { minWidth: 0 })}>
+          <span style={{ width: u(58), height: u(58), flex: 'none', boxSizing: 'border-box', border: `${u(3)} solid ${PAPER_WHITE}`, borderRadius: '50%', overflow: 'hidden', display: 'block' }}>
+            <Photo s={s} ink={ink} initialsSize={Math.round(20 * (P.fw === 1440 ? 0.82 : 1))} />
+          </span>
+          {(nameLine || roleLine) && (
+            <span style={col(u(1), { minWidth: 0, height: u(38), color: PAPER_WHITE })}>
+              {nameLine && <span style={face(u(16), 700, { lineHeight: u(19.2), overflowWrap: 'anywhere' })}>{nameLine}</span>}
+              {roleLine && <span style={face(u(13), 700, { lineHeight: u(15.6), opacity: 0.8, overflowWrap: 'anywhere' })}>{roleLine}</span>}
+            </span>
+          )}
+        </div>
+        {!!String(s.title || '').trim() && (
+          <div style={{ containerType: 'inline-size', minWidth: 0, fontSize: u(P.headFs) }}>
+            <h2 style={head(s.titleWordEms ? `min(1em, calc(100cqi / ${(s.titleWordEms * P.fit).toFixed(3)}))` : '1em')}>{s.title}</h2>
+          </div>
+        )}
+        {s.formPromises.length > 0 && (
+          <div style={col(u(10), { minWidth: 0 })}>
+            {s.formPromises.map((p, i) => (
+              <div key={i} style={row(u(10), { alignItems: 'flex-start', minWidth: 0 })}>
+                <span aria-hidden style={{
+                  flex: 'none', width: u(24), height: u(24), borderRadius: '50%', background: yellow, color: ink, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontFamily: "'Times New Roman', Times, serif", fontSize: u(12), lineHeight: 1,
+                }}>✓</span>
+                <span style={face(u(16), 600, { color: PAPER_WHITE, lineHeight: u(24), minWidth: 0, overflowWrap: 'anywhere' })}>{p}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+
+  const [disc, icon, bx, by] = P.bubble
+  const bubble = (
+    <div aria-hidden style={{
+      position: 'absolute', right: `calc(${u(bx)} - ${u(disc / 2)})`, top: `calc(${u(by)} - ${u(disc / 2)})`, width: u(disc), height: u(disc), boxSizing: 'border-box',
+      background: yellow, border: `${u(3)} solid ${ink}`, borderRadius: '50%', transform: 'rotate(8deg)', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none',
+    }}>
+      <PaperbackArt name="chat" width={u(icon)} height={u(icon)} />
+    </div>
+  )
+
+  const form = (
+    <div style={col(u(P.rowGap), {
+      position: 'relative', boxSizing: 'border-box', background: orange, padding: `${u(P.formY)} ${u(P.formX)}`, minWidth: 0,
+      borderRadius: desk ? `0 ${u(40)} ${u(40)} 0` : `0 0 ${u(40)} ${u(40)}`, ...(desk ? { flex: '1 1 0' } : null),
+    })}>
+      {sent ? (
+        // The form half alone; the card and the panel do not move. `sent` is only ever set under s.live, so the canvas never draws it.
+        <div style={col(u(16), { minHeight: u(P.sentH), alignItems: 'flex-start' })}>
+          <h3 style={head(u(P.headFs * 0.8), { color: ink })}>{s.formSentTitle}</h3>
+          <p style={{ ...face(u(16), 600, { lineHeight: 1.5, color: ink }), margin: 0 }}>{s.formSentBody}</p>
+          {/* Plain text, Retro's reason: the fallback for a browser that opened nothing. */}
+          <span style={face(u(16), 700, { lineHeight: 1.5, color: ink, overflowWrap: 'break-word' })}>{s.formEmail}</span>
+          <PaperbackPill s={s} u={u} bg={ink} fg={PAPER_WHITE} label={s.formAgain} as="span" tagProps={{ onClick: () => setSent(false) }} />
+        </div>
+      ) : (
+        <>
+          {s.formRows.map(fieldRow)}
+          {showTypes && (
+            <div style={col(u(8))}>
+              {label(s.formTypeLabel, { height: u(18) })}
+              <div style={row(u(6), { flexWrap: 'wrap', rowGap: u(6) })}>
+                {s.formTypes.map((t, i) => {
+                  const on = i === ti
+                  return (
+                    <span key={i} onClick={s.live ? () => setType(i) : undefined} style={{
+                      ...face(u(15), 700, { lineHeight: 'normal' }), boxSizing: 'border-box', height: u(44), padding: `0 ${u(16)}`, display: 'inline-flex', alignItems: 'center',
+                      border: `${u(2)} solid ${ink}`, borderRadius: s.radiusChip, background: on ? ink : s.bg, color: on ? PAPER_WHITE : ink,
+                      whiteSpace: 'nowrap', cursor: s.live ? 'pointer' : undefined,
+                    }}>{t}</span>
+                  )
+                })}
+              </div>
+            </div>
+          )}
+          <div style={col(u(6))}>
+            {label(s.formMsgLabel)}
+            {s.live ? (
+              <textarea
+                {...cp('msg')}
+                value={msg} placeholder={s.formMessage} aria-label={s.formMsgLabel}
+                onChange={(e) => setMessage(e.target.value)}
+                style={{ ...box(msgBad, { display: 'block', height: u(89), borderRadius: u(24), padding: `${u(14)} ${u(18)}`, resize: 'none' }), '--ph': PAPER_FORM_PH }}
+              />
+            ) : (
+              <span style={box(false, { display: 'block', height: u(89), borderRadius: u(24), padding: `${u(14)} ${u(18)}` })}>{hint(s.formMessage)}</span>
+            )}
+          </div>
+          <div style={col(u(P.rowGap), { alignItems: 'flex-start' })}>
+            {submit()}
+            {errs && (
+              <span id={pid} role="alert" style={face(u(14), 700, { lineHeight: 1.3, color: ink })}>
+                {errs?.m?.find(Boolean) || errs?.msg?.m || s.formPrompt}
+              </span>
+            )}
+          </div>
+        </>
+      )}
+      {bubble}
+    </div>
+  )
+
+  return (
+    <div style={{ position: 'relative', containerType: 'inline-size', overflow: 'hidden' }}>
+      <div style={{ paddingTop: u(P.top), paddingBottom: u(P.top) }}>
+        <div style={{ margin: `0 ${u(P.side)}`, display: 'flex', flexDirection: desk ? 'row' : 'column', alignItems: 'stretch', ...WRAP_LONG }}>
+          {panel}
+          {form}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function EnquiryForm({ s }) {
   // What the visitor has typed, gated on `s.live` throughout: on the canvas
   // every box is the span it has always been (§12.7), because a live field
@@ -28342,6 +30124,9 @@ function EnquiryForm({ s }) {
   // Lattice's layout-1 form is a block of its own (LatticeForm), after the seam: every piece of the live
   // seam above goes over in `g`, so the published boxes, chip, mailto, refusal and sent state are the one
   // seam in a new picture.
+  if (s.v0 && s.limeTree && s.paperback) {
+    return <PaperbackForm s={s} g={{ at, setAt, msg, setMessage, ti, setType, showTypes, errs, msgBad, sent, setSent, Pill, pillLink, onSubmit, cp, pid }} />
+  }
   if (s.v0 && s.limeTree && s.lattice) {
     return <LatticeForm s={s} g={{ at, setAt, msg, setMessage, ti, setType, showTypes, errs, msgBad, sent, setSent, Pill, pillLink, onSubmit, cp, pid }} />
   }
@@ -31441,6 +33226,118 @@ function LatticeFooter({ s }) {
   )
 }
 
+// Paperback's layout-1 footer (Batch 2 file, 1:3395 · 1:12081 · 1:13263: 486.59 / 798.47 / 876.27 tall; plans/paperback/layout-1.md, section 11). An indigo band
+// (Scheme 3, the section's own ground) holding the artist's name in Bricolage ExtraBold (44 / 35 / 29, lh .9, -0.035em), the sitemap as a row of white-12% pills
+// that wraps (44 tall, radius 999, Figtree Bold 14, 6 apart both ways), the Book pill (a pink split pill, `PaperbackPill`) under them, a photograph on a 351 x 280
+// keyline card turned -8 degrees (262 wide at 390) in a 300-tall box with an initials disc 10 in from its right edge, three sparkles, and a full-bleed rule at white 30%
+// over the copyright and the credit. The frame's newsletter (`Join the guest list`, an email box, `Subscribe`) is not drawn (call 2: A): its column is the photo's at 1440
+// (centred in the two columns the frame gives the photo and the form), and at 768 and 390 the photo is the last block. Every length is the FRAME's px through `u`, in cqw of
+// a stage (a container as wide as the page content, `s.surplus` in from the root's edges), so the picture holds its proportions on a canvas narrower than the frame.
+// The left block is a flow (name, pills, pill, 24 apart) in a 300-tall seat at 1440, so ten long labels grow the band rather than overflow it.
+// The seam is Lime's restated: `extLink` / `navHref` per link row (read row by row, so the wrap is the frame's), the pill on `bookTo` and dropped with its label.
+// Scheme 3's `tx` is white and `ac` orange here, so the frame's pink, yellow and ink are read off their own schemes (`onScheme`), as PaperbackMap does.
+const PAPER_FOOTER = {
+  desktop: { fw: 1440, gut: 48.96, top: 72, name: 44, photoW: 431.34, cardW: 351, kmFs: 35 },
+  tablet: { fw: 768, gut: 26.11, top: 58, name: 35, photoW: 431, cardW: 351, kmFs: 32 },
+  mobile: { fw: 390, gut: 24, top: 43, name: 29, photoW: 342, cardW: 262, kmFs: 29 },
+}
+const PAPER_FOOT_PILL = 'rgba(255, 255, 255, 0.12)'
+const PAPER_FOOT_RULE = 'rgba(255, 255, 255, 0.3)'
+function PaperbackFooter({ s }) {
+  const dev = s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop'
+  const P = PAPER_FOOTER[dev]
+  const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
+  const O = s.onScheme
+  const pink = O[5].bg
+  const yellow = O[1].box2
+  const ink = O[8].bg
+  const desk = dev === 'desktop'
+  const label = (size, extra) => ({ fontFamily: s.label, fontWeight: 700, fontSize: size, letterSpacing: '-0.01em', ...extra })
+
+  // The name, fitted to its widest word: the container's font-size is the frame's, the text `min(1em, 100cqi / ems)`
+  // (a nested container resets cqw, so the size is set on the container).
+  const name = !!String(s.brand || '').trim() && (
+    <div style={{ containerType: 'inline-size', minWidth: 0, fontSize: u(P.name) }}>
+      <div style={{
+        fontFamily: s.display, fontWeight: 800, lineHeight: 0.9, letterSpacing: '-0.035em', color: s.tx, overflowWrap: 'break-word',
+        fontSize: s.footerWordEms ? `min(1em, calc(100cqi / ${s.footerWordEms}))` : '1em',
+      }}>{s.brand}</div>
+    </div>
+  )
+  // An address the artist typed leaves the page in a new tab, a section id scrolls, and on the canvas both resolve to an <a> with no href at all (`navHref`).
+  const links = s.footerLinks.length > 0 && (
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: u(6), minWidth: 0 }}>
+      {s.footerLinks.map((l, i) => {
+        const ext = extLink(s, l.url)
+        return (
+          <a key={i} {...(ext || { href: navHref(s, l.to) })} style={label(u(14), {
+            display: 'inline-flex', alignItems: 'center', boxSizing: 'border-box', minHeight: u(44), maxWidth: '100%', minWidth: 0, padding: `${u(8)} ${u(16)}`,
+            borderRadius: s.radiusChip, background: PAPER_FOOT_PILL, color: s.tx, cursor: 'pointer', textDecoration: 'none', lineHeight: 1.2, overflowWrap: 'anywhere',
+          })}>{l.label}</a>
+        )
+      })}
+    </div>
+  )
+  // `bookTo` with no self-exclusion filter (`footer` is not in CTA_TARGETS.book); an emptied label drops it.
+  const pill = !!s.footerCta && <PaperbackPill s={s} label={s.footerCta} to={s.bookTo} u={u} bg={pink} fg={PAPER_WHITE} style={{ alignSelf: 'flex-start' }} />
+  const left = (name || links || pill) ? (
+    <div style={{ ...col(u(24), { minWidth: 0 }), ...(desk ? { alignSelf: 'center' } : null) }}>
+      {name}{links}{pill}
+    </div>
+  ) : null
+
+  const at = (size, x, y, node) => (
+    <div aria-hidden style={{ position: 'absolute', left: u(x), top: u(y), width: u(size), height: u(size), pointerEvents: 'none' }}>{node}</div>
+  )
+  const full = { width: '100%', height: '100%' }
+  const photo = (
+    <div style={{
+      position: 'relative', flex: 'none', width: u(P.photoW), height: u(300), ...(desk ? { justifySelf: 'center' } : { alignSelf: 'center' }),
+    }}>
+      <div style={{
+        position: 'absolute', left: u((P.photoW - P.cardW) / 2), top: u(10), width: u(P.cardW), height: u(280), boxSizing: 'border-box',
+        border: `${u(4)} solid ${PAPER_WHITE}`, borderRadius: u(24), overflow: 'hidden', background: pink, transform: 'rotate(-8deg)',
+      }}>
+        <Photo s={s} initialsSize={64} />
+      </div>
+      {s.showBadge === 'show' && (
+        <span aria-hidden style={{
+          position: 'absolute', right: u(10), top: 0, width: u(98), height: u(98), boxSizing: 'border-box', borderRadius: '50%',
+          border: `${u(3)} solid ${PAPER_WHITE}`, background: s.bg, color: s.tx, ...row('0px', { justifyContent: 'center' }),
+          fontFamily: s.display, fontWeight: 800, fontSize: u(P.kmFs), letterSpacing: '-0.035em', lineHeight: 1, whiteSpace: 'nowrap',
+        }}>{s.initials}</span>
+      )}
+      {at(44, 6, 242, <PaperbackSparkle size={44} fill={yellow} ink={ink} style={full} />)}
+      {at(26, 48, 220, <PaperbackSparkle size={26} fill={pink} ink={ink} style={full} />)}
+      {at(16, 58, 268, <PaperbackSparkle size={16} fill={PAPER_WHITE} ink={ink} style={full} />)}
+    </div>
+  )
+
+  return (
+    <div style={{ position: 'relative', containerType: 'inline-size' }}>
+      <div style={{ padding: `${u(P.top)} ${u(P.gut)} 0` }}>
+        {desk ? (
+          // The frame's three 431.36 columns, 24 apart: the name and pills, the photo, and the column the newsletter held, which the photo takes (centred in the two).
+          <div style={{ display: 'grid', gridTemplateColumns: `${u(431.36)} minmax(0, 1fr)`, columnGap: u(24), alignItems: 'center', minHeight: u(300) }}>
+            {left}{photo}
+          </div>
+        ) : (
+          <div style={col(u(24), { minWidth: 0 })}>{left}{photo}</div>
+        )}
+      </div>
+      {/* the rule bleeds to the page's edges, over the root's surplus */}
+      <div style={{
+        boxSizing: 'border-box', margin: `${u(48)} calc(-1 * ${s.surplus}) 0`, padding: `${u(18)} calc(${s.surplus} + ${u(P.gut)}) ${u(32)}`,
+        borderTop: `1px solid ${PAPER_FOOT_RULE}`, ...row(u(16), { alignItems: 'flex-start', justifyContent: 'space-between' }),
+        ...label(u(13), { lineHeight: u(15.6), color: s.tx }),
+      }}>
+        {!!s.copyright && <span style={{ flex: '1 1 0', minWidth: 0, overflowWrap: 'anywhere' }}>{s.copyright}</span>}
+        <span style={{ flex: 'none', marginLeft: 'auto', textAlign: 'right', whiteSpace: 'nowrap' }}>{s.footerCredit}</span>
+      </div>
+    </div>
+  )
+}
+
 // §10.2 reference design: the wordmark over the statement to the left of a
 // full-height rule, the two link columns and the Book Now pill to its right,
 // the seal hung off the left column's outer edge, and the small print under a
@@ -31459,6 +33356,7 @@ function LatticeFooter({ s }) {
 function Footer({ s }) {
   // Lattice's layout-1 footer is a block of its own (LatticeFooter). `Footer` owns no hook, so the block can
   // stand at the head of the function, ahead of Lime's; the seam is restated in it.
+  if (s.limeTree && s.paperback) return <PaperbackFooter s={s} />
   if (s.limeTree && s.lattice) return <LatticeFooter s={s} />
   const scale = s.narrow ? 1 : 0.82
   const u = (v) => `${Math.round(v * scale)}px`
@@ -32135,6 +34033,9 @@ export default function EncoreSection({ s }) {
   // 1440 alone — narrow, the frame round it is the card's own violet.
   const cardOnPage = (s.me || s.ca) && s.v1 && (s.editorial || s.pop)
     || (s.ca || s.hd && !s.narrow) && s.v2 && s.pop
+    // Paperback's layout-1 hero is a yellow band with a rounded foot on the page's white: the root
+    // paints the page's ground, so the two corners the radius cuts show it and not the band's own.
+    || s.hd && s.v0 && s.paperback
   // Pop's layout-2 media `Section` (964:64563) strokes its top and foot 5px
   // inside in `scheme/1/stroke/2`, lime, at 1440 alone — visible, where the
   // twins' same stroke is a hidden paint; the narrow wrappers carry none.

@@ -257,3 +257,41 @@ sleeveSlot, audio, goTo, toggle, onPick }`, so the player is the one seam in a n
 - **Caps** (`limits.mjs media --themes=5 --designs=0 --check`): `heading` 20 and `tracks.title` 17 / `sub` 33 hold at their seeds (the seeded rows wrap at 390 in
   the frame, so the probe's one-line test is not the bound there); `IDENTITY_CHARS.media.title.Lattice[0]` = 40, the artist line's box at 390.
 
+
+## Paperback · layout 1 (plans/paperback/layout-1.md, section 3, 2026-11-20)
+
+`PaperbackMedia` (`EncoreSection.jsx`, ahead of `Media`) is a tree of its own, dispatched from `Media` **after** its hooks and seam, handed `{ at, count, playing, now, sleeve,
+sleeveSlot, audio, goTo, toggle, onPick }` as Lattice's is, so the published player is the same seam in a new picture (every `<audio>` rule above holds: the source is assigned
+imperatively, `cur` starts at -1, the card names the cued track).
+
+- **Frame** `1:2450` · `1:11054` · `1:12240` (1057 / 1398 / 1361 tall). `PAPER_MEDIA` holds the frame's px per width, **verbatim at all three** (desktop is not x 0.82: `u()` is cqw of a
+  `containerType: inline-size` stage as wide as the page, so the stage's width does the scaling); the stage's vertical insets are in a child and `vm.pad = '0px <surplus>'`
+  (`EncoreBuilder.jsx`, beside the bio's). A cyan card (`s.onScheme[2].box3`, radius 40) at 48.96 / 26.11 / 12 in, padded 64 / 48 / 36 / 16, on the white page; the head, then a 48
+  gap, then the list column and the player (a 820.05 : 394.02 grid at 1440, a stack with 28 gaps at 768 and 390).
+- **Removed copy holds** (call 1): the `Top tracks` and `5 / 5 featured` scripts. The kicker's 56 / 54 / 51 seat stays as padding (the bio's convention), so the section is the frame's
+  1057 / 1398.7 / 1361.3 tall. **The ring text the 768 and 390 frames print round the disc (`NEW MIX · EVERY MONTH`) is not drawn**, at any width: the 1440 frame draws none and no field carries
+  it, so the disc is the same pink ring, white disc and note everywhere. The disc is decoration, not a badge (no `badgeMode` on the media).
+- **Head.** Bricolage ExtraBold 800, -0.035em, lh .82, at 95.04 / 59 / 38. It **wraps and fits to the room left of the sparkles** (`free` 423 / 282 / 192, the sparkles' left edge): `maxWidth: u(free)`
+  and the font `min(u(size), calc(u(free) / titleWordEms))`, `vm.titleWordEms` now set for the Paperback media as for its bio. The first cut wrapped at 5.4em and `limits.mjs` found the heading overlapping the sparkles at
+  11 characters; held to the free width it breaks after "worth" for the seed and only a third line (17 characters of prose) can cost anything, which the heading's 20 already allows.
+- **Rows** are 84 tall at a 2.9 vertical inset and a 94 pitch: the frame's wrapped 390 rows (title, chip, chip on a second line: 78.2 of content) sit in 84 and do not grow. Number (indigo, 16),
+  cover (56 / 44, radius 14), title (Bricolage 800, 26 / 26 / 18, lh .9), the release chip and the duration chip (13, 26 tall, wrapping at a 6 / 4 gap, ellipsised in a column that cannot hold them), a 44 disc. The duration chip is drawn
+  only while it differs from the release (`t.dur !== t.rel`), as layout 2's list: a stored list's `sub` is the whole line, drawn once, as the release chip.
+- **Marked row and chip colours.** The marked row is the player's track (`at`), not the frame's row 02 (Lattice's rule: the frame names *Night Rain*, which is not in its list), so the canvas draws row 1 yellow
+  with a pink disc and `Late Lights` on the player; Pause shows on the marked row only while `playing`. The chip colours follow the row's place (yellow, cyan, magenta, ink, orange, repeating), as the frame's five rows
+  draw them; a marked row's yellow chip goes white, since yellow on yellow is no chip.
+- **Player.** 394 x 460 (334 x 460 at 390) turned 3 degrees clockwise about its centre, a flex column at the frame's gaps (20) whose **sleeve is the flex remainder** (217 / 233 / 246 square, a 5px white keyline, radius 20), so a title that wraps
+  (`overflowWrap: anywhere`) costs the sleeve its height and the card stays 460. Title 40 / 32 / 26 centred, the artist (`now.by`) 15 on one ellipsised line, three discs (40 / 56 / 40: white, pink, white; arrows are drawn paths), the
+  clocks (`now.at` / `now.of`, 13) and a yellow bar over a 25% white track. **Live the fill is `now.pct`; on the canvas it is 56.15%** (the frame's 137 of 244, the clock's mid-song picture) while a track exists, and **0 under an empty list on both surfaces**, beside `00:00 / 00:00`. The disc (128, turned 10 degrees) sits at the card's
+  (358, 12) (298 at 390) and overflows it: the mobile cyan card does not clip, as its frame's does not, so the disc runs to the page's edge.
+- **Soundcloud** is `PaperbackPill` in ink (`bg = s.tx`, `fg = PAPER_WHITE`), `ext={s.soundcloud}`: a picture on the canvas and while the address is empty, an outbound link in the published tab. `cta` and `chipLabel` are not read at layout 1.
+- **Confetti** is `ART.confettiMedia` (1342.08 x 924.27), `confettiMediaTablet` (715.77 x 1350.3) and `confettiMediaMobile` (366 x 1313): the frames' 24-piece sets, which are not the same pieces moved.
+- **Caps** (`limits.mjs media --themes=6 --designs=0`, then `--check`: 0 failing; `--seeds`: 0 over): `heading` 20 (the seed; 17 / 18 / 18 characters of prose make a third line, a packing bound), `tracks.title` 17 and `sub` 33 hold at their seeds
+  (the probe reads 13 / 25 at 390, where the seeded rows already wrap or ellipsise), `IDENTITY_CHARS.media.title.Paperback[0]` = 41 (the artist line, one ellipsised line; layouts 2–4 are Pop's 11 / 13 / 31).
+- **Ledger.** `Paperback.0.media.tracks.sub` (and `.1`–`.3`, Pop's placeholder rows): the seeded page prints the release and the running time as two chips, never the whole line. `inline-probe` media at layouts 1–4, 1440 and 768: PASS (layout 1: 6 slots hit,
+  the heading and the five titles). `photo-probe` PASS (layout 1: 5 slots at both widths, `--blank` and `--drop` too); `focus-probe --prime` layouts 1–4 PASS.
+
+## Paperback layouts 2–4: the caps (session 12, 2026-11-21, plans/paperback/layout-1.md)
+
+- Layouts 2–4 are still Lime's / Pop's tree in Paperback's tokens. Every cap now has a `Paperback` row (none reads Pop's through `specAt`), measured by `limits.mjs media --themes=6 --designs=1,2,3 --upright`, then `--check` (0 failing) and `--seeds` (0 over). **The rule is lower-only and never under the seed:** a number the placeholder card cannot bear came down to what it bears, and one that bore more was left, so no cap rose. Lowered (layouts 2, 3, 4, an index per layout; `–` not read): `chipLabel` [10,–,–] → [9,–,–]; `title` [11,13,31] → [10,12,30].
+- **Rough edges (the seed is wider than the card holds a prose line of its length):** `heading` L3 and L4 (20, 19), `tracks.title` L2-4 (17 against 11 / 12 / 10), `tracks.sub` L2-4 (33 against 14 / 20 / 12). The cap holds at the seed, `--check` reads it as `(floor)`, and the card draws the seed as it does at the other templates. A layout-2–4 pass with frames replaces all of these.

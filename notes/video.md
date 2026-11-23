@@ -1039,3 +1039,8 @@ once Play was pressed, the very thing call 7 declined).
   is byte-identical; `inline-probe --cat video --check` at layouts 2 and 4, 1440 and 768, Retro and Pop PASS (the
   1 *unhit* at layout 4 is the baseline's too); `photo-probe --cat video --check` Retro and Pop PASS.
 
+
+## Paperback layouts 2–4: the caps (session 12, 2026-11-21, plans/paperback/layout-1.md)
+
+- Layouts 2–4 are still Lime's / Pop's tree in Paperback's tokens. Every cap now has a `Paperback` row (none reads Pop's through `specAt`), measured by `limits.mjs video --themes=6 --designs=1,2,3 --upright`, then `--check` (0 failing) and `--seeds` (0 over). **The rule is lower-only and never under the seed:** a number the placeholder card cannot bear came down to what it bears, and one that bore more was left, so no cap rose. Lowered (layouts 2, 3, 4, an index per layout; `–` not read): `videos.title` [29,–,31] → [20,–,30]; `heading` [–,–,20] → [–,–,19]; `videos.desc` [63,–,63] → [61,–,63].
+- **Rough edges (the seed is wider than the card holds a prose line of its length):** `videos.title` L2 (20, 18). The cap holds at the seed, `--check` reads it as `(floor)`, and the card draws the seed as it does at the other templates. A layout-2–4 pass with frames replaces all of these.

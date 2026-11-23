@@ -380,3 +380,28 @@ step closures only while `s.live`. Not Lime's *Compact tile*: that is a raster m
 - **Caps** (`limits.mjs map --themes=5 --designs=0`, `--check` 0 fail, `--seeds` 0 over): `heading` 12, `base` 19, `terms` 39, `listLabel` 31, `gigs.venue` 26, `city` 20, `time` 15, `month` 8, `day` 3
   (each measured alone; the city · time line shares one mono line that wraps). Layouts 2-4 stay Pop's rows.
 - `INLINE_OFF`: none needed. `inline-probe` (1440 and 768) PASS, 29 slots hit, 0 UNLEDGERED; `photo-probe` PASS (no photo slot); `focus-probe --prime` PASS (41 controls).
+
+## Paperback · layout 1 (plans/paperback/layout-1.md, section 6, 2026-11-21)
+
+Frames `1:2822` · `1:11471` · `1:12654`. An **own tree**, `PaperbackMap` (`EncoreSection.jsx`, before `EventsMap`), dispatched in `EventsMap`'s `if (s.limeTree)` **after the seam** and ahead of Lattice's: `perPage`, `pages`,
+`pg`, `shown`, `lit`, `onPick` and `pageWindow(pages, pg, true)` stay `EventsMap`'s and go over in `g` (`at0 = pg * perPage`, the page and step closures only while `s.live`). The bio's stage pattern: `PAPER_MAP` per width
+(frame px verbatim, `u()` in cqw of an `inline-size` stage, vertical insets in a child), `vm.pad = '0px <surplus>'` and `vm.titleWordEms` extended to `map` in `EncoreBuilder.jsx`. The section stands on **Scheme 3** (indigo),
+the confetti behind it is `confettiMap` (desktop) / `confettiMapTablet` / `confettiMapMobile` in `paperbackArt.jsx`.
+
+- **The picture is art, not the real map** (Lattice's call): a lilac card turned -2 degrees with the frame's concentric rings (`PaperbackArt`, desktop only; the narrow frames draw the foot alone) and a black arrow drawn *after* the foot so it paints over it.
+  `RealMap` is not mounted. The foot is `vm.mapBase` (orange display) over `vm.mapTerms` (indigo label); each drops when emptied.
+- **The head is a hug-width box** with the three sparkles at `left: calc(100% + u(x))`, so they follow the words; the `120 mile radius` pill is `vm.mapRadius`. **The head fit reads Bricolage's table times `fit`**
+  (1 / 1.033 / 1.0745 at 1440 / 768 / 390): the table is read at 1000 px, where the face is tightest, and a head sets 3-8% wider at 48-75 px (measured on *Wolverhampton*). Without it the widest word ran under the sparkles at 390.
+- **Rows** are the frame's white pills: a 64 wide date tile (colours `[lilac, yellow, pink, cyan, magenta][(at0 + i) % 5]`, i.e. by the gig's place in the *whole* list, so a page turn does not recolour), the venue in display over `city · time`
+  in the label face. `vm.gigs[].line` is that composed line, so an emptied half drops with its `·`. The tile keeps a minimum height so a title-only row does not collapse it. The lit row (live only) is a 3 px inset **yellow ring**; the frames draw none.
+- **Not drawn**: the script `Shows / coverage` (call 1, stays removed), `home turf` (no field), the `Sold out` chip (no field). **The Tickets chip is drawn only for a gig with an address** (JP-045), so the seeded rows, which carry none, draw none; the frame's chip on every row is not reproduced.
+  The `05 of 12` count is derived (`shown` of `gigs`, two digits), no field.
+- **The pager draws only past one page** (white prev disc, 40 px page rings with the current one yellow, yellow next disc, `space-between`); the seeded five gigs draw none, so the seeded section is 925.2 / 916.8 tall at 768 / 390 against the frames' 983 (the absent pager's height).
+  At 1440 the section is 982.99 (the card sets the height). Empty list: a white *No upcoming gigs.* row.
+- **Caps** (`limits.mjs map --themes=6 --designs=0`, `--check` 0 failing, `--seeds` 0 over): `heading` 11, `base` 25, `terms` 44, `listLabel` 30, `gigs.venue` 25, `city` 28, `time` 23, `month` 8, `day` 4. The other three designs keep the rows they read before (Pop's venue, `'*'` for city, time, month and day; Pop's heading).
+- `INLINE_OFF`: none needed. `inline-probe` (layouts 1-4, 1440 and 768) PASS, 29 slots hit at layout 1; `photo-probe` PASS (no photo slot); `focus-probe --prime` PASS (41 controls at layout 1).
+
+## Paperback layouts 2–4: the caps (session 12, 2026-11-21, plans/paperback/layout-1.md)
+
+- Layouts 2–4 are still Lime's / Pop's tree in Paperback's tokens. Every cap now has a `Paperback` row (none reads Pop's through `specAt`), measured by `limits.mjs map --themes=6 --designs=1,2,3 --upright`, then `--check` (0 failing) and `--seeds` (0 over). **The rule is lower-only and never under the seed:** a number the placeholder card cannot bear came down to what it bears, and one that bore more was left, so no cap rose. Lowered (layouts 2, 3, 4, an index per layout; `–` not read): `gigs.venue` [18,28,40] → [18,26,32]; `kicker` [30,–,–] → [28,–,–]; `heading` [21,25,23] → [19,23,23]; `base` [–,33,–] → [–,28,–]; `terms` [51,–,–] → [42,–,–]; `travelTime` [13,–,–] → [11,–,–]; `fee` [13,–,–] → [11,–,–]; `homeLabel` [18,–,–] → [17,–,–]; `homeCaption` [18,–,–] → [17,–,–]; `radiusLabel` [17,–,–] → [16,–,–]; `venueCaption` [18,–,–] → [17,–,–]; `travelTimeLabel` [17,–,–] → [16,–,–]; `feeLabel` [17,–,–] → [16,–,–]; `venueCta` [20,–,–] → [10,–,–]; `routeCta` [28,–,–] → [14,–,–]; `cta` [–,24,–] → [–,20,–]; `updated` [35,34,–] → [35,32,–]; `span` [–,–,58] → [–,–,51]; `stats.label` [–,–,19] → [–,–,17]; `stats.sub` [–,–,20] → [–,–,19].
+- **Rough edges (the seed is wider than the card holds a prose line of its length):** `routeCta` L2 (14, 13), `stats.value` L4 (14, 9), `venueLabel` L2 (20, 19). The cap holds at the seed, `--check` reads it as `(floor)`, and the card draws the seed as it does at the other templates. A layout-2–4 pass with frames replaces all of these.

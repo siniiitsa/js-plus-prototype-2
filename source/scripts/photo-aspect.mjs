@@ -17,7 +17,7 @@ import { headlessShell } from './headless-shell.mjs'
 const args = process.argv.slice(2)
 const opt = (name, dflt) => { const i = args.indexOf(`--${name}`); return i >= 0 && args[i + 1] && !args[i + 1].startsWith('--') ? args[i + 1] : dflt }
 const list = (v) => String(v).split(',').map((x) => x.trim()).filter(Boolean)
-const themes = list(opt('theme', 'Retro,Lime,Grunge,Editorial,Pop,Lattice'))
+const themes = list(opt('theme', 'Retro,Lime,Grunge,Editorial,Pop,Lattice,Paperback'))
 const layouts = list(opt('layout', '1,2,3,4')).map(Number)
 const widths = list(opt('width', '1440,768,390')).map(Number)
 const onlyCats = opt('cat') ? list(opt('cat')) : null

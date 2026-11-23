@@ -12,6 +12,7 @@
 //   --designs=0,1                              only these designs (0-based)
 //   --extra-lines=songs.title                  these keys one line past the frame's
 //   --no-floor=stats.value                     these keys may shrink without bound
+//   --upright                                  turned boxes measured upright (a turned deck's boxes cross by their bounding boxes)
 //
 // A key is `heading`, `tracks.title` (a repeater column, row 0 of the seed),
 // `tags[]` (a list's item, item 0) or `tags#` (a list's item count), or
@@ -52,7 +53,7 @@ const opt = (k, d) => { const a = argv.find((x) => x.startsWith(`--${k}=`)); ret
 const flag = (k) => argv.includes(`--${k}`)
 const cats = (argv.find((a) => !a.startsWith('--')) || '').split(',').filter(Boolean)
 if (!cats.length) { console.error('usage: node scripts/limits.mjs <cat[,cat]> [--themes=] [--keys=] [--check|--seeds]'); process.exit(1) }
-const themes = opt('themes', '0,1,2,3,4,5').split(',').map(Number)
+const themes = opt('themes', '0,1,2,3,4,5,6').split(',').map(Number)
 const keysOnly = opt('keys', '') ? opt('keys', '').split(',') : null
 const designsOnly = opt('designs', '') ? opt('designs', '').split(',').map(Number) : null // 0-based
 const widths = opt('widths', 'desktop,tablet,mobile').split(',')
@@ -140,7 +141,7 @@ for (const k of (opt('no-floor', '') || '').split(',').filter(Boolean)) FLOOR[k]
 // The bio heading is fitted to its widest word at the four designs that stack it
 // one word to a line at 1440 (session 12): it takes the name's floor there.
 // --no-floor=heading still lets it shrink without bound.
-const FLOOR_AT = { 'bio.heading': { Lime: [0], Editorial: [0], Pop: [0, 3], Lattice: [0] } }
+const FLOOR_AT = { 'bio.heading': { Lime: [0], Editorial: [0], Pop: [0, 3], Lattice: [0], Paperback: [0] } }
 const shrinkFloor = (p, themeName, a) => fitted(p) ? 0.5 : FLOOR[p.key] ?? (FLOOR_AT[`${p.cat}.${p.key}`]?.[themeName]?.includes(a) ? 0.75 : 1)
 // A repeater's list count whose chip row is the union over every row (session 5).
 const UNION_COUNT = new Set(['songs.tags#'])
@@ -370,6 +371,17 @@ function measure(needles, drops = []) {
   const R = root.getBoundingClientRect()
   const squash = (t) => t.replace(/\s+/g, '').toLowerCase()
   const all = [...root.querySelectorAll('*')]
+  // `--upright` (the URL's &upright=1): every turned box is set upright before anything is measured, so a text range's
+  // bounding box, which is the axis-aligned box of a turned line, is its own width and height. Paperback's pricing deck
+  // turns each card up to 3 degrees, and a wider numeral then crossed the name row's box above it (the boxes, not the ink).
+  if (/[?&]upright=1/.test(location.search)) {
+    for (const e of all) {
+      if (e instanceof SVGElement) continue
+      const cs = getComputedStyle(e)
+      if (cs.transform !== 'none') e.style.transform = 'none'
+      if (cs.rotate && cs.rotate !== 'none') e.style.rotate = 'none'
+    }
+  }
   const holds = (el) => { const t = squash(el.textContent); return needles.every((n) => t.includes(n)) }
   const seats = all.filter((el) => holds(el) && ![...el.children].some(holds))
     .filter((el) => el.getClientRects().length && getComputedStyle(el).visibility !== 'hidden')
@@ -671,7 +683,7 @@ async function runProbe(pg, p, t) {
     const perSurface = {}
     let unseen = true
     for (const { w, col } of surfacesOf(p.cat, a)) {
-      const qBase = `cat=${p.cat}&arch=${a}&theme=${t}&w=${w}${col ? `&column=${col}` : ''}`
+      const qBase = `cat=${p.cat}&arch=${a}&theme=${t}&w=${w}${col ? `&column=${col}` : ''}${flag('upright') ? '&upright=1' : ''}`
       const art = p.f?.type === 'tracks' ? await artOf(pg, themeName) : null
       const drops = DROPS[`${p.cat}.${p.key}`]?.[themeName] ?? []
       const lbx = fitted(p) ? '&linebox=1' : ''
