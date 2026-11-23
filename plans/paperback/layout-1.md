@@ -889,6 +889,16 @@ renders at theme 6 (45 renders, 0 bad). Digest of every category at three widths
 - **Open calls still to collect** (the list under *Open calls* holds sections 1-11, those lines said *Layouts 2-4 are still Pop's caps*, which session 12 superseded and the sweep rewrote; the sweep folded them into one message for the user): the hero's ring text at 1440, the ring text on the media, repertoire, pricing and testimonials discs and the hero's vinyl, the `Reviewed 6 days ago` / `Top tracks` scripts, the gallery's viewer photograph, the straight seeded quotes against the frames' curly ones, **section 11's** (the photo's and the Book pill's seats, the `Shows/Coverage` wrap at 768, the credit's casing and the hidden statement, below), **and session 12's one**: the 27 seeds wider than the layout 2-4 placeholder cards hold (the list above), which are for whoever designs those layouts.
 - The footer's frame is **1:3395** · **1:12081** · **1:13263**.
 
+### Inherited and used
+
+*(Written at the sweep from the per-section bullets above; the plan kept no running list, so `plans/CONVENTIONS.md` group **G** is built from these and from group F.)*
+
+- Group F whole: the verdict written before the code, raw values where nothing is bound, the seam's place (after the hooks; the hookless bio, hero and footer at the head), `SCHEMES_OF` / `s.onScheme`, `THEME_RAMP`, `ems-table.mjs` (Bricolage, `WEIGHT=800`), `rowArt`, the label rule, the two-build digest.
+- Lattice's *Session 0*, *Per-session procedure* and *Session 12*, and its `LATTICE_ART` shape for `paperbackArt.jsx`.
+- Pop and Editorial: `schemes` and the card-on-paper seat (`cardOnPage`).
+- `figma-frame-reading`: the alias walk, the rotated groups' metadata, the narrow masters' Device-mode leak.
+- `limits.mjs`, `inline-probe`, `photo-probe`, `focus-probe` and `reach.mjs` as Lattice's session 12 left them, plus `--upright` and a themes list (added here).
+
 ### Open calls — everything the pass hands the user, in one place
 
 *(collected at the sweep; calls 1–3 are written back at session 0)*

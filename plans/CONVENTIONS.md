@@ -64,6 +64,11 @@ settled by composition and geometry and every one of the eleven sections is a `L
 It therefore has no column on A, B, C or D1; its running list (*Inherited and used* in
 [`lattice/layout-1.md`](./lattice/layout-1.md)) is folded in as group **F**, below. Its dot field, bracket
 corners, dotted art and square chips stay in its plan and in `notes/templates.md`, by this file's own rule.
+Paperback's layout-1 pass leaned on it an eleventh time and is Lattice's shape again — the same Batch 2 file, eleven own-tree
+blocks, no widened Lime block — with one difference that mattered: **its frames bind variable modes**, so a section's scheme
+was read, not inferred. It therefore inherits group **F** whole (every row of it was met again) and adds group **G**, below,
+from its own running list (*Inherited and used* in [`paperback/layout-1.md`](./paperback/layout-1.md)). Its tilted keylined
+cards, tape, sparkles, confetti, doodle discs and hand-drawn marks stay in its plan and in `notes/templates.md`.
 The video section's passes (`plans/video.md`, sessions 1 to 9: one restored section fitted at layouts 2 and 4 of
 all five templates) are not a layout pass and leaned on groups A, B and C as they stood; the nine rows they added,
 each met three times or more, are group E.
@@ -309,11 +314,34 @@ cannot be dressed in a shared branch by a paired walk, so the rows of A, B and C
 | *A frame label the tester can retype is a seeded, uncased, drop-when-emptied field; an eyebrow with no such field is not drawn* | CLAUDE.md, JP-071; lattice/layout-1, decision 1 | every section (the `[ 00N ]` eyebrows) |
 | *The two-build digest, positive control first* (the old tree answers none of the new symbols) | memory: `digest-two-servers` | every section; the sweep (themes 0–4 zero rows) |
 
+## G. A page with own trees and bound variable modes (Paperback, layout 1)
+
+Source: [`paperback/layout-1.md`](./paperback/layout-1.md), *Conventions* (*Settled in session 0*, *Settled in sections 1–11*,
+*Conventions section N inherits*, *Inherited and used*). Group **F** applies whole (the verdict-first rule, raw values where
+nothing is bound, the seam's place, `SCHEMES_OF` / `s.onScheme`, `THEME_RAMP`, `ems-table.mjs`, `rowArt`, the label rule, the
+two-build digest); these are the rows Paperback added, each met by three sections or more unless the cell says otherwise.
+
+| Convention | Where | Leaned on in Paperback |
+|---|---|---|
+| *Where the file binds modes, read each section's `explicitVariableModes` through the alias chain with Primitives set to the template's own mode* — the default mode is another template's, and `get_variable_defs` is node-dependent | paperback/layout-1, *Settled in session 0* (the scheme table); memory: `figma-frame-reading` | session 0 (Schemes 1–9), every section's seat |
+| *The stage pattern: a `PAPER_<CAT>` frame table, a `containerType: inline-size` stage, `u(v)` in cqw, frame px verbatim at all three widths, vertical insets in a child, `vm.pad = '0px <surplus>'`* | paperback/layout-1, *Conventions section 2 (the bio) inherits* | sections 2 to 11 (the hero is its own stage, `u()` in the hero) |
+| *Read a rotated group's `top` / `left` off `get_design_context`, never `get_metadata`; the box is the unrotated card at the wrapper's centre, turned about its own centre* | paperback/layout-1, *Conventions section 3 inherits*; memory: `figma-frame-reading` | sections 1, 2, 3, 8, 9 (metadata was 18 to 36 px off) |
+| *A fitted head's `fit` is measured, not borrowed: the em table is read at 1000 px and a smaller head sets 3 to 12 % wider; take the widest seed word and a long one at the width's size, then walk a long single word at 390* | paperback/layout-1, *sections 7 and 10 inherit* | sections 5 (1.13), 6, 7, 8, 9 (1.12), 10 (1.12), 11 (1.18, found at review) |
+| *A turned card is measured with `limits.mjs --upright`, and `--extra-lines=<keys>` goes on the measure and the `--check` alike* | paperback/layout-1, *sections 5, 7 and 8 inherit* | sections 4, 5, 7, 8, 9, 10, 11 |
+| *A script note is a rotated box of the column's width turned about its centre, never the text alone* | paperback/layout-1, *section 5 inherits* | sections 4, 5 (the credit script), the role note |
+| *Colour by position in the stored list, not by the theme: a filter that hides an item must not recolour the rest* | paperback/layout-1, *section 8 inherits* | sections 3, 5, 6, 7 |
+| *A seat the seeded data does not draw (a pager past one page, a lit tab, a `Tickets` chip, a Continue) is drawn only when its data is there, and says so in the Open calls* | paperback/layout-1, *sections 5 to 8 inherit* | sections 5, 6, 7, 8 |
+| *A background art goes on the outer box's CSS background, not on a node, where text can grow over it; a decoration is seated off the edge it hangs from* | paperback/layout-1, *section 11 inherits* | sections 10, 11 |
+| *A button or label that is not a field's own reads the field's seed (`CAL_CTA_LATTICE`'s shape): `sectionVm` and `fieldSeed` in step, uncased, dropped when emptied* | paperback/layout-1, *section 9 inherits* | sections 2 (Full bio), 7 (Book this set), 8 (Continue), 9 |
+| *A field seeded empty and drawn when typed (the gallery's `kicker`) needs no ledger row; a derived slot (a tags row) is ledgered; layouts 2 to 4 need `INLINE_OFF` rows only for slots their placeholder cards do not draw (copy Pop's reasons)* | paperback/layout-1, *sections 4, 6 and 7 inherit* | sections 3 to 11, session 12 |
+| *A placeholder whose frame states its strength sets `--ph` inline; record the call* | paperback/layout-1, *section 9 inherits*; CLAUDE.md, JP-093 | section 9 (one use) |
+| *Caps at placeholder layouts are lower-only, floored at the seed, never above Pop's; a seed wider than its card is listed, not capped* | paperback/layout-1, *session 12 inherits* | session 12 (87 rows, 27 listed) |
+
 ## What is deliberately not here
 
 - **A template's decorative language** — Retro's grain, torn edges, checkerboard and offset
   shadows; Lime's arcs and glows; Grunge's tears, lighten grain and seals; Editorial's dashed
-  rule and tape; Pop's stickers, scribbles, dot grids and 10px rules; Lattice's dot field, bracket corners, dotted art and square chips. Each plan's
+  rule and tape; Pop's stickers, scribbles, dot grids and 10px rules; Lattice's dot field, bracket corners, dotted art and square chips; Paperback's tilted keylined cards, tape, sparkles, confetti, doodle discs and hand-drawn marks. Each plan's
   *decorative language* section owns its own.
 - **The `sectionVm` and live-seam rules.** They are CLAUDE.md's, and every plan reads that first.
 - **The per-session procedure and the sweep list.** Lime layout 1's are the canonical ones; a new
