@@ -187,6 +187,22 @@ const THEME_RAMP = {
     tablet:  { dispXl: '86px',  dispLg: '59px', dispMd: '48px', dispSm: '42px', title: '32px', list: '26px', labelLg: '26px', labelMd: '22px', labelSm: '16px', labelXs: '13px', bodyLg: '18px', bodyMd: '16px', bodySm: '13px', chip: '13px', eyebrow: '15px', scriptLg: '31px', scriptMd: '29px', scriptSm: '25px' },
     desktop: { dispXl: '113px', dispLg: '78px', dispMd: '64px', dispSm: '43px', title: '33px', list: '21px', labelLg: '21px', labelMd: '18px', labelSm: '13px', labelXs: '11px', bodyLg: '15px', bodyMd: '13px', bodySm: '11px', chip: '11px', eyebrow: '12px', scriptLg: '28px', scriptMd: '26px', scriptSm: '23px' },
   },
+  // Headliner's mode, read off the three masters' text nodes (2026-11-23; the file binds `size/*` partially and
+  // node by node, so a header's token answers are not the page's; plans/headliner/layout-1.md, *Settled in
+  // session 0*). The display strings are fluid values of the frames' own, so each key is a section's head, as
+  // Lattice's and Paperback's are: dispXl the header's name (267.84 / 156 / 58), dispLg the repertoire's and the
+  // calendar's heads (149.76 / 93 / 60), dispMd the pricing's prices (112 / 69 / 45), dispSm the form's head
+  // (64 / 48 / 38), title the now-playing name (44 / 35 / 29), list a track's name in Inter Tight (22 / 22 / 18),
+  // labelLg the map card's head (22), labelMd 17, labelSm the Anton 16 label, labelXs the Anton 14 one; the
+  // Inter Tight body is 17 / 16 / 14 and the chip 13 at every width. The bio's, media's, gallery's, map's,
+  // pricing's and testimonials' heads (150 / 155.52 / 129.6 / 181.44 / 123.84 / 86.4 at 1440) sit between keys;
+  // their sessions write them. Desktop is the frame x 0.82, 768 and 390 verbatim. The serif (Fraunces Light) has no
+  // ramp key: its sizes are 38 / 34 / 31 / 28 / 22 by site, written where drawn.
+  Headliner: {
+    mobile:  { dispXl: '58px',  dispLg: '60px', dispMd: '45px', dispSm: '38px', title: '29px', list: '18px', labelLg: '22px', labelMd: '17px', labelSm: '16px', labelXs: '14px', bodyLg: '17px', bodyMd: '16px', bodySm: '14px', chip: '13px', eyebrow: '15px' },
+    tablet:  { dispXl: '156px', dispLg: '93px', dispMd: '69px', dispSm: '48px', title: '35px', list: '22px', labelLg: '22px', labelMd: '17px', labelSm: '16px', labelXs: '14px', bodyLg: '17px', bodyMd: '16px', bodySm: '14px', chip: '13px', eyebrow: '15px' },
+    desktop: { dispXl: '220px', dispLg: '123px', dispMd: '92px', dispSm: '52px', title: '36px', list: '18px', labelLg: '18px', labelMd: '14px', labelSm: '13px', labelXs: '11px', bodyLg: '14px', bodyMd: '13px', bodySm: '11px', chip: '11px', eyebrow: '12px' },
+  },
 }
 
 // The two keys that only matter once a window is wider than the canvas its
@@ -405,6 +421,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // The handwritten face of the notes (Paperback's Caveat); a theme with none falls back to
     // its body face, so read it behind `s.paperback`.
     script: T.script ?? T.body,
+    // Headliner's serif (Fraunces Light through the `Fraunces Headliner` alias): the hero tagline, the bio lead, the
+    // pricing blurbs, the calendar's foot and the footer tagline. A theme with none falls back to its body face.
+    serif: T.serif ?? T.body,
     radius: T.radius, radiusSm: T.radiusSm, btnR: T.btnR, bw: T.bw,
     // `radius/chip`. Retro's token is 8, which its branches write as a literal.
     radiusChip: T.radiusChip ?? '8px',
@@ -422,6 +441,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // white on the rest — where `tx` (`text/2`) is violet; no other theme's
     // `sem` carries it, so it is undefined there (plans/pop/layout-1.md, trap 4).
     text3: T.sem?.text3,
+    // `sem/text/1`, the scheme's first ink. Headliner's maroon and ink grounds set it amber where `text/2`
+    // (`tx`) is cream; no other theme's `sem` carries it, so it is undefined there (read behind `s.headliner`).
+    text1: T.sem?.text1,
     // The page's own ground, whatever scheme the section is seated on: a
     // section whose frames stand a card on another scheme is seated on the
     // card's, and the root paints this round it.
@@ -494,7 +516,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // template is designed since Pop's layout-1 pass, so it is true for all
     // five; TagChips' undesigned chip went with the flat family. A site only
     // some of them share stays a named pair, widened per site from the frame.
-    designed: T.name === 'Retro' || T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial' || T.name === 'Pop' || T.name === 'Lattice' || T.name === 'Paperback',
+    designed: T.name === 'Retro' || T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial' || T.name === 'Pop' || T.name === 'Lattice' || T.name === 'Paperback' || T.name === 'Headliner',
     // Grunge's four layout pages are the same components in a third mode,
     // Static Youth, so its decoration — at layout 1 torn black seams round its
     // textured bands, grain and the red seal, at layouts 2, 3 and 4 rings where
@@ -526,6 +548,13 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // the tape, the sparkles and squiggles, the script notes, the doodle discs — goes behind this
     // flag, widened per site. Lattice's rule: every section has its own `Paperback*` tree.
     paperback: T.name === 'Paperback',
+    // Headliner's layout-1 page (plans/headliner/layout-1.md) is the same component trees in an eighth mode, and the
+    // brutalist one: square corners, 1 px hairlines, full-bleed bands, Anton display, a Fraunces Light serif and Inter
+    // Tight. Lattice's and Paperback's rule: every section gets its own `Headliner*` tree, standing on this flag after the
+    // section's hooks and seam. Until a section has one, `limeTree` (widened to Headliner, as Paperback's was in its
+    // foundation commit) stands the Lime block in Headliner's tokens: without it a layout-1 media falls through to Pop's
+    // branch and reads `S3.activeBg` of null.
+    headliner: T.name === 'Headliner',
     // The templates whose pages are Lime's component trees — the four that widen
     // its blocks, and Lattice, whose own trees stand on the same gate — so a Lime block a twin's frame shares is gated on this rather
     // than on a name at every site. Widened per site, from the frame, as each
@@ -534,7 +563,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // site the others do not share keeps `(s.lime || s.grunge)`, and one is
     // left (layout 2's gallery caption). Pop's layout-1 media steps out of it
     // (`&& !s.pop`), being Retro's body dressed.
-    limeTree: T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial' || T.name === 'Pop' || T.name === 'Lattice' || T.name === 'Paperback',
+    limeTree: T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial' || T.name === 'Pop' || T.name === 'Lattice' || T.name === 'Paperback' || T.name === 'Headliner',
     // Lime layout 3's footer (964:68684 · 984:10769 · 984:10800) stands on
     // Scheme 2's `sem/bg`, the olive `box1`, where layout 1's is the page
     // ground; its seal's disc and the Book pill's label and disc follow, each

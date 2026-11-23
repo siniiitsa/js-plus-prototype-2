@@ -102,6 +102,18 @@ import paperbackShot5 from './photos/paperback-shot-5.jpg'
 import paperbackShot6 from './photos/paperback-shot-6.jpg'
 import paperbackShot7 from './photos/paperback-shot-7.jpg'
 import paperbackViewer from './photos/paperback-viewer.jpg'
+import headlinerHero from './photos/headliner-hero.jpg'
+import headlinerAvatar from './photos/headliner-avatar.jpg'
+import headlinerBio from './photos/headliner-bio.jpg'
+import headlinerCover from './photos/headliner-cover.jpg'
+import headlinerShot1 from './photos/headliner-shot-1.jpg'
+import headlinerShot2 from './photos/headliner-shot-2.jpg'
+import headlinerShot3 from './photos/headliner-shot-3.jpg'
+import headlinerShot4 from './photos/headliner-shot-4.jpg'
+import headlinerShot5 from './photos/headliner-shot-5.jpg'
+import headlinerShot6 from './photos/headliner-shot-6.jpg'
+import headlinerShot7 from './photos/headliner-shot-7.jpg'
+import headlinerViewer from './photos/headliner-viewer.jpg'
 
 const REVIEWERS = [review1, review2, review3]
 
@@ -327,6 +339,35 @@ export const PAPERBACK_PHOTOS = {
 export const PAPERBACK_TRACK_ART = [paperbackShot1, paperbackShot2, paperbackShot3, paperbackShot4, paperbackShot5]
 export const PAPERBACK_VIEWER = paperbackViewer
 
+// Headliner's layout-1 frames (1:4478 · 1:15259 · 1:16314, JustPay — Batch 2, "Headliner Structured — Claude
+// Design") are an eighth shoot: a performer with orange-red hair, tinted sunglasses and a navy-orange-cream
+// jacket on an orange and maroon set, twelve photographs here (plans/headliner/layout-1.md, *Settled in
+// session 0*), none of them in Retro's, Pop's, Lattice's or Paperback's. The hero (1536 wide in the frame; it
+// is clipped to a slanted parallelogram in markup, so the picture is imported whole), the avatar, the bio's
+// portrait on its orange ground, the media player's large cover (`headlinerCover`), the gallery's
+// seven thumbnails (`headlinerShot1`..`7`, which are also the media list's five row covers, in order: the
+// frames re-crop them at 56 px) and the gallery viewer's own (`headlinerViewer`, the singing shot, none of the
+// seven). The form's avatar is the avatar. The footer draws no photograph. Re-encoded with `sips`: the hero
+// 1440 px q55, the rest at their frames' sizes (146-656 px), 485 KB in all.
+//
+// The gallery strip stands the viewer's picture in its second slot, as Paperback's does: the viewer can only show a
+// slot (plans/headliner/layout-1.md, section 4 settles whether it is the second or the first). `headlinerShot2`
+// stays the media's second row cover.
+export const HEADLINER_PHOTOS = {
+  header: headlinerHero,
+  bio: headlinerBio,
+  // No frame draws the video; the hero stands in, as Retro's poster does.
+  video: headlinerHero,
+  form: headlinerAvatar,
+  gallery: [headlinerShot1, headlinerViewer, headlinerShot3, headlinerShot4, headlinerShot5, headlinerShot6, headlinerShot7],
+  pricing: REVIEWERS,
+}
+export const HEADLINER_TRACK_ART = [headlinerShot1, headlinerShot2, headlinerShot3, headlinerShot4, headlinerShot5]
+export const HEADLINER_VIEWER = headlinerViewer
+// The media player's large cover (the frame's `Night Rain` picture, none of the five rows'). The player has no cover field
+// of its own (it shows the current track's art), so section 3 settles where this one is seeded; exported so it is not dead.
+export const HEADLINER_COVER = headlinerCover
+
 // The seeded artwork for the media player's five track rows, in track order.
 //
 // These are the frames' own fills (964:58578 and Lime's 964:58590 share the five
@@ -428,6 +469,8 @@ const SEEDS = {
   // The header's avatar card is its own picture (43c4de), the form's layout-2 stage the hero; the
   // footer's photograph (ef42b0) is the fourth cover, read by the footer's section.
   Paperback: { photos: PAPERBACK_PHOTOS, avatar: paperbackAvatar, photo: paperbackHero, rowArt: { media: PAPERBACK_TRACK_ART } },
+  // The header's avatar card is its own picture, the form's layout-2 stage the hero.
+  Headliner: { photos: HEADLINER_PHOTOS, avatar: headlinerAvatar, photo: headlinerHero, rowArt: { media: HEADLINER_TRACK_ART } },
 }
 
 // Where each seeded photograph keeps its performer, as the `object-position`
