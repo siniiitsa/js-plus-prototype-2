@@ -500,6 +500,142 @@ number.
 - **footer (11).** Three link groups where the builder derives two; the newsletter on the right; the tagline is Fraunces
   30 px. **At 768 the footer is 492 tall and at 390 655** (the columns stack).
 
+### Settled in session 0 — the foundation
+
+Branch `headliner-layout-1`, 2026-11-23. The four opening calls were put to the user in one question, recommended options
+first, and **all four were taken as recommended**: (1) every standing removal holds — the hero's Fraunces tagline is
+**not drawn**, the footer keeps its two derived columns, no newsletter, and a script or serif eyebrow is drawn only
+where a seeded, uncased, drop-when-emptied field already is its seat; (2) `vm.heroH` is **900 at 768 and 390 only**
+(behind `headliner`), desktop keeps its aspect (900 × 0.82 = 738 on the 1180 canvas), the picker aspect and the setup
+cards unchanged — **not yet written: it is section 1's work**; (3) the serif is the CSS alias **`Fraunces Headliner`**,
+Fraunces Light 300, SOFT 0, WONK 1, an `@font-face` in `src/index.css` pinned to the file Google serves for
+`Fraunces:opsz,wght,SOFT,WONK@9..144,300,0,1` (opsz stays live), **no `Fraunces` entry added to any `<link>`**, so
+Retro is untouched (the digest below proves it); (4) the template is **Headliner**, `THEMES[7]`, flag `s.headliner`,
+sub `Anton · maroon & orange`.
+
+**Scheme table and seats.** Read off each section's own node with `variable.resolveForConsumer(node)` (the collections
+are remote, so `getLocalVariableCollectionsAsync` is empty) and checked against the node's `fills`: the two agree, so
+the planning note that `sem/bg` "answers wrong" for the bio and the repertoire is settled — they are cream `#F8F2E7`.
+The file holds only twelve `sem` keys per section (bg, active bg / text, tag 1 bg / text, tag 4 text, tag 5 bg / text,
+tag 7 bg, text 1 / 2 / 3); everything else in a scheme is **inferred** (below) and is re-read by the section that draws it.
+
+| Scheme | Ground | Accent (`active/bg`) | `text/2` | Seats |
+|---|---|---|---|---|
+| 1 (the theme's own) | `#EEE3D1` sand | `#F85E34` | `#1E1E1E` | the page, gallery, pricing |
+| 2 | `#F8F2E7` cream | `#F85E34` | `#1E1E1E` | bio, repertoire, form |
+| 3 | `#760000` maroon | `#F8A351` | `#F8F2E7` | header, media, video (no frame; beside the media) |
+| 4 | `#F8A351` amber | `#F85E34` | `#020202` | calendar |
+| 5 | `#F85E34` orange | `#F8A351` | `#020202` | testimonials |
+| 6 | `#3B758B` teal | `#48B469` | `#F8F2E7` | map |
+| 7 | `#1E1E1E` ink | `#F8A351` | `#F8F2E7` | footer |
+
+`SCHEMES_OF.Headliner` rows 0–3 are identical (layouts 2–4 copy row 0). **Only schemes 1–7 are defined**: no section
+stands on an eighth, and a nested node that needs another ground names a literal. `text1` is a **new `sem` key and a new
+vm key** (`s.text1`, plumbed beside `text3` in `sectionVm`): maroon and ink set `sem/text/1` amber `#F8A351` where `text/2`
+is cream, teal's `text/1` / `text/3` are `#FBF8F2`; read it behind `s.headliner`. **Inferred**: `box1–3` (a step off the
+ground: sand → `#F8F2E7` / `#E6DAC4` / `#DCCFB6`, maroon → `#8A0F0F` / `#5E0000` / `#000`, …), `glow` (the active ground),
+the inactive pair (box 1 and text 1), `stroke1/2` and `hl` (text 1), tag seats 2, 3 and 6, and tag 4's chip (dark where its
+text is light, light where it is dark). `pageGround` is `#EEE3D1` (the page frame's fill = Scheme 1, so it reads the same as
+`palette[0]`; stated for the record). A literal no scheme holds: the logo's `#CE1F1A`.
+
+**Faces.** Display and label **Anton** (already loaded for Retro's labels; the frames upper-case it by site, so `casing`
+is `'title'` and a block uppercases), UI and body **Inter Tight** (`family=Inter+Tight:wght@400;500;600` added to
+`index.html` and `preview.html`; `published.html` loads none), serif **Fraunces Headliner** (`vm.serif = T.serif ?? T.body`).
+The published tab's cloned head carries the alias: `openPublished` imports every `head style`, which is Vite's injected tag in
+dev and the single inlined `<style>` in a build (the built `dist-standalone/index.html` holds it; `page-check.mjs Headliner 0`
+published with no console errors). **`faceK` is 1**: Anton is the face Retro’s labels and Grunge’s display already set with no
+`faceK`, so no table is owed; the hero name's fit needs `TITLE_SITES.Headliner` and a `face` for `titleFitK` — see *Section 1 owes*.
+
+**Ramp** (`THEME_RAMP.Headliner`, read off the masters' text nodes with a per-section size dump, not off `size/*`, which is
+partial and node-dependent; desktop is the frame × 0.82, 768 and 390 verbatim). Heads are fluid values of the frame's own, so
+a key is a section's head, as Lattice's and Paperback's are:
+
+| Key | mobile | tablet | desktop | Read as |
+|---|---|---|---|---|
+| `dispXl` | 58 | 156 | 220 | the header's name (267.84 / 156 / 58) |
+| `dispLg` | 60 | 93 | 123 | the repertoire's and the calendar's heads (149.76 / 93 / 60) |
+| `dispMd` | 45 | 69 | 92 | pricing's prices (112 / 69 / 45) |
+| `dispSm` | 38 | 48 | 52 | the form's head (64 / 48 / 38) |
+| `title` | 29 | 35 | 36 | the now-playing name (44 / 35 / 29) |
+| `list` | 18 | 22 | 18 | a track's name, Inter Tight (22 / 22 / 18) |
+| `labelLg` / `labelMd` / `labelSm` / `labelXs` | 22 / 17 / 16 / 14 | 22 / 17 / 16 / 14 | 18 / 14 / 13 / 11 | the map card's head; the Anton 16 and 14 labels |
+| `bodyLg` / `bodyMd` / `bodySm` | 17 / 16 / 14 | 17 / 16 / 14 | 14 / 13 / 11 | Inter Tight body, inputs, sub-lines |
+| `chip` / `eyebrow` | 13 / 15 | 13 / 15 | 11 / 12 | |
+
+**Heads that sit between keys** (their sessions write them; frame px at 1440 / 768 / 390): bio 150 / 124.84 / 54.43, media
+155.52 / 72 / 62, gallery 129.6 / 80 / 52, map 181.44 / 112 / 70, pricing 123.84 / 77 / 50, testimonials' quote 86.4 / 54 / 38
+(its mark 220 / 136 / 88), the calendar's month 56 / 45 / 37. **Serif sizes are written where drawn** (Fraunces 38 / 34 / 31 /
+28 / 22 by site; hero tagline 38 / 34 / 22, bio lead 34 / 31 / 28, pricing blurb 22 / 22 / 20, calendar foot 26 / 20 / 24,
+footer tagline 30 / 27 / 25).
+
+**The flag and `limeTree`.** `sectionVm` carries `headliner: T.name === 'Headliner'`, with `designed` **and `limeTree`** widened to
+it. `limeTree` had to be: without it a layout-1 media falls through to Pop's branch and reads `S3.activeBg` of `null` (`page error`
+at all three widths, found by the first theme-7 render sweep), exactly as Paperback's foundation needed. It stands the Lime block in
+Headliner's tokens **until each section gets its own `Headliner*` tree** (Lattice's and Paperback's rule: after the section's
+hooks and seam, hookless sections at the head). `limeTree` therefore now names seven templates.
+
+**Gate inventory** (`grep -c 'Paperback\|paperback'`: `data.js` 209, `EncoreSection.jsx` 110, `EncoreBuilder.jsx` 36, `photos.js`
+27, six scripts; `EncoreSection.jsx` carries **no theme names** — it reads flags — so session 0 touched none of its 110, which are
+Paperback's own trees). Written for Headliner in session 0:
+
+- `data.js`: `THEMES[7]`; `SCHEMES_OF.Headliner`; `headerFamily` → `'headliner'`, `HEADER_COUNT.headliner = 4`,
+  `HEADER_NAMES.headliner` (the shared four names); `specAt`'s fallback (below); **the eight header `in` rows that name templates
+  and no `'*'`** (`heroCta`, `faceTitle`, `faceBody`, `tags`, `showTags`, `badgeMode`, `badgeText`, `align`), each seeded with
+  **Paperback's value** (layouts 2–4 placeholders, so Lime's twins' rows; `align` `[]`) — section 1 re-measures them with
+  `reach.mjs 7`.
+- `EncoreBuilder.jsx`: `THEME_RAMP.Headliner`, `vm.serif`, `vm.text1`, the flag, `designed`, `limeTree`.
+- `photos.js`: `SEEDS.Headliner`, `HEADLINER_PHOTOS` / `HEADLINER_TRACK_ART` / `HEADLINER_VIEWER` / `HEADLINER_COVER`.
+- Deliberately **not** written, and what each does until its section: **`chars` / `count` / `num` specs and `IDENTITY_CHARS`** that
+  name no `Headliner` read `'*'` where one exists, else **Grunge's row, else Pop's** (`specAt`: `spec[T] ?? spec['*'] ?? (Headliner
+  → spec.Grunge ?? spec.Pop)`; **Grunge's, not Pop's, because Headliner sets Anton, the face Grunge sets, in square frames** — every
+  cap reached that way is provisional, measured by `limits.mjs --themes=7` in its section; Lattice's and Paperback's fallback is
+  still Pop's); **`TITLE_SITES`** has no Headliner row, so `titleFitK` returns 1 and the name never shrinks; **`INLINE_OFF` /
+  `PHOTO_OFF`** have no Headliner rows and no fallback beyond `inlineRule`'s `*` rows (`Headliner.<design>.` → `Headliner.*.` →
+  `*.<design>.` → `*.*.`), so a Headliner section writes its own as it passes; `FOCUS` untouched; every other `in` object that
+  names Paperback also names `'*'`, so Headliner reads `'*'`.
+
+**Photography** — an eighth shoot (a performer with orange-red hair, tinted sunglasses, a navy / orange / cream jacket), **twelve
+JPEGs, 484,700 bytes raw** re-encoded with `sips` (hero 1440 × 820 q55 = 216,800; bio 428 × 640 = 61,479; the viewer 656 × 482;
+the rest 146–379 px): `headliner-hero`, `-avatar`, `-bio`, `-cover`, `-shot-1`…`-7`, `-viewer`. `photos.js` is the only importer.
+Pairing, read off the frames' exports: the media list's five row covers are **shots 1–5 in order** (they are also the gallery
+strip's first five thumbs); the strip's sixth and seventh are shots 6 and 7; the big gallery picture (a singing shot, none of the
+seven) is `headlinerViewer`; the form's avatar is the avatar; **the footer draws no photograph**, so there is no `footer` key and
+no `FIELDS.footer.image`. The player's large cover (`Night Rain`, `headlinerCover`) is **not a field**: the player shows the current
+track's art, so `HEADLINER_COVER` is exported and **section 3 settles where it is seeded** (a first track whose art it is, or a
+Headliner-only player picture). **Section 4 settles the gallery's slot:** `HEADLINER_PHOTOS.gallery` follows Paperback's shape
+(the viewer's picture in the second slot, since the viewer can only show a slot), a placeholder choice. The hero is imported **whole**;
+the slanted parallelogram is a markup clip, so the crop editor edits the picture. **Size**: the standalone build is 15,191,031 bytes
+against the root `index.html`'s 14,585,791 (+605,240, mostly the photographs' base64); the real growth is re-measured at the sweep.
+
+**Art** — `src/builder/headlinerArt.jsx` (pure SVG functions, no hook): `HeadlinerWaves({ dev, ... })` is the wavy-line field as **one
+dataset in the 768-wide frame's coordinates** (70 polylines, 820 tall, stroke `#760000` at .32), with the desktop's x scaled × 1.875
+and the mobile's × 0.5078 and a per-width stroke (1 / 0.73 / 0.52) — one path at every width, as Paperback's squiggle is — and the
+arrow, the block arrow, the eye (outline, iris, and a highlight arc `M44.05 7.9C40.65 12.15 40.65 16.4 44.05 20.65`) and the play
+triangle. The ringed numerals and the hero's slanted edge are section 1's and section 2's.
+
+**Tooling** — the scripts that hard-coded seven templates, edited in one commit named for them: `focus-probe`, `inline-probe`,
+`photo-probe` (the `--theme` doc), `photo-aspect` (default list now eight), `limits` (`--themes` default `0..7`), `reach` (the
+index note), `digest` (the usage note). `shots.mjs`, `page-check.mjs` and `build-digest.mjs` take indices or names generically and
+needed no edit. **Each was run once at theme 7**: `inline-probe --theme Headliner --layout 1 --cat bio --limit 3` PASS; `focus-probe
+--cat bio` PASS (5 controls, 0 failing); `photo-probe --cat header,gallery` runs (8 slots hit) and **FAILs on the placeholder
+header, `header.image` under its copy, which is section 1's to fix**; `photo-aspect --theme Headliner` PASS; `limits bio --themes=7
+--seeds` 0 seeds over their caps; `reach.mjs 7` (ran to completion in about 4½ minutes; its table is the *placeholder* trees' reach, so a section re-reads it once it has a tree), `digest.mjs t7 7 header,media`, `shots.mjs`, `page-check.mjs Headliner 0` (no
+console errors, only WebGL warnings) and `build-digest.mjs` (eight themes; `7 Headliner: 4 cards`) all run.
+
+**Verification of the foundation.** (a) **Digest, `digest.mjs` themes 0–6 × every category and layout × desktop, tablet and mobile
+(1008 renders), HEAD against the working tree (two servers, 5173 and a worktree on 5175): 0 of 1008 differ** after the two
+normalisations the recipe names (the port in `url()` cells, and Vite's `?t=` HMR stamp on a changed module's image URLs, which
+appeared because `photos.js` changed). (b) Theme 7 renders every category at every layout and width (150 renders, 0 page errors, 0
+empty roots) once `limeTree` is widened. (c) `npm run build` and `npm run build:standalone` pass. (d) The builder opens with eight
+templates, the filmstrip scrolls (`overflowX: auto`) and the top bar's theme menu is a scrolling 2-column grid; both map `THEMES`,
+so neither needed a change. (e) **"Before" pictures** of all twelve section roots at theme 7, three widths, in the placeholder
+trees: scratchpad `shots/before-{desktop,tablet,mobile}/` (not committed). **Root `index.html` is not refreshed.**
+
+**Section 1 owes** (the header, next): `vm.heroH` 900 at 768 and 390 (call 2); `TITLE_SITES.Headliner` and the name's `face` in
+`sectionVm`'s `titleFitK` call (`navFace` is undefined for Headliner, so the header reads `frauncesEms` — wrong for Anton; use
+`antonEms`, the table Grunge reads); the header `in` rows and caps re-measured (`reach.mjs 7`, `limits.mjs header --themes=7`);
+`INLINE_OFF` / `PHOTO_OFF` rows for the header's pass; `HeadlinerHero` and the slanted-clip, three-copies name (plan, *The header*).
+
 ## Open questions
 
 1. **What the stray floating `Container` is** (86.7 / 95.4 / 42 px) — one `get_screenshot` in section 1's session.
