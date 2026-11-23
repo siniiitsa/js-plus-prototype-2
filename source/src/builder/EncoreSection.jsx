@@ -4973,9 +4973,96 @@ function PaperbackBio({ s }) {
   )
 }
 
+// Headliner's bio (Batch 2 file, 1:4627 · 1:15396 · 1:16446: 1440 x 832, 768 x 1293, 390 x 1209; no component sets, so the
+// verdict came from the pictures and the code: an own tree). Neither Retro's nor Lime's layout-1 bio sets a head rotated a
+// quarter turn UNDER nothing and OVER a square portrait, so the block stands alone, as Lattice's and Paperback's do.
+// Desktop is three 426.016 columns in one 640 row (49 in, 32 apart, 96 above and below); the first holds only what the
+// standing rules removed (`KM bio`, the `001` and `Structure · Bio_01` chips), so it is a seat; the second is the 426 x 640
+// portrait on its orange ground with the statement laid over it, its first line standing 198 left of the photograph; the
+// third is the Fraunces lead at the top and a hairline, `About` and the Inter paragraph at the foot. 768 and 390 stack the
+// seat (101.75 to the portrait), the portrait (426 centred, 342 at 390) and the lower block, with 77 / 58 above and below.
+//
+// The statement is Anton at 150 / 124.84 / 54.43 frame px, one string turned -90 degrees and right-aligned (so its ends meet
+// at the portrait's top edge), 0.98 leading, -0.005em. It is a box the portrait's height long that wraps like any heading
+// (the frame's own break, `READS THE` / `ROOM`, falls out of a 5em measure at every width, the narrowest included, where
+// the 640 would hold it on one line) and grows to the right a line at a time. Written as a transform, not `writing-mode`,
+// because the frames' own box is a rotated horizontal one and the glyph seats differ by a few px between the two.
+//
+// Draws what the standing rules leave: no `KM bio` eyebrow, no `001` / `Structure · Bio_01` chips (their seats stay as
+// padding, so the portrait keeps the frame's relation), and no badge (the frame draws none). Fields it reads: `heading`,
+// `para1` (the lead), `para2` (the About paragraph), `image`.
+const HEADLINER_BIO = {
+  desktop: { fw: 1440, top: 96, foot: 96, side: 49, colW: 426.016, h2: 150, x0: -198, y0: 0, lead: 34 },
+  tablet: { fw: 768, top: 77, foot: 77, seat: 101.75, colW: 426, h2: 124.839, x0: -149.65, y0: 0.85, lead: 31, lowGap: 32.25, lowW: 716, lowMin: 365, leadTop: 24.02, leadMin: 163.98 },
+  mobile: { fw: 390, top: 58, foot: 58, seat: 101.75, colW: 342, h2: 54.432, x0: -11.92, y0: 1.3, lead: 28, lowGap: 32, lowW: 342, lowMin: 319.47, leadTop: 0, leadMin: 142.67 },
+}
+const HL_BIO_HAIR = 'rgba(30,30,30,0.18)'   // the frames' own literal, not a variable
+function HeadlinerBio({ s }) {
+  const dev = s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop'
+  const P = HEADLINER_BIO[dev]
+  const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
+  const ems = s.titleWordEms
+  const statement = (
+    <h2 style={{
+      position: 'absolute', left: u(P.x0), top: u(P.y0), margin: 0, textAlign: 'right', textTransform: 'uppercase',
+      width: ems ? `min(${u(640)}, max(5em, ${ems}em))` : `min(${u(640)}, 5em)`,
+      transformOrigin: '100% 0', transform: 'translateX(-100%) rotate(-90deg)',
+      fontFamily: s.display, fontWeight: 400, lineHeight: 0.98, letterSpacing: '-0.005em', color: s.activeFg,
+      fontSize: ems ? `min(${u(P.h2)}, calc(${u(640)} / ${ems}))` : u(P.h2),
+    }}>{s.title}</h2>
+  )
+  const portrait = (
+    <div style={{ position: 'relative', flex: 'none', width: u(P.colW), height: u(640) }}>
+      <div style={{ position: 'absolute', inset: 0, background: s.ac }}>
+        <Photo s={s} initialsSize={96} />
+      </div>
+      {statement}
+    </div>
+  )
+  const lead = s.bioP1 && (
+    <p style={{
+      margin: 0, fontFamily: s.serif, fontWeight: 300, fontSize: u(P.lead), lineHeight: 1.06, letterSpacing: '-0.015em', color: s.text1,
+      whiteSpace: 'pre-line',
+    }}>{s.bioP1}</p>
+  )
+  const foot = s.bioP2 && (
+    <div style={{ borderTop: `1px solid ${HL_BIO_HAIR}`, ...col(u(20), { paddingTop: u(dev === 'desktop' ? 20 : 22) }) }}>
+      <span style={{ fontFamily: s.label, fontWeight: 400, fontSize: u(16), lineHeight: 1.05, letterSpacing: '0.02em', textTransform: 'uppercase', color: s.text3 }}>About</span>
+      <p style={{
+        margin: 0, fontFamily: s.body, fontWeight: 400, fontSize: u(17), lineHeight: 1.5, letterSpacing: '-0.015em', color: s.text1,
+        whiteSpace: 'pre-line',
+      }}>{s.bioP2}</p>
+    </div>
+  )
+  return (
+    <div style={{ position: 'relative', containerType: 'inline-size', overflow: 'hidden' }}>
+      {dev === 'desktop' ? (
+        <div style={{ ...row(u(32), { alignItems: 'stretch' }), boxSizing: 'border-box', padding: `${u(P.top)} ${u(P.side)} ${u(P.foot)}` }}>
+          <div style={{ flex: 'none', width: u(P.colW) }} />
+          {portrait}
+          <div style={col(u(24), { flex: 'none', width: u(P.colW), justifyContent: 'space-between', minHeight: u(640) })}>
+            <div>{lead}</div>
+            {foot}
+          </div>
+        </div>
+      ) : (
+        <div style={{ boxSizing: 'border-box', padding: `${u(P.top)} 0 ${u(P.foot)}` }}>
+          <div style={{ height: u(P.seat) }} />
+          <div style={{ marginLeft: s.mob ? u(24) : 'auto', marginRight: s.mob ? undefined : 'auto', width: u(P.colW) }}>{portrait}</div>
+          <div style={{ boxSizing: 'border-box', marginTop: u(P.lowGap), marginLeft: u((P.fw - P.lowW) / 2), width: u(P.lowW), minHeight: u(P.lowMin) }}>
+            {lead && <div style={{ boxSizing: 'border-box', paddingTop: u(P.leadTop), paddingBottom: u(24), minHeight: u(P.leadMin) }}>{lead}</div>}
+            {foot}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
 function Bio({ s }) {
   if (s.v0 && s.lattice) return <LatticeBio s={s} />
   if (s.v0 && s.paperback) return <PaperbackBio s={s} />
+  if (s.v0 && s.headliner) return <HeadlinerBio s={s} />
   // Lime layout 1 (964:58589 · 986:39877 at 768 · 986:39890 at 390) is the same
   // Figma component as Retro's below, in Lime's mode — but it is not the same
   // tree re-tokened. The middle column is a different composition (one arch-

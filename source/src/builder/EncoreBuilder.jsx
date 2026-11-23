@@ -628,6 +628,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // frames' vertical insets in cqw and the horizontal ones as its columns' own seats, so the root pads only the
   // published tab's surplus.
   if (d === 0 && (cat === 'bio' || cat === 'media' || cat === 'gallery' || cat === 'repertoire' || cat === 'map' || cat === 'pricing' || cat === 'calendar' || cat === 'form' || cat === 'testimonials' || cat === 'footer') && T.name === 'Paperback') vm.pad = `0px ${vm.surplus}`
+  // Headliner's layout-1 bio (1:4627 · 1:15396 · 1:16446) is a stage of its own (HeadlinerBio), Paperback's shape: it carries the
+  // frames' insets in cqw, so the root pads only the published tab's surplus. The other ten sections join the line as they pass.
+  if (d === 0 && cat === 'bio' && T.name === 'Headliner') vm.pad = `0px ${vm.surplus}`
   // …and the media's (1:419 · 1:9052 · 1:10024): 129.43 top and foot at 1440 (x 0.82, 106.13), 77 at 768
   // and 58 at 390, the same content insets. The 390 master's head box starts 40 down (an import
   // artefact: the eyebrow row sits at y 98, not 58), so with the eyebrow removed the head takes
@@ -1590,6 +1593,11 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // fitted to its widest word, in Bricolage's ems less the frames' -0.035em tracking (the header's face).
   if (T.name === 'Paperback' && (cat === 'bio' || cat === 'media' || cat === 'gallery' || cat === 'repertoire' || cat === 'map' || cat === 'pricing' || cat === 'form') && d === 0) {
     vm.titleWordEms = +Math.max(0, ...vm.title.split(/\s+/).map((w) => bricolageEms(w) - 0.035 * [...w].length)).toFixed(3)
+  }
+  // Headliner's layout-1 bio statement is Anton turned a quarter turn in a 640 measure (the portrait's height), fitted to its
+  // widest word in Anton's ems at the frames' -0.005em tracking (the header's rule, `antonEms(w, -0.005)`).
+  if (T.name === 'Headliner' && cat === 'bio' && d === 0) {
+    vm.titleWordEms = +Math.max(0, ...vm.title.split(/\s+/).map((w) => antonEms(w, -0.005))).toFixed(3)
   }
   // …and its repertoire rows set a song's title in a box beside the artist's chip, shrinking the type to keep the
   // widest word whole (the 768 frame's *Superstition* at 17, *September* at 16), so each song carries its own ems. The table is

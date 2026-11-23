@@ -3215,13 +3215,18 @@ export const FIELDS = {
         Lattice: [21, null, 17, 19],
         // Paperback layout 1 measured 2026-11-20 (limits.mjs bio --themes=6 --designs=0): the head is one line at 768 and 390
         // in the frame, so 390 binds at the seed's own 15 (the probe's floor); 3 and 4 are Pop's until their passes.
-        Paperback: [15, null, 17, 19] } },
+        Paperback: [15, null, 17, 19],
+        // Headliner layout 1 measured 2026-11-23 (limits.mjs bio --themes=7 --designs=0: 17 at 1440, 19 at 768 and 390; the statement is
+        // two lines in a 5em measure and a third reaches into the portrait); 3 and 4 are Grunge's until their passes.
+        Headliner: [17, null, 20, 18] } },
     // Layout 2's pill over the paragraph (JP-059), seeded with the frame's
     // copy and cased as a label; emptied, it is not drawn.
     { k: 'tag',       l: 'Highlight tag', d: BIO_TAG, in: [1], chars: [null, 18],
       hint: 'The small pill over the first paragraph. Left empty, it is not drawn.' },
     { k: 'para1',     l: 'Paragraph 1', type: 'area', def: 'bioP1', chars: 390 },
-    { k: 'para2',     l: 'Paragraph 2', type: 'area', def: 'bioP2', in: [2, 3], chars: [null, null, 340, 340] },
+    // Headliner's layout 1 prints it too, as the paragraph under `About` (the lead above the rule is `para1`).
+    { k: 'para2',     l: 'Paragraph 2', type: 'area', def: 'bioP2', in: { Headliner: [0, 2, 3], '*': [2, 3] },
+      chars: { Headliner: [340, null, 340, 340], '*': [null, null, 340, 340] } },
     // Layout 2's foot row (JP-037): the frame's two-tone line, whose first
     // three words take the accent (`vm.bioCredit`), and the pill beside it.
     // Each drops when emptied, and the row with both.
@@ -3261,7 +3266,7 @@ export const FIELDS = {
     // header's three states (2026-11-11). Editorial's layout 3 draws a sparkle, not
     // a badge, so it reads this at layout 1 alone. `sectionVm` folds it into `showBadge` /
     // `badgeSpin`; an absent key is today's rotating seal.
-    { k: 'badgeMode', l: 'Badge', type: 'select', d: 'rotating', opts: BADGE_MODES, in: { Editorial: [0], '*': [0, 2] },
+    { k: 'badgeMode', l: 'Badge', type: 'select', d: 'rotating', opts: BADGE_MODES, in: { Editorial: [0], Headliner: [2], '*': [0, 2] },
       hint: 'Show the circular badge turning, show it still, or hide it. Hidden leaves no gap.' },
     // Layout 4's "Listen ↗" (JP-082, user call, 2026-09-29): the key the bio
     // already read, `vm.cta2` off its own content, which no field reached
@@ -4711,8 +4716,9 @@ export function identityCap(key, sections, themeName) {
 // `who.kicker`, `who.location`, `who.tags` and `who.showTags=hide` per design;
 // change a reader, re-measure, change this.
 export const IDENTITY_READS = {
-  kicker: { bio: [0, 1, 2, 3], form: [0, 1] },
-  location: { bio: [0, 1, 2], calendar: { Retro: [0, 3], Lattice: [0, 3], '*': [3] } },
+  // Headliner's layout-1 bio prints neither (the frame has no role line), so its layout 1 is off both.
+  kicker: { bio: { Headliner: [1, 2, 3], '*': [0, 1, 2, 3] }, form: [0, 1] },
+  location: { bio: { Headliner: [1, 2], '*': [0, 1, 2] }, calendar: { Retro: [0, 3], Lattice: [0, 3], '*': [3] } },
   tags: { bio: { Retro: [1, 3], '*': [1, 2, 3] } },
   showTags: { bio: { Retro: [1, 3], '*': [1, 2, 3] } },
 }
