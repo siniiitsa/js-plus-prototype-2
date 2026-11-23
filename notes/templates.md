@@ -722,3 +722,8 @@ hold the record, and this file keeps what a later session touching a Headliner s
 - The stage pattern again (`HEADLINER_BIO`, `u()` in cqw, the frame's px at all three widths, `vm.pad` = the published tab's surplus alone).
 - **The statement is a transform**, the frame's own rotated horizontal box: `translateX(-100%) rotate(-90deg)` about the box's top-right corner, right-aligned so the lines' ends meet the portrait's top edge, in a `min(640u, max(5em, widest word))` measure that makes the frame's `READS THE` / `ROOM` break at every width. Not `writing-mode`, whose glyph seats differ by a few px.
 - `para1` is the Fraunces lead, `para2` the paragraph under a literal `About`; no badge, role line or tags are drawn at layout 1.
+
+**The media** (`HeadlinerMedia`, `EncoreSection.jsx`; own tree, dispatched from `Media` after its hooks and seam; `notes/media.md`, *Headliner · layout 1*):
+- The stage pattern (`HEADLINER_MEDIA`, `u()` in cqw, the frame's px at all three widths, `vm.pad` = the surplus alone). Desktop centres its content in a 1057 box (`minHeight` + centring).
+- Flush rows on `HL_HAIR` rules (place number, square cover, Inter Tight title and sub, Anton time, a 44 outlined square) beside a **426-tall black square card** whose photograph is the flex remainder; the transport stands on the title row's foot. The player's track is `at`, not the frame's row 02.
+- **The cover is seeded as track one's art** (`HEADLINER_TRACK_ART[0]`); the Soundcloud button is `HeadlinerPill`.
