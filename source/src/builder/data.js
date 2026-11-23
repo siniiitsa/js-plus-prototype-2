@@ -1748,6 +1748,17 @@ export const TITLE_SITES = {
     TS([67, 51, 36], 0.89, [1, 1, 1], [894.7, 440, 350], [738, 1024, 606]),
     TS([103, 75, 46], 0.75, [0, 1, 1], [806.1, 561.5, 350], [738, 1024, 844]),
   ],
+  // Headliner's layout-1 header (HeadlinerHero): one wrapping run in Anton at 267.84 / 156 / 58 frame px (x 0.82 at
+  // 1440 = 219.63), lh 0.98, set -0.005em, anchored by its foot so a longer name grows upward. W is the room between
+  // the gutters (the frame's own text box: 1342.08 x 0.82 at 1440, 715.77 at 768, 342 at 390) and the hero is 738 /
+  // 900 / 900 tall. The seed ("KAI MERCER", 4.37em) is one line at every width; the ring and the block arrow stand
+  // right of x 1241 x 0.82, past W, so there is no `room` and no `bs`. Layouts 2-4 copy Pop's rows.
+  Headliner: [
+    TS([219.63, 156, 58], 0.98, [1, 1, 1], [1100.5, 715.8, 342], [738, 900, 900]),
+    TS([67, 51, 36], 0.89, [1, 1, 1], [521, 324, 370], [800, 811, 682]),
+    TS([67, 51, 36], 0.89, [1, 1, 1], [894.7, 440, 350], [738, 1024, 606]),
+    TS([103, 75, 46], 0.75, [0, 1, 1], [806.1, 561.5, 350], [738, 1024, 844]),
+  ],
 }
 
 // The lines a name takes set at size `s` in a column `W` wide: greedy word wrap
@@ -3013,7 +3024,7 @@ export const BADGE_MODES = [
 // badge is a static reticle / star, and Lattice's a still raster disc of dotted rings, so a
 // rotating one is not on offer there.
 export const badgeOptsFor = (themeName, design, cat = 'header') =>
-  design === 0 && (cat === 'header' && (themeName === 'Lime' || themeName === 'Editorial' || themeName === 'Lattice')
+  design === 0 && (cat === 'header' && (themeName === 'Lime' || themeName === 'Editorial' || themeName === 'Lattice' || themeName === 'Headliner')
     || cat === 'bio' && themeName === 'Lattice')
     ? [{ v: 'rotating', l: 'Visible' }, { v: 'hidden', l: 'Hidden' }]
     : BADGE_MODES
@@ -3105,7 +3116,11 @@ export const FIELDS = {
       // Paperback's layout 1 holds 14 (`limits.mjs header --themes=6 --designs=0 --keys=title --sweep`: 60 at
       // 1440, 21 at 390, 14 at 768 where a second line climbs into the vinyl sticker and the photo card); its
       // other three layouts are placeholders and keep Pop's 80, which --check holds.
-      chars: { Retro: [80, 80, 14, 80, 56, 39], Lime: 80, Grunge: 80, Editorial: 80, Pop: 80, Lattice: 80, Paperback: [14, 80, 80, 80] } },
+      //
+      // Headliner's layout 1 holds 33 (`limits.mjs header --themes=7 --designs=0 --keys=title --sweep`: open to 80 at 1440 and
+      // 768, 33 at 390, where a name that long sets down to the half-size floor and a fifth line climbs into the ring); the
+      // others are placeholders and keep Pop's 80.
+      chars: { Retro: [80, 80, 14, 80, 56, 39], Lime: 80, Grunge: 80, Editorial: 80, Pop: 80, Lattice: 80, Paperback: [14, 80, 80, 80], Headliner: [33, 80, 80, 80] } },
     // Header-nav ticket (2026-11-11): layout 2 no longer prints the description
     // under the name, so only Retro's layout 5 reads it.
     { k: 'subtitle',  l: 'Subtitle',         type: 'area', def: 'heroSub',
@@ -3173,7 +3188,11 @@ export const FIELDS = {
     { k: 'badgeText', l: 'Corner badge text',                    // defaults to the artist's name — special-cased
       in: { Retro: [0, 1, 3, 4, 5], Lime: [3], Grunge: [0, 3], Editorial: [3], Pop: [0, 3], Lattice: [3], Paperback: [0, 3], Headliner: [0, 3] },
       chars: { Retro: 19, Lime: [null, null, null, 13], Grunge: [14, null, null, 14], Editorial: [null, null, null, 10],
-        Pop: [12, null, null, 10], Lattice: [null, null, null, 13], Paperback: [12, null, null, 10] } },
+        Pop: [12, null, null, 10], Lattice: [null, null, null, 13], Paperback: [12, null, null, 10],
+        // Headliner layout 1 prints the ringed numeral ("26" in the frame, the artist's initials until typed over) inside a
+        // 96 / 96 / 56 px hole: three characters, the third setting the numeral at 0.72 (three capital Ws are 72 px in the
+        // 56 hole at full size at 390; the probe's three-letter sentinel needs the third seat too).
+        Headliner: [3, null, null, 14] } },
     { k: 'navMode',   l: 'Menu style', type: 'select', d: 'sections', opts: [
       { v: 'sections', l: 'Follow my sections' },
       { v: 'minimal',  l: 'Minimal (Music · Gigs · About)' },
@@ -4184,8 +4203,14 @@ export const HEADING_4 = {
 // map's coverage joined with JP-105 (mapRadiusSeed). Layouts 3 and 4's heads
 // come ahead of the song count, which sectionVm's later assignment says the
 // other way round (JP-070, JP-081).
+// The artist's initials, at most two: the placeholder discs' letters, and Headliner layout 1's ringed numeral.
+export const initialsOf = (name) =>
+  String(name).trim().split(/\s+/).map((w) => w[0] || '').join('').slice(0, 2).toUpperCase()
+
 export function fieldSeed({ cat, f, themeName, design, c = {}, artistName, email }) {
   const songs = Array.isArray(c.songs) ? c.songs : SONGS
+  // Headliner's layout-1 hero rings a numeral where the others ring the name (plans/headliner/layout-1.md, section 1).
+  if (f.k === 'badgeText' && cat === 'header' && themeName === 'Headliner' && design === 0) return initialsOf(artistName)
   return (f.k === 'title' || f.k === 'badgeText') && cat === 'header' ? artistName
     : f.k === 'copyright' && cat === 'footer' ? copyrightOf(artistName)
     : f.k === 'email' && cat === 'calendar' ? email
@@ -4412,6 +4437,9 @@ export const INLINE_OFF = {
   'Lattice.1.header.location': 'not drawn: layouts 1–4 print no location any more (a shared identity key; the bio, the calendar and the map print it)',
   'Lattice.2.header.location': 'not drawn: layouts 1–4 print no location any more (a shared identity key; the bio, the calendar and the map print it)',
   'Lattice.3.header.location': 'not drawn: layouts 1–4 print no location any more (a shared identity key; the bio, the calendar and the map print it)',
+  // Headliner's layout-1 header (the only fitted one; layouts 2–4 are placeholders until their pass) draws neither line.
+  'Headliner.0.header.kicker': 'not drawn: the layout-1 header prints no act type any more (a shared identity key; the bio’s role line and the form print it)',
+  'Headliner.0.header.location': 'not drawn: layouts 1–4 print no location any more (a shared identity key; the bio, the calendar and the map print it)',
   '*.*.pricing.tiers.tags': 'derived value: the filter chips are the distinct tags of every package',
   '*.3.video.videos.desc': 'not drawn: layout 4 prints the playing video’s title alone',
   '*.*.repertoire.songs.tags': 'derived value: the filter chips are the distinct tags of every song',

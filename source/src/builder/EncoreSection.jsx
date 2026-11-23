@@ -31,6 +31,7 @@
 import { useId, useRef, useState } from 'react'
 import RealMap from './RealMap.jsx'
 import { PaperbackArt, PaperbackSparkle, PaperbackWaves } from './paperbackArt.jsx'
+import { HeadlinerWaves, HeadlinerBlockArrow } from './headlinerArt.jsx'
 import {
   Play, Pause, SkipBack, SkipForward, Check, ChevronLeft, ChevronRight,
   ArrowLeft, ArrowRight, ArrowUp, ArrowDown, Star, Plus, X, Search, User,
@@ -1026,7 +1027,7 @@ const clock = (sec) => {
 // The ground and ink the menu opens on (below). Shared by `HeaderRoot`'s in-flow
 // panel and the fixed one Retro's layouts 5 and 6 still open.
 function menuColours(s) {
-  return s.lattice || s.paperback ? [s.bg, s.tx] : s.editorial ? [s.box3, s.paper] : s.pop && s.v2 ? [s.bg, s.text3]
+  return s.lattice || s.paperback || s.headliner ? [s.bg, s.tx] : s.editorial ? [s.box3, s.paper] : s.pop && s.v2 ? [s.bg, s.text3]
     : s.pop && s.v3 ? [s.mapBg, s.text3] : [s.mapBg, s.mapFg]
 }
 
@@ -1102,6 +1103,7 @@ function MenuPanel({ s, menu }) {
           <X size={26} style={{ flex: 'none' }} />
         </span>
         {s.paperback ? <PaperbackPill s={s} to={s.bookTo} u={(v) => `${v * (s.narrow ? 1 : 0.82)}px`} />
+          : s.headliner ? <HeadlinerPill s={s} to={s.bookTo} u={(v) => `${v * (s.narrow ? 1 : 0.82)}px`} />
           : s.lattice ? <BracketButton s={s} to={s.bookTo} ink={ink} /> : <BookPill s={s} to={s.bookTo} />}
       </div>
       {s.paperback ? (
@@ -2338,6 +2340,192 @@ function PaperbackHero({ s, menu }) {
   )
 }
 
+// Headliner's hero (Batch 2 file, 1:4481 · 1:15262 · 1:16317: 1440 / 768 / 390, all 900 tall, of which the top 80 is the
+// in-frame bar; the frames carry no component sets, so the verdict came from the pictures: an own tree, the seam
+// HeaderRoot's). A 820-tall stage cut by two slanted edges into three zones: maroon on the left, the photograph between
+// them and an orange field of wavy lines on the right (none at 390: the frame hides it). The name is one line of Anton
+// at 267.84 / 156 / 58 frame px painted in THREE colours across the edges, which the frame does with three masked copies;
+// so does this, three copies of the one h1 stacked in a grid cell and each `clip-path`-ed to its zone (orange on the maroon,
+// cream over the photograph, black over the orange), pure CSS, no hook, the polygon's corners written against the name's own
+// box (`calc(100% - 764)` is the stage's top, `calc(100% + 56)` its foot, whatever the name's height) so a name that wraps or
+// shrinks keeps its zones. The ringed numeral and the block arrow stand top right; an avatar and the six tag chips sit
+// above the name. The bar is the hamburger and Book Now (the header-nav rules: the frames' wordmark, logo, inline links and
+// the act-type and location lines are not drawn, nor the Fraunces tagline, call 1 of session 0).
+//
+// Every length is the FRAME's px through `u`, in cqw of the stage (a container as wide as the page content, `s.surplus` in
+// from the hero's edges), so the picture holds its proportions on a canvas narrower than the frame; at the frame's own width
+// it is the frame x 0.82 at desktop and verbatim at 768 and 390. The edges are fractions of the stage's width (the masks'
+// own: 475.2 -> 763.2 and 892.8 -> 1137.6 of 1440; 307.2 -> 445.44 and 522.24 -> 645.12 of 768; 187.2 -> 249.6 and
+// 288.6 -> 343.2 of 390).
+const HEADLINER_HERO = {
+  desktop: { fw: 1440, gut: 48.96, ring: 124, num: 52, arrow: 150, gap: 24, L: [0.33, 0.53], R: [0.62, 0.79], orange: true },
+  tablet: { fw: 768, gut: 26.11, ring: 124, num: 42, arrow: 150, gap: 28.1, L: [0.4, 0.58], R: [0.68, 0.84], orange: true },
+  mobile: { fw: 390, gut: 24, ring: 84, num: 34, arrow: 0, gap: 27.2, L: [0.48, 0.64], R: [0.74, 0.88], orange: false, imgX: 77 },
+}
+const HL_BAR = 80      // the in-frame bar
+const HL_STAGE = 820   // the stage under it
+const HL_FOOT = 56     // the name's box ends this far above the stage's foot
+const HL_HAIR = 'rgba(238,227,209,0.22)'
+
+// Book now (1:4501): a square orange button, Anton 16 tracked .02em, the arrow 14 to the right of the label.
+function HeadlinerPill({ s, label, to, ext, u }) {
+  const link = ext !== undefined ? extLink(s, ext) : s.live && to ? { href: `#${to}` } : null
+  const Tag = link ? 'a' : 'span'
+  const bg = s.onScheme[1].activeBg
+  const ink = s.onScheme[1].activeFg
+  return (
+    <Tag {...link} style={{
+      ...row(u(14)), flex: 'none', height: u(46), boxSizing: 'border-box', padding: `0 ${u(18)}`, cursor: 'pointer', textDecoration: 'none',
+      background: bg, border: `1px solid ${bg}`, color: ink, whiteSpace: 'nowrap',
+      fontFamily: s.label, fontWeight: 400, fontSize: u(16), letterSpacing: '0.02em', textTransform: 'uppercase', lineHeight: 'normal',
+    }}>
+      {label ?? s.cta1}
+      <svg aria-hidden viewBox="0 0 16 14" fill="none" style={{ display: 'block', width: u(16), height: u(14), flex: 'none' }}>
+        <path d="M0 7H13M8 1.5L14 7L8 12.5" stroke={ink} strokeWidth="2.4" />
+      </svg>
+    </Tag>
+  )
+}
+
+// The hamburger (1:15273): three 2px bars 20 wide and 6 apart in a 26 glyph in a 46 button; the button stands left of the gutter
+// by the 13px the bars sit in from it, so the ink starts on the gutter (the standing rule puts it left, where the frames' wordmark is).
+function HeadlinerBurger({ color, menu, u }) {
+  return (
+    <span onClick={menu?.toggle} style={{
+      ...row('0px', { justifyContent: 'center' }), flex: 'none', cursor: 'pointer', width: u(46), height: u(46), marginLeft: `-${u(13)}`,
+    }}>
+      <svg aria-hidden viewBox="0 0 26 26" fill="none" style={{ display: 'block', width: u(26), height: u(26) }}>
+        <path d="M3 7H23M3 13H23M3 19H23" stroke={color} strokeWidth="2" strokeLinecap="square" />
+      </svg>
+    </span>
+  )
+}
+
+function HeadlinerHero({ s, menu }) {
+  const dev = s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop'
+  const P = HEADLINER_HERO[dev]
+  const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
+  const tok = s.onScheme[1]
+  const orange = tok.activeBg
+  const cream = tok.bg
+  const black = tok.activeFg
+  const [l0, l1] = P.L
+  const [r0, r1] = P.R
+  const pct = (f) => `${(f * 100).toFixed(3)}%`
+  const poly = (...pts) => `polygon(${pts.map(([x, y]) => `${x} ${y}`).join(', ')})`
+  // the three zones, in the stage's own box
+  const zone = {
+    left: poly(['0%', '0%'], [pct(l0), '0%'], [pct(l1), '100%'], ['0%', '100%']),
+    right: poly([pct(r0), '0%'], ['100%', '0%'], ['100%', '100%'], [pct(r1), '100%']),
+  }
+  // and the same three in the name's box: x is the stage's less the gutter, y is the box's own 100% less / plus the stage's offsets
+  const X = (f) => `calc(${(f * 100).toFixed(3)}cqw - ${u(P.gut)})`
+  const Y0 = `calc(100% - ${u(HL_STAGE - HL_FOOT)})`
+  const Y1 = `calc(100% + ${u(HL_FOOT)})`
+  const FAR = `calc(150cqw)`
+  const nameZone = {
+    left: poly([`calc(-50cqw)`, Y0], [X(l0), Y0], [X(l1), Y1], [`calc(-50cqw)`, Y1]),
+    centre: poly([X(l0), Y0], [X(r0), Y0], [X(r1), Y1], [X(l1), Y1]),
+    right: poly([X(r0), Y0], [FAR, Y0], [FAR, Y1], [X(r1), Y1]),
+  }
+  const nameStyle = {
+    margin: 0, gridArea: '1 / 1', fontFamily: s.display, fontWeight: 400, textTransform: 'uppercase',
+    fontSize: fitSz(s, u(dev === 'desktop' ? 267.84 : dev === 'tablet' ? 156 : 58), s.dispXl), lineHeight: 0.98, letterSpacing: '-0.005em',
+    overflowWrap: s.titleK < 1 ? 'break-word' : undefined,
+  }
+  const SEAT = [
+    { bg: tok.chips[3].bg, fg: cream }, { bg: tok.chips[1].bg, fg: black }, { bg: tok.chips[2].bg, fg: black },
+    { bg: tok.chips[0].bg, fg: cream }, { bg: tok.chips[4].bg, fg: black }, { line: true, fg: cream },
+  ]
+  const badge = s.showBadge === 'show'
+  const numeral = String(s.badgeText || '').toUpperCase()
+  const D = P.ring
+  // The frame draws two characters; a third (the cap is 3) sets at 0.72 so three capital Ws still clear the 56 px hole at 390.
+  const fs = numeral.length > 2 ? P.num * 0.72 : P.num
+  return (
+    <div style={{
+      position: 'relative', width: '100%', aspectRatio: `${P.fw} / 900`, maxHeight: s.narrow ? s.heroH : 900 * 0.82, overflow: 'hidden',
+      background: s.bg, color: s.tx,
+    }}>
+      {/* a published window wider than the stage: the orange field runs on to the edge, the maroon already does */}
+      {P.orange && <div aria-hidden style={{ position: 'absolute', right: 0, width: s.surplus, top: `${(HL_BAR / 900) * 100}%`, bottom: 0, background: orange }} />}
+      <div style={{ position: 'absolute', top: 0, bottom: 0, left: s.surplus, right: s.surplus, containerType: 'inline-size' }}>
+        {/* the bar */}
+        <div style={{
+          position: 'absolute', left: 0, right: 0, top: 0, height: u(HL_BAR), boxSizing: 'border-box', borderBottom: `1px solid ${HL_HAIR}`,
+          background: s.bg, zIndex: 4,
+        }}>
+          <div style={{
+            position: 'absolute', left: u(P.gut), right: u(P.gut), top: u(16.5), ...row('0px', { justifyContent: 'space-between' }),
+            visibility: menu?.open ? 'hidden' : undefined,
+          }}>
+            <HeadlinerBurger color={cream} menu={menu} u={u} />
+            <HeadlinerPill s={s} to={s.bookTo} u={u} />
+          </div>
+        </div>
+
+        {/* the stage */}
+        <div style={{ position: 'absolute', left: 0, right: 0, top: u(HL_BAR), height: u(HL_STAGE) }}>
+          {/* The 390 frame sets its picture in a box 77 to the right of the stage (the right 77 fall off it); the same
+              picture in the stage's own box, drawn 77 to the right of its centred cover, is that without a box the
+              maroon wedge already covers on the left (and which no ink of a chip meets by being wider). */}
+          <div style={{ position: 'absolute', inset: 0 }}>
+            <Photo s={s} initialsSize={96} style={P.imgX ? { objectPosition: `calc(50% + ${u(P.imgX)}) 50%` } : undefined} />
+          </div>
+          <div aria-hidden style={{ position: 'absolute', inset: 0, background: s.bg, clipPath: zone.left }} />
+          {P.orange && (
+            <div aria-hidden style={{ position: 'absolute', inset: 0, background: orange, clipPath: zone.right }}>
+              <HeadlinerWaves dev={dev} />
+            </div>
+          )}
+
+          {/* the ringed numeral (one svg, the disc its viewBox, so the builder's seal rule boxes it whole) and the block arrow */}
+          {badge && (
+            <svg viewBox={`0 0 ${D} ${D}`} fill="none" style={{
+              position: 'absolute', right: u(P.gut), top: u(48), width: u(D), height: u(D), display: 'block', overflow: 'visible',
+            }}>
+              <circle cx={D / 2} cy={D / 2} r={D / 2 - 7} stroke={black} strokeWidth="14" />
+              <text x={D / 2} y={D / 2 + fs * 0.463} textAnchor="middle" fill={black} fontFamily={s.display} fontSize={fs}
+                letterSpacing={-0.005 * fs}>{numeral}</text>
+            </svg>
+          )}
+          {P.arrow > 0 && (
+            <HeadlinerBlockArrow fill={black} width={P.arrow} style={{ position: 'absolute', right: u(P.gut), top: u(204), width: u(P.arrow), height: 'auto' }} />
+          )}
+
+          {/* the avatar, the chips and the name, anchored at the foot so a longer name grows upward */}
+          <div style={{ position: 'absolute', left: u(P.gut), right: u(P.gut), bottom: u(HL_FOOT), ...col(u(P.gap)) }}>
+            <div style={col(u(14), { alignItems: 'flex-start' })}>
+              <div style={{ width: u(72), height: u(72), overflow: 'hidden', background: tok.box1 }}>
+                <Photo s={s} avatar initialsSize={28} />
+              </div>
+              {s.showTags === 'show' && (
+                <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'flex-start', gap: u(6) }}>
+                  {s.tagChips.map((c, i) => {
+                    const t = SEAT[i % 6]
+                    return (
+                      <span key={i} style={{
+                        ...row('0px'), height: u(t.line ? 30 : 28), padding: `0 ${u(12)}`, boxSizing: 'border-box', borderRadius: s.radiusChip,
+                        whiteSpace: 'nowrap', background: t.bg, color: t.fg, border: t.line ? `1px solid ${t.fg}` : undefined,
+                        fontFamily: s.label, fontWeight: 400, fontSize: u(13), letterSpacing: '0.02em', textTransform: 'uppercase', lineHeight: 'normal',
+                      }}>{c.label}</span>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
+            <div style={{ display: 'grid' }}>
+              <h1 style={{ ...nameStyle, color: orange, clipPath: nameZone.left }}>{s.heroTitle}</h1>
+              <div aria-hidden style={{ ...nameStyle, color: cream, clipPath: nameZone.centre }}>{s.heroTitle}</div>
+              <div aria-hidden style={{ ...nameStyle, color: black, clipPath: nameZone.right }}>{s.heroTitle}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // v0 — Header layout 1 · Hero (§10.2 reference design)
 //
 // Full-bleed photograph under a bottom-weighted scrim: the nav rides the top
@@ -2347,6 +2535,7 @@ function PaperbackHero({ s, menu }) {
 function HeaderV0({ s, menu }) {
   if (s.lattice) return <LatticeHero s={s} menu={menu} />
   if (s.paperback) return <PaperbackHero s={s} menu={menu} />
+  if (s.headliner) return <HeadlinerHero s={s} menu={menu} />
   const centred = s.align === 'centre'
   // Both reference frames are transcribed verbatim (§5.5). 768: 30px gutters,
   // a 144px portrait card, identity stacked 40/24/36/30. 390: 10px gutters, a

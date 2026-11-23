@@ -199,8 +199,14 @@ function pageHelpers() {
       }
     }
     if (!r) return { hidden: 'no box', text }
-    const x = r.left + r.width / 2, y = r.top + r.height / 2
     const root = rootOf(sid)
+    const y = r.top + r.height / 2
+    let x = r.left + r.width / 2
+    // The builder's own chrome over the middle of the copy (the selected section's canvas toolbar sits on the
+    // header's top-right, over a Book pill's text): a hand clicks the part of the words it leaves, so slide the aim
+    // along the line to the nearest point whose topmost element is the section's.
+    const chrome = (px) => { const e = document.elementsFromPoint(px, y)[0]; return !!e && !root.contains(e) }
+    if (!t.svg && chrome(x)) for (const f of [0.15, 0.3, 0.45, 0.6, 0.75, 0.9]) { const px = r.left + r.width * f; if (!chrome(px)) { x = px; break } }
     if (x < 0 || y < 0 || x >= innerWidth || y >= innerHeight) return { hidden: 'off-screen', text }
     const stack = document.elementsFromPoint(x, y).filter((e) => root.contains(e))
     const depth = stack.indexOf(t.el)

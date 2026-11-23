@@ -532,6 +532,10 @@ function measure(needles, drops = []) {
     const overlaps = others.filter((o) => !el.contains(o.el) && !o.el.contains(el)
       && !drops.includes(o.el.textContent.trim())
       && !(o.el.closest('svg') && seats.includes(o.el))
+      // Another copy of the same value stacked in the same box (Headliner's hero paints the name three times, each
+      // clipped to its colour zone, in one grid cell) is the same print, not a neighbour.
+      && !(seats.includes(o.el) && o.el.parentElement === el.parentElement
+        && (o.el.getAttribute('aria-hidden') === 'true' || el.getAttribute('aria-hidden') === 'true'))
       // A fitted name's line box brushing a seal's disc by a pixel or two is read by eye, not failed
       // (the line box is a quarter-size taller than the glyphs it holds): plans/header-fit.md.
       && !(/[?&]linebox=1/.test(location.search) && o.el.closest('svg'))

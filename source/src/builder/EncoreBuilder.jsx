@@ -61,7 +61,7 @@ import {
   PRICING_INTRO_3, FORM_SUB_4, CAL_HEADING_1, formBtnSeed, CAL_TYPES, PRICING_ROW_CTA, PRICING_ROW_CTA_3, PRICING_ROW_CTA_PAPERBACK, MAP_SPAN, MAP_STATS_4, STAT_KEYS,FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
   parseDate, isoDate, calStart, headerIdentity, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav, navModeDefault, badgeOptsFor,
-  catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldSeed, HEADING_3, HEADING_4, fieldReach, fieldShown, identityFieldsFor, identityHint, INLINE_OFF, PHOTO_OFF, INLINE_HEAD, INLINE_MARKED, INLINE_PART, INLINE_LINES, inlineRule, fieldCap, colCaps, identityCap, sealCap, capExcess, numeralLen, clampCapped, clampContent, legacyContent, clampIdentity, copyrightOf, formHeading3, extUrl, youtubeEmbed, youtubeThumb, youtubeParts, youtubeWatch, youtubeChannel, urlProblem, emailProblem, emailAddr, songTags, repChips,
+  catById, catName, navSectionsOf, initialsOf, contrast, lum, mix, rgba, caseText, fieldSeed, HEADING_3, HEADING_4, fieldReach, fieldShown, identityFieldsFor, identityHint, INLINE_OFF, PHOTO_OFF, INLINE_HEAD, INLINE_MARKED, INLINE_PART, INLINE_LINES, inlineRule, fieldCap, colCaps, identityCap, sealCap, capExcess, numeralLen, clampCapped, clampContent, legacyContent, clampIdentity, copyrightOf, formHeading3, extUrl, youtubeEmbed, youtubeThumb, youtubeParts, youtubeWatch, youtubeChannel, urlProblem, emailProblem, emailAddr, songTags, repChips,
   tierFeats, priceParts, priceCuts, blankRow, SONG_KEYS, repSetsOf, repSetLine, TRACK_KEYS, uploadedAudio, GIG_KEYS, gigDayOk, gigWeekday, gigStatus, gigStamp, MIN_YEAR, gigPart, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
   layoutChoices, designCount, designOf, pageLayout, pageOrder, pageRows, videoDesign, videoStartArch,
   VIDEOS, VIDEO_SEED, VIDEO_KEYS, videoPlayable, videoSeedDesc, VIDEO_ALL, COLUMN_SPLIT, bebasEms, antonEms, gloockEms, titanEms, latticeEms, frauncesEms, titleFitK, bricolageEms, latticeDotField, latticeBioDots, latticeTestiDots,
@@ -276,8 +276,6 @@ const siteSlug = (name) =>
 // (NameInput), so in the app that is a fresh page's absent key alone.
 const nameOf = (title, fallback) => String(title ?? '').trim() || fallback
 
-const initialsOf = (name) =>
-  String(name).trim().split(/\s+/).map((w) => w[0] || '').join('').slice(0, 2).toUpperCase()
 
 // §5.4 — header stays at index 0, footer stays last, and optional sections
 // may only move between them.
@@ -967,6 +965,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // (sealCap, data.js), so a long name never sets its two copies over each
   // other; Badge text is capped to the same fit in the panel.
   vm.badgeText = c.badgeText !== undefined ? c.badgeText
+    // Headliner's layout-1 ring holds a numeral, not the name (fieldSeed mirrors it): the artist's initials until typed over.
+    : T.name === 'Headliner' && cat === 'header' && d === 0 ? initials
     : clamp ? clampCapped(name, sealCap(cat, theme.name, d)) : name
   vm.navMode = cv('navMode', cat === 'header' ? navModeDefault(T.name, d) : 'sections')
   vm.align = cv('align', 'left')
@@ -1027,6 +1027,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // draw 1024 and 844; the desktop number (614 = 750 x .82, 1px under the frame's) already agrees,
   // so `WIDE.heroH`, the picker's aspect and the setup cards stay as they are (Lattice's verdict).
   if (T.name === 'Paperback' && cat === 'header' && d === 0 && Z.dev !== 'desktop') vm.heroH = 750
+  // Headliner's is 900 at 768 and 390 (call 2 of session 0); its desktop stays at the aspect, 900 x .82 = 738, which
+  // HeadlinerHero computes itself, since `WIDE.heroH` (614) is the other templates' and stays.
+  if (T.name === 'Headliner' && cat === 'header' && d === 0 && Z.dev !== 'desktop') vm.heroH = 900
 
   // §4.8 — `navSections` is `{ cat, label }`, the label being the visitor's
   // word for the section (`navLabel()`, §4.3a) and never the sidebar's, and a
@@ -1122,7 +1125,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // Lattice's title is set 0.004em open (LatticeHero), which its table (measured at no tracking) lacks.
     // Paperback's is set -0.035em (the frames' tracking, which its table, measured at none, lacks).
     const face = T.name === 'Lattice' ? (x) => latticeEms(x) + 0.004 * [...x].length
-      : T.name === 'Paperback' ? (x) => bricolageEms(x) - 0.035 * [...x].length : (navFace ?? frauncesEms)
+      : T.name === 'Paperback' ? (x) => bricolageEms(x) - 0.035 * [...x].length
+      // Headliner's name is Anton at -0.005em (the frame's -1.3392 px at 267.84), at the face's own size: no `navFace`, which
+      // no Headliner site reads, and no 0.75 (that is Grunge's stand-in for Stones Crush).
+      : T.name === 'Headliner' ? (x) => antonEms(x, -0.005) : (navFace ?? frauncesEms)
     const words = vm.brand.split(/\s+/).filter(Boolean).map((w) => face(w))
     ;[vm.titleK, vm.titleFloor] = titleFitK(T.name, d, Z.dev, words, face(' '), pageW)
   }
@@ -5944,6 +5950,9 @@ function TemplatePreview({ themeIdx, artistName }) {
   return (
     <ScaledPreview
       height="100%" center
+      // Headliner's hero is 738 tall at the 1180 canvas (the frame's 900 x .82), taller than the 614 every picker frame is
+      // cut to, so its card would crop the bar and the name's foot: it alone is scaled to fit (user call, 2026-11-23).
+      fit={THEMES[themeIdx].name === 'Headliner'}
       vm={sectionVm({
         themeIdx, cat: 'header', arch: 0, c: {}, artistName,
         Z: SIZES.desktop, mob: false, navSections: previewNav(0),
