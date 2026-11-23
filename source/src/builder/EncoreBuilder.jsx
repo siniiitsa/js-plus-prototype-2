@@ -58,7 +58,7 @@ import {
   FOOTER_LINKS, FOOTER_TARGETS, FOOTER_CREDIT, FOOTER_STATEMENT,
   CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN, CAL_SLOTS, SLOT_KEYS, slotDate, parseDayFirst, pageTiers, CAL_SLOT_CTA, CAL_SEND_4, CAL_CTA_LATTICE, BIO_CTA_PAPERBACK, FORM_EMAIL, pageEmail, MONTHS, DAY_FULL,
   TESTI_HEADING_2, CARD_LINE_3, TESTI_STARS, TESTI_RATING,
-  PRICING_INTRO_3, FORM_SUB_4, CAL_HEADING_1, formBtnSeed, CAL_TYPES, PRICING_ROW_CTA, PRICING_ROW_CTA_3, PRICING_ROW_CTA_PAPERBACK, MAP_SPAN, MAP_STATS_4, STAT_KEYS,FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
+  PRICING_INTRO_3, FORM_SUB_4, CAL_HEADING_1, formBtnSeed, CAL_TYPES, PRICING_ROW_CTA, PRICING_ROW_CTA_3, PRICING_ROW_CTA_PAPERBACK, PRICING_HEADING_HEADLINER, MAP_SPAN, MAP_STATS_4, STAT_KEYS,FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
   parseDate, isoDate, calStart, headerIdentity, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav, navModeDefault, badgeOptsFor,
   catById, catName, navSectionsOf, initialsOf, contrast, lum, mix, rgba, caseText, fieldSeed, HEADING_3, HEADING_4, fieldReach, fieldShown, identityFieldsFor, identityHint, INLINE_OFF, PHOTO_OFF, INLINE_HEAD, INLINE_MARKED, INLINE_PART, INLINE_LINES, inlineRule, fieldCap, colCaps, identityCap, sealCap, capExcess, numeralLen, clampCapped, clampContent, legacyContent, clampIdentity, copyrightOf, formHeading3, extUrl, youtubeEmbed, youtubeThumb, youtubeParts, youtubeWatch, youtubeChannel, urlProblem, emailProblem, emailAddr, songTags, repChips,
@@ -630,8 +630,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   if (d === 0 && (cat === 'bio' || cat === 'media' || cat === 'gallery' || cat === 'repertoire' || cat === 'map' || cat === 'pricing' || cat === 'calendar' || cat === 'form' || cat === 'testimonials' || cat === 'footer') && T.name === 'Paperback') vm.pad = `0px ${vm.surplus}`
   // Headliner's layout-1 bio (1:4627 · 1:15396 · 1:16446) is a stage of its own (HeadlinerBio), Paperback's shape: it carries the
   // frames' insets in cqw, so the root pads only the published tab's surplus. The media (1:4650 · 1:15421 · 1:16471) joined it in section 3;
-  // the gallery (1:4766 · 1:15538 · 1:16587) in section 4, the repertoire (1:4830 · 1:15602 · 1:16651) in section 5, the map (1:4955 · 1:15726 · 1:16776) in section 6; the other five sections join the line as they pass.
-  if (d === 0 && (cat === 'bio' || cat === 'media' || cat === 'gallery' || cat === 'repertoire' || cat === 'map') && T.name === 'Headliner') vm.pad = `0px ${vm.surplus}`
+  // the gallery (1:4766 · 1:15538 · 1:16587) in section 4, the repertoire (1:4830 · 1:15602 · 1:16651) in section 5, the map (1:4955 · 1:15726 · 1:16776) in section 6, the pricing (1:5067 · 1:15838 · 1:16888) in section 7; the other four sections join the line as they pass.
+  if (d === 0 && (cat === 'bio' || cat === 'media' || cat === 'gallery' || cat === 'repertoire' || cat === 'map' || cat === 'pricing') && T.name === 'Headliner') vm.pad = `0px ${vm.surplus}`
   // …and the media's (1:419 · 1:9052 · 1:10024): 129.43 top and foot at 1440 (x 0.82, 106.13), 77 at 768
   // and 58 at 390, the same content insets. The 390 master's head box starts 40 down (an import
   // artefact: the eyebrow row sits at y 98, not 58), so with the eyebrow removed the head takes
@@ -1155,7 +1155,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // emptied one drops the pill. Uncased, the footer's rule: the pill sets it
   // in the display face with no text transform, and casing it would shout on
   // Pop. Layout 2's plan card reads its own `cta`.
-  vm.tierRowCta = cv('rowCta', d === 2 ? PRICING_ROW_CTA_3 : d === 3 ? PRICING_ROW_CTA : d === 0 && T.name === 'Paperback' ? PRICING_ROW_CTA_PAPERBACK : 'Book Now')
+  vm.tierRowCta = cv('rowCta', d === 2 ? PRICING_ROW_CTA_3 : d === 3 ? PRICING_ROW_CTA : d === 0 && (T.name === 'Paperback' || T.name === 'Headliner') ? PRICING_ROW_CTA_PAPERBACK : 'Book Now')
   // The label's width in the display face's ems (`navFace`, undefined where a
   // template has no advance table). Editorial's layout-1 deck fits its pill's
   // label to the card (plans/editorial/display-face.md, step 4): Gloock sets
@@ -1566,6 +1566,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // "Book Now" (JP-089; Pop's frame 964:58631 too); Retro's layout 1 prints no
   // head. EditPanel mirrors it. Lattice's layout 1 (widened to `limeTree`) keeps TITLES.calendar,
   // "Availability": its frames set that word as the `[ 007 ]` eyebrow's own, and `heading` is its seat.
+  if (d === 0 && cat === 'pricing' && c.heading === undefined && T.name === 'Headliner') vm.title = cased(PRICING_HEADING_HEADLINER)
   if (d === 0 && cat === 'calendar' && c.heading === undefined && vm.limeTree && !vm.lattice) vm.title = cased(CAL_HEADING_1)
   // The form's layout-3 head is the frame's "Book Kai for / your event" off
   // the artist's own name (JP-070), copyrightOf()'s rule; EditPanel mirrors it.
@@ -1598,8 +1599,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // Headliner's layout-1 bio statement is Anton turned a quarter turn in a 640 measure (the portrait's height), fitted to its
   // widest word in Anton's ems at the frames' -0.005em tracking (the header's rule, `antonEms(w, -0.005)`).
   // The media head (Anton, one line at 1440, wrapping at the content's width) is fitted the same way, and so are the gallery's (two lines) and the
-  // repertoire's count (`240 SONGS`: its widest word, against the room the head box leaves it); the map's town is the widest word against the room the pill leaves.
-  if (T.name === 'Headliner' && (cat === 'bio' || cat === 'media' || cat === 'gallery' || cat === 'repertoire' || cat === 'map') && d === 0) {
+  // repertoire's count (`240 SONGS`: its widest word, against the room the head box leaves it); the map's town is the widest word against the room the pill leaves, and the pricing's head the same against the room the tabs leave.
+  if (T.name === 'Headliner' && (cat === 'bio' || cat === 'media' || cat === 'gallery' || cat === 'repertoire' || cat === 'map' || cat === 'pricing') && d === 0) {
     vm.titleWordEms = +Math.max(0, ...vm.title.split(/\s+/).map((w) => antonEms(w, -0.005))).toFixed(3)
   }
   // …and its repertoire rows set a song's title in a box beside the artist's chip, shrinking the type to keep the

@@ -2852,8 +2852,10 @@ export const CAL_TYPES = ['Wedding', 'Birthday', 'Corporate', 'Festival']
 // own `cta`.
 export const PRICING_ROW_CTA = 'Start Enquiry'
 export const PRICING_ROW_CTA_3 = 'Book'
-// Paperback's layout-1 cards draw the frame's `Book this set` (1:3028), seeded as that.
+// Paperback's layout-1 cards draw the frame's `Book this set` (1:3028), seeded as that; Headliner's (1:5117) draw the same words.
 export const PRICING_ROW_CTA_PAPERBACK = 'Book this set'
+// Headliner's layout-1 head is the frame's `Pick your night's set` (1:5076), where the shared seed is the Retro / Lime sentence.
+export const PRICING_HEADING_HEADLINER = "Pick your night's set"
 // Events map layout 4's panel note, beside "Travel & reach" (964:72830).
 export const MAP_SPAN = 'Live · last 12 months'
 // Events map layout 4's stat wall, the frame's four cards verbatim (JP-077,
@@ -3409,7 +3411,9 @@ export const FIELDS = {
         // so the seed's own 42 is the floor, as the gallery's and the bio's heads. Layouts 2-4: Pop's, provisional.
         Lattice: [42, 42, 28],
         // Paperback layout 1 measured 2026-11-21 (limits.mjs pricing --themes=6 --designs=0 --upright): 46 (the seed's 42 fits); layouts 2-4 Pop's.
-        Paperback: [46, 42, 28] },
+        Paperback: [46, 42, 28],
+        // Headliner layout 1 measured 2026-11-23 (limits.mjs pricing --themes=7 --designs=0): 24 (42 / 36 / 24 at 1440 / 768 / 390; the seed's 21 fits); layouts 2-3 Grunge's, written out.
+        Headliner: [24, 44, 41] },
       hint: 'Layouts 1, 2 and 3 only. Layout 4 is a stack of service rows and heads them with '
           + 'the package names alone, so it draws no title.' },
     { k: 'tiers',   l: 'Packages', type: 'tiers', max: 6,
@@ -3422,7 +3426,9 @@ export const FIELDS = {
           // Layout 1 measured 15 (desktop 17, tablet 15, mobile 17); the seed's 16 (The Festival Set) is the floor.
           Lattice: [16, 16, 30, 18],
           // Paperback layout 1 measured 29 (desktop 37, tablet 29, mobile 30); the rest Pop's.
-          Paperback: [29, 16, 26, 18] },
+          Paperback: [29, 16, 26, 18],
+          // Headliner layout 1 measured 32 (desktop 41, tablet 32, mobile 32: a second line of the name); layouts 2-4 Grunge's.
+          Headliner: [32, 34, 51, 25] },
         // `num` is the first number run, the big numeral: a price of digits alone
         // sets whole in it, so it is measured apart from the total (`chars`, the
         // price with its small tail). User call, 2026-11-06. The numeral's cap is
@@ -3435,20 +3441,28 @@ export const FIELDS = {
           // Layout 1 measured 9 (one run in the display face, a range's tail wrapping at its spaces); the rest Pop's.
           Lattice: [9, 34, 25, 23],
           // Paperback layout 1 measured 10 (desktop 10, tablet 12, mobile 17: one run in the display face, a tail wrapping at its spaces).
-          Paperback: [10, 25, 21, 17] },
+          Paperback: [10, 25, 21, 17],
+          // Headliner layout 1 measured 6 (desktop 6, tablet 10, mobile 16: one run in the display face, a tail wrapping at its spaces); layouts 2-4 Grunge's.
+          Headliner: [6, 35, 30, 34] },
           // Lattice's numeral is layout 1's 9 (measured: desktop 9, tablet 10, mobile 12) held to Pop's 7, the tightest of
           // the placeholder layouts' provisional rows, so a price typed at layout 2, 3 or 4 is not one the deck then cuts.
           num: { Retro: 5, Lime: 10, Grunge: 11, Editorial: 8, Pop: 7, Lattice: 7,
             // Paperback layout 1 measured 9 / 11 / 14 (the card's box); held to Pop's 7 as Lattice's is, layouts 2-4 being unmeasured.
-            Paperback: 7 } },
+            Paperback: 7,
+            // Headliner layout 1 measured 6 / 9 / 14 (the card's box at 1440 is the tightest), held at 6, under Pop's 7, so a price typed at layouts 2-4 is not one the deck then cuts.
+            Headliner: 6 } },
         // Lattice layout 1 measured: an item 42 at 390 (so the shared 26 holds), and three tags a package (a fourth chip
         // wraps the 390 row's second line).
         tags: { list: ',', chars: { Retro: [12, null, 12, 12], Lattice: [26, null, 26, 26], '*': [26, null, 26, 26] },
-          count: { Retro: [4, null, 5, 6], Pop: [3, null, 4, 5], Lattice: [3, null, 4, 5], Paperback: [3, null, 4, 5], '*': [4, null, 4, 5] } },
+          count: { Retro: [4, null, 5, 6], Pop: [3, null, 4, 5], Lattice: [3, null, 4, 5], Paperback: [3, null, 4, 5],
+          // Headliner layout 1: the seed's three tags a package is the floor (the chip row is the union of every package's, so the row wraps before a package's own count does).
+          Headliner: [3, null, 4, 5], '*': [4, null, 4, 5] } },
         blurb: 160,
         feats: { list: '\n', chars: { Retro: [24, 24, 24, 59], Grunge: [25, 24, 24, 62], Editorial: [25, 24, 24, 60],
           // Paperback layout 1 measured 35 (desktop 45, tablet 35, mobile 36).
-          Pop: [26, 24, 24, 62], Lattice: [24, 24, 24, 62], Paperback: [35, 24, 24, 57], '*': [24, 24, 24, 62] }, count: [15, 15, 15, 5] },
+          Pop: [26, 24, 24, 62], Lattice: [24, 24, 24, 62], Paperback: [35, 24, 24, 57],
+          // Headliner layout 1 measured 40 (desktop 51, tablet 40, mobile 41: the row's text beside its numeral); the rest the shared row.
+          Headliner: [40, 24, 24, 62], '*': [24, 24, 24, 62] }, count: [15, 15, 15, 5] },
       },
       hint: 'Tags become the filter chips above the packages in layouts 1 and 3. '
           + 'Layout 3 starts the packages tagged Duo where the other layouts '
@@ -3468,7 +3482,9 @@ export const FIELDS = {
         // Layout 1 measured 29 (desktop 37; tablet and mobile 29): the unit stands in the card's top row, right-aligned.
         Lattice: [29, 39, 27, 51],
         // Paperback layout 1 measured 11 (desktop 11, tablet 17, mobile 17): the unit stands in the card's top row, right-aligned.
-        Paperback: [11, 31, 23, 39] },
+        Paperback: [11, 31, 23, 39],
+        // Headliner layout 1 measured 16 (desktop 16, tablet and mobile 50): the unit stands in the card's top row beside the name; layouts 2-4 Grunge's.
+        Headliner: [16, 41, 33, 98] },
       hint: 'Printed after the price in layouts 1, 2 and 3. Layout 4 stands it above the price '
           + 'instead, as the kind of booking being priced, and drops a leading slash.' },
     { k: 'intro',   l: 'Intro line', type: 'area', d: PRICING_INTRO_3, in: [2],
@@ -3525,7 +3541,9 @@ export const FIELDS = {
         // Layout 1 measured 34 (the full-width bar: desktop 42, tablet 34, mobile 35); the rest Pop's.
         Lattice: [34, null, 12, 26],
         // Paperback layout 1 measured 34 (desktop 47, tablet 34, mobile 37): the split pill's label.
-        Paperback: [34, null, 12, 26] },
+        Paperback: [34, null, 12, 26],
+        // Headliner layout 1 measured 39 (desktop 50, tablet 40, mobile 39); the rest Grunge's.
+        Headliner: [39, null, 12, 26] },
       hint: 'The pill on every package. Layout 3 starts from “Book” and layout 4 from '
           + '“Start Enquiry”. Layout 2 has its own plan button. Empty it to drop the pill.' },
     { k: 'sub',     l: 'Small print', def: 'pricingSub',
@@ -4255,7 +4273,8 @@ export function fieldSeed({ cat, f, themeName, design, c = {}, artistName, email
     : f.k === 'cta' && cat === 'calendar' && design === 3 ? CAL_SEND_4
     : f.k === 'cta' && cat === 'bio' && design === 0 && themeName === 'Paperback' ? BIO_CTA_PAPERBACK
     : f.k === 'cta' && cat === 'calendar' && design === 0 && (themeName === 'Lattice' || themeName === 'Paperback') ? CAL_CTA_LATTICE
-    : f.k === 'rowCta' && cat === 'pricing' && design === 0 && themeName === 'Paperback' ? PRICING_ROW_CTA_PAPERBACK
+    : f.k === 'rowCta' && cat === 'pricing' && design === 0 && (themeName === 'Paperback' || themeName === 'Headliner') ? PRICING_ROW_CTA_PAPERBACK
+    : f.k === 'heading' && cat === 'pricing' && design === 0 && themeName === 'Headliner' ? PRICING_HEADING_HEADLINER
     : f.k === 'rowCta' && cat === 'pricing' && design === 2 ? PRICING_ROW_CTA_3
     : f.k === 'rowCta' && cat === 'pricing' && design === 3 ? PRICING_ROW_CTA
     : fieldDefault(f)

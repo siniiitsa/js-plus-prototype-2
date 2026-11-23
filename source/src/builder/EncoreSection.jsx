@@ -2368,11 +2368,10 @@ const HL_FOOT = 56     // the name's box ends this far above the stage's foot
 const HL_HAIR = 'rgba(238,227,209,0.22)'
 
 // Book now (1:4501): a square orange button, Anton 16 tracked .02em, the arrow 14 to the right of the label.
-function HeadlinerPill({ s, label, to, ext, u }) {
+// The pricing cards' three buttons (1:5117 · 1:5158 · 1:5199) are the same box in another ground and ink: `bg` and `ink` override the orange.
+function HeadlinerPill({ s, label, to, ext, u, bg = s.onScheme[1].activeBg, ink = s.onScheme[1].activeFg }) {
   const link = ext !== undefined ? extLink(s, ext) : s.live && to ? { href: `#${to}` } : null
   const Tag = link ? 'a' : 'span'
-  const bg = s.onScheme[1].activeBg
-  const ink = s.onScheme[1].activeFg
   return (
     <Tag {...link} style={{
       ...row(u(14)), flex: 'none', height: u(46), boxSizing: 'border-box', padding: `0 ${u(18)}`, cursor: 'pointer', textDecoration: 'none',
@@ -11815,6 +11814,132 @@ function PaperbackPricing({ s, g }) {
   )
 }
 
+// Headliner's layout-1 pricing (1:5067 · 1:15838 · 1:16888): a sand band holding a two-line Anton head with the Solo / Trio / Band tabs at its foot,
+// three flat square cards (orange, maroon, teal) of name and unit, price, blurb, a list of numbered rows and a square Book button, and the small print.
+// `fw` the frame's width, `top` the band's vertical inset, `side` its gutter, `h2` the head, `price` the numeral, `blurb` and `sub` the serif sizes,
+// `pad` the card's padding (top, side), `free` the room the tabs leave the head, `cols` / `colGap` / `rowGap` the deck.
+const HEADLINER_PRICING = {
+  desktop: { fw: 1440, top: 96, side: 48.96, h2: 123.84, free: 1078.28, price: 112, blurb: 22, sub: 22, subLh: 23.32, pad: [28, 28], cols: 3, colGap: 16, rowGap: 16 },
+  tablet: { fw: 768, top: 77, side: 26.11, h2: 77, free: 451.97, price: 69, blurb: 22, sub: 22, subLh: 23.32, pad: [24, 21], cols: 2, colGap: 16, rowGap: 36 },
+  mobile: { fw: 390, top: 58, side: 24, h2: 50, free: 342, price: 45, blurb: 20, sub: 20, subLh: 21.2, pad: [20, 16], cols: 1, colGap: 16, rowGap: 28 },
+}
+function HeadlinerPricing({ s, g }) {
+  const { shown, active, pressChip } = g
+  const dev = s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop'
+  const P = HEADLINER_PRICING[dev]
+  const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
+  const O = s.onScheme
+  const sand = O[1].bg          // the type on a maroon or teal card and the third button's ground, #EEE3D1
+  const orange = O[1].activeBg  // the first card's ground and the second button's, #F85E34
+  const maroon = O[3].bg        // #760000
+  const teal = O[6].bg          // #3B758B
+  const black = s.activeFg      // the head's and the orange card's ink, #020202
+  const ink = s.text1           // the tabs', the first button's and the small print's, #1E1E1E
+  const anton = (size, extra) => ({ fontFamily: s.label, fontWeight: 400, fontSize: size, lineHeight: 'normal', letterSpacing: '0.02em', textTransform: 'uppercase', ...extra })
+  // The three seats by the package's place in the WHOLE stored list (`t.n % 3`): a filter that hides one card must not recolour the rest, and the
+  // frame's lit Solo tab still draws all three. `row` is the list's ink, `hair` the rule between its rows, `btn` the button's ground and type.
+  const SEATS = [
+    { bg: orange, fg: black, row: black, hair: HL_GAL_HAIR, btn: ink, btnFg: sand },
+    { bg: maroon, fg: sand, row: HL_MEDIA_LIT, hair: HL_HAIR, btn: orange, btnFg: black },
+    { bg: teal, fg: sand, row: HL_MEDIA_LIT, hair: HL_HAIR, btn: sand, btnFg: ink },
+  ]
+
+  // The head: the frame sets it in two <p>s, which a measure reproduces only at the width of `Night's set` exactly, so it is two lines at the middle word
+  // (the gallery's rule), the space kept before the <br> so the node's text is the field's own. The eyebrow's 31.75 is padding (no field).
+  const words = String(s.title || '').trim().split(/\s+/).filter(Boolean)
+  const cut = words.length > 1 ? Math.ceil(words.length / 2) : 0
+  const h2 = words.length ? (
+    <h2 style={{
+      margin: 0, minWidth: 0, color: black, fontFamily: s.display, fontWeight: 400, lineHeight: 0.98, letterSpacing: '-0.005em', textTransform: 'uppercase', overflowWrap: 'anywhere',
+      fontSize: s.titleWordEms ? `min(${u(P.h2)}, calc(${u(P.free)} / ${s.titleWordEms}))` : u(P.h2),
+    }}>{cut ? <>{words.slice(0, cut).join(' ')}{' '}<br />{words.slice(cut).join(' ')}</> : s.title}</h2>
+  ) : null
+
+  // The tabs: 44-tall outlined pills on a 6 gap, the lit one `#1E1E1E` with sand type. They stand over two or more tags only, and at rest none is lit (JP-089).
+  const tabs = s.tierChips.length > 1 ? (
+    <div style={{ ...row(u(6), { flexWrap: 'wrap' }), flex: 'none', maxWidth: '100%', marginLeft: s.mob ? undefined : 'auto' }}>
+      {s.tierChips.map((f, i) => (
+        <span key={i} onClick={s.live ? () => pressChip(i, active) : undefined} style={{
+          ...anton(u(16)), display: 'inline-flex', alignItems: 'center', justifyContent: 'center', boxSizing: 'border-box', height: u(44), padding: `0 ${u(22)}`,
+          borderRadius: s.radiusChip, whiteSpace: 'nowrap', border: `1px solid ${ink}`, background: i === active ? ink : undefined, color: i === active ? sand : ink,
+          cursor: s.live ? 'pointer' : undefined,
+        }}>{f.label}</span>
+      ))}
+    </div>
+  ) : null
+  const head = (
+    <div style={{ minWidth: 0, paddingTop: u(31.75) }}>
+      {s.mob ? <div style={col(u(24), { alignItems: 'flex-start' })}>{h2}{tabs}</div> : <div style={row(u(24), { flexWrap: 'wrap', alignItems: 'flex-end' })}>{h2}{tabs}</div>}
+    </div>
+  )
+
+  const cards = shown.map((t, i) => {
+    const S = SEATS[t.n % 3]
+    const span = P.cols === 2 && i === shown.length - 1 && shown.length % 2 === 1
+    return (
+      // Keyed on the package's place in the WHOLE list, layout 1's rule.
+      <div key={t.n} style={{ minWidth: 0, display: 'flex', gridColumn: span ? '1 / -1' : undefined }}>
+        <div style={{
+          ...col(u(20), { flex: '1 1 auto' }), boxSizing: 'border-box', minWidth: 0, minHeight: u(540), padding: `${u(P.pad[0])} ${u(P.pad[1])}`, background: S.bg, color: S.fg, ...WRAP_LONG,
+        }}>
+          {(!!t.name || !!s.tierUnit) && (
+            <div style={row(u(12), { justifyContent: 'space-between', alignItems: 'center' })}>
+              <span style={anton(u(18), { lineHeight: 1.05, color: S.fg, minWidth: 0 })}>{t.name}</span>
+              {!!s.tierUnit && <span style={anton(u(14), { lineHeight: 1.05, color: S.fg, opacity: 0.75, flex: 'none', whiteSpace: 'nowrap', textAlign: 'right' })}>{s.tierUnit}</span>}
+            </div>
+          )}
+          {/* The price is one run in the display face, as the frame sets `£1,200`: the lead, the numeral and a range's second half are spans of one size, so a
+              long tail wraps at its spaces. A price with no digit (prose) sets a size smaller and wraps anywhere in its seat. */}
+          {(!!t.lead || !!t.amount || !!t.tail) && (
+            <div style={{
+              minWidth: 0, fontFamily: s.display, fontWeight: 400, letterSpacing: '-0.005em', textTransform: 'uppercase', color: S.fg,
+              fontSize: t.prose ? u(P.price * 0.6) : u(P.price), lineHeight: t.prose ? 1.05 : 0.98, ...(t.prose ? { overflowWrap: 'anywhere' } : {}),
+            }}>
+              {!!t.lead && <span style={{ display: 'inline-block' }}>{t.lead}</span>}
+              <span style={t.prose ? undefined : { display: 'inline-block', whiteSpace: 'nowrap' }}>{t.amount}</span>
+              {!!t.tail && <span style={{ marginLeft: '0.25em' }}>{t.tail}</span>}
+            </div>
+          )}
+          {!!t.blurb && <p style={{ margin: 0, fontFamily: s.serif, fontWeight: 300, fontSize: u(P.blurb), lineHeight: 1.15, letterSpacing: '-0.015em', color: S.fg }}>{t.blurb}</p>}
+          {/* The list is the card's flex remainder (the frame's four-row card stands the five-row card's 221), closed by its own foot rule. */}
+          <div style={{ flex: '1 1 auto', borderBottom: `1px solid ${S.hair}` }}>
+            {t.feats.map((f, j) => (
+              <div key={j} style={row(u(12), { alignItems: 'flex-start', justifyContent: 'space-between', boxSizing: 'border-box', minHeight: u(44), padding: `${u(11)} 0`, borderTop: `1px solid ${S.hair}` })}>
+                <span style={{ minWidth: 0, fontFamily: s.body, fontWeight: 400, fontSize: u(16), lineHeight: u(21), letterSpacing: '-0.015em', color: S.row }}>{f}</span>
+                <span style={anton(u(14), { flex: 'none', lineHeight: u(21), color: S.fg })}>{String(j + 1).padStart(2, '0')}</span>
+              </div>
+            ))}
+          </div>
+          {!!s.tierRowCta && (
+            <div style={row(0, { alignItems: 'flex-start' })}>
+              <HeadlinerPill s={s} label={s.tierRowCta} to={s.tierBookTo} u={u} bg={S.btn} ink={S.btnFg} />
+            </div>
+          )}
+        </div>
+      </div>
+    )
+  })
+
+  return (
+    <div style={{ position: 'relative', containerType: 'inline-size', overflow: 'hidden' }}>
+      <div style={{ paddingTop: u(P.top), paddingBottom: u(P.top) }}>
+        <div style={col(u(40), { margin: `0 ${u(P.side)}`, ...WRAP_LONG })}>
+          {head}
+          {cards.length > 0 && (
+            <div style={{ display: 'grid', alignItems: 'stretch', columnGap: u(P.colGap), rowGap: u(P.rowGap), gridTemplateColumns: `repeat(${P.cols}, minmax(0, 1fr))` }}>{cards}</div>
+          )}
+          {s.tiers.length === 0 && (
+            <div style={{ ...anton(u(18), { color: black }), boxSizing: 'border-box', background: orange, padding: `${u(24)} ${u(28)}` }}>No packages yet.</div>
+          )}
+          {!!s.pricingSub && (
+            <p style={{ margin: 0, fontFamily: s.serif, fontWeight: 300, fontSize: u(P.sub), lineHeight: u(P.subLh), letterSpacing: '-0.015em', color: ink }}>{s.pricingSub}</p>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function Pricing({ s }) {
   // The selected filter chip, gated on `s.live` below like Repertoire's: it is
   // a real control in the published tab and inert on the editor canvas, which
@@ -11917,6 +12042,8 @@ function Pricing({ s }) {
     // that clips, or the rings would scroll the 390 page sideways.
     // Lattice's layout-1 pricing is a block of its own (LatticePricing), after the seam: the chip filter and
     // the pick above are shared whole, and the block is the picture.
+    // Headliner's (1:5067 · 1:15838 · 1:16888) is a block of its own too, handed the same seam.
+    if (s.limeTree && s.headliner) return <HeadlinerPricing s={s} g={{ shown, active, pressChip }} />
     if (s.limeTree && s.lattice) return <LatticePricing s={s} g={{ shown, active, pressChip }} />
     // Paperback's (1:2968 · 1:11610 · 1:12793) is a block of its own as well, handed the same seam.
     if (s.limeTree && s.paperback) return <PaperbackPricing s={s} g={{ shown, active, pressChip }} />
