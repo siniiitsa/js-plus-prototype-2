@@ -1,4 +1,4 @@
-# The designed templates: Retro, Lime, Grunge, Editorial, Pop and Lattice — working notes
+# The designed templates: Retro, Lime, Grunge, Editorial, Pop, Lattice and Paperback — working notes
 
 Moved word for word out of `CLAUDE.md`'s *Intentional limits — not bugs* on 2026-09-30, so it
 loads only when a session works on it. "Above" and "below" may point into `CLAUDE.md` or
@@ -585,3 +585,113 @@ are the face's `navFace`, upper-cased, with **+0.004em per glyph** added by ever
 
 **The hero is 750 tall at 768 and 390** (`vm.heroH = 750` for a Lattice header off desktop); desktop and the picker's
 aspect are the other templates'. **A header card's `badgeText` seat** is `Lattice: [3]`.
+
+## Paperback (plans/paperback/layout-1.md, 2026-11-20 to 11-22)
+
+The seventh template, from *JustPay — Batch 2* (`ORILFywSzuadscu6RzskCW`), frames **"Paperback Playful — Claude Design"**:
+Lattice's file and Lattice's import style (layers named `Section` / `Container` / `Text`, no component sets and no `Theme=`
+variants, so a section's twin was settled by composition and geometry), **but this file binds variables**, so each
+section's scheme was read off `explicitVariableModes` through the SAAS library's *2 · Scheme* collection with *1 ·
+Primitives* at its Paperback mode (`187:3`; the default mode is Lattice's). **Only layout 1 is designed.** Layouts 2–4 render
+Lime's / Pop's trees in Paperback's tokens, the four header cards render `HeaderV0`…`V3` (card 1 is the fitted hero), and
+no frame exists for them (plan open question 2); every cap is nonetheless Paperback's own (session 12, below).
+
+**Not a widened Lime tree, again.** Eleven own-tree blocks, each standing on `s.paperback` (the flag is `T.name === 'Paperback'`
+in `sectionVm`, with `designed` and `limeTree` widened to it) after the section's hooks and seam, except the bio and the
+footer, which own no hook and stand at the head: `PaperbackHero` (in `HeaderV0`), `PaperbackBio`, `PaperbackMedia`,
+`PaperbackGallery`, `PaperbackRepertoire`, `PaperbackMap`, `PaperbackPricing`, `PaperbackCalendar`, `PaperbackForm`,
+`PaperbackTestimonials`, `PaperbackFooter`. The seam (state, `extLink` / `navHref`, the published controls) is the shared
+component's, and each block is handed what it draws in `g`. `limeTreeTheme` is not widened.
+
+**The stage pattern** (the bio's, then every section's; `plans/paperback/layout-1.md`, *Conventions section 2 inherits* on):
+a `PAPER_<CAT>` table of the frame's numbers (`PAPER_HERO`, `PAPER_BIO`, `PAPER_MEDIA`, `PAPER_GALLERY`, `PAPER_REP`,
+`PAPER_MAP`, `PAPER_PRICING`, `PAPER_CAL`, `PAPER_FORM`, `PAPER_TESTI`, `PAPER_FOOTER`), one `containerType: inline-size` stage,
+`u(v)` turning a frame px into `cqw` of it, so **the numbers are the frame's own at 1440, 768 and 390 and the stage's width does
+the 0.82**; vertical insets are in a child (a container's own lengths do not resolve against it) and `vm.pad = '0px
+<surplus>'` (ten sections, `EncoreBuilder.jsx`) leaves the root to pad the published tab's surplus alone. A rotated card is
+the unrotated box at the wrapper's centre, turned about its own centre, its children in the box's coordinates; read a
+rotated group's `top` / `left` off `get_design_context`, never `get_metadata`. Desktop positions are absolute boxes at the
+frame's x; 768 and 390 are flow blocks with the frame's gaps. A card or band takes `margin: 0 u(side)` and `overflow: hidden`
+where the frame clips; a section whose text can grow over its art paints the art as the outer box's CSS background, not a node.
+
+**The page.** White page, straight seams, one rounded foot: pale-yellow **hero** (Scheme 1, squiggle field, rounded foot over the
+bio's white) · white **bio** · white **media** (cyan card) · pale-yellow **gallery** band (Scheme 1) · white **repertoire**
+(yellow card, orange blob) · indigo **map** band (Scheme 3) · white **pricing** · white **calendar** (blush card) · white **form**
+(indigo panel and orange form in one card) · pale-yellow **testimonials** band (wave floor) · indigo **footer** (Scheme 3).
+`THEMES[6]` carries Scheme 1 (`#FAED8F` / `#F8158F` / `#0B0B0B`, `sem.text3` `#3B308F`) as its palette and Schemes 2–9
+as `schemes`: **2** `#FFFFFF`, **3** `#3B308F` (accent orange, ink white), and nested-only **4** orange `#F9A12B`, **5** pink
+`#F8158F`, **6** lilac `#9982DE`, **7** magenta `#FD48F2`, **8** ink `#0B0B0B`, **9** pale yellow `#FAED8F`; `SCHEMES_OF.Paperback`
+rows 0–3 are identical. **The page's ground is white** (`THEMES[6].pageGround`, through `pageGroundOf()`): the gutter, the
+published `documentElement`, the preview's scroller and `vm.pageBg` read it, where the theme's own Scheme 1 is the header's band.
+A tint no scheme key holds stays a named literal: `PAPER_WHITE` `#FFFFFF`, `PAPER_CYAN` `#1CE8ED` (the pricing's card and badge
+read the frame's own cyan, the theme's `#A4F6F8` elsewhere), `PAPER_TILE` `#EFEFEF`. Seats a nested node takes: tape yellow
+`s.onScheme[1].box2`, the cyan `s.onScheme[2].box3`, the indigo script `s.text3`, lilac `s.chips[0].bg`, pink `s.ac`, ink
+`s.tx`; **the footer reads pink, yellow and ink off their own schemes** (`onScheme[5]` / `[1].box2` / `[8]`), because its seat
+is Scheme 3 and `s.ac` there is orange.
+
+**Faces.** Display **Bricolage Grotesque ExtraBold (800)** at −3.5 %, label / UI / body **Figtree** Bold and SemiBold at −1 %, and a
+**third face, the script, Caveat Bold** (`THEMES[6].script`, `vm.script` = `T.script ?? T.body`; the first template to carry one),
+all free Google Fonts, one combined `family=` entry each in `index.html` and `preview.html`, none in `published.html`. `faceK` is 1
+(`font-optical-sizing: auto` measured within about 0.8 % of the frame). Casing is `'title'` and `dls` 0: the frames type every
+string in mixed case. **Bricolage fits through an em table** (`bricolageEms`, `WEIGHT=800 node scripts/ems-table.mjs`, the advance
+less the tracking, 0.035 em a glyph): the table is read at 1000 px, so a head at 20–75 px sets **3–12 % wider** and each fit
+carries a measured per-site factor (the map's and pricing's heads 1–1.0745 by size, the calendar's month 1.09 / 1.115 / 1.125, the
+repertoire's song titles 1.13, the form 1.12, the testimonials' quote 1.12, **the footer's name 1.18**, because `W`, `M` and `m` runs need 1.05 beyond
+the form's 1.12). `vm.titleWordEms` fits a head to the room beside its decoration.
+
+**Decoration, all behind `s.paperback`** (the art is `paperbackArt.jsx`: `PaperbackArt`, `PaperbackSparkle`, `PaperbackWaves`; pure
+SVG, no effect, no library, the frames' own vectors transcribed once and read from here):
+- **Tilted cards with a white keyline** (6 px, radius 24) carry the photographs: the hero's 6° photo card and −4° avatar, the bio's −4°
+  portrait, the media's now-playing card, the map's −2° card, the pricing deck (−3° / 2° / −2° by position), the calendar's tiles,
+  the testimonials' quote card, the footer's photograph. **Tape strips** (flat, slightly turned, cyan on the hero, yellow on the
+  bio portrait, pink on the gallery viewer; `clip-path` torn ends) hold them.
+- **Four-point sparkles** (one 16-unit path at every size, a 0.8 stroke the frames' 5 %; 44 yellow, 26 lilac, 16 pink) and **blobs**
+  (blush, magenta, indigo, orange) behind a card or tile; **confetti** (short dashes in orange, pink, cyan, lilac), **a set per
+  width** for the media, map and calendar; the map card's **concentric dashed rings** (1440 only); the testimonials' **yellow wave**
+  (the outer box's CSS background, 310 tall at the frame's own width).
+- **The hero's squiggle field** is one 5,935-curve path (138 KB, rounded to a tenth and written relative; the frames' 271 KB) that the
+  three frames crop differently, with a pink **hand-drawn underline** under the name's last word (stretched to 84 / 86 / 90 % of
+  it) and a **vinyl sticker** whose ring text spins under `badgeSpin`.
+- **Doodle discs**: an icon (vinyl, note, heart, headphones, speaker, chat bubble, trophy, star) in a white disc with a 2 px black
+  ring; **hand-drawn marks**: the calendar's indigo circle round the picked day (a narrower loop at 768 and 390) and the map's
+  black arrow (the bio's curved arrow goes with its removed script note and is not drawn).
+- **Controls**: `PaperbackPill`, the one split pill (a label box and, 3 apart, a 48 square, radius 8, Figtree Bold 16; black
+  for Full bio / Soundcloud, pink Book Now), `paperArrow(u, back, ink)` for the round discs of the gallery, map, repertoire and
+  testimonials, white pill chips with a 2 px black ring where selected, a yellow active pager disc. Chips are 26 tall, 13 px
+  Figtree Bold, radius 999; **colours follow position** (the repertoire's artist chips, the map's tiles, the pricing's cards,
+  the media's chips repeat on a fixed run), so a filter leaves the survivors their colours.
+- **No grain, arcs or tears; straight seams except the hero's rounded foot.** The hero is **750 tall at 768 and 390**
+  (`vm.heroH`, layout 1 of the header alone; desktop is the other templates' 614).
+
+**The standing removals hold** (session 0, call 1, option A, user): a script note or eyebrow is drawn only where a seeded,
+uncased, drop-when-emptied field is its seat, so the frame's inline nav, wordmark, `DJ LIVE`, kicker pills, `Booking 2026`, the bio's
+`KM bio` / `that's me!`, `Top tracks`, `5 / 5 featured`, `Repertoire`, `home turf`, `Shows / coverage`, `Reviewed 6 days ago`, `pick your
+night!` and `Your night, your playlist` are not drawn (the arrows go with their notes, though the map's black arrow is), and
+**the footer's *Join the guest list* newsletter is not drawn** (call 2, option A: the builder has no backend and a dead box on a
+published page is a lie to the visitor); its freed seat is the footer photograph's, and the Book pill takes the family seat under
+the link pills. The calls the user is asked to make about these are the plan's *Open calls*.
+
+**Photography** is a seventh shoot, eleven JPEGs in `photos/paperback-*.jpg` (hero, avatar, bio, `shot-1`…`7`, `viewer`;
+959,840 bytes raw, re-encoded at 1152 px q50 and the avatar 512 px q60, about 1.28 MB inlined), seated by `PAPERBACK_PHOTOS`
+(header and video the hero, bio the portrait, form shot 3, the gallery's seven tiles, the footer shot 4, the pricing reviewers),
+`PAPERBACK_TRACK_ART` (shots 1–5), `PAPERBACK_VIEWER` and `SEEDS.Paperback` in `photos.js`. **The gallery's slot 2 holds the frame's
+viewer picture**, which is none of the seven tiles (the viewer can only show a slot), so the canvas draws that tile picked and
+ringed (live-only elsewhere). Every slot is a centred cover, so `FOCUS` has no entry. The footer's photograph is a Paperback-only
+`image` field (`in: { Paperback: [0], '*': [] }`).
+
+**Fields and caps.** Every `chars` / `count` / `num` / `cols` spec and every `IDENTITY_CHARS` entry carries a `Paperback` row
+(87 added or replaced in session 12), measured with `limits.mjs <cat> --themes=6` (`--upright` where a card is turned,
+`--extra-lines=<keys>` on the measure **and** the `--check` where the frame wraps, `--designs=1,2,3` for the placeholders), then
+`--check` and `--seeds`: lower-only, floored at the seed, never above Pop's number; a measurement that came back open (400) is
+left at Pop's. **27 seeds are wider than the placeholder cards at layouts 2–4 hold**, so those caps sit at the seed and read
+`(floor)`: they overflow or clip their card today and belong to whoever fits those layouts (plan, *Open calls*). `specAt`'s Pop
+fallback for Lattice and Paperback is still in `data.js`; **Paperback no longer reaches it**. `FIELDS` `in` rows name
+`Paperback:` (the header's eight began as Lattice's; `align` is hidden, `badgeText` read at layouts 1 and 4, `cardLine` at 3;
+`bio.cta` at 1 and 2). `INLINE_OFF` carries a handful of `Paperback.*` rows, session 12 added none, `PHOTO_OFF` none.
+Probes pass at **layouts 1–4**: `inline-probe` (143–154 slots a page), `photo-probe` (`--blank` and `--drop` at 1), `focus-probe
+--prime`. `reach.mjs` takes a themes list (`6` for Paperback; one run, in the background).
+
+**Per-section records** live in each section's notes file under *Paperback · layout 1* and *Paperback layouts 2–4: the caps*
+(`bio`, `media`, `gallery`, `repertoire`, `map`, `pricing`, `calendar`, `form`, `testimonials`, `video`; the footer's notes file
+holds *Paperback — layout 1* alone, its four caps being layout 1's, since it has one design); the header's layouts 2–4 caps
+have no notes file and are in the plan's *Conventions session 12*.
