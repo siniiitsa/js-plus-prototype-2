@@ -58,7 +58,7 @@ import {
   FOOTER_LINKS, FOOTER_TARGETS, FOOTER_CREDIT, FOOTER_STATEMENT,
   CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN, CAL_SLOTS, SLOT_KEYS, slotDate, parseDayFirst, pageTiers, CAL_SLOT_CTA, CAL_SEND_4, CAL_CTA_LATTICE, BIO_CTA_PAPERBACK, FORM_EMAIL, pageEmail, MONTHS, DAY_FULL,
   TESTI_HEADING_2, CARD_LINE_3, TESTI_STARS, TESTI_RATING,
-  PRICING_INTRO_3, FORM_SUB_4, CAL_HEADING_1, formBtnSeed, CAL_TYPES, PRICING_ROW_CTA, PRICING_ROW_CTA_3, PRICING_ROW_CTA_PAPERBACK, PRICING_HEADING_HEADLINER, MAP_SPAN, MAP_STATS_4, STAT_KEYS,FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
+  PRICING_INTRO_3, FORM_SUB_4, CAL_HEADING_1, formBtnSeed, CAL_TYPES, PRICING_ROW_CTA, PRICING_ROW_CTA_3, PRICING_ROW_CTA_PAPERBACK, PRICING_HEADING_HEADLINER, CAL_HEADING_HEADLINER, MAP_SPAN, MAP_STATS_4, STAT_KEYS,FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
   parseDate, isoDate, calStart, headerIdentity, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav, navModeDefault, badgeOptsFor,
   catById, catName, navSectionsOf, initialsOf, contrast, lum, mix, rgba, caseText, fieldSeed, HEADING_3, HEADING_4, fieldReach, fieldShown, identityFieldsFor, identityHint, INLINE_OFF, PHOTO_OFF, INLINE_HEAD, INLINE_MARKED, INLINE_PART, INLINE_LINES, inlineRule, fieldCap, colCaps, identityCap, sealCap, capExcess, numeralLen, clampCapped, clampContent, legacyContent, clampIdentity, copyrightOf, formHeading3, extUrl, youtubeEmbed, youtubeThumb, youtubeParts, youtubeWatch, youtubeChannel, urlProblem, emailProblem, emailAddr, songTags, repChips,
@@ -630,8 +630,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   if (d === 0 && (cat === 'bio' || cat === 'media' || cat === 'gallery' || cat === 'repertoire' || cat === 'map' || cat === 'pricing' || cat === 'calendar' || cat === 'form' || cat === 'testimonials' || cat === 'footer') && T.name === 'Paperback') vm.pad = `0px ${vm.surplus}`
   // Headliner's layout-1 bio (1:4627 · 1:15396 · 1:16446) is a stage of its own (HeadlinerBio), Paperback's shape: it carries the
   // frames' insets in cqw, so the root pads only the published tab's surplus. The media (1:4650 · 1:15421 · 1:16471) joined it in section 3;
-  // the gallery (1:4766 · 1:15538 · 1:16587) in section 4, the repertoire (1:4830 · 1:15602 · 1:16651) in section 5, the map (1:4955 · 1:15726 · 1:16776) in section 6, the pricing (1:5067 · 1:15838 · 1:16888) in section 7; the other four sections join the line as they pass.
-  if (d === 0 && (cat === 'bio' || cat === 'media' || cat === 'gallery' || cat === 'repertoire' || cat === 'map' || cat === 'pricing') && T.name === 'Headliner') vm.pad = `0px ${vm.surplus}`
+  // the gallery (1:4766 · 1:15538 · 1:16587) in section 4, the repertoire (1:4830 · 1:15602 · 1:16651) in section 5, the map (1:4955 · 1:15726 · 1:16776) in section 6, the pricing (1:5067 · 1:15838 · 1:16888) in section 7, the calendar (1:5205 · 1:15976 · 1:17026) in section 8; the other three sections join the line as they pass.
+  if (d === 0 && (cat === 'bio' || cat === 'media' || cat === 'gallery' || cat === 'repertoire' || cat === 'map' || cat === 'pricing' || cat === 'calendar') && T.name === 'Headliner') vm.pad = `0px ${vm.surplus}`
   // …and the media's (1:419 · 1:9052 · 1:10024): 129.43 top and foot at 1440 (x 0.82, 106.13), 77 at 768
   // and 58 at 390, the same content insets. The 390 master's head box starts 40 down (an import
   // artefact: the eyebrow row sits at y 98, not 58), so with the eyebrow removed the head takes
@@ -1567,7 +1567,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // head. EditPanel mirrors it. Lattice's layout 1 (widened to `limeTree`) keeps TITLES.calendar,
   // "Availability": its frames set that word as the `[ 007 ]` eyebrow's own, and `heading` is its seat.
   if (d === 0 && cat === 'pricing' && c.heading === undefined && T.name === 'Headliner') vm.title = cased(PRICING_HEADING_HEADLINER)
-  if (d === 0 && cat === 'calendar' && c.heading === undefined && vm.limeTree && !vm.lattice) vm.title = cased(CAL_HEADING_1)
+  if (d === 0 && cat === 'calendar' && c.heading === undefined && vm.limeTree && !vm.lattice && T.name !== 'Headliner') vm.title = cased(CAL_HEADING_1)
+  // Headliner's layout-1 calendar heads its maroon panel with the frame's `Pick a date.` (`heading` is the seat; fieldSeed mirrors it).
+  if (d === 0 && cat === 'calendar' && c.heading === undefined && T.name === 'Headliner') vm.title = cased(CAL_HEADING_HEADLINER)
   // The form's layout-3 head is the frame's "Book Kai for / your event" off
   // the artist's own name (JP-070), copyrightOf()'s rule; EditPanel mirrors it.
   if (d === 2 && cat === 'form' && c.heading === undefined) vm.title = cased(formHeading3(artistName))
@@ -1602,6 +1604,14 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // repertoire's count (`240 SONGS`: its widest word, against the room the head box leaves it); the map's town is the widest word against the room the pill leaves, and the pricing's head the same against the room the tabs leave.
   if (T.name === 'Headliner' && (cat === 'bio' || cat === 'media' || cat === 'gallery' || cat === 'repertoire' || cat === 'map' || cat === 'pricing') && d === 0) {
     vm.titleWordEms = +Math.max(0, ...vm.title.split(/\s+/).map((w) => antonEms(w, -0.005))).toFixed(3)
+  }
+  // The calendar's head is two lines at the middle word (the gallery's and the pricing's rule), so what it fits is its widest *line*, not its widest word:
+  // the narrow frames set it beside the up arrow, and a line that is wider than the room shrinks the type instead of wrapping and growing the panel.
+  if (T.name === 'Headliner' && cat === 'calendar' && d === 0) {
+    const w = vm.title.trim().split(/\s+/).filter(Boolean)
+    const cut = w.length > 1 ? Math.ceil(w.length / 2) : 0
+    const lines = cut ? [w.slice(0, cut).join(' '), w.slice(cut).join(' ')] : w
+    vm.titleWordEms = +Math.max(0, ...lines.map((l) => antonEms(l, -0.005))).toFixed(3)
   }
   // …and its repertoire rows set a song's title in a box beside the artist's chip, shrinking the type to keep the
   // widest word whole (the 768 frame's *Superstition* at 17, *September* at 16), so each song carries its own ems. The table is
@@ -1831,7 +1841,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
       const label = cased(monthLabel(y, mo))
       // Paperback's layout-1 month is fitted to the room between its two discs the same way, in Bricolage's ems less the frames' -0.035em tracking.
       const ems = navFace ? +navFace(label).toFixed(3)
-        : T.name === 'Paperback' && d === 0 ? +(bricolageEms(label) - 0.035 * [...label].length).toFixed(3) : undefined
+        : T.name === 'Paperback' && d === 0 ? +(bricolageEms(label) - 0.035 * [...label].length).toFixed(3)
+        // Headliner's layout-1 month is Anton at the frames' -0.005em, fitted to the room between its two squares (SEPTEMBER 2025 sets 237 in the 390 frame's 197).
+        : T.name === 'Headliner' && d === 0 ? +antonEms(label, -0.005).toFixed(3) : undefined
       return { label, ems, name: MONTHS[mo].toUpperCase(), year: String(y), cells }
     })
     vm.calDays = CAL_DAYS
@@ -1853,7 +1865,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // none, JP-088: its line links). The same field is layout 4's Send Enquiry (JP-082),
     // seeded CAL_SEND_4 there: `vm.calWizard.send`, below.
     // Lattice's layout-1 foot draws a Continue bar (its own seed, mirrored by fieldSeed); the Lime family's draws none.
-    vm.calCta = cased(cv('cta', d === 0 && (vm.lattice || vm.paperback) ? CAL_CTA_LATTICE : 'Check a date'))
+    vm.calCta = cased(cv('cta', d === 0 && (vm.lattice || vm.paperback || vm.headliner) ? CAL_CTA_LATTICE : 'Check a date'))
     // Layout 2's pill, which its frame labels differently from the other two
     // calendar pills (its "Star Enquiry" read as the intended "Start").
     vm.calSlotCta = cased(cv('slotCta', CAL_SLOT_CTA))

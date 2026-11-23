@@ -31,7 +31,7 @@
 import { useId, useRef, useState } from 'react'
 import RealMap from './RealMap.jsx'
 import { PaperbackArt, PaperbackSparkle, PaperbackWaves } from './paperbackArt.jsx'
-import { HeadlinerWaves, HeadlinerBlockArrow, HeadlinerRings } from './headlinerArt.jsx'
+import { HeadlinerWaves, HeadlinerWaveField, HeadlinerBlockArrow, HeadlinerRings } from './headlinerArt.jsx'
 import {
   Play, Pause, SkipBack, SkipForward, Check, ChevronLeft, ChevronRight,
   ArrowLeft, ArrowRight, ArrowUp, ArrowDown, Star, Plus, X, Search, User,
@@ -20737,6 +20737,201 @@ function PaperbackCalendar({ s, g }) {
   )
 }
 
+// Headliner's layout-1 calendar (plans/headliner/layout-1.md, section 8; frames 1:5205 · 1:15976 · 1:17026, 858.52 / 1044.33 / 1026.9 tall): a flat square
+// cream card on the amber band, 48.96 / 26.11 / 24 in from the edges and nothing centred in a taller box (96 / 76.99 / 58.01 round it). A month half (two 44
+// outlined squares round the Anton month, a weekday row, a grid of 54-tall cells with a top rule only) and a maroon panel of the wave field (the ringed
+// initials, the eye, the two-line head `Pick a date.`, a block arrow) sit side by side at 1440 and stack at 768 and 390, over a foot (the enquiry line and
+// the black Continue). The month, the pick, the arrows and the Continue link are `Calendar`'s, handed over in `g`; only the picture is Headliner's.
+// The panel's height is its own content's at every width (32 / 27 / 22 round a 120 ring row, the in-flow head and a 110 arrow row), and **the narrow frames
+// draw the head `shift` below its flow box, over the arrow row**, where the arrow is turned -90 to point up (a 110 x 132 box at `arrow`'s offsets).
+const HEADLINER_CAL = {
+  desktop: {
+    fw: 1440, top: 96, side: 48.96, left: [32, 32, 0], panel: [32, 32, 32], month: 56, headH: 58.875, head: 149.76, free: 607.047, shift: 0, mark: 50,
+    wave: [671.047, 587.516, 0.577827], line: 26,
+  },
+  tablet: {
+    fw: 768, top: 76.99, side: 26.11, left: [27, 24, 27], panel: [27, 24, 27], month: 45, headH: 48.094, head: 93, free: 224, shift: 109.25, mark: 40, arrow: [38, -22],
+    wave: [357.891, 466.25, 0.375921], line: 20,
+  },
+  mobile: {
+    fw: 390, top: 58.01, side: 24, left: [22, 16, 22], panel: [22, 16, 22], month: 37, headH: 44, head: 60, free: 220, shift: 115.59, mark: 33, arrow: [34, -19],
+    wave: [342, 391.594, 0.336777], line: 24,
+  },
+}
+function HeadlinerCalendar({ s, g }) {
+  const { month, cur, line, step, pick } = g
+  const dev = s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop'
+  const P = HEADLINER_CAL[dev]
+  const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
+  const O = s.onScheme
+  const cream = O[2].bg         // the card's ground and the eye's glint, #F8F2E7
+  const sand = O[1].bg          // the eye, the arrow and Continue's type, #EEE3D1
+  const orange = O[1].activeBg  // the ring, the head, the picked day's numeral, #F85E34
+  const maroon = O[3].bg        // the panel, #760000
+  const black = s.activeFg      // the month, the days, the picked day's ground, the line and Continue's ground, #020202
+  const ink = O[2].text1        // the two squares' outline, #1E1E1E (the seat's own text1 is the amber's #020202)
+  const days = O[2].text3       // the weekday names, #760000
+  const anton = (size, extra) => ({ fontFamily: s.label, fontWeight: 400, fontSize: size, lineHeight: 'normal', letterSpacing: '0.02em', textTransform: 'uppercase', ...extra })
+
+  // The two squares. The arrow that cannot go further has no handler and is dimmed live (JP-152's rule).
+  const square = (back, dir) => {
+    const onClick = step(dir)
+    return (
+      <span aria-hidden onClick={onClick} style={{
+        flex: 'none', boxSizing: 'border-box', width: u(44), height: u(44), border: `1px solid ${ink}`, display: 'flex', alignItems: 'center', justifyContent: 'center',
+        cursor: onClick ? 'pointer' : undefined, opacity: s.live && !onClick ? 0.38 : undefined,
+      }}>
+        <svg aria-hidden viewBox="0 0 16 14" fill="none" style={{ display: 'block', width: u(16), height: u(14), flex: 'none' }}>
+          <path d={back ? 'M16 7H3M8 1.5L2 7L8 12.5' : 'M0 7H13M8 1.5L14 7L8 12.5'} stroke={ink} strokeWidth="2.4" />
+        </svg>
+      </span>
+    )
+  }
+
+  // The month, centred between the squares and fitted to the room they leave by its own width (`month.ems`), at the frame's size wherever it fits. The box is a
+  // container, so its own size is set on it (cqw resolves against the stage there) and the span takes `min(1em, room / ems)`; the row keeps the frame's height
+  // (58.875 / 48.094 / 44: the head's own line and 4 above it, or the squares) so a shrunk month does not move the grid.
+  const ems = month.ems !== undefined ? month.ems : 0
+  const head = (
+    <div style={row(u(12), { height: u(P.headH) })}>
+      {square(true, -1)}
+      <div style={{
+        flex: '1 1 0', minWidth: 0, alignSelf: 'stretch', boxSizing: 'border-box', paddingTop: u(4), containerType: 'inline-size', display: 'flex', alignItems: 'center',
+        justifyContent: 'center', fontSize: u(P.month),
+      }}>
+        <span style={{
+          fontFamily: s.display, fontWeight: 400, letterSpacing: '-0.005em', lineHeight: 0.98, textTransform: 'uppercase', color: black, whiteSpace: 'nowrap',
+          fontSize: ems ? `min(1em, calc(100cqi / ${ems.toFixed(3)}))` : '1em',
+        }}>{month.label}</span>
+      </div>
+      {square(false, 1)}
+    </div>
+  )
+
+  const names = (
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', height: u(34), boxSizing: 'border-box', paddingTop: u(8) }}>
+      {s.calDays.map((d) => (
+        <span key={d} style={anton(u(13), { lineHeight: 1.05, textAlign: 'center', color: days })}>{d}</span>
+      ))}
+    </div>
+  )
+
+  // A day: a 54-tall cell with a 1 px top rule and nothing else (an absent cell draws no rule); the picked one is the black square under an orange numeral.
+  // A booked or past day is the family's: dimmed to .38, no strike, no handler.
+  const day = (c, i) => {
+    if (c.iso === undefined) return <span key={i} />
+    const on = c.iso === cur
+    const onClick = pick(c)
+    return (
+      <span key={i} onClick={onClick} style={{
+        ...anton(u(18)), boxSizing: 'border-box', height: u(54), borderTop: `1px solid ${HL_GAL_HAIR}`, display: 'flex', alignItems: 'center', justifyContent: 'center',
+        background: on ? black : undefined, color: on ? orange : black, opacity: c.booked || c.dead ? 0.38 : undefined, cursor: onClick ? 'pointer' : undefined,
+      }}>{c.d}</span>
+    )
+  }
+
+  const [lt, lx, lb] = P.left
+  const left = (
+    <div style={{ minWidth: 0, boxSizing: 'border-box', borderRight: `1px solid ${HL_GAL_HAIR}`, padding: `${u(lt)} ${u(lx)} ${u(lb)}` }}>
+      {head}
+      <div style={{ marginTop: u(18) }}>
+        {names}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))' }}>{month.cells.map(day)}</div>
+      </div>
+    </div>
+  )
+
+  // The panel. The head is two lines at the middle word (the gallery's and the pricing's rule: no measure makes the frame's break at 390), the space kept before
+  // the <br> so the node's text is the field's own, and it is fitted to the room it has (`s.titleWordEms` is its widest line; `free` is the panel's content
+  // at 1440 and the room left of the up arrow's glyph at 768 and 390). An emptied head keeps its two-line seat.
+  const words = String(s.title || '').trim().split(/\s+/).filter(Boolean)
+  const cut = words.length > 1 ? Math.ceil(words.length / 2) : 0
+  const [pt, px, pb] = P.panel
+  const headEl = words.length ? (
+    <h2 style={{
+      margin: 0, minWidth: 0, position: 'relative', top: P.shift ? u(P.shift) : undefined, color: orange, fontFamily: s.display, fontWeight: 400, lineHeight: 0.98,
+      letterSpacing: '-0.005em', textTransform: 'uppercase', overflowWrap: 'anywhere',
+      fontSize: s.titleWordEms ? `min(${u(P.head)}, calc(${u(P.free)} / ${s.titleWordEms}))` : u(P.head),
+    }}>{cut ? <>{words.slice(0, cut).join(' ')}{' '}<br />{words.slice(cut).join(' ')}</> : s.title}</h2>
+  ) : <div aria-hidden style={{ height: u(P.head * 0.98 * 2) }} />
+  const arrow = (
+    <div aria-hidden style={{ position: 'relative', height: u(110), display: 'flex', justifyContent: 'flex-end', pointerEvents: 'none' }}>
+      {P.arrow ? (
+        <div style={{ position: 'relative', flex: 'none', width: u(132), height: u(110) }}>
+          <div style={{ position: 'absolute', left: u(P.arrow[0]), top: u(P.arrow[1]), width: u(110), height: u(132), display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ transform: 'rotate(-90deg)', flex: 'none' }}>
+              <svg viewBox="0 0 132 110" fill="none" style={{ display: 'block', width: u(132), height: u(110) }}><path d="M0 41.8H77V8.8L132 55L77 101.2V68.2H0V41.8Z" fill={sand} /></svg>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <svg viewBox="0 0 132 110" fill="none" style={{ display: 'block', flex: 'none', width: u(132), height: u(110) }}><path d="M132 68.2H55V101.2L0 55L55 8.8V41.8H132V68.2Z" fill={sand} /></svg>
+      )}
+    </div>
+  )
+  const panel = (
+    <div style={{ position: 'relative', minWidth: 0, overflow: 'hidden', boxSizing: 'border-box', background: maroon, padding: `${u(pt)} ${u(px)} ${u(pb)}`, ...WRAP_LONG }}>
+      <div aria-hidden style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}><HeadlinerWaveField w={P.wave[0]} h={P.wave[1]} sw={P.wave[2]} ink={orange} /></div>
+      <div style={{ position: 'relative' }}>
+        <div style={row(u(16), { justifyContent: 'space-between', alignItems: 'flex-start' })}>
+          <div style={{ flex: 'none', boxSizing: 'border-box', width: u(120), height: u(120), border: `${u(13)} solid ${orange}`, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <span style={anton(u(P.mark), { lineHeight: 1, letterSpacing: '-0.005em', color: orange, position: 'relative', top: '0.04em' })}>{s.initials}</span>
+          </div>
+          <svg aria-hidden viewBox="0 0 120 64" fill="none" style={{ display: 'block', flex: 'none', width: u(120), height: u(64), overflow: 'visible' }}>
+            <path d="M4.8 32C24 8 96 8 115.2 32C96 56 24 56 4.8 32Z" stroke={sand} strokeWidth="5.6" strokeLinejoin="round" />
+            <path d="M60 45.6C67.5111 45.6 73.6 39.5111 73.6 32C73.6 24.4889 67.5111 18.4 60 18.4C52.4889 18.4 46.4 24.4889 46.4 32C46.4 39.5111 52.4889 45.6 60 45.6Z" fill={sand} />
+            <path d="M60 24C55.7333 29.3333 55.7333 34.6667 60 40" stroke={cream} strokeWidth="3.2" strokeLinecap="round" />
+          </svg>
+        </div>
+        {headEl}
+        {arrow}
+      </div>
+    </div>
+  )
+
+  // The foot: the enquiry line (the picked day's, else the prompt; plain text, never the link: Lattice's rule) and Continue, which leads on to the form
+  // (`calBookTo`) when live and is a picture on the canvas. An emptied `cta` drops it. A row at 1440 and 390; at 768 a column in the panel's row, the line
+  // at the top in the frame's 175.891 measure (three lines: `at` would fit only a pixel wider) and Continue at the foot.
+  const pill = s.calCta ? <HeadlinerPill s={s} label={s.calCta} to={s.calBookTo} u={u} bg={black} ink={sand} /> : null
+  const lineEl = (
+    <p style={{
+      margin: 0, minWidth: 0, fontFamily: s.serif, fontWeight: 300, fontSize: u(P.line), lineHeight: 1.06, letterSpacing: '-0.015em', color: black, overflowWrap: 'anywhere',
+      flex: dev === 'tablet' ? undefined : '1 1 0', maxWidth: dev === 'tablet' ? u(175.891) : undefined,
+    }}>{line}</p>
+  )
+  const foot = dev === 'tablet' ? (
+    <div style={col(u(20), { boxSizing: 'border-box', minWidth: 0, borderTop: `1px solid ${HL_GAL_HAIR}`, padding: u(46), justifyContent: 'space-between', alignItems: 'flex-start' })}>
+      {lineEl}
+      {pill}
+    </div>
+  ) : (
+    <div style={row(u(16), {
+      boxSizing: 'border-box', borderTop: `1px solid ${HL_GAL_HAIR}`, minHeight: dev === 'desktop' ? u(79) : undefined,
+      padding: dev === 'desktop' ? `${u(16)} ${u(16)} ${u(16)} ${u(32)}` : u(16), justifyContent: 'space-between',
+    })}>
+      {lineEl}
+      {pill}
+    </div>
+  )
+
+  const two = { display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))' }
+  return (
+    <div style={{ position: 'relative', containerType: 'inline-size', overflow: 'hidden' }}>
+      <div style={{ paddingTop: u(P.top), paddingBottom: u(P.top) }}>
+        <div style={{ margin: `0 ${u(P.side)}`, background: cream }}>
+          {dev === 'desktop' ? (
+            <div style={two}>{left}{panel}<div style={{ gridColumn: '1 / -1' }}>{foot}</div></div>
+          ) : dev === 'tablet' ? (
+            <div>{left}<div style={two}>{panel}{foot}</div></div>
+          ) : (
+            <div>{left}{panel}{foot}</div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function Calendar({ s }) {
   // The month on show, as an offset into `s.calMonths`, and the day the visitor
   // has picked. Both inert on the editor canvas, where the section is a picture
@@ -20826,10 +21021,11 @@ function Calendar({ s }) {
     // Lattice's layout-1 calendar is a block of its own (LatticeCalendar), after the seam: the month, the pick
     // and the arrows are `Calendar`'s and go over in `g`, so the published controls are the one seam in a new
     // picture. The day's handler is the Lime block's (a blocked day has none; the lit day unlights on a second click).
-    // Paperback's (PaperbackCalendar) is the same hand-over in a third picture.
-    if (s.limeTree && (s.lattice || s.paperback)) {
+    // Paperback's (PaperbackCalendar) is the same hand-over in a third picture, and Headliner's (HeadlinerCalendar) in a fourth.
+    if (s.limeTree && (s.lattice || s.paperback || s.headliner)) {
       const pick = (c) => (s.live && !blocked(c) ? () => setSel((v) => (v === c.iso ? '' : c.iso)) : undefined)
-      return s.paperback ? <PaperbackCalendar s={s} g={{ month, cur, line, step, pick }} /> : <LatticeCalendar s={s} g={{ month, cur, line, step, pick }} />
+      return s.headliner ? <HeadlinerCalendar s={s} g={{ month, cur, line, step, pick }} />
+        : s.paperback ? <PaperbackCalendar s={s} g={{ month, cur, line, step, pick }} /> : <LatticeCalendar s={s} g={{ month, cur, line, step, pick }} />
     }
 
     // Lime — the scheduler frames 964:58595 / 986:39884 / 986:39896, as a block

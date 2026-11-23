@@ -5,8 +5,8 @@
 // concentric rings, a ringed numeral, an arrow glyph and an eye. Measured here, from the desktop
 // master (1:4478), the ones whose geometry is one frame's own and the same everywhere they stand:
 //
-//   HeadlinerWaves     the hero's orange panel and the calendar's maroon panel (1:4512): 70 vertical
-//                      six-point polylines, one set for the three widths (below)
+//   HeadlinerWaves     the hero's orange panel (1:4512): 70 vertical six-point polylines, one set for the three widths
+//                      (below); HeadlinerWaveField is the same set in the calendar's maroon panel, orange at .22
 //   HeadlinerArrow     the 14 x 11 line arrow (stroke 2.4) of every Book now, link, pager and transport
 //                      button: nine sections draw it, left and right
 //   HeadlinerBlockArrow  the filled block arrow, 150 x 105 (hero 1:4607) and the same shape scaled
@@ -41,6 +41,22 @@ export function HeadlinerWaves({ dev = 'desktop', ink = '#760000', opacity = 0.3
     <svg viewBox={`0 0 ${w} 820`} width="100%" height="100%" preserveAspectRatio="none" fill="none" aria-hidden="true"
       style={{ display: 'block', ...style }} {...rest}>
       <path d={WAVE_PATHS[dev]} stroke={ink} strokeWidth={sw} opacity={opacity} />
+    </svg>
+  )
+}
+
+/** The calendar panel's field (1:5294 · 1:16074 · 1:17115): **the same 70 lines**, x a fraction of the panel's width and y
+ *  at the same fractions of its height (`WAVE_Y / 820`), checked over all 420 points at the three widths (0.03 px at most), drawn
+ *  orange at .22 on the maroon in a panel of `w` x `h` frame px (671.047 x 587.516, 357.891 x 466.25, 342 x 391.594) with the
+ *  frames' own stroke (.577827 / .375921 / .336777). The svg stretches to whatever box it gets, so a panel a longer head makes
+ *  taller stretches the lines and never crops them. */
+const WAVE_ROWS = WAVE_X768.split(';').map((row) => row.split(',').map(Number))
+const fieldPath = (w, h) => WAVE_ROWS.map((row) => 'M' + row.map((x, i) => `${+((x / 768) * w).toFixed(2)} ${+((WAVE_Y[i] / 820) * h).toFixed(2)}`).join('L')).join('')
+export function HeadlinerWaveField({ w, h, sw, ink = '#F85E34', opacity = 0.22, style, ...rest }) {
+  return (
+    <svg viewBox={`0 0 ${w} ${h}`} width="100%" height="100%" preserveAspectRatio="none" fill="none" aria-hidden="true"
+      style={{ display: 'block', ...style }} {...rest}>
+      <path d={fieldPath(w, h)} stroke={ink} strokeWidth={sw} opacity={opacity} />
     </svg>
   )
 }
