@@ -49,7 +49,7 @@ The hand-written code is `src/builder/` (`EncoreBuilder.jsx`, `EncoreSection.jsx
 shadcn.
 
 `photos.js` is the only module that imports the files in `src/builder/photos/`. Keep those
-imports out of `data.js` — it is documented as pure, import-free data, and the assets are ~6.5 MB.
+imports out of `data.js` — it is documented as pure, import-free data, and the assets are ~8 MB (80 files).
 
 ## The one architectural rule
 
@@ -210,7 +210,7 @@ mutated through a single `patch()` helper.
   box, by design. A tag row (`tags`) takes only the chip that *is* the row (or
   its `…`), else none: a one-word tag such as "Live" sits inside other copy, and a layout that
   draws no chips has no box. Measured over header layouts 1–4 of the first five templates (and
-  Retro's 5; the 2026-10-14 measurement predates Lattice and Paperback, whose boxes `focus-probe --prime` proves at layouts 1–4), plus bio and calendar: no collision the ranking cannot settle, and every other key
+  Retro's 5; the 2026-10-14 measurement predates Lattice and Paperback, whose boxes `focus-probe --prime` proves at layouts 1–4 for Paperback and at layout 1 for Lattice), plus bio and calendar: no collision the ranking cannot settle, and every other key
   picks the node it always did. **A seal is boxed as its disc** (JP-148): a node inside an svg is
   boxed through `fieldRect`, which takes the outermost svg's `getScreenCTM()` and viewBox to
   the disc's centre and diameter, because the ring's own box is one `<textPath>` arc that swings

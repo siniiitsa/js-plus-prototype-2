@@ -597,7 +597,7 @@ Lime's / Pop's trees in Paperback's tokens, the four header cards render `Header
 no frame exists for them (plan open question 2); every cap is nonetheless Paperback's own (session 12, below).
 
 **Not a widened Lime tree, again.** Eleven own-tree blocks, each standing on `s.paperback` (the flag is `T.name === 'Paperback'`
-in `sectionVm`, with `designed` and `limeTree` widened to it) after the section's hooks and seam, except the bio and the
+in `sectionVm`, with `designed` and `limeTree` widened to it) after the section's hooks and seam, except the bio, the hero and the
 footer, which own no hook and stand at the head: `PaperbackHero` (in `HeaderV0`), `PaperbackBio`, `PaperbackMedia`,
 `PaperbackGallery`, `PaperbackRepertoire`, `PaperbackMap`, `PaperbackPricing`, `PaperbackCalendar`, `PaperbackForm`,
 `PaperbackTestimonials`, `PaperbackFooter`. The seam (state, `extLink` / `navHref`, the published controls) is the shared
@@ -644,7 +644,7 @@ SVG, no effect, no library, the frames' own vectors transcribed once and read fr
 - **Tilted cards with a white keyline** (6 px, radius 24) carry the photographs: the hero's 6° photo card and −4° avatar, the bio's −4°
   portrait, the media's now-playing card, the map's −2° card, the pricing deck (−3° / 2° / −2° by position), the calendar's tiles,
   the testimonials' quote card, the footer's photograph. **Tape strips** (flat, slightly turned, cyan on the hero, yellow on the
-  bio portrait, pink on the gallery viewer; `clip-path` torn ends) hold them.
+  bio portrait, pink on the gallery viewer; `clip-path` clipped corners) hold them.
 - **Four-point sparkles** (one 16-unit path at every size, a 0.8 stroke the frames' 5 %; 44 yellow, 26 lilac, 16 pink) and **blobs**
   (blush, magenta, indigo, orange) behind a card or tile; **confetti** (short dashes in orange, pink, cyan, lilac), **a set per
   width** for the media, map and calendar; the map card's **concentric dashed rings** (1440 only); the testimonials' **yellow wave**
