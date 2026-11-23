@@ -2881,14 +2881,17 @@ export const FIELDS = {
   // `aspect` on an image field is only the FALLBACK frame of the photo editor: it opens on the shape of the
   // field's largest photo on the canvas as drawn now (photoAspectOf, EncoreBuilder.jsx), and falls back to this
   // when the layout or device draws none.
-  // The header's `in` is always an object naming all six templates: they have
-  // different header families (six designs against four, four, four, four and four —
+  // The header's `in` is always an object naming all seven templates: they have
+  // different header families (six designs against four, four, four, four, four and four —
   // Grunge's, Editorial's and Pop's rows are each measured over four fitted
   // cards, none a placeholder since each template's layout-4 pass). Pop's was
   // measured in its layout-1 sweep and re-measured in each later header
   // session, the last over its fitted card 4 (2026-10-07), unchanged. Lattice's is
   // measured over its fitted Hero alone (cards 2-4 are placeholders: `reach.mjs 5`
   // agreed with it at the 2026-11-20 sweep, so those seats are Lime's twins' rows).
+  // Paperback's is the same shape: its rows began as Lattice's (session 0), section 1 set
+  // `align`, `badgeText` and the title cap from the fitted Hero, and `reach.mjs 6`
+  // (session 12) agreed with them except `cardLine`, which gained `Paperback: [2]`.
   header: [
     { k: 'image',     l: 'Background photo', type: 'image', aspect: [16, 9],
       hint: 'Fills the header behind the type.' },

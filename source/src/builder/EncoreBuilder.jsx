@@ -977,7 +977,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // Lattice's dot field and dotted disc (plans/lattice/layout-1.md, section 1): the
   // field is the width's own dot set as an SVG data URI, the disc a WebP mask the
   // section inks. Its hero is 750 tall at the two narrow widths as well, where the
-  // other five draw 1024 and 844; the desktop number (614 = 750 x .82) already agrees.
+  // other templates draw 1024 and 844 (Paperback's is 750 there too, set below); the
+  // desktop number (614 = 750 x .82) already agrees.
   if (T.name === 'Lattice') {
     vm.dotField = latticeDotField(Z.dev)
     vm.latticeDisc = LATTICE_ART
