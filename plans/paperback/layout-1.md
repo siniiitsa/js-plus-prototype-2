@@ -1025,6 +1025,23 @@ renders at theme 6 (45 renders, 0 bad). Digest of every category at three widths
 - **The statement is not offered** (`Statement` in the panel), because the frame draws none; a stored value stays in the content and comes back with a template that reads it. The initials disc is the footer's own `Seal` select (Show / Hide); it has no ring to turn. **The photograph is a new `Photo` box** in the footer's panel, Paperback only, seeded with the fourth cover (also the gallery's fourth tile).
 - **Caps: link label 47, button 36, copyright 34, name 37** (measured). Layouts 2-4 are one design here (the footer has one).
 
+### Answers to the Open calls (2026-11-23, user: "make sensible decisions for each question … I trust your judgement")
+
+**Every call above is decided as shipped. No code, seed or `index.html` change**, so no probe, digest or refresh was re-run (the sweep's results stand at `daa3d4a`). The reasons, so a later pass can reopen one knowingly:
+
+- **Header.** Ring text drawn at 1440 too: kept (the badge fields and the three states must act wherever a sticker stands, and the inline probe has a slot for it; a 768-only draw would need an `INLINE_OFF` row for no visitor gain). Title cap 14 kept (a longer name climbs into the sticker and the photograph; the cap is measured, the alternative is a visible defect). `Page alignment` stays hidden; the badge controls do nothing at 390, where the frame draws no sticker.
+- **Bio.** `Full bio` links to the booking section live: kept (a link-less pill is a dead control on a published page). `About` stays a literal (Lattice's precedent). Heading cap 15 kept.
+- **Media.** Disc ring text not drawn, no new field: kept (call 1; a seeded field nobody asked for is more panel). Row 1 marked and the player naming the cued track: kept (Lattice's rule). Chip colours by row place: kept. The 56 px kicker seat stays as padding.
+- **Gallery.** The viewer's seed stays in slot 2 (the viewer can show only a slot, and the cost is one 85 px thumbnail). Tile 2 picked on the canvas: kept. `railLabel` as the credit script, `Media` only when typed: kept.
+- **Repertoire.** `12 songs`, the real count in lowercase: kept (the frame's `240 songs` was the designer's number; a capital would be a literal quirk). The pager appears only past twelve songs: kept. Title cap 17 kept.
+- **Map.** No `Tickets` chip on a row without an address: kept (the chip is the tickets link, JP-045; a dead pill on a published page is worse than the frame's missing chip). `05 of 05` derived: kept. Lit row a yellow inset ring: kept. Pager past five gigs: kept.
+- **Pricing.** The badge on position 2, not on a Featured tier: kept (the frame's seat). No tab lit at rest, `/event`, the Oxford comma, `Book this set`: kept.
+- **Calendar.** Continue is the link and is not dimmed until a day is picked: kept (Lattice's rule; a dimmed Continue hides the way to the form). Label cap 12 kept (the measured 34 is the 390 foot with one line; 12 keeps the 768 foot's line whole). The desktop card's 141 px up and down kept (the frame's own box). The picture half stays top-aligned for a six-row month.
+- **Form.** The chat bubble stays a picture. `promises` cap 29 / five rows kept (a sixth meets the blob). `--ph: 0.565` kept (the frame's ink at that tint, and the label sits above the box, so the placeholder is a hint).
+- **Testimonials.** `Reviewed 6 days ago` drawn from `quotes.when`: kept (an emptied `when` drops it). Straight quotes in the seeds: kept (Lattice's call 2). Ring text not drawn. Caps (`quote` 170, `who` / `role` 45, `when` 31) kept.
+- **Footer.** The photo takes the newsletter's column and the Book pill the family seat under the link pills: kept. The seeded `Shows/Coverage` is the artist's copy shared with the header's menu, so it stays (changing it would move other templates); the 768 wrap of `Reviews` is accepted. `A JustPay Product` stays the platform's constant. Caps unchanged.
+- **Found by session 12 and the sweep (27 wide seeds, the two layout 3 / 4 name splits, Pop's / Lime's colours at layouts 2–4).** Not decided here and not for this pass: they belong to whoever fits layouts 2–4, whose frames will replace the placeholder trees they come from.
+
 ## Open questions
 
 1. **Are all eleven the existing layout-1 compositions?** The pictures say yes for every one. The least certain are
