@@ -198,7 +198,7 @@ the only module that imports them.
   photographs), so from then on it is theirs and survives a template switch.
 - **Imports, never fetches.** §8.6 forbids a network request in the render path.
   `vite-plugin-singlefile` forces `assetsInlineLimit = () => true`, so all eighty files are
-  base64-inlined and the committed `index.html` still opens from `file://`. It is ~14.6 MB (14,585,775 bytes after the Paperback pass, which grew it by 1.56 MB from 13.03: eleven `paperback-*` files, 960 KB raw and about 1.28 MB inlined, and the rest code and the art; the Lattice pass before it grew it by 1.10 MB from 11.93).
+  base64-inlined and the committed `index.html` still opens from `file://`. It is ~14.6 MB (14,585,791 bytes after the Paperback pass, which grew it by 1.56 MB from 13.03: eleven `paperback-*` files, 960 KB raw and about 1.28 MB inlined, and the rest code and the art; the Lattice pass before it grew it by 1.10 MB from 11.93).
   (The plain `npm run build` path has no such override and would emit them to `dist/assets/`
   instead; only the standalone build feeds the committed demo.)
 - **`null` is the explicit-clear sentinel.** A fresh section carries no `image` key at all, and
