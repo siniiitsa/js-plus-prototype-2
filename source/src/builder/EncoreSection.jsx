@@ -31,7 +31,7 @@
 import { useId, useRef, useState } from 'react'
 import RealMap from './RealMap.jsx'
 import { PaperbackArt, PaperbackSparkle, PaperbackWaves } from './paperbackArt.jsx'
-import { HeadlinerWaves, HeadlinerBlockArrow } from './headlinerArt.jsx'
+import { HeadlinerWaves, HeadlinerBlockArrow, HeadlinerRings } from './headlinerArt.jsx'
 import {
   Play, Pause, SkipBack, SkipForward, Check, ChevronLeft, ChevronRight,
   ArrowLeft, ArrowRight, ArrowUp, ArrowDown, Star, Plus, X, Search, User,
@@ -23716,6 +23716,167 @@ function PaperbackMap({ s, g }) {
   )
 }
 
+// Headliner's layout-1 map (1:4955 · 1:15726 · 1:16776, 1051.41 / 1558.52 / 1435.13 tall; plans/headliner/layout-1.md, section 6): an own tree, handed the seam's
+// page of gigs, the pairing and the pager's window by `EventsMap` (Lattice's and Paperback's shape). The stage pattern: `u(v)` turns the frame's px into `cqw` of an
+// `inline-size` stage, the frame's numbers verbatim at all three widths. A teal band (Scheme 6, the root's own ground, no card) with nothing centred in a taller box
+// (96 / 77 / 58 round the content). The head is the town in Anton (181.44 / 112 / 70) and the `120 mile radius` pill at the head box's *foot* (`flex-end`: 12 under the
+// baseline, not on it), right at 1440 and 768 and under the head on a 14 gap at 390; the eyebrow `Shows / coverage` is not drawn (no field carries it) and its 31.75 stays
+// as padding. The body is two 655.05 columns on a 32 gap at 1440, the maroon card stretched to the list's height, and a stack on a 32 gap narrow. The card is the rings art
+// (`HeadlinerRings`, not the real map: Lattice's and Paperback's call) over a ruled foot; its picture box is 24 in on three sides and flush to the foot, 505.84 tall at 1440
+// only as the remainder (667.77 x 556.47 at 768, 294 x 360 at 390), and its foot is the name in Anton 30 / 27 / 25 beside the terms in amber Anton 13, a flex row whose
+// name shrinks to its min-content at 390 and leaves the terms their two lines. The rows are flush on `HL_HAIR` rules: a flat 72-wide date tile (orange, amber, then sand,
+// **by the gig's place in the whole list**, so a page turn does not recolour: the frame's first row is `Sold out` and its second `Tickets`, and the second and third share a
+// state and differ in fill, so it is the index), the venue in Anton over `City · time` in Inter Tight at .85, and a 1 px outlined `Tickets` pill **only on a row with an
+// address** (JP-045; the frame's orange `Sold out` has no field). Rows are 107.19 / 90.55 / 106 tall; at 390 the frame's five are all 106 (its first venue wraps beside the
+// Sold-out pill), so 106 is the floor of a row there. The pager draws only past one page (every template's rule), so the seeded five leave the section 54 short of the
+// frame's: space-between, an outlined prev square, the window's squares (the current one orange) and an orange next square, at every width. The `05 of 12` is derived.
+const HEADLINER_MAP = {
+  desktop: { fw: 1440, top: 96, side: 48.96, h2: 181.44, free: 1209.77, box: [607.047, 505.844], areaMin: 300, tileGap: 18, rowPad: 20.906, tileH: 64.375, dayT: 32, titleT: 30, nameT: 30 },
+  tablet: { fw: 768, top: 77, side: 26.11, h2: 112, free: 583.46, box: [667.766, 556.469], areaH: 580.469, tileGap: 18, rowPad: 14, tileH: 61.547, dayT: 29, titleT: 27, nameT: 27 },
+  mobile: { fw: 390, top: 58, side: 24, h2: 70, free: 342, box: [294, 360], areaH: 384, tileGap: 10, rowPad: 14, rowMin: 106, tileH: 58.688, dayT: 26, titleT: 25, nameT: 25 },
+}
+function HeadlinerMap({ s, g }) {
+  const { shown, at0, lit, onPick, win, onPage, onStep } = g
+  const dev = s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop'
+  const P = HEADLINER_MAP[dev]
+  const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
+  const O = s.onScheme
+  const sand = O[1].bg           // the head's, the rows', the rules' and the outlines' #EEE3D1 (sem/tag/1/text)
+  const orange = O[1].activeBg   // the first tile's, the dot's and the current page's #F85E34
+  const amber = O[3].activeBg    // the radius pill's, the second tile's and the terms' #F8A351
+  const maroon = O[3].bg         // the card's #760000
+  const black = s.activeFg       // the tiles', the pill's and the current page's ink, #020202
+  const anton = (size, extra) => ({ fontFamily: s.label, fontWeight: 400, fontSize: size, lineHeight: 'normal', letterSpacing: '0.02em', textTransform: 'uppercase', ...extra })
+  const display = (size, extra) => ({ fontFamily: s.display, fontWeight: 400, fontSize: size, lineHeight: 1, letterSpacing: '-0.005em', textTransform: 'uppercase', ...extra })
+  // The tiles' fills by the gig's place in the whole list: orange, amber and three sand, repeating every five.
+  const TILES = [orange, amber, sand, sand, sand]
+
+  const h2 = String(s.title || '').trim() ? (
+    <h2 style={{
+      margin: 0, flex: '0 1 auto', minWidth: 0, color: sand, ...display(s.titleWordEms ? `min(${u(P.h2)}, calc(${u(P.free)} / ${s.titleWordEms}))` : u(P.h2), { lineHeight: 0.98 }),
+    }}>{s.title}</h2>
+  ) : null
+  const pill = s.mapRadius ? (
+    <span style={{
+      ...anton(u(13)), flex: 'none', alignSelf: s.mob ? 'flex-start' : 'flex-end', boxSizing: 'border-box', height: u(28), padding: `0 ${u(12)}`, display: 'inline-flex',
+      alignItems: 'center', borderRadius: s.radiusChip, background: amber, color: black, whiteSpace: 'nowrap',
+    }}>{s.mapRadius}</span>
+  ) : null
+  const head = (
+    <div style={{ paddingTop: u(31.75), minWidth: 0 }}>
+      {s.mob ? <div style={col(u(14))}>{h2}{pill}</div> : <div style={row(u(24), { alignItems: 'flex-end', justifyContent: 'space-between' })}>{h2}{pill}</div>}
+    </div>
+  )
+
+  // The card: the rings in a box 24 in on three sides and flush to the foot, over the foot. At 1440 the box is the remainder of the height the list gives the grid row.
+  const foot = !!(s.mapBase || s.mapTerms)
+  const card = (
+    <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0, background: maroon }}>
+      <div style={{
+        position: 'relative', flex: P.areaH ? 'none' : '1 1 0', minHeight: u(P.areaH ?? P.areaMin), ...(P.areaH ? { height: u(P.areaH) } : null),
+      }}>
+        <HeadlinerRings w={P.box[0]} h={P.box[1]} ink={sand} dot={orange} style={{
+          position: 'absolute', left: u(24), top: u(24), width: `calc(100% - ${u(48)})`, height: `calc(100% - ${u(24)})`,
+        }} />
+      </div>
+      {foot && (
+        <div style={row(0, {
+          flex: 'none', boxSizing: 'border-box', padding: `${u(20)} ${u(24)}`, borderTop: `1px solid ${HL_HAIR}`, justifyContent: 'space-between',
+        })}>
+          {!!s.mapBase && <div style={display(u(P.nameT), { lineHeight: 'normal', paddingTop: u(2), color: sand, overflowWrap: 'break-word' })}>{s.mapBase}</div>}
+          {!!s.mapTerms && <div style={anton(u(13), { lineHeight: u(13.65), color: amber, overflowWrap: 'break-word' })}>{s.mapTerms}</div>}
+        </div>
+      )}
+    </div>
+  )
+
+  // A gig row: the tile, the venue over `City · time`, and the outlined pill where the row has an address (JP-045). The lit row (live only, the pairing) is the row
+  // ringed inside in the pill's amber: the frame draws none.
+  const rows = shown.map((gig, i) => {
+    const link = extLink(s, gig.url)
+    const Tag = link ? 'a' : 'div'
+    return (
+      <Tag key={i} {...link} onClick={onPick(i)} style={{
+        ...row(u(P.tileGap)), boxSizing: 'border-box', minHeight: P.rowMin ? u(P.rowMin) : undefined, padding: `${u(P.rowPad)} 0`, borderTop: `1px solid ${HL_HAIR}`,
+        textDecoration: 'none', color: sand, cursor: s.live ? 'pointer' : undefined, boxShadow: lit(i) ? `inset 0 0 0 ${u(3)} ${amber}` : undefined,
+      }}>
+        <span style={{ flex: 'none', boxSizing: 'border-box', display: 'block', width: u(72), height: u(P.tileH), paddingTop: u(8), background: TILES[(at0 + i) % TILES.length], color: black, textAlign: 'center' }}>
+          <span style={{ display: 'block', position: 'relative', height: u(13.641) }}>
+            <span style={anton(u(13), { display: 'block', position: 'relative', top: u(-3), lineHeight: u(13.65), color: black })}>{gig.month}</span>
+          </span>
+          <span style={display(u(P.dayT), { display: 'block', lineHeight: 0.95, color: black })}>{gig.day}</span>
+        </span>
+        <span style={col(u(6), { flex: '1 1 0', minWidth: 0 })}>
+          <span style={display(u(P.titleT), { paddingTop: u(2), color: sand, overflowWrap: 'break-word' })}>{gig.venue}</span>
+          {!!gig.line && (
+            <span style={{ fontFamily: s.body, fontWeight: 400, fontSize: u(15), letterSpacing: '-0.015em', lineHeight: 'normal', color: HL_MEDIA_LIT, opacity: 0.85, overflowWrap: 'anywhere' }}>{gig.line}</span>
+          )}
+        </span>
+        {!!gig.url && (
+          <span style={{
+            ...anton(u(13)), flex: 'none', boxSizing: 'border-box', height: u(30), padding: `0 ${u(12)}`, display: 'inline-flex', alignItems: 'center',
+            border: `1px solid ${sand}`, borderRadius: s.radiusChip, color: sand, whiteSpace: 'nowrap',
+          }}>Tickets</span>
+        )}
+      </Tag>
+    )
+  })
+
+  // The pager: 44 squares on a 6 gap, the frame's 16 x 14 line arrows (stroke 2.4); it draws only past one page.
+  const square = (key, child, { fill, onClick }) => (
+    <span key={key} onClick={onClick} style={{
+      ...anton(u(16)), boxSizing: 'border-box', flex: 'none', width: u(44), height: u(44), display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+      border: `1px solid ${fill ? orange : sand}`, background: fill ? orange : 'transparent', color: fill ? black : sand, cursor: onClick ? 'pointer' : undefined, whiteSpace: 'nowrap',
+    }}>{child}</span>
+  )
+  const arrow = (back, stroke) => (
+    <svg aria-hidden viewBox="0 0 16 14" fill="none" style={{ display: 'block', width: u(16), height: u(14), flex: 'none', overflow: 'visible' }}>
+      <path d={back ? 'M16 7H3M8 1.5L2 7L8 12.5' : 'M0 7H13M8 1.5L14 7L8 12.5'} stroke={stroke} strokeWidth="2.4" />
+    </svg>
+  )
+  const pager = win.labels.length > 0 ? (
+    <div style={row(0, { justifyContent: 'space-between' })}>
+      {square('prev', arrow(true, sand), { onClick: onStep && (() => onStep(-1)) })}
+      <div style={row(u(6))}>
+        {win.labels.map((p, i) => square(`p${i}`, p, { fill: i === win.at, onClick: onPage && p !== '…' ? () => onPage(p) : undefined }))}
+      </div>
+      {square('next', arrow(false, black), { fill: true, onClick: onStep && (() => onStep(1)) })}
+    </div>
+  ) : null
+
+  const two = (n) => String(n).padStart(2, '0')
+  const panel = (
+    <div style={col(u(10), { minWidth: 0 })}>
+      {(!!s.mapListLabel || shown.length > 0) && (
+        <div style={row(u(12), { justifyContent: 'space-between', ...anton(u(16), { lineHeight: u(16.8), color: sand }) })}>
+          <span style={{ minWidth: 0, overflowWrap: 'anywhere' }}>{s.mapListLabel}</span>
+          {shown.length > 0 && <span style={{ flex: 'none', whiteSpace: 'nowrap' }}>{`${two(shown.length)} of ${two(s.gigs.length)}`}</span>}
+        </div>
+      )}
+      {rows.length > 0 ? (
+        <div style={{ borderBottom: `1px solid ${HL_HAIR}` }}>{rows}</div>
+      ) : (
+        <div style={{ ...anton(u(16), { color: sand }), padding: `${u(24)} 0`, borderTop: `1px solid ${HL_HAIR}`, borderBottom: `1px solid ${HL_HAIR}` }}>No upcoming gigs.</div>
+      )}
+      {pager}
+    </div>
+  )
+
+  return (
+    <div style={{ position: 'relative', containerType: 'inline-size', overflow: 'hidden' }}>
+      <div style={{ boxSizing: 'border-box', padding: `${u(P.top)} ${u(P.side)}` }}>
+        <div style={col(u(32))}>
+          {head}
+          <div style={s.narrow ? col(u(32)) : { display: 'grid', alignItems: 'stretch', columnGap: u(32), gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)' }}>
+            {card}
+            {panel}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function EventsMap({ s }) {
   // The page of gigs, and the gig the visitor has picked out on the map. Both
   // are inert on the editor canvas, where the section is a picture of a website
@@ -23763,6 +23924,14 @@ function EventsMap({ s }) {
     // window is the compact one at every width (the frames' own `1 2 3`).
     // Paperback's (1:2822 · 1:11471 · 1:12654) is a block of its own as well, handed the same seam, and the gig's place in the whole list
     // (`at0`) so a date tile keeps its colour as the pager turns.
+    // Headliner's (1:4955 · 1:15726 · 1:16776) is a block of its own too, handed the same seam; the date tiles' fills follow the gig's place in the whole list.
+    if (s.limeTree && s.headliner) {
+      return <HeadlinerMap s={s} g={{
+        shown, at0: pg * perPage, lit, onPick, win: pageWindow(pages, pg, true),
+        onPage: s.live ? (label) => setPage(Number(label) - 1) : undefined,
+        onStep: s.live ? (dir) => setPage(Math.max(0, Math.min(pages - 1, pg + dir))) : undefined,
+      }} />
+    }
     if (s.limeTree && s.paperback) {
       return <PaperbackMap s={s} g={{
         shown, at0: pg * perPage, lit, onPick, win: pageWindow(pages, pg, true),

@@ -15,9 +15,12 @@
 //                      1.2545 x, a lens, a pupil and a highlight arc
 //   HeadlinerPlay      the media rows' 10 x 12 triangle
 //
+//   HeadlinerRings     the map card's concentric rings (section 6, 1:4970 · 1:15741 · 1:16791): four rings and a dot
+//                      about the picture box's centre, every size a fraction of the box's *width* (below)
+//
 // NOT here, because the numbers belong to the section that draws them and are read there: the ringed
-// numeral (section 1, the header's `26`, and the calendar's `KM` disc, section 8) and the map's
-// concentric rings (section 6). Each section's session adds its piece to this file.
+// numeral (section 1, the header's `26`, and the calendar's `KM` disc, section 8). Each section's session
+// adds its piece to this file.
 
 // The wavy-line field. The frames hold it as 70 lines in 768-wide coordinates (the tablet frame, 1:15285):
 // each is six points at y 0, 180, 330, 480, 640 and 820, drawn in #760000 at 32 % opacity. The desktop frame
@@ -82,6 +85,35 @@ export function HeadlinerPlay({ size = 10, fill = '#020202', style, ...rest }) {
     <svg viewBox="0 0 10 12" width={size} height={size * 1.2} fill="none" aria-hidden="true"
       style={{ display: 'block', ...style }} {...rest}>
       <path d="M0 0L10 6L0 12V0Z" fill={fill} />
+    </svg>
+  )
+}
+
+/** The map card's rings, read off the three frames' vector exports (607.047 x 505.844 at 1440, 667.766 x 556.469 at 768,
+ *  294 x 360 at 390). Every size is a fraction of the box's *width* `w` at all three: four rings of diameter .2, .4, .6 and
+ *  .8 w about the centre, the .2 and .6 rings solid (stroke .005 w and .0025 w), the .4 and .8 rings dashed (52 and 108
+ *  dashes, each .43 of its pitch, one centred on three o'clock, stroke .0025 w), and an orange dot of radius .02667 w. The
+ *  box is `w` x `h` as the frame draws it; the svg fits it into whatever box it is given (a shorter one scales the rings
+ *  down, a taller one leaves them centred), so a card the list stretches never crops them. */
+export function HeadlinerRings({ w = 607.047, h = 505.844, ink = '#EEE3D1', dot = '#F85E34', style, ...rest }) {
+  const cx = w / 2
+  const cy = h / 2
+  const dashed = (k, n) => {
+    const r = (k * w) / 2
+    const pitch = (2 * Math.PI * r) / n
+    const dash = pitch * 0.43
+    return { r, strokeDasharray: `${dash.toFixed(3)} ${(pitch - dash).toFixed(3)}`, strokeDashoffset: +(dash / 2).toFixed(3) }
+  }
+  const a = dashed(0.4, 52)
+  const b = dashed(0.8, 108)
+  return (
+    <svg viewBox={`0 0 ${w} ${h}`} width="100%" height="100%" preserveAspectRatio="xMidYMid meet" fill="none" aria-hidden="true"
+      style={{ display: 'block', ...style }} {...rest}>
+      <circle cx={cx} cy={cy} r={0.1 * w} stroke={ink} strokeWidth={0.005 * w} />
+      <circle cx={cx} cy={cy} r={a.r} stroke={ink} strokeWidth={0.0025 * w} strokeDasharray={a.strokeDasharray} strokeDashoffset={a.strokeDashoffset} />
+      <circle cx={cx} cy={cy} r={0.3 * w} stroke={ink} strokeWidth={0.0025 * w} />
+      <circle cx={cx} cy={cy} r={b.r} stroke={ink} strokeWidth={0.0025 * w} strokeDasharray={b.strokeDasharray} strokeDashoffset={b.strokeDashoffset} />
+      <circle cx={cx} cy={cy} r={0.02667 * w} fill={dot} />
     </svg>
   )
 }
