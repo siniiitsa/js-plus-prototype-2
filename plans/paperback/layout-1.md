@@ -886,7 +886,7 @@ renders at theme 6 (45 renders, 0 bad). Digest of every category at three widths
 - **`scripts/reach.mjs` takes a themes list** (default `0,1,2`; pass `6` for Paperback) and a long time; run it once, in the background, and do not start a second copy. It is not needed again: session 12's run is the pass's (`reach6` above). A tool that lists `FIELDS[].in` changes would have to be re-run.
 - **The sweep's whole-page published check is the first time two Paperback sections stand together.** The seams to eyeball: the hero's rounded foot over the bio's white; the pale-yellow gallery band between white sections; the indigo map band against the white pricing; **the testimonials' pale-yellow band (wave floor) against the indigo footer** (a straight seam, the footer's rule bleeding to the page's edge); the footer's 32 foot under the small print (the frames' own).
 - **The footer's seams for the sweep to check live:** its eight pills are `navHref()` anchors (a page missing a section drops that pill on the published page and keeps it on the canvas, as everywhere); the Book pill goes to the form; the footer takes `&page=2` and stands on the same Scheme 3.
-- **Open calls still to collect** (the list under *Open calls* holds sections 1-11, each still saying *Layouts 2-4 are still Pop's caps*, which session 12 has superseded; the sweep folds them into one message for the user, and says that line is stale): the hero's ring text at 1440, the ring text on the media, repertoire, pricing and testimonials discs and the hero's vinyl, the `Reviewed 6 days ago` / `Top tracks` scripts, the gallery's viewer photograph, the straight seeded quotes against the frames' curly ones, **section 11's** (the photo's and the Book pill's seats, the `Shows/Coverage` wrap at 768, the credit's casing and the hidden statement, below), **and session 12's one**: the 27 seeds wider than the layout 2-4 placeholder cards hold (the list above), which are for whoever designs those layouts.
+- **Open calls still to collect** (the list under *Open calls* holds sections 1-11, those lines said *Layouts 2-4 are still Pop's caps*, which session 12 superseded and the sweep rewrote; the sweep folded them into one message for the user): the hero's ring text at 1440, the ring text on the media, repertoire, pricing and testimonials discs and the hero's vinyl, the `Reviewed 6 days ago` / `Top tracks` scripts, the gallery's viewer photograph, the straight seeded quotes against the frames' curly ones, **section 11's** (the photo's and the Book pill's seats, the `Shows/Coverage` wrap at 768, the credit's casing and the hidden statement, below), **and session 12's one**: the 27 seeds wider than the layout 2-4 placeholder cards hold (the list above), which are for whoever designs those layouts.
 - The footer's frame is **1:3395** · **1:12081** · **1:13263**.
 
 ### Open calls — everything the pass hands the user, in one place
@@ -914,7 +914,7 @@ renders at theme 6 (45 renders, 0 bad). Digest of every category at three widths
 - **`About` is a literal** (Lattice's precedent); the existing `aboutLabel` is layout 3's bracketed label. Say if you want it a field at layout 1 too.
 - **Not drawn:** the script `KM bio`, `that's me!` and its arrow (no field), and the `001` / `Structure · Bio_01` chips (removed 2026-11-11). The role line is drawn, from the header's `kicker` and
   `location`, so it prints `DJ · Live Act · Manchester, UK` at 1440 (the frame has no dot and no `, UK`) and two lines (`DJ · Live Act` / `Manchester, UK`) at 768 and 390.
-- **The heading cap is 15** at layout 1 (the seed's own length): the frame draws it on one line at 768 and 390, and a sixteenth character breaks that. Layouts 2–4 are still Pop's caps.
+- **The heading cap is 15** at layout 1 (the seed's own length): the frame draws it on one line at 768 and 390, and a sixteenth character breaks that. Layouts 2–4 now carry Paperback's own caps (session 12: measured on the placeholder cards, lower-only, the seed the floor; `notes/bio.md`).
 - **The vinyl is the badge.** `Hidden` removes it and keeps the three sparkles.
 
 **From section 3 (media), for the user:**
@@ -932,7 +932,7 @@ renders at theme 6 (45 renders, 0 bad). Digest of every category at three widths
 - **The canvas draws tile 2 picked and ringed**, as the frame does; the other templates draw no ring on the canvas. A visitor's pick moves it, and the playing video clears it.
 - **`railLabel` is the credit script (`Gallery`)**, not the frame's `Kai Mercer gallery` (the name was removed from it, 2026-11-12). It wraps in the frame's 104 / 93 / 85 box, so a longer caption turns into two lines beside the tape; its cap is 18.
 - **The script `Media` is drawn only when the `Small heading` field is typed** (it is seeded empty, as at every template), with the frame's turn and seat; its cap is 25.
-- **Caps: heading 16** (the seed's length; a 16-character head that packs badly wraps to a second line and the section grows by one line), **source label 36 and caption 18** (both measured with the second line the frame draws). Layouts 2–4 are still Pop's.
+- **Caps: heading 16** (the seed's length; a 16-character head that packs badly wraps to a second line and the section grows by one line), **source label 36 and caption 18** (both measured with the second line the frame draws). Layouts 2–4 carry Paperback's own caps since session 12 (`notes/gallery.md`).
 
 **From section 5 (repertoire), for the user:**
 
@@ -940,7 +940,7 @@ renders at theme 6 (45 renders, 0 bad). Digest of every category at three widths
 - **The script `Repertoire` and the ring text on the disc are not drawn** (no field carries them; the media's call). The disc is the plain heart-in-vinyl.
 - **The pager and its seat appear only past twelve songs**, so the seeded section is about 100 shorter than the frame (which draws a pager over 240 songs); at 390 the pager takes a 58 foot when it shows.
 - **An artist over 22 characters is cut by the cap and, on the canvas, an over-long stored one ellipsises in its chip** (the chip is at most 55% of the row). Title cap 17 (the seed's own length).
-- **Layouts 2–4 are still Pop's caps**, as every section so far.
+- **Layouts 2–4 carry Paperback's own caps** since session 12 (`notes/repertoire.md`).
 
 **From section 6 (map), for the user:**
 
@@ -951,7 +951,7 @@ renders at theme 6 (45 renders, 0 bad). Digest of every category at three widths
 - **The date tiles take their colour from the row's place in the whole list**, not its page, so a page turn does not recolour a gig.
 - **The pager appears only past five gigs**, so the seeded section is 925 / 917 tall at 768 / 390 against the frames' 983 (the absent pager); at 1440 the card sets the height (982.99).
 - **The rings art is drawn at 1440 only**, as the frames do; the 768 and 390 frames draw the foot alone. The real map is not mounted (Lattice's call), so the town and radius fields move the head and pill, not a picture.
-- **Heading cap 11** (the seed's own length; mobile is the tightest). Layouts 2–4 are still Pop's caps.
+- **Heading cap 11** (the seed's own length; mobile is the tightest). Layouts 2–4 carry Paperback's own caps since session 12 (`notes/map.md`).
 
 **From section 7 (pricing), for the user:**
 
@@ -962,7 +962,7 @@ renders at theme 6 (45 renders, 0 bad). Digest of every category at three widths
 - **The small print's seed carries the Oxford comma** (*date, location, and length of set.*), as the frame's.
 - **The button is seeded *Book this set*** (`rowCta`), where the shared seed is *Book Now*; layouts 2–4 are unchanged.
 - **Card colours and tilt follow position** (lilac, pink, cyan; -3, 2, -2 degrees) and repeat for a fourth card on, so a filter leaves the survivors their colours.
-- **`price.num` is capped 7** (the box measures 9 / 11 / 14): kept to Pop's number as Lattice's is, since layouts 2–4 are unmeasured. Layouts 2–4 are still Pop's caps.
+- **`price.num` is capped 7** (the box measures 9 / 11 / 14): kept to Pop's number at layout 1 as Lattice's is. Layouts 2–4 carry Paperback's own caps since session 12 (`notes/pricing.md`).
 
 **From section 8 (calendar), for the user:**
 
@@ -972,7 +972,7 @@ renders at theme 6 (45 renders, 0 bad). Digest of every category at three widths
 - **The desktop card stands 141 px down and 141 px up** (the 1440 frame is an 835-tall box with the card centred), so the section is 835 at 1440 and the white gap round the card is the frame's. Narrower frames pad 70 and 24. Say if you want the desktop padding trimmed to the pricing's 96.
 - **The picture half does not recentre** for a four- or six-row month (it is pinned to the five-row height, top-aligned), so a six-row month leaves it above the grid's middle.
 - **The circle is drawn round the lit day whichever day it is** (the frame's offset from the cell's centre); a booked or past day is dimmed to .38 with no strike, the family's look.
-- **Layouts 2–4 of `time` and `prompt` are still Pop's and Lattice's caps**, as every section so far.
+- **Layouts 2–4 of `time` and `prompt` carry Paperback's own caps** since session 12 (`notes/calendar.md`; `prompt` L2 is one of the 27 seeds wider than the card).
 
 **From section 9 (form), for the user:**
 
@@ -980,7 +980,7 @@ renders at theme 6 (45 renders, 0 bad). Digest of every category at three widths
 - **The `promises` cap is the seed (29)** and the list holds five rows (a sixth meets the blob's art at 1440); a longer promise wraps to two lines at 768 and 390 and breaks inside a word only past the measure. Raise it if you would rather let the blob sit behind the text.
 - **The head shrinks only for a word wider than the measure** (a 34-letter word fits at 20 px); the cap of 41 is the 1440 measure's fourth line.
 - **The placeholder strength is `--ph: 0.565`**, the frame's ink at that tint on white; the label sits above the box, so it is a hint and not the box's only label. Raise it if you want the contrast higher.
-- **Layouts 2-4 of every field are Pop's and Lattice's caps**, as every section so far.
+- **Layouts 2-4 of every field carry Paperback's own caps** since session 12 (`notes/form.md`; `heading` L2 and `promises[]` L2 are among the 27 seeds wider than the card).
 
 **From section 11 (footer), for the user:**
 
