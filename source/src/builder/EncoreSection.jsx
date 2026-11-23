@@ -7442,6 +7442,161 @@ function PaperbackMedia({ s, m }) {
   )
 }
 
+// Headliner's layout-1 media player (1:4650 · 1:15421 · 1:16471: 1440 / 768 / 390; 1057 / 1219 / 1251 tall).
+// A tree of its own, dispatched from `Media` after its hooks and seam (Lattice's and Paperback's shape), so the published
+// player is the one seam in a new picture (notes/media.md: the `<audio>` is `Media`'s and is assigned imperatively).
+// The frame is a maroon band holding the head (Anton, black), five flush rows on 1 px rules (number, cover, title and sub in
+// Inter Tight, the running time in Anton, a 44 square outlined button; the marked row's title white, its number and button
+// orange) and a 426-tall black card (the photograph, the name, the artist, three 44 squares, a 3 px progress rail), then a
+// square orange Soundcloud button under the list.
+//
+// Every length is the frame's px through `u`, in cqw of a stage as wide as the page (the hero's and the bio's mechanism);
+// the stage's vertical insets are in a child. Desktop is not x 0.82: the stage's width does the scaling. The frame centres its
+// 694.39 of content in a 1057 box (181.3 above and below), so the desktop child holds `minHeight` and centres, which is the
+// frame's number and grows when the artist adds tracks. Not drawn (the standing removals, call 1 of session 0): `TOP TRACKS`
+// and `5 / 5 FEATURED`. Their seat stays as padding at 390 (the head box is the frame's 201.09), as the bio's convention.
+// Named departures: the marked row is the player's track (`at`), not the frame's row 02, and the player names the cued
+// track, not the frame's *Night Rain* (Lattice's rule); the row number is the place (`1`), not `t.n`; the running time is drawn
+// only while it differs from the subtitle (a stored list's `sub` is the whole line).
+const HEADLINER_MEDIA = {
+  desktop: { fw: 1440, top: 96, minH: 1057, side: 48.96, headH: 152.39, h2: 155.52, cols: [884.047, 426.016, 32.015], contentW: 1342.08, card: 426.016, rowH: 85, numW: 34, gap: 16, art: 56, rowT: 22, rowTLh: 26, t: 44, artistTop: 9 },
+  tablet: { fw: 768, top: 77, side: 26.11, headH: 70.55, h2: 72, card: 426, contentW: 715.766, rowH: 85, numW: 34, gap: 16, art: 56, rowT: 22, rowTLh: 26, t: 35, artistTop: 7 },
+  mobile: { fw: 390, top: 58, side: 24, headH: 201.09, h2: 62, card: 342, contentW: 342, rowH: 73, numW: 22, gap: 10, art: 44, rowT: 18, rowTLh: 21, t: 29, artistTop: 7 },
+}
+const HL_MEDIA_DIM = 'rgba(238,227,209,0.72)'   // an unmarked row's ink (the frame's literal)
+const HL_MEDIA_LIT = '#f4f4f4'                   // the marked row's title and sub
+function HeadlinerMedia({ s, m }) {
+  const { at, playing, now, sleeve, sleeveSlot, audio, goTo, toggle, onPick } = m
+  const dev = s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop'
+  const P = HEADLINER_MEDIA[dev]
+  const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
+  const cream = s.chips[3].fg            // tag/4 text, #EEE3D1: the card's ink and the outlined squares
+  const orange = s.onScheme[1].activeBg  // the lit row's and the play button's #F85E34
+  const black = s.activeFg               // the head's and the card's #020202
+  const anton = (size, lh, extra) => ({ fontFamily: s.label, fontWeight: 400, fontSize: size, lineHeight: lh, letterSpacing: '0.02em', textTransform: 'uppercase', ...extra })
+  const ems = s.titleWordEms
+
+  const h2 = s.title ? (
+    <h2 style={{
+      margin: 0, color: black, textTransform: 'uppercase', fontFamily: s.display, fontWeight: 400, lineHeight: 0.98, letterSpacing: '-0.005em',
+      fontSize: ems ? `min(${u(P.h2)}, calc(${u(P.contentW)} / ${ems}))` : u(P.h2),
+    }}>{s.title}</h2>
+  ) : null
+
+  // A 44 square: outlined in cream, or filled orange; the glyph is the frame's triangle, the arrows its line arrow.
+  const square = (fill, onClick, children, key) => (
+    <span key={key} onClick={onClick} style={{
+      ...row('0px', { justifyContent: 'center' }), flex: 'none', width: u(44), height: u(44), boxSizing: 'border-box', cursor: onClick ? 'pointer' : undefined,
+      background: fill ? orange : 'transparent', border: `1px solid ${fill ? orange : cream}`,
+    }}>{children}</span>
+  )
+  // The frame's glyphs, drawn as the pill draws its arrow (`u` lengths, so a numeric helper cannot serve): the 10 x 12 triangle,
+  // a pause (two bars, the frame draws none) and the 14 x 11 line arrow at stroke 2 (the transport's).
+  const glyph = (w, h, vb, children) => (
+    <svg aria-hidden viewBox={vb} fill="none" style={{ display: 'block', width: u(w), height: u(h), flex: 'none', overflow: 'visible' }}>{children}</svg>
+  )
+  const tri = (c) => glyph(10, 12, '0 0 10 12', <path d="M0 0L10 6L0 12V0Z" fill={c} />)
+  const bars = (c) => glyph(10, 12, '0 0 10 12', <path d="M0 0H4V12H0ZM6 0H10V12H6Z" fill={c} />)
+  const arrow = (back) => glyph(14, 11, '0 0 14 11', <path d={back ? 'M14 5.5H1M6 0L0 5.5L6 11' : 'M0 5.5H13M8 0L14 5.5L8 11'} stroke={cream} strokeWidth="2" />)
+
+  const list = (
+    <div style={{ borderBottom: `1px solid ${HL_HAIR}` }}>
+      {s.tracks.length === 0 && (
+        <div style={{ ...anton(u(16), 1.05, { color: HL_MEDIA_DIM }), borderTop: `1px solid ${HL_HAIR}`, padding: `${u(30)} 0` }}>{s.mediaEmpty}</div>
+      )}
+      {s.tracks.map((t, i) => {
+        const marked = i === at
+        const dur = t.dur && t.dur !== t.rel ? t.dur : ''
+        const text = marked ? HL_MEDIA_LIT : HL_MEDIA_DIM
+        return (
+          <div key={i} onClick={onPick(i)} style={{
+            ...row(u(P.gap)), boxSizing: 'border-box', minHeight: u(P.rowH), padding: `0 ${u(2)} 0 0`, borderTop: `1px solid ${HL_HAIR}`,
+            cursor: s.live ? 'pointer' : undefined,
+          }}>
+            <span style={anton(u(16), 1.05, { flex: 'none', width: u(P.numW), color: marked ? orange : HL_MEDIA_DIM })}>{i + 1}</span>
+            <span style={{ flex: 'none', width: u(P.art), height: u(P.art), position: 'relative', overflow: 'hidden', background: s.box1 }}>
+              <Photo s={s} slot={`tracks:${t.row}`} initialsSize={14} src={t.img} ink={cream} />
+            </span>
+            <span style={col(u(4), { flex: 1, minWidth: 0 })}>
+              <span style={{ fontFamily: s.ui, fontWeight: 500, fontSize: u(P.rowT), lineHeight: u(P.rowTLh), letterSpacing: '-0.015em', color: text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t.name}</span>
+              {t.rel && <span style={{ fontFamily: s.ui, fontWeight: 400, fontSize: u(14), lineHeight: u(17), letterSpacing: '-0.015em', color: text, opacity: 0.8, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t.rel}</span>}
+            </span>
+            {dur && <span style={anton(u(15), 1.05, { flex: 'none', color: marked ? cream : HL_MEDIA_DIM })}>{dur}</span>}
+            {square(marked, undefined, playing && marked ? bars(black) : tri(marked ? black : cream))}
+          </div>
+        )
+      })}
+    </div>
+  )
+
+  const pill = <HeadlinerPill s={s} label="Soundcloud" ext={s.soundcloud} u={u} />
+
+  // The canvas keeps the frame's 164.5 of 293.75 (a mid-song picture); an empty list stands at 0 on both surfaces.
+  const pct = s.live ? now.pct : s.tracks.length ? 56 : 0
+  const card = (
+    <div style={{
+      ...col(u(18)), position: 'relative', boxSizing: 'border-box', width: u(P.card), height: u(426), flex: 'none', padding: u(24), background: black,
+      alignSelf: s.narrow && !s.mob ? 'center' : undefined,
+    }}>
+      <div style={{ flex: '1 1 0', minHeight: 0, position: 'relative', overflow: 'hidden', background: s.box1 }}>
+        <Photo s={s} slot={sleeveSlot} initialsSize={44} src={sleeve} ink={cream} />
+      </div>
+      {/* The transport stands on the row's foot (the frame's offsets 17.11 / 8.3 / 2.39 are the row less the 44), not its middle. */}
+      <div style={row(u(16), { justifyContent: 'space-between', alignItems: 'flex-end' })}>
+        <div style={col(0, { flex: 1, minWidth: 0 })}>
+          <span style={{ fontFamily: s.display, fontWeight: 400, fontSize: u(P.t), lineHeight: 0.98, letterSpacing: '-0.005em', textTransform: 'uppercase', color: cream, overflowWrap: 'anywhere' }}>{now.track}</span>
+          {/* The frame's artist line is an 18 box whose 14.7 text starts 9 (7 narrow) down, so it overhangs the block's foot by 5.7 (3.7). */}
+          <span style={anton(u(14), u(14.7), {
+            color: s.text1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+            margin: `${u(P.artistTop)} 0 ${u(3.3 - P.artistTop)}`,
+          })}>{now.by}</span>
+        </div>
+        <div style={row(u(6), { flex: 'none' })}>
+          {square(false, s.live ? () => goTo(at - 1) : undefined, arrow(true), 'prev')}
+          {square(true, s.live ? toggle : undefined, playing ? bars(black) : tri(black), 'play')}
+          {square(false, s.live ? () => goTo(at + 1) : undefined, arrow(false), 'next')}
+        </div>
+      </div>
+      <div style={row(u(12), { color: cream })}>
+        <span style={anton(u(13), 1.05, { flex: 'none', width: u(30.125) })}>{now.at}</span>
+        <span aria-hidden style={{ flex: 1, minWidth: 0, height: u(3), background: 'rgba(238,227,209,0.22)', position: 'relative' }}>
+          <span style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: `${pct}%`, background: orange }} />
+        </span>
+        <span style={anton(u(13), 1.05, { flex: 'none', width: u(30.125), textAlign: 'right' })}>{now.of}</span>
+      </div>
+      {audio}
+    </div>
+  )
+
+  return (
+    <div style={{ position: 'relative', containerType: 'inline-size', overflow: 'hidden' }}>
+      <div style={{
+        boxSizing: 'border-box', padding: `${u(P.top)} ${u(P.side)}`, minHeight: P.minH ? u(P.minH) : undefined,
+        display: 'flex', flexDirection: 'column', justifyContent: 'center',
+      }}>
+        <div style={{ minHeight: u(P.headH) }}>{h2}</div>
+        <div style={{ marginTop: u(44) }}>
+          {s.narrow ? (
+            <div style={col(u(26))}>
+              {card}
+              {list}
+              <span style={{ alignSelf: 'flex-start' }}>{pill}</span>
+            </div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: `${u(P.cols[0])} ${u(P.cols[1])}`, columnGap: u(P.cols[2]), alignItems: 'start' }}>
+              <div style={col(u(26))}>
+                {list}
+                <span style={{ alignSelf: 'flex-start' }}>{pill}</span>
+              </div>
+              {card}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function Media({ s }) {
   // Hooks before the layout branch — the older three-card design plays too.
   // `playing` mirrors the element's own play/pause events rather than being
@@ -7550,6 +7705,9 @@ function Media({ s }) {
   }
   if (s.v0 && s.paperback) {
     return <PaperbackMedia s={s} m={{ at, count, playing, now, sleeve, sleeveSlot, audio, goTo, toggle, onPick }} />
+  }
+  if (s.v0 && s.headliner) {
+    return <HeadlinerMedia s={s} m={{ at, count, playing, now, sleeve, sleeveSlot, audio, goTo, toggle, onPick }} />
   }
 
   // Lime layout 1 (964:58590 · 986:39879 at 768 · 986:39891 at 390) is Retro's

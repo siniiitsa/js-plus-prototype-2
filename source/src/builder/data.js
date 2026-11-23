@@ -3292,14 +3292,19 @@ export const FIELDS = {
     // A column's floor is its longest seeded row (session 3): Manchester at 3am
     // (17) and Live at the Deaf Institute · 7:01 (33), which the frames draw.
     { k: 'tracks',  l: 'Tracks', type: 'tracks', max: 8,
-      cols: { title: { Retro: [17, 17, 20, 17], Lime: [40, 17, 19, 17], Grunge: [24, 17, 21, 17], '*': [17, 17, 17, 17] },
+      cols: { title: { Retro: [17, 17, 20, 17], Lime: [40, 17, 19, 17], Grunge: [24, 17, 21, 17],
+        // Headliner's layout 1 (limits.mjs media --themes=7 --designs=0): the probe reads 11 / 14 / 10, under the seed, so the
+        // cap holds at the seed's 17 (the column's floor) and a longer title ellipsises in its row; layouts 2-4 are Grunge's.
+        Headliner: [17, 17, 21, 17], '*': [17, 17, 17, 17] },
         sub: 33 },
       hint: 'Each row is one card in the stack, with its own artwork and audio: upload a recording or paste a link. '
           + "The player shows the track it is on, so track one's artwork is the sleeve." },
     // (The kicker "Top tracks", the "● Popular" list label and the "5 Featured /
     // 5 Max" counter's two words were removed 2026-11-12, user call: notes/media.md.)
     { k: 'heading', l: 'Heading', d: 'Five worth your ear.',
-      chars: { Retro: [20, 20, 25, 20], Grunge: [30, 20, 20, 25], Pop: [20, 20, 20, 23], '*': [20, 20, 20, 20] } },
+      chars: { Retro: [20, 20, 25, 20], Grunge: [30, 20, 20, 25], Pop: [20, 20, 20, 23],
+        // Headliner's layout 1: the head is one line at 1440 at 20 characters (a 21st wraps it, which the section absorbs).
+        Headliner: [20, 20, 20, 25], '*': [20, 20, 20, 20] } },
     // JP-095 (a): the chip on the fan's front card, the frame's word, uncased.
     { k: 'chipLabel', l: 'Track tag', d: MEDIA_CHIP_LABEL, in: [1],
       chars: { Retro: [null, 10], Lime: [null, 9], Paperback: [null, 9], '*': [null, 10] },
@@ -4445,6 +4450,7 @@ export const INLINE_OFF = {
   // Headliner's layout-1 header (the only fitted one; layouts 2–4 are placeholders until their pass) draws neither line.
   'Headliner.0.header.kicker': 'not drawn: the layout-1 header prints no act type any more (a shared identity key; the bio’s role line and the form print it)',
   'Headliner.0.header.location': 'not drawn: layouts 1–4 print no location any more (a shared identity key; the bio, the calendar and the map print it)',
+  'Headliner.0.media.tracks.sub': 'derived value: the seeded page prints the release under the title and the running time at the row’s right, and the whole line only once the list is stored',
   '*.*.pricing.tiers.tags': 'derived value: the filter chips are the distinct tags of every package',
   '*.3.video.videos.desc': 'not drawn: layout 4 prints the playing video’s title alone',
   '*.*.repertoire.songs.tags': 'derived value: the filter chips are the distinct tags of every song',
@@ -4629,7 +4635,10 @@ export const IDENTITY_CHARS = {
       Lattice: [40, 11, 13, 31],
       // Paperback's layout 1 measured 2026-11-20 (limits.mjs media --themes=6 --designs=0): the player's artist line,
       // one ellipsised line, holds 48 / 50 / 41; the others are Pop's until their passes.
-      Paperback: [41, 10, 12, 30] },
+      Paperback: [41, 10, 12, 30],
+      // Headliner's layout 1 (limits.mjs media --themes=7 --designs=0): the player's artist line, one ellipsised line,
+      // holds 65 / 65 / 50; the others are Grunge's until their passes.
+      Headliner: [50, 11, 21, 31] },
   },
   pricing: {
     seal: { Grunge: [14] },

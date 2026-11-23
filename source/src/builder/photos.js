@@ -362,11 +362,14 @@ export const HEADLINER_PHOTOS = {
   gallery: [headlinerShot1, headlinerViewer, headlinerShot3, headlinerShot4, headlinerShot5, headlinerShot6, headlinerShot7],
   pricing: REVIEWERS,
 }
-export const HEADLINER_TRACK_ART = [headlinerShot1, headlinerShot2, headlinerShot3, headlinerShot4, headlinerShot5]
-export const HEADLINER_VIEWER = headlinerViewer
-// The media player's large cover (the frame's `Night Rain` picture, none of the five rows'). The player has no cover field
-// of its own (it shows the current track's art), so section 3 settles where this one is seeded; exported so it is not dead.
+// The media player's large cover (the frame's `Night Rain` picture, none of the five rows'). The player has no cover field of
+// its own (it shows the cued track's art, and the canvas cues track one), and the 176 px row crops would be a soft 378 px
+// sleeve, so section 3 seeds the cover as **track one's art**: the player draws the frame's picture at full size and row one's
+// 56 px thumbnail is its centre crop (the frame's is shot 1, a different frame of the same session; the gallery's first
+// thumbnail keeps shot 1). Rows 2-5 are shots 2-5 in order, as the frame's.
 export const HEADLINER_COVER = headlinerCover
+export const HEADLINER_TRACK_ART = [HEADLINER_COVER, headlinerShot2, headlinerShot3, headlinerShot4, headlinerShot5]
+export const HEADLINER_VIEWER = headlinerViewer
 
 // The seeded artwork for the media player's five track rows, in track order.
 //

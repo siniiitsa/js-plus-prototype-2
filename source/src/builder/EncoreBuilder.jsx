@@ -629,8 +629,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // published tab's surplus.
   if (d === 0 && (cat === 'bio' || cat === 'media' || cat === 'gallery' || cat === 'repertoire' || cat === 'map' || cat === 'pricing' || cat === 'calendar' || cat === 'form' || cat === 'testimonials' || cat === 'footer') && T.name === 'Paperback') vm.pad = `0px ${vm.surplus}`
   // Headliner's layout-1 bio (1:4627 · 1:15396 · 1:16446) is a stage of its own (HeadlinerBio), Paperback's shape: it carries the
-  // frames' insets in cqw, so the root pads only the published tab's surplus. The other ten sections join the line as they pass.
-  if (d === 0 && cat === 'bio' && T.name === 'Headliner') vm.pad = `0px ${vm.surplus}`
+  // frames' insets in cqw, so the root pads only the published tab's surplus. The media (1:4650 · 1:15421 · 1:16471) joined it in section 3;
+  // the other nine sections join the line as they pass.
+  if (d === 0 && (cat === 'bio' || cat === 'media') && T.name === 'Headliner') vm.pad = `0px ${vm.surplus}`
   // …and the media's (1:419 · 1:9052 · 1:10024): 129.43 top and foot at 1440 (x 0.82, 106.13), 77 at 768
   // and 58 at 390, the same content insets. The 390 master's head box starts 40 down (an import
   // artefact: the eyebrow row sits at y 98, not 58), so with the eyebrow removed the head takes
@@ -1596,7 +1597,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   }
   // Headliner's layout-1 bio statement is Anton turned a quarter turn in a 640 measure (the portrait's height), fitted to its
   // widest word in Anton's ems at the frames' -0.005em tracking (the header's rule, `antonEms(w, -0.005)`).
-  if (T.name === 'Headliner' && cat === 'bio' && d === 0) {
+  // The media head (Anton, one line at 1440, wrapping at the content's width) is fitted the same way.
+  if (T.name === 'Headliner' && (cat === 'bio' || cat === 'media') && d === 0) {
     vm.titleWordEms = +Math.max(0, ...vm.title.split(/\s+/).map((w) => antonEms(w, -0.005))).toFixed(3)
   }
   // …and its repertoire rows set a song's title in a box beside the artist's chip, shrinking the type to keep the
