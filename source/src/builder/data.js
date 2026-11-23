@@ -3552,7 +3552,10 @@ export const FIELDS = {
         Lattice: [12, 25, 17, 10],
         // Paperback layout 1 measured 2026-11-20 (limits.mjs repertoire --themes=6 --designs=0): 13 at 1440 and 768, 14 at 390,
         // the count and the disc beside it. Layouts 2-4 are Pop's until their passes.
-        Paperback: [13, 22, 17, 10] } },
+        Paperback: [13, 22, 17, 10],
+        // Headliner layout 1 measured 2026-11-23 (limits.mjs repertoire --themes=7 --designs=0): 10 at 1440, 14 at 768, 6 at 390 (a seventh letter
+        // shrinks the count there, which the word fit allows); the seed's 8 is the floor. Layouts 2-4 are Grunge's, written out.
+        Headliner: [8, 38, 25, 20] } },
     // `in` is per field, and every layout reads the songs, so the hint says
     // which column each layout leaves out (JP-107): the reviews' date shape.
     // Session 5 of the character-limits pass: a tag is a chip, and at layout 3
@@ -3562,15 +3565,20 @@ export const FIELDS = {
     // no tags and takes the tightest, so a list typed there is not cut elsewhere.
     { k: 'songs',   l: 'Songs', type: 'songs', max: 60,
       cols: {
-        title: { Retro: [17, 25, 25, 25], Lime: [44, 24, 17, 22], Grunge: [33, 26, 23, 26], Editorial: 17, Pop: 17, Paperback: 17 },
+        title: { Retro: [17, 25, 25, 25], Lime: [44, 24, 17, 22], Grunge: [33, 26, 23, 26], Editorial: 17, Pop: 17, Paperback: 17,
+          // Headliner layout 1: the probe reads 37 / 13 / 17 (overlap), under the seed's 17 at 768, so the seed is the floor and a longer title
+          // ellipsises in its row. Layouts 2-4 are Grunge's, written out.
+          Headliner: [17, 26, 23, 26] },
         artist: { Retro: [32, 25, null, 41], Lime: [73, 25, null, 37], Grunge: [74, 25, null, 42],
           Editorial: [35, 25, null, 18], Pop: [18, 25, null, 19],
           // Lattice layout 1: 22 at 768 and 390 (one line beside a 17-character title); 1440 holds 44.
           Lattice: [22, 25, null, 19],
           // Paperback layout 1: 22 at 768 and 390 (the chip ellipsises past it, the frame's longest artist is 18); 1440 holds 48.
-          Paperback: [22, 25, null, 19] },
+          Paperback: [22, 25, null, 19],
+          // Headliner layout 1: 29 at 768 (78 at 1440, 32 at 390); an artist past what stands beside its title drops under it (JP-136).
+          Headliner: [29, 25, null, 42] },
         length: { Retro: [null, null, 23], Lime: [null, null, 17], Grunge: [null, null, 22], Editorial: [null, null, 17],
-          Pop: [null, null, 14], Paperback: [null, null, 10] },
+          Pop: [null, null, 14], Paperback: [null, null, 10], Headliner: [null, null, 22] },
         tags: { list: ',', chars: 18, count: { Editorial: [3, 4, 3, 3], Lattice: [3, 4, 3, 3], '*': [4, 4, 3, 3] } },
       },
       hint: 'Tags become the filter chips above the list. Layout 4 draws no chips: it indexes the whole list A–Z instead. '
@@ -3581,7 +3589,7 @@ export const FIELDS = {
     // the mood the rest, never under its seed's 14 (session 5).
     { k: 'sets',    l: 'Set lists', type: 'sets', in: [2],
       cols: { mood: { Retro: [null, null, 17], Lime: [null, null, 14], Grunge: [null, null, 17], Editorial: [null, null, 17],
-        Pop: [null, null, 14], Paperback: [null, null, 14] }, length: { Lime: [null, null, 7], '*': [null, null, 10] } },
+        Pop: [null, null, 14], Paperback: [null, null, 14], Headliner: [null, null, 17] }, length: { Lime: [null, null, 7], '*': [null, null, 10] } },
       hint: 'One per tag on your songs. The mood and length show under the set’s name in layout 3; with both empty, it shows the song count.' },
   ],
   // The three social addresses follow the photos, and follow `media.soundcloud`
@@ -4454,6 +4462,7 @@ export const INLINE_OFF = {
   'Headliner.0.header.kicker': 'not drawn: the layout-1 header prints no act type any more (a shared identity key; the bio’s role line and the form print it)',
   'Headliner.0.header.location': 'not drawn: layouts 1–4 print no location any more (a shared identity key; the bio, the calendar and the map print it)',
   'Headliner.0.media.tracks.sub': 'derived value: the seeded page prints the release under the title and the running time at the row’s right, and the whole line only once the list is stored',
+  'Headliner.0.repertoire.songs.length': 'not drawn: only layout 3 prints a song’s length',
   '*.*.pricing.tiers.tags': 'derived value: the filter chips are the distinct tags of every package',
   '*.3.video.videos.desc': 'not drawn: layout 4 prints the playing video’s title alone',
   '*.*.repertoire.songs.tags': 'derived value: the filter chips are the distinct tags of every song',

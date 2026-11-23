@@ -14963,7 +14963,7 @@ function Repertoire({ s }) {
     // reference frames show.
     // Lattice's frames draw twelve a page at every width (two columns of six at 768, one of twelve
     // at 390), so it is the one template whose narrow page is not six.
-    const perPage = s.narrow && !s.lattice && !s.paperback ? 6 : 12
+    const perPage = s.narrow && !s.lattice && !s.paperback && !s.headliner ? 6 : 12
     // The chip index, clamped: the row is derived from the artist's tags, so a
     // tag they delete can leave `chip` past the end of it.
     const active = s.live ? Math.min(chip, s.repChips.length - 1) : 0
@@ -14988,9 +14988,9 @@ function Repertoire({ s }) {
     // page offset — not its place on the screen. Both narrow frames run the
     // whole six-song page down one column.
     const half = Math.ceil(shown.length / 2)
-    const columns = (s.narrow && !((s.lattice || s.paperback) && !s.mob) ? [shown] : [shown.slice(0, half), shown.slice(half)])
+    const columns = (s.narrow && !((s.lattice || s.paperback || s.headliner) && !s.mob) ? [shown] : [shown.slice(0, half), shown.slice(half)])
       .map((cs, ci) => cs.map((t, i) => ({ ...t, n: pg * perPage + ci * half + i + 1 })))
-    const { labels, at } = pageWindow(pages, pg, s.mob, s.lattice || (s.paperback && !s.mob) ? 4 : undefined)
+    const { labels, at } = pageWindow(pages, pg, s.mob, s.lattice || s.headliner || (s.paperback && !s.mob) ? 4 : undefined)
 
     // Lime — the same component in Lime's mode (964:58592 at 1440, 986:39881 at
     // 768, 986:39893 at 390), placed after the seam as the gallery's block is:
@@ -15048,8 +15048,9 @@ function Repertoire({ s }) {
     if (s.limeTree) {
       // Lattice's layout-1 repertoire is a block of its own (LatticeRepertoire), after the seam: the
       // search, chip and pager state above is shared whole, and the block is the picture.
-      // Paperback's (1:2689 · 1:11313 · 1:12499) is a block of its own as well, handed the same seam.
-      if (s.lattice || s.paperback) {
+      // Paperback's (1:2689 · 1:11313 · 1:12499) is a block of its own as well, handed the same seam, and Headliner's (1:4830 · 1:15602 · 1:16651):
+      // twelve a page at every width, two columns at 1440 and 768, and a pager of four numbered squares (`1 2 3 … 20`) at all three.
+      if (s.lattice || s.paperback || s.headliner) {
         const g = {
           title, q, active, columns, shown, labels, at,
           noSongs: s.songs.length === 0,
@@ -15058,7 +15059,7 @@ function Repertoire({ s }) {
           onPage: s.live ? (label) => setPage(Number(label) - 1) : undefined,
           onStep: s.live ? (dir) => setPage(Math.max(0, Math.min(pages - 1, pg + dir))) : undefined,
         }
-        return s.paperback ? <PaperbackRepertoire s={s} g={g} /> : <LatticeRepertoire s={s} g={g} />
+        return s.headliner ? <HeadlinerRepertoire s={s} g={g} /> : s.paperback ? <PaperbackRepertoire s={s} g={g} /> : <LatticeRepertoire s={s} g={g} />
       }
       const grunge = s.grunge
       const ed = s.editorial
@@ -17805,6 +17806,161 @@ function HeadlinerGallery({ s, g }) {
         ) : (
           <div style={col(u(P.gutter), { margin: `0 ${u(P.side)}` })}>{left}{right}</div>
         )}
+      </div>
+    </div>
+  )
+}
+
+// Headliner · layout 1 (plans/headliner/layout-1.md, section 5; frames 1:4830 · 1:15602 · 1:16651, 1067 / 1067 / 1603 tall).
+// A cream band (Scheme 2, the root's own ground: no card): the count in Anton (black), a square 1 px outlined search, four 40-tall outlined pill
+// chips (the active one `#1E1E1E` with sand type), twelve flush rows on `rgba(30,30,30,.18)` rules (a maroon Anton number, the title in Anton, the
+// artist in Inter Tight flush right) in two columns of six (one of twelve at 390, 28 apart), and a row of 44 outlined squares (two arrows and
+// `1 2 3 … 20`, the current one filled). `Repertoire`'s seam (search, chips, pager) is handed over in `g`, as Lattice's and Paperback's.
+// The bio's stage pattern: frame px verbatim at all three widths in cqw, vertical insets in a child, `vm.pad` the surplus alone. Desktop and tablet
+// centre the content in a 1067 box (`minHeight` and centring over the 96 / 77 padding, so more songs grow the section), 390 pads 58.
+// The head is a flex row of the count and an empty box the frame holds beside it (an import artefact: 239.67 x 82.06 at 1440, 147.72 at 768,
+// 141.02 x 128.69 at 390): kept as a spacer, because the frame's two-line `240 / SONGS` at 768 and 390 is that box squeezing the count (a flex shrink,
+// not a measure), and at 390 its height is what seats the count 11.09 down. The count's box is the frame's 254.55 at 768 and at most the room the
+// search leaves at 1440 (`hMax`), the head never shrinks, and the search takes what is left of the row (380 at 1440, 261.5 at 768).
+// Not drawn (the standing removals): the eyebrow `— REPERTOIRE` (no field carries it; its 31.75 stays as padding). With one page there is no
+// pager and no seat for it (every template's rule), so the seeded twelve leave the content shorter than the frame's by the pager's 74.
+const HEADLINER_REP = {
+  desktop: { fw: 1440, top: 96, minH: 1067, side: 48.96, search: 380, seat: [239.672, 82.063], h2: 149.76, hMax: 670, fitW: 850, rowT: 30, gap: 14, colGap: 47.983, rowGap: 0, chipPad: 18 },
+  tablet: { fw: 768, top: 77, minH: 1067, side: 26.11, search: 380, seat: [147.719, 0], h2: 93, hMax: 254.547, fitW: 316, rowT: 27, gap: 14, colGap: 47.983, rowGap: 0, chipPad: 18 },
+  mobile: { fw: 390, top: 58, side: 24, seat: [141.016, 128.688], h2: 60, fitW: 173, rowT: 25, gap: 10, rowGap: 28, chipPad: 18 },
+}
+function HeadlinerRepertoire({ s, g }) {
+  const { title, q, onQuery, active, onChip, columns, shown, labels, at, onPage, onStep, noSongs } = g
+  const dev = s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop'
+  const P = HEADLINER_REP[dev]
+  const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
+  const ink = s.text1            // the search's, the chips', the squares' and the artist's #1E1E1E (sem/text/1)
+  const black = s.activeFg       // the count's and the titles' #020202 (sem/active/text)
+  const maroon = s.text3         // the numbers' #760000 (sem/text/3)
+  const sand = s.onScheme[1].bg  // the filled chip's and square's type, #EEE3D1 (scheme/1/bg)
+  const anton = (size, extra) => ({ fontFamily: s.label, fontWeight: 400, fontSize: size, lineHeight: 'normal', letterSpacing: '0.02em', textTransform: 'uppercase', ...extra })
+  const clip = { whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0 }
+
+  const h2 = String(title || '').trim() ? (
+    <h2 style={{
+      margin: 0, flex: '0 1 auto', color: black, textTransform: 'uppercase', fontFamily: s.display, fontWeight: 400, lineHeight: 0.98, letterSpacing: '-0.005em',
+      ...(P.hMax ? { maxWidth: u(P.hMax) } : null),
+      fontSize: s.titleWordEms ? `min(${u(P.h2)}, calc(${u(P.fitW)} / ${s.titleWordEms}))` : u(P.h2),
+    }}>{title}</h2>
+  ) : null
+  const left = (
+    <div style={row(u(28), { alignItems: 'flex-end', flex: 'none' })}>
+      {h2}
+      <span aria-hidden style={{ flex: 'none', width: u(P.seat[0]), height: u(P.seat[1]) }} />
+    </div>
+  )
+
+  // The hint is the placeholder (index.css: ink at .45); the canvas's span draws the same.
+  const hint = 'Search songs or artists…'
+  const hintType = { fontFamily: s.body, fontWeight: 400, fontSize: u(16), letterSpacing: '-0.015em', lineHeight: 'normal' }
+  const search = (
+    <div style={row(0, {
+      boxSizing: 'border-box', height: u(52), border: `1px solid ${ink}`, padding: `0 ${u(16)}`, overflow: 'hidden', color: ink, minWidth: 0,
+      ...(s.mob ? { width: '100%' } : { flex: `0 1 ${u(P.search)}` }),
+    })}>
+      {s.live ? (
+        <input
+          value={q} placeholder={hint} aria-label="Search songs or artists"
+          onChange={(e) => onQuery(e.target.value)}
+          style={{ ...hintType, color: ink, flex: 1, minWidth: 0, border: 'none', outline: 'none', background: 'transparent', padding: 0 }}
+        />
+      ) : (
+        <span style={{ ...hintType, opacity: 0.45, ...clip }}>{hint}</span>
+      )}
+    </div>
+  )
+
+  const head = (
+    <div style={{ paddingTop: u(31.75) }}>
+      {s.mob ? <div style={col(u(24))}>{left}{search}</div> : <div style={row(u(24), { justifyContent: 'space-between', alignItems: 'flex-end' })}>{left}{search}</div>}
+    </div>
+  )
+
+  const chips = (
+    <div style={row(u(8), { flexWrap: 'wrap' })}>
+      {s.repChips.map((f, i) => {
+        const on = i === active
+        return (
+          <span
+            key={i}
+            onClick={s.live ? () => onChip(i) : undefined}
+            style={{
+              ...anton(u(15)), boxSizing: 'border-box', height: u(40), padding: `0 ${u(P.chipPad)}`, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              border: `1px solid ${ink}`, borderRadius: s.radiusChip, background: on ? ink : 'transparent', color: on ? sand : ink,
+              whiteSpace: 'nowrap', cursor: s.live ? 'pointer' : undefined,
+            }}
+          >{f.label}</span>
+        )
+      })}
+    </div>
+  )
+
+  // An artist too long to stand beside its title wraps under it (JP-136) rather than crushing the title; each keeps its own ellipsis at the row's width.
+  const song = (t) => (
+    <div key={t.n} style={row(u(P.gap), { boxSizing: 'border-box', minWidth: 0, padding: `${u(16)} 0`, borderTop: `1px solid ${HL_GAL_HAIR}` })}>
+      <span style={anton(u(15), { flex: 'none', width: u(40), lineHeight: 1.05, color: maroon, whiteSpace: 'nowrap' })}>{String(t.n).padStart(2, '0')}</span>
+      <span style={row(u(P.gap), { flex: 1, minWidth: 0, flexWrap: 'wrap', justifyContent: 'space-between', rowGap: u(4) })}>
+        <span style={{
+          ...clip, flex: '0 1 auto', maxWidth: '100%', color: black, fontFamily: s.display, fontWeight: 400, fontSize: u(P.rowT), lineHeight: u(P.rowT), paddingTop: u(2),
+          letterSpacing: '-0.005em', textTransform: 'uppercase',
+        }}>{t.title}</span>
+        {t.artist && (
+          <span style={{ ...clip, flex: '0 1 auto', maxWidth: '100%', color: ink, fontFamily: s.body, fontSize: u(15), lineHeight: u(19), letterSpacing: '-0.015em' }}>{t.artist}</span>
+        )}
+      </span>
+    </div>
+  )
+  const flat = columns.flat()
+  const list = shown.length === 0 ? (
+    <div style={{ ...anton(u(16), { color: ink }), padding: `${u(24)} 0`, borderTop: `1px solid ${HL_GAL_HAIR}`, borderBottom: `1px solid ${HL_GAL_HAIR}` }}>
+      {noSongs ? 'No songs yet.' : 'No songs match that.'}
+    </div>
+  ) : (
+    <div style={{
+      display: 'grid', alignItems: 'start', gridAutoFlow: 'column', columnGap: u(P.colGap ?? 0), rowGap: u(P.rowGap),
+      gridTemplateColumns: columns.length > 1 ? 'minmax(0, 1fr) minmax(0, 1fr)' : 'minmax(0, 1fr)',
+      gridTemplateRows: `repeat(${columns[0].length}, auto)`, borderBottom: `1px solid ${HL_GAL_HAIR}`,
+    }}>{flat.map(song)}</div>
+  )
+
+  // The frame's 16 x 14 line arrows (stroke 2.4), drawn in their own box; the numbers are Anton 15 in the same 44 squares, the filled one in sand.
+  const square = (key, child, { on, onClick, stretch }) => (
+    <span key={key} onClick={onClick} style={{
+      ...anton(u(15)), boxSizing: 'border-box', height: u(44), display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+      ...(stretch ? { flex: '1 1 0', minWidth: 0 } : { flex: 'none', width: u(44) }), border: `1px solid ${ink}`,
+      background: on ? ink : 'transparent', color: on ? sand : ink, cursor: onClick ? 'pointer' : undefined, whiteSpace: 'nowrap',
+    }}>{child}</span>
+  )
+  const arrow = (back) => (
+    <svg aria-hidden viewBox="0 0 16 14" fill="none" style={{ display: 'block', width: u(16), height: u(14), flex: 'none', overflow: 'visible' }}>
+      <path d={back ? 'M16 7H3M8 1.5L2 7L8 12.5' : 'M0 7H13M8 1.5L14 7L8 12.5'} stroke={ink} strokeWidth="2.4" />
+    </svg>
+  )
+  const pager = labels.length > 0 ? (
+    <div style={row(u(6))}>
+      {square('prev', arrow(true), { onClick: onStep && (() => onStep(-1)) })}
+      {labels.map((p, i) => square(`p${i}`, p, { on: i === at, stretch: s.mob, onClick: onPage && p !== '…' ? () => onPage(p) : undefined }))}
+      {square('next', arrow(false), { onClick: onStep && (() => onStep(1)) })}
+    </div>
+  ) : null
+
+  return (
+    <div style={{ position: 'relative', containerType: 'inline-size', overflow: 'hidden' }}>
+      <div style={{
+        boxSizing: 'border-box', padding: `${u(P.top)} ${u(P.side)}`, minHeight: P.minH ? u(P.minH) : undefined,
+        display: 'flex', flexDirection: 'column', justifyContent: 'center',
+      }}>
+        <div style={col(u(30))}>
+          {head}
+          {chips}
+          {list}
+          {pager}
+        </div>
       </div>
     </div>
   )
