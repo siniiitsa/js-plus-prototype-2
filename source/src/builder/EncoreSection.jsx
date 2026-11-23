@@ -17647,6 +17647,169 @@ function PaperbackGallery({ s, g }) {
   )
 }
 
+// Headliner · layout 1 (plans/headliner/layout-1.md, section 4; frames 1:4766 · 1:15538 · 1:16587, 849.25 / 1385.94 / 943.02 tall).
+// A sand band (Scheme 1, the root's own ground: no card), the head in Anton (black, two lines), four flush rows on 1 px rules (the open one
+// orange with an orange block arrow, the others black), a square outlined back link with a teal eye at the row's right, a figure on the
+// frame's 655.047 : 481.469 aspect with a black and an orange 46 square at its foot-right corner, and seven flat 1 : 1 tiles on an 8 gap.
+// The bio's stage pattern: frame px verbatim at all three widths in cqw, vertical insets in a child, `vm.pad` the surplus alone. Two columns
+// at 1440 (540.516 and 655.047 on a 146.5 gutter, 48.96 in), one column at 768 and 390 (a 36 / 28 gap between the head and the viewer).
+// The frame's top and foot are 96 / 77 / 58 and its content the taller column's (the rows, 657.25), so nothing is centred in a taller box.
+// Not drawn (the standing removals): the eyebrow `Media` is `kicker`, seeded empty, so it is drawn only when typed (its dash goes with it);
+// its 37.75 seat stays as padding. The frame has no credit line, so `railLabel` is not read here. The canvas draws no marked tile (the frame
+// rings none; Lattice's rule): a visitor's own pick rings its tile in 3 px of the orange, live only.
+const HEADLINER_GALLERY = {
+  desktop: { fw: 1440, top: 96, side: 48.96, cols: [540.516, 655.047], gutter: 146.5, h2: 129.6, rowH: 85.625, rowT: 64, padT: 13.84, padB: 9.985, iconT: 19.81 },
+  tablet: { fw: 768, top: 77, side: 26.11, gutter: 36, h2: 80, rowH: 69.469, rowT: 48, padT: 12.88, padB: 9.989, iconT: 11.73 },
+  mobile: { fw: 390, top: 58, side: 24, gutter: 28, h2: 52, rowH: 66, rowT: 38, padT: 15.6, padB: 13.3, iconT: 10 },
+}
+const HL_GAL_HAIR = 'rgba(30,30,30,0.18)'   // the frame's row rules: sem/text/1 at .18
+const HL_GAL_TILE = '#EFEFEF'               // the tiles' and the figure's ground
+function HeadlinerGallery({ s, g }) {
+  const { at, marked, strip, go, srcRows, srcAct, video, player } = g
+  const dev = s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop'
+  const P = HEADLINER_GALLERY[dev]
+  const desk = !s.narrow
+  const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
+  const colW = desk ? P.cols[0] : P.fw - 2 * P.side
+  const ink = s.text1           // the back link's ink, #1E1E1E (sem/text/1)
+  const black = s.activeFg      // the head's, the rows' and the arrow's #020202 (sem/active/text)
+  const orange = s.ac           // the open row's, the kicker's and the next square's #F85E34
+  const teal = s.onScheme[6].bg
+  const cream = s.onScheme[2].bg
+  const anton = (size, lh, extra) => ({ fontFamily: s.label, fontWeight: 400, fontSize: size, lineHeight: lh, letterSpacing: '0.02em', textTransform: 'uppercase', ...extra })
+  const wrap = { whiteSpace: 'normal', overflowWrap: 'anywhere', minWidth: 0 }
+
+  // The frame breaks its head after the second word of four (`See us` / `in action`), and no measure can make that break
+  // (`See us in` sets 436.5 at 129.6, narrower than `in action`'s 451), so the head is two lines at the middle word, each wrapping in the
+  // column. One word stands on its line. The space stays before the <br>, so the node's text is the field's own.
+  const words = String(s.title || '').trim().split(/\s+/).filter(Boolean)
+  const cut = words.length > 1 ? Math.ceil(words.length / 2) : 0
+  const h2 = s.title ? (
+    <h2 style={{
+      margin: 0, color: black, textTransform: 'uppercase', fontFamily: s.display, fontWeight: 400, lineHeight: 0.98, letterSpacing: '-0.005em', overflowWrap: 'anywhere',
+      fontSize: s.titleWordEms ? `min(${u(P.h2)}, calc(${u(colW)} / ${s.titleWordEms}))` : u(P.h2),
+    }}>{cut ? <>{words.slice(0, cut).join(' ')}{' '}<br />{words.slice(cut).join(' ')}</> : s.title}</h2>
+  ) : null
+
+  const eyebrow = s.galKicker ? (
+    <div style={row(u(10))}>
+      <span aria-hidden style={{ flex: 'none', width: u(22), height: u(2), background: orange }} />
+      <span style={anton(u(15), u(15.75), { color: orange, ...wrap })}>{s.galKicker}</span>
+    </div>
+  ) : null
+
+  // The frame's glyphs: the 54 x 45 block arrow, the 16 x 14 line arrow (stroke 2.4) and the 96 x 51 eye, drawn at their own boxes.
+  const blockArrow = (fill) => (
+    <svg aria-hidden viewBox="0 0 54 45" fill="none" style={{ display: 'block', width: u(54), height: u(45), overflow: 'visible' }}>
+      <path d="M0 17.1H31.5V3.6L54 22.5L31.5 41.4V27.9H0V17.1Z" fill={fill} />
+    </svg>
+  )
+  const lineArrow = (back, stroke) => (
+    <svg aria-hidden viewBox="0 0 16 14" fill="none" style={{ display: 'block', width: u(16), height: u(14), flex: 'none', overflow: 'visible' }}>
+      <path d={back ? 'M16 7H3M8 1.5L2 7L8 12.5' : 'M0 7H13M8 1.5L14 7L8 12.5'} stroke={stroke} strokeWidth="2.4" />
+    </svg>
+  )
+
+  const rows = (
+    <div style={{ borderBottom: `1px solid ${HL_GAL_HAIR}` }}>
+      {srcRows.map(({ g: r, i }) => {
+        const link = srcAct(r, i)
+        const Tag = link?.href ? 'a' : 'div'
+        return (
+          <Tag key={i} {...link} style={{
+            display: 'block', position: 'relative', boxSizing: 'border-box', minHeight: u(P.rowH), borderTop: `1px solid ${HL_GAL_HAIR}`,
+            padding: `${u(P.padT)} ${u(54 + 16)} ${u(P.padB)} 0`, color: r.on ? orange : black, textDecoration: 'none', cursor: link ? 'pointer' : undefined,
+          }}>
+            <span data-inline={i === 0 ? 'sourceLabel' : undefined} style={{
+              display: 'block', fontFamily: s.display, fontWeight: 400, fontSize: u(P.rowT), lineHeight: 0.95, letterSpacing: '-0.005em', textTransform: 'uppercase', ...wrap,
+            }}>{r.label}</span>
+            <span aria-hidden style={{ position: 'absolute', right: 0, top: u(P.iconT) }}>{blockArrow(r.on ? orange : black)}</span>
+          </Tag>
+        )
+      })}
+    </div>
+  )
+
+  const left = (
+    <div style={col(u(22), { minWidth: 0 })}>
+      <div style={{ minHeight: u(15.75) }}>{eyebrow}</div>
+      {h2}
+      {rows}
+    </div>
+  )
+
+  const back = (
+    <span onClick={s.live ? () => go(0) : undefined} style={{
+      ...row(u(14)), boxSizing: 'border-box', flex: '0 1 auto', minWidth: 0, minHeight: u(46), padding: `0 ${u(18)} 0 ${u(18)}`, border: `1px solid ${ink}`,
+      color: ink, cursor: s.live ? 'pointer' : undefined,
+    }}>
+      <span style={anton(u(16), 'normal', { ...wrap })}>{s.galBackLabel}</span>
+      {lineArrow(false, ink)}
+    </span>
+  )
+  const eye = (
+    <svg aria-hidden viewBox="0 0 96 51" fill="none" style={{ display: 'block', flex: 'none', width: u(96), height: u(51), overflow: 'visible' }}>
+      <path d="M4.0125 25.5C19.3125 6.375 76.6875 6.375 91.9875 25.5C76.6875 44.625 19.3125 44.625 4.0125 25.5Z" stroke={teal} strokeWidth="4.4625" strokeLinejoin="round" />
+      <circle cx="48" cy="25.5" r="10.8375" fill={teal} />
+      <path d="M48 19.125C44.6 23.375 44.6 27.625 48 31.875" stroke={cream} strokeWidth="2.55" strokeLinecap="round" />
+    </svg>
+  )
+  const top = <div style={row(u(12), { justifyContent: 'space-between', alignItems: 'center', minHeight: u(51) })}>{back}{eye}</div>
+
+  const square = (fill, stroke, back, onClick) => (
+    <span onClick={onClick} style={{
+      ...row('0px', { justifyContent: 'center' }), flex: 'none', width: u(46), height: u(46), boxSizing: 'border-box', background: fill, border: `1px solid ${fill}`,
+      cursor: onClick ? 'pointer' : undefined,
+    }}>{lineArrow(back, stroke)}</span>
+  )
+  const figure = (
+    <div style={{ position: 'relative', aspectRatio: '655.047 / 481.469', overflow: 'hidden', background: HL_GAL_TILE }}>
+      {video ? player : (
+        <>
+          <div style={{ position: 'absolute', inset: 0 }}>
+            <Photo s={s} slot={`images:${at}`} initialsSize={52} src={s.images[at]} ink={black} style={{ objectPosition: s.imagesPos[at] }} />
+          </div>
+          <div style={row('0px', { position: 'absolute', right: 0, bottom: 0 })}>
+            {square(black, s.bg, true, s.live ? () => go(at - 1) : undefined)}
+            {square(orange, black, false, s.live ? () => go(at + 1) : undefined)}
+          </div>
+        </>
+      )}
+    </div>
+  )
+
+  // Seven flat tiles at every width on an 8 gap (86.72 / 95.375 / 42 square), no turn, no radius, no sliding window.
+  const thumbs = (
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', columnGap: u(8) }}>
+      {strip.map((i) => (
+        <span key={i} onClick={s.live ? () => go(i) : undefined} style={{
+          position: 'relative', display: 'block', aspectRatio: '1 / 1', overflow: 'hidden', background: HL_GAL_TILE, cursor: s.live ? 'pointer' : undefined,
+        }}>
+          <span style={{ position: 'absolute', inset: 0 }}>
+            <Photo s={s} slot={`images:${i}`} initialsSize={12} src={s.images[i]} ink={black} />
+          </span>
+          {i === marked && <span aria-hidden style={{ position: 'absolute', inset: 0, boxSizing: 'border-box', border: `${u(3)} solid ${orange}`, pointerEvents: 'none' }} />}
+        </span>
+      ))}
+    </div>
+  )
+
+  const right = <div style={col(u(14), { minWidth: 0 })}>{top}{figure}{thumbs}</div>
+  return (
+    <div style={{ position: 'relative', containerType: 'inline-size', overflow: 'hidden' }}>
+      <div style={{ paddingTop: u(P.top), paddingBottom: u(P.top) }}>
+        {desk ? (
+          <div style={{ display: 'grid', gridTemplateColumns: `${u(P.cols[0])} ${u(P.cols[1])}`, columnGap: u(P.gutter), margin: `0 ${u(P.side)}`, alignItems: 'start' }}>
+            {left}{right}
+          </div>
+        ) : (
+          <div style={col(u(P.gutter), { margin: `0 ${u(P.side)}` })}>{left}{right}</div>
+        )}
+      </div>
+    </div>
+  )
+}
+
 function Gallery({ s }) {
   // Hooks before the layout branch, the way Media takes them: `s.v0` is a prop
   // and not a hook's business, so the branch below cannot be the thing that
@@ -17805,6 +17968,14 @@ function Gallery({ s }) {
       const picked = s.live && pick >= 0
       const at = picked ? pick : s.images.length > 1 ? 1 : 0
       return <PaperbackGallery s={s} g={{ at, marked: video ? -1 : at, strip, go, srcRows, srcAct, video, player }} />
+    }
+
+    // Headliner's layout-1 gallery is a block of its own (HeadlinerGallery), after the seam. The canvas opens the viewer on the second slot (the
+    // seed's second photograph is the frame's viewer picture, Paperback's shape) and rings no tile; a visitor's pick rings its own.
+    if (s.headliner) {
+      const picked = s.live && pick >= 0
+      const at = picked ? pick : s.images.length > 1 ? 1 : 0
+      return <HeadlinerGallery s={s} g={{ at, marked: picked && !video ? pick : -1, strip, go, srcRows, srcAct, video, player }} />
     }
 
     // Lattice's layout-1 gallery is a block of its own (LatticeGallery), after the seam. It opens on
