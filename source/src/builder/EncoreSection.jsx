@@ -26993,8 +26993,10 @@ function PaperbackTestimonials({ s, g }) {
   const yellow = s.box2
 
   // A sized box for a piece of art: the art fills it (the svg's own width and height are overridden by the style).
-  const art = (w, h, node, extra) => (
-    <div aria-hidden style={{ position: 'absolute', width: u(w), height: u(h), pointerEvents: 'none', ...extra }}>{node}</div>
+  // `key` rides in `extra` for the sparkles' map and goes on the element, not into the style (it was spread into
+  // `style` and React warned of an unkeyed list on every card: the 2026-11-23 sweep's published check).
+  const art = (w, h, node, { key, ...extra } = {}) => (
+    <div key={key} aria-hidden style={{ position: 'absolute', width: u(w), height: u(h), pointerEvents: 'none', ...extra }}>{node}</div>
   )
   const fill = { width: '100%', height: '100%' }
   const trophy = (size, [cx, cy], turn) => art(size, size, <PaperbackArt name="trophy" style={fill} />, {
