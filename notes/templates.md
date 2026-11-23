@@ -717,3 +717,8 @@ hold the record, and this file keeps what a later session touching a Headliner s
 - **The bar is hamburger + `HeadlinerPill`** only; the menu's Book Now row reads the same pill.
 - Picker: `TemplatePreview` passes `fit` for Headliner (user call 2026-11-23), since its 738-tall hero outgrows the 1180 × 614 card.
 - Caps: title 33, tags 8 × 22, main button 16, numeral 3 (`limits.mjs header --themes=7 --designs=0`).
+
+**The bio** (`HeadlinerBio`, `EncoreSection.jsx`; own tree, the head of `Bio` on `s.v0 && s.headliner`; `notes/bio.md`, *Headliner layout 1*):
+- The stage pattern again (`HEADLINER_BIO`, `u()` in cqw, the frame's px at all three widths, `vm.pad` = the published tab's surplus alone).
+- **The statement is a transform**, the frame's own rotated horizontal box: `translateX(-100%) rotate(-90deg)` about the box's top-right corner, right-aligned so the lines' ends meet the portrait's top edge, in a `min(640u, max(5em, widest word))` measure that makes the frame's `READS THE` / `ROOM` break at every width. Not `writing-mode`, whose glyph seats differ by a few px.
+- `para1` is the Fraunces lead, `para2` the paragraph under a literal `About`; no badge, role line or tags are drawn at layout 1.
