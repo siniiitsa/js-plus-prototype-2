@@ -34760,6 +34760,113 @@ function LatticeFooter({ s }) {
   )
 }
 
+// Headliner's layout-1 footer (Batch 2 file, 1:5480 · 1:16253 · 1:17302: 395.31 / 491.94 / 655.02 tall; plans/headliner/layout-1.md, section 11). A bare `#1E1E1E` band (Scheme 7, the section's own
+// ground: no card, no art) holding a 40 square `#CE1F1A` monogram (`KAI` over `MER`, Anton 15) beside the name in Anton 24 / 24 / 22, the tagline in Fraunces Light (30 / 27 / 25, lh 1.06,
+// -0.015em: the statement's seat), the link columns (Anton 20, 31-tall boxes 43 apart, the first 26.69 down where the frame's eyebrows stood), a sand Book pill in the newsletter's seat, and a
+// 1 px rule at `rgba(238,227,209,.22)` over the copyright and the credit (Anton 13, +.02em). Nothing is centred in a taller box: 64 / 51 / 38 round the content, 48 to the rule, the small print
+// 18 under it. Desktop is a row on a 32 gap (540.516 | 426.016 | 311.516), 768 two rows (the left block, then the links beside the pill's column at x 400) and 390 three. The standing removals
+// hold: the newsletter (its eyebrow, email box and button) is not drawn, the two derived link columns stand where the frame has three (the third, `Social`, is four services no field holds),
+// and the eyebrows have no field, so their seat stays as padding. Every length is the FRAME's px through `u`, in cqw of a stage (a container as wide as the page content, `s.surplus` in from
+// the root's edges), so the picture holds its proportions on a canvas narrower than the frame. The seam is Lime's restated: `extLink` / `navHref` per link row, the pill on `bookTo` (no
+// self-exclusion filter: `footer` is not in CTA_TARGETS.book) and dropped with its label.
+const HEADLINER_FOOT = {
+  desktop: { fw: 1440, gut: 48.96, pad: 64, name: 24, tag: 30, leftW: 540.516, linksW: 426.016, colW: 128.672, newsW: 311.516 },
+  tablet: { fw: 768, gut: 26.11, pad: 51, name: 24, tag: 27, linksW: 341.89, colW: 100.625 },
+  mobile: { fw: 390, gut: 24, pad: 38, name: 22, tag: 25, colW: 100.64 },
+}
+const HL_FOOT_RED = '#CE1F1A'   // the monogram's square: the one literal no scheme holds
+function HeadlinerFooter({ s }) {
+  const dev = s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop'
+  const P = HEADLINER_FOOT[dev]
+  const desk = dev === 'desktop'
+  const mob = dev === 'mobile'
+  const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
+  const O = s.onScheme
+  const sand = O[1].bg       // every ink on the band, #EEE3D1
+  const dark = O[1].text1    // the pill's type, #1E1E1E
+  const anton = (size, extra) => ({ fontFamily: s.label, fontWeight: 400, fontSize: size, textTransform: 'uppercase', ...extra })
+  const eyebrow = 26.6875    // the frame's eyebrow (14.69) and the 12 under it, where its links and button start
+
+  const mono = s.showBadge === 'show' && s.footerMono && s.footerMono.length > 0 && (
+    <span aria-hidden style={{
+      ...col('0px', { alignItems: 'center', justifyContent: 'center' }), flex: 'none', width: u(40), height: u(40), boxSizing: 'border-box', overflow: 'hidden',
+      background: HL_FOOT_RED, color: sand, ...anton(u(15), { lineHeight: u(14.7), letterSpacing: '-0.005em', textAlign: 'center', whiteSpace: 'nowrap' }),
+    }}>{s.footerMono.map((w, i) => <span key={i}>{w}</span>)}</span>
+  )
+  const name = !!String(s.brand || '').trim() && (
+    <span style={anton(u(P.name), { flex: '0 1 auto', minWidth: 0, lineHeight: u(P.name), letterSpacing: '-0.005em', color: sand, overflowWrap: 'break-word' })}>{s.brand}</span>
+  )
+  const tagline = !!s.footerStatement && (
+    <p style={{ margin: 0, minWidth: 0, fontFamily: s.serif, fontWeight: 300, fontSize: u(P.tag), lineHeight: 1.06, letterSpacing: '-0.015em', color: sand, whiteSpace: 'pre-wrap', overflowWrap: 'break-word' }}>{s.footerStatement}</p>
+  )
+  const left = (mono || name || tagline) ? (
+    <div style={col(u(22), { minWidth: 0 })}>
+      {(mono || name) && <div style={row(u(10), { minHeight: u(40), minWidth: 0 })}>{mono}{name}</div>}
+      {tagline}
+    </div>
+  ) : <div />
+
+  // An address the artist typed leaves the page in a new tab, a section id scrolls, and on the canvas both resolve to an <a> with no href at all (`navHref`).
+  // The two derived columns grow into the dropped third's seat rather than wrap a long label at the frame's column width.
+  const links = s.footerLinks.length > 0 && (
+    <div style={{ display: 'flex', alignItems: 'flex-start', gap: u(20), minWidth: 0, paddingTop: u(eyebrow) }}>
+      {s.footerCols.map((cl, ci) => (
+        <div key={ci} style={col(u(12), { flex: '0 1 auto', minWidth: `min(${u(P.colW)}, 100%)` })}>
+          {cl.map((l, i) => {
+            const ext = extLink(s, l.url)
+            return (
+              <a key={i} {...(ext || { href: navHref(s, l.to) })} style={anton(u(20), {
+                display: 'block', minHeight: u(31), color: sand, cursor: 'pointer', textDecoration: 'none', lineHeight: 'normal', letterSpacing: '0.02em', overflowWrap: 'anywhere',
+              })}>{l.label}</a>
+            )
+          })}
+        </div>
+      ))}
+    </div>
+  )
+  // The Book pill is the newsletter's `SUBSCRIBE →` box in its own sand and ink; it stands level with the first link where the links stand beside it.
+  const pill = !!s.footerCta && (
+    <div style={{ display: 'flex', minWidth: 0, ...(mob ? null : { paddingTop: u(eyebrow) }) }}>
+      <HeadlinerPill s={s} label={s.footerCta} to={s.bookTo} u={u} bg={sand} ink={dark} style={{ maxWidth: '100%' }} />
+    </div>
+  )
+
+  const small = (
+    <div style={{
+      boxSizing: 'border-box', marginTop: u(48), borderTop: `1px solid ${HL_HAIR}`, paddingTop: u(18),
+      ...row(u(16), { alignItems: 'flex-start', justifyContent: 'space-between' }),
+      ...anton(u(13), { lineHeight: u(13.65), letterSpacing: '0.02em', color: sand }),
+    }}>
+      {!!s.copyright && <span style={{ flex: '1 1 0', minWidth: 0, overflowWrap: 'anywhere' }}>{s.copyright}</span>}
+      <span style={{ flex: 'none', marginLeft: 'auto', textAlign: 'right', whiteSpace: 'nowrap' }}>{s.footerCredit}</span>
+    </div>
+  )
+
+  return (
+    <div style={{ position: 'relative', containerType: 'inline-size', overflow: 'hidden' }}>
+      <div style={{ boxSizing: 'border-box', padding: `${u(P.pad)} ${u(P.gut)}` }}>
+        {desk ? (
+          <div style={{ display: 'grid', gridTemplateColumns: `${u(P.leftW)} ${u(P.linksW)} minmax(0, 1fr)`, columnGap: u(32), alignItems: 'start' }}>
+            {left}<div style={{ minWidth: 0 }}>{links}</div>{pill}
+          </div>
+        ) : (
+          <div style={col(u(32), { minWidth: 0 })}>
+            {left}
+            {mob ? (
+              <>{links}{pill}</>
+            ) : (links || pill) ? (
+              <div style={{ display: 'grid', gridTemplateColumns: `${u(P.linksW)} minmax(0, 1fr)`, columnGap: u(32), alignItems: 'start' }}>
+                <div style={{ minWidth: 0 }}>{links}</div>{pill}
+              </div>
+            ) : null}
+          </div>
+        )}
+        {small}
+      </div>
+    </div>
+  )
+}
+
 // Paperback's layout-1 footer (Batch 2 file, 1:3395 · 1:12081 · 1:13263: 486.59 / 798.47 / 876.27 tall; plans/paperback/layout-1.md, section 11). An indigo band
 // (Scheme 3, the section's own ground) holding the artist's name in Bricolage ExtraBold (44 / 35 / 29, lh .9, -0.035em), the sitemap as a row of white-12% pills
 // that wraps (44 tall, radius 999, Figtree Bold 14, 6 apart both ways), the Book pill (a pink split pill, `PaperbackPill`) under them, a photograph on a 351 x 280
@@ -34890,6 +34997,8 @@ function PaperbackFooter({ s }) {
 function Footer({ s }) {
   // Lattice's layout-1 footer is a block of its own (LatticeFooter). `Footer` owns no hook, so the block can
   // stand at the head of the function, ahead of Lime's; the seam is restated in it.
+  // Headliner's layout-1 footer is a block of its own (HeadlinerFooter), ahead of Paperback's: no hook here either.
+  if (s.limeTree && s.headliner) return <HeadlinerFooter s={s} />
   if (s.limeTree && s.paperback) return <PaperbackFooter s={s} />
   if (s.limeTree && s.lattice) return <LatticeFooter s={s} />
   const scale = s.narrow ? 1 : 0.82

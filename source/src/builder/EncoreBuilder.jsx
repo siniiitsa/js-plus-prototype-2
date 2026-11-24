@@ -55,7 +55,7 @@ import {
   MAP_STATUS, MAP_UPDATED, MAP_EXPAND,
   PRICING_REVIEWS, PRICING_RATING, PRICING_CTA, PRICING_NOTE, PRICING_OFFER,
   FORM_PROMISES, FORM_STEPS, STEP_KEYS, FORM_FIELDS, FORM_FIELDS_CARD, FORM_FIELDS_4, FORM_FIELD_KEYS, FORM_EMAIL_LABEL, FORM_KINDS, enquiryErrors, FORM_TYPES, FORM_MESSAGE, FORM_MSG_LABEL,
-  FOOTER_LINKS, FOOTER_TARGETS, FOOTER_CREDIT, FOOTER_STATEMENT,
+  FOOTER_LINKS, FOOTER_TARGETS, FOOTER_CREDIT, FOOTER_STATEMENT, FOOTER_STATEMENT_HEADLINER,
   CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN, CAL_SLOTS, SLOT_KEYS, slotDate, parseDayFirst, pageTiers, CAL_SLOT_CTA, CAL_SEND_4, CAL_CTA_LATTICE, BIO_CTA_PAPERBACK, FORM_EMAIL, pageEmail, MONTHS, DAY_FULL,
   TESTI_HEADING_2, CARD_LINE_3, TESTI_STARS, TESTI_RATING,
   PRICING_INTRO_3, FORM_SUB_4, CAL_HEADING_1, formBtnSeed, CAL_TYPES, PRICING_ROW_CTA, PRICING_ROW_CTA_3, PRICING_ROW_CTA_PAPERBACK, PRICING_HEADING_HEADLINER, CAL_HEADING_HEADLINER, MAP_SPAN, MAP_STATS_4, STAT_KEYS,FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
@@ -630,8 +630,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   if (d === 0 && (cat === 'bio' || cat === 'media' || cat === 'gallery' || cat === 'repertoire' || cat === 'map' || cat === 'pricing' || cat === 'calendar' || cat === 'form' || cat === 'testimonials' || cat === 'footer') && T.name === 'Paperback') vm.pad = `0px ${vm.surplus}`
   // Headliner's layout-1 bio (1:4627 · 1:15396 · 1:16446) is a stage of its own (HeadlinerBio), Paperback's shape: it carries the
   // frames' insets in cqw, so the root pads only the published tab's surplus. The media (1:4650 · 1:15421 · 1:16471) joined it in section 3;
-  // the gallery (1:4766 · 1:15538 · 1:16587) in section 4, the repertoire (1:4830 · 1:15602 · 1:16651) in section 5, the map (1:4955 · 1:15726 · 1:16776) in section 6, the pricing (1:5067 · 1:15838 · 1:16888) in section 7, the calendar (1:5205 · 1:15976 · 1:17026) in section 8, the form (1:5385 · 1:16159 · 1:17207) in section 9, the testimonials (1:5460 · 1:16233 · 1:17282) in section 10; the footer joins the line as it passes.
-  if (d === 0 && (cat === 'bio' || cat === 'media' || cat === 'gallery' || cat === 'repertoire' || cat === 'map' || cat === 'pricing' || cat === 'calendar' || cat === 'form' || cat === 'testimonials') && T.name === 'Headliner') vm.pad = `0px ${vm.surplus}`
+  // the gallery (1:4766 · 1:15538 · 1:16587) in section 4, the repertoire (1:4830 · 1:15602 · 1:16651) in section 5, the map (1:4955 · 1:15726 · 1:16776) in section 6, the pricing (1:5067 · 1:15838 · 1:16888) in section 7, the calendar (1:5205 · 1:15976 · 1:17026) in section 8, the form (1:5385 · 1:16159 · 1:17207) in section 9, the testimonials (1:5460 · 1:16233 · 1:17282) in section 10, the footer (1:5480 · 1:16253 · 1:17302) in section 11.
+  if (d === 0 && (cat === 'bio' || cat === 'media' || cat === 'gallery' || cat === 'repertoire' || cat === 'map' || cat === 'pricing' || cat === 'calendar' || cat === 'form' || cat === 'testimonials' || cat === 'footer') && T.name === 'Headliner') vm.pad = `0px ${vm.surplus}`
   // …and the media's (1:419 · 1:9052 · 1:10024): 129.43 top and foot at 1440 (x 0.82, 106.13), 77 at 768
   // and 58 at 390, the same content insets. The 390 master's head box starts 40 down (an import
   // artefact: the eyebrow row sits at y 98, not 58), so with the eyebrow removed the head takes
@@ -2443,7 +2443,14 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // column is built round, and it does not fall out of the measure alone in a
   // display face narrower than the frame's. Kept in step with FIELDS.footer's
   // own default, and rendered `pre-wrap` so an edited statement can break too.
-  vm.footerStatement = cased(cv('statement', FOOTER_STATEMENT))
+  vm.footerStatement = cased(cv('statement', T.name === 'Headliner' ? FOOTER_STATEMENT_HEADLINER : FOOTER_STATEMENT))
+  // Headliner's layout-1 footer stands a red square on the frame's `KAI` over `MER` (1:5485): the first three letters of the name's first
+  // and last word, upper-case, so `Kai Mercer` is the frame's. A one-word name stands alone; a clamp's `…` and any mark that is not a
+  // letter or a digit is not a letter of it. Composed here, not in EncoreSection (the hero's numeral and the calendar's disc are `vm.initials`).
+  if (T.name === 'Headliner') {
+    const words = String(vm.brand || '').split(/\s+/).map((w) => [...w].filter((ch) => /[\p{L}\p{N}]/u.test(ch))).filter((w) => w.length)
+    vm.footerMono = (words.length > 1 ? [words[0], words[words.length - 1]] : words).map((w) => w.slice(0, 3).join('').toUpperCase())
+  }
   // The statement's widest word in the display face's ems × `faceK`
   // (`navFace`'s table) — `wordEms`' rule, for a third hand-scaled Bold that is
   // not `vm.title`: Editorial's footer fits the frame's 57.84 to it rather than

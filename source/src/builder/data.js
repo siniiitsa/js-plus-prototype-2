@@ -2659,6 +2659,9 @@ export const FOOTER_TARGETS = [
 export const FOOTER_CREDIT = 'A JustPay Product'
 // The frames' own hard break — see sectionVm, which is the other half of it.
 export const FOOTER_STATEMENT = "Let's make\nyour night unforgettable."
+// Headliner's layout-1 footer draws the frame's own tagline (1:5489) in the statement's seat, where the shared seed is the form's head
+// (which this frame prints one section up).
+export const FOOTER_STATEMENT_HEADLINER = 'House, disco, soul and 80s — chosen by the room.'
 
 // No `repertoire` entry: its heading counts the songs (see sectionVm), and at
 // layouts 3 and 4 starts from REP_HEADING_3 / REP_HEADING_4, so a literal here
@@ -4105,7 +4108,7 @@ export const FIELDS = {
     // 2026-11-20 (limits.mjs footer --themes=5): 37 at all three widths, three lines in its 11em measure.
     // Paperback's footer draws no statement (its frames set the name, the pills and a photograph), so the panel does not offer it.
     { k: 'statement', l: 'Statement', type: 'area', d: FOOTER_STATEMENT, in: { Paperback: [], '*': [0] },
-      chars: { Grunge: [45], Lattice: [37], '*': [36] } },
+      chars: { Grunge: [45], Lattice: [37], Headliner: [59], '*': [36] } },
     // Paperback's footer photograph, the tilted keyline card between the name and the right-hand edge. Seeded (PAPERBACK_PHOTOS.footer);
     // no other template's footer draws a photograph, so no other template offers the box.
     { k: 'image', l: 'Photo', type: 'image', aspect: [5, 4], in: { Paperback: [0], '*': [] },
@@ -4117,7 +4120,7 @@ export const FIELDS = {
     { k: 'links',    l: 'Footer links', type: 'links', max: 10,
       // Read in every row at once: the two columns stand side by side (session 11).
       // Lattice's measured: 19 at 390 (a one-line label in its 159-wide cell; 24 at 1440, 41 at 768).
-      cols: { label: { Retro: [19], Lime: [28], Grunge: [28], Editorial: [20], Pop: [14], Lattice: [19], Paperback: [47] } },
+      cols: { label: { Retro: [19], Lime: [28], Grunge: [28], Editorial: [20], Pop: [14], Lattice: [19], Paperback: [47], Headliner: [18] } },
       hint: {
         '*': 'The list is halved into two columns, in order. A link scrolls to a section on the page, or opens a web address in a new tab.',
         // Lattice's frames set the links as a grid read across (plans/lattice/layout-1.md, section 11).
@@ -4131,16 +4134,17 @@ export const FIELDS = {
     // (session 11).
     // Lattice's bracket box stands alone under the links, so its cap is the page's (measured: 36 at 390,
     // 49 at 1440, 82 at 768).
-    { k: 'cta',      l: 'Button', d: 'Book Now', chars: { Editorial: [12], Pop: [11], Lattice: [36], Paperback: [36], '*': [16] },
+    { k: 'cta',      l: 'Button', d: 'Book Now', chars: { Editorial: [12], Pop: [11], Lattice: [36], Paperback: [36], Headliner: [41], '*': [16] },
       hint: 'Books at the enquiry form, the calendar or the pricing section — whichever the page carries. Empty drops the button.' },
     // The same key the header's seal takes: `vm.showBadge` already reads this
     // section's own content, so the footer's seal was hidable by nothing only
     // because no field here named it.
-    { k: 'showBadge', l: 'Seal', type: 'select', opts: SHOW_HIDE, d: 'show' },
+    { k: 'showBadge', l: 'Seal', type: 'select', opts: SHOW_HIDE, d: 'show',
+      hint: { Headliner: 'The red square of letters beside the name.' } },
     // Defaults to copyrightOf(name), special-cased.
     { k: 'copyright', l: 'Small print',
       // Lattice's measured: 25 at 390, a one-line copyright beside the credit (75 at 768, 157 at 1440).
-      chars: { Retro: [31], Lime: [28], Grunge: [32], Editorial: [24], Pop: [35], Lattice: [25], Paperback: [34] } },
+      chars: { Retro: [31], Lime: [28], Grunge: [32], Editorial: [24], Pop: [35], Lattice: [25], Paperback: [34], Headliner: [39] } },
   ],
 }
 
@@ -4300,6 +4304,7 @@ export function fieldSeed({ cat, f, themeName, design, c = {}, artistName, email
     : f.k === 'cta' && cat === 'calendar' && design === 0 && (themeName === 'Lattice' || themeName === 'Paperback' || themeName === 'Headliner') ? CAL_CTA_LATTICE
     : f.k === 'rowCta' && cat === 'pricing' && design === 0 && (themeName === 'Paperback' || themeName === 'Headliner') ? PRICING_ROW_CTA_PAPERBACK
     : f.k === 'heading' && cat === 'pricing' && design === 0 && themeName === 'Headliner' ? PRICING_HEADING_HEADLINER
+    : f.k === 'statement' && cat === 'footer' && themeName === 'Headliner' ? FOOTER_STATEMENT_HEADLINER
     : f.k === 'rowCta' && cat === 'pricing' && design === 2 ? PRICING_ROW_CTA_3
     : f.k === 'rowCta' && cat === 'pricing' && design === 3 ? PRICING_ROW_CTA
     : fieldDefault(f)
@@ -4671,7 +4676,9 @@ export const IDENTITY_CHARS = {
   footer: {
     // Lattice's measured (limits.mjs footer --themes=5, `who.title`): the wordmark and the copyright both take
     // the name, two lines at the least width: 39 (87 at 1440, 76 at 768). Its ring is not drawn (no `seal` row).
-    title: { Retro: [24], Lime: [46], Grunge: [54], Editorial: [39], Pop: [10], Lattice: [39], Paperback: [37] },
+    title: { Retro: [24], Lime: [46], Grunge: [54], Editorial: [39], Pop: [10], Lattice: [39], Paperback: [37],
+      // Headliner's layout 1 measured 2026-11-24 (limits.mjs footer --themes=7 --designs=0, `who.title`): the name beside the monogram holds 31 (48 / 66 / 31).
+      Headliner: [31] },
     seal: { Retro: 19, Lime: 13, Grunge: 14, Editorial: 16, Pop: 12, Paperback: 12 },
   },
   form: {
