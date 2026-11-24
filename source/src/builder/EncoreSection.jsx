@@ -17792,6 +17792,23 @@ const HEADLINER_GALLERY = {
   tablet: { fw: 768, top: 77, side: 26.11, gutter: 36, h2: 80, rowH: 69.469, rowT: 48, padT: 12.88, padB: 9.989, iconT: 11.73 },
   mobile: { fw: 390, top: 58, side: 24, gutter: 28, h2: 52, rowH: 66, rowT: 38, padT: 15.6, padB: 13.3, iconT: 10 },
 }
+// The frame's 16 x 14 line arrow (stroke 2.4) and the 46 square it stands in: the gallery's viewer pair (1:4811) and the testimonials' edge buttons
+// (1:5462 · 1:5477) are the same box (`fill` with a 1 px border of the same, the arrow in `stroke`), so both trees read these two.
+function headlinerLineArrow(u, back, stroke) {
+  return (
+    <svg aria-hidden viewBox="0 0 16 14" fill="none" style={{ display: 'block', width: u(16), height: u(14), flex: 'none', overflow: 'visible' }}>
+      <path d={back ? 'M16 7H3M8 1.5L2 7L8 12.5' : 'M0 7H13M8 1.5L14 7L8 12.5'} stroke={stroke} strokeWidth="2.4" />
+    </svg>
+  )
+}
+function headlinerSquare(u, fill, stroke, back, onClick) {
+  return (
+    <span onClick={onClick} style={{
+      ...row('0px', { justifyContent: 'center' }), flex: 'none', width: u(46), height: u(46), boxSizing: 'border-box', background: fill, border: `1px solid ${fill}`,
+      cursor: onClick ? 'pointer' : undefined,
+    }}>{headlinerLineArrow(u, back, stroke)}</span>
+  )
+}
 const HL_GAL_HAIR = 'rgba(30,30,30,0.18)'   // the frame's row rules: sem/text/1 at .18
 const HL_GAL_TILE = '#EFEFEF'               // the tiles' and the figure's ground
 function HeadlinerGallery({ s, g }) {
@@ -17834,11 +17851,7 @@ function HeadlinerGallery({ s, g }) {
       <path d="M0 17.1H31.5V3.6L54 22.5L31.5 41.4V27.9H0V17.1Z" fill={fill} />
     </svg>
   )
-  const lineArrow = (back, stroke) => (
-    <svg aria-hidden viewBox="0 0 16 14" fill="none" style={{ display: 'block', width: u(16), height: u(14), flex: 'none', overflow: 'visible' }}>
-      <path d={back ? 'M16 7H3M8 1.5L2 7L8 12.5' : 'M0 7H13M8 1.5L14 7L8 12.5'} stroke={stroke} strokeWidth="2.4" />
-    </svg>
-  )
+  const lineArrow = (back, stroke) => headlinerLineArrow(u, back, stroke)
 
   const rows = (
     <div style={{ borderBottom: `1px solid ${HL_GAL_HAIR}` }}>
@@ -17886,12 +17899,7 @@ function HeadlinerGallery({ s, g }) {
   )
   const top = <div style={row(u(12), { justifyContent: 'space-between', alignItems: 'center', minHeight: u(51) })}>{back}{eye}</div>
 
-  const square = (fill, stroke, back, onClick) => (
-    <span onClick={onClick} style={{
-      ...row('0px', { justifyContent: 'center' }), flex: 'none', width: u(46), height: u(46), boxSizing: 'border-box', background: fill, border: `1px solid ${fill}`,
-      cursor: onClick ? 'pointer' : undefined,
-    }}>{lineArrow(back, stroke)}</span>
-  )
+  const square = (fill, stroke, back, onClick) => headlinerSquare(u, fill, stroke, back, onClick)
   const figure = (
     <div style={{ position: 'relative', aspectRatio: '655.047 / 481.469', overflow: 'hidden', background: HL_GAL_TILE }}>
       {video ? player : (
@@ -28371,6 +28379,95 @@ function PaperbackTestimonials({ s, g }) {
   )
 }
 
+// Headliner's layout-1 testimonials (plans/headliner/layout-1.md, section 10; frames 1:5460 · 1:16233 · 1:17282, 730 tall at every width): a bare orange band (Scheme 5, the section's own
+// ground: no card, no art but a glyph) holding one centred figure, in a 730 box that CENTRES its content at every width (171.93 + 386.14 + 171.93; 177.24 + 375.52 + 177.24; 167.75 + 394.5 +
+// 167.75), so `minHeight` plus centring and a longer review grows the section. The figure is a column on a 24 gap: a maroon Anton `“` in a 100-tall seat (220 / 136 / 88, lh .5 em), `quotes.when`
+// (Anton 16, the frame's `Reviewed 6 days ago`), the quote (Anton 86.4 / 54 / 38, lh .98, -0.005em, `#020202`) and the two pills that are the attribution (`who` maroon, `role` `#1E1E1E`; the
+// frame draws no byline line). The arrows are the gallery's 46 squares (black, the arrow in the orange): at the gutter (48.96 / 26.11) at 1440 and 768, centred on the figure's height with
+// 40 between each and the figure (whose `max-width` is 1040, centred), and a centred pair under the figure at 390 (12 apart, 20 below it). The seam's `q`, `paging` and `step` come over, so
+// the arrows wrap at both ends and are not drawn at one review, their tracks held so the figure keeps its seat.
+const HEADLINER_TESTI = {
+  desktop: { fw: 1440, h: 730, side: 48.96, figW: 1040, mark: 220, quote: 86.4 },
+  tablet: { fw: 768, h: 730, side: 26.11, figW: 1040, mark: 136, quote: 54 },
+  mobile: { fw: 390, h: 730, side: 24, mark: 88, quote: 38 },
+}
+function HeadlinerTestimonials({ s, g }) {
+  const { q, paging, step } = g
+  const dev = s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop'
+  const P = HEADLINER_TESTI[dev]
+  const mob = dev === 'mobile'
+  const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
+  const O = s.onScheme
+  const black = O[1].activeFg   // the quote, the line over it and the arrows' ground, #020202
+  const orange = O[1].activeBg  // the arrow, #F85E34
+  const maroon = O[3].bg        // the mark and `who`'s pill, #760000
+  const sand = O[1].bg          // both pills' type, #EEE3D1
+  const dark = O[1].text1       // `role`'s pill, #1E1E1E
+  const anton = (size, extra) => ({ fontFamily: s.label, fontWeight: 400, fontSize: size, letterSpacing: '0.02em', textTransform: 'uppercase', ...extra })
+
+  const pill = (label, bg, key) => (
+    <span key={key} style={anton(u(13), {
+      boxSizing: 'border-box', minHeight: u(28), maxWidth: '100%', minWidth: 0, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: `${u(4)} ${u(12)}`,
+      borderRadius: '999px', background: bg, color: sand, lineHeight: u(20), textAlign: 'center', overflowWrap: 'anywhere',
+    })}>{label}</span>
+  )
+
+  const mark = (
+    <div aria-hidden style={{ height: u(100), flex: 'none', textAlign: 'center' }}>
+      <span style={{ display: 'block', fontFamily: s.display, fontWeight: 400, fontSize: u(P.mark), lineHeight: u(P.mark / 2), letterSpacing: '-0.005em', color: maroon, whiteSpace: 'nowrap' }}>{'\u201C'}</span>
+    </div>
+  )
+  const body = q ? (
+    <>
+      {!!q.when && <span style={anton(u(16), { display: 'block', lineHeight: u(16.8), color: black, textAlign: 'center', overflowWrap: 'anywhere' })}>{q.when}</span>}
+      {!!q.quote && (
+        // Fitted to its widest word (`wordEms`, Anton's table at the frame's -0.005em) against the figure's own width, so a long word shrinks the type instead of breaking.
+        <div style={{ containerType: 'inline-size', minWidth: 0, fontSize: u(P.quote) }}>
+          <p style={{
+            margin: 0, fontFamily: s.display, fontWeight: 400, lineHeight: 0.98, letterSpacing: '-0.005em', textTransform: 'uppercase', textAlign: 'center', color: black, overflowWrap: 'break-word',
+            fontSize: q.wordEms ? `min(1em, calc(100cqi / ${q.wordEms}))` : '1em',
+          }}>{q.quote}</p>
+        </div>
+      )}
+      {(!!q.who || !!q.role) && (
+        <div style={row(u(8), { flexWrap: 'wrap', justifyContent: 'center', minWidth: 0 })}>
+          {!!q.who && pill(q.who, maroon, 0)}
+          {!!q.role && pill(q.role, dark, 1)}
+        </div>
+      )}
+    </>
+  ) : (
+    <span style={anton(u(16), { display: 'block', lineHeight: u(16.8), color: black, textAlign: 'center' })}>No reviews yet.</span>
+  )
+  const figure = <div style={col(u(24), { minWidth: 0, ...(mob ? null : { width: '100%', maxWidth: u(P.figW), justifySelf: 'center' }) })}>{mark}{body}</div>
+
+  const prev = paging ? headlinerSquare(u, black, orange, true, step(-1)) : null
+  const next = paging ? headlinerSquare(u, black, orange, false, step(1)) : null
+
+  return (
+    <div style={{ position: 'relative', containerType: 'inline-size', overflow: 'hidden' }}>
+      <div style={{ minHeight: u(P.h), boxSizing: 'border-box', display: 'flex', alignItems: 'center' }}>
+        {mob ? (
+          <div style={col(u(20), { width: '100%', minWidth: 0, boxSizing: 'border-box', padding: `0 ${u(P.side)}`, alignItems: 'stretch' })}>
+            {figure}
+            {paging && <div style={row(u(12), { justifyContent: 'center' })}>{prev}{next}</div>}
+          </div>
+        ) : (
+          // Three tracks at both wide widths, so the figure keeps its seat at one review: the arrows are not drawn but their 46 are held.
+          <div style={{
+            display: 'grid', width: '100%', alignItems: 'center', columnGap: u(40), minWidth: 0, boxSizing: 'border-box',
+            padding: `0 ${u(P.side)}`, gridTemplateColumns: `${u(46)} minmax(0, 1fr) ${u(46)}`,
+          }}>
+            <span style={{ display: 'flex' }}>{prev}</span>
+            {figure}
+            <span style={{ display: 'flex' }}>{next}</span>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
 // v0 — Testimonials layout 1 · Stacked tag card (§10.2 reference design): one
 // cream quote card standing on two rotated, ink-outlined coloured cards, with
 // the pager arrows thrown out to the page's own gutters.
@@ -28437,6 +28534,8 @@ function Testimonials({ s }) {
     // `q`, `paging` and `step` (the arrows, which wrap at both ends and are not drawn at one review) go over.
     if (s.limeTree && s.lattice) return <LatticeTestimonials s={s} g={{ q, paging, step }} />
     // Paperback's layout-1 testimonials are a block of their own too (PaperbackTestimonials), after the seam, the same hand-over.
+    // Headliner's is a stage of its own too (HeadlinerTestimonials), after the seam, the same hand-over.
+    if (s.limeTree && s.headliner) return <HeadlinerTestimonials s={s} g={{ q, paging, step }} />
     if (s.limeTree && s.paperback) return <PaperbackTestimonials s={s} g={{ q, paging, step }} />
 
     // Lime (964:58597 · 986:39886 · 986:39898) — the ninth Lime block, after the

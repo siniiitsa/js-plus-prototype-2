@@ -3906,7 +3906,9 @@ export const FIELDS = {
       chars: { Retro: [null, 38, 26, 24], Lime: [null, 43, 26, 23], Grunge: [null, 38, 30, 30],
         Editorial: [null, 38, 17, 22], Pop: [null, 45, 22, 22],
         // Lattice's layout 1 draws no heading; layouts 2-4 are placeholders on Pop's numbers.
-        Lattice: [null, 45, 22, 22], Paperback: [null, 45, 19, 22] },
+        Lattice: [null, 45, 22, 22], Paperback: [null, 45, 19, 22],
+        // Headliner's layout 1 draws no heading; layouts 2-4 are Grunge's rows, written out.
+        Headliner: [null, 38, 30, 30] },
       hint: 'Layouts 2, 3 and 4 each start from their own heading. A line break you type is '
           + 'kept in layout 2.' },
     // Layout 2 was the first design to head this section, so both of the plain
@@ -3932,17 +3934,20 @@ export const FIELDS = {
         // `role` 35 (77 / 63 / 35; each prints twice, in the caption and on its chip, and wraps), `when` 21
         // (62 / 47 / 21, the seed's own at 390). `quote` stays the shared 190 (measured open at 400: the card
         // grows). Layouts 2-4 are Pop's, unmeasured.
+        // Headliner layout 1 measured 2026-11-24 (limits.mjs testimonials --themes=7 --designs=0): `who` and `role` 54 (179 / 91 / 54 and 179 / 91 / 54: each prints once, on its pill, and a pill
+        // that takes a second line at 768 is the limit past 91; 54 is the 390 one-line limit), `when` 47 (148 / 76 / 47, one line), `quote` held to the shared 190 (measured open at 400: the figure grows
+        // the section past its 730). Layouts 2-4 are Grunge's rows, written out.
         // Paperback layout 1 measured 2026-11-21 (limits.mjs testimonials --themes=6 --designs=0 --upright): `who` and `role` 45
         // (105 / 66-83 / 45: each prints once, on its chip, and wraps), `when` 31 (64 / 55 / 31: the script meets the star disc at 390),
         // `quote` 170 (measured 293 / 260 / 195 on three samples, 170 on the fourth, all-lower-case one `--check` adds: at 390 a 180-character review is nine lines and the card runs down over the foot trophy). Layouts 2-4 are Pop's, unmeasured.
         who: { Retro: [28, 48, 25, 27], Lime: [39, 45, 20, 27], Grunge: [28, 50, 25, 27],
           Editorial: [17, 27, 13, 27], Pop: [18, 32, 15, 27], Lattice: [35, 32, 15, 27],
-          Paperback: [45, 31, 13, 23] },
+          Paperback: [45, 31, 13, 23], Headliner: [54, 50, 25, 27] },
         quote: { Lime: [66, 190, 190, 190], Grunge: [68, 190, 190, 190], Editorial: [66, 190, 190, 190],
-          Lattice: [190, 190, 190, 190], Paperback: [170, 190, 190, 190], '*': [190, 190, 190, 190] },
+          Lattice: [190, 190, 190, 190], Paperback: [170, 190, 190, 190], Headliner: [190, 190, 190, 190], '*': [190, 190, 190, 190] },
         role: { Retro: [28, 48, 26, 29], Lime: [45, 48, 26, 27], Grunge: [28, 48, 26, 29], Lattice: [35, 48, 26, 29],
-          Paperback: [45, 46, 26, 28], '*': [26, 48, 26, 29] },
-        when: { Retro: [30], Pop: [30], Lattice: [21], Paperback: [31], '*': [46] },
+          Paperback: [45, 46, 26, 28], Headliner: [54, 48, 26, 29], '*': [26, 48, 26, 29] },
+        when: { Retro: [30], Pop: [30], Lattice: [21], Paperback: [31], Headliner: [47], '*': [46] },
       },
       hint: 'Each row is one review. Layouts 1, 2 and 4 page through them; layout 3 '
           + 'gives each one a card on its wall, and a row with no name or role '
@@ -3952,7 +3957,7 @@ export const FIELDS = {
           + 'and 4 have no seat for the date.' },
     { k: 'rating',  l: 'Rating', d: TESTI_RATING, in: [2],
       chars: { Retro: [null, null, 8], Lime: [null, null, 7], Grunge: [null, null, 9], Editorial: [null, null, 5],
-        Pop: [null, null, 7], Lattice: [null, null, 7], Paperback: [null, null, 4] },
+        Pop: [null, null, 7], Lattice: [null, null, 7], Paperback: [null, null, 4], Headliner: [null, null, 9] },
       hint: 'The big number on the stat card, printed out of 5. Empty it to show how many reviews there are instead.' },
     { k: 'stars',   l: 'Star rating', d: TESTI_STARS, in: [1, 2],
       chars: { Retro: [null, 44, 35], Lime: [null, 44, 32], Paperback: [null, 37, 33], '*': [null, 44, 36] },
