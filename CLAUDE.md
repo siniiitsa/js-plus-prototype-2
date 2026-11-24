@@ -7,7 +7,7 @@ repeat it. What follows is only what a fresh session tends to get wrong.
 
 All source lives in **`source/`**. Two files at the repo root are *not* source:
 
-- **`index.html`** (~14.6 MB — most of it the inlined photography of all eight templates; 14,585,791 bytes after the Paperback pass, +1.56 MB on the 13.03 MB it had, which was itself +1.10 MB after the Lattice pass) is the generated
+- **`index.html`** (~15.3 MB — most of it the inlined photography of all eight templates; 15,306,066 bytes after the Headliner pass, +0.72 MB on the 14.59 MB it had, which was itself +1.56 MB after the Paperback pass, on the 13.03 MB the Lattice pass left, +1.10 MB) is the generated
   single-file build, committed so the demo is
   double-clickable. Never hand-edit it.
 - **`mock-template.html`** (~12 MB, untracked) is a reference artefact.
