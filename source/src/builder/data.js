@@ -3393,7 +3393,10 @@ export const FIELDS = {
         Paperback: [15, null, 17, 19],
         // Headliner layout 1 measured 2026-11-23 (limits.mjs bio --themes=7 --designs=0: 17 at 1440, 19 at 768 and 390; the statement is
         // two lines in a 5em measure and a third reaches into the portrait); 3 and 4 are Grunge's until their passes.
-        Headliner: [17, null, 20, 18] } },
+        Headliner: [17, null, 20, 18],
+        // Backline layout 1 measured 2026-11-24 (limits.mjs bio --themes=8 --designs=0: 17 at all three widths, where an eighteenth character
+        // sets a third line in the turned statement's 4.6em measure); 3 and 4 are Pop's, written out, until their passes.
+        Backline: [17, null, 17, 19] } },
     // Layout 2's pill over the paragraph (JP-059), seeded with the frame's
     // copy and cased as a label; emptied, it is not drawn.
     { k: 'tag',       l: 'Highlight tag', d: BIO_TAG, in: [1], chars: [null, 18],
@@ -4835,7 +4838,10 @@ export const IDENTITY_CHARS = {
     tags: { chars: { Retro: [null, 22, null, 22], '*': [null, 22, 22, 22] },
       count: { Retro: [null, 7, null, 7], '*': [null, 6, 8, 8] } },
     seal: { Retro: [19, null, 19], Lime: [13, null, 22], Grunge: [14, null, 14], Editorial: [16],
-      Pop: [null, null, 12], Paperback: [null, null, 12] },
+      Pop: [null, null, 12], Paperback: [null, null, 12],
+      // Backline layout 1 measured 2026-11-24 (limits.mjs bio --themes=8 --designs=0, `who.seal`: 11 at every width; the stamp sets the name twice,
+      // one copy to a 106 degree arc, and a twelfth letter meets its neighbour). Layouts 3 and 4 are Pop's, written out.
+      Backline: [11, null, 12] },
   },
   // No video row: layout 4's top bar printed the artist's name until 2026-10-28 and
   // prints the playing video's title since (`videos.title`), and layout 2 none.
