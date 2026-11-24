@@ -3981,11 +3981,16 @@ export const FIELDS = {
           // Headliner layout 1 measured 2026-11-23 (limits.mjs map --themes=7 --designs=0): venue 24 (a 25th wraps it at 390, where the frame's own
           // first row wraps), city, time, month and day each alone (the city · time line shares one Inter Tight line that wraps, and the row grows);
           // layouts 2-4 are Grunge's rows, written out, as the earlier Headliner sections' were.
-          Headliner: [24, 20, 41, 40] },
-        city: { Retro: [22, 14, 20, 13], Editorial: [29, 13, 23, 13], Pop: [13, 13, 20, 13], Paperback: [28, 13, 20, 13], Headliner: [72, 13, 20, 13], '*': [20, 13, 20, 13] },
-        time: { Retro: [13, 5, 13, 10], Pop: [8, 5, 13, 13], Lattice: [15, 5, 13, 13], Paperback: [23, 5, 13, 13], Headliner: [27, 5, 13, 13], '*': [13, 5, 13, 13] },
-        month: { Retro: [7, 4, 11, 9], Lime: [5, 3, 12, 9], Pop: [9, 5, 12, 9], Lattice: [8, 5, 12, 9], Paperback: [8, 5, 12, 9], Headliner: [11, 5, 12, 9], '*': [5, 5, 12, 9] },
-        day: { Retro: [5, 5, 5, 5], Lattice: [3, 3, 5, 5], Paperback: [4, 3, 5, 5], Headliner: [5, 3, 5, 5], '*': [6, 3, 5, 5] },
+          Headliner: [24, 20, 41, 40],
+          // Backline layout 1 measured 2026-11-24 (limits.mjs map --themes=8 --designs=0, then --extra-lines for the three that wrap): the venue 23 on one line (the 24th wraps at 390;
+          // the title sets in TT2020 at 18 px there and the row grows by a line past it, which the frame's own first row does too); layouts 2-4 are Pop's rows, written out.
+          Backline: [23, 18, 28, 40] },
+        city: { Retro: [22, 14, 20, 13], Editorial: [29, 13, 23, 13], Pop: [13, 13, 20, 13], Paperback: [28, 13, 20, 13], Headliner: [72, 13, 20, 13],
+          // Backline layout 1: the city and the time share one label line that wraps at 390 (the frame's does), so each is capped alone at the shared rows' 20 and 13 (the probe reads 58 and 22 one line, 65 and 53 with a wrapped one).
+          Backline: [20, 13, 20, 13], '*': [20, 13, 20, 13] },
+        time: { Retro: [13, 5, 13, 10], Pop: [8, 5, 13, 13], Lattice: [15, 5, 13, 13], Paperback: [23, 5, 13, 13], Headliner: [27, 5, 13, 13], Backline: [13, 5, 13, 13], '*': [13, 5, 13, 13] },
+        month: { Retro: [7, 4, 11, 9], Lime: [5, 3, 12, 9], Pop: [9, 5, 12, 9], Lattice: [8, 5, 12, 9], Paperback: [8, 5, 12, 9], Headliner: [11, 5, 12, 9], Backline: [4, 5, 12, 9], '*': [5, 5, 12, 9] },
+        day: { Retro: [5, 5, 5, 5], Lattice: [3, 3, 5, 5], Paperback: [4, 3, 5, 5], Headliner: [5, 3, 5, 5], Backline: [2, 3, 5, 5], '*': [6, 3, 5, 5] },
       },
       // The page size is vm.gigPage (five) except in layout 4, whose whole
       // list is a one-gig ticker. The cities are read
@@ -4010,23 +4015,26 @@ export const FIELDS = {
     // JP-090: layout 1's label over the gig list; the "· 5" count is the page's.
     // (Layout 2's "Other upcoming · 4", JP-095 (b), was removed 2026-11-12.)
     { k: 'listLabel', l: 'List heading', d: MAP_LIST_LABEL, in: [0],
-      chars: { Retro: [37], Lime: [40], Grunge: [41], Editorial: [46], Pop: [31], Lattice: [31], Paperback: [30], Headliner: [38] },
+      chars: { Retro: [37], Lime: [40], Grunge: [41], Editorial: [46], Pop: [31], Lattice: [31], Paperback: [30], Headliner: [38], Backline: [39] },
       hint: 'The label over the list of gigs, before its count. Left empty, neither is drawn.' },
     { k: 'heading', l: 'Heading', d: 'Manchester',
       // Layouts 1 and 2 start from the picked town (mapHeadingSeed).
       chars: { Retro: [20, 20, 39, 25], Lime: [19, 17, 34, 24], Grunge: [16, 20, 37, 25], Editorial: [11, 19, 22, 22],
         Pop: [17, 21, 25, 23], Lattice: [12, 21, 25, 23], Paperback: [11, 19, 23, 23],
         // Headliner layout 1 measured (limits.mjs map --themes=7 --designs=0): 15 at 1440, 12 at 768, 11 at 390 (a twelfth letter wraps the town); layouts 2-4 are Grunge's.
-        Headliner: [11, 20, 37, 25] } },
+        Headliner: [11, 20, 37, 25],
+        // Backline layout 1 measured (limits.mjs map --themes=8 --designs=0): 16 at 1440, 12 at 768, 11 at 390 (a twelfth letter wraps the town; the seed's `manchester.` is exactly 11);
+        // a typed heading prints as typed, and `mapHeadingSeed` seeds the town in this cap less one, plus the stop. Layouts 2-4 are Pop's.
+        Backline: [11, 21, 25, 23] } },
     // Layout 2's travel card prints the header's Location instead, under its
     // own "Based in" label (JP-096, user call, 2026-10-01): the frame's value is
     // the town alone, and this field's copy says "Based in" itself.
     { k: 'base',    l: 'Based in',       d: MAP_BASE, in: [0, 2],
-      chars: { Retro: [29, null, 33], Lime: [35, null, 27], Grunge: [39, null, 33], Lattice: [19, null, 33], Paperback: [25, null, 28], Headliner: [31, null, 33], '*': [24, null, 33] },
+      chars: { Retro: [29, null, 33], Lime: [35, null, 27], Grunge: [39, null, 33], Lattice: [19, null, 33], Paperback: [25, null, 28], Headliner: [31, null, 33], Backline: [28, null, 33], '*': [24, null, 33] },
       hint: 'Layout 1 prints it beside the map and layout 3 under it. Layout 2’s travel card '
           + 'shows the Location you typed on the header instead.' },
     { k: 'terms',   l: 'Travel charges',   d: MAP_TERMS, in: [0, 1],
-      chars: { Retro: [59, 50], Lime: [58, 41], Pop: [45, 51], Lattice: [39, 51], Paperback: [44, 42], Headliner: [58, 51], '*': [58, 51] } },
+      chars: { Retro: [59, 50], Lime: [58, 41], Pop: [45, 51], Lattice: [39, 51], Paperback: [44, 42], Headliner: [58, 51], Backline: [58, 51], '*': [58, 51] } },
     { k: 'travelTime', l: 'Travel time (layout 2)', d: MAP_TRAVEL_TIME, in: [1],
       chars: { Retro: [null, 11], Paperback: [null, 11], '*': [null, 13] } },
     { k: 'fee',        l: 'Booking fee (layout 2)', d: MAP_FEE, in: [1],
