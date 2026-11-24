@@ -7,7 +7,7 @@ repeat it. What follows is only what a fresh session tends to get wrong.
 
 All source lives in **`source/`**. Two files at the repo root are *not* source:
 
-- **`index.html`** (~14.6 MB — most of it the inlined photography of all seven templates; 14,585,791 bytes after the Paperback pass, +1.56 MB on the 13.03 MB it had, which was itself +1.10 MB after the Lattice pass) is the generated
+- **`index.html`** (~14.6 MB — most of it the inlined photography of all eight templates; 14,585,791 bytes after the Paperback pass, +1.56 MB on the 13.03 MB it had, which was itself +1.10 MB after the Lattice pass) is the generated
   single-file build, committed so the demo is
   double-clickable. Never hand-edit it.
 - **`mock-template.html`** (~12 MB, untracked) is a reference artefact.
@@ -45,11 +45,11 @@ blocks Google Fonts and the YouTube iframe (JP-134). `openPublished` detects tha
 ## Source files
 
 The hand-written code is `src/builder/` (`EncoreBuilder.jsx`, `EncoreSection.jsx`, `data.js`,
-`photos.js`, and `paperbackArt.jsx`, Paperback's doodle art), `src/index.css` and `src/App.jsx`. Everything under `src/components/ui/` is stock
+`photos.js`, and `paperbackArt.jsx` and `headlinerArt.jsx`, Paperback's doodle art and Headliner's line art), `src/index.css` and `src/App.jsx`. Everything under `src/components/ui/` is stock
 shadcn.
 
 `photos.js` is the only module that imports the files in `src/builder/photos/`. Keep those
-imports out of `data.js` — it is documented as pure, import-free data, and the assets are ~8 MB (80 files).
+imports out of `data.js` — it is documented as pure, import-free data, and the assets are ~8.9 MB (92 files).
 
 ## The one architectural rule
 
@@ -60,8 +60,8 @@ Two styling systems, deliberately (README §"Two styling systems, deliberately")
 - **`EncoreSection.jsx`** uses **neither**. Every value is an inline `style={{}}`, because
   section colours are arbitrary runtime hexes (`background: s.bg` where `s.bg` is `#7A58A7`).
   Its only library imports are `lucide-react` and, for the events map, the leaf module `RealMap.jsx`
-  (MapLibre; `notes/map.md`, *The real map*), plus Paperback's `paperbackArt.jsx` (pure SVG functions,
-  no hook, no library: `notes/templates.md`, *Paperback*); from React it takes `useId`, `useState` and
+  (MapLibre; `notes/map.md`, *The real map*), plus Paperback's `paperbackArt.jsx` and Headliner's `headlinerArt.jsx` (pure SVG functions,
+  no hook, no library: `notes/templates.md`, *Paperback*, *Headliner*); from React it takes `useId`, `useState` and
   `useRef` — and no effect.
 
 Do not try to unify them. Only `.hv-indent`, `.hv-acbord` and `.hv-acfill` cross the boundary,
@@ -75,7 +75,8 @@ layout-1 repertoire search sets `--ph: 0.8` too, and its canvas span draws the s
 frame states 50% (JP-119's retest, user call, 2026-10-12: 3.07:1 where 50% is 2.07:1). Paperback's
 layout-1 form sets `--ph: 0.565` on its boxes, the frame's ink at that tint on white (`PAPER_FORM_PH`;
 its label sits above the box, so the placeholder is a hint). Every
-other placeholder is a hint at .45, so a box joins by a call, not by the rule alone.
+other placeholder is a hint at .45, so a box joins by a call, not by the rule alone: **Headliner's layout-1 repertoire search and form boxes
+draw at .45**, not the frame's `#757575` (about .59 of the ink on the cream), and a `--ph: 0.6` join is the user's call (the plan's *For the user*, sections 5 and 9).
 
 Every section is projected through **`sectionVm()`** into a flat, fully-resolved view-model
 before rendering, so `EncoreSection` does zero colour maths. `sectionVm` takes `themeIdx` as an
@@ -210,7 +211,7 @@ mutated through a single `patch()` helper.
   box, by design. A tag row (`tags`) takes only the chip that *is* the row (or
   its `…`), else none: a one-word tag such as "Live" sits inside other copy, and a layout that
   draws no chips has no box. Measured over header layouts 1–4 of the first five templates (and
-  Retro's 5; the 2026-10-14 measurement predates Lattice and Paperback, whose boxes `focus-probe --prime` proves at layouts 1–4 for Paperback and at layout 1 for Lattice), plus bio and calendar: no collision the ranking cannot settle, and every other key
+  Retro's 5; the 2026-10-14 measurement predates Lattice and Paperback, whose boxes `focus-probe --prime` proves at layouts 1–4 for Paperback and at layout 1 for Lattice and Headliner, section by section), plus bio and calendar: no collision the ranking cannot settle, and every other key
   picks the node it always did. **A seal is boxed as its disc** (JP-148): a node inside an svg is
   boxed through `fieldRect`, which takes the outermost svg's `getScreenCTM()` and viewBox to
   the disc's centre and diameter, because the ring's own box is one `<textPath>` arc that swings
@@ -243,7 +244,7 @@ reversing 2026-10-20's "an already-selected section": the `text` cursor shows on
   exceptions are the ones the probe skips or the audit shows as noise: a node under another element (the media fan's back
   cards), vertical type (Retro layout 2's `Manchester, UK` rail, the gallery's `Gallery` wordmark) and markup that is not the
   field's copy (`·`, a song's row number). Pass 20 found the kicker dead on one of two nodes and fixed it with an
-  `INLINE_LINES` row, not a ledger row. **Lattice layout 1 passed whole at the end of its pass** (2026-11-20, 1440 and 768: 148 slots hit, 0 WRONG, 0 UNREACHED, 0 dead click, 39 slots ledgered off at each width). **Paperback passed at layouts 1–4** (session 12, 2026-11-21/22: 143–154 slots hit per page and width, 0 WRONG / NOT-RESTORED / MISSING / UNREACHED / UNLEDGERED, no dead click); layouts 2–4 ride the `INLINE_OFF` rows written for the other templates' designs (`inlineRule` falls from `Paperback.<design>.` to `Paperback.*.`, `*.<design>.`, `*.*.`), so the `Paperback.*` rows are few (the sections' own, written as each passed; session 12 added none). `--width 768` clicks the Tablet tab and keeps the window at 1440, because a window
+  `INLINE_LINES` row, not a ledger row. **Lattice layout 1 passed whole at the end of its pass** (2026-11-20, 1440 and 768: 148 slots hit, 0 WRONG, 0 UNREACHED, 0 dead click, 39 slots ledgered off at each width). **Paperback passed at layouts 1–4** (session 12, 2026-11-21/22: 143–154 slots hit per page and width, 0 WRONG / NOT-RESTORED / MISSING / UNREACHED / UNLEDGERED, no dead click); layouts 2–4 ride the `INLINE_OFF` rows written for the other templates' designs (`inlineRule` falls from `Paperback.<design>.` to `Paperback.*.`, `*.<design>.`, `*.*.`), so the `Paperback.*` rows are few (the sections' own, written as each passed; session 12 added none). **Headliner layout 1 passed section by section** (`--cat <cat>`, 1440 and 768, 2026-11-23/24, each ending `inline-probe: PASS`, no dead click), with five ledger rows only: `Headliner.0.header.kicker` and `.location` (not drawn), `.media.tracks.sub`, `.repertoire.songs.length` and `.calendar.prompt`. `--width 768` clicks the Tablet tab and keeps the window at 1440, because a window
   at 820 or under is the phone chrome. Until a page's pass in `plans/inline-edit-all.md` it is on and unproved.
   `InlineEditor` opens a `<textarea>` over the text's own line rectangles (`inlineBox`)
   with transparent type and a caret, so the page keeps drawing the copy; a tilted card's box is given the
@@ -285,7 +286,7 @@ reversing 2026-10-20's "an already-selected section": the `text` cursor shows on
   the end *appends*, so the photo lands on the first free tile. Hover draws a thin box and a pointer, turned with a tilted card (`photoBox`); focusing a photo field in
   the panel boxes the picture, and a media track's art button boxes its row's. Remove, reorder and Add stay in the panel. A page is *known* to work only because
   **`scripts/photo-probe.mjs --theme T --layout N --width 1440,768 --check`** passed it (`--blank` walks the empty slots; its header lists the
-  verdicts). Retro layout 1 has passed, by hand too (the Step 2 pilot, with Pop layout 1's hit-test spike), and layouts 2, 3 and 4 on all five templates and Retro's 5 and 6 (Step 3, 2026-10-23), then re-run whole at Step 4 (all 22 pages, both widths, filled and `--blank`: PASS, with `--drop` too). Lattice layout 1 (the sixth template; layouts 2–4 have no frames) passed whole at the end of its pass, 2026-11-20: 16 slots at both widths, filled, `--blank` (7 appended) and `--drop`. Paperback (the seventh) passed at layouts 1–4 (session 12: 16–22 slots hit, no `PHOTO_OFF` row; layout 1 `--blank` with 7 appended and `--drop` too).
+  verdicts). Retro layout 1 has passed, by hand too (the Step 2 pilot, with Pop layout 1's hit-test spike), and layouts 2, 3 and 4 on all five templates and Retro's 5 and 6 (Step 3, 2026-10-23), then re-run whole at Step 4 (all 22 pages, both widths, filled and `--blank`: PASS, with `--drop` too). Lattice layout 1 (the sixth template; layouts 2–4 have no frames) passed whole at the end of its pass, 2026-11-20: 16 slots at both widths, filled, `--blank` (7 appended) and `--drop`. Paperback (the seventh) passed at layouts 1–4 (session 12: 16–22 slots hit, no `PHOTO_OFF` row; layout 1 `--blank` with 7 appended and `--drop` too). Headliner (the eighth; layouts 2–4 have no frames) passed at layout 1 section by section, `--check`, `--blank` and `--drop`, with no `PHOTO_OFF` row.
   **A file dropped on a section's photo replaces it** (Step 4, 2026-10-23; the handlers are the wrapper's, `EncoreSection` is not touched): a drag that carries files is
   cancelled anywhere over a section, a photo under it or not, with `dropEffect` `copy` over a photo `photoFieldAt` would open and `none` elsewhere (or the browser opens the file in the
   tab and the page is gone); the drop frames the file in the crop editor, filled slot or empty, and Apply writes through the same `photoPut`. Where a click opens, a drop lands: copy and controls
@@ -538,7 +539,7 @@ reversing 2026-10-20's "an already-selected section": the `text` cursor shows on
   (`plans/lattice/layout-1.md`, `notes/templates.md` *Lattice*; 2026-11-19 to 11-20; **only layout 1 is
   designed** — layouts 2–4 and the four header cards are placeholders in Retro's and Lime's arms
   in its tokens). `sectionVm` carries `lattice: T.name === 'Lattice'`, with `designed` and `limeTree`
-  widened to it (so `limeTree` named five templates, and six with Paperback), but **every section has its own tree**: a
+  widened to it (so `limeTree` named five templates, six with Paperback and seven with Headliner), but **every section has its own tree**: a
   `Lattice*` function (`LatticeHero`, `LatticeBio`, `LatticeMedia`, `LatticeGallery`,
   `LatticeRepertoire`, `LatticeMap`, `LatticePricing`, `LatticeCalendar`, `LatticeForm`,
   `LatticeTestimonials`, `LatticeFooter`) standing on `s.lattice` (and the branch's own `s.v0` / `s.limeTree`,
@@ -560,9 +561,12 @@ reversing 2026-10-20's "an already-selected section": the `text` cursor shows on
   (`LATTICE_DOTS`, `latticeDotField(dev)`), its dotted disc a lossless-WebP *mask* (`LATTICE_ART`), and
   its photography four 1536-wide JPEGs. A **`chars` / `count` / `num` spec** that names templates but neither Lattice
   nor `'*'` is **read as Pop's** by `specAt` (`data.js`: `spec[Lattice] ?? spec['*'] ?? spec.Pop`, and the
-  same for Paperback), so a cap a layout-2–4 pass has not re-measured is Pop's, not an absence. **Paperback
+  same for Paperback; **Headliner's fallback is Grunge's row, then Pop's**, since it sets Anton in square frames), so a cap a layout-2–4 pass has not re-measured is Pop's, not an absence. **Paperback
   no longer reaches the fallback** (session 12): every spec and `IDENTITY_CHARS` entry carries its own row, so
-  a number added later needs a Paperback row or it falls through to Pop's silently. **`in` rows and the `INLINE_OFF` / `PHOTO_OFF`
+  a number added later needs a Paperback row or it falls through to Pop's silently. **Headliner still reaches its fallback** for twenty
+  specs (counted at the sweep: the ones its layout 1 does not read, such as every `seal` row, `cta` / `venueCta` / `routeCta`, the
+  calendar's `slots`, `video.videos.title` and the header's layout-2 and -3 keys; every spec layout 1 reads has its own row, and layouts 2–4 are
+  Grunge's numbers written out), so a layout-2–4 pass for Headliner re-measures them. **`in` rows and the `INLINE_OFF` / `PHOTO_OFF`
   ledgers have no such fallback**: an `in` object that names neither Lattice nor `'*'` *reads* the field.
 - **Paperback is the seventh template and Lattice's shape again: eleven own-tree blocks, none widening a Lime block**
   (`plans/paperback/layout-1.md`, `notes/templates.md` *Paperback*; 2026-11-20 to 11-22; **only layout 1 is
@@ -606,6 +610,52 @@ reversing 2026-10-20's "an already-selected section": the `text` cursor shows on
   are all its own**, measured at layout 1 and, lower-only and never under the seed, on the placeholder cards at layouts 2–4
   (`limits.mjs --themes=6`, with `--upright` for a turned card and `--extra-lines=<keys>` where the frame wraps), and the
   27 seeds wider than the placeholder cards hold are the plan's *Open calls*, for whoever fits layouts 2–4.
+- **Headliner is the eighth template and the third own-tree one: eleven blocks, none widening a Lime block**
+  (`plans/headliner/layout-1.md`, `notes/templates.md` *Headliner*; 2026-11-23 to 11-24; **only layout 1 is
+  designed** — layouts 2–4 and the four header cards 2–4 are Lime's / Pop's trees in Headliner's tokens, the placeholders, which
+  render and publish; the frames are *JustPay — Batch 2*, "Headliner Structured — Claude Design", the same HTML-to-Figma file as
+  Paperback's, so each section's scheme was read off the node's resolved variable mode). `sectionVm` carries
+  `headliner: T.name === 'Headliner'`, with `designed` and `limeTree` widened to it (so `limeTree` now names seven templates), and
+  each section is a `Headliner*` function (`HeadlinerHero`, `HeadlinerBio`, `HeadlinerMedia`, `HeadlinerGallery`,
+  `HeadlinerRepertoire`, `HeadlinerMap`, `HeadlinerPricing`, `HeadlinerCalendar`, `HeadlinerForm`, `HeadlinerTestimonials`,
+  `HeadlinerFooter`) standing on `s.headliner` *after* the section's hooks and seam, except the hookless hero, bio and footer, which
+  stand at the head; so a section's published controls are the shared seam's and only its picture is Headliner's. **The stage
+  pattern** is Paperback's: a `HEADLINER_<CAT>` table of the frame's numbers, a `containerType: inline-size` root with `overflow:
+  hidden`, `u(v)` turning a frame px into `cqw`, **the frame's own numbers at all three widths**, vertical insets in a child, and
+  `vm.pad = '0px <surplus>'` (one line in `EncoreBuilder.jsx` names the ten sections that share it). A head is fitted by
+  `vm.titleWordEms` = `antonEms(w, -0.005)` (the calendar's the widest of its two lines, the testimonials' quote `vm.quotes[].wordEms`).
+  **The look is the opposite of Paperback's**: square corners everywhere, 1 px hairlines (drawn unscaled on the canvas, so a desktop
+  box reads about 0.2 px a rule over the frame's), full-bleed colour bands with straight seams, no tilt, tape, sticker, confetti or
+  grain, and Anton set enormous; its only art is a wavy-line field (the hero's orange wedge and the calendar's maroon panel), a
+  ringed numeral, concentric rings, two arrow glyphs and an eye, all in `headlinerArt.jsx` (pure SVG functions, no hook). The
+  template's one split button is `HeadlinerPill` (`bg` / `ink` / `as` / `tagProps` / `style`), and `headlinerSquare` /
+  `headlinerLineArrow` are the shared 46 square arrow button. **The hero is 900 tall at 768 and 390** (`vm.heroH`; desktop keeps its
+  aspect, 738 on the canvas) with a photograph under two clipped wedge panels and a **three-colour name that is three stacked
+  clipped copies** (the real `<h1>` and two `aria-hidden` divs, none `pointer-events: none`, so a click reaches the title slot);
+  the numeral's text is `badgeText`, **defaulting to the initials** (`initialsOf`, cap 3), and `badgeOptsFor` offers Visible /
+  Hidden only. `TemplatePreview` passes `fit` for Headliner alone (user call, 2026-11-23) because its hero outgrows the picker's card.
+  **The standing removals hold** (session 0, call 1: the hero's tagline, the footer's newsletter, the kicker / location lines and
+  every script or serif eyebrow with no seeded, uncased, drop-when-emptied field as its seat are **not drawn**; the seat stays as
+  padding where the frame centres or spaces round it). **Faces:** display and labels **Anton** (already loaded for Retro, no `faceK`),
+  UI and body **Inter Tight** (`family=Inter+Tight:wght@400;500;600` in `index.html` and `preview.html`; `published.html` loads
+  none), and the serif **`Fraunces Headliner`**, a CSS alias in `index.css` pinning the file Google serves for `Fraunces` at
+  **Light 300, SOFT 0, WONK 1** (opsz live), with **no `Fraunces` entry added to any `<link>`** so Retro's Fraunces Black (900, SOFT 100)
+  is untouched (`vm.serif = T.serif ?? T.body`); casing `'title'`. **It carries `schemes`** (`THEMES[7]`: Scheme 1 sand `#EEE3D1`
+  as its palette, Schemes 2–7 beside it: cream `#F8F2E7`, maroon `#760000`, amber `#F8A351`, orange `#F85E34`, teal `#3B758B` and
+  `#1E1E1E`; only seven are defined, so a nested node that needs another ground names a literal), `SCHEMES_OF.Headliner` rows 0–3
+  identical (the placeholders copy row 0): the header, media and video stand on 3 (maroon), the bio, repertoire and form on 2 (cream),
+  the gallery and pricing on the theme's own 1 (sand), the calendar on 4 (amber), the testimonials on 5 (orange), the map on 6 (teal)
+  and the footer on 7 (`#1E1E1E`), and nested nodes read `s.onScheme[n]`. **The page's own ground is sand** (`pageGround`, equal to
+  `palette[0]`). Its Scheme 1 adds a `sem` key and a vm key, **`text1`** (`s.text1`, plumbed beside `text3`: maroon and ink set it amber
+  where `text/2` is cream), and the one literal no scheme holds is the footer monogram's `#CE1F1A` (`HL_FOOT_RED`). **Photography** is an
+  eighth shoot of twelve JPEGs (`headliner-*.jpg`: hero, avatar, bio, cover, shots 1–7, the gallery viewer's own picture; 484,700
+  bytes raw), `HEADLINER_PHOTOS` / `HEADLINER_TRACK_ART` / `HEADLINER_VIEWER` / `HEADLINER_COVER` and `SEEDS.Headliner` in `photos.js`;
+  the media player's cover is seeded as track one's art, and **the footer draws no photograph** (no `footer` key, no `footer.image`
+  field). Its **caps are measured at layout 1 per section** (`limits.mjs --themes=7`, `--check` and `--seeds`: 0 failing, 0 over, the
+  heads being the fields that fill their measure first), layouts 2–4 are Grunge's rows written out, and the seeds the sections
+  re-wrote for Headliner (the pricing's head and button, the calendar's head and button, the footer's statement) are seeded in
+  `sectionVm` **and** `fieldSeed`. The calls the sections made on their own are the plan's *For the user* lists, collected in its
+  *Open calls*.
 - **`FIELDS` exposes every key any layout reads. A layout that does not consume a key simply
   ignores it, and the panel hides it**: a field's `in` lists the designs that read it (0-based,
   `arch % designCount` and never the raw `arch`; an array, or an object keyed by template with
@@ -626,7 +676,7 @@ reversing 2026-10-20's "an already-selected section": the `text` cursor shows on
   list two to a row, not in two columns). `fieldShown` is unchanged, since
   the inline editor's universe and `INLINE_OFF` read it. `in` is **measured, not read off the prose**: type into the field and
   see whether the section's HTML moves, canvas and `live`, at all three widths. The header's
-  `in` names all seven templates (Lattice's and Paperback's are measured over their fitted Heroes alone: their cards 2–4 are
+  `in` names all eight templates (Lattice's, Paperback's and Headliner's are measured over their fitted Heroes alone: their cards 2–4 are
   placeholders, so those seats are Lime's twins' rows until a layout pass fits them; Grunge's row measured over its four fitted
   cards, 2026-09-24 — the first measurement with no placeholder card; Editorial's over its four
   fitted cards, 2026-09-30, card 2 having lost the placeholder's `showBadge` and `badgeText`
@@ -635,7 +685,7 @@ reversing 2026-10-20's "an already-selected section": the `text` cursor shows on
   took `showBadge` and `badgeText` off design 1 as Editorial's had, and over fitted card 3,
   2026-10-06, which took design 2 off the kicker and gave `cardLine` a Pop row, the twins' rows
   exactly, and over fitted card 4, 2026-10-07, unchanged — the last placeholder card of any
-  template gone, so every header row but Lattice's and Paperback's is measured over fitted cards). One header row keeps a
+  template gone, so every header row but Lattice's, Paperback's and Headliner's is measured over fitted cards). One header row keeps a
   `'*'`: `cardLine` (JP-061), whose `'*': []` hides it under
   Retro, as `FIELDS.media.cta`'s row does, because only the `HeaderV2`
   block Lime, Grunge, Editorial and Pop share reads it. A field no design reads is deleted, not kept at `in: []`: `bio.statement` and
@@ -771,7 +821,7 @@ reversing 2026-10-20's "an already-selected section": the `text` cursor shows on
   **The categories are the sections on Retro layout 1's Figma page** (`964:58575`), **plus `video`**:
   `tags` and `audio` were removed from the project, every layout, because that page draws none of
   them. `video` was removed with them and came back (`plans/video.md`, user calls 2026-10-27)
-  because the frames draw it at **layouts 2 and 4 of the first five templates** (Lattice's and Paperback's frames draw no video at all, so it stands on the hero's photograph in their tokens when added). It is the one
+  because the frames draw it at **layouts 2 and 4 of the first five templates** (Lattice's, Paperback's and Headliner's frames draw no video at all, so it stands on the hero's photograph in their tokens when added). It is the one
   **layout-bound** category: `NVAR.video = 4` with designs 0 and 2 empty (`videoDesign()` folds them onto
   1 and 3), the sidebar's `LayoutPicker` offers only layouts 2 and 4 (`layoutChoices`), and the setup
   modal's cards 2 and 4 insert it after the media player and cards 1 and 3 drop it (`pickHeader`,
@@ -807,7 +857,7 @@ file is loaded into every session and holds only what is cross-cutting.
 | [`notes/footer.md`](./notes/footer.md) | The footer: `LinksField`, the two derived columns, the Book pill |
 | [`notes/list-editors.md`](./notes/list-editors.md) | The ten repeaters, `BookedField`, `SetsField`, `blankRow`, the seed resolvers |
 | [`notes/photography.md`](./notes/photography.md) | Seeded photography: `SEEDS`, `null` vs absent, the two-slot categories, `FOCUS` (a seed's own crop) |
-| [`notes/templates.md`](./notes/templates.md) | Retro, Lime, Grunge, Editorial, Pop, Lattice and Paperback: the `s.lime` / `s.limeTree` / `s.pop` / `s.lattice` / `s.paperback` blocks, faces, decoration, header families |
+| [`notes/templates.md`](./notes/templates.md) | Retro, Lime, Grunge, Editorial, Pop, Lattice, Paperback and Headliner: the `s.lime` / `s.limeTree` / `s.pop` / `s.lattice` / `s.paperback` / `s.headliner` blocks, faces, decoration, header families |
 
 ## Load-bearing rules from the notes
 

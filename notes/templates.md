@@ -1,4 +1,4 @@
-# The designed templates: Retro, Lime, Grunge, Editorial, Pop, Lattice and Paperback — working notes
+# The designed templates: Retro, Lime, Grunge, Editorial, Pop, Lattice, Paperback and Headliner — working notes
 
 Moved word for word out of `CLAUDE.md`'s *Intentional limits — not bugs* on 2026-09-30, so it
 loads only when a session works on it. "Above" and "below" may point into `CLAUDE.md` or
@@ -701,6 +701,28 @@ have no notes file and are in the plan's *Conventions session 12*.
 The eighth template (`THEMES[7]`, flag `s.headliner`; frames from the *Batch 2* file, Anton display, Inter Tight body, Fraunces Headliner
 serif). **Only layout 1 is designed**, one section at a time; the plan's *Conventions → Settled in session 0* and *Settled in sections 1–11*
 hold the record, and this file keeps what a later session touching a Headliner section needs.
+
+**Its visual language** (the pass closed at the 2026-11-24 sweep; the plan's *Headliner's visual language* is the planning read):
+- **Brutalist and flat, the opposite of Paperback's.** Square corners at every card, field, button and arrow disc (`999` only on a chip or
+  pill tab), 1 px hairlines (`rgba(30,30,30,.18)` on the light grounds, `rgba(238,227,209,.22)` on maroon, teal and ink; unscaled on the
+  canvas), full-bleed colour bands with **straight seams**, no tilt, tape, sticker, confetti, grain, arc or tear, no shadow. The page is the
+  band colours' order: maroon hero, cream bio, maroon media, sand gallery, cream repertoire, teal map, sand pricing, amber calendar,
+  cream form, orange testimonials, `#1E1E1E` footer; the page's own ground (the gutter past 1440) is sand.
+- **Anton set enormous** is the whole personality: the hero's name 267.84 px at 1440, the bio's turned statement 150, the repertoire's count,
+  the map's town, the testimonials' quote. Heads are fitted by `antonEms(w, -0.005)`; labels are Anton 14 to 22 at .02em; body is Inter
+  Tight; **Fraunces Headliner (Light 300, SOFT 0, WONK 1) is the serif**, drawn only where a seeded field is its seat (the bio's lead, the pricing
+  blurb, the calendar's foot line, the footer's tagline).
+- **Art is five shapes** (`headlinerArt.jsx`: the wavy-line field in `HeadlinerWaves` / `HeadlinerWaveField`, `HeadlinerRings`, the ringed
+  numeral, `HeadlinerBlockArrow` and the line arrow, the eye), plus the maroon Anton `“` (type, not art), the footer's red monogram and the
+  shared 46 square arrow button (`headlinerSquare`). **The inks are scheme seats**, read `s.onScheme[n]` where a node stands on another ground
+  (sand `[1].bg`, orange `[1].activeBg`, maroon `[3].bg`, amber `[3].activeBg`, teal `[6].bg`, black `s.activeFg`); the hairlines and a few
+  tints are named literals (`HL_HAIR`, `HL_GAL_HAIR`, `HL_MEDIA_LIT`, `HL_FOOT_RED`).
+- **What the frames draw that the standing removals do not**: the inline nav and wordmark, the hero's tagline, the kicker and location lines,
+  `KM BIO`, `001 · STRUCTURE · BIO_01`, `TOP TRACKS`, `SHOWS / COVERAGE`, `120 MILE RADIUS` and the footer's newsletter and three eyebrows. The
+  testimonials' `REVIEWED 6 DAYS AGO` is the one that *is* drawn, being `quotes.when`'s seed.
+- **Every section is an own tree** (none dresses `s.v0`), standing on `s.headliner` after the seam and handed the seam's `g`; the hero, bio and
+  footer, which own no hook, stand at their section's head. A section whose frame centres its content in a taller box (the media's, the
+  repertoire's and the testimonials') writes `minHeight` plus centring, so more content grows it.
 
 **The header** (`HeadlinerHero`, `EncoreSection.jsx`; own tree, stands at `HeaderV0`'s head):
 - **Stage pattern**: `containerType: inline-size`, `u(v)` = frame px in `cqw`; the table `HEADLINER_HERO` carries each width's numbers
