@@ -3806,19 +3806,23 @@ export const FIELDS = {
       hint: 'One per tile. Layout 1 shows the highlighted one in its viewer; layouts 2 and 4 show it as the large photo beside the others.' },
     // JP-120 (gallery): the eyebrow over the heading, the frames' word, uncased.
     { k: 'kicker',  l: 'Small heading', d: GALLERY_KICKER, in: [0, 3],
-      chars: { Retro: [44, null, null, 49], Pop: [44, null, null, 39], Lattice: [41, null, null, 51], Paperback: [25, null, null, 39], Headliner: [45, null, null, 51], '*': [55, null, null, 51] },
+      chars: { Retro: [44, null, null, 49], Pop: [44, null, null, 39], Lattice: [41, null, null, 51], Paperback: [25, null, null, 39], Headliner: [45, null, null, 51], Backline: [41, null, null, 51], '*': [55, null, null, 51] },
       hint: 'A small line over the heading. Empty by default; type one to show it.' },
     { k: 'heading', l: 'Heading', d: 'See us in action',
       chars: { Retro: [20, 27, 18, 24], Lime: [19, 26, 18, 23], Grunge: [29, 26, 23, 24], Editorial: [16, 26, 11, 20],
         Pop: [16, 27, 15, 20], Lattice: [16, 27, 15, 20], Paperback: [16, 23, 15, 20],
         // Headliner's layout 1 measured (limits.mjs gallery --themes=7 --designs=0: 14 at 1440, where a sample's long word shrinks the two-line head); the seed's 16 is the floor. Layouts 2-4 are Grunge's.
-        Headliner: [16, 26, 23, 24] } },
+        Headliner: [16, 26, 23, 24],
+        // Backline's layout 1 (limits.mjs gallery --themes=8 --designs=0): the seed's own 17 (the probe reads 17 at 1440 and 390, where an eighteenth letter sets a third line / a second one); layouts 2-4 are Pop's.
+        Backline: [17, 27, 15, 20] } },
     // JP-098: the 768 head row's word, the frame's, uncased. `in` cannot name a
     // width, so the hint does. JP-120 (gallery): layout 1's credit line too.
     { k: 'railLabel', l: 'Gallery caption', d: GALLERY_RAIL_LABEL, in: { Headliner: [1], '*': [0, 1] },
-      chars: { Retro: [49, 70], Lime: [55, 64], Editorial: [32, 70], Pop: [49, 70], Lattice: [45, 70], Paperback: [18, 64], '*': [55, 70] },
-      hint: 'The line under your name over the large photo in layout 1, and the label over the small '
-          + 'photos in layout 2, on a tablet only. Left empty, neither is drawn.' },
+      chars: { Retro: [49, 70], Lime: [55, 64], Editorial: [32, 70], Pop: [49, 70], Lattice: [45, 70], Paperback: [18, 64], Backline: [40, 70], '*': [55, 70] },
+      hint: { '*': 'The line under your name over the large photo in layout 1, and the label over the small '
+          + 'photos in layout 2, on a tablet only. Left empty, neither is drawn.',
+        Backline: 'The words on the turned stamp over the large photo in layout 1 (“Contact sheet”), and the label over the small '
+          + 'photos in layout 2, on a tablet only. Left empty, neither is drawn.' } },
     // JP-120 (gallery): two words that head a control or a row standing
     // whatever they say, so an emptied one reads its seed again (venueCta's
     // rule). The row's label prints at desktop alone, so the hint says so.
@@ -3826,10 +3830,11 @@ export const FIELDS = {
       hint: 'The link over the large photo that goes back to the first one. Left empty, it shows '
           + '“Back to beginning” again.' },
     { k: 'sourceLabel', l: 'Social links heading', d: GALLERY_SOURCES[0].l, in: [0],
-      chars: { Retro: [42], Lime: [49], Grunge: [58], Editorial: [37], Pop: [50], Lattice: [25], Paperback: [36], Headliner: [17] },
+      chars: { Retro: [42], Lime: [49], Grunge: [58], Editorial: [37], Pop: [50], Lattice: [25], Paperback: [36], Headliner: [17], Backline: [18] },
       hint: { '*': 'The first row, above YouTube, Instagram and TikTok, on desktop only. Left empty, it '
           + 'shows “Gallery” again.',
-        Headliner: 'The first row, above YouTube, Instagram and TikTok, at every width. Left empty, it shows “Gallery” again.' } },
+        Headliner: 'The first row, above YouTube, Instagram and TikTok, at every width. Left empty, it shows “Gallery” again.',
+        Backline: 'The first row, above YouTube, Instagram and TikTok, at every width. Left empty, it shows “Gallery” again.' } },
     { k: 'youtube',   l: 'YouTube link', type: 'url', d: '', in: [0],
       hint: 'A video, short or playlist link plays inside the section when the YouTube row is clicked on the '
           + 'published page; any other YouTube address opens in a new tab. Leave empty and it stays a picture. Layout 1 only.' },
