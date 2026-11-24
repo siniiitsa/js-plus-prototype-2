@@ -4888,7 +4888,10 @@ export const IDENTITY_CHARS = {
       Paperback: [41, 10, 12, 30],
       // Headliner's layout 1 (limits.mjs media --themes=7 --designs=0): the player's artist line, one ellipsised line,
       // holds 65 / 65 / 50; the others are Grunge's until their passes.
-      Headliner: [50, 11, 21, 31] },
+      Headliner: [50, 11, 21, 31],
+      // Backline's layout 1 (limits.mjs media --themes=8 --designs=0, 2026-11-24): the player's artist line, one ellipsised line in the title block
+      // (236 / 269 / 190 wide), holds 33 / 37 / 26; the others are Pop's until their passes.
+      Backline: [26, 11, 13, 31] },
   },
   pricing: {
     seal: { Grunge: [14] },
