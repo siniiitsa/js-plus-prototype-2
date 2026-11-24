@@ -792,3 +792,39 @@ hold the record, and this file keeps what a later session touching a Headliner s
 - A red `#CE1F1A` 40 square monogram (`vm.footerMono`: the first three letters of the name's first and last word, composed in `sectionVm`; hidable by the footer's `showBadge`) beside the name in Anton, the **tagline in Fraunces Headliner 300 in the `statement`'s seat** (seeded per template: `FOOTER_STATEMENT_HEADLINER`), the two derived link columns in Anton 20 where the frame has three, a sand `HeadlinerPill` Book button in the newsletter's seat, and the rule over the copyright and the credit. The newsletter and the three eyebrows are not drawn; their seats stay as padding.
 - Caps: statement 59, link label 18, button 41, copyright 39, name 31.
 
+
+## Backline (plans/backline/layout-1.md, 2026-11-24 on)
+
+The ninth template (`THEMES[8]`, flag `s.backline`; frames from the *Batch 2* file, "Backline Evolved — Claude Design", display **TT2020 Base** (a self-hosted
+typewriter face, OFL), labels **Archivo Backline** (Archivo's wdth 75 / wght 700 alias), body Inter). **Only layout 1 is designed**, one section at a time; the plan's
+*Conventions → Settled in session 0* and *Settled in sections 1–11* hold the record, and this file keeps what a later session touching a Backline section needs.
+The frames bind no variables (each section's only fill is a grain raster), so every colour is sampled from a render, and the file's two ink literals are
+`#23240F` (ink) and the scrim's `rgba(35,36,15,·)`.
+
+**The header** (`BacklineHero`, `EncoreSection.jsx`; own tree, hookless, standing at `HeaderV0`'s head on `s.backline`):
+- **Stage pattern**: a `containerType: inline-size` stage inside a root that is an `aspectRatio` box (975.297 / 914.4375 / 880 by 1440 / 768 / 390); `u(v)` is the frame
+  px in `cqw`, so desktop is the frame × 0.82 on the 1180 canvas by that alone. `vm.heroH` is 914.44 at 768 and 880 at 390 (`sectionVm`, Backline's header layout 1 only); desktop
+  is `975.297 × 0.82 = 799.74`, which the hero computes itself (`WIDE.heroH`, 614, is the other templates'). The photograph, wash, scrim and tear hang off the **root**, not the
+  surplus-inset stage, so a published window wider than the frame carries them to its edges (the tear stretches in x there: a desktop contour at the window's width).
+- **The picture is four layers, in the frame's order**: the photograph (`<Photo>`, imported whole: the crop editor edits the picture), the **wash** (a `#4C4E29` layer,
+  `mix-blend-mode: color`, opacity .55: the frame's `blend-color`), the **scrim** (the frame's two gradients: ink at .82 / .25 / .55 across, .9 up the foot to 55 %), then the tear. The wash and
+  the scrim are `pointer-events: none` (the photo probe's "a scrim lets the click through"). Rendered against the frames' pictures the three widths agree to 1 level everywhere
+  the removed LP ticket and polaroid are not.
+- **The tear** is `BacklineTear` (`tear="head"`, `flip`, the bio's paper `s.onScheme[1].bg`, `tone="paper"`), 88 tall and 1 px past the foot as the frame stands it. **The narrow tears are
+  the desktop contour cropped from the left at 1:1, not squeezed** (correlation 1.000 / 0.995 against the first 768 / 390 columns; squeezed it is about 0): a narrow hero draws the svg `u(1440)` wide and lets the
+  root clip it. A section after this one that draws a tear does the same.
+- **The bar** is the hamburger (`HeadlinerBurger`, whose path is the frame's byte for byte, reused) and `BacklinePill` (a mustard rectangle, 46 tall, 1 px border in its own colour, Archivo Backline 14 +.06em in ink; `bg` /
+  `ink` / `as` / `tagProps` / `style` as `HeadlinerPill`'s, for the later sections' buttons). The standing rule holds: hamburger left, Book Now right, at every width. The open menu (`MenuPanel`) gets a Backline arm: olive
+  ground, the pill, and the links in TT2020 lower-case at 1.7 × `bodyLg` (no frame draws it).
+- **The name** is one run in TT2020 at 201.6 / 125 / 61 frame px, lh 0.82, tracked −0.045em, **lower-cased by CSS** (call 4: a stored `Kai Mercer` renders `kai mercer`), cream (`s.tx`), anchored at the foot (the chip row's foot
+  stands 136 / 109 / 82 above the hero's; name → chips 18). It fits by the header-fit machinery: `TITLE_SITES.Backline` and `ttEms` (monospaced: 0.547 − 0.045 = **0.502 em a character, no table**),
+  the last word carrying the dot's cell, so a long name wraps between words, grows upward and sets down to the half-size floor. **The dot is not text**: an inline-block of the face's advance with a 0.134 em
+  disc on the baseline (`radial-gradient`), inside a `nowrap` span with the last word, so a wrap never strands it and the title slot's copy is exactly the name. Its colour is the frames': **olive `#4C4E29` at 1440, mustard `#D4BE1E` at 768 and 390**
+  (the 1440 master binds `sem/tag/7/bg`, the narrow ones a literal).
+- **The six chips** take `s.onScheme[2].chips[6, 1, 2, 3, 5]` (ink / mustard / moss / `#363719` / beige, with `tagFg`) and a dashed cream outline for the sixth: 26 tall, 10 padding, Archivo Backline 12 +.06em, the **ticket notch**
+  (`backlineNotch`, `backlineArt.jsx`: four radial gradients, a 5 px bite out of each corner, any width). Scheme 2's seat 3 was inferred `#2F3019` and is now the sampled `#363719`.
+- **Not drawn** (call 1 A, 2026-11-24): the wordmark and six inline links, `NEXT STOP · GORILLA, MANCHESTER · 30.08`, the LP ticket (call 2 A), the polaroid avatar, the act type and the location; no seal, no grain over the
+  photograph (the frame's grain is under it and covered). The chips' labels are the seeded `TAG_LABELS`, not the frame's (`Default / Sold out / New release / Archive / Live / All access`).
+- Picker: `TemplatePreview` passes `fit` for Backline too (user call, 2026-11-24, "Fit, Backline only"), since a 799.74-tall hero outgrows the 1180 × 614 card.
+- Data (section 1, 2026-11-24): the header's eight `in` rows were Headliner copies and are re-measured (`reach.mjs 8`): `badgeMode` and `badgeText` read design 3 alone (layout 1 draws no seal), `cardLine` gains `Backline: [2]`, `avatar` has `in: { Backline: [1, 2, 3] }`, the rest held. Caps: title `[67, 80, 80, 80]`, tags and button as the `'*'` rows. `INLINE_OFF`: `Backline.0.header.kicker`, `.location` (not drawn) and `.cta1` (the canvas's hover toolbar covers the pill's words at the desktop canvas; per design, so tablet loses it too). **A hero that prints copy in the top-right 110 × 50 px of its section is under that toolbar at the desktop canvas.**
+- Scheme 2's seat 3 (`tags`) is the sampled `#363719`; `ttEms` and `TITLE_SITES.Backline` are in `data.js`; `backlineNotch` (a ticket-notched chip) is in `backlineArt.jsx` and `BacklinePill` (the template's one button) in `EncoreSection.jsx`.

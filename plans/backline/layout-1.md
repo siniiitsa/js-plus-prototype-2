@@ -107,7 +107,7 @@ measuring (open question 4).
 | # | Cat | Desktop node | Size | Tablet node | Size | Mobile node | Size | Composition (from the pictures) · predicted twin | Status |
 |---|---|---|---|---|---|---|---|---|---|
 | 0 | *foundation* | `1:5541` | — | `1:17363` | — | `1:18697` | — | `THEMES[8]`, ramp, faces, photos, the flag, the torn-seam / grain / tape / stamp art | |
-| 1 | `header` | `1:5543` | 1440 × 975.30 | `1:17365` | 768 × 914.44 | `1:18699` | 390 × 880 | **Full-bleed photograph, duotoned olive** (a four-man band on a moor, under a dark olive wash), no band colour of its own. Top bar: `kai mercer.` wordmark left (TT2020 48, the `.` in olive `#4c4e29`; at 768 / 390 a smaller wordmark), **six inline links** centred at 1440 (`About · Top Tracks · Media · Repertoire · Shows · Pricing`, Archivo Condensed Bold 14, upper-case), a **mustard `BOOK NOW` rectangle** at the right (at 768 and 390 the links are gone and a **hamburger** stands right of `BOOK NOW`). Under it a pin icon + `NEXT STOP · GORILLA, MANCHESTER · 30.08`. Right, **a tilted cream "LP" ticket** (taped, notched, barcode: `ADMIT ONE · NEW LP`, `hidden sessions vol. 2` in TT2020 with `vol. 2` in olive, `OUT NOW — ALL PLATFORMS`, `LP`, `NO. 000412`), at 1440 over the right figure's shoulder, at 768 / 390 wider and over the middle of the photograph. Left foot: a **polaroid avatar** (white keyline, tilted) beside `DJ · LIVE ACT / MANCHESTER, UK`; under it **`kai mercer` at ~ 150 px TT2020, one line, cream, with a mustard-olive `.`**; then **six ticket-notched chips** (`DEFAULT` plain, `SOLD OUT` mustard, `NEW RELEASE` moss, `ARCHIVE` dark olive, `LIVE` pale, `ALL ACCESS` dashed outline). A **torn paper foot** (cream) closes the section · **Retro's / Grunge's `HeaderV0` (photo, name, chips, seal seat) is the nearest relative; the ticket, polaroid and torn foot decide whether it is an own tree** — read both, then decide | |
+| 1 | `header` | `1:5543` | 1440 × 975.30 | `1:17365` | 768 × 914.44 | `1:18699` | 390 × 880 | **Full-bleed photograph, duotoned olive** (a four-man band on a moor, under a dark olive wash), no band colour of its own. Top bar: `kai mercer.` wordmark left (TT2020 48, the `.` in olive `#4c4e29`; at 768 / 390 a smaller wordmark), **six inline links** centred at 1440 (`About · Top Tracks · Media · Repertoire · Shows · Pricing`, Archivo Condensed Bold 14, upper-case), a **mustard `BOOK NOW` rectangle** at the right (at 768 and 390 the links are gone and a **hamburger** stands right of `BOOK NOW`). Under it a pin icon + `NEXT STOP · GORILLA, MANCHESTER · 30.08`. Right, **a tilted cream "LP" ticket** (taped, notched, barcode: `ADMIT ONE · NEW LP`, `hidden sessions vol. 2` in TT2020 with `vol. 2` in olive, `OUT NOW — ALL PLATFORMS`, `LP`, `NO. 000412`), at 1440 over the right figure's shoulder, at 768 / 390 wider and over the middle of the photograph. Left foot: a **polaroid avatar** (white keyline, tilted) beside `DJ · LIVE ACT / MANCHESTER, UK`; under it **`kai mercer` at ~ 150 px TT2020, one line, cream, with a mustard-olive `.`**; then **six ticket-notched chips** (`DEFAULT` plain, `SOLD OUT` mustard, `NEW RELEASE` moss, `ARCHIVE` dark olive, `LIVE` pale, `ALL ACCESS` dashed outline). A **torn paper foot** (cream) closes the section · **Retro's / Grunge's `HeaderV0` (photo, name, chips, seal seat) is the nearest relative; the ticket, polaroid and torn foot decide whether it is an own tree** — read both, then decide | done ec62589 (+ e7095b8) |
 | 2 | `bio` | `1:5665` | 1440 × 824 | `1:17466` | 768 × 1066 | `1:18797` | 390 × 1256 | **Paper** (`#F5F6E8`, grained). Left: `01 ┈┈ KM BIO` eyebrow, a **round olive stamp seal** (`MANCHESTER ★ DJ · SELECTOR` on a ring, `est. 21` inside), and bottom-left a `001` notched chip + a dashed-box `STRUCTURE · BIO_01`. Centre: a **vertical TT2020 statement `reads the room.`** in two rotated columns (ink, with an olive `.`), the second column **overlapping the photograph's left edge**; a **tilted taped polaroid portrait** (a beige keyline, a tape strip top, a second tape strip at the foot-right). Right: a TT2020 lead (`DJ and selector from Manchester. Five years of reading rooms — chosen by the room, never the algorithm.`, with **a hand-drawn olive underline under `reading rooms`**), a **dashed rule**, `ABOUT` (Archivo Condensed, olive) + a small TT2020 paragraph, and a **black `FULL BIO →` button** · **own tree** (nothing in Grunge's / Retro's bio turns a head under a taped polaroid) — confirm | |
 | 3 | `media` | `1:5736` | 1440 × 1057 | `1:17534` | 768 × 1376.72 | `1:18870` | 390 × 1205.72 | **Dark olive** with a torn cream head; `02 ┈┈ TOP TRACKS`; **`five worth` at ~ 100 px cream TT2020** (the frame's head is two words, with a faint ghost of a third behind it); `5 / 5 FEATURED` at its foot-right. Left: **five dashed-rule rows** (number, a **tilted polaroid cover**, a TT2020 title + a small TT2020 sub, the time in Archivo Condensed, an **outlined square play button**); **row 2 is lit**: mustard number, **a mustard hand-drawn strike-through over the title**, a **mustard-filled play button**; an outlined `SOUNDCLOUD →` button. Right: **a tilted taped ticket player card** (`NOW PLAYING`, `SIDE A · 02`, `TRACK`, a polaroid photograph, a barcode column, `night rain` in TT2020, `KAI MERCER` in olive, three transport squares with an olive-filled play, `02:28 ▬▬ 04:22`, `NO. 000227`) · **Retro's `v0` media** (list + player) or Grunge's, re-dressed — the inventory matches; confirm | |
 | 4 | `gallery` | `1:5934` | 1440 × 902.42 | `1:17730` | 768 × 1350.88 | `1:19066` | 390 × 931.31 | **Paper** with a torn olive head; `03 ┈┈ MEDIA`; **`see us in action.`** in two TT2020 lines (the second olive, with its `.`); **four accordion rows**: the open `gallery` row **a filled ink bar with notched ends**, the others **dashed-outline ticket rows** (`youtube`, `instagram`, `tiktok`), each with a two-digit index (`01…04`) at the right; right: an outlined `BACK TO BEGINNING ←` button, **a rotated outlined `CONTACT SHEET` stamp**, a **tilted taped photograph** with a white square arrow and a mustard square arrow in its foot-right, and **a dark film strip of seven thumbnails** · **Lime's *Photo viewer* inventory** (source rows + viewer + strip), as every earlier template read it | |
@@ -528,6 +528,9 @@ nodes before trusting a number.
   890, 972 (read off the 1440 picture: measure the exact positions). The ticket is tilted about **+4°** at 1440 and wider at 768 / 390 (it sits left of centre, across the
   middle figure, at 768 and 390); the name sits at the foot-left over the darkest part of the wash, so **its contrast
   is the photograph's wash**. At 390 the six chips wrap to two rows and the ticket's title wraps to two lines.
+  **Verdict (section 1): a new own-tree block, `BacklineHero`**, standing at `HeaderV0`'s head on `s.backline` (hookless, so before the seam; it dresses neither Retro's nor Grunge's `s.v0`: the
+  olive-washed photograph, the notched chips and the torn foot are drawn by nothing in either). Read at the frames: the LP ticket, the polaroid and `NEXT STOP` are removed (calls 1 and 2), so the hero is
+  photograph, bar, name, chips and tear, and no tilted card stands in this section (the first is the bio's polaroid).
 - **bio (2).** The vertical statement is **two rotated columns of one string** (`reads the` / `room.`), turned
   counter-clockwise, the second **overlapping the photograph's left edge by ~ 90 px** with the olive `.` above it; the
   photograph is *under* the letters. Verify at 768 / 390 whether it stays turned. The stamp's ring text and the
@@ -677,3 +680,93 @@ editor, the setup modal offers four header cards (*Full photo*, *Side by side*, 
 published page; `page-check.mjs Backline 0` walked to the published tab with no console error). `cardOnPage` for the form is
 the form section's to set. **Before pictures:** the eleven sections (and the video) at `theme=8` desktop, `shots.mjs before-bl`,
 are in the session's scratchpad.
+
+### Settled in section 1 — the header
+
+*(2026-11-24; `BacklineHero`, `EncoreSection.jsx`; the notes are in `notes/templates.md` *Backline*.)*
+
+- **The tear question is answered: the 768 and 390 tears are the desktop contour cropped from the left at 1:1, not squeezed.** The
+  narrow masters' 88-tall rasters correlate 1.000 (768) and 0.995 (390) with the first 768 / 390 columns of the desktop contour and
+  about 0 with it squeezed. `backlineArt.jsx`'s old *Open for section 1* is now a SETTLED note: the caller draws the svg `u(1440)` wide
+  (frame px, left-anchored) and the root clips it; desktop draws it at the band's width. **Every later section that draws a tear does
+  the same**, with the contour its own desktop master carries (four are traced).
+- **The stage.** `BACKLINE_HERO` (`desktop {fw 1440, h 975.297, gut 48.96, foot 136, name 201.6}`, tablet `{768, 914.4375, 26.11, 109,
+  125}`, mobile `{390, 880, 24, 82, 61}`), `u(v)` in `cqw`, the frame's numbers at all three widths. The root is an `aspect-ratio` box
+  (`maxHeight` = `s.heroH` narrow, 975.297 × 0.82 on the desktop canvas); `vm.heroH` is 914.44 / 880 at the two narrow widths for
+  Backline's header layout 1. **The photograph, wash, scrim and tear hang off the root** (not the surplus-inset stage), so a window
+  wider than the frame carries them to its edges; the name, chips and bar stand in the stage (`left` / `right: s.surplus`). Checked at
+  1900: picture and tear reach the edges, content stays on the gutter.
+- **The photograph** is the sepia source imported whole (`<Photo>`, `data-photo`), with the olive wash as **markup**:
+  `#4C4E29`, `mix-blend-mode: color`, opacity .55 (the frame's `blend-color` layer), then the two scrim gradients in ink
+  `35, 36, 15` (`BL_INK`). **Wash and scrim are `pointer-events: none`**, or `photoFieldAt` is blocked. Against the frames' renders the
+  three widths agree to about one level except under the removed LP ticket and polaroid.
+- **The name** is one wrapping run in TT2020 (`s.display`, weight 400), lower-cased by CSS, cream, tracking −0.045 em, line-height .82,
+  anchored at the foot so a longer name grows upward; the last word and the dot stand in one `nowrap` span. **`ttEms(text, track)`
+  (`data.js`) is TT2020's width: monospaced, 0.547 em an advance, 0.502 em tracked**, so no table. `TITLE_SITES.Backline[0]` is
+  `TS([165.31, 125, 61], 0.82, [1, 1, 1], [1100.5, 715.77, 342], [799.74, 914.44, 880])` and the header-fit block takes `ttEms` for
+  Backline with the dot's cell on the last word (`EncoreBuilder.jsx`). **The dot is not text**: a 0.547 em inline-block with a
+  0.134 em radial-gradient disc, so the title's text is exactly the name (the inline slot, the focus box and the h1 all match it).
+  **Its colour differs by master**: olive `#4C4E29` at 1440 (`sem/tag/7/bg`), mustard `#D4BE1E` at 768 and 390 (a literal there);
+  the code follows each master (see *For the user*).
+- **Chips.** The six seats read off the renders: ink `chips[6]`, mustard `[1]`, moss `[2]`, dark olive `[3]`, beige `[5]`, and a dashed
+  cream outline for the sixth; 26 tall (the dashed one 28), padding 10, gap 8, wrapping; the **ticket notch** is
+  `backlineNotch(colour, r)` (four radial gradients, a 5 px bite per corner, any width: new in `backlineArt.jsx`).
+  **Scheme 2's `tags` seat 3 is corrected** from the inferred `#2F3019` to the sampled `#363719`.
+- **The bar** is `HeadlinerBurger` (the frame's path, reused) and **`BacklinePill`** (new; `s, label, to, ext, u, bg, ink, as, tagProps,
+  style`; a mustard rectangle, 46 tall, 1 px border in its own colour, Archivo Backline 700 14 px, .06 em, uppercase): the section
+  buttons to come reuse it. `MenuPanel` has a Backline arm (olive ground, the pill, links in TT2020 lower-case at 1.7 × `bodyLg`: no
+  frame draws the open menu), and `menuColours` takes `s.backline`.
+- **Picker.** `TemplatePreview` passes `fit` for Backline too (user call, 2026-11-24).
+- **Data.** `reach.mjs 8` over the header (1,008 renders, 2026-11-24): `badgeMode` / `badgeText` `Backline: [3]` (no seal at layout 1),
+  `cardLine` `Backline: [2]` (Headliner's row never took it; placeholders 2–4 print it), `heroCta` / `faceTitle` / `faceBody` `[1]`,
+  `tags` / `showTags` `[0, 2, 3]`, `align` none: **all held except those three**. `avatar` got `in: { Backline: [1, 2, 3] }` (a sentinel
+  moves layouts 2–4 only), instead of a `PHOTO_OFF` row. **Caps** (`limits.mjs header --themes=8 --designs=0 --sweep`, `--check`,
+  `--seeds`: 0 failing, 0 over): title 67 (`[67, 80, 80, 80]`: 67 at 1440 where a longer name sets past the half-size floor; 80 open at
+  768 and 390), tags 22 a chip and 8 chips (the `'*'` rows already held), button 16 (the probe reads 37).
+  **A `limits.mjs` run over all three widths can print `mobile – (unseen)` for the title under load; the same key at `--widths=mobile`,
+  or any pair, reads 80 open.**
+- **Ledger.** `INLINE_OFF`: `Backline.0.header.kicker`, `.location` (not drawn) and **`.cta1`** (see *For the user*). No `PHOTO_OFF` row.
+- **Proofs (all `theme=Backline`, layout 1, sequential):** `inline-probe --cat header --width 1440,768 --check` PASS (7 / 8 slots hit,
+  0 WRONG, 0 UNREACHED, 0 dead click, 3 off); `photo-probe --check`, `--blank`, `--drop` PASS (1 slot, 2 clicks, no MISSING); `focus-probe
+  --prime --check` PASS (10 controls, 0 failing); `page-check.mjs Backline 0,1,2,3`: no console error, the live menu opens with nine
+  links and Book Now → `#form` at 1440, the 390 burger works; the four setup-modal cards render and publish; `npm run build` clean.
+- **The exit criterion, proved.** Old commit `e96e291` (a git worktree on :5176) against the working tree (:5173), every category × layout
+  × 3 widths at `theme=0…7`, 1,152 renders each. After normalising the port and the Vite `?t=` stamp (cut by the 40-character cell to
+  `?t`, `?t=` or a bare `?`), **117 files differ by sub-pixel layout noise only, and none beyond 0.25 px except three Paperback
+  map matrices at 0.008 px**: all in themes 6 and 7 (Paperback, Headliner), none in a Backline-touched path. **The control**: the old
+  commit's theme 6 run twice against itself differs in the same 66 files (of 144) and the same three matrices, so it is the
+  measurement's own jitter, not the change. A byte-exact zero needs a tolerance of 0.25 px on numeric cells.
+
+### Conventions section 2 (the bio) inherits
+
+- **Build the stage the hero's way**: a `BACKLINE_BIO` table, `containerType: inline-size`, `u(v)` in `cqw`, the frame's px at all three
+  widths, vertical insets in a child, `vm.pad = '0px <surplus>'` (the line in `EncoreBuilder.jsx` that names the ten sections that share
+  it needs Backline's bio added).
+- **Tears**: `BacklineTear` with the neighbour's colour and the contour of the section's own desktop master, cropped from the left at
+  1:1 at the narrow widths (above). **Grain** is `BacklineGrain` with `GRAIN_OPACITY` by ground; the hero draws none.
+- **Pieces now in the kit**: `BacklinePill` (buttons), `backlineNotch` (a ticket-notched chip), `ttEms` (TT2020 widths; `TITLE_SITES`
+  for a fitted head). Still to add by the section that draws them: tape, stamps, the barcode and the hand marks.
+- **Seats**: the bio stands on the theme's own Scheme 1 (paper `#EAECD7`); the tear under the hero is cut from it
+  (`s.onScheme[1].bg`). Nested seats read `s.onScheme[n]`; the frames bind no variables, so every colour is sampled from a render.
+- **Face rules**: TT2020 is monospaced and tracked −0.045 em at every size; the Archivo label face is `s.label` (700, .06 em, uppercase).
+  Lower-case the display copy by CSS (`textTransform: 'lowercase'`), never in the data.
+- **Probes**: the canvas's hover toolbar sits at the section's top-right (right 8, top 8, ~100 wide): copy printed within ~110 px of the
+  right edge and 50 px of the top of a section is covered at the desktop canvas, and `inline-probe` slides along the words but cannot
+  find a free part when the words are narrower than the toolbar. Place nothing editable there, or ledger it as the header's Book pill is.
+- **Measuring**: a `reach.mjs` / `limits.mjs` run next to a digest on the same server starves it (navigation timeouts): run them one
+  after the other; for `reach.mjs` the `domcontentloaded` wait with a 300 ms settle and a retry on `Timed out` is what finished.
+
+### For the user (section 1)
+
+1. **The dot's colour follows each master: olive at 1440, mustard at 768 and 390.** Two readings of the file; one colour at all three
+   widths is a one-line change if the olive is an accident of the desktop master.
+2. **The chips print the seeded `TAG_LABELS`**, not the frame's `Default / Sold out / New release / Archive / Live / All access`
+   (the shared seeds hold six chips and the labels are the artist's). The seats and notches are the frame's.
+3. **The open menu's links** (TT2020 lower-case, 1.7 × the body size) are not drawn by any frame.
+4. **The name wraps and shrinks** (the fit machinery, floor 50 %, then a character cap of 67) instead of the frame's strict single line.
+5. **No grain over the hero photograph**: the frame's grain is under the wash and covered.
+6. **Scheme 2's seat 3 is the sampled `#363719`**, not the inferred `#2F3019`.
+7. **`header.cta1` (Book Now) is not editable on the canvas** (`INLINE_OFF`): the frame sets the pill 49 px in from the edge and the
+   canvas's own toolbar covers its words at the desktop canvas. The ledger is per design, so the tablet canvas, which would reach
+   it, loses it too; the panel edits it. Options: move the toolbar, or accept as is.
+8. **Picker fit** was approved (*Fit, Backline only*).
