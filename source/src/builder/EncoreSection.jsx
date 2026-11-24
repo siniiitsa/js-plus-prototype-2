@@ -2369,14 +2369,16 @@ const HL_HAIR = 'rgba(238,227,209,0.22)'
 
 // Book now (1:4501): a square orange button, Anton 16 tracked .02em, the arrow 14 to the right of the label.
 // The pricing cards' three buttons (1:5117 · 1:5158 · 1:5199) are the same box in another ground and ink: `bg` and `ink` override the orange.
-function HeadlinerPill({ s, label, to, ext, u, bg = s.onScheme[1].activeBg, ink = s.onScheme[1].activeFg }) {
-  const link = ext !== undefined ? extLink(s, ext) : s.live && to ? { href: `#${to}` } : null
-  const Tag = link ? 'a' : 'span'
+// The enquiry form's submit is the seam's own element (`as`: the `<a href="mailto:">`, the refusing `role="button"` or the inert span) with its props
+// (`tagProps`), so the pill is one box for every reader; `style` is the caller's last word.
+function HeadlinerPill({ s, label, to, ext, u, bg = s.onScheme[1].activeBg, ink = s.onScheme[1].activeFg, as, tagProps, style }) {
+  const link = as ? tagProps : ext !== undefined ? extLink(s, ext) : s.live && to ? { href: `#${to}` } : null
+  const Tag = as ?? (link ? 'a' : 'span')
   return (
     <Tag {...link} style={{
       ...row(u(14)), flex: 'none', height: u(46), boxSizing: 'border-box', padding: `0 ${u(18)}`, cursor: 'pointer', textDecoration: 'none',
       background: bg, border: `1px solid ${bg}`, color: ink, whiteSpace: 'nowrap',
-      fontFamily: s.label, fontWeight: 400, fontSize: u(16), letterSpacing: '0.02em', textTransform: 'uppercase', lineHeight: 'normal',
+      fontFamily: s.label, fontWeight: 400, fontSize: u(16), letterSpacing: '0.02em', textTransform: 'uppercase', lineHeight: 'normal', ...style,
     }}>
       {label ?? s.cta1}
       <svg aria-hidden viewBox="0 0 16 14" fill="none" style={{ display: 'block', width: u(16), height: u(14), flex: 'none' }}>
@@ -31264,6 +31266,183 @@ function PaperbackForm({ s, g }) {
   )
 }
 
+// Headliner's layout-1 form (plans/headliner/layout-1.md, section 9; frames 1:5385 · 1:16159 · 1:17207, 714.05 / 1066.11 / 1309.13 tall): one flat square card, 48.96 / 26.11 / 24 in
+// from the edges of the cream page and nothing centred in a taller box (96 / 76.99 / 58 round it), a maroon context panel and a sand form half side by side at 1440 (447.344 | the
+// rest) and stacked at 768 and 390. No radius, no shadow, no bubble and no wave field. The panel: a 52 square avatar beside the name and the role, the head in Anton (64 / 48 / 38,
+// orange, broken by measure: at 1440 its last word overhangs the content box by about 11) and three promises on hairlines with amber numerals; at 1440 the panel is stretched to
+// the form half and the list is foot-anchored (26 is its floor), at 768 and 390 it is its own height. The form half: four 50-tall 1 px outlined squares on cream (two to a row on a 20 gap,
+// one column at 390), an `Event type` legend over 40-tall pill chips (the lit one `#1E1E1E`), a 90-tall message box and the orange `Book now`. The typed boxes, the chip, the mailto, the
+// refusal and the sent state are `EnquiryForm`'s, handed over in `g`; nothing here is a hook and there is no <form>, ever (notes/form.md).
+const HEADLINER_FORM = {
+  desktop: { fw: 1440, top: 96, side: 48.96, panelW: 447.344, px: 40, py: 40, rowGap: 18, pair: 20, head: 64, room: 393.344, sentH: 442.05 },
+  tablet: { fw: 768, top: 76.99, side: 26.11, px: 30, py: 34, rowGap: 18, pair: 20, head: 48, room: 655.766, sentH: 442.05 },
+  mobile: { fw: 390, top: 58, side: 24, px: 20, py: 28, rowGap: 28, pair: 28, head: 38, room: 302, sentH: 729.44 },
+}
+function HeadlinerForm({ s, g }) {
+  const { at, setAt, msg, setMessage, ti, setType, showTypes, errs, msgBad, sent, setSent, Pill, pillLink, onSubmit, cp, pid } = g
+  const dev = s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop'
+  const P = HEADLINER_FORM[dev]
+  const desk = dev === 'desktop'
+  const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
+  const O = s.onScheme
+  const cream = O[2].bg         // the page, and every box's ground, #F8F2E7
+  const sand = O[1].bg          // the form half, and the lit chip's type, #EEE3D1
+  const orange = O[1].activeBg  // the head and the button, #F85E34
+  const maroon = O[3].bg        // the context panel, and a refused box's ring, #760000
+  const amber = O[3].activeBg   // the role line and the numerals, #F8A351
+  const ink = O[2].text1        // the outlines, the labels and the lit chip's ground, #1E1E1E (the seat's own text1)
+  const black = s.activeFg      // the sent state's head, #020202
+  const anton = (size, extra) => ({ fontFamily: s.label, fontWeight: 400, fontSize: size, lineHeight: 'normal', letterSpacing: '0.02em', textTransform: 'uppercase', ...extra })
+  const ui = (size, extra) => ({ fontFamily: s.body, fontWeight: 400, fontSize: size, lineHeight: 'normal', letterSpacing: '-0.015em', ...extra })
+
+  const label = (t, extra) => <span style={anton(u(14), { display: 'block', lineHeight: u(14.6875), color: ink, ...extra })}>{t}</span>
+  // One box, drawn once for both modes: a 1 px ring of ink on cream, square. A refused box changes colour as well as weight (no palette has a red, and the idle ring is already full
+  // ink): the ring and a 1 px inset in the panel's maroon, 2 px in all, which the 50 holds.
+  const box = (bad, extra) => ({
+    boxSizing: 'border-box', width: '100%', margin: 0, height: u(50), padding: `0 ${u(14)}`, outline: 'none', borderRadius: 0,
+    border: `1px solid ${bad ? maroon : ink}`, background: cream, color: ink, boxShadow: bad ? `inset 0 0 0 1px ${maroon}` : undefined,
+    ...ui(u(16)), ...extra,
+  })
+  // The canvas draws a hint at `::placeholder`'s .45 (index.css), which is what the live box draws; the frame's #757575 is about .59 of the ink (a call, the repertoire's search).
+  const hint = (t) => <span style={{ opacity: 0.45, minWidth: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t}</span>
+
+  const field = (f, i) => {
+    const bad = !!(errs && errs.f[i])
+    return (
+      <div key={i} style={col(u(8), { minWidth: 0 })}>
+        {label(f.label)}
+        {s.live ? (
+          <input
+            {...cp(i)}
+            value={at(i)} placeholder={f.placeholder} aria-label={f.label}
+            onChange={(e) => setAt(i, e.target.value)}
+            type={f.kind === 'email' ? 'email' : 'text'}
+            inputMode={f.kind === 'number' || f.kind === 'date' ? 'numeric' : undefined}
+            aria-invalid={bad || undefined}
+            style={box(bad)}
+          />
+        ) : (
+          <span style={box(bad, { display: 'flex', alignItems: 'center' })}>{hint(f.placeholder)}</span>
+        )}
+      </div>
+    )
+  }
+  const fieldRow = (fs, r) => (
+    <div key={r} style={{ display: 'grid', gap: u(P.pair), gridTemplateColumns: s.mob ? 'minmax(0, 1fr)' : 'repeat(2, minmax(0, 1fr))' }}>{fs.map((f, j) => field(f, r * 2 + j))}</div>
+  )
+
+  const submit = (extra) => (
+    <HeadlinerPill s={s} u={u} label={s.formBtn} as={Pill} tagProps={{ ...pillLink, onClick: onSubmit }} style={{ cursor: onSubmit ? 'pointer' : undefined, ...extra }} />
+  )
+
+  // The panel. The head wraps at the content box and keeps a word whole past it (the frame's `UNFORGETTABLE.` overhangs the 367.344 by about 11 at 1440): it is fitted to its widest
+  // word against `room` (`s.titleWordEms`, Anton's ems at -0.005em), so a longer word shrinks the type instead of breaking.
+  const nameLine = String(s.brand || '').trim()
+  const roleLine = String(s.kicker || '').trim()
+  const hasHead = !!String(s.title || '').trim()
+  const panel = (
+    <div style={col(0, { boxSizing: 'border-box', minWidth: 0, background: maroon, padding: `${u(P.py)} ${u(P.px)}` })}>
+      <div style={row(u(14), { minWidth: 0 })}>
+        <span style={{ width: u(52), height: u(52), flex: 'none', overflow: 'hidden', display: 'block' }}>
+          <Photo s={s} ink={sand} initialsSize={Math.round(20 * (desk ? 0.82 : 1))} style={{ background: O[3].box1 }} />
+        </span>
+        {(nameLine || roleLine) && (
+          <span style={col(u(4), { minWidth: 0 })}>
+            {nameLine && <span style={anton(u(16), { lineHeight: u(16.8), color: sand, overflowWrap: 'anywhere' })}>{nameLine}</span>}
+            {roleLine && <span style={anton(u(13), { lineHeight: u(13.65), color: amber, overflowWrap: 'anywhere' })}>{roleLine}</span>}
+          </span>
+        )}
+      </div>
+      {hasHead && (
+        <h2 style={{
+          margin: 0, marginTop: u(26), minWidth: 0, color: orange, fontFamily: s.display, fontWeight: 400, lineHeight: 0.98, letterSpacing: '-0.005em', textTransform: 'uppercase', overflowWrap: 'normal',
+          fontSize: s.titleWordEms ? `min(${u(P.head)}, calc(${u(P.room)} / ${s.titleWordEms}))` : u(P.head),
+        }}>{s.title}</h2>
+      )}
+      {s.formPromises.length > 0 && (
+        <div style={{ marginTop: 'auto', paddingTop: u(26) }}>
+          <div style={{ borderBottom: `1px solid ${HL_HAIR}` }}>
+            {s.formPromises.map((p, i) => (
+              <div key={i} style={row(u(16), { alignItems: 'flex-start', justifyContent: 'space-between', boxSizing: 'border-box', borderTop: `1px solid ${HL_HAIR}`, padding: `${u(12)} 0` })}>
+                <span style={ui(u(16), { lineHeight: u(20), color: HL_MEDIA_LIT, minWidth: 0, overflowWrap: 'anywhere' })}>{p}</span>
+                <span style={anton(u(14), { lineHeight: u(14.7), color: amber, flex: 'none' })}>{String(i + 1).padStart(2, '0')}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+
+  const form = (
+    <div style={col(u(P.rowGap), { boxSizing: 'border-box', minWidth: 0, background: sand, padding: `${u(P.py)} ${u(P.px)}` })}>
+      {sent ? (
+        // The form half alone; the card and the panel do not move, and the half keeps its height. `sent` is only ever set under s.live, so the canvas never draws it.
+        <div style={col(u(16), { minHeight: u(P.sentH), alignItems: 'flex-start' })}>
+          <h3 style={{ margin: 0, color: black, fontFamily: s.display, fontWeight: 400, lineHeight: 0.98, letterSpacing: '-0.005em', textTransform: 'uppercase', fontSize: u(P.head * 0.75), overflowWrap: 'anywhere' }}>{s.formSentTitle}</h3>
+          <p style={{ ...ui(u(16), { lineHeight: 1.4, color: ink }), margin: 0 }}>{s.formSentBody}</p>
+          {/* Plain text, Retro's reason: the fallback for a browser that opened nothing. */}
+          <span style={ui(u(16), { fontWeight: 600, lineHeight: 1.4, color: ink, overflowWrap: 'anywhere' })}>{s.formEmail}</span>
+          <HeadlinerPill s={s} u={u} label={s.formAgain} as="span" tagProps={{ onClick: () => setSent(false) }} />
+        </div>
+      ) : (
+        <>
+          {s.formRows.map(fieldRow)}
+          {showTypes && (
+            <div style={col(u(8))}>
+              {label(s.formTypeLabel, { height: u(18) })}
+              <div style={row(u(6), { flexWrap: 'wrap', rowGap: u(6) })}>
+                {s.formTypes.map((t, i) => {
+                  const on = i === ti
+                  return (
+                    <span key={i} onClick={s.live ? () => setType(i) : undefined} style={{
+                      ...anton(u(14)), boxSizing: 'border-box', height: u(40), padding: `0 ${u(16)}`, display: 'inline-flex', alignItems: 'center',
+                      border: `1px solid ${ink}`, borderRadius: 999, background: on ? ink : 'transparent', color: on ? sand : ink,
+                      whiteSpace: 'nowrap', cursor: s.live ? 'pointer' : undefined,
+                    }}>{t}</span>
+                  )
+                })}
+              </div>
+            </div>
+          )}
+          <div style={col(u(8))}>
+            {label(s.formMsgLabel)}
+            {s.live ? (
+              <textarea
+                {...cp('msg')}
+                value={msg} placeholder={s.formMessage} aria-label={s.formMsgLabel}
+                onChange={(e) => setMessage(e.target.value)}
+                style={box(msgBad, { display: 'block', height: u(90), padding: u(14), resize: 'none' })}
+              />
+            ) : (
+              <span style={box(false, { display: 'block', height: u(90), padding: u(14) })}>{hint(s.formMessage)}</span>
+            )}
+          </div>
+          <div style={col(u(P.rowGap), { alignItems: 'flex-start' })}>
+            {submit()}
+            {errs && (
+              <span id={pid} role="alert" style={anton(u(14), { lineHeight: 1.3, color: maroon })}>
+                {errs?.m?.find(Boolean) || errs?.msg?.m || s.formPrompt}
+              </span>
+            )}
+          </div>
+        </>
+      )}
+    </div>
+  )
+
+  return (
+    <div style={{ position: 'relative', containerType: 'inline-size', overflow: 'hidden' }}>
+      <div style={{ paddingTop: u(P.top), paddingBottom: u(P.top) }}>
+        <div style={{ margin: `0 ${u(P.side)}`, display: 'grid', gridTemplateColumns: desk ? `${u(P.panelW)} minmax(0, 1fr)` : 'minmax(0, 1fr)', alignItems: 'stretch', ...WRAP_LONG }}>
+          {panel}
+          {form}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function EnquiryForm({ s }) {
   // What the visitor has typed, gated on `s.live` throughout: on the canvas
   // every box is the span it has always been (§12.7), because a live field
@@ -31377,6 +31556,9 @@ function EnquiryForm({ s }) {
   // Lattice's layout-1 form is a block of its own (LatticeForm), after the seam: every piece of the live
   // seam above goes over in `g`, so the published boxes, chip, mailto, refusal and sent state are the one
   // seam in a new picture.
+  if (s.v0 && s.limeTree && s.headliner) {
+    return <HeadlinerForm s={s} g={{ at, setAt, msg, setMessage, ti, setType, showTypes, errs, msgBad, sent, setSent, Pill, pillLink, onSubmit, cp, pid }} />
+  }
   if (s.v0 && s.limeTree && s.paperback) {
     return <PaperbackForm s={s} g={{ at, setAt, msg, setMessage, ti, setType, showTypes, errs, msgBad, sent, setSent, Pill, pillLink, onSubmit, cp, pid }} />
   }

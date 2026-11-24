@@ -3964,7 +3964,8 @@ export const FIELDS = {
   ],
   form: [
     { k: 'image',    l: 'Portrait', type: 'image', aspect: [1, 1], in: [0, 1],
-      hint: 'The round photo beside your name. Layouts 1 and 2 — layouts 3 and 4 draw no credit row.' },
+      hint: { '*': 'The round photo beside your name. Layouts 1 and 2 — layouts 3 and 4 draw no credit row.',
+        Headliner: 'The square photo beside your name. Layouts 1 and 2 — layouts 3 and 4 draw no credit row.' } },
     // Layout 2's stage shot. The section's two photographs are the artist and
     // the scene — the header's pair the other way up,
     // this one's `image` having been the artist since layout 1 drew it as an
@@ -3983,8 +3984,11 @@ export const FIELDS = {
       // Lattice's layout 1 measured 2026-11-19 (limits.mjs form --themes=5 --designs=0): 37 at 1440, 56 at
       // 768, 44 at 390, three lines in a 419 measure; the others are Pop's until their passes.
       // Paperback's layout 1 measured 2026-11-21 (limits.mjs form --themes=6 --designs=0 --upright): 41 at 1440 (a fourth line past it), 58 at 768, 46 at 390.
+      // Headliner's layout 1 measured 2026-11-24 (limits.mjs form --themes=7 --designs=0): 31 at 1440 (a fourth line past it), 61 at 768, 46 at 390, in the content box
+      // of a panel the form half stretches; 31 is under the seed's 36, so the seed is the floor and a 32-to-36 character head sets a fourth line at 1440 that the card
+      // absorbs (the panel and the half grow together); layouts 2-4 are Grunge's, written out.
       chars: { Retro: [45, 36, 32, 20], Lime: [37, 37, 32, 19], Grunge: [36, 40, 41, 25],
-        Editorial: [36, 42, 30, 12], Pop: [36, 40, 30, 17], Lattice: [37, 40, 30, 17], Paperback: [41, 36, 30, 17] },
+        Editorial: [36, 42, 30, 12], Pop: [36, 40, 30, 17], Lattice: [37, 40, 30, 17], Paperback: [41, 36, 30, 17], Headliner: [36, 40, 41, 25] },
       hint: 'Layout 3 starts from your name (“Book … for your event”) and follows it until you '
           + 'type your own; layout 4 starts from “Contact Us”. A line break you type is kept in '
           + 'layout 2.' },
@@ -3992,7 +3996,7 @@ export const FIELDS = {
     // name until JP-054 gave it the frame's own word. Emptiable: it drops.
     { k: 'sub',      l: 'Line under the heading', d: FORM_SUB_4, in: [3],
       chars: { Retro: [null, null, null, 33], Lime: [null, null, null, 40], Grunge: [null, null, null, 44],
-        Editorial: [null, null, null, 27], Pop: [null, null, null, 30], Paperback: [null, null, null, 23] },
+        Editorial: [null, null, null, 27], Pop: [null, null, null, 30], Paperback: [null, null, null, 23], Headliner: [null, null, null, 44] },
       hint: 'Layout 4 only. Leave it empty to hide it.' },
     { k: 'para',     l: 'Paragraph', type: 'area', def: 'formPara', in: [2], chars: [null, null, 210],
       hint: 'The line under the heading. Layout 3 only.' },
@@ -4003,7 +4007,8 @@ export const FIELDS = {
       // (16 measured, open); layout 2 is the '*' row's.
       // Paperback's layout 1 measured 5 rows (the sixth meets the blob's art at 1440) and 20 a line at 390, under the seed's own 29
       // (the frame's longest, one line there), so the seed is the floor.
-      chars: { Retro: [45, 32], Pop: [42, 31], Editorial: [34, 29], Lattice: [33, 34], Paperback: [29, 29], '*': [34, 34] },
+      // Headliner's layout 1 measured 39 a line (desktop 48, tablet 95, mobile 39: the row's text beside its numeral) and 9 rows (16 measured, open); layout 2 the shared row.
+      chars: { Retro: [45, 32], Pop: [42, 31], Editorial: [34, 29], Lattice: [33, 34], Paperback: [29, 29], Headliner: [39, 34], '*': [34, 34] },
       count: { Editorial: [6, 9], Lattice: [9, 9], Paperback: [5, 9], '*': [9, 9] },
       rows: { placeholder: 'Promise', add: 'Add promise' },
       hint: 'The ticked list beside the form.' },
@@ -4023,9 +4028,13 @@ export const FIELDS = {
     { k: 'fields',   l: 'Form fields', type: 'formFields', max: 8,
       cols: {
         label: { Retro: [49, 46, 57, 22], Lime: [47, 52, 69, 27], Grunge: [52, 62, 76, 30],
-          Editorial: [24, 33, 41, 14], Pop: [32, 33, 40, 19], Lattice: [40, 33, 40, 19], Paperback: [45, 27, 30, 15] },
+          Editorial: [24, 33, 41, 14], Pop: [32, 33, 40, 19], Lattice: [40, 33, 40, 19], Paperback: [45, 27, 30, 15],
+          // Headliner's layout 1 measured 48 (64 / 50 / 48); layouts 2-4 Grunge's, written out.
+          Headliner: [48, 62, 76, 30] },
         placeholder: { Retro: [37, null, null, 23], Lime: [41, null, null, 24], Grunge: [41, null, null, 24],
-          Editorial: [41, null, null, 25], Pop: [35, null, null, 24], Lattice: [36, null, null, 24], Paperback: [34, null, null, 20] },
+          Editorial: [41, null, null, 25], Pop: [35, null, null, 24], Lattice: [36, null, null, 24], Paperback: [34, null, null, 20],
+          // Headliner's layout 1 measured 39 (53 / 41 / 39); layouts 2-4 Grunge's.
+          Headliner: [39, null, null, 24] },
       },
       hint: 'One box each — two to a row in layouts 1 and 4 (layout 1 stacks them on a phone), '
           + 'one to a row in layouts 2 and 3, '
@@ -4042,16 +4051,18 @@ export const FIELDS = {
     // The chip row's label (JP-090), messageLabel's rule: the row it heads
     // stands whatever it says, so an emptied label reads the seed again.
     { k: 'typeLabel', l: 'Event type label', d: FORM_TYPE_LABEL, in: [0],
-      chars: { Retro: [51], Lime: [52], Grunge: [58], Editorial: [37], Pop: [33], Lattice: [40], Paperback: [45] },
+      chars: { Retro: [51], Lime: [52], Grunge: [58], Editorial: [37], Pop: [33], Lattice: [40], Paperback: [45], Headliner: [48] },
       hint: 'The label over the event types. Layout 1 only. Left empty, it shows Event type.' },
     { k: 'message',  l: 'Message box hint text', d: FORM_MESSAGE, in: [0, 3],
       chars: { Retro: [39, null, null, 53], Lime: [42, null, null, 54], Grunge: [42, null, null, 54],
-        Editorial: [44, null, null, 58], Pop: [35, null, null, 54], Lattice: [39, null, null, 54], Paperback: [37, null, null, 44] },
+        Editorial: [44, null, null, 58], Pop: [35, null, null, 54], Lattice: [39, null, null, 54], Paperback: [37, null, null, 44],
+        Headliner: [41, null, null, 54] },
       hint: 'Layouts 1 and 4.' },
     // The message box's label (JP-082): the one box label that was a literal.
     { k: 'messageLabel', l: 'Message label', d: FORM_MSG_LABEL, in: [0, 3],
       chars: { Retro: [51, null, null, 45], Lime: [52, null, null, 59], Grunge: [58, null, null, 64],
-        Editorial: [37, null, null, 35], Pop: [33, null, null, 41], Lattice: [40, null, null, 41], Paperback: [45, null, null, 33] },
+        Editorial: [37, null, null, 35], Pop: [33, null, null, 41], Lattice: [40, null, null, 41], Paperback: [45, null, null, 33],
+        Headliner: [48, null, null, 64] },
       hint: 'Layouts 1 and 4. Also heads the message in the email you receive. Left empty, it shows Message.' },
     // Dead until the submit was made real — this is now what the form is for.
     { k: 'email',    l: 'Email address', type: 'email', d: FORM_EMAIL,
@@ -4060,7 +4071,7 @@ export const FIELDS = {
       // Lattice's layout 1 is a full-width bar with nothing beside it to crowd, so its measured 35 stands
       // (the shared 15 is Retro's and Lime's pill).
       chars: { Retro: [16, null, null, 36], Editorial: [15, null, null, 27], Pop: [15, null, null, 32],
-        Lattice: [35, null, null, 36], Paperback: [34, null, null, 31], '*': [15, null, null, 36] },
+        Lattice: [35, null, null, 36], Paperback: [34, null, null, 31], Headliner: [39, null, null, 36], '*': [15, null, null, 36] },
       hint: 'Layouts 1 and 4. Layout 4 starts from “Check Availability”, and layout 1 from “Enquire” in Lime, Grunge, Editorial and Pop.' },
     // Layouts 2 and 3's card — the same component in both frames. Every one is
     // emptiable and drops what it fills, except the button: it is the submit,
@@ -4069,7 +4080,7 @@ export const FIELDS = {
     // as prose; it shares a wrapping row with its unit (plans/char-limits.md).
     { k: 'price',     l: 'Price (layouts 2 and 3)', d: FORM_PRICE, in: [1, 2],
       chars: { Retro: [null, 32, 39], Lime: [null, 28, 35], Grunge: [null, 32, 39], Editorial: [null, 19, 23],
-        Pop: [null, 22, 26], Paperback: [null, 20, 24] } },
+        Pop: [null, 22, 26], Paperback: [null, 20, 24], Headliner: [null, 32, 39] } },
     { k: 'priceUnit', l: 'Price note (layouts 2 and 3)', d: FORM_PRICE_UNIT, in: [1, 2],
       chars: { Lime: [null, 43, 54], Paperback: [null, 45, 52], '*': [null, 47, 54] } },
     { k: 'bookings',  l: 'Bookings line (layouts 2 and 3)', d: FORM_BOOKINGS, in: [1, 2],
@@ -4077,7 +4088,7 @@ export const FIELDS = {
       hint: 'The five stars before it are drawn while this is filled.' },
     { k: 'cta',       l: 'Button (layouts 2 and 3)', d: FORM_CTA, in: [1, 2],
       chars: { Retro: [null, 36, 36], Lime: [null, 30, 36], Grunge: [null, 33, 36], Editorial: [null, 18, 22],
-        Pop: [null, 20, 26], Paperback: [null, 20, 26] } },
+        Pop: [null, 20, 26], Paperback: [null, 20, 26], Headliner: [null, 33, 36] } },
     { k: 'note',      l: 'Line under the button (layouts 2 and 3)', d: FORM_NOTE, in: [1, 2],
       chars: { Lime: [null, 43, 54], Paperback: [null, 45, 52], '*': [null, 47, 54] } },
     { k: 'available', l: 'Eyebrow (layout 3)', d: FORM_AVAILABLE, in: [2], chars: { Paperback: [null, null, 54], '*': [null, null, 61] },
@@ -4662,8 +4673,11 @@ export const IDENTITY_CHARS = {
     // Lattice's layout 1 measured 2026-11-19 (limits.mjs form --themes=5 --designs=0, `who.*`): the name in
     // the context panel's avatar row holds 59, the role line 33; layouts 2 and 3 are Pop's.
     title: { Retro: [76, 50, 13], Lime: [61, 40, 13], Grunge: [50, 85, 23], Editorial: [27, 42, 10],
-      Pop: [55, 54, 11], Lattice: [59, 54, 11], Paperback: [60, 32, 11] },
-    kicker: { Retro: [43, 38], Pop: [39, 40], Lattice: [33, 40], Paperback: [37, 40], '*': [30, 40] },
+      Pop: [55, 54, 11], Lattice: [59, 54, 11], Paperback: [60, 32, 11],
+      // Headliner's layout 1 measured 2026-11-24 (limits.mjs form --themes=7 --designs=0, `who.*`): the name in the avatar row holds 33 (41 / 83 / 33), the role line 40;
+      // layouts 2 and 3 are Grunge's, written out.
+      Headliner: [33, 85, 23] },
+    kicker: { Retro: [43, 38], Pop: [39, 40], Lattice: [33, 40], Paperback: [37, 40], Headliner: [40, 40], '*': [30, 40] },
     seal: { Pop: [12], Paperback: [12] },
   },
   // Layout 2's caption line ellipsizes at 390 past 26–27 (session 6's re-run;
