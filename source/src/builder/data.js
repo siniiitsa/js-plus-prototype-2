@@ -2375,6 +2375,9 @@ export const GALLERY_RAIL_LABEL = 'Gallery'
 // carries the frame's full stop (`see us in action.`).
 export const GALLERY_RAIL_LABEL_BACKLINE = 'Contact sheet'
 export const GALLERY_HEADING_BACKLINE = 'See us in action.'
+// Backline's layout-1 repertoire head is the frame's `240 songs.` (section 5): the word is lower-case and takes the full stop, where
+// Paperback seeds `songs` and every other template `Songs`. Layouts 2-4 of Backline are the placeholders and keep the shared word.
+export const repCountWord = (themeName, design) => (themeName === 'Backline' && design === 0 ? 'songs.' : themeName === 'Paperback' ? 'songs' : 'Songs')
 // JP-120 (gallery), user call, 2026-10-08: layout 1's eyebrow, which layout 4's
 // prints as well, and its back link, the frames' words. The open source row's
 // label seeds off GALLERY_SOURCES[0].l. The eyebrow's seed was the frames'
@@ -4472,7 +4475,7 @@ export function fieldSeed({ cat, f, themeName, design, c = {}, artistName, email
     : f.k === 'heading' && design === 3 && HEADING_4[cat] ? HEADING_4[cat]
     : f.k === 'heading' && cat === 'calendar' && design === 0 && themeName === 'Headliner' ? CAL_HEADING_HEADLINER
     : f.k === 'heading' && cat === 'calendar' && design === 0 && limeTreeTheme(themeName) ? CAL_HEADING_1
-    : f.k === 'heading' && cat === 'repertoire' ? `${songs.filter((t) => !blankRow(t, SONG_KEYS)).length} ${themeName === 'Paperback' ? 'songs' : 'Songs'}`
+    : f.k === 'heading' && cat === 'repertoire' ? `${songs.filter((t) => !blankRow(t, SONG_KEYS)).length} ${repCountWord(themeName, design)}`
     : f.k === 'heading' && cat === 'testimonials' && design === 1 ? TESTI_HEADING_2
     : f.k === 'navMode' && cat === 'header' ? navModeDefault(themeName, design)
     : f.k === 'button' && cat === 'form' ? formBtnSeed(themeName, design)

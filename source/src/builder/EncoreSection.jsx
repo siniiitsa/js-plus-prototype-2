@@ -15618,7 +15618,7 @@ function Repertoire({ s }) {
     // reference frames show.
     // Lattice's frames draw twelve a page at every width (two columns of six at 768, one of twelve
     // at 390), so it is the one template whose narrow page is not six.
-    const perPage = s.narrow && !s.lattice && !s.paperback && !s.headliner ? 6 : 12
+    const perPage = s.narrow && !s.lattice && !s.paperback && !s.headliner && !s.backline ? 6 : 12
     // The chip index, clamped: the row is derived from the artist's tags, so a
     // tag they delete can leave `chip` past the end of it.
     const active = s.live ? Math.min(chip, s.repChips.length - 1) : 0
@@ -15643,9 +15643,9 @@ function Repertoire({ s }) {
     // page offset — not its place on the screen. Both narrow frames run the
     // whole six-song page down one column.
     const half = Math.ceil(shown.length / 2)
-    const columns = (s.narrow && !((s.lattice || s.paperback || s.headliner) && !s.mob) ? [shown] : [shown.slice(0, half), shown.slice(half)])
+    const columns = (s.narrow && !((s.lattice || s.paperback || s.headliner || s.backline) && !s.mob) ? [shown] : [shown.slice(0, half), shown.slice(half)])
       .map((cs, ci) => cs.map((t, i) => ({ ...t, n: pg * perPage + ci * half + i + 1 })))
-    const { labels, at } = pageWindow(pages, pg, s.mob, s.lattice || s.headliner || (s.paperback && !s.mob) ? 4 : undefined)
+    const { labels, at } = pageWindow(pages, pg, s.mob, s.lattice || s.headliner || s.backline || (s.paperback && !s.mob) ? 4 : undefined)
 
     // Lime — the same component in Lime's mode (964:58592 at 1440, 986:39881 at
     // 768, 986:39893 at 390), placed after the seam as the gallery's block is:
@@ -15705,7 +15705,8 @@ function Repertoire({ s }) {
       // search, chip and pager state above is shared whole, and the block is the picture.
       // Paperback's (1:2689 · 1:11313 · 1:12499) is a block of its own as well, handed the same seam, and Headliner's (1:4830 · 1:15602 · 1:16651):
       // twelve a page at every width, two columns at 1440 and 768, and a pager of four numbered squares (`1 2 3 … 20`) at all three.
-      if (s.lattice || s.paperback || s.headliner) {
+      // Backline's (1:6031 · 1:17818 · 1:19154) is a block of its own as well, handed the same seam: twelve a page at every width, two columns at 1440 and 768, and `1 2 3 … 20`.
+      if (s.lattice || s.paperback || s.headliner || s.backline) {
         const g = {
           title, q, active, columns, shown, labels, at,
           noSongs: s.songs.length === 0,
@@ -15714,7 +15715,7 @@ function Repertoire({ s }) {
           onPage: s.live ? (label) => setPage(Number(label) - 1) : undefined,
           onStep: s.live ? (dir) => setPage(Math.max(0, Math.min(pages - 1, pg + dir))) : undefined,
         }
-        return s.headliner ? <HeadlinerRepertoire s={s} g={g} /> : s.paperback ? <PaperbackRepertoire s={s} g={g} /> : <LatticeRepertoire s={s} g={g} />
+        return s.backline ? <BacklineRepertoire s={s} g={g} /> : s.headliner ? <HeadlinerRepertoire s={s} g={g} /> : s.paperback ? <PaperbackRepertoire s={s} g={g} /> : <LatticeRepertoire s={s} g={g} />
       }
       const grunge = s.grunge
       const ed = s.editorial
@@ -18805,6 +18806,209 @@ function BacklineGallery({ s, g }) {
         <BacklineTear
           tear="gallery" colour={s.onScheme[2].bg} id={tearId} height={u(88)}
           style={desk ? undefined : { width: u(1440), maxWidth: 'none' }}
+        />
+      </div>
+    </div>
+  )
+}
+
+// Backline · layout 1 (plans/backline/layout-1.md, section 5; frames 1:6031 · 1:17818 · 1:19154, 1067 / 1067 / 1532.94 tall).
+// A dark olive band (Scheme 2, the root's own ground) under a torn paper head (the gallery's paper, the repertoire's own contour: `BACKLINE_TEARS.repertoire`,
+// a fifth traced path, the head's shifted 148 px): the count in TT2020 (`240 ` cream, `songs.` moss at 1440 and mustard at 768 and 390, the frames' two readings),
+// a dashed-underline search, four 42-tall square chips (the active one a filled cream) and a paper setlist card turned -0.5 degrees with two tape strips,
+// twelve dashed-rule rows (an olive number, the title in TT2020, the artist flush right in a small TT2020) in two columns of six (one of twelve at 390, 28 apart),
+// then a pager of 44 squares (two arrows and `1 2 3 … 20`, the current one a filled cream). `Repertoire`'s seam (search, chips, pager) is handed over in `g`,
+// as Lattice's, Paperback's and Headliner's are. The bio's stage pattern: frame px verbatim at all three widths in cqw, vertical insets in a child, `vm.pad`
+// the surplus alone; the content is centred in a 1067 box, as the frames' two wide ones are (padding 112 / 90 / 67, the gallery's).
+// Not drawn (the standing removals, call 1 A): `04 ┈┈ REPERTOIRE` (no field; its 30.94 stays as padding), `SETLIST — KAI MERCER — GORILLA, MCR`, the boxed
+// `SIDE A / SIDE B` and `encore: whatever they shout loudest` (no field is their seat; their 88 / 64 / 78 stay as the card's padding, so it is the frame's height).
+// A title is as typed (the frame's rows are mixed case), and sits beside its artist like the frame's flex row: a phrase wraps in what the artist leaves it and a
+// single word that would outrun it steps down a size (the 768 frame's *Superstition* and *September* at 22 against 25), both read off `t.ems` / `t.aems`
+// (TT2020's one advance, `sectionVm`). With one page there is no pager and no seat for it (every template's rule).
+const BACKLINE_REP = {
+  desktop: { fw: 1440, top: 112, minH: 1067, side: 48.96, inset: 44, foot: 64, colW: 599, colGap: 56, rowGap: 0, titleL: 52, rowT: 28, rowTs: 22, padT: 11, padB: 11, numDy: 2, gap: 12, h2: 123.84, lh: 0.9, hPad: 30.94, fitW: 938, search: 380, tapes: [153.94, 1161.23] },
+  tablet: { fw: 768, top: 90, minH: 1067, side: 26.11, inset: 33, foot: 64, colW: 297, colGap: 56, rowGap: 0, titleL: 52, rowT: 25, rowTs: 22, padT: 9.41, padB: 12.59, numDy: 3, gap: 12, h2: 77, lh: 0.955, hPad: 22.44, fitW: 349, search: 380, tapes: [110.1, 591.56] },
+  mobile: { fw: 390, top: 67, minH: 1532.94, side: 24, inset: 22, foot: 78, colW: 298, colGap: 0, rowGap: 28, titleL: 35, rowT: 23, rowTs: 20, padT: 9.4, padB: 12.6, numDy: 3, gap: 24, h2: 50, lh: 0.9, hPad: 30.94, hDy: -2.5, fitW: 342, tapes: [83.94, 251.2] },
+}
+function BacklineRepertoire({ s, g }) {
+  const { title, q, onQuery, active, onChip, columns, shown, labels, at, onPage, onStep, noSongs } = g
+  const dev = s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop'
+  const P = BACKLINE_REP[dev]
+  const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
+  const cream = s.text1                   // #F5F6E8: the count, the outlines, the pager (Scheme 2's text)
+  const ink = s.activeFg                  // #23240F: the filled chip's and square's type
+  const paper = s.onScheme[1]             // the card's seat: Scheme 1's ink, olive and tape
+  const tail = s.narrow ? s.activeBg : s.chips[2].bg   // `songs.`: the 1440 master's moss `sem/tag/3/bg`, the narrow ones' mustard literal
+  const tearId = useId().replace(/:/g, '')
+  const label = (size, extra) => ({ fontFamily: s.label, fontWeight: 700, fontSize: size, letterSpacing: '0.06em', textTransform: 'uppercase', lineHeight: 'normal', ...extra })
+  const clip = { whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0 }
+
+  // The count: the last word (of two or more) in the tail colour, wrapping in the room the search leaves and fitted to its widest word.
+  const words = String(title ?? '').trim().split(/\s+/).filter(Boolean)
+  const lead = words.slice(0, -1).join(' ')
+  const last = words.length > 1 ? words[words.length - 1] : ''
+  const h2 = words.length ? (
+    <h2 style={{
+      margin: 0, ...(P.hDy ? { position: 'relative', top: u(P.hDy) } : null), color: cream, textTransform: 'lowercase', fontFamily: s.display, fontWeight: 400, lineHeight: P.lh, letterSpacing: '-0.045em',
+      fontSize: s.titleWordEms ? `min(${u(P.h2)}, calc(${u(P.fitW)} / ${s.titleWordEms}))` : u(P.h2),
+    }}>{last ? <>{lead}{' '}<span style={{ color: tail }}>{last}</span></> : words[0]}</h2>
+  ) : null
+
+  // The hint is the placeholder (index.css: the box's colour at .45); the canvas's span draws the same.
+  const hint = 'Search songs or artists…'
+  const hintType = { fontFamily: s.display, fontWeight: 400, fontSize: u(17), letterSpacing: '-0.02em', lineHeight: 'normal' }
+  const search = (
+    <div style={row(0, {
+      position: 'relative', boxSizing: 'border-box', height: u(50), overflow: 'hidden', color: cream, minWidth: 0,
+      ...(s.mob ? { width: '100%' } : { flex: `0 1 ${u(P.search)}`, marginLeft: 'auto' }),
+    })}>
+      {/* the frame's underline: 2 on, 1 off, 1 px tall */}
+      <div aria-hidden style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 1, backgroundImage: `repeating-linear-gradient(90deg, ${cream} 0, ${cream} ${u(2)}, transparent ${u(2)}, transparent ${u(3)})` }} />
+      {/* no padding on the flex item itself (the frame sets the text 16 in, absolutely), or the head's shrink would weigh the search 32 lighter than the frame's */}
+      <div style={row(0, { flex: 1, minWidth: 0, padding: `0 ${u(16)}` })}>
+      {s.live ? (
+        <input
+          value={q} placeholder={hint} aria-label="Search songs or artists"
+          onChange={(e) => onQuery(e.target.value)}
+          style={{ ...hintType, color: cream, flex: 1, minWidth: 0, border: 'none', outline: 'none', background: 'transparent', padding: 0 }}
+        />
+      ) : (
+        <span style={{ ...hintType, opacity: 0.45, ...clip }}>{hint}</span>
+      )}
+      </div>
+    </div>
+  )
+  const left = <div style={{ flex: '0 1 auto', minWidth: 0, paddingTop: u(P.hPad) }}>{h2}</div>
+  const head = s.mob
+    ? <div style={col(u(24))}><div style={{ alignSelf: 'flex-start', minWidth: 0 }}>{left}</div>{search}</div>
+    : <div style={row(u(24), { alignItems: 'flex-end' })}>{left}{search}</div>
+
+  const chips = (
+    <div style={row(u(6), { flexWrap: 'wrap' })}>
+      {s.repChips.map((f, i) => {
+        const on = i === active
+        return (
+          <span
+            key={i}
+            onClick={s.live ? () => onChip(i) : undefined}
+            style={{
+              ...label(u(13)), boxSizing: 'border-box', height: u(42), padding: `0 ${u(16)}`, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              border: `1px solid ${cream}`, background: on ? cream : 'transparent', color: on ? ink : cream, whiteSpace: 'nowrap', cursor: s.live ? 'pointer' : undefined,
+            }}
+          >{f.label}</span>
+        )
+      })}
+    </div>
+  )
+
+  // A row: the number in its own column, the title (a flex remainder that wraps), the artist flush right. The title is stepped down a size when it is one
+  // word that would outrun the room the artist leaves it (the artist's own room is capped at 62 % so a long one ellipsises instead of crushing the title).
+  const artMax = 0.62 * (P.colW - P.titleL)
+  const size = (t) => {
+    const aw = t.artist ? Math.min((t.aems ?? 0) * 14, artMax) : 0
+    const room = P.colW - P.titleL - (t.artist ? P.gap + aw : 0)
+    return !/\s/.test(t.title) && (t.ems ?? 0) * P.rowT > room ? P.rowTs : P.rowT
+  }
+  // The 390 master stands its titles on one x all the way down the card (78 to 79 over 860 px) while the numbers and artists turn with it (43 to 50, 246 to 339...
+  // right edges), so a title there is moved back by what the card's -0.5 degrees carried it: tan(0.5deg) of its row's distance below the first row, the rows' heights
+  // estimated (a one-line row is padT + padB + 1 + its size, a phrase wraps in the room the artist leaves, and a single word never does).
+  const lineCount = (t, S) => {
+    if (!/\s/.test(t.title)) return 1
+    const aw = t.artist ? Math.min((t.aems ?? 0) * 14, artMax) : 0
+    return Math.max(1, Math.ceil(((t.ems ?? 0) * S) / (P.colW - P.titleL - (t.artist ? P.gap + aw : 0))))
+  }
+  let below = 0
+  const song = (t) => {
+    const S = size(t)
+    const back = s.mob ? below * 0.008727 : 0
+    if (s.mob) below += P.padT + P.padB + 1 + lineCount(t, S) * S + P.rowGap
+    return (
+      <div key={t.n} style={{ display: 'flex', alignItems: 'flex-start', boxSizing: 'border-box', minWidth: 0, padding: `${u(P.padT)} 0 ${u(P.padB)}`, borderTop: `1px dashed ${BL_BIO_RULE}` }}>
+        <span style={label(u(12), { flex: 'none', width: u(P.titleL), lineHeight: u(13.8), marginTop: u(S / 2 - 6.9 + P.numDy), color: paper.text3, whiteSpace: 'nowrap' })}>{String(t.n).padStart(2, '0')}</span>
+        <span style={{
+          flex: '1 1 0', minWidth: 0, color: paper.text1, fontFamily: s.display, fontWeight: 400, fontSize: u(S), lineHeight: u(S), letterSpacing: '-0.045em', overflowWrap: 'anywhere', ...(back ? { position: 'relative', left: u(-back) } : null),
+        }}>{t.title}</span>
+        {t.artist && (
+          <span style={{
+            ...clip, flex: 'none', maxWidth: u(artMax), marginLeft: u(P.gap), marginTop: u(S / 2 - 3), color: paper.text1, fontFamily: s.display, fontWeight: 400,
+            fontSize: u(14), lineHeight: 'normal', letterSpacing: '-0.02em', textAlign: 'right',
+          }}>{t.artist}</span>
+        )}
+      </div>
+    )
+  }
+  const flat = columns.flat()
+  const list = shown.length === 0 ? (
+    <div style={{
+      padding: `${u(24)} 0`, borderTop: `1px dashed ${BL_BIO_RULE}`, borderBottom: `1px dashed ${BL_BIO_RULE}`,
+      color: paper.text1, fontFamily: s.display, fontWeight: 400, fontSize: u(22), lineHeight: 'normal', letterSpacing: '-0.045em',
+    }}>{noSongs ? 'No songs yet.' : 'No songs match that.'}</div>
+  ) : (
+    <div style={{
+      display: 'grid', alignItems: 'start', gridAutoFlow: 'column', columnGap: u(P.colGap), rowGap: u(P.rowGap),
+      gridTemplateColumns: columns.length > 1 ? 'minmax(0, 1fr) minmax(0, 1fr)' : 'minmax(0, 1fr)',
+      gridTemplateRows: `repeat(${columns[0].length}, auto)`, borderBottom: `1px dashed ${BL_BIO_RULE}`,
+    }}>{flat.map(song)}</div>
+  )
+
+  // The card: Scheme 1's paper (`BL_TICKET`, the frame's mottled raster's mean, the media ticket's) turned -0.5 degrees with the frames' two shadows, a half-strength
+  // grain, and two tapes in the card's own coordinates (the frames' centres: 4 down, turned CSS -5 and +4).
+  const paperShadow = `0 ${u(1)} ${u(1)} 0 rgba(35, 36, 15, 0.18), 0 ${u(14)} ${u(26)} ${u(-16)} rgba(35, 36, 15, 0.55)`
+  const card = (
+    <div style={{
+      position: 'relative', boxSizing: 'border-box', transform: 'rotate(-0.5deg)', background: BL_TICKET, boxShadow: paperShadow,
+      padding: `${u(88)} ${u(P.inset)} ${u(P.foot)}`,
+    }}>
+      <BacklineGrain src={s.backlineGrain} tone="paper" opacity={0.5} />
+      <div style={{ position: 'relative' }}>{list}</div>
+      <BacklineTape colour={paper.box3} width={u(120)} style={{ position: 'absolute', left: u(P.tapes[0] - 60), top: u(4 - 16), transform: 'rotate(-5deg)' }} />
+      <BacklineTape colour={paper.box3} width={u(120)} style={{ position: 'absolute', left: u(P.tapes[1] - 60), top: u(4 - 16), transform: 'rotate(4deg)' }} />
+    </div>
+  )
+
+  // The pager: 44 squares on a 6 gap, the frames' 16 x 12 line arrows (stroke 2), the current page a filled cream; the 390 master stretches the numbers.
+  const arrow = (back) => (
+    <svg aria-hidden viewBox="0 0 16 12" fill="none" style={{ display: 'block', width: u(16), height: u(12), flex: 'none', overflow: 'visible' }}>
+      <path d={back ? 'M16 6H2M7 11L2 6L7 1' : 'M0 6H14M9 11L14 6L9 1'} stroke={cream} strokeWidth="2" />
+    </svg>
+  )
+  const square = (key, child, { on, onClick, stretch }) => (
+    <span key={key} onClick={onClick} style={{
+      ...label(u(14)), boxSizing: 'border-box', height: u(44), display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+      ...(stretch ? { flex: '1 1 0', minWidth: 0 } : { flex: 'none', width: u(44) }), border: `1px solid ${cream}`,
+      background: on ? cream : 'transparent', color: on ? ink : cream, cursor: onClick ? 'pointer' : undefined, whiteSpace: 'nowrap',
+    }}>{child}</span>
+  )
+  const pager = labels.length > 0 ? (
+    <div style={row(u(6))}>
+      {square('prev', arrow(true), { onClick: onStep && (() => onStep(-1)) })}
+      {labels.map((p, i) => square(`p${i}`, p, { on: i === at, stretch: s.mob, onClick: onPage && p !== '…' ? () => onPage(p) : undefined }))}
+      {square('next', arrow(false), { onClick: onStep && (() => onStep(1)) })}
+    </div>
+  ) : null
+
+  return (
+    <div style={{
+      position: 'relative', containerType: 'inline-size', overflow: 'hidden', background: s.bg,
+      margin: `0 calc(-1 * ${s.surplus})`, padding: `0 ${s.surplus}`,
+    }}>
+      <BacklineGrain src={s.backlineGrain} tone="olive" />
+      <div style={{
+        position: 'relative', boxSizing: 'border-box', minHeight: u(P.minH), padding: `${u(P.top)} ${u(P.side)}`,
+        display: 'flex', flexDirection: 'column', justifyContent: 'center',
+      }}>
+        <div style={col(u(30))}>
+          {head}
+          {chips}
+          {card}
+          {pager}
+        </div>
+      </div>
+      {/* the torn head: the gallery's paper, the repertoire's own contour, 1 px above the band as the frame stands it; a narrow frame is the same contour cropped from the left at 1:1 */}
+      <div style={{ position: 'absolute', left: 0, right: 0, top: u(-1), height: u(88), pointerEvents: 'none' }}>
+        <BacklineTear
+          tear="repertoire" colour={paper.bg} tone="paper" id={tearId} height={u(88)}
+          style={s.narrow ? { width: u(1440), maxWidth: 'none' } : undefined}
         />
       </div>
     </div>
