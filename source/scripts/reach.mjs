@@ -4,7 +4,7 @@
 // written from (CLAUDE.md, the FIELDS bullet; JP-042, JP-037). Needs
 // `npm run dev` on :5173.
 //
-//   node scripts/reach.mjs [themes=0,1,2]    (theme 3 is Editorial, 4 Pop, 5 Lattice)
+//   node scripts/reach.mjs [themes=0,1,2]    (theme 3 is Editorial, 4 Pop, 5 Lattice, 6 Paperback, 7 Headliner)
 //
 // A probe is { name, cats, param: 'cj' | 'who' | 'tiers', value, base? }: `cj` types into
 // the section's own content, `who` into the header's identity as every other

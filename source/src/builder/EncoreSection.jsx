@@ -31,6 +31,7 @@
 import { useId, useRef, useState } from 'react'
 import RealMap from './RealMap.jsx'
 import { PaperbackArt, PaperbackSparkle, PaperbackWaves } from './paperbackArt.jsx'
+import { HeadlinerWaves, HeadlinerWaveField, HeadlinerBlockArrow, HeadlinerRings } from './headlinerArt.jsx'
 import {
   Play, Pause, SkipBack, SkipForward, Check, ChevronLeft, ChevronRight,
   ArrowLeft, ArrowRight, ArrowUp, ArrowDown, Star, Plus, X, Search, User,
@@ -1026,7 +1027,7 @@ const clock = (sec) => {
 // The ground and ink the menu opens on (below). Shared by `HeaderRoot`'s in-flow
 // panel and the fixed one Retro's layouts 5 and 6 still open.
 function menuColours(s) {
-  return s.lattice || s.paperback ? [s.bg, s.tx] : s.editorial ? [s.box3, s.paper] : s.pop && s.v2 ? [s.bg, s.text3]
+  return s.lattice || s.paperback || s.headliner ? [s.bg, s.tx] : s.editorial ? [s.box3, s.paper] : s.pop && s.v2 ? [s.bg, s.text3]
     : s.pop && s.v3 ? [s.mapBg, s.text3] : [s.mapBg, s.mapFg]
 }
 
@@ -1102,6 +1103,7 @@ function MenuPanel({ s, menu }) {
           <X size={26} style={{ flex: 'none' }} />
         </span>
         {s.paperback ? <PaperbackPill s={s} to={s.bookTo} u={(v) => `${v * (s.narrow ? 1 : 0.82)}px`} />
+          : s.headliner ? <HeadlinerPill s={s} to={s.bookTo} u={(v) => `${v * (s.narrow ? 1 : 0.82)}px`} />
           : s.lattice ? <BracketButton s={s} to={s.bookTo} ink={ink} /> : <BookPill s={s} to={s.bookTo} />}
       </div>
       {s.paperback ? (
@@ -2338,6 +2340,193 @@ function PaperbackHero({ s, menu }) {
   )
 }
 
+// Headliner's hero (Batch 2 file, 1:4481 · 1:15262 · 1:16317: 1440 / 768 / 390, all 900 tall, of which the top 80 is the
+// in-frame bar; the frames carry no component sets, so the verdict came from the pictures: an own tree, the seam
+// HeaderRoot's). A 820-tall stage cut by two slanted edges into three zones: maroon on the left, the photograph between
+// them and an orange field of wavy lines on the right (none at 390: the frame hides it). The name is one line of Anton
+// at 267.84 / 156 / 58 frame px painted in THREE colours across the edges, which the frame does with three masked copies;
+// so does this, three copies of the one h1 stacked in a grid cell and each `clip-path`-ed to its zone (orange on the maroon,
+// cream over the photograph, black over the orange), pure CSS, no hook, the polygon's corners written against the name's own
+// box (`calc(100% - 764)` is the stage's top, `calc(100% + 56)` its foot, whatever the name's height) so a name that wraps or
+// shrinks keeps its zones. The ringed numeral and the block arrow stand top right; an avatar and the six tag chips sit
+// above the name. The bar is the hamburger and Book Now (the header-nav rules: the frames' wordmark, logo, inline links and
+// the act-type and location lines are not drawn, nor the Fraunces tagline, call 1 of session 0).
+//
+// Every length is the FRAME's px through `u`, in cqw of the stage (a container as wide as the page content, `s.surplus` in
+// from the hero's edges), so the picture holds its proportions on a canvas narrower than the frame; at the frame's own width
+// it is the frame x 0.82 at desktop and verbatim at 768 and 390. The edges are fractions of the stage's width (the masks'
+// own: 475.2 -> 763.2 and 892.8 -> 1137.6 of 1440; 307.2 -> 445.44 and 522.24 -> 645.12 of 768; 187.2 -> 249.6 and
+// 288.6 -> 343.2 of 390).
+const HEADLINER_HERO = {
+  desktop: { fw: 1440, gut: 48.96, ring: 124, num: 52, arrow: 150, gap: 24, L: [0.33, 0.53], R: [0.62, 0.79], orange: true },
+  tablet: { fw: 768, gut: 26.11, ring: 124, num: 42, arrow: 150, gap: 28.1, L: [0.4, 0.58], R: [0.68, 0.84], orange: true },
+  mobile: { fw: 390, gut: 24, ring: 84, num: 34, arrow: 0, gap: 27.2, L: [0.48, 0.64], R: [0.74, 0.88], orange: false, imgX: 77 },
+}
+const HL_BAR = 80      // the in-frame bar
+const HL_STAGE = 820   // the stage under it
+const HL_FOOT = 56     // the name's box ends this far above the stage's foot
+const HL_HAIR = 'rgba(238,227,209,0.22)'
+
+// Book now (1:4501): a square orange button, Anton 16 tracked .02em, the arrow 14 to the right of the label.
+// The pricing cards' three buttons (1:5117 · 1:5158 · 1:5199) are the same box in another ground and ink: `bg` and `ink` override the orange.
+// The enquiry form's submit is the seam's own element (`as`: the `<a href="mailto:">`, the refusing `role="button"` or the inert span) with its props
+// (`tagProps`), so the pill is one box for every reader; `style` is the caller's last word.
+function HeadlinerPill({ s, label, to, ext, u, bg = s.onScheme[1].activeBg, ink = s.onScheme[1].activeFg, as, tagProps, style }) {
+  const link = as ? tagProps : ext !== undefined ? extLink(s, ext) : s.live && to ? { href: `#${to}` } : null
+  const Tag = as ?? (link ? 'a' : 'span')
+  return (
+    <Tag {...link} style={{
+      ...row(u(14)), flex: 'none', height: u(46), boxSizing: 'border-box', padding: `0 ${u(18)}`, cursor: 'pointer', textDecoration: 'none',
+      background: bg, border: `1px solid ${bg}`, color: ink, whiteSpace: 'nowrap',
+      fontFamily: s.label, fontWeight: 400, fontSize: u(16), letterSpacing: '0.02em', textTransform: 'uppercase', lineHeight: 'normal', ...style,
+    }}>
+      {label ?? s.cta1}
+      <svg aria-hidden viewBox="0 0 16 14" fill="none" style={{ display: 'block', width: u(16), height: u(14), flex: 'none' }}>
+        <path d="M0 7H13M8 1.5L14 7L8 12.5" stroke={ink} strokeWidth="2.4" />
+      </svg>
+    </Tag>
+  )
+}
+
+// The hamburger (1:15273): three 2px bars 20 wide and 6 apart in a 26 glyph in a 46 button; the button stands left of the gutter
+// by the 13px the bars sit in from it, so the ink starts on the gutter (the standing rule puts it left, where the frames' wordmark is).
+function HeadlinerBurger({ color, menu, u }) {
+  return (
+    <span onClick={menu?.toggle} style={{
+      ...row('0px', { justifyContent: 'center' }), flex: 'none', cursor: 'pointer', width: u(46), height: u(46), marginLeft: `-${u(13)}`,
+    }}>
+      <svg aria-hidden viewBox="0 0 26 26" fill="none" style={{ display: 'block', width: u(26), height: u(26) }}>
+        <path d="M3 7H23M3 13H23M3 19H23" stroke={color} strokeWidth="2" strokeLinecap="square" />
+      </svg>
+    </span>
+  )
+}
+
+function HeadlinerHero({ s, menu }) {
+  const dev = s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop'
+  const P = HEADLINER_HERO[dev]
+  const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
+  const tok = s.onScheme[1]
+  const orange = tok.activeBg
+  const cream = tok.bg
+  const black = tok.activeFg
+  const [l0, l1] = P.L
+  const [r0, r1] = P.R
+  const pct = (f) => `${(f * 100).toFixed(3)}%`
+  const poly = (...pts) => `polygon(${pts.map(([x, y]) => `${x} ${y}`).join(', ')})`
+  // the three zones, in the stage's own box
+  const zone = {
+    left: poly(['0%', '0%'], [pct(l0), '0%'], [pct(l1), '100%'], ['0%', '100%']),
+    right: poly([pct(r0), '0%'], ['100%', '0%'], ['100%', '100%'], [pct(r1), '100%']),
+  }
+  // and the same three in the name's box: x is the stage's less the gutter, y is the box's own 100% less / plus the stage's offsets
+  const X = (f) => `calc(${(f * 100).toFixed(3)}cqw - ${u(P.gut)})`
+  const Y0 = `calc(100% - ${u(HL_STAGE - HL_FOOT)})`
+  const Y1 = `calc(100% + ${u(HL_FOOT)})`
+  const FAR = `calc(150cqw)`
+  const nameZone = {
+    left: poly([`calc(-50cqw)`, Y0], [X(l0), Y0], [X(l1), Y1], [`calc(-50cqw)`, Y1]),
+    centre: poly([X(l0), Y0], [X(r0), Y0], [X(r1), Y1], [X(l1), Y1]),
+    right: poly([X(r0), Y0], [FAR, Y0], [FAR, Y1], [X(r1), Y1]),
+  }
+  const nameStyle = {
+    margin: 0, gridArea: '1 / 1', fontFamily: s.display, fontWeight: 400, textTransform: 'uppercase',
+    fontSize: fitSz(s, u(dev === 'desktop' ? 267.84 : dev === 'tablet' ? 156 : 58), s.dispXl), lineHeight: 0.98, letterSpacing: '-0.005em',
+    overflowWrap: s.titleK < 1 ? 'break-word' : undefined,
+  }
+  const SEAT = [
+    { bg: tok.chips[3].bg, fg: cream }, { bg: tok.chips[1].bg, fg: black }, { bg: tok.chips[2].bg, fg: black },
+    { bg: tok.chips[0].bg, fg: cream }, { bg: tok.chips[4].bg, fg: black }, { line: true, fg: cream },
+  ]
+  const badge = s.showBadge === 'show'
+  const numeral = String(s.badgeText || '').toUpperCase()
+  const D = P.ring
+  // The frame draws two characters; a third (the cap is 3) sets at 0.72 so three capital Ws still clear the 56 px hole at 390.
+  const fs = numeral.length > 2 ? P.num * 0.72 : P.num
+  return (
+    <div style={{
+      position: 'relative', width: '100%', aspectRatio: `${P.fw} / 900`, maxHeight: s.narrow ? s.heroH : 900 * 0.82, overflow: 'hidden',
+      background: s.bg, color: s.tx,
+    }}>
+      {/* a published window wider than the stage: the orange field runs on to the edge, the maroon already does */}
+      {P.orange && <div aria-hidden style={{ position: 'absolute', right: 0, width: s.surplus, top: `${(HL_BAR / 900) * 100}%`, bottom: 0, background: orange }} />}
+      <div style={{ position: 'absolute', top: 0, bottom: 0, left: s.surplus, right: s.surplus, containerType: 'inline-size' }}>
+        {/* the bar */}
+        <div style={{
+          position: 'absolute', left: 0, right: 0, top: 0, height: u(HL_BAR), boxSizing: 'border-box', borderBottom: `1px solid ${HL_HAIR}`,
+          background: s.bg, zIndex: 4,
+        }}>
+          <div style={{
+            position: 'absolute', left: u(P.gut), right: u(P.gut), top: u(16.5), ...row('0px', { justifyContent: 'space-between' }),
+            visibility: menu?.open ? 'hidden' : undefined,
+          }}>
+            <HeadlinerBurger color={cream} menu={menu} u={u} />
+            <HeadlinerPill s={s} to={s.bookTo} u={u} />
+          </div>
+        </div>
+
+        {/* the stage */}
+        <div style={{ position: 'absolute', left: 0, right: 0, top: u(HL_BAR), height: u(HL_STAGE) }}>
+          {/* The 390 frame sets its picture in a box 77 to the right of the stage (the right 77 fall off it); the same
+              picture in the stage's own box, drawn 77 to the right of its centred cover, is that without a box the
+              maroon wedge already covers on the left (and which no ink of a chip meets by being wider). */}
+          <div style={{ position: 'absolute', inset: 0 }}>
+            <Photo s={s} initialsSize={96} style={P.imgX ? { objectPosition: `calc(50% + ${u(P.imgX)}) 50%` } : undefined} />
+          </div>
+          <div aria-hidden style={{ position: 'absolute', inset: 0, background: s.bg, clipPath: zone.left }} />
+          {P.orange && (
+            <div aria-hidden style={{ position: 'absolute', inset: 0, background: orange, clipPath: zone.right }}>
+              <HeadlinerWaves dev={dev} />
+            </div>
+          )}
+
+          {/* the ringed numeral (one svg, the disc its viewBox, so the builder's seal rule boxes it whole) and the block arrow */}
+          {badge && (
+            <svg viewBox={`0 0 ${D} ${D}`} fill="none" style={{
+              position: 'absolute', right: u(P.gut), top: u(48), width: u(D), height: u(D), display: 'block', overflow: 'visible',
+            }}>
+              <circle cx={D / 2} cy={D / 2} r={D / 2 - 7} stroke={black} strokeWidth="14" />
+              <text x={D / 2} y={D / 2 + fs * 0.463} textAnchor="middle" fill={black} fontFamily={s.display} fontSize={fs}
+                letterSpacing={-0.005 * fs}>{numeral}</text>
+            </svg>
+          )}
+          {P.arrow > 0 && (
+            <HeadlinerBlockArrow fill={black} width={P.arrow} style={{ position: 'absolute', right: u(P.gut), top: u(204), width: u(P.arrow), height: 'auto' }} />
+          )}
+
+          {/* the avatar, the chips and the name, anchored at the foot so a longer name grows upward */}
+          <div style={{ position: 'absolute', left: u(P.gut), right: u(P.gut), bottom: u(HL_FOOT), ...col(u(P.gap)) }}>
+            <div style={col(u(14), { alignItems: 'flex-start' })}>
+              <div style={{ width: u(72), height: u(72), overflow: 'hidden', background: tok.box1 }}>
+                <Photo s={s} avatar initialsSize={28} />
+              </div>
+              {s.showTags === 'show' && (
+                <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'flex-start', gap: u(6) }}>
+                  {s.tagChips.map((c, i) => {
+                    const t = SEAT[i % 6]
+                    return (
+                      <span key={i} style={{
+                        ...row('0px'), height: u(t.line ? 30 : 28), padding: `0 ${u(12)}`, boxSizing: 'border-box', borderRadius: s.radiusChip,
+                        whiteSpace: 'nowrap', background: t.bg, color: t.fg, border: t.line ? `1px solid ${t.fg}` : undefined,
+                        fontFamily: s.label, fontWeight: 400, fontSize: u(13), letterSpacing: '0.02em', textTransform: 'uppercase', lineHeight: 'normal',
+                      }}>{c.label}</span>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
+            <div style={{ display: 'grid' }}>
+              <h1 style={{ ...nameStyle, color: orange, clipPath: nameZone.left }}>{s.heroTitle}</h1>
+              <div aria-hidden style={{ ...nameStyle, color: cream, clipPath: nameZone.centre }}>{s.heroTitle}</div>
+              <div aria-hidden style={{ ...nameStyle, color: black, clipPath: nameZone.right }}>{s.heroTitle}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // v0 — Header layout 1 · Hero (§10.2 reference design)
 //
 // Full-bleed photograph under a bottom-weighted scrim: the nav rides the top
@@ -2347,6 +2536,7 @@ function PaperbackHero({ s, menu }) {
 function HeaderV0({ s, menu }) {
   if (s.lattice) return <LatticeHero s={s} menu={menu} />
   if (s.paperback) return <PaperbackHero s={s} menu={menu} />
+  if (s.headliner) return <HeadlinerHero s={s} menu={menu} />
   const centred = s.align === 'centre'
   // Both reference frames are transcribed verbatim (§5.5). 768: 30px gutters,
   // a 144px portrait card, identity stacked 40/24/36/30. 390: 10px gutters, a
@@ -4784,9 +4974,96 @@ function PaperbackBio({ s }) {
   )
 }
 
+// Headliner's bio (Batch 2 file, 1:4627 · 1:15396 · 1:16446: 1440 x 832, 768 x 1293, 390 x 1209; no component sets, so the
+// verdict came from the pictures and the code: an own tree). Neither Retro's nor Lime's layout-1 bio sets a head rotated a
+// quarter turn UNDER nothing and OVER a square portrait, so the block stands alone, as Lattice's and Paperback's do.
+// Desktop is three 426.016 columns in one 640 row (49 in, 32 apart, 96 above and below); the first holds only what the
+// standing rules removed (`KM bio`, the `001` and `Structure · Bio_01` chips), so it is a seat; the second is the 426 x 640
+// portrait on its orange ground with the statement laid over it, its first line standing 198 left of the photograph; the
+// third is the Fraunces lead at the top and a hairline, `About` and the Inter paragraph at the foot. 768 and 390 stack the
+// seat (101.75 to the portrait), the portrait (426 centred, 342 at 390) and the lower block, with 77 / 58 above and below.
+//
+// The statement is Anton at 150 / 124.84 / 54.43 frame px, one string turned -90 degrees and right-aligned (so its ends meet
+// at the portrait's top edge), 0.98 leading, -0.005em. It is a box the portrait's height long that wraps like any heading
+// (the frame's own break, `READS THE` / `ROOM`, falls out of a 5em measure at every width, the narrowest included, where
+// the 640 would hold it on one line) and grows to the right a line at a time. Written as a transform, not `writing-mode`,
+// because the frames' own box is a rotated horizontal one and the glyph seats differ by a few px between the two.
+//
+// Draws what the standing rules leave: no `KM bio` eyebrow, no `001` / `Structure · Bio_01` chips (their seats stay as
+// padding, so the portrait keeps the frame's relation), and no badge (the frame draws none). Fields it reads: `heading`,
+// `para1` (the lead), `para2` (the About paragraph), `image`.
+const HEADLINER_BIO = {
+  desktop: { fw: 1440, top: 96, foot: 96, side: 49, colW: 426.016, h2: 150, x0: -198, y0: 0, lead: 34 },
+  tablet: { fw: 768, top: 77, foot: 77, seat: 101.75, colW: 426, h2: 124.839, x0: -149.65, y0: 0.85, lead: 31, lowGap: 32.25, lowW: 716, lowMin: 365, leadTop: 24.02, leadMin: 163.98 },
+  mobile: { fw: 390, top: 58, foot: 58, seat: 101.75, colW: 342, h2: 54.432, x0: -11.92, y0: 1.3, lead: 28, lowGap: 32, lowW: 342, lowMin: 319.47, leadTop: 0, leadMin: 142.67 },
+}
+const HL_BIO_HAIR = 'rgba(30,30,30,0.18)'   // the frames' own literal, not a variable
+function HeadlinerBio({ s }) {
+  const dev = s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop'
+  const P = HEADLINER_BIO[dev]
+  const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
+  const ems = s.titleWordEms
+  const statement = (
+    <h2 style={{
+      position: 'absolute', left: u(P.x0), top: u(P.y0), margin: 0, textAlign: 'right', textTransform: 'uppercase',
+      width: ems ? `min(${u(640)}, max(5em, ${ems}em))` : `min(${u(640)}, 5em)`,
+      transformOrigin: '100% 0', transform: 'translateX(-100%) rotate(-90deg)',
+      fontFamily: s.display, fontWeight: 400, lineHeight: 0.98, letterSpacing: '-0.005em', color: s.activeFg,
+      fontSize: ems ? `min(${u(P.h2)}, calc(${u(640)} / ${ems}))` : u(P.h2),
+    }}>{s.title}</h2>
+  )
+  const portrait = (
+    <div style={{ position: 'relative', flex: 'none', width: u(P.colW), height: u(640) }}>
+      <div style={{ position: 'absolute', inset: 0, background: s.ac }}>
+        <Photo s={s} initialsSize={96} />
+      </div>
+      {statement}
+    </div>
+  )
+  const lead = s.bioP1 && (
+    <p style={{
+      margin: 0, fontFamily: s.serif, fontWeight: 300, fontSize: u(P.lead), lineHeight: 1.06, letterSpacing: '-0.015em', color: s.text1,
+      whiteSpace: 'pre-line',
+    }}>{s.bioP1}</p>
+  )
+  const foot = s.bioP2 && (
+    <div style={{ borderTop: `1px solid ${HL_BIO_HAIR}`, ...col(u(20), { paddingTop: u(dev === 'desktop' ? 20 : 22) }) }}>
+      <span style={{ fontFamily: s.label, fontWeight: 400, fontSize: u(16), lineHeight: 1.05, letterSpacing: '0.02em', textTransform: 'uppercase', color: s.text3 }}>About</span>
+      <p style={{
+        margin: 0, fontFamily: s.body, fontWeight: 400, fontSize: u(17), lineHeight: 1.5, letterSpacing: '-0.015em', color: s.text1,
+        whiteSpace: 'pre-line',
+      }}>{s.bioP2}</p>
+    </div>
+  )
+  return (
+    <div style={{ position: 'relative', containerType: 'inline-size', overflow: 'hidden' }}>
+      {dev === 'desktop' ? (
+        <div style={{ ...row(u(32), { alignItems: 'stretch' }), boxSizing: 'border-box', padding: `${u(P.top)} ${u(P.side)} ${u(P.foot)}` }}>
+          <div style={{ flex: 'none', width: u(P.colW) }} />
+          {portrait}
+          <div style={col(u(24), { flex: 'none', width: u(P.colW), justifyContent: 'space-between', minHeight: u(640) })}>
+            <div>{lead}</div>
+            {foot}
+          </div>
+        </div>
+      ) : (
+        <div style={{ boxSizing: 'border-box', padding: `${u(P.top)} 0 ${u(P.foot)}` }}>
+          <div style={{ height: u(P.seat) }} />
+          <div style={{ marginLeft: s.mob ? u(24) : 'auto', marginRight: s.mob ? undefined : 'auto', width: u(P.colW) }}>{portrait}</div>
+          <div style={{ boxSizing: 'border-box', marginTop: u(P.lowGap), marginLeft: u((P.fw - P.lowW) / 2), width: u(P.lowW), minHeight: u(P.lowMin) }}>
+            {lead && <div style={{ boxSizing: 'border-box', paddingTop: u(P.leadTop), paddingBottom: u(24), minHeight: u(P.leadMin) }}>{lead}</div>}
+            {foot}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
 function Bio({ s }) {
   if (s.v0 && s.lattice) return <LatticeBio s={s} />
   if (s.v0 && s.paperback) return <PaperbackBio s={s} />
+  if (s.v0 && s.headliner) return <HeadlinerBio s={s} />
   // Lime layout 1 (964:58589 · 986:39877 at 768 · 986:39890 at 390) is the same
   // Figma component as Retro's below, in Lime's mode — but it is not the same
   // tree re-tokened. The middle column is a different composition (one arch-
@@ -7166,6 +7443,161 @@ function PaperbackMedia({ s, m }) {
   )
 }
 
+// Headliner's layout-1 media player (1:4650 · 1:15421 · 1:16471: 1440 / 768 / 390; 1057 / 1219 / 1251 tall).
+// A tree of its own, dispatched from `Media` after its hooks and seam (Lattice's and Paperback's shape), so the published
+// player is the one seam in a new picture (notes/media.md: the `<audio>` is `Media`'s and is assigned imperatively).
+// The frame is a maroon band holding the head (Anton, black), five flush rows on 1 px rules (number, cover, title and sub in
+// Inter Tight, the running time in Anton, a 44 square outlined button; the marked row's title white, its number and button
+// orange) and a 426-tall black card (the photograph, the name, the artist, three 44 squares, a 3 px progress rail), then a
+// square orange Soundcloud button under the list.
+//
+// Every length is the frame's px through `u`, in cqw of a stage as wide as the page (the hero's and the bio's mechanism);
+// the stage's vertical insets are in a child. Desktop is not x 0.82: the stage's width does the scaling. The frame centres its
+// 694.39 of content in a 1057 box (181.3 above and below), so the desktop child holds `minHeight` and centres, which is the
+// frame's number and grows when the artist adds tracks. Not drawn (the standing removals, call 1 of session 0): `TOP TRACKS`
+// and `5 / 5 FEATURED`. Their seat stays as padding at 390 (the head box is the frame's 201.09), as the bio's convention.
+// Named departures: the marked row is the player's track (`at`), not the frame's row 02, and the player names the cued
+// track, not the frame's *Night Rain* (Lattice's rule); the row number is the place (`1`), not `t.n`; the running time is drawn
+// only while it differs from the subtitle (a stored list's `sub` is the whole line).
+const HEADLINER_MEDIA = {
+  desktop: { fw: 1440, top: 96, minH: 1057, side: 48.96, headH: 152.39, h2: 155.52, cols: [884.047, 426.016, 32.015], contentW: 1342.08, card: 426.016, rowH: 85, numW: 34, gap: 16, art: 56, rowT: 22, rowTLh: 26, t: 44, artistTop: 9 },
+  tablet: { fw: 768, top: 77, side: 26.11, headH: 70.55, h2: 72, card: 426, contentW: 715.766, rowH: 85, numW: 34, gap: 16, art: 56, rowT: 22, rowTLh: 26, t: 35, artistTop: 7 },
+  mobile: { fw: 390, top: 58, side: 24, headH: 201.09, h2: 62, card: 342, contentW: 342, rowH: 73, numW: 22, gap: 10, art: 44, rowT: 18, rowTLh: 21, t: 29, artistTop: 7 },
+}
+const HL_MEDIA_DIM = 'rgba(238,227,209,0.72)'   // an unmarked row's ink (the frame's literal)
+const HL_MEDIA_LIT = '#f4f4f4'                   // the marked row's title and sub
+function HeadlinerMedia({ s, m }) {
+  const { at, playing, now, sleeve, sleeveSlot, audio, goTo, toggle, onPick } = m
+  const dev = s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop'
+  const P = HEADLINER_MEDIA[dev]
+  const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
+  const cream = s.chips[3].fg            // tag/4 text, #EEE3D1: the card's ink and the outlined squares
+  const orange = s.onScheme[1].activeBg  // the lit row's and the play button's #F85E34
+  const black = s.activeFg               // the head's and the card's #020202
+  const anton = (size, lh, extra) => ({ fontFamily: s.label, fontWeight: 400, fontSize: size, lineHeight: lh, letterSpacing: '0.02em', textTransform: 'uppercase', ...extra })
+  const ems = s.titleWordEms
+
+  const h2 = s.title ? (
+    <h2 style={{
+      margin: 0, color: black, textTransform: 'uppercase', fontFamily: s.display, fontWeight: 400, lineHeight: 0.98, letterSpacing: '-0.005em',
+      fontSize: ems ? `min(${u(P.h2)}, calc(${u(P.contentW)} / ${ems}))` : u(P.h2),
+    }}>{s.title}</h2>
+  ) : null
+
+  // A 44 square: outlined in cream, or filled orange; the glyph is the frame's triangle, the arrows its line arrow.
+  const square = (fill, onClick, children, key) => (
+    <span key={key} onClick={onClick} style={{
+      ...row('0px', { justifyContent: 'center' }), flex: 'none', width: u(44), height: u(44), boxSizing: 'border-box', cursor: onClick ? 'pointer' : undefined,
+      background: fill ? orange : 'transparent', border: `1px solid ${fill ? orange : cream}`,
+    }}>{children}</span>
+  )
+  // The frame's glyphs, drawn as the pill draws its arrow (`u` lengths, so a numeric helper cannot serve): the 10 x 12 triangle,
+  // a pause (two bars, the frame draws none) and the 14 x 11 line arrow at stroke 2 (the transport's).
+  const glyph = (w, h, vb, children) => (
+    <svg aria-hidden viewBox={vb} fill="none" style={{ display: 'block', width: u(w), height: u(h), flex: 'none', overflow: 'visible' }}>{children}</svg>
+  )
+  const tri = (c) => glyph(10, 12, '0 0 10 12', <path d="M0 0L10 6L0 12V0Z" fill={c} />)
+  const bars = (c) => glyph(10, 12, '0 0 10 12', <path d="M0 0H4V12H0ZM6 0H10V12H6Z" fill={c} />)
+  const arrow = (back) => glyph(14, 11, '0 0 14 11', <path d={back ? 'M14 5.5H1M6 0L0 5.5L6 11' : 'M0 5.5H13M8 0L14 5.5L8 11'} stroke={cream} strokeWidth="2" />)
+
+  const list = (
+    <div style={{ borderBottom: `1px solid ${HL_HAIR}` }}>
+      {s.tracks.length === 0 && (
+        <div style={{ ...anton(u(16), 1.05, { color: HL_MEDIA_DIM }), borderTop: `1px solid ${HL_HAIR}`, padding: `${u(30)} 0` }}>{s.mediaEmpty}</div>
+      )}
+      {s.tracks.map((t, i) => {
+        const marked = i === at
+        const dur = t.dur && t.dur !== t.rel ? t.dur : ''
+        const text = marked ? HL_MEDIA_LIT : HL_MEDIA_DIM
+        return (
+          <div key={i} onClick={onPick(i)} style={{
+            ...row(u(P.gap)), boxSizing: 'border-box', minHeight: u(P.rowH), padding: `0 ${u(2)} 0 0`, borderTop: `1px solid ${HL_HAIR}`,
+            cursor: s.live ? 'pointer' : undefined,
+          }}>
+            <span style={anton(u(16), 1.05, { flex: 'none', width: u(P.numW), color: marked ? orange : HL_MEDIA_DIM })}>{i + 1}</span>
+            <span style={{ flex: 'none', width: u(P.art), height: u(P.art), position: 'relative', overflow: 'hidden', background: s.box1 }}>
+              <Photo s={s} slot={`tracks:${t.row}`} initialsSize={14} src={t.img} ink={cream} />
+            </span>
+            <span style={col(u(4), { flex: 1, minWidth: 0 })}>
+              <span style={{ fontFamily: s.ui, fontWeight: 500, fontSize: u(P.rowT), lineHeight: u(P.rowTLh), letterSpacing: '-0.015em', color: text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t.name}</span>
+              {t.rel && <span style={{ fontFamily: s.ui, fontWeight: 400, fontSize: u(14), lineHeight: u(17), letterSpacing: '-0.015em', color: text, opacity: 0.8, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t.rel}</span>}
+            </span>
+            {dur && <span style={anton(u(15), 1.05, { flex: 'none', color: marked ? cream : HL_MEDIA_DIM })}>{dur}</span>}
+            {square(marked, undefined, playing && marked ? bars(black) : tri(marked ? black : cream))}
+          </div>
+        )
+      })}
+    </div>
+  )
+
+  const pill = <HeadlinerPill s={s} label="Soundcloud" ext={s.soundcloud} u={u} />
+
+  // The canvas keeps the frame's 164.5 of 293.75 (a mid-song picture); an empty list stands at 0 on both surfaces.
+  const pct = s.live ? now.pct : s.tracks.length ? 56 : 0
+  const card = (
+    <div style={{
+      ...col(u(18)), position: 'relative', boxSizing: 'border-box', width: u(P.card), height: u(426), flex: 'none', padding: u(24), background: black,
+      alignSelf: s.narrow && !s.mob ? 'center' : undefined,
+    }}>
+      <div style={{ flex: '1 1 0', minHeight: 0, position: 'relative', overflow: 'hidden', background: s.box1 }}>
+        <Photo s={s} slot={sleeveSlot} initialsSize={44} src={sleeve} ink={cream} />
+      </div>
+      {/* The transport stands on the row's foot (the frame's offsets 17.11 / 8.3 / 2.39 are the row less the 44), not its middle. */}
+      <div style={row(u(16), { justifyContent: 'space-between', alignItems: 'flex-end' })}>
+        <div style={col(0, { flex: 1, minWidth: 0 })}>
+          <span style={{ fontFamily: s.display, fontWeight: 400, fontSize: u(P.t), lineHeight: 0.98, letterSpacing: '-0.005em', textTransform: 'uppercase', color: cream, overflowWrap: 'anywhere' }}>{now.track}</span>
+          {/* The frame's artist line is an 18 box whose 14.7 text starts 9 (7 narrow) down, so it overhangs the block's foot by 5.7 (3.7). */}
+          <span style={anton(u(14), u(14.7), {
+            color: s.text1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+            margin: `${u(P.artistTop)} 0 ${u(3.3 - P.artistTop)}`,
+          })}>{now.by}</span>
+        </div>
+        <div style={row(u(6), { flex: 'none' })}>
+          {square(false, s.live ? () => goTo(at - 1) : undefined, arrow(true), 'prev')}
+          {square(true, s.live ? toggle : undefined, playing ? bars(black) : tri(black), 'play')}
+          {square(false, s.live ? () => goTo(at + 1) : undefined, arrow(false), 'next')}
+        </div>
+      </div>
+      <div style={row(u(12), { color: cream })}>
+        <span style={anton(u(13), 1.05, { flex: 'none', width: u(30.125) })}>{now.at}</span>
+        <span aria-hidden style={{ flex: 1, minWidth: 0, height: u(3), background: 'rgba(238,227,209,0.22)', position: 'relative' }}>
+          <span style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: `${pct}%`, background: orange }} />
+        </span>
+        <span style={anton(u(13), 1.05, { flex: 'none', width: u(30.125), textAlign: 'right' })}>{now.of}</span>
+      </div>
+      {audio}
+    </div>
+  )
+
+  return (
+    <div style={{ position: 'relative', containerType: 'inline-size', overflow: 'hidden' }}>
+      <div style={{
+        boxSizing: 'border-box', padding: `${u(P.top)} ${u(P.side)}`, minHeight: P.minH ? u(P.minH) : undefined,
+        display: 'flex', flexDirection: 'column', justifyContent: 'center',
+      }}>
+        <div style={{ minHeight: u(P.headH) }}>{h2}</div>
+        <div style={{ marginTop: u(44) }}>
+          {s.narrow ? (
+            <div style={col(u(26))}>
+              {card}
+              {list}
+              <span style={{ alignSelf: 'flex-start' }}>{pill}</span>
+            </div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: `${u(P.cols[0])} ${u(P.cols[1])}`, columnGap: u(P.cols[2]), alignItems: 'start' }}>
+              <div style={col(u(26))}>
+                {list}
+                <span style={{ alignSelf: 'flex-start' }}>{pill}</span>
+              </div>
+              {card}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function Media({ s }) {
   // Hooks before the layout branch — the older three-card design plays too.
   // `playing` mirrors the element's own play/pause events rather than being
@@ -7274,6 +7706,9 @@ function Media({ s }) {
   }
   if (s.v0 && s.paperback) {
     return <PaperbackMedia s={s} m={{ at, count, playing, now, sleeve, sleeveSlot, audio, goTo, toggle, onPick }} />
+  }
+  if (s.v0 && s.headliner) {
+    return <HeadlinerMedia s={s} m={{ at, count, playing, now, sleeve, sleeveSlot, audio, goTo, toggle, onPick }} />
   }
 
   // Lime layout 1 (964:58590 · 986:39879 at 768 · 986:39891 at 390) is Retro's
@@ -11381,6 +11816,132 @@ function PaperbackPricing({ s, g }) {
   )
 }
 
+// Headliner's layout-1 pricing (1:5067 · 1:15838 · 1:16888): a sand band holding a two-line Anton head with the Solo / Trio / Band tabs at its foot,
+// three flat square cards (orange, maroon, teal) of name and unit, price, blurb, a list of numbered rows and a square Book button, and the small print.
+// `fw` the frame's width, `top` the band's vertical inset, `side` its gutter, `h2` the head, `price` the numeral, `blurb` and `sub` the serif sizes,
+// `pad` the card's padding (top, side), `free` the room the tabs leave the head, `cols` / `colGap` / `rowGap` the deck.
+const HEADLINER_PRICING = {
+  desktop: { fw: 1440, top: 96, side: 48.96, h2: 123.84, free: 1078.28, price: 112, blurb: 22, sub: 22, subLh: 23.32, pad: [28, 28], cols: 3, colGap: 16, rowGap: 16 },
+  tablet: { fw: 768, top: 77, side: 26.11, h2: 77, free: 451.97, price: 69, blurb: 22, sub: 22, subLh: 23.32, pad: [24, 21], cols: 2, colGap: 16, rowGap: 36 },
+  mobile: { fw: 390, top: 58, side: 24, h2: 50, free: 342, price: 45, blurb: 20, sub: 20, subLh: 21.2, pad: [20, 16], cols: 1, colGap: 16, rowGap: 28 },
+}
+function HeadlinerPricing({ s, g }) {
+  const { shown, active, pressChip } = g
+  const dev = s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop'
+  const P = HEADLINER_PRICING[dev]
+  const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
+  const O = s.onScheme
+  const sand = O[1].bg          // the type on a maroon or teal card and the third button's ground, #EEE3D1
+  const orange = O[1].activeBg  // the first card's ground and the second button's, #F85E34
+  const maroon = O[3].bg        // #760000
+  const teal = O[6].bg          // #3B758B
+  const black = s.activeFg      // the head's and the orange card's ink, #020202
+  const ink = s.text1           // the tabs', the first button's and the small print's, #1E1E1E
+  const anton = (size, extra) => ({ fontFamily: s.label, fontWeight: 400, fontSize: size, lineHeight: 'normal', letterSpacing: '0.02em', textTransform: 'uppercase', ...extra })
+  // The three seats by the package's place in the WHOLE stored list (`t.n % 3`): a filter that hides one card must not recolour the rest, and the
+  // frame's lit Solo tab still draws all three. `row` is the list's ink, `hair` the rule between its rows, `btn` the button's ground and type.
+  const SEATS = [
+    { bg: orange, fg: black, row: black, hair: HL_GAL_HAIR, btn: ink, btnFg: sand },
+    { bg: maroon, fg: sand, row: HL_MEDIA_LIT, hair: HL_HAIR, btn: orange, btnFg: black },
+    { bg: teal, fg: sand, row: HL_MEDIA_LIT, hair: HL_HAIR, btn: sand, btnFg: ink },
+  ]
+
+  // The head: the frame sets it in two <p>s, which a measure reproduces only at the width of `Night's set` exactly, so it is two lines at the middle word
+  // (the gallery's rule), the space kept before the <br> so the node's text is the field's own. The eyebrow's 31.75 is padding (no field).
+  const words = String(s.title || '').trim().split(/\s+/).filter(Boolean)
+  const cut = words.length > 1 ? Math.ceil(words.length / 2) : 0
+  const h2 = words.length ? (
+    <h2 style={{
+      margin: 0, minWidth: 0, color: black, fontFamily: s.display, fontWeight: 400, lineHeight: 0.98, letterSpacing: '-0.005em', textTransform: 'uppercase', overflowWrap: 'anywhere',
+      fontSize: s.titleWordEms ? `min(${u(P.h2)}, calc(${u(P.free)} / ${s.titleWordEms}))` : u(P.h2),
+    }}>{cut ? <>{words.slice(0, cut).join(' ')}{' '}<br />{words.slice(cut).join(' ')}</> : s.title}</h2>
+  ) : null
+
+  // The tabs: 44-tall outlined pills on a 6 gap, the lit one `#1E1E1E` with sand type. They stand over two or more tags only, and at rest none is lit (JP-089).
+  const tabs = s.tierChips.length > 1 ? (
+    <div style={{ ...row(u(6), { flexWrap: 'wrap' }), flex: 'none', maxWidth: '100%', marginLeft: s.mob ? undefined : 'auto' }}>
+      {s.tierChips.map((f, i) => (
+        <span key={i} onClick={s.live ? () => pressChip(i, active) : undefined} style={{
+          ...anton(u(16)), display: 'inline-flex', alignItems: 'center', justifyContent: 'center', boxSizing: 'border-box', height: u(44), padding: `0 ${u(22)}`,
+          borderRadius: s.radiusChip, whiteSpace: 'nowrap', border: `1px solid ${ink}`, background: i === active ? ink : undefined, color: i === active ? sand : ink,
+          cursor: s.live ? 'pointer' : undefined,
+        }}>{f.label}</span>
+      ))}
+    </div>
+  ) : null
+  const head = (
+    <div style={{ minWidth: 0, paddingTop: u(31.75) }}>
+      {s.mob ? <div style={col(u(24), { alignItems: 'flex-start' })}>{h2}{tabs}</div> : <div style={row(u(24), { flexWrap: 'wrap', alignItems: 'flex-end' })}>{h2}{tabs}</div>}
+    </div>
+  )
+
+  const cards = shown.map((t, i) => {
+    const S = SEATS[t.n % 3]
+    const span = P.cols === 2 && i === shown.length - 1 && shown.length % 2 === 1
+    return (
+      // Keyed on the package's place in the WHOLE list, layout 1's rule.
+      <div key={t.n} style={{ minWidth: 0, display: 'flex', gridColumn: span ? '1 / -1' : undefined }}>
+        <div style={{
+          ...col(u(20), { flex: '1 1 auto' }), boxSizing: 'border-box', minWidth: 0, minHeight: u(540), padding: `${u(P.pad[0])} ${u(P.pad[1])}`, background: S.bg, color: S.fg, ...WRAP_LONG,
+        }}>
+          {(!!t.name || !!s.tierUnit) && (
+            <div style={row(u(12), { justifyContent: 'space-between', alignItems: 'center' })}>
+              <span style={anton(u(18), { lineHeight: 1.05, color: S.fg, minWidth: 0 })}>{t.name}</span>
+              {!!s.tierUnit && <span style={anton(u(14), { lineHeight: 1.05, color: S.fg, opacity: 0.75, flex: 'none', whiteSpace: 'nowrap', textAlign: 'right' })}>{s.tierUnit}</span>}
+            </div>
+          )}
+          {/* The price is one run in the display face, as the frame sets `£1,200`: the lead, the numeral and a range's second half are spans of one size, so a
+              long tail wraps at its spaces. A price with no digit (prose) sets a size smaller and wraps anywhere in its seat. */}
+          {(!!t.lead || !!t.amount || !!t.tail) && (
+            <div style={{
+              minWidth: 0, fontFamily: s.display, fontWeight: 400, letterSpacing: '-0.005em', textTransform: 'uppercase', color: S.fg,
+              fontSize: t.prose ? u(P.price * 0.6) : u(P.price), lineHeight: t.prose ? 1.05 : 0.98, ...(t.prose ? { overflowWrap: 'anywhere' } : {}),
+            }}>
+              {!!t.lead && <span style={{ display: 'inline-block' }}>{t.lead}</span>}
+              <span style={t.prose ? undefined : { display: 'inline-block', whiteSpace: 'nowrap' }}>{t.amount}</span>
+              {!!t.tail && <span style={{ marginLeft: '0.25em' }}>{t.tail}</span>}
+            </div>
+          )}
+          {!!t.blurb && <p style={{ margin: 0, fontFamily: s.serif, fontWeight: 300, fontSize: u(P.blurb), lineHeight: 1.15, letterSpacing: '-0.015em', color: S.fg }}>{t.blurb}</p>}
+          {/* The list is the card's flex remainder (the frame's four-row card stands the five-row card's 221), closed by its own foot rule. */}
+          <div style={{ flex: '1 1 auto', borderBottom: `1px solid ${S.hair}` }}>
+            {t.feats.map((f, j) => (
+              <div key={j} style={row(u(12), { alignItems: 'flex-start', justifyContent: 'space-between', boxSizing: 'border-box', minHeight: u(44), padding: `${u(11)} 0`, borderTop: `1px solid ${S.hair}` })}>
+                <span style={{ minWidth: 0, fontFamily: s.body, fontWeight: 400, fontSize: u(16), lineHeight: u(21), letterSpacing: '-0.015em', color: S.row }}>{f}</span>
+                <span style={anton(u(14), { flex: 'none', lineHeight: u(21), color: S.fg })}>{String(j + 1).padStart(2, '0')}</span>
+              </div>
+            ))}
+          </div>
+          {!!s.tierRowCta && (
+            <div style={row(0, { alignItems: 'flex-start' })}>
+              <HeadlinerPill s={s} label={s.tierRowCta} to={s.tierBookTo} u={u} bg={S.btn} ink={S.btnFg} />
+            </div>
+          )}
+        </div>
+      </div>
+    )
+  })
+
+  return (
+    <div style={{ position: 'relative', containerType: 'inline-size', overflow: 'hidden' }}>
+      <div style={{ paddingTop: u(P.top), paddingBottom: u(P.top) }}>
+        <div style={col(u(40), { margin: `0 ${u(P.side)}`, ...WRAP_LONG })}>
+          {head}
+          {cards.length > 0 && (
+            <div style={{ display: 'grid', alignItems: 'stretch', columnGap: u(P.colGap), rowGap: u(P.rowGap), gridTemplateColumns: `repeat(${P.cols}, minmax(0, 1fr))` }}>{cards}</div>
+          )}
+          {s.tiers.length === 0 && (
+            <div style={{ ...anton(u(18), { color: black }), boxSizing: 'border-box', background: orange, padding: `${u(24)} ${u(28)}` }}>No packages yet.</div>
+          )}
+          {!!s.pricingSub && (
+            <p style={{ margin: 0, fontFamily: s.serif, fontWeight: 300, fontSize: u(P.sub), lineHeight: u(P.subLh), letterSpacing: '-0.015em', color: ink }}>{s.pricingSub}</p>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function Pricing({ s }) {
   // The selected filter chip, gated on `s.live` below like Repertoire's: it is
   // a real control in the published tab and inert on the editor canvas, which
@@ -11483,6 +12044,8 @@ function Pricing({ s }) {
     // that clips, or the rings would scroll the 390 page sideways.
     // Lattice's layout-1 pricing is a block of its own (LatticePricing), after the seam: the chip filter and
     // the pick above are shared whole, and the block is the picture.
+    // Headliner's (1:5067 · 1:15838 · 1:16888) is a block of its own too, handed the same seam.
+    if (s.limeTree && s.headliner) return <HeadlinerPricing s={s} g={{ shown, active, pressChip }} />
     if (s.limeTree && s.lattice) return <LatticePricing s={s} g={{ shown, active, pressChip }} />
     // Paperback's (1:2968 · 1:11610 · 1:12793) is a block of its own as well, handed the same seam.
     if (s.limeTree && s.paperback) return <PaperbackPricing s={s} g={{ shown, active, pressChip }} />
@@ -14529,7 +15092,7 @@ function Repertoire({ s }) {
     // reference frames show.
     // Lattice's frames draw twelve a page at every width (two columns of six at 768, one of twelve
     // at 390), so it is the one template whose narrow page is not six.
-    const perPage = s.narrow && !s.lattice && !s.paperback ? 6 : 12
+    const perPage = s.narrow && !s.lattice && !s.paperback && !s.headliner ? 6 : 12
     // The chip index, clamped: the row is derived from the artist's tags, so a
     // tag they delete can leave `chip` past the end of it.
     const active = s.live ? Math.min(chip, s.repChips.length - 1) : 0
@@ -14554,9 +15117,9 @@ function Repertoire({ s }) {
     // page offset — not its place on the screen. Both narrow frames run the
     // whole six-song page down one column.
     const half = Math.ceil(shown.length / 2)
-    const columns = (s.narrow && !((s.lattice || s.paperback) && !s.mob) ? [shown] : [shown.slice(0, half), shown.slice(half)])
+    const columns = (s.narrow && !((s.lattice || s.paperback || s.headliner) && !s.mob) ? [shown] : [shown.slice(0, half), shown.slice(half)])
       .map((cs, ci) => cs.map((t, i) => ({ ...t, n: pg * perPage + ci * half + i + 1 })))
-    const { labels, at } = pageWindow(pages, pg, s.mob, s.lattice || (s.paperback && !s.mob) ? 4 : undefined)
+    const { labels, at } = pageWindow(pages, pg, s.mob, s.lattice || s.headliner || (s.paperback && !s.mob) ? 4 : undefined)
 
     // Lime — the same component in Lime's mode (964:58592 at 1440, 986:39881 at
     // 768, 986:39893 at 390), placed after the seam as the gallery's block is:
@@ -14614,8 +15177,9 @@ function Repertoire({ s }) {
     if (s.limeTree) {
       // Lattice's layout-1 repertoire is a block of its own (LatticeRepertoire), after the seam: the
       // search, chip and pager state above is shared whole, and the block is the picture.
-      // Paperback's (1:2689 · 1:11313 · 1:12499) is a block of its own as well, handed the same seam.
-      if (s.lattice || s.paperback) {
+      // Paperback's (1:2689 · 1:11313 · 1:12499) is a block of its own as well, handed the same seam, and Headliner's (1:4830 · 1:15602 · 1:16651):
+      // twelve a page at every width, two columns at 1440 and 768, and a pager of four numbered squares (`1 2 3 … 20`) at all three.
+      if (s.lattice || s.paperback || s.headliner) {
         const g = {
           title, q, active, columns, shown, labels, at,
           noSongs: s.songs.length === 0,
@@ -14624,7 +15188,7 @@ function Repertoire({ s }) {
           onPage: s.live ? (label) => setPage(Number(label) - 1) : undefined,
           onStep: s.live ? (dir) => setPage(Math.max(0, Math.min(pages - 1, pg + dir))) : undefined,
         }
-        return s.paperback ? <PaperbackRepertoire s={s} g={g} /> : <LatticeRepertoire s={s} g={g} />
+        return s.headliner ? <HeadlinerRepertoire s={s} g={g} /> : s.paperback ? <PaperbackRepertoire s={s} g={g} /> : <LatticeRepertoire s={s} g={g} />
       }
       const grunge = s.grunge
       const ed = s.editorial
@@ -17213,6 +17777,332 @@ function PaperbackGallery({ s, g }) {
   )
 }
 
+// Headliner · layout 1 (plans/headliner/layout-1.md, section 4; frames 1:4766 · 1:15538 · 1:16587, 849.25 / 1385.94 / 943.02 tall).
+// A sand band (Scheme 1, the root's own ground: no card), the head in Anton (black, two lines), four flush rows on 1 px rules (the open one
+// orange with an orange block arrow, the others black), a square outlined back link with a teal eye at the row's right, a figure on the
+// frame's 655.047 : 481.469 aspect with a black and an orange 46 square at its foot-right corner, and seven flat 1 : 1 tiles on an 8 gap.
+// The bio's stage pattern: frame px verbatim at all three widths in cqw, vertical insets in a child, `vm.pad` the surplus alone. Two columns
+// at 1440 (540.516 and 655.047 on a 146.5 gutter, 48.96 in), one column at 768 and 390 (a 36 / 28 gap between the head and the viewer).
+// The frame's top and foot are 96 / 77 / 58 and its content the taller column's (the rows, 657.25), so nothing is centred in a taller box.
+// Not drawn (the standing removals): the eyebrow `Media` is `kicker`, seeded empty, so it is drawn only when typed (its dash goes with it);
+// its 37.75 seat stays as padding. The frame has no credit line, so `railLabel` is not read here. The canvas draws no marked tile (the frame
+// rings none; Lattice's rule): a visitor's own pick rings its tile in 3 px of the orange, live only.
+const HEADLINER_GALLERY = {
+  desktop: { fw: 1440, top: 96, side: 48.96, cols: [540.516, 655.047], gutter: 146.5, h2: 129.6, rowH: 85.625, rowT: 64, padT: 13.84, padB: 9.985, iconT: 19.81 },
+  tablet: { fw: 768, top: 77, side: 26.11, gutter: 36, h2: 80, rowH: 69.469, rowT: 48, padT: 12.88, padB: 9.989, iconT: 11.73 },
+  mobile: { fw: 390, top: 58, side: 24, gutter: 28, h2: 52, rowH: 66, rowT: 38, padT: 15.6, padB: 13.3, iconT: 10 },
+}
+// The frame's 16 x 14 line arrow (stroke 2.4) and the 46 square it stands in: the gallery's viewer pair (1:4811) and the testimonials' edge buttons
+// (1:5462 · 1:5477) are the same box (`fill` with a 1 px border of the same, the arrow in `stroke`), so both trees read these two.
+function headlinerLineArrow(u, back, stroke) {
+  return (
+    <svg aria-hidden viewBox="0 0 16 14" fill="none" style={{ display: 'block', width: u(16), height: u(14), flex: 'none', overflow: 'visible' }}>
+      <path d={back ? 'M16 7H3M8 1.5L2 7L8 12.5' : 'M0 7H13M8 1.5L14 7L8 12.5'} stroke={stroke} strokeWidth="2.4" />
+    </svg>
+  )
+}
+function headlinerSquare(u, fill, stroke, back, onClick) {
+  return (
+    <span onClick={onClick} style={{
+      ...row('0px', { justifyContent: 'center' }), flex: 'none', width: u(46), height: u(46), boxSizing: 'border-box', background: fill, border: `1px solid ${fill}`,
+      cursor: onClick ? 'pointer' : undefined,
+    }}>{headlinerLineArrow(u, back, stroke)}</span>
+  )
+}
+const HL_GAL_HAIR = 'rgba(30,30,30,0.18)'   // the frame's row rules: sem/text/1 at .18
+const HL_GAL_TILE = '#EFEFEF'               // the tiles' and the figure's ground
+function HeadlinerGallery({ s, g }) {
+  const { at, marked, strip, go, srcRows, srcAct, video, player } = g
+  const dev = s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop'
+  const P = HEADLINER_GALLERY[dev]
+  const desk = !s.narrow
+  const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
+  const colW = desk ? P.cols[0] : P.fw - 2 * P.side
+  const ink = s.text1           // the back link's ink, #1E1E1E (sem/text/1)
+  const black = s.activeFg      // the head's, the rows' and the arrow's #020202 (sem/active/text)
+  const orange = s.ac           // the open row's, the kicker's and the next square's #F85E34
+  const teal = s.onScheme[6].bg
+  const cream = s.onScheme[2].bg
+  const anton = (size, lh, extra) => ({ fontFamily: s.label, fontWeight: 400, fontSize: size, lineHeight: lh, letterSpacing: '0.02em', textTransform: 'uppercase', ...extra })
+  const wrap = { whiteSpace: 'normal', overflowWrap: 'anywhere', minWidth: 0 }
+
+  // The frame breaks its head after the second word of four (`See us` / `in action`), and no measure can make that break
+  // (`See us in` sets 436.5 at 129.6, narrower than `in action`'s 451), so the head is two lines at the middle word, each wrapping in the
+  // column. One word stands on its line. The space stays before the <br>, so the node's text is the field's own.
+  const words = String(s.title || '').trim().split(/\s+/).filter(Boolean)
+  const cut = words.length > 1 ? Math.ceil(words.length / 2) : 0
+  const h2 = s.title ? (
+    <h2 style={{
+      margin: 0, color: black, textTransform: 'uppercase', fontFamily: s.display, fontWeight: 400, lineHeight: 0.98, letterSpacing: '-0.005em', overflowWrap: 'anywhere',
+      fontSize: s.titleWordEms ? `min(${u(P.h2)}, calc(${u(colW)} / ${s.titleWordEms}))` : u(P.h2),
+    }}>{cut ? <>{words.slice(0, cut).join(' ')}{' '}<br />{words.slice(cut).join(' ')}</> : s.title}</h2>
+  ) : null
+
+  const eyebrow = s.galKicker ? (
+    <div style={row(u(10))}>
+      <span aria-hidden style={{ flex: 'none', width: u(22), height: u(2), background: orange }} />
+      <span style={anton(u(15), u(15.75), { color: orange, ...wrap })}>{s.galKicker}</span>
+    </div>
+  ) : null
+
+  // The frame's glyphs: the 54 x 45 block arrow, the 16 x 14 line arrow (stroke 2.4) and the 96 x 51 eye, drawn at their own boxes.
+  const blockArrow = (fill) => (
+    <svg aria-hidden viewBox="0 0 54 45" fill="none" style={{ display: 'block', width: u(54), height: u(45), overflow: 'visible' }}>
+      <path d="M0 17.1H31.5V3.6L54 22.5L31.5 41.4V27.9H0V17.1Z" fill={fill} />
+    </svg>
+  )
+  const lineArrow = (back, stroke) => headlinerLineArrow(u, back, stroke)
+
+  const rows = (
+    <div style={{ borderBottom: `1px solid ${HL_GAL_HAIR}` }}>
+      {srcRows.map(({ g: r, i }) => {
+        const link = srcAct(r, i)
+        const Tag = link?.href ? 'a' : 'div'
+        return (
+          <Tag key={i} {...link} style={{
+            display: 'block', position: 'relative', boxSizing: 'border-box', minHeight: u(P.rowH), borderTop: `1px solid ${HL_GAL_HAIR}`,
+            padding: `${u(P.padT)} ${u(54 + 16)} ${u(P.padB)} 0`, color: r.on ? orange : black, textDecoration: 'none', cursor: link ? 'pointer' : undefined,
+          }}>
+            <span data-inline={i === 0 ? 'sourceLabel' : undefined} style={{
+              display: 'block', fontFamily: s.display, fontWeight: 400, fontSize: u(P.rowT), lineHeight: 0.95, letterSpacing: '-0.005em', textTransform: 'uppercase', ...wrap,
+            }}>{r.label}</span>
+            <span aria-hidden style={{ position: 'absolute', right: 0, top: u(P.iconT) }}>{blockArrow(r.on ? orange : black)}</span>
+          </Tag>
+        )
+      })}
+    </div>
+  )
+
+  const left = (
+    <div style={col(u(22), { minWidth: 0 })}>
+      <div style={{ minHeight: u(15.75) }}>{eyebrow}</div>
+      {h2}
+      {rows}
+    </div>
+  )
+
+  const back = (
+    <span onClick={s.live ? () => go(0) : undefined} style={{
+      ...row(u(14)), boxSizing: 'border-box', flex: '0 1 auto', minWidth: 0, minHeight: u(46), padding: `0 ${u(18)} 0 ${u(18)}`, border: `1px solid ${ink}`,
+      color: ink, cursor: s.live ? 'pointer' : undefined,
+    }}>
+      <span style={anton(u(16), 'normal', { ...wrap })}>{s.galBackLabel}</span>
+      {lineArrow(false, ink)}
+    </span>
+  )
+  const eye = (
+    <svg aria-hidden viewBox="0 0 96 51" fill="none" style={{ display: 'block', flex: 'none', width: u(96), height: u(51), overflow: 'visible' }}>
+      <path d="M4.0125 25.5C19.3125 6.375 76.6875 6.375 91.9875 25.5C76.6875 44.625 19.3125 44.625 4.0125 25.5Z" stroke={teal} strokeWidth="4.4625" strokeLinejoin="round" />
+      <circle cx="48" cy="25.5" r="10.8375" fill={teal} />
+      <path d="M48 19.125C44.6 23.375 44.6 27.625 48 31.875" stroke={cream} strokeWidth="2.55" strokeLinecap="round" />
+    </svg>
+  )
+  const top = <div style={row(u(12), { justifyContent: 'space-between', alignItems: 'center', minHeight: u(51) })}>{back}{eye}</div>
+
+  const square = (fill, stroke, back, onClick) => headlinerSquare(u, fill, stroke, back, onClick)
+  const figure = (
+    <div style={{ position: 'relative', aspectRatio: '655.047 / 481.469', overflow: 'hidden', background: HL_GAL_TILE }}>
+      {video ? player : (
+        <>
+          <div style={{ position: 'absolute', inset: 0 }}>
+            <Photo s={s} slot={`images:${at}`} initialsSize={52} src={s.images[at]} ink={black} style={{ objectPosition: s.imagesPos[at] }} />
+          </div>
+          <div style={row('0px', { position: 'absolute', right: 0, bottom: 0 })}>
+            {square(black, s.bg, true, s.live ? () => go(at - 1) : undefined)}
+            {square(orange, black, false, s.live ? () => go(at + 1) : undefined)}
+          </div>
+        </>
+      )}
+    </div>
+  )
+
+  // Seven flat tiles at every width on an 8 gap (86.72 / 95.375 / 42 square), no turn, no radius, no sliding window.
+  const thumbs = (
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', columnGap: u(8) }}>
+      {strip.map((i) => (
+        <span key={i} onClick={s.live ? () => go(i) : undefined} style={{
+          position: 'relative', display: 'block', aspectRatio: '1 / 1', overflow: 'hidden', background: HL_GAL_TILE, cursor: s.live ? 'pointer' : undefined,
+        }}>
+          <span style={{ position: 'absolute', inset: 0 }}>
+            <Photo s={s} slot={`images:${i}`} initialsSize={12} src={s.images[i]} ink={black} />
+          </span>
+          {i === marked && <span aria-hidden style={{ position: 'absolute', inset: 0, boxSizing: 'border-box', border: `${u(3)} solid ${orange}`, pointerEvents: 'none' }} />}
+        </span>
+      ))}
+    </div>
+  )
+
+  const right = <div style={col(u(14), { minWidth: 0 })}>{top}{figure}{thumbs}</div>
+  return (
+    <div style={{ position: 'relative', containerType: 'inline-size', overflow: 'hidden' }}>
+      <div style={{ paddingTop: u(P.top), paddingBottom: u(P.top) }}>
+        {desk ? (
+          <div style={{ display: 'grid', gridTemplateColumns: `${u(P.cols[0])} ${u(P.cols[1])}`, columnGap: u(P.gutter), margin: `0 ${u(P.side)}`, alignItems: 'start' }}>
+            {left}{right}
+          </div>
+        ) : (
+          <div style={col(u(P.gutter), { margin: `0 ${u(P.side)}` })}>{left}{right}</div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// Headliner · layout 1 (plans/headliner/layout-1.md, section 5; frames 1:4830 · 1:15602 · 1:16651, 1067 / 1067 / 1603 tall).
+// A cream band (Scheme 2, the root's own ground: no card): the count in Anton (black), a square 1 px outlined search, four 40-tall outlined pill
+// chips (the active one `#1E1E1E` with sand type), twelve flush rows on `rgba(30,30,30,.18)` rules (a maroon Anton number, the title in Anton, the
+// artist in Inter Tight flush right) in two columns of six (one of twelve at 390, 28 apart), and a row of 44 outlined squares (two arrows and
+// `1 2 3 … 20`, the current one filled). `Repertoire`'s seam (search, chips, pager) is handed over in `g`, as Lattice's and Paperback's.
+// The bio's stage pattern: frame px verbatim at all three widths in cqw, vertical insets in a child, `vm.pad` the surplus alone. Desktop and tablet
+// centre the content in a 1067 box (`minHeight` and centring over the 96 / 77 padding, so more songs grow the section), 390 pads 58.
+// The head is a flex row of the count and an empty box the frame holds beside it (an import artefact: 239.67 x 82.06 at 1440, 147.72 at 768,
+// 141.02 x 128.69 at 390): kept as a spacer, because the frame's two-line `240 / SONGS` at 768 and 390 is that box squeezing the count (a flex shrink,
+// not a measure), and at 390 its height is what seats the count 11.09 down. The count's box is the frame's 254.55 at 768 and at most the room the
+// search leaves at 1440 (`hMax`), the head never shrinks, and the search takes what is left of the row (380 at 1440, 261.5 at 768).
+// Not drawn (the standing removals): the eyebrow `— REPERTOIRE` (no field carries it; its 31.75 stays as padding). With one page there is no
+// pager and no seat for it (every template's rule), so the seeded twelve leave the content shorter than the frame's by the pager's 74.
+const HEADLINER_REP = {
+  desktop: { fw: 1440, top: 96, minH: 1067, side: 48.96, search: 380, seat: [239.672, 82.063], h2: 149.76, hMax: 670, fitW: 850, rowT: 30, gap: 14, colGap: 47.983, rowGap: 0, chipPad: 18 },
+  tablet: { fw: 768, top: 77, minH: 1067, side: 26.11, search: 380, seat: [147.719, 0], h2: 93, hMax: 254.547, fitW: 316, rowT: 27, gap: 14, colGap: 47.983, rowGap: 0, chipPad: 18 },
+  mobile: { fw: 390, top: 58, side: 24, seat: [141.016, 128.688], h2: 60, fitW: 173, rowT: 25, gap: 10, rowGap: 28, chipPad: 18 },
+}
+function HeadlinerRepertoire({ s, g }) {
+  const { title, q, onQuery, active, onChip, columns, shown, labels, at, onPage, onStep, noSongs } = g
+  const dev = s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop'
+  const P = HEADLINER_REP[dev]
+  const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
+  const ink = s.text1            // the search's, the chips', the squares' and the artist's #1E1E1E (sem/text/1)
+  const black = s.activeFg       // the count's and the titles' #020202 (sem/active/text)
+  const maroon = s.text3         // the numbers' #760000 (sem/text/3)
+  const sand = s.onScheme[1].bg  // the filled chip's and square's type, #EEE3D1 (scheme/1/bg)
+  const anton = (size, extra) => ({ fontFamily: s.label, fontWeight: 400, fontSize: size, lineHeight: 'normal', letterSpacing: '0.02em', textTransform: 'uppercase', ...extra })
+  const clip = { whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0 }
+
+  const h2 = String(title || '').trim() ? (
+    <h2 style={{
+      margin: 0, flex: '0 1 auto', color: black, textTransform: 'uppercase', fontFamily: s.display, fontWeight: 400, lineHeight: 0.98, letterSpacing: '-0.005em',
+      ...(P.hMax ? { maxWidth: u(P.hMax) } : null),
+      fontSize: s.titleWordEms ? `min(${u(P.h2)}, calc(${u(P.fitW)} / ${s.titleWordEms}))` : u(P.h2),
+    }}>{title}</h2>
+  ) : null
+  const left = (
+    <div style={row(u(28), { alignItems: 'flex-end', flex: 'none' })}>
+      {h2}
+      <span aria-hidden style={{ flex: 'none', width: u(P.seat[0]), height: u(P.seat[1]) }} />
+    </div>
+  )
+
+  // The hint is the placeholder (index.css: ink at .45); the canvas's span draws the same.
+  const hint = 'Search songs or artists…'
+  const hintType = { fontFamily: s.body, fontWeight: 400, fontSize: u(16), letterSpacing: '-0.015em', lineHeight: 'normal' }
+  const search = (
+    <div style={row(0, {
+      boxSizing: 'border-box', height: u(52), border: `1px solid ${ink}`, padding: `0 ${u(16)}`, overflow: 'hidden', color: ink, minWidth: 0,
+      ...(s.mob ? { width: '100%' } : { flex: `0 1 ${u(P.search)}` }),
+    })}>
+      {s.live ? (
+        <input
+          value={q} placeholder={hint} aria-label="Search songs or artists"
+          onChange={(e) => onQuery(e.target.value)}
+          style={{ ...hintType, color: ink, flex: 1, minWidth: 0, border: 'none', outline: 'none', background: 'transparent', padding: 0 }}
+        />
+      ) : (
+        <span style={{ ...hintType, opacity: 0.45, ...clip }}>{hint}</span>
+      )}
+    </div>
+  )
+
+  const head = (
+    <div style={{ paddingTop: u(31.75) }}>
+      {s.mob ? <div style={col(u(24))}>{left}{search}</div> : <div style={row(u(24), { justifyContent: 'space-between', alignItems: 'flex-end' })}>{left}{search}</div>}
+    </div>
+  )
+
+  const chips = (
+    <div style={row(u(8), { flexWrap: 'wrap' })}>
+      {s.repChips.map((f, i) => {
+        const on = i === active
+        return (
+          <span
+            key={i}
+            onClick={s.live ? () => onChip(i) : undefined}
+            style={{
+              ...anton(u(15)), boxSizing: 'border-box', height: u(40), padding: `0 ${u(P.chipPad)}`, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              border: `1px solid ${ink}`, borderRadius: s.radiusChip, background: on ? ink : 'transparent', color: on ? sand : ink,
+              whiteSpace: 'nowrap', cursor: s.live ? 'pointer' : undefined,
+            }}
+          >{f.label}</span>
+        )
+      })}
+    </div>
+  )
+
+  // An artist too long to stand beside its title wraps under it (JP-136) rather than crushing the title; each keeps its own ellipsis at the row's width.
+  const song = (t) => (
+    <div key={t.n} style={row(u(P.gap), { boxSizing: 'border-box', minWidth: 0, padding: `${u(16)} 0`, borderTop: `1px solid ${HL_GAL_HAIR}` })}>
+      <span style={anton(u(15), { flex: 'none', width: u(40), lineHeight: 1.05, color: maroon, whiteSpace: 'nowrap' })}>{String(t.n).padStart(2, '0')}</span>
+      <span style={row(u(P.gap), { flex: 1, minWidth: 0, flexWrap: 'wrap', justifyContent: 'space-between', rowGap: u(4) })}>
+        <span style={{
+          ...clip, flex: '0 1 auto', maxWidth: '100%', color: black, fontFamily: s.display, fontWeight: 400, fontSize: u(P.rowT), lineHeight: u(P.rowT), paddingTop: u(2),
+          letterSpacing: '-0.005em', textTransform: 'uppercase',
+        }}>{t.title}</span>
+        {t.artist && (
+          <span style={{ ...clip, flex: '0 1 auto', maxWidth: '100%', color: ink, fontFamily: s.body, fontSize: u(15), lineHeight: u(19), letterSpacing: '-0.015em' }}>{t.artist}</span>
+        )}
+      </span>
+    </div>
+  )
+  const flat = columns.flat()
+  const list = shown.length === 0 ? (
+    <div style={{ ...anton(u(16), { color: ink }), padding: `${u(24)} 0`, borderTop: `1px solid ${HL_GAL_HAIR}`, borderBottom: `1px solid ${HL_GAL_HAIR}` }}>
+      {noSongs ? 'No songs yet.' : 'No songs match that.'}
+    </div>
+  ) : (
+    <div style={{
+      display: 'grid', alignItems: 'start', gridAutoFlow: 'column', columnGap: u(P.colGap ?? 0), rowGap: u(P.rowGap),
+      gridTemplateColumns: columns.length > 1 ? 'minmax(0, 1fr) minmax(0, 1fr)' : 'minmax(0, 1fr)',
+      gridTemplateRows: `repeat(${columns[0].length}, auto)`, borderBottom: `1px solid ${HL_GAL_HAIR}`,
+    }}>{flat.map(song)}</div>
+  )
+
+  // The frame's 16 x 14 line arrows (stroke 2.4), drawn in their own box; the numbers are Anton 15 in the same 44 squares, the filled one in sand.
+  const square = (key, child, { on, onClick, stretch }) => (
+    <span key={key} onClick={onClick} style={{
+      ...anton(u(15)), boxSizing: 'border-box', height: u(44), display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+      ...(stretch ? { flex: '1 1 0', minWidth: 0 } : { flex: 'none', width: u(44) }), border: `1px solid ${ink}`,
+      background: on ? ink : 'transparent', color: on ? sand : ink, cursor: onClick ? 'pointer' : undefined, whiteSpace: 'nowrap',
+    }}>{child}</span>
+  )
+  const arrow = (back) => (
+    <svg aria-hidden viewBox="0 0 16 14" fill="none" style={{ display: 'block', width: u(16), height: u(14), flex: 'none', overflow: 'visible' }}>
+      <path d={back ? 'M16 7H3M8 1.5L2 7L8 12.5' : 'M0 7H13M8 1.5L14 7L8 12.5'} stroke={ink} strokeWidth="2.4" />
+    </svg>
+  )
+  const pager = labels.length > 0 ? (
+    <div style={row(u(6))}>
+      {square('prev', arrow(true), { onClick: onStep && (() => onStep(-1)) })}
+      {labels.map((p, i) => square(`p${i}`, p, { on: i === at, stretch: s.mob, onClick: onPage && p !== '…' ? () => onPage(p) : undefined }))}
+      {square('next', arrow(false), { onClick: onStep && (() => onStep(1)) })}
+    </div>
+  ) : null
+
+  return (
+    <div style={{ position: 'relative', containerType: 'inline-size', overflow: 'hidden' }}>
+      <div style={{
+        boxSizing: 'border-box', padding: `${u(P.top)} ${u(P.side)}`, minHeight: P.minH ? u(P.minH) : undefined,
+        display: 'flex', flexDirection: 'column', justifyContent: 'center',
+      }}>
+        <div style={col(u(30))}>
+          {head}
+          {chips}
+          {list}
+          {pager}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function Gallery({ s }) {
   // Hooks before the layout branch, the way Media takes them: `s.v0` is a prop
   // and not a hook's business, so the branch below cannot be the thing that
@@ -17371,6 +18261,14 @@ function Gallery({ s }) {
       const picked = s.live && pick >= 0
       const at = picked ? pick : s.images.length > 1 ? 1 : 0
       return <PaperbackGallery s={s} g={{ at, marked: video ? -1 : at, strip, go, srcRows, srcAct, video, player }} />
+    }
+
+    // Headliner's layout-1 gallery is a block of its own (HeadlinerGallery), after the seam. The canvas opens the viewer on the second slot (the
+    // seed's second photograph is the frame's viewer picture, Paperback's shape) and rings no tile; a visitor's pick rings its own.
+    if (s.headliner) {
+      const picked = s.live && pick >= 0
+      const at = picked ? pick : s.images.length > 1 ? 1 : 0
+      return <HeadlinerGallery s={s} g={{ at, marked: picked && !video ? pick : -1, strip, go, srcRows, srcAct, video, player }} />
     }
 
     // Lattice's layout-1 gallery is a block of its own (LatticeGallery), after the seam. It opens on
@@ -19849,6 +20747,201 @@ function PaperbackCalendar({ s, g }) {
   )
 }
 
+// Headliner's layout-1 calendar (plans/headliner/layout-1.md, section 8; frames 1:5205 · 1:15976 · 1:17026, 858.52 / 1044.33 / 1026.9 tall): a flat square
+// cream card on the amber band, 48.96 / 26.11 / 24 in from the edges and nothing centred in a taller box (96 / 76.99 / 58.01 round it). A month half (two 44
+// outlined squares round the Anton month, a weekday row, a grid of 54-tall cells with a top rule only) and a maroon panel of the wave field (the ringed
+// initials, the eye, the two-line head `Pick a date.`, a block arrow) sit side by side at 1440 and stack at 768 and 390, over a foot (the enquiry line and
+// the black Continue). The month, the pick, the arrows and the Continue link are `Calendar`'s, handed over in `g`; only the picture is Headliner's.
+// The panel's height is its own content's at every width (32 / 27 / 22 round a 120 ring row, the in-flow head and a 110 arrow row), and **the narrow frames
+// draw the head `shift` below its flow box, over the arrow row**, where the arrow is turned -90 to point up (a 110 x 132 box at `arrow`'s offsets).
+const HEADLINER_CAL = {
+  desktop: {
+    fw: 1440, top: 96, side: 48.96, left: [32, 32, 0], panel: [32, 32, 32], month: 56, headH: 58.875, head: 149.76, free: 607.047, shift: 0, mark: 50,
+    wave: [671.047, 587.516, 0.577827], line: 26,
+  },
+  tablet: {
+    fw: 768, top: 76.99, side: 26.11, left: [27, 24, 27], panel: [27, 24, 27], month: 45, headH: 48.094, head: 93, free: 224, shift: 109.25, mark: 40, arrow: [38, -22],
+    wave: [357.891, 466.25, 0.375921], line: 20,
+  },
+  mobile: {
+    fw: 390, top: 58.01, side: 24, left: [22, 16, 22], panel: [22, 16, 22], month: 37, headH: 44, head: 60, free: 220, shift: 115.59, mark: 33, arrow: [34, -19],
+    wave: [342, 391.594, 0.336777], line: 24,
+  },
+}
+function HeadlinerCalendar({ s, g }) {
+  const { month, cur, line, step, pick } = g
+  const dev = s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop'
+  const P = HEADLINER_CAL[dev]
+  const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
+  const O = s.onScheme
+  const cream = O[2].bg         // the card's ground and the eye's glint, #F8F2E7
+  const sand = O[1].bg          // the eye, the arrow and Continue's type, #EEE3D1
+  const orange = O[1].activeBg  // the ring, the head, the picked day's numeral, #F85E34
+  const maroon = O[3].bg        // the panel, #760000
+  const black = s.activeFg      // the month, the days, the picked day's ground, the line and Continue's ground, #020202
+  const ink = O[2].text1        // the two squares' outline, #1E1E1E (the seat's own text1 is the amber's #020202)
+  const days = O[2].text3       // the weekday names, #760000
+  const anton = (size, extra) => ({ fontFamily: s.label, fontWeight: 400, fontSize: size, lineHeight: 'normal', letterSpacing: '0.02em', textTransform: 'uppercase', ...extra })
+
+  // The two squares. The arrow that cannot go further has no handler and is dimmed live (JP-152's rule).
+  const square = (back, dir) => {
+    const onClick = step(dir)
+    return (
+      <span aria-hidden onClick={onClick} style={{
+        flex: 'none', boxSizing: 'border-box', width: u(44), height: u(44), border: `1px solid ${ink}`, display: 'flex', alignItems: 'center', justifyContent: 'center',
+        cursor: onClick ? 'pointer' : undefined, opacity: s.live && !onClick ? 0.38 : undefined,
+      }}>
+        <svg aria-hidden viewBox="0 0 16 14" fill="none" style={{ display: 'block', width: u(16), height: u(14), flex: 'none' }}>
+          <path d={back ? 'M16 7H3M8 1.5L2 7L8 12.5' : 'M0 7H13M8 1.5L14 7L8 12.5'} stroke={ink} strokeWidth="2.4" />
+        </svg>
+      </span>
+    )
+  }
+
+  // The month, centred between the squares and fitted to the room they leave by its own width (`month.ems`), at the frame's size wherever it fits. The box is a
+  // container, so its own size is set on it (cqw resolves against the stage there) and the span takes `min(1em, room / ems)`; the row keeps the frame's height
+  // (58.875 / 48.094 / 44: the head's own line and 4 above it, or the squares) so a shrunk month does not move the grid.
+  const ems = month.ems !== undefined ? month.ems : 0
+  const head = (
+    <div style={row(u(12), { height: u(P.headH) })}>
+      {square(true, -1)}
+      <div style={{
+        flex: '1 1 0', minWidth: 0, alignSelf: 'stretch', boxSizing: 'border-box', paddingTop: u(4), containerType: 'inline-size', display: 'flex', alignItems: 'center',
+        justifyContent: 'center', fontSize: u(P.month),
+      }}>
+        <span style={{
+          fontFamily: s.display, fontWeight: 400, letterSpacing: '-0.005em', lineHeight: 0.98, textTransform: 'uppercase', color: black, whiteSpace: 'nowrap',
+          fontSize: ems ? `min(1em, calc(100cqi / ${ems.toFixed(3)}))` : '1em',
+        }}>{month.label}</span>
+      </div>
+      {square(false, 1)}
+    </div>
+  )
+
+  const names = (
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', height: u(34), boxSizing: 'border-box', paddingTop: u(8) }}>
+      {s.calDays.map((d) => (
+        <span key={d} style={anton(u(13), { lineHeight: 1.05, textAlign: 'center', color: days })}>{d}</span>
+      ))}
+    </div>
+  )
+
+  // A day: a 54-tall cell with a 1 px top rule and nothing else (an absent cell draws no rule); the picked one is the black square under an orange numeral.
+  // A booked or past day is the family's: dimmed to .38, no strike, no handler.
+  const day = (c, i) => {
+    if (c.iso === undefined) return <span key={i} />
+    const on = c.iso === cur
+    const onClick = pick(c)
+    return (
+      <span key={i} onClick={onClick} style={{
+        ...anton(u(18)), boxSizing: 'border-box', height: u(54), borderTop: `1px solid ${HL_GAL_HAIR}`, display: 'flex', alignItems: 'center', justifyContent: 'center',
+        background: on ? black : undefined, color: on ? orange : black, opacity: c.booked || c.dead ? 0.38 : undefined, cursor: onClick ? 'pointer' : undefined,
+      }}>{c.d}</span>
+    )
+  }
+
+  const [lt, lx, lb] = P.left
+  const left = (
+    <div style={{ minWidth: 0, boxSizing: 'border-box', borderRight: `1px solid ${HL_GAL_HAIR}`, padding: `${u(lt)} ${u(lx)} ${u(lb)}` }}>
+      {head}
+      <div style={{ marginTop: u(18) }}>
+        {names}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))' }}>{month.cells.map(day)}</div>
+      </div>
+    </div>
+  )
+
+  // The panel. The head is two lines at the middle word (the gallery's and the pricing's rule: no measure makes the frame's break at 390), the space kept before
+  // the <br> so the node's text is the field's own, and it is fitted to the room it has (`s.titleWordEms` is its widest line; `free` is the panel's content
+  // at 1440 and the room left of the up arrow's glyph at 768 and 390). An emptied head keeps its two-line seat.
+  const words = String(s.title || '').trim().split(/\s+/).filter(Boolean)
+  const cut = words.length > 1 ? Math.ceil(words.length / 2) : 0
+  const [pt, px, pb] = P.panel
+  const headEl = words.length ? (
+    <h2 style={{
+      margin: 0, minWidth: 0, position: 'relative', top: P.shift ? u(P.shift) : undefined, color: orange, fontFamily: s.display, fontWeight: 400, lineHeight: 0.98,
+      letterSpacing: '-0.005em', textTransform: 'uppercase', overflowWrap: 'anywhere',
+      fontSize: s.titleWordEms ? `min(${u(P.head)}, calc(${u(P.free)} / ${s.titleWordEms}))` : u(P.head),
+    }}>{cut ? <>{words.slice(0, cut).join(' ')}{' '}<br />{words.slice(cut).join(' ')}</> : s.title}</h2>
+  ) : <div aria-hidden style={{ height: u(P.head * 0.98 * 2) }} />
+  const arrow = (
+    <div aria-hidden style={{ position: 'relative', height: u(110), display: 'flex', justifyContent: 'flex-end', pointerEvents: 'none' }}>
+      {P.arrow ? (
+        <div style={{ position: 'relative', flex: 'none', width: u(132), height: u(110) }}>
+          <div style={{ position: 'absolute', left: u(P.arrow[0]), top: u(P.arrow[1]), width: u(110), height: u(132), display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ transform: 'rotate(-90deg)', flex: 'none' }}>
+              <svg viewBox="0 0 132 110" fill="none" style={{ display: 'block', width: u(132), height: u(110) }}><path d="M0 41.8H77V8.8L132 55L77 101.2V68.2H0V41.8Z" fill={sand} /></svg>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <svg viewBox="0 0 132 110" fill="none" style={{ display: 'block', flex: 'none', width: u(132), height: u(110) }}><path d="M132 68.2H55V101.2L0 55L55 8.8V41.8H132V68.2Z" fill={sand} /></svg>
+      )}
+    </div>
+  )
+  const panel = (
+    <div style={{ position: 'relative', minWidth: 0, overflow: 'hidden', boxSizing: 'border-box', background: maroon, padding: `${u(pt)} ${u(px)} ${u(pb)}`, ...WRAP_LONG }}>
+      <div aria-hidden style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}><HeadlinerWaveField w={P.wave[0]} h={P.wave[1]} sw={P.wave[2]} ink={orange} /></div>
+      <div style={{ position: 'relative' }}>
+        <div style={row(u(16), { justifyContent: 'space-between', alignItems: 'flex-start' })}>
+          <div style={{ flex: 'none', boxSizing: 'border-box', width: u(120), height: u(120), border: `${u(13)} solid ${orange}`, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <span style={anton(u(P.mark), { lineHeight: 1, letterSpacing: '-0.005em', color: orange, position: 'relative', top: '0.04em' })}>{s.initials}</span>
+          </div>
+          <svg aria-hidden viewBox="0 0 120 64" fill="none" style={{ display: 'block', flex: 'none', width: u(120), height: u(64), overflow: 'visible' }}>
+            <path d="M4.8 32C24 8 96 8 115.2 32C96 56 24 56 4.8 32Z" stroke={sand} strokeWidth="5.6" strokeLinejoin="round" />
+            <path d="M60 45.6C67.5111 45.6 73.6 39.5111 73.6 32C73.6 24.4889 67.5111 18.4 60 18.4C52.4889 18.4 46.4 24.4889 46.4 32C46.4 39.5111 52.4889 45.6 60 45.6Z" fill={sand} />
+            <path d="M60 24C55.7333 29.3333 55.7333 34.6667 60 40" stroke={cream} strokeWidth="3.2" strokeLinecap="round" />
+          </svg>
+        </div>
+        {headEl}
+        {arrow}
+      </div>
+    </div>
+  )
+
+  // The foot: the enquiry line (the picked day's, else the prompt; plain text, never the link: Lattice's rule) and Continue, which leads on to the form
+  // (`calBookTo`) when live and is a picture on the canvas. An emptied `cta` drops it. A row at 1440 and 390; at 768 a column in the panel's row, the line
+  // at the top in the frame's 175.891 measure (three lines: `at` would fit only a pixel wider) and Continue at the foot.
+  const pill = s.calCta ? <HeadlinerPill s={s} label={s.calCta} to={s.calBookTo} u={u} bg={black} ink={sand} /> : null
+  const lineEl = (
+    <p style={{
+      margin: 0, minWidth: 0, fontFamily: s.serif, fontWeight: 300, fontSize: u(P.line), lineHeight: 1.06, letterSpacing: '-0.015em', color: black, overflowWrap: 'anywhere',
+      flex: dev === 'tablet' ? undefined : '1 1 0', maxWidth: dev === 'tablet' ? u(175.891) : undefined,
+    }}>{line}</p>
+  )
+  const foot = dev === 'tablet' ? (
+    <div style={col(u(20), { boxSizing: 'border-box', minWidth: 0, borderTop: `1px solid ${HL_GAL_HAIR}`, padding: u(46), justifyContent: 'space-between', alignItems: 'flex-start' })}>
+      {lineEl}
+      {pill}
+    </div>
+  ) : (
+    <div style={row(u(16), {
+      boxSizing: 'border-box', borderTop: `1px solid ${HL_GAL_HAIR}`, minHeight: dev === 'desktop' ? u(79) : undefined,
+      padding: dev === 'desktop' ? `${u(16)} ${u(16)} ${u(16)} ${u(32)}` : u(16), justifyContent: 'space-between',
+    })}>
+      {lineEl}
+      {pill}
+    </div>
+  )
+
+  const two = { display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))' }
+  return (
+    <div style={{ position: 'relative', containerType: 'inline-size', overflow: 'hidden' }}>
+      <div style={{ paddingTop: u(P.top), paddingBottom: u(P.top) }}>
+        <div style={{ margin: `0 ${u(P.side)}`, background: cream }}>
+          {dev === 'desktop' ? (
+            <div style={two}>{left}{panel}<div style={{ gridColumn: '1 / -1' }}>{foot}</div></div>
+          ) : dev === 'tablet' ? (
+            <div>{left}<div style={two}>{panel}{foot}</div></div>
+          ) : (
+            <div>{left}{panel}{foot}</div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function Calendar({ s }) {
   // The month on show, as an offset into `s.calMonths`, and the day the visitor
   // has picked. Both inert on the editor canvas, where the section is a picture
@@ -19938,10 +21031,11 @@ function Calendar({ s }) {
     // Lattice's layout-1 calendar is a block of its own (LatticeCalendar), after the seam: the month, the pick
     // and the arrows are `Calendar`'s and go over in `g`, so the published controls are the one seam in a new
     // picture. The day's handler is the Lime block's (a blocked day has none; the lit day unlights on a second click).
-    // Paperback's (PaperbackCalendar) is the same hand-over in a third picture.
-    if (s.limeTree && (s.lattice || s.paperback)) {
+    // Paperback's (PaperbackCalendar) is the same hand-over in a third picture, and Headliner's (HeadlinerCalendar) in a fourth.
+    if (s.limeTree && (s.lattice || s.paperback || s.headliner)) {
       const pick = (c) => (s.live && !blocked(c) ? () => setSel((v) => (v === c.iso ? '' : c.iso)) : undefined)
-      return s.paperback ? <PaperbackCalendar s={s} g={{ month, cur, line, step, pick }} /> : <LatticeCalendar s={s} g={{ month, cur, line, step, pick }} />
+      return s.headliner ? <HeadlinerCalendar s={s} g={{ month, cur, line, step, pick }} />
+        : s.paperback ? <PaperbackCalendar s={s} g={{ month, cur, line, step, pick }} /> : <LatticeCalendar s={s} g={{ month, cur, line, step, pick }} />
     }
 
     // Lime — the scheduler frames 964:58595 / 986:39884 / 986:39896, as a block
@@ -22955,6 +24049,167 @@ function PaperbackMap({ s, g }) {
   )
 }
 
+// Headliner's layout-1 map (1:4955 · 1:15726 · 1:16776, 1051.41 / 1558.52 / 1435.13 tall; plans/headliner/layout-1.md, section 6): an own tree, handed the seam's
+// page of gigs, the pairing and the pager's window by `EventsMap` (Lattice's and Paperback's shape). The stage pattern: `u(v)` turns the frame's px into `cqw` of an
+// `inline-size` stage, the frame's numbers verbatim at all three widths. A teal band (Scheme 6, the root's own ground, no card) with nothing centred in a taller box
+// (96 / 77 / 58 round the content). The head is the town in Anton (181.44 / 112 / 70) and the `120 mile radius` pill at the head box's *foot* (`flex-end`: 12 under the
+// baseline, not on it), right at 1440 and 768 and under the head on a 14 gap at 390; the eyebrow `Shows / coverage` is not drawn (no field carries it) and its 31.75 stays
+// as padding. The body is two 655.05 columns on a 32 gap at 1440, the maroon card stretched to the list's height, and a stack on a 32 gap narrow. The card is the rings art
+// (`HeadlinerRings`, not the real map: Lattice's and Paperback's call) over a ruled foot; its picture box is 24 in on three sides and flush to the foot, 505.84 tall at 1440
+// only as the remainder (667.77 x 556.47 at 768, 294 x 360 at 390), and its foot is the name in Anton 30 / 27 / 25 beside the terms in amber Anton 13, a flex row whose
+// name shrinks to its min-content at 390 and leaves the terms their two lines. The rows are flush on `HL_HAIR` rules: a flat 72-wide date tile (orange, amber, then sand,
+// **by the gig's place in the whole list**, so a page turn does not recolour: the frame's first row is `Sold out` and its second `Tickets`, and the second and third share a
+// state and differ in fill, so it is the index), the venue in Anton over `City · time` in Inter Tight at .85, and a 1 px outlined `Tickets` pill **only on a row with an
+// address** (JP-045; the frame's orange `Sold out` has no field). Rows are 107.19 / 90.55 / 106 tall; at 390 the frame's five are all 106 (its first venue wraps beside the
+// Sold-out pill), so 106 is the floor of a row there. The pager draws only past one page (every template's rule), so the seeded five leave the section 54 short of the
+// frame's: space-between, an outlined prev square, the window's squares (the current one orange) and an orange next square, at every width. The `05 of 12` is derived.
+const HEADLINER_MAP = {
+  desktop: { fw: 1440, top: 96, side: 48.96, h2: 181.44, free: 1209.77, box: [607.047, 505.844], areaMin: 300, tileGap: 18, rowPad: 20.906, tileH: 64.375, dayT: 32, titleT: 30, nameT: 30 },
+  tablet: { fw: 768, top: 77, side: 26.11, h2: 112, free: 583.46, box: [667.766, 556.469], areaH: 580.469, tileGap: 18, rowPad: 14, tileH: 61.547, dayT: 29, titleT: 27, nameT: 27 },
+  mobile: { fw: 390, top: 58, side: 24, h2: 70, free: 342, box: [294, 360], areaH: 384, tileGap: 10, rowPad: 14, rowMin: 106, tileH: 58.688, dayT: 26, titleT: 25, nameT: 25 },
+}
+function HeadlinerMap({ s, g }) {
+  const { shown, at0, lit, onPick, win, onPage, onStep } = g
+  const dev = s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop'
+  const P = HEADLINER_MAP[dev]
+  const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
+  const O = s.onScheme
+  const sand = O[1].bg           // the head's, the rows', the rules' and the outlines' #EEE3D1 (sem/tag/1/text)
+  const orange = O[1].activeBg   // the first tile's, the dot's and the current page's #F85E34
+  const amber = O[3].activeBg    // the radius pill's, the second tile's and the terms' #F8A351
+  const maroon = O[3].bg         // the card's #760000
+  const black = s.activeFg       // the tiles', the pill's and the current page's ink, #020202
+  const anton = (size, extra) => ({ fontFamily: s.label, fontWeight: 400, fontSize: size, lineHeight: 'normal', letterSpacing: '0.02em', textTransform: 'uppercase', ...extra })
+  const display = (size, extra) => ({ fontFamily: s.display, fontWeight: 400, fontSize: size, lineHeight: 1, letterSpacing: '-0.005em', textTransform: 'uppercase', ...extra })
+  // The tiles' fills by the gig's place in the whole list: orange, amber and three sand, repeating every five.
+  const TILES = [orange, amber, sand, sand, sand]
+
+  const h2 = String(s.title || '').trim() ? (
+    <h2 style={{
+      margin: 0, flex: '0 1 auto', minWidth: 0, color: sand, ...display(s.titleWordEms ? `min(${u(P.h2)}, calc(${u(P.free)} / ${s.titleWordEms}))` : u(P.h2), { lineHeight: 0.98 }),
+    }}>{s.title}</h2>
+  ) : null
+  const pill = s.mapRadius ? (
+    <span style={{
+      ...anton(u(13)), flex: 'none', alignSelf: s.mob ? 'flex-start' : 'flex-end', boxSizing: 'border-box', height: u(28), padding: `0 ${u(12)}`, display: 'inline-flex',
+      alignItems: 'center', borderRadius: s.radiusChip, background: amber, color: black, whiteSpace: 'nowrap',
+    }}>{s.mapRadius}</span>
+  ) : null
+  const head = (
+    <div style={{ paddingTop: u(31.75), minWidth: 0 }}>
+      {s.mob ? <div style={col(u(14))}>{h2}{pill}</div> : <div style={row(u(24), { alignItems: 'flex-end', justifyContent: 'space-between' })}>{h2}{pill}</div>}
+    </div>
+  )
+
+  // The card: the rings in a box 24 in on three sides and flush to the foot, over the foot. At 1440 the box is the remainder of the height the list gives the grid row.
+  const foot = !!(s.mapBase || s.mapTerms)
+  const card = (
+    <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0, background: maroon }}>
+      <div style={{
+        position: 'relative', flex: P.areaH ? 'none' : '1 1 0', minHeight: u(P.areaH ?? P.areaMin), ...(P.areaH ? { height: u(P.areaH) } : null),
+      }}>
+        <HeadlinerRings w={P.box[0]} h={P.box[1]} ink={sand} dot={orange} style={{
+          position: 'absolute', left: u(24), top: u(24), width: `calc(100% - ${u(48)})`, height: `calc(100% - ${u(24)})`,
+        }} />
+      </div>
+      {foot && (
+        <div style={row(0, {
+          flex: 'none', boxSizing: 'border-box', padding: `${u(20)} ${u(24)}`, borderTop: `1px solid ${HL_HAIR}`, justifyContent: 'space-between',
+        })}>
+          {!!s.mapBase && <div style={display(u(P.nameT), { lineHeight: 'normal', paddingTop: u(2), color: sand, overflowWrap: 'break-word' })}>{s.mapBase}</div>}
+          {!!s.mapTerms && <div style={anton(u(13), { lineHeight: u(13.65), color: amber, overflowWrap: 'break-word' })}>{s.mapTerms}</div>}
+        </div>
+      )}
+    </div>
+  )
+
+  // A gig row: the tile, the venue over `City · time`, and the outlined pill where the row has an address (JP-045). The lit row (live only, the pairing) is the row
+  // ringed inside in the pill's amber: the frame draws none.
+  const rows = shown.map((gig, i) => {
+    const link = extLink(s, gig.url)
+    const Tag = link ? 'a' : 'div'
+    return (
+      <Tag key={i} {...link} onClick={onPick(i)} style={{
+        ...row(u(P.tileGap)), boxSizing: 'border-box', minHeight: P.rowMin ? u(P.rowMin) : undefined, padding: `${u(P.rowPad)} 0`, borderTop: `1px solid ${HL_HAIR}`,
+        textDecoration: 'none', color: sand, cursor: s.live ? 'pointer' : undefined, boxShadow: lit(i) ? `inset 0 0 0 ${u(3)} ${amber}` : undefined,
+      }}>
+        <span style={{ flex: 'none', boxSizing: 'border-box', display: 'block', width: u(72), height: u(P.tileH), paddingTop: u(8), background: TILES[(at0 + i) % TILES.length], color: black, textAlign: 'center' }}>
+          <span style={{ display: 'block', position: 'relative', height: u(13.641) }}>
+            <span style={anton(u(13), { display: 'block', position: 'relative', top: u(-3), lineHeight: u(13.65), color: black })}>{gig.month}</span>
+          </span>
+          <span style={display(u(P.dayT), { display: 'block', lineHeight: 0.95, color: black })}>{gig.day}</span>
+        </span>
+        <span style={col(u(6), { flex: '1 1 0', minWidth: 0 })}>
+          <span style={display(u(P.titleT), { paddingTop: u(2), color: sand, overflowWrap: 'break-word' })}>{gig.venue}</span>
+          {!!gig.line && (
+            <span style={{ fontFamily: s.body, fontWeight: 400, fontSize: u(15), letterSpacing: '-0.015em', lineHeight: 'normal', color: HL_MEDIA_LIT, opacity: 0.85, overflowWrap: 'anywhere' }}>{gig.line}</span>
+          )}
+        </span>
+        {!!gig.url && (
+          <span style={{
+            ...anton(u(13)), flex: 'none', boxSizing: 'border-box', height: u(30), padding: `0 ${u(12)}`, display: 'inline-flex', alignItems: 'center',
+            border: `1px solid ${sand}`, borderRadius: s.radiusChip, color: sand, whiteSpace: 'nowrap',
+          }}>Tickets</span>
+        )}
+      </Tag>
+    )
+  })
+
+  // The pager: 44 squares on a 6 gap, the frame's 16 x 14 line arrows (stroke 2.4); it draws only past one page.
+  const square = (key, child, { fill, onClick }) => (
+    <span key={key} onClick={onClick} style={{
+      ...anton(u(16)), boxSizing: 'border-box', flex: 'none', width: u(44), height: u(44), display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+      border: `1px solid ${fill ? orange : sand}`, background: fill ? orange : 'transparent', color: fill ? black : sand, cursor: onClick ? 'pointer' : undefined, whiteSpace: 'nowrap',
+    }}>{child}</span>
+  )
+  const arrow = (back, stroke) => (
+    <svg aria-hidden viewBox="0 0 16 14" fill="none" style={{ display: 'block', width: u(16), height: u(14), flex: 'none', overflow: 'visible' }}>
+      <path d={back ? 'M16 7H3M8 1.5L2 7L8 12.5' : 'M0 7H13M8 1.5L14 7L8 12.5'} stroke={stroke} strokeWidth="2.4" />
+    </svg>
+  )
+  const pager = win.labels.length > 0 ? (
+    <div style={row(0, { justifyContent: 'space-between' })}>
+      {square('prev', arrow(true, sand), { onClick: onStep && (() => onStep(-1)) })}
+      <div style={row(u(6))}>
+        {win.labels.map((p, i) => square(`p${i}`, p, { fill: i === win.at, onClick: onPage && p !== '…' ? () => onPage(p) : undefined }))}
+      </div>
+      {square('next', arrow(false, black), { fill: true, onClick: onStep && (() => onStep(1)) })}
+    </div>
+  ) : null
+
+  const two = (n) => String(n).padStart(2, '0')
+  const panel = (
+    <div style={col(u(10), { minWidth: 0 })}>
+      {(!!s.mapListLabel || shown.length > 0) && (
+        <div style={row(u(12), { justifyContent: 'space-between', ...anton(u(16), { lineHeight: u(16.8), color: sand }) })}>
+          <span style={{ minWidth: 0, overflowWrap: 'anywhere' }}>{s.mapListLabel}</span>
+          {shown.length > 0 && <span style={{ flex: 'none', whiteSpace: 'nowrap' }}>{`${two(shown.length)} of ${two(s.gigs.length)}`}</span>}
+        </div>
+      )}
+      {rows.length > 0 ? (
+        <div style={{ borderBottom: `1px solid ${HL_HAIR}` }}>{rows}</div>
+      ) : (
+        <div style={{ ...anton(u(16), { color: sand }), padding: `${u(24)} 0`, borderTop: `1px solid ${HL_HAIR}`, borderBottom: `1px solid ${HL_HAIR}` }}>No upcoming gigs.</div>
+      )}
+      {pager}
+    </div>
+  )
+
+  return (
+    <div style={{ position: 'relative', containerType: 'inline-size', overflow: 'hidden' }}>
+      <div style={{ boxSizing: 'border-box', padding: `${u(P.top)} ${u(P.side)}` }}>
+        <div style={col(u(32))}>
+          {head}
+          <div style={s.narrow ? col(u(32)) : { display: 'grid', alignItems: 'stretch', columnGap: u(32), gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)' }}>
+            {card}
+            {panel}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function EventsMap({ s }) {
   // The page of gigs, and the gig the visitor has picked out on the map. Both
   // are inert on the editor canvas, where the section is a picture of a website
@@ -23002,6 +24257,14 @@ function EventsMap({ s }) {
     // window is the compact one at every width (the frames' own `1 2 3`).
     // Paperback's (1:2822 · 1:11471 · 1:12654) is a block of its own as well, handed the same seam, and the gig's place in the whole list
     // (`at0`) so a date tile keeps its colour as the pager turns.
+    // Headliner's (1:4955 · 1:15726 · 1:16776) is a block of its own too, handed the same seam; the date tiles' fills follow the gig's place in the whole list.
+    if (s.limeTree && s.headliner) {
+      return <HeadlinerMap s={s} g={{
+        shown, at0: pg * perPage, lit, onPick, win: pageWindow(pages, pg, true),
+        onPage: s.live ? (label) => setPage(Number(label) - 1) : undefined,
+        onStep: s.live ? (dir) => setPage(Math.max(0, Math.min(pages - 1, pg + dir))) : undefined,
+      }} />
+    }
     if (s.limeTree && s.paperback) {
       return <PaperbackMap s={s} g={{
         shown, at0: pg * perPage, lit, onPick, win: pageWindow(pages, pg, true),
@@ -27116,6 +28379,95 @@ function PaperbackTestimonials({ s, g }) {
   )
 }
 
+// Headliner's layout-1 testimonials (plans/headliner/layout-1.md, section 10; frames 1:5460 · 1:16233 · 1:17282, 730 tall at every width): a bare orange band (Scheme 5, the section's own
+// ground: no card, no art but a glyph) holding one centred figure, in a 730 box that CENTRES its content at every width (171.93 + 386.14 + 171.93; 177.24 + 375.52 + 177.24; 167.75 + 394.5 +
+// 167.75), so `minHeight` plus centring and a longer review grows the section. The figure is a column on a 24 gap: a maroon Anton `“` in a 100-tall seat (220 / 136 / 88, lh .5 em), `quotes.when`
+// (Anton 16, the frame's `Reviewed 6 days ago`), the quote (Anton 86.4 / 54 / 38, lh .98, -0.005em, `#020202`) and the two pills that are the attribution (`who` maroon, `role` `#1E1E1E`; the
+// frame draws no byline line). The arrows are the gallery's 46 squares (black, the arrow in the orange): at the gutter (48.96 / 26.11) at 1440 and 768, centred on the figure's height with
+// 40 between each and the figure (whose `max-width` is 1040, centred), and a centred pair under the figure at 390 (12 apart, 20 below it). The seam's `q`, `paging` and `step` come over, so
+// the arrows wrap at both ends and are not drawn at one review, their tracks held so the figure keeps its seat.
+const HEADLINER_TESTI = {
+  desktop: { fw: 1440, h: 730, side: 48.96, figW: 1040, mark: 220, quote: 86.4 },
+  tablet: { fw: 768, h: 730, side: 26.11, figW: 1040, mark: 136, quote: 54 },
+  mobile: { fw: 390, h: 730, side: 24, mark: 88, quote: 38 },
+}
+function HeadlinerTestimonials({ s, g }) {
+  const { q, paging, step } = g
+  const dev = s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop'
+  const P = HEADLINER_TESTI[dev]
+  const mob = dev === 'mobile'
+  const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
+  const O = s.onScheme
+  const black = O[1].activeFg   // the quote, the line over it and the arrows' ground, #020202
+  const orange = O[1].activeBg  // the arrow, #F85E34
+  const maroon = O[3].bg        // the mark and `who`'s pill, #760000
+  const sand = O[1].bg          // both pills' type, #EEE3D1
+  const dark = O[1].text1       // `role`'s pill, #1E1E1E
+  const anton = (size, extra) => ({ fontFamily: s.label, fontWeight: 400, fontSize: size, letterSpacing: '0.02em', textTransform: 'uppercase', ...extra })
+
+  const pill = (label, bg, key) => (
+    <span key={key} style={anton(u(13), {
+      boxSizing: 'border-box', minHeight: u(28), maxWidth: '100%', minWidth: 0, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: `${u(4)} ${u(12)}`,
+      borderRadius: '999px', background: bg, color: sand, lineHeight: u(20), textAlign: 'center', overflowWrap: 'anywhere',
+    })}>{label}</span>
+  )
+
+  const mark = (
+    <div aria-hidden style={{ height: u(100), flex: 'none', textAlign: 'center' }}>
+      <span style={{ display: 'block', fontFamily: s.display, fontWeight: 400, fontSize: u(P.mark), lineHeight: u(P.mark / 2), letterSpacing: '-0.005em', color: maroon, whiteSpace: 'nowrap' }}>{'\u201C'}</span>
+    </div>
+  )
+  const body = q ? (
+    <>
+      {!!q.when && <span style={anton(u(16), { display: 'block', lineHeight: u(16.8), color: black, textAlign: 'center', overflowWrap: 'anywhere' })}>{q.when}</span>}
+      {!!q.quote && (
+        // Fitted to its widest word (`wordEms`, Anton's table at the frame's -0.005em) against the figure's own width, so a long word shrinks the type instead of breaking.
+        <div style={{ containerType: 'inline-size', minWidth: 0, fontSize: u(P.quote) }}>
+          <p style={{
+            margin: 0, fontFamily: s.display, fontWeight: 400, lineHeight: 0.98, letterSpacing: '-0.005em', textTransform: 'uppercase', textAlign: 'center', color: black, overflowWrap: 'break-word',
+            fontSize: q.wordEms ? `min(1em, calc(100cqi / ${q.wordEms}))` : '1em',
+          }}>{q.quote}</p>
+        </div>
+      )}
+      {(!!q.who || !!q.role) && (
+        <div style={row(u(8), { flexWrap: 'wrap', justifyContent: 'center', minWidth: 0 })}>
+          {!!q.who && pill(q.who, maroon, 0)}
+          {!!q.role && pill(q.role, dark, 1)}
+        </div>
+      )}
+    </>
+  ) : (
+    <span style={anton(u(16), { display: 'block', lineHeight: u(16.8), color: black, textAlign: 'center' })}>No reviews yet.</span>
+  )
+  const figure = <div style={col(u(24), { minWidth: 0, ...(mob ? null : { width: '100%', maxWidth: u(P.figW), justifySelf: 'center' }) })}>{mark}{body}</div>
+
+  const prev = paging ? headlinerSquare(u, black, orange, true, step(-1)) : null
+  const next = paging ? headlinerSquare(u, black, orange, false, step(1)) : null
+
+  return (
+    <div style={{ position: 'relative', containerType: 'inline-size', overflow: 'hidden' }}>
+      <div style={{ minHeight: u(P.h), boxSizing: 'border-box', display: 'flex', alignItems: 'center' }}>
+        {mob ? (
+          <div style={col(u(20), { width: '100%', minWidth: 0, boxSizing: 'border-box', padding: `0 ${u(P.side)}`, alignItems: 'stretch' })}>
+            {figure}
+            {paging && <div style={row(u(12), { justifyContent: 'center' })}>{prev}{next}</div>}
+          </div>
+        ) : (
+          // Three tracks at both wide widths, so the figure keeps its seat at one review: the arrows are not drawn but their 46 are held.
+          <div style={{
+            display: 'grid', width: '100%', alignItems: 'center', columnGap: u(40), minWidth: 0, boxSizing: 'border-box',
+            padding: `0 ${u(P.side)}`, gridTemplateColumns: `${u(46)} minmax(0, 1fr) ${u(46)}`,
+          }}>
+            <span style={{ display: 'flex' }}>{prev}</span>
+            {figure}
+            <span style={{ display: 'flex' }}>{next}</span>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
 // v0 — Testimonials layout 1 · Stacked tag card (§10.2 reference design): one
 // cream quote card standing on two rotated, ink-outlined coloured cards, with
 // the pager arrows thrown out to the page's own gutters.
@@ -27182,6 +28534,8 @@ function Testimonials({ s }) {
     // `q`, `paging` and `step` (the arrows, which wrap at both ends and are not drawn at one review) go over.
     if (s.limeTree && s.lattice) return <LatticeTestimonials s={s} g={{ q, paging, step }} />
     // Paperback's layout-1 testimonials are a block of their own too (PaperbackTestimonials), after the seam, the same hand-over.
+    // Headliner's is a stage of its own too (HeadlinerTestimonials), after the seam, the same hand-over.
+    if (s.limeTree && s.headliner) return <HeadlinerTestimonials s={s} g={{ q, paging, step }} />
     if (s.limeTree && s.paperback) return <PaperbackTestimonials s={s} g={{ q, paging, step }} />
 
     // Lime (964:58597 · 986:39886 · 986:39898) — the ninth Lime block, after the
@@ -30011,6 +31365,183 @@ function PaperbackForm({ s, g }) {
   )
 }
 
+// Headliner's layout-1 form (plans/headliner/layout-1.md, section 9; frames 1:5385 · 1:16159 · 1:17207, 714.05 / 1066.11 / 1309.13 tall): one flat square card, 48.96 / 26.11 / 24 in
+// from the edges of the cream page and nothing centred in a taller box (96 / 76.99 / 58 round it), a maroon context panel and a sand form half side by side at 1440 (447.344 | the
+// rest) and stacked at 768 and 390. No radius, no shadow, no bubble and no wave field. The panel: a 52 square avatar beside the name and the role, the head in Anton (64 / 48 / 38,
+// orange, broken by measure: at 1440 its last word overhangs the content box by about 11) and three promises on hairlines with amber numerals; at 1440 the panel is stretched to
+// the form half and the list is foot-anchored (26 is its floor), at 768 and 390 it is its own height. The form half: four 50-tall 1 px outlined squares on cream (two to a row on a 20 gap,
+// one column at 390), an `Event type` legend over 40-tall pill chips (the lit one `#1E1E1E`), a 90-tall message box and the orange `Book now`. The typed boxes, the chip, the mailto, the
+// refusal and the sent state are `EnquiryForm`'s, handed over in `g`; nothing here is a hook and there is no <form>, ever (notes/form.md).
+const HEADLINER_FORM = {
+  desktop: { fw: 1440, top: 96, side: 48.96, panelW: 447.344, px: 40, py: 40, rowGap: 18, pair: 20, head: 64, room: 393.344, sentH: 442.05 },
+  tablet: { fw: 768, top: 76.99, side: 26.11, px: 30, py: 34, rowGap: 18, pair: 20, head: 48, room: 655.766, sentH: 442.05 },
+  mobile: { fw: 390, top: 58, side: 24, px: 20, py: 28, rowGap: 28, pair: 28, head: 38, room: 302, sentH: 729.44 },
+}
+function HeadlinerForm({ s, g }) {
+  const { at, setAt, msg, setMessage, ti, setType, showTypes, errs, msgBad, sent, setSent, Pill, pillLink, onSubmit, cp, pid } = g
+  const dev = s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop'
+  const P = HEADLINER_FORM[dev]
+  const desk = dev === 'desktop'
+  const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
+  const O = s.onScheme
+  const cream = O[2].bg         // the page, and every box's ground, #F8F2E7
+  const sand = O[1].bg          // the form half, and the lit chip's type, #EEE3D1
+  const orange = O[1].activeBg  // the head and the button, #F85E34
+  const maroon = O[3].bg        // the context panel, and a refused box's ring, #760000
+  const amber = O[3].activeBg   // the role line and the numerals, #F8A351
+  const ink = O[2].text1        // the outlines, the labels and the lit chip's ground, #1E1E1E (the seat's own text1)
+  const black = s.activeFg      // the sent state's head, #020202
+  const anton = (size, extra) => ({ fontFamily: s.label, fontWeight: 400, fontSize: size, lineHeight: 'normal', letterSpacing: '0.02em', textTransform: 'uppercase', ...extra })
+  const ui = (size, extra) => ({ fontFamily: s.body, fontWeight: 400, fontSize: size, lineHeight: 'normal', letterSpacing: '-0.015em', ...extra })
+
+  const label = (t, extra) => <span style={anton(u(14), { display: 'block', lineHeight: u(14.6875), color: ink, ...extra })}>{t}</span>
+  // One box, drawn once for both modes: a 1 px ring of ink on cream, square. A refused box changes colour as well as weight (no palette has a red, and the idle ring is already full
+  // ink): the ring and a 1 px inset in the panel's maroon, 2 px in all, which the 50 holds.
+  const box = (bad, extra) => ({
+    boxSizing: 'border-box', width: '100%', margin: 0, height: u(50), padding: `0 ${u(14)}`, outline: 'none', borderRadius: 0,
+    border: `1px solid ${bad ? maroon : ink}`, background: cream, color: ink, boxShadow: bad ? `inset 0 0 0 1px ${maroon}` : undefined,
+    ...ui(u(16)), ...extra,
+  })
+  // The canvas draws a hint at `::placeholder`'s .45 (index.css), which is what the live box draws; the frame's #757575 is about .59 of the ink (a call, the repertoire's search).
+  const hint = (t) => <span style={{ opacity: 0.45, minWidth: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t}</span>
+
+  const field = (f, i) => {
+    const bad = !!(errs && errs.f[i])
+    return (
+      <div key={i} style={col(u(8), { minWidth: 0 })}>
+        {label(f.label)}
+        {s.live ? (
+          <input
+            {...cp(i)}
+            value={at(i)} placeholder={f.placeholder} aria-label={f.label}
+            onChange={(e) => setAt(i, e.target.value)}
+            type={f.kind === 'email' ? 'email' : 'text'}
+            inputMode={f.kind === 'number' || f.kind === 'date' ? 'numeric' : undefined}
+            aria-invalid={bad || undefined}
+            style={box(bad)}
+          />
+        ) : (
+          <span style={box(bad, { display: 'flex', alignItems: 'center' })}>{hint(f.placeholder)}</span>
+        )}
+      </div>
+    )
+  }
+  const fieldRow = (fs, r) => (
+    <div key={r} style={{ display: 'grid', gap: u(P.pair), gridTemplateColumns: s.mob ? 'minmax(0, 1fr)' : 'repeat(2, minmax(0, 1fr))' }}>{fs.map((f, j) => field(f, r * 2 + j))}</div>
+  )
+
+  const submit = (extra) => (
+    <HeadlinerPill s={s} u={u} label={s.formBtn} as={Pill} tagProps={{ ...pillLink, onClick: onSubmit }} style={{ cursor: onSubmit ? 'pointer' : undefined, ...extra }} />
+  )
+
+  // The panel. The head wraps at the content box and keeps a word whole past it (the frame's `UNFORGETTABLE.` overhangs the 367.344 by about 11 at 1440): it is fitted to its widest
+  // word against `room` (`s.titleWordEms`, Anton's ems at -0.005em), so a longer word shrinks the type instead of breaking.
+  const nameLine = String(s.brand || '').trim()
+  const roleLine = String(s.kicker || '').trim()
+  const hasHead = !!String(s.title || '').trim()
+  const panel = (
+    <div style={col(0, { boxSizing: 'border-box', minWidth: 0, background: maroon, padding: `${u(P.py)} ${u(P.px)}` })}>
+      <div style={row(u(14), { minWidth: 0 })}>
+        <span style={{ width: u(52), height: u(52), flex: 'none', overflow: 'hidden', display: 'block' }}>
+          <Photo s={s} ink={sand} initialsSize={Math.round(20 * (desk ? 0.82 : 1))} style={{ background: O[3].box1 }} />
+        </span>
+        {(nameLine || roleLine) && (
+          <span style={col(u(4), { minWidth: 0 })}>
+            {nameLine && <span style={anton(u(16), { lineHeight: u(16.8), color: sand, overflowWrap: 'anywhere' })}>{nameLine}</span>}
+            {roleLine && <span style={anton(u(13), { lineHeight: u(13.65), color: amber, overflowWrap: 'anywhere' })}>{roleLine}</span>}
+          </span>
+        )}
+      </div>
+      {hasHead && (
+        <h2 style={{
+          margin: 0, marginTop: u(26), minWidth: 0, color: orange, fontFamily: s.display, fontWeight: 400, lineHeight: 0.98, letterSpacing: '-0.005em', textTransform: 'uppercase', overflowWrap: 'normal',
+          fontSize: s.titleWordEms ? `min(${u(P.head)}, calc(${u(P.room)} / ${s.titleWordEms}))` : u(P.head),
+        }}>{s.title}</h2>
+      )}
+      {s.formPromises.length > 0 && (
+        <div style={{ marginTop: 'auto', paddingTop: u(26) }}>
+          <div style={{ borderBottom: `1px solid ${HL_HAIR}` }}>
+            {s.formPromises.map((p, i) => (
+              <div key={i} style={row(u(16), { alignItems: 'flex-start', justifyContent: 'space-between', boxSizing: 'border-box', borderTop: `1px solid ${HL_HAIR}`, padding: `${u(12)} 0` })}>
+                <span style={ui(u(16), { lineHeight: u(20), color: HL_MEDIA_LIT, minWidth: 0, overflowWrap: 'anywhere' })}>{p}</span>
+                <span style={anton(u(14), { lineHeight: u(14.7), color: amber, flex: 'none' })}>{String(i + 1).padStart(2, '0')}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+
+  const form = (
+    <div style={col(u(P.rowGap), { boxSizing: 'border-box', minWidth: 0, background: sand, padding: `${u(P.py)} ${u(P.px)}` })}>
+      {sent ? (
+        // The form half alone; the card and the panel do not move, and the half keeps its height. `sent` is only ever set under s.live, so the canvas never draws it.
+        <div style={col(u(16), { minHeight: u(P.sentH), alignItems: 'flex-start' })}>
+          <h3 style={{ margin: 0, color: black, fontFamily: s.display, fontWeight: 400, lineHeight: 0.98, letterSpacing: '-0.005em', textTransform: 'uppercase', fontSize: u(P.head * 0.75), overflowWrap: 'anywhere' }}>{s.formSentTitle}</h3>
+          <p style={{ ...ui(u(16), { lineHeight: 1.4, color: ink }), margin: 0 }}>{s.formSentBody}</p>
+          {/* Plain text, Retro's reason: the fallback for a browser that opened nothing. */}
+          <span style={ui(u(16), { fontWeight: 600, lineHeight: 1.4, color: ink, overflowWrap: 'anywhere' })}>{s.formEmail}</span>
+          <HeadlinerPill s={s} u={u} label={s.formAgain} as="span" tagProps={{ onClick: () => setSent(false) }} />
+        </div>
+      ) : (
+        <>
+          {s.formRows.map(fieldRow)}
+          {showTypes && (
+            <div style={col(u(8))}>
+              {label(s.formTypeLabel, { height: u(18) })}
+              <div style={row(u(6), { flexWrap: 'wrap', rowGap: u(6) })}>
+                {s.formTypes.map((t, i) => {
+                  const on = i === ti
+                  return (
+                    <span key={i} onClick={s.live ? () => setType(i) : undefined} style={{
+                      ...anton(u(14)), boxSizing: 'border-box', height: u(40), padding: `0 ${u(16)}`, display: 'inline-flex', alignItems: 'center',
+                      border: `1px solid ${ink}`, borderRadius: 999, background: on ? ink : 'transparent', color: on ? sand : ink,
+                      whiteSpace: 'nowrap', cursor: s.live ? 'pointer' : undefined,
+                    }}>{t}</span>
+                  )
+                })}
+              </div>
+            </div>
+          )}
+          <div style={col(u(8))}>
+            {label(s.formMsgLabel)}
+            {s.live ? (
+              <textarea
+                {...cp('msg')}
+                value={msg} placeholder={s.formMessage} aria-label={s.formMsgLabel}
+                onChange={(e) => setMessage(e.target.value)}
+                style={box(msgBad, { display: 'block', height: u(90), padding: u(14), resize: 'none' })}
+              />
+            ) : (
+              <span style={box(false, { display: 'block', height: u(90), padding: u(14) })}>{hint(s.formMessage)}</span>
+            )}
+          </div>
+          <div style={col(u(P.rowGap), { alignItems: 'flex-start' })}>
+            {submit()}
+            {errs && (
+              <span id={pid} role="alert" style={anton(u(14), { lineHeight: 1.3, color: maroon })}>
+                {errs?.m?.find(Boolean) || errs?.msg?.m || s.formPrompt}
+              </span>
+            )}
+          </div>
+        </>
+      )}
+    </div>
+  )
+
+  return (
+    <div style={{ position: 'relative', containerType: 'inline-size', overflow: 'hidden' }}>
+      <div style={{ paddingTop: u(P.top), paddingBottom: u(P.top) }}>
+        <div style={{ margin: `0 ${u(P.side)}`, display: 'grid', gridTemplateColumns: desk ? `${u(P.panelW)} minmax(0, 1fr)` : 'minmax(0, 1fr)', alignItems: 'stretch', ...WRAP_LONG }}>
+          {panel}
+          {form}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function EnquiryForm({ s }) {
   // What the visitor has typed, gated on `s.live` throughout: on the canvas
   // every box is the span it has always been (§12.7), because a live field
@@ -30124,6 +31655,9 @@ function EnquiryForm({ s }) {
   // Lattice's layout-1 form is a block of its own (LatticeForm), after the seam: every piece of the live
   // seam above goes over in `g`, so the published boxes, chip, mailto, refusal and sent state are the one
   // seam in a new picture.
+  if (s.v0 && s.limeTree && s.headliner) {
+    return <HeadlinerForm s={s} g={{ at, setAt, msg, setMessage, ti, setType, showTypes, errs, msgBad, sent, setSent, Pill, pillLink, onSubmit, cp, pid }} />
+  }
   if (s.v0 && s.limeTree && s.paperback) {
     return <PaperbackForm s={s} g={{ at, setAt, msg, setMessage, ti, setType, showTypes, errs, msgBad, sent, setSent, Pill, pillLink, onSubmit, cp, pid }} />
   }
@@ -33226,6 +34760,113 @@ function LatticeFooter({ s }) {
   )
 }
 
+// Headliner's layout-1 footer (Batch 2 file, 1:5480 · 1:16253 · 1:17302: 395.31 / 491.94 / 655.02 tall; plans/headliner/layout-1.md, section 11). A bare `#1E1E1E` band (Scheme 7, the section's own
+// ground: no card, no art) holding a 40 square `#CE1F1A` monogram (`KAI` over `MER`, Anton 15) beside the name in Anton 24 / 24 / 22, the tagline in Fraunces Light (30 / 27 / 25, lh 1.06,
+// -0.015em: the statement's seat), the link columns (Anton 20, 31-tall boxes 43 apart, the first 26.69 down where the frame's eyebrows stood), a sand Book pill in the newsletter's seat, and a
+// 1 px rule at `rgba(238,227,209,.22)` over the copyright and the credit (Anton 13, +.02em). Nothing is centred in a taller box: 64 / 51 / 38 round the content, 48 to the rule, the small print
+// 18 under it. Desktop is a row on a 32 gap (540.516 | 426.016 | 311.516), 768 two rows (the left block, then the links beside the pill's column at x 400) and 390 three. The standing removals
+// hold: the newsletter (its eyebrow, email box and button) is not drawn, the two derived link columns stand where the frame has three (the third, `Social`, is four services no field holds),
+// and the eyebrows have no field, so their seat stays as padding. Every length is the FRAME's px through `u`, in cqw of a stage (a container as wide as the page content, `s.surplus` in from
+// the root's edges), so the picture holds its proportions on a canvas narrower than the frame. The seam is Lime's restated: `extLink` / `navHref` per link row, the pill on `bookTo` (no
+// self-exclusion filter: `footer` is not in CTA_TARGETS.book) and dropped with its label.
+const HEADLINER_FOOT = {
+  desktop: { fw: 1440, gut: 48.96, pad: 64, name: 24, tag: 30, leftW: 540.516, linksW: 426.016, colW: 128.672, newsW: 311.516 },
+  tablet: { fw: 768, gut: 26.11, pad: 51, name: 24, tag: 27, linksW: 341.89, colW: 100.625 },
+  mobile: { fw: 390, gut: 24, pad: 38, name: 22, tag: 25, colW: 100.64 },
+}
+const HL_FOOT_RED = '#CE1F1A'   // the monogram's square: the one literal no scheme holds
+function HeadlinerFooter({ s }) {
+  const dev = s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop'
+  const P = HEADLINER_FOOT[dev]
+  const desk = dev === 'desktop'
+  const mob = dev === 'mobile'
+  const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
+  const O = s.onScheme
+  const sand = O[1].bg       // every ink on the band, #EEE3D1
+  const dark = O[1].text1    // the pill's type, #1E1E1E
+  const anton = (size, extra) => ({ fontFamily: s.label, fontWeight: 400, fontSize: size, textTransform: 'uppercase', ...extra })
+  const eyebrow = 26.6875    // the frame's eyebrow (14.69) and the 12 under it, where its links and button start
+
+  const mono = s.showBadge === 'show' && s.footerMono && s.footerMono.length > 0 && (
+    <span aria-hidden style={{
+      ...col('0px', { alignItems: 'center', justifyContent: 'center' }), flex: 'none', width: u(40), height: u(40), boxSizing: 'border-box', overflow: 'hidden',
+      background: HL_FOOT_RED, color: sand, ...anton(u(15), { lineHeight: u(14.7), letterSpacing: '-0.005em', textAlign: 'center', whiteSpace: 'nowrap' }),
+    }}>{s.footerMono.map((w, i) => <span key={i}>{w}</span>)}</span>
+  )
+  const name = !!String(s.brand || '').trim() && (
+    <span style={anton(u(P.name), { flex: '0 1 auto', minWidth: 0, lineHeight: u(P.name), letterSpacing: '-0.005em', color: sand, overflowWrap: 'break-word' })}>{s.brand}</span>
+  )
+  const tagline = !!s.footerStatement && (
+    <p style={{ margin: 0, minWidth: 0, fontFamily: s.serif, fontWeight: 300, fontSize: u(P.tag), lineHeight: 1.06, letterSpacing: '-0.015em', color: sand, whiteSpace: 'pre-wrap', overflowWrap: 'break-word' }}>{s.footerStatement}</p>
+  )
+  const left = (mono || name || tagline) ? (
+    <div style={col(u(22), { minWidth: 0 })}>
+      {(mono || name) && <div style={row(u(10), { minHeight: u(40), minWidth: 0 })}>{mono}{name}</div>}
+      {tagline}
+    </div>
+  ) : <div />
+
+  // An address the artist typed leaves the page in a new tab, a section id scrolls, and on the canvas both resolve to an <a> with no href at all (`navHref`).
+  // The two derived columns grow into the dropped third's seat rather than wrap a long label at the frame's column width.
+  const links = s.footerLinks.length > 0 && (
+    <div style={{ display: 'flex', alignItems: 'flex-start', gap: u(20), minWidth: 0, paddingTop: u(eyebrow) }}>
+      {s.footerCols.map((cl, ci) => (
+        <div key={ci} style={col(u(12), { flex: '0 1 auto', minWidth: `min(${u(P.colW)}, 100%)` })}>
+          {cl.map((l, i) => {
+            const ext = extLink(s, l.url)
+            return (
+              <a key={i} {...(ext || { href: navHref(s, l.to) })} style={anton(u(20), {
+                display: 'block', minHeight: u(31), color: sand, cursor: 'pointer', textDecoration: 'none', lineHeight: 'normal', letterSpacing: '0.02em', overflowWrap: 'anywhere',
+              })}>{l.label}</a>
+            )
+          })}
+        </div>
+      ))}
+    </div>
+  )
+  // The Book pill is the newsletter's `SUBSCRIBE →` box in its own sand and ink; it stands level with the first link where the links stand beside it.
+  const pill = !!s.footerCta && (
+    <div style={{ display: 'flex', minWidth: 0, ...(mob ? null : { paddingTop: u(eyebrow) }) }}>
+      <HeadlinerPill s={s} label={s.footerCta} to={s.bookTo} u={u} bg={sand} ink={dark} style={{ maxWidth: '100%' }} />
+    </div>
+  )
+
+  const small = (
+    <div style={{
+      boxSizing: 'border-box', marginTop: u(48), borderTop: `1px solid ${HL_HAIR}`, paddingTop: u(18),
+      ...row(u(16), { alignItems: 'flex-start', justifyContent: 'space-between' }),
+      ...anton(u(13), { lineHeight: u(13.65), letterSpacing: '0.02em', color: sand }),
+    }}>
+      {!!s.copyright && <span style={{ flex: '1 1 0', minWidth: 0, overflowWrap: 'anywhere' }}>{s.copyright}</span>}
+      <span style={{ flex: 'none', marginLeft: 'auto', textAlign: 'right', whiteSpace: 'nowrap' }}>{s.footerCredit}</span>
+    </div>
+  )
+
+  return (
+    <div style={{ position: 'relative', containerType: 'inline-size', overflow: 'hidden' }}>
+      <div style={{ boxSizing: 'border-box', padding: `${u(P.pad)} ${u(P.gut)}` }}>
+        {desk ? (
+          <div style={{ display: 'grid', gridTemplateColumns: `${u(P.leftW)} ${u(P.linksW)} minmax(0, 1fr)`, columnGap: u(32), alignItems: 'start' }}>
+            {left}<div style={{ minWidth: 0 }}>{links}</div>{pill}
+          </div>
+        ) : (
+          <div style={col(u(32), { minWidth: 0 })}>
+            {left}
+            {mob ? (
+              <>{links}{pill}</>
+            ) : (links || pill) ? (
+              <div style={{ display: 'grid', gridTemplateColumns: `${u(P.linksW)} minmax(0, 1fr)`, columnGap: u(32), alignItems: 'start' }}>
+                <div style={{ minWidth: 0 }}>{links}</div>{pill}
+              </div>
+            ) : null}
+          </div>
+        )}
+        {small}
+      </div>
+    </div>
+  )
+}
+
 // Paperback's layout-1 footer (Batch 2 file, 1:3395 · 1:12081 · 1:13263: 486.59 / 798.47 / 876.27 tall; plans/paperback/layout-1.md, section 11). An indigo band
 // (Scheme 3, the section's own ground) holding the artist's name in Bricolage ExtraBold (44 / 35 / 29, lh .9, -0.035em), the sitemap as a row of white-12% pills
 // that wraps (44 tall, radius 999, Figtree Bold 14, 6 apart both ways), the Book pill (a pink split pill, `PaperbackPill`) under them, a photograph on a 351 x 280
@@ -33356,6 +34997,8 @@ function PaperbackFooter({ s }) {
 function Footer({ s }) {
   // Lattice's layout-1 footer is a block of its own (LatticeFooter). `Footer` owns no hook, so the block can
   // stand at the head of the function, ahead of Lime's; the seam is restated in it.
+  // Headliner's layout-1 footer is a block of its own (HeadlinerFooter), ahead of Paperback's: no hook here either.
+  if (s.limeTree && s.headliner) return <HeadlinerFooter s={s} />
   if (s.limeTree && s.paperback) return <PaperbackFooter s={s} />
   if (s.limeTree && s.lattice) return <LatticeFooter s={s} />
   const scale = s.narrow ? 1 : 0.82

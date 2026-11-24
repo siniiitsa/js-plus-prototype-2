@@ -55,13 +55,13 @@ import {
   MAP_STATUS, MAP_UPDATED, MAP_EXPAND,
   PRICING_REVIEWS, PRICING_RATING, PRICING_CTA, PRICING_NOTE, PRICING_OFFER,
   FORM_PROMISES, FORM_STEPS, STEP_KEYS, FORM_FIELDS, FORM_FIELDS_CARD, FORM_FIELDS_4, FORM_FIELD_KEYS, FORM_EMAIL_LABEL, FORM_KINDS, enquiryErrors, FORM_TYPES, FORM_MESSAGE, FORM_MSG_LABEL,
-  FOOTER_LINKS, FOOTER_TARGETS, FOOTER_CREDIT, FOOTER_STATEMENT,
+  FOOTER_LINKS, FOOTER_TARGETS, FOOTER_CREDIT, FOOTER_STATEMENT, FOOTER_STATEMENT_HEADLINER,
   CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN, CAL_SLOTS, SLOT_KEYS, slotDate, parseDayFirst, pageTiers, CAL_SLOT_CTA, CAL_SEND_4, CAL_CTA_LATTICE, BIO_CTA_PAPERBACK, FORM_EMAIL, pageEmail, MONTHS, DAY_FULL,
   TESTI_HEADING_2, CARD_LINE_3, TESTI_STARS, TESTI_RATING,
-  PRICING_INTRO_3, FORM_SUB_4, CAL_HEADING_1, formBtnSeed, CAL_TYPES, PRICING_ROW_CTA, PRICING_ROW_CTA_3, PRICING_ROW_CTA_PAPERBACK, MAP_SPAN, MAP_STATS_4, STAT_KEYS,FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
+  PRICING_INTRO_3, FORM_SUB_4, CAL_HEADING_1, formBtnSeed, CAL_TYPES, PRICING_ROW_CTA, PRICING_ROW_CTA_3, PRICING_ROW_CTA_PAPERBACK, PRICING_HEADING_HEADLINER, CAL_HEADING_HEADLINER, MAP_SPAN, MAP_STATS_4, STAT_KEYS,FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
   parseDate, isoDate, calStart, headerIdentity, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav, navModeDefault, badgeOptsFor,
-  catById, catName, navSectionsOf, contrast, lum, mix, rgba, caseText, fieldSeed, HEADING_3, HEADING_4, fieldReach, fieldShown, identityFieldsFor, identityHint, INLINE_OFF, PHOTO_OFF, INLINE_HEAD, INLINE_MARKED, INLINE_PART, INLINE_LINES, inlineRule, fieldCap, colCaps, identityCap, sealCap, capExcess, numeralLen, clampCapped, clampContent, legacyContent, clampIdentity, copyrightOf, formHeading3, extUrl, youtubeEmbed, youtubeThumb, youtubeParts, youtubeWatch, youtubeChannel, urlProblem, emailProblem, emailAddr, songTags, repChips,
+  catById, catName, navSectionsOf, initialsOf, contrast, lum, mix, rgba, caseText, fieldSeed, HEADING_3, HEADING_4, fieldReach, fieldShown, identityFieldsFor, identityHint, INLINE_OFF, PHOTO_OFF, INLINE_HEAD, INLINE_MARKED, INLINE_PART, INLINE_LINES, inlineRule, fieldCap, colCaps, identityCap, sealCap, capExcess, numeralLen, clampCapped, clampContent, legacyContent, clampIdentity, copyrightOf, formHeading3, extUrl, youtubeEmbed, youtubeThumb, youtubeParts, youtubeWatch, youtubeChannel, urlProblem, emailProblem, emailAddr, songTags, repChips,
   tierFeats, priceParts, priceCuts, blankRow, SONG_KEYS, repSetsOf, repSetLine, TRACK_KEYS, uploadedAudio, GIG_KEYS, gigDayOk, gigWeekday, gigStatus, gigStamp, MIN_YEAR, gigPart, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
   layoutChoices, designCount, designOf, pageLayout, pageOrder, pageRows, videoDesign, videoStartArch,
   VIDEOS, VIDEO_SEED, VIDEO_KEYS, videoPlayable, videoSeedDesc, VIDEO_ALL, COLUMN_SPLIT, bebasEms, antonEms, gloockEms, titanEms, latticeEms, frauncesEms, titleFitK, bricolageEms, latticeDotField, latticeBioDots, latticeTestiDots,
@@ -187,6 +187,22 @@ const THEME_RAMP = {
     tablet:  { dispXl: '86px',  dispLg: '59px', dispMd: '48px', dispSm: '42px', title: '32px', list: '26px', labelLg: '26px', labelMd: '22px', labelSm: '16px', labelXs: '13px', bodyLg: '18px', bodyMd: '16px', bodySm: '13px', chip: '13px', eyebrow: '15px', scriptLg: '31px', scriptMd: '29px', scriptSm: '25px' },
     desktop: { dispXl: '113px', dispLg: '78px', dispMd: '64px', dispSm: '43px', title: '33px', list: '21px', labelLg: '21px', labelMd: '18px', labelSm: '13px', labelXs: '11px', bodyLg: '15px', bodyMd: '13px', bodySm: '11px', chip: '11px', eyebrow: '12px', scriptLg: '28px', scriptMd: '26px', scriptSm: '23px' },
   },
+  // Headliner's mode, read off the three masters' text nodes (2026-11-23; the file binds `size/*` partially and
+  // node by node, so a header's token answers are not the page's; plans/headliner/layout-1.md, *Settled in
+  // session 0*). The display strings are fluid values of the frames' own, so each key is a section's head, as
+  // Lattice's and Paperback's are: dispXl the header's name (267.84 / 156 / 58), dispLg the repertoire's and the
+  // calendar's heads (149.76 / 93 / 60), dispMd the pricing's prices (112 / 69 / 45), dispSm the form's head
+  // (64 / 48 / 38), title the now-playing name (44 / 35 / 29), list a track's name in Inter Tight (22 / 22 / 18),
+  // labelLg the map card's head (22), labelMd 17, labelSm the Anton 16 label, labelXs the Anton 14 one; the
+  // Inter Tight body is 17 / 16 / 14 and the chip 13 at every width. The bio's, media's, gallery's, map's,
+  // pricing's and testimonials' heads (150 / 155.52 / 129.6 / 181.44 / 123.84 / 86.4 at 1440) sit between keys;
+  // their sessions write them. Desktop is the frame x 0.82, 768 and 390 verbatim. The serif (Fraunces Light) has no
+  // ramp key: its sizes are 38 / 34 / 31 / 28 / 22 by site, written where drawn.
+  Headliner: {
+    mobile:  { dispXl: '58px',  dispLg: '60px', dispMd: '45px', dispSm: '38px', title: '29px', list: '18px', labelLg: '22px', labelMd: '17px', labelSm: '16px', labelXs: '14px', bodyLg: '17px', bodyMd: '16px', bodySm: '14px', chip: '13px', eyebrow: '15px' },
+    tablet:  { dispXl: '156px', dispLg: '93px', dispMd: '69px', dispSm: '48px', title: '35px', list: '22px', labelLg: '22px', labelMd: '17px', labelSm: '16px', labelXs: '14px', bodyLg: '17px', bodyMd: '16px', bodySm: '14px', chip: '13px', eyebrow: '15px' },
+    desktop: { dispXl: '220px', dispLg: '123px', dispMd: '92px', dispSm: '52px', title: '36px', list: '18px', labelLg: '18px', labelMd: '14px', labelSm: '13px', labelXs: '11px', bodyLg: '14px', bodyMd: '13px', bodySm: '11px', chip: '11px', eyebrow: '12px' },
+  },
 }
 
 // The two keys that only matter once a window is wider than the canvas its
@@ -260,8 +276,6 @@ const siteSlug = (name) =>
 // (NameInput), so in the app that is a fresh page's absent key alone.
 const nameOf = (title, fallback) => String(title ?? '').trim() || fallback
 
-const initialsOf = (name) =>
-  String(name).trim().split(/\s+/).map((w) => w[0] || '').join('').slice(0, 2).toUpperCase()
 
 // §5.4 — header stays at index 0, footer stays last, and optional sections
 // may only move between them.
@@ -405,6 +419,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // The handwritten face of the notes (Paperback's Caveat); a theme with none falls back to
     // its body face, so read it behind `s.paperback`.
     script: T.script ?? T.body,
+    // Headliner's serif (Fraunces Light through the `Fraunces Headliner` alias): the hero tagline, the bio lead, the
+    // pricing blurbs, the calendar's foot and the footer tagline. A theme with none falls back to its body face.
+    serif: T.serif ?? T.body,
     radius: T.radius, radiusSm: T.radiusSm, btnR: T.btnR, bw: T.bw,
     // `radius/chip`. Retro's token is 8, which its branches write as a literal.
     radiusChip: T.radiusChip ?? '8px',
@@ -422,6 +439,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // white on the rest — where `tx` (`text/2`) is violet; no other theme's
     // `sem` carries it, so it is undefined there (plans/pop/layout-1.md, trap 4).
     text3: T.sem?.text3,
+    // `sem/text/1`, the scheme's first ink. Headliner's maroon and ink grounds set it amber where `text/2`
+    // (`tx`) is cream; no other theme's `sem` carries it, so it is undefined there (read behind `s.headliner`).
+    text1: T.sem?.text1,
     // The page's own ground, whatever scheme the section is seated on: a
     // section whose frames stand a card on another scheme is seated on the
     // card's, and the root paints this round it.
@@ -494,7 +514,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // template is designed since Pop's layout-1 pass, so it is true for all
     // five; TagChips' undesigned chip went with the flat family. A site only
     // some of them share stays a named pair, widened per site from the frame.
-    designed: T.name === 'Retro' || T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial' || T.name === 'Pop' || T.name === 'Lattice' || T.name === 'Paperback',
+    designed: T.name === 'Retro' || T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial' || T.name === 'Pop' || T.name === 'Lattice' || T.name === 'Paperback' || T.name === 'Headliner',
     // Grunge's four layout pages are the same components in a third mode,
     // Static Youth, so its decoration — at layout 1 torn black seams round its
     // textured bands, grain and the red seal, at layouts 2, 3 and 4 rings where
@@ -526,6 +546,13 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // the tape, the sparkles and squiggles, the script notes, the doodle discs — goes behind this
     // flag, widened per site. Lattice's rule: every section has its own `Paperback*` tree.
     paperback: T.name === 'Paperback',
+    // Headliner's layout-1 page (plans/headliner/layout-1.md) is the same component trees in an eighth mode, and the
+    // brutalist one: square corners, 1 px hairlines, full-bleed bands, Anton display, a Fraunces Light serif and Inter
+    // Tight. Lattice's and Paperback's rule: every section gets its own `Headliner*` tree, standing on this flag after the
+    // section's hooks and seam. Until a section has one, `limeTree` (widened to Headliner, as Paperback's was in its
+    // foundation commit) stands the Lime block in Headliner's tokens: without it a layout-1 media falls through to Pop's
+    // branch and reads `S3.activeBg` of null.
+    headliner: T.name === 'Headliner',
     // The templates whose pages are Lime's component trees — the four that widen
     // its blocks, and Lattice, whose own trees stand on the same gate — so a Lime block a twin's frame shares is gated on this rather
     // than on a name at every site. Widened per site, from the frame, as each
@@ -534,7 +561,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // site the others do not share keeps `(s.lime || s.grunge)`, and one is
     // left (layout 2's gallery caption). Pop's layout-1 media steps out of it
     // (`&& !s.pop`), being Retro's body dressed.
-    limeTree: T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial' || T.name === 'Pop' || T.name === 'Lattice' || T.name === 'Paperback',
+    limeTree: T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial' || T.name === 'Pop' || T.name === 'Lattice' || T.name === 'Paperback' || T.name === 'Headliner',
     // Lime layout 3's footer (964:68684 · 984:10769 · 984:10800) stands on
     // Scheme 2's `sem/bg`, the olive `box1`, where layout 1's is the page
     // ground; its seal's disc and the Book pill's label and disc follow, each
@@ -601,6 +628,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // frames' vertical insets in cqw and the horizontal ones as its columns' own seats, so the root pads only the
   // published tab's surplus.
   if (d === 0 && (cat === 'bio' || cat === 'media' || cat === 'gallery' || cat === 'repertoire' || cat === 'map' || cat === 'pricing' || cat === 'calendar' || cat === 'form' || cat === 'testimonials' || cat === 'footer') && T.name === 'Paperback') vm.pad = `0px ${vm.surplus}`
+  // Headliner's layout-1 bio (1:4627 · 1:15396 · 1:16446) is a stage of its own (HeadlinerBio), Paperback's shape: it carries the
+  // frames' insets in cqw, so the root pads only the published tab's surplus. The media (1:4650 · 1:15421 · 1:16471) joined it in section 3;
+  // the gallery (1:4766 · 1:15538 · 1:16587) in section 4, the repertoire (1:4830 · 1:15602 · 1:16651) in section 5, the map (1:4955 · 1:15726 · 1:16776) in section 6, the pricing (1:5067 · 1:15838 · 1:16888) in section 7, the calendar (1:5205 · 1:15976 · 1:17026) in section 8, the form (1:5385 · 1:16159 · 1:17207) in section 9, the testimonials (1:5460 · 1:16233 · 1:17282) in section 10, the footer (1:5480 · 1:16253 · 1:17302) in section 11.
+  if (d === 0 && (cat === 'bio' || cat === 'media' || cat === 'gallery' || cat === 'repertoire' || cat === 'map' || cat === 'pricing' || cat === 'calendar' || cat === 'form' || cat === 'testimonials' || cat === 'footer') && T.name === 'Headliner') vm.pad = `0px ${vm.surplus}`
   // …and the media's (1:419 · 1:9052 · 1:10024): 129.43 top and foot at 1440 (x 0.82, 106.13), 77 at 768
   // and 58 at 390, the same content insets. The 390 master's head box starts 40 down (an import
   // artefact: the eyebrow row sits at y 98, not 58), so with the eyebrow removed the head takes
@@ -938,6 +969,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // (sealCap, data.js), so a long name never sets its two copies over each
   // other; Badge text is capped to the same fit in the panel.
   vm.badgeText = c.badgeText !== undefined ? c.badgeText
+    // Headliner's layout-1 ring holds a numeral, not the name (fieldSeed mirrors it): the artist's initials until typed over.
+    : T.name === 'Headliner' && cat === 'header' && d === 0 ? initials
     : clamp ? clampCapped(name, sealCap(cat, theme.name, d)) : name
   vm.navMode = cv('navMode', cat === 'header' ? navModeDefault(T.name, d) : 'sections')
   vm.align = cv('align', 'left')
@@ -998,6 +1031,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // draw 1024 and 844; the desktop number (614 = 750 x .82, 1px under the frame's) already agrees,
   // so `WIDE.heroH`, the picker's aspect and the setup cards stay as they are (Lattice's verdict).
   if (T.name === 'Paperback' && cat === 'header' && d === 0 && Z.dev !== 'desktop') vm.heroH = 750
+  // Headliner's is 900 at 768 and 390 (call 2 of session 0); its desktop stays at the aspect, 900 x .82 = 738, which
+  // HeadlinerHero computes itself, since `WIDE.heroH` (614) is the other templates' and stays.
+  if (T.name === 'Headliner' && cat === 'header' && d === 0 && Z.dev !== 'desktop') vm.heroH = 900
 
   // §4.8 — `navSections` is `{ cat, label }`, the label being the visitor's
   // word for the section (`navLabel()`, §4.3a) and never the sidebar's, and a
@@ -1093,7 +1129,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // Lattice's title is set 0.004em open (LatticeHero), which its table (measured at no tracking) lacks.
     // Paperback's is set -0.035em (the frames' tracking, which its table, measured at none, lacks).
     const face = T.name === 'Lattice' ? (x) => latticeEms(x) + 0.004 * [...x].length
-      : T.name === 'Paperback' ? (x) => bricolageEms(x) - 0.035 * [...x].length : (navFace ?? frauncesEms)
+      : T.name === 'Paperback' ? (x) => bricolageEms(x) - 0.035 * [...x].length
+      // Headliner's name is Anton at -0.005em (the frame's -1.3392 px at 267.84), at the face's own size: no `navFace`, which
+      // no Headliner site reads, and no 0.75 (that is Grunge's stand-in for Stones Crush).
+      : T.name === 'Headliner' ? (x) => antonEms(x, -0.005) : (navFace ?? frauncesEms)
     const words = vm.brand.split(/\s+/).filter(Boolean).map((w) => face(w))
     ;[vm.titleK, vm.titleFloor] = titleFitK(T.name, d, Z.dev, words, face(' '), pageW)
   }
@@ -1116,7 +1155,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // emptied one drops the pill. Uncased, the footer's rule: the pill sets it
   // in the display face with no text transform, and casing it would shout on
   // Pop. Layout 2's plan card reads its own `cta`.
-  vm.tierRowCta = cv('rowCta', d === 2 ? PRICING_ROW_CTA_3 : d === 3 ? PRICING_ROW_CTA : d === 0 && T.name === 'Paperback' ? PRICING_ROW_CTA_PAPERBACK : 'Book Now')
+  vm.tierRowCta = cv('rowCta', d === 2 ? PRICING_ROW_CTA_3 : d === 3 ? PRICING_ROW_CTA : d === 0 && (T.name === 'Paperback' || T.name === 'Headliner') ? PRICING_ROW_CTA_PAPERBACK : 'Book Now')
   // The label's width in the display face's ems (`navFace`, undefined where a
   // template has no advance table). Editorial's layout-1 deck fits its pill's
   // label to the card (plans/editorial/display-face.md, step 4): Gloock sets
@@ -1527,7 +1566,10 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // "Book Now" (JP-089; Pop's frame 964:58631 too); Retro's layout 1 prints no
   // head. EditPanel mirrors it. Lattice's layout 1 (widened to `limeTree`) keeps TITLES.calendar,
   // "Availability": its frames set that word as the `[ 007 ]` eyebrow's own, and `heading` is its seat.
-  if (d === 0 && cat === 'calendar' && c.heading === undefined && vm.limeTree && !vm.lattice) vm.title = cased(CAL_HEADING_1)
+  if (d === 0 && cat === 'pricing' && c.heading === undefined && T.name === 'Headliner') vm.title = cased(PRICING_HEADING_HEADLINER)
+  if (d === 0 && cat === 'calendar' && c.heading === undefined && vm.limeTree && !vm.lattice && T.name !== 'Headliner') vm.title = cased(CAL_HEADING_1)
+  // Headliner's layout-1 calendar heads its maroon panel with the frame's `Pick a date.` (`heading` is the seat; fieldSeed mirrors it).
+  if (d === 0 && cat === 'calendar' && c.heading === undefined && T.name === 'Headliner') vm.title = cased(CAL_HEADING_HEADLINER)
   // The form's layout-3 head is the frame's "Book Kai for / your event" off
   // the artist's own name (JP-070), copyrightOf()'s rule; EditPanel mirrors it.
   if (d === 2 && cat === 'form' && c.heading === undefined) vm.title = cased(formHeading3(artistName))
@@ -1555,6 +1597,21 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // fitted to its widest word, in Bricolage's ems less the frames' -0.035em tracking (the header's face).
   if (T.name === 'Paperback' && (cat === 'bio' || cat === 'media' || cat === 'gallery' || cat === 'repertoire' || cat === 'map' || cat === 'pricing' || cat === 'form') && d === 0) {
     vm.titleWordEms = +Math.max(0, ...vm.title.split(/\s+/).map((w) => bricolageEms(w) - 0.035 * [...w].length)).toFixed(3)
+  }
+  // Headliner's layout-1 bio statement is Anton turned a quarter turn in a 640 measure (the portrait's height), fitted to its
+  // widest word in Anton's ems at the frames' -0.005em tracking (the header's rule, `antonEms(w, -0.005)`).
+  // The media head (Anton, one line at 1440, wrapping at the content's width) is fitted the same way, and so are the gallery's (two lines) and the
+  // repertoire's count (`240 SONGS`: its widest word, against the room the head box leaves it); the map's town is the widest word against the room the pill leaves, and the pricing's head the same against the room the tabs leave.
+  if (T.name === 'Headliner' && (cat === 'bio' || cat === 'media' || cat === 'gallery' || cat === 'repertoire' || cat === 'map' || cat === 'pricing' || cat === 'form') && d === 0) {
+    vm.titleWordEms = +Math.max(0, ...vm.title.split(/\s+/).map((w) => antonEms(w, -0.005))).toFixed(3)
+  }
+  // The calendar's head is two lines at the middle word (the gallery's and the pricing's rule), so what it fits is its widest *line*, not its widest word:
+  // the narrow frames set it beside the up arrow, and a line that is wider than the room shrinks the type instead of wrapping and growing the panel.
+  if (T.name === 'Headliner' && cat === 'calendar' && d === 0) {
+    const w = vm.title.trim().split(/\s+/).filter(Boolean)
+    const cut = w.length > 1 ? Math.ceil(w.length / 2) : 0
+    const lines = cut ? [w.slice(0, cut).join(' '), w.slice(cut).join(' ')] : w
+    vm.titleWordEms = +Math.max(0, ...lines.map((l) => antonEms(l, -0.005))).toFixed(3)
   }
   // …and its repertoire rows set a song's title in a box beside the artist's chip, shrinking the type to keep the
   // widest word whole (the 768 frame's *Superstition* at 17, *September* at 16), so each song carries its own ems. The table is
@@ -1784,7 +1841,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
       const label = cased(monthLabel(y, mo))
       // Paperback's layout-1 month is fitted to the room between its two discs the same way, in Bricolage's ems less the frames' -0.035em tracking.
       const ems = navFace ? +navFace(label).toFixed(3)
-        : T.name === 'Paperback' && d === 0 ? +(bricolageEms(label) - 0.035 * [...label].length).toFixed(3) : undefined
+        : T.name === 'Paperback' && d === 0 ? +(bricolageEms(label) - 0.035 * [...label].length).toFixed(3)
+        // Headliner's layout-1 month is Anton at the frames' -0.005em, fitted to the room between its two squares (SEPTEMBER 2025 sets 237 in the 390 frame's 197).
+        : T.name === 'Headliner' && d === 0 ? +antonEms(label, -0.005).toFixed(3) : undefined
       return { label, ems, name: MONTHS[mo].toUpperCase(), year: String(y), cells }
     })
     vm.calDays = CAL_DAYS
@@ -1806,7 +1865,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // none, JP-088: its line links). The same field is layout 4's Send Enquiry (JP-082),
     // seeded CAL_SEND_4 there: `vm.calWizard.send`, below.
     // Lattice's layout-1 foot draws a Continue bar (its own seed, mirrored by fieldSeed); the Lime family's draws none.
-    vm.calCta = cased(cv('cta', d === 0 && (vm.lattice || vm.paperback) ? CAL_CTA_LATTICE : 'Check a date'))
+    vm.calCta = cased(cv('cta', d === 0 && (vm.lattice || vm.paperback || vm.headliner) ? CAL_CTA_LATTICE : 'Check a date'))
     // Layout 2's pill, which its frame labels differently from the other two
     // calendar pills (its "Star Enquiry" read as the intended "Start").
     vm.calSlotCta = cased(cv('slotCta', CAL_SLOT_CTA))
@@ -2218,6 +2277,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
         // frames' -0.035em tracking, times 1.12 (the table is read at 1000px; 32-48px type sets 7-12% wider).
         : T.name === 'Paperback' && d === 0
         ? +(1.12 * Math.max(0, ...quote.split(/\s+/).map((w) => bricolageEms(w) - 0.035 * [...w].length))).toFixed(3)
+        // Headliner's layout-1 quote is Anton at the frames' -0.005em, fitted to its widest word against the figure's width (a long word would outrun the 342 at 390).
+        : T.name === 'Headliner' && d === 0
+        ? +Math.max(0, ...quote.split(/\s+/).map((w) => antonEms(w, -0.005))).toFixed(3)
         : undefined,
       who,
       role,
@@ -2381,7 +2443,14 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // column is built round, and it does not fall out of the measure alone in a
   // display face narrower than the frame's. Kept in step with FIELDS.footer's
   // own default, and rendered `pre-wrap` so an edited statement can break too.
-  vm.footerStatement = cased(cv('statement', FOOTER_STATEMENT))
+  vm.footerStatement = cased(cv('statement', T.name === 'Headliner' ? FOOTER_STATEMENT_HEADLINER : FOOTER_STATEMENT))
+  // Headliner's layout-1 footer stands a red square on the frame's `KAI` over `MER` (1:5485): the first three letters of the name's first
+  // and last word, upper-case, so `Kai Mercer` is the frame's. A one-word name stands alone; a clamp's `…` and any mark that is not a
+  // letter or a digit is not a letter of it. Composed here, not in EncoreSection (the hero's numeral and the calendar's disc are `vm.initials`).
+  if (T.name === 'Headliner') {
+    const words = String(vm.brand || '').split(/\s+/).map((w) => [...w].filter((ch) => /[\p{L}\p{N}]/u.test(ch))).filter((w) => w.length)
+    vm.footerMono = (words.length > 1 ? [words[0], words[words.length - 1]] : words).map((w) => w.slice(0, 3).join('').toUpperCase())
+  }
   // The statement's widest word in the display face's ems × `faceK`
   // (`navFace`'s table) — `wordEms`' rule, for a third hand-scaled Bold that is
   // not `vm.title`: Editorial's footer fits the frame's 57.84 to it rather than
@@ -5915,6 +5984,9 @@ function TemplatePreview({ themeIdx, artistName }) {
   return (
     <ScaledPreview
       height="100%" center
+      // Headliner's hero is 738 tall at the 1180 canvas (the frame's 900 x .82), taller than the 614 every picker frame is
+      // cut to, so its card would crop the bar and the name's foot: it alone is scaled to fit (user call, 2026-11-23).
+      fit={THEMES[themeIdx].name === 'Headliner'}
       vm={sectionVm({
         themeIdx, cat: 'header', arch: 0, c: {}, artistName,
         Z: SIZES.desktop, mob: false, navSections: previewNav(0),

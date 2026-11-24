@@ -1,4 +1,4 @@
-# The designed templates: Retro, Lime, Grunge, Editorial, Pop, Lattice and Paperback — working notes
+# The designed templates: Retro, Lime, Grunge, Editorial, Pop, Lattice, Paperback and Headliner — working notes
 
 Moved word for word out of `CLAUDE.md`'s *Intentional limits — not bugs* on 2026-09-30, so it
 loads only when a session works on it. "Above" and "below" may point into `CLAUDE.md` or
@@ -695,3 +695,100 @@ Probes pass at **layouts 1–4**: `inline-probe` (143–154 slots a page), `phot
 (`bio`, `media`, `gallery`, `repertoire`, `map`, `pricing`, `calendar`, `form`, `testimonials`, `video`; the footer's notes file
 holds *Paperback — layout 1* alone, its four caps being layout 1's, since it has one design); the header's layouts 2–4 caps
 have no notes file and are in the plan's *Conventions session 12*.
+
+## Headliner (plans/headliner/layout-1.md, 2026-11-23 on)
+
+The eighth template (`THEMES[7]`, flag `s.headliner`; frames from the *Batch 2* file, Anton display, Inter Tight body, Fraunces Headliner
+serif). **Only layout 1 is designed**, one section at a time; the plan's *Conventions → Settled in session 0* and *Settled in sections 1–11*
+hold the record, and this file keeps what a later session touching a Headliner section needs.
+
+**Its visual language** (the pass closed at the 2026-11-24 sweep; the plan's *Headliner's visual language* is the planning read):
+- **Brutalist and flat, the opposite of Paperback's.** Square corners at every card, field, button and arrow disc (`999` only on a chip or
+  pill tab), 1 px hairlines (`rgba(30,30,30,.18)` on the light grounds, `rgba(238,227,209,.22)` on maroon, teal and ink; unscaled on the
+  canvas), full-bleed colour bands with **straight seams**, no tilt, tape, sticker, confetti, grain, arc or tear, no shadow. The page is the
+  band colours' order: maroon hero, cream bio, maroon media, sand gallery, cream repertoire, teal map, sand pricing, amber calendar,
+  cream form, orange testimonials, `#1E1E1E` footer; the page's own ground (the gutter past 1440) is sand.
+- **Anton set enormous** is the whole personality: the hero's name 267.84 px at 1440, the bio's turned statement 150, the repertoire's count,
+  the map's town, the testimonials' quote. Heads are fitted by `antonEms(w, -0.005)`; labels are Anton 14 to 22 at .02em; body is Inter
+  Tight; **Fraunces Headliner (Light 300, SOFT 0, WONK 1) is the serif**, drawn only where a seeded field is its seat (the bio's lead, the pricing
+  blurb, the calendar's foot line, the footer's tagline).
+- **Art is five shapes** (`headlinerArt.jsx`: the wavy-line field in `HeadlinerWaves` / `HeadlinerWaveField`, `HeadlinerRings`, the ringed
+  numeral, `HeadlinerBlockArrow` and the line arrow, the eye), plus the maroon Anton `“` (type, not art), the footer's red monogram and the
+  shared 46 square arrow button (`headlinerSquare`). **The inks are scheme seats**, read `s.onScheme[n]` where a node stands on another ground
+  (sand `[1].bg`, orange `[1].activeBg`, maroon `[3].bg`, amber `[3].activeBg`, teal `[6].bg`, black `s.activeFg`); the hairlines and a few
+  tints are named literals (`HL_HAIR`, `HL_GAL_HAIR`, `HL_MEDIA_LIT`, `HL_FOOT_RED`).
+- **What the frames draw that the standing removals do not**: the inline nav and wordmark, the hero's tagline, the kicker and location lines,
+  `KM BIO`, `001 · STRUCTURE · BIO_01`, `TOP TRACKS`, `SHOWS / COVERAGE`, `120 MILE RADIUS` and the footer's newsletter and three eyebrows. The
+  testimonials' `REVIEWED 6 DAYS AGO` is the one that *is* drawn, being `quotes.when`'s seed.
+- **Every section is an own tree** (none dresses `s.v0`), standing on `s.headliner` after the seam and handed the seam's `g`; the hero, bio and
+  footer, which own no hook, stand at their section's head. A section whose frame centres its content in a taller box (the media's, the
+  repertoire's and the testimonials') writes `minHeight` plus centring, so more content grows it.
+
+**The header** (`HeadlinerHero`, `EncoreSection.jsx`; own tree, stands at `HeaderV0`'s head):
+- **Stage pattern**: `containerType: inline-size`, `u(v)` = frame px in `cqw`; the table `HEADLINER_HERO` carries each width's numbers
+  and the slanted-edge fractions (desktop 0.33→0.53 / 0.62→0.79, tablet 0.40→0.58 / 0.68→0.84, mobile 0.48→0.64 / 0.74→0.88). The
+  hero is 900 (`vm.heroH` at 768 and 390; desktop is the root's `aspectRatio` × 0.82 = 738 on the canvas).
+- **Photo under two solid wedges** (maroon left, orange right with `HeadlinerWaves`); mobile has neither the orange wedge nor the block
+  arrow, and its picture is the stage's cover shifted 77 px by `objectPosition`.
+- **The three-colour name is three stacked, clipped copies**: the real `<h1>` plus two `aria-hidden` divs in one grid cell, each
+  `clip-path: polygon()` to its colour zone. Do not give them `pointer-events: none` (the click must reach the title slot), and
+  `limits.mjs` skips a same-box `aria-hidden` copy of a seat when it counts overlaps. The column is bottom-anchored, so a wrapped name
+  grows upward.
+- **The ringed numeral** is one svg, the disc its viewBox, so the seal-box rule applies; its text is `badgeText`, **defaulting to the
+  artist's initials** (`initialsOf` in `data.js`), cap 3 (the third sets at 0.72).
+- **The bar is hamburger + `HeadlinerPill`** only; the menu's Book Now row reads the same pill.
+- Picker: `TemplatePreview` passes `fit` for Headliner (user call 2026-11-23), since its 738-tall hero outgrows the 1180 × 614 card.
+- Caps: title 33, tags 8 × 22, main button 16, numeral 3 (`limits.mjs header --themes=7 --designs=0`).
+
+**The bio** (`HeadlinerBio`, `EncoreSection.jsx`; own tree, the head of `Bio` on `s.v0 && s.headliner`; `notes/bio.md`, *Headliner layout 1*):
+- The stage pattern again (`HEADLINER_BIO`, `u()` in cqw, the frame's px at all three widths, `vm.pad` = the published tab's surplus alone).
+- **The statement is a transform**, the frame's own rotated horizontal box: `translateX(-100%) rotate(-90deg)` about the box's top-right corner, right-aligned so the lines' ends meet the portrait's top edge, in a `min(640u, max(5em, widest word))` measure that makes the frame's `READS THE` / `ROOM` break at every width. Not `writing-mode`, whose glyph seats differ by a few px.
+- `para1` is the Fraunces lead, `para2` the paragraph under a literal `About`; no badge, role line or tags are drawn at layout 1.
+
+**The media** (`HeadlinerMedia`, `EncoreSection.jsx`; own tree, dispatched from `Media` after its hooks and seam; `notes/media.md`, *Headliner · layout 1*):
+- The stage pattern (`HEADLINER_MEDIA`, `u()` in cqw, the frame's px at all three widths, `vm.pad` = the surplus alone). Desktop centres its content in a 1057 box (`minHeight` + centring).
+- Flush rows on `HL_HAIR` rules (place number, square cover, Inter Tight title and sub, Anton time, a 44 outlined square) beside a **426-tall black square card** whose photograph is the flex remainder; the transport stands on the title row's foot. The player's track is `at`, not the frame's row 02.
+- **The cover is seeded as track one's art** (`HEADLINER_TRACK_ART[0]`); the Soundcloud button is `HeadlinerPill`.
+
+**The gallery** (`HeadlinerGallery`, `EncoreSection.jsx`; own tree, dispatched from `Gallery` after its hooks and seam; `notes/gallery.md`, *Headliner · layout 1*):
+- The stage pattern (`HEADLINER_GALLERY`, `u()` in cqw, the frame's px at all three widths, `vm.pad` = the surplus alone). A sand band, 96 / 77 / 58 round the taller column: nothing is centred in a taller box.
+- **Anton head set in two lines at the middle word** (the frame's break is not reachable by any measure), four flush rows on `rgba(30,30,30,.18)` rules with 54 x 45 block arrows (orange for the open row), a square outlined back link and a teal eye, a constant-aspect figure with a black and an orange 46 square in its foot-right corner, seven flat tiles on an 8 gap. The glyphs are drawn inline in the frame's own boxes (16 x 14 line arrow, 96 x 51 eye), not through `headlinerArt.jsx`'s differently-sized ones.
+- No credit line (`railLabel` is not read); `sourceLabel` prints at every width; the eyebrow is `kicker`, drawn only when typed. The canvas opens the viewer on slot 2 (`headlinerViewer`) and rings no tile.
+
+**The repertoire** (`HeadlinerRepertoire`, `EncoreSection.jsx`; own tree, dispatched from `Repertoire` after its seam; `notes/repertoire.md`, *Headliner · layout 1*):
+- The stage pattern (`HEADLINER_REP`, `u()` in cqw, the frame's px at all three widths, `vm.pad` = the surplus alone). A cream band that **centres its content in a 1067 box at 1440 and 768** (390 pads 58), like the media's 1440.
+- **The head is the count beside an empty box the frame holds** (kept as a spacer): the frame's two-line `240 / SONGS` at 768 and 390 is that box squeezing the count, so it is reproduced, not forced. Square 1 px search, outlined pill chips, twelve flush rows on `rgba(30,30,30,.18)` rules (maroon Anton number, Anton title, Inter Tight artist flush right; 28 apart at 390), a pager of 44 outlined squares (`1 2 3 … 20`, four numbered buttons at every width).
+- Twelve a page at every width, two columns at 1440 and 768: `perPage`, `columns` and `pageWindow` in `Repertoire` name Headliner. The pager draws only past twelve songs and holds no seat.
+
+**The map** (`HeadlinerMap`, `EncoreSection.jsx`; own tree, dispatched from `EventsMap`'s `if (s.limeTree)` after the seam; `notes/map.md`, *Headliner · layout 1*):
+- The stage pattern (`HEADLINER_MAP`, `u()` in cqw, the frame's px at all three widths, `vm.pad` = the surplus alone). A teal band with nothing centred in a taller box (96 / 77 / 58 round the content). **The head's pill stands at the head box's foot** (`flex-end`, 12 under the baseline), and there is no empty sibling to reproduce.
+- **A flat maroon card of rings art, not the real map** (`HeadlinerRings`, the frame's rings in fractions of the box's width: no `RealMap`, no Photon request) over a ruled foot, **stretched to the list's height at 1440**; the foot's name shrinks to its min-content at 390 and the terms wrap.
+- Flush rows on `HL_HAIR` rules with a flat 72-wide date tile **filled by the gig's place in the whole list** (orange, amber, sand x 3, repeating every five: the frame's `Sold out` / `Tickets` states do not decide it), the venue in Anton over `City · time`, an outlined `Tickets` pill only on a row with an address; a pager of 44 squares (prev outlined, the current page and next orange), space-between at every width, drawn only past one page. The lit row (live) is ringed 3 px inside in amber.
+
+
+**The pricing** (`HeadlinerPricing`, `EncoreSection.jsx`; own tree, dispatched from `Pricing`'s `if (s.limeTree)` after the seam; `notes/pricing.md`, *Headliner · layout 1*):
+- The stage pattern (`HEADLINER_PRICING`, `u()` in cqw, the frame's px at all three widths, `vm.pad` = the surplus alone). A sand band, 96 / 77 / 58 round the content: nothing is centred in a taller box.
+- **Three flat square cards** (orange, maroon, teal; no ring, no turn, no badge) **filled by the package's place in the stored list (`t.n % 3`)**, each `min-height: 540` with a flex-grow list of 44-tall rows on 1 px rules carrying an Anton `01..` numeral flush right, over a per-seat `HeadlinerPill` (it takes `bg` and `ink`). The tablet's odd last card spans both columns.
+- The head is two lines at the middle word (the gallery's rule) with three outlined 44-tall pill tabs at its foot (right at 1440 / 768, under it at 390); no tab is lit at rest.
+
+**The calendar** (`HeadlinerCalendar`, `EncoreSection.jsx`; own tree, dispatched from `Calendar` after its hooks and seam; `notes/calendar.md`, *Headliner · layout 1*):
+- The stage pattern (`HEADLINER_CAL`, `u()` in cqw, the frame's px at all three widths, `vm.pad` = the surplus alone). A flat cream card on the amber band (the section's own Scheme 4 seat, so no `cardOnPage`); a month half and a maroon wave-field panel side by side at 1440 and stacked at 768 and 390, over a ruled foot; nothing is centred in a taller box.
+- **The panel's field is the hero's dataset** (`HeadlinerWaveField`, `headlinerArt.jsx`, orange at .22); the `KM` disc is the ringed numeral's second seat and prints `vm.initials`.
+- **The head is two lines at the middle word**, drawn 109.25 / 115.59 below its flow box on the narrow frames, over the turned (-90) block arrow; **the month is fitted** to the room its two squares leave (`calMonths` `ems`).
+- Caps: heading 14, time 10, prompt 29, cta held to 12. `prompt` is ledgered (`Headliner.0.calendar.prompt`).
+
+**The form** (`HeadlinerForm`, `EncoreSection.jsx`; own tree, dispatched from `EnquiryForm` after the seam; `notes/form.md`, *Headliner — layout 1*):
+- The stage pattern (`HEADLINER_FORM`, `u()` in cqw, the frame's px at all three widths, `vm.pad` = the surplus alone). **One flat square card on the cream page** (the section's own Scheme 2 seat, so no `cardOnPage`): a maroon panel (`s.onScheme[3]`) and a sand half (`s.onScheme[1]`) side by side at 1440 and stacked at 768 and 390; nothing is centred in a taller box. No radius, wave field, bubble or shadow.
+- **The panel is stretched to the form half at 1440 and its list is foot-anchored** (`margin-top: auto` over a 26 floor); the head wraps by measure (`UNFORGETTABLE.` overhangs the content box by about 11 at 1440) and is fitted to its widest word (`vm.titleWordEms`).
+- **A refused box is the ring plus a 1 px inset in maroon**; the submit is `HeadlinerPill` with `as` / `tagProps` (the seam's element). Caps: heading 36 (the seed, a floor), label 48, placeholder 39, message 41, button 39, promises 39, identity 33 / 40.
+
+**The testimonials** (`HeadlinerTestimonials`, `EncoreSection.jsx`; own tree, dispatched in `Testimonials`'s `if (s.limeTree)` after the seam; `notes/testimonials.md`, *Headliner — layout 1*):
+- The stage pattern (`HEADLINER_TESTI`, `u()` in cqw, the frame's px at all three widths, `vm.pad` = the surplus alone). A bare orange band (Scheme 5, the section's own ground) that **centres its content in a 730 box at every width** (`minHeight` + centring; a longer review grows the section).
+- One centred figure on a 24 gap: a maroon Anton `“` (art, in a 100-tall seat), `quotes.when` (the frame's `Reviewed 6 days ago`, drawn: it is the seeded field), the Anton quote (86.4 / 54 / 38, fitted to its widest word through `vm.quotes[].wordEms`) and two pills that are the attribution (`who` maroon, `role` `#1E1E1E`; no byline line).
+- **The arrows are the gallery's 46 square** (black, the arrow in the orange), now shared as `headlinerSquare` / `headlinerLineArrow` at module level: at the gutter, 40 from the figure, at 1440 and 768 (tracks held at one review), a centred pair under the figure at 390. Paging is the seam's (`s.live`, wrapping, not drawn at one review).
+
+**The footer** (`HeadlinerFooter`, `EncoreSection.jsx`; own tree, standing at the head of `Footer` on `s.limeTree && s.headliner`, ahead of Paperback's line, hookless like `Footer`; `notes/footer.md`, *Headliner — layout 1*):
+- The stage pattern (`HEADLINER_FOOT`, `u()` in cqw, the frame's px at all three widths, `vm.pad` = the surplus alone). A bare `#1E1E1E` band (the section's own Scheme 7 seat, no card, no art); **nothing is centred in a taller box** (64 / 51 / 38 round the content, 48 to a 1 px rule, the small print 18 under it).
+- A red `#CE1F1A` 40 square monogram (`vm.footerMono`: the first three letters of the name's first and last word, composed in `sectionVm`; hidable by the footer's `showBadge`) beside the name in Anton, the **tagline in Fraunces Headliner 300 in the `statement`'s seat** (seeded per template: `FOOTER_STATEMENT_HEADLINER`), the two derived link columns in Anton 20 where the frame has three, a sand `HeadlinerPill` Book button in the newsletter's seat, and the rule over the copyright and the credit. The newsletter and the three eyebrows are not drawn; their seats stay as padding.
+- Caps: statement 59, link label 18, button 41, copyright 39, name 31.
+

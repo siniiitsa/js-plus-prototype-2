@@ -69,6 +69,12 @@ blocks, no widened Lime block — with one difference that mattered: **its frame
 was read, not inferred. It therefore inherits group **F** whole (every row of it was met again) and adds group **G**, below,
 from its own running list (*Inherited and used* in [`paperback/layout-1.md`](./paperback/layout-1.md)). Its tilted keylined
 cards, tape, sparkles, confetti, doodle discs and hand-drawn marks stay in its plan and in `notes/templates.md`.
+Headliner's layout-1 pass leaned on it a twelfth time and is Paperback's shape once more — the same Batch 2 file, eleven own-tree
+blocks, none widening a Lime block, bound variable modes — but **flat and square where Paperback was collaged**, and the first pass
+whose page is eleven full-bleed bands with straight seams. It inherits groups **F** and **G** whole and adds group **H**, below, from its
+own running list (*Inherited and used* in [`headliner/layout-1.md`](./headliner/layout-1.md), written at the sweep from the per-section
+*Conventions section N inherits* bullets). Its square corners, hairlines, wavy-line field, rings and ringed numeral stay in its plan and
+in `notes/templates.md`.
 The video section's passes (`plans/video.md`, sessions 1 to 9: one restored section fitted at layouts 2 and 4 of
 all five templates) are not a layout pass and leaned on groups A, B and C as they stood; the nine rows they added,
 each met three times or more, are group E.
@@ -337,11 +343,35 @@ two-build digest); these are the rows Paperback added, each met by three section
 | *A placeholder whose frame states its strength sets `--ph` inline; record the call* | paperback/layout-1, *section 9 inherits*; CLAUDE.md, JP-093 | section 9 (one use) |
 | *Caps at placeholder layouts are lower-only, floored at the seed, never above Pop's; a seed wider than its card is listed, not capped* | paperback/layout-1, *session 12 inherits* | session 12 (87 rows, 27 listed) |
 
+## H. A flat band-on-band page with own trees (Headliner, layout 1)
+
+Source: [`headliner/layout-1.md`](./headliner/layout-1.md), *Conventions* (*Settled in session 0*, *Settled in sections 1–11*,
+*Conventions section N inherits*, *Inherited and used*). Groups **F** and **G** apply whole (the verdict-first rule, raw values where
+nothing is bound, the seam's place, `SCHEMES_OF` / `s.onScheme`, the stage pattern with its own `HEADLINER_<CAT>` table, `ems-table.mjs`'s
+role taken by `antonEms`, the seeded-label rule, the two-build digest); these are the rows Headliner added, each met by three sections or
+more unless the cell says otherwise.
+
+| Convention | Where | Leaned on in Headliner |
+|---|---|---|
+| *Read a section's scheme off its own node (`variable.resolveForConsumer`) and check it against the node's `fills`; the file binds about a dozen `sem` keys, so the rest of a scheme is inferred and re-read by the section that draws it; trust a design context's fallback literal over `get_variable_defs`, which answered `sem/bg` as the orange* | headliner/layout-1, *Settled in session 0* (the scheme table); memory: `figma-frame-reading` | session 0 (Schemes 1–7), every section's seat |
+| *Read every sibling of the head in the metadata before calling a break forced or a measure: an empty `Paragraph` is a spacer that decides the break (the repertoire's), no sibling means a measure (the map's, the bio's)* | headliner/layout-1, *Conventions sections 5, 6 and 7 inherit* | sections 4, 5, 6, 7 |
+| *A forced head break is a `<br>` after a space, never two blocks, so the node's text is the field's own and the inline probe still matches it* | headliner/layout-1, *Conventions section 5 inherits* | sections 4, 7, 8 |
+| *Read whether the frame centres its content in a taller box (`minHeight` plus centring, so more content grows the section) or wraps it (96 / 77 / 58 round the content)* | headliner/layout-1, *Conventions sections 3 to 11 inherit* | sections 3, 4, 5, 6, 7, 8, 9, 10, 11 (centred: the media's 1440, the repertoire's 1440 and 768, the testimonials' every width) |
+| *A fitted head is `vm.titleWordEms` = `antonEms(w, -0.005)` of the widest word (the calendar's: the widest line; the testimonials': `vm.quotes[].wordEms`), fitted against the room a pill or tabs leave (`free`), and a head allowed the 75 % floor needs a `FLOOR_AT` row in `limits.mjs` or its 768 reads low* | headliner/layout-1, *Conventions sections 3, 6, 7 and 10 inherit* | sections 2, 3, 4, 5, 6, 7, 8, 9, 10 |
+| *What a standing removal drops leaves its seat as padding where the frame centres or spaces round it (the eyebrows, the head's empty sibling, the footer's newsletter column)* | headliner/layout-1, *Conventions sections 3, 7 and 11 inherit* | sections 2, 3, 4, 6, 7, 11 |
+| *Lift a shared helper only when a later reader really matches: `HeadlinerPill` grew `bg` / `ink` (section 7), then `as` / `tagProps` / `style` (section 9), and the 46 square arrow became `headlinerSquare` at section 10, after four local square shapes* | headliner/layout-1, *Conventions sections 8, 9 and 10 inherit* | sections 7, 8, 9, 10, 11 |
+| *A node on another ground reads `s.onScheme[n]`, and the section's own seat re-reads its keys off the frame: under the amber seat `s.text1` is `#020202`, under orange `text/2` too* | headliner/layout-1, *Conventions sections 8, 9, 10 and 11 inherit* (the *Inks* bullets) | sections 6, 7, 8, 9, 10, 11 |
+| *A 1 px rule is unscaled on the canvas, so a desktop box reads about 0.2 per rule over the frame's: measure in frame px by dividing by the stage's scale (1180 / 1440 at desktop)* | headliner/layout-1, *Conventions section 6 inherits* | sections 5 to 11 |
+| *A frame literal a section re-seeds (the pricing's head and button, the calendar's head and button, the footer's statement) is a per-template seed written in `sectionVm` and `fieldSeed` in step, uncased, dropped when emptied* | headliner/layout-1, *Settled in sections 7, 8 and 11* | sections 7, 8, 11 |
+| *The probe recipe, in this order: `reach.mjs 7` in the background first (wait on its PID, not `pgrep -f`), `limits.mjs <cat> --themes=7 --designs=0` beside it, **cap rows written only after `reach.mjs` ends**, then `--check` and `--seeds`, the three probes with `--cat <cat> --width 1440,768`, the live walk, the two-server digest on a fresh port (themes 0–5 and 7 in one run, 6 in a second), then `npm run build`* | headliner/layout-1, *Conventions sections 3 to 11 inherit* | sections 3 to 11 |
+| *When a probe fails on something the page does right, fix the probe in the same commit and say so: `limits.mjs`'s overlap filter skips a same-box `aria-hidden` copy of a seat (section 1), `inline-probe` slides its aim off the builder's chrome (section 1), `focus-probe`'s `ACCEPTED` table takes a row with its reason (section 8)* | headliner/layout-1, *Settled in sections 1 and 8* | sections 1, 8, 9 |
+| *Theme 6 can show 0.1 px Figtree text-x differences between two byte layouts of the same source (66 of 144 in sections 5 and 11, 0 in sections 6 to 10): confirm the old tree against its own rerun, then bisect with a no-op comment before calling it a regression* | headliner/layout-1, *Settled in sections 5 and 11* | sections 5, 11 (and the sweep) |
+
 ## What is deliberately not here
 
 - **A template's decorative language** — Retro's grain, torn edges, checkerboard and offset
   shadows; Lime's arcs and glows; Grunge's tears, lighten grain and seals; Editorial's dashed
-  rule and tape; Pop's stickers, scribbles, dot grids and 10px rules; Lattice's dot field, bracket corners, dotted art and square chips; Paperback's tilted keylined cards, tape, sparkles, confetti, doodle discs and hand-drawn marks. Each plan's
+  rule and tape; Pop's stickers, scribbles, dot grids and 10px rules; Lattice's dot field, bracket corners, dotted art and square chips; Paperback's tilted keylined cards, tape, sparkles, confetti, doodle discs and hand-drawn marks; Headliner's square bands, hairlines, wavy-line field, rings and ringed numeral. Each plan's
   *decorative language* section owns its own.
 - **The `sectionVm` and live-seam rules.** They are CLAUDE.md's, and every plan reads that first.
 - **The per-session procedure and the sweep list.** Lime layout 1's are the canonical ones; a new

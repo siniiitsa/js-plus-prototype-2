@@ -11,7 +11,7 @@
 //   OUT=/tmp/fp BASE=http://localhost:5175 node scripts/focus-probe.mjs --theme Grunge --layout 3 --prime
 //
 // Flags (comma lists run every combination, each in a fresh editor):
-//   --theme    Retro | Lime | Grunge | Editorial | Pop | Lattice | Paperback   (default Retro)
+//   --theme    Retro | Lime | Grunge | Editorial | Pop | Lattice | Paperback | Headliner   (default Retro)
 //   --layout   1..4 (Retro also 5 and 6: the header alone, on page 1)  (default 1)
 //   --width    1440 (the Desktop tab) | 768 (the Tablet tab) | 390 (the Mobile tab)  (default 1440)
 //              The window stays 1440 wide in all three (at 820 or under the editor is the phone chrome).
@@ -30,6 +30,7 @@
 //   FOCUSF-OTHER-SECTION  the builder's focus belongs to another section
 //   NO-PANEL         the section's panel never mounted a labelled field (a harness fault, not a pass)
 //   shared line      a STALE the page cannot tell apart: two fields printed in one line (LEDGER below)
+//   accepted         a WRONG-NODE on a field the page does not draw, whose first words are a sibling's (ACCEPTED below)
 // What `ok` means: the box covered the field's copy. A box on the wrong one of two nodes that print
 // the same words, or on a paragraph that merely holds the words, passes (JP-146's class has its own
 // ranking in `findFieldNode`). A section the canvas gives no editable copy (nothing opens on a click)
@@ -66,6 +67,13 @@ const LEDGER = [
   { cat: 'media', label: /^Counter (count|total) label$/, why: "layout 3's counter prints `5 Featured / 5 Max` as one line (notes/media.md)" },
   { cat: 'bio', label: /^(Small heading|Kicker|Location)$/, why: 'the role line `DJ · Live Act · Manchester, UK` prints both (the identity fields, CLAUDE.md)' },
 ]
+// A field the page does not draw, whose copy opens with the words of a sibling's, so the box falls on the sibling: a WRONG-NODE the page cannot avoid
+// short of changing a seed, listed as `accepted` (reported, not failing). One row per theme, section and label; each is a call for the notes.
+const ACCEPTED = [
+  { theme: 'Headliner', cat: 'calendar', label: /^Calendar instruction text$/, why: "the prompt shows only while no day is cued, so it is not drawn, and its first words `Pick a date` are the head's `Pick a date.` (notes/calendar.md, Headliner · layout 1)" },
+]
+let curTheme = ''
+const accepted = (cat, label) => ACCEPTED.find((l) => l.theme === curTheme && l.cat === cat && l.label.test(label || ''))
 const ledgered = (cat, label) => LEDGER.find((l) => l.cat === cat && l.label.test(label || ''))
 
 // --- in the page ------------------------------------------------------------
@@ -220,6 +228,7 @@ const verdictOf = (c, r, prev, cat) => {
   const covers = sq(r.covers)
   const wrong = !!first && !covers.includes(first) && !covers.includes('…')
   const stale = prev && JSON.stringify(prev.box) === JSON.stringify(r.box) && prev.label !== c.label
+  if (wrong && !stale && accepted(cat.cat, c.label)) return 'accepted'
   if (wrong || stale) return ledgered(cat.cat, c.label) && !wrong ? 'shared line' : stale && !wrong ? 'STALE' : stale ? 'STALE+WRONG-NODE' : 'WRONG-NODE'
   return 'ok'
 }
@@ -229,7 +238,8 @@ async function runCombo(theme, layout, width) {
   const sink = path.join(outDir, `${tag}.jsonl`)
   fs.writeFileSync(sink, '')
   const emit = (row) => fs.appendFileSync(sink, JSON.stringify(row) + '\n')
-  const res = { tag, fail: 0, shared: 0, controls: 0, unprimed: [], noPanel: [], errors: [] }
+  curTheme = theme
+  const res = { tag, fail: 0, shared: 0, accepted: 0, controls: 0, unprimed: [], noPanel: [], errors: [] }
   const { page, errors } = await openEditor(theme, layout, width)
   try {
     const secs = await page.evaluate(() => window.__fh().st.sections.map((s) => ({ id: s.id, cat: s.cat })))
@@ -255,6 +265,7 @@ async function runCombo(theme, layout, width) {
         const verdict = verdictOf(c, r, prev, sec)
         res.controls++
         if (verdict === 'shared line') res.shared++
+        else if (verdict === 'accepted') res.accepted++
         else if (verdict !== 'ok') res.fail++
         emit({ tag, cat: sec.cat, label: c.label, ctrl: `${c.tag}/${c.type}`, value: c.value, verdict, box: r.box, covers: r.covers, fkey: r.focus?.key, primed })
         prev = { box: r.box, label: c.label }
@@ -289,7 +300,7 @@ for (const theme of themes) for (const layout of layouts) for (const width of wi
   let r
   try { r = await runCombo(theme, layout, width) } catch (e) { r = { tag: `${theme}-L${layout}-${width}`, fail: 1, shared: 0, controls: 0, unprimed: [], noPanel: [], errors: [String(e.message)] } }
   fails += r.fail
-  console.log(`${r.tag}: ${r.controls} controls, ${r.fail} failing, ${r.shared} shared-line${r.unprimed.length ? `, unprimed: ${r.unprimed.join(',')}` : ''}${r.noPanel.length ? `, NO-PANEL: ${r.noPanel.join(',')}` : ''}${r.errors.length ? `, errors: ${r.errors.join(' | ')}` : ''}`)
+  console.log(`${r.tag}: ${r.controls} controls, ${r.fail} failing, ${r.shared} shared-line${r.accepted ? `, ${r.accepted} accepted` : ''}${r.unprimed.length ? `, unprimed: ${r.unprimed.join(',')}` : ''}${r.noPanel.length ? `, NO-PANEL: ${r.noPanel.join(',')}` : ''}${r.errors.length ? `, errors: ${r.errors.join(' | ')}` : ''}`)
 }
 await browser.close()
 console.log(fails ? 'focus-probe: FAIL' : 'focus-probe: PASS')

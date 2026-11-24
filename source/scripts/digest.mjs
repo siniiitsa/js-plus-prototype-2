@@ -1,7 +1,7 @@
 // Geometry-and-style digest of the preview harness, for proving a change moves
 // nothing it should not. Needs `npm run dev` on :5173.
 //
-//   node scripts/digest.mjs <label> [themes=0,2,3,4] [cats=all]
+//   node scripts/digest.mjs <label> [themes=0,2,3,4; 7 is Headliner] [cats=all]
 //   WIDTHS=desktop EXTRA='&live=1' OUT=/tmp/digest node scripts/digest.mjs after 0
 //   EXTRA="&cj=$(node -p 'encodeURIComponent(…)')" node scripts/digest.mjs blank 0,1,2 form
 //

@@ -3,7 +3,7 @@
 // that still draw the way the Figma frame does at all three widths. Needs
 // `npm run dev` on :5173 (BASE overrides).
 //
-//   node scripts/limits.mjs <cat[,cat]> [--themes=0,1,2,3,4,5] [--keys=heading,tracks.title]
+//   node scripts/limits.mjs <cat[,cat]> [--themes=0,1,2,3,4,5,6,7] [--keys=heading,tracks.title]
 //                           [--widths=desktop,tablet,mobile] [--out=<file.jsonl>]
 //   node scripts/limits.mjs <cats> --check     every cap in FIELDS re-rendered at the cap
 //   node scripts/limits.mjs <cats> --seeds     every seed within its cap, no browser
@@ -53,7 +53,7 @@ const opt = (k, d) => { const a = argv.find((x) => x.startsWith(`--${k}=`)); ret
 const flag = (k) => argv.includes(`--${k}`)
 const cats = (argv.find((a) => !a.startsWith('--')) || '').split(',').filter(Boolean)
 if (!cats.length) { console.error('usage: node scripts/limits.mjs <cat[,cat]> [--themes=] [--keys=] [--check|--seeds]'); process.exit(1) }
-const themes = opt('themes', '0,1,2,3,4,5,6').split(',').map(Number)
+const themes = opt('themes', '0,1,2,3,4,5,6,7').split(',').map(Number)
 const keysOnly = opt('keys', '') ? opt('keys', '').split(',') : null
 const designsOnly = opt('designs', '') ? opt('designs', '').split(',').map(Number) : null // 0-based
 const widths = opt('widths', 'desktop,tablet,mobile').split(',')
@@ -141,7 +141,9 @@ for (const k of (opt('no-floor', '') || '').split(',').filter(Boolean)) FLOOR[k]
 // The bio heading is fitted to its widest word at the four designs that stack it
 // one word to a line at 1440 (session 12): it takes the name's floor there.
 // --no-floor=heading still lets it shrink without bound.
-const FLOOR_AT = { 'bio.heading': { Lime: [0], Editorial: [0], Pop: [0, 3], Lattice: [0], Paperback: [0] } }
+const FLOOR_AT = { 'bio.heading': { Lime: [0], Editorial: [0], Pop: [0, 3], Lattice: [0], Paperback: [0], Headliner: [0] },
+  // Headliner's calendar head is fitted to the room left of the up arrow at 768 and 390 (plans/headliner/layout-1.md, section 8): it sets down to 75 % before it wraps.
+  'calendar.heading': { Headliner: [0] } }
 const shrinkFloor = (p, themeName, a) => fitted(p) ? 0.5 : FLOOR[p.key] ?? (FLOOR_AT[`${p.cat}.${p.key}`]?.[themeName]?.includes(a) ? 0.75 : 1)
 // A repeater's list count whose chip row is the union over every row (session 5).
 const UNION_COUNT = new Set(['songs.tags#'])
@@ -532,6 +534,10 @@ function measure(needles, drops = []) {
     const overlaps = others.filter((o) => !el.contains(o.el) && !o.el.contains(el)
       && !drops.includes(o.el.textContent.trim())
       && !(o.el.closest('svg') && seats.includes(o.el))
+      // Another copy of the same value stacked in the same box (Headliner's hero paints the name three times, each
+      // clipped to its colour zone, in one grid cell) is the same print, not a neighbour.
+      && !(seats.includes(o.el) && o.el.parentElement === el.parentElement
+        && (o.el.getAttribute('aria-hidden') === 'true' || el.getAttribute('aria-hidden') === 'true'))
       // A fitted name's line box brushing a seal's disc by a pixel or two is read by eye, not failed
       // (the line box is a quarter-size taller than the glyphs it holds): plans/header-fit.md.
       && !(/[?&]linebox=1/.test(location.search) && o.el.closest('svg'))

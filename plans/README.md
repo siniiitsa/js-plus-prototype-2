@@ -67,6 +67,8 @@ plans/
     layout-4-qa-fixes.md
   lattice/
     layout-1.md   ← a sixth template, from the JustPay — Batch 2 Figma file (planned 2026-11-19)
+  headliner/
+    layout-1.md   ← an eighth template, "Headliner Structured", from the same Batch 2 file (closed 2026-11-24)
   paperback/
     layout-1.md   ← a seventh template, "Paperback Playful", from the same Batch 2 file (closed 2026-11-23)
   pop/
@@ -246,6 +248,17 @@ Lime layout 1's *Per-session procedure*. The header session also reads `header-n
 procedure* and *Learned on session 12 and the sweep*, [`CONVENTIONS.md`](./CONVENTIONS.md) groups A, B, C, D1, F and G, the
 section's *Settled* bullets in Pop and Lattice layout 1, the section's `notes/` file, and Lime layout 1's
 *Per-session procedure*. The header session also reads `header-nav.md` and `header-fit.md`.
+
+## Headliner
+
+| Pass | Plan | Branch | Fitted |
+|---|---|---|---|
+| Layout 1 | [`headliner/layout-1.md`](./headliner/layout-1.md) | `headliner-layout-1`, forked from `main` (`d61842d`; closed 2026-11-24, swept, with the root `index.html` refreshed; push, PR and merge still open) | An eighth template from the *JustPay — Batch 2* file (`ORILFywSzuadscu6RzskCW`, frames *Headliner Structured — Claude Design*, desktop `1:4478`, tablet `1:15259`, mobile `1:16314`). The same eleven sections, in Retro's order, as full-bleed square-cornered colour bands (maroon, cream, sand, teal, amber, orange, near-black) set in Anton, Fraunces Light and Inter Tight; the hero is a 900-tall slanted-photo stage with a three-colour clipped title. Four user calls open session 0 (the standing removals, the hero's 900, Fraunces Light beside Retro's Fraunces Black, the name); each section may dress Retro's / Grunge's shared branch or take an own tree. Closed: session 0 (the foundation: the four calls, the schemes, the faces), sections 1–11 one per session (every one an own tree, each with its caps, ledgers and three probes), and the 2026-11-24 sweep (docs and `CONVENTIONS.md` group H, the whole-page published check, the root `index.html` +720,275 bytes, themes 0–6 digest-identical). Layouts 2–4 and setup cards 2–4 are placeholders. |
+
+**Reading order in a Headliner session:** `CLAUDE.md`, then the plan, then Paperback layout 1's *Session 0*, *Per-session
+procedure* and *Inherited and used*, [`CONVENTIONS.md`](./CONVENTIONS.md) groups A, B, C, D1, F and G, the section's
+*Settled* bullets in Grunge and Retro layout 1, the section's `notes/` file, and Lime layout 1's *Per-session procedure*.
+The header session also reads `header-nav.md` and `header-fit.md`.
 
 ## Every template
 

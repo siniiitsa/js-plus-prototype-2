@@ -10,7 +10,7 @@
 //   OUT=/tmp/ip BASE=http://localhost:5175 node scripts/inline-probe.mjs --theme Lime --layout 1 --check
 //
 // Flags (comma lists run every combination, each in a fresh editor):
-//   --theme    Retro | Lime | Grunge | Editorial | Pop | Lattice | Paperback   (default Retro)
+//   --theme    Retro | Lime | Grunge | Editorial | Pop | Lattice | Paperback | Headliner   (default Retro)
 //   --layout   1..4 (Retro also 5 and 6: the header alone, on page 1)  (default 1)
 //   --width    1440 (the Desktop tab) | 768 (the Tablet tab) | 390 (the Mobile tab)  (default 1440)
 //              The window stays 1440 wide in all three: at 820 or under the editor
@@ -199,8 +199,14 @@ function pageHelpers() {
       }
     }
     if (!r) return { hidden: 'no box', text }
-    const x = r.left + r.width / 2, y = r.top + r.height / 2
     const root = rootOf(sid)
+    const y = r.top + r.height / 2
+    let x = r.left + r.width / 2
+    // The builder's own chrome over the middle of the copy (the selected section's canvas toolbar sits on the
+    // header's top-right, over a Book pill's text): a hand clicks the part of the words it leaves, so slide the aim
+    // along the line to the nearest point whose topmost element is the section's.
+    const chrome = (px) => { const e = document.elementsFromPoint(px, y)[0]; return !!e && !root.contains(e) }
+    if (!t.svg && chrome(x)) for (const f of [0.15, 0.3, 0.45, 0.6, 0.75, 0.9]) { const px = r.left + r.width * f; if (!chrome(px)) { x = px; break } }
     if (x < 0 || y < 0 || x >= innerWidth || y >= innerHeight) return { hidden: 'off-screen', text }
     const stack = document.elementsFromPoint(x, y).filter((e) => root.contains(e))
     const depth = stack.indexOf(t.el)
