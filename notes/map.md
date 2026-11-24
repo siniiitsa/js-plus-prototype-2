@@ -433,3 +433,36 @@ Paperback's, handed the same `g` (`shown`, `at0`, `lit`, `onPick`, `win` = `page
   `city` 72, `time` 27, `month` 11, `day` 5 (each alone; the city · time line shares one wrapping line, so a long pair grows the row and the cap is a ceiling, not a layout). The other three designs keep Grunge's rows, written out.
 - **`in` rows unchanged** (`reach.mjs 7`: `base` layouts 1 and 3, `terms` 1 and 2, `listLabel` 1 alone). `INLINE_OFF`: none needed. `inline-probe` (1440 and 768) PASS, 29 slots hit, 0 UNLEDGERED; `photo-probe` PASS (no photo slot);
   `focus-probe --prime` PASS (41 controls).
+
+## Backline · layout 1 (plans/backline/layout-1.md, section 6, 2026-11-24)
+
+Frames `1:6137` · `1:17928` · `1:19264` (1041.47 / 1560.25 / 1348.45 tall). An **own tree**, `BacklineMap` (`EncoreSection.jsx`, before `EventsMap`), dispatched in `EventsMap`'s `if (s.limeTree)` after the seam and ahead of
+Headliner's, handed the same `g` (`shown`, `at0`, `lit`, `onPick`, `win` = `pageWindow(pages, pg, true)`, `onPage` / `onStep` only while `s.live`). The stage pattern: `BACKLINE_MAP` per width (the frame's px verbatim, `u()` in cqw of an
+`inline-size` stage, vertical insets 112 / 90 / 67 in a child), `vm.pad = '0px <surplus>'` and `vm.titleWordEms` = `ttEms`, both extended to `map` in `EncoreBuilder.jsx`. **A moss band (Scheme 3, the root's own ground, no card) under a torn
+dark-olive head** (the repertoire's olive, `s.onScheme[2].bg`).
+
+- **The head** is the town in TT2020 (144 / 89 / 58, lh .9, -0.045em, lower-case, **one line**: `manchester.`, the stop seeded by `mapHeadingSeed` for Backline layout 1 as the gallery's and the repertoire's heads do) and **the round
+  `120 mile radius` stamp** (`BacklineRadiusStamp`, `backlineArt.jsx`): two rings (r55 / r29) turned 10 deg, `vm.mapRadius` split into the arcs' words (all but the last, set on both arcs with a star between, the bio stamp's precedent:
+  the frame's `ON THE ROAD` has no field) and the inner ring's last word (`radius`). The stamp is right-aligned in the head at 1440 and 768 and **sits over the paper square's top-right corner at 390** (absolute, the frame's own, clipped by the
+  root). It drops whole when `vm.mapRadius` is empty. The eyebrow `05 ┈┈ SHOWS / COVERAGE` is not drawn (call 1 A), its 30.94 stays as padding.
+- **The paper square** is a card turned -1 deg (`BL_CARD`, the frames' two shadows, half-strength paper grain, a tape at the top) holding **the rings art** (`BacklineRings`: four rings of .18333 k of the box's width, the 2nd and 4th dashed
+  in 68 and 140 dashes of .4 of the pitch, an olive dot; the frame's `mcr` label (the town's short form) has no field and is **not drawn**, a literal would be wrong for any other town; **no `RealMap`, no tiles, no request**, Lattice's, Paperback's and Headliner's call) in a box 12 in (627x559 / 692x530 / 318x340), and a foot of
+  `vm.mapBase` (TT2020 28 / 25 / 23, lower-case) beside `vm.mapTerms` (Archivo label 11, olive) in a flex row that **shrinks both at 390**, as the frame's does. Each drops when emptied. The card is 621 / 591 / 416 tall.
+- **Tickets** are turned, notched paper (`BL_TICKET`, `blNotchMask(u(12))`, half-strength grain, drop-shadow on the turned wrapper so the shadow follows the bites): 100 / 92 tall at 1440 and 768 (content-driven at 390, 22 padding top and
+  bottom), 8 apart, **turned -0.8 / 0.6 / -0.4 / 0.7 / -0.6 deg by the gig's place in the whole list** (`(at0 + i) % 5`): a page turn does not move them, and a longer list repeats the five. A dashed ink rule (**a repeating gradient: 1.8 on,
+  1.8 off**, not CSS `dashed`) divides the date block (month in the label face, day in TT2020 40 / 32 / 26) from the venue (TT2020 28 / 25 / 18) over `vm.gigs[].line` (label 11). **Not drawn**: the frame's turned `Sold out` stamp (no
+  field); the ink `Tickets` square **except on a row with an address** (JP-045; the seeded rows draw none); the `05 of 12` is derived (`shown` of `gigs`, two digits), never typed. The rows are `<a target=_blank rel=noopener>` while
+  they have an address and `s.live`.
+- **The lit row** (live only, the pairing) is the ticket ringed 3 px inside in the olive `s.text3`: the frame draws none. The pager draws **only past one page** (every template's rule): a 44 outlined prev square with the line arrow, the
+  window's squares (the current one ink with cream type), an ink next square, `space-between` at every width. With the seeded five the section stands 66 shorter than the frame's right column.
+- **The tear is a composition, not a sixth path**: the master's 88 px raster **is the form's contour shifted 249 px over x 0-1191 (correlation test, 2026-11-24)**; only the tail 1191-1440 is new. `BACKLINE_TEARS.map` is
+  `composeTear(BACKLINE_TEARS.form, 249, TEAR_MAP_TAIL)`, the tail a traced 1.5 KB path, so the section costs 1.5 KB where a whole path costs 7. The tail was corrected against the master's edge in windows of 40 px (the first trace sat
+  1.4 px proud of the body), and now measures -3.8 / -3.9 against the master at 2x for the body and the tail alike (the shared threshold bias). **Past 1191 the contour is a simplified trace** (eps .5): its edge deviates from the master's
+  by a wider spread (sd 2.4-2.7 px against 1.9) in the 250 px nearest the right corner.
+- **Caps** (`limits.mjs map --themes=8 --designs=0`, then with `--extra-lines` for the three that wrap; `--check` 0 failing, `--seeds` 0 over): `heading` 11 (16 / 12 / 11 at the three widths: a twelfth letter wraps the town; the seed
+  `manchester.` is exactly 11, and `mapHeadingSeed` seeds the town in the cap less one, plus the stop), `listLabel` 39, `base` 28, `terms` 58, `gigs.venue` 23 (one line at 390; a 24th wraps and the row grows), `city` 20, `time` 13,
+  `month` 4, `day` 2. The city and the time share one label line that wraps at 390 (the frame's does), so each is capped alone at the shared rows' 20 and 13 (the probe reads 58 / 22 on one line, 65 / 53 with a wrapped line). Layouts 2-4
+  are Pop's rows, written out.
+- **`in` rows unchanged** (`reach.mjs 8` over the map, the scratch copy, `ONLY=map`, 2,832 renders: layout 1 reads `base`, `listLabel` and `terms`, as the existing rows say). `INLINE_OFF`: none needed (`inline-probe` PASS, 29 slots
+  hit at 1440 and 768, 0 off). `photo-probe` PASS (no photo slot); `focus-probe --prime --check` PASS (41 controls, 0 failing). A live walk at `&n=12&live=1`: the pager steps 1 / 2 / 3 and back, a picked row rings, the linked rows are
+  `<a>`s with `noopener`.

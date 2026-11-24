@@ -25202,7 +25202,7 @@ function BacklineMap({ s, g }) {
       <div style={{ position: 'absolute', inset: 0, transform: 'rotate(-1deg)', background: BL_CARD, boxShadow: paperShadow }}>
         <BacklineGrain src={s.backlineGrain} tone="paper" opacity={0.5} />
         <BacklineRings
-          w={P.box[0]} h={P.box[1]} ink={ink} dot={olive} label="mcr" font={s.body}
+          w={P.box[0]} h={P.box[1]} ink={ink} dot={olive} font={s.body}
           style={{ position: 'absolute', left: u(12), top: u(12), width: `calc(100% - ${u(24)})`, height: u(P.box[1]) }}
         />
         {foot && (
