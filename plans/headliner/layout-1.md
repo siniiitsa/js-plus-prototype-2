@@ -1012,6 +1012,16 @@ the sidebar's layout picker show them as they are.
 - `vm.titleWordEms` for a Headliner section is `antonEms(w, -0.005)` (`EncoreBuilder.jsx`, next to the Lattice and Paperback lines); `limits.mjs`' `FLOOR_AT` takes a `Headliner: [0]` for a head allowed the 75 % floor.
 - **Probe recipe**: run the section's probes with `--cat <cat> --width 1440,768` (each `--check`; `--blank` and `--drop` for the photo probe), `reach.mjs 7` in the background first (no edits to `src/` or `scripts/` while it runs), then the two-server digest on a **fresh port** (5175 was a stale worktree server from an earlier session; 5176 worked), confirmed by `curl :PORT/src/builder/EncoreSection.jsx | grep -c <a symbol only the new tree has>` returning 0 on the old tree.
 
+### Inherited and used
+
+*(Written at the sweep from the per-section bullets above; the plan kept no running list, so `plans/CONVENTIONS.md` group **H** is built from these and from groups F and G.)*
+
+- Groups F and G whole: the verdict written before the code, raw values where nothing is bound, the seam's place (after the hooks; the hookless hero, bio and footer at the head), `SCHEMES_OF` / `s.onScheme`, `THEME_RAMP`, the stage pattern (`HEADLINER_<CAT>`, `u(v)` in cqw, vertical insets in a child, `vm.pad = '0px <surplus>'`), the label and seeded-literal rules, the two-build digest.
+- Paperback's *Session 0*, *Per-session procedure* and *Session 12* (the per-section proofs and the probe recipe), and its `paperbackArt.jsx` shape for `headlinerArt.jsx`.
+- Grunge's and Retro's layout-1 inventories as the nearest relatives (Anton, hairlines, band-on-band), read and *not* dressed: every section came back an own tree.
+- `figma-frame-reading`: `variable.resolveForConsumer` per node, the narrow masters' Device-mode leak, a design context's fallback literals over `get_variable_defs`.
+- `limits.mjs` (`--themes=7 --designs=0`, `FLOOR_AT`), `inline-probe`, `photo-probe`, `focus-probe` (`--prime --check`, the `ACCEPTED` table) and `reach.mjs 7`, as Paperback's session 12 left them, plus the three fixes the pass made to them (the overlap filter's `aria-hidden` copy, the inline probe's aim off the toolbar, `ACCEPTED`).
+
 ## Open questions
 
 1. **What the stray floating `Container` is** (86.7 / 95.4 / 42 px) — one `get_screenshot` in section 1's session.
