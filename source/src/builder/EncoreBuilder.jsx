@@ -657,6 +657,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // frames' insets in cqw, so the root pads only the published tab's surplus. The media (1:4650 · 1:15421 · 1:16471) joined it in section 3;
   // the gallery (1:4766 · 1:15538 · 1:16587) in section 4, the repertoire (1:4830 · 1:15602 · 1:16651) in section 5, the map (1:4955 · 1:15726 · 1:16776) in section 6, the pricing (1:5067 · 1:15838 · 1:16888) in section 7, the calendar (1:5205 · 1:15976 · 1:17026) in section 8, the form (1:5385 · 1:16159 · 1:17207) in section 9, the testimonials (1:5460 · 1:16233 · 1:17282) in section 10, the footer (1:5480 · 1:16253 · 1:17302) in section 11.
   if (d === 0 && (cat === 'bio' || cat === 'media' || cat === 'gallery' || cat === 'repertoire' || cat === 'map' || cat === 'pricing' || cat === 'calendar' || cat === 'form' || cat === 'testimonials' || cat === 'footer') && T.name === 'Headliner') vm.pad = `0px ${vm.surplus}`
+  // Backline's layout-1 bio (1:5665 · 1:17466 · 1:18797) is a stage of its own (BacklineBio), the hero's shape: the frames' insets in cqw, so the root pads only the published tab's surplus.
+  if (d === 0 && cat === 'bio' && T.name === 'Backline') vm.pad = `0px ${vm.surplus}`
   // …and the media's (1:419 · 1:9052 · 1:10024): 129.43 top and foot at 1440 (x 0.82, 106.13), 77 at 768
   // and 58 at 390, the same content insets. The 390 master's head box starts 40 down (an import
   // artefact: the eyebrow row sits at y 98, not 58), so with the eyebrow removed the head takes
@@ -1240,10 +1242,23 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // nothing. A line of three words or fewer is all lead. The pill is uncased.
   const credit = String(cv('credit', BIO_CREDIT) ?? '').trim().split(/\s+/).filter(Boolean)
   vm.bioCredit = { lead: credit.slice(0, 3).join(' '), rest: credit.slice(3).join(' ') }
-  vm.bioCta = cv('cta', d === 0 && T.name === 'Paperback' ? BIO_CTA_PAPERBACK : BIO_CTA)
+  vm.bioCta = cv('cta', d === 0 && (T.name === 'Paperback' || T.name === 'Backline') ? BIO_CTA_PAPERBACK : BIO_CTA)
   // JP-059 — layout 2's pill over the paragraph; `labelStyle` cases it.
   vm.bioTag = cv('tag', BIO_TAG)
   vm.bioP2 = cv('para2', DEFS.bioP2)
+  // Backline's layout-1 lead carries a hand-drawn underline (the frame's, under `reading rooms`, the two words before its dash): it is the last two
+  // words ahead of the lead's first spaced dash, so it follows the artist's copy. {pre, mark, post} split the string without changing it; null
+  // when the lead has no spaced dash with two or more words before it.
+  vm.bioMark = null
+  if (T.name === 'Backline' && cat === 'bio' && d === 0 && vm.bioP1) {
+    const text = String(vm.bioP1)
+    const dash = /\s[—–-]\s/.exec(text)
+    if (dash) {
+      const before = text.slice(0, dash.index).replace(/\s+$/, '')
+      const m = /(\S+\s+\S+)$/.exec(before)
+      if (m) vm.bioMark = { pre: before.slice(0, m.index), mark: m[1], post: text.slice(m.index + m[1].length) }
+    }
+  }
   // Layout 3's first stat, seeded with the frame's "June 2021"; an emptied
   // string is what tells the ID card not to draw the column.
   vm.since = cv('since', DEFS.since)
@@ -1638,6 +1653,11 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // repertoire's count (`240 SONGS`: its widest word, against the room the head box leaves it); the map's town is the widest word against the room the pill leaves, and the pricing's head the same against the room the tabs leave.
   if (T.name === 'Headliner' && (cat === 'bio' || cat === 'media' || cat === 'gallery' || cat === 'repertoire' || cat === 'map' || cat === 'pricing' || cat === 'form') && d === 0) {
     vm.titleWordEms = +Math.max(0, ...vm.title.split(/\s+/).map((w) => antonEms(w, -0.005))).toFixed(3)
+  }
+  // Backline's layout-1 bio statement is TT2020 turned a quarter turn in a 600 measure (the polaroid's height), fitted to its widest word in the
+  // face's ems (`ttEms`: monospaced, so a character count) at the frames' -0.045em tracking, the header's rule.
+  if (T.name === 'Backline' && cat === 'bio' && d === 0) {
+    vm.titleWordEms = +Math.max(0, ...vm.title.split(/\s+/).map((w) => ttEms(w))).toFixed(3)
   }
   // The calendar's head is two lines at the middle word (the gallery's and the pricing's rule), so what it fits is its widest *line*, not its widest word:
   // the narrow frames set it beside the up arrow, and a line that is wider than the room shrinks the type instead of wrapping and growing the panel.

@@ -107,3 +107,56 @@ export function backlineNotch(colour, r) {
   const g = (at, pos) => `radial-gradient(circle at ${at}, transparent ${r}, ${colour} calc(${r} + 0.6px)) ${pos} / 51% 51% no-repeat`
   return [g('0 0', 'left top'), g('100% 0', 'right top'), g('0 100%', 'left bottom'), g('100% 100%', 'right bottom')].join(', ')
 }
+
+// The tape strip (section 2, the bio; the frames' `clip-poly@…` rectangles 120 x 32, a translucent beige `sem/box/3` at 80 %, whose two ends are torn by a
+// 16-point polygon). The same strip at every use: a section sizes it (`width`, a CSS length; the height follows the 120 : 32 box) and turns it.
+const TAPE_POINTS = '0,1.92 4.8,0 2.4,5.76 6,10.56 1.2,16 6,21.12 2.4,26.24 4.8,32 115.2,32 118.8,26.88 114,21.76 118.8,16.64 115.2,11.2 120,5.76 116.4,0'
+export function BacklineTape({ colour, opacity = 0.8, width, style, ...rest }) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 120 32" preserveAspectRatio="none" style={{ display: 'block', width, height: `calc(${width} * 32 / 120)`, overflow: 'visible', pointerEvents: 'none', ...style }} {...rest}>
+      <polygon points={TAPE_POINTS} fill={colour} fillOpacity={opacity} />
+    </svg>
+  )
+}
+
+// The round stamp (the bio's badge: 1:5674, a 160 box turned 14 degrees; two rings, 4.37 and 1.90 thick, in the olive, the name set on a circle
+// between them, and a star after each copy). The frames' ring reads MANCHESTER ★ DJ · SELECTOR ★ and `est. 21` inside; the standing removals keep
+// the ring's text to the artist's name (`text`, twice, a copy to an arc) and leave the middle bare. The letters are Archivo Bold 14 on a baseline
+// 57.7 out (off the frames' glyph boxes: the letter centres stand 62.5 from the middle and the box is 15 tall), set evenly along each arc
+// (`textLength`), the first arc from -85 to 21 degrees from the top and the second from 51 to 157, with the stars at 36 and 180 (the frame's
+// letters run -80 to 180 with a 100 degree bare span at the lower left). `id` makes the arc paths unique (the caller passes a `useId()`).
+// `size` is the 160 box (a CSS length): the artwork is a 160 viewBox that overflows it by nothing, the turn being inside.
+const STAMP_R = 57.7
+const stampPt = (r, deg) => [(80 + r * Math.sin((deg * Math.PI) / 180)).toFixed(3), (80 - r * Math.cos((deg * Math.PI) / 180)).toFixed(3)]
+const stampArc = (a, b) => `M${stampPt(STAMP_R, a).join(' ')}A${STAMP_R} ${STAMP_R} 0 0 1 ${stampPt(STAMP_R, b).join(' ')}`
+const stampStar = (deg) => {
+  const [cx, cy] = stampPt(62.5, deg)
+  const pts = []
+  for (let i = 0; i < 10; i++) {
+    const r = i % 2 ? 2.7 : 6.2
+    const a = ((deg + i * 36) * Math.PI) / 180
+    pts.push(`${(+cx + r * Math.sin(a)).toFixed(2)},${(+cy - r * Math.cos(a)).toFixed(2)}`)
+  }
+  return pts.join(' ')
+}
+export function BacklineStamp({ text, ink, font, size, id = 'bl-stamp', style, ...rest }) {
+  const word = String(text ?? '').toUpperCase()
+  const arcs = [[-85, 21], [51, 157]]
+  const len = (STAMP_R * 106 * Math.PI) / 180
+  return (
+    <svg aria-hidden="true" viewBox="0 0 160 160" fill="none" style={{ display: 'block', width: size, height: size, overflow: 'visible', pointerEvents: 'none', ...style }} {...rest}>
+      <defs>{arcs.map(([a, b], i) => <path key={i} id={`${id}-${i}`} d={stampArc(a, b)} />)}</defs>
+      <g transform="rotate(-14 80 80)">
+        <circle cx="80" cy="80" r="76.47" stroke={ink} strokeWidth="4.37" />
+        <circle cx="80" cy="80" r="41.835" stroke={ink} strokeWidth="1.9" />
+        {word && arcs.map((_, i) => (
+          <text key={i} fill={ink} style={{ fontFamily: font, fontWeight: 700, fontSize: 14 }}>
+            <textPath href={`#${id}-${i}`} textLength={len.toFixed(2)} lengthAdjust="spacing">{word}</textPath>
+          </text>
+        ))}
+        <polygon points={stampStar(36)} fill={ink} />
+        <polygon points={stampStar(180)} fill={ink} />
+      </g>
+    </svg>
+  )
+}

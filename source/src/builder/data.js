@@ -3187,7 +3187,7 @@ export const BADGE_MODES = [
 // rotating one is not on offer there.
 export const badgeOptsFor = (themeName, design, cat = 'header') =>
   design === 0 && (cat === 'header' && (themeName === 'Lime' || themeName === 'Editorial' || themeName === 'Lattice' || themeName === 'Headliner')
-    || cat === 'bio' && themeName === 'Lattice')
+    || cat === 'bio' && (themeName === 'Lattice' || themeName === 'Backline'))
     ? [{ v: 'rotating', l: 'Visible' }, { v: 'hidden', l: 'Hidden' }]
     : BADGE_MODES
 
@@ -3400,8 +3400,8 @@ export const FIELDS = {
       hint: 'The small pill over the first paragraph. Left empty, it is not drawn.' },
     { k: 'para1',     l: 'Paragraph 1', type: 'area', def: 'bioP1', chars: 390 },
     // Headliner's layout 1 prints it too, as the paragraph under `About` (the lead above the rule is `para1`).
-    { k: 'para2',     l: 'Paragraph 2', type: 'area', def: 'bioP2', in: { Headliner: [0, 2, 3], '*': [2, 3] },
-      chars: { Headliner: [340, null, 340, 340], '*': [null, null, 340, 340] } },
+    { k: 'para2',     l: 'Paragraph 2', type: 'area', def: 'bioP2', in: { Headliner: [0, 2, 3], Backline: [0, 2, 3], '*': [2, 3] },
+      chars: { Headliner: [340, null, 340, 340], Backline: [340, null, 340, 340], '*': [null, null, 340, 340] } },
     // Layout 2's foot row (JP-037): the frame's two-tone line, whose first
     // three words take the accent (`vm.bioCredit`), and the pill beside it.
     // Each drops when emptied, and the row with both.
@@ -3409,9 +3409,10 @@ export const FIELDS = {
       hint: 'The line at the foot of the card. Its first three words take the accent colour.' },
     // Paperback's layout 1 draws it too: the black `Full bio` pill under the About copy (seeded by
     // sectionVm and `fieldSeed`, as the calendar's Lattice `Continue`).
-    { k: 'cta',       l: 'Button', d: BIO_CTA, in: { Paperback: [0, 1], '*': [1] }, chars: { Paperback: [16, 16], '*': [null, 16] },
+    { k: 'cta',       l: 'Button', d: BIO_CTA, in: { Paperback: [0, 1], Backline: [0, 1], '*': [1] }, chars: { Paperback: [16, 16], Backline: [16, 16], '*': [null, 16] },
       hint: { '*': 'The button beside the footer line. Left empty, it is not drawn.',
-        Paperback: 'The black pill under the About copy (layout 1) and the button beside the footer line (layout 2). Left empty, it is not drawn.' } },
+        Paperback: 'The black pill under the About copy (layout 1) and the button beside the footer line (layout 2). Left empty, it is not drawn.',
+        Backline: 'The ink button under the About copy (layout 1) and the button beside the footer line (layout 2). Left empty, it is not drawn.' } },
     // Layout 3's ID card draws a row of stats, and the frame's first one is
     // "Performing since: June 2021". Seeded with the frame's copy (QA,
     // 2026-09-15 — layout 2's price row and bookings line were the precedent),
@@ -4467,7 +4468,7 @@ export function fieldSeed({ cat, f, themeName, design, c = {}, artistName, email
     : f.k === 'base' && cat === 'map' ? mapBaseSeed(c, themeName, design)
     : f.k === 'terms' && cat === 'map' ? mapTermsSeed(c)
     : f.k === 'cta' && cat === 'calendar' && design === 3 ? CAL_SEND_4
-    : f.k === 'cta' && cat === 'bio' && design === 0 && themeName === 'Paperback' ? BIO_CTA_PAPERBACK
+    : f.k === 'cta' && cat === 'bio' && design === 0 && (themeName === 'Paperback' || themeName === 'Backline') ? BIO_CTA_PAPERBACK
     : f.k === 'cta' && cat === 'calendar' && design === 0 && (themeName === 'Lattice' || themeName === 'Paperback' || themeName === 'Headliner') ? CAL_CTA_LATTICE
     : f.k === 'rowCta' && cat === 'pricing' && design === 0 && (themeName === 'Paperback' || themeName === 'Headliner') ? PRICING_ROW_CTA_PAPERBACK
     : f.k === 'heading' && cat === 'pricing' && design === 0 && themeName === 'Headliner' ? PRICING_HEADING_HEADLINER
@@ -4971,8 +4972,8 @@ export function identityCap(key, sections, themeName) {
 // change a reader, re-measure, change this.
 export const IDENTITY_READS = {
   // Headliner's layout-1 bio prints neither (the frame has no role line), so its layout 1 is off both.
-  kicker: { bio: { Headliner: [1, 2, 3], '*': [0, 1, 2, 3] }, form: [0, 1] },
-  location: { bio: { Headliner: [1, 2], '*': [0, 1, 2] }, calendar: { Retro: [0, 3], Lattice: [0, 3], '*': [3] } },
+  kicker: { bio: { Headliner: [1, 2, 3], Backline: [1, 2, 3], '*': [0, 1, 2, 3] }, form: [0, 1] },
+  location: { bio: { Headliner: [1, 2], Backline: [1, 2], '*': [0, 1, 2] }, calendar: { Retro: [0, 3], Lattice: [0, 3], '*': [3] } },
   tags: { bio: { Retro: [1, 3], '*': [1, 2, 3] } },
   showTags: { bio: { Retro: [1, 3], '*': [1, 2, 3] } },
 }

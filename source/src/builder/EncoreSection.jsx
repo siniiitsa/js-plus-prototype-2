@@ -32,7 +32,7 @@ import { useId, useRef, useState } from 'react'
 import RealMap from './RealMap.jsx'
 import { PaperbackArt, PaperbackSparkle, PaperbackWaves } from './paperbackArt.jsx'
 import { HeadlinerWaves, HeadlinerWaveField, HeadlinerBlockArrow, HeadlinerRings } from './headlinerArt.jsx'
-import { BacklineTear, backlineNotch } from './backlineArt.jsx'
+import { BacklineTear, BacklineGrain, BacklineTape, BacklineStamp, backlineNotch } from './backlineArt.jsx'
 import {
   Play, Pause, SkipBack, SkipForward, Check, ChevronLeft, ChevronRight,
   ArrowLeft, ArrowRight, ArrowUp, ArrowDown, Star, Plus, X, Search, User,
@@ -5201,10 +5201,149 @@ function HeadlinerBio({ s }) {
   )
 }
 
+// Backline · layout 1 · the bio (plans/backline/layout-1.md, section 2; frames 1:5665 · 1:17466 · 1:18797, 824 / 1066 / 1256 tall): an own tree,
+// hookless in the sense that matters (it stands at the head of `Bio`, before any seam), though `useId` makes the stamp's arc paths unique. The
+// stage pattern: a `containerType: inline-size` root, `u(v)` turning a frame px into cqw of it, the frame's numbers at all three widths, the
+// vertical insets in a child, `vm.pad = '0px <surplus>'`. A taped, turned polaroid with the statement set over it a quarter turn (a transform,
+// not `writing-mode`: the frame's box is a horizontal one turned -90, as Headliner's), the round stamp, a lead with a hand-drawn underline, and
+// an `About` block under a dashed rule ending in the ink `Full bio` button.
+//
+// Draws what the standing rules leave (call 1 A): no `01 ┈┈ KM BIO` eyebrow and no `001` / `STRUCTURE · BIO_01` pair (their seats stay as
+// padding, so the polaroid keeps the frame's relation to the band's edge), and the stamp's ring is the artist's name, its middle bare (`est. 21`
+// is a claim). It draws no tear: the band's torn head is the hero's foot (BacklineHero), and the next band's head is that band's own. The 768
+// master clips the `Full bio` button at its 1066-tall section (the container runs to 1345); it is drawn at 768 as at 1440 and 390, so the
+// tablet section is taller than the frame's (the foot below the button is the 390 master's 70.8).
+const BACKLINE_BIO = {
+  desktop: { fw: 1440, top: 112, foot: 112, side: 48.96, colW: 426.016, h2: 124, x0: -113.13, y0: 0, lead: 38, ul: 1.73, leadTop: 8, stamp: [0, 213.47] },
+  tablet: { fw: 768, top: 84.94, foot: 70.8, figW: 426, h2: 77, x0: -32.22, y0: 0, lead: 34, ul: 2.96, gap: 73.62, gut: 26, lowW: 716, aboutW: 342, stamp: [387.37, 452.09] },
+  mobile: { fw: 390, top: 141, foot: 70.8, figW: 342, h2: 50, x0: -19, y0: 2.18, lead: 31, ul: 1.93, gap: 32, gut: 24, lowW: 342, aboutW: 342, stamp: [223.4, 468.77] },
+}
+const BL_CARD = '#F1F2E5'              // the polaroid raster's mean (1:5714's 427 x 601 PNG), sampled; sem/box/1 #F5F6E8 is 4 levels paler
+const BL_BIO_RULE = 'rgba(35, 36, 15, 0.22)'
+function BacklineBio({ s }) {
+  const dev = s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop'
+  const P = BACKLINE_BIO[dev]
+  const desk = dev === 'desktop'
+  const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
+  const stampId = useId().replace(/:/g, '')
+  const figW = desk ? 426 : P.figW
+  const ems = s.titleWordEms
+  const title = String(s.title ?? '')
+  const dotEnd = title.endsWith('.')
+  const statement = (
+    <h2 style={{
+      position: 'absolute', right: `calc(100% - ${u(P.x0)})`, top: u(P.y0), margin: 0, textAlign: 'right', textTransform: 'lowercase',
+      width: ems ? `min(${u(600)}, max(4.6em, ${ems}em))` : `min(${u(600)}, 4.6em)`,
+      transformOrigin: '100% 0', transform: 'rotate(-90deg)',
+      fontFamily: s.display, fontWeight: 400, lineHeight: 0.86, letterSpacing: '-0.045em', color: s.text1,
+      fontSize: ems ? `min(${u(P.h2)}, calc(${u(600)} / ${ems}))` : u(P.h2),
+    }}>{dotEnd ? <>{title.slice(0, -1)}<span style={{ color: s.text3 }}>.</span></> : title}</h2>
+  )
+  const stamp = s.showBadge === 'show' && (
+    <BacklineStamp
+      text={s.badgeText} ink={s.text3} font={s.ui} id={stampId} size={u(160)}
+      style={{ position: 'absolute', left: u(P.stamp[0]), top: u(P.stamp[1]) }}
+    />
+  )
+  const portrait = (
+    <div style={{ position: 'relative', flex: 'none', width: u(figW), height: u(600) }}>
+      <div style={{
+        position: 'absolute', inset: 0, transform: 'rotate(2deg)', background: BL_CARD,
+        boxShadow: `0 ${u(1)} ${u(1)} 0 rgba(35, 36, 15, 0.18), 0 ${u(14)} ${u(26)} ${u(-16)} rgba(35, 36, 15, 0.55)`,
+      }}>
+        <div style={{ position: 'absolute', left: u(12), top: u(12), right: u(12), bottom: u(12), overflow: 'hidden' }}>
+          <Photo s={s} initialsSize={96} />
+        </div>
+        <BacklineTape colour={s.box3} width={u(120)} style={{ position: 'absolute', left: u(figW / 2 - 60), top: u(-14), transform: 'rotate(-4deg)' }} />
+        <BacklineTape colour={s.box3} width={u(120)} style={{ position: 'absolute', left: u(figW - 90), top: u(528), transform: 'rotate(68deg)' }} />
+      </div>
+      {statement}
+      {!desk && stamp}
+    </div>
+  )
+  const mark = s.bioMark
+  const lead = s.bioP1 && (
+    <p style={{
+      margin: 0, fontFamily: s.display, fontWeight: 400, fontSize: u(P.lead), lineHeight: 1.05, letterSpacing: '-0.045em', color: s.text1,
+      whiteSpace: 'pre-line',
+    }}>
+      {mark ? (
+        <>
+          {mark.pre}
+          <span style={{ position: 'relative', display: 'inline-block', whiteSpace: 'nowrap' }}>
+            {mark.mark}
+            <svg aria-hidden viewBox="0 0 257.906 8.35938" preserveAspectRatio="none" fill="none" style={{
+              position: 'absolute', left: '-0.13em', width: 'calc(100% + 0.26em)', top: `calc(100% - ${u(P.ul)})`, height: '0.22em',
+              overflow: 'visible', pointerEvents: 'none',
+            }}>
+              <path
+                d="M2.57906 5.37389C51.5812 2.38839 116.058 1.7913 167.639 3.58259C219.22 5.37389 232.115 5.97099 252.748 4.17969M23.2115 7.16518C74.7927 5.37389 139.269 4.77679 216.641 5.97099"
+                stroke={s.text3} strokeWidth="2.63245" strokeLinecap="round"
+              />
+            </svg>
+          </span>
+          {mark.post}
+        </>
+      ) : s.bioP1}
+    </p>
+  )
+  const about = (s.bioP2 || s.bioCta) && (
+    <div style={{ borderTop: `1px dashed ${BL_BIO_RULE}`, ...col(u(16), { paddingTop: u(22), alignItems: 'flex-start' }) }}>
+      {s.bioP2 && (
+        <>
+          <span style={{ fontFamily: s.label, fontWeight: 700, fontSize: u(13), lineHeight: `${u(14.95)}`, letterSpacing: '0.06em', textTransform: 'uppercase', color: s.text3 }}>About</span>
+          <p style={{
+            margin: 0, fontFamily: s.display, fontWeight: 400, fontSize: u(17), lineHeight: 1.5, letterSpacing: '-0.02em', color: s.text1,
+            whiteSpace: 'pre-line', maxWidth: u(desk ? 427 : P.aboutW),
+          }}>{s.bioP2}</p>
+        </>
+      )}
+      {s.bioCta && (
+        <BacklinePill
+          s={s} to={s.bookTo} u={u} bg={s.text1} ink={s.box1}
+          style={{ gap: u(26), padding: `0 ${u(14.25)} 0 ${u(12.24)}` }}
+          label={(
+            <>
+              <span>{s.bioCta}</span>
+              <svg aria-hidden width={u(15.9844)} height={u(12)} viewBox="0 0 15.9844 12" fill="none" style={{ display: 'block', flex: 'none' }}>
+                <path d="M0 6H13.9864M8.99123 10.9951L13.9864 6L8.99123 1.00488" stroke={s.box1} strokeWidth="1.99805" />
+              </svg>
+            </>
+          )}
+        />
+      )}
+    </div>
+  )
+  return (
+    <div style={{ position: 'relative', containerType: 'inline-size', overflow: 'hidden' }}>
+      <BacklineGrain src={s.backlineGrain} tone="paper" />
+      {desk ? (
+        <div style={{ position: 'relative', ...row(u(32), { alignItems: 'stretch' }), boxSizing: 'border-box', padding: `${u(P.top)} ${u(P.side)} ${u(P.foot)}` }}>
+          <div style={{ position: 'relative', flex: 'none', width: u(P.colW) }}>{stamp}</div>
+          {portrait}
+          <div style={col(u(24), { flex: 'none', width: u(P.colW), justifyContent: 'space-between', minHeight: u(600) })}>
+            <div style={{ paddingTop: u(P.leadTop) }}>{lead}</div>
+            {about}
+          </div>
+        </div>
+      ) : (
+        <div style={{ position: 'relative', boxSizing: 'border-box', padding: `${u(P.top)} 0 ${u(P.foot)}` }}>
+          <div style={{ marginLeft: s.mob ? u(24) : 'auto', marginRight: s.mob ? undefined : 'auto', width: u(figW) }}>{portrait}</div>
+          <div style={{ boxSizing: 'border-box', marginTop: u(P.gap), marginLeft: u(P.gut), width: u(P.lowW), ...col(u(24)) }}>
+            {lead}
+            {about}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
 function Bio({ s }) {
   if (s.v0 && s.lattice) return <LatticeBio s={s} />
   if (s.v0 && s.paperback) return <PaperbackBio s={s} />
   if (s.v0 && s.headliner) return <HeadlinerBio s={s} />
+  if (s.v0 && s.backline) return <BacklineBio s={s} />
   // Lime layout 1 (964:58589 · 986:39877 at 768 · 986:39890 at 390) is the same
   // Figma component as Retro's below, in Lime's mode — but it is not the same
   // tree re-tokened. The middle column is a different composition (one arch-
