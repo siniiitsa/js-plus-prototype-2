@@ -748,3 +748,9 @@ hold the record, and this file keeps what a later session touching a Headliner s
 - The stage pattern (`HEADLINER_PRICING`, `u()` in cqw, the frame's px at all three widths, `vm.pad` = the surplus alone). A sand band, 96 / 77 / 58 round the content: nothing is centred in a taller box.
 - **Three flat square cards** (orange, maroon, teal; no ring, no turn, no badge) **filled by the package's place in the stored list (`t.n % 3`)**, each `min-height: 540` with a flex-grow list of 44-tall rows on 1 px rules carrying an Anton `01..` numeral flush right, over a per-seat `HeadlinerPill` (it takes `bg` and `ink`). The tablet's odd last card spans both columns.
 - The head is two lines at the middle word (the gallery's rule) with three outlined 44-tall pill tabs at its foot (right at 1440 / 768, under it at 390); no tab is lit at rest.
+
+**The calendar** (`HeadlinerCalendar`, `EncoreSection.jsx`; own tree, dispatched from `Calendar` after its hooks and seam; `notes/calendar.md`, *Headliner · layout 1*):
+- The stage pattern (`HEADLINER_CAL`, `u()` in cqw, the frame's px at all three widths, `vm.pad` = the surplus alone). A flat cream card on the amber band (the section's own Scheme 4 seat, so no `cardOnPage`); a month half and a maroon wave-field panel side by side at 1440 and stacked at 768 and 390, over a ruled foot; nothing is centred in a taller box.
+- **The panel's field is the hero's dataset** (`HeadlinerWaveField`, `headlinerArt.jsx`, orange at .22); the `KM` disc is the ringed numeral's second seat and prints `vm.initials`.
+- **The head is two lines at the middle word**, drawn 109.25 / 115.59 below its flow box on the narrow frames, over the turned (-90) block arrow; **the month is fitted** to the room its two squares leave (`calMonths` `ems`).
+- Caps: heading 14, time 10, prompt 29, cta held to 12. `prompt` is ledgered (`Headliner.0.calendar.prompt`).
