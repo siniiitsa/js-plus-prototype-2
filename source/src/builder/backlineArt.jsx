@@ -164,3 +164,33 @@ export function BacklineStamp({ text, ink, font, size, id = 'bl-stamp', style, .
     </svg>
   )
 }
+
+// The barcode (section 3, the media's ticket: 1:5901, a 96 x 26 icon of 27 vertical bars turned a quarter turn; the pricing's and the
+// calendar's tickets draw the same kind). `BARCODE_BARS` is the frame's own [x, width] list across its 96 px; the artwork stands upright
+// as a 26 wide x 96 tall svg of horizontal stripes, the frame's -90deg turn applied (the bar at x = 0 is the foot). `dot` draws the small
+// disc the media's stub carries in its middle (the frame's radial gradient: solid to about 3 px, gone by 4). `size` is the 26 px width
+// (a CSS length): the height follows the 26 : 96 box. Pure ornament (no words, no number): the frames' `NO. 000227` is a claim the
+// artist's data does not hold.
+const BARCODE_BARS = [[0, 1], [3, 1], [7, 3], [12, 1], [14, 1], [18, 2], [21, 1], [24, 2], [28, 1], [31, 1], [33, 2], [37, 1], [40, 2], [44, 2], [47, 2], [52, 1], [55, 1], [59, 2], [62, 2], [65, 2], [69, 1], [73, 3], [78, 3], [84, 1], [87, 2], [91, 1], [93, 1]]
+export function BacklineBarcode({ ink, size, dot = false, style, ...rest }) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 26 96" fill="none" style={{ display: 'block', width: size, height: `calc(${size} * 96 / 26)`, overflow: 'visible', pointerEvents: 'none', ...style }} {...rest}>
+      {BARCODE_BARS.map(([x, w]) => <rect key={x} x="0" y={96 - x - w} width="26" height={w} fill={ink} />)}
+      {dot && <circle cx="13" cy="45" r="3.4" fill={ink} />}
+    </svg>
+  )
+}
+
+// The hand-drawn strike (the media's lit row, 1:5783: two brush strokes in the mustard, 266.27 x 6.59 over a 17-letter title). The frame
+// sizes it in ems of the title (8.876 em for 17 letters = 0.502 em a letter + 0.342 em, standing 0.17 em left of the first letter), so a
+// caller gives `width` as a CSS length computed from the title's length; the height follows the 266.27 : 6.59 box.
+export function BacklineStrike({ colour, width, style, ...rest }) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 266.266 6.59375" preserveAspectRatio="none" fill="none" style={{ display: 'block', width, height: `calc(${width} * 6.59375 / 266.266)`, overflow: 'visible', pointerEvents: 'none', ...style }} {...rest}>
+      <path
+        d="M2.66266 4.23884C53.2532 1.88393 119.82 1.41295 173.073 2.82589C226.326 4.23884 239.639 4.70982 260.941 3.29688M23.9639 5.65179C77.2171 4.23884 143.784 3.76786 223.663 4.70982"
+        stroke={colour} strokeWidth="2.37556" strokeLinecap="round"
+      />
+    </svg>
+  )
+}

@@ -32,7 +32,7 @@ import { useId, useRef, useState } from 'react'
 import RealMap from './RealMap.jsx'
 import { PaperbackArt, PaperbackSparkle, PaperbackWaves } from './paperbackArt.jsx'
 import { HeadlinerWaves, HeadlinerWaveField, HeadlinerBlockArrow, HeadlinerRings } from './headlinerArt.jsx'
-import { BacklineTear, BacklineGrain, BacklineTape, BacklineStamp, backlineNotch } from './backlineArt.jsx'
+import { BacklineTear, BacklineGrain, BacklineTape, BacklineStamp, BacklineBarcode, BacklineStrike, backlineNotch } from './backlineArt.jsx'
 import {
   Play, Pause, SkipBack, SkipForward, Check, ChevronLeft, ChevronRight,
   ArrowLeft, ArrowRight, ArrowUp, ArrowDown, Star, Plus, X, Search, User,
@@ -7883,6 +7883,244 @@ function HeadlinerMedia({ s, m }) {
   )
 }
 
+// Backline's layout-1 media player (1:5736 · 1:17534 · 1:18870: 1440 / 768 / 390; 1057 / 1376.72 / 1205.72 tall).
+// A tree of its own, dispatched from `Media` after its hooks and seam (Lattice's, Paperback's and Headliner's shape), so the published player
+// is the one seam in a new picture (notes/media.md: the `<audio>` is `Media`'s and is assigned imperatively).
+// The frame is a dark-olive band under a torn paper head (the bio's paper, the media's own traced contour), holding the head (TT2020, the
+// last two words in the mustard), five dashed-rule rows (a turned polaroid cover, the title and subtitle in TT2020, the time and a square
+// play button; the marked row's number and button mustard, its title struck through by a hand-drawn stroke), an outlined Soundcloud button,
+// and a taped, ticket-notched, turned paper card (the photograph, the track, the artist, three squares, the progress rail, a barcode).
+//
+// Every length is the frame's px through `u`, in cqw of a stage as wide as the page (the hero's and the bio's mechanism); the vertical
+// insets are in a child, and the root bleeds through the published surplus so the grain and the tear reach a wide window's edges.
+// Desktop is not x 0.82: the stage's width does the scaling. The frame centres its 700.594 of content in a 1057 box (178.2 above and below),
+// so the desktop child holds `minHeight` and centres, as Headliner's does.
+// Not drawn (the standing removals, call 1 A): `02 ┈┈ TOP TRACKS` (its 30.94 seat stays as padding, and so does the `5 / 5 FEATURED` label's,
+// which sets the head's measure: the head wraps in the room it leaves), `NOW PLAYING`, `SIDE A · 02`, `TRACK` and `NO. 000227`.
+// Named departures: the marked row is the player's track (`at`), not the frame's row 02, and the player names the cued track, not the frame's
+// *Night Rain* (Lattice's rule); the row number is the place, in two digits; the running time is drawn only while it differs from the
+// subtitle (a stored list's `sub` is the whole line).
+const BACKLINE_MEDIA = {
+  desktop: { fw: 1440, v: 96, minH: 1057, side: 48.96, headH: 134.594, h2: 115.2, labelW: 88.063, contentW: 1342.078, cols: [881.391, 421, 39.687], card: 421, numW: 34, gap: 18, rowH: 89, art: 60, rowT: 30, litDy: 7, strikeTop: 22, subH: 11,
+    t: 36, tLh: 32.4, photoX: 26, bottom: 22, tape: 80.69, tapeY: -14, stub: [321, 37, 178], stack: false },
+  tablet: { fw: 768, v: 90, side: 26.11, headH: 158.72, h2: 71, labelW: 76.06, contentW: 715.766, card: 421, numW: 34, gap: 18, rowH: 89, art: 60, rowT: 27, litDy: 1.86, strikeTop: 12.3, subH: 11,
+    t: 32, tLh: 29, photoX: 26, bottom: 21, tape: 80.69, tapeY: -14, stub: [321, 37, 178], stack: true },
+  mobile: { fw: 390, v: 67, side: 24, headH: 113.72, h2: 46, labelW: 61.56, contentW: 342, card: 342, numW: 22, gap: 10, rowH: 73, art: 44, rowT: 18, litDy: 0.24, strikeTop: 7.2, subH: 11,
+    t: 30, tLh: 27, photoX: 26, bottom: 21, tape: 57, tapeY: -14, stub: [242, 37, 178], stack: true },
+}
+const BL_RULE = 'rgba(237, 239, 218, 0.24)'    // the dashed rules (the frame's literal)
+const BL_TICKET = '#E0DFC2'                      // the ticket's paper, the mean of the frame's mottled raster (1:5859's Fill, 421 x 446, sampled)
+const BL_ROW_TILT = [-3, 2, -2, 3, -1]           // the covers' CSS turns, row by row (Figma's rotation, negated)
+const blNotchMask = (r) => ['0 0', '100% 0', '0 100%', '100% 100%'].map((p) => `radial-gradient(circle at ${p}, transparent ${r}, #000 calc(${r} + 0.5px))`).join(', ')
+function BacklineMedia({ s, m }) {
+  const { at, playing, now, sleeve, sleeveSlot, audio, goTo, toggle, onPick } = m
+  const dev = s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop'
+  const P = BACKLINE_MEDIA[dev]
+  const desk = dev === 'desktop'
+  const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
+  const paper = s.onScheme[1]            // the bio's paper: the torn head, and the ticket's and the covers' inks
+  const cream = s.text1                  // the olive band's cream #F5F6E8: titles, rules' glyphs, outlines
+  const mustard = s.activeBg             // #D4BE1E: the lit row's number and button, the head's tail
+  const ink = paper.text1                // #23240F
+  const olive = paper.text3              // #6F630A: the ticket's play square, rail and artist
+  const tearId = useId().replace(/:/g, '')
+  const ems = s.titleWordEms
+  const label = (size, extra) => ({ fontFamily: s.label, fontWeight: 700, fontSize: size, letterSpacing: '0.06em', textTransform: 'uppercase', lineHeight: 'normal', ...extra })
+
+  // The head: the last two words of three or more in the mustard (the frame's `your ear.`; the 1440 master paints it in the band's own olive, a
+  // token that hides it, so the narrow masters' mustard stands at all three widths), set in the room the removed label leaves.
+  const words = String(s.title ?? '').trim().split(/\s+/).filter(Boolean)
+  const k = words.length >= 3 ? 2 : words.length === 2 ? 1 : 0
+  const lead = words.slice(0, words.length - k).join(' ')
+  const tail = words.slice(words.length - k).join(' ')
+  const measure = P.contentW - P.labelW - 24
+  const h2 = words.length ? (
+    <h2 style={{
+      margin: 0, maxWidth: u(measure), color: cream, textTransform: 'lowercase', fontFamily: s.display, fontWeight: 400, lineHeight: 0.9, letterSpacing: '-0.045em',
+      fontSize: ems ? `min(${u(P.h2)}, calc(${u(measure)} / ${ems}))` : u(P.h2),
+    }}>{lead}{tail && <>{lead && ' '}<span style={{ color: mustard }}>{tail}</span></>}</h2>
+  ) : null
+
+  const glyph = (w, h, vb, children, style) => (
+    <svg aria-hidden viewBox={vb} fill="none" style={{ display: 'block', width: u(w), height: u(h), flex: 'none', overflow: 'visible', ...style }}>{children}</svg>
+  )
+  const tri = (c) => glyph(12, 14, '0 0 12 14', <path d="M1 1L11 7L1 13V1Z" fill={c} />)
+  const bars = (c) => glyph(12, 14, '0 0 12 14', <path d="M1 1H5V13H1ZM7 1H11V13H7Z" fill={c} />)
+  const arrow = (back, c) => glyph(16, 12, '0 0 16 12', <path d={back ? 'M16 6H2M7 11L2 6L7 1' : 'M0 6H14M9 11L14 6L9 1'} stroke={c} strokeWidth="2" />)
+  // A polaroid: the paper card, its two shadows (the bio's), the photograph inset, turned about its centre.
+  const polaroid = (inset, deg, children, style) => (
+    <div style={{
+      position: 'relative', background: BL_CARD, transform: `rotate(${deg}deg)`,
+      boxShadow: `0 ${u(1)} ${u(1)} 0 rgba(35, 36, 15, 0.18), 0 ${u(14)} ${u(26)} ${u(-16)} rgba(35, 36, 15, 0.55)`, ...style,
+    }}>
+      <div style={{ position: 'absolute', left: u(inset), top: u(inset), right: u(inset), bottom: u(inset), overflow: 'hidden' }}>{children}</div>
+    </div>
+  )
+
+  const list = (
+    <div style={{ borderBottom: `1px dashed ${BL_RULE}` }}>
+      {s.tracks.length === 0 && (
+        <div style={{ ...label(u(14), { color: cream }), borderTop: `1px dashed ${BL_RULE}`, padding: `${u(30)} 0` }}>{s.mediaEmpty}</div>
+      )}
+      {s.tracks.map((t, i) => {
+        const marked = i === at
+        const dur = t.dur && t.dur !== t.rel ? t.dur : ''
+        const name = String(t.name ?? '')
+        return (
+          <div key={i} onClick={onPick(i)} style={{
+            ...row(u(P.gap)), boxSizing: 'border-box', height: u(P.rowH), borderTop: `1px dashed ${BL_RULE}`, cursor: s.live ? 'pointer' : undefined,
+          }}>
+            <span style={label(u(13), { flex: 'none', width: u(P.numW), color: marked ? mustard : s.text3 })}>{String(i + 1).padStart(2, '0')}</span>
+            <span style={{ flex: 'none', width: u(P.art), height: u(P.art) }}>
+              {polaroid(3, BL_ROW_TILT[i % 5], <Photo s={s} slot={`tracks:${t.row}`} initialsSize={14} src={t.img} ink={ink} />, { width: '100%', height: '100%' })}
+            </span>
+            <span style={{ flex: 1, minWidth: 0, position: 'relative', fontFamily: s.display, fontWeight: 400, color: cream, letterSpacing: '-0.045em' }}>
+              <span style={{
+                display: 'block', position: 'relative', top: marked ? u(P.litDy) : undefined, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                fontSize: u(P.rowT), lineHeight: u(P.rowT), paddingBottom: u(8), marginBottom: u(-8),
+              }}>{name}</span>
+              {marked && name && (
+                <BacklineStrike
+                  colour={mustard} width={u((Math.min([...name].length, 40) * 0.502 + 0.342) * P.rowT)}
+                  style={{ position: 'absolute', left: u(-0.17 * P.rowT), top: u(P.strikeTop), maxWidth: 'none' }}
+                />
+              )}
+              {t.rel && (
+                <span style={{
+                  display: 'block', overflow: 'hidden', fontSize: u(14), letterSpacing: '-0.02em', opacity: 0.75, lineHeight: u(11),
+                  padding: `${u(3)} 0`, margin: `${u(1)} 0 ${u(-3)}`,
+                  ...(s.mob ? { display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' } : { whiteSpace: 'nowrap', textOverflow: 'ellipsis' }),
+                }}>{t.rel}</span>
+              )}
+            </span>
+            {dur && <span style={label(u(13), { flex: 'none', color: cream })}>{dur}</span>}
+            <span style={{
+              ...row('0px', { justifyContent: 'center' }), flex: 'none', width: u(44), height: u(44), boxSizing: 'border-box',
+              background: marked ? mustard : 'transparent', border: `1px solid ${marked ? mustard : cream}`,
+            }}>{playing && marked ? bars(s.activeFg) : tri(marked ? s.activeFg : cream)}</span>
+          </div>
+        )
+      })}
+    </div>
+  )
+
+  const pill = (
+    <BacklinePill
+      s={s} ext={s.soundcloud} u={u} bg="transparent" ink={cream} style={{ border: `1px solid ${cream}`, gap: u(34), padding: `0 ${u(9)}` }}
+      label={(
+        <>
+          <span>Soundcloud</span>
+          <svg aria-hidden width={u(16)} height={u(12)} viewBox="0 0 16 12" fill="none" style={{ display: 'block', flex: 'none', overflow: 'visible' }}>
+            <path d="M0 6H14M9 11L14 6L9 1" stroke={cream} strokeWidth="2" />
+          </svg>
+        </>
+      )}
+    />
+  )
+
+  // The ticket. A 421 x 446 (342 wide at 390) paper card turned CSS +1.5deg, its four corners bitten out by a 12 px quarter circle (a mask, so the
+  // two drop shadows on the turned wrapper follow the notches), the grain over it. The photograph is the flex remainder, so a title that wraps
+  // costs the photograph and the card stays 446. The `NOW PLAYING` row's seat (14) stays as padding.
+  const pct = s.live ? now.pct : s.tracks.length ? 56 : 0
+  const sq = (fill, onClick, children, key) => (
+    <span key={key} onClick={onClick} style={{
+      ...row('0px', { justifyContent: 'center' }), flex: 'none', width: u(37), height: u(37), boxSizing: 'border-box', cursor: onClick ? 'pointer' : undefined,
+      background: fill ? olive : 'transparent', border: `1px solid ${fill ? olive : ink}`,
+    }}>{children}</span>
+  )
+  const transport = (
+    <div style={row(u(6), { flex: 'none', height: u(36), alignItems: 'flex-start' })}>
+      {sq(false, s.live ? () => goTo(at - 1) : undefined, arrow(true, ink), 'prev')}
+      {sq(true, s.live ? toggle : undefined, playing ? bars(paper.box1) : tri(paper.box1), 'play')}
+      {sq(false, s.live ? () => goTo(at + 1) : undefined, arrow(false, ink), 'next')}
+    </div>
+  )
+  const trackName = (
+    <div style={{ minWidth: 0, position: 'relative', ...(desk ? { width: u(236) } : null) }}>
+      <div style={{
+        fontFamily: s.display, fontWeight: 400, fontSize: u(P.t), lineHeight: u(P.tLh), letterSpacing: '-0.045em', textTransform: 'lowercase', color: ink, overflowWrap: 'anywhere',
+      }}>{now.track}</div>
+      <div style={{ ...label(u(13), { color: olive, letterSpacing: '0.055em', lineHeight: u(14), marginTop: u(desk ? 6 : 6), whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }) }}>{now.by}</div>
+    </div>
+  )
+  const card = (
+    <div style={{ position: 'relative', flex: 'none', width: u(P.card), height: u(446), alignSelf: dev === 'tablet' ? 'center' : undefined }}>
+      <div style={{
+        position: 'absolute', inset: 0, transform: 'rotate(1.5deg)',
+        filter: `drop-shadow(0 ${u(10)} ${u(14)} rgba(35, 36, 15, 0.22)) drop-shadow(0 ${u(1)} ${u(1)} rgba(35, 36, 15, 0.2))`,
+      }}>
+        <div style={{
+          position: 'absolute', inset: 0, background: BL_TICKET, color: ink,
+          maskImage: blNotchMask(u(12)), maskComposite: 'intersect', WebkitMaskImage: blNotchMask(u(12)), WebkitMaskComposite: 'source-in',
+        }}>
+          <BacklineGrain src={s.backlineGrain} tone="paper" opacity={0.5} />
+          <div style={{ ...col(u(16)), position: 'absolute', left: u(P.photoX), top: u(22), right: u(P.card - P.stub[0] + 26), bottom: u(P.bottom) }}>
+            <div style={{ height: u(14), flex: 'none' }} />
+            <div style={{ position: 'relative', flex: '1 1 0', minHeight: 0 }}>
+              {polaroid(8, -2, <Photo s={s} slot={sleeveSlot} initialsSize={44} src={sleeve} ink={ink} />, { width: '100%', height: '100%' })}
+              <BacklineTape colour={paper.box3} width={u(120)} style={{ position: 'absolute', left: u(P.tape), top: u(P.tapeY), transform: 'rotate(3deg)' }} />
+            </div>
+            <div style={{ position: 'relative', flex: 'none', ...(P.stack ? col(u(12)) : null) }}>
+              {trackName}
+              {desk ? <div style={{ position: 'absolute', left: u(252.98), top: u(6.43) }}>{transport}</div> : transport}
+            </div>
+            <div style={row(u(11.7), { flex: 'none', height: u(14) })}>
+              <span style={label(u(12), { flex: 'none', width: u(30), color: ink, letterSpacing: '0.06em' })}>{now.at}</span>
+              <span aria-hidden style={{ flex: 1, minWidth: 0, height: u(2), position: 'relative' }}>
+                <span style={{ position: 'absolute', left: 0, top: u(-1), height: u(4), width: `${pct}%`, background: olive }} />
+              </span>
+              <span style={label(u(12), { flex: 'none', width: u(30), color: ink, textAlign: 'right' })}>{now.of}</span>
+            </div>
+          </div>
+          <div style={{ position: 'absolute', left: u(P.stub[0] + P.stub[1]), top: u(P.stub[2]) }}>
+            <BacklineBarcode ink={ink} size={u(26)} dot />
+          </div>
+        </div>
+      </div>
+      {audio}
+    </div>
+  )
+
+  return (
+    <div style={{
+      position: 'relative', containerType: 'inline-size', overflow: 'hidden', background: s.bg,
+      margin: `0 calc(-1 * ${s.surplus})`, padding: `0 ${s.surplus}`,
+    }}>
+      <BacklineGrain src={s.backlineGrain} tone="olive" />
+      <div style={{
+        position: 'relative', boxSizing: 'border-box', padding: `${u(P.v)} ${u(P.side)}`, minHeight: P.minH ? u(P.minH) : undefined,
+        display: 'flex', flexDirection: 'column', justifyContent: 'center',
+      }}>
+        <div style={{ boxSizing: 'border-box', minHeight: u(P.headH), paddingTop: u(30.94) }}>{h2}</div>
+        <div style={{ marginTop: u(48) }}>
+          {desk ? (
+            <div style={{ display: 'grid', gridTemplateColumns: `${u(P.cols[0])} ${u(P.cols[1])}`, columnGap: u(P.cols[2]), alignItems: 'start' }}>
+              <div style={col(u(26))}>
+                {list}
+                <span style={{ alignSelf: 'flex-start' }}>{pill}</span>
+              </div>
+              {card}
+            </div>
+          ) : (
+            <div style={col(u(26))}>
+              {list}
+              <span style={{ alignSelf: 'flex-start' }}>{pill}</span>
+              {card}
+            </div>
+          )}
+        </div>
+      </div>
+      {/* the torn head: the bio's paper, the media's own contour, 1 px above the band as the frame stands it; a narrow frame is the same contour cropped from the left at 1:1 */}
+      <div style={{ position: 'absolute', left: 0, right: 0, top: u(-1), height: u(88), pointerEvents: 'none' }}>
+        <BacklineTear
+          tear="media" colour={paper.bg} tone="paper" id={tearId} height={u(88)}
+          style={desk ? undefined : { width: u(1440), maxWidth: 'none' }}
+        />
+      </div>
+    </div>
+  )
+}
+
 function Media({ s }) {
   // Hooks before the layout branch — the older three-card design plays too.
   // `playing` mirrors the element's own play/pause events rather than being
@@ -7994,6 +8232,9 @@ function Media({ s }) {
   }
   if (s.v0 && s.headliner) {
     return <HeadlinerMedia s={s} m={{ at, count, playing, now, sleeve, sleeveSlot, audio, goTo, toggle, onPick }} />
+  }
+  if (s.v0 && s.backline) {
+    return <BacklineMedia s={s} m={{ at, count, playing, now, sleeve, sleeveSlot, audio, goTo, toggle, onPick }} />
   }
 
   // Lime layout 1 (964:58590 · 986:39879 at 768 · 986:39891 at 390) is Retro's

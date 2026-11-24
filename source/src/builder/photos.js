@@ -120,7 +120,6 @@ import backlineAvatar from './photos/backline-avatar.jpg'
 import backlineFormAvatar from './photos/backline-form-avatar.jpg'
 import backlineBio from './photos/backline-bio.jpg'
 import backlineCover from './photos/backline-cover.jpg'
-import backlineTrack1 from './photos/backline-track-1.jpg'
 import backlineTrack2 from './photos/backline-track-2.jpg'
 import backlineTrack3 from './photos/backline-track-3.jpg'
 import backlineTrack4 from './photos/backline-track-4.jpg'
@@ -417,7 +416,10 @@ export const BACKLINE_PHOTOS = {
   pricing: REVIEWERS,
 }
 export const BACKLINE_COVER = backlineCover
-export const BACKLINE_TRACK_ART = [backlineTrack1, backlineTrack2, backlineTrack3, backlineTrack4, backlineTrack5]
+// Track one's art is the cover itself (the player shows the cued track's art and has no cover field of its own, and the 110 px row crop would
+// draw a soft 253 px sleeve): row 1's 60 px thumbnail is the cover's centre crop where the frame's is another frame of the session
+// (plans/backline/layout-1.md, section 3; Headliner's call, section 3).
+export const BACKLINE_TRACK_ART = [BACKLINE_COVER, backlineTrack2, backlineTrack3, backlineTrack4, backlineTrack5]
 export const BACKLINE_VIEWER = backlineViewer
 // Backline's one raster of art: the paper grain's 192 px tile (a high-passed crop of the frames' band fill,
 // grey 128 +- 10 x deviation, lossless WebP, 27.6 KB), laid over a band with `overlay` (backlineArt.jsx,
