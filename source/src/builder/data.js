@@ -973,6 +973,128 @@ export const THEMES = [
       },
     },
   },
+  // Backline — the ninth template, from the same Batch 2 file as Lattice, Paperback and Headliner
+  // (JustPay — Batch 2, ORILFywSzuadscu6RzskCW; frames "Backline Evolved — Claude Design", desktop
+  // 1:5541, tablet 1:17363, mobile 1:18697; plans/backline/layout-1.md). The look is a torn-paper
+  // scrapbook in olive and mustard: paper and dark-olive bands alternate (a moss band and a mustard
+  // band once each), every seam a torn edge with a pale fibre fringe, every band grained, cards
+  // tilted, taped and ticket-notched. Every section's own fill is ONE image (the band's grain
+  // raster) and the nodes carry no variable modes, so each ground below is the colour the band
+  // RENDERS at, sampled off a full-page export at all three widths (session 0, 2026-11-24): olive
+  // `#4C4E29`, moss `#A7A03B` (token `#A9A23A`), mustard `#D2BD21` (token `#D4BE1E`) and paper
+  // `#EAECD7`, which is 11 levels under the `sem/box/1` / `sem/bg` token `#F5F6E8` that the cards
+  // and the cream type use (`box1` here). Scheme 1, paper, is the theme's own (the bio, the
+  // gallery, the pricing and the form stand on it); the header, media, video, repertoire, calendar
+  // and footer on 2 (olive), the map on 3 (moss), the testimonials on 4 (mustard); 5 is the paper
+  // CARD, read only by nested nodes — SCHEMES_OF.Backline. `palette` is [bg, ac, tx]: ac is
+  // `sem/active/bg` (mustard, ink on moss and mustard, where the frames' buttons are black) and tx
+  // `sem/text/2`. The file holds a dozen `sem` keys at most, so box 2–3, glow, the inactive pair,
+  // the strokes and the tag seats beyond the frames' are INFERRED and re-read by the section that
+  // draws them. `text3` is the frame's second ink, the olive `#6F630A` of the `.`, the underlines
+  // and the eyebrows on paper, and beige `#C7C59F` (sem/tag/5/bg) on the dark bands.
+  //
+  // The faces: TT2020 Base (font/display, and every body-sized run the frame sets in it — a free
+  // typewriter face under the SIL OFL 1.1, self-hosted in backline-fonts.css; monospaced at 0.547 em
+  // an advance, tracked -0.045 em by the frame at every size, which the Backline trees write per
+  // site, so `dls` stays 0 here), Archivo Condensed Bold (the labels: `Archivo Backline`, an
+  // @font-face alias on the Archivo file's wdth 75, +0.06 em tracking) and Archivo / Inter for UI
+  // and body. The frames set display copy lower-case in the source text and the labels upper-case
+  // by site, so casing is 'title' and a block transforms (call 4).
+  {
+    name: 'Backline',
+    sub: 'TT2020 · olive & mustard',
+    // The page's own ground: the paper of Scheme 1's band.
+    pageGround: '#EAECD7',
+    display: "'TT2020 Base', 'Courier Prime', monospace",
+    label: "'Archivo Backline', 'Archivo', sans-serif",
+    ui: "'Archivo', sans-serif",
+    body: "'Inter', sans-serif",
+    casing: 'title',
+    dls: '0px',
+    // The file binds no radius token: every box is a right angle, but the polaroids' keylines, the
+    // ticket notches (semicircle bites) and the round stamps. border/hairline 1, default 2, heavy 3.
+    radius: '0px',
+    radiusSm: '0px',
+    btnR: '0px',
+    bw: '1px',
+    radiusChip: '0px',
+    // Scheme 1's bg (as rendered) / sem/active/bg / sem/text/1.
+    palette: ['#EAECD7', '#D4BE1E', '#23240F'],
+    // The six chips' seats off the hero's Default / Sold out / New release / Archive / Live / All
+    // access, and a beige and an ink to round the seven: plain paper, mustard, moss, dark olive,
+    // pale, beige (sem/tag/5/bg, the tape) and ink. Inferred where the frame is silent.
+    tags: ['#F5F6E8', '#D4BE1E', '#A9A23A', '#4C4E29', '#EDF0DB', '#C7C59F', '#23240F'],
+    sem: {
+      box1: '#F5F6E8',                      // sem/box/1 — the paper card
+      box2: '#EDF0DB',                      // the pale fill of the stamps' and the avatar's seats
+      box3: '#D6D2A0',                      // the tape's beige (read at 80 %)
+      glow: '#D4BE1E',                      // inferred: sem/active/bg
+      activeBg: '#D4BE1E',                  // sem/active/bg
+      activeFg: '#23240F',                  // the mustard pills' ink
+      inactiveBg: '#F5F6E8',                // inferred: sem/box/1
+      inactiveFg: '#23240F',                // inferred: sem/text/1
+      inactiveLine: '#23240F',              // inferred: the dashed rules' ink
+      stroke1: '#23240F',                   // inferred: sem/text/1
+      stroke2: '#23240F',                   // inferred
+      hl: '#6F630A',                        // the olive of the underline and the scribbles
+      text1: '#23240F',                     // sem/text/1
+      text3: '#6F630A',                     // the olive `.`, eyebrows and underlines on paper
+      tagFg: ['#23240F', '#23240F', '#23240F', '#F5F6E8', '#23240F', '#23240F', '#F5F6E8'],
+    },
+    // Schemes 2–5, in Scheme 1's shape; a section is seated on one through SCHEMES_OF.Backline and a
+    // nested node reads `s.onScheme[n]`. Only the grounds and cream / ink are read; the rest inferred.
+    schemes: {
+      // Scheme 2, #4C4E29 — dark olive: the header, media, video, repertoire, calendar and footer.
+      2: {
+        palette: ['#4C4E29', '#D4BE1E', '#F5F6E8'],
+        tags: ['#F5F6E8', '#D4BE1E', '#A9A23A', '#2F3019', '#EDF0DB', '#C7C59F', '#23240F'],
+        sem: {
+          box1: '#5C5E36', box2: '#3E4022', box3: '#23240F', glow: '#D4BE1E',
+          activeBg: '#D4BE1E', activeFg: '#23240F',
+          inactiveBg: '#5C5E36', inactiveFg: '#F5F6E8', inactiveLine: '#EDEFDA',
+          stroke1: '#F5F6E8', stroke2: '#EDEFDA', hl: '#D4BE1E', text1: '#F5F6E8', text3: '#C7C59F',
+          tagFg: ['#23240F', '#23240F', '#23240F', '#F5F6E8', '#23240F', '#23240F', '#F5F6E8'],
+        },
+      },
+      // Scheme 3, #A9A23A — moss: the map (its gig rows are paper tickets, ink buttons).
+      3: {
+        palette: ['#A7A03B', '#23240F', '#23240F'],
+        tags: ['#F5F6E8', '#D4BE1E', '#4C4E29', '#23240F', '#EDF0DB', '#C7C59F', '#F5F6E8'],
+        sem: {
+          box1: '#F5F6E8', box2: '#EDF0DB', box3: '#4C4E29', glow: '#D4BE1E',
+          activeBg: '#23240F', activeFg: '#F5F6E8',
+          inactiveBg: '#F5F6E8', inactiveFg: '#23240F', inactiveLine: '#23240F',
+          stroke1: '#23240F', stroke2: '#23240F', hl: '#6F630A', text1: '#23240F', text3: '#6F630A',
+          tagFg: ['#23240F', '#23240F', '#F5F6E8', '#F5F6E8', '#23240F', '#23240F', '#23240F'],
+        },
+      },
+      // Scheme 4, #D4BE1E — mustard: the testimonials (a paper card, ink arrows).
+      4: {
+        palette: ['#D2BD21', '#23240F', '#23240F'],
+        tags: ['#F5F6E8', '#A9A23A', '#4C4E29', '#23240F', '#EDF0DB', '#C7C59F', '#F5F6E8'],
+        sem: {
+          box1: '#F5F6E8', box2: '#EDF0DB', box3: '#A9A23A', glow: '#F5F6E8',
+          activeBg: '#23240F', activeFg: '#F5F6E8',
+          inactiveBg: '#F5F6E8', inactiveFg: '#23240F', inactiveLine: '#23240F',
+          stroke1: '#23240F', stroke2: '#23240F', hl: '#6F630A', text1: '#23240F', text3: '#6F630A',
+          tagFg: ['#23240F', '#23240F', '#F5F6E8', '#F5F6E8', '#23240F', '#23240F', '#23240F'],
+        },
+      },
+      // Scheme 5, #F5F6E8 — the paper CARD (sem/box/1): no section's seat, read by nested nodes
+      // (the cards, the tickets, the polaroid keylines) on any band.
+      5: {
+        palette: ['#F5F6E8', '#D4BE1E', '#23240F'],
+        tags: ['#EDF0DB', '#D4BE1E', '#A9A23A', '#4C4E29', '#F5F6E8', '#C7C59F', '#23240F'],
+        sem: {
+          box1: '#EDF0DB', box2: '#EAECD7', box3: '#D6D2A0', glow: '#D4BE1E',
+          activeBg: '#D4BE1E', activeFg: '#23240F',
+          inactiveBg: '#EDF0DB', inactiveFg: '#23240F', inactiveLine: '#23240F',
+          stroke1: '#23240F', stroke2: '#23240F', hl: '#6F630A', text1: '#23240F', text3: '#6F630A',
+          tagFg: ['#23240F', '#23240F', '#23240F', '#F5F6E8', '#23240F', '#23240F', '#F5F6E8'],
+        },
+      },
+    },
+  },
 ]
 
 // Which Figma colour scheme a section stands on, where its frames stand it on
@@ -1089,6 +1211,19 @@ export const SCHEMES_OF = {
     1: { header: 3, media: 3, video: 3, bio: 2, repertoire: 2, form: 2, calendar: 4, testimonials: 5, map: 6, footer: 7 },
     2: { header: 3, media: 3, video: 3, bio: 2, repertoire: 2, form: 2, calendar: 4, testimonials: 5, map: 6, footer: 7 },
     3: { header: 3, media: 3, video: 3, bio: 2, repertoire: 2, form: 2, calendar: 4, testimonials: 5, map: 6, footer: 7 },
+  },
+  // Backline's layout-1 page (1:5541 · 1:17363 · 1:18697), the same at all three widths. Each
+  // section's own fill is one grain image and the nodes carry no variable modes, so the seats are
+  // read off the bands' rendered colour (session 0): the bio, the gallery, the pricing and the
+  // form stand on Scheme 1 (paper, the theme's own, so no entry), the header, media, video (no
+  // frame; beside the media), repertoire, calendar and footer on 2 (dark olive), the map on 3
+  // (moss), the testimonials on 4 (mustard). Layouts 2–4 have no frames yet and are placeholders,
+  // so they take row 0's seats, as Lattice's, Paperback's and Headliner's do.
+  Backline: {
+    0: { header: 2, media: 2, video: 2, repertoire: 2, calendar: 2, footer: 2, map: 3, testimonials: 4 },
+    1: { header: 2, media: 2, video: 2, repertoire: 2, calendar: 2, footer: 2, map: 3, testimonials: 4 },
+    2: { header: 2, media: 2, video: 2, repertoire: 2, calendar: 2, footer: 2, map: 3, testimonials: 4 },
+    3: { header: 2, media: 2, video: 2, repertoire: 2, calendar: 2, footer: 2, map: 3, testimonials: 4 },
   },
 }
 
@@ -1889,9 +2024,9 @@ export const NVAR = {
 export const headerFamily = (themeName) =>
   themeName === 'Lime' ? 'lime' : themeName === 'Grunge' ? 'grunge'
     : themeName === 'Editorial' ? 'editorial' : themeName === 'Pop' ? 'pop'
-      : themeName === 'Lattice' ? 'lattice' : themeName === 'Paperback' ? 'paperback' : themeName === 'Headliner' ? 'headliner' : 'photographic'
+      : themeName === 'Lattice' ? 'lattice' : themeName === 'Paperback' ? 'paperback' : themeName === 'Headliner' ? 'headliner' : themeName === 'Backline' ? 'backline' : 'photographic'
 
-const HEADER_COUNT = { photographic: 6, lime: 4, grunge: 4, editorial: 4, pop: 4, lattice: 4, paperback: 4, headliner: 4 }
+const HEADER_COUNT = { photographic: 6, lime: 4, grunge: 4, editorial: 4, pop: 4, lattice: 4, paperback: 4, headliner: 4, backline: 4 }
 
 export const headerVariants = (themeName) => HEADER_COUNT[headerFamily(themeName)]
 
@@ -1992,6 +2127,7 @@ const HEADER_NAMES = {
   lattice: PHOTOGRAPHIC_NAMES.slice(0, HEADER_COUNT.lattice),
   paperback: PHOTOGRAPHIC_NAMES.slice(0, HEADER_COUNT.paperback),
   headliner: PHOTOGRAPHIC_NAMES.slice(0, HEADER_COUNT.headliner),
+  backline: PHOTOGRAPHIC_NAMES.slice(0, HEADER_COUNT.backline),
 }
 
 export const headerLayout = (themeName, i) =>
@@ -3067,7 +3203,9 @@ export const FIELDS = {
   // `align`, `badgeText` and the title cap from the fitted Hero, and `reach.mjs 6`
   // (session 12) agreed with them except `cardLine`, which gained `Paperback: [2]`.
   // Headliner's is the same shape again: its rows began as Paperback's (session 0), section 1
-  // re-measured them over the fitted Hero (`reach.mjs 7`) and left them unchanged.
+  // re-measured them over the fitted Hero (`reach.mjs 7`) and left them unchanged. Backline's began as
+  // Headliner's (session 0: layouts 2-4 are placeholders, so those seats are Lime's twins' rows; section 1
+  // re-measures them over the fitted Hero with `reach.mjs 8`).
   header: [
     { k: 'image',     l: 'Background photo', type: 'image', aspect: [16, 9],
       hint: 'Fills the header behind the type.' },
@@ -3146,7 +3284,7 @@ export const FIELDS = {
     // Layout 2's pill under the subtitle (JP-037). Its frame words it apart
     // from the nav's Book Now, so it is a field of its own. Emptied, no pill.
     { k: 'heroCta',   l: 'Button under subtitle',      d: HERO_CTA,
-      in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1], Lattice: [1], Paperback: [1], Headliner: [1] },
+      in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1], Lattice: [1], Paperback: [1], Headliner: [1], Backline: [1] },
       chars: { Retro: [null, 34], Lime: [null, 35], Grunge: [null, 40], Editorial: [null, 21], Pop: [null, 25], Lattice: [null, 25], Paperback: [null, 25] },
       hint: 'The button under your name. Left empty, it is not drawn.' },
     // The rest of layout 2's copy (JP-059, reversing Lime's fit, which kept
@@ -3156,11 +3294,11 @@ export const FIELDS = {
     // card's "Performing since 2021" is the artist's copy — the bio's own
     // Performing since is another field, which the hint says.
     { k: 'faceTitle', l: 'Portrait caption title',  d: FACE_TITLE,
-      in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1], Lattice: [1], Paperback: [1], Headliner: [1] },
+      in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1], Lattice: [1], Paperback: [1], Headliner: [1], Backline: [1] },
       chars: { Retro: [null, 22], Lime: [null, 24], Grunge: [null, 29], Editorial: [null, 19], Pop: [null, 20], Lattice: [null, 20], Paperback: [null, 19] },
       hint: 'The card beside your portrait, under the photograph. Left empty, it is not drawn.' },
     { k: 'faceBody',  l: 'Portrait caption text',   type: 'area', d: FACE_BODY,
-      in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1], Lattice: [1], Paperback: [1], Headliner: [1] }, chars: [null, 180],
+      in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1], Lattice: [1], Paperback: [1], Headliner: [1], Backline: [1] }, chars: [null, 180],
       hint: 'The line under the portrait caption title. The bio’s Performing since is a separate field, '
           + 'so change both if you name a year here. Left empty, it is not drawn.' },
     // Named `cta2` on the bio's own content too, which FIELDS.bio.cta2 edits
@@ -3176,13 +3314,13 @@ export const FIELDS = {
     // Its cap is per chip (`chars`) and chips (`count`), the bio's besides
     // (IDENTITY_CHARS), each chip a sized seat held to twice the longest seed.
     { k: 'tags',      l: 'Tags',             type: 'area', d: TAG_LABELS, shared: true, list: ',',
-      in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3], Editorial: [0, 2, 3], Pop: [0, 2, 3], Lattice: [0, 2, 3], Paperback: [0, 2, 3], Headliner: [0, 2, 3] },
+      in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3], Editorial: [0, 2, 3], Pop: [0, 2, 3], Lattice: [0, 2, 3], Paperback: [0, 2, 3], Headliner: [0, 2, 3], Backline: [0, 2, 3] },
       chars: { Retro: [22, null, 22, 22, 15, 22], '*': [22, null, 22, 22] },
       count: { Retro: [8, null, 7, 7, 6, 6], Pop: [6, null, 6, 6], Lattice: [6, null, 6, 6], '*': [8, null, 6, 6] },
       rows: { placeholder: 'Tag', add: 'Add tag' },
       hint: 'Your genre chips. One per row; a comma starts a new row.' },
     { k: 'showTags',  l: 'Tags',        type: 'select', d: 'show', opts: SHOW_HIDE_TAGS, shared: true,
-      in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3], Editorial: [0, 2, 3], Pop: [0, 2, 3], Lattice: [0, 2, 3], Paperback: [0, 2, 3], Headliner: [0, 2, 3] },
+      in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3], Editorial: [0, 2, 3], Pop: [0, 2, 3], Lattice: [0, 2, 3], Paperback: [0, 2, 3], Headliner: [0, 2, 3], Backline: [0, 2, 3] },
       hint: 'Show or hide the tag chips wherever they are printed.' },
     // Three states (header-nav ticket, 2026-11-11): the seal is visible and
     // turning (today's), visible and still, or hidden. `badgeMode` replaces the
@@ -3191,12 +3329,12 @@ export const FIELDS = {
     // Editorial's layout-1 artwork (a reticle, a star) has no ring to turn, so
     // EditPanel offers those two Show / Hide alone (`badgeOptsFor`).
     { k: 'badgeMode', l: 'Corner badge',     type: 'select', d: 'rotating', opts: BADGE_MODES,
-      in: { Retro: [0, 1, 3, 4, 5], Lime: [0, 3], Grunge: [0, 3], Editorial: [0, 3], Pop: [0, 3], Lattice: [0, 3], Paperback: [0, 3], Headliner: [0, 3] } },
+      in: { Retro: [0, 1, 3, 4, 5], Lime: [0, 3], Grunge: [0, 3], Editorial: [0, 3], Pop: [0, 3], Lattice: [0, 3], Paperback: [0, 3], Headliner: [0, 3], Backline: [0, 3] } },
     // The seal's ring sets it twice round a circle, so its cap is the ring's
     // fit (scripts/limits.mjs's ring test). Left empty, the ring prints the
     // artist's name, clamped to the same fit (sealCap).
     { k: 'badgeText', l: 'Corner badge text',                    // defaults to the artist's name — special-cased
-      in: { Retro: [0, 1, 3, 4, 5], Lime: [3], Grunge: [0, 3], Editorial: [3], Pop: [0, 3], Lattice: [3], Paperback: [0, 3], Headliner: [0, 3] },
+      in: { Retro: [0, 1, 3, 4, 5], Lime: [3], Grunge: [0, 3], Editorial: [3], Pop: [0, 3], Lattice: [3], Paperback: [0, 3], Headliner: [0, 3], Backline: [0, 3] },
       chars: { Retro: 19, Lime: [null, null, null, 13], Grunge: [14, null, null, 14], Editorial: [null, null, null, 10],
         Pop: [12, null, null, 10], Lattice: [null, null, null, 13], Paperback: [12, null, null, 10],
         // Headliner layout 1 prints the ringed numeral ("26" in the frame, the artist's initials until typed over) inside a
@@ -3207,7 +3345,7 @@ export const FIELDS = {
       { v: 'sections', l: 'Follow my sections' },
       { v: 'minimal',  l: 'Minimal (Music · Gigs · About)' },
     ] },
-    { k: 'align',     l: 'Page alignment',        type: 'select', d: 'left', in: { Retro: [0], Lime: [0], Grunge: [0], Editorial: [0], Pop: [0], Lattice: [0], Paperback: [], Headliner: [] }, opts: [
+    { k: 'align',     l: 'Page alignment',        type: 'select', d: 'left', in: { Retro: [0], Lime: [0], Grunge: [0], Editorial: [0], Pop: [0], Lattice: [0], Paperback: [], Headliner: [], Backline: [] }, opts: [
       { v: 'left',   l: 'Left' },
       { v: 'centre', l: 'Centre' },
     ] },
@@ -4734,7 +4872,9 @@ const specAt = (spec, themeName, design) => {
   // Headliner reads GRUNGE's row (and Pop's where Grunge has none): its display is Anton, the face Grunge sets,
   // and its brutalist frames are nearer Grunge's than Pop's (plans/headliner/layout-1.md, *Settled in session 0*).
   // Every cap it reaches this way is provisional until its own pass measures it (`limits.mjs --themes=7`).
-  return specAt(spec[themeName] ?? spec['*'] ?? (themeName === 'Lattice' || themeName === 'Paperback' ? spec.Pop : themeName === 'Headliner' ? (spec.Grunge ?? spec.Pop) : undefined), themeName, design)
+  // Backline reads POP's row where a spec names neither it nor '*' (session 0, plans/backline/layout-1.md:
+  // TT2020 sets wide, so expect every cap to come in under Pop's; session 12 measures them, `--themes=8`).
+  return specAt(spec[themeName] ?? spec['*'] ?? (themeName === 'Lattice' || themeName === 'Paperback' || themeName === 'Backline' ? spec.Pop : themeName === 'Headliner' ? (spec.Grunge ?? spec.Pop) : undefined), themeName, design)
 }
 const isColObj = (spec) => spec != null && typeof spec === 'object' && !Array.isArray(spec) && 'chars' in spec
 // The resolved cap of a field or column: { chars, count, list } or null.

@@ -203,6 +203,24 @@ const THEME_RAMP = {
     tablet:  { dispXl: '156px', dispLg: '93px', dispMd: '69px', dispSm: '48px', title: '35px', list: '22px', labelLg: '22px', labelMd: '17px', labelSm: '16px', labelXs: '14px', bodyLg: '17px', bodyMd: '16px', bodySm: '14px', chip: '13px', eyebrow: '15px' },
     desktop: { dispXl: '220px', dispLg: '123px', dispMd: '92px', dispSm: '52px', title: '36px', list: '18px', labelLg: '18px', labelMd: '14px', labelSm: '13px', labelXs: '11px', bodyLg: '14px', bodyMd: '13px', bodySm: '11px', chip: '11px', eyebrow: '12px' },
   },
+  // Backline's mode, read off the three masters' text nodes (2026-11-24; the sections' only fill is a
+  // grain image and the file binds no per-Device size set, so the numbers are what the nodes draw;
+  // plans/backline/layout-1.md, *Settled in session 0*). The display strings are fluid values of the
+  // frames' own, so each key is a section's head, as Lattice's, Paperback's and Headliner's are:
+  // dispXl the header's name (201.6 / 125 / 61), dispLg the repertoire's head (123.84 / 77 / 50),
+  // dispMd the pricing's prices (77.76 / 48 / 38), dispSm the form's head (50 / 40 / 33), title the
+  // now-playing name (36 / 32 / 30), list a track's name (30 / 27 / 18), labelLg the calendar's
+  // Archivo Condensed 22 (22 / 22 / 20), labelMd / labelSm / labelXs the Archivo Condensed 14 / 13 / 12
+  // labels (the same at every width), bodyLg the TT2020 17 paragraph and footer link, bodyMd the 15
+  // feature and field run, bodySm the 14 sub-line; chip 11 and eyebrow 10 the stamps' and the
+  // barcodes' fine print. The bio's, media's, gallery's, map's, calendar's and testimonials' heads
+  // (124 / 115.2 / 100.8 / 144 / 72 / 66.24 at 1440) sit between keys; their sessions write them.
+  // Desktop is the frame x 0.82 rounded, 768 and 390 verbatim.
+  Backline: {
+    mobile:  { dispXl: '61px',  dispLg: '50px', dispMd: '38px', dispSm: '33px', title: '30px', list: '18px', labelLg: '20px', labelMd: '14px', labelSm: '13px', labelXs: '12px', bodyLg: '17px', bodyMd: '15px', bodySm: '14px', chip: '11px', eyebrow: '10px' },
+    tablet:  { dispXl: '125px', dispLg: '77px', dispMd: '48px', dispSm: '40px', title: '32px', list: '27px', labelLg: '22px', labelMd: '14px', labelSm: '13px', labelXs: '12px', bodyLg: '17px', bodyMd: '15px', bodySm: '14px', chip: '11px', eyebrow: '10px' },
+    desktop: { dispXl: '165px', dispLg: '102px', dispMd: '64px', dispSm: '41px', title: '30px', list: '25px', labelLg: '18px', labelMd: '11px', labelSm: '11px', labelXs: '10px', bodyLg: '14px', bodyMd: '12px', bodySm: '11px', chip: '9px', eyebrow: '8px' },
+  },
 }
 
 // The two keys that only matter once a window is wider than the canvas its
@@ -514,7 +532,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // template is designed since Pop's layout-1 pass, so it is true for all
     // five; TagChips' undesigned chip went with the flat family. A site only
     // some of them share stays a named pair, widened per site from the frame.
-    designed: T.name === 'Retro' || T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial' || T.name === 'Pop' || T.name === 'Lattice' || T.name === 'Paperback' || T.name === 'Headliner',
+    designed: T.name === 'Retro' || T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial' || T.name === 'Pop' || T.name === 'Lattice' || T.name === 'Paperback' || T.name === 'Headliner' || T.name === 'Backline',
     // Grunge's four layout pages are the same components in a third mode,
     // Static Youth, so its decoration — at layout 1 torn black seams round its
     // textured bands, grain and the red seal, at layouts 2, 3 and 4 rings where
@@ -553,6 +571,13 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // foundation commit) stands the Lime block in Headliner's tokens: without it a layout-1 media falls through to Pop's
     // branch and reads `S3.activeBg` of null.
     headliner: T.name === 'Headliner',
+    // Backline's layout-1 page (plans/backline/layout-1.md) is the ninth mode, and the torn-paper scrapbook: paper and
+    // olive bands with torn seams and grain, tilted taped notched cards, TT2020 typewriter display and Archivo Condensed
+    // labels. Lattice's, Paperback's and Headliner's rule: every section gets its own `Backline*` tree, standing on this
+    // flag after the section's hooks and seam (the hookless hero, bio and footer at the head). Until a section has one,
+    // `limeTree` (widened to Backline in this foundation commit, as Headliner's was) stands the Lime block in Backline's
+    // tokens, or a layout-1 media falls through to Pop's branch and reads `S3.activeBg` of null.
+    backline: T.name === 'Backline',
     // The templates whose pages are Lime's component trees — the four that widen
     // its blocks, and Lattice, whose own trees stand on the same gate — so a Lime block a twin's frame shares is gated on this rather
     // than on a name at every site. Widened per site, from the frame, as each
@@ -561,7 +586,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     // site the others do not share keeps `(s.lime || s.grunge)`, and one is
     // left (layout 2's gallery caption). Pop's layout-1 media steps out of it
     // (`&& !s.pop`), being Retro's body dressed.
-    limeTree: T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial' || T.name === 'Pop' || T.name === 'Lattice' || T.name === 'Paperback' || T.name === 'Headliner',
+    limeTree: T.name === 'Lime' || T.name === 'Grunge' || T.name === 'Editorial' || T.name === 'Pop' || T.name === 'Lattice' || T.name === 'Paperback' || T.name === 'Headliner' || T.name === 'Backline',
     // Lime layout 3's footer (964:68684 · 984:10769 · 984:10800) stands on
     // Scheme 2's `sem/bg`, the olive `box1`, where layout 1's is the page
     // ground; its seal's disc and the Book pill's label and disc follow, each
