@@ -18629,6 +18629,188 @@ function HeadlinerRepertoire({ s, g }) {
   )
 }
 
+// Backline · layout 1 (plans/backline/layout-1.md, section 4; frames 1:5934 · 1:17730 · 1:19066, 902.42 / 1350.88 / 931.31 tall).
+// A paper band (Scheme 1, the root's own ground) under a torn olive head (the media's band, the gallery contour of `BACKLINE_TEARS`): the head in TT2020
+// (the last word olive), four rows on the frame's 10 gap (the open one an ink bar with the ticket's four 10 px bites and a cream label, the others dashed
+// 1 px ink outlines, each turned a fraction of a degree), an outlined back link and a turned `Contact sheet` stamp over a taped photograph (a paper
+// card turned -1.2 degrees round the viewer, a paper and an olive 46 square at its foot-right) and a dark film strip of seven thumbnails turned +0.6.
+// The bio's and media's stage pattern: frame px verbatim at all three widths in cqw, vertical insets in a child, `vm.pad` the surplus alone. Two columns
+// at 1440 (535.844 and 651.047 on a 155.19 gutter; the rows hang from the left column's foot, 24 under the head), one column at 768 and 390 (a 36 / 28 gap).
+// The frame's top and foot are 112 / 90 / 67, the taller column's height between them, so nothing is centred.
+// Not drawn (the standing removals, call 1 A): `03 ┈┈ MEDIA`'s number (the eyebrow is `kicker`, seeded empty, so it is drawn only when typed, with its dashed rule;
+// its 14.94 seat stays as padding). The stamp is the credit line's seat: `railLabel`, seeded `Contact sheet` at Backline's layout 1 (the frame's word, uncased,
+// dropped when emptied), so the stamp's words are a field's. The frame's viewer picture is none of the seven, so the seed's slot two is that picture and
+// the canvas opens on it (`at`, Paperback's and Headliner's rule); the frame rings no tile, a visitor's own pick rings its tile in 3 px of the mustard.
+const BACKLINE_GALLERY = {
+  desktop: { fw: 1440, top: 112, side: 48.96, cols: [535.844, 651.047], gutter: 155.19, h2: 100.8, rowH: 72, rowT: 44, figH: 467, boxH: 467.391, stripH: 121, tile: 86, backW: 199.469, backL: 13.23, backR: 5.24, backGap: 19 },
+  tablet: { fw: 768, top: 90, side: 26.11, gap: 36, h2: 62, rowH: 63, rowT: 35, figH: 514, boxH: 513.891, stripH: 130, tile: 94, backW: 199.469, backL: 13.23, backR: 5.24, backGap: 19 },
+  mobile: { fw: 390, top: 67, side: 24, gap: 28, h2: 40, rowH: 57, rowT: 29, figH: 246, boxH: 245.516, stripH: 77, tile: 41, backL: 11, backR: 11, backGap: 19 },
+}
+const BL_ROW_TURN = [-1, 0.6, -0.4, 0.8]   // the rows' CSS turns, top to bottom (Figma's rotation, negated)
+function BacklineGallery({ s, g }) {
+  const { at, marked, strip, go, srcRows, srcAct, video, player } = g
+  const dev = s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop'
+  const P = BACKLINE_GALLERY[dev]
+  const desk = dev === 'desktop'
+  const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
+  const colW = desk ? P.cols[0] : P.fw - 2 * P.side
+  const figW = desk ? P.cols[1] : colW
+  const ink = s.text1            // #23240F
+  const olive = s.text3          // #6F630A: the head's tail, the stamp, the next square
+  const cream = s.box1           // #F5F6E8: the open row's label, the previous square
+  const mustard = s.activeBg     // #D4BE1E: a visitor's pick
+  const tearId = useId().replace(/:/g, '')
+  const label = (size, extra) => ({ fontFamily: s.label, fontWeight: 700, fontSize: size, letterSpacing: '0.06em', textTransform: 'uppercase', lineHeight: 'normal', ...extra })
+  const wrap = { whiteSpace: 'normal', overflowWrap: 'anywhere', minWidth: 0 }
+
+  // The head: the last word (of two or more) in the olive, wrapping in the column; fitted to its widest word.
+  const words = String(s.title ?? '').trim().split(/\s+/).filter(Boolean)
+  const lead = words.slice(0, -1).join(' ')
+  const tail = words.length > 1 ? words[words.length - 1] : ''
+  const h2 = words.length ? (
+    <h2 style={{
+      margin: 0, color: ink, textTransform: 'lowercase', fontFamily: s.display, fontWeight: 400, lineHeight: 0.9, letterSpacing: '-0.045em', overflowWrap: 'anywhere',
+      fontSize: s.titleWordEms ? `min(${u(P.h2)}, calc(${u(colW)} / ${s.titleWordEms}))` : u(P.h2),
+    }}>{tail ? <>{lead}{' '}<span style={{ color: olive }}>{tail}</span></> : words[0]}</h2>
+  ) : null
+
+  const eyebrow = s.galKicker ? (
+    <div style={row(u(12))}>
+      <span aria-hidden style={{ flex: 'none', width: u(28), height: 0, borderTop: `1px dashed ${olive}` }} />
+      <span style={label(u(13), { color: olive, letterSpacing: '0.06em', ...wrap })}>{s.galKicker}</span>
+    </div>
+  ) : null
+
+  const arrow = (back, c) => (
+    <svg aria-hidden viewBox="0 0 16 12" fill="none" style={{ display: 'block', width: u(16), height: u(12), flex: 'none', overflow: 'visible' }}>
+      <path d={back ? 'M16 6H2M7 11L2 6L7 1' : 'M0 6H14M9 11L14 6L9 1'} stroke={c} strokeWidth="2" />
+    </svg>
+  )
+  const notch = blNotchMask(u(10))
+
+  // The rows: an open ink bar and three dashed outlines, each a ticket with its corners bitten out by a 10 px quarter circle.
+  const rows = (
+    <div style={col(u(10))}>
+      {srcRows.map(({ g: r, i }, n) => {
+        const link = srcAct(r, i)
+        const Tag = link?.href ? 'a' : 'div'
+        return (
+          <Tag key={i} {...link} style={{
+            ...row(u(16)), boxSizing: 'border-box', minHeight: u(P.rowH), padding: `0 ${u(22)}`, textDecoration: 'none', transform: `rotate(${BL_ROW_TURN[n % 4]}deg)`,
+            background: r.on ? ink : 'transparent', border: r.on ? 'none' : `1px dashed ${ink}`, color: r.on ? cream : ink, cursor: link ? 'pointer' : undefined,
+            maskImage: notch, maskComposite: 'intersect', WebkitMaskImage: notch, WebkitMaskComposite: 'source-in',
+          }}>
+            <span data-inline={i === 0 ? 'sourceLabel' : undefined} style={{
+              flex: 1, ...wrap, fontFamily: s.display, fontWeight: 400, fontSize: u(P.rowT), lineHeight: 1, letterSpacing: '-0.045em', textTransform: 'lowercase',
+            }}>{r.label}</span>
+            <span style={label(u(12), { flex: 'none', lineHeight: u(13.8) })}>{String(n + 1).padStart(2, '0')}</span>
+          </Tag>
+        )
+      })}
+    </div>
+  )
+
+  const left = (
+    <div style={col('0px', { minWidth: 0, justifyContent: 'space-between', gap: u(24) })}>
+      <div style={col(u(24), { minWidth: 0 })}>
+        <div style={{ minHeight: u(14.938) }}>{eyebrow}</div>
+        {h2}
+      </div>
+      {rows}
+    </div>
+  )
+
+  const back = (
+    <span onClick={s.live ? () => go(0) : undefined} style={{
+      ...row(u(P.backGap), { justifyContent: 'space-between' }), boxSizing: 'border-box', flex: '0 1 auto', minWidth: P.backW ? u(P.backW) : undefined, minHeight: u(46),
+      padding: `0 ${u(P.backR)} 0 ${u(P.backL)}`, border: `1px solid ${ink}`, color: ink, cursor: s.live ? 'pointer' : undefined,
+    }}>
+      <span style={label(u(14), { letterSpacing: '0.06em', ...wrap })}>{s.galBackLabel}</span>
+      {arrow(true, ink)}
+    </span>
+  )
+  const stamp = s.galRailLabel ? (
+    <span style={{ flex: '0 1 auto', marginLeft: 'auto', minWidth: 0, transform: 'rotate(-3deg)' }}>
+      <span style={{ ...row('0px', { justifyContent: 'center' }), boxSizing: 'border-box', minWidth: u(142), minHeight: u(34), padding: `0 ${u(12)}`, border: `${u(3)} solid ${olive}`, color: olive }}>
+        <span data-inline="railLabel" style={label(u(14), { letterSpacing: '0.064em', ...wrap })}>{s.galRailLabel}</span>
+      </span>
+    </span>
+  ) : null
+  const top = <div style={row(u(4), { flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', minHeight: u(46), rowGap: u(8) })}>{back}{stamp}</div>
+
+  const paperShadow = `0 ${u(1)} ${u(1)} 0 rgba(35, 36, 15, 0.18), 0 ${u(14)} ${u(26)} ${u(-16)} rgba(35, 36, 15, 0.55)`
+  const square = (fill, glyph, onClick) => (
+    <span onClick={onClick} style={{
+      ...row('0px', { justifyContent: 'center' }), flex: 'none', width: u(46), height: u(46), boxSizing: 'border-box', background: fill, border: `1px solid ${fill}`, cursor: onClick ? 'pointer' : undefined,
+    }}>{glyph}</span>
+  )
+  // The viewer: a paper card turned -1.2 degrees, the photograph inset 12, two tapes in the card's own coordinates (the frame's centres: 36, 36 turned -58
+  // and 100 in from the right, 2 down, turned 4), then the two squares in the unturned box, 26 in from its right and foot.
+  const figure = (
+    <div style={{ position: 'relative', height: u(P.boxH) }}>
+      <div style={{ position: 'absolute', left: 0, top: 0, width: '100%', height: u(P.figH), transform: 'rotate(-1.2deg)', background: BL_CARD, boxShadow: paperShadow }}>
+        <BacklineGrain src={s.backlineGrain} tone="paper" opacity={0.5} />
+        <div style={{ position: 'absolute', left: u(12), top: u(12), right: u(12), bottom: u(12), overflow: 'hidden', background: s.box2 }}>
+          {video ? player : <Photo s={s} slot={`images:${at}`} initialsSize={52} src={s.images[at]} ink={ink} style={{ objectPosition: s.imagesPos[at] }} />}
+        </div>
+        <BacklineTape colour={s.box3} width={u(120)} style={{ position: 'absolute', left: u(36 - 60), top: u(36 - 16), transform: 'rotate(-58deg)' }} />
+        <BacklineTape colour={s.box3} width={u(120)} style={{ position: 'absolute', left: u(figW - 100 - 60), top: u(2 - 16), transform: 'rotate(4deg)' }} />
+      </div>
+      {!video && (
+        <div style={row(u(6), { position: 'absolute', right: u(26), bottom: u(26) })}>
+          {square(cream, arrow(true, ink), s.live ? () => go(at - 1) : undefined)}
+          {square(olive, arrow(false, cream), s.live ? () => go(at + 1) : undefined)}
+        </div>
+      )}
+    </div>
+  )
+
+  // The film strip: an ink bar turned +0.6, seven square thumbnails 10 in from its sides and 18 down, spread edge to edge (the frame's gaps 5 / 6.28 / 5.86).
+  const thumbs = (
+    <div style={{ position: 'relative', height: u(P.stripH), transform: 'rotate(0.6deg)', background: ink, boxShadow: paperShadow, overflow: 'hidden' }}>
+      <BacklineGrain src={s.backlineGrain} tone="olive" />
+      <div style={row('0px', { position: 'absolute', left: u(10), right: u(10), top: u(18), justifyContent: 'space-between', alignItems: 'flex-start' })}>
+        {strip.map((i) => (
+          <span key={i} onClick={s.live ? () => go(i) : undefined} style={{
+            position: 'relative', display: 'block', flex: 'none', width: u(P.tile), height: u(P.tile), overflow: 'hidden', background: '#EFEFEF', cursor: s.live ? 'pointer' : undefined,
+          }}>
+            <span style={{ position: 'absolute', inset: u(1) }}>
+              <Photo s={s} slot={`images:${i}`} initialsSize={12} src={s.images[i]} ink={ink} />
+            </span>
+            {i === marked && <span aria-hidden style={{ position: 'absolute', inset: 0, boxSizing: 'border-box', border: `${u(3)} solid ${mustard}`, pointerEvents: 'none' }} />}
+          </span>
+        ))}
+      </div>
+    </div>
+  )
+
+  const right = <div style={col(u(22), { minWidth: 0 })}>{top}{figure}{thumbs}</div>
+  return (
+    <div style={{
+      position: 'relative', containerType: 'inline-size', overflow: 'hidden', background: s.bg,
+      margin: `0 calc(-1 * ${s.surplus})`, padding: `0 ${s.surplus}`,
+    }}>
+      <BacklineGrain src={s.backlineGrain} tone="paper" />
+      <div style={{ position: 'relative', boxSizing: 'border-box', padding: `${u(P.top)} ${u(P.side)}` }}>
+        {desk ? (
+          <div style={{ display: 'grid', gridTemplateColumns: `${u(P.cols[0])} ${u(P.cols[1])}`, columnGap: u(P.gutter), alignItems: 'stretch' }}>
+            {left}{right}
+          </div>
+        ) : (
+          <div style={col(u(P.gap))}>{left}{right}</div>
+        )}
+      </div>
+      {/* the torn head: the media's olive, the gallery's own contour, 1 px above the band as the frame stands it; a narrow frame is the same contour cropped from the left at 1:1 */}
+      <div style={{ position: 'absolute', left: 0, right: 0, top: u(-1), height: u(88), pointerEvents: 'none' }}>
+        <BacklineTear
+          tear="gallery" colour={s.onScheme[2].bg} id={tearId} height={u(88)}
+          style={desk ? undefined : { width: u(1440), maxWidth: 'none' }}
+        />
+      </div>
+    </div>
+  )
+}
+
 function Gallery({ s }) {
   // Hooks before the layout branch, the way Media takes them: `s.v0` is a prop
   // and not a hook's business, so the branch below cannot be the thing that
@@ -18780,6 +18962,14 @@ function Gallery({ s }) {
     )
     // No photograph is the viewer's while the player is, so none is marked.
     const lit = video ? -1 : active
+
+    // Backline's layout-1 gallery is a block of its own (BacklineGallery), after the seam. The canvas opens the viewer on the second slot (the seed's
+    // second photograph is the frame's viewer picture, Paperback's and Headliner's shape) and rings no tile; a visitor's pick rings its own.
+    if (s.backline) {
+      const picked = s.live && pick >= 0
+      const at = picked ? pick : s.images.length > 1 ? 1 : 0
+      return <BacklineGallery s={s} g={{ at, marked: picked && !video ? pick : -1, strip, go, srcRows, srcAct, video, player }} />
+    }
 
     // Paperback's layout-1 gallery is a block of its own (PaperbackGallery), after the seam. The canvas draws the frame's picked tile,
     // the second, and the viewer shows that slot's photograph (the seed's second slot is the frame's viewer picture).

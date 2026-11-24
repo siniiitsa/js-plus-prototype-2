@@ -125,7 +125,6 @@ import backlineTrack3 from './photos/backline-track-3.jpg'
 import backlineTrack4 from './photos/backline-track-4.jpg'
 import backlineTrack5 from './photos/backline-track-5.jpg'
 import backlineShot1 from './photos/backline-shot-1.jpg'
-import backlineShot2 from './photos/backline-shot-2.jpg'
 import backlineShot3 from './photos/backline-shot-3.jpg'
 import backlineShot4 from './photos/backline-shot-4.jpg'
 import backlineShot5 from './photos/backline-shot-5.jpg'
@@ -412,7 +411,7 @@ export const BACKLINE_PHOTOS = {
   // No frame draws the video; the hero stands in, as Retro's poster does.
   video: backlineHero,
   form: backlineFormAvatar,
-  gallery: [backlineShot1, backlineShot2, backlineShot3, backlineShot4, backlineShot5, backlineShot6, backlineShot7],
+  gallery: [backlineShot1, backlineViewer, backlineShot3, backlineShot4, backlineShot5, backlineShot6, backlineShot7],
   pricing: REVIEWERS,
 }
 export const BACKLINE_COVER = backlineCover

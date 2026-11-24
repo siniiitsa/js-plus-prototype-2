@@ -2371,6 +2371,10 @@ export const MEDIA_CHIP_LABEL = 'Featured'
 // heading it used to hold went back to the caption. JP-120 (gallery) gave it
 // layout 1's credit line too, the gallery's name under the artist's.
 export const GALLERY_RAIL_LABEL = 'Gallery'
+// Backline's layout 1 (plans/backline/layout-1.md, section 4): the credit line's seat is the frame's turned `CONTACT SHEET` stamp, and the head
+// carries the frame's full stop (`see us in action.`).
+export const GALLERY_RAIL_LABEL_BACKLINE = 'Contact sheet'
+export const GALLERY_HEADING_BACKLINE = 'See us in action.'
 // JP-120 (gallery), user call, 2026-10-08: layout 1's eyebrow, which layout 4's
 // prints as well, and its back link, the frames' words. The open source row's
 // label seeds off GALLERY_SOURCES[0].l. The eyebrow's seed was the frames'
@@ -4475,6 +4479,8 @@ export function fieldSeed({ cat, f, themeName, design, c = {}, artistName, email
     : f.k === 'cta' && cat === 'calendar' && design === 0 && (themeName === 'Lattice' || themeName === 'Paperback' || themeName === 'Headliner') ? CAL_CTA_LATTICE
     : f.k === 'rowCta' && cat === 'pricing' && design === 0 && (themeName === 'Paperback' || themeName === 'Headliner') ? PRICING_ROW_CTA_PAPERBACK
     : f.k === 'heading' && cat === 'pricing' && design === 0 && themeName === 'Headliner' ? PRICING_HEADING_HEADLINER
+    : f.k === 'heading' && cat === 'gallery' && design === 0 && themeName === 'Backline' ? GALLERY_HEADING_BACKLINE
+    : f.k === 'railLabel' && cat === 'gallery' && design === 0 && themeName === 'Backline' ? GALLERY_RAIL_LABEL_BACKLINE
     : f.k === 'statement' && cat === 'footer' && themeName === 'Headliner' ? FOOTER_STATEMENT_HEADLINER
     : f.k === 'rowCta' && cat === 'pricing' && design === 2 ? PRICING_ROW_CTA_3
     : f.k === 'rowCta' && cat === 'pricing' && design === 3 ? PRICING_ROW_CTA

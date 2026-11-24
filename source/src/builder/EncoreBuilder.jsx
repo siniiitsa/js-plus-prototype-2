@@ -58,7 +58,7 @@ import {
   FOOTER_LINKS, FOOTER_TARGETS, FOOTER_CREDIT, FOOTER_STATEMENT, FOOTER_STATEMENT_HEADLINER,
   CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN, CAL_SLOTS, SLOT_KEYS, slotDate, parseDayFirst, pageTiers, CAL_SLOT_CTA, CAL_SEND_4, CAL_CTA_LATTICE, BIO_CTA_PAPERBACK, FORM_EMAIL, pageEmail, MONTHS, DAY_FULL,
   TESTI_HEADING_2, CARD_LINE_3, TESTI_STARS, TESTI_RATING,
-  PRICING_INTRO_3, FORM_SUB_4, CAL_HEADING_1, formBtnSeed, CAL_TYPES, PRICING_ROW_CTA, PRICING_ROW_CTA_3, PRICING_ROW_CTA_PAPERBACK, PRICING_HEADING_HEADLINER, CAL_HEADING_HEADLINER, MAP_SPAN, MAP_STATS_4, STAT_KEYS,FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
+  PRICING_INTRO_3, FORM_SUB_4, CAL_HEADING_1, formBtnSeed, CAL_TYPES, PRICING_ROW_CTA, PRICING_ROW_CTA_3, PRICING_ROW_CTA_PAPERBACK, PRICING_HEADING_HEADLINER, CAL_HEADING_HEADLINER, GALLERY_HEADING_BACKLINE, GALLERY_RAIL_LABEL_BACKLINE, MAP_SPAN, MAP_STATS_4, STAT_KEYS,FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
   parseDate, isoDate, calStart, headerIdentity, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav, navModeDefault, badgeOptsFor,
   catById, catName, navSectionsOf, initialsOf, contrast, lum, mix, rgba, caseText, fieldSeed, HEADING_3, HEADING_4, fieldReach, fieldShown, identityFieldsFor, identityHint, INLINE_OFF, PHOTO_OFF, INLINE_HEAD, INLINE_MARKED, INLINE_PART, INLINE_LINES, inlineRule, fieldCap, colCaps, identityCap, sealCap, capExcess, numeralLen, clampCapped, clampContent, legacyContent, clampIdentity, copyrightOf, formHeading3, extUrl, youtubeEmbed, youtubeThumb, youtubeParts, youtubeWatch, youtubeChannel, urlProblem, emailProblem, emailAddr, songTags, repChips,
@@ -658,8 +658,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // the gallery (1:4766 · 1:15538 · 1:16587) in section 4, the repertoire (1:4830 · 1:15602 · 1:16651) in section 5, the map (1:4955 · 1:15726 · 1:16776) in section 6, the pricing (1:5067 · 1:15838 · 1:16888) in section 7, the calendar (1:5205 · 1:15976 · 1:17026) in section 8, the form (1:5385 · 1:16159 · 1:17207) in section 9, the testimonials (1:5460 · 1:16233 · 1:17282) in section 10, the footer (1:5480 · 1:16253 · 1:17302) in section 11.
   if (d === 0 && (cat === 'bio' || cat === 'media' || cat === 'gallery' || cat === 'repertoire' || cat === 'map' || cat === 'pricing' || cat === 'calendar' || cat === 'form' || cat === 'testimonials' || cat === 'footer') && T.name === 'Headliner') vm.pad = `0px ${vm.surplus}`
   // Backline's layout-1 bio (1:5665 · 1:17466 · 1:18797) is a stage of its own (BacklineBio), the hero's shape: the frames' insets in cqw, so the root pads only the published tab's surplus.
-  // The media (1:5736 · 1:17534 · 1:18870) joined it in section 3.
-  if (d === 0 && (cat === 'bio' || cat === 'media') && T.name === 'Backline') vm.pad = `0px ${vm.surplus}`
+  // The media (1:5736 · 1:17534 · 1:18870) joined it in section 3, the gallery (1:5934 · 1:17730 · 1:19066) in section 4.
+  if (d === 0 && (cat === 'bio' || cat === 'media' || cat === 'gallery') && T.name === 'Backline') vm.pad = `0px ${vm.surplus}`
   // …and the media's (1:419 · 1:9052 · 1:10024): 129.43 top and foot at 1440 (x 0.82, 106.13), 77 at 768
   // and 58 at 390, the same content insets. The 390 master's head box starts 40 down (an import
   // artefact: the eyebrow row sits at y 98, not 58), so with the eyebrow removed the head takes
@@ -1618,6 +1618,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // head. EditPanel mirrors it. Lattice's layout 1 (widened to `limeTree`) keeps TITLES.calendar,
   // "Availability": its frames set that word as the `[ 007 ]` eyebrow's own, and `heading` is its seat.
   if (d === 0 && cat === 'pricing' && c.heading === undefined && T.name === 'Headliner') vm.title = cased(PRICING_HEADING_HEADLINER)
+  // Backline's layout-1 gallery head is the frame's `see us in action.` with its full stop (the shared seed has none; the media's and the bio's seeds carry theirs).
+  if (d === 0 && cat === 'gallery' && c.heading === undefined && T.name === 'Backline') vm.title = cased(GALLERY_HEADING_BACKLINE)
   if (d === 0 && cat === 'calendar' && c.heading === undefined && vm.limeTree && !vm.lattice && T.name !== 'Headliner') vm.title = cased(CAL_HEADING_1)
   // Headliner's layout-1 calendar heads its maroon panel with the frame's `Pick a date.` (`heading` is the seat; fieldSeed mirrors it).
   if (d === 0 && cat === 'calendar' && c.heading === undefined && T.name === 'Headliner') vm.title = cased(CAL_HEADING_HEADLINER)
@@ -1659,7 +1661,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // Backline's layout-1 bio statement is TT2020 turned a quarter turn in a 600 measure (the polaroid's height), fitted to its widest word in the
   // face's ems (`ttEms`: monospaced, so a character count) at the frames' -0.045em tracking, the header's rule.
   // The media head (TT2020, wrapping in the room the removed `5 / 5 featured` label leaves) is fitted the same way.
-  if (T.name === 'Backline' && (cat === 'bio' || cat === 'media') && d === 0) {
+  // The gallery's head (TT2020, wrapping in the column, the last word olive) is fitted the same way.
+  if (T.name === 'Backline' && (cat === 'bio' || cat === 'media' || cat === 'gallery') && d === 0) {
     vm.titleWordEms = +Math.max(0, ...vm.title.split(/\s+/).map((w) => ttEms(w))).toFixed(3)
   }
   // The calendar's head is two lines at the middle word (the gallery's and the pricing's rule), so what it fits is its widest *line*, not its widest word:
@@ -1797,7 +1800,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // JP-098 — layout 2's 768 head row over the small photos, the frame's word,
   // uncased; emptied, the row goes. The heading is the caption's, at every width.
   // JP-120 (gallery) prints it as layout 1's credit line too, under the name.
-  vm.galRailLabel = cv('railLabel', GALLERY_RAIL_LABEL)
+  // Backline's layout 1 draws the credit line as the turned `Contact sheet` stamp, so that is its seed there (the frame's word, uncased).
+  vm.galRailLabel = cv('railLabel', d === 0 && T.name === 'Backline' ? GALLERY_RAIL_LABEL_BACKLINE : GALLERY_RAIL_LABEL)
   // JP-120 (gallery), user call, 2026-10-08 — layout 1's eyebrow (layout 4's
   // too) and its back link, the frames' words, uncased. An emptied kicker is
   // not drawn; the back link is a control that stands whatever it says, so
