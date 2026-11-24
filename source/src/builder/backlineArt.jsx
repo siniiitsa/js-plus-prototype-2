@@ -142,7 +142,11 @@ const stampStar = (deg) => {
 export function BacklineStamp({ text, ink, font, size, id = 'bl-stamp', style, ...rest }) {
   const word = String(text ?? '').toUpperCase()
   const arcs = [[-85, 21], [51, 157]]
-  const len = (STAMP_R * 106 * Math.PI) / 180
+  const arcLen = (STAMP_R * 106 * Math.PI) / 180
+  // A name that would not fill its arc is set at its natural width (Archivo Bold 14 caps average 9.66 px an advance, stretched by at most 35 %) and
+  // centred on it, so a short name is not spread across the whole ring; one that fills it takes the arc by `textLength`.
+  const len = Math.min(arcLen, [...word].length * 9.66 * 1.35)
+  const start = (arcLen - len) / 2
   return (
     <svg aria-hidden="true" viewBox="0 0 160 160" fill="none" style={{ display: 'block', width: size, height: size, overflow: 'visible', pointerEvents: 'none', ...style }} {...rest}>
       <defs>{arcs.map(([a, b], i) => <path key={i} id={`${id}-${i}`} d={stampArc(a, b)} />)}</defs>
@@ -151,7 +155,7 @@ export function BacklineStamp({ text, ink, font, size, id = 'bl-stamp', style, .
         <circle cx="80" cy="80" r="41.835" stroke={ink} strokeWidth="1.9" />
         {word && arcs.map((_, i) => (
           <text key={i} fill={ink} style={{ fontFamily: font, fontWeight: 700, fontSize: 14 }}>
-            <textPath href={`#${id}-${i}`} textLength={len.toFixed(2)} lengthAdjust="spacing">{word}</textPath>
+            <textPath href={`#${id}-${i}`} startOffset={start.toFixed(2)} textLength={len.toFixed(2)} lengthAdjust="spacing">{word}</textPath>
           </text>
         ))}
         <polygon points={stampStar(36)} fill={ink} />

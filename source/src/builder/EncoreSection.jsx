@@ -5314,8 +5314,13 @@ function BacklineBio({ s }) {
       )}
     </div>
   )
+  // The root bleeds through the surplus the published tab pads the section by (`vm.pad`) and pads its own stage by the same, so the grain, which paints the
+  // root's padding box, reaches the window's edges where the frame stops (checked at 1900); `cqw` is the content box, so `u()` is unchanged.
   return (
-    <div style={{ position: 'relative', containerType: 'inline-size', overflow: 'hidden' }}>
+    <div style={{
+      position: 'relative', containerType: 'inline-size', overflow: 'hidden',
+      margin: `0 calc(-1 * ${s.surplus})`, padding: `0 ${s.surplus}`,
+    }}>
       <BacklineGrain src={s.backlineGrain} tone="paper" />
       {desk ? (
         <div style={{ position: 'relative', ...row(u(32), { alignItems: 'stretch' }), boxSizing: 'border-box', padding: `${u(P.top)} ${u(P.side)} ${u(P.foot)}` }}>

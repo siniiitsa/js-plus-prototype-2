@@ -1248,7 +1248,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   vm.bioP2 = cv('para2', DEFS.bioP2)
   // Backline's layout-1 lead carries a hand-drawn underline (the frame's, under `reading rooms`, the two words before its dash): it is the last two
   // words ahead of the lead's first spaced dash, so it follows the artist's copy. {pre, mark, post} split the string without changing it; null
-  // when the lead has no spaced dash with two or more words before it.
+  // when the lead has no spaced dash with two or more words before it, or the two words run past 21 characters.
   vm.bioMark = null
   if (T.name === 'Backline' && cat === 'bio' && d === 0 && vm.bioP1) {
     const text = String(vm.bioP1)
@@ -1256,7 +1256,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
     if (dash) {
       const before = text.slice(0, dash.index).replace(/\s+$/, '')
       const m = /(\S+\s+\S+)$/.exec(before)
-      if (m) vm.bioMark = { pre: before.slice(0, m.index), mark: m[1], post: text.slice(m.index + m[1].length) }
+      // two words of at most 21 characters between them: a longer pair, set nowrap, would run past the 390 column (342 / 15.56 = 21.98)
+      if (m && m[1].length <= 21) vm.bioMark = { pre: before.slice(0, m.index), mark: m[1], post: text.slice(m.index + m[1].length) }
     }
   }
   // Layout 3's first stat, seeded with the frame's "June 2021"; an emptied
