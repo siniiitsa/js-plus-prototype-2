@@ -67,7 +67,7 @@ import {
   VIDEOS, VIDEO_SEED, VIDEO_KEYS, videoPlayable, videoSeedDesc, VIDEO_ALL, COLUMN_SPLIT, bebasEms, antonEms, gloockEms, titanEms, latticeEms, frauncesEms, titleFitK, bricolageEms, latticeDotField, latticeBioDots, latticeTestiDots,
   headerLayout, headerLayoutLabel, layoutLabel, setupHeaderCount,
 } from './data.js'
-import { defaultImage, defaultImages, defaultTrackArt, seedFocus, RETRO_TEXTURE, LATTICE_ART } from './photos.js'
+import { defaultImage, defaultImages, defaultTrackArt, seedFocus, RETRO_TEXTURE, LATTICE_ART, BACKLINE_ART } from './photos.js'
 
 /* ------------------------------------------------------------------ *
  * §5.5 Axis B — canvas device preview sizing
@@ -1037,6 +1037,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // section inks. Its hero is 750 tall at the two narrow widths as well, where the
   // other templates draw 1024 and 844 (Paperback's is 750 there too, set below); the
   // desktop number (614 = 750 x .82) already agrees.
+  // Backline's grain tile, for `BacklineGrain` (backlineArt.jsx); a URL, not a value any section computes with.
+  if (T.name === 'Backline') vm.backlineGrain = BACKLINE_ART.grain
   if (T.name === 'Lattice') {
     vm.dotField = latticeDotField(Z.dev)
     vm.latticeDisc = LATTICE_ART

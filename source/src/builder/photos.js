@@ -24,6 +24,7 @@
 
 import hero from './photos/hero.jpg'
 import latticeDisc from './photos/lattice-disc.webp'
+import backlineGrain from './photos/backline-grain.webp'
 import latticeMapDesktop from './photos/lattice-map-desktop.webp'
 import latticeMapTablet from './photos/lattice-map-tablet.webp'
 import latticeMapMobile from './photos/lattice-map-mobile.webp'
@@ -418,6 +419,10 @@ export const BACKLINE_PHOTOS = {
 export const BACKLINE_COVER = backlineCover
 export const BACKLINE_TRACK_ART = [backlineTrack1, backlineTrack2, backlineTrack3, backlineTrack4, backlineTrack5]
 export const BACKLINE_VIEWER = backlineViewer
+// Backline's one raster of art: the paper grain's 192 px tile (a high-passed crop of the frames' band fill,
+// grey 128 +- 10 x deviation, lossless WebP, 27.6 KB), laid over a band with `overlay` (backlineArt.jsx,
+// `BacklineGrain`). The tears are vectors, so nothing else of the template's art is a file.
+export const BACKLINE_ART = { grain: backlineGrain }
 
 // The seeded artwork for the media player's five track rows, in track order.
 //
