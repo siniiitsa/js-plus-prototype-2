@@ -43,6 +43,25 @@ export const BACKLINE_TEARS = {
     'M0 49.25L3 48L4 45.75L5 47.25L7 48L9 46.5L10 47L12 45.75L14 46L16 43.75L17 44.75L19 42.75L21 44.25L22 42.5L24 45.25L26 42.75L28 44.5L29 42.25L30 42L31 43.5L32 42.5L33 43.25L35 42L40 45.75L42 43.5L44 45.75L46 42.75L49 46L53 44.5L54 45.5L55 45.25L56 46.75L62 45.25L64 46.5L66 45.25L68 45.25L70 43L72 43L73 41.75L74 42.5L75 41.25L76 42L77 41L78 41.25L79 43.25L81 39.75L82 41.25L83 41.5L84 40.5L85 42.25L88 41L91 42.5L93 39.75L96 43.25L97 42L99 42L100 43.25L104 41.5L106 41.25L109 42.25L112 41.5L116 45L117 44.25L120 44.5L122 42.25L127 46L128 45.5L129 47.5L131 46.5L133 49L135 48.75L136 50L142 45L144 44.75L146 42.25L149 41.75L151 38.25L155 37.5L156 38L158 34.5L159 36L162 34L163 34L164 35.25L165 34.5L166 35.5L168 34.5L169 35L172 33.25L173 34.5L175 32.75L176 35.25L181 36.75L183 37L184 35.5L187 35.25L188 33.25L190 35.25L193 34.5L194 36L196 35.5L199 37.75L200 36.25L202 35.5L203 36.75L209 34.75L210 35.75L212 34L213 34.5L215 33.25L216 35L220 34L223 35.75L224 35L226 35.25L228 33.25L229 35L231 33.75L232 35L237 36.25L240 35.75L242 36.75L244 35L247 35.25L249 33.25L250 35.25L251 33.75L253 34.25L258 33.5L262 36L263 35.5L264 37L266 35.5L267 36.5L268 36L270 37L274 34.75L275 36L279 35.75L282 37.25L284 36.5L285 39.75L288 39.75L289 40.75L290 39.5L292 40.75L294 38L296 41.25L299 40L300 40.5L301 38.75L302 38.5L303 39.5L305 38.5L306 40L308 40.75L309 39.25L312 40L313 39L317 39L318 40L320 39.25L323 40.5L324 39L325 39.5L326 38.25L327 39L328 37.75L329 39.75L330 39.75L331 38.5L332 39L334 38.25L336 40.25L337 40L338 41L339 39.75L340 41L343 37.75L346 39.5L347 39.5L348 38L350 39.5L355 39L356 40.25L359 39.5L360 38.5L361 39.25L364 39.25L367 37.75L369 39.75L373 39.75L374 41.5L375 40.75L376 41.5L381 40.75L385 42.25L386 41L389 40.25L390 40.25L391 41.75L392 40L394 39.75L395 40.5L400 37.75L403 39.25L404 37.5L405 39.5L407 39L411 36L414 39.75L415 37L416 39.25L421 37.5L422 38L423 37L424 38.5L425 38.5L426 36.25L427 37.25L431 37.25L432 39L437 35.5L438 36.75L440 37.25L441 35.75L442 36.5L443 34.75L444 36L446 34.25L447 35L448 33.25L451 33.25L452 34.5L453 32.25L455 34.25L457 31.25L458 31.5L459 33.5L461 33.75L462 31.75L466 33.75L468 32.75L471 34.25L472 34.25L474 32.5L476 35.5L477 34.25L480 34.25L482 32.5L483 30L487 33.5L489 32.25L490 34L491 33L492 35L494 33.25L496 34L500 32.25L501 33L502 31.75L506 36L513 37.25L514 39L518 39.75L520 42.25L523 42.75L524 41.5L525 41.75L526 43.5L530 42.5L531 43.75L533 39.75L534 40L537 36.75L539 36L541 36.5L542 34.75L543 35.5L546 32.5L548 33.25L553 31.5L555 32.5L557 30.75L559 32.5L561 32.75L563 35.5L564 34.75L565 36.75L566 34.25L567 35.5L570 34.75L571 36.25L573 36.5L577 33.5L579 36.25L582 35L585 36.75L586 35L588 33.75L589 35L590 33.75L594 33.25L597 35.25L599 33.25L600 34L601 33L602 34.75L603 33.25L607 35.5L608 34.75L609 35.25L612 32.75L614 33L615 35L616 35.25L618 34L620 36.25L622 35.25L625 35.5L627 33.25L628 34.25L630 34L631 36L635 37.25L638 36.75L639 35.75L643 37L645 35L646 36L648 34L649 36L651 34L652 34.5L653 37.25L656 36.75L657 37.75L659 34.75L662 36.25L663 34.5L666 35L667 36L669 35.75L671 37.5L673 36L674 37.5L676 37L677 37.75L678 36.5L679 38L681 36.25L683 38L685 37.75L686 38.5L687 37.25L689 37.75L694 34.75L695 35.25L696 34.5L699 35.25L700 37L701 35.5L706 36.75L707 35.5L708 37.5L709 34.75L710 34.5L711 35.75L712 36L713 35L714 36L717 34.25L722 36.75L725 36L726 33.75L727 36L729 37.25L730 37.5L731 36.25L735 37.25L736 38.75L738 39.75L741 39.25L742 40L744 38L748 39L750 38L751 39.5L754 40L756 41.75L757 40.25L758 41.25L760 40.75L761 39.5L763 40L766 38.5L767 39.5L769 38L772 38.75L775 34.75L778 35.5L781 33.25L783 35.5L784 35.5L785 34.25L787 36.75L788 35.5L790 36.25L791 37.75L793 36L795 38.5L796 36.5L797 36.5L798 38L800 37.5L801 39.75L804 39.75L806 41.75L807 40.5L809 41.75L810 44L813 42.25L814 43.75L816 41.5L818 42.25L820 41L821 42L825 41.25L826 42.75L827 42.5L829 44.25L830 43.5L832 45.5L837 44.25L839 45.5L841 45L842 45.75L845 43.25L850 42.25L851 39.5L852 40.75L853 41L854 39.75L856 41.25L857 40.5L858 41.75L859 40.25L861 39.75L862 38.5L864 40L865 37.5L866 39.5L867 39.25L868 41L869 40L873 40L877 38.5L878 41L880 40L881 40.5L882 39L884 39L887 41.25L888 39.5L889 41.5L890 40.5L891 41.75L893 40L894 41.25L895 40L896 41.75L897 40.5L898 41.5L900 41.5L902 40.25L906 42.5L908 41.5L912 42.5L913 41.5L914 42L915 41.25L916 42.5L919 40.75L922 43L924 42.5L925 43.75L926 42.75L928 44L930 41.75L932 42.5L935 41.5L937 42L940 39L942 40L943 39L944 40.75L946 39.75L947 41L948 40.5L949 41.5L952 40.25L954 41L958 40L959 40.75L964 40.5L967 41.5L970 44L973 42.75L974 43.5L976 41.25L979 42.25L980 43.5L983 43L984 44.25L985 41.5L987 44.75L989 45.75L990 45.25L992 47.5L993 44.25L995 44.25L996 45.75L998 46L1001 48L1003 46.5L1004 49.25L1005 47.25L1010 48.25L1011 49.5L1012 48.5L1013 50.25L1015 49.75L1016 51.5L1018 52.75L1019 52.25L1021 53.25L1023 53.25L1025 51.75L1028 51.75L1032 55L1033 51.75L1035 51L1037 50.5L1038 52.25L1041 50.5L1042 51L1043 50.25L1044 51.25L1047 49.75L1049 52L1055 51.25L1056 53.25L1057 52.25L1058 54L1060 53.5L1062 55.5L1064 55.25L1066 53.75L1068 54.75L1070 53.75L1071 55.5L1072 54.5L1073 56.75L1075 56L1079 57.75L1080 57L1081 57.5L1082 55.5L1087 55.5L1090 58.5L1091 58L1092 59L1093 57.25L1094 59L1097 59.75L1098 58.25L1099 59.5L1101 59L1103 61L1104 60.5L1105 62L1107 61.75L1108 63L1109 62.25L1111 64L1112 66.5L1113 64.25L1114 65.5L1115 64.75L1118 65L1119 66L1120 64L1121 65.75L1122 64.25L1125 65L1129 60.5L1130 61.5L1131 60.5L1135 61L1140 58.25L1142 59L1143 57.75L1147 57.5L1148 59.25L1151 55.25L1152 57.75L1156 56.75L1157 57.75L1158 57L1159 58.75L1162 57.25L1163 58.25L1166 58.25L1167 57.5L1168 59L1169 59L1171 57.25L1173 57.75L1175 56L1178 57.5L1179 54.5L1180 54L1181 54L1182 57L1183 56.25L1185 57.75L1187 57.25L1188 55.25L1190 54.5L1191 56L1192 56L1193 54.25L1194 54.75L1195 54L1196 55.5L1199 53.75L1204 56.25L1205 55.25L1206 56L1207 54.25L1208 56L1209 53.75L1210 54.5L1211 52.5L1212 54L1213 52.25L1214 53L1215 51.25L1216 51.5L1219 50L1220 50.75L1221 49.5L1227 49.75L1230 46.75L1232 48.5L1233 48L1235 49L1236 48L1239 48.75L1241 47L1242 48.5L1244 48.5L1246 47.25L1247 48.25L1249 48.5L1250 46.75L1252 48.5L1253 47.75L1257 49.5L1259 48.75L1261 50.25L1262 48.5L1263 50.5L1264 49.25L1267 51L1272 47.5L1273 48.75L1274 47.75L1276 48L1277 46.5L1278 48.75L1283 46L1286 47L1287 45L1289 47.5L1291 46.5L1292 47.25L1294 46.5L1295 47.75L1297 48.25L1298 46.75L1299 48.75L1300 47.75L1301 49L1302 47.5L1306 46.5L1308 47.25L1309 46L1314 48L1315 47.25L1318 50.5L1319 49.75L1322 51.5L1324 49L1326 50.5L1330 50L1331 51.5L1334 49.25L1336 50.5L1337 49.5L1338 50.75L1340 50L1343 52.5L1344 52.5L1345 50.75L1346 50.5L1348 52.5L1349 52.5L1350 51.25L1351 52.25L1352 51.5L1353 52L1354 49.5L1357 50L1358 48.5L1361 48L1362 46.75L1364 48.75L1365 47.75L1366 48.5L1369 45.25L1370 46.25L1371 44.75L1372 48.25L1374 46.75L1375 46.75L1376 48.5L1377 47.5L1382 48L1383 47L1385 48L1386 46L1388 47.75L1390 46.25L1391 47.25L1392 45.75L1395 46L1397 47.75L1399 46.75L1401 47.75L1404 47.75L1406 46.25L1408 48.25L1413 47L1416 48.5L1418 46.5L1419 47.75L1424 47.25L1425 49L1429 49.5L1430 48.75L1431 50.25L1432 48.5L1433 50.25L1434 49.25L1438 50.75L1440 50.25',
 }
 
+// SETTLED in section 6 (the map, 2026-11-24): the map's head is a SIXTH seam and not a sixth path. Its master's raster (1:6321, 2880 x 178) correlates 0.988 with the
+// FORM's contour shifted 249 px (map[x] = form[x + 249], over 1,191 columns: sd 0.9 px, the raster's fibres) and 0.990 with the GALLERY's shifted 794 (map[x] =
+// gallery[x + 794], over 646), so the gallery, the form and the map are windows of one second long strip, as the head, media and repertoire are of the first, and
+// at no shift does it match the head's, the media's or the repertoire's (best 0.68 / 0.74 / 0.72). The form's window reaches map x 0 to 1,191; the other 249 px lie
+// past the form's right edge, so they are traced alone (1.6 KB, `TEAR_MAP_TAIL`, from the raster, raised 1.2 px to the traced paths' own bias) and the contour is
+// composed from the form's path, shifted, and that tail: 1.6 KB where a whole path is 7. A caller names it `tear="map"`.
+const TEAR_MAP_TAIL = 'L1192 38.5L1193 41L1195 40.25L1196 40.75L1197 38.75L1198 40.75L1200 41.5L1201 43.5L1205 41.5L1206 41.75L1207 38.75L1208 42L1211 42L1212 42.75L1213 40L1214 39.5L1217 41.5L1218 39.75L1221 43.5L1222 42L1223 44.25L1225 44.5L1226 43.75L1227 45L1228 44.25L1231 48.5L1233 48.75L1234 52.5L1235 52.75L1236 54.5L1237 54.5L1240 58.25L1241 57.25L1246 56L1247 54.5L1252 57.25L1253 56.25L1255 56.5L1256 55.25L1259 57.75L1262 53.25L1263 49.5L1264 49L1265 51.25L1270 46.5L1271 47.5L1273 45.5L1277 45.5L1278 44.25L1280 44.25L1281 43L1283 45.25L1284 41.25L1285 44.5L1286 44.75L1287 43.5L1289 45.25L1292 43.25L1293 44.75L1295 45.75L1296 45L1302 45.5L1303 46.5L1305 46L1306 44.75L1307 46.75L1309 45.25L1311 47L1312 46.5L1314 47.5L1315 46.5L1316 48.5L1318 46.5L1319 47.75L1323 44.75L1324 46.25L1325 44.75L1326 46L1327 40.5L1328 47.75L1330 45.75L1331 46.25L1332 45.25L1334 46.5L1335 45.25L1336 46.5L1337 43.75L1338 45.25L1340 44.75L1341 45.5L1342 42.25L1343 46L1344 46.25L1349 43L1352 45L1354 44L1355 45.5L1357 44L1358 45.25L1359 43.25L1360 45.75L1362 44.25L1363 46.25L1364 46L1367 48.5L1368 44.75L1369 47.5L1374 49.75L1375 48.75L1380 53.25L1383 53.5L1384 54.75L1385 54L1386 51L1387 55.5L1388 51.75L1391 57.25L1392 55L1393 57L1396 57.75L1397 55.75L1398 58.25L1399 58.75L1400 56.25L1401 57.75L1402 58L1403 57L1404 59.5L1405 60L1406 57.25L1407 58.75L1408 58.5L1410 54.5L1412 55.25L1414 50L1415 52L1416 49.5L1417 52L1419 49.75L1421 50.25L1422 51.75L1423 50L1424 50.5L1425 49L1426 51.5L1427 50.5L1429 51L1430 49L1431 49.75L1433 48.25L1435 48L1436 44.5L1438 45.75L1439 43.5L1440 43.5'
+const composeTear = (edge, shift, tail) => {
+  const pts = [...edge.matchAll(/[ML]([-\d.]+) ([-\d.]+)/g)].map((m) => [+m[1], +m[2]])
+  const i = pts.findIndex(([x]) => x >= shift)
+  const [x0, y0] = pts[i - 1] ?? pts[i]
+  const [x1, y1] = pts[i]
+  const y = x1 === x0 ? y1 : y0 + ((y1 - y0) * (shift - x0)) / (x1 - x0)
+  const body = [[0, y], ...pts.slice(i).filter(([x]) => x > shift).map(([x, yy]) => [x - shift, yy])]
+  return 'M' + body.map(([x, yy]) => `${+x.toFixed(2)} ${+yy.toFixed(2)}`).join('L') + tail
+}
+BACKLINE_TEARS.map = composeTear(BACKLINE_TEARS.form, 249, TEAR_MAP_TAIL)
+
+
 // The frames' own tear order, desktop: the header's foot, the media's head, the gallery's head, the repertoire's head, the form's head.
 //
 // SETTLED in section 5 (the repertoire, 2026-11-24): the repertoire's raster is NOT one of the four. Its contour correlates 0.51 / -0.62 / -0.03 /
@@ -51,7 +70,7 @@ export const BACKLINE_TEARS = {
 // one longer torn strip, cut at different offsets. The repertoire needs 148 px of strip the head's window does not hold (its left edge), so it is traced
 // whole as a fifth path rather than composed (+7.0 KB). The gallery's and the form's windows match nothing at a shift of 300 columns or more (best 0.70 /
 // 0.74): they are other strips. Later sections: test the master's raster against all five, shifted, before tracing a sixth.
-export const BACKLINE_TEAR_KEYS = ['head', 'media', 'gallery', 'repertoire', 'form']
+export const BACKLINE_TEAR_KEYS = ['head', 'media', 'gallery', 'repertoire', 'form', 'map']
 
 // Overlay opacity of the grain tile per band ground. Calibrated in session 0 on a render of the tile over each plain
 // ground: the luma sd of the result at opacity .1 / .17 / .25 / .4 / .64 / .9 was paper 0.6 / 1.1 / 1.6 / 2.5 / 4.0 /
@@ -200,6 +219,83 @@ export function BacklineStrike({ colour, width, style, ...rest }) {
         d="M2.66266 4.23884C53.2532 1.88393 119.82 1.41295 173.073 2.82589C226.326 4.23884 239.639 4.70982 260.941 3.29688M23.9639 5.65179C77.2171 4.23884 143.784 3.76786 223.663 4.70982"
         stroke={colour} strokeWidth="2.37556" strokeLinecap="round"
       />
+    </svg>
+  )
+}
+
+// The coverage rings (section 6, the map's paper square: 1:6186 · 1:17977 · 1:19282, a 627 x 559 / 692 x 530 / 318 x 340 picture). Four concentric rings and
+// a dot about the box's centre, every size a fraction of the box's WIDTH (read off all three masters: the diameters are .18333 / .36667 / .55 / .73333 of it, the
+// two solid strokes .004167 and .002 of it, the dashes .002 of it, the dot's diameter .03 of it, `mcr` .02), so one svg fits the three widths. The dashed two are
+// 68 and 140 dashes of .4 of the pitch, one centred on three o'clock. `w` and `h` are the box in frame px (the viewBox: the svg scales to the box it is given).
+// `mcr` is the town's short form, set to the dot's upper right (left .5267 w, top h/2 - .0333 w); `label` is its text, `font` its face, `labelInk` its colour.
+export function BacklineRings({ w, h, ink, dot, label, font, style, ...rest }) {
+  const cx = w / 2
+  const cy = h / 2
+  const d = (k) => w * 0.18333 * k
+  const dashed = (k, n) => {
+    const pitch = 360 / n
+    return (
+      <circle
+        cx={cx} cy={cy} r={d(k) / 2} fill="none" stroke={ink} strokeWidth={w * 0.002} pathLength="360"
+        strokeDasharray={`${(0.4 * pitch).toFixed(4)} ${(0.6 * pitch).toFixed(4)}`} strokeDashoffset={(0.2 * pitch).toFixed(4)}
+      />
+    )
+  }
+  return (
+    <svg aria-hidden="true" viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none" fill="none" style={{ display: 'block', overflow: 'visible', pointerEvents: 'none', ...style }} {...rest}>
+      <circle cx={cx} cy={cy} r={d(1) / 2} stroke={ink} strokeWidth={w * 0.004167} />
+      {dashed(2, 68)}
+      <circle cx={cx} cy={cy} r={d(3) / 2} stroke={ink} strokeWidth={w * 0.002} />
+      {dashed(4, 140)}
+      <circle cx={cx} cy={cy} r={w * 0.015} fill={dot} />
+      {label && <text x={w * 0.5267} y={cy - w * 0.0333 + w * 0.02 * 0.969} fill={ink} style={{ fontFamily: font, fontSize: w * 0.02 }}>{label}</text>}
+    </svg>
+  )
+}
+
+// The map's round stamp (1:6149 · 1:17940 · 1:19406, a 130 box turned 10 degrees: an outer ring 4 thick at radius 55 and an inner ring 2 thick at radius 29 about
+// (65, 65), the frame's `120 MILE ★ ON THE ROAD ★` set on the band between them in Archivo Bold 11 (letter centres 46 out, so the baseline 42.26: the cap
+// height's half is .34 em, the bio stamp's own measure) with `radius` in Inter 12 inside, a little below the middle). The words of the arcs are the radius's own:
+// `lead` ("120 mile", the first words of the `120 mile radius` the section prints) is set on both arcs, a copy to an arc as the bio's stamp sets the name (the
+// frame's second arc, `ON THE ROAD`, has no field), and `inner` ("radius") is the last word. The first arc runs -86.4 to -10.6 degrees from the top before the
+// turn (the frame's `120 MILE`: letter centres -81.6 to -15.4), the second 19.7 to 133.5 (`ON THE ROAD`), with a star at 2.7 and one at 146.4 degrees. A copy
+// shorter than its arc is set at its natural width (6.97 px a letter, the frame's `120 MILE` over its arc, stretched at most 10 %) and centred on it; a longer one fills the arc by `textLength`.
+// `id` makes the arc paths unique (the caller passes a `useId()`); `size` is the 130 box (a CSS length).
+const RS_R = 42.26
+const rsPt = (r, deg) => [(65 + r * Math.sin((deg * Math.PI) / 180)).toFixed(3), (65 - r * Math.cos((deg * Math.PI) / 180)).toFixed(3)]
+const rsArc = (a, b) => `M${rsPt(RS_R, a).join(' ')}A${RS_R} ${RS_R} 0 0 1 ${rsPt(RS_R, b).join(' ')}`
+const rsStar = (deg) => {
+  const [cx, cy] = rsPt(46, deg)
+  const pts = []
+  for (let i = 0; i < 10; i++) {
+    const r = i % 2 ? 1.8 : 4.2
+    const a = ((deg + i * 36) * Math.PI) / 180
+    pts.push(`${(+cx + r * Math.sin(a)).toFixed(2)},${(+cy - r * Math.cos(a)).toFixed(2)}`)
+  }
+  return pts.join(' ')
+}
+export function BacklineRadiusStamp({ lead, inner, ink, font, innerFont, size, id = 'bl-rstamp', style, ...rest }) {
+  const word = String(lead ?? '').toUpperCase()
+  const arcs = [[-86.4, -10.6], [19.7, 133.5]]
+  return (
+    <svg aria-hidden="true" viewBox="0 0 130 130" fill="none" style={{ display: 'block', width: size, height: size, overflow: 'visible', pointerEvents: 'none', ...style }} {...rest}>
+      <defs>{arcs.map(([a, b], i) => <path key={i} id={`${id}-${i}`} d={rsArc(a, b)} />)}</defs>
+      <g transform="rotate(10 65 65)">
+        <circle cx="65" cy="65" r="55" stroke={ink} strokeWidth="4" />
+        <circle cx="65" cy="65" r="29" stroke={ink} strokeWidth="2" />
+        {word && arcs.map(([a, b], i) => {
+          const arcLen = (RS_R * (b - a) * Math.PI) / 180
+          const len = Math.min(arcLen, [...word].length * 6.97 * 1.1)
+          return (
+            <text key={i} fill={ink} style={{ fontFamily: font, fontWeight: 700, fontSize: 11 }}>
+              <textPath href={`#${id}-${i}`} startOffset={((arcLen - len) / 2).toFixed(2)} textLength={len.toFixed(2)} lengthAdjust="spacing">{word}</textPath>
+            </text>
+          )
+        })}
+        {word && <polygon points={rsStar(2.7)} fill={ink} />}
+        {word && <polygon points={rsStar(146.4)} fill={ink} />}
+        {inner && <text x="65" y="71.6" textAnchor="middle" fill={ink} style={{ fontFamily: innerFont, fontSize: 12 }}>{inner}</text>}
+      </g>
     </svg>
   )
 }

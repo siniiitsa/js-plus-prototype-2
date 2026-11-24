@@ -32,7 +32,7 @@ import { useId, useRef, useState } from 'react'
 import RealMap from './RealMap.jsx'
 import { PaperbackArt, PaperbackSparkle, PaperbackWaves } from './paperbackArt.jsx'
 import { HeadlinerWaves, HeadlinerWaveField, HeadlinerBlockArrow, HeadlinerRings } from './headlinerArt.jsx'
-import { BacklineTear, BacklineGrain, BacklineTape, BacklineStamp, BacklineBarcode, BacklineStrike, backlineNotch } from './backlineArt.jsx'
+import { BacklineTear, BacklineGrain, BacklineTape, BacklineStamp, BacklineBarcode, BacklineStrike, BacklineRings, BacklineRadiusStamp, backlineNotch } from './backlineArt.jsx'
 import {
   Play, Pause, SkipBack, SkipForward, Check, ChevronLeft, ChevronRight,
   ArrowLeft, ArrowRight, ArrowUp, ArrowDown, Star, Plus, X, Search, User,
@@ -25130,6 +25130,206 @@ function HeadlinerMap({ s, g }) {
   )
 }
 
+// Backline's layout-1 map (1:6137 · 1:17928 · 1:19264, 1041.47 / 1560.25 / 1348.45 tall; plans/backline/layout-1.md, section 6): an own tree, handed the seam's page of
+// gigs, the pairing and the pager's window by `EventsMap` (Headliner's shape). The stage pattern: `u(v)` turns the frame's px into `cqw` of an `inline-size` stage, the
+// frame's numbers verbatim at all three widths. A moss band (Scheme 3, the root's own ground, no card) under a dark-olive tear (the map's own contour: `BACKLINE_TEARS.map`),
+// with the frame's insets 112 / 90 / 67 above and below. The head is the town in TT2020 (144 / 89 / 58, lower-case, one line) and the round `120 mile ★` stamp, in the
+// head's right corner at 1440 and 768 and over the paper square's top-right corner at 390 (the frame's own, clipped by the section there). The eyebrow `05 ┈┈ SHOWS /
+// COVERAGE` is not drawn (call 1 A) and its 30.94 stays as padding. The body is two 651.05 columns on a 40 gap at 1440 and a stack on a 40 gap narrow. Left, the paper
+// square: a turned (-1 degree) card of the band's paper `BL_CARD` with the frames' two shadows, a half-strength grain, a tape at the top, the rings in a box 12 in (627 x 559
+// / 692 x 530 / 318 x 340) and a foot of the base line (TT2020, lower-case) beside the terms (Archivo, olive, upper-case), a flex row that shrinks both at 390 as the frame's does.
+// Right, `UPCOMING GIGS` / `05 OF 12`, then the gigs as paper tickets: 100 / 92 / content-driven tall, four bites of 12, turned by the gig's place in the whole list (-0.8, 0.6, -0.4, 0.7,
+// -0.6 degrees, so a page turn does not move them), on an 8 gap, a date block (month, day) on a dashed rule, the venue over `City · time`, and the ink `Tickets` square **only on a row with an
+// address** (JP-045; the frame's turned `Sold out` stamp has no field and is not drawn). The pager draws only past one page (every template's rule): an outlined prev square,
+// the window's squares (the current one ink) and an ink next square, space-between, at every width.
+const BACKLINE_MAP = {
+  desktop: {
+    fw: 1440, top: 112, foot: 112, side: 48.96, h2: 144, lh: 0.9, hDy: 0, h2Top: 30.94, headH: 160.516, free: 1188, stampTop: 30.52, gap: 36, colGap: 39.98, cardH: 621, box: [627, 559], capH: 38,
+    nameT: 28, nameDy: 14, termsDy: 19, tape: 333.4, tg: 8, rowMin: 56, dateW: 71, dateGap: 17, pillGap: 18, monthDy: -0.98, dayT: 40, dayDy: 0, titleT: 28, shadow: 28,
+  },
+  tablet: {
+    fw: 768, top: 90, foot: 90, side: 26.11, h2: 89, lh: 0.9, hDy: -5.65, h2Top: 49.92, headH: 130, free: 561.77, stampTop: 0, gap: 36, bodyGap: 40.344, cardH: 591, box: [692, 530], capH: 37,
+    nameT: 25, nameDy: 14, termsDy: 18, tape: 360.7, tg: 8.375, rowMin: 48, dateW: 70, dateGap: 18, pillGap: 18, monthDy: -1, dayT: 32, dayDy: -2.03, titleT: 25, shadow: 14,
+  },
+  mobile: {
+    fw: 390, top: 67, foot: 67, side: 24, h2: 58, lh: 0.9, hDy: -3.68, h2Top: 30.94, headH: 83.125, free: 342, stamp: [271.23, 145.55], gap: 44, bodyGap: 40, cardH: 416, box: [318, 340], capH: 52,
+    nameT: 23, nameDy: 12.54, termsDy: 17, tape: 203.6, tg: 8.27, rowMin: 0, dateW: 71, dateGap: 9, pillGap: 10, monthDy: -1, dayT: 26, dayDy: -1.65, titleT: 18, dateH: 44, shadow: 14,
+  },
+}
+// The tickets' CSS turns by the gig's place in the whole list (the frames' five rows, Figma's rotation negated).
+const BL_MAP_TURN = [-0.8, 0.6, -0.4, 0.7, -0.6]
+function BacklineMap({ s, g }) {
+  const { shown, at0, lit, onPick, win, onPage, onStep } = g
+  const dev = s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop'
+  const P = BACKLINE_MAP[dev]
+  const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
+  const ink = s.text1                    // #23240F: the head, the labels, the rules, the rings, the Tickets squares' ground (Scheme 3's own)
+  const cream = s.activeFg               // #F5F6E8: the filled squares' type
+  const paper = s.onScheme[1]            // the card's and tickets' seat: Scheme 1's olive (`text3`) and tape (`box3`)
+  const olive = s.text3                  // #6F630A: the terms, the dot
+  const tearId = useId().replace(/:/g, '')
+  const stampId = useId().replace(/:/g, '')
+  const label = (size, extra) => ({ fontFamily: s.label, fontWeight: 700, fontSize: size, letterSpacing: '0.06em', textTransform: 'uppercase', lineHeight: 'normal', ...extra })
+  const display = (size, extra) => ({ fontFamily: s.display, fontWeight: 400, fontSize: size, letterSpacing: '-0.045em', ...extra })
+
+  // The stamp: `120 mile radius` is the section's radius text, its last word the inner ring's and the rest the arcs' (a copy to an arc).
+  const rw = String(s.mapRadius || '').trim().split(/\s+/).filter(Boolean)
+  const stamp = rw.length ? (
+    <BacklineRadiusStamp
+      lead={rw.length > 1 ? rw.slice(0, -1).join(' ') : rw[0]} inner={rw.length > 1 ? rw[rw.length - 1] : ''} ink={ink} font={s.ui} innerFont={s.body} id={stampId} size={u(130)}
+      style={{ position: 'absolute', ...(P.stamp ? { left: u(P.stamp[0]), top: u(P.stamp[1]) } : { right: 0, top: u(P.stampTop) }) }}
+    />
+  ) : null
+
+  const h2 = String(s.title || '').trim() ? (
+    <h2 style={{
+      margin: 0, minWidth: 0, maxWidth: u(P.free), ...(P.hDy ? { position: 'relative', top: u(P.hDy) } : null), color: ink, textTransform: 'lowercase', lineHeight: P.lh,
+      ...display(s.titleWordEms ? `min(${u(P.h2)}, calc(${u(P.free)} / ${s.titleWordEms}))` : u(P.h2)),
+    }}>{s.title}</h2>
+  ) : null
+  const head = (
+    <div style={{ position: 'relative', boxSizing: 'border-box', minHeight: u(P.headH), paddingTop: u(P.h2Top) }}>
+      {h2}
+      {!s.mob && stamp}
+    </div>
+  )
+
+  // The paper square.
+  const paperShadow = `0 ${u(1)} ${u(1)} 0 rgba(35, 36, 15, 0.18), 0 ${u(14)} ${u(26)} ${u(-16)} rgba(35, 36, 15, 0.55)`
+  const foot = !!(s.mapBase || s.mapTerms)
+  const card = (
+    <div style={{ position: 'relative', height: u(P.cardH), minWidth: 0 }}>
+      <div style={{ position: 'absolute', inset: 0, transform: 'rotate(-1deg)', background: BL_CARD, boxShadow: paperShadow }}>
+        <BacklineGrain src={s.backlineGrain} tone="paper" opacity={0.5} />
+        <BacklineRings
+          w={P.box[0]} h={P.box[1]} ink={ink} dot={olive} label="mcr" font={s.body}
+          style={{ position: 'absolute', left: u(12), top: u(12), width: `calc(100% - ${u(24)})`, height: u(P.box[1]) }}
+        />
+        {foot && (
+          <div style={{
+            position: 'absolute', left: u(12), right: u(12), top: u(12 + P.box[1]), height: u(P.capH), boxSizing: 'border-box', padding: `0 ${u(6)}`,
+            display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
+          }}>
+            {!!s.mapBase && <div style={{ ...display(u(P.nameT), { lineHeight: 'normal', textTransform: 'lowercase', color: ink, marginTop: u(P.nameDy), flex: '0 1 auto', minWidth: 0, overflowWrap: 'anywhere' }) }}>{s.mapBase}</div>}
+            {!!s.mapTerms && <div style={label(u(11), { lineHeight: u(12.65), color: olive, marginTop: u(P.termsDy), flex: '0 1 auto', minWidth: 0, marginLeft: 'auto', overflowWrap: 'anywhere' })}>{s.mapTerms}</div>}
+          </div>
+        )}
+        <BacklineTape colour={paper.box3} width={u(120)} style={{ position: 'absolute', left: u(P.tape - 60), top: u(2 - 16), transform: 'rotate(-3deg)' }} />
+      </div>
+    </div>
+  )
+
+  // A gig: a turned, notched paper ticket. The wrapper is turned and carries the shadows (so they follow the bites); the ticket inside is cut by the mask.
+  // The lit row (live only, the pairing) is the ticket ringed inside in the olive: the frame draws none.
+  const shadow = `drop-shadow(0 ${u(10)} ${u(P.shadow)} rgba(35, 36, 15, 0.22)) drop-shadow(0 ${u(1)} ${u(P.shadow === 28 ? 2 : 1)} rgba(35, 36, 15, 0.2))`
+  const mask = blNotchMask(u(12))
+  const tickets = shown.map((gig, i) => {
+    const link = extLink(s, gig.url)
+    const Tag = link ? 'a' : 'div'
+    return (
+      <Tag key={i} {...link} onClick={onPick(i)} style={{
+        display: 'block', position: 'relative', minWidth: 0, transform: `rotate(${BL_MAP_TURN[(at0 + i) % BL_MAP_TURN.length]}deg)`, filter: shadow,
+        textDecoration: 'none', color: ink, cursor: s.live ? 'pointer' : undefined,
+      }}>
+        <div style={{
+          position: 'relative', boxSizing: 'border-box', background: BL_TICKET, padding: `${u(22)} ${u(26)}`,
+          maskImage: mask, maskComposite: 'intersect', WebkitMaskImage: mask, WebkitMaskComposite: 'source-in',
+          boxShadow: lit(i) ? `inset 0 0 0 ${u(3)} ${olive}` : undefined,
+        }}>
+          <BacklineGrain src={s.backlineGrain} tone="paper" opacity={0.5} />
+          <div style={row(0, { position: 'relative', minHeight: u(P.rowMin), alignItems: 'center' })}>
+            <div style={{
+              position: 'relative', flex: 'none', boxSizing: 'border-box', width: u(P.dateW), paddingRight: u(14), marginRight: u(P.dateGap), textAlign: 'center',
+              ...(P.dateH ? { height: u(P.dateH) } : { alignSelf: 'stretch' }),
+            }}>
+              {/* the frame's dotted rule: a 1 px line in 2 px dashes on a 2 px gap, which a CSS dashed border (3 px on 3) cannot draw */}
+              <span aria-hidden style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: 1, backgroundImage: `repeating-linear-gradient(to bottom, ${ink} 0 ${u(1.8)}, transparent ${u(1.8)} ${u(3.6)})` }} />
+              <div style={label(u(12), { lineHeight: u(13.8), height: u(13.7), position: 'relative', top: u(P.monthDy), color: ink })}>{gig.month}</div>
+              <div style={display(u(P.dayT), { lineHeight: 0.95, position: 'relative', top: u(P.dayDy), color: ink })}>{gig.day}</div>
+            </div>
+            <div style={col(u(4), { flex: '1 1 0', minWidth: 0 })}>
+              <div style={display(u(P.titleT), { lineHeight: 1, color: ink, overflowWrap: 'anywhere' })}>{gig.venue}</div>
+              {!!gig.line && <div style={label(u(11), { lineHeight: u(12.65), color: ink, overflowWrap: 'anywhere' })}>{gig.line}</div>}
+            </div>
+            {!!gig.url && (
+              <span style={{
+                ...label(u(14)), flex: 'none', boxSizing: 'border-box', width: u(97), height: u(47), marginLeft: u(P.pillGap), display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                border: `1px solid ${s.activeBg}`, background: s.activeBg, color: cream, whiteSpace: 'nowrap',
+              }}>Tickets</span>
+            )}
+          </div>
+        </div>
+      </Tag>
+    )
+  })
+
+  // The pager: 44 squares on a 6 gap, the frames' 16 x 12 line arrows (stroke 2), the current page ink; it draws only past one page.
+  const arrow = (back, stroke) => (
+    <svg aria-hidden viewBox="0 0 16 12" fill="none" style={{ display: 'block', width: u(16), height: u(12), flex: 'none', overflow: 'visible' }}>
+      <path d={back ? 'M16 6H2M7 11L2 6L7 1' : 'M0 6H14M9 11L14 6L9 1'} stroke={stroke} strokeWidth="2" />
+    </svg>
+  )
+  const square = (key, child, { fill, onClick }) => (
+    <span key={key} onClick={onClick} style={{
+      ...label(u(13)), boxSizing: 'border-box', flex: 'none', width: u(44), height: u(44), display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+      border: `1px solid ${ink}`, background: fill ? ink : 'transparent', color: fill ? cream : ink, cursor: onClick ? 'pointer' : undefined, whiteSpace: 'nowrap',
+    }}>{child}</span>
+  )
+  const pager = win.labels.length > 0 ? (
+    <div style={row(0, { justifyContent: 'space-between', marginTop: u(22) })}>
+      {square('prev', arrow(true, ink), { onClick: onStep && (() => onStep(-1)) })}
+      <div style={row(u(6))}>
+        {win.labels.map((p, i) => square(`p${i}`, p, { fill: i === win.at, onClick: onPage && p !== '…' ? () => onPage(p) : undefined }))}
+      </div>
+      {square('next', arrow(false, cream), { fill: true, onClick: onStep && (() => onStep(1)) })}
+    </div>
+  ) : null
+
+  const two = (n) => String(n).padStart(2, '0')
+  const panel = (
+    <div style={{ minWidth: 0 }}>
+      {(!!s.mapListLabel || shown.length > 0) && (
+        <div style={row(u(12), { justifyContent: 'space-between', ...label(u(13), { lineHeight: u(14.95), color: ink, letterSpacing: '0.06em' }) })}>
+          <span style={{ minWidth: 0, overflowWrap: 'anywhere' }}>{s.mapListLabel}</span>
+          {shown.length > 0 && <span style={{ flex: 'none', whiteSpace: 'nowrap' }}>{`${two(shown.length)} of ${two(s.gigs.length)}`}</span>}
+        </div>
+      )}
+      {tickets.length > 0 ? (
+        <div style={col(u(P.tg), { marginTop: u(P.tg) })}>{tickets}</div>
+      ) : (
+        <div style={{ ...display(u(22), { lineHeight: 'normal', color: ink }), padding: `${u(24)} 0`, marginTop: u(P.tg), borderTop: `1px dashed ${ink}`, borderBottom: `1px dashed ${ink}` }}>No upcoming gigs.</div>
+      )}
+      {pager}
+    </div>
+  )
+
+  return (
+    <div style={{
+      position: 'relative', containerType: 'inline-size', overflow: 'hidden', background: s.bg,
+      margin: `0 calc(-1 * ${s.surplus})`, padding: `0 ${s.surplus}`,
+    }}>
+      <BacklineGrain src={s.backlineGrain} tone="moss" />
+      <div style={{ position: 'relative', boxSizing: 'border-box', padding: `${u(P.top)} ${u(P.side)} ${u(P.foot)}` }}>
+        <div style={col(u(P.gap))}>
+          {head}
+          <div style={s.narrow ? col(u(P.bodyGap)) : { display: 'grid', alignItems: 'start', columnGap: u(P.colGap), gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)' }}>
+            {card}
+            {panel}
+          </div>
+        </div>
+        {s.mob && stamp}
+      </div>
+      {/* the torn head: the repertoire's olive, the map's own contour (the form's window, shifted, and a traced tail), 1 px above the band as the frame stands it */}
+      <div style={{ position: 'absolute', left: 0, right: 0, top: u(-1), height: u(88), pointerEvents: 'none' }}>
+        <BacklineTear
+          tear="map" colour={s.onScheme[2].bg} id={tearId} height={u(88)}
+          style={s.narrow ? { width: u(1440), maxWidth: 'none' } : undefined}
+        />
+      </div>
+    </div>
+  )
+}
+
 function EventsMap({ s }) {
   // The page of gigs, and the gig the visitor has picked out on the map. Both
   // are inert on the editor canvas, where the section is a picture of a website
@@ -25178,6 +25378,14 @@ function EventsMap({ s }) {
     // Paperback's (1:2822 · 1:11471 · 1:12654) is a block of its own as well, handed the same seam, and the gig's place in the whole list
     // (`at0`) so a date tile keeps its colour as the pager turns.
     // Headliner's (1:4955 · 1:15726 · 1:16776) is a block of its own too, handed the same seam; the date tiles' fills follow the gig's place in the whole list.
+    // Backline's (1:6137 · 1:17928 · 1:19264) is a block of its own as well, handed the same seam; the tickets' turns follow the gig's place in the whole list.
+    if (s.limeTree && s.backline) {
+      return <BacklineMap s={s} g={{
+        shown, at0: pg * perPage, lit, onPick, win: pageWindow(pages, pg, true),
+        onPage: s.live ? (label) => setPage(Number(label) - 1) : undefined,
+        onStep: s.live ? (dir) => setPage(Math.max(0, Math.min(pages - 1, pg + dir))) : undefined,
+      }} />
+    }
     if (s.limeTree && s.headliner) {
       return <HeadlinerMap s={s} g={{
         shown, at0: pg * perPage, lit, onPick, win: pageWindow(pages, pg, true),

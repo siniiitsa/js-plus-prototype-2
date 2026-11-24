@@ -2623,6 +2623,8 @@ export const mapRingLabels = (miles) => [miles / 4, miles / 2, miles]
 export const mapHeadingSeed = (c, themeName, design) => {
   const f = FIELDS.map.find((x) => x.k === 'heading')
   const cap = fieldCap(f, themeName, design)
+  // Backline's layout-1 head is the frame's `manchester.`, with its full stop (the gallery's and the repertoire's heads do the same): the town in the cap less the stop.
+  if (themeName === 'Backline' && design === 0) return `${placeWord(mapPlaceOf(c).name, (cap?.chars || 20) - 1)}.`
   return placeWord(mapPlaceOf(c).name, cap?.chars || 20)
 }
 export const mapBaseSeed = (c, themeName, design) => {
