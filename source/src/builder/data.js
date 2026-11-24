@@ -3224,10 +3224,15 @@ export const FIELDS = {
   // re-measured them over the fitted Hero (`reach.mjs 7`) and left them unchanged. Backline's began as
   // Headliner's (session 0: layouts 2-4 are placeholders, so those seats are Lime's twins' rows; section 1
   // re-measures them over the fitted Hero with `reach.mjs 8`).
+  // Backline's section 1 did (2026-11-24, 1,008 renders): the seal is not drawn, so `badgeMode` and
+  // `badgeText` lose layout 1 (design 3 alone), and `cardLine` gained `Backline: [2]`, which Headliner's row
+  // never took; every other row held. Cards 2-4 are placeholders, so those seats are Lime's twins'.
   header: [
     { k: 'image',     l: 'Background photo', type: 'image', aspect: [16, 9],
       hint: 'Fills the header behind the type.' },
-    { k: 'avatar',    l: 'Artist photo',     type: 'image', aspect: [1, 1],
+    // Backline's layout 1 draws no portrait (the polaroid was removed, call 2): measured 2026-11-24, the avatar
+    // moves layouts 2-4 only (a template this `in` does not name reads it everywhere, as before).
+    { k: 'avatar',    l: 'Artist photo',     type: 'image', aspect: [1, 1], in: { Backline: [1, 2, 3] },
       hint: 'The portrait card and the small round avatar.' },
     // Kicker and Location are the artist's role and home town, so they also
     // reach the bio, the booking calendar, the enquiry form and the events map
@@ -3262,7 +3267,7 @@ export const FIELDS = {
     // only the `HeaderV2` block those four share reads it. Emptied, the card
     // is the name alone.
     { k: 'cardLine',  l: 'Line under your name', d: CARD_LINE_3,
-      in: { Lime: [2], Grunge: [2], Editorial: [2], Pop: [2], Lattice: [2], Paperback: [2], '*': [] },
+      in: { Lime: [2], Grunge: [2], Editorial: [2], Pop: [2], Lattice: [2], Paperback: [2], Backline: [2], '*': [] },
       chars: { Lime: [null, null, 22], Grunge: [null, null, 23], Editorial: [null, null, 23], Pop: [null, null, 29], Lattice: [null, null, 23], Paperback: [null, null, 22] },
       hint: 'The line under your name on the portrait card. The bio’s Performing since is a separate '
           + 'field, so change both if you name a year here. Left empty, it is not drawn.' },
@@ -3286,7 +3291,11 @@ export const FIELDS = {
       // Headliner's layout 1 holds 33 (`limits.mjs header --themes=7 --designs=0 --keys=title --sweep`: open to 80 at 1440 and
       // 768, 33 at 390, where a name that long sets down to the half-size floor and a fifth line climbs into the ring); the
       // others are placeholders and keep Pop's 80.
-      chars: { Retro: [80, 80, 14, 80, 56, 39], Lime: 80, Grunge: 80, Editorial: 80, Pop: 80, Lattice: 80, Paperback: [14, 80, 80, 80], Headliner: [33, 80, 80, 80] } },
+      //
+      // Backline's layout 1 holds 67 (`limits.mjs header --themes=8 --designs=0 --keys=title --sweep`: 67 at 1440, where a
+      // longer name sets down past the half-size floor; 80, open, at 768 and 390: the name wraps and grows upward, and the
+      // chip row stays under it). The three placeholders keep Pop's 80.
+      chars: { Retro: [80, 80, 14, 80, 56, 39], Lime: 80, Grunge: 80, Editorial: 80, Pop: 80, Lattice: 80, Paperback: [14, 80, 80, 80], Headliner: [33, 80, 80, 80], Backline: [67, 80, 80, 80] } },
     // Header-nav ticket (2026-11-11): layout 2 no longer prints the description
     // under the name, so only Retro's layout 5 reads it.
     { k: 'subtitle',  l: 'Subtitle',         type: 'area', def: 'heroSub',
@@ -3347,12 +3356,12 @@ export const FIELDS = {
     // Editorial's layout-1 artwork (a reticle, a star) has no ring to turn, so
     // EditPanel offers those two Show / Hide alone (`badgeOptsFor`).
     { k: 'badgeMode', l: 'Corner badge',     type: 'select', d: 'rotating', opts: BADGE_MODES,
-      in: { Retro: [0, 1, 3, 4, 5], Lime: [0, 3], Grunge: [0, 3], Editorial: [0, 3], Pop: [0, 3], Lattice: [0, 3], Paperback: [0, 3], Headliner: [0, 3], Backline: [0, 3] } },
+      in: { Retro: [0, 1, 3, 4, 5], Lime: [0, 3], Grunge: [0, 3], Editorial: [0, 3], Pop: [0, 3], Lattice: [0, 3], Paperback: [0, 3], Headliner: [0, 3], Backline: [3] } },
     // The seal's ring sets it twice round a circle, so its cap is the ring's
     // fit (scripts/limits.mjs's ring test). Left empty, the ring prints the
     // artist's name, clamped to the same fit (sealCap).
     { k: 'badgeText', l: 'Corner badge text',                    // defaults to the artist's name — special-cased
-      in: { Retro: [0, 1, 3, 4, 5], Lime: [3], Grunge: [0, 3], Editorial: [3], Pop: [0, 3], Lattice: [3], Paperback: [0, 3], Headliner: [0, 3], Backline: [0, 3] },
+      in: { Retro: [0, 1, 3, 4, 5], Lime: [3], Grunge: [0, 3], Editorial: [3], Pop: [0, 3], Lattice: [3], Paperback: [0, 3], Headliner: [0, 3], Backline: [3] },
       chars: { Retro: 19, Lime: [null, null, null, 13], Grunge: [14, null, null, 14], Editorial: [null, null, null, 10],
         Pop: [12, null, null, 10], Lattice: [null, null, null, 13], Paperback: [12, null, null, 10],
         // Headliner layout 1 prints the ringed numeral ("26" in the frame, the artist's initials until typed over) inside a
@@ -4676,6 +4685,9 @@ export const INLINE_OFF = {
   'Headliner.0.header.kicker': 'not drawn: the layout-1 header prints no act type any more (a shared identity key; the bio’s role line and the form print it)',
   'Headliner.0.header.location': 'not drawn: layouts 1–4 print no location any more (a shared identity key; the bio, the calendar and the map print it)',
   'Headliner.0.media.tracks.sub': 'derived value: the seeded page prints the release under the title and the running time at the row’s right, and the whole line only once the list is stored',
+  'Backline.0.header.kicker': 'not drawn: the layout-1 header prints no act type any more (a shared identity key; the bio’s role line and the form print it)',
+  'Backline.0.header.location': 'not drawn: layouts 1–4 print no location any more (a shared identity key; the bio, the calendar and the map print it)',
+  'Backline.0.header.cta1': 'a node text can never settle (a user call, section 1): the frame sets the Book pill 49 px in from the right edge, and the canvas’s own toolbar (right 8, top 8, about 100 wide) covers its words at the desktop canvas, so a click there lands on the toolbar; the panel edits it (the ledger is per design, so tablet, which would reach it, loses it too)',
   'Headliner.0.repertoire.songs.length': 'not drawn: only layout 3 prints a song’s length',
   '*.*.pricing.tiers.tags': 'derived value: the filter chips are the distinct tags of every package',
   '*.3.video.videos.desc': 'not drawn: layout 4 prints the playing video’s title alone',

@@ -1120,11 +1120,11 @@ function MenuPanel({ s, menu }) {
           ))}
         </nav>
       ) : s.backline ? (
-        // The typewriter face, lower-case, as the frames set the footer's links (TT2020 17, tracked -0.045em), at the title's size.
+        // The typewriter face, lower-case, as the frames set the footer's links (TT2020 17, tracked -0.045em), at 1.7 x their size (no frame draws this menu).
         <nav onClick={menu.toggle} style={col('14px', { alignItems: 'flex-start' })}>
           {s.navLinks.map((l) => (
             <a key={l.label} href={navHref(s, l.to)} style={{
-              color: ink, cursor: 'pointer', textDecoration: 'none', fontFamily: s.display, fontWeight: 400, fontSize: s.title,
+              color: ink, cursor: 'pointer', textDecoration: 'none', fontFamily: s.display, fontWeight: 400, fontSize: `calc(${s.bodyLg} * 1.7)`,
               lineHeight: 1.1, letterSpacing: '-0.045em', textTransform: 'lowercase', whiteSpace: 'nowrap',
             }}>{l.label}</a>
           ))}
