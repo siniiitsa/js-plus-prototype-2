@@ -385,3 +385,37 @@ the block is only a new picture, and `PaperbackPill` took `as` / `tagProps` so t
 
 - Layouts 2–4 are still Lime's / Pop's tree in Paperback's tokens. Every cap now has a `Paperback` row (none reads Pop's through `specAt`), measured by `limits.mjs form --themes=6 --designs=1,2,3 --upright`, then `--check` (0 failing) and `--seeds` (0 over). **The rule is lower-only and never under the seed:** a number the placeholder card cannot bear came down to what it bears, and one that bore more was left, so no cap rose. Lowered (layouts 2, 3, 4, an index per layout; `–` not read): `heading` [40,30,17] → [36,30,17]; `promises` [34,–,–] → [29,–,–]; `sub` [–,–,30] → [–,–,23]; `steps.title` [–,–,41] → [–,–,34]; `fields.placeholder` [–,–,24] → [–,–,20]; `steps.sub` [–,–,44] → [–,–,41]; `fields.label` [33,40,19] → [27,30,15]; `messageLabel` [–,–,41] → [–,–,33]; `message` [–,–,54] → [–,–,44]; `button` [–,–,36] → [–,–,31]; `price` [22,26,–] → [20,24,–]; `priceUnit` [47,54,–] → [45,52,–]; `bookings` [36,42,–] → [34,40,–]; `note` [47,54,–] → [45,52,–]; `available` [–,61,–] → [–,54,–]; `title` [54,11,–] → [32,11,–].
 - **Rough edges (the seed is wider than the card holds a prose line of its length):** `heading` L2 (36, 31), `promises` L2 (29, 28). The cap holds at the seed, `--check` reads it as `(floor)`, and the card draws the seed as it does at the other templates. A layout-2–4 pass with frames replaces all of these.
+
+## Headliner — layout 1 (plans/headliner/layout-1.md, section 9, 2026-11-24)
+
+`HeadlinerForm` (`EncoreSection.jsx`, before `EnquiryForm`; dispatched there on `s.v0 && s.limeTree && s.headliner` after the seam and ahead of Paperback's). Frames `1:5385` · `1:16159` · `1:17207`
+(714.05 / 1066.11 / 1309.13 tall). Everything the live seam owns (the typed boxes, the date mask, the chip at 0, the refusal, the `role="alert"` line, the mailto submit, the sent state) goes over in `g`,
+the same object as Lattice's and Paperback's; the block owns no hook and there is no `<form>`.
+
+- **Stage**: `HEADLINER_FORM` holds each width's numbers, `u(v)` in `cqw`, `vm.pad = '0px <surplus>'` (`form` joins the Headliner line in `EncoreBuilder.jsx`). **One flat square card** 48.96 / 26.11 / 24 in from the
+  edges of the cream page (Scheme 2, the section's own seat: no `cardOnPage`), nothing centred in a taller box (96 / 76.99 / 58 round it). A grid: the panel `447.344` then the rest at 1440, a single column narrow.
+  Sections measure 713.9 / 1066.0 / 1308.9 (frames 714.05 / 1066.11 / 1309.13); every box within 0.5 (the canvas draws 1 px rules unscaled: a 1 px border is 1.22 frame px at 1440).
+- **The panel** (maroon, `s.onScheme[3].bg`): a 52 square photograph (the form's `image`; an unset one draws the initials on `O[3].box1`) beside the name (Anton 16, sand) over the role (Anton 13, amber), 14 apart, 4 between the lines;
+  the head (Anton 64 / 48 / 38, lh .98, -0.005em, orange, 26 under the avatar row); the list (three 45-tall rows on `HL_HAIR`, an Inter Tight 16 `#f4f4f4` promise and an Anton 14 amber numeral derived from the row's place,
+  the list's foot rule closing it). **At 1440 the panel is stretched to the form half and the list is foot-anchored** (`marginTop: auto` over a 26 padding, the frame's `List:align`); narrow it is its own height.
+- **The head wraps at the content box by measure and is not forced**: `LET'S MAKE / YOUR NIGHT / UNFORGETTABLE.` at 1440 (the last word overhangs the 367.344 box by about 11 into the panel's padding, as the frame's
+  381-wide text node does, so the h2 sets `overflow-wrap: normal` against the section's `anywhere`), two lines at 768 and three at 390. It is fitted to its widest word against `room` (393.344 / 655.766 / 302, content plus
+  the 1440 overhang) with `vm.titleWordEms` = `antonEms(w, -0.005)` (`form` joins the Headliner line in `sectionVm`): a longer word shrinks the type (a 37-letter word sets 19.9 / 40.5 / 18.6 px) instead of breaking.
+- **The boxes** are 50-tall 1 px `#1E1E1E` squares on cream (`O[2].bg`), padding 14, an Anton 14 label 8 above at lh 14.6875; two to a row on a 20 gap at 1440 and 768 and one column at 390, the blocks 18 apart (28 at 390).
+  **A refused box changes colour as well as weight**: the ring and a 1 px inset in the panel's maroon (2 px in all, the 50 held); the prompt line is Anton 14 in the same maroon. The event-type chips are 40-tall 1 px pills
+  (Anton 14, padding 16, 6 apart, wrapping: `Other` takes a second row at 390), the lit one `#1E1E1E` under sand; the message box is 90 tall; **the submit is `HeadlinerPill` with `as={Pill}` and `tagProps`**
+  (new props: the seam's `<a href="mailto:">`, refusing `role="button"` or inert span, in the pill's own 46-tall box; the other callers are unchanged).
+- **The sent state** swaps the form half alone and holds its height (`sentH` 442.05 / 442.05 / 729.44, the frames' content heights; measured 585.08 against 585.02 at 1440, 1066.03 / 1309.03 narrow), an Anton head over two
+  Inter Tight lines and the address in plain text, then *Write another* (the orange pill); it keeps the typed values and the chip.
+- **Not drawn** (no removal is owed: the frame prints no eyebrow, script or ring text): no wave field, no bubble, no radius, no shadow. The frame's `KAI MERCER` / `DJ · LIVE BAND` are `vm.brand` and `vm.kicker`.
+- **Caps** (2026-11-24, `limits.mjs form --themes=7 --designs=0`, then `--check` and `--seeds`: 0 failing, 0 over): `heading` **36** (the seed, a floor: the probe reads 31 at 1440, a fourth line, 61 / 46 narrow; a 32-36
+  character head sets four lines at 1440 and the card absorbs it, the panel and the half growing together), `fields.label` 48, `fields.placeholder` 39, `typeLabel` / `messageLabel` 48, `message` 41, `button` 39, `promises[]` 39 (9 rows, 16
+  measured, open), `types` 8 chips of the shared 15, identity `title` 33 and `kicker` 40. Layouts 2-4 are Grunge's rows, written out (`heading` `[36, 40, 41, 25]`, `fields.label` `[.., 62, 76, 30]`, `messageLabel` `[.., 64]`).
+  **`in` rows unchanged** (`reach.mjs 7`: `button` and `messageLabel` layouts 1 and 4, `promises` 1 and 2, `typeLabel` 1, `steps` and `sub` 4; `who.kicker` reads the form at 1 and 2). `FIELDS.form.image`'s hint is now an
+  object (the Headliner photograph is square).
+- **Ledgers**: none (`INLINE_OFF` and `PHOTO_OFF` gain no row). `inline-probe`, layout 1 at 1440 and 768: PASS (21 slots hit, 5 unhit: the name, the role and the three numerals, which are no slot); `photo-probe`
+  `--check`, `--blank` and `--drop`: PASS (the avatar, 1 slot); `focus-probe --prime --check`: PASS (27 controls, 0 failing, both widths).
+- **Placeholders draw at the global .45**, where the frame's `#757575` on cream is about .59 of the ink (the repertoire's search, section 5): `--ph` is the user's call.
+- **Seeds are the shared ones**: `Book Now` (the frame's `Book now`), the head `Let's make your night unforgettable.`, the three promises, the five chips and `Message` / `Event type` match the frame's words. The placeholders print
+  as seeded, `dd / mm / yyyy` and `approx.`, where the frame types `DD / MM / YYYY` and `Approx.` (Lattice's call: a Headliner-only seed would fork `FORM_FIELDS` and `formFieldsVal`).
+

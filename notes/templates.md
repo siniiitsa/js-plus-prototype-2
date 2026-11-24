@@ -754,3 +754,8 @@ hold the record, and this file keeps what a later session touching a Headliner s
 - **The panel's field is the hero's dataset** (`HeadlinerWaveField`, `headlinerArt.jsx`, orange at .22); the `KM` disc is the ringed numeral's second seat and prints `vm.initials`.
 - **The head is two lines at the middle word**, drawn 109.25 / 115.59 below its flow box on the narrow frames, over the turned (-90) block arrow; **the month is fitted** to the room its two squares leave (`calMonths` `ems`).
 - Caps: heading 14, time 10, prompt 29, cta held to 12. `prompt` is ledgered (`Headliner.0.calendar.prompt`).
+
+**The form** (`HeadlinerForm`, `EncoreSection.jsx`; own tree, dispatched from `EnquiryForm` after the seam; `notes/form.md`, *Headliner — layout 1*):
+- The stage pattern (`HEADLINER_FORM`, `u()` in cqw, the frame's px at all three widths, `vm.pad` = the surplus alone). **One flat square card on the cream page** (the section's own Scheme 2 seat, so no `cardOnPage`): a maroon panel (`s.onScheme[3]`) and a sand half (`s.onScheme[1]`) side by side at 1440 and stacked at 768 and 390; nothing is centred in a taller box. No radius, wave field, bubble or shadow.
+- **The panel is stretched to the form half at 1440 and its list is foot-anchored** (`margin-top: auto` over a 26 floor); the head wraps by measure (`UNFORGETTABLE.` overhangs the content box by about 11 at 1440) and is fitted to its widest word (`vm.titleWordEms`).
+- **A refused box is the ring plus a 1 px inset in maroon**; the submit is `HeadlinerPill` with `as` / `tagProps` (the seam's element). Caps: heading 36 (the seed, a floor), label 48, placeholder 39, message 41, button 39, promises 39, identity 33 / 40.
