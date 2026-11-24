@@ -9,7 +9,7 @@
 //                  edge and a soft shadow under it (frames: Container 1440 x 88 rasters, 1:5547 header, 1:5933 media,
 //                  1:6030 gallery, 1:6809 form). Four distinct contours exist in the desktop frames, and no two are
 //                  alike (measured: 2,544-2,704 of 2,880 columns differ by more than a pixel from each other), so
-//                  there are four traced paths, each the contour at 1440 x 88 css px, simplified to 0.5 px (767 points,
+//                  there are five traced paths (the repertoire's added in section 5), each the contour at 1440 x 88 css px, simplified to 0.5 px (767 points,
 //                  6.7 KB). The section that draws a seam picks the contour its frame does (`tear`) and colours it
 //                  with the neighbour's band (`colour`, read through `s.above`-style inputs by that section).
 //   BacklineGrain  the paper texture. The frames fill every band with a 1440-wide grain raster (colour baked in, sd
