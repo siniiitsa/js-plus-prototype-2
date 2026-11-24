@@ -32,6 +32,7 @@ import { useId, useRef, useState } from 'react'
 import RealMap from './RealMap.jsx'
 import { PaperbackArt, PaperbackSparkle, PaperbackWaves } from './paperbackArt.jsx'
 import { HeadlinerWaves, HeadlinerWaveField, HeadlinerBlockArrow, HeadlinerRings } from './headlinerArt.jsx'
+import { BacklineTear, backlineNotch } from './backlineArt.jsx'
 import {
   Play, Pause, SkipBack, SkipForward, Check, ChevronLeft, ChevronRight,
   ArrowLeft, ArrowRight, ArrowUp, ArrowDown, Star, Plus, X, Search, User,
@@ -1027,7 +1028,7 @@ const clock = (sec) => {
 // The ground and ink the menu opens on (below). Shared by `HeaderRoot`'s in-flow
 // panel and the fixed one Retro's layouts 5 and 6 still open.
 function menuColours(s) {
-  return s.lattice || s.paperback || s.headliner ? [s.bg, s.tx] : s.editorial ? [s.box3, s.paper] : s.pop && s.v2 ? [s.bg, s.text3]
+  return s.lattice || s.paperback || s.headliner || s.backline ? [s.bg, s.tx] : s.editorial ? [s.box3, s.paper] : s.pop && s.v2 ? [s.bg, s.text3]
     : s.pop && s.v3 ? [s.mapBg, s.text3] : [s.mapBg, s.mapFg]
 }
 
@@ -1104,6 +1105,7 @@ function MenuPanel({ s, menu }) {
         </span>
         {s.paperback ? <PaperbackPill s={s} to={s.bookTo} u={(v) => `${v * (s.narrow ? 1 : 0.82)}px`} />
           : s.headliner ? <HeadlinerPill s={s} to={s.bookTo} u={(v) => `${v * (s.narrow ? 1 : 0.82)}px`} />
+          : s.backline ? <BacklinePill s={s} to={s.bookTo} u={(v) => `${v * (s.narrow ? 1 : 0.82)}px`} />
           : s.lattice ? <BracketButton s={s} to={s.bookTo} ink={ink} /> : <BookPill s={s} to={s.bookTo} />}
       </div>
       {s.paperback ? (
@@ -1114,6 +1116,16 @@ function MenuPanel({ s, menu }) {
               ...row('0px', { justifyContent: 'center' }), height: '44px', padding: '0 16px', boxSizing: 'border-box',
               borderRadius: s.radiusChip, background: PAPER_WHITE, color: ink, cursor: 'pointer', textDecoration: 'none',
               fontFamily: s.label, fontWeight: 700, fontSize: '16px', letterSpacing: '-0.01em', whiteSpace: 'nowrap',
+            }}>{l.label}</a>
+          ))}
+        </nav>
+      ) : s.backline ? (
+        // The typewriter face, lower-case, as the frames set the footer's links (TT2020 17, tracked -0.045em), at the title's size.
+        <nav onClick={menu.toggle} style={col('14px', { alignItems: 'flex-start' })}>
+          {s.navLinks.map((l) => (
+            <a key={l.label} href={navHref(s, l.to)} style={{
+              color: ink, cursor: 'pointer', textDecoration: 'none', fontFamily: s.display, fontWeight: 400, fontSize: s.title,
+              lineHeight: 1.1, letterSpacing: '-0.045em', textTransform: 'lowercase', whiteSpace: 'nowrap',
             }}>{l.label}</a>
           ))}
         </nav>
@@ -2527,6 +2539,134 @@ function HeadlinerHero({ s, menu }) {
   )
 }
 
+// Backline · layout 1 (plans/backline/layout-1.md, section 1; frames 1:5543 · 1:17365 · 1:18699, 975.30 / 914.44 / 880 tall): an own tree,
+// hookless, so it stands at `HeaderV0`'s head. A photograph under an olive wash and a two-gradient scrim, the bar (the hamburger left
+// and Book Now right, the standing rule), the name in TT2020 with the template's dot, the six notched chips, and a torn paper foot.
+// The stage pattern: a `containerType: inline-size` stage, `u(v)` turning a frame px into cqw of it, the frame's numbers verbatim at every
+// width (desktop is the frame x 0.82 on the 1180 canvas by that alone). The photograph, wash, scrim and tear hang off the root, not the
+// stage, so a published window wider than the frame carries them to its edges.
+//
+// Not drawn (call 1 A, 2026-11-24): the wordmark and six inline links, `NEXT STOP · …`, the LP ticket (call 2 A), the polaroid avatar, the
+// act type and location beside it. `foot` is the chip row's foot above the hero's foot (136 / 109 / 82, read off the three frames with the
+// avatar row's 114 above the name gone: the name's box ends 18 above the chips and the stack is anchored at the foot, so a longer name
+// grows upward). The two dot colours are the frames' own: the 1440 master sets it `sem/tag/7/bg` (the olive of the wash), the 768 and 390
+// masters the mustard.
+const BACKLINE_HERO = {
+  desktop: { fw: 1440, h: 975.297, gut: 48.96, foot: 136, name: 201.6 },
+  tablet: { fw: 768, h: 914.4375, gut: 26.11, foot: 109, name: 125 },
+  mobile: { fw: 390, h: 880, gut: 24, foot: 82, name: 61 },
+}
+const BL_BAR = 80       // the in-frame bar
+const BL_TEAR = 88      // the torn foot's strip
+const BL_NAME_LH = 0.82 // the frames' 165.312 / 102.5 / 50.02 over 201.6 / 125 / 61
+const BL_TRACK = '-0.045em'
+const BL_INK = '35, 36, 15'   // the scrim's own literal (rgba of the ink #23240F); no scheme key holds it as an alpha
+
+// Book now (1:5565): a mustard rectangle, 46 tall, a 1 px border in its own colour, Archivo Condensed Bold 14 tracked +0.84, in ink. The
+// later sections' buttons are the same box in another ground and ink (`bg`, `ink`); a form's submit is the seam's own element (`as`, with
+// its props in `tagProps`), as `HeadlinerPill`'s; `style` is the caller's last word.
+function BacklinePill({ s, label, to, ext, u, bg = s.onScheme[2].activeBg, ink = s.onScheme[2].activeFg, as, tagProps, style }) {
+  const link = as ? tagProps : ext !== undefined ? extLink(s, ext) : s.live && to ? { href: `#${to}` } : null
+  const Tag = as ?? (link ? 'a' : 'span')
+  return (
+    <Tag {...link} style={{
+      ...row('0px', { justifyContent: 'center' }), flex: 'none', height: u(46), boxSizing: 'border-box', padding: `0 ${u(19.84)}`, cursor: 'pointer',
+      textDecoration: 'none', background: bg, border: `1px solid ${bg}`, color: ink, whiteSpace: 'nowrap',
+      fontFamily: s.label, fontWeight: 700, fontSize: u(14), letterSpacing: '0.06em', textTransform: 'uppercase', lineHeight: 'normal', ...style,
+    }}>{label ?? s.cta1}</Tag>
+  )
+}
+
+function BacklineHero({ s, menu }) {
+  const dev = s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop'
+  const P = BACKLINE_HERO[dev]
+  const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
+  const tok = s.onScheme[2]       // the olive band's scheme: the header's own seat (SCHEMES_OF.Backline)
+  const paper = s.onScheme[1]     // the bio's paper, which the torn foot is cut from
+  const cream = s.tx
+  // the six chips' seats, read off the renders: ink / mustard / moss / dark olive / beige, and a dashed outline
+  const SEAT = [tok.chips[6], tok.chips[1], tok.chips[2], tok.chips[3], tok.chips[5], null]
+  const tearId = useId()
+  const title = s.heroTitle || ''
+  const cut = title.lastIndexOf(' ') + 1   // the last word stands with the dot, in one nowrap run (a break may not strand the dot)
+  const dot = dev === 'desktop' ? tok.bg : tok.activeBg
+  const nameStyle = {
+    margin: 0, fontFamily: s.display, fontWeight: 400, color: cream, textTransform: 'lowercase',
+    fontSize: fitSz(s, u(P.name), s.dispXl), lineHeight: BL_NAME_LH, letterSpacing: BL_TRACK,
+    overflowWrap: s.titleK < 1 ? 'break-word' : undefined,
+  }
+  return (
+    <div style={{
+      position: 'relative', width: '100%', aspectRatio: `${P.fw} / ${P.h}`, maxHeight: s.narrow ? s.heroH : P.h * 0.82, overflow: 'hidden',
+      background: s.bg, color: cream, isolation: 'isolate',
+    }}>
+      {/* the photograph, the wash (the frame's COLOR-blend layer: the olive at 55 %) and the scrim (two gradients, ink at .82 / .25 / .55 across and .9 up the foot) */}
+      <div style={{ position: 'absolute', inset: 0 }}>
+        <Photo s={s} initialsSize={96} />
+      </div>
+      <div aria-hidden style={{ position: 'absolute', inset: 0, background: tok.bg, mixBlendMode: 'color', opacity: 0.55, pointerEvents: 'none' }} />
+      <div aria-hidden style={{
+        position: 'absolute', inset: 0, pointerEvents: 'none',
+        backgroundImage: `linear-gradient(90deg, rgba(${BL_INK}, 0.82) 0%, rgba(${BL_INK}, 0.25) 55%, rgba(${BL_INK}, 0.55) 100%), linear-gradient(0deg, rgba(${BL_INK}, 0.9) 0%, rgba(${BL_INK}, 0) 55%)`,
+      }} />
+      <div style={{ position: 'absolute', top: 0, bottom: 0, left: s.surplus, right: s.surplus, containerType: 'inline-size' }}>
+        {/* the torn foot: the bio's paper, the header's contour (flipped, so the fringe faces up) 1 px past the foot as the frame stands it; the 768 and 390
+            frames are the same contour cropped from the left at 1:1, not squeezed (backlineArt.jsx), so a narrow tear is 1440 frame px wide */}
+        <div style={{ position: 'absolute', left: `calc(-1 * ${s.surplus})`, right: `calc(-1 * ${s.surplus})`, bottom: u(-1), height: u(BL_TEAR), pointerEvents: 'none' }}>
+          <BacklineTear
+            tear="head" colour={paper.bg} tone="paper" flip id={tearId.replace(/:/g, '')} height={u(BL_TEAR)}
+            style={dev === 'desktop' ? undefined : { width: u(1440), maxWidth: 'none' }}
+          />
+        </div>
+        {/* the bar */}
+        <div style={{
+          position: 'absolute', left: u(P.gut), right: u(P.gut), top: u(17), ...row('0px', { justifyContent: 'space-between' }),
+          visibility: menu?.open ? 'hidden' : undefined, zIndex: 4,
+        }}>
+          <HeadlinerBurger color={cream} menu={menu} u={u} />
+          <BacklinePill s={s} to={s.bookTo} u={u} />
+        </div>
+        {/* the name and the chips, anchored at the foot so a longer name grows upward */}
+        <div style={{ position: 'absolute', left: u(P.gut), right: u(P.gut), bottom: u(P.foot), ...col(u(18)) }}>
+          <h1 style={nameStyle}>
+            {title.slice(0, cut)}
+            <span style={{ whiteSpace: 'nowrap' }}>
+              {title.slice(cut)}
+              {/* the template's dot: a cell of the face's own advance, the disc 0.134em on the baseline, drawn not typed (no text for the title's slot to miss) */}
+              <span aria-hidden style={{
+                display: 'inline-block', width: '0.547em', height: '0.134em', marginRight: '-0.045em',
+                backgroundImage: `radial-gradient(circle closest-side, ${dot} 96%, transparent 100%)`, backgroundSize: '0.134em 0.134em',
+                backgroundPosition: 'center', backgroundRepeat: 'no-repeat',
+              }} />
+            </span>
+          </h1>
+          {s.showTags === 'show' && (
+            <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: u(8) }}>
+              {s.tagChips.map((c, i) => {
+                const t = SEAT[i % 6]
+                const text = {
+                  fontFamily: s.label, fontWeight: 700, fontSize: u(12), letterSpacing: '0.06em', textTransform: 'uppercase', lineHeight: 'normal',
+                  whiteSpace: 'nowrap', color: t ? t.fg : cream,
+                }
+                return t ? (
+                  <span key={i} style={{
+                    ...row('0px'), height: u(26), padding: `0 ${u(10)}`, boxSizing: 'border-box', ...text,
+                    background: backlineNotch(t.bg, u(5)),
+                  }}>{c.label}</span>
+                ) : (
+                  <span key={i} style={{
+                    ...row('0px'), height: u(28), padding: `0 ${u(10)}`, boxSizing: 'border-box', border: `1px dashed ${cream}`, ...text,
+                  }}>{c.label}</span>
+                )
+              })}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // v0 — Header layout 1 · Hero (§10.2 reference design)
 //
 // Full-bleed photograph under a bottom-weighted scrim: the nav rides the top
@@ -2537,6 +2677,7 @@ function HeaderV0({ s, menu }) {
   if (s.lattice) return <LatticeHero s={s} menu={menu} />
   if (s.paperback) return <PaperbackHero s={s} menu={menu} />
   if (s.headliner) return <HeadlinerHero s={s} menu={menu} />
+  if (s.backline) return <BacklineHero s={s} menu={menu} />
   const centred = s.align === 'centre'
   // Both reference frames are transcribed verbatim (§5.5). 768: 30px gutters,
   // a 144px portrait card, identity stacked 40/24/36/30. 390: 10px gutters, a

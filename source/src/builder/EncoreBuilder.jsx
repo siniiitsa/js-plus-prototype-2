@@ -64,7 +64,7 @@ import {
   catById, catName, navSectionsOf, initialsOf, contrast, lum, mix, rgba, caseText, fieldSeed, HEADING_3, HEADING_4, fieldReach, fieldShown, identityFieldsFor, identityHint, INLINE_OFF, PHOTO_OFF, INLINE_HEAD, INLINE_MARKED, INLINE_PART, INLINE_LINES, inlineRule, fieldCap, colCaps, identityCap, sealCap, capExcess, numeralLen, clampCapped, clampContent, legacyContent, clampIdentity, copyrightOf, formHeading3, extUrl, youtubeEmbed, youtubeThumb, youtubeParts, youtubeWatch, youtubeChannel, urlProblem, emailProblem, emailAddr, songTags, repChips,
   tierFeats, priceParts, priceCuts, blankRow, SONG_KEYS, repSetsOf, repSetLine, TRACK_KEYS, uploadedAudio, GIG_KEYS, gigDayOk, gigWeekday, gigStatus, gigStamp, MIN_YEAR, gigPart, QUOTE_KEYS, LINK_KEYS, enquiryMailto, formErrors,
   layoutChoices, designCount, designOf, pageLayout, pageOrder, pageRows, videoDesign, videoStartArch,
-  VIDEOS, VIDEO_SEED, VIDEO_KEYS, videoPlayable, videoSeedDesc, VIDEO_ALL, COLUMN_SPLIT, bebasEms, antonEms, gloockEms, titanEms, latticeEms, frauncesEms, titleFitK, bricolageEms, latticeDotField, latticeBioDots, latticeTestiDots,
+  VIDEOS, VIDEO_SEED, VIDEO_KEYS, videoPlayable, videoSeedDesc, VIDEO_ALL, COLUMN_SPLIT, bebasEms, antonEms, ttEms, gloockEms, titanEms, latticeEms, frauncesEms, titleFitK, bricolageEms, latticeDotField, latticeBioDots, latticeTestiDots,
   headerLayout, headerLayoutLabel, layoutLabel, setupHeaderCount,
 } from './data.js'
 import { defaultImage, defaultImages, defaultTrackArt, seedFocus, RETRO_TEXTURE, LATTICE_ART, BACKLINE_ART } from './photos.js'
@@ -1061,6 +1061,9 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // Headliner's is 900 at 768 and 390 (call 2 of session 0); its desktop stays at the aspect, 900 x .82 = 738, which
   // HeadlinerHero computes itself, since `WIDE.heroH` (614) is the other templates' and stays.
   if (T.name === 'Headliner' && cat === 'header' && d === 0 && Z.dev !== 'desktop') vm.heroH = 900
+  // Backline's is 914.44 at 768 and 880 at 390 (call 2 of session 0: two frame numbers, not one); its desktop stays at the
+  // frame's aspect, 975.30 x .82 = 799.74, which BacklineHero computes itself (`WIDE.heroH`, 614, is the other templates').
+  if (T.name === 'Backline' && cat === 'header' && d === 0 && Z.dev !== 'desktop') vm.heroH = Z.dev === 'tablet' ? 914.44 : 880
 
   // §4.8 — `navSections` is `{ cat, label }`, the label being the visitor's
   // word for the section (`navLabel()`, §4.3a) and never the sidebar's, and a
@@ -1159,8 +1162,12 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
       : T.name === 'Paperback' ? (x) => bricolageEms(x) - 0.035 * [...x].length
       // Headliner's name is Anton at -0.005em (the frame's -1.3392 px at 267.84), at the face's own size: no `navFace`, which
       // no Headliner site reads, and no 0.75 (that is Grunge's stand-in for Stones Crush).
-      : T.name === 'Headliner' ? (x) => antonEms(x, -0.005) : (navFace ?? frauncesEms)
+      : T.name === 'Headliner' ? (x) => antonEms(x, -0.005)
+      // Backline's is TT2020, monospaced: 0.502 em a character (0.547 less the frames' -0.045em), no table.
+      : T.name === 'Backline' ? ttEms : (navFace ?? frauncesEms)
     const words = vm.brand.split(/\s+/).filter(Boolean).map((w) => face(w))
+    // Layout 1's name ends in the template's dot (a cell of its own, BacklineHero), which stays with the last word.
+    if (T.name === 'Backline' && d === 0 && words.length) words[words.length - 1] += ttEms('.')
     ;[vm.titleK, vm.titleFloor] = titleFitK(T.name, d, Z.dev, words, face(' '), pageW)
   }
   // `navNameFit` (the nav brand's one-line / two-line / floor fit, JP-091, JP-101,
@@ -6012,8 +6019,9 @@ function TemplatePreview({ themeIdx, artistName }) {
     <ScaledPreview
       height="100%" center
       // Headliner's hero is 738 tall at the 1180 canvas (the frame's 900 x .82), taller than the 614 every picker frame is
-      // cut to, so its card would crop the bar and the name's foot: it alone is scaled to fit (user call, 2026-11-23).
-      fit={THEMES[themeIdx].name === 'Headliner'}
+      // cut to, so its card would crop the bar and the name's foot: it alone is scaled to fit (user call, 2026-11-23). Backline's is
+      // 799.74 (975.30 x .82), the same cause, and the same answer (user call, 2026-11-24: "Fit, Backline only").
+      fit={THEMES[themeIdx].name === 'Headliner' || THEMES[themeIdx].name === 'Backline'}
       vm={sectionVm({
         themeIdx, cat: 'header', arch: 0, c: {}, artistName,
         Z: SIZES.desktop, mob: false, navSections: previewNav(0),

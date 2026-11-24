@@ -1047,7 +1047,9 @@ export const THEMES = [
       // Scheme 2, #4C4E29 — dark olive: the header, media, video, repertoire, calendar and footer.
       2: {
         palette: ['#4C4E29', '#D4BE1E', '#F5F6E8'],
-        tags: ['#F5F6E8', '#D4BE1E', '#A9A23A', '#2F3019', '#EDF0DB', '#C7C59F', '#23240F'],
+        // seat 3 is the hero's ARCHIVE chip, read off the 1440 / 768 / 390 renders (#363719); the rest of the six are the
+        // frames' own: ink (DEFAULT), mustard, moss, beige (LIVE).
+        tags: ['#F5F6E8', '#D4BE1E', '#A9A23A', '#363719', '#EDF0DB', '#C7C59F', '#23240F'],
         sem: {
           box1: '#5C5E36', box2: '#3E4022', box3: '#23240F', glow: '#D4BE1E',
           activeBg: '#D4BE1E', activeFg: '#23240F',
@@ -1371,6 +1373,11 @@ const ANTON_EM = {
 // ems: Retro's 0.02 by default, and 0 for Grunge, whose mode states none.
 export const antonEms = (text, track = 0.02) =>
   [...String(text).toUpperCase()].reduce((w, ch) => w + (ANTON_EM[ch] ?? 0.494) + track, 0)
+
+// TT2020 Base's width in ems (Backline's display and typewriter body): MONOSPACED, 0.547 em an advance, and the frames
+// track it -0.045 em at every size, so a run of n characters is n x 0.502 em (no table: the face has one advance).
+export const TT2020_ADVANCE = 0.547
+export const ttEms = (text, track = -0.045) => [...String(text)].length * (TT2020_ADVANCE + track)
 
 // Gloock's, at its one weight (400) — Editorial's display and label face,
 // standing in for the caps-only Fisterra Fora, so set in caps as well. Read
@@ -1895,6 +1902,17 @@ export const TITLE_SITES = {
     TS([103, 75, 46], 0.75, [0, 1, 1], [806.1, 561.5, 350], [738, 1024, 844]),
   ],
 }
+// Backline's layout-1 header (BacklineHero): one wrapping run in TT2020 at 201.6 / 125 / 61 frame px (x 0.82 at 1440 =
+// 165.31), lh 0.82 (the frames' 165.312 / 102.5 / 50.02), tracked -0.045em, anchored by its foot so a longer name grows
+// upward. W is the room between the gutters (the frame's own text box: 1342.08 x 0.82 at 1440, 715.77 at 768, 342 at
+// 390) and the hero is 975.30 x 0.82 = 799.74 / 914.44 / 880 tall. The seed ("kai mercer" and its dot, 11 cells of 0.502
+// em) is one line at every width (the tablet's 5.52em of 5.73, the phone's 5.52em of 5.61: the dot counts, `ttEms`
+// callers add it to the last word). The photograph, the bar and the chips stand clear of it, so no `room` and no `bs`.
+// Layouts 2-4 copy Headliner's rows, which are Pop's (the placeholders).
+TITLE_SITES.Backline = [
+  TS([165.31, 125, 61], 0.82, [1, 1, 1], [1100.5, 715.77, 342], [799.74, 914.44, 880]),
+  ...TITLE_SITES.Headliner.slice(1),
+]
 
 // The lines a name takes set at size `s` in a column `W` wide: greedy word wrap
 // in ems; a word wider than the column never fits (Infinity), and when `inline`

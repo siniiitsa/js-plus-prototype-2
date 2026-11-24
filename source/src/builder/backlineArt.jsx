@@ -19,13 +19,16 @@
 //                  and a dark one want different opacities (`GRAIN_OPACITY`, calibrated in session 0 against the
 //                  frames' sd).
 //
-// NOT here, because the numbers belong to the section that draws them and are read there: the tape strips, the
-// ticket notch, the stamps, the barcode and the hand marks (the circle, the underline, the strike). Each section's
-// session adds its piece to this file, measured off its own frame.
+// `backlineNotch` (the ticket notch, from the header's chips) is the third piece. NOT here yet, because the numbers
+// belong to the section that draws them and are read there: the tape strips, the stamps, the barcode and the hand
+// marks (the circle, the underline, the strike). Each section's session adds its piece to this file, measured off its
+// own frame.
 //
-// OPEN for the header's session, which draws the first tear: whether the 768 and 390 frames' tears are the desktop
-// contour squeezed in x (as Headliner's waves are) or their own. The component stretches the one path in x
-// (`preserveAspectRatio: none`) and keeps the 88 tall; read the narrow masters' tears before trusting it.
+// SETTLED in section 1 (the header, which draws the first tear): the 768 and 390 frames' tears are NOT the desktop
+// contour squeezed in x. They are the desktop contour cropped from the left at 1:1 (the same path, its first 768 /
+// 390 css px; the contour correlates 1.000 and 0.995 with the desktop's first 768 and 390 columns, against about 0 for
+// the squeezed one). A caller therefore draws the svg 1440 frame-px wide, left-anchored, and lets its band clip it
+// (`style.width`), and the desktop draws it at the band's width.
 
 export const BACKLINE_TEARS = {
   head:
@@ -93,4 +96,14 @@ export function BacklineGrain({ src, tone = 'olive', opacity, style, ...rest }) 
       {...rest}
     />
   )
+}
+
+// The ticket notch: the quarter-circle bite out of each of a box's four corners (the frames' chips, a 5 px radius on a
+// 26 tall chip; the cards' and stubs' bites are the same shape at their own radius, which the section that draws one
+// passes). Returns a `background` for a box of ANY size, so a chip whose width follows its label needs no mask file: four
+// radial gradients, each over the quadrant its corner stands in, transparent inside `r` and `colour` outside it, half a
+// pixel of anti-aliasing at the edge. `r` is a CSS length (the caller's `u(5)`), `colour` the chip's fill.
+export function backlineNotch(colour, r) {
+  const g = (at, pos) => `radial-gradient(circle at ${at}, transparent ${r}, ${colour} calc(${r} + 0.6px)) ${pos} / 51% 51% no-repeat`
+  return [g('0 0', 'left top'), g('100% 0', 'right top'), g('0 100%', 'left bottom'), g('100% 100%', 'right bottom')].join(', ')
 }
