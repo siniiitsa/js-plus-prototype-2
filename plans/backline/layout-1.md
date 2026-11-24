@@ -312,6 +312,9 @@ that names neither Backline nor `'*'` *reads* the field; `INLINE_OFF` / `PHOTO_O
 and write the list under *Conventions*. **`SCHEMES_OF.Backline`** is the per-section ground table (the bands are the
 grounds, so most sections are their own scheme).
 
+**settled: Backline (user call, 2026-11-24).** `THEMES[8].name` is `Backline`, `sub` *TT2020 · olive & mustard*, the flag `s.backline`,
+the folder `plans/backline/`. The name inventory is under *Settled in session 0*.
+
 ### 7. Photography
 
 The frames' photographs are **a four-man band on a moor, in a studio and in a rehearsal room** (the hero, the polaroid
@@ -567,3 +570,98 @@ nodes before trusting a number.
   dashed at `rgba(237,239,218,0.24)`, 48 below the columns; the two labels are Archivo Condensed 11. The link set the
   frame draws (`About / Top Tracks / Media / Repertoire`, `Shows / Pricing / Enquiries / Reviews`, `Instagram /
   Soundcloud / TikTok / YouTube`) is three groups of four.
+
+### Settled in session 0 — the foundation
+
+Branch `backline-layout-1`, 2026-11-24. **The opening calls (1 to 4), the name (6) and the art (5) were put to the user and
+all six were taken as recommended**: (1) every standing removal holds; (2) no LP ticket, `vm.heroH` 914.44 at 768 and 880 at
+390 only (**not yet written: it is section 1's work**); (3) TT2020 Base is self-hosted behind a `Courier Prime`, `monospace`
+fallback; (4) `casing: 'title'` plus a per-site transform; (5) A, Backline's own `backlineArt.jsx`; (6) the name is
+`Backline`. Call 7 (photography) had no options: it went as the plan recommends (a ninth shoot, JPEG, budgeted).
+
+**No variable modes.** Unlike Paperback's and Headliner's, these frames bind nothing: each section's only fill is **one grain
+image** (the colour is baked into the raster, sd 4.2 to 4.8 levels), the file carries no per-Device size set and
+`explicitVariableModes` is empty on every master. So every colour below is **sampled from a render** (the mean of the grain
+fill), not read from a token, and the sizes are what the text nodes draw. `get_variable_defs` answering `sem/bg` mustard for the
+page is not the page's ground either: the page is paper.
+
+**Grounds (band means, sampled):** paper `#EAECD7` (the bio's fill; the *card* token is `#F5F6E8`), olive `#4C4E29` (header,
+media, gallery, footer, form's left panel), moss `#A7A03B` (the map), mustard `#D2BD21` (the testimonials), ink `#23240F`.
+`THEMES[8]`: `palette ['#EAECD7', '#D4BE1E', '#23240F']`, `pageGround '#EAECD7'`, seven `tags` seats, `sem`
+(`box1 #F5F6E8`, `box2 #EDF0DB`, `box3 #D6D2A0`, `glow` / `activeBg` the mustard accent `#D4BE1E`, `activeFg` ink,
+`hl` / `text3` `#6F630A`, `text1` ink), and `schemes` 2 olive `['#4C4E29', '#D4BE1E', '#F5F6E8']`, 3 moss `['#A7A03B',
+'#23240F', '#23240F']`, 4 mustard `['#D2BD21', '#23240F', '#23240F']`, 5 the paper card `['#F5F6E8', '#D4BE1E', '#23240F']`.
+**`SCHEMES_OF.Backline`** rows 0 to 3 identical (the placeholders copy row 0): header, media, video, repertoire, calendar
+and footer on 2 (olive), the map on 3 (moss), the testimonials on 4 (mustard); the bio, gallery, pricing and form stand on
+the theme's own Scheme 1 (paper). **Grounds the bands render as and the tokens differ:** the band is the *render*; a section
+that paints a band reads `s.onScheme[n].bg`, not `s.bg`.
+
+**Faces.** Display **TT2020 Base Regular**, the frames' typewriter face, **not on Google Fonts**: OFL 1.1 (Fredrick R.
+Brennan, github.com/ctrlcctrlv/TT2020; no Reserved Font Name), a real 64.7 KB woff2 subset to Basic Latin, Latin-1, the curly
+quotes, dashes, ellipsis, euro and bullet (**24,004 bytes**, every name ID and the licence text kept), inlined as a data URI in
+`src/backline-fonts.css` (imported by `index.css`), so the single-file build, the dev server and the published tab's
+cloned head all carry it with no network. The licence text is `src/fonts/TT2020-OFL-LICENSE.txt`. It is **monospaced (0.547 em
+advance)**, so a head's fit table is a constant, and it **has no arrow, star, cross, bullet disc or pencil**: those are SVG.
+Labels **`Archivo Backline`**, an `@font-face` alias pinning the one Archivo variable file at `font-weight: 700;
+font-stretch: 75%` (the frames' *Archivo Condensed* Bold), so no section names an axis and the `Archivo` link is untouched;
+proved against the frames' text boxes (`BOOK NOW` 14 px +0.84 sets 69.47 against 69, `REPERTOIRE` 80.88 / 81, `SOUNDCLOUD` 88.02 / 88,
+`NEW RELEASE` 12 px 76.84 / 77, `JOIN THE GUEST LIST` 13 px 124.42 / 124; plain Archivo sets `BOOK NOW` 84.34). UI `Archivo`, body
+`Inter`. `dls '0px'`: the frames' -0.045 em on the display is set by site.
+
+**Ramp** (`THEME_RAMP.Backline`, read off the three masters' text nodes; desktop is the frame × 0.82, 768 and 390 verbatim): see
+the table in `EncoreBuilder.jsx`. Keys: `dispXl` the header's name (201.6 / 125 / 61), `dispLg` the repertoire's head, `dispMd` the
+pricing's prices, `dispSm` the form's head, `title` the now-playing name, `list` a track's name, `labelLg` the calendar's
+22, `labelMd` / `labelSm` / `labelXs` the Archivo Condensed 14 / 13 / 12, `bodyLg` the TT2020 17, `bodyMd` the 15, `bodySm`
+the 14, `chip` 11 and `eyebrow` 10. The bio's, media's, gallery's, map's, calendar's and testimonials' heads sit between keys
+and are written by their sessions. Every other template's ramp is byte-identical (the digest below).
+
+**The flag and the gates.** `backline: T.name === 'Backline'`, with `designed` and `limeTree` widened to it (until each
+section has its own `Backline*` tree the Lime block stands in Backline's tokens: without `limeTree` a layout-1 media reads
+`S3.activeBg` of null). `headerFamily` 'backline' of four (`HEADER_COUNT`, `HEADER_NAMES`; the cards 2 to 4 are Lime's and
+Pop's trees in Backline's tokens, the placeholders). **The inventory** (`grep` over `source/src/builder/*.js*` and
+`source/scripts/*.mjs`, nothing skipped), each gate with its Backline row or its reason:
+- `specAt` falls to **Pop's** row (`spec[T] ?? spec['*'] ?? spec.Pop`; the fallback list names Backline). 119 spec objects,
+  49 of them with no `'*'`, so **49 caps are Pop's until session 12 measures them**; TT2020 sets wide (0.547 em), so expect every
+  one to come in under Pop's. `limits.mjs header,…,video --themes=8 --seeds`: 0 seeds over their caps.
+- **`in` objects**: eight header rows (`heroCta`, `faceTitle`, `faceBody`, `tags`, `showTags`, `badgeMode`, `badgeText`, `align`)
+  name every template without a `'*'`, so each got a **`Backline:` row, a copy of Headliner's** (a placeholder: the header
+  session re-measures). No other `in` object lacks a `'*'`.
+- `IDENTITY_CHARS` has 11 entries without a `'*'` (bio `title` / `location` / `tags` / `seal`, calendar `seal`, footer `title` /
+  `seal`, form `title` / `seal`, media `title`, pricing `seal`); **none names Backline, so each falls to Pop's**
+  until the section's session writes a row.
+- `INLINE_OFF` / `PHOTO_OFF` have no fallback: **no `Backline.*` row exists yet**; each section's pass writes its own as it
+  passes `inline-probe` / `photo-probe`.
+- `FOCUS` is keyed by file: the nine Backline photographs carry none (centred); the section that crops one reads it.
+- Scripts that hard-coded eight: `limits.mjs` (the `--themes` default), `photo-aspect.mjs` (the default theme list),
+  and the header comments of `digest.mjs`, `reach.mjs`, `focus-probe.mjs`, `inline-probe.mjs`, `photo-probe.mjs`. All take
+  `--theme Backline` / `8` by name or index (see *Tooling*).
+
+**Photography** (call 7): a ninth shoot, **eighteen JPEGs, 560,844 bytes raw**: the hero (1440 px q55, 187,910, the frame's
+sepia monochrome, **imported whole**: the frame stands an olive `COLOR`-blend layer at 55 % over it, `blend-color`, which is
+markup), the polaroid avatar (146 × 168), the bio portrait (403 × 577), the media player's cover (the frame's `Night Rain`),
+**five row covers** (110 px, none of the gallery's), **seven gallery shots** (174 px, in the frame's x order) and the viewer
+(`The band in the control room`, 628 × 444, none of the seven), and the form's own avatar (102 × 114). The frames' `blend-overlay`
+layers (`OVERLAY` at 16 %, a texture over every photograph) are not imported: grain, art. `BACKLINE_PHOTOS`, `BACKLINE_COVER`,
+`BACKLINE_TRACK_ART`, `BACKLINE_VIEWER` and `SEEDS.Backline` in `photos.js`. **The gallery strip is the seven shots** and the
+viewer and cover are exported beside it: **how the gallery stands the viewer and how the media stands the cover are those
+sections' calls** (Headliner seeded the cover as track one's art and the viewer in slot two; Backline's covers and shots are all
+different pictures, so neither trade is forced). **Byte budget:** the standalone build reads **15,919,372 bytes against the root
+`index.html`'s 15,306,066: +613,306** (fonts 35.7 KB and art 27.6 KB included). The root is not refreshed.
+
+**Art** (call 5 A): `backlineArt.jsx`, pure SVG functions, no hook. **Four distinct tear contours** exist in the desktop
+frames (the header's, media's, gallery's and form's 1440 × 88 rasters: 2,544 to 2,704 of 2,880 columns differ by more than a pixel
+between any two), so `BACKLINE_TEARS` holds four traced paths (767 points, 6.7 KB each, simplified to 0.5 px) and
+`BacklineTear` draws one in the neighbour's colour with a pale fibre fringe (olive .27, paper .8) and a soft shadow. **`BacklineGrain`**
+lays one 192 px lossless-WebP tile (`backline-grain.webp`, 27.6 KB, grey 128 ± 10 × the frames' grain, high-passed at 24 px) with
+`overlay`, **opacity per ground** (`GRAIN_OPACITY`: paper .75, olive .21, moss .18, mustard .28), calibrated by rendering the tile over
+each ground against the frames' own sd (paper 4.8, olive 4.2 to 4.4; moss and mustard assumed to grain like olive: read from
+renders, not from a fill). `vm.backlineGrain` is the tile's URL, set for Backline alone. **The tape, the ticket notch, the stamps,
+the barcode and the hand marks are not here**: each is added by the section that draws it, measured off its own frame.
+**Open for section 1:** whether the 768 and 390 tears are the desktop contour squeezed in x or their own (the component stretches
+one path in x and keeps the 88 tall).
+
+**Tooling** (step 7, each run once at `theme=8` / `--theme Backline`): `digest.mjs`, `shots.mjs` (the eleven before-pictures
+are in the session's scratchpad), `limits.mjs --seeds`, `focus-probe.mjs` (header, layout 1: 12 controls, 0 failing),
+`inline-probe.mjs` and `photo-probe.mjs` (**run, FAIL as expected**: the placeholder header draws copy over the photograph, so
+`header.image` is MISSING; section 1 fits it), `photo-aspect.mjs` (PASS), `page-check.mjs Backline 0` (walks to the published
+tab), `reach.mjs 8`. None hard-coded eight past what the commit names.

@@ -11,7 +11,7 @@
 //   OUT=/tmp/pp BASE=http://localhost:5175 node scripts/photo-probe.mjs --theme Lime --layout 3 --check
 //
 // Flags (comma lists run every combination, each in a fresh editor):
-//   --theme    Retro | Lime | Grunge | Editorial | Pop | Lattice | Paperback | Headliner   (default Retro)
+//   --theme    Retro | Lime | Grunge | Editorial | Pop | Lattice | Paperback | Headliner | Backline   (default Retro)
 //   --layout   1..4 (Retro also 5 and 6: the header alone, on page 1)  (default 1)
 //   --width    1440 (the Desktop tab) | 768 (the Tablet tab)  (default 1440)
 //              The window stays 1440 wide in both: at 820 or under the editor
