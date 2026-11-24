@@ -665,3 +665,15 @@ are in the session's scratchpad), `limits.mjs --seeds`, `focus-probe.mjs` (heade
 `inline-probe.mjs` and `photo-probe.mjs` (**run, FAIL as expected**: the placeholder header draws copy over the photograph, so
 `header.image` is MISSING; section 1 fits it), `photo-aspect.mjs` (PASS), `page-check.mjs Backline 0` (walks to the published
 tab), `reach.mjs 8`. None hard-coded eight past what the commit names.
+
+**The exit criterion, proved.** Old commit `8aa11de` (a git worktree on :5176) against the working tree (:5173), every category × layout
+× 3 widths at `theme=0…7`, 1,152 renders each: **0 of 1,152 files differ** after normalising the port and the Vite `?t=` stamp
+(the 40-character cell cut leaves a bare `?`, so the sed also strips `?|`; before that, 12 Headliner media files differed on that
+alone). **The template card and the picker:** nine thumbnails in the filmstrip, the Backline card draws the live `HeaderV0` in
+Backline's tokens (the band photograph, TT2020 name, mustard Book now), `Open the editor with the Backline template` reaches the
+editor, the setup modal offers four header cards (*Full photo*, *Side by side*, *Framed photo*, *Stacked*), no page error.
+**The page's ground:** `pageGroundOf(T)` and `vm.pageBg` read `THEMES[8].pageGround` `#EAECD7`, as the published
+`documentElement`, the preview scroller, the arranged rows and the gutter all do (read in `EncoreBuilder.jsx`, not measured on a
+published page; `page-check.mjs Backline 0` walked to the published tab with no console error). `cardOnPage` for the form is
+the form section's to set. **Before pictures:** the eleven sections (and the video) at `theme=8` desktop, `shots.mjs before-bl`,
+are in the session's scratchpad.
