@@ -3757,7 +3757,10 @@ export const FIELDS = {
         Paperback: [13, 22, 17, 10],
         // Headliner layout 1 measured 2026-11-23 (limits.mjs repertoire --themes=7 --designs=0): 10 at 1440, 14 at 768, 6 at 390 (a seventh letter
         // shrinks the count there, which the word fit allows); the seed's 8 is the floor. Layouts 2-4 are Grunge's, written out.
-        Headliner: [8, 38, 25, 20] } },
+        Headliner: [8, 38, 25, 20],
+        // Backline layout 1 measured 2026-11-24 (limits.mjs repertoire --themes=8 --designs=0): 15 at 1440, 19 at 768, 13 at 390 (the count wraps and the
+        // word fit shrinks it; the seed `240 songs.` is 10). Layouts 2-4 are Pop's until their passes.
+        Backline: [13, 25, 17, 10] } },
     // `in` is per field, and every layout reads the songs, so the hint says
     // which column each layout leaves out (JP-107): the reviews' date shape.
     // Session 5 of the character-limits pass: a tag is a chip, and at layout 3
@@ -3770,7 +3773,10 @@ export const FIELDS = {
         title: { Retro: [17, 25, 25, 25], Lime: [44, 24, 17, 22], Grunge: [33, 26, 23, 26], Editorial: 17, Pop: 17, Paperback: 17,
           // Headliner layout 1: the probe reads 37 / 13 / 17 (overlap), under the seed's 17 at 768, so the seed is the floor and a longer title
           // ellipsises in its row. Layouts 2-4 are Grunge's, written out.
-          Headliner: [17, 26, 23, 26] },
+          Headliner: [17, 26, 23, 26],
+          // Backline layout 1 (--extra-lines=songs.title, the frame wraps a phrase to two lines): 60 at 1440, 18 at 768 (a third line), 20 at 390;
+          // the seed's 17 fits. Layouts 2-4 are Pop's 17 written out.
+          Backline: [18, 17, 17, 17] },
         artist: { Retro: [32, 25, null, 41], Lime: [73, 25, null, 37], Grunge: [74, 25, null, 42],
           Editorial: [35, 25, null, 18], Pop: [18, 25, null, 19],
           // Lattice layout 1: 22 at 768 and 390 (one line beside a 17-character title); 1440 holds 44.
@@ -3778,10 +3784,12 @@ export const FIELDS = {
           // Paperback layout 1: 22 at 768 and 390 (the chip ellipsises past it, the frame's longest artist is 18); 1440 holds 48.
           Paperback: [22, 25, null, 19],
           // Headliner layout 1: 29 at 768 (78 at 1440, 32 at 390); an artist past what stands beside its title drops under it (JP-136).
-          Headliner: [29, 25, null, 42] },
+          Headliner: [29, 25, null, 42],
+          // Backline layout 1: 20 at 768 (the artist's room stops at 62 % of the row, then it ellipsises; 22 at 390, 46 at 1440). Layouts 2-4 are Pop's.
+          Backline: [20, 25, null, 19] },
         length: { Retro: [null, null, 23], Lime: [null, null, 17], Grunge: [null, null, 22], Editorial: [null, null, 17],
           Pop: [null, null, 14], Paperback: [null, null, 10], Headliner: [null, null, 22] },
-        tags: { list: ',', chars: 18, count: { Editorial: [3, 4, 3, 3], Lattice: [3, 4, 3, 3], '*': [4, 4, 3, 3] } },
+        tags: { list: ',', chars: 18, count: { Editorial: [3, 4, 3, 3], Lattice: [3, 4, 3, 3], Backline: [3, 4, 3, 3], '*': [4, 4, 3, 3] } },
       },
       hint: 'Tags become the filter chips above the list. Layout 4 draws no chips: it indexes the whole list A–Z instead. '
           + 'Layout 3 groups the songs into one set per tag and shows each song’s length in place of its artist; '
@@ -4708,6 +4716,7 @@ export const INLINE_OFF = {
   'Backline.0.header.location': 'not drawn: layouts 1–4 print no location any more (a shared identity key; the bio, the calendar and the map print it)',
   'Backline.0.header.cta1': 'a node text can never settle (a user call, section 1): the frame sets the Book pill 49 px in from the right edge, and the canvas’s own toolbar (right 8, top 8, about 100 wide) covers its words at the desktop canvas, so a click there lands on the toolbar; the panel edits it (the ledger is per design, so tablet, which would reach it, loses it too)',
   'Headliner.0.repertoire.songs.length': 'not drawn: only layout 3 prints a song’s length',
+  'Backline.0.repertoire.songs.length': 'not drawn: only layout 3 prints a song’s length',
   '*.*.pricing.tiers.tags': 'derived value: the filter chips are the distinct tags of every package',
   '*.3.video.videos.desc': 'not drawn: layout 4 prints the playing video’s title alone',
   '*.*.repertoire.songs.tags': 'derived value: the filter chips are the distinct tags of every song',
