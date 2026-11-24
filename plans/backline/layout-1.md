@@ -175,6 +175,8 @@ by lever.)
 
 ### 1. Do the standing copy removals hold for Backline, or does the frame win?  *(session 0 opens on this)*
 
+**settled: A (user call, 2026-11-24).** Every standing removal holds, and the rule behind them. The footer keeps its two derived columns and draws no newsletter; **the hero's polaroid avatar is not drawn** (no `avatar` field).
+
 Paperback's, Lattice's and Headliner's call 1, with this frame's list (read from the 1440 pictures and the narrow heroes):
 
 | Section | The frame draws | Standing rule it meets |
@@ -218,6 +220,8 @@ field, seeded / not drawn*).
 
 ### 2. The hero's release ticket, and the hero's height
 
+**settled: A + A (user call, 2026-11-24).** The LP ticket is not drawn. `vm.heroH` is 914.44 at 768 and 880 at 390 only, behind `backline`; desktop keeps its frame aspect (975.30 × 0.82 = 799.7 on the canvas). Not yet written: section 1's work.
+
 Both are the header's. **The LP ticket** is the hero's one new object and an invitation to a new field group
 (`ticketTitle`, `ticketLine`, `ticketFoot`, …) read by no other template.
 - **A (recommended): the ticket is not drawn.** Call 1 A's rule; the freed seat is the photograph's. The hero is then
@@ -234,6 +238,8 @@ narrow-only (`vm.heroH`, `EncoreBuilder.jsx:995–1000`; `WIDE.heroH`, `SPOT_ASP
 - **B: the hero is the frame's height at every canvas**, and the picker's aspect follows it for this template alone.
 
 ### 3. The display face: TT2020 Base is not on Google Fonts
+
+**settled: A with B as its fallback stack (user call, 2026-11-24).** Self-host TT2020 Base, `display` stack `'TT2020 Base', 'Courier Prime', monospace`. **Verified in session 0:** source `github.com/ctrlcctrlv/TT2020` (Fredrick R. Brennan, © 2020), **SIL OFL 1.1** (the repo's `LICENSE`, 4,365 bytes, read in full; the GitHub API reports `ofl-1.1`); **no Reserved Font Name is declared**, so a subset may keep the name. The file is `dist/TT2020Base-Regular.woff2`, 64,740 bytes whole.
 
 `font/display` = **TT2020 Base** (a free typewriter face, believed to be **SIL OFL 1.1** — **verify the licence text
 and the file before bundling**). It sets the heads, the row titles, the lead, the body paragraphs, the footer — most of
@@ -260,6 +266,8 @@ stretch off the frame (`get_design_context` on a label node, `font-variation-set
 alias and every other `Archivo` user are byte-identical (a zero-row digest at `theme=0…7`).
 
 ### 4. Casing
+
+**settled: A (user call, 2026-11-24).** `casing: 'title'` plus a per-site `lowercase` / `uppercase` transform; a stored `Kai Mercer` renders `kai mercer`. (The hero's name as typed stays open for the header session only if the user reopens it.)
 
 The frame's TT2020 copy is **lower-case in the source text**; Archivo Condensed is upper-cased by an `uppercase`
 class; Inter is mixed. Default **`casing: 'title'`** (the stored copy is passed through) with **`textTransform:
