@@ -25514,15 +25514,15 @@ function HeadlinerMap({ s, g }) {
 const BACKLINE_MAP = {
   desktop: {
     fw: 1440, top: 112, foot: 112, side: 48.96, h2: 144, lh: 0.9, hDy: 0, h2Top: 30.94, headH: 160.516, free: 1188, stampTop: 30.52, gap: 36, colGap: 39.98, cardH: 621, box: [627, 559], capH: 38,
-    nameT: 28, nameDy: 14, termsDy: 19, tape: 333.4, tg: 8, rowMin: 56, dateW: 71, dateGap: 17, pillGap: 18, monthDy: -0.98, dayT: 40, dayDy: 0, titleT: 28, shadow: 28,
+    nameT: 28, nameDy: 14, termsDy: 19, tape: 333.4, tg: 8, rowMin: 56, dateW: 71, dateGap: 17, pillGap: 18, monthDy: -0.98, dayT: 40, dayDy: 0, titleT: 28,
   },
   tablet: {
     fw: 768, top: 90, foot: 90, side: 26.11, h2: 89, lh: 0.9, hDy: -5.65, h2Top: 49.92, headH: 130, free: 561.77, stampTop: 0, gap: 36, bodyGap: 40.344, cardH: 591, box: [692, 530], capH: 37,
-    nameT: 25, nameDy: 14, termsDy: 18, tape: 360.7, tg: 8.375, rowMin: 48, dateW: 70, dateGap: 18, pillGap: 18, monthDy: -1, dayT: 32, dayDy: -2.03, titleT: 25, shadow: 14,
+    nameT: 25, nameDy: 14, termsDy: 18, tape: 360.7, tg: 8.375, rowMin: 48, dateW: 70, dateGap: 18, pillGap: 18, monthDy: -1, dayT: 32, dayDy: -2.03, titleT: 25,
   },
   mobile: {
     fw: 390, top: 67, foot: 67, side: 24, h2: 58, lh: 0.9, hDy: -3.68, h2Top: 30.94, headH: 83.125, free: 342, stamp: [271.23, 145.55], gap: 44, bodyGap: 40, cardH: 416, box: [318, 340], capH: 52,
-    nameT: 23, nameDy: 12.54, termsDy: 17, tape: 203.6, tg: 8.27, rowMin: 0, dateW: 71, dateGap: 9, pillGap: 10, monthDy: -1, dayT: 26, dayDy: -1.65, titleT: 18, dateH: 44, shadow: 14,
+    nameT: 23, nameDy: 12.54, termsDy: 17, tape: 203.6, tg: 8.27, rowMin: 0, dateW: 71, dateGap: 9, pillGap: 10, monthDy: -1, dayT: 26, dayDy: -1.65, titleT: 18, dateH: 44,
   },
 }
 // The tickets' CSS turns by the gig's place in the whole list (the frames' five rows, Figma's rotation negated).
@@ -25590,7 +25590,8 @@ function BacklineMap({ s, g }) {
 
   // A gig: a turned, notched paper ticket. The wrapper is turned and carries the shadows (so they follow the bites); the ticket inside is cut by the mask.
   // The lit row (live only, the pairing) is the ticket ringed inside in the olive: the frame draws none.
-  const shadow = `drop-shadow(0 ${u(10)} ${u(P.shadow)} rgba(35, 36, 15, 0.22)) drop-shadow(0 ${u(1)} ${u(P.shadow === 28 ? 2 : 1)} rgba(35, 36, 15, 0.2))`
+  // The frame's SVG filter, its deviations as `drop-shadow()` takes them (14 and 1, 1:6137's ticket), the same at all three widths.
+  const shadow = `drop-shadow(0 ${u(10)} ${u(14)} rgba(35, 36, 15, 0.22)) drop-shadow(0 ${u(1)} ${u(1)} rgba(35, 36, 15, 0.2))`
   const mask = blNotchMask(u(12))
   const tickets = shown.map((gig, i) => {
     const link = extLink(s, gig.url)
