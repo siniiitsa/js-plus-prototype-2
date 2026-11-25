@@ -124,6 +124,9 @@ export const BACKLINE_TEAR_KEYS = ['head', 'media', 'gallery', 'repertoire', 'fo
 // (sd 2.2 at 16 px) is not carried.
 export const GRAIN_OPACITY = { paper: 0.75, olive: 0.21, moss: 0.18, mustard: 0.28 }
 
+// Both strokes along the edge (the shadow and the fringe) take round joins: the traced contours turn sharply at every fibre, and a miter there throws a
+// spike a few px proud of the edge (the sweep's parked judgement 4; not the trace).
+//
 // A tear strip. `colour` is the neighbour band's ground, `tone` its ground (`paper` for a pale band, any other for a dark one), which sets the
 // fringe: the frames' fibres run about 11 levels paler than a paper tear's body and 45 paler than an olive one's.
 // `id` makes the shadow's filter unique (the caller passes a `useId()`), `flip` turns it to the foot of a band
@@ -143,12 +146,12 @@ export function BacklineTear({ tear = 'head', colour, tone = 'olive', height = 8
           <defs>
             <filter id={id} x="-2%" y="-20%" width="104%" height="160%"><feGaussianBlur stdDeviation="2.2" /></filter>
           </defs>
-          <path d={edge} fill="none" stroke="#000" strokeOpacity=".24" strokeWidth="6" transform="translate(0 3)" filter={`url(#${id})`} />
+          <path d={edge} fill="none" stroke="#000" strokeOpacity=".24" strokeWidth="6" strokeLinejoin="round" transform="translate(0 3)" filter={`url(#${id})`} />
         </>
       )}
       <path d={body} fill={colour} />
       <clipPath id={id + '-c'}><path d={body} /></clipPath>
-      <path d={edge} fill="none" stroke={fringe.c} strokeOpacity={fringe.o} strokeWidth="8" clipPath={`url(#${id}-c)`} />
+      <path d={edge} fill="none" stroke={fringe.c} strokeOpacity={fringe.o} strokeWidth="8" strokeLinejoin="round" clipPath={`url(#${id}-c)`} />
     </svg>
   )
 }
