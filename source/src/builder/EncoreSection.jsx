@@ -12479,9 +12479,9 @@ function HeadlinerPricing({ s, g }) {
 // the price unit takes the number's seat), the price in TT2020 at 96 / 60 / 38, the blurb, the features each led by a drawn cross (TT2020 has none) on dashed rules, the list the card's flex remainder, and the
 // foot: the Book pill on its seat's ground and the 23-bar barcode. The deck is three columns on a 24 gap at 1440, two at 768 with the odd last card spanning both, one at 390.
 const BACKLINE_PRICING = {
-  desktop: { fw: 1440, top: 112, foot: 112, side: 48.96, h2: 77.76, h2Top: 30.94, free: 1100, price: 96, priceLh: 86.4, blurbT: 22, blurbLh: 24.2, blurbB: 21.6, blurb: 22, pb: 21, shadow: 32, shadowS: 2, cols: 3 },
-  tablet: { fw: 768, top: 90, foot: 90, side: 26.11, h2: 48, h2Top: 30.94, free: 490, price: 60, priceLh: 54, blurbT: 20.6, blurbLh: 24.2, blurbB: 23.5, blurb: 22, pb: 19.5, shadow: 16, shadowS: 1, cols: 2 },
-  mobile: { fw: 390, top: 67, foot: 67, side: 24, h2: 38, h2Top: 30.94, free: 342, price: 38, priceLh: 34.2, blurbT: 18.73, blurbLh: 22, blurbB: 21.27, blurb: 20, pb: 20, shadow: 16, shadowS: 1, cols: 1 },
+  desktop: { fw: 1440, top: 112, foot: 112, side: 48.96, h2: 77.76, h2Top: 30.94, free: 1100, price: 96, priceLh: 86.4, blurbT: 22, blurbLh: 24.2, blurbB: 21.6, blurb: 22, pb: 21, cols: 3 },
+  tablet: { fw: 768, top: 90, foot: 90, side: 26.11, h2: 48, h2Top: 30.94, free: 490, price: 60, priceLh: 54, blurbT: 20.6, blurbLh: 24.2, blurbB: 23.5, blurb: 22, pb: 19.5, cols: 2 },
+  mobile: { fw: 390, top: 67, foot: 67, side: 24, h2: 38, h2Top: 30.94, free: 342, price: 38, priceLh: 34.2, blurbT: 18.73, blurbLh: 22, blurbB: 21.27, blurb: 20, pb: 20, cols: 1 },
 }
 const BL_PRICE_TURN = [-1.2, 0.8, -0.6]            // the cards' CSS turns by seat (the frames' rotate-[-1.2deg] / [0.8deg] / [-0.6deg], the emitter's own sign: the right edge of the first lifts)
 const BL_PRICE_DARK = '#38391C'                         // the first card's ground, sampled off the master's own raster (1:6385: mean of 87,024 px); the nearest scheme seat is Scheme 2's tag 3, #363719, two levels away
@@ -12501,9 +12501,9 @@ function BacklinePricing({ s, g }) {
   const display = (size, extra) => ({ fontFamily: s.display, fontWeight: 400, fontSize: size, ...extra })
   // The three seats by the package's place in the WHOLE stored list: the ground, its grain (tone and strength), the type, the rule, the button's ground and type, the barcode.
   const SEATS = [
-    { bg: BL_PRICE_DARK, tone: 'olive', grain: 0.45, fg: cream, rule: BL_PRICE_RULE_LIGHT, btn: cream, btnFg: ink, bars: cream },
-    { bg: O[4].bg, tone: 'mustard', grain: 0.4, fg: ink, rule: BL_PRICE_RULE_INK, btn: ink, btnFg: cream, bars: ink },
-    { bg: O[3].bg, tone: 'moss', grain: 0.29, fg: ink, rule: BL_PRICE_RULE_INK, btn: ink, btnFg: cream, bars: ink },
+    { bg: BL_PRICE_DARK, tone: 'olive', grain: 0.29, fg: cream, rule: BL_PRICE_RULE_LIGHT, btn: cream, btnFg: ink, bars: cream },
+    { bg: O[4].bg, tone: 'mustard', grain: undefined, fg: ink, rule: BL_PRICE_RULE_INK, btn: ink, btnFg: cream, bars: ink },
+    { bg: O[3].bg, tone: 'moss', grain: undefined, fg: ink, rule: BL_PRICE_RULE_INK, btn: ink, btnFg: cream, bars: ink },
   ]
 
   // The head: three lines at the frame's 8.2 em measure (16 characters of TT2020 at every width), the last two words olive (the media's rule), fitted to its widest word in the room the tabs leave.
@@ -12538,7 +12538,8 @@ function BacklinePricing({ s, g }) {
 
   // A card. The turned wrapper carries the shadows (so they follow the bites) and the tape; the paper inside is cut by the mask. The list is the flex remainder, closed by its own foot rule.
   const mask = blNotchMask(u(14))
-  const shadow = `drop-shadow(0 ${u(12)} ${u(P.shadow)} rgba(35, 36, 15, 0.2)) drop-shadow(0 ${u(1)} ${u(P.shadowS)} rgba(35, 36, 15, 0.2))`
+  // The frame's notch filter at all three widths: dy 12 / deviation 16 and dy 1 / deviation 1, each at .2. CSS `drop-shadow()`'s third value is that deviation.
+  const shadow = `drop-shadow(0 ${u(12)} ${u(16)} rgba(35, 36, 15, 0.2)) drop-shadow(0 ${u(1)} ${u(1)} rgba(35, 36, 15, 0.2))`
   const cross = (c) => (
     <svg aria-hidden viewBox="0 0 9 9" fill="none" style={{ display: 'block', flex: 'none', width: u(9), height: u(9), marginTop: u(4.5), overflow: 'visible' }}>
       <path d="M0.8 0.8L8.2 8.2M8.2 0.8L0.8 8.2" stroke={c} strokeWidth="1.2" />
