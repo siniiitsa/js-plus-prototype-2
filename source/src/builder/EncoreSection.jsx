@@ -22035,9 +22035,9 @@ function HeadlinerCalendar({ s, g }) {
 // The frame's px at all three widths. `cell` is [row, number, the number's top], the weekday row's height beside it; `card` is the padding under the
 // grid; `arrowTop` the squares' top inside the month row.
 const BACKLINE_CALENDAR = {
-  desktop: { fw: 1440, top: 151.6, side: 48.96, cols: true, pad: 32, headTop: 32, headH: 47, month: 52, monthTop: 0, arrowTop: 2, week: 34, row: 52, day: 24, dayTop: 12, foot: 32, circle: [71, 3.1975], head: 72, headW: 651, date: 44, dateLh: 41.8, dateW: 481, dateLines: 1, sub: 72 },
-  tablet: { fw: 768, top: 90, side: 26.11, cols: false, pad: 24, headTop: 27, headH: 42, month: 42, monthTop: 2, arrowTop: -0.5, week: 34, row: 52, day: 24, dayTop: 10.48, foot: 27, circle: [71, 3.351], head: 48, headW: 716, date: 35, dateLh: 33.25, dateW: 546, dateLines: 1, sub: 63 },
-  mobile: { fw: 390, top: 67, side: 24, cols: false, pad: 16, headTop: 22, headH: 42, month: 34, monthTop: 5.5, arrowTop: -0.5, week: 34.61, row: 52.61, day: 22, dayTop: 12.1, foot: 18.34, circle: [71.61, 2.593], head: 38, headW: 342, date: 29, dateLh: 27.55, dateW: 172, dateLines: 2, sub: 85, lineW: 188 },
+  desktop: { fw: 1440, top: 151.6, side: 48.96, cols: true, pad: 32, headTop: 32, headH: 47, month: 52, monthTop: 0, arrowTop: 2, week: 34, row: 52, day: 24, dayTop: 12, foot: 32, circle: [71, 3.1975], head: 72, headW: 651, date: 44, dateLh: 41.8, dateLines: 1, sub: 72 },
+  tablet: { fw: 768, top: 90, side: 26.11, cols: false, pad: 24, headTop: 27, headH: 42, month: 42, monthTop: 2, arrowTop: -0.5, week: 34, row: 52, day: 24, dayTop: 10.48, foot: 27, circle: [71, 3.351], head: 48, headW: 716, date: 35, dateLh: 33.25, dateLines: 1, sub: 63 },
+  mobile: { fw: 390, top: 67, side: 24, cols: false, pad: 16, headTop: 22, headH: 42, month: 34, monthTop: 5.5, arrowTop: -0.5, week: 34.61, row: 52.61, day: 22, dayTop: 12.1, foot: 18.34, circle: [71.61, 2.593], head: 38, headW: 342, date: 29, dateLh: 27.55, dateLines: 2, sub: 85, lineW: 188 },
 }
 const BL_CAL_RULE = 'rgba(35, 36, 15, 0.22)'   // the dashed rules between the weeks (the frame's literal)
 function BacklineCalendar({ s, g }) {
@@ -22151,9 +22151,8 @@ function BacklineCalendar({ s, g }) {
   // The ticket: turned 2.5 degrees, its corners bitten by the mask and its shadows on the wrapper so they follow the bites. It prints the picked day and
   // the town (the header's); the frame's `BOOKING REQUEST`, event kind, `PENCILLED IN`, `GIG` and number are not drawn (call 1 A) and their seats are
   // kept where something is placed against them. With no day picked the date's line is a blank rule to be written on: the prompt stands in the terminal line.
-  // The date keeps one line at 1440 and 768, shrinking to three quarters of its size before it wraps; at 390 it wraps, as the frame's does.
+  // The date is never shrunk: one too long for its line wraps, as the 390 frame's seeded one does, in the 210 the ticket has.
   const mask = blNotchMask(u(12))
-  const dateSize = P.dateLines === 1 && when?.stubEms ? `max(${u(P.date * 0.75)}, min(${u(P.date)}, calc(${u(P.dateW)} / ${when.stubEms})))` : u(P.date)
   const ticket = (
     <div style={{ position: 'relative', marginTop: u(30), transform: 'rotate(2.5deg)', filter: `drop-shadow(0 ${u(10)} ${u(14)} rgba(35, 36, 15, 0.22)) drop-shadow(0 ${u(1)} ${u(1)} rgba(35, 36, 15, 0.2))` }}>
       <div style={{
@@ -22164,7 +22163,7 @@ function BacklineCalendar({ s, g }) {
         <div style={{ position: 'relative', flex: '1 1 0', minWidth: 0, boxSizing: 'border-box', padding: `${u(44)} ${u(26)} ${u(26)}`, ...WRAP_LONG }}>
           <div style={{ minHeight: u(P.dateLh * P.dateLines) }}>
             {when ? (
-              <div style={{ ...display(dateSize, { lineHeight: P.dateLh / P.date }) }}>{when.stub}</div>
+              <div style={display(u(P.date), { lineHeight: P.dateLh / P.date })}>{when.stub}</div>
             ) : (
               <div aria-hidden style={{ height: u(P.dateLh * P.dateLines * 0.86), backgroundImage: `repeating-linear-gradient(90deg, ${BL_PRICE_RULE_INK} 0 ${u(2)}, transparent ${u(2)}, transparent ${u(3)})`, backgroundSize: '100% 1px', backgroundPosition: 'bottom', backgroundRepeat: 'no-repeat' }} />
             )}

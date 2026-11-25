@@ -71,6 +71,7 @@ const LEDGER = [
 // short of changing a seed, listed as `accepted` (reported, not failing). One row per theme, section and label; each is a call for the notes.
 const ACCEPTED = [
   { theme: 'Headliner', cat: 'calendar', label: /^Calendar instruction text$/, why: "the prompt shows only while no day is cued, so it is not drawn, and its first words `Pick a date` are the head's `Pick a date.` (notes/calendar.md, Headliner · layout 1)" },
+  { theme: 'Backline', cat: 'calendar', label: /^Calendar instruction text$/, why: "the prompt shows only while no day is cued, so it is not drawn, and its first words `Pick a date` are the head's `Pick a date, we’ll do the rest.` (notes/calendar.md, Backline · layout 1)" },
 ]
 let curTheme = ''
 const accepted = (cat, label) => ACCEPTED.find((l) => l.theme === curTheme && l.cat === cat && l.label.test(label || ''))

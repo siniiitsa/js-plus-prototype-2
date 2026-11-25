@@ -3894,7 +3894,9 @@ export const FIELDS = {
     { k: 'heading', l: 'Heading', d: 'Availability', in: { Lime: [0, 1, 2, 3], Grunge: [0, 1, 2, 3], Editorial: [0, 1, 2, 3], Pop: [0, 1, 2, 3], Lattice: [0, 1, 2, 3], Paperback: [1, 2, 3], Headliner: [0, 1, 2, 3], Backline: [0, 1, 2, 3], '*': [1, 2, 3] },
       // Paperback's layout 1 draws the month as its head, so it reads no heading. Headliner's layout 1 heads the maroon panel with it (`Pick a date.`). Lattice's layout 1 measured (limits.mjs calendar --themes=5 --designs=0); the others are Pop's, provisional.
       chars: { Retro: [null, 25, 36, 18], Lime: [25, 22, 32, 18], Grunge: [28, 24, 35, 23], Editorial: [14, 14, 21, 11], Pop: [13, 20, 24, 15],
-        Lattice: [25, 20, 24, 15], Paperback: [13, 14, 24, 15], Headliner: [14, 24, 35, 23], Backline: [40, 20, 24, 15] } },
+        Lattice: [25, 20, 24, 15], Paperback: [13, 14, 24, 15], Headliner: [14, 24, 35, 23],
+        // Backline's layout 1 measured (limits.mjs calendar --themes=8 --designs=0 --upright): 32 binds at 1440, where a longer head makes a third line; layouts 2-4 are Pop's, provisional.
+        Backline: [32, 20, 24, 15] } },
     { k: 'open',    l: 'Calendar start date', type: 'date', d: CAL_OPEN,
       hint: 'The month the calendar opens on, and the date it opens picked. '
           + `Layouts 1 and 3 page through ${CAL_SPAN} months from there, layout 2's seeded `
@@ -3912,7 +3914,9 @@ export const FIELDS = {
         // Paperback's layout 1 measured (limits.mjs calendar --themes=6 --designs=0 --upright): 24 binds at 768, where the line is one line.
         Paperback: [24, null, null, 26],
         // Headliner's layout 1 measured (limits.mjs calendar --themes=7 --designs=0): 10 at 390, where the line is three lines and a longer time makes a fourth; layout 4 is Grunge's.
-        Headliner: [10, null, null, 37], Backline: [40, null, null, 33] },
+        Headliner: [10, null, null, 37],
+        // Backline's layout 1 measured (… --extra-lines=time): 25 binds at 390, where the ticket's date is two lines and a longer time makes a fourth; layout 4 is Pop's.
+        Backline: [25, null, null, 33] },
       hint: "Printed in layout 1's enquiry line, and on its own in layout 4's "
           + 'date card. Leave it empty and the line stops at the date.' },
     // JP-095 (a): the line every layout prints while no day is cued. Cased in
@@ -3921,7 +3925,9 @@ export const FIELDS = {
       chars: { Retro: [33, 24, 39, 50], Lime: [44, 23, 33, 47], Grunge: [44, 24, 36, 50], Editorial: [44, 29, 24, 50], Pop: [31, 32, 24, 50],
         Lattice: [33, 32, 24, 50], Paperback: [36, 22, 24, 44],
         // Headliner's layout 1 measured: 29 at 390, where the foot's line is three lines and a fourth would grow it; layouts 2-4 are Grunge's, written out.
-        Headliner: [29, 24, 36, 50], Backline: [50, 32, 24, 50] },
+        Headliner: [29, 24, 36, 50],
+        // Backline's layout 1 measured (… --extra-lines=prompt): 47 binds at 390, where the foot's line is the frame's three lines.
+        Backline: [47, 32, 24, 50] },
       hint: 'The line where the picked date goes while none is picked: on the published page, '
           + 'until a visitor picks one, when the opening date is booked or has passed. Left empty, '
           + 'it shows “Pick a date to enquire” again.' },
@@ -3933,6 +3939,7 @@ export const FIELDS = {
     { k: 'cta',     l: 'Button', d: 'Check a date',
       in: { Lime: [3], Grunge: [3], Editorial: [3], Pop: [3], Lattice: [0, 3], Paperback: [0, 3], Headliner: [0, 3], Backline: [0, 3], '*': [0, 3] },
       // Paperback's Continue pill measured 34 (the 390 foot's width) and is held to 12 as Lattice's is, so the 768 foot's line keeps its room: a judgement call, the user's to overrule.
+      // Backline's layout-1 Continue measured 40 at 390 and is held to 12 as the three above are, so the 390 foot's line keeps its room: a judgement call, the user's to overrule.
       // Lattice's layout-1 Continue bar: measured 29 (box), held to 12 so the bar stays within a third of the 390 foot
       // and the enquiry line keeps its room (the frame's seat is 130 wide beside a 162 line); a judgement call.
       chars: { Retro: [24, null, null, 24], Lattice: [12, null, null, 24], Paperback: [12, null, null, 24], Headliner: [12, null, null, 24], Backline: [12, null, null, 24], '*': [null, null, null, 24] },
@@ -4775,6 +4782,9 @@ export const INLINE_MARKED = {
 export const INLINE_PART = {
   'map.listLabel': true,
   'calendar.time': true,
+  // `every`: the slot's one copy is drawn on more than one node, and each opens it. Backline's layout-1 calendar prints the start time on the
+  // picked day's ticket and again in the terminal line.
+  'Backline.0.calendar.time': 'every',
   'repertoire.songs.artist': true,
   // Layout 2 prints these inside a longer line: a bullet, an arrow or a count
   // beside the words (`32 reviews · 4.9 ★`, `Expand view→`). The words are
@@ -4904,7 +4914,9 @@ export const IDENTITY_CHARS = {
   // prints the playing video's title since (`videos.title`), and layout 2 none.
   calendar: {
     location: { Retro: [19, null, null, 67], Lime: [null, null, null, 64], Grunge: [null, null, null, 55],
-      Lattice: [19, null, null, 67], Paperback: [null, null, null, 29], Backline: [60, null, null, 67], '*': [null, null, null, 67] },
+      Lattice: [19, null, null, 67], Paperback: [null, null, null, 29],
+      // Backline's layout-1 ticket measured 48 at 390 (limits.mjs --extra-lines=who.location: the town takes two lines).
+      Backline: [48, null, null, 67], '*': [null, null, null, 67] },
     seal: { Retro: [19] },
   },
   footer: {

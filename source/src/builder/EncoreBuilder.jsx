@@ -1908,8 +1908,6 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
           // Backline's layout-1 ticket prints the day in its own form, the frame's `thu 12 june 9:00pm` (the block lower-cases it), composed here like the line.
           stub: gone || !ticketDay ? '' : cased([`${CAL_DAYS[weekdayOf(y, mo, d)]} ${d} ${MONTHS[mo]}`, String(time ?? '').trim()].filter(Boolean).join(' ')),
         })
-        // …and its width in TT2020's ems, so the ticket can keep it to one line.
-        if (ticketDay && !gone) cells[cells.length - 1].stubEms = +ttEms(cells[cells.length - 1].stub).toFixed(3)
       }
       // `label` is the one line layouts 1 draws; layout 3's head columns the
       // same month apart — "JUNE" in the display face over "2025" in the body
@@ -7015,6 +7013,7 @@ export function inlineSlots(sec, themeName, artistName, all = false) {
     out.push({
       ...rest, group, id: slotId(sec, slot), off: off ?? null, head: !!head && off === head, lines,
       part: !!inlineRule(INLINE_PART, themeName, design, group) || !!slot.line,
+      every: inlineRule(INLINE_PART, themeName, design, group) === 'every',
       marked: !!inlineRule(INLINE_MARKED, themeName, design, group),
     })
   }
@@ -7588,6 +7587,9 @@ function inlineFieldAt(sec, wrap, target, pt, themeName, artistName) {
         } else if (lined && same.length === 1 && peers.length > 1) {
           // One slot, a line it is drawn on twice: Retro's byline and its pill both print a
           // lone `Hannah L.` once the role is emptied. Whichever node it is, it is that slot's.
+          mine = same[0]
+        } else if (slot.every && !lined && same.length === 1 && peers.length > 1) {
+          // One slot whose copy the page draws more than once (INLINE_PART's `every`): any of them is it.
           mine = same[0]
         } else if (same.length !== peers.length) mine = null
         if (n < 0 || !mine || mine !== slot) continue
