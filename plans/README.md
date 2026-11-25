@@ -70,7 +70,7 @@ plans/
   headliner/
     layout-1.md   ← an eighth template, "Headliner Structured", from the same Batch 2 file (closed 2026-11-24)
   backline/
-    layout-1.md   ← a ninth template, "Backline Evolved" (torn-paper scrapbook, TT2020 typewriter), from the same Batch 2 file (planned 2026-11-24)
+    layout-1.md   ← a ninth template, "Backline Evolved" (torn-paper scrapbook, TT2020 typewriter), from the same Batch 2 file (closed 2026-11-25)
   paperback/
     layout-1.md   ← a seventh template, "Paperback Playful", from the same Batch 2 file (closed 2026-11-23)
   pop/
@@ -266,7 +266,7 @@ The header session also reads `header-nav.md` and `header-fit.md`.
 
 | Pass | Plan | Branch | Fitted |
 |---|---|---|---|
-| Layout 1 | [`backline/layout-1.md`](./backline/layout-1.md) | `backline-layout-1`, to fork from `main` (planned 2026-11-24; nothing in `source/` touched) | A ninth template from the *JustPay — Batch 2* file (`ORILFywSzuadscu6RzskCW`, frames *Backline Evolved — Claude Design*, desktop `1:5541`, tablet `1:17363`, mobile `1:18697`). The same eleven sections in Retro's order, as paper / dark-olive / moss / mustard bands joined by torn seams, with grain, taped and ticket-notched tilted cards, stamps and barcodes, set in **TT2020 Base** (a typewriter face not on Google Fonts), Archivo Condensed and Inter. Seven calls are handed over (copy removals, the hero's ticket and three-value height, the display face, casing, tear/grain art, name and flag, the ninth shoot); session 0 opens on calls 1–4. |
+| Layout 1 | [`backline/layout-1.md`](./backline/layout-1.md) | `backline-layout-1`, forked from `main` (closed 2026-11-25, swept, with the root `index.html` refreshed; push, PR and merge still open) | A ninth template from the *JustPay — Batch 2* file (`ORILFywSzuadscu6RzskCW`, frames *Backline Evolved — Claude Design*, desktop `1:5541`, tablet `1:17363`, mobile `1:18697`). The same eleven sections in Retro's order, as paper / dark-olive / moss / mustard bands joined by torn seams, with grain, taped and ticket-notched tilted cards, stamps and barcodes, set in **TT2020 Base** (a self-hosted typewriter face), Archivo at width 75 and Inter; the frames bind no variables, so every colour is sampled. Closed: session 0 (the foundation: the calls on the standing removals, the hero's ticket and heights, the face, casing, the art and the name), sections 1–11 one per session (every one an own tree, each with its caps, ledgers and three probes), and the 2026-11-25 sweep (session 12's whole-page proofs, docs and `CONVENTIONS.md` group I, the whole-page published check, the root `index.html` refreshed, themes 0–7 digest-identical). Layouts 2–4 and setup cards 2–4 are placeholders; the open calls are collected in the plan, with the tear and grain fixes proposed and not applied. |
 
 **Reading order in a Backline session:** `CLAUDE.md`, then the plan, then Headliner layout 1's *Session 0*, *Per-session
 procedure* and *Inherited and used*, Paperback layout 1 (the stage pattern), [`CONVENTIONS.md`](./CONVENTIONS.md) groups A, B, C, D1, F, G and H, Grunge layout 1's *Settled*

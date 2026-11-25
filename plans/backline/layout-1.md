@@ -549,6 +549,11 @@ After section 11 and session 12, in one session (Headliner's list is the model):
   **What cards 2–4 look like** is in *Open calls*; they are placeholders, and nothing was changed.
 - **`data-seam` and `data-underprint`** reach the published markup. A grep of `source/` finds one setter each (the
   footer's seam wrapper; the review stamp's rings) and one reader, `scripts/limits.mjs`.
+- **Item 7**: `build-digest.mjs`, the old root against the new build. **Themes 0–7: all 24 files identical** (eight
+  templates, three canvas widths). Theme 8's three files are new, and the setup modal's list gains its one row. The
+  root `index.html` is **16,243,656 bytes, +937,590 (0.94 MB)** on 15,306,066; session 0 read +613,306 before the
+  sections drew. The new root publishes Backline's eleven sections at all three widths with no error and no sideways
+  overflow. `published.html` was already the same as `source/public/`'s.
 - **One shared-shadow fix** (`814acef`, section 7's item 7 and section 6's item 8). The desktop map ticket's
   `drop-shadow()` read 28 and 2 where the frame's SVG filter (`1:6137`) has deviations 14 and 1, which the narrow
   widths already used. Desktop pixels only; at 768 the ticket matches its master by eye.
