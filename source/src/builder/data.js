@@ -4201,7 +4201,8 @@ export const FIELDS = {
   form: [
     { k: 'image',    l: 'Portrait', type: 'image', aspect: [1, 1], in: [0, 1],
       hint: { '*': 'The round photo beside your name. Layouts 1 and 2 — layouts 3 and 4 draw no credit row.',
-        Headliner: 'The square photo beside your name. Layouts 1 and 2 — layouts 3 and 4 draw no credit row.' } },
+        Headliner: 'The square photo beside your name. Layouts 1 and 2 — layouts 3 and 4 draw no credit row.',
+        Backline: 'The tilted photo beside your name. Layouts 1 and 2 — layouts 3 and 4 draw no credit row.' } },
     // Layout 2's stage shot. The section's two photographs are the artist and
     // the scene — the header's pair the other way up,
     // this one's `image` having been the artist since layout 1 drew it as an

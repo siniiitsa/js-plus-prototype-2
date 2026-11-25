@@ -660,7 +660,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // Backline's layout-1 bio (1:5665 · 1:17466 · 1:18797) is a stage of its own (BacklineBio), the hero's shape: the frames' insets in cqw, so the root pads only the published tab's surplus.
   // The media (1:5736 · 1:17534 · 1:18870) joined it in section 3, the gallery (1:5934 · 1:17730 · 1:19066) in section 4, the repertoire (1:6031 · 1:17818 · 1:19154) in section 5, the map (1:6137 · 1:17928 · 1:19264) in section 6,
   // the pricing (1:6322 · 1:18100 · 1:19431) in section 7 and the calendar (1:6558 · 1:18328 · 1:19659) in section 8.
-  if (d === 0 && (cat === 'bio' || cat === 'media' || cat === 'gallery' || cat === 'repertoire' || cat === 'map' || cat === 'pricing' || cat === 'calendar') && T.name === 'Backline') vm.pad = `0px ${vm.surplus}`
+  if (d === 0 && (cat === 'bio' || cat === 'media' || cat === 'gallery' || cat === 'repertoire' || cat === 'map' || cat === 'pricing' || cat === 'calendar' || cat === 'form') && T.name === 'Backline') vm.pad = `0px ${vm.surplus}`
   // …and the media's (1:419 · 1:9052 · 1:10024): 129.43 top and foot at 1440 (x 0.82, 106.13), 77 at 768
   // and 58 at 390, the same content insets. The 390 master's head box starts 40 down (an import
   // artefact: the eyebrow row sits at y 98, not 58), so with the eyebrow removed the head takes
@@ -1671,7 +1671,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // The map's town (`manchester.`, TT2020, one line in the room the stamp leaves, wrapping at a space) is fitted the same way.
   // The pricing's head (`choose the set that's right for your night.`, TT2020, three lines in the room the tabs leave) is fitted the same way.
   // The calendar's head (TT2020, wrapping in its column) is fitted the same way.
-  if (T.name === 'Backline' && (cat === 'bio' || cat === 'media' || cat === 'gallery' || cat === 'repertoire' || cat === 'map' || cat === 'pricing' || cat === 'calendar') && d === 0) {
+  // The form's statement (TT2020, wrapping in its panel, the last word pale) is fitted the same way.
+  if (T.name === 'Backline' && (cat === 'bio' || cat === 'media' || cat === 'gallery' || cat === 'repertoire' || cat === 'map' || cat === 'pricing' || cat === 'calendar' || cat === 'form') && d === 0) {
     vm.titleWordEms = +Math.max(0, ...vm.title.split(/\s+/).map((w) => ttEms(w))).toFixed(3)
   }
   // The calendar's head is two lines at the middle word (the gallery's and the pricing's rule), so what it fits is its widest *line*, not its widest word:

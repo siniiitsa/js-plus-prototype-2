@@ -33039,6 +33039,219 @@ function HeadlinerForm({ s, g }) {
   )
 }
 
+// Backline's layout-1 form (1:6725 · 1:18496 · 1:19825): two abutting cards on the paper, a dark panel turned -0.6 degrees and the paper form turned 0.4,
+// each with the calendar card's pair of shadows. `py` / `side` are the section's insets, `p*` the panel's padding, `f*` the form's (asymmetric in the
+// frames), `head` the statement's size in a `headW` measure, and `sentH` the form's own content height, held by the sent state.
+const BACKLINE_FORM = {
+  desktop: { fw: 1440, py: 112, side: 48.96, px: 40, pt: 40, head: 50, headW: 367, fl: 56, fr: 40, sentH: 449, sentHead: 40 },
+  tablet: { fw: 768, py: 89.99, side: 26.11, px: 30, pt: 34, head: 40, headW: 656, fl: 42, fr: 30, sentH: 449, sentHead: 34 },
+  mobile: { fw: 390, py: 67, side: 24, px: 20, pt: 28, head: 33, headW: 302, fl: 28, fr: 20, sentH: 663, sentHead: 28 },
+}
+function BacklineForm({ s, g }) {
+  const { at, setAt, msg, setMessage, ti, setType, showTypes, errs, msgBad, sent, setSent, Pill, pillLink, onSubmit, cp, pid } = g
+  const dev = s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop'
+  const P = BACKLINE_FORM[dev]
+  const desk = dev === 'desktop'
+  const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
+  const paper = s.onScheme[1]
+  const olive = s.onScheme[2]
+  const ink = paper.text1              // #23240F: the underlines, the chips, the lit chip's ground
+  const green = paper.text3            // #6F630A: the labels, the button, a refused box's rule
+  const cream = paper.box1             // sem/box/1 #F5F6E8: the panel's type, the lit chip's and the button's (s.text1 is ink on this paper seat)
+  const beige = s.chips[5].bg          // sem/tag/5/bg #C7C59F: the role line and the statement's last word
+  const tearId = useId().replace(/:/g, '')
+  const label = (size, extra) => ({ fontFamily: s.label, fontWeight: 700, fontSize: size, letterSpacing: '0.06em', textTransform: 'uppercase', lineHeight: 'normal', ...extra })
+  // TT2020 for the promises, the boxes and the sent state, as typed: only the statement and the sent head are lower-cased (a visitor's own words never are).
+  const typed = (size, extra) => ({ fontFamily: s.display, fontWeight: 400, fontSize: size, letterSpacing: '-0.02em', lineHeight: 'normal', ...extra })
+  const lift = `0 ${u(1)} ${u(1)} 0 rgba(35, 36, 15, 0.18), 0 ${u(14)} ${u(26)} ${u(-16)} rgba(35, 36, 15, 0.55)`
+  const heading = (size) => ({ margin: 0, fontFamily: s.display, fontWeight: 400, fontSize: size, lineHeight: 0.9, letterSpacing: '-0.045em', textTransform: 'lowercase', overflowWrap: 'break-word' })
+  const arrow = (
+    <svg aria-hidden viewBox="0 0 15.8906 12" fill="none" style={{ display: 'block', flex: 'none', width: u(15.8906), height: u(12), overflow: 'visible' }}>
+      <path d="M0 6H13.9043M8.93846 10.9658L13.9043 6L8.93846 1.03419" stroke={cream} strokeWidth="1.98633" />
+    </svg>
+  )
+  const button = (text, as, tagProps, extra) => (
+    <BacklinePill
+      s={s} u={u} bg={green} ink={cream} label={<>{text}{arrow}</>} as={as} tagProps={tagProps}
+      style={{ justifyContent: 'space-between', gap: u(16), minWidth: u(140), maxWidth: '100%', padding: `0 ${u(12)}`, ...extra }}
+    />
+  )
+
+  const caption = (t, extra) => <span style={label(u(13), { display: 'block', lineHeight: u(13.8), letterSpacing: '0.055em', color: green, overflowWrap: 'anywhere', ...extra })}>{t}</span>
+  // One box for both modes: no box at all but its underline, 1 px of ink. A refused one changes colour and weight on that one edge (no palette has a
+  // red, and a ring would add three edges the idle mark has not): the rule turns olive and a 1 px inset under it makes 2, so the 44 holds.
+  const box = (bad, extra) => ({
+    boxSizing: 'border-box', width: '100%', minWidth: 0, margin: 0, height: u(44), padding: `0 ${u(2)}`, outline: 'none', borderRadius: 0,
+    border: 'none', borderBottom: `1px solid ${bad ? green : ink}`, background: 'transparent', color: ink, boxShadow: bad ? `inset 0 -1px 0 ${green}` : undefined,
+    ...typed(u(18)), ...extra,
+  })
+  // The canvas draws a hint at `::placeholder`'s .45 (index.css), which is what the live box draws.
+  const hint = (t) => <span style={{ opacity: 0.45, minWidth: 0, whiteSpace: 'nowrap', overflow: 'hidden' }}>{t}</span>
+
+  // A row's two boxes share a baseline: the captions grow upward from it, so a label that wraps does not part the two underlines.
+  const field = (f, i) => {
+    const bad = !!(errs && errs.f[i])
+    return (
+      <div key={i} style={col(u(6.2), { minWidth: 0, justifyContent: 'flex-end' })}>
+        {f.label && caption(f.label)}
+        {s.live ? (
+          <input
+            {...cp(i)}
+            value={at(i)} placeholder={f.placeholder} aria-label={f.label || f.placeholder}
+            onChange={(e) => setAt(i, e.target.value)}
+            type={f.kind === 'email' ? 'email' : 'text'}
+            inputMode={f.kind === 'number' || f.kind === 'date' ? 'numeric' : undefined}
+            aria-invalid={bad || undefined}
+            style={box(bad)}
+          />
+        ) : (
+          <span style={box(bad, { display: 'flex', alignItems: 'center' })}>{hint(f.placeholder)}</span>
+        )}
+      </div>
+    )
+  }
+  const fieldRow = (fs, r) => (
+    <div key={r} style={{ display: 'grid', columnGap: u(24), rowGap: u(20), gridTemplateColumns: s.mob ? 'minmax(0, 1fr)' : 'repeat(2, minmax(0, 1fr))' }}>{fs.map((f, j) => field(f, r * 2 + j))}</div>
+  )
+
+  // The statement: its last word pale, as the frames colour `unforgettable.`; a one-word heading is all cream. It wraps by its measure, which gives each
+  // master's own breaks, and is fitted to its widest word (`ttEms`: monospaced, so a character count).
+  const title = String(s.title ?? '').trim()
+  const cut = title.search(/\s\S+$/)
+  const lead = cut < 0 ? title : title.slice(0, cut + 1)
+  const tail = cut < 0 ? '' : title.slice(cut + 1)
+  const nameLine = String(s.brand || '').trim()
+  const roleLine = String(s.kicker || '').trim()
+
+  // A promise: the frame's cross, drawn 11 across (TT2020 has no glyph for it, so the pricing card's path) beside TT2020 15 at 21 in, under a dashed rule.
+  const cross = (
+    <svg aria-hidden viewBox="0 0 9 9" fill="none" style={{ display: 'block', flex: 'none', width: u(11), height: u(11), marginTop: u(3.5), overflow: 'visible' }}>
+      <path d="M0.8 0.8L8.2 8.2M8.2 0.8L0.8 8.2" stroke={cream} strokeWidth="1" />
+    </svg>
+  )
+
+  const surface = { position: 'relative', minWidth: 0, boxSizing: 'border-box' }
+  const panel = (
+    <div style={{ ...surface, display: 'flex', flexDirection: 'column', transform: 'rotate(-0.6deg)', background: BL_PRICE_DARK, boxShadow: lift, padding: `${u(P.pt)} ${u(P.px)}` }}>
+      <BacklineGrain src={s.backlineGrain} tone="olive" opacity={0.29} />
+      {/* the polaroid and the artist: the photograph is the form's own `image` */}
+      <div style={{ ...row(u(14), { minWidth: 0 }), position: 'relative' }}>
+        <span style={{ display: 'block', flex: 'none', boxSizing: 'border-box', width: u(58), height: u(64), padding: u(4), background: BL_CARD, boxShadow: lift, transform: 'rotate(-4deg)' }}>
+          <span style={{ display: 'block', width: '100%', height: '100%', overflow: 'hidden' }}>
+            <Photo s={s} ink={ink} initialsSize={Math.round(20 * (desk ? 0.82 : 1))} style={{ background: paper.box3 }} />
+          </span>
+        </span>
+        {(nameLine || roleLine) && (
+          <span style={col(u(4.05), { minWidth: 0 })}>
+            {nameLine && <span style={label(u(13), { lineHeight: u(14.95), color: cream, overflowWrap: 'anywhere' })}>{nameLine}</span>}
+            {roleLine && <span style={label(u(11), { lineHeight: u(12.65), color: beige, overflowWrap: 'anywhere' })}>{roleLine}</span>}
+          </span>
+        )}
+      </div>
+      {!!title && (
+        <h2 style={{ ...heading(s.titleWordEms ? `min(${u(P.head)}, calc(${u(P.headW)} / ${s.titleWordEms}))` : u(P.head)), position: 'relative', margin: `${u(24)} 0 0`, color: cream }}>
+          {lead}{!!tail && <span style={{ color: beige }}>{tail}</span>}
+        </h2>
+      )}
+      {s.formPromises.length > 0 && (
+        // stretched to the form card at 1440, so the list stands on the panel's foot; stacked, the panel is its own height
+        <div style={{ position: 'relative', marginTop: 'auto', paddingTop: u(24) }}>
+          {s.formPromises.map((p, i) => (
+            <div key={i} style={row(u(10), {
+              alignItems: 'flex-start', boxSizing: 'border-box', minHeight: u(37), padding: `${u(10)} 0 ${u(9)}`,
+              backgroundImage: `repeating-linear-gradient(90deg, ${BL_RULE} 0 ${u(2)}, transparent ${u(2)} ${u(3)})`, backgroundSize: '100% 1px', backgroundRepeat: 'no-repeat',
+            })}>
+              {cross}
+              <span style={typed(u(15), { lineHeight: u(18), color: cream, minWidth: 0, overflowWrap: 'anywhere' })}>{p}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+
+  const body = sent ? (
+    // The form card alone; the panel does not move, and the card keeps its height. `sent` is only ever set under s.live, so the canvas never draws it.
+    <div style={col(u(16), { position: 'relative', minHeight: u(P.sentH), alignItems: 'flex-start' })}>
+      <h3 style={{ color: ink, ...heading(u(P.sentHead)) }}>{s.formSentTitle}</h3>
+      <p style={typed(u(17), { margin: 0, lineHeight: 1.5, color: ink })}>{s.formSentBody}</p>
+      {/* Plain text, Retro's reason: the fallback for a browser that opened nothing. */}
+      <span style={typed(u(18), { lineHeight: 1.5, color: green, overflowWrap: 'anywhere' })}>{s.formEmail}</span>
+      {button(s.formAgain, 'span', { onClick: () => setSent(false) })}
+    </div>
+  ) : (
+    <div style={col(u(20), { position: 'relative' })}>
+      {s.formRows.map(fieldRow)}
+      {showTypes && (
+        <div style={col(u(8))}>
+          {caption(s.formTypeLabel, { lineHeight: u(18) })}
+          <div style={row(u(6), { flexWrap: 'wrap', rowGap: u(6) })}>
+            {s.formTypes.map((t, i) => {
+              const on = i === ti
+              return (
+                <span key={i} onClick={s.live ? () => setType(i) : undefined} style={{
+                  ...label(u(13)), boxSizing: 'border-box', maxWidth: '100%', minHeight: u(40), padding: `${u(4)} ${u(16)}`, display: 'inline-flex', alignItems: 'center',
+                  border: `1px solid ${ink}`, background: on ? ink : 'transparent', color: on ? cream : ink,
+                  overflowWrap: 'anywhere', cursor: s.live ? 'pointer' : undefined,
+                }}>{t}</span>
+              )
+            })}
+          </div>
+        </div>
+      )}
+      <div style={col(u(6.2))}>
+        {caption(s.formMsgLabel)}
+        {s.live ? (
+          <textarea
+            {...cp('msg')}
+            value={msg} placeholder={s.formMessage} aria-label={s.formMsgLabel}
+            onChange={(e) => setMessage(e.target.value)}
+            style={box(msgBad, { display: 'block', height: u(109), padding: `${u(desk ? 6 : 5)} ${u(2)} 0`, lineHeight: u(32), resize: 'none' })}
+          />
+        ) : (
+          <span style={box(false, { display: 'block', height: u(109), padding: `${u(desk ? 6 : 5)} ${u(2)} 0`, lineHeight: u(32), overflow: 'hidden' })}><span style={{ opacity: 0.45 }}>{s.formMessage}</span></span>
+        )}
+      </div>
+      <div style={col(u(12), { alignItems: 'flex-start' })}>
+        {button(s.formBtn, Pill, { ...pillLink, onClick: onSubmit }, { cursor: onSubmit ? 'pointer' : undefined })}
+        {errs && (
+          <span id={pid} role="alert" style={typed(u(15), { lineHeight: 1.4, color: green })}>
+            {errs?.m?.find(Boolean) || errs?.msg?.m || s.formPrompt}
+          </span>
+        )}
+      </div>
+    </div>
+  )
+
+  const card = (
+    <div style={{ ...surface, transform: 'rotate(0.4deg)', background: BL_TICKET, boxShadow: lift, padding: `${u(40)} ${u(P.fr)} ${u(39)} ${u(P.fl)}` }}>
+      <BacklineGrain src={s.backlineGrain} tone="paper" opacity={0.5} />
+      {body}
+      {/* the tape on the top-right corner: its middle 100 in from the right and 2 under the edge at every width; stacked, it straddles the seam. It takes no click. */}
+      <BacklineTape colour={paper.box3} width={u(120)} style={{ position: 'absolute', right: u(40), top: u(-14), transform: 'rotate(5deg)' }} />
+    </div>
+  )
+
+  return (
+    <div style={{ position: 'relative', containerType: 'inline-size', overflow: 'hidden', background: s.bg, margin: `0 calc(-1 * ${s.surplus})`, padding: `0 ${s.surplus}` }}>
+      <BacklineGrain src={s.backlineGrain} tone="paper" />
+      <div style={{ position: 'relative', boxSizing: 'border-box', padding: `${u(P.py)} ${u(P.side)}` }}>
+        <div style={{ display: 'grid', gridTemplateColumns: desk ? 'minmax(0, 1fr) minmax(0, 2fr)' : 'minmax(0, 1fr)', alignItems: 'stretch', ...WRAP_LONG }}>
+          {panel}
+          {card}
+        </div>
+      </div>
+      {/* the torn head: the calendar's olive above, the `form` contour (r 0.996 against this master's own raster at no shift); a narrow frame is the same contour cropped from the left at 1:1 */}
+      <div style={{ position: 'absolute', left: 0, right: 0, top: u(-1), height: u(88), pointerEvents: 'none' }}>
+        <BacklineTear
+          tear="form" colour={olive.bg} id={tearId} height={u(88)}
+          style={s.narrow ? { width: u(1440), maxWidth: 'none' } : undefined}
+        />
+      </div>
+    </div>
+  )
+}
+
 function EnquiryForm({ s }) {
   // What the visitor has typed, gated on `s.live` throughout: on the canvas
   // every box is the span it has always been (§12.7), because a live field
@@ -33152,6 +33365,9 @@ function EnquiryForm({ s }) {
   // Lattice's layout-1 form is a block of its own (LatticeForm), after the seam: every piece of the live
   // seam above goes over in `g`, so the published boxes, chip, mailto, refusal and sent state are the one
   // seam in a new picture.
+  if (s.v0 && s.limeTree && s.backline) {
+    return <BacklineForm s={s} g={{ at, setAt, msg, setMessage, ti, setType, showTypes, errs, msgBad, sent, setSent, Pill, pillLink, onSubmit, cp, pid }} />
+  }
   if (s.v0 && s.limeTree && s.headliner) {
     return <HeadlinerForm s={s} g={{ at, setAt, msg, setMessage, ti, setType, showTypes, errs, msgBad, sent, setSent, Pill, pillLink, onSubmit, cp, pid }} />
   }
