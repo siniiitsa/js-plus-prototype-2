@@ -143,7 +143,10 @@ for (const k of (opt('no-floor', '') || '').split(',').filter(Boolean)) FLOOR[k]
 // --no-floor=heading still lets it shrink without bound.
 const FLOOR_AT = { 'bio.heading': { Lime: [0], Editorial: [0], Pop: [0, 3], Lattice: [0], Paperback: [0], Headliner: [0] },
   // Headliner's calendar head is fitted to the room left of the up arrow at 768 and 390 (plans/headliner/layout-1.md, section 8): it sets down to 75 % before it wraps.
-  'calendar.heading': { Headliner: [0] } }
+  'calendar.heading': { Headliner: [0] },
+  // Backline's testimonials score steps from 12 to 10 px past three characters, so `4.95/5` clears the stamp's inner ring
+  // (plans/backline/layout-1.md, section 10). The step is the page's, so the cap of 4 holds with it.
+  'testimonials.rating': { Backline: [0] } }
 const shrinkFloor = (p, themeName, a) => fitted(p) ? 0.5 : FLOOR[p.key] ?? (FLOOR_AT[`${p.cat}.${p.key}`]?.[themeName]?.includes(a) ? 0.75 : 1)
 // A repeater's list count whose chip row is the union over every row (session 5).
 const UNION_COUNT = new Set(['songs.tags#'])
