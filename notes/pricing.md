@@ -384,8 +384,8 @@ seam's. The stage pattern: `BACKLINE_PRICING`, an `inline-size` container, the f
 1135.3 / 1595 / 2196.4 against 1135.38 / 1595 / 2196.50.
 
 - **The band** is Scheme 1's paper (the pricing has no `SCHEMES_OF.Backline` row) with paper grain, under a **moss torn head** (the map's
-  ground) drawn 1 above the band. It takes `tone="paper"` although it is not paper: the master's fibres read about 230 against the body's
-  130, which is the .8 fringe, where the dark tone's .27 would read about 162. The narrow widths draw the 1440 contour cropped from the left.
+  ground) drawn 1 above the band. It takes `ground="moss"`: the moss fibres are nearly as pale as the paper they lie over (about 230
+  against the body's 151; every fringe is the frames' own fibre colour at .82 over the band below, `backlineArt.jsx`). The narrow widths draw the 1440 contour cropped from the left.
 - **The head** is TT2020 at 77.76 / 48 / 38 on an `8.205em` measure, which reproduces all three masters' breaks, with the **last two
   words olive** (the media's rule: three or more words). It is fitted by `vm.titleWordEms` (`ttEms`). The seed is the frame's, with its
   full stop (`PRICING_HEADING_BACKLINE`, in `sectionVm` and `fieldSeed`).

@@ -191,7 +191,7 @@ Frames `1:6031` · `1:17818` · `1:19154` (1067 / 1067 / 1532.94 tall). An own t
 count (`g.title`, which follows a chip and the search) are `Repertoire`'s, handed over in `g`. **Four seam conditions name Backline** (the dispatch; `perPage` 12 at every width; `columns` two at 768;
 `pageWindow`'s keep-4 at all three widths: the 390 frame draws `1 2 3 … 20` as the others do). **The 390 master is one column of twelve rows** (298 wide, 28 between, a 342 x 1073 card); 768 keeps two columns of 297.
 
-- **A dark olive band** (Scheme 2, the root's own ground, olive grain) **under a torn paper head**: `BacklineTear tear="repertoire"` in `s.onScheme[1].bg`, `tone="paper"`, 88 tall and 1 px above the band, `u(1440)` wide
+- **A dark olive band** (Scheme 2, the root's own ground, olive grain) **under a torn paper head**: `BacklineTear tear="repertoire"` in `s.onScheme[1].bg`, `ground="paper"`, 88 tall and 1 px above the band, `u(1440)` wide
   and clipped at the narrow widths. **The contour is a fifth traced path** (`BACKLINE_TEARS.repertoire`, 7.0 KB). The section-1 correlation test on the master's 88 px raster against the four held:
   **the repertoire's strip is the head's, shifted 148 px** (`rep[x] = head[x - 148]`, 1.000 over 1,292 columns) and the media's is the head's shifted the other way (`media[x] = head[x + 498]`): the head, media and
   repertoire rasters are windows of one longer torn strip, and the gallery's and the form's match nothing (best 0.70 and 0.74). The new path is traced whole (per-column lowest opaque row, RDP at 0.5 px) rather than composed from the

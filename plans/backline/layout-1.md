@@ -561,7 +561,7 @@ After section 11 and session 12, in one session (Headliner's list is the model):
   `drop-shadow()` read 28 and 2 where the frame's SVG filter (`1:6137`) has deviations 14 and 1, which the narrow
   widths already used. Desktop pixels only; at 768 the ticket matches its master by eye.
 
-**The parked judgements.** Judged on renders beside the masters and on the tears' own rasters (Figma's `1:5547`,
+**The parked judgements.** *(Acted on the same day: see* The tear and grain fixes*, below the table.)* Judged on renders beside the masters and on the tears' own rasters (Figma's `1:5547`,
 `5933`, `6030`, `6136`, `6321`, `6557`, `6724`, `6809`, `6866`, `6923`). **None of the shared kit was changed.** The
 trials below were CSS laid over the published page in headless Chromium at 1440; the narrow widths and Safari were not
 tried.
@@ -625,13 +625,65 @@ tried.
 Any of these changes Backline's pixels only, and needs a Backline digest and **another refresh of the root
 `index.html`**.
 
+### The tear and grain fixes (2026-11-25, after the sweep)
+
+The user approved five of the table's changes and asked for the flat strip to be tried at about .55 on paper and shown before it is kept.
+Five commits (`826a7b5` to `328597f`), all in `backlineArt.jsx` and `Backline*` blocks.
+
+| Change | As built |
+|---|---|
+| Round joins | `strokeLinejoin="round"` on the shadow and the fringe. The spikes are gone. |
+| Fringe width per ground | `BacklineTear` takes `ground` (the strip's own body) in place of `tone`: 10 paper, 11 mustard, 12 moss, 13 olive |
+| Fibres at .82 over the band below | the stroke is opaque, in `.82 x fibre + .18 x below`. **Fibre colours read off the ten tear rasters** (all at alpha .819): `#F7F8EF` paper, `#F2F0D2` mustard, `#EBE9CE` moss, `#797B5A` olive. `below` is each section's `s.bg`; the header's foot lies over the photograph and passes ink (`#23240F`; the master reads `#232310` there, ours `#21210F`). This one formula gives the table's .38 (olive over paper) and about .30 (over moss). |
+| Invert the olive grain | `filter: invert(1)` on `BacklineGrain`'s olive tone, bands and nested dark cards alike (all three nested surfaces carry light flecks in Figma too) |
+| Grain at frame size | `size={u(192)}` at all 22 calls. Computed: 157.33 px at the published 1440's 1.22 zoom, 192 at 768 and 390. |
+| Olive strength, re-checked | **.21 to .175.** At frame size .21 read strong at all three widths: .165 / .194 / .170 from 34 x 40 gutter blocks at 1440 / 768 / 390, .177 from larger patches. At .175 the large patches read sd 3.80 to 3.95 against Figma's 3.75 to 4.03. **The tile's sd varies across its 192 px** (one band's left gutter reads 3.90, its right 4.61), so a narrow gutter misleads. |
+
+**Against Figma, on renders at 1440, 768 and 390** (headless Chromium, the published tab, beside the masters). Behind the edge the fibre
+profiles now read 208 against 207 to 209 on the header, 215 against 214 to 216 on the media, and 139 against 137 to 141 on the gallery and
+form. Paper's sd went from 3.36 to 4.28 on the sweep's four gutters (Figma 4.37 to 4.64); moss and mustard land within about .3. No edge
+was moved, and every section's height is unchanged.
+
+**Safari.** The Safari app could not be driven: `safaridriver` needs `--enable`, which asks for a password. Instead the preview harness was
+rendered in `WKWebView`, the system WebKit of Safari 27.0.1 (a Swift snapshot script). `invert` with `overlay`, the `cqw` tile size and the
+round joins all take. With the trial strip in, five seams (form, media and pricing at desktop, the footer at 390, the gallery at 768) matched
+Chromium's by eye, and their strip and band patches agreed on mean within .2 and sd within .25. **The Safari app itself and the published
+popup in Safari are untested.**
+
+**Proofs.** `limits.mjs --themes=8 --designs=0`: `--seeds` 0 over. `--check` with no flags reports 7 failing, **and `32db25e`, served from a
+worktree, reports the same 7 with the same lines** for those four sections (repertoire, pricing, calendar, testimonials): they are fields
+the sections measured with `--extra-lines` or `--upright`. With `--upright --extra-lines=songs.title,tiers.name,rowCta,time,prompt,who.location,quotes.when`
+those four read 0 failing. `build-digest.mjs`, old root against new build: **themes 0–7, all 24 files identical, and the modal's list**;
+theme 8's geometry is identical at three widths, and each file differs in 5 lines, the olive grain's opacity. It records no filter, tile
+size or stroke, so the renders above are the proof of those. **The script's fixed 700 ms wait caught the canvas mid-resize** on two walks
+(Lime, Grunge and Pop mobile at 391 to 442 px wide, in the unchanged build too); the clean run is from a scratch copy that waits until two
+reads 600 ms apart are identical. The root `index.html` is **16,244,412 bytes**, 756 more; `published.html` was already current.
+
+**The strip trial: shown to the user, not committed.** It is the `git stash` entry *"Backline strip-grain trial"*: `BacklineTear` takes
+`grain`, draws the tile as an SVG pattern over its body under `overlay` at `STRIP_GRAIN` (paper .55; olive .175, moss .15, mustard .21,
+scaled to the frames' strips), and inverts olive with an **SVG filter in sRGB**, since WebKit applies no CSS filter to a shape inside an
+svg. At .55 the flat stripe is gone and no edge moves. On the media's patch paper reads sd 4.2 beside a band of 4.5 to 5.4 (Figma's strips
+read 3.3 on paper and 3.4 to 4.2 elsewhere, so it is a little strong by this one narrow patch). The pattern's phase does not meet the band
+above. It repeats the tile's data URI once a seam in the published DOM. **If it is kept**, re-run `limits.mjs` (the layer may read as an
+image box in a section's head), the digest and the root refresh.
+
+**What still differs from the frames** (seen on these renders, nothing changed)
+
+- Figma's fibres are streaked and fade softly on their inner side; ours are an even band, most visibly on pricing, the gallery and the form.
+- **The gallery's film strip** is nearly flat in Figma (sd 0.60 on its top margin) and ours is grained (sd 1.71; 2.08 before the olive
+  strength came down).
+- **The hand-set card grains** (.5 on paper cards, .29 on the form's panel and pricing's olive card, pricing's others) were left as they
+  were. At 1440 the paper cards read sd 3.6 to 4.0 against 4.0 to 4.7, the form's panel 3.3 against 3.8, pricing's olive card 3.0
+  against 4.7. These are narrow patches, so treat them as rough.
+
 ### Open calls — everything the pass hands the user, in one place
 
 *(Collected at the sweep from the sections' lists, which hold the detail; **s5.2** is section 5's item 2.)*
 
 **To decide first**
 
-- **The tear and grain fixes** in the table above (s6.7, s7.5, s8.6, s8.7, s9.5, s9.8, s10.8, s11.9).
+- **Keep the grained strip, or not** (*The tear and grain fixes*; the other fixes in the sweep's table, s6.7 to s11.9, are built). With it,
+  three smaller gaps listed there: the streaked fibres, the gallery's film strip and the card grains.
 - **Card 2's covered player buttons** at desktop width, a fault of Backline's alone (*the record*, item 5).
 - **Layouts 2–4's caps are not measured.** 22 specs (85 seats) still reach Pop's row and 43 (94 seats) carry numbers
   written out equal to Pop's (*Session 12 — the record*). Measuring them waits on your word.

@@ -806,17 +806,20 @@ The frames bind no variables (each section's only fill is a grain raster), so ev
   dark olive media, paper gallery, dark olive repertoire, moss map, paper pricing, dark olive calendar, paper form, mustard testimonials,
   dark olive footer. The page's own ground (the gutter past 1440) is paper.
 - **Every seam is torn**: no straight edge, arc or wave. The tear is drawn by the band **below** (the hero's foot is the one drawn by the
-  band above), an 88 px strip in the neighbour's colour with a pale fibre fringe (`tone="paper"` .8 of `#FFFFF5`, otherwise .27 of
-  `#FAFAEE`) and a soft shadow. The strip's paper side is one flat colour. The bio draws no tear of its own.
-- **Grain on every band but the hero**, one 192 px tile under `overlay` (`GRAIN_OPACITY`: paper .75, olive .21, moss .18, mustard .28).
-  It is calibrated to the frames' standard deviation, and carries none of their soft mottle.
-- **Known gaps against the frames, judged at the sweep and not changed** (they are shared kit; figures and costs in the
-  plan's *The sweep — the record*): the **olive** bands' grain is inverted (the frames carry light flecks there, dark
-  specks on paper); **on desktop the tile is drawn 22 % large** (192 CSS px, not `u(192)`), which is what blurs the
-  paper grain; the tears' fibres are opaque and 4 px wide where the frames' are about 82 % opaque and 5 to 6.5;
-  the fringe stroke's miter joins make small spikes; and the strip above each tear has no grain. **The tear contours
-  themselves are within 0.75 px** of the frames' own rasters (nine seams at 1440; the calendar, form and footer at 768
-  and 390 too).
+  band above), an 88 px strip in the neighbour's colour with a pale fibre fringe and a soft shadow, both stroked with round joins. The fringe
+  is set by the strip's own `ground`: 10 units wide on paper, 11 on mustard, 12 on moss and 13 on olive (the clip shows half), in the frames'
+  fibre colour (`#F7F8EF`, `#F2F0D2`, `#EBE9CE`, `#797B5A`) painted opaque as .82 of it over `below`, the band under the tear (each section
+  passes `s.bg`; the header's flipped foot, over the photograph, passes ink `#23240F`). The strip's paper side is one flat colour. The bio
+  draws no tear of its own.
+- **Grain on every band but the hero**, one tile under `overlay`, drawn at 192 **frame** px (every call passes `size={u(192)}`; the tile is
+  one raster px to a frame px) and **inverted on the olive tone**, whose flecks are light in the frames (`GRAIN_OPACITY`: paper .75, olive
+  .175, moss .18, mustard .28). It is calibrated to the frames' standard deviation, and carries none of their soft mottle. **The tile's
+  strength varies across its own 192 px**, so measure it over many blocks, never over one narrow gutter.
+- **Known gaps against the frames** (the plan's *The tear and grain fixes*): the frames' fibres are streaked and fade softly on their inner
+  side, where ours are an even band; **the strip above each tear has no grain** (a trial is waiting on the user's word); the gallery's film
+  strip, nearly flat in the frame (sd 0.6), still carries grain (sd 1.7); and the small hand-set card grains (.5 on paper cards, .29 on the
+  two dark cards) were not retuned for the frame-size tile. **The tear contours themselves are within 0.75 px** of the frames' own rasters
+  (nine seams at 1440; the calendar, form and footer at 768 and 390 too).
 - **Turned, taped, ticket-notched cards** under small drop shadows. Turns are a fraction of a degree to 2 degrees. Notches are semicircle
   bites (`blNotchMask` on a turned box, `backlineNotch` on a chip). Everything else is square; only the stamps and the picked day are round.
 - **TT2020 Base** (monospaced typewriter, lower-cased by CSS where the frame types it so) for everything set big or long, tracked
@@ -834,7 +837,7 @@ The frames bind no variables (each section's only fill is a grain raster), so ev
   `mix-blend-mode: color`, opacity .55: the frame's `blend-color`), the **scrim** (the frame's two gradients: ink at .82 / .25 / .55 across, .9 up the foot to 55 %), then the tear. The wash and
   the scrim are `pointer-events: none` (the photo probe's "a scrim lets the click through"). Rendered against the frames' pictures the three widths agree to 1 level everywhere
   the removed LP ticket and polaroid are not.
-- **The tear** is `BacklineTear` (`tear="head"`, `flip`, the bio's paper `s.onScheme[1].bg`, `tone="paper"`), 88 tall and 1 px past the foot as the frame stands it. **The narrow tears are
+- **The tear** is `BacklineTear` (`tear="head"`, `flip`, the bio's paper `s.onScheme[1].bg`, `ground="paper"`, `below` ink), 88 tall and 1 px past the foot as the frame stands it. **The narrow tears are
   the desktop contour cropped from the left at 1:1, not squeezed** (correlation 1.000 / 0.995 against the first 768 / 390 columns; squeezed it is about 0): a narrow hero draws the svg `u(1440)` wide and lets the
   root clip it. A section after this one that draws a tear does the same.
 - **The bar** is the hamburger (`HeadlinerBurger`, whose path is the frame's byte for byte, reused) and `BacklinePill` (a mustard rectangle, 46 tall, 1 px border in its own colour, Archivo Backline 14 +.06em in ink; `bg` /
@@ -895,8 +898,7 @@ set on a render against the master's alpha edge (-0.2 px; mean offset -0.05, rms
 
 **The calendar** (`BacklineCalendar`, `EncoreSection.jsx`; own tree, dispatched in `Calendar()`'s own-tree line after the seam; notes/calendar.md *Backline · layout 1* holds the record; 2026-11-25): a dark olive band under a torn paper head, a taped paper month with the pick in a hand-drawn olive circle,
 the head (cream to the first comma, mustard after), a notched ticket for the picked day with the town and the media's barcode, and a dashed rule over the terminal line and Continue. **The tear is no new path**: `BACKLINE_TEARS.calendar = rotateTear(BACKLINE_TEARS.repertoire, 250)` (r 0.998 over all 1,440 columns,
-the ones that wrap included). On a render (`out` against the master's screenshot, the first row darker than luma 140 in each column) the edge reads 0.36 / 0.59 / 0.68 px lower than the master's at 1440 / 768 / 390, where the raster against the path reads 0.04; nothing was traced, so no bias was applied. **So the strips are 1440-periodic: test a new master against every contour at every shift modulo 1440**, not only over the overlap a plain window leaves. On this master the torn edge's fibres read about 215 against a 233 body, where `tone="paper"` paints about 250 (the kit's tone kept, as on the other
-cream-on-olive heads; only this master was measured: the sweep's).
+the ones that wrap included). On a render (`out` against the master's screenshot, the first row darker than luma 140 in each column) the edge reads 0.36 / 0.59 / 0.68 px lower than the master's at 1440 / 768 / 390, where the raster against the path reads 0.04; nothing was traced, so no bias was applied. **So the strips are 1440-periodic: test a new master against every contour at every shift modulo 1440**, not only over the overlap a plain window leaves. On this master the torn edge's fibres read about 215 against a 233 body (the kit's fringe, then about 250, was corrected after the sweep: the plan's *The tear and grain fixes*).
 
 **The form** (`BacklineForm`, `EncoreSection.jsx`; own tree, dispatched in `EnquiryForm` after the seam, ahead of Headliner's line; notes/form.md *Backline · layout 1* holds the record; 2026-11-25): paper (Scheme 1: no `form` row) under the calendar's olive torn with `tear="form"` (the key matches this master, r .996-.997; its edge reads about 2 frame px lower than the master's on a render, no bias applied),
 two abutting cards turned apart (-0.6 and +0.4 degrees), a dark olive panel (`BL_PRICE_DARK`, grain .29) beside the taped `BL_TICKET` paper form. **On a Scheme 1 section `s.text1` is ink**: cream type on a nested dark card there reads `s.onScheme[1].box1` (the calendar, on Scheme 2, reads `s.text1` as cream). No new art. **`BacklinePill` is one `nowrap` line**: a caller whose label the artist types at length lets it grow (`height: auto`, `minHeight`, `whiteSpace: normal`), and walks it, since `limits.mjs` does not see the arrow.

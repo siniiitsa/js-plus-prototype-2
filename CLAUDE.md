@@ -7,7 +7,7 @@ repeat it. What follows is only what a fresh session tends to get wrong.
 
 All source lives in **`source/`**. Two files at the repo root are *not* source:
 
-- **`index.html`** (~16.2 MB — most of it the inlined photography of all nine templates; 16,243,656 bytes after the Backline pass, +0.94 MB on the 15.31 MB the Headliner pass left, itself +0.72 MB on the 14.59 MB before it, which was +1.56 MB after the Paperback pass, on the 13.03 MB the Lattice pass left, +1.10 MB) is the generated
+- **`index.html`** (~16.2 MB — most of it the inlined photography of all nine templates; 16,244,412 bytes after Backline's tear and grain fixes, 756 more than the 16,243,656 its pass left, which was +0.94 MB on the 15.31 MB the Headliner pass left, itself +0.72 MB on the 14.59 MB before it, which was +1.56 MB after the Paperback pass, on the 13.03 MB the Lattice pass left, +1.10 MB) is the generated
   single-file build, committed so the demo is
   double-clickable. Never hand-edit it.
 - **`mock-template.html`** (~12 MB, untracked) is a reference artefact.
@@ -672,8 +672,9 @@ reversing 2026-10-20's "an already-selected section": the `text` cursor shows on
   mustard**: every band after the first stands under a **torn seam** in the band above's colour (`BacklineTear`, 88 frame px, a
   pale fibre fringe and a soft shadow; ten contours in `BACKLINE_TEARS`, most of them windows or rotations of a few 1440-periodic
   strips, so **test a new master against every contour at every shift modulo 1440 before tracing**; at 768 and 390 the strip is
-  the desktop contour cropped from the left at 1:1, never squeezed), each band carries **one 192 px grain tile** under `overlay`
-  (`BacklineGrain`, `GRAIN_OPACITY` per ground, `vm.backlineGrain`), and cards are turned, taped, ticket-notched
+  the desktop contour cropped from the left at 1:1, never squeezed), each band carries **one grain tile** under `overlay`,
+  192 **frame** px (`size={u(192)}`), inverted on olive (`BacklineGrain`, `GRAIN_OPACITY` per ground, `vm.backlineGrain`; a seam's fringe
+  takes its `ground` and the colour `below` it), and cards are turned, taped, ticket-notched
   (`blNotchMask` on a turned box, `backlineNotch` on a chip) with stamps, barcodes and hand marks. **The art carries no words
   the artist did not type** (session 0, call 1 A: every ticket-stub line with no field is **not drawn**, as are the hero's LP
   ticket, polaroid avatar, act type and location, and the footer's third link column and newsletter). The torn layer over a
