@@ -447,9 +447,12 @@ over in `g`, the same object as Lattice's, Paperback's and Headliner's; the bloc
 - **Caps** (2026-11-25, `limits.mjs form --themes=8 --designs=0 --upright`, then `--check` and `--seeds`: 0 failing, 0 over): `heading` **36** (the seed, a floor: 33 measured at 1440, where a fourth line sets;
   61 / 47 narrow), `fields.label` 41, `fields.placeholder` 30 (the 390 box clips), `typeLabel` / `messageLabel` 41, `message` 30, `button` **30**, `promises[]` 35 (9 rows; 16 measured, open), `types` 6 chips
   of the shared 15, identity `title` 60 and `kicker` 37. **The probe reads text, not an SVG**: while the pill was `nowrap` it passed 36 for the button with the arrow hanging out of the 390 button, so a
-  button's cap is walked as well as probed. Layouts 2-4 are Pop's rows, written out.
+  button's cap is walked as well as probed. Layouts 2-4 resolve as they did before the Backline rows (Pop's numbers written out, or the `'*'` row's where a spec has one:
+  `promises`, `types`, `button`); the resolved caps were compared old against new, identity keys included.
 - **`in` rows unchanged** (`reach`, theme 8, 1,152 renders: `image` 1-2, `button` / `message` / `messageLabel` 1 and 4, `promises` 1-2, `types` / `typeLabel` 1, `who.kicker` 1-2).
   `FIELDS.form.image`'s hint gained a Backline line.
 - **Ledgers**: none. `inline-probe` PASS (21 slots at 1440 and 768; 2 unhit, the header's name and role); `focus-probe --prime --check` PASS (27 controls a width); `photo-probe` `--check`, `--blank`,
   `--drop` PASS (the avatar, 1 slot).
+- **Checked outside the canvas**: in the builder's Preview at a 1900 px window the surplus goes to the gutters (the grid keeps the frame's 1343 px span, centred; paper and tear reach both edges). The cards'
+  shadow is the three nodes' own (`0 1px 1px` at .18, `0 14px 26px -16px` at .55). The paler button in a refused shot is the pointer's hover (.72), not the refusal.
 - **Placeholders draw at the global .45**, where the frame's `#757575` is about .57 of the ink on the card: `--ph` is the user's call.
