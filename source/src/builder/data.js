@@ -973,6 +973,130 @@ export const THEMES = [
       },
     },
   },
+  // Backline — the ninth template, from the same Batch 2 file as Lattice, Paperback and Headliner
+  // (JustPay — Batch 2, ORILFywSzuadscu6RzskCW; frames "Backline Evolved — Claude Design", desktop
+  // 1:5541, tablet 1:17363, mobile 1:18697; plans/backline/layout-1.md). The look is a torn-paper
+  // scrapbook in olive and mustard: paper and dark-olive bands alternate (a moss band and a mustard
+  // band once each), every seam a torn edge with a pale fibre fringe, every band grained, cards
+  // tilted, taped and ticket-notched. Every section's own fill is ONE image (the band's grain
+  // raster) and the nodes carry no variable modes, so each ground below is the colour the band
+  // RENDERS at, sampled off a full-page export at all three widths (session 0, 2026-11-24): olive
+  // `#4C4E29`, moss `#A7A03B` (token `#A9A23A`), mustard `#D2BD21` (token `#D4BE1E`) and paper
+  // `#EAECD7`, which is 11 levels under the `sem/box/1` / `sem/bg` token `#F5F6E8` that the cards
+  // and the cream type use (`box1` here). Scheme 1, paper, is the theme's own (the bio, the
+  // gallery, the pricing and the form stand on it); the header, media, video, repertoire, calendar
+  // and footer on 2 (olive), the map on 3 (moss), the testimonials on 4 (mustard); 5 is the paper
+  // CARD, read only by nested nodes — SCHEMES_OF.Backline. `palette` is [bg, ac, tx]: ac is
+  // `sem/active/bg` (mustard, ink on moss and mustard, where the frames' buttons are black) and tx
+  // `sem/text/2`. The file holds a dozen `sem` keys at most, so box 2–3, glow, the inactive pair,
+  // the strokes and the tag seats beyond the frames' are INFERRED and re-read by the section that
+  // draws them. `text3` is the frame's second ink, the olive `#6F630A` of the `.`, the underlines
+  // and the eyebrows on paper, and beige `#C7C59F` (sem/tag/5/bg) on the dark bands.
+  //
+  // The faces: TT2020 Base (font/display, and every body-sized run the frame sets in it — a free
+  // typewriter face under the SIL OFL 1.1, self-hosted in backline-fonts.css; monospaced at 0.547 em
+  // an advance, tracked -0.045 em by the frame at every size, which the Backline trees write per
+  // site, so `dls` stays 0 here), Archivo Condensed Bold (the labels: `Archivo Backline`, an
+  // @font-face alias on the Archivo file's wdth 75, +0.06 em tracking) and Archivo / Inter for UI
+  // and body. The frames set display copy lower-case in the source text and the labels upper-case
+  // by site, so casing is 'title' and a block transforms (call 4).
+  {
+    name: 'Backline',
+    sub: 'TT2020 · olive & mustard',
+    // The page's own ground: the paper of Scheme 1's band.
+    pageGround: '#EAECD7',
+    display: "'TT2020 Base', 'Courier Prime', monospace",
+    label: "'Archivo Backline', 'Archivo', sans-serif",
+    ui: "'Archivo', sans-serif",
+    body: "'Inter', sans-serif",
+    casing: 'title',
+    dls: '0px',
+    // The file binds no radius token: every box is a right angle, but the polaroids' keylines, the
+    // ticket notches (semicircle bites) and the round stamps. border/hairline 1, default 2, heavy 3.
+    radius: '0px',
+    radiusSm: '0px',
+    btnR: '0px',
+    bw: '1px',
+    radiusChip: '0px',
+    // Scheme 1's bg (as rendered) / sem/active/bg / sem/text/1.
+    palette: ['#EAECD7', '#D4BE1E', '#23240F'],
+    // The six chips' seats off the hero's Default / Sold out / New release / Archive / Live / All
+    // access, and a beige and an ink to round the seven: plain paper, mustard, moss, dark olive,
+    // pale, beige (sem/tag/5/bg, the tape) and ink. Inferred where the frame is silent.
+    tags: ['#F5F6E8', '#D4BE1E', '#A9A23A', '#4C4E29', '#EDF0DB', '#C7C59F', '#23240F'],
+    sem: {
+      box1: '#F5F6E8',                      // sem/box/1 — the paper card
+      box2: '#EDF0DB',                      // the pale fill of the stamps' and the avatar's seats
+      box3: '#D6D2A0',                      // the tape's beige (read at 80 %)
+      glow: '#D4BE1E',                      // inferred: sem/active/bg
+      activeBg: '#D4BE1E',                  // sem/active/bg
+      activeFg: '#23240F',                  // the mustard pills' ink
+      inactiveBg: '#F5F6E8',                // inferred: sem/box/1
+      inactiveFg: '#23240F',                // inferred: sem/text/1
+      inactiveLine: '#23240F',              // inferred: the dashed rules' ink
+      stroke1: '#23240F',                   // inferred: sem/text/1
+      stroke2: '#23240F',                   // inferred
+      hl: '#6F630A',                        // the olive of the underline and the scribbles
+      text1: '#23240F',                     // sem/text/1
+      text3: '#6F630A',                     // the olive `.`, eyebrows and underlines on paper
+      tagFg: ['#23240F', '#23240F', '#23240F', '#F5F6E8', '#23240F', '#23240F', '#F5F6E8'],
+    },
+    // Schemes 2–5, in Scheme 1's shape; a section is seated on one through SCHEMES_OF.Backline and a
+    // nested node reads `s.onScheme[n]`. Only the grounds and cream / ink are read; the rest inferred.
+    schemes: {
+      // Scheme 2, #4C4E29 — dark olive: the header, media, video, repertoire, calendar and footer.
+      2: {
+        palette: ['#4C4E29', '#D4BE1E', '#F5F6E8'],
+        // seat 3 is the hero's ARCHIVE chip, read off the 1440 / 768 / 390 renders (#363719); the rest of the six are the
+        // frames' own: ink (DEFAULT), mustard, moss, beige (LIVE).
+        tags: ['#F5F6E8', '#D4BE1E', '#A9A23A', '#363719', '#EDF0DB', '#C7C59F', '#23240F'],
+        sem: {
+          box1: '#5C5E36', box2: '#3E4022', box3: '#23240F', glow: '#D4BE1E',
+          activeBg: '#D4BE1E', activeFg: '#23240F',
+          inactiveBg: '#5C5E36', inactiveFg: '#F5F6E8', inactiveLine: '#EDEFDA',
+          stroke1: '#F5F6E8', stroke2: '#EDEFDA', hl: '#D4BE1E', text1: '#F5F6E8', text3: '#C7C59F',
+          tagFg: ['#23240F', '#23240F', '#23240F', '#F5F6E8', '#23240F', '#23240F', '#F5F6E8'],
+        },
+      },
+      // Scheme 3, #A9A23A — moss: the map (its gig rows are paper tickets, ink buttons).
+      3: {
+        palette: ['#A7A03B', '#23240F', '#23240F'],
+        tags: ['#F5F6E8', '#D4BE1E', '#4C4E29', '#23240F', '#EDF0DB', '#C7C59F', '#F5F6E8'],
+        sem: {
+          box1: '#F5F6E8', box2: '#EDF0DB', box3: '#4C4E29', glow: '#D4BE1E',
+          activeBg: '#23240F', activeFg: '#F5F6E8',
+          inactiveBg: '#F5F6E8', inactiveFg: '#23240F', inactiveLine: '#23240F',
+          stroke1: '#23240F', stroke2: '#23240F', hl: '#6F630A', text1: '#23240F', text3: '#6F630A',
+          tagFg: ['#23240F', '#23240F', '#F5F6E8', '#F5F6E8', '#23240F', '#23240F', '#23240F'],
+        },
+      },
+      // Scheme 4, #D4BE1E — mustard: the testimonials (a paper card, ink arrows).
+      4: {
+        palette: ['#D2BD21', '#23240F', '#23240F'],
+        tags: ['#F5F6E8', '#A9A23A', '#4C4E29', '#23240F', '#EDF0DB', '#C7C59F', '#F5F6E8'],
+        sem: {
+          box1: '#F5F6E8', box2: '#EDF0DB', box3: '#A9A23A', glow: '#F5F6E8',
+          activeBg: '#23240F', activeFg: '#F5F6E8',
+          inactiveBg: '#F5F6E8', inactiveFg: '#23240F', inactiveLine: '#23240F',
+          stroke1: '#23240F', stroke2: '#23240F', hl: '#6F630A', text1: '#23240F', text3: '#6F630A',
+          tagFg: ['#23240F', '#23240F', '#F5F6E8', '#F5F6E8', '#23240F', '#23240F', '#23240F'],
+        },
+      },
+      // Scheme 5, #F5F6E8 — the paper CARD (sem/box/1): no section's seat, read by nested nodes
+      // (the cards, the tickets, the polaroid keylines) on any band.
+      5: {
+        palette: ['#F5F6E8', '#D4BE1E', '#23240F'],
+        tags: ['#EDF0DB', '#D4BE1E', '#A9A23A', '#4C4E29', '#F5F6E8', '#C7C59F', '#23240F'],
+        sem: {
+          box1: '#EDF0DB', box2: '#EAECD7', box3: '#D6D2A0', glow: '#D4BE1E',
+          activeBg: '#D4BE1E', activeFg: '#23240F',
+          inactiveBg: '#EDF0DB', inactiveFg: '#23240F', inactiveLine: '#23240F',
+          stroke1: '#23240F', stroke2: '#23240F', hl: '#6F630A', text1: '#23240F', text3: '#6F630A',
+          tagFg: ['#23240F', '#23240F', '#23240F', '#F5F6E8', '#23240F', '#23240F', '#F5F6E8'],
+        },
+      },
+    },
+  },
 ]
 
 // Which Figma colour scheme a section stands on, where its frames stand it on
@@ -1089,6 +1213,19 @@ export const SCHEMES_OF = {
     1: { header: 3, media: 3, video: 3, bio: 2, repertoire: 2, form: 2, calendar: 4, testimonials: 5, map: 6, footer: 7 },
     2: { header: 3, media: 3, video: 3, bio: 2, repertoire: 2, form: 2, calendar: 4, testimonials: 5, map: 6, footer: 7 },
     3: { header: 3, media: 3, video: 3, bio: 2, repertoire: 2, form: 2, calendar: 4, testimonials: 5, map: 6, footer: 7 },
+  },
+  // Backline's layout-1 page (1:5541 · 1:17363 · 1:18697), the same at all three widths. Each
+  // section's own fill is one grain image and the nodes carry no variable modes, so the seats are
+  // read off the bands' rendered colour (session 0): the bio, the gallery, the pricing and the
+  // form stand on Scheme 1 (paper, the theme's own, so no entry), the header, media, video (no
+  // frame; beside the media), repertoire, calendar and footer on 2 (dark olive), the map on 3
+  // (moss), the testimonials on 4 (mustard). Layouts 2–4 have no frames yet and are placeholders,
+  // so they take row 0's seats, as Lattice's, Paperback's and Headliner's do.
+  Backline: {
+    0: { header: 2, media: 2, video: 2, repertoire: 2, calendar: 2, footer: 2, map: 3, testimonials: 4 },
+    1: { header: 2, media: 2, video: 2, repertoire: 2, calendar: 2, footer: 2, map: 3, testimonials: 4 },
+    2: { header: 2, media: 2, video: 2, repertoire: 2, calendar: 2, footer: 2, map: 3, testimonials: 4 },
+    3: { header: 2, media: 2, video: 2, repertoire: 2, calendar: 2, footer: 2, map: 3, testimonials: 4 },
   },
 }
 
@@ -1236,6 +1373,11 @@ const ANTON_EM = {
 // ems: Retro's 0.02 by default, and 0 for Grunge, whose mode states none.
 export const antonEms = (text, track = 0.02) =>
   [...String(text).toUpperCase()].reduce((w, ch) => w + (ANTON_EM[ch] ?? 0.494) + track, 0)
+
+// TT2020 Base's width in ems (Backline's display and typewriter body): MONOSPACED, 0.547 em an advance, and the frames
+// track it -0.045 em at every size, so a run of n characters is n x 0.502 em (no table: the face has one advance).
+export const TT2020_ADVANCE = 0.547
+export const ttEms = (text, track = -0.045) => [...String(text)].length * (TT2020_ADVANCE + track)
 
 // Gloock's, at its one weight (400) — Editorial's display and label face,
 // standing in for the caps-only Fisterra Fora, so set in caps as well. Read
@@ -1760,6 +1902,17 @@ export const TITLE_SITES = {
     TS([103, 75, 46], 0.75, [0, 1, 1], [806.1, 561.5, 350], [738, 1024, 844]),
   ],
 }
+// Backline's layout-1 header (BacklineHero): one wrapping run in TT2020 at 201.6 / 125 / 61 frame px (x 0.82 at 1440 =
+// 165.31), lh 0.82 (the frames' 165.312 / 102.5 / 50.02), tracked -0.045em, anchored by its foot so a longer name grows
+// upward. W is the room between the gutters (the frame's own text box: 1342.08 x 0.82 at 1440, 715.77 at 768, 342 at
+// 390) and the hero is 975.30 x 0.82 = 799.74 / 914.44 / 880 tall. The seed ("kai mercer" and its dot, 11 cells of 0.502
+// em) is one line at every width (the tablet's 5.52em of 5.73, the phone's 5.52em of 5.61: the dot counts, `ttEms`
+// callers add it to the last word). The photograph, the bar and the chips stand clear of it, so no `room` and no `bs`.
+// Layouts 2-4 copy Headliner's rows, which are Pop's (the placeholders).
+TITLE_SITES.Backline = [
+  TS([165.31, 125, 61], 0.82, [1, 1, 1], [1100.5, 715.77, 342], [799.74, 914.44, 880]),
+  ...TITLE_SITES.Headliner.slice(1),
+]
 
 // The lines a name takes set at size `s` in a column `W` wide: greedy word wrap
 // in ems; a word wider than the column never fits (Infinity), and when `inline`
@@ -1889,9 +2042,9 @@ export const NVAR = {
 export const headerFamily = (themeName) =>
   themeName === 'Lime' ? 'lime' : themeName === 'Grunge' ? 'grunge'
     : themeName === 'Editorial' ? 'editorial' : themeName === 'Pop' ? 'pop'
-      : themeName === 'Lattice' ? 'lattice' : themeName === 'Paperback' ? 'paperback' : themeName === 'Headliner' ? 'headliner' : 'photographic'
+      : themeName === 'Lattice' ? 'lattice' : themeName === 'Paperback' ? 'paperback' : themeName === 'Headliner' ? 'headliner' : themeName === 'Backline' ? 'backline' : 'photographic'
 
-const HEADER_COUNT = { photographic: 6, lime: 4, grunge: 4, editorial: 4, pop: 4, lattice: 4, paperback: 4, headliner: 4 }
+const HEADER_COUNT = { photographic: 6, lime: 4, grunge: 4, editorial: 4, pop: 4, lattice: 4, paperback: 4, headliner: 4, backline: 4 }
 
 export const headerVariants = (themeName) => HEADER_COUNT[headerFamily(themeName)]
 
@@ -1992,6 +2145,7 @@ const HEADER_NAMES = {
   lattice: PHOTOGRAPHIC_NAMES.slice(0, HEADER_COUNT.lattice),
   paperback: PHOTOGRAPHIC_NAMES.slice(0, HEADER_COUNT.paperback),
   headliner: PHOTOGRAPHIC_NAMES.slice(0, HEADER_COUNT.headliner),
+  backline: PHOTOGRAPHIC_NAMES.slice(0, HEADER_COUNT.backline),
 }
 
 export const headerLayout = (themeName, i) =>
@@ -2217,6 +2371,13 @@ export const MEDIA_CHIP_LABEL = 'Featured'
 // heading it used to hold went back to the caption. JP-120 (gallery) gave it
 // layout 1's credit line too, the gallery's name under the artist's.
 export const GALLERY_RAIL_LABEL = 'Gallery'
+// Backline's layout 1 (plans/backline/layout-1.md, section 4): the credit line's seat is the frame's turned `CONTACT SHEET` stamp, and the head
+// carries the frame's full stop (`see us in action.`).
+export const GALLERY_RAIL_LABEL_BACKLINE = 'Contact sheet'
+export const GALLERY_HEADING_BACKLINE = 'See us in action.'
+// Backline's layout-1 repertoire head is the frame's `240 songs.` (section 5): the word is lower-case and takes the full stop, where
+// Paperback seeds `songs` and every other template `Songs`. Layouts 2-4 of Backline are the placeholders and keep the shared word.
+export const repCountWord = (themeName, design) => (themeName === 'Backline' && design === 0 ? 'songs.' : themeName === 'Paperback' ? 'songs' : 'Songs')
 // JP-120 (gallery), user call, 2026-10-08: layout 1's eyebrow, which layout 4's
 // prints as well, and its back link, the frames' words. The open source row's
 // label seeds off GALLERY_SOURCES[0].l. The eyebrow's seed was the frames'
@@ -2462,6 +2623,8 @@ export const mapRingLabels = (miles) => [miles / 4, miles / 2, miles]
 export const mapHeadingSeed = (c, themeName, design) => {
   const f = FIELDS.map.find((x) => x.k === 'heading')
   const cap = fieldCap(f, themeName, design)
+  // Backline's layout-1 head is the frame's `manchester.`, with its full stop (the gallery's and the repertoire's heads do the same): the town in the cap less the stop.
+  if (themeName === 'Backline' && design === 0) return `${placeWord(mapPlaceOf(c).name, (cap?.chars || 20) - 1)}.`
   return placeWord(mapPlaceOf(c).name, cap?.chars || 20)
 }
 export const mapBaseSeed = (c, themeName, design) => {
@@ -2662,6 +2825,8 @@ export const FOOTER_STATEMENT = "Let's make\nyour night unforgettable."
 // Headliner's layout-1 footer draws the frame's own tagline (1:5489) in the statement's seat, where the shared seed is the form's head
 // (which this frame prints one section up).
 export const FOOTER_STATEMENT_HEADLINER = 'House, disco, soul and 80s — chosen by the room.'
+// Backline's layout-1 footer draws its frame's tagline (1:6872) in the same seat, for the same reason.
+export const FOOTER_STATEMENT_BACKLINE = 'House, disco, soul and 80s. Played loud, chosen by the room.'
 
 // No `repertoire` entry: its heading counts the songs (see sectionVm), and at
 // layouts 3 and 4 starts from REP_HEADING_3 / REP_HEADING_4, so a literal here
@@ -2844,6 +3009,8 @@ export const TESTI_STARS = '★★★★★'
 // prints the "/5" (JP-065). Its own constant, though pricing's PRICING_RATING
 // has the same bytes: it is another section's content.
 export const TESTI_RATING = '4.9'
+// Backline's layout-1 card prints the same key in its round stamp, whose frame reads 5/5 (user call, 2026-11-25).
+export const TESTI_RATING_BACKLINE = '5'
 // Booking calendar layout 4's wizard (964:72843): the event types its first
 // step offers, the frame's own four. The calendar's own list rather than the
 // enquiry form's FORM_TYPES, which is another section's content.
@@ -2859,6 +3026,8 @@ export const PRICING_ROW_CTA_3 = 'Book'
 export const PRICING_ROW_CTA_PAPERBACK = 'Book this set'
 // Headliner's layout-1 head is the frame's `Pick your night's set` (1:5076), where the shared seed is the Retro / Lime sentence.
 export const PRICING_HEADING_HEADLINER = "Pick your night's set"
+// Backline's layout-1 head is the frame's three lines with their full stop (1:6322); its Book pill's `Book this set` is Paperback's and Headliner's seed.
+export const PRICING_HEADING_BACKLINE = "Choose the set that's right for your night."
 // Events map layout 4's panel note, beside "Travel & reach" (964:72830).
 export const MAP_SPAN = 'Live · last 12 months'
 // Events map layout 4's stat wall, the frame's four cards verbatim (JP-077,
@@ -2901,6 +3070,9 @@ export const CAL_CTA_LATTICE = 'Continue'
 // Headliner's layout-1 calendar (1:5205 · 1:15976 · 1:17026) heads its maroon panel with the frame's `Pick a date.` (the `heading` field is its seat),
 // and draws the same `Continue` button. Uncased: a block upper-cases the head.
 export const CAL_HEADING_HEADLINER = 'Pick a date.'
+// Backline's layout-1 calendar (1:6558 · 1:18328 · 1:19659) heads its right column with the frame's whole line. The 1440 master paints the run after the
+// comma in the band's own colour (it vanishes); the 768 and 390 masters paint it mustard, and the block does at every width, since an artist's words must show.
+export const CAL_HEADING_BACKLINE = 'Pick a date, we’ll do the rest.'
 
 export const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December']
@@ -3033,7 +3205,7 @@ export const BADGE_MODES = [
 // rotating one is not on offer there.
 export const badgeOptsFor = (themeName, design, cat = 'header') =>
   design === 0 && (cat === 'header' && (themeName === 'Lime' || themeName === 'Editorial' || themeName === 'Lattice' || themeName === 'Headliner')
-    || cat === 'bio' && themeName === 'Lattice')
+    || cat === 'bio' && (themeName === 'Lattice' || themeName === 'Backline'))
     ? [{ v: 'rotating', l: 'Visible' }, { v: 'hidden', l: 'Hidden' }]
     : BADGE_MODES
 
@@ -3055,8 +3227,8 @@ export const FIELDS = {
   // `aspect` on an image field is only the FALLBACK frame of the photo editor: it opens on the shape of the
   // field's largest photo on the canvas as drawn now (photoAspectOf, EncoreBuilder.jsx), and falls back to this
   // when the layout or device draws none.
-  // The header's `in` is always an object naming all eight templates: they have
-  // different header families (six designs against four in each of the other seven —
+  // The header's `in` is always an object naming all nine templates: they have
+  // different header families (six designs against four in each of the other eight —
   // Grunge's, Editorial's and Pop's rows are each measured over four fitted
   // cards, none a placeholder since each template's layout-4 pass). Pop's was
   // measured in its layout-1 sweep and re-measured in each later header
@@ -3067,11 +3239,18 @@ export const FIELDS = {
   // `align`, `badgeText` and the title cap from the fitted Hero, and `reach.mjs 6`
   // (session 12) agreed with them except `cardLine`, which gained `Paperback: [2]`.
   // Headliner's is the same shape again: its rows began as Paperback's (session 0), section 1
-  // re-measured them over the fitted Hero (`reach.mjs 7`) and left them unchanged.
+  // re-measured them over the fitted Hero (`reach.mjs 7`) and left them unchanged. Backline's began as
+  // Headliner's (session 0: layouts 2-4 are placeholders, so those seats are Lime's twins' rows; section 1
+  // re-measures them over the fitted Hero with `reach.mjs 8`).
+  // Backline's section 1 did (2026-11-24, 1,008 renders): the seal is not drawn, so `badgeMode` and
+  // `badgeText` lose layout 1 (design 3 alone), and `cardLine` gained `Backline: [2]`, which Headliner's row
+  // never took; every other row held. Cards 2-4 are placeholders, so those seats are Lime's twins'.
   header: [
     { k: 'image',     l: 'Background photo', type: 'image', aspect: [16, 9],
       hint: 'Fills the header behind the type.' },
-    { k: 'avatar',    l: 'Artist photo',     type: 'image', aspect: [1, 1],
+    // Backline's layout 1 draws no portrait (the polaroid was removed, call 2): measured 2026-11-24, the avatar
+    // moves layouts 2-4 only (a template this `in` does not name reads it everywhere, as before).
+    { k: 'avatar',    l: 'Artist photo',     type: 'image', aspect: [1, 1], in: { Backline: [1, 2, 3] },
       hint: 'The portrait card and the small round avatar.' },
     // Kicker and Location are the artist's role and home town, so they also
     // reach the bio, the booking calendar, the enquiry form and the events map
@@ -3106,7 +3285,7 @@ export const FIELDS = {
     // only the `HeaderV2` block those four share reads it. Emptied, the card
     // is the name alone.
     { k: 'cardLine',  l: 'Line under your name', d: CARD_LINE_3,
-      in: { Lime: [2], Grunge: [2], Editorial: [2], Pop: [2], Lattice: [2], Paperback: [2], '*': [] },
+      in: { Lime: [2], Grunge: [2], Editorial: [2], Pop: [2], Lattice: [2], Paperback: [2], Backline: [2], '*': [] },
       chars: { Lime: [null, null, 22], Grunge: [null, null, 23], Editorial: [null, null, 23], Pop: [null, null, 29], Lattice: [null, null, 23], Paperback: [null, null, 22] },
       hint: 'The line under your name on the portrait card. The bio’s Performing since is a separate '
           + 'field, so change both if you name a year here. Left empty, it is not drawn.' },
@@ -3130,7 +3309,11 @@ export const FIELDS = {
       // Headliner's layout 1 holds 33 (`limits.mjs header --themes=7 --designs=0 --keys=title --sweep`: open to 80 at 1440 and
       // 768, 33 at 390, where a name that long sets down to the half-size floor and a fifth line climbs into the ring); the
       // others are placeholders and keep Pop's 80.
-      chars: { Retro: [80, 80, 14, 80, 56, 39], Lime: 80, Grunge: 80, Editorial: 80, Pop: 80, Lattice: 80, Paperback: [14, 80, 80, 80], Headliner: [33, 80, 80, 80] } },
+      //
+      // Backline's layout 1 holds 67 (`limits.mjs header --themes=8 --designs=0 --keys=title --sweep`: 67 at 1440, where a
+      // longer name sets down past the half-size floor; 80, open, at 768 and 390: the name wraps and grows upward, and the
+      // chip row stays under it). The three placeholders keep Pop's 80.
+      chars: { Retro: [80, 80, 14, 80, 56, 39], Lime: 80, Grunge: 80, Editorial: 80, Pop: 80, Lattice: 80, Paperback: [14, 80, 80, 80], Headliner: [33, 80, 80, 80], Backline: [67, 80, 80, 80] } },
     // Header-nav ticket (2026-11-11): layout 2 no longer prints the description
     // under the name, so only Retro's layout 5 reads it.
     { k: 'subtitle',  l: 'Subtitle',         type: 'area', def: 'heroSub',
@@ -3146,7 +3329,7 @@ export const FIELDS = {
     // Layout 2's pill under the subtitle (JP-037). Its frame words it apart
     // from the nav's Book Now, so it is a field of its own. Emptied, no pill.
     { k: 'heroCta',   l: 'Button under subtitle',      d: HERO_CTA,
-      in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1], Lattice: [1], Paperback: [1], Headliner: [1] },
+      in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1], Lattice: [1], Paperback: [1], Headliner: [1], Backline: [1] },
       chars: { Retro: [null, 34], Lime: [null, 35], Grunge: [null, 40], Editorial: [null, 21], Pop: [null, 25], Lattice: [null, 25], Paperback: [null, 25] },
       hint: 'The button under your name. Left empty, it is not drawn.' },
     // The rest of layout 2's copy (JP-059, reversing Lime's fit, which kept
@@ -3156,11 +3339,11 @@ export const FIELDS = {
     // card's "Performing since 2021" is the artist's copy — the bio's own
     // Performing since is another field, which the hint says.
     { k: 'faceTitle', l: 'Portrait caption title',  d: FACE_TITLE,
-      in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1], Lattice: [1], Paperback: [1], Headliner: [1] },
+      in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1], Lattice: [1], Paperback: [1], Headliner: [1], Backline: [1] },
       chars: { Retro: [null, 22], Lime: [null, 24], Grunge: [null, 29], Editorial: [null, 19], Pop: [null, 20], Lattice: [null, 20], Paperback: [null, 19] },
       hint: 'The card beside your portrait, under the photograph. Left empty, it is not drawn.' },
     { k: 'faceBody',  l: 'Portrait caption text',   type: 'area', d: FACE_BODY,
-      in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1], Lattice: [1], Paperback: [1], Headliner: [1] }, chars: [null, 180],
+      in: { Retro: [1], Lime: [1], Grunge: [1], Editorial: [1], Pop: [1], Lattice: [1], Paperback: [1], Headliner: [1], Backline: [1] }, chars: [null, 180],
       hint: 'The line under the portrait caption title. The bio’s Performing since is a separate field, '
           + 'so change both if you name a year here. Left empty, it is not drawn.' },
     // Named `cta2` on the bio's own content too, which FIELDS.bio.cta2 edits
@@ -3176,13 +3359,13 @@ export const FIELDS = {
     // Its cap is per chip (`chars`) and chips (`count`), the bio's besides
     // (IDENTITY_CHARS), each chip a sized seat held to twice the longest seed.
     { k: 'tags',      l: 'Tags',             type: 'area', d: TAG_LABELS, shared: true, list: ',',
-      in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3], Editorial: [0, 2, 3], Pop: [0, 2, 3], Lattice: [0, 2, 3], Paperback: [0, 2, 3], Headliner: [0, 2, 3] },
+      in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3], Editorial: [0, 2, 3], Pop: [0, 2, 3], Lattice: [0, 2, 3], Paperback: [0, 2, 3], Headliner: [0, 2, 3], Backline: [0, 2, 3] },
       chars: { Retro: [22, null, 22, 22, 15, 22], '*': [22, null, 22, 22] },
       count: { Retro: [8, null, 7, 7, 6, 6], Pop: [6, null, 6, 6], Lattice: [6, null, 6, 6], '*': [8, null, 6, 6] },
       rows: { placeholder: 'Tag', add: 'Add tag' },
       hint: 'Your genre chips. One per row; a comma starts a new row.' },
     { k: 'showTags',  l: 'Tags',        type: 'select', d: 'show', opts: SHOW_HIDE_TAGS, shared: true,
-      in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3], Editorial: [0, 2, 3], Pop: [0, 2, 3], Lattice: [0, 2, 3], Paperback: [0, 2, 3], Headliner: [0, 2, 3] },
+      in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3], Editorial: [0, 2, 3], Pop: [0, 2, 3], Lattice: [0, 2, 3], Paperback: [0, 2, 3], Headliner: [0, 2, 3], Backline: [0, 2, 3] },
       hint: 'Show or hide the tag chips wherever they are printed.' },
     // Three states (header-nav ticket, 2026-11-11): the seal is visible and
     // turning (today's), visible and still, or hidden. `badgeMode` replaces the
@@ -3191,12 +3374,12 @@ export const FIELDS = {
     // Editorial's layout-1 artwork (a reticle, a star) has no ring to turn, so
     // EditPanel offers those two Show / Hide alone (`badgeOptsFor`).
     { k: 'badgeMode', l: 'Corner badge',     type: 'select', d: 'rotating', opts: BADGE_MODES,
-      in: { Retro: [0, 1, 3, 4, 5], Lime: [0, 3], Grunge: [0, 3], Editorial: [0, 3], Pop: [0, 3], Lattice: [0, 3], Paperback: [0, 3], Headliner: [0, 3] } },
+      in: { Retro: [0, 1, 3, 4, 5], Lime: [0, 3], Grunge: [0, 3], Editorial: [0, 3], Pop: [0, 3], Lattice: [0, 3], Paperback: [0, 3], Headliner: [0, 3], Backline: [3] } },
     // The seal's ring sets it twice round a circle, so its cap is the ring's
     // fit (scripts/limits.mjs's ring test). Left empty, the ring prints the
     // artist's name, clamped to the same fit (sealCap).
     { k: 'badgeText', l: 'Corner badge text',                    // defaults to the artist's name — special-cased
-      in: { Retro: [0, 1, 3, 4, 5], Lime: [3], Grunge: [0, 3], Editorial: [3], Pop: [0, 3], Lattice: [3], Paperback: [0, 3], Headliner: [0, 3] },
+      in: { Retro: [0, 1, 3, 4, 5], Lime: [3], Grunge: [0, 3], Editorial: [3], Pop: [0, 3], Lattice: [3], Paperback: [0, 3], Headliner: [0, 3], Backline: [3] },
       chars: { Retro: 19, Lime: [null, null, null, 13], Grunge: [14, null, null, 14], Editorial: [null, null, null, 10],
         Pop: [12, null, null, 10], Lattice: [null, null, null, 13], Paperback: [12, null, null, 10],
         // Headliner layout 1 prints the ringed numeral ("26" in the frame, the artist's initials until typed over) inside a
@@ -3207,7 +3390,7 @@ export const FIELDS = {
       { v: 'sections', l: 'Follow my sections' },
       { v: 'minimal',  l: 'Minimal (Music · Gigs · About)' },
     ] },
-    { k: 'align',     l: 'Page alignment',        type: 'select', d: 'left', in: { Retro: [0], Lime: [0], Grunge: [0], Editorial: [0], Pop: [0], Lattice: [0], Paperback: [], Headliner: [] }, opts: [
+    { k: 'align',     l: 'Page alignment',        type: 'select', d: 'left', in: { Retro: [0], Lime: [0], Grunge: [0], Editorial: [0], Pop: [0], Lattice: [0], Paperback: [], Headliner: [], Backline: [] }, opts: [
       { v: 'left',   l: 'Left' },
       { v: 'centre', l: 'Centre' },
     ] },
@@ -3228,15 +3411,18 @@ export const FIELDS = {
         Paperback: [15, null, 17, 19],
         // Headliner layout 1 measured 2026-11-23 (limits.mjs bio --themes=7 --designs=0: 17 at 1440, 19 at 768 and 390; the statement is
         // two lines in a 5em measure and a third reaches into the portrait); 3 and 4 are Grunge's until their passes.
-        Headliner: [17, null, 20, 18] } },
+        Headliner: [17, null, 20, 18],
+        // Backline layout 1 measured 2026-11-24 (limits.mjs bio --themes=8 --designs=0: 17 at all three widths, where an eighteenth character
+        // sets a third line in the turned statement's 4.6em measure); 3 and 4 are Pop's, written out, until their passes.
+        Backline: [17, null, 17, 19] } },
     // Layout 2's pill over the paragraph (JP-059), seeded with the frame's
     // copy and cased as a label; emptied, it is not drawn.
     { k: 'tag',       l: 'Highlight tag', d: BIO_TAG, in: [1], chars: [null, 18],
       hint: 'The small pill over the first paragraph. Left empty, it is not drawn.' },
     { k: 'para1',     l: 'Paragraph 1', type: 'area', def: 'bioP1', chars: 390 },
     // Headliner's layout 1 prints it too, as the paragraph under `About` (the lead above the rule is `para1`).
-    { k: 'para2',     l: 'Paragraph 2', type: 'area', def: 'bioP2', in: { Headliner: [0, 2, 3], '*': [2, 3] },
-      chars: { Headliner: [340, null, 340, 340], '*': [null, null, 340, 340] } },
+    { k: 'para2',     l: 'Paragraph 2', type: 'area', def: 'bioP2', in: { Headliner: [0, 2, 3], Backline: [0, 2, 3], '*': [2, 3] },
+      chars: { Headliner: [340, null, 340, 340], Backline: [340, null, 340, 340], '*': [null, null, 340, 340] } },
     // Layout 2's foot row (JP-037): the frame's two-tone line, whose first
     // three words take the accent (`vm.bioCredit`), and the pill beside it.
     // Each drops when emptied, and the row with both.
@@ -3244,9 +3430,10 @@ export const FIELDS = {
       hint: 'The line at the foot of the card. Its first three words take the accent colour.' },
     // Paperback's layout 1 draws it too: the black `Full bio` pill under the About copy (seeded by
     // sectionVm and `fieldSeed`, as the calendar's Lattice `Continue`).
-    { k: 'cta',       l: 'Button', d: BIO_CTA, in: { Paperback: [0, 1], '*': [1] }, chars: { Paperback: [16, 16], '*': [null, 16] },
+    { k: 'cta',       l: 'Button', d: BIO_CTA, in: { Paperback: [0, 1], Backline: [0, 1], '*': [1] }, chars: { Paperback: [16, 16], Backline: [16, 16], '*': [null, 16] },
       hint: { '*': 'The button beside the footer line. Left empty, it is not drawn.',
-        Paperback: 'The black pill under the About copy (layout 1) and the button beside the footer line (layout 2). Left empty, it is not drawn.' } },
+        Paperback: 'The black pill under the About copy (layout 1) and the button beside the footer line (layout 2). Left empty, it is not drawn.',
+        Backline: 'The ink button under the About copy (layout 1) and the button beside the footer line (layout 2). Left empty, it is not drawn.' } },
     // Layout 3's ID card draws a row of stats, and the frame's first one is
     // "Performing since: June 2021". Seeded with the frame's copy (QA,
     // 2026-09-15 — layout 2's price row and bookings line were the precedent),
@@ -3421,7 +3608,9 @@ export const FIELDS = {
         // Paperback layout 1 measured 2026-11-21 (limits.mjs pricing --themes=6 --designs=0 --upright): 46 (the seed's 42 fits); layouts 2-4 Pop's.
         Paperback: [46, 42, 28],
         // Headliner layout 1 measured 2026-11-23 (limits.mjs pricing --themes=7 --designs=0): 24 (42 / 36 / 24 at 1440 / 768 / 390; the seed's 21 fits); layouts 2-3 Grunge's, written out.
-        Headliner: [24, 44, 41] },
+        Headliner: [24, 44, 41],
+        // Backline layout 1 measured 2026-11-25 (limits.mjs pricing --themes=8 --designs=0 --upright): 45 (45 / 45 / 45 at the three widths: the head is three lines at an 8.2 em measure and the cap is the page's 3-line fill; the seed's 43 fits); layouts 2-3 Pop's.
+        Backline: [45, 42, 28] },
       hint: 'Layouts 1, 2 and 3 only. Layout 4 is a stack of service rows and heads them with '
           + 'the package names alone, so it draws no title.' },
     { k: 'tiers',   l: 'Packages', type: 'tiers', max: 6,
@@ -3436,7 +3625,9 @@ export const FIELDS = {
           // Paperback layout 1 measured 29 (desktop 37, tablet 29, mobile 30); the rest Pop's.
           Paperback: [29, 16, 26, 18],
           // Headliner layout 1 measured 32 (desktop 41, tablet 32, mobile 32: a second line of the name); layouts 2-4 Grunge's.
-          Headliner: [32, 34, 51, 25] },
+          Headliner: [32, 34, 51, 25],
+          // Backline layout 1 measured 43 (desktop 58, tablet 44, mobile 43: the name's label line wraps at the card's content box); the rest Pop's.
+          Backline: [43, 16, 30, 18] },
         // `num` is the first number run, the big numeral: a price of digits alone
         // sets whole in it, so it is measured apart from the total (`chars`, the
         // price with its small tail). User call, 2026-11-06. The numeral's cap is
@@ -3451,7 +3642,9 @@ export const FIELDS = {
           // Paperback layout 1 measured 10 (desktop 10, tablet 12, mobile 17: one run in the display face, a tail wrapping at its spaces).
           Paperback: [10, 25, 21, 17],
           // Headliner layout 1 measured 6 (desktop 6, tablet 10, mobile 16: one run in the display face, a tail wrapping at its spaces); layouts 2-4 Grunge's.
-          Headliner: [6, 35, 30, 34] },
+          Headliner: [6, 35, 30, 34],
+          // Backline layout 1 measured 7 (desktop 7, tablet 9, mobile 15: one run in TT2020 at 96 / 60 / 38, a tail wrapping at its spaces); the rest Pop's.
+          Backline: [7, 34, 25, 23] },
           // Lattice's numeral is layout 1's 9 (measured: desktop 9, tablet 10, mobile 12) held to Pop's 7, the tightest of
           // the placeholder layouts' provisional rows, so a price typed at layout 2, 3 or 4 is not one the deck then cuts.
           num: { Retro: 5, Lime: 10, Grunge: 11, Editorial: 8, Pop: 7, Lattice: 7,
@@ -3464,13 +3657,16 @@ export const FIELDS = {
         tags: { list: ',', chars: { Retro: [12, null, 12, 12], Lattice: [26, null, 26, 26], '*': [26, null, 26, 26] },
           count: { Retro: [4, null, 5, 6], Pop: [3, null, 4, 5], Lattice: [3, null, 4, 5], Paperback: [3, null, 4, 5],
           // Headliner layout 1: the seed's three tags a package is the floor (the chip row is the union of every package's, so the row wraps before a package's own count does).
-          Headliner: [3, null, 4, 5], '*': [4, null, 4, 5] } },
+          Headliner: [3, null, 4, 5],
+          // Backline layout 1: three tags a package, measured (the tab row at 390 wraps its second line at a fourth); the rest Pop's.
+          Backline: [3, null, 4, 5], '*': [4, null, 4, 5] } },
         blurb: 160,
         feats: { list: '\n', chars: { Retro: [24, 24, 24, 59], Grunge: [25, 24, 24, 62], Editorial: [25, 24, 24, 60],
           // Paperback layout 1 measured 35 (desktop 45, tablet 35, mobile 36).
           Pop: [26, 24, 24, 62], Lattice: [24, 24, 24, 62], Paperback: [35, 24, 24, 57],
           // Headliner layout 1 measured 40 (desktop 51, tablet 40, mobile 41: the row's text beside its numeral); the rest the shared row.
-          Headliner: [40, 24, 24, 62], '*': [24, 24, 24, 62] }, count: [15, 15, 15, 5] },
+          // Backline layout 1 measured 34 (desktop 45, tablet 34, mobile 34: a feature beside its drawn cross, one line); the rest Pop's.
+          Backline: [34, 24, 24, 62], Headliner: [40, 24, 24, 62], '*': [24, 24, 24, 62] }, count: [15, 15, 15, 5] },
       },
       hint: 'Tags become the filter chips above the packages in layouts 1 and 3. '
           + 'Layout 3 starts the packages tagged Duo where the other layouts '
@@ -3485,6 +3681,8 @@ export const FIELDS = {
           + 'to give a package layout 3’s Featured badge; with none ticked, it goes to the last '
           + 'package on show.' },
     { k: 'unit',    l: 'Price unit', d: PRICE_UNIT,
+      // Backline's layout 1 draws no unit: its card's top row is the plan's name over a `NO. 00N` that has no field, so the seed has no seat there (layouts 2-4 are Headliner's placeholders).
+      in: { Backline: [1, 2, 3], '*': [0, 1, 2, 3] },
       chars: { Retro: [7, 37, 32, 69], Lime: [13, 40, 28, 88], Grunge: [15, 41, 33, 98], Editorial: [12, 37, 29, 53],
         Pop: [11, 39, 27, 51],
         // Layout 1 measured 29 (desktop 37; tablet and mobile 29): the unit stands in the card's top row, right-aligned.
@@ -3551,11 +3749,15 @@ export const FIELDS = {
         // Paperback layout 1 measured 34 (desktop 47, tablet 34, mobile 37): the split pill's label.
         Paperback: [34, null, 12, 26],
         // Headliner layout 1 measured 39 (desktop 50, tablet 40, mobile 39); the rest Grunge's.
-        Headliner: [39, null, 12, 26] },
+        Headliner: [39, null, 12, 26],
+        // Backline layout 1 measured 40 (desktop 41, tablet 40, mobile 40: the split pill's label beside its arrow); the rest Pop's.
+        Backline: [40, null, 12, 26] },
       hint: 'The pill on every package. Layout 3 starts from “Book” and layout 4 from '
           + '“Start Enquiry”. Layout 2 has its own plan button. Empty it to drop the pill.' },
     { k: 'sub',     l: 'Small print', def: 'pricingSub',
-      chars: { Retro: [133, 67, 67, 67], Grunge: [53, 67, 63, 67], Pop: [80, 67, 63, 67], Lattice: [85, 67, 63, 67], Paperback: [80, 53, 53, 53], '*': [67, 67, 63, 67] } },
+      chars: { Retro: [133, 67, 67, 67], Grunge: [53, 67, 63, 67], Pop: [80, 67, 63, 67], Lattice: [85, 67, 63, 67], Paperback: [80, 53, 53, 53],
+        // Backline layout 1 measured 81 (desktop 167, tablet 88, mobile 81); the rest Pop's.
+        Backline: [81, 67, 63, 67], '*': [67, 67, 63, 67] } },
   ],
   // The other list-shaped content type with a structured editor rather than a
   // textarea (see `media` above): `songs` is an array of
@@ -3581,7 +3783,10 @@ export const FIELDS = {
         Paperback: [13, 22, 17, 10],
         // Headliner layout 1 measured 2026-11-23 (limits.mjs repertoire --themes=7 --designs=0): 10 at 1440, 14 at 768, 6 at 390 (a seventh letter
         // shrinks the count there, which the word fit allows); the seed's 8 is the floor. Layouts 2-4 are Grunge's, written out.
-        Headliner: [8, 38, 25, 20] } },
+        Headliner: [8, 38, 25, 20],
+        // Backline layout 1 measured 2026-11-24 (limits.mjs repertoire --themes=8 --designs=0): 15 at 1440, 19 at 768, 13 at 390 (the count wraps and the
+        // word fit shrinks it; the seed `240 songs.` is 10). Layouts 2-4 are Pop's until their passes.
+        Backline: [13, 25, 17, 10] } },
     // `in` is per field, and every layout reads the songs, so the hint says
     // which column each layout leaves out (JP-107): the reviews' date shape.
     // Session 5 of the character-limits pass: a tag is a chip, and at layout 3
@@ -3594,7 +3799,10 @@ export const FIELDS = {
         title: { Retro: [17, 25, 25, 25], Lime: [44, 24, 17, 22], Grunge: [33, 26, 23, 26], Editorial: 17, Pop: 17, Paperback: 17,
           // Headliner layout 1: the probe reads 37 / 13 / 17 (overlap), under the seed's 17 at 768, so the seed is the floor and a longer title
           // ellipsises in its row. Layouts 2-4 are Grunge's, written out.
-          Headliner: [17, 26, 23, 26] },
+          Headliner: [17, 26, 23, 26],
+          // Backline layout 1 (--extra-lines=songs.title, the frame wraps a phrase to two lines): 60 at 1440, 18 at 768 (a third line), 20 at 390;
+          // the seed's 17 fits. Layouts 2-4 are Pop's 17 written out.
+          Backline: [18, 17, 17, 17] },
         artist: { Retro: [32, 25, null, 41], Lime: [73, 25, null, 37], Grunge: [74, 25, null, 42],
           Editorial: [35, 25, null, 18], Pop: [18, 25, null, 19],
           // Lattice layout 1: 22 at 768 and 390 (one line beside a 17-character title); 1440 holds 44.
@@ -3602,10 +3810,12 @@ export const FIELDS = {
           // Paperback layout 1: 22 at 768 and 390 (the chip ellipsises past it, the frame's longest artist is 18); 1440 holds 48.
           Paperback: [22, 25, null, 19],
           // Headliner layout 1: 29 at 768 (78 at 1440, 32 at 390); an artist past what stands beside its title drops under it (JP-136).
-          Headliner: [29, 25, null, 42] },
+          Headliner: [29, 25, null, 42],
+          // Backline layout 1: 20 at 768 (the artist's room stops at 62 % of the row, then it ellipsises; 22 at 390, 46 at 1440). Layouts 2-4 are Pop's.
+          Backline: [20, 25, null, 19] },
         length: { Retro: [null, null, 23], Lime: [null, null, 17], Grunge: [null, null, 22], Editorial: [null, null, 17],
           Pop: [null, null, 14], Paperback: [null, null, 10], Headliner: [null, null, 22] },
-        tags: { list: ',', chars: 18, count: { Editorial: [3, 4, 3, 3], Lattice: [3, 4, 3, 3], '*': [4, 4, 3, 3] } },
+        tags: { list: ',', chars: 18, count: { Editorial: [3, 4, 3, 3], Lattice: [3, 4, 3, 3], Backline: [3, 4, 3, 3], '*': [4, 4, 3, 3] } },
       },
       hint: 'Tags become the filter chips above the list. Layout 4 draws no chips: it indexes the whole list A–Z instead. '
           + 'Layout 3 groups the songs into one set per tag and shows each song’s length in place of its artist; '
@@ -3633,19 +3843,23 @@ export const FIELDS = {
       hint: 'One per tile. Layout 1 shows the highlighted one in its viewer; layouts 2 and 4 show it as the large photo beside the others.' },
     // JP-120 (gallery): the eyebrow over the heading, the frames' word, uncased.
     { k: 'kicker',  l: 'Small heading', d: GALLERY_KICKER, in: [0, 3],
-      chars: { Retro: [44, null, null, 49], Pop: [44, null, null, 39], Lattice: [41, null, null, 51], Paperback: [25, null, null, 39], Headliner: [45, null, null, 51], '*': [55, null, null, 51] },
+      chars: { Retro: [44, null, null, 49], Pop: [44, null, null, 39], Lattice: [41, null, null, 51], Paperback: [25, null, null, 39], Headliner: [45, null, null, 51], Backline: [41, null, null, 51], '*': [55, null, null, 51] },
       hint: 'A small line over the heading. Empty by default; type one to show it.' },
     { k: 'heading', l: 'Heading', d: 'See us in action',
       chars: { Retro: [20, 27, 18, 24], Lime: [19, 26, 18, 23], Grunge: [29, 26, 23, 24], Editorial: [16, 26, 11, 20],
         Pop: [16, 27, 15, 20], Lattice: [16, 27, 15, 20], Paperback: [16, 23, 15, 20],
         // Headliner's layout 1 measured (limits.mjs gallery --themes=7 --designs=0: 14 at 1440, where a sample's long word shrinks the two-line head); the seed's 16 is the floor. Layouts 2-4 are Grunge's.
-        Headliner: [16, 26, 23, 24] } },
+        Headliner: [16, 26, 23, 24],
+        // Backline's layout 1 (limits.mjs gallery --themes=8 --designs=0): the seed's own 17 (the probe reads 17 at 1440 and 390, where an eighteenth letter sets a third line / a second one); layouts 2-4 are Pop's.
+        Backline: [17, 27, 15, 20] } },
     // JP-098: the 768 head row's word, the frame's, uncased. `in` cannot name a
     // width, so the hint does. JP-120 (gallery): layout 1's credit line too.
     { k: 'railLabel', l: 'Gallery caption', d: GALLERY_RAIL_LABEL, in: { Headliner: [1], '*': [0, 1] },
-      chars: { Retro: [49, 70], Lime: [55, 64], Editorial: [32, 70], Pop: [49, 70], Lattice: [45, 70], Paperback: [18, 64], '*': [55, 70] },
-      hint: 'The line under your name over the large photo in layout 1, and the label over the small '
-          + 'photos in layout 2, on a tablet only. Left empty, neither is drawn.' },
+      chars: { Retro: [49, 70], Lime: [55, 64], Editorial: [32, 70], Pop: [49, 70], Lattice: [45, 70], Paperback: [18, 64], Backline: [40, 70], '*': [55, 70] },
+      hint: { '*': 'The line under your name over the large photo in layout 1, and the label over the small '
+          + 'photos in layout 2, on a tablet only. Left empty, neither is drawn.',
+        Backline: 'The words on the turned stamp over the large photo in layout 1 (“Contact sheet”), and the label over the small '
+          + 'photos in layout 2, on a tablet only. Left empty, neither is drawn.' } },
     // JP-120 (gallery): two words that head a control or a row standing
     // whatever they say, so an emptied one reads its seed again (venueCta's
     // rule). The row's label prints at desktop alone, so the hint says so.
@@ -3653,10 +3867,11 @@ export const FIELDS = {
       hint: 'The link over the large photo that goes back to the first one. Left empty, it shows '
           + '“Back to beginning” again.' },
     { k: 'sourceLabel', l: 'Social links heading', d: GALLERY_SOURCES[0].l, in: [0],
-      chars: { Retro: [42], Lime: [49], Grunge: [58], Editorial: [37], Pop: [50], Lattice: [25], Paperback: [36], Headliner: [17] },
+      chars: { Retro: [42], Lime: [49], Grunge: [58], Editorial: [37], Pop: [50], Lattice: [25], Paperback: [36], Headliner: [17], Backline: [18] },
       hint: { '*': 'The first row, above YouTube, Instagram and TikTok, on desktop only. Left empty, it '
           + 'shows “Gallery” again.',
-        Headliner: 'The first row, above YouTube, Instagram and TikTok, at every width. Left empty, it shows “Gallery” again.' } },
+        Headliner: 'The first row, above YouTube, Instagram and TikTok, at every width. Left empty, it shows “Gallery” again.',
+        Backline: 'The first row, above YouTube, Instagram and TikTok, at every width. Left empty, it shows “Gallery” again.' } },
     { k: 'youtube',   l: 'YouTube link', type: 'url', d: '', in: [0],
       hint: 'A video, short or playlist link plays inside the section when the YouTube row is clicked on the '
           + 'published page; any other YouTube address opens in a new tab. Leave empty and it stays a picture. Layout 1 only.' },
@@ -3677,13 +3892,15 @@ export const FIELDS = {
   // `in` records each key's reach.
   calendar: [
     // Lattice's layout 1 draws a dotted torus (art, not a photograph) in that seat, so only layout 4's disc reads it.
-    { k: 'image',   l: 'Photo', type: 'image', aspect: [1, 1], in: { Lattice: [3], Paperback: [3], Headliner: [3], '*': [0, 3] },
+    { k: 'image',   l: 'Photo', type: 'image', aspect: [1, 1], in: { Lattice: [3], Paperback: [3], Headliner: [3], Backline: [3], '*': [0, 3] },
       hint: 'Fills the polaroid stack beside the month in layout 1, and the small disc on '
-          + "layout 4's summary card. Layouts 2 and 3 draw no photograph. Lattice's, Paperback's and Headliner's layout 1 draw none either." },
-    { k: 'heading', l: 'Heading', d: 'Availability', in: { Lime: [0, 1, 2, 3], Grunge: [0, 1, 2, 3], Editorial: [0, 1, 2, 3], Pop: [0, 1, 2, 3], Lattice: [0, 1, 2, 3], Paperback: [1, 2, 3], Headliner: [0, 1, 2, 3], '*': [1, 2, 3] },
+          + "layout 4's summary card. Layouts 2 and 3 draw no photograph. Lattice's, Paperback's, Headliner's and Backline's layout 1 draw none either." },
+    { k: 'heading', l: 'Heading', d: 'Availability', in: { Lime: [0, 1, 2, 3], Grunge: [0, 1, 2, 3], Editorial: [0, 1, 2, 3], Pop: [0, 1, 2, 3], Lattice: [0, 1, 2, 3], Paperback: [1, 2, 3], Headliner: [0, 1, 2, 3], Backline: [0, 1, 2, 3], '*': [1, 2, 3] },
       // Paperback's layout 1 draws the month as its head, so it reads no heading. Headliner's layout 1 heads the maroon panel with it (`Pick a date.`). Lattice's layout 1 measured (limits.mjs calendar --themes=5 --designs=0); the others are Pop's, provisional.
       chars: { Retro: [null, 25, 36, 18], Lime: [25, 22, 32, 18], Grunge: [28, 24, 35, 23], Editorial: [14, 14, 21, 11], Pop: [13, 20, 24, 15],
-        Lattice: [25, 20, 24, 15], Paperback: [13, 14, 24, 15], Headliner: [14, 24, 35, 23] } },
+        Lattice: [25, 20, 24, 15], Paperback: [13, 14, 24, 15], Headliner: [14, 24, 35, 23],
+        // Backline's layout 1 measured (limits.mjs calendar --themes=8 --designs=0 --upright): 32 binds at 1440, where a longer head makes a third line; layouts 2-4 are Pop's, provisional.
+        Backline: [32, 20, 24, 15] } },
     { k: 'open',    l: 'Calendar start date', type: 'date', d: CAL_OPEN,
       hint: 'The month the calendar opens on, and the date it opens picked. '
           + `Layouts 1 and 3 page through ${CAL_SPAN} months from there, layout 2's seeded `
@@ -3701,7 +3918,9 @@ export const FIELDS = {
         // Paperback's layout 1 measured (limits.mjs calendar --themes=6 --designs=0 --upright): 24 binds at 768, where the line is one line.
         Paperback: [24, null, null, 26],
         // Headliner's layout 1 measured (limits.mjs calendar --themes=7 --designs=0): 10 at 390, where the line is three lines and a longer time makes a fourth; layout 4 is Grunge's.
-        Headliner: [10, null, null, 37] },
+        Headliner: [10, null, null, 37],
+        // Backline's layout 1 measured (… --extra-lines=time): 25 binds at 390, where the ticket's date is two lines and a longer time makes a fourth; layout 4 is Pop's.
+        Backline: [25, null, null, 33] },
       hint: "Printed in layout 1's enquiry line, and on its own in layout 4's "
           + 'date card. Leave it empty and the line stops at the date.' },
     // JP-095 (a): the line every layout prints while no day is cued. Cased in
@@ -3710,7 +3929,9 @@ export const FIELDS = {
       chars: { Retro: [33, 24, 39, 50], Lime: [44, 23, 33, 47], Grunge: [44, 24, 36, 50], Editorial: [44, 29, 24, 50], Pop: [31, 32, 24, 50],
         Lattice: [33, 32, 24, 50], Paperback: [36, 22, 24, 44],
         // Headliner's layout 1 measured: 29 at 390, where the foot's line is three lines and a fourth would grow it; layouts 2-4 are Grunge's, written out.
-        Headliner: [29, 24, 36, 50] },
+        Headliner: [29, 24, 36, 50],
+        // Backline's layout 1 measured (… --extra-lines=prompt): 47 binds at 390, where the foot's line is the frame's three lines.
+        Backline: [47, 32, 24, 50] },
       hint: 'The line where the picked date goes while none is picked: on the published page, '
           + 'until a visitor picks one, when the opening date is booked or has passed. Left empty, '
           + 'it shows “Pick a date to enquire” again.' },
@@ -3720,15 +3941,16 @@ export const FIELDS = {
     // (JP-088; Pop's since its layout-1 pass, user call, 2026-10-02): its
     // enquiry line is the link.
     { k: 'cta',     l: 'Button', d: 'Check a date',
-      in: { Lime: [3], Grunge: [3], Editorial: [3], Pop: [3], Lattice: [0, 3], Paperback: [0, 3], Headliner: [0, 3], '*': [0, 3] },
+      in: { Lime: [3], Grunge: [3], Editorial: [3], Pop: [3], Lattice: [0, 3], Paperback: [0, 3], Headliner: [0, 3], Backline: [0, 3], '*': [0, 3] },
       // Paperback's Continue pill measured 34 (the 390 foot's width) and is held to 12 as Lattice's is, so the 768 foot's line keeps its room: a judgement call, the user's to overrule.
+      // Backline's layout-1 Continue measured 40 at 390 and is held to 12 as the three above are, so the 390 foot's line keeps its room: a judgement call, the user's to overrule.
       // Lattice's layout-1 Continue bar: measured 29 (box), held to 12 so the bar stays within a third of the 390 foot
       // and the enquiry line keeps its room (the frame's seat is 130 wide beside a 162 line); a judgement call.
-      chars: { Retro: [24, null, null, 24], Lattice: [12, null, null, 24], Paperback: [12, null, null, 24], Headliner: [12, null, null, 24], '*': [null, null, null, 24] },
+      chars: { Retro: [24, null, null, 24], Lattice: [12, null, null, 24], Paperback: [12, null, null, 24], Headliner: [12, null, null, 24], Backline: [12, null, null, 24], '*': [null, null, null, 24] },
       // Headliner's Continue measured 37 (the box); held to 12 as Lattice's and Paperback's are, so the 390 foot's line keeps its room: a judgement call, the user's to overrule.
       hint: 'Layout 4’s Send Enquiry, on the last step of the enquiry wizard and at the foot '
           + 'of the summary; it starts from “Send Enquiry” there, and shows it again if you '
-          + 'empty this. Under Retro it is also layout 1’s button, and under Lattice, Paperback and Headliner layout 1’s '
+          + 'empty this. Under Retro it is also layout 1’s button, and under Lattice, Paperback, Headliner and Backline layout 1’s '
           + '“Continue” button (emptied, the bar is not drawn). The other templates’ '
           + 'layout 1 has no button: its “Enquiry for …” line is the link.' },
     { k: 'slots',   l: 'Available dates', type: 'slots', max: 8, in: [1],
@@ -3790,11 +4012,16 @@ export const FIELDS = {
           // Headliner layout 1 measured 2026-11-23 (limits.mjs map --themes=7 --designs=0): venue 24 (a 25th wraps it at 390, where the frame's own
           // first row wraps), city, time, month and day each alone (the city · time line shares one Inter Tight line that wraps, and the row grows);
           // layouts 2-4 are Grunge's rows, written out, as the earlier Headliner sections' were.
-          Headliner: [24, 20, 41, 40] },
-        city: { Retro: [22, 14, 20, 13], Editorial: [29, 13, 23, 13], Pop: [13, 13, 20, 13], Paperback: [28, 13, 20, 13], Headliner: [72, 13, 20, 13], '*': [20, 13, 20, 13] },
-        time: { Retro: [13, 5, 13, 10], Pop: [8, 5, 13, 13], Lattice: [15, 5, 13, 13], Paperback: [23, 5, 13, 13], Headliner: [27, 5, 13, 13], '*': [13, 5, 13, 13] },
-        month: { Retro: [7, 4, 11, 9], Lime: [5, 3, 12, 9], Pop: [9, 5, 12, 9], Lattice: [8, 5, 12, 9], Paperback: [8, 5, 12, 9], Headliner: [11, 5, 12, 9], '*': [5, 5, 12, 9] },
-        day: { Retro: [5, 5, 5, 5], Lattice: [3, 3, 5, 5], Paperback: [4, 3, 5, 5], Headliner: [5, 3, 5, 5], '*': [6, 3, 5, 5] },
+          Headliner: [24, 20, 41, 40],
+          // Backline layout 1 measured 2026-11-24 (limits.mjs map --themes=8 --designs=0, then --extra-lines for the three that wrap): the venue 23 on one line (the 24th wraps at 390;
+          // the title sets in TT2020 at 18 px there and the row grows by a line past it, which the frame's own first row does too); layouts 2-4 are Pop's rows, written out.
+          Backline: [23, 18, 28, 40] },
+        city: { Retro: [22, 14, 20, 13], Editorial: [29, 13, 23, 13], Pop: [13, 13, 20, 13], Paperback: [28, 13, 20, 13], Headliner: [72, 13, 20, 13],
+          // Backline layout 1: the city and the time share one label line that wraps at 390 (the frame's does), so each is capped alone at the shared rows' 20 and 13 (the probe reads 58 and 22 one line, 65 and 53 with a wrapped one).
+          Backline: [20, 13, 20, 13], '*': [20, 13, 20, 13] },
+        time: { Retro: [13, 5, 13, 10], Pop: [8, 5, 13, 13], Lattice: [15, 5, 13, 13], Paperback: [23, 5, 13, 13], Headliner: [27, 5, 13, 13], Backline: [13, 5, 13, 13], '*': [13, 5, 13, 13] },
+        month: { Retro: [7, 4, 11, 9], Lime: [5, 3, 12, 9], Pop: [9, 5, 12, 9], Lattice: [8, 5, 12, 9], Paperback: [8, 5, 12, 9], Headliner: [11, 5, 12, 9], Backline: [4, 5, 12, 9], '*': [5, 5, 12, 9] },
+        day: { Retro: [5, 5, 5, 5], Lattice: [3, 3, 5, 5], Paperback: [4, 3, 5, 5], Headliner: [5, 3, 5, 5], Backline: [2, 3, 5, 5], '*': [6, 3, 5, 5] },
       },
       // The page size is vm.gigPage (five) except in layout 4, whose whole
       // list is a one-gig ticker. The cities are read
@@ -3819,23 +4046,26 @@ export const FIELDS = {
     // JP-090: layout 1's label over the gig list; the "· 5" count is the page's.
     // (Layout 2's "Other upcoming · 4", JP-095 (b), was removed 2026-11-12.)
     { k: 'listLabel', l: 'List heading', d: MAP_LIST_LABEL, in: [0],
-      chars: { Retro: [37], Lime: [40], Grunge: [41], Editorial: [46], Pop: [31], Lattice: [31], Paperback: [30], Headliner: [38] },
+      chars: { Retro: [37], Lime: [40], Grunge: [41], Editorial: [46], Pop: [31], Lattice: [31], Paperback: [30], Headliner: [38], Backline: [39] },
       hint: 'The label over the list of gigs, before its count. Left empty, neither is drawn.' },
     { k: 'heading', l: 'Heading', d: 'Manchester',
       // Layouts 1 and 2 start from the picked town (mapHeadingSeed).
       chars: { Retro: [20, 20, 39, 25], Lime: [19, 17, 34, 24], Grunge: [16, 20, 37, 25], Editorial: [11, 19, 22, 22],
         Pop: [17, 21, 25, 23], Lattice: [12, 21, 25, 23], Paperback: [11, 19, 23, 23],
         // Headliner layout 1 measured (limits.mjs map --themes=7 --designs=0): 15 at 1440, 12 at 768, 11 at 390 (a twelfth letter wraps the town); layouts 2-4 are Grunge's.
-        Headliner: [11, 20, 37, 25] } },
+        Headliner: [11, 20, 37, 25],
+        // Backline layout 1 measured (limits.mjs map --themes=8 --designs=0): 16 at 1440, 12 at 768, 11 at 390 (a twelfth letter wraps the town; the seed's `manchester.` is exactly 11);
+        // a typed heading prints as typed, and `mapHeadingSeed` seeds the town in this cap less one, plus the stop. Layouts 2-4 are Pop's.
+        Backline: [11, 21, 25, 23] } },
     // Layout 2's travel card prints the header's Location instead, under its
     // own "Based in" label (JP-096, user call, 2026-10-01): the frame's value is
     // the town alone, and this field's copy says "Based in" itself.
     { k: 'base',    l: 'Based in',       d: MAP_BASE, in: [0, 2],
-      chars: { Retro: [29, null, 33], Lime: [35, null, 27], Grunge: [39, null, 33], Lattice: [19, null, 33], Paperback: [25, null, 28], Headliner: [31, null, 33], '*': [24, null, 33] },
+      chars: { Retro: [29, null, 33], Lime: [35, null, 27], Grunge: [39, null, 33], Lattice: [19, null, 33], Paperback: [25, null, 28], Headliner: [31, null, 33], Backline: [28, null, 33], '*': [24, null, 33] },
       hint: 'Layout 1 prints it beside the map and layout 3 under it. Layout 2’s travel card '
           + 'shows the Location you typed on the header instead.' },
     { k: 'terms',   l: 'Travel charges',   d: MAP_TERMS, in: [0, 1],
-      chars: { Retro: [59, 50], Lime: [58, 41], Pop: [45, 51], Lattice: [39, 51], Paperback: [44, 42], Headliner: [58, 51], '*': [58, 51] } },
+      chars: { Retro: [59, 50], Lime: [58, 41], Pop: [45, 51], Lattice: [39, 51], Paperback: [44, 42], Headliner: [58, 51], Backline: [58, 51], '*': [58, 51] } },
     { k: 'travelTime', l: 'Travel time (layout 2)', d: MAP_TRAVEL_TIME, in: [1],
       chars: { Retro: [null, 11], Paperback: [null, 11], '*': [null, 13] } },
     { k: 'fee',        l: 'Booking fee (layout 2)', d: MAP_FEE, in: [1],
@@ -3945,14 +4175,17 @@ export const FIELDS = {
         // Paperback layout 1 measured 2026-11-21 (limits.mjs testimonials --themes=6 --designs=0 --upright): `who` and `role` 45
         // (105 / 66-83 / 45: each prints once, on its chip, and wraps), `when` 31 (64 / 55 / 31: the script meets the star disc at 390),
         // `quote` 170 (measured 293 / 260 / 195 on three samples, 170 on the fourth, all-lower-case one `--check` adds: at 390 a 180-character review is nine lines and the card runs down over the foot trophy). Layouts 2-4 are Pop's, unmeasured.
-        who: { Retro: [28, 48, 25, 27], Lime: [39, 45, 20, 27], Grunge: [28, 50, 25, 27],
+        // Backline layout 1 measured 2026-11-25 (limits.mjs testimonials --themes=8 --designs=0 --upright): `who` 40 (122 / 67 / 40), `role` 40 (131 / 67 / 40) and `when` 40 (125 / 65 / 40): each prints once and
+        // wraps inside its own pill or line, and 40 is the 390 one-line limit. The round stamp's rings are printed under the copy (`data-underprint`), so a pill crossing them is no collision; the score inside them is.
+        // `quote` held to the shared 190 (measured open at 400: the card grows). Layouts 2-4 are placeholders: their numbers are the ones Backline resolved to before this row.
+        who: { Backline: [40, 32, 15, 27], Retro: [28, 48, 25, 27], Lime: [39, 45, 20, 27], Grunge: [28, 50, 25, 27],
           Editorial: [17, 27, 13, 27], Pop: [18, 32, 15, 27], Lattice: [35, 32, 15, 27],
           Paperback: [45, 31, 13, 23], Headliner: [54, 50, 25, 27] },
         quote: { Lime: [66, 190, 190, 190], Grunge: [68, 190, 190, 190], Editorial: [66, 190, 190, 190],
           Lattice: [190, 190, 190, 190], Paperback: [170, 190, 190, 190], Headliner: [190, 190, 190, 190], '*': [190, 190, 190, 190] },
-        role: { Retro: [28, 48, 26, 29], Lime: [45, 48, 26, 27], Grunge: [28, 48, 26, 29], Lattice: [35, 48, 26, 29],
+        role: { Backline: [40, 48, 26, 29], Retro: [28, 48, 26, 29], Lime: [45, 48, 26, 27], Grunge: [28, 48, 26, 29], Lattice: [35, 48, 26, 29],
           Paperback: [45, 46, 26, 28], Headliner: [54, 48, 26, 29], '*': [26, 48, 26, 29] },
-        when: { Retro: [30], Pop: [30], Lattice: [21], Paperback: [31], Headliner: [47], '*': [46] },
+        when: { Backline: [40], Retro: [30], Pop: [30], Lattice: [21], Paperback: [31], Headliner: [47], '*': [46] },
       },
       hint: 'Each row is one review. Layouts 1, 2 and 4 page through them; layout 3 '
           + 'gives each one a card on its wall, and a row with no name or role '
@@ -3960,10 +4193,14 @@ export const FIELDS = {
           + "above the quote in layout 1. Layout 2's selector takes the name's "
           + 'initials — layout 4 marks its card with the same initials; layouts 2, 3 '
           + 'and 4 have no seat for the date.' },
-    { k: 'rating',  l: 'Rating', d: TESTI_RATING, in: [2],
+    // Backline's layout 1 draws it too, in the card's round stamp (user call, 2026-11-25): seeded 5 there (`TESTI_RATING_BACKLINE`),
+    // and an emptied one leaves the two rings bare. 4 is what the 38px inside the inner ring holds beside the `/5`.
+    { k: 'rating',  l: 'Rating', d: TESTI_RATING, in: { Backline: [0, 2], '*': [2] },
       chars: { Retro: [null, null, 8], Lime: [null, null, 7], Grunge: [null, null, 9], Editorial: [null, null, 5],
-        Pop: [null, null, 7], Lattice: [null, null, 7], Paperback: [null, null, 4], Headliner: [null, null, 9] },
-      hint: 'The big number on the stat card, printed out of 5. Empty it to show how many reviews there are instead.' },
+        Pop: [null, null, 7], Lattice: [null, null, 7], Paperback: [null, null, 4], Headliner: [null, null, 9], Backline: [4, null, 7] },
+      hint: { '*': 'The big number on the stat card, printed out of 5. Empty it to show how many reviews there are instead.',
+        Backline: 'Printed out of 5, in the round stamp (layout 1) and as the big number on the stat card (layout 3). '
+          + 'Emptying it leaves the stamp bare, and shows the review count on the stat card.' } },
     { k: 'stars',   l: 'Star rating', d: TESTI_STARS, in: [1, 2],
       chars: { Retro: [null, 44, 35], Lime: [null, 44, 32], Paperback: [null, 37, 33], '*': [null, 44, 36] },
       hint: 'Layout 2 prints them in the corner of the card, beside the reviewer; layout 3 beside '
@@ -3975,7 +4212,8 @@ export const FIELDS = {
   form: [
     { k: 'image',    l: 'Portrait', type: 'image', aspect: [1, 1], in: [0, 1],
       hint: { '*': 'The round photo beside your name. Layouts 1 and 2 — layouts 3 and 4 draw no credit row.',
-        Headliner: 'The square photo beside your name. Layouts 1 and 2 — layouts 3 and 4 draw no credit row.' } },
+        Headliner: 'The square photo beside your name. Layouts 1 and 2 — layouts 3 and 4 draw no credit row.',
+        Backline: 'The tilted photo beside your name. Layouts 1 and 2 — layouts 3 and 4 draw no credit row.' } },
     // Layout 2's stage shot. The section's two photographs are the artist and
     // the scene — the header's pair the other way up,
     // this one's `image` having been the artist since layout 1 drew it as an
@@ -3997,8 +4235,11 @@ export const FIELDS = {
       // Headliner's layout 1 measured 2026-11-24 (limits.mjs form --themes=7 --designs=0): 31 at 1440 (a fourth line past it), 61 at 768, 46 at 390, in the content box
       // of a panel the form half stretches; 31 is under the seed's 36, so the seed is the floor and a 32-to-36 character head sets a fourth line at 1440 that the card
       // absorbs (the panel and the half grow together); layouts 2-4 are Grunge's, written out.
+      // Backline's layout 1 measured 2026-11-25 (limits.mjs form --themes=8 --designs=0 --upright, every key below): 33 at 1440 (a fourth line past it; 61 at 768, 47 at 390),
+      // under the seed's 36, so the seed is the floor and a 34-to-36 character head may set a fourth line there, which the two cards absorb together; layouts 2-4 are Pop's.
       chars: { Retro: [45, 36, 32, 20], Lime: [37, 37, 32, 19], Grunge: [36, 40, 41, 25],
-        Editorial: [36, 42, 30, 12], Pop: [36, 40, 30, 17], Lattice: [37, 40, 30, 17], Paperback: [41, 36, 30, 17], Headliner: [36, 40, 41, 25] },
+        Editorial: [36, 42, 30, 12], Pop: [36, 40, 30, 17], Lattice: [37, 40, 30, 17], Paperback: [41, 36, 30, 17], Headliner: [36, 40, 41, 25],
+        Backline: [36, 40, 30, 17] },
       hint: 'Layout 3 starts from your name (“Book … for your event”) and follows it until you '
           + 'type your own; layout 4 starts from “Contact Us”. A line break you type is kept in '
           + 'layout 2.' },
@@ -4018,8 +4259,9 @@ export const FIELDS = {
       // Paperback's layout 1 measured 5 rows (the sixth meets the blob's art at 1440) and 20 a line at 390, under the seed's own 29
       // (the frame's longest, one line there), so the seed is the floor.
       // Headliner's layout 1 measured 39 a line (desktop 48, tablet 95, mobile 39: the row's text beside its numeral) and 9 rows (16 measured, open); layout 2 the shared row.
-      chars: { Retro: [45, 32], Pop: [42, 31], Editorial: [34, 29], Lattice: [33, 34], Paperback: [29, 29], Headliner: [39, 34], '*': [34, 34] },
-      count: { Editorial: [6, 9], Lattice: [9, 9], Paperback: [5, 9], '*': [9, 9] },
+      // Backline's layout 1 measured 35 a line (the 390 row wraps past it; 43 / 80 wide) and holds the shared 9 rows (16 measured, open); layout 2 is the '*' row's.
+      chars: { Retro: [45, 32], Pop: [42, 31], Editorial: [34, 29], Lattice: [33, 34], Paperback: [29, 29], Headliner: [39, 34], Backline: [35, 34], '*': [34, 34] },
+      count: { Editorial: [6, 9], Lattice: [9, 9], Paperback: [5, 9], Backline: [9, 9], '*': [9, 9] },
       rows: { placeholder: 'Promise', add: 'Add promise' },
       hint: 'The ticked list beside the form.' },
     // Layout 4's *What happens next* column (JP-079 · JP-081, user call,
@@ -4040,11 +4282,13 @@ export const FIELDS = {
         label: { Retro: [49, 46, 57, 22], Lime: [47, 52, 69, 27], Grunge: [52, 62, 76, 30],
           Editorial: [24, 33, 41, 14], Pop: [32, 33, 40, 19], Lattice: [40, 33, 40, 19], Paperback: [45, 27, 30, 15],
           // Headliner's layout 1 measured 48 (64 / 50 / 48); layouts 2-4 Grunge's, written out.
-          Headliner: [48, 62, 76, 30] },
+          Headliner: [48, 62, 76, 30], Backline: [41, 33, 40, 19] },
         placeholder: { Retro: [37, null, null, 23], Lime: [41, null, null, 24], Grunge: [41, null, null, 24],
           Editorial: [41, null, null, 25], Pop: [35, null, null, 24], Lattice: [36, null, null, 24], Paperback: [34, null, null, 20],
           // Headliner's layout 1 measured 39 (53 / 41 / 39); layouts 2-4 Grunge's.
-          Headliner: [39, null, null, 24] },
+          Headliner: [39, null, null, 24],
+          // Backline's box clips a longer hint at 390 (30; 40 / 32 wide).
+          Backline: [30, null, null, 24] },
       },
       hint: 'One box each — two to a row in layouts 1 and 4 (layout 1 stacks them on a phone), '
           + 'one to a row in layouts 2 and 3, '
@@ -4055,24 +4299,25 @@ export const FIELDS = {
           + 'in every layout.' },
     { k: 'types',    l: 'Event types', type: 'area', d: FORM_TYPES.join(', '), in: [0], list: ',',
       // Paperback's layout 1 measured 6 chips (the 390 frame's two rows; a seventh wraps to a third), the item held to the shared 15.
-      chars: [15], count: { Lime: [5], Grunge: [5], Lattice: [8], Paperback: [6], '*': [8] },
+      // Backline's 390 chips take a third row past 6 of the shared samples (10 / 8 wide); the item stays the shared 15 (36 measured).
+      chars: [15], count: { Lime: [5], Grunge: [5], Lattice: [8], Paperback: [6], Backline: [6], '*': [8] },
       rows: { placeholder: 'Event type', add: 'Add event type' },
       hint: 'The form opens on the first; empty hides the row. Layout 1 only. One per row; a comma starts a new row.' },
     // The chip row's label (JP-090), messageLabel's rule: the row it heads
     // stands whatever it says, so an emptied label reads the seed again.
     { k: 'typeLabel', l: 'Event type label', d: FORM_TYPE_LABEL, in: [0],
-      chars: { Retro: [51], Lime: [52], Grunge: [58], Editorial: [37], Pop: [33], Lattice: [40], Paperback: [45], Headliner: [48] },
+      chars: { Retro: [51], Lime: [52], Grunge: [58], Editorial: [37], Pop: [33], Lattice: [40], Paperback: [45], Headliner: [48], Backline: [41] },
       hint: 'The label over the event types. Layout 1 only. Left empty, it shows Event type.' },
     { k: 'message',  l: 'Message box hint text', d: FORM_MESSAGE, in: [0, 3],
       chars: { Retro: [39, null, null, 53], Lime: [42, null, null, 54], Grunge: [42, null, null, 54],
         Editorial: [44, null, null, 58], Pop: [35, null, null, 54], Lattice: [39, null, null, 54], Paperback: [37, null, null, 44],
-        Headliner: [41, null, null, 54] },
+        Headliner: [41, null, null, 54], Backline: [30, null, null, 54] },
       hint: 'Layouts 1 and 4.' },
     // The message box's label (JP-082): the one box label that was a literal.
     { k: 'messageLabel', l: 'Message label', d: FORM_MSG_LABEL, in: [0, 3],
       chars: { Retro: [51, null, null, 45], Lime: [52, null, null, 59], Grunge: [58, null, null, 64],
         Editorial: [37, null, null, 35], Pop: [33, null, null, 41], Lattice: [40, null, null, 41], Paperback: [45, null, null, 33],
-        Headliner: [48, null, null, 64] },
+        Headliner: [48, null, null, 64], Backline: [41, null, null, 41] },
       hint: 'Layouts 1 and 4. Also heads the message in the email you receive. Left empty, it shows Message.' },
     // Dead until the submit was made real — this is now what the form is for.
     { k: 'email',    l: 'Email address', type: 'email', d: FORM_EMAIL,
@@ -4081,7 +4326,7 @@ export const FIELDS = {
       // Lattice's layout 1 is a full-width bar with nothing beside it to crowd, so its measured 35 stands
       // (the shared 15 is Retro's and Lime's pill).
       chars: { Retro: [16, null, null, 36], Editorial: [15, null, null, 27], Pop: [15, null, null, 32],
-        Lattice: [35, null, null, 36], Paperback: [34, null, null, 31], Headliner: [39, null, null, 36], '*': [15, null, null, 36] },
+        Lattice: [35, null, null, 36], Paperback: [34, null, null, 31], Headliner: [39, null, null, 36], Backline: [30, null, null, 36], '*': [15, null, null, 36] },
       hint: 'Layouts 1 and 4. Layout 4 starts from “Check Availability”, and layout 1 from “Enquire” in Lime, Grunge, Editorial and Pop.' },
     // Layouts 2 and 3's card — the same component in both frames. Every one is
     // emptiable and drops what it fills, except the button: it is the submit,
@@ -4110,7 +4355,7 @@ export const FIELDS = {
     // 2026-11-20 (limits.mjs footer --themes=5): 37 at all three widths, three lines in its 11em measure.
     // Paperback's footer draws no statement (its frames set the name, the pills and a photograph), so the panel does not offer it.
     { k: 'statement', l: 'Statement', type: 'area', d: FOOTER_STATEMENT, in: { Paperback: [], '*': [0] },
-      chars: { Grunge: [45], Lattice: [37], Headliner: [59], '*': [36] } },
+      chars: { Grunge: [45], Lattice: [37], Headliner: [59], Backline: [74], '*': [36] } },
     // Paperback's footer photograph, the tilted keyline card between the name and the right-hand edge. Seeded (PAPERBACK_PHOTOS.footer);
     // no other template's footer draws a photograph, so no other template offers the box.
     { k: 'image', l: 'Photo', type: 'image', aspect: [5, 4], in: { Paperback: [0], '*': [] },
@@ -4122,7 +4367,7 @@ export const FIELDS = {
     { k: 'links',    l: 'Footer links', type: 'links', max: 10,
       // Read in every row at once: the two columns stand side by side (session 11).
       // Lattice's measured: 19 at 390 (a one-line label in its 159-wide cell; 24 at 1440, 41 at 768).
-      cols: { label: { Retro: [19], Lime: [28], Grunge: [28], Editorial: [20], Pop: [14], Lattice: [19], Paperback: [47], Headliner: [18] } },
+      cols: { label: { Retro: [19], Lime: [28], Grunge: [28], Editorial: [20], Pop: [14], Lattice: [19], Paperback: [47], Headliner: [18], Backline: [17] } },
       hint: {
         '*': 'The list is halved into two columns, in order. A link scrolls to a section on the page, or opens a web address in a new tab.',
         // Lattice's frames set the links as a grid read across (plans/lattice/layout-1.md, section 11).
@@ -4136,17 +4381,19 @@ export const FIELDS = {
     // (session 11).
     // Lattice's bracket box stands alone under the links, so its cap is the page's (measured: 36 at 390,
     // 49 at 1440, 82 at 768).
-    { k: 'cta',      l: 'Button', d: 'Book Now', chars: { Editorial: [12], Pop: [11], Lattice: [36], Paperback: [36], Headliner: [41], '*': [16] },
+    // Backline's layout 1 measured 2026-11-25 (limits.mjs footer --themes=8 --designs=0): 31 at 1440, 35 narrow, walked with the arrow beside it.
+    { k: 'cta',      l: 'Button', d: 'Book Now', chars: { Editorial: [12], Pop: [11], Lattice: [36], Paperback: [36], Headliner: [41], Backline: [31], '*': [16] },
       hint: 'Books at the enquiry form, the calendar or the pricing section — whichever the page carries. Empty drops the button.' },
     // The same key the header's seal takes: `vm.showBadge` already reads this
     // section's own content, so the footer's seal was hidable by nothing only
     // because no field here named it.
-    { k: 'showBadge', l: 'Seal', type: 'select', opts: SHOW_HIDE, d: 'show',
+    // Backline's footer draws no seal and no disc (1:6867 · 1:18639 · 1:19969), so it does not offer the select.
+    { k: 'showBadge', l: 'Seal', type: 'select', opts: SHOW_HIDE, d: 'show', in: { Backline: [], '*': [0] },
       hint: { Headliner: 'The red square of letters beside the name.' } },
     // Defaults to copyrightOf(name), special-cased.
     { k: 'copyright', l: 'Small print',
       // Lattice's measured: 25 at 390, a one-line copyright beside the credit (75 at 768, 157 at 1440).
-      chars: { Retro: [31], Lime: [28], Grunge: [32], Editorial: [24], Pop: [35], Lattice: [25], Paperback: [34], Headliner: [39] } },
+      chars: { Retro: [31], Lime: [28], Grunge: [32], Editorial: [24], Pop: [35], Lattice: [25], Paperback: [34], Headliner: [39], Backline: [36] } },
   ],
 }
 
@@ -4293,20 +4540,26 @@ export function fieldSeed({ cat, f, themeName, design, c = {}, artistName, email
     : f.k === 'heading' && design === 2 && HEADING_3[cat] ? HEADING_3[cat]
     : f.k === 'heading' && design === 3 && HEADING_4[cat] ? HEADING_4[cat]
     : f.k === 'heading' && cat === 'calendar' && design === 0 && themeName === 'Headliner' ? CAL_HEADING_HEADLINER
+    : f.k === 'heading' && cat === 'calendar' && design === 0 && themeName === 'Backline' ? CAL_HEADING_BACKLINE
     : f.k === 'heading' && cat === 'calendar' && design === 0 && limeTreeTheme(themeName) ? CAL_HEADING_1
-    : f.k === 'heading' && cat === 'repertoire' ? `${songs.filter((t) => !blankRow(t, SONG_KEYS)).length} ${themeName === 'Paperback' ? 'songs' : 'Songs'}`
+    : f.k === 'heading' && cat === 'repertoire' ? `${songs.filter((t) => !blankRow(t, SONG_KEYS)).length} ${repCountWord(themeName, design)}`
     : f.k === 'heading' && cat === 'testimonials' && design === 1 ? TESTI_HEADING_2
+    : f.k === 'rating' && cat === 'testimonials' && design === 0 && themeName === 'Backline' ? TESTI_RATING_BACKLINE
     : f.k === 'navMode' && cat === 'header' ? navModeDefault(themeName, design)
     : f.k === 'button' && cat === 'form' ? formBtnSeed(themeName, design)
           : f.k === 'heading' && cat === 'map' && design < 2 ? mapHeadingSeed(c, themeName, design)
     : f.k === 'base' && cat === 'map' ? mapBaseSeed(c, themeName, design)
     : f.k === 'terms' && cat === 'map' ? mapTermsSeed(c)
     : f.k === 'cta' && cat === 'calendar' && design === 3 ? CAL_SEND_4
-    : f.k === 'cta' && cat === 'bio' && design === 0 && themeName === 'Paperback' ? BIO_CTA_PAPERBACK
-    : f.k === 'cta' && cat === 'calendar' && design === 0 && (themeName === 'Lattice' || themeName === 'Paperback' || themeName === 'Headliner') ? CAL_CTA_LATTICE
-    : f.k === 'rowCta' && cat === 'pricing' && design === 0 && (themeName === 'Paperback' || themeName === 'Headliner') ? PRICING_ROW_CTA_PAPERBACK
+    : f.k === 'cta' && cat === 'bio' && design === 0 && (themeName === 'Paperback' || themeName === 'Backline') ? BIO_CTA_PAPERBACK
+    : f.k === 'cta' && cat === 'calendar' && design === 0 && (themeName === 'Lattice' || themeName === 'Paperback' || themeName === 'Headliner' || themeName === 'Backline') ? CAL_CTA_LATTICE
+    : f.k === 'rowCta' && cat === 'pricing' && design === 0 && (themeName === 'Paperback' || themeName === 'Headliner' || themeName === 'Backline') ? PRICING_ROW_CTA_PAPERBACK
     : f.k === 'heading' && cat === 'pricing' && design === 0 && themeName === 'Headliner' ? PRICING_HEADING_HEADLINER
+    : f.k === 'heading' && cat === 'pricing' && design === 0 && themeName === 'Backline' ? PRICING_HEADING_BACKLINE
+    : f.k === 'heading' && cat === 'gallery' && design === 0 && themeName === 'Backline' ? GALLERY_HEADING_BACKLINE
+    : f.k === 'railLabel' && cat === 'gallery' && design === 0 && themeName === 'Backline' ? GALLERY_RAIL_LABEL_BACKLINE
     : f.k === 'statement' && cat === 'footer' && themeName === 'Headliner' ? FOOTER_STATEMENT_HEADLINER
+    : f.k === 'statement' && cat === 'footer' && themeName === 'Backline' ? FOOTER_STATEMENT_BACKLINE
     : f.k === 'rowCta' && cat === 'pricing' && design === 2 ? PRICING_ROW_CTA_3
     : f.k === 'rowCta' && cat === 'pricing' && design === 3 ? PRICING_ROW_CTA
     : fieldDefault(f)
@@ -4520,7 +4773,13 @@ export const INLINE_OFF = {
   'Headliner.0.header.kicker': 'not drawn: the layout-1 header prints no act type any more (a shared identity key; the bio’s role line and the form print it)',
   'Headliner.0.header.location': 'not drawn: layouts 1–4 print no location any more (a shared identity key; the bio, the calendar and the map print it)',
   'Headliner.0.media.tracks.sub': 'derived value: the seeded page prints the release under the title and the running time at the row’s right, and the whole line only once the list is stored',
+  'Backline.0.media.tracks.sub': 'derived value: the seeded page prints the release under the title and the running time at the row’s right, and the whole line only once the list is stored',
+  'Backline.0.header.kicker': 'not drawn: the layout-1 header prints no act type any more (a shared identity key; the bio’s role line and the form print it)',
+  'Backline.0.header.location': 'not drawn: layouts 1–4 print no location any more (a shared identity key; the bio, the calendar and the map print it)',
+  'Backline.0.header.cta1': 'a node text can never settle (a user call, section 1): the frame sets the Book pill 49 px in from the right edge, and the canvas’s own toolbar (right 8, top 8, about 100 wide) covers its words at the desktop canvas, so a click there lands on the toolbar; the panel edits it (the ledger is per design, so tablet, which would reach it, loses it too)',
   'Headliner.0.repertoire.songs.length': 'not drawn: only layout 3 prints a song’s length',
+  'Backline.0.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
+  'Backline.0.repertoire.songs.length': 'not drawn: only layout 3 prints a song’s length',
   '*.*.pricing.tiers.tags': 'derived value: the filter chips are the distinct tags of every package',
   '*.3.video.videos.desc': 'not drawn: layout 4 prints the playing video’s title alone',
   '*.*.repertoire.songs.tags': 'derived value: the filter chips are the distinct tags of every song',
@@ -4546,6 +4805,9 @@ export const INLINE_MARKED = {
 export const INLINE_PART = {
   'map.listLabel': true,
   'calendar.time': true,
+  // `every`: the slot's one copy is drawn on more than one node, and each opens it. Backline's layout-1 calendar prints the start time on the
+  // picked day's ticket and again in the terminal line.
+  'Backline.0.calendar.time': 'every',
   'repertoire.songs.artist': true,
   // Layout 2 prints these inside a longer line: a bullet, an arrow or a count
   // beside the words (`32 reviews · 4.9 ★`, `Expand view→`). The words are
@@ -4666,13 +4928,18 @@ export const IDENTITY_CHARS = {
     tags: { chars: { Retro: [null, 22, null, 22], '*': [null, 22, 22, 22] },
       count: { Retro: [null, 7, null, 7], '*': [null, 6, 8, 8] } },
     seal: { Retro: [19, null, 19], Lime: [13, null, 22], Grunge: [14, null, 14], Editorial: [16],
-      Pop: [null, null, 12], Paperback: [null, null, 12] },
+      Pop: [null, null, 12], Paperback: [null, null, 12],
+      // Backline layout 1 measured 2026-11-24 (limits.mjs bio --themes=8 --designs=0, `who.seal`: 11 at every width; the stamp sets the name twice,
+      // one copy to a 106 degree arc, and a twelfth letter meets its neighbour). Layouts 3 and 4 are Pop's, written out.
+      Backline: [11, null, 12] },
   },
   // No video row: layout 4's top bar printed the artist's name until 2026-10-28 and
   // prints the playing video's title since (`videos.title`), and layout 2 none.
   calendar: {
     location: { Retro: [19, null, null, 67], Lime: [null, null, null, 64], Grunge: [null, null, null, 55],
-      Lattice: [19, null, null, 67], Paperback: [null, null, null, 29], '*': [null, null, null, 67] },
+      Lattice: [19, null, null, 67], Paperback: [null, null, null, 29],
+      // Backline's layout-1 ticket measured 48 at 390 (limits.mjs --extra-lines=who.location: the town takes two lines).
+      Backline: [48, null, null, 67], '*': [null, null, null, 67] },
     seal: { Retro: [19] },
   },
   footer: {
@@ -4680,7 +4947,9 @@ export const IDENTITY_CHARS = {
     // the name, two lines at the least width: 39 (87 at 1440, 76 at 768). Its ring is not drawn (no `seal` row).
     title: { Retro: [24], Lime: [46], Grunge: [54], Editorial: [39], Pop: [10], Lattice: [39], Paperback: [37],
       // Headliner's layout 1 measured 2026-11-24 (limits.mjs footer --themes=7 --designs=0, `who.title`): the name beside the monogram holds 31 (48 / 66 / 31).
-      Headliner: [31] },
+      Headliner: [31],
+      // Backline's layout 1 measured 2026-11-25 (limits.mjs footer --themes=8 --designs=0, `who.title`): the name in the left column holds 30 at 1440 in two lines (72 at 768, 39 at 390).
+      Backline: [30] },
     seal: { Retro: 19, Lime: 13, Grunge: 14, Editorial: 16, Pop: 12, Paperback: 12 },
   },
   form: {
@@ -4690,8 +4959,10 @@ export const IDENTITY_CHARS = {
       Pop: [55, 54, 11], Lattice: [59, 54, 11], Paperback: [60, 32, 11],
       // Headliner's layout 1 measured 2026-11-24 (limits.mjs form --themes=7 --designs=0, `who.*`): the name in the avatar row holds 33 (41 / 83 / 33), the role line 40;
       // layouts 2 and 3 are Grunge's, written out.
-      Headliner: [33, 85, 23] },
-    kicker: { Retro: [43, 38], Pop: [39, 40], Lattice: [33, 40], Paperback: [37, 40], Headliner: [40, 40], '*': [30, 40] },
+      Headliner: [33, 85, 23],
+      // Backline's layout 1 measured 2026-11-25 (limits.mjs form --themes=8 --designs=0, `who.*`): the name beside the polaroid holds 60, the role line 37; layouts 2 and 3 are Pop's.
+      Backline: [60, 54, 11] },
+    kicker: { Retro: [43, 38], Pop: [39, 40], Lattice: [33, 40], Paperback: [37, 40], Headliner: [40, 40], Backline: [37, 40], '*': [30, 40] },
     seal: { Pop: [12], Paperback: [12] },
   },
   // Layout 2's caption line ellipsizes at 390 past 26–27 (session 6's re-run;
@@ -4713,7 +4984,10 @@ export const IDENTITY_CHARS = {
       Paperback: [41, 10, 12, 30],
       // Headliner's layout 1 (limits.mjs media --themes=7 --designs=0): the player's artist line, one ellipsised line,
       // holds 65 / 65 / 50; the others are Grunge's until their passes.
-      Headliner: [50, 11, 21, 31] },
+      Headliner: [50, 11, 21, 31],
+      // Backline's layout 1 (limits.mjs media --themes=8 --designs=0, 2026-11-24): the player's artist line, one ellipsised line in the title block
+      // (236 / 269 / 190 wide), holds 33 / 37 / 26; the others are Pop's until their passes.
+      Backline: [26, 11, 13, 31] },
   },
   pricing: {
     seal: { Grunge: [14] },
@@ -4734,7 +5008,9 @@ const specAt = (spec, themeName, design) => {
   // Headliner reads GRUNGE's row (and Pop's where Grunge has none): its display is Anton, the face Grunge sets,
   // and its brutalist frames are nearer Grunge's than Pop's (plans/headliner/layout-1.md, *Settled in session 0*).
   // Every cap it reaches this way is provisional until its own pass measures it (`limits.mjs --themes=7`).
-  return specAt(spec[themeName] ?? spec['*'] ?? (themeName === 'Lattice' || themeName === 'Paperback' ? spec.Pop : themeName === 'Headliner' ? (spec.Grunge ?? spec.Pop) : undefined), themeName, design)
+  // Backline reads POP's row where a spec names neither it nor '*' (session 0, plans/backline/layout-1.md:
+  // TT2020 sets wide, so expect every cap to come in under Pop's; session 12 measures them, `--themes=8`).
+  return specAt(spec[themeName] ?? spec['*'] ?? (themeName === 'Lattice' || themeName === 'Paperback' || themeName === 'Backline' ? spec.Pop : themeName === 'Headliner' ? (spec.Grunge ?? spec.Pop) : undefined), themeName, design)
 }
 const isColObj = (spec) => spec != null && typeof spec === 'object' && !Array.isArray(spec) && 'chars' in spec
 // The resolved cap of a field or column: { chars, count, list } or null.
@@ -4801,8 +5077,8 @@ export function identityCap(key, sections, themeName) {
 // change a reader, re-measure, change this.
 export const IDENTITY_READS = {
   // Headliner's layout-1 bio prints neither (the frame has no role line), so its layout 1 is off both.
-  kicker: { bio: { Headliner: [1, 2, 3], '*': [0, 1, 2, 3] }, form: [0, 1] },
-  location: { bio: { Headliner: [1, 2], '*': [0, 1, 2] }, calendar: { Retro: [0, 3], Lattice: [0, 3], '*': [3] } },
+  kicker: { bio: { Headliner: [1, 2, 3], Backline: [1, 2, 3], '*': [0, 1, 2, 3] }, form: [0, 1] },
+  location: { bio: { Headliner: [1, 2], Backline: [1, 2], '*': [0, 1, 2] }, calendar: { Retro: [0, 3], Lattice: [0, 3], Backline: [0, 3], '*': [3] } },
   tags: { bio: { Retro: [1, 3], '*': [1, 2, 3] } },
   showTags: { bio: { Retro: [1, 3], '*': [1, 2, 3] } },
 }

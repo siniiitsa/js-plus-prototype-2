@@ -419,3 +419,40 @@ the same object as Lattice's and Paperback's; the block owns no hook and there i
 - **Seeds are the shared ones**: `Book Now` (the frame's `Book now`), the head `Let's make your night unforgettable.`, the three promises, the five chips and `Message` / `Event type` match the frame's words. The placeholders print
   as seeded, `dd / mm / yyyy` and `approx.`, where the frame types `DD / MM / YYYY` and `Approx.` (Lattice's call: a Headliner-only seed would fork `FORM_FIELDS` and `formFieldsVal`).
 
+
+## Backline — layout 1 (plans/backline/layout-1.md, section 9, 2026-11-25)
+
+`BacklineForm` (`EncoreSection.jsx`, just before `EnquiryForm`; dispatched there on `s.v0 && s.limeTree && s.backline` after the seam and ahead of Headliner's line). Frames `1:6725` · `1:18496` ·
+`1:19825` (752.39 / 1071.38 / 1244.05 tall). Everything the live seam owns (the typed boxes, the date mask, the chip at 0, the refusal, the `role="alert"` line, the mailto submit, the sent state) goes
+over in `g`, the same object as Lattice's, Paperback's and Headliner's; the block's only hook is `useId` (the tear's) and there is no `<form>`. **It is not Lime's *Split context + form*.**
+
+- **Stage**: `BACKLINE_FORM` holds each width's numbers, `u(v)` in `cqw`, `vm.pad = '0px <surplus>'` (`form` joins the Backline line in `EncoreBuilder.jsx`). Rendered 751.8 / 1070.8 / 1243.8.
+- **Ground**: Scheme 1 paper (no `form` row in `SCHEMES_OF.Backline`; no `cardOnPage`), under `BacklineTear tear="form"` in the calendar's olive (`s.onScheme[2].bg`), 88 tall at `top: -1`, the narrow widths
+  the desktop contour cropped at 1:1. The raster matches that key at r .996-.997 at all three widths (it was traced in session 0 from the frames' tear order, and it is this master's).
+- **Two cards, not one split card**: abutting (no gap), each turned on its own and with its own shadow, the form painted second. The panel turns -0.6 degrees, the form +0.4; a 1fr / 2fr grid at 1440,
+  stretched to one height, and one column narrow.
+- **Colours**: `ink = s.onScheme[1].text1`, `green = s.onScheme[1].text3` (`#6F630A`: the labels, the button, the refused underline, the prompt), **`cream = s.onScheme[1].box1`** (on this seat `s.text1`
+  is ink, so cream type on the dark panel cannot read it, as the calendar, on Scheme 2, can), beige `s.chips[5].bg` (the role line, the statement's last word). The panel is `BL_PRICE_DARK` (sampled
+  `#38391C`) with pricing's grain (`tone="olive"`, .29); the form's paper is `BL_TICKET` (paper grain at .5) under the calendar card's shadow.
+- **The panel**: a 58 x 64 polaroid (the form's `image`, turned -4 degrees; unset draws the initials) beside the name (Archivo Backline 13) over the header's role (11, beige); the statement in TT2020,
+  lower-cased by CSS (call 4), split at its last space with the tail in beige (one word is all cream), 50 / 40 / 33 at lh .9, fitted to its widest word by `vm.titleWordEms` (`ttEms`); the promises
+  foot-anchored at 1440, each a 2-on-1-off dashed rule over an 11 px cross (a path: TT2020 has no `✕` glyph) and TT2020 15.
+- **The form**: underlined TT2020 18 boxes, 44 tall, two to a row (one at 390), Archivo Backline 13 captions; the chips square, 40 tall, 1 px ink, the lit one ink under cream (**the chip starts at 0**);
+  the message box 109 tall with the same underline; the olive `BacklinePill` submit (the seam's `<a href="mailto:">` as `as` / `tagProps`) beside the `role="alert"` line under it.
+  **The pill grows here** (`height: auto`, `min-height: 46`, wrapping): the kit's pill is one `nowrap` line, and a long one-word label ran out of the 390 card.
+- **A refused box** thickens its underline to 2 px and turns it olive (the palette has no red).
+- **The sent state** swaps the form card alone with a minimum of `sentH` (449 / 449 / 663): a lower-cased TT2020 head, the body, the address in olive as typed, and *Write another*.
+- **Seeds** are the shared ones, and match the frame's words. `Book Now`; Backline is not in `limeTreeTheme`.
+- **Not drawn** (call 1 A: the masters print no eyebrow or foot note). The frame's `DJ · LIVE BAND` is `vm.kicker` (`DJ · Live Act` seeded). The chips' sub-half-pixel hand turns are not reproduced.
+- **Caps** (2026-11-25, `limits.mjs form --themes=8 --designs=0 --upright`, then `--check` and `--seeds`: 0 failing, 0 over): `heading` **36** (the seed, a floor: 33 measured at 1440, where a fourth line sets;
+  61 / 47 narrow), `fields.label` 41, `fields.placeholder` 30 (the 390 box clips), `typeLabel` / `messageLabel` 41, `message` 30, `button` **30**, `promises[]` 35 (9 rows; 16 measured, open), `types` 6 chips
+  of the shared 15, identity `title` 60 and `kicker` 37. **The probe reads text, not an SVG**: while the pill was `nowrap` it passed 36 for the button with the arrow hanging out of the 390 button, so a
+  button's cap is walked as well as probed. Layouts 2-4 resolve as they did before the Backline rows (Pop's numbers written out, or the `'*'` row's where a spec has one:
+  `promises`, `types`, `button`); the resolved caps were compared old against new, identity keys included.
+- **`in` rows unchanged** (`reach`, theme 8, 1,152 renders: `image` 1-2, `button` / `message` / `messageLabel` 1 and 4, `promises` 1-2, `types` / `typeLabel` 1, `who.kicker` 1-2).
+  `FIELDS.form.image`'s hint gained a Backline line.
+- **Ledgers**: none. `inline-probe` PASS (21 slots at 1440 and 768; 2 unhit, the header's name and role); `focus-probe --prime --check` PASS (27 controls a width); `photo-probe` `--check`, `--blank`,
+  `--drop` PASS (the avatar, 1 slot).
+- **Checked outside the canvas**: in the builder's Preview at a 1900 px window the surplus goes to the gutters (the grid keeps the frame's 1343 px span, centred; paper and tear reach both edges). The cards'
+  shadow is the three nodes' own (`0 1px 1px` at .18, `0 14px 26px -16px` at .55). The paler button in a refused shot is the pointer's hover (.72), not the refusal.
+- **Placeholders draw at the global .45**, where the frame's `#757575` is about .57 of the ink on the card: `--ph` is the user's call.

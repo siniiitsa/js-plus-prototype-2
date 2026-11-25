@@ -75,6 +75,13 @@ whose page is eleven full-bleed bands with straight seams. It inherits groups **
 own running list (*Inherited and used* in [`headliner/layout-1.md`](./headliner/layout-1.md), written at the sweep from the per-section
 *Conventions section N inherits* bullets). Its square corners, hairlines, wavy-line field, rings and ringed numeral stay in its plan and
 in `notes/templates.md`.
+Backline's layout-1 pass leaned on it a thirteenth time and is the same shape — the same Batch 2 file, eleven own-tree blocks —
+with two differences that mattered: **its frames bind no variables at all** (so it meets group **F**'s raw-values rows again, not
+**G**'s modes), and it is the first torn-paper page of own trees, with art shared between bands. It inherits group **F** whole and,
+from **G** and **H**, the stage pattern, `SCHEMES_OF` / `s.onScheme`, the seeded-label rule and the probe recipe, and adds group
+**I**, below, from its own running list (*Inherited and used* in [`backline/layout-1.md`](./backline/layout-1.md), written at the
+sweep from the per-section *Conventions section N inherits* bullets). Its tears, grain, tape, notches, stamps and barcodes stay in
+its plan and in `notes/templates.md`.
 The video section's passes (`plans/video.md`, sessions 1 to 9: one restored section fitted at layouts 2 and 4 of
 all five templates) are not a layout pass and leaned on groups A, B and C as they stood; the nine rows they added,
 each met three times or more, are group E.
@@ -367,11 +374,37 @@ more unless the cell says otherwise.
 | *When a probe fails on something the page does right, fix the probe in the same commit and say so: `limits.mjs`'s overlap filter skips a same-box `aria-hidden` copy of a seat (section 1), `inline-probe` slides its aim off the builder's chrome (section 1), `focus-probe`'s `ACCEPTED` table takes a row with its reason (section 8)* | headliner/layout-1, *Settled in sections 1 and 8* | sections 1, 8, 9 |
 | *Theme 6 can show 0.1 px Figtree text-x differences between two byte layouts of the same source (66 of 144 in sections 5 and 11, 0 in sections 6 to 10): confirm the old tree against its own rerun, then bisect with a no-op comment before calling it a regression* | headliner/layout-1, *Settled in sections 5 and 11* | sections 5, 11 (and the sweep) |
 
+## I. A torn-paper page with own trees and no variables (Backline, layout 1)
+
+Source: [`backline/layout-1.md`](./backline/layout-1.md), *Conventions* (*Settled in session 0*, *Settled in sections 1–11*,
+*Conventions section N inherits*, *Inherited and used*). Group **F** applies whole, and the stage pattern, the seats, the seeded
+labels and the two-build digest from **G** and **H**; these are the rows Backline added.
+
+| Convention | Where | Leaned on in Backline |
+|---|---|---|
+| *Where the frames bind nothing, sample each ground from a render (the mean of its grain fill) and write the mapping; a band that paints itself reads `s.onScheme[n].bg`* | backline/layout-1, *Settled in session 0* | every section |
+| *Before tracing a new edge, correlate its raster against every held contour at every shift modulo the strip's period (a true window reads .99 or better, noise .72 to .82); reuse, rotate or compose before adding a path* | backline/layout-1, *Conventions sections 6, 7, 8, 9, 10 and 11 inherit* | sections 5 to 11 |
+| *A narrow master's edge strip may be the desktop contour cropped at 1:1, not squeezed: test both before choosing* | backline/layout-1, *Settled in section 1* | every torn section |
+| *Set a traced edge's bias on a render against that master's own alpha edge; never carry another section's bias over* | backline/layout-1, *Conventions section 8 inherits* | sections 7, 8, 9, 10, 11 |
+| *A frame's SVG shadow maps to `drop-shadow()` at its `stdDeviation`, not twice it; read the filter* | backline/layout-1, *Settled in section 7* | sections 7, 8, 9, 10 |
+| *A dashed or dotted rule in a frame is a pattern: measure its on and off run and draw a repeating gradient; CSS `dashed` and `dotted` differ from it* | backline/layout-1, *Conventions sections 6 and 7 inherit* | sections 5, 6, 7 |
+| *A turned, notched card: the turned wrapper carries the drop shadow and the paper inside carries the notch mask and grain, so the shadow follows the bites; a tiled-background notch shows a hairline once turned* | backline/layout-1, *Conventions section 8 inherits*, *Settled in section 10* | sections 3, 6, 7, 8, 10 |
+| *A list that turns or recolours its cards does it by the item's place in the whole list, so a page turn or a filter moves no card* | backline/layout-1, *Settled in sections 6 and 7* | sections 6, 7 |
+| *Walk the artist's own content before calling a section done: the most and the longest labels, three widths, `&live=1`, every control taking a real click. A one-line control row the frame draws is a seeded picture, not a rule* | backline/layout-1, *Settled in section 7* | sections 7 to 11 |
+| *A text under a transparent box is not clickable on the canvas: a field painted under other copy takes its own layer on top* | backline/layout-1, *Settled in section 10* | sections 10, 11 |
+| *A capped label beside an arrow or icon is walked, not only probed (the probe reads text, not SVG); a one-line button the artist types into is allowed to grow* | backline/layout-1, *Settled in sections 9, 10 and 11* | sections 9, 10, 11 |
+| *A decorative layer that crosses copy as the frame does is marked for the cap probe (`data-seam`, `data-underprint`), which then reads no collision; only `limits.mjs` reads the marks* | backline/layout-1, *Settled in sections 10 and 11* | sections 10, 11 |
+| *Do not assume a seat's inks: print the keys the seat resolves to before placing type on a nested card (on a paper seat `s.text1` is ink)* | backline/layout-1, *Settled in section 9* | sections 9, 10, 11 |
+| *A frame literal with no field is not drawn even where it looks derivable, and is listed for the user* | backline/layout-1, *Conventions section 7 inherits* | sections 6, 7, 8 |
+| *Judge a texture by a crop beside the master's, not by its standard deviation alone* | backline/layout-1, *Settled in section 7* | sections 7, 8, 9, 11 |
+| *A face that is not on Google Fonts is self-hosted only under a licence that allows it: subset, keep the name table and licence text, inline it as a data URI so the single file and the published tab carry it; a monospaced face's fit table is one constant* | backline/layout-1, *Settled in session 0* | session 0, every fitted head |
+| *A flag-dependent cap probe is re-run with the section's recorded flags before a whole-page failure is believed (`--upright` for turned cards, `--extra-lines` where the frame wraps)* | backline/layout-1, *Session 12 — the record* | session 12 |
+
 ## What is deliberately not here
 
 - **A template's decorative language** — Retro's grain, torn edges, checkerboard and offset
   shadows; Lime's arcs and glows; Grunge's tears, lighten grain and seals; Editorial's dashed
-  rule and tape; Pop's stickers, scribbles, dot grids and 10px rules; Lattice's dot field, bracket corners, dotted art and square chips; Paperback's tilted keylined cards, tape, sparkles, confetti, doodle discs and hand-drawn marks; Headliner's square bands, hairlines, wavy-line field, rings and ringed numeral. Each plan's
+  rule and tape; Pop's stickers, scribbles, dot grids and 10px rules; Lattice's dot field, bracket corners, dotted art and square chips; Paperback's tilted keylined cards, tape, sparkles, confetti, doodle discs and hand-drawn marks; Headliner's square bands, hairlines, wavy-line field, rings and ringed numeral; Backline's torn seams, grain, tape, ticket notches, stamps, barcodes and hand marks. Each plan's
   *decorative language* section owns its own.
 - **The `sectionVm` and live-seam rules.** They are CLAUDE.md's, and every plan reads that first.
 - **The per-session procedure and the sweep list.** Lime layout 1's are the canonical ones; a new

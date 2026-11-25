@@ -375,3 +375,55 @@ Frames `1:5067` · `1:15838` · `1:16888` (1152 / 1556 / 2112 tall). An **own tr
 - **Empty list** draws an orange "No packages yet." bar; an emptied `sub` drops the small print.
 - **Caps** (`limits.mjs pricing --themes=7 --designs=0`, then `--check` and `--seeds`: 0 failing, 0 seeds over): `heading` **24** (42 / 36 / 24), `tiers.name` **32** (41 / 32 / 32), `price` **6** (6 / 10 / 16), `price.num` **6** (held at the 1440 box, under Pop's 7), `tags` count **3** (the seed's floor: the probe reads 13 / 7 / 1, a long prose chip wrapping the row, and the row is the union of every package's), `feats` item **40** (51 / 40 / 41) with count 15, `unit` **16** (16 / 50 / 50), `rowCta` **39** (50 / 40 / 39), `sub` 67 (the shared `'*'` row), `tags` item and `blurb` the shared rows (26 and 160). Layouts 2-4 are Grunge's rows, written out.
 - **Ledgers**: none written. `inline-probe --theme Headliner --layout 1 --cat pricing --width 1440,768 --check` passes with 30 slots hit and the 6 derived `tiers[].tags` slots ledgered off by the shared `*.*.` row; `photo-probe` has no slot to hit (the layout-1 pricing reads no photograph).
+
+## Backline · layout 1 (the ninth template; plans/backline/layout-1.md, section 7, 2026-11-25)
+
+`BacklinePricing` (`EncoreSection.jsx`; 1:6322 · 1:18100 · 1:19431) is a block of its own, dispatched in `Pricing()` after the seam, ahead of
+Headliner's line. It is handed `g = { shown, active, pressChip }`, so the chip filter, `tierBookTo` and the `s.live` gate are the shared
+seam's. The stage pattern: `BACKLINE_PRICING`, an `inline-size` container, the frame's px in `cqw` at all three widths. Rendered heights:
+1135.3 / 1595 / 2196.4 against 1135.38 / 1595 / 2196.50.
+
+- **The band** is Scheme 1's paper (the pricing has no `SCHEMES_OF.Backline` row) with paper grain, under a **moss torn head** (the map's
+  ground) drawn 1 above the band. It takes `ground="moss"`: the moss fibres are nearly as pale as the paper they lie over (about 230
+  against the body's 151; every fringe is the frames' own fibre colour at .82 over the band below, `backlineArt.jsx`). The narrow widths draw the 1440 contour cropped from the left.
+- **The head** is TT2020 at 77.76 / 48 / 38 on an `8.205em` measure, which reproduces all three masters' breaks, with the **last two
+  words olive** (the media's rule: three or more words). It is fitted by `vm.titleWordEms` (`ttEms`). The seed is the frame's, with its
+  full stop (`PRICING_HEADING_BACKLINE`, in `sectionVm` and `fieldSeed`).
+- **The tabs** are 44-tall 1 px ink boxes (padding 19.75, overlapping by 1.5), at the head's foot-right at 1440 and 768 and under the head
+  at 390. **At rest none is lit** (JP-089), though the frame lights Solo. A lit one is ink with cream type. **The list wraps, and where it
+  cannot stand beside the head it drops under it whole.** The first build was one `nowrap` line like the frame's: with six tags it squeezed
+  the head to 13 px (36 lines) at 768 and clipped tabs off the 390 page, and even the three occasions other templates seed gave the 768
+  head a fourth line. Every box is pulled 1.5 up and left inside a 1.5 pad, so wrapped rows share a hairline as neighbours do. Walked at three
+  widths with 2, 3, 6 and 9 tags up to the cap: every tab inside the page and clickable, the head three lines.
+- **The cards**: three columns at 1440, two at 768 with an odd last card spanning both, one at 390, on a 24 gap. A card is **560 tall as a
+  minimum** at every width, with four **14 px bites** (`blNotchMask`; the other tickets use 12) and the frame's two shadows on the turned
+  wrapper (`drop-shadow` 12 / 16 and 1 / 1 at .2, at every width; its third value is the SVG filter's standard deviation, checked on a
+  blank page: `drop-shadow(0 12px 16px)` and the filter at `stdDeviation` 16 read the same alpha at seven points under a box, and 32px does
+  not).
+- **The ground, turn and tape go by the package's place in the whole stored list (`t.n % 3`)**, so a filter moves nothing: dark olive
+  (`BL_PRICE_DARK` `#38391C`, sampled; the nearest seat, Scheme 2's tag 3, is `#363719`) turned -1.2, mustard (`O[4].bg`) +0.8, moss
+  (`O[3].bg`) -0.6. **The tape is on the middle seat.** It follows the seat, not the Featured tick: layout 1 reads no tick (JP-048).
+- **Grain**: mustard and moss take the kit's own `GRAIN_OPACITY`, the dark card .29. **Compare crops, not the sd.** Raising the opacities
+  until the sd matched the frame's 4.6 drew separate dark speckles the frame does not have, because the kit's tile is spottier than the
+  frame's fine mottle.
+- **Inside**: the package's name alone in the 14 px top row (the frame's `ADMIT ONE ·` and `NO. 00N` are not drawn, call 1 A; the row is
+  kept when the name is empty). Then the price as one run in TT2020 at 96 / 60 / 38 (lead, numeral and tail; a price with no digit sets at
+  .6), the blurb, and the features each led by a **drawn cross** (11 px, the text at 19; TT2020 has none) between dashed rules. The list takes the card's spare
+  height and closes with its own rule. The foot holds the Book pill (166 × 46; `Book this set`, Paperback's and Headliner's seed; the
+  button's ground is cream on the dark card and ink on the others), the frame's 1.3 px centre dot and the 90 × 30 barcode
+  (`BacklinePriceBars`, 23 bars; ornament).
+- **The price unit is not drawn at layout 1.** No master prints one, and its only seat would be `NO. 00N`'s. `FIELDS.pricing.unit` gained
+  `in: { Backline: [1, 2, 3], '*': [0, 1, 2, 3] }`; layouts 2-4, the placeholders, still print it.
+- **The small print** is `sub`, with the frame's `* ` in an `aria-hidden` span of its own, so the slot's node prints exactly the field. It
+  drops with the field.
+- **Caps** (`limits.mjs pricing --themes=8 --designs=0 --upright`; `--check` 0 failing, `--seeds` 0 over): `heading` 45, `tiers.name` 43,
+  `price` 7 (`num` 7), `feats` 34, `rowCta` 40, `sub` 81, three tags a package (`count` needed a Backline row, or `'*'`'s 4 wins over the
+  Pop fallback). The blurb (160) and the feature count (15) hold. Layouts 2-4 are Pop's numbers.
+- **Data**: `reach.mjs 8` over pricing (the scratch copy, `ONLY=pricing`, 2,160 renders) held `rowCta` (layouts 1, 3, 4) and moved no
+  pricing row; it has no `unit`, `heading` or `sub` probe. `INLINE_OFF` gains nothing (the generic `tiers[].tags` row covers the six tag
+  slots). There is no photo slot.
+- **Proofs** (layout 1, `--width 1440,768`): `inline-probe --cat pricing --check` PASS (29 slots hit, 0 WRONG / NOT-RESTORED / MISSING /
+  UNREACHED, 0 dead click); `focus-probe --cat pricing --prime --check` PASS (35 controls, 0 failing); a live walk at all three widths (a
+  tab filters and a second press resets, each card keeps its ground and turn, the pills link to `#form`; the canvas has no link and
+  ignores a press; one tag draws no tabs; an empty list says `No packages yet.`; prose and over-long values clamp or wrap with no sideways
+  scroll).

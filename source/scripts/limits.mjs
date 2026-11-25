@@ -3,7 +3,7 @@
 // that still draw the way the Figma frame does at all three widths. Needs
 // `npm run dev` on :5173 (BASE overrides).
 //
-//   node scripts/limits.mjs <cat[,cat]> [--themes=0,1,2,3,4,5,6,7] [--keys=heading,tracks.title]
+//   node scripts/limits.mjs <cat[,cat]> [--themes=0,1,2,3,4,5,6,7,8] [--keys=heading,tracks.title]
 //                           [--widths=desktop,tablet,mobile] [--out=<file.jsonl>]
 //   node scripts/limits.mjs <cats> --check     every cap in FIELDS re-rendered at the cap
 //   node scripts/limits.mjs <cats> --seeds     every seed within its cap, no browser
@@ -53,7 +53,7 @@ const opt = (k, d) => { const a = argv.find((x) => x.startsWith(`--${k}=`)); ret
 const flag = (k) => argv.includes(`--${k}`)
 const cats = (argv.find((a) => !a.startsWith('--')) || '').split(',').filter(Boolean)
 if (!cats.length) { console.error('usage: node scripts/limits.mjs <cat[,cat]> [--themes=] [--keys=] [--check|--seeds]'); process.exit(1) }
-const themes = opt('themes', '0,1,2,3,4,5,6,7').split(',').map(Number)
+const themes = opt('themes', '0,1,2,3,4,5,6,7,8').split(',').map(Number)
 const keysOnly = opt('keys', '') ? opt('keys', '').split(',') : null
 const designsOnly = opt('designs', '') ? opt('designs', '').split(',').map(Number) : null // 0-based
 const widths = opt('widths', 'desktop,tablet,mobile').split(',')
@@ -143,7 +143,10 @@ for (const k of (opt('no-floor', '') || '').split(',').filter(Boolean)) FLOOR[k]
 // --no-floor=heading still lets it shrink without bound.
 const FLOOR_AT = { 'bio.heading': { Lime: [0], Editorial: [0], Pop: [0, 3], Lattice: [0], Paperback: [0], Headliner: [0] },
   // Headliner's calendar head is fitted to the room left of the up arrow at 768 and 390 (plans/headliner/layout-1.md, section 8): it sets down to 75 % before it wraps.
-  'calendar.heading': { Headliner: [0] } }
+  'calendar.heading': { Headliner: [0] },
+  // Backline's testimonials score steps from 12 to 10 px past three characters, so `4.95/5` clears the stamp's inner ring
+  // (plans/backline/layout-1.md, section 10). The step is the page's, so the cap of 4 holds with it.
+  'testimonials.rating': { Backline: [0] } }
 const shrinkFloor = (p, themeName, a) => fitted(p) ? 0.5 : FLOOR[p.key] ?? (FLOOR_AT[`${p.cat}.${p.key}`]?.[themeName]?.includes(a) ? 0.75 : 1)
 // A repeater's list count whose chip row is the union over every row (session 5).
 const UNION_COUNT = new Set(['songs.tags#'])
@@ -541,6 +544,12 @@ function measure(needles, drops = []) {
       // A fitted name's line box brushing a seal's disc by a pixel or two is read by eye, not failed
       // (the line box is a quarter-size taller than the glyphs it holds): plans/header-fit.md.
       && !(/[?&]linebox=1/.test(location.search) && o.el.closest('svg'))
+      // A print the copy is drawn over by design (`data-underprint`: the rings of Backline's layout-1 review stamp,
+      // under the card's pills and quote). The score inside them is text and still counts.
+      && !o.el.closest('[data-underprint]')
+      // A torn seam painted over a band's head (`data-seam`: Backline's layout-1 footer). The name's line box starts inside the tear's deepest
+      // notch at 768 and 390, as the frames stand it, while its letters stay clear: walked by pixels, ascenders and accents lose only to the shadow.
+      && !o.el.closest('[data-seam]')
       && !(o.rs.length === 1 && encloses(o.rs[0]))
       && o.rs.some((r) => ink.some((k) => hit(r, k) && (!o.loose || paints(o.el, r, k))))).map((o) => pathOf(o.el))
     const w = Math.round(el.getBoundingClientRect().width)

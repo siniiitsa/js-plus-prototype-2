@@ -11,7 +11,7 @@
 //   OUT=/tmp/fp BASE=http://localhost:5175 node scripts/focus-probe.mjs --theme Grunge --layout 3 --prime
 //
 // Flags (comma lists run every combination, each in a fresh editor):
-//   --theme    Retro | Lime | Grunge | Editorial | Pop | Lattice | Paperback | Headliner   (default Retro)
+//   --theme    Retro | Lime | Grunge | Editorial | Pop | Lattice | Paperback | Headliner | Backline   (default Retro)
 //   --layout   1..4 (Retro also 5 and 6: the header alone, on page 1)  (default 1)
 //   --width    1440 (the Desktop tab) | 768 (the Tablet tab) | 390 (the Mobile tab)  (default 1440)
 //              The window stays 1440 wide in all three (at 820 or under the editor is the phone chrome).
@@ -71,6 +71,7 @@ const LEDGER = [
 // short of changing a seed, listed as `accepted` (reported, not failing). One row per theme, section and label; each is a call for the notes.
 const ACCEPTED = [
   { theme: 'Headliner', cat: 'calendar', label: /^Calendar instruction text$/, why: "the prompt shows only while no day is cued, so it is not drawn, and its first words `Pick a date` are the head's `Pick a date.` (notes/calendar.md, Headliner · layout 1)" },
+  { theme: 'Backline', cat: 'calendar', label: /^Calendar instruction text$/, why: "the prompt shows only while no day is cued, so it is not drawn, and its first words `Pick a date` are the head's `Pick a date, we’ll do the rest.` (notes/calendar.md, Backline · layout 1)" },
 ]
 let curTheme = ''
 const accepted = (cat, label) => ACCEPTED.find((l) => l.theme === curTheme && l.cat === cat && l.label.test(label || ''))

@@ -19,11 +19,12 @@
 // helpers; no React" and is import-free, and ~2 MB of base64 has no business in the
 // file people open to read the palettes.
 //
-// All eight templates have Figma frames of their own, so all eight seed
-// photography: Retro's, Lime's, Grunge's, Editorial's, Pop's, Lattice's, Paperback's and Headliner's shoots.
+// All nine templates have Figma frames of their own, so all nine seed
+// photography: Retro's, Lime's, Grunge's, Editorial's, Pop's, Lattice's, Paperback's, Headliner's and Backline's shoots.
 
 import hero from './photos/hero.jpg'
 import latticeDisc from './photos/lattice-disc.webp'
+import backlineGrain from './photos/backline-grain.webp'
 import latticeMapDesktop from './photos/lattice-map-desktop.webp'
 import latticeMapTablet from './photos/lattice-map-tablet.webp'
 import latticeMapMobile from './photos/lattice-map-mobile.webp'
@@ -114,6 +115,22 @@ import headlinerShot5 from './photos/headliner-shot-5.jpg'
 import headlinerShot6 from './photos/headliner-shot-6.jpg'
 import headlinerShot7 from './photos/headliner-shot-7.jpg'
 import headlinerViewer from './photos/headliner-viewer.jpg'
+import backlineHero from './photos/backline-hero.jpg'
+import backlineAvatar from './photos/backline-avatar.jpg'
+import backlineFormAvatar from './photos/backline-form-avatar.jpg'
+import backlineBio from './photos/backline-bio.jpg'
+import backlineCover from './photos/backline-cover.jpg'
+import backlineTrack2 from './photos/backline-track-2.jpg'
+import backlineTrack3 from './photos/backline-track-3.jpg'
+import backlineTrack4 from './photos/backline-track-4.jpg'
+import backlineTrack5 from './photos/backline-track-5.jpg'
+import backlineShot1 from './photos/backline-shot-1.jpg'
+import backlineShot3 from './photos/backline-shot-3.jpg'
+import backlineShot4 from './photos/backline-shot-4.jpg'
+import backlineShot5 from './photos/backline-shot-5.jpg'
+import backlineShot6 from './photos/backline-shot-6.jpg'
+import backlineShot7 from './photos/backline-shot-7.jpg'
+import backlineViewer from './photos/backline-viewer.jpg'
 
 const REVIEWERS = [review1, review2, review3]
 
@@ -371,6 +388,43 @@ export const HEADLINER_COVER = headlinerCover
 export const HEADLINER_TRACK_ART = [HEADLINER_COVER, headlinerShot2, headlinerShot3, headlinerShot4, headlinerShot5]
 export const HEADLINER_VIEWER = headlinerViewer
 
+// Backline's layout-1 frames (1:5543 · 1:5665 · 1:5736 · 1:5934 · 1:6725 and their narrow masters, JustPay — Batch 2,
+// "Backline Evolved — Claude Design") are a ninth shoot: a four-man band (long-haired singer in a navy polo,
+// curly-haired guitarist in a brown corduroy jacket) on a moor, against a concrete wall and in a rehearsal room,
+// eighteen photographs here, none of them in any earlier template's (plans/backline/layout-1.md, call 7). The
+// hero (1440 wide in the frame, a sepia monochrome that the frame stands under an olive COLOR-blend layer at 55 %,
+// `blend-color`: the picture is imported whole and the wash is markup, so the crop editor edits the picture), the
+// header's avatar (the polaroid's, 146 x 168), the bio's portrait (403 x 577), the media player's large cover
+// (`backlineCover`, the frame's `Night Rain` picture), the media list's five row covers (`backlineTrack1`..`5`, 110
+// px, none of the gallery's), the gallery's seven thumbnails (`backlineShot1`..`7`, 174 px, in the frame's order)
+// and the gallery viewer's own (`backlineViewer`, `The band in the control room`, none of the seven), and the form's
+// own avatar (102 x 114, another crop of the band). The frames' `blend-overlay` layers (OVERLAY at 16 %, a texture
+// over every photograph) are not imported: they are grain, art not photography. Re-encoded with `sips`: the hero
+// 1440 px q55, the rest at their frames' sizes (102-628 px) q80, 561 KB in all.
+//
+// The gallery strip is the seven shots in order; the viewer's picture is its own export (`BACKLINE_VIEWER`) and the
+// media's covers are `BACKLINE_COVER` and `BACKLINE_TRACK_ART`: how the gallery and the media section stand each
+// is those sections' sessions' call (the plan's sections 3 and 4), as Headliner's and Paperback's were.
+export const BACKLINE_PHOTOS = {
+  header: backlineHero,
+  bio: backlineBio,
+  // No frame draws the video; the hero stands in, as Retro's poster does.
+  video: backlineHero,
+  form: backlineFormAvatar,
+  gallery: [backlineShot1, backlineViewer, backlineShot3, backlineShot4, backlineShot5, backlineShot6, backlineShot7],
+  pricing: REVIEWERS,
+}
+export const BACKLINE_COVER = backlineCover
+// Track one's art is the cover itself (the player shows the cued track's art and has no cover field of its own, and the 110 px row crop would
+// draw a soft 253 px sleeve): row 1's 60 px thumbnail is the cover's centre crop where the frame's is another frame of the session
+// (plans/backline/layout-1.md, section 3; Headliner's call, section 3).
+export const BACKLINE_TRACK_ART = [BACKLINE_COVER, backlineTrack2, backlineTrack3, backlineTrack4, backlineTrack5]
+export const BACKLINE_VIEWER = backlineViewer
+// Backline's one raster of art: the paper grain's 192 px tile (a high-passed crop of the frames' band fill,
+// grey 128 +- 10 x deviation, lossless WebP, 27.6 KB), laid over a band with `overlay` (backlineArt.jsx,
+// `BacklineGrain`). The tears are vectors, so nothing else of the template's art is a file.
+export const BACKLINE_ART = { grain: backlineGrain }
+
 // The seeded artwork for the media player's five track rows, in track order.
 //
 // These are the frames' own fills (964:58578 and Lime's 964:58590 share the five
@@ -474,6 +528,8 @@ const SEEDS = {
   Paperback: { photos: PAPERBACK_PHOTOS, avatar: paperbackAvatar, photo: paperbackHero, rowArt: { media: PAPERBACK_TRACK_ART } },
   // The header's avatar card is its own picture, the form's layout-2 stage the hero.
   Headliner: { photos: HEADLINER_PHOTOS, avatar: headlinerAvatar, photo: headlinerHero, rowArt: { media: HEADLINER_TRACK_ART } },
+  // The header's avatar card is the polaroid's own picture, the form's layout-2 stage the hero.
+  Backline: { photos: BACKLINE_PHOTOS, avatar: backlineAvatar, photo: backlineHero, rowArt: { media: BACKLINE_TRACK_ART } },
 }
 
 // Where each seeded photograph keeps its performer, as the `object-position`
