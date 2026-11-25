@@ -812,9 +812,11 @@ The frames bind no variables (each section's only fill is a grain raster), so ev
   It is calibrated to the frames' standard deviation, and carries none of their soft mottle.
 - **Known gaps against the frames, judged at the sweep and not changed** (they are shared kit; figures and costs in the
   plan's *The sweep — the record*): the **olive** bands' grain is inverted (the frames carry light flecks there, dark
-  specks on paper); the tears' fibres are opaque and 4 px wide where the frames' are about 82 % opaque and 5 to 6.5;
+  specks on paper); **on desktop the tile is drawn 22 % large** (192 CSS px, not `u(192)`), which is what blurs the
+  paper grain; the tears' fibres are opaque and 4 px wide where the frames' are about 82 % opaque and 5 to 6.5;
   the fringe stroke's miter joins make small spikes; and the strip above each tear has no grain. **The tear contours
-  themselves are within 0.7 px** of the frames' own rasters at 1440.
+  themselves are within 0.75 px** of the frames' own rasters (nine seams at 1440; the calendar, form and footer at 768
+  and 390 too).
 - **Turned, taped, ticket-notched cards** under small drop shadows. Turns are a fraction of a degree to 2 degrees. Notches are semicircle
   bites (`blNotchMask` on a turned box, `backlineNotch` on a chip). Everything else is square; only the stamps and the picked day are round.
 - **TT2020 Base** (monospaced typewriter, lower-cased by CSS where the frame types it so) for everything set big or long, tracked

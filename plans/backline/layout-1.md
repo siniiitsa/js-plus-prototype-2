@@ -543,8 +543,11 @@ After section 11 and session 12, in one session (Headliner's list is the model):
   click, and no sideways overflow, at all three widths (the console warnings on cards 2–4 are headless WebGL's, from the
   real map). Every control on cards 2–4 was clicked. Those that did nothing: already-picked chips, tabs and tiles;
   card 3's map row and *See all gigs* after its Lake District chip (one gig is left, already lit); card 2's `Venue Link`
-  (no address). **Not exercised**: media cards whose centre another card covers, and card 3's *View full set* at 390,
-  off screen. **One not explained**: a 123 × 68 gallery control on card 4 at 390 (probably the picked thumbnail; not
+  (no address). **One fault**: on card 2 at 1440 **the media player's previous, play and next are covered by the
+  fanned track cards** at all five points sampled in each, so a visitor cannot press them. Under Lime and Headliner
+  the same three are clear; the cause was not investigated, and nothing was changed. **Not exercised**: media cards
+  whose centre another card covers; card 3's *View full set* at 390, off screen; and card 3's map rows and *See all
+  gigs* on the unfiltered list (the walk reached them only after filtering). **One not explained**: a 123 × 68 gallery control on card 4 at 390 (probably the picked thumbnail; not
   checked). Outbound links (the maps' directions and attribution) were listed, not opened.
   **What cards 2–4 look like** is in *Open calls*; they are placeholders, and nothing was changed.
 - **`data-seam` and `data-underprint`** reach the published markup. A grep of `source/` finds one setter each (the
@@ -564,30 +567,44 @@ trials below were CSS laid over the published page in headless Chromium at 1440;
 tried.
 
 1. **Edge offsets: nothing to move.** With our fringe and shadow hidden, the body edge was compared with each tear
-   node's own alpha (the lowest half-opaque row), at 1440: ours less the raster's, median per column, media −.56,
+   node's own alpha (the lowest half-opaque row). Ours less the raster's, median per column, **at 1440**: media −.56,
    gallery −.56, repertoire +.06, map +.33, pricing −.70, calendar +.16, form +.13, testimonials +.22, footer −.27 px
-   (interquartile .5 to .75; the header's flipped foot was not measured this way). **The calendar's 0.36 was read with
-   the fringe showing, against a screenshot; the form's "2 px" was the solid-colour boundary**, which sits lower in ours
-   because **our fibre band is narrower**: Figma's measures 5 px on cream, 5.5 on the footer's mustard, 6 on moss, 6.5
-   on olive, and ours is 4 on all (an 8-unit stroke clipped to the body). The narrow widths' figures, the footer's +1.1
-   at 390 among them, were not re-measured. (A first whole-page crossover measure moved with the fringe's colour, so
-   its figures are not used.)
+   (interquartile .5 to .75; the header's flipped foot was not measured this way). **At 768 and 390, the three parked
+   seams**, each against that width's own raster (`1:18495` · `19824`, `18581` · `19911`, `18696` · `20025`): calendar
+   −.08 / +.06, form +.73 / +.66, footer −.61 / +.36 (the other six were not measured narrow). The form's rasters at
+   both narrow widths, and the footer's at 390, stand exactly 1 px above the desktop's left crop; the others are exact
+   crops. **The calendar's 0.36 / 0.59 / 0.68 was read with the fringe showing, against screenshots; the form's
+   "2 px" was the solid-colour boundary**, which sits lower in ours because **our fibre band is narrower**: on the
+   desktop rasters Figma's measures 5 px on cream, 5.5 on the footer's mustard, 6 on moss, 6.5 on olive, and ours is
+   4 on all (an 8-unit stroke clipped to the body). (A first whole-page crossover measure moved with the fringe's
+   colour, so its figures are not used.)
 2. **Fibre brightness: the colour is right, the opacity is not.** Figma's fibres are about **82 % opaque** over the
    band below (mean alpha .82 through the band; luma 248 on cream, 120 on olive, which are the kit's own two tones).
    `.82 × fibre + .18 × the band below` gives the masters' readings: cream over olive 217, cream over mustard 235,
    olive over cream 141 (each within .5), the footer 208.5 against 207.5. Ours are painted over the body inside the
    clip, so they read about 250 on cream and 121 on olive. **To fix**: one blended colour per paper call site (it needs
-   the band below), and .38 in place of .27 for olive over paper.
-3. **Spotty grain: the main cause is that the olive grain is inverted.** Figma's paper bands carry dark specks (luma
-   skew −1.0 to −1.3; ours −1.6 to −1.8, the right way round) and its **olive bands light flecks** (+1.0 to +1.2; ours
-   −1.5 to −1.7), at all three widths. Moss and mustard are near even in Figma (−.3 to −.7). With `filter: invert(1)`
-   on the olive grain alone, the footer's patch reads spread 4.19 against Figma's 4.06, skew +1.20 against +1.10, mean
-   73.1 against 73.9, and looks it, with slightly heavier clumps. **It needs no new bytes, and the second, finer tile
-   (about +28 KB) is not recommended on this evidence.**
-   **A second, smaller fault**: the tile is 192 CSS px, and the desktop canvas and published page draw a frame px at
-   .82 and 1.22 CSS px, so on desktop the grain is 22 % large (the source fill is 1440 × 339, one raster px to a frame
-   px; at 768 and 390 the size is right). Resizing alone did not help the look, and without the resampling blur the
-   spread rose to 4.8, so it would want new opacities. Not recommended for now.
+   the band below). For the olive tears the strength depends on the band below too: **the gallery's and the form's**
+   (olive over paper) want .38 in place of .27; the map's (olive over moss) wants about .30, so it can stay near .27.
+3. **Spotty grain: two faults, one for the dark bands and one for paper.**
+   **(a) The olive grain is inverted.** Figma's paper bands carry dark specks (luma skew −1.0 to −1.3; ours −1.6 to
+   −1.8, the right way round) and its **olive bands light flecks** (+1.0 to +1.2; ours −1.5 to −1.7), at all three
+   widths. Moss and mustard are near even in Figma (−.3 to −.7). With `filter: invert(1)` on the olive grain alone,
+   the footer's patch reads spread 4.19 against Figma's 4.06, skew +1.20 against +1.10, mean 73.1 against 73.9, and
+   looks it, with slightly heavier clumps.
+   **(b) On desktop the tile is drawn 22 % large.** It is 192 CSS px, and the desktop canvas and published page draw
+   a frame px at .82 and 1.22 CSS px (the source fill is 1440 × 339, one raster px to a frame px; at 768 and 390 the
+   size is right). **On paper this is what is wrong**: the resampling blurs the fine grain away. With the tile at frame
+   size the left gutters of four paper bands (bio, gallery, pricing, form; 1440) match Figma:
+
+   | Paper, 1440 | spread | fine | mid | coarse |
+   |---|---|---|---|---|
+   | Figma | 4.37 to 4.64 | 2.00 to 2.38 | 2.14 to 2.26 | 1.33 to 1.34 |
+   | Shipped | 3.36 to 3.38 | 1.32 | 1.90 | 1.32 to 1.34 |
+   | Tile at frame size | 4.28 to 4.29 | 2.50 | 2.17 | 1.31 to 1.33 |
+
+   On the olive footer patch, resizing alone raised the spread to 4.79 (Figma 4.06; fine 2.71 against 1.87), so **the
+   olive strength wants re-checking after a resize**; moss and mustard were not measured resized. Neither fault needs
+   new bytes, and **the second, finer tile (about +28 KB) is not needed on this evidence** (it was not tried).
 4. **Spikes** (section 6's item 7, the map's "rough tail", and smaller ones on every seam): **not the trace**. They are
    the miter joins of the 8-unit fringe stroke; `stroke-linejoin: round` removes them.
 5. **The flat strip above each tear** (section 10's item 8): with the grain and fringe corrected it is **the largest
@@ -596,14 +613,14 @@ tried.
 
 | Change to the kit | Cost | How far it was tried | Advice |
 |---|---|---|---|
-| Invert the olive grain | one style line in `BacklineGrain`; no new bytes | browser trial; footer measured | yes |
+| Invert the olive grain | one style line in `BacklineGrain`; no new bytes | browser trial; the footer measured | yes |
+| Draw the desktop grain at frame size | a size prop (`u(192)`) at `BacklineGrain`'s 22 call sites; no new bytes | browser trial; paper matches, olive reads strong | yes, then re-check the olive strength |
 | Round joins | one attribute on two paths | browser trial | yes |
 | Fibre width: 10 units on cream, 11 footer, 12 moss, 13 olive | one value per call site, tens of bytes | olive's 13 tried; the others are arithmetic | yes |
-| Fibre opacity .82 over the band below | a prop at the paper call sites and .38 for olive, about 200 bytes | an earlier paper-colour trial; the rest arithmetic | yes |
-| Grain the flat strip | about 15 lines and a prop at 10 call sites; no new asset, but each seam repeats the tile's data URI in the published DOM | browser trial, too strong on paper | after the four above, at about .55 on paper |
-| Draw the desktop grain at frame size | `u(192)` per band, and new opacities | measured; no visible gain alone | not now |
+| Fibre opacity .82 over the band below | a prop at the paper call sites, and .38 on the gallery's and form's olive tears; about 200 bytes | an earlier paper-colour trial; the rest arithmetic | yes |
+| Grain the flat strip | about 15 lines and a prop at 10 call sites; no new asset, but each seam repeats the tile's data URI in the published DOM | browser trial, too strong on paper | after the five above, at about .55 on paper (untried) |
 | A second, finer tile | about +28 KB raw | not tried | no |
-| Move any tear | nothing | measured at 1440 | no |
+| Move any tear | nothing | 1440; the three parked seams at 768 and 390 | no |
 
 Any of these changes Backline's pixels only, and needs a Backline digest and **another refresh of the root
 `index.html`**.
@@ -615,6 +632,7 @@ Any of these changes Backline's pixels only, and needs a Backline digest and **a
 **To decide first**
 
 - **The tear and grain fixes** in the table above (s6.7, s7.5, s8.6, s8.7, s9.5, s9.8, s10.8, s11.9).
+- **Card 2's covered player buttons** at desktop width, a fault of Backline's alone (*the record*, item 5).
 - **Layouts 2–4's caps are not measured.** 22 specs (85 seats) still reach Pop's row and 43 (94 seats) carry numbers
   written out equal to Pop's (*Session 12 — the record*). Measuring them waits on your word.
 
@@ -656,7 +674,8 @@ Any of these changes Backline's pixels only, and needs a Backline digest and **a
   (s9.7).
 - Testimonials: the date line is drawn and the stamp prints the rating (s10.1); the published card holds the tallest
   review's height, so **one long review leaves short ones in a tall empty card** (s10.2); the quote keeps its typed
-  marks (s10.5).
+  marks (s10.5). A review with no quote is the date line and the pills; an emptied list is a one-line card, *No
+  reviews yet.*, with no stamp (s10.7).
 - Footer: the Book pill takes the newsletter's seat (s11.3), the page is shorter than the frames by what was removed
   (s11.6), and the links are the page's section names (s11.7).
 - **`--ph`**: the repertoire's search and the form's boxes draw their hints at .45, where the frame is about .57
@@ -682,6 +701,9 @@ Any of these changes Backline's pixels only, and needs a Backline digest and **a
 **Header cards 2–4 and layouts 2–4 are placeholders** (Lime's and Pop's trees in Backline's tokens; Figma was not
 touched). They render and publish, and **they are not presentable as they stand**. Seen on cards 2–4, causes not
 investigated:
+
+- **Card 2's media player cannot be pressed at desktop width**: the fanned cards cover previous, play and next. Lime's
+  and Headliner's card 2 are clear.
 
 - **A bright lime that is not Backline's** (the travel and quote cards, a curated set, the map panel, the repertoire
   panel). It is Lime's literal `#CCFA61`, which the shared trees give every template with no arm of its own; Headliner's
