@@ -22193,8 +22193,8 @@ function BacklineCalendar({ s, g }) {
       backgroundImage: `repeating-linear-gradient(90deg, ${BL_RULE} 0 ${u(2)}, transparent ${u(2)} ${u(3)})`, backgroundSize: '100% 1px', backgroundRepeat: 'no-repeat',
     }}>
       <div style={row(u(16), { flex: '1 1 auto', minWidth: 0, justifyContent: 'space-between' })}>
-        {/* at 390 the frame's line box (189.766) breaks before its `at`, which TT2020 sets a hair wider than here: 188 keeps that break */}
-        <p style={{ margin: 0, flex: '1 1 0', minWidth: 0, maxWidth: P.lineW ? u(P.lineW) : undefined, ...display(u(18), { lineHeight: u(27), letterSpacing: '-0.02em', textTransform: 'none', color: cream, overflowWrap: 'anywhere' }) }}>
+        {/* at 390 the frame's line box (189.766) breaks before its `at`, which TT2020 sets a hair narrower here: 188 keeps that break. With no button the line takes the row. */}
+        <p style={{ margin: 0, flex: '1 1 0', minWidth: 0, maxWidth: P.lineW && s.calCta ? u(P.lineW) : undefined, ...display(u(18), { lineHeight: u(27), letterSpacing: '-0.02em', textTransform: 'none', color: cream, overflowWrap: 'anywhere' }) }}>
           <span aria-hidden>&gt; </span><span>{line}</span><span aria-hidden>_</span>
         </p>
         {s.calCta && (
