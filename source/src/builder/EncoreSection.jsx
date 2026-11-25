@@ -12476,7 +12476,7 @@ function HeadlinerPricing({ s, g }) {
 // `06 ┈┈ PRICING` is not drawn (call 1 A) and its 30.94 stays as padding. A card is 560 tall at every width (a minimum: a longer blurb grows it) and **a ticket**: its paper cut by four 14 px bites
 // (`blNotchMask`), turned by the package's place in the whole list (`t.n % 3`: -1.2, +0.8, -0.6 degrees, as the fills, so a filter that hides one card leaves the others their seats), a drop shadow on the
 // turned wrapper so it follows the bites, grain on a ground of its own (dark olive, mustard, moss), a tape on the middle seat. Inside: the package's name (`ADMIT ONE ·` and `NO. 00N` are not drawn, call 1 A;
-// the price unit takes the number's seat), the price in TT2020 at 96 / 60 / 38, the blurb, the features each led by a drawn cross (TT2020 has none) on dashed rules, the list the card's flex remainder, and the
+// the price unit, which no master prints, is not drawn), the price in TT2020 at 96 / 60 / 38, the blurb, the features each led by a drawn cross (TT2020 has none) on dashed rules, the list the card's flex remainder, and the
 // foot: the Book pill on its seat's ground and the 23-bar barcode. The deck is three columns on a 24 gap at 1440, two at 768 with the odd last card spanning both, one at 390.
 const BACKLINE_PRICING = {
   desktop: { fw: 1440, top: 112, foot: 112, side: 48.96, h2: 77.76, h2Top: 30.94, free: 1100, price: 96, priceLh: 86.4, blurbT: 22, blurbLh: 24.2, blurbB: 21.6, blurb: 22, pb: 21, cols: 3 },
@@ -12518,19 +12518,20 @@ function BacklinePricing({ s, g }) {
     }}>{lead}{tail && <>{lead && ' '}<span style={{ color: olive }}>{tail}</span></>}</h2>
   ) : null
 
-  // The tab list: 44 tall, one hairline box a tab, each after the first drawn 1.5 over the last (the frame's `Tab:margin`). It stands over two or more tags only, and at rest none is lit (JP-089).
+  // The tab list: 44 tall, one hairline box a tab, each drawn 1.5 over its neighbour (the frame's `Tab:margin`, kept between wrapped rows too: every box is pulled 1.5 up and left inside a 1.5 pad). It stands over two or more
+  // tags only, and at rest none is lit (JP-089). The tags are the artist's, so the list wraps, and a list too wide to stand beside the head drops under it whole: it must never squeeze the head or run past the page.
   const tabs = s.tierChips.length > 1 ? (
-    <div style={{ display: 'flex', flex: 'none', maxWidth: '100%', marginLeft: s.mob ? undefined : 'auto' }}>
+    <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: s.mob ? 'flex-start' : 'flex-end', maxWidth: '100%', marginLeft: s.mob ? undefined : 'auto', padding: `${u(1.5)} 0 0 ${u(1.5)}` }}>
       {s.tierChips.map((f, i) => (
         <span key={i} onClick={s.live ? () => pressChip(i, active) : undefined} style={{
-          ...label(u(14)), display: 'inline-flex', alignItems: 'center', justifyContent: 'center', boxSizing: 'border-box', height: u(44), padding: `0 ${u(19.75)}`, marginLeft: i ? u(-1.5) : 0,
-          border: `1px solid ${ink}`, background: i === active ? ink : 'transparent', color: i === active ? cream : ink, whiteSpace: 'nowrap', cursor: s.live ? 'pointer' : undefined,
+          ...label(u(14)), display: 'inline-flex', alignItems: 'center', justifyContent: 'center', boxSizing: 'border-box', flex: 'none', maxWidth: '100%', minHeight: u(44), padding: `0 ${u(19.75)}`, margin: `${u(-1.5)} 0 0 ${u(-1.5)}`,
+          border: `1px solid ${ink}`, background: i === active ? ink : 'transparent', color: i === active ? cream : ink, textAlign: 'center', overflowWrap: 'anywhere', cursor: s.live ? 'pointer' : undefined,
         }}>{f.label}</span>
       ))}
     </div>
   ) : null
   const head = (
-    <div style={s.mob ? col(u(24), { alignItems: 'flex-start' }) : { display: 'flex', alignItems: 'flex-end', gap: u(24) }}>
+    <div style={s.mob ? col(u(24), { alignItems: 'flex-start' }) : row(u(24), { flexWrap: 'wrap', alignItems: 'flex-end' })}>
       <div style={{ minWidth: 0, paddingTop: u(P.h2Top) }}>{h2}</div>
       {tabs}
     </div>
@@ -12622,7 +12623,7 @@ function BacklinePricing({ s, g }) {
           )}
         </div>
       </div>
-      {/* the torn head: the map's moss, the pricing's own contour, 1 px above the band as the frame stands it */}
+      {/* the torn head: the map's moss, the pricing's own contour, 1 px above the band as the frame stands it. `tone="paper"` on a moss tear is measured, not a slip: the master's fibres read about 230 against the body's 130, which is the .8 fringe; the dark tone's .27 would read about 162. */}
       <div style={{ position: 'absolute', left: 0, right: 0, top: u(-1), height: u(88), pointerEvents: 'none' }}>
         <BacklineTear
           tear="pricing" colour={O[3].bg} tone="paper" id={tearId} height={u(88)}
