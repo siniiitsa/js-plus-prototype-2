@@ -12541,8 +12541,8 @@ function BacklinePricing({ s, g }) {
   // The frame's notch filter at all three widths: dy 12 / deviation 16 and dy 1 / deviation 1, each at .2. CSS `drop-shadow()`'s third value is that deviation.
   const shadow = `drop-shadow(0 ${u(12)} ${u(16)} rgba(35, 36, 15, 0.2)) drop-shadow(0 ${u(1)} ${u(1)} rgba(35, 36, 15, 0.2))`
   const cross = (c) => (
-    <svg aria-hidden viewBox="0 0 9 9" fill="none" style={{ display: 'block', flex: 'none', width: u(9), height: u(9), marginTop: u(4.5), overflow: 'visible' }}>
-      <path d="M0.8 0.8L8.2 8.2M8.2 0.8L0.8 8.2" stroke={c} strokeWidth="1.2" />
+    <svg aria-hidden viewBox="0 0 9 9" fill="none" style={{ display: 'block', flex: 'none', width: u(11), height: u(11), marginTop: u(3.5), overflow: 'visible' }}>
+      <path d="M0.8 0.8L8.2 8.2M8.2 0.8L0.8 8.2" stroke={c} strokeWidth="1" />
     </svg>
   )
   const cards = shown.map((t, i) => {
@@ -12575,7 +12575,7 @@ function BacklinePricing({ s, g }) {
             )}
             <div style={{ position: 'relative', flex: '1 1 auto', marginTop: u(16), marginBottom: u(P.pb), borderBottom: `1px dashed ${S.rule}` }}>
               {t.feats.map((f, j) => (
-                <div key={j} style={row(u(10), { alignItems: 'flex-start', boxSizing: 'border-box', minHeight: u(35), padding: `${u(8)} 0 ${u(9)}`, borderTop: `1px dashed ${S.rule}` })}>
+                <div key={j} style={row(u(8), { alignItems: 'flex-start', boxSizing: 'border-box', minHeight: u(35), padding: `${u(8)} 0 ${u(9)}`, borderTop: `1px dashed ${S.rule}` })}>
                   {cross(S.fg)}
                   <span style={{ minWidth: 0, ...display(u(15), { lineHeight: u(17), letterSpacing: '-0.02em', color: S.fg }) }}>{f}</span>
                 </div>
