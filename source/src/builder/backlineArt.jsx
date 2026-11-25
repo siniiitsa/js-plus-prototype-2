@@ -19,7 +19,9 @@
 //                  high-passed, lossless WebP, 27.6 KB, grey 128 +- 10 x deviation) laid over the band's plain
 //                  colour with `overlay`. Overlay's effect scales with the base (2 x min(b, 1 - b)), so a pale band
 //                  and a dark one want different opacities (`GRAIN_OPACITY`, calibrated in session 0 against the
-//                  frames' sd).
+//                  frames' sd). The tile's specks are dark, as the frames' are on paper; on olive (the bands and the nested dark cards alike) the
+//                  frames' are light flecks, so the olive tone inverts the tile (grey 128 stays grey, so the ground's mean holds). Moss and
+//                  mustard are near even in the frames and take it as it is.
 //
 // The rest of the kit was added by the section that first draws each piece, measured off its own frame:
 // `backlineNotch` (the ticket notch, from the header's chips), `BacklineTape`, `BacklineStamp` and
@@ -178,6 +180,7 @@ export function BacklineGrain({ src, tone = 'olive', opacity, style, ...rest }) 
       style={{
         position: 'absolute', inset: 0, pointerEvents: 'none',
         backgroundImage: `url(${src})`, backgroundSize: '192px 192px', mixBlendMode: 'overlay',
+        filter: tone === 'olive' ? 'invert(1)' : undefined,
         opacity: opacity ?? GRAIN_OPACITY[tone], ...style,
       }}
       {...rest}
