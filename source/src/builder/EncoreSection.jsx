@@ -33073,7 +33073,8 @@ function BacklineForm({ s, g }) {
   const button = (text, as, tagProps, extra) => (
     <BacklinePill
       s={s} u={u} bg={green} ink={cream} label={<>{text}{arrow}</>} as={as} tagProps={tagProps}
-      style={{ justifyContent: 'space-between', gap: u(16), minWidth: u(140), maxWidth: '100%', padding: `0 ${u(12)}`, ...extra }}
+      // The kit's pill is one nowrap line: here it may grow, so a 36-character label of one wide word breaks instead of leaving the 390 card.
+      style={{ justifyContent: 'space-between', gap: u(16), minWidth: u(140), maxWidth: '100%', height: 'auto', minHeight: u(46), whiteSpace: 'normal', ...WRAP_LONG, padding: `0 ${u(12)}`, ...extra }}
     />
   )
 
