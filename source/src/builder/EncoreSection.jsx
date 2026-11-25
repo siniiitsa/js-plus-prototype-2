@@ -12548,7 +12548,6 @@ function BacklinePricing({ s, g }) {
     const seat = t.n % 3
     const S = SEATS[seat]
     const span = P.cols === 2 && i === shown.length - 1 && shown.length % 2 === 1
-    const hasHead = !!t.name || !!s.tierUnit
     return (
       <div key={t.n} style={{ minWidth: 0, display: 'flex', gridColumn: span ? '1 / -1' : undefined }}>
         <div style={{ position: 'relative', display: 'flex', flex: '1 1 auto', minWidth: 0, transform: `rotate(${BL_PRICE_TURN[seat]}deg)`, filter: shadow }}>
@@ -12557,12 +12556,8 @@ function BacklinePricing({ s, g }) {
             maskImage: mask, maskComposite: 'intersect', WebkitMaskImage: mask, WebkitMaskComposite: 'source-in', ...WRAP_LONG,
           }}>
             <BacklineGrain src={s.backlineGrain} tone={S.tone} opacity={S.grain} />
-            {hasHead && (
-              <div style={row(u(12), { position: 'relative', alignItems: 'flex-start', justifyContent: 'space-between', minHeight: u(14), ...label(u(12), { lineHeight: u(13.8), color: S.fg }) })}>
-                <span style={{ minWidth: 0 }}>{t.name}</span>
-                {!!s.tierUnit && <span style={{ flex: 'none', whiteSpace: 'nowrap', textAlign: 'right', opacity: 0.7 }}>{s.tierUnit}</span>}
-              </div>
-            )}
+            {/* The frame's top row is `ADMIT ONE · <NAME>` over `NO. 00N`; the name is the package's own and stands alone (the words and the number are not drawn, call 1 A), and the row keeps its 14 as padding. The unit has no seat in the frame and is not drawn. */}
+            <div style={{ position: 'relative', minHeight: u(14), ...label(u(12), { lineHeight: u(13.8), color: S.fg }) }}>{t.name}</div>
             {/* The price is one run in the display face, as the frame sets `£450`: the lead, the numeral and a range's second half are spans of one size; a price with no digit (prose) sets a size smaller and wraps anywhere. */}
             {(!!t.lead || !!t.amount || !!t.tail) && (
               <div style={{

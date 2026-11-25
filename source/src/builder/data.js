@@ -3601,7 +3601,9 @@ export const FIELDS = {
         // Paperback layout 1 measured 2026-11-21 (limits.mjs pricing --themes=6 --designs=0 --upright): 46 (the seed's 42 fits); layouts 2-4 Pop's.
         Paperback: [46, 42, 28],
         // Headliner layout 1 measured 2026-11-23 (limits.mjs pricing --themes=7 --designs=0): 24 (42 / 36 / 24 at 1440 / 768 / 390; the seed's 21 fits); layouts 2-3 Grunge's, written out.
-        Headliner: [24, 44, 41] },
+        Headliner: [24, 44, 41],
+        // Backline layout 1 measured 2026-11-25 (limits.mjs pricing --themes=8 --designs=0 --upright): 45 (45 / 45 / 45 at the three widths: the head is three lines at an 8.2 em measure and the cap is the page's 3-line fill; the seed's 43 fits); layouts 2-3 Pop's.
+        Backline: [45, 42, 28] },
       hint: 'Layouts 1, 2 and 3 only. Layout 4 is a stack of service rows and heads them with '
           + 'the package names alone, so it draws no title.' },
     { k: 'tiers',   l: 'Packages', type: 'tiers', max: 6,
@@ -3616,7 +3618,9 @@ export const FIELDS = {
           // Paperback layout 1 measured 29 (desktop 37, tablet 29, mobile 30); the rest Pop's.
           Paperback: [29, 16, 26, 18],
           // Headliner layout 1 measured 32 (desktop 41, tablet 32, mobile 32: a second line of the name); layouts 2-4 Grunge's.
-          Headliner: [32, 34, 51, 25] },
+          Headliner: [32, 34, 51, 25],
+          // Backline layout 1 measured 43 (desktop 58, tablet 44, mobile 43: the name's label line wraps at the card's content box); the rest Pop's.
+          Backline: [43, 16, 30, 18] },
         // `num` is the first number run, the big numeral: a price of digits alone
         // sets whole in it, so it is measured apart from the total (`chars`, the
         // price with its small tail). User call, 2026-11-06. The numeral's cap is
@@ -3631,7 +3635,9 @@ export const FIELDS = {
           // Paperback layout 1 measured 10 (desktop 10, tablet 12, mobile 17: one run in the display face, a tail wrapping at its spaces).
           Paperback: [10, 25, 21, 17],
           // Headliner layout 1 measured 6 (desktop 6, tablet 10, mobile 16: one run in the display face, a tail wrapping at its spaces); layouts 2-4 Grunge's.
-          Headliner: [6, 35, 30, 34] },
+          Headliner: [6, 35, 30, 34],
+          // Backline layout 1 measured 7 (desktop 7, tablet 9, mobile 15: one run in TT2020 at 96 / 60 / 38, a tail wrapping at its spaces); the rest Pop's.
+          Backline: [7, 34, 25, 23] },
           // Lattice's numeral is layout 1's 9 (measured: desktop 9, tablet 10, mobile 12) held to Pop's 7, the tightest of
           // the placeholder layouts' provisional rows, so a price typed at layout 2, 3 or 4 is not one the deck then cuts.
           num: { Retro: 5, Lime: 10, Grunge: 11, Editorial: 8, Pop: 7, Lattice: 7,
@@ -3644,13 +3650,16 @@ export const FIELDS = {
         tags: { list: ',', chars: { Retro: [12, null, 12, 12], Lattice: [26, null, 26, 26], '*': [26, null, 26, 26] },
           count: { Retro: [4, null, 5, 6], Pop: [3, null, 4, 5], Lattice: [3, null, 4, 5], Paperback: [3, null, 4, 5],
           // Headliner layout 1: the seed's three tags a package is the floor (the chip row is the union of every package's, so the row wraps before a package's own count does).
-          Headliner: [3, null, 4, 5], '*': [4, null, 4, 5] } },
+          Headliner: [3, null, 4, 5],
+          // Backline layout 1: three tags a package, measured (the tab row at 390 wraps its second line at a fourth); the rest Pop's.
+          Backline: [3, null, 4, 5], '*': [4, null, 4, 5] } },
         blurb: 160,
         feats: { list: '\n', chars: { Retro: [24, 24, 24, 59], Grunge: [25, 24, 24, 62], Editorial: [25, 24, 24, 60],
           // Paperback layout 1 measured 35 (desktop 45, tablet 35, mobile 36).
           Pop: [26, 24, 24, 62], Lattice: [24, 24, 24, 62], Paperback: [35, 24, 24, 57],
           // Headliner layout 1 measured 40 (desktop 51, tablet 40, mobile 41: the row's text beside its numeral); the rest the shared row.
-          Headliner: [40, 24, 24, 62], '*': [24, 24, 24, 62] }, count: [15, 15, 15, 5] },
+          // Backline layout 1 measured 34 (desktop 45, tablet 34, mobile 34: a feature beside its drawn cross, one line); the rest Pop's.
+          Backline: [34, 24, 24, 62], Headliner: [40, 24, 24, 62], '*': [24, 24, 24, 62] }, count: [15, 15, 15, 5] },
       },
       hint: 'Tags become the filter chips above the packages in layouts 1 and 3. '
           + 'Layout 3 starts the packages tagged Duo where the other layouts '
@@ -3665,6 +3674,8 @@ export const FIELDS = {
           + 'to give a package layout 3’s Featured badge; with none ticked, it goes to the last '
           + 'package on show.' },
     { k: 'unit',    l: 'Price unit', d: PRICE_UNIT,
+      // Backline's layout 1 draws no unit: its card's top row is the plan's name over a `NO. 00N` that has no field, so the seed has no seat there (layouts 2-4 are Headliner's placeholders).
+      in: { Backline: [1, 2, 3], '*': [0, 1, 2, 3] },
       chars: { Retro: [7, 37, 32, 69], Lime: [13, 40, 28, 88], Grunge: [15, 41, 33, 98], Editorial: [12, 37, 29, 53],
         Pop: [11, 39, 27, 51],
         // Layout 1 measured 29 (desktop 37; tablet and mobile 29): the unit stands in the card's top row, right-aligned.
@@ -3731,11 +3742,15 @@ export const FIELDS = {
         // Paperback layout 1 measured 34 (desktop 47, tablet 34, mobile 37): the split pill's label.
         Paperback: [34, null, 12, 26],
         // Headliner layout 1 measured 39 (desktop 50, tablet 40, mobile 39); the rest Grunge's.
-        Headliner: [39, null, 12, 26] },
+        Headliner: [39, null, 12, 26],
+        // Backline layout 1 measured 40 (desktop 41, tablet 40, mobile 40: the split pill's label beside its arrow); the rest Pop's.
+        Backline: [40, null, 12, 26] },
       hint: 'The pill on every package. Layout 3 starts from “Book” and layout 4 from '
           + '“Start Enquiry”. Layout 2 has its own plan button. Empty it to drop the pill.' },
     { k: 'sub',     l: 'Small print', def: 'pricingSub',
-      chars: { Retro: [133, 67, 67, 67], Grunge: [53, 67, 63, 67], Pop: [80, 67, 63, 67], Lattice: [85, 67, 63, 67], Paperback: [80, 53, 53, 53], '*': [67, 67, 63, 67] } },
+      chars: { Retro: [133, 67, 67, 67], Grunge: [53, 67, 63, 67], Pop: [80, 67, 63, 67], Lattice: [85, 67, 63, 67], Paperback: [80, 53, 53, 53],
+        // Backline layout 1 measured 81 (desktop 167, tablet 88, mobile 81); the rest Pop's.
+        Backline: [81, 67, 63, 67], '*': [67, 67, 63, 67] } },
   ],
   // The other list-shaped content type with a structured editor rather than a
   // textarea (see `media` above): `songs` is an array of
