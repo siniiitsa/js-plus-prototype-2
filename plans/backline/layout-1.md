@@ -471,6 +471,37 @@ Headliner's session 12, one session, each its own commit:
    polaroids and the duotoned hero are the probe's hard cases** (a click lands on a rotated box; `photoFieldAt` takes the
    stack under the pointer; a wash must be a scrim the click passes through).
 
+### Session 12 — the record
+
+*(2026-11-25. No record that it had run as one session was found, since each section ran its own proofs, so it was run on the
+whole page at the head of the sweep, theme 8, layout 1, no `--cat`, one probe at a time.)*
+
+- **`reach.mjs 8`** (5,808 renders): every `in` row and `IDENTITY_READS` row holds. The only differences from the rows are the
+  known ones: `bio.badgeMode=static` at layout 1 (a stamp does not turn), `repertoire.songs.length` and `map.gigs.year` (the
+  probe reads a column where `in` names the whole field), and partial counts at `calendar.email` layout 4 (3 of 6) and
+  `gallery.railLabel` layout 2 (2 of 6). Four rows that name Backline have no committed probe (`header.avatar`, `bio.para2`,
+  `pricing.unit`, `footer.showBadge`); a scratch copy probed them (180 renders) and all four hold.
+- **`limits.mjs --themes=8 --designs=0`.** Run on all twelve categories with no flags it reports 8 fields failing at their cap.
+  Re-run with each section's recorded flags (`repertoire --extra-lines=songs.title`; `pricing --upright`;
+  `calendar --upright --extra-lines=calendar.time,time,prompt,who.location`; `testimonials --upright`) all but one pass.
+  **One fix** (`3eaa736`): `testimonials.rating` failed at all three widths because the probe did not allow the stamp's score its
+  10 px step past three characters; `FLOOR_AT` now names it. `--seeds` (all categories): 0 over.
+- **Pop's fallback in `specAt`** (reported to the user; **layouts 2–4 were not measured**). Of 159 specs, **22 (85 layout seats)
+  reach Pop's row** for Backline: `header.cardLine`, `.heroCta`, `.faceTitle`, `.badgeText`; `video.videos.title`;
+  `pricing.tiers.price.num`, `.unit`, `.cta`; `repertoire.songs.length`, `.sets.mood`; `calendar.slots.kind`, `.slots.price`;
+  `map.venueCta`, `.routeCta`; `testimonials.heading`; `form.sub`, `.price`, `.cta`; and the identity rows `bio.title`,
+  `bio.location`, `footer.seal`, `form.seal`. At layout 1 the only one on something drawn is `pricing.tiers.price.num` (7),
+  which never binds, since the whole price's own cap is 7. A further **43 specs (94 seats)** have a Backline row whose layout
+  2–4 numbers equal Pop's: written-out copies, unmeasured.
+- **`inline-probe --width 1440,768 --check`**: PASS. At each width 144 slots hit, 0 WRONG / NOT-RESTORED / MISSING /
+  UNREACHED / COVERED, 16 paged, 45 off, and one reported dead click, the repertoire heading's `12` (section 5: the seeded
+  twelfth row's number).
+- **`focus-probe --width 1440,768 --prime --check`**: PASS. 232 controls a width, 0 failing, 1 accepted (the calendar's,
+  section 8).
+- **`photo-probe`** `--check`, `--check --blank` and `--check --drop`: all PASS. 15 slots and 18 clicks a width, 0 WRONG /
+  NOT-RESTORED / MISSING / blocked; `--blank` appends 7. No `PHOTO_OFF` row. Three pictures open from part of their box only
+  (the hero, the bio's polaroid and the strip's second tile, where copy or a mark stands over them: copy goes first).
+
 ## The end-of-pass sweep
 
 After section 11 and session 12, in one session (Headliner's list is the model):
@@ -1118,3 +1149,21 @@ are in the session's scratchpad.
 7. **The seeded links read longer than the frame's** (`Shows/Coverage` where it reads `Shows`), since they are the page's section names.
 8. **At 768 and 390 the torn head's deepest teeth reach into the name's line box**, as the frames stand it. Tall ascenders and accents pass under the shadow; a crop shows no glyph visibly cut.
 9. **Parked for the sweep**, now seen on this seam too: the fibre reads brighter than the master's (about 238 luma against 207), the grain is spottier than the master's soft mottle, and the tear's paper side is flat against the grained mustard band above it (plain in the 1900 px Preview under the testimonials).
+
+## Inherited and used
+
+*(Written at the 2026-11-25 sweep from the per-section* Conventions section N inherits *and* Settled in *bullets.)*
+
+**Inherited.** [`CONVENTIONS.md`](../CONVENTIONS.md) group **F** whole (own trees from an HTML-to-Figma import: raw values,
+composition and geometry deciding each twin). From groups **G** and **H**: the stage pattern (a per-section table of frame
+numbers, an `inline-size` container, `u(v)` in `cqw`, insets in a child, `vm.pad`), `SCHEMES_OF` and `s.onScheme[n]`, the
+seeded-label rule (uncased, dropped when emptied, seeded in `sectionVm` and `fieldSeed` in step), the probe recipe, and the
+two-build digest.
+
+**Added** (group **I**, which names where each was written): sampling grounds where nothing is bound; testing a new tear
+against every held contour at every shift; the narrow strip as a 1:1 crop; a tear's bias set against its own master; a
+frame shadow's deviation read off its filter; a dashed rule measured and drawn as a gradient; the turned, notched card's
+two layers; turns by the item's place in the whole list; the walk of the artist's longest content; no text under a
+transparent box; an arrow beside capped copy walked as well as probed; `data-seam` / `data-underprint`; printing a seat's
+inks before placing type; a frame literal with no field left undrawn; a texture judged by a crop; a self-hosted face's
+licence, subset and fit; a flag-dependent cap probe re-run with its flags.
