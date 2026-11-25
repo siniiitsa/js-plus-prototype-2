@@ -3066,6 +3066,9 @@ export const CAL_CTA_LATTICE = 'Continue'
 // Headliner's layout-1 calendar (1:5205 · 1:15976 · 1:17026) heads its maroon panel with the frame's `Pick a date.` (the `heading` field is its seat),
 // and draws the same `Continue` button. Uncased: a block upper-cases the head.
 export const CAL_HEADING_HEADLINER = 'Pick a date.'
+// Backline's layout-1 calendar (1:6558 · 1:18328 · 1:19659) heads its right column with the frame's whole line. The 1440 master paints the run after the
+// comma in the band's own colour (it vanishes); the 768 and 390 masters paint it mustard, and the block does at every width, since an artist's words must show.
+export const CAL_HEADING_BACKLINE = 'Pick a date, we’ll do the rest.'
 
 export const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December']
@@ -3885,13 +3888,13 @@ export const FIELDS = {
   // `in` records each key's reach.
   calendar: [
     // Lattice's layout 1 draws a dotted torus (art, not a photograph) in that seat, so only layout 4's disc reads it.
-    { k: 'image',   l: 'Photo', type: 'image', aspect: [1, 1], in: { Lattice: [3], Paperback: [3], Headliner: [3], '*': [0, 3] },
+    { k: 'image',   l: 'Photo', type: 'image', aspect: [1, 1], in: { Lattice: [3], Paperback: [3], Headliner: [3], Backline: [3], '*': [0, 3] },
       hint: 'Fills the polaroid stack beside the month in layout 1, and the small disc on '
-          + "layout 4's summary card. Layouts 2 and 3 draw no photograph. Lattice's, Paperback's and Headliner's layout 1 draw none either." },
-    { k: 'heading', l: 'Heading', d: 'Availability', in: { Lime: [0, 1, 2, 3], Grunge: [0, 1, 2, 3], Editorial: [0, 1, 2, 3], Pop: [0, 1, 2, 3], Lattice: [0, 1, 2, 3], Paperback: [1, 2, 3], Headliner: [0, 1, 2, 3], '*': [1, 2, 3] },
+          + "layout 4's summary card. Layouts 2 and 3 draw no photograph. Lattice's, Paperback's, Headliner's and Backline's layout 1 draw none either." },
+    { k: 'heading', l: 'Heading', d: 'Availability', in: { Lime: [0, 1, 2, 3], Grunge: [0, 1, 2, 3], Editorial: [0, 1, 2, 3], Pop: [0, 1, 2, 3], Lattice: [0, 1, 2, 3], Paperback: [1, 2, 3], Headliner: [0, 1, 2, 3], Backline: [0, 1, 2, 3], '*': [1, 2, 3] },
       // Paperback's layout 1 draws the month as its head, so it reads no heading. Headliner's layout 1 heads the maroon panel with it (`Pick a date.`). Lattice's layout 1 measured (limits.mjs calendar --themes=5 --designs=0); the others are Pop's, provisional.
       chars: { Retro: [null, 25, 36, 18], Lime: [25, 22, 32, 18], Grunge: [28, 24, 35, 23], Editorial: [14, 14, 21, 11], Pop: [13, 20, 24, 15],
-        Lattice: [25, 20, 24, 15], Paperback: [13, 14, 24, 15], Headliner: [14, 24, 35, 23] } },
+        Lattice: [25, 20, 24, 15], Paperback: [13, 14, 24, 15], Headliner: [14, 24, 35, 23], Backline: [40, 20, 24, 15] } },
     { k: 'open',    l: 'Calendar start date', type: 'date', d: CAL_OPEN,
       hint: 'The month the calendar opens on, and the date it opens picked. '
           + `Layouts 1 and 3 page through ${CAL_SPAN} months from there, layout 2's seeded `
@@ -3909,7 +3912,7 @@ export const FIELDS = {
         // Paperback's layout 1 measured (limits.mjs calendar --themes=6 --designs=0 --upright): 24 binds at 768, where the line is one line.
         Paperback: [24, null, null, 26],
         // Headliner's layout 1 measured (limits.mjs calendar --themes=7 --designs=0): 10 at 390, where the line is three lines and a longer time makes a fourth; layout 4 is Grunge's.
-        Headliner: [10, null, null, 37] },
+        Headliner: [10, null, null, 37], Backline: [40, null, null, 33] },
       hint: "Printed in layout 1's enquiry line, and on its own in layout 4's "
           + 'date card. Leave it empty and the line stops at the date.' },
     // JP-095 (a): the line every layout prints while no day is cued. Cased in
@@ -3918,7 +3921,7 @@ export const FIELDS = {
       chars: { Retro: [33, 24, 39, 50], Lime: [44, 23, 33, 47], Grunge: [44, 24, 36, 50], Editorial: [44, 29, 24, 50], Pop: [31, 32, 24, 50],
         Lattice: [33, 32, 24, 50], Paperback: [36, 22, 24, 44],
         // Headliner's layout 1 measured: 29 at 390, where the foot's line is three lines and a fourth would grow it; layouts 2-4 are Grunge's, written out.
-        Headliner: [29, 24, 36, 50] },
+        Headliner: [29, 24, 36, 50], Backline: [50, 32, 24, 50] },
       hint: 'The line where the picked date goes while none is picked: on the published page, '
           + 'until a visitor picks one, when the opening date is booked or has passed. Left empty, '
           + 'it shows “Pick a date to enquire” again.' },
@@ -3928,11 +3931,11 @@ export const FIELDS = {
     // (JP-088; Pop's since its layout-1 pass, user call, 2026-10-02): its
     // enquiry line is the link.
     { k: 'cta',     l: 'Button', d: 'Check a date',
-      in: { Lime: [3], Grunge: [3], Editorial: [3], Pop: [3], Lattice: [0, 3], Paperback: [0, 3], Headliner: [0, 3], '*': [0, 3] },
+      in: { Lime: [3], Grunge: [3], Editorial: [3], Pop: [3], Lattice: [0, 3], Paperback: [0, 3], Headliner: [0, 3], Backline: [0, 3], '*': [0, 3] },
       // Paperback's Continue pill measured 34 (the 390 foot's width) and is held to 12 as Lattice's is, so the 768 foot's line keeps its room: a judgement call, the user's to overrule.
       // Lattice's layout-1 Continue bar: measured 29 (box), held to 12 so the bar stays within a third of the 390 foot
       // and the enquiry line keeps its room (the frame's seat is 130 wide beside a 162 line); a judgement call.
-      chars: { Retro: [24, null, null, 24], Lattice: [12, null, null, 24], Paperback: [12, null, null, 24], Headliner: [12, null, null, 24], '*': [null, null, null, 24] },
+      chars: { Retro: [24, null, null, 24], Lattice: [12, null, null, 24], Paperback: [12, null, null, 24], Headliner: [12, null, null, 24], Backline: [12, null, null, 24], '*': [null, null, null, 24] },
       // Headliner's Continue measured 37 (the box); held to 12 as Lattice's and Paperback's are, so the 390 foot's line keeps its room: a judgement call, the user's to overrule.
       hint: 'Layout 4’s Send Enquiry, on the last step of the enquiry wizard and at the foot '
           + 'of the summary; it starts from “Send Enquiry” there, and shows it again if you '
@@ -4509,6 +4512,7 @@ export function fieldSeed({ cat, f, themeName, design, c = {}, artistName, email
     : f.k === 'heading' && design === 2 && HEADING_3[cat] ? HEADING_3[cat]
     : f.k === 'heading' && design === 3 && HEADING_4[cat] ? HEADING_4[cat]
     : f.k === 'heading' && cat === 'calendar' && design === 0 && themeName === 'Headliner' ? CAL_HEADING_HEADLINER
+    : f.k === 'heading' && cat === 'calendar' && design === 0 && themeName === 'Backline' ? CAL_HEADING_BACKLINE
     : f.k === 'heading' && cat === 'calendar' && design === 0 && limeTreeTheme(themeName) ? CAL_HEADING_1
     : f.k === 'heading' && cat === 'repertoire' ? `${songs.filter((t) => !blankRow(t, SONG_KEYS)).length} ${repCountWord(themeName, design)}`
     : f.k === 'heading' && cat === 'testimonials' && design === 1 ? TESTI_HEADING_2
@@ -4519,7 +4523,7 @@ export function fieldSeed({ cat, f, themeName, design, c = {}, artistName, email
     : f.k === 'terms' && cat === 'map' ? mapTermsSeed(c)
     : f.k === 'cta' && cat === 'calendar' && design === 3 ? CAL_SEND_4
     : f.k === 'cta' && cat === 'bio' && design === 0 && (themeName === 'Paperback' || themeName === 'Backline') ? BIO_CTA_PAPERBACK
-    : f.k === 'cta' && cat === 'calendar' && design === 0 && (themeName === 'Lattice' || themeName === 'Paperback' || themeName === 'Headliner') ? CAL_CTA_LATTICE
+    : f.k === 'cta' && cat === 'calendar' && design === 0 && (themeName === 'Lattice' || themeName === 'Paperback' || themeName === 'Headliner' || themeName === 'Backline') ? CAL_CTA_LATTICE
     : f.k === 'rowCta' && cat === 'pricing' && design === 0 && (themeName === 'Paperback' || themeName === 'Headliner' || themeName === 'Backline') ? PRICING_ROW_CTA_PAPERBACK
     : f.k === 'heading' && cat === 'pricing' && design === 0 && themeName === 'Headliner' ? PRICING_HEADING_HEADLINER
     : f.k === 'heading' && cat === 'pricing' && design === 0 && themeName === 'Backline' ? PRICING_HEADING_BACKLINE
@@ -4744,6 +4748,7 @@ export const INLINE_OFF = {
   'Backline.0.header.location': 'not drawn: layouts 1–4 print no location any more (a shared identity key; the bio, the calendar and the map print it)',
   'Backline.0.header.cta1': 'a node text can never settle (a user call, section 1): the frame sets the Book pill 49 px in from the right edge, and the canvas’s own toolbar (right 8, top 8, about 100 wide) covers its words at the desktop canvas, so a click there lands on the toolbar; the panel edits it (the ledger is per design, so tablet, which would reach it, loses it too)',
   'Headliner.0.repertoire.songs.length': 'not drawn: only layout 3 prints a song’s length',
+  'Backline.0.calendar.prompt': 'not drawn: it shows only while no day is cued, and the canvas opens with one cued',
   'Backline.0.repertoire.songs.length': 'not drawn: only layout 3 prints a song’s length',
   '*.*.pricing.tiers.tags': 'derived value: the filter chips are the distinct tags of every package',
   '*.3.video.videos.desc': 'not drawn: layout 4 prints the playing video’s title alone',
@@ -4899,7 +4904,7 @@ export const IDENTITY_CHARS = {
   // prints the playing video's title since (`videos.title`), and layout 2 none.
   calendar: {
     location: { Retro: [19, null, null, 67], Lime: [null, null, null, 64], Grunge: [null, null, null, 55],
-      Lattice: [19, null, null, 67], Paperback: [null, null, null, 29], '*': [null, null, null, 67] },
+      Lattice: [19, null, null, 67], Paperback: [null, null, null, 29], Backline: [60, null, null, 67], '*': [null, null, null, 67] },
     seal: { Retro: [19] },
   },
   footer: {
@@ -5034,7 +5039,7 @@ export function identityCap(key, sections, themeName) {
 export const IDENTITY_READS = {
   // Headliner's layout-1 bio prints neither (the frame has no role line), so its layout 1 is off both.
   kicker: { bio: { Headliner: [1, 2, 3], Backline: [1, 2, 3], '*': [0, 1, 2, 3] }, form: [0, 1] },
-  location: { bio: { Headliner: [1, 2], Backline: [1, 2], '*': [0, 1, 2] }, calendar: { Retro: [0, 3], Lattice: [0, 3], '*': [3] } },
+  location: { bio: { Headliner: [1, 2], Backline: [1, 2], '*': [0, 1, 2] }, calendar: { Retro: [0, 3], Lattice: [0, 3], Backline: [0, 3], '*': [3] } },
   tags: { bio: { Retro: [1, 3], '*': [1, 2, 3] } },
   showTags: { bio: { Retro: [1, 3], '*': [1, 2, 3] } },
 }

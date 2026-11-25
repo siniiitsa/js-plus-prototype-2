@@ -22030,6 +22030,206 @@ function HeadlinerCalendar({ s, g }) {
   )
 }
 
+// Backline's layout-1 calendar (1:6558 · 1:18328 · 1:19659), a stage of its own: dark olive under the torn paper head, a tilted, taped paper
+// calendar, then the head over a tilted, notched ticket for the picked day, and under both a dashed rule, the terminal line and the mustard button.
+// The frame's px at all three widths. `cell` is [row, number, the number's top], the weekday row's height beside it; `card` is the padding under the
+// grid; `arrowTop` the squares' top inside the month row.
+const BACKLINE_CALENDAR = {
+  desktop: { fw: 1440, top: 151.6, side: 48.96, cols: true, pad: 32, headTop: 32, headH: 47, month: 52, monthTop: 0, arrowTop: 2, week: 34, row: 52, day: 24, dayTop: 12, foot: 32, circle: [71, 3.1975], head: 72, headW: 651, date: 44, dateLh: 41.8, dateW: 481, dateLines: 1, sub: 72 },
+  tablet: { fw: 768, top: 90, side: 26.11, cols: false, pad: 24, headTop: 27, headH: 42, month: 42, monthTop: 2, arrowTop: -0.5, week: 34, row: 52, day: 24, dayTop: 10.48, foot: 27, circle: [71, 3.351], head: 48, headW: 716, date: 35, dateLh: 33.25, dateW: 546, dateLines: 1, sub: 63 },
+  mobile: { fw: 390, top: 67, side: 24, cols: false, pad: 16, headTop: 22, headH: 42, month: 34, monthTop: 5.5, arrowTop: -0.5, week: 34.61, row: 52.61, day: 22, dayTop: 12.1, foot: 18.34, circle: [71.61, 2.593], head: 38, headW: 342, date: 29, dateLh: 27.55, dateW: 172, dateLines: 2, sub: 85, lineW: 188 },
+}
+const BL_CAL_RULE = 'rgba(35, 36, 15, 0.22)'   // the dashed rules between the weeks (the frame's literal)
+function BacklineCalendar({ s, g }) {
+  const { month, cur, line, step, pick } = g
+  const dev = s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop'
+  const P = BACKLINE_CALENDAR[dev]
+  const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
+  const paper = s.onScheme[1]
+  const ink = paper.text1              // #23240F
+  const olive = paper.text3            // #6F630A: the year, the weekdays, the picked day and its circle
+  const cream = s.text1                // #F5F6E8: the head's lead and the terminal line
+  const mustard = s.activeBg           // #D4BE1E: the head's tail
+  const tearId = useId().replace(/:/g, '')
+  const label = (size, extra) => ({ fontFamily: s.label, fontWeight: 700, fontSize: size, letterSpacing: '0.06em', textTransform: 'uppercase', lineHeight: 'normal', ...extra })
+  const display = (size, extra) => ({ fontFamily: s.display, fontWeight: 400, fontSize: size, letterSpacing: '-0.045em', textTransform: 'lowercase', ...extra })
+  const when = g.hit
+
+  // The two squares. The arrow that cannot go further has no handler and is dimmed live (JP-152's rule); the canvas keeps both solid.
+  const square = (back, dir) => {
+    const onClick = step(dir)
+    return (
+      <span aria-hidden onClick={onClick} style={{
+        flex: 'none', alignSelf: 'flex-start', boxSizing: 'border-box', width: u(43), height: u(43), marginTop: u(P.arrowTop), border: `1px solid ${ink}`,
+        display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: onClick ? 'pointer' : undefined, opacity: s.live && !onClick ? 0.38 : undefined,
+      }}>
+        <svg aria-hidden viewBox="0 0 16 12" fill="none" style={{ display: 'block', width: u(16), height: u(12), flex: 'none', overflow: 'visible' }}>
+          <path d={back ? 'M16 6H2M7 11L2 6L7 1' : 'M0 6H14M9 11L14 6L9 1'} stroke={ink} strokeWidth="2" />
+        </svg>
+      </span>
+    )
+  }
+
+  // The month, centred between the squares, the name in ink and the year olive, fitted to the room the squares leave by its own width (`month.ems`). The
+  // box is a container, so its own size is set on it (cqw resolves against the stage there); the row keeps the frame's height, so a shrunk month does not move the grid.
+  const cutAt = month.label.lastIndexOf(' ')
+  const monthRow = (
+    <div style={row('0px', { alignItems: 'stretch', height: u(P.headH), marginBottom: u(10) })}>
+      {square(true, -1)}
+      <div style={{ flex: '1 1 0', minWidth: 0, boxSizing: 'border-box', padding: `${u(P.monthTop)} ${u(4)} 0`, containerType: 'inline-size', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', fontSize: u(P.month) }}>
+        <span style={{ ...display(month.ems ? `min(1em, calc(100cqi / ${month.ems}))` : '1em', { lineHeight: 0.9, color: ink, whiteSpace: 'nowrap' }) }}>
+          {month.label.slice(0, cutAt + 1)}<span style={{ color: olive }}>{month.label.slice(cutAt + 1)}</span>
+        </span>
+      </div>
+      {square(false, 1)}
+    </div>
+  )
+
+  const seven = { display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))' }
+  const names = (
+    <div style={{ ...seven, height: u(P.week), boxSizing: 'border-box', paddingTop: u(8) }}>
+      {s.calDays.map((d) => (
+        <span key={d} style={{ ...label(u(11), { lineHeight: u(12.65), textAlign: 'center', color: olive }) }}>{d}</span>
+      ))}
+    </div>
+  )
+
+  // A day: a ruled cell (the frame's dashes, 2 on 1 off; an absent cell draws no rule) and a TT2020 number; the picked one turns olive inside the
+  // hand-drawn circle, which stands 14 left and 9 above its cell and 28 wider than it. A booked or past day is the family's: dimmed to .38, no strike, no handler.
+  const day = (c, i) => {
+    if (c.iso === undefined) return <span key={i} />
+    const on = c.iso === cur
+    const onClick = pick(c)
+    return (
+      <span key={i} onClick={onClick} style={{
+        position: 'relative', display: 'block', boxSizing: 'border-box', height: u(P.row), paddingTop: u(P.dayTop), textAlign: 'center', cursor: onClick ? 'pointer' : undefined,
+        backgroundImage: `repeating-linear-gradient(90deg, ${BL_CAL_RULE} 0 ${u(2)}, transparent ${u(2)} ${u(3)})`, backgroundSize: '100% 1px', backgroundRepeat: 'no-repeat',
+      }}>
+        <span style={{ ...display(u(P.day), { display: 'block', lineHeight: 0.9, color: on ? olive : ink }), opacity: c.booked || c.dead ? 0.38 : undefined }}>{c.d}</span>
+        {on && (
+          <svg aria-hidden viewBox="0 0 112 71" preserveAspectRatio="none" fill="none" style={{ position: 'absolute', left: u(-14), top: u(-9), width: `calc(100% + ${u(28)})`, height: u(P.circle[0]), overflow: 'visible', pointerEvents: 'none', zIndex: 1 }}>
+            <path d="M64.96 6.08571C33.6 3.04286 6.72 14.2 7.84 34.4857C8.96 54.7714 36.96 64.9143 63.84 63.9C90.72 62.8857 106.4 51.7286 104.16 33.4714C101.92 14.2 78.4 5.07143 49.28 8.11429" stroke={olive} strokeLinecap="round" vectorEffect="non-scaling-stroke" style={{ strokeWidth: u(P.circle[1]) }} />
+          </svg>
+        )}
+      </span>
+    )
+  }
+
+  // The card, turned -0.8 degrees, with the frame's two shadows, its grain and two tapes over the squares (they take no click). A six-week month grows it by a row.
+  const tape = (side, turn) => (
+    <BacklineTape colour={paper.box3} width={u(120)} style={{ position: 'absolute', [side]: u(34 - 60), top: u(42 - 16), transform: `rotate(${turn}deg)` }} />
+  )
+  const card = (
+    <div style={{
+      position: 'relative', minWidth: 0, boxSizing: 'border-box', transform: 'rotate(-0.8deg)', background: BL_TICKET, padding: `${u(P.headTop)} ${u(P.pad)} ${u(P.foot)}`,
+      boxShadow: `0 ${u(1)} ${u(1)} 0 rgba(35, 36, 15, 0.18), 0 ${u(14)} ${u(26)} ${u(-16)} rgba(35, 36, 15, 0.55)`,
+    }}>
+      <BacklineGrain src={s.backlineGrain} tone="paper" opacity={0.5} />
+      <div style={{ position: 'relative' }}>
+        {monthRow}
+        {names}
+        <div style={seven}>{month.cells.map(day)}</div>
+      </div>
+      {tape('left', -50)}
+      {tape('right', 50)}
+    </div>
+  )
+
+  // The head: the frame's `07 ┈┈ BOOKING` line is not drawn (call 1 A) and keeps its seat. The run after the first comma is mustard; the 1440 master
+  // paints it in the band's own colour, which would hide the artist's words, so all three widths take the 768 / 390 masters' mustard.
+  const title = String(s.title ?? '')
+  const comma = title.indexOf(',')
+  const lead = comma < 0 ? title : title.slice(0, comma + 1)
+  const tail = comma < 0 ? '' : title.slice(comma + 1)
+  const h2 = title.trim() ? (
+    <h2 style={{
+      margin: 0, minWidth: 0, color: cream, overflowWrap: 'anywhere',
+      ...display(s.titleWordEms ? `min(${u(P.head)}, calc(${u(P.headW)} / ${s.titleWordEms}))` : u(P.head), { lineHeight: 0.9 }),
+    }}>{lead}{!!tail && <span style={{ color: mustard }}>{tail}</span>}</h2>
+  ) : null
+
+  // The ticket: turned 2.5 degrees, its corners bitten by the mask and its shadows on the wrapper so they follow the bites. It prints the picked day and
+  // the town (the header's); the frame's `BOOKING REQUEST`, event kind, `PENCILLED IN`, `GIG` and number are not drawn (call 1 A) and their seats are
+  // kept where something is placed against them. With no day picked the date's line is a blank rule to be written on: the prompt stands in the terminal line.
+  // The date keeps one line at 1440 and 768, shrinking to three quarters of its size before it wraps; at 390 it wraps, as the frame's does.
+  const mask = blNotchMask(u(12))
+  const dateSize = P.dateLines === 1 && when?.stubEms ? `max(${u(P.date * 0.75)}, min(${u(P.date)}, calc(${u(P.dateW)} / ${when.stubEms})))` : u(P.date)
+  const ticket = (
+    <div style={{ position: 'relative', marginTop: u(30), transform: 'rotate(2.5deg)', filter: `drop-shadow(0 ${u(10)} ${u(14)} rgba(35, 36, 15, 0.22)) drop-shadow(0 ${u(1)} ${u(1)} rgba(35, 36, 15, 0.2))` }}>
+      <div style={{
+        position: 'relative', display: 'flex', boxSizing: 'border-box', minHeight: u(210), background: BL_TICKET, color: ink,
+        maskImage: mask, maskComposite: 'intersect', WebkitMaskImage: mask, WebkitMaskComposite: 'source-in',
+      }}>
+        <BacklineGrain src={s.backlineGrain} tone="paper" opacity={0.5} />
+        <div style={{ position: 'relative', flex: '1 1 0', minWidth: 0, boxSizing: 'border-box', padding: `${u(44)} ${u(26)} ${u(26)}`, ...WRAP_LONG }}>
+          <div style={{ minHeight: u(P.dateLh * P.dateLines) }}>
+            {when ? (
+              <div style={{ ...display(dateSize, { lineHeight: P.dateLh / P.date }) }}>{when.stub}</div>
+            ) : (
+              <div aria-hidden style={{ height: u(P.dateLh * P.dateLines * 0.86), backgroundImage: `repeating-linear-gradient(90deg, ${BL_PRICE_RULE_INK} 0 ${u(2)}, transparent ${u(2)}, transparent ${u(3)})`, backgroundSize: '100% 1px', backgroundPosition: 'bottom', backgroundRepeat: 'no-repeat' }} />
+            )}
+          </div>
+          {!!s.location && <div style={label(u(12), { marginTop: u(P.sub - 22 - P.dateLh * P.dateLines), lineHeight: u(13.8) })}>{s.location}</div>}
+        </div>
+        <div style={{ position: 'relative', flex: 'none', width: u(118) }}>
+          <BacklineBarcode ink={ink} size={u(26)} dot dotR={2} style={{ position: 'absolute', left: u(46), top: u(61) }} />
+        </div>
+      </div>
+    </div>
+  )
+
+  const right = (
+    <div style={{ minWidth: 0, alignSelf: 'start' }}>
+      <div aria-hidden style={{ height: u(14.94 + 30) }} />
+      {h2}
+      {ticket}
+    </div>
+  )
+
+  // The foot: the enquiry line, the picked day's or the prompt, between the frame's `>` and `_` (plain text, never the link), and the button, which leads on
+  // to the form (`calBookTo`) when live and is a picture on the canvas. An emptied `cta` drops it.
+  const foot = (
+    <div style={{
+      marginTop: u(48), paddingTop: u(22), minHeight: u(P.dateLines === 1 ? 69 : 104), boxSizing: 'border-box', display: 'flex', alignItems: 'flex-start',
+      backgroundImage: `repeating-linear-gradient(90deg, ${BL_RULE} 0 ${u(2)}, transparent ${u(2)} ${u(3)})`, backgroundSize: '100% 1px', backgroundRepeat: 'no-repeat',
+    }}>
+      <div style={row(u(16), { flex: '1 1 auto', minWidth: 0, justifyContent: 'space-between' })}>
+        {/* at 390 the frame's line box (189.766) breaks before its `at`, which TT2020 sets a hair wider than here: 188 keeps that break */}
+        <p style={{ margin: 0, flex: '1 1 0', minWidth: 0, maxWidth: P.lineW ? u(P.lineW) : undefined, ...display(u(18), { lineHeight: u(27), letterSpacing: '-0.02em', textTransform: 'none', color: cream, overflowWrap: 'anywhere' }) }}>
+          <span aria-hidden>&gt; </span><span>{line}</span><span aria-hidden>_</span>
+        </p>
+        {s.calCta && (
+          <BacklinePill
+            s={s} u={u} to={s.calBookTo}
+            label={<>{s.calCta}<svg aria-hidden viewBox="0 0 15.8906 12" fill="none" style={{ display: 'block', flex: 'none', width: u(15.8906), height: u(12), overflow: 'visible' }}><path d="M0 6H13.9043M8.93846 10.9658L13.9043 6L8.93846 1.03419" stroke={s.activeFg} strokeWidth="1.98633" /></svg></>}
+            style={{ justifyContent: 'space-between', gap: u(16), minWidth: u(136.22), padding: `0 ${u(12)}` }}
+          />
+        )}
+      </div>
+    </div>
+  )
+
+  return (
+    <div style={{ position: 'relative', containerType: 'inline-size', overflow: 'hidden', background: s.bg, margin: `0 calc(-1 * ${s.surplus})`, padding: `0 ${s.surplus}` }}>
+      <BacklineGrain src={s.backlineGrain} tone="olive" />
+      <div style={{ position: 'relative', boxSizing: 'border-box', padding: `${u(P.top)} ${u(P.side)}` }}>
+        <div style={P.cols ? { display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', columnGap: u(40), alignItems: 'start' } : col(u(40))}>
+          {card}
+          {right}
+        </div>
+        {foot}
+      </div>
+      {/* the torn head: the paper above, the repertoire's contour rotated (`BACKLINE_TEARS.calendar`), 1 px above the band as the frame stands it; a narrow frame is the same contour cropped from the left at 1:1 */}
+      <div style={{ position: 'absolute', left: 0, right: 0, top: u(-1), height: u(88), pointerEvents: 'none' }}>
+        <BacklineTear
+          tear="calendar" colour={paper.bg} tone="paper" id={tearId} height={u(88)}
+          style={s.narrow ? { width: u(1440), maxWidth: 'none' } : undefined}
+        />
+      </div>
+    </div>
+  )
+}
+
 function Calendar({ s }) {
   // The month on show, as an offset into `s.calMonths`, and the day the visitor
   // has picked. Both inert on the editor canvas, where the section is a picture
@@ -22119,9 +22319,11 @@ function Calendar({ s }) {
     // Lattice's layout-1 calendar is a block of its own (LatticeCalendar), after the seam: the month, the pick
     // and the arrows are `Calendar`'s and go over in `g`, so the published controls are the one seam in a new
     // picture. The day's handler is the Lime block's (a blocked day has none; the lit day unlights on a second click).
-    // Paperback's (PaperbackCalendar) is the same hand-over in a third picture, and Headliner's (HeadlinerCalendar) in a fourth.
-    if (s.limeTree && (s.lattice || s.paperback || s.headliner)) {
+    // Paperback's (PaperbackCalendar) is the same hand-over in a third picture, Headliner's (HeadlinerCalendar) in a fourth and Backline's
+    // (BacklineCalendar) in a fifth, which also takes the picked cell itself (`hit`: its ticket prints the cell's `stub`).
+    if (s.limeTree && (s.lattice || s.paperback || s.headliner || s.backline)) {
       const pick = (c) => (s.live && !blocked(c) ? () => setSel((v) => (v === c.iso ? '' : c.iso)) : undefined)
+      if (s.backline) return <BacklineCalendar s={s} g={{ month, cur, hit: cur ? hit : null, line, step, pick }} />
       return s.headliner ? <HeadlinerCalendar s={s} g={{ month, cur, line, step, pick }} />
         : s.paperback ? <PaperbackCalendar s={s} g={{ month, cur, line, step, pick }} /> : <LatticeCalendar s={s} g={{ month, cur, line, step, pick }} />
     }
