@@ -89,6 +89,12 @@ const rotateTear = (edge, shift) => {
 }
 BACKLINE_TEARS.calendar = rotateTear(BACKLINE_TEARS.repertoire, 250)
 
+// SETTLED in section 10 (the testimonials, 2026-11-25): the same strip again. Its master's raster (1:6866, 2880 x 178) is the repertoire's contour rotated 895 px:
+// testimonials[x] = repertoire[(x - 895) mod 1440], r .9977 over all 1,440 columns, mean offset +0.01 px, sd 0.50 (the raster's fibres); the 768 raster, its left
+// columns, reads .9983 and the 390 one .9883 over its 390 columns (the same sd; 1 px higher, as the narrow masters sit). The gallery's, form's, map's and pricing's
+// contours read 0.46-0.73 at their best shift modulo 1440.
+BACKLINE_TEARS.testimonials = rotateTear(BACKLINE_TEARS.repertoire, 895)
+
 // The frames' own tear order, desktop: the header's foot, the media's head, the gallery's head, the repertoire's head, the form's head.
 //
 // SETTLED in section 5 (the repertoire, 2026-11-24): the repertoire's raster is NOT one of the four. Its contour correlates 0.51 / -0.62 / -0.03 /
@@ -97,7 +103,7 @@ BACKLINE_TEARS.calendar = rotateTear(BACKLINE_TEARS.repertoire, 250)
 // one longer torn strip, cut at different offsets. The repertoire needs 148 px of strip the head's window does not hold (its left edge), so it is traced
 // whole as a fifth path rather than composed (+7.0 KB). The gallery's and the form's windows match nothing at a shift of 300 columns or more (best 0.70 /
 // 0.74): they are other strips. Later sections: test the master's raster against all five, shifted, before tracing a sixth.
-export const BACKLINE_TEAR_KEYS = ['head', 'media', 'gallery', 'repertoire', 'form', 'map', 'pricing', 'calendar']
+export const BACKLINE_TEAR_KEYS = ['head', 'media', 'gallery', 'repertoire', 'form', 'map', 'pricing', 'calendar', 'testimonials']
 
 // Overlay opacity of the grain tile per band ground. Calibrated in session 0 on a render of the tile over each plain
 // ground: the luma sd of the result at opacity .1 / .17 / .25 / .4 / .64 / .9 was paper 0.6 / 1.1 / 1.6 / 2.5 / 4.0 /
@@ -335,6 +341,20 @@ export function BacklinePriceBars({ ink, size, style, ...rest }) {
   return (
     <svg aria-hidden="true" viewBox="0 0 90 30" fill="none" style={{ display: 'block', width: size, height: `calc(${size} * 30 / 90)`, overflow: 'visible', pointerEvents: 'none', ...style }} {...rest}>
       {PRICE_BARS.map(([x, w]) => <rect key={x} x={x} y="0" width={w} height="30" fill={ink} />)}
+    </svg>
+  )
+}
+
+// The testimonials' stamp (section 10: 1:6835 · 1:18607 · 1:19934, a 112 box turned 14 degrees, the same at all three widths): two bare rings in the olive about one
+// centre, the outer 46 out and 4 thick, the inner 20 out and 2 thick, in a 96 viewBox. The frames set `FIVE STARS ★ HOSTS AGREE ★` round the band between
+// them, which no field holds (call 1 A), so the band is bare; the number inside is the section's own copy (`rating`), drawn by the section as text. The bio's
+// stamp (`BacklineStamp`, .55 / .057 / .025 of its outer radius) and the map's (.53 / .073 / .036) are other proportions (this one is .43 / .087 / .043).
+// `size` is the 96 box (a CSS length).
+export function BacklineScoreRings({ ink, size, style, ...rest }) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 96 96" fill="none" style={{ display: 'block', width: size, height: size, overflow: 'visible', pointerEvents: 'none', ...style }} {...rest}>
+      <circle cx="48" cy="48" r="46" stroke={ink} strokeWidth="4" />
+      <circle cx="48" cy="48" r="20" stroke={ink} strokeWidth="2" />
     </svg>
   )
 }

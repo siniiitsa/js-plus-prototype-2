@@ -3007,6 +3007,8 @@ export const TESTI_STARS = '★★★★★'
 // prints the "/5" (JP-065). Its own constant, though pricing's PRICING_RATING
 // has the same bytes: it is another section's content.
 export const TESTI_RATING = '4.9'
+// Backline's layout-1 card prints the same key in its round stamp, whose frame reads 5/5 (user call, 2026-11-25).
+export const TESTI_RATING_BACKLINE = '5'
 // Booking calendar layout 4's wizard (964:72843): the event types its first
 // step offers, the frame's own four. The calendar's own list rather than the
 // enquiry form's FORM_TYPES, which is another section's content.
@@ -4186,10 +4188,14 @@ export const FIELDS = {
           + "above the quote in layout 1. Layout 2's selector takes the name's "
           + 'initials — layout 4 marks its card with the same initials; layouts 2, 3 '
           + 'and 4 have no seat for the date.' },
-    { k: 'rating',  l: 'Rating', d: TESTI_RATING, in: [2],
+    // Backline's layout 1 draws it too, in the card's round stamp (user call, 2026-11-25): seeded 5 there (`TESTI_RATING_BACKLINE`),
+    // and an emptied one leaves the two rings bare. 4 is what the 38px inside the inner ring holds beside the `/5`.
+    { k: 'rating',  l: 'Rating', d: TESTI_RATING, in: { Backline: [0, 2], '*': [2] },
       chars: { Retro: [null, null, 8], Lime: [null, null, 7], Grunge: [null, null, 9], Editorial: [null, null, 5],
-        Pop: [null, null, 7], Lattice: [null, null, 7], Paperback: [null, null, 4], Headliner: [null, null, 9] },
-      hint: 'The big number on the stat card, printed out of 5. Empty it to show how many reviews there are instead.' },
+        Pop: [null, null, 7], Lattice: [null, null, 7], Paperback: [null, null, 4], Headliner: [null, null, 9], Backline: [4, null, 7] },
+      hint: { '*': 'The big number on the stat card, printed out of 5. Empty it to show how many reviews there are instead.',
+        Backline: 'Printed out of 5, in the round stamp (layout 1) and as the big number on the stat card (layout 3). '
+          + 'Emptying it leaves the stamp bare, and shows the review count on the stat card.' } },
     { k: 'stars',   l: 'Star rating', d: TESTI_STARS, in: [1, 2],
       chars: { Retro: [null, 44, 35], Lime: [null, 44, 32], Paperback: [null, 37, 33], '*': [null, 44, 36] },
       hint: 'Layout 2 prints them in the corner of the card, beside the reviewer; layout 3 beside '
@@ -4531,6 +4537,7 @@ export function fieldSeed({ cat, f, themeName, design, c = {}, artistName, email
     : f.k === 'heading' && cat === 'calendar' && design === 0 && limeTreeTheme(themeName) ? CAL_HEADING_1
     : f.k === 'heading' && cat === 'repertoire' ? `${songs.filter((t) => !blankRow(t, SONG_KEYS)).length} ${repCountWord(themeName, design)}`
     : f.k === 'heading' && cat === 'testimonials' && design === 1 ? TESTI_HEADING_2
+    : f.k === 'rating' && cat === 'testimonials' && design === 0 && themeName === 'Backline' ? TESTI_RATING_BACKLINE
     : f.k === 'navMode' && cat === 'header' ? navModeDefault(themeName, design)
     : f.k === 'button' && cat === 'form' ? formBtnSeed(themeName, design)
           : f.k === 'heading' && cat === 'map' && design < 2 ? mapHeadingSeed(c, themeName, design)

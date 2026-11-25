@@ -32,7 +32,7 @@ import { useId, useRef, useState } from 'react'
 import RealMap from './RealMap.jsx'
 import { PaperbackArt, PaperbackSparkle, PaperbackWaves } from './paperbackArt.jsx'
 import { HeadlinerWaves, HeadlinerWaveField, HeadlinerBlockArrow, HeadlinerRings } from './headlinerArt.jsx'
-import { BacklineTear, BacklineGrain, BacklineTape, BacklineStamp, BacklineBarcode, BacklineStrike, BacklineRings, BacklineRadiusStamp, BacklinePriceBars, backlineNotch } from './backlineArt.jsx'
+import { BacklineTear, BacklineGrain, BacklineTape, BacklineStamp, BacklineBarcode, BacklineStrike, BacklineRings, BacklineRadiusStamp, BacklinePriceBars, BacklineScoreRings, backlineNotch } from './backlineArt.jsx'
 import {
   Play, Pause, SkipBack, SkipForward, Check, ChevronLeft, ChevronRight,
   ArrowLeft, ArrowRight, ArrowUp, ArrowDown, Star, Plus, X, Search, User,
@@ -29965,6 +29965,172 @@ function HeadlinerTestimonials({ s, g }) {
   )
 }
 
+// Backline's layout-1 testimonials (plans/backline/layout-1.md, section 10; frames 1:6810 · 1:18582 · 1:19912, 730 tall at every width): a mustard band (Scheme 4)
+// under a torn paper head, holding one taped paper card turned -1 degree: the date line, the quote in TT2020 with its last two words olive, the two notched pills
+// (the attribution: the frames draw no byline line) and a bare round stamp round the section's `rating`; two 46 squares page it. A box that centres its content in
+// a 730 minimum, so a longer review grows the section. `fw` the frame, `side` the arrows' gutter, `card` the card's width, `quote` the type and `measure` its box
+// (the card less its padding), `rise` the narrow masters' quote text standing above its box, `tape` each tape's centre in from its side, and `stampX` / `stampY`
+// the stamp's centre in from the card's right and up from its foot (inside the card at 1440, over its foot on the narrow ones, as the masters draw it).
+const BACKLINE_TESTI = {
+  desktop: { fw: 1440, side: 48.96, card: 980, quote: 66.24, measure: 868, rise: 0, tape: 177.6, stampX: 84, stampY: 83 },
+  tablet: { fw: 768, side: 26.11, card: 544, quote: 48, measure: 460, rise: 3.05, tape: 125.26, stampX: 42, stampY: 5 },
+  mobile: { fw: 390, side: 24, card: 342, quote: 38, measure: 286, rise: 2.41, tape: 101.03, stampX: 46, stampY: 9 },
+}
+// TT2020's advance in ems at the quote's -0.045em (`ttEms`, data.js). The face is monospaced, so a greedy wrap by character count is the browser's own, and the
+// length of the quote's last line is known without measuring: a hyphen or a dash is a break too, as in the browser.
+const BL_TESTI_ADVANCE = 0.502
+function blLastLine(text, perLine) {
+  let line = 0
+  for (const word of String(text).split(/\s+/).filter(Boolean)) {
+    for (const [i, part] of (word.match(/[^-–—]*[-–—]+|[^-–—]+/g) ?? []).entries()) {
+      const n = [...part].length
+      const gap = line && !i ? 1 : 0
+      if (line && line + gap + n > perLine) line = n
+      else line += gap + n
+    }
+  }
+  return line
+}
+function BacklineTestimonials({ s, g }) {
+  const { q, at, paging, step } = g
+  const dev = s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop'
+  const P = BACKLINE_TESTI[dev]
+  const mob = dev === 'mobile'
+  const desk = dev === 'desktop'
+  const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
+  const paper = s.onScheme[1]
+  const ink = paper.text1              // #23240F: the quote, `who`'s pill, the arrows
+  const green = paper.text3            // #6F630A: the date line, the quote's last words, the stamp
+  const cream = paper.box1             // sem/box/1 #F5F6E8: `role`'s pill, the type on the ink pill and the lit arrow
+  const tearId = useId().replace(/:/g, '')
+  const label = (size, extra) => ({ fontFamily: s.label, fontWeight: 700, fontSize: size, letterSpacing: '0.06em', textTransform: 'uppercase', lineHeight: 'normal', ...extra })
+
+  // A notched pill (a 5px bite out of each corner): one line at 26, wrapping inside itself past the card's width. The bites are the cards' mask over one fill,
+  // not the header chips' `backlineNotch`, whose four tiles show a seam across the middle once the card turns them.
+  const bite = blNotchMask(u(5))
+  const pill = (text, bg, fg, key) => (
+    <span key={key} style={label(u(12), {
+      boxSizing: 'border-box', minHeight: u(26), maxWidth: '100%', minWidth: 0, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: `${u(4)} ${u(10)}`,
+      lineHeight: u(13), background: bg, color: fg, textAlign: 'center', overflowWrap: 'anywhere',
+      maskImage: bite, maskComposite: 'intersect', WebkitMaskImage: bite, WebkitMaskComposite: 'source-in',
+    })}>{text}</span>
+  )
+
+  // One review, a column on a 22 gap. The quote's last two words are olive and a closing quote mark after them stays ink, as the frames set it; a quote of under
+  // three words is all ink. The paragraph's text is the stored copy to the letter (no mark is added), which is what the inline editor matches. It is fitted to its
+  // widest word (`wordEms`), so a long word sets the type down and is not broken. At 1440 the stamp stands inside the card beside the quote's last lines: a last
+  // line long enough to reach it takes the pills (and with them the card's foot, which the stamp hangs from) 44 further down, so the line clears the ring.
+  const review = (r) => {
+    const text = String(r.quote ?? '')
+    const m = text.match(/^(.*?\S+\s+)(\S+\s+\S+?)(["'”’»]*)$/s)
+    const lead = m ? m[1] : text
+    const size = r.wordEms ? Math.min(P.quote, P.measure / r.wordEms) : P.quote
+    const reach = blLastLine(text, Math.floor(P.measure / (size * BL_TESTI_ADVANCE) + 0.001)) * size * BL_TESTI_ADVANCE / 2
+    const pills = !!r.who || !!r.role
+    // the ring's left edge is `stampX + 48` in from the card's right; 6 is the air it keeps
+    const clear = desk && !!text && reach > P.card / 2 - P.stampX - 48 - 6 ? 44 : 0
+    return (
+      <div style={col(u(22), { minWidth: 0 })}>
+        {!!r.when && <span style={label(u(13), { display: 'block', lineHeight: u(13.8), letterSpacing: '0.055em', color: green, textAlign: 'center', overflowWrap: 'anywhere' })}>{r.when}</span>}
+        {!!text && (
+          <div style={{ containerType: 'inline-size', minWidth: 0, fontSize: u(P.quote), marginBottom: clear ? u(clear) : undefined }}>
+            <p style={{
+              margin: 0, position: 'relative', top: u(-P.rise), fontFamily: s.display, fontWeight: 400, lineHeight: 1, letterSpacing: '-0.045em', textTransform: 'lowercase', textAlign: 'center', color: ink,
+              overflowWrap: 'break-word', fontSize: r.wordEms ? `min(1em, calc(100cqi / ${r.wordEms}))` : '1em',
+            }}>{lead}{!!m && <><span style={{ color: green }}>{m[2]}</span>{m[3]}</>}</p>
+          </div>
+        )}
+        {/* With neither pill the row keeps its 26 under a quote: the card's foot is what the stamp hangs from, and without it a second line of the quote would stand beside the ring. */}
+        {(pills || !!text) && (
+          <div style={row(u(8), { flexWrap: 'wrap', justifyContent: 'center', minWidth: 0, minHeight: u(26) })}>
+            {!!r.who && pill(r.who, ink, cream, 0)}
+            {!!r.role && pill(r.role, cream, ink, 1)}
+          </div>
+        )}
+      </div>
+    )
+  }
+  const empty = <span style={label(u(13), { display: 'block', lineHeight: u(13.8), color: green, textAlign: 'center' })}>No reviews yet.</span>
+
+  // The arrows page a card whose height is the review's, and they are centred on it (under it at 390), so one would move from under the pointer between a short
+  // review and a long one. The published page therefore lays every review in one grid cell, the others hidden (not drawn, not clickable, not read aloud): the card
+  // is the tallest one's height at every step. The canvas draws the one review.
+  const body = !q ? empty : s.live && paging ? (
+    <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', alignItems: 'center' }}>
+      {s.quotes.map((r, i) => (
+        <div key={i} aria-hidden={i !== at || undefined} style={{ gridArea: '1 / 1', minWidth: 0, visibility: i === at ? undefined : 'hidden' }}>{review(r)}</div>
+      ))}
+    </div>
+  ) : review(q)
+
+  // The stamp, turned 14 degrees: the two bare rings and, a hair under their centre, the section's `rating` out of 5 (emptied, the rings stay bare). It lies UNDER
+  // the card's copy, so a line or a pill that reaches it prints over the ring and every word stays whole; the frames paint it over the foot of a pill at 390.
+  // An emptied list draws none: it would score no review, and the one-line card is too short to hold it.
+  const rating = String(s.testiRating ?? '').trim()
+  const stamp = q && (
+    <div style={{ position: 'absolute', right: u(P.stampX - 48), bottom: u(P.stampY - 48), width: u(96), height: u(96), transform: 'rotate(14deg)', zIndex: 0 }}>
+      <BacklineScoreRings ink={green} size={u(96)} />
+      {!!rating && (
+        <div style={{ position: 'absolute', left: 0, right: 0, top: u(42), display: 'flex', justifyContent: 'center', fontFamily: s.body, fontWeight: 400, fontSize: u(12), lineHeight: u(15), color: green, whiteSpace: 'nowrap' }}>
+          <span>{rating}</span><span>/5</span>
+        </div>
+      )}
+    </div>
+  )
+  const tape = (side, turn) => (
+    <BacklineTape colour={paper.box3} width={u(120)} style={{ position: 'absolute', [side]: u(P.tape - 60), top: u(-14), transform: `rotate(${turn}deg)`, zIndex: 2 }} />
+  )
+  // The card: turned -1 degree, the calendar card's pair of shadows, half-strength paper grain, and a tape either side of its head. Neither tape takes a click.
+  const card = (
+    <div style={{
+      position: 'relative', isolation: 'isolate', boxSizing: 'border-box', width: u(P.card), maxWidth: '100%', margin: '0 auto', transform: 'rotate(-1deg)', background: BL_TICKET,
+      boxShadow: `0 ${u(1)} ${u(1)} 0 rgba(35, 36, 15, 0.18), 0 ${u(14)} ${u(26)} ${u(-16)} rgba(35, 36, 15, 0.55)`,
+      padding: `${u(48)} ${u((P.card - P.measure) / 2)} ${u(40)}`,
+    }}>
+      <BacklineGrain src={s.backlineGrain} tone="paper" opacity={0.5} />
+      {stamp}
+      <div style={{ position: 'relative', zIndex: 1, minWidth: 0 }}>{body}</div>
+      {tape('left', -6)}
+      {tape('right', 5)}
+    </div>
+  )
+
+  // The two squares: Previous outlined, Next filled in ink (the frames' 16 x 12 arrow at stroke 2). Not drawn at one review; the seam wraps them at both ends.
+  const square = (back, onClick, extra) => (
+    <span aria-hidden onClick={onClick} style={{
+      flex: 'none', boxSizing: 'border-box', width: u(46), height: u(46), border: `1px solid ${ink}`, background: back ? 'transparent' : ink,
+      display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: onClick ? 'pointer' : undefined, ...extra,
+    }}>
+      <svg aria-hidden viewBox="0 0 16 12" fill="none" style={{ display: 'block', width: u(16), height: u(12), flex: 'none', overflow: 'visible' }}>
+        <path d={back ? 'M16 6H2M7 11L2 6L7 1' : 'M0 6H14M9 11L14 6L9 1'} stroke={back ? ink : cream} strokeWidth="2" />
+      </svg>
+    </span>
+  )
+  const flank = (side) => ({ position: 'absolute', [side]: u(P.side), top: `calc(50% - ${u(23)})` })
+
+  return (
+    <div style={{ position: 'relative', containerType: 'inline-size', overflow: 'hidden', background: s.bg, margin: `0 calc(-1 * ${s.surplus})`, padding: `0 ${s.surplus}` }}>
+      <BacklineGrain src={s.backlineGrain} tone="mustard" />
+      {/* 112 clears the torn head and the tapes over a card taller than the frame's */}
+      <div style={{ position: 'relative', boxSizing: 'border-box', minHeight: u(730), padding: `${u(112)} 0`, display: 'flex', flexDirection: 'column', justifyContent: 'center', ...WRAP_LONG }}>
+        {card}
+        {paging && (mob ? (
+          <div style={row(u(12), { justifyContent: 'center', marginTop: u(20) })}>{square(true, step(-1))}{square(false, step(1))}</div>
+        ) : (
+          <>{square(true, step(-1), flank('left'))}{square(false, step(1), flank('right'))}</>
+        ))}
+      </div>
+      {/* the torn head: the paper above, the repertoire's contour rotated (`BACKLINE_TEARS.testimonials`), 1 px above the band as the frame stands it; a narrow frame is the same contour cropped from the left at 1:1 */}
+      <div style={{ position: 'absolute', left: 0, right: 0, top: u(-1), height: u(88), pointerEvents: 'none' }}>
+        <BacklineTear
+          tear="testimonials" colour={paper.bg} tone="paper" id={tearId} height={u(88)}
+          style={s.narrow ? { width: u(1440), maxWidth: 'none' } : undefined}
+        />
+      </div>
+    </div>
+  )
+}
+
 // v0 — Testimonials layout 1 · Stacked tag card (§10.2 reference design): one
 // cream quote card standing on two rotated, ink-outlined coloured cards, with
 // the pager arrows thrown out to the page's own gutters.
@@ -30032,6 +30198,8 @@ function Testimonials({ s }) {
     if (s.limeTree && s.lattice) return <LatticeTestimonials s={s} g={{ q, paging, step }} />
     // Paperback's layout-1 testimonials are a block of their own too (PaperbackTestimonials), after the seam, the same hand-over.
     // Headliner's is a stage of its own too (HeadlinerTestimonials), after the seam, the same hand-over.
+    // Backline's too (BacklineTestimonials), which takes `at` besides: its published card stacks every review and shows that one.
+    if (s.limeTree && s.backline) return <BacklineTestimonials s={s} g={{ q, at, paging, step }} />
     if (s.limeTree && s.headliner) return <HeadlinerTestimonials s={s} g={{ q, paging, step }} />
     if (s.limeTree && s.paperback) return <PaperbackTestimonials s={s} g={{ q, paging, step }} />
 
