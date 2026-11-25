@@ -30065,7 +30065,8 @@ function BacklineTestimonials({ s, g }) {
 
   // The stamp, turned 14 degrees: the two bare rings and, a hair under their centre, the section's `rating` out of 5 (emptied, the rings stay bare). The rings lie
   // UNDER the card's copy, so a line or a pill that reaches them prints over the ring and every word stays whole; the frames paint them over the foot of a pill at 390.
-  // The score is its own layer over the copy, which never reaches it: under the copy column's box a click at 1440 could not open it on the canvas.
+  // The score is its own layer over the copy, which never reaches it: under the copy column's box a click at 1440 could not open it on the canvas. It is the
+  // frame's 12; past three characters it is 10, or `4.95/5` meets the inner ring on both sides.
   // An emptied list draws none: it would score no review, and the one-line card is too short to hold it.
   const rating = String(s.testiRating ?? '').trim()
   const seat = { position: 'absolute', right: u(P.stampX - 48), bottom: u(P.stampY - 48), width: u(96), height: u(96), transform: 'rotate(14deg)', pointerEvents: 'none' }
@@ -30074,7 +30075,7 @@ function BacklineTestimonials({ s, g }) {
       <div style={{ ...seat, zIndex: 0 }}><BacklineScoreRings ink={green} size={u(96)} /></div>
       {!!rating && (
         <div style={{ ...seat, zIndex: 2 }}>
-          <div style={{ position: 'absolute', left: 0, right: 0, top: u(42), display: 'flex', justifyContent: 'center', fontFamily: s.body, fontWeight: 400, fontSize: u(12), lineHeight: u(15), color: green, whiteSpace: 'nowrap' }}>
+          <div style={{ position: 'absolute', left: 0, right: 0, top: u(42), display: 'flex', justifyContent: 'center', fontFamily: s.body, fontWeight: 400, fontSize: u(rating.length > 3 ? 10 : 12), lineHeight: u(15), color: green, whiteSpace: 'nowrap' }}>
             <span style={{ pointerEvents: 'auto' }}>{rating}</span><span style={{ pointerEvents: 'auto' }}>/5</span>
           </div>
         </div>
