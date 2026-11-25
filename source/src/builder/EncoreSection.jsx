@@ -30063,19 +30063,23 @@ function BacklineTestimonials({ s, g }) {
     </div>
   ) : review(q)
 
-  // The stamp, turned 14 degrees: the two bare rings and, a hair under their centre, the section's `rating` out of 5 (emptied, the rings stay bare). It lies UNDER
-  // the card's copy, so a line or a pill that reaches it prints over the ring and every word stays whole; the frames paint it over the foot of a pill at 390.
+  // The stamp, turned 14 degrees: the two bare rings and, a hair under their centre, the section's `rating` out of 5 (emptied, the rings stay bare). The rings lie
+  // UNDER the card's copy, so a line or a pill that reaches them prints over the ring and every word stays whole; the frames paint them over the foot of a pill at 390.
+  // The score is its own layer over the copy, which never reaches it: under the copy column's box a click at 1440 could not open it on the canvas.
   // An emptied list draws none: it would score no review, and the one-line card is too short to hold it.
   const rating = String(s.testiRating ?? '').trim()
+  const seat = { position: 'absolute', right: u(P.stampX - 48), bottom: u(P.stampY - 48), width: u(96), height: u(96), transform: 'rotate(14deg)', pointerEvents: 'none' }
   const stamp = q && (
-    <div style={{ position: 'absolute', right: u(P.stampX - 48), bottom: u(P.stampY - 48), width: u(96), height: u(96), transform: 'rotate(14deg)', zIndex: 0 }}>
-      <BacklineScoreRings ink={green} size={u(96)} />
+    <>
+      <div style={{ ...seat, zIndex: 0 }}><BacklineScoreRings ink={green} size={u(96)} /></div>
       {!!rating && (
-        <div style={{ position: 'absolute', left: 0, right: 0, top: u(42), display: 'flex', justifyContent: 'center', fontFamily: s.body, fontWeight: 400, fontSize: u(12), lineHeight: u(15), color: green, whiteSpace: 'nowrap' }}>
-          <span>{rating}</span><span>/5</span>
+        <div style={{ ...seat, zIndex: 2 }}>
+          <div style={{ position: 'absolute', left: 0, right: 0, top: u(42), display: 'flex', justifyContent: 'center', fontFamily: s.body, fontWeight: 400, fontSize: u(12), lineHeight: u(15), color: green, whiteSpace: 'nowrap' }}>
+            <span style={{ pointerEvents: 'auto' }}>{rating}</span><span style={{ pointerEvents: 'auto' }}>/5</span>
+          </div>
         </div>
       )}
-    </div>
+    </>
   )
   const tape = (side, turn) => (
     <BacklineTape colour={paper.box3} width={u(120)} style={{ position: 'absolute', [side]: u(P.tape - 60), top: u(-14), transform: `rotate(${turn}deg)`, zIndex: 2 }} />
