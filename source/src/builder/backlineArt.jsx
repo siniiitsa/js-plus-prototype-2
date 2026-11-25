@@ -7,11 +7,13 @@
 //   BacklineTear   the seam. Every band after the first stands under a tear in the band above it: a strip 88 tall at
 //                  the foot of the neighbour's colour, its lower edge a hand-torn line, a pale fibre fringe along the
 //                  edge and a soft shadow under it (frames: Container 1440 x 88 rasters, 1:5547 header, 1:5933 media,
-//                  1:6030 gallery, 1:6809 form). Four distinct contours exist in the desktop frames, and no two are
-//                  alike (measured: 2,544-2,704 of 2,880 columns differ by more than a pixel from each other), so
-//                  there are five traced paths (the repertoire's added in section 5), each the contour at 1440 x 88 css px, simplified to 0.5 px (767 points,
-//                  6.7 KB). The section that draws a seam picks the contour its frame does (`tear`) and colours it
-//                  with the neighbour's band (`colour`, read through `s.above`-style inputs by that section).
+//                  1:6030 gallery, 1:6809 form). `BACKLINE_TEARS` holds ten keys, one a seam, each the contour at
+//                  1440 x 88 css px (a traced path is simplified to 0.5 px, about 7 KB): head, media, gallery and form
+//                  (session 0), repertoire (section 5), pricing (section 7) and footer (section 11) are traced; map
+//                  (section 6) is the form's shifted, with a traced tail; calendar and testimonials (sections 8 and 10)
+//                  are the repertoire's rotated. The SETTLED notes below say how each was found. The section that draws
+//                  a seam picks its own (`tear`) and colours it with the neighbour's band (`colour`, read through
+//                  `s.above`-style inputs by that section).
 //   BacklineGrain  the paper texture. The frames fill every band with a 1440-wide grain raster (colour baked in, sd
 //                  4.2-4.8 levels, a fine grain over a soft mottling); this is the same grain as one 192 px tile (a
 //                  high-passed, lossless WebP, 27.6 KB, grey 128 +- 10 x deviation) laid over the band's plain
@@ -19,10 +21,10 @@
 //                  and a dark one want different opacities (`GRAIN_OPACITY`, calibrated in session 0 against the
 //                  frames' sd).
 //
-// `backlineNotch` (the ticket notch, from the header's chips) is the third piece. NOT here yet, because the numbers
-// belong to the section that draws them and are read there: the tape strips, the stamps, the barcode and the hand
-// marks (the circle, the underline, the strike). Each section's session adds its piece to this file, measured off its
-// own frame.
+// The rest of the kit was added by the section that first draws each piece, measured off its own frame:
+// `backlineNotch` (the ticket notch, from the header's chips), `BacklineTape`, `BacklineStamp` and
+// `BacklineRadiusStamp`, `BacklineBarcode` and `BacklinePriceBars`, `BacklineStrike`, `BacklineRings` (the map's) and
+// `BacklineScoreRings` (the testimonials').
 //
 // SETTLED in section 1 (the header, which draws the first tear): the 768 and 390 frames' tears are NOT the desktop
 // contour squeezed in x. They are the desktop contour cropped from the left at 1:1 (the same path, its first 768 /

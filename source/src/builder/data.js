@@ -3227,8 +3227,8 @@ export const FIELDS = {
   // `aspect` on an image field is only the FALLBACK frame of the photo editor: it opens on the shape of the
   // field's largest photo on the canvas as drawn now (photoAspectOf, EncoreBuilder.jsx), and falls back to this
   // when the layout or device draws none.
-  // The header's `in` is always an object naming all eight templates: they have
-  // different header families (six designs against four in each of the other seven —
+  // The header's `in` is always an object naming all nine templates: they have
+  // different header families (six designs against four in each of the other eight —
   // Grunge's, Editorial's and Pop's rows are each measured over four fitted
   // cards, none a placeholder since each template's layout-4 pass). Pop's was
   // measured in its layout-1 sweep and re-measured in each later header
@@ -3950,7 +3950,7 @@ export const FIELDS = {
       // Headliner's Continue measured 37 (the box); held to 12 as Lattice's and Paperback's are, so the 390 foot's line keeps its room: a judgement call, the user's to overrule.
       hint: 'Layout 4’s Send Enquiry, on the last step of the enquiry wizard and at the foot '
           + 'of the summary; it starts from “Send Enquiry” there, and shows it again if you '
-          + 'empty this. Under Retro it is also layout 1’s button, and under Lattice, Paperback and Headliner layout 1’s '
+          + 'empty this. Under Retro it is also layout 1’s button, and under Lattice, Paperback, Headliner and Backline layout 1’s '
           + '“Continue” button (emptied, the bar is not drawn). The other templates’ '
           + 'layout 1 has no button: its “Enquiry for …” line is the link.' },
     { k: 'slots',   l: 'Available dates', type: 'slots', max: 8, in: [1],

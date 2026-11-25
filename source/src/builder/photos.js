@@ -19,7 +19,7 @@
 // helpers; no React" and is import-free, and ~2 MB of base64 has no business in the
 // file people open to read the palettes.
 //
-// All eight templates have Figma frames of their own, so all eight seed
+// All nine templates have Figma frames of their own, so all nine seed
 // photography: Retro's, Lime's, Grunge's, Editorial's, Pop's, Lattice's, Paperback's, Headliner's and Backline's shoots.
 
 import hero from './photos/hero.jpg'
