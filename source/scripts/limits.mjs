@@ -541,6 +541,9 @@ function measure(needles, drops = []) {
       // A fitted name's line box brushing a seal's disc by a pixel or two is read by eye, not failed
       // (the line box is a quarter-size taller than the glyphs it holds): plans/header-fit.md.
       && !(/[?&]linebox=1/.test(location.search) && o.el.closest('svg'))
+      // A print the copy is drawn over by design (`data-underprint`: the rings of Backline's layout-1 review stamp,
+      // under the card's pills and quote). The score inside them is text and still counts.
+      && !o.el.closest('[data-underprint]')
       && !(o.rs.length === 1 && encloses(o.rs[0]))
       && o.rs.some((r) => ink.some((k) => hit(r, k) && (!o.loose || paints(o.el, r, k))))).map((o) => pathOf(o.el))
     const w = Math.round(el.getBoundingClientRect().width)

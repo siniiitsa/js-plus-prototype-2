@@ -352,7 +352,7 @@ export function BacklinePriceBars({ ink, size, style, ...rest }) {
 // `size` is the 96 box (a CSS length).
 export function BacklineScoreRings({ ink, size, style, ...rest }) {
   return (
-    <svg aria-hidden="true" viewBox="0 0 96 96" fill="none" style={{ display: 'block', width: size, height: size, overflow: 'visible', pointerEvents: 'none', ...style }} {...rest}>
+    <svg aria-hidden="true" data-underprint="" viewBox="0 0 96 96" fill="none" style={{ display: 'block', width: size, height: size, overflow: 'visible', pointerEvents: 'none', ...style }} {...rest}>
       <circle cx="48" cy="48" r="46" stroke={ink} strokeWidth="4" />
       <circle cx="48" cy="48" r="20" stroke={ink} strokeWidth="2" />
     </svg>

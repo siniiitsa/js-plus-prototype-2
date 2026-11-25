@@ -4173,14 +4173,17 @@ export const FIELDS = {
         // Paperback layout 1 measured 2026-11-21 (limits.mjs testimonials --themes=6 --designs=0 --upright): `who` and `role` 45
         // (105 / 66-83 / 45: each prints once, on its chip, and wraps), `when` 31 (64 / 55 / 31: the script meets the star disc at 390),
         // `quote` 170 (measured 293 / 260 / 195 on three samples, 170 on the fourth, all-lower-case one `--check` adds: at 390 a 180-character review is nine lines and the card runs down over the foot trophy). Layouts 2-4 are Pop's, unmeasured.
-        who: { Retro: [28, 48, 25, 27], Lime: [39, 45, 20, 27], Grunge: [28, 50, 25, 27],
+        // Backline layout 1 measured 2026-11-25 (limits.mjs testimonials --themes=8 --designs=0 --upright): `who` 40 (122 / 67 / 40), `role` 40 (131 / 67 / 40) and `when` 40 (125 / 65 / 40): each prints once and
+        // wraps inside its own pill or line, and 40 is the 390 one-line limit. The round stamp's rings are printed under the copy (`data-underprint`), so a pill crossing them is no collision; the score inside them is.
+        // `quote` held to the shared 190 (measured open at 400: the card grows). Layouts 2-4 are placeholders: their numbers are the ones Backline resolved to before this row.
+        who: { Backline: [40, 32, 15, 27], Retro: [28, 48, 25, 27], Lime: [39, 45, 20, 27], Grunge: [28, 50, 25, 27],
           Editorial: [17, 27, 13, 27], Pop: [18, 32, 15, 27], Lattice: [35, 32, 15, 27],
           Paperback: [45, 31, 13, 23], Headliner: [54, 50, 25, 27] },
         quote: { Lime: [66, 190, 190, 190], Grunge: [68, 190, 190, 190], Editorial: [66, 190, 190, 190],
           Lattice: [190, 190, 190, 190], Paperback: [170, 190, 190, 190], Headliner: [190, 190, 190, 190], '*': [190, 190, 190, 190] },
-        role: { Retro: [28, 48, 26, 29], Lime: [45, 48, 26, 27], Grunge: [28, 48, 26, 29], Lattice: [35, 48, 26, 29],
+        role: { Backline: [40, 48, 26, 29], Retro: [28, 48, 26, 29], Lime: [45, 48, 26, 27], Grunge: [28, 48, 26, 29], Lattice: [35, 48, 26, 29],
           Paperback: [45, 46, 26, 28], Headliner: [54, 48, 26, 29], '*': [26, 48, 26, 29] },
-        when: { Retro: [30], Pop: [30], Lattice: [21], Paperback: [31], Headliner: [47], '*': [46] },
+        when: { Backline: [40], Retro: [30], Pop: [30], Lattice: [21], Paperback: [31], Headliner: [47], '*': [46] },
       },
       hint: 'Each row is one review. Layouts 1, 2 and 4 page through them; layout 3 '
           + 'gives each one a card on its wall, and a row with no name or role '
