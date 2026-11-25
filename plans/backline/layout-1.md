@@ -635,9 +635,9 @@ Five commits (`826a7b5` to `328597f`), all in `backlineArt.jsx` and `Backline*` 
 | Round joins | `strokeLinejoin="round"` on the shadow and the fringe. The spikes are gone. |
 | Fringe width per ground | `BacklineTear` takes `ground` (the strip's own body) in place of `tone`: 10 paper, 11 mustard, 12 moss, 13 olive |
 | Fibres at .82 over the band below | the stroke is opaque, in `.82 x fibre + .18 x below`. **Fibre colours read off the ten tear rasters** (all at alpha .819): `#F7F8EF` paper, `#F2F0D2` mustard, `#EBE9CE` moss, `#797B5A` olive. `below` is each section's `s.bg`; the header's foot lies over the photograph and passes ink (`#23240F`; the master reads `#232310` there, ours `#21210F`). This one formula gives the table's .38 (olive over paper) and about .30 (over moss). |
-| Invert the olive grain | `filter: invert(1)` on `BacklineGrain`'s olive tone, bands and nested dark cards alike (all three nested surfaces carry light flecks in Figma too) |
+| Invert the olive grain | `filter: invert(1)` on `BacklineGrain`'s olive tone, bands and nested dark cards alike. Of the nested surfaces, the form's panel and pricing's olive card carry light flecks in Figma too (skew +1.27 and +2.99); the gallery's film strip is nearly flat there (below) |
 | Grain at frame size | `size={u(192)}` at all 22 calls. Computed: 157.33 px at the published 1440's 1.22 zoom, 192 at 768 and 390. |
-| Olive strength, re-checked | **.21 to .175.** At frame size .21 read strong at all three widths: .165 / .194 / .170 from 34 x 40 gutter blocks at 1440 / 768 / 390, .177 from larger patches. At .175 the large patches read sd 3.80 to 3.95 against Figma's 3.75 to 4.03. **The tile's sd varies across its 192 px** (one band's left gutter reads 3.90, its right 4.61), so a narrow gutter misleads. |
+| Olive strength, re-checked | **.21 to .175.** At frame size .21 read strong at all three widths: .165 / .194 / .170 from 34 x 40 gutter blocks at 1440 / 768 / 390, .177 from larger patches. At .175 the large patches read sd 3.80 to 3.95 against Figma's 3.75 to 4.03. **One value serves all three widths**, though only desktop's tile changed size; by the block medians (ours 3.62 / 3.44 / 3.16, Figma 3.45 / 3.74 / 3.11) 768 is now a little weak. **The tile's sd varies across its 192 px** (one band's left gutter reads 3.90, its right 4.61), so a narrow gutter misleads. |
 
 **Against Figma, on renders at 1440, 768 and 390** (headless Chromium, the published tab, beside the masters). Behind the edge the fibre
 profiles now read 208 against 207 to 209 on the header, 215 against 214 to 216 on the media, and 139 against 137 to 141 on the gallery and
@@ -651,9 +651,9 @@ Chromium's by eye, and their strip and band patches agreed on mean within .2 and
 popup in Safari are untested.**
 
 **Proofs.** `limits.mjs --themes=8 --designs=0`: `--seeds` 0 over. `--check` with no flags reports 7 failing, **and `32db25e`, served from a
-worktree, reports the same 7 with the same lines** for those four sections (repertoire, pricing, calendar, testimonials): they are fields
-the sections measured with `--extra-lines` or `--upright`. With `--upright --extra-lines=songs.title,tiers.name,rowCta,time,prompt,who.location,quotes.when`
-those four read 0 failing. `build-digest.mjs`, old root against new build: **themes 0–7, all 24 files identical, and the modal's list**;
+worktree, reports the same lines** for those four sections: they are fields measured with `--extra-lines` or `--upright`. With the flags
+the sweep recorded (`repertoire --extra-lines=songs.title`; `pricing --upright`; `calendar --upright
+--extra-lines=calendar.time,time,prompt,who.location`; `testimonials --upright`) each of the four reads **0 failing**. `build-digest.mjs`, old root against new build: **themes 0–7, all 24 files identical, and the modal's list**;
 theme 8's geometry is identical at three widths, and each file differs in 5 lines, the olive grain's opacity. It records no filter, tile
 size or stroke, so the renders above are the proof of those. **The script's fixed 700 ms wait caught the canvas mid-resize** on two walks
 (Lime, Grunge and Pop mobile at 391 to 442 px wide, in the unchanged build too); the clean run is from a scratch copy that waits until two
@@ -662,8 +662,11 @@ reads 600 ms apart are identical. The root `index.html` is **16,244,412 bytes**,
 **The strip trial: shown to the user, not committed.** It is the `git stash` entry *"Backline strip-grain trial"*: `BacklineTear` takes
 `grain`, draws the tile as an SVG pattern over its body under `overlay` at `STRIP_GRAIN` (paper .55; olive .175, moss .15, mustard .21,
 scaled to the frames' strips), and inverts olive with an **SVG filter in sRGB**, since WebKit applies no CSS filter to a shape inside an
-svg. At .55 the flat stripe is gone and no edge moves. On the media's patch paper reads sd 4.2 beside a band of 4.5 to 5.4 (Figma's strips
-read 3.3 on paper and 3.4 to 4.2 elsewhere, so it is a little strong by this one narrow patch). The pattern's phase does not meet the band
+svg. At .55 the flat stripe is gone and no edge moves. By a 200 x 28 patch of the strip it reads **a little strong on every ground**: sd 4.2
+on paper (Figma 3.3), 4.5 on olive (3.8 to 4.2), 4.6 on moss (3.7 to 3.8) and 4.2 on mustard (3.4); one narrow patch each, so rough.
+**In a window wider than 1440 its grain stretches sideways**: the tear's svg fills the root with `preserveAspectRatio="none"`, so at a
+1900 window the pattern is scaled 1.32 in x and 1.00 in y while the band's grain tile stays square, and the strip reads as horizontal
+streaks (the contour already stretches the same way). That needs fixing before the trial is kept. The pattern's phase does not meet the band
 above. It repeats the tile's data URI once a seam in the published DOM. **If it is kept**, re-run `limits.mjs` (the layer may read as an
 image box in a section's head), the digest and the root refresh.
 
@@ -672,6 +675,8 @@ image box in a section's head), the digest and the root refresh.
 - Figma's fibres are streaked and fade softly on their inner side; ours are an even band, most visibly on pricing, the gallery and the form.
 - **The gallery's film strip** is nearly flat in Figma (sd 0.60 on its top margin) and ours is grained (sd 1.71; 2.08 before the olive
   strength came down).
+- **The tile has a clump that repeats** every 192 px, visible at 2x on paper and mustard, where the frames show no repeat. It is the
+  tile's own, and was there before these fixes.
 - **The hand-set card grains** (.5 on paper cards, .29 on the form's panel and pricing's olive card, pricing's others) were left as they
   were. At 1440 the paper cards read sd 3.6 to 4.0 against 4.0 to 4.7, the form's panel 3.3 against 3.8, pricing's olive card 3.0
   against 4.7. These are narrow patches, so treat them as rough.
@@ -682,7 +687,7 @@ image box in a section's head), the digest and the root refresh.
 
 **To decide first**
 
-- **Keep the grained strip, or not** (*The tear and grain fixes*; the other fixes in the sweep's table, s6.7 to s11.9, are built). With it,
+- **Keep the grained strip, or not** (*The tear and grain fixes*; keeping it first needs its wide-window stretch fixed; the other fixes in the sweep's table, s6.7 to s11.9, are built). With it,
   three smaller gaps listed there: the streaked fibres, the gallery's film strip and the card grains.
 - **Card 2's covered player buttons** at desktop width, a fault of Backline's alone (*the record*, item 5).
 - **Layouts 2–4's caps are not measured.** 22 specs (85 seats) still reach Pop's row and 43 (94 seats) carry numbers
