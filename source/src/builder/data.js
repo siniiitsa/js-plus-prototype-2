@@ -3022,6 +3022,8 @@ export const PRICING_ROW_CTA_3 = 'Book'
 export const PRICING_ROW_CTA_PAPERBACK = 'Book this set'
 // Headliner's layout-1 head is the frame's `Pick your night's set` (1:5076), where the shared seed is the Retro / Lime sentence.
 export const PRICING_HEADING_HEADLINER = "Pick your night's set"
+// Backline's layout-1 head is the frame's three lines with their full stop (1:6322); its Book pill's `Book this set` is Paperback's and Headliner's seed.
+export const PRICING_HEADING_BACKLINE = "Choose the set that's right for your night."
 // Events map layout 4's panel note, beside "Travel & reach" (964:72830).
 export const MAP_SPAN = 'Live · last 12 months'
 // Events map layout 4's stat wall, the frame's four cards verbatim (JP-077,
@@ -4503,8 +4505,9 @@ export function fieldSeed({ cat, f, themeName, design, c = {}, artistName, email
     : f.k === 'cta' && cat === 'calendar' && design === 3 ? CAL_SEND_4
     : f.k === 'cta' && cat === 'bio' && design === 0 && (themeName === 'Paperback' || themeName === 'Backline') ? BIO_CTA_PAPERBACK
     : f.k === 'cta' && cat === 'calendar' && design === 0 && (themeName === 'Lattice' || themeName === 'Paperback' || themeName === 'Headliner') ? CAL_CTA_LATTICE
-    : f.k === 'rowCta' && cat === 'pricing' && design === 0 && (themeName === 'Paperback' || themeName === 'Headliner') ? PRICING_ROW_CTA_PAPERBACK
+    : f.k === 'rowCta' && cat === 'pricing' && design === 0 && (themeName === 'Paperback' || themeName === 'Headliner' || themeName === 'Backline') ? PRICING_ROW_CTA_PAPERBACK
     : f.k === 'heading' && cat === 'pricing' && design === 0 && themeName === 'Headliner' ? PRICING_HEADING_HEADLINER
+    : f.k === 'heading' && cat === 'pricing' && design === 0 && themeName === 'Backline' ? PRICING_HEADING_BACKLINE
     : f.k === 'heading' && cat === 'gallery' && design === 0 && themeName === 'Backline' ? GALLERY_HEADING_BACKLINE
     : f.k === 'railLabel' && cat === 'gallery' && design === 0 && themeName === 'Backline' ? GALLERY_RAIL_LABEL_BACKLINE
     : f.k === 'statement' && cat === 'footer' && themeName === 'Headliner' ? FOOTER_STATEMENT_HEADLINER

@@ -58,7 +58,7 @@ import {
   FOOTER_LINKS, FOOTER_TARGETS, FOOTER_CREDIT, FOOTER_STATEMENT, FOOTER_STATEMENT_HEADLINER,
   CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN, CAL_SLOTS, SLOT_KEYS, slotDate, parseDayFirst, pageTiers, CAL_SLOT_CTA, CAL_SEND_4, CAL_CTA_LATTICE, BIO_CTA_PAPERBACK, FORM_EMAIL, pageEmail, MONTHS, DAY_FULL,
   TESTI_HEADING_2, CARD_LINE_3, TESTI_STARS, TESTI_RATING,
-  PRICING_INTRO_3, FORM_SUB_4, CAL_HEADING_1, formBtnSeed, CAL_TYPES, PRICING_ROW_CTA, PRICING_ROW_CTA_3, PRICING_ROW_CTA_PAPERBACK, PRICING_HEADING_HEADLINER, CAL_HEADING_HEADLINER, GALLERY_HEADING_BACKLINE, repCountWord, GALLERY_RAIL_LABEL_BACKLINE, MAP_SPAN, MAP_STATS_4, STAT_KEYS,FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
+  PRICING_INTRO_3, FORM_SUB_4, CAL_HEADING_1, formBtnSeed, CAL_TYPES, PRICING_ROW_CTA, PRICING_ROW_CTA_3, PRICING_ROW_CTA_PAPERBACK, PRICING_HEADING_HEADLINER, PRICING_HEADING_BACKLINE, CAL_HEADING_HEADLINER, GALLERY_HEADING_BACKLINE, repCountWord, GALLERY_RAIL_LABEL_BACKLINE, MAP_SPAN, MAP_STATS_4, STAT_KEYS,FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
   parseDate, isoDate, calStart, headerIdentity, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav, navModeDefault, badgeOptsFor,
   catById, catName, navSectionsOf, initialsOf, contrast, lum, mix, rgba, caseText, fieldSeed, HEADING_3, HEADING_4, fieldReach, fieldShown, identityFieldsFor, identityHint, INLINE_OFF, PHOTO_OFF, INLINE_HEAD, INLINE_MARKED, INLINE_PART, INLINE_LINES, inlineRule, fieldCap, colCaps, identityCap, sealCap, capExcess, numeralLen, clampCapped, clampContent, legacyContent, clampIdentity, copyrightOf, formHeading3, extUrl, youtubeEmbed, youtubeThumb, youtubeParts, youtubeWatch, youtubeChannel, urlProblem, emailProblem, emailAddr, songTags, repChips,
@@ -659,7 +659,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   if (d === 0 && (cat === 'bio' || cat === 'media' || cat === 'gallery' || cat === 'repertoire' || cat === 'map' || cat === 'pricing' || cat === 'calendar' || cat === 'form' || cat === 'testimonials' || cat === 'footer') && T.name === 'Headliner') vm.pad = `0px ${vm.surplus}`
   // Backline's layout-1 bio (1:5665 · 1:17466 · 1:18797) is a stage of its own (BacklineBio), the hero's shape: the frames' insets in cqw, so the root pads only the published tab's surplus.
   // The media (1:5736 · 1:17534 · 1:18870) joined it in section 3, the gallery (1:5934 · 1:17730 · 1:19066) in section 4, the repertoire (1:6031 · 1:17818 · 1:19154) in section 5.
-  if (d === 0 && (cat === 'bio' || cat === 'media' || cat === 'gallery' || cat === 'repertoire' || cat === 'map') && T.name === 'Backline') vm.pad = `0px ${vm.surplus}`
+  if (d === 0 && (cat === 'bio' || cat === 'media' || cat === 'gallery' || cat === 'repertoire' || cat === 'map' || cat === 'pricing') && T.name === 'Backline') vm.pad = `0px ${vm.surplus}`
   // …and the media's (1:419 · 1:9052 · 1:10024): 129.43 top and foot at 1440 (x 0.82, 106.13), 77 at 768
   // and 58 at 390, the same content insets. The 390 master's head box starts 40 down (an import
   // artefact: the eyebrow row sits at y 98, not 58), so with the eyebrow removed the head takes
@@ -1192,7 +1192,7 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // emptied one drops the pill. Uncased, the footer's rule: the pill sets it
   // in the display face with no text transform, and casing it would shout on
   // Pop. Layout 2's plan card reads its own `cta`.
-  vm.tierRowCta = cv('rowCta', d === 2 ? PRICING_ROW_CTA_3 : d === 3 ? PRICING_ROW_CTA : d === 0 && (T.name === 'Paperback' || T.name === 'Headliner') ? PRICING_ROW_CTA_PAPERBACK : 'Book Now')
+  vm.tierRowCta = cv('rowCta', d === 2 ? PRICING_ROW_CTA_3 : d === 3 ? PRICING_ROW_CTA : d === 0 && (T.name === 'Paperback' || T.name === 'Headliner' || T.name === 'Backline') ? PRICING_ROW_CTA_PAPERBACK : 'Book Now')
   // The label's width in the display face's ems (`navFace`, undefined where a
   // template has no advance table). Editorial's layout-1 deck fits its pill's
   // label to the card (plans/editorial/display-face.md, step 4): Gloock sets
@@ -1618,6 +1618,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // head. EditPanel mirrors it. Lattice's layout 1 (widened to `limeTree`) keeps TITLES.calendar,
   // "Availability": its frames set that word as the `[ 007 ]` eyebrow's own, and `heading` is its seat.
   if (d === 0 && cat === 'pricing' && c.heading === undefined && T.name === 'Headliner') vm.title = cased(PRICING_HEADING_HEADLINER)
+  // Backline's layout-1 pricing head is the frame's `choose the set that's right for your night.` with its full stop (the shared seed has none).
+  if (d === 0 && cat === 'pricing' && c.heading === undefined && T.name === 'Backline') vm.title = cased(PRICING_HEADING_BACKLINE)
   // Backline's layout-1 gallery head is the frame's `see us in action.` with its full stop (the shared seed has none; the media's and the bio's seeds carry theirs).
   if (d === 0 && cat === 'gallery' && c.heading === undefined && T.name === 'Backline') vm.title = cased(GALLERY_HEADING_BACKLINE)
   if (d === 0 && cat === 'calendar' && c.heading === undefined && vm.limeTree && !vm.lattice && T.name !== 'Headliner') vm.title = cased(CAL_HEADING_1)
@@ -1664,7 +1666,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // The gallery's head (TT2020, wrapping in the column, the last word olive) is fitted the same way.
   // The repertoire's count (`240 songs.`, TT2020, wrapping in the room the search leaves) is fitted the same way.
   // The map's town (`manchester.`, TT2020, one line in the room the stamp leaves, wrapping at a space) is fitted the same way.
-  if (T.name === 'Backline' && (cat === 'bio' || cat === 'media' || cat === 'gallery' || cat === 'repertoire' || cat === 'map') && d === 0) {
+  // The pricing's head (`choose the set that's right for your night.`, TT2020, three lines in the room the tabs leave) is fitted the same way.
+  if (T.name === 'Backline' && (cat === 'bio' || cat === 'media' || cat === 'gallery' || cat === 'repertoire' || cat === 'map' || cat === 'pricing') && d === 0) {
     vm.titleWordEms = +Math.max(0, ...vm.title.split(/\s+/).map((w) => ttEms(w))).toFixed(3)
   }
   // The calendar's head is two lines at the middle word (the gallery's and the pricing's rule), so what it fits is its widest *line*, not its widest word:

@@ -32,7 +32,7 @@ import { useId, useRef, useState } from 'react'
 import RealMap from './RealMap.jsx'
 import { PaperbackArt, PaperbackSparkle, PaperbackWaves } from './paperbackArt.jsx'
 import { HeadlinerWaves, HeadlinerWaveField, HeadlinerBlockArrow, HeadlinerRings } from './headlinerArt.jsx'
-import { BacklineTear, BacklineGrain, BacklineTape, BacklineStamp, BacklineBarcode, BacklineStrike, BacklineRings, BacklineRadiusStamp, backlineNotch } from './backlineArt.jsx'
+import { BacklineTear, BacklineGrain, BacklineTape, BacklineStamp, BacklineBarcode, BacklineStrike, BacklineRings, BacklineRadiusStamp, BacklinePriceBars, backlineNotch } from './backlineArt.jsx'
 import {
   Play, Pause, SkipBack, SkipForward, Check, ChevronLeft, ChevronRight,
   ArrowLeft, ArrowRight, ArrowUp, ArrowDown, Star, Plus, X, Search, User,
@@ -12468,6 +12468,175 @@ function HeadlinerPricing({ s, g }) {
   )
 }
 
+// Backline's layout-1 pricing (1:6322 · 1:18100 · 1:19431, 1135.38 / 1595 / 2196.50 tall; plans/backline/layout-1.md, section 7): an own tree, handed the seam's filtered packages, the lit tab and the
+// press by `Pricing` (Headliner's shape: `g = { shown, active, pressChip }`), so the chip filter, `tierBookTo` and the `s.live` gate are the shared seam's and only the picture is Backline's. The
+// stage pattern: `u(v)` turns the frame's px into `cqw` of an `inline-size` stage, the frame's numbers verbatim at all three widths. A paper band (Scheme 1, the root's own ground and grain) under a moss
+// torn head (the pricing's own contour: `BACKLINE_TEARS.pricing`, the seventh), with the frame's insets 112 / 90 / 67 above and below. The head is three lines of TT2020 at an 8.2 em measure (the frame's
+// 16 characters at every width: 77.76 / 48 / 38, the last two words olive), the Solo / Trio / Band tab list at its foot-right (under it at 390), then the cards on a 44 gap and the small print. The eyebrow
+// `06 ┈┈ PRICING` is not drawn (call 1 A) and its 30.94 stays as padding. A card is 560 tall at every width (a minimum: a longer blurb grows it) and **a ticket**: its paper cut by four 14 px bites
+// (`blNotchMask`), turned by the package's place in the whole list (`t.n % 3`: -1.2, +0.8, -0.6 degrees, as the fills, so a filter that hides one card leaves the others their seats), a drop shadow on the
+// turned wrapper so it follows the bites, grain on a ground of its own (dark olive, mustard, moss), a tape on the middle seat. Inside: the package's name (`ADMIT ONE ·` and `NO. 00N` are not drawn, call 1 A;
+// the price unit takes the number's seat), the price in TT2020 at 96 / 60 / 38, the blurb, the features each led by a drawn cross (TT2020 has none) on dashed rules, the list the card's flex remainder, and the
+// foot: the Book pill on its seat's ground and the 23-bar barcode. The deck is three columns on a 24 gap at 1440, two at 768 with the odd last card spanning both, one at 390.
+const BACKLINE_PRICING = {
+  desktop: { fw: 1440, top: 112, foot: 112, side: 48.96, h2: 77.76, h2Top: 30.94, free: 1100, price: 96, priceLh: 86.4, blurbT: 22, blurbLh: 24.2, blurbB: 21.6, blurb: 22, pb: 21, shadow: 32, shadowS: 2, cols: 3 },
+  tablet: { fw: 768, top: 90, foot: 90, side: 26.11, h2: 48, h2Top: 30.94, free: 490, price: 60, priceLh: 54, blurbT: 20.6, blurbLh: 24.2, blurbB: 23.5, blurb: 22, pb: 19.5, shadow: 16, shadowS: 1, cols: 2 },
+  mobile: { fw: 390, top: 67, foot: 67, side: 24, h2: 38, h2Top: 30.94, free: 342, price: 38, priceLh: 34.2, blurbT: 18.73, blurbLh: 22, blurbB: 21.27, blurb: 20, pb: 20, shadow: 16, shadowS: 1, cols: 1 },
+}
+const BL_PRICE_TURN = [-1.2, 0.8, -0.6]            // the cards' CSS turns by seat (the frames' rotate-[-1.2deg] / [0.8deg] / [-0.6deg], the emitter's own sign: the right edge of the first lifts)
+const BL_PRICE_DARK = '#38391C'                         // the first card's ground, sampled off the master's own raster (1:6385: mean of 87,024 px); the nearest scheme seat is Scheme 2's tag 3, #363719, two levels away
+const BL_PRICE_RULE_LIGHT = 'rgba(255, 248, 232, 0.35)'   // the dashed rules on the dark card (the frame's literal)
+const BL_PRICE_RULE_INK = 'rgba(35, 36, 15, 0.25)'        // and on the mustard and moss cards
+function BacklinePricing({ s, g }) {
+  const { shown, active, pressChip } = g
+  const dev = s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop'
+  const P = BACKLINE_PRICING[dev]
+  const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
+  const O = s.onScheme
+  const ink = s.text1                  // #23240F: the head, the tabs, the small print, the ink cards' type and buttons
+  const cream = O[1].box1              // #F5F6E8: the dark card's type and button, the pills' type
+  const olive = s.text3                // #6F630A: the head's last two words
+  const tearId = useId().replace(/:/g, '')
+  const label = (size, extra) => ({ fontFamily: s.label, fontWeight: 700, fontSize: size, letterSpacing: '0.06em', textTransform: 'uppercase', lineHeight: 'normal', ...extra })
+  const display = (size, extra) => ({ fontFamily: s.display, fontWeight: 400, fontSize: size, ...extra })
+  // The three seats by the package's place in the WHOLE stored list: the ground, its grain (tone and strength), the type, the rule, the button's ground and type, the barcode.
+  const SEATS = [
+    { bg: BL_PRICE_DARK, tone: 'olive', grain: 0.45, fg: cream, rule: BL_PRICE_RULE_LIGHT, btn: cream, btnFg: ink, bars: cream },
+    { bg: O[4].bg, tone: 'mustard', grain: 0.4, fg: ink, rule: BL_PRICE_RULE_INK, btn: ink, btnFg: cream, bars: ink },
+    { bg: O[3].bg, tone: 'moss', grain: 0.29, fg: ink, rule: BL_PRICE_RULE_INK, btn: ink, btnFg: cream, bars: ink },
+  ]
+
+  // The head: three lines at the frame's 8.2 em measure (16 characters of TT2020 at every width), the last two words olive (the media's rule), fitted to its widest word in the room the tabs leave.
+  const words = String(s.title ?? '').trim().split(/\s+/).filter(Boolean)
+  const k = words.length >= 3 ? 2 : words.length === 2 ? 1 : 0
+  const lead = words.slice(0, words.length - k).join(' ')
+  const tail = words.slice(words.length - k).join(' ')
+  const h2 = words.length ? (
+    <h2 style={{
+      margin: 0, minWidth: 0, maxWidth: '8.205em', color: ink, textTransform: 'lowercase', lineHeight: 0.9, letterSpacing: '-0.045em', overflowWrap: 'anywhere',
+      ...display(s.titleWordEms ? `min(${u(P.h2)}, calc(${u(P.free)} / ${s.titleWordEms}))` : u(P.h2)),
+    }}>{lead}{tail && <>{lead && ' '}<span style={{ color: olive }}>{tail}</span></>}</h2>
+  ) : null
+
+  // The tab list: 44 tall, one hairline box a tab, each after the first drawn 1.5 over the last (the frame's `Tab:margin`). It stands over two or more tags only, and at rest none is lit (JP-089).
+  const tabs = s.tierChips.length > 1 ? (
+    <div style={{ display: 'flex', flex: 'none', maxWidth: '100%', marginLeft: s.mob ? undefined : 'auto' }}>
+      {s.tierChips.map((f, i) => (
+        <span key={i} onClick={s.live ? () => pressChip(i, active) : undefined} style={{
+          ...label(u(14)), display: 'inline-flex', alignItems: 'center', justifyContent: 'center', boxSizing: 'border-box', height: u(44), padding: `0 ${u(19.75)}`, marginLeft: i ? u(-1.5) : 0,
+          border: `1px solid ${ink}`, background: i === active ? ink : 'transparent', color: i === active ? cream : ink, whiteSpace: 'nowrap', cursor: s.live ? 'pointer' : undefined,
+        }}>{f.label}</span>
+      ))}
+    </div>
+  ) : null
+  const head = (
+    <div style={s.mob ? col(u(24), { alignItems: 'flex-start' }) : { display: 'flex', alignItems: 'flex-end', gap: u(24) }}>
+      <div style={{ minWidth: 0, paddingTop: u(P.h2Top) }}>{h2}</div>
+      {tabs}
+    </div>
+  )
+
+  // A card. The turned wrapper carries the shadows (so they follow the bites) and the tape; the paper inside is cut by the mask. The list is the flex remainder, closed by its own foot rule.
+  const mask = blNotchMask(u(14))
+  const shadow = `drop-shadow(0 ${u(12)} ${u(P.shadow)} rgba(35, 36, 15, 0.2)) drop-shadow(0 ${u(1)} ${u(P.shadowS)} rgba(35, 36, 15, 0.2))`
+  const cross = (c) => (
+    <svg aria-hidden viewBox="0 0 9 9" fill="none" style={{ display: 'block', flex: 'none', width: u(9), height: u(9), marginTop: u(4.5), overflow: 'visible' }}>
+      <path d="M0.8 0.8L8.2 8.2M8.2 0.8L0.8 8.2" stroke={c} strokeWidth="1.2" />
+    </svg>
+  )
+  const cards = shown.map((t, i) => {
+    const seat = t.n % 3
+    const S = SEATS[seat]
+    const span = P.cols === 2 && i === shown.length - 1 && shown.length % 2 === 1
+    const hasHead = !!t.name || !!s.tierUnit
+    return (
+      <div key={t.n} style={{ minWidth: 0, display: 'flex', gridColumn: span ? '1 / -1' : undefined }}>
+        <div style={{ position: 'relative', display: 'flex', flex: '1 1 auto', minWidth: 0, transform: `rotate(${BL_PRICE_TURN[seat]}deg)`, filter: shadow }}>
+          <div style={{
+            position: 'relative', display: 'flex', flexDirection: 'column', flex: '1 1 auto', minWidth: 0, boxSizing: 'border-box', minHeight: u(560), padding: `${u(26)} ${u(26)} 0`, background: S.bg, color: S.fg,
+            maskImage: mask, maskComposite: 'intersect', WebkitMaskImage: mask, WebkitMaskComposite: 'source-in', ...WRAP_LONG,
+          }}>
+            <BacklineGrain src={s.backlineGrain} tone={S.tone} opacity={S.grain} />
+            {hasHead && (
+              <div style={row(u(12), { position: 'relative', alignItems: 'flex-start', justifyContent: 'space-between', minHeight: u(14), ...label(u(12), { lineHeight: u(13.8), color: S.fg }) })}>
+                <span style={{ minWidth: 0 }}>{t.name}</span>
+                {!!s.tierUnit && <span style={{ flex: 'none', whiteSpace: 'nowrap', textAlign: 'right', opacity: 0.7 }}>{s.tierUnit}</span>}
+              </div>
+            )}
+            {/* The price is one run in the display face, as the frame sets `£450`: the lead, the numeral and a range's second half are spans of one size; a price with no digit (prose) sets a size smaller and wraps anywhere. */}
+            {(!!t.lead || !!t.amount || !!t.tail) && (
+              <div style={{
+                position: 'relative', marginTop: u(16), minWidth: 0, color: S.fg, letterSpacing: '-0.045em', lineHeight: P.priceLh / P.price, minHeight: u(P.priceLh),
+                ...display(t.prose ? u(P.price * 0.6) : u(P.price)), ...(t.prose ? { overflowWrap: 'anywhere' } : null),
+              }}>
+                {!!t.lead && <span style={{ display: 'inline-block' }}>{t.lead}</span>}
+                <span style={t.prose ? undefined : { display: 'inline-block', whiteSpace: 'nowrap' }}>{t.amount}</span>
+                {!!t.tail && <span style={{ marginLeft: '0.25em' }}>{t.tail}</span>}
+              </div>
+            )}
+            {!!t.blurb && (
+              <p style={{ position: 'relative', margin: `${u(16)} 0 0`, padding: `${u(P.blurbT)} 0 ${u(P.blurbB)}`, color: S.fg, ...display(u(P.blurb), { lineHeight: P.blurbLh / P.blurb }) }}>{t.blurb}</p>
+            )}
+            <div style={{ position: 'relative', flex: '1 1 auto', marginTop: u(16), marginBottom: u(P.pb), borderBottom: `1px dashed ${S.rule}` }}>
+              {t.feats.map((f, j) => (
+                <div key={j} style={row(u(10), { alignItems: 'flex-start', boxSizing: 'border-box', minHeight: u(35), padding: `${u(8)} 0 ${u(9)}`, borderTop: `1px dashed ${S.rule}` })}>
+                  {cross(S.fg)}
+                  <span style={{ minWidth: 0, ...display(u(15), { lineHeight: u(17), letterSpacing: '-0.02em', color: S.fg }) }}>{f}</span>
+                </div>
+              ))}
+            </div>
+            <div style={{
+              position: 'relative', flex: 'none', height: u(86), margin: `0 ${u(-26)}`, padding: `${u(18)} ${u(26)} 0`, boxSizing: 'border-box', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
+              backgroundImage: `radial-gradient(circle at 50% 50%, ${S.fg} 0.66px, transparent 1.2px)`,
+            }}>
+              {/* the frame's own dot at the foot's middle: a 1.3 px disc */}
+              {!!s.tierRowCta && (
+                <BacklinePill
+                  s={s} u={u} to={s.tierBookTo} bg={S.btn} ink={S.btnFg}
+                  label={<>{s.tierRowCta}<svg aria-hidden viewBox="0 0 15.8906 12" fill="none" style={{ display: 'block', flex: 'none', width: u(15.8906), height: u(12), overflow: 'visible' }}><path d="M0 6H13.9043M8.93846 10.9658L13.9043 6L8.93846 1.03419" stroke={S.btnFg} strokeWidth="1.98633" /></svg></>}
+                  style={{ justifyContent: 'space-between', gap: u(12), minWidth: u(166), padding: `0 ${u(9.55)} 0 ${u(7.55)}` }}
+                />
+              )}
+              <BacklinePriceBars ink={S.bars} size={u(90)} style={{ marginTop: u(8), marginLeft: 'auto', flex: 'none' }} />
+            </div>
+          </div>
+          {seat === 1 && <BacklineTape colour={O[1].box3} width={u(100)} style={{ position: 'absolute', left: '50%', top: u(-14), marginLeft: u(-50), transform: 'rotate(-2.4deg)' }} />}
+        </div>
+      </div>
+    )
+  })
+
+  return (
+    <div style={{
+      position: 'relative', containerType: 'inline-size', overflow: 'hidden', background: s.bg,
+      margin: `0 calc(-1 * ${s.surplus})`, padding: `0 ${s.surplus}`,
+    }}>
+      <BacklineGrain src={s.backlineGrain} tone="paper" />
+      <div style={{ position: 'relative', boxSizing: 'border-box', padding: `${u(P.top)} ${u(P.side)} ${u(P.foot)}` }}>
+        <div style={col(u(44), { ...WRAP_LONG })}>
+          {head}
+          {cards.length > 0 && (
+            <div style={{ display: 'grid', alignItems: 'stretch', columnGap: u(24), rowGap: u(24), gridTemplateColumns: `repeat(${P.cols}, minmax(0, 1fr))` }}>{cards}</div>
+          )}
+          {s.tiers.length === 0 && (
+            <div style={{ ...display(u(22), { lineHeight: 'normal', color: ink }), padding: `${u(24)} 0`, borderTop: `1px dashed ${ink}`, borderBottom: `1px dashed ${ink}` }}>No packages yet.</div>
+          )}
+          {!!s.pricingSub && (
+            <p style={{ margin: 0, color: ink, ...display(u(15), { lineHeight: u(22.5), letterSpacing: '-0.02em' }) }}><span aria-hidden>* </span><span>{s.pricingSub}</span></p>
+          )}
+        </div>
+      </div>
+      {/* the torn head: the map's moss, the pricing's own contour, 1 px above the band as the frame stands it */}
+      <div style={{ position: 'absolute', left: 0, right: 0, top: u(-1), height: u(88), pointerEvents: 'none' }}>
+        <BacklineTear
+          tear="pricing" colour={O[3].bg} tone="paper" id={tearId} height={u(88)}
+          style={s.narrow ? { width: u(1440), maxWidth: 'none' } : undefined}
+        />
+      </div>
+    </div>
+  )
+}
+
 function Pricing({ s }) {
   // The selected filter chip, gated on `s.live` below like Repertoire's: it is
   // a real control in the published tab and inert on the editor canvas, which
@@ -12571,6 +12740,8 @@ function Pricing({ s }) {
     // Lattice's layout-1 pricing is a block of its own (LatticePricing), after the seam: the chip filter and
     // the pick above are shared whole, and the block is the picture.
     // Headliner's (1:5067 · 1:15838 · 1:16888) is a block of its own too, handed the same seam.
+    // Backline's (1:6322 · 1:18100 · 1:19431) is a block of its own as well, handed the same seam.
+    if (s.limeTree && s.backline) return <BacklinePricing s={s} g={{ shown, active, pressChip }} />
     if (s.limeTree && s.headliner) return <HeadlinerPricing s={s} g={{ shown, active, pressChip }} />
     if (s.limeTree && s.lattice) return <LatticePricing s={s} g={{ shown, active, pressChip }} />
     // Paperback's (1:2968 · 1:11610 · 1:12793) is a block of its own as well, handed the same seam.
