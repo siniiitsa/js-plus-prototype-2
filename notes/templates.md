@@ -868,3 +868,8 @@ turned tickets by the gig's place in the whole list and a square pager. The tear
 two words olive, hairline Solo / Trio / Band boxes, and three notched, turned ticket cards (dark olive, mustard, moss by the package's place in the whole list; the middle one taped), each with its name, price, blurb, cross-led feature rows, Book pill and barcode
 (`BacklinePriceBars`). **The tear is a seventh contour, `BACKLINE_TEARS.pricing`, traced whole** (778 points, 7.2 KB): its master matches none of the six, aligned or shifted over ±1500 (best correlation 0.72-0.82, where a true window reads 0.99 or better). Its bias was
 set on a render against the master's alpha edge (-0.2 px; mean offset -0.05, rms 0.9).
+
+**The calendar** (`BacklineCalendar`, `EncoreSection.jsx`; own tree, dispatched in `Calendar()`'s own-tree line after the seam; notes/calendar.md *Backline · layout 1* holds the record; 2026-11-25): a dark olive band under a torn paper head, a taped paper month with the pick in a hand-drawn olive circle,
+the head (cream to the first comma, mustard after), a notched ticket for the picked day with the town and the media's barcode, and a dashed rule over the terminal line and Continue. **The tear is no new path**: `BACKLINE_TEARS.calendar = rotateTear(BACKLINE_TEARS.repertoire, 250)` (r 0.998 over all 1,440 columns,
+the ones that wrap included). **So the strips are 1440-periodic: test a new master against every contour at every shift modulo 1440**, not only over the overlap a plain window leaves. On this master the torn edge's fibres read about 215 against a 233 body, where `tone="paper"` paints about 250 (the kit's tone kept, as on the other
+cream-on-olive heads; only this master was measured: the sweep's).
