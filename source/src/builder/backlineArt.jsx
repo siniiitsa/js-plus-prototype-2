@@ -123,8 +123,10 @@ export const BACKLINE_TEAR_KEYS = ['head', 'media', 'gallery', 'repertoire', 'fo
 // 6.4 / 10.2 / 14.4, against the frames' own fills at 4.8 (paper, the bio) and 4.2-4.4 (olive: the header, the media).
 // Each value below lands on 4.8 (paper) or 4.4 (the others; moss and mustard are assumed to grain like olive: their
 // bands were read from renders, not from a fill raster). The tile is high-passed, so the frames' soft mottling
-// (sd 2.2 at 16 px) is not carried.
-export const GRAIN_OPACITY = { paper: 0.75, olive: 0.21, moss: 0.18, mustard: 0.28 }
+// (sd 2.2 at 16 px) is not carried. Olive was then .21; once the tile was drawn at frame size (no resample to blur it) and inverted, .21 read strong
+// at all three widths (34 x 40 gutter blocks against the masters': .165 / .194 / .170 for 1440 / 768 / 390; larger areas .177), so it is .175. The
+// tile's strength varies across its 192 px, so judge it over many blocks, never over one narrow gutter.
+export const GRAIN_OPACITY = { paper: 0.75, olive: 0.175, moss: 0.18, mustard: 0.28 }
 
 // Both strokes along the edge (the shadow and the fringe) take round joins: the traced contours turn sharply at every fibre, and a miter there throws a
 // spike a few px proud of the edge (the sweep's parked judgement 4; not the trace).
@@ -172,14 +174,16 @@ export function BacklineTear({ tear = 'head', colour, ground = 'olive', below = 
 }
 
 // The grain, over a band: `src` is `s.backlineGrain` (the tile's URL, plumbed by `sectionVm` from `BACKLINE_ART`),
-// `tone` the band's ground, `opacity` overrides `GRAIN_OPACITY[tone]`.
-export function BacklineGrain({ src, tone = 'olive', opacity, style, ...rest }) {
+// `size` is the tile's 192 frame px as the section's own `u(192)`, `tone` the band's ground, `opacity` overrides `GRAIN_OPACITY[tone]`. The tile's
+// source is the frames' own raster, one pixel to a frame px, so it is drawn at frame size: a literal 192 px was 22 % large on the desktop canvas
+// (.82 css px to a frame px) and the published desktop (1.22), and the resample blurred the fine grain away.
+export function BacklineGrain({ src, size, tone = 'olive', opacity, style, ...rest }) {
   return (
     <div
       aria-hidden="true"
       style={{
         position: 'absolute', inset: 0, pointerEvents: 'none',
-        backgroundImage: `url(${src})`, backgroundSize: '192px 192px', mixBlendMode: 'overlay',
+        backgroundImage: `url(${src})`, backgroundSize: `${size} ${size}`, mixBlendMode: 'overlay',
         filter: tone === 'olive' ? 'invert(1)' : undefined,
         opacity: opacity ?? GRAIN_OPACITY[tone], ...style,
       }}

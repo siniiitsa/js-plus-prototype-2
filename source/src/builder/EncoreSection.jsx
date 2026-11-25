@@ -5321,7 +5321,7 @@ function BacklineBio({ s }) {
       position: 'relative', containerType: 'inline-size', overflow: 'hidden',
       margin: `0 calc(-1 * ${s.surplus})`, padding: `0 ${s.surplus}`,
     }}>
-      <BacklineGrain src={s.backlineGrain} tone="paper" />
+      <BacklineGrain src={s.backlineGrain} size={u(192)} tone="paper" />
       {desk ? (
         <div style={{ position: 'relative', ...row(u(32), { alignItems: 'stretch' }), boxSizing: 'border-box', padding: `${u(P.top)} ${u(P.side)} ${u(P.foot)}` }}>
           <div style={{ position: 'relative', flex: 'none', width: u(P.colW) }}>{stamp}</div>
@@ -8053,7 +8053,7 @@ function BacklineMedia({ s, m }) {
           position: 'absolute', inset: 0, background: BL_TICKET, color: ink,
           maskImage: blNotchMask(u(12)), maskComposite: 'intersect', WebkitMaskImage: blNotchMask(u(12)), WebkitMaskComposite: 'source-in',
         }}>
-          <BacklineGrain src={s.backlineGrain} tone="paper" opacity={0.5} />
+          <BacklineGrain src={s.backlineGrain} size={u(192)} tone="paper" opacity={0.5} />
           <div style={{ ...col(u(16)), position: 'absolute', left: u(P.photoX), top: u(22), right: u(P.card - P.stub[0] + 26), bottom: u(P.bottom) }}>
             <div style={{ height: u(14), flex: 'none' }} />
             <div style={{ position: 'relative', flex: '1 1 0', minHeight: 0 }}>
@@ -8086,7 +8086,7 @@ function BacklineMedia({ s, m }) {
       position: 'relative', containerType: 'inline-size', overflow: 'hidden', background: s.bg,
       margin: `0 calc(-1 * ${s.surplus})`, padding: `0 ${s.surplus}`,
     }}>
-      <BacklineGrain src={s.backlineGrain} tone="olive" />
+      <BacklineGrain src={s.backlineGrain} size={u(192)} tone="olive" />
       <div style={{
         position: 'relative', boxSizing: 'border-box', padding: `${u(P.v)} ${u(P.side)}`, minHeight: P.minH ? u(P.minH) : undefined,
         display: 'flex', flexDirection: 'column', justifyContent: 'center',
@@ -12557,7 +12557,7 @@ function BacklinePricing({ s, g }) {
             position: 'relative', display: 'flex', flexDirection: 'column', flex: '1 1 auto', minWidth: 0, boxSizing: 'border-box', minHeight: u(560), padding: `${u(26)} ${u(26)} 0`, background: S.bg, color: S.fg,
             maskImage: mask, maskComposite: 'intersect', WebkitMaskImage: mask, WebkitMaskComposite: 'source-in', ...WRAP_LONG,
           }}>
-            <BacklineGrain src={s.backlineGrain} tone={S.tone} opacity={S.grain} />
+            <BacklineGrain src={s.backlineGrain} size={u(192)} tone={S.tone} opacity={S.grain} />
             {/* The frame's top row is `ADMIT ONE · <NAME>` over `NO. 00N`; the name is the package's own and stands alone (the words and the number are not drawn, call 1 A), and the row keeps its 14 as padding. The unit has no seat in the frame and is not drawn. */}
             <div style={{ position: 'relative', minHeight: u(14), ...label(u(12), { lineHeight: u(13.8), color: S.fg }) }}>{t.name}</div>
             {/* The price is one run in the display face, as the frame sets `£450`: the lead, the numeral and a range's second half are spans of one size; a price with no digit (prose) sets a size smaller and wraps anywhere. */}
@@ -12608,7 +12608,7 @@ function BacklinePricing({ s, g }) {
       position: 'relative', containerType: 'inline-size', overflow: 'hidden', background: s.bg,
       margin: `0 calc(-1 * ${s.surplus})`, padding: `0 ${s.surplus}`,
     }}>
-      <BacklineGrain src={s.backlineGrain} tone="paper" />
+      <BacklineGrain src={s.backlineGrain} size={u(192)} tone="paper" />
       <div style={{ position: 'relative', boxSizing: 'border-box', padding: `${u(P.top)} ${u(P.side)} ${u(P.foot)}` }}>
         <div style={col(u(44), { ...WRAP_LONG })}>
           {head}
@@ -18918,7 +18918,7 @@ function BacklineGallery({ s, g }) {
   const figure = (
     <div style={{ position: 'relative', height: u(P.boxH) }}>
       <div style={{ position: 'absolute', left: 0, top: 0, width: '100%', height: u(P.figH), transform: 'rotate(-1.2deg)', background: BL_CARD, boxShadow: paperShadow }}>
-        <BacklineGrain src={s.backlineGrain} tone="paper" opacity={0.5} />
+        <BacklineGrain src={s.backlineGrain} size={u(192)} tone="paper" opacity={0.5} />
         <div style={{ position: 'absolute', left: u(12), top: u(12), right: u(12), bottom: u(12), overflow: 'hidden', background: s.box2 }}>
           {video ? player : <Photo s={s} slot={`images:${at}`} initialsSize={52} src={s.images[at]} ink={ink} style={{ objectPosition: s.imagesPos[at] }} />}
         </div>
@@ -18937,7 +18937,7 @@ function BacklineGallery({ s, g }) {
   // The film strip: an ink bar turned +0.6, seven square thumbnails 10 in from its sides and 18 down, spread edge to edge (the frame's gaps 5 / 6.28 / 5.86).
   const thumbs = (
     <div style={{ position: 'relative', height: u(P.stripH), transform: 'rotate(0.6deg)', background: ink, boxShadow: paperShadow, overflow: 'hidden' }}>
-      <BacklineGrain src={s.backlineGrain} tone="olive" />
+      <BacklineGrain src={s.backlineGrain} size={u(192)} tone="olive" />
       <div style={row('0px', { position: 'absolute', left: u(10), right: u(10), top: u(18), justifyContent: 'space-between', alignItems: 'flex-start' })}>
         {strip.map((i) => (
           <span key={i} onClick={s.live ? () => go(i) : undefined} style={{
@@ -18959,7 +18959,7 @@ function BacklineGallery({ s, g }) {
       position: 'relative', containerType: 'inline-size', overflow: 'hidden', background: s.bg,
       margin: `0 calc(-1 * ${s.surplus})`, padding: `0 ${s.surplus}`,
     }}>
-      <BacklineGrain src={s.backlineGrain} tone="paper" />
+      <BacklineGrain src={s.backlineGrain} size={u(192)} tone="paper" />
       <div style={{ position: 'relative', boxSizing: 'border-box', padding: `${u(P.top)} ${u(P.side)}` }}>
         {desk ? (
           <div style={{ display: 'grid', gridTemplateColumns: `${u(P.cols[0])} ${u(P.cols[1])}`, columnGap: u(P.gutter), alignItems: 'stretch' }}>
@@ -19127,7 +19127,7 @@ function BacklineRepertoire({ s, g }) {
       position: 'relative', boxSizing: 'border-box', transform: 'rotate(-0.5deg)', background: BL_TICKET, boxShadow: paperShadow,
       padding: `${u(88)} ${u(P.inset)} ${u(P.foot)}`,
     }}>
-      <BacklineGrain src={s.backlineGrain} tone="paper" opacity={0.5} />
+      <BacklineGrain src={s.backlineGrain} size={u(192)} tone="paper" opacity={0.5} />
       <div style={{ position: 'relative' }}>{list}</div>
       <BacklineTape colour={paper.box3} width={u(120)} style={{ position: 'absolute', left: u(P.tapes[0] - 60), top: u(4 - 16), transform: 'rotate(-5deg)' }} />
       <BacklineTape colour={paper.box3} width={u(120)} style={{ position: 'absolute', left: u(P.tapes[1] - 60), top: u(4 - 16), transform: 'rotate(4deg)' }} />
@@ -19160,7 +19160,7 @@ function BacklineRepertoire({ s, g }) {
       position: 'relative', containerType: 'inline-size', overflow: 'hidden', background: s.bg,
       margin: `0 calc(-1 * ${s.surplus})`, padding: `0 ${s.surplus}`,
     }}>
-      <BacklineGrain src={s.backlineGrain} tone="olive" />
+      <BacklineGrain src={s.backlineGrain} size={u(192)} tone="olive" />
       <div style={{
         position: 'relative', boxSizing: 'border-box', minHeight: u(P.minH), padding: `${u(P.top)} ${u(P.side)}`,
         display: 'flex', flexDirection: 'column', justifyContent: 'center',
@@ -22124,7 +22124,7 @@ function BacklineCalendar({ s, g }) {
       position: 'relative', minWidth: 0, boxSizing: 'border-box', transform: 'rotate(-0.8deg)', background: BL_TICKET, padding: `${u(P.headTop)} ${u(P.pad)} ${u(P.foot)}`,
       boxShadow: `0 ${u(1)} ${u(1)} 0 rgba(35, 36, 15, 0.18), 0 ${u(14)} ${u(26)} ${u(-16)} rgba(35, 36, 15, 0.55)`,
     }}>
-      <BacklineGrain src={s.backlineGrain} tone="paper" opacity={0.5} />
+      <BacklineGrain src={s.backlineGrain} size={u(192)} tone="paper" opacity={0.5} />
       <div style={{ position: 'relative' }}>
         {monthRow}
         {names}
@@ -22159,7 +22159,7 @@ function BacklineCalendar({ s, g }) {
         position: 'relative', display: 'flex', boxSizing: 'border-box', minHeight: u(210), background: BL_TICKET, color: ink,
         maskImage: mask, maskComposite: 'intersect', WebkitMaskImage: mask, WebkitMaskComposite: 'source-in',
       }}>
-        <BacklineGrain src={s.backlineGrain} tone="paper" opacity={0.5} />
+        <BacklineGrain src={s.backlineGrain} size={u(192)} tone="paper" opacity={0.5} />
         <div style={{ position: 'relative', flex: '1 1 0', minWidth: 0, boxSizing: 'border-box', padding: `${u(44)} ${u(26)} ${u(26)}`, ...WRAP_LONG }}>
           <div style={{ minHeight: u(P.dateLh * P.dateLines) }}>
             {when ? (
@@ -22210,7 +22210,7 @@ function BacklineCalendar({ s, g }) {
 
   return (
     <div style={{ position: 'relative', containerType: 'inline-size', overflow: 'hidden', background: s.bg, margin: `0 calc(-1 * ${s.surplus})`, padding: `0 ${s.surplus}` }}>
-      <BacklineGrain src={s.backlineGrain} tone="olive" />
+      <BacklineGrain src={s.backlineGrain} size={u(192)} tone="olive" />
       <div style={{ position: 'relative', boxSizing: 'border-box', padding: `${u(P.top)} ${u(P.side)}` }}>
         <div style={P.cols ? { display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', columnGap: u(40), alignItems: 'start' } : col(u(40))}>
           {card}
@@ -25569,7 +25569,7 @@ function BacklineMap({ s, g }) {
   const card = (
     <div style={{ position: 'relative', height: u(P.cardH), minWidth: 0 }}>
       <div style={{ position: 'absolute', inset: 0, transform: 'rotate(-1deg)', background: BL_CARD, boxShadow: paperShadow }}>
-        <BacklineGrain src={s.backlineGrain} tone="paper" opacity={0.5} />
+        <BacklineGrain src={s.backlineGrain} size={u(192)} tone="paper" opacity={0.5} />
         <BacklineRings
           w={P.box[0]} h={P.box[1]} ink={ink} dot={olive} font={s.body}
           style={{ position: 'absolute', left: u(12), top: u(12), width: `calc(100% - ${u(24)})`, height: u(P.box[1]) }}
@@ -25606,7 +25606,7 @@ function BacklineMap({ s, g }) {
           maskImage: mask, maskComposite: 'intersect', WebkitMaskImage: mask, WebkitMaskComposite: 'source-in',
           boxShadow: lit(i) ? `inset 0 0 0 ${u(3)} ${olive}` : undefined,
         }}>
-          <BacklineGrain src={s.backlineGrain} tone="paper" opacity={0.5} />
+          <BacklineGrain src={s.backlineGrain} size={u(192)} tone="paper" opacity={0.5} />
           <div style={row(0, { position: 'relative', minHeight: u(P.rowMin), alignItems: 'center' })}>
             <div style={{
               position: 'relative', flex: 'none', boxSizing: 'border-box', width: u(P.dateW), paddingRight: u(14), marginRight: u(P.dateGap), textAlign: 'center',
@@ -25678,7 +25678,7 @@ function BacklineMap({ s, g }) {
       position: 'relative', containerType: 'inline-size', overflow: 'hidden', background: s.bg,
       margin: `0 calc(-1 * ${s.surplus})`, padding: `0 ${s.surplus}`,
     }}>
-      <BacklineGrain src={s.backlineGrain} tone="moss" />
+      <BacklineGrain src={s.backlineGrain} size={u(192)} tone="moss" />
       <div style={{ position: 'relative', boxSizing: 'border-box', padding: `${u(P.top)} ${u(P.side)} ${u(P.foot)}` }}>
         <div style={col(u(P.gap))}>
           {head}
@@ -30093,7 +30093,7 @@ function BacklineTestimonials({ s, g }) {
       boxShadow: `0 ${u(1)} ${u(1)} 0 rgba(35, 36, 15, 0.18), 0 ${u(14)} ${u(26)} ${u(-16)} rgba(35, 36, 15, 0.55)`,
       padding: `${u(48)} ${u((P.card - P.measure) / 2)} ${u(40)}`,
     }}>
-      <BacklineGrain src={s.backlineGrain} tone="paper" opacity={0.5} />
+      <BacklineGrain src={s.backlineGrain} size={u(192)} tone="paper" opacity={0.5} />
       {stamp}
       <div style={{ position: 'relative', zIndex: 1, minWidth: 0 }}>{body}</div>
       {tape('left', -6)}
@@ -30116,7 +30116,7 @@ function BacklineTestimonials({ s, g }) {
 
   return (
     <div style={{ position: 'relative', containerType: 'inline-size', overflow: 'hidden', background: s.bg, margin: `0 calc(-1 * ${s.surplus})`, padding: `0 ${s.surplus}` }}>
-      <BacklineGrain src={s.backlineGrain} tone="mustard" />
+      <BacklineGrain src={s.backlineGrain} size={u(192)} tone="mustard" />
       {/* 112 clears the torn head and the tapes over a card taller than the frame's */}
       <div style={{ position: 'relative', boxSizing: 'border-box', minHeight: u(730), padding: `${u(112)} 0`, display: 'flex', flexDirection: 'column', justifyContent: 'center', ...WRAP_LONG }}>
         {card}
@@ -33308,7 +33308,7 @@ function BacklineForm({ s, g }) {
   const surface = { position: 'relative', minWidth: 0, boxSizing: 'border-box' }
   const panel = (
     <div style={{ ...surface, display: 'flex', flexDirection: 'column', transform: 'rotate(-0.6deg)', background: BL_PRICE_DARK, boxShadow: lift, padding: `${u(P.pt)} ${u(P.px)}` }}>
-      <BacklineGrain src={s.backlineGrain} tone="olive" opacity={0.29} />
+      <BacklineGrain src={s.backlineGrain} size={u(192)} tone="olive" opacity={0.29} />
       {/* the polaroid and the artist: the photograph is the form's own `image` */}
       <div style={{ ...row(u(14), { minWidth: 0 }), position: 'relative' }}>
         <span style={{ display: 'block', flex: 'none', boxSizing: 'border-box', width: u(58), height: u(64), padding: u(4), background: BL_CARD, boxShadow: lift, transform: 'rotate(-4deg)' }}>
@@ -33400,7 +33400,7 @@ function BacklineForm({ s, g }) {
 
   const card = (
     <div style={{ ...surface, transform: 'rotate(0.4deg)', background: BL_TICKET, boxShadow: lift, padding: `${u(40)} ${u(P.fr)} ${u(39)} ${u(P.fl)}` }}>
-      <BacklineGrain src={s.backlineGrain} tone="paper" opacity={0.5} />
+      <BacklineGrain src={s.backlineGrain} size={u(192)} tone="paper" opacity={0.5} />
       {body}
       {/* the tape on the top-right corner: its middle 100 in from the right and 2 under the edge at every width; stacked, it straddles the seam. It takes no click. */}
       <BacklineTape colour={paper.box3} width={u(120)} style={{ position: 'absolute', right: u(40), top: u(-14), transform: 'rotate(5deg)' }} />
@@ -33409,7 +33409,7 @@ function BacklineForm({ s, g }) {
 
   return (
     <div style={{ position: 'relative', containerType: 'inline-size', overflow: 'hidden', background: s.bg, margin: `0 calc(-1 * ${s.surplus})`, padding: `0 ${s.surplus}` }}>
-      <BacklineGrain src={s.backlineGrain} tone="paper" />
+      <BacklineGrain src={s.backlineGrain} size={u(192)} tone="paper" />
       <div style={{ position: 'relative', boxSizing: 'border-box', padding: `${u(P.py)} ${u(P.side)}` }}>
         <div style={{ display: 'grid', gridTemplateColumns: desk ? 'minmax(0, 1fr) minmax(0, 2fr)' : 'minmax(0, 1fr)', alignItems: 'stretch', ...WRAP_LONG }}>
           {panel}
@@ -36849,7 +36849,7 @@ function BacklineFooter({ s }) {
 
   return (
     <div style={{ position: 'relative', containerType: 'inline-size', overflow: 'hidden', background: s.bg, margin: `0 calc(-1 * ${s.surplus})`, padding: `0 ${s.surplus}` }}>
-      <BacklineGrain src={s.backlineGrain} tone="olive" />
+      <BacklineGrain src={s.backlineGrain} size={u(192)} tone="olive" />
       <div style={{ position: 'relative', boxSizing: 'border-box', padding: `${u(P.top)} ${u(P.gut)} ${u(48)}` }}>
         {desk ? (
           // 48.96 | 426.016 | 31.98 | 540.516 | 32 | 311.516 | 48.96; the pill keeps the newsletter's column whatever stands in the other two
