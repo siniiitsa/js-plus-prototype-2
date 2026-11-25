@@ -863,3 +863,8 @@ The frames bind no variables (each section's only fill is a grain raster), so ev
 **The map** (`BacklineMap`, `EncoreSection.jsx`; own tree, dispatched in `EventsMap`'s `if (s.limeTree)` after the seam, ahead of Headliner's line; notes/map.md *Backline · layout 1* holds the record; 2026-11-24): a moss band (Scheme 3) under a torn
 dark-olive head, the town in TT2020 (`manchester.`, ink), the round `120 mile radius` stamp (`BacklineRadiusStamp`), a taped paper square holding the rings art (`BacklineRings`, no real map) with its foot, `UPCOMING GIGS`, five notched
 turned tickets by the gig's place in the whole list and a square pager. The tear is `composeTear(BACKLINE_TEARS.form, 249, TEAR_MAP_TAIL)`: the form's contour shifted 249 plus a traced 1.5 KB tail.
+
+**The pricing** (`BacklinePricing`, `EncoreSection.jsx`; own tree, dispatched in `Pricing()` after the seam, ahead of Headliner's line; notes/pricing.md *Backline · layout 1* holds the record; 2026-11-25): a paper band under a torn moss head, a three-line TT2020 head with its last
+two words olive, hairline Solo / Trio / Band boxes, and three notched, turned ticket cards (dark olive, mustard, moss by the package's place in the whole list; the middle one taped), each with its name, price, blurb, cross-led feature rows, Book pill and barcode
+(`BacklinePriceBars`). **The tear is a seventh contour, `BACKLINE_TEARS.pricing`, traced whole** (778 points, 7.2 KB): its master matches none of the six, aligned or shifted over ±1500 (best correlation 0.72-0.82, where a true window reads 0.99 or better). Its bias was
+set on a render against the master's alpha edge (-0.2 px; mean offset -0.05, rms 0.9).
