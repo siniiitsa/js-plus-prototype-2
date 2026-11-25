@@ -384,15 +384,22 @@ seam's. The stage pattern: `BACKLINE_PRICING`, an `inline-size` container, the f
 1135.3 / 1595 / 2196.4 against 1135.38 / 1595 / 2196.50.
 
 - **The band** is Scheme 1's paper (the pricing has no `SCHEMES_OF.Backline` row) with paper grain, under a **moss torn head** (the map's
-  ground) drawn 1 above the band. The narrow widths draw the 1440 contour cropped from the left.
+  ground) drawn 1 above the band. It takes `tone="paper"` although it is not paper: the master's fibres read about 230 against the body's
+  130, which is the .8 fringe, where the dark tone's .27 would read about 162. The narrow widths draw the 1440 contour cropped from the left.
 - **The head** is TT2020 at 77.76 / 48 / 38 on an `8.205em` measure, which reproduces all three masters' breaks, with the **last two
   words olive** (the media's rule: three or more words). It is fitted by `vm.titleWordEms` (`ttEms`). The seed is the frame's, with its
   full stop (`PRICING_HEADING_BACKLINE`, in `sectionVm` and `fieldSeed`).
 - **The tabs** are 44-tall 1 px ink boxes (padding 19.75, overlapping by 1.5), at the head's foot-right at 1440 and 768 and under the head
-  at 390. **At rest none is lit** (JP-089), though the frame lights Solo. A lit one is ink with cream type.
+  at 390. **At rest none is lit** (JP-089), though the frame lights Solo. A lit one is ink with cream type. **The list wraps, and where it
+  cannot stand beside the head it drops under it whole.** The first build was one `nowrap` line like the frame's: with six tags it squeezed
+  the head to 13 px (36 lines) at 768 and clipped tabs off the 390 page, and even the three occasions other templates seed gave the 768
+  head a fourth line. Every box is pulled 1.5 up and left inside a 1.5 pad, so wrapped rows share a hairline as neighbours do. Walked at three
+  widths with 2, 3, 6 and 9 tags up to the cap: every tab inside the page and clickable, the head three lines.
 - **The cards**: three columns at 1440, two at 768 with an odd last card spanning both, one at 390, on a 24 gap. A card is **560 tall as a
   minimum** at every width, with four **14 px bites** (`blNotchMask`; the other tickets use 12) and the frame's two shadows on the turned
-  wrapper (`drop-shadow` 12 / 16 and 1 / 1 at .2, at every width; its third value is the SVG filter's standard deviation).
+  wrapper (`drop-shadow` 12 / 16 and 1 / 1 at .2, at every width; its third value is the SVG filter's standard deviation, checked on a
+  blank page: `drop-shadow(0 12px 16px)` and the filter at `stdDeviation` 16 read the same alpha at seven points under a box, and 32px does
+  not).
 - **The ground, turn and tape go by the package's place in the whole stored list (`t.n % 3`)**, so a filter moves nothing: dark olive
   (`BL_PRICE_DARK` `#38391C`, sampled; the nearest seat, Scheme 2's tag 3, is `#363719`) turned -1.2, mustard (`O[4].bg`) +0.8, moss
   (`O[3].bg`) -0.6. **The tape is on the middle seat.** It follows the seat, not the Featured tick: layout 1 reads no tick (JP-048).
@@ -401,7 +408,7 @@ seam's. The stage pattern: `BACKLINE_PRICING`, an `inline-size` container, the f
   frame's fine mottle.
 - **Inside**: the package's name alone in the 14 px top row (the frame's `ADMIT ONE ·` and `NO. 00N` are not drawn, call 1 A; the row is
   kept when the name is empty). Then the price as one run in TT2020 at 96 / 60 / 38 (lead, numeral and tail; a price with no digit sets at
-  .6), the blurb, and the features each led by a **drawn cross** (TT2020 has none) between dashed rules. The list takes the card's spare
+  .6), the blurb, and the features each led by a **drawn cross** (11 px, the text at 19; TT2020 has none) between dashed rules. The list takes the card's spare
   height and closes with its own rule. The foot holds the Book pill (166 × 46; `Book this set`, Paperback's and Headliner's seed; the
   button's ground is cream on the dark card and ink on the others), the frame's 1.3 px centre dot and the 90 × 30 barcode
   (`BacklinePriceBars`, 23 bars; ornament).
