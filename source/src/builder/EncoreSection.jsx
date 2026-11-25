@@ -2614,7 +2614,7 @@ function BacklineHero({ s, menu }) {
             frames are the same contour cropped from the left at 1:1, not squeezed (backlineArt.jsx), so a narrow tear is 1440 frame px wide */}
         <div style={{ position: 'absolute', left: `calc(-1 * ${s.surplus})`, right: `calc(-1 * ${s.surplus})`, bottom: u(-1), height: u(BL_TEAR), pointerEvents: 'none' }}>
           <BacklineTear
-            tear="head" colour={paper.bg} tone="paper" flip id={tearId.replace(/:/g, '')} height={u(BL_TEAR)}
+            tear="head" ground="paper" colour={paper.bg} tone="paper" flip id={tearId.replace(/:/g, '')} height={u(BL_TEAR)}
             style={dev === 'desktop' ? undefined : { width: u(1440), maxWidth: 'none' }}
           />
         </div>
@@ -8113,7 +8113,7 @@ function BacklineMedia({ s, m }) {
       {/* the torn head: the bio's paper, the media's own contour, 1 px above the band as the frame stands it; a narrow frame is the same contour cropped from the left at 1:1 */}
       <div style={{ position: 'absolute', left: 0, right: 0, top: u(-1), height: u(88), pointerEvents: 'none' }}>
         <BacklineTear
-          tear="media" colour={paper.bg} tone="paper" id={tearId} height={u(88)}
+          tear="media" ground="paper" colour={paper.bg} tone="paper" id={tearId} height={u(88)}
           style={desk ? undefined : { width: u(1440), maxWidth: 'none' }}
         />
       </div>
@@ -12626,7 +12626,7 @@ function BacklinePricing({ s, g }) {
       {/* the torn head: the map's moss, the pricing's own contour, 1 px above the band as the frame stands it. `tone="paper"` on a moss tear is measured, not a slip: the master's fibres read about 230 against the body's 130, which is the .8 fringe; the dark tone's .27 would read about 162. */}
       <div style={{ position: 'absolute', left: 0, right: 0, top: u(-1), height: u(88), pointerEvents: 'none' }}>
         <BacklineTear
-          tear="pricing" colour={O[3].bg} tone="paper" id={tearId} height={u(88)}
+          tear="pricing" ground="moss" colour={O[3].bg} tone="paper" id={tearId} height={u(88)}
           style={s.narrow ? { width: u(1440), maxWidth: 'none' } : undefined}
         />
       </div>
@@ -18972,7 +18972,7 @@ function BacklineGallery({ s, g }) {
       {/* the torn head: the media's olive, the gallery's own contour, 1 px above the band as the frame stands it; a narrow frame is the same contour cropped from the left at 1:1 */}
       <div style={{ position: 'absolute', left: 0, right: 0, top: u(-1), height: u(88), pointerEvents: 'none' }}>
         <BacklineTear
-          tear="gallery" colour={s.onScheme[2].bg} id={tearId} height={u(88)}
+          tear="gallery" ground="olive" colour={s.onScheme[2].bg} id={tearId} height={u(88)}
           style={desk ? undefined : { width: u(1440), maxWidth: 'none' }}
         />
       </div>
@@ -19175,7 +19175,7 @@ function BacklineRepertoire({ s, g }) {
       {/* the torn head: the gallery's paper, the repertoire's own contour, 1 px above the band as the frame stands it; a narrow frame is the same contour cropped from the left at 1:1 */}
       <div style={{ position: 'absolute', left: 0, right: 0, top: u(-1), height: u(88), pointerEvents: 'none' }}>
         <BacklineTear
-          tear="repertoire" colour={paper.bg} tone="paper" id={tearId} height={u(88)}
+          tear="repertoire" ground="paper" colour={paper.bg} tone="paper" id={tearId} height={u(88)}
           style={s.narrow ? { width: u(1440), maxWidth: 'none' } : undefined}
         />
       </div>
@@ -22221,7 +22221,7 @@ function BacklineCalendar({ s, g }) {
       {/* the torn head: the paper above, the repertoire's contour rotated (`BACKLINE_TEARS.calendar`), 1 px above the band as the frame stands it; a narrow frame is the same contour cropped from the left at 1:1 */}
       <div style={{ position: 'absolute', left: 0, right: 0, top: u(-1), height: u(88), pointerEvents: 'none' }}>
         <BacklineTear
-          tear="calendar" colour={paper.bg} tone="paper" id={tearId} height={u(88)}
+          tear="calendar" ground="paper" colour={paper.bg} tone="paper" id={tearId} height={u(88)}
           style={s.narrow ? { width: u(1440), maxWidth: 'none' } : undefined}
         />
       </div>
@@ -25692,7 +25692,7 @@ function BacklineMap({ s, g }) {
       {/* the torn head: the repertoire's olive, the map's own contour (the form's window, shifted, and a traced tail), 1 px above the band as the frame stands it */}
       <div style={{ position: 'absolute', left: 0, right: 0, top: u(-1), height: u(88), pointerEvents: 'none' }}>
         <BacklineTear
-          tear="map" colour={s.onScheme[2].bg} id={tearId} height={u(88)}
+          tear="map" ground="olive" colour={s.onScheme[2].bg} id={tearId} height={u(88)}
           style={s.narrow ? { width: u(1440), maxWidth: 'none' } : undefined}
         />
       </div>
@@ -30129,7 +30129,7 @@ function BacklineTestimonials({ s, g }) {
       {/* the torn head: the paper above, the repertoire's contour rotated (`BACKLINE_TEARS.testimonials`), 1 px above the band as the frame stands it; a narrow frame is the same contour cropped from the left at 1:1 */}
       <div style={{ position: 'absolute', left: 0, right: 0, top: u(-1), height: u(88), pointerEvents: 'none' }}>
         <BacklineTear
-          tear="testimonials" colour={paper.bg} tone="paper" id={tearId} height={u(88)}
+          tear="testimonials" ground="paper" colour={paper.bg} tone="paper" id={tearId} height={u(88)}
           style={s.narrow ? { width: u(1440), maxWidth: 'none' } : undefined}
         />
       </div>
@@ -33419,7 +33419,7 @@ function BacklineForm({ s, g }) {
       {/* the torn head: the calendar's olive above, the `form` contour (r 0.996 against this master's own raster at no shift); a narrow frame is the same contour cropped from the left at 1:1 */}
       <div style={{ position: 'absolute', left: 0, right: 0, top: u(-1), height: u(88), pointerEvents: 'none' }}>
         <BacklineTear
-          tear="form" colour={olive.bg} id={tearId} height={u(88)}
+          tear="form" ground="olive" colour={olive.bg} id={tearId} height={u(88)}
           style={s.narrow ? { width: u(1440), maxWidth: 'none' } : undefined}
         />
       </div>
@@ -36874,7 +36874,7 @@ function BacklineFooter({ s }) {
       {/* the torn head: the testimonials' mustard, the footer's own contour (`BACKLINE_TEARS.footer`), 1 px above the band as the frame stands it and painted over the copy as the frame paints it; a narrow frame is the same contour cropped from the left at 1:1. `data-seam` tells `limits.mjs` its box is no collision for the name under it */}
       <div data-seam="" style={{ position: 'absolute', left: 0, right: 0, top: u(-1), height: u(88), pointerEvents: 'none' }}>
         <BacklineTear
-          tear="footer" colour={s.onScheme[4].bg} tone="paper" id={tearId} height={u(88)}
+          tear="footer" ground="mustard" colour={s.onScheme[4].bg} tone="paper" id={tearId} height={u(88)}
           style={s.narrow ? { width: u(1440), maxWidth: 'none' } : undefined}
         />
       </div>

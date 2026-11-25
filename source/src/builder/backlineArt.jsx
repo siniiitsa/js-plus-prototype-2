@@ -127,11 +127,15 @@ export const GRAIN_OPACITY = { paper: 0.75, olive: 0.21, moss: 0.18, mustard: 0.
 // Both strokes along the edge (the shadow and the fringe) take round joins: the traced contours turn sharply at every fibre, and a miter there throws a
 // spike a few px proud of the edge (the sweep's parked judgement 4; not the trace).
 //
+// `ground` is the tear's own body (`paper`, `mustard`, `moss` or `olive`) and sets the fringe's width. The stroke is clipped to the body, so half of it
+// shows: Figma's fibre bands measure 5 frame px on cream, 5.5 on the footer's mustard, 6 on moss and 6.5 on olive.
+//
 // A tear strip. `colour` is the neighbour band's ground, `tone` its ground (`paper` for a pale band, any other for a dark one), which sets the
 // fringe: the frames' fibres run about 11 levels paler than a paper tear's body and 45 paler than an olive one's.
 // `id` makes the shadow's filter unique (the caller passes a `useId()`), `flip` turns it to the foot of a band
 // (the contour mirrored in y, the strip standing under the section it tears into).
-export function BacklineTear({ tear = 'head', colour, tone = 'olive', height = 88, shadow = true, flip = false, id = 'bl-tear', style, ...rest }) {
+const TEAR_FRINGE_W = { paper: 10, mustard: 11, moss: 12, olive: 13 }
+export function BacklineTear({ tear = 'head', colour, tone = 'olive', ground = 'olive', height = 88, shadow = true, flip = false, id = 'bl-tear', style, ...rest }) {
   const edge = BACKLINE_TEARS[tear] ?? BACKLINE_TEARS.head
   const body = edge + 'L1440 0L0 0Z'
   const fringe = tone === 'paper' ? { c: '#FFFFF5', o: 0.8 } : { c: '#FAFAEE', o: 0.27 }
@@ -151,7 +155,7 @@ export function BacklineTear({ tear = 'head', colour, tone = 'olive', height = 8
       )}
       <path d={body} fill={colour} />
       <clipPath id={id + '-c'}><path d={body} /></clipPath>
-      <path d={edge} fill="none" stroke={fringe.c} strokeOpacity={fringe.o} strokeWidth="8" strokeLinejoin="round" clipPath={`url(#${id}-c)`} />
+      <path d={edge} fill="none" stroke={fringe.c} strokeOpacity={fringe.o} strokeWidth={TEAR_FRINGE_W[ground]} strokeLinejoin="round" clipPath={`url(#${id}-c)`} />
     </svg>
   )
 }
