@@ -544,6 +544,9 @@ function measure(needles, drops = []) {
       // A print the copy is drawn over by design (`data-underprint`: the rings of Backline's layout-1 review stamp,
       // under the card's pills and quote). The score inside them is text and still counts.
       && !o.el.closest('[data-underprint]')
+      // A torn seam painted over a band's head (`data-seam`: Backline's layout-1 footer). The name's line box starts inside the tear's deepest
+      // notch at 768 and 390, as the frames stand it, while its letters stay clear: walked by pixels, ascenders and accents lose only to the shadow.
+      && !o.el.closest('[data-seam]')
       && !(o.rs.length === 1 && encloses(o.rs[0]))
       && o.rs.some((r) => ink.some((k) => hit(r, k) && (!o.loose || paints(o.el, r, k))))).map((o) => pathOf(o.el))
     const w = Math.round(el.getBoundingClientRect().width)

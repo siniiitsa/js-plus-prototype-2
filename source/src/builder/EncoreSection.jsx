@@ -36754,6 +36754,133 @@ function HeadlinerFooter({ s }) {
   )
 }
 
+// Backline's layout-1 footer (Batch 2 file, 1:6867 · 1:18639 · 1:19969: 337.44 / 546.72 / 712.02 tall; plans/backline/layout-1.md, section 11). A grained dark olive band (Scheme 2,
+// the section's own ground) under a torn mustard head: the artist's name in TT2020 (48 / 38 / 32, lower-case, -0.045em) with the template's mustard dot, the tagline (TT2020 17 / 25.5, -0.02em)
+// in the statement's seat, the two derived link columns, the Book pill, and a 2-on-1-off dashed rule over the copyright and the credit in Archivo Backline 11. Not drawn (call 1 A): the
+// frame's third link group, the three column headings (no field, so their 25.8 seat stays as padding over the first link), and the newsletter. The Book pill takes the newsletter button's own
+// box (`Sign up`: cream under ink, 46 tall, the arrow), level with the first link at 1440 and 768 and under the links at 390. No seal: the frames draw none. The 1440 master paints the
+// dot olive on olive (1:6871), where 768 and 390 paint it mustard: mustard at every width. The newsletter's column set the frame's content height, so the section is shorter than the frame.
+// The stage is BacklineTestimonials': every length is the FRAME's px through `u`, in cqw of a container as wide as the page content, and the root bleeds through the published tab's surplus
+// so the grain and the tear reach the window's edges. The seam is Lime's restated: `extLink` / `navHref` per link row, the pill on `bookTo` (no self-exclusion filter) and dropped with its label.
+const BACKLINE_FOOTER = {
+  desktop: { fw: 1440, gut: 48.96, top: 80, name: 48, nameRise: 0, textRise: 0, leftW: 426.016, linksW: 540.516, colW: 166.844 },
+  tablet: { fw: 768, gut: 26.11, top: 64, name: 38, nameRise: 2.41, textRise: 1.08, linksW: 341.891, colW: 160.938 },
+  mobile: { fw: 390, gut: 24, top: 48, name: 32, nameRise: 2.03, textRise: 1.08, colW: 161 },
+}
+function BacklineFooter({ s }) {
+  const dev = s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop'
+  const P = BACKLINE_FOOTER[dev]
+  const desk = dev === 'desktop'
+  const mob = dev === 'mobile'
+  const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
+  const cream = s.tx                    // sem/box/1 #F5F6E8: the name, the tagline, the links, the small print (NOT `s.box1`, which is olive on this seat)
+  const mustard = s.ac                  // sem/active/bg: the dot
+  const paper = s.onScheme[1]
+  const tearId = useId().replace(/:/g, '')
+  const type = (extra) => ({ fontFamily: s.display, fontWeight: 400, fontSize: u(17), letterSpacing: '-0.02em', color: cream, ...extra })
+  const seat = 25.8                     // the frame's heading (13.8) and the 12 under it
+
+  // The name is the header's, lower-cased, between words; its widest word fits the column (`footerWordEms`: TT2020 is monospaced). The dot stays with the last word.
+  const title = String(s.brand || '').trim()
+  const cut = title.lastIndexOf(' ') + 1
+  const name = !!title && (
+    <div style={{ containerType: 'inline-size', minWidth: 0, fontSize: u(P.name) }}>
+      <span style={{
+        display: 'block', position: 'relative', top: u(-P.nameRise), fontFamily: s.display, fontWeight: 400, lineHeight: 1, letterSpacing: '-0.045em', textTransform: 'lowercase', color: cream,
+        fontSize: s.footerWordEms ? `min(1em, calc(100cqi / ${s.footerWordEms}))` : '1em', overflowWrap: 'break-word',
+      }}>{title.slice(0, cut)}<span style={{ whiteSpace: 'nowrap' }}>{title.slice(cut)}<span style={{ color: mustard }}>.</span></span></span>
+    </div>
+  )
+  const tagline = !!s.footerStatement && (
+    <p style={type({ margin: 0, position: 'relative', top: u(-P.textRise), lineHeight: u(25.5), whiteSpace: 'pre-wrap', overflowWrap: 'break-word' })}>{s.footerStatement}</p>
+  )
+  const left = (
+    <div style={col(u(20), { minWidth: 0 })}>{name}{tagline}</div>
+  )
+
+  // The two derived columns, where the frame has three; they grow into the third's seat. A link is a 24-tall box on the frame's 24 pitch (18 of line and 3 over and under), so a
+  // label that wraps sets its lines closer than two links stand. An address the artist typed leaves the page in a new tab, a section id scrolls, and the canvas carries no href.
+  const links = s.footerLinks.length > 0 && (
+    <div style={{ display: 'flex', alignItems: 'flex-start', gap: u(20), minWidth: 0, paddingTop: u(seat - 5) }}>
+      {s.footerCols.map((cl, ci) => (
+        <div key={ci} style={col('0px', { flex: '0 1 auto', minWidth: `min(${u(P.colW)}, 100%)` })}>
+          {cl.map((l, i) => {
+            const ext = extLink(s, l.url)
+            return (
+              <a key={i} {...(ext || { href: navHref(s, l.to) })} style={type({
+                display: 'block', boxSizing: 'border-box', padding: `${u(3)} 0`, lineHeight: u(18), cursor: 'pointer', textDecoration: 'none', overflowWrap: 'anywhere',
+              })}>{l.label}</a>
+            )
+          })}
+        </div>
+      ))}
+    </div>
+  )
+  // The Book pill grows with a long label (BacklinePill is otherwise one line at 46).
+  const pill = !!s.footerCta && (
+    <div style={{ display: 'flex', alignItems: 'flex-start', minWidth: 0, paddingTop: mob || (!desk && !links) ? 0 : u(seat) }}>
+      <BacklinePill
+        s={s} to={s.bookTo} u={u} bg={paper.box1} ink={paper.text1}
+        style={{ gap: u(24), flex: '0 1 auto', minWidth: 0, maxWidth: '100%', height: 'auto', minHeight: u(46), whiteSpace: 'normal', padding: `${u(6)} ${u(14.68)} ${u(6)} ${u(12.68)}` }}
+        label={(
+          <>
+            <span style={{ minWidth: 0, overflowWrap: 'anywhere' }}>{s.footerCta}</span>
+            <svg aria-hidden width={u(15.9844)} height={u(12)} viewBox="0 0 15.9844 12" fill="none" style={{ display: 'block', flex: 'none' }}>
+              <path d="M0 6H13.9864M8.99123 10.9951L13.9864 6L8.99123 1.00488" stroke={paper.text1} strokeWidth="1.99805" />
+            </svg>
+          </>
+        )}
+      />
+    </div>
+  )
+
+  const small = (
+    <div style={{
+      marginTop: u(48), paddingTop: `calc(1px + ${u(18)})`,
+      backgroundImage: `repeating-linear-gradient(90deg, ${BL_RULE} 0 ${u(2)}, transparent ${u(2)} ${u(3)})`, backgroundSize: '100% 1px', backgroundRepeat: 'no-repeat',
+      ...row(u(16), { alignItems: 'flex-start', justifyContent: 'space-between' }),
+      fontFamily: s.label, fontWeight: 700, fontSize: u(11), lineHeight: u(12.65), letterSpacing: '0.06em', textTransform: 'uppercase', color: cream,
+    }}>
+      {!!s.copyright && <span style={{ flex: '1 1 0', minWidth: 0, overflowWrap: 'anywhere' }}>{s.copyright}</span>}
+      <span style={{ flex: 'none', marginLeft: 'auto', textAlign: 'right', whiteSpace: 'nowrap' }}>{s.footerCredit}</span>
+    </div>
+  )
+
+  return (
+    <div style={{ position: 'relative', containerType: 'inline-size', overflow: 'hidden', background: s.bg, margin: `0 calc(-1 * ${s.surplus})`, padding: `0 ${s.surplus}` }}>
+      <BacklineGrain src={s.backlineGrain} tone="olive" />
+      <div style={{ position: 'relative', boxSizing: 'border-box', padding: `${u(P.top)} ${u(P.gut)} ${u(48)}` }}>
+        {desk ? (
+          // 48.96 | 426.016 | 31.98 | 540.516 | 32 | 311.516 | 48.96; the pill keeps the newsletter's column whatever stands in the other two
+          <div style={{ display: 'grid', gridTemplateColumns: `${u(P.leftW)} ${u(P.linksW)} minmax(0, 1fr)`, columnGap: u(31.99), alignItems: 'start' }}>
+            {left}<div style={{ minWidth: 0 }}>{links}</div>{pill || <div />}
+          </div>
+        ) : (
+          <div style={col(u(32), { minWidth: 0 })}>
+            {left}
+            {mob || !links ? (
+              <>{links}{pill}</>
+            ) : (
+              // with no links the pill drops to the margin, under the tagline, rather than stand alone in the second column
+              <div style={{ display: 'grid', gridTemplateColumns: `${u(P.linksW)} minmax(0, 1fr)`, columnGap: u(32), alignItems: 'start' }}>
+                <div style={{ minWidth: 0 }}>{links}</div>{pill || <div />}
+              </div>
+            )}
+          </div>
+        )}
+        {small}
+      </div>
+      {/* the torn head: the testimonials' mustard, the footer's own contour (`BACKLINE_TEARS.footer`), 1 px above the band as the frame stands it and painted over the copy as the frame paints it; a narrow frame is the same contour cropped from the left at 1:1. `data-seam` tells `limits.mjs` its box is no collision for the name under it */}
+      <div data-seam="" style={{ position: 'absolute', left: 0, right: 0, top: u(-1), height: u(88), pointerEvents: 'none' }}>
+        <BacklineTear
+          tear="footer" colour={s.onScheme[4].bg} tone="paper" id={tearId} height={u(88)}
+          style={s.narrow ? { width: u(1440), maxWidth: 'none' } : undefined}
+        />
+      </div>
+    </div>
+  )
+}
+
 // Paperback's layout-1 footer (Batch 2 file, 1:3395 · 1:12081 · 1:13263: 486.59 / 798.47 / 876.27 tall; plans/paperback/layout-1.md, section 11). An indigo band
 // (Scheme 3, the section's own ground) holding the artist's name in Bricolage ExtraBold (44 / 35 / 29, lh .9, -0.035em), the sitemap as a row of white-12% pills
 // that wraps (44 tall, radius 999, Figtree Bold 14, 6 apart both ways), the Book pill (a pink split pill, `PaperbackPill`) under them, a photograph on a 351 x 280
@@ -36884,7 +37011,9 @@ function PaperbackFooter({ s }) {
 function Footer({ s }) {
   // Lattice's layout-1 footer is a block of its own (LatticeFooter). `Footer` owns no hook, so the block can
   // stand at the head of the function, ahead of Lime's; the seam is restated in it.
+  // Backline's layout-1 footer is a block of its own (BacklineFooter), ahead of Headliner's; its `useId` is the block's own hook, not `Footer`'s.
   // Headliner's layout-1 footer is a block of its own (HeadlinerFooter), ahead of Paperback's: no hook here either.
+  if (s.limeTree && s.backline) return <BacklineFooter s={s} />
   if (s.limeTree && s.headliner) return <HeadlinerFooter s={s} />
   if (s.limeTree && s.paperback) return <PaperbackFooter s={s} />
   if (s.limeTree && s.lattice) return <LatticeFooter s={s} />
