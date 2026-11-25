@@ -3,7 +3,7 @@
 A single-page, client-only prototype of a website builder for musicians and DJs, built to
 [`SPEC.md`](./SPEC.md).
 
-Pick one of eight visual **templates** from a spotlight-and-filmstrip picker and land straight in
+Pick one of nine visual **templates** from a spotlight-and-filmstrip picker and land straight in
 the editor on a filled-in example page — a stack of **sections** you add, remove, reorder, swap
 layouts on, recolour and rewrite — while seeing a live, fully re-skinned preview. The first thing
 the editor asks for is a **header layout**, in a setup modal over the finished page; see
@@ -60,6 +60,7 @@ source/
       photos.js              ← the only importer of photos/ (seeded photography, per template)
       paperbackArt.jsx       ← Paperback's doodle art: pure SVG, read by EncoreSection
       headlinerArt.jsx       ← Headliner's line art (wave field, rings, arrows, eye): pure SVG, read by EncoreSection
+      backlineArt.jsx        ← Backline's torn seams, grain, tape, stamps, barcodes and hand marks: pure SVG, read by EncoreSection
 ```
 
 ## Two styling systems, deliberately
@@ -77,7 +78,7 @@ This is the one architectural rule worth knowing before editing anything (§12.9
   the things that have live controls: Repertoire, the header's burger menu, the media player, the
   gallery, the events map, the pricing cards, the booking calendar and the enquiry form — and
   `useRef`, for the media player's one
-  `<audio>` element, which is commanded rather than described. There is no effect anywhere in the file, and nothing else is imported but three leaf modules: `RealMap.jsx` (the events map's MapLibre), `paperbackArt.jsx` (Paperback's SVG art: pure functions, no hook) and `headlinerArt.jsx` (Headliner's, the same).
+  `<audio>` element, which is commanded rather than described. There is no effect anywhere in the file, and nothing else is imported but four leaf modules: `RealMap.jsx` (the events map's MapLibre), `paperbackArt.jsx` (Paperback's SVG art: pure functions, no hook), `headlinerArt.jsx` (Headliner's, the same) and `backlineArt.jsx` (Backline's, the same).
 
 Do not try to unify them. Only three hand-written CSS classes cross the boundary —
 `.hv-indent`, `.hv-acbord`, `.hv-acfill` — because each reads the `--ac` / `--acFg` custom
@@ -85,7 +86,7 @@ properties set per section at runtime. One more rule reads a custom property the
 `input::placeholder` is `opacity: var(--ph, .45)`, and a box whose frame states its placeholder's
 strength sets `--ph` inline: the enquiry form's label-in-box inputs `1` (JP-093), Pop's
 layout-1 form `0.8` (JP-119), and Pop's layout-1 repertoire search `0.8` (JP-119's retest, a
-user call over the frame's 50%), and Paperback's layout-1 form `0.565` (the frame's ink at that tint). Headliner's layout-1 repertoire search and form leave theirs at the global .45 (the frame's `#757575` is about .59 of the ink on the cream; whether to join is the user's call).
+user call over the frame's 50%), and Paperback's layout-1 form `0.565` (the frame's ink at that tint). Headliner's layout-1 repertoire search and form leave theirs at the global .45 (the frame's `#757575` is about .59 of the ink on the cream; whether to join is the user's call), and Backline's do the same.
 
 Every section is projected through `sectionVm()` into a flat, fully-resolved view-model before
 rendering, so `EncoreSection` does zero colour maths. The enquiry form and the calendar's
@@ -175,7 +176,7 @@ Four things about it are load-bearing:
   over a page that has just been built and not yet touched.
 - **Names, not numbers.** `headerLayout()` in `data.js` promotes the names the compositions
   already carried in `EncoreSection`'s §10.2 comments — Hero, Feature spread, Inset Hero, Stacked,
-  Overlay card, Stage wide (Lime's, Grunge's, Editorial's, Pop's, Lattice's, Paperback's and Headliner's family is the first four)
+  Overlay card, Stage wide (Lime's, Grunge's, Editorial's, Pop's, Lattice's, Paperback's, Headliner's and Backline's family is the first four)
   — into every label,
   including the ordinary `LayoutPicker` dropdown. Every other category stays numbered: its
   layouts are variations of one idea, and the number is honest about the folding.
@@ -184,7 +185,7 @@ The `startTheme` prop skips the template picker, and skips the onboarding with i
 
 ## Seeded photography
 
-All eight templates open with their Figma mock photography already in place.
+All nine templates open with their Figma mock photography already in place.
 The assets live in `src/builder/photos/` and are wired up by `src/builder/photos.js`, which is
 the only module that imports them.
 
@@ -193,12 +194,12 @@ the only module that imports them.
   and render the initials placeholder). Lime's row
   is a different shoot for the artist's own pictures (the hero, its portrait card, the bio and
   its layout-3 landscape shot, the calendar, the form avatar, the form's layout-2 stage photograph and the gallery spotlight) and
-  Retro's files for the rest; Grunge's row is a third shoot, black-and-white in the assets themselves (nothing desaturates an upload); Editorial's is a fourth, in colour (`editorial-*.jpg`), whose gallery strip is the five pictures of its shoot and two crops of its hero, since its frame's strip repeats one thumbnail and borrows Retro's; and Pop's is a fifth, in colour (`pop-*.jpg`), whose strip seeds seven different pictures of its shoot where its frame borrows four of Retro's; Lattice's is a sixth, in colour (`lattice-*.jpg`), and only four photographs — the hero, the portrait, the bio's and a fourth — each a 1536-wide JPEG used as the frame's own file, since every thumbnail, track cover and avatar of its frames is one of them re-cropped (its dotted disc, map card and calendar torus are art, lossless WebPs used as masks and backgrounds, not photography); Paperback's is a seventh, in colour (`paperback-*.jpg`), eleven JPEGs (1152 wide, the avatar 512) — the hero, the avatar, the bio's portrait, seven shots (the gallery's strip, with shots 1–5 the media's covers, 3 the form's picture and 4 the footer's) and the gallery viewer's own picture (its doodles are SVG art in `paperbackArt.jsx`, not photography); Headliner's is an eighth, in colour (`headliner-*.jpg`), twelve JPEGs (484,700 bytes raw: the hero at 1440 wide, the avatar, the bio's portrait, the player's cover, seven shots, with shots 1–5 the media's covers and the gallery strip's first five thumbnails, and the gallery viewer's own picture); its footer draws no photograph, and its line art is SVG in `headlinerArt.jsx`. The photography is Retro's art direction, not the user's content, so switching template
+  Retro's files for the rest; Grunge's row is a third shoot, black-and-white in the assets themselves (nothing desaturates an upload); Editorial's is a fourth, in colour (`editorial-*.jpg`), whose gallery strip is the five pictures of its shoot and two crops of its hero, since its frame's strip repeats one thumbnail and borrows Retro's; and Pop's is a fifth, in colour (`pop-*.jpg`), whose strip seeds seven different pictures of its shoot where its frame borrows four of Retro's; Lattice's is a sixth, in colour (`lattice-*.jpg`), and only four photographs — the hero, the portrait, the bio's and a fourth — each a 1536-wide JPEG used as the frame's own file, since every thumbnail, track cover and avatar of its frames is one of them re-cropped (its dotted disc, map card and calendar torus are art, lossless WebPs used as masks and backgrounds, not photography); Paperback's is a seventh, in colour (`paperback-*.jpg`), eleven JPEGs (1152 wide, the avatar 512) — the hero, the avatar, the bio's portrait, seven shots (the gallery's strip, with shots 1–5 the media's covers, 3 the form's picture and 4 the footer's) and the gallery viewer's own picture (its doodles are SVG art in `paperbackArt.jsx`, not photography); Headliner's is an eighth, in colour (`headliner-*.jpg`), twelve JPEGs (484,700 bytes raw: the hero at 1440 wide, the avatar, the bio's portrait, the player's cover, seven shots, with shots 1–5 the media's covers and the gallery strip's first five thumbnails, and the gallery viewer's own picture); its footer draws no photograph, and its line art is SVG in `headlinerArt.jsx`; Backline's is a ninth (`backline-*.jpg`), sixteen JPEGs (541,247 bytes raw: the hero in the frame's sepia, under an olive wash that is markup, the bio's portrait, the player's cover, which is track one's art, four more track covers, six gallery shots and the gallery viewer's own picture, which stands in the strip's second slot, the form's avatar and the header's avatar, which layout 1 does not draw), beside one 27.6 KB grain tile (`backline-grain.webp`, art); its footer draws no photograph. The photography is Retro's art direction, not the user's content, so switching template
   drops it — with one exception: the media player's track art is materialised into `c.tracks` the
   moment the artist edits the list (it has to be, or renaming track one would delete five
   photographs), so from then on it is theirs and survives a template switch.
 - **Imports, never fetches.** §8.6 forbids a network request in the render path.
-  `vite-plugin-singlefile` forces `assetsInlineLimit = () => true`, so all ninety-two files are
+  `vite-plugin-singlefile` forces `assetsInlineLimit = () => true`, so all 109 files are
   base64-inlined and the committed `index.html` still opens from `file://`. It is ~15.3 MB (15,306,066 bytes after the Headliner pass, which grew it by 0.72 MB from 14.59: twelve `headliner-*` files, 485 KB raw and about 0.65 MB inlined, and the rest code and the art; the Paperback pass before it grew it by 1.56 MB from 13.03: eleven `paperback-*` files, 960 KB raw and about 1.28 MB inlined, and the rest code and the art; the Lattice pass before it grew it by 1.10 MB from 11.93).
   (The plain `npm run build` path has no such override and would emit them to `dist/assets/`
   instead; only the standalone build feeds the committed demo.)
@@ -626,11 +627,11 @@ These are intentional limits, not oversights — see §12 for the full list. The
   is still on the page, else at the old index — *Start fresh* or not; only a category with no
   entry lands immediately before the footer, as §9.1 says. It lives only as long as the
   session, like everything else.
-- **Retro, Lime, Grunge, Editorial and Pop are designed at all four layouts, and Lattice, Paperback and Headliner at layout 1.** Retro ships six
+- **Retro, Lime, Grunge, Editorial and Pop are designed at all four layouts, and Lattice, Paperback, Headliner and Backline at layout 1.** Retro ships six
   photographic header layouts and every other template the first four, every family closed, so
   no card of any template draws Retro's checker floor under another's tokens; there is no flat
   template, and no flat header family, any more.
-  The §10.2 *layouts* are shared by all eight templates; Retro's decorative treatment — paper
+  The §10.2 *layouts* are shared by all nine templates; Retro's decorative treatment — paper
   grain, torn edges, checkerboard, hard offset shadows, rotated cards — is gated on `s.retro`,
   the same split as `headerFamily()`. **Lime is designed at all four of its layouts**: each of its
   Figma pages is Retro's page of the same number in another variable mode, so its own treatment —
@@ -744,6 +745,16 @@ These are intentional limits, not oversights — see §12 for the full list. The
   Lattice and Paperback, its page is sand, and every character cap is its own at layout 1. Layouts 2–4 and the four setup cards
   2–4 render and publish in Headliner's tokens but are Lime's and Pop's arms until a layout pass fits them. See
   `notes/templates.md`.
+  **Backline is designed at layout 1 only**: the ninth template, from the same Batch 2 file (*Backline Evolved*), whose frames bind
+  no variables at all, so every colour is sampled from a render. Its eleven sections are `Backline*` trees of their own standing
+  on `s.backline` after the shared hooks and seam. The page is a **torn-paper scrapbook**: paper and dark-olive bands, one moss
+  and one mustard, every band after the first standing under a torn edge in the colour above it, one grain tile over each, and
+  turned, taped, ticket-notched cards with stamps, barcodes and hand-drawn marks, all from `backlineArt.jsx`. The frames' ticket-stub
+  copy that no field holds is left undrawn (user call, 2026-11-24). Faces: **TT2020 Base**, a monospaced typewriter face under the
+  SIL OFL that is not on Google Fonts, subset and inlined in `src/backline-fonts.css`; **Archivo Backline** (Archivo pinned
+  condensed and bold) for the labels; Inter for body. Its hero is 914 tall at 768 and 880 at 390. It carries `schemes`, its page
+  is paper, and its caps are measured at layout 1. Layouts 2–4 and the four setup cards 2–4 render and publish in Backline's
+  tokens but are Lime's and Pop's arms until a layout pass fits them. See `notes/templates.md`.
   One piece of Retro's treatment is placed
   rather than copied: the checker ribbon on header layout 1's floor is not in the Figma hero
   frame at all. It is lifted from the stacked header, which shares the same full-bleed
@@ -786,8 +797,8 @@ These are intentional limits, not oversights — see §12 for the full list. The
   A hidden field keeps its copy, so switching to a layout that reads it brings it back with
   whatever was typed. The header's four identity fields (Kicker, Location, Tags, Tag chips) are
   `shared`: other sections print them, so they are listed at every header layout, marked "Not
-  shown in this layout" where the header itself does not draw them. The header's `in` names all eight templates' layouts,
-  each measured over fitted cards alone since Pop's Stacked was fitted (Lattice's, Paperback's and Headliner's cards 2–4 are placeholders, so their rows there are the twins').
+  shown in this layout" where the header itself does not draw them. The header's `in` names all nine templates' layouts,
+  each measured over fitted cards alone since Pop's Stacked was fitted (Lattice's, Paperback's, Headliner's and Backline's cards 2–4 are placeholders, so their rows there are the twins').
 - **Accessibility is scoped to the chrome.** Radix supplies focus management, keyboard
   navigation and ARIA there. The rendered preview is deliberately not accessible: it is a
   picture of a website, not a website. The seal badge honours `prefers-reduced-motion`.

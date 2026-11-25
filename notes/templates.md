@@ -1,4 +1,4 @@
-# The designed templates: Retro, Lime, Grunge, Editorial, Pop, Lattice, Paperback and Headliner — working notes
+# The designed templates: Retro, Lime, Grunge, Editorial, Pop, Lattice, Paperback, Headliner and Backline — working notes
 
 Moved word for word out of `CLAUDE.md`'s *Intentional limits — not bugs* on 2026-09-30, so it
 loads only when a session works on it. "Above" and "below" may point into `CLAUDE.md` or
@@ -793,13 +793,35 @@ hold the record, and this file keeps what a later session touching a Headliner s
 - Caps: statement 59, link label 18, button 41, copyright 39, name 31.
 
 
-## Backline (plans/backline/layout-1.md, 2026-11-24 on)
+## Backline (plans/backline/layout-1.md, 2026-11-24 to 11-25)
 
 The ninth template (`THEMES[8]`, flag `s.backline`; frames from the *Batch 2* file, "Backline Evolved — Claude Design", display **TT2020 Base** (a self-hosted
 typewriter face, OFL), labels **Archivo Backline** (Archivo's wdth 75 / wght 700 alias), body Inter). **Only layout 1 is designed**, one section at a time; the plan's
 *Conventions → Settled in session 0* and *Settled in sections 1–11* hold the record, and this file keeps what a later session touching a Backline section needs.
 The frames bind no variables (each section's only fill is a grain raster), so every colour is sampled from a render, and the file's two ink literals are
 `#23240F` (ink) and the scrim's `rgba(35,36,15,·)`.
+
+**Its visual language** (the plan's *Backline's visual language* is the planning read):
+- **A torn-paper scrapbook in paper, olive, moss and mustard.** The page is the band colours' order: olive-washed photograph, paper bio,
+  dark olive media, paper gallery, dark olive repertoire, moss map, paper pricing, dark olive calendar, paper form, mustard testimonials,
+  dark olive footer. The page's own ground (the gutter past 1440) is paper.
+- **Every seam is torn**: no straight edge, arc or wave. The tear is drawn by the band **below** (the hero's foot is the one drawn by the
+  band above), an 88 px strip in the neighbour's colour with a pale fibre fringe (`tone="paper"` .8 of `#FFFFF5`, otherwise .27 of
+  `#FAFAEE`) and a soft shadow. The strip's paper side is one flat colour. The bio draws no tear of its own.
+- **Grain on every band but the hero**, one 192 px tile under `overlay` (`GRAIN_OPACITY`: paper .75, olive .21, moss .18, mustard .28).
+  It is calibrated to the frames' standard deviation, and carries none of their soft mottle.
+- **Known gaps against the frames, judged at the sweep and not changed** (they are shared kit; figures and costs in the
+  plan's *The sweep — the record*): the **olive** bands' grain is inverted (the frames carry light flecks there, dark
+  specks on paper); the tears' fibres are opaque and 4 px wide where the frames' are about 82 % opaque and 5 to 6.5;
+  the fringe stroke's miter joins make small spikes; and the strip above each tear has no grain. **The tear contours
+  themselves are within 0.7 px** of the frames' own rasters at 1440.
+- **Turned, taped, ticket-notched cards** under small drop shadows. Turns are a fraction of a degree to 2 degrees. Notches are semicircle
+  bites (`blNotchMask` on a turned box, `backlineNotch` on a chip). Everything else is square; only the stamps and the picked day are round.
+- **TT2020 Base** (monospaced typewriter, lower-cased by CSS where the frame types it so) for everything set big or long, tracked
+  −0.045em; **Archivo Backline** upper-case, tracked +0.06em, for labels, chips, buttons and numbers; Inter for the small print.
+- **Art** (`backlineArt.jsx`, pure SVG): the tears, the grain, the notch, `BacklineTape`, the two kinds of barcode, the bio's stamp, the
+  map's rings and radius stamp, the testimonials' score rings and the media's hand-drawn strike. The calendar's circle and the bio's
+  underline are hand marks of the same family. **No art carries a word no field holds.**
 
 **The header** (`BacklineHero`, `EncoreSection.jsx`; own tree, hookless, standing at `HeaderV0`'s head on `s.backline`):
 - **Stage pattern**: a `containerType: inline-size` stage inside a root that is an `aspectRatio` box (975.297 / 914.4375 / 880 by 1440 / 768 / 390); `u(v)` is the frame
@@ -824,7 +846,7 @@ The frames bind no variables (each section's only fill is a grain raster), so ev
 - **The six chips** take `s.onScheme[2].chips[6, 1, 2, 3, 5]` (ink / mustard / moss / `#363719` / beige, with `tagFg`) and a dashed cream outline for the sixth: 26 tall, 10 padding, Archivo Backline 12 +.06em, the **ticket notch**
   (`backlineNotch`, `backlineArt.jsx`: four radial gradients, a 5 px bite out of each corner, any width). Scheme 2's seat 3 was inferred `#2F3019` and is now the sampled `#363719`.
 - **Not drawn** (call 1 A, 2026-11-24): the wordmark and six inline links, `NEXT STOP · GORILLA, MANCHESTER · 30.08`, the LP ticket (call 2 A), the polaroid avatar, the act type and the location; no seal, no grain over the
-  photograph (the frame's grain is under it and covered). The chips' labels are the seeded `TAG_LABELS`, not the frame's (`Default / Sold out / New release / Archive / Live / All access`).
+  photograph (the frame's grain is under it and covered). The chips' labels are the seeded `TAG_LABELS`, which are the frame's six words, capitals aside.
 - Picker: `TemplatePreview` passes `fit` for Backline too (user call, 2026-11-24, "Fit, Backline only"), since a 799.74-tall hero outgrows the 1180 × 614 card.
 - Data (section 1, 2026-11-24): the header's eight `in` rows were Headliner copies and are re-measured (`reach.mjs 8`): `badgeMode` and `badgeText` read design 3 alone (layout 1 draws no seal), `cardLine` gains `Backline: [2]`, `avatar` has `in: { Backline: [1, 2, 3] }`, the rest held. Caps: title `[67, 80, 80, 80]`, tags and button as the `'*'` rows. `INLINE_OFF`: `Backline.0.header.kicker`, `.location` (not drawn) and `.cta1` (the canvas's hover toolbar covers the pill's words at the desktop canvas; per design, so tablet loses it too). **A hero that prints copy in the top-right 110 × 50 px of its section is under that toolbar at the desktop canvas.**
 - Scheme 2's seat 3 (`tags`) is the sampled `#363719`; `ttEms` and `TITLE_SITES.Backline` are in `data.js`; `backlineNotch` (a ticket-notched chip) is in `backlineArt.jsx` and `BacklinePill` (the template's one button) in `EncoreSection.jsx`.

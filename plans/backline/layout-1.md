@@ -523,6 +523,170 @@ After section 11 and session 12, in one session (Headliner's list is the model):
    `cp`s, and the two-build digest — **zero rows at themes 0–7, non-zero at theme 8**. Say what the file grew by (from
    15,306,066 bytes).
 
+### The sweep — the record (2026-11-25)
+
+- **Step 0** is *Session 12 — the record*, above.
+- **Items 1–3 and 6**: CLAUDE.md, README.md, `notes/templates.md` (the title, and *Its visual language*),
+  `plans/CONVENTIONS.md` (*I. A torn-paper page with own trees and no variables*) and `plans/README.md`. Comments that
+  counted templates or tears are fixed (`0095474`), among them the calendar button's panel hint, which now names Backline.
+- **Item 4, card 1 published**: no console error or warning, and no sideways overflow at 1440, 768 or 390. Book Now and
+  the bio's, pricing's and calendar's pills go to `#form`; the nine menu links scroll and close the menu, which opens at
+  768 and 390 without overflow; the footer's eight links and its pill scroll. The media player plays on a trusted click.
+  The form refuses an empty submit (olive underlines), then builds the mailto and shows the sent state. The controls
+  that did nothing are the already-picked ones (the repertoire's `All`, the current gallery tile, the form's first chip)
+  and **SoundCloud with no address**: `extLink` returns nothing without one, so the pill is a plain span with a pointer
+  cursor, the shared no-link state. (The walk's "it acted" for the player at 768 and 390 is not reliable: its snapshot
+  moves while audio loads.) **No outbound link was exercised**: the seeded page holds none. Each tear's colour matches
+  its real neighbour, by eye. Against the master the differences are the expected ones: the undrawn frame literals, the
+  empty source rows and ticket links hidden when live, no day cued (the seeded June 2025 is past) and no pager.
+- **Item 5, cards 1–4**: each publishes all eleven sections in its `pageOrder(i)`; no console error on load or on a
+  click, and no sideways overflow, at all three widths (the console warnings on cards 2–4 are headless WebGL's, from the
+  real map). Every control on cards 2–4 was clicked. Those that did nothing: already-picked chips, tabs and tiles;
+  card 3's map row and *See all gigs* after its Lake District chip (one gig is left, already lit); card 2's `Venue Link`
+  (no address). **Not exercised**: media cards whose centre another card covers, and card 3's *View full set* at 390,
+  off screen. **One not explained**: a 123 × 68 gallery control on card 4 at 390 (probably the picked thumbnail; not
+  checked). Outbound links (the maps' directions and attribution) were listed, not opened.
+  **What cards 2–4 look like** is in *Open calls*; they are placeholders, and nothing was changed.
+- **`data-seam` and `data-underprint`** reach the published markup. A grep of `source/` finds one setter each (the
+  footer's seam wrapper; the review stamp's rings) and one reader, `scripts/limits.mjs`.
+- **One shared-shadow fix** (`814acef`, section 7's item 7 and section 6's item 8). The desktop map ticket's
+  `drop-shadow()` read 28 and 2 where the frame's SVG filter (`1:6137`) has deviations 14 and 1, which the narrow
+  widths already used. Desktop pixels only; at 768 the ticket matches its master by eye.
+
+**The parked judgements.** Judged on renders beside the masters and on the tears' own rasters (Figma's `1:5547`,
+`5933`, `6030`, `6136`, `6321`, `6557`, `6724`, `6809`, `6866`, `6923`). **None of the shared kit was changed.** The
+trials below were CSS laid over the published page in headless Chromium at 1440; the narrow widths and Safari were not
+tried.
+
+1. **Edge offsets: nothing to move.** With our fringe and shadow hidden, the body edge was compared with each tear
+   node's own alpha (the lowest half-opaque row), at 1440: ours less the raster's, median per column, media −.56,
+   gallery −.56, repertoire +.06, map +.33, pricing −.70, calendar +.16, form +.13, testimonials +.22, footer −.27 px
+   (interquartile .5 to .75; the header's flipped foot was not measured this way). **The calendar's 0.36 was read with
+   the fringe showing, against a screenshot; the form's "2 px" was the solid-colour boundary**, which sits lower in ours
+   because **our fibre band is narrower**: Figma's measures 5 px on cream, 5.5 on the footer's mustard, 6 on moss, 6.5
+   on olive, and ours is 4 on all (an 8-unit stroke clipped to the body). The narrow widths' figures, the footer's +1.1
+   at 390 among them, were not re-measured. (A first whole-page crossover measure moved with the fringe's colour, so
+   its figures are not used.)
+2. **Fibre brightness: the colour is right, the opacity is not.** Figma's fibres are about **82 % opaque** over the
+   band below (mean alpha .82 through the band; luma 248 on cream, 120 on olive, which are the kit's own two tones).
+   `.82 × fibre + .18 × the band below` gives the masters' readings: cream over olive 217, cream over mustard 235,
+   olive over cream 141 (each within .5), the footer 208.5 against 207.5. Ours are painted over the body inside the
+   clip, so they read about 250 on cream and 121 on olive. **To fix**: one blended colour per paper call site (it needs
+   the band below), and .38 in place of .27 for olive over paper.
+3. **Spotty grain: the main cause is that the olive grain is inverted.** Figma's paper bands carry dark specks (luma
+   skew −1.0 to −1.3; ours −1.6 to −1.8, the right way round) and its **olive bands light flecks** (+1.0 to +1.2; ours
+   −1.5 to −1.7), at all three widths. Moss and mustard are near even in Figma (−.3 to −.7). With `filter: invert(1)`
+   on the olive grain alone, the footer's patch reads spread 4.19 against Figma's 4.06, skew +1.20 against +1.10, mean
+   73.1 against 73.9, and looks it, with slightly heavier clumps. **It needs no new bytes, and the second, finer tile
+   (about +28 KB) is not recommended on this evidence.**
+   **A second, smaller fault**: the tile is 192 CSS px, and the desktop canvas and published page draw a frame px at
+   .82 and 1.22 CSS px, so on desktop the grain is 22 % large (the source fill is 1440 × 339, one raster px to a frame
+   px; at 768 and 390 the size is right). Resizing alone did not help the look, and without the resampling blur the
+   spread rose to 4.8, so it would want new opacities. Not recommended for now.
+4. **Spikes** (section 6's item 7, the map's "rough tail", and smaller ones on every seam): **not the trace**. They are
+   the miter joins of the 8-unit fringe stroke; `stroke-linejoin: round` removes them.
+5. **The flat strip above each tear** (section 10's item 8): with the grain and fringe corrected it is **the largest
+   difference left**. A trial that grained it (an SVG pattern of the same tile) removed it, but read stronger than the
+   frame on paper (5.4 to 5.8 against 3.3 to 4.2) and its phase does not meet the band above.
+
+| Change to the kit | Cost | How far it was tried | Advice |
+|---|---|---|---|
+| Invert the olive grain | one style line in `BacklineGrain`; no new bytes | browser trial; footer measured | yes |
+| Round joins | one attribute on two paths | browser trial | yes |
+| Fibre width: 10 units on cream, 11 footer, 12 moss, 13 olive | one value per call site, tens of bytes | olive's 13 tried; the others are arithmetic | yes |
+| Fibre opacity .82 over the band below | a prop at the paper call sites and .38 for olive, about 200 bytes | an earlier paper-colour trial; the rest arithmetic | yes |
+| Grain the flat strip | about 15 lines and a prop at 10 call sites; no new asset, but each seam repeats the tile's data URI in the published DOM | browser trial, too strong on paper | after the four above, at about .55 on paper |
+| Draw the desktop grain at frame size | `u(192)` per band, and new opacities | measured; no visible gain alone | not now |
+| A second, finer tile | about +28 KB raw | not tried | no |
+| Move any tear | nothing | measured at 1440 | no |
+
+Any of these changes Backline's pixels only, and needs a Backline digest and **another refresh of the root
+`index.html`**.
+
+### Open calls — everything the pass hands the user, in one place
+
+*(Collected at the sweep from the sections' lists, which hold the detail; **s5.2** is section 5's item 2.)*
+
+**To decide first**
+
+- **The tear and grain fixes** in the table above (s6.7, s7.5, s8.6, s8.7, s9.5, s9.8, s10.8, s11.9).
+- **Layouts 2–4's caps are not measured.** 22 specs (85 seats) still reach Pop's row and 43 (94 seats) carry numbers
+  written out equal to Pop's (*Session 12 — the record*). Measuring them waits on your word.
+
+**Colours the masters disagree on**
+
+- The hero's dot: olive at 1440, mustard narrow (s1.1). `your ear.`: mustard at all widths, where the 1440 paints it
+  invisibly (s3.1). `songs.`: moss at 1440, mustard narrow (s5.2). The calendar head's second run: mustard at 1440, where
+  the master paints it olive on olive (s8.1). The footer's dot: mustard everywhere (s11.4).
+
+**Frame literals not drawn, each wanting a field or nothing** (session 0, call 1 A)
+
+- The bio stamp's `est. 21` and ring words, so its middle is bare (s2.1). The media's six micro-copies (s3.4). The
+  gallery's `03 ┈┈` (s4.5) and the strip's two empty bars (s4.8). The repertoire's setlist head, `SIDE A / SIDE B`
+  stamp, `encore:` foot and eyebrow (s5.1). The map's second stamp arc, `mcr` and `Sold out` (s6.2–4). Pricing's
+  `ADMIT ONE ·`, `NO. 001` and price unit (s7.1–2). The calendar's eyebrow, request line, event kind,
+  `PENCILLED IN`, `GIG` and number (s8.2). The testimonials' ring words (s10.6). The footer's column headings, third
+  column, newsletter and seal (s11.1–2, s11.5).
+
+**Choices made where the frame could not settle one**
+
+- Header: the menu's link style, which no frame draws (s1.3); the name wraps and shrinks, cap 67 (s1.4); no grain on the
+  hero photograph (s1.5); scheme 2's seat 3 sampled `#363719` (s1.6); **Book Now is not editable on the canvas**, whose
+  toolbar covers it (s1.7). (s1.2, the chips' words, is moot: the shared seed is the frame's six, capitals aside.)
+- Bio: the underline follows the last two words before the lead's dash (s2.2); the button is drawn at 768, where the
+  master clips it (s2.3); a flat polaroid paper (s2.4); the heading's lower case and olive stop (s2.5).
+- Media: the cover is track one's art (s3.2); the cued track is the lit one (s3.3); flat ticket paper (s3.5); the sub
+  clamps at 390 alone (s3.6); new barcode and strike art (s3.8).
+- Gallery: the stamp prints `railLabel`, seeded `Contact sheet` (s4.1); the head is seeded `See us in action.` (s4.2);
+  **slot two is the viewer's picture** and shot two is dropped (s4.3); a pick is ringed in mustard (s4.4); the back
+  link's padding (s4.6); CSS dashes (s4.7).
+- Repertoire: at 390 the titles stand on one x under a turned card (s5.5).
+- Map: the rings art stands where the real map would, with no tiles or request (s6.1); the lit row is ringed (s6.5).
+- Pricing: no tab lit at rest (s7.3); the tape stays on the second package, whatever is Featured (s7.4); the small
+  print keeps the shared seed's Oxford comma (s7.8).
+- Calendar: a blank dashed rule with no day picked, **which is how the published page opens**, the seeded month being
+  past (s8.3); the picked day keeps the row's size when narrow (s8.4).
+- Form: the placeholders print as seeded (s9.2); the role is the header's kicker (s9.3); a refused box is an olive
+  underline, the palette having no red (s9.4); the chips are not hand-turned (s9.6); the tape is torn at every width
+  (s9.7).
+- Testimonials: the date line is drawn and the stamp prints the rating (s10.1); the published card holds the tallest
+  review's height, so **one long review leaves short ones in a tall empty card** (s10.2); the quote keeps its typed
+  marks (s10.5).
+- Footer: the Book pill takes the newsletter's seat (s11.3), the page is shorter than the frames by what was removed
+  (s11.6), and the links are the page's section names (s11.7).
+- **`--ph`**: the repertoire's search and the form's boxes draw their hints at .45, where the frame is about .57
+  (s5.4, s9.1). Joining is your call, as for Headliner.
+
+**Fits, caps and held heights**
+
+- Tight caps: the bio's heading 17 and ring 11 (s2.6), the media artist 26 (s3.7), the repertoire's title 18, artist
+  20 and heading 13 (s5.6), `Continue` 12 (s8.5).
+- The seeded pages draw no pager, so the repertoire's content sits 37 px low at 1440 and 768 and the map's right column
+  is 66 short (s5.3, s6.6). The tablet bio is taller than its clipped master (s2.3).
+- A form head of 34 to 36 characters may set a fourth line at 1440 (s9.9); a near-empty form's sent state is taller
+  than the form (s9.10). Extra pricing tags drop under the head (s7.9). A long last line moves the review pills 44 px
+  (s10.4); at 390 the score's stamp passes under a pill (s10.3); long or wide ratings clip at layout 3 or cross the ring
+  (s10.9). The footer's teeth reach the name's line box when narrow (s11.8).
+
+**The code and the published page**
+
+- The head, media and repertoire strips are windows of one longer strip; composing them would save about 14 KB with no
+  visible change (s5.7, s7.6).
+- `data-seam` and `data-underprint` ship in the published markup for `limits.mjs` alone (s10.10).
+
+**Header cards 2–4 and layouts 2–4 are placeholders** (Lime's and Pop's trees in Backline's tokens; Figma was not
+touched). They render and publish, and **they are not presentable as they stand**. Seen on cards 2–4, causes not
+investigated:
+
+- **A bright lime that is not Backline's** (the travel and quote cards, a curated set, the map panel, the repertoire
+  panel). It is Lime's literal `#CCFA61`, which the shared trees give every template with no arm of its own; Headliner's
+  card 3 shows it too, so it predates this pass.
+- Text hard or impossible to read on the pale and lime cards: card 2's travel card, quote card and form price card,
+  and card 4's form hints and pricing chips.
+- `Venue Link` runs into `Get Directions` on card 2's map at 768.
+- Words broken mid-word (`unforgett / able.`, `succes / s storie / s`, `Manchest / er, UK`).
+- Card 3's bio photograph is cropped through the heads.
+
 ## Open questions
 
 1. **Does TT2020's licence allow bundling, and where does the file come from?** (Call 3 A depends on it.)
