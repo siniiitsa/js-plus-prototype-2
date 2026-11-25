@@ -127,18 +127,27 @@ export const GRAIN_OPACITY = { paper: 0.75, olive: 0.21, moss: 0.18, mustard: 0.
 // Both strokes along the edge (the shadow and the fringe) take round joins: the traced contours turn sharply at every fibre, and a miter there throws a
 // spike a few px proud of the edge (the sweep's parked judgement 4; not the trace).
 //
-// `ground` is the tear's own body (`paper`, `mustard`, `moss` or `olive`) and sets the fringe's width. The stroke is clipped to the body, so half of it
-// shows: Figma's fibre bands measure 5 frame px on cream, 5.5 on the footer's mustard, 6 on moss and 6.5 on olive.
+// `ground` is the tear's own body (`paper`, `mustard`, `moss` or `olive`) and sets the fringe's width and colour. The stroke is clipped to the body, so
+// half of it shows: Figma's fibre bands measure 5 frame px on cream, 5.5 on the footer's mustard, 6 on moss and 6.5 on olive. Figma's fibres are
+// 82 % opaque over the band below, and ours cannot be (the clip puts the body under them), so the stroke is painted opaque in that blend,
+// `.82 x fibre + .18 x below`. `below` is the colour of the band the tear lies over, which each caller passes: the section's own ground, and for the
+// header's flipped foot, which lies over the photograph, the ink its olive wash reads as there (`#232310` on the master; a fixed colour, so an
+// uploaded photograph keeps the seeded one's .18).
 //
-// A tear strip. `colour` is the neighbour band's ground, `tone` its ground (`paper` for a pale band, any other for a dark one), which sets the
-// fringe: the frames' fibres run about 11 levels paler than a paper tear's body and 45 paler than an olive one's.
+// A tear strip. `colour` is the neighbour band's ground.
 // `id` makes the shadow's filter unique (the caller passes a `useId()`), `flip` turns it to the foot of a band
 // (the contour mirrored in y, the strip standing under the section it tears into).
-const TEAR_FRINGE_W = { paper: 10, mustard: 11, moss: 12, olive: 13 }
-export function BacklineTear({ tear = 'head', colour, tone = 'olive', ground = 'olive', height = 88, shadow = true, flip = false, id = 'bl-tear', style, ...rest }) {
+// each ground's fringe: the stroke's width and the frames' own fibre colour, read off the tear rasters (every one at alpha .82)
+const TEAR_FRINGE = {
+  paper: { w: 10, c: '#F7F8EF' }, mustard: { w: 11, c: '#F2F0D2' }, moss: { w: 12, c: '#EBE9CE' }, olive: { w: 13, c: '#797B5A' },
+}
+const TEAR_FIBRE_ALPHA = 0.82
+// `a` over `b` at `t`, both `#RRGGBB`
+const mixHex = (a, b, t) => '#' + [1, 3, 5].map((i) => Math.round(t * parseInt(a.slice(i, i + 2), 16) + (1 - t) * parseInt(b.slice(i, i + 2), 16)).toString(16).padStart(2, '0')).join('')
+export function BacklineTear({ tear = 'head', colour, ground = 'olive', below = '#EAECD7', height = 88, shadow = true, flip = false, id = 'bl-tear', style, ...rest }) {
   const edge = BACKLINE_TEARS[tear] ?? BACKLINE_TEARS.head
   const body = edge + 'L1440 0L0 0Z'
-  const fringe = tone === 'paper' ? { c: '#FFFFF5', o: 0.8 } : { c: '#FAFAEE', o: 0.27 }
+  const fringe = TEAR_FRINGE[ground]
   return (
     <svg
       viewBox="0 0 1440 88" preserveAspectRatio="none" aria-hidden="true"
@@ -155,7 +164,7 @@ export function BacklineTear({ tear = 'head', colour, tone = 'olive', ground = '
       )}
       <path d={body} fill={colour} />
       <clipPath id={id + '-c'}><path d={body} /></clipPath>
-      <path d={edge} fill="none" stroke={fringe.c} strokeOpacity={fringe.o} strokeWidth={TEAR_FRINGE_W[ground]} strokeLinejoin="round" clipPath={`url(#${id}-c)`} />
+      <path d={edge} fill="none" stroke={mixHex(fringe.c, below, TEAR_FIBRE_ALPHA)} strokeWidth={fringe.w} strokeLinejoin="round" clipPath={`url(#${id}-c)`} />
     </svg>
   )
 }
