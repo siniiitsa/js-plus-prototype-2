@@ -7044,16 +7044,19 @@ export function inlineSlots(sec, themeName, artistName, all = false) {
       for (const col of cols) {
         const raw = String(row[col] ?? '')
         const pair = LINE_PAIRS[k]
+        // The pair's one line, `Manchester · 22:00`, where both its cells are filled. A slot
+        // carries it even where INLINE_LINES names the column's forms (layout 3's city).
+        const pairLine = pair?.includes(col) && pair.every((p) => String(row[p] ?? '').trim())
+          ? pair.map((p) => String(row[p]).trim()).join(' · ') : undefined
         if (ROW_LISTS[col]) listItems(raw, ROW_LISTS[col]).forEach((text, item) => add({ f, k, row: r, col, item, text }))
         else if (k === 'tiers' && col === 'price') {
           // A price is drawn as three nodes, the lead (£), the numeral and the tail.
           const pp = priceParts(raw)
           for (const sub of ['lead', 'amount', 'tail']) add({ f, k, row: r, col, sub, text: pp[sub] })
-        } else if (pair?.includes(col) && pair.every((p) => String(row[p] ?? '').trim())
-          && !inlineRule(INLINE_LINES, themeName, design, `${sec.cat}.${k}.${col}`)) {
-          // The page prints the pair as one line, `Manchester · 22:00`.
-          add({ f, k, row: r, col, text: raw, line: pair.map((p) => String(row[p]).trim()).join(' · ') })
-        } else add({ f, k, row: r, col, text: raw, cells: row })
+        } else if (pairLine && !inlineRule(INLINE_LINES, themeName, design, `${sec.cat}.${k}.${col}`)) {
+          // The page prints the pair as that one line.
+          add({ f, k, row: r, col, text: raw, line: pairLine, pairLine })
+        } else add({ f, k, row: r, col, text: raw, cells: row, pairLine })
       }
     })
   }
@@ -7596,6 +7599,17 @@ function inlineFieldAt(sec, wrap, target, pt, themeName, artistName) {
           // four rows in Manchester. The canvas is never live, so the card shows the first
           // row and the nth node is the nth of the rows that print the line (JP-158).
           mine = same[n]
+        } else if (n >= 0 && peers.length < same.length && slot.pairLine && squash(slot.pairLine) === sq) {
+          // The same, where the rows that open the column print different pair lines: a row
+          // past the pager repeats a drawn row's `Manchester · 22:00` (JP-173). Where the
+          // pair lines drawn read as the head of the column, the nth of them is the nth
+          // row's. The pair line alone: layout 2's list prints `city · month · time` from
+          // the second row (the first is its card's), so a head pairing there could be off
+          // by one.
+          const col = slots.filter((x) => x.group === slot.group && x.pairLine)
+          const prints = (e, x) => squash(e.textContent) === squash(x.pairLine)
+          const drawn = minimalPeers(root, (e) => col.some((x) => prints(e, x)))
+          mine = prefixSlot(col, drawn, a, prints)
         } else if (lined && same.length === 1 && peers.length > 1) {
           // One slot, a line it is drawn on twice: Retro's byline and its pill both print a
           // lone `Hannah L.` once the role is emptied. Whichever node it is, it is that slot's.

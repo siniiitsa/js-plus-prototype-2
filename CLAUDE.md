@@ -7,7 +7,7 @@ repeat it. What follows is only what a fresh session tends to get wrong.
 
 All source lives in **`source/`**. Two files at the repo root are *not* source:
 
-- **`index.html`** (~16.2 MB — most of it the inlined photography of all nine templates; 16,244,444 bytes after JP-171, 32 more than the 16,244,412 Backline's tear and grain fixes left, itself 756 more than the 16,243,656 its pass left, which was +0.94 MB on the 15.31 MB the Headliner pass left, itself +0.72 MB on the 14.59 MB before it, which was +1.56 MB after the Paperback pass, on the 13.03 MB the Lattice pass left, +1.10 MB) is the generated
+- **`index.html`** (~16.2 MB — most of it the inlined photography of all nine templates; 16,244,684 bytes after JP-173, 240 more than the 16,244,444 JP-171 left, itself 32 more than the 16,244,412 Backline's tear and grain fixes left, itself 756 more than the 16,243,656 its pass left, which was +0.94 MB on the 15.31 MB the Headliner pass left, itself +0.72 MB on the 14.59 MB before it, which was +1.56 MB after the Paperback pass, on the 13.03 MB the Lattice pass left, +1.10 MB) is the generated
   single-file build, committed so the demo is
   double-clickable. Never hand-edit it.
 - **`mock-template.html`** (~12 MB, untracked) is a reference artefact.
@@ -263,7 +263,7 @@ reversing 2026-10-20's "an already-selected section": the `text` cursor shows on
   **Where the words are not enough, `INLINE_LINES` names the forms the copy is printed in** (`'● {}'`, `'{} ↓'`, a gig's
   `'{city} · {month} · {time}'`; scoped like `INLINE_PART`, built in `plans/retro/inline-layout-2.md`): a node that prints
   exactly one is the slot's, and exact copy standing in several fields is settled by claims (a slot whose line is drawn
-  is spoken for), then the copy as typed, then the heading on the largest type. A line drawn **fewer times than rows print it** is the column head's (the map's layout-3 card prints the first row's bare city, JP-158), and a line **one slot prints** is that slot's however many nodes draw it (an emptied role leaves Retro's byline and its pill both `Hannah L.`, JP-157). **Where the canvas draws only a head of a repeater, `INLINE_HEAD` ledgers the rows it does not draw**: repertoire layout 3
+  is spoken for), then the copy as typed, then the heading on the largest type. A line drawn **fewer times than rows print it** is the column head's (the map's layout-3 card prints the first row's bare city, JP-158); where the head's rows print different lines and a later page repeats one, the **pair lines** drawn (`City · Time`, `Mood · Length`) are paired with the column's head instead (`pairLine`, JP-173: a list long enough to page, which `inline-probe` never sets), and a line **one slot prints** is that slot's however many nodes draw it (an emptied role leaves Retro's byline and its pill both `Hannah L.`, JP-157). **Where the canvas draws only a head of a repeater, `INLINE_HEAD` ledgers the rows it does not draw**: repertoire layout 3
   stands each song in a card per tag, four rows a card and three cards a page, so a song is drawn twice or not at all; `drawnRows()` works out the drawn
   rows from the same tags and `inlineSlots` puts the others in the ledger (`off`, *live-only copy*), which also keeps the exact-copy pairing honest
   (plans/retro/inline-layout-3.md). The box is re-placed on the canvas's

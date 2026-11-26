@@ -220,3 +220,7 @@ count (`g.title`, which follows a chip and the search) are `Repertoire`'s, hande
 - **Proof.** `inline-probe --theme Backline --layout 1 --cat repertoire --width 1440,768 --check`: PASS (25 slots hit, 0 WRONG / NOT-RESTORED / MISSING / UNREACHED / UNLEDGERED; **one reported dead click, the heading's `12`**, which is the seeded page's twelfth row number: the heading `12 songs.` begins with the same two characters, so the probe pairs a node that prints a hit slot's words with the slot that does not own it. With any other count it does not exist; the click opens the row-number node's nothing, as the frame's row number is markup). `photo-probe`: not run (no photo slot). `focus-probe --prime --check`: 43 controls, 0 failing, both widths.
   Live (`&live=1`, 240 songs, desktop and mobile): page 3 starts at 25, a chip filters (Pubs: 100, nine pages) and the count follows, a search narrows (`queen`: 20, two pages), an unmatched one draws *No songs match that.*, no console error.
 
+
+## Inline editing — a repeated set line (JP-173, 2026-11-26)
+
+Layout 3's `mood · length` line was dead on the canvas when a set past the third card repeated a drawn set's line. The fix is the events map's, shared through `LINE_PAIRS` and `pairLine` ([map.md](./map.md), *a pair line repeated past the pager*).
