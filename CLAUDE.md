@@ -7,7 +7,7 @@ repeat it. What follows is only what a fresh session tends to get wrong.
 
 All source lives in **`source/`**. Two files at the repo root are *not* source:
 
-- **`index.html`** (~16.2 MB — most of it the inlined photography of all nine templates; 16,244,412 bytes after Backline's tear and grain fixes, 756 more than the 16,243,656 its pass left, which was +0.94 MB on the 15.31 MB the Headliner pass left, itself +0.72 MB on the 14.59 MB before it, which was +1.56 MB after the Paperback pass, on the 13.03 MB the Lattice pass left, +1.10 MB) is the generated
+- **`index.html`** (~16.2 MB — most of it the inlined photography of all nine templates; 16,244,444 bytes after JP-171, 32 more than the 16,244,412 Backline's tear and grain fixes left, itself 756 more than the 16,243,656 its pass left, which was +0.94 MB on the 15.31 MB the Headliner pass left, itself +0.72 MB on the 14.59 MB before it, which was +1.56 MB after the Paperback pass, on the 13.03 MB the Lattice pass left, +1.10 MB) is the generated
   single-file build, committed so the demo is
   double-clickable. Never hand-edit it.
 - **`mock-template.html`** (~12 MB, untracked) is a reference artefact.
@@ -631,7 +631,7 @@ reversing 2026-10-20's "an already-selected section": the `text` cursor shows on
   template's one split button is `HeadlinerPill` (`bg` / `ink` / `as` / `tagProps` / `style`), and `headlinerSquare` /
   `headlinerLineArrow` are the shared 46 square arrow button. **The hero is 900 tall at 768 and 390** (`vm.heroH`; desktop keeps its
   aspect, 738 on the canvas) with a photograph under two clipped wedge panels and a **three-colour name that is three stacked
-  clipped copies** (the real `<h1>` and two `aria-hidden` divs, none `pointer-events: none`, so a click reaches the title slot);
+  clipped copies** (two at 390, which has no orange panel; the real `<h1>` and the `aria-hidden` divs, none `pointer-events: none`, so a click reaches the title slot);
   the numeral's text is `badgeText`, **defaulting to the initials** (`initialsOf`, cap 3), and `badgeOptsFor` offers Visible /
   Hidden only. `TemplatePreview` passes `fit` for Headliner alone (user call, 2026-11-23) because its hero outgrows the picker's card.
   **The standing removals hold** (session 0, call 1: the hero's tagline, the footer's newsletter, the kicker / location lines and

@@ -2358,7 +2358,8 @@ function PaperbackHero({ s, menu }) {
 // them and an orange field of wavy lines on the right (none at 390: the frame hides it). The name is one line of Anton
 // at 267.84 / 156 / 58 frame px painted in THREE colours across the edges, which the frame does with three masked copies;
 // so does this, three copies of the one h1 stacked in a grid cell and each `clip-path`-ed to its zone (orange on the maroon,
-// cream over the photograph, black over the orange), pure CSS, no hook, the polygon's corners written against the name's own
+// cream over the photograph, black over the orange; TWO at 390, which has no orange: no black copy, and the cream runs on to
+// the right edge, JP-171), pure CSS, no hook, the polygon's corners written against the name's own
 // box (`calc(100% - 764)` is the stage's top, `calc(100% + 56)` its foot, whatever the name's height) so a name that wraps or
 // shrinks keeps its zones. The ringed numeral and the block arrow stand top right; an avatar and the six tag chips sit
 // above the name. The bar is the hamburger and Book Now (the header-nav rules: the frames' wordmark, logo, inline links and
@@ -2438,7 +2439,8 @@ function HeadlinerHero({ s, menu }) {
   const FAR = `calc(150cqw)`
   const nameZone = {
     left: poly([`calc(-50cqw)`, Y0], [X(l0), Y0], [X(l1), Y1], [`calc(-50cqw)`, Y1]),
-    centre: poly([X(l0), Y0], [X(r0), Y0], [X(r1), Y1], [X(l1), Y1]),
+    // the black ink is the orange wedge's: where there is none (390) the cream runs on over the photograph (JP-171)
+    centre: poly([X(l0), Y0], [P.orange ? X(r0) : FAR, Y0], [P.orange ? X(r1) : FAR, Y1], [X(l1), Y1]),
     right: poly([X(r0), Y0], [FAR, Y0], [FAR, Y1], [X(r1), Y1]),
   }
   const nameStyle = {
@@ -2530,7 +2532,7 @@ function HeadlinerHero({ s, menu }) {
             <div style={{ display: 'grid' }}>
               <h1 style={{ ...nameStyle, color: orange, clipPath: nameZone.left }}>{s.heroTitle}</h1>
               <div aria-hidden style={{ ...nameStyle, color: cream, clipPath: nameZone.centre }}>{s.heroTitle}</div>
-              <div aria-hidden style={{ ...nameStyle, color: black, clipPath: nameZone.right }}>{s.heroTitle}</div>
+              {P.orange && <div aria-hidden style={{ ...nameStyle, color: black, clipPath: nameZone.right }}>{s.heroTitle}</div>}
             </div>
           </div>
         </div>
