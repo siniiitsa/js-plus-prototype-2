@@ -15239,7 +15239,10 @@ function Pricing({ s }) {
 // hardcode. Lives here rather than in data.js because the page count depends on
 // the search and chip state, which only this file holds. Returns the labels and
 // the index of the active one *within them*, which is what Pager highlights.
-function pageWindow(n, active, narrow, keepN) {
+// `hold` (layout 1's repertoire alone) keeps the row as long as page 1's on every page, so its arrows stay put (JP-172's rest): with a gap
+// on both sides it drops the page before the current one. A row of three numbers cannot: 1, the page, n and two gaps are five labels to page
+// 1's four, so those rows hold their arrows by geometry (`Pager`'s `pin`, Paperback's shrinking pills).
+function pageWindow(n, active, narrow, keepN, hold) {
   if (n <= 1) return { labels: [], at: 0 }
   const keep = keepN ?? (narrow ? 3 : 5)   // numbered buttons at most (`keepN`: Lattice's frames draw four, 1 2 3 … 20)
   const page = active + 1              // the row is 1-based
@@ -15250,13 +15253,34 @@ function pageWindow(n, active, narrow, keepN) {
     if (page - d >= 1) nums.add(page - d)
     if (nums.size < keep && page + d <= n) nums.add(page + d)
   }
-  const sorted = [...nums].sort((a, b) => a - b)
-  const labels = []
-  sorted.forEach((v, i) => {
-    if (i && v !== sorted[i - 1] + 1) labels.push('…')
-    labels.push(String(v))
-  })
+  const row = () => {
+    const sorted = [...nums].sort((a, b) => a - b)
+    const out = []
+    sorted.forEach((v, i) => {
+      if (i && v !== sorted[i - 1] + 1) out.push('…')
+      out.push(String(v))
+    })
+    return out
+  }
+  let labels = row()
+  if (hold && keep >= 4 && labels.length > keep + 1) {
+    nums.delete(page - 1)
+    labels = row()
+  }
   return { labels, at: labels.indexOf(String(page)) }
+}
+
+// The published pager holds the tallest page (JP-172, the testimonials' grid cell): every page of a list lies in one cell, the others hidden (not drawn,
+// not read aloud), so a short page does not draw the pager up from under the pointer. `draw(p)` is page p's list. Only a published list past one page
+// calls it. Both `minmax(0, 1fr)` and the cells' `minWidth: 0` are load-bearing: without them a nowrap line on a hidden page widens the visible one.
+function heldPages(count, current, draw) {
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', alignItems: 'start' }}>
+      {Array.from({ length: count }, (_, p) => (
+        <div key={p} aria-hidden={p !== current || undefined} style={{ gridArea: '1 / 1', minWidth: 0, visibility: p === current ? undefined : 'hidden' }}>{draw(p)}</div>
+      ))}
+    </div>
+  )
 }
 
 // `frame.active` is an index into the *rendered* button row, which stops
@@ -15278,6 +15302,14 @@ function LimeArrow({ back, z, stroke = false }) {
         : 'M28.1612 22.5455L32.6157 27L28.1612 31.4546L27.3956 30.6989L30.5475 27.5469L22.3842 27.5469L22.3842 26.4532L30.5475 26.4532L27.3956 23.3111L28.1612 22.5455Z'} />
     </svg>
   )
+}
+
+// `frame.pin` is the button count of a `grow` row's first page: the two arrows keep the width an equal split gives them there, and the pages
+// share what is left. So page 1 is the unpinned row, and a longer one narrows its numbers without moving an arrow.
+function pinned(frame, gap) {
+  return frame.pin
+    ? { flex: 'none', width: `calc((100% - ${frame.pin - 1} * ${gap}) / ${frame.pin})` }
+    : null
 }
 
 function Pager({ s, colour, fill, frame = {} }) {
@@ -15350,6 +15382,7 @@ function Pager({ s, colour, fill, frame = {} }) {
           : { fontFamily: s.label, fontSize: s.labelSm, lineHeight: 1.1, letterSpacing: s.dls, whiteSpace: 'nowrap' }),
         // The 390 master spreads every button to one width across the measure.
         ...(frame.grow ? { flex: '1 1 0', minWidth: 0 } : null),
+        ...(end ? pinned(frame, u(8)) : null),
       }}>{child}</span>
     )
     return (
@@ -15389,6 +15422,7 @@ function Pager({ s, colour, fill, frame = {} }) {
       // `grow` spreads the row across the whole measure, so it comes after the
       // box metrics it overrides.
       ...(frame.grow ? { flex: 1, minWidth: 0 } : null),
+      ...(ends ? pinned(frame, '8px') : null),
     }}>{child}</span>
   )
   return (
@@ -15419,7 +15453,7 @@ function Pager({ s, colour, fill, frame = {} }) {
 // standing removals hold (call 1). Sizes are the frame's raw ones, not the ramp's (which rounds
 // 12 / 11 / 20 x 0.82 to 10 / 9 / 13). The warm glow is the root's own background, not a node.
 function LatticeRepertoire({ s, g }) {
-  const { title, q, onQuery, active, onChip, columns, shown, labels, at, onPage, onStep, noSongs } = g
+  const { title, q, onQuery, active, onChip, columns, shown, labels, at, onPage, onStep, noSongs, pg, sheets } = g
   const tab = isTablet(s)
   const k = s.narrow ? 1 : 0.82
   const u = (v) => `${Math.round(v * k * 100) / 100}px`
@@ -15507,16 +15541,17 @@ function LatticeRepertoire({ s, g }) {
     </div>
   )
 
-  const list = shown.length === 0 ? (
-    <span style={mono(u(12), { opacity: 0.6 })}>{noSongs ? 'No songs yet.' : 'No songs match that.'}</span>
-  ) : (
+  const sheet = (cols) => (
     <div style={{
       display: 'grid', alignItems: 'start', columnGap: u(24),
-      gridTemplateColumns: columns.length > 1 ? 'minmax(0, 1fr) minmax(0, 1fr)' : 'minmax(0, 1fr)',
+      gridTemplateColumns: cols.length > 1 ? 'minmax(0, 1fr) minmax(0, 1fr)' : 'minmax(0, 1fr)',
     }}>
-      {columns.map((cs, ci) => <div key={ci} style={col(u(s.mob ? 28 : 16), { minWidth: 0 })}>{cs.map(song)}</div>)}
+      {cols.map((cs, ci) => <div key={ci} style={col(u(s.mob ? 28 : 16), { minWidth: 0 })}>{cs.map(song)}</div>)}
     </div>
   )
+  const list = shown.length === 0 ? (
+    <span style={mono(u(12), { opacity: 0.6 })}>{noSongs ? 'No songs yet.' : 'No songs match that.'}</span>
+  ) : sheets ? heldPages(sheets.length, pg, (p) => sheet(sheets[p])) : sheet(columns)
 
   // Square 3px boxes: the arrows 44 (38 at 390) and the pages 46, six apart, the current page
   // filled ink. The arrows are Arial 13.33 in a span of their own, the numerals zero-padded.
@@ -15578,7 +15613,7 @@ const PAPER_REP = {
   },
 }
 function PaperbackRepertoire({ s, g }) {
-  const { title, q, onQuery, active, onChip, columns, shown, labels, at, onPage, onStep, noSongs } = g
+  const { title, q, onQuery, active, onChip, columns, shown, labels, at, onPage, onStep, noSongs, pg, sheets, first } = g
   const P = PAPER_REP[s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop']
   const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
   const ink = s.tx
@@ -15680,30 +15715,43 @@ function PaperbackRepertoire({ s, g }) {
       </div>
     )
   }
-  const flat = columns.flat()
+  const sheet = (cols) => (
+    <div style={{
+      display: 'grid', alignItems: 'start', columnGap: u(20), rowGap: u(P.rowGap), gridAutoFlow: 'column',
+      gridTemplateColumns: cols.length > 1 ? 'minmax(0, 1fr) minmax(0, 1fr)' : 'minmax(0, 1fr)',
+      gridTemplateRows: `repeat(${cols[0].length}, auto)`,
+    }}>{cols.flat().map(song)}</div>
+  )
   const list = shown.length === 0 ? (
     <div style={{ ...label(u(16), { color: s.text3 }), background: PAPER_WHITE, borderRadius: s.radiusChip, padding: `${u(20)} ${u(P.numL)}` }}>
       {noSongs ? 'No songs yet.' : 'No songs match that.'}
     </div>
-  ) : (
-    <div style={{
-      display: 'grid', alignItems: 'start', columnGap: u(20), rowGap: u(P.rowGap), gridAutoFlow: 'column',
-      gridTemplateColumns: columns.length > 1 ? 'minmax(0, 1fr) minmax(0, 1fr)' : 'minmax(0, 1fr)',
-      gridTemplateRows: `repeat(${columns[0].length}, auto)`,
-    }}>{flat.map(song)}</div>
-  )
+  ) : sheets ? heldPages(sheets.length, pg, (p) => sheet(sheets[p])) : sheet(columns)
 
-  const btn = (key, child, { on, round, onClick }) => (
+  // Published, the arrows hold still. At 390 the number pills give up width when a middle page adds a fifth (`1 … 3 … 5` is 344 in the card's 294 at
+  // 44 each, and the next arrow was clipped). Wider, a pill sizes to its glyph, so each takes its width from the label page 1 draws in its place
+  // (`seat`, unseen) and draws its own over it.
+  const btn = (key, child, { on, round, onClick, seat }) => (
     <span key={key} onClick={onClick} style={{
       ...label(u(15)), boxSizing: 'border-box', flex: 'none', height: u(44), display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
       ...(round || s.mob ? { width: u(44) } : { padding: `0 ${u(16)}` }), borderRadius: round ? '50%' : s.radiusChip,
+      ...(onStep && s.mob && !round ? { flex: '0 1 auto', minWidth: 0 } : null), ...(seat ? { position: 'relative' } : null),
       background: on ? ink : PAPER_WHITE, color: on ? PAPER_WHITE : ink, cursor: onClick ? 'pointer' : undefined, whiteSpace: 'nowrap',
-    }}>{child}</span>
+    }}>
+      {seat ? (
+        <>
+          <span aria-hidden style={{ visibility: 'hidden' }}>{seat}</span>
+          <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{child}</span>
+        </>
+      ) : child}
+    </span>
   )
   const pager = labels.length > 0 ? (
     <div style={row(u(6), { justifyContent: s.mob ? 'space-between' : 'flex-start' })}>
       {btn('prev', paperArrow(u, true, ink), { round: true, onClick: onStep && (() => onStep(-1)) })}
-      {labels.map((p, i) => btn(`p${i}`, p, { on: i === at, onClick: onPage && p !== '…' ? () => onPage(p) : undefined }))}
+      {labels.map((p, i) => btn(`p${i}`, p, {
+        on: i === at, onClick: onPage && p !== '…' ? () => onPage(p) : undefined, seat: onStep && !s.mob ? first[i] : undefined,
+      }))}
       {btn('next', paperArrow(u, false, ink), { round: true, onClick: onStep && (() => onStep(1)) })}
     </div>
   ) : null
@@ -15812,10 +15860,20 @@ function Repertoire({ s }) {
     // right. The number is the song's place in the artist's list — hence the
     // page offset — not its place on the screen. Both narrow frames run the
     // whole six-song page down one column.
-    const half = Math.ceil(shown.length / 2)
-    const columns = (s.narrow && !((s.lattice || s.paperback || s.headliner || s.backline) && !s.mob) ? [shown] : [shown.slice(0, half), shown.slice(half)])
-      .map((cs, ci) => cs.map((t, i) => ({ ...t, n: pg * perPage + ci * half + i + 1 })))
-    const { labels, at } = pageWindow(pages, pg, s.mob, s.lattice || s.headliner || s.backline || (s.paperback && !s.mob) ? 4 : undefined)
+    const columnsOf = (p) => {
+      const list = filtered.slice(p * perPage, (p + 1) * perPage)
+      const split = Math.ceil(list.length / 2)
+      return (s.narrow && !((s.lattice || s.paperback || s.headliner || s.backline) && !s.mob) ? [list] : [list.slice(0, split), list.slice(split)])
+        .map((cs, ci) => cs.map((t, i) => ({ ...t, n: p * perPage + ci * split + i + 1 })))
+    }
+    const columns = columnsOf(pg)
+    // Every page's columns of the filtered list, which the published pager is held under (`heldPages`).
+    const sheets = s.live && pages > 1 ? Array.from({ length: pages }, (_, p) => columnsOf(p)) : null
+    const keep = s.lattice || s.headliner || s.backline || (s.paperback && !s.mob) ? 4 : undefined
+    const { labels, at } = pageWindow(pages, pg, s.mob, keep, true)
+    // Page 1's labels, which is what the canvas draws: the published pager is held to its geometry.
+    const first = pageWindow(pages, 0, s.mob, keep, true).labels
+    const pin = s.live && s.mob ? first.length + 2 : undefined
 
     // Lime — the same component in Lime's mode (964:58592 at 1440, 986:39881 at
     // 768, 986:39893 at 390), placed after the seam as the gallery's block is:
@@ -15879,6 +15937,7 @@ function Repertoire({ s }) {
       if (s.lattice || s.paperback || s.headliner || s.backline) {
         const g = {
           title, q, active, columns, shown, labels, at,
+          pg, sheets, first,
           noSongs: s.songs.length === 0,
           onQuery: (v) => { setQ(v); setPage(0) },
           onChip: (i) => { setChip(i); setPage(0) },
@@ -15940,6 +15999,69 @@ function Repertoire({ s }) {
             <GrungeStar s={s} fill={SIENNA_MEDIA} style={{ right: 0, top: u(0.13), width: u(80.67), height: u(81.42) }} />
           )}</h2>
       )
+      // One page's columns: the visible page, and each page the published pager is held under.
+      const songGrid = (cols) => (
+        <div style={{
+          display: 'grid', columnGap: u(pop ? 20 : 70),
+          gridTemplateColumns: s.narrow ? 'minmax(0, 1fr)' : 'minmax(0, 1fr) minmax(0, 1fr)',
+        }}>
+          {cols.map((colSongs, ci) => (
+            <div key={ci} style={col(pop ? u(20) : '0px', { minWidth: 0 })}>
+              {colSongs.map((t) => (
+                // 27 above and below, the rule stroked inside the row's
+                // height as Figma strokes it, so the foot gives back its 1px.
+                // Editorial's rule is dashed, an overlay taking no height,
+                // so its foot keeps the whole 27. Pop's row is a pill
+                // ringed all round, inside, so it keeps all four pads.
+                <div key={t.n} style={row('0px', pop
+                  ? { padding: `${u(27)} ${u(30)}`, borderRadius: '999px', boxShadow: `inset 0 0 0 1px ${s.stroke1}` }
+                  : ed
+                  ? { position: 'relative', padding: `${u(27)} 0` }
+                  : { padding: `${u(27)} 0 calc(${u(27)} - 1px)`, borderBottom: `1px solid ${s.stroke1}` })}>
+                  {ed && <DashRule dash={9 * z} colour={s.stroke1} />}
+                  {/* Label/XS in Chakra Petch, pinned at the frame's 24 so
+                      "10" does not shunt its own title. */}
+                  <span style={{
+                    width: u(24), flex: 'none', whiteSpace: 'nowrap',
+                    fontFamily: s.ui, fontSize: pop ? u(16) : s.labelXs, lineHeight: pop ? 'normal' : 1.26,
+                    letterSpacing: s.dls, color: pop ? POP_REP.song : s.ac,
+                  }}>{t.n}</span>
+                  {/* An artist too long to stand beside its title wraps under
+                      it (JP-136) instead of crushing the title to "Don'…":
+                      each keeps its own ellipsis at the row's width. Pop's
+                      pill wraps at 390 too (the retest: both columns must
+                      read, and the pill's 999px radius stays round on two
+                      lines); at 768 and 1440 the frame's single line fits,
+                      so the title keeps its width and the artist gives way. */}
+                  <span style={row(u(pop ? 4 : 12), {
+                    flex: 1, minWidth: 0, alignItems: 'baseline', justifyContent: 'space-between',
+                    ...(pop && !popWrap ? null : { flexWrap: 'wrap', rowGap: u(2) }),
+                  })}>
+                    {/* Label/LG over Label/SM. */}
+                    <span style={bebas(G.song, {
+                      color: pop ? POP_REP.song : s.tx, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis',
+                      maxWidth: '100%',
+                      ...(pop && !popWrap ? { flex: 'none' } : null),
+                    })}>{t.title}</span>
+                    {/* Pop's pill clips its row (the frame's own
+                        `clipsContent`); at 768 and 1440 the title holds its
+                        width (JP-136) and a long artist gives way instead,
+                        to 60% of the row at most and its own ellipsis —
+                        Editorial's layout-4 cap. At 390 it wraps like the
+                        other templates. */}
+                    <span style={bebas(pop ? u(16) : s.labelSm, {
+                      color: pop ? s.tx : s.ac, flex: 'none',
+                      overflow: 'hidden', textOverflow: 'ellipsis',
+                      ...(pop && !popWrap ? { maxWidth: '60%', flex: '0 1 auto', minWidth: 0 } : { maxWidth: '100%' }),
+                    })}>· {t.artist}</span>
+                  </span>
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      )
+
       return (
         <div style={col(u(32))}>
           {/* Pop's root clips (the frame's own `clipsContent`), so its 10px
@@ -16117,74 +16239,14 @@ function Repertoire({ s }) {
             <span style={body(s.bodyMd, 1.5, pop ? { color: s.text3, opacity: 0.5 } : { color: s.muted })}>
               {s.songs.length === 0 ? 'No songs yet.' : 'No songs match that.'}
             </span>
-          ) : (
-            <div style={{
-              display: 'grid', columnGap: u(pop ? 20 : 70),
-              gridTemplateColumns: s.narrow ? 'minmax(0, 1fr)' : 'minmax(0, 1fr) minmax(0, 1fr)',
-            }}>
-              {columns.map((colSongs, ci) => (
-                <div key={ci} style={col(pop ? u(20) : '0px', { minWidth: 0 })}>
-                  {colSongs.map((t) => (
-                    // 27 above and below, the rule stroked inside the row's
-                    // height as Figma strokes it, so the foot gives back its 1px.
-                    // Editorial's rule is dashed, an overlay taking no height,
-                    // so its foot keeps the whole 27. Pop's row is a pill
-                    // ringed all round, inside, so it keeps all four pads.
-                    <div key={t.n} style={row('0px', pop
-                      ? { padding: `${u(27)} ${u(30)}`, borderRadius: '999px', boxShadow: `inset 0 0 0 1px ${s.stroke1}` }
-                      : ed
-                      ? { position: 'relative', padding: `${u(27)} 0` }
-                      : { padding: `${u(27)} 0 calc(${u(27)} - 1px)`, borderBottom: `1px solid ${s.stroke1}` })}>
-                      {ed && <DashRule dash={9 * z} colour={s.stroke1} />}
-                      {/* Label/XS in Chakra Petch, pinned at the frame's 24 so
-                          "10" does not shunt its own title. */}
-                      <span style={{
-                        width: u(24), flex: 'none', whiteSpace: 'nowrap',
-                        fontFamily: s.ui, fontSize: pop ? u(16) : s.labelXs, lineHeight: pop ? 'normal' : 1.26,
-                        letterSpacing: s.dls, color: pop ? POP_REP.song : s.ac,
-                      }}>{t.n}</span>
-                      {/* An artist too long to stand beside its title wraps under
-                          it (JP-136) instead of crushing the title to "Don'…":
-                          each keeps its own ellipsis at the row's width. Pop's
-                          pill wraps at 390 too (the retest: both columns must
-                          read, and the pill's 999px radius stays round on two
-                          lines); at 768 and 1440 the frame's single line fits,
-                          so the title keeps its width and the artist gives way. */}
-                      <span style={row(u(pop ? 4 : 12), {
-                        flex: 1, minWidth: 0, alignItems: 'baseline', justifyContent: 'space-between',
-                        ...(pop && !popWrap ? null : { flexWrap: 'wrap', rowGap: u(2) }),
-                      })}>
-                        {/* Label/LG over Label/SM. */}
-                        <span style={bebas(G.song, {
-                          color: pop ? POP_REP.song : s.tx, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis',
-                          maxWidth: '100%',
-                          ...(pop && !popWrap ? { flex: 'none' } : null),
-                        })}>{t.title}</span>
-                        {/* Pop's pill clips its row (the frame's own
-                            `clipsContent`); at 768 and 1440 the title holds its
-                            width (JP-136) and a long artist gives way instead,
-                            to 60% of the row at most and its own ellipsis —
-                            Editorial's layout-4 cap. At 390 it wraps like the
-                            other templates. */}
-                        <span style={bebas(pop ? u(16) : s.labelSm, {
-                          color: pop ? s.tx : s.ac, flex: 'none',
-                          overflow: 'hidden', textOverflow: 'ellipsis',
-                          ...(pop && !popWrap ? { maxWidth: '60%', flex: '0 1 auto', minWidth: 0 } : { maxWidth: '100%' }),
-                        })}>· {t.artist}</span>
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              ))}
-            </div>
-          )}
+          ) : sheets ? heldPages(sheets.length, pg, (p) => songGrid(sheets[p])) : songGrid(columns)}
 
           {/* Left on desktop, centred at 768, spread across the measure at 390;
               the frame's 8 above it is the row's own top inset. */}
           {labels.length > 0 && (
             <div style={{ paddingTop: u(8) }}>
               <Pager s={s} frame={{
-                justify: tab ? 'center' : undefined, grow: s.mob, pages: labels, active: at,
+                justify: tab ? 'center' : undefined, grow: s.mob, pin, pages: labels, active: at,
                 onPage: s.live ? (label) => setPage(Number(label) - 1) : undefined,
                 onStep: s.live
                   ? (dir) => setPage(Math.max(0, Math.min(pages - 1, pg + dir)))
@@ -16206,6 +16268,63 @@ function Repertoire({ s }) {
         </div>
       )
     }
+
+    // One page's columns: the visible page, and each page the published pager is held under.
+    const songGrid = (cols) => (
+      <div style={{
+        display: 'grid', gridTemplateColumns: s.narrow ? '1fr' : '1fr 1fr', gap: '26px',
+      }}>
+        {/* minWidth 0 on the track itself: a `1fr` column will not go below
+            its content's minimum, so a wide display face would otherwise push
+            the whole grid past the canvas. */}
+        {cols.map((colSongs, ci) => (
+          <div key={ci} style={col(s.narrow ? '10px' : '8px', { minWidth: 0 })}>
+            {colSongs.map((t) => (
+              <div key={t.n} style={{
+                position: 'relative', overflow: 'hidden',
+                border: `${s.retro ? (s.narrow ? '3px' : '2.5px') : s.bw} solid ${hue}`,
+                borderRadius: s.narrow ? '20px' : '16px',
+                // The frames' own padding less the border they draw inside:
+                // 27/20/35 on both narrow frames, the same × 0.82 on desktop,
+                // each edge short by the outline.
+                padding: s.narrow ? '24px 17px 32px' : '19px 14px 26px',
+                ...row('0'),
+              }}>
+                <span style={{
+                  fontFamily: s.display, fontSize: '11px', letterSpacing: s.dls,
+                  color: s.ac, width: s.narrow ? 24 : 20, flex: 'none',
+                }}>{t.n}</span>
+                <span style={row('12px', {
+                  flex: 1, minWidth: 0, alignItems: 'baseline', justifyContent: 'space-between',
+                  flexWrap: 'wrap', rowGap: '2px',
+                })}>
+                  {/* Literal, not `s.title`: the view-model's content `title`
+                      shadows the RAMP size of the same name, so that key does
+                      not carry a length here. The frames' size/title is 26px
+                      on mobile, 28 on tablet, 24 × 0.82 on desktop. */}
+                  {/* minWidth 0 as well as the ellipsis: without it the
+                      title's own min-content sets the grid track, and a wide
+                      display face pushes the whole column past the canvas. */}
+                  <span style={{
+                    fontFamily: s.display, fontSize: s.mob ? '26px' : tab ? '28px' : '20px',
+                    lineHeight: 1.1, letterSpacing: s.dls, color: hue, minWidth: 0, maxWidth: '100%',
+                    overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                  }}>{t.title}</span>
+                  {/* Wraps under the title when it cannot stand beside it (JP-136). */}
+                  <span style={labelStyle(s, s.narrow ? '15px' : s.eyebrow, {
+                    color: s.ac, flex: 'none', maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis',
+                  })}>· {t.artist}</span>
+                </span>
+                {/* Two rows of squares closing the card, over its bottom edge. */}
+                <Checkerboard s={s} cell={s.narrow ? 12 : 10} colour={hue} style={{
+                  position: 'absolute', left: 0, right: 0, bottom: 0, width: 'auto',
+                }} />
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+    )
 
     return (
       <div style={{ position: 'relative', ...col(s.narrow ? '32px' : '26px') }}>
@@ -16315,61 +16434,7 @@ function Repertoire({ s }) {
             fontFamily: s.body, fontSize: s.narrow ? '14px' : '13px',
             color: s.muted, padding: '4px 0',
           }}>{s.songs.length === 0 ? 'No songs yet.' : 'No songs match that.'}</span>
-        ) : (
-        <div style={{
-          display: 'grid', gridTemplateColumns: s.narrow ? '1fr' : '1fr 1fr', gap: '26px',
-        }}>
-          {/* minWidth 0 on the track itself: a `1fr` column will not go below
-              its content's minimum, so a wide display face would otherwise push
-              the whole grid past the canvas. */}
-          {columns.map((colSongs, ci) => (
-            <div key={ci} style={col(s.narrow ? '10px' : '8px', { minWidth: 0 })}>
-              {colSongs.map((t) => (
-                <div key={t.n} style={{
-                  position: 'relative', overflow: 'hidden',
-                  border: `${s.retro ? (s.narrow ? '3px' : '2.5px') : s.bw} solid ${hue}`,
-                  borderRadius: s.narrow ? '20px' : '16px',
-                  // The frames' own padding less the border they draw inside:
-                  // 27/20/35 on both narrow frames, the same × 0.82 on desktop,
-                  // each edge short by the outline.
-                  padding: s.narrow ? '24px 17px 32px' : '19px 14px 26px',
-                  ...row('0'),
-                }}>
-                  <span style={{
-                    fontFamily: s.display, fontSize: '11px', letterSpacing: s.dls,
-                    color: s.ac, width: s.narrow ? 24 : 20, flex: 'none',
-                  }}>{t.n}</span>
-                  <span style={row('12px', {
-                    flex: 1, minWidth: 0, alignItems: 'baseline', justifyContent: 'space-between',
-                    flexWrap: 'wrap', rowGap: '2px',
-                  })}>
-                    {/* Literal, not `s.title`: the view-model's content `title`
-                        shadows the RAMP size of the same name, so that key does
-                        not carry a length here. The frames' size/title is 26px
-                        on mobile, 28 on tablet, 24 × 0.82 on desktop. */}
-                    {/* minWidth 0 as well as the ellipsis: without it the
-                        title's own min-content sets the grid track, and a wide
-                        display face pushes the whole column past the canvas. */}
-                    <span style={{
-                      fontFamily: s.display, fontSize: s.mob ? '26px' : tab ? '28px' : '20px',
-                      lineHeight: 1.1, letterSpacing: s.dls, color: hue, minWidth: 0, maxWidth: '100%',
-                      overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                    }}>{t.title}</span>
-                    {/* Wraps under the title when it cannot stand beside it (JP-136). */}
-                    <span style={labelStyle(s, s.narrow ? '15px' : s.eyebrow, {
-                      color: s.ac, flex: 'none', maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis',
-                    })}>· {t.artist}</span>
-                  </span>
-                  {/* Two rows of squares closing the card, over its bottom edge. */}
-                  <Checkerboard s={s} cell={s.narrow ? 12 : 10} colour={hue} style={{
-                    position: 'absolute', left: 0, right: 0, bottom: 0, width: 'auto',
-                  }} />
-                </div>
-              ))}
-            </div>
-          ))}
-        </div>
-        )}
+        ) : sheets ? heldPages(sheets.length, pg, (p) => songGrid(sheets[p])) : songGrid(columns)}
 
         {/* Derived from the list, so it cannot claim pages that are not there —
             and gone entirely at one page. Mobile spreads its buttons across the
@@ -16383,7 +16448,7 @@ function Repertoire({ s }) {
             activeEdge: hue, activeFg: pageFg,
             font: labelStyle(s, s.narrow ? '12px' : '10px'),
             justify: tab ? 'center' : undefined,
-            grow: s.mob, pages: labels, active: at,
+            grow: s.mob, pin, pages: labels, active: at,
             // Static on the canvas, like the search field and the chips.
             onPage: s.live ? (label) => setPage(Number(label) - 1) : undefined,
             onStep: s.live
@@ -18664,7 +18729,7 @@ const HEADLINER_REP = {
   mobile: { fw: 390, top: 58, side: 24, seat: [141.016, 128.688], h2: 60, fitW: 173, rowT: 25, gap: 10, rowGap: 28, chipPad: 18 },
 }
 function HeadlinerRepertoire({ s, g }) {
-  const { title, q, onQuery, active, onChip, columns, shown, labels, at, onPage, onStep, noSongs } = g
+  const { title, q, onQuery, active, onChip, columns, shown, labels, at, onPage, onStep, noSongs, pg, sheets } = g
   const dev = s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop'
   const P = HEADLINER_REP[dev]
   const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
@@ -18749,18 +18814,18 @@ function HeadlinerRepertoire({ s, g }) {
       </span>
     </div>
   )
-  const flat = columns.flat()
+  const sheet = (cols) => (
+    <div style={{
+      display: 'grid', alignItems: 'start', gridAutoFlow: 'column', columnGap: u(P.colGap ?? 0), rowGap: u(P.rowGap),
+      gridTemplateColumns: cols.length > 1 ? 'minmax(0, 1fr) minmax(0, 1fr)' : 'minmax(0, 1fr)',
+      gridTemplateRows: `repeat(${cols[0].length}, auto)`, borderBottom: `1px solid ${HL_GAL_HAIR}`,
+    }}>{cols.flat().map(song)}</div>
+  )
   const list = shown.length === 0 ? (
     <div style={{ ...anton(u(16), { color: ink }), padding: `${u(24)} 0`, borderTop: `1px solid ${HL_GAL_HAIR}`, borderBottom: `1px solid ${HL_GAL_HAIR}` }}>
       {noSongs ? 'No songs yet.' : 'No songs match that.'}
     </div>
-  ) : (
-    <div style={{
-      display: 'grid', alignItems: 'start', gridAutoFlow: 'column', columnGap: u(P.colGap ?? 0), rowGap: u(P.rowGap),
-      gridTemplateColumns: columns.length > 1 ? 'minmax(0, 1fr) minmax(0, 1fr)' : 'minmax(0, 1fr)',
-      gridTemplateRows: `repeat(${columns[0].length}, auto)`, borderBottom: `1px solid ${HL_GAL_HAIR}`,
-    }}>{flat.map(song)}</div>
-  )
+  ) : sheets ? heldPages(sheets.length, pg, (p) => sheet(sheets[p])) : sheet(columns)
 
   // The frame's 16 x 14 line arrows (stroke 2.4), drawn in their own box; the numbers are Anton 15 in the same 44 squares, the filled one in sand.
   const square = (key, child, { on, onClick, stretch }) => (
@@ -19001,7 +19066,7 @@ const BACKLINE_REP = {
   mobile: { fw: 390, top: 67, minH: 1532.94, side: 24, inset: 22, foot: 78, colW: 298, colGap: 0, rowGap: 28, titleL: 35, rowT: 23, rowTs: 20, padT: 9.4, padB: 12.6, numDy: 3, gap: 24, h2: 50, lh: 0.9, hPad: 30.94, hDy: -2.5, fitW: 342, tapes: [83.94, 251.2] },
 }
 function BacklineRepertoire({ s, g }) {
-  const { title, q, onQuery, active, onChip, columns, shown, labels, at, onPage, onStep, noSongs } = g
+  const { title, q, onQuery, active, onChip, columns, shown, labels, at, onPage, onStep, noSongs, pg, sheets } = g
   const dev = s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop'
   const P = BACKLINE_REP[dev]
   const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
@@ -19107,19 +19172,31 @@ function BacklineRepertoire({ s, g }) {
       </div>
     )
   }
-  const flat = columns.flat()
+  // One page's two columns (one at 390). `below` is a page's own: the 390 back-shift counts from its first row.
+  const sheet = (cols) => {
+    below = 0
+    return (
+      <div style={{
+        display: 'grid', alignItems: 'start', gridAutoFlow: 'column', columnGap: u(P.colGap), rowGap: u(P.rowGap),
+        gridTemplateColumns: cols.length > 1 ? 'minmax(0, 1fr) minmax(0, 1fr)' : 'minmax(0, 1fr)',
+        gridTemplateRows: `repeat(${cols[0].length}, auto)`, borderBottom: `1px dashed ${BL_BIO_RULE}`,
+      }}>{cols.flat().map(song)}</div>
+    )
+  }
   const list = shown.length === 0 ? (
     <div style={{
       padding: `${u(24)} 0`, borderTop: `1px dashed ${BL_BIO_RULE}`, borderBottom: `1px dashed ${BL_BIO_RULE}`,
       color: paper.text1, fontFamily: s.display, fontWeight: 400, fontSize: u(22), lineHeight: 'normal', letterSpacing: '-0.045em',
     }}>{noSongs ? 'No songs yet.' : 'No songs match that.'}</div>
-  ) : (
-    <div style={{
-      display: 'grid', alignItems: 'start', gridAutoFlow: 'column', columnGap: u(P.colGap), rowGap: u(P.rowGap),
-      gridTemplateColumns: columns.length > 1 ? 'minmax(0, 1fr) minmax(0, 1fr)' : 'minmax(0, 1fr)',
-      gridTemplateRows: `repeat(${columns[0].length}, auto)`, borderBottom: `1px dashed ${BL_BIO_RULE}`,
-    }}>{flat.map(song)}</div>
-  )
+  ) : sheets ? (
+    // The published pager holds the tallest page (JP-172, the testimonials' grid cell): every page lies in one cell, the others hidden (not drawn, not read
+    // aloud), so a short last page does not shrink the card, which would re-centre the band and move the pager from under the pointer.
+    <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', alignItems: 'start' }}>
+      {sheets.map((cols, p) => (
+        <div key={p} aria-hidden={p !== pg || undefined} style={{ gridArea: '1 / 1', minWidth: 0, visibility: p === pg ? undefined : 'hidden' }}>{sheet(cols)}</div>
+      ))}
+    </div>
+  ) : sheet(columns)
 
   // The card: Scheme 1's paper (`BL_TICKET`, the frame's mottled raster's mean, the media ticket's) turned -0.5 degrees with the frames' two shadows, a half-strength
   // grain, and two tapes in the card's own coordinates (the frames' centres: 4 down, turned CSS -5 and +4).
@@ -22097,7 +22174,8 @@ function BacklineCalendar({ s, g }) {
   )
 
   // A day: a ruled cell (the frame's dashes, 2 on 1 off; an absent cell draws no rule) and a TT2020 number; the picked one turns olive inside the
-  // hand-drawn circle, which stands 14 left and 9 above its cell and 28 wider than it. A booked or past day is the family's: dimmed to .38, no strike, no handler.
+  // hand-drawn circle, which stands 14 left and 9 above its cell and 28 wider than it. A booked or past day has no strike and no handler (the family's), and is
+  // dimmed to .52, not the family's .38: 3:1 on the card's paper where .38 was 2.18:1 (user call, 2026-11-26).
   const day = (c, i) => {
     if (c.iso === undefined) return <span key={i} />
     const on = c.iso === cur
@@ -22107,7 +22185,7 @@ function BacklineCalendar({ s, g }) {
         position: 'relative', display: 'block', boxSizing: 'border-box', height: u(P.row), paddingTop: u(P.dayTop), textAlign: 'center', cursor: onClick ? 'pointer' : undefined,
         backgroundImage: `repeating-linear-gradient(90deg, ${BL_CAL_RULE} 0 ${u(2)}, transparent ${u(2)} ${u(3)})`, backgroundSize: '100% 1px', backgroundRepeat: 'no-repeat',
       }}>
-        <span style={{ ...display(u(P.day), { display: 'block', lineHeight: 0.9, color: on ? olive : ink }), opacity: c.booked || c.dead ? 0.38 : undefined }}>{c.d}</span>
+        <span style={{ ...display(u(P.day), { display: 'block', lineHeight: 0.9, color: on ? olive : ink }), opacity: c.booked || c.dead ? 0.52 : undefined }}>{c.d}</span>
         {on && (
           <svg aria-hidden viewBox="0 0 112 71" preserveAspectRatio="none" fill="none" style={{ position: 'absolute', left: u(-14), top: u(-9), width: `calc(100% + ${u(28)})`, height: u(P.circle[0]), overflow: 'visible', pointerEvents: 'none', zIndex: 1 }}>
             <path d="M64.96 6.08571C33.6 3.04286 6.72 14.2 7.84 34.4857C8.96 54.7714 36.96 64.9143 63.84 63.9C90.72 62.8857 106.4 51.7286 104.16 33.4714C101.92 14.2 78.4 5.07143 49.28 8.11429" stroke={olive} strokeLinecap="round" vectorEffect="non-scaling-stroke" style={{ strokeWidth: u(P.circle[1]) }} />
@@ -25012,7 +25090,7 @@ function GeoMark({ color, ring = color, u }) {
 // art, not a map: it is the frame's raster used as a mask (so the card inks it, and `limits.mjs` does not count a
 // `url(`), with the centre marker, the place and the `R = N mi` corner label drawn on it. The real map is not drawn.
 function LatticeMap({ s, g }) {
-  const { shown, lit, onPick, win, onPage, onStep } = g
+  const { shown, holdPages, lit, onPick, win, onPage, onStep } = g
   const tab = isTablet(s)
   const k = s.narrow ? 1 : 0.82
   const u = (v) => `${Math.round(v * k * 100) / 100}px`
@@ -25079,14 +25157,14 @@ function LatticeMap({ s, g }) {
   // at the right. The pill is the row's tickets link, so it stands only where there is one (JP-045): the canvas draws
   // none of the frame's *Tickets*, and the frame's orange *Sold out* has no field. The lit row (live) is the open
   // row's look: ink under paper, its fill bled 12 either side so the type does not stand on its edge.
-  const rows = shown.map((gig, i) => {
+  const rows = (list, from, current) => list.map((gig, i) => {
     const link = extLink(s, gig.url)
     const Tag = link ? 'a' : 'div'
-    const on = lit(i)
+    const on = current && lit(i)
     const fg = on ? s.bg : ink
     const sub = on ? s.bg : dim
     return (
-      <Tag key={i} {...link} onClick={onPick(i)} style={{
+      <Tag key={i} {...link} onClick={current ? onPick(i) : undefined} style={{
         ...row(u(s.mob ? 10 : 20)), boxSizing: 'border-box', padding: `${u(14)} 0`, borderBottom: `1px solid ${ink}`,
         textDecoration: 'none', color: fg, cursor: s.live ? 'pointer' : undefined,
         background: on ? ink : undefined, boxShadow: on ? `${u(12)} 0 0 0 ${ink}, -${u(12)} 0 0 0 ${ink}` : undefined,
@@ -25141,8 +25219,8 @@ function LatticeMap({ s, g }) {
           <span style={mono(u(12), { color: dim, flex: 'none' })}>{String(s.gigs.length).padStart(2, '0')}</span>
         </span>
       )}
-      {rows.length > 0
-        ? <div style={{ borderTop: `1px solid ${ink}` }}>{rows}</div>
+      {shown.length > 0
+        ? holdPages((list, from, current) => <div style={{ borderTop: `1px solid ${ink}` }}>{rows(list, from, current)}</div>)
         : <span style={mono(u(12), { opacity: 0.6 })}>No upcoming gigs.</span>}
       {pager}
     </div>
@@ -25187,7 +25265,7 @@ const PAPER_MAP = {
   },
 }
 function PaperbackMap({ s, g }) {
-  const { shown, at0, lit, onPick, win, onPage, onStep } = g
+  const { shown, holdPages, lit, onPick, win, onPage, onStep } = g
   const dev = s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop'
   const P = PAPER_MAP[dev]
   const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
@@ -25249,17 +25327,17 @@ function PaperbackMap({ s, g }) {
 
   // A gig row: a coloured date tile, the venue over `City · time`, and the tickets chip where the row has an address (JP-045). The lit row
   // (live, the pairing) is the white row ringed in the page's yellow.
-  const rows = shown.map((gig, i) => {
+  const rows = (list, from, current) => list.map((gig, i) => {
     const link = extLink(s, gig.url)
     const Tag = link ? 'a' : 'div'
-    const on = lit(i)
+    const on = current && lit(i)
     return (
-      <Tag key={i} {...link} onClick={onPick(i)} style={{
+      <Tag key={i} {...link} onClick={current ? onPick(i) : undefined} style={{
         ...row(u(P.tileGap)), boxSizing: 'border-box', padding: `${u(12)} ${u(16)}`, background: PAPER_WHITE, borderRadius: u(24), textDecoration: 'none', color: ink,
         cursor: s.live ? 'pointer' : undefined, boxShadow: on ? `inset 0 0 0 ${u(3)} ${yellow}` : undefined,
       }}>
         <span style={{
-          flex: 'none', boxSizing: 'border-box', width: u(64), minHeight: u(P.dayT * 0.9 + 30), padding: `${u(6)} 0 ${u(8.4)}`, borderRadius: u(14), background: TILES[(at0 + i) % TILES.length], textAlign: 'center',
+          flex: 'none', boxSizing: 'border-box', width: u(64), minHeight: u(P.dayT * 0.9 + 30), padding: `${u(6)} 0 ${u(8.4)}`, borderRadius: u(14), background: TILES[(from + i) % TILES.length], textAlign: 'center',
         }}>
           <span style={label(u(13), { display: 'block', lineHeight: u(15.6), color: ink })}>{gig.month}</span>
           <span style={display(u(P.dayT), 0.9, { display: 'block', marginTop: u(0), color: ink })}>{gig.day}</span>
@@ -25310,8 +25388,8 @@ function PaperbackMap({ s, g }) {
           {shown.length > 0 && <span style={{ flex: 'none', whiteSpace: 'nowrap' }}>{`${two(shown.length)} of ${two(s.gigs.length)}`}</span>}
         </div>
       )}
-      {rows.length > 0 ? (
-        <div style={col(u(10))}>{rows}</div>
+      {shown.length > 0 ? (
+        holdPages((list, from, current) => <div style={col(u(10))}>{rows(list, from, current)}</div>)
       ) : (
         <div style={{ ...label(u(16), { color: s.bg }), background: PAPER_WHITE, borderRadius: u(24), padding: `${u(24)} ${u(16)}` }}>No upcoming gigs.</div>
       )}
@@ -25360,7 +25438,7 @@ const HEADLINER_MAP = {
   mobile: { fw: 390, top: 58, side: 24, h2: 70, free: 342, box: [294, 360], areaH: 384, tileGap: 10, rowPad: 14, rowMin: 106, tileH: 58.688, dayT: 26, titleT: 25, nameT: 25 },
 }
 function HeadlinerMap({ s, g }) {
-  const { shown, at0, lit, onPick, win, onPage, onStep } = g
+  const { shown, holdPages, lit, onPick, win, onPage, onStep } = g
   const dev = s.mob ? 'mobile' : s.narrow ? 'tablet' : 'desktop'
   const P = HEADLINER_MAP[dev]
   const u = (v) => `${((v / P.fw) * 100).toFixed(4)}cqw`
@@ -25416,15 +25494,15 @@ function HeadlinerMap({ s, g }) {
 
   // A gig row: the tile, the venue over `City · time`, and the outlined pill where the row has an address (JP-045). The lit row (live only, the pairing) is the row
   // ringed inside in the pill's amber: the frame draws none.
-  const rows = shown.map((gig, i) => {
+  const rows = (list, from, current) => list.map((gig, i) => {
     const link = extLink(s, gig.url)
     const Tag = link ? 'a' : 'div'
     return (
-      <Tag key={i} {...link} onClick={onPick(i)} style={{
+      <Tag key={i} {...link} onClick={current ? onPick(i) : undefined} style={{
         ...row(u(P.tileGap)), boxSizing: 'border-box', minHeight: P.rowMin ? u(P.rowMin) : undefined, padding: `${u(P.rowPad)} 0`, borderTop: `1px solid ${HL_HAIR}`,
-        textDecoration: 'none', color: sand, cursor: s.live ? 'pointer' : undefined, boxShadow: lit(i) ? `inset 0 0 0 ${u(3)} ${amber}` : undefined,
+        textDecoration: 'none', color: sand, cursor: s.live ? 'pointer' : undefined, boxShadow: current && lit(i) ? `inset 0 0 0 ${u(3)} ${amber}` : undefined,
       }}>
-        <span style={{ flex: 'none', boxSizing: 'border-box', display: 'block', width: u(72), height: u(P.tileH), paddingTop: u(8), background: TILES[(at0 + i) % TILES.length], color: black, textAlign: 'center' }}>
+        <span style={{ flex: 'none', boxSizing: 'border-box', display: 'block', width: u(72), height: u(P.tileH), paddingTop: u(8), background: TILES[(from + i) % TILES.length], color: black, textAlign: 'center' }}>
           <span style={{ display: 'block', position: 'relative', height: u(13.641) }}>
             <span style={anton(u(13), { display: 'block', position: 'relative', top: u(-3), lineHeight: u(13.65), color: black })}>{gig.month}</span>
           </span>
@@ -25477,8 +25555,8 @@ function HeadlinerMap({ s, g }) {
           {shown.length > 0 && <span style={{ flex: 'none', whiteSpace: 'nowrap' }}>{`${two(shown.length)} of ${two(s.gigs.length)}`}</span>}
         </div>
       )}
-      {rows.length > 0 ? (
-        <div style={{ borderBottom: `1px solid ${HL_HAIR}` }}>{rows}</div>
+      {shown.length > 0 ? (
+        holdPages((list, from, current) => <div style={{ borderBottom: `1px solid ${HL_HAIR}` }}>{rows(list, from, current)}</div>)
       ) : (
         <div style={{ ...anton(u(16), { color: sand }), padding: `${u(24)} 0`, borderTop: `1px solid ${HL_HAIR}`, borderBottom: `1px solid ${HL_HAIR}` }}>No upcoming gigs.</div>
       )}
@@ -25595,18 +25673,20 @@ function BacklineMap({ s, g }) {
   // The frame's SVG filter, its deviations as `drop-shadow()` takes them (14 and 1, 1:6137's ticket), the same at all three widths.
   const shadow = `drop-shadow(0 ${u(10)} ${u(14)} rgba(35, 36, 15, 0.22)) drop-shadow(0 ${u(1)} ${u(1)} rgba(35, 36, 15, 0.2))`
   const mask = blNotchMask(u(12))
-  const tickets = shown.map((gig, i) => {
+  // `from` is the page's first gig's place in the whole list; `current` is false on the held pages the visitor does not see (below), which take no
+  // pick and no ring.
+  const ticket = (gig, i, from, current) => {
     const link = extLink(s, gig.url)
     const Tag = link ? 'a' : 'div'
     return (
-      <Tag key={i} {...link} onClick={onPick(i)} style={{
-        display: 'block', position: 'relative', minWidth: 0, transform: `rotate(${BL_MAP_TURN[(at0 + i) % BL_MAP_TURN.length]}deg)`, filter: shadow,
+      <Tag key={i} {...link} onClick={current ? onPick(i) : undefined} style={{
+        display: 'block', position: 'relative', minWidth: 0, transform: `rotate(${BL_MAP_TURN[(from + i) % BL_MAP_TURN.length]}deg)`, filter: shadow,
         textDecoration: 'none', color: ink, cursor: s.live ? 'pointer' : undefined,
       }}>
         <div style={{
           position: 'relative', boxSizing: 'border-box', background: BL_TICKET, padding: `${u(22)} ${u(26)}`,
           maskImage: mask, maskComposite: 'intersect', WebkitMaskImage: mask, WebkitMaskComposite: 'source-in',
-          boxShadow: lit(i) ? `inset 0 0 0 ${u(3)} ${olive}` : undefined,
+          boxShadow: current && lit(i) ? `inset 0 0 0 ${u(3)} ${olive}` : undefined,
         }}>
           <BacklineGrain src={s.backlineGrain} size={u(192)} tone="paper" opacity={0.5} />
           <div style={row(0, { position: 'relative', minHeight: u(P.rowMin), alignItems: 'center' })}>
@@ -25633,7 +25713,25 @@ function BacklineMap({ s, g }) {
         </div>
       </Tag>
     )
-  })
+  }
+  // The published pager holds the tallest page (JP-172, the testimonials' grid cell): every page lies in one cell, the others hidden (not drawn, not
+  // clickable, not read aloud), so a short last page does not draw the pager up from under the pointer. The canvas and a one-page list draw the one page.
+  const tickets = (list, from, current) => (
+    <div style={col(u(P.tg), { marginTop: u(P.tg) })}>{list.map((gig, i) => ticket(gig, i, from, current))}</div>
+  )
+  const held = s.live && win.labels.length > 0 ? (
+    <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', alignItems: 'start' }}>
+      {Array.from({ length: Math.ceil(s.gigs.length / s.gigPage) }, (_, p) => {
+        const from = p * s.gigPage
+        const current = from === at0
+        return (
+          <div key={p} aria-hidden={!current || undefined} style={{ gridArea: '1 / 1', minWidth: 0, visibility: current ? undefined : 'hidden' }}>
+            {tickets(s.gigs.slice(from, from + s.gigPage), from, current)}
+          </div>
+        )
+      })}
+    </div>
+  ) : null
 
   // The pager: 44 squares on a 6 gap, the frames' 16 x 12 line arrows (stroke 2), the current page ink; it draws only past one page.
   const arrow = (back, stroke) => (
@@ -25666,9 +25764,7 @@ function BacklineMap({ s, g }) {
           {shown.length > 0 && <span style={{ flex: 'none', whiteSpace: 'nowrap' }}>{`${two(shown.length)} of ${two(s.gigs.length)}`}</span>}
         </div>
       )}
-      {tickets.length > 0 ? (
-        <div style={col(u(P.tg), { marginTop: u(P.tg) })}>{tickets}</div>
-      ) : (
+      {shown.length > 0 ? held ?? tickets(shown, at0, true) : (
         <div style={{ ...display(u(22), { lineHeight: 'normal', color: ink }), padding: `${u(24)} 0`, marginTop: u(P.tg), borderTop: `1px dashed ${ink}`, borderBottom: `1px dashed ${ink}` }}>No upcoming gigs.</div>
       )}
       {pager}
@@ -25744,6 +25840,12 @@ function EventsMap({ s }) {
       setSel((v) => (v === j ? -1 : j))
     } : undefined)
 
+    // Live and past one page, the published pager holds the tallest page (JP-172, `heldPages`). `draw(list, from, current)` is one page's rows: `from` is
+    // its first gig's place in the whole list, and a hidden page (`current` false) takes no pick and no ring, `onPick` and `lit` being the visible page's.
+    const holdPages = (draw) => (s.live && pages > 1
+      ? heldPages(pages, pg, (p) => draw(s.gigs.slice(p * perPage, (p + 1) * perPage), p * perPage, p === pg))
+      : draw(shown, pg * perPage, true))
+
     // Lattice's layout-1 map is a block of its own (LatticeMap), after the seam: the page, the
     // pairing and the pager's window above are shared whole, and the block is the picture. Its
     // window is the compact one at every width (the frames' own `1 2 3`).
@@ -25760,21 +25862,21 @@ function EventsMap({ s }) {
     }
     if (s.limeTree && s.headliner) {
       return <HeadlinerMap s={s} g={{
-        shown, at0: pg * perPage, lit, onPick, win: pageWindow(pages, pg, true),
+        shown, holdPages, lit, onPick, win: pageWindow(pages, pg, true),
         onPage: s.live ? (label) => setPage(Number(label) - 1) : undefined,
         onStep: s.live ? (dir) => setPage(Math.max(0, Math.min(pages - 1, pg + dir))) : undefined,
       }} />
     }
     if (s.limeTree && s.paperback) {
       return <PaperbackMap s={s} g={{
-        shown, at0: pg * perPage, lit, onPick, win: pageWindow(pages, pg, true),
+        shown, holdPages, lit, onPick, win: pageWindow(pages, pg, true),
         onPage: s.live ? (label) => setPage(Number(label) - 1) : undefined,
         onStep: s.live ? (dir) => setPage(Math.max(0, Math.min(pages - 1, pg + dir))) : undefined,
       }} />
     }
     if (s.limeTree && s.lattice) {
       return <LatticeMap s={s} g={{
-        shown, lit, onPick, win: pageWindow(pages, pg, true),
+        shown, holdPages, lit, onPick, win: pageWindow(pages, pg, true),
         onPage: s.live ? (label) => setPage(Number(label) - 1) : undefined,
         onStep: s.live ? (dir) => setPage(Math.max(0, Math.min(pages - 1, pg + dir))) : undefined,
       }} />
@@ -26070,15 +26172,15 @@ function EventsMap({ s }) {
       // venue and its city line, with the date in a lime `tag/1` disc at the
       // right. 768 fixes the row at 79, so its 57 disc stands 11 from either
       // edge where the other two pad by 20. The lit row takes `sem/active`.
-      const rowsL = shown.map((g, i) => {
+      const rowsL = (list, from, current) => list.map((g, i) => {
         // The anchor seam is Retro's: a row with a tickets address links out in
         // a new tab, so one click both opens it and lights the pin.
         const link = extLink(s, g.url)
         const Tag = link ? 'a' : 'div'
-        const on = lit(i)
+        const on = current && lit(i)
         const fg = on ? G.rowOnFg : G.rowFg
         return (
-          <Tag key={i} {...link} onClick={onPick(i)} style={{
+          <Tag key={i} {...link} onClick={current ? onPick(i) : undefined} style={{
             ...row(u(12), { justifyContent: 'space-between' }),
             background: on ? G.rowOn : G.rowBg, borderRadius: G.rowR,
             ...(ed ? {
@@ -26176,7 +26278,7 @@ function EventsMap({ s }) {
               {grunge && <span aria-hidden style={{ flex: 1, height: '1px', background: s.bg }} />}
             </span>
           )}
-          {rowsL.length > 0 && <div style={col(u(12))}>{rowsL}</div>}
+          {shown.length > 0 && holdPages((list, from, current) => <div style={col(u(12))}>{rowsL(list, from, current)}</div>)}
           {win.labels.length > 0 && (
             <Pager s={s} frame={{
               pages: win.labels, active: win.at, justify: 'center', grow: !tab,
@@ -26325,6 +26427,63 @@ function EventsMap({ s }) {
     )
 
     const onDark = s.retro
+    const gigRows = (list, from, current) => list.map((g, i) => {
+      // A row with a tickets address becomes an anchor, the gallery's seam:
+      // `target="_blank"`, so the click both opens the tab and lights the
+      // pin, and the published page is still behind it. A row without one
+      // stays the picture it has always been — the Soundcloud rule rather
+      // than the gallery's, because a gig is a show the artist is playing,
+      // not a tile promising somewhere to go.
+      const link = extLink(s, g.url)
+      const Tag = link ? 'a' : 'div'
+      const on = current && lit(i)
+      return (
+        <Tag key={i} {...link} onClick={current ? onPick(i) : undefined} style={{
+          ...row('12px', { justifyContent: 'space-between' }),
+          border: `${s.bw} solid ${g.hue}`, borderRadius: s.radiusSm,
+          padding: s.mob ? '10px 12px' : '12px 16px', position: 'relative',
+          // The lit row fills rather than lifting: these sit in a column
+          // with no room to raise one, and the fill is what the pin echoes.
+          background: on ? g.hue : 'transparent',
+          // Anchors inherit the card's colour instead of the UA's blue.
+          textDecoration: 'none', color: 'inherit',
+          cursor: s.live ? 'pointer' : undefined,
+        }}>
+          <span style={col('4px', { minWidth: 0 })}>
+            <span style={{
+              fontFamily: s.display, fontSize: s.title, letterSpacing: s.dls,
+              color: on ? contrastInk(g.hue) : g.hue,
+              overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+            }}>{g.venue}</span>
+            <span style={{
+              fontFamily: s.mono, fontSize: s.narrow ? '11px' : '9px', lineHeight: 'normal',
+              opacity: onDark ? 1 : 0.8,
+              color: on ? contrastInk(g.hue) : onDark ? s.mapFg : undefined,
+              // The city is the artist's, and one long word has no break
+              // opportunity of its own.
+              overflowWrap: 'anywhere',
+            }}>
+              {g.city} · {g.time}
+            </span>
+          </span>
+          <span style={col('0', {
+            alignItems: 'center', justifyContent: 'center', flex: 'none', boxSizing: 'border-box',
+            width: s.narrow ? '42px' : '34.4px', height: s.narrow ? '42px' : '34.4px',
+            border: `${s.bw} solid ${on ? contrastInk(g.hue) : g.hue}`,
+            borderRadius: s.narrow ? '6px' : '5px', lineHeight: 'normal', fontFamily: s.mono,
+            background: onDark && !on ? s.mapBg : 'transparent',
+            color: on ? contrastInk(g.hue) : onDark ? s.mapFg : undefined,
+          })}>
+            <span style={{
+              fontSize: s.narrow ? '9px' : '7.4px', letterSpacing: s.narrow ? '0.5px' : '0.4px',
+              textTransform: 'uppercase',
+            }}>{g.month}</span>
+            <span style={{ fontSize: s.narrow ? '14px' : '11.5px', fontWeight: 700 }}>{g.day}</span>
+          </span>
+        </Tag>
+      )
+    })
+
     const list = (
       <div style={{
         position: 'relative',
@@ -26347,62 +26506,10 @@ function EventsMap({ s }) {
             {`${s.mapListLabel} · `}{s.gigs.length}
           </span>
         )}
-        {shown.map((g, i) => {
-          // A row with a tickets address becomes an anchor, the gallery's seam:
-          // `target="_blank"`, so the click both opens the tab and lights the
-          // pin, and the published page is still behind it. A row without one
-          // stays the picture it has always been — the Soundcloud rule rather
-          // than the gallery's, because a gig is a show the artist is playing,
-          // not a tile promising somewhere to go.
-          const link = extLink(s, g.url)
-          const Tag = link ? 'a' : 'div'
-          const on = lit(i)
-          return (
-            <Tag key={i} {...link} onClick={onPick(i)} style={{
-              ...row('12px', { justifyContent: 'space-between' }),
-              border: `${s.bw} solid ${g.hue}`, borderRadius: s.radiusSm,
-              padding: s.mob ? '10px 12px' : '12px 16px', position: 'relative',
-              // The lit row fills rather than lifting: these sit in a column
-              // with no room to raise one, and the fill is what the pin echoes.
-              background: on ? g.hue : 'transparent',
-              // Anchors inherit the card's colour instead of the UA's blue.
-              textDecoration: 'none', color: 'inherit',
-              cursor: s.live ? 'pointer' : undefined,
-            }}>
-              <span style={col('4px', { minWidth: 0 })}>
-                <span style={{
-                  fontFamily: s.display, fontSize: s.title, letterSpacing: s.dls,
-                  color: on ? contrastInk(g.hue) : g.hue,
-                  overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                }}>{g.venue}</span>
-                <span style={{
-                  fontFamily: s.mono, fontSize: s.narrow ? '11px' : '9px', lineHeight: 'normal',
-                  opacity: onDark ? 1 : 0.8,
-                  color: on ? contrastInk(g.hue) : onDark ? s.mapFg : undefined,
-                  // The city is the artist's, and one long word has no break
-                  // opportunity of its own.
-                  overflowWrap: 'anywhere',
-                }}>
-                  {g.city} · {g.time}
-                </span>
-              </span>
-              <span style={col('0', {
-                alignItems: 'center', justifyContent: 'center', flex: 'none', boxSizing: 'border-box',
-                width: s.narrow ? '42px' : '34.4px', height: s.narrow ? '42px' : '34.4px',
-                border: `${s.bw} solid ${on ? contrastInk(g.hue) : g.hue}`,
-                borderRadius: s.narrow ? '6px' : '5px', lineHeight: 'normal', fontFamily: s.mono,
-                background: onDark && !on ? s.mapBg : 'transparent',
-                color: on ? contrastInk(g.hue) : onDark ? s.mapFg : undefined,
-              })}>
-                <span style={{
-                  fontSize: s.narrow ? '9px' : '7.4px', letterSpacing: s.narrow ? '0.5px' : '0.4px',
-                  textTransform: 'uppercase',
-                }}>{g.month}</span>
-                <span style={{ fontSize: s.narrow ? '14px' : '11.5px', fontWeight: 700 }}>{g.day}</span>
-              </span>
-            </Tag>
-          )
-        })}
+        {/* The canvas and a one-page list stand the rows bare in the panel's column; the held pages each need a column of their own, on the same gap. */}
+        {s.live && pages > 1
+          ? holdPages((list, from, current) => <div style={col(s.mob ? '10px' : '14px')}>{gigRows(list, from, current)}</div>)
+          : gigRows(shown, pg * perPage, true)}
         {/* Derived from the list, so it cannot claim pages that are not there,
             and gone entirely at one page — the repertoire's rule. The five
             seeded gigs are one page, so the reference picture no longer carries

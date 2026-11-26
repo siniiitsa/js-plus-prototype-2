@@ -7,7 +7,7 @@ repeat it. What follows is only what a fresh session tends to get wrong.
 
 All source lives in **`source/`**. Two files at the repo root are *not* source:
 
-- **`index.html`** (~16.2 MB — most of it the inlined photography of all nine templates; 16,244,684 bytes after JP-173, 240 more than the 16,244,444 JP-171 left, itself 32 more than the 16,244,412 Backline's tear and grain fixes left, itself 756 more than the 16,243,656 its pass left, which was +0.94 MB on the 15.31 MB the Headliner pass left, itself +0.72 MB on the 14.59 MB before it, which was +1.56 MB after the Paperback pass, on the 13.03 MB the Lattice pass left, +1.10 MB) is the generated
+- **`index.html`** (~16.2 MB — most of it the inlined photography of all nine templates; 16,247,134 bytes after the layout-1 repertoire pager fix, 673 more than the 16,246,461 JP-172's held pager on the other eight templates left, itself 936 more than the 16,245,525 the Backline QA fixes of 2026-11-26 left, itself 841 more than the 16,244,684 JP-173 left, itself 240 more than the 16,244,444 JP-171 left, itself 32 more than the 16,244,412 Backline's tear and grain fixes left, itself 756 more than the 16,243,656 its pass left, which was +0.94 MB on the 15.31 MB the Headliner pass left, itself +0.72 MB on the 14.59 MB before it, which was +1.56 MB after the Paperback pass, on the 13.03 MB the Lattice pass left, +1.10 MB) is the generated
   single-file build, committed so the demo is
   double-clickable. Never hand-edit it.
 - **`mock-template.html`** (~12 MB, untracked) is a reference artefact.

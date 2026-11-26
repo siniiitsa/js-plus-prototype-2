@@ -5490,13 +5490,13 @@ export const DATE_PAST_MSG = 'That date has already passed.'
 export const NAME_MSG = 'Enter your name, using letters only (no digits).'
 export const EMAIL_MSG = 'Enter a valid email address.'
 export const NUMBER_MSG = 'Enter a whole number, 1 or more.'
-export const REQUIRED_MSG = 'This box is required.'
+export const NAME_REQUIRED_MSG = 'Enter your name.'
 export const MESSAGE_MSG = 'Write a short message.'
 // A name: at least one letter, no digit in any script (\p{N} also catches
 // ² and ٣), otherwise anything — spaces, ’ ' and - are ordinary name marks.
 export function nameProblem(v) {
   const t = String(v ?? '').trim()
-  if (!t) return REQUIRED_MSG
+  if (!t) return NAME_REQUIRED_MSG
   return /\p{N}/u.test(t) || !/\p{L}/u.test(t) ? NAME_MSG : null
 }
 // A guest count: a whole number of at least 1 (digits only after trimming).
