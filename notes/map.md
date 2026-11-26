@@ -466,3 +466,16 @@ dark-olive head** (the repertoire's olive, `s.onScheme[2].bg`).
 - **`in` rows unchanged** (`reach.mjs 8` over the map, the scratch copy, `ONLY=map`, 2,832 renders: layout 1 reads `base`, `listLabel` and `terms`, as the existing rows say). `INLINE_OFF`: none needed (`inline-probe` PASS, 29 slots
   hit at 1440 and 768, 0 off). `photo-probe` PASS (no photo slot); `focus-probe --prime --check` PASS (41 controls, 0 failing). A live walk at `&n=12&live=1`: the pager steps 1 / 2 / 3 and back, a picked row rings, the linked rows are
   `<a>`s with `noopener`.
+
+## Inline editing — a pair line repeated past the pager (JP-173, 2026-11-26)
+
+A gig row's `City · Time` line opened nothing, city and time both, when a row **past the pager** printed the same line as a drawn one. The ticket blamed the city matching the map's town; that is not the cause. The seeded five gigs are one page and every row opens. Renaming the city "fixed" a row only because it made its line unique, and `Lake District` opened for the same reason. The tester's list was longer than the seed (`05 OF 12`).
+
+The lined branch of `inlineFieldAt` took fewer nodes than rows only when the rows that open the column all print this one line (JP-158, above), which a page of mixed lines never does. Each `LINE_PAIRS` slot now carries `pairLine`, and where the clicked node prints it, the pair lines drawn are read as the head of the column (`prefixSlot`): the nth is the nth row's. It is template-blind and covers layout 1's rows, layout 3's list and the repertoire's `mood · length` set lines (a fourth set repeating a drawn line). Measured with a 12-gig list set through React state, which `inline-probe` cannot do (it walks the seeded single page): Headliner and Lime layout 1 at 1440, 768 and 390, and layout 3 and the set lines on Retro, Lime, Grunge, Editorial and Pop at 1440: the rows go from dead to their own slots (compared with the old code). Layout 1 at 1440 was also run, on the fixed code only, on the other seven templates, where every row opens its own slots. Typing in row 5 changes `gigs[4]` alone on all nine.
+
+**The fallback is the pair line's alone.** Layout 2's list prints `city · month · time` from the **second** row (the first is the travel card's), so pairing its head with the column's could be off by one.
+
+**Open on layout 2, older than this fix, none of them fixed.** All need rows that share city, month and start time with another:
+- **Wrong row from the list line.** On a paged list whose rows 1 and 2 are such twins, row 2's list line opens row 1's `city` and `time`, so typing edits the wrong gig. Seen on Retro, Lime, Grunge, Editorial and Pop, identical before and after. Likely JP-158's rule reading row 1 as drawn.
+- **Wrong row from the featured card.** Lime, five gigs, row 4 sharing row 1's line: the card's bare city opens `gigs[3].city`. Seen on the old code, not traced.
+- **Dead featured city.** With the paged twins list above, the card's two bare `Manchester` nodes open nothing on those five templates. On the seed (checked on Lime) they open `gigs[0].city`.

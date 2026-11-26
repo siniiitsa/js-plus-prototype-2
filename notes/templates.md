@@ -733,7 +733,9 @@ hold the record, and this file keeps what a later session touching a Headliner s
 - **The three-colour name is three stacked, clipped copies**: the real `<h1>` plus two `aria-hidden` divs in one grid cell, each
   `clip-path: polygon()` to its colour zone. Do not give them `pointer-events: none` (the click must reach the title slot), and
   `limits.mjs` skips a same-box `aria-hidden` copy of a seat when it counts overlaps. The column is bottom-anchored, so a wrapped name
-  grows upward.
+  grows upward. **At 390 there are two copies** (JP-171, 2026-11-26): the black one is the orange wedge's ink and that width draws no
+  wedge, so it is not rendered and the cream zone runs on to the right edge (both on `P.orange`). Black there stood on the photograph
+  from about x 340, which a long name reaches and the frame's `KAI MERCER` does not.
 - **The ringed numeral** is one svg, the disc its viewBox, so the seal-box rule applies; its text is `badgeText`, **defaulting to the
   artist's initials** (`initialsOf` in `data.js`), cap 3 (the third sets at 0.72).
 - **The bar is hamburger + `HeadlinerPill`** only; the menu's Book Now row reads the same pill.

@@ -803,6 +803,8 @@ trees: scratchpad `shots/before-{desktop,tablet,mobile}/` (not committed). **Roo
   a click reaches the title slot (the inline probe's positive control). The column is bottom-anchored (avatar, chips, name), so a
   name that wraps grows *upward* and lifts the chips. The name is Anton 267.84 / 156 / 58 px (`TITLE_SITES.Headliner`, `antonEms` at
   -0.005em in `sectionVm`'s `titleFitK`: a long name sets down to the half-size floor).
+  **Since JP-171** (2026-11-26) 390 draws two copies: no black one, since it has no orange panel, and the cream zone runs to the
+  right edge (`P.orange`). The frame's name stops short of the black zone, so it does not show the case.
 - **The ringed numeral is one svg whose viewBox is the disc** (124 / 124 / 84, stroke 14), so the builder's seal rule boxes it whole. Its
   text is `header.badgeText`, **which defaults to the artist's initials, not the name** (`initialsOf` moved to `data.js`;
   `fieldSeed` mirrors it; `vm.badgeText` takes it at layout 1). Cap **3**: two characters at the frame's size, a third at 0.72 so three
