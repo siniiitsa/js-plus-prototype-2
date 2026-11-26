@@ -310,6 +310,8 @@ Now **no href exists until every box the layout shows passes `formCheck`**, whic
   the first refused control's own message: *Enter your name…*, *Enter a valid email address.*, *Enter a whole number,
   1 or more.*, the date messages, *Write a short message.*) and calls `setCustomValidity` with the current verdict,
   so `input.validity` agrees with what the page says. The message box takes the layout's refused ring (`msgBad`).
+  **An empty name reads *Enter your name.*** (2026-11-26, every template; `NAME_REQUIRED_MSG`), where it read *This box is required.*: the line stands under the button, by no box, while up to three boxes are marked, and it was the one message that
+  named none. The defect was inferred from an uncaptioned QA shot of Backline's refused form; the pale button in that shot is the pointer's `a:hover` (below, *Backline*).
   A fresh callback ref each render is what keeps the custom message following the box's value.
 - **Probe.** `scripts/page-check.mjs` types valid data per kind; reading the href before the form is valid now
   gives nothing. All 20 template × layout pages were driven at Desktop, Tablet and Mobile with the QA cases
