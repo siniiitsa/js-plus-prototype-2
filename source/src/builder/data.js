@@ -2961,6 +2961,17 @@ export const TESTI_HEADING_3 = 'Experiences.'
 // Retro's polaroid prints the kicker in that seat. The line is the artist's
 // copy, not the bio's `since`.
 export const CARD_LINE_3 = 'Performing since 2021'
+// Backline's layout-1 release ticket (plans/backline/layout-1.md, call 2 reopened, 2026-11-27): the frame's own
+// words, each a field of its own, since every one is a claim about the artist's release. The barcode is art. The
+// title's two runs are two fields: the frame sets the second in the olive on a line of its own.
+export const RELEASE_BACKLINE = {
+  releaseKicker: 'Admit one · New LP',
+  releaseTitle: 'Hidden sessions',
+  releaseEdition: 'Vol. 2',
+  releaseFoot: 'Out now — all platforms',
+  releaseFormat: 'LP',
+  releaseNo: 'No. 000412',
+}
 // Layout 4's heads, each its composed page's own wrapper head over the section
 // (QA, 2026-09-15): the Book Us panel (964:72839), the gallery's column
 // (964:72784), the map band (964:72827) and the testimonials sheet — and the
@@ -3195,6 +3206,7 @@ export const BLANK_PAGE = [
 const SHOW_HIDE = [{ v: 'show', l: 'Show' }, { v: 'hide', l: 'Hide' }]
 // The header's Tags visibility select sits beside the Tags list input, so its options name what they show.
 const SHOW_HIDE_TAGS = [{ v: 'show', l: 'Show tags' }, { v: 'hide', l: 'Hide tags' }]
+const SHOW_HIDE_TICKET = [{ v: 'show', l: 'Show ticket' }, { v: 'hide', l: 'Hide ticket' }]
 export const BADGE_MODES = [
   { v: 'rotating', l: 'Visible, rotating' },
   { v: 'static',   l: 'Visible, static' },
@@ -3367,6 +3379,19 @@ export const FIELDS = {
     { k: 'showTags',  l: 'Tags',        type: 'select', d: 'show', opts: SHOW_HIDE_TAGS, shared: true,
       in: { Retro: [0, 2, 3, 4, 5], Lime: [0, 2, 3], Grunge: [0, 2, 3], Editorial: [0, 2, 3], Pop: [0, 2, 3], Lattice: [0, 2, 3], Paperback: [0, 2, 3], Headliner: [0, 2, 3], Backline: [0, 2, 3] },
       hint: 'Show or hide the tag chips wherever they are printed.' },
+    // Backline's layout-1 release ticket (RELEASE_BACKLINE). Emptied, a line is not drawn; hidden, or with all
+    // six emptied, there is no ticket. Caps: `limits.mjs header --themes=8 --designs=0 --upright
+    // --extra-lines=releaseTitle` (2026-11-27; 390 binds all but the number; the title may take one more line,
+    // and the card grows with it). The format is held to 8 under the probe's 11, where `CASSETTE LP` reaches the stub's edge.
+    { k: 'showRelease',    l: 'Release ticket', type: 'select', d: 'show', opts: SHOW_HIDE_TICKET, in: { Backline: [0], '*': [] },
+      hint: 'The ticket over the photograph, announcing a release. Hide it if you have nothing to announce.' },
+    { k: 'releaseKicker',  l: 'Ticket top line', d: RELEASE_BACKLINE.releaseKicker, in: { Backline: [0], '*': [] }, chars: 26 },
+    { k: 'releaseTitle',   l: 'Release title', d: RELEASE_BACKLINE.releaseTitle, in: { Backline: [0], '*': [] }, chars: 25 },
+    { k: 'releaseEdition', l: 'Release title, second line', d: RELEASE_BACKLINE.releaseEdition, in: { Backline: [0], '*': [] }, chars: 11 },
+    { k: 'releaseFoot',    l: 'Ticket bottom line', d: RELEASE_BACKLINE.releaseFoot, in: { Backline: [0], '*': [] }, chars: 26 },
+    { k: 'releaseFormat',  l: 'Ticket format', d: RELEASE_BACKLINE.releaseFormat, in: { Backline: [0], '*': [] }, chars: 8,
+      hint: 'LP, EP, Single and so on.' },
+    { k: 'releaseNo',      l: 'Ticket number', d: RELEASE_BACKLINE.releaseNo, in: { Backline: [0], '*': [] }, chars: 19 },
     // Three states (header-nav ticket, 2026-11-11): the seal is visible and
     // turning (today's), visible and still, or hidden. `badgeMode` replaces the
     // old `showBadge` Show / Hide on the header (the footer keeps its own), and

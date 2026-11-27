@@ -220,7 +220,13 @@ field, seeded / not drawn*).
 
 ### 2. The hero's release ticket, and the hero's height
 
-**settled: A + A (user call, 2026-11-24).** The LP ticket is not drawn. `vm.heroH` is 914.44 at 768 and 880 at 390 only, behind `backline`; desktop keeps its frame aspect (975.30 × 0.82 = 799.7 on the canvas). Not yet written: section 1's work.
+**The ticket half is reopened: B (user call, 2026-11-27).** QA reported the missing ticket. It is drawn, behind
+header fields read at Backline's layout 1 alone: the top line, the title's two runs, the bottom line, **and `LP` and
+`NO. 000412` too** (not art, not derived: user call), plus a Show / Hide. The barcode is art. Record:
+`notes/templates.md` *Backline*, *The release ticket*. The rest of call 1 A stands (the same day's scope call: the
+ticket only). The height half is unchanged.
+
+*As first settled:* **A + A (user call, 2026-11-24).** The LP ticket is not drawn. `vm.heroH` is 914.44 at 768 and 880 at 390 only, behind `backline`; desktop keeps its frame aspect (975.30 × 0.82 = 799.7 on the canvas). Not yet written: section 1's work.
 
 Both are the header's. **The LP ticket** is the hero's one new object and an invitation to a new field group
 (`ticketTitle`, `ticketLine`, `ticketFoot`, …) read by no other template.
@@ -683,6 +689,20 @@ image box in a section's head), the digest and the root refresh.
 
 ### Open calls — everything the pass hands the user, in one place
 
+*(2026-11-27: **the hero's LP ticket is built** (call 2 reopened). The other literals under *Frame literals not drawn*,
+and the hero's `NEXT STOP`, polaroid, act type, town, wordmark and six links, stay removed by that day's scope call.
+QA named them as things the client may notice.)*
+
+**The release ticket (2026-11-27): choices made without a call**
+
+- The Show / Hide select (`showRelease`) is an addition: the seed announces a release, so an artist with none switches
+  it off in one click.
+- The card's paper grain is .35, where the media ticket's is .5, which read speckled beside this frame (judged by eye).
+- The format is capped at 8; the probe reads 11, where `CASSETTE LP` touches the stub's edge.
+- The panel's focus box has one key rule for `releaseFormat` (`findFieldNode`): `LP` is also a word of the top line.
+- A plain header `limits.mjs --check` now needs `--upright --extra-lines=releaseTitle` for Backline: the card is
+  turned, and a long title takes another line.
+
 *(Collected at the sweep from the sections' lists, which hold the detail; **s5.2** is section 5's item 2.)*
 
 **To decide first**
@@ -857,7 +877,7 @@ nodes before trusting a number.
 ### Settled in session 0 — the foundation
 
 Branch `backline-layout-1`, 2026-11-24. **The opening calls (1 to 4), the name (6) and the art (5) were put to the user and
-all six were taken as recommended**: (1) every standing removal holds; (2) no LP ticket, `vm.heroH` 914.44 at 768 and 880 at
+all six were taken as recommended**: (1) every standing removal holds; (2) no LP ticket (reopened 2026-11-27, see call 2), `vm.heroH` 914.44 at 768 and 880 at
 390 only (**not yet written: it is section 1's work**); (3) TT2020 Base is self-hosted behind a `Courier Prime`, `monospace`
 fallback; (4) `casing: 'title'` plus a per-site transform; (5) A, Backline's own `backlineArt.jsx`; (6) the name is
 `Backline`. Call 7 (photography) had no options: it went as the plan recommends (a ninth shoot, JPEG, budgeted).
@@ -979,7 +999,7 @@ are in the session's scratchpad.
 - **The photograph** is the sepia source imported whole (`<Photo>`, `data-photo`), with the olive wash as **markup**:
   `#4C4E29`, `mix-blend-mode: color`, opacity .55 (the frame's `blend-color` layer), then the two scrim gradients in ink
   `35, 36, 15` (`BL_INK`). **Wash and scrim are `pointer-events: none`**, or `photoFieldAt` is blocked. Against the frames' renders the
-  three widths agree to about one level except under the removed LP ticket and polaroid.
+  three widths agree to about one level except under the removed LP ticket and polaroid. *(The ticket came back on 2026-11-27, call 2.)*
 - **The name** is one wrapping run in TT2020 (`s.display`, weight 400), lower-cased by CSS, cream, tracking −0.045 em, line-height .82,
   anchored at the foot so a longer name grows upward; the last word and the dot stand in one `nowrap` span. **`ttEms(text, track)`
   (`data.js`) is TT2020's width: monospaced, 0.547 em an advance, 0.502 em tracked**, so no table. `TITLE_SITES.Backline[0]` is

@@ -57,7 +57,7 @@ import {
   FORM_PROMISES, FORM_STEPS, STEP_KEYS, FORM_FIELDS, FORM_FIELDS_CARD, FORM_FIELDS_4, FORM_FIELD_KEYS, FORM_EMAIL_LABEL, FORM_KINDS, enquiryErrors, FORM_TYPES, FORM_MESSAGE, FORM_MSG_LABEL,
   FOOTER_LINKS, FOOTER_TARGETS, FOOTER_CREDIT, FOOTER_STATEMENT, FOOTER_STATEMENT_HEADLINER, FOOTER_STATEMENT_BACKLINE,
   CAL_OPEN, CAL_TIME, CAL_DAYS, CAL_BOOKED, CAL_SPAN, CAL_SLOTS, SLOT_KEYS, slotDate, parseDayFirst, pageTiers, CAL_SLOT_CTA, CAL_SEND_4, CAL_CTA_LATTICE, BIO_CTA_PAPERBACK, FORM_EMAIL, pageEmail, MONTHS, DAY_FULL,
-  TESTI_HEADING_2, CARD_LINE_3, TESTI_STARS, TESTI_RATING, TESTI_RATING_BACKLINE,
+  TESTI_HEADING_2, CARD_LINE_3, RELEASE_BACKLINE, TESTI_STARS, TESTI_RATING, TESTI_RATING_BACKLINE,
   PRICING_INTRO_3, FORM_SUB_4, CAL_HEADING_1, formBtnSeed, CAL_TYPES, PRICING_ROW_CTA, PRICING_ROW_CTA_3, PRICING_ROW_CTA_PAPERBACK, PRICING_HEADING_HEADLINER, PRICING_HEADING_BACKLINE, CAL_HEADING_HEADLINER, CAL_HEADING_BACKLINE, GALLERY_HEADING_BACKLINE, repCountWord, GALLERY_RAIL_LABEL_BACKLINE, MAP_SPAN, MAP_STATS_4, STAT_KEYS,FORM_PRICE, FORM_PRICE_UNIT, FORM_BOOKINGS, FORM_CTA, FORM_NOTE, FORM_AVAILABLE,
   parseDate, isoDate, calStart, headerIdentity, monthSpan, monthLabel, enquiryLine, weekdayOf,
   CTA_TARGETS, firstPresent, minimalNav, navModeDefault, badgeOptsFor,
@@ -981,6 +981,13 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // JP-061 — the layout-3 portrait card's line under the name, the kicker's
   // seat in Retro's polaroid. Uncased, as the four above.
   vm.cardLine = cv('cardLine', CARD_LINE_3)
+  // Backline's layout-1 release ticket, the header's own: uncased (the frame's casing is CSS), each line dropped
+  // when emptied, and `null` when it is hidden or every line is empty.
+  vm.release = null
+  if (cat === 'header' && c.showRelease !== 'hide') {
+    const lines = Object.fromEntries(Object.entries(RELEASE_BACKLINE).map(([k, d]) => [k, String(cv(k, d)).trim()]))
+    if (Object.values(lines).some(Boolean)) vm.release = lines
+  }
   // The header's badge has three states (header-nav ticket, 2026-11-11): its own
   // `badgeMode`, which folds onto the two things every reader already asks —
   // `showBadge` (drawn or not) and `badgeSpin` (the ring turns). The bio's
@@ -6777,7 +6784,8 @@ function dressPublishedWindow(win, artistName, pageBg) {
 // the title, the badge and the seal's ring all at once), and text cannot tell
 // the fields apart, so the field's `key` picks among the minimal matches:
 // `title` the largest type, `badgeText` the one inside an svg (the seal's
-// ring). A tag row takes only the chip that is the row, or none. Any other
+// ring), `releaseFormat` the one that is the value alone (Backline's ticket).
+// A tag row takes only the chip that is the row, or none. Any other
 // key takes the first in document order, which is what a field with one
 // match always got.
 const squash = (v) => String(v).replace(/\s+/g, '').toLowerCase()
@@ -6814,6 +6822,10 @@ function findFieldNode(root, text, key) {
         }
       } else if (key === 'badgeText') {
         pick = min.find((h) => h.el.closest('svg'))
+      } else if (key === 'releaseFormat') {
+        // Backline's ticket: `LP` is also a word of the top line above it, so
+        // the format's node is the one that prints nothing else.
+        pick = min.find((h) => h.sq === squash(words.join('')))
       }
       if (pick) return pick.el
     }

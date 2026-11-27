@@ -2551,16 +2551,19 @@ function HeadlinerHero({ s, menu }) {
 // width (desktop is the frame x 0.82 on the 1180 canvas by that alone). The photograph, wash, scrim and tear hang off the root, not the
 // stage, so a published window wider than the frame carries them to its edges.
 //
-// Not drawn (call 1 A, 2026-11-24): the wordmark and six inline links, `NEXT STOP · …`, the LP ticket (call 2 A), the polaroid avatar, the
-// act type and location beside it. `foot` is the chip row's foot above the hero's foot (136 / 109 / 82, read off the three frames with the
-// avatar row's 114 above the name gone: the name's box ends 18 above the chips and the stack is anchored at the foot, so a longer name
-// grows upward). The two dot colours are the frames' own: the 1440 master sets it `sem/tag/7/bg` (the olive of the wash), the 768 and 390
-// masters the mustard.
+// Not drawn (call 1 A, 2026-11-24): the wordmark and six inline links, `NEXT STOP · …`, the polaroid avatar, the act type and location
+// beside it. `foot` is the chip row's foot above the hero's foot (136 / 109 / 82, read off the three frames: the name's box ends 18 above
+// the chips and the stack is anchored at the foot, so a longer name grows upward). The release ticket (call 2, reopened 2026-11-27) leads
+// that stack, `ticket.gap` over the name (the room the frames give the polaroid's row), so at the seed it stands on the frame's own spot
+// and a longer name or more chips push it up rather than run under it. The two dot colours are the frames' own: the 1440 master sets it
+// `sem/tag/7/bg` (the olive of the wash), the 768 and 390 masters the mustard.
 const BACKLINE_HERO = {
-  desktop: { fw: 1440, h: 975.297, gut: 48.96, foot: 136, name: 201.6 },
-  tablet: { fw: 768, h: 914.4375, gut: 26.11, foot: 109, name: 125 },
-  mobile: { fw: 390, h: 880, gut: 24, foot: 82, name: 61 },
+  desktop: { fw: 1440, h: 975.297, gut: 48.96, foot: 136, name: 201.6, ticket: { w: 460, gap: 114, title: 38, eyebrow: 13, tape: 174.8, side: 'flex-end' } },
+  tablet: { fw: 768, h: 914.4375, gut: 26.11, foot: 109, name: 125, ticket: { w: 460, gap: 114, title: 34, eyebrow: 13, tape: 174.8, side: 'flex-start' } },
+  mobile: { fw: 390, h: 880, gut: 24, foot: 82, name: 61, ticket: { w: 342, gap: 125, title: 31, eyebrow: 12, tape: 130, side: 'flex-start' } },
 }
+const BL_STACK_GAP = 18   // the name's box over the chips, and the least the ticket can stand over the name
+const BL_STUB = 112       // the ticket's stub, its right-hand 112
 const BL_BAR = 80       // the in-frame bar
 const BL_TEAR = 88      // the torn foot's strip
 const BL_NAME_LH = 0.82 // the frames' 165.312 / 102.5 / 50.02 over 201.6 / 125 / 61
@@ -2579,6 +2582,60 @@ function BacklinePill({ s, label, to, ext, u, bg = s.onScheme[2].activeBg, ink =
       textDecoration: 'none', background: bg, border: `1px solid ${bg}`, color: ink, whiteSpace: 'nowrap',
       fontFamily: s.label, fontWeight: 700, fontSize: u(14), letterSpacing: '0.06em', textTransform: 'uppercase', lineHeight: 'normal', ...style,
     }}>{label ?? s.cta1}</Tag>
+  )
+}
+
+// The release ticket (1:5576 · 1:17387 · 1:18718): a cream card turned 4 degrees, its corners bitten at 12, a strip of tape on its head,
+// the release on the left and a stub (the format, a barcode with a dot in its middle, the number) on the right. The media player's card
+// in other measures: `blNotchMask`, `BL_TICKET`, a fainter paper grain, the two drop shadows and the barcode are its own. 176
+// tall at least; a title long enough to take another line makes it taller.
+function BacklineTicket({ s, T, u }) {
+  const r = s.release
+  const paper = s.onScheme[1]
+  const ink = paper.text1       // #23240F
+  const olive = paper.text3     // #6F630A: the top line and the title's second run
+  const label = (size, extra) => ({
+    fontFamily: s.label, fontWeight: 700, fontSize: u(size), letterSpacing: '0.06em', textTransform: 'uppercase', overflowWrap: 'anywhere', ...extra,
+  })
+  return (
+    <div style={{ position: 'relative', flex: 'none', alignSelf: T.side, width: u(T.w), marginBottom: u(T.gap - BL_STACK_GAP) }}>
+      <div style={{
+        position: 'relative', transform: 'rotate(4deg)',
+        filter: `drop-shadow(0 ${u(10)} ${u(14)} rgba(35, 36, 15, 0.22)) drop-shadow(0 ${u(1)} ${u(1)} rgba(35, 36, 15, 0.2))`,
+      }}>
+        <div style={{
+          position: 'relative', display: 'flex', minHeight: u(176), background: BL_TICKET, color: ink,
+          maskImage: blNotchMask(u(12)), maskComposite: 'intersect', WebkitMaskImage: blNotchMask(u(12)), WebkitMaskComposite: 'source-in',
+        }}>
+          <BacklineGrain src={s.backlineGrain} size={u(192)} tone="paper" opacity={0.35} />
+          <div style={{ ...col(u(6)), position: 'relative', flex: '1 1 0', minWidth: 0, padding: `${u(22)} ${u(26)} ${u(20)}` }}>
+            {r.releaseKicker && <div style={label(T.eyebrow, { color: olive, lineHeight: u(13.8) })}>{r.releaseKicker}</div>}
+            {(r.releaseTitle || r.releaseEdition) && (
+              <div style={{
+                fontFamily: s.display, fontWeight: 400, fontSize: u(T.title), lineHeight: 0.95, letterSpacing: BL_TRACK, textTransform: 'lowercase',
+                overflowWrap: 'anywhere',
+              }}>
+                {r.releaseTitle && <div>{r.releaseTitle}</div>}
+                {r.releaseEdition && <div style={{ color: olive }}>{r.releaseEdition}</div>}
+              </div>
+            )}
+            {r.releaseFoot && <div style={label(12, { lineHeight: u(13.8) })}>{r.releaseFoot}</div>}
+          </div>
+          <div style={{ position: 'relative', flex: 'none', width: u(BL_STUB), opacity: 0.95 }}>
+            {r.releaseFormat && (
+              <div style={label(16, { position: 'absolute', left: 0, right: 0, top: u(16), textAlign: 'center', lineHeight: u(18.4) })}>{r.releaseFormat}</div>
+            )}
+            {/* the frame's 96 x 26 icon turned a quarter turn is the art standing upright: 26 wide, 96 tall */}
+            <BacklineBarcode ink={ink} size={u(26)} dot dotR={1.6} style={{ position: 'absolute', left: u(43), top: u(45.5) }} />
+            {r.releaseNo && (
+              <div style={label(10, { position: 'absolute', left: 0, right: 0, top: u(148), textAlign: 'center', lineHeight: u(11.5) })}>{r.releaseNo}</div>
+            )}
+          </div>
+        </div>
+      </div>
+      {/* the tape does not turn with the card: the frames set it beside the card's own node, at -6 degrees to the page */}
+      <BacklineTape colour={paper.box3} width={u(96)} style={{ position: 'absolute', left: u(T.tape), top: u(-14), transform: 'rotate(-6deg)' }} />
+    </div>
   )
 }
 
@@ -2632,7 +2689,8 @@ function BacklineHero({ s, menu }) {
           <BacklinePill s={s} to={s.bookTo} u={u} />
         </div>
         {/* the name and the chips, anchored at the foot so a longer name grows upward */}
-        <div style={{ position: 'absolute', left: u(P.gut), right: u(P.gut), bottom: u(P.foot), ...col(u(18)) }}>
+        <div style={{ position: 'absolute', left: u(P.gut), right: u(P.gut), bottom: u(P.foot), ...col(u(BL_STACK_GAP)) }}>
+          {s.release && <BacklineTicket s={s} T={P.ticket} u={u} />}
           <h1 style={nameStyle}>
             {title.slice(0, cut)}
             <span style={{ whiteSpace: 'nowrap' }}>
