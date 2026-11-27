@@ -37,6 +37,10 @@ const PROBES = [
   { name: 'header.align=centre', cats: ['header'], param: 'cj', value: { align: 'centre' } },
   { name: 'header.tags', cats: ['header'], param: 'cj', value: { tags: Z } },
   { name: 'header.showTags=hide', cats: ['header'], param: 'cj', value: { showTags: 'hide' } },
+  // Backline's layout-1 release ticket (2026-11-27).
+  { name: 'header.showRelease=hide', cats: ['header'], param: 'cj', value: { showRelease: 'hide' } },
+  ...['releaseKicker', 'releaseTitle', 'releaseEdition', 'releaseFoot', 'releaseFormat', 'releaseNo']
+    .map((k) => ({ name: `header.${k}`, cats: ['header'], param: 'cj', value: { [k]: 'ZZ' } })),
   { name: 'header.heroCta', cats: ['header'], param: 'cj', value: { heroCta: Z } },
   // JP-059: the rest of layout 2's copy — the pill over the name, the two
   // cards under the photograph, and the bio card's pill.

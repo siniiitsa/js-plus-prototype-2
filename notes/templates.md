@@ -838,7 +838,7 @@ The frames bind no variables (each section's only fill is a grain raster), so ev
 - **The picture is four layers, in the frame's order**: the photograph (`<Photo>`, imported whole: the crop editor edits the picture), the **wash** (a `#4C4E29` layer,
   `mix-blend-mode: color`, opacity .55: the frame's `blend-color`), the **scrim** (the frame's two gradients: ink at .82 / .25 / .55 across, .9 up the foot to 55 %), then the tear. The wash and
   the scrim are `pointer-events: none` (the photo probe's "a scrim lets the click through"). Rendered against the frames' pictures the three widths agree to 1 level everywhere
-  the removed LP ticket and polaroid are not.
+  the LP ticket (not drawn until 2026-11-27, below) and the removed polaroid are not.
 - **The tear** is `BacklineTear` (`tear="head"`, `flip`, the bio's paper `s.onScheme[1].bg`, `ground="paper"`, `below` ink), 88 tall and 1 px past the foot as the frame stands it. **The narrow tears are
   the desktop contour cropped from the left at 1:1, not squeezed** (correlation 1.000 / 0.995 against the first 768 / 390 columns; squeezed it is about 0): a narrow hero draws the svg `u(1440)` wide and lets the
   root clip it. A section after this one that draws a tear does the same.
@@ -852,7 +852,18 @@ The frames bind no variables (each section's only fill is a grain raster), so ev
   (the 1440 master binds `sem/tag/7/bg`, the narrow ones a literal).
 - **The six chips** take `s.onScheme[2].chips[6, 1, 2, 3, 5]` (ink / mustard / moss / `#363719` / beige, with `tagFg`) and a dashed cream outline for the sixth: 26 tall, 10 padding, Archivo Backline 12 +.06em, the **ticket notch**
   (`backlineNotch`, `backlineArt.jsx`: four radial gradients, a 5 px bite out of each corner, any width). Scheme 2's seat 3 was inferred `#2F3019` and is now the sampled `#363719`.
-- **Not drawn** (call 1 A, 2026-11-24): the wordmark and six inline links, `NEXT STOP · GORILLA, MANCHESTER · 30.08`, the LP ticket (call 2 A), the polaroid avatar, the act type and the location; no seal, no grain over the
+- **The release ticket** (`BacklineTicket`; frames 1:5576 · 1:17387 · 1:18718; call 2 **reopened 2026-11-27** after QA reported it missing: its option B is built, and `LP` and the number are fields too, user calls). Six header
+  fields read at Backline's layout 1 alone (`in: { Backline: [0], '*': [] }`), seeded from `RELEASE_BACKLINE`: `releaseKicker`, `releaseTitle`, `releaseEdition` (the olive second run; two fields, so nothing splits a string),
+  `releaseFoot`, `releaseFormat`, `releaseNo`, plus `showRelease` (Show / Hide: the seed announces a release, so an artist with none switches it off in one click). `vm.release` is `null` when hidden or when all six are empty; an
+  emptied line drops. **It leads the bottom-anchored name-and-chips column** rather than standing at a fixed top: its margin is the frames' room over the name (114 / 114 / 125, the removed polaroid's row), so the seed lands on the
+  frame's spot (338 at 1440, 366.94 narrow) and a longer name or more chips push it up instead of running under it (worst case at 390: its turned top stays at 214), so `TITLE_SITES` and the name's cap of 67 did not move.
+  Right gutter at 1440, left gutter narrow. A cream card turned +4 (`BL_TICKET`, `blNotchMask(u(12))`, paper grain at .35, the media card's two drop shadows), 460 / 460 / 342 wide and **176 tall at least** (a long title
+  adds a line and the card grows); a 112 stub with the format, `BacklineBarcode` (`dot`) and the number. **The tape does not turn with the card** (the frames set it beside the card's node): `BacklineTape` at 96 is the frame's own
+  polygon, at −6 to the page. No link and no live behaviour. Caps (`limits.mjs header --themes=8 --designs=0 --upright --extra-lines=releaseTitle`): 26 / 25 / 11 / 26 / **8** / 19; the format's probe reads 11, where `CASSETTE LP`
+  touches the stub's edge. `reach.mjs 8` (2026-11-27): the seven new fields move the header's layout 1 alone. It, and a digest
+  against `main`, also report "layout 5" (`arch` 4) moving: Backline has four header designs, so `arch` 4 folds onto design 0. The digest (every template's header, and every Backline section, 306 renders)
+  differs nowhere else.
+- **Not drawn** (call 1 A, 2026-11-24): the wordmark and six inline links, `NEXT STOP · GORILLA, MANCHESTER · 30.08`, the polaroid avatar, the act type and the location; no seal, no grain over the
   photograph (the frame's grain is under it and covered). The chips' labels are the seeded `TAG_LABELS`, which are the frame's six words, capitals aside.
 - Picker: `TemplatePreview` passes `fit` for Backline too (user call, 2026-11-24, "Fit, Backline only"), since a 799.74-tall hero outgrows the 1180 × 614 card.
 - Data (section 1, 2026-11-24): the header's eight `in` rows were Headliner copies and are re-measured (`reach.mjs 8`): `badgeMode` and `badgeText` read design 3 alone (layout 1 draws no seal), `cardLine` gains `Backline: [2]`, `avatar` has `in: { Backline: [1, 2, 3] }`, the rest held. Caps: title `[67, 80, 80, 80]`, tags and button as the `'*'` rows. `INLINE_OFF`: `Backline.0.header.kicker`, `.location` (not drawn) and `.cta1` (the canvas's hover toolbar covers the pill's words at the desktop canvas; per design, so tablet loses it too). **A hero that prints copy in the top-right 110 × 50 px of its section is under that toolbar at the desktop canvas.**
