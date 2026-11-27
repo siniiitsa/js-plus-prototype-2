@@ -61,7 +61,8 @@ another `notes/` file.
 
 Every upload opens `src/builder/ImageEditor.jsx` before it is placed: move, zoom, rotate (90° steps
 plus ±45° straighten) inside a fixed frame. **The edit is baked**:
-Apply renders the frame to a canvas (long edge ≤ 1600, source PNG stays PNG, JPEG q .9) and stores
+Apply renders the frame to a canvas (long edge ≤ 1600, source PNG stays PNG, JPEG q .9; **the header background is
+the exception**, below) and stores
 the new data-URI *string*, so `c.image` / `c.images` / `tracks[].image` keep their shapes and
 `Photo`, `seedFocus`, `NO_CLAMP` and `reach.mjs` know nothing of it. Metadata applied at render time
 was rejected: it would touch every `Photo` site and the ones that hard-code `50% 0%`.
@@ -106,13 +107,48 @@ was rejected: it would touch every `Photo` site and the ones that hard-code `50%
   `FOCUS` entry. Now `focusTf(focus, iw, ih, R)` seats the frame where a cover crop at that `object-position` would sit, for the
   frame's own ratio (natural px, so stage size does not enter); the source it reads is the *original* (`seedFocus(original)`),
   so a baked seed's **Reset** returns to the focus too, not to the centre. A fresh upload, an upload with no entry and a swap
-  (**Upload another**) still open centred (JP-129: uploads take defaults only). `start` is the transform the dialog opened on
+  (**Upload another**) still open centred (JP-129: uploads take defaults only). **The header background is the exception** since 2026-11-27: its uploads open at `50% 25%` (above). `start` is the transform the dialog opened on
   (a saved edit's own, else `home`); when `item.edit && !swapped` and zoom, quarter, fine and the clamped centre are within a
   natural pixel of it, **Apply writes nothing** (`shift()`, as Cancel does), not the same string back: a write would pin a seed
   into `c.image`, and an absent key is what lets a theme swap reseed it. A fresh pick still bakes untouched, since the crop to
   the field's ratio is its point. Still true, and not part of this: a real edit of a seed bakes a frame-shaped crop that a tile
   of another shape re-crops at the centre.
 - Not done: a live preview of how the crop sits at 1440 / 768 / 390.
+
+## The header background is kept whole (user call, 2026-11-27)
+
+QA: a header picture added on Mobile or Tablet lost its subject on Desktop. Two causes, both measured on Retro
+layout 1: Apply baked the frame, which is the box on screen (2026-11-06), so a 1600 × 900 file added on Mobile was
+stored as 416 × 900; and several desktop sites hard-code a crop fitted to the seed (`50% 0%`), so even a whole tall
+upload showed its top 24%. **The header's `image` alone** now keeps the whole picture (`keepsWhole`, photos.js; the
+user scoped it there). Every other slot still bakes to its frame, **and so still has the first cause**: a crop made at
+one width is re-cropped by the others. This amends 2026-10-14's "render-time metadata rejected" for this one slot,
+and answers JP-129's editable focus for uploads here.
+
+- **Apply** (`wholeCrop`, ImageEditor.jsx) stores the whole picture, turned, long edge ≤ 2400 (`WHOLE_MAX_EDGE`). Zoom
+  trims: it keeps a region of the picture's own shape, 1 / zoom each way, centred on the frame as far as the edges
+  allow. `c.image` is still a plain string. Where the picture sits is an `object-position` in `UPLOAD_FOCUS`
+  (photos.js), keyed by that string, in memory like the upload.
+- **The position reproduces the frame** at the width it was framed on. It is cover-crop slack, not a centre point, and
+  a cover crops one axis, so the other keeps the position the dialog opened with: aiming on Mobile sets x and keeps y,
+  aiming on Desktop sets y and keeps x. After a new zoom or angle that axis is 50% (zoomed, the kept region is already
+  centred) or the default's. CSS keeps the point at the same fraction of every box; it does not keep the frame, so a
+  frame dragged to an edge is not promised whole at a much narrower box.
+- **The default is `50% 25%`** (`UPLOAD_HOME`), for an upload nobody placed, *Use original* included. It is a guess
+  (faces and headlines sit high in tall pictures), not detection; auto-detect was offered and not chosen. A subject
+  low in a tall picture needs **Edit** on Desktop, not a re-upload. On the 566-tall desktop heroes a 520 × 1125 test
+  picture shows 19–43% of its height.
+- **Read at one site.** `Photo` lays `s.imageFocus` over a site's own `style` for the `image` mark, so every header
+  layout of every template takes it, the hard-coded crops and Headliner's 390 shift included. It is undefined for a
+  seed (`headerFocus`), which keeps each site's crop. A new header site that draws `s.image` without `Photo` must
+  read it itself.
+- **Lime's layout-4 desktop mirror is the seed's alone** now: a mirrored upload read backwards at desktop only, and
+  its x would have contradicted the dialog.
+- **Reopening on another shape** (`reframe`) seats the frame on what the canvas shows there, from the original at its
+  saved zoom and angle, and an untouched Apply writes nothing (JP-160's rule; the other slots still bake, since their
+  string is cropped to the old shape). Past `ORIGINALS`' 40 the kept picture is its own source.
+- **Fixed in passing:** *Upload another* with the very file already under the frame left the dialog blank (the load
+  effect was keyed on an unchanged source; it also keys on a swap count now).
 
 ## The photo mark (plans/photo-edit.md, user call, 2026-10-23)
 

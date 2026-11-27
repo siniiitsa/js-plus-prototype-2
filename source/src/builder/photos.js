@@ -573,6 +573,21 @@ const FOCUS = new Map([
 
 export const seedFocus = (url) => (url ? FOCUS.get(url) : undefined)
 
+// The header's background is the one photo that is not cropped to the box it was
+// framed in (user call, 2026-11-27): that box is a 1.9:1 band on desktop and a
+// tall strip on a phone, so a crop baked at one width lost the subject at
+// another. The editor keeps the whole picture and records here where every
+// width's cover crop of it sits, an `object-position` keyed by the stored URL.
+// An upload nobody has placed aims a quarter of the way down, where a tall
+// picture's face or headline usually is. A header seed has no entry and keeps
+// each layout's own crop. In memory only, like the upload itself.
+export const keepsWhole = (cat, key) => cat === 'header' && key === 'image'
+export const UPLOAD_HOME = '50% 25%'
+const UPLOAD_FOCUS = new Map()
+export const setUploadFocus = (url, pos) => { UPLOAD_FOCUS.set(url, pos) }
+export const headerFocus = (url) => (!url ? undefined
+  : UPLOAD_FOCUS.get(url) ?? (Object.values(SEEDS).some((seed) => seed.photos.header === url) ? undefined : UPLOAD_HOME))
+
 // Resolvers for the two shapes. Both return undefined for an unseeded theme.
 //
 // The header and the enquiry form are the two categories with two independent

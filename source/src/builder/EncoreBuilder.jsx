@@ -67,7 +67,7 @@ import {
   VIDEOS, VIDEO_SEED, VIDEO_KEYS, videoPlayable, videoSeedDesc, VIDEO_ALL, COLUMN_SPLIT, bebasEms, antonEms, ttEms, gloockEms, titanEms, latticeEms, frauncesEms, titleFitK, bricolageEms, latticeDotField, latticeBioDots, latticeTestiDots,
   headerLayout, headerLayoutLabel, layoutLabel, setupHeaderCount,
 } from './data.js'
-import { defaultImage, defaultImages, defaultTrackArt, seedFocus, RETRO_TEXTURE, LATTICE_ART, BACKLINE_ART } from './photos.js'
+import { defaultImage, defaultImages, defaultTrackArt, seedFocus, headerFocus, keepsWhole, RETRO_TEXTURE, LATTICE_ART, BACKLINE_ART } from './photos.js'
 
 /* ------------------------------------------------------------------ *
  * §5.5 Axis B — canvas device preview sizing
@@ -1024,6 +1024,8 @@ export function sectionVm({ themeIdx, cat, arch, c = {}, artistName, identity = 
   // JP-133): an `object-position` string, or undefined for an upload, an
   // empty slot or a file centred already. The sites that read it say so.
   vm.imagePos = seedFocus(vm.image)
+  // The header's uploaded background, which every width crops around one position.
+  vm.imageFocus = cat === 'header' ? headerFocus(vm.image) : undefined
   vm.imagesPos = vm.images.map(seedFocus)
   // Fixed decoration — paper grain and the events-map raster (§10.2). The grain
   // is Retro's and Grunge's (Lime's frames carry no texture); the raster is the
@@ -2931,7 +2933,7 @@ const openOnKey = (inputRef) => (e) => {
   inputRef.current?.click()
 }
 
-function ImageField({ value, aspect, onChange, onToast }) {
+function ImageField({ value, aspect, whole, onChange, onToast }) {
   const inputRef = useRef(null)
   const [over, setOver] = useState(false)
   const [err, setErr] = useState(null)
@@ -2942,7 +2944,7 @@ function ImageField({ value, aspect, onChange, onToast }) {
     if (!v) return
     setErr(v.msg)
     // A pick goes through the editor first (ImageEditor.jsx); Cancel there writes nothing.
-    v.ok.forEach((f) => readImage(f, (src) => editImages([{ src, aspect, onApply: onChange }])))
+    v.ok.forEach((f) => readImage(f, (src) => editImages([{ src, aspect, whole, onApply: onChange }])))
   }
   // The filled photo is a dropzone too, and a drop there replaces it — without
   // these the browser takes the drop itself and opens the file in the tab.
@@ -2967,7 +2969,7 @@ function ImageField({ value, aspect, onChange, onToast }) {
           }} />
           <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
             <button
-              type="button" onClick={() => editImages([{ src: value, aspect, edit: true, onApply: onChange }])}
+              type="button" onClick={() => editImages([{ src: value, aspect, whole, edit: true, onApply: onChange }])}
               className="hover:bg-muted"
               style={{ ...IMG_BTN, color: '#5B5850' }}
             >Edit</button>
@@ -5722,7 +5724,7 @@ function EditPanel({ sec, vm, api, artistName, identity, tiers, email, themeIdx,
                         </p>
                       )}
                       {f.type === 'image' ? (
-                        <ImageField value={imgVal(f.k)} aspect={api.photoAspect(sec.id, f.k, f.aspect)} onChange={(v) => set(v)} onToast={api.toast} />
+                        <ImageField value={imgVal(f.k)} aspect={api.photoAspect(sec.id, f.k, f.aspect)} whole={keepsWhole(sec.cat, f.k)} onChange={(v) => set(v)} onToast={api.toast} />
                       ) : f.type === 'images' ? (
                         <ImagesField value={imgsVal(f.k)} max={f.max} aspect={api.photoAspect(sec.id, f.k, f.aspect)} onChange={(v) => set(v)} onToast={api.toast} />
                       ) : f.type === 'songs' ? (
@@ -8107,17 +8109,18 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
   const photoAspect = (sid, k, fallback) => () => photoAspectOf(canvasRef.current?.querySelector(`[data-sid="${sid}"]`)?.firstElementChild, k, fallback)
   const photoPut = (sec, slot) => (url) => { const [k, v] = photoWrite(sec, slot, url, T.name); api.setContent(sec.id, k, v) }
   // A picked or dropped file goes through the editor first, as the panel's drop zone has it; one file, the first.
-  const frameFile = (files, put, aspect) => {
+  const frameFile = (files, put, aspect, whole) => {
     const v = vetImages(files ? [...files].slice(0, 1) : [], toast)
     if (!v) return
-    v.ok.forEach((f) => readImage(f, (src) => editImages([{ src, aspect, onApply: put }])))
+    v.ok.forEach((f) => readImage(f, (src) => editImages([{ src, aspect, whole, onApply: put }])))
   }
   const startPhoto = (sec, slot) => {
     setPhotoHover(null)
     const put = photoPut(sec, slot)
     const aspect = photoAspect(sec.id, slot.k, slot.aspect)
-    if (slot.empty) { photoPick.current = { put, aspect }; photoFile.current?.click() }
-    else editImages([{ src: slot.value, aspect, edit: true, onApply: put }])
+    const whole = keepsWhole(sec.cat, slot.k)
+    if (slot.empty) { photoPick.current = { put, aspect, whole }; photoFile.current?.click() }
+    else editImages([{ src: slot.value, aspect, whole, edit: true, onApply: put }])
   }
   // A file dropped on a section's photo replaces it, where a click would open it (the panel's
   // drop zone, from the picture). Only a drag that carries files is the canvas's: a text drag is left alone.
@@ -8140,7 +8143,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
     const ph = photoFieldAt(sec, e.currentTarget, { x: e.clientX, y: e.clientY }, T.name)
     if (!ph) return
     patch({ selectedId: sec.id, menuFor: null })
-    frameFile(e.dataTransfer.files, photoPut(sec, ph), photoAspect(sec.id, ph.k, ph.aspect))
+    frameFile(e.dataTransfer.files, photoPut(sec, ph), photoAspect(sec.id, ph.k, ph.aspect), keepsWhole(sec.cat, ph.k))
   }
 
   // The box follows the copy as it is typed, wraps, or changes width, and as the
@@ -9142,7 +9145,7 @@ export default function EncoreBuilder({ artistName: profileName = 'Kai Mercer', 
             const pick = photoPick.current
             const files = e.target.files ? [...e.target.files] : []
             e.target.value = ''
-            if (pick) frameFile(files, pick.put, pick.aspect)
+            if (pick) frameFile(files, pick.put, pick.aspect, pick.whole)
           }}
         />
 
