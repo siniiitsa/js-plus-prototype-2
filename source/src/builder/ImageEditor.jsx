@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Button } from '@/components/ui/button'
 import { Slider } from '@/components/ui/slider'
 import { readImage, vetImages } from './imageFiles.js'
-import { seedFocus } from './photos.js'
+import { headerFocus, seedFocus, setUploadFocus, UPLOAD_HOME } from './photos.js'
 
 /* ------------------------------------------------------------------ *
  * The image editor — move, zoom, rotate and crop an upload before it is
@@ -17,14 +17,22 @@ import { seedFocus } from './photos.js'
  * baked photo reopens the original at its last transform instead of cropping
  * already-cropped pixels. In memory only, like every upload (no persistence).
  *
+ * One slot is not cropped to its frame: the header background (`item.whole`,
+ * photos.js `keepsWhole`). There the baked string is the whole picture (turned,
+ * and trimmed by the zoom), and the frame only sets where each width's cover
+ * crop of it sits (`wholeCrop`, `setUploadFocus`).
+ *
  * Callers never mount a dialog: editImages() pushes onto a queue and the one
  * <ImageEditorHost> at the builder's root shows its head. That keeps the dialog
  * outside the mobile Edit drawer it is opened from.
  * ------------------------------------------------------------------ */
 
 const MAX_EDGE = 1600
+// A kept-whole picture is cropped again by every width, so it keeps more pixels: a tall
+// phone shot capped at 1600 would be 740 wide under an 1180 desktop header.
+const WHOLE_MAX_EDGE = 2400
 const ORIGINALS_MAX = 40
-// bakedUrl → { original, tf, R }; R is the frame ratio the edit was made at, so a reopen at a
+// bakedUrl → { original, tf, R, kc }; kc is the kept region's centre, a whole-kept edit's alone; R is the frame ratio the edit was made at, so a reopen at a
 // frame of another shape (the page's box changed with the layout or the device) starts over
 // from the original instead of replaying a transform fitted to the old shape.
 // Insertion-ordered, oldest dropped past the cap.
@@ -46,7 +54,7 @@ const shift = () => { queue = queue.slice(1); closedAt = Date.now(); emit() }
 // itself and dismisses. The mobile sheets guard on this (EncoreBuilder).
 export const editorBusy = () => queue.length > 0 || Date.now() - closedAt < 500
 
-// items: [{ src, aspect?: [w, h] | () => [w, h], onApply(url) }] — one batch, edited in order.
+// items: [{ src, aspect?: [w, h] | () => [w, h], whole?, onApply(url) }] — one batch, edited in order.
 // An aspect given as a function is read here, when the editor is asked for: it is the photo's
 // box on the canvas right now, which the layout, the device and the template all move.
 export function editImages(items) {
@@ -105,13 +113,55 @@ function mimeOf(src) {
   return /^data:image\/png|\.png(\?|$)/i.test(src) ? 'image/png' : 'image/jpeg'
 }
 
-function bake(img, iw, ih, tf, src, aspect) {
+const parseFocus = (focus) => focus.split(/\s+/).map((v) => parseFloat(v) / 100)
+
+// What Apply keeps of a whole-kept picture, and where it sits. `keep` is the transform of a
+// frame of the picture's own shape at the same angle and zoom, centred on what the user framed
+// as far as the edges allow: at zoom 1 and no straighten that is the whole picture. `pos` is
+// the object-position that puts a cover crop of it back on the user's frame. A cover crops one
+// axis only, so the other axis has no room to read a position from: it takes `carry`.
+function wholeCrop(tf, iw, ih, R, carry) {
+  const Rn = frameRatio(null, tf, iw, ih)
+  const f = geometry(tf, iw, ih, R, 1)
+  const k = geometry({ ...tf, cx: f.cx, cy: f.cy }, iw, ih, Rn, 1)
+  const cos = Math.cos(f.th)
+  const sin = Math.sin(f.th)
+  const dx = f.cx - k.cx
+  const dy = f.cy - k.cy
+  const place = (off, kept, framed, fallback) => {
+    const room = kept - framed
+    const p = room > 1 ? clamp((off + room / 2) / room, 0, 1) : fallback
+    return `${+(p * 100).toFixed(2)}%`
+  }
+  const pos = [
+    place(cos * dx - sin * dy, Rn / k.s, R / f.s, carry[0]),
+    place(sin * dx + cos * dy, 1 / k.s, 1 / f.s, carry[1]),
+  ].join(' ')
+  return { keep: { ...tf, cx: k.cx, cy: k.cy }, pos }
+}
+
+// An earlier whole-kept edit, re-seated in a frame of another shape (the device or the layout
+// changed): the transform that frames what the canvas shows there now, the cover crop of the
+// kept picture at `pos`. `wholeCrop` run backwards.
+function reframe(saved, iw, ih, R, pos) {
+  const [px, py] = parseFocus(pos)
+  const Rn = frameRatio(null, saved.tf, iw, ih)
+  const k = geometry({ ...saved.tf, cx: saved.kc[0], cy: saved.kc[1] }, iw, ih, Rn, 1)
+  const fs = geometry(saved.tf, iw, ih, R, 1).s
+  const u = (px - 0.5) * (Rn / k.s - R / fs)
+  const v = (py - 0.5) * (1 / k.s - 1 / fs)
+  const cos = Math.cos(k.th)
+  const sin = Math.sin(k.th)
+  return { ...saved.tf, cx: k.cx + u * cos + v * sin, cy: k.cy - u * sin + v * cos }
+}
+
+function bake(img, iw, ih, tf, src, aspect, maxEdge = MAX_EDGE) {
   const R = frameRatio(aspect, tf, iw, ih)
   const g = geometry(tf, iw, ih, R, 1) // frame of height 1: only its shape matters
-  // The cropped region in natural px, then capped to MAX_EDGE on its long edge.
+  // The cropped region in natural px, then capped to `maxEdge` on its long edge.
   const rw = R / g.s
   const rh = 1 / g.s
-  const m = Math.min(1, MAX_EDGE / Math.max(rw, rh))
+  const m = Math.min(1, maxEdge / Math.max(rw, rh))
   const ow = Math.max(1, Math.round(rw * m))
   const oh = Math.max(1, Math.round(rh * m))
   const canvas = document.createElement('canvas')
@@ -134,13 +184,19 @@ function Editor({ item, onToast }) {
   // onApply, aspect and queue seat stay, only the picture under the frame changes.
   const [src, setSrc] = useState(item.src)
   const [swapped, setSwapped] = useState(false)
+  // Counts the swaps, so picking the very file already under the frame loads it again.
+  const [picks, setPicks] = useState(0)
   const [pickErr, setPickErr] = useState(null)
   const found = swapped ? undefined : ORIGINALS.get(src)
   const original = found?.original ?? src
   // The edit was made for a frame of another shape: its transform no longer fits, and an untouched
   // Apply must bake (the stored string is cropped to the old shape), so only the original is kept.
-  const stale = !!found && !!item.aspect && !!found.R && Math.abs(found.R / (item.aspect[0] / item.aspect[1]) - 1) > 0.01
-  const saved = stale ? undefined : found
+  // A whole-kept picture is not cropped to a shape: its edit is re-seated in the new frame
+  // (`reframe`) and an untouched Apply keeps it as it is.
+  const reshaped = !!found && !!item.aspect && !!found.R && Math.abs(found.R / (item.aspect[0] / item.aspect[1]) - 1) > 0.01
+  const stale = reshaped && !item.whole
+  // An entry another slot made from the very same bytes has no kept centre to re-seat from.
+  const saved = stale || (item.whole && found && !found.kc) ? undefined : found
   const [dim, setDim] = useState(null) // { img, w, h }
   const [failed, setFailed] = useState(false)
   const [tf, setTf] = useState(() => saved?.tf ?? startTf())
@@ -161,15 +217,18 @@ function Editor({ item, onToast }) {
     el.onload = () => {
       const w = el.naturalWidth
       const h = el.naturalHeight
-      const focus = swapped ? undefined : seedFocus(original)
+      const focus = item.whole ? headerFocus(original) ?? seedFocus(original)
+        : swapped ? undefined : seedFocus(original)
       home.current = focus ? focusTf(focus, w, h, frameRatio(item.aspect, startTf(), w, h)) : startTf()
-      start.current = saved?.tf ?? home.current
+      start.current = !saved ? home.current
+        : item.whole && reshaped ? reframe(saved, w, h, frameRatio(item.aspect, saved.tf, w, h), headerFocus(src))
+          : saved.tf
       setTf(start.current)
       setDim({ img: el, w, h })
     }
     el.onerror = () => setFailed(true)
     el.src = original
-  }, [original])
+  }, [original, picks])
 
   // Measured after the dialog mounts; the stage is as wide as its column.
   useEffect(() => {
@@ -246,13 +305,35 @@ function Editor({ item, onToast }) {
   const apply = () => {
     if (untouched) { shift(); return }
     try {
-      const url = bake(dim.img, iw, ih, { ...tf, cx: g.cx, cy: g.cy }, original, item.aspect)
-      ORIGINALS.set(url, { original, tf: { ...tf, cx: g.cx, cy: g.cy }, R: frameRatio(item.aspect, tf, iw, ih) })
+      const framed = { ...tf, cx: g.cx, cy: g.cy }
+      let url
+      let kc
+      if (item.whole) {
+        // The axis with no room keeps the position it opened with. After a new zoom or angle
+        // that no longer holds: a zoomed-in picture is kept centred on the frame.
+        const turned = tf.quarter !== start.current.quarter || tf.fine !== start.current.fine
+        const same = !turned && tf.zoom === start.current.zoom
+        const opened = swapped ? UPLOAD_HOME : headerFocus(src) ?? seedFocus(src) ?? '50% 50%'
+        const carry = parseFocus(same ? opened : tf.zoom > 1 ? '50% 50%' : UPLOAD_HOME)
+        const { keep, pos } = wholeCrop(framed, iw, ih, R, carry)
+        url = bake(dim.img, iw, ih, keep, original, [frameRatio(null, tf, iw, ih), 1], WHOLE_MAX_EDGE)
+        setUploadFocus(url, pos)
+        kc = [keep.cx, keep.cy]
+      } else {
+        url = bake(dim.img, iw, ih, framed, original, item.aspect)
+      }
+      ORIGINALS.set(url, { original, tf: framed, R, kc })
       if (ORIGINALS.size > ORIGINALS_MAX) ORIGINALS.delete(ORIGINALS.keys().next().value)
       finish(url)
     } catch {
       finish(original)
     }
+  }
+  // The file as picked has not been placed: a kept-whole upload goes back to the default,
+  // even where its bytes equal an earlier bake's. A seed has no position to reset.
+  const useOriginal = () => {
+    if (item.whole && headerFocus(original)) setUploadFocus(original, UPLOAD_HOME)
+    finish(original)
   }
   const cancel = () => shift()
 
@@ -265,6 +346,7 @@ function Editor({ item, onToast }) {
     readImage(v.ok[0], (url) => {
       setSrc(url)
       setSwapped(true)
+      setPicks((n) => n + 1)
       setDim(null)
       setFailed(false)
       setTf(startTf())
@@ -285,7 +367,9 @@ function Editor({ item, onToast }) {
             {item.edit && !swapped ? 'Edit photo' : 'Frame your photo'}{batch ? ` · ${item.pos} of ${item.total}` : ''}
           </DialogTitle>
           <DialogDescription className="text-xs">
-            Drag to move, pinch or use the slider to zoom. Only what is inside the frame is kept.
+            Drag to move, pinch or use the slider to zoom. {item.whole
+              ? 'The whole picture is kept: each screen size crops it around where you place this frame. Zooming in trims its edges.'
+              : 'Only what is inside the frame is kept.'}
           </DialogDescription>
         </DialogHeader>
 
@@ -363,7 +447,7 @@ function Editor({ item, onToast }) {
           </div>
           <div className="flex flex-wrap justify-end gap-2">
             <Button type="button" variant="outline" size="sm" onClick={cancel}>{batch ? 'Skip photo' : 'Cancel'}</Button>
-            <Button type="button" variant="outline" size="sm" onClick={() => finish(original)}>Use original</Button>
+            <Button type="button" variant="outline" size="sm" onClick={useOriginal}>Use original</Button>
             <Button type="button" size="sm" disabled={!dim} onClick={apply}>Apply</Button>
           </div>
         </DialogFooter>

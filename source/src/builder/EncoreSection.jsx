@@ -1792,7 +1792,10 @@ function Photo({ s, style, initialsSize = 44, backdrop = false, avatar = false, 
   const url = avatar ? s.avatar : (src === undefined ? s.image : src)
   const mark = slot ?? (avatar ? 'avatar' : src === undefined ? 'image' : undefined)
   if (url) {
-    return <img data-photo={mark} src={url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', ...style }} />
+    // An uploaded header background sits where it was placed, over any crop a layout
+    // fitted to its seed (`headerFocus`, photos.js); undefined everywhere else.
+    const placed = mark === 'image' && s.imageFocus
+    return <img data-photo={mark} src={url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', ...style, ...(placed ? { objectPosition: placed } : null) }} />
   }
   if (backdrop) {
     return (
@@ -4521,12 +4524,12 @@ function HeaderV3({ s, menu }) {
             centred cover, flipped — where 768 and 390 are FILL and unflipped
             (read off `scaleMode`: the layout-3 header's lesson the other way
             round). The flip is the composition's: it stands the subject at
-            the right, clear of the name. Its cost is a mirrored upload at
-            desktop alone, named here rather than declined. Narrow, a seed
+            the right, clear of the name. It is the seed's alone: an upload
+            would read backwards at desktop and nowhere else. Narrow, a seed
             takes its own focus, HeaderV0's (JP-133); desktop stays centred,
             where Lime's flip would mirror any x. */}
         <div aria-hidden style={{ position: 'absolute', inset: 0 }}>
-          <Photo s={s} backdrop style={desk ? (s.lime ? { transform: 'scaleX(-1)' } : undefined) : { objectPosition: s.imagePos }} />
+          <Photo s={s} backdrop style={desk ? (s.lime && !s.imageFocus ? { transform: 'scaleX(-1)' } : undefined) : { objectPosition: s.imagePos }} />
         </div>
         {/* Scheme 3's `sem/bg` — `s.ac` — off the floor to a transparent stop
             in Scheme 1's `sem/bg` at the top, the frame's own two stops.
